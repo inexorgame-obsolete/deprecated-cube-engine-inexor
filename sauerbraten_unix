@@ -1,8 +1,11 @@
 #!/bin/sh
-# SAUER_DIR should refer to the directory in which Sauerbraten is placed.
-#SAUER_DIR=~/sauerbraten
-#SAUER_DIR=/usr/local/sauerbraten
-SAUER_DIR=.
+# SAUER_DATA should refer to the directory in which Sauerbraten data files are placed.
+#SAUER_DATA=~/sauerbraten
+#SAUER_DATA=/usr/local/sauerbraten
+SAUER_DATA=.
+
+# SAUER_BIN should refer to the directory in which Sauerbraten executable files are placed.
+SAUER_BIN=${SAUER_DATA}/bin_unix
 
 # SAUER_OPTIONS contains any command line options you would like to start Sauerbraten with.
 #SAUER_OPTIONS="-f"
@@ -41,16 +44,16 @@ x86_64)
   ;;
 esac
 
-if [ -x ${SAUER_DIR}/bin_unix/native_client ]
+if [ -x ${SAUER_BIN}/native_client ]
 then
   SYSTEM_NAME=native_
   MACHINE_NAME=
 fi
 
-if [ -x ${SAUER_DIR}/bin_unix/${SYSTEM_NAME}${MACHINE_NAME}client ]
+if [ -x ${SAUER_BIN}/${SYSTEM_NAME}${MACHINE_NAME}client ]
 then
-  cd ${SAUER_DIR}
-  exec ${SAUER_DIR}/bin_unix/${SYSTEM_NAME}${MACHINE_NAME}client ${SAUER_OPTIONS} "$@"
+  cd ${SAUER_DATA}
+  exec ${SAUER_BIN}/${SYSTEM_NAME}${MACHINE_NAME}client ${SAUER_OPTIONS} "$@"
 else
   echo "Your platform does not have a pre-compiled Sauerbraten client."
   echo "Please follow the following steps to build a native client:"
