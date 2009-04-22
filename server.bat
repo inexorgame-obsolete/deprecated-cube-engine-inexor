@@ -1,2 +1,2 @@
-bin\sauerbraten.exe -d -c6 %*
+bin\sauerbraten.exe -d %*
 
