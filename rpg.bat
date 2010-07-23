@@ -1,0 +1,2 @@
+bin\rpg.exe -r %*
+
