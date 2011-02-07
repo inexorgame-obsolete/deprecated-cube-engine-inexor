@@ -1,2 +1,2 @@
-bin\sauerbraten.exe -r %*
+bin\sauerbraten.exe -q"$HOME\My Games\Sauerbraten" -r %*
 
