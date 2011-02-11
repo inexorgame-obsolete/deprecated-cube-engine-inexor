@@ -1,2 +1,2 @@
-bin\rpg.exe -r %*
+bin\rpg.exe -q"$HOME\My Games\Sauerbraten" -r %*
 
