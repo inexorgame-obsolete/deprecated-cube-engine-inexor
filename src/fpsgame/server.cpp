@@ -1553,6 +1553,34 @@ namespace server
 
     void startintermission() { gamelimit = min(gamelimit, gamemillis); checkintermission(); }
 
+	/**
+	 * Checks if the game has endet because only one player is still alive.
+	 * It does this by checking if less than 2 players have thir state set to alive. 
+	 * This means, the game will also end if someone is gagging
+	 * If only one is still alive this method forces intermission.
+	 */
+	void checklms() {
+		int plalive = 0; // Number of players still alive; 
+		                    // n > 1 Means the game is still running; 
+		                    // 1 means player x has won; 
+		                    // n < 1 means that the game should end, but there is now winner (probatly only,
+		                       // if the two last players killed them self at the same time)
+		int clfound = -1; // The index of the client whose player is last found as alive, the winner. IF $plalive == 1
+		                     // It is currently not used
+		
+		// Get player check if players are alive; if yes set plfound and increase plalive
+		for (int clnum = 0; clnum < clients.length() && plalive < 2; clnum++)
+			if (clients[clnum]->state.state == CS_ALIVE) {
+				plalive++;
+				clfound = clnum;
+			}
+		
+		// Stop game if less than 2 players are aive
+		if (plalive < 2)
+			startintermission();
+		
+	}
+	
     void dodamage(clientinfo *target, clientinfo *actor, int damage, int gun, const vec &hitpush = vec(0, 0, 0))
     {
         gamestate &ts = target->state;
@@ -1584,6 +1612,7 @@ namespace server
             if(smode) smode->died(target, actor);
             ts.state = CS_DEAD;
             ts.lastdeath = gamemillis;
+			checklms(); // Last Man Standing
             // don't issue respawn yet until DEATHMILLIS has elapsed
             // ts.respawn();
         }
@@ -2298,7 +2327,7 @@ namespace server
                 break;
 
             case N_TRYSPAWN:
-                if(!ci || !cq || cq->state.state!=CS_DEAD || cq->state.lastspawn>=0 || (smode && !smode->canspawn(cq))) break;
+                if(!ci || !cq || cq->state.state!=CS_DEAD || cq->state.lastspawn>=0 || (smode && !smode->canspawn(cq)) || m_lms) break;
                 if(!ci->clientmap[0] && !ci->mapcrc)
                 {
                     ci->mapcrc = -1;

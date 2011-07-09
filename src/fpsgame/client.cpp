@@ -429,7 +429,8 @@ namespace game
     ICOMMANDS("m_sp", "i", (int *mode), { int gamemode = *mode; intret(m_sp); });
     ICOMMANDS("m_dmsp", "i", (int *mode), { int gamemode = *mode; intret(m_dmsp); });
     ICOMMANDS("m_classicsp", "i", (int *mode), { int gamemode = *mode; intret(m_classicsp); });
-
+	ICOMMANDS("m_lms", "i", (int *mode), { int gamemode = *mode; intret(m_lms); });
+	
     void changemap(const char *name, int mode) // request map change, server may ignore
     {
         if(m_checknot(mode, M_EDIT) && !name[0])
@@ -1295,6 +1296,7 @@ namespace game
                 }
                 if(!victim) break;
                 killed(victim, actor);
+				
                 break;
             }
 
