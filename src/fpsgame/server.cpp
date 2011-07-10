@@ -1629,6 +1629,8 @@ namespace server
         if(smode) smode->died(ci, NULL);
         gs.state = CS_DEAD;
         gs.respawn();
+		// lms
+		checklms();
     }
 
     void suicideevent::process(clientinfo *ci)

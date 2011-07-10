@@ -425,12 +425,7 @@ namespace game
         }
         deathstate(d);
 		ai::killed(d, actor);
-		
-		// On lms
-		if (d == player1) {
-			
-		}
-    }
+	}
 
     void timeupdate(int secs)
     {
