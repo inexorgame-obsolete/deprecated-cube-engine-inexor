@@ -2430,6 +2430,7 @@ namespace server
                 exp->millis = cq ? cq->geteventmillis(gamemillis, cmillis) : 0;
                 exp->gun = getint(p);
                 exp->id = getint(p);
+                if(exp->gun==GUN_BOMB) cq->ammo[GUN_BOMB]++; // add a bomb if the bomb explodes
                 int hits = getint(p);
                 loopk(hits)
                 {
