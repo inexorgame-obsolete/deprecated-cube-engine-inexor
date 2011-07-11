@@ -1679,7 +1679,7 @@ namespace server
         int wait = millis - gs.lastshot;
         if(!gs.isalive(gamemillis) ||
            wait<gs.gunwait ||
-           gun<GUN_FIST || gun>GUN_PISTOL ||
+           gun<GUN_FIST || gun>GUN_BOMB ||
            gs.ammo[gun]<=0 || (guns[gun].range && from.dist(to) > guns[gun].range + 1))
             return;
         if(gun!=GUN_FIST) gs.ammo[gun]--;
@@ -2347,7 +2347,7 @@ namespace server
             case N_GUNSELECT:
             {
                 int gunselect = getint(p);
-                if(!cq || cq->state.state!=CS_ALIVE || gunselect<GUN_FIST || gunselect>GUN_PISTOL) break;
+                if(!cq || cq->state.state!=CS_ALIVE || gunselect<GUN_FIST || gunselect>GUN_BOMB) break;
                 cq->state.gunselect = gunselect;
                 QUEUE_AI;
                 QUEUE_MSG;

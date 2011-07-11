@@ -727,7 +727,7 @@ namespace game
         while(i < 3) ammohuddown[i++] = -1;
     });
 
-    ICOMMAND(ammohudcycle, "sssssss", (char *w1, char *w2, char *w3, char *w4, char *w5, char *w6, char *w7),
+    ICOMMAND(ammohudcycle, "ssssssss", (char *w1, char *w2, char *w3, char *w4, char *w5, char *w6, char *w7, char *w8),
     {
         int i = 0;
         if(w1[0]) ammohudcycle[i++] = parseint(w1);
@@ -737,7 +737,8 @@ namespace game
         if(w5[0]) ammohudcycle[i++] = parseint(w5);
         if(w6[0]) ammohudcycle[i++] = parseint(w6);
         if(w7[0]) ammohudcycle[i++] = parseint(w7);
-        while(i < 7) ammohudcycle[i++] = -1;
+        if(w8[0]) ammohudcycle[i++] = parseint(w8);
+        while(i < 8) ammohudcycle[i++] = -1;
     });
 
     VARP(ammohud, 0, 1, 1);
@@ -751,7 +752,7 @@ namespace game
         loopi(3)
         {
             int gun = ammohudup[i];
-            if(gun < GUN_FIST || gun > GUN_PISTOL || gun == d->gunselect || !d->ammo[gun]) continue;
+            if(gun < GUN_FIST || gun > GUN_BOMB || gun == d->gunselect || !d->ammo[gun]) continue;
             drawicon(HICON_FIST+gun, xup, yup, sz);
             yup += sz;
         }
@@ -759,7 +760,7 @@ namespace game
         loopi(3)
         {
             int gun = ammohuddown[3-i-1];
-            if(gun < GUN_FIST || gun > GUN_PISTOL || gun == d->gunselect || !d->ammo[gun]) continue;
+            if(gun < GUN_FIST || gun > GUN_BOMB || gun == d->gunselect || !d->ammo[gun]) continue;
             ydown -= sz;
             drawicon(HICON_FIST+gun, xdown, ydown, sz);
         }
@@ -767,7 +768,7 @@ namespace game
         loopi(7)
         {
             int gun = ammohudcycle[i];
-            if(gun < GUN_FIST || gun > GUN_PISTOL) continue;
+            if(gun < GUN_FIST || gun > GUN_BOMB) continue;
             if(gun == d->gunselect) offset = i + 1;
             else if(d->ammo[gun]) num++;
         }
@@ -775,7 +776,7 @@ namespace game
         loopi(7)
         {
             int gun = ammohudcycle[(i + offset)%7];
-            if(gun < GUN_FIST || gun > GUN_PISTOL || gun == d->gunselect || !d->ammo[gun]) continue;
+            if(gun < GUN_FIST || gun > GUN_BOMB || gun == d->gunselect || !d->ammo[gun]) continue;
             xcycle -= sz;
             drawicon(HICON_FIST+gun, xcycle, ycycle, sz);
         }

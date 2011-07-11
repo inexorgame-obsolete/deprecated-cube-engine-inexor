@@ -1237,8 +1237,8 @@ namespace game
                 loopk(3) to[k] = getint(p)/DMF;
                 fpsent *s = getclient(scn);
                 if(!s) break;
-                if(gun>GUN_FIST && gun<=GUN_PISTOL && s->ammo[gun]) s->ammo[gun]--;
-                s->gunselect = clamp(gun, (int)GUN_FIST, (int)GUN_PISTOL);
+                if(gun>GUN_FIST && gun<=GUN_BOMB && s->ammo[gun]) s->ammo[gun]--;
+                s->gunselect = clamp(gun, (int)GUN_FIST, (int)GUN_BOMB);
                 s->gunwait = guns[s->gunselect].attackdelay;
                 int prevaction = s->lastaction;
                 s->lastaction = lastmillis;
@@ -1304,7 +1304,7 @@ namespace game
             {
                 if(!d) return;
                 int gun = getint(p);
-                d->gunselect = clamp(gun, int(GUN_FIST), int(GUN_PISTOL));
+                d->gunselect = clamp(gun, int(GUN_FIST), int(GUN_BOMB));
                 playsound(S_WEAPLOAD, &d->o);
                 break;
             }
