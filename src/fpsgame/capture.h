@@ -262,7 +262,7 @@ struct captureclientmode : clientmode
         loopv(bases)
         {
             baseinfo &b = bases[i];
-            if(b.ammotype>0 && b.ammotype<=I_CARTRIDGES-I_SHELLS+1 && insidebase(b, player1->feetpos()) && player1->hasmaxammo(b.ammotype-1+I_SHELLS)) return;
+            if(b.ammotype>0 && b.ammotype<=I_BOMBS-I_SHELLS+1 && insidebase(b, player1->feetpos()) && player1->hasmaxammo(b.ammotype-1+I_SHELLS)) return;
         }
         addmsg(N_REPAMMO, "rc", player1);
     }
@@ -270,7 +270,7 @@ struct captureclientmode : clientmode
     void receiveammo(fpsent *d, int type)
     {
         type += I_SHELLS-1;
-        if(type<I_SHELLS || type>I_CARTRIDGES) return;
+        if(type<I_SHELLS || type>I_BOMBS) return;
         entities::repammo(d, type, d==player1);
         int icon = itemstats[type-I_SHELLS].icon;
         if(icon >= 0) particle_icon(d->abovehead(), icon%4, icon/4, PART_HUD_ICON_GREY, 2000, 0xFFFFFF, 2.0f, -8);
@@ -283,7 +283,7 @@ struct captureclientmode : clientmode
         loopv(bases)
         {
             baseinfo &b = bases[i];
-            if(b.ammotype>0 && b.ammotype<=I_CARTRIDGES-I_SHELLS+1 && insidebase(b, d->feetpos()) && !strcmp(b.owner, d->team) && b.o.dist(o) < 12)
+            if(b.ammotype>0 && b.ammotype<=I_BOMBS-I_SHELLS+1 && insidebase(b, d->feetpos()) && !strcmp(b.owner, d->team) && b.o.dist(o) < 12)
             {
                 if(d->lastrepammo!=i)
                 {
@@ -352,7 +352,7 @@ struct captureclientmode : clientmode
 
 //            particle_fireball(b.ammopos, 4.8f, PART_EXPLOSION, 0, b.owner[0] ? (strcmp(b.owner, player1->team) ? 0x802020 : 0x2020FF) : 0x208020, 4.8f);
 
-            if(b.ammotype>0 && b.ammotype<=I_CARTRIDGES-I_SHELLS+1)
+            if(b.ammotype>0 && b.ammotype<=I_BOMBS-I_SHELLS+1)
             {
                 const char *ammoname = entities::entmdlname(I_SHELLS+b.ammotype-1);
                 if(m_regencapture)
@@ -580,7 +580,7 @@ struct captureclientmode : clientmode
         if(ammo>b.ammo)
         {
             playsound(S_ITEMSPAWN, &b.o);
-            int icon = b.ammotype>0 && b.ammotype<=I_CARTRIDGES-I_SHELLS+1 ? itemstats[b.ammotype-1].icon : -1;
+            int icon = b.ammotype>0 && b.ammotype<=I_BOMBS-I_SHELLS+1 ? itemstats[b.ammotype-1].icon : -1;
             if(icon >= 0) particle_icon(vec(b.ammopos.x, b.ammopos.y, b.ammopos.z + AMMOHEIGHT + 1.0f), icon%4, icon/4, PART_HUD_ICON, 2000, 0xFFFFFF, 2.0f, -8);
         }
         b.ammo = ammo;
@@ -686,7 +686,7 @@ struct captureclientmode : clientmode
 			if(m_regencapture)
 			{
 				int gun = f.ammotype-1+I_SHELLS;
-				if(f.ammo > 0 && f.ammotype > 0 && f.ammotype <= I_CARTRIDGES-I_SHELLS+1 && !d->hasmaxammo(gun))
+				if(f.ammo > 0 && f.ammotype > 0 && f.ammotype <= I_BOMBS-I_SHELLS+1 && !d->hasmaxammo(gun))
 					regen = gun != d->ai->weappref ? 2 : 4;
 			}
 			loopi(numdynents()) if((e = (fpsent *)iterdynents(i)) && !e->ai && e->state == CS_ALIVE && isteam(d->team, e->team))
@@ -716,7 +716,7 @@ struct captureclientmode : clientmode
 			if(!regen && m_regencapture)
 			{
 				int gun = f.ammotype-1+I_SHELLS;
-				if(f.ammo > 0 && f.ammotype > 0 && f.ammotype <= I_CARTRIDGES-I_SHELLS+1 && !d->hasmaxammo(gun))
+				if(f.ammo > 0 && f.ammotype > 0 && f.ammotype <= I_BOMBS-I_SHELLS+1 && !d->hasmaxammo(gun))
 					regen = true;
 			}
 			int walk = 0;
@@ -814,7 +814,7 @@ ICOMMAND(repammo, "", (), capturemode.replenishammo());
         loopv(bases)
         {
             baseinfo &b = bases[i];
-            if(b.ammotype>0 && b.ammotype<=I_CARTRIDGES-I_SHELLS+1 && insidebase(b, ci->state.o) && !ci->state.hasmaxammo(b.ammotype-1+I_SHELLS) && b.takeammo(ci->team))
+            if(b.ammotype>0 && b.ammotype<=I_BOMBS-I_SHELLS+1 && insidebase(b, ci->state.o) && !ci->state.hasmaxammo(b.ammotype-1+I_SHELLS) && b.takeammo(ci->team))
             {
                 sendbaseinfo(i);
                 sendf(-1, 1, "riii", N_REPAMMO, ci->clientnum, b.ammotype);
@@ -877,7 +877,7 @@ ICOMMAND(repammo, "", (), capturemode.replenishammo());
                 if(b.ammotype>0)
                 {
                     int ammotype = b.ammotype-1+I_SHELLS;
-                    if(ammotype<=I_CARTRIDGES && !ci->state.hasmaxammo(ammotype))
+                    if(ammotype<=I_BOMBS && !ci->state.hasmaxammo(ammotype))
                     {
                         ci->state.addammo(b.ammotype, ticks*REGENAMMO, 100);
                         notify = true;
@@ -955,7 +955,7 @@ ICOMMAND(repammo, "", (), capturemode.replenishammo());
         loopv(bases)
         {
             baseinfo &b = bases[i];
-            putint(p, min(max(b.ammotype, 1), I_CARTRIDGES+1));
+            putint(p, min(max(b.ammotype, 1), I_BOMBS+1));
             sendstring(b.owner, p);
             sendstring(b.enemy, p);
             putint(p, b.converted);
