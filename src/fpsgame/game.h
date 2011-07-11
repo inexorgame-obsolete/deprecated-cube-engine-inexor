@@ -30,7 +30,7 @@ enum                            // static entity types
     PARTICLES = ET_PARTICLES,
     MAPSOUND = ET_SOUND,
     SPOTLIGHT = ET_SPOTLIGHT,
-    I_SHELLS, I_BULLETS, I_ROCKETS, I_ROUNDS, I_GRENADES, I_CARTRIDGES,
+    I_SHELLS, I_BULLETS, I_ROCKETS, I_ROUNDS, I_GRENADES, I_CARTRIDGES, // TODO: bomb items: I_BOMBS,
     I_HEALTH, I_BOOST,
     I_GREENARMOUR, I_YELLOWARMOUR,
     I_QUAD,
@@ -90,7 +90,8 @@ enum
     M_DMSP       = 1<<16,
     M_CLASSICSP  = 1<<17,
     M_SLOWMO     = 1<<18,
-	M_LMS        = 1<<19
+	M_LMS        = 1<<19,
+	M_BOMB       = 1<<20
 };
 
 static struct gamemodeinfo
@@ -123,7 +124,8 @@ static struct gamemodeinfo
     { "efficiency ctf", M_NOITEMS | M_EFFICIENCY | M_CTF | M_TEAM, "Efficiency Capture The Flag: Capture \fs\f3the enemy flag\fr and bring it back to \fs\f1your flag\fr to score points for \fs\f1your team\fr. You spawn with all weapons and armour. There are no items." },
     { "efficiency protect", M_NOITEMS | M_EFFICIENCY | M_CTF | M_PROTECT | M_TEAM, "Efficiency Protect The Flag: Touch \fs\f3the enemy flag\fr to score points for \fs\f1your team\fr. Pick up \fs\f1your flag\fr to protect it. \fs\f1Your team\fr loses points if a dropped flag resets. You spawn with all weapons and armour. There are no items." },
     { "efficiency hold", M_NOITEMS | M_EFFICIENCY | M_CTF | M_HOLD | M_TEAM, "Efficiency Hold The Flag: Hold \fs\f7the flag\fr for 20 seconds to score points for \fs\f1your team\fr. You spawn with all weapons and armour. There are no items." },
-	{ "lms", M_LMS, "Last Man Standing: The last player alive wins." }
+	{ "lms", M_LMS, "Last Man Standing: The last player alive wins." },
+	{ "bomberman", M_LMS | M_NOITEMS | M_BOMB, "Bomberman: Bomb all people. Be careful." }
 };
 
 #define STARTGAMEMODE (-3)
@@ -134,7 +136,8 @@ static struct gamemodeinfo
 #define m_checknot(mode, flag) (m_valid(mode) && !(gamemodes[(mode) - STARTGAMEMODE].flags&(flag)))
 #define m_checkall(mode, flag) (m_valid(mode) && (gamemodes[(mode) - STARTGAMEMODE].flags&(flag)) == (flag))
 
-#define m_lms			(m_check(gamemode, M_LMS))
+#define m_lms          (m_check(gamemode, M_LMS))
+#define m_bomb         (m_check(gamemode, M_BOMB))
 #define m_noitems      (m_check(gamemode, M_NOITEMS))
 #define m_noammo       (m_check(gamemode, M_NOAMMO|M_NOITEMS))
 #define m_insta        (m_check(gamemode, M_INSTA))
@@ -337,14 +340,14 @@ static struct itemstat { int add, max, sound; const char *name; int icon, info; 
 
 static const struct guninfo { short sound, attackdelay, damage, projspeed, part, kickamount, range; const char *name, *file; } guns[NUMGUNS] =
 {
-    { S_PUNCH1,    250,  50, 0,   0, 0,   14,  "fist", "fist"  },
+    { S_PUNCH1,    250,  50, 0,   0,  0,   14,  "fist", "fist"  },
     { S_SG,       1400,  10, 0,   0, 20, 1024, "shotgun",         "shotg" },  // *SGRAYS
-    { S_CG,        100,  30, 0,   0, 7, 1024,  "chaingun",       "chaing"},
+    { S_CG,        100,  30, 0,   0,  7, 1024,  "chaingun",        "chaing"},
     { S_RLFIRE,    800, 120, 80,  0, 10, 1024, "rocketlauncher",  "rocket"},
-    { S_RIFLE,    1500, 100, 0,   0, 30, 2048, "rifle",          "rifle" },
+    { S_RIFLE,    1500, 100, 0,   0, 30, 2048, "rifle",           "rifle" },
     { S_FLAUNCH,   500,  75, 80,  0, 10, 1024, "grenadelauncher", "gl" },
-    { S_PISTOL,    500,  25, 0,   0,  7, 1024, "pistol",         "pistol" },
-	{ S_FLAUNCH,     0, 800, 50,  0, 60,    0, "bomb",          "gl" },
+    { S_PISTOL,    500,  25, 0,   0,  7, 1024, "pistol",          "pistol" },
+	{ S_FLAUNCH,   100, 800, 10,  0,  2,    0, "bomb",            "gl" }, // TODO: other sound, other hudmodel
     { S_FLAUNCH,   200,  20, 50,  PART_FIREBALL1,  1, 1024, "fireball",  NULL },
     { S_ICEBALL,   200,  40, 30,  PART_FIREBALL2,  1, 1024, "iceball",   NULL },
     { S_SLIMEBALL, 200,  30, 160, PART_FIREBALL3,  1, 1024, "slimeball", NULL },
@@ -363,8 +366,9 @@ struct fpsstate
     int gunselect, gunwait;
     int ammo[NUMGUNS];
     int aitype, skill;
+    int backupweapon;
 
-    fpsstate() : maxhealth(100), aitype(AI_NONE), skill(0) {}
+    fpsstate() : maxhealth(100), aitype(AI_NONE), skill(0), backupweapon(GUN_FIST) {}
 
     void baseammo(int gun, int k = 2, int scale = 1)
     {
@@ -425,7 +429,7 @@ struct fpsstate
         }
     }
 
-    void respawn()
+    void respawn(int gamemode = NULL)
     {
         health = maxhealth;
         armour = 0;
@@ -434,12 +438,17 @@ struct fpsstate
         gunselect = GUN_PISTOL;
         gunwait = 0;
         loopi(NUMGUNS) ammo[i] = 0;
-        ammo[GUN_FIST] = 1;
+        if (m_bomb) backupweapon = GUN_BOMB;
+        else backupweapon = GUN_FIST;
+        conoutf(CON_CHAT, "backupweapon %i", backupweapon);
+        ammo[backupweapon] = 1;
     }
 
     void spawnstate(int gamemode)
     {
-        if(m_demo)
+        conoutf(CON_CHAT, "gamemode %i", gamemode);
+
+    	if(m_demo)
         {
             gunselect = GUN_FIST;
         }
@@ -485,12 +494,22 @@ struct fpsstate
             ammo[GUN_PISTOL] = 40;
             ammo[GUN_GL] = 1;
         }
+        else if(m_bomb)
+        {
+        	conoutf(CON_CHAT, "entering m_bomb");
+        	health = 1;
+            armourtype = A_GREEN;
+            armour = 0;
+        	gunselect = GUN_BOMB;
+        	backupweapon = GUN_BOMB;
+        	conoutf(CON_CHAT, "leaving m_bomb");
+        }
         else
         {
             ammo[GUN_PISTOL] = m_sp ? 80 : 40;
             ammo[GUN_GL] = 1;
-			ammo[GUN_BOMB] = 100;
 		}
+        conoutf(CON_CHAT, "backupweapon %i (%i, %i)", backupweapon, GUN_FIST, GUN_BOMB);
     }
 
     // just subtract damage here, can set death, etc. later in code calling this
@@ -567,10 +586,10 @@ struct fpsent : dynent, fpsstate
         idlesound = idlechan = -1;
     }
 
-    void respawn()
+    void respawn(int gamemode = NULL)
     {
         dynent::reset();
-        fpsstate::respawn();
+        fpsstate::respawn(gamemode);
         respawned = suicided = -1;
         lastaction = 0;
         lastattackgun = gunselect;
@@ -583,6 +602,7 @@ struct fpsent : dynent, fpsstate
         stopattacksound();
         lastnode = -1;
     }
+
 };
 
 struct teamscore

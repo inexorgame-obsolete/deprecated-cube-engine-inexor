@@ -82,8 +82,10 @@ namespace game
 
     fpsent *spawnstate(fpsent *d)              // reset player state not persistent accross spawns
     {
-        d->respawn();
+        conoutf(CON_CHAT, "spawnstate entering");
+        d->respawn(gamemode);
         d->spawnstate(gamemode);
+        conoutf(CON_CHAT, "spawnstate leave");
         return d;
     }
 
@@ -289,7 +291,7 @@ namespace game
 
     VARP(spawnwait, 0, 0, 1000);
 
-    void respawn()
+    void respawn(int gamemode = NULL)
     {
         if(player1->state==CS_DEAD)
         {
@@ -317,12 +319,12 @@ namespace game
     void doattack(bool on)
     {
         if(intermission) return;
-        if((player1->attacking = on)) respawn();
+        if((player1->attacking = on)) respawn(gamemode);
     }
 
     bool canjump()
     {
-        if(!intermission) respawn();
+        if(!intermission) respawn(gamemode);
         return player1->state!=CS_DEAD && !intermission;
     }
 
@@ -679,7 +681,7 @@ namespace game
     }
     ICOMMAND(kill, "", (), suicide(player1));
 
-    bool needminimap() { return m_ctf || m_protect || m_hold || m_capture; }
+    bool needminimap() { return m_ctf || m_protect || m_hold || m_capture || m_bomb; }
 
     void drawicon(int icon, float x, float y, float sz)
     {
@@ -707,7 +709,7 @@ namespace game
 
     int ammohudup[3] = { GUN_CG, GUN_RL, GUN_GL },
         ammohuddown[3] = { GUN_RIFLE, GUN_SG, GUN_PISTOL },
-        ammohudcycle[7] = { -1, -1, -1, -1, -1, -1, -1 };
+        ammohudcycle[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
 
     ICOMMAND(ammohudup, "sss", (char *w1, char *w2, char *w3),
     {
@@ -765,7 +767,7 @@ namespace game
             drawicon(HICON_FIST+gun, xdown, ydown, sz);
         }
         int offset = 0, num = 0;
-        loopi(7)
+        loopi(8)
         {
             int gun = ammohudcycle[i];
             if(gun < GUN_FIST || gun > GUN_BOMB) continue;
@@ -773,9 +775,9 @@ namespace game
             else if(d->ammo[gun]) num++;
         }
         float xcycle = (x+sz/2)*3.2f + 0.5f*num*sz, ycycle = y*3.2f-sz;
-        loopi(7)
+        loopi(8)
         {
-            int gun = ammohudcycle[(i + offset)%7];
+            int gun = ammohudcycle[(i + offset)%8];
             if(gun < GUN_FIST || gun > GUN_BOMB || gun == d->gunselect || !d->ammo[gun]) continue;
             xcycle -= sz;
             drawicon(HICON_FIST+gun, xcycle, ycycle, sz);

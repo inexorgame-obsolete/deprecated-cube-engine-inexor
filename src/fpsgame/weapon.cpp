@@ -106,6 +106,7 @@ namespace game
         else if(s!=GUN_GL     && d->ammo[GUN_GL])     s = GUN_GL;
         else if(s!=GUN_PISTOL && d->ammo[GUN_PISTOL]) s = GUN_PISTOL;
         else if(s!=GUN_BOMB   && d->ammo[GUN_BOMB])   s = GUN_BOMB;
+        else if(s==GUN_BOMB)                          s = GUN_BOMB; // only switch if the current weapon is not the bomb
         else                                          s = GUN_FIST;
 
         gunselect(s, d);
@@ -160,7 +161,7 @@ namespace game
         loopi(SGRAYS) offsetray(from, to, SGSPREAD, guns[GUN_SG].range, sg[i]);
     }
 
-    enum { BNC_GRENADE, BNC_GIBS, BNC_DEBRIS, BNC_BARRELDEBRIS };
+    enum { BNC_GRENADE, BNC_BOMB, BNC_GIBS, BNC_DEBRIS, BNC_BARRELDEBRIS };
 
     struct bouncer : physent
     {
@@ -216,6 +217,11 @@ namespace game
             bnc.offset = hudgunorigin(GUN_GL, from, to, owner);
             if(owner==hudplayer() && !isthirdperson()) bnc.offset.sub(owner->o).rescale(16).add(owner->o);
         }
+        else if(type==BNC_BOMB)
+        {
+            bnc.offset = hudgunorigin(GUN_BOMB, from, to, owner);
+            if(owner==hudplayer() && !isthirdperson()) bnc.offset.sub(owner->o).rescale(16).add(owner->o);
+        }
         else bnc.offset = from;
         bnc.offset.sub(bnc.o);
         bnc.offsetmillis = OFFSETMILLIS;
@@ -237,7 +243,7 @@ namespace game
         loopv(bouncers)
         {
             bouncer &bnc = *bouncers[i];
-            if(bnc.bouncetype==BNC_GRENADE && bnc.vel.magnitude() > 50.0f)
+            if((bnc.bouncetype==BNC_GRENADE || bnc.bouncetype==BNC_BOMB) && bnc.vel.magnitude() > 50.0f)
             {
                 vec pos(bnc.o);
                 pos.add(vec(bnc.offset).mul(bnc.offsetmillis/float(OFFSETMILLIS)));
@@ -245,7 +251,7 @@ namespace game
             }
             vec old(bnc.o);
             bool stopped = false;
-            if(bnc.bouncetype==BNC_GRENADE) stopped = bounce(&bnc, 0.6f, 0.5f) || (bnc.lifetime -= time)<0;
+            if(bnc.bouncetype==BNC_GRENADE || bnc.bouncetype==BNC_BOMB) stopped = bounce(&bnc, 0.6f, 0.5f) || (bnc.lifetime -= time)<0;
             else
             {
                 // cheaper variable rate physics for debris, gibs, etc.
@@ -266,6 +272,16 @@ namespace game
                     adddecal(DECAL_SCORCH, bnc.o, vec(0, 0, 1), RL_DAMRAD/2);
                     if(bnc.local)
                         addmsg(N_EXPLODE, "rci3iv", bnc.owner, lastmillis-maptime, GUN_GL, bnc.id-maptime,
+                                hits.length(), hits.length()*sizeof(hitmsg)/sizeof(int), hits.getbuf());
+                }
+                else if(bnc.bouncetype==BNC_BOMB)
+                {
+                    int qdam = guns[GUN_BOMB].damage*(bnc.owner->quadmillis ? 4 : 1);
+                    hits.setsize(0);
+                    explode(bnc.local, bnc.owner, bnc.o, NULL, qdam, GUN_BOMB);
+                    adddecal(DECAL_SCORCH, bnc.o, vec(0, 0, 1), RL_DAMRAD/2);
+                    if(bnc.local)
+                        addmsg(N_EXPLODE, "rci3iv", bnc.owner, lastmillis-maptime, GUN_BOMB, bnc.id-maptime,
                                 hits.length(), hits.length()*sizeof(hitmsg)/sizeof(int), hits.getbuf());
                 }
                 delete bouncers.remove(i--);
@@ -429,6 +445,7 @@ namespace game
 
     void explode(bool local, fpsent *owner, const vec &v, dynent *safe, int damage, int gun)
     {
+        conoutf(CON_CHAT, "entering explode");
         particle_splash(PART_SPARK, 200, 300, v, 0xB49B4B, 0.24f);
         playsound(S_RLHIT, &v);
         particle_fireball(v, RL_DAMRAD, gun!=GUN_GL ? PART_EXPLOSION : PART_EXPLOSION_BLUE, -1, gun!=GUN_GL ? 0xFF8080 : 0x80FFFF, 4.0f);
@@ -438,6 +455,8 @@ namespace game
         int numdebris = gun==GUN_BARREL ? rnd(max(maxbarreldebris-5, 1))+5 : rnd(maxdebris-5)+5;
         vec debrisvel = owner->o==v ? vec(0, 0, 0) : vec(owner->o).sub(v).normalize(), debrisorigin(v);
         if(gun==GUN_RL) debrisorigin.add(vec(debrisvel).mul(8));
+        conoutf(CON_CHAT, "gun %i (%i), owner_cn %i", gun, owner->ammo[gun], owner->clientnum);
+        if(gun==GUN_BOMB) owner->ammo[GUN_BOMB]++; // add a bomb if the bomb explodes
         if(numdebris)
         {
             entitylight light;
@@ -498,6 +517,21 @@ namespace game
                         vec pos(b.o);
                         pos.add(vec(b.offset).mul(b.offsetmillis/float(OFFSETMILLIS)));
                         explode(b.local, b.owner, pos, NULL, 0, GUN_GL);
+                        adddecal(DECAL_SCORCH, pos, vec(0, 0, 1), RL_DAMRAD/2);
+                        delete bouncers.remove(i);
+                        break;
+                    }
+                }
+                break;
+            case GUN_BOMB:
+                loopv(bouncers)
+                {
+                    bouncer &b = *bouncers[i];
+                    if(b.bouncetype == BNC_BOMB && b.owner == d && b.id == id && !b.local)
+                    {
+                        vec pos(b.o);
+                        pos.add(vec(b.offset).mul(b.offsetmillis/float(OFFSETMILLIS)));
+                        explode(b.local, b.owner, pos, NULL, 0, GUN_BOMB);
                         adddecal(DECAL_SCORCH, pos, vec(0, 0, 1), RL_DAMRAD/2);
                         delete bouncers.remove(i);
                         break;
@@ -648,6 +682,19 @@ namespace game
                 break;
             }
 
+            case GUN_BOMB:
+            {
+            	// TODO: Bomb
+                float dist = from.dist(to);
+                vec up = to;
+                up.z += dist/8;
+                if(muzzleflash && d->muzzle.x >= 0)
+                    particle_flare(d->muzzle, d->muzzle, 500, PART_MUZZLE_FLASH2, 0xFFFFFF, 1.8f, d);
+                if(muzzlelight) adddynlight(hudgunorigin(gun, d->o, to, d), 20, vec(0.5f, 0.375f, 0.25f), 100, 100, DL_FLASH, 0, vec(0, 0, 0), d);
+                newbouncer(from, up, local, id, d, BNC_BOMB, 5000, 2);
+                break;
+            }
+
             case GUN_RIFLE:
                 particle_splash(PART_SPARK, 200, 250, to, 0xB49B4B, 0.24f);
                 particle_trail(PART_SMOKE, 500, hudgunorigin(gun, from, to, d), to, 0x404040, 0.6f, 20);
@@ -785,7 +832,8 @@ namespace game
                 msgsound(S_NOAMMO, d);
                 d->gunwait = 600;
                 d->lastattackgun = -1;
-                weaponswitch(d);
+                if (d->gunselect != GUN_BOMB) weaponswitch(d); // only switch if current weapon is not the bomb
+                // weaponswitch(d);
             }
             return;
         }
@@ -824,6 +872,7 @@ namespace game
                    hits.length(), hits.length()*sizeof(hitmsg)/sizeof(int), hits.getbuf());
         }
 
+        // TODO: bomb wait delay, mindestens 20 ms, aber mindestens bis eine freie bombe verfuegbar ist
 		d->gunwait = guns[d->gunselect].attackdelay;
 		if(d->gunselect == GUN_PISTOL && d->ai) d->gunwait += int(d->gunwait*(((101-d->skill)+rnd(111-d->skill))/100.f));
         d->totalshots += guns[d->gunselect].damage*(d->quadmillis ? 4 : 1)*(d->gunselect==GUN_SG ? SGRAYS : 1);
@@ -842,7 +891,7 @@ namespace game
         loopv(bouncers)
         {
             bouncer &bnc = *bouncers[i];
-            if(bnc.bouncetype!=BNC_GRENADE) continue;
+            if(bnc.bouncetype!=BNC_GRENADE && bnc.bouncetype!=BNC_BOMB) continue;
             vec pos(bnc.o);
             pos.add(vec(bnc.offset).mul(bnc.offsetmillis/float(OFFSETMILLIS)));
             adddynlight(pos, 8, vec(0.25f, 1, 1));
@@ -880,6 +929,8 @@ namespace game
             }
             pitch = -bnc.roll;
             if(bnc.bouncetype==BNC_GRENADE)
+                rendermodel(&bnc.light, "projectiles/grenade", ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_DYNSHADOW);
+            else if(bnc.bouncetype==BNC_BOMB)
                 rendermodel(&bnc.light, "projectiles/grenade", ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_DYNSHADOW);
             else
             {
@@ -1002,7 +1053,7 @@ namespace game
         loopv(bouncers)
         {
             bouncer &bnc = *bouncers[i];
-            if(bnc.bouncetype != BNC_GRENADE) continue;
+            if(bnc.bouncetype != BNC_GRENADE && bnc.bouncetype != BNC_BOMB) continue;
             obstacles.avoidnear(NULL, bnc.o.z + RL_DAMRAD + 1, bnc.o, radius + RL_DAMRAD);
         }
     }

@@ -29,6 +29,7 @@ namespace server
     static const int DEATHMILLIS = 300;
 
     struct clientinfo;
+    int gamemode = 0;
 
     struct gameevent
     {
@@ -120,7 +121,7 @@ namespace server
         int state, editstate;
         int lastdeath, lastspawn, lifesequence;
         int lastshot;
-        projectilestate<8> rockets, grenades;
+        projectilestate<8> rockets, grenades, bombs;
         int frags, flags, deaths, teamkills, shotdamage, damage;
         int lasttimeplayed, timeplayed;
         float effectiveness;
@@ -143,17 +144,18 @@ namespace server
             maxhealth = 100;
             rockets.reset();
             grenades.reset();
+            bombs.reset();
 
             timeplayed = 0;
             effectiveness = 0;
             frags = flags = deaths = teamkills = shotdamage = damage = 0;
 
-            respawn();
+            respawn(gamemode);
         }
 
-        void respawn()
+        void respawn(int gamemode = NULL)
         {
-            fpsstate::respawn();
+            fpsstate::respawn(gamemode);
             o = vec(-1e10f, -1e10f, -1e10f);
             lastdeath = 0;
             lastspawn = -1;
@@ -162,10 +164,17 @@ namespace server
 
         void reassign()
         {
-            respawn();
+            respawn(gamemode);
             rockets.reset();
             grenades.reset();
+            bombs.reset();
         }
+
+        void setbackupweapon(int backupweapon)
+        {
+        	fpsstate::backupweapon = GUN_BOMB;
+        }
+
     };
 
     struct savedscore
@@ -369,7 +378,7 @@ namespace server
     #define MM_COOPSERV (MM_AUTOAPPROVE | MM_PUBSERV | (1<<MM_LOCKED))
 
     bool notgotitems = true;        // true when map has changed and waiting for clients to send item
-    int gamemode = 0;
+//Hanack    int gamemode = 0; // moved to top
     int gamemillis = 0, gamelimit = 0, nextexceeded = 0;
     bool gamepaused = false;
 
@@ -1438,6 +1447,8 @@ namespace server
             clientinfo *ci = clients[i];
             ci->mapchange();
             ci->state.lasttimeplayed = lastmillis;
+            // Hanack
+            if(m_bomb) ci->state.setbackupweapon(GUN_BOMB);
             if(m_mp(gamemode) && ci->state.state!=CS_SPECTATOR) sendspawn(ci);
         }
 
@@ -1612,7 +1623,8 @@ namespace server
             if(smode) smode->died(target, actor);
             ts.state = CS_DEAD;
             ts.lastdeath = gamemillis;
-			checklms(); // Last Man Standing
+            if (m_lms) checklms(); // Last Man Standing
+            else ts.respawn(gamemode);
             // don't issue respawn yet until DEATHMILLIS has elapsed
             // ts.respawn();
         }
@@ -1628,9 +1640,9 @@ namespace server
         ci->position.setsize(0);
         if(smode) smode->died(ci, NULL);
         gs.state = CS_DEAD;
-        gs.respawn();
+        gs.respawn(gamemode);
 		// lms
-		checklms();
+        if (m_lms) checklms();
     }
 
     void suicideevent::process(clientinfo *ci)
@@ -1649,6 +1661,10 @@ namespace server
 
             case GUN_GL:
                 if(!gs.grenades.remove(id)) return;
+                break;
+
+            case GUN_BOMB:
+                if(!gs.bombs.remove(id)) return;
                 break;
 
             default:
@@ -1694,6 +1710,7 @@ namespace server
         {
             case GUN_RL: gs.rockets.add(id); break;
             case GUN_GL: gs.grenades.add(id); break;
+            case GUN_BOMB: gs.bombs.add(id); break;
             default:
             {
                 int totalrays = 0, maxrays = gun==GUN_SG ? SGRAYS : 1;
@@ -2297,6 +2314,7 @@ namespace server
                     ci->events.setsize(0);
                     ci->state.rockets.reset();
                     ci->state.grenades.reset();
+                    ci->state.bombs.reset();
                 }
                 else ci->state.state = ci->state.editstate;
                 QUEUE_MSG;
@@ -2338,7 +2356,7 @@ namespace server
                 if(cq->state.lastdeath)
                 {
                     flushevents(cq, cq->state.lastdeath + DEATHMILLIS);
-                    cq->state.respawn();
+                    cq->state.respawn(gamemode);
                 }
                 cleartimedevents(cq);
                 sendspawn(cq);
@@ -2643,7 +2661,7 @@ namespace server
                 else if(spinfo->state.state==CS_SPECTATOR && !val)
                 {
                     spinfo->state.state = CS_DEAD;
-                    spinfo->state.respawn();
+                    spinfo->state.respawn(gamemode);
                     spinfo->state.lasttimeplayed = lastmillis;
                     aiman::addclient(spinfo);
                     if(spinfo->clientmap[0] || spinfo->mapcrc) checkmaps();

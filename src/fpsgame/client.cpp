@@ -430,6 +430,7 @@ namespace game
     ICOMMANDS("m_dmsp", "i", (int *mode), { int gamemode = *mode; intret(m_dmsp); });
     ICOMMANDS("m_classicsp", "i", (int *mode), { int gamemode = *mode; intret(m_classicsp); });
 	ICOMMANDS("m_lms", "i", (int *mode), { int gamemode = *mode; intret(m_lms); });
+	ICOMMANDS("m_bomb", "i", (int *mode), { int gamemode = *mode; intret(m_bomb); });
 	
     void changemap(const char *name, int mode) // request map change, server may ignore
     {
@@ -684,7 +685,7 @@ namespace game
         messages.setsize(0);
         messagereliable = false;
         messagecn = -1;
-        player1->respawn();
+        player1->respawn(gamemode);
         player1->lifesequence = 0;
         player1->state = CS_ALIVE;
         player1->privilege = PRIV_NONE;
@@ -1192,7 +1193,7 @@ namespace game
                 if(d)
                 {
                     if(d->state==CS_DEAD && d->lastpain) saveragdoll(d);
-                    d->respawn();
+                    d->respawn(gamemode);
                 }
                 parsestate(d, p);
                 if(!d) break;
@@ -1213,7 +1214,7 @@ namespace game
                     if(editmode) toggleedit();
                     stopfollowing();
                 }
-                s->respawn();
+                s->respawn(gamemode);
                 parsestate(s, p);
                 s->state = CS_ALIVE;
                 if(cmode) cmode->pickspawn(s);
