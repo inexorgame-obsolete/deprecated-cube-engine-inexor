@@ -46,7 +46,7 @@ namespace game
 
     int getweapon(const char *name)
     {
-        const char *abbrevs[] = { "FI", "SG", "CG", "RL", "RI", "GL", "PI" };
+        const char *abbrevs[] = { "FI", "SG", "CG", "RL", "RI", "GL", "PI", "BO" };
         if(isdigit(name[0])) return parseint(name);
         else loopi(sizeof(abbrevs)/sizeof(abbrevs[0])) if(!strcasecmp(abbrevs[i], name)) return i;
         return -1;
@@ -77,7 +77,7 @@ namespace game
         }
         playsound(S_NOAMMO);
     }
-    ICOMMAND(cycleweapon, "sssssss", (char *w1, char *w2, char *w3, char *w4, char *w5, char *w6, char *w7),
+    ICOMMAND(cycleweapon, "ssssssss", (char *w1, char *w2, char *w3, char *w4, char *w5, char *w6, char *w7, char *w8),
     {
          int numguns = 0;
          int guns[7];
@@ -88,6 +88,7 @@ namespace game
          if(w5[0]) guns[numguns++] = getweapon(w5);
          if(w6[0]) guns[numguns++] = getweapon(w6);
          if(w7[0]) guns[numguns++] = getweapon(w7);
+         if(w8[0]) guns[numguns++] = getweapon(w8);
          cycleweapon(numguns, guns);
     });
 
@@ -101,6 +102,7 @@ namespace game
         else if(s!=GUN_RIFLE  && d->ammo[GUN_RIFLE])  s = GUN_RIFLE;
         else if(s!=GUN_GL     && d->ammo[GUN_GL])     s = GUN_GL;
         else if(s!=GUN_PISTOL && d->ammo[GUN_PISTOL]) s = GUN_PISTOL;
+        else if(s!=GUN_BOMB   && d->ammo[GUN_BOMB])   s = GUN_BOMB;
         else                                          s = GUN_FIST;
 
         gunselect(s, d);
@@ -114,7 +116,7 @@ namespace game
         } \
         else { weaponswitch(player1); return; } \
     } while(0)
-    ICOMMAND(weapon, "sssssss", (char *w1, char *w2, char *w3, char *w4, char *w5, char *w6, char *w7),
+    ICOMMAND(weapon, "sssssss", (char *w1, char *w2, char *w3, char *w4, char *w5, char *w6, char *w7, char *w8),
     {
         if(player1->state!=CS_ALIVE) return;
         TRYWEAPON(w1);
@@ -124,6 +126,7 @@ namespace game
         TRYWEAPON(w5);
         TRYWEAPON(w6);
         TRYWEAPON(w7);
+        TRYWEAPON(w8);
         playsound(S_NOAMMO);
     });
 
