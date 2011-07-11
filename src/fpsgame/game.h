@@ -123,7 +123,7 @@ static struct gamemodeinfo
     { "efficiency ctf", M_NOITEMS | M_EFFICIENCY | M_CTF | M_TEAM, "Efficiency Capture The Flag: Capture \fs\f3the enemy flag\fr and bring it back to \fs\f1your flag\fr to score points for \fs\f1your team\fr. You spawn with all weapons and armour. There are no items." },
     { "efficiency protect", M_NOITEMS | M_EFFICIENCY | M_CTF | M_PROTECT | M_TEAM, "Efficiency Protect The Flag: Touch \fs\f3the enemy flag\fr to score points for \fs\f1your team\fr. Pick up \fs\f1your flag\fr to protect it. \fs\f1Your team\fr loses points if a dropped flag resets. You spawn with all weapons and armour. There are no items." },
     { "efficiency hold", M_NOITEMS | M_EFFICIENCY | M_CTF | M_HOLD | M_TEAM, "Efficiency Hold The Flag: Hold \fs\f7the flag\fr for 20 seconds to score points for \fs\f1your team\fr. You spawn with all weapons and armour. There are no items." },
-	{ "lms", M_LMS }
+	{ "lms", M_LMS, "Last Man Standing: The last player alive wins." }
 };
 
 #define STARTGAMEMODE (-3)
@@ -297,6 +297,7 @@ enum
     HICON_RIFLE,
     HICON_GL,
     HICON_PISTOL,
+    HICON_BOMB,
 
     HICON_QUAD,
 
@@ -320,6 +321,7 @@ static struct itemstat { int add, max, sound; const char *name; int icon, info; 
     {5,     15,    S_ITEMAMMO,   "RI", HICON_RIFLE, GUN_RIFLE},
     {10,    30,    S_ITEMAMMO,   "GL", HICON_GL, GUN_GL},
     {30,    120,   S_ITEMAMMO,   "PI", HICON_PISTOL, GUN_PISTOL},
+    {5,     800,   S_ITEMAMMO,   "BO", HICON_BOMB, GUN_BOMB},
     {25,    100,   S_ITEMHEALTH, "H", HICON_HEALTH},
     {10,    1000,  S_ITEMHEALTH, "MH", HICON_HEALTH},
     {100,   100,   S_ITEMARMOUR, "GA", HICON_GREEN_ARMOUR, A_GREEN},
