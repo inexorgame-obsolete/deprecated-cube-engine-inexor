@@ -445,7 +445,6 @@ namespace game
 
     void explode(bool local, fpsent *owner, const vec &v, dynent *safe, int damage, int gun)
     {
-        conoutf(CON_CHAT, "entering explode");
         particle_splash(PART_SPARK, 200, 300, v, 0xB49B4B, 0.24f);
         playsound(S_RLHIT, &v);
         particle_fireball(v, RL_DAMRAD, gun!=GUN_GL ? PART_EXPLOSION : PART_EXPLOSION_BLUE, -1, gun!=GUN_GL ? 0xFF8080 : 0x80FFFF, 4.0f);
@@ -455,7 +454,6 @@ namespace game
         int numdebris = gun==GUN_BARREL ? rnd(max(maxbarreldebris-5, 1))+5 : rnd(maxdebris-5)+5;
         vec debrisvel = owner->o==v ? vec(0, 0, 0) : vec(owner->o).sub(v).normalize(), debrisorigin(v);
         if(gun==GUN_RL) debrisorigin.add(vec(debrisvel).mul(8));
-        conoutf(CON_CHAT, "gun %i (%i), owner_cn %i", gun, owner->ammo[gun], owner->clientnum);
         if(gun==GUN_BOMB) owner->ammo[GUN_BOMB]++; // add a bomb if the bomb explodes
         if(numdebris)
         {
@@ -687,11 +685,11 @@ namespace game
             	// TODO: Bomb
                 float dist = from.dist(to);
                 vec up = to;
-                up.z += dist/8;
+                up.z += dist/16;
                 if(muzzleflash && d->muzzle.x >= 0)
-                    particle_flare(d->muzzle, d->muzzle, 500, PART_MUZZLE_FLASH2, 0xFFFFFF, 1.8f, d);
+                    particle_flare(d->muzzle, d->muzzle, 500, PART_MUZZLE_FLASH2, 0xFFFFFF, 2.3f, d);
                 if(muzzlelight) adddynlight(hudgunorigin(gun, d->o, to, d), 20, vec(0.5f, 0.375f, 0.25f), 100, 100, DL_FLASH, 0, vec(0, 0, 0), d);
-                newbouncer(from, up, local, id, d, BNC_BOMB, 5000, 2);
+                newbouncer(from, up, local, id, d, BNC_BOMB, 5000, 30);
                 break;
             }
 
