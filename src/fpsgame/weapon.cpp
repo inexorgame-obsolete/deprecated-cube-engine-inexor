@@ -55,7 +55,7 @@ namespace game
     void setweapon(const char *name, bool force = false)
     {
         int gun = getweapon(name);
-        if(player1->state!=CS_ALIVE || gun<GUN_FIST || gun>GUN_PISTOL) return;
+        if(player1->state!=CS_ALIVE || gun<GUN_FIST || gun>GUN_BOMB) return;
         if(force || player1->ammo[gun]) gunselect(gun, player1);
         else playsound(S_NOAMMO);
     }
@@ -112,11 +112,11 @@ namespace game
         if(w[0]) \
         { \
             int gun = getweapon(w); \
-            if(gun >= GUN_FIST && gun <= GUN_PISTOL && gun != player1->gunselect && player1->ammo[gun]) { gunselect(gun, player1); return; } \
+            if(gun >= GUN_FIST && gun <= GUN_BOMB && gun != player1->gunselect && player1->ammo[gun]) { gunselect(gun, player1); return; } \
         } \
         else { weaponswitch(player1); return; } \
     } while(0)
-    ICOMMAND(weapon, "sssssss", (char *w1, char *w2, char *w3, char *w4, char *w5, char *w6, char *w7, char *w8),
+    ICOMMAND(weapon, "ssssssss", (char *w1, char *w2, char *w3, char *w4, char *w5, char *w6, char *w7, char *w8),
     {
         if(player1->state!=CS_ALIVE) return;
         TRYWEAPON(w1);
