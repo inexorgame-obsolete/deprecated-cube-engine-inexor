@@ -439,7 +439,6 @@ struct fpsstate
 
     void spawnstate(int gamemode)
     {
-		ammo[GUN_BOMB] = 100;
         if(m_demo)
         {
             gunselect = GUN_FIST;
@@ -490,7 +489,8 @@ struct fpsstate
         {
             ammo[GUN_PISTOL] = m_sp ? 80 : 40;
             ammo[GUN_GL] = 1;
-        }
+			ammo[GUN_BOMB] = 100;
+		}
     }
 
     // just subtract damage here, can set death, etc. later in code calling this

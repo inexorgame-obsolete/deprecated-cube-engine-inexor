@@ -3,6 +3,9 @@
 
 namespace game
 {
+	ICOMMAND(givemeammo, "", (), player1->ammo[GUN_BOMB] = 100);
+
+	
     static const int MONSTERDAMAGEFACTOR = 4;
     static const int OFFSETMILLIS = 500;
     vec sg[SGRAYS];
@@ -108,6 +111,8 @@ namespace game
         gunselect(s, d);
     }
 
+	ICOMMAND(givemeammo, "", (), player1->ammo[GUN_BOMB] = 100);
+	
     #define TRYWEAPON(w) do { \
         if(w[0]) \
         { \
