@@ -65,7 +65,7 @@ struct fpsentity : extentity
     fpsentity() : triggerstate(TRIGGER_RESET), lasttrigger(0) {} 
 };
 
-enum { GUN_FIST = 0, GUN_SG, GUN_CG, GUN_RL, GUN_RIFLE, GUN_GL, GUN_PISTOL, GUN_FIREBALL, GUN_ICEBALL, GUN_SLIMEBALL, GUN_BITE, GUN_BARREL, NUMGUNS };
+enum { GUN_FIST = 0, GUN_SG, GUN_CG, GUN_RL, GUN_RIFLE, GUN_GL, GUN_PISTOL, GUN_BOMB, GUN_FIREBALL, GUN_ICEBALL, GUN_SLIMEBALL, GUN_BITE, GUN_BARREL, NUMGUNS };
 enum { A_BLUE, A_GREEN, A_YELLOW };     // armour types... take 20/40/60 % off
 enum { M_NONE = 0, M_SEARCH, M_HOME, M_ATTACKING, M_PAIN, M_SLEEP, M_AIMING };  // monster states
 
@@ -335,13 +335,14 @@ static struct itemstat { int add, max, sound; const char *name; int icon, info; 
 
 static const struct guninfo { short sound, attackdelay, damage, projspeed, part, kickamount, range; const char *name, *file; } guns[NUMGUNS] =
 {
-    { S_PUNCH1,    250,  50, 0,   0, 0,   14,  "fist",            "fist"  },
+    { S_PUNCH1,    250,  50, 0,   0, 0,   14,  "fist", "fist"  },
     { S_SG,       1400,  10, 0,   0, 20, 1024, "shotgun",         "shotg" },  // *SGRAYS
-    { S_CG,        100,  30, 0,   0, 7, 1024,  "chaingun",        "chaing"},
+    { S_CG,        100,  30, 0,   0, 7, 1024,  "chaingun",       "chaing"},
     { S_RLFIRE,    800, 120, 80,  0, 10, 1024, "rocketlauncher",  "rocket"},
-    { S_RIFLE,    1500, 100, 0,   0, 30, 2048, "rifle",           "rifle" },
+    { S_RIFLE,    1500, 100, 0,   0, 30, 2048, "rifle",          "rifle" },
     { S_FLAUNCH,   500,  75, 80,  0, 10, 1024, "grenadelauncher", "gl" },
-    { S_PISTOL,    500,  25, 0,   0,  7, 1024, "pistol",          "pistol" },
+    { S_PISTOL,    500,  25, 0,   0,  7, 1024, "pistol",         "pistol" },
+	{ S_FLAUNCH,     0, 800, 50,  0, 60,    0, "bomb",          "gl" },
     { S_FLAUNCH,   200,  20, 50,  PART_FIREBALL1,  1, 1024, "fireball",  NULL },
     { S_ICEBALL,   200,  40, 30,  PART_FIREBALL2,  1, 1024, "iceball",   NULL },
     { S_SLIMEBALL, 200,  30, 160, PART_FIREBALL3,  1, 1024, "slimeball", NULL },
@@ -436,6 +437,7 @@ struct fpsstate
 
     void spawnstate(int gamemode)
     {
+		ammo[GUN_BOMB] = 100;
         if(m_demo)
         {
             gunselect = GUN_FIST;
