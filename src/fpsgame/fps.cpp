@@ -82,10 +82,8 @@ namespace game
 
     fpsent *spawnstate(fpsent *d)              // reset player state not persistent accross spawns
     {
-        conoutf(CON_CHAT, "spawnstate entering");
         d->respawn(gamemode);
         d->spawnstate(gamemode);
-        conoutf(CON_CHAT, "spawnstate leave");
         return d;
     }
 
