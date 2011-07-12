@@ -407,7 +407,7 @@ namespace ai
             }
             default:
             {
-                if(e.type >= I_SHELLS && e.type <= I_BOMBS && !d->hasmaxammo(e.type))
+                if(e.type >= I_SHELLS && e.type <= I_CARTRIDGES && !d->hasmaxammo(e.type))
                 {
                     int gun = e.type - I_SHELLS + GUN_SG;
                     // go get a weapon upgrade
@@ -670,7 +670,7 @@ namespace ai
                 if(entities::ents.inrange(b.target))
                 {
                     extentity &e = *(extentity *)entities::ents[b.target];
-                    if(!e.spawned || e.type < I_SHELLS || e.type > I_BOMBS || d->hasmaxammo(e.type)) return 0;
+                    if(!e.spawned || e.type < I_SHELLS || e.type > I_CARTRIDGES || d->hasmaxammo(e.type)) return 0;
                     if(d->feetpos().squaredist(e.o) <= CLOSEDIST*CLOSEDIST)
                     {
                         b.idle = 1;

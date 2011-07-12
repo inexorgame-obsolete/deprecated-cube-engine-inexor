@@ -30,7 +30,7 @@ enum                            // static entity types
     PARTICLES = ET_PARTICLES,
     MAPSOUND = ET_SOUND,
     SPOTLIGHT = ET_SPOTLIGHT,
-    I_SHELLS, I_BULLETS, I_ROCKETS, I_ROUNDS, I_GRENADES, I_CARTRIDGES, I_BOMBS, // TODO: bomb items: I_BOMBS,
+    I_SHELLS, I_BULLETS, I_ROCKETS, I_ROUNDS, I_GRENADES, I_CARTRIDGES, // TODO: bomb items: I_BOMBS,
     I_HEALTH, I_BOOST,
     I_GREENARMOUR, I_YELLOWARMOUR,
     I_QUAD,
@@ -46,6 +46,7 @@ enum                            // static entity types
     PLATFORM,                   // attr1 = angle, attr2 = idx, attr3 = tag, attr4 = speed
     ELEVATOR,                   // attr1 = angle, attr2 = idx, attr3 = tag, attr4 = speed
     FLAG,                       // attr1 = angle, attr2 = team
+    I_BOMBS,
     MAXENTTYPES
 };
 
@@ -324,12 +325,12 @@ static struct itemstat { int add, max, sound; const char *name; int icon, info; 
     {5,     15,    S_ITEMAMMO,   "RI", HICON_RIFLE, GUN_RIFLE},
     {10,    30,    S_ITEMAMMO,   "GL", HICON_GL, GUN_GL},
     {30,    120,   S_ITEMAMMO,   "PI", HICON_PISTOL, GUN_PISTOL},
-    {5,     800,   S_ITEMAMMO,   "BO", HICON_BOMB, GUN_BOMB},
     {25,    100,   S_ITEMHEALTH, "H", HICON_HEALTH},
     {10,    1000,  S_ITEMHEALTH, "MH", HICON_HEALTH},
     {100,   100,   S_ITEMARMOUR, "GA", HICON_GREEN_ARMOUR, A_GREEN},
     {200,   200,   S_ITEMARMOUR, "YA", HICON_YELLOW_ARMOUR, A_YELLOW},
     {20000, 30000, S_ITEMPUP,    "Q", HICON_QUAD},
+    {5,     800,   S_ITEMAMMO,   "BO", HICON_BOMB, GUN_BOMB},
 };
 
 #define SGRAYS 20

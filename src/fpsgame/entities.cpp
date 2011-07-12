@@ -54,7 +54,7 @@ namespace entities
         static const char *entmdlnames[] =
         {
             NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-            "ammo/shells", "ammo/bullets", "ammo/rockets", "ammo/rrounds", "ammo/grenades", "ammo/cartridges", "ammo/grenades", // TODO: change last one to bomb
+            "ammo/shells", "ammo/bullets", "ammo/rockets", "ammo/rrounds", "ammo/grenades", "ammo/cartridges",
             "health", "boost", "armor/green", "armor/yellow", "quad", "teleporter",
             NULL, NULL,
             "carrot",
@@ -62,7 +62,8 @@ namespace entities
             "checkpoint",
             NULL, NULL,
             NULL, NULL,
-            NULL
+            NULL,
+            "ammo/grenades", // TODO: change last one to bomb
         };
         return entmdlnames[type];
     }
@@ -319,7 +320,7 @@ namespace entities
     void putitems(packetbuf &p)            // puts items in network stream and also spawns them locally
     {
         putint(p, N_ITEMLIST);
-        loopv(ents) if(ents[i]->type>=I_SHELLS && ents[i]->type<=I_QUAD && (!m_noammo || ents[i]->type<I_SHELLS || ents[i]->type>I_BOMBS))
+        loopv(ents) if(ents[i]->type>=I_SHELLS && ents[i]->type<=I_QUAD && (!m_noammo || ents[i]->type<I_SHELLS || ents[i]->type>I_CARTRIDGES))
         {
             putint(p, i);
             putint(p, ents[i]->type);
@@ -332,7 +333,7 @@ namespace entities
     void spawnitems(bool force)
     {
         if(m_noitems) return;
-        loopv(ents) if(ents[i]->type>=I_SHELLS && ents[i]->type<=I_QUAD && (!m_noammo || ents[i]->type<I_SHELLS || ents[i]->type>I_BOMBS))
+        loopv(ents) if(ents[i]->type>=I_SHELLS && ents[i]->type<=I_QUAD && (!m_noammo || ents[i]->type<I_SHELLS || ents[i]->type>I_CARTRIDGES))
         {
             ents[i]->spawned = force || m_sp || !server::delayspawn(ents[i]->type);
         }
