@@ -797,7 +797,7 @@ bool mmcollide(physent *d, const vec &dir, octaentities &oc)               // co
                 break;
         }
     }
-    return true;
+    return game::weaponcollide(d, dir);
 }
 
 template<class E>

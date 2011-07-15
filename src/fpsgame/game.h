@@ -343,6 +343,10 @@ static struct itemstat { int add, max, sound; const char *name; int icon, info; 
 #define RL_SELFDAMDIV 2
 #define RL_DISTSCALE 1.5f
 
+#define BOMB_COLLHEIGHT 70
+#define BOMB_COLLGROUND 5
+#define BOMB_COLLBULGE 40
+
 static const struct guninfo { short sound, attackdelay, damage, projspeed, part, kickamount, range; const char *name, *file; } guns[NUMGUNS] =
 {
     { S_PUNCH1,    250,  50, 0,   0,  0,   14, "fist",            "fist"  },

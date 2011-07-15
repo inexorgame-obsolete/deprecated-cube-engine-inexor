@@ -54,6 +54,7 @@ namespace game
     extern void edittrigger(const selinfo &sel, int op, int arg1 = 0, int arg2 = 0, int arg3 = 0);
     extern void vartrigger(ident *id);
     extern void dynentcollide(physent *d, physent *o, const vec &dir);
+	extern bool weaponcollide(physent *d, const vec &dir);
     extern const char *getclientmap();
     extern const char *getmapinfo();
     extern void resetgamestate();

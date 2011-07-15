@@ -271,6 +271,7 @@ extern bool loadents(const char *fname, vector<entity> &ents, uint *crc = NULL);
 extern void moveplayer(physent *pl, int moveres, bool local);
 extern bool moveplayer(physent *pl, int moveres, bool local, int curtime);
 extern bool collide(physent *d, const vec &dir = vec(0, 0, 0), float cutoff = 0.0f, bool playercol = true);
+extern bool ellipsecollide(physent *d, const vec &dir, const vec &o, const vec &center, float yaw, float xr, float yr, float hi, float lo);
 extern bool bounce(physent *d, float secs, float elasticity, float waterfric);
 extern bool bounce(physent *d, float elasticity, float waterfric);
 extern void avoidcollision(physent *d, const vec &dir, physent *obstacle, float space);

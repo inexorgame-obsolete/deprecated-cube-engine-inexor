@@ -252,7 +252,11 @@ namespace game
             vec old(bnc.o);
             bool stopped = false;
             if(bnc.bouncetype==BNC_GRENADE) stopped = bounce(&bnc, 0.6f, 0.5f) || (bnc.lifetime -= time)<0;
-			else if(bnc.bouncetype==BNC_BOMB) stopped = (bnc.lifetime -= time)<0;
+			else if(bnc.bouncetype==BNC_BOMB)
+			{
+				bounce(&bnc, 0.6f, 0.5f);
+				stopped = (bnc.lifetime -= time)<0;
+			}
             else
             {
                 // cheaper variable rate physics for debris, gibs, etc.
@@ -1042,6 +1046,16 @@ namespace game
         }
     }
 
+	bool weaponcollide(physent *d, const vec &dir) {
+		loopv(projs)
+        {
+            projectile &p = projs[i];
+			if(!ellipsecollide(d, dir, p.o, p.o, 0, BOMB_COLLBULGE, BOMB_COLLBULGE, BOMB_COLLHEIGHT, BOMB_COLLGROUND)) return false;
+		}
+		return true;
+	}
+	
+	
     void avoidweapons(ai::avoidset &obstacles, float radius)
     {
         loopv(projs)
