@@ -411,8 +411,10 @@ struct fpsstate
             itemstat &is = itemstats[11+type-I_BOMBS];
             switch(type)
             {
-                case I_BOMBRADIUS: return bombradius<is.max;
-                default: return ammo[is.info]<is.max;
+                case I_BOMBRADIUS:
+                	return bombradius<is.max;
+                default:
+                	return ammo[is.info]<is.max;
             }
     	} else if(type>=I_SHELLS || type<=I_QUAD) {
             itemstat &is = itemstats[type-I_SHELLS];
