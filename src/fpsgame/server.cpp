@@ -586,7 +586,7 @@ namespace server
             case I_GRENADES:
             case I_CARTRIDGES: sec = np*4; break;
             case I_BOMBS:
-            case I_BOMBRADIUS: sec = np*3; break;
+            case I_BOMBRADIUS: sec = np*7; break;
             case I_HEALTH: sec = np*5; break;
             case I_GREENARMOUR:
             case I_YELLOWARMOUR: sec = 20; break;
@@ -1691,8 +1691,10 @@ namespace server
             if(dup) continue;
 
             int damage = guns[gun].damage;
-            if(gs.quadmillis) damage *= 4;
-            damage = int(damage*(1-h.dist/RL_DISTSCALE/RL_DAMRAD));
+            if(gun!=GUN_BOMB) {
+                if(gs.quadmillis) damage *= 4;
+                damage = int(damage*(1-h.dist/RL_DISTSCALE/RL_DAMRAD));
+            }
             if(gun==GUN_RL && target==ci) damage /= RL_SELFDAMDIV;
             dodamage(target, ci, damage, gun, h.dir);
         }
