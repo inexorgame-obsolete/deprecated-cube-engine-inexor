@@ -38,15 +38,23 @@ namespace entities
     const char *itemname(int i)
     {
         int t = ents[i]->type;
-        if(t<I_SHELLS || t>I_QUAD) return NULL;
-        return itemstats[t-I_SHELLS].name;
+        if(m_bomb)
+            if(t<I_BOMBS || t>I_BOMBRADIUS) return NULL;
+            else return itemstats[11+t-I_BOMBS].name;
+        else
+            if(t<I_SHELLS || t>I_QUAD) return NULL;
+        	else return itemstats[t-I_SHELLS].name;
     }
 
     int itemicon(int i)
     {
         int t = ents[i]->type;
-        if(t<I_SHELLS || t>I_QUAD) return -1;
-        return itemstats[t-I_SHELLS].icon;
+        if (m_bomb)
+            if(t<I_BOMBS || t>I_BOMBRADIUS) return -1;
+            else return itemstats[11+t-I_BOMBS].icon;
+        else
+            if(t<I_SHELLS || t>I_QUAD) return -1;
+        	else return itemstats[t-I_SHELLS].icon;
     }
 
     const char *entmdlname(int type)
@@ -63,7 +71,7 @@ namespace entities
             NULL, NULL,
             NULL, NULL,
             NULL,
-            "ammo/grenades", // TODO: change last one to bomb
+            "ammo/bombs", "ammo/bombradius"
         };
         return entmdlnames[type];
     }
@@ -84,7 +92,7 @@ namespace entities
         {
             switch(i)
             {
-                case I_SHELLS: case I_BULLETS: case I_ROCKETS: case I_ROUNDS: case I_GRENADES: case I_CARTRIDGES: case I_BOMBS:
+                case I_SHELLS: case I_BULLETS: case I_ROCKETS: case I_ROUNDS: case I_GRENADES: case I_CARTRIDGES:
                     if(m_noammo) continue;
                     break;
                 case I_HEALTH: case I_BOOST: case I_GREENARMOUR: case I_YELLOWARMOUR: case I_QUAD:
@@ -92,6 +100,9 @@ namespace entities
                     break;
                 case CARROT: case RESPAWNPOINT:
                     if(!m_classicsp) continue;
+                    break;
+                case I_BOMBS: case I_BOMBRADIUS:
+                    if(!m_bomb) continue;
                     break;
             }
             const char *mdl = entmdlname(i);
@@ -116,7 +127,9 @@ namespace entities
                     if(e.attr2 < 0) continue;
                     break;
                 default:
-                    if(!e.spawned || e.type < I_SHELLS || e.type > I_QUAD) continue;
+                	if(m_bomb) {
+                		if (!e.spawned || e.type<I_BOMBS || e.type>I_BOMBRADIUS) continue;
+                	} else if (!e.spawned || e.type<I_SHELLS || e.type>I_QUAD) continue;
             }
             const char *mdlname = entmodel(e);
             if(mdlname)
@@ -130,7 +143,9 @@ namespace entities
 
     void addammo(int type, int &v, bool local)
     {
-        itemstat &is = itemstats[type-I_SHELLS];
+        int tindex = type-I_SHELLS;
+    	if(type==I_BOMBS) tindex = 11;
+    	itemstat &is = itemstats[tindex];
         v += is.add;
         if(v>is.max) v = is.max;
         if(local) msgsound(is.sound);
@@ -138,7 +153,8 @@ namespace entities
 
     void repammo(fpsent *d, int type, bool local)
     {
-        addammo(type, d->ammo[type-I_SHELLS+GUN_SG], local);
+    	if(type==I_BOMBS) addammo(type, d->ammo[GUN_BOMB], local);
+    	else addammo(type, d->ammo[type-I_SHELLS+GUN_SG], local);
     }
 
     // these two functions are called when the server acknowledges that you really
@@ -148,16 +164,19 @@ namespace entities
     {
         if(!ents.inrange(n)) return;
         int type = ents[n]->type;
-        if(type<I_SHELLS || type>I_QUAD) return;
+        if (m_bomb && (type<I_BOMBS || type>I_BOMBRADIUS)) return;
+        else if (!m_bomb && (type<I_SHELLS || type>I_QUAD)) return;
         ents[n]->spawned = false;
         if(!d) return;
-        itemstat &is = itemstats[type-I_SHELLS];
+        int tindex = type-I_SHELLS;
+        if(type>=I_BOMBS) tindex = 11+type-I_BOMBS;
+        itemstat &is = itemstats[tindex];
         if(d!=player1 || isthirdperson())
         {
             //particle_text(d->abovehead(), is.name, PART_TEXT, 2000, 0xFFC864, 4.0f, -8);
             particle_icon(d->abovehead(), is.icon%4, is.icon/4, PART_HUD_ICON_GREY, 2000, 0xFFFFFF, 2.0f, -8);
         }
-        playsound(itemstats[type-I_SHELLS].sound, d!=player1 ? &d->o : NULL, NULL, 0, 0, -1, 0, 1500);
+        playsound(itemstats[tindex].sound, d!=player1 ? &d->o : NULL, NULL, 0, 0, -1, 0, 1500);
         d->pickup(type);
         if(d==player1) switch(type)
         {
@@ -169,6 +188,11 @@ namespace entities
             case I_QUAD:
                 conoutf(CON_GAMEINFO, "\f2you got the quad!");
                 playsound(S_V_QUAD, NULL, NULL, 0, 0, -1, 0, 3000);
+                break;
+
+            case I_BOMBRADIUS:
+                conoutf(CON_GAMEINFO, "\f2you have a permanent +1 damage radius bonus!");
+                playsound(S_V_QUAD, NULL, NULL, 0, 0, -1, 0, 3000); // TODO: other sound
                 break;
         }
     }
@@ -320,11 +344,16 @@ namespace entities
     void putitems(packetbuf &p)            // puts items in network stream and also spawns them locally
     {
         putint(p, N_ITEMLIST);
-        loopv(ents) if(ents[i]->type>=I_SHELLS && ents[i]->type<=I_QUAD && (!m_noammo || ents[i]->type<I_SHELLS || ents[i]->type>I_CARTRIDGES))
-        {
-            putint(p, i);
-            putint(p, ents[i]->type);
-        }
+        if(m_bomb)
+        	loopv(ents) if(ents[i]->type>=I_BOMBS && ents[i]->type<=I_BOMBRADIUS) {
+                putint(p, i);
+                putint(p, ents[i]->type);
+            }
+        else
+        	loopv(ents) if(ents[i]->type>=I_SHELLS && ents[i]->type<=I_QUAD && (!m_noammo || ents[i]->type<I_SHELLS || ents[i]->type>I_CARTRIDGES)) {
+                putint(p, i);
+                putint(p, ents[i]->type);
+            }
         putint(p, -1);
     }
 
@@ -332,10 +361,15 @@ namespace entities
 
     void spawnitems(bool force)
     {
-        if(m_noitems) return;
-        loopv(ents) if(ents[i]->type>=I_SHELLS && ents[i]->type<=I_QUAD && (!m_noammo || ents[i]->type<I_SHELLS || ents[i]->type>I_CARTRIDGES))
-        {
-            ents[i]->spawned = force || m_sp || !server::delayspawn(ents[i]->type);
+        if(m_bomb)
+            loopv(ents) if(ents[i]->type>=I_BOMBS && ents[i]->type<=I_BOMBRADIUS) {
+                ents[i]->spawned = force || m_sp || !server::delayspawn(ents[i]->type);
+            }
+        else {
+            if(m_noitems) return;
+            loopv(ents) if(ents[i]->type>=I_SHELLS && ents[i]->type<=I_QUAD && (!m_noammo || ents[i]->type<I_SHELLS || ents[i]->type>I_CARTRIDGES)) {
+                ents[i]->spawned = force || m_sp || !server::delayspawn(ents[i]->type);
+            }
         }
     }
 
@@ -630,7 +664,7 @@ namespace entities
             "box", "barrel",
             "platform", "elevator",
             "flag",
-            "", "", "", "",
+            "bombs", "bombradius", "", "",
         };
         return i>=0 && size_t(i)<sizeof(entnames)/sizeof(entnames[0]) ? entnames[i] : "";
     }

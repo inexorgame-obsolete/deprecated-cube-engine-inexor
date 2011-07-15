@@ -39,15 +39,18 @@ namespace game
 
     #include "capture.h"
     #include "ctf.h"
+    #include "bomb.h"
 
     clientmode *cmode = NULL;
     captureclientmode capturemode;
     ctfclientmode ctfmode;
+    bombclientmode bombmode;
 
     void setclientmode()
     {
         if(m_capture) cmode = &capturemode;
         else if(m_ctf) cmode = &ctfmode;
+        else if(m_bomb) cmode = &bombmode;
         else cmode = NULL;
     }
 

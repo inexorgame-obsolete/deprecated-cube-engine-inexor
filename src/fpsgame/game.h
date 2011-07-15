@@ -30,7 +30,7 @@ enum                            // static entity types
     PARTICLES = ET_PARTICLES,
     MAPSOUND = ET_SOUND,
     SPOTLIGHT = ET_SPOTLIGHT,
-    I_SHELLS, I_BULLETS, I_ROCKETS, I_ROUNDS, I_GRENADES, I_CARTRIDGES, // TODO: bomb items: I_BOMBS,
+    I_SHELLS, I_BULLETS, I_ROCKETS, I_ROUNDS, I_GRENADES, I_CARTRIDGES,
     I_HEALTH, I_BOOST,
     I_GREENARMOUR, I_YELLOWARMOUR,
     I_QUAD,
@@ -47,6 +47,7 @@ enum                            // static entity types
     ELEVATOR,                   // attr1 = angle, attr2 = idx, attr3 = tag, attr4 = speed
     FLAG,                       // attr1 = angle, attr2 = team
     I_BOMBS,
+    I_BOMBRADIUS,
     MAXENTTYPES
 };
 
@@ -126,7 +127,7 @@ static struct gamemodeinfo
     { "efficiency protect", M_NOITEMS | M_EFFICIENCY | M_CTF | M_PROTECT | M_TEAM, "Efficiency Protect The Flag: Touch \fs\f3the enemy flag\fr to score points for \fs\f1your team\fr. Pick up \fs\f1your flag\fr to protect it. \fs\f1Your team\fr loses points if a dropped flag resets. You spawn with all weapons and armour. There are no items." },
     { "efficiency hold", M_NOITEMS | M_EFFICIENCY | M_CTF | M_HOLD | M_TEAM, "Efficiency Hold The Flag: Hold \fs\f7the flag\fr for 20 seconds to score points for \fs\f1your team\fr. You spawn with all weapons and armour. There are no items." },
 	{ "lms", M_LMS, "Last Man Standing: The last player alive wins." },
-	{ "bomberman", M_LMS | M_NOITEMS | M_BOMB, "Bomberman: Bomb all people. Be careful." }
+	{ "bomberman", M_LMS | M_BOMB, "Bomberman: Bomb all people. Be careful." }
 };
 
 #define STARTGAMEMODE (-3)
@@ -309,6 +310,8 @@ enum
     HICON_BLUE_FLAG,
     HICON_NEUTRAL_FLAG,
 
+    HICON_BOMBRADIUS,
+
     HICON_X       = 20,
     HICON_Y       = 1650,
     HICON_TEXTY   = 1644,
@@ -330,7 +333,8 @@ static struct itemstat { int add, max, sound; const char *name; int icon, info; 
     {100,   100,   S_ITEMARMOUR, "GA", HICON_GREEN_ARMOUR, A_GREEN},
     {200,   200,   S_ITEMARMOUR, "YA", HICON_YELLOW_ARMOUR, A_YELLOW},
     {20000, 30000, S_ITEMPUP,    "Q", HICON_QUAD},
-    {5,     800,   S_ITEMAMMO,   "BO", HICON_BOMB, GUN_BOMB},
+    {1,     10,    S_ITEMAMMO,   "BO", HICON_BOMB, GUN_BOMB},
+    {1,     8,     S_ITEMPUP,    "BR", HICON_BOMBRADIUS},
 };
 
 #define SGRAYS 20
@@ -368,66 +372,99 @@ struct fpsstate
     int ammo[NUMGUNS];
     int aitype, skill;
     int backupweapon;
+    int bombradius, maxbombradius;
 
-    fpsstate() : maxhealth(100), aitype(AI_NONE), skill(0), backupweapon(GUN_FIST) {}
+    fpsstate() : maxhealth(100), aitype(AI_NONE), skill(0), backupweapon(GUN_FIST), maxbombradius(10) {}
 
     void baseammo(int gun, int k = 2, int scale = 1)
     {
-        ammo[gun] = (itemstats[gun-GUN_SG].add*k)/scale;
+    	if(gun==GUN_BOMB) ammo[gun] = (itemstats[11].add*k)/scale;
+    	else ammo[gun] = (itemstats[gun-GUN_SG].add*k)/scale;
     }
 
     void addammo(int gun, int k = 1, int scale = 1)
     {
-        itemstat &is = itemstats[gun-GUN_SG];
-        ammo[gun] = min(ammo[gun] + (is.add*k)/scale, is.max);
+        if(gun==GUN_BOMB) {
+        	itemstat &is = itemstats[11];
+        	ammo[gun] = min(ammo[gun] + (is.add*k)/scale, is.max);
+        } else {
+        	itemstat &is = itemstats[gun-GUN_SG];
+        	ammo[gun] = min(ammo[gun] + (is.add*k)/scale, is.max);
+        }
     }
 
     bool hasmaxammo(int type)
     {
-       const itemstat &is = itemstats[type-I_SHELLS];
-       return ammo[type-I_SHELLS+GUN_SG]>=is.max;
+        if(type>=I_BOMBS) {
+            itemstat &is = itemstats[11+type-I_BOMBS];
+            return ammo[GUN_BOMB]>=is.max;
+        }
+        else {
+        	itemstat &is = itemstats[type-I_SHELLS];
+            return ammo[type-I_SHELLS+GUN_SG]>=is.max;
+        }
     }
 
     bool canpickup(int type)
     {
-        if(type<I_SHELLS || type>I_QUAD) return false;
-        itemstat &is = itemstats[type-I_SHELLS];
-        switch(type)
-        {
-            case I_BOOST: return maxhealth<is.max;
-            case I_HEALTH: return health<maxhealth;
-            case I_GREENARMOUR:
-                // (100h/100g only absorbs 200 damage)
-                if(armourtype==A_YELLOW && armour>=100) return false;
-            case I_YELLOWARMOUR: return !armourtype || armour<is.max;
-            case I_QUAD: return quadmillis<is.max;
-            default: return ammo[is.info]<is.max;
-        }
+        if(type>=I_BOMBS || type<=I_BOMBRADIUS) {
+            itemstat &is = itemstats[11+type-I_BOMBS];
+            switch(type)
+            {
+                case I_BOMBRADIUS: return bombradius<is.max;
+                default: return ammo[is.info]<is.max;
+            }
+    	} else if(type>=I_SHELLS || type<=I_QUAD) {
+            itemstat &is = itemstats[type-I_SHELLS];
+            switch(type)
+            {
+                case I_BOOST: return maxhealth<is.max;
+                case I_HEALTH: return health<maxhealth;
+                case I_GREENARMOUR:
+                    // (100h/100g only absorbs 200 damage)
+                    if(armourtype==A_YELLOW && armour>=100) return false;
+                case I_YELLOWARMOUR: return !armourtype || armour<is.max;
+                case I_QUAD: return quadmillis<is.max;
+                default: return ammo[is.info]<is.max;
+            }
+    	} else return false;
     }
 
     void pickup(int type)
     {
-        if(type<I_SHELLS || type>I_QUAD) return;
-        itemstat &is = itemstats[type-I_SHELLS];
-        switch(type)
-        {
-            case I_BOOST:
-                maxhealth = min(maxhealth+is.add, is.max);
-            case I_HEALTH: // boost also adds to health
-                health = min(health+is.add, maxhealth);
-                break;
-            case I_GREENARMOUR:
-            case I_YELLOWARMOUR:
-                armour = min(armour+is.add, is.max);
-                armourtype = is.info;
-                break;
-            case I_QUAD:
-                quadmillis = min(quadmillis+is.add, is.max);
-                break;
-            default:
-                ammo[is.info] = min(ammo[is.info]+is.add, is.max);
-                break;
-        }
+   		if(type>=I_BOMBS || type<=I_BOMBRADIUS) {
+    		itemstat &is = itemstats[11+type-I_BOMBS];
+            switch(type)
+            {
+                case I_BOMBRADIUS:
+                    bombradius = min(bombradius+is.add, is.max);
+                    break;
+                default:
+                    ammo[is.info] = min(ammo[is.info]+is.add, is.max);
+                    break;
+            }
+    	} else if(type>=I_SHELLS || type<=I_QUAD) {
+    		itemstat &is = itemstats[type-I_SHELLS];
+            switch(type)
+            {
+                case I_BOOST:
+                    maxhealth = min(maxhealth+is.add, is.max);
+                case I_HEALTH: // boost also adds to health
+                    health = min(health+is.add, maxhealth);
+                    break;
+                case I_GREENARMOUR:
+                case I_YELLOWARMOUR:
+                    armour = min(armour+is.add, is.max);
+                    armourtype = is.info;
+                    break;
+                case I_QUAD:
+                    quadmillis = min(quadmillis+is.add, is.max);
+                    break;
+                default:
+                    ammo[is.info] = min(ammo[is.info]+is.add, is.max);
+                    break;
+            }
+    	}
     }
 
     void respawn(int gamemode = NULL)
@@ -438,10 +475,10 @@ struct fpsstate
         quadmillis = 0;
         gunselect = GUN_PISTOL;
         gunwait = 0;
+    	bombradius = 1;
         loopi(NUMGUNS) ammo[i] = 0;
         if (m_bomb) backupweapon = GUN_BOMB;
         else backupweapon = GUN_FIST;
-        // conoutf(CON_CHAT, "backupweapon %i", backupweapon);
         ammo[backupweapon] = 1;
     }
 
