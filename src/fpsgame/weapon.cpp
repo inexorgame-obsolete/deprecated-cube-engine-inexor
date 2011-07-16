@@ -1056,15 +1056,13 @@ namespace game
         }
     }
 
-	bool weaponcollide(physent *d, const vec &dir) {
-/*
+	bool weaponcollide(physent *d, const vec &dir) { 
 		loopv(projs)
         {
             projectile &p = projs[i];
 			if(!ellipsecollide(d, dir, p.o, p.o, 0, BOMB_COLLBULGE, BOMB_COLLBULGE, BOMB_COLLHEIGHT, BOMB_COLLGROUND)) return false;
 		}
 		return true;
-*/
 	}
 	
 	
