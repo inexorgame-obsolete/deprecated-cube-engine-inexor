@@ -1576,8 +1576,8 @@ namespace server
     void startintermission() { gamelimit = min(gamelimit, gamemillis); checkintermission(); }
 
 	/**
-	 * Checks if the game has endet because only one player is still alive.
-	 * It does this by checking if less than 2 players have thir state set to alive. 
+	 * Checks if the game has ended because only one player is still alive.
+	 * It does this by checking if less than 2 players have their state set to alive.
 	 * This means, the game will also end if someone is gagging
 	 * If only one is still alive this method forces intermission.
 	 */
@@ -1638,6 +1638,7 @@ namespace server
             else ts.respawn(gamemode);
             // don't issue respawn yet until DEATHMILLIS has elapsed
             // ts.respawn();
+            if (m_bomb) smode->died(target,actor);
         }
     }
 

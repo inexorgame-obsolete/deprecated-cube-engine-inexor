@@ -376,9 +376,9 @@ struct fpsstate
     int ammo[NUMGUNS];
     int aitype, skill;
     int backupweapon;
-    int bombradius, maxbombradius;
+    int bombradius; // , maxbombradius;
 
-    fpsstate() : maxhealth(100), aitype(AI_NONE), skill(0), backupweapon(GUN_FIST), maxbombradius(10) {}
+    fpsstate() : maxhealth(100), aitype(AI_NONE), skill(0), backupweapon(GUN_FIST) {} // , maxbombradius(10)
 
     void baseammo(int gun, int k = 2, int scale = 1)
     {
@@ -868,6 +868,7 @@ namespace game
     extern void clearragdolls();
     extern void moveragdolls();
     extern void changedplayermodel();
+    extern void renderplayer(fpsent *d, const playermodelinfo &mdl, int team, float fade, bool mainpass);
     extern const playermodelinfo &getplayermodelinfo(fpsent *d);
     extern int chooserandomplayermodel(int seed);
     extern void swayhudgun(int curtime);

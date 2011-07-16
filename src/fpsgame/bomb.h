@@ -76,8 +76,49 @@ struct bombclientmode : clientmode
             draw_textf("%d", (x + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, d->bombradius);
             glPopMatrix();
         }
+        else {
+            glPushMatrix();
+            glScalef(2, 2, 1);
+            bool flash = d==player1 && lastspawnattempt>=d->lastpain && lastmillis < lastspawnattempt+100;
+            draw_textf("%s%s", (x+s/2)/2-64, (y+s/2)/2-48, flash ? "\f3" : "", "Game");
+            draw_textf("%s%s", (x+s/2)/2-48, (y+s/2)/2-8, flash ? "\f3" : "", "over");
+            glPopMatrix();
+        }
 
-	}
+    }
+
+    void renderhiddenplayers() {
+        loopv(players)
+        {
+        	fpsent *p = players[i];
+        	if(p == player1 || p->state!=CS_ALIVE) continue;
+            float yaw, pitch;
+            vectoyawpitch(vec(p->o).sub(camera1->o), yaw, pitch);
+            float angle = yaw + 180;
+            int flags = MDL_GHOST | MDL_CULL_VFC | MDL_CULL_OCCLUDED;
+
+        	playermodelinfo model = getplayermodelinfo(p);
+            const char *modelname = model.redteam;
+            /* switch(testteam ? testteam-1 : team) // TODO: teammode
+            {
+                case 1: modelname = mdl.blueteam; break;
+                case 2: modelname = mdl.redteam; break;
+            } */
+        	rendermodel(NULL, modelname, ANIM_ALL|ANIM_MAPMODEL|ANIM_LOOP, p->feetpos(), yaw, pitch, flags, p, NULL, /* p->lastaction+ */ lastmillis/10.0f, 0, 0.3f);
+/*        	rendermodel(NULL, modelname, ANIM_MAPMODEL|ANIM_LOOP,
+                    p->pos, angle, 0,
+                    MDL_GHOST | MDL_CULL_VFC | (f.droptime || f.owner ? MDL_LIGHT : 0),
+                    NULL, NULL, 0, 0, 0.5f + 0.5f*(2*fabs(fmod(lastmillis/1000.0f, 1.0f) - 0.5f)));
+*/
+        }
+    }
+
+    void rendergame()
+    {
+    	renderhiddenplayers();
+    }
+
+
 #else
 
 	bool canspawn(clientinfo *ci, bool connecting = false) {
@@ -85,6 +126,11 @@ struct bombclientmode : clientmode
     	else if(ci->state.deaths==0) return true; // ci->state.aitype!=AI_NONE &&
     	else return false;
     }
+
+	void died(clientinfo *target, clientinfo *actor) {
+		conoutf("%s died bombs:%i bombradius:%i", target->name, target->state.ammo[GUN_BOMB], target->state.bombradius);
+
+	}
 
 #endif
 
