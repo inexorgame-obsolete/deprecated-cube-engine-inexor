@@ -468,7 +468,7 @@ namespace game
         int numdebris = gun==GUN_BARREL ? rnd(max(maxbarreldebris-5, 1))+5 : rnd(maxdebris-5)+5;
         vec debrisvel = owner->o==v ? vec(0, 0, 0) : vec(owner->o).sub(v).normalize(), debrisorigin(v);
         if(gun==GUN_RL) debrisorigin.add(vec(debrisvel).mul(8));
-        if(gun==GUN_BOMB) owner->ammo[GUN_BOMB]++; // add a bomb if the bomb explodes
+        if(gun==GUN_BOMB && owner->ammo[GUN_BOMB] < itemstats[11].max) owner->ammo[GUN_BOMB]++; // add a bomb if the bomb explodes
         if(numdebris)
         {
             entitylight light;
@@ -1056,12 +1056,13 @@ namespace game
         }
     }
 
-	bool weaponcollide(physent *d, const vec &dir) { 
-		loopv(projs)
-        {
-            projectile &p = projs[i];
-			if(!ellipsecollide(d, dir, p.o, p.o, 0, BOMB_COLLBULGE, BOMB_COLLBULGE, BOMB_COLLHEIGHT, BOMB_COLLGROUND)) return false;
-		}
+	bool weaponcollide(physent *d, const vec &dir) {
+	    loopv(bouncers)
+	    {
+	    	bouncer *p = bouncers[i];
+	    	if(p->bouncetype != BNC_BOMB) continue;
+	    	if(!ellipsecollide(d, dir, p->o, p->o, 0, BOMB_COLLBULGE, BOMB_COLLBULGE, BOMB_COLLHEIGHT, BOMB_COLLGROUND)) return false;
+	    }
 		return true;
 	}
 	

@@ -20,14 +20,14 @@ struct bombclientmode : clientmode
         glEnd();
     }
 
-    void drawblip(fpsent *d, float x, float y, float s, const vec &pos, bool flagblip)
+    void drawblip(fpsent *d, float x, float y, float s, const vec &pos, bool flagblip, int size_factor)
     {
         float scale = calcradarscale();
         vec dir = d->o;
         dir.sub(pos).div(scale);
-        float size = flagblip ? 0.1f : 0.05f,
-              xoffset = flagblip ? -2*(3/32.0f)*size : -size,
-              yoffset = flagblip ? -2*(1 - 3/32.0f)*size : -size,
+        float size = 0.03f * size_factor,
+              xoffset = -size,
+              yoffset = -size,
               dist = dir.magnitude2(), maxdist = 1 - 0.05f - 0.05f;
         if(dist >= maxdist) dir.mul(maxdist/dist);
         dir.rotate_around_z(-camera1->yaw*RAD);
@@ -53,15 +53,16 @@ struct bombclientmode : clientmode
         loopv(players) {
             fpsent *p = players[i];
             if(p == player1 || p->state!=CS_ALIVE) continue;
-            settexture("packages/hud/bomb_player_red.png", 3);
-            drawblip(d, x, y, s, p->o, true);
+            settexture("packages/hud/blip_red.png", 3);
+            drawblip(d, x, y, s, p->o, true, 2);
         }
 
+        // show fired bombs on minimap
         loopv(bouncers) {
         	bouncer *p = bouncers[i];
         	if(p->bouncetype != BNC_BOMB) continue;
-            settexture("packages/hud/bomb_bouncer_blue.png", 3);
-            drawblip(d, x, y, s, p->o, true);
+            settexture("packages/hud/blip_blue.png", 3);
+            drawblip(d, x, y, s, p->o, false, p->owner->bombradius);
         }
 
         // bomb radius icon

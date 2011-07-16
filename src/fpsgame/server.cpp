@@ -1456,7 +1456,6 @@ namespace server
             clientinfo *ci = clients[i];
             ci->mapchange();
             ci->state.lasttimeplayed = lastmillis;
-            // Hanack
             if(m_bomb) ci->state.setbackupweapon(GUN_BOMB);
             if(m_mp(gamemode) && ci->state.state!=CS_SPECTATOR) sendspawn(ci);
         }
@@ -2441,7 +2440,7 @@ namespace server
                 exp->millis = cq ? cq->geteventmillis(gamemillis, cmillis) : 0;
                 exp->gun = getint(p);
                 exp->id = getint(p);
-                if(exp->gun==GUN_BOMB) cq->state.ammo[GUN_BOMB]++; // add a bomb if the bomb explodes
+                if(exp->gun==GUN_BOMB && cq->state.ammo[GUN_BOMB] < itemstats[11].max) cq->state.ammo[GUN_BOMB]++; // add a bomb if the bomb explodes
                 int hits = getint(p);
                 loopk(hits)
                 {
