@@ -792,6 +792,38 @@ namespace game
     extern void hitmovable(int damage, movable *m, fpsent *at, const vec &vel, int gun);
 
     // weapon
+    struct projectile
+    {
+        vec dir, o, to, offset;
+        float speed;
+        fpsent *owner;
+        int gun;
+        bool local;
+        int offsetmillis;
+        int id;
+        entitylight light;
+    };
+    extern vector<projectile> projs;
+
+    struct bouncer : physent
+    {
+        int lifetime, bounces;
+        float lastyaw, roll;
+        bool local;
+        fpsent *owner;
+        int bouncetype, variant;
+        vec offset;
+        int offsetmillis;
+        int id;
+        entitylight light;
+
+        bouncer() : bounces(0), roll(0), variant(0)
+        {
+            type = ENT_BOUNCE;
+        }
+    };
+    extern vector<bouncer *> bouncers;
+
     extern void shoot(fpsent *d, const vec &targ);
     extern void shoteffects(int gun, const vec &from, const vec &to, fpsent *d, bool local, int id, int prevaction);
     extern void explode(bool local, fpsent *owner, const vec &v, dynent *safe, int dam, int gun);

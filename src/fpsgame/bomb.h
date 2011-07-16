@@ -1,8 +1,8 @@
 #ifdef SERVMODE
-VAR(ctftkpenalty, 0, 1, 1);
 
 struct bombservmode : servmode
 #else
+static int BNC_BOMB = 1;
 struct bombclientmode : clientmode
 #endif
 {
@@ -20,6 +20,20 @@ struct bombclientmode : clientmode
         glEnd();
     }
 
+    void drawblip(fpsent *d, float x, float y, float s, const vec &pos, bool flagblip)
+    {
+        float scale = calcradarscale();
+        vec dir = d->o;
+        dir.sub(pos).div(scale);
+        float size = flagblip ? 0.1f : 0.05f,
+              xoffset = flagblip ? -2*(3/32.0f)*size : -size,
+              yoffset = flagblip ? -2*(1 - 3/32.0f)*size : -size,
+              dist = dir.magnitude2(), maxdist = 1 - 0.05f - 0.05f;
+        if(dist >= maxdist) dir.mul(maxdist/dist);
+        dir.rotate_around_z(-camera1->yaw*RAD);
+        drawradar(x + s*0.5f*(1.0f + dir.x + xoffset), y + s*0.5f*(1.0f + dir.y + yoffset), size*s);
+    }
+
 	void drawhud(fpsent *d, int w, int h)
 	{
 		// minimap
@@ -35,6 +49,21 @@ struct bombclientmode : clientmode
         settexture("packages/hud/radar.png", 3);
         drawradar(x - roffset, y - roffset, rsize);
 
+        // show other players on minimap
+        loopv(players) {
+            fpsent *p = players[i];
+            if(p == player1 || p->state!=CS_ALIVE) continue;
+            settexture("packages/hud/bomb_player_red.png", 3);
+            drawblip(d, x, y, s, p->o, true);
+        }
+
+        loopv(bouncers) {
+        	bouncer *p = bouncers[i];
+        	if(p->bouncetype != BNC_BOMB) continue;
+            settexture("packages/hud/bomb_bouncer_blue.png", 3);
+            drawblip(d, x, y, s, p->o, true);
+        }
+
         // bomb radius icon
         if(d->state == CS_ALIVE)
         {
@@ -47,5 +76,7 @@ struct bombclientmode : clientmode
         }
 
 	}
+
+
 };
 extern bombclientmode bombmode;

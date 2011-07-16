@@ -163,7 +163,7 @@ namespace game
 
     enum { BNC_GRENADE, BNC_BOMB, BNC_GIBS, BNC_DEBRIS, BNC_BARRELDEBRIS };
 
-    struct bouncer : physent
+    /* struct bouncer : physent
     {
         int lifetime, bounces;
         float lastyaw, roll;
@@ -179,7 +179,7 @@ namespace game
         {
             type = ENT_BOUNCE;
         }
-    };
+    }; */
 
     vector<bouncer *> bouncers;
 
@@ -306,7 +306,7 @@ namespace game
 
     void clearbouncers() { bouncers.deletecontents(); }
 
-    struct projectile
+/*    struct projectile
     {
         vec dir, o, to, offset;
         float speed;
@@ -316,7 +316,7 @@ namespace game
         int offsetmillis;
         int id;
         entitylight light;
-    };
+    }; */
     vector<projectile> projs;
 
     void clearprojectiles() { projs.shrink(0); }
