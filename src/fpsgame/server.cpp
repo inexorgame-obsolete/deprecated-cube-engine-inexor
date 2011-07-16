@@ -561,9 +561,11 @@ namespace server
     #define SERVMODE 1
     #include "capture.h"
     #include "ctf.h"
+    #include "bomb.h"
 
     captureservmode capturemode;
     ctfservmode ctfmode;
+    bombservmode bombmode;
     servmode *smode = NULL;
 
     bool canspawnitem(int type) {
@@ -1448,6 +1450,7 @@ namespace server
 
         if(m_capture) smode = &capturemode;
         else if(m_ctf) smode = &ctfmode;
+        else if(m_bomb) smode = &bombmode;
         else smode = NULL;
 
         if(m_timed && smapname[0]) sendf(-1, 1, "ri2", N_TIMEUP, gamemillis < gamelimit && !interm ? max((gamelimit - gamemillis)/1000, 1) : 0);
@@ -2357,7 +2360,7 @@ namespace server
                 break;
 
             case N_TRYSPAWN:
-                if(!ci || !cq || cq->state.state!=CS_DEAD || cq->state.lastspawn>=0 || (smode && !smode->canspawn(cq)) || m_lms) break;
+                if(!ci || !cq || cq->state.state!=CS_DEAD || cq->state.lastspawn>=0 || (smode && !smode->canspawn(cq)) || (!smode && m_lms)) break;
                 if(!ci->clientmap[0] && !ci->mapcrc)
                 {
                     ci->mapcrc = -1;

@@ -550,6 +550,7 @@ namespace ai
         d->ai->reset(tryreset);
         d->ai->lastrun = lastmillis;
         if(m_insta) d->ai->weappref = GUN_RIFLE;
+        else if(m_bomb) d->ai->weappref = GUN_BOMB;
         else
         {
         	if(forcegun >= 0 && forcegun < NUMGUNS) d->ai->weappref = forcegun;
@@ -572,7 +573,7 @@ namespace ai
 
     void itemspawned(int ent)
     {
-        if(entities::ents.inrange(ent) && entities::ents[ent]->type >= I_SHELLS && entities::ents[ent]->type <= I_QUAD)
+        if(entities::ents.inrange(ent) && ((entities::ents[ent]->type >= I_SHELLS && entities::ents[ent]->type <= I_QUAD) || (entities::ents[ent]->type >= I_BOMBS && entities::ents[ent]->type <= I_BOMBRADIUS)) )
         {
             loopv(players) if(players[i] && players[i]->ai && players[i]->aitype == AI_BOT && players[i]->canpickup(entities::ents[ent]->type))
             {
@@ -584,7 +585,7 @@ namespace ai
                     case I_GREENARMOUR: case I_YELLOWARMOUR: case I_QUAD: break;
                     default:
                     {
-                        itemstat &is = itemstats[entities::ents[ent]->type-I_SHELLS];
+                        itemstat &is = itemstats[entities::ents[ent]->type-I_SHELLS]; // TODO I_BOMBS, I_BOMBRADIUS
                         wantsitem = isgoodammo(is.info) && d->ammo[is.info] <= (d->ai->weappref == is.info ? is.add : is.add/2);
                         break;
                     }

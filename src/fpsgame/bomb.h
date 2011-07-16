@@ -7,6 +7,7 @@ struct bombclientmode : clientmode
 #endif
 {
 
+#ifndef SERVMODE
 	void drawicon(int icon, float x, float y, float sz)
     {
 		int bicon = icon - HICON_BOMBRADIUS;
@@ -77,7 +78,18 @@ struct bombclientmode : clientmode
         }
 
 	}
+#else
 
+	bool canspawn(clientinfo *ci, bool connecting = false) {
+    	if(!m_lms) return true;
+    	else if(ci->state.deaths==0) return true; // ci->state.aitype!=AI_NONE &&
+    	else return false;
+    }
+
+#endif
 
 };
+
+#ifndef SERVMODE
 extern bombclientmode bombmode;
+#endif

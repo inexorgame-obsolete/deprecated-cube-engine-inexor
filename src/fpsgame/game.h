@@ -127,7 +127,7 @@ static struct gamemodeinfo
     { "efficiency protect", M_NOITEMS | M_EFFICIENCY | M_CTF | M_PROTECT | M_TEAM, "Efficiency Protect The Flag: Touch \fs\f3the enemy flag\fr to score points for \fs\f1your team\fr. Pick up \fs\f1your flag\fr to protect it. \fs\f1Your team\fr loses points if a dropped flag resets. You spawn with all weapons and armour. There are no items." },
     { "efficiency hold", M_NOITEMS | M_EFFICIENCY | M_CTF | M_HOLD | M_TEAM, "Efficiency Hold The Flag: Hold \fs\f7the flag\fr for 20 seconds to score points for \fs\f1your team\fr. You spawn with all weapons and armour. There are no items." },
 	{ "lms", M_LMS, "Last Man Standing: The last player alive wins." },
-	{ "bomberman", M_LMS | M_BOMB, "Bomberman: Bomb all people. Be careful." }
+	{ "bomberman", M_LMS | M_BOMB, "Bomberman: Place bombs to kill enemies. Collect items to increase amount of bombs or damage radius. Survive to win." }
 };
 
 #define STARTGAMEMODE (-3)
