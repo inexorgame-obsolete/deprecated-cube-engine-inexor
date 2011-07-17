@@ -175,6 +175,10 @@ extern void renderentattachment(const extentity &e);
 extern void renderentsphere(const extentity &e, float radius);
 extern void renderentring(const extentity &e, float radius, int axis = 0);
 
+extern extentity *newentity(bool local, const vec &o, int type, int v1, int v2, int v3, int v4, int v5);
+extern void attachentity(extentity &e);
+extern bool modifyoctaent(int flags, int id);
+
 // main
 extern void fatal(const char *s, ...);
 extern void keyrepeat(bool on);
