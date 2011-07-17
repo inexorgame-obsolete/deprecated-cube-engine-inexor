@@ -615,11 +615,16 @@ namespace server
  
     bool pickup(int i, int sender)         // server side item pickup, acknowledge first client that gets it
     {
+    	conoutf("server::pickup i=%i sender=%i", i, sender);
         if((m_timed && gamemillis>=gamelimit) || !sents.inrange(i) || !sents[i].spawned) {
+        	if((m_timed && gamemillis>=gamelimit)) conoutf("(m_timed && gamemillis>=gamelimit)");
+        	if(!sents.inrange(i)) conoutf("!sents.inrange(i)");
+        	if(!sents[i].spawned) conoutf("!sents[i].spawned");
         	return false;
         }
         clientinfo *ci = getinfo(sender);
         if(!ci || (!ci->local && !ci->state.canpickup(sents[i].type))) {
+        	conoutf("false2");
         	return false;
         }
         sents[i].spawned = false;
@@ -2465,6 +2470,7 @@ namespace server
             {
                 int n = getint(p);
                 if(!cq) break;
+                conoutf("N_ITEMPICKUP n=%i cn=%i", n, cq->clientnum);
                 pickupevent *pickup = new pickupevent;
                 pickup->ent = n;
                 cq->addevent(pickup);

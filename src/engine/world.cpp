@@ -142,7 +142,7 @@ void modifyoctaentity(int flags, int id, cube *c, const ivec &cor, int size, con
 
 vector<int> outsideents;
 
-static bool modifyoctaent(int flags, int id)
+bool modifyoctaent(int flags, int id)
 {
     vector<extentity *> &ents = entities::getents();
     if(!ents.inrange(id)) return false;
@@ -174,7 +174,7 @@ static bool modifyoctaent(int flags, int id)
     return true;
 }
 
-static inline void addentity(int id)    { modifyoctaent(MODOE_ADD|MODOE_UPDATEBB, id); }
+inline void addentity(int id)    { modifyoctaent(MODOE_ADD|MODOE_UPDATEBB, id); }
 static inline void removeentity(int id) { modifyoctaent(MODOE_UPDATEBB, id); }
 
 void freeoctaentities(cube &c)

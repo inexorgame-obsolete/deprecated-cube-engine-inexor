@@ -240,6 +240,7 @@ enum
     N_ADDBOT, N_DELBOT, N_INITAI, N_FROMAI, N_BOTLIMIT, N_BOTBALANCE,
     N_MAPCRC, N_CHECKMAPS,
     N_SWITCHNAME, N_SWITCHMODEL, N_SWITCHTEAM,
+    N_ITEMPUSH,
     NUMSV
 };
 
@@ -267,6 +268,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
     N_ADDBOT, 2, N_DELBOT, 1, N_INITAI, 0, N_FROMAI, 2, N_BOTLIMIT, 2, N_BOTBALANCE, 2,
     N_MAPCRC, 0, N_CHECKMAPS, 1,
     N_SWITCHNAME, 0, N_SWITCHMODEL, 2, N_SWITCHTEAM, 0,
+    N_ITEMPUSH, 6,
     -1
 };
 
@@ -356,7 +358,7 @@ static const struct guninfo { short sound, attackdelay, damage, projspeed, part,
     { S_RIFLE,    1500, 100, 0,   0, 30, 2048, "rifle",           "rifle" },
     { S_FLAUNCH,   500,  75, 80,  0, 10, 1024, "grenadelauncher", "gl" },
     { S_PISTOL,    500,  25, 0,   0,  7, 1024, "pistol",          "pistol" },
-	{ S_FEXPLODE,  375, 300, 8,   0,  2,    0, "bomb",            "gl" }, // TODO: other sound, other hudmodel // TODO: set damage to 1
+	{ S_FEXPLODE,  375,   1, 8,   0,  2,    0, "bomb",            "gl" }, // TODO: other sound, other hudmodel // TODO: set damage to 1
     { S_FLAUNCH,   200,  20, 50,  PART_FIREBALL1,  1, 1024, "fireball",  NULL },
     { S_ICEBALL,   200,  40, 30,  PART_FIREBALL2,  1, 1024, "iceball",   NULL },
     { S_SLIMEBALL, 200,  30, 160, PART_FIREBALL3,  1, 1024, "slimeball", NULL },
@@ -790,6 +792,7 @@ namespace game
     extern void rendermovables();
     extern void suicidemovable(movable *m);
     extern void hitmovable(int damage, movable *m, fpsent *at, const vec &vel, int gun);
+    extern bool isbarrelalive(movable *m);
 
     // weapon
     struct projectile

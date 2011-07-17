@@ -60,6 +60,7 @@ namespace game
             state = CS_DEAD;
             exploding = 0;
             game::explode(true, (fpsent *)at, o, this, guns[GUN_BARREL].damage, GUN_BARREL);
+            // TODO: BOMB
         }
  
         void damaged(int damage, fpsent *at, int gun = -1)
@@ -183,6 +184,11 @@ namespace game
     {
         m->hitpush(damage, vel, at, gun);
         m->damaged(damage, at, gun);
+    }
+
+    bool isbarrelalive(movable *m)
+    {
+        return (m->state==CS_ALIVE && m->etype==BARREL);
     }
 }
 

@@ -367,7 +367,7 @@ namespace ai
 
     bool hasgoodammo(fpsent *d)
     {
-        static const int goodguns[] = { GUN_CG, GUN_RL, GUN_SG, GUN_RIFLE };
+        static const int goodguns[] = { GUN_CG, GUN_RL, GUN_SG, GUN_RIFLE }; // TODO: BOMB
         loopi(sizeof(goodguns)/sizeof(goodguns[0])) if(d->hasammo(goodguns[0])) return true;
         if(d->ammo[GUN_GL] > 5) return true;
         return false;
@@ -407,7 +407,7 @@ namespace ai
             }
             default:
             {
-                if(e.type >= I_SHELLS && e.type <= I_CARTRIDGES && !d->hasmaxammo(e.type))
+                if(e.type >= I_SHELLS && e.type <= I_CARTRIDGES && !d->hasmaxammo(e.type)) // TODO: BOMB
                 {
                     int gun = e.type - I_SHELLS + GUN_SG;
                     // go get a weapon upgrade
@@ -476,7 +476,7 @@ namespace ai
             {
                 static vector<int> nearby;
                 nearby.setsize(0);
-                findents(I_SHELLS, I_QUAD, false, d->feetpos(), vec(32, 32, 24), nearby);
+                findents(I_SHELLS, I_QUAD, false, d->feetpos(), vec(32, 32, 24), nearby); // TODO: BOMB
                 loopv(nearby)
                 {
                     int id = nearby[i];

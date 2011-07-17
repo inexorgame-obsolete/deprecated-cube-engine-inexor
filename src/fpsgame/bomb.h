@@ -21,7 +21,7 @@ struct bombclientmode : clientmode
         glEnd();
     }
 
-    void drawblip(fpsent *d, float x, float y, float s, const vec &pos, bool flagblip, int size_factor)
+    void drawblip(fpsent *d, float x, float y, float s, const vec &pos, int size_factor)
     {
         float scale = calcradarscale();
         vec dir = d->o;
@@ -50,12 +50,22 @@ struct bombclientmode : clientmode
         settexture("packages/hud/radar.png", 3);
         drawradar(x - roffset, y - roffset, rsize);
 
+        // show barrels on minimap
+        loopv(movables) {
+        	dynent *m = (dynent *) movables[i];
+            // conoutf("m->state=%i (%i) m->type=%i (%i)", m->state, CS_ALIVE, m->type, BARREL);
+            // if(m->state!=CS_ALIVE || m->type!=BARREL) continue;
+        	if(!isbarrelalive((movable *) m)) continue;
+            settexture("packages/hud/block_yellow_t.png", 3);
+            drawblip(d, x, y, s, m->o, 1);
+        }
+
         // show other players on minimap
         loopv(players) {
             fpsent *p = players[i];
             if(p == player1 || p->state!=CS_ALIVE) continue;
             settexture("packages/hud/blip_red.png", 3);
-            drawblip(d, x, y, s, p->o, true, 2);
+            drawblip(d, x, y, s, p->o, 2);
         }
 
         // show fired bombs on minimap
@@ -63,20 +73,26 @@ struct bombclientmode : clientmode
         	bouncer *p = bouncers[i];
         	if(p->bouncetype != BNC_BOMB) continue;
             settexture("packages/hud/blip_blue.png", 3);
-            drawblip(d, x, y, s, p->o, false, p->owner->bombradius);
+            drawblip(d, x, y, s, p->o, p->owner->bombradius);
         }
 
-        // bomb radius icon
-        if(d->state == CS_ALIVE)
-        {
+        if(d->state == CS_ALIVE && !game::intermission) {
+            // bomb radius icon
             int x = HICON_X + 3*HICON_STEP + (d->quadmillis ? HICON_SIZE + HICON_SPACE : 0);
             drawicon(HICON_BOMBRADIUS, x, HICON_Y, HICON_SIZE);
             glPushMatrix();
             glScalef(2, 2, 1);
             draw_textf("%d", (x + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, d->bombradius);
             glPopMatrix();
-        }
-        else {
+        } else if(d->state == CS_ALIVE) {
+            glPushMatrix();
+            glScalef(2, 2, 1);
+            bool flash = d==player1 && lastspawnattempt>=d->lastpain && lastmillis < lastspawnattempt+100;
+            draw_textf("%s%s", (x+s/2)/2-56, (y+s/2)/2-48, flash ? "\f3" : "", "You");
+            draw_textf("%s%s", (x+s/2)/2-48, (y+s/2)/2-8, flash ? "\f3" : "", "win");
+            glPopMatrix();
+        } else {
+        	// Game over message
             glPushMatrix();
             glScalef(2, 2, 1);
             bool flash = d==player1 && lastspawnattempt>=d->lastpain && lastmillis < lastspawnattempt+100;
@@ -104,7 +120,8 @@ struct bombclientmode : clientmode
                 case 1: modelname = mdl.blueteam; break;
                 case 2: modelname = mdl.redteam; break;
             } */
-        	rendermodel(NULL, modelname, ANIM_ALL|ANIM_MAPMODEL|ANIM_LOOP, p->feetpos(), yaw, pitch, flags, p, NULL, /* p->lastaction+ */ lastmillis/10.0f, 0, 0.3f);
+        	rendermodel(NULL, modelname, ANIM_MAPMODEL|ANIM_LOOP, p->feetpos(), yaw, pitch, flags, p, NULL, /* p->lastaction+ */ lastmillis/10.0f, 0, 0.3f);
+        	// ANIM_ALL|
 /*        	rendermodel(NULL, modelname, ANIM_MAPMODEL|ANIM_LOOP,
                     p->pos, angle, 0,
                     MDL_GHOST | MDL_CULL_VFC | (f.droptime || f.owner ? MDL_LIGHT : 0),
@@ -127,10 +144,33 @@ struct bombclientmode : clientmode
     	else return false;
     }
 
-	void died(clientinfo *target, clientinfo *actor) {
-		conoutf("%s died bombs:%i bombradius:%i", target->name, target->state.ammo[GUN_BOMB], target->state.bombradius);
+    void pushentity(int type, vec o) {
+    	entity &e = ments.add();
+    	e.o = o;
+    	e.type = type;
+        server_entity se = { NOTUSED, 0, false };
+        while(sents.length()<=ments.length()+1) sents.add(se);
+        int id = sents.length()-1;
+        sents[id].type = ments[id].type;
+        sents[id].spawned = true;
+        conoutf("ments.length=%i sents.length=%i", ments.length(), sents.length());
+        ivec io(o.mul(DMF));
+        conoutf("SEND N_ITEMPUSH: id=%i type=%i pos x=%i y=%i z=%i", id, type, io.x-120+rnd(240), io.y-120+rnd(240), io.z);
+        sendf(-1, 1, "ri6", N_ITEMPUSH, id, type, io.x-120+rnd(240), io.y-120+rnd(240), io.z);
+    }
 
-	}
+	void died(clientinfo *target, clientinfo *actor) {
+        conoutf("%s died bombs:%i bombradius:%i", target->name, target->state.ammo[GUN_BOMB], target->state.bombradius);
+        for(int i=0; i<target->state.ammo[GUN_BOMB]/2; i++) pushentity(I_BOMBS, target->state.o);
+        for(int i=0; i<target->state.bombradius/2; i++) pushentity(I_BOMBRADIUS, target->state.o);
+
+        /* for(int i=0; i<cbombradius; i++) {
+        	server_entity se = { I_BOMBRADIUS, 0, false }; // additional item which spawns only once!
+            sents.add(se);
+            sendf(-1, 1, "ri2", N_ITEMSPAWN, sents.length());
+            conoutf("bombradius item %i spawned", sents.length());
+        } */
+    }
 
 #endif
 
