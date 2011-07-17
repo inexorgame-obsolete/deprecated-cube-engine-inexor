@@ -457,9 +457,9 @@ namespace game
 
     void explode(bool local, fpsent *owner, const vec &v, dynent *safe, int damage, int gun)
     {
-        particle_splash(PART_SPARK, 200, 300, v, 0xB49B4B, 0.24f);
+        particle_splash(PART_SPARK, 200, 300, v, 0xB49B4B, 0.24f * (gun == GUN_BOMB ? owner->bombradius : 1));
         playsound(S_RLHIT, &v);
-        particle_fireball(v, RL_DAMRAD, gun!=GUN_GL ? PART_EXPLOSION : PART_EXPLOSION_BLUE, -1, gun!=GUN_GL ? 0xFF8080 : 0x80FFFF, 4.0f);
+        particle_fireball(v, RL_DAMRAD * (gun == GUN_BOMB ? owner->bombradius : 1), gun!=GUN_GL ? PART_EXPLOSION : PART_EXPLOSION_BLUE, -1, gun!=GUN_GL ? 0xFF8080 : 0x80FFFF, 4.0f * (gun == GUN_BOMB ? owner->bombradius : 1));
         if(gun==GUN_RL) adddynlight(v, 1.15f*RL_DAMRAD, vec(2, 1.5f, 1), 900, 100, 0, RL_DAMRAD/2, vec(1, 0.75f, 0.5f));
         else if(gun==GUN_GL) adddynlight(v, 1.15f*RL_DAMRAD, vec(0.5f, 1.5f, 2), 900, 100, 0, 8, vec(0.25f, 1, 1));
         // TODO: BOMB
