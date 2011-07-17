@@ -87,7 +87,7 @@ namespace game
             cleardynentcache();
             movables.deletecontents();
         }
-        if(!m_dmsp && !m_classicsp) return;
+        if(!m_dmsp && !m_classicsp && !m_bomb) return;
         loopv(entities::ents) 
         {
             const entity &e = *entities::ents[i];

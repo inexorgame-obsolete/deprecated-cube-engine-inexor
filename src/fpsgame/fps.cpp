@@ -70,9 +70,9 @@ namespace game
 
     void resetgamestate()
     {
+        if(m_bomb || m_classicsp) clearmovables();
         if(m_classicsp)
         {
-            clearmovables();
             clearmonsters();                 // all monsters back at their spawns for editing
             entities::resettriggers();
         }
