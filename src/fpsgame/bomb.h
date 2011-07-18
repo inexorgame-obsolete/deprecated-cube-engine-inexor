@@ -152,8 +152,8 @@ struct bombclientmode : clientmode
         sents[id].spawned = true;
         conoutf("ments.length=%i sents.length=%i", ments.length(), sents.length());
         ivec io(o.mul(DMF));
-        conoutf("SEND N_ITEMPUSH: id=%i type=%i pos x=%i y=%i z=%i", id, type, io.x-120+rnd(240), io.y-120+rnd(240), io.z);
-        sendf(-1, 1, "ri6", N_ITEMPUSH, id, type, io.x-120+rnd(240), io.y-120+rnd(240), io.z);
+        conoutf("SEND N_ITEMPUSH: id=%i type=%i pos x=%i y=%i z=%i", id, type, io.x-120+rnd(240), io.y-120+rnd(240), io.z + rnd(2)*120);
+        sendf(-1, 1, "ri6", N_ITEMPUSH, id, type, io.x-120+rnd(240), io.y-120+rnd(240), io.z + rnd(2)*180);
     }
 
 	void died(clientinfo *target, clientinfo *actor) {
