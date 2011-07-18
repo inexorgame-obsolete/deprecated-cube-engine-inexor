@@ -1358,14 +1358,11 @@ namespace game
                 int id = getint(p), type = getint(p);
                 vec itemloc;
                 loopk(3) itemloc[k] = getint(p)/DMF;
-            	//id = entities::getents().length()+1;
-                //id--;
             	conoutf("GET  N_ITEMPUSH: id=%i type=%i pos x=%i y=%i z=%i", id, type, itemloc.x, itemloc.y, itemloc.z);
             	if(entities::getents().length()<=id) {
                     while(entities::getents().length()<id) entities::getents().add(entities::newentity())->type = ET_EMPTY;
                     extentity *e = newentity(false, itemloc, type, 0, 0, 0, 0, 0);
                     entities::getents().add(e);
-                    // addentity(id);
                     modifyoctaent(1<<0|1<<1, id); // MODOE_ADD | MODOE_UPDATEBB
                     attachentity(*e);
                     entities::setspawn(id, true);
@@ -1376,12 +1373,6 @@ namespace game
             	} else {
             	    conoutf("entity already exists: %i/%i", id, entities::getents().length());
             	}
-//                entities::setspawn(i, true);
-//                ai::itemspawned(i);
-/*
-entities::ents[i]->type = type;
-entities::ents[i]->o = itemloc;
- */
                 break;
             }
 

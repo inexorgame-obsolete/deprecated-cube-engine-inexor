@@ -110,23 +110,20 @@ struct bombclientmode : clientmode
         	if(p == player1 || p->state!=CS_ALIVE) continue;
             float yaw, pitch;
             vectoyawpitch(vec(p->o).sub(camera1->o), yaw, pitch);
-            float angle = yaw + 180;
-            int flags = MDL_GHOST | MDL_CULL_VFC | MDL_CULL_OCCLUDED;
-
-        	playermodelinfo model = getplayermodelinfo(p);
-            const char *modelname = model.redteam;
+        	// playermodelinfo model = getplayermodelinfo(p);
+            const char *modelname = "quadrings"; // "flags/neutral"; // model.redteam;
             /* switch(testteam ? testteam-1 : team) // TODO: teammode
             {
                 case 1: modelname = mdl.blueteam; break;
                 case 2: modelname = mdl.redteam; break;
             } */
-        	rendermodel(NULL, modelname, ANIM_MAPMODEL|ANIM_LOOP, p->feetpos(), yaw, pitch, flags, p, NULL, /* p->lastaction+ */ lastmillis/10.0f, 0, 0.3f);
-        	// ANIM_ALL|
-/*        	rendermodel(NULL, modelname, ANIM_MAPMODEL|ANIM_LOOP,
-                    p->pos, angle, 0,
-                    MDL_GHOST | MDL_CULL_VFC | (f.droptime || f.owner ? MDL_LIGHT : 0),
-                    NULL, NULL, 0, 0, 0.5f + 0.5f*(2*fabs(fmod(lastmillis/1000.0f, 1.0f) - 0.5f)));
-*/
+            float angle = 360*lastmillis/1000.0f;
+            float alpha = 0.3f + 0.5f*(2*fabs(fmod(lastmillis/1000.0f, 1.0f) - 0.5f));
+            entitylight light;
+            rendermodel(/* NULL */ &light, modelname, ANIM_MAPMODEL|ANIM_LOOP, // ANIM_ALL|
+                    p->feetpos(), angle, pitch,
+                    MDL_GHOST | MDL_CULL_VFC | MDL_LIGHT | MDL_CULL_OCCLUDED,
+                    NULL /* p */, NULL, /* p->lastaction+ */ /* lastmillis/10.0f */ 0, 0, alpha);
         }
     }
 
@@ -163,13 +160,6 @@ struct bombclientmode : clientmode
         conoutf("%s died bombs:%i bombradius:%i", target->name, target->state.ammo[GUN_BOMB], target->state.bombradius);
         for(int i=0; i<target->state.ammo[GUN_BOMB]/2; i++) pushentity(I_BOMBS, target->state.o);
         for(int i=0; i<target->state.bombradius/2; i++) pushentity(I_BOMBRADIUS, target->state.o);
-
-        /* for(int i=0; i<cbombradius; i++) {
-        	server_entity se = { I_BOMBRADIUS, 0, false }; // additional item which spawns only once!
-            sents.add(se);
-            sendf(-1, 1, "ri2", N_ITEMSPAWN, sents.length());
-            conoutf("bombradius item %i spawned", sents.length());
-        } */
     }
 
 #endif

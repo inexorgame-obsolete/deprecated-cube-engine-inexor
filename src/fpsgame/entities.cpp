@@ -373,7 +373,7 @@ namespace entities
         }
     }
 
-    void setspawn(int i, bool on) { if(ents.inrange(i)) ents[i]->spawned = on; }
+    void setspawn(int i, bool on) { if(ents.inrange(i)) ents[i]->spawned = on; else conoutf("COULD NOT SETSPAWN"); }
 
     extentity *newentity() { return new fpsentity(); }
     void deleteentity(extentity *e) { delete (fpsentity *)e; }
