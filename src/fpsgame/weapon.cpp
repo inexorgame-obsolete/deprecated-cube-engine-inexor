@@ -109,8 +109,6 @@ namespace game
         gunselect(s, d);
     }
 
-	ICOMMAND(givemeammo, "", (), player1->ammo[GUN_BOMB] = 100);
-	
     #define TRYWEAPON(w) do { \
         if(w[0]) \
         { \
