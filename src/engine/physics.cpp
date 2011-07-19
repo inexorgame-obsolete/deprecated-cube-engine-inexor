@@ -1119,7 +1119,7 @@ bool collide(physent *d, const vec &dir, float cutoff, bool playercol)
     ivec bo(int(d->o.x-d->radius), int(d->o.y-d->radius), int(d->o.z-d->eyeheight)),
          bs(int(d->radius*2), int(d->radius*2), int(d->eyeheight+d->aboveeye));
     bs.add(2);  // guard space for rounding errors
-    if(!octacollide(d, dir, cutoff, bo, bs)) return false;//, worldroot, ivec(0, 0, 0), worldsize>>1)) return false; // collide with world
+    if(!octacollide(d, dir, cutoff, bo, bs)) return false; //, worldroot, ivec(0, 0, 0), worldsize>>1)) return false; // collide with world
     return !playercol || plcollide(d, dir);
 }
 
@@ -1410,7 +1410,13 @@ bool move(physent *d, vec &dir)
     bool collided = false, slidecollide = false;
     vec obstacle;
     d->o.add(dir);
-    if(!collide(d, dir) || ((d->type==ENT_AI || d->type==ENT_INANIMATE) && !collide(d, vec(0, 0, 0), 0, false)))
+    if(!game::weaponcollide(d, dir)) { // weapon collided
+    	d->o = old;
+    	d->zmargin = 0;
+    	collided = true;
+    	// return false;
+    }
+    else if(!collide(d, dir) || ((d->type==ENT_AI || d->type==ENT_INANIMATE) && !collide(d, vec(0, 0, 0), 0, false)) /* || !game::weaponcollide(d, dir) */ )
     {
         obstacle = wall;
         /* check to see if there is an obstacle that would prevent this one from being used as a floor (or ceiling bump) */

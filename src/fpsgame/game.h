@@ -795,6 +795,8 @@ namespace game
     extern bool isbarrelalive(movable *m);
 
     // weapon
+    enum { BNC_GRENADE, BNC_BOMB, BNC_GIBS, BNC_DEBRIS, BNC_BARRELDEBRIS };
+
     struct projectile
     {
         vec dir, o, to, offset;

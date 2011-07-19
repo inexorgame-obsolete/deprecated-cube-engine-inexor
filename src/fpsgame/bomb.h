@@ -2,7 +2,7 @@
 
 struct bombservmode : servmode
 #else
-static int BNC_BOMB = 1;
+//static int BNC_BOMB = 1;
 struct bombclientmode : clientmode
 #endif
 {

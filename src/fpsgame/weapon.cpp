@@ -3,9 +3,6 @@
 
 namespace game
 {
-	ICOMMAND(givemeammo, "", (), player1->ammo[GUN_BOMB] = 100);
-
-	
     static const int MONSTERDAMAGEFACTOR = 4;
     static const int OFFSETMILLIS = 500;
     vec sg[SGRAYS];
@@ -161,7 +158,7 @@ namespace game
         loopi(SGRAYS) offsetray(from, to, SGSPREAD, guns[GUN_SG].range, sg[i]);
     }
 
-    enum { BNC_GRENADE, BNC_BOMB, BNC_GIBS, BNC_DEBRIS, BNC_BARRELDEBRIS };
+//    enum { BNC_GRENADE, BNC_BOMB, BNC_GIBS, BNC_DEBRIS, BNC_BARRELDEBRIS };
 
     /* struct bouncer : physent
     {
@@ -189,7 +186,18 @@ namespace game
     {
         bouncer &bnc = *bouncers.add(new bouncer);
         bnc.o = from;
-        bnc.radius = bnc.xradius = bnc.yradius = type==BNC_DEBRIS ? 0.5f : 1.5f;
+        switch(type)
+        {
+            case BNC_DEBRIS:
+            	bnc.radius = bnc.xradius = bnc.yradius = 0.5f;
+                break;
+            case BNC_BOMB:
+                bnc.radius = bnc.xradius = bnc.yradius = 3.5f; // TODO: adjust radius as soon as projectile model works
+                break;
+            default:
+                bnc.radius = bnc.xradius = bnc.yradius = 1.5f;
+        }
+        // bnc.radius = bnc.xradius = bnc.yradius = type==BNC_DEBRIS ? 0.5f : 1.5f;
         bnc.eyeheight = bnc.radius;
         bnc.aboveeye = bnc.radius;
         bnc.lifetime = lifetime;
@@ -283,7 +291,6 @@ namespace game
                 {
                     hits.setsize(0);
                     explode(bnc.local, bnc.owner, bnc.o, NULL, guns[GUN_BOMB].damage, GUN_BOMB);
-                    // TODO: DAMRAD <-> bnc.owner
                     adddecal(DECAL_SCORCH, bnc.o, vec(0, 0, 1), bnc.owner->bombradius*RL_DAMRAD/2);
                     if(bnc.local)
                         addmsg(N_EXPLODE, "rci3iv", bnc.owner, lastmillis-maptime, GUN_BOMB, bnc.id-maptime,
@@ -897,7 +904,6 @@ namespace game
                    hits.length(), hits.length()*sizeof(hitmsg)/sizeof(int), hits.getbuf());
         }
 
-        // TODO: bomb wait delay, mindestens 20 ms, aber mindestens bis eine freie bombe verfuegbar ist
 		d->gunwait = guns[d->gunselect].attackdelay;
 		if(d->gunselect == GUN_PISTOL && d->ai) d->gunwait += int(d->gunwait*(((101-d->skill)+rnd(111-d->skill))/100.f));
         d->totalshots += guns[d->gunselect].damage*(d->quadmillis ? 4 : 1)*(d->gunselect==GUN_SG ? SGRAYS : 1);
@@ -1074,8 +1080,7 @@ namespace game
 	    {
 	    	bouncer *p = bouncers[i];
 	    	if(p->bouncetype != BNC_BOMB) continue;
-	    	conoutf("check collide with bomb bouncer");
-	    	if(!ellipsecollide(d, dir, p->o, p->o, 0, BOMB_COLLBULGE, BOMB_COLLBULGE, BOMB_COLLHEIGHT, BOMB_COLLGROUND)) return false;
+	    	if(!ellipsecollide(d, dir, p->o, vec(0, 0, 0), p->yaw, p->xradius*5.0f, p->yradius*5.0f, p->aboveeye, p->eyeheight)) return false;
 	    }
 		return true;
 	}
