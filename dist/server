@@ -1,0 +1,1 @@
+bin_unix/native_server -d -l"base/vendetta" -n"NoobLounge.net 9 Bombodrome" -j10666 -m"nooblounge.net" -c4 -g3 -o2 -p"bombodrome"
