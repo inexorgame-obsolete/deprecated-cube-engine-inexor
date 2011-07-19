@@ -216,19 +216,22 @@ namespace game
         bnc.vel = dir;
         bnc.vel.mul(speed);
 
-        avoidcollision(&bnc, dir, owner, 0.1f);
-
-        if(type==BNC_GRENADE)
+        switch(type)
         {
-            bnc.offset = hudgunorigin(GUN_GL, from, to, owner);
-            if(owner==hudplayer() && !isthirdperson()) bnc.offset.sub(owner->o).rescale(16).add(owner->o);
+            case BNC_GRENADE:
+                avoidcollision(&bnc, dir, owner, 0.1f);
+            	bnc.offset = hudgunorigin(GUN_GL, from, to, owner);
+            	if(owner==hudplayer() && !isthirdperson()) bnc.offset.sub(owner->o).rescale(16).add(owner->o);
+            	break;
+            case BNC_BOMB:
+                avoidcollision(&bnc, dir, owner, 1.0f); // we need much more radius for bombs
+                bnc.offset = hudgunorigin(GUN_BOMB, from, to, owner);
+                if(owner==hudplayer() && !isthirdperson()) bnc.offset.sub(owner->o).rescale(16).add(owner->o);
+                break;
+            default:
+                avoidcollision(&bnc, dir, owner, 0.1f);
+            	bnc.offset = from;
         }
-        else if(type==BNC_BOMB)
-        {
-            bnc.offset = hudgunorigin(GUN_BOMB, from, to, owner);
-            if(owner==hudplayer() && !isthirdperson()) bnc.offset.sub(owner->o).rescale(16).add(owner->o);
-        }
-        else bnc.offset = from;
         bnc.offset.sub(bnc.o);
         bnc.offsetmillis = OFFSETMILLIS;
 
@@ -1078,6 +1081,7 @@ namespace game
 	    {
 	    	bouncer *p = bouncers[i];
 	    	if(p->bouncetype != BNC_BOMB) continue;
+	    	// conoutf("BNC_BOMB lifetime=%i curtime=%i", p->lifetime, curtime);
 	    	if(!ellipsecollide(d, dir, p->o, vec(0, 0, 0), p->yaw, p->xradius*5.0f, p->yradius*5.0f, p->aboveeye, p->eyeheight)) return false;
 	    }
 		return true;
