@@ -1119,7 +1119,7 @@ bool collide(physent *d, const vec &dir, float cutoff, bool playercol)
     ivec bo(int(d->o.x-d->radius), int(d->o.y-d->radius), int(d->o.z-d->eyeheight)),
          bs(int(d->radius*2), int(d->radius*2), int(d->eyeheight+d->aboveeye));
     bs.add(2);  // guard space for rounding errors
-    if(!octacollide(d, dir, cutoff, bo, bs)) return false; //, worldroot, ivec(0, 0, 0), worldsize>>1)) return false; // collide with world
+    if(!octacollide(d, dir, cutoff, bo, bs)) return false;//, worldroot, ivec(0, 0, 0), worldsize>>1)) return false; // collide with world
     return !playercol || plcollide(d, dir);
 }
 
@@ -1414,9 +1414,16 @@ bool move(physent *d, vec &dir)
     	d->o = old;
     	d->zmargin = 0;
     	collided = true;
-    	// return false;
+    	obstacle = wall;
+        /* check to see if there is an obstacle that would prevent this one from being used as a floor (or ceiling bump) */
+        if(d->type==ENT_PLAYER && ((wall.z>=SLOPEZ && dir.z<0) || (wall.z<=-SLOPEZ && dir.z>0)) && (dir.x || dir.y) && !collide(d, vec(dir.x, dir.y, 0)))
+        {
+            if(wall.dot(dir) >= 0) slidecollide = true;
+            obstacle = wall;
+        }
+
     }
-    else if(!collide(d, dir) || ((d->type==ENT_AI || d->type==ENT_INANIMATE) && !collide(d, vec(0, 0, 0), 0, false)) /* || !game::weaponcollide(d, dir) */ )
+    else if(!collide(d, dir) || ((d->type==ENT_AI || d->type==ENT_INANIMATE) && !collide(d, vec(0, 0, 0), 0, false)))
     {
         obstacle = wall;
         /* check to see if there is an obstacle that would prevent this one from being used as a floor (or ceiling bump) */
