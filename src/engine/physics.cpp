@@ -1421,7 +1421,6 @@ bool move(physent *d, vec &dir)
             if(wall.dot(dir) >= 0) slidecollide = true;
             obstacle = wall;
         }
-
     }
     else if(!collide(d, dir) || ((d->type==ENT_AI || d->type==ENT_INANIMATE) && !collide(d, vec(0, 0, 0), 0, false)))
     {

@@ -9,9 +9,9 @@ struct bombclientmode : clientmode
 {
 
 #ifndef SERVMODE
-	void drawicon(int icon, float x, float y, float sz)
+    void drawicon(int icon, float x, float y, float sz)
     {
-		int bicon = icon - HICON_BOMBRADIUS;
+        int bicon = icon - HICON_BOMBRADIUS;
         settexture("packages/hud/bomb_items.png");
         glBegin(GL_TRIANGLE_STRIP);
         float tsz = 0.25f, tx = tsz*(bicon%4), ty = tsz*(bicon/4);
@@ -36,9 +36,9 @@ struct bombclientmode : clientmode
         drawradar(x + s*0.5f*(1.0f + dir.x + xoffset), y + s*0.5f*(1.0f + dir.y + yoffset), size*s);
     }
 
-	void drawhud(fpsent *d, int w, int h)
-	{
-		// minimap
+    void drawhud(fpsent *d, int w, int h)
+    {
+        // minimap
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         int s = 1800/4, x = 1800*w/h - s - s/10, y = s/10;
         glColor4f(1, 1, 1, minimapalpha);
@@ -52,17 +52,19 @@ struct bombclientmode : clientmode
         drawradar(x - roffset, y - roffset, rsize);
 
         // show barrels on minimap
-        loopv(movables) {
-        	dynent *m = (dynent *) movables[i];
+        loopv(movables)
+        {
+            dynent *m = (dynent *) movables[i];
             // conoutf("m->state=%i (%i) m->type=%i (%i)", m->state, CS_ALIVE, m->type, BARREL);
             // if(m->state!=CS_ALIVE || m->type!=BARREL) continue;
-        	if(!isbarrelalive((movable *) m)) continue;
+            if(!isbarrelalive((movable *) m)) continue;
             settexture("packages/hud/block_yellow_t.png", 3);
             drawblip(d, x, y, s, m->o, 1);
         }
 
         // show other players on minimap
-        loopv(players) {
+        loopv(players)
+        {
             fpsent *p = players[i];
             if(p == player1 || p->state!=CS_ALIVE) continue;
             settexture("packages/hud/blip_red.png", 3);
@@ -70,14 +72,16 @@ struct bombclientmode : clientmode
         }
 
         // show fired bombs on minimap
-        loopv(bouncers) {
-        	bouncer *p = bouncers[i];
-        	if(p->bouncetype != BNC_BOMB) continue;
+        loopv(bouncers)
+        {
+            bouncer *p = bouncers[i];
+            if(p->bouncetype != BNC_BOMB) continue;
             settexture("packages/hud/blip_blue.png", 3);
             drawblip(d, x, y, s, p->o, p->owner->bombradius);
         }
 
-        if(d->state == CS_ALIVE && !game::intermission) {
+        if(d->state == CS_ALIVE && !game::intermission)
+        {
             // bomb radius icon
             int x = HICON_X + 3*HICON_STEP + (d->quadmillis ? HICON_SIZE + HICON_SPACE : 0);
             drawicon(HICON_BOMBRADIUS, x, HICON_Y, HICON_SIZE);
@@ -85,35 +89,36 @@ struct bombclientmode : clientmode
             glScalef(2, 2, 1);
             draw_textf("%d", (x + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, d->bombradius);
             glPopMatrix();
-        } else if(d->state == CS_ALIVE) {
-            glPushMatrix();
-            glScalef(2, 2, 1);
-            bool flash = d==player1 && lastspawnattempt>=d->lastpain && lastmillis < lastspawnattempt+100;
-            draw_textf("%s%s", (x+s/2)/2-56, (y+s/2)/2-48, flash ? "\f3" : "", "You");
-            draw_textf("%s%s", (x+s/2)/2-48, (y+s/2)/2-8, flash ? "\f3" : "", "win");
-            glPopMatrix();
-        } else if(d->state != CS_ALIVE && !game::intermission) {
+        }
+
+        if(player1->state == CS_ALIVE  && game::intermission)
+        {
+            int pw, ph, tw, th;
+            text_bounds("  ", pw, ph);
+            text_bounds("YOU WIN", tw, th);
+            th = max(th, ph);
+            draw_text("YOU WIN", w*1800/h - tw - pw, 1650 - th);
+        }
+        else if(player1->state != CS_ALIVE && !game::intermission)
+        {
             int pw, ph, tw, th, fw, fh;
             text_bounds("  ", pw, ph);
             text_bounds("YOU ARE DEAD", tw, th);
+            text_bounds("PLEASE WAIT UNTIL ROUND ENDS", fw, fh);
             th = max(th, ph);
-            fpsent *f = followingplayer();
-            text_bounds(f ? colorname(f) : " ", fw, fh);
-            fh = max(fh, ph);
-            draw_text("YOU ARE DEAD", w*1800/h - tw - pw, 1650 - th - fh);
-            if(f) draw_text(colorname(f), w*1800/h - fw - pw, 1650 - fh);
+            draw_text("YOU ARE DEAD", w*1800/h - tw - pw, 1420 - th);
+            draw_text("PLEASE WAIT UNTIL ROUND ENDS", w*1800/h - fw - pw, 1460 - fh);
         }
     }
 
     void renderhiddenplayers() {
         loopv(players)
         {
-        	fpsent *p = players[i];
-        	if(p == player1 || p->state!=CS_ALIVE) continue;
+            fpsent *p = players[i];
+            if(p == player1 || p->state!=CS_ALIVE) continue;
             float yaw, pitch;
             vectoyawpitch(vec(p->o).sub(camera1->o), yaw, pitch);
-        	// playermodelinfo model = getplayermodelinfo(p);
-            const char *modelname = "quadrings"; // "flags/neutral"; // model.redteam;
+            const char *modelname = "quadrings";
             /* switch(testteam ? testteam-1 : team) // TODO: teammode
             {
                 case 1: modelname = mdl.blueteam; break;
@@ -122,10 +127,10 @@ struct bombclientmode : clientmode
             float angle = 360*lastmillis/1000.0f;
             float alpha = 0.3f + 0.5f*(2*fabs(fmod(lastmillis/1000.0f, 1.0f) - 0.5f));
             entitylight light;
-            rendermodel(/* NULL */ &light, modelname, ANIM_MAPMODEL|ANIM_LOOP, // ANIM_ALL|
+            rendermodel(&light, modelname, ANIM_MAPMODEL|ANIM_LOOP,
                     p->feetpos(), angle, pitch,
                     MDL_GHOST | MDL_CULL_VFC | MDL_LIGHT | MDL_CULL_OCCLUDED,
-                    NULL /* p */, NULL, /* p->lastaction+ */ /* lastmillis/10.0f */ 0, 0, alpha);
+                    NULL, NULL, 0, 0, alpha);
         }
     }
 
@@ -134,6 +139,17 @@ struct bombclientmode : clientmode
     	renderhiddenplayers();
     }
 
+    void killed(fpsent *d, fpsent *actor)
+    {
+        if(d!=player1) return;
+        conoutf("killed!");
+        following = actor->clientnum;
+        player1->state = CS_SPECTATOR;
+        player1->yaw = actor->yaw;
+        player1->pitch = actor->pitch;
+        player1->o = actor->o;
+        player1->resetinterp();
+    }
 
 #else
 
@@ -158,7 +174,8 @@ struct bombclientmode : clientmode
         sendf(-1, 1, "ri6", N_ITEMPUSH, id, type, io.x-120+rnd(240), io.y-120+rnd(240), io.z + rnd(2)*180);
     }
 
-	void died(clientinfo *target, clientinfo *actor) {
+    void died(clientinfo *target, clientinfo *actor)
+    {
         for(int i=0; i<target->state.ammo[GUN_BOMB]/2; i++) pushentity(I_BOMBS, target->state.o);
         for(int i=0; i<target->state.bombradius/2; i++) pushentity(I_BOMBRADIUS, target->state.o);
     }

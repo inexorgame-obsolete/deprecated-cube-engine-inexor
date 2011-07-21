@@ -617,10 +617,11 @@ namespace server
     {
     	conoutf("server::pickup i=%i sender=%i", i, sender);
         if((m_timed && gamemillis>=gamelimit) || !sents.inrange(i) || !sents[i].spawned) {
-        	if((m_timed && gamemillis>=gamelimit)) conoutf("(m_timed && gamemillis>=gamelimit)");
-        	if(!sents.inrange(i)) conoutf("!sents.inrange(i)");
-        	if(!sents[i].spawned) conoutf("!sents[i].spawned");
-        	return false;
+            // TODO remove debug output
+            if((m_timed && gamemillis>=gamelimit)) conoutf("(m_timed && gamemillis>=gamelimit)");
+            if(!sents.inrange(i)) conoutf("!sents.inrange(i)");
+            if(!sents[i].spawned) conoutf("!sents[i].spawned");
+            return false;
         }
         clientinfo *ci = getinfo(sender);
         if(!ci || (!ci->local && !ci->state.canpickup(sents[i].type))) {
@@ -1580,33 +1581,49 @@ namespace server
 
     void startintermission() { gamelimit = min(gamelimit, gamemillis); checkintermission(); }
 
-	/**
-	 * Checks if the game has ended because only one player is still alive.
-	 * It does this by checking if less than 2 players have their state set to alive.
-	 * This means, the game will also end if someone is gagging
-	 * If only one is still alive this method forces intermission.
-	 */
-	void checklms() {
-		int plalive = 0; // Number of players still alive; 
-		                    // n > 1 Means the game is still running; 
-		                    // 1 means player x has won; 
-		                    // n < 1 means that the game should end, but there is now winner (probatly only,
-		                       // if the two last players killed them self at the same time)
-		int clfound = -1; // The index of the client whose player is last found as alive, the winner. IF $plalive == 1
-		                     // It is currently not used
-		
-		// Get player check if players are alive; if yes set plfound and increase plalive
-		for (int clnum = 0; clnum < clients.length() && plalive < 2; clnum++)
-			if (clients[clnum]->state.state == CS_ALIVE) {
-				plalive++;
-				clfound = clnum;
-			}
-		
-		// Stop game if less than 2 players are aive
-		if (plalive < 2)
-			startintermission();
-		
-	}
+    /**
+     * Checks if the game has ended because only one player is still alive.
+     * It does this by checking if less than 2 players have their state set to alive.
+     * This means, the game will also end if someone is gagging
+     * If only one is still alive this method forces intermission.
+     */
+    void checklms()
+    {
+        if(m_teammode)
+        {
+            /*
+            int teamsalive = 0;
+            loopj(numteams)
+            {
+                int plalive = 0;
+                for (int clnum = 0; clnum < clients.length() && plalive < 2; clnum++)
+                    if (clients[clnum]->state.state == CS_ALIVE) {
+                        teamsalive++;
+                        continue;
+                    }
+            }
+            if(teamsalive < 2) startintermission();
+            */
+        }
+        else
+        {
+            int plalive = 0;  // Number of players still alive;
+                              // n > 1 Means the game is still running;
+                              // 1 means player x has won;
+                              // n < 1 means that the game should end, but there is now winner (probatly only,
+                              // if the two last players killed them self at the same time)
+            int clfound = -1; // The index of the client whose player is last found as alive, the winner. IF $plalive == 1
+                              // It is currently not used
+            // Get player check if players are alive; if yes set plfound and increase plalive
+            for (int clnum = 0; clnum < clients.length() && plalive < 2; clnum++)
+                if (clients[clnum]->state.state == CS_ALIVE) {
+                    plalive++;
+                    clfound = clnum;
+                }
+            // Stop game if less than 2 players are alive
+            if (plalive < 2) startintermission();
+        }
+    }
 	
     void dodamage(clientinfo *target, clientinfo *actor, int damage, int gun, const vec &hitpush = vec(0, 0, 0))
     {
@@ -2879,6 +2896,7 @@ namespace server
             #define PARSEMESSAGES 1
             #include "capture.h"
             #include "ctf.h"
+			#include "bomb.h"
             #undef PARSEMESSAGES
 
             case -1:

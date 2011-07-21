@@ -30,7 +30,7 @@ namespace game
         intret(f ? f->clientnum : -1);
     });
 
-	void follow(char *arg)
+    void follow(char *arg)
     {
         if(arg[0] ? player1->state==CS_SPECTATOR : following>=0)
         {
@@ -424,8 +424,9 @@ namespace game
             else conoutf(contype, "\f2%s fragged %s", aname, dname);
         }
         deathstate(d);
-		ai::killed(d, actor);
-	}
+        ai::killed(d, actor);
+        if(cmode) cmode->killed(d, actor);
+    }
 
     void timeupdate(int secs)
     {

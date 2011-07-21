@@ -187,17 +187,17 @@ namespace game
         switch(type)
         {
             case BNC_DEBRIS:
-            	bnc.radius = bnc.xradius = bnc.yradius = 0.5f;
+            	bnc.radius = bnc.xradius = bnc.yradius = bnc.eyeheight = bnc.aboveeye = 0.5f;
                 break;
             case BNC_BOMB:
-                bnc.radius = bnc.xradius = bnc.yradius = 3.5f; // TODO: adjust radius as soon as projectile model works
+                bnc.radius = bnc.xradius = bnc.yradius = 3.0f; // TODO: adjust radius as soon as projectile model works
+                bnc.eyeheight = 1.5f;
+                bnc.aboveeye = 1.5f;
                 break;
             default:
-                bnc.radius = bnc.xradius = bnc.yradius = 1.5f;
+                bnc.radius = bnc.xradius = bnc.yradius = bnc.eyeheight = bnc.aboveeye = 1.5f;
+                break;
         }
-        // bnc.radius = bnc.xradius = bnc.yradius = type==BNC_DEBRIS ? 0.5f : 1.5f;
-        bnc.eyeheight = bnc.radius;
-        bnc.aboveeye = bnc.radius;
         bnc.lifetime = lifetime;
         bnc.local = local;
         bnc.owner = owner;
@@ -224,13 +224,14 @@ namespace game
             	if(owner==hudplayer() && !isthirdperson()) bnc.offset.sub(owner->o).rescale(16).add(owner->o);
             	break;
             case BNC_BOMB:
-                avoidcollision(&bnc, dir, owner, 1.0f); // we need much more radius for bombs
+                avoidcollision(&bnc, dir, owner, 4.0f); // we need much more radius for bombs // TODO: adjust this value
                 bnc.offset = hudgunorigin(GUN_BOMB, from, to, owner);
                 if(owner==hudplayer() && !isthirdperson()) bnc.offset.sub(owner->o).rescale(16).add(owner->o);
                 break;
             default:
                 avoidcollision(&bnc, dir, owner, 0.1f);
             	bnc.offset = from;
+            	break;
         }
         bnc.offset.sub(bnc.o);
         bnc.offsetmillis = OFFSETMILLIS;
@@ -1080,7 +1081,7 @@ namespace game
 	    loopv(bouncers)
 	    {
 	    	bouncer *p = bouncers[i];
-	    	if(p->bouncetype != BNC_BOMB) continue;
+	    	if(p->bouncetype != BNC_BOMB /* || p->lifetime > 3000 */ ) continue; // TODO: maybe collide should happen after a short time
 	    	// conoutf("BNC_BOMB lifetime=%i curtime=%i", p->lifetime, curtime);
 	    	if(!ellipsecollide(d, dir, p->o, vec(0, 0, 0), p->yaw, p->xradius*5.0f, p->yradius*5.0f, p->aboveeye, p->eyeheight)) return false;
 	    }

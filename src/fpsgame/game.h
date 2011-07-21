@@ -92,8 +92,8 @@ enum
     M_DMSP       = 1<<16,
     M_CLASSICSP  = 1<<17,
     M_SLOWMO     = 1<<18,
-	M_LMS        = 1<<19,
-	M_BOMB       = 1<<20
+    M_LMS        = 1<<19,
+    M_BOMB       = 1<<20
 };
 
 static struct gamemodeinfo
@@ -126,8 +126,9 @@ static struct gamemodeinfo
     { "efficiency ctf", M_NOITEMS | M_EFFICIENCY | M_CTF | M_TEAM, "Efficiency Capture The Flag: Capture \fs\f3the enemy flag\fr and bring it back to \fs\f1your flag\fr to score points for \fs\f1your team\fr. You spawn with all weapons and armour. There are no items." },
     { "efficiency protect", M_NOITEMS | M_EFFICIENCY | M_CTF | M_PROTECT | M_TEAM, "Efficiency Protect The Flag: Touch \fs\f3the enemy flag\fr to score points for \fs\f1your team\fr. Pick up \fs\f1your flag\fr to protect it. \fs\f1Your team\fr loses points if a dropped flag resets. You spawn with all weapons and armour. There are no items." },
     { "efficiency hold", M_NOITEMS | M_EFFICIENCY | M_CTF | M_HOLD | M_TEAM, "Efficiency Hold The Flag: Hold \fs\f7the flag\fr for 20 seconds to score points for \fs\f1your team\fr. You spawn with all weapons and armour. There are no items." },
-	{ "lms", M_LMS, "Last Man Standing: The last player alive wins." },
-	{ "bomberman", M_LMS | M_BOMB, "Bomberman: Place bombs to kill enemies. Collect items to increase amount of bombs or damage radius. Survive to win." }
+    { "lms", M_LMS, "Last Man Standing: The last player alive wins." },
+    { "bomberman", M_LMS | M_BOMB, "Bomberman: Place bombs to kill enemies. Collect items to increase amount of bombs or damage radius. Survive to win." },
+    { "bomberman team", M_LMS | M_BOMB | M_TEAM, "Bomberman Team: Place bombs to kill \fs\f3enemies\fr. Collect items to increase amount of bombs or damage radius. Your team wins if one player survives." }
 };
 
 #define STARTGAMEMODE (-3)
@@ -358,7 +359,7 @@ static const struct guninfo { short sound, attackdelay, damage, projspeed, part,
     { S_RIFLE,    1500, 100, 0,   0, 30, 2048, "rifle",           "rifle" },
     { S_FLAUNCH,   500,  75, 80,  0, 10, 1024, "grenadelauncher", "gl" },
     { S_PISTOL,    500,  25, 0,   0,  7, 1024, "pistol",          "pistol" },
-	{ S_FEXPLODE,  375,   1, 8,   0,  2,    0, "bomb",            "gl" }, // TODO: other sound, other hudmodel // TODO: set damage to 1
+    { S_FEXPLODE,  375,   1, 8,   0,  2,    0, "bomb",            "gl" }, // TODO: other sound, other hudmodel // TODO: set damage to 1
     { S_FLAUNCH,   200,  20, 50,  PART_FIREBALL1,  1, 1024, "fireball",  NULL },
     { S_ICEBALL,   200,  40, 30,  PART_FIREBALL2,  1, 1024, "iceball",   NULL },
     { S_SLIMEBALL, 200,  30, 160, PART_FIREBALL3,  1, 1024, "slimeball", NULL },
@@ -540,17 +541,17 @@ struct fpsstate
         }
         else if(m_bomb)
         {
-        	health = 1;
+            health = 1;
             armourtype = A_GREEN;
             armour = 0;
-        	gunselect = GUN_BOMB;
-        	backupweapon = GUN_BOMB;
+            gunselect = GUN_BOMB;
+            backupweapon = GUN_BOMB;
         }
         else
         {
             ammo[GUN_PISTOL] = m_sp ? 80 : 40;
             ammo[GUN_GL] = 1;
-		}
+        }
     }
 
     // just subtract damage here, can set death, etc. later in code calling this
@@ -713,6 +714,7 @@ namespace game
         virtual bool aicheck(fpsent *d, ai::aistate &b) { return false; }
         virtual bool aidefend(fpsent *d, ai::aistate &b) { return false; }
         virtual bool aipursue(fpsent *d, ai::aistate &b) { return false; }
+        virtual void killed(fpsent *d, fpsent *actor) {}
     };
 
     extern clientmode *cmode;
