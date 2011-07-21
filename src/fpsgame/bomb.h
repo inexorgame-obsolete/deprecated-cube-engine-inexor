@@ -1,8 +1,9 @@
-#ifdef SERVMODE
+// bomb.h: client and server state for bomb gamemode
+#ifndef PARSEMESSAGES
 
+#ifdef SERVMODE
 struct bombservmode : servmode
 #else
-//static int BNC_BOMB = 1;
 struct bombclientmode : clientmode
 #endif
 {
@@ -91,16 +92,17 @@ struct bombclientmode : clientmode
             draw_textf("%s%s", (x+s/2)/2-56, (y+s/2)/2-48, flash ? "\f3" : "", "You");
             draw_textf("%s%s", (x+s/2)/2-48, (y+s/2)/2-8, flash ? "\f3" : "", "win");
             glPopMatrix();
-        } else {
-        	// Game over message
-            glPushMatrix();
-            glScalef(2, 2, 1);
-            bool flash = d==player1 && lastspawnattempt>=d->lastpain && lastmillis < lastspawnattempt+100;
-            draw_textf("%s%s", (x+s/2)/2-64, (y+s/2)/2-48, flash ? "\f3" : "", "Game");
-            draw_textf("%s%s", (x+s/2)/2-48, (y+s/2)/2-8, flash ? "\f3" : "", "over");
-            glPopMatrix();
+        } else if(d->state != CS_ALIVE && !game::intermission) {
+            int pw, ph, tw, th, fw, fh;
+            text_bounds("  ", pw, ph);
+            text_bounds("YOU ARE DEAD", tw, th);
+            th = max(th, ph);
+            fpsent *f = followingplayer();
+            text_bounds(f ? colorname(f) : " ", fw, fh);
+            fh = max(fh, ph);
+            draw_text("YOU ARE DEAD", w*1800/h - tw - pw, 1650 - th - fh);
+            if(f) draw_text(colorname(f), w*1800/h - fw - pw, 1650 - fh);
         }
-
     }
 
     void renderhiddenplayers() {
@@ -157,7 +159,6 @@ struct bombclientmode : clientmode
     }
 
 	void died(clientinfo *target, clientinfo *actor) {
-        conoutf("%s died bombs:%i bombradius:%i", target->name, target->state.ammo[GUN_BOMB], target->state.bombradius);
         for(int i=0; i<target->state.ammo[GUN_BOMB]/2; i++) pushentity(I_BOMBS, target->state.o);
         for(int i=0; i<target->state.bombradius/2; i++) pushentity(I_BOMBRADIUS, target->state.o);
     }
@@ -168,4 +169,16 @@ struct bombclientmode : clientmode
 
 #ifndef SERVMODE
 extern bombclientmode bombmode;
+#endif
+
+#elif SERVMODE
+/*
+case N_KILLMOVABLE:
+{
+    int id = getint(p);
+    // if(m_bomb) bombmode.kill(flag, version, spawnindex, team, score);
+    break;
+}
+*/
+
 #endif
