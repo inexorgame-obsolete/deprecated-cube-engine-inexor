@@ -59,9 +59,8 @@ namespace game
         {
             state = CS_DEAD;
             exploding = 0;
-            game::explode(true, (fpsent *)at, o, this, guns[GUN_BARREL].damage, GUN_BARREL);
-            //if(!m_bomb) game::explode(true, (fpsent *)at, o, this, guns[GUN_BARREL].damage, GUN_BARREL);
-            //else game::explode(true, (fpsent *)at, o, this, 0, GUN_BARREL); // in bomb mode barrels does explode, but does not cause any damage
+            if(!m_bomb) game::explode(true, (fpsent *)at, o, this, guns[GUN_BARREL].damage, GUN_BARREL);
+            else game::explode(true, (fpsent *)at, o, this, 0, GUN_BARREL); // in bomb mode barrels does explode, but does not cause any damage
         }
  
         void damaged(int damage, fpsent *at, int gun = -1)
