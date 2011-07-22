@@ -141,10 +141,10 @@ struct bombclientmode : clientmode
 
     void killed(fpsent *d, fpsent *actor)
     {
+        d->state = CS_SPECTATOR;
         if(d!=player1) return;
         conoutf("killed!");
         following = actor->clientnum;
-        player1->state = CS_SPECTATOR;
         player1->yaw = actor->yaw;
         player1->pitch = actor->pitch;
         player1->o = actor->o;
