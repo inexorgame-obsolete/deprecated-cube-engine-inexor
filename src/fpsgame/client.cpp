@@ -1334,14 +1334,9 @@ namespace game
 
             case N_ITEMSPAWN:
             {
-            	conoutf("N_ITEMSPAWN");
                 int i = getint(p);
-                if(!entities::ents.inrange(i)) {
-                	conoutf("entities not in range");
-                	break;
-                }
+                if(!entities::ents.inrange(i)) break;
                 entities::setspawn(i, true);
-            	conoutf("entities::setspawn %i", i);
                 ai::itemspawned(i);
                 playsound(S_ITEMSPAWN, &entities::ents[i]->o, NULL, 0, 0, -1, 0, 1500);
                 #if 0
@@ -1358,7 +1353,6 @@ namespace game
                 int id = getint(p), type = getint(p);
                 vec itemloc;
                 loopk(3) itemloc[k] = getint(p)/DMF;
-            	conoutf("GET  N_ITEMPUSH: id=%i type=%i pos x=%i y=%i z=%i", id, type, itemloc.x, itemloc.y, itemloc.z);
             	if(entities::getents().length()<=id) {
                     while(entities::getents().length()<id) entities::getents().add(entities::newentity())->type = ET_EMPTY;
                     extentity *e = newentity(false, itemloc, type, 0, 0, 0, 0, 0);
@@ -1370,8 +1364,6 @@ namespace game
                     playsound(S_ITEMSPAWN, &entities::ents[id]->o, NULL, 0, 0, -1, 0, 1500);
                     int icon = entities::itemicon(id);
                     if(icon >= 0) particle_icon(vec(0.0f, 0.0f, 4.0f).add(entities::ents[id]->o), icon%4, icon/4, PART_HUD_ICON, 2000, 0xFFFFFF, 2.0f, -8);
-            	} else {
-            	    conoutf("entity already exists: %i/%i", id, entities::getents().length());
             	}
                 break;
             }
@@ -1379,11 +1371,8 @@ namespace game
             case N_ITEMACC:            // server acknowledges that I picked up this item
             {
                 int i = getint(p), cn = getint(p);
-                conoutf("N_ITEMACC i=%i cn=%i", i, cn);
                 fpsent *d = getclient(cn);
-                conoutf("N_ITEMACC 2");
                 entities::pickupeffects(i, d);
-                conoutf("N_ITEMACC 3");
                 break;
             }
 

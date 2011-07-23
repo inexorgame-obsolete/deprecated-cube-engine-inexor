@@ -99,7 +99,7 @@ struct bombclientmode : clientmode
             th = max(th, ph);
             draw_text("YOU WIN", w*1800/h - tw - pw, 1650 - th);
         }
-        else if(player1->state != CS_ALIVE && !game::intermission)
+        else if(player1->state != CS_ALIVE && player1->deaths > 0 && !game::intermission)
         {
             int pw, ph, tw, th, fw, fh;
             text_bounds("  ", pw, ph);
@@ -151,11 +151,25 @@ struct bombclientmode : clientmode
         player1->resetinterp();
     }
 
+    void gameconnect(fpsent *d)
+    {
+        conoutf("gameconnect");
+        d->deaths++;
+        d->state = CS_SPECTATOR;
+    }
+
 #else
 
-	bool canspawn(clientinfo *ci, bool connecting = false) {
+    bool gamerunning() {
+      for (int cn = 0; cn < clients.length(); cn++)
+          if(clients[cn]->state.deaths > 0) return true;
+      return false;
+    }
+
+    bool canspawn(clientinfo *ci, bool connecting = false) {
     	if(!m_lms) return true;
-    	else if(ci->state.deaths==0) return true; // ci->state.aitype!=AI_NONE &&
+    	else if(gamerunning()) {conoutf("game is running"); return false; }
+    	else if(ci->state.deaths==0) {conoutf("player has no deaths"); return true; } // ci->state.aitype!=AI_NONE &&
     	else return false;
     }
 

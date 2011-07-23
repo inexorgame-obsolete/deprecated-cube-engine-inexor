@@ -392,7 +392,7 @@ struct fpsstate
     void addammo(int gun, int k = 1, int scale = 1)
     {
         if(gun==GUN_BOMB) {
-        	itemstat &is = itemstats[11];
+        	itemstat &is = itemstats[11]; // TODO: 11
         	ammo[gun] = min(ammo[gun] + (is.add*k)/scale, is.max);
         } else {
         	itemstat &is = itemstats[gun-GUN_SG];
@@ -403,25 +403,25 @@ struct fpsstate
     bool hasmaxammo(int type)
     {
         if(type>=I_BOMBS) {
-            itemstat &is = itemstats[11+type-I_BOMBS];
+            itemstat &is = itemstats[11+type-I_BOMBS]; // TODO: 11
             return ammo[GUN_BOMB]>=is.max;
         }
         else {
-        	itemstat &is = itemstats[type-I_SHELLS];
+            itemstat &is = itemstats[type-I_SHELLS];
             return ammo[type-I_SHELLS+GUN_SG]>=is.max;
         }
     }
 
     bool canpickup(int type)
     {
-        if(type>=I_BOMBS || type<=I_BOMBRADIUS) {
-            itemstat &is = itemstats[11+type-I_BOMBS];
+        if(type>=I_BOMBS && type<=I_BOMBRADIUS) {
+            itemstat &is = itemstats[11+type-I_BOMBS]; // TODO: 11
             switch(type)
             {
                 case I_BOMBRADIUS:
-                	return bombradius<is.max;
+                    return bombradius<is.max;
                 default:
-                	return ammo[is.info]<is.max;
+                    return ammo[is.info]<is.max;
             }
     	} else if(type>=I_SHELLS || type<=I_QUAD) {
             itemstat &is = itemstats[type-I_SHELLS];
@@ -441,8 +441,8 @@ struct fpsstate
 
     void pickup(int type)
     {
-   		if(type>=I_BOMBS || type<=I_BOMBRADIUS) {
-    		itemstat &is = itemstats[11+type-I_BOMBS];
+   	if(type>=I_BOMBS && type<=I_BOMBRADIUS) {
+    	    itemstat &is = itemstats[11+type-I_BOMBS];
             switch(type)
             {
                 case I_BOMBRADIUS:
@@ -453,7 +453,7 @@ struct fpsstate
                     break;
             }
     	} else if(type>=I_SHELLS || type<=I_QUAD) {
-    		itemstat &is = itemstats[type-I_SHELLS];
+            itemstat &is = itemstats[type-I_SHELLS];
             switch(type)
             {
                 case I_BOOST:
