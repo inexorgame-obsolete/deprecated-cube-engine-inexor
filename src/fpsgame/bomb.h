@@ -162,6 +162,64 @@ struct bombclientmode : clientmode
         d->state = CS_SPECTATOR;
     }
 
+    void pickspawn(fpsent *d)
+    {
+        conoutf("pickspawn for player %i", d->clientnum);
+        if(m_teammode)
+        {
+            conoutf("+ teammode");
+            //
+            // findplayerspawn(d, pickteamspawn(d->team));
+        }
+        else
+        {
+            // find playerstart with maximum distance
+            const vector<extentity *> &ents = entities::getents();
+            // bool found = false;
+            extentity *playerstart = NULL;
+            int maxdistance = -1;
+            for(int i=0; i<ents.length(); i++)
+            {
+                extentity &e = *ents[i];
+                if(e.type==ET_PLAYERSTART) {
+                    if(maxdistance < 0)
+                    {
+                        maxdistance = 0;
+                        playerstart = &e; // always pick first playerstart if available
+                    }
+                    else
+                    {
+                        conoutf("+- ent=%i", i);
+                        int allplayersdistance = 0;
+                        loopv(players)
+                        {
+                            fpsent *t = players[i];
+                            if(t==d) continue;
+                            int playerdistance = abs(e.o.x-t->o.x)+abs(e.o.y-t->o.y)+abs(e.o.z-t->o.z);
+                            conoutf("+--- player=%i playerdistance=%i", t->clientnum, playerdistance);
+                            allplayersdistance += playerdistance;
+                        }
+                        conoutf("+-- allplayersdistance=%i maxdistance=%i", allplayersdistance, maxdistance);
+                        if(allplayersdistance > maxdistance)
+                        {
+                            conoutf("+-- picked as new playerstart");
+                            maxdistance = allplayersdistance;
+                            playerstart = &e;
+                            d->o = e.o;
+                            d->yaw = e.attr1;
+                        }
+                    }
+                }
+            }
+            if(playerstart!=NULL)
+            {
+                conoutf("+ apply playerstart");
+                d->o = playerstart->o;
+                d->yaw = playerstart->attr1;
+            }
+            else findplayerspawn(d, -1); // if no playerstart was found, fallback to standard routine
+        }
+    }
 #else
 
     bool gamerunning() {
