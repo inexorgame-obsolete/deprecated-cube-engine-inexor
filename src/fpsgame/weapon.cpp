@@ -190,9 +190,8 @@ namespace game
             	bnc.radius = bnc.xradius = bnc.yradius = bnc.eyeheight = bnc.aboveeye = 0.5f;
                 break;
             case BNC_BOMB:
-                bnc.radius = bnc.xradius = bnc.yradius = 4.0f; // TODO: adjust radius as soon as projectile model works
-                bnc.eyeheight = 0.5f;
-                bnc.aboveeye = 0.5f;
+                bnc.radius = bnc.xradius = bnc.yradius = 2.5f; // TODO: adjust radius as soon as projectile model works 3.0
+                bnc.eyeheight = bnc.aboveeye = 1.5f; // 2.5f;
                 break;
             default:
                 bnc.radius = bnc.xradius = bnc.yradius = bnc.eyeheight = bnc.aboveeye = 1.5f;
@@ -219,14 +218,15 @@ namespace game
         switch(type)
         {
             case BNC_GRENADE:
+                // bnc.o.add(dir).normalize();
                 avoidcollision(&bnc, dir, owner, 0.1f);
                 bnc.offset = hudgunorigin(GUN_GL, from, to, owner);
                 if(owner==hudplayer() && !isthirdperson()) bnc.offset.sub(owner->o).rescale(16).add(owner->o);
                 break;
             case BNC_BOMB:
-                avoidcollision(&bnc, dir, owner, 4.0f); // we need much more radius for bombs // TODO: adjust this value
+                avoidcollision(&bnc, dir, owner, 4.5f); // we need much more radius for bombs // TODO: adjust this value 4.0 , 2.3
                 bnc.offset = hudgunorigin(GUN_BOMB, from, to, owner);
-                if(owner==hudplayer() && !isthirdperson()) bnc.offset.sub(owner->o).rescale(16).add(owner->o);
+                if(owner==hudplayer() && !isthirdperson()) bnc.offset.sub(owner->o).rescale(2).add(owner->o);
                 break;
             default:
                 avoidcollision(&bnc, dir, owner, 0.1f);
@@ -263,14 +263,14 @@ namespace game
             {
                 vec pos(bnc.o);
                 pos.add(vec(bnc.offset).mul(bnc.offsetmillis/float(OFFSETMILLIS)));
-                regular_particle_splash(PART_SMOKE, 1, 150, pos, 0x0080f0, 6.4f, 120, -90);
+                regular_particle_splash(PART_SMOKE, 1, 150, pos, 0x0080f0, 6.4f, 120, -120);
             }
             vec old(bnc.o);
             bool stopped = false;
             if(bnc.bouncetype==BNC_GRENADE) stopped = bounce(&bnc, 0.6f, 0.5f) || (bnc.lifetime -= time)<0;
 	          else if(bnc.bouncetype==BNC_BOMB)
             {
-	              bounce(&bnc, 3.5f, 4.1f, 0.1f);
+	              bounce(&bnc, 0.2f, 0.3f);
                 stopped = (bnc.lifetime -= time)<0;
             }
             else
@@ -480,7 +480,8 @@ namespace game
         vec debrisvel = owner->o==v ? vec(0, 0, 0) : vec(owner->o).sub(v).normalize(), debrisorigin(v);
         particle_splash(PART_SPARK, 200, 300, v, 0xB49B4B, 0.24f*rfactor);
         playsound(S_RLHIT, &v);
-        particle_fireball(v, maxsize, gun!=GUN_GL ? PART_EXPLOSION : PART_EXPLOSION_BLUE, fade, gun!=GUN_GL ? 0xFF8080 : 0x80FFFF, size);
+        particle_fireball(v, maxsize, gun!=GUN_GL ? PART_EXPLOSION : PART_EXPLOSION_BLUE, fade, gun!=GUN_GL ? (gun==GUN_BOMB ? 0x004D30 : 0xFF8080) : 0x80FFFF, size);
+        // particle_fireball(v, maxsize, gun!=GUN_GL ? PART_EXPLOSION : PART_EXPLOSION_BLUE, fade, gun!=GUN_GL ? 0xFF8080 : 0x80FFFF, size);
         switch(gun)
         {
             case GUN_RL:
@@ -727,11 +728,17 @@ namespace game
             	// TODO: Bomb
                 float dist = from.dist(to);
                 vec up = to;
-                up.z += dist/16;
+                // up.z += dist/8;
+                // up.z += 10;
+                // up.add(vec(20,0,10));
+                vec src = from;
+                float f = 5.0f, dx = to.x-from.x, dy = to.y-from.y, dyy = 15.0f, dzz = 2.0f;
+                src.add(vec(dx/f,dy/f,-dzz));
+                up.add(vec(0, dyy, -dzz*f));
                 if(muzzleflash && d->muzzle.x >= 0)
                     particle_flare(d->muzzle, d->muzzle, 500, PART_MUZZLE_FLASH2, 0xFFFFFF, 2.3f, d);
                 if(muzzlelight) adddynlight(hudgunorigin(gun, d->o, to, d), 40, vec(0.5f, 0.375f, 0.25f), 100, 100, DL_FLASH, 0, vec(0, 0, 0), d);
-                newbouncer(from, up, local, id, d, BNC_BOMB, 5000, 75);
+                newbouncer(src, up, local, id, d, BNC_BOMB, 5000, 20);
                 break;
             }
 
@@ -1087,9 +1094,8 @@ namespace game
 	    loopv(bouncers)
 	    {
 	    	bouncer *p = bouncers[i];
-	    	if(p->bouncetype != BNC_BOMB /* || p->lifetime > 3000 */ ) continue; // TODO: maybe collide should happen after a short time
-	    	// conoutf("BNC_BOMB lifetime=%i curtime=%i", p->lifetime, curtime);
-	    	if(!ellipsecollide(d, dir, p->o, vec(0, 0, 0), p->yaw, p->xradius*5.0f, p->yradius*5.0f, p->aboveeye, p->eyeheight)) return false;
+	    	if(p->bouncetype != BNC_BOMB) continue;
+	    	if(!ellipsecollide(d, dir, p->o, vec(0, 0, 0), p->yaw, p->xradius*6.0f, p->yradius*6.0f, p->aboveeye, p->eyeheight)) return false;
 	    }
 		return true;
 	}
