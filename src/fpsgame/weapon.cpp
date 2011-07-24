@@ -190,9 +190,9 @@ namespace game
             	bnc.radius = bnc.xradius = bnc.yradius = bnc.eyeheight = bnc.aboveeye = 0.5f;
                 break;
             case BNC_BOMB:
-                bnc.radius = bnc.xradius = bnc.yradius = 3.0f; // TODO: adjust radius as soon as projectile model works
-                bnc.eyeheight = 1.5f;
-                bnc.aboveeye = 1.5f;
+                bnc.radius = bnc.xradius = bnc.yradius = 4.0f; // TODO: adjust radius as soon as projectile model works
+                bnc.eyeheight = 0.5f;
+                bnc.aboveeye = 0.5f;
                 break;
             default:
                 bnc.radius = bnc.xradius = bnc.yradius = bnc.eyeheight = bnc.aboveeye = 1.5f;
@@ -220,9 +220,9 @@ namespace game
         {
             case BNC_GRENADE:
                 avoidcollision(&bnc, dir, owner, 0.1f);
-            	bnc.offset = hudgunorigin(GUN_GL, from, to, owner);
-            	if(owner==hudplayer() && !isthirdperson()) bnc.offset.sub(owner->o).rescale(16).add(owner->o);
-            	break;
+                bnc.offset = hudgunorigin(GUN_GL, from, to, owner);
+                if(owner==hudplayer() && !isthirdperson()) bnc.offset.sub(owner->o).rescale(16).add(owner->o);
+                break;
             case BNC_BOMB:
                 avoidcollision(&bnc, dir, owner, 4.0f); // we need much more radius for bombs // TODO: adjust this value
                 bnc.offset = hudgunorigin(GUN_BOMB, from, to, owner);
@@ -230,8 +230,8 @@ namespace game
                 break;
             default:
                 avoidcollision(&bnc, dir, owner, 0.1f);
-            	bnc.offset = from;
-            	break;
+                bnc.offset = from;
+                break;
         }
         bnc.offset.sub(bnc.o);
         bnc.offsetmillis = OFFSETMILLIS;
@@ -253,20 +253,26 @@ namespace game
         loopv(bouncers)
         {
             bouncer &bnc = *bouncers[i];
-            if((bnc.bouncetype==BNC_GRENADE || bnc.bouncetype==BNC_BOMB) && bnc.vel.magnitude() > 50.0f)
+            if(bnc.bouncetype==BNC_GRENADE && bnc.vel.magnitude() > 50.0f)
             {
                 vec pos(bnc.o);
                 pos.add(vec(bnc.offset).mul(bnc.offsetmillis/float(OFFSETMILLIS)));
                 regular_particle_splash(PART_SMOKE, 1, 150, pos, 0x404040, 2.4f, 50, -20);
             }
+            else if(bnc.bouncetype==BNC_BOMB && bnc.vel.magnitude() > 50.0f)
+            {
+                vec pos(bnc.o);
+                pos.add(vec(bnc.offset).mul(bnc.offsetmillis/float(OFFSETMILLIS)));
+                regular_particle_splash(PART_SMOKE, 1, 150, pos, 0x0080f0, 6.4f, 120, -90);
+            }
             vec old(bnc.o);
             bool stopped = false;
             if(bnc.bouncetype==BNC_GRENADE) stopped = bounce(&bnc, 0.6f, 0.5f) || (bnc.lifetime -= time)<0;
-			else if(bnc.bouncetype==BNC_BOMB)
-			{
-				bounce(&bnc, 0.6f, 0.5f);
-				stopped = (bnc.lifetime -= time)<0;
-			}
+	          else if(bnc.bouncetype==BNC_BOMB)
+            {
+	              bounce(&bnc, 3.5f, 4.1f, 0.1f);
+                stopped = (bnc.lifetime -= time)<0;
+            }
             else
             {
                 // cheaper variable rate physics for debris, gibs, etc.
@@ -276,7 +282,7 @@ namespace game
                     rtime -= qtime;
                     if((bnc.lifetime -= qtime)<0 || bounce(&bnc, qtime/1000.0f, 0.6f, 0.5f)) { stopped = true; break; }
                 }
-			}
+            }
             if(stopped)
             {
                 if(bnc.bouncetype==BNC_GRENADE)
@@ -450,10 +456,10 @@ namespace game
         vec dir;
         float dist = projdist(o, dir, v);
         if(gun==GUN_BOMB) {
-        	int qdamrad = at->bombradius*RL_DAMRAD;
-        	float qdist = dist / at->bombradius;
+            int qdamrad = at->bombradius*RL_DAMRAD;
+            float qdist = dist / at->bombradius;
             if(dist<qdamrad) // getroffen wird, wenn die entfernung nah genug ist (verstaerkungsfaktor bombradius)
-            	hit(guns[gun].damage, o, at, dir, gun, qdist); // schaden ist immer 1 (entfernungsunabhaengig)
+                hit(guns[gun].damage, o, at, dir, gun, qdist); // schaden ist immer 1 (entfernungsunabhaengig)
         } else {
             if(dist<RL_DAMRAD)
             {
@@ -478,18 +484,18 @@ namespace game
         switch(gun)
         {
             case GUN_RL:
-            	adddynlight(v, 1.15f*RL_DAMRAD, vec(2, 1.5f, 1), 900, 100, 0, RL_DAMRAD/2, vec(1, 0.75f, 0.5f));
-            	debrisorigin.add(vec(debrisvel).mul(8));
+                adddynlight(v, 1.15f*RL_DAMRAD, vec(2, 1.5f, 1), 900, 100, 0, RL_DAMRAD/2, vec(1, 0.75f, 0.5f));
+                debrisorigin.add(vec(debrisvel).mul(8));
                 break;
             case GUN_GL:
-            	adddynlight(v, 1.15f*RL_DAMRAD, vec(0.5f, 1.5f, 2), 900, 100, 0, 8, vec(0.25f, 1, 1));
-            	break;
+                adddynlight(v, 1.15f*RL_DAMRAD, vec(0.5f, 1.5f, 2), 900, 100, 0, 8, vec(0.25f, 1, 1));
+                break;
             case GUN_BOMB:
-            	adddynlight(v, owner->bombradius*RL_DAMRAD, vec(0.5f, 1.5f, 2), 900, 100, 0, 8, vec(1, 1, 0.25f));
-            	if(owner->ammo[GUN_BOMB] < itemstats[11].max) owner->ammo[GUN_BOMB]++; // add a bomb if the bomb explodes // FIXME: index=11
-            	break;
+                adddynlight(v, owner->bombradius*RL_DAMRAD, vec(0.5f, 1.5f, 2), 900, 100, 0, 8, vec(1, 1, 0.25f));
+                if(owner->ammo[GUN_BOMB] < itemstats[11].max) owner->ammo[GUN_BOMB]++; // add a bomb if the bomb explodes // FIXME: index=11
+                break;
             default:
-            	adddynlight(v, 1.15f*RL_DAMRAD, vec(2, 1.5f, 1), 900, 100);
+                adddynlight(v, 1.15f*RL_DAMRAD, vec(2, 1.5f, 1), 900, 100);
         }
         if(numdebris)
         {
