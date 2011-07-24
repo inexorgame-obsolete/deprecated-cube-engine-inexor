@@ -67,7 +67,8 @@ struct bombclientmode : clientmode
         {
             fpsent *p = players[i];
             if(p == player1 || p->state!=CS_ALIVE) continue;
-            settexture("packages/hud/blip_red.png", 3);
+            if(!m_teammode || strcmp(p->team, player1->team) != 0) settexture("packages/hud/blip_red.png", 3);
+            else settexture("packages/hud/blip_blue.png", 3);
             drawblip(d, x, y, s, p->o, 2);
         }
 
@@ -76,8 +77,8 @@ struct bombclientmode : clientmode
         {
             bouncer *p = bouncers[i];
             if(p->bouncetype != BNC_BOMB) continue;
-            settexture("packages/hud/blip_blue.png", 3);
-            drawblip(d, x, y, s, p->o, p->owner->bombradius);
+            settexture("packages/hud/blip_bomb_orange.png", 3);
+            drawblip(d, x, y, s, p->o, p->owner->bombradius * 2);
         }
 
         if(d->state == CS_ALIVE && !game::intermission)
@@ -99,14 +100,17 @@ struct bombclientmode : clientmode
             th = max(th, ph);
             draw_text("YOU WIN", w*1800/h - tw - pw, 1650 - th);
         }
-        else if(player1->state != CS_ALIVE && player1->deaths > 0 && !game::intermission)
+        else if(player1->state != CS_ALIVE && !game::intermission)
         {
             int pw, ph, tw, th, fw, fh;
             text_bounds("  ", pw, ph);
-            text_bounds("YOU ARE DEAD", tw, th);
+            if(player1->deaths > 0)
+            {
+                text_bounds("YOU ARE DEAD", tw, th);
+                th = max(th, ph);
+                draw_text("YOU ARE DEAD", w*1800/h - tw - pw, 1420 - th);
+            }
             text_bounds("PLEASE WAIT UNTIL ROUND ENDS", fw, fh);
-            th = max(th, ph);
-            draw_text("YOU ARE DEAD", w*1800/h - tw - pw, 1420 - th);
             draw_text("PLEASE WAIT UNTIL ROUND ENDS", w*1800/h - fw - pw, 1460 - fh);
         }
     }

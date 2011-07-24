@@ -1581,19 +1581,30 @@ namespace server
     {
         if(m_teammode)
         {
-            /*
+            conoutf("checklms team");
             int teamsalive = 0;
-            loopj(numteams)
+            vector<teamscore> teams;
+            for(int cn=0; cn<clients.length(); cn++)
             {
-                int plalive = 0;
-                for (int clnum = 0; clnum < clients.length() && plalive < 2; clnum++)
-                    if (clients[clnum]->state.state == CS_ALIVE) {
-                        teamsalive++;
-                        continue;
+                bool found = false;
+                for(int t=0; t<teams.length(); t++)
+                {
+                    if(strcmp(teams[t].team, clients[cn]->team) == 0)
+                    {
+                        found = true;
+                        if(clients[cn]->state.state == CS_ALIVE) teams[t].score++;
+                        break;
                     }
+                }
+                if(!found) teams.add(teamscore(clients[cn]->team, (clients[cn]->state.state == CS_ALIVE) ? 1 : 0));
+            }
+            conoutf("teams: %i", teams.length());
+            for(int t=0; t<teams.length(); t++)
+            {
+                conoutf("team %s - %i players alive", teams[t].team, teams[t].score);
+                if(teams[t].score > 0) teamsalive++;
             }
             if(teamsalive < 2) startintermission();
-            */
         }
         else
         {
