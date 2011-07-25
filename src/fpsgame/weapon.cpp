@@ -259,7 +259,7 @@ namespace game
                 pos.add(vec(bnc.offset).mul(bnc.offsetmillis/float(OFFSETMILLIS)));
                 regular_particle_splash(PART_SMOKE, 1, 150, pos, 0x404040, 2.4f, 50, -20);
             }
-            else if(bnc.bouncetype==BNC_BOMB && bnc.vel.magnitude() > 50.0f)
+            else if(bnc.bouncetype==BNC_BOMB)
             {
                 vec pos(bnc.o);
                 pos.add(vec(bnc.offset).mul(bnc.offsetmillis/float(OFFSETMILLIS)));
