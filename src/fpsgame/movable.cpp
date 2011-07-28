@@ -100,6 +100,7 @@ namespace game
             else // in bomb mode movables doesn't care about collision
             {
                 m->o.z += m->eyeheight;
+                m->physstate = PHYS_FLOOR;
                 m->resetinterp();
             }
             updatedynentcache(m);
