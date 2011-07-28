@@ -25,7 +25,7 @@ namespace game
             etype(e.type),
             mapmodel(e.attr2),
             health(e.type==BARREL ? (e.attr4 ? e.attr4 : BARRELHEALTH) : 0), 
-            weight(e.type==PLATFORM || e.type==ELEVATOR ? PLATFORMWEIGHT : (e.attr3 ? e.attr3 : (e.type==BARREL ? BARRELWEIGHT : BOXWEIGHT))), 
+            weight(e.type==PLATFORM || e.type==ELEVATOR ? PLATFORMWEIGHT : (e.attr3 ? e.attr3 : (e.type==BARREL ? BARRELWEIGHT : BOXWEIGHT))),
             exploding(0),
             tag(e.type==PLATFORM || e.type==ELEVATOR ? e.attr3 : 0),
             dir(e.type==PLATFORM || e.type==ELEVATOR ? (e.attr4 < 0 ? -1 : 1) : 0),
@@ -96,7 +96,12 @@ namespace game
             movable *m = new movable(e);
             movables.add(m);
             m->o = e.o;
-            entinmap(m);
+            if(!m_bomb) entinmap(m);
+            else // in bomb mode movables doesn't care about collision
+            {
+                m->o.z += m->eyeheight;
+                m->resetinterp();
+            }
             updatedynentcache(m);
         }
     }
@@ -171,7 +176,7 @@ namespace game
             vec o = m.feetpos();
             const char *mdlname = mapmodelname(m.mapmodel);
             if(!mdlname) continue;
-			rendermodel(NULL, mdlname, ANIM_MAPMODEL|ANIM_LOOP, o, m.yaw, 0, MDL_LIGHT | MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_DIST | MDL_CULL_OCCLUDED, &m);
+            rendermodel(NULL, mdlname, ANIM_MAPMODEL|ANIM_LOOP, o, m.yaw, 0, MDL_LIGHT | MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_DIST | MDL_CULL_OCCLUDED, &m);
         }
     }
     
