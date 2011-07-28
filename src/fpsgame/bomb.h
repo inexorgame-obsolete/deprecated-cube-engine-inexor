@@ -115,19 +115,14 @@ struct bombclientmode : clientmode
         }
     }
 
-    void renderhiddenplayers() {
+    void renderplayersposindicator() {
         loopv(players)
         {
             fpsent *p = players[i];
             if(p == player1 || p->state!=CS_ALIVE) continue;
             float yaw, pitch;
             vectoyawpitch(vec(p->o).sub(camera1->o), yaw, pitch);
-            const char *modelname = "quadrings";
-            /* switch(testteam ? testteam-1 : team) // TODO: teammode
-            {
-                case 1: modelname = mdl.blueteam; break;
-                case 2: modelname = mdl.redteam; break;
-            } */
+            const char *modelname = m_teammode ? (strcmp(p->team, player1->team) == 0 ? "bomb/posindicator/blue" : "bomb/posindicator/red") : "bomb/posindicator/green";
             float angle = 360*lastmillis/1000.0f;
             float alpha = 0.3f + 0.5f*(2*fabs(fmod(lastmillis/1000.0f, 1.0f) - 0.5f));
             entitylight light;
@@ -140,7 +135,7 @@ struct bombclientmode : clientmode
 
     void rendergame()
     {
-    	renderhiddenplayers();
+    	renderplayersposindicator();
     }
 
     void killed(fpsent *d, fpsent *actor)
@@ -184,8 +179,22 @@ struct bombclientmode : clientmode
                 if(e.type==ET_PLAYERSTART) {
                     if(maxdistance < 0)
                     {
-                        maxdistance = 0;
+                        conoutf("+- ent=%i", i);
+                        int allplayersdistance = 0;
+                        loopv(players)
+                        {
+                            fpsent *t = players[i];
+                            if(t==d || t->state != CS_ALIVE) continue;
+                            int playerdistance = e.o.dist(t->o);
+                            conoutf("+--- player=%i playerdistance=%i", t->clientnum, playerdistance);
+                            allplayersdistance += playerdistance;
+                        }
+                        conoutf("+-- allplayersdistance=%i maxdistance=%i", allplayersdistance, maxdistance);
+                        maxdistance = allplayersdistance;
                         playerstart = &e; // always pick first playerstart if available
+                        conoutf("+-- picked as playerstart");
+                        d->o = e.o;
+                        d->yaw = e.attr1;
                     }
                     else
                     {
@@ -194,8 +203,9 @@ struct bombclientmode : clientmode
                         loopv(players)
                         {
                             fpsent *t = players[i];
-                            if(t==d) continue;
-                            int playerdistance = abs(e.o.x-t->o.x)+abs(e.o.y-t->o.y)+abs(e.o.z-t->o.z);
+                            if(t==d || t->state != CS_ALIVE) continue;
+                            int playerdistance = e.o.dist(t->o);
+                            // int playerdistance = abs(e.o.x-t->o.x)+abs(e.o.y-t->o.y)+abs(e.o.z-t->o.z);
                             conoutf("+--- player=%i playerdistance=%i", t->clientnum, playerdistance);
                             allplayersdistance += playerdistance;
                         }
