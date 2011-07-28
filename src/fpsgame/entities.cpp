@@ -40,10 +40,10 @@ namespace entities
         int t = ents[i]->type;
         if(m_bomb)
             if(t<I_BOMBS || t>I_BOMBRADIUS) return NULL;
-            else return itemstats[11+t-I_BOMBS].name;
+            else return itemstats[11+t-I_BOMBS].name; // TODO: 11
         else
             if(t<I_SHELLS || t>I_QUAD) return NULL;
-        	else return itemstats[t-I_SHELLS].name;
+            else return itemstats[t-I_SHELLS].name;
     }
 
     int itemicon(int i)
@@ -51,10 +51,10 @@ namespace entities
         int t = ents[i]->type;
         if (m_bomb)
             if(t<I_BOMBS || t>I_BOMBRADIUS) return -1;
-            else return itemstats[11+t-I_BOMBS].icon;
+            else return itemstats[11+t-I_BOMBS].icon; // TODO: 11
         else
             if(t<I_SHELLS || t>I_QUAD) return -1;
-        	else return itemstats[t-I_SHELLS].icon;
+            else return itemstats[t-I_SHELLS].icon;
     }
 
     const char *entmdlname(int type)
@@ -127,9 +127,9 @@ namespace entities
                     if(e.attr2 < 0) continue;
                     break;
                 default:
-                	if(m_bomb) {
-                		if (!e.spawned || e.type<I_BOMBS || e.type>I_BOMBRADIUS) continue;
-                	} else if (!e.spawned || e.type<I_SHELLS || e.type>I_QUAD) continue;
+                    if(m_bomb) {
+                        if (!e.spawned || e.type<I_BOMBS || e.type>I_BOMBRADIUS) continue;
+                    } else if (!e.spawned || e.type<I_SHELLS || e.type>I_QUAD) continue;
             }
             const char *mdlname = entmodel(e);
             if(mdlname)
@@ -144,8 +144,8 @@ namespace entities
     void addammo(int type, int &v, bool local)
     {
         int tindex = type-I_SHELLS;
-    	if(type==I_BOMBS) tindex = 11;
-    	itemstat &is = itemstats[tindex];
+        if(type==I_BOMBS) tindex = 11;
+        itemstat &is = itemstats[tindex];
         v += is.add;
         if(v>is.max) v = is.max;
         if(local) msgsound(is.sound);
@@ -308,8 +308,8 @@ namespace entities
                 jumppadeffects(d, n, true);
                 vec v((int)(char)ents[n]->attr3*10.0f, (int)(char)ents[n]->attr2*10.0f, ents[n]->attr1*12.5f);
                 if(d->ai) d->ai->becareful = true;
-				d->falling = vec(0, 0, 0);
-				d->physstate = PHYS_FALL;
+                d->falling = vec(0, 0, 0);
+                d->physstate = PHYS_FALL;
                 d->timeinair = 1;
                 d->vel = v;
                 break;
@@ -345,12 +345,12 @@ namespace entities
     {
         putint(p, N_ITEMLIST);
         if(m_bomb)
-        	loopv(ents) if(ents[i]->type>=I_BOMBS && ents[i]->type<=I_BOMBRADIUS) {
+            loopv(ents) if(ents[i]->type>=I_BOMBS && ents[i]->type<=I_BOMBRADIUS) {
                 putint(p, i);
                 putint(p, ents[i]->type);
             }
         else
-        	loopv(ents) if(ents[i]->type>=I_SHELLS && ents[i]->type<=I_QUAD && (!m_noammo || ents[i]->type<I_SHELLS || ents[i]->type>I_CARTRIDGES)) {
+            loopv(ents) if(ents[i]->type>=I_SHELLS && ents[i]->type<=I_QUAD && (!m_noammo || ents[i]->type<I_SHELLS || ents[i]->type>I_CARTRIDGES)) {
                 putint(p, i);
                 putint(p, ents[i]->type);
             }
