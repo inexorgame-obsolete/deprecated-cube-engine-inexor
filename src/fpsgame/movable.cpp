@@ -58,6 +58,7 @@ namespace game
 
         void explode(dynent *at)
         {
+            // conoutf("movable.cpp::explode etype=%i state=%i health=%i",etype,state,health);
             state = CS_DEAD;
             exploding = 0;
             if(etype==OBSTACLE) game::explode(false, (fpsent *)at, o, this, 0, GUN_BARREL); // obstacles explodes not only locally and doesn't cause any damage
@@ -66,8 +67,10 @@ namespace game
 
         void damaged(int damage, fpsent *at, int gun = -1)
         {
+            // conoutf("movable.cpp::damaged etype=%i state=%i health=%i damage=%i gun=%i",etype,state,health,damage,gun);
             if((etype!=BARREL && etype!=OBSTACLE) || state!=CS_ALIVE || exploding) return;
             health -= damage;
+            // conoutf("movable.cpp::damaged health new=%i", health);
             if(health>0) return;
             if(gun==GUN_BARREL) exploding = lastmillis + EXPLODEDELAY;
             else explode(at); 

@@ -695,6 +695,21 @@ namespace entities
         if(e.type==BASE || e.type==FLAG) return 0.0f;
         return 4.0f;
     }
+
+    bool hasmapmodel(extentity &e)
+    {
+        switch(e.type)
+        {
+            case MAPMODEL:
+            case BOX:
+            case BARREL:
+            case OBSTACLE:
+                return true;
+                break;
+            default:
+                return false;
+        }
+    }
 #endif
 }
 
