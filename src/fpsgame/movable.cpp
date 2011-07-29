@@ -68,7 +68,6 @@ namespace game
         {
             if((etype!=BARREL && etype!=OBSTACLE) || state!=CS_ALIVE || exploding) return;
             health -= damage;
-            conoutf("movable.cpp::damaged health new=%i", health);
             if(health>0) return;
             if(gun==GUN_BARREL) exploding = lastmillis + EXPLODEDELAY;
             else explode(at); 

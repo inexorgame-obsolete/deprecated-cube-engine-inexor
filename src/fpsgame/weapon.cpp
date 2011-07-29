@@ -504,7 +504,7 @@ namespace game
             loopi(numdebris)
                 spawnbouncer(debrisorigin, debrisvel, owner, gun==GUN_BARREL ? BNC_BARRELDEBRIS : BNC_DEBRIS, &light);
         }
-        if(!local /* && !m_bomb */) return;
+        if(!local && !m_bomb) return;
         loopi(numdynents())
         {
             dynent *o = iterdynents(i);
