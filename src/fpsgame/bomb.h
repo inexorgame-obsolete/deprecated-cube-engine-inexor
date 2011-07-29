@@ -51,13 +51,13 @@ struct bombclientmode : clientmode
         settexture("packages/hud/radar.png", 3);
         drawradar(x - roffset, y - roffset, rsize);
 
-        // show barrels on minimap
+        // show obstacles on minimap
         loopv(movables)
         {
             dynent *m = (dynent *) movables[i];
             // conoutf("m->state=%i (%i) m->type=%i (%i)", m->state, CS_ALIVE, m->type, BARREL);
             // if(m->state!=CS_ALIVE || m->type!=BARREL) continue;
-            if(!isbarrelalive((movable *) m)) continue;
+            if(!isobstaclealive((movable *) m)) continue;
             settexture("packages/hud/block_yellow_t.png", 3);
             drawblip(d, x, y, s, m->o, 1);
         }
@@ -173,18 +173,18 @@ struct bombclientmode : clientmode
             // bool found = false;
             extentity *playerstart = NULL;
             int maxdistance = -1;
-            for(int i=0; i<ents.length(); i++)
+            loopv(ents)
             {
                 extentity &e = *ents[i];
                 if(e.type==ET_PLAYERSTART) {
+                    conoutf("+- ent=%i type=%i x=%i y=%i z=%i", i, e.type, e.o.x, e.o.y, e.o.z);
                     if(maxdistance < 0)
                     {
-                        conoutf("+- ent=%i", i);
                         int allplayersdistance = 0;
                         loopv(players)
                         {
                             fpsent *t = players[i];
-                            if(t==d || t->state != CS_ALIVE) continue;
+                            if(t==d || t->state != CS_ALIVE) { conoutf("+--- player is not alive or player is you"); continue; }
                             int playerdistance = e.o.dist(t->o);
                             conoutf("+--- player=%i playerdistance=%i", t->clientnum, playerdistance);
                             allplayersdistance += playerdistance;
@@ -192,18 +192,17 @@ struct bombclientmode : clientmode
                         conoutf("+-- allplayersdistance=%i maxdistance=%i", allplayersdistance, maxdistance);
                         maxdistance = allplayersdistance;
                         playerstart = &e; // always pick first playerstart if available
-                        conoutf("+-- picked as playerstart");
-                        d->o = e.o;
-                        d->yaw = e.attr1;
+                        conoutf("+-- picked first as playerstart");
+                        // d->o = e.o;
+                        // d->yaw = e.attr1;
                     }
                     else
                     {
-                        conoutf("+- ent=%i", i);
                         int allplayersdistance = 0;
                         loopv(players)
                         {
                             fpsent *t = players[i];
-                            if(t==d || t->state != CS_ALIVE) continue;
+                            if(t==d || t->state != CS_ALIVE) { conoutf("+--- player is not alive or player is you"); continue; }
                             int playerdistance = e.o.dist(t->o);
                             // int playerdistance = abs(e.o.x-t->o.x)+abs(e.o.y-t->o.y)+abs(e.o.z-t->o.z);
                             conoutf("+--- player=%i playerdistance=%i", t->clientnum, playerdistance);
@@ -215,8 +214,8 @@ struct bombclientmode : clientmode
                             conoutf("+-- picked as new playerstart");
                             maxdistance = allplayersdistance;
                             playerstart = &e;
-                            d->o = e.o;
-                            d->yaw = e.attr1;
+                            // d->o = e.o;
+                            // d->yaw = e.attr1;
                         }
                     }
                 }
@@ -227,7 +226,7 @@ struct bombclientmode : clientmode
                 d->o = playerstart->o;
                 d->yaw = playerstart->attr1;
             }
-            else findplayerspawn(d, -1); // if no playerstart was found, fallback to standard routine
+            else { conoutf("+ didnt found a playerstart!"); findplayerspawn(d, -1); } // if no playerstart was found, fallback to standard routine
         }
     }
 #else

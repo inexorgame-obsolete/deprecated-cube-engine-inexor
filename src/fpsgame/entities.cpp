@@ -20,6 +20,7 @@ namespace entities
             case RESPAWNPOINT:
             case BOX:
             case BARREL:
+            case OBSTACLE:
             case PLATFORM:
             case ELEVATOR:
                 e.attr1 = (int(e.attr1)+180)%360;
@@ -71,7 +72,8 @@ namespace entities
             NULL, NULL,
             NULL, NULL,
             NULL,
-            "ammo/bombs", "ammo/bombradius"
+            "ammo/bombs", "ammo/bombradius", NULL, NULL, NULL, NULL, NULL, NULL,
+            NULL
         };
         return entmdlnames[type];
     }
@@ -101,7 +103,7 @@ namespace entities
                 case CARROT: case RESPAWNPOINT:
                     if(!m_classicsp) continue;
                     break;
-                case I_BOMBS: case I_BOMBRADIUS:
+                case I_BOMBS: case I_BOMBRADIUS: case I_BOMBRESERVED1: case I_BOMBRESERVED2: case I_BOMBRESERVED3: case I_BOMBRESERVED4: case I_BOMBRESERVED5: case I_BOMBRESERVED6:
                     if(!m_bomb) continue;
                     break;
             }
@@ -174,6 +176,7 @@ namespace entities
         if(d!=player1 || isthirdperson())
         {
             //particle_text(d->abovehead(), is.name, PART_TEXT, 2000, 0xFFC864, 4.0f, -8);
+            // TODO: bomb items switch
             particle_icon(d->abovehead(), is.icon%4, is.icon/4, PART_HUD_ICON_GREY, 2000, 0xFFFFFF, 2.0f, -8);
         }
         playsound(itemstats[tindex].sound, d!=player1 ? &d->o : NULL, NULL, 0, 0, -1, 0, 1500);
@@ -373,7 +376,7 @@ namespace entities
         }
     }
 
-    void setspawn(int i, bool on) { if(ents.inrange(i)) ents[i]->spawned = on; else conoutf("COULD NOT SETSPAWN"); }
+    void setspawn(int i, bool on) { if(ents.inrange(i)) ents[i]->spawned = on; else conoutf("entities.cpp::setspawn(387): COULD NOT SETSPAWN"); }
 
     extentity *newentity() { return new fpsentity(); }
     void deleteentity(extentity *e) { delete (fpsentity *)e; }
@@ -595,6 +598,7 @@ namespace entities
             case FLAG:
             case BOX:
             case BARREL:
+            case OBSTACLE:
             case PLATFORM:
             case ELEVATOR:
                 e.attr5 = e.attr4;
@@ -631,6 +635,7 @@ namespace entities
             case RESPAWNPOINT:
             case BOX:
             case BARREL:
+            case OBSTACLE:
             case PLATFORM:
             case ELEVATOR:
             {
@@ -664,7 +669,9 @@ namespace entities
             "box", "barrel",
             "platform", "elevator",
             "flag",
-            "bombs", "bombradius", "", "",
+            "bombs", "bombradius", "bombreserved1", "bombreserved2", "bombreserved3", "bombreserved4", "bombreserved5", "bombreserved6",
+            "obstacle",
+            "", "",
         };
         return i>=0 && size_t(i)<sizeof(entnames)/sizeof(entnames[0]) ? entnames[i] : "";
     }

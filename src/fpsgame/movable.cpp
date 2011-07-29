@@ -10,6 +10,7 @@ namespace game
         BOXWEIGHT = 25,
         BARRELHEALTH = 50,
         BARRELWEIGHT = 25,
+        OBSTACLEHEALTH = 1,
         PLATFORMWEIGHT = 1000,
         PLATFORMSPEED = 8,
         EXPLODEDELAY = 200
@@ -24,8 +25,8 @@ namespace game
         movable(const entity &e) : 
             etype(e.type),
             mapmodel(e.attr2),
-            health(e.type==BARREL ? (e.attr4 ? e.attr4 : BARRELHEALTH) : 0), 
-            weight(e.type==PLATFORM || e.type==ELEVATOR ? PLATFORMWEIGHT : (e.attr3 ? e.attr3 : (e.type==BARREL ? BARRELWEIGHT : BOXWEIGHT))),
+            health(e.type==BARREL ? (e.attr4 ? e.attr4 : BARRELHEALTH) : (e.type==OBSTACLE ? (e.attr3 ? e.attr3 : OBSTACLEHEALTH) : 0)),
+            weight(e.type!=OBSTACLE ? (e.type==PLATFORM || e.type==ELEVATOR ? PLATFORMWEIGHT : (e.attr3 ? e.attr3 : (e.type==BARREL ? BARRELWEIGHT : BOXWEIGHT))) : 0),
             exploding(0),
             tag(e.type==PLATFORM || e.type==ELEVATOR ? e.attr3 : 0),
             dir(e.type==PLATFORM || e.type==ELEVATOR ? (e.attr4 < 0 ? -1 : 1) : 0),
@@ -59,14 +60,15 @@ namespace game
         {
             state = CS_DEAD;
             exploding = 0;
-            if(!m_bomb) game::explode(true, (fpsent *)at, o, this, guns[GUN_BARREL].damage, GUN_BARREL);
-            else game::explode(true, (fpsent *)at, o, this, 0, GUN_BARREL); // in bomb mode barrels does explode, but does not cause any damage
+            if(etype==OBSTACLE) game::explode(false, (fpsent *)at, o, this, 0, GUN_BARREL); // obstacles explodes not only locally and doesn't cause any damage
+            else game::explode(true, (fpsent *)at, o, this, guns[GUN_BARREL].damage, GUN_BARREL);
         }
- 
+
         void damaged(int damage, fpsent *at, int gun = -1)
         {
-            if(etype!=BARREL || state!=CS_ALIVE || exploding) return;
+            if((etype!=BARREL && etype!=OBSTACLE) || state!=CS_ALIVE || exploding) return;
             health -= damage;
+            conoutf("movable.cpp::damaged health new=%i", health);
             if(health>0) return;
             if(gun==GUN_BARREL) exploding = lastmillis + EXPLODEDELAY;
             else explode(at); 
@@ -75,7 +77,7 @@ namespace game
         void suicide()
         {
             state = CS_DEAD;
-            if(etype==BARREL) explode(player1);
+            if(etype==BARREL || etype==OBSTACLE) explode(player1);
         }
     };
 
@@ -92,12 +94,12 @@ namespace game
         loopv(entities::ents) 
         {
             const entity &e = *entities::ents[i];
-            if(e.type!=BOX && e.type!=BARREL && e.type!=PLATFORM && e.type!=ELEVATOR) continue;
+            if(e.type!=BOX && e.type!=BARREL && e.type!=OBSTACLE && e.type!=PLATFORM && e.type!=ELEVATOR) continue;
             movable *m = new movable(e);
             movables.add(m);
             m->o = e.o;
-            if(!m_bomb) entinmap(m);
-            else // in bomb mode movables doesn't care about collision
+            if(e.type!=OBSTACLE) entinmap(m);
+            else // obstacles doesn't care about collision
             {
                 m->o.z += m->eyeheight;
                 m->physstate = PHYS_FLOOR;
@@ -192,9 +194,9 @@ namespace game
         m->damaged(damage, at, gun);
     }
 
-    bool isbarrelalive(movable *m)
+    bool isobstaclealive(movable *m)
     {
-        return (m->state==CS_ALIVE && m->etype==BARREL);
+        return (m->state==CS_ALIVE && m->etype==OBSTACLE);
     }
 }
 

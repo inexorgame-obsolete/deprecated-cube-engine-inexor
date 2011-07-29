@@ -481,7 +481,6 @@ namespace game
         particle_splash(PART_SPARK, 200, 300, v, 0xB49B4B, 0.24f*rfactor);
         playsound(S_RLHIT, &v);
         particle_fireball(v, maxsize, gun!=GUN_GL ? PART_EXPLOSION : PART_EXPLOSION_BLUE, fade, gun!=GUN_GL ? (gun==GUN_BOMB ? 0x004D30 : 0xFF8080) : 0x80FFFF, size);
-        // particle_fireball(v, maxsize, gun!=GUN_GL ? PART_EXPLOSION : PART_EXPLOSION_BLUE, fade, gun!=GUN_GL ? 0xFF8080 : 0x80FFFF, size);
         switch(gun)
         {
             case GUN_RL:
@@ -505,7 +504,7 @@ namespace game
             loopi(numdebris)
                 spawnbouncer(debrisorigin, debrisvel, owner, gun==GUN_BARREL ? BNC_BARRELDEBRIS : BNC_DEBRIS, &light);
         }
-        if(!local && !m_bomb) return;
+        if(!local /* && !m_bomb */) return;
         loopi(numdynents())
         {
             dynent *o = iterdynents(i);
@@ -731,14 +730,15 @@ namespace game
                 // up.z += dist/8;
                 // up.z += 10;
                 // up.add(vec(20,0,10));
-                vec src = from;
+                // vec src = from;
+                vec src(from);
                 float f = 5.0f, dx = to.x-from.x, dy = to.y-from.y, dyy = 15.0f, dzz = 2.0f;
                 src.add(vec(dx/f,dy/f,-dzz));
                 up.add(vec(0, dyy, -dzz*f));
                 if(muzzleflash && d->muzzle.x >= 0)
                     particle_flare(d->muzzle, d->muzzle, 500, PART_MUZZLE_FLASH2, 0xFFFFFF, 2.3f, d);
                 if(muzzlelight) adddynlight(hudgunorigin(gun, d->o, to, d), 40, vec(0.5f, 0.375f, 0.25f), 100, 100, DL_FLASH, 0, vec(0, 0, 0), d);
-                newbouncer(src, up, local, id, d, BNC_BOMB, 5000, 20);
+                newbouncer(src, up, local, id, d, BNC_BOMB, 5000, 20); // TODO: make time variable
                 break;
             }
 

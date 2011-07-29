@@ -48,6 +48,13 @@ enum                            // static entity types
     FLAG,                       // attr1 = angle, attr2 = team
     I_BOMBS,
     I_BOMBRADIUS,
+    I_BOMBRESERVED1,
+    I_BOMBRESERVED2,
+    I_BOMBRESERVED3,
+    I_BOMBRESERVED4,
+    I_BOMBRESERVED5,
+    I_BOMBRESERVED6,
+    OBSTACLE,                   // attr1 = angle, attr2 = idx, attr3 = health
     MAXENTTYPES
 };
 
@@ -314,6 +321,12 @@ enum
     HICON_NEUTRAL_FLAG,
 
     HICON_BOMBRADIUS,
+    HICON_BOMBRESERVED1,
+    HICON_BOMBRESERVED2,
+    HICON_BOMBRESERVED3,
+    HICON_BOMBRESERVED4,
+    HICON_BOMBRESERVED5,
+    HICON_BOMBRESERVED6,
 
     HICON_X       = 20,
     HICON_Y       = 1650,
@@ -331,11 +344,11 @@ static struct itemstat { int add, max, sound; const char *name; int icon, info; 
     {5,     15,    S_ITEMAMMO,   "RI", HICON_RIFLE, GUN_RIFLE},
     {10,    30,    S_ITEMAMMO,   "GL", HICON_GL, GUN_GL},
     {30,    120,   S_ITEMAMMO,   "PI", HICON_PISTOL, GUN_PISTOL},
-    {25,    100,   S_ITEMHEALTH, "H", HICON_HEALTH},
+    {25,    100,   S_ITEMHEALTH, "H",  HICON_HEALTH},
     {10,    1000,  S_ITEMHEALTH, "MH", HICON_HEALTH},
     {100,   100,   S_ITEMARMOUR, "GA", HICON_GREEN_ARMOUR, A_GREEN},
     {200,   200,   S_ITEMARMOUR, "YA", HICON_YELLOW_ARMOUR, A_YELLOW},
-    {20000, 30000, S_ITEMPUP,    "Q", HICON_QUAD},
+    {20000, 30000, S_ITEMPUP,    "Q",  HICON_QUAD},
     {1,     10,    S_ITEMAMMO,   "BO", HICON_BOMB, GUN_BOMB},
     {1,     8,     S_ITEMPUP,    "BR", HICON_BOMBRADIUS},
 };
@@ -359,7 +372,7 @@ static const struct guninfo { short sound, attackdelay, damage, projspeed, part,
     { S_RIFLE,    1500, 100, 0,   0, 30, 2048, "rifle",           "rifle" },
     { S_FLAUNCH,   500,  75, 80,  0, 10, 1024, "grenadelauncher", "gl" },
     { S_PISTOL,    500,  25, 0,   0,  7, 1024, "pistol",          "pistol" },
-    { S_FEXPLODE,  375,   1, 8,   0,  2,    0, "bomb",            "gl" }, // TODO: other sound, other hudmodel // TODO: set damage to 1
+    { S_FEXPLODE,  375,   1, 8,   0,  2,    0, "bomb",            "gl" }, // TODO: other sound, other hudmodel
     { S_FLAUNCH,   200,  20, 50,  PART_FIREBALL1,  1, 1024, "fireball",  NULL },
     { S_ICEBALL,   200,  40, 30,  PART_FIREBALL2,  1, 1024, "iceball",   NULL },
     { S_SLIMEBALL, 200,  30, 160, PART_FIREBALL3,  1, 1024, "slimeball", NULL },
@@ -379,24 +392,24 @@ struct fpsstate
     int ammo[NUMGUNS];
     int aitype, skill;
     int backupweapon;
-    int bombradius; // , maxbombradius;
+    int bombradius;
 
-    fpsstate() : maxhealth(100), aitype(AI_NONE), skill(0), backupweapon(GUN_FIST) {} // , maxbombradius(10)
+    fpsstate() : maxhealth(100), aitype(AI_NONE), skill(0), backupweapon(GUN_FIST) {}
 
     void baseammo(int gun, int k = 2, int scale = 1)
     {
-    	if(gun==GUN_BOMB) ammo[gun] = (itemstats[11].add*k)/scale;
-    	else ammo[gun] = (itemstats[gun-GUN_SG].add*k)/scale;
+        if(gun==GUN_BOMB) ammo[gun] = (itemstats[11].add*k)/scale; // TODO: 11
+        else ammo[gun] = (itemstats[gun-GUN_SG].add*k)/scale;
     }
 
     void addammo(int gun, int k = 1, int scale = 1)
     {
         if(gun==GUN_BOMB) {
-        	itemstat &is = itemstats[11]; // TODO: 11
-        	ammo[gun] = min(ammo[gun] + (is.add*k)/scale, is.max);
+            itemstat &is = itemstats[11]; // TODO: 11
+            ammo[gun] = min(ammo[gun] + (is.add*k)/scale, is.max);
         } else {
-        	itemstat &is = itemstats[gun-GUN_SG];
-        	ammo[gun] = min(ammo[gun] + (is.add*k)/scale, is.max);
+            itemstat &is = itemstats[gun-GUN_SG];
+            ammo[gun] = min(ammo[gun] + (is.add*k)/scale, is.max);
         }
     }
 
@@ -441,8 +454,8 @@ struct fpsstate
 
     void pickup(int type)
     {
-   	if(type>=I_BOMBS && type<=I_BOMBRADIUS) {
-    	    itemstat &is = itemstats[11+type-I_BOMBS];
+       	if(type>=I_BOMBS && type<=I_BOMBRADIUS) {
+            itemstat &is = itemstats[11+type-I_BOMBS];
             switch(type)
             {
                 case I_BOMBRADIUS:
@@ -452,7 +465,7 @@ struct fpsstate
                     ammo[is.info] = min(ammo[is.info]+is.add, is.max);
                     break;
             }
-    	} else if(type>=I_SHELLS || type<=I_QUAD) {
+        } else if(type>=I_SHELLS || type<=I_QUAD) {
             itemstat &is = itemstats[type-I_SHELLS];
             switch(type)
             {
@@ -473,7 +486,7 @@ struct fpsstate
                     ammo[is.info] = min(ammo[is.info]+is.add, is.max);
                     break;
             }
-    	}
+        }
     }
 
     void respawn(int gamemode = NULL)
@@ -484,7 +497,7 @@ struct fpsstate
         quadmillis = 0;
         gunselect = GUN_PISTOL;
         gunwait = 0;
-    	bombradius = 1;
+        bombradius = 1;
         loopi(NUMGUNS) ammo[i] = 0;
         if (m_bomb) backupweapon = GUN_BOMB;
         else backupweapon = GUN_FIST;
@@ -493,7 +506,7 @@ struct fpsstate
 
     void spawnstate(int gamemode)
     {
-    	if(m_demo)
+        if(m_demo)
         {
             gunselect = GUN_FIST;
         }
@@ -795,7 +808,7 @@ namespace game
     extern void rendermovables();
     extern void suicidemovable(movable *m);
     extern void hitmovable(int damage, movable *m, fpsent *at, const vec &vel, int gun);
-    extern bool isbarrelalive(movable *m);
+    extern bool isobstaclealive(movable *m);
 
     // weapon
     enum { BNC_GRENADE, BNC_BOMB, BNC_GIBS, BNC_DEBRIS, BNC_BARRELDEBRIS };
