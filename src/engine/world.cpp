@@ -10,12 +10,23 @@ SVARR(maptitle, "Untitled Map by Unknown");
 VAR(octaentsize, 0, 128, 1024);
 VAR(entselradius, 0, 2, 10);
 
+int efocus = -1, enthover = -1, entorient = -1, oldhover = -1;
+VARF(entediting, 0, 0, 1, { if(!entediting) { entcancel(); efocus = enthover = -1; } });
+
 bool getentboundingbox(extentity &e, ivec &o, ivec &r)
 {
     switch(e.type)
     {
         case ET_EMPTY:
             return false;
+        case 39: // OBSTACLE
+            if(!entediting || !entities::hasmapmodel(e))
+            {
+                o = e.o;
+                o.sub(entselradius);
+                r.x = r.y = r.z = entselradius*2;
+                break;
+            }
         case ET_MAPMODEL:
         {
             model *m = loadmodel(NULL, e.attr2);
@@ -64,6 +75,12 @@ void modifyoctaentity(int flags, int id, cube *c, const ivec &cor, int size, con
             octaentities &oe = *c[i].ext->ents;
             switch(entities::getents()[id]->type)
             {
+                case 39: // OBSTACLE
+                    if(!entediting || !entities::hasmapmodel(*entities::getents()[id]))
+                    {
+                        oe.other.add(id);
+                        break;
+                    }
                 case ET_MAPMODEL:
                     if(loadmodel(NULL, entities::getents()[id]->attr2))
                     {
@@ -92,6 +109,13 @@ void modifyoctaentity(int flags, int id, cube *c, const ivec &cor, int size, con
             octaentities &oe = *c[i].ext->ents;
             switch(entities::getents()[id]->type)
             {
+                /* TODO: maybe this is needed as well?
+                case 39: // OBSTACLE
+                    if(!entediting || !entities::hasmapmodel(*entities::getents()[id]))
+                    {
+                        oe.other.removeobj(id);
+                        break;
+                    } */
                 case ET_MAPMODEL:
                     if(loadmodel(NULL, entities::getents()[id]->attr2))
                     {
@@ -262,10 +286,7 @@ char *entname(entity &e)
 extern selinfo sel;
 extern bool havesel, selectcorners;
 int entlooplevel = 0;
-int efocus = -1, enthover = -1, entorient = -1, oldhover = -1;
 bool undonext = true;
-
-VARF(entediting, 0, 0, 1, { if(!entediting) { entcancel(); efocus = enthover = -1; } });
 
 bool noentedit()
 {
@@ -468,7 +489,7 @@ void entselectionbox(const entity &e, vec &eo, vec &es)
         eo.x += e.o.x;
         eo.y += e.o.y;
         eo.z = e.o.z - entselradius + es.z;
-    } 
+    }
     else if(e.type == ET_MAPMODEL && (m = loadmodel(NULL, e.attr2)))
     {
         m->collisionbox(0, eo, es);
