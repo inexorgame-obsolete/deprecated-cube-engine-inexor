@@ -9,6 +9,7 @@ namespace entities
     extern void writeent(entity &e, char *buf);
     extern void readent(entity &e, char *buf, int ver);
     extern float dropheight(entity &e);
+    extern bool hasmapmodel(extentity &e);
     extern void fixentity(extentity &e);
     extern void entradius(extentity &e, bool color);
     extern bool mayattach(extentity &e);
@@ -54,7 +55,7 @@ namespace game
     extern void edittrigger(const selinfo &sel, int op, int arg1 = 0, int arg2 = 0, int arg3 = 0);
     extern void vartrigger(ident *id);
     extern void dynentcollide(physent *d, physent *o, const vec &dir);
-	extern bool weaponcollide(physent *d, const vec &dir);
+    extern bool weaponcollide(physent *d, const vec &dir);
     extern const char *getclientmap();
     extern const char *getmapinfo();
     extern void resetgamestate();
