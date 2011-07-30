@@ -573,7 +573,7 @@ namespace ai
 
     void itemspawned(int ent)
     {
-        if(entities::ents.inrange(ent) && ((entities::ents[ent]->type >= I_SHELLS && entities::ents[ent]->type <= I_QUAD) || (entities::ents[ent]->type >= I_BOMBS && entities::ents[ent]->type <= I_BOMBRADIUS)) )
+        if(entities::ents.inrange(ent) && ((entities::ents[ent]->type >= I_SHELLS && entities::ents[ent]->type <= I_QUAD) || (entities::ents[ent]->type >= I_BOMBS && entities::ents[ent]->type <= I_BOMBDELAY)) )
         {
             loopv(players) if(players[i] && players[i]->ai && players[i]->aitype == AI_BOT && players[i]->canpickup(entities::ents[ent]->type))
             {

@@ -78,17 +78,20 @@ struct bombclientmode : clientmode
             bouncer *p = bouncers[i];
             if(p->bouncetype != BNC_BOMB) continue;
             settexture("packages/hud/blip_bomb_orange.png", 3);
-            drawblip(d, x, y, s, p->o, p->owner->bombradius * 2);
+            drawblip(d, x, y, s, p->o, p->owner->bombradius * 2); // TODO: sin function to make it swing // TODO: geschwindigkeit der schwingung abhängig von bombdelay
         }
 
         if(d->state == CS_ALIVE && !game::intermission)
         {
-            // bomb radius icon
-            int x = HICON_X + 3*HICON_STEP + (d->quadmillis ? HICON_SIZE + HICON_SPACE : 0);
-            drawicon(HICON_BOMBRADIUS, x, HICON_Y, HICON_SIZE);
+            // bomb radius and bomb delay icons
+            int x1 = HICON_X + 3*HICON_STEP + (d->quadmillis ? HICON_SIZE + HICON_SPACE : 0);
+            int x2 = HICON_X + 4*HICON_STEP + (d->quadmillis ? HICON_SIZE + HICON_SPACE : 0);
+            drawicon(HICON_BOMBRADIUS, x1, HICON_Y, HICON_SIZE);
+            drawicon(HICON_BOMBDELAY, x2, HICON_Y, HICON_SIZE);
             glPushMatrix();
             glScalef(2, 2, 1);
-            draw_textf("%d", (x + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, d->bombradius);
+            draw_textf("%d", (x1 + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, d->bombradius);
+            draw_textf("%f", (x2 + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, 5.5f-(d->bombdelay*0.5f));
             glPopMatrix();
         }
 
@@ -242,6 +245,7 @@ struct bombclientmode : clientmode
     {
         for(int i=0; i<target->state.ammo[GUN_BOMB]/2; i++) pushentity(I_BOMBS, target->state.o);
         for(int i=0; i<target->state.bombradius/2; i++) pushentity(I_BOMBRADIUS, target->state.o);
+        for(int i=0; i<target->state.bombdelay/3; i++) pushentity(I_BOMBDELAY, target->state.o);
     }
 
 #endif

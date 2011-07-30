@@ -48,7 +48,7 @@ enum                            // static entity types
     FLAG,                       // attr1 = angle, attr2 = team
     I_BOMBS,
     I_BOMBRADIUS,
-    I_BOMBRESERVED1,
+    I_BOMBDELAY,
     I_BOMBRESERVED2,
     I_BOMBRESERVED3,
     I_BOMBRESERVED4,
@@ -321,7 +321,7 @@ enum
     HICON_NEUTRAL_FLAG,
 
     HICON_BOMBRADIUS,
-    HICON_BOMBRESERVED1,
+    HICON_BOMBDELAY,
     HICON_BOMBRESERVED2,
     HICON_BOMBRESERVED3,
     HICON_BOMBRESERVED4,
@@ -351,6 +351,7 @@ static struct itemstat { int add, max, sound; const char *name; int icon, info; 
     {20000, 30000, S_ITEMPUP,    "Q",  HICON_QUAD},
     {1,     10,    S_ITEMAMMO,   "BO", HICON_BOMB, GUN_BOMB},
     {1,     8,     S_ITEMPUP,    "BR", HICON_BOMBRADIUS},
+    {1,     7,     S_ITEMPUP,    "Bd", HICON_BOMBDELAY},
 };
 
 #define SGRAYS 20
@@ -393,6 +394,7 @@ struct fpsstate
     int aitype, skill;
     int backupweapon;
     int bombradius;
+    int bombdelay;
 
     fpsstate() : maxhealth(100), aitype(AI_NONE), skill(0), backupweapon(GUN_FIST) {}
 
@@ -427,12 +429,14 @@ struct fpsstate
 
     bool canpickup(int type)
     {
-        if(type>=I_BOMBS && type<=I_BOMBRADIUS) {
+        if(type>=I_BOMBS && type<=I_BOMBDELAY) {
             itemstat &is = itemstats[11+type-I_BOMBS]; // TODO: 11
             switch(type)
             {
                 case I_BOMBRADIUS:
                     return bombradius<is.max;
+                case I_BOMBDELAY:
+                    return bombdelay<is.max;
                 default:
                     return ammo[is.info]<is.max;
             }
@@ -454,12 +458,15 @@ struct fpsstate
 
     void pickup(int type)
     {
-       	if(type>=I_BOMBS && type<=I_BOMBRADIUS) {
+       	if(type>=I_BOMBS && type<=I_BOMBDELAY) {
             itemstat &is = itemstats[11+type-I_BOMBS];
             switch(type)
             {
                 case I_BOMBRADIUS:
                     bombradius = min(bombradius+is.add, is.max);
+                    break;
+                case I_BOMBDELAY:
+                    bombdelay = min(bombdelay+is.add, is.max);
                     break;
                 default:
                     ammo[is.info] = min(ammo[is.info]+is.add, is.max);
@@ -498,6 +505,7 @@ struct fpsstate
         gunselect = GUN_PISTOL;
         gunwait = 0;
         bombradius = 1;
+        bombdelay = 1;
         loopi(NUMGUNS) ammo[i] = 0;
         if (m_bomb) backupweapon = GUN_BOMB;
         else backupweapon = GUN_FIST;

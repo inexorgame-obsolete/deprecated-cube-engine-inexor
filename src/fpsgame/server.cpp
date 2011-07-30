@@ -569,7 +569,7 @@ namespace server
     servmode *smode = NULL;
 
     bool canspawnitem(int type) {
-    	if(m_bomb) return (type>=I_BOMBS && type<=I_BOMBRADIUS);
+    	if(m_bomb) return (type>=I_BOMBS && type<=I_BOMBDELAY);
     	else return !m_noitems && (type>=I_SHELLS && type<=I_QUAD && (!m_noammo || type<I_SHELLS || type>I_CARTRIDGES));
     }
 
@@ -589,6 +589,7 @@ namespace server
             case I_CARTRIDGES: sec = np*4; break;
             case I_BOMBS:
             case I_BOMBRADIUS: sec = np*9; break;
+            case I_BOMBDELAY: sec = np*7; break;
             case I_HEALTH: sec = np*5; break;
             case I_GREENARMOUR:
             case I_YELLOWARMOUR: sec = 20; break;
@@ -1581,7 +1582,6 @@ namespace server
     {
         if(m_teammode)
         {
-            conoutf("checklms team");
             int teamsalive = 0;
             vector<teamscore> teams;
             for(int cn=0; cn<clients.length(); cn++)
@@ -1598,10 +1598,9 @@ namespace server
                 }
                 if(!found) teams.add(teamscore(clients[cn]->team, (clients[cn]->state.state == CS_ALIVE) ? 1 : 0));
             }
-            conoutf("teams: %i", teams.length());
             for(int t=0; t<teams.length(); t++)
             {
-                conoutf("team %s - %i players alive", teams[t].team, teams[t].score);
+                // conoutf("team %s - %i players alive", teams[t].team, teams[t].score);
                 if(teams[t].score > 0) teamsalive++;
             }
             if(teamsalive < 2) startintermission();

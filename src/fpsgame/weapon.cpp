@@ -496,6 +496,7 @@ namespace game
                 break;
             default:
                 adddynlight(v, 1.15f*RL_DAMRAD, vec(2, 1.5f, 1), 900, 100);
+                break;
         }
         if(numdebris)
         {
@@ -738,7 +739,7 @@ namespace game
                 if(muzzleflash && d->muzzle.x >= 0)
                     particle_flare(d->muzzle, d->muzzle, 500, PART_MUZZLE_FLASH2, 0xFFFFFF, 2.3f, d);
                 if(muzzlelight) adddynlight(hudgunorigin(gun, d->o, to, d), 40, vec(0.5f, 0.375f, 0.25f), 100, 100, DL_FLASH, 0, vec(0, 0, 0), d);
-                newbouncer(src, up, local, id, d, BNC_BOMB, 5000, 20); // TODO: make time variable
+                newbouncer(src, up, local, id, d, BNC_BOMB, 5500-(d->bombdelay*500), 20); // TODO: make time variable
                 break;
             }
 
@@ -1095,7 +1096,7 @@ namespace game
 	    {
 	    	bouncer *p = bouncers[i];
 	    	if(p->bouncetype != BNC_BOMB) continue;
-	    	if(!ellipsecollide(d, dir, p->o, vec(0, 0, 0), p->yaw, p->xradius*6.0f, p->yradius*6.0f, p->aboveeye, p->eyeheight)) return false;
+	    	if(!ellipsecollide(d, dir, p->o, vec(0, 0, 0), p->yaw, p->xradius*7.5f, p->yradius*7.5f, p->aboveeye, p->eyeheight)) return false;
 	    }
 		return true;
 	}

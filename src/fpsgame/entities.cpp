@@ -40,7 +40,7 @@ namespace entities
     {
         int t = ents[i]->type;
         if(m_bomb)
-            if(t<I_BOMBS || t>I_BOMBRADIUS) return NULL;
+            if(t<I_BOMBS || t>I_BOMBDELAY) return NULL;
             else return itemstats[11+t-I_BOMBS].name; // TODO: 11
         else
             if(t<I_SHELLS || t>I_QUAD) return NULL;
@@ -51,7 +51,7 @@ namespace entities
     {
         int t = ents[i]->type;
         if (m_bomb)
-            if(t<I_BOMBS || t>I_BOMBRADIUS) return -1;
+            if(t<I_BOMBS || t>I_BOMBDELAY) return -1;
             else return itemstats[11+t-I_BOMBS].icon; // TODO: 11
         else
             if(t<I_SHELLS || t>I_QUAD) return -1;
@@ -72,7 +72,7 @@ namespace entities
             NULL, NULL,
             NULL, NULL,
             NULL,
-            "ammo/bombs", "ammo/bombradius", NULL, NULL, NULL, NULL, NULL, NULL,
+            "ammo/bombs", "ammo/bombradius", "ammo/bombdelay", NULL, NULL, NULL, NULL, NULL,
             NULL
         };
         return entmdlnames[type];
@@ -103,7 +103,7 @@ namespace entities
                 case CARROT: case RESPAWNPOINT:
                     if(!m_classicsp) continue;
                     break;
-                case I_BOMBS: case I_BOMBRADIUS: case I_BOMBRESERVED1: case I_BOMBRESERVED2: case I_BOMBRESERVED3: case I_BOMBRESERVED4: case I_BOMBRESERVED5: case I_BOMBRESERVED6:
+                case I_BOMBS: case I_BOMBRADIUS: case I_BOMBDELAY: case I_BOMBRESERVED2: case I_BOMBRESERVED3: case I_BOMBRESERVED4: case I_BOMBRESERVED5: case I_BOMBRESERVED6:
                     if(!m_bomb) continue;
                     break;
             }
@@ -130,7 +130,7 @@ namespace entities
                     break;
                 default:
                     if(m_bomb) {
-                        if (!e.spawned || e.type<I_BOMBS || e.type>I_BOMBRADIUS) continue;
+                        if (!e.spawned || e.type<I_BOMBS || e.type>I_BOMBDELAY) continue;
                     } else if (!e.spawned || e.type<I_SHELLS || e.type>I_QUAD) continue;
             }
             const char *mdlname = entmodel(e);
@@ -166,7 +166,7 @@ namespace entities
     {
         if(!ents.inrange(n)) return;
         int type = ents[n]->type;
-        if (m_bomb && (type<I_BOMBS || type>I_BOMBRADIUS)) return;
+        if (m_bomb && (type<I_BOMBS || type>I_BOMBDELAY)) return;
         else if (!m_bomb && (type<I_SHELLS || type>I_QUAD)) return;
         ents[n]->spawned = false;
         if(!d) return;
@@ -196,6 +196,11 @@ namespace entities
             case I_BOMBRADIUS:
                 conoutf(CON_GAMEINFO, "\f2you have a permanent +1 damage radius bonus!");
                 playsound(S_V_QUAD, NULL, NULL, 0, 0, -1, 0, 3000); // TODO: other sound
+                break;
+
+            case I_BOMBDELAY:
+                conoutf(CON_GAMEINFO, "\f2your bombs explodes faster!");
+                playsound(S_ITEMHEALTH, NULL, NULL, 0, 0, -1, 0, 3000);
                 break;
         }
     }
@@ -348,7 +353,7 @@ namespace entities
     {
         putint(p, N_ITEMLIST);
         if(m_bomb)
-            loopv(ents) if(ents[i]->type>=I_BOMBS && ents[i]->type<=I_BOMBRADIUS) {
+            loopv(ents) if(ents[i]->type>=I_BOMBS && ents[i]->type<=I_BOMBDELAY) {
                 putint(p, i);
                 putint(p, ents[i]->type);
             }
@@ -365,7 +370,7 @@ namespace entities
     void spawnitems(bool force)
     {
         if(m_bomb)
-            loopv(ents) if(ents[i]->type>=I_BOMBS && ents[i]->type<=I_BOMBRADIUS) {
+            loopv(ents) if(ents[i]->type>=I_BOMBS && ents[i]->type<=I_BOMBDELAY) {
                 ents[i]->spawned = force || m_sp || !server::delayspawn(ents[i]->type);
             }
         else {
@@ -669,7 +674,7 @@ namespace entities
             "box", "barrel",
             "platform", "elevator",
             "flag",
-            "bombs", "bombradius", "bombreserved1", "bombreserved2", "bombreserved3", "bombreserved4", "bombreserved5", "bombreserved6",
+            "bombs", "bombradius", "bombdelay", "bombreserved2", "bombreserved3", "bombreserved4", "bombreserved5", "bombreserved6",
             "obstacle",
             "", "",
         };

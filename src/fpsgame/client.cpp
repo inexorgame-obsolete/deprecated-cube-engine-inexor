@@ -1353,7 +1353,7 @@ namespace game
                 int id = getint(p), type = getint(p);
                 vec itemloc;
                 loopk(3) itemloc[k] = getint(p)/DMF;
-            	if(entities::getents().length()<=id) {
+                if(entities::getents().length()<=id) {
                     while(entities::getents().length()<id) entities::getents().add(entities::newentity())->type = ET_EMPTY;
                     extentity *e = newentity(false, itemloc, type, 0, 0, 0, 0, 0);
                     entities::getents().add(e);
@@ -1364,7 +1364,7 @@ namespace game
                     playsound(S_ITEMSPAWN, &entities::ents[id]->o, NULL, 0, 0, -1, 0, 1500);
                     int icon = entities::itemicon(id);
                     if(icon >= 0) particle_icon(vec(0.0f, 0.0f, 4.0f).add(entities::ents[id]->o), icon%4, icon/4, PART_HUD_ICON, 2000, 0xFFFFFF, 2.0f, -8);
-            	}
+                }
                 break;
             }
 
