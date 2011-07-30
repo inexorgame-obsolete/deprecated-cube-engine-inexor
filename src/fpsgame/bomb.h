@@ -167,7 +167,7 @@ struct bombclientmode : clientmode
             extentity &e = *ents[i];
             if(e.type==ET_PLAYERSTART && e.attr2 <= 0) playerstarts.add(&e);
         }
-        conoutf("got %i playerstarts", playerstarts.length());
+        // conoutf("got %i playerstarts", playerstarts.length());
         int found=0;
         int next=0;
         while(found<players.length())
@@ -183,7 +183,7 @@ struct bombclientmode : clientmode
             }
             next++;
         }
-        conoutf("got %i players", pl.length());
+        // conoutf("got %i players", pl.length());
         /*
         if(m_teammode)
         {
@@ -195,7 +195,7 @@ struct bombclientmode : clientmode
             loopv(pl)
             {
                 fpsent *p = pl[i];
-                conoutf("placing player %i (cn=%i) on playerstart %i", i, pl[i]->clientnum, i%playerstarts.length());
+                // conoutf("placing player %i (cn=%i) on playerstart %i", i, pl[i]->clientnum, i%playerstarts.length());
                 if(p!=d) continue;
                 extentity &e = *playerstarts[i%playerstarts.length()];
                 d->o = e.o;
