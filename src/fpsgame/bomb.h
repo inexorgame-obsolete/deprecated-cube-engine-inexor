@@ -159,76 +159,55 @@ struct bombclientmode : clientmode
 
     void pickspawn(fpsent *d)
     {
-        conoutf("pickspawn for player %i", d->clientnum);
+        const vector<extentity *> &ents = entities::getents();
+        vector<extentity *> playerstarts;
+        vector<fpsent *> pl;
+        loopv(ents)
+        {
+            extentity &e = *ents[i];
+            if(e.type==ET_PLAYERSTART && e.attr2 <= 0) playerstarts.add(&e);
+        }
+        conoutf("got %i playerstarts", playerstarts.length());
+        int found=0;
+        int next=0;
+        while(found<players.length())
+        {
+            loopv(players)
+            {
+                fpsent *p = players[i];
+                if(p->clientnum == next)
+                {
+                    pl.add(p);
+                    found++;
+                }
+            }
+            next++;
+        }
+        conoutf("got %i players", pl.length());
+        /*
         if(m_teammode)
         {
-            conoutf("+ teammode");
-            //
-            // findplayerspawn(d, pickteamspawn(d->team));
+
         }
         else
         {
-            // find playerstart with maximum distance
-            const vector<extentity *> &ents = entities::getents();
-            // bool found = false;
-            extentity *playerstart = NULL;
-            int maxdistance = -1;
-            loopv(ents)
+        */
+            loopv(pl)
             {
-                extentity &e = *ents[i];
-                if(e.type==ET_PLAYERSTART) {
-                    conoutf("+- ent=%i type=%i x=%i y=%i z=%i", i, e.type, e.o.x, e.o.y, e.o.z);
-                    if(maxdistance < 0)
-                    {
-                        int allplayersdistance = 0;
-                        loopv(players)
-                        {
-                            fpsent *t = players[i];
-                            if(t==d || t->state != CS_ALIVE) { conoutf("+--- player is not alive or player is you"); continue; }
-                            int playerdistance = e.o.dist(t->o);
-                            conoutf("+--- player=%i playerdistance=%i", t->clientnum, playerdistance);
-                            allplayersdistance += playerdistance;
-                        }
-                        conoutf("+-- allplayersdistance=%i maxdistance=%i", allplayersdistance, maxdistance);
-                        maxdistance = allplayersdistance;
-                        playerstart = &e; // always pick first playerstart if available
-                        conoutf("+-- picked first as playerstart");
-                        // d->o = e.o;
-                        // d->yaw = e.attr1;
-                    }
-                    else
-                    {
-                        int allplayersdistance = 0;
-                        loopv(players)
-                        {
-                            fpsent *t = players[i];
-                            if(t==d || t->state != CS_ALIVE) { conoutf("+--- player is not alive or player is you"); continue; }
-                            int playerdistance = e.o.dist(t->o);
-                            // int playerdistance = abs(e.o.x-t->o.x)+abs(e.o.y-t->o.y)+abs(e.o.z-t->o.z);
-                            conoutf("+--- player=%i playerdistance=%i", t->clientnum, playerdistance);
-                            allplayersdistance += playerdistance;
-                        }
-                        conoutf("+-- allplayersdistance=%i maxdistance=%i", allplayersdistance, maxdistance);
-                        if(allplayersdistance > maxdistance)
-                        {
-                            conoutf("+-- picked as new playerstart");
-                            maxdistance = allplayersdistance;
-                            playerstart = &e;
-                            // d->o = e.o;
-                            // d->yaw = e.attr1;
-                        }
-                    }
-                }
+                fpsent *p = pl[i];
+                conoutf("placing player %i (cn=%i) on playerstart %i", i, pl[i]->clientnum, i%playerstarts.length());
+                if(p!=d) continue;
+                extentity &e = *playerstarts[i%playerstarts.length()];
+                d->o = e.o;
+                d->yaw = e.attr1;
+                d->pitch = 0;
+                d->roll = 0;
+                entinmap(d);
+                break;
             }
-            if(playerstart!=NULL)
-            {
-                conoutf("+ apply playerstart");
-                d->o = playerstart->o;
-                d->yaw = playerstart->attr1;
-            }
-            else { conoutf("+ didnt found a playerstart!"); findplayerspawn(d, -1); } // if no playerstart was found, fallback to standard routine
-        }
+        /* } */
     }
+
 #else
 
     bool gamerunning() {
