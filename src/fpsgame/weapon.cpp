@@ -190,8 +190,8 @@ namespace game
             	bnc.radius = bnc.xradius = bnc.yradius = bnc.eyeheight = bnc.aboveeye = 0.5f;
                 break;
             case BNC_BOMB:
-                bnc.radius = bnc.xradius = bnc.yradius = 2.5f; // TODO: adjust radius as soon as projectile model works 3.0
-                bnc.eyeheight = bnc.aboveeye = 1.5f; // 2.5f;
+                bnc.radius = bnc.xradius = bnc.yradius = 2.5f;
+                bnc.eyeheight = bnc.aboveeye = 1.5f;
                 break;
             default:
                 bnc.radius = bnc.xradius = bnc.yradius = bnc.eyeheight = bnc.aboveeye = 1.5f;
@@ -224,7 +224,7 @@ namespace game
                 if(owner==hudplayer() && !isthirdperson()) bnc.offset.sub(owner->o).rescale(16).add(owner->o);
                 break;
             case BNC_BOMB:
-                avoidcollision(&bnc, dir, owner, 4.5f); // we need much more radius for bombs // TODO: adjust this value 4.0 , 2.3
+                avoidcollision(&bnc, dir, owner, 4.5f); // we need much more radius for bombs
                 bnc.offset = hudgunorigin(GUN_BOMB, from, to, owner);
                 if(owner==hudplayer() && !isthirdperson()) bnc.offset.sub(owner->o).rescale(2).add(owner->o);
                 break;
@@ -470,6 +470,16 @@ namespace game
         }
     }
 
+    void radialbombeffect(bouncer *b, const vec &v)
+    {
+        if(b->bouncetype!=BNC_BOMB) return;
+        vec dir;
+        float dist = b->o.dist(v, dir);
+        dir.div(dist);
+        if(dist<0) dist = 0;
+        if(dist < (b->owner->bombradius * RL_DAMRAD)) b->lifetime = 100;
+    }
+
     void explode(bool local, fpsent *owner, const vec &v, dynent *safe, int damage, int gun)
     {
         int rfactor = gun != GUN_BOMB ? 1 : owner->bombradius,
@@ -512,6 +522,12 @@ namespace game
             if(o==safe) continue;
             radialeffect(o, v, damage, owner, gun);
         }
+        if(m_bomb && gun==GUN_BOMB) // in bomb mode projectiles hits other projectiles
+        {
+            int len = bouncers.length();
+            loopi(len) radialbombeffect(bouncers[i], v);
+        }
+
     }
 
     void projsplash(projectile &p, vec &v, dynent *safe, int damage)
@@ -728,10 +744,6 @@ namespace game
             	// TODO: Bomb
                 float dist = from.dist(to);
                 vec up = to;
-                // up.z += dist/8;
-                // up.z += 10;
-                // up.add(vec(20,0,10));
-                // vec src = from;
                 vec src(from);
                 float f = 5.0f, dx = to.x-from.x, dy = to.y-from.y, dyy = 15.0f, dzz = 2.0f;
                 src.add(vec(dx/f,dy/f,-dzz));
@@ -739,7 +751,7 @@ namespace game
                 if(muzzleflash && d->muzzle.x >= 0)
                     particle_flare(d->muzzle, d->muzzle, 500, PART_MUZZLE_FLASH2, 0xFFFFFF, 2.3f, d);
                 if(muzzlelight) adddynlight(hudgunorigin(gun, d->o, to, d), 40, vec(0.5f, 0.375f, 0.25f), 100, 100, DL_FLASH, 0, vec(0, 0, 0), d);
-                newbouncer(src, up, local, id, d, BNC_BOMB, 5500-(d->bombdelay*500), 20); // TODO: make time variable
+                newbouncer(src, up, local, id, d, BNC_BOMB, 5500-(d->bombdelay*500), 20);
                 break;
             }
 
