@@ -1,5 +1,6 @@
 // weapon.cpp: all shooting and effects code, projectile management
 #include "game.h"
+#include "engine.h"
 
 namespace game
 {
@@ -971,6 +972,18 @@ namespace game
         loopi(sizeof(barreldebrisnames)/sizeof(barreldebrisnames[0])) preloadmodel(barreldebrisnames[i]);
     }
 
+// Static values for the bomb barrier particles
+	
+#define bbarr_type 8
+#define bbarr_dir 3
+#define bbarr_num 10
+#define bbarr_fade 200
+#define bbarr_size 0.6f
+#define bbarr_gravity 0
+#define bbarr_overlap 4.0f
+#define bbarr_height 5.0f
+#define bbarr_color 0x00E22D
+	
     void renderbouncers()
     {
         float yaw, pitch;
@@ -990,9 +1003,17 @@ namespace game
             pitch = -bnc.roll;
             if(bnc.bouncetype==BNC_GRENADE)
                 rendermodel(&bnc.light, "projectiles/grenade", ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_DYNSHADOW);
-            else if(bnc.bouncetype==BNC_BOMB)
+            else if(bnc.bouncetype==BNC_BOMB) {
                 rendermodel(&bnc.light, "projectiles/bomb", ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_DYNSHADOW);
-            else
+				
+				
+				int radius = 20; // TODO: Relate to the collision
+				vec mov_from(0, 0, radius-bbarr_overlap); // shift the lower part of the Barrier upwards
+				vec mov_to(0, 0, -radius+bbarr_height); // shift the upper part downwards
+				
+				regularshape(bbarr_type, radius, bbarr_color, bbarr_dir, bbarr_num, b_barrfade, bnc.o, bbarr_size, bbarr_gravity, mov_from, mov_to);
+			}
+			else
             {
                 const char *mdl = NULL;
                 int cull = MDL_CULL_VFC|MDL_CULL_DIST|MDL_CULL_OCCLUDED;

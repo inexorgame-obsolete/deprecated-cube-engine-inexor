@@ -521,6 +521,8 @@ extern void seedparticles();
 extern void updateparticles();
 extern void renderparticles(bool mainpass = false);
 extern bool printparticles(extentity &e, char *buf);
+extern void regularshape(int type, int radius, int color, int dir, int num, int fade, const vec &p, float size, int gravity);
+extern void regularshape(int type, int radius, int color, int dir, int num, int fade, const vec &p, float size, int gravity, const vec &modfrom, const vec &modto); // bomberman
 
 // decal
 extern void initdecals();

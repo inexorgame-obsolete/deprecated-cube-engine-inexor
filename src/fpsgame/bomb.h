@@ -160,8 +160,7 @@ struct bombclientmode : clientmode
         d->state = CS_SPECTATOR;
     }
 
-    void pickspawn(fpsent *d)
-    {
+    void pickspawn(fpsent *d) {
         const vector<extentity *> &ents = entities::getents();
         vector<extentity *> playerstarts;
         vector<fpsent *> pl;
@@ -170,6 +169,13 @@ struct bombclientmode : clientmode
             extentity &e = *ents[i];
             if(e.type==ET_PLAYERSTART && e.attr2 <= 0) playerstarts.add(&e);
         }
+	
+		// mapc says: This function fails if there are no playerstarts...
+		if (playerstarts.length() <= 0) {
+			findplayerspawn(d);
+			return;
+		}
+	
         // conoutf("got %i playerstarts", playerstarts.length());
         int found=0;
         int next=0;
