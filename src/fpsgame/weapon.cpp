@@ -1011,7 +1011,7 @@ namespace game
 				vec mov_from(0, 0, radius-bbarr_overlap); // shift the lower part of the Barrier upwards
 				vec mov_to(0, 0, -radius+bbarr_height); // shift the upper part downwards
 				
-				regularshape(bbarr_type, radius, bbarr_color, bbarr_dir, bbarr_num, b_barrfade, bnc.o, bbarr_size, bbarr_gravity, mov_from, mov_to);
+				regularshape(bbarr_type, radius, bbarr_color, bbarr_dir, bbarr_num, bbarr_fade, bnc.o, bbarr_size, bbarr_gravity, mov_from, mov_to);
 			}
 			else
             {

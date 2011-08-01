@@ -22,7 +22,7 @@ struct bombclientmode : clientmode
         glEnd();
     }
 
-    void drawblip(fpsent *d, float x, float y, float s, const vec &pos, int size_factor)
+    void drawblip(fpsent *d, float x, float y, float s, const vec &pos, float size_factor)
     {
         float scale = calcradarscale();
         vec dir = d->o;
@@ -59,7 +59,7 @@ struct bombclientmode : clientmode
             // if(m->state!=CS_ALIVE || m->type!=BARREL) continue;
             if(!isobstaclealive((movable *) m)) continue;
             settexture("packages/hud/block_yellow_t.png", 3);
-            drawblip(d, x, y, s, m->o, 1);
+            drawblip(d, x, y, s, m->o, 1.0f);
         }
 
         // show other players on minimap
@@ -69,7 +69,7 @@ struct bombclientmode : clientmode
             if(p == player1 || p->state!=CS_ALIVE) continue;
             if(!m_teammode || strcmp(p->team, player1->team) != 0) settexture("packages/hud/blip_red.png", 3);
             else settexture("packages/hud/blip_blue.png", 3);
-            drawblip(d, x, y, s, p->o, 2);
+            drawblip(d, x, y, s, p->o, 2.0f);
         }
 
         // show fired bombs on minimap
@@ -78,7 +78,9 @@ struct bombclientmode : clientmode
             bouncer *p = bouncers[i];
             if(p->bouncetype != BNC_BOMB) continue;
             settexture("packages/hud/blip_bomb_orange.png", 3);
-            drawblip(d, x, y, s, p->o, p->owner->bombradius * 2); // TODO: sin function to make it swing // TODO: geschwindigkeit der schwingung abhängig von bombdelay
+            struct timeval t;
+            gettimeofday(&t, NULL);
+            drawblip(d, x, y, s, p->o, 0.5f + p->owner->bombradius * 1.5f * sin((t.tv_usec / (5.5f-p->owner->bombdelay)) / 200000.0f));
         }
 
         if(d->state == CS_ALIVE && !game::intermission)
@@ -91,7 +93,7 @@ struct bombclientmode : clientmode
             glPushMatrix();
             glScalef(2, 2, 1);
             draw_textf("%d", (x1 + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, d->bombradius);
-            draw_textf("%f", (x2 + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, 5.5f-(d->bombdelay*0.5f));
+            draw_textf("%1.1fs", (x2 + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, 5.5f-(d->bombdelay*0.5f));
             glPopMatrix();
         }
 
@@ -99,9 +101,9 @@ struct bombclientmode : clientmode
         {
             int pw, ph, tw, th;
             text_bounds("  ", pw, ph);
-            text_bounds("YOU WIN", tw, th);
+            text_bounds(m_teammode ? "YOUR TEAM WINS" : "YOU WIN", tw, th);
             th = max(th, ph);
-            draw_text("YOU WIN", w*1800/h - tw - pw, 1650 - th);
+            draw_text(m_teammode ? "YOUR TEAM WINS" : "YOU WIN", w*1800/h - tw - pw, 1650 - th);
         }
         else if(player1->state != CS_ALIVE && !game::intermission)
         {
@@ -145,7 +147,7 @@ struct bombclientmode : clientmode
     {
         d->state = CS_SPECTATOR;
         if(d!=player1) return;
-        conoutf("killed!");
+        // conoutf("killed!");
         following = actor->clientnum;
         player1->yaw = actor->yaw;
         player1->pitch = actor->pitch;
@@ -155,30 +157,32 @@ struct bombclientmode : clientmode
 
     void gameconnect(fpsent *d)
     {
-        conoutf("gameconnect");
+        // conoutf("gameconnect");
         d->deaths++;
         d->state = CS_SPECTATOR;
     }
 
     void pickspawn(fpsent *d) {
+        int team = m_teammode ? (strcmp(d->team, "good") == 0 ? 1 : 2) : 0;
         const vector<extentity *> &ents = entities::getents();
-        vector<extentity *> playerstarts;
-        vector<fpsent *> pl;
+        vector<vector<extentity *> > playerstarts;
+        for(int i=0;i<3;i++) playerstarts.add(vector<extentity *>());
         loopv(ents)
         {
             extentity &e = *ents[i];
-            if(e.type==ET_PLAYERSTART && e.attr2 <= 0) playerstarts.add(&e);
+            if(e.type!=ET_PLAYERSTART) continue;
+            if(m_teammode) playerstarts[e.attr2].add(&e);
+            else if(e.attr2 <= 0) playerstarts[0].add(&e); // in non-teammode only use non-teammode playerstarts
         }
-	
-		// mapc says: This function fails if there are no playerstarts...
-		if (playerstarts.length() <= 0) {
-			findplayerspawn(d);
-			return;
-		}
-	
-        // conoutf("got %i playerstarts", playerstarts.length());
-        int found=0;
-        int next=0;
+        if(playerstarts[team].length() <= 0)
+        {
+            conoutf("could not find playerstart for player %i of team %i", d->clientnum, team);
+            findplayerspawn(d, -1);
+            return;
+        }
+        conoutf("got %i playerstarts for team %i", playerstarts[team].length(), team);
+        vector<fpsent *> pl;
+        int found=0, next=0;
         while(found<players.length())
         {
             loopv(players)
@@ -192,29 +196,22 @@ struct bombclientmode : clientmode
             }
             next++;
         }
-        // conoutf("got %i players", pl.length());
-        /*
-        if(m_teammode)
+        struct timeval t;
+        gettimeofday(&t, NULL);
+        int seed = t.tv_sec - (t.tv_sec % 23); // seed have to be the same for all players even without network messages
+        loopv(pl)
         {
-
+            fpsent *p = pl[i];
+            conoutf("placing player %i (cn=%i, team=%s) on playerstart %i", i, pl[i]->clientnum, pl[i]->team, (i+seed)%playerstarts[team].length());
+            if(p!=d) continue;
+            extentity &e = *playerstarts[team][(i+seed)%playerstarts[team].length()];
+            d->o = e.o;
+            d->yaw = e.attr1;
+            d->pitch = 0;
+            d->roll = 0;
+            entinmap(d);
+            break;
         }
-        else
-        {
-        */
-            loopv(pl)
-            {
-                fpsent *p = pl[i];
-                // conoutf("placing player %i (cn=%i) on playerstart %i", i, pl[i]->clientnum, i%playerstarts.length());
-                if(p!=d) continue;
-                extentity &e = *playerstarts[i%playerstarts.length()];
-                d->o = e.o;
-                d->yaw = e.attr1;
-                d->pitch = 0;
-                d->roll = 0;
-                entinmap(d);
-                break;
-            }
-        /* } */
     }
 
 #else
