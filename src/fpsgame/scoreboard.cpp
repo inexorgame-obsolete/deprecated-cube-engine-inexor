@@ -64,10 +64,6 @@ namespace game
         loopv(teamscores) best.add(teamscores[i].team);
     }
 
-    struct scoregroup : teamscore
-    {
-        vector<fpsent *> players;
-    };
     static vector<scoregroup *> groups;
     static vector<fpsent *> spectators;
 
@@ -217,6 +213,8 @@ namespace game
                 loopscoregroup(o, g.textf("%d", 0xFFFFDD, NULL, o->frags));
                 g.poplist();
             }
+
+            if(cmode) cmode->renderscoreboard(g, sg, fgcolor, bgcolor);
 
             if(multiplayer(false) || demoplayback)
             {

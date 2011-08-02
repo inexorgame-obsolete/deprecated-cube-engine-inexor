@@ -711,6 +711,11 @@ namespace entities
 
 namespace game
 {
+    struct scoregroup : teamscore
+    {
+        vector<fpsent *> players;
+    };
+
     struct clientmode
     {
         virtual ~clientmode() {}
@@ -737,6 +742,7 @@ namespace game
         virtual bool aipursue(fpsent *d, ai::aistate &b) { return false; }
         virtual void killed(fpsent *d, fpsent *actor) {}
         virtual void gameconnect(fpsent *d) {}
+        virtual void renderscoreboard(g3d_gui &g, scoregroup &sg, int fgcolor, int bgcolor) {}
     };
 
     extern clientmode *cmode;

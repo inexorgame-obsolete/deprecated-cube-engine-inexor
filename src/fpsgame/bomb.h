@@ -4,11 +4,17 @@
 #ifdef SERVMODE
 struct bombservmode : servmode
 #else
+
+VARP(showbombs, 0, 1, 1);
+VARP(showbombradius, 0, 1, 1);
+VARP(showbombdelay, 0, 1, 1);
+
 struct bombclientmode : clientmode
 #endif
 {
 
 #ifndef SERVMODE
+
     void drawicon(int icon, float x, float y, float sz)
     {
         int bicon = icon - HICON_BOMBRADIUS;
@@ -141,6 +147,46 @@ struct bombclientmode : clientmode
     void rendergame()
     {
     	renderplayersposindicator();
+    }
+
+    void renderscoreboard(g3d_gui &g, game::scoregroup &sg, int fgcolor, int bgcolor)
+    {
+        if(showbombs)
+        {
+            g.pushlist();
+            g.strut(7);
+            g.text("bombs", fgcolor);
+            loopv(sg.players)
+            {
+                fpsent *d = sg.players[i];
+                g.textf("%d", 0xFFFFDD, NULL, d->ammo[GUN_BOMB]);
+            }
+            g.poplist();
+        }
+        if(showbombdelay)
+        {
+            g.pushlist();
+            g.strut(7);
+            g.text("time", fgcolor);
+            loopv(sg.players)
+            {
+                fpsent *d = sg.players[i];
+                g.textf("%1.1fs", 0xFFFFDD, NULL, 5.5f-(d->bombdelay*0.5f));
+            }
+            g.poplist();
+        }
+        if(showbombradius)
+        {
+            g.pushlist();
+            g.strut(7);
+            g.text("radius", fgcolor);
+            loopv(sg.players)
+            {
+                fpsent *d = sg.players[i];
+                g.textf("%d", 0xFFFFDD, NULL, d->bombradius);
+            }
+            g.poplist();
+        }
     }
 
     void killed(fpsent *d, fpsent *actor)
