@@ -1003,17 +1003,19 @@ namespace game
             pitch = -bnc.roll;
             if(bnc.bouncetype==BNC_GRENADE)
                 rendermodel(&bnc.light, "projectiles/grenade", ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_DYNSHADOW);
-            else if(bnc.bouncetype==BNC_BOMB) {
+            else if(bnc.bouncetype==BNC_BOMB)
+            {
                 rendermodel(&bnc.light, "projectiles/bomb", ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_DYNSHADOW);
-				
-				
-				int radius = 20; // TODO: Relate to the collision
-				vec mov_from(0, 0, radius-bbarr_overlap); // shift the lower part of the Barrier upwards
-				vec mov_to(0, 0, -radius+bbarr_height); // shift the upper part downwards
-				
-				regularshape(bbarr_type, radius, bbarr_color, bbarr_dir, bbarr_num, bbarr_fade, bnc.o, bbarr_size, bbarr_gravity, mov_from, mov_to);
-			}
-			else
+                int radius = 20; // TODO: Relate to the collision
+                vec mov_from(0, 0, radius-bbarr_overlap); // shift the lower part of the Barrier upwards
+                vec mov_to(0, 0, -radius+bbarr_height); // shift the upper part downwards
+                vec floor = bnc.o;
+                floor.z = floor.z - raycube(floor, vec(0, 0, -1), 0.2f, RAY_CLIPMAT);
+                // TODO: PPP
+                // conoutf("particle barrier: bnc.o.z=%2.2f raycube=%2.2f floor.z=%2.2f", bnc.o.z, raycube(floor, vec(0, 0, -1), 0.5f, RAY_CLIPMAT), floor.z);
+                regularshape(bbarr_type, radius, bbarr_color, bbarr_dir, bbarr_num, bbarr_fade, floor, bbarr_size, bbarr_gravity, mov_from, mov_to);
+            }
+            else
             {
                 const char *mdl = NULL;
                 int cull = MDL_CULL_VFC|MDL_CULL_DIST|MDL_CULL_OCCLUDED;
@@ -1129,7 +1131,9 @@ namespace game
 	    {
 	    	bouncer *p = bouncers[i];
 	    	if(p->bouncetype != BNC_BOMB) continue;
-	    	if(!ellipsecollide(d, dir, p->o, vec(0, 0, 0), p->yaw, p->xradius*7.5f, p->yradius*7.5f, p->aboveeye, p->eyeheight)) return false;
+	    	// TODO: PPP
+        // conoutf("weaponcollide p->o.z=%2.2f raycube=%2.2f p->eyeheight=%2.2f", p->o.z, raycube(p->o, vec(0, 0, -1), 0.2f, RAY_CLIPMAT), p->eyeheight);
+	    	if(!ellipsecollide(d, dir, p->o, vec(0, 0, 0), p->yaw, p->xradius*7.5f, p->yradius*7.5f, p->aboveeye, p->o.z - raycube(p->o, vec(0, 0, -1), 0.2f, RAY_CLIPMAT))) return false;
 	    }
 		return true;
 	}
