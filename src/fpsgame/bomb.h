@@ -84,9 +84,11 @@ struct bombclientmode : clientmode
             bouncer *p = bouncers[i];
             if(p->bouncetype != BNC_BOMB) continue;
             settexture("packages/hud/blip_bomb_orange.png", 3);
-            struct timeval t;
-            gettimeofday(&t, NULL);
-            drawblip(d, x, y, s, p->o, 0.5f + p->owner->bombradius * 1.5f * sin((t.tv_usec / (5.5f-p->owner->bombdelay)) / 200000.0f));
+            // struct timeval t;
+            // gettimeofday(&t, NULL);
+            // drawblip(d, x, y, s, p->o, 0.5f + p->owner->bombradius * 1.5f * sin((t.tv_usec / (5.5f-p->owner->bombdelay)) / 200000.0f));
+            Uint32 t = SDL_GetTicks();
+            drawblip(d, x, y, s, p->o, 0.5f + p->owner->bombradius * 1.5f * sin((t / (5.5f-p->owner->bombdelay)) / 100.0f));
         }
 
         if(d->state == CS_ALIVE && !game::intermission)
@@ -193,7 +195,6 @@ struct bombclientmode : clientmode
     {
         d->state = CS_SPECTATOR;
         if(d!=player1) return;
-        // conoutf("killed!");
         following = actor->clientnum;
         player1->yaw = actor->yaw;
         player1->pitch = actor->pitch;
@@ -203,12 +204,12 @@ struct bombclientmode : clientmode
 
     void gameconnect(fpsent *d)
     {
-        // conoutf("gameconnect");
         d->deaths++;
         d->state = CS_SPECTATOR;
     }
 
-    void pickspawn(fpsent *d) {
+    void pickspawn(fpsent *d)
+    {
         int team = m_teammode ? (strcmp(d->team, "good") == 0 ? 1 : 2) : 0;
         const vector<extentity *> &ents = entities::getents();
         vector<vector<extentity *> > playerstarts;
@@ -242,9 +243,14 @@ struct bombclientmode : clientmode
             }
             next++;
         }
-        struct timeval t;
-        gettimeofday(&t, NULL);
-        int seed = t.tv_sec - (t.tv_sec % 23); // seed have to be the same for all players even without network messages
+        // struct timeval t;
+        // gettimeofday(&t, NULL);
+        // int seed = t.tv_sec - (t.tv_sec % 23); // seed have to be the same for all players even without network messages
+        // Uint32 t = SDL_GetTicks() / 1000;
+        time_t t = time(NULL);
+        conoutf("SDL_GetTicks() = %i", t);
+
+        int seed = t - (t % 23); // seed have to be the same for all players even without network messages
         loopv(pl)
         {
             fpsent *p = pl[i];
@@ -284,9 +290,7 @@ struct bombclientmode : clientmode
         int id = sents.length()-1;
         sents[id].type = ments[id].type;
         sents[id].spawned = true;
-        conoutf("ments.length=%i sents.length=%i", ments.length(), sents.length());
         ivec io(o.mul(DMF));
-        conoutf("SEND N_ITEMPUSH: id=%i type=%i pos x=%i y=%i z=%i", id, type, io.x-120+rnd(240), io.y-120+rnd(240), io.z + rnd(2)*120);
         sendf(-1, 1, "ri6", N_ITEMPUSH, id, type, io.x-120+rnd(240), io.y-120+rnd(240), io.z + rnd(2)*180);
     }
 
