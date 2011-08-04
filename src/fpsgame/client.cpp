@@ -1482,6 +1482,10 @@ namespace game
                 timeupdate(getint(p));
                 break;
 
+            case N_TIMESTAMP:
+                timestampupdate(getint(p));
+                break;
+
             case N_SERVMSG:
                 getstring(text, p);
                 conoutf("%s", text);

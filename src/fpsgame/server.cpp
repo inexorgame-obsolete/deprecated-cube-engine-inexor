@@ -30,6 +30,7 @@ namespace server
 
     struct clientinfo;
     int gamemode = 0;
+    int timestamp = 0;
 
     struct gameevent
     {
@@ -1216,6 +1217,7 @@ namespace server
         putint(p, gs.armour);
         putint(p, gs.armourtype);
         putint(p, gs.gunselect);
+        // TODO: gs.bombdelay gs.bombradius
         loopi(GUN_PISTOL-GUN_SG+1) putint(p, gs.ammo[GUN_SG+i]);
     }
 
@@ -1242,6 +1244,12 @@ namespace server
         packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
         int chan = welcomepacket(p, ci);
         sendpacket(ci->clientnum, chan, p.finalize());
+    }
+
+    void sendtimestamp(bool update = false)
+    {
+        if(update) timestamp = time(NULL);
+        sendf(-1, 1, "ri2", N_TIMESTAMP, timestamp, 1);
     }
 
     void putinitclient(clientinfo *ci, packetbuf &p)
@@ -1451,6 +1459,7 @@ namespace server
         else smode = NULL;
 
         if(m_timed && smapname[0]) sendf(-1, 1, "ri2", N_TIMEUP, gamemillis < gamelimit && !interm ? max((gamelimit - gamemillis)/1000, 1) : 0);
+        sendtimestamp(true);
         loopv(clients)
         {
             clientinfo *ci = clients[i];

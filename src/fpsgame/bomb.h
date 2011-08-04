@@ -84,11 +84,7 @@ struct bombclientmode : clientmode
             bouncer *p = bouncers[i];
             if(p->bouncetype != BNC_BOMB) continue;
             settexture("packages/hud/blip_bomb_orange.png", 3);
-            // struct timeval t;
-            // gettimeofday(&t, NULL);
-            // drawblip(d, x, y, s, p->o, 0.5f + p->owner->bombradius * 1.5f * sin((t.tv_usec / (5.5f-p->owner->bombdelay)) / 200000.0f));
-            Uint32 t = SDL_GetTicks();
-            drawblip(d, x, y, s, p->o, 0.5f + p->owner->bombradius * 1.5f * sin((t / (5.5f-p->owner->bombdelay)) / 100.0f));
+            drawblip(d, x, y, s, p->o, (p->owner->bombradius * 1.5f + p->owner->bombradius * 1.5f * sin((SDL_GetTicks() / (5.5f-p->owner->bombdelay)) / 75.0f))/1.5f);
         }
 
         if(d->state == CS_ALIVE && !game::intermission)
@@ -243,18 +239,11 @@ struct bombclientmode : clientmode
             }
             next++;
         }
-        // struct timeval t;
-        // gettimeofday(&t, NULL);
-        // int seed = t.tv_sec - (t.tv_sec % 23); // seed have to be the same for all players even without network messages
-        // Uint32 t = SDL_GetTicks() / 1000;
-        time_t t = time(NULL);
-        conoutf("SDL_GetTicks() = %i", t);
-
-        int seed = t - (t % 23); // seed have to be the same for all players even without network messages
+        int seed = game::timestamp - (game::timestamp % 23); // seed have to be the same for all players even without network messages
         loopv(pl)
         {
             fpsent *p = pl[i];
-            conoutf("placing player %i (cn=%i, team=%s) on playerstart %i", i, pl[i]->clientnum, pl[i]->team, (i+seed)%playerstarts[team].length());
+            conoutf("placing player %i (cn=%i, team=%s) on playerstart %i (timestamp=%i)", i, pl[i]->clientnum, pl[i]->team, (i+seed)%playerstarts[team].length(), game::timestamp);
             if(p!=d) continue;
             extentity &e = *playerstarts[team][(i+seed)%playerstarts[team].length()];
             d->o = e.o;
