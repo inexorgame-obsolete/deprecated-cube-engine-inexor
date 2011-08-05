@@ -104,9 +104,7 @@ namespace game
         else if(s!=GUN_GL     && d->ammo[GUN_GL])     s = GUN_GL;
         else if(s!=GUN_PISTOL && d->ammo[GUN_PISTOL]) s = GUN_PISTOL;
         else if(s!=GUN_BOMB   && d->ammo[GUN_BOMB])   s = GUN_BOMB;
-        else if(s==GUN_BOMB)                          s = GUN_BOMB; // only switch if the current weapon is not the bomb
-        else                                          s = GUN_FIST;
-
+        else s = d->backupweapon; // switch to the fallback weapon
         gunselect(s, d);
     }
 
@@ -157,42 +155,25 @@ namespace game
         loopi(SGRAYS) offsetray(from, to, SGSPREAD, guns[GUN_SG].range, sg[i]);
     }
 
-//    enum { BNC_GRENADE, BNC_BOMB, BNC_GIBS, BNC_DEBRIS, BNC_BARRELDEBRIS };
-
-    /* struct bouncer : physent
-    {
-        int lifetime, bounces;
-        float lastyaw, roll;
-        bool local;
-        fpsent *owner;
-        int bouncetype, variant;
-        vec offset;
-        int offsetmillis;
-        int id;
-        entitylight light;
-
-        bouncer() : bounces(0), roll(0), variant(0)
-        {
-            type = ENT_BOUNCE;
-        }
-    }; */
-
     vector<bouncer *> bouncers;
 
     vec hudgunorigin(int gun, const vec &from, const vec &to, fpsent *d);
 
-    void newbouncer(const vec &from, const vec &to, bool local, int id, fpsent *owner, int type, int lifetime, int speed, entitylight *light = NULL)
+    void newbouncer(const vec &from, const vec &to, bool local, int id, fpsent *owner, int type, int lifetime, int speed, entitylight *light = NULL, int generation = 0)
     {
         bouncer &bnc = *bouncers.add(new bouncer);
         bnc.o = from;
         switch(type)
         {
             case BNC_DEBRIS:
-            	bnc.radius = bnc.xradius = bnc.yradius = bnc.eyeheight = bnc.aboveeye = 0.5f;
+                bnc.radius = bnc.xradius = bnc.yradius = bnc.eyeheight = bnc.aboveeye = 0.5f;
                 break;
             case BNC_BOMB:
                 bnc.radius = bnc.xradius = bnc.yradius = 2.5f;
                 bnc.eyeheight = bnc.aboveeye = 1.5f;
+                break;
+            case BNC_SPLINTER:
+                bnc.radius = bnc.xradius = bnc.yradius = bnc.eyeheight = bnc.aboveeye = 1.5f; // TODO: adjust
                 break;
             default:
                 bnc.radius = bnc.xradius = bnc.yradius = bnc.eyeheight = bnc.aboveeye = 1.5f;
@@ -202,6 +183,7 @@ namespace game
         bnc.local = local;
         bnc.owner = owner;
         bnc.bouncetype = type;
+        bnc.generation = generation;
         bnc.id = local ? lastmillis : id;
         if(light) bnc.light = *light;
 
@@ -248,7 +230,41 @@ namespace game
         b->bounces++;
         adddecal(DECAL_BLOOD, vec(b->o).sub(vec(surface).mul(b->radius)), surface, 2.96f/b->bounces, bvec(0x60, 0xFF, 0xFF), rnd(4));
     }
-        
+
+    void spawnnextsplinter(const vec &p, const vec &vel, fpsent *d, int generation)
+    {
+        generation--;
+        if(generation<1) return;
+        // int r1 = d->bombradius * RL_DAMRAD, r2 = r1/2;
+        vec to(vel);
+        // to.normalize();
+//         to.mul(100.0f);
+        float fac = (d->bombradius+50.0f)*(d->bombradius-generation+1);
+        to.x*=fac;
+        to.y*=fac;
+//        to.z*=100.0f;
+        to.add(p);
+        newbouncer(p, to, true, 0, d, BNC_SPLINTER, 500, 150, NULL, generation);
+    }
+
+    void spawnsplinters(const vec &p, fpsent *d)
+    {
+        // const int r1 = d->bombradius * RL_DAMRAD;
+        // const int r2 = r1/2;
+        for(int i=1; i<=36; i++) // je fortgeschrittener, desto weniger verzweigungen
+        {
+            vec to(sin(36.0f/((float) i)), cos(36.0f/((float) i)), 1); // a small random sphere
+//            to.mul(100.0f);
+            float fac = d->bombradius+50.0f;
+            to.x*=fac;
+            to.y*=fac;
+//            to.z*=100.0f;
+            // to.normalize();
+            to.add(p);
+            newbouncer(p, to, true, 0, d, BNC_SPLINTER, 500, 150, NULL, d->bombradius);
+        }
+    }
+
     void updatebouncers(int time)
     {
         loopv(bouncers)
@@ -265,6 +281,12 @@ namespace game
                 vec pos(bnc.o);
                 pos.add(vec(bnc.offset).mul(bnc.offsetmillis/float(OFFSETMILLIS)));
                 regular_particle_splash(PART_SMOKE, 1, 150, pos, 0x0080f0, 6.4f, 120, -120);
+            }
+            else if(bnc.bouncetype==BNC_SPLINTER)
+            {
+                // vec pos(bnc.o);
+                // pos.add(vec(bnc.offset).mul(bnc.offsetmillis/float(OFFSETMILLIS)));
+                // regular_particle_splash(PART_SMOKE, 1, 150, pos, 0x00a0f0, 6.4f, 50, -20);
             }
             vec old(bnc.o);
             bool stopped = false;
@@ -301,8 +323,18 @@ namespace game
                     hits.setsize(0);
                     explode(bnc.local, bnc.owner, bnc.o, NULL, guns[GUN_BOMB].damage, GUN_BOMB);
                     adddecal(DECAL_SCORCH, bnc.o, vec(0, 0, 1), bnc.owner->bombradius*RL_DAMRAD/2);
+                    spawnsplinters(bnc.o, bnc.owner); // starts with 3+x generations
                     if(bnc.local)
                         addmsg(N_EXPLODE, "rci3iv", bnc.owner, lastmillis-maptime, GUN_BOMB, bnc.id-maptime,
+                                hits.length(), hits.length()*sizeof(hitmsg)/sizeof(int), hits.getbuf());
+                }
+                else if(bnc.bouncetype==BNC_SPLINTER)
+                {
+                    hits.setsize(0);
+                    explode(bnc.local, bnc.owner, bnc.o, NULL, guns[GUN_SPLINTER].damage, GUN_SPLINTER);
+                    spawnnextsplinter(bnc.o, bnc.vel, bnc.owner, bnc.generation);
+                    if(bnc.local)
+                        addmsg(N_EXPLODE, "rci3iv", bnc.owner, lastmillis-maptime, GUN_SPLINTER, bnc.id-maptime,
                                 hits.length(), hits.length()*sizeof(hitmsg)/sizeof(int), hits.getbuf());
                 }
                 delete bouncers.remove(i--);
@@ -322,17 +354,6 @@ namespace game
 
     void clearbouncers() { bouncers.deletecontents(); }
 
-/*    struct projectile
-    {
-        vec dir, o, to, offset;
-        float speed;
-        fpsent *owner;
-        int gun;
-        bool local;
-        int offsetmillis;
-        int id;
-        entitylight light;
-    }; */
     vector<projectile> projs;
 
     void clearprojectiles() { projs.shrink(0); }
@@ -456,18 +477,28 @@ namespace game
         if(o->state!=CS_ALIVE) return;
         vec dir;
         float dist = projdist(o, dir, v);
-        if(gun==GUN_BOMB) {
-            int qdamrad = at->bombradius*RL_DAMRAD;
-            float qdist = dist / at->bombradius;
-            if(dist<qdamrad) // getroffen wird, wenn die entfernung nah genug ist (verstaerkungsfaktor bombradius)
-                hit(guns[gun].damage, o, at, dir, gun, qdist); // schaden ist immer 1 (entfernungsunabhaengig)
-        } else {
-            if(dist<RL_DAMRAD)
-            {
-                int damage = (int)(qdam*(1-dist/RL_DISTSCALE/RL_DAMRAD));
-                if(gun==GUN_RL && o==at) damage /= RL_SELFDAMDIV;
-                hit(damage, o, at, dir, gun, dist);
-            }
+        float qdist;
+        int qdamrad;
+        switch(gun)
+        {
+            case GUN_BOMB:
+                qdamrad = at->bombradius*RL_DAMRAD;
+                qdist = dist / at->bombradius;
+                if(dist<qdamrad) // getroffen wird, wenn die entfernung nah genug ist (verstaerkungsfaktor bombradius)
+                    hit(guns[gun].damage, o, at, dir, gun, qdist); // schaden ist immer 100%, d.h. entfernungsunabhaengig
+                break;
+            case GUN_SPLINTER:
+                if(dist<RL_DAMRAD)
+                    hit(guns[gun].damage, o, at, dir, gun, dist); // schaden ist immer 100%, d.h. entfernungsunabhaengig
+                break;
+            default:
+                if(dist<RL_DAMRAD)
+                {
+                    int damage = (int)(qdam*(1-dist/RL_DISTSCALE/RL_DAMRAD));
+                    if(gun==GUN_RL && o==at) damage /= RL_SELFDAMDIV;
+                    hit(damage, o, at, dir, gun, dist);
+                }
+                break;
         }
     }
 
@@ -478,7 +509,8 @@ namespace game
         float dist = b->o.dist(v, dir);
         dir.div(dist);
         if(dist<0) dist = 0;
-        if(dist < (b->owner->bombradius * RL_DAMRAD)) b->lifetime = 100;
+        // if(dist < (b->owner->bombradius * RL_DAMRAD)) b->lifetime = 100;
+        if(dist < RL_DAMRAD) b->lifetime = 100; // new: without bomb radius // TODO: maybe RL_DAMRAD is too big!
     }
 
     void explode(bool local, fpsent *owner, const vec &v, dynent *safe, int damage, int gun)
@@ -502,14 +534,14 @@ namespace game
                 adddynlight(v, 1.15f*RL_DAMRAD, vec(0.5f, 1.5f, 2), 900, 100, 0, 8, vec(0.25f, 1, 1));
                 break;
             case GUN_BOMB:
-                adddynlight(v, owner->bombradius*RL_DAMRAD, vec(0.5f, 1.5f, 2), 900, 100, 0, 8, vec(1, 1, 0.25f));
+                // TODO: COMMENT IN: adddynlight(v, owner->bombradius*RL_DAMRAD, vec(0.5f, 1.5f, 2), 900, 100, 0, 8, vec(1, 1, 0.25f));
                 if(owner->ammo[GUN_BOMB] < itemstats[11].max) owner->ammo[GUN_BOMB]++; // add a bomb if the bomb explodes // FIXME: index=11
                 break;
             default:
                 adddynlight(v, 1.15f*RL_DAMRAD, vec(2, 1.5f, 1), 900, 100);
                 break;
         }
-        if(numdebris)
+        if(numdebris && gun!=GUN_SPLINTER)
         {
             entitylight light;
             lightreaching(debrisorigin, light.color, light.dir);
@@ -523,7 +555,7 @@ namespace game
             if(o==safe) continue;
             radialeffect(o, v, damage, owner, gun);
         }
-        if(m_bomb && gun==GUN_BOMB) // in bomb mode projectiles hits other projectiles
+        if(m_bomb && (gun==GUN_BOMB || gun==GUN_SPLINTER)) // in bomb mode projectiles hits other projectiles
         {
             int len = bouncers.length();
             loopi(len) radialbombeffect(bouncers[i], v);
@@ -591,6 +623,22 @@ namespace game
                         pos.add(vec(b.offset).mul(b.offsetmillis/float(OFFSETMILLIS)));
                         explode(b.local, b.owner, pos, NULL, 0, GUN_BOMB);
                         adddecal(DECAL_SCORCH, pos, vec(0, 0, 1), b.owner->bombradius*RL_DAMRAD/2);
+                        spawnsplinters(b.o, b.owner); // starts with 3+x generations
+                        delete bouncers.remove(i);
+                        break;
+                    }
+                }
+                break;
+            case GUN_SPLINTER:
+                loopv(bouncers)
+                {
+                    bouncer &b = *bouncers[i];
+                    if(b.bouncetype == BNC_SPLINTER && b.owner == d && b.id == id && !b.local)
+                    {
+                        vec pos(b.o);
+                        pos.add(vec(b.offset).mul(b.offsetmillis/float(OFFSETMILLIS)));
+                        explode(b.local, b.owner, pos, NULL, 0, GUN_SPLINTER);
+                        spawnnextsplinter(b.o, b.vel, b.owner, b.generation);
                         delete bouncers.remove(i);
                         break;
                     }
@@ -742,7 +790,6 @@ namespace game
 
             case GUN_BOMB:
             {
-            	// TODO: Bomb
                 float dist = from.dist(to);
                 vec up = to;
                 vec src(from);
@@ -1014,6 +1061,11 @@ namespace game
                 // TODO: PPP
                 // conoutf("particle barrier: bnc.o.z=%2.2f raycube=%2.2f floor.z=%2.2f", bnc.o.z, raycube(floor, vec(0, 0, -1), 0.5f, RAY_CLIPMAT), floor.z);
                 regularshape(bbarr_type, radius, bbarr_color, bbarr_dir, bbarr_num, bbarr_fade, floor, bbarr_size, bbarr_gravity, mov_from, mov_to);
+            }
+            // TODO: REMOVE RENDERMODEL FOR SPLINTERS
+            else if(bnc.bouncetype==BNC_SPLINTER)
+            {
+                rendermodel(&bnc.light, "projectiles/grenade", ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_DYNSHADOW);
             }
             else
             {

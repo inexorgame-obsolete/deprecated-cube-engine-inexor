@@ -74,7 +74,7 @@ struct fpsentity : extentity
     fpsentity() : triggerstate(TRIGGER_RESET), lasttrigger(0) {} 
 };
 
-enum { GUN_FIST = 0, GUN_SG, GUN_CG, GUN_RL, GUN_RIFLE, GUN_GL, GUN_PISTOL, GUN_BOMB, GUN_FIREBALL, GUN_ICEBALL, GUN_SLIMEBALL, GUN_BITE, GUN_BARREL, NUMGUNS };
+enum { GUN_FIST = 0, GUN_SG, GUN_CG, GUN_RL, GUN_RIFLE, GUN_GL, GUN_PISTOL, GUN_BOMB, GUN_FIREBALL, GUN_ICEBALL, GUN_SLIMEBALL, GUN_BITE, GUN_BARREL, GUN_SPLINTER, NUMGUNS };
 enum { A_BLUE, A_GREEN, A_YELLOW };     // armour types... take 20/40/60 % off
 enum { M_NONE = 0, M_SEARCH, M_HOME, M_ATTACKING, M_PAIN, M_SLEEP, M_AIMING };  // monster states
 
@@ -378,7 +378,8 @@ static const struct guninfo { short sound, attackdelay, damage, projspeed, part,
     { S_ICEBALL,   200,  40, 30,  PART_FIREBALL2,  1, 1024, "iceball",   NULL },
     { S_SLIMEBALL, 200,  30, 160, PART_FIREBALL3,  1, 1024, "slimeball", NULL },
     { S_PIGR1,     250,  50, 0,   0,  1,   12, "bite",            NULL },
-    { -1,            0, 120, 0,   0,  0,    0, "barrel",          NULL }
+    { -1,            0, 120, 0,   0,  0,    0, "barrel",          NULL },
+    { -1,            0,   1, 200, 0,  0,    0, "splinter",        NULL }
 };
 
 #include "ai.h"
@@ -827,7 +828,7 @@ namespace game
     extern bool isobstaclealive(movable *m);
 
     // weapon
-    enum { BNC_GRENADE, BNC_BOMB, BNC_GIBS, BNC_DEBRIS, BNC_BARRELDEBRIS };
+    enum { BNC_GRENADE, BNC_BOMB, BNC_SPLINTER, BNC_GIBS, BNC_DEBRIS, BNC_BARRELDEBRIS };
 
     struct projectile
     {
@@ -853,6 +854,7 @@ namespace game
         int offsetmillis;
         int id;
         entitylight light;
+        int generation;
 
         bouncer() : bounces(0), roll(0), variant(0)
         {
