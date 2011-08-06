@@ -235,33 +235,25 @@ namespace game
     {
         generation--;
         if(generation<1) return;
-        // int r1 = d->bombradius * RL_DAMRAD, r2 = r1/2;
         vec to(vel);
-        // to.normalize();
-//         to.mul(100.0f);
-        float fac = (d->bombradius+50.0f)*(d->bombradius-generation+1);
+        float fac = (d->bombradius+30.0f)*(d->bombradius-generation+1);
         to.x*=fac;
         to.y*=fac;
-//        to.z*=100.0f;
+        to.z+=5
         to.add(p);
-        newbouncer(p, to, true, 0, d, BNC_SPLINTER, 500, 150, NULL, generation);
+        newbouncer(p, to, true, 0, d, BNC_SPLINTER, 200, 100, NULL, generation); // lifetime, speed
     }
 
     void spawnsplinters(const vec &p, fpsent *d)
     {
-        // const int r1 = d->bombradius * RL_DAMRAD;
-        // const int r2 = r1/2;
         for(int i=1; i<=36; i++) // je fortgeschrittener, desto weniger verzweigungen
         {
-            vec to(sin(36.0f/((float) i)), cos(36.0f/((float) i)), 1); // a small random sphere
-//            to.mul(100.0f);
-            float fac = d->bombradius+50.0f;
+            vec to(sin(36.0f/((float) i)), cos(36.0f/((float) i)), 5);
+            float fac = d->bombradius+30.0f;
             to.x*=fac;
             to.y*=fac;
-//            to.z*=100.0f;
-            // to.normalize();
             to.add(p);
-            newbouncer(p, to, true, 0, d, BNC_SPLINTER, 500, 150, NULL, d->bombradius);
+            newbouncer(p, to, true, 0, d, BNC_SPLINTER, 200, 100, NULL, d->bombradius);
         }
     }
 
@@ -282,12 +274,12 @@ namespace game
                 pos.add(vec(bnc.offset).mul(bnc.offsetmillis/float(OFFSETMILLIS)));
                 regular_particle_splash(PART_SMOKE, 1, 150, pos, 0x0080f0, 6.4f, 120, -120);
             }
-            else if(bnc.bouncetype==BNC_SPLINTER)
-            {
-                // vec pos(bnc.o);
-                // pos.add(vec(bnc.offset).mul(bnc.offsetmillis/float(OFFSETMILLIS)));
-                // regular_particle_splash(PART_SMOKE, 1, 150, pos, 0x00a0f0, 6.4f, 50, -20);
-            }
+            // else if(bnc.bouncetype==BNC_SPLINTER)
+            // {
+            //    vec pos(bnc.o);
+            //    pos.add(vec(bnc.offset).mul(bnc.offsetmillis/float(OFFSETMILLIS)));
+            //    regular_particle_splash(PART_SMOKE, 1, 150, pos, 0x00a0f0, 6.4f, 50, -20);
+            // }
             vec old(bnc.o);
             bool stopped = false;
             if(bnc.bouncetype==BNC_GRENADE) stopped = bounce(&bnc, 0.6f, 0.5f) || (bnc.lifetime -= time)<0;
@@ -413,6 +405,7 @@ namespace game
 
     void hit(int damage, dynent *d, fpsent *at, const vec &vel, int gun, float info1, int info2 = 1)
     {
+        // conoutf("hit from %s (cn=%i); damage=%i gun=%i target-type=%i", at->name, at->clientnum, damage, gun, d->type);
         if(at==player1 && d!=at)
         {
             extern int hitsound;
@@ -422,6 +415,7 @@ namespace game
 
         if(d->type==ENT_INANIMATE)
         {
+            // conoutf("hit a movable");
             hitmovable(damage, (movable *)d, at, vel, gun);
             return;
         }
@@ -482,10 +476,15 @@ namespace game
         switch(gun)
         {
             case GUN_BOMB:
+                /* old version
                 qdamrad = at->bombradius*RL_DAMRAD;
                 qdist = dist / at->bombradius;
                 if(dist<qdamrad) // getroffen wird, wenn die entfernung nah genug ist (verstaerkungsfaktor bombradius)
                     hit(guns[gun].damage, o, at, dir, gun, qdist); // schaden ist immer 100%, d.h. entfernungsunabhaengig
+                break;
+                */
+                if(dist<RL_DAMRAD)
+                    hit(guns[gun].damage, o, at, dir, gun, dist); // schaden ist immer 100%, d.h. entfernungsunabhaengig
                 break;
             case GUN_SPLINTER:
                 if(dist<RL_DAMRAD)
@@ -515,7 +514,7 @@ namespace game
 
     void explode(bool local, fpsent *owner, const vec &v, dynent *safe, int damage, int gun)
     {
-        int rfactor = gun != GUN_BOMB ? 1 : owner->bombradius,
+        int rfactor = 1, /* old: gun != GUN_BOMB ? 1 : owner->bombradius, */
             maxsize = RL_DAMRAD * rfactor,
             size = 4.0f * rfactor,
             fade = gun!=GUN_BOMB ? -1 : int((maxsize-size)*7), // explosion speed, lower=faster
@@ -622,7 +621,7 @@ namespace game
                         vec pos(b.o);
                         pos.add(vec(b.offset).mul(b.offsetmillis/float(OFFSETMILLIS)));
                         explode(b.local, b.owner, pos, NULL, 0, GUN_BOMB);
-                        adddecal(DECAL_SCORCH, pos, vec(0, 0, 1), b.owner->bombradius*RL_DAMRAD/2);
+                        // adddecal(DECAL_SCORCH, pos, vec(0, 0, 1), b.owner->bombradius*RL_DAMRAD/2);
                         spawnsplinters(b.o, b.owner); // starts with 3+x generations
                         delete bouncers.remove(i);
                         break;
@@ -1062,11 +1061,12 @@ namespace game
                 // conoutf("particle barrier: bnc.o.z=%2.2f raycube=%2.2f floor.z=%2.2f", bnc.o.z, raycube(floor, vec(0, 0, -1), 0.5f, RAY_CLIPMAT), floor.z);
                 regularshape(bbarr_type, radius, bbarr_color, bbarr_dir, bbarr_num, bbarr_fade, floor, bbarr_size, bbarr_gravity, mov_from, mov_to);
             }
-            // TODO: REMOVE RENDERMODEL FOR SPLINTERS
+            // TODO: vvv REMOVE RENDERMODEL FOR SPLINTERS vvv
             else if(bnc.bouncetype==BNC_SPLINTER)
             {
                 rendermodel(&bnc.light, "projectiles/grenade", ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_DYNSHADOW);
             }
+            // TODO: ^^^ REMOVE RENDERMODEL FOR SPLINTERS ^^^
             else
             {
                 const char *mdl = NULL;

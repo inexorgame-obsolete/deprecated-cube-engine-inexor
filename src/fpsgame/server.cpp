@@ -1710,6 +1710,9 @@ namespace server
                 if(!gs.bombs.remove(id)) return;
                 break;
 
+            case GUN_SPLINTER:
+                break;
+
             default:
                 return;
         }
@@ -1719,17 +1722,19 @@ namespace server
             hitinfo &h = hits[i];
             clientinfo *target = getinfo(h.target);
             if(!target || target->state.state!=CS_ALIVE || h.lifesequence!=target->state.lifesequence || h.dist<0 || h.dist>RL_DAMRAD) continue;
+            conoutf("server.cpp::explodeevent target=%i from=%i",target->clientnum, ci->clientnum);
 
             bool dup = false;
             loopj(i) if(hits[j].target==h.target) { dup = true; break; }
             if(dup) continue;
 
             int damage = guns[gun].damage;
-            if(gun!=GUN_BOMB) {
+            if(gun!=GUN_BOMB && gun!=GUN_SPLINTER) {
                 if(gs.quadmillis) damage *= 4;
                 damage = int(damage*(1-h.dist/RL_DISTSCALE/RL_DAMRAD));
             }
             if(gun==GUN_RL && target==ci) damage /= RL_SELFDAMDIV;
+            conoutf("server.cpp::explodeevent damage=%i",damage);
             dodamage(target, ci, damage, gun, h.dir);
         }
     }
@@ -1738,10 +1743,11 @@ namespace server
     {
         gamestate &gs = ci->state;
         int wait = millis - gs.lastshot;
-        if(!gs.isalive(gamemillis) ||
+        if(gun!=GUN_SPLINTER &&
+          (!gs.isalive(gamemillis) ||
            wait<gs.gunwait ||
-           gun<GUN_FIST || gun>GUN_BOMB ||
-           gs.ammo[gun]<=0 || (guns[gun].range && from.dist(to) > guns[gun].range + 1))
+           gun<GUN_FIST || gun>GUN_BOMB  ||
+           gs.ammo[gun]<=0 || (guns[gun].range && from.dist(to) > guns[gun].range + 1)))
             return;
         if(gun!=GUN_FIST) gs.ammo[gun]--;
         gs.lastshot = millis;
