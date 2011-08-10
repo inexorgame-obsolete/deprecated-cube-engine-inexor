@@ -236,12 +236,12 @@ namespace game
         generation--;
         if(generation<1) return;
         vec to(vel);
-        float fac = (d->bombradius+30.0f)*(d->bombradius-generation+1);
+        float fac = ((d->bombradius*1.8f)+30.0f)*(d->bombradius-generation+1);
         to.x*=fac;
         to.y*=fac;
-        to.z+=5
+        to.z+=5;
         to.add(p);
-        newbouncer(p, to, true, 0, d, BNC_SPLINTER, 200, 100, NULL, generation); // lifetime, speed
+        newbouncer(p, to, true, 0, d, BNC_SPLINTER, 190, 140, NULL, generation); // lifetime, speed
     }
 
     void spawnsplinters(const vec &p, fpsent *d)
@@ -249,11 +249,11 @@ namespace game
         for(int i=1; i<=36; i++) // je fortgeschrittener, desto weniger verzweigungen
         {
             vec to(sin(36.0f/((float) i)), cos(36.0f/((float) i)), 5);
-            float fac = d->bombradius+30.0f;
+            float fac = (d->bombradius*1.8f)+30.0f;
             to.x*=fac;
             to.y*=fac;
             to.add(p);
-            newbouncer(p, to, true, 0, d, BNC_SPLINTER, 200, 100, NULL, d->bombradius);
+            newbouncer(p, to, true, 0, d, BNC_SPLINTER, 190, 140, NULL, d->bombradius);
         }
     }
 
@@ -274,12 +274,6 @@ namespace game
                 pos.add(vec(bnc.offset).mul(bnc.offsetmillis/float(OFFSETMILLIS)));
                 regular_particle_splash(PART_SMOKE, 1, 150, pos, 0x0080f0, 6.4f, 120, -120);
             }
-            // else if(bnc.bouncetype==BNC_SPLINTER)
-            // {
-            //    vec pos(bnc.o);
-            //    pos.add(vec(bnc.offset).mul(bnc.offsetmillis/float(OFFSETMILLIS)));
-            //    regular_particle_splash(PART_SMOKE, 1, 150, pos, 0x00a0f0, 6.4f, 50, -20);
-            // }
             vec old(bnc.o);
             bool stopped = false;
             if(bnc.bouncetype==BNC_GRENADE) stopped = bounce(&bnc, 0.6f, 0.5f) || (bnc.lifetime -= time)<0;
@@ -471,8 +465,8 @@ namespace game
         if(o->state!=CS_ALIVE) return;
         vec dir;
         float dist = projdist(o, dir, v);
-        float qdist;
-        int qdamrad;
+        // old version: float qdist;
+        // old version: int qdamrad;
         switch(gun)
         {
             case GUN_BOMB:
@@ -517,12 +511,12 @@ namespace game
         int rfactor = 1, /* old: gun != GUN_BOMB ? 1 : owner->bombradius, */
             maxsize = RL_DAMRAD * rfactor,
             size = 4.0f * rfactor,
-            fade = gun!=GUN_BOMB ? -1 : int((maxsize-size)*7), // explosion speed, lower=faster
+            fade = gun!=GUN_BOMB && gun!=GUN_SPLINTER ? -1 : int((maxsize-size)*7), // explosion speed, lower=faster
             numdebris = gun==GUN_BARREL ? rnd(max(maxbarreldebris-5, 1))+5 : rnd(maxdebris-5)+5;
         vec debrisvel = owner->o==v ? vec(0, 0, 0) : vec(owner->o).sub(v).normalize(), debrisorigin(v);
         particle_splash(PART_SPARK, 200, 300, v, 0xB49B4B, 0.24f*rfactor);
         playsound(S_RLHIT, &v);
-        particle_fireball(v, maxsize, gun!=GUN_GL ? PART_EXPLOSION : PART_EXPLOSION_BLUE, fade, gun!=GUN_GL ? (gun==GUN_BOMB ? 0x004D30 : 0xFF8080) : 0x80FFFF, size);
+        particle_fireball(v, maxsize, gun!=GUN_GL ? PART_EXPLOSION : PART_EXPLOSION_BLUE, fade, gun!=GUN_GL ? (gun==GUN_BOMB || gun==GUN_SPLINTER ? 0x004D30 : 0xFF8080) : 0x80FFFF, size);
         switch(gun)
         {
             case GUN_RL:
@@ -535,6 +529,9 @@ namespace game
             case GUN_BOMB:
                 // TODO: COMMENT IN: adddynlight(v, owner->bombradius*RL_DAMRAD, vec(0.5f, 1.5f, 2), 900, 100, 0, 8, vec(1, 1, 0.25f));
                 if(owner->ammo[GUN_BOMB] < itemstats[11].max) owner->ammo[GUN_BOMB]++; // add a bomb if the bomb explodes // FIXME: index=11
+                break;
+            case GUN_SPLINTER:
+                // no dynlight
                 break;
             default:
                 adddynlight(v, 1.15f*RL_DAMRAD, vec(2, 1.5f, 1), 900, 100);
@@ -789,7 +786,7 @@ namespace game
 
             case GUN_BOMB:
             {
-                float dist = from.dist(to);
+                // float dist = from.dist(to);
                 vec up = to;
                 vec src(from);
                 float f = 5.0f, dx = to.x-from.x, dy = to.y-from.y, dyy = 15.0f, dzz = 2.0f;
@@ -1062,10 +1059,12 @@ namespace game
                 regularshape(bbarr_type, radius, bbarr_color, bbarr_dir, bbarr_num, bbarr_fade, floor, bbarr_size, bbarr_gravity, mov_from, mov_to);
             }
             // TODO: vvv REMOVE RENDERMODEL FOR SPLINTERS vvv
+            /*
             else if(bnc.bouncetype==BNC_SPLINTER)
             {
                 rendermodel(&bnc.light, "projectiles/grenade", ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_DYNSHADOW);
             }
+            */
             // TODO: ^^^ REMOVE RENDERMODEL FOR SPLINTERS ^^^
             else
             {
