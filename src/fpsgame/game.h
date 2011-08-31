@@ -276,7 +276,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
     N_ADDBOT, 2, N_DELBOT, 1, N_INITAI, 0, N_FROMAI, 2, N_BOTLIMIT, 2, N_BOTBALANCE, 2,
     N_MAPCRC, 0, N_CHECKMAPS, 1,
     N_SWITCHNAME, 0, N_SWITCHMODEL, 2, N_SWITCHTEAM, 0,
-    N_ITEMPUSH, 6, N_TIMESTAMP, 1,
+    N_ITEMPUSH, 6, N_TIMESTAMP, 2,
     -1
 };
 
