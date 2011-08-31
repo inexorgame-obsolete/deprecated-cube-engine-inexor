@@ -8,6 +8,7 @@ struct bombservmode : servmode
 VARP(showbombs, 0, 1, 1);
 VARP(showbombradius, 0, 1, 1);
 VARP(showbombdelay, 0, 1, 1);
+VARP(showminimapobstacles, 0, 1, 1);
 
 struct bombclientmode : clientmode
 #endif
@@ -58,11 +59,9 @@ struct bombclientmode : clientmode
         drawradar(x - roffset, y - roffset, rsize);
 
         // show obstacles on minimap
-        loopv(movables)
+        if(showminimapobstacles) loopv(movables)
         {
             dynent *m = (dynent *) movables[i];
-            // conoutf("m->state=%i (%i) m->type=%i (%i)", m->state, CS_ALIVE, m->type, BARREL);
-            // if(m->state!=CS_ALIVE || m->type!=BARREL) continue;
             if(!isobstaclealive((movable *) m)) continue;
             settexture("packages/hud/block_yellow_t.png", 3);
             drawblip(d, x, y, s, m->o, 1.0f);
