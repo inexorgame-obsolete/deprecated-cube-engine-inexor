@@ -1203,7 +1203,7 @@ static inline int colorfromattr(int attr)
  * Bomberman:
  * Add modfrom and modto to be able to modify the tos and froms
  */
-void regularshape(int type, int radius, int color, int dir, int num, int fade, const vec &p, float size, int gravity, const vec &modfrom, const vec &modto)
+void regularshape(int type, int radius, int color, int dir, int num, int fade, const vec &p, float size, int gravity, const vec* modfrom, const vec* modto)
 {
 	//conoutf("CALLED: regularshape(int type: %i, int radius: %i, int color: %X, int dir: %i, int num: %i, int fade: %i, vec &p: (x: %f, y: %f, z:%f), float size: %f, int gravity: %i", type, radius, color, dir, num, fade, p.x, p.y, p.z, size, gravity);
     if(!emit_particles()) return;
@@ -1270,8 +1270,10 @@ void regularshape(int type, int radius, int color, int dir, int num, int fade, c
         }
        
 		// Bomberman
-		from.add(modfrom);
-		to.add(modto);
+        if(modfrom && modto){
+        	from.add(*modfrom);
+        	to.add(*modto);
+        }
 		
         if(taper)
         {
@@ -1295,14 +1297,6 @@ void regularshape(int type, int radius, int color, int dir, int num, int fade, c
             newparticle(inv?to:from, d, rnd(fade*3)+1, type, color, size, gravity);
         }
     }
-}
-
-/**
- * Compat: For code that does not know the modfrom and modto params;
- */
-const vec nullvec(0,0,0);
-void regularshape(int type, int radius, int color, int dir, int num, int fade, const vec &p, float size, int gravity) {
-	regularshape(type, radius, color, dir, num, fade, p, size, gravity, nullvec, nullvec);
 }
 
 static void regularflame(int type, const vec &p, float radius, float height, int color, int density = 3, float scale = 2.0f, float speed = 200.0f, float fade = 600.0f, int gravity = -15) 

@@ -1061,7 +1061,7 @@ namespace game
                 floor.z = floor.z - raycube(floor, vec(0, 0, -1), 0.2f, RAY_CLIPMAT);
                 // TODO: PPP
                 // conoutf("particle barrier: bnc.o.z=%2.2f raycube=%2.2f floor.z=%2.2f", bnc.o.z, raycube(floor, vec(0, 0, -1), 0.5f, RAY_CLIPMAT), floor.z);
-                regularshape(bbarr_type, radius, bbarr_color, bbarr_dir, bbarr_num, bbarr_fade, floor, bbarr_size, bbarr_gravity, mov_from, mov_to);
+                regularshape(bbarr_type, radius, bbarr_color, bbarr_dir, bbarr_num, bbarr_fade, floor, bbarr_size, bbarr_gravity, &mov_from, &mov_to);
             }
             // TODO: vvv REMOVE RENDERMODEL FOR SPLINTERS vvv
             /*
