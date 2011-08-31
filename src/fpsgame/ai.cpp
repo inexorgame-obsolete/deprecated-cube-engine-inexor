@@ -116,7 +116,7 @@ namespace ai
         {
             if(lastmillis >= d->ai->lastaimrnd)
             {
-                const int aiskew[NUMGUNS] = { 1, 10, 50, 5, 20, 1, 100, 10, 10, 10, 1, 1 };
+                const int aiskew[NUMGUNS] = { 1, 10, 50, 5, 20, 1, 100, 1, 10, 10, 10, 1, 1 };
                 #define rndaioffset(r) ((rnd(int(r*aiskew[d->gunselect]*2)+1)-(r*aiskew[d->gunselect]))*(1.f/float(max(d->skill, 1))))
                 loopk(3) d->ai->aimrnd[k] = rndaioffset(e->radius);
                 int dur = (d->skill+10)*10;
@@ -363,11 +363,11 @@ namespace ai
         return false;
     }
 
-    int isgoodammo(int gun) { return gun >= GUN_SG && gun <= GUN_GL; }
+    int isgoodammo(int gun) { return (m_bomb ? true : gun >= GUN_SG && gun <= GUN_GL); }
 
     bool hasgoodammo(fpsent *d)
     {
-        static const int goodguns[] = { GUN_CG, GUN_RL, GUN_SG, GUN_RIFLE }; // TODO: BOMB
+        static const int goodguns[] = { m_bomb ? GUN_BOMB : GUN_CG, GUN_RL, GUN_SG, GUN_RIFLE };
         loopi(sizeof(goodguns)/sizeof(goodguns[0])) if(d->hasammo(goodguns[0])) return true;
         if(d->ammo[GUN_GL] > 5) return true;
         return false;
@@ -407,9 +407,9 @@ namespace ai
             }
             default:
             {
-                if(e.type >= I_SHELLS && e.type <= I_CARTRIDGES && !d->hasmaxammo(e.type)) // TODO: BOMB
+                if(((e.type >= I_SHELLS && e.type <= I_CARTRIDGES) || (e.type >= I_BOMBS && e.type <= I_BOMBDELAY)) && !d->hasmaxammo(e.type))
                 {
-                    int gun = e.type - I_SHELLS + GUN_SG;
+                    int gun = m_bomb ? GUN_BOMB : e.type - I_SHELLS + GUN_SG;
                     // go get a weapon upgrade
                     if(gun == d->ai->weappref) score = 1e8f;
                     else if(isgoodammo(gun)) score = hasgoodammo(d) ? 1e2f : 1e4f;
@@ -553,9 +553,9 @@ namespace ai
         else if(m_bomb) d->ai->weappref = GUN_BOMB;
         else
         {
-        	if(forcegun >= 0 && forcegun < NUMGUNS) d->ai->weappref = forcegun;
-        	else if(m_noammo) d->ai->weappref = -1;
-			else d->ai->weappref = rnd(GUN_GL-GUN_SG+1)+GUN_SG;
+            if(forcegun >= 0 && forcegun < NUMGUNS) d->ai->weappref = forcegun;
+            else if(m_noammo) d->ai->weappref = -1;
+		        else d->ai->weappref = rnd(GUN_GL-GUN_SG+1)+GUN_SG;
         }
         vec dp = d->headpos();
         findorientation(dp, d->yaw, d->pitch, d->ai->target);
@@ -1065,7 +1065,7 @@ namespace ai
         fpsent *e = getclient(d->ai->enemy);
         if(!d->hasammo(d->gunselect) || !hasrange(d, e, d->gunselect) || (d->gunselect != d->ai->weappref && (!isgoodammo(d->gunselect) || d->hasammo(d->ai->weappref))))
         {
-            static const int gunprefs[] = { GUN_CG, GUN_RL, GUN_SG, GUN_RIFLE, GUN_GL, GUN_PISTOL, GUN_FIST }; // TODO: Bomb
+            static const int gunprefs[] = { GUN_CG, GUN_RL, GUN_SG, GUN_RIFLE, GUN_GL, GUN_PISTOL, GUN_FIST, GUN_BOMB }; // TODO: Bomb
             int gun = -1;
             if(d->hasammo(d->ai->weappref) && hasrange(d, e, d->ai->weappref)) gun = d->ai->weappref;
             else
