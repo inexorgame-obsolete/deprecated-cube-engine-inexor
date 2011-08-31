@@ -703,17 +703,8 @@ namespace entities
 
     bool hasmapmodel(extentity &e)
     {
-        switch(e.type)
-        {
-            case MAPMODEL:
-            case BOX:
-            case BARREL:
-            case OBSTACLE:
-                return true;
-                break;
-            default:
-                return false;
-        }
+        if(e.type==MAPMODEL || e.type==BOX || e.type==BARREL || e.type==OBSTACLE) return true;
+        return false;
     }
 #endif
 }
