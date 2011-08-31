@@ -236,12 +236,12 @@ namespace game
         generation--;
         if(generation<1) return;
         vec to(vel);
-        float fac = ((d->bombradius*1.8f)+30.0f)*(d->bombradius-generation+1);
-        to.x*=fac;
-        to.y*=fac;
-        to.z+=5;
+        float fac = ((d->bombradius*d->bombradius)+30.0f)*(d->bombradius-generation+1);
+        to.x = (to.x * fac);// + (rnd(60)-15.0f);
+        to.y = (to.y * fac) + (((float)rnd(120))-60.0f);
+        to.z+=5.0f;
         to.add(p);
-        newbouncer(p, to, true, 0, d, BNC_SPLINTER, 190, 140, NULL, generation); // lifetime, speed
+        newbouncer(p, to, true, 0, d, BNC_SPLINTER, 210, 140, NULL, generation); // lifetime, speed
     }
 
     void spawnsplinters(const vec &p, fpsent *d)
@@ -249,11 +249,11 @@ namespace game
         for(int i=1; i<=36; i++) // je fortgeschrittener, desto weniger verzweigungen
         {
             vec to(sin(36.0f/((float) i)), cos(36.0f/((float) i)), 5);
-            float fac = (d->bombradius*1.8f)+30.0f;
+            float fac = (d->bombradius*d->bombradius)+30.0f;
             to.x*=fac;
             to.y*=fac;
             to.add(p);
-            newbouncer(p, to, true, 0, d, BNC_SPLINTER, 190, 140, NULL, d->bombradius);
+            newbouncer(p, to, true, 0, d, BNC_SPLINTER, 210, 140, NULL, d->bombradius); // 1+((d->bombradius-1)*2)); // 1, 3, 5, 7, ... generations
         }
     }
 
@@ -514,9 +514,14 @@ namespace game
             fade = gun!=GUN_BOMB && gun!=GUN_SPLINTER ? -1 : int((maxsize-size)*7), // explosion speed, lower=faster
             numdebris = gun==GUN_BARREL ? rnd(max(maxbarreldebris-5, 1))+5 : rnd(maxdebris-5)+5;
         vec debrisvel = owner->o==v ? vec(0, 0, 0) : vec(owner->o).sub(v).normalize(), debrisorigin(v);
-        particle_splash(PART_SPARK, 200, 300, v, 0xB49B4B, 0.24f*rfactor);
-        playsound(S_RLHIT, &v);
-        particle_fireball(v, maxsize, gun!=GUN_GL ? PART_EXPLOSION : PART_EXPLOSION_BLUE, fade, gun!=GUN_GL ? (gun==GUN_BOMB || gun==GUN_SPLINTER ? 0x004D30 : 0xFF8080) : 0x80FFFF, size);
+        if(gun!=GUN_SPLINTER)
+        {
+            particle_splash(PART_SPARK, 200, 300, v, 0xB49B4B, 0.24f*rfactor);
+            playsound(S_RLHIT, &v);
+            particle_fireball(v, maxsize, gun!=GUN_GL ? PART_EXPLOSION : PART_EXPLOSION_BLUE, fade, gun!=GUN_GL ? (gun==GUN_BOMB ? 0x004D30 : 0xFF8080) : 0x80FFFF, size);
+        }
+        else
+            particle_fireball(v, maxsize, gun!=GUN_GL ? PART_EXPLOSION : PART_EXPLOSION_BLUE, fade, 0x004D30, size);
         switch(gun)
         {
             case GUN_RL:
@@ -619,7 +624,7 @@ namespace game
                         pos.add(vec(b.offset).mul(b.offsetmillis/float(OFFSETMILLIS)));
                         explode(b.local, b.owner, pos, NULL, 0, GUN_BOMB);
                         // adddecal(DECAL_SCORCH, pos, vec(0, 0, 1), b.owner->bombradius*RL_DAMRAD/2);
-                        spawnsplinters(b.o, b.owner); // starts with 3+x generations
+                        spawnsplinters(b.o, b.owner);
                         delete bouncers.remove(i);
                         break;
                     }
@@ -1177,17 +1182,17 @@ namespace game
         }
     }
 
-	bool weaponcollide(physent *d, const vec &dir) {
-	    loopv(bouncers)
-	    {
-	    	bouncer *p = bouncers[i];
-	    	if(p->bouncetype != BNC_BOMB) continue;
-	    	// TODO: PPP
-        // conoutf("weaponcollide p->o.z=%2.2f raycube=%2.2f p->eyeheight=%2.2f", p->o.z, raycube(p->o, vec(0, 0, -1), 0.2f, RAY_CLIPMAT), p->eyeheight);
-	    	if(!ellipsecollide(d, dir, p->o, vec(0, 0, 0), p->yaw, p->xradius*7.5f, p->yradius*7.5f, p->aboveeye, p->o.z - raycube(p->o, vec(0, 0, -1), 0.2f, RAY_CLIPMAT))) return false;
-	    }
-		return true;
-	}
+    bool weaponcollide(physent *d, const vec &dir) {
+        loopv(bouncers)
+        {
+           	bouncer *p = bouncers[i];
+            if(p->bouncetype != BNC_BOMB) continue;
+            // TODO: PPP
+            // conoutf("weaponcollide p->o.z=%2.2f raycube=%2.2f p->eyeheight=%2.2f", p->o.z, raycube(p->o, vec(0, 0, -1), 0.2f, RAY_CLIPMAT), p->eyeheight);
+            if(!ellipsecollide(d, dir, p->o, vec(0, 0, 0), p->yaw, p->xradius*7.5f, p->yradius*7.5f, p->aboveeye, p->o.z - raycube(p->o, vec(0, 0, -1), 0.2f, RAY_CLIPMAT))) return false;
+        }
+        return true;
+    }
 	
 	
     void avoidweapons(ai::avoidset &obstacles, float radius)
