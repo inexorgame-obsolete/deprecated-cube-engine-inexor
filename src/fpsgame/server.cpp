@@ -1065,7 +1065,7 @@ namespace server
             loopi(sizeof(servtypes)/sizeof(int)) if(type == servtypes[i]) return -1;
             if(type < N_EDITENT || type > N_EDITVAR || !m_edit) 
             {
-                if(type != N_POS && ++ci->overflow >= 200) return -2;
+                if(type != N_POS && ++ci->overflow >= 1000) return -2; // TEMPORARY FIX (suggested by upper): 200 -> 1000
             }
         }
         return type;
