@@ -1717,7 +1717,7 @@ namespace server
                 return;
         }
         sendf(-1, 1, "ri4x", N_EXPLODEFX, ci->clientnum, gun, id, ci->ownernum);
-        if(gun==GUN_BOMB && ci->state.ammo[GUN_BOMB] < itemstats[11].max) ci->state.ammo[GUN_BOMB]++; // add a bomb if the bomb explodes
+        if(gun==GUN_BOMB && ci->state.ammo[GUN_BOMB] < itemstats[P_AMMO_BO].max) ci->state.ammo[GUN_BOMB]++; // add a bomb if the bomb explodes
         loopv(hits)
         {
             hitinfo &h = hits[i];

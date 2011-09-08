@@ -41,7 +41,7 @@ namespace entities
         int t = ents[i]->type;
         if(m_bomb)
             if(t<I_BOMBS || t>I_BOMBDELAY) return NULL;
-            else return itemstats[11+t-I_BOMBS].name; // TODO: 11
+            else return itemstats[P_AMMO_BO+t-I_BOMBS].name;
         else
             if(t<I_SHELLS || t>I_QUAD) return NULL;
             else return itemstats[t-I_SHELLS].name;
@@ -52,7 +52,7 @@ namespace entities
         int t = ents[i]->type;
         if (m_bomb)
             if(t<I_BOMBS || t>I_BOMBDELAY) return -1;
-            else return itemstats[11+t-I_BOMBS].icon; // TODO: 11
+            else return itemstats[P_AMMO_BO+t-I_BOMBS].icon;
         else
             if(t<I_SHELLS || t>I_QUAD) return -1;
             else return itemstats[t-I_SHELLS].icon;

@@ -533,7 +533,7 @@ namespace game
                 break;
             case GUN_BOMB:
                 // TODO: COMMENT IN: adddynlight(v, owner->bombradius*RL_DAMRAD, vec(0.5f, 1.5f, 2), 900, 100, 0, 8, vec(1, 1, 0.25f));
-                if(owner->ammo[GUN_BOMB] < itemstats[11].max) owner->ammo[GUN_BOMB]++; // add a bomb if the bomb explodes // FIXME: index=11
+                if(owner->ammo[GUN_BOMB] < itemstats[P_AMMO_BO].max) owner->ammo[GUN_BOMB]++; // add a bomb if the bomb explodes
                 break;
             case GUN_SPLINTER:
                 // no dynlight

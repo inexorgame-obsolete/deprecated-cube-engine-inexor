@@ -336,6 +336,23 @@ enum
     HICON_SPACE   = 40
 };
 
+enum pickupitems {                      // pickup items
+    P_AMMO_SG = 0,
+    P_AMMO_CG,
+    P_AMMO_RL,
+    P_AMMO_RI,
+    P_AMMO_GL,
+    P_AMMO_PI,
+    P_HEALTH_H,
+    P_HEALTH_MH,
+    P_ARMOUR_GA,
+    P_ARMOUR_YA,
+    P_UP_Q,
+    P_AMMO_BO,
+    P_UP_BR,
+    P_UP_BD
+};
+
 static struct itemstat { int add, max, sound; const char *name; int icon, info; } itemstats[] =
 {
     {10,    30,    S_ITEMAMMO,   "SG", HICON_SG, GUN_SG},
@@ -351,7 +368,7 @@ static struct itemstat { int add, max, sound; const char *name; int icon, info; 
     {20000, 30000, S_ITEMPUP,    "Q",  HICON_QUAD},
     {1,     10,    S_ITEMAMMO,   "BO", HICON_BOMB, GUN_BOMB},
     {1,     8,     S_ITEMPUP,    "BR", HICON_BOMBRADIUS},
-    {1,     7,     S_ITEMPUP,    "Bd", HICON_BOMBDELAY},
+    {1,     7,     S_ITEMPUP,    "BD", HICON_BOMBDELAY},
 };
 
 #define SGRAYS 20
@@ -401,14 +418,14 @@ struct fpsstate
 
     void baseammo(int gun, int k = 2, int scale = 1)
     {
-        if(gun==GUN_BOMB) ammo[gun] = (itemstats[11].add*k)/scale; // TODO: 11
+        if(gun==GUN_BOMB) ammo[gun] = (itemstats[P_AMMO_BO].add*k)/scale;
         else ammo[gun] = (itemstats[gun-GUN_SG].add*k)/scale;
     }
 
     void addammo(int gun, int k = 1, int scale = 1)
     {
         if(gun==GUN_BOMB) {
-            itemstat &is = itemstats[11]; // TODO: 11
+            itemstat &is = itemstats[P_AMMO_BO];
             ammo[gun] = min(ammo[gun] + (is.add*k)/scale, is.max);
         } else {
             itemstat &is = itemstats[gun-GUN_SG];
@@ -419,7 +436,7 @@ struct fpsstate
     bool hasmaxammo(int type)
     {
         if(type>=I_BOMBS) {
-            itemstat &is = itemstats[11+type-I_BOMBS]; // TODO: 11
+            itemstat &is = itemstats[P_AMMO_BO+type-I_BOMBS];
             return ammo[GUN_BOMB]>=is.max;
         }
         else {
@@ -431,7 +448,7 @@ struct fpsstate
     bool canpickup(int type)
     {
         if(type>=I_BOMBS && type<=I_BOMBDELAY) {
-            itemstat &is = itemstats[11+type-I_BOMBS]; // TODO: 11
+            itemstat &is = itemstats[P_AMMO_BO+type-I_BOMBS];
             switch(type)
             {
                 case I_BOMBRADIUS:
@@ -460,7 +477,7 @@ struct fpsstate
     void pickup(int type)
     {
        	if(type>=I_BOMBS && type<=I_BOMBDELAY) {
-            itemstat &is = itemstats[11+type-I_BOMBS];
+            itemstat &is = itemstats[P_AMMO_BO+type-I_BOMBS];
             switch(type)
             {
                 case I_BOMBRADIUS:
