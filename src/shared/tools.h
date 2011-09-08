@@ -471,6 +471,16 @@ template <class T> struct vector
 
     void sort() { sort(compareless<T>); }
 
+    void shuffle(){
+    	extern int randomMT();
+    	for(int i = 0; i < ulen; i++){
+    		int indx = rnd(ulen);
+    		T temp = buf[i];
+    		buf[i] = buf[indx];
+    		buf[indx] = temp;
+    	}
+    }
+
     void growbuf(int sz)
     {
         int olen = alen;

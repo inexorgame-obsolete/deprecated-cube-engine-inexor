@@ -3,7 +3,6 @@
 namespace game
 {
     bool intermission = false;
-    int timestamp = time(NULL);
     int maptime = 0, maprealtime = 0, maplimit = -1;
     int respawnent = -1;
     int lasthit = 0, lastspawnattempt = 0;
@@ -453,12 +452,6 @@ namespace game
             
             if(identexists("intermission")) execute("intermission");
         }
-    }
-
-    void timestampupdate(int secs)
-    {
-        game::timestamp = secs;
-        conoutf("fps.cpp::timestamp update: %i", secs);
     }
 
     ICOMMAND(getfrags, "", (), intret(player1->frags));

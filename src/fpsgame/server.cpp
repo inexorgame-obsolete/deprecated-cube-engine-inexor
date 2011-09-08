@@ -30,7 +30,6 @@ namespace server
 
     struct clientinfo;
     int gamemode = 0;
-    int timestamp = 0;
 
     struct gameevent
     {
@@ -185,6 +184,8 @@ namespace server
         int maxhealth, frags, flags, deaths, teamkills, shotdamage, damage;
         int timeplayed;
         float effectiveness;
+        int bombradius;
+        int bombdelay;
 
         void save(gamestate &gs)
         {
@@ -197,6 +198,8 @@ namespace server
             damage = gs.damage;
             timeplayed = gs.timeplayed;
             effectiveness = gs.effectiveness;
+            bombradius = gs.bombradius;
+            bombdelay = gs.bombdelay;
         }
 
         void restore(gamestate &gs)
@@ -211,6 +214,8 @@ namespace server
             gs.damage = damage;
             gs.timeplayed = timeplayed;
             gs.effectiveness = effectiveness;
+            gs.bombradius = bombradius;
+            gs.bombdelay = bombdelay;
         }
     };
 
@@ -1059,7 +1064,7 @@ namespace server
         // only allow edit messages in coop-edit mode
         if(type>=N_EDITENT && type<=N_EDITVAR && !m_edit) return -1;
         // server only messages
-        static const int servtypes[] = { N_SERVINFO, N_INITCLIENT, N_WELCOME, N_MAPRELOAD, N_SERVMSG, N_DAMAGE, N_HITPUSH, N_SHOTFX, N_EXPLODEFX, N_DIED, N_SPAWNSTATE, N_FORCEDEATH, N_ITEMACC, N_ITEMSPAWN, N_TIMEUP, N_CDIS, N_CURRENTMASTER, N_PONG, N_RESUME, N_BASESCORE, N_BASEINFO, N_BASEREGEN, N_ANNOUNCE, N_SENDDEMOLIST, N_SENDDEMO, N_DEMOPLAYBACK, N_SENDMAP, N_DROPFLAG, N_SCOREFLAG, N_RETURNFLAG, N_RESETFLAG, N_INVISFLAG, N_CLIENT, N_AUTHCHAL, N_INITAI, N_TIMESTAMP };
+        static const int servtypes[] = { N_SERVINFO, N_INITCLIENT, N_WELCOME, N_MAPRELOAD, N_SERVMSG, N_DAMAGE, N_HITPUSH, N_SHOTFX, N_EXPLODEFX, N_DIED, N_SPAWNSTATE, N_FORCEDEATH, N_ITEMACC, N_ITEMSPAWN, N_TIMEUP, N_CDIS, N_CURRENTMASTER, N_PONG, N_RESUME, N_BASESCORE, N_BASEINFO, N_BASEREGEN, N_ANNOUNCE, N_SENDDEMOLIST, N_SENDDEMO, N_DEMOPLAYBACK, N_SENDMAP, N_DROPFLAG, N_SCOREFLAG, N_RETURNFLAG, N_RESETFLAG, N_INVISFLAG, N_CLIENT, N_AUTHCHAL, N_INITAI, N_ITEMPUSH };
         if(ci) 
         {
             loopi(sizeof(servtypes)/sizeof(int)) if(type == servtypes[i]) return -1;
@@ -1244,12 +1249,6 @@ namespace server
         packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
         int chan = welcomepacket(p, ci);
         sendpacket(ci->clientnum, chan, p.finalize());
-    }
-
-    void sendtimestamp(bool update = false)
-    {
-        if(update) timestamp = time(NULL);
-        sendf(-1, 1, "ri2", N_TIMESTAMP, timestamp);
     }
 
     void putinitclient(clientinfo *ci, packetbuf &p)
@@ -1459,14 +1458,12 @@ namespace server
         else smode = NULL;
 
         if(m_timed && smapname[0]) sendf(-1, 1, "ri2", N_TIMEUP, gamemillis < gamelimit && !interm ? max((gamelimit - gamemillis)/1000, 1) : 0);
-        sendtimestamp(true);
         loopv(clients)
         {
             clientinfo *ci = clients[i];
             ci->mapchange();
             ci->state.lasttimeplayed = lastmillis;
             if(m_bomb) ci->state.setbackupweapon(GUN_BOMB);
-            if(m_mp(gamemode) && ci->state.state!=CS_SPECTATOR) sendspawn(ci);
         }
 
         aiman::changemap();
@@ -1481,7 +1478,19 @@ namespace server
             setupdemorecord();
         }
 
-        if(smode) smode->setup();
+        if(smode){
+        	smode->setup();
+        	if(m_mp(gamemode))
+        		loopv(clients){
+        			clientinfo* ci = clients[i];
+        			if(ci->state.state == CS_SPECTATOR) continue;
+        			if(!smode->canspawn(ci)){
+        				ci->state.state = CS_DEAD;
+        				sendf(-1, 1, "ri2", N_FORCEDEATH, ci->clientnum);
+        			}
+        			else sendspawn(ci);
+        		}
+        }
     }
 
     struct votecount
@@ -1669,7 +1678,7 @@ namespace server
             else ts.respawn(gamemode);
             // don't issue respawn yet until DEATHMILLIS has elapsed
             // ts.respawn();
-            if (m_bomb) smode->died(target,actor);
+            //if (m_bomb) smode->died(target,actor); TODO why this??
         }
     }
 
@@ -1990,6 +1999,7 @@ namespace server
 
         connects.add(ci);
         sendservinfo(ci);
+        if(smode == &bombmode && !notgotitems) bombmode.sendspawnlocs(true);		//awful workaround to what seems to be a bug in the codebase.
     }
 
     void localdisconnect(int n)

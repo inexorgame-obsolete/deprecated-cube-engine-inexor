@@ -1,6 +1,8 @@
 // bomb.h: client and server state for bomb gamemode
 #ifndef PARSEMESSAGES
 
+//#include <signal.h>
+
 #ifdef SERVMODE
 struct bombservmode : servmode
 #else
@@ -14,7 +16,44 @@ struct bombclientmode : clientmode
 #endif
 {
 
+    struct spawnloc{
+    	vec o;
+    	int team, index;
+#ifdef SERVMODE
+    	int cn;
+    	spawnloc(const vec& o_, int team_, int index_): o(o_), team(team_), index(index_), cn(-1) {}
+#endif
+    };
+
 #ifndef SERVMODE
+
+	int myspawnloc;
+
+	void setup(){
+		myspawnloc = -1;
+	}
+
+	void senditems(packetbuf &p){
+		vector<spawnloc> v;
+		loopv(entities::ents){
+			extentity& e = *entities::ents[i];
+			if(e.type != PLAYERSTART) continue;
+			if(m_teammode ? e.attr2 < 1 || e.attr2 > 2 : e.attr2) continue;
+			spawnloc temp;
+			temp.o = e.o;
+			temp.team = e.attr2;
+			temp.index = i;
+			v.add(temp);
+		}
+		putint(p, N_SPAWNLOC);
+		putint(p, v.length());
+		loopv(v){
+			spawnloc &sploc = v[i];
+			loopk(3) putint(p, int(sploc.o[k]*DMF));
+			putint(p, sploc.team);
+			putint(p, sploc.index);
+		}
+	}
 
     void drawicon(int icon, float x, float y, float sz)
     {
@@ -203,58 +242,79 @@ struct bombclientmode : clientmode
         d->state = CS_SPECTATOR;
     }
 
-    void pickspawn(fpsent *d)
-    {
-        int team = m_teammode ? (strcmp(d->team, "good") == 0 ? 1 : 2) : 0;
-        const vector<extentity *> &ents = entities::getents();
-        vector<vector<extentity *> > playerstarts;
-        for(int i=0;i<3;i++) playerstarts.add(vector<extentity *>());
-        loopv(ents)
-        {
-            extentity &e = *ents[i];
-            if(e.type!=ET_PLAYERSTART) continue;
-            if(m_teammode) playerstarts[e.attr2].add(&e);
-            else if(e.attr2 <= 0) playerstarts[0].add(&e); // in non-teammode only use non-teammode playerstarts
-        }
-        if(playerstarts[team].length() <= 0)
-        {
-            conoutf("could not find playerstart for player %i of team %i", d->clientnum, team);
-            findplayerspawn(d, -1);
-            return;
-        }
-        conoutf("got %i playerstarts for team %i", playerstarts[team].length(), team);
-        vector<fpsent *> pl;
-        int found=0, next=0;
-        while(found<players.length())
-        {
-            loopv(players)
-            {
-                fpsent *p = players[i];
-                if(p->clientnum == next)
-                {
-                    pl.add(p);
-                    found++;
-                }
-            }
-            next++;
-        }
-        int seed = game::timestamp - (game::timestamp % 23); // seed have to be the same for all players even without network messages
-        loopv(pl)
-        {
-            fpsent *p = pl[i];
-            conoutf("placing player %i (cn=%i, team=%s) on playerstart %i (timestamp=%i)", i, pl[i]->clientnum, pl[i]->team, (i+seed)%playerstarts[team].length(), game::timestamp);
-            if(p!=d) continue;
-            extentity &e = *playerstarts[team][(i+seed)%playerstarts[team].length()];
-            d->o = e.o;
-            d->yaw = e.attr1;
-            d->pitch = 0;
-            d->roll = 0;
-            entinmap(d);
-            break;
-        }
+    void pickspawn(fpsent *d){
+    	if(!entities::ents.inrange(myspawnloc)) return;
+    	extentity& e = *entities::ents[myspawnloc];
+    	d->o = e.o;
+    	d->yaw = e.attr1;
+    	d->pitch = 0;
+    	d->roll = 0;
+    	entinmap(d);
     }
 
 #else
+
+    bool notgotspawnlocations;
+    vector<spawnloc*> spawnlocs;
+
+    void setup(){
+    	notgotspawnlocations = true;
+    	spawnlocs.deletecontents();
+    	if(!notgotitems){
+    		loopv(ments){
+    			if(ments[i].type != PLAYERSTART) continue;
+    			entity& e = ments[i];
+    			spawnlocs.add(new spawnloc(e.o, e.attr2, i));
+    		}
+    		notgotspawnlocations = false;
+    		sendspawnlocs();
+    	}
+    }
+
+    bool parsespawnloc(ucharbuf &p, bool commit)
+    {
+    	//raise(SIGTRAP);
+    	int numsploc = getint(p);
+    	loopi(numsploc){
+    		vec o;
+    		loopk(3) o[k] = max(getint(p)/DMF, 0.0f);
+    		int team = getint(p), index = getint(p);
+    		if(p.overread()) break;
+        	if(m_teammode ? team < 1 || team > 2 : team) return false;
+    		if(commit && notgotspawnlocations) spawnlocs.add(new spawnloc(o, team, index));
+    	}
+    	if(commit && notgotspawnlocations){
+    		notgotspawnlocations = false;
+    		sendspawnlocs(true);
+    	}
+    	return true;
+    }
+
+#define bombteamname(s) (!strcmp(s, "good") ? 1 : (!strcmp(s, "evil") ? 2 : 0))
+
+    void sendspawnlocs(bool resuscitate = false){
+    	vector<clientinfo*> activepl;
+    	loopv(clients){
+    		clientinfo* ci = clients[i];
+    		if(ci->state.state == CS_SPECTATOR) continue;
+    		activepl.add(ci);
+    	}
+    	vector<spawnloc*> pool[3];
+    	loopv(spawnlocs) pool[spawnlocs[i]->team].add(spawnlocs[i]);
+    	loopi(3) pool[i].shuffle();
+    	for(int i = 0; i < activepl.length(); i++){
+    		vector<spawnloc*>& tpool = pool[m_teammode ? bombteamname(activepl[i]->team) : 0];
+    		if(tpool.length()){
+    			tpool[0]->cn = activepl[i]->clientnum;
+    			sendf(tpool[0]->cn, 1, "ri2", N_SPAWNLOC, tpool[0]->index);
+    			if(resuscitate){
+    				extern void sendspawn(clientinfo *ci);
+    				sendspawn(activepl[i]);
+    			}
+    			tpool.removeunordered(0);
+    		}
+    	}
+    }
 
     bool gamerunning() {
       for (int cn = 0; cn < clients.length(); cn++)
@@ -262,11 +322,15 @@ struct bombclientmode : clientmode
       return false;
     }
 
-    bool canspawn(clientinfo *ci, bool connecting = false) {
+    bool canspawn(clientinfo *ci, bool connecting) {
     	if(!m_lms) return true;
-    	else if(gamerunning()) {conoutf("game is running"); return false; }
-    	else if(ci->state.deaths==0) {conoutf("player has no deaths"); return true; } // ci->state.aitype!=AI_NONE &&
-    	else return false;
+    	if(gamerunning()) {conoutf("game is running"); return false; }
+    	if(notgotspawnlocations) {conoutf("not got spawn locations yet"); return false; }
+    	int i = 0;
+    	for(; i < spawnlocs.length(); i++) if(spawnlocs[i]->cn == ci->clientnum) break;
+    	if(i == spawnlocs.length()) {conoutf("player has got no spawn location"); return false; }
+    	if(ci->state.deaths==0) {conoutf("player has no deaths"); return true; } // ci->state.aitype!=AI_NONE &&
+    	return false;
     }
 
     void pushentity(int type, vec o) {
@@ -289,6 +353,14 @@ struct bombclientmode : clientmode
         for(int i=0; i<target->state.bombdelay/3; i++) pushentity(I_BOMBDELAY, target->state.o);
     }
 
+    bool canchangeteam(clientinfo *ci, const char *oldteam, const char *newteam){
+    	return m_teammode && bombteamname(newteam) > 0;
+    }
+
+    void cleanup(){
+    	spawnlocs.deletecontents();
+    }
+
 #endif
 
 };
@@ -306,5 +378,21 @@ case N_KILLMOVABLE:
     break;
 }
 */
+
+case N_SPAWNLOC:
+{
+	if(smode==&bombmode)
+		if(!bombmode.parsespawnloc(p, (ci->state.state!=CS_SPECTATOR || ci->privilege || ci->local) && !strcmp(ci->clientmap, smapname)))
+			disconnect_client(sender, DISC_TAGT);
+	break;
+}
+
+#else
+
+case N_SPAWNLOC:
+{
+	bombmode.myspawnloc = getint(p);
+	break;
+}
 
 #endif
