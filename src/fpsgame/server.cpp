@@ -1679,7 +1679,6 @@ namespace server
             else ts.respawn(gamemode);
             // don't issue respawn yet until DEATHMILLIS has elapsed
             // ts.respawn();
-            //if (m_bomb) smode->died(target,actor); TODO why this??
         }
     }
 
