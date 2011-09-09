@@ -4,6 +4,11 @@
 //#include <signal.h>
 
 #ifdef SERVMODE
+
+
+extern void sendspawn(clientinfo *ci);
+extern void pausegame(bool val);
+
 struct bombservmode : servmode
 #else
 
@@ -256,8 +261,11 @@ struct bombclientmode : clientmode
 
     bool notgotspawnlocations;
     vector<spawnloc*> spawnlocs;
+    int sequence, countdown;
 
     void setup(){
+    	sequence = -1;
+    	pausegame(true);
     	notgotspawnlocations = true;
     	spawnlocs.deletecontents();
     	if(!notgotitems){
@@ -273,7 +281,6 @@ struct bombclientmode : clientmode
 
     bool parsespawnloc(ucharbuf &p, bool commit)
     {
-    	//raise(SIGTRAP);
     	int numsploc = getint(p);
     	loopi(numsploc){
     		vec o;
@@ -288,6 +295,40 @@ struct bombclientmode : clientmode
     		sendspawnlocs(true);
     	}
     	return true;
+    }
+
+    void updatelimbo(){
+    	if(notgotspawnlocations || sequence == -2) return;
+    	if(sequence == -1){
+    		loopv(spawnlocs){
+    			if(spawnlocs[i]->cn == -1) continue;
+    			clientinfo* ci = getinfo(spawnlocs[i]->cn);
+    			if(!ci || ci->state.state==CS_SPECTATOR || ci->state.aitype != AI_NONE || ci->clientmap[0] || ci->mapcrc) continue;
+    			return;
+    		}
+    		sequence = totalmillis;
+    		sendservmsg("Map load complete.\n-5...");
+    		countdown = 4;
+    		return;
+    	}
+    	int remaining = 5000 - (totalmillis - sequence);
+    	if(remaining <= 0){
+			sequence = -2;
+			sendservmsg("FIGHT!");
+			pausegame(false);
+    	}
+    	else if(remaining/1000 != countdown){
+    		defformatstring(msg)("-%d...", countdown--);
+    		sendservmsg(msg);
+    	}
+    }
+
+    void leavegame(clientinfo *ci, bool disconnecting){
+    	if(!disconnecting) return;
+    	loopv(spawnlocs) if(spawnlocs[i]->cn == ci->clientnum){
+    		spawnlocs[i]->cn = -1;
+    		break;
+    	}
     }
 
 #define bombteamname(s) (!strcmp(s, "good") ? 1 : (!strcmp(s, "evil") ? 2 : 0))
@@ -307,10 +348,7 @@ struct bombclientmode : clientmode
     		if(tpool.length()){
     			tpool[0]->cn = activepl[i]->clientnum;
     			sendf(tpool[0]->cn, 1, "ri2", N_SPAWNLOC, tpool[0]->index);
-    			if(resuscitate){
-    				extern void sendspawn(clientinfo *ci);
-    				sendspawn(activepl[i]);
-    			}
+    			if(resuscitate) sendspawn(activepl[i]);
     			tpool.removeunordered(0);
     		}
     	}
