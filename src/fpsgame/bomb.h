@@ -261,10 +261,14 @@ struct bombclientmode : clientmode
 
     bool notgotspawnlocations;
     vector<spawnloc*> spawnlocs;
-    int sequence, countdown;
+    int sequence, timecounter, countdown;
+
+#define COUNTDOWNSECONDS 3
 
     void setup(){
-    	sequence = -1;
+    	sequence = 0;
+    	countdown = COUNTDOWNSECONDS;
+    	timecounter = totalmillis;
     	pausegame(true);
     	notgotspawnlocations = true;
     	spawnlocs.deletecontents();
@@ -298,28 +302,39 @@ struct bombclientmode : clientmode
     }
 
     void updatelimbo(){
-    	if(notgotspawnlocations || sequence == -2) return;
-    	if(sequence == -1){
-    		loopv(spawnlocs){
-    			if(spawnlocs[i]->cn == -1) continue;
-    			clientinfo* ci = getinfo(spawnlocs[i]->cn);
-    			if(!ci || ci->state.state==CS_SPECTATOR || ci->state.aitype != AI_NONE || ci->clientmap[0] || ci->mapcrc) continue;
-    			return;
+    	if(notgotspawnlocations) return;
+    	switch(sequence){
+    	case 0:
+    		if(totalmillis - timecounter >= 10000) sendservmsg("Map load complete (grannies left behind).");
+    		else{
+    			loopv(spawnlocs){
+    				if(spawnlocs[i]->cn == -1) continue;
+    				clientinfo* ci = getinfo(spawnlocs[i]->cn);
+    				if(!ci || ci->state.state==CS_SPECTATOR || ci->state.aitype != AI_NONE || ci->clientmap[0] || ci->mapcrc) continue;
+    				return;
+    			}
+    			sendservmsg("Map load complete.");
     		}
-    		sequence = totalmillis;
-    		sendservmsg("Map load complete.\n-5...");
-    		countdown = 4;
+    		sequence = 1;
+    		timecounter = totalmillis;
     		return;
+
+    	case 1:
+    	{
+    		int remaining = COUNTDOWNSECONDS*1000 - (totalmillis - timecounter);
+    		if(remaining <= 0){
+    			sequence = 2;
+    			sendservmsg("FIGHT!");
+    			pausegame(false);
+    		}
+    		else if(remaining/1000 != countdown){
+    			defformatstring(msg)("-%d...", countdown--);
+    			sendservmsg(msg);
+    		}
+    		break;
     	}
-    	int remaining = 5000 - (totalmillis - sequence);
-    	if(remaining <= 0){
-			sequence = -2;
-			sendservmsg("FIGHT!");
-			pausegame(false);
-    	}
-    	else if(remaining/1000 != countdown){
-    		defformatstring(msg)("-%d...", countdown--);
-    		sendservmsg(msg);
+
+    	case 2: break;
     	}
     }
 
