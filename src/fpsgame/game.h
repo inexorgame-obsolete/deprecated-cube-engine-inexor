@@ -100,7 +100,8 @@ enum
     M_CLASSICSP  = 1<<17,
     M_SLOWMO     = 1<<18,
     M_LMS        = 1<<19,
-    M_BOMB       = 1<<20
+    M_BOMB       = 1<<20,
+    M_RACE       = 1<<21
 };
 
 static struct gamemodeinfo
@@ -135,7 +136,9 @@ static struct gamemodeinfo
     { "efficiency hold", M_NOITEMS | M_EFFICIENCY | M_CTF | M_HOLD | M_TEAM, "Efficiency Hold The Flag: Hold \fs\f7the flag\fr for 20 seconds to score points for \fs\f1your team\fr. You spawn with all weapons and armour. There are no items." },
     { "lms", M_LMS, "Last Man Standing: The last player alive wins." },
     { "bomberman", M_LMS | M_BOMB, "Bomberman: Place bombs to kill enemies. Collect items to increase amount of bombs or damage radius. Survive to win." },
-    { "bomberman team", M_LMS | M_BOMB | M_TEAM, "Bomberman Team: Place bombs to kill \fs\f3enemies\fr. Collect items to increase amount of bombs or damage radius. Your team wins if one player survives." }
+    { "bomberman team", M_LMS | M_BOMB | M_TEAM, "Bomberman Team: Place bombs to kill \fs\f3enemies\fr. Collect items to increase amount of bombs or damage radius. Your team wins if one player survives." },
+    { "race", M_RACE, "Race: Be faster than the others" }
+
 };
 
 #define STARTGAMEMODE (-3)
@@ -146,6 +149,7 @@ static struct gamemodeinfo
 #define m_checknot(mode, flag) (m_valid(mode) && !(gamemodes[(mode) - STARTGAMEMODE].flags&(flag)))
 #define m_checkall(mode, flag) (m_valid(mode) && (gamemodes[(mode) - STARTGAMEMODE].flags&(flag)) == (flag))
 
+#define m_race         (m_check(gamemode, M_LMS))
 #define m_lms          (m_check(gamemode, M_LMS))
 #define m_bomb         (m_check(gamemode, M_BOMB))
 #define m_noitems      (m_check(gamemode, M_NOITEMS))
@@ -298,8 +302,7 @@ struct demoheader
 #define MAXTEAMLEN 4
 
 enum
-{
-    HICON_BLUE_ARMOUR = 0,
+{    HICON_BLUE_ARMOUR = 0,
     HICON_GREEN_ARMOUR,
     HICON_YELLOW_ARMOUR,
 
@@ -390,7 +393,7 @@ static const struct guninfo { short sound, attackdelay, damage, projspeed, part,
     { S_RIFLE,    1500, 100, 0,   0, 30, 2048, "rifle",           "rifle" },
     { S_FLAUNCH,   500,  75, 80,  0, 10, 1024, "grenadelauncher", "gl" },
     { S_PISTOL,    500,  25, 0,   0,  7, 1024, "pistol",          "pistol" },
-    { S_FEXPLODE,  375,   1, 8,   0,  2,    0, "bomb",            "gl" }, // TODO: other sound, other hudmodel
+    { S_FEXPLODE,  375,   1, 8,   0,  2,    0, "bomb",            "cannon" }, // TODO: other sound, other hudmodel
     { S_FLAUNCH,   200,  20, 50,  PART_FIREBALL1,  1, 1024, "fireball",  NULL },
     { S_ICEBALL,   200,  40, 30,  PART_FIREBALL2,  1, 1024, "iceball",   NULL },
     { S_SLIMEBALL, 200,  30, 160, PART_FIREBALL3,  1, 1024, "slimeball", NULL },

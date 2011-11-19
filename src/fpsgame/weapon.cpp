@@ -1189,7 +1189,7 @@ namespace game
             if(p->bouncetype != BNC_BOMB) continue;
             // TODO: PPP
             // conoutf("weaponcollide p->o.z=%2.2f raycube=%2.2f p->eyeheight=%2.2f", p->o.z, raycube(p->o, vec(0, 0, -1), 0.2f, RAY_CLIPMAT), p->eyeheight);
-            if(!ellipsecollide(d, dir, p->o, vec(0, 0, 0), p->yaw, p->xradius*7.5f, p->yradius*7.5f, p->aboveeye, p->o.z - raycube(p->o, vec(0, 0, -1), 0.2f, RAY_CLIPMAT))) return false;
+            //if(!ellipsecollide(d, dir, p->o, vec(0, 0, 0), p->yaw, p->xradius*7.5f, p->yradius*7.5f, p->aboveeye, p->o.z - raycube(p->o, vec(0, 0, -1), 0.2f, RAY_CLIPMAT))) return false;
         }
         return true;
     }

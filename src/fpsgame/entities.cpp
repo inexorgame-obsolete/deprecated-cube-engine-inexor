@@ -101,7 +101,7 @@ namespace entities
                     if(m_noitems) continue;
                     break;
                 case CARROT: case RESPAWNPOINT:
-                    if(!m_classicsp) continue;
+                    if(!(m_classicsp || m_race)) continue;
                     break;
                 case I_BOMBS: case I_BOMBRADIUS: case I_BOMBDELAY: case I_BOMBRESERVED2: case I_BOMBRESERVED3: case I_BOMBRESERVED4: case I_BOMBRESERVED5: case I_BOMBRESERVED6:
                     if(!m_bomb) continue;
