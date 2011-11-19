@@ -1024,13 +1024,13 @@ namespace game
 	
 #define bbarr_type 8
 #define bbarr_dir 3
-#define bbarr_num 10
-#define bbarr_fade 200
-#define bbarr_size 0.6f
+#define bbarr_num 1
+#define bbarr_fade 2000
+#define bbarr_size 1.2f //0.8f
 #define bbarr_gravity 0
 #define bbarr_overlap 4.0f
 #define bbarr_height 5.0f
-#define bbarr_color 0x00E22D
+#define bbarr_color 0X2E7187 //0x2E7187 //0x0084AD //0x00E22D
 	
     void renderbouncers()
     {
@@ -1054,14 +1054,16 @@ namespace game
             else if(bnc.bouncetype==BNC_BOMB)
             {
                 rendermodel(&bnc.light, "projectiles/bomb", ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_DYNSHADOW);
-                int radius = 20; // TODO: Relate to the collision
+                int radius = 16; // TODO: Relate to the collision
                 vec mov_from(0, 0, radius-bbarr_overlap); // shift the lower part of the Barrier upwards
                 vec mov_to(0, 0, -radius+bbarr_height); // shift the upper part downwards
                 vec floor = bnc.o;
                 floor.z = floor.z - raycube(floor, vec(0, 0, -1), 0.2f, RAY_CLIPMAT);
                 // TODO: PPP
                 // conoutf("particle barrier: bnc.o.z=%2.2f raycube=%2.2f floor.z=%2.2f", bnc.o.z, raycube(floor, vec(0, 0, -1), 0.5f, RAY_CLIPMAT), floor.z);
-                regularshape(bbarr_type, radius, bbarr_color, bbarr_dir, bbarr_num, bbarr_fade, floor, bbarr_size, bbarr_gravity, &mov_from, &mov_to);
+                int tremble = (rnd(14)) - 7;
+		conoutf("TREMBLE <- %i", tremble);
+		regularshape(bbarr_type, radius + tremble, bbarr_color, bbarr_dir, bbarr_num, bbarr_fade, floor, bbarr_size, bbarr_gravity, &mov_from, &mov_to);
             }
             // TODO: vvv REMOVE RENDERMODEL FOR SPLINTERS vvv
             /*
@@ -1189,7 +1191,7 @@ namespace game
             if(p->bouncetype != BNC_BOMB) continue;
             // TODO: PPP
             // conoutf("weaponcollide p->o.z=%2.2f raycube=%2.2f p->eyeheight=%2.2f", p->o.z, raycube(p->o, vec(0, 0, -1), 0.2f, RAY_CLIPMAT), p->eyeheight);
-            //if(!ellipsecollide(d, dir, p->o, vec(0, 0, 0), p->yaw, p->xradius*7.5f, p->yradius*7.5f, p->aboveeye, p->o.z - raycube(p->o, vec(0, 0, -1), 0.2f, RAY_CLIPMAT))) return false;
+            if(!ellipsecollide(d, dir, p->o, vec(0, 0, 0), p->yaw, p->xradius*7.5f, p->yradius*7.5f, p->aboveeye, p->o.z - raycube(p->o, vec(0, 0, -1), 0.2f, RAY_CLIPMAT))) return false;
         }
         return true;
     }
