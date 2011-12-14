@@ -456,6 +456,9 @@ const float WALLZ = 0.2f;
 // #extern const float GRAVITY = 200.0f;
 FVARNR(jumpvel, JUMPVEL, 0.0f,     125.0f, 2000.0f);
 FVARNR(gravity, GRAVITY, -2000.0f, 200.0f, 2000.0f);
+FVARR(friction_air,   1.0f, 30.0f, 2000.0f);
+FVARR(friction_water, 1.0f, 6.0f,  2000.0f);
+FVARR(friction_land,  1.0f, 20.0f, 2000.0f);
 //////////////////////
 
 bool ellipserectcollide(physent *d, const vec &dir, const vec &o, const vec &center, float yaw, float xr, float yr, float hi, float lo)
@@ -1716,7 +1719,7 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
         }
         else if(!water && game::allowmove(pl)) d.mul((pl->move && !pl->strafe ? 1.3f : 1.0f) * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f)); // EXPERIMENTAL
     }
-    float fric = water && !floating ? 20.0f : (pl->physstate >= PHYS_SLOPE || floating ? 6.0f : 30.0f);
+    float fric = water && !floating ? friction_water : (pl->physstate >= PHYS_SLOPE || floating ? friction_land : friction_air);
     pl->vel.lerp(d, pl->vel, pow(1 - 1/fric, curtime/20.0f));
 // old fps friction
 //    float friction = water && !floating ? 20.0f : (pl->physstate >= PHYS_SLOPE || floating ? 6.0f : 30.0f);
@@ -1740,8 +1743,8 @@ void modifygravity(physent *pl, bool water, int curtime)
 
     if(water || pl->physstate >= PHYS_SLOPE)
     {
-        float fric = water ? 2.0f : 6.0f,
-              c = water ? 1.0f : clamp((pl->floor.z - SLOPEZ)/(FLOORZ-SLOPEZ), 0.0f, 1.0f);
+        float fric = water ? (friction_water-1)/5 + 1: 6.0;
+        float c    = water ? 1.0f : clamp((pl->floor.z - SLOPEZ)/(FLOORZ-SLOPEZ), 0.0f, 1.0f);
         pl->falling.mul(pow(1 - c/fric, curtime/20.0f));
 // old fps friction
 //        float friction = water ? 2.0f : 6.0f,
