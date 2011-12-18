@@ -454,11 +454,17 @@ const float WALLZ = 0.2f;
 /////// ON MOD //////
 // #extern const float JUMPVEL = 125.0f;
 // #extern const float GRAVITY = 200.0f;
-FVARNR(jumpvel, JUMPVEL, 0.0f,     125.0f, 2000.0f);
-FVARNR(gravity, GRAVITY, -2000.0f, 200.0f, 2000.0f);
-FVARR(friction_air,   1.0f, 30.0f, 2000.0f);
-FVARR(friction_water, 1.0f, 6.0f,  2000.0f);
-FVARR(friction_land,  1.0f, 20.0f, 2000.0f);
+FVARNR(jumpvel, JUMPVEL, -8000.0f, 125.0f, 8000.0f);
+FVARNR(gravity, GRAVITY, -8000.0f, 200.0f, 8000.0f);
+FVARFR(playerspeed,      -8000.0f, 100.0f, 8000.0f, player->maxspeed = playerspeed);
+
+#define friction_air_default   30.0f
+#define friction_water_default 20.0f
+#define friction_land_default  6.0f
+
+FVARR(friction_air,   1.0f, friction_air_default,   2000.0f);
+FVARR(friction_water, 1.0f, friction_water_default, 2000.0f);
+FVARR(friction_land,  1.0f, friction_land_default,  2000.0f);
 //////////////////////
 
 bool ellipserectcollide(physent *d, const vec &dir, const vec &o, const vec &center, float yaw, float xr, float yr, float hi, float lo)
@@ -1719,8 +1725,17 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
         }
         else if(!water && game::allowmove(pl)) d.mul((pl->move && !pl->strafe ? 1.3f : 1.0f) * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f)); // EXPERIMENTAL
     }
-    float fric = water && !floating ? friction_water : (pl->physstate >= PHYS_SLOPE || floating ? friction_land : friction_air);
-    pl->vel.lerp(d, pl->vel, pow(1 - 1/fric, curtime/20.0f));
+
+    // ON MOD : sauerbomber
+    //float fric = water && !floating ? friction_water : (pl->physstate >= PHYS_SLOPE || floating ? friction_land : friction_air);
+    
+    float fric = floating ? (friction_land_default) // float => float
+                          : (water ? (friction_water) // water & !float => water
+			           : (pl->physstate < PHYS_SLOPE ? friction_air_default // (slide | fall | float) & !float & !water => air
+				                                 : friction_land));     // otherwise => land
+    // END MOD			     
+
+      pl->vel.lerp(d, pl->vel, pow(1 - 1/fric, curtime/20.0f));
 // old fps friction
 //    float friction = water && !floating ? 20.0f : (pl->physstate >= PHYS_SLOPE || floating ? 6.0f : 30.0f);
 //    float fpsfric = min(curtime/(20.0f*friction), 1.0f);
