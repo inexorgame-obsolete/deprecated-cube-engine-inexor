@@ -101,7 +101,8 @@ enum
     M_SLOWMO     = 1<<18,
     M_LMS        = 1<<19,
     M_BOMB       = 1<<20,
-    M_RACE       = 1<<21
+    M_RACE       = 1<<21,
+    M_TIMEFORWARD= 1<<22
 };
 
 static struct gamemodeinfo
@@ -137,7 +138,7 @@ static struct gamemodeinfo
     { "lms", M_LMS, "Last Man Standing: The last player alive wins." },
     { "bomberman", M_LMS | M_BOMB, "Bomberman: Place bombs to kill enemies. Collect items to increase amount of bombs or damage radius. Survive to win." },
     { "bomberman team", M_LMS | M_BOMB | M_TEAM, "Bomberman Team: Place bombs to kill \fs\f3enemies\fr. Collect items to increase amount of bombs or damage radius. Your team wins if one player survives." },
-    { "race", M_RACE, "Race: Be faster than the others" }
+    { "race", M_RACE | M_TIMEFORWARD, "Race: Be faster than the others" }
 
 };
 
@@ -149,7 +150,7 @@ static struct gamemodeinfo
 #define m_checknot(mode, flag) (m_valid(mode) && !(gamemodes[(mode) - STARTGAMEMODE].flags&(flag)))
 #define m_checkall(mode, flag) (m_valid(mode) && (gamemodes[(mode) - STARTGAMEMODE].flags&(flag)) == (flag))
 
-#define m_race         (m_check(gamemode, M_LMS))
+#define m_race         (m_check(gamemode, M_RACE))
 #define m_lms          (m_check(gamemode, M_LMS))
 #define m_bomb         (m_check(gamemode, M_BOMB))
 #define m_noitems      (m_check(gamemode, M_NOITEMS))
@@ -164,6 +165,7 @@ static struct gamemodeinfo
 #define m_hold         (m_checkall(gamemode, M_CTF | M_HOLD))
 #define m_teammode     (m_check(gamemode, M_TEAM))
 #define m_overtime     (m_check(gamemode, M_OVERTIME))
+#define m_timeforward  (m_check(gamemode, M_TIMEFORWARD))
 #define isteam(a,b)    (m_teammode && strcmp(a, b)==0)
 
 #define m_demo         (m_check(gamemode, M_DEMO))
@@ -302,7 +304,8 @@ struct demoheader
 #define MAXTEAMLEN 4
 
 enum
-{    HICON_BLUE_ARMOUR = 0,
+{
+    HICON_BLUE_ARMOUR = 0,
     HICON_GREEN_ARMOUR,
     HICON_YELLOW_ARMOUR,
 
@@ -938,6 +941,7 @@ namespace server
     extern const char *modename(int n, const char *unknown = "unknown");
     extern const char *mastermodename(int n, const char *unknown = "unknown");
     extern void startintermission();
+    extern void forceintermission();
     extern void stopdemo();
     extern void forcemap(const char *map, int mode);
     extern void hashpassword(int cn, int sessionid, const char *pwd, char *result, int maxlen = MAXSTRLEN);

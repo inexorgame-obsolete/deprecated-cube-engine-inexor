@@ -137,9 +137,16 @@ namespace game
         if(m_timed && mname[0] && (maplimit >= 0 || intermission))
         {
             g.separator();
-            if(intermission) g.text("intermission", 0xFFFF80);
-            else 
-            {
+            if(intermission) {
+                g.text("intermission", 0xFFFF80);
+            } else if(m_timeforward) {
+                int secs = max(lastmillis, 0)/1000, mins = secs/60;
+                secs %= 60;
+                g.pushlist();
+                g.strut(mins >= 10 ? 4.5f : 3.5f);
+                g.textf("%d:%02d", 0xFFFF80, NULL, mins, secs);
+                g.poplist();
+            } else {
                 int secs = max(maplimit-lastmillis, 0)/1000, mins = secs/60;
                 secs %= 60;
                 g.pushlist();

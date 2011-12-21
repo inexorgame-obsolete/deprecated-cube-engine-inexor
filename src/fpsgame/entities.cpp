@@ -278,6 +278,11 @@ namespace entities
     {
         switch(ents[n]->type)
         {
+            case CARROT:
+                if (m_race) {
+                    conoutf("THE CARROT");
+                    server::forceintermission();
+                }
             default:
                 if(d->canpickup(ents[n]->type))
                 {
@@ -322,6 +327,7 @@ namespace entities
                 d->vel = v;
                 break;
             }
+
         }
     }
 
@@ -333,7 +339,7 @@ namespace entities
         {
             extentity &e = *ents[i];
             if(e.type==NOTUSED) continue;
-            if(!e.spawned && e.type!=TELEPORT && e.type!=JUMPPAD && e.type!=RESPAWNPOINT) continue;
+            if(!e.spawned && e.type!=TELEPORT && e.type!=JUMPPAD && e.type!=RESPAWNPOINT && (e.type!=CARROT && m_race) ) continue;
             float dist = e.o.dist(o);
             if(dist<(e.type==TELEPORT ? 16 : 12)) trypickup(i, d);
         }

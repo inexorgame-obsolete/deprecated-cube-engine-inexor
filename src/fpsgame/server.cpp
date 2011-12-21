@@ -1581,7 +1581,7 @@ namespace server
 
     void checkintermission()
     {
-        if(gamemillis >= gamelimit && !interm)
+        if(gamemillis >= gamelimit && !interm && !m_timeforward)
         {
             sendf(-1, 1, "ri2", N_TIMEUP, 0);
             if(smode) smode->intermission();
@@ -1589,7 +1589,19 @@ namespace server
         }
     }
 
-    void startintermission() { gamelimit = min(gamelimit, gamemillis); checkintermission(); }
+    void startintermission()
+    {
+        gamelimit = min(gamelimit, gamemillis);
+        checkintermission();
+    }
+
+    void forceintermission()
+    {
+        if(interm) return;
+        sendf(-1, 1, "ri2", N_TIMEUP, 0);
+        if(smode) smode->intermission();
+        interm = gamemillis + 10000;
+    }
 
     /**
      * Checks if the game has ended because only one player is still alive.
