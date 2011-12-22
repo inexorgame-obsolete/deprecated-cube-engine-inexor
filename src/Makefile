@@ -388,7 +388,7 @@ fpsgame/ai.o: shared/ents.h shared/command.h shared/iengine.h shared/igame.h
 fpsgame/ai.o: fpsgame/ai.h
 fpsgame/client.o: fpsgame/game.h shared/cube.h shared/tools.h shared/geom.h
 fpsgame/client.o: shared/ents.h shared/command.h shared/iengine.h
-fpsgame/client.o: shared/igame.h fpsgame/ai.h fpsgame/capture.h fpsgame/ctf.h fpsgame/bomb.h
+fpsgame/client.o: shared/igame.h fpsgame/ai.h fpsgame/capture.h fpsgame/ctf.h fpsgame/bomb.h fpsgame/race.h
 fpsgame/entities.o: fpsgame/game.h shared/cube.h shared/tools.h shared/geom.h
 fpsgame/entities.o: shared/ents.h shared/command.h shared/iengine.h
 fpsgame/entities.o: shared/igame.h fpsgame/ai.h
@@ -409,7 +409,7 @@ fpsgame/scoreboard.o: shared/geom.h shared/ents.h shared/command.h
 fpsgame/scoreboard.o: shared/iengine.h shared/igame.h fpsgame/ai.h
 fpsgame/server.o: fpsgame/game.h shared/cube.h shared/tools.h shared/geom.h
 fpsgame/server.o: shared/ents.h shared/command.h shared/iengine.h
-fpsgame/server.o: shared/igame.h fpsgame/ai.h fpsgame/capture.h fpsgame/ctf.h fpsgame/bomb.h
+fpsgame/server.o: shared/igame.h fpsgame/ai.h fpsgame/capture.h fpsgame/ctf.h fpsgame/bomb.h fpsgame/race.h
 fpsgame/server.o: fpsgame/extinfo.h fpsgame/aiman.h
 fpsgame/waypoint.o: fpsgame/game.h shared/cube.h shared/tools.h shared/geom.h
 fpsgame/waypoint.o: shared/ents.h shared/command.h shared/iengine.h
