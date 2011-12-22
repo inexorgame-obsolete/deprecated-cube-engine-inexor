@@ -40,17 +40,20 @@ namespace game
     #include "capture.h"
     #include "ctf.h"
     #include "bomb.h"
+    #include "race.h"
 
     clientmode *cmode = NULL;
     captureclientmode capturemode;
     ctfclientmode ctfmode;
     bombclientmode bombmode;
+    raceclientmode racemode;
 
     void setclientmode()
     {
         if(m_capture) cmode = &capturemode;
         else if(m_ctf) cmode = &ctfmode;
         else if(m_bomb) cmode = &bombmode;
+        else if(m_race) cmode = &racemode;
         else cmode = NULL;
     }
 
@@ -1601,7 +1604,8 @@ namespace game
             #define PARSEMESSAGES 1
             #include "capture.h"
             #include "ctf.h"
-			#include "bomb.h"
+            #include "bomb.h"
+            #include "race.h"
             #undef PARSEMESSAGES
 
             case N_ANNOUNCE:

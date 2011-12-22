@@ -569,10 +569,12 @@ namespace server
     #include "capture.h"
     #include "ctf.h"
     #include "bomb.h"
+    #include "race.h"
 
     captureservmode capturemode;
     ctfservmode ctfmode;
     bombservmode bombmode;
+    raceservmode racemode;
     servmode *smode = NULL;
 
     bool canspawnitem(int type) {
@@ -1456,6 +1458,7 @@ namespace server
         if(m_capture) smode = &capturemode;
         else if(m_ctf) smode = &ctfmode;
         else if(m_bomb) smode = &bombmode;
+        else if(m_race) smode = &racemode;
         else smode = NULL;
 
         if(m_timed && smapname[0]) sendf(-1, 1, "ri2", N_TIMEUP, gamemillis < gamelimit && !interm ? max((gamelimit - gamemillis)/1000, 1) : 0);
@@ -1597,10 +1600,11 @@ namespace server
 
     void forceintermission()
     {
+        conoutf("forceintermission()");
         if(interm) return;
+        interm = gamemillis + 10000;
         sendf(-1, 1, "ri2", N_TIMEUP, 0);
         if(smode) smode->intermission();
-        interm = gamemillis + 10000;
     }
 
     /**
@@ -2933,7 +2937,8 @@ namespace server
             #define PARSEMESSAGES 1
             #include "capture.h"
             #include "ctf.h"
-			#include "bomb.h"
+            #include "bomb.h"
+            #include "race.h"
             #undef PARSEMESSAGES
 
             case -1:

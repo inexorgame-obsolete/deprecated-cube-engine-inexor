@@ -140,7 +140,7 @@ namespace game
             if(intermission) {
                 g.text("intermission", 0xFFFF80);
             } else if(m_timeforward) {
-                int secs = max(lastmillis, 0)/1000, mins = secs/60;
+                int secs = max(lastmillis-maptime, 0)/1000, mins = secs/60;
                 secs %= 60;
                 g.pushlist();
                 g.strut(mins >= 10 ? 4.5f : 3.5f);

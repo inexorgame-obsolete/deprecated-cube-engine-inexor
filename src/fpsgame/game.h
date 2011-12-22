@@ -254,7 +254,7 @@ enum
     N_ADDBOT, N_DELBOT, N_INITAI, N_FROMAI, N_BOTLIMIT, N_BOTBALANCE,
     N_MAPCRC, N_CHECKMAPS,
     N_SWITCHNAME, N_SWITCHMODEL, N_SWITCHTEAM,
-    N_ITEMPUSH, N_SPAWNLOC,
+    N_ITEMPUSH, N_SPAWNLOC, N_FINISH,
     NUMSV
 };
 
@@ -282,7 +282,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
     N_ADDBOT, 2, N_DELBOT, 1, N_INITAI, 0, N_FROMAI, 2, N_BOTLIMIT, 2, N_BOTBALANCE, 2,
     N_MAPCRC, 0, N_CHECKMAPS, 1,
     N_SWITCHNAME, 0, N_SWITCHMODEL, 2, N_SWITCHTEAM, 0,
-    N_ITEMPUSH, 6, N_SPAWNLOC, 0,
+    N_ITEMPUSH, 6, N_SPAWNLOC, 0, N_FINISH, 1,
     -1
 };
 
@@ -420,6 +420,8 @@ struct fpsstate
 	//bomberman
     int bombradius;
     int bombdelay;
+    //race
+    int racetime;
 
     fpsstate() : maxhealth(100), aitype(AI_NONE), skill(0), backupweapon(GUN_FIST) {}
 
@@ -478,7 +480,11 @@ struct fpsstate
                 case I_QUAD: return quadmillis<is.max;
                 default: return ammo[is.info]<is.max;
             }
-    	} else return false;
+    	} else if(type==CARROT) {
+    	    return true;
+    	} else {
+    	    return false;
+    	}
     }
 
     void pickup(int type)
@@ -531,6 +537,7 @@ struct fpsstate
         gunwait = 0;
         bombradius = 1;
         bombdelay = 1;
+        racetime = 0;
         loopi(NUMGUNS) ammo[i] = 0;
         if (m_bomb) backupweapon = GUN_BOMB;
         else backupweapon = GUN_FIST;
@@ -592,6 +599,16 @@ struct fpsstate
             armour = 0;
             gunselect = GUN_BOMB;
             backupweapon = GUN_BOMB;
+        }
+        else if(m_race)
+        {
+            racetime = 0;
+            health = 1;
+            armourtype = A_GREEN;
+            armour = 0;
+            gunselect = GUN_FIST;
+            ammo[GUN_PISTOL] = 0;
+            ammo[GUN_GL] = 0;
         }
         else
         {

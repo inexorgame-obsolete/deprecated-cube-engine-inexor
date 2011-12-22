@@ -278,16 +278,19 @@ namespace entities
     {
         switch(ents[n]->type)
         {
-            case CARROT:
-                if (m_race) {
-                    conoutf("THE CARROT");
-                    server::forceintermission();
-                }
             default:
                 if(d->canpickup(ents[n]->type))
                 {
                     addmsg(N_ITEMPICKUP, "rci", d, n);
                     ents[n]->spawned = false; // even if someone else gets it first
+                }
+                break;
+
+            case CARROT:
+                if (m_race) {
+                    conoutf("trypickup: THE CARROT");
+                    addmsg(N_FINISH, "rc", d);
+                    // server::forceintermission();
                 }
                 break;
 
