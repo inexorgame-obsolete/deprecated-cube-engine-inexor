@@ -55,6 +55,9 @@ enum                            // static entity types
     I_BOMBRESERVED5,
     I_BOMBRESERVED6,
     OBSTACLE,                   // attr1 = angle, attr2 = idx, attr3 = health
+    RACE_START,
+    RACE_FINISH,
+    RACE_CHECKPOINT,
     MAXENTTYPES
 };
 
@@ -254,7 +257,8 @@ enum
     N_ADDBOT, N_DELBOT, N_INITAI, N_FROMAI, N_BOTLIMIT, N_BOTBALANCE,
     N_MAPCRC, N_CHECKMAPS,
     N_SWITCHNAME, N_SWITCHMODEL, N_SWITCHTEAM,
-    N_ITEMPUSH, N_SPAWNLOC, N_FINISH,
+    N_ITEMPUSH, N_SPAWNLOC,
+    N_RACESTART, N_RACEFINISH, N_RACECHECKPOINT, N_RACELAP, N_RACEINFO,
     NUMSV
 };
 
@@ -282,7 +286,8 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
     N_ADDBOT, 2, N_DELBOT, 1, N_INITAI, 0, N_FROMAI, 2, N_BOTLIMIT, 2, N_BOTBALANCE, 2,
     N_MAPCRC, 0, N_CHECKMAPS, 1,
     N_SWITCHNAME, 0, N_SWITCHMODEL, 2, N_SWITCHTEAM, 0,
-    N_ITEMPUSH, 6, N_SPAWNLOC, 0, N_FINISH, 1,
+    N_ITEMPUSH, 6, N_SPAWNLOC, 0,
+    N_RACESTART, 0, N_RACEFINISH, 0, N_RACECHECKPOINT, 2, N_RACELAP, 2, N_RACEINFO, 4,
     -1
 };
 
@@ -422,6 +427,8 @@ struct fpsstate
     int bombdelay;
     //race
     int racetime;
+    int racelaps;
+    int racecheckpoint;
 
     fpsstate() : maxhealth(100), aitype(AI_NONE), skill(0), backupweapon(GUN_FIST) {}
 
@@ -480,7 +487,7 @@ struct fpsstate
                 case I_QUAD: return quadmillis<is.max;
                 default: return ammo[is.info]<is.max;
             }
-    	} else if(type==CARROT) {
+    	} else if(type==RACE_START || type==RACE_FINISH || type==RACE_CHECKPOINT) {
     	    return true;
     	} else {
     	    return false;
@@ -538,6 +545,8 @@ struct fpsstate
         bombradius = 1;
         bombdelay = 1;
         racetime = 0;
+        racelaps = 0;
+        racecheckpoint = 0;
         loopi(NUMGUNS) ammo[i] = 0;
         if (m_bomb) backupweapon = GUN_BOMB;
         else backupweapon = GUN_FIST;
@@ -603,6 +612,8 @@ struct fpsstate
         else if(m_race)
         {
             racetime = 0;
+            racelaps = 0;
+            racecheckpoint = 0;
             health = 1;
             armourtype = A_GREEN;
             armour = 0;

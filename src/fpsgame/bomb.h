@@ -434,7 +434,7 @@ case N_KILLMOVABLE:
 
 case N_SPAWNLOC:
 {
-	if(smode==&bombmode)
+	if(smode==&bombmode || smode==&racemode)
 		if(!bombmode.parsespawnloc(p, (ci->state.state!=CS_SPECTATOR || ci->privilege || ci->local) && !strcmp(ci->clientmap, smapname)))
 			disconnect_client(sender, DISC_TAGT);
 	break;

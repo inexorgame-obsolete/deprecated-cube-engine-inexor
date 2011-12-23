@@ -186,6 +186,9 @@ namespace server
         float effectiveness;
         int bombradius;
         int bombdelay;
+        int racetime;
+        int racelaps;
+        int racecheckpoint;
 
         void save(gamestate &gs)
         {
@@ -200,6 +203,9 @@ namespace server
             effectiveness = gs.effectiveness;
             bombradius = gs.bombradius;
             bombdelay = gs.bombdelay;
+            racetime = gs.racetime;
+            racelaps = gs.racelaps;
+            racecheckpoint = gs.racecheckpoint;
         }
 
         void restore(gamestate &gs)
@@ -216,6 +222,9 @@ namespace server
             gs.effectiveness = effectiveness;
             gs.bombradius = bombradius;
             gs.bombdelay = bombdelay;
+            gs.racetime = racetime;
+            gs.racelaps = racelaps;
+            gs.racecheckpoint = racecheckpoint;
         }
     };
 

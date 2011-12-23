@@ -73,7 +73,8 @@ namespace entities
             NULL, NULL,
             NULL,
             "ammo/bombs", "ammo/bombradius", "ammo/bombdelay", NULL, NULL, NULL, NULL, NULL,
-            NULL
+            NULL,
+            NULL, NULL, NULL
         };
         return entmdlnames[type];
     }
@@ -101,7 +102,10 @@ namespace entities
                     if(m_noitems) continue;
                     break;
                 case CARROT: case RESPAWNPOINT:
-                    if(!(m_classicsp || m_race)) continue;
+                    if(!m_classicsp) continue;
+                    break;
+                case RACE_START: case RACE_FINISH: case RACE_CHECKPOINT:
+                    if(!m_race) continue;
                     break;
                 case I_BOMBS: case I_BOMBRADIUS: case I_BOMBDELAY: case I_BOMBRESERVED2: case I_BOMBRESERVED3: case I_BOMBRESERVED4: case I_BOMBRESERVED5: case I_BOMBRESERVED6:
                     if(!m_bomb) continue;
@@ -286,12 +290,31 @@ namespace entities
                 }
                 break;
 
-            case CARROT:
+            case RACE_FINISH:
                 if (m_race) {
-                    conoutf("trypickup: THE CARROT");
-                    addmsg(N_FINISH, "rc", d);
-                    // server::forceintermission();
+                    conoutf("race finish");
+                    addmsg(N_RACEFINISH, "rc", d);
                 }
+                d->lastpickup = ents[n]->type;
+                d->lastpickupmillis = lastmillis;
+                break;
+
+            case RACE_START:
+                if (m_race) {
+                    conoutf("race start");
+                    addmsg(N_RACESTART, "rc", d);
+                }
+                d->lastpickup = ents[n]->type;
+                d->lastpickupmillis = lastmillis;
+                break;
+
+            case RACE_CHECKPOINT:
+                if (m_race) {
+                    // conoutf("race checkpoint cn:%d no:%d", d->clientnum, ents[n]->attr1);
+                    addmsg(N_RACECHECKPOINT, "rci", d, ents[n]->attr1);
+                }
+                d->lastpickup = ents[n]->type;
+                d->lastpickupmillis = lastmillis;
                 break;
 
             case TELEPORT:
@@ -342,7 +365,7 @@ namespace entities
         {
             extentity &e = *ents[i];
             if(e.type==NOTUSED) continue;
-            if(!e.spawned && e.type!=TELEPORT && e.type!=JUMPPAD && e.type!=RESPAWNPOINT && (e.type!=CARROT && m_race) ) continue;
+            if(!e.spawned && e.type!=TELEPORT && e.type!=JUMPPAD && e.type!=RESPAWNPOINT && (m_race && e.type!=RACE_START && e.type!=RACE_FINISH && e.type!=RACE_CHECKPOINT) ) continue;
             float dist = e.o.dist(o);
             if(dist<(e.type==TELEPORT ? 16 : 12)) trypickup(i, d);
         }
@@ -685,6 +708,7 @@ namespace entities
             "flag",
             "bombs", "bombradius", "bombdelay", "bombreserved2", "bombreserved3", "bombreserved4", "bombreserved5", "bombreserved6",
             "obstacle",
+            "start", "finish", "checkpoint",
             "", "",
         };
         return i>=0 && size_t(i)<sizeof(entnames)/sizeof(entnames[0]) ? entnames[i] : "";
