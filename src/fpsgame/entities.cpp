@@ -26,6 +26,17 @@ namespace entities
                 e.attr1 = (int(e.attr1)+180)%360;
                 break;
         }
+        if(ver <= 31) switch(e.type)
+        {
+            case BOX:
+            case BARREL:
+            case OBSTACLE:
+            case PLATFORM:
+            case ELEVATOR:
+                int yaw = (int(e.attr1)%360 + 360)%360 + 7; 
+                e.attr1 = yaw - yaw%15;
+                break;
+        }
     }
 
 #ifndef STANDALONE
@@ -39,23 +50,25 @@ namespace entities
     const char *itemname(int i)
     {
         int t = ents[i]->type;
-        if(m_bomb)
-            if(t<I_BOMBS || t>I_BOMBDELAY) return NULL;
-            else return itemstats[P_AMMO_BO+t-I_BOMBS].name;
-        else
-            if(t<I_SHELLS || t>I_QUAD) return NULL;
-            else return itemstats[t-I_SHELLS].name;
+        if(t>=I_BOMBS && t<=I_BOMBDELAY) {
+            return itemstats[P_AMMO_BO+t-I_BOMBS].name;
+        } else if (t>=I_SHELLS && t<=I_QUAD) {
+            return itemstats[t-I_SHELLS].name;
+        } else {
+            return NULL;
+        }
     }
 
     int itemicon(int i)
     {
         int t = ents[i]->type;
-        if (m_bomb)
-            if(t<I_BOMBS || t>I_BOMBDELAY) return -1;
-            else return itemstats[P_AMMO_BO+t-I_BOMBS].icon;
-        else
-            if(t<I_SHELLS || t>I_QUAD) return -1;
-            else return itemstats[t-I_SHELLS].icon;
+        if(t>=I_BOMBS && t<=I_BOMBDELAY) {
+            return itemstats[P_AMMO_BO+t-I_BOMBS].icon;
+        } else if (t>=I_SHELLS && t<=I_QUAD) {
+            return itemstats[t-I_SHELLS].icon;
+        } else {
+            return -1;
+        }
     }
 
     const char *entmdlname(int type)
@@ -133,9 +146,12 @@ namespace entities
                     if(e.attr2 < 0) continue;
                     break;
                 default:
+                    if(!e.spawned) continue;
                     if(m_bomb) {
-                        if (!e.spawned || e.type<I_BOMBS || e.type>I_BOMBDELAY) continue;
-                    } else if (!e.spawned || e.type<I_SHELLS || e.type>I_QUAD) continue;
+                        if(!e.spawned || e.type < I_BOMBS || e.type > I_BOMBDELAY) continue;
+                    } else {
+                        if(!e.spawned || e.type < I_SHELLS || e.type > I_QUAD) continue;
+                    }
             }
             const char *mdlname = entmodel(e);
             if(mdlname)
@@ -381,16 +397,16 @@ namespace entities
     void putitems(packetbuf &p)            // puts items in network stream and also spawns them locally
     {
         putint(p, N_ITEMLIST);
-        if(m_bomb)
-            loopv(ents) if(ents[i]->type>=I_BOMBS && ents[i]->type<=I_BOMBDELAY) {
+        loopv(ents) {
+            if((m_bomb && ents[i]->type>=I_BOMBS && ents[i]->type<=I_BOMBDELAY) || (!m_bomb && ents[i]->type>=I_SHELLS && ents[i]->type<=I_QUAD)) {
                 putint(p, i);
                 putint(p, ents[i]->type);
             }
-        else
-            loopv(ents) if(ents[i]->type>=I_SHELLS && ents[i]->type<=I_QUAD && (!m_noammo || ents[i]->type<I_SHELLS || ents[i]->type>I_CARTRIDGES)) {
+            if(!m_noammo && ents[i]->type>=I_HEALTH && ents[i]->type<=I_QUAD) {
                 putint(p, i);
                 putint(p, ents[i]->type);
             }
+        }
         putint(p, -1);
     }
 
@@ -398,7 +414,16 @@ namespace entities
 
     void spawnitems(bool force)
     {
-        if(m_bomb)
+        if(m_noitems) return;
+        loopv(ents) {
+            if((m_bomb  && ents[i]->type>=I_BOMBS && ents[i]->type<=I_BOMBDELAY) || (!m_bomb && ents[i]->type>=I_SHELLS && ents[i]->type<=I_QUAD)) {
+                ents[i]->spawned = force || m_sp || !server::delayspawn(ents[i]->type);
+            }
+            if(!m_noammo && ents[i]->type>=I_HEALTH && ents[i]->type<=I_QUAD) {
+                ents[i]->spawned = force || m_sp || !server::delayspawn(ents[i]->type);
+            }
+        }
+        /*
             loopv(ents) if(ents[i]->type>=I_BOMBS && ents[i]->type<=I_BOMBDELAY) {
                 ents[i]->spawned = force || m_sp || !server::delayspawn(ents[i]->type);
             }
@@ -408,9 +433,10 @@ namespace entities
                 ents[i]->spawned = force || m_sp || !server::delayspawn(ents[i]->type);
             }
         }
+        */
     }
 
-    void setspawn(int i, bool on) { if(ents.inrange(i)) ents[i]->spawned = on; else conoutf("entities.cpp::setspawn(387): COULD NOT SETSPAWN"); }
+    void setspawn(int i, bool on) { if(ents.inrange(i)) ents[i]->spawned = on; }
 
     extentity *newentity() { return new fpsentity(); }
     void deleteentity(extentity *e) { delete (fpsentity *)e; }

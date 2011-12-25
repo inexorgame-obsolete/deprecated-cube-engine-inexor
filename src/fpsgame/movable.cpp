@@ -35,7 +35,8 @@ namespace game
         {
             state = CS_ALIVE;
             type = ENT_INANIMATE;
-            yaw = float((e.attr1+7)-(e.attr1+7)%15);
+            // yaw = float((e.attr1+7)-(e.attr1+7)%15);
+            yaw = e.attr1;
             if(e.type==PLATFORM || e.type==ELEVATOR) 
             {
                 maxspeed = e.attr4 ? fabs(float(e.attr4)) : PLATFORMSPEED;
@@ -61,7 +62,7 @@ namespace game
             // conoutf("movable.cpp::explode etype=%i state=%i health=%i",etype,state,health);
             state = CS_DEAD;
             exploding = 0;
-            if(etype==OBSTACLE) game::explode(false, (fpsent *)at, o, this, 0, GUN_BARREL); // obstacles explodes not only locally and doesn't cause any damage
+            if(etype==OBSTACLE) game::explode(false, (fpsent *)at, o, this, 0, GUN_BARREL); // obstacles explodes not only locally and doesn't cause any damage // TODO: GUN_OBSTACLE???
             else game::explode(true, (fpsent *)at, o, this, guns[GUN_BARREL].damage, GUN_BARREL);
         }
 
@@ -92,7 +93,7 @@ namespace game
             cleardynentcache();
             movables.deletecontents();
         }
-        if(!m_dmsp && !m_classicsp && !m_bomb) return;
+        if(!m_dmsp && !m_classicsp && !m_obstacles) return;
         loopv(entities::ents) 
         {
             const entity &e = *entities::ents[i];

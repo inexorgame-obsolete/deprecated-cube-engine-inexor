@@ -70,7 +70,7 @@ namespace game
 
     void resetgamestate()
     {
-        if(m_bomb || m_classicsp) clearmovables();
+        if(m_obstacles || m_classicsp) clearmovables();
         if(m_classicsp)
         {
             clearmonsters();                 // all monsters back at their spawns for editing
@@ -202,7 +202,7 @@ namespace game
             }
             else if(d->state==CS_DEAD && d->ragdoll) moveragdoll(d);
 
-            const int lagtime = lastmillis-d->lastupdate;
+            const int lagtime = totalmillis-d->lastupdate;
             if(!lagtime || intermission) continue;
             else if(lagtime>1000 && d->state==CS_ALIVE)
             {
@@ -498,6 +498,7 @@ namespace game
             if(followdir) nextfollow(followdir);
             else stopfollowing();
         }
+        unignore(cn);
         fpsent *d = clients[cn];
         if(!d) return;
         if(notify && d->name[0]) conoutf("player %s disconnected", colorname(d));
@@ -898,7 +899,7 @@ namespace game
     bool serverinfostartcolumn(g3d_gui *g, int i)
     {
         static const char *names[] = { "ping ", "players ", "map ", "mode ", "master ", "host ", "port ", "description " };
-        static const int struts[] =  { 0,       0,          12,     12,      8,         13,      6,       24 };
+        static const int struts[] =  { 7,       7,          14,     13,      8,         14,      7,       24 };
         if(size_t(i) >= sizeof(names)/sizeof(names[0])) return false;
         g->pushlist();
         g->text(names[i], 0xFFFF80, !i ? " " : NULL);

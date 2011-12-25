@@ -216,7 +216,7 @@ void visiblecubes(bool cull)
     }
 }
 
-static inline bool insideva(const vtxarray *va, const vec &v, int margin = 1)
+static inline bool insideva(const vtxarray *va, const vec &v, int margin = 2)
 {
     int size = va->size + margin;
     return v.x>=va->o.x-margin && v.y>=va->o.y-margin && v.z>=va->o.z-margin && 
@@ -319,7 +319,7 @@ void drawbb(const ivec &bo, const ivec &br, const vec &camera)
 
         loopj(4)
         {
-            const ivec &cc = cubecoords[fv[i][j]];
+            const ivec &cc = facecoords[i][j];
             glVertex3f(cc.x ? bo.x+br.x : bo.x,
                        cc.y ? bo.y+br.y : bo.y,
                        cc.z ? bo.z+br.z : bo.z);
@@ -398,7 +398,7 @@ void rendermapmodel(extentity &e)
     int anim = ANIM_MAPMODEL|ANIM_LOOP, basetime = 0;
     if(e.flags&extentity::F_ANIM) entities::animatemapmodel(e, anim, basetime);
     mapmodelinfo &mmi = getmminfo(e.attr2);
-    if(&mmi) rendermodel(&e.light, mmi.name, anim, e.o, (float)((e.attr1+7)-(e.attr1+7)%15), 0, MDL_CULL_VFC | MDL_CULL_DIST | MDL_DYNLIGHT, NULL, NULL, basetime);
+    if(&mmi) rendermodel(&e.light, mmi.name, anim, e.o, e.attr1, 0, MDL_CULL_VFC | MDL_CULL_DIST | MDL_DYNLIGHT, NULL, NULL, basetime);
 }
 
 extern int reflectdist;
@@ -884,7 +884,7 @@ void renderquery(renderstate &cur, occludequery *query, vtxarray *va, bool full 
 
     startquery(query);
 
-    if(full) drawbb(va->bbmin, ivec(va->bbmax).sub(va->bbmin), camera);
+    if(full) drawbb(ivec(va->bbmin).sub(1), ivec(va->bbmax).sub(va->bbmin).add(2), camera);
     else drawbb(va->geommin, ivec(va->geommax).sub(va->geommin), camera);
 
     endquery(query);
@@ -1988,7 +1988,7 @@ void cleanupva()
     loopi(NUMCAUSTICS) caustictex[i] = NULL;
 }
 
-VARR(causticscale, 0, 100, 10000);
+VARR(causticscale, 0, 50, 10000);
 VARR(causticmillis, 0, 75, 1000);
 VARFP(caustics, 0, 1, 1, loadcaustics());
 

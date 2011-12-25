@@ -129,7 +129,8 @@ namespace game
             }
         }
      
-        g.pushlist(0);
+        g.pushlist();
+        g.spring();
         g.text(server::modename(gamemode), 0xFFFF80);
         g.separator();
         const char *mname = getclientmap();
@@ -156,6 +157,7 @@ namespace game
             }
         }
         if(paused || ispaused()) { g.separator(); g.text("paused", 0xFFFF80); }
+        g.spring();
         g.poplist();
 
         g.separator();
@@ -215,7 +217,7 @@ namespace game
             if(!cmode || !cmode->hidefrags())
             { 
                 g.pushlist();
-                g.strut(7);
+                g.strut(6);
                 g.text("frags", fgcolor);
                 loopscoregroup(o, g.textf("%d", 0xFFFFDD, NULL, o->frags));
                 g.poplist();
@@ -256,7 +258,7 @@ namespace game
 
             g.pushlist();
             g.text("name", fgcolor);
-            g.strut(10);
+            g.strut(13);
             loopscoregroup(o, 
             {
                 int status = o->state!=CS_DEAD ? 0xFFFFDD : 0x606060;

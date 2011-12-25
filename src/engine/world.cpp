@@ -10,6 +10,8 @@ SVARR(maptitle, "Untitled Map by Unknown");
 VAR(octaentsize, 0, 128, 1024);
 VAR(entselradius, 0, 2, 10);
 
+VARR(racelaps, 1, 3, 255);
+
 int efocus = -1, enthover = -1, entorient = -1, oldhover = -1;
 VARF(entediting, 0, 0, 1, { if(!entediting) { entcancel(); efocus = enthover = -1; } });
 
@@ -22,9 +24,25 @@ bool getentboundingbox(extentity &e, ivec &o, ivec &r)
         case 39: // OBSTACLE
             if(!entediting || !entities::hasmapmodel(e))
             {
-                o = e.o;
-                o.sub(entselradius);
-                r.x = r.y = r.z = entselradius*2;
+                model *m = loadmodel(NULL, e.attr2);
+                if(m)
+                {
+                    vec center, radius;
+                    m->boundbox(0, center, radius);
+                    rotatebb(center, radius, e.attr1);
+                    o = e.o;
+                    o.add(center);
+                    r = radius;
+                    r.add(1);
+                    o.sub(r);
+                    r.mul(2);
+                }
+                else
+                {
+                    o = e.o;
+                    o.sub(entselradius);
+                    r.x = r.y = r.z = entselradius*2;
+                }
                 break;
             }
         case ET_MAPMODEL:
@@ -1110,6 +1128,7 @@ void resetmap()
     clearsleep();
     cancelsel();
     pruneundos();
+    clearmapcrc();
 
     setvar("gamespeed", 100, false);
     setvar("paused", 0, false);

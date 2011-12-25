@@ -5,7 +5,7 @@
 #define INPUT_LIMIT 4096
 #define OUTPUT_LIMIT (64*1024)
 #define CLIENT_TIME (3*60*1000)
-#define AUTH_TIME (60*1000)
+#define AUTH_TIME (30*1000)
 #define AUTH_LIMIT 100
 #define AUTH_THROTTLE 1000
 #define CLIENT_LIMIT 8192
@@ -559,7 +559,7 @@ bool checkclientinput(client &c)
         int port;
         uint id;
         string user, val;
-        if(!strncmp(c.input, "list", 4) && (!c.input[4] || isspace(c.input[4])))
+        if(!strncmp(c.input, "list", 4) && (!c.input[4] || c.input[4] == '\n' || c.input[4] == '\r'))
         {
             genserverlist();
             if(gameserverlists.empty() || c.message) return false;
@@ -609,6 +609,7 @@ void checkclients()
     loopv(clients)
     {
         client &c = *clients[i];
+        if(c.authreqs.length()) purgeauths(c);
         if(c.message || c.output.length()) ENET_SOCKETSET_ADD(writeset, c.socket);
         else ENET_SOCKETSET_ADD(readset, c.socket);
         maxsock = max(maxsock, c.socket);

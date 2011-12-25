@@ -105,7 +105,8 @@ enum
     M_LMS        = 1<<19,
     M_BOMB       = 1<<20,
     M_RACE       = 1<<21,
-    M_TIMEFORWARD= 1<<22
+    M_TIMEFORWARD= 1<<22,
+    M_OBSTACLES  = 1<<23
 };
 
 static struct gamemodeinfo
@@ -139,9 +140,9 @@ static struct gamemodeinfo
     { "efficiency protect", M_NOITEMS | M_EFFICIENCY | M_CTF | M_PROTECT | M_TEAM, "Efficiency Protect The Flag: Touch \fs\f3the enemy flag\fr to score points for \fs\f1your team\fr. Pick up \fs\f1your flag\fr to protect it. \fs\f1Your team\fr loses points if a dropped flag resets. You spawn with all weapons and armour. There are no items." },
     { "efficiency hold", M_NOITEMS | M_EFFICIENCY | M_CTF | M_HOLD | M_TEAM, "Efficiency Hold The Flag: Hold \fs\f7the flag\fr for 20 seconds to score points for \fs\f1your team\fr. You spawn with all weapons and armour. There are no items." },
     { "lms", M_LMS, "Last Man Standing: The last player alive wins." },
-    { "bomberman", M_LMS | M_BOMB, "Bomberman: Place bombs to kill enemies. Collect items to increase amount of bombs or damage radius. Survive to win." },
-    { "bomberman team", M_LMS | M_BOMB | M_TEAM, "Bomberman Team: Place bombs to kill \fs\f3enemies\fr. Collect items to increase amount of bombs or damage radius. Your team wins if one player survives." },
-    { "race", M_RACE | M_TIMEFORWARD, "Race: Be faster than the others" }
+    { "bomberman", M_LMS | M_BOMB | M_OBSTACLES, "Bomberman: Place bombs to kill enemies. Collect items to increase amount of bombs or damage radius. Survive to win." },
+    { "bomberman team", M_LMS | M_BOMB | M_TEAM | M_OBSTACLES, "Bomberman Team: Place bombs to kill \fs\f3enemies\fr. Collect items to increase amount of bombs or damage radius. Your team wins if one player survives." },
+    { "race", M_RACE | M_TIMEFORWARD | M_OBSTACLES, "Race: Be faster than the others" }
 
 };
 
@@ -153,9 +154,6 @@ static struct gamemodeinfo
 #define m_checknot(mode, flag) (m_valid(mode) && !(gamemodes[(mode) - STARTGAMEMODE].flags&(flag)))
 #define m_checkall(mode, flag) (m_valid(mode) && (gamemodes[(mode) - STARTGAMEMODE].flags&(flag)) == (flag))
 
-#define m_race         (m_check(gamemode, M_RACE))
-#define m_lms          (m_check(gamemode, M_LMS))
-#define m_bomb         (m_check(gamemode, M_BOMB))
 #define m_noitems      (m_check(gamemode, M_NOITEMS))
 #define m_noammo       (m_check(gamemode, M_NOAMMO|M_NOITEMS))
 #define m_insta        (m_check(gamemode, M_INSTA))
@@ -168,8 +166,13 @@ static struct gamemodeinfo
 #define m_hold         (m_checkall(gamemode, M_CTF | M_HOLD))
 #define m_teammode     (m_check(gamemode, M_TEAM))
 #define m_overtime     (m_check(gamemode, M_OVERTIME))
-#define m_timeforward  (m_check(gamemode, M_TIMEFORWARD))
 #define isteam(a,b)    (m_teammode && strcmp(a, b)==0)
+
+#define m_lms          (m_check(gamemode, M_LMS))
+#define m_bomb         (m_check(gamemode, M_BOMB))
+#define m_race         (m_check(gamemode, M_RACE))
+#define m_obstacles    (m_check(gamemode, M_OBSTACLES))
+#define m_timeforward  (m_check(gamemode, M_TIMEFORWARD))
 
 #define m_demo         (m_check(gamemode, M_DEMO))
 #define m_edit         (m_check(gamemode, M_EDIT))
@@ -453,11 +456,10 @@ struct fpsstate
 
     bool hasmaxammo(int type)
     {
-        if(type>=I_BOMBS) {
+        if(type>=I_BOMBS && type<=I_BOMBDELAY) {
             itemstat &is = itemstats[P_AMMO_BO+type-I_BOMBS];
             return ammo[GUN_BOMB]>=is.max;
-        }
-        else {
+        } else {
             itemstat &is = itemstats[type-I_SHELLS];
             return ammo[type-I_SHELLS+GUN_SG]>=is.max;
         }
@@ -467,27 +469,33 @@ struct fpsstate
     {
         if(type>=I_BOMBS && type<=I_BOMBDELAY) {
             itemstat &is = itemstats[P_AMMO_BO+type-I_BOMBS];
-            switch(type)
-            {
+            switch(type) {
                 case I_BOMBRADIUS:
                     return bombradius<is.max;
+                    break;
                 case I_BOMBDELAY:
                     return bombdelay<is.max;
+                    break;
                 default:
                     return ammo[is.info]<is.max;
+                    break;
             }
-    	} else if(type>=I_SHELLS || type<=I_QUAD) {
+    	} else if(type>=I_SHELLS && type<=I_QUAD) {
             itemstat &is = itemstats[type-I_SHELLS];
-            switch(type)
-            {
-                case I_BOOST: return maxhealth<is.max;
-                case I_HEALTH: return health<maxhealth;
+            switch(type) {
+                case I_BOOST:
+                    return maxhealth<is.max;
+                case I_HEALTH:
+                    return health<maxhealth;
                 case I_GREENARMOUR:
                     // (100h/100g only absorbs 200 damage)
                     if(armourtype==A_YELLOW && armour>=100) return false;
-                case I_YELLOWARMOUR: return !armourtype || armour<is.max;
-                case I_QUAD: return quadmillis<is.max;
-                default: return ammo[is.info]<is.max;
+                case I_YELLOWARMOUR:
+                    return !armourtype || armour<is.max;
+                case I_QUAD:
+                    return quadmillis<is.max;
+                default:
+                    return ammo[is.info]<is.max;
             }
     	} else if(type==RACE_START || type==RACE_FINISH || type==RACE_CHECKPOINT) {
     	    return true;
@@ -512,7 +520,7 @@ struct fpsstate
                     ammo[is.info] = min(ammo[is.info]+is.add, is.max);
                     break;
             }
-        } else if(type>=I_SHELLS || type<=I_QUAD) {
+        } else if(type>=I_SHELLS && type<=I_QUAD) {
             itemstat &is = itemstats[type-I_SHELLS];
             switch(type)
             {
@@ -613,12 +621,12 @@ struct fpsstate
             racetime = 0;
             // racelaps = 0;
             // racecheckpoint = 0;
-            health = 1;
+            health = 100;
             armourtype = A_GREEN;
-            armour = 0;
-            gunselect = GUN_FIST;
+            armour = 50;
+            gunselect = GUN_GL;
             ammo[GUN_PISTOL] = 0;
-            ammo[GUN_GL] = 0;
+            ammo[GUN_GL] = 8;
         }
         else
         {
@@ -839,6 +847,9 @@ namespace game
     extern string servinfo;
 
     extern int parseplayer(const char *arg);
+    extern void ignore(int cn);
+    extern void unignore(int cn);
+    extern bool isignored(int cn);
     extern void addmsg(int type, const char *fmt = NULL, ...);
     extern void switchname(const char *name);
     extern void switchteam(const char *name);

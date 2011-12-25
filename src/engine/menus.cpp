@@ -14,9 +14,9 @@ static g3d_gui *cgui = NULL;
 struct menu : g3d_callback
 {
     char *name, *header;
-    uint *contents, *onclear;
+    uint *contents, *init, *onclear;
 
-    menu() : name(NULL), header(NULL), contents(NULL), onclear(NULL) {}
+    menu() : name(NULL), header(NULL), contents(NULL), init(NULL), onclear(NULL) {}
 
     void gui(g3d_gui &g, bool firstpass)
     {
@@ -151,6 +151,7 @@ void pushgui(menu *m, int pos = -1)
         menutab = 1;
         menustart = totalmillis;
     }
+    if(m->init) execute(m->init);
 }
 
 void restoregui(int pos)
@@ -170,6 +171,12 @@ void showgui(const char *name)
     else restoregui(pos);
 }
 
+void hidegui(const char *name)
+{
+    menu *m = guis.access(name);
+    if(m) removegui(m);
+}
+ 
 int cleargui(int n)
 {
     int clear = guistack.length();
@@ -182,6 +189,23 @@ int cleargui(int n)
     loopi(clear) popgui(); 
     if(!guistack.empty()) restoregui(guistack.length()-1);
     return clear;
+}
+
+void clearguis(int level = -1)
+{
+    if(level < 0) level = guistack.length();
+    loopvrev(guistack)
+    {
+       menu *m = guistack[i];
+       if(m->onclear)
+       {
+           uint *action = m->onclear;
+           m->onclear = NULL;
+           execute(action);
+           delete[] action;
+       }
+    }
+    cleargui(level);
 }
 
 void guionclear(char *action)
@@ -288,24 +312,27 @@ void guibar()
 
 void guistrut(float *strut, int *alt)
 {
-	if(cgui)
-	{
-		if(!*alt) cgui->pushlist();
-		cgui->strut(*strut);
-		if(!*alt) cgui->poplist();
-	}
+	  if(cgui)
+	  {
+        if(*alt) cgui->strut(*strut); else cgui->space(*strut);
+    }
+}
+
+void guispring(int *weight)
+{
+    if(cgui) cgui->spring(max(*weight, 1));
 }
 
 template<class T> static void updateval(char *var, T val, char *onchange)
 {
-    ident *id = newident(var);
+    ident *id = writeident(var);
     updatelater.add().schedule(id, val);
     if(onchange[0]) updatelater.add().schedule(onchange);
 }
 
 static int getval(char *var)
 {
-    ident *id = getident(var);
+    ident *id = readident(var);
     if(!id) return 0;
     switch(id->type)
     {
@@ -319,7 +346,7 @@ static int getval(char *var)
 
 static float getfval(char *var)
 {
-    ident *id = getident(var);
+    ident *id = readident(var);
     if(!id) return 0;
     switch(id->type)
     {
@@ -333,7 +360,7 @@ static float getfval(char *var)
 
 static const char *getsval(char *var)
 {
-    ident *id = getident(var);
+    ident *id = readident(var);
     if(!id) return "";
     switch(id->type)
     {
@@ -367,8 +394,7 @@ void guilistslider(char *var, char *list, char *onchange)
     if(vals.empty()) return;
     int val = getval(var), oldoffset = vals.length()-1, offset = oldoffset;
     loopv(vals) if(val <= vals[i]) { oldoffset = offset = i; break; }
-    defformatstring(label)("%d", val);
-    cgui->slider(offset, 0, vals.length()-1, GUI_TITLE_COLOR, label);
+    cgui->slider(offset, 0, vals.length()-1, GUI_TITLE_COLOR, intstr(val));
     if(offset != oldoffset) updateval(var, vals[offset], onchange);
 }
 
@@ -460,12 +486,14 @@ void guilist(uint *contents)
 void guialign(int *align, uint *contents)
 {
     if(!cgui) return;
-    cgui->pushlist(clamp(*align, -1, 1));
+    cgui->pushlist();
+    if(*align >= 0) cgui->spring();
     execute(contents);
+    if(*align == 0) cgui->spring(); 
     cgui->poplist();
 }
 
-void newgui(char *name, char *contents, char *header)
+void newgui(char *name, char *contents, char *header, char *init)
 {
     menu *m = guis.access(name);
     if(!m)
@@ -478,31 +506,46 @@ void newgui(char *name, char *contents, char *header)
     {
         DELETEA(m->header);
         DELETEA(m->contents);
+        DELETEA(m->init);
     }
     m->header = header && header[0] ? newstring(header) : NULL;
     m->contents = compilecode(contents);
+    m->init = init && init[0] ? compilecode(init) : NULL;
 }
 
-void guiservers()
+menu *guiserversmenu = NULL;
+
+void guiservers(uint *header)
 {
-    extern char *showservers(g3d_gui *cgui);
+    extern char *showservers(g3d_gui *cgui, uint *header);
     if(cgui) 
     {
-        char *command = showservers(cgui);
+        char *command = showservers(cgui, header);
         if(command)
         {
             updatelater.add().schedule(command);
             if(shouldclearmenu) clearlater = true;
+            guiserversmenu = clearlater || guistack.empty() ? NULL : guistack.last();
         }
+    }
+        }
+
+void notifywelcome()
+{
+    if(guiserversmenu)
+    {
+        if(guistack.length() && guistack.last() == guiserversmenu) clearguis();
+        guiserversmenu = NULL;
     }
 }
 
-COMMAND(newgui, "sss");
+COMMAND(newgui, "ssss");
 COMMAND(guibutton, "sss");
 COMMAND(guitext, "ss");
-COMMAND(guiservers, "s");
+COMMAND(guiservers, "e");
 ICOMMAND(cleargui, "i", (int *n), intret(cleargui(*n)));
 COMMAND(showgui, "s");
+COMMAND(hidegui, "s");
 COMMAND(guionclear, "s");
 COMMAND(guistayopen, "e");
 COMMAND(guinoautotab, "e");
@@ -512,6 +555,7 @@ COMMAND(guialign, "ie");
 COMMAND(guititle, "s");
 COMMAND(guibar,"");
 COMMAND(guistrut,"fi");
+COMMAND(guispring, "i");
 COMMAND(guiimage,"ssfis");
 COMMAND(guislider,"siis");
 COMMAND(guilistslider, "sss");
@@ -600,21 +644,7 @@ void menuprocess()
     updatelater.shrink(0);
     if(wasmain > mainmenu || clearlater)
     {
-        if(wasmain > mainmenu || level==guistack.length()) 
-        {
-            loopvrev(guistack)
-            {
-                menu *m = guistack[i];
-                if(m->onclear) 
-                {
-                    uint *action = m->onclear;
-                    m->onclear = NULL;
-                    execute(action);
-                    delete[] action;
-                }
-            }
-            cleargui(level); 
-        }
+        if(wasmain > mainmenu || level==guistack.length()) clearguis(level); 
         clearlater = false;
     }
     if(mainmenu && !isconnected(true) && guistack.empty()) showgui("main");

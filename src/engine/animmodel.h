@@ -449,12 +449,16 @@ struct animmodel : model
                          &tc1 = tcverts[t.vert[1]],
                          &tc2 = tcverts[t.vert[2]];
                 float u1 = tc1.u - tc0.u, v1 = tc1.v - tc0.v,
-                      u2 = tc2.u - tc0.u, v2 = tc2.v - tc0.v,
-                      scale = u1*v2 - u2*v1;
-                if(scale!=0) scale = 1.0f / scale;
-                vec u(e1), v(e2);
-                u.mul(v2).sub(vec(e2).mul(v1)).mul(scale);
-                v.mul(u1).sub(vec(e1).mul(u2)).mul(scale);
+                      u2 = tc2.u - tc0.u, v2 = tc2.v - tc0.v;
+                vec u(e2), v(e2);
+                u.mul(v1).sub(vec(e1).mul(v2));
+                v.mul(u1).sub(vec(e1).mul(u2));
+
+                if(vec().cross(e2, e1).dot(vec().cross(v, u)) < 0)
+                {
+                    u.neg();
+                    v.neg();
+                }
 
                 if(!areaweight)
                 {
@@ -665,7 +669,7 @@ struct animmodel : model
             info.range = 1;
         }
 
-        bool calcanim(int animpart, int anim, int basetime, int basetime2, dynent *d, int interp, animinfo &info)
+        bool calcanim(int animpart, int anim, int basetime, int basetime2, dynent *d, int interp, animinfo &info, int &aitime)
         {
             uint varseed = uint((size_t)d);
             info.anim = anim;
@@ -710,15 +714,18 @@ struct animmodel : model
 
             info.anim &= (1<<ANIM_SECONDARY)-1;
             info.anim |= anim&ANIM_FLAGS;
-            if(info.anim&(ANIM_LOOP|ANIM_START|ANIM_END))
+            if((info.anim&ANIM_CLAMP) != ANIM_CLAMP)
             {
-                info.anim &= ~ANIM_SETTIME;
-                if(!info.basetime) info.basetime = -((int)(size_t)d&0xFFF);
-            }
-            if(info.anim&(ANIM_START|ANIM_END))
-            {
-                if(info.anim&ANIM_END) info.frame += info.range-1;
-                info.range = 1;
+                if(info.anim&(ANIM_LOOP|ANIM_START|ANIM_END))
+                {
+                    info.anim &= ~ANIM_SETTIME;
+                    if(!info.basetime) info.basetime = -((int)(size_t)d&0xFFF);
+                }
+                if(info.anim&(ANIM_START|ANIM_END))
+                {
+                    if(info.anim&ANIM_END) info.frame += info.range-1;
+                    info.range = 1;
+                }
             }
 
             if(!meshes->hasframes(info.frame, info.range))
@@ -730,19 +737,20 @@ struct animmodel : model
             if(d && interp>=0)
             {
                 animinterpinfo &ai = d->animinterp[interp];
+                if((info.anim&ANIM_CLAMP)==ANIM_CLAMP) aitime = min(aitime, int(info.range*info.speed*0.5e-3f));
                 if(d->ragdoll && !(anim&ANIM_RAGDOLL)) 
                 {
                     ai.prev.range = ai.cur.range = 0;
                     ai.lastswitch = -1;
                 }
-                else if(ai.lastmodel!=this || ai.lastswitch<0 || lastmillis-d->lastrendered>animationinterpolationtime)
+                else if(ai.lastmodel!=this || ai.lastswitch<0 || lastmillis-d->lastrendered>aitime)
                 {
                     ai.prev = ai.cur = info;
-                    ai.lastswitch = lastmillis-animationinterpolationtime*2;
+                    ai.lastswitch = lastmillis-aitime*2;
                 }
                 else if(ai.cur!=info)
                 {
-                    if(lastmillis-ai.lastswitch>animationinterpolationtime/2) ai.prev = ai.cur;
+                    if(lastmillis-ai.lastswitch>aitime/2) ai.prev = ai.cur;
                     ai.cur = info;
                     ai.lastswitch = lastmillis;
                 }
@@ -763,8 +771,8 @@ struct animmodel : model
             if(!(anim&ANIM_REUSE)) loopi(numanimparts)
             {
                 animinfo info;
-                int interp = d && index+numanimparts<=MAXANIMPARTS ? index+i : -1;
-                if(!calcanim(i, anim, basetime, basetime2, d, interp, info)) return;
+                int interp = d && index+numanimparts<=MAXANIMPARTS ? index+i : -1, aitime = animationinterpolationtime;
+                if(!calcanim(i, anim, basetime, basetime2, d, interp, info, aitime)) return;
                 animstate &p = as[i];
                 p.owner = this;
                 p.cur.setframes(info);
@@ -772,10 +780,10 @@ struct animmodel : model
                 if(interp>=0 && d->animinterp[interp].prev.range>0)
                 {
                     int diff = lastmillis-d->animinterp[interp].lastswitch;
-                    if(diff<animationinterpolationtime)
+                    if(diff<aitime)
                     {
                         p.prev.setframes(d->animinterp[interp].prev);
-                        p.interp = diff/float(animationinterpolationtime);
+                        p.interp = diff/float(aitime);
                     }
                 }
             }

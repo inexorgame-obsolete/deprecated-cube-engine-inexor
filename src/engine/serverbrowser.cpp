@@ -262,22 +262,46 @@ enum { UNRESOLVED = 0, RESOLVING, RESOLVED };
 
 struct serverinfo
 {
+    enum 
+    { 
+        WAITING = INT_MAX,
+
+        MAXPINGS = 3 
+    };
+
     string name, map, sdesc;
-    int port, numplayers, ping, resolved, lastping;
+    int port, numplayers, resolved, ping, lastping, nextping;
+    int pings[MAXPINGS];
     vector<int> attr;
     ENetAddress address;
     bool keep;
     const char *password;
 
     serverinfo()
-     : port(-1), numplayers(0), ping(INT_MAX), resolved(UNRESOLVED), lastping(-1), keep(false), password(NULL)
+     : port(-1), numplayers(0), resolved(UNRESOLVED), keep(false), password(NULL)
     {
         name[0] = map[0] = sdesc[0] = '\0';
+        clearpings();
     }
 
     ~serverinfo()
     {
         DELETEA(password);
+    }
+
+    void clearpings()
+    {
+        ping = WAITING;
+        loopk(MAXPINGS) pings[k] = WAITING;
+        nextping = 0;
+        lastping = -1;
+    }
+
+    void cleanup()
+    {
+        clearpings();
+        attr.setsize(0);
+        numplayers = 0;
     }
 
     void reset()
@@ -288,19 +312,23 @@ struct serverinfo
     void checkdecay(int decay)
     {
         if(lastping >= 0 && totalmillis - lastping >= decay)
-        {
-            ping = INT_MAX;
-            numplayers = 0;
-            lastping = -1;
-        }
+            cleanup();
         if(lastping < 0) lastping = totalmillis;
     }
+
+    void calcping()
+        {
+        int numpings = 0, totalpings = 0;
+        loopk(MAXPINGS) if(pings[k] != WAITING) { totalpings += pings[k]; numpings++; }
+        ping = numpings ? totalpings/numpings : WAITING;
+        }
 
     void addping(int rtt, int millis)
     {
         if(millis >= lastping) lastping = -1;
-        if(ping == INT_MAX) ping = rtt;
-        else ping = (ping*4 + rtt)/5;
+        pings[nextping] = rtt;
+        nextping = (nextping+1)%MAXPINGS;
+        calcping();
     }
 
     static bool compare(serverinfo *a, serverinfo *b)
@@ -450,6 +478,8 @@ void checkresolver()
     }
 }
 
+static int lastreset = 0;
+
 void checkpings()
 {
     if(pingsock==ENET_SOCKET_NULL) return;
@@ -470,7 +500,7 @@ void checkpings()
         if(!si) continue;
         ucharbuf p(ping, len);
         int millis = getint(p), rtt = clamp(totalmillis - millis, 0, min(servpingdecay, totalmillis));
-        if(rtt < servpingdecay) si->addping(rtt, millis);
+        if(millis >= lastreset && rtt < servpingdecay) si->addping(rtt, millis);
         si->numplayers = getint(p);
         int numattr = getint(p);
         si->attr.shrink(0);
@@ -482,26 +512,47 @@ void checkpings()
     }
 }
 
+void sortservers()
+{
+    servers.sort(serverinfo::compare);
+}
+COMMAND(sortservers, "");
+
+VARP(autosortservers, 0, 1, 1);
+VARP(autoupdateservers, 0, 1, 1);
+
 void refreshservers()
 {
     static int lastrefresh = 0;
     if(lastrefresh==totalmillis) return;
-    if(totalmillis - lastrefresh > 1000) loopv(servers) servers[i]->reset();
+    if(totalmillis - lastrefresh > 1000) 
+    {
+        loopv(servers) servers[i]->reset();
+        lastreset = totalmillis;
+    }
     lastrefresh = totalmillis;
 
     checkresolver();
     checkpings();
     if(totalmillis - lastinfo >= servpingrate/(maxservpings ? max(1, (servers.length() + maxservpings - 1) / maxservpings) : 1)) pingservers();
-    servers.sort(serverinfo::compare);
+    if(autosortservers) sortservers();
 }
 
-char *showservers(g3d_gui *cgui)
+serverinfo *selectedserver = NULL;
+
+char *showservers(g3d_gui *cgui, uint *header)
 {
     refreshservers();
+    if(servers.empty())
+    {
+        if(header) execute(header);
+        return NULL;
+    }
     serverinfo *sc = NULL;
     for(int start = 0; start < servers.length();)
     {
         if(start > 0) cgui->tab();
+        if(header) execute(header);
         int end = servers.length();
         cgui->pushlist();
         loopi(10)
@@ -513,7 +564,7 @@ char *showservers(g3d_gui *cgui)
                 serverinfo &si = *servers[j];
                 const char *sdesc = si.sdesc;
                 if(si.address.host == ENET_HOST_ANY) sdesc = "[unknown host]";
-                else if(si.ping == INT_MAX) sdesc = "[waiting for response]";
+                else if(si.ping == serverinfo::WAITING) sdesc = "[waiting for response]";
                 if(game::serverinfoentry(cgui, i, si.name, si.port, sdesc, si.map, sdesc == si.sdesc ? si.ping : -1, si.attr, si.numplayers))
                     sc = &si;
             }
@@ -522,18 +573,26 @@ char *showservers(g3d_gui *cgui)
         cgui->poplist();
         start = end;
     }
-    if(!sc) return NULL;
-    string command;
-    if(sc->password) formatstring(command)("connect %s %d \"%s\"", sc->name, sc->port, sc->password);
-    else formatstring(command)("connect %s %d", sc->name, sc->port);
-    return newstring(command);
+    if(selectedserver || !sc) return NULL;
+    selectedserver = sc;
+    return newstring("connectselected");
 }
+
+void connectselected()
+{
+    if(!selectedserver) return;
+    connectserv(selectedserver->name, selectedserver->port, selectedserver->password);
+    selectedserver = NULL;
+}
+
+COMMAND(connectselected, "");
 
 void clearservers(bool full = false)
 {
     resolverclear();
     if(full) servers.deletecontents();
     else loopvrev(servers) if(!servers[i]->keep) delete servers.remove(i);
+    selectedserver = NULL;
 }
 
 #define RETRIEVELIMIT 20000
@@ -592,6 +651,8 @@ void retrieveservers(vector<char> &data)
     enet_socket_destroy(sock);
 }
 
+bool updatedservers = false;
+
 void updatefrommaster()
 {
     vector<char> data;
@@ -603,17 +664,25 @@ void updatefrommaster()
         execute(data.getbuf());
     }
     refreshservers();
+    updatedservers = true;
+}
+
+void initservers()
+{
+    selectedserver = NULL;
+    if(autoupdateservers && !updatedservers) updatefrommaster();
 }
 
 ICOMMAND(addserver, "sis", (const char *name, int *port, const char *password), addserver(name, *port, password[0] ? password : NULL));
 ICOMMAND(keepserver, "sis", (const char *name, int *port, const char *password), addserver(name, *port, password[0] ? password : NULL, true));
 ICOMMAND(clearservers, "i", (int *full), clearservers(*full!=0));
 COMMAND(updatefrommaster, "");
+COMMAND(initservers, "");
 
 void writeservercfg()
 {
     if(!game::savedservers()) return;
-    stream *f = openfile(path(game::savedservers(), true), "w");
+    stream *f = openutf8file(path(game::savedservers(), true), "w");
     if(!f) return;
     int kept = 0;
     loopv(servers)

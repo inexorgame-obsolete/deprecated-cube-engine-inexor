@@ -3,6 +3,8 @@
 
 #include "engine.h"
 
+#define LOGSTRLEN 512
+
 static FILE *logfile = NULL;
 
 void closelogfile()
@@ -33,6 +35,20 @@ void logoutf(const char *fmt, ...)
     va_end(args);
 }
 
+static void writelog(FILE *file, const char *fmt, va_list args)
+{
+    static char buf[LOGSTRLEN];
+    static uchar ubuf[512];
+    vformatstring(buf, fmt, args, sizeof(buf));
+    int len = strlen(buf), carry = 0;
+    while(carry < len)
+    {
+        int numu = encodeutf8(ubuf, sizeof(ubuf)-1, &((uchar *)buf)[carry], len - carry, &carry);
+        if(carry >= len) ubuf[numu++] = '\n';
+        fwrite(ubuf, 1, numu, file);
+    }
+}
+ 
 #ifdef STANDALONE
 void fatal(const char *fmt, ...) 
 { 
@@ -177,14 +193,14 @@ void getstring(char *text, ucharbuf &p, int len)
 
 void filtertext(char *dst, const char *src, bool whitespace, int len)
 {
-    for(int c = *src; c; c = *++src)
+    for(int c = uchar(*src); c; c = uchar(*++src))
     {
         if(c == '\f')
         {
             if(!*++src) break;
             continue;
         }
-        if(isspace(c) ? whitespace : isprint(c))
+        if(iscubeprint(c) || (iscubespace(c) && whitespace))
         {
             *dst++ = c;
             if(!--len) break;
@@ -352,7 +368,7 @@ void disconnect_client(int n, int reason)
     server::deleteclientinfo(clients[n]->info);
     clients[n]->info = NULL;
     defformatstring(s)("client (%s) disconnected because: %s", clients[n]->hostname, disc_reasons[reason]);
-    puts(s);
+    logoutf("%s", s);
     server::sendservmsg(s);
 }
 
@@ -494,9 +510,9 @@ void processmasterinput()
         *end++ = '\0';
 
         const char *args = input;
-        while(args < end && !isspace(*args)) args++;
+        while(args < end && !iscubespace(*args)) args++;
         int cmdlen = args - input;
-        while(args < end && isspace(*args)) args++;
+        while(args < end && iscubespace(*args)) args++;
 
         if(!strncmp(input, "failreg", cmdlen))
             conoutf(CON_ERROR, "master server registration failed: %s", args);
@@ -542,7 +558,7 @@ void flushmasterinput()
         masterin.reserve(4096);
 
     ENetBuffer buf;
-    buf.data = &masterin[masterin.length()];
+    buf.data = masterin.getbuf() + masterin.length();
     buf.dataLength = masterin.capacity() - masterin.length();
     int recv = enet_socket_receive(mastersock, NULL, &buf, 1);
     if(recv > 0)
@@ -617,6 +633,19 @@ void updatemasterserver()
     lastupdatemaster = totalmillis ? totalmillis : 1;
 }
 
+uint totalsecs = 0;
+
+void updatetime()
+{
+    static int lastsec = 0;
+    if(totalmillis - lastsec >= 1000) 
+    {
+        int cursecs = (totalmillis - lastsec) / 1000;
+        totalsecs += cursecs;
+        lastsec += cursecs * 1000;
+    }
+}
+
 void serverslice(bool dedicated, uint timeout)   // main server update, called from main loop in sp, or from below in dedicated server
 {
     localclients = nonlocalclients = 0;
@@ -641,6 +670,7 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
         curtime = server::ispaused() ? 0 : millis - totalmillis;
         totalmillis = millis;
         lastmillis += curtime;
+        updatetime();
     }
     server::serverupdate();
 
@@ -756,7 +786,7 @@ static HICON appicon = NULL;
 static HMENU appmenu = NULL;
 static HANDLE outhandle = NULL;
 static const int MAXLOGLINES = 200;
-struct logline { int len; string buf; };
+struct logline { int len; char buf[LOGSTRLEN]; };
 static ringbuf<logline, MAXLOGLINES> loglines;
 
 static void cleanupsystemtray()
@@ -828,6 +858,18 @@ static BOOL WINAPI consolehandler(DWORD dwCtrlType)
     return FALSE;
 }
 
+static void writeline(logline &line)
+{
+    static uchar ubuf[512];
+    int len = strlen(line.buf), carry = 0;
+    while(carry < len)
+    {
+        int numu = encodeutf8(ubuf, sizeof(ubuf), &((uchar *)line.buf)[carry], len - carry, &carry);
+        DWORD written = 0;
+        WriteConsole(outhandle, ubuf, numu, &written, NULL);
+    }     
+}
+
 static void setupconsole()
 {
 	if(conwindow) return;
@@ -842,12 +884,9 @@ static void setupconsole()
     GetConsoleScreenBufferInfo(outhandle, &coninfo);
     coninfo.dwSize.Y = MAXLOGLINES;
     SetConsoleScreenBufferSize(outhandle, coninfo.dwSize);
-    loopv(loglines)
-    {
-        logline &line = loglines[i];
-        DWORD written = 0;
-        WriteConsole(outhandle, line.buf, line.len, &written, NULL);
-    }
+    SetConsoleCP(CP_UTF8);
+    SetConsoleOutputCP(CP_UTF8);
+    loopv(loglines) writeline(loglines[i]);
 }
 
 enum
@@ -984,11 +1023,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw)
 
 void logoutfv(const char *fmt, va_list args)
 {
-    if(logfile)
-    {
-        vfprintf(logfile, fmt, args);
-        fputc('\n', logfile);
-    }
+    if(logfile) writelog(logfile, fmt, args);
     if(appwindow)
     {
         logline &line = loglines.add();
@@ -996,7 +1031,7 @@ void logoutfv(const char *fmt, va_list args)
         line.len = min(strlen(line.buf), sizeof(line.buf)-2);
         line.buf[line.len++] = '\n';
         line.buf[line.len] = '\0';
-        if(outhandle) { DWORD written = 0; WriteConsole(outhandle, line.buf, line.len, &written, NULL); }
+        if(outhandle) writeline(line);
     }
 }
 
@@ -1004,17 +1039,13 @@ void logoutfv(const char *fmt, va_list args)
 
 void logoutfv(const char *fmt, va_list args)
 {
-    vfprintf(logfile ? logfile : stdout, fmt, args);
-    fputc('\n', logfile ? logfile : stdout);
+    writelog(logfile ? logfile : stdout, fmt, args);
 }
 
 #endif
 
 void rundedicatedserver()
 {
-#ifdef WIN32
-    setupwindow("Cube 2: Sauerbraten server");
-#endif
     logoutf("dedicated server started, waiting for clients...");
 #ifdef WIN32
     SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
@@ -1082,7 +1113,13 @@ bool setuplistenserver(bool dedicated)
 
 void initserver(bool listen, bool dedicated)
 {
-    if(dedicated) execfile("server-init.cfg", false);
+    if(dedicated) 
+    {
+#ifdef WIN32
+        setupwindow("Cube 2: Sauerbraten server");
+#endif
+        execfile("server-init.cfg", false);
+    }
 
     if(listen) setuplistenserver(dedicated);
 

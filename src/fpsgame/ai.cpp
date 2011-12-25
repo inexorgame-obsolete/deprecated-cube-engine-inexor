@@ -222,24 +222,24 @@ namespace ai
         return !targets.empty();
     }
 
-    bool makeroute(fpsent *d, aistate &b, int node, bool changed, bool retry)
+    bool makeroute(fpsent *d, aistate &b, int node, bool changed, int retries)
     {
-        if(!waypoints.inrange(d->lastnode)) return false;
+        if(!iswaypoint(d->lastnode)) return false;
 		if(changed && d->ai->route.length() > 1 && d->ai->route[0] == node) return true;
-		if(route(d, d->lastnode, node, d->ai->route, obstacles, retry))
+		if(route(d, d->lastnode, node, d->ai->route, obstacles, retries))
 		{
 			b.override = false;
 			return true;
 		}
-		d->ai->clear(true);
-		if(!retry) return makeroute(d, b, node, false, true);
+        // retry fails: 0 = first attempt, 1 = try ignoring obstacles, 2 = try ignoring prevnodes too
+		if(retries <= 1) return makeroute(d, b, node, false, retries+1);
 		return false;
     }
 
-    bool makeroute(fpsent *d, aistate &b, const vec &pos, bool changed, bool retry)
+    bool makeroute(fpsent *d, aistate &b, const vec &pos, bool changed, int retries)
     {
         int node = closestwaypoint(pos, SIGHTMIN, true);
-        return makeroute(d, b, node, changed, retry);
+        return makeroute(d, b, node, changed, retries);
     }
 
     bool randomnode(fpsent *d, aistate &b, const vec &pos, float guard, float wander)
@@ -267,7 +267,7 @@ namespace ai
         return false;
     }
 
-    bool enemy(fpsent *d, aistate &b, const vec &pos, float guard = SIGHTMIN, bool pursue = false)
+    bool enemy(fpsent *d, aistate &b, const vec &pos, float guard = SIGHTMIN, int pursue = 0)
     {
         fpsent *t = NULL;
         vec dp = d->headpos();
@@ -315,7 +315,7 @@ namespace ai
 
     bool defend(fpsent *d, aistate &b, const vec &pos, float guard, float wander, int walk)
     {
-		bool hasenemy = enemy(d, b, pos, wander, d->gunselect == GUN_FIST);
+		bool hasenemy = enemy(d, b, pos, wander, d->gunselect == GUN_FIST ? 1 : 0);
 		if(!walk)
 		{
 		    if(d->feetpos().squaredist(pos) <= guard*guard)
@@ -328,11 +328,16 @@ namespace ai
         return patrol(d, b, pos, guard, wander, walk);
     }
 
-    bool violence(fpsent *d, aistate &b, fpsent *e, bool pursue)
+    bool violence(fpsent *d, aistate &b, fpsent *e, int pursue)
     {
         if(e && targetable(d, e))
         {
-            if(pursue && waypoints.inrange(d->lastnode)) d->ai->switchstate(b, AI_S_PURSUE, AI_T_PLAYER, e->clientnum);
+            if(pursue)
+            {
+                if((b.targtype != AI_T_AFFINITY || !(pursue%2)) && makeroute(d, b, e->lastnode))
+                    d->ai->switchstate(b, AI_S_PURSUE, AI_T_PLAYER, e->clientnum);
+                else if(pursue >= 3) return false; // can't pursue
+            }
             if(d->ai->enemy != e->clientnum)
             {
                 d->ai->enemyseen = d->ai->enemymillis = lastmillis;
@@ -343,23 +348,33 @@ namespace ai
         return false;
     }
 
-    bool target(fpsent *d, aistate &b, bool pursue = false, bool force = false, float mindist = 0.f)
+    bool target(fpsent *d, aistate &b, int pursue = 0, bool force = false, float mindist = 0.f)
     {
+        static vector<fpsent *> hastried; hastried.setsize(0);
+        vec dp = d->headpos();
+        while(true)
+    {
+            float dist = 1e16f;
         fpsent *t = NULL;
-        vec dp = d->headpos(), tp(0, 0, 0);
         loopv(players)
         {
             fpsent *e = players[i];
-            if(e == d || !targetable(d, e)) continue;
+                if(e == d || hastried.find(e) >= 0 || !targetable(d, e)) continue;
             vec ep = getaimpos(d, e);
-            float dist = ep.squaredist(dp);
-            if((!t || dist < tp.squaredist(dp)) && ((mindist > 0 && dist <= mindist) || force || cansee(d, dp, ep)))
+                float v = ep.squaredist(dp);
+                if((!t || v < dist) && (mindist <= 0 || v <= mindist) && (force || cansee(d, dp, ep)))
             {
                 t = e;
-                tp = ep;
+                    dist = v;
+                }
             }
+            if(t)
+            {
+                if(violence(d, b, t, pursue)) return true;
+                hastried.add(t);
+            }
+            else break;
         }
-        if(t) return violence(d, b, t, pursue);
         return false;
     }
 
@@ -455,7 +470,7 @@ namespace ai
                     break;
                 default: break;
             }
-            if(proceed && makeroute(d, b, n.node, false))
+            if(proceed && makeroute(d, b, n.node))
             {
                 d->ai->switchstate(b, n.state, n.targtype, n.target);
                 return true;
@@ -508,7 +523,7 @@ namespace ai
                     break;
                 default: break;
             }
-            if(proceed && makeroute(d, b, n.node, false))
+            if(proceed && makeroute(d, b, n.node))
             {
                 d->ai->switchstate(b, n.state, n.targtype, n.target);
                 return true;
@@ -522,7 +537,7 @@ namespace ai
         if(d->ai && canmove(d) && targetable(d, e)) // see if this ai is interested in a grudge
         {
             aistate &b = d->ai->getstate();
-            if(violence(d, b, e, d->gunselect == GUN_FIST)) return;
+            if(violence(d, b, e, d->gunselect == GUN_FIST ? 1 : 0)) return;
         }
         if(checkothers(targets, d, AI_S_DEFEND, AI_T_PLAYER, d->clientnum, true))
         {
@@ -531,7 +546,7 @@ namespace ai
                 fpsent *t = getclient(targets[i]);
                 if(!t->ai || !canmove(t) || !targetable(t, e)) continue;
                 aistate &c = t->ai->getstate();
-                if(violence(t, c, e, d->gunselect == GUN_FIST)) return;
+                if(violence(t, c, e, d->gunselect == GUN_FIST ? 1 : 0)) return;
             }
         }
     }
@@ -544,10 +559,10 @@ namespace ai
             pos = dir.mul(2*getworldsize()).add(o); //otherwise 3dgui won't work when outside of map
     }
 
-    void setup(fpsent *d, bool tryreset = false)
+    void setup(fpsent *d)
     {
         d->ai->clearsetup();
-        d->ai->reset(tryreset);
+        d->ai->reset(true);
         d->ai->lastrun = lastmillis;
         if(m_insta) d->ai->weappref = GUN_RIFLE;
         else if(m_bomb) d->ai->weappref = GUN_BOMB;
@@ -563,7 +578,7 @@ namespace ai
 
     void spawned(fpsent *d)
     {
-        if(d->ai) setup(d, false);
+        if(d->ai) setup(d);
     }
 
     void killed(fpsent *d, fpsent *e)
@@ -593,7 +608,7 @@ namespace ai
                 if(wantsitem)
                 {
                     aistate &b = d->ai->getstate();
-                    if(b.type == AI_S_PURSUE && b.targtype == AI_T_AFFINITY) continue;
+                    if(b.targtype == AI_T_AFFINITY) continue;
                     if(b.type == AI_S_INTEREST && b.targtype == AI_T_ENTITY)
                     {
                         if(entities::ents.inrange(b.target))
@@ -617,8 +632,10 @@ namespace ai
 
     int dowait(fpsent *d, aistate &b)
     {
+        d->ai->clear(true); // ensure they're clean
         if(check(d, b) || find(d, b)) return 1;
-        if(target(d, b, true, true)) return 1;
+        if(target(d, b, 4, false)) return 1;
+        if(target(d, b, 4, true)) return 1;
         if(randomnode(d, b, SIGHTMIN, 1e16f))
         {
             d->ai->switchstate(b, AI_S_INTEREST, AI_T_NODE, d->ai->route[0]);
@@ -635,7 +652,7 @@ namespace ai
             {
                 case AI_T_NODE:
                     if(check(d, b)) return 1;
-                    if(waypoints.inrange(b.target)) return defend(d, b, waypoints[b.target].o) ? 1 : 0;
+                    if(iswaypoint(b.target)) return defend(d, b, waypoints[b.target].o) ? 1 : 0;
                     break;
                 case AI_T_ENTITY:
                     if(check(d, b)) return 1;
@@ -662,21 +679,22 @@ namespace ai
         if(d->state != CS_ALIVE) return 0;
         switch(b.targtype)
         {
-            case AI_T_NODE:
-                if(check(d, b)) return 1;
-				if(d->lastnode != b.target && waypoints.inrange(b.target))
-					return makeroute(d, b, b.target) ? 1 : 0;
+            case AI_T_NODE: // this is like a wait state without sitting still..
+                if(check(d, b) || find(d, b)) return 1;
+                if(target(d, b, 4, true)) return 1;
+                if(iswaypoint(b.target) && vec(waypoints[b.target].o).sub(d->feetpos()).magnitude() > CLOSEDIST)
+                    return makeroute(d, b, waypoints[b.target].o) ? 1 : 0;
 				break;
             case AI_T_ENTITY:
                 if(entities::ents.inrange(b.target))
                 {
                     extentity &e = *(extentity *)entities::ents[b.target];
                     if(!e.spawned || e.type < I_SHELLS || e.type > I_CARTRIDGES || d->hasmaxammo(e.type)) return 0;
-                    if(d->feetpos().squaredist(e.o) <= CLOSEDIST*CLOSEDIST)
-                    {
-                        b.idle = 1;
-                        return true;
-                    }
+                    //if(d->feetpos().squaredist(e.o) <= CLOSEDIST*CLOSEDIST)
+                    //{
+                    //    b.idle = 1;
+                    //    return true;
+                    //}
                     return makeroute(d, b, e.o) ? 1 : 0;
                 }
                 break;
@@ -690,6 +708,14 @@ namespace ai
         {
             switch(b.targtype)
             {
+                case AI_T_NODE:
+                {
+                    if(check(d, b)) return 1;
+                    if(iswaypoint(b.target))
+                        return defend(d, b, waypoints[b.target].o) ? 1 : 0;
+                    break;
+                }
+
                 case AI_T_AFFINITY:
                 {
                     if(cmode) return cmode->aipursue(d, b) ? 1 : 0;
@@ -714,108 +740,157 @@ namespace ai
         return 0;
     }
 
-    int closenode(fpsent *d, bool retry = false)
+    int closenode(fpsent *d)
     {
         vec pos = d->feetpos();
         int node = -1;
-        float mindist = SIGHTMIN*SIGHTMIN;
-        loopv(d->ai->route) if(waypoints.inrange(d->ai->route[i]))
+        float mindist = WAYPOINTRADIUS*WAYPOINTRADIUS;
+        loopk(3)
         {
-            waypoint &w = waypoints[d->ai->route[i]];
-            vec wpos = w.o;
-            int id = obstacles.remap(d, d->ai->route[i], wpos, retry);
-            if(waypoints.inrange(id) && (retry || id == d->ai->route[i] || !d->ai->hasprevnode(id)))
+            loopv(d->ai->route) if(iswaypoint(d->ai->route[i]))
             {
-                float dist = wpos.squaredist(pos);
-                if(dist < mindist)
+                vec epos = waypoints[d->ai->route[i]].o;
+                int entid = obstacles.remap(d, d->ai->route[i], epos, k==2);
+                if(iswaypoint(entid))
                 {
-                    node = id;
-                    mindist = dist;
+                    float dist = epos.squaredist(pos);
+                    if(dist < mindist)
+                    {
+                        node = i;
+                        mindist = dist;
+                    }
                 }
             }
+            if(node >= 0) break;
+            if(!k) mindist = CLOSEDIST*CLOSEDIST;
         }
         return node;
     }
 
-    bool wpspot(fpsent *d, int n, bool retry = false)
+    int wpspot(fpsent *d, int n, bool check = false)
     {
-        if(waypoints.inrange(n))
+        if(iswaypoint(n)) loopk(2)
         {
-            waypoint &w = waypoints[n];
-            vec wpos = w.o;
-            int id = obstacles.remap(d, n, wpos, retry);
-            if(waypoints.inrange(id) && (retry || id == n || !d->ai->hasprevnode(id)))
+            vec epos = waypoints[n].o;
+            int entid = obstacles.remap(d, n, epos, k!=0);
+            if(iswaypoint(entid))
             {
-				d->ai->spot = wpos;
-				d->ai->targnode = id;
-				return true;
+                d->ai->spot = epos;
+                d->ai->targnode = entid;
+                return !check || d->feetpos().squaredist(epos) > MINWPDIST*MINWPDIST ? 1 : 2;
+            }
+        }
+        return 0;
+    }
+
+    int randomlink(fpsent *d, int n)
+    {
+        if(iswaypoint(n) && waypoints[n].haslinks())
+		    {
+            waypoint &w = waypoints[n];
+            static vector<int> linkmap; linkmap.setsize(0);
+			      loopi(MAXWAYPOINTLINKS)
+			      {
+                if(!w.links[i]) break;
+                if(iswaypoint(w.links[i]) && !d->ai->hasprevnode(w.links[i]) && d->ai->route.find(w.links[i]) < 0)
+                    linkmap.add(w.links[i]);
+            }
+            if(!linkmap.empty()) return linkmap[rnd(linkmap.length())];
+			  }
+        return -1;
+		}
+
+    bool anynode(fpsent *d, aistate &b, int len = NUMPREVNODES)
+    {
+        if(iswaypoint(d->lastnode)) loopk(2)
+		    {
+            d->ai->clear(k ? true : false);
+            int n = randomlink(d, d->lastnode);
+            if(wpspot(d, n))
+			      {
+                d->ai->route.add(n);
+				        d->ai->route.add(d->lastnode);
+                loopi(len)
+                {
+                    n = randomlink(d, n);
+                    if(iswaypoint(n)) d->ai->route.insert(0, n);
+                    else break;
+                }
+                return true;
             }
         }
         return false;
     }
 
-    bool anynode(fpsent *d, aistate &b, bool retry = false)
+    bool checkroute(fpsent *d, int n)
     {
-        if(!waypoints.inrange(d->lastnode)) return false;
-        waypoint &w = waypoints[d->lastnode];
-		static vector<int> anyremap; anyremap.setsize(0);
-		if(w.links[0])
-		{
-			loopi(MAXWAYPOINTLINKS)
-			{
-				int link = w.links[i];
-				if(!link) break;
-				if(waypoints.inrange(link) && (retry || !d->ai->hasprevnode(link)))
-					anyremap.add(link);
-			}
+        if(d->ai->route.empty() || !d->ai->route.inrange(n)) return false;
+        int last = d->ai->lastcheck ? lastmillis-d->ai->lastcheck : 0;
+        if(last < 500 || n < 3) return false; // route length is too short
+        d->ai->lastcheck = lastmillis;
+        int w = iswaypoint(d->lastnode) ? d->lastnode : d->ai->route[n], c = min(n-1, NUMPREVNODES);
+        loopj(c) // check ahead to see if we need to go around something
+        {
+            int p = n-j-1, v = d->ai->route[p];
+            if(d->ai->hasprevnode(v) || obstacles.find(v, d)) // something is in the way, try to remap around it
+            {
+                int m = p-1;
+                if(m < 3) return false; // route length is too short from this point
+                loopirev(m)
+                {
+                    int t = d->ai->route[i];
+                    if(!d->ai->hasprevnode(t) && !obstacles.find(t, d))
+                    {
+                        static vector<int> remap; remap.setsize(0);
+                        if(route(d, w, t, remap, obstacles))
+                        { // kill what we don't want and put the remap in
+                            while(d->ai->route.length() > i) d->ai->route.pop();
+                            loopvk(remap) d->ai->route.add(remap[k]);
+                            return true;
+			                  }
+                        return false; // we failed
+                    }
+                }
+                return false;
+            }
 		}
-		while(!anyremap.empty())
-		{
-			int r = rnd(anyremap.length()), t = anyremap[r];
-			if(wpspot(d, t, retry))
-			{
-				d->ai->route.add(t);
-				d->ai->route.add(d->lastnode);
-				return true;
-			}
-			anyremap.remove(r);
-		}
-		if(!retry) return anynode(d, b, true);
         return false;
-    }
+  }
 
-	bool hunt(fpsent *d, aistate &b, int retries = 0)
+  bool hunt(fpsent *d, aistate &b)
 	{
-		if(!d->ai->route.empty() && waypoints.inrange(d->lastnode))
-		{
-			int n = retries%2 ? d->ai->route.find(d->lastnode) : closenode(d, retries >= 2);
-			if(retries%2 && d->ai->route.inrange(n))
-			{
-				while(d->ai->route.length() > n+1) d->ai->route.pop(); // waka-waka-waka-waka
-				if(!n)
-				{
-					if(wpspot(d, d->ai->route[n], retries >= 2))
-					{
-						d->ai->clear(false);
-						return true;
-					}
-					else if(retries <= 2) return hunt(d, b, retries+1); // try again
+      if(!d->ai->route.empty())
+		  {
+            int n = closenode(d);
+            if(d->ai->route.inrange(n) && checkroute(d, n)) n = closenode(d);
+            if(d->ai->route.inrange(n))
+            {
+                if(!n)
+                {
+                    switch(wpspot(d, d->ai->route[n], true))
+					          {
+                        case 2: d->ai->clear(false);
+                        case 1: return true; // not close enough to pop it yet
+                        case 0: default: break;
+                    }
+					      }
+                else
+                {
+                    while(d->ai->route.length() > n+1) d->ai->route.pop(); // waka-waka-waka-waka
+                    int m = n-1; // next, please!
+                    if(d->ai->route.inrange(m) && wpspot(d, d->ai->route[m])) return true;
 				}
-				else n--; // otherwise, we want the next in line
 			}
-			if(d->ai->route.inrange(n) && wpspot(d, d->ai->route[n], retries >= 2)) return true;
-			if(retries <= 2) return hunt(d, b, retries+1); // try again
 		}
 		b.override = false;
-		d->ai->clear(false);
 		return anynode(d, b);
 	}
 
     void jumpto(fpsent *d, aistate &b, const vec &pos)
     {
 		vec off = vec(pos).sub(d->feetpos()), dir(off.x, off.y, 0);
-		bool offground = d->timeinair && !d->inwater, jumper = off.z >= JUMPMIN,
-			jump = !offground && (jumper || lastmillis >= d->ai->jumprand) && lastmillis >= d->ai->jumpseed;
+        bool sequenced = d->ai->blockseq || d->ai->targseq, offground = d->timeinair && !d->inwater,
+            jump = !offground && lastmillis >= d->ai->jumpseed && (sequenced || off.z >= JUMPMIN || lastmillis >= d->ai->jumprand);
 		if(jump)
 		{
 			vec old = d->o;
@@ -835,7 +910,7 @@ namespace ai
 		if(jump)
 		{
 			d->jumping = true;
-			int seed = (111-d->skill)*(d->inwater ? 2 : 10);
+			int seed = (111-d->skill)*(d->inwater ? 3 : 5);
 			d->ai->jumpseed = lastmillis+seed+rnd(seed);
 			seed *= b.idle ? 50 : 25;
 			d->ai->jumprand = lastmillis+seed+rnd(seed);
@@ -926,13 +1001,18 @@ namespace ai
         {
             d->ai->lastaction = d->ai->lasthunt = lastmillis;
             d->ai->dontmove = true;
+            d->ai->spot = vec(0, 0, 0);
         }
         else if(hunt(d, b))
         {
             getyawpitch(dp, vec(d->ai->spot).add(vec(0, 0, d->eyeheight)), d->ai->targyaw, d->ai->targpitch);
             d->ai->lasthunt = lastmillis;
         }
-        else idle = d->ai->dontmove = true;
+        else
+        {
+            idle = d->ai->dontmove = true;
+            d->ai->spot = vec(0, 0, 0);
+        }
 
 		if(!d->ai->dontmove) jumpto(d, b, d->ai->spot);
 
@@ -945,13 +1025,13 @@ namespace ai
             {
                 if(targetable(d, f))
                 {
-                    if(!enemyok) violence(d, b, f, d->gunselect == GUN_FIST);
+                    if(!enemyok) violence(d, b, f, d->gunselect == GUN_FIST ? 1 : 0);
                     enemyok = true;
                     e = f;
                 }
                 else enemyok = false;
             }
-            else if(!enemyok && target(d, b, d->gunselect == GUN_FIST, false, SIGHTMIN))
+            else if(!enemyok && target(d, b, d->gunselect == GUN_FIST ? 1 : 0, false, SIGHTMIN))
                 enemyok = (e = getclient(d->ai->enemy)) != NULL;
         }
         if(enemyok)
@@ -1086,8 +1166,9 @@ namespace ai
         if(d->blocked)
         {
             d->ai->blocktime += lastmillis-d->ai->lastrun;
-            if(d->ai->blocktime > (d->ai->blockseq+1)*500)
+            if(d->ai->blocktime > (d->ai->blockseq+1)*1000)
             {
+                d->ai->blockseq++;
                 switch(d->ai->blockseq)
                 {
                     case 1: case 2: case 3:
@@ -1096,10 +1177,8 @@ namespace ai
                         break;
                     case 4: d->ai->reset(true); break;
                     case 5: d->ai->reset(false); break;
-                    case 6: suicide(d); return; break; // this is our last resort..
-                    case 0: default: break;
+                    case 6: default: suicide(d); return; break; // this is our last resort..
                 }
-                d->ai->blockseq++;
             }
         }
         else d->ai->blocktime = d->ai->blockseq = 0;
@@ -1109,6 +1188,7 @@ namespace ai
             d->ai->targtime += lastmillis-d->ai->lastrun;
             if(d->ai->targtime > (d->ai->targseq+1)*1000)
             {
+                d->ai->targseq++;
                 switch(d->ai->targseq)
                 {
                     case 1: case 2: case 3:
@@ -1117,10 +1197,8 @@ namespace ai
                         break;
                     case 4: d->ai->reset(true); break;
                     case 5: d->ai->reset(false); break;
-                    case 6: suicide(d); return; break; // this is our last resort..
-                    case 0: default: break;
+                    case 6: default: suicide(d); return; break; // this is our last resort..
                 }
-                d->ai->targseq++;
             }
         }
         else
@@ -1132,17 +1210,16 @@ namespace ai
         if(d->ai->lasthunt)
         {
             int millis = lastmillis-d->ai->lasthunt;
-            if(millis <= 3000) { d->ai->tryreset = false; d->ai->huntseq = 0; }
-            else if(millis > (d->ai->huntseq+1)*3000)
+            if(millis <= 1000) { d->ai->tryreset = false; d->ai->huntseq = 0; }
+            else if(millis > (d->ai->huntseq+1)*1000)
             {
+                d->ai->huntseq++;
                 switch(d->ai->huntseq)
                 {
-                    case 0: d->ai->reset(true); break;
-                    case 1: d->ai->reset(false); break;
-                    case 2: suicide(d); return; break; // this is our last resort..
-                    default: break;
+                    case 1: d->ai->reset(true); break;
+                    case 2: d->ai->reset(false); break;
+                    case 3: default: suicide(d); return; break; // this is our last resort..
                 }
-                d->ai->huntseq++;
             }
         }
 	}
@@ -1200,8 +1277,8 @@ namespace ai
         // the state stack works like a chain of commands, certain commands simply replace each other
         // others spawn new commands to the stack the ai reads the top command from the stack and executes
         // it or pops the stack and goes back along the history until it finds a suitable command to execute
-        if(d->ai->state.empty()) setup(d, false);
-        bool cleannext = false, parse = run && waypoints.inrange(d->lastnode);
+        bool cleannext = false;
+        if(d->ai->state.empty()) d->ai->addstate(AI_S_WAIT);
         loopvrev(d->ai->state)
         {
             aistate &c = d->ai->state[i];
@@ -1216,7 +1293,7 @@ namespace ai
                 addmsg(N_TRYSPAWN, "rc", d);
                 d->respawned = d->lifesequence;
             }
-            else if(d->state == CS_ALIVE && parse)
+            else if(d->state == CS_ALIVE && run)
             {
                 int result = 0;
                 c.idle = 0;
@@ -1230,7 +1307,6 @@ namespace ai
                 }
                 if(result <= 0)
                 {
-                    d->ai->clear(true);
                     if(c.type != AI_S_WAIT)
                     {
                         switch(result)
@@ -1242,81 +1318,55 @@ namespace ai
                     }
                 }
             }
-            logic(d, c, parse);
+            logic(d, c, run);
             break;
         }
         if(d->ai->trywipe) d->ai->wipe();
         d->ai->lastrun = lastmillis;
     }
 
-    void drawstate(fpsent *d, aistate &b, bool top, int above)
+    void drawroute(fpsent *d, float amt = 1.f)
     {
-        const char *bnames[AI_S_MAX] = {
-            "wait", "defend", "pursue", "interest"
-        }, *btypes[AI_T_MAX+1] = {
-            "none", "node", "player", "affinity", "entity"
-        };
-        string s;
-        if(top)
-        {
-            formatstring(s)("\f0%s (%d) %s:%d (%d[%d])",
-                bnames[b.type],
-                lastmillis-b.millis,
-                btypes[clamp(b.targtype+1, 0, AI_T_MAX+1)], b.target,
-                !d->ai->route.empty() ? d->ai->route[0] : -1,
-                d->ai->route.length()
-            );
-        }
-        else
-        {
-            formatstring(s)("\f2%s (%d) %s:%d",
-                bnames[b.type],
-                lastmillis-b.millis,
-                btypes[clamp(b.targtype+1, 0, AI_T_MAX+1)], b.target
-            );
-        }
-        particle_textcopy(vec(d->abovehead()).add(vec(0, 0, above)), s, PART_TEXT, 1);
-        if(b.targtype == AI_T_ENTITY && entities::ents.inrange(b.target))
-        {
-            formatstring(s)("GOAL: %s", colorname(d));
-            particle_textcopy(entities::ents[b.target]->o, s, PART_TEXT, 1);
-        }
-    }
-
-    void drawroute(fpsent *d, aistate &b, float amt = 1.f)
-    {
-        int colour = 0xFFFFFF, last = -1;
-
+        int last = -1;
         loopvrev(d->ai->route)
         {
             if(d->ai->route.inrange(last))
             {
                 int index = d->ai->route[i], prev = d->ai->route[last];
-                if(waypoints.inrange(index) && waypoints.inrange(prev))
+                if(iswaypoint(index) && iswaypoint(prev))
                 {
-                    waypoint &e = waypoints[index],
-                        &f = waypoints[prev];
-                    vec fr(vec(f.o).add(vec(0, 0, 4.f*amt))),
-                        dr(vec(e.o).add(vec(0, 0, 4.f*amt)));
-                    particle_flare(fr, dr, 1, PART_STREAK, colour);
+                    waypoint &e = waypoints[index], &f = waypoints[prev];
+                    vec fr = f.o, dr = e.o;
+                    fr.z += amt; dr.z += amt;
+                    particle_flare(fr, dr, 1, PART_STREAK, 0xFFFFFF);
                 }
             }
             last = i;
         }
-        if(aidebug > 4)
+        if(aidebug >= 5)
         {
             vec pos = d->feetpos();
-            if(d->ai->spot != vec(0, 0, 0)) particle_flare(pos, d->ai->spot, 1, PART_LIGHTNING, 0xFFFFFF);
-            if(waypoints.inrange(d->lastnode))
-                particle_flare(pos, waypoints[d->lastnode].o, 1, PART_LIGHTNING, 0x00FFFF);
-            if(waypoints.inrange(d->ai->prevnodes[1]))
-                particle_flare(pos, waypoints[d->ai->prevnodes[1]].o, 1, PART_LIGHTNING, 0xFF00FF);
+            if(d->ai->spot != vec(0, 0, 0)) particle_flare(pos, d->ai->spot, 1, PART_LIGHTNING, 0x00FFFF);
+            if(iswaypoint(d->ai->targnode))
+                particle_flare(pos, waypoints[d->ai->targnode].o, 1, PART_LIGHTNING, 0xFF00FF);
+            if(iswaypoint(d->lastnode))
+                particle_flare(pos, waypoints[d->lastnode].o, 1, PART_LIGHTNING, 0xFFFF00);
+            loopi(NUMPREVNODES) if(iswaypoint(d->ai->prevnodes[i]))
+            {
+                particle_flare(pos, waypoints[d->ai->prevnodes[i]].o, 1, PART_LIGHTNING, 0x884400);
+                pos = waypoints[d->ai->prevnodes[i]].o;
+            }
         }
     }
 
     VAR(showwaypoints, 0, 0, 1);
     VAR(showwaypointsradius, 0, 200, 10000);
 
+    const char *stnames[AI_S_MAX] = {
+        "wait", "defend", "pursue", "interest"
+    }, *sttypes[AI_T_MAX+1] = {
+        "none", "node", "player", "affinity", "entity"
+    };
     void render()
     {
         if(aidebug > 1)
@@ -1326,31 +1376,71 @@ namespace ai
             loopv(players) if(players[i]->state == CS_ALIVE && players[i]->ai)
             {
                 fpsent *d = players[i];
-                bool top = true;
-                int above = 0;
+                vec pos = d->abovehead();
+                pos.z += 3;
                 alive++;
+                if(aidebug >= 4) drawroute(d, 4.f*(float(alive)/float(total)));
+                if(aidebug >= 3)
+                {
+                    defformatstring(q)("node: %d route: %d (%d)",
+                        d->lastnode,
+                        !d->ai->route.empty() ? d->ai->route[0] : -1,
+                        d->ai->route.length()
+                    );
+                    particle_textcopy(pos, q, PART_TEXT, 1);
+                    pos.z += 2;
+                }
+                bool top = true;
                 loopvrev(d->ai->state)
                 {
                     aistate &b = d->ai->state[i];
-                    drawstate(d, b, top, above += 2);
-                    if(aidebug > 3 && top && b.type != AI_S_WAIT)
-                        drawroute(d, b, float(alive)/float(total));
+                    defformatstring(s)("%s%s (%d ms) %s:%d",
+                        top ? "\fg" : "\fy",
+                        stnames[b.type],
+                        lastmillis-b.millis,
+                        sttypes[b.targtype+1], b.target
+                    );
+                    particle_textcopy(pos, s, PART_TEXT, 1);
+                    pos.z += 2;
                     if(top)
                     {
-                        if(aidebug > 2) top = false;
+                        if(aidebug >= 3) top = false;
                         else break;
                     }
                 }
-                if(aidebug > 2)
+                if(aidebug >= 3)
                 {
                     if(d->ai->weappref >= 0 && d->ai->weappref < NUMGUNS)
-                        particle_textcopy(vec(d->abovehead()).add(vec(0, 0, above += 2)), guns[d->ai->weappref].name, PART_TEXT, 1);
+                    {
+                        particle_textcopy(pos, guns[d->ai->weappref].name, PART_TEXT, 1);
+                        pos.z += 2;
+                    }
                     fpsent *e = getclient(d->ai->enemy);
-                    if(e) particle_textcopy(vec(d->abovehead()).add(vec(0, 0, above += 2)), colorname(e), PART_TEXT, 1);
+                    if(e)
+                    {
+                        particle_textcopy(pos, colorname(e), PART_TEXT, 1);
+                        pos.z += 2;
+                    }
+                }
+            }
+            if(aidebug >= 4)
+            {
+                int cur = 0;
+                loopv(obstacles.obstacles)
+                {
+                    const avoidset::obstacle &ob = obstacles.obstacles[i];
+                    int next = cur + ob.numwaypoints;
+                    for(; cur < next; cur++)
+                    {
+                        int ent = obstacles.waypoints[cur];
+                        if(iswaypoint(ent))
+                            regular_particle_splash(PART_EDIT, 2, 40, waypoints[ent].o, 0xFF6600, 1.5f);
+                    }
+                    cur = next;
                 }
             }
         }
-        if(showwaypoints || aidebug > 5)
+        if(showwaypoints || aidebug >= 6)
         {
             vector<int> close;
             int len = waypoints.length();

@@ -750,7 +750,7 @@ void rotatebb(vec &center, vec &radius, int yaw)
 {
     if(yaw < 0) yaw = 360 + yaw%360;
     else if(yaw >= 360) yaw %= 360;
-    const vec2 &rot = mmrots[yaw + 7];
+    const vec2 &rot = sincos360[yaw];
     vec2 oldcenter(center), oldradius(radius);
     center.x = oldcenter.x*rot.x - oldcenter.y*rot.y;
     center.y = oldcenter.y*rot.x + oldcenter.x*rot.y;
@@ -785,7 +785,7 @@ bool mmcollide(physent *d, const vec &dir, octaentities &oc)               // co
         if(!m || !m->collide) continue;
         vec center, radius;
         m->collisionbox(0, center, radius);
-        float yaw = float((e.attr1+7)-(e.attr1+7)%15);
+        float yaw = e.attr1;
         switch(d->collidetype)
         {
             case COLLIDE_ELLIPSE:
@@ -825,8 +825,8 @@ static bool fuzzycollidesolid(physent *d, const vec &dir, float cutoff, cube &c,
     E entvol(d);
     wall = vec(0, 0, 0);
     float bestdist = -1e10f;
-    int vis = isentirelysolid(c) ? c.visible : 0xFF;
-    loopi(6) if(vis&(1<<i))
+    int visible = isentirelysolid(c) ? c.collide : 0xFF;
+    loopi(6) if(visible&(1<<i))
     {
         int dim = dimension(i), dc = dimcoord(i), dimdir = 2*dc - 1;
         plane w(0, 0, 0, -(dimdir*co[dim] + dc*size));
@@ -855,6 +855,33 @@ static bool fuzzycollidesolid(physent *d, const vec &dir, float cutoff, cube &c,
     return false;
 }
 
+template<class E>
+static inline bool clampcollide(const clipplanes &p, const E &entvol, const plane &w, const vec &pw)
+{
+    if(w.x && (w.y || w.z) && fabs(pw.x - p.o.x) > p.r.x)
+    {
+        vec c = entvol.center();
+        float fv = pw.x < p.o.x ? p.o.x-p.r.x : p.o.x+p.r.x, fdist = (w.x*fv + w.y*c.y + w.z*c.z + w.offset) / (w.y*w.y + w.z*w.z);
+        vec fdir(fv - c.x, -w.y*fdist, -w.z*fdist);
+        if((pw.y-c.y-fdir.y)*w.y + (pw.z-c.z-fdir.z)*w.z >= 0 && entvol.supportpoint(fdir).squaredist(c) < fdir.squaredlen()) return true;
+    }
+    if(w.y && (w.x || w.z) && fabs(pw.y - p.o.y) > p.r.y)
+    {
+        vec c = entvol.center();
+        float fv = pw.y < p.o.y ? p.o.y-p.r.y : p.o.y+p.r.y, fdist = (w.x*c.x + w.y*fv + w.z*c.z + w.offset) / (w.x*w.x + w.z*w.z);
+        vec fdir(-w.x*fdist, fv - c.y, -w.z*fdist);
+        if((pw.x-c.x-fdir.x)*w.x + (pw.z-c.z-fdir.z)*w.z >= 0 && entvol.supportpoint(fdir).squaredist(c) < fdir.squaredlen()) return true;
+    }
+    if(w.z && (w.x || w.y) && fabs(pw.z - p.o.z) > p.r.z)
+    {
+        vec c = entvol.center();
+        float fv = pw.z < p.o.z ? p.o.z-p.r.z : p.o.z+p.r.z, fdist = (w.x*c.x + w.y*c.y + w.z*fv + w.offset) / (w.x*w.x + w.y*w.y);
+        vec fdir(-w.x*fdist, -w.y*fdist, fv - c.z);
+        if((pw.x-c.x-fdir.x)*w.x + (pw.y-c.y-fdir.y)*w.y >= 0 && entvol.supportpoint(fdir).squaredist(c) < fdir.squaredlen()) return true;
+    }
+    return false;
+}
+    
 template<class E>
 static bool fuzzycollideplanes(physent *d, const vec &dir, float cutoff, cube &c, const ivec &co, int size) // collide with deformed cube geometry
 {
@@ -888,6 +915,7 @@ static bool fuzzycollideplanes(physent *d, const vec &dir, float cutoff, cube &c
         wall = w;
         bestdist = dist;
     }
+    int bestplane = -1;
     loopi(p.size)
     {
         plane &w = p.p[i];
@@ -895,6 +923,8 @@ static bool fuzzycollideplanes(physent *d, const vec &dir, float cutoff, cube &c
         float dist = w.dist(pw);
         if(dist >= 0) return true;
         if(dist <= bestdist) continue;
+        bestplane = -1;
+        bestdist = dist;
         if(!dir.iszero())
         {
             if(w.dot(dir) >= -cutoff*dir.magnitude()) continue;
@@ -904,10 +934,11 @@ static bool fuzzycollideplanes(physent *d, const vec &dir, float cutoff, cube &c
                     ((dir.x*w.x < 0 || dir.y*w.y < 0) ? -d->radius : 0)))
                 continue;
         }
-        wall = w;
-        bestdist = dist;
+        if(clampcollide(p, entvol, w, pw)) continue;
+        bestplane = i;
     }
-    if(wall.iszero())
+    if(bestplane >= 0) wall = p.p[bestplane];
+    else if(wall.iszero())
     {
         inside = true;
         return true;
@@ -929,8 +960,8 @@ static bool cubecollidesolid(physent *d, const vec &dir, float cutoff, cube &c, 
 
     wall = vec(0, 0, 0);
     float bestdist = -1e10f;
-    int vis = isentirelysolid(c) ? c.visible : 0xFF;
-    loopi(6) if(vis&(1<<i))
+    int visible = isentirelysolid(c) ? c.collide : 0xFF;
+    loopi(6) if(visible&(1<<i))
     {
         int dim = dimension(i), dc = dimcoord(i), dimdir = 2*dc - 1;
         plane w(0, 0, 0, -(dimdir*co[dim] + dc*size));
@@ -947,7 +978,6 @@ static bool cubecollidesolid(physent *d, const vec &dir, float cutoff, cube &c, 
                     ((dir.x*w.x < 0 || dir.y*w.y < 0) ? -d->radius : 0)))
                 continue;
         }
-        //wall.add(w);
         wall = w;
         bestdist = dist;
     }
@@ -956,7 +986,6 @@ static bool cubecollidesolid(physent *d, const vec &dir, float cutoff, cube &c, 
         inside = true;
         return true;
     }
-    //wall.normalize();
     return false;
 }
 
@@ -992,16 +1021,18 @@ static bool cubecollideplanes(physent *d, const vec &dir, float cutoff, cube &c,
                     ((dir.x*w.x < 0 || dir.y*w.y < 0) ? -d->radius : 0)))
                 continue;
         }
-        //wall.add(w);
         wall = w;
         bestdist = dist;
     }
+    int bestplane = -1;
     loopi(p.size)
     {
         plane &w = p.p[i];
         vec pw = entvol.supportpoint(vec(w).neg());
         float dist = w.dist(pw);
         if(dist <= bestdist) continue;
+        bestplane = -1;
+        bestdist = dist;
         if(!dir.iszero())
         {
             if(w.dot(dir) >= -cutoff*dir.magnitude()) continue;
@@ -1011,16 +1042,15 @@ static bool cubecollideplanes(physent *d, const vec &dir, float cutoff, cube &c,
                     ((dir.x*w.x < 0 || dir.y*w.y < 0) ? -d->radius : 0)))
                 continue;
         }
-        //wall.add(w);
-        wall = w;
-        bestdist = dist;
+        if(clampcollide(p, entvol, w, pw)) continue;
+        bestplane = i;
     }
-    if(wall.iszero())
+    if(bestplane >= 0) wall = p.p[bestplane];
+    else if(wall.iszero())
     {
         inside = true;
         return true;
     }
-    //wall.normalize();
     return false;
 }
 
@@ -1034,7 +1064,7 @@ static inline bool cubecollide(physent *d, const vec &dir, float cutoff, cube &c
             if(cutoff <= 0)
             {
                 int crad = size/2;
-                return rectcollide(d, dir, vec(co.x + crad, co.y + crad, co.z), crad, crad, size, 0, isentirelysolid(c) ? c.visible : 0xFF);
+                return rectcollide(d, dir, vec(co.x + crad, co.y + crad, co.z), crad, crad, size, 0, isentirelysolid(c) ? c.collide : 0xFF);
             }
 #if 0
             else return cubecollidesolid<mpr::EntAABB>(d, dir, cutoff, c, co, size);
@@ -1671,7 +1701,7 @@ void vectoyawpitch(const vec &v, float &yaw, float &pitch)
 
 VARP(maxroll, 0, 3, 20);
 FVAR(straferoll, 0, 0.033f, 90);
-VAR(floatspeed, 10, 100, 1000);
+VAR(floatspeed, 10, 100, 10000);
 
 void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curtime)
 {
@@ -1723,7 +1753,7 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
         {
             if(pl==player) d.mul(floatspeed/100.0f);
         }
-        else if(!water && game::allowmove(pl)) d.mul((pl->move && !pl->strafe ? 1.3f : 1.0f) * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f)); // EXPERIMENTAL
+        else if(!water && game::allowmove(pl)) d.mul((pl->move && !pl->strafe ? 1.3f : 1.0f) * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f));
     }
 
     // ON MOD : sauerbomber

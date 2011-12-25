@@ -3,6 +3,7 @@
 extern int curtime;                     // current frame time
 extern int lastmillis;                  // last time
 extern int totalmillis;                 // total elapsed time
+extern uint totalsecs;
 extern int gamespeed, paused;
 
 enum
@@ -106,6 +107,8 @@ extern int getvarmax(const char *name);
 extern bool identexists(const char *name);
 extern ident *getident(const char *name);
 extern ident *newident(const char *name, int flags = 0);
+extern ident *readident(const char *name);
+extern ident *writeident(const char *name, int flags = 0);
 extern bool addcommand(const char *name, identfun fun, const char *narg);
 extern uint *compilecode(const char *p);
 extern void executeret(const uint *code, tagval &result);
@@ -141,7 +144,7 @@ extern void logoutf(const char *fmt, ...);
 
 // menus
 extern vec menuinfrontofplayer();
-extern void newgui(char *name, char *contents, char *header = NULL);
+extern void newgui(char *name, char *contents, char *header = NULL, char *init = NULL);
 extern void showgui(const char *name);
 extern int cleargui(int n = 0);
 
@@ -190,10 +193,31 @@ extern bool popfont();
 extern void gettextres(int &w, int &h);
 extern void draw_text(const char *str, int left, int top, int r = 255, int g = 255, int b = 255, int a = 255, int cursor = -1, int maxwidth = -1);
 extern void draw_textf(const char *fstr, int left, int top, ...);
-extern int text_width(const char *str);
-extern void text_bounds(const char *str, int &width, int &height, int maxwidth = -1);
-extern int text_visible(const char *str, int hitx, int hity, int maxwidth);
-extern void text_pos(const char *str, int cursor, int &cx, int &cy, int maxwidth);
+extern float text_widthf(const char *str);
+extern void text_boundsf(const char *str, float &width, float &height, int maxwidth = -1);
+extern int text_visible(const char *str, float hitx, float hity, int maxwidth);
+extern void text_posf(const char *str, int cursor, float &cx, float &cy, int maxwidth);
+
+static inline int text_width(const char *str)
+{
+    return int(ceil(text_widthf(str)));
+}
+
+static inline void text_bounds(const char *str, int &width, int &height, int maxwidth = -1)
+{
+    float widthf, heightf;
+    text_boundsf(str, widthf, heightf, maxwidth);
+    width = int(ceil(widthf));
+    height = int(ceil(heightf));
+}
+
+static inline void text_pos(const char *str, int cursor, int &cx, int &cy, int maxwidth)
+{
+    float cxf, cyf;
+    text_posf(str, cursor, cxf, cyf, maxwidth);
+    cx = int(cxf);
+    cy = int(cyf);
+}
 
 // renderva
 enum
@@ -269,6 +293,7 @@ extern bool load_world(const char *mname, const char *cname = NULL);
 extern bool save_world(const char *mname, bool nolms = false);
 extern void getmapfilenames(const char *fname, const char *cname, char *pakname, char *mapname, char *cfgname);
 extern uint getmapcrc();
+extern void clearmapcrc();
 extern bool loadents(const char *fname, vector<entity> &ents, uint *crc = NULL);
 
 // physics
@@ -388,6 +413,7 @@ extern const ENetAddress *connectedpeer();
 extern bool multiplayer(bool msg = true);
 extern void neterr(const char *s, bool disc = true);
 extern void gets2c();
+extern void notifywelcome();
 
 // crypto
 extern void genprivkey(const char *seed, vector<char> &privstr, vector<char> &pubstr);
@@ -434,7 +460,7 @@ struct g3d_gui
     }
     virtual void background(int color, int parentw = 0, int parenth = 0) = 0;
 
-    virtual void pushlist(int align = -1) {}
+    virtual void pushlist() {}
     virtual void poplist() {}
 
     virtual void allowautotab(bool on) = 0;
@@ -442,11 +468,12 @@ struct g3d_gui
 	virtual void tab(const char *name = NULL, int color = 0) = 0;
     virtual int image(Texture *t, float scale, bool overlaid = false) = 0;
     virtual int texture(VSlot &vslot, float scale, bool overlaid = true) = 0;
-    virtual void slider(int &val, int vmin, int vmax, int color, char *label = NULL) = 0;
+    virtual void slider(int &val, int vmin, int vmax, int color, const char *label = NULL) = 0;
     virtual void separator() = 0;
 	virtual void progress(float percent) = 0;
 	virtual void strut(float size) = 0;
     virtual void space(float size) = 0;
+    virtual void spring(int weight = 1) = 0;
     virtual char *keyfield(const char *name, int color, int length, int height = 0, const char *initval = NULL, int initmode = EDITORFOCUSED) = 0;
     virtual char *field(const char *name, int color, int length, int height = 0, const char *initval = NULL, int initmode = EDITORFOCUSED) = 0;
     virtual void textbox(const char *text, int width, int height, int color = 0xFFFFFF) = 0;

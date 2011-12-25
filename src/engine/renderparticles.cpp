@@ -1269,10 +1269,10 @@ void regularshape(int type, int radius, int color, int dir, int num, int fade, c
             from = p;
         }
        
-		// Bomberman
+        // Bomberman
         if(modfrom && modto){
-        	from.add(*modfrom);
-        	to.add(*modto);
+            from.add(*modfrom);
+            to.add(*modto);
         }
 		
         if(taper)
@@ -1418,7 +1418,7 @@ VAR(replayparticles, 0, 1, 1);
 VARN(seedparticles, seedmillis, 0, 3000, 10000);
 VAR(dbgpcull, 0, 0, 1);
 
-void seedparticles() // MAY
+void seedparticles()
 {
     renderprogress(0, "seeding particles");
     addparticleemitters();

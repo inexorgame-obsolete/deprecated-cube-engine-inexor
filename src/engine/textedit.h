@@ -94,7 +94,7 @@ struct editline
                 if(blen > 0 && buf[blen-1] == '\n') return true;
             }
         }
-        return false;
+        return len > 0;
     }
 
     void del(int start, int count)
@@ -190,7 +190,7 @@ struct editor
     {
         if(!filename) return;
         clear(NULL);
-        stream *file = openfile(filename, "r");
+        stream *file = openutf8file(filename, "r");
         if(file) 
         {
             while(lines.add().read(file, maxx) && (maxy < 0 || lines.length() <= maxy));
@@ -203,7 +203,7 @@ struct editor
     void save()
     {
         if(!filename) return;
-        stream *file = openfile(filename, "w");
+        stream *file = openutf8file(filename, "w");
         if(!file) return;
         loopv(lines) file->putline(lines[i].text);
         delete file;
@@ -528,6 +528,21 @@ struct editor
         }
     }
 
+    int limitscrolly()
+    {
+        int maxwidth = linewrap?pixelwidth:-1;
+        int slines = lines.length();
+        for(int ph = pixelheight; slines > 0 && ph > 0;)
+        {
+            int width, height;
+            text_bounds(lines[slines-1].text, width, height, maxwidth);
+            if(height > ph) break;
+            ph -= height;
+            slines--;
+        }
+        return slines;
+    }
+
     void draw(int x, int y, int color, bool hit)
     {
         int maxwidth = linewrap?pixelwidth:-1;
@@ -677,13 +692,14 @@ static editor *useeditor(const char *name, int mode, bool focus, const char *ini
 )
 
 ICOMMAND(textlist, "", (), // @DEBUG return list of all the editors
-    string s = "";
+    vector<char> s;
     loopv(editors)
     {   
-        if(i > 0) concatstring(s, ", ");
-        concatstring(s, editors[i]->name);
+        if(i > 0) s.put(", ", 2);
+        s.put(editors[i]->name, strlen(editors[i]->name));
     }
-    result(s);
+    s.add('\0');
+    result(s.getbuf());
 );
 TEXTCOMMAND(textshow, "", (), // @DEBUG return the start of the buffer
     editline line;
@@ -698,11 +714,7 @@ ICOMMAND(textfocus, "si", (char *name, int *mode), // focus on a (or create a pe
 TEXTCOMMAND(textprev, "", (), editors.insert(0, top); editors.pop();); // return to the previous editor
 TEXTCOMMAND(textmode, "i", (int *m), // (1= keep while focused, 2= keep while used in gui, 3= keep forever (i.e. until mode changes)) topmost editor, return current setting if no args
     if(*m) top->mode = *m;
-    else
-    {
-        defformatstring(s)("%d", top->mode);
-        result(s);
-    } 
+    else intret(top->mode);
 );
 TEXTCOMMAND(textsave, "s", (char *file),  // saves the topmost (filename is optional)
     if(*file) top->setfile(path(file, true)); 
@@ -733,7 +745,7 @@ TEXTCOMMAND(textcopy, "", (), editor *b = useeditor(PASTEBUFFER, EDITORFOREVER, 
 TEXTCOMMAND(textpaste, "", (), editor *b = useeditor(PASTEBUFFER, EDITORFOREVER, false); top->insertallfrom(b););
 TEXTCOMMAND(textmark, "i", (int *m),  // (1=mark, 2=unmark), return current mark setting if no args
     if(*m) top->mark(*m==1);
-    else result(top->region() ? "1" : "2");
+    else intret(top->region() ? 1 : 2);
 );
 TEXTCOMMAND(textselectall, "", (), top->selectall(););
 TEXTCOMMAND(textclear, "", (), top->clear(););

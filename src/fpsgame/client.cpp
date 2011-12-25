@@ -320,10 +320,34 @@ namespace game
     }
     COMMAND(kick, "s");
 
+    vector<int> ignores;
+
+    void ignore(int cn)
+    {
+        fpsent *d = getclient(cn);
+        if(!d || d == player1) return;
+        conoutf("ignoring %s", d->name);
+        if(ignores.find(cn) < 0) ignores.add(cn);
+    }
+
+    void unignore(int cn)
+    {
+        if(ignores.find(cn) < 0) return;
+        fpsent *d = getclient(cn);
+        if(d) conoutf("stopped ignoring %s", d->name);
+        ignores.removeobj(cn);
+    }
+
+    bool isignored(int cn) { return ignores.find(cn) >= 0; }
+
+    ICOMMAND(ignore, "s", (char *arg), ignore(parseplayer(arg)));
+    ICOMMAND(unignore, "s", (char *arg), unignore(parseplayer(arg))); 
+    ICOMMAND(isignored, "s", (char *arg), intret(isignored(parseplayer(arg)) ? 1 : 0));
+
     void setteam(const char *arg1, const char *arg2)
     {
         int i = parseplayer(arg1);
-        if(i>=0 && i!=player1->clientnum) addmsg(N_SETTEAM, "ris", i, arg2);
+        if(i>=0) addmsg(N_SETTEAM, "ris", i, arg2);
     }
     COMMAND(setteam, "ss");
 
@@ -439,6 +463,7 @@ namespace game
     ICOMMANDS("m_bomb", "i", (int *mode), { int gamemode = *mode; intret(m_bomb); });
     ICOMMANDS("m_race", "i", (int *mode), { int gamemode = *mode; intret(m_race); });
     ICOMMANDS("m_timeforward", "i", (int *mode), { int gamemode = *mode; intret(m_timeforward); });
+    ICOMMANDS("m_obstacles", "i", (int *mode), { int gamemode = *mode; intret(m_obstacles); });
 	
     void changemap(const char *name, int mode) // request map change, server may ignore
     {
@@ -554,7 +579,9 @@ namespace game
             {
                 int val = *id->storage.i;
                 string str;
-                if(id->flags&IDF_HEX && id->maxval==0xFFFFFF)
+                if(val < 0)
+                    formatstring(str)("%d", val); 
+                else if(id->flags&IDF_HEX && id->maxval==0xFFFFFF)
                     formatstring(str)("0x%.6X (%d, %d, %d)", val, (val>>16)&0xFF, (val>>8)&0xFF, val&0xFF);
                 else
                     formatstring(str)(id->flags&IDF_HEX ? "0x%X" : "%d", val);
@@ -686,6 +713,7 @@ namespace game
     void gamedisconnect(bool cleanup)
     {
         if(remote) stopfollowing();
+        ignores.setsize(0);
         connected = remote = false;
         player1->clientnum = -1;
         sessionid = 0;
@@ -825,11 +853,11 @@ namespace game
             messagereliable = false;
             messagecn = -1;
         }
-        if(lastmillis-lastping>250)
+        if(totalmillis-lastping>250)
         {
             putint(p, N_PING);
-            putint(p, lastmillis);
-            lastping = lastmillis;
+            putint(p, totalmillis);
+            lastping = totalmillis;
         }
         sendclientpacket(p.finalize(), 1);
     }
@@ -877,11 +905,11 @@ namespace game
             if(fx<fy) d->o.y += dy<0 ? r-fy : -(r-fy);  // push aside
             else      d->o.x += dx<0 ? r-fx : -(r-fx);
         }
-        int lagtime = lastmillis-d->lastupdate;
+        int lagtime = totalmillis-d->lastupdate;
         if(lagtime)
         {
             if(d->state!=CS_SPAWNING && d->lastupdate) d->plag = (d->plag*5+lagtime)/6;
-            d->lastupdate = lastmillis;
+            d->lastupdate = totalmillis;
         }
     }
 
@@ -1043,6 +1071,7 @@ namespace game
 
             case N_WELCOME:
             {
+                notifywelcome();
                 int hasmap = getint(p);
                 if(!hasmap) initmap = true; // we are the first client on this server, set map
                 break;
@@ -1072,6 +1101,23 @@ namespace game
             case N_TEXT:
             {
                 if(!d) return;
+
+                getstring(text, p);
+                filtertext(text, text);
+                if(isignored(d->clientnum)) break;
+                if(d->state!=CS_DEAD && d->state!=CS_SPECTATOR)
+                    particle_textcopy(d->abovehead(), text, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
+                conoutf(CON_CHAT, "%s:\f0 %s", colorname(d), text);
+                break;
+            }
+
+            /*
+            case N_ANNOUNCE:
+            {
+                if(!d) return;
+
+                int duration = getint(p);
+                int effect = getint(p);
                 getstring(text, p);
                 filtertext(text, text);
                 if(d->state!=CS_DEAD && d->state!=CS_SPECTATOR)
@@ -1079,6 +1125,7 @@ namespace game
                 conoutf(CON_CHAT, "%s:\f0 %s", colorname(d), text);
                 break;
             }
+            */
 
             case N_SAYTEAM:
             {
@@ -1086,7 +1133,7 @@ namespace game
                 fpsent *t = getclient(tcn);
                 getstring(text, p);
                 filtertext(text, text);
-                if(!t) break;
+                if(!t || isignored(t->clientnum)) break;
                 if(t->state!=CS_DEAD && t->state!=CS_SPECTATOR)
                     particle_textcopy(t->abovehead(), text, PART_TEXT, 2000, 0x6496FF, 4.0f, -8);
                 conoutf(CON_TEAMCHAT, "%s:\f1 %s", colorname(t), text);
@@ -1152,7 +1199,7 @@ namespace game
                 if(!text[0]) copystring(text, "unnamed");
                 if(d->name[0])          // already connected
                 {
-                    if(strcmp(d->name, text))
+                    if(strcmp(d->name, text) && !isignored(d->clientnum))
                         conoutf("%s is now known as %s", colorname(d), colorname(d, text));
                 }
                 else                    // new client
@@ -1175,7 +1222,7 @@ namespace game
                     if(!text[0]) copystring(text, "unnamed");
                     if(strcmp(text, d->name))
                     {
-                        conoutf("%s is now known as %s", colorname(d), colorname(d, text));
+                        if(!isignored(d->clientnum)) conoutf("%s is now known as %s", colorname(d), colorname(d, text));
                         copystring(d->name, text, MAXNAMELEN+1);
                     }
                 }
@@ -1454,19 +1501,19 @@ namespace game
                     case ID_VAR:
                     {
                         int val = getint(p);
-                        if(id && !(id->flags&IDF_READONLY)) setvar(name, val);
+                        if(id && id->flags&IDF_OVERRIDE && !(id->flags&IDF_READONLY)) setvar(name, val);
                         break;
                     }
                     case ID_FVAR:
                     {
                         float val = getfloat(p);
-                        if(id && !(id->flags&IDF_READONLY)) setfvar(name, val);
+                        if(id && id->flags&IDF_OVERRIDE && !(id->flags&IDF_READONLY)) setfvar(name, val);
                         break;
                     }
                     case ID_SVAR:
                     {
                         getstring(text, p);
-                        if(id && !(id->flags&IDF_READONLY)) setsvar(name, text);
+                        if(id && id->flags&IDF_OVERRIDE && !(id->flags&IDF_READONLY)) setsvar(name, text);
                         break;
                     }
                 }
@@ -1475,7 +1522,7 @@ namespace game
             }
 
             case N_PONG:
-                addmsg(N_CLIENTPING, "i", player1->ping = (player1->ping*5+lastmillis-getint(p))/6);
+                addmsg(N_CLIENTPING, "i", player1->ping = (player1->ping*5+totalmillis-getint(p))/6);
                 break;
 
             case N_CLIENTPING:
@@ -1715,9 +1762,9 @@ namespace game
                 conoutf("received map");
                 map->write(data, len);
                 delete map;
-                load_world(mname, oldname[0] ? oldname : NULL);
+                if(load_world(mname, oldname[0] ? oldname : NULL))
+                    entities::spawnitems(true);
                 remove(findfile(fname, "rb"));
-                entities::spawnitems(true);
                 break;
             }
         }
@@ -1801,7 +1848,7 @@ namespace game
         if(map)
         {
             stream::offset len = map->size();
-            if(len > 1024*1024) conoutf(CON_ERROR, "map is too large");
+            if(len > 4*1024*1024) conoutf(CON_ERROR, "map is too large");
             else if(len <= 0) conoutf(CON_ERROR, "could not read map");
             else
             {

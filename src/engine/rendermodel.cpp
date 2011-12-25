@@ -752,7 +752,7 @@ void rendermodel(entitylight *light, const char *mdl, int anim, const vec &o, fl
     if(shadowmapping && !(flags&(MDL_SHADOW|MDL_DYNSHADOW))) return;
     model *m = loadmodel(mdl); 
     if(!m) return;
-    vec center, bbradius;
+    vec center(0, 0, 0), bbradius(0, 0, 0);
     float radius = 0;
     bool shadow = !shadowmap && !glaring && (flags&(MDL_SHADOW|MDL_DYNSHADOW)) && showblobs,
          doOQ = flags&MDL_CULL_QUERY && hasOQ && oqfrags && oqdynent;
@@ -965,8 +965,8 @@ bool matchanim(const char *name, const char *pattern)
             if(!c || c=='|') break;
             else if(c=='*') 
             {
-                if(!*s || isspace(*s)) break;
-                do s++; while(*s && !isspace(*s));
+                if(!*s || iscubespace(*s)) break;
+                do s++; while(*s && !iscubespace(*s));
             }
             else if(c!=*s) break;
             else s++;

@@ -145,7 +145,6 @@ VAR(apple_glsldepth_bug, 0, 0, 1);
 VAR(apple_ff_bug, 0, 0, 1);
 VAR(apple_vp_bug, 0, 0, 1);
 VAR(sdl_backingstore_bug, -1, 0, 1);
-VAR(intel_quadric_bug, 0, 0, 1);
 VAR(mesa_program_bug, 0, 0, 1);
 VAR(avoidshaders, 1, 0, 0);
 VAR(minimizetcusage, 1, 0, 0);
@@ -200,6 +199,10 @@ void gl_checkextensions()
     // default to low precision shaders on certain cards, can be overridden with -f3
     // char *weakcards[] = { "GeForce FX", "Quadro FX", "6200", "9500", "9550", "9600", "9700", "9800", "X300", "X600", "FireGL", "Intel", "Chrome", NULL } 
     // if(shaderprecision==2) for(char **wc = weakcards; *wc; wc++) if(strstr(renderer, *wc)) shaderprecision = 1;
+
+    GLint val;
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &val);
+    hwtexsize = val;
 
     if(hasext(exts, "GL_EXT_texture_env_combine") || hasext(exts, "GL_ARB_texture_env_combine"))
     {
@@ -314,6 +317,10 @@ void gl_checkextensions()
     }
     else conoutf(CON_WARN, "WARNING: No framebuffer object support. (reflective water may be slow)");
 
+#ifdef __APPLE__
+    // Intel HD3000 broke occlusion queries - either causing software fallback, or returning wrong results
+    if(!strstr(vendor, "Intel"))
+#endif	   
     if(hasext(exts, "GL_ARB_occlusion_query"))
     {
         GLint bits;
@@ -366,28 +373,27 @@ void gl_checkextensions()
         if(hasTF && (!strstr(renderer, "GeForce") || !checkseries(renderer, 6000, 6600)))
             fpdepthfx = 1; // FP filtering causes software fallback on 6200?
     }
-    else if(strstr(vendor, "Intel"))
+    else
     {
-        avoidshaders = 1;
-        intel_quadric_bug = 1;
-        maxtexsize = 256;
-        reservevpparams = 20;
-        batchlightmaps = 0;
-        ffdynlights = 0;
-
-        if(!hasOQ) waterrefract = 0;
-
+        if(strstr(vendor, "Intel"))
+    {
 #ifdef __APPLE__
         apple_vp_bug = 1;
 #endif
     }
-    else if(strstr(vendor, "Tungsten") || strstr(vendor, "Mesa") || strstr(vendor, "DRI") || strstr(vendor, "Microsoft") || strstr(vendor, "S3 Graphics"))
+
+        if(!hasext(exts, "GL_EXT_gpu_shader4"))
     {
         avoidshaders = 1;
-        maxtexsize = 256;
+            if(hwtexsize < 4096) 
+            {
+                maxtexsize = hwtexsize >= 2048 ? 512 : 256;
+                batchlightmaps = 0;
+            }
+            if(!hasTF) ffdynlights = 0;
+        }
+
         reservevpparams = 20;
-        batchlightmaps = 0;
-        ffdynlights = 0;
 
         if(!hasOQ) waterrefract = 0;
     }
@@ -642,10 +648,6 @@ void gl_checkextensions()
             }
         }
     }
-
-    GLint val;
-    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &val);
-    hwtexsize = val;
 }
 
 void glext(char *ext)
@@ -1879,9 +1881,9 @@ void gl_drawframe(int w, int h)
     rendermaterials();
     renderalphageom();
 
-    renderparticles(true);
-
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    renderparticles(true);
 
     glDisable(GL_FOG);
     glDisable(GL_CULL_FACE);

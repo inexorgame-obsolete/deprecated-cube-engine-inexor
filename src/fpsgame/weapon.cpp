@@ -465,24 +465,15 @@ namespace game
         if(o->state!=CS_ALIVE) return;
         vec dir;
         float dist = projdist(o, dir, v);
-        // old version: float qdist;
-        // old version: int qdamrad;
         switch(gun)
         {
             case GUN_BOMB:
-                /* old version
-                qdamrad = at->bombradius*RL_DAMRAD;
-                qdist = dist / at->bombradius;
-                if(dist<qdamrad) // getroffen wird, wenn die entfernung nah genug ist (verstaerkungsfaktor bombradius)
-                    hit(guns[gun].damage, o, at, dir, gun, qdist); // schaden ist immer 100%, d.h. entfernungsunabhaengig
-                break;
-                */
                 if(dist<RL_DAMRAD)
-                    hit(guns[gun].damage, o, at, dir, gun, dist); // schaden ist immer 100%, d.h. entfernungsunabhaengig
+                    hit(guns[gun].damage, o, at, dir, gun, dist); // damage does not depend on the distance
                 break;
             case GUN_SPLINTER:
                 if(dist<RL_DAMRAD)
-                    hit(guns[gun].damage, o, at, dir, gun, dist); // schaden ist immer 100%, d.h. entfernungsunabhaengig
+                    hit(guns[gun].damage, o, at, dir, gun, dist); // damage does not depend on the distance
                 break;
             default:
                 if(dist<RL_DAMRAD)
@@ -502,13 +493,12 @@ namespace game
         float dist = b->o.dist(v, dir);
         dir.div(dist);
         if(dist<0) dist = 0;
-        // if(dist < (b->owner->bombradius * RL_DAMRAD)) b->lifetime = 100;
-        if(dist < RL_DAMRAD) b->lifetime = 100; // new: without bomb radius // TODO: maybe RL_DAMRAD is too big!
+        if(dist < RL_DAMRAD) b->lifetime = 100; // TODO: maybe RL_DAMRAD is too big!
     }
 
     void explode(bool local, fpsent *owner, const vec &v, dynent *safe, int damage, int gun)
     {
-        int rfactor = 1, /* old: gun != GUN_BOMB ? 1 : owner->bombradius, */
+        int rfactor = 1,
             maxsize = RL_DAMRAD * rfactor,
             size = 4.0f * rfactor,
             fade = gun!=GUN_BOMB && gun!=GUN_SPLINTER ? -1 : int((maxsize-size)*7), // explosion speed, lower=faster
@@ -549,7 +539,7 @@ namespace game
             loopi(numdebris)
                 spawnbouncer(debrisorigin, debrisvel, owner, gun==GUN_BARREL ? BNC_BARRELDEBRIS : BNC_DEBRIS, &light);
         }
-        if(!local && !m_bomb) return;
+        if(!local && !m_bomb && !m_obstacles) return;
         loopi(numdynents())
         {
             dynent *o = iterdynents(i);
