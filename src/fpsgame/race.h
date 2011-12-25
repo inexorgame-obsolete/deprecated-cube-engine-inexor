@@ -350,7 +350,7 @@ extern raceclientmode racemode;
 
 #elif SERVMODE
 
-// #define RACELABS 3
+#define RACELABS 3
 case N_RACEFINISH:
 {
   if(smode==&racemode && cq) {
@@ -358,7 +358,7 @@ case N_RACEFINISH:
           cq->state.racecheckpoint = 0;
           cq->state.racelaps++;
           sendf(-1, 1, "ri4 ", N_RACEINFO, cq->clientnum, cq->state.racelaps, cq->state.racecheckpoint);
-          if (cq->state.racelaps >= engine::racelaps) {
+          if (cq->state.racelaps >= RACELABS) {
               forceintermission();
           }
       }
