@@ -259,6 +259,7 @@ enum
     N_SWITCHNAME, N_SWITCHMODEL, N_SWITCHTEAM,
     N_ITEMPUSH, N_SPAWNLOC,
     N_RACESTART, N_RACEFINISH, N_RACECHECKPOINT, N_RACELAP, N_RACEINFO,
+    N_HUDANNOUNCE,
     NUMSV
 };
 
@@ -288,6 +289,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
     N_SWITCHNAME, 0, N_SWITCHMODEL, 2, N_SWITCHTEAM, 0,
     N_ITEMPUSH, 6, N_SPAWNLOC, 0,
     N_RACESTART, 0, N_RACEFINISH, 0, N_RACECHECKPOINT, 2, N_RACELAP, 2, N_RACEINFO, 4,
+    N_HUDANNOUNCE, 0,
     -1
 };
 
@@ -544,9 +546,6 @@ struct fpsstate
         gunwait = 0;
         bombradius = 1;
         bombdelay = 1;
-        racetime = 0;
-        racelaps = 0;
-        racecheckpoint = 0;
         loopi(NUMGUNS) ammo[i] = 0;
         if (m_bomb) backupweapon = GUN_BOMB;
         else backupweapon = GUN_FIST;
@@ -612,8 +611,8 @@ struct fpsstate
         else if(m_race)
         {
             racetime = 0;
-            racelaps = 0;
-            racecheckpoint = 0;
+            // racelaps = 0;
+            // racecheckpoint = 0;
             health = 1;
             armourtype = A_GREEN;
             armour = 0;

@@ -32,6 +32,15 @@ struct raceclientmode : clientmode
 
     void setup() {
         myspawnloc = -1;
+        resetplayers();
+    }
+
+    void resetplayers() {
+      loopv(players) {
+          fpsent *d = players[i];
+          d->racelaps = 0;
+          d->racecheckpoint = 0;
+      }
     }
 
     void senditems(packetbuf &p){
@@ -108,18 +117,22 @@ struct raceclientmode : clientmode
     }
 
     void killed(fpsent *d, fpsent *actor) {
+        // conoutf("killed");
         // d->state.racetime = 0;
     }
 
     void respawned(fpsent *d) {
+        // conoutf("respawned");
         d->racetime = lastmillis;
-        conoutf("racetime: %d lastmillis: %d", d->racetime, lastmillis);
-    }
-
-    void gameconnect(fpsent *d) {
+        // conoutf("racetime: %d lastmillis: %d", d->racetime, lastmillis);
     }
 
     void pickspawn(fpsent *d) {
+      if(d->racelaps > 0 || d->racecheckpoint > 0) {
+          if(d->racecheckpoint == 0) pickspawnbyenttype(d, PLAYERSTART);
+          else if (d->racecheckpoint > 0) pickspawnbyenttype(d, RACE_CHECKPOINT);
+          return;
+      }
       if(!entities::ents.inrange(myspawnloc)) return;
       extentity& e = *entities::ents[myspawnloc];
       d->o = e.o;
@@ -127,6 +140,20 @@ struct raceclientmode : clientmode
       d->pitch = 0;
       d->roll = 0;
       entinmap(d);
+    }
+
+    void pickspawnbyenttype(fpsent *d, int ent_type) {
+      loopv(entities::ents){
+          extentity& e = *entities::ents[i];
+          if(e.type == ent_type && e.attr2 == d->racecheckpoint) {
+              // conoutf("pick RACE_START or RACE_CHECKPOINT as spawn point");
+              d->o = e.o;
+              d->yaw = e.attr1;
+              d->pitch = 0;
+              d->roll = 0;
+              entinmap(d);
+          }
+      }
     }
 
     bool hidefrags() {
@@ -165,10 +192,11 @@ struct raceclientmode : clientmode
       int m = 0;
       loopv(ments) {
         entity& e = ments[i];
-        if(e.type == RACE_CHECKPOINT && e.attr1 > m) {
-            m = e.attr1;
+        if(e.type == RACE_CHECKPOINT && e.attr2 > m) {
+            m = e.attr2;
         }
       }
+      conoutf("MAX CHECKPOINT: %d", m);
       return m;
     }
 
@@ -230,7 +258,7 @@ struct raceclientmode : clientmode
     void spawned(fpsent *d) {
         d->racetime = lastmillis;
         // d->racecheckpoint = 0;
-        conoutf("racetime: %d lastmillis: %d", d->racetime, lastmillis);
+        // conoutf("racetime: %d lastmillis: %d", d->racetime, lastmillis);
     }
 
     void intermission() {
@@ -239,6 +267,8 @@ struct raceclientmode : clientmode
             conoutf("I racetime old: %d", ci->state.racetime);
             ci->state.racetime = max(lastmillis - ci->state.racetime, 0);
             conoutf("I racetime: %d lastmillis: %d", ci->state.racetime, lastmillis);
+            ci->state.racelaps = 0;
+            ci->state.racecheckpoint = 0;
         }
     }
 
@@ -298,6 +328,16 @@ struct raceclientmode : clientmode
 
     void cleanup() {
       spawnlocs.deletecontents();
+      resetplayers();
+    }
+
+    void resetplayers() {
+      loopv(clients) {
+          clientinfo *ci = clients[i];
+          ci->state.racelaps = 0;
+          ci->state.racecheckpoint = 0;
+          sendf(-1, 1, "ri4 ", N_RACEINFO, ci->clientnum, 0, 0);
+      }
     }
 
 #endif
@@ -310,16 +350,15 @@ extern raceclientmode racemode;
 
 #elif SERVMODE
 
-#define RACELABS 3
+// #define RACELABS 3
 case N_RACEFINISH:
 {
   if(smode==&racemode && cq) {
-      conoutf("N_RACEFINISH SERVMODE cn:%d", cq->clientnum);
       if (cq->state.racecheckpoint == racemode.maxcheckpoint) {
           cq->state.racecheckpoint = 0;
           cq->state.racelaps++;
           sendf(-1, 1, "ri4 ", N_RACEINFO, cq->clientnum, cq->state.racelaps, cq->state.racecheckpoint);
-          if (cq->state.racelaps >= RACELABS) {
+          if (cq->state.racelaps >= engine::racelaps) {
               forceintermission();
           }
       }
@@ -330,7 +369,7 @@ case N_RACEFINISH:
 case N_RACESTART:
 {
   if(smode==&racemode && cq) {
-      conoutf("N_RACESTART SERVMODE cn:%d", cq->clientnum);
+      // conoutf("N_RACESTART SERVMODE cn:%d", cq->clientnum);
   }
   break;
 }
@@ -342,7 +381,7 @@ case N_RACECHECKPOINT:
       // conoutf("N_RACECHECKPOINT SERVMODE cn:%d   checkpoint no:%d   old checkpoint no:%d", cq->clientnum, checkpoint_no, cq->state.racecheckpoint);
       if (checkpoint_no == cq->state.racecheckpoint+1) {
           cq->state.racecheckpoint++;
-          conoutf("SEND: new checkpoint:%d",cq->state.racecheckpoint);
+          // conoutf("SEND: new checkpoint:%d",cq->state.racecheckpoint);
           sendf(-1, 1, "ri4 ", N_RACEINFO, cq->clientnum, cq->state.racelaps, cq->state.racecheckpoint);
       }
   }
@@ -360,7 +399,7 @@ case N_RACEINFO:
   int rcn = getint(p);
   int lap = getint(p);
   int checkpoint = getint(p);
-  conoutf("N_RACEINFO cn:%d lap:%d checkpoint:%d", rcn, lap, checkpoint);
+  // conoutf("N_RACEINFO cn:%d lap:%d checkpoint:%d", rcn, lap, checkpoint);
   fpsent *r = rcn==player1->clientnum ? player1 : getclient(rcn);
   if(m_race && r) {
       r->racelaps = lap;

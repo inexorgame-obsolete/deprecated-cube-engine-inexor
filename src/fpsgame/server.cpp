@@ -299,7 +299,7 @@ namespace server
         
         bool checkexceeded()
         {
-            return state.state==CS_ALIVE && exceeded && gamemillis > exceeded + calcpushrange();
+            return state.state==CS_ALIVE && exceeded && gamemillis > exceeded + calcpushrange() && !m_race;
         }
 
         void mapchange()

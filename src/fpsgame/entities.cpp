@@ -292,7 +292,6 @@ namespace entities
 
             case RACE_FINISH:
                 if (m_race) {
-                    conoutf("race finish");
                     addmsg(N_RACEFINISH, "rc", d);
                 }
                 d->lastpickup = ents[n]->type;
@@ -301,7 +300,6 @@ namespace entities
 
             case RACE_START:
                 if (m_race) {
-                    conoutf("race start");
                     addmsg(N_RACESTART, "rc", d);
                 }
                 d->lastpickup = ents[n]->type;
@@ -310,8 +308,7 @@ namespace entities
 
             case RACE_CHECKPOINT:
                 if (m_race) {
-                    // conoutf("race checkpoint cn:%d no:%d", d->clientnum, ents[n]->attr1);
-                    addmsg(N_RACECHECKPOINT, "rci", d, ents[n]->attr1);
+                    addmsg(N_RACECHECKPOINT, "rci", d, ents[n]->attr2);
                 }
                 d->lastpickup = ents[n]->type;
                 d->lastpickupmillis = lastmillis;
@@ -643,6 +640,9 @@ namespace entities
             case TELEDEST:
                 e.attr3 = e.attr2;
             case MONSTER:
+            case RACE_START:
+            case RACE_FINISH:
+            case RACE_CHECKPOINT:
                 e.attr2 = e.attr1;
             case RESPAWNPOINT:
                 e.attr1 = (int)player1->yaw;
@@ -652,6 +652,7 @@ namespace entities
 
     void entradius(extentity &e, bool color)
     {
+        int maxcheckpoints = 0;
         switch(e.type)
         {
             case TELEPORT:
@@ -665,6 +666,34 @@ namespace entities
             case JUMPPAD:
                 renderentarrow(e, vec((int)(char)e.attr3*10.0f, (int)(char)e.attr2*10.0f, e.attr1*12.5f).normalize(), 4);
                 break;
+
+            case RACE_START:
+                loopv(ents) if(ents[i]->type == RACE_CHECKPOINT && ents[i]->attr2 == 1)
+                {
+                    renderentarrow(e, vec(ents[i]->o).sub(e.o).normalize(), e.o.dist(ents[i]->o));
+                }
+                break;
+
+            case RACE_CHECKPOINT:
+                loopv(ents) if(ents[i]->type == RACE_CHECKPOINT && (e.attr2+1) == ents[i]->attr2)
+                {
+                    renderentarrow(e, vec(ents[i]->o).sub(e.o).normalize(), e.o.dist(ents[i]->o));
+                    // break;
+                }
+                break;
+
+            case RACE_FINISH:
+                loopv(ents) if(ents[i]->type == RACE_CHECKPOINT && ents[i]->attr2 > maxcheckpoints) {
+                    maxcheckpoints = ents[i]->attr2;
+                }
+                loopv(ents) if(ents[i]->type == RACE_CHECKPOINT && ents[i]->attr2 == maxcheckpoints) {
+                    renderentarrow(e, vec(ents[i]->o).sub(e.o).normalize(), e.o.dist(ents[i]->o));
+                }
+                loopv(ents) if(ents[i]->type == RACE_START) {
+                    renderentarrow(e, vec(ents[i]->o).sub(e.o).normalize(), e.o.dist(ents[i]->o));
+                }
+                break;
+
 
             case FLAG:
             case MONSTER:
