@@ -291,7 +291,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
     N_MAPCRC, 0, N_CHECKMAPS, 1,
     N_SWITCHNAME, 0, N_SWITCHMODEL, 2, N_SWITCHTEAM, 0,
     N_ITEMPUSH, 6, N_SPAWNLOC, 0,
-    N_RACESTART, 0, N_RACEFINISH, 0, N_RACECHECKPOINT, 2, N_RACELAP, 2, N_RACEINFO, 4,
+    N_RACESTART, 0, N_RACEFINISH, 0, N_RACECHECKPOINT, 2, N_RACELAP, 2, N_RACEINFO, 6,
     N_HUDANNOUNCE, 0,
     -1
 };
@@ -369,6 +369,21 @@ enum pickupitems {                      // pickup items
     P_UP_BD
 };
 
+enum hudannounceeffects {
+    E_STATIC_CENTER = 0,
+    E_STATIC_LEFT,
+    E_STATIC_RIGHT,
+    E_STATIC_TOP,
+    E_STATIC_BOTTOM,
+    E_FADE_LEFT_RIGHT,
+    E_FADE_RIGHT_LEFT,
+    E_FADE_TOP_BOTTOM,
+    E_FADE_BOTTOM_TOP,
+    E_ZOOM_IN,
+    E_ZOOM_OUT,
+    E_BLINK_CENTER
+};
+
 static struct itemstat { int add, max, sound; const char *name; int icon, info; } itemstats[] =
 {
     {10,    30,    S_ITEMAMMO,   "SG", HICON_SG, GUN_SG},
@@ -434,6 +449,7 @@ struct fpsstate
     int racetime;
     int racelaps;
     int racecheckpoint;
+    int racerank;
 
     fpsstate() : maxhealth(100), aitype(AI_NONE), skill(0), backupweapon(GUN_FIST) {}
 
@@ -618,7 +634,7 @@ struct fpsstate
         }
         else if(m_race)
         {
-            racetime = 0;
+            // racetime = 0;
             // racelaps = 0;
             // racecheckpoint = 0;
             health = 100;
@@ -820,6 +836,12 @@ namespace game
     extern int respawnent;
     extern int following;
     extern int smoothmove, smoothdist;
+
+    extern int hudannounce_begin;
+    extern int hudannounce_timeout;
+    extern int hudannounce_effect;
+    extern char* hudannounce_text;
+
 
     extern bool clientoption(const char *arg);
     extern fpsent *getclient(int cn);

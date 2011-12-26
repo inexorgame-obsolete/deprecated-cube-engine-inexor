@@ -189,6 +189,7 @@ namespace server
         int racetime;
         int racelaps;
         int racecheckpoint;
+        int racerank;
 
         void save(gamestate &gs)
         {
@@ -206,6 +207,7 @@ namespace server
             racetime = gs.racetime;
             racelaps = gs.racelaps;
             racecheckpoint = gs.racecheckpoint;
+            racerank = gs.racerank;
         }
 
         void restore(gamestate &gs)
@@ -225,6 +227,7 @@ namespace server
             gs.racetime = racetime;
             gs.racelaps = racelaps;
             gs.racecheckpoint = racecheckpoint;
+            gs.racerank = racerank;
         }
     };
 

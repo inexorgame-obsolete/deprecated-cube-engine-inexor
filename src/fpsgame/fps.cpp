@@ -681,7 +681,7 @@ namespace game
     }
     ICOMMAND(kill, "", (), suicide(player1));
 
-    bool needminimap() { return m_ctf || m_protect || m_hold || m_capture || m_bomb; }
+    bool needminimap() { return m_ctf || m_protect || m_hold || m_capture || m_bomb || m_race; }
 
     void drawicon(int icon, float x, float y, float sz)
     {
@@ -809,6 +809,52 @@ namespace game
         }
     }
 
+    void drawhudannounce(int w, int h)
+    {
+        if(hudannounce_timeout < totalmillis) return;
+        int fw, fh;
+        float zoom = 1.0f;
+        float scale = 500.0f;
+        int left = 0;
+        int top = 0;
+        int duration = hudannounce_timeout - hudannounce_begin;
+        int remaining = hudannounce_timeout - totalmillis;
+
+        switch(hudannounce_effect) {
+            case E_STATIC_CENTER:
+                break;
+            case E_STATIC_LEFT:
+                left = 500;
+                break;
+            case E_STATIC_RIGHT:
+                left = -500;
+                break;
+            case E_STATIC_TOP:
+                top = 400;
+                break;
+            case E_STATIC_BOTTOM:
+                top = -400;
+                break;
+            case E_ZOOM_IN:
+                zoom = 0.5f + ((float) remaining / duration);
+                scale = scale * zoom;
+                break;
+            case E_ZOOM_OUT:
+                zoom = 1.5f - ((float) remaining / duration);
+                scale = scale * zoom;
+                break;
+
+        }
+        // conoutf("drawhudannounce zoom:%1.2f remaining:%d effect:%d text:%s", zoom, hudannounce_timeout - totalmillis, hudannounce_effect, hudannounce_text);
+        glPushMatrix();
+        glScalef(h/scale, h/scale, 1);
+        // glTranslatef(0, 0, +0.9f);
+        text_bounds(hudannounce_text, fw, fh);
+        draw_text(hudannounce_text, w*scale/h - fw/2 - left, scale - fh/2 - top); // , 255, 255, 255, 0);
+        glPopMatrix();
+
+    }
+
     void gameplayhud(int w, int h)
     {
         glPushMatrix();
@@ -831,6 +877,7 @@ namespace game
         if(d->state!=CS_EDITING)
         {
             if(d->state!=CS_SPECTATOR) drawhudicons(d);
+            drawhudannounce(w, h);
             if(cmode) cmode->drawhud(d, w, h);
         }
 

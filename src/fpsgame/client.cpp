@@ -6,6 +6,11 @@ namespace game
     VARP(maxradarscale, 1, 1024, 10000);
     FVARP(minimapalpha, 0, 1, 1);
 
+    int hudannounce_begin = 0;
+    int hudannounce_timeout = 0;
+    int hudannounce_effect = 0;
+    char* hudannounce_text;
+
     float calcradarscale()
     {
         return clamp(max(minimapradius.x, minimapradius.y)/3, float(minradarscale), float(maxradarscale));
@@ -1111,21 +1116,18 @@ namespace game
                 break;
             }
 
-            /*
-            case N_ANNOUNCE:
+            case N_HUDANNOUNCE:
             {
-                if(!d) return;
-
                 int duration = getint(p);
                 int effect = getint(p);
                 getstring(text, p);
                 filtertext(text, text);
-                if(d->state!=CS_DEAD && d->state!=CS_SPECTATOR)
-                    particle_textcopy(d->abovehead(), text, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
-                conoutf(CON_CHAT, "%s:\f0 %s", colorname(d), text);
+                hudannounce_begin = totalmillis;
+                hudannounce_timeout = totalmillis + duration;
+                hudannounce_effect = effect;
+                hudannounce_text = text;
                 break;
             }
-            */
 
             case N_SAYTEAM:
             {

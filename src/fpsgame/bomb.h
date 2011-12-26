@@ -305,15 +305,18 @@ struct bombclientmode : clientmode
     	if(notgotspawnlocations) return;
     	switch(sequence){
     	case 0:
-    		if(totalmillis - timecounter >= 10000) sendservmsg("Map load complete (grannies left behind).");
-    		else{
+    		if(totalmillis - timecounter >= 10000) {
+    		    // sendservmsg("Map load complete (grannies left behind).");
+            sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 1000, E_STATIC_BOTTOM, "Map load complete (grannies left behind)");
+    		} else {
     			loopv(spawnlocs){
     				if(spawnlocs[i]->cn == -1) continue;
     				clientinfo* ci = getinfo(spawnlocs[i]->cn);
     				if(!ci || ci->state.state==CS_SPECTATOR || ci->state.aitype != AI_NONE || ci->clientmap[0] || ci->mapcrc) continue;
     				return;
     			}
-    			sendservmsg("Map load complete.");
+    			// sendservmsg("Map load complete.");
+          sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 1000, E_STATIC_BOTTOM, "Map load complete");
     		}
     		sequence = 1;
     		timecounter = totalmillis;
@@ -324,12 +327,15 @@ struct bombclientmode : clientmode
     		int remaining = COUNTDOWNSECONDS*1000 - (totalmillis - timecounter);
     		if(remaining <= 0){
     			sequence = 2;
-    			sendservmsg("FIGHT!");
+          // sendservmsg("FIGHT!");
+          sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 2000, E_ZOOM_IN, "F I G H T");
     			pausegame(false);
     		}
     		else if(remaining/1000 != countdown){
-    			defformatstring(msg)("-%d...", countdown--);
-    			sendservmsg(msg);
+    			// defformatstring(msg)("-%d...", countdown--);
+    			// sendservmsg(msg);
+          defformatstring(msg)("- %d -", countdown--);
+          sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 2000, E_ZOOM_IN, msg);
     		}
     		break;
     	}
