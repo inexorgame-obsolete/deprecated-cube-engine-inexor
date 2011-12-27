@@ -54,10 +54,14 @@ enum                            // static entity types
     I_BOMBRESERVED4,
     I_BOMBRESERVED5,
     I_BOMBRESERVED6,
-    OBSTACLE,                   // attr1 = angle, attr2 = idx, attr3 = health
+    OBSTACLE,                   // attr1 = angle, attr2 = idx (mapmodel index), attr3 = health, attr4 = weight, attr5 = respawnmillis
     RACE_START,
     RACE_FINISH,
-    RACE_CHECKPOINT,
+    RACE_CHECKPOINT,            // attr1 = angle, attr2 = checkpoint no
+    P_GRAVITY,                  // attr1 = ?, attr2 = radius, attr3 = manipulation value
+    P_FRICTION,
+    P_JUMP,
+    P_SPEED,
     MAXENTTYPES
 };
 
@@ -772,6 +776,7 @@ namespace entities
     extern void resettriggers();
     extern void checktriggers();
     extern void checkitems(fpsent *d);
+    extern void checkphysics(fpsent *d);
     extern void checkquad(int time, fpsent *d);
     extern void resetspawns();
     extern void spawnitems(bool force = false);

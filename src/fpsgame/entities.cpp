@@ -85,9 +85,10 @@ namespace entities
             NULL, NULL,
             NULL, NULL,
             NULL,
-            "ammo/bombs", "ammo/bombradius", "ammo/bombdelay", NULL, NULL, NULL, NULL, NULL,
-            NULL,
-            NULL, NULL, NULL
+            "ammo/bombs", "ammo/bombradius", "ammo/bombdelay", NULL, NULL, NULL, NULL, NULL, // bomb
+            NULL, //obstacle
+            NULL, NULL, NULL, // race
+            NULL, NULL, NULL, NULL // physics
         };
         return entmdlnames[type];
     }
@@ -384,6 +385,44 @@ namespace entities
         }
     }
 
+    void checkphysics(fpsent *d)
+    {
+        float p_gravity = 0.0f;
+        float p_friction_land = 0.0f;
+        float p_jumpvel = 0.0f;
+        float p_playerspeed = 0.0f;
+        loopv(ents)
+        {
+            extentity &e = *ents[i];
+            if(e.type < P_GRAVITY || e.type > P_SPEED) continue;
+            if(camera1->o.dist(e.o) < e.attr2)
+            {
+                switch(e.type) {
+                    case P_GRAVITY:
+                        p_gravity += (float) e.attr3;
+                        conoutf("+ attr1:%d attr2:%d attr3:%d p_gravity:%1.2f", e.attr1, e.attr2, e.attr3, p_gravity);
+                        break;
+                    case P_FRICTION:
+                        p_friction_land += (float) e.attr3;
+                        break;
+                    case P_JUMP:
+                        p_jumpvel += (float) e.attr3;
+                        break;
+                    case P_SPEED:
+                        p_playerspeed += (float) e.attr3;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        d->p_gravity = p_gravity;
+        d->p_friction_land = p_friction_land;
+        d->p_jumpvel = p_jumpvel;
+        d->p_playerspeed = p_playerspeed;
+        // conoutf("physics manipulation: gravity:%1.2f friction:%1.2f jump:%1.2f speed:%1.2f", d->p_gravity, d->p_friction_land, d->p_jumpvel, d->p_playerspeed);
+    }
+
     void checkquad(int time, fpsent *d)
     {
         if(d->quadmillis && (d->quadmillis -= time)<=0)
@@ -423,17 +462,6 @@ namespace entities
                 ents[i]->spawned = force || m_sp || !server::delayspawn(ents[i]->type);
             }
         }
-        /*
-            loopv(ents) if(ents[i]->type>=I_BOMBS && ents[i]->type<=I_BOMBDELAY) {
-                ents[i]->spawned = force || m_sp || !server::delayspawn(ents[i]->type);
-            }
-        else {
-            if(m_noitems) return;
-            loopv(ents) if(ents[i]->type>=I_SHELLS && ents[i]->type<=I_QUAD && (!m_noammo || ents[i]->type<I_SHELLS || ents[i]->type>I_CARTRIDGES)) {
-                ents[i]->spawned = force || m_sp || !server::delayspawn(ents[i]->type);
-            }
-        }
-        */
     }
 
     void setspawn(int i, bool on) { if(ents.inrange(i)) ents[i]->spawned = on; }
@@ -664,6 +692,10 @@ namespace entities
                 e.attr5 = e.attr4;
                 e.attr4 = e.attr3;
             case TELEDEST:
+            case P_GRAVITY:
+            case P_FRICTION:
+            case P_JUMP:
+            case P_SPEED:
                 e.attr3 = e.attr2;
             case MONSTER:
             case RACE_START:
@@ -694,17 +726,28 @@ namespace entities
                 break;
 
             case RACE_START:
-                loopv(ents) if(ents[i]->type == RACE_CHECKPOINT && ents[i]->attr2 == 1)
-                {
-                    renderentarrow(e, vec(ents[i]->o).sub(e.o).normalize(), e.o.dist(ents[i]->o));
+                loopv(ents) {
+                    // successor
+                    if(ents[i]->type == RACE_CHECKPOINT && ents[i]->attr2 == 1) {
+                        renderentarrow(e, vec(ents[i]->o).sub(e.o).normalize(), e.o.dist(ents[i]->o));
+                    }
+                    // precessor
+                    if(ents[i]->type == RACE_FINISH) {
+                        renderentarrow(*ents[i], vec(e.o).sub(ents[i]->o).normalize(), ents[i]->o.dist(e.o));
+                    }
                 }
                 break;
 
             case RACE_CHECKPOINT:
-                loopv(ents) if(ents[i]->type == RACE_CHECKPOINT && (e.attr2+1) == ents[i]->attr2)
-                {
-                    renderentarrow(e, vec(ents[i]->o).sub(e.o).normalize(), e.o.dist(ents[i]->o));
-                    // break;
+                loopv(ents) {
+                    // successor
+                    if(ents[i]->type == RACE_CHECKPOINT && (e.attr2+1) == ents[i]->attr2) {
+                        renderentarrow(e, vec(ents[i]->o).sub(e.o).normalize(), e.o.dist(ents[i]->o));
+                    }
+                    // precessor
+                    if(ents[i]->type == RACE_CHECKPOINT && (e.attr2-1) == ents[i]->attr2) {
+                        renderentarrow(*ents[i], vec(e.o).sub(ents[i]->o).normalize(), ents[i]->o.dist(e.o));
+                    }
                 }
                 break;
 
@@ -712,12 +755,21 @@ namespace entities
                 loopv(ents) if(ents[i]->type == RACE_CHECKPOINT && ents[i]->attr2 > maxcheckpoints) {
                     maxcheckpoints = ents[i]->attr2;
                 }
-                loopv(ents) if(ents[i]->type == RACE_CHECKPOINT && ents[i]->attr2 == maxcheckpoints) {
-                    renderentarrow(e, vec(ents[i]->o).sub(e.o).normalize(), e.o.dist(ents[i]->o));
-                }
+                // successor
                 loopv(ents) if(ents[i]->type == RACE_START) {
                     renderentarrow(e, vec(ents[i]->o).sub(e.o).normalize(), e.o.dist(ents[i]->o));
                 }
+                // precessor
+                loopv(ents) if(ents[i]->type == RACE_CHECKPOINT && ents[i]->attr2 == maxcheckpoints) {
+                    renderentarrow(*ents[i], vec(e.o).sub(ents[i]->o).normalize(), ents[i]->o.dist(e.o));
+                }
+                break;
+
+            case P_GRAVITY:
+            case P_FRICTION:
+            case P_JUMP:
+            case P_SPEED:
+                renderentsphere(e, e.attr2);
                 break;
 
 
@@ -764,7 +816,8 @@ namespace entities
             "bombs", "bombradius", "bombdelay", "bombreserved2", "bombreserved3", "bombreserved4", "bombreserved5", "bombreserved6",
             "obstacle",
             "start", "finish", "checkpoint",
-            "", "",
+            "gravity", "friction", "jump", "speed",
+            "", "", // two empty strings follows.
         };
         return i>=0 && size_t(i)<sizeof(entnames)/sizeof(entnames[0]) ? entnames[i] : "";
     }

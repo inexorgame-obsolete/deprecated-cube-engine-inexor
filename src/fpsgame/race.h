@@ -35,17 +35,6 @@ struct raceclientmode : clientmode
         int timepenalties;
         raceinfo(int cn_, int timefinished_, int gotcheckpoints_, int timepenalties_): cn(cn_), timefinished(timefinished_), gotcheckpoints(gotcheckpoints_), timepenalties(timepenalties_) {}
     };
-
-    static inline bool playersort(const raceinfo *a, const raceinfo *b) {
-        if(a->timefinished > b->timefinished) return false;
-        if(a->timefinished < b->timefinished) return true;
-        if(a->gotcheckpoints < b->gotcheckpoints) return false;
-        if(a->gotcheckpoints > b->gotcheckpoints) return true;
-        if(a->timepenalties < b->timepenalties) return false;
-        if(a->timepenalties > b->timepenalties) return true;
-        return false;
-    }
-
 #endif
 
 #ifndef SERVMODE
@@ -116,6 +105,15 @@ struct raceclientmode : clientmode
       float margin = 0.04f, roffset = s*margin, rsize = s + 2*roffset;
       settexture("packages/hud/radar.png", 3);
       drawradar(x - roffset, y - roffset, rsize);
+
+      // show obstacles on minimap
+      if(showminimapobstacles) loopv(movables)
+      {
+          dynent *m = (dynent *) movables[i];
+          if(!isobstaclealive((movable *) m)) continue;
+          settexture("packages/hud/block_yellow_t.png", 3);
+          drawblip(d, x, y, s, m->o, 1.0f);
+      }
 
       // show other players on minimap
       loopv(players)
@@ -336,32 +334,15 @@ struct raceclientmode : clientmode
     }
 
     void spawned(fpsent *d) {
-        // d->racetime = lastmillis;
-        // d->racecheckpoint = 0;
-        // conoutf("racetime: %d lastmillis: %d", d->racetime, lastmillis);
     }
 
     void intermission() {
-        /*
-        loopv(clients) {
-            clientinfo *ci = clients[i];
-            conoutf("I racetime old: %d", ci->state.racetime);
-            ci->state.racetime = max(lastmillis - ci->state.racetime, 0);
-            conoutf("I racetime: %d lastmillis: %d", ci->state.racetime, lastmillis);
-            ci->state.racelaps = 0;
-            ci->state.racecheckpoint = 0;
-        }
-        */
     }
 
     bool checkfinished() {
         if(interm) return false;
         int allplayersfinished = true;
-        conoutf("raceinfos.length:%d",raceinfos.length());
-        loopv(raceinfos) {
-            conoutf("cn:%d timefinished:%d", raceinfos[i]->cn, raceinfos[i]->timefinished);
-            if (raceinfos[i]->timefinished == -1) allplayersfinished = false;
-        }
+        loopv(raceinfos) if (raceinfos[i]->timefinished == -1) allplayersfinished = false;
         return allplayersfinished;
     }
 
@@ -378,18 +359,20 @@ struct raceclientmode : clientmode
     }
 
     int getrank(int cn) {
-        raceinfos.sort(playersort);
-        loopv(raceinfos) if(raceinfos[i]->cn == cn) return raceinfos.length() - i;
-        /*
         int rank = 1;
+        int timefinished = -1;
         int gotcheckpoints = 0;
-        loopv(raceinfos) if(raceinfos[i]->cn == cn) gotcheckpoints = raceinfos[i]->gotcheckpoints;
-        loopv(raceinfos) {
-            if(raceinfos[i]->cn == cn) continue;
-            if(raceinfos[i]->gotcheckpoints > gotcheckpoints) rank++;
+        int timepenalties = 0;
+        loopv(raceinfos) if(raceinfos[i]->cn == cn) {
+            timefinished = raceinfos[i]->timefinished;
+            gotcheckpoints = raceinfos[i]->gotcheckpoints;
+            timepenalties = raceinfos[i]->timepenalties;
+        }
+        loopv(raceinfos) if(raceinfos[i]->cn != cn) {
+            // conoutf("cn:%d gotcheckpoints:%d", raceinfos[i]->cn, raceinfos[i]->gotcheckpoints);
+            if(raceinfos[i]->timefinished > timefinished || raceinfos[i]->gotcheckpoints > gotcheckpoints || (raceinfos[i]->timefinished == timefinished && raceinfos[i]->gotcheckpoints == gotcheckpoints && raceinfos[i]->timepenalties > timepenalties)) rank++;
         }
         return rank;
-        */
     }
 
     int getracetime(clientinfo *ci) {
@@ -492,25 +475,20 @@ extern raceclientmode racemode;
 case N_RACEFINISH:
 {
   if(smode==&racemode && cq) {
-      loopv(racemode.raceinfos) if(racemode.raceinfos[i]->cn == cq->clientnum) {
-          // conoutf("racelabs:%d RACELAPS:%d racecheckpoint:%d maxcheckpoint:%d timefinished:%d", cq->state.racelaps, RACELAPS, cq->state.racecheckpoint, racemode.maxcheckpoint, racemode.raceinfos[i]->timefinished);
-          if (cq->state.racecheckpoint == racemode.maxcheckpoint) {
-              cq->state.racecheckpoint = 0;
-              cq->state.racelaps++;
-              cq->state.racerank = racemode.getrank(cq->clientnum);
-              sendf(-1, 1, "ri6", N_RACEINFO, cq->clientnum, cq->state.racelaps, cq->state.racecheckpoint, racemode.getracetime(cq), cq->state.racerank);
-              // conoutf("racelabs:%d RACELAPS:%d timefinished:%d", cq->state.racelaps, RACELAPS, racemode.raceinfos[i]->timefinished);
-              if (cq->state.racelaps >= RACELAPS) {
-                  racemode.raceinfos[i]->timefinished = totalmillis;
-                  racemode.sendfinishannounce(cq);
-                  cq->state.state = CS_DEAD;
-                  putint(p, N_FORCEDEATH);
-                  putint(p, cq->clientnum);
-                  sendf(-1, 1, "ri2x", N_FORCEDEATH, cq->clientnum, cq->clientnum);
-              } else {
-                  defformatstring(msg)("%d %s REMAINING", RACELAPS - cq->state.racelaps, RACELAPS - cq->state.racelaps != 1 ? "LAPS" : "LAP");
-                  sendf(cq->clientnum, 1, "ri3s ", N_HUDANNOUNCE, 1500, E_ZOOM_IN, msg);
-              }
+      loopv(racemode.raceinfos) if(racemode.raceinfos[i]->cn == cq->clientnum && cq->state.racecheckpoint == racemode.maxcheckpoint) {
+          cq->state.racecheckpoint = 0;
+          cq->state.racelaps++;
+          cq->state.racerank = racemode.getrank(cq->clientnum);
+          sendf(-1, 1, "ri6", N_RACEINFO, cq->clientnum, cq->state.racelaps, cq->state.racecheckpoint, racemode.getracetime(cq), cq->state.racerank);
+          // conoutf("racelabs:%d RACELAPS:%d timefinished:%d", cq->state.racelaps, RACELAPS, racemode.raceinfos[i]->timefinished);
+          if (cq->state.racelaps >= RACELAPS) {
+              racemode.raceinfos[i]->timefinished = totalmillis;
+              racemode.sendfinishannounce(cq);
+              cq->state.state = CS_DEAD;
+              sendf(-1, 1, "ri4", N_DIED, cq->clientnum, cq->clientnum, cq->state.frags);
+          } else {
+              defformatstring(msg)("%d %s REMAINING", RACELAPS - cq->state.racelaps, RACELAPS - cq->state.racelaps != 1 ? "LAPS" : "LAP");
+              sendf(cq->clientnum, 1, "ri3s ", N_HUDANNOUNCE, 1500, E_ZOOM_IN, msg);
           }
       }
   }
@@ -519,9 +497,9 @@ case N_RACEFINISH:
 
 case N_RACESTART:
 {
-  if(smode==&racemode && cq) {
-      if (cq->state.racelaps == 0 && cq->state.racecheckpoint == 0) {
-          loopv(racemode.raceinfos) if(racemode.raceinfos[i]->cn == cq->clientnum) racemode.raceinfos[i]->gotcheckpoints++;
+  if(smode==&racemode && cq && cq->state.racelaps == 0 && cq->state.racecheckpoint == 0) {
+      loopv(racemode.raceinfos) if(racemode.raceinfos[i]->cn == cq->clientnum && racemode.raceinfos[i]->gotcheckpoints == 0) {
+          racemode.raceinfos[i]->gotcheckpoints = 1;
           cq->state.racetime = totalmillis;
           cq->state.racerank = racemode.getrank(cq->clientnum);
           sendf(-1, 1, "ri6", N_RACEINFO, cq->clientnum, cq->state.racelaps, cq->state.racecheckpoint, 0, cq->state.racerank);
@@ -533,15 +511,13 @@ case N_RACESTART:
 case N_RACECHECKPOINT:
 {
   int checkpoint_no = getint(p);
-  if(smode==&racemode && cq) {
-      if (checkpoint_no == cq->state.racecheckpoint+1) {
-          loopv(racemode.raceinfos) if(racemode.raceinfos[i]->cn == cq->clientnum) racemode.raceinfos[i]->gotcheckpoints++;
-          cq->state.racecheckpoint++;
-          cq->state.racerank = racemode.getrank(cq->clientnum);
-          sendf(-1, 1, "ri6", N_RACEINFO, cq->clientnum, cq->state.racelaps, cq->state.racecheckpoint, racemode.getracetime(cq), cq->state.racerank);
-          defformatstring(msg)("CHECKPOINT %d", cq->state.racecheckpoint);
-          sendf(cq->clientnum, 1, "ri3s ", N_HUDANNOUNCE, 400, E_ZOOM_OUT, msg);
-      }
+  if(smode==&racemode && cq && checkpoint_no == cq->state.racecheckpoint+1) {
+      loopv(racemode.raceinfos) if(racemode.raceinfos[i]->cn == cq->clientnum) racemode.raceinfos[i]->gotcheckpoints++;
+      cq->state.racecheckpoint++;
+      cq->state.racerank = racemode.getrank(cq->clientnum);
+      sendf(-1, 1, "ri6", N_RACEINFO, cq->clientnum, cq->state.racelaps, cq->state.racecheckpoint, racemode.getracetime(cq), cq->state.racerank);
+      defformatstring(msg)("CHECKPOINT %d", cq->state.racecheckpoint);
+      sendf(cq->clientnum, 1, "ri3s ", N_HUDANNOUNCE, 400, E_ZOOM_OUT, msg);
   }
   break;
 }

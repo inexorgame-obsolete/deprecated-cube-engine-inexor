@@ -1530,10 +1530,10 @@ bool bounce(physent *d, float secs, float elasticity, float waterfric)
     bool water = isliquid(mat);
     if(water)
     {
-        d->vel.z -= GRAVITY/16*secs;
+        d->vel.z -= (GRAVITY+d->p_gravity)/16*secs;
         d->vel.mul(max(1.0f - secs/waterfric, 0.0f));
     }
-    else d->vel.z -= GRAVITY*secs;
+    else d->vel.z -= (GRAVITY+d->p_gravity)*secs;
     vec old(d->o);
     loopi(2)
     {
@@ -1710,7 +1710,7 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
         if(pl->jumping)
         {
             pl->jumping = false;
-            pl->vel.z = max(pl->vel.z, JUMPVEL);
+            pl->vel.z = max(pl->vel.z, JUMPVEL + pl->p_jumpvel);
         }
     }
     else if(pl->physstate >= PHYS_SLOPE || water)
@@ -1720,7 +1720,7 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
         {
             pl->jumping = false;
 
-            pl->vel.z = max(pl->vel.z, JUMPVEL); // physics impulse upwards
+            pl->vel.z = max(pl->vel.z, JUMPVEL + pl->p_jumpvel); // physics impulse upwards
             if(water) { pl->vel.x /= 8.0f; pl->vel.y /= 8.0f; } // dampen velocity change even harder, gives correct water feel
 
             game::physicstrigger(pl, local, 1, 0);
@@ -1746,7 +1746,7 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
     }
 
     vec d(m);
-    d.mul(pl->maxspeed);
+    d.mul(pl->maxspeed+pl->p_playerspeed);
     if(pl->type==ENT_PLAYER)
     {
         if(floating)
@@ -1762,7 +1762,7 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
     float fric = floating ? (friction_land_default) // float => float
                           : (water ? (friction_water) // water & !float => water
 			           : (pl->physstate < PHYS_SLOPE ? friction_air_default // (slide | fall | float) & !float & !water => air
-				                                 : friction_land));     // otherwise => land
+				                                 : friction_land + pl->p_friction_land));     // otherwise => land
     // END MOD			     
 
       pl->vel.lerp(d, pl->vel, pow(1 - 1/fric, curtime/20.0f));
@@ -1776,13 +1776,13 @@ void modifygravity(physent *pl, bool water, int curtime)
 {
     float secs = curtime/1000.0f;
     vec g(0, 0, 0);
-    if(pl->physstate == PHYS_FALL) g.z -= GRAVITY*secs;
+    if(pl->physstate == PHYS_FALL) g.z -= (GRAVITY+pl->p_gravity)*secs;
     else if(pl->floor.z > 0 && pl->floor.z < FLOORZ)
     {
         g.z = -1;
         g.project(pl->floor);
         g.normalize();
-        g.mul(GRAVITY*secs);
+        g.mul((GRAVITY+pl->p_gravity)*secs);
     }
     if(!water || !game::allowmove(pl) || (!pl->move && !pl->strafe)) pl->falling.add(g);
 

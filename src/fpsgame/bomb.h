@@ -306,7 +306,6 @@ struct bombclientmode : clientmode
     	switch(sequence){
     	case 0:
     		if(totalmillis - timecounter >= 10000) {
-    		    // sendservmsg("Map load complete (grannies left behind).");
             sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 1000, E_STATIC_BOTTOM, "Map load complete (grannies left behind)");
     		} else {
     			loopv(spawnlocs){
@@ -315,7 +314,6 @@ struct bombclientmode : clientmode
     				if(!ci || ci->state.state==CS_SPECTATOR || ci->state.aitype != AI_NONE || ci->clientmap[0] || ci->mapcrc) continue;
     				return;
     			}
-    			// sendservmsg("Map load complete.");
           sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 1000, E_STATIC_BOTTOM, "Map load complete");
     		}
     		sequence = 1;
@@ -327,13 +325,10 @@ struct bombclientmode : clientmode
     		int remaining = COUNTDOWNSECONDS*1000 - (totalmillis - timecounter);
     		if(remaining <= 0){
     			sequence = 2;
-          // sendservmsg("FIGHT!");
           sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 2000, E_ZOOM_IN, "F I G H T");
     			pausegame(false);
     		}
     		else if(remaining/1000 != countdown){
-    			// defformatstring(msg)("-%d...", countdown--);
-    			// sendservmsg(msg);
           defformatstring(msg)("- %d -", countdown--);
           sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 2000, E_ZOOM_IN, msg);
     		}
@@ -389,6 +384,7 @@ struct bombclientmode : clientmode
     	for(; i < spawnlocs.length(); i++) if(spawnlocs[i]->cn == ci->clientnum) break;
     	if(i == spawnlocs.length()) {conoutf("player has got no spawn location"); return false; }
     	if(ci->state.deaths==0) {conoutf("player has no deaths"); return true; } // ci->state.aitype!=AI_NONE &&
+    	sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 1250, E_ZOOM_IN, "You cannot respawn this round");
     	return false;
     }
 
@@ -407,9 +403,17 @@ struct bombclientmode : clientmode
 
     void died(clientinfo *target, clientinfo *actor)
     {
-        for(int i=0; i<target->state.ammo[GUN_BOMB]/2; i++) pushentity(I_BOMBS, target->state.o);
-        for(int i=0; i<target->state.bombradius/2; i++) pushentity(I_BOMBRADIUS, target->state.o);
-        for(int i=0; i<target->state.bombdelay/3; i++) pushentity(I_BOMBDELAY, target->state.o);
+        int leftitems = 0;
+        for(int i=0; i<target->state.ammo[GUN_BOMB]/2; i++) { pushentity(I_BOMBS, target->state.o); leftitems++; }
+        for(int i=0; i<target->state.bombradius/2; i++) { pushentity(I_BOMBRADIUS, target->state.o); leftitems++; }
+        for(int i=0; i<target->state.bombdelay/3; i++) { pushentity(I_BOMBDELAY, target->state.o); leftitems++; }
+        if (leftitems > 0) {
+            defformatstring(msg)("%s died and left %d %s!", target->name, leftitems, leftitems > 1 ? "items" : "item");
+            sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 1250, E_ZOOM_OUT, msg);
+        } else {
+            defformatstring(msg)("%s died!", target->name);
+            sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 1250, E_ZOOM_OUT, msg);
+        }
     }
 
     bool canchangeteam(clientinfo *ci, const char *oldteam, const char *newteam){
