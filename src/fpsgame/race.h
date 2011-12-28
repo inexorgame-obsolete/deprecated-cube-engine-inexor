@@ -18,14 +18,14 @@ struct raceclientmode : clientmode
 #endif
 {
 
-  struct spawnloc{
-    vec o;
-    int team, index;
+    struct spawnloc{
+        vec o;
+        int team, index;
 #ifdef SERVMODE
-    int cn;
-    spawnloc(const vec& o_, int team_, int index_): o(o_), team(team_), index(index_), cn(-1) {}
+        int cn;
+        spawnloc(const vec& o_, int team_, int index_): o(o_), team(team_), index(index_), cn(-1) {}
 #endif
-  };
+    };
 
 #ifdef SERVMODE
     struct raceinfo {
@@ -47,13 +47,22 @@ struct raceclientmode : clientmode
     }
 
     void resetplayers() {
-      loopv(players) {
-          fpsent *d = players[i];
-          d->racelaps = 0;
-          d->racecheckpoint = 0;
-          d->racetime = 0;
-          d->racerank = -1;
-      }
+        loopv(players) {
+            fpsent *d = players[i];
+            d->racelaps = 0;
+            d->racecheckpoint = 0;
+            d->racetime = 0;
+            d->racerank = -1;
+            d->racestate = 0;
+        }
+    }
+
+    void removeplayer(fpsent *d) {
+        d->racelaps = 0;
+        d->racecheckpoint = 0;
+        d->racetime = 0;
+        d->racerank = -1;
+        d->racestate = 0;
     }
 
     void senditems(packetbuf &p){
@@ -130,38 +139,66 @@ struct raceclientmode : clientmode
     void rendergame() {
     }
 
+    int getplayerattackanim(fpsent *d, const playermodelinfo &mdl, int attack) {
+        if (intermission && d->racerank < 4) return ANIM_WIN|ANIM_LOOP;
+        if (d->racestate == 2 && d->racerank < 4) return ANIM_WIN|ANIM_LOOP;
+        else if (d->racestate == 2 && d->racerank >= 4) return ANIM_LOSE|ANIM_LOOP;
+        return ANIM_LOSE|ANIM_LOOP;
+    }
+
+    int getplayerholdanim(fpsent *d, const playermodelinfo &mdl, int hold) {
+        if (intermission && d->racerank < 4) return ANIM_WIN|ANIM_LOOP;
+        if (d->racestate == 2 && d->racerank < 4) return ANIM_WIN|ANIM_LOOP;
+        else if (d->racestate == 2 && d->racerank >= 4) return ANIM_LOSE|ANIM_LOOP;
+        return ANIM_LOSE|ANIM_LOOP;
+    }
+
     void renderscoreboard(g3d_gui &g, game::scoregroup &sg, int fgcolor, int bgcolor) {
         if (showracerank) {
             g.pushlist();
-            g.strut(7);
+            g.strut(9);
             g.text("rank", fgcolor);
             loopv(sg.players) {
                 fpsent *d = sg.players[i];
-                if(d->racerank == -1) {
-                    g.textf("%s", 0xFFFFDD, NULL, "start");
-                } else {
-                    g.textf("%02d", 0xFFFFDD, NULL, d->racerank);
+                switch(d->racestate) {
+                    case 0:
+                        g.textf("%s", 0xFFFFDD, NULL, "start");
+                        break;
+                    case 1:
+                        g.textf("%02d", 0xFFFFDD, NULL, d->racerank);
+                        break;
+                    case 2:
+                        g.textf("%s", 0xFFFFDD, NULL, "finished");
+                        break;
                 }
             }
             g.poplist();
         }
         if (showracelaps) {
             g.pushlist();
-            g.strut(7);
+            g.strut(4);
             g.text("laps", fgcolor);
             loopv(sg.players) {
                 fpsent *d = sg.players[i];
-                g.textf("%02d", 0xFFFFDD, NULL, d->racelaps);
+                if (d->racestate == 1) {
+                    g.textf("%02d", 0xFFFFDD, NULL, d->racelaps);
+                } else {
+                    g.textf("%s", 0xFFFFDD, NULL, "");
+                }
             }
             g.poplist();
         }
         if (showracecheckpoints) {
             g.pushlist();
-            g.strut(7);
+            g.strut(5);
             g.text("check", fgcolor);
             loopv(sg.players) {
                 fpsent *d = sg.players[i];
-                g.textf("%d", 0xFFFFDD, NULL, d->racecheckpoint);
+                if (d->racestate == 1) {
+                    g.textf("%02d", 0xFFFFDD, NULL, d->racecheckpoint);
+                } else {
+                    g.textf("%s", 0xFFFFDD, NULL, "");
+                }
             }
             g.poplist();
         }
@@ -171,9 +208,13 @@ struct raceclientmode : clientmode
             g.text("time", fgcolor);
             loopv(sg.players) {
                 fpsent *d = sg.players[i];
-                int secs = max(d->racetime, 0)/1000, mins = secs/60;
-                secs %= 60;
-                g.textf("%d:%02d", 0xFFFFDD, NULL, mins, secs);
+                if (d->racestate >= 1) {
+                    int secs = max(d->racetime, 0)/1000, mins = secs/60;
+                    secs %= 60;
+                    g.textf("%d:%02d", 0xFFFFDD, NULL, mins, secs);
+                } else {
+                    g.textf("%s", 0xFFFFDD, NULL, "");
+                }
             }
             g.poplist();
         }
@@ -191,32 +232,55 @@ struct raceclientmode : clientmode
     }
 
     void pickspawn(fpsent *d) {
-      if(d->racelaps > 0 || d->racecheckpoint > 0) {
+        if (d->racestate == 2 || (d->racestate == 1 && d->racecheckpoint == 0)) {
+            pickspawnbyenttype(d, PLAYERSTART);
+        } else if (d->racestate == 1) {
+            pickspawnbyenttype(d, RACE_CHECKPOINT);
+        } else {
+            if(entities::ents.inrange(myspawnloc)) {
+                extentity& e = *entities::ents[myspawnloc];
+                d->o = e.o;
+                d->yaw = e.attr1;
+                d->pitch = 0;
+                d->roll = 0;
+                entinmap(d);
+            } else {
+                pickspawnbyenttype(d, PLAYERSTART);
+            }
+        }
+      /* if(d->racelaps > 0 || d->racecheckpoint > 0) {
           if(d->racecheckpoint == 0) pickspawnbyenttype(d, PLAYERSTART);
           else if (d->racecheckpoint > 0) pickspawnbyenttype(d, RACE_CHECKPOINT);
           return;
-      }
-      if(!entities::ents.inrange(myspawnloc)) return;
-      extentity& e = *entities::ents[myspawnloc];
-      d->o = e.o;
-      d->yaw = e.attr1;
-      d->pitch = 0;
-      d->roll = 0;
-      entinmap(d);
+      } */
     }
 
     void pickspawnbyenttype(fpsent *d, int ent_type) {
-      loopv(entities::ents){
+      bool found = false;
+      loopv(entities::ents) {
           extentity& e = *entities::ents[i];
-          if(e.type == ent_type && e.attr2 == d->racecheckpoint) {
+          if(e.type == ent_type && ((e.attr2 == d->racecheckpoint && i == d->lastpickupindex) || ent_type == PLAYERSTART)) {
               // conoutf("pick RACE_START or RACE_CHECKPOINT as spawn point");
               d->o = e.o;
               d->yaw = e.attr1;
               d->pitch = 0;
               d->roll = 0;
               entinmap(d);
+              found = true;
           }
       }
+      if (!found) loopv(entities::ents) {
+          extentity& e = *entities::ents[i];
+          if(e.type == ent_type && (e.attr2 == d->racecheckpoint || ent_type == PLAYERSTART)) {
+              d->o = e.o;
+              d->yaw = e.attr1;
+              d->pitch = 0;
+              d->roll = 0;
+              entinmap(d);
+              found = true;
+          }
+      }
+      if (!found) findplayerspawn(player1);
     }
 
     bool hidefrags() {
@@ -342,7 +406,7 @@ struct raceclientmode : clientmode
     bool checkfinished() {
         if(interm) return false;
         int allplayersfinished = true;
-        loopv(raceinfos) if (raceinfos[i]->timefinished == -1) allplayersfinished = false;
+        loopv(raceinfos) if (raceinfos[i]->timefinished == -1 && raceinfos[i]->cn != -1) allplayersfinished = false;
         return allplayersfinished;
     }
 
@@ -353,9 +417,18 @@ struct raceclientmode : clientmode
             loopv(clients) {
                 clientinfo *ci = clients[i];
                 ci->state.racerank = getrank(ci->clientnum);
-                sendf(-1, 1, "ri6", N_RACEINFO, ci->clientnum, ci->state.racelaps, ci->state.racecheckpoint, getracetime(ci), ci->state.racerank);
+                sendf(-1, 1, "ri7", N_RACEINFO, ci->clientnum, ci->state.racestate, ci->state.racelaps, ci->state.racecheckpoint, getracetime(ci), ci->state.racerank);
             }
         }
+    }
+
+    void initclient(clientinfo *ci, packetbuf &p, bool connecting) {
+        // if (!connecting) return;
+        initplayer(ci);
+    }
+
+    void connected(clientinfo *ci) {
+        initplayer(ci);
     }
 
     int getrank(int cn) {
@@ -376,8 +449,13 @@ struct raceclientmode : clientmode
     }
 
     int getracetime(clientinfo *ci) {
-        loopv(raceinfos) if(raceinfos[i]->cn == ci->clientnum){
-            return totalmillis - ci->state.racetime + (raceinfos[i]->timepenalties * 10000);
+        loopv(raceinfos) if(raceinfos[i]->cn == ci->clientnum) {
+            // if(raceinfos[i]->timefinished > 0) {
+            if (ci->state.racestate == 2) {
+                return raceinfos[i]->timefinished + (raceinfos[i]->timepenalties * 10000);
+            } else {
+                return totalmillis - ci->state.racetime + (raceinfos[i]->timepenalties * 10000);
+            }
         }
         return totalmillis - ci->state.racetime;
     }
@@ -386,6 +464,19 @@ struct raceclientmode : clientmode
         int rank = ci->state.racerank;
         defformatstring(msg)("%d%s", rank, (rank==1 ? "st" : (rank==2 ? "nd" : (rank==3 ? "rd": "th"))));
         sendf(ci->clientnum, 1, "ri3s ", N_HUDANNOUNCE, 3000, E_ZOOM_OUT, msg);
+    }
+
+    void initplayers() {
+        loopv(clients) initplayer(clients[i]);
+    }
+
+    void initplayer(clientinfo *ci) {
+        ci->state.racelaps = 0;
+        ci->state.racecheckpoint = 0;
+        ci->state.racerank = -1;
+        ci->state.racestate = 0;
+        raceinfos.add(new raceinfo(ci->clientnum, (ci->state.state==CS_SPECTATOR ? -2 : -1), 0, 0));
+        sendf(-1, 1, "ri7", N_RACEINFO, ci->clientnum, 0, 0, 0, 0, -1);
     }
 
     void leavegame(clientinfo *ci, bool disconnecting) {
@@ -398,6 +489,11 @@ struct raceclientmode : clientmode
             spawnlocs[i]->cn = -1;
             break;
         }
+    }
+
+    void cleanup() {
+        spawnlocs.deletecontents();
+        raceinfos.deletecontents();
     }
 
     void sendspawnlocs(bool resuscitate = false){
@@ -422,9 +518,11 @@ struct raceclientmode : clientmode
     }
 
     bool canspawn(clientinfo *ci, bool connecting) {
-        loopv(raceinfos) if(raceinfos[i]->cn == ci->clientnum){
+        if (ci->state.racestate == 2) return false;
+        /* loopv(raceinfos) if(raceinfos[i]->cn == ci->clientnum){
             if(raceinfos[i]->timefinished > 0) return false;
-        }
+        } */
+        if (connecting) return true;
         if(notgotspawnlocations) {conoutf("not got spawn locations yet"); return false; }
         int i = 0;
         for(; i < spawnlocs.length(); i++) if(spawnlocs[i]->cn == ci->clientnum) break;
@@ -432,33 +530,23 @@ struct raceclientmode : clientmode
     	  return true;
     }
 
-    void pushentity(int type, vec o) {
-    }
-
     void died(clientinfo *target, clientinfo *actor) {
+        if (!target) return;
         loopv(raceinfos) if(raceinfos[i]->cn == target->clientnum){
             raceinfos[i]->timepenalties++;
+        }
+        if (actor && target->clientnum != actor->clientnum && (target->state.racelaps > 0 || target->state.racecheckpoint >= 2)) {
+            if (target->state.racecheckpoint >= 2) {
+                target->state.racecheckpoint -= 2;
+            } else {
+                target->state.racelaps -= 1;
+                target->state.racecheckpoint = maxcheckpoint - 2 + target->state.racecheckpoint;
+            }
         }
     }
 
     bool canchangeteam(clientinfo *ci, const char *oldteam, const char *newteam){
     	  return false;
-    }
-
-    void cleanup() {
-        spawnlocs.deletecontents();
-        raceinfos.deletecontents();
-    }
-
-    void initplayers() {
-        loopv(clients) {
-            clientinfo *ci = clients[i];
-            ci->state.racelaps = 0;
-            ci->state.racecheckpoint = 0;
-            ci->state.racerank = -1;
-            raceinfos.add(new raceinfo(ci->clientnum, (ci->state.state==CS_SPECTATOR ? -2 : -1), 0, 0));
-            sendf(-1, 1, "ri6", N_RACEINFO, ci->clientnum, 0, 0, 0, -1);
-        }
     }
 
 #endif
@@ -479,13 +567,15 @@ case N_RACEFINISH:
           cq->state.racecheckpoint = 0;
           cq->state.racelaps++;
           cq->state.racerank = racemode.getrank(cq->clientnum);
-          sendf(-1, 1, "ri6", N_RACEINFO, cq->clientnum, cq->state.racelaps, cq->state.racecheckpoint, racemode.getracetime(cq), cq->state.racerank);
+          sendf(-1, 1, "ri7", N_RACEINFO, cq->clientnum, cq->state.racestate, cq->state.racelaps, cq->state.racecheckpoint, racemode.getracetime(cq), cq->state.racerank);
           // conoutf("racelabs:%d RACELAPS:%d timefinished:%d", cq->state.racelaps, RACELAPS, racemode.raceinfos[i]->timefinished);
-          if (cq->state.racelaps >= RACELAPS) {
-              racemode.raceinfos[i]->timefinished = totalmillis;
+          if (cq->state.racelaps == RACELAPS) {
+              cq->state.racestate = 2;
+              racemode.raceinfos[i]->timefinished = totalmillis - racemode.timestarted;
               racemode.sendfinishannounce(cq);
-              cq->state.state = CS_DEAD;
-              sendf(-1, 1, "ri4", N_DIED, cq->clientnum, cq->clientnum, cq->state.frags);
+              sendf(-1, 1, "ri ", N_RACEFINISH, cq->clientnum);
+              // cq->state.state = CS_FINISHED;
+              // sendf(-1, 1, "ri4", N_DIED, cq->clientnum, cq->clientnum, cq->state.frags);
           } else {
               defformatstring(msg)("%d %s REMAINING", RACELAPS - cq->state.racelaps, RACELAPS - cq->state.racelaps != 1 ? "LAPS" : "LAP");
               sendf(cq->clientnum, 1, "ri3s ", N_HUDANNOUNCE, 1500, E_ZOOM_IN, msg);
@@ -502,7 +592,9 @@ case N_RACESTART:
           racemode.raceinfos[i]->gotcheckpoints = 1;
           cq->state.racetime = totalmillis;
           cq->state.racerank = racemode.getrank(cq->clientnum);
-          sendf(-1, 1, "ri6", N_RACEINFO, cq->clientnum, cq->state.racelaps, cq->state.racecheckpoint, 0, cq->state.racerank);
+          cq->state.racestate = 1;
+          sendf(-1, 1, "ri ", N_RACESTART, cq->clientnum);
+          sendf(-1, 1, "ri7", N_RACEINFO, cq->clientnum, cq->state.racestate, cq->state.racelaps, cq->state.racecheckpoint, 0, cq->state.racerank);
       }
   }
   break;
@@ -515,7 +607,7 @@ case N_RACECHECKPOINT:
       loopv(racemode.raceinfos) if(racemode.raceinfos[i]->cn == cq->clientnum) racemode.raceinfos[i]->gotcheckpoints++;
       cq->state.racecheckpoint++;
       cq->state.racerank = racemode.getrank(cq->clientnum);
-      sendf(-1, 1, "ri6", N_RACEINFO, cq->clientnum, cq->state.racelaps, cq->state.racecheckpoint, racemode.getracetime(cq), cq->state.racerank);
+      sendf(-1, 1, "ri7", N_RACEINFO, cq->clientnum, cq->state.racestate, cq->state.racelaps, cq->state.racecheckpoint, racemode.getracetime(cq), cq->state.racerank);
       defformatstring(msg)("CHECKPOINT %d", cq->state.racecheckpoint);
       sendf(cq->clientnum, 1, "ri3s ", N_HUDANNOUNCE, 400, E_ZOOM_OUT, msg);
   }
@@ -527,19 +619,43 @@ case N_RACECHECKPOINT:
 case N_RACEINFO:
 {
   int rcn = getint(p);
+  int state = getint(p);
   int lap = getint(p);
   int checkpoint = getint(p);
   int time = getint(p);
   int rank = getint(p);
   // conoutf("N_RACEINFO cn:%d lap:%d checkpoint:%d", rcn, lap, checkpoint, time);
-  fpsent *r = rcn==player1->clientnum ? player1 : getclient(rcn);
-  if(m_race && r) {
-      r->racelaps = lap;
-      r->racecheckpoint = checkpoint;
-      r->racetime = time;
-      r->racerank = rank;
+  fpsent *d = rcn==player1->clientnum ? player1 : getclient(rcn);
+  if(m_race && d) {
+      d->racestate = state;
+      d->racelaps = lap;
+      d->racecheckpoint = checkpoint;
+      d->racetime = time;
+      d->racerank = rank;
   }
   break;
+}
+
+case N_RACESTART:
+{
+  int rcn = getint(p);
+  loopv(players) {
+      fpsent *d = players[i];
+      if (d->clientnum == rcn) {
+          d->racestate = 1;
+      }
+  }
+}
+
+case N_RACEFINISH:
+{
+    int rcn = getint(p);
+    loopv(players) {
+        fpsent *d = players[i];
+        if (d->clientnum == rcn) {
+            d->racestate = 2;
+        }
+    }
 }
 
 #endif

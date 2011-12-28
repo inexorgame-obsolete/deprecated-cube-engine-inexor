@@ -176,6 +176,11 @@ namespace game
             case 1: mdlname = mdl.blueteam; break;
             case 2: mdlname = mdl.redteam; break;
         }
+        if(cmode) {
+            attack = cmode->getplayerattackanim(d, attack);
+            hold = cmode->getplayerholdanim(d, hold);
+            // conoutf("attack:%d hold:%d", attack, hold);
+        }
         renderclient(d, mdlname, a[0].tag ? a : NULL, hold, attack, delay, lastaction, intermission && d->state!=CS_DEAD ? 0 : d->lastpain, fade, ragdoll && mdl.ragdoll);
 #if 0
         if(d->state!=CS_DEAD && d->quadmillis) 
@@ -187,6 +192,7 @@ namespace game
     }
 
     VARP(teamskins, 0, 0, 1);
+    // VARP(showplayernames, 0, 0, 1);
 
     void rendergame(bool mainpass)
     {
@@ -212,6 +218,7 @@ namespace game
             renderplayer(d, getplayermodelinfo(d), team, 1, mainpass);
             copystring(d->info, colorname(d));
             if(d->maxhealth>100) { defformatstring(sn)(" +%d", d->maxhealth-100); concatstring(d->info, sn); }
+            // TODO: VARP(showplayernames, 0, 0, 1)
             if(d->state!=CS_DEAD) particle_text(d->abovehead(), d->info, PART_TEXT, 1, team ? (team==1 ? 0x6496FF : 0xFF4B19) : 0x1EC850, 2.0f);
         }
         loopv(ragdolls)

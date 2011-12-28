@@ -295,7 +295,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
     N_MAPCRC, 0, N_CHECKMAPS, 1,
     N_SWITCHNAME, 0, N_SWITCHMODEL, 2, N_SWITCHTEAM, 0,
     N_ITEMPUSH, 6, N_SPAWNLOC, 0,
-    N_RACESTART, 0, N_RACEFINISH, 0, N_RACECHECKPOINT, 2, N_RACELAP, 2, N_RACEINFO, 6,
+    N_RACESTART, 0, N_RACEFINISH, 0, N_RACECHECKPOINT, 2, N_RACELAP, 2, N_RACEINFO, 7,
     N_HUDANNOUNCE, 0,
     -1
 };
@@ -454,6 +454,7 @@ struct fpsstate
     int racelaps;
     int racecheckpoint;
     int racerank;
+    int racestate;
 
     fpsstate() : maxhealth(100), aitype(AI_NONE), skill(0), backupweapon(GUN_FIST) {}
 
@@ -683,7 +684,7 @@ struct fpsent : dynent, fpsstate
     bool attacking;
     int attacksound, attackchan, idlesound, idlechan;
     int lasttaunt;
-    int lastpickup, lastpickupmillis, lastbase, lastrepammo, flagpickup;
+    int lastpickup, lastpickupmillis, lastpickupindex, lastbase, lastrepammo, flagpickup;
     int frags, flags, deaths, totaldamage, totalshots;
     editinfo *edit;
     float deltayaw, deltapitch, newyaw, newpitch;
@@ -805,6 +806,8 @@ namespace game
         virtual int clipconsole(int w, int h) { return 0; }
         virtual void drawhud(fpsent *d, int w, int h) {}
         virtual void rendergame() {}
+        virtual int getplayerattackanim(fpsent *d, int attack) { return attack; }
+        virtual int getplayerholdanim(fpsent *d, int hold) { return hold; }
         virtual void respawned(fpsent *d) {}
         virtual void setup() {}
         virtual void checkitems(fpsent *d) {}

@@ -190,6 +190,7 @@ namespace server
         int racelaps;
         int racecheckpoint;
         int racerank;
+        int racestate;
 
         void save(gamestate &gs)
         {
@@ -208,6 +209,7 @@ namespace server
             racelaps = gs.racelaps;
             racecheckpoint = gs.racecheckpoint;
             racerank = gs.racerank;
+            racestate = gs.racestate;
         }
 
         void restore(gamestate &gs)
@@ -228,6 +230,7 @@ namespace server
             gs.racelaps = racelaps;
             gs.racecheckpoint = racecheckpoint;
             gs.racerank = racerank;
+            gs.racestate = racestate;
         }
     };
 
@@ -302,7 +305,7 @@ namespace server
         
         bool checkexceeded()
         {
-            return state.state==CS_ALIVE && exceeded && gamemillis > exceeded + calcpushrange() && !m_race;
+            return state.state==CS_ALIVE && exceeded && gamemillis > exceeded + calcpushrange() && !m_race; // TODO: check if there are physics manipulation entities
         }
 
         void mapchange()
@@ -552,6 +555,7 @@ namespace server
 
         virtual void entergame(clientinfo *ci) {}
         virtual void leavegame(clientinfo *ci, bool disconnecting = false) {}
+        virtual void connected(clientinfo *ci) {}
 
         virtual void moved(clientinfo *ci, const vec &oldpos, bool oldclip, const vec &newpos, bool newclip) {}
         virtual bool canspawn(clientinfo *ci, bool connecting = false) { return true; }
@@ -2288,6 +2292,8 @@ namespace server
                 if(m_demo) setupdemoplayback();
 
                 if(servermotd[0]) sendf(sender, 1, "ris", N_SERVMSG, servermotd);
+
+                if(smode) smode->connected(ci);
             }
         }
         else if(chan==2)
