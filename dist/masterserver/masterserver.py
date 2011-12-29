@@ -101,15 +101,12 @@ class masterserver(object):
         cid = str(infos[1][1])
         ip = str(infos[1][0])
         data = con.recv(4096)
-        # self.log(str(data))
         if data == "list\n":
             serverstr = "%s%s" %(self.getlocalservers(), self.getserversfromproxy())
             con.send(serverstr)
-            # con.send("%s%sself.getserversfromproxy() + "\n" + self.getlocalservers())
-            # con.send(self.getlocalservers())
-            self.log("=== successfully sent server list ===")
-            self.log(serverstr)
-            self.log("=== successfully sent server list ===")
+            #self.log("=== successfully sent server list ===")
+            #self.log(serverstr)
+            #self.log("=== successfully sent server list ===")
         else:
             if data[0:7] == "regserv":
                 port = data[8:].replace("\n","").replace("\r","")
