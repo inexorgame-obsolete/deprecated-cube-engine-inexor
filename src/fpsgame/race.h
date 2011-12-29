@@ -156,19 +156,17 @@ struct raceclientmode : clientmode
     void renderscoreboard(g3d_gui &g, game::scoregroup &sg, int fgcolor, int bgcolor) {
         if (showracerank) {
             g.pushlist();
-            g.strut(9);
+            g.strut(4);
             g.text("rank", fgcolor);
             loopv(sg.players) {
                 fpsent *d = sg.players[i];
                 switch(d->racestate) {
                     case 0:
-                        g.textf("%s", 0xFFFFDD, NULL, "start");
+                        g.textf("%s", 0xFFFFDD, NULL, "");
                         break;
                     case 1:
-                        g.textf("%02d", 0xFFFFDD, NULL, d->racerank);
-                        break;
                     case 2:
-                        g.textf("%s", 0xFFFFDD, NULL, "finished");
+                        g.textf("%02d", 0xFFFFDD, NULL, d->racerank);
                         break;
                 }
             }
@@ -176,14 +174,20 @@ struct raceclientmode : clientmode
         }
         if (showracelaps) {
             g.pushlist();
-            g.strut(4);
+            g.strut(8);
             g.text("laps", fgcolor);
             loopv(sg.players) {
                 fpsent *d = sg.players[i];
-                if (d->racestate == 1) {
-                    g.textf("%02d", 0xFFFFDD, NULL, d->racelaps);
-                } else {
-                    g.textf("%s", 0xFFFFDD, NULL, "");
+                switch(d->racestate) {
+                    case 0:
+                        g.textf("%s", 0xFFFFDD, NULL, "start");
+                        break;
+                    case 1:
+                        g.textf("%02d", 0xFFFFDD, NULL, d->racelaps);
+                        break;
+                    case 2:
+                        g.textf("%s", 0xFFFFDD, NULL, "finished");
+                        break;
                 }
             }
             g.poplist();

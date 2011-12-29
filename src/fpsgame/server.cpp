@@ -1617,7 +1617,6 @@ namespace server
 
     void forceintermission()
     {
-        conoutf("forceintermission()");
         if(interm) return;
         interm = gamemillis + 10000;
         sendf(-1, 1, "ri2", N_TIMEUP, 0);
