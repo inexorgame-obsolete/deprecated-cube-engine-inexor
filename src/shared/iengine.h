@@ -111,11 +111,16 @@ extern ident *readident(const char *name);
 extern ident *writeident(const char *name, int flags = 0);
 extern bool addcommand(const char *name, identfun fun, const char *narg);
 extern uint *compilecode(const char *p);
-extern void executeret(const uint *code, tagval &result);
-extern void executeret(const char *p, tagval &result);
-extern char *executeret(const char *p);
+extern void keepcode(uint *p);
+extern void freecode(uint *p);
+extern void executeret(const uint *code, tagval &result = *commandret);
+extern void executeret(const char *p, tagval &result = *commandret);
+extern char *executestr(const uint *code);
+extern char *executestr(const char *p);
 extern int execute(const uint *code);
 extern int execute(const char *p);
+extern bool executebool(const uint *code);
+extern bool executebool(const char *p);
 extern bool execfile(const char *cfgfile, bool msg = true);
 extern void alias(const char *name, const char *action);
 extern void alias(const char *name, tagval &v);
@@ -177,10 +182,6 @@ extern void renderentarrow(const extentity &e, const vec &dir, float radius);
 extern void renderentattachment(const extentity &e);
 extern void renderentsphere(const extentity &e, float radius);
 extern void renderentring(const extentity &e, float radius, int axis = 0);
-
-extern extentity *newentity(bool local, const vec &o, int type, int v1, int v2, int v3, int v4, int v5);
-extern void attachentity(extentity &e);
-extern bool modifyoctaent(int flags, int id);
 
 // main
 extern void fatal(const char *s, ...);

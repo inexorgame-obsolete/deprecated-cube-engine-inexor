@@ -18,7 +18,7 @@ static inline void freearg(tagval &v)
     switch(v.type)
     {
         case VAL_STR: delete[] v.s; break;
-        case VAL_CODE: if(v.code[-1] == CODE_NOP) delete[] (uchar *)&v.code[-1]; break;
+        case VAL_CODE: if(v.code[-1] == CODE_START) delete[] (uchar *)&v.code[-1]; break;
     }
 }
 
@@ -97,12 +97,12 @@ static inline void freeargs(tagval *args, int &oldnum, int newnum)
     oldnum = newnum;
 }
 
-static inline void freecode(ident &id)
+static inline void cleancode(ident &id)
 {
     if(id.code)
     {
         id.code[0] -= 0x100;
-        if(!(id.code[0]>>8)) delete[] id.code;
+        if(int(id.code[0]) < 0x100) delete[] id.code;
         id.code = NULL;
     }
 }
@@ -137,7 +137,7 @@ void clearoverride(ident &i)
                 if(!i.val.s[0]) break;
                 delete[] i.val.s;
             }
-            freecode(i);
+            cleancode(i);
             i.valtype = VAL_STR;
             i.val.s = newstring("");
             break;
@@ -269,7 +269,7 @@ static inline void pusharg(ident &id, tagval &v, identstack &stack)
     stack.next = id.stack;
     id.stack = &stack;
     id.setval(v);
-    freecode(id);
+    cleancode(id);
 } 
 
 static inline void poparg(ident &id)
@@ -278,7 +278,7 @@ static inline void poparg(ident &id)
     identstack *stack = id.stack;
     if(id.valtype == VAL_STR) delete[] id.val.s;
     id.setval(*stack);
-    freecode(id);
+    cleancode(id);
     id.stack = stack->next;
 }
 
@@ -293,9 +293,15 @@ ICOMMAND(push, "rte", (ident *id, tagval *v, uint *code),
     poparg(*id);
 });
 
-static inline bool isinteger(const char *c)
+static inline bool isnumber(const char *s)
 {
-    return isdigit(c[0]) || ((c[0]=='+' || c[0]=='-' || c[0]=='.') && isdigit(c[1]));
+    if(isdigit(s[0])) return true;
+    else switch(s[0])
+{
+        case '+': case '-': return isdigit(s[1]) || (s[1] == '.' && isdigit(s[2]));
+        case '.': return isdigit(s[1]);
+        default: return false;
+    }
 }
 
 ident *newident(const char *name, int flags)
@@ -303,7 +309,7 @@ ident *newident(const char *name, int flags)
     ident *id = idents.access(name);
     if(!id)
     {
-        if(isinteger(name)) 
+        if(isnumber(name)) 
         {
             debugcode("number %s is not a valid identifier name", name);
             return dummyident;
@@ -349,7 +355,7 @@ static inline void setarg(ident &id, tagval &v)
     {
         if(id.valtype == VAL_STR) delete[] id.val.s;
         id.setval(v);
-        freecode(id);
+        cleancode(id);
     }
     else
     {
@@ -362,7 +368,7 @@ static inline void setalias(ident &id, tagval &v)
 {
     if(id.valtype == VAL_STR) delete[] id.val.s;
     id.setval(v);
-    freecode(id);
+    cleancode(id);
     id.flags = (id.flags & identflags) | identflags;
 }
 
@@ -381,7 +387,7 @@ static void setalias(const char *name, tagval &v)
             freearg(v);
         }
     }
-    else if(isinteger(name)) 
+    else if(isnumber(name)) 
     {
         debugcode("cannot alias number %s", name);
         freearg(v);
@@ -726,9 +732,9 @@ static inline char *cutstring(const char *&p, int &len)
 static inline char *cutword(const char *&p, int &len)
 {
     const char *word = p;
-    for(int parens = 0, braks = 0;;)
+    for(int parens = 0, braks = 0, curly = 0;;)
     {
-        p += strcspn(p, "/;()[] \t\r\n\0");
+        p += strcspn(p, "/;()[]{} \t\r\n\0");
         switch(p[0])
         {
             case ';': case ' ': case '\t': case '\r': case '\n': case '\0': goto done;
@@ -737,6 +743,8 @@ static inline char *cutword(const char *&p, int &len)
             case ')': if(--parens < 0) goto done; break;
             case '[': braks++; break;
             case ']': if(--braks < 0) goto done; break; 
+            case '{': curly++; break;
+            case '}': if(--curly < 0) goto done; break;
         } 
         p++;
     }
@@ -794,6 +802,7 @@ static inline void compileblock(vector<uint> &code)
 {
     int start = code.length();
     code.add(CODE_BLOCK);
+    code.add(CODE_OFFSET|((start+2)<<8));
     code.add(CODE_EXIT);
     code[start] |= uint(code.length() - (start + 1))<<8;
 }
@@ -846,6 +855,7 @@ static inline void compileval(vector<uint> &code, int wordtype, char *word, int 
         {
             int start = code.length();
             code.add(CODE_BLOCK);
+            code.add(CODE_OFFSET|((start+2)<<8));
             const char *p = word;
             compilestatements(code, p, VAL_ANY);
             code.add(CODE_EXIT|RET_STR);
@@ -868,6 +878,7 @@ static bool compilelookup(vector<uint> &code, const char *&p, int ltype)
     {
         case '(':
         case '[':
+        case '{':
             if(!compileword(code, p, VAL_STR, lookup, lookuplen)) return false;
             break;
         case '$':
@@ -901,7 +912,7 @@ done:
     return true;
 }
 
-static bool compileblockstr(vector<uint> &code, const char *str, const char *end, bool macro)
+static bool compileblockstr(vector<uint> &code, const char *str, const char *end, bool macro, int braktype = ']')
 {
     int start = code.length();
     code.add(macro ? CODE_MACRO : CODE_VAL|RET_STR); 
@@ -909,7 +920,7 @@ static bool compileblockstr(vector<uint> &code, const char *str, const char *end
     int len = 0;
     while(str < end)
     {
-        int n = strcspn(str, "\r/\"@]\0");
+        int n = braktype == ']' ? strcspn(str, "\r/\"@]\0") : strcspn(str, "\r/\"}\0");
         memcpy(&buf[len], str, n);
         len += n;
         str += n;
@@ -931,6 +942,7 @@ static bool compileblockstr(vector<uint> &code, const char *str, const char *end
                 break;
             case '@':
             case ']':
+            case '}':
                 if(str < end) { buf[len++] = *str++; break; }
             case '\0': goto done;
         }
@@ -950,6 +962,7 @@ static bool compileblocksub(vector<uint> &code, const char *&p)
             if(!compilearg(code, p, VAL_STR)) return false;
             break;
         case '[':
+        case '{':
             if(!compilearg(code, p, VAL_STR)) return false;
             code.add(CODE_LOOKUPU|RET_STR);
             break;
@@ -977,18 +990,18 @@ static bool compileblocksub(vector<uint> &code, const char *&p)
     return true;
 }
 
-static bool compileblock(vector<uint> &code, const char *&p, int wordtype)
+static bool compileblock(vector<uint> &code, const char *&p, int wordtype, int braktype = ']')
 {
     const char *line = p, *start = p;
     int concs = 0;
     for(int brak = 1; brak;)
     {
-        p += strcspn(p, "@\"/[]");
+        p += braktype == ']' ? strcspn(p, "@\"/[]") : strcspn(p, "\"/{}");
         int c = *p++;
         switch(c)
         {
             case '\0':
-                debugcode(debugline(line, "missing \"]\""));
+                debugcode(debugline(line, braktype == ']' ? "missing \"]\"" : "missing \"}\""));
                 p--;
                 return false;
             case '\"':
@@ -1002,8 +1015,8 @@ static bool compileblock(vector<uint> &code, const char *&p, int wordtype)
                     continue;
                 }
                 break;
-            case '[': brak++; break;
-            case ']': brak--; break;
+            case '[': case '{': brak++; break;
+            case ']': case '}': brak--; break;
             case '@': 
             {
                 const char *esc = p;
@@ -1032,7 +1045,8 @@ static bool compileblock(vector<uint> &code, const char *&p, int wordtype)
                 p = start;
                 int inst = code.length();
                 code.add(CODE_BLOCK);
-                compilestatements(code, p, VAL_ANY, ']');
+                code.add(CODE_OFFSET|((inst+2)<<8));
+                compilestatements(code, p, VAL_ANY, braktype);
                 code.add(CODE_EXIT);
                 code[inst] |= uint(code.length() - (inst + 1))<<8;
                 return true;
@@ -1045,7 +1059,7 @@ static bool compileblock(vector<uint> &code, const char *&p, int wordtype)
                 return true;
             }
         }
-        compileblockstr(code, start, p-1, concs > 0);
+        compileblockstr(code, start, p-1, concs > 0, braktype);
         if(concs > 1) concs++;
     }        
     if(concs)
@@ -1091,7 +1105,10 @@ static bool compileword(vector<uint> &code, const char *&p, int wordtype, char *
             return true;        
         case '[':
             p++;
-            return compileblock(code, p, wordtype);
+            return compileblock(code, p, wordtype, ']');
+        case '{':
+            p++;
+            return compileblock(code, p, wordtype, '}');
         default: word = cutword(p, wordlen); break;
     }
     return word!=NULL;
@@ -1153,7 +1170,7 @@ static void compilestatements(vector<uint> &code, const char *&p, int rettype, i
             id = idents.access(idname);
             if(!id) 
             {
-                if(!isinteger(idname)) { compilestr(code, idname, idlen); delete[] idname; goto noid; }
+                if(!isnumber(idname)) { compilestr(code, idname, idlen); delete[] idname; goto noid; }
                 char *end = idname;
                 int val = int(strtol(idname, &end, 0));
                 if(*end) compilestr(code, idname, idlen);
@@ -1230,7 +1247,7 @@ static void compilestatements(vector<uint> &code, const char *&p, int rettype, i
         }
     endstatement:
         if(more) while(compilearg(code, p, VAL_ANY)) code.add(CODE_POP); 
-        p += strcspn(p, ")];/\n\0");
+        p += strcspn(p, ")}];/\n\0");
         int c = *p++;
         switch(c)
         {
@@ -1240,6 +1257,7 @@ static void compilestatements(vector<uint> &code, const char *&p, int rettype, i
 
             case ')':
             case ']':
+            case '}':
                 if(c == brak) return;
                 debugcode(debugline(line, "unexpected \"%c\""), c); 
                 break;
@@ -1253,7 +1271,7 @@ static void compilestatements(vector<uint> &code, const char *&p, int rettype, i
 
 static void compilemain(vector<uint> &code, const char *p, int rettype = VAL_ANY)
 {
-    code.add(CODE_NOP);
+    code.add(CODE_START);
     compilestatements(code, p, VAL_ANY);
     code.add(CODE_EXIT|(rettype < VAL_ANY ? rettype<<CODE_RET : 0));
 }
@@ -1265,7 +1283,53 @@ uint *compilecode(const char *p)
     compilemain(buf, p);
     uint *code = new uint[buf.length()];
     memcpy(code, buf.getbuf(), buf.length()*sizeof(uint));
+    code[0] += 0x100;
     return code;
+}
+
+void keepcode(uint *code)
+{
+    if(!code) return;
+    switch(*code&CODE_OP_MASK)
+    {
+        case CODE_START:
+            *code += 0x100;
+            return;
+    }
+    switch(code[-1]&CODE_OP_MASK)
+    {
+        case CODE_START:
+            code[-1] += 0x100;
+            break;
+        case CODE_OFFSET:
+            code -= int(code[-1]>>8);
+            *code += 0x100;
+            break;
+    }
+}
+
+void freecode(uint *code)
+{
+    if(!code) return;
+    switch(*code&CODE_OP_MASK)
+    {   
+        case CODE_START:
+            *code -= 0x100;
+            if(int(*code) < 0x100) delete[] code;
+            return;
+    }
+    switch(code[-1]&CODE_OP_MASK)
+    {
+        case CODE_START:
+            code[-1] -= 0x100;
+            if(int(code[-1]) < 0x100) delete[] &code[-1];
+            break;
+        case CODE_OFFSET:
+            code -= int(code[-1]>>8);
+            *code -= 0x100;
+            if(int(*code) < 0x100) delete[] code;
+            break;
+    }
 }
 
 static void printvar(ident *id)
@@ -1314,7 +1378,8 @@ static const uint *runcode(const uint *code, tagval &result)
         uint op = *code++;
         switch(op&0xFF)
         {
-            case CODE_NOP: continue;
+            case CODE_START: case CODE_OFFSET: continue;
+
             case CODE_POP:
                 freearg(args[--numargs]);
                 continue;        
@@ -1372,7 +1437,7 @@ static const uint *runcode(const uint *code, tagval &result)
             case CODE_BLOCK:
             {
                 uint len = op>>8;
-                args[numargs++].setcode(code);
+                args[numargs++].setcode(code+1);
                 code += len;
                 continue;
             }
@@ -1382,10 +1447,10 @@ static const uint *runcode(const uint *code, tagval &result)
                 vector<uint> buf;
                 switch(arg.type)
                 {
-                    case VAL_INT: buf.reserve(8); buf.add(CODE_NOP); compileint(buf, arg.i); buf.add(CODE_RESULT); buf.add(CODE_EXIT); break;
-                    case VAL_FLOAT: buf.reserve(8); buf.add(CODE_NOP); compilefloat(buf, arg.f); buf.add(CODE_RESULT); buf.add(CODE_EXIT); break;
+                    case VAL_INT: buf.reserve(8); buf.add(CODE_START); compileint(buf, arg.i); buf.add(CODE_RESULT); buf.add(CODE_EXIT); break;
+                    case VAL_FLOAT: buf.reserve(8); buf.add(CODE_START); compilefloat(buf, arg.f); buf.add(CODE_RESULT); buf.add(CODE_EXIT); break;
                     case VAL_STR: case VAL_MACRO: buf.reserve(64); compilemain(buf, arg.s); freearg(arg); break;
-                    default: buf.reserve(8); buf.add(CODE_NOP); compilenull(buf); buf.add(CODE_RESULT); buf.add(CODE_EXIT); break;
+                    default: buf.reserve(8); buf.add(CODE_START); compilenull(buf); buf.add(CODE_RESULT); buf.add(CODE_EXIT); break;
                 }
                 arg.setcode(buf.getbuf()+1);
                 buf.disown();
@@ -1605,16 +1670,12 @@ static const uint *runcode(const uint *code, tagval &result)
                     identflags |= id->flags&IDF_OVERRIDDEN; \
                     identlink aliaslink = { id, aliasstack, (1<<newargs)-1, argstack }; \
                     aliasstack = &aliaslink; \
-                    if(!id->code) \
-                    { \
-                        id->code = compilecode(id->getstr()); \
-                        id->code[0] += 0x100; \
-                    } \
+                    if(!id->code) id->code = compilecode(id->getstr()); \
                     uint *code = id->code; \
                     code[0] += 0x100; \
                     runcode(code+1, result); \
                     code[0] -= 0x100; \
-                    if(!(code[0]>>8)) delete[] code; \
+                    if(int(code[0]) < 0x100) delete[] code; \
                     aliasstack = aliaslink.next; \
                     identflags = oldflags; \
                     for(int i = 0; i < newargs; i++) \
@@ -1647,7 +1708,7 @@ static const uint *runcode(const uint *code, tagval &result)
                 if(!id)
                 {
                 noid:
-                    if(isinteger(args[0].s)) goto litval;
+                    if(isnumber(args[0].s)) goto litval;
                     debugcode("unknown command: %s", args[0].s);
                     forcenull(result);
                     goto forceresult;
@@ -1707,7 +1768,7 @@ static const uint *runcode(const uint *code, tagval &result)
                             int val = forceint(args[1]);
                             if(id->flags&IDF_HEX && numargs > 2)
                             {
-                                val = (val << 16) | forceint(args[2]);
+                                val = (val << 16) | (forceint(args[2])<<8);
                                 if(numargs > 3) val |= forceint(args[3]);
                             }
                             setvarchecked(id, val);
@@ -1746,9 +1807,19 @@ void executeret(const char *p, tagval &result)
     code.reserve(64);
     compilemain(code, p, VAL_ANY);
     runcode(code.getbuf()+1, result);
+    if(int(code[0]) >= 0x100) code.disown();
 }
 
-char *executeret(const char *p)
+char *executestr(const uint *code)
+{
+    tagval result;
+    runcode(code, result);
+    if(result.type == VAL_NULL) return NULL;
+    forcestr(result);
+    return result.s;
+}
+
+char *executestr(const char *p)
 {
     tagval result;
     executeret(p, result);
@@ -1773,9 +1844,68 @@ int execute(const char *p)
     compilemain(code, p, VAL_INT);
     tagval result;
     runcode(code.getbuf()+1, result);
+    if(int(code[0]) >= 0x100) code.disown();
     int i = result.getint();
     freearg(result);
     return i;
+}
+
+static inline bool getbool(const char *s)
+{
+    switch(s[0])
+    {
+        case '+': case '-': 
+            switch(s[1])
+            {
+                case '0': break;
+                case '.': return !isdigit(s[2]) || parsefloat(s) != 0;
+                default: return true;
+            }
+            // fall through
+        case '0':
+        {
+            char *end;
+            int val = strtol((char *)s, &end, 0);
+            if(val) return true;
+            switch(*end)
+            {
+                case 'e': case '.': return parsefloat(s) != 0;
+                default: return false;
+            }
+        }
+        case '.': return !isdigit(s[1]) || parsefloat(s) != 0;
+        case '\0': return false;
+        default: return true;
+    }
+}
+
+static inline bool getbool(const tagval &v)
+{
+    switch(v.type)
+    {
+        case VAL_FLOAT: return v.f!=0;
+        case VAL_INT: return v.i!=0;
+        case VAL_STR: case VAL_MACRO: return getbool(v.s);
+        default: return false;
+    }
+}
+
+bool executebool(const uint *code)
+{
+    tagval result;
+    runcode(code, result);
+    bool b = getbool(result);
+    freearg(result);
+    return b;
+}
+
+bool executebool(const char *p)
+{
+    tagval result;
+    executeret(p, result);
+    bool b = getbool(result);
+    freearg(result);
+    return b;
 }
 
 bool execfile(const char *cfgfile, bool msg)
@@ -1820,18 +1950,20 @@ void writeescapedstring(stream *f, const char *s)
 
 static bool validatealias(const char *s)
 {
-    int parens = 0, braks = 0;
+    int parens = 0, braks = 0, curly = 0;
     for(; *s; s++) switch(*s)
     {
         case '(': parens++; break;
         case ')': if(!parens) return false; parens--; break;
         case '[': braks++; break;
         case ']': if(!braks) return false; braks--; break;
+        case '{': curly++; break;
+        case '}': if(!curly) return false; curly--; break;
         case '"': s = parsestring(s + 1); if(*s != '"') return false; break;
         case '/': if(s[1] == '/') return false; break;
         case '\f': return false;
     }
-    if(braks || parens) return false;
+    if(braks || parens || curly) return false;
     return true;
 }
 
@@ -1913,39 +2045,37 @@ void floatret(float v)
 #undef ICOMMANDNAME
 #define ICOMMANDNAME(name) _stdcmd
 
-static inline bool getbool(const tagval &v)
-{
-    switch(v.type)
-    { 
-        case VAL_NULL: return false;
-        case VAL_FLOAT: return v.f!=0;
-        case VAL_INT: return v.i!=0;
-        case VAL_STR: case VAL_MACRO: return v.s[0] && (!isinteger(v.s) || parseint(v.s));
-        default: return false;
-    }
-}
-
 ICOMMAND(do, "e", (uint *body), executeret(body, *commandret));
 ICOMMAND(if, "tee", (tagval *cond, uint *t, uint *f), executeret(getbool(*cond) ? t : f, *commandret));
 ICOMMAND(?, "ttt", (tagval *cond, tagval *t, tagval *f), result(*(getbool(*cond) ? t : f)));
+
+static inline void setiter(ident &id, int i, identstack &stack)
+{
+    if(i)
+    {
+        if(id.valtype != VAL_INT)
+        {
+            if(id.valtype == VAL_STR) delete[] id.val.s;
+            cleancode(id);
+            id.valtype = VAL_INT;
+        }
+        id.val.i = i;
+        }
+        else 
+        {
+            tagval zero;
+            zero.setint(0);
+        pusharg(id, zero, stack);
+        id.flags &= ~IDF_UNKNOWN;
+    }
+        }
 ICOMMAND(loop, "rie", (ident *id, int *n, uint *body),
 {
     if(*n <= 0 || id->type!=ID_ALIAS) return;
     identstack stack;
     loopi(*n)
     {
-        if(i) 
-        {
-            if(id->valtype != VAL_INT) { if(id->valtype == VAL_STR) delete[] id->val.s; freecode(*id); id->valtype = VAL_INT; } 
-            id->val.i = i;
-        }
-        else 
-        {
-            tagval zero;
-            zero.setint(0);
-            pusharg(*id, zero, stack);
-            id->flags &= ~IDF_UNKNOWN;
-        }
+        setiter(*id, i, stack);
         execute(body);
     }
     poparg(*id);
@@ -1956,24 +2086,13 @@ ICOMMAND(loopwhile, "riee", (ident *id, int *n, uint *cond, uint *body),
     identstack stack;
     loopi(*n)
     {
-        if(i)
-        {
-            if(id->valtype != VAL_INT) { if(id->valtype == VAL_STR) delete[] id->val.s; freecode(*id); id->valtype = VAL_INT; }
-            id->val.i = i;
-        }
-        else 
-        {
-            tagval zero;
-            zero.setint(0);
-            pusharg(*id, zero, stack);
-            id->flags &= ~IDF_UNKNOWN;
-        }
-        if(!execute(cond)) break;
+        setiter(*id, i, stack);
+        if(!executebool(cond)) break;
         execute(body);
     }
     poparg(*id);
 });
-ICOMMAND(while, "ee", (uint *cond, uint *body), while(execute(cond)) execute(body));
+ICOMMAND(while, "ee", (uint *cond, uint *body), while(executebool(cond)) execute(body));
 ICOMMAND(loopconcat, "rie", (ident *id, int *n, uint *body),
 {
     if(*n <= 0 || id->type!=ID_ALIAS) return;
@@ -1981,18 +2100,7 @@ ICOMMAND(loopconcat, "rie", (ident *id, int *n, uint *body),
     vector<char> s;
     loopi(*n)
     {
-        if(i)
-        {
-            if(id->valtype != VAL_INT) { if(id->valtype == VAL_STR) delete[] id->val.s; freecode(*id); id->valtype = VAL_INT; }
-            id->val.i = i;
-        }
-        else
-        {
-            tagval zero;
-            zero.setint(0);
-            pusharg(*id, zero, stack);
-            id->flags &= ~IDF_UNKNOWN;
-        }
+        setiter(*id, i, stack);
         tagval v;
         executeret(body, v);
         const char *vstr = v.getstr();
@@ -2176,7 +2284,7 @@ void looplist(ident *id, const char *list, const uint *body, bool search)
         {
             if(id->valtype == VAL_STR) delete[] id->val.s;
             else id->valtype = VAL_STR;
-            freecode(*id);
+            cleancode(*id);
             id->val.s = val;
         }
         else 
@@ -2186,7 +2294,7 @@ void looplist(ident *id, const char *list, const uint *body, bool search)
             pusharg(*id, t, stack);
             id->flags &= ~IDF_UNKNOWN;
         }
-        if(execute(body) && search) { intret(n-1); break; }
+        if(executebool(body) && search) { intret(n-1); break; }
     }
     if(n) poparg(*id);
 }
@@ -2317,7 +2425,7 @@ ICOMMAND(>f, "ff", (float *a, float *b), intret((int)(*a > *b)));
 ICOMMAND(<=f, "ff", (float *a, float *b), intret((int)(*a <= *b)));
 ICOMMAND(>=f, "ff", (float *a, float *b), intret((int)(*a >= *b)));
 ICOMMAND(^, "ii", (int *a, int *b), intret(*a ^ *b));
-ICOMMAND(!, "i", (int *a), intret(*a == 0));
+ICOMMAND(!, "t", (tagval *a), intret(!getbool(*a)));
 ICOMMAND(&, "ii", (int *a, int *b), intret(*a & *b));
 ICOMMAND(|, "ii", (int *a, int *b), intret(*a | *b));
 ICOMMAND(~, "i", (int *a), intret(~*a));
@@ -2328,15 +2436,23 @@ ICOMMAND(<<, "ii", (int *a, int *b), intret(*a << *b));
 ICOMMAND(>>, "ii", (int *a, int *b), intret(*a >> *b));
 ICOMMAND(&&, "e1V", (tagval *args, int numargs),
 {
-    int val = 1;
-    loopi(numargs) { val = execute(args[i].code); if(!val) break; }
-    intret(val);
+    if(!numargs) intret(1);
+    else loopi(numargs) 
+    {   
+        if(i) freearg(*commandret);
+        executeret(args[i].code, *commandret);
+        if(!getbool(*commandret)) break;
+    }
 });
 ICOMMAND(||, "e1V", (tagval *args, int numargs),
 {
-    int val = 0;
-    loopi(numargs) { val = execute(args[i].code); if(val) break; }
-    intret(val);
+    if(!numargs) intret(0);
+    else loopi(numargs)
+    { 
+        if(i) freearg(*commandret);
+        executeret(args[i].code, *commandret);
+        if(getbool(*commandret)) break;
+    }
 });
 
 ICOMMAND(div, "ii", (int *a, int *b), intret(*b ? *a / *b : 0));
@@ -2386,7 +2502,7 @@ ICOMMAND(cond, "ee2V", (tagval *args, int numargs),
 {
     for(int i = 0; i < numargs; i += 2)
     {
-        if(execute(args[i].code))
+        if(executebool(args[i].code))
         {
             if(i+1 < numargs) executeret(args[i+1].code, *commandret);
             break;
