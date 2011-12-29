@@ -11,7 +11,7 @@ import string
 class masterserver(object):
 
     settings = {
-        "host": "localhost",
+        "host": "sauerbomber.org",
         "port": 28787,
         "log": "master.log"
     }
@@ -35,6 +35,7 @@ class masterserver(object):
             else:
                 self.logfile = open(self.settings["log"], "w")
         self.logfile.write("\n" + time.strftime("[%a %m/%d/%Y %H:%M:%S] ") + text)
+        self.logfile.flush()
 
     def getserversfromproxy(self):
         try:
@@ -64,8 +65,9 @@ class masterserver(object):
         s_str = ""
         for server in self.servers:
             if s_str == "":
-                s_str = "%s\naddserver %s %s\n" %(s_str, server["ip"], server["port"])
-            s_str = "addserver %s %s\n" %(server["ip"], server["port"])
+                s_str = "addserver %s %s\n" %(server["ip"], server["port"])
+            else:
+                s_str = "%saddserver %s %s\n" %(s_str, server["ip"], server["port"])
         return s_str
 
     def register(self, ip, port):
@@ -101,9 +103,13 @@ class masterserver(object):
         data = con.recv(4096)
         # self.log(str(data))
         if data == "list\n":
-            con.send(self.getserversfromproxy() + "\n")
-            con.send(self.getlocalservers())
-            self.log("successfully sent server list")
+            serverstr = "%s%s" %(self.getlocalservers(), self.getserversfromproxy())
+            con.send(serverstr)
+            # con.send("%s%sself.getserversfromproxy() + "\n" + self.getlocalservers())
+            # con.send(self.getlocalservers())
+            self.log("=== successfully sent server list ===")
+            self.log(serverstr)
+            self.log("=== successfully sent server list ===")
         else:
             if data[0:7] == "regserv":
                 port = data[8:].replace("\n","").replace("\r","")
@@ -113,7 +119,6 @@ class masterserver(object):
                     i = 0
                     while i < self.updatesecs and not self.shutdown:
                         time.sleep(1)
-                    self.unregister(ip, port)
                 else:
                     self.log("failed to register server %s %s" %(ip, port))
                     con.send("failreg\n")
@@ -159,6 +164,7 @@ class masterserver(object):
             except:
                 self.log("shutdown...")
                 self.shutdown = True
+                self.logfile.close()
                 return
         
 if __name__ == '__main__':
