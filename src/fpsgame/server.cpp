@@ -565,6 +565,7 @@ namespace server
             if(victim==actor || isteam(victim->team, actor->team)) return -1;
             return 1;
         }
+        virtual bool canhit(clientinfo *victim, clientinfo *actor) { return true; }
         virtual void died(clientinfo *victim, clientinfo *actor) {}
         virtual bool canchangeteam(clientinfo *ci, const char *oldteam, const char *newteam) { return true; }
         virtual void changeteam(clientinfo *ci, const char *oldteam, const char *newteam) {}
@@ -586,11 +587,13 @@ namespace server
     #include "ctf.h"
     #include "bomb.h"
     #include "race.h"
+    #include "hideandseek.h"
 
     captureservmode capturemode;
     ctfservmode ctfmode;
     bombservmode bombmode;
     raceservmode racemode;
+    hideandseekservmode hideandseekmode;
     servmode *smode = NULL;
 
     bool canspawnitem(int type) {
@@ -1476,6 +1479,7 @@ namespace server
         else if(m_ctf) smode = &ctfmode;
         else if(m_bomb) smode = &bombmode;
         else if(m_race) smode = &racemode;
+        else if(m_hideandseek) smode = &hideandseekmode;
         else smode = NULL;
 
         if(m_timed && smapname[0]) sendf(-1, 1, "ri2", N_TIMEUP, gamemillis < gamelimit && !interm ? max((gamelimit - gamemillis)/1000, 1) : 0);
@@ -1511,6 +1515,12 @@ namespace server
         			}
         			else sendspawn(ci);
         		}
+        } else {
+            loopv(clients)
+            {
+                clientinfo *ci = clients[i];
+                if(m_mp(gamemode) && ci->state.state!=CS_SPECTATOR) sendspawn(ci);
+            }
         }
     }
 
@@ -1678,6 +1688,7 @@ namespace server
 	
     void dodamage(clientinfo *target, clientinfo *actor, int damage, int gun, const vec &hitpush = vec(0, 0, 0))
     {
+        if (smode && !smode->canhit(target, actor)) return;
         gamestate &ts = target->state;
         ts.dodamage(damage);
         if(target!=actor && !isteam(target->team, actor->team)) actor->state.damage += damage;
@@ -2957,6 +2968,7 @@ namespace server
             #include "ctf.h"
             #include "bomb.h"
             #include "race.h"
+            #include "hideandseek.h"
             #undef PARSEMESSAGES
 
             case -1:

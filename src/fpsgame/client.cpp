@@ -46,12 +46,14 @@ namespace game
     #include "ctf.h"
     #include "bomb.h"
     #include "race.h"
+    #include "hideandseek.h"
 
     clientmode *cmode = NULL;
     captureclientmode capturemode;
     ctfclientmode ctfmode;
     bombclientmode bombmode;
     raceclientmode racemode;
+    hideandseekclientmode hideandseekmode;
 
     void setclientmode()
     {
@@ -59,6 +61,7 @@ namespace game
         else if(m_ctf) cmode = &ctfmode;
         else if(m_bomb) cmode = &bombmode;
         else if(m_race) cmode = &racemode;
+        else if(m_hideandseek) cmode = &hideandseekmode;
         else cmode = NULL;
     }
 
@@ -1655,6 +1658,7 @@ namespace game
             #include "ctf.h"
             #include "bomb.h"
             #include "race.h"
+            #include "hideandseek.h"
             #undef PARSEMESSAGES
 
             case N_ANNOUNCE:

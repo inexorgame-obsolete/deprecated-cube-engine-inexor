@@ -62,6 +62,7 @@ enum                            // static entity types
     P_FRICTION,
     P_JUMP,
     P_SPEED,
+    // I_INVISIBLE,                // hide and seek
     MAXENTTYPES
 };
 
@@ -110,7 +111,10 @@ enum
     M_BOMB       = 1<<20,
     M_RACE       = 1<<21,
     M_TIMEFORWARD= 1<<22,
-    M_OBSTACLES  = 1<<23
+    M_OBSTACLES  = 1<<23,
+    M_HIDEANDSEEK= 1<<24,
+    M_FREEZE     = 1<<25 /*,
+    M_SAFARI     = 1<<26 */
 };
 
 static struct gamemodeinfo
@@ -146,8 +150,11 @@ static struct gamemodeinfo
     { "lms", M_LMS, "Last Man Standing: The last player alive wins." },
     { "bomberman", M_LMS | M_BOMB | M_OBSTACLES, "Bomberman: Place bombs to kill enemies. Collect items to increase amount of bombs or damage radius. Survive to win." },
     { "bomberman team", M_LMS | M_BOMB | M_TEAM | M_OBSTACLES, "Bomberman Team: Place bombs to kill \fs\f3enemies\fr. Collect items to increase amount of bombs or damage radius. Your team wins if one player survives." },
-    { "race", M_RACE | M_TIMEFORWARD | M_OBSTACLES, "Race: Be faster than the others" }
-
+    { "race", M_RACE | M_TIMEFORWARD | M_OBSTACLES, "Race: Be the first who completes 3 laps. Kill people to repulse them." },
+    { "hideandseek", M_HIDEANDSEEK | M_TEAM | M_OBSTACLES, "Hide and Seek: Hiders hides, seekers seeks. No teamkills." },
+    { "insta hideandseek", M_HIDEANDSEEK | M_NOITEMS | M_INSTA | M_TEAM | M_OBSTACLES, "Hide and Seek: Hiders hides, seekers seeks. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
+    { "hideandseek freeze", M_HIDEANDSEEK | M_TEAM | M_FREEZE | M_OBSTACLES, "Hide and Seek: Hiders hides, Seekers seeks. Hiders freezes Seekers, Seekers catches Hiders. No teamkills." } /*,
+    { "hideandseek safari", M_HIDEANDSEEK | M_TEAM | M_SAFARI | M_OBSTACLES, "Hide and Seek: Hiders hides, Seekers seeks. Seekers drugs Hiders, then hunt them down." } */
 };
 
 #define STARTGAMEMODE (-3)
@@ -175,8 +182,11 @@ static struct gamemodeinfo
 #define m_lms          (m_check(gamemode, M_LMS))
 #define m_bomb         (m_check(gamemode, M_BOMB))
 #define m_race         (m_check(gamemode, M_RACE))
+#define m_hideandseek  (m_check(gamemode, M_HIDEANDSEEK))
+
 #define m_obstacles    (m_check(gamemode, M_OBSTACLES))
 #define m_timeforward  (m_check(gamemode, M_TIMEFORWARD))
+#define m_freeze       (m_check(gamemode, M_FREEZE))
 
 #define m_demo         (m_check(gamemode, M_DEMO))
 #define m_edit         (m_check(gamemode, M_EDIT))
@@ -649,6 +659,15 @@ struct fpsstate
             ammo[GUN_PISTOL] = 0;
             ammo[GUN_GL] = 8;
         }
+        else if(m_hideandseek)
+        {
+            health = 100;
+            armour = 0;
+            gunselect = GUN_RL;
+            ammo[GUN_RL] = 10;
+            ammo[GUN_PISTOL] = 0;
+            ammo[GUN_GL] = 0;
+        }
         else
         {
             ammo[GUN_PISTOL] = m_sp ? 80 : 40;
@@ -805,6 +824,7 @@ namespace game
         virtual void preload() {}
         virtual int clipconsole(int w, int h) { return 0; }
         virtual void drawhud(fpsent *d, int w, int h) {}
+        virtual bool isinvisible(fpsent *d) { return false; }
         virtual void rendergame() {}
         virtual int getplayerattackanim(fpsent *d, int attack) { return attack; }
         virtual int getplayerholdanim(fpsent *d, int hold) { return hold; }

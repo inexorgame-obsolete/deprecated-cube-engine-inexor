@@ -257,6 +257,8 @@ namespace game
         }
     }
 
+    VARP(bombsmoke, 0, 1, 1);
+
     void updatebouncers(int time)
     {
         loopv(bouncers)
@@ -272,7 +274,7 @@ namespace game
             {
                 vec pos(bnc.o);
                 pos.add(vec(bnc.offset).mul(bnc.offsetmillis/float(OFFSETMILLIS)));
-                regular_particle_splash(PART_SMOKE, 1, 150, pos, 0x0080f0, 6.4f, 120, -120);
+                if(bombsmoke) regular_particle_splash(PART_SMOKE, 1, 150, pos, 0x0080f0, 6.4f, 120, -120);
             }
             vec old(bnc.o);
             bool stopped = false;
@@ -1026,6 +1028,7 @@ namespace game
 // Mapvars
 
     VARP(bombcolliderad, 0, 16, 1000);
+    VARP(bombbarrier, 0, 1, 1);
 	
     void renderbouncers()
     {
@@ -1050,12 +1053,13 @@ namespace game
             {
                 vec mov_from(0, 0, bombcolliderad-bbarr_overlap);                                                // shift the lower part of the Barrier upwards
                 vec mov_to(0, 0, -bombcolliderad+bbarr_height);                                                  // shift the upper part downwards
-                vec floor = bnc.o; floor.z = floor.z - raycube(floor, vec(0, 0, -1), 0.2f, RAY_CLIPMAT); // Get the rays on the floor.
-                int tremble = (rnd(bbarr_tremblepeak*2)) - bbarr_tremblepeak;                            // Compute random tremble
+                vec floor = bnc.o; floor.z = floor.z - raycube(floor, vec(0, 0, -1), 0.2f, RAY_CLIPMAT);         // Get the rays on the floor.
+                int tremble = (rnd(bbarr_tremblepeak*2)) - bbarr_tremblepeak;                                    // Compute random tremble
 
-		regularshape(bbarr_type, bombcolliderad + tremble, bbarr_color, bbarr_dir, bbarr_num, bbarr_fade, floor, bbarr_size, bbarr_gravity, &mov_from, &mov_to);
-                rendermodel(&bnc.light, "projectiles/bomb", ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_DYNSHADOW);            
-	    }
+                if(bombbarrier)
+                    regularshape(bbarr_type, bombcolliderad + tremble, bbarr_color, bbarr_dir, bbarr_num, bbarr_fade, floor, bbarr_size, bbarr_gravity, &mov_from, &mov_to);
+                rendermodel(&bnc.light, "projectiles/bomb", ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_DYNSHADOW);
+            }
             // DEBUG: vvv REMOVE RENDERMODEL FOR SPLINTERS vvv
             /*
             else if(bnc.bouncetype==BNC_SPLINTER)
