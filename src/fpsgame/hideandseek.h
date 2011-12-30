@@ -273,7 +273,7 @@ struct hideandseekclientmode : clientmode
     }
 
     void setfreezedstate(clientinfo *ci, bool state) {
-        loopv(seekersinfos) if(seekersinfos[i]->cn != ci->clientnum) seekersinfos[i]->freezed = state;
+        loopv(seekersinfos) if(seekersinfos[i]->cn == ci->clientnum) seekersinfos[i]->freezed = state;
     }
 
     int getnonfreezedseekers() {
