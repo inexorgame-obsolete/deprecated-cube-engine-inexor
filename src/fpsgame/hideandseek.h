@@ -22,7 +22,7 @@ struct hideandseekclientmode : clientmode
 
 #ifndef SERVMODE
 
-#define STARTINVISIBLESECS 20
+#define STARTINVISIBLESECS 30
 #define ishider(ci) (strcmp(ci->team, TEAM_HIDE) == 0 && ci->state != CS_SPECTATOR ? true : false)
 
     void setup() {
@@ -160,7 +160,6 @@ struct hideandseekclientmode : clientmode
         if (getactiveplayers().length() >= 2 && getnonfreezedseekers() == 0) return true;
         // check if no hider is alive
         loopv(clients) if (ishider(clients[i])) return false;
-        // sendservmsg("no hiders found: finished");
         return true;
     }
 
@@ -210,6 +209,7 @@ struct hideandseekclientmode : clientmode
                 return false;
             }
         }
+        conoutf("d");
         return true;
     }
 
@@ -217,12 +217,22 @@ struct hideandseekclientmode : clientmode
         if (target && ishider(target)) {
             setseeker(target);
             int remaining = getremaininghiders();
-            if (remaining > 0) {
-                defformatstring(msg)("%s killed %s! %d Hiders remaining!", actor->name, target->name, remaining);
-                sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 3000, E_ZOOM_OUT, msg);
+            if (!actor) {
+                if (remaining > 0) {
+                    defformatstring(msg)("%s suicided! %d Hiders remaining!", target->name, remaining);
+                    sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 3000, E_ZOOM_OUT, msg);
+                } else {
+                    defformatstring(msg)("%s suicided! All Hiders eliminated!", target->name);
+                    sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 3000, E_ZOOM_OUT, msg);
+                }
             } else {
-                defformatstring(msg)("%s killed %s! All Hiders eliminated!", actor->name, target->name);
-                sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 3000, E_ZOOM_OUT, msg);
+                if (remaining > 0) {
+                    defformatstring(msg)("%s killed %s! %d Hiders remaining!", actor->name, target->name, remaining);
+                    sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 3000, E_ZOOM_OUT, msg);
+                } else {
+                    defformatstring(msg)("%s killed %s! All Hiders eliminated!", actor->name, target->name);
+                    sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 3000, E_ZOOM_OUT, msg);
+                }
             }
         }
     }
@@ -232,8 +242,6 @@ struct hideandseekclientmode : clientmode
     }
 
     void setseeker(clientinfo *ci) {
-        sendservmsg("setseeker:");
-        sendservmsg(ci->name);
         copystring(ci->team, TEAM_SEEK, MAXTEAMLEN+1);
         sendf(-1, 1, "riisi", N_SETTEAM, ci->clientnum, ci->team, 1);
         seekersinfos.add(new seekersinfo(ci->clientnum, false));
@@ -256,13 +264,6 @@ struct hideandseekclientmode : clientmode
 
     int getremaininghiders() {
         int numhiders = 0;
-        /*
-        vector<clientinfo*> activeplayers = getactiveplayers();
-        loopv(activeplayers) {
-            clientinfo* ci = activeplayers[i];
-            if (ishider(ci)) numhiders++;
-        }
-        */
         loopv(clients) if (ishider(clients[i])) numhiders++;
         return numhiders;
     }
