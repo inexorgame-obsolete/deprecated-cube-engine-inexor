@@ -712,36 +712,19 @@ namespace game
         ammohuddown[3] = { GUN_RIFLE, GUN_SG, GUN_PISTOL },
         ammohudcycle[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
 
-    ICOMMAND(ammohudup, "sss", (char *w1, char *w2, char *w3),
+    ICOMMAND(ammohudup, "V", (tagval *args, int numargs),
     {
-        int i = 0;
-        if(w1[0]) ammohudup[i++] = parseint(w1);
-        if(w2[0]) ammohudup[i++] = parseint(w2);
-        if(w3[0]) ammohudup[i++] = parseint(w3);
-        while(i < 3) ammohudup[i++] = -1;
+        loopi(3) ammohudup[i] = i < numargs ? getweapon(args[i].getstr()) : -1;
     });
 
-    ICOMMAND(ammohuddown, "sss", (char *w1, char *w2, char *w3),
+    ICOMMAND(ammohuddown, "V", (tagval *args, int numargs),
     {
-        int i = 0;
-        if(w1[0]) ammohuddown[i++] = parseint(w1);
-        if(w2[0]) ammohuddown[i++] = parseint(w2);
-        if(w3[0]) ammohuddown[i++] = parseint(w3);
-        while(i < 3) ammohuddown[i++] = -1;
+        loopi(3) ammohuddown[i] = i < numargs ? getweapon(args[i].getstr()) : -1;
     });
 
-    ICOMMAND(ammohudcycle, "ssssssss", (char *w1, char *w2, char *w3, char *w4, char *w5, char *w6, char *w7, char *w8),
+    ICOMMAND(ammohudcycle, "V", (tagval *args, int numargs),
     {
-        int i = 0;
-        if(w1[0]) ammohudcycle[i++] = parseint(w1);
-        if(w2[0]) ammohudcycle[i++] = parseint(w2);
-        if(w3[0]) ammohudcycle[i++] = parseint(w3);
-        if(w4[0]) ammohudcycle[i++] = parseint(w4);
-        if(w5[0]) ammohudcycle[i++] = parseint(w5);
-        if(w6[0]) ammohudcycle[i++] = parseint(w6);
-        if(w7[0]) ammohudcycle[i++] = parseint(w7);
-        if(w8[0]) ammohudcycle[i++] = parseint(w8);
-        while(i < 8) ammohudcycle[i++] = -1;
+        loopi(8) ammohudcycle[i] = i < numargs ? getweapon(args[i].getstr()) : -1;
     });
 
     VARP(ammohud, 0, 1, 1);

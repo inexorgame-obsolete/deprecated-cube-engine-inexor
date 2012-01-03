@@ -973,6 +973,7 @@ namespace game
     };
     extern vector<bouncer *> bouncers;
 
+    extern int getweapon(const char *name);
     extern void shoot(fpsent *d, const vec &targ);
     extern void shoteffects(int gun, const vec &from, const vec &to, fpsent *d, bool local, int id, int prevaction);
     extern void explode(bool local, fpsent *owner, const vec &v, dynent *safe, int dam, int gun);

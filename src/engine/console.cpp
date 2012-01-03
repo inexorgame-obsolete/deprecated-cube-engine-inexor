@@ -628,7 +628,11 @@ void writebinds(stream *f)
         loopv(binds)
         {
             keym &km = *binds[i];
-            if(*km.actions[j]) f->printf("%s \"%s\" [%s]\n", cmds[j], km.name, km.actions[j]);
+            if(*km.actions[j]) 
+            {
+                if(validateblock(km.actions[j])) f->printf("%s %s [%s]\n", cmds[j], escapestring(km.name), km.actions[j]);
+                else f->printf("%s %s %s\n", cmds[j], escapestring(km.name), escapestring(km.actions[j]));
+            }
         }
     }
 }
