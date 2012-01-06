@@ -175,6 +175,8 @@ struct animinterpinfo // used for animation blending of animated characters
     void *lastmodel;
 
     animinterpinfo() : lastswitch(-1), lastmodel(NULL) {}
+
+    void reset() { lastswitch = -1; }
 };
 
 #define MAXANIMPARTS 3
@@ -215,6 +217,7 @@ struct dynent : physent                         // animated characters, or chara
     {
         physent::reset();
         stopmoving();
+        loopi(MAXANIMPARTS) animinterp[i].reset();
     }
 
     vec abovehead() { return vec(o).add(vec(0, 0, aboveeye+4)); }
