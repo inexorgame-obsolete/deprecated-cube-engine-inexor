@@ -32,22 +32,25 @@ struct vec
     bool iszero() const { return x==0 && y==0 && z==0; }
     float squaredlen() const { return x*x + y*y + z*z; }
     float dot2(const vec &o) const { return x*o.x + y*o.y; }
-    float dot(const vec &o) const { return x*o.x + y*o.y + z*o.z; }
-    vec &mul(const vec &o)   { x *= o.x; y *= o.y; z *= o.z; return *this; }
-    vec &mul(float f)        { x *= f; y *= f; z *= f; return *this; }
-    vec &div(const vec &o)   { x /= o.x; y /= o.y; z /= o.z; return *this; }
-    vec &div(float f)        { x /= f; y /= f; z /= f; return *this; }
-    vec &add(const vec &o)   { x += o.x; y += o.y; z += o.z; return *this; }
-    vec &add(float f)        { x += f; y += f; z += f; return *this; }
-    vec &sub(const vec &o)   { x -= o.x; y -= o.y; z -= o.z; return *this; }
-    vec &sub(float f)        { x -= f; y -= f; z -= f; return *this; }
-    vec &neg2()              { x = -x; y = -y; return *this; }
-    vec &neg()               { x = -x; y = -y; z = -z; return *this; }
-    vec &min(const vec &o)   { x = ::min(x, o.x); y = ::min(y, o.y); z = ::min(z, o.z); return *this; }
-    vec &max(const vec &o)   { x = ::max(x, o.x); y = ::max(y, o.y); z = ::max(z, o.z); return *this; }
-    vec &min(float f)        { x = ::min(x, f); y = ::min(y, f); z = ::min(z, f); return *this; }
-    vec &max(float f)        { x = ::max(x, f); y = ::max(y, f); z = ::max(z, f); return *this; }
-    vec &clamp(float f, float h) { x = ::clamp(x, f, h); y = ::clamp(y, f, h); z = ::clamp(z, f, h); return *this; }
+    float dot(const vec &o) const  { return x*o.x + y*o.y + z*o.z; }
+    vec &mul(const vec &o)   { x *= o.x;       y *= o.y;       z *= o.z;       return *this; }
+    vec &mul(float f)        { x *= f;         y *= f;         z *= f;         return *this; }
+    vec &div(const vec &o)   { x /= o.x;       y /= o.y;       z /= o.z;       return *this; }
+    vec &div(float f)        { x /= f;         y /= f;         z /= f;         return *this; }
+    vec &add(const vec &o)   { x += o.x;       y += o.y;       z += o.z;       return *this; }
+    vec &add(float f)        { x += f;         y += f;         z += f;         return *this; }
+    vec &sub(const vec &o)   { x -= o.x;       y -= o.y;       z -= o.z;       return *this; }
+    vec &sub(float f)        { x -= f;         y -= f;         z -= f;         return *this; }
+    vec &neg2()              { x = -x;         y = -y;                         return *this; }
+    vec &neg()               { x = -x;         y = -y;         z = -z;         return *this; }
+    vec &pow()               { return mul(*this); }
+    vec &pow(float f)        { x = ::pow(x, f);    y = ::pow(y, f);    z = ::pow(z, f);    return *this; }
+    vec &pow(const vec &o)   { x = ::pow(x, o.x);  y = ::pow(y, o.y);  z = ::pow(z, o.z);  return *this; }
+    vec &min(const vec &o)   { x = ::min(x, o.x);  y = ::min(y, o.y);  z = ::min(z, o.z);  return *this; }
+    vec &max(const vec &o)   { x = ::max(x, o.x);  y = ::max(y, o.y);  z = ::max(z, o.z);  return *this; }
+    vec &min(float f)        { x = ::min(x, f);    y = ::min(y, f);    z = ::min(z, f);    return *this; }
+    vec &max(float f)        { x = ::max(x, f);    y = ::max(y, f);    z = ::max(z, f);    return *this; }
+    vec &clamp(float f, float h) { x = ::clamp(x, f, h);   y = ::clamp(y, f, h);   z = ::clamp(z, f, h);   return *this; }
     float magnitude2() const { return sqrtf(dot2(*this)); }
     float magnitude() const  { return sqrtf(squaredlen()); }
     vec &normalize()         { div(magnitude()); return *this; }
