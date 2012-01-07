@@ -1699,6 +1699,11 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 	steerconrol = steerconrol_land;
     }
 
+    d = vec(0).lerp( // C(): Interpolate between (0,0,0) and d to reduce control over the movement
+		vec(d), //vec(0.0f, 0.0f, 0.0f),
+		steerconrol), // Interpolation amount for C()                    
+
+    
     /*
      * Friction:
      *
@@ -1708,15 +1713,14 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
      * pl->vel + d = Modified movement (over a specified duration 's')
      */
     pl->vel.lerp( // A(): Interpolate between vel and B() (short: d+vel) to account for the fact, that duration (= time between this and last frame = curtime) us not 's'
-		 vec(d).sub(pl->vel).lerp( // B(): Interpolate between C() (short: d) and d+vel to modify inertia (-> definition of d)
-					  vec(0.f).lerp( // C(): Interpolate between (0,0,0) and d to reduce control over the movement
-							vec(d),
-							steerconrol), // Interpolation amount for C()
+		 vec(d).sub(pl->vel).lerp( // B(): Interpolate between d and d+vel to modify inertia (-> definition of d)
+					  d,
 					  inertia), // Interpolation amount for B()
 		 pl->vel,
-		 friction*pow(                    // Interpolation amount for A()
-			      1 -1/oldfriction,  
-			      curtime/20.0f));
+		 pow(                    // Interpolation amount for A()
+		     1 -1/oldfriction,  
+		     curtime/20.0f));
+    pl->vel.div(1+0.05f*(friction-1));
 }
 
 void modifygravity(physent *pl, bool water, int curtime)
