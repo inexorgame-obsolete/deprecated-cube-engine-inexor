@@ -215,7 +215,7 @@ namespace game
         generation--;
         if(generation<1) return;
         vec to(vel);
-        float fac = ((d->bombradius*d->bombradius)+30.0f)*(d->bombradius-generation+1);
+        float fac = ((d->bombradius*d->bombradius)+BOMB_DAMRAD)*(d->bombradius-generation+1);
         to.x = (to.x * fac);// + (rnd(60)-15.0f);
         to.y = (to.y * fac) + (((float)rnd(120))-60.0f);
         to.z+=5.0f;
@@ -225,10 +225,10 @@ namespace game
 
     void spawnsplinters(const vec &p, fpsent *d)
     {
-        for(int i=1; i<=36; i++) // je fortgeschrittener, desto weniger verzweigungen
+        for(int i=1; i<=48; i++) // je fortgeschrittener, desto weniger verzweigungen
         {
-            vec to(sin(36.0f/((float) i)), cos(36.0f/((float) i)), 5);
-            float fac = (d->bombradius*d->bombradius)+30.0f;
+            vec to(sin(48.0f/((float) i)), cos(48.0f/((float) i)), 5);
+            float fac = (d->bombradius*d->bombradius)+BOMB_DAMRAD;
             to.x*=fac;
             to.y*=fac;
             to.add(p);

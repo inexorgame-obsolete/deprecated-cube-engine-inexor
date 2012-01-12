@@ -912,6 +912,7 @@ namespace game
         {
             if(d->state!=CS_SPECTATOR) drawhudicons(d);
             drawhudannounce(w, h);
+            drawosd(w, h);
             if(cmode) cmode->drawhud(d, w, h);
         }
 

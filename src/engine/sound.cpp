@@ -199,8 +199,14 @@ Mix_Music *loadmusic(const char *name)
     }
     return music;
 }
- 
-void startmusic(char *name, char *cmd)
+
+SVARP(musicdir, "music");
+SVARP(currentartist, "zero-project");
+SVARP(currentalbum, "e-world");
+SVARP(currentsong, "");
+SVARP(albumcover, "Cover.jpg");
+
+void startmusic(char *name, char *cmd, char *cmd_success, char *cmd_failed)
 {
     if(nosound) return;
     stopmusic();
@@ -217,16 +223,125 @@ void startmusic(char *name, char *cmd)
             Mix_PlayMusic(music, cmd[0] ? 0 : -1);
             Mix_VolumeMusic((musicvol*MAXVOL)/255);
             intret(1);
+            execute(cmd_success);
         }
         else
         {
             conoutf(CON_ERROR, "could not play music: %s", file);
             intret(0); 
+            execute(cmd_failed);
         }
     }
 }
 
-COMMANDN(music, startmusic, "ss");
+COMMANDN(music, startmusic, "ssss");
+
+/*
+void previousalbum(char *cmd, char *cmd_success, char *cmd_failed)
+{
+    defformatstring(albumdir)("packages/%s/%s/%s", musicdir, currentartist, currentalbum);
+    vector<char *> files;
+    listfiles(albumdir, NULL, files);
+    if (files.length() < 2) return;
+    int currentindex = -1;
+    loopv(files) if (strcmp(files[i], currentsong) == 0) {
+        currentindex = i;
+    }
+    if (currentindex <= 0) currentindex = files.length();
+    int nextindex = (currentindex - 1) % files.length();
+    defformatstring(file)("%s/%s/%s/%s", musicdir, currentartist, currentalbum, files[nextindex]);
+    startmusic(file, cmd, cmd_success, cmd_failed);
+    setsvar("currentsong", files[nextindex]);
+}
+COMMAND(previousalbum, "sss");
+*/
+
+void nextsong(char *cmd, char *cmd_success, char *cmd_failed)
+{
+    defformatstring(albumdir)("packages/%s/%s/%s", musicdir, currentartist, currentalbum);
+    vector<char *> files;
+    listfiles(albumdir, "ogg", files);
+    removehiddendirs(files);
+    sortfiles(files);
+    int currentindex = -1;
+    loopv(files) if (strcmp(files[i], currentsong) == 0) {
+        currentindex = i;
+    }
+    int nextindex = (currentindex + 1) % files.length();
+    if (nextindex < currentindex || (nextindex == currentindex && strcmp(files[nextindex], currentsong) == 0)) {
+        nextalbum(cmd, cmd_success, cmd_failed);
+    } else {
+        defformatstring(file)("%s/%s/%s/%s.ogg", musicdir, currentartist, currentalbum, files[nextindex]);
+        startmusic(file, cmd, cmd_success, cmd_failed);
+        setsvar("currentsong", files[nextindex]);
+    }
+}
+COMMAND(nextsong, "sss");
+
+void previoussong(char *cmd, char *cmd_success, char *cmd_failed)
+{
+    defformatstring(albumdir)("packages/%s/%s/%s", musicdir, currentartist, currentalbum);
+    vector<char *> files;
+    listfiles(albumdir, "ogg", files);
+    removehiddendirs(files);
+    sortfiles(files);
+    int currentindex = -1;
+    loopv(files) if (strcmp(files[i], currentsong) == 0) {
+        currentindex = i;
+    }
+    if (currentindex <= 0) currentindex = files.length();
+    int nextindex = (currentindex - 1) % files.length();
+    defformatstring(file)("%s/%s/%s/%s.ogg", musicdir, currentartist, currentalbum, files[nextindex]);
+    startmusic(file, cmd, cmd_success, cmd_failed);
+    setsvar("currentsong", files[nextindex]);
+}
+COMMAND(previoussong, "sss");
+
+void nextalbum(char *cmd, char *cmd_success, char *cmd_failed)
+{
+    defformatstring(artistdir)("packages/%s/%s", musicdir, currentartist);
+    vector<char *> files;
+    listfiles(artistdir, NULL, files);
+    removehiddendirs(files);
+    sortfiles(files);
+    int currentindex = -1;
+    loopv(files) if (strcmp(files[i], currentalbum) == 0) {
+        currentindex = i;
+    }
+    int nextindex = (currentindex + 1) % files.length();
+    if (nextindex < currentindex || (nextindex == currentindex && strcmp(files[nextindex], currentalbum) == 0)) {
+        nextartist(cmd, cmd_success, cmd_failed);
+    } else {
+        setsvar("currentalbum", files[nextindex]);
+        nextsong(cmd, cmd_success, cmd_failed);
+    }
+}
+COMMAND(nextalbum, "sss");
+
+void nextartist(char *cmd, char *cmd_success, char *cmd_failed)
+{
+    defformatstring(allartistsdir)("packages/%s", musicdir);
+    vector<char *> files;
+    listfiles(allartistsdir, NULL, files);
+    removehiddendirs(files);
+    sortfiles(files);
+    int currentindex = -1;
+    loopv(files) if (strcmp(files[i], currentartist) == 0 && files[i][0] != '.') {
+        currentindex = i;
+    }
+    int nextindex = (currentindex + 1) % files.length();
+    setsvar("currentartist", files[nextindex]);
+    nextalbum(cmd, cmd_success, cmd_failed);
+}
+COMMAND(nextartist, "sss");
+
+void removehiddendirs(vector<char *> &files)
+{
+    loopv(files) if (files[i][0] == '.') {
+        files.remove(i);
+        i--;
+    }
+}
 
 static hashtable<const char *, soundsample> samples;
 static vector<soundslot> gameslots, mapslots;

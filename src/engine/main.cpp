@@ -1165,6 +1165,8 @@ int main(int argc, char **argv)
 
     logoutf("init: cfg");
     execfile("data/keymap.cfg");
+    execfile("data/cubescript/music.cfg");
+    execfile("data/cubescript/guis.cfg");
     execfile("data/stdedit.cfg");
     execfile("data/menus.cfg");
     execfile("data/sounds.cfg");

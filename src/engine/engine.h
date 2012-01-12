@@ -625,6 +625,11 @@ extern void initmumble();
 extern void closemumble();
 extern void updatemumble();
 
+extern void nextsong(char *cmd, char *cmd_success, char *cmd_failed);
+extern void nextartist(char *cmd, char *cmd_success, char *cmd_failed);
+extern void nextalbum(char *cmd, char *cmd_success, char *cmd_failed);
+extern void removehiddendirs(vector<char *> &files);
+
 // grass
 extern void generategrass();
 extern void rendergrass();
