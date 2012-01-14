@@ -440,7 +440,7 @@ static const struct guninfo { short sound, attackdelay, damage, spread, projspee
     { S_CG,        100,  30, 100, 0,   0, 7, 1024,  "chaingun",        "chaing"},
     { S_RLFIRE,    800, 120, 0,   80,  0, 10, 1024, "rocketlauncher",  "rocket"},
     { S_RIFLE,    1500, 100, 0,   0,   0, 30, 2048, "rifle",           "rifle" },
-    { S_FLAUNCH,   500,  75, 0,   300, 0, 10, 1024, "grenadelauncher", "gl" },
+    { S_FLAUNCH,   500,  75, 0,   270, 0, 10, 1024, "grenadelauncher", "gl" },
     { S_PISTOL,    500,  35, 35,  0,   0,  7, 1024, "pistol",          "pistol" },
     { S_FEXPLODE,  375,   1, 8,   0,   0,  2,    0, "bomb",            "cannon" }, // TODO: other sound, other hudmodel
     { S_FLAUNCH,   200,  20, 0,   50,  PART_FIREBALL1,  1, 1024, "fireball",  NULL },
