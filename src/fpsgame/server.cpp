@@ -452,7 +452,7 @@ namespace server
 
     int findmaprotation(int mode, const char *map)
     {
-        for(int i = curmaprotation + 1; i < maprotations.length(); i++)
+        for(int i = curmaprotation; i < maprotations.length(); i++)
         {
             maprotation &rot = maprotations[i];
             if(!rot.modes) break;
@@ -536,7 +536,8 @@ namespace server
             rot.map[0] = '\0';
         }
     }
-
+    
+    COMMAND(maprotationreset, "");
     COMMANDN(maprotation, addmaprotation, "ss2V");
 
     struct demofile
