@@ -298,7 +298,7 @@ namespace game
     }
     ICOMMAND(getclientnum, "s", (char *name), intret(name[0] ? parseplayer(name) : player1->clientnum));
 
-    void listclients(bool local)
+    void listclients(bool local, bool bots)
     {
         vector<char> buf;
         string cn;
@@ -309,7 +309,7 @@ namespace game
             buf.put(cn, strlen(cn));
             numclients++;
         }
-        loopv(clients) if(clients[i])
+        loopv(clients) if(clients[i] && (bots || clients[i]->aitype == AI_NONE))
         {
             formatstring(cn)("%d", clients[i]->clientnum);
             if(numclients++) buf.add(' ');
@@ -318,7 +318,7 @@ namespace game
         buf.add('\0');
         result(buf.getbuf());
     }
-    ICOMMAND(listclients, "i", (int *local), listclients(*local!=0));
+    ICOMMAND(listclients, "bb", (int *local, int *bots), listclients(*local>0, *bots!=0));
 
     void clearbans()
     {
