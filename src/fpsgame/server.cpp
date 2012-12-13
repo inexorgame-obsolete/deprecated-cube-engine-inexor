@@ -863,7 +863,7 @@ namespace server
             case I_BOMBDELAY: sec = np*7; break;
             case I_HEALTH: sec = np*5; break;
             case I_GREENARMOUR: sec = 20; break;
-            case I_YELLOWARMOUR: sec = 20; break;
+            case I_YELLOWARMOUR: sec = 30; break;
             case I_BOOST:
             case I_QUAD: sec = 40+rnd(40); break;
         }
