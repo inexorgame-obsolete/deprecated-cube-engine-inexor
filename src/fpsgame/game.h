@@ -1069,6 +1069,7 @@ namespace server
     extern void forceintermission();
     extern void stopdemo();
     extern void forcemap(const char *map, int mode);
+    extern void forcepaused(bool paused);
     extern void hashpassword(int cn, int sessionid, const char *pwd, char *result, int maxlen = MAXSTRLEN);
     extern int msgsizelookup(int msg);
     extern bool serveroption(const char *arg);
