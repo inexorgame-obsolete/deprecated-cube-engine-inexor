@@ -1951,6 +1951,16 @@ void drawminimap()
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+bool deferdrawtextures = false;
+
+void drawtextures()
+{
+    if(minimized) { deferdrawtextures = true; return; }
+    deferdrawtextures = false;
+    genenvmaps();
+    drawminimap();
+}
+
 GLuint motiontex = 0;
 int motionw = 0, motionh = 0, lastmotion = 0;
 
@@ -2038,6 +2048,8 @@ int xtraverts, xtravertsva;
 
 void gl_drawframe(int w, int h)
 {
+    if(deferdrawtextures) drawtextures();
+
     defaultshader->set();
 
     updatedynlights();
