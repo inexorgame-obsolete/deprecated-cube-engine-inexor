@@ -308,7 +308,7 @@ char *entname(entity &e)
 }
 
 extern selinfo sel;
-extern bool havesel, selectcorners;
+extern bool havesel;
 int entlooplevel = 0;
 bool undonext = true;
 
