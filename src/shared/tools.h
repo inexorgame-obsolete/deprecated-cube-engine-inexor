@@ -190,7 +190,7 @@ struct databuf
 
     databuf subbuf(int sz)
     {
-        sz = min(sz, maxlen-len);
+        sz = clamp(sz, 0, maxlen-len);
         len += sz;
         return databuf(&buf[len-sz], sz);
     }
