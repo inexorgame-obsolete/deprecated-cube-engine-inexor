@@ -1472,6 +1472,8 @@ void seedparticles()
 
 void updateparticles()
 {
+    if(minimized) return;
+
     if(regenemitters) addparticleemitters();
 
     if(lastmillis - lastemitframe >= emitmillis)
