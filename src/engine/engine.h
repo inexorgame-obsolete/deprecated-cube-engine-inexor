@@ -655,7 +655,7 @@ extern uchar shouldsaveblendmap();
 namespace recorder
 {
     extern void stop();
-    extern void capture();
+    extern void capture(bool overlay = true);
     extern void cleanup();
 }
 
