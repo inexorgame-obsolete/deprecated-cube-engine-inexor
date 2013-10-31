@@ -105,7 +105,7 @@ namespace game
 
     void preloadplayermodel()
     {
-        loopi(3)
+        loopi(sizeof(playermodels)/sizeof(playermodels[0]))
         {
             const playermodelinfo *mdl = getplayermodelinfo(i);
             if(!mdl) break;
