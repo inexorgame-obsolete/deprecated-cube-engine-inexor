@@ -540,6 +540,8 @@ namespace game
         clearbouncers();
         clearragdolls();
 
+        clearteaminfo();
+
         // reset perma-state
         loopv(players)
         {
