@@ -535,10 +535,11 @@ namespace game
                 spawnbouncer(debrisorigin, debrisvel, owner, gun==GUN_BARREL ? BNC_BARRELDEBRIS : BNC_DEBRIS, &light);
         }
         if(!local && !m_obstacles) return;
-        loopi(numdynents())
+        int numdyn = numdynents();
+        loopi(numdyn)
         {
             dynent *o = iterdynents(i);
-            if(o==safe) continue;
+            if(o->o.reject(v, o->radius + guns[gun].exprad) || o==safe) continue;
             radialeffect(o, v, damage, owner, gun);
         }
         if(m_bomb && (gun==GUN_BOMB || gun==GUN_SPLINTER)) // in bomb mode projectiles hits other projectiles
