@@ -120,6 +120,7 @@ static inline T clamp(T a, U b, U c)
 #endif
 
 #define strcasecmp _stricmp
+#define strncasecmp _strnicmp
 #define PATHDIV '\\'
 
 #else
