@@ -712,6 +712,7 @@ struct fpsent : dynent, fpsstate
     int attacksound, attackchan, idlesound, idlechan;
     int lasttaunt;
     int lastpickup, lastpickupmillis, lastpickupindex, lastbase, lastrepammo, flagpickup, tokens;
+    vec lastcollect;
     int frags, flags, deaths, totaldamage, totalshots;
     editinfo *edit;
     float deltayaw, deltapitch, newyaw, newpitch;
@@ -771,6 +772,7 @@ struct fpsent : dynent, fpsstate
         lastbase = lastrepammo = -1;
         flagpickup = 0;
         tokens = 0;
+        lastcollect = vec(-1e10f, -1e10f, -1e10f);
         stopattacksound();
         lastnode = -1;
     }
