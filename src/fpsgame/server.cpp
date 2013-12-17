@@ -2244,8 +2244,9 @@ namespace server
         ci->position.setsize(0);
         if(smode) smode->died(ci, NULL);
         gs.state = CS_DEAD;
-        gs.respawn(gamemode);
-        // lms
+        gs.lastdeath = gamemillis;
+        gs.respawn();
+
         if (m_lms) checklms();
     }
 
