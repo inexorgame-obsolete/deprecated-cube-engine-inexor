@@ -133,6 +133,26 @@ namespace game
         loopi(SGRAYS) offsetray(from, to, guns[GUN_SG].spread, guns[GUN_SG].range, sg[i]);
     }
 
+    enum { BNC_GRENADE, BNC_GIBS, BNC_DEBRIS, BNC_BARRELDEBRIS };
+
+    struct bouncer : physent
+    {
+        int lifetime, bounces;
+        float lastyaw, roll;
+        bool local;
+        fpsent *owner;
+        int bouncetype, variant;
+        vec offset;
+        int offsetmillis;
+        int id;
+        entitylight light;
+
+        bouncer() : bounces(0), roll(0), variant(0)
+        {
+            type = ENT_BOUNCE;
+            collidetype = COLLIDE_AABB;
+        }
+    };
     vector<bouncer *> bouncers;
 
     vec hudgunorigin(int gun, const vec &from, const vec &to, fpsent *d);
@@ -167,6 +187,7 @@ namespace game
 
         switch(type)
         {
+            case BNC_GRENADE: bnc.collidetype = COLLIDE_ELLIPSE; break;
             case BNC_DEBRIS: case BNC_BARRELDEBRIS: bnc.variant = rnd(4); break;
             case BNC_GIBS: bnc.variant = rnd(3); break;
         }
@@ -1026,7 +1047,7 @@ namespace game
             }
             pitch = -bnc.roll;
             if(bnc.bouncetype==BNC_GRENADE)
-                rendermodel(&bnc.light, "projectiles/grenade", ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_DYNSHADOW);
+                rendermodel(&bnc.light, "projectiles/grenade", ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_LIGHT_FAST|MDL_DYNSHADOW);
             else if(bnc.bouncetype==BNC_BOMB) // Render BOMB projectile
             {
                 vec mov_from(0, 0, bombcolliderad-bbarr_overlap);                                                // shift the lower part of the Barrier upwards
@@ -1082,7 +1103,7 @@ namespace game
             yaw += 90;
             v.mul(3);
             v.add(pos);
-            rendermodel(&p.light, "projectiles/rocket", ANIM_MAPMODEL|ANIM_LOOP, v, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT);
+            rendermodel(&p.light, "projectiles/rocket", ANIM_MAPMODEL|ANIM_LOOP, v, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_LIGHT_FAST);
         }
     }
 
