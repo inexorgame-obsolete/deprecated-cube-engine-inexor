@@ -376,7 +376,7 @@ namespace server
 
     struct ban
     {
-        int time;
+        int time, expire;
         uint ip;
     };
 
@@ -414,10 +414,32 @@ namespace server
 
     vector<uint> allowedips;
     vector<ban> bannedips;
+
+    void addban(uint ip, int expire)
+    {
+        allowedips.remove(ip);
+        ban b;
+        b.time = totalmillis;
+        b.expire = totalmillis + expire;
+        b.ip = ip;
+        loopv(bannedips) if(b.expire < bannedips[i].expire) { bannedips.insert(i, b); return; }
+        bannedips.add(b);
+    }
+
     vector<clientinfo *> connects, clients, bots;
     vector<worldstate *> worldstates;
     bool reliablemessages = false;
 
+    void kickclients(uint ip)
+    {
+        loopvrev(clients) 
+        {
+            clientinfo &c = *clients[i];
+            if(c.state.aitype != AI_NONE) continue;
+            if(getclientip(c.clientnum) == ip) disconnect_client(c.clientnum, DISC_KICK);
+        }
+    }
+ 
     struct maprotation
     {
         int modes;
@@ -428,7 +450,6 @@ namespace server
             if(!(modes&(1<<(mode-STARTGAMEMODE)))) loopi(NUMGAMEMODES) if(modes&(1<<i)) return i+STARTGAMEMODE;
             return mode;
         }
-        
     };
     vector<maprotation> maprotations;
     int curmaprotation = 0;
@@ -474,7 +495,44 @@ namespace server
         }
         return -1;
     }
- 
+
+    int genmodemask(vector<char *> &modes)
+    {
+        int modemask = 0;
+        loopv(modes)
+        {
+            const char *mode = modes[i];
+            int op = mode[0];
+            switch(mode[0])
+            {
+                case '*':
+                    loopk(NUMGAMEMODES) if(m_checknot(k+STARTGAMEMODE, M_DEMO|M_EDIT|M_LOCAL)) modemask |= 1<<k;
+                    continue;
+                case '!':
+                    mode++;
+                    if(mode[0] != '?') break;
+                case '?':
+                    mode++;
+                    loopk(NUMGAMEMODES) if(strstr(gamemodes[k].name, mode))
+                    {
+                        if(op == '!') modemask &= ~(1<<k);
+                        else modemask |= 1<<k;
+                    }
+                    continue;
+            }
+            int modenum = INT_MAX;
+            if(isdigit(mode[0])) modenum = atoi(mode);
+            else loopk(NUMGAMEMODES) if(!strstr(mode, gamemodes[k].name)) { modenum = k+STARTGAMEMODE; break; }
+            if(!m_valid(modenum)) continue;
+            switch(op)
+            {
+                case '!': modemask &= ~(1 << (modenum - STARTGAMEMODE)); break;
+                default: modemask |= 1 << (modenum - STARTGAMEMODE); break;
+            }
+        }
+        return modemask;
+    }
+         
     void addmaprotation(tagval *args, int numargs)
     {
         vector<char *> modes, maps;
@@ -484,38 +542,7 @@ namespace server
             explodelist(args[i+1].getstr(), maps);
             if(modes.length() && maps.length())
             {
-                int modemask = 0;
-                loopvj(modes)
-                {
-                    const char *mode = modes[j];
-                    int op = mode[0]; 
-                    switch(mode[0])
-                    {
-                        case '*': 
-                            loopk(NUMGAMEMODES) if(m_checknot(k+STARTGAMEMODE, M_DEMO|M_EDIT|M_LOCAL)) modemask |= 1<<k; 
-                            continue;
-                        case '!':   
-                            mode++; 
-                            if(mode[0] != '?') break;
-                        case '?':
-                            mode++;
-                            loopk(NUMGAMEMODES) if(strstr(gamemodes[k].name, mode)) 
-                            {
-                                if(op == '!') modemask &= ~(1<<k);
-                                else modemask |= 1<<k;
-                            }
-                            continue;
-                    }
-                    int modenum = INT_MAX;
-                    if(isdigit(mode[0])) modenum = atoi(mode); 
-                    else loopk(NUMGAMEMODES) if(!strstr(mode, gamemodes[k].name)) { modenum = k+STARTGAMEMODE; break; }
-                    if(!m_valid(modenum)) continue;
-                    switch(op)
-                    {
-                        case '!': modemask &= ~(1 << (modenum - STARTGAMEMODE)); break;
-                        default: modemask |= 1 << (modenum - STARTGAMEMODE); break;
-                    }
-                }
+                int modemask = genmodemask(modes);
                 if(modemask) loopvj(maps)
                 {
                     int rotmask = modemask;
@@ -570,6 +597,57 @@ namespace server
 	});
     SVAR(servermotd, "");
 
+    struct teamkillinfo
+    {
+        uint ip;
+        int teamkills;
+    };
+    vector<teamkillinfo> teamkills;
+
+    struct teamkillkick
+    {
+        int modes, limit, ban;
+    };
+    vector<teamkillkick> teamkillkicks;
+
+    void addteamkill(clientinfo *actor, int n)
+    {
+        if(!m_timed || actor->state.aitype != AI_NONE) return;
+        uint ip = getclientip(actor->clientnum);
+        teamkillkick *kick = NULL;
+        loopv(teamkillkicks) if(teamkillkicks[i].modes & (1 << (gamemode + STARTGAMEMODE)))         
+        {
+            kick = &teamkillkicks[i];
+            break;
+        }
+        if(!kick) return;
+        teamkillinfo *tk = NULL;
+        loopv(teamkills) if(teamkills[i].ip == ip) { tk = &teamkills[i]; tk->teamkills += n; break; }
+        if(!tk) { tk = &teamkills.add(); tk->ip = ip; tk->teamkills = n; }
+        if(actor->local || actor->privilege || tk->teamkills < kick->limit) return;
+        if(kick->ban > 0) addban(ip, kick->ban);
+        kickclients(ip);
+    }
+
+    void teamkillkickreset()
+    {
+        teamkillkicks.setsize(0);
+    }
+
+    void addteamkillkick(char *modestr, int *limit, int *ban)
+    {
+        vector<char *> modes;
+        explodelist(modestr, modes);
+        teamkillkick &kick = teamkillkicks.add();
+        kick.modes = genmodemask(modes);
+        kick.limit = *limit;
+        kick.ban = *ban > 0 ? *ban*60000 : (*ban < 0 ? 0 : 30*60000); 
+        modes.deletearrays();
+    }
+
+    COMMAND(teamkillkickreset, "");
+    COMMANDN(teamkillkick, addteamkillkick, "sii");
+ 
     void *newclientinfo() { return new clientinfo; }
     void deleteclientinfo(void *ci) { delete (clientinfo *)ci; }
 
@@ -1605,6 +1683,7 @@ namespace server
         copystring(smapname, s);
         loaditems();
         scores.shrink(0);
+        teamkills.shrink(0);
         loopv(clients)
         {
             clientinfo *ci = clients[i];
@@ -1876,7 +1955,6 @@ namespace server
         if(ts.health<=0)
         {
             target->state.deaths++;
-            if(actor!=target && isteam(actor->team, target->team)) actor->state.teamkills++;
             int fragvalue = smode ? smode->fragvalue(target, actor) : (target==actor || isteam(target->team, actor->team) ? -1 : 1);
             actor->state.frags += fragvalue;
             if(fragvalue>0)
@@ -1891,8 +1969,16 @@ namespace server
             if(smode) smode->died(target, actor);
             ts.state = CS_DEAD;
             ts.lastdeath = gamemillis;
+
             if (m_lms) checklms(); // Last Man Standing
             else ts.respawn(gamemode);
+
+            if(actor!=target && isteam(actor->team, target->team)) 
+            {
+                actor->state.teamkills++;
+                addteamkill(actor, 1);
+            }
+
             // don't issue respawn yet until DEATHMILLIS has elapsed
             // ts.respawn();
         }
@@ -2111,7 +2197,7 @@ namespace server
         }
         else if(smode) smode->updatelimbo();
 
-        while(bannedips.length() && bannedips[0].time-totalmillis>4*60*60000) bannedips.remove(0);
+        while(bannedips.length() && bannedips[0].expire > totalmillis) bannedips.remove(0);
         loopv(connects) if(totalmillis-connects[i]->connectmillis>15000) disconnect_client(connects[i]->clientnum, DISC_TIMEOUT);
 
         if(nextexceeded && gamemillis > nextexceeded && (!m_timed || gamemillis < gamelimit))
@@ -2914,11 +3000,9 @@ namespace server
                 int victim = getint(p);
                 if((ci->privilege || ci->local) && ci->clientnum!=victim && getclientinfo(victim)) // no bots
                 {
-                    ban &b = bannedips.add();
-                    b.time = totalmillis;
-                    b.ip = getclientip(victim);
-                    allowedips.removeobj(b.ip);
-                    disconnect_client(victim, DISC_KICK);
+                    uint ip = getclientip(victim);
+                    addban(ip, 4*60*60000);
+                    kickclients(ip);
                 }
                 break;
             }
