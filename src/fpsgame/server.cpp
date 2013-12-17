@@ -122,7 +122,7 @@ namespace server
         int lastdeath, lastspawn, lifesequence;
         int lastshot;
         projectilestate<8> rockets, grenades, bombs;
-        int frags, flags, deaths, teamkills, shotdamage, damage;
+        int frags, flags, deaths, teamkills, shotdamage, damage, tokens;
         int lasttimeplayed, timeplayed;
         float effectiveness;
 
@@ -148,7 +148,7 @@ namespace server
 
             timeplayed = 0;
             effectiveness = 0;
-            frags = flags = deaths = teamkills = shotdamage = damage = 0;
+            frags = flags = deaths = teamkills = shotdamage = damage = tokens = 0;
 
             respawn(gamemode);
         }
@@ -160,6 +160,7 @@ namespace server
             lastdeath = 0;
             lastspawn = -1;
             lastshot = 0;
+            tokens = 0;
         }
 
         void reassign()
@@ -585,15 +586,18 @@ namespace server
     #define SERVMODE 1
     #include "capture.h"
     #include "ctf.h"
+    #include "collect.h"
     #include "bomb.h"
     #include "race.h"
     #include "hideandseek.h"
 
     captureservmode capturemode;
     ctfservmode ctfmode;
+    collectservmode collectmode;
     bombservmode bombmode;
     raceservmode racemode;
     hideandseekservmode hideandseekmode;
+
     servmode *smode = NULL;
 
     bool canspawnitem(int type) {
@@ -1477,6 +1481,7 @@ namespace server
 
         if(m_capture) smode = &capturemode;
         else if(m_ctf) smode = &ctfmode;
+        else if(m_collect) smode = &collectmode;
         else if(m_bomb) smode = &bombmode;
         else if(m_race) smode = &racemode;
         else if(m_hideandseek) smode = &hideandseekmode;
@@ -2966,6 +2971,7 @@ namespace server
             #define PARSEMESSAGES 1
             #include "capture.h"
             #include "ctf.h"
+            #include "collect.h"
             #include "bomb.h"
             #include "race.h"
             #include "hideandseek.h"
