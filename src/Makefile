@@ -1,5 +1,6 @@
-CXXFLAGS= -O3 -fomit-frame-pointer -ffast-math
-override CXXFLAGS+= -Wall -fsigned-char -fno-exceptions -fno-rtti
+#CXXFLAGS= -O3 -fomit-frame-pointer -ffast-math
+#override CXXFLAGS+= -Wall -fsigned-char -fno-exceptions -fno-rtti
+CXXFLAGS=-O0 -Wall -g
 
 PLATFORM= $(shell uname -s)
 PLATFORM_PREFIX= native
