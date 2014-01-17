@@ -466,46 +466,51 @@ namespace game
 
     void explode(bool local, fpsent *owner, const vec &v, dynent *safe, int damage, int gun)
     {
-        int rfactor = 1,
-            maxsize = guns[GUN_BOMB].exprad * rfactor,
-            size = 4.0f * rfactor,
-            fade = gun!=GUN_BOMB && gun!=GUN_SPLINTER ? -1 : int((maxsize-size)*7); // explosion speed, lower=faster
+        int size = 4.0f;
+        float exprad = guns[gun].exprad;
+        int numdebris = gun==GUN_BARREL
+              ? rnd(max(maxbarreldebris-5, 1))+5
+              : rnd(maxdebris-5)+5;
+        vec debrisvel = owner->o==v
+              ? vec(0, 0, 0)
+              : vec(owner->o).sub(v).normalize();
+        vec debrisorigin(v);
 
-        particle_splash(PART_SPARK, 200, 300, v, 0xB49B4B, 0.24f);
-        playsound(gun!=GUN_GL ? S_RLHIT : S_FEXPLODE, &v);
-        particle_fireball(v, guns[gun].exprad, gun!=GUN_GL ? PART_EXPLOSION : PART_EXPLOSION_BLUE, gun!=GUN_GL ? -1 : int((guns[gun].exprad-4.0f)*15), gun!=GUN_GL ? 0xFF8080 : 0x80FFFF, 4.0f);
-        if(gun==GUN_RL) adddynlight(v, 1.15f*guns[gun].exprad, vec(2, 1.5f, 1), 700, 100, 0, guns[gun].exprad/2, vec(1, 0.75f, 0.5f));
-        else if(gun==GUN_GL) adddynlight(v, 1.15f*guns[gun].exprad, vec(0.5f, 1.5f, 2), 600, 100, 0, 8, vec(0.25f, 1, 1));
-        else adddynlight(v, 1.15f*guns[gun].exprad, vec(2, 1.5f, 1), 700, 100);
-        int numdebris = gun==GUN_BARREL ? rnd(max(maxbarreldebris-5, 1))+5 : rnd(maxdebris-5)+5;
-        vec debrisvel = owner->o==v ? vec(0, 0, 0) : vec(owner->o).sub(v).normalize(), debrisorigin(v);
-
-        if(gun!=GUN_SPLINTER)
-        {
-            particle_splash(PART_SPARK, 200, 300, v, 0xB49B4B, 0.24f*rfactor);
-            playsound(S_RLHIT, &v);
-            particle_fireball(v, maxsize, gun!=GUN_GL ? PART_EXPLOSION : PART_EXPLOSION_BLUE, fade, gun!=GUN_GL ? (gun==GUN_BOMB ? 0x004D30 : 0xFF8080) : 0x80FFFF, size);
-        }
-        else
-            particle_fireball(v, maxsize, gun!=GUN_GL ? PART_EXPLOSION : PART_EXPLOSION_BLUE, fade, 0x004D30, size);
-        switch(gun)
-        {
+        switch(gun) {
             case GUN_RL:
-                adddynlight(v, 1.15f*guns[GUN_BOMB].exprad, vec(2, 1.5f, 1), 900, 100, 0, guns[GUN_BOMB].exprad/2, vec(1, 0.75f, 0.5f));
+                particle_splash(PART_SPARK, 200, 300, v, 0xB49B4B, 0.24f);
+                playsound(S_RLHIT, &v);
+                particle_fireball(v, exprad, PART_EXPLOSION, -1, 0xFF8080, size);
+
+                adddynlight(v, 1.15f*exprad, vec(2, 1.5f, 1), 700, 100, 0, exprad/2, vec(1, 0.75f, 0.5f));
                 debrisorigin.add(vec(debrisvel).mul(8));
                 break;
+
             case GUN_GL:
-                adddynlight(v, 1.15f*guns[GUN_BOMB].exprad, vec(0.5f, 1.5f, 2), 900, 100, 0, 8, vec(0.25f, 1, 1));
+                particle_splash(PART_SPARK, 200, 300, v, 0xB49B4B, 0.24f);
+                playsound(S_FEXPLODE, &v);
+                particle_fireball(v, exprad, PART_EXPLOSION_BLUE, int((exprad-4.0f)*15), 0x80FFFF, size);
+
+                adddynlight(v, 1.15f*exprad, vec(0.5f, 1.5f, 2), 600, 100, 0, 8, vec(0.25f, 1, 1));
                 break;
+
             case GUN_BOMB:
-                // TODO: COMMENT IN: adddynlight(v, owner->bombradius*guns[GUN_BOMB].exprad, vec(0.5f, 1.5f, 2), 900, 100, 0, 8, vec(1, 1, 0.25f));
-                if(owner->ammo[GUN_BOMB] < itemstats[P_AMMO_BO].max) owner->ammo[GUN_BOMB]++; // add a bomb if the bomb explodes
+                particle_splash(PART_SPARK, 200, 300, v, 0xB49B4B, 0.24f);
+                playsound(S_RLHIT, &v);
+                particle_fireball(v, exprad, PART_EXPLOSION, int((exprad-4.0f)*7), 0x004D30, size);
+
+                adddynlight(v, 1.15f*exprad, vec(0.5f, 1.5f, 2), 600, 100, 0, 8, vec(0.25f, 1, 1));
+
+                if(owner->ammo[GUN_BOMB] < itemstats[P_AMMO_BO].max)
+                    owner->ammo[GUN_BOMB]++; // add a bomb if the bomb explodes
                 break;
+
             case GUN_SPLINTER:
-                // no dynlight
+                particle_fireball(v, exprad, PART_EXPLOSION, int((exprad-4.0f)*7), 0x004D30, size);
                 break;
+
             default:
-                adddynlight(v, 1.15f*guns[GUN_BOMB].exprad, vec(2, 1.5f, 1), 900, 100);
+                adddynlight(v, 1.15f*exprad, vec(2, 1.5f, 1), 700, 100);
                 break;
         }
         if(numdebris && gun!=GUN_SPLINTER)
