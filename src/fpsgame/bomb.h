@@ -21,7 +21,7 @@ struct bombclientmode : clientmode
 #endif
 {
 
-    struct spawnloc{
+    struct spawnloc {
     	vec o;
     	int team, index;
 #ifdef SERVMODE
@@ -446,7 +446,7 @@ case N_SPAWNLOC:
 {
 	if(smode==&bombmode || smode==&racemode)
 		if(!bombmode.parsespawnloc(p, (ci->state.state!=CS_SPECTATOR || ci->privilege || ci->local) && !strcmp(ci->clientmap, smapname)))
-			disconnect_client(sender, DISC_TAGT);
+			disconnect_client(sender, DISC_MSGERR);
 	break;
 }
 

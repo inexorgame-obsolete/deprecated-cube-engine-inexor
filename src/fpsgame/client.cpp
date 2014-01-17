@@ -1565,7 +1565,8 @@ namespace game
                 loopk(3) itemloc[k] = getint(p)/DMF;
                 if(entities::getents().length()<=id) {
                     while(entities::getents().length()<id) entities::getents().add(entities::newentity())->type = ET_EMPTY;
-                    extentity *e = newentity(false, itemloc, type, 0, 0, 0, 0, 0);
+                    int eind;
+                    extentity *e = newentity(false, itemloc, type, 0, 0, 0, 0, 0, eind);
                     entities::getents().add(e);
                     modifyoctaent(1<<0|1<<1, id); // MODOE_ADD | MODOE_UPDATEBB
                     attachentity(*e);

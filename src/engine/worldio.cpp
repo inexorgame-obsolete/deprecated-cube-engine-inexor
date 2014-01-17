@@ -325,25 +325,25 @@ void savec(cube *c, const ivec &o, int size, stream *f, bool nolms)
                             hasxyz = false;
                         }
                         if(hasuv && vertmask&0x02)
-            {
+                        {
                             const vertinfo &v0 = verts[uvorder], &v2 = verts[(uvorder+2)&3];
                             f->putlil<ushort>(v0.u); f->putlil<ushort>(v0.v);
                             f->putlil<ushort>(v2.u); f->putlil<ushort>(v2.v);
                             if(surf.numverts&LAYER_DUP)
-                {
+                            {
                                 const vertinfo &b0 = verts[4+uvorder], &b2 = verts[4+((uvorder+2)&3)];
                                 f->putlil<ushort>(b0.u); f->putlil<ushort>(b0.v);
                                 f->putlil<ushort>(b2.u); f->putlil<ushort>(b2.v);
                             }
                             hasuv = false;
-                }
-            }
+                        }
+                    }
                     if(hasnorm && vertmask&0x08) { f->putlil<ushort>(verts[0].norm); hasnorm = false; }
                     if(hasxyz || hasuv || hasnorm) loopk(layerverts)
-            {
+                    {
                         const vertinfo &v = verts[(k+vertorder)%layerverts];
                         if(hasxyz) 
-                {
+                        {
                             ivec xyz = v.getxyz(); 
                             f->putlil<ushort>(xyz[vc]); f->putlil<ushort>(xyz[vr]); 
                         }
@@ -357,10 +357,8 @@ void savec(cube *c, const ivec &o, int size, stream *f, bool nolms)
                     }
                 }
             }
-            if(c[i].children) savec(c[i].children, co, size>>1, f, nolms);
-                    } 
-                }
-            }
+            if(c[i].children)
+                savec(c[i].children, co, size>>1, f, nolms);
         }
     }
 }

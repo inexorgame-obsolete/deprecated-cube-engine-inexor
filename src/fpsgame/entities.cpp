@@ -881,7 +881,7 @@ namespace entities
         return 4.0f;
     }
 
-    bool hasmapmodel(extentity &e)
+    bool hasmapmodel(const extentity &e)
     {
         if(e.type==MAPMODEL || e.type==BOX || e.type==BARREL || e.type==OBSTACLE) return true;
         return false;

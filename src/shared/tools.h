@@ -74,7 +74,6 @@ static inline T clamp(T a, U b, U c)
 #define loopl(m) loop(l,m)
 #define loopirev(v) for(int i = v-1; i>=0; i--)
 
-
 #define DELETEP(p) if(p) { delete   p; p = 0; }
 #define DELETEA(p) if(p) { delete[] p; p = 0; }
 
@@ -162,7 +161,7 @@ struct databuf
 
     databuf() : buf(NULL), len(0), maxlen(0), flags(0) {}
 
-    template<class U> 
+    template<class U>
     databuf(T *buf, U maxlen) : buf(buf), len(0), maxlen((int)maxlen), flags(0) {}
 
     const T &get()
@@ -251,7 +250,7 @@ struct packetbuf : ucharbuf
 
     void checkspace(int n)
     {
-        if(len + n > maxlen && packet && growth > 0) resize(max(len + n, maxlen + growth));    
+        if(len + n > maxlen && packet && growth > 0) resize(max(len + n, maxlen + growth));
     }
 
     ucharbuf subbuf(int sz)
@@ -271,7 +270,7 @@ struct packetbuf : ucharbuf
         checkspace(numvals);
         ucharbuf::put(vals, numvals);
     }
-    
+
     ENetPacket *finalize()
     {
         resize(len);
@@ -491,22 +490,22 @@ template <class T> struct vector
     int length() const { return ulen; }
     T &operator[](int i) { ASSERT(i>=0 && i<ulen); return buf[i]; }
     const T &operator[](int i) const { ASSERT(i >= 0 && i<ulen); return buf[i]; }
-    
+
     void disown() { buf = NULL; alen = ulen = 0; }
 
     void shrink(int i) { ASSERT(i<=ulen); if(isclass<T>::no) ulen = i; else while(ulen>i) drop(); }
     void setsize(int i) { ASSERT(i<=ulen); ulen = i; }
-    
+
     void deletecontents() { while(!empty()) delete   pop(); }
     void deletearrays() { while(!empty()) delete[] pop(); }
-    
+
     T *getbuf() { return buf; }
     const T *getbuf() const { return buf; }
     bool inbuf(const T *e) const { return e >= buf && e < &buf[ulen]; }
 
     template<class F>
-    void sort(F fun, int i = 0, int n = -1) 
-    { 
+    void sort(F fun, int i = 0, int n = -1)
+    {
         quicksort(&buf[i], n < 0 ? ulen-i : n, fun);
     }
 
@@ -597,7 +596,7 @@ template <class T> struct vector
         loopi(ulen) if(buf[i]==o) return i;
         return -1;
     }
-    
+
     void removeobj(const T &o)
     {
         loopi(ulen) if(buf[i]==o) remove(i--);
@@ -696,34 +695,6 @@ template <class T> struct vector
     }
 };
 
-static inline uint hthash(const char *key)
-{
-    uint h = 5381;
-    for(int i = 0, k; (k = key[i]); i++) h = ((h<<5)+h)^k;    // bernstein k=33 xor
-    return h;
-}
-
-static inline bool htcmp(const char *x, const char *y)
-{
-    return !strcmp(x, y);
-}
-
-static inline uint hthash(int key)
-{   
-    return key;
-}
-
-static inline bool htcmp(int x, int y)
-{
-    return x==y;
-}
-
-#ifndef STANDALONE
-static inline uint hthash(GLuint key)
-{
-    return key;
-}
-
 template<class T> struct hashset
 {
     typedef T elem;
@@ -775,7 +746,7 @@ template<class T> struct hashset
         numelems++;
         return c;
     }
-     
+
     #define HTFIND(key, success, fail) \
         uint h = hthash(key)&(this->size-1); \
         for(chain *c = this->chains[h]; c; c = c->next) \
@@ -892,7 +863,7 @@ template<class K, class T> struct hashtable : hashset<hashtableentry<K, T> >
         c->elem.key = key;
         return c->elem;
     }
-    
+
     T *access(const K &key)
     {
         HTFIND(key, &c->elem.data, NULL);
@@ -935,7 +906,7 @@ struct unionfind
 
         ufval() : rank(0), next(-1) {}
     };
-    
+
     vector<ufval> ufvals;
 
     int find(int k)
@@ -944,13 +915,13 @@ struct unionfind
         while(ufvals[k].next>=0) k = ufvals[k].next;
         return k;
     }
-    
+
     int compressfind(int k)
     {
         if(ufvals[k].next<0) return k;
         return ufvals[k].next = compressfind(ufvals[k].next);
     }
-    
+
     void unite (int x, int y)
     {
         while(ufvals.length() <= max(x, y)) ufvals.add();
@@ -971,9 +942,9 @@ template <class T, int SIZE> struct queue
 {
     int head, tail, len;
     T data[SIZE];
-    
+
     queue() { clear(); }
-    
+
     void clear() { head = tail = len = 0; }
 
     int length() const { return len; }
@@ -989,7 +960,6 @@ template <class T, int SIZE> struct queue
     T &adding(int offset) { return data[tail+offset >= SIZE ? tail+offset - SIZE : tail+offset]; }
     T &add()
     {
-        ASSERT(len < SIZE);    
         T &t = data[tail];
         tail++;
         if(tail >= SIZE) tail -= SIZE;
@@ -1087,7 +1057,7 @@ struct stream
 #else
     typedef off_t offset;
 #endif
-    
+
     virtual ~stream() {}
     virtual void close() = 0;
     virtual bool end() = 0;

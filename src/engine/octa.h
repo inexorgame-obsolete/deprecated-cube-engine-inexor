@@ -215,6 +215,7 @@ struct cube
         uchar escaped;       // mask of which children have escaped merges
         uchar visible;       // visibility info for faces
     };
+};
 
 struct block3
 {

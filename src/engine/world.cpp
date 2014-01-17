@@ -40,7 +40,7 @@ bool getentboundingbox(const extentity &e, ivec &o, ivec &r)
                 if(m)
                 {
                     vec center, radius;
-                    m->boundbox(0, center, radius);
+                    m->boundbox(center, radius);
                     rotatebb(center, radius, e.attr1);
                     o = e.o;
                     o.add(center);
@@ -217,7 +217,7 @@ static bool modifyoctaent(int flags, int id, extentity &e)
     return true;
 }
 
-static inline bool modifyoctaent(int flags, int id)
+bool modifyoctaent(int flags, int id)
 {
     vector<extentity *> &ents = entities::getents();
     return ents.inrange(id) && modifyoctaent(flags, id, *ents[id]);

@@ -9,7 +9,7 @@ namespace entities
     extern void writeent(entity &e, char *buf);
     extern void readent(entity &e, char *buf, int ver);
     extern float dropheight(entity &e);
-    extern bool hasmapmodel(extentity &e);
+    extern bool hasmapmodel(const extentity &e);
     extern void fixentity(extentity &e);
     extern void entradius(extentity &e, bool color);
     extern bool mayattach(extentity &e);

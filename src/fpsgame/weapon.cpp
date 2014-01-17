@@ -8,6 +8,8 @@ namespace game
     static const int OFFSETMILLIS = 500;
     vec rays[MAXRAYS];
 
+    vector<bouncer *> bouncers;
+
     struct hitmsg
     {
         int target, lifesequence, info1, info2;
@@ -132,27 +134,6 @@ namespace game
     {
         loopi(guns[gun].rays) offsetray(from, to, guns[gun].spread, guns[gun].range, rays[i]);
     }
-
-    enum { BNC_GRENADE, BNC_GIBS, BNC_DEBRIS, BNC_BARRELDEBRIS };
-
-    struct bouncer : physent
-    {
-        int lifetime, bounces;
-        float lastyaw, roll;
-        bool local;
-        fpsent *owner;
-        int bouncetype, variant;
-        vec offset;
-        int offsetmillis;
-        int id;
-        entitylight light;
-
-        bouncer() : bounces(0), roll(0), variant(0)
-        {
-            type = ENT_BOUNCE;
-        }
-    };
-    vector<bouncer *> bouncers;
 
     vec hudgunorigin(int gun, const vec &from, const vec &to, fpsent *d);
 
@@ -279,7 +260,7 @@ namespace game
             if(bnc.bouncetype==BNC_GRENADE) stopped = bounce(&bnc, 0.6f, 0.5f, 0.8f) || (bnc.lifetime -= time)<0;
 	          else if(bnc.bouncetype==BNC_BOMB)
             {
-	              bounce(&bnc, 0.2f, 0.3f);
+	              bounce(&bnc, 0.2f, 0.3f, 0.8f);
                 stopped = (bnc.lifetime -= time)<0;
             }
             else
@@ -308,7 +289,7 @@ namespace game
                 {
                     hits.setsize(0);
                     explode(bnc.local, bnc.owner, bnc.o, NULL, guns[GUN_BOMB].damage, GUN_BOMB);
-                    adddecal(DECAL_SCORCH, bnc.o, vec(0, 0, 1), bnc.owner->bombradius*RL_DAMRAD/2);
+                    adddecal(DECAL_SCORCH, bnc.o, vec(0, 0, 1), bnc.owner->bombradius*guns[GUN_BOMB].exprad);
                     spawnsplinters(bnc.o, bnc.owner); // starts with 3+x generations
                     if(bnc.local)
                         addmsg(N_EXPLODE, "rci3iv", bnc.owner, lastmillis-maptime, GUN_BOMB, bnc.id-maptime,
@@ -480,15 +461,15 @@ namespace game
         float dist = b->o.dist(v, dir);
         dir.div(dist);
         if(dist<0) dist = 0;
-        if(dist < RL_DAMRAD) b->lifetime = 100; // TODO: maybe RL_DAMRAD is too big!
+        if(dist < guns[GUN_BOMB].exprad) b->lifetime = 100; // TODO: maybe guns[GUN_BOMB].exprad is too big!
     }
 
     void explode(bool local, fpsent *owner, const vec &v, dynent *safe, int damage, int gun)
     {
         int rfactor = 1,
-            maxsize = RL_DAMRAD * rfactor,
+            maxsize = guns[GUN_BOMB].exprad * rfactor,
             size = 4.0f * rfactor,
-            fade = gun!=GUN_BOMB && gun!=GUN_SPLINTER ? -1 : int((maxsize-size)*7);</0> // explosion speed, lower=faster
+            fade = gun!=GUN_BOMB && gun!=GUN_SPLINTER ? -1 : int((maxsize-size)*7); // explosion speed, lower=faster
 
         particle_splash(PART_SPARK, 200, 300, v, 0xB49B4B, 0.24f);
         playsound(gun!=GUN_GL ? S_RLHIT : S_FEXPLODE, &v);
@@ -510,21 +491,21 @@ namespace game
         switch(gun)
         {
             case GUN_RL:
-                adddynlight(v, 1.15f*RL_DAMRAD, vec(2, 1.5f, 1), 900, 100, 0, RL_DAMRAD/2, vec(1, 0.75f, 0.5f));
+                adddynlight(v, 1.15f*guns[GUN_BOMB].exprad, vec(2, 1.5f, 1), 900, 100, 0, guns[GUN_BOMB].exprad/2, vec(1, 0.75f, 0.5f));
                 debrisorigin.add(vec(debrisvel).mul(8));
                 break;
             case GUN_GL:
-                adddynlight(v, 1.15f*RL_DAMRAD, vec(0.5f, 1.5f, 2), 900, 100, 0, 8, vec(0.25f, 1, 1));
+                adddynlight(v, 1.15f*guns[GUN_BOMB].exprad, vec(0.5f, 1.5f, 2), 900, 100, 0, 8, vec(0.25f, 1, 1));
                 break;
             case GUN_BOMB:
-                // TODO: COMMENT IN: adddynlight(v, owner->bombradius*RL_DAMRAD, vec(0.5f, 1.5f, 2), 900, 100, 0, 8, vec(1, 1, 0.25f));
+                // TODO: COMMENT IN: adddynlight(v, owner->bombradius*guns[GUN_BOMB].exprad, vec(0.5f, 1.5f, 2), 900, 100, 0, 8, vec(1, 1, 0.25f));
                 if(owner->ammo[GUN_BOMB] < itemstats[P_AMMO_BO].max) owner->ammo[GUN_BOMB]++; // add a bomb if the bomb explodes
                 break;
             case GUN_SPLINTER:
                 // no dynlight
                 break;
             default:
-                adddynlight(v, 1.15f*RL_DAMRAD, vec(2, 1.5f, 1), 900, 100);
+                adddynlight(v, 1.15f*guns[GUN_BOMB].exprad, vec(2, 1.5f, 1), 900, 100);
                 break;
         }
         if(numdebris && gun!=GUN_SPLINTER)
@@ -609,7 +590,7 @@ namespace game
                         vec pos(b.o);
                         pos.add(vec(b.offset).mul(b.offsetmillis/float(OFFSETMILLIS)));
                         explode(b.local, b.owner, pos, NULL, 0, GUN_BOMB);
-                        // adddecal(DECAL_SCORCH, pos, vec(0, 0, 1), b.owner->bombradius*RL_DAMRAD/2);
+                        // adddecal(DECAL_SCORCH, pos, vec(0, 0, 1), b.owner->bombradius*guns[GUN_BOMB].exprad/2);
                         spawnsplinters(b.o, b.owner);
                         delete bouncers.remove(i);
                         break;
@@ -1052,7 +1033,7 @@ namespace game
                 int tremble = (rnd(bbarr_tremblepeak*2)) - bbarr_tremblepeak;                                    // Compute random tremble
 
                 if(bombbarrier)
-                    regularshape(bbarr_type, bombcolliderad + tremble, bbarr_color, bbarr_dir, bbarr_num, bbarr_fade, floor, bbarr_size, bbarr_gravity, &mov_from, &mov_to);
+                    regularshape(bbarr_type, bombcolliderad + tremble, bbarr_color, bbarr_dir, bbarr_num, bbarr_fade, floor, bbarr_size, bbarr_gravity, 200, &mov_from, &mov_to);
                 rendermodel(&bnc.light, "projectiles/bomb", ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_DYNSHADOW);
             }
             // DEBUG: vvv REMOVE RENDERMODEL FOR SPLINTERS vvv
@@ -1175,17 +1156,19 @@ namespace game
     }
 
     bool weaponcollide(physent *d, const vec &dir) {
-        loopv(bouncers)
-        {
+        loopv(bouncers) {
            	bouncer *p = bouncers[i];
-            if(p->bouncetype != BNC_BOMB) continue;
-            if(!ellipsecollide(d, 
-			       dir, p->o, vec(0, 0, 0), p->yaw, 
-			       bombcolliderad, bombcolliderad, 
-			       p->aboveeye, p->o.z - raycube(p->o, vec(0, 0, -1), 0.2f, RAY_CLIPMAT))) 
-	      return false;
+
+            if(p->bouncetype != BNC_BOMB)
+                continue;
+
+            if(!ellipsecollide(d,
+			              dir, p->o, vec(0, 0, 0), p->yaw,
+			              bombcolliderad, bombcolliderad,
+			              p->aboveeye, p->o.z - raycube(p->o, vec(0, 0, -1), 0.2f, RAY_CLIPMAT)))
+                return true;
         }
-        return true;
+        return false;
     }
 	
 	

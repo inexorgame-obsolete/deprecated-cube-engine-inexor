@@ -146,7 +146,7 @@ extern const char *escapestring(const char *s);
 extern const char *escapeid(const char *s);
 static inline const char *escapeid(ident &id) { return escapeid(id.name); }
 extern bool validateblock(const char *s);
-extern void explodelist(const char *s, vector<char *> &elems, int limit = -1);
+extern void explodelist(const char *s, vector<char *> &elems);
 extern char *indexlist(const char *s, int pos);
 extern int listlen(const char *s);
 extern void printvar(ident *id);
@@ -222,7 +222,7 @@ extern void renderentsphere(const extentity &e, float radius);
 extern void renderentring(const extentity &e, float radius, int axis = 0);
 
 // bomberman
-extern extentity *newentity(bool local, const vec &o, int type, int v1, int v2, int v3, int v4, int v5);
+extern extentity *newentity(bool local, const vec &o, int type, int v1, int v2, int v3, int v4, int v5, int &idx);
 extern void attachentity(extentity &e);
 extern bool modifyoctaent(int flags, int id);
 
