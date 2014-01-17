@@ -82,7 +82,7 @@ struct physent                                  // base entity type, can be affe
                state(CS_ALIVE), editstate(CS_ALIVE), type(ENT_PLAYER),
                collidetype(COLLIDE_ELLIPSE),
                blocked(false),
-               p_gravity(200.0f), p_friction_land(6.0f), p_jumpvel(125.0f), p_playerspeed(100.0f)
+               p_gravity(200.0f), p_friction_land(6.0f), p_jumpvel(0), p_playerspeed(100.0f)
                { reset(); }
               
     void resetinterp()
