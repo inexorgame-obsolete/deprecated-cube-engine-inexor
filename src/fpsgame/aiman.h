@@ -80,49 +80,71 @@ namespace aiman
         return least;
 	}
 
-	bool addai(int skill, int limit)
-	{
-		int numai = 0, cn = -1, maxai = limit >= 0 ? min(limit, MAXBOTS) : MAXBOTS;
-		loopv(bots)
-        {
-            clientinfo *ci = bots[i];
-            if(!ci || ci->ownernum < 0) { if(cn < 0) cn = i; continue; }
+	bool addai(int skill, int limit) {
+		int numai = 0, cn = -1;
+    int maxai = (limit >= 0)
+        ? min(limit, MAXBOTS)
+        : MAXBOTS;
+
+		loopv(bots) {
+      clientinfo *ci = bots[i];
+      if( (cn < 0) && (!ci || ci->ownernum < 0) ) {
+        cn = i;
+        continue;
+      }
 			numai++;
 		}
-		if(numai >= maxai) return false;
-        if(bots.inrange(cn))
-        {
-            clientinfo *ci = bots[cn];
-            if(ci)
-            { // reuse a slot that was going to removed
 
-                clientinfo *owner = findaiclient();
-                ci->ownernum = owner ? owner->clientnum : -1;
-                if(owner) owner->bots.add(ci);
-                ci->aireinit = 2;
-                dorefresh = true;
-                return true;
-            }
-        }
-        else { cn = bots.length(); bots.add(NULL); }
-        const char *team = m_teammode ? chooseteam() : "";
-        if(!bots[cn]) bots[cn] = new clientinfo;
-        clientinfo *ci = bots[cn];
+		if(numai >= maxai)
+      return false;
+
+    if(bots.inrange(cn)) {
+      clientinfo *ci = bots[cn];
+      if(ci) {
+        // reuse a slot that was going to removed
+        clientinfo *owner = findaiclient();
+        ci->ownernum = owner ? owner->clientnum : -1;
+        ci->aireinit = 2;
+
+        if(owner)
+          owner->bots.add(ci);
+
+        dorefresh = true;
+        return true;
+      }
+    } else {
+      cn = bots.length();
+      bots.add(NULL);
+    }
+
+    const char *team = m_teammode ? chooseteam() : "";
+
+    if(!bots[cn])
+      bots[cn] = new clientinfo;
+
+    clientinfo *owner = findaiclient();
+    clientinfo *ci = bots[cn];
+
 		ci->clientnum = MAXCLIENTS + cn;
 		ci->state.aitype = AI_BOT;
-        clientinfo *owner = findaiclient();
 		ci->ownernum = owner ? owner->clientnum : -1;
-        if(owner) owner->bots.add(ci);
-        ci->state.skill = skill <= 0 ? rnd(50) + 51 : clamp(skill, 1, 101);
-	    clients.add(ci);
+    ci->state.skill = skill <= 0 ? rnd(50) + 51 : clamp(skill, 1, 101);
 		ci->state.lasttimeplayed = lastmillis;
-		copystring(ci->name, "bot", MAXNAMELEN+1);
 		ci->state.state = CS_DEAD;
-        copystring(ci->team, team, MAXTEAMLEN+1);
-        ci->playermodel = rnd(128);
+    ci->playermodel = rnd(128);
 		ci->aireinit = 2;
 		ci->connected = true;
-        dorefresh = true;
+
+		copystring(ci->name, "bot", MAXNAMELEN+1);
+    copystring(ci->team, team, MAXTEAMLEN+1);
+
+    if(owner)
+      owner->bots.add(ci);
+
+	  clients.add(ci);
+
+    dorefresh = true;
+
 		return true;
 	}
 
