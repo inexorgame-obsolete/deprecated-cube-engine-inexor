@@ -3170,7 +3170,13 @@ namespace server
                 break;
 
             case N_TRYSPAWN:
-                if(!ci || !cq || cq->state.state!=CS_DEAD || cq->state.lastspawn>=0 || (smode && !smode->canspawn(cq)) || (!smode && m_lms)) break;
+                if(!ci || !cq || cq->state.state!=CS_DEAD || cq->state.lastspawn>=0 || (smode && !smode->canspawn(cq))) break;
+
+                if(!smode && m_lms
+                    && (cq->state.deaths != 0
+                      || cq->state.aitype == AI_NONE))
+                  break;
+
                 if(!ci->clientmap[0] && !ci->mapcrc)
                 {
                     ci->mapcrc = -1;
