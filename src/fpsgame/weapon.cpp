@@ -1167,7 +1167,7 @@ namespace game
             if(p->bouncetype != BNC_BOMB)
                 continue;
 
-            if(!ellipsecollide(d,
+            if(ellipsecollide(d,
 			              dir, p->o, vec(0, 0, 0), p->yaw,
 			              bombcolliderad, bombcolliderad,
 			              p->aboveeye, p->o.z - raycube(p->o, vec(0, 0, -1), 0.2f, RAY_CLIPMAT)))
