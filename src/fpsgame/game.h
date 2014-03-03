@@ -451,7 +451,7 @@ static const struct guninfo { int   sound, attackdelay, damage, spread, projspee
     { S_RIFLE,    1500, 100,   0,   0, 30, 2048,  1,  80,   0,    0, "rifle",           "rifle",  0 },
     { S_FLAUNCH,   600,  90,   0, 200, 10, 1024,  1, 250,  45, 1500, "grenadelauncher", "gl",     0 },
     { S_PISTOL,    500,  35,  50,   0,  7, 1024,  1,  80,   0,    0, "pistol",          "pistol", 0 },
-    { S_FEXPLODE,  375,   1,   8,   0,  0, 1024,  0,  80,  60, 1500, "bomb",            "cannon", 0 },
+    { S_FEXPLODE,  375, 400,   8,  20,  0, 1024,  1,  80,  60, 1500, "bomb",            "cannon", 0 },
     { S_FLAUNCH,   200,  20,   0, 200,  1, 1024,  1,  80,  40,    0, "fireball",        NULL,     PART_FIREBALL1 },
     { S_ICEBALL,   200,  40,   0, 120,  1, 1024,  1,  80,  40,    0, "iceball",         NULL,     PART_FIREBALL2 },
     { S_SLIMEBALL, 200,  30,   0, 640,  1, 1024,  1,  80,  40,    0, "slimeball",       NULL,     PART_FIREBALL3 },
