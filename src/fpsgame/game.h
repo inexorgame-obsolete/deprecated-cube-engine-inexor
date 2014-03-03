@@ -458,8 +458,8 @@ static const struct guninfo { int   sound, attackdelay, damage, spread, projspee
     { S_SLIMEBALL, 200,  30,   0, 640,  1, 1024,  1,  80,  40,    0, "slimeball",       NULL,     PART_FIREBALL3 },
     { S_PIGR1,     250,  50,   0,   0,  1,   12,  1,  80,   0,    0, "bite",            NULL,     0 },
     { -1,            0, 120,   0,   0,  0,    0,  1,  80,  40,    0, "barrel",          NULL,     0 },
+    { S_FEXPLODE,  375, 200,   8,  20,  0, 1024,  1, 400,  60, 1500, "bomb_splinter",   NULL,     0 },
 
-    { S_FEXPLODE,  375,   1,   8,   0,  0, 1024,  0,  80,  60, 1500, "bomb_splinter",   NULL,     0 },
 };
 
 #include "ai.h"
