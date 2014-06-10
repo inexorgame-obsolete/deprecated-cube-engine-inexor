@@ -1,3 +1,17 @@
 *.o
 *.gch
 /.project
+
+bin
+bin64
+bin_osx
+packages
+data
+src/vcpp
+src/xcode
+src/rpggame
+src/include
+src/lib
+src/lib64
+src/enet
+rpg.bat
