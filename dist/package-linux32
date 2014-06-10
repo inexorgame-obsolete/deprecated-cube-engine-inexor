@@ -1,6 +1,0 @@
-dist/compile
-cd bin_unix
-cp -a native_client linux_32_client
-cp -a native_server linux_32_server
-svn --non-interactive --message "linux 32 bit binaries" commit linux_32_client linux_32_server
-

@@ -1,1 +1,0 @@
-bin_unix/native_client -w800 -h600 -q${HOME}/.sauerbraten -r -t

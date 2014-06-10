@@ -1,4 +1,0 @@
-cd src
-make server
-cd ..
-cp -a src/sauer_server bin_unix/native_64_server

@@ -1,1 +1,0 @@
-bin_unix/native_64_server -n"NoobLounge.net 9 Bombodrome" -j10333 -m"nooblounge.net" -c4 -o2 -p"bombodrome" -g"server.log" -x"exec init.cfg"

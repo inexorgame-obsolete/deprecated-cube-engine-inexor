@@ -1,4 +1,0 @@
-cd src
-make
-make install
-cd ..

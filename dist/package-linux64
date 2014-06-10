@@ -1,6 +1,0 @@
-dist/compile
-cd bin_unix
-cp -a native_client linux_64_client
-cp -a native_server linux_64_server
-svn --non-interactive --message "linux 64 bit binaries" commit linux_64_client linux_64_server
-
