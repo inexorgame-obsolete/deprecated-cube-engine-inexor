@@ -7,6 +7,7 @@ OUTDIR=$(BUILDDIR)/$(OUT)
 
 SRC_REF=./src/
 ENET_REF=$(BUILDDIR)/enet/
+SDEPS_REF=$(BUILDDIR)/sdeps/
 
 OUT_SRC=$(OUTDIR)/src/
 OUT_ENET=$(OUT_SRC)/enet/
@@ -22,13 +23,13 @@ native:
 	make cpexe OUT=native
 
 linux:
-	make cpexe OUT=linux PLATFORM=linux
+	make cpexe OUT=linux PLATFORM=Linux
 
 win32:
-	make cpexe OUT=win32 PLATFORM=MINGW-CROSS
+	make cpexe OUT=win32 PLATFORM=MINGW-CROSS EXE_SUFF=.exe
 
 win64:
-	make cpexe OUT=win64 PLATFORM=MINGW-CROSS-64
+	make cpexe OUT=win64 PLATFORM=MINGW-CROSS-64 EXE_SUFF=.exe
 
 all-win: win32 win64
 all-os: all-win linux
@@ -37,6 +38,9 @@ all-os: all-win linux
 
 fetch-enet: build-dir
 	sh tools/tools.sh github_fetch lsalzman/enet "$(ENET_REF)"
+
+fetch-static-deps: build-dir
+	sh tools/tools.sh github_fetch mobius-tempname/sauerbomber-build-deps "$(SDEPS_REF)"
 
 fetch-bomb-data: data-dir
 	sh tools/tools.sh github_fetch  mobius-tempname/sauerbomber-data "$(DATADIR)"/sauerbomber
@@ -65,10 +69,11 @@ out-dir:
 bin-dir:
 	mkdir -p "$(BINDIR)"
 
-bin-dir:
-
 link-enet: fetch-enet link-src
 	cp -Rl "$(ENET_REF)" "$(OUT_ENET)"
+
+link-static-deps: fetch-static-deps link-src
+	test -d "$(SDEPS_REF)"/"$(OUT)" && cp -Rl "$(SDEPS_REF)"/"$(OUT)"/* "$(OUT_SRC)" || true
 
 link-src: out-dir
 	cp -Rl "$(SRC_REF)" "$(OUT_SRC)"
@@ -78,10 +83,10 @@ clean:
 
 # Compilation ##############################################
 
-compile: link-src link-enet
+compile: link-src link-enet link-static-deps
 	$(MAKE) -C $(OUT_SRC) -j $(JOBS)
 
 cpexe: compile bin-dir
-	cp "$(OUT_SRC)/"*client "$(BINDIR)/$(OUT)_client" -rv
-	cp "$(OUT_SRC)/"*server "$(BINDIR)/$(OUT)_server" -rv
-	cp "$(OUT_SRC)/"*master "$(BINDIR)/$(OUT)_master" -rv || true
+	cp "$(OUT_SRC)/"*client"$(EXE_SUFF)" "$(BINDIR)/$(OUT)_client$(EXE_SUFF)" -rv
+	cp "$(OUT_SRC)/"*server"$(EXE_SUFF)" "$(BINDIR)/$(OUT)_server$(EXE_SUFF)" -rv
+	cp "$(OUT_SRC)/"*master"$(EXE_SUFF)" "$(BINDIR)/$(OUT)_master$(EXE_SUFF)" -rv || true

@@ -17,6 +17,7 @@ endif
 MV=mv
 
 ifneq (,$(findstring MINGW,$(PLATFORM)))
+WINBIN=.
 WINDRES= windres
 ifneq (,$(findstring 64,$(PLATFORM)))
 ifneq (,$(findstring CROSS,$(PLATFORM)))
@@ -27,7 +28,6 @@ ifneq (,$(STRIP))
 endif
 endif
 WINLIB=lib64
-WINBIN=../bin64
 override CXX+= -m64
 override WINDRES+= -F pe-x86-64
 else
@@ -39,7 +39,6 @@ ifneq (,$(STRIP))
 endif
 endif
 WINLIB=lib
-WINBIN=../bin
 override CXX+= -m32
 override WINDRES+= -F pe-i386
 endif
@@ -176,7 +175,7 @@ $(filter-out $(SERVER_OBJS),$(MASTER_OBJS)): CXXFLAGS += $(SERVER_INCLUDES)
 ifneq (,$(findstring MINGW,$(PLATFORM)))
 client: $(CLIENT_OBJS)
 	$(WINDRES) -I vcpp -i vcpp/mingw.rc -J rc -o vcpp/mingw.res -O coff 
-	$(CXX) $(CXXFLAGS) -o $(WINBIN)/sauerbomber.exe vcpp/mingw.res $(CLIENT_OBJS) $(CLIENT_LIBS)
+	$(CXX) $(CXXFLAGS) -o $(WINBIN)/bomber_client.exe vcpp/mingw.res $(CLIENT_OBJS) $(CLIENT_LIBS)
 
 server: $(SERVER_OBJS)
 	$(WINDRES) -I vcpp -i vcpp/mingw.rc -J rc -o vcpp/mingw.res -O coff
