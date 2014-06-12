@@ -15,3 +15,5 @@ src/lib
 src/lib64
 src/enet
 rpg.bat
+
+build
