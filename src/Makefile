@@ -1,65 +1,132 @@
-#CXXFLAGS= -O3 -fomit-frame-pointer -ffast-math
-#override CXXFLAGS+= -Wall -fsigned-char -fno-exceptions -fno-rtti
-CXXFLAGS=-O0 -Wall -g
-
 PLATFORM= $(shell uname -s)
 PLATFORM_PREFIX= native
 
 INCLUDES= -Ishared -Iengine -Ifpsgame -Ienet/include
 
-STRIP=
-ifeq (,$(findstring -g,$(CXXFLAGS)))
-ifeq (,$(findstring -pg,$(CXXFLAGS)))
-  STRIP=strip
-endif
-endif
-
 MV=mv
 
-ifneq (,$(findstring MINGW,$(PLATFORM)))
-WINBIN=.
-WINDRES= windres
-ifneq (,$(findstring 64,$(PLATFORM)))
-ifneq (,$(findstring CROSS,$(PLATFORM)))
-  CXX=x86_64-w64-mingw32-g++
-  WINDRES=x86_64-w64-mingw32-windres
-ifneq (,$(STRIP))
-  STRIP=x86_64-w64-mingw32-strip
-endif
-endif
-WINLIB=lib64
-override CXX+= -m64
-override WINDRES+= -F pe-x86-64
+# COMPILER CONFIG ##########################################
+
+ifdef DEBUG
+override CXXFLAGS+=-O0 -Wall -g
 else
-ifneq (,$(findstring CROSS,$(PLATFORM)))
-  CXX=i686-w64-mingw32-g++
-  WINDRES=i686-w64-mingw32-windres
-ifneq (,$(STRIP))
-  STRIP=i686-w64-mingw32-strip
+override CXXFLAGS+=-O3 -fomit-frame-pointer -ffast-math
 endif
-endif
-WINLIB=lib
-override CXX+= -m32
-override WINDRES+= -F pe-i386
-endif
+
+# PLATFORM DETECTION #######################################
+
+P = $(PLATFORM)
+
+pMINGW   = $(findstring MINGW,$(P))
+pM64     = $(findstring 64,$(P))
+pM32     = $(if $(pM64),,1)
+pMCROSS  = $(findstring CROSS,$(P))
+pMNATIVE = $(if $(pMCROSS),,1)
+
+pGNU = $(or $(findstring GNU,$(P)),$(findstring Linux,$(P)), $(findstring LINUX,$(P)))
+
+pSUN = $(findstring SunOS,$(P))
+
+# PLATFORM CONFIGURATION ###################################
+
+# NATIVE MINGW 32 ------------------------------------------
+ifneq (, $(and $(pMINGW),$(pM32),$(pMNATIVE)))
+
+WINDRES= windres -F pe-i386
+CXX=i686-w64-mingw32-g++ -m32
+STRIP=strip
+
 CLIENT_INCLUDES= $(INCLUDES) -Iinclude
-ifneq (,$(findstring TDM,$(PLATFORM)))
-STD_LIBS=
-else
-STD_LIBS= -static-libgcc -static-libstdc++
+CLIENT_LIBS= -mwindows -static-libgcc -static-libstdc++ -Llib -Llib -lSDL -lSDL_image -lSDL_mixer -lzdll -lopengl32 -lenet -lws2_32 -lwinmm -static
+
+
+SERVER_INCLUDES= -DSTANDALONE $(INCLUDES) -Iinclude
+
+SERVER_LIBS= -mwindows -static-libgcc -static-libstdc++ -Llib -lzlib1 -lenet -lws2_32 -lwinmm
+MASTER_LIBS= -mwindows -static-libgcc -static-libstdc++ -Llib -lzlib1 -lenet -lws2_32 -lwinmm
+
 endif
-CLIENT_LIBS= -mwindows $(STD_LIBS) -L$(WINBIN) -L$(WINLIB) -Llib -lSDL -lSDL_image -lSDL_mixer -lzdll -lopengl32 -lenet -lws2_32 -lwinmm -static
-else	
+# NATIVE MINGW 64 ------------------------------------------
+ifneq (, $(and $(pMINGW),$(pM64),$(pMNATIVE) ))
+
+WINDRES= windres -F pe-x86-64
+CXX=x86_64-w64-mingw32-g++ -m64
+STRIP=strip
+
+CLIENT_INCLUDES= $(INCLUDES) -Iinclude
+CLIENT_LIBS= -mwindows -static-libgcc -static-libstdc++ -Llib64 -Llib -lSDL -lSDL_image -lSDL_mixer -lzdll -lopengl32 -lenet -lws2_32 -lwinmm -static
+
+SERVER_INCLUDES= -DSTANDALONE $(INCLUDES) -Iinclude
+SERVER_LIBS= -mwindows -static-libgcc -static-libstdc++ -LIB64 -lzlib1 -lenet -lws2_32 -lwinmm
+
+MASTER_LIBS= -mwindows -static-libgcc -static-libstdc++ -Llib64 -lzlib1 -lenet -lws2_32 -lwinmm
+
+endif
+# CROSS MINGW 32 -------------------------------------------
+ifneq (, $(and $(pMINGW),$(pM32),$(pMCROSS)))
+
+WINDRES=i686-w64-mingw32-windres -F pe-i386
+CXX=i686-w64-mingw32-g++ -m32
+STRIP=i686-w64-mingw32-strip
+
+CLIENT_INCLUDES= $(INCLUDES) -Iinclude
+CLIENT_LIBS= -mwindows -static-libgcc -static-libstdc++ -Llib -lSDL -lSDL_image -lSDL_mixer -lzdll -lopengl32 -lenet -lws2_32 -lwinmm -static
+
+SERVER_INCLUDES= -DSTANDALONE $(INCLUDES) -Iinclude
+SERVER_LIBS= -mwindows -static-libgcc -static-libstdc++ -Llib -lzlib1 -lenet -lws2_32 -lwinmm#
+
+MASTER_LIBS= -mwindows -static-libgcc -static-libstdc++ -Llib -lzlib1 -lenet -lws2_32 -lwinmm
+
+endif
+# CROSS MINGW 64 -------------------------------------------
+ifneq (, $(and $(pMINGW),$(pM64),$(pMCROSS)))
+
+WINDRES=windres -F pe-x86-64
+CXX=x86_64-w64-mingw32-g++ -m64
+WINDRES=x86_64-w64-mingw32-windres
+STRIP=x86_64-w64-mingw32-strip
+
+CLIENT_INCLUDES= $(INCLUDES) -Iinclude
+CLIENT_LIBS= -mwindows -static-libgcc -static-libstdc++ -Llib64 -Llib -lSDL -lSDL_image -lSDL_mixer -lzdll -lopengl32 -lenet -lws2_32 -lwinmm -static
+
+SERVER_INCLUDES= -DSTANDALONE $(INCLUDES) -Iinclude
+SERVER_LIBS= -mwindows -static-libgcc -static-libstdc++ -Llib64 -lzlib1 -lenet -lws2_32 -lwinmm
+
+MASTER_LIBS= -mwindows -static-libgcc -static-libstdc++ -Llib64 -lzlib1 -lenet -lws2_32 -lwinmm
+
+endif
+# GNU ------------------------------------------------------
+ifneq (, $(pGNU))
+
+STRIP=strip
+
 CLIENT_INCLUDES= $(INCLUDES) -I/usr/X11R6/include `sdl-config --cflags`
-CLIENT_LIBS= -Lenet/.libs -lenet -L/usr/X11R6/lib -lX11 `sdl-config --libs` -lSDL_image -lSDL_mixer -lz -lGL -lstdc++ -lm
+CLIENT_LIBS= -Lenet/.libs -lenet -L/usr/X11R6/lib -lX11 `sdl-config --libs` -lSDL_image -lSDL_mixer -lz -lGL -lstdc++ -lm -lrt
+
+SERVER_INCLUDES= -DSTANDALONE $(INCLUDES)
+SERVER_LIBS= -Lenet/.libs -lenet -lz -lm -lstdc++
+
+MASTER_LIBS= $(SERVER_LIBS)
+
 endif
-ifeq ($(PLATFORM),Linux)
-CLIENT_LIBS+= -lrt
-else
-ifneq (,$(findstring GNU,$(PLATFORM)))
-CLIENT_LIBS+= -lrt        
-endif         
+# SunOS ----------------------------------------------------
+ifneq (, $(pSUN))
+
+STRIP=strip
+
+CLIENT_INCLUDES= $(INCLUDES) -I/usr/X11R6/include `sdl-config --cflags`
+CLIENT_LIBS= -Lenet/.libs -lenet -L/usr/X11R6/lib -lX11 `sdl-config --libs` -lSDL_image -lSDL_mixer -lz -lGL -lstdc++ -lm -lsocket -lnsl -lX11
+
+SERVER_INCLUDES= -DSTANDALONE $(INCLUDES)
+SERVER_LIBS= -Lenet/.libs -lenet -lz -lm -lstdc++
+
+MASTER_LIBS= $(SERVER_LIBS)
+SERVER_LIBS+= -lsocket -lnsl
+
 endif
+
+# TARGET DEFINITIONS #######################################
+
 CLIENT_OBJS= \
 	shared/crypto.o \
 	shared/geom.o \
@@ -119,15 +186,6 @@ CLIENT_OBJS= \
 
 CLIENT_PCH= shared/cube.h.gch engine/engine.h.gch fpsgame/game.h.gch
 
-ifneq (,$(findstring MINGW,$(PLATFORM)))
-SERVER_INCLUDES= -DSTANDALONE $(INCLUDES) -Iinclude
-SERVER_LIBS= -mwindows $(STD_LIBS) -L$(WINBIN) -L$(WINLIB) -lzlib1 -lenet -lws2_32 -lwinmm
-MASTER_LIBS= $(STD_LIBS) -L$(WINBIN) -L$(WINLIB) -lzlib1 -lenet -lws2_32 -lwinmm
-else
-SERVER_INCLUDES= -DSTANDALONE $(INCLUDES)
-SERVER_LIBS= -Lenet/.libs -lenet -lz -lm -lstdc++
-MASTER_LIBS= $(SERVER_LIBS)
-endif
 SERVER_OBJS= \
 	shared/crypto-standalone.o \
 	shared/stream-standalone.o \
@@ -145,14 +203,10 @@ MASTER_OBJS= \
 	engine/command-standalone.o \
 	engine/master-standalone.o
 
-ifeq ($(PLATFORM),SunOS)
-CLIENT_LIBS+= -lsocket -lnsl -lX11
-SERVER_LIBS+= -lsocket -lnsl
-endif
+# TARGETS ##################################################
 
-default: all
 
-all: client server
+all: client server master
 
 clean:
 	-$(RM) $(CLIENT_PCH) $(CLIENT_OBJS) $(SERVER_OBJS) $(MASTER_OBJS) bomber_client bomber_server bomber_master
@@ -172,47 +226,36 @@ $(filter fpsgame/%,$(CLIENT_OBJS)): $(filter fpsgame/%,$(CLIENT_PCH))
 $(SERVER_OBJS): CXXFLAGS += $(SERVER_INCLUDES)
 $(filter-out $(SERVER_OBJS),$(MASTER_OBJS)): CXXFLAGS += $(SERVER_INCLUDES)
 
-ifneq (,$(findstring MINGW,$(PLATFORM)))
+ifneq (,$(pMINGW)) #-------------------------- MINGW COMPILE
 client: $(CLIENT_OBJS)
-	$(WINDRES) -I vcpp -i vcpp/mingw.rc -J rc -o vcpp/mingw.res -O coff 
-	$(CXX) $(CXXFLAGS) -o $(WINBIN)/bomber_client.exe vcpp/mingw.res $(CLIENT_OBJS) $(CLIENT_LIBS)
+	$(WINDRES) -I vcpp -i vcpp/mingw.rc -J rc -o vcpp/mingw.res -O coff
+	$(CXX) $(CXXFLAGS) -o bomber_client.exe vcpp/mingw.res $(CLIENT_OBJS) $(CLIENT_LIBS)
 
 server: $(SERVER_OBJS)
 	$(WINDRES) -I vcpp -i vcpp/mingw.rc -J rc -o vcpp/mingw.res -O coff
-	$(CXX) $(CXXFLAGS) -o $(WINBIN)/bomber_server.exe vcpp/mingw.res $(SERVER_OBJS) $(SERVER_LIBS)
+	$(CXX) $(CXXFLAGS) -o bomber_server.exe vcpp/mingw.res $(SERVER_OBJS) $(SERVER_LIBS)
 
 master: $(MASTER_OBJS)
-	$(CXX) $(CXXFLAGS) -o $(WINBIN)/bomber_master.exe $(MASTER_OBJS) $(MASTER_LIBS)
-
-install: all
-else
+	$(CXX) $(CXXFLAGS) -o bomber_master.exe $(MASTER_OBJS) $(MASTER_LIBS)
+else #----------------------------------------- UNIX COMPILE
 client:	libenet $(CLIENT_OBJS)
 	$(CXX) $(CXXFLAGS) -o bomber_client $(CLIENT_OBJS) $(CLIENT_LIBS)
 
 server:	libenet $(SERVER_OBJS)
-	$(CXX) $(CXXFLAGS) -o bomber_server $(SERVER_OBJS) $(SERVER_LIBS)  
+	$(CXX) $(CXXFLAGS) -o bomber_server $(SERVER_OBJS) $(SERVER_LIBS)
 	
 master: libenet $(MASTER_OBJS)
-	$(CXX) $(CXXFLAGS) -o bomber_master $(MASTER_OBJS) $(MASTER_LIBS)  
+	$(CXX) $(CXXFLAGS) -o bomber_master $(MASTER_OBJS) $(MASTER_LIBS)
 
 shared/cube2font.o: shared/cube2font.c
 	$(CXX) $(CXXFLAGS) -c -o $@ $< `freetype-config --cflags`
 
 cube2font: shared/cube2font.o
 	$(CXX) $(CXXFLAGS) -o cube2font shared/cube2font.o `freetype-config --libs` -lz
+endif #----------------------------------------------- ENDIF
 
-install: all
-	cp bomber_client	../bin_unix/$(PLATFORM_PREFIX)_client
-	cp bomber_server	../bin_unix/$(PLATFORM_PREFIX)_server
-ifneq (,$(STRIP))
-	$(STRIP) ../bin_unix/$(PLATFORM_PREFIX)_client
-	$(STRIP) ../bin_unix/$(PLATFORM_PREFIX)_server
-endif
-endif
-
-enet/libenet.a:
+libenet:
 	cd enet; test -e .libs/libenet.a || ( autoreconf -vfi && configure && $(MAKE) )
-libenet: enet/libenet.a
 
 depend:
 	makedepend -Y -Ishared -Iengine -Ifpsgame $(subst .o,.cpp,$(CLIENT_OBJS))
@@ -223,7 +266,7 @@ depend:
 engine/engine.h.gch: shared/cube.h.gch
 fpsgame/game.h.gch: shared/cube.h.gch
 
-# DO NOT DELETE
+# DO NOT DELETE ###########################################
 
 shared/crypto.o: shared/cube.h shared/tools.h shared/geom.h shared/ents.h
 shared/crypto.o: shared/command.h shared/iengine.h shared/igame.h
