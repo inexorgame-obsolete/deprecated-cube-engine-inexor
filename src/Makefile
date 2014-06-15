@@ -15,22 +15,22 @@ endif
 
 # PLATFORM DETECTION #######################################
 
-P = $(PLATFORM)
+P = $(shell echo "$(PLATFORM)" | tr A-Z a-z)
 
-pMINGW   = $(findstring MINGW,$(P))
-pM64     = $(findstring 64,$(P))
-pM32     = $(if $(pM64),,1)
-pMCROSS  = $(findstring CROSS,$(P))
-pMNATIVE = $(if $(pMCROSS),,1)
+pMINGW  = $(findstring mingw,$(P))
+pGNU = $(or $(findstring gnu,$(P)),$(findstring linux,$(P)))
+pSUN = $(findstring sunos,$(P))
 
-pGNU = $(or $(findstring GNU,$(P)),$(findstring Linux,$(P)), $(findstring LINUX,$(P)))
+p64     = $(findstring 64,$(P))
+p32     = $(if $(p64),,1)
+pCROSS  = $(findstring cross,$(P))
+pNATIVE = $(if $(pCROSS),,1)
 
-pSUN = $(findstring SunOS,$(P))
 
 # PLATFORM CONFIGURATION ###################################
 
 # NATIVE MINGW 32 ------------------------------------------
-ifneq (, $(and $(pMINGW),$(pM32),$(pMNATIVE)))
+ifneq (, $(and $(pMINGW),$(p32),$(pNATIVE)))
 
 WINDRES= windres -F pe-i386
 CXX=i686-w64-mingw32-g++ -m32
@@ -47,7 +47,7 @@ MASTER_LIBS= -mwindows -static-libgcc -static-libstdc++ -Llib -lzlib1 -lenet -lw
 
 endif
 # NATIVE MINGW 64 ------------------------------------------
-ifneq (, $(and $(pMINGW),$(pM64),$(pMNATIVE) ))
+ifneq (, $(and $(pMINGW),$(p64),$(pNATIVE) ))
 
 WINDRES= windres -F pe-x86-64
 CXX=x86_64-w64-mingw32-g++ -m64
@@ -63,7 +63,7 @@ MASTER_LIBS= -mwindows -static-libgcc -static-libstdc++ -Llib64 -lzlib1 -lenet -
 
 endif
 # CROSS MINGW 32 -------------------------------------------
-ifneq (, $(and $(pMINGW),$(pM32),$(pMCROSS)))
+ifneq (, $(and $(pMINGW),$(p32),$(pCROSS)))
 
 WINDRES=i686-w64-mingw32-windres -F pe-i386
 CXX=i686-w64-mingw32-g++ -m32
@@ -79,7 +79,7 @@ MASTER_LIBS= -mwindows -static-libgcc -static-libstdc++ -Llib -lzlib1 -lenet -lw
 
 endif
 # CROSS MINGW 64 -------------------------------------------
-ifneq (, $(and $(pMINGW),$(pM64),$(pMCROSS)))
+ifneq (, $(and $(pMINGW),$(p64),$(pCROSS)))
 
 WINDRES=windres -F pe-x86-64
 CXX=x86_64-w64-mingw32-g++ -m64
