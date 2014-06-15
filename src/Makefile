@@ -20,6 +20,7 @@ P = $(shell echo "$(PLATFORM)" | tr A-Z a-z)
 pMINGW  = $(findstring mingw,$(P))
 pGNU = $(or $(findstring gnu,$(P)),$(findstring linux,$(P)))
 pSUN = $(findstring sunos,$(P))
+pOSX = $(findstring darwin,$(P))
 
 p64     = $(findstring 64,$(P))
 p32     = $(if $(p64),,1)
@@ -27,7 +28,7 @@ pCROSS  = $(findstring cross,$(P))
 pNATIVE = $(if $(pCROSS),,1)
 
 
-# PLATFORM CONFIGURATION ###################################
+# PLATFORM CONFIGURATION
 
 # NATIVE MINGW 32 ------------------------------------------
 ifneq (, $(and $(pMINGW),$(p32),$(pNATIVE)))
@@ -93,6 +94,42 @@ SERVER_INCLUDES= -DSTANDALONE $(INCLUDES) -Iinclude
 SERVER_LIBS= -mwindows -static-libgcc -static-libstdc++ -Llib64 -lzlib1 -lenet -lws2_32 -lwinmm
 
 MASTER_LIBS= -mwindows -static-libgcc -static-libstdc++ -Llib64 -lzlib1 -lenet -lws2_32 -lwinmm
+
+endif
+# OSXCROSS i386 --------------------------------------------
+ifneq (, $(and $(pOSX),$(p32),$(pCROSS)))
+# This is pretty much for OSXCross + Leopard
+CC=i386-apple-darwin9-clang
+CXX=i386-apple-darwin9-clang++
+LD=i386-apple-darwin9-ld
+
+ENET_CONFIGURE = --host=i386-apple-darwin9
+
+CLIENT_INCLUDES=$(INCLUDES) -Fframeworks $(shell echo " " ./frameworks/*/Headers|sed 's@\s\s*@ -I@g')
+CLIENT_LIBS=-Lenet/.libs -lenet -lz -lstdc++ -lm -Fframeworks -framework SDL -framework SDL_image -framework SDL_mixer -framework OpenGL -framework Foundation -framework Cocoa
+
+SERVER_INCLUDES= -DSTANDALONE $(INCLUDES)
+SERVER_LIBS= -Lenet/.libs -lenet -lz -lm -lstdc++
+
+MASTER_LIBS= $(SERVER_LIBS)
+
+endif
+# OSXCROSS x86_64 ------------------------------------------
+ifneq (, $(and $(pOSX),$(p64),$(pCROSS)))
+# This is pretty much for OSXCross + Leopard
+CC=x86_64-apple-darwin9-clang
+CXX=x86_64-apple-darwin9-clang++
+LD=x86_64-apple-darwin9-ld
+
+ENET_CONFIGURE = --host=x86_64-apple-darwin9
+
+CLIENT_INCLUDES=$(INCLUDES) -Fframeworks $(shell echo " " ./frameworks/*/Headers|sed 's@\s\s*@ -I@g')
+CLIENT_LIBS=-Lenet/.libs -lenet -lz -lstdc++ -lm -Fframeworks -framework SDL -framework SDL_image -framework SDL_mixer -framework OpenGL -framework Foundation -framework Cocoa
+
+SERVER_INCLUDES= -DSTANDALONE $(INCLUDES)
+SERVER_LIBS= -Lenet/.libs -lenet -lz -lm -lstdc++
+
+MASTER_LIBS= $(SERVER_LIBS)
 
 endif
 # GNU ------------------------------------------------------
@@ -184,6 +221,10 @@ CLIENT_OBJS= \
 	fpsgame/waypoint.o \
 	fpsgame/weapon.o
 
+ifneq (, $(and $(pOSX)))
+override CLIENT_OBJS+=engine/macutils.o
+endif
+
 CLIENT_PCH= shared/cube.h.gch engine/engine.h.gch fpsgame/game.h.gch
 
 SERVER_OBJS= \
@@ -204,7 +245,6 @@ MASTER_OBJS= \
 	engine/master-standalone.o
 
 # TARGETS ##################################################
-
 
 all: client server master
 
@@ -252,10 +292,14 @@ shared/cube2font.o: shared/cube2font.c
 
 cube2font: shared/cube2font.o
 	$(CXX) $(CXXFLAGS) -o cube2font shared/cube2font.o `freetype-config --libs` -lz
+
 endif #----------------------------------------------- ENDIF
 
+engine/macutils.o: engine/macutils.mm
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
 libenet:
-	cd enet; test -e .libs/libenet.a || ( autoreconf -vfi && configure && $(MAKE) )
+	export CC=$(CC) CXX=$(CXX); cd enet; test -e .libs/libenet.a || ( autoreconf -vfi && configure $(ENET_CONFIGURE) && $(MAKE) )
 
 depend:
 	makedepend -Y -Ishared -Iengine -Ifpsgame $(subst .o,.cpp,$(CLIENT_OBJS))

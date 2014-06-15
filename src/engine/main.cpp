@@ -1009,7 +1009,12 @@ int getclockmillis()
 
 VAR(numcpus, 1, 1, 16);
 
+// FIXME: WTF? - main is in macutils.mm?
+#ifdef __APPLE__
+int real_main(int argc, char **argv)
+#else
 int main(int argc, char **argv)
+#endif
 {
     #ifdef WIN32
     //atexit((void (__cdecl *)(void))_CrtDumpMemoryLeaks);

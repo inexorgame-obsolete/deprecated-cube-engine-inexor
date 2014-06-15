@@ -12,6 +12,12 @@ SDEPS_REF=$(BUILDDIR)/sdeps/
 OUT_SRC=$(OUTDIR)/src/
 OUT_ENET=$(OUT_SRC)/enet/
 
+ENV=
+
+ifdef OSXCROSS
+override ENV=$(shell ("$(OSXCROSS)"/bin/osxcross-conf && "$(OSXCROSS)"/bin/osxcross-env) | sed 's/^export //' | tr '\n' ' ')
+endif
+
 # Default entry ############################################
 
 help:
@@ -31,8 +37,15 @@ win32:
 win64:
 	make cpexe OUT=win64 PLATFORM=MINGW-CROSS-64 EXE_SUFF=.exe
 
+osx32:
+	make cpexe OUT=osx32 PLATFORM=DARWIN-CROSS $(ENV)
+
+osx64:
+	make cpexe OUT=osx64 PLATFORM=DARWIN-CROSS-64 $(ENV)
+
 all-win: win32 win64
-all-os: all-win linux
+all-osx: osx32 osx64
+all-os: all-win all-osx linux
 
 # Download #################################################
 
