@@ -2,8 +2,8 @@ JOBS=$(shell </proc/cpuinfo grep "processor" | wc -l)
 
 BUILDDIR=./build/
 DATADIR=./data/
-BINDIR=./bin/
-OUTDIR=$(BUILDDIR)/$(OUT)
+BINDIR=./bin/$(OUT)/
+OUTDIR=$(BUILDDIR)/targ/$(OUT)
 
 SRC_REF=./src/
 ENET_REF=$(BUILDDIR)/enet/
@@ -100,6 +100,9 @@ compile: link-src link-enet link-static-deps
 	$(MAKE) -C $(OUT_SRC) -j $(JOBS)
 
 cpexe: compile bin-dir
-	cp "$(OUT_SRC)/"*client"$(EXE_SUFF)" "$(BINDIR)/$(OUT)_client$(EXE_SUFF)" -rv
-	cp "$(OUT_SRC)/"*server"$(EXE_SUFF)" "$(BINDIR)/$(OUT)_server$(EXE_SUFF)" -rv
-	cp "$(OUT_SRC)/"*master"$(EXE_SUFF)" "$(BINDIR)/$(OUT)_master$(EXE_SUFF)" -rv || true
+	cp "$(OUT_SRC)/"*client"$(EXE_SUFF)" "$(BINDIR)/client$(EXE_SUFF)" -rv
+	cp "$(OUT_SRC)/"*server"$(EXE_SUFF)" "$(BINDIR)/server$(EXE_SUFF)" -rv
+	cp "$(OUT_SRC)/"*master"$(EXE_SUFF)" "$(BINDIR)/master$(EXE_SUFF)" -rv || true
+	test -d "$(SDEPS_REF)"/"$(OUT)"/bin && cp -Rl "$(SDEPS_REF)"/"$(OUT)"/bin/* "$(BINDIR)" || true
+	cp -R "$(OUT_SRC)"/enet/.libs/* "$(BINDIR)"
+
