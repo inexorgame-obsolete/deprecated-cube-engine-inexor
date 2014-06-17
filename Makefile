@@ -53,10 +53,10 @@ fetch-enet: build-dir
 	sh tools/tools.sh github_fetch lsalzman/enet "$(ENET_REF)"
 
 fetch-static-deps: build-dir
-	sh tools/tools.sh github_fetch mobius-tempname/sauerbomber-build-deps "$(SDEPS_REF)"
+	sh tools/tools.sh github_fetch mobius-tempname/sauerbraten-fork-build-deps "$(SDEPS_REF)"
 
 fetch-bomb-data: data-dir
-	sh tools/tools.sh github_fetch  mobius-tempname/sauerbomber-data "$(DATADIR)"/sauerbomber
+	sh tools/tools.sh github_fetch  mobius-tempname/sauerbraten-fork-data "$(DATADIR)"/sauerbomber
 
 fetch-sauerbraten: data-dir
 	sh tools/tools.sh github_fetch  mobius-tempname/sauerbraten "$(DATADIR)"/sauerbraten
