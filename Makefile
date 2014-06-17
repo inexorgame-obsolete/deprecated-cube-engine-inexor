@@ -104,5 +104,5 @@ cpexe: compile bin-dir
 	cp "$(OUT_SRC)/"*server"$(EXE_SUFF)" "$(BINDIR)/server$(EXE_SUFF)" -rv
 	cp "$(OUT_SRC)/"*master"$(EXE_SUFF)" "$(BINDIR)/master$(EXE_SUFF)" -rv || true
 	test -d "$(SDEPS_REF)"/"$(OUT)"/bin && cp -Rl "$(SDEPS_REF)"/"$(OUT)"/bin/* "$(BINDIR)" || true
-	cp -R "$(OUT_SRC)"/enet/.libs/* "$(BINDIR)"
+	cp -R "$(OUT_SRC)"/enet/.libs/* "$(BINDIR)" || true
 
