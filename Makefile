@@ -66,7 +66,7 @@ fetch-data: fetch-bomb-data fetch-sauerbraten
 # Dependency Management ####################################
 
 install-debian-packets:
-	apt-get install libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl1.2-dev libenet-dev libenet1-dev libenet0debian1 libsdl-image1.2 libsdl-mixer1.2 g++ g++-4.4
+	apt-get install libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl1.2-dev libenet-dev libenet1-dev libenet0debian1 libsdl-image1.2 libsdl-mixer1.2 g++ g++-4.4 autoconf2.13
 
 # File Management ##########################################
 
