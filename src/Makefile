@@ -299,7 +299,7 @@ engine/macutils.o: engine/macutils.mm
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 libenet:
-	export CC=$(CC) CXX=$(CXX); cd enet; test -e .libs/libenet.a || ( autoreconf -vfi && configure $(ENET_CONFIGURE) && $(MAKE) )
+	export CC=$(CC) CXX=$(CXX); cd enet; test -e .libs/libenet.a || ( autoreconf -vfi && ./configure $(ENET_CONFIGURE) && $(MAKE) )
 
 depend:
 	makedepend -Y -Ishared -Iengine -Ifpsgame $(subst .o,.cpp,$(CLIENT_OBJS))
