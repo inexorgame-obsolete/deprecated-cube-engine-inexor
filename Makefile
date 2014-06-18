@@ -56,17 +56,17 @@ fetch-static-deps: build-dir
 	sh tools/tools.sh github_fetch sauerbraten-fork/sauerbraten-fork-build-deps "$(SDEPS_REF)"
 
 fetch-bomb-data: data-dir
-	sh tools/tools.sh github_fetch  sauerbraten-fork/sauerbraten-fork-data "$(DATADIR)"/sauerbomber
+	sh tools/tools.sh github_fetch sauerbraten-fork/sauerbraten-fork-data "$(DATADIR)"/sauerbomber
 
 fetch-sauerbraten: data-dir
-	sh tools/tools.sh github_fetch  sauerbraten-fork/sauerbraten "$(DATADIR)"/sauerbraten
+	sh tools/tools.sh github_fetch sauerbraten-fork/sauerbraten "$(DATADIR)"/sauerbraten
 
 fetch-data: fetch-bomb-data fetch-sauerbraten
 
 # Dependency Management ####################################
 
 install-debian-packets:
-	apt-get install libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl1.2-dev libenet-dev libenet1-dev libenet0debian1 libsdl-image1.2 libsdl-mixer1.2 g++ g++-4.4 autoconf2.13
+	apt-get install libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl1.2-dev libenet-dev libsdl-image1.2 libsdl-mixer1.2 g++ g++-4.4 autoconf2.13 libtool
 
 # File Management ##########################################
 

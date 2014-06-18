@@ -138,11 +138,9 @@ ifneq (, $(pGNU))
 STRIP=strip
 
 CLIENT_INCLUDES= $(INCLUDES) -I/usr/X11R6/include `sdl-config --cflags`
-CLIENT_LIBS= -Lenet/.libs -lenet -L/usr/X11R6/lib -lX11 `sdl-config --libs` -lSDL_image -lSDL_mixer -lz -lGL -lstdc++ -lm -lrt
-
+CLIENT_LIBS= -lenet -L/usr/X11R6/lib -lX11 `sdl-config --libs` -lSDL_image -lSDL_mixer -lz -lstdc++ -lm -lrt -lGL
 SERVER_INCLUDES= -DSTANDALONE $(INCLUDES)
-SERVER_LIBS= -Lenet/.libs -lenet -lz -lm -lstdc++
-
+SERVER_LIBS= -lenet -lz -lm -lstdc++
 MASTER_LIBS= $(SERVER_LIBS)
 
 endif
