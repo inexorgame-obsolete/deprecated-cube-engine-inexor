@@ -1,4 +1,5 @@
 // generic useful stuff for any C++ program
+#include <new>
 
 #ifndef _TOOLS_H
 #define _TOOLS_H
@@ -25,11 +26,6 @@ typedef unsigned long long int ullong;
 #else
 #define RESTRICT
 #endif
-
-inline void *operator new(size_t, void *p) { return p; }
-inline void *operator new[](size_t, void *p) { return p; }
-inline void operator delete(void *, void *) {}
-inline void operator delete[](void *, void *) {}
 
 #ifdef swap
 #undef swap
