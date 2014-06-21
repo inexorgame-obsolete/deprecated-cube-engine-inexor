@@ -132,10 +132,32 @@ SERVER_LIBS= -Lenet/.libs -lenet -lz -lm -lstdc++
 MASTER_LIBS= $(SERVER_LIBS)
 
 endif
-# GNU ------------------------------------------------------
-ifneq (, $(pGNU))
+# LINUX 32 -------------------------------------------------
+ifneq (, $(and $(pGNU),$(p32)))
 
 STRIP=strip
+
+override CXXFLAGS+=-m32
+override CFLAGS+=-m32
+override LDFLAGS+=-m32
+
+CLIENT_INCLUDES= $(INCLUDES) -I/usr/X11R6/include `sdl-config --cflags`
+CLIENT_LIBS= -Lenet/.libs -lenet -L/usr/X11R6/lib -lX11 `sdl-config --libs` -lSDL_image -lSDL_mixer -lz -lGL -lstdc++ -lm -lrt
+
+SERVER_INCLUDES= -DSTANDALONE $(INCLUDES)
+SERVER_LIBS= -Lenet/.libs -lenet -lz -lm -lstdc++
+
+MASTER_LIBS= $(SERVER_LIBS)
+
+endif
+# LINUX 64 -------------------------------------------------
+ifneq (, $(and $(pGNU),$(p64)))
+
+STRIP=strip
+
+override CXXFLAGS+=-m64
+override CFLAGS+=-m64
+override LDFLAGS+=-m64
 
 CLIENT_INCLUDES= $(INCLUDES) -I/usr/X11R6/include `sdl-config --cflags`
 CLIENT_LIBS= -Lenet/.libs -lenet -L/usr/X11R6/lib -lX11 `sdl-config --libs` -lSDL_image -lSDL_mixer -lz -lGL -lstdc++ -lm -lrt
@@ -161,6 +183,10 @@ MASTER_LIBS= $(SERVER_LIBS)
 SERVER_LIBS+= -lsocket -lnsl
 
 endif
+
+# UTILS ####################################################
+
+ENV=CXX="$(CXX)" CC="$(CC)" LD="$(LD)" CXXFLAGS="$(CXXFLAGS)" CFLAGS="$(CFLAGS)" CXXFLAGS="$(CXXFLAGS)" LDFLAGS="$(LDFLAGS)"
 
 # TARGET DEFINITIONS #######################################
 
@@ -299,7 +325,7 @@ engine/macutils.o: engine/macutils.mm
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 libenet:
-	export CC=$(CC) CXX=$(CXX); cd enet; test -e .libs/libenet.a || ( autoreconf -vfi && ./configure $(ENET_CONFIGURE) && $(MAKE) )
+	export $(ENV); cd enet; test -e .libs/libenet.a || ( autoreconf -vfi && ./configure $(ENET_CONFIGURE) && $(MAKE) )
 
 depend:
 	makedepend -Y -Ishared -Iengine -Ifpsgame $(subst .o,.cpp,$(CLIENT_OBJS))
