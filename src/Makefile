@@ -1,4 +1,4 @@
-PLATFORM= $(shell uname -s)
+PLATFORM= $(shell uname -som)
 PLATFORM_PREFIX= native
 
 INCLUDES= -Ishared -Iengine -Ifpsgame -Ienet/include
