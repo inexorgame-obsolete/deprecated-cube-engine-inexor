@@ -4,7 +4,9 @@ github_fetch() {
   notouch="$3 exists but is not a SVN repo. Not touching."
 	if cd "$3"; then
     if test -d .svn; then
-      svn up
+      if test -z "$NOUPGIT"; then
+        svn up
+      fi
     else
       echo >&2 "$notouch"
     fi
