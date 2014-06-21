@@ -28,8 +28,11 @@ help:
 native:
 	make cpexe OUT=native
 
-linux:
-	make cpexe OUT=linux PLATFORM=Linux
+linux32:
+	make cpexe OUT=linux32 PLATFORM=Linux-32
+
+linux64:
+	make cpexe OUT=linux64 PLATFORM=Linux-64
 
 win32:
 	make cpexe OUT=win32 PLATFORM=MINGW-CROSS EXE_SUFF=.exe
@@ -45,7 +48,8 @@ osx64:
 
 all-win: win32 win64
 all-osx: osx32 osx64
-all-os: all-win all-osx linux
+all-linux: linux32 linux64
+all-os: all-win all-osx all-linux
 
 # Download #################################################
 
