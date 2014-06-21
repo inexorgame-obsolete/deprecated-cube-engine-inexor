@@ -9,8 +9,10 @@ MV=mv
 
 ifdef DEBUG
 override CXXFLAGS+=-O0 -Wall -g
+override CFLAGS+=-O0 -Wall -g
 else
 override CXXFLAGS+=-O3 -Wall -fomit-frame-pointer -ffast-math
+override CFLAGS+=-O3 -Wall -fomit-frame-pointer -ffast-math
 endif
 
 # PLATFORM DETECTION #######################################
