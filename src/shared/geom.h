@@ -43,9 +43,6 @@ struct vec
     vec &sub(float f)        { x -= f;         y -= f;         z -= f;         return *this; }
     vec &neg2()              { x = -x;         y = -y;                         return *this; }
     vec &neg()               { x = -x;         y = -y;         z = -z;         return *this; }
-    vec &pow()               { return mul(*this); }
-    vec &pow(float f)        { x = ::pow(x, f);    y = ::pow(y, f);    z = ::pow(z, f);    return *this; }
-    vec &pow(const vec &o)   { x = ::pow(x, o.x);  y = ::pow(y, o.y);  z = ::pow(z, o.z);  return *this; }
     vec &min(const vec &o)   { x = ::min(x, o.x);  y = ::min(y, o.y);  z = ::min(z, o.z);  return *this; }
     vec &max(const vec &o)   { x = ::max(x, o.x);  y = ::max(y, o.y);  z = ::max(z, o.z);  return *this; }
     vec &min(float f)        { x = ::min(x, f);    y = ::min(y, f);    z = ::min(z, f);    return *this; }

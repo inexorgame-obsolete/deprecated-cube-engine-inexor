@@ -75,7 +75,7 @@ struct QuadNode
 static float wfwave, wfscroll, wfxscale, wfyscale;
 
 static void renderwaterfall(const materialsurface &m, float offset, const vec *normal = NULL)
-    {
+{
     if(varray::data.empty())
     {
         varray::defattrib(varray::ATTRIB_VERTEX, 3, GL_FLOAT);

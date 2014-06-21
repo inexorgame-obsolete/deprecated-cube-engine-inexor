@@ -380,7 +380,6 @@ namespace game
 
     void hit(int damage, dynent *d, fpsent *at, const vec &vel, int gun, float info1, int info2 = 1)
     {
-        // conoutf("hit from %s (cn=%i); damage=%i gun=%i target-type=%i", at->name, at->clientnum, damage, gun, d->type);
         if(at==player1 && d!=at)
         {
             extern int hitsound;
@@ -390,7 +389,6 @@ namespace game
 
         if(d->type==ENT_INANIMATE)
         {
-            // conoutf("hit a movable");
             hitmovable(damage, (movable *)d, at, vel, gun);
             return;
         }

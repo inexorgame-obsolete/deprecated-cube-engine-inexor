@@ -358,7 +358,7 @@ static inline bool checknumber(const char *s)
 {
     if(isdigit(s[0])) return true;
     else switch(s[0])
-{
+    {
         case '+': case '-': return isdigit(s[1]) || (s[1] == '.' && isdigit(s[2]));
         case '.': return isdigit(s[1]) != 0;
         default: return false;
@@ -2379,7 +2379,7 @@ static inline void setiter(ident &id, int i, identstack &stack)
         pusharg(id, zero, stack);
         id.flags &= ~IDF_UNKNOWN;
     }
-        }
+}
 ICOMMAND(loop, "rie", (ident *id, int *n, uint *body),
 {
     if(*n <= 0 || id->type!=ID_ALIAS) return;
@@ -2539,14 +2539,14 @@ static bool parselist(const char *&s, const char *&start = liststart, const char
     skiplist(s);
     if(*s == ';') s++;
     return true;
-    }
+}
                 
-void explodelist(const char *s, vector<char *> &elems)
-    {
+void explodelist(const char *s, vector<char *> &elems, int limit)
+{
     const char *start, *end;
-    while(parselist(s, start, end))
+    while((limit < 0 || elems.length() < limit) && parselist(s, start, end))
         elems.add(newstring(start, end-start));
-    }
+}
 
 char *indexlist(const char *s, int pos)
 {

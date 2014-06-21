@@ -1393,7 +1393,7 @@ int genmergedfaces(cube &c, const ivec &co, int size, int minlevel = -1)
             vahasmerges |= MERGE_ORIGIN;
         }
     return maxlevel;
-    }
+}
 
 int findmergedfaces(cube &c, const ivec &co, int size, int csi, int minlevel)
 {

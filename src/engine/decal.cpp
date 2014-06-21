@@ -433,7 +433,7 @@ struct decalrenderer
         {
             const vec &n = planes[l];
             float facing = n.dot(decalnormal);
-            if(facing<=0) continue;
+            if(facing <= 0) continue;
             vec p = vec(pos[0]).sub(decalcenter);
 #if 0
             // intersect ray along decal normal with plane

@@ -409,7 +409,7 @@ struct raceclientmode : clientmode
 
     bool checkfinished() {
         if(interm) return false;
-        int allplayersfinished = true;
+        bool allplayersfinished = true;
         loopv(raceinfos) if (raceinfos[i]->timefinished == -1 && raceinfos[i]->cn != -1) allplayersfinished = false;
         return allplayersfinished;
     }

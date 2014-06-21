@@ -473,7 +473,7 @@ struct textrenderer : listrenderer
     {
     }
 
-    void cleanup(listparticle *p)
+    void killpart(listparticle *p)
     {
         if(p->text && p->flags&1) delete[] p->text;
     }
