@@ -1,16 +1,16 @@
 JOBS=$(shell </proc/cpuinfo grep "processor" | wc -l)
 
-BUILDDIR=./build/
-DATADIR=./data/
-BINDIR=./bin/$(OUT)/
-OUTDIR=$(BUILDDIR)/targ/$(OUT)
+BUILDDIR=./build
+DATADIR=./data
+BINDIR=./bin/$(OUT)
+OUTDIR=$(BUILDDIR)/target/$(OUT)
 
 SRC_REF=./src/
-ENET_REF=$(BUILDDIR)/enet/
-SDEPS_REF=$(BUILDDIR)/sdeps/
+ENET_REF=$(BUILDDIR)/enet
+SDEPS_REF=$(BUILDDIR)/sdeps
 
-OUT_SRC=$(OUTDIR)/src/
-OUT_ENET=$(OUT_SRC)/enet/
+OUT_SRC=$(OUTDIR)/src
+OUT_ENET=$(OUT_SRC)/enet
 
 ENV=
 
@@ -59,13 +59,13 @@ fetch-enet: build-dir
 fetch-static-deps: build-dir
 	sh tools/tools.sh github_fetch sauerbraten-fork/sauerbraten-fork-build-deps "$(SDEPS_REF)"
 
-fetch-bomb-data: data-dir
+fetch-sauerbraten-fork-data: data-dir
 	sh tools/tools.sh github_fetch sauerbraten-fork/sauerbraten-fork-data "$(DATADIR)"/sauerbraten-fork-data
 
 fetch-sauerbraten: data-dir
 	sh tools/tools.sh github_fetch sauerbraten-fork/sauerbraten "$(DATADIR)"/sauerbraten
 
-fetch-data: fetch-bomb-data fetch-sauerbraten
+fetch-data: fetch-sauerbraten-fork-data fetch-sauerbraten
 
 # Dependency Management ####################################
 
