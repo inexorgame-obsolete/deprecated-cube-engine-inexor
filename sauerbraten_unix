@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 DIR="`dirname "$0"`"
 OLIB=LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
 
