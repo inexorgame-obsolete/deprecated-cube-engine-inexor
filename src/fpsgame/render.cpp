@@ -10,7 +10,6 @@ namespace game
     VARP(ragdollfade, 0, 1000, 300000);
     VARFP(playermodel, 0, 0, 4, changedplayermodel());
     VARP(forceplayermodels, 0, 0, 1);
-    VARP(allplayermodels, 0, 0, 1);
     VARP(hidedead, 0, 0, 1);
 
     vector<fpsent *> ragdolls;
@@ -71,7 +70,7 @@ namespace game
     const playermodelinfo &getplayermodelinfo(fpsent *d)
     {
         const playermodelinfo *mdl = getplayermodelinfo(d==player1 || forceplayermodels ? playermodel : d->playermodel);
-        if(!mdl || (!mdl->selectable && !allplayermodels)) mdl = getplayermodelinfo(playermodel);
+        if(!mdl) mdl = getplayermodelinfo(playermodel);
         return *mdl;
     }
 
@@ -86,7 +85,7 @@ namespace game
             if(!forceplayermodels)
             {
                 const playermodelinfo *mdl = getplayermodelinfo(d->playermodel);
-                if(mdl && (mdl->selectable || allplayermodels)) continue;
+                if(mdl) continue;
             }
             cleanragdoll(d);
         }
@@ -97,7 +96,7 @@ namespace game
             if(!forceplayermodels)
             {
                 const playermodelinfo *mdl = getplayermodelinfo(d->playermodel);
-                if(mdl && (mdl->selectable || allplayermodels)) continue;
+                if(mdl) continue;
             }
             cleanragdoll(d);
         }
@@ -109,7 +108,7 @@ namespace game
         {
             const playermodelinfo *mdl = getplayermodelinfo(i);
             if(!mdl) break;
-            if(i != playermodel && (!multiplayer(false) || forceplayermodels || (!mdl->selectable && !allplayermodels))) continue;
+            if(i != playermodel && (!multiplayer(false) || forceplayermodels)) continue;
             if(m_teammode)
             {
                 preloadmodel(mdl->blueteam);

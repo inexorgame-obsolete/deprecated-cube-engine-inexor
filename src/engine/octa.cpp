@@ -39,7 +39,7 @@ cubeext *newcubeext(cube &c, int maxverts, bool init)
     if(init)
     {
         if(c.ext)
-{
+        {
             memcpy(ext->surfaces, c.ext->surfaces, sizeof(ext->surfaces));
             memcpy(ext->verts(), c.ext->verts(), c.ext->maxverts*sizeof(vertinfo));
         }
@@ -213,7 +213,7 @@ void validatec(cube *c, int size)
                 }
         }
     }
-}
+    }
 }
 
 ivec lu;
@@ -637,7 +637,7 @@ void edgespan2vectorcube(cube &c)
 {
     if(isentirelysolid(c) || isempty(c)) return;
     cube o = c;
-    loop(x,2) loop(y,2) loop(z,2)
+    loop(x, 2) loop(y, 2) loop(z, 2)
     {
         ivec p(8*x, 8*y, 8*z);
         vec v;
@@ -646,7 +646,7 @@ void edgespan2vectorcube(cube &c)
         edgeset(cubeedge(c, 0, y, z), x, int(v.x+0.49f));
         edgeset(cubeedge(c, 1, z, x), y, int(v.y+0.49f));
         edgeset(cubeedge(c, 2, x, y), z, int(v.z+0.49f));
-}
+    }
 }
 
 const ivec cubecoords[8] = // verts of bounding cube
@@ -1729,7 +1729,7 @@ static inline void clearmerge(cube &c, int orient)
 void addmerges(int orient, const ivec &co, const ivec &n, int offset, vector<poly> &polys)
 {
     loopv(polys)
-{
+    {
         poly &p = polys[i];
         if(p.merged) addmerge(*p.c, orient, co, n, offset, p);
         else clearmerge(*p.c, orient);
@@ -1811,12 +1811,11 @@ void genmerges(cube *c = worldroot, const ivec &o = ivec(0, 0, 0), int size = wo
                     addmerge(c[i], j, co, k.n, k.offset, p);
                     continue;
                 }
-
             }
             clearmerge(c[i], j);
-}
+        }
         if((size == 1<<maxmerge || c == worldroot) && cpolys.numelems)
-{
+        {
             enumeratekt(cpolys, cfkey, key, cfpolys, val,
     {
                 mergepolys(key.orient, co, key.n, key.offset, val.polys);

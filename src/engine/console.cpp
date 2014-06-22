@@ -283,7 +283,7 @@ COMMAND(inputcommand, "ssss");
 
 void pasteconsole()
 {
-    #ifdef WIN32
+#ifdef WIN32
     UINT fmt = CF_UNICODETEXT;
     if(!IsClipboardFormatAvailable(fmt)) 
     {
@@ -309,9 +309,9 @@ void pasteconsole()
     commandbuf[commandlen + decoded] = '\0';
     GlobalUnlock(cb);
     CloseClipboard();
-    #elif defined(__APPLE__)
-	extern char *mac_pasteconsole(size_t *cblen);
-    size_t cblen = 0;
+#elif defined(__APPLE__)
+	extern char *mac_pasteconsole(int *cblen);
+    int cblen = 0;
 	uchar *cb = (uchar *)mac_pasteconsole(&cblen);
     if(!cb) return;
     size_t commandlen = strlen(commandbuf);
@@ -345,7 +345,7 @@ void pasteconsole()
         commandbuf[commandlen] = '\0';
     }
     XFree(cb);
-    #endif
+#endif
 }
 
 struct hline
@@ -815,8 +815,12 @@ void writecompletions(stream *f)
     {
         char *k = cmds[i];
         filesval *v = completions[k];
-        if(v->type==FILES_LIST) f->printf("listcomplete \"%s\" [%s]\n", k, v->dir);
-        else f->printf("complete \"%s\" \"%s\" \"%s\"\n", k, v->dir, v->ext ? v->ext : "*");
+        if(v->type==FILES_LIST) 
+        {
+            if(validateblock(v->dir)) f->printf("listcomplete %s [%s]\n", escapeid(k), v->dir);
+            else f->printf("listcomplete %s %s\n", escapeid(k), escapestring(v->dir));
+        }
+        else f->printf("complete %s %s %s\n", escapeid(k), escapestring(v->dir), escapestring(v->ext ? v->ext : "*"));
     }
 }
 

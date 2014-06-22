@@ -357,8 +357,6 @@ void savec(cube *c, const ivec &o, int size, stream *f, bool nolms)
                     }
                 }
             }
-            if(c[i].children)
-                savec(c[i].children, co, size>>1, f, nolms);
         }
     }
 }

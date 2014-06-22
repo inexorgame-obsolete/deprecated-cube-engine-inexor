@@ -561,7 +561,7 @@ void guiservers(uint *header, int *pagemin, int *pagemax)
             guiserversmenu = clearlater || guistack.empty() ? NULL : guistack.last();
         }
     }
-        }
+}
 
 void notifywelcome()
 {

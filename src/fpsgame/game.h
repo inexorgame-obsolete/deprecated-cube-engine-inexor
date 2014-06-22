@@ -531,28 +531,23 @@ struct fpsstate
                     return ammo[is.info]<is.max;
                     break;
             }
-    	} else if(type>=I_SHELLS && type<=I_QUAD) {
-            itemstat &is = itemstats[type-I_SHELLS];
-            switch(type) {
-                case I_BOOST:
-                    return maxhealth<is.max;
-                case I_HEALTH:
-                    return health<maxhealth;
-                case I_GREENARMOUR:
-                    // (100h/100g only absorbs 200 damage)
-                    if(armourtype==A_YELLOW && armour>=100) return false;
-                case I_YELLOWARMOUR:
-                    return !armourtype || armour<is.max;
-                case I_QUAD:
-                    return quadmillis<is.max;
-                default:
-                    return ammo[is.info]<is.max;
-            }
-    	} else if(type==RACE_START || type==RACE_FINISH || type==RACE_CHECKPOINT) {
-    	    return true;
-    	} else {
-    	    return false;
-    	}
+    	} 
+		else if(type>=I_SHELLS && type<=I_QUAD) 
+		{
+			itemstat &is = itemstats[type-I_SHELLS];
+	        switch(type)
+	        {
+	            case I_BOOST: return maxhealth<is.max;
+	            case I_HEALTH: return health<maxhealth;
+	                case I_GREENARMOUR:
+	                    // (100h/100g only absorbs 200 damage)
+	                    if(armourtype==A_YELLOW && armour>=100) return false;
+	            case I_YELLOWARMOUR: return !armourtype || armour<is.max;
+	            case I_QUAD: return quadmillis<is.max;
+	            default: return ammo[is.info]<is.max;
+	    	}
+		}
+		else return false;
     }
 
     void pickup(int type)

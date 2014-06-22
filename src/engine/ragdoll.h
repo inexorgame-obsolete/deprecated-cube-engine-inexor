@@ -442,7 +442,7 @@ VAR(ragdollwaterexpireoffset, 0, 3000, 30000);
 
 void ragdolldata::move(dynent *pl, float ts)
 {
-    extern const float GRAVITY;
+    extern float GRAVITY;
     if(collidemillis && lastmillis > collidemillis) return;
 
     int material = lookupmaterial(vec(center.x, center.y, center.z + radius/2));
