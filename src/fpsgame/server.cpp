@@ -440,10 +440,10 @@ namespace server
     struct maprotation
     {
         static int exclude;
-        int modes;
+        long modes;
         string map;
         
-        int calcmodemask() const { return modes&(1<<NUMGAMEMODES) ? modes & ~exclude : modes; }
+        long calcmodemask() const { return modes&((long)1<<NUMGAMEMODES) ? modes & ~exclude : modes; }
         bool hasmode(int mode, int offset = STARTGAMEMODE) const { return (calcmodemask() & (1 << (mode-offset))) != 0; }
 
         int findmode(int mode) const
@@ -535,7 +535,7 @@ namespace server
 
     int genmodemask(vector<char *> &modes)
     {
-        int modemask = 0;
+        long modemask = 0;
         loopv(modes)
         {
             const char *mode = modes[i];
@@ -543,7 +543,7 @@ namespace server
             switch(mode[0])
             {
                 case '*':
-                    modemask |= 1<<NUMGAMEMODES;
+                    modemask |= (long)1<<NUMGAMEMODES;
                     loopk(NUMGAMEMODES) if(m_checknot(k+STARTGAMEMODE, M_DEMO|M_EDIT|M_LOCAL)) modemask |= 1<<k;
                     continue;
                 case '!':
@@ -575,7 +575,7 @@ namespace server
     {
         if(!map[0]) loopk(NUMGAMEMODES) if(modemask&(1<<k) && !m_check(k+STARTGAMEMODE, M_EDIT)) modemask &= ~(1<<k);
         if(!modemask) return false;
-        if(!(modemask&(1<<NUMGAMEMODES))) maprotation::exclude |= modemask;
+        if(!(modemask&((long)1<<NUMGAMEMODES))) maprotation::exclude |= modemask;
         maprotation &rot = maprotations.add();
         rot.modes = modemask;
         copystring(rot.map, map);
