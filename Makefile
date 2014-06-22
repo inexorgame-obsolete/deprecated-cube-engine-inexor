@@ -1,4 +1,4 @@
-JOBS=$(shell </proc/cpuinfo grep "processor" | wc -l)
+JOBS=$(shell sh tools/tools.sh jobno)
 
 BUILDDIR=./build
 DATADIR=./data

@@ -19,4 +19,25 @@ github_fetch() {
 
 }
 
+# TODO: Support Win? Mac?
+jobno() {
+  j=0
+  s=""
+
+  if test -n "$JOBS"; then
+    s="$$JOBS variable found."
+    j="$JOBS"
+  elif test -e /proc/cpuinfo; then
+    s="/proc/cpuinfo exists."
+    j="`</proc/cpuinfo grep processor | wc -l`"
+  else
+    s="Could not determine number of cores"
+    j="4"
+  fi
+
+  echo >2 "$s Compiling using $j jobs."
+  echo "$j"
+  return 0
+}
+
 "$1" "$@"
