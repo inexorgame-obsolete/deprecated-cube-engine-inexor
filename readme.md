@@ -1,7 +1,6 @@
-# Sauerbomber
+# Sauerbraten Fork
 
-Sauerbomber is a fork of the quake-like fps Sauerbraten/Cube2, that adapts the Bomberman game for an FPS environment.
-It is compatible to the current Sauerbraten/Cube 2 release.
+Sauerbraten Fork is a fork of the quake-like fps Sauerbraten/Cube2. It is compatible to the current Sauerbraten/Cube 2 release.
 
 ## Features
 
@@ -34,17 +33,17 @@ It is compatible to the current Sauerbraten/Cube 2 release.
 
 ## Resources
 
-* [Web site, well probably somewhen](http://sauerbomber.org)
+* [Web site, well probably somewhen](http://.org)
 * [Wiki](http://forge.nooblounge.net/projects/bomberman/wiki)
 * [Issue Tracker](http://forge.nooblounge.net/projects/bomberman/issues)
-* [Source Repository](https://github.com/mobius-tempname/sauerbomber)
-* [Chat (irc.nooblounge.net #talk)](irc://irc.nooblounge.net/#talk)
+* [Source Repository](https://github.com/sauerbraten-fork/sauerbraten-fork)
+* [Chat (irc.gamesurge.net #sauerfork)](irc://irc.gamesurge.net/#sauerfork)
 * [Sauerbraten Wiki](http://cube.wikispaces.com/)
 * [Sauerbraten Docs](http://sauerbraten.org/README.html)
 
 ## Credits
 
-### Sauerbomber
+### Sauerbraten Fork
 
 * Karolin "mapc" Varner
 * Andreas "hanack" Schaeffer
@@ -101,8 +100,8 @@ with contributions from:
 
 ## Copyright
 
-The Sauerbomber source code, the Sauerbraten source code, 
-and Sauerbomber files are provided under the terms of the
+The Sauerbraten Fork source code, the Sauerbraten Fork source code, 
+and Sauerbraten Fork files are provided under the terms of the
 ZLIB license:
 
 http://www.opensource.org/licenses/zlib-license.php
@@ -112,20 +111,20 @@ http://www.opensource.org/licenses/zlib-license.php
 
 The license covers the source code found in the "src"
 directory of this archive as well as the .cfg files under
-the "data" directory and content provided by the Sauerbomber
-project. The included ENet network library which Sauerbomber
-uses is covered by an MIT-style license, which is however
-compatible with the above license for all practical
-purposes.
+the "data" directory and content provided by the Sauerbraten
+Fork project. The included ENet network library which
+Sauerbraten Fork uses is covered by an MIT-style license,
+which is however compatible with the above license for all
+practical purposes.
 
 Game media included in the game (maps, textures, sounds,
 models etc.) are NOT covered by this license, and may have
 individual copyrights and distribution restrictions (see
 individual readmes).
 
-### Sauerbomber
+### Sauerbraten Fork
 
-Sauerbomber/game engine.
+Sauerbraten Fork/game engine.
 
 Copyright (C) 2011-2014 Karolin Varner, Andreas Schaeffer
 

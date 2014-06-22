@@ -4,5 +4,5 @@ OLIB=LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
 
 for pref in bin/{native,linux{64,32}}; do
   export LD_LIBRARY_PATH="$OLIB:pref"
-  "$pref/client" -k"$DIR/data/sauerbraten" -k"$DIR/data/sauerbomber" -q"~/.sauerbraten-fork" && exit
+  "$pref/client" -k"$DIR/data/sauerbraten" -k"$DIR/data/sauerbraten-fork" -q"~/.sauerbraten-fork" && exit
 done

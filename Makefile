@@ -60,7 +60,7 @@ fetch-static-deps: build-dir
 	sh tools/tools.sh github_fetch sauerbraten-fork/sauerbraten-fork-build-deps "$(SDEPS_REF)"
 
 fetch-bomb-data: data-dir
-	sh tools/tools.sh github_fetch sauerbraten-fork/sauerbraten-fork-data "$(DATADIR)"/sauerbomber
+	sh tools/tools.sh github_fetch sauerbraten-fork/sauerbraten-fork-data "$(DATADIR)"/sauerbraten-fork-data
 
 fetch-sauerbraten: data-dir
 	sh tools/tools.sh github_fetch sauerbraten-fork/sauerbraten "$(DATADIR)"/sauerbraten

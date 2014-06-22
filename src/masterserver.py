@@ -11,7 +11,7 @@ import string
 class masterserver(object):
 
     settings = {
-        "host": "sauerbomber.org",
+        "host": "sauerbraten-fork.org",
         "port": 28787,
         "log": "master.log"
     }
