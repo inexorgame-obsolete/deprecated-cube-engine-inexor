@@ -26,25 +26,25 @@ help:
 # Distributions ############################################
 
 native:
-	make cpexe OUT=native
+	$(MAKE) cpexe OUT=native
 
 linux32:
-	make cpexe OUT=linux32 PLATFORM=Linux-32
+	$(MAKE) cpexe OUT=linux32 PLATFORM=Linux-32
 
 linux64:
-	make cpexe OUT=linux64 PLATFORM=Linux-64
+	$(MAKE) cpexe OUT=linux64 PLATFORM=Linux-64
 
 win32:
-	make cpexe OUT=win32 PLATFORM=MINGW-CROSS EXE_SUFF=.exe
+	$(MAKE) cpexe OUT=win32 PLATFORM=MINGW-CROSS EXE_SUFF=.exe
 
 win64:
-	make cpexe OUT=win64 PLATFORM=MINGW-CROSS-64 EXE_SUFF=.exe
+	$(MAKE) cpexe OUT=win64 PLATFORM=MINGW-CROSS-64 EXE_SUFF=.exe
 
 osx32:
-	make cpexe OUT=osx32 PLATFORM=DARWIN-CROSS $(ENV)
+	$(MAKE) cpexe OUT=osx32 PLATFORM=DARWIN-CROSS $(ENV)
 
 osx64:
-	make cpexe OUT=osx64 PLATFORM=DARWIN-CROSS-64 $(ENV)
+	$(MAKE) cpexe OUT=osx64 PLATFORM=DARWIN-CROSS-64 $(ENV)
 
 all-win: win32 win64
 all-osx: osx32 osx64
