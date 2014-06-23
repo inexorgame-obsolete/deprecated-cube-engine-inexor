@@ -49,7 +49,7 @@ repo() {
 }
 
 github_fetch() {
-  notouch="$3 exists but is not a repo. Not touching."
+  local notouch="$3 exists but is not a repo. Not touching."
 	if test -d "$3"; then
     test -z "$NOUPGIT" && repo xxx up "$3"
   elif test -e "$3"; then
@@ -64,8 +64,7 @@ github_fetch() {
 
 # TODO: Support Win? Mac?
 jobno() {
-  j=0
-  s=""
+  local j=0 s=""
 
   if test -n "$JOBS"; then
     s="$$JOBS variable found."
