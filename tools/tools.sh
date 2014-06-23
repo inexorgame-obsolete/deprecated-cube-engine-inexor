@@ -77,7 +77,7 @@ jobno() {
     j="4"
   fi
 
-  echo >2 "$s Compiling using $j jobs."
+  echo >&2 "$s Compiling using $j jobs."
   echo "$j"
   return 0
 }
