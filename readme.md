@@ -2,17 +2,13 @@
 
 Sauerbraten Fork is a fork of the quake-like fps Sauerbraten/Cube2. It is compatible to the current Sauerbraten/Cube 2 release.
 
-## Features
+## Game Features
 
-* Bomberman mode
-* Last Man Standing mode
-* Race mode
-* Hide and Seek mode
+* see wiki for actual list of game features
 
 ### Engine Features
 
-* Destructable Map models
-* Localized Force Fields
+* see wiki for actual list of engine features
 
 ### Sauerbraten Features
 
@@ -45,14 +41,7 @@ Sauerbraten Fork is a fork of the quake-like fps Sauerbraten/Cube2. It is compat
 
 ### Sauerbraten Fork
 
-* Karolin "mapc" Varner
-* Andreas "hanack" Schaeffer
-
-with
-
-* nothing
-* westernheld
-* *and many others!*
+* see wiki for the actual list of developers and content designers
 
 ### Sauerbraten/Cube2
 
@@ -126,7 +115,7 @@ individual readmes).
 
 Sauerbraten Fork/game engine.
 
-Copyright (C) 2011-2014 Karolin Varner, Andreas Schaeffer
+Copyright (C) 2011-2014 **TODO**
 
 This software is provided 'as-is', without any express or implied
 warranty.  In no event will the authors be held liable for any damages
