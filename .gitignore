@@ -16,5 +16,5 @@ src/lib64
 src/enet
 rpg.bat
 
-build
+build*
 bin*
