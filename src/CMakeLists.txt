@@ -43,11 +43,7 @@ elseif(${BUILD_TARGET_OSX})
 endif()
 
 if(NOT DEFINED ENET_LIBRARIES)
-    find_package(ENet REQUIRED)
-
-    set(ENET_LIBRARIES ${ENet_LIBRARIES})
-    set(ENET_INCLUDE_DIRS ${ENet_INCLUDE_DIRS})
-    message(STATUS "Found ENet (include: ${ENET_INCLUDE_DIRS})")
+    add_subdirectory(libraries/enet)
 endif()
 
 include_directories(
