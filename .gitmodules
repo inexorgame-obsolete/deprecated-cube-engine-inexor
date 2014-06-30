@@ -1,0 +1,8 @@
+[submodule "src/platform_windows"]
+	path = src/platform_windows
+	url = https://github.com/Theintercooler/Platform-Windows.git
+	branch = master
+[submodule "src/libraries/enet"]
+	path = src/libraries/enet
+	url = https://github.com/Theintercooler/enet.git
+	branch = master
