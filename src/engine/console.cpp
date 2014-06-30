@@ -424,7 +424,7 @@ void loadhistory()
 	string next;
 	while(f->getline(next, sizeof(next)))
 	{
-		if(history.length() >= maxhistory) history.remove(0); //more than 200 commands in your history are senseless
+		if(history.length() >= maxhistory) history.remove(0);
 		hline *d = new hline;
 		filtertext(next, next);
 		if(next[strlen(next)-1]== '\n') next[strlen(next)-1] = '\0';
