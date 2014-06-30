@@ -25,6 +25,7 @@ void quit()                     // normal exit
     extern void writeinitcfg();
     writeinitcfg();
     writeservercfg();
+	writehistory();
     abortconnect();
     disconnect();
     localdisconnect();
@@ -1211,6 +1212,7 @@ int main(int argc, char **argv)
         game::changemap(load);
     }
 
+	loadhistory();
     if(initscript) execute(initscript);
 
     logoutf("init: mainloop");
