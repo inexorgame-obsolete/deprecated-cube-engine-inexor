@@ -83,7 +83,7 @@ if(${BUILD_TARGET_WINDOWS})
     endif()
 endif()
 
-set(SB_CLIENT_BINARY client_${BUILD_PLATFORM_BIN}_${BUILD_TARGET_ARCH} CACHE INTERNAL "Revelade revolution client binary name.")
+set(SB_CLIENT_BINARY client_${BUILD_PLATFORM_BIN}_${BUILD_TARGET_ARCH} CACHE INTERNAL "Client binary name.")
 add_executable(${SB_CLIENT_BINARY} ${CLIENT_SOURCES})
 target_link_libraries(${SB_CLIENT_BINARY}
     ${ENET_LIBRARIES}

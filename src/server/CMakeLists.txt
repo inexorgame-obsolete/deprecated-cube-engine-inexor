@@ -23,7 +23,7 @@ set(SERVER_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/entities
 )
 
-set(SB_SERVER_BINARY server_${BUILD_PLATFORM_BIN}_${BUILD_TARGET_ARCH} CACHE INTERNAL "Revelade revolution server binary name.")
+set(SB_SERVER_BINARY server_${BUILD_PLATFORM_BIN}_${BUILD_TARGET_ARCH} CACHE INTERNAL "Server binary name.")
 add_executable(${SB_SERVER_BINARY} ${SERVER_SOURCES})
 target_link_libraries(${SB_SERVER_BINARY}
     ${TOMCRYPT_LIBRARIES}

@@ -13,7 +13,7 @@ set(SB_VERSION_RELEASE 0)
 
 set(SB_VERSION_CLEAN "")
 
-# Detect svn rev
+# Detect git hash
 include(FindGit)
 IF(GIT_FOUND)
     EXECUTE_PROCESS(
