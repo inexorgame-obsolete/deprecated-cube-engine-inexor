@@ -1,0 +1,4 @@
+[submodule "src/platform_windows"]
+	path = src/platform_windows
+	url = https://github.com/Theintercooler/Platform-Windows.git
+	branch = master
