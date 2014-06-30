@@ -467,6 +467,8 @@ extern int identflags;
 
 extern void clearoverrides();
 extern void writecfg(const char *name = NULL);
+extern void loadhistory();
+extern void writehistory();
 
 extern void checksleep(int millis);
 extern void clearsleep(bool clearoverrides = true);

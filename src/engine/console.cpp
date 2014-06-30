@@ -403,6 +403,41 @@ vector<hline *> history;
 int histpos = 0;
 
 VARP(maxhistory, 0, 1000, 10000);
+const char *historyfile() { return "history.cfg"; }
+void writehistory()
+{
+    stream *f = openutf8file(path(historyfile(), true), "w");
+    if(!f) return;
+	loopv(history)
+	{
+		hline *h = history[i];
+		if(!h->buf) continue;
+		f->putline(h->buf);
+	}
+	delete f;
+}
+COMMAND(writehistory, "");
+void loadhistory()
+{		
+	stream *f = openutf8file(path(historyfile(), true), "r");
+	if(!f) { return; }
+	string next;
+	while(f->getline(next, sizeof(next)))
+	{
+		if(history.length() >= maxhistory) history.remove(0); //more than 200 commands in your history are senseless
+		hline *d = new hline;
+		filtertext(next, next);
+		if(next[strlen(next)-1]== '\n') next[strlen(next)-1] = '\0';
+		d->buf = newstring(next);
+		d->flags = 3;
+		d->action = d->prompt = 0;
+		if(strlen(next)) history.add(d);
+		else delete d;
+	}
+	delete f;
+	histpos = history.length();
+}
+COMMAND(loadhistory, "");
 
 void history_(int *n)
 {
