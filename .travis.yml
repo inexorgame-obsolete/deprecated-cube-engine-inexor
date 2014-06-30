@@ -3,7 +3,7 @@ before_install:
   # Install dependencies
   - sudo apt-get update
   - sudo apt-get -y install build-essential zlib1g-dev libsdl1.2-dev libsdl-image1.2-dev libsdl-mixer1.2-dev
-  - sudo apt-get install mingw-w64
+  - sudo apt-get -y install mingw-w64 gcc-mingw-w64 mingw32-binutils mingw-w64-tools
 
 script:
   - (mkdir cmakebuild && cd cmakebuild && cmake $CMAKE_FLAGS .. && make -j5 && cd .. && rm -rf cmakebuild)
