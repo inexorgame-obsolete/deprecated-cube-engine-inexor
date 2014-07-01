@@ -80,7 +80,7 @@ set(BUILD_FLAGS "")
 if(BUILD_TARGET_WINDOWS)
     set(BUILD_FLAGS "${BUILD_FLAGS} -DWIN32 -DWINDOWS")
     if(BUILD_TARGET_X64)
-        set(BUILD_FLAGS "$BUILD_FLAGS} -DWIN64")
+        set(BUILD_FLAGS "${BUILD_FLAGS} -DWIN64")
     endif()
 endif()
 
