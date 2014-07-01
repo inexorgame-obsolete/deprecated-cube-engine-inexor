@@ -6,3 +6,7 @@
 	path = src/libraries/enet
 	url = https://github.com/Theintercooler/enet.git
 	branch = master
+[submodule "src/platform_osx"]
+	path = src/platform_osx
+	url = https://github.com/Theintercooler/Platform-osx.git
+	branch = master

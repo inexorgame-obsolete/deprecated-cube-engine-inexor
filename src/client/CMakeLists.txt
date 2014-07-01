@@ -68,8 +68,12 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/weapon
 )
 
-option(CLIENT_USE_WINDRES "Add icon to executable." 0)
-if(${BUILD_TARGET_WINDOWS})
+if(${BUILD_TARGET_OSX})
+    set(CLIENT_SOURCES
+        ${CLIENT_SOURCES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/../engine/macutils.mm)
+elseif(${BUILD_TARGET_WINDOWS})
+    option(CLIENT_USE_WINDRES "Add icon to executable." 0)
 
     if(${CLIENT_USE_WINDRES})
         set(CLIENT_SOURCES

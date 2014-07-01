@@ -1,6 +1,6 @@
 #import <Cocoa/Cocoa.h>
 
-char *mac_pasteconsole(size_t *cblen)
+char *mac_pasteconsole(int *cblen)
 {
     NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
     NSString *type = [pasteboard availableTypeFromArray:[NSArray arrayWithObject:NSStringPboardType]];
