@@ -1,4 +1,5 @@
 #include "game.h"
+#include "hud.h"
 
 namespace game
 {
@@ -73,7 +74,7 @@ namespace game
             {
                 if(!alive++) 
                 {
-                	defformatstring(blip_alive)("%s/blip_%s_alive.png", huddir, isteam(d->team, player1->team) ? "blue" : "red");
+                	defformatstring(blip_alive)("%s/%s", huddir, isteam(d->team, player1->team) ? blip_blue_alive : blip_red_alive);
                     settexture(blip_alive);
                     glBegin(GL_QUADS);
                 }
@@ -88,7 +89,7 @@ namespace game
             {
                 if(!dead++) 
                 {
-                	defformatstring(blip_dead)("%s/blip_%s_dead.png", huddir, isteam(d->team, player1->team) ? "blue" : "red");
+                	defformatstring(blip_dead)("%s/%s", huddir, isteam(d->team, player1->team) ? blip_blue_dead : blip_red_dead);
                     settexture(blip_dead);
                     glBegin(GL_QUADS);
                 }

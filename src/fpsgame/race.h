@@ -112,7 +112,7 @@ struct raceclientmode : clientmode
       if(minimapalpha >= 1) glEnable(GL_BLEND);
       glColor3f(1, 1, 1);
       float margin = 0.04f, roffset = s*margin, rsize = s + 2*roffset;
-      defformatstring(race_radar_filename)("%s/radar.png", huddir);
+      defformatstring(race_radar_filename)("%s/%s", huddir, hud_radar);
       settexture(race_radar_filename, 3);
       drawradar(x - roffset, y - roffset, rsize);
 
@@ -121,14 +121,14 @@ struct raceclientmode : clientmode
       {
           dynent *m = (dynent *) movables[i];
           if(!isobstaclealive((movable *) m)) continue;
-          defformatstring(race_block_yellow_filename)("%s/block_yellow_t.png", huddir);
+          defformatstring(race_block_yellow_filename)("%s/%s", huddir, blip_block_yellow);
           settexture(race_block_yellow_filename, 3);
           drawblip(d, x, y, s, m->o, 1.0f);
       }
 
       // show other players on minimap
-      defformatstring(race_blip_red_filename)("%s/blip_red.png", huddir);
-      defformatstring(race_blip_blue_filename)("%s/blip_blue.png", huddir);
+      defformatstring(race_blip_red_filename)("%s/%s", huddir, blip_red);
+      defformatstring(race_blip_blue_filename)("%s/%s", huddir, blip_blue);
       loopv(players)
       {
           fpsent *p = players[i];

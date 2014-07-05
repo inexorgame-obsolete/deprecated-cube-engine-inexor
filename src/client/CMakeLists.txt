@@ -60,6 +60,7 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/client       
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/entities
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/fps
+    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/hud
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/monster
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/movable
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/render

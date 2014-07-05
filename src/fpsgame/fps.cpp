@@ -1,4 +1,5 @@
 #include "game.h"
+#include "hud.h"
 
 namespace game
 {
@@ -726,7 +727,7 @@ namespace game
 
     void drawicon(int icon, float x, float y, float sz)
     {
-        defformatstring(fps_items_filename)("%s/items.png", huddir);
+        defformatstring(fps_items_filename)("%s/%s", huddir, hud_items);
         settexture(fps_items_filename);
         glBegin(GL_TRIANGLE_STRIP);
         float tsz = 0.25f, tx = tsz*(icon%4), ty = tsz*(icon/4);
@@ -930,12 +931,14 @@ namespace game
 
     const char *defaultcrosshair(int index)
     {
+    	string crosshair;
         switch(index)
         {
-            case 2: return "data/hit.png";
-            case 1: return "data/teammate.png";
-            default: return "data/crosshair.png";
+            case 2: formatstring(crosshair)("%s/%s", datadir, crosshair_hit);
+            case 1: formatstring(crosshair)("%s/%s", datadir, crosshair_teammate);
+            default: formatstring(crosshair)("%s/%s", datadir, crosshair_default);
         }
+    	return crosshair;
     }
 
     int selectcrosshair(float &r, float &g, float &b)

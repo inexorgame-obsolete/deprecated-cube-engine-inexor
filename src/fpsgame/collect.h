@@ -433,7 +433,7 @@ struct collectclientmode : clientmode
     void drawbaseblip(fpsent *d, float x, float y, float s, int i)
     {
         base &b = bases[i];
-        defformatstring(collect_blip_filename)("%s/blip_%s.png", huddir, b.team == collectteambase(player1->team) ? "blue" : "red");
+        defformatstring(collect_blip_filename)("%s/%s", huddir, b.team == collectteambase(player1->team) ? blip_blue : blip_red);
         settexture(collect_blip_filename, 3);
         drawblip(d, x, y, s, b.o);
     }
@@ -464,11 +464,11 @@ struct collectclientmode : clientmode
         if(minimapalpha >= 1) glEnable(GL_BLEND);
         glColor3f(1, 1, 1);
         float margin = 0.04f, roffset = s*margin, rsize = s + 2*roffset;
-        defformatstring(collect_radar_filename)("%s/radar.png", huddir);
+        defformatstring(collect_radar_filename)("%s/%s", huddir, hud_radar);
         settexture(collect_radar_filename, 3);
         drawradar(x - roffset, y - roffset, rsize);
         #if 0
-        defformatstring(collect_compass_filename)("%s/compass.png", huddir);
+        defformatstring(collect_compass_filename)("%s/%s", huddir, hud_compass);
         settexture(collect_compass_filename, 3);
         glPushMatrix();
         glTranslatef(x - roffset + 0.5f*rsize, y - roffset + 0.5f*rsize, 0);
@@ -483,7 +483,7 @@ struct collectclientmode : clientmode
             drawbaseblip(d, x, y, s, i);
         }
         int team = collectteambase(d->team);
-        defformatstring(collect_skull_filename)("%s/blip_%s_skull.png", huddir, team == collectteambase(player1->team) ? "red" : "blue");
+        defformatstring(collect_skull_filename)("%s/%s", huddir, team == collectteambase(player1->team) ? blip_red_skull : blip_blue_skull);
         settexture(collect_skull_filename, 3);
         loopv(players)
         {

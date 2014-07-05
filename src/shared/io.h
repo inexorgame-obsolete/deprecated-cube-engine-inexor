@@ -2,6 +2,7 @@
 
 #define SHARED_IO_H
 
+extern string datadir;
 extern string packagesdir;
 extern string basedir;
 extern string modelsdir;

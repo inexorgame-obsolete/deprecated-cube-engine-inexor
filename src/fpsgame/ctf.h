@@ -522,11 +522,11 @@ struct ctfclientmode : clientmode
         if(minimapalpha >= 1) glEnable(GL_BLEND);
         glColor3f(1, 1, 1);
         float margin = 0.04f, roffset = s*margin, rsize = s + 2*roffset;
-        defformatstring(ctf_radar_filename)("%s/radar.png", huddir);
+        defformatstring(ctf_radar_filename)("%s/%s", huddir, hud_radar);
         settexture(ctf_radar_filename, 3);
         drawradar(x - roffset, y - roffset, rsize);
         #if 0
-        defformatstring(ctf_compass_filename)("%s/compass.png", huddir);
+        defformatstring(ctf_compass_filename)("%s/%s", huddir, hud_compass);
         settexture(ctf_compass_filename, 3);
         glPushMatrix();
         glTranslatef(x - roffset + 0.5f*rsize, y - roffset + 0.5f*rsize, 0);
@@ -536,7 +536,7 @@ struct ctfclientmode : clientmode
         #endif
         if(m_hold)
         {
-            defformatstring(ctf_blip_neutral_filename)("%s/blip_neutral.png", huddir);
+            defformatstring(ctf_blip_neutral_filename)("%s/%s", huddir, blip_neutral);
             settexture(ctf_blip_neutral_filename, 3);
             loopv(holdspawns) drawblip(d, x, y, s, holdspawns[i].o, false);
         }

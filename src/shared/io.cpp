@@ -1,5 +1,6 @@
 #include "cube.h"
 
+string datadir = "data";
 string packagesdir = "packages";
 string basedir = "packages/base";
 string modelsdir = "packages/models";
