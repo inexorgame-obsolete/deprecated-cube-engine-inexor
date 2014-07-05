@@ -726,7 +726,8 @@ namespace game
 
     void drawicon(int icon, float x, float y, float sz)
     {
-        settexture("packages/hud/items.png");
+        defformatstring(fps_items_filename)("%s/items.png", huddir);
+        settexture(fps_items_filename);
         glBegin(GL_TRIANGLE_STRIP);
         float tsz = 0.25f, tx = tsz*(icon%4), ty = tsz*(icon/4);
         glTexCoord2f(tx,     ty);     glVertex2f(x,    y);

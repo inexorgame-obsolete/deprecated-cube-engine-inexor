@@ -73,7 +73,8 @@ namespace game
             {
                 if(!alive++) 
                 {
-                    settexture(isteam(d->team, player1->team) ? "packages/hud/blip_blue_alive.png" : "packages/hud/blip_red_alive.png");
+                	defformatstring(blip_alive)("%s/blip_%s_alive.png", huddir, isteam(d->team, player1->team) ? "blue" : "red");
+                    settexture(blip_alive);
                     glBegin(GL_QUADS);
                 }
                 drawteammate(d, x, y, s, o, scale);
@@ -87,7 +88,8 @@ namespace game
             {
                 if(!dead++) 
                 {
-                    settexture(isteam(d->team, player1->team) ? "packages/hud/blip_blue_dead.png" : "packages/hud/blip_red_dead.png");
+                	defformatstring(blip_dead)("%s/blip_%s_dead.png", huddir, isteam(d->team, player1->team) ? "blue" : "red");
+                    settexture(blip_dead);
                     glBegin(GL_QUADS);
                 }
                 drawteammate(d, x, y, s, o, scale);
@@ -1911,7 +1913,7 @@ namespace game
                 string oldname;
                 copystring(oldname, getclientmap());
                 defformatstring(mname)("getmap_%d", lastmillis);
-                defformatstring(fname)("packages/base/%s.ogz", mname);
+                defformatstring(fname)("%s/%s.ogz", basedir, mname);
                 stream *map = openrawfile(path(fname), "wb");
                 if(!map) return;
                 conoutf("received map");
@@ -1999,7 +2001,7 @@ namespace game
         conoutf("sending map...");
         defformatstring(mname)("sendmap_%d", lastmillis);
         save_world(mname, true);
-        defformatstring(fname)("packages/base/%s.ogz", mname);
+        defformatstring(fname)("%s/%s.ogz", basedir, mname);
         stream *map = openrawfile(path(fname), "rb");
         if(map)
         {

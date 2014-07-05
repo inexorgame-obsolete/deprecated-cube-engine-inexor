@@ -666,7 +666,7 @@ namespace ai
 
         string pakname, mapname, cfgname;
         getmapfilenames(mname, NULL, pakname, mapname, cfgname);
-        formatstring(wptname)("packages/%s.wpt", mapname);
+        formatstring(wptname)("%s/%s.wpt", packagesdir, mapname);
         path(wptname);
         return true;
     }

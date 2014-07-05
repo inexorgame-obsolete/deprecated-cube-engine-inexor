@@ -54,20 +54,23 @@ struct hideandseekclientmode : clientmode
         if(minimapalpha >= 1) glEnable(GL_BLEND);
         glColor3f(1, 1, 1);
         float margin = 0.04f, roffset = s*margin, rsize = s + 2*roffset;
-        settexture("packages/hud/radar.png", 3);
+        defformatstring(has_radar_filename)("%s/radar.png", huddir);
+        settexture(has_radar_filename, 3);
         drawradar(x - roffset, y - roffset, rsize);
         // show obstacles on minimap
         if(showminimapobstacles) loopv(movables) {
             dynent *m = (dynent *) movables[i];
             if(!isobstaclealive((movable *) m)) continue;
-            settexture("packages/hud/block_yellow_t.png", 3);
+            defformatstring(has_block_yellow_filename)("%s/block_yellow_t.png", huddir);
+            settexture(has_block_yellow_filename, 3);
             drawblip(d, x, y, s, m->o, 1.0f);
         }
         // show other players on minimap
         loopv(players) {
             fpsent *p = players[i];
             if(p == player1 || p->state!=CS_ALIVE || ishider(p)) continue;
-            settexture("packages/hud/blip_red.png", 3);
+            defformatstring(has_blip_red_filename)("%s/blip_red.png", huddir);
+            settexture(has_blip_red_filename, 3);
             drawblip(d, x, y, s, p->o, 2.0f);
         }
     }
