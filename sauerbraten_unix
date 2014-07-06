@@ -2,7 +2,7 @@
 DIR="`dirname "$0"`"
 OLIB=LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
 
-for pref in bin/{native,linux{64,32}}; do
+for pref in build/src/client bin/{native,linux{64,32}}; do
   export LD_LIBRARY_PATH="$OLIB:pref"
-  "$pref/client" -k"$DIR/data/sauerbraten-fork" -k"$DIR/data/sauerbraten" -q"~/.sauerbraten-fork" && exit
+  "$pref/client"* -k"$DIR/data/sauerbraten-fork" -k"$DIR/data/sauerbraten" -q"~/.sauerbraten-fork" && exit
 done
