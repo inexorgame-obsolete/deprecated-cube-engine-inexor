@@ -10,6 +10,7 @@ extern string texturesdir;
 extern string huddir;
 extern string iconsdir;
 extern string particlesdir;
+extern string causticsdir;
 extern string soundsdir;
 extern string cubedir;
 
