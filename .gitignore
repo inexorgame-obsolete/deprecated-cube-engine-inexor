@@ -16,5 +16,9 @@ src/lib64
 src/enet
 rpg.bat
 
+eclipse
+codeblocks
+xcode
+
 build*
 bin*
