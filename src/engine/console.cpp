@@ -139,7 +139,7 @@ int drawconlines(int conskip, int confade, int conwidth, int conheight, int cono
         if(!(conlines[idx].type&filter)) continue;
         
 		string line;
-		if(su_contime && fullconsole && conlines[idx].time && conlines[idx].time[0]) formatstring(line)("\fs\f4[%s]\fr %s", conlines[idx].time, conlines[idx].line);
+		if(contime && fullconsole && conlines[idx].time && conlines[idx].time[0]) formatstring(line)("\fs\f4[%s]\fr %s", conlines[idx].time, conlines[idx].line);
 		else formatstring(line)("%s", conlines[idx].line); 
 
         int width, height;
@@ -154,7 +154,7 @@ int drawconlines(int conskip, int confade, int conwidth, int conheight, int cono
         if(!(conlines[idx].type&filter)) continue;
         
 		string line;
-		if(su_contime && fullconsole && conlines[idx].time && conlines[idx].time[0]) formatstring(line)("\fs\f4[%s]\fr %s", conlines[idx].time, conlines[idx].line);
+		if(contime && fullconsole && conlines[idx].time && conlines[idx].time[0]) formatstring(line)("\fs\f4[%s]\fr %s", conlines[idx].time, conlines[idx].line);
 		else formatstring(line)("%s", conlines[idx].line); 
 
         int width, height;
