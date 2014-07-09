@@ -3,7 +3,7 @@
 #include "engine.h"
 
 #define MAXCONLINES 1000
-struct cline { char *line; int type, outtime; };
+struct cline { char *line, *time; int type, outtime; };
 reversequeue<cline, MAXCONLINES> conlines;
 
 int commandmillis = -1;
@@ -16,12 +16,31 @@ VARFP(maxcon, 10, 200, MAXCONLINES, { while(conlines.length() > maxcon) delete[]
 
 #define CONSTRLEN 512
 
+VARP(contime, 0, 1, 1);
+static time_t walltime = 0;
 void conline(int type, const char *sf)        // add a line to the console buffer
 {
     char *buf = conlines.length() >= maxcon ? conlines.remove().line : newstring("", CONSTRLEN-1);
     cline &cl = conlines.add();
     cl.line = buf;
     cl.type = type;
+	cl.time = 0;
+	if(su_contime)
+    {
+        if(!walltime) { walltime = time(NULL); walltime -= totalmillis/1000; if(!walltime) walltime++; }
+        time_t walloffset = walltime + totalmillis/1000;
+        struct tm *localvals = localtime(&walloffset);
+        static string buf;
+        if(localvals && strftime(buf, sizeof(buf), "%H:%M:%S", localvals))
+        {
+            //strip leading 0 from 12 hour time
+            char *dst = buf;
+            const char *src = &buf[0];
+            while(*src) *dst++ = tolower(*src++);
+            *dst++ = '\0'; 
+			cl.time = newstring(buf, CONSTRLEN-1);
+        }
+    }
     cl.outtime = totalmillis;                // for how long to keep line on screen
     copystring(cl.line, sf, CONSTRLEN);
 }
@@ -71,7 +90,7 @@ VARP(miniconwidth, 0, 40, 100);
 VARP(confade, 0, 30, 60);
 VARP(miniconfade, 0, 30, 60);
 VARP(fullconsize, 0, 75, 100);
-HVARP(confilter, 0, 0x7FFFFFF, 0x7FFFFFF);
+HVARP(confilter, 0, 0x2CEF, 0x7FFFFFF);
 HVARP(fullconfilter, 0, 0x7FFFFFF, 0x7FFFFFF);
 HVARP(miniconfilter, 0, 0, 0x7FFFFFF);
 
@@ -118,7 +137,11 @@ int drawconlines(int conskip, int confade, int conwidth, int conheight, int cono
         // shuffle backwards to fill if necessary
         int idx = offset+i < numl ? offset+i : --offset;
         if(!(conlines[idx].type&filter)) continue;
-        char *line = conlines[idx].line;
+        
+		string line;
+		if(su_contime && fullconsole && conlines[idx].time && conlines[idx].time[0]) formatstring(line)("\fs\f4[%s]\fr %s", conlines[idx].time, conlines[idx].line);
+		else formatstring(line)("%s", conlines[idx].line); 
+
         int width, height;
         text_bounds(line, width, height, conwidth);
         if(totalheight + height > conheight) { numl = i; if(offset == idx) ++offset; break; }
@@ -129,7 +152,11 @@ int drawconlines(int conskip, int confade, int conwidth, int conheight, int cono
     {
         int idx = offset + (dir > 0 ? numl-i-1 : i);
         if(!(conlines[idx].type&filter)) continue;
-        char *line = conlines[idx].line;
+        
+		string line;
+		if(su_contime && fullconsole && conlines[idx].time && conlines[idx].time[0]) formatstring(line)("\fs\f4[%s]\fr %s", conlines[idx].time, conlines[idx].line);
+		else formatstring(line)("%s", conlines[idx].line); 
+
         int width, height;
         text_bounds(line, width, height, conwidth);
         if(dir <= 0) y -= height; 
