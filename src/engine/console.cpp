@@ -17,6 +17,8 @@ VARFP(maxcon, 10, 200, MAXCONLINES, { while(conlines.length() > maxcon) delete[]
 #define CONSTRLEN 512
 
 VARP(contime, 0, 1, 1);
+VARP(confading, 0, 1, 1);
+
 static time_t walltime = 0;
 void conline(int type, const char *sf)        // add a line to the console buffer
 {
@@ -25,7 +27,7 @@ void conline(int type, const char *sf)        // add a line to the console buffe
     cl.line = buf;
     cl.type = type;
 	cl.time = 0;
-	if(su_contime)
+	if(contime)
     {
         if(!walltime) { walltime = time(NULL); walltime -= totalmillis/1000; if(!walltime) walltime++; }
         time_t walloffset = walltime + totalmillis/1000;
@@ -160,7 +162,15 @@ int drawconlines(int conskip, int confade, int conwidth, int conheight, int cono
         int width, height;
         text_bounds(line, width, height, conwidth);
         if(dir <= 0) y -= height; 
-        draw_text(line, conoff, y, 0xFF, 0xFF, 0xFF, 0xFF, -1, conwidth);
+
+		if(confading) {
+			float alpha = 255.0;
+			if(!fullconsole && totalmillis - conlines[idx].outtime > confade/10*9000) 
+                alpha = 255.0 - 255.0*((float(totalmillis-conlines[idx].outtime)/1000.0)-float(confade)/10.0*9.0)/(float(confade)/10.0); //smooth outfading of consoletext (last 10% of the visible time)
+			draw_text(line, conoff, y, 0xFF, 0xFF, 0xFF, (int)alpha, -1, conwidth);
+		}
+		else draw_text(line, conoff, y, 0xFF, 0xFF, 0xFF, 0xFF, -1, conwidth);
+		
         if(dir > 0) y += height;
     }
     return y+conoff;
