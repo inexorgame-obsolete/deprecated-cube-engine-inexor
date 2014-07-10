@@ -63,7 +63,8 @@ struct bombclientmode : clientmode
     void drawicon(int icon, float x, float y, float sz)
     {
         int bicon = icon - HICON_BOMBRADIUS;
-        settexture("packages/hud/bomb_items.png");
+        defformatstring(bomb_items_filename)("%s/%s", huddir, hud_bomb_items);
+        settexture(bomb_items_filename);
         glBegin(GL_TRIANGLE_STRIP);
         float tsz = 0.25f, tx = tsz*(bicon%4), ty = tsz*(bicon/4);
         glTexCoord2f(tx,     ty);     glVertex2f(x,    y);
@@ -99,7 +100,8 @@ struct bombclientmode : clientmode
         if(minimapalpha >= 1) glEnable(GL_BLEND);
         glColor3f(1, 1, 1);
         float margin = 0.04f, roffset = s*margin, rsize = s + 2*roffset;
-        settexture("packages/hud/radar.png", 3);
+        defformatstring(bomb_radar_filename)("%s/%s", huddir, hud_radar);
+        settexture(bomb_radar_filename, 3);
         drawradar(x - roffset, y - roffset, rsize);
 
         // show obstacles on minimap
@@ -107,7 +109,8 @@ struct bombclientmode : clientmode
         {
             dynent *m = (dynent *) movables[i];
             if(!isobstaclealive((movable *) m)) continue;
-            settexture("packages/hud/block_yellow_t.png", 3);
+            defformatstring(bomb_block_yellow_filename)("%s/%s", huddir, blip_block_yellow);
+            settexture(bomb_block_yellow_filename, 3);
             drawblip(d, x, y, s, m->o, 1.0f);
         }
 
@@ -116,8 +119,8 @@ struct bombclientmode : clientmode
         {
             fpsent *p = players[i];
             if(p == player1 || p->state!=CS_ALIVE) continue;
-            if(!m_teammode || strcmp(p->team, player1->team) != 0) settexture("packages/hud/blip_red.png", 3);
-            else settexture("packages/hud/blip_blue.png", 3);
+            defformatstring(bomb_blip_filename)("%s/%s", huddir, (!m_teammode || strcmp(p->team, player1->team) != 0) ? blip_red : blip_blue);
+        	settexture(bomb_blip_filename, 3);
             drawblip(d, x, y, s, p->o, 2.0f);
         }
 
@@ -126,7 +129,8 @@ struct bombclientmode : clientmode
         {
             bouncer *p = bouncers[i];
             if(p->bouncetype != BNC_BOMB) continue;
-            settexture("packages/hud/blip_bomb_orange.png", 3);
+            defformatstring(bomb_blip_orange_filename)("%s/%s", huddir, blip_bomb_orange);
+            settexture(bomb_blip_orange_filename, 3);
             drawblip(d, x, y, s, p->o, (p->owner->bombradius * 1.5f + p->owner->bombradius * 1.5f * sin((SDL_GetTicks() / (5.5f-p->owner->bombdelay)) / 75.0f))/1.5f);
         }
 

@@ -7,6 +7,8 @@ extern int totalmillis;                 // total elapsed time
 extern uint totalsecs;
 extern int gamespeed, paused;
 
+extern string packagesdir;
+
 enum
 {
     MATF_INDEX_SHIFT  = 0,

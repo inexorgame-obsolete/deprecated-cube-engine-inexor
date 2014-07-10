@@ -778,7 +778,7 @@ struct gui : g3d_gui
                 if(icon[0] != ' ')
                 {
                     const char *ext = strrchr(icon, '.');
-                    defformatstring(tname)("packages/icons/%s%s", icon, ext ? "" : ".jpg");
+                    defformatstring(tname)("%s/%s%s", iconsdir, icon, ext ? "" : ".jpg");
                     icon_(textureload(tname, 3), false, x, cury, ICON_SIZE, clickable && hit);
                 }
                 x += ICON_SIZE;

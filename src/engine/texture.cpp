@@ -1132,13 +1132,13 @@ static bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex = NULL, 
         {
             cmds = tex->name;
             file = strrchr(tex->name, '>');
-            if(!file) { if(msg) conoutf(CON_ERROR, "could not load texture packages/%s", tex->name); return false; }
+            if(!file) { if(msg) conoutf(CON_ERROR, "could not load texture %s/%s", packagesdir, tex->name); return false; }
             file++;
         }
         else file = tex->name;
         
         static string pname;
-        formatstring(pname)("packages/%s", file);
+        formatstring(pname)("%s/%s", packagesdir, file);
         file = path(pname);
     }
     else if(tname[0]=='<') 
@@ -1922,7 +1922,7 @@ static void addname(vector<char> &key, Slot &slot, Slot::Tex &t, bool combined =
 {
     if(combined) key.add('&');
     if(prefix) { while(*prefix) key.add(*prefix++); }
-    defformatstring(tname)("packages/%s", t.name);
+    defformatstring(tname)("%s/%s", packagesdir, t.name);
     for(const char *s = path(tname); *s; key.add(*s++));
 }
 

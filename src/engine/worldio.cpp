@@ -1,6 +1,7 @@
 // worldio.cpp: loading & saving of maps and savegames
 
 #include "engine.h"
+#include "io.h"
 
 void cutogz(char *s) 
 {   
@@ -169,11 +170,11 @@ void setmapfilenames(const char *fname, const char *cname = 0)
     string pakname, mapname, mcfgname;
     getmapfilenames(fname, cname, pakname, mapname, mcfgname);
 
-    formatstring(ogzname)("packages/%s.ogz", mapname);
-    if(savebak==1) formatstring(bakname)("packages/%s.BAK", mapname);
-    else formatstring(bakname)("packages/%s_%d.BAK", mapname, totalmillis);
-    formatstring(cfgname)("packages/%s/%s.cfg", pakname, mcfgname);
-    formatstring(picname)("packages/%s.jpg", mapname);
+    formatstring(ogzname)("%s/%s.ogz", packagesdir, mapname);
+    if(savebak==1) formatstring(bakname)("%s/%s.BAK", packagesdir, mapname);
+    else formatstring(bakname)("%s/%s_%d.BAK", packagesdir, mapname, totalmillis);
+    formatstring(cfgname)("%s/%s/%s.cfg", packagesdir, pakname, mcfgname);
+    formatstring(picname)("%s/%s.jpg", packagesdir, mapname);
 
     path(ogzname);
     path(bakname);
@@ -188,7 +189,7 @@ void mapcfgname()
 
     string pakname, mapname, mcfgname;
     getmapfilenames(mname, NULL, pakname, mapname, mcfgname);
-    defformatstring(cfgname)("packages/%s/%s.cfg", pakname, mcfgname);
+    defformatstring(cfgname)("%s/%s/%s.cfg", packagesdir, pakname, mcfgname);
     path(cfgname);
     result(cfgname);
 }

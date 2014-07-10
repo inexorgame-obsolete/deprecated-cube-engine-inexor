@@ -2223,7 +2223,10 @@ void drawdamagescreen(int w, int h)
     glEnable(GL_TEXTURE_2D);
 
     static Texture *damagetex = NULL;
-    if(!damagetex) damagetex = textureload("packages/hud/damage.png", 3);
+    if(!damagetex) {
+        defformatstring(damagetex_filename)("%s/damage.png", huddir);
+    	damagetex = textureload(damagetex_filename, 3);
+    }
 
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glBindTexture(GL_TEXTURE_2D, damagetex->id);

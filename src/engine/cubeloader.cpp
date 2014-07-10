@@ -263,7 +263,7 @@ struct cubeloader
         int loadingstart = SDL_GetTicks();
         string pakname, cgzname;
         formatstring(pakname)("cube/%s", mname);
-        formatstring(cgzname)("packages/%s.cgz", pakname);
+        formatstring(cgzname)("%s/%s.cgz", packagesdir, pakname);
         stream *f = opengzfile(path(cgzname), "rb");
         if(!f) { conoutf(CON_ERROR, "could not read cube map %s", cgzname); return; }
         c_header hdr;
@@ -367,9 +367,10 @@ struct cubeloader
         delete f;
 
         string cfgname;
-        formatstring(cfgname)("packages/cube/%s.cfg", mname);
+        formatstring(cfgname)("%s/cube/%s.cfg", packagesdir, mname);
         identflags |= IDF_OVERRIDDEN;
-        execfile("packages/cube/package.cfg");
+        defformatstring(pkgname)("%s/cube/package.cfg", packagesdir);
+        execfile(pkgname);
         execfile(path(cfgname));
         identflags &= ~IDF_OVERRIDDEN;
         create_cubes();

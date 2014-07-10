@@ -112,7 +112,8 @@ struct raceclientmode : clientmode
       if(minimapalpha >= 1) glEnable(GL_BLEND);
       glColor3f(1, 1, 1);
       float margin = 0.04f, roffset = s*margin, rsize = s + 2*roffset;
-      settexture("packages/hud/radar.png", 3);
+      defformatstring(race_radar_filename)("%s/%s", huddir, hud_radar);
+      settexture(race_radar_filename, 3);
       drawradar(x - roffset, y - roffset, rsize);
 
       // show obstacles on minimap
@@ -120,17 +121,20 @@ struct raceclientmode : clientmode
       {
           dynent *m = (dynent *) movables[i];
           if(!isobstaclealive((movable *) m)) continue;
-          settexture("packages/hud/block_yellow_t.png", 3);
+          defformatstring(race_block_yellow_filename)("%s/%s", huddir, blip_block_yellow);
+          settexture(race_block_yellow_filename, 3);
           drawblip(d, x, y, s, m->o, 1.0f);
       }
 
       // show other players on minimap
+      defformatstring(race_blip_red_filename)("%s/%s", huddir, blip_red);
+      defformatstring(race_blip_blue_filename)("%s/%s", huddir, blip_blue);
       loopv(players)
       {
           fpsent *p = players[i];
           if(p == player1 || p->state!=CS_ALIVE) continue;
-          if(!m_teammode || strcmp(p->team, player1->team) != 0) settexture("packages/hud/blip_red.png", 3);
-          else settexture("packages/hud/blip_blue.png", 3);
+          if(!m_teammode || strcmp(p->team, player1->team) != 0) settexture(race_blip_red_filename, 3);
+          else settexture(race_blip_blue_filename, 3);
           drawblip(d, x, y, s, p->o, 2.0f);
       }
 
