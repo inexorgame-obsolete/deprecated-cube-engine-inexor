@@ -34,6 +34,7 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/octa
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/octaedit
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/octarender
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/physics
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/pvs
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/rendergl
