@@ -221,12 +221,11 @@ int get_particle_modifier_type_id(char *name) {
 	return -1;
 }
 
-// commands
 COMMAND(init_particles, "");
 COMMAND(clear_particle_pools, "");
 COMMAND(reset_particle_system, "");
 
-COMMAND(add_particle_type, "si");
-COMMAND(add_particle_emitter_type, "s");
-COMMAND(add_particle_renderer_type, "s");
+COMMAND(add_particle_type, "ss");
+COMMAND(add_particle_emitter_type, "sssi");
+COMMAND(add_particle_renderer_type, "ss");
 COMMAND(add_particle_modifier_type, "s");
