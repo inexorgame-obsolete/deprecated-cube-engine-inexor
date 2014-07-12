@@ -17,17 +17,20 @@ vector<particle_modifier_instance *> particle_modifier_instances;
 vector<particle_instance *> alive_pool;
 vector<particle_instance *> dead_pool;
 
-void init_particles() {
+void init_particles()
+{
 	reset_particle_system();
 	clear_particle_pools();
 }
 
-void clear_particle_pools() {
+void clear_particle_pools()
+{
 	alive_pool.shrink(0);
 	dead_pool.shrink(0);
 }
 
-void reset_particle_system() {
+void reset_particle_system()
+{
 	particle_types.shrink(0);
 	particle_emitter_types.shrink(0);
 	particle_renderer_types.shrink(0);
@@ -38,11 +41,13 @@ void reset_particle_system() {
 	particle_modifier_instances.shrink(0);
 }
 
-void apply_particle_modifiers() {
+void apply_particle_modifiers()
+{
 
 }
 
-void apply_particle_emitters() {
+void apply_particle_emitters()
+{
 	loopv(particle_emitter_instances) {
 		particle_emitter_instance *ei = particle_emitter_instances[i];
 		particle_emitter_type *et = particle_emitter_types[ei->type];
@@ -61,7 +66,8 @@ void apply_particle_emitters() {
 	}
 }
 
-void render_particles() {
+void render_particles()
+{
 
 }
 
@@ -70,7 +76,8 @@ void render_particles() {
  * would cause a performance issue (nested loops)! This is an optimized
  * remove function with only a single loop.
  */
-void next_particles_iteration() {
+void next_particles_iteration()
+{
 	int n = 0;
 	loopv(alive_pool) {
 		if (n > 0 && i + n < alive_pool.length()) {
@@ -93,7 +100,8 @@ void next_particles_iteration() {
  * By emitting a particle we want to reuse dead particles in order to save
  * memory.
  */
-particle_instance* emit_particle() {
+particle_instance* emit_particle()
+{
 	if (dead_pool.length() > 0) {
 		// reanimate a dead particle
 		return dead_pool.pop();
@@ -103,7 +111,8 @@ particle_instance* emit_particle() {
 	}
 }
 
-particle_type* add_particle_type(char *name, char *renderer) {
+particle_type* add_particle_type(char *name, char *renderer)
+{
 	name = newstring(name);
 	particle_type *pt = particle_types.add();
 	pt->name = name;
@@ -111,11 +120,13 @@ particle_type* add_particle_type(char *name, char *renderer) {
 	return pt;
 }
 
-void remove_particle_type(char *name) {
+void remove_particle_type(char *name)
+{
 	particle_types.remove(get_particle_type_id(name));
 }
 
-particle_type* get_particle_type(char *name) {
+particle_type* get_particle_type(char *name)
+{
 	loopv(particle_types) {
 		if(strcmp(particle_types[i]->name, name)) {
 			return particle_types[i];
@@ -123,7 +134,8 @@ particle_type* get_particle_type(char *name) {
 	}
 }
 
-int get_particle_type_id(char *name) {
+int get_particle_type_id(char *name)
+{
 	loopv(particle_types) {
 		if(strcmp(particle_types[i]->name, name)) {
 			return i;
@@ -132,7 +144,8 @@ int get_particle_type_id(char *name) {
 	return -1;
 }
 
-particle_emitter_type* add_particle_emitter_type(char *name, char *particle_type, char *renderer_type, int lifetime) {
+particle_emitter_type* add_particle_emitter_type(char *name, char *particle_type, char *renderer_type, int lifetime)
+{
 	name = newstring(name);
 	particle_emitter_type *pet = particle_emitter_types.add();
 	pet->name = name;
@@ -142,11 +155,13 @@ particle_emitter_type* add_particle_emitter_type(char *name, char *particle_type
 	return pet;
 }
 
-void remove_particle_emitter_type(char *name) {
+void remove_particle_emitter_type(char *name)
+{
 	particle_emitter_types.remove(get_particle_emitter_type_id(name));
 }
 
-particle_emitter_type* get_particle_emitter_type(char *name) {
+particle_emitter_type* get_particle_emitter_type(char *name)
+{
 	loopv(particle_emitter_types) {
 		if(strcmp(particle_emitter_types[i]->name, name)) {
 			return particle_emitter_types[i];
@@ -154,7 +169,8 @@ particle_emitter_type* get_particle_emitter_type(char *name) {
 	}
 }
 
-int get_particle_emitter_type_id(char *name) {
+int get_particle_emitter_type_id(char *name)
+{
 	loopv(particle_emitter_types) {
 		if(strcmp(particle_emitter_types[i]->name, name)) {
 			return i;
@@ -163,7 +179,8 @@ int get_particle_emitter_type_id(char *name) {
 	return -1;
 }
 
-particle_renderer_type* add_particle_renderer_type(char *name, char *shader) {
+particle_renderer_type* add_particle_renderer_type(char *name, char *shader)
+{
 	name = newstring(name);
 	shader = newstring(shader);
 	particle_renderer_type *prt = particle_renderer_types.add();
@@ -172,11 +189,13 @@ particle_renderer_type* add_particle_renderer_type(char *name, char *shader) {
 	return prt;
 }
 
-void remove_particle_renderer_type(char *name) {
+void remove_particle_renderer_type(char *name)
+{
 	particle_renderer_types.remove(get_particle_renderer_type_id(name));
 }
 
-particle_renderer_type* get_particle_renderer_type(char *name) {
+particle_renderer_type* get_particle_renderer_type(char *name)
+{
 	loopv(particle_renderer_types) {
 		if(strcmp(particle_renderer_types[i]->name, name)) {
 			return particle_renderer_types[i];
@@ -184,7 +203,8 @@ particle_renderer_type* get_particle_renderer_type(char *name) {
 	}
 }
 
-int get_particle_renderer_type_id(char *name) {
+int get_particle_renderer_type_id(char *name)
+{
 	loopv(particle_renderer_types) {
 		if(strcmp(particle_renderer_types[i]->name, name)) {
 			return i;
@@ -193,18 +213,21 @@ int get_particle_renderer_type_id(char *name) {
 	return -1;
 }
 
-particle_modifier_type* add_particle_modifier_type(char *name) {
+particle_modifier_type* add_particle_modifier_type(char *name)
+{
 	name = newstring(name);
 	particle_modifier_type *pmt = particle_modifier_types.add();
 	pmt->name = name;
 	return pmt;
 }
 
-void remove_particle_modifier_type(char *name) {
+void remove_particle_modifier_type(char *name)
+{
 	particle_modifier_types.remove(get_particle_modifier_type_id(name));
 }
 
-particle_modifier_type* get_particle_modifier_type(char *name) {
+particle_modifier_type* get_particle_modifier_type(char *name)
+{
 	loopv(particle_modifier_types) {
 		if(strcmp(particle_modifier_types[i]->name, name)) {
 			return particle_modifier_types[i];
@@ -212,7 +235,8 @@ particle_modifier_type* get_particle_modifier_type(char *name) {
 	}
 }
 
-int get_particle_modifier_type_id(char *name) {
+int get_particle_modifier_type_id(char *name)
+{
 	loopv(particle_modifier_types) {
 		if(strcmp(particle_modifier_types[i]->name, name)) {
 			return i;
@@ -229,3 +253,28 @@ COMMAND(add_particle_type, "ss");
 COMMAND(add_particle_emitter_type, "sssi");
 COMMAND(add_particle_renderer_type, "ss");
 COMMAND(add_particle_modifier_type, "s");
+
+COMMAND(remove_particle_type, "s");
+COMMAND(remove_particle_emitter_type, "s");
+COMMAND(remove_particle_renderer_type, "s");
+COMMAND(remove_particle_modifier_type, "s");
+
+ICOMMAND(get_particle_type_id, "s", (char *name),
+{
+    intret(get_particle_type_id(name));
+});
+
+ICOMMAND(get_particle_emitter_type_id, "s", (char *name),
+{
+    intret(get_particle_emitter_type_id(name));
+});
+
+ICOMMAND(get_particle_renderer_type_id, "s", (char *name),
+{
+    intret(get_particle_renderer_type_id(name));
+});
+
+ICOMMAND(get_particle_modifier_type_id, "s", (char *name),
+{
+    intret(get_particle_modifier_type_id(name));
+});
