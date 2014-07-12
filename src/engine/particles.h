@@ -4,27 +4,26 @@
 
 struct particle_type
 {
-	char *name;
+	string name;
 	int renderer_type;
 };
 
 struct particle_emitter_type
 {
-	char *name;
+	string name;
 	int particle_type;
-	int renderer_type;
 	int lifetime;
 };
 
 struct particle_renderer_type
 {
-	char *name;
-	char *shader;
+	string name;
+	string shader;
 };
 
 struct particle_modifier_type
 {
-	char *name;
+	string name;
 };
 
 struct particle_instance
@@ -79,20 +78,20 @@ struct particle_modifier_instance
 };
 
 // abstract definitions - makes everything dynamic
-extern vector<particle_type *> particle_types;
-extern vector<particle_emitter_type *> particle_emitter_types;
-extern vector<particle_renderer_type *> particle_renderer_types;
-extern vector<particle_modifier_type *> particle_modifier_types;
+extern vector<particle_type> particle_types;
+extern vector<particle_emitter_type> particle_emitter_types;
+extern vector<particle_renderer_type> particle_renderer_types;
+extern vector<particle_modifier_type> particle_modifier_types;
 
 // concrete instances refers to the abstract definitions
-extern vector<particle_instance *> particles_instances;
-extern vector<particle_emitter_instance *> particle_emitter_instances;
-extern vector<particle_renderer_instance *> particle_renderer_instances;
-extern vector<particle_modifier_instance *> particle_modifier_instances;
+extern vector<particle_instance> particles_instances;
+extern vector<particle_emitter_instance> particle_emitter_instances;
+extern vector<particle_renderer_instance> particle_renderer_instances;
+extern vector<particle_modifier_instance> particle_modifier_instances;
 
 // particle pools for performance reasons, replace this with pointers
-extern vector<particle_instance *> alive_pool;
-extern vector<particle_instance *> dead_pool;
+extern vector<particle_instance> alive_pool;
+extern vector<particle_instance> dead_pool;
 
 extern void init_particles();
 
@@ -110,37 +109,29 @@ extern void next_particles_iteration();
 
 extern particle_instance* emit_particle();
 
-extern particle_type* add_particle_type(char *name, char *renderer);
+extern int add_particle_type(const char *name, const char *renderer);
 
-extern void remove_particle_type(char *name);
+extern void remove_particle_type(const char *name);
 
-extern particle_type* get_particle_type(char *name);
+extern int get_particle_type(const char *name);
 
-extern int get_particle_type_id(char *name);
+extern int add_particle_emitter_type(const char *name, const char *particle_type, int lifetime);
 
-extern particle_emitter_type* add_particle_emitter_type(char *name, char *particle_type, char *renderer_type, int lifetime);
+extern void remove_particle_emitter_type(const char *name);
 
-extern void remove_particle_emitter_type(char *name);
+extern int get_particle_emitter_type(const char *name);
 
-extern particle_emitter_type* get_particle_emitter_type(char *name);
+extern int add_particle_renderer_type(const char *name, const char *shader);
 
-extern int get_particle_emitter_type_id(char *name);
+extern void remove_particle_renderer_type(const char *name);
 
-extern particle_renderer_type* add_particle_renderer_type(char *name, char *shader);
+extern int get_particle_renderer_type(const char *name);
 
-extern void remove_particle_renderer_type(char *name);
+extern int add_particle_modifier_type(const char *name);
 
-extern particle_renderer_type* get_particle_renderer_type(char *name);
+extern void remove_particle_modifier_type(const char *name);
 
-extern int get_particle_renderer_type_id(char *name);
-
-extern particle_modifier_type* add_particle_modifier_type(char *name);
-
-extern void remove_particle_modifier_type(char *name);
-
-extern particle_modifier_type* get_particle_modifier_type(char *name);
-
-extern int get_particle_modifier_type_id(char *name);
+extern int get_particle_modifier_type(const char *name);
 
 // extern void set_particle_type(int particle_id);
 
