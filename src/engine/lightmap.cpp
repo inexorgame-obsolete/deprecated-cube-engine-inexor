@@ -465,6 +465,47 @@ static bool packlightmap(lightmapinfo &l, layoutinfo &surface)
     else insertlightmap(l, surface);
     return true;
 }
+//calculate the ambient occlusion factor: 
+//ao works as follows:
+//you check for every point how much light possible comes onto it when the light comes from the whole sky (no lights/spotlights, whatever)
+//this will darken cracks and sharp edges and hence give a more realistic rendering output.
+//from every point we send out ray casts into the main directions (see below) and get a hit back if it touched the sky (or a skytextured cube, see RAY_SKIPSKY)
+//we then darken the lightmap color depending on how much the pixel is occlued. 
+//(rays-hitting-a-wall / total-rays-sent -> value between 0 and 1.0) 1.0 = totally occlued, 0.0 = no occlusion
+
+VARR(ambientocclusion, 0, 255, 255); //factor how much the scene will be darkened
+FVARR(ambientocclusionradius, 1.0, 5.0, 1e16);
+VARP(testao, 0, 1, 1);
+static float calcocclusion(const vec &o, const vec &normal, float tolerance, int flags = RAY_ALPHAPOLY)
+{
+	static const vec rays[14] = //to make the calculations not to heavy, 14 ray paths (in the main directions) are enough.. todo
+    {
+		vec( 1,  0,  0),  //forwards
+		vec(-1,  0,  0),  //backwards
+		vec( 0,  1,  0),  //rightwards
+		vec( 0, -1,  0),  //leftwards
+		vec( 0,  0,  1),  //upwards
+		vec( 0,  0, -1),  //downwards
+		vec( 1,  1,  1),  //upper forward right
+		vec( 1, -1,  1),  //upper forward left
+		vec( 1,  1, -1),  //lower forward right
+		vec( 1, -1, -1),  //lower forward left
+		vec(-1,  1,  1),  //upper backward right
+		vec(-1, -1,  1),  //upper backward left
+		vec(-1,  1, -1),  //lower backward right
+		vec(-1, -1, -1),  //lower backward left
+    };
+	 
+    flags |= RAY_SHADOW;
+    if(skytexturelight) flags |= RAY_SKIPSKY;
+	int occluedray = 14;
+	loopi(14) 
+    {
+        if(normal.dot(rays[i])<0 //skip the rays on the invisible side of the cube
+			|| shadowray(vec(rays[i]).mul(tolerance).add(o), rays[i], ambientocclusionradius, flags, NULL)>(ambientocclusionradius-1.0f)) occluedray--; //check whether there's a wall in the field around the sample
+    }
+	return float(occluedray)/4.0f; //4 occluedrays only todo
+}
 
 static void updatelightmap(const layoutinfo &surface)
 {
@@ -588,7 +629,8 @@ static uint generatelumel(lightmapworker *w, const float tolerance, uint lightma
             b += intensity * (sunlightcolor.z*sunlightscale);
         }
     }
-    switch(w->type&LM_TYPE)
+
+	switch(w->type&LM_TYPE)
     {
         case LM_BUMPMAP0:
             if(avgray.iszero()) break;
@@ -602,9 +644,18 @@ static uint generatelumel(lightmapworker *w, const float tolerance, uint lightma
             w->raydata[y*w->w+x].add(vec(S.dot(avgray)/S.magnitude(), T.dot(avgray)/T.magnitude(), normal.dot(avgray)));
             break;
     }
-    sample.x = min(255.0f, max(r, float(ambientcolor[0])));
-    sample.y = min(255.0f, max(g, float(ambientcolor[1])));
-    sample.z = min(255.0f, max(b, float(ambientcolor[2])));
+	float occlusion = calcocclusion(target, normal, tolerance, RAY_ALPHAPOLY);
+
+	if(testao) { 
+		sample.r = min(255.0f, ambientocclusion * occlusion); //colorize every occlued part red
+		sample.g = 0;
+		sample.b = 0;
+	}
+	else {
+		sample.r = min(255.0f, max(r, float(ambientcolor[0])));
+		sample.g = min(255.0f, max(g, float(ambientcolor[1])));
+		sample.b = min(255.0f, max(b, float(ambientcolor[2])));
+	}
     return lightused;
 }
 
@@ -621,44 +672,6 @@ static bool lumelsample(const vec &sample, int aasample, int stride)
     n += stride;
     NCHECK(n[0]); NCHECK(n[aasample]); NCHECK(n[2*aasample]);
     return false;
-}
-//calculate the ambient occlusion factor: 
-//ao works as follows:
-//you check for every point how much light possible comes onto it when the light comes from the whole sky (no lights/spotlights, whatever)
-//this will darken cracks and sharp edges and hence give a more realistic rendering output.
-//from every point we send out ray casts into the main directions (see below) and get a hit back if it touched the sky (or a skytextured cube, see RAY_SKIPSKY)
-//we then darken the lightmap color depending on how much the pixel is occlued. (rays-hitting-the-sky / total-rays-sent -> value between 0 and 1.0)
-
-VARR(ambientocclusion, 0, 48, 255); //factor how much the scene will be darkened
-static void calcambient(const vec &o, const vec &normal, float tolerance, uchar *ambient, int flags = RAY_ALPHAPOLY)
-{
-	static const vec rays[14] = //to make the calculations not to heavy, 14 ray paths (in the main directions) are enough.. 
-    {
-		vec( 1,  0,  0),  //forwards
-		vec(-1,  0,  0),  //backwards
-		vec( 0,  1,  0),  //rightwards
-		vec( 0, -1,  0),  //leftwards
-		vec( 0,  0,  1),  //upwards
-		vec( 0,  0, -1),  //downwards
-		vec( 1,  1,  1),  //upper forward right
-		vec( 1, -1,  1),  //upper forward left
-		vec( 1,  1, -1),  //lower forward right
-		vec( 1, -1, -1),  //lower forward left
-		vec(-1,  1,  1),  //upper backward right
-		vec(-1, -1,  1),  //upper backward left
-		vec(-1,  1, -1),  //lower backward right
-		vec(-1, -1, -1),  //lower backward left
-    };
-	 
-    flags |= RAY_SHADOW;
-    if(skytexturelight) flags |= RAY_SKIPSKY;
-	int hit = 0;
-	loopi(14) 
-    {
-        if(normal.dot(rays[i])>=0 //skip the rays on the invisible side of the cube
-			&& shadowray(vec(rays[i]).mul(tolerance).add(o), rays[i], 1e16f, flags, NULL)>1e15f) hit++; //check for a hit of the sky
-    }
-	loopk(3) ambient[k] = uchar(ambientocclusion * hit/14.0f);
 }
 
 static void calcskylight(lightmapworker *w, const vec &o, const vec &normal, float tolerance, uchar *skylight, int flags = RAY_ALPHAPOLY, extentity *t = NULL)
