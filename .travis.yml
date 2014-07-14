@@ -17,3 +17,6 @@ env:
   - CMAKE_FLAGS=-DRELEASE_BUILD=1
   - CMAKE_FLAGS="-DCMAKE_TOOLCHAIN_FILE=../src/platform_windows/linux-toolchain-mingw.cmake -DMINGW_TYPE=classic"
   - CMAKE_FLAGS="-DCMAKE_TOOLCHAIN_FILE=../src/platform_windows/linux-toolchain-mingw.cmake -DRELEASE_BUILD=1  -DMINGW_TYPE=classic"
+
+notifications:
+  webhooks: http://n.tkte.ch/h/2910/Rm7oDLYIC1icyntUug11eWi1
