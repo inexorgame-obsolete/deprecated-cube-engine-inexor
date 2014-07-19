@@ -12,6 +12,8 @@ struct particle_emitter_type
 {
 	string name;
 	int particle_type;
+	float mass;
+	float density;
 	int lifetime;
 };
 
@@ -49,6 +51,12 @@ struct particle_instance
 
     // the elapsed iterations
     int elapsed;
+
+    // the mass of the particle
+    float mass;
+
+    // the density of the particle
+    float density;
 
     // optional states; mutable
     hashtable<const char *, float> attributes;

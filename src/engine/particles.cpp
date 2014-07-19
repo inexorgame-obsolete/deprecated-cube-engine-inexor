@@ -59,11 +59,13 @@ void apply_particle_emitters()
 		particle_instance *pi = emit_particle();
 		// set the origin emitter
 		pi->emitter = i;
-		// get the particle type from the emitter type
+		// get the particle type, mass and density from the emitter type
 		pi->type = et.particle_type;
-		// set the remaining iterations from the emitter type's lifetime
-		pi->remaining = et.lifetime;
+		pi->mass = et.mass;
+		pi->density = et.density;
+		// set the elapsed and remaining iterations from the emitter type's lifetime
 		pi->elapsed = 0;
+		pi->remaining = et.lifetime;
 		// add particle instance to the alive pool
 		alive_pool.add(*pi);
 	}
