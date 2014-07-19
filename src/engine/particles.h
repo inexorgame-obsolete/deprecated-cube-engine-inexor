@@ -47,6 +47,9 @@ struct particle_instance
     // the remaining iterations
     int remaining;
 
+    // the elapsed iterations
+    int elapsed;
+
     // optional states; mutable
     hashtable<const char *, float> attributes;
 };

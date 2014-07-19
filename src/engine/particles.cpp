@@ -63,6 +63,7 @@ void apply_particle_emitters()
 		pi->type = et.particle_type;
 		// set the remaining iterations from the emitter type's lifetime
 		pi->remaining = et.lifetime;
+		pi->elapsed = 0;
 		// add particle instance to the alive pool
 		alive_pool.add(*pi);
 	}
