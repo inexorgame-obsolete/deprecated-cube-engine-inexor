@@ -11,7 +11,7 @@
 #include "bih.h"
 #include "texture.h"
 #include "model.h"
-#include "particles.h"
+#include "particles/particles.h"
 
 // GL_ARB_multitexture
 extern PFNGLACTIVETEXTUREARBPROC       glActiveTexture_;

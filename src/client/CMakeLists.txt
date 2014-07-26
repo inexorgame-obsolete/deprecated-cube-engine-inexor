@@ -28,14 +28,12 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/grass
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/main
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/material
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/massspring
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/menus
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/movie
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/normal
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/octa
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/octaedit
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/octarender
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/physics
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/pvs
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/rendergl
@@ -48,7 +46,6 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/shader
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/sound
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/texture
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/velocity
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/water
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/world
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/worldio
@@ -58,6 +55,9 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/glare
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/blob
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/osd
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/particles
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/massspring
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/velocity
 
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/ai
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/client       
