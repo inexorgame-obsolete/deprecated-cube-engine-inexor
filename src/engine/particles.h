@@ -2,68 +2,81 @@
 
 #define ENGINE_PARTICLES_H
 
-struct particle_type
-{
-	string name;
-	int renderer_type;
-};
-
-struct particle_emitter_type
-{
-	string name;
-	int particle_type;
-	float mass;
-	float density;
-	int lifetime;
-};
-
-struct particle_renderer_type
-{
-	string name;
-	string shader;
-};
-
-struct particle_modifier_type
-{
-	string name;
-};
-
+/**
+ * A particle instance.
+ */
 struct particle_instance
 {
-	// non-mutable states
+	/*** Non-mutable states ***/
 
-	// the particle type (the renderer is definied in the particle type definition)
+	/**
+	 * Reference to the id of the particle type. The particle renderer
+	 * belonging to this particle instance is defined in the particle
+	 * type definition.
+	 */
 	int type;
 
-	// the origin emitter
+	/**
+	 * Reference to the id of the origin particle emitter. Therefore
+	 * we can restore the start conditions of this particle instance.
+	 */
 	int emitter;
 
-	// required states; mutable
+	/*** Required states; mutable ***/
 
-	// particle position
+	/**
+	 * The current position of the particle instance.
+	 */
 	vec o;
 
-	// particle velocity
+	/**
+	 * The current velocity of the particle instance.
+	 */
     vec vel;
 
-    // the remaining iterations
+    /**
+     * The remaining iterations of the particle instance. There might be
+     * particle modifiers that change the remaining lifetime, for example
+     * particle culling would set the remaining iterations to zero.
+     */
     int remaining;
 
-    // the elapsed iterations
+    /**
+     * The elapsed iterations since birth. This attribute gets constantly
+     * increased and should not be modified. It also might differ to
+     * calculating (lifetime - remaining iterations) if the remaining
+     * iterations attribute was modified. If you need a constant change
+     * over time, you should use this!
+     */
     int elapsed;
 
-    // the mass of the particle
+    /**
+     * Every particle instance has a mass. Needed for modifiers which are
+     * applying physical transformations like gravity.
+     */
     float mass;
 
-    // the density of the particle
+    /**
+     * The density (or volume) of the particle. Needed for volumetric
+     * rendering (for example metaballs or cloth).
+     */
     float density;
 
-    // optional states; mutable
+    /*** Optional states; mutable ***/
+
+    /**
+     * An unlimited number of additional attributes. These might not as
+     * performant as the attributes above because of the additional
+     * hashtable lookup. But it allows maximum flexibility for emitters,
+     * modifiers and renderers.
+     */
     hashtable<const char *, float> attributes;
+
 };
 
 /**
- * Emits particles
+ * A particle emitter instance is an instance of a particle emitter
+ * type.
  */
 struct particle_emitter_instance
 {
@@ -71,6 +84,7 @@ struct particle_emitter_instance
 };
 
 /**
+ * A particle renderer instance.
  * Different rendering of particles bound on a single particle.
  */
 struct particle_renderer_instance
@@ -88,11 +102,170 @@ struct particle_modifier_instance
 	int emitter;
 };
 
+/**
+ * Interface for a particle emitter implementation.
+ *
+ * Particle emitters should register themselves in their constructor
+ * using add_particle_emitter_type()
+ */
+struct particle_emitter_implementation
+{
+
+	/**
+	 * The name of the particle emitter implementation.
+	 */
+	string name;
+
+	/**
+	 * Emits new particle(s).
+	 */
+	virtual void emit() = 0;
+
+};
+
+/**
+ * Interface for a particle renderer implementation.
+ *
+ * Particle renderers should register themselves in their constructor
+ * using add_particle_renderer_type()
+ */
+struct particle_renderer_implementation
+{
+
+	/**
+	 * The name of the particle renderer implementation.
+	 */
+	string name;
+
+	/**
+	 * Renders particles.
+	 */
+	virtual void render() = 0;
+
+};
+
+/**
+ * Interface for a particle modifier implementation.
+ *
+ * Particle modifiers should register themselves in their constructor
+ * using add_particle_modifier_type()
+ */
+struct particle_modifier_implementation
+{
+
+	/**
+	 * The name of the particle modifier implementation.
+	 */
+	string name;
+
+	/**
+	 * Modifies particle(s).
+	 */
+	virtual void modify() = 0;
+
+};
+
+/**
+ * A particle type.
+ */
+struct particle_type
+{
+	/**
+	 * The name of the particle type.
+	 */
+	string name;
+
+	/**
+	 * The id reference to the particle renderer type.
+	 */
+	int renderer_type;
+};
+
+/**
+ * A particle emitter type. Notice that the actual implementation of
+ * an particle emitter type needs to be bind using a function pointer.
+ */
+struct particle_emitter_type
+{
+
+	/**
+	 * The name of the particle emitter type.
+	 */
+	string name;
+
+	/**
+	 * The particle type of an emitted particle instance.
+	 */
+	int particle_type;
+
+	/**
+	 * The start mass of an emitted particle instance.
+	 */
+	float mass;
+
+	/**
+	 * The start density of an emitted particle instance.
+	 */
+	float density;
+
+	/**
+	 * The lifetime of an emitted particle instance.
+	 */
+	int lifetime;
+
+	/**
+	 * The implementation.
+	 */
+	particle_emitter_implementation *impl;
+};
+
+/**
+ * A particle renderer type.
+ */
+struct particle_renderer_type
+{
+	/**
+	 * The name of the particle renderer type.
+	 */
+	string name;
+
+	/**
+	 * The shader to use.
+	 */
+	string shader;
+
+	/**
+	 * The implementation.
+	 */
+	particle_renderer_implementation *impl;
+};
+
+/**
+ * A particle modifier type.
+ */
+struct particle_modifier_type
+{
+	/**
+	 * The name of the particle modifier type.
+	 */
+	string name;
+
+	/**
+	 * The implementation.
+	 */
+	particle_modifier_implementation *impl;
+};
+
 // abstract definitions - makes everything dynamic
 extern vector<particle_type> particle_types;
 extern vector<particle_emitter_type> particle_emitter_types;
 extern vector<particle_renderer_type> particle_renderer_types;
 extern vector<particle_modifier_type> particle_modifier_types;
+
+// implementations - the concrete implementations
+extern vector<particle_emitter_implementation *> particle_emitter_implementations;
+extern vector<particle_renderer_implementation *> particle_renderer_implementations;
+extern vector<particle_modifier_implementation *> particle_modifier_implementations;
 
 // concrete instances refers to the abstract definitions
 extern vector<particle_instance> particles_instances;
@@ -101,52 +274,40 @@ extern vector<particle_renderer_instance> particle_renderer_instances;
 extern vector<particle_modifier_instance> particle_modifier_instances;
 
 // particle pools for performance reasons, replace this with pointers
-extern vector<particle_instance> alive_pool;
-extern vector<particle_instance> dead_pool;
+extern vector<particle_instance> alive_pool[2];
+extern vector<particle_instance> dead_pool[2];
+extern int current_alive_pool;
+extern int current_dead_pool;
 
 extern void init_particles();
-
 extern void clear_particle_pools();
-
 extern void reset_particle_system();
 
-extern void apply_particle_emitters();
-
-extern void apply_particle_modifiers();
-
+extern void apply_particles();
+extern void apply_particle_emitters(int elapsedtime);
+extern void apply_particle_modifiers(int elapsedtime);
 extern void render_particles();
-
-extern void next_particles_iteration();
-
+extern void next_particles_iteration(int elapsedtime);
 extern particle_instance* emit_particle();
 
 extern int add_particle_type(const char *name, const char *renderer);
-
 extern void remove_particle_type(const char *name);
-
 extern int get_particle_type(const char *name);
 
 extern int add_particle_emitter_type(const char *name, const char *particle_type, int lifetime);
-
 extern void remove_particle_emitter_type(const char *name);
-
 extern int get_particle_emitter_type(const char *name);
+extern int get_particle_emitter_implementation(const char *name);
 
 extern int add_particle_renderer_type(const char *name, const char *shader);
-
 extern void remove_particle_renderer_type(const char *name);
-
 extern int get_particle_renderer_type(const char *name);
+extern int get_particle_renderer_implementation(const char *name);
 
-extern int add_particle_modifier_type(const char *name);
-
+extern int add_particle_modifier_type(const char *name, const char *impl);
 extern void remove_particle_modifier_type(const char *name);
-
 extern int get_particle_modifier_type(const char *name);
-
-// extern void set_particle_type(int particle_id);
-
-// extern void set_particle_emitter(int particle_id, int emitter_id);
+extern int get_particle_modifier_implementation(const char *name);
 
 // extern void set_particle_attribute(int particle_id, char * key, float value);
 

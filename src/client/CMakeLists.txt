@@ -28,6 +28,7 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/grass
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/main
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/material
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/massspring
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/menus
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/movie
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/normal
@@ -47,6 +48,7 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/shader
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/sound
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/texture
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/velocity
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/water
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/world
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/worldio
