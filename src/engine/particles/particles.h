@@ -80,7 +80,20 @@ struct particle_instance
  */
 struct particle_emitter_instance
 {
+	/**
+	 * The emitter type id.
+	 */
 	int type;
+
+	/**
+	 * The current position of the particle emitter instance.
+	 */
+	vec o;
+
+	/**
+	 * The modifier instances.
+	 */
+	vector<int> modifier_instances;
 };
 
 /**
@@ -98,8 +111,6 @@ struct particle_renderer_instance
 struct particle_modifier_instance
 {
 	int type;
-	// >= 0: only apply on particles emitted by a specific emitter
-	int emitter;
 };
 
 /**
@@ -119,7 +130,7 @@ struct particle_emitter_implementation
 	/**
 	 * Emits new particle(s).
 	 */
-	virtual void emit() = 0;
+	virtual void emit(particle_emitter_instance pe_inst, int pe_inst_id, int elapsedtime) = 0;
 
 };
 
@@ -140,7 +151,7 @@ struct particle_renderer_implementation
 	/**
 	 * Renders particles.
 	 */
-	virtual void render() = 0;
+	virtual void render(particle_instance p_inst) = 0;
 
 };
 
@@ -161,7 +172,7 @@ struct particle_modifier_implementation
 	/**
 	 * Modifies particle(s).
 	 */
-	virtual void modify() = 0;
+	virtual void modify(particle_modifier_instance pmi, particle_instance pi, int elapsedtime) = 0;
 
 };
 
@@ -214,9 +225,20 @@ struct particle_emitter_type
 	int lifetime;
 
 	/**
+	 * Emit particles every <rate> milliseconds.
+	 */
+	int rate;
+
+	/**
 	 * The implementation.
 	 */
 	particle_emitter_implementation *impl;
+
+	/**
+	 * The modifier types to apply on particles spawned by an emitter of this type.
+	 */
+	vector<int> modifier_types;
+
 };
 
 /**
@@ -268,7 +290,7 @@ extern vector<particle_renderer_implementation *> particle_renderer_implementati
 extern vector<particle_modifier_implementation *> particle_modifier_implementations;
 
 // concrete instances refers to the abstract definitions
-extern vector<particle_instance> particles_instances;
+extern vector<particle_instance> particle_instances;
 extern vector<particle_emitter_instance> particle_emitter_instances;
 extern vector<particle_renderer_instance> particle_renderer_instances;
 extern vector<particle_modifier_instance> particle_modifier_instances;
@@ -283,23 +305,26 @@ extern void init_particles();
 extern void clear_particle_pools();
 extern void reset_particle_system();
 
-extern void apply_particles();
-extern void apply_particle_emitters(int elapsedtime);
-extern void apply_particle_modifiers(int elapsedtime);
+extern void update_particle_system();
+extern void switch_particles_buffer(int elapsedtime);
+
+extern void emit_particles(int elapsedtime);
+extern void modify_particles(int elapsedtime);
 extern void render_particles();
-extern void next_particles_iteration(int elapsedtime);
 extern particle_instance* emit_particle();
 
 extern int add_particle_type(const char *name, const char *renderer);
 extern void remove_particle_type(const char *name);
 extern int get_particle_type(const char *name);
 
-extern int add_particle_emitter_type(const char *name, const char *particle_type, int lifetime);
+extern int add_particle_emitter_type(const char *name, const char *particle_type, float mass, float density, int lifetime, int rate, const char *impl);
 extern void remove_particle_emitter_type(const char *name);
 extern int get_particle_emitter_type(const char *name);
 extern int get_particle_emitter_implementation(const char *name);
+extern int assign_modifier_to_emitter(const char *emitter_name, const char *modifier_name);
+extern int create_particle_emitter_instance(const char *name, const vec &o);
 
-extern int add_particle_renderer_type(const char *name, const char *shader);
+extern int add_particle_renderer_type(const char *name, const char *shader, const char *impl);
 extern void remove_particle_renderer_type(const char *name);
 extern int get_particle_renderer_type(const char *name);
 extern int get_particle_renderer_implementation(const char *name);
@@ -308,6 +333,7 @@ extern int add_particle_modifier_type(const char *name, const char *impl);
 extern void remove_particle_modifier_type(const char *name);
 extern int get_particle_modifier_type(const char *name);
 extern int get_particle_modifier_implementation(const char *name);
+extern int create_particle_modifier_instance(int type);
 
 // extern void set_particle_attribute(int particle_id, char * key, float value);
 

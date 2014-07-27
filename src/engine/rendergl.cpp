@@ -2347,6 +2347,7 @@ VARP(showfps, 0, 1, 1);
 VARP(showfpsrange, 0, 0, 1);
 VAR(showeditstats, 0, 0, 1);
 VAR(statrate, 1, 200, 1000);
+VARP(showpps, 0, 1, 1);
 
 FVARP(conscale, 1e-3f, 0.33f, 1e3f);
 
@@ -2432,6 +2433,13 @@ void gl_drawhud(int w, int h)
                 if(showfpsrange) draw_textf("fps %d+%d-%d", conw-7*FONTH, conh-FONTH*3/2, curfps[0], curfps[1], curfps[2]);
                 else draw_textf("fps %d", conw-5*FONTH, conh-FONTH*3/2, curfps[0]);
                 roffset += FONTH;
+            }
+            if(showpps)
+            {
+                draw_textf("particles %d:%d %d:%d", conw-15*FONTH, conh-FONTH*9/2, particle_instances.length(), particle_types.length(), alive_pool[current_alive_pool].length(), dead_pool[current_dead_pool].length());
+                draw_textf("emitters %d:%d:%d", conw-15*FONTH, conh-FONTH*7/2, particle_emitter_instances.length(), particle_emitter_types.length(), particle_emitter_implementations.length());
+                draw_textf("modifier %d:%d:%d", conw-15*FONTH, conh-FONTH*5/2, particle_modifier_instances.length(), particle_modifier_types.length(), particle_modifier_implementations.length());
+                draw_textf("renderer %d:%d:%d", conw-15*FONTH, conh-FONTH*3/2, particle_renderer_instances.length(), particle_renderer_types.length(), particle_renderer_implementations.length());
             }
 
             if(wallclock)

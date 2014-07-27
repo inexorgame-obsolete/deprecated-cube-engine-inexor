@@ -1258,7 +1258,7 @@ int main(int argc, char **argv)
         // miscellaneous general game effects
         recomputecamera();
         updateparticles();
-        apply_particles();
+        update_particle_system();
         updatesounds();
 
         if(minimized) continue;
