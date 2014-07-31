@@ -1423,6 +1423,7 @@ void drawglare()
     renderwater();
     rendermaterials();
     renderalphageom();
+//    render_particles();
     renderparticles();
 
     glFogf(GL_FOG_START, oldfogstart);
@@ -2097,6 +2098,7 @@ void gl_drawframe(int w, int h)
 
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+    render_particles();
     renderparticles(true);
 
     glDisable(GL_FOG);

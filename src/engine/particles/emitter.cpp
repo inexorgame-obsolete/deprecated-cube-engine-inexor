@@ -14,9 +14,10 @@ void emit_particles(int elapsedtime)
 {
 	loopv(particle_emitter_instances)
 	{
-		particle_emitter_instance pe_inst = particle_emitter_instances[i];
-		particle_emitter_type pe_type = particle_emitter_types[pe_inst.type];
-		pe_type.impl->emit(pe_inst, i, elapsedtime);
+		// particle_emitter_instance pe_inst = particle_emitter_instances[i];
+		// particle_emitter_type pe_type = particle_emitter_types[particle_emitter_instances[i].type];
+		// conoutf("pe_inst: %2d pe_type: %2d", i, particle_emitter_instances[i].type);
+		particle_emitter_types[particle_emitter_instances[i].type].impl->emit(&particle_emitter_instances[i], i, elapsedtime);
 	}
 }
 
@@ -74,7 +75,6 @@ int get_particle_emitter_type(const char *name)
 {
 	loopv(particle_emitter_types)
 	{
-		conoutf("gpet %s == %s", particle_emitter_types[i].name, name);
 		if (strcmp(particle_emitter_types[i].name, name) == 0) {
 			return i;
 		}
@@ -95,26 +95,29 @@ int assign_modifier_to_emitter(const char *pe_name, const char *pm_name)
 {
     int pe_type_id = get_particle_emitter_type(pe_name);
     int pm_type_id = get_particle_modifier_type(pm_name);
-    conoutf("add_modifier_type_to_emitter_type: %s(%d) %s(%d)", pe_name, pe_type_id, pm_name, pm_type_id);
+    conoutf("assign_modifier_to_emitter: %s(%d) %s(%d)", pe_name, pe_type_id, pm_name, pm_type_id);
     particle_emitter_types[pe_type_id].modifier_types.add(pm_type_id);
-	conoutf("Assigned modifier type \"%s\" (id: %d) to emitter type \"%s\" (id: %d)", pm_name, pm_type_id, pe_name, pe_type_id);
+	conoutf("Assigned modifier type \"%s\" (id: %d) to emitter type \"%s\" (id: %d, len: %d)", pm_name, pm_type_id, pe_name, pe_type_id, particle_emitter_types[pe_type_id].modifier_types.length());
 }
 
-int create_particle_emitter_instance(const char *name, const vec &o)
+int create_particle_emitter_instance(const char *name, const vec &o, const vec &vel)
 {
 	int pe_type_id = get_particle_emitter_type(name);
 	particle_emitter_instances.add();
 	int pe_inst_id = particle_emitter_instances.length() - 1;
-	particle_emitter_instance pe_inst = particle_emitter_instances[pe_inst_id];
-	pe_inst.type = pe_type_id;
-	pe_inst.o = o;
+	particle_emitter_instances[pe_inst_id].type = pe_type_id;
+	particle_emitter_instances[pe_inst_id].o = o;
+	particle_emitter_instances[pe_inst_id].vel = vel;
+	particle_emitter_instances[pe_inst_id].millistoprocess = 0;
 	particle_emitter_type pe_type = particle_emitter_types[pe_type_id];
+	conoutf("Created emitter instance (id: %d) of type \"%s\" (id: %d)", pe_inst_id, name, pe_type_id);
 	loopv(pe_type.modifier_types)
 	{
-		int modifier_inst_id = create_particle_modifier_instance(pe_type.modifier_types[i]);
-		pe_inst.modifier_instances.add(modifier_inst_id);
+		int pm_inst_id = create_particle_modifier_instance(pe_type.modifier_types[i]);
+		particle_emitter_instances[pe_inst_id].modifier_instances.add(pm_inst_id);
+		conoutf("Added modifier instance (id: %d) to emitter instance (id: %d, len: %d)", pm_inst_id, pe_inst_id, particle_emitter_instances[pe_inst_id].modifier_instances.length());
 	}
-	conoutf("Created emitter instance (id: %d) of type \"%s\" (id: %d)", pe_inst_id, name, pe_type_id);
+	return pe_inst_id;
 }
 
 ICOMMAND(add_particle_emitter_type, "ssi", (char *name, char *particle_type, int *mass, int *density, int *lifetime, int *rate, char *impl), intret(add_particle_emitter_type(name, particle_type, *mass, *density, *lifetime, *rate, impl)));

@@ -62,7 +62,11 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/particletype
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/massspring
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/velocity
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/randomv
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/randomw
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/gravitypoint
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/point
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/field
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/renderers/billboard
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/ptest
 

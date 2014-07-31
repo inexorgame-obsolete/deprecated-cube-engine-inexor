@@ -13,11 +13,12 @@ int current_dead_pool = 0;
 void init_particles()
 {
 	reset_particle_system();
-	clear_particle_pools();
+//	clear_particle_pools();
 }
 
 void clear_particle_pools()
 {
+	alive_pool[current_alive_pool].shrink(0);
 /*
 	alive_pool[0].shrink(0);
 	alive_pool[1].shrink(0);
@@ -51,8 +52,8 @@ void update_particle_system() {
 
     switch_particles_buffer(elapsedtime);
     emit_particles(elapsedtime);
-//    modify_particles(elapsedtime);
-//    render_particles();
+    modify_particles(elapsedtime);
+    // render_particles();
 
     particlemillis = millis;
 }
@@ -70,9 +71,9 @@ void switch_particles_buffer(int elapsedtime)
 			alive_pool[current_alive_pool][i].elapsed += elapsedtime;
 			alive_pool[current_alive_pool][i].remaining -= elapsedtime;
 		} else {
-			conoutf("kill particle id: %d", i);
-			conoutf("spb alive.ulen: %d alive.alen: %d", alive_pool[current_alive_pool].ulen, alive_pool[current_alive_pool].alen);
-			conoutf("spb dead.ulen: %d dead.alen: %d", dead_pool[current_dead_pool].ulen, dead_pool[current_dead_pool].alen);
+//			conoutf("kill particle id: %d", i);
+//			conoutf("spb alive.ulen: %d alive.alen: %d", alive_pool[current_alive_pool].ulen, alive_pool[current_alive_pool].alen);
+//			conoutf("spb dead.ulen: %d dead.alen: %d", dead_pool[current_dead_pool].ulen, dead_pool[current_dead_pool].alen);
 			particle_instance pi = alive_pool[current_alive_pool].removeunordered(i);
 /*
 			int ulen = dead_pool[current_dead_pool].ulen;

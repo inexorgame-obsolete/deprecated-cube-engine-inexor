@@ -12,14 +12,22 @@ vector<particle_renderer_instance> particle_renderer_instances;
 
 void render_particles()
 {
-    loopv(alive_pool[current_alive_pool])
+	glPushMatrix();
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	glPointSize(5.0f);
+	glDepthMask(false);
+	glColor4f(0.8f, 0.5f, 0.0f, 0.3f);
+	glBegin(GL_POINTS);
+	loopv(alive_pool[current_alive_pool])
     {
-        particle_instance p_inst = alive_pool[current_alive_pool][i];
-        particle_type p_type = particle_types[p_inst.type];
-        particle_renderer_type pr_type = particle_renderer_types[p_type.renderer_type];
-        pr_type.impl->render(p_inst);
-        // conoutf("rendered");
+        particle_renderer_types[particle_types[alive_pool[current_alive_pool][i].type].renderer_type].impl->render(&alive_pool[current_alive_pool][i]);
     }
+	glEnd();
+	glDepthMask(true);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_BLEND);
+	glPopMatrix();
 }
 
 int add_particle_renderer_type(const char *name, const char *shader, const char *impl)

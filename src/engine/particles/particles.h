@@ -70,7 +70,7 @@ struct particle_instance
      * hashtable lookup. But it allows maximum flexibility for emitters,
      * modifiers and renderers.
      */
-    hashtable<const char *, float> attributes;
+    // hashtable<const char *, float> attributes;
 
 };
 
@@ -89,6 +89,16 @@ struct particle_emitter_instance
 	 * The current position of the particle emitter instance.
 	 */
 	vec o;
+
+	/**
+	 * The velocity.
+	 */
+	vec vel;
+
+	/**
+	 * Remaining millis to process.
+	 */
+	int millistoprocess;
 
 	/**
 	 * The modifier instances.
@@ -110,7 +120,20 @@ struct particle_renderer_instance
  */
 struct particle_modifier_instance
 {
+	/**
+	 * The modifier type id.
+	 */
 	int type;
+
+	/**
+	 * The current position of the particle modifier instance.
+	 */
+	vec o;
+
+	/**
+	 * The velocity.
+	 */
+	vec vel;
 };
 
 /**
@@ -130,7 +153,7 @@ struct particle_emitter_implementation
 	/**
 	 * Emits new particle(s).
 	 */
-	virtual void emit(particle_emitter_instance pe_inst, int pe_inst_id, int elapsedtime) = 0;
+	virtual void emit(particle_emitter_instance *pe_inst, int pe_inst_id, int elapsedtime) = 0;
 
 };
 
@@ -151,7 +174,7 @@ struct particle_renderer_implementation
 	/**
 	 * Renders particles.
 	 */
-	virtual void render(particle_instance p_inst) = 0;
+	virtual void render(particle_instance *p_inst) = 0;
 
 };
 
@@ -172,7 +195,7 @@ struct particle_modifier_implementation
 	/**
 	 * Modifies particle(s).
 	 */
-	virtual void modify(particle_modifier_instance pmi, particle_instance pi, int elapsedtime) = 0;
+	virtual void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime) = 0;
 
 };
 
@@ -273,6 +296,16 @@ struct particle_modifier_type
 	string name;
 
 	/**
+	 * The current position of the particle modifier instance.
+	 */
+	vec o;
+
+	/**
+	 * The velocity.
+	 */
+	vec vel;
+
+	/**
 	 * The implementation.
 	 */
 	particle_modifier_implementation *impl;
@@ -322,14 +355,14 @@ extern void remove_particle_emitter_type(const char *name);
 extern int get_particle_emitter_type(const char *name);
 extern int get_particle_emitter_implementation(const char *name);
 extern int assign_modifier_to_emitter(const char *emitter_name, const char *modifier_name);
-extern int create_particle_emitter_instance(const char *name, const vec &o);
+extern int create_particle_emitter_instance(const char *name, const vec &o, const vec &vel);
 
 extern int add_particle_renderer_type(const char *name, const char *shader, const char *impl);
 extern void remove_particle_renderer_type(const char *name);
 extern int get_particle_renderer_type(const char *name);
 extern int get_particle_renderer_implementation(const char *name);
 
-extern int add_particle_modifier_type(const char *name, const char *impl);
+extern int add_particle_modifier_type(const char *name, const vec &o, const vec &vel, const char *impl);
 extern void remove_particle_modifier_type(const char *name);
 extern int get_particle_modifier_type(const char *name);
 extern int get_particle_modifier_implementation(const char *name);
