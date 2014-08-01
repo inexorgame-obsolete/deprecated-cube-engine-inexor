@@ -1,20 +1,16 @@
 #include "cube.h"
 #include "engine/particles/particles.h"
 
-struct field_emitter : particle_emitter_implementation
+struct field_emitter : public particle_emitter_implementation
 {
 
 	int grid_num = 5;
 	float grid_dist = 20.0f;
 
-	// int millistoprocess;
-
-	field_emitter()
-    {
-		// millistoprocess = 0;
-		strcpy(name, newstring("field_emitter"));
+	field_emitter() : particle_emitter_implementation("field_emitter") {
 		particle_emitter_implementations.add(this);
-    }
+	}
+	virtual ~field_emitter() { }
 
 	void emit(particle_emitter_instance *pe_inst, int pe_inst_id, int elapsedtime) {
 		particle_emitter_type pe_type = particle_emitter_types[pe_inst->type];

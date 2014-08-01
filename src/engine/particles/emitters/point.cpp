@@ -1,17 +1,13 @@
 #include "cube.h"
 #include "engine/particles/particles.h"
 
-struct point_emitter : particle_emitter_implementation
+struct point_emitter : public particle_emitter_implementation
 {
 
-	// int millistoprocess;
-
-	point_emitter()
-    {
-		// millistoprocess = 0;
-		strcpy(name, newstring("point_emitter"));
+	point_emitter() : particle_emitter_implementation("point_emitter") {
 		particle_emitter_implementations.add(this);
-    }
+	}
+	~point_emitter() { }
 
 	void emit(particle_emitter_instance *pe_inst, int pe_inst_id, int elapsedtime) {
 		particle_emitter_type pe_type = particle_emitter_types[pe_inst->type];

@@ -1,27 +1,30 @@
 #include "cube.h"
 #include "engine/particles/particles.h"
 
-struct velocity_damper : particle_modifier_implementation
+struct velocity_damper : public particle_modifier_implementation
 {
 	/**
 	 * The damper.
 	 */
-	float damper = 0.99f;
+	static const float damper = 0.99f;
 
-	/**
-	 * The time unit (1 second).
-	 */
-	float unit = 1000.0f;
-
-	velocity_damper()
-    {
-		strcpy(name, newstring("velocity_damper"));
+	velocity_damper() : particle_modifier_implementation("velocity_damper") {
 		particle_modifier_implementations.add(this);
-    }
+	}
+	virtual ~velocity_damper() { }
 
 	void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime) {
-		p_inst->vel.mul(damper * (elapsedtime / unit));
+		// pm_inst->attributes["damper"]
+		p_inst->vel.mul(damper * (elapsedtime / particle_frame));
 	}
+
+	/*
+	std::map<std::string, float> get_default_attributes() {
+		std::map<std::string, float> default_attributes;
+		default_attributes["damper"] = 0.99f;
+		return default_attributes;
+	}
+	*/
 
 };
 

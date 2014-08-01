@@ -2,6 +2,14 @@
 
 #define ENGINE_PARTICLES_H
 
+#include <string>
+#include <map>
+
+/**
+ * Particle frame in milliseconds.
+ */
+static float particle_frame = 1000.0f;
+
 /**
  * A particle instance.
  */
@@ -70,7 +78,7 @@ struct particle_instance
      * hashtable lookup. But it allows maximum flexibility for emitters,
      * modifiers and renderers.
      */
-    // hashtable<const char *, float> attributes;
+	// std::map<std::string, float> attributes;
 
 };
 
@@ -104,6 +112,12 @@ struct particle_emitter_instance
 	 * The modifier instances.
 	 */
 	vector<int> modifier_instances;
+
+	/**
+	 * Extra attributes per emitter instance.
+	 */
+	std::map<std::string, float> attributes;
+
 };
 
 /**
@@ -112,7 +126,17 @@ struct particle_emitter_instance
  */
 struct particle_renderer_instance
 {
+
+	/**
+	 * The particle renderer type id.
+	 */
 	int type;
+
+	/**
+	 * Extra attributes per renderer instance.
+	 */
+	std::map<std::string, float> attributes;
+
 };
 
 /**
@@ -120,6 +144,7 @@ struct particle_renderer_instance
  */
 struct particle_modifier_instance
 {
+
 	/**
 	 * The modifier type id.
 	 */
@@ -134,6 +159,24 @@ struct particle_modifier_instance
 	 * The velocity.
 	 */
 	vec vel;
+
+	/**
+	 * Extra attributes per modifier instance.
+	 */
+	std::map<std::string, float> attributes;
+
+};
+
+struct particle_implementation_base {
+
+	/**
+	 * The name of the implementation.
+	 */
+	const std::string name;
+
+	particle_implementation_base(const std::string& name) : name(name) { }
+	~particle_implementation_base() {}
+
 };
 
 /**
@@ -142,13 +185,11 @@ struct particle_modifier_instance
  * Particle emitters should register themselves in their constructor
  * using add_particle_emitter_type()
  */
-struct particle_emitter_implementation
+struct particle_emitter_implementation : public particle_implementation_base
 {
 
-	/**
-	 * The name of the particle emitter implementation.
-	 */
-	string name;
+	particle_emitter_implementation(const std::string& name) : particle_implementation_base(name) { }
+	~particle_emitter_implementation() { }
 
 	/**
 	 * Emits new particle(s).
@@ -163,13 +204,11 @@ struct particle_emitter_implementation
  * Particle renderers should register themselves in their constructor
  * using add_particle_renderer_type()
  */
-struct particle_renderer_implementation
+struct particle_renderer_implementation : public particle_implementation_base
 {
 
-	/**
-	 * The name of the particle renderer implementation.
-	 */
-	string name;
+	particle_renderer_implementation(const std::string& name) : particle_implementation_base(name) { }
+	~particle_renderer_implementation() { };
 
 	/**
 	 * Renders particles.
@@ -184,18 +223,21 @@ struct particle_renderer_implementation
  * Particle modifiers should register themselves in their constructor
  * using add_particle_modifier_type()
  */
-struct particle_modifier_implementation
+struct particle_modifier_implementation : public particle_implementation_base
 {
 
-	/**
-	 * The name of the particle modifier implementation.
-	 */
-	string name;
+	particle_modifier_implementation(const std::string& name) : particle_implementation_base(name) { }
+	~particle_modifier_implementation() { };
 
 	/**
 	 * Modifies particle(s).
 	 */
 	virtual void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime) = 0;
+
+	/**
+	 * The
+	 */
+	// virtual std::map<std::string, float> get_default_attributes() = 0;
 
 };
 
@@ -207,12 +249,17 @@ struct particle_type
 	/**
 	 * The name of the particle type.
 	 */
-	string name;
+	std::string name;
 
 	/**
 	 * The id reference to the particle renderer type.
 	 */
 	int renderer_type;
+
+	/**
+	 * Extra particle attributes.
+	 */
+	std::map<std::string, float> attributes;
 };
 
 /**
@@ -225,7 +272,7 @@ struct particle_emitter_type
 	/**
 	 * The name of the particle emitter type.
 	 */
-	string name;
+	std::string name;
 
 	/**
 	 * The particle type of an emitted particle instance.
@@ -262,6 +309,11 @@ struct particle_emitter_type
 	 */
 	vector<int> modifier_types;
 
+	/**
+	 * Extra particle emitter attributes.
+	 */
+	std::map<std::string, float> attributes;
+
 };
 
 /**
@@ -272,17 +324,22 @@ struct particle_renderer_type
 	/**
 	 * The name of the particle renderer type.
 	 */
-	string name;
+	std::string name;
 
 	/**
 	 * The shader to use.
 	 */
-	string shader;
+	std::string shader;
 
 	/**
 	 * The implementation.
 	 */
 	particle_renderer_implementation *impl;
+
+	/**
+	 * Extra particle renderer attributes.
+	 */
+	std::map<std::string, float> attributes;
 };
 
 /**
@@ -293,7 +350,7 @@ struct particle_modifier_type
 	/**
 	 * The name of the particle modifier type.
 	 */
-	string name;
+	std::string name;
 
 	/**
 	 * The current position of the particle modifier instance.
@@ -309,6 +366,11 @@ struct particle_modifier_type
 	 * The implementation.
 	 */
 	particle_modifier_implementation *impl;
+
+	/**
+	 * Extra particle modifier attributes.
+	 */
+	std::map<std::string, float> attributes;
 };
 
 // abstract definitions - makes everything dynamic
@@ -346,26 +408,26 @@ extern void modify_particles(int elapsedtime);
 extern void render_particles();
 extern particle_instance* emit_particle();
 
-extern int add_particle_type(const char *name, const char *renderer);
-extern void remove_particle_type(const char *name);
-extern int get_particle_type(const char *name);
+extern int add_particle_type(std::string name, std::string renderer);
+extern void remove_particle_type(std::string name);
+extern int get_particle_type(std::string name);
 
-extern int add_particle_emitter_type(const char *name, const char *particle_type, float mass, float density, int lifetime, int rate, const char *impl);
-extern void remove_particle_emitter_type(const char *name);
-extern int get_particle_emitter_type(const char *name);
-extern int get_particle_emitter_implementation(const char *name);
-extern int assign_modifier_to_emitter(const char *emitter_name, const char *modifier_name);
-extern int create_particle_emitter_instance(const char *name, const vec &o, const vec &vel);
+extern int add_particle_emitter_type(std::string name, std::string particle_type, float mass, float density, int lifetime, int rate, std::string impl);
+extern void remove_particle_emitter_type(std::string name);
+extern int get_particle_emitter_type(std::string name);
+extern int get_particle_emitter_implementation(std::string name);
+extern int assign_modifier_to_emitter(std::string emitter_name, std::string modifier_name);
+extern int create_particle_emitter_instance(std::string name, const vec &o, const vec &vel);
 
-extern int add_particle_renderer_type(const char *name, const char *shader, const char *impl);
-extern void remove_particle_renderer_type(const char *name);
-extern int get_particle_renderer_type(const char *name);
-extern int get_particle_renderer_implementation(const char *name);
+extern int add_particle_renderer_type(std::string name, std::string shader, std::string impl);
+extern void remove_particle_renderer_type(std::string name);
+extern int get_particle_renderer_type(std::string name);
+extern int get_particle_renderer_implementation(std::string name);
 
-extern int add_particle_modifier_type(const char *name, const vec &o, const vec &vel, const char *impl);
-extern void remove_particle_modifier_type(const char *name);
-extern int get_particle_modifier_type(const char *name);
-extern int get_particle_modifier_implementation(const char *name);
+extern int add_particle_modifier_type(std::string name, const vec &o, const vec &vel, std::string impl);
+extern void remove_particle_modifier_type(std::string name);
+extern int get_particle_modifier_type(std::string name);
+extern int get_particle_modifier_implementation(std::string name);
 extern int create_particle_modifier_instance(int type);
 
 // extern void set_particle_attribute(int particle_id, char * key, float value);

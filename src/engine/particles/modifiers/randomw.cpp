@@ -1,21 +1,16 @@
 #include "cube.h"
 #include "engine/particles/particles.h"
 
-struct randomw : particle_modifier_implementation
+struct randomw : public particle_modifier_implementation
 {
-	/**
-	 * The time unit (1 second).
-	 */
-	float unit = 1000.0f;
 
-	randomw()
-    {
-		strcpy(name, newstring("randomw"));
+	randomw() : particle_modifier_implementation("randomw") {
 		particle_modifier_implementations.add(this);
-    }
+	}
+	virtual ~randomw() { }
 
 	void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime) {
-		float f = elapsedtime / unit;
+		float f = elapsedtime / particle_frame;
 		float rx = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 		float ry = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 		float rz = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
