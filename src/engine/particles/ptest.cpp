@@ -17,22 +17,22 @@ struct ptest
 
 		/** Renderer types and instances **/
 
-		particle_renderer_type* pr_type_billboard = add_particle_renderer_type("default_billboard_renderer", "shader", "billboard_renderer");
-		pr_type_billboard->attributes["r"] = 255.0f;
-		pr_type_billboard->attributes["g"] = 255.0f;
-		pr_type_billboard->attributes["b"] = 255.0f;
-		pr_type_billboard->attributes["a"] = 0.3f;
-		pr_type_billboard->attributes["size"] = 5.0f;
+		particle_renderer_type* pr_type_ball = add_particle_renderer_type("ball_renderer", "packages/particles/ball1.png", "shader", "billboard_renderer");
+		pr_type_ball->attributes["r"] = 255.0f;
+		pr_type_ball->attributes["g"] = 255.0f;
+		pr_type_ball->attributes["b"] = 255.0f;
+		pr_type_ball->attributes["a"] = 0.3f;
+		pr_type_ball->attributes["size"] = 5.0f;
 
-		particle_renderer_instance* pr_inst_fire = pr_type_billboard->create_instance("fire");
+		particle_renderer_instance* pr_inst_fire = pr_type_ball->create_instance("fire");
 		pr_inst_fire->attributes["r"] = 200.0f;
 		pr_inst_fire->attributes["b"] = 0.0f;
 
-		particle_renderer_instance* pr_inst_poison = pr_type_billboard->create_instance("poison");
+		particle_renderer_instance* pr_inst_poison = pr_type_ball->create_instance("poison");
 		pr_inst_fire->attributes["r"] = 200.0f;
 		pr_inst_fire->attributes["b"] = 0.0f;
 
-		particle_renderer_instance* pr_inst_smoke = pr_type_billboard->create_instance("smoke");
+		particle_renderer_instance* pr_inst_smoke = pr_type_ball->create_instance("smoke");
 		pr_inst_smoke->attributes["size"] = 20.0f;
 
 		/** Particle types **/

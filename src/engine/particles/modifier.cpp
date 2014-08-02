@@ -20,7 +20,6 @@ void modify_particles(int elapsedtime)
 	int started = SDL_GetTicks();
 	for(std::list<particle_instance*>::iterator p_it = alive_pool.begin(); p_it != alive_pool.end(); ++p_it)
 	{
-		int started2 = SDL_GetTicks();
 		for(std::vector<particle_modifier_instance*>::iterator pm_it = (*p_it)->pe_inst->modifiers.begin(); pm_it != (*p_it)->pe_inst->modifiers.end(); ++pm_it)
 		{
 			(*pm_it)->pm_type->pm_impl->modify(*pm_it, *p_it, elapsedtime);

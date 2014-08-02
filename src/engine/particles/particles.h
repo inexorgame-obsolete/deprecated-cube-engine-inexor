@@ -188,6 +188,11 @@ struct particle_renderer_instance
 	std::string name;
 
 	/**
+	 * The name of the texture.
+	 */
+	std::string texture;
+
+	/**
 	 * The particle renderer type.
 	 */
 	particle_renderer_type *pr_type;
@@ -403,6 +408,11 @@ struct particle_renderer_type
 	std::string name;
 
 	/**
+	 * The name of the texture.
+	 */
+	std::string texture;
+
+	/**
 	 * The shader to use.
 	 */
 	std::string shader;
@@ -505,7 +515,7 @@ extern particle_emitter_type* add_particle_emitter_type(std::string name, std::s
 // extern int assign_modifier_to_emitter(std::string emitter_name, std::string modifier_name);
 extern particle_emitter_instance* create_particle_emitter_instance(std::string pe_type, const vec &o, const vec &vel);
 
-extern particle_renderer_type* add_particle_renderer_type(std::string name, std::string shader, std::string impl);
+extern particle_renderer_type* add_particle_renderer_type(std::string name, std::string texture, std::string shader, std::string impl);
 extern particle_renderer_instance* create_particle_renderer_instance(std::string name, std::string pr_type);
 // extern void remove_particle_renderer_type(std::string name);
 

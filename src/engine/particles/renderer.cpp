@@ -38,10 +38,11 @@ void render_particles()
 	timer_renderer = SDL_GetTicks() - started;
 }
 
-particle_renderer_type* add_particle_renderer_type(std::string name, std::string shader, std::string impl)
+particle_renderer_type* add_particle_renderer_type(std::string name, std::string texture, std::string shader, std::string impl)
 {
 	particle_renderer_type* pr_type = new particle_renderer_type;
 	pr_type->name = name;
+	pr_type->texture = texture;
 	pr_type->shader = shader;
 	pr_type->pr_impl = particle_renderer_implementations_map[impl];
 	particle_renderer_types.push_back(pr_type);
@@ -54,6 +55,8 @@ particle_renderer_instance* particle_renderer_type::create_instance(std::string 
 {
 	particle_renderer_instance* pr_inst = new particle_renderer_instance;
 	pr_inst->name = name;
+	pr_inst->texture = texture;
+	// TODO: pr_inst->shader = shader;
 	pr_inst->pr_type = this;
 	pr_inst->attributes.insert(attributes.begin(), attributes.end());
 	particle_renderer_instances.push_back(pr_inst);
@@ -66,7 +69,7 @@ particle_renderer_instance* create_particle_renderer_instance(std::string name, 
 	return particle_renderer_types_map[type]->create_instance(name);
 }
 
-ICOMMAND(add_particle_renderer_type, "ss", (char *name, char *shader, char *impl), add_particle_renderer_type(name, shader, impl));
+ICOMMAND(add_particle_renderer_type, "ss", (char *name, char *texture, char *shader, char *impl), add_particle_renderer_type(name, texture, shader, impl));
 ICOMMAND(create_particle_renderer_instance, "ss", (char *name, char *type), create_particle_renderer_instance(name, type));
 
 /*
