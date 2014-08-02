@@ -64,6 +64,10 @@ PFNGLGENERATEMIPMAPEXTPROC          glGenerateMipmap_          = NULL;
 // GL_EXT_framebuffer_blit
 PFNGLBLITFRAMEBUFFEREXTPROC         glBlitFramebuffer_         = NULL;
 
+// GL_ARB_point_parameters
+PFNGLPOINTPARAMETERFARBPROC         glPointParameterfARB_      = NULL;
+PFNGLPOINTPARAMETERFVARBPROC        glPointParameterfvARB_     = NULL;
+
 // OpenGL 2.0: GL_ARB_shading_language_100, GL_ARB_shader_objects, GL_ARB_fragment_shader, GL_ARB_vertex_shader
 #ifndef __APPLE__
 PFNGLCREATEPROGRAMPROC            glCreateProgram_            = NULL;
@@ -354,6 +358,13 @@ void gl_checkextensions()
         }
     }
     else conoutf(CON_WARN, "WARNING: No framebuffer object support. (reflective water may be slow)");
+
+    if(hasext(exts, "GL_ARB_point_parameters"))
+    {
+    	glPointParameterfARB_  = (PFNGLPOINTPARAMETERFARBPROC)            getprocaddress("glPointParameterfARB");
+    	glPointParameterfvARB_ = (PFNGLPOINTPARAMETERFVARBPROC)           getprocaddress("glPointParameterfvARB");
+    }
+    else conoutf(CON_WARN, "WARNING: No point sprite support.");
 
     if(hasext(exts, "GL_ARB_occlusion_query"))
     {

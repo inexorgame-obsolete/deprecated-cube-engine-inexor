@@ -1,7 +1,5 @@
-#define GL_GLEXT_PROTOTYPES
 #include "engine.h"
 #include "engine/particles/particles.h"
-#include <GL/glext.h>
 
 struct billboard_renderer : public particle_renderer_implementation
 {
@@ -32,11 +30,11 @@ struct billboard_renderer : public particle_renderer_implementation
         glBindTexture(GL_TEXTURE_2D, tex->id);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-		glEnable(GL_POINT_SPRITE);
-		glPointParameterfv(GL_POINT_DISTANCE_ATTENUATION, quadratic);
-		glPointParameterf(GL_POINT_FADE_THRESHOLD_SIZE, fade_threshold_size);
-		glPointParameterf(GL_POINT_SIZE_MIN_ARB, min_size);
-		glPointParameterf(GL_POINT_SIZE_MAX_ARB, max_size);
+		glEnable(GL_POINT_SPRITE_ARB);
+		glPointParameterfvARB_(GL_POINT_DISTANCE_ATTENUATION_ARB, quadratic);
+		glPointParameterfARB_(GL_POINT_FADE_THRESHOLD_SIZE_ARB, fade_threshold_size);
+		glPointParameterfARB_(GL_POINT_SIZE_MIN_ARB, min_size);
+		glPointParameterfARB_(GL_POINT_SIZE_MAX_ARB, max_size);
 		glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
 		glPointSize(pr_inst->attributes["size"]);
 		glDepthMask(false);
