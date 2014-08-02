@@ -63,14 +63,14 @@ typedef void (APIENTRYP PFNGLBLITFRAMEBUFFEREXTPROC) (GLint srcX0, GLint srcY0, 
 extern PFNGLBLITFRAMEBUFFEREXTPROC         glBlitFramebuffer_;
 
 // GL_ARB_point_sprite
-//#ifndef GL_ARB_point_parameters
+#ifndef GL_ARB_point_parameters
 #define GL_POINT_SIZE_MIN_ARB             0x8126
 #define GL_POINT_SIZE_MAX_ARB             0x8127
 #define GL_POINT_FADE_THRESHOLD_SIZE_ARB  0x8128
 #define GL_POINT_DISTANCE_ATTENUATION_ARB 0x8129
 typedef void (APIENTRYP PFNGLPOINTPARAMETERFARBPROC) (GLenum pname, GLfloat param);
 typedef void (APIENTRYP PFNGLPOINTPARAMETERFVARBPROC) (GLenum pname, const GLfloat *params);
-// #endif
+#endif
 extern PFNGLPOINTPARAMETERFARBPROC         glPointParameterfARB_;
 extern PFNGLPOINTPARAMETERFVARBPROC        glPointParameterfvARB_;
 

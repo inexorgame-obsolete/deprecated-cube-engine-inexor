@@ -35,7 +35,7 @@ struct billboard_renderer : public particle_renderer_implementation
 		glPointParameterfARB_(GL_POINT_FADE_THRESHOLD_SIZE_ARB, fade_threshold_size);
 		glPointParameterfARB_(GL_POINT_SIZE_MIN_ARB, min_size);
 		glPointParameterfARB_(GL_POINT_SIZE_MAX_ARB, max_size);
-		glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
+		glTexEnvi(GL_POINT_SPRITE_ARB, GL_COORD_REPLACE, GL_TRUE);
 		glPointSize(pr_inst->attributes["size"]);
 		glDepthMask(false);
 		glColor4f(pr_inst->attributes["r"], pr_inst->attributes["g"], pr_inst->attributes["b"], pr_inst->attributes["a"]);
