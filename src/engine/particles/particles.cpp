@@ -2,23 +2,25 @@
 #include "particles.h"
 
 // concrete instances refers to the abstract definitions
-vector<particle_instance> particle_instances;
+std::vector<particle_instance*> particle_instances;
 
 // particle pools for performance reasons
-vector<particle_instance> alive_pool[2];
-vector<particle_instance> dead_pool[2];
-int current_alive_pool = 0;
-int current_dead_pool = 0;
+std::list<particle_instance*> alive_pool;
+std::list<particle_instance*> dead_pool;
 
 void init_particles()
 {
 	reset_particle_system();
-//	clear_particle_pools();
 }
 
 void clear_particle_pools()
 {
-	alive_pool[current_alive_pool].shrink(0);
+	alive_pool.clear();
+	dead_pool.clear();
+	for(std::vector<particle_renderer_instance*>::iterator pr_it = particle_renderer_instances.begin(); pr_it != particle_renderer_instances.end(); ++pr_it)
+	{
+		(*pr_it)->particles.clear();
+	}
 }
 
 void reset_particle_system()
@@ -34,7 +36,7 @@ void update_particle_system() {
 	int millis = SDL_GetTicks();
     int elapsedtime = millis - particlemillis;
 
-    switch_particles_buffer(elapsedtime);
+    update_particle_pools(elapsedtime);
     emit_particles(elapsedtime);
     modify_particles(elapsedtime);
     render_particles();
@@ -43,22 +45,25 @@ void update_particle_system() {
 }
 
 /**
- * Use a doubled buffered pool for alive and dead particle instances.
- * Avoid sorting, because sorting is a performance killer.
+ * Use pools for alive and dead particle instances. Avoid sorting,
+ * because sorting is a performance killer. Instead we pick dead
+ * particles from the list (efficiently remove elements in the
+ * middle) and push it at the end of the dead pool (a vector).
  */
-void switch_particles_buffer(int elapsedtime)
+void update_particle_pools(int elapsedtime)
 {
-	int i = 0;
-	while(i < alive_pool[current_alive_pool].length()) {
-		if (alive_pool[current_alive_pool][i].remaining > 0)
+	std::list<particle_instance*>::iterator i = alive_pool.begin();
+	while (i != alive_pool.end())
+	{
+		if ((*i)->remaining > 0)
 		{
-			alive_pool[current_alive_pool][i].elapsed += elapsedtime;
-			alive_pool[current_alive_pool][i].remaining -= elapsedtime;
+			(*i)->elapsed += elapsedtime;
+			(*i)->remaining -= elapsedtime;
+			++i;
 		} else {
-			particle_instance pi = alive_pool[current_alive_pool].removeunordered(i);
-			i--;
+			dead_pool.push_back(*i);
+			i = alive_pool.erase(i);
 		}
-		i++;
 	}
 }
 

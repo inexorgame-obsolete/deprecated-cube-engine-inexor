@@ -5,7 +5,7 @@ struct mass_spring_transformation : public particle_modifier_implementation
 {
 
 	mass_spring_transformation() : particle_modifier_implementation("mass_spring_transformation") {
-		particle_modifier_implementations.add(this);
+		particle_modifier_implementations.push_back(this);
 	}
 	virtual ~mass_spring_transformation() { }
 

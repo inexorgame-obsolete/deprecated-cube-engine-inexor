@@ -2438,10 +2438,10 @@ void gl_drawhud(int w, int h)
             }
             if(showpps)
             {
-                draw_textf("particles %d:%d %d:%d", conw-15*FONTH, conh-FONTH*9/2, particle_instances.length(), particle_types.length(), alive_pool[current_alive_pool].length(), dead_pool[current_dead_pool].length());
-                draw_textf("emitters %d:%d:%d", conw-15*FONTH, conh-FONTH*7/2, particle_emitter_instances.length(), particle_emitter_types.length(), particle_emitter_implementations.length());
-                draw_textf("modifier %d:%d:%d", conw-15*FONTH, conh-FONTH*5/2, particle_modifier_instances.length(), particle_modifier_types.length(), particle_modifier_implementations.length());
-                draw_textf("renderer %d:%d:%d", conw-15*FONTH, conh-FONTH*3/2, particle_renderer_instances.length(), particle_renderer_types.length(), particle_renderer_implementations.length());
+                draw_textf("particles %d:%d %d:%d", conw-15*FONTH, conh-FONTH*9/2, (int) particle_instances.size(), (int) particle_types.size(), (int) alive_pool.size(), (int) dead_pool.size());
+                draw_textf("emitters %d:%d:%d", conw-15*FONTH, conh-FONTH*7/2, (int) particle_emitter_instances.size(), (int) particle_emitter_types.size(), (int) particle_emitter_implementations.size());
+                draw_textf("modifier %d:%d:%d", conw-15*FONTH, conh-FONTH*5/2, (int) particle_modifier_instances.size(), (int) particle_modifier_types.size(), (int) particle_modifier_implementations.size());
+                draw_textf("renderer %d:%d:%d", conw-15*FONTH, conh-FONTH*3/2, (int) particle_renderer_instances.size(), (int) particle_renderer_types.size(), (int) particle_renderer_implementations.size());
             }
 
             if(wallclock)

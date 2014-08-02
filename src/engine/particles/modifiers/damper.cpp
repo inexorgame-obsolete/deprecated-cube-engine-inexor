@@ -9,7 +9,7 @@ struct velocity_damper : public particle_modifier_implementation
 	static const float damper = 0.99f;
 
 	velocity_damper() : particle_modifier_implementation("velocity_damper") {
-		particle_modifier_implementations.add(this);
+		particle_modifier_implementations.push_back(this);
 	}
 	virtual ~velocity_damper() { }
 

@@ -5,7 +5,7 @@ struct velocity_transformation : public particle_modifier_implementation
 {
 
 	velocity_transformation() : particle_modifier_implementation("velocity_transformation") {
-		particle_modifier_implementations.add(this);
+		particle_modifier_implementations.push_back(this);
 	}
 	virtual ~velocity_transformation() { }
 

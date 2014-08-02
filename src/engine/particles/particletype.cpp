@@ -2,32 +2,32 @@
 #include "particles.h"
 
 // abstract definitions - makes everything dynamic
-vector<particle_type> particle_types;
+std::vector<particle_type*> particle_types;
+std::map<std::string, particle_type*> particle_types_map;
 
-int add_particle_type(std::string name, std::string renderer)
+particle_type* add_particle_type(std::string name, std::string renderer)
 {
-	particle_types.add();
-	int id = particle_types.length() - 1;
-	particle_types[id].name = name;
-	particle_types[id].renderer_type = get_particle_renderer_type(renderer);
-	return id;
+	return add_particle_type(name, particle_renderer_instances_map[renderer]);
 }
 
-int get_particle_type(std::string name)
+particle_type* add_particle_type(std::string name, particle_renderer_instance* renderer)
 {
-	loopv(particle_types)
-	{
-		if (particle_types[i].name.compare(name) == 0) return i;
-	}
-	return -1;
+	particle_type *pt = new particle_type;
+	pt->name = name;
+	pt->pr_inst = renderer;
+	particle_types.push_back(pt);
+	particle_types_map[name] = pt;
+	return pt;
 }
 
-ICOMMAND(add_particle_type, "ss", (char *name, char *renderer_type), intret(add_particle_type(name, renderer_type)));
-ICOMMAND(get_particle_type, "s", (char *name), intret(get_particle_type(name)));
-ICOMMAND(particle_types_num, "", (), intret(particle_types.length()));
+ICOMMAND(add_particle_type, "ss", (char *name, char *renderer), add_particle_type(name, renderer));
+
+/*
+ICOMMAND(particle_types_num, "", (), intret(particle_types.size()));
 ICOMMAND(ls_particle_types, "", (),
 {
-	loopv(particle_types) {
-		conoutf("%i | %s | %i", i, particle_types[i].name.c_str(), particle_types[i].renderer_type);
+	for(std::vector<particle_type>::iterator it = particle_types.begin(); it != particle_emitter_instances.end(); ++it) {
+		conoutf("%s | %i", it->name.c_str(), it->renderer_type);
 	}
 });
+*/

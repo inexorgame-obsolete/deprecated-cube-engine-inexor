@@ -2,70 +2,58 @@
 #include "particles.h"
 
 // abstract definitions - makes everything dynamic
-vector<particle_modifier_type> particle_modifier_types;
+std::vector<particle_modifier_type*> particle_modifier_types;
+std::map<std::string, particle_modifier_type*> particle_modifier_types_map;
 
 // implementations - the concrete implementations
-vector<particle_modifier_implementation *> particle_modifier_implementations;
+std::vector<particle_modifier_implementation*> particle_modifier_implementations;
+std::map<std::string, particle_modifier_implementation*> particle_modifier_implementations_map;
 
 // concrete instances refers to the abstract definitions
-vector<particle_modifier_instance> particle_modifier_instances;
-
+std::vector<particle_modifier_instance*> particle_modifier_instances;
 
 void modify_particles(int elapsedtime)
 {
-//	conoutf("modify %d", elapsedtime);
-	loopv(alive_pool[current_alive_pool])
-    {
-    	// particle_instance p_inst = ;
-        // particle_emitter_instance pe_inst = ;
-    	// conoutf("modify p[%d] e[%d] eimods[%d]", i, p_inst.emitter, pe_inst.modifier_instances.length());
-        // only apply modifiers assigned to the origin emitter
-        loopvj(particle_emitter_instances[alive_pool[current_alive_pool][i].emitter].modifier_instances)
-        {
-        	// particle_modifier_instance pm_inst = particle_modifier_instances[particle_emitter_instances[alive_pool[current_alive_pool][i].emitter].modifier_instances[j]];
-        	// particle_modifier_type pm_type = particle_modifier_types[particle_modifier_instances[particle_emitter_instances[alive_pool[current_alive_pool][i].emitter].modifier_instances[j]].type];
-        	// conoutf("modify %d %s", pm_inst.type, pm_type.name);
-        	particle_modifier_types[particle_modifier_instances[particle_emitter_instances[alive_pool[current_alive_pool][i].emitter].modifier_instances[j]].type].impl->modify(&particle_modifier_instances[particle_emitter_instances[alive_pool[current_alive_pool][i].emitter].modifier_instances[j]], &alive_pool[current_alive_pool][i], elapsedtime);
-        }
-    }
-}
-
-int add_particle_modifier_type(std::string name, const vec &o, const vec &vel, std::string impl)
-{
-	particle_modifier_types.add();
-	int pm_type_id = particle_modifier_types.length() - 1;
-	particle_modifier_types[pm_type_id].name = name;
-	int impl_id = get_particle_modifier_implementation(impl);
-	particle_modifier_types[pm_type_id].impl = particle_modifier_implementations[impl_id];
-	particle_modifier_types[pm_type_id].o.x = o.x;
-	particle_modifier_types[pm_type_id].o.y = o.y;
-	particle_modifier_types[pm_type_id].o.z = o.z;
-	particle_modifier_types[pm_type_id].vel.x = vel.x;
-	particle_modifier_types[pm_type_id].vel.y = vel.y;
-	particle_modifier_types[pm_type_id].vel.z = vel.z;
-
-	conoutf("Added particle modifier type \"%s\" (id: %d) of implementation \"%s\" (id: %d) [%d:%d:%d]", name.c_str(), pm_type_id, impl.c_str(), impl_id, particle_modifier_instances.length(), particle_modifier_types.length(), particle_modifier_implementations.length());
-	return pm_type_id;
-}
-
-int get_particle_modifier_type(std::string name)
-{
-	loopv(particle_modifier_types)
+	// TODO: special types of modifiers which are called before only
+	for(std::list<particle_instance*>::iterator p_it = alive_pool.begin(); p_it != alive_pool.end(); ++p_it)
 	{
-		if (particle_modifier_types[i].name.compare(name) == 0) return i;
+		for(std::vector<particle_modifier_instance*>::iterator pm_it = (*p_it)->pe_inst->modifiers.begin(); pm_it != (*p_it)->pe_inst->modifiers.end(); ++pm_it)
+		{
+			(*pm_it)->pm_type->pm_impl->modify(*pm_it, *p_it, elapsedtime);
+		}
 	}
-	return -1;
+	// TODO: special types of modifiers which are called afterwards only
 }
 
-int get_particle_modifier_implementation(std::string name)
+particle_modifier_type* add_particle_modifier_type(std::string name, std::string impl)
 {
-	loopv(particle_modifier_implementations)
-	{
-		if (particle_modifier_implementations[i]->name.compare(name) == 0) return i;
-	}
-	return -1;
+	particle_modifier_type* pm_type = new particle_modifier_type;
+	pm_type->name = name;
+	pm_type->pm_impl = particle_modifier_implementations_map[impl];
+	particle_modifier_types.push_back(pm_type);
+	particle_modifier_types_map[name] = pm_type;
+	conoutf("Added particle modifier type \"%s\" of implementation \"%s\"", name.c_str(), impl.c_str());
+	return pm_type;
 }
 
+particle_modifier_instance* particle_modifier_type::create_instance() {
+	return create_instance(vec(0.0f, 0.0f, 0.0f));
+}
+
+particle_modifier_instance* particle_modifier_type::create_instance(const vec &o) {
+	particle_modifier_instance* pm_inst = new particle_modifier_instance;
+	pm_inst->pm_type = this;
+	pm_inst->o = o;
+	pm_inst->attributes.insert(attributes.begin(), attributes.end());
+	particle_modifier_instances.push_back(pm_inst);
+	return pm_inst;
+}
+
+void create_particle_modifier_instance(std::string pm_type, const vec &o) {
+	particle_modifier_types_map[pm_type]->create_instance(o);
+}
+
+/*
 int create_particle_modifier_instance(int pm_type_id)
 {
 	particle_modifier_instances.add();
@@ -82,13 +70,17 @@ int create_particle_modifier_instance(int pm_type_id)
 	conoutf("Created modifier instance (id: %d) of type (id: %d)", pm_inst_id, pm_type_id);
 	return pm_inst_id;
 }
+*/
 
-ICOMMAND(add_particle_modifier_type, "siiiiiis", (char *name, int *ox, int *oy, int *oz, int *vx, int *vy, int *vz, char *impl), intret(add_particle_modifier_type(name, vec(*ox, *oy, *oz), vec(*vx, *vy, *vz), impl)));
-ICOMMAND(get_particle_modifier_type, "s", (char *name), intret(get_particle_modifier_type(name)));
-ICOMMAND(particle_modifier_types_num, "", (), intret(particle_modifier_types.length()));
+ICOMMAND(add_particle_modifier_type, "ss", (char *name, char *impl), add_particle_modifier_type(name, impl));
+ICOMMAND(create_particle_modifier_instance, "siii", (char *name, int *ox, int *oy, int *oz), create_particle_modifier_instance(name, vec(*ox, *oy, *oz)));
+/*
+ICOMMAND(particle_modifier_types_num, "", (), intret(particle_modifier_types.size()));
+ICOMMAND(particle_modifier_instances_num, "", (), intret(particle_modifier_instances.size()));
 ICOMMAND(ls_particle_modifier_types, "", (),
 {
 	loopv(particle_modifier_types) {
 		conoutf("%i | %s", i, particle_modifier_types[i].name.c_str());
 	}
 });
+*/

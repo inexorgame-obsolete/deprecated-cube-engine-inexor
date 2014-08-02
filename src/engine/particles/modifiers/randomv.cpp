@@ -5,7 +5,7 @@ struct randomv : public particle_modifier_implementation
 {
 
 	randomv() : particle_modifier_implementation("randomv") {
-		particle_modifier_implementations.add(this);
+		particle_modifier_implementations.push_back(this);
 	}
 	virtual ~randomv() { }
 
