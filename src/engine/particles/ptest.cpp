@@ -11,7 +11,7 @@ struct ptest
 		// int lifetime1 = 3500;
 		// int rate1 = 1;
 		int lifetime2 = 10000;
-		int rate2 = 2;
+		int rate2 = 50;
 		int lifetime3 = 200;
 		int rate3 = 5;
 
@@ -28,12 +28,17 @@ struct ptest
 		pr_inst_fire->attributes["r"] = 200.0f;
 		pr_inst_fire->attributes["b"] = 0.0f;
 
+		particle_renderer_instance* pr_inst_poison = pr_type_billboard->create_instance("poison");
+		pr_inst_fire->attributes["r"] = 200.0f;
+		pr_inst_fire->attributes["b"] = 0.0f;
+
 		particle_renderer_instance* pr_inst_smoke = pr_type_billboard->create_instance("smoke");
 		pr_inst_smoke->attributes["size"] = 20.0f;
 
 		/** Particle types **/
 
 		particle_type* p_type_fire = add_particle_type("fire", "fire");
+		particle_type* p_type_poison = add_particle_type("poison", "poison");
 		particle_type* p_type_smoke = add_particle_type("smoke", "smoke");
 
 		/** Modifier types and instances **/
@@ -62,11 +67,13 @@ struct ptest
 
 		/** Emitter types and instances **/
 
-		particle_emitter_type* pe_point_type = add_particle_emitter_type("special_point_emitter", "fire", mass, density, lifetime2, rate2, "point_emitter");
-		particle_emitter_instance* pe_inst_point_1 = pe_point_type->create_instance(vec(512.0f, 512.0f, 514.0f), vec(-40.0f, 0.0f, 0.0f));
-		particle_emitter_instance* pe_inst_point_2 = pe_point_type->create_instance(vec(512.0f, 512.0f, 514.0f), vec(0.0f, -40.0f, 0.0f));
-		particle_emitter_instance* pe_inst_point_3 = pe_point_type->create_instance(vec(512.0f, 512.0f, 514.0f), vec(40.0f, 0.0f, 0.0f));
-		particle_emitter_instance* pe_inst_point_4 = pe_point_type->create_instance(vec(512.0f, 512.0f, 514.0f), vec(0.0f, 40.0f, 0.0f));
+		particle_emitter_type* pe_point_fire_type = add_particle_emitter_type("special_point_emitter", "fire", mass, density, lifetime2, rate2, "point_emitter");
+		particle_emitter_instance* pe_inst_point_1 = pe_point_fire_type->create_instance(vec(512.0f, 512.0f, 514.0f), vec(-40.0f, 0.0f, 0.0f));
+		particle_emitter_instance* pe_inst_point_2 = pe_point_fire_type->create_instance(vec(512.0f, 512.0f, 514.0f), vec(0.0f, -40.0f, 0.0f));
+
+		particle_emitter_type* pe_point_poison_type = add_particle_emitter_type("special_point_emitter", "poison", mass, density, lifetime2, rate2, "point_emitter");
+		particle_emitter_instance* pe_inst_point_3 = pe_point_poison_type->create_instance(vec(512.0f, 512.0f, 514.0f), vec(40.0f, 0.0f, 0.0f));
+		particle_emitter_instance* pe_inst_point_4 = pe_point_poison_type->create_instance(vec(512.0f, 512.0f, 514.0f), vec(0.0f, 40.0f, 0.0f));
 
 		particle_emitter_type* pe_field_type = add_particle_emitter_type("special_field_emitter", "smoke", mass, density, lifetime3, rate3, "field_emitter");
 		pe_field_type->attributes["grid_size_x"] = 3.0f;
@@ -95,24 +102,6 @@ struct ptest
 		pe_inst_point_4->add_modifier(pm_inst_gravity_point_4);
 
 		pe_inst_field_1->add_modifier(pm_inst_gravity_point_5);
-
-		// assign_modifier_to_emitter("default_point_emitter", "default_velocity_transformation");
-		// assign_modifier_to_emitter("default_point_emitter", "default_randomw");
-		// assign_modifier_to_emitter("special_point_emitter", "default_velocity_transformation");
-		// assign_modifier_to_emitter("special_point_emitter", "default_mass_spring_transformation");
-		// assign_modifier_to_emitter("special_point_emitter", "default_randomv");
-		// assign_modifier_to_emitter("special_point_emitter", "gravity_point_1");
-		// assign_modifier_to_emitter("special_point_emitter", "gravity_point_2");
-
-		// assign_modifier_to_emitter("special_field_emitter", "default_velocity_transformation");
-		// assign_modifier_to_emitter("special_field_emitter", "default_randomv");
-		// assign_modifier_to_emitter("special_field_emitter", "default_randomw");
-		// assign_modifier_to_emitter("special_field_emitter", "gravity_point_3");
-
-		// create_particle_emitter_instance("default_point_emitter", vec(512.0f, 512.0f, 532.0f), vec(0.0f, 0.0f, 150.0f));
-		// create_particle_emitter_instance("special_point_emitter", vec(512.0f, 512.0f, 514.0f), vec(80.0f, 0.0f, 0.0f));
-		// create_particle_emitter_instance("special_point_emitter", vec(512.0f, 512.0f, 514.0f), vec(-40.0f, 0.0f, 0.0f));
-		// create_particle_emitter_instance("special_field_emitter", vec(768.0f, 768.0f, 514.0f), vec(0.0f, 0.0f, 0.0f));
     }
 
 };

@@ -1,6 +1,8 @@
 #include "cube.h"
 #include "particles.h"
 
+int timer_modifier = 0;
+
 // abstract definitions - makes everything dynamic
 std::vector<particle_modifier_type*> particle_modifier_types;
 std::map<std::string, particle_modifier_type*> particle_modifier_types_map;
@@ -15,13 +17,16 @@ std::vector<particle_modifier_instance*> particle_modifier_instances;
 void modify_particles(int elapsedtime)
 {
 	// TODO: special types of modifiers which are called before only
+	int started = SDL_GetTicks();
 	for(std::list<particle_instance*>::iterator p_it = alive_pool.begin(); p_it != alive_pool.end(); ++p_it)
 	{
+		int started2 = SDL_GetTicks();
 		for(std::vector<particle_modifier_instance*>::iterator pm_it = (*p_it)->pe_inst->modifiers.begin(); pm_it != (*p_it)->pe_inst->modifiers.end(); ++pm_it)
 		{
 			(*pm_it)->pm_type->pm_impl->modify(*pm_it, *p_it, elapsedtime);
 		}
 	}
+	timer_modifier = SDL_GetTicks() - started;
 	// TODO: special types of modifiers which are called afterwards only
 }
 

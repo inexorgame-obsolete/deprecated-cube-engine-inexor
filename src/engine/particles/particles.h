@@ -58,6 +58,11 @@ struct particle_emitter_instance
 	vec vel;
 
 	/**
+	 * If true, particles will be emitted.
+	 */
+	bool enabled;
+
+	/**
 	 * The start mass of an emitted particle instance.
 	 */
 	float mass;
@@ -508,5 +513,9 @@ extern particle_modifier_type* add_particle_modifier_type(std::string name, std:
 // extern void remove_particle_modifier_type(std::string name);
 // extern particle_modifier_instance* create_particle_modifier_instance(int type, const vec &o, const vec &vel);
 extern void create_particle_modifier_instance(std::string pm_type, const vec &o);
+
+extern int timer_emitter;
+extern int timer_modifier;
+extern int timer_renderer;
 
 #endif /* ENGINE_PARTICLES_H */

@@ -1,6 +1,8 @@
 #include "cube.h"
 #include "particles.h"
 
+int timer_emitter = 0;
+
 // abstract definitions - makes everything dynamic
 std::vector<particle_emitter_type*> particle_emitter_types;
 std::map<std::string, particle_emitter_type*> particle_emitter_types_map;
@@ -14,12 +16,12 @@ std::vector<particle_emitter_instance*> particle_emitter_instances;
 
 void emit_particles(int elapsedtime)
 {
+	int started = SDL_GetTicks();
 	for(std::vector<particle_emitter_instance*>::iterator it = particle_emitter_instances.begin(); it != particle_emitter_instances.end(); ++it)
 	{
-		// conoutf("p_type: %s pe_type: %s lifetime: %d", (*it)->p_type->name.c_str(), (*it)->pe_type->name.c_str(), (*it)->lifetime);
-		// conoutf("pe_impl: %s", (*it)->pe_type->pe_impl->name.c_str());
-		(*it)->pe_type->pe_impl->emit(*it, elapsedtime);
+		if ((*it)->enabled) (*it)->pe_type->pe_impl->emit(*it, elapsedtime);
 	}
+	timer_emitter = SDL_GetTicks() - started;
 }
 
 /**
@@ -71,6 +73,7 @@ particle_emitter_instance* particle_emitter_type::create_instance(const vec &o, 
 	pe_inst->p_type = p_type;
 	pe_inst->o = o;
 	pe_inst->vel = vel;
+	pe_inst->enabled = true;
 	pe_inst->mass = mass;
 	pe_inst->density = density;
 	pe_inst->lifetime = lifetime;

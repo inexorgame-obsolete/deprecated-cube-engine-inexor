@@ -1,6 +1,8 @@
 #include "cube.h"
 #include "particles.h"
 
+int timer_renderer = 0;
+
 // abstract definitions - makes everything dynamic
 std::vector<particle_renderer_type*> particle_renderer_types;
 std::map<std::string, particle_renderer_type*> particle_renderer_types_map;
@@ -15,16 +17,14 @@ std::map<std::string, particle_renderer_instance*> particle_renderer_instances_m
 
 void render_particles()
 {
-	// conoutf("render_particles start");
+	int started = SDL_GetTicks();
 	for(std::vector<particle_renderer_instance*>::iterator pr_it = particle_renderer_instances.begin(); pr_it != particle_renderer_instances.end(); ++pr_it)
 	{
-		// conoutf("%s (before) %d", (*pr_it)->name.c_str(), int((*pr_it)->particles.size()));
 		(*pr_it)->pr_type->pr_impl->before(*pr_it);
 
 		std::list<particle_instance*>::iterator p_it = (*pr_it)->particles.begin();
 		while (p_it != (*pr_it)->particles.end())
 		{
-			// conoutf("elapsed: %d remaining: %d", (*p_it)->elapsed, (*p_it)->remaining);
 			if ((*p_it)->remaining > 0)
 			{
 				(*pr_it)->pr_type->pr_impl->render(*pr_it, *p_it);
@@ -33,16 +33,9 @@ void render_particles()
 				p_it = (*pr_it)->particles.erase(p_it);
 			}
 		}
-		/*
-		for(std::list<particle_instance*>::iterator p_it = (*pr_it)->particles.begin(); p_it != (*pr_it)->particles.end(); ++p_it)
-		{
-			(*pr_it)->pr_type->pr_impl->render(*pr_it, *p_it);
-		}
-		*/
-		// conoutf("%s (after) %d", (*pr_it)->name.c_str(), int((*pr_it)->particles.size()));
 		(*pr_it)->pr_type->pr_impl->after(*pr_it);
 	}
-	// conoutf("render_particles end");
+	timer_renderer = SDL_GetTicks() - started;
 }
 
 particle_renderer_type* add_particle_renderer_type(std::string name, std::string shader, std::string impl)
