@@ -228,20 +228,59 @@ char *makerelpath(const char *dir, const char *file, const char *prefix, const c
 }
 
 
-char *path(char *s)
+
+/*
+#	TASK: extract a file path from a (maybe invalid) parameter path
+#	PARAMETERS: 
+#		path_to_validate		the path that must be validated
+#	RETURN VALUE: 
+#		pointer to char* that contains validated path
+#		-please note that this pointer's memory must be somewhere and can't be stored in this function (FUNCTION SCOPE)
+*/
+char *path(char *path_to_validate)
 {
-    for(char *curpart = s;;)
+	// start an endless loop and initialise a char pointer at the beginning
+    for(char *curpart = path_to_validate; /*nothing*/; /*nothing*/)
     {
-        char *endpart = strchr(curpart, '&');
-        if(endpart) *endpart = '\0';
+		/*	strchr - 
+		Locate first occurrence of character in string
+		http://www.cplusplus.com/reference/cstring/strchr/
+		*/
+		// separate input by '&'
+		char *endpart = strchr(curpart, '&');
+        if(endpart) {
+			*endpart = '\0'; // cut off path_to_validate with binary NULL
+		}
+		// check if current piece contains color code information and skip this color code!
         if(curpart[0]=='<')
-        {
+		{
+			/* strrchr
+			Locate last occurrence of character in string
+			Returns a pointer to the last occurrence of character in the C string str.
+			http://www.cplusplus.com/reference/cstring/strrchr/?kw=strrchr
+			*/
+			// try to find the end of the color key '>'
             char *file = strrchr(curpart, '>');
-            if(!file) return s;
+            if(!file) return path_to_validate;
+			// skip color code
             curpart = file+1;
+			/* example:
+				"<grey>packages/fonts/default0.png" -> "packages/fonts/default0.png"
+			*/
         }
+		/*	strpbrk
+		Locate characters in string.
+		Returns a pointer to the first occurrence in str1 of any of the characters that are part of str2, or a null pointer if there are no matches.
+		http://www.cplusplus.com/reference/cstring/strpbrk/?kw=strpbrk
+		*/
+		/* replace SLASH or BACKSLASH with simple BACKSLASH
+			example:
+				"packages/textures/notexture.png"	->	"packages\textures\notexture.png"
+		*/
         for(char *t = curpart; (t = strpbrk(t, "/\\")); *t++ = PATHDIV);
-        for(char *prevdir = NULL, *curdir = curpart;;)
+
+		/**/
+        for(char *prevdir = NULL, *curdir = curpart;  /*nothing*/;  /*nothing*/)
         {
             prevdir = curdir[0]==PATHDIV ? curdir+1 : curdir;
             curdir = strchr(prevdir, PATHDIV);
@@ -258,23 +297,42 @@ char *path(char *s)
                 curdir = prevdir;
             }
         }
+		/*check if this is the last block or not*/
         if(endpart)
-        {
-            *endpart = '&';
-            curpart = endpart+1;
+		{
+            *endpart = '&'; // Bring this separation character back to life
+            curpart = endpart+1; // Skip it!
+			// replace '&' with '\0', then replace '\0' with '&' --- so in the ent we did not modify the string at all
         }
+		// we have reached the end of the character
         else break;
     }
-    return s;
+	// return path pointer (char*)
+    return path_to_validate;
 }
 
-char *path(const char *s, bool copy)
+
+
+
+
+/*
+#	TASK: extract a file path from a (maybe invalid) parameter path
+#	PARAMETERS: 
+#		path_to_validate		the path that must be validated
+#		copy_path				UNUSED FOR WHATEVER REASON?
+#	RETURN VALUE: none (void)
+*/
+char *path(const char *path_to_validate, bool copy_path)
 {
-    static string tmp;
-    copystring(tmp, s);
-    path(tmp);
-    return tmp;
+    static string tmp; // static strings keep their values 
+    copystring(tmp, path_to_validate); // copy string from s to tmp
+    path(tmp); // validate path 
+    return tmp; // return pointer to validated path
 }
+
+
+
+
 
 const char *parentdir(const char *directory)
 {
@@ -1146,13 +1204,26 @@ stream *opengzfile(const char *filename, const char *mode, stream *file, int lev
     return gz;
 }
 
+/*
+#	TASK: open an UTF-8 input stream to a target file
+#	PARAMETERS: 
+#		filename		target file name
+#		mode			read/write mode
+#		file			
+#	RETURN VALUE: file stream OR a nullpointer
+*/
 stream *openutf8file(const char *filename, const char *mode, stream *file)
 {
     stream *source = file ? file : openfile(filename, mode);
     if(!source) return NULL;
+	// allocate memory for new file stream
     utf8stream *utf8 = new utf8stream;
-    if(!utf8->open(source, mode, !file)) { if(!file) delete source; return NULL; }
-    return utf8;
+	// try to open a stream and catch errors in an inner block
+    if(!utf8->open(source, mode, !file)) { 
+		if(!file) delete source; // free stream memory if stream is invalid
+		return NULL; // return null pointer
+	}
+    return utf8; // return stream
 }
 
 char *loadfile(const char *fn, int *size, bool utf8)

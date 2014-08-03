@@ -8,8 +8,8 @@ void cleanup()
 {
     recorder::stop();
     cleanupserver();
-    SDL_ShowCursor(1);
-    SDL_WM_GrabInput(SDL_GRAB_OFF);
+    SDL_ShowCursor(1); // make standard os cursor visible again
+    SDL_WM_GrabInput(SDL_GRAB_OFF); // free SDL Input
     cleargamma();
     freeocta(worldroot);
     extern void clear_command(); clear_command();
@@ -20,21 +20,26 @@ void cleanup()
     SDL_Quit();
 }
 
-void quit()                     // normal exit
+/*
+#	TASK: clean up program enviroment at exit
+#	PARAMETERS: none (void)
+#	RETURN VALUE: none (void)
+*/
+void quit() // normal exit
 {
-    extern void writeinitcfg();
-    writeinitcfg();
-    writeservercfg();
+    extern void writeinitcfg(); // make function body known
+    writeinitcfg(); // write basic game configuration
+    writeservercfg(); // write SERVER LIST, NOT SERVER CONFIGURATION!!
 	writehistory();
     abortconnect();
     disconnect();
     localdisconnect();
     writecfg();
     cleanup();
-    exit(EXIT_SUCCESS);
+    exit(EXIT_SUCCESS); // exit(0); ---end process
 }
 
-void fatal(const char *s, ...)    // failure exit
+void fatal(const char *s, ...) // failure exit
 {
     static int errors = 0;
     errors++;
@@ -94,29 +99,38 @@ VARF(stencilbits, 0, 0, 32, initwarning("stencil-buffer precision"));
 VARF(fsaa, -1, -1, 16, initwarning("anti-aliasing"));
 VARF(vsync, -1, -1, 1, initwarning("vertical sync"));
 
+
+
+/*
+#	TASK: write options from RAM to hard disk
+#	PARAMETERS: none (void)
+#	RETURN VALUE: none (void)
+*/
 void writeinitcfg()
 {
-    stream *f = openutf8file("init.cfg", "w");
-    if(!f) return;
-    f->printf("// automatically written on exit, DO NOT MODIFY\n// modify settings in game\n");
-    extern int fullscreen;
-    f->printf("fullscreen %d\n", fullscreen);
-    f->printf("scr_w %d\n", scr_w);
-    f->printf("scr_h %d\n", scr_h);
-    f->printf("colorbits %d\n", colorbits);
-    f->printf("depthbits %d\n", depthbits);
-    f->printf("stencilbits %d\n", stencilbits);
-    f->printf("fsaa %d\n", fsaa);
-    f->printf("vsync %d\n", vsync);
-    extern int useshaders, shaderprecision, forceglsl;
-    f->printf("shaders %d\n", useshaders);
-    f->printf("shaderprecision %d\n", shaderprecision);
-    f->printf("forceglsl %d\n", forceglsl);
-    extern int soundchans, soundfreq, soundbufferlen;
-    f->printf("soundchans %d\n", soundchans);
-    f->printf("soundfreq %d\n", soundfreq);
-    f->printf("soundbufferlen %d\n", soundbufferlen);
-    delete f;
+	// open a file stream to the configuration file and check its consistency
+    stream *configfile_stream = openutf8file("init.cfg", "w"); // open "init.cfg" with write access
+    if(!configfile_stream) return; // abort function (void!) if stream is invalid
+	// make external options known to the compiler
+    extern int fullscreen, useshaders, shaderprecision, forceglsl, soundchans, soundfreq, soundbufferlen;
+	// export all options as integer values
+    configfile_stream->printf("// automatically written on exit, DO NOT MODIFY\n// modify settings in game\n"); // write standard "disclaimer" comment to file
+    configfile_stream->printf("fullscreen %d\n", fullscreen); // fullscreen or not
+    configfile_stream->printf("scr_w %d\n", scr_w); // screen width
+    configfile_stream->printf("scr_h %d\n", scr_h); // screen height
+    configfile_stream->printf("colorbits %d\n", colorbits); // color bit configuration
+    configfile_stream->printf("depthbits %d\n", depthbits); // depth buffer
+    configfile_stream->printf("stencilbits %d\n", stencilbits); // stencil buffer
+    configfile_stream->printf("fsaa %d\n", fsaa);  // FSAA (full screen anti aliasing)
+    configfile_stream->printf("vsync %d\n", vsync); // vertical synchronisation
+    configfile_stream->printf("shaders %d\n", useshaders); // shaders on or off?
+    configfile_stream->printf("shaderprecision %d\n", shaderprecision); // shader precision
+    configfile_stream->printf("forceglsl %d\n", forceglsl); // 
+    configfile_stream->printf("soundchans %d\n", soundchans); // amount of sound buffer channels
+    configfile_stream->printf("soundfreq %d\n", soundfreq); // sound frequency
+    configfile_stream->printf("soundbufferlen %d\n", soundbufferlen); // sound buffer length
+	// free the stream memory
+    delete configfile_stream;
 }
 
 COMMAND(quit, "");
@@ -503,7 +517,7 @@ void screenres(int *w, int *h)
 
 COMMAND(screenres, "ii");
 
-static int curgamma = 100;
+static int curgamma = 100 ;// the current screen gamma
 VARFP(gamma, 30, 100, 300,
 {
     if(gamma == curgamma) return;
@@ -520,9 +534,9 @@ void restoregamma()
     SDL_SetGamma(f, f, f);
 }
 
-void cleargamma()
+void cleargamma() // set gamma to full red/green/blue
 {
-    if(curgamma != 100) SDL_SetGamma(1, 1, 1);
+    if(curgamma != 100) SDL_SetGamma(1, 1, 1); // "Sets the color gamma function for the display" http://sdl.beuc.net/sdl.wiki/SDL_SetGamma
 }
 
 VAR(dbgmodes, 0, 0, 1);
@@ -827,7 +841,7 @@ void checkinput()
         switch(event.type)
         {
             case SDL_QUIT:
-                quit();
+                quit(); // quit the program
                 return;
 
             #if !defined(WIN32) && !defined(__APPLE__)

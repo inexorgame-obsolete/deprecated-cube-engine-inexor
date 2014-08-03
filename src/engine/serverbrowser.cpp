@@ -636,11 +636,24 @@ ICOMMAND(clearservers, "i", (int *full), clearservers(*full!=0));
 COMMAND(updatefrommaster, "");
 COMMAND(initservers, "");
 
+/*
+#	TASK: write list of available servers to a server list file
+#	PARAMETERS: none (void)
+#	RETURN VALUE: none (void)
+*/
 void writeservercfg()
 {
-    if(!game::savedservers()) return;
-    stream *f = openutf8file(path(game::savedservers(), true), "w");
-    if(!f) return;
+	/* please note that game::savedservers() is a char* pointer function
+	that just returns "servers.cfg". It is useful because the target file
+	name (servers.cfg) can be changed once in the code and still affects all
+	code passages.
+	*/
+	// abort function if "server list config file name" is not set
+    if(!game::savedservers()) return; 
+	// open server list configuration file
+    stream *f = openutf8file( path(game::savedservers(), true), "w");
+    // abort function if file stream is invalid
+	if(!f) return;
     int kept = 0;
     loopv(servers)
     {
@@ -664,6 +677,7 @@ void writeservercfg()
             else f->printf("addserver %s %d\n", escapeid(s->name), s->port);
         }
     }
+	// free file stream memory
     delete f;
 }
 
