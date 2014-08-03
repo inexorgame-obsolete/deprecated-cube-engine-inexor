@@ -10,15 +10,15 @@ struct ptest
 		float density = 1.0f;
 		// int lifetime1 = 3500;
 		// int rate1 = 1;
-		int lifetime2 = 25000;
+		int lifetime2 = 10000;
 		int rate2 = 10;
 
-		int lifetime3 = 550;
+		int lifetime3 = 500;
 		int rate3 = 20;
 
 		float density4 = 5.0f;
-		int lifetime4 = 750;
-		int rate4 = 250;
+		int lifetime4 = 500;
+		int rate4 = 10;
 
 		/** Renderer types and instances **/
 
@@ -28,7 +28,7 @@ struct ptest
 		particle_renderer_type* pr_type_smoke = add_particle_renderer_type("smoke_renderer", "<grey>packages/particles/smoke.png", "shader", vec4(255.0f, 220.0f, 220.0f, 0.1f), "billboard_renderer");
 		pr_type_smoke->attributes["size"] = 75.0f;
 
-		particle_renderer_type* pr_type_cube = add_particle_renderer_type("cube_renderer", "packages/textures/yves_allaire/e7/e7sbrickfloor_jump_s.jpg", "shader", vec4(200.0f, 200.0f, 200.0f, 0.8f), "cube_renderer");
+		particle_renderer_type* pr_type_cube = add_particle_renderer_type("cube_renderer", "packages/textures/yves_allaire/e7/e7sbrickfloor_jump_s.jpg", "shader", vec4(0.0f, 0.0f, 255.0f, 0.9f), "cube_renderer");
 
 		particle_renderer_instance* pr_inst_fire = pr_type_ball->create_instance("fire");
 		pr_inst_fire->color.r = 200.0f;
@@ -41,6 +41,7 @@ struct ptest
 		particle_renderer_instance* pr_inst_smoke = pr_type_smoke->create_instance("smoke");
 
 		particle_renderer_instance* pr_inst_cube = pr_type_cube->create_instance("cube");
+		pr_inst_cube->color.g = 100.0f;
 
 		/** Particle types **/
 
@@ -97,7 +98,7 @@ struct ptest
 		pe_type_cube_field->attributes["grid_size_y"] = 6.0f;
 		pe_type_cube_field->attributes["grid_size_z"] = 1.0f;
 		pe_type_cube_field->attributes["grid_dist"] = 20.0f;
-		particle_emitter_instance* pe_inst_cube_field = pe_type_cube_field->create_instance(vec(256.0f, 256.0f, 514.0f), vec(0.0f, 0.0f, 100.0f));
+		particle_emitter_instance* pe_inst_cube_field = pe_type_cube_field->create_instance(vec(256.0f, 256.0f, 514.0f), vec(0.0f, 0.0f, 70.0f));
 
 		/** Connect emitters and modifiers **/
 
