@@ -59,5 +59,3 @@ struct billboard_renderer : public particle_renderer_implementation
 };
 
 billboard_renderer *ps_renderer_billboard = new billboard_renderer();
-
-#undef GL_GLEXT_PROTOTYPES
