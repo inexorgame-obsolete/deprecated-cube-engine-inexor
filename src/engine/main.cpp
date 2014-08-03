@@ -6,6 +6,7 @@ extern void cleargamma();
 
 void cleanup()
 {
+	shutdown_particles();
     recorder::stop();
     cleanupserver();
     SDL_ShowCursor(1);

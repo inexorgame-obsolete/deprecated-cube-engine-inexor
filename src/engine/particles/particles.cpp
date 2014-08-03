@@ -8,19 +8,73 @@ std::vector<particle_instance*> particle_instances;
 std::list<particle_instance*> alive_pool;
 std::list<particle_instance*> dead_pool;
 
+struct particle_state_worker
+{
+	SDL_Thread *thread;
+	bool running;
+
+	particle_state_worker()
+	{
+		thread = NULL;
+		running = false;
+	}
+
+	void start();
+	void stop();
+	static int work(void *data);
+
+};
+
+void particle_state_worker::start()
+{
+	running = true;
+	thread = SDL_CreateThread(work, this);
+}
+
+void particle_state_worker::stop() {
+	running = false;
+	SDL_KillThread(thread);
+}
+
+int particle_state_worker::work(void *data)
+{
+	particle_state_worker *w = (particle_state_worker *)data;
+	int last_millis = 0;
+	while(w->running)
+	{
+		int current_millis = SDL_GetTicks();
+	    int elapsedtime = current_millis - last_millis;
+	    update_particle_pools(elapsedtime);
+	    emit_particles(elapsedtime);
+	    modify_particles(elapsedtime);
+	    last_millis = current_millis;
+	}
+	return 0;
+}
+
+particle_state_worker p_worker;
+
 void init_particles()
 {
 	reset_particle_system();
+	p_worker.start();
+}
+
+void shutdown_particles()
+{
+	p_worker.stop();
 }
 
 void clear_particle_pools()
 {
+	p_worker.stop();
 	alive_pool.clear();
 	dead_pool.clear();
 	for(std::vector<particle_renderer_instance*>::iterator pr_it = particle_renderer_instances.begin(); pr_it != particle_renderer_instances.end(); ++pr_it)
 	{
 		(*pr_it)->particles.clear();
 	}
+	p_worker.start();
 }
 
 void reset_particle_system()
@@ -29,17 +83,20 @@ void reset_particle_system()
 
 int particlemillis = 0;
 
+
 /**
  * Apply emitters, modifiers and renderers.
  */
-void update_particle_system() {
+void update_particle_system()
+{
 	int millis = SDL_GetTicks();
     int elapsedtime = millis - particlemillis;
 
-    update_particle_pools(elapsedtime);
-    emit_particles(elapsedtime);
     // std::thread t1(modify_particles, elapsedtime);
-    modify_particles(elapsedtime);
+
+    // update_particle_pools(elapsedtime);
+    // emit_particles(elapsedtime);
+    // modify_particles(elapsedtime);
     render_particles();
 
     particlemillis = millis;

@@ -510,6 +510,7 @@ extern std::list<particle_instance*> alive_pool;
 extern std::list<particle_instance*> dead_pool;
 
 extern void init_particles();
+extern void shutdown_particles();
 extern void clear_particle_pools();
 extern void reset_particle_system();
 
@@ -530,7 +531,7 @@ extern particle_emitter_type* add_particle_emitter_type(std::string name, std::s
 // extern int assign_modifier_to_emitter(std::string emitter_name, std::string modifier_name);
 extern particle_emitter_instance* create_particle_emitter_instance(std::string pe_type, const vec &o, const vec &vel);
 
-extern particle_renderer_type* add_particle_renderer_type(std::string name, std::string texture, std::string shader, vec4 color, std::string impl);
+extern particle_renderer_type* add_particle_renderer_type(std::string name, std::string texture, std::string shader, const vec4 &color, std::string impl);
 extern particle_renderer_instance* create_particle_renderer_instance(std::string name, std::string pr_type);
 // extern void remove_particle_renderer_type(std::string name);
 

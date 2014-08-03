@@ -38,7 +38,7 @@ void render_particles()
 	timer_renderer = SDL_GetTicks() - started;
 }
 
-particle_renderer_type* add_particle_renderer_type(std::string name, std::string texture, std::string shader, vec4 color, std::string impl)
+particle_renderer_type* add_particle_renderer_type(std::string name, std::string texture, std::string shader, const vec4 &color, std::string impl)
 {
 	particle_renderer_type* pr_type = new particle_renderer_type;
 	pr_type->name = name;
