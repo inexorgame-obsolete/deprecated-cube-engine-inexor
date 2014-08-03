@@ -13,6 +13,15 @@ struct field_emitter : public particle_emitter_implementation
 	virtual ~field_emitter() { }
 
 	void emit(particle_emitter_instance *pe_inst, int elapsedtime) {
+		/** === TEST === **/
+		float rx = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+		float ry = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+		float rz = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+		pe_inst->o.x += (rx - 0.5f);
+		pe_inst->o.y += (ry - 0.5f);
+		pe_inst->o.z += (rz - 0.5f);
+		/** === TEST === **/
+
 		particle_emitter_type* pe_type = pe_inst->pe_type;
 		pe_inst->millistoprocess += elapsedtime;
 		int particlestoemit = pe_inst->millistoprocess / pe_type->rate;

@@ -10,10 +10,10 @@ struct ptest
 		float density = 1.0f;
 		// int lifetime1 = 3500;
 		// int rate1 = 1;
-		int lifetime2 = 10000;
+		int lifetime2 = 15000;
 		int rate2 = 50;
-		int lifetime3 = 200;
-		int rate3 = 5;
+		int lifetime3 = 150;
+		int rate3 = 10;
 
 		/** Renderer types and instances **/
 
@@ -22,18 +22,24 @@ struct ptest
 		pr_type_ball->attributes["g"] = 255.0f;
 		pr_type_ball->attributes["b"] = 255.0f;
 		pr_type_ball->attributes["a"] = 0.3f;
-		pr_type_ball->attributes["size"] = 5.0f;
+		pr_type_ball->attributes["size"] = 20.0f;
+
+		particle_renderer_type* pr_type_smoke = add_particle_renderer_type("smoke_renderer", "<grey>packages/particles/smoke.png", "shader", "billboard_renderer");
+		pr_type_smoke->attributes["r"] = 255.0f;
+		pr_type_smoke->attributes["g"] = 220.0f;
+		pr_type_smoke->attributes["b"] = 220.0f;
+		pr_type_smoke->attributes["a"] = 0.1f;
+		pr_type_smoke->attributes["size"] = 75.0f;
 
 		particle_renderer_instance* pr_inst_fire = pr_type_ball->create_instance("fire");
 		pr_inst_fire->attributes["r"] = 200.0f;
 		pr_inst_fire->attributes["b"] = 0.0f;
 
 		particle_renderer_instance* pr_inst_poison = pr_type_ball->create_instance("poison");
-		pr_inst_fire->attributes["r"] = 200.0f;
-		pr_inst_fire->attributes["b"] = 0.0f;
+		pr_inst_fire->attributes["r"] = 0.0f;
+		pr_inst_fire->attributes["b"] = 200.0f;
 
-		particle_renderer_instance* pr_inst_smoke = pr_type_ball->create_instance("smoke");
-		pr_inst_smoke->attributes["size"] = 20.0f;
+		particle_renderer_instance* pr_inst_smoke = pr_type_smoke->create_instance("smoke");
 
 		/** Particle types **/
 
@@ -62,8 +68,10 @@ struct ptest
 		particle_modifier_instance* pm_inst_gravity_point_2 = pm_type_gravity_point->create_instance(vec(256.0f, 256.0f, 532.0f));
 		particle_modifier_instance* pm_inst_gravity_point_3 = pm_type_gravity_point->create_instance(vec(768.0f, 256.0f, 532.0f));
 		particle_modifier_instance* pm_inst_gravity_point_4 = pm_type_gravity_point->create_instance(vec(256.0f, 768.0f, 532.0f));
+
 		particle_modifier_instance* pm_inst_gravity_point_5 = pm_type_gravity_point->create_instance(vec(768.0f, 768.0f, 532.0f));
-		pm_inst_gravity_point_5->attributes["mass"] = 10000.0f;
+		pm_inst_gravity_point_5->attributes["mass"] = 5000.0f;
+		pm_type_gravity_point->attributes["gravity"] = 1.8f;
 
 		/** Emitter types and instances **/
 
