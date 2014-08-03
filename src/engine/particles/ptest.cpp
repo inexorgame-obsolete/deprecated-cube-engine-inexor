@@ -10,10 +10,15 @@ struct ptest
 		float density = 1.0f;
 		// int lifetime1 = 3500;
 		// int rate1 = 1;
-		int lifetime2 = 15000;
-		int rate2 = 50;
-		int lifetime3 = 150;
-		int rate3 = 10;
+		int lifetime2 = 25000;
+		int rate2 = 10;
+
+		int lifetime3 = 550;
+		int rate3 = 20;
+
+		float density4 = 10.0f;
+		int lifetime4 = 750;
+		int rate4 = 250;
 
 		/** Renderer types and instances **/
 
@@ -31,6 +36,8 @@ struct ptest
 		pr_type_smoke->attributes["a"] = 0.1f;
 		pr_type_smoke->attributes["size"] = 75.0f;
 
+		particle_renderer_type* pr_type_cube = add_particle_renderer_type("cube_renderer", "cube", "shader", "cube_renderer");
+
 		particle_renderer_instance* pr_inst_fire = pr_type_ball->create_instance("fire");
 		pr_inst_fire->attributes["r"] = 200.0f;
 		pr_inst_fire->attributes["b"] = 0.0f;
@@ -41,11 +48,14 @@ struct ptest
 
 		particle_renderer_instance* pr_inst_smoke = pr_type_smoke->create_instance("smoke");
 
+		particle_renderer_instance* pr_inst_cube = pr_type_cube->create_instance("cube");
+
 		/** Particle types **/
 
 		particle_type* p_type_fire = add_particle_type("fire", "fire");
 		particle_type* p_type_poison = add_particle_type("poison", "poison");
 		particle_type* p_type_smoke = add_particle_type("smoke", "smoke");
+		particle_type* p_type_cube = add_particle_type("cube", "cube");
 
 		/** Modifier types and instances **/
 
@@ -75,20 +85,27 @@ struct ptest
 
 		/** Emitter types and instances **/
 
-		particle_emitter_type* pe_point_fire_type = add_particle_emitter_type("special_point_emitter", "fire", mass, density, lifetime2, rate2, "point_emitter");
+		particle_emitter_type* pe_point_fire_type = add_particle_emitter_type("fire_point_emitter", "fire", mass, density, lifetime2, rate2, "point_emitter");
 		particle_emitter_instance* pe_inst_point_1 = pe_point_fire_type->create_instance(vec(512.0f, 512.0f, 514.0f), vec(-40.0f, 0.0f, 0.0f));
 		particle_emitter_instance* pe_inst_point_2 = pe_point_fire_type->create_instance(vec(512.0f, 512.0f, 514.0f), vec(0.0f, -40.0f, 0.0f));
 
-		particle_emitter_type* pe_point_poison_type = add_particle_emitter_type("special_point_emitter", "poison", mass, density, lifetime2, rate2, "point_emitter");
+		particle_emitter_type* pe_point_poison_type = add_particle_emitter_type("poison_point_emitter", "poison", mass, density, lifetime2, rate2, "point_emitter");
 		particle_emitter_instance* pe_inst_point_3 = pe_point_poison_type->create_instance(vec(512.0f, 512.0f, 514.0f), vec(40.0f, 0.0f, 0.0f));
 		particle_emitter_instance* pe_inst_point_4 = pe_point_poison_type->create_instance(vec(512.0f, 512.0f, 514.0f), vec(0.0f, 40.0f, 0.0f));
 
-		particle_emitter_type* pe_field_type = add_particle_emitter_type("special_field_emitter", "smoke", mass, density, lifetime3, rate3, "field_emitter");
-		pe_field_type->attributes["grid_size_x"] = 3.0f;
-		pe_field_type->attributes["grid_size_y"] = 3.0f;
-		pe_field_type->attributes["grid_size_z"] = 3.0f;
-		pe_field_type->attributes["grid_dist"] = 20.0f;
-		particle_emitter_instance* pe_inst_field_1 = pe_field_type->create_instance(vec(768.0f, 768.0f, 514.0f), vec(0.0f, 0.0f, 0.0f));
+		particle_emitter_type* pe_type_smoke_field = add_particle_emitter_type("smoke_field_emitter", "smoke", mass, density, lifetime3, rate3, "field_emitter");
+		pe_type_smoke_field->attributes["grid_size_x"] = 3.0f;
+		pe_type_smoke_field->attributes["grid_size_y"] = 3.0f;
+		pe_type_smoke_field->attributes["grid_size_z"] = 3.0f;
+		pe_type_smoke_field->attributes["grid_dist"] = 20.0f;
+		particle_emitter_instance* pe_inst_smoke_field = pe_type_smoke_field->create_instance(vec(768.0f, 768.0f, 514.0f), vec(0.0f, 0.0f, 10.0f));
+
+		particle_emitter_type* pe_type_cube_field = add_particle_emitter_type("cube_field_emitter", "cube", mass, density4, lifetime4, rate4, "field_emitter");
+		pe_type_cube_field->attributes["grid_size_x"] = 6.0f;
+		pe_type_cube_field->attributes["grid_size_y"] = 6.0f;
+		pe_type_cube_field->attributes["grid_size_z"] = 1.0f;
+		pe_type_cube_field->attributes["grid_dist"] = 20.0f;
+		particle_emitter_instance* pe_inst_cube_field = pe_type_cube_field->create_instance(vec(256.0f, 256.0f, 514.0f), vec(0.0f, 0.0f, 200.0f));
 
 		/** Connect emitters and modifiers **/
 
@@ -96,20 +113,24 @@ struct ptest
 		pe_inst_point_2->add_modifier(pm_inst_velocity_transformation);
 		pe_inst_point_3->add_modifier(pm_inst_velocity_transformation);
 		pe_inst_point_4->add_modifier(pm_inst_velocity_transformation);
-		pe_inst_field_1->add_modifier(pm_inst_velocity_transformation);
+		pe_inst_smoke_field->add_modifier(pm_inst_velocity_transformation);
+		pe_inst_cube_field->add_modifier(pm_inst_velocity_transformation);
 
 		pe_inst_point_1->add_modifier(pm_inst_randomv);
 		pe_inst_point_2->add_modifier(pm_inst_randomv);
 		pe_inst_point_3->add_modifier(pm_inst_randomv);
 		pe_inst_point_4->add_modifier(pm_inst_randomv);
-		pe_inst_field_1->add_modifier(pm_inst_randomw);
+		pe_inst_smoke_field->add_modifier(pm_inst_randomw);
+		pe_inst_cube_field->add_modifier(pm_inst_randomv);
 
 		pe_inst_point_1->add_modifier(pm_inst_gravity_point_1);
 		pe_inst_point_2->add_modifier(pm_inst_gravity_point_2);
 		pe_inst_point_3->add_modifier(pm_inst_gravity_point_3);
 		pe_inst_point_4->add_modifier(pm_inst_gravity_point_4);
 
-		pe_inst_field_1->add_modifier(pm_inst_gravity_point_5);
+		pe_inst_smoke_field->add_modifier(pm_inst_gravity_point_5);
+
+		// pe_inst_cube_field->add_modifier(pm_inst_gravity_point_5);
     }
 
 };
