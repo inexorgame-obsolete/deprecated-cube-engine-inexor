@@ -25,7 +25,9 @@ public:
         tex = textureload(pr_inst->texture.c_str(), texclamp);
         glBindTexture(GL_TEXTURE_2D, tex->id);
 		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+		glDisable(GL_CULL_FACE);
+		glColor4f(pr_inst->color.r, pr_inst->color.g, pr_inst->color.b, pr_inst->color.a);
 		glBegin(GL_QUADS);
 	}
 
@@ -77,6 +79,7 @@ public:
 
 	void after(particle_renderer_instance *pr_inst) {
 		glEnd();
+		glEnable(GL_CULL_FACE);
 		glDisable(GL_BLEND);
 		glDisable(GL_TEXTURE_2D);
 		glPopMatrix();
