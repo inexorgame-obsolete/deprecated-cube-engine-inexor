@@ -1,23 +1,24 @@
 #include "cube.h"
 #include "engine/particles/particles.h"
 
+/**
+ * Singleton implementation of a gravity point.
+ */
 struct gravity_point : public particle_modifier_implementation
 {
-	/**
-	 * The gravity.
-	 */
-	static const float gravity = 0.8f;
 
-	/**
-	 * The mass.
-	 */
-	static const float mass = 1000.0f;
+public:
 
-	gravity_point() : particle_modifier_implementation("gravity_point") {
-		particle_modifier_implementations.push_back(this);
+	static gravity_point& instance()
+	{
+		static gravity_point _instance;
+		return _instance;
 	}
 	virtual ~gravity_point() { }
 
+	/**
+	 * Attracts particles.
+	 */
 	void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime) {
 		float gravity = pm_inst->attributes["gravity"];
 		float mass = pm_inst->attributes["mass"];
@@ -35,6 +36,13 @@ struct gravity_point : public particle_modifier_implementation
 		p_inst->vel.z += az;
 	}
 
+private:
+	gravity_point() : particle_modifier_implementation("gravity_point") {
+		particle_modifier_implementations.push_back(this);
+	}
+	gravity_point( const gravity_point& );
+	gravity_point & operator = (const gravity_point &);
+
 };
 
-gravity_point *ps_modifier_gravity_point = new gravity_point();
+gravity_point& ps_modifier_gravity_point = gravity_point::instance();

@@ -1,22 +1,37 @@
 #include "engine.h"
 #include "engine/particles/particles.h"
 
+/**
+ * Singleton implementation of a cube renderer.
+ */
 struct cube_renderer : public particle_renderer_implementation
 {
 
-	cube_renderer() : particle_renderer_implementation("cube_renderer") {
-		particle_renderer_implementations.push_back(this);
+public:
+
+	static cube_renderer& instance()
+	{
+		static cube_renderer _instance;
+		return _instance;
 	}
 	virtual ~cube_renderer() { }
 
+	Texture *tex;
+	int texclamp;
+
 	void before(particle_renderer_instance *pr_inst) {
 		glPushMatrix();
-		// glEnable(GL_BLEND);
-		// glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-		glDepthMask(false);
+		glEnable(GL_TEXTURE_2D);
+        tex = textureload(pr_inst->texture.c_str(), texclamp);
+        glBindTexture(GL_TEXTURE_2D, tex->id);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 		glBegin(GL_QUADS);
 	}
 
+	/**
+	 * Rendering of a colored cube.
+	 */
 	void render(particle_renderer_instance *pr_inst, particle_instance *p_inst) {
 		float bbMinX = p_inst->o.x - p_inst->density;
 		float bbMinY = p_inst->o.y - p_inst->density;
@@ -62,12 +77,21 @@ struct cube_renderer : public particle_renderer_implementation
 
 	void after(particle_renderer_instance *pr_inst) {
 		glEnd();
-		glDepthMask(true);
-		// glDisable(GL_BLEND);
-		// glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glDisable(GL_BLEND);
+		glDisable(GL_TEXTURE_2D);
 		glPopMatrix();
 	}
 
+private:
+
+	cube_renderer() : particle_renderer_implementation("cube_renderer") {
+		particle_renderer_implementations.push_back(this);
+		tex = NULL;
+		texclamp = 0;
+	}
+	cube_renderer( const cube_renderer& );
+	cube_renderer & operator = (const cube_renderer &);
+
 };
 
-cube_renderer *ps_renderer_cube = new cube_renderer();
+cube_renderer& ps_renderer_cube = cube_renderer::instance();

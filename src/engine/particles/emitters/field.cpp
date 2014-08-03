@@ -1,18 +1,28 @@
 #include "cube.h"
 #include "engine/particles/particles.h"
 
+/**
+ * Singleton implementation of a field emitter.
+ */
 struct field_emitter : public particle_emitter_implementation
 {
 
-	// int grid_num = 5;
-	// float grid_dist = 20.0f;
+public:
 
-	field_emitter() : particle_emitter_implementation("field_emitter") {
-		particle_emitter_implementations.push_back(this);
+	static field_emitter& instance()
+	{
+		static field_emitter _instance;
+		return _instance;
 	}
 	virtual ~field_emitter() { }
 
-	void emit(particle_emitter_instance *pe_inst, int elapsedtime) {
+	/**
+	 * Emits particles from a one, two or three dimensional grid which is specified
+	 * by the grid size attributes: grid_size_x, grid_size_y, grid_size_z. The distance of the
+	 * points in the grid is specified by the grid_dist attribute.
+	 */
+	void emit(particle_emitter_instance *pe_inst, int elapsedtime)
+	{
 		/** === TEST === **/
 		float rx = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 		float ry = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
@@ -26,9 +36,9 @@ struct field_emitter : public particle_emitter_implementation
 		pe_inst->millistoprocess += elapsedtime;
 		int particlestoemit = pe_inst->millistoprocess / pe_type->rate;
 		pe_inst->millistoprocess = pe_inst->millistoprocess % pe_type->rate;
-		// conoutf("pe_inst: %d millistoprocess: %d particlestoemit: %d", pe_inst_id, pe_inst->millistoprocess, particlestoemit);
 
-		if (particlestoemit > 0) {
+		if (particlestoemit > 0)
+		{
 			float grid_dist = pe_inst->attributes["grid_dist"];
 			int grid_size_x = int(pe_inst->attributes["grid_size_x"]);
 			int grid_size_y = int(pe_inst->attributes["grid_size_y"]);
@@ -68,9 +78,17 @@ struct field_emitter : public particle_emitter_implementation
 				}
 			}
 		}
-
 	}
+
+private:
+
+	field_emitter() : particle_emitter_implementation("field_emitter")
+	{
+		particle_emitter_implementations.push_back(this);
+	}
+	field_emitter( const field_emitter& );
+	field_emitter & operator = (const field_emitter &);
 
 };
 
-field_emitter *ps_emitter_field = new field_emitter();
+field_emitter& ps_emitter_field = field_emitter::instance();

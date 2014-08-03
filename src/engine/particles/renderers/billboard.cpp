@@ -4,24 +4,21 @@
 struct billboard_renderer : public particle_renderer_implementation
 {
 
+public:
+
+	static billboard_renderer& instance()
+	{
+		static billboard_renderer _instance;
+		return _instance;
+	}
+	virtual ~billboard_renderer() { }
+
 	Texture *tex;
 	int texclamp;
 	float fade_threshold_size;
 	float min_size;
 	float max_size;
 	float quadratic[3];
-
-	billboard_renderer() : particle_renderer_implementation("billboard_renderer") {
-		particle_renderer_implementations.push_back(this);
-		texclamp = 0;
-		fade_threshold_size = 75.0f;
-		min_size = 1.0f;
-		max_size = 150.0f;
-		quadratic[0] = 1.0f;
-		quadratic[1] = 0.0f;
-		quadratic[2] = 0.01f;
-	}
-	virtual ~billboard_renderer() { }
 
 	void before(particle_renderer_instance *pr_inst) {
 		glPushMatrix();
@@ -38,7 +35,7 @@ struct billboard_renderer : public particle_renderer_implementation
 		glTexEnvi(GL_POINT_SPRITE_ARB, GL_COORD_REPLACE, GL_TRUE);
 		glPointSize(pr_inst->attributes["size"]);
 		glDepthMask(false);
-		glColor4f(pr_inst->attributes["r"], pr_inst->attributes["g"], pr_inst->attributes["b"], pr_inst->attributes["a"]);
+		glColor4f(pr_inst->color.r, pr_inst->color.g, pr_inst->color.b, pr_inst->color.a);
 		glBegin(GL_POINTS);
 	}
 
@@ -56,6 +53,22 @@ struct billboard_renderer : public particle_renderer_implementation
 		glPopMatrix();
 	}
 
+private:
+
+	billboard_renderer() : particle_renderer_implementation("billboard_renderer") {
+		particle_renderer_implementations.push_back(this);
+		tex = NULL;
+		texclamp = 0;
+		fade_threshold_size = 75.0f;
+		min_size = 1.0f;
+		max_size = 150.0f;
+		quadratic[0] = 1.0f;
+		quadratic[1] = 0.0f;
+		quadratic[2] = 0.01f;
+	}
+	billboard_renderer( const billboard_renderer& );
+	billboard_renderer & operator = (const billboard_renderer &);
+
 };
 
-billboard_renderer *ps_renderer_billboard = new billboard_renderer();
+billboard_renderer& ps_renderer_billboard = billboard_renderer::instance();

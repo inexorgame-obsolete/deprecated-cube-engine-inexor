@@ -16,35 +16,27 @@ struct ptest
 		int lifetime3 = 550;
 		int rate3 = 20;
 
-		float density4 = 10.0f;
+		float density4 = 5.0f;
 		int lifetime4 = 750;
 		int rate4 = 250;
 
 		/** Renderer types and instances **/
 
-		particle_renderer_type* pr_type_ball = add_particle_renderer_type("ball_renderer", "packages/particles/ball1.png", "shader", "billboard_renderer");
-		pr_type_ball->attributes["r"] = 255.0f;
-		pr_type_ball->attributes["g"] = 255.0f;
-		pr_type_ball->attributes["b"] = 255.0f;
-		pr_type_ball->attributes["a"] = 0.3f;
+		particle_renderer_type* pr_type_ball = add_particle_renderer_type("ball_renderer", "packages/particles/ball1.png", "shader", vec4(255.0f, 255.0f, 255.0f, 0.3f), "billboard_renderer");
 		pr_type_ball->attributes["size"] = 20.0f;
 
-		particle_renderer_type* pr_type_smoke = add_particle_renderer_type("smoke_renderer", "<grey>packages/particles/smoke.png", "shader", "billboard_renderer");
-		pr_type_smoke->attributes["r"] = 255.0f;
-		pr_type_smoke->attributes["g"] = 220.0f;
-		pr_type_smoke->attributes["b"] = 220.0f;
-		pr_type_smoke->attributes["a"] = 0.1f;
+		particle_renderer_type* pr_type_smoke = add_particle_renderer_type("smoke_renderer", "<grey>packages/particles/smoke.png", "shader", vec4(255.0f, 220.0f, 220.0f, 0.1f), "billboard_renderer");
 		pr_type_smoke->attributes["size"] = 75.0f;
 
-		particle_renderer_type* pr_type_cube = add_particle_renderer_type("cube_renderer", "cube", "shader", "cube_renderer");
+		particle_renderer_type* pr_type_cube = add_particle_renderer_type("cube_renderer", "packages/textures/yves_allaire/e7/e7sbrickfloor_jump_s.jpg", "shader", vec4(200.0f, 200.0f, 200.0f, 0.8f), "cube_renderer");
 
 		particle_renderer_instance* pr_inst_fire = pr_type_ball->create_instance("fire");
-		pr_inst_fire->attributes["r"] = 200.0f;
-		pr_inst_fire->attributes["b"] = 0.0f;
+		pr_inst_fire->color.r = 200.0f;
+		pr_inst_fire->color.b = 0.0f;
 
 		particle_renderer_instance* pr_inst_poison = pr_type_ball->create_instance("poison");
-		pr_inst_fire->attributes["r"] = 0.0f;
-		pr_inst_fire->attributes["b"] = 200.0f;
+		pr_inst_poison->color.r = 0.0f;
+		pr_inst_poison->color.b = 200.0f;
 
 		particle_renderer_instance* pr_inst_smoke = pr_type_smoke->create_instance("smoke");
 
@@ -105,7 +97,7 @@ struct ptest
 		pe_type_cube_field->attributes["grid_size_y"] = 6.0f;
 		pe_type_cube_field->attributes["grid_size_z"] = 1.0f;
 		pe_type_cube_field->attributes["grid_dist"] = 20.0f;
-		particle_emitter_instance* pe_inst_cube_field = pe_type_cube_field->create_instance(vec(256.0f, 256.0f, 514.0f), vec(0.0f, 0.0f, 200.0f));
+		particle_emitter_instance* pe_inst_cube_field = pe_type_cube_field->create_instance(vec(256.0f, 256.0f, 514.0f), vec(0.0f, 0.0f, 100.0f));
 
 		/** Connect emitters and modifiers **/
 

@@ -38,6 +38,7 @@ void update_particle_system() {
 
     update_particle_pools(elapsedtime);
     emit_particles(elapsedtime);
+    // std::thread t1(modify_particles, elapsedtime);
     modify_particles(elapsedtime);
     render_particles();
 

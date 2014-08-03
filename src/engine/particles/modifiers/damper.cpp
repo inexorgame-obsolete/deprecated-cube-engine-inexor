@@ -1,31 +1,36 @@
 #include "cube.h"
 #include "engine/particles/particles.h"
 
+/**
+ * Singleton implementation of a velocity damper.
+ */
 struct velocity_damper : public particle_modifier_implementation
 {
-	/**
-	 * The damper.
-	 */
-	static const float damper = 0.99f;
 
-	velocity_damper() : particle_modifier_implementation("velocity_damper") {
-		particle_modifier_implementations.push_back(this);
+public:
+
+	static velocity_damper& instance()
+	{
+		static velocity_damper _instance;
+		return _instance;
 	}
 	virtual ~velocity_damper() { }
 
+	/**
+	 * The velocity of an particle gets reduced. The damping value is specified by
+	 * the attribute "damper".
+	 */
 	void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime) {
-		// pm_inst->attributes["damper"]
-		p_inst->vel.mul(damper * (elapsedtime / particle_frame));
+		p_inst->vel.mul(pm_inst->attributes["damper"] * (elapsedtime / particle_frame));
 	}
 
-	/*
-	std::map<std::string, float> get_default_attributes() {
-		std::map<std::string, float> default_attributes;
-		default_attributes["damper"] = 0.99f;
-		return default_attributes;
+private:
+	velocity_damper() : particle_modifier_implementation("velocity_damper") {
+		particle_modifier_implementations.push_back(this);
 	}
-	*/
+	velocity_damper( const velocity_damper& );
+	velocity_damper & operator = (const velocity_damper &);
 
 };
 
-velocity_damper *ps_modifier_velocity_damper = new velocity_damper();
+velocity_damper& ps_modifier_velocity_damper = velocity_damper::instance();

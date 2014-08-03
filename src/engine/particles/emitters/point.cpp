@@ -1,22 +1,33 @@
 #include "cube.h"
 #include "engine/particles/particles.h"
 
+/**
+ * Singleton implementation of a point emitter.
+ */
 struct point_emitter : public particle_emitter_implementation
 {
 
-	point_emitter() : particle_emitter_implementation("point_emitter") {
-		particle_emitter_implementations.push_back(this);
+public:
+
+	static point_emitter& instance()
+	{
+		static point_emitter _instance;
+		return _instance;
 	}
 	virtual ~point_emitter() { }
 
-	void emit(particle_emitter_instance *pe_inst, int elapsedtime) {
+	/**
+	 * Emits particles from a single point (x,y,z).
+	 */
+	void emit(particle_emitter_instance *pe_inst, int elapsedtime)
+	{
 		particle_emitter_type* pe_type = pe_inst->pe_type;
 		pe_inst->millistoprocess += elapsedtime;
 		int particlestoemit = pe_inst->millistoprocess / pe_type->rate;
 		pe_inst->millistoprocess = pe_inst->millistoprocess % pe_type->rate;
-		// conoutf("pe_inst: %d millistoprocess: %d particlestoemit: %d", pe_inst_id, pe_inst->millistoprocess, particlestoemit);
 
-		if (particlestoemit > 0) {
+		if (particlestoemit > 0)
+		{
 			loopi(particlestoemit)
 			{
 				// get new particle, may increase the pool
@@ -41,6 +52,15 @@ struct point_emitter : public particle_emitter_implementation
 
 	}
 
+private:
+
+	point_emitter() : particle_emitter_implementation("point_emitter")
+	{
+		particle_emitter_implementations.push_back(this);
+	}
+	point_emitter( const point_emitter& );
+	point_emitter & operator = (const point_emitter &);
+
 };
 
-point_emitter *ps_emitter_point = new point_emitter();
+point_emitter& ps_emitter_point = point_emitter::instance();
