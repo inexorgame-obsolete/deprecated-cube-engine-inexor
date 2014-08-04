@@ -4,20 +4,33 @@
 
 extern void cleargamma();
 
+/*
+#	TASK: clean up program enviroment before process will stop
+#	PARAMETERS: none (void)
+#	RETURN VALUE: none (void)
+*/
 void cleanup()
 {
-    recorder::stop();
-    cleanupserver();
+	/* make clean-up functions known to the compiler 
+		before you call them
+	*/
+	extern void clear_command(); 
+	extern void clear_console();
+	extern void clear_mdls();
+	extern void clear_sound();
+
+    recorder::stop(); // stop video recorder (if running)
+    cleanupserver(); // stop server functionality
     SDL_ShowCursor(1); // make standard os cursor visible again
     SDL_WM_GrabInput(SDL_GRAB_OFF); // free SDL Input
-    cleargamma();
-    freeocta(worldroot);
-    extern void clear_command(); clear_command();
-    extern void clear_console(); clear_console();
-    extern void clear_mdls();    clear_mdls();
-    extern void clear_sound();   clear_sound();
+    cleargamma(); // reset display gamma
+    freeocta(worldroot); // free octree world memory
+    clear_command();
+	clear_console();
+	clear_mdls();
+	clear_sound();
     closelogfile();
-    SDL_Quit();
+    SDL_Quit(); // Use this function to clean up all initialized subsystems. You should call it upon all exit conditions.
 }
 
 /*
@@ -39,33 +52,65 @@ void quit() // normal exit
     exit(EXIT_SUCCESS); // exit(0); ---end process
 }
 
-void fatal(const char *s, ...) // failure exit
+
+/*
+#	TASK: display a fatal error message before exiting the program
+#	PARAMETERS: 
+#		error_message		the error message (can contain placeholders [like %s, %d, %llu, %I64d] for variable parameter list!)
+#		[...]				additional parameters
+#	RETURN VALUE: none (void) / program exit
+*/
+void fatal(const char *error_message, ...) // failure exit
 {
     static int errors = 0;
     errors++;
 
     if(errors <= 2) // print up to one extra recursive error
     {
-        defvformatstring(msg,s,s);
-        logoutf("%s", msg);
+		/* this function supports variable parameter lists.
+			error_message could print the value of an integer for example:
+			--------------------------------------------------------------
+			fatal("Progress failed! Error code: %d", 13);
+		*/
+		// this string will contain the formated error message
+        string finished_error_message;
+
+		// start variable parameter list
+		va_list ap; 
+		va_start(ap, error_message); 
+		// format error_message with variable parameters
+		vformatstring(finished_error_message, error_message, ap); 
+		// end variable parameter list
+		va_end(ap);
+		
+		/* the error message will also be printed to the log file
+			it does not make sense to print it ingame using conoutf!
+		*/
+		logoutf("%s", finished_error_message);
 
         if(errors <= 1) // avoid recursion
         {
-            if(SDL_WasInit(SDL_INIT_VIDEO))
+            if(SDL_WasInit(SDL_INIT_VIDEO)) // Use this function to return a mask of the specified subsystems which have previously been initialized. 
             {
-                SDL_ShowCursor(1);
-                SDL_WM_GrabInput(SDL_GRAB_OFF);
+                SDL_ShowCursor(1); // show os cursor again
+                SDL_WM_GrabInput(SDL_GRAB_OFF); // disable keyboard and mouse grabbing mode
                 cleargamma();
             }
+			// view an error message box on Windows
             #ifdef WIN32
-                MessageBox(NULL, msg, "Cube 2: Sauerbraten fatal error", MB_OK|MB_SYSTEMMODAL);
+				// the MB_SYSTEMMODAL flag means that the message box has the WS_EX_TOPMOST flag set
+				// MB_ICONERROR has been added by the way
+                MessageBox(NULL, finished_error_message, "Cube 2: Sauerbraten fatal error", MB_ICONERROR|MB_OK|MB_SYSTEMMODAL);
             #endif
-            SDL_Quit();
+            SDL_Quit(); // "Use this function to clean up all initialized subsystems. You should call it upon all exit conditions."
         }
     }
-
-    exit(EXIT_FAILURE);
+	// terminate program
+    exit(EXIT_FAILURE); // exit(1)
 }
+
+
+
 
 SDL_Surface *screen = NULL;
 
@@ -534,7 +579,13 @@ void restoregamma()
     SDL_SetGamma(f, f, f);
 }
 
-void cleargamma() // set gamma to full red/green/blue
+
+/*
+#	TASK: reset gamma to operating system's default value
+#	PARAMETERS: none (void)
+#	RETURN VALUE: none (void)
+*/
+void cleargamma()
 {
     if(curgamma != 100) SDL_SetGamma(1, 1, 1); // "Sets the color gamma function for the display" http://sdl.beuc.net/sdl.wiki/SDL_SetGamma
 }

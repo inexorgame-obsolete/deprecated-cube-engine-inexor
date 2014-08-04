@@ -74,13 +74,27 @@ int familysize(const cube &c)
     return size;
 }
 
-void freeocta(cube *c)
+
+/*
+#	TASK: delete octree knot ("cube")
+#	PARAMETERS:
+#
+#	RETURN VALUE: none (void)
+*/
+void freeocta(cube *cube_to_delete)
 {
-    if(!c) return;
-    loopi(8) discardchildren(c[i]);
-    delete[] c;
+	// abort function if pointer is invalid
+    if(!cube_to_delete) return;
+	/* an octree is a cube that is divided/cut in 8 (2*2*2) smaller cubes
+		that are stacked inside it. We will discard all these 8 chilren now.
+	*/
+    loopi(8) discardchildren(cube_to_delete[i]);
+   
+	// delete
+	delete[] cube_to_delete;
     allocnodes--;
 }
+
 
 void freecubeext(cube &c)
 {

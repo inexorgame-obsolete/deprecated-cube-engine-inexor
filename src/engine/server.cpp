@@ -169,15 +169,25 @@ void delclient(client *c)
     }
 }
 
+/*
+#	TASK: stop server network functionality and destroy sockets
+#	PARAMETERS: none (void)
+#	RETURN VALUE: none (void)
+*/
 void cleanupserver()
 {
+	// destroy server host to kill off all server functionality
     if(serverhost) enet_host_destroy(serverhost);
-    serverhost = NULL;
-
+    // set server host to NULL
+	serverhost = NULL;
+	// destroy sockets if they are valid
     if(pongsock != ENET_SOCKET_NULL) enet_socket_destroy(pongsock);
     if(lansock != ENET_SOCKET_NULL) enet_socket_destroy(lansock);
-    pongsock = lansock = ENET_SOCKET_NULL;
+	// set sockets to NULL
+    pongsock = ENET_SOCKET_NULL;
+	lansock = ENET_SOCKET_NULL;
 }
+
 
 VARF(maxclients, 0, DEFAULTCLIENTS, MAXCLIENTS, { if(!maxclients) maxclients = DEFAULTCLIENTS; });
 VARF(maxdupclients, 0, 0, MAXCLIENTS, { if(serverhost) serverhost->duplicatePeers = maxdupclients ? maxdupclients : MAXCLIENTS; });

@@ -279,7 +279,7 @@ char *path(char *path_to_validate)
 		*/
         for(char *t = curpart; (t = strpbrk(t, "/\\")); *t++ = PATHDIV);
 
-		/**/
+		/* this code passage somehow trys to manage/handle .. in paths*/
         for(char *prevdir = NULL, *curdir = curpart;  /*nothing*/;  /*nothing*/)
         {
             prevdir = curdir[0]==PATHDIV ? curdir+1 : curdir;

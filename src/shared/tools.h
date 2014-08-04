@@ -1,72 +1,164 @@
 // generic useful stuff for any C++ program
 
+
+/* include guard block
+	include guards guarantee that header files will be included only once	
+*/
 #ifndef _TOOLS_H
 #define _TOOLS_H
 
+/*------------------------------------------------------------------------------------------------------------------*/
+// TYPE DEFINITIONS AND "NULL"
+// 
+// 
+/*------------------------------------------------------------------------------------------------------------------*/
+
+/*	If NULL is defined somewhere else, undefine it
+	Make sure NULL is defined as 0 
+	and not as.. "NULL"
+*/
 #ifdef NULL
-#undef NULL
+	#undef NULL
 #endif
+// define it again here!
 #define NULL 0
 
+/* Very common type definitions
+*/
 typedef unsigned char uchar;
 typedef unsigned short ushort;
 typedef unsigned int uint;
 typedef signed long long int llong;
 typedef unsigned long long int ullong;
 
+
+
+/*------------------------------------------------------------------------------------------------------------------*/
+// MACROS FOR "DEBUGGING TRICKS"
+// 
+// 
+/*------------------------------------------------------------------------------------------------------------------*/
+
+/* This macro defines ASSERT as assert. If debugmode is disabled, you can use 
+*/
 #ifdef _DEBUG
-#define ASSERT(c) assert(c)
+	#define ASSERT(c) assert(c)
 #else
-#define ASSERT(c) if(c) {}
+	// do not do anything. Just run the code
+	#define ASSERT(c) if(c) {}
 #endif
 
+/* __restrict is a keyword that can be used in pointer declarations
+	http://stackoverflow.com/questions/745870/realistic-usage-of-the-c99-restrict-keyword
+	http://en.wikipedia.org/wiki/Restrict
+*/
 #if defined(__GNUC__) || (defined(_MSC_VER) && _MSC_VER >= 1400)
-#define RESTRICT __restrict
+	#define RESTRICT __restrict
 #else
-#define RESTRICT
+	#define RESTRICT
 #endif
 
+
+
+
+/*------------------------------------------------------------------------------------------------------------------*/
+// MEMORY ALLOCATION / MEMORY RELEASE OPERATORS
+// 
+// 
+/*------------------------------------------------------------------------------------------------------------------*/
+
+/* Memory allocation operators
+*/
 inline void *operator new(size_t, void *p) { return p; }
 inline void *operator new[](size_t, void *p) { return p; }
+
+/* Memory delete operators
+*/
 inline void operator delete(void *, void *) {}
 inline void operator delete[](void *, void *) {}
 
+
+
+
+/*------------------------------------------------------------------------------------------------------------------*/
+// SWAP / MIN / MAX / CLAMP  MACROS
+// 
+// 
+/*------------------------------------------------------------------------------------------------------------------*/
+
+/* This code passage checks for evidence of macros with the same names
+	like the templates below. The macros will be undefined because they
+	have HIGHEST PRIORITY and would override anything
+*/
 #ifdef swap
-#undef swap
+	#undef swap
 #endif
-template<class T>
-static inline void swap(T &a, T &b)
-{
-    T t = a;
-    a = b;
-    b = t;
-}
 #ifdef max
-#undef max
+	#undef max
 #endif
 #ifdef min
-#undef min
+	#undef min
 #endif
+
+/*	Swap is a template to swap the values of A and B
+*/
 template<class T>
-static inline T max(T a, T b)
-{
+static inline void swap(T &a, T &b) {
+    T t = a; // temporary template to "save" a
+    a = b;
+    b = t; // restore a
+}
+/* Return the maximum of two types
+*/
+template<class T>
+static inline T max(T a, T b) {
     return a > b ? a : b;
 }
+/* Return the minimum of two types
+*/
 template<class T>
-static inline T min(T a, T b)
-{
+static inline T min(T a, T b) {
     return a < b ? a : b;
 }
+/* Return the maximum of the [ minimum of (A,C) ], B
+*/
 template<class T, class U>
-static inline T clamp(T a, U b, U c)
-{
+static inline T clamp(T a, U b, U c) {
     return max(T(b), min(a, T(c)));
 }
 
+
+
+
+
+/*------------------------------------------------------------------------------------------------------------------*/
+// RANDOM NUMBER (SCALE) MACROS
+// 
+// 
+/*------------------------------------------------------------------------------------------------------------------*/
+
+/* Some crazy weird random number macros
+	that could be replaced easily... (?)
+	some set the signed/unsigned bit - why not use abs() ?
+*/
 #define rnd(x) ((int)(randomMT()&0x7FFFFFFF)%(x))
 #define rndscale(x) (float((randomMT()&0x7FFFFFFF)*double(x)/double(0x7FFFFFFF)))
 #define detrnd(s, x) ((int)(((((uint)(s))*1103515245+12345)>>16)%(x)))
 
+
+
+
+/*------------------------------------------------------------------------------------------------------------------*/
+// LOOP MACROS
+// 
+// 
+/*------------------------------------------------------------------------------------------------------------------*/
+
+/* Loop macros
+	These macros must die!
+	It is important to replace them with their equivalent code
+	to make them visible for debuggers properly!
+*/
 #define loop(v,m) for(int v = 0; v<int(m); v++)
 #define loopi(m) loop(i,m)
 #define loopj(m) loop(j,m)
@@ -74,46 +166,97 @@ static inline T clamp(T a, U b, U c)
 #define loopl(m) loop(l,m)
 #define loopirev(v) for(int i = v-1; i>=0; i--)
 
+
+
+
+
+/*------------------------------------------------------------------------------------------------------------------*/
+// SAFE RELEASE MACROS WHICH SET POINTERS TO ZERO AFTER DELETE
+// 
+// 
+/*------------------------------------------------------------------------------------------------------------------*/
+
+/* These macros represent a common way to delete dynamic memory:
+	you delete the memory and set the pointer to NULL
+*/
 #define DELETEP(p) if(p) { delete   p; p = 0; }
 #define DELETEA(p) if(p) { delete[] p; p = 0; }
 
+
+
+
+
+/*------------------------------------------------------------------------------------------------------------------*/
+// MATH CONSTANTS
+// 
+// 
+/*------------------------------------------------------------------------------------------------------------------*/
+
+/* Some important number constants
+	such as PI, 2*pi and common square roots
+*/
 #define PI  (3.1415927f)
 #define PI2 (2*PI)
 #define SQRT2 (1.4142136f)
 #define SQRT3 (1.7320508f)
 #define RAD (PI / 180.0f)
 
+
+
+
+
+/*------------------------------------------------------------------------------------------------------------------*/
+// OPERATING SYSTEM SPECIFIC CODE PARTS THAT ENSURE EVIDENCE OF MACROS OR DEFINE OS SPECIFIC SETTINGS
+// 
+// 
+/*------------------------------------------------------------------------------------------------------------------*/
 #ifdef WIN32
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
-#ifndef M_LN2
-#define M_LN2 0.693147180559945309417
-#endif
+	/* Windows-specific code part that makes sure M_PI and M_LN2 are defined
+	*/
+	#ifndef M_PI
+		#define M_PI 3.14159265358979323846
+	#endif
+	#ifndef M_LN2
+		#define M_LN2 0.693147180559945309417
+	#endif
 
-#ifndef __GNUC__
-#pragma warning (3: 4189)       // local variable is initialized but not referenced
-#pragma warning (disable: 4244) // conversion from 'int' to 'float', possible loss of data
-#pragma warning (disable: 4267) // conversion from 'size_t' to 'int', possible loss of data
-#pragma warning (disable: 4355) // 'this' : used in base member initializer list
-#pragma warning (disable: 4996) // 'strncpy' was declared deprecated
-#endif
+	/* These compiler pragma macros aim at Microsoft compilers
+		some warnings are stupid indeed. Programmers know the risks so they can be disabled.
+	*/
+	#ifndef __GNUC__
+		#pragma warning (3: 4189)       // local variable is initialized but not referenced
+		#pragma warning (disable: 4244) // conversion from 'int' to 'float', possible loss of data
+		#pragma warning (disable: 4267) // conversion from 'size_t' to 'int', possible loss of data
+		#pragma warning (disable: 4355) // 'this' : used in base member initializer list
+		#pragma warning (disable: 4996) // 'strncpy' was declared deprecated
+	#endif
 
-#define strcasecmp _stricmp
-#define strncasecmp _strnicmp
-#define PATHDIV '\\'
-
+	#define strcasecmp _stricmp
+	#define strncasecmp _strnicmp
+	#define PATHDIV '\\'
+/* #ifndef WIN32 (if not on Windows) 
+*/
 #else
-#define __cdecl
-#define _vsnprintf vsnprintf
-#define PATHDIV '/'
+	#define __cdecl // ignore Windows' __cdecl (?)
+	#define _vsnprintf vsnprintf
+	#define PATHDIV '/'
 #endif
 
 #ifdef __GNUC__
-#define PRINTFARGS(fmt, args) __attribute__((format(printf, fmt, args)))
+	#define PRINTFARGS(fmt, args) __attribute__((format(printf, fmt, args)))
 #else
-#define PRINTFARGS(fmt, args)
+	#define PRINTFARGS(fmt, args)
 #endif
+
+
+
+
+
+/*------------------------------------------------------------------------------------------------------------------*/
+// STRINGS
+// 
+// 
+/*------------------------------------------------------------------------------------------------------------------*/
 
 // easy safe strings
 
@@ -289,6 +432,17 @@ static inline float heapscore(const T &n) { return n; }
 template<class T>
 static inline bool compareless(const T &x, const T &y) { return x < y; }
 
+
+
+
+/*------------------------------------------------------------------------------------------------------------------*/
+// SEVERAL SORTING ALGORITHM TEMPLATES WITH VARIOUS PARAMETER CONSTELLATIONS
+// 
+// 
+/*------------------------------------------------------------------------------------------------------------------*/
+
+/* Insertionsort algorithm template
+*/
 template<class T, class F>
 static inline void insertionsort(T *start, T *end, F fun)
 {
@@ -306,19 +460,20 @@ static inline void insertionsort(T *start, T *end, F fun)
     }
 
 }
-
+// this is just a dummy which will lead to the function above
 template<class T, class F>
-static inline void insertionsort(T *buf, int n, F fun)
-{
+static inline void insertionsort(T *buf, int n, F fun) {
     insertionsort(buf, buf+n, fun);
 }
-
+// this is just a dummy which will lead to the function above
 template<class T>
-static inline void insertionsort(T *buf, int n)
-{
+static inline void insertionsort(T *buf, int n) {
     insertionsort(buf, buf+n, compareless<T>);
 }
 
+
+/* Quicksort algorithm template
+*/
 template<class T, class F>
 static inline void quicksort(T *start, T *end, F fun)
 {
@@ -360,78 +515,126 @@ static inline void quicksort(T *start, T *end, F fun)
 
     insertionsort(start, end, fun);
 }
-
+// this is just a dummy which will lead to the function above
 template<class T, class F>
-static inline void quicksort(T *buf, int n, F fun)
-{
+static inline void quicksort(T *buf, int n, F fun) {
     quicksort(buf, buf+n, fun);
 }
-
+// this is just a dummy which will lead to the function above
 template<class T>
-static inline void quicksort(T *buf, int n)
-{
+static inline void quicksort(T *buf, int n) {
     quicksort(buf, buf+n, compareless<T>);
 }
 
+
+
+/*------------------------------------------------------------------------------------------------------------------*/
+// ?
+// 
+// 
+/*------------------------------------------------------------------------------------------------------------------*/
+/* Looks like he's trying to find out whether a template is a class or not or something...
+	That code is weird!
+*/
 template<class T> struct isclass
 {
     template<class C> static char test(void (C::*)(void));
     template<class C> static int test(...);
-    enum { yes = sizeof(test<T>(0)) == 1 ? 1 : 0, no = yes^1 };
+    enum { 
+		yes = sizeof(test<T>(0)) == 1 ? 1 : 0, 
+		no = yes^1
+	};
 };
 
-static inline uint hthash(const char *key)
-{
+
+
+/*------------------------------------------------------------------------------------------------------------------*/
+// STATIC INLINE HASTABLE HELPER FUNCTIONS
+// 
+// 
+/*------------------------------------------------------------------------------------------------------------------*/
+/* Bernstein hash function to make hashtable data unique (?)
+	http://www.cse.yorku.ca/~oz/hash.html
+*/
+static inline uint hthash(const char *key) {
     uint h = 5381;
     for(int i = 0, k; (k = key[i]); i++) h = ((h<<5)+h)^k;    // bernstein k=33 xor
     return h;
 }
 
-static inline bool htcmp(const char *x, const char *y)
-{
+/* compare two strings
+*/
+static inline bool htcmp(const char *x, const char *y) {
     return !strcmp(x, y);
 }
 
-static inline uint hthash(int key)
-{
+/* Get access to a key (return the value)
+*/
+static inline uint hthash(int key) {
     return key;
 }
 
-static inline bool htcmp(int x, int y)
-{
+/* Compare two integer values
+*/
+static inline bool htcmp(int x, int y) {
     return x==y;
 }
 
+/* Special code part for STANDALONEs ?
+*/
 #ifndef STANDALONE
-static inline uint hthash(GLuint key)
-{
-    return key;
-}
-
-static inline bool htcmp(GLuint x, GLuint y)
-{
-    return x==y;
-}
+	static inline uint hthash(GLuint key) {
+		return key;
+	}
+	static inline bool htcmp(GLuint x, GLuint y) {
+		return x==y;
+	}
 #endif
 
+
+
+/*------------------------------------------------------------------------------------------------------------------*/
+// EIHRULS SELFMADE STANDARD TEMPLATE LIBRARIES
+// 
+// 
+/*------------------------------------------------------------------------------------------------------------------*/
+/* Equivalent to std::vector
+*/
 template <class T> struct vector
 {
+	// minimum vector size is 2^3 = 8
     static const int MINSIZE = 8;
 
     T *buf;
-    int alen, ulen;
+	/* .ulen is a member which returns the vector's size
+		just like std::vector.size();
+	*/
+    int alen, ulen; 
 
-    vector() : buf(NULL), alen(0), ulen(0)
-    {
+
+
+	// CONSTRUCTOR with constructor list
+    vector() : buf(NULL), alen(0), ulen(0) {
+		// constructor itself does nothing...
     }
-
-    vector(const vector &v) : buf(NULL), alen(0), ulen(0)
-    {
+	// COPY-CONSTRUCTOR with constructor list
+    vector(const vector &v) : buf(NULL), alen(0), ulen(0) {
+		// "I AM THIS VECTOR NOW"
         *this = v;
     }
+	// vector DESTRUCTOR
+    ~vector() { 
+		shrink(0); // set size to 0
+		if(buf) {
+			// free vector memory
+			delete[] (uchar *)buf; 
+		}
+	}
 
-    ~vector() { shrink(0); if(buf) delete[] (uchar *)buf; }
 
+	/* vector<int> a, b;
+		a = b;
+	*/
     vector<T> &operator=(const vector<T> &v)
     {
         shrink(0);
@@ -478,8 +681,14 @@ template <class T> struct vector
         }
     }
 
-    bool inrange(size_t i) const { return i<size_t(ulen); }
-    bool inrange(int i) const { return i>=0 && i<ulen; }
+    /* Methods to check if index is in range or not
+	*/
+	bool inrange(size_t i) const { 
+		return i<size_t(ulen); 
+	}
+    bool inrange(int i) const { 
+		return i>=0 && i<ulen; 
+	}
 
     T &pop() { return buf[--ulen]; }
     T &last() { return buf[ulen-1]; }
@@ -695,6 +904,8 @@ template <class T> struct vector
     }
 };
 
+/* Equivalent to std::map
+*/
 template<class T> struct hashset
 {
     typedef T elem;
@@ -1122,20 +1333,48 @@ static inline int iscubealpha(uchar c) { return cubectype[c]&CT_ALPHA; }
 static inline int iscubealnum(uchar c) { return cubectype[c]&(CT_ALPHA|CT_DIGIT); }
 static inline int iscubelower(uchar c) { return cubectype[c]&CT_LOWER; }
 static inline int iscubeupper(uchar c) { return cubectype[c]&CT_UPPER; }
-static inline int cube2uni(uchar c)
-{ 
+
+
+
+
+
+
+/*------------------------------------------------------------------------------------------------------------------*/
+// CUBE INFORMATION CODE -> UNICODE CONVERSION TOOLS
+// 
+// 
+/*------------------------------------------------------------------------------------------------------------------*/
+/* Convert from Cube to Unichar
+*/
+static inline int cube2uni(uchar c) { 
     extern const int cube2unichars[256]; 
     return cube2unichars[c]; 
 }
-static inline uchar uni2cube(int c)
-{
+/* Convert from Unichar to Cube2
+*/
+static inline uchar uni2cube(int c) {
     extern const int uni2cubeoffsets[8];
     extern const uchar uni2cubechars[];
     return uint(c) <= 0x7FF ? uni2cubechars[uni2cubeoffsets[c>>8] + (c&0xFF)] : 0;
 }
+
+
+
+
+
+
+/*------------------------------------------------------------------------------------------------------------------*/
+// EXTERN DEFINITIONS FOR FUNCTIONS
+// 
+// 
+/*------------------------------------------------------------------------------------------------------------------*/
+/* UTF-8 encoding/decoding function declaration
+*/
 extern int decodeutf8(uchar *dst, int dstlen, const uchar *src, int srclen, int *carry = NULL);
 extern int encodeutf8(uchar *dstbuf, int dstlen, const uchar *srcbuf, int srclen, int *carry = NULL);
 
+/* common useful functions
+*/
 extern char *makerelpath(const char *dir, const char *file, const char *prefix = NULL, const char *cmd = NULL);
 extern char *path(char *s);
 extern char *path(const char *s, bool copy);
@@ -1161,6 +1400,8 @@ extern void seedMT(uint seed);
 extern uint randomMT();
 extern int guessnumcpus();
 
+/* network code
+*/
 extern void putint(ucharbuf &p, int n);
 extern void putint(packetbuf &p, int n);
 extern void putint(vector<uchar> &p, int n);
@@ -1180,5 +1421,10 @@ extern void getstring(char *t, ucharbuf &p, int len);
 template<size_t N> static inline void getstring(char (&t)[N], ucharbuf &p) { getstring(t, p, int(N)); }
 extern void filtertext(char *dst, const char *src, bool whitespace = true, int len = sizeof(string)-1);
 
-#endif
 
+// -----------------------------------------------------------------------------------------------------------------------------------------------------
+
+/* end of include guard block:
+	#ifndef _TOOLS_H
+*/
+#endif 
