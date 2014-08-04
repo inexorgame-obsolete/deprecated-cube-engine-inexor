@@ -429,9 +429,12 @@ struct packetbuf : ucharbuf
 template<class T>
 static inline float heapscore(const T &n) { return n; }
 
+
+/* Return if value A is SMALLER THAN value B
+	( <=> this means value B is BIGGER than value A)
+*/
 template<class T>
 static inline bool compareless(const T &x, const T &y) { return x < y; }
-
 
 
 
@@ -529,11 +532,11 @@ static inline void quicksort(T *buf, int n) {
 
 
 /*------------------------------------------------------------------------------------------------------------------*/
-// ?
+// HELPER CODE TO FIND OUT WHETHER A VECTOR TEMPLATE IS A CLASS OR NOT
 // 
 // 
 /*------------------------------------------------------------------------------------------------------------------*/
-/* Looks like he's trying to find out whether a template is a class or not or something...
+/* This code is used in vector (e.g.) to find out whether the data type that is maintained is a CLASS OR NOT!
 	That code is weird!
 */
 template<class T> struct isclass
@@ -605,11 +608,18 @@ template <class T> struct vector
 	// minimum vector size is 2^3 = 8
     static const int MINSIZE = 8;
 
-    T *buf;
-	/* .ulen is a member which returns the vector's size
-		just like std::vector.size();
+    /* A pointer to the data type that will be maintained
 	*/
-    int alen, ulen; 
+	T *buf;
+	
+	/* You should not access these variables directly!
+		Use the methods capacity() and length()
+		...
+		If we had a good class design these two would
+		stand under protected or private!
+	*/
+    int alen; // CAPACITY, use .capacity()
+	int ulen; // LENGTH, use .length()
 
 
 
@@ -643,6 +653,11 @@ template <class T> struct vector
         return *this;
     }
 
+	/* Add a new slot and object to the vector
+		vector<int> phonenumbers;
+		int add_this = 911;
+		phonenumbers.add(911);
+	*/
     T &add(const T &x)
     {
         if(ulen==alen) growbuf(ulen+1);
@@ -650,6 +665,10 @@ template <class T> struct vector
         return buf[ulen++];
     }
 
+	/*Add a new slot (but no object) to the vector
+		vector<int> phonenumbers;
+		phonenumbers.add(); // add an EMPTY item slot
+	*/
     T &add()
     {
         if(ulen==alen) growbuf(ulen+1);
@@ -657,6 +676,11 @@ template <class T> struct vector
         return buf[ulen++];
     }
 
+	/* Duplicate the last item in the vector
+		vector<int> phonenumbers;
+		phonenumbers.add(911);	// [0] -> 911
+		phonenumbers.dup();		// [0] -> 911, [1] -> 911
+	*/
     T &dup()
     {
         if(ulen==alen) growbuf(ulen+1);
@@ -664,24 +688,43 @@ template <class T> struct vector
         return buf[ulen++];
     }
 
+	/* Add a fill-vector at the end of the existing vector
+		The fill-vector should not be empty. Both vectors must have the same type!
+
+		vector<int> a;			1,2,3,4,5
+		vector<int> b;			2,45,2,87,-1
+		a.move(b);		
+		result:					1,2,3,4,5,2,45,2,87,-1
+
+	*/
     void move(vector<T> &v)
     {
         if(!ulen)
-        {
+        {	
+			/* The current vector is empty but we are filling it with
+				a vector hat is not empty. Just take the fill-vector's
+				parameters and memory.
+			*/			
             swap(buf, v.buf);
             swap(ulen, v.ulen);
             swap(alen, v.alen);
         }
         else
         {
+			// Resize the current vector's memory
             growbuf(ulen+v.ulen);
+			// copy fill-vector's memory
             if(v.ulen) memcpy(&buf[ulen], (void  *)v.buf, v.ulen*sizeof(T));
+			// apply size
             ulen += v.ulen;
+			// set the fill-vector's size to 0
             v.ulen = 0;
         }
     }
 
     /* Methods to check if index is in range or not
+		this function is overloaded to support 
+		both signed and unsigned integers as indices
 	*/
 	bool inrange(size_t i) const { 
 		return i<size_t(ulen); 
@@ -690,37 +733,156 @@ template <class T> struct vector
 		return i>=0 && i<ulen; 
 	}
 
-    T &pop() { return buf[--ulen]; }
-    T &last() { return buf[ulen-1]; }
-    void drop() { ulen--; buf[ulen].~T(); }
-    bool empty() const { return ulen==0; }
 
-    int capacity() const { return alen; }
-    int length() const { return ulen; }
-    T &operator[](int i) { ASSERT(i>=0 && i<ulen); return buf[i]; }
-    const T &operator[](int i) const { ASSERT(i >= 0 && i<ulen); return buf[i]; }
+	/* Return the last index of a vector
+		Remove the last index of a vector by changing ulen (size)
+		the memory will be deleted properly
+	*/
+    T &pop() { 
+		/* please note that ulen is decremented LEFT SIDED which means
+			that it will already return the decremented number in this function call
+		*/
+		return buf[--ulen];
+	}
+	/* Return the last index of a vector
+		WITHOUT dropping the last index
+	*/
+    T &last() { 
+		return buf[ulen-1];
+	}
+	/* Drop means that the last index will be abandonned.
+		It is interesting that the DESTRUCTOR of the last index will be called!
+	*/
+    void drop() { 
+		ulen--; // decrease length
+		buf[ulen].~T(); // CALL DESTRUCTOR!
+	}
 
-    void disown() { buf = NULL; alen = ulen = 0; }
 
-    void shrink(int i) { ASSERT(i<=ulen); if(isclass<T>::no) ulen = i; else while(ulen>i) drop(); }
-    void setsize(int i) { ASSERT(i<=ulen); ulen = i; }
+	/*	Is this vector empty or not?
+	*/
+    bool empty() const { 
+		return ulen==0; // are we empty or not?
+	}
 
-    void deletecontents() { while(!empty()) delete   pop(); }
-    void deletearrays() { while(!empty()) delete[] pop(); }
 
-    T *getbuf() { return buf; }
-    const T *getbuf() const { return buf; }
-    bool inbuf(const T *e) const { return e >= buf && e < &buf[ulen]; }
+    /* Return the vector's CAPACITY (the amount of items that COULD BE STORED in it currently) 
+	*/
+	int capacity() const { 
+		return alen; 
+	}
+	/* Return the vecvtor's LENGTH (the amount of items stored in it)
+	*/
+    int length() const { 
+		return ulen; 
+	}
 
+	/* Address operator for auto and const types can be applied to any index
+	*/
+    T &operator[](int i) { 
+		ASSERT(i>=0 && i<ulen); 
+		return buf[i]; 
+	}
+    const T &operator[](int i) const { 
+		ASSERT(i >= 0 && i<ulen); 
+		return buf[i]; 
+	}
+
+	/* Give the memory away to some other code parts that care about it
+
+		IMPORTANT NOTE: VECTOR MEMORY ALLOCATIONS ARE STORED IN THE HEAP AND
+		WILL NOT BE RELEASED AUTOMATICLY!
+		DO NOT USE THIS FUNCTION UNLESS YOU HAVE TO!
+	*/
+    void disown() { 
+		buf = NULL; // DESTRUCTOR WILL NOT TAKE CARE OF IT
+		alen = ulen = 0; 
+	}
+
+
+	/* Shrink ( = decrease size) vector to a certain size
+	*/
+    void shrink(int i) { 
+		ASSERT(i<=ulen); // only if the new size less,equel than the current size it can be called "shrink"
+		/* If the data type that is maintained is NOT a class, just change the size
+			otherwise call the data type's DESTRUCTOR using the drop() method.
+		*/
+		if(isclass<T>::no) ulen = i; 
+		else while(ulen>i) drop();
+	}
+    /* Change the vector's size WITHOUT CALLING ANY DESTRUCTORS!
+		Please not that this may affects the data type's behaviour!
+	*/
+	void setsize(int i) { 
+		ASSERT(i<=ulen); // make sure the new size is less,equel than the current size
+		ulen = i; // change the vector's length
+	}
+
+    
+	/* As long as the vector is not empty,
+		get a pointer to the last index using the pop method()
+		and delete the memory
+	*/
+	void deletecontents() { 
+		while(!empty()) {
+			delete pop();
+		}
+	}
+	/* As long as the vector is not empty,
+		get a pointer to the last index using the pop() method
+		and delete the arrays
+	*/
+    void deletearrays() { 
+		while(!empty()) {
+			delete[] pop();
+		}
+	}
+
+	
+	/* Method to get access to the main data type pointer T* buf;
+		In a valid C++ class concept, this buf would be protected/private!
+		You should use these methods instead of accessing it directly!
+	*/
+    T *getbuf() { 
+		return buf; 
+	}
+	/* Get access to the buffer as constant data type */
+    const T *getbuf() const { 
+		return buf; 
+	}
+
+
+	/* Check if buffer E is greater,equal than buffer BUF
+		and if E is smaller than BUF
+		[THIS METHOD IS NOT USED IN THE WHOLE CODE]
+	*/
+    bool inbuf(const T *e) const { 
+		return e >= buf && e < &buf[ulen]; 
+	}
+
+
+	/* Sorting implementations
+	*/
     template<class F>
-    void sort(F fun, int i = 0, int n = -1)
-    {
+    void sort(F fun, int i = 0, int n = -1) {
+		// call quicksort template
+		/* Standard data types cam be compared very easily
+			More advanced types have OPERATORS to compare two values
+		*/
         quicksort(&buf[i], n < 0 ? ulen-i : n, fun);
     }
+	// this is a dummy method that will lead to the function above
+    void sort() { 
+		sort(compareless<T>); 
+	}
 
-    void sort() { sort(compareless<T>); }
 
-    void shuffle(){
+	/* Shuffle the vector 
+		EXAMPLE:
+		before shuffle:	1 2 3 4 5 6 7 8 9
+		after shuffle:	9 2 1 3 8 4 6 5 7
+	*/
+    void shuffle() {
     	extern uint randomMT();
     	for(int i = 0; i < ulen; i++){
     		int indx = rnd(ulen);
@@ -730,6 +892,10 @@ template <class T> struct vector
     	}
     }
 
+
+	/* Change the data buffer's size
+		and re-allocate memory
+	*/
     void growbuf(int sz)
     {
         int olen = alen;
@@ -745,22 +911,36 @@ template <class T> struct vector
         buf = (T *)newbuf;
     }
 
+	/* Add some memory slots to the vector and return the
+		additional slots as databuf 
+	*/
     databuf<T> reserve(int sz)
     {
-        if(ulen+sz > alen) growbuf(ulen+sz);
-        return databuf<T>(&buf[ulen], sz);
+        if(ulen+sz > alen) {
+			/* Re-allocate some memory if the amount of memory 
+				to reserve exceedes the vector's capacity 
+			*/
+			growbuf(ulen+sz);
+        }
+		return databuf<T>(&buf[ulen], sz);
     }
 
-    void advance(int sz)
-    {
+	/* Change the vector's length without allocating new memory
+	*/
+    void advance(int sz) {
         ulen += sz;
     }
 
-    void addbuf(const databuf<T> &p)
-    {
+	/* Change the vector's size by the size of a data buffer
+	*/
+    void addbuf(const databuf<T> &p) {
+		// call advance method to resize vector length
         advance(p.length());
     }
-
+	
+	/* Change the vector's length and allocate new memory
+		return the new memory area as buffer
+	*/
     T *pad(int n)
     {
         T *buf = reserve(n).buf;
@@ -768,8 +948,14 @@ template <class T> struct vector
         return buf;
     }
 
-    void put(const T &v) { add(v); }
+	/* The methods put and add to the same!
+	*/
+    void put(const T &v) { 
+		add(v); // calls "add" method
+	}
 
+	/* 
+	*/
     void put(const T *v, int n)
     {
         databuf<T> buf = reserve(n);
@@ -777,77 +963,136 @@ template <class T> struct vector
         addbuf(buf);
     }
 
-    void remove(int i, int n)
-    {
-        for(int p = i+n; p<ulen; p++) buf[p-n] = buf[p];
-        ulen -= n;
-    }
 
+
+	/* Remove a range of indices
+		All the indices after the index which is removed will come a step closer
+		All the indices in the range will be deleted
+	*/
+    void remove(int i, int n)
+	{
+		/*  123456789abcdefghijklmnopqrstuvwxyz
+			remove(5, 4)
+			1289abcdefghijklmnopqrstuvwxyz
+			removed: 34567
+		*/
+		// push memory
+        for(int p = i+n; p<ulen; p++) buf[p-n] = buf[p];
+        ulen -= n; // shrink vector's length by range size
+    }
+	/* Remove one single index and return the removed index as a 
+		data type
+	*/
     T remove(int i)
     {
         T e = buf[i];
+		// push memory 
         for(int p = i+1; p<ulen; p++) buf[p-1] = buf[p];
-        ulen--;
+        ulen--; // decrement vector's size because we only remove 1 index
         return e;
     }
+	/* Removes one single index and uses the last index to replace
+		the removed index
 
+		123456789abcdefghijklmnopqrstuvwxyz
+		remove(15)
+		123456789abcdefzhijklmnopqrstuvwxy
+		removed: 'g'  (please note that 'z' takes its place)
+	*/
     T removeunordered(int i)
     {
         T e = buf[i];
         ulen--;
+		// if buffer is not empty, take last index as removed index
         if(ulen>0) buf[i] = buf[ulen];
         return e;
     }
 
+	/* Find an index (the first occurance) in a vector
+		Comparing operations in classes are based on operator implementations!
+	*/
     template<class U>
     int find(const U &o)
     {
-        loopi(ulen) if(buf[i]==o) return i;
+        //loopi(ulen) if(buf[i]==o) return i;
+		/* Death to loop macros
+		*/
+		for(int index = 0; index < ulen; index++) {
+			// if we find it, return it
+			if(buf[index]==o) return index;
+		}
+		// no index found: return invalid index
         return -1;
     }
-
+	/* Loop through all indices of a vector
+		and remove all appearances of this value
+	*/
     void removeobj(const T &o)
     {
-        loopi(ulen) if(buf[i]==o) remove(i--);
+        //loopi(ulen) if(buf[i]==o) remove(i--);
+		for(int index = 0; index < ulen; index++) {
+			if(buf[index]==o) remove(index--);
+		}
     }
-
+	/* Loop through a vector and replace all appearances
+		with the last index (which wont be abanconned/changed until the end)
+	*/
     void replacewithlast(const T &o)
     {
         if(!ulen) return;
-        loopi(ulen-1) if(buf[i]==o)
-        {
-            buf[i] = buf[ulen-1];
-        }
+		for(int index = 0; index < ulen-1; index++) {
+			if(buf[i]==o) {
+				buf[i] = buf[ulen-1];
+			}
+		}
         ulen--;
     }
 
+
+	/* Insert a data type into a vector in a certain position
+	*/
     T &insert(int i, const T &e)
     {
+		// add additional memory slot
         add(T());
+		// push memory
         for(int p = ulen-1; p>i; p--) buf[p] = buf[p-1];
+		// copy value
         buf[i] = e;
+		// return input value
         return buf[i];
     }
-
+	/* Insert a data type into a vector SEVERAL TIMES
+	*/
     T *insert(int i, const T *e, int n)
     {
+		// reallocate vector memory
         if(ulen+n>alen) growbuf(ulen+n);
-        loopj(n) add(T());
-        for(int p = ulen-1; p>=i+n; p--) buf[p] = buf[p-n];
-        loopj(n) buf[i+j] = e[j];
+		// add memory slots
+        for(int added_times = 0; added_times < n; added_times++) add(T());
+        // push existing objects forward
+		for(int p = ulen-1; p>=i+n; p--) buf[p] = buf[p-n];
+		// insert new object [n] times
+        for(int copied = 0; copied < n; copied++) buf[i+copied] = e[copied];
+		// return added items as array
         return &buf[i];
     }
 
-    void reverse()
-    {
+
+	/* Reverse buffer
+		1 2 3 4 5 6 7 8 9
+		reverse();
+		9 8 7 6 5 4 3 2 1 
+	*/
+    void reverse() {
         loopi(ulen/2) swap(buf[i], buf[ulen-1-i]);
     }
+
 
     static int heapparent(int i) { return (i - 1) >> 1; }
     static int heapchild(int i) { return (i << 1) + 1; }
 
-    void buildheap()
-    {
+    void buildheap() {
         for(int i = ulen/2; i >= 0; i--) downheap(i);
     }
 
