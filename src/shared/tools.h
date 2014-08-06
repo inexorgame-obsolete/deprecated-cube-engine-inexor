@@ -280,14 +280,33 @@ struct stringformatter
     }
 };
 
+
+
+/*------------------------------------------------------------------------------------------------------------------*/
+// STRING FORMAT MACROS
+// 
+// 
+/*------------------------------------------------------------------------------------------------------------------*/
 #define formatstring(d) stringformatter((char *)d)
 #define defformatstring(d) string d; formatstring(d)
 #define defvformatstring(d,last,fmt) string d; { va_list ap; va_start(ap, last); vformatstring(d, fmt, ap); va_end(ap); }
 
+
+
+/*------------------------------------------------------------------------------------------------------------------*/
+// LOOP MACROS
+// 
+// 
+/*------------------------------------------------------------------------------------------------------------------*/
+
+/* These macros must die!
+*/
 #define loopv(v)    for(int i = 0; i<(v).length(); i++)
 #define loopvj(v)   for(int j = 0; j<(v).length(); j++)
 #define loopvk(v)   for(int k = 0; k<(v).length(); k++)
 #define loopvrev(v) for(int i = (v).length()-1; i>=0; i--)
+
+
 
 template <class T>
 struct databuf
@@ -962,8 +981,7 @@ template <class T> struct vector
         buf.put(v, n);
         addbuf(buf);
     }
-
-
+	
 
 	/* Remove a range of indices
 		All the indices after the index which is removed will come a step closer
@@ -1088,7 +1106,6 @@ template <class T> struct vector
         loopi(ulen/2) swap(buf[i], buf[ulen-1-i]);
     }
 
-
     static int heapparent(int i) { return (i - 1) >> 1; }
     static int heapchild(int i) { return (i << 1) + 1; }
 
@@ -1153,13 +1170,30 @@ template <class T> struct vector
 */
 template<class T> struct hashset
 {
+	/* Type definitions for template lements
+	*/
     typedef T elem;
     typedef const T const_elem;
 
+	// Set Chunk size to 64 (no other option available)
     enum { CHUNKSIZE = 64 };
 
-    struct chain { T elem; chain *next; };
-    struct chainchunk { chain chains[CHUNKSIZE]; chainchunk *next; };
+	/* One-side chain structure
+	    with pointer to the next element
+	*/
+    struct chain { 
+		T elem; 
+		// pointer to the next index
+		chain *next; 
+	};
+
+	// chain chunk structure
+    struct chainchunk { 
+		// array of chains [64]
+		chain chains[CHUNKSIZE];
+		// pointer to the next chain chunk
+		chainchunk *next; 
+	};
 
     int size;
     int numelems;
@@ -1168,18 +1202,20 @@ template<class T> struct hashset
     chainchunk *chunks;
     chain *unused;
 
-    hashset(int size = 1<<10)
-      : size(size)
-    {
+
+	/* Constructor with constructor list
+	*/
+    hashset(int size = 1<<10) : size(size) {
         numelems = 0;
         chunks = NULL;
         unused = NULL;
         chains = new chain *[size];
         loopi(size) chains[i] = NULL;
     }
-
-    ~hashset()
-    {
+	/* Destructor
+	*/
+    ~hashset() {
+		// relase chains safely
         DELETEA(chains);
         deletechunks();
     }
@@ -1459,15 +1495,22 @@ inline char *newstring(const char *s)           { return newstring(s, strlen(s))
 inline char *newstringbuf(const char *s)        { return newstring(s, MAXSTRLEN-1);       }
 
 const int islittleendian = 1;
+
+
+
 #ifdef SDL_BYTEORDER
-#define endianswap16 SDL_Swap16
-#define endianswap32 SDL_Swap32
-#define endianswap64 SDL_Swap64
+	#define endianswap16 SDL_Swap16
+	#define endianswap32 SDL_Swap32
+	#define endianswap64 SDL_Swap64
 #else
-inline ushort endianswap16(ushort n) { return (n<<8) | (n>>8); }
-inline uint endianswap32(uint n) { return (n<<24) | (n>>24) | ((n>>8)&0xFF00) | ((n<<8)&0xFF0000); }
-inline ullong endianswap64(ullong n) { return endianswap32(uint(n >> 32)) | ((ullong)endianswap32(uint(n)) << 32); }
+	inline ushort endianswap16(ushort n) { return (n<<8) | (n>>8); }
+	inline uint endianswap32(uint n) { return (n<<24) | (n>>24) | ((n>>8)&0xFF00) | ((n<<8)&0xFF0000); }
+	inline ullong endianswap64(ullong n) { return endianswap32(uint(n >> 32)) | ((ullong)endianswap32(uint(n)) << 32); }
 #endif
+
+
+
+
 template<class T> inline T endianswap(T n) { union { T t; uint i; } conv; conv.t = n; conv.i = endianswap32(conv.i); return conv.t; }
 template<> inline ushort endianswap<ushort>(ushort n) { return endianswap16(n); }
 template<> inline short endianswap<short>(short n) { return endianswap16(n); }
@@ -1479,40 +1522,52 @@ template<> inline double endianswap<double>(double n) { union { double t; uint i
 template<class T> inline void endianswap(T *buf, int len) { for(T *end = &buf[len]; buf < end; buf++) *buf = endianswap(*buf); }
 template<class T> inline T endiansame(T n) { return n; }
 template<class T> inline void endiansame(T *buf, int len) {}
+
+
+
+
 #ifdef SDL_BYTEORDER
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
-#define lilswap endiansame
-#define bigswap endianswap
+	#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+		#define lilswap endiansame
+		#define bigswap endianswap
+	#else
+		#define lilswap endianswap
+		#define bigswap endiansame
+	#endif
 #else
-#define lilswap endianswap
-#define bigswap endiansame
+	template<class T> inline T lilswap(T n) { return *(const uchar *)&islittleendian ? n : endianswap(n); }
+	template<class T> inline void lilswap(T *buf, int len) { if(!*(const uchar *)&islittleendian) endianswap(buf, len); }
+	template<class T> inline T bigswap(T n) { return *(const uchar *)&islittleendian ? endianswap(n) : n; }
+	template<class T> inline void bigswap(T *buf, int len) { if(*(const uchar *)&islittleendian) endianswap(buf, len); }
 #endif
-#else
-template<class T> inline T lilswap(T n) { return *(const uchar *)&islittleendian ? n : endianswap(n); }
-template<class T> inline void lilswap(T *buf, int len) { if(!*(const uchar *)&islittleendian) endianswap(buf, len); }
-template<class T> inline T bigswap(T n) { return *(const uchar *)&islittleendian ? endianswap(n) : n; }
-template<class T> inline void bigswap(T *buf, int len) { if(*(const uchar *)&islittleendian) endianswap(buf, len); }
-#endif
+
+
 
 /* workaround for some C platforms that have these two functions as macros - not used anywhere */
 #ifdef getchar
-#undef getchar
+	#undef getchar
 #endif
 #ifdef putchar
-#undef putchar
+	#undef putchar
 #endif
+
+
+
 
 struct stream
 {
-#ifdef WIN32
-#ifdef __GNUC__
-    typedef off64_t offset;
-#else
-    typedef __int64 offset;
-#endif
-#else
-    typedef off_t offset;
-#endif
+	/*
+	*/
+	#ifdef WIN32
+		#ifdef __GNUC__
+			typedef off64_t offset;
+		#else
+			typedef __int64 offset;
+		#endif
+	#else
+		typedef off_t offset;
+	#endif
+
 
     virtual ~stream() {}
     virtual void close() = 0;

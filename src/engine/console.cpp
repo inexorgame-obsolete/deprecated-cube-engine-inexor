@@ -440,20 +440,46 @@ vector<hline *> history;
 int histpos = 0;
 
 VARP(maxhistory, 0, 1000, 10000);
+
+
+/*
+#	TASK: clean up program enviroment at exit
+#	PARAMETERS: none (void)
+#	RETURN VALUE: name for a file in which the history will be written
+*/
 const char *historyfile() { return "history.cfg"; }
+
+
+
+/*
+#	TASK: clean up program enviroment at exit
+#	PARAMETERS: none (void)
+#	RETURN VALUE: none (void)
+*/
 void writehistory()
 {
+	/* Open UTF-8 file stream (write mode) 
+	    and check its validity
+	*/
     stream *f = openutf8file(path(historyfile(), true), "w");
-    if(!f) return;
-	loopv(history)
-	{
-		hline *h = history[i];
+    if(!f) return; // close file stream if invalid
+
+	/* loop through history vector and
+	    export all content to the history file
+	*/
+	for(int history_index = 0; history_index < history.length(); history_index++) {
+		hline *h = history[history_index];
 		if(!h->buf) continue;
-		f->putline(h->buf);
+		f->putline(h->buf); // write line
 	}
+	// delete file stream
 	delete f;
 }
+// in game command to call writehistory() function
 COMMAND(writehistory, "");
+
+
+
 void loadhistory()
 {		
 	stream *f = openutf8file(path(historyfile(), true), "r");

@@ -522,9 +522,19 @@ namespace game
         cleardynentcache();
     }
 
+		/*
+	#	TASK: clean up game settings/enviroment when disconnecting
+	#	PARAMETERS:
+	#		cleanup		perform a clean disconnect (reset map mode and map name)
+	#	RETURN VALUE: none (void)
+	*/
     void clearclients(bool notify)
     {
-        loopv(clients) if(clients[i]) clientdisconnected(i, notify);
+        // macro loopv(clients) replaced
+		for(int i=0; i<clients.length(); i++) {
+			// if client is valid, disconnect client
+			if(clients[i]) clientdisconnected(i, notify);
+		}
     }
 
     void initclient()
@@ -547,7 +557,8 @@ namespace game
         clearteaminfo();
 
         // reset perma-state
-        loopv(players)
+        // macro loopv(players) replaces
+		for(int i=0; i<players.length(); i++)
         {
             fpsent *d = players[i];
             d->frags = d->flags = 0;

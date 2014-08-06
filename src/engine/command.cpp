@@ -2244,50 +2244,106 @@ static inline bool sortidents(ident *x, ident *y)
     return strcmp(x->name, y->name) < 0;
 }
 
+
+/*
+#	TASK: write configuration file
+#	PARAMETERS: 
+#		name		configuration file name
+#	RETURN VALUE: none (void)
+*/
 void writecfg(const char *name)
 {
+	/* Open UTF-8 file stream and
+	    check its validity
+	*/
     stream *f = openutf8file(path(name && name[0] ? name : game::savedconfig(), true), "w");
     if(!f) return;
+
+
+	/* write standard "DO NOT MODIFY" disclaimer to config file
+		game::defaultconfig() and game::autoexec() are just strings that 
+		contain standard file names for these config files
+	*/
     f->printf("// automatically written on exit, DO NOT MODIFY\n// delete this file to have %s overwrite these settings\n// modify settings in game, or put settings in %s to override anything\n\n", game::defaultconfig(), game::autoexec());
-    game::writeclientinfo(f);
-    f->printf("\n");
+    
+	/* Write player name to config file
+	*/
+	game::writeclientinfo(f);
+    f->printf("\n"); // write new line
+	
+	/* Write crosshair configuration to config file
+	*/
     writecrosshairs(f);
-    vector<ident *> ids;
+	
+	/*------------------------------------------------------------------------------------------------------------------*/
+	// LOOP THROUGH ALL IDENTS (VARIABLES) AND WRITE THEM TO CONFIG FILE
+	// ALL WILL BE DONE AUTOMATICLY, EVEN IF YOU MODIFY CODE
+	/*------------------------------------------------------------------------------------------------------------------*/
+	// vector to store ids
+	vector<ident *> ids;
+	// ernumerate ids
     enumerate(idents, ident, id, ids.add(&id));
+	// sort ids using quicksort
     ids.sort(sortidents);
-    loopv(ids)
+
+    // macro loopv(ids) replaced
+	for(int i=0; i<ids.length(); i++)
     {
         ident &id = *ids[i];
-        if(id.flags&IDF_PERSIST) switch(id.type)
-        {
-            case ID_VAR: f->printf("%s %d\n", escapeid(id), *id.storage.i); break;
-            case ID_FVAR: f->printf("%s %s\n", escapeid(id), floatstr(*id.storage.f)); break;
-            case ID_SVAR: f->printf("%s %s\n", escapeid(id), escapestring(*id.storage.s)); break;
-        }
+        if(id.flags&IDF_PERSIST) 
+		{
+			switch(id.type) {
+				case ID_VAR: f->printf("%s %d\n", escapeid(id), *id.storage.i); break;
+				case ID_FVAR: f->printf("%s %s\n", escapeid(id), floatstr(*id.storage.f)); break;
+				case ID_SVAR: f->printf("%s %s\n", escapeid(id), escapestring(*id.storage.s)); break;
+			}
+		}
     }
-    f->printf("\n");
-    writebinds(f);
-    f->printf("\n");
-    loopv(ids)
+    f->printf("\n"); // write new line			
+
+	/* Write binds to config file
+	*/    
+	writebinds(f);
+    f->printf("\n"); // write new line	
+
+    // macro loopv(ids) replaced
+	for(int i=0; i<ids.length(); i++)
     {
         ident &id = *ids[i];
-        if(id.type==ID_ALIAS && id.flags&IDF_PERSIST && !(id.flags&IDF_OVERRIDDEN)) switch(id.valtype)
-        {
-        case VAL_STR:
-            if(!id.val.s[0]) break;
-            if(!validateblock(id.val.s)) { f->printf("%s = %s\n", escapeid(id), escapestring(id.val.s)); break; }
-        case VAL_FLOAT:
-        case VAL_INT: 
-            f->printf("%s = [%s]\n", escapeid(id), id.getstr()); break;
-        }
+        if(id.type==ID_ALIAS && id.flags&IDF_PERSIST && !(id.flags&IDF_OVERRIDDEN)) 
+		{
+			switch(id.valtype)
+			{
+				case VAL_STR:
+					if(!id.val.s[0]) break;
+					if(!validateblock(id.val.s)) { 
+						f->printf("%s = %s\n", escapeid(id), escapestring(id.val.s));
+						break; 
+					}
+
+				case VAL_FLOAT: case VAL_INT:
+					f->printf("%s = [%s]\n", escapeid(id), id.getstr()); 
+					break;
+			}
+		}
     }
-    f->printf("\n");
+    f->printf("\n"); // write new line
+
+	/* ?
+	*/
     writecompletions(f);
+
+	/* Free file stream memory
+	*/
     delete f;
 }
 
+// add a command to write configuration file manually (including parameter)
 COMMAND(writecfg, "s");
 #endif
+
+
+
 
 // below the commands that implement a small imperative language. thanks to the semantics of
 // () and [] expressions, any control construct can be defined trivially.

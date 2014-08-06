@@ -59,16 +59,26 @@ ICOMMAND(connectedport, "", (),
     intret(address ? address->port : -1);
 });
 
+
+
+/*
+#	TASK: abort any client to server connection
+#	PARAMETERS: none (void)
+#	RETURN VALUE: none (void)
+*/
 void abortconnect()
 {
     if(!connpeer) return;
-    game::connectfail();
-    if(connpeer->state!=ENET_PEER_STATE_DISCONNECTED) enet_peer_reset(connpeer);
-    connpeer = NULL;
+    game::connectfail(); // reset connection password
+    if(connpeer->state!=ENET_PEER_STATE_DISCONNECTED) enet_peer_reset(connpeer); // reset ENet connection peer (if state is valid)
+    connpeer = NULL; // set peer to NULL
     if(curpeer) return;
+	// destroy client host and set host to NULL
     enet_host_destroy(clienthost);
     clienthost = NULL;
 }
+
+
 
 SVARP(connectname, "");
 VARP(connectport, 0, 0, 0xFFFF);
@@ -132,6 +142,14 @@ void reconnect(const char *serverpassword)
     connectserv(connectname, connectport, serverpassword);
 }
 
+
+/*
+#	TASK: disconnect from a server
+#	PARAMETERS: 
+#		async		
+#		cleanup		
+#	RETURN VALUE: none (void)
+*/
 void disconnect(bool async, bool cleanup)
 {
     if(curpeer) 

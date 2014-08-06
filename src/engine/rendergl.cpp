@@ -2283,13 +2283,32 @@ ICOMMAND(getcrosshair, "i", (int *i),
     }
     result(name);
 });
- 
-void writecrosshairs(stream *f)
+
+
+
+
+/*
+#	TASK: write crosshair settings (file name, size..) to a file stream (config file e.g.)
+#	PARAMETERS: 
+#		file_stream		file stream that will be written to
+#	RETURN VALUE: none (void)
+*/
+void writecrosshairs(stream *file_stream)
 {
-    loopi(MAXCROSSHAIRS) if(crosshairs[i] && crosshairs[i]!=notexture)
-        f->printf("loadcrosshair %s %d\n", escapestring(crosshairs[i]->name), i);
-    f->printf("\n");
+    // macro loopi(MAXCROSSHAIRS) replaced
+	for(int i=0; i<MAXCROSSHAIRS; i++) {
+		/* If crosshair (and its texture) is valid
+		    write crosshair load info to config
+		*/
+		if(crosshairs[i] && crosshairs[i]!=notexture) {
+		    file_stream->printf("loadcrosshair %s %d\n", escapestring(crosshairs[i]->name), i);
+		}
+	}
+    file_stream->printf("\n"); // print new line
 }
+
+
+
 
 void drawcrosshair(int w, int h)
 {

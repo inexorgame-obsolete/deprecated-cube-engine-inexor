@@ -5,25 +5,41 @@
 
 #define LOGSTRLEN 512
 
+// logfile pointer
 static FILE *logfile = NULL;
 
+/*
+#	TASK: close log file
+#	PARAMETERS: none (void)
+#	RETURN VALUE: none (void)
+*/
 void closelogfile()
 {
     if(logfile)
     {
+		/* If log file is valid,
+		    close log file and set log file pointer to null
+		*/
         fclose(logfile);
         logfile = NULL;
     }
 }
 
+/*
+#	TASK: return log file pointer
+#	PARAMETERS: none (void)
+#	RETURN VALUE:
+#		a pointer to a FILE* structure
+*/
 FILE *getlogfile()
 {
-#ifdef WIN32
-    return logfile;
-#else
-    return logfile ? logfile : stdout;
-#endif
+	#ifdef WIN32
+		return logfile;
+	#else
+		return logfile ? logfile : stdout;
+	#endif
 }
+
 
 void setlogfile(const char *fname)
 {
@@ -717,18 +733,44 @@ void flushserver(bool force)
     if(server::sendpackets(force) && serverhost) enet_host_flush(serverhost);
 }
 
+
+
+
+
+/*------------------------------------------------------------------------------------------------------------------*/
+// OVERLOADED FUNCTION TO DISCONNECT FROM A SERVER IN GAME
+// ONLY FOR NON-STANDALONES!
+// 
+/*------------------------------------------------------------------------------------------------------------------*/
 #ifndef STANDALONE
+
+/*
+#	TASK: connect to a local server via /lanconnect
+#	PARAMETERS: 
+#		cleanup		perform a clean disconnect?
+#	RETURN VALUE: none (void)
+*/
 void localdisconnect(bool cleanup)
 {
     bool disconnected = false;
-    loopv(clients) if(clients[i]->type==ST_LOCAL) 
-    {
-        server::localdisconnect(i);
-        delclient(clients[i]);
-        disconnected = true;
-    }
-    if(!disconnected) return;
+
+    // macro loopv(clients) replaced
+	for(int i=0; i<clients.length(); i++)
+	{
+		if(clients[i]->type==ST_LOCAL) 
+		{
+		    server::localdisconnect(i); // disconnect local client
+		    delclient(clients[i]); // remove client
+		    disconnected = true;
+		}
+	}
+
+    if(!disconnected) return; // return function if we are still connected
+	/* let game enviroment know that you disconnected from a server
+	*/
     game::gamedisconnect(cleanup);
+	/* Return to main menu
+	*/
     mainmenu = 1;
 }
 
@@ -741,9 +783,20 @@ void localconnect()
 }
 #endif
 
+
+
+
+/*------------------------------------------------------------------------------------------------------------------*/
+// ONLY ON WINDOWS:
+// SET UP WINDOWS SYSTEM TRAY ICONS FOR WIN32 SERVERS
+// 
+/*------------------------------------------------------------------------------------------------------------------*/
+
 #ifdef WIN32
+// Include Windows Shell API
 #include "shellapi.h"
 
+// Standard program icon
 #define IDI_ICON1 1
 
 static string apptip = "";
@@ -757,6 +810,12 @@ static const int MAXLOGLINES = 200;
 struct logline { int len; char buf[LOGSTRLEN]; };
 static queue<logline, MAXLOGLINES> loglines;
 
+
+/*
+#	TASK: destroy task bar icon (system tray icon) and menu (for WIN32 servers)
+#	PARAMETERS: none (void)
+#	RETURN VALUE: none (void)
+*/
 static void cleanupsystemtray()
 {
     NOTIFYICONDATA nid;
@@ -767,6 +826,12 @@ static void cleanupsystemtray()
     Shell_NotifyIcon(NIM_DELETE, &nid);
 }
 
+/*
+#	TASK: create task bar icon (system tray icon) and menu (for WIN32 servers)
+#	PARAMETERS: 
+#		uCallbackMessage	?
+#	RETURN VALUE: none (void)
+*/
 static bool setupsystemtray(UINT uCallbackMessage)
 {
 	NOTIFYICONDATA nid;
@@ -784,6 +849,11 @@ static bool setupsystemtray(UINT uCallbackMessage)
     return true;
 }
 
+
+
+/* Another fancy way to comment things out
+    Never seen that in other code
+*/
 #if 0
 static bool modifysystemtray()
 {
@@ -798,6 +868,12 @@ static bool modifysystemtray()
 }
 #endif
 
+
+/*
+#	TASK: Unregister Windows class and Destroy system tray icon menu ("clean up")
+#	PARAMETERS: none (void)
+#	RETURN VALUE: none (void)
+*/
 static void cleanupwindow()
 {
 	if(!appinstance) return;
@@ -812,6 +888,8 @@ static void cleanupwindow()
 		wndclass = 0;
 	}
 }
+
+
 
 static BOOL WINAPI consolehandler(DWORD dwCtrlType)
 {
@@ -949,6 +1027,8 @@ static void setupwindow(const char *title)
 
     if(!setupsystemtray(WM_APP)) fatal("failed adding to system tray");
 }
+
+
 
 static char *parsecommandline(const char *src, vector<char *> &args)
 {

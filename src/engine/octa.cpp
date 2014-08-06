@@ -88,8 +88,12 @@ void freeocta(cube *cube_to_delete)
 	/* an octree is a cube that is divided/cut in 8 (2*2*2) smaller cubes
 		that are stacked inside it. We will discard all these 8 chilren now.
 	*/
-    loopi(8) discardchildren(cube_to_delete[i]);
-   
+
+	// discard all children
+	for(int cube = 0; cube < 8; cube++) {
+		discardchildren(cube_to_delete[cube]);
+	}
+
 	// delete
 	delete[] cube_to_delete;
     allocnodes--;

@@ -4,6 +4,7 @@
 
 extern void cleargamma();
 
+
 /*
 #	TASK: clean up program enviroment before process will stop
 #	PARAMETERS: none (void)
@@ -19,6 +20,8 @@ void cleanup()
 	extern void clear_mdls();
 	extern void clear_sound();
 
+	/* Call clean up functions
+	*/
     recorder::stop(); // stop video recorder (if running)
     cleanupserver(); // stop server functionality
     SDL_ShowCursor(1); // make standard os cursor visible again
@@ -29,9 +32,10 @@ void cleanup()
 	clear_console();
 	clear_mdls();
 	clear_sound();
-    closelogfile();
+    closelogfile(); // close log file
     SDL_Quit(); // Use this function to clean up all initialized subsystems. You should call it upon all exit conditions.
 }
+
 
 /*
 #	TASK: clean up program enviroment at exit
@@ -41,14 +45,14 @@ void cleanup()
 void quit() // normal exit
 {
     extern void writeinitcfg(); // make function body known
-    writeinitcfg(); // write basic game configuration
+    writeinitcfg(); // write BASIC game configuration
     writeservercfg(); // write SERVER LIST, NOT SERVER CONFIGURATION!!
-	writehistory();
-    abortconnect();
-    disconnect();
-    localdisconnect();
-    writecfg();
-    cleanup();
+	writehistory(); // write console history to history log
+    abortconnect(); // abort client to server connection
+    disconnect(); // terminate existing connections
+    localdisconnect(); // disconnect locally
+    writecfg(); // write EXTENDED configuration file
+    cleanup(); // call clean up function above
     exit(EXIT_SUCCESS); // exit(0); ---end process
 }
 
@@ -110,8 +114,6 @@ void fatal(const char *error_message, ...) // failure exit
 }
 
 
-
-
 SDL_Surface *screen = NULL;
 
 int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1;
@@ -119,6 +121,7 @@ int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1;
 dynent *player = NULL;
 
 int initing = NOT_INITING;
+
 
 bool initwarning(const char *desc, int level, int type)
 {
@@ -129,6 +132,7 @@ bool initwarning(const char *desc, int level, int type)
     }
     return false;
 }
+
 
 #define SCR_MINW 320
 #define SCR_MINH 200
@@ -143,7 +147,6 @@ VARF(depthbits, 0, 0, 32, initwarning("depth-buffer precision"));
 VARF(stencilbits, 0, 0, 32, initwarning("stencil-buffer precision"));
 VARF(fsaa, -1, -1, 16, initwarning("anti-aliasing"));
 VARF(vsync, -1, -1, 1, initwarning("vertical sync"));
-
 
 
 /*
@@ -589,6 +592,7 @@ void cleargamma()
 {
     if(curgamma != 100) SDL_SetGamma(1, 1, 1); // "Sets the color gamma function for the display" http://sdl.beuc.net/sdl.wiki/SDL_SetGamma
 }
+
 
 VAR(dbgmodes, 0, 0, 1);
 

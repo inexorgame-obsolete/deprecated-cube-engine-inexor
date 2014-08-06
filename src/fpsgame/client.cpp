@@ -238,10 +238,18 @@ namespace game
         if(player1->state!=CS_SPECTATOR || player1->privilege || !remote) senditemstoserver = true;
     }
 
-    void writeclientinfo(stream *f)
+	/*
+	#	TASK: write standard player name to file stream (config file e.g.)
+	#	PARAMETERS: 
+	#		file_stream		a pointer to a file stream
+	#	RETURN VALUE: none (void)
+	*/
+    void writeclientinfo(stream *file_stream)
     {
-        f->printf("name %s\n", escapestring(player1->name));
+		// write player name (escaped)
+        file_stream->printf("name %s\n", escapestring(player1->name));
     }
+
 
     bool allowedittoggle()
     {
@@ -816,6 +824,12 @@ namespace game
         copystring(connectpass, password);
     }
 
+
+	/*
+	#	TASK: reset connection password because connection failed
+	#	PARAMETERS: none (void)
+	#	RETURN VALUE: none (void)
+	*/
     void connectfail()
     {
         memset(connectpass, 0, sizeof(connectpass));
@@ -828,30 +842,42 @@ namespace game
         if(editmode) toggleedit();
     }
 
+	/*
+	#	TASK: clean up game settings/enviroment when disconnecting
+	#	PARAMETERS:
+	#		cleanup		perform a clean disconnect (reset map mode and map name)
+	#	RETURN VALUE: none (void)
+	*/
     void gamedisconnect(bool cleanup)
     {
-        if(remote) stopfollowing();
-        ignores.setsize(0);
-        connected = remote = false;
+        if(remote) stopfollowing(); // stop spectating a player
+        ignores.setsize(0); // clear vector of players that you ignore (/ignore <cn>)
+        connected = false;
+		remote = false;
         player1->clientnum = -1;
         sessionid = 0;
-        mastermode = MM_OPEN;
-        messages.setsize(0);
+        mastermode = MM_OPEN; // reset mastermode
+        messages.setsize(0); // reset network message vector
         messagereliable = false;
         messagecn = -1;
-        player1->respawn(gamemode);
+        player1->respawn(gamemode); // respawn player (in most cases you return to main menu if no start map specified...)
         player1->lifesequence = 0;
         player1->state = CS_ALIVE;
-        player1->privilege = PRIV_NONE;
-        sendcrc = senditemstoserver = false;
+        player1->privilege = PRIV_NONE; // reset player's administrative status
+        sendcrc = false; // do not send a CRC32 hash of maps
+		senditemstoserver = false;
         demoplayback = false;
         gamepaused = false;
-        gamespeed = 100;
-        clearclients(false);
-        if(cleanup)
-        {
-            nextmode = gamemode = INT_MAX;
-            clientmap[0] = '\0';
+        gamespeed = 100; // reset game speed
+        clearclients(false); // delete all clients from my scoreboard and game session
+
+		/* Perform a clean disconnect if parameter specified
+		    clean disconnect means to reset gamemode, nextmode and clientmap
+		*/
+        if(cleanup) {
+			nextmode = INT_MAX;
+			gamemode = INT_MAX;
+			clientmap[0] = '\0';
         }
     }
 
