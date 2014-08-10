@@ -76,7 +76,7 @@ private:
 
 	vec max_force;
 	bool color_forces; // TODO: use attributes in renderer instance
-	Shader *shader = NULL;
+	Shader *shader;
 
 	spring_renderer() : particle_renderer_implementation("spring_renderer") {
 		ps.particle_renderer_implementations.push_back(this);
