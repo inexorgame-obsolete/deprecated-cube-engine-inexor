@@ -88,7 +88,7 @@ set(BUILD_DEBUG_FLAGS   "${BUILD_FLAGS} -O0 -g -D_DEBUG -DBUILD_DEBUG")
 set(BUILD_RELEASE_FLAGS "${BUILD_FLAGS} -O3 -DNDEBUG -DBUILD_NO_DEBUG")
 
 set(BUILD_C_FLAGS "-fomit-frame-pointer -Wall -fsigned-char")
-set(BUILD_CXX_FLAGS "-fno-exceptions -fno-rtti")
+set(BUILD_CXX_FLAGS "-fexceptions -fno-rtti")
 
 set(BUILD_C_DEBUG_FLAGS "${BUILD_C_FLAGS} ${BUILD_DEBUG_FLAGS}")
 set(BUILD_CXX_DEBUG_FLAGS "${BUILD_CXX_FLAGS} ${BUILD_DEBUG_FLAGS}")

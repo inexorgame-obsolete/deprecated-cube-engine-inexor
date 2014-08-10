@@ -2,39 +2,36 @@
 #include "engine/particles/particles.h"
 
 /**
- * Singleton implementation of a black hole.
+ * Singleton implementation of a pulsar.
  */
-struct black_hole : public particle_modifier_implementation
+struct pulsar : public particle_modifier_implementation
 {
 
 public:
 
-	static black_hole& instance()
+	static pulsar& instance()
 	{
-		static black_hole _instance;
+		static pulsar _instance;
 		return _instance;
 	}
-	virtual ~black_hole() { }
+	virtual ~pulsar() { }
 
 	/**
 	 * Attracts particles.
 	 */
 	inline void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime) {
-		// TODO: time factor
-		gravity = pm_inst->attributes["gravity"];
+		gravity = pm_inst->attributes["gravity"] * sin(ps.particlemillis / 1000.0);
+		// conoutf("gravity: %3.3f", gravity);
 		mass = pm_inst->attributes["mass"];
 		dx = p_inst->o.x - pm_inst->o.x;
 		dy = p_inst->o.y - pm_inst->o.y;
 		dz = p_inst->o.z - pm_inst->o.z;
 		distance = sqrtf(dx * dx + dy * dy + dz * dz);
-		if (distance < 5.0f) {
-			p_inst->remaining = 0;
-		} else {
-			force = -(p_inst->mass) * mass * gravity / (distance * distance);
-			p_inst->vel.x += (force * dx) / (distance * p_inst->mass);
-			p_inst->vel.y += (force * dy) / (distance * p_inst->mass);
-			p_inst->vel.z += (force * dz) / (distance * p_inst->mass);
-		}
+		if (distance == 0.0f) distance = 0.00000000001f;
+		force = -(p_inst->mass) * mass * gravity / (distance * distance);
+		p_inst->vel.x += (force * dx) / (distance * p_inst->mass);
+		p_inst->vel.y += (force * dy) / (distance * p_inst->mass);
+		p_inst->vel.z += (force * dz) / (distance * p_inst->mass);
 	}
 
 	inline void modify(particle_modifier_instance *pm_inst, int elapsedtime) { }
@@ -51,7 +48,7 @@ private:
 	float force;
 	float dx, dy, dz;
 
-	black_hole() : particle_modifier_implementation("black_hole") {
+	pulsar() : particle_modifier_implementation("pulsar") {
 		ps.particle_modifier_implementations.push_back(this);
 		gravity = 0.0f;
 		mass = 0.0f;
@@ -61,9 +58,9 @@ private:
 		dy = 0.0f;
 		dz = 0.0f;
 	}
-	black_hole( const black_hole& );
-	black_hole & operator = (const black_hole &);
+	pulsar( const pulsar& );
+	pulsar & operator = (const pulsar &);
 
 };
 
-black_hole& ps_modifier_black_hole = black_hole::instance();
+pulsar& ps_modifier_pulsar = pulsar::instance();

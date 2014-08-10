@@ -13,20 +13,23 @@ public:
 	}
 	virtual ~billboard_renderer() { }
 
-	Texture *tex;
-	int texclamp;
-	float fade_threshold_size;
-	float min_size;
-	float max_size;
-	float quadratic[3];
-
 	void before(particle_renderer_instance *pr_inst) {
 		glPushMatrix();
 		glEnable(GL_TEXTURE_2D);
+		glShadeModel(GL_SMOOTH);
+		glEnable(GL_POINT_SMOOTH);
+        glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+        glEnable(GL_DEPTH_TEST);
+
+		// particle_shader->set();
+		// particle_shader_notexture->set();
+        // default_shader->set();
+        particlesoftshader->set();
         tex = textureload(pr_inst->texture.c_str(), texclamp);
         glBindTexture(GL_TEXTURE_2D, tex->id);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+		// glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_POINT_SPRITE_ARB);
 		glPointParameterfvARB_(GL_POINT_DISTANCE_ATTENUATION_ARB, quadratic);
 		glPointParameterfARB_(GL_POINT_FADE_THRESHOLD_SIZE_ARB, fade_threshold_size);
@@ -50,21 +53,45 @@ public:
 		glDisable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glDisable(GL_TEXTURE_2D);
+		glDisable(GL_DEPTH_TEST);
+		// particle_shader_notexture->set();
 		glPopMatrix();
 	}
 
 private:
 
+	Texture *tex;
+	int texclamp;
+	float fade_threshold_size;
+	float min_size;
+	float max_size;
+	float quadratic[3];
+	Shader *stdworldshader = NULL;
+	Shader *default_shader = NULL;
+	Shader *particle_shader = NULL;
+	Shader *particle_shader_notexture = NULL;
+	Shader *particlesoftshader = NULL;
+
 	billboard_renderer() : particle_renderer_implementation("billboard_renderer") {
-		particle_renderer_implementations.push_back(this);
+		ps.particle_renderer_implementations.push_back(this);
 		tex = NULL;
 		texclamp = 0;
-		fade_threshold_size = 75.0f;
+		fade_threshold_size = 250.0f;
 		min_size = 1.0f;
-		max_size = 150.0f;
-		quadratic[0] = 1.0f;
-		quadratic[1] = 0.0f;
-		quadratic[2] = 0.01f;
+		max_size = 500.0f;
+		// quadratic[0] = 1.0f;
+		// quadratic[1] = 0.0f;
+		// quadratic[2] = 0.01f;
+		quadratic[0] = 5.0f;
+		quadratic[1] = 0.1f;
+		quadratic[2] = 10.0f;
+	    stdworldshader = lookupshaderbyname("stdworld");
+		if (!default_shader) default_shader = lookupshaderbyname("default");
+		if (!particle_shader) particle_shader = lookupshaderbyname("particle");
+		if (!particle_shader_notexture) particle_shader_notexture = lookupshaderbyname("particlenotexture");
+
+        if(!particlesoftshader) particlesoftshader = lookupshaderbyname("particlesoft");
+
 	}
 	billboard_renderer( const billboard_renderer& );
 	billboard_renderer & operator = (const billboard_renderer &);

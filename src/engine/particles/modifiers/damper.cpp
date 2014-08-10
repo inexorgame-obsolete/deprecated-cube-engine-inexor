@@ -20,13 +20,33 @@ public:
 	 * The velocity of an particle gets reduced. The damping value is specified by
 	 * the attribute "damper".
 	 */
-	void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime) {
-		p_inst->vel.mul(pm_inst->attributes["damper"] * (elapsedtime / particle_frame));
+	inline void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime) {
+		time_factor = elapsedtime / ps.particle_frame;
+		// damper = pm_inst->attributes["damper"];
+		// p_inst->vel.x *= (1.0f - damper * time_factor);
+		// p_inst->vel.y *= (1.0f - damper * time_factor);
+		// p_inst->vel.z *= (1.0f - damper * time_factor);
+		// Use the modifier vec3
+		p_inst->vel.x *= (1.0f - pm_inst->o.x * time_factor);
+		p_inst->vel.y *= (1.0f - pm_inst->o.y * time_factor);
+		p_inst->vel.z *= (1.0f - pm_inst->o.z * time_factor);
 	}
 
+	inline void modify(particle_modifier_instance *pm_inst, int elapsedtime) { }
+
+	inline void modify(int elapsedtime) { }
+
+	inline void init(particle_instance *p_inst) { }
+
 private:
+
+	float time_factor;
+	float damper;
+
 	velocity_damper() : particle_modifier_implementation("velocity_damper") {
-		particle_modifier_implementations.push_back(this);
+		ps.particle_modifier_implementations.push_back(this);
+		time_factor = 0.0f;
+		damper = 0.0f;
 	}
 	velocity_damper( const velocity_damper& );
 	velocity_damper & operator = (const velocity_damper &);

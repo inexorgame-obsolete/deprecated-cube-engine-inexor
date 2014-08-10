@@ -43,6 +43,7 @@ public:
 			int grid_size_x = int(pe_inst->attributes["grid_size_x"]);
 			int grid_size_y = int(pe_inst->attributes["grid_size_y"]);
 			int grid_size_z = int(pe_inst->attributes["grid_size_z"]);
+			particle_instance* last = NULL;
 			for (int x = 0; x < grid_size_x; x++)
 			{
 				float dx = x * grid_dist;
@@ -55,24 +56,42 @@ public:
 						loopi(particlestoemit)
 						{
 							// get new particle, may increase the pool
-							particle_instance *p_inst = emit_particle();
+							particle_instance *p_inst = ps.emit_particle();
 							// set the origin emitter
 							p_inst->pe_inst = pe_inst;
 							// get the particle type, mass and density from the emitter type
 							p_inst->p_type = pe_inst->p_type;
+							// conoutf("x:%3.1f y:%3.1f z:%3.1f", pe_inst->o.x, pe_inst->o.y, pe_inst->o.z);
 							p_inst->o.x = pe_inst->o.x + dx;
 							p_inst->o.y = pe_inst->o.y + dy;
 							p_inst->o.z = pe_inst->o.z + dz;
 							p_inst->vel = pe_inst->vel;
 							p_inst->mass = pe_inst->mass;
 							p_inst->density = pe_inst->density;
-							// set the elapsed and remaining iterations from the emitter type's lifetime
-							p_inst->elapsed = 0;
+							// set the remaining iterations from the emitter type's lifetime
 							p_inst->remaining = pe_inst->lifetime;
 							// add particle instance to the alive pool
-							alive_pool.push_back(p_inst);
+							ps.alive_pool.push_back(p_inst);
 							// add particle instance to it's renderer
 							p_inst->p_type->pr_inst->particles.push_back(p_inst);
+							// initialize particle instance in modifiers
+							/*
+							for(std::vector<particle_modifier_instance*>::iterator pm_it = pe_inst->modifiers.begin(); pm_it != pe_inst->modifiers.end(); ++pm_it)
+							{
+								(*pm_it)->pm_type->pm_impl->init(p_inst);
+							}
+							*/
+							//
+							if (z > 0 || y > 0 || x > 0) {
+								spring_instance *spring_inst = new spring_instance;
+								spring_inst->p_inst_1 = last;
+								spring_inst->p_inst_2 = p_inst;
+								spring_inst->spring_constant = 0.2f;
+								spring_inst->spring_friction = 0.9f;
+								spring_inst->spring_length = grid_dist + 1.0f;
+								ps.spring_instances.push_back(spring_inst);
+							}
+							last = p_inst;
 						}
 					}
 				}
@@ -84,7 +103,7 @@ private:
 
 	field_emitter() : particle_emitter_implementation("field_emitter")
 	{
-		particle_emitter_implementations.push_back(this);
+		ps.particle_emitter_implementations.push_back(this);
 	}
 	field_emitter( const field_emitter& );
 	field_emitter & operator = (const field_emitter &);

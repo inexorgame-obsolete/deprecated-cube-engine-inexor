@@ -1,16 +1,18 @@
 #include "cube.h"
 #include "particles.h"
 
+/*
 // abstract definitions - makes everything dynamic
 std::vector<particle_type*> particle_types;
 std::map<std::string, particle_type*> particle_types_map;
+*/
 
-particle_type* add_particle_type(std::string name, std::string renderer)
+particle_type* particle_system::add_particle_type(std::string name, std::string renderer)
 {
 	return add_particle_type(name, particle_renderer_instances_map[renderer]);
 }
 
-particle_type* add_particle_type(std::string name, particle_renderer_instance* renderer)
+particle_type* particle_system::add_particle_type(std::string name, particle_renderer_instance* renderer)
 {
 	particle_type *pt = new particle_type;
 	pt->name = name;
@@ -20,7 +22,7 @@ particle_type* add_particle_type(std::string name, particle_renderer_instance* r
 	return pt;
 }
 
-ICOMMAND(add_particle_type, "ss", (char *name, char *renderer), add_particle_type(name, renderer));
+// ICOMMAND(add_particle_type, "ss", (char *name, char *renderer), add_particle_type(name, renderer));
 
 /*
 ICOMMAND(particle_types_num, "", (), intret(particle_types.size()));

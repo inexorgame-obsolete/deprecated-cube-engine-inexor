@@ -18,15 +18,23 @@ public:
 
 	Texture *tex;
 	int texclamp;
+	Shader *particle_shader = NULL;
+	Shader *particle_shader_notexture = NULL;
 
 	void before(particle_renderer_instance *pr_inst) {
+		// glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
-		glEnable(GL_TEXTURE_2D);
-        tex = textureload(pr_inst->texture.c_str(), texclamp);
-        glBindTexture(GL_TEXTURE_2D, tex->id);
+		glDisable(GL_CULL_FACE);
+		// glEnable(GL_TEXTURE_2D);
+		// glShadeModel(GL_SMOOTH);
+		// particle_shader_notexture->set();
+        // tex = textureload(pr_inst->texture.c_str(), texclamp);
+        // glBindTexture(GL_TEXTURE_2D, tex->id);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-		glDisable(GL_CULL_FACE);
+		glEnable(GL_DEPTH_TEST);
+		// glDepthFunc(GL_LEQUAL);
+		glDepthMask(false);
 		glColor4f(pr_inst->color.r, pr_inst->color.g, pr_inst->color.b, pr_inst->color.a);
 		glBegin(GL_QUADS);
 	}
@@ -79,18 +87,24 @@ public:
 
 	void after(particle_renderer_instance *pr_inst) {
 		glEnd();
+		glDepthMask(true);
+        glDisable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 		glDisable(GL_BLEND);
-		glDisable(GL_TEXTURE_2D);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		// glEnable(GL_TEXTURE_2D);
+		// particle_shader->set();
 		glPopMatrix();
 	}
 
 private:
 
 	cube_renderer() : particle_renderer_implementation("cube_renderer") {
-		particle_renderer_implementations.push_back(this);
+		ps.particle_renderer_implementations.push_back(this);
 		tex = NULL;
 		texclamp = 0;
+		if (!particle_shader) particle_shader = lookupshaderbyname("particle");
+		if (!particle_shader_notexture) particle_shader_notexture = lookupshaderbyname("particlenotexture");
 	}
 	cube_renderer( const cube_renderer& );
 	cube_renderer & operator = (const cube_renderer &);

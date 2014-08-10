@@ -6,7 +6,7 @@ extern void cleargamma();
 
 void cleanup()
 {
-	shutdown_particles();
+	ps.shutdown_particles();
     recorder::stop();
     cleanupserver();
     SDL_ShowCursor(1);
@@ -1225,7 +1225,7 @@ int main(int argc, char **argv)
     inputgrab(grabinput = true);
     ignoremousemotion();
 
-    init_particles();
+    ps.init_particles();
 
     for(;;)
     {
@@ -1259,7 +1259,7 @@ int main(int argc, char **argv)
         // miscellaneous general game effects
         recomputecamera();
         updateparticles();
-        update_particle_system();
+        ps.update_particle_system();
         updatesounds();
 
         if(minimized) continue;

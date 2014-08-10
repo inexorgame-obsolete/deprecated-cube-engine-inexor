@@ -60,18 +60,27 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/renderer
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifier
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/particletype
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/worker
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/massspring
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/velocity
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/randomv
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/randomw
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/gravitypoint
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/blackhole
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/pulsar
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/damper
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/bbculling
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/globalgravity
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/geometrycollide
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/noop
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/point
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/field
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/sphere
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/satellite
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/cloth
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/renderers/billboard
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/renderers/cube
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/renderers/spring
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/ptest
 
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/ai

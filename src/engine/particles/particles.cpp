@@ -1,75 +1,42 @@
-#include "cube.h"
+#include "engine.h"
 #include "particles.h"
 
-// concrete instances refers to the abstract definitions
-std::vector<particle_instance*> particle_instances;
+particle_system ps;
 
-// particle pools for performance reasons
-std::list<particle_instance*> alive_pool;
-std::list<particle_instance*> dead_pool;
-
-struct particle_state_worker
+particle_system::particle_system()
 {
-	SDL_Thread *thread;
-	bool running;
-
-	particle_state_worker()
-	{
-		thread = NULL;
-		running = false;
-	}
-
-	void start();
-	void stop();
-	static int work(void *data);
-
-};
-
-void particle_state_worker::start()
-{
-	running = true;
-	thread = SDL_CreateThread(work, this);
+	particle_frame = 1000.0f;
+	particlemillis = 0;
+	timer_emitter = 0;
+	timer_modifier = 0;
+	timer_renderer = 0;
 }
 
-void particle_state_worker::stop() {
-	running = false;
-	SDL_KillThread(thread);
-}
-
-int particle_state_worker::work(void *data)
+particle_system::~particle_system()
 {
-	particle_state_worker *w = (particle_state_worker *)data;
-	int last_millis = 0;
-	while(w->running)
-	{
-		int current_millis = SDL_GetTicks();
-	    int elapsedtime = current_millis - last_millis;
-	    update_particle_pools(elapsedtime);
-	    emit_particles(elapsedtime);
-	    modify_particles(elapsedtime);
-	    last_millis = current_millis;
-	}
-	return 0;
 }
 
-particle_state_worker p_worker;
-
-void init_particles()
+void particle_system::init_particles()
 {
 	reset_particle_system();
 	p_worker.start();
 }
 
-void shutdown_particles()
+void particle_system::shutdown_particles()
 {
 	p_worker.stop();
 }
 
-void clear_particle_pools()
+void particle_system::clear_particle_pools()
 {
 	p_worker.stop();
-	alive_pool.clear();
-	dead_pool.clear();
+	std::list<particle_instance*>::iterator i = alive_pool.begin();
+	while (i != alive_pool.end())
+	{
+		(*i)->remaining = 0;
+		dead_pool.push_front(*i);
+		i = alive_pool.erase(i);
+	}
 	for(std::vector<particle_renderer_instance*>::iterator pr_it = particle_renderer_instances.begin(); pr_it != particle_renderer_instances.end(); ++pr_it)
 	{
 		(*pr_it)->particles.clear();
@@ -77,28 +44,24 @@ void clear_particle_pools()
 	p_worker.start();
 }
 
-void reset_particle_system()
+void particle_system::reset_particle_system()
 {
+	init_particle_renderer();
 }
 
-int particlemillis = 0;
-
-
 /**
- * Apply emitters, modifiers and renderers.
+ * Apply renderers.
  */
-void update_particle_system()
+void particle_system::update_particle_system()
 {
 	int millis = SDL_GetTicks();
     int elapsedtime = millis - particlemillis;
-
-    // std::thread t1(modify_particles, elapsedtime);
-
-    // update_particle_pools(elapsedtime);
-    // emit_particles(elapsedtime);
-    // modify_particles(elapsedtime);
-    render_particles();
-
+	try
+	{
+	    render_particles();
+	} catch (int e) {
+		conoutf("update_particle_system e: %d", e);
+	}
     particlemillis = millis;
 }
 
@@ -108,24 +71,44 @@ void update_particle_system()
  * particles from the list (efficiently remove elements in the
  * middle) and push it at the end of the dead pool (a vector).
  */
-void update_particle_pools(int elapsedtime)
+void particle_system::update_particle_pools(int elapsedtime)
 {
 	std::list<particle_instance*>::iterator i = alive_pool.begin();
 	while (i != alive_pool.end())
 	{
+		// conoutf("remaining: %d", (*i)->remaining);
 		if ((*i)->remaining > 0)
 		{
 			(*i)->elapsed += elapsedtime;
 			(*i)->remaining -= elapsedtime;
 			++i;
 		} else {
-			dead_pool.push_back(*i);
+			// dead_pool.push_front(*i);
+			// int before = (int) alive_pool.size();
 			i = alive_pool.erase(i);
+			// conoutf("%d:%d", before, (int) alive_pool.size());
 		}
 	}
 }
 
+particle_implementation_base::particle_implementation_base(const std::string& name) : name(name) { }
+particle_implementation_base::~particle_implementation_base() { }
 
-COMMAND(init_particles, "");
-COMMAND(clear_particle_pools, "");
-COMMAND(reset_particle_system, "");
+particle_emitter_implementation::particle_emitter_implementation(const std::string& name) : particle_implementation_base(name) {
+	ps.particle_emitter_implementations_map[name] = this;
+}
+particle_emitter_implementation::~particle_emitter_implementation() { }
+
+particle_renderer_implementation::particle_renderer_implementation(const std::string& name) : particle_implementation_base(name) {
+	ps.particle_renderer_implementations_map[name] = this;
+}
+particle_renderer_implementation::~particle_renderer_implementation() { }
+
+particle_modifier_implementation::particle_modifier_implementation(const std::string& name) : particle_implementation_base(name) {
+	ps.particle_modifier_implementations_map[name] = this;
+}
+particle_modifier_implementation::~particle_modifier_implementation() { }
+
+// COMMANDN(init_particles, particle_system::init_particles(), "");
+// ICOMMAND(clear_particle_pools, "");
+// ICOMMAND(reset_particle_system, "");

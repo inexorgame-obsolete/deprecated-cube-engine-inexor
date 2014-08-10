@@ -20,20 +20,26 @@ public:
 	/**
 	 * Respects the particle time frame.
 	 */
-	void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime) {
-		float f = elapsedtime / particle_frame;
-		float rx = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-		float ry = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-		float rz = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-		p_inst->vel.x += ((rx * 64.0f) - 32.0f) * f;
-		p_inst->vel.y += ((ry * 64.0f) - 32.0f) * f;
-		p_inst->vel.z += ((rz * 64.0f) - 32.0f) * f;
+	inline void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime) {
+		time_factor = elapsedtime / ps.particle_frame;
+		p_inst->vel.x += ((static_cast <float> (rand()) / static_cast <float> (RAND_MAX) * 64.0f) - 32.0f) * time_factor;
+		p_inst->vel.y += ((static_cast <float> (rand()) / static_cast <float> (RAND_MAX) * 64.0f) - 32.0f) * time_factor;
+		p_inst->vel.z += ((static_cast <float> (rand()) / static_cast <float> (RAND_MAX) * 64.0f) - 32.0f) * time_factor;
 	}
+
+	inline void modify(particle_modifier_instance *pm_inst, int elapsedtime) { }
+
+	inline void modify(int elapsedtime) { }
+
+	inline void init(particle_instance *p_inst) { }
 
 private:
 
+	float time_factor;
+
 	randomv() : particle_modifier_implementation("randomv") {
-		particle_modifier_implementations.push_back(this);
+		ps.particle_modifier_implementations.push_back(this);
+		time_factor = 0.0f;
 	}
 	randomv( const randomv& );
 	randomv & operator = (const randomv &);

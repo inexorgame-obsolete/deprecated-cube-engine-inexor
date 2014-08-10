@@ -1434,7 +1434,7 @@ void drawglare()
     renderwater();
     rendermaterials();
     renderalphageom();
-//    render_particles();
+    ps.render_particles();
     renderparticles();
 
     glFogf(GL_FOG_START, oldfogstart);
@@ -2064,7 +2064,7 @@ void gl_drawframe(int w, int h)
 
     glClear(GL_DEPTH_BUFFER_BIT|(wireframe && editmode ? GL_COLOR_BUFFER_BIT : 0)|(hasstencil ? GL_STENCIL_BUFFER_BIT : 0));
 
-    if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); 
+    if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     if(limitsky()) drawskybox(farplane, true);
 
@@ -2109,7 +2109,7 @@ void gl_drawframe(int w, int h)
 
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    render_particles();
+    ps.render_particles();
     renderparticles(true);
 
     glDisable(GL_FOG);
@@ -2118,6 +2118,7 @@ void gl_drawframe(int w, int h)
 
     addmotionblur();
     addglare();
+
     if(isliquid(fogmat&MATF_VOLUME)) drawfogoverlay(fogmat, fogblend, abovemat);
     renderpostfx();
 
@@ -2449,10 +2450,10 @@ void gl_drawhud(int w, int h)
             }
             if(showpps)
             {
-                draw_textf("particles %5d:%2d %5d:%5d", conw-25*FONTH, conh-FONTH*9/2, (int) particle_instances.size(), (int) particle_types.size(), (int) alive_pool.size(), (int) dead_pool.size());
-                draw_textf("emitters [%3d ms] %2d:%2d:%2d", conw-25*FONTH, conh-FONTH*7/2, timer_emitter, (int) particle_emitter_instances.size(), (int) particle_emitter_types.size(), (int) particle_emitter_implementations.size());
-                draw_textf("modifier [%3d ms] %2d:%2d:%2d", conw-25*FONTH, conh-FONTH*5/2, timer_modifier, (int) particle_modifier_instances.size(), (int) particle_modifier_types.size(), (int) particle_modifier_implementations.size());
-                draw_textf("renderer [%3d ms] %2d:%2d:%2d", conw-25*FONTH, conh-FONTH*3/2, timer_renderer, (int) particle_renderer_instances.size(), (int) particle_renderer_types.size(), (int) particle_renderer_implementations.size());
+                draw_textf("particles %5d:%2d %5d:%5d", conw-25*FONTH, conh-FONTH*9/2, (int) ps.particle_instances.size(), (int) ps.particle_types.size(), (int) ps.alive_pool.size(), (int) ps.dead_pool.size());
+                draw_textf("emitters [%3d ms] %2d:%2d:%2d", conw-25*FONTH, conh-FONTH*7/2, ps.timer_emitter, (int) ps.particle_emitter_instances.size(), (int) ps.particle_emitter_types.size(), (int) ps.particle_emitter_implementations.size());
+                draw_textf("modifier [%3d ms] %2d:%2d:%2d", conw-25*FONTH, conh-FONTH*5/2, ps.timer_modifier, (int) ps.particle_modifier_instances.size(), (int) ps.particle_modifier_types.size(), (int) ps.particle_modifier_implementations.size());
+                draw_textf("renderer [%3d ms] %2d:%2d:%2d", conw-25*FONTH, conh-FONTH*3/2, ps.timer_renderer, (int) ps.particle_renderer_instances.size(), (int) ps.particle_renderer_types.size(), (int) ps.particle_renderer_implementations.size());
             }
 
             if(wallclock)
