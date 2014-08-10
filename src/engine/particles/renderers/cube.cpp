@@ -16,11 +16,6 @@ public:
 	}
 	virtual ~cube_renderer() { }
 
-	Texture *tex;
-	int texclamp;
-	Shader *particle_shader = NULL;
-	Shader *particle_shader_notexture = NULL;
-
 	void before(particle_renderer_instance *pr_inst) {
 		// glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
@@ -99,12 +94,17 @@ public:
 
 private:
 
+	Texture *tex;
+	int texclamp;
+	Shader *particle_shader;
+	Shader *particle_shader_notexture;
+
 	cube_renderer() : particle_renderer_implementation("cube_renderer") {
 		ps.particle_renderer_implementations.push_back(this);
 		tex = NULL;
 		texclamp = 0;
-		if (!particle_shader) particle_shader = lookupshaderbyname("particle");
-		if (!particle_shader_notexture) particle_shader_notexture = lookupshaderbyname("particlenotexture");
+		particle_shader = lookupshaderbyname("particle");
+		particle_shader_notexture = lookupshaderbyname("particlenotexture");
 	}
 	cube_renderer( const cube_renderer& );
 	cube_renderer & operator = (const cube_renderer &);

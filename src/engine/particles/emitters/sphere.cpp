@@ -16,8 +16,6 @@ public:
 	}
 	virtual ~sphere_emitter() { }
 
-	particle_instance* last = NULL;
-
 	/**
 	 * Emits particles from a single sphere (x,y,z).
 	 */
@@ -83,9 +81,12 @@ public:
 
 private:
 
+	particle_instance* last;
+
 	sphere_emitter() : particle_emitter_implementation("sphere_emitter")
 	{
 		ps.particle_emitter_implementations.push_back(this);
+		last = NULL;
 	}
 	sphere_emitter( const sphere_emitter& );
 	sphere_emitter & operator = (const sphere_emitter &);

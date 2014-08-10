@@ -66,11 +66,11 @@ private:
 	float min_size;
 	float max_size;
 	float quadratic[3];
-	Shader *stdworldshader = NULL;
-	Shader *default_shader = NULL;
-	Shader *particle_shader = NULL;
-	Shader *particle_shader_notexture = NULL;
-	Shader *particlesoftshader = NULL;
+	Shader *stdworldshader;
+	Shader *default_shader;
+	Shader *particle_shader;
+	Shader *particle_shader_notexture;
+	Shader *particlesoftshader;
 
 	billboard_renderer() : particle_renderer_implementation("billboard_renderer") {
 		ps.particle_renderer_implementations.push_back(this);
@@ -86,11 +86,10 @@ private:
 		quadratic[1] = 0.1f;
 		quadratic[2] = 10.0f;
 	    stdworldshader = lookupshaderbyname("stdworld");
-		if (!default_shader) default_shader = lookupshaderbyname("default");
-		if (!particle_shader) particle_shader = lookupshaderbyname("particle");
-		if (!particle_shader_notexture) particle_shader_notexture = lookupshaderbyname("particlenotexture");
-
-        if(!particlesoftshader) particlesoftshader = lookupshaderbyname("particlesoft");
+		default_shader = lookupshaderbyname("default");
+		particle_shader = lookupshaderbyname("particle");
+		particle_shader_notexture = lookupshaderbyname("particlenotexture");
+        particlesoftshader = lookupshaderbyname("particlesoft");
 
 	}
 	billboard_renderer( const billboard_renderer& );
