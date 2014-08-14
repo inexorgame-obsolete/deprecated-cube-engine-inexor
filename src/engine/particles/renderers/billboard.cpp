@@ -42,10 +42,10 @@ public:
 */
 
 		glEnable(GL_POINT_SPRITE_ARB);
-		glPointParameterfvARB(GL_POINT_DISTANCE_ATTENUATION_ARB, quadratic);
-		glPointParameterfARB(GL_POINT_FADE_THRESHOLD_SIZE_ARB, fade_threshold_size);
-		glPointParameterfARB(GL_POINT_SIZE_MIN_ARB, fSizes[0]);
-		glPointParameterfARB(GL_POINT_SIZE_MAX_ARB, fSizes[1]);
+		glPointParameterfvARB_(GL_POINT_DISTANCE_ATTENUATION_ARB, quadratic);
+		glPointParameterfARB_(GL_POINT_FADE_THRESHOLD_SIZE_ARB, fade_threshold_size);
+		glPointParameterfARB_(GL_POINT_SIZE_MIN_ARB, fSizes[0]);
+		glPointParameterfARB_(GL_POINT_SIZE_MAX_ARB, fSizes[1]);
 		glTexEnvi(GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, GL_TRUE);
 
 		glPointSize(pr_inst->attributes["size"]);

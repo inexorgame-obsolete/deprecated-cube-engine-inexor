@@ -70,9 +70,9 @@ extern PFNGLBLITFRAMEBUFFEREXTPROC         glBlitFramebuffer_;
 #define GL_POINT_DISTANCE_ATTENUATION_ARB 0x8129
 typedef void (APIENTRYP PFNGLPOINTPARAMETERFARBPROC) (GLenum pname, GLfloat param);
 typedef void (APIENTRYP PFNGLPOINTPARAMETERFVARBPROC) (GLenum pname, const GLfloat *params);
-extern PFNGLPOINTPARAMETERFARBPROC         glPointParameterfARB;
-extern PFNGLPOINTPARAMETERFVARBPROC        glPointParameterfvARB;
 #endif
+extern PFNGLPOINTPARAMETERFARBPROC         glPointParameterfARB_;
+extern PFNGLPOINTPARAMETERFVARBPROC        glPointParameterfvARB_;
 
 // GL_EXT_draw_range_elements
 extern PFNGLDRAWRANGEELEMENTSEXTPROC glDrawRangeElements_;
