@@ -6,7 +6,7 @@ extern void cleargamma();
 
 void cleanup()
 {
-	ps.shutdown_particles();
+	ps.p_worker.stop();
     recorder::stop();
     cleanupserver();
     SDL_ShowCursor(1);
@@ -670,6 +670,7 @@ void resetgl()
     recorder::cleanup();
     cleanupva();
     cleanupparticles();
+	// ps.cleanup();
     cleanupsky();
     cleanupmodels();
     cleanuptextures();

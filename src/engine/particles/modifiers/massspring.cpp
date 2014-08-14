@@ -34,16 +34,15 @@ public:
 				vec spring = vec(o1).sub(o2);
 				float actual_spring_length = spring.magnitude();
 				vec force(0.0f, 0.0f, 0.0f);
-				if (actual_spring_length != 0.0f)
-				{
+				if (actual_spring_length > 0.0f)
 					force = spring.mul((actual_spring_length - (*spring_it)->spring_length) * (-(*spring_it)->spring_constant) / actual_spring_length);
-				}
 				force.add(vec(o2).sub(o1).mul((*spring_it)->spring_friction)).mul(time_factor);
 				(*spring_it)->p_inst_1->vel.add(force);
 				(*spring_it)->p_inst_2->vel.sub(force);
 				++spring_it;
 			} else {
 				spring_it = ps.spring_instances.erase(spring_it);
+				ps.spring_lock = true;
 			}
 		}
 	}

@@ -239,7 +239,7 @@ struct particle_modifier_instance
 	/**
 	 * The entity. May be replaced by a new entity implementation.
 	 */
-	entity ent;
+	extentity *ent;
 
 	/**
 	 * Extra attributes per modifier instance.
@@ -342,38 +342,40 @@ struct particle_modifier_implementation : public particle_implementation_base
 
 };
 
-/**
- * A particle type.
- */
-struct particle_type
+struct particle_type_base
 {
+
 	/**
 	 * The name of the particle type.
 	 */
 	std::string name;
 
 	/**
+	 * Type attributes.
+	 */
+	std::map<std::string, float> attributes;
+
+};
+
+/**
+ * A particle type.
+ */
+struct particle_type : public particle_type_base
+{
+
+	/**
 	 * The reference to the particle renderer instance.
 	 */
 	particle_renderer_instance *pr_inst;
 
-	/**
-	 * Extra particle attributes.
-	 */
-	std::map<std::string, float> attributes;
 };
 
 /**
  * A particle emitter type. Notice that the actual implementation of
  * an particle emitter type needs to be bind using a function pointer.
  */
-struct particle_emitter_type
+struct particle_emitter_type : public particle_type_base
 {
-
-	/**
-	 * The name of the particle emitter type.
-	 */
-	std::string name;
 
 	/**
 	 * The particle type of an emitted particle instance.
@@ -406,11 +408,6 @@ struct particle_emitter_type
 	particle_emitter_implementation *pe_impl;
 
 	/**
-	 * Extra particle emitter attributes.
-	 */
-	std::map<std::string, float> attributes;
-
-	/**
 	 * The modifiers to apply on particles spawned by emitters of this type.
 	 */
 	std::vector<particle_modifier_instance*> modifiers;
@@ -425,12 +422,8 @@ struct particle_emitter_type
 /**
  * A particle renderer type.
  */
-struct particle_renderer_type
+struct particle_renderer_type : public particle_type_base
 {
-	/**
-	 * The name of the particle renderer type.
-	 */
-	std::string name;
 
 	/**
 	 * The name of the texture.
@@ -453,11 +446,6 @@ struct particle_renderer_type
 	particle_renderer_implementation *pr_impl;
 
 	/**
-	 * Extra particle renderer attributes.
-	 */
-	std::map<std::string, float> attributes;
-
-	/**
 	 * Creates an particle renderer instance of this type.
 	 */
 	particle_renderer_instance* create_instance(std::string name);
@@ -467,22 +455,13 @@ struct particle_renderer_type
 /**
  * A particle modifier type.
  */
-struct particle_modifier_type
+struct particle_modifier_type : public particle_type_base
 {
-	/**
-	 * The name of the particle modifier type.
-	 */
-	std::string name;
 
 	/**
 	 * The implementation.
 	 */
 	particle_modifier_implementation *pm_impl;
-
-	/**
-	 * Extra particle modifier attributes.
-	 */
-	std::map<std::string, float> attributes;
 
 	/**
 	 * Creates an particle modifier instance of this type.
@@ -496,20 +475,64 @@ struct particle_modifier_type
 
 };
 
+/**
+ * Springs between two particles.
+ */
 struct spring_instance
 {
+
+	/**
+	 * The particle at the one side of the spring.
+	 */
 	particle_instance *p_inst_1;
+
+	/**
+	 * The particle at the other side of the spring.
+	 */
 	particle_instance *p_inst_2;
+
+	/**
+	 * The ideal length of the spring.
+	 */
 	float spring_length;
+
+	/**
+	 * The spring constant.
+	 */
 	float spring_constant;
+
+	/**
+	 * The spring friction.
+	 */
 	float spring_friction;
+
+	/**
+	 * If true, the spring is alive.
+	 */
+	bool alive;
 
 };
 
+/**
+ * Worker thread container for calculate particle physics in it's own thread.
+ */
 struct particle_state_worker
 {
+
+	/**
+	 * The worker thread.
+	 */
 	SDL_Thread *thread;
+
+	/**
+	 * If true, the worker thread will continue.
+	 */
 	bool running;
+
+	/**
+	 * If false, the worker thread hasn't ended.
+	 */
+	bool stopped;
 
 	particle_state_worker();
 	~particle_state_worker();
@@ -519,6 +542,10 @@ struct particle_state_worker
 
 };
 
+/**
+ * Encapsulates the whole particle system in a single class. The methods and
+ * members of this class can be considered as the public API.
+ */
 struct particle_system
 {
 	/**
@@ -526,7 +553,11 @@ struct particle_system
 	 */
 	float particle_frame;
 
+	/**
+	 * Milliseconds since the last frame.
+	 */
 	int particlemillis;
+
 	int timer_emitter;
 	int timer_modifier;
 	int timer_renderer;
@@ -570,13 +601,15 @@ struct particle_system
 
 	particle_state_worker p_worker;
 
+	bool spring_lock;
+
 	particle_system();
 	~particle_system();
 
 	void init_particles();
-	void shutdown_particles();
+	// void shutdown_particles();
 	void clear_particle_pools();
-	void reset_particle_system();
+	void cleanup();
 
 	void update_particle_system();
 	void update_particle_pools(int elapsedtime);
@@ -588,22 +621,25 @@ struct particle_system
 
 	particle_type* add_particle_type(std::string name, std::string pr_inst);
 	particle_type* add_particle_type(std::string name, particle_renderer_instance* pr_inst);
-	// void remove_particle_type(std::string name);
+	void remove_particle_type(std::string name);
+	void remove_all_particle_types();
 
 	particle_emitter_type* add_particle_emitter_type(std::string name, std::string p_type, float mass, float density, int lifetime, int rate, std::string pe_impl);
-	// void remove_particle_emitter_type(std::string name);
-	// int assign_modifier_to_emitter(std::string emitter_name, std::string modifier_name);
 	particle_emitter_instance* create_particle_emitter_instance(std::string pe_type, const vec &o, const vec &vel);
+	void remove_particle_emitter_type(std::string name);
+	void remove_all_particle_emitter_types();
+	// int assign_modifier_to_emitter(std::string emitter_name, std::string modifier_name);
 
-	void init_particle_renderer();
+	// void init_particle_renderer();
 	particle_renderer_type* add_particle_renderer_type(std::string name, std::string texture, std::string shader, const vec4 &color, std::string impl);
 	particle_renderer_instance* create_particle_renderer_instance(std::string name, std::string pr_type);
-	// void remove_particle_renderer_type(std::string name);
+	void remove_particle_renderer_type(std::string name);
+	void remove_all_particle_renderer_types();
 
 	particle_modifier_type* add_particle_modifier_type(std::string name, std::string pm_impl);
-	// void remove_particle_modifier_type(std::string name);
-	// particle_modifier_instance* create_particle_modifier_instance(int type, const vec &o, const vec &vel);
-	void create_particle_modifier_instance(std::string pm_type, const vec &o);
+	particle_modifier_instance* create_particle_modifier_instance(std::string pm_type, const vec &o);
+	void remove_particle_modifier_type(std::string name);
+	void remove_all_particle_modifier_types();
 
 };
 

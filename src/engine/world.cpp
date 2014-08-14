@@ -223,7 +223,7 @@ bool modifyoctaent(int flags, int id)
     return ents.inrange(id) && modifyoctaent(flags, id, *ents[id]);
 }
 
-static inline void addentity(int id)    { modifyoctaent(MODOE_ADD|MODOE_UPDATEBB|MODOE_LIGHTENT, id); }
+// static inline void addentity(int id)    { modifyoctaent(MODOE_ADD|MODOE_UPDATEBB|MODOE_LIGHTENT, id); }
 static inline void removeentity(int id) { modifyoctaent(MODOE_UPDATEBB, id); }
 
 void freeoctaentities(cube &c)
@@ -697,6 +697,18 @@ void renderentradius(extentity &e, bool color)
             vecfromyawpitch(e.attr1, 0, 1, 0, dir);
             renderentarrow(e, dir, 4);
             break;
+        }
+        case EP_EMITTER:
+        {
+            if(color) glColor3f(1, 0, 1);
+            renderentsphere(e, 20.0f); // TODO
+        	break;
+        }
+        case EP_MODIFIER:
+        {
+            if(color) glColor3f(1, 1, 0);
+            renderentsphere(e, 20.0f); // TODO
+        	break;
         }
 
         default:
@@ -1204,6 +1216,7 @@ void resetmap()
     clearpvs();
     clearslots();
     clearparticles();
+    ps.cleanup();
     cleardecals();
     clearsleep();
     cancelsel();

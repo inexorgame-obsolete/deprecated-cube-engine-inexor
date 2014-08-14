@@ -60,6 +60,7 @@ static inline T clamp(T a, U b, U c)
 }
 
 #define rnd(x) ((int)(randomMT()&0x7FFFFFFF)%(x))
+#define frnd(x) (randomMT()&0x7FFFFFFF)
 #define rndscale(x) (float((randomMT()&0x7FFFFFFF)*double(x)/double(0x7FFFFFFF)))
 #define detrnd(s, x) ((int)(((((uint)(s))*1103515245+12345)>>16)%(x)))
 

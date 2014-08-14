@@ -1580,6 +1580,7 @@ void drawreflection(float z, bool refract, int fogdepth, const bvec &col)
     if(refracting) rendergrass();
     rendermaterials();
     renderalphageom(fogging);
+    ps.render_particles();
     renderparticles();
 
     if(fading) glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
@@ -2101,6 +2102,10 @@ void gl_drawframe(int w, int h)
 
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+    ps.render_particles();
+
+    if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
     renderwater();
     rendergrass();
 
@@ -2109,7 +2114,7 @@ void gl_drawframe(int w, int h)
 
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    ps.render_particles();
+//    ps.render_particles();
     renderparticles(true);
 
     glDisable(GL_FOG);

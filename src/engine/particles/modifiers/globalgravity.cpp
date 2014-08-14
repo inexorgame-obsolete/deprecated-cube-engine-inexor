@@ -25,7 +25,7 @@ public:
 		for(std::list<particle_instance*>::iterator p_it = ps.alive_pool.begin(); p_it != ps.alive_pool.end(); ++p_it)
 		{
 			dz = (*p_it)->o.z - pm_inst->o.z;
-			if (dz < 10.0f) continue;
+			if (dz <= dzmin || dz >= dzmax) continue;
 			force = -((*p_it)->mass) * mass * gravity / (dz * dz);
 			(*p_it)->vel.z += (force * dz) / (dz * (*p_it)->mass);
 		}
@@ -42,6 +42,8 @@ private:
 	float distance;
 	float force;
 	float dz;
+	float dzmin;
+	float dzmax;
 
 	global_gravity() : particle_modifier_implementation("global_gravity") {
 		ps.particle_modifier_implementations.push_back(this);
@@ -50,6 +52,8 @@ private:
 		distance = 0.0f;
 		force = 0.0f;
 		dz = 0.0f;
+		dzmin = 10.0f;
+		dzmax = 40.0f;
 	}
 	global_gravity( const global_gravity& );
 	global_gravity & operator = (const global_gravity &);

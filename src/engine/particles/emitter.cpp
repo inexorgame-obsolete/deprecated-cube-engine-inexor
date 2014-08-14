@@ -10,7 +10,7 @@ void particle_system::emit_particles(int elapsedtime)
 		int started = SDL_GetTicks();
 		for(std::vector<particle_emitter_instance*>::iterator it = particle_emitter_instances.begin(); it != particle_emitter_instances.end(); ++it)
 		{
-			if ((*it)->enabled) (*it)->pe_type->pe_impl->emit(*it, elapsedtime);
+			if ((*it)->enabled && (*it)->lifetime > 0) (*it)->pe_type->pe_impl->emit(*it, elapsedtime);
 		}
 		timer_emitter = SDL_GetTicks() - started;
 	}
@@ -19,7 +19,7 @@ void particle_system::emit_particles(int elapsedtime)
 		for(std::vector<particle_emitter_instance*>::iterator it = particle_emitter_instances.begin(); it != particle_emitter_instances.end(); ++it)
 		{
 			// conoutf("%3.1f %3.1f", (*it)->o.x, (*it)->ent->o.x);
-			(*it)->o = (*it)->ent->o;
+			(*it)->o = vec((*it)->ent->o);
 		}
 	}
 }
@@ -39,24 +39,31 @@ particle_instance* particle_system::emit_particle()
 		return p_inst;
 	} else {
 		// dynamically create a new particle instance
-		particle_instance *pi = new particle_instance;
-		return pi;
+		particle_instance *p_inst = new particle_instance;
+		p_inst->elapsed = 0;
+		return p_inst;
 	}
 }
 
 particle_emitter_type* particle_system::add_particle_emitter_type(const std::string name, const std::string p_type, float mass, float density, int lifetime, int rate, const std::string impl)
 {
-	particle_emitter_type* pe_type = new particle_emitter_type;
-	pe_type->name = name;
-	pe_type->mass = mass;
-	pe_type->density = density;
-	pe_type->lifetime = lifetime;
-	pe_type->rate = rate;
-	pe_type->p_type = particle_types_map[p_type];
-	pe_type->pe_impl = particle_emitter_implementations_map[impl];
-	particle_emitter_types.push_back(pe_type);
-	particle_emitter_types_map[name] = pe_type;
-	return pe_type;
+	if (!particle_emitter_types_map.count(name))
+	{
+		particle_emitter_type* pe_type = new particle_emitter_type;
+		pe_type->name = name;
+		pe_type->mass = mass;
+		pe_type->density = density;
+		pe_type->lifetime = lifetime;
+		pe_type->rate = rate;
+		pe_type->p_type = particle_types_map[p_type];
+		pe_type->pe_impl = particle_emitter_implementations_map[impl];
+		particle_emitter_types.push_back(pe_type);
+		particle_emitter_types_map[name] = pe_type;
+		return pe_type;
+	} else {
+		conoutf("Particle modifier type %s already exists!", name.c_str());
+		return particle_emitter_types_map[name];
+	}
 }
 
 void particle_emitter_instance::add_modifier(particle_modifier_instance* pm_inst)
@@ -81,19 +88,51 @@ particle_emitter_instance* particle_emitter_type::create_instance(const vec &o, 
 	pe_inst->modifiers = modifiers;
 	// initialize default attributes by copy the attributes map
 	pe_inst->attributes.insert(attributes.begin(), attributes.end());
-	// create entity and attach to the instance object
-	int idx;
-	pe_inst->ent = newentity(true, vec(o), ET_NEWPARTICLES, 0, 0, 0, 0, 0, idx);  // yeah i love the hard coded entity system, which would break every map if i would insert a new entity type on engine level. This is only a quick fix and have to replace by an integration into the new entity system
 
-// TODO!!!!
+	// TODO!!!!
+	// create entity and attach to the instance object
+	// float yaw;
+	// float pitch;
+	// vectoyawpitch(*vel, &yaw, &pitch);
+	int idx;
+	pe_inst->ent = newentity(true, vec(o), EP_EMITTER, 0, 0, 0, 0, 0, idx);  // yeah i love the hard coded entity system, which would break every map if i would insert a new entity type on engine level. This is only a quick fix and have to replace by an integration into the new entity system
+	addentity(idx);
+	pe_inst->ent->spawned = true;
 
 	ps.particle_emitter_instances.push_back(pe_inst);
 	return pe_inst;
 }
 
-particle_emitter_instance* particle_system::create_particle_emitter_instance(std::string type, const vec &o, const vec &vel)
+particle_emitter_instance* particle_system::create_particle_emitter_instance(std::string pe_type, const vec &o, const vec &vel)
 {
-	return particle_emitter_types_map[type]->create_instance(o, vel);
+	if (particle_emitter_types_map.count(pe_type))
+	{
+		return particle_emitter_types_map[pe_type]->create_instance(o, vel);
+	} else {
+		conoutf("Particle emitter type %s not found!", pe_type.c_str());
+		return 0;
+	}
+}
+
+void particle_system::remove_particle_emitter_type(std::string name)
+{
+	if (particle_emitter_types_map.count(name))
+	{
+		particle_emitter_types_map.erase(name);
+		// TODO: iterate particle_emitter_types and check by name
+	} else {
+		conoutf("Particle emitter type %s not found!", name.c_str());
+	}
+}
+
+void particle_system::remove_all_particle_emitter_types()
+{
+	particle_emitter_types_map.clear();
+	particle_emitter_types.clear();
+}
+
+void create_particle_emitter_instance(std::string pe_type, const vec &o, const vec &vel) {
+	ps.create_particle_emitter_instance(pe_type, o, vel);
 }
 
 // ICOMMAND(add_particle_emitter_type, "ssiiiis", (char *name, char *particle_type, int *mass, int *density, int *lifetime, int *rate, char *impl), add_particle_emitter_type(name, particle_type, *mass, *density, *lifetime, *rate, impl));

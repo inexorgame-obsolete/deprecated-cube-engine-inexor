@@ -1561,6 +1561,8 @@ float dropheight(entity &e)
     switch(e.type)
     {
         case ET_PARTICLES:
+        case EP_EMITTER:
+        case EP_MODIFIER:
         case ET_MAPMODEL: return 0.0f;
         default:
             if(e.type >= ET_GAMESPECIFIC) return entities::dropheight(e);

@@ -75,6 +75,7 @@ public:
 				spring_inst->spring_constant = 0.2f;
 				spring_inst->spring_friction = 0.9f;
 				spring_inst->spring_length = pe_inst->density;
+				spring_inst->alive = true;
 				ps.spring_instances.push_back(spring_inst);
 
 			}

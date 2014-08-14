@@ -17,6 +17,7 @@ struct ptest
 			case 4: setup4(); break;
 			case 5: setup5(); break;
 			case 6: setup6(); break;
+			case 7: setup7(); break;
 		}
 	}
 
@@ -300,8 +301,8 @@ struct ptest
     {
 		float mass = 1.0f;
 		float density = 250.0f;
-		int lifetime = 10000;
-		int rate = 1000;
+		int lifetime = 5000;
+		int rate = 75;
 
 		particle_renderer_type* pr_type_spring = ps.add_particle_renderer_type("spring_renderer_6", "packages/particles/flare.jpg", "shader", vec4(255.0f, 255.0f, 255.0f, 0.3f), "spring_renderer");
 		particle_renderer_instance* pr_inst_spring = pr_type_spring->create_instance("spring6");
@@ -313,23 +314,57 @@ struct ptest
 		particle_modifier_type* pm_type_mass_spring_transformation = ps.add_particle_modifier_type("mass_spring_transformation", "mass_spring_transformation");
 		particle_modifier_instance* pm_inst_mass_spring_transformation = pm_type_mass_spring_transformation->create_instance();
 
-		particle_modifier_type* pm_type_bb_culling = ps.add_particle_modifier_type("bb_culling", "bb_culling");
-		particle_modifier_instance* pm_inst_bb_culling = pm_type_bb_culling->create_instance(vec(1024.0f, 1024.0f, 1024.0f));
+		// particle_modifier_type* pm_type_bb_culling = ps.add_particle_modifier_type("bb_culling", "bb_culling");
+		// particle_modifier_instance* pm_inst_bb_culling = pm_type_bb_culling->create_instance(vec(1024.0f, 1024.0f, 1024.0f));
 
-		particle_modifier_type* pm_type_pulsar = ps.add_particle_modifier_type("pulsar", "pulsar");
-		pm_type_pulsar->attributes["mass"] = 1750.0f;
-		pm_type_pulsar->attributes["gravity"] = 5.0f;
-		particle_modifier_instance* pm_inst_pulsar1 = pm_type_pulsar->create_instance(vec(1250.0f, 220.0f, 1400.0f));
-		particle_modifier_instance* pm_inst_pulsar3 = pm_type_pulsar->create_instance(vec(1250.0f, 220.0f, 1000.0f));
-		particle_modifier_instance* pm_inst_pulsar4 = pm_type_pulsar->create_instance(vec(1250.0f, 220.0f, 600.0f));
+		// particle_modifier_type* pm_type_pulsar = ps.add_particle_modifier_type("pulsar", "pulsar");
+		// pm_type_pulsar->attributes["mass"] = 1750.0f;
+		// pm_type_pulsar->attributes["gravity"] = 5.0f;
+		// particle_modifier_instance* pm_inst_pulsar1 = pm_type_pulsar->create_instance(vec(1250.0f, 220.0f, 1400.0f));
+		// particle_modifier_instance* pm_inst_pulsar3 = pm_type_pulsar->create_instance(vec(1250.0f, 220.0f, 1000.0f));
+		// particle_modifier_instance* pm_inst_pulsar4 = pm_type_pulsar->create_instance(vec(1250.0f, 220.0f, 600.0f));
 
 		particle_emitter_type* pe_type_cloth_emitter = ps.add_particle_emitter_type("spring_cloth_emitter", "spring6", mass, density, lifetime, rate, "cloth_emitter");
 		particle_emitter_instance* pe_inst_cloth_emitter = pe_type_cloth_emitter->create_instance(vec(0.0f, 100.0f, 1750.0f), vec(0.0f, 0.0f, -100.0f));
 		pe_inst_cloth_emitter->add_modifier(pm_inst_velocity_transformation);
 		pe_inst_cloth_emitter->add_modifier(pm_inst_mass_spring_transformation);
-		pe_inst_cloth_emitter->add_modifier(pm_inst_pulsar1);
-		pe_inst_cloth_emitter->add_modifier(pm_inst_pulsar3);
-		pe_inst_cloth_emitter->add_modifier(pm_inst_pulsar4);
+		// pe_inst_cloth_emitter->add_modifier(pm_inst_pulsar1);
+		// pe_inst_cloth_emitter->add_modifier(pm_inst_pulsar3);
+		// pe_inst_cloth_emitter->add_modifier(pm_inst_pulsar4);
+    }
+
+	void setup7()
+    {
+		float mass = 5.0f;
+		float density = 250.0f;
+		int lifetime = 5000;
+		int rate = 1;
+
+		particle_renderer_type* pr_type_fire_ball = ps.add_particle_renderer_type("fire_ball_7", "packages/particles/ball1.png", "shader", vec4(255.0f, 255.0f, 0.0f, 0.3f), "billboard_renderer");
+		pr_type_fire_ball->attributes["size"] = 15.0f;
+		particle_renderer_instance* pr_inst_fire_ball = pr_type_fire_ball->create_instance("fire_ball_7");
+		particle_type* p_type_fire_ball = ps.add_particle_type("fire_ball_7", "fire_ball_7");
+
+		particle_modifier_type* pm_type_velocity_transformation = ps.add_particle_modifier_type("velocity_transformation", "velocity_transformation");
+		particle_modifier_instance* pm_inst_velocity_transformation = pm_type_velocity_transformation->create_instance();
+
+		particle_modifier_type* pm_type_global_gravity_7 = ps.add_particle_modifier_type("global_gravity_7", "global_gravity");
+		pm_type_global_gravity_7->attributes["mass"] = 450.0f;
+		pm_type_global_gravity_7->attributes["gravity"] = 3.0f;
+		particle_modifier_instance* pm_inst_global_gravity_7 = pm_type_global_gravity_7->create_instance(vec(0.0f, 0.0f, 400.0f));
+
+		particle_modifier_type* pm_type_geometry_collide_7 = ps.add_particle_modifier_type("geometry_collide_7", "geometry_collide");
+		particle_modifier_instance* pm_inst_geometry_collide_7 = pm_type_geometry_collide_7->create_instance();
+
+		particle_modifier_type* pm_type_randomv_7 = ps.add_particle_modifier_type("randomv", "randomv");
+		particle_modifier_instance* pm_inst_randomv_7 = pm_type_randomv_7->create_instance();
+
+		particle_emitter_type* pe_type_fire_ball_7 = ps.add_particle_emitter_type("fire_ball_emitter_7", "fire_ball_7", mass, density, lifetime, rate, "point_emitter");
+		particle_emitter_instance* pe_inst_fire_ball_7 = pe_type_fire_ball_7->create_instance(vec(1860.0f, 1860.0f, 400.0f), vec(0.0f, 0.0f, 200.0f));
+		pe_inst_fire_ball_7->add_modifier(pm_inst_velocity_transformation);
+		pe_inst_fire_ball_7->add_modifier(pm_inst_global_gravity_7);
+		pe_inst_fire_ball_7->add_modifier(pm_inst_geometry_collide_7);
+		pe_inst_fire_ball_7->add_modifier(pm_inst_randomv_7);
     }
 
 };

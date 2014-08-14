@@ -227,6 +227,7 @@ extern void renderentring(const extentity &e, float radius, int axis = 0);
 extern extentity *newentity(bool local, const vec &o, int type, int v1, int v2, int v3, int v4, int v5, int &idx);
 extern void attachentity(extentity &e);
 extern bool modifyoctaent(int flags, int id);
+static inline void addentity(int id)    { modifyoctaent(1<<0|1<<1|1<<2, id); }
 
 // main
 extern void fatal(const char *s, ...) PRINTFARGS(1, 2);

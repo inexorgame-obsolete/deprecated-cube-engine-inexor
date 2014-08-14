@@ -22,6 +22,21 @@ particle_type* particle_system::add_particle_type(std::string name, particle_ren
 	return pt;
 }
 
+void particle_system::remove_particle_type(std::string name)
+{
+	if (particle_types_map.count(name))
+	{
+		particle_types_map.erase(name);
+	} else {
+		conoutf("Particle type %s not found!", name.c_str());
+	}
+}
+
+void particle_system::remove_all_particle_types()
+{
+	particle_types_map.clear();
+}
+
 // ICOMMAND(add_particle_type, "ss", (char *name, char *renderer), add_particle_type(name, renderer));
 
 /*

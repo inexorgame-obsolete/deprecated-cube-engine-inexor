@@ -24,10 +24,11 @@ public:
 			shader->set();
 			glBegin(GL_LINES);
 			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+			ps.spring_lock = false;
 			std::list<spring_instance *>::iterator spring_it = ps.spring_instances.begin();
 			if (color_forces)
 			{
-				while (spring_it != ps.spring_instances.end())
+				while (!ps.spring_lock && spring_it != ps.spring_instances.end())
 				{
 					vec o1 = vec((*spring_it)->p_inst_1->o);
 					vec o2 = vec((*spring_it)->p_inst_2->o);
@@ -48,7 +49,7 @@ public:
 					++spring_it;
 				}
 			} else {
-				while (spring_it != ps.spring_instances.end())
+				while (!ps.spring_lock && spring_it != ps.spring_instances.end())
 				{
 					glVertex3d((*spring_it)->p_inst_1->o.x, (*spring_it)->p_inst_1->o.y, (*spring_it)->p_inst_1->o.z);
 					glVertex3d((*spring_it)->p_inst_2->o.x, (*spring_it)->p_inst_2->o.y, (*spring_it)->p_inst_2->o.z);

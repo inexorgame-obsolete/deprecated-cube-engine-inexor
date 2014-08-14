@@ -23,19 +23,9 @@ Shader *particle_shader_notexture = NULL;
 
 VARP(renderers, 0, 1, 1);
 
-// default particle shaders
-Shader *particle_shader = NULL;
-Shader *particle_shader_notexture = NULL;
-
-void particle_system::init_particle_renderer()
-{
-	if (!particle_shader) particle_shader = lookupshaderbyname("particle");
-	if (!particle_shader_notexture) particle_shader_notexture = lookupshaderbyname("particlenotexture");
-}
-
 void particle_system::render_particles()
 {
-	if (renderers) {
+	if (renderers && p_worker.running) {
 		try {
 			int started = SDL_GetTicks();
 			for(std::vector<particle_renderer_instance*>::iterator pr_it = particle_renderer_instances.begin(); pr_it != particle_renderer_instances.end(); ++pr_it)
@@ -64,16 +54,22 @@ void particle_system::render_particles()
 
 particle_renderer_type* particle_system::add_particle_renderer_type(std::string name, std::string texture, std::string shader, const vec4 &color, std::string impl)
 {
-	particle_renderer_type* pr_type = new particle_renderer_type;
-	pr_type->name = name;
-	pr_type->texture = texture;
-	pr_type->shader = shader;
-	pr_type->color = color;
-	pr_type->pr_impl = particle_renderer_implementations_map[impl];
-	particle_renderer_types.push_back(pr_type);
-	particle_renderer_types_map[name] = pr_type;
-	conoutf("Added particle renderer type \"%s\" (shader: %s) of implementation \"%s\"", name.c_str(), shader.c_str(), impl.c_str());
-	return pr_type;
+	if (!particle_renderer_types_map.count(name))
+	{
+		particle_renderer_type* pr_type = new particle_renderer_type;
+		pr_type->name = name;
+		pr_type->texture = texture;
+		pr_type->shader = shader;
+		pr_type->color = color;
+		pr_type->pr_impl = particle_renderer_implementations_map[impl];
+		particle_renderer_types.push_back(pr_type);
+		particle_renderer_types_map[name] = pr_type;
+		conoutf("Added particle renderer type \"%s\" (shader: %s) of implementation \"%s\"", name.c_str(), shader.c_str(), impl.c_str());
+		return pr_type;
+	} else {
+		conoutf("Particle renderer type %s already exists!", name.c_str());
+		return particle_renderer_types_map[name];
+	}
 }
 
 particle_renderer_instance* particle_renderer_type::create_instance(std::string name)
@@ -90,9 +86,35 @@ particle_renderer_instance* particle_renderer_type::create_instance(std::string 
 	return pr_inst;
 }
 
-particle_renderer_instance* particle_system::create_particle_renderer_instance(std::string name, std::string type)
+particle_renderer_instance* particle_system::create_particle_renderer_instance(std::string name, std::string pr_type)
 {
-	return particle_renderer_types_map[type]->create_instance(name);
+	if (particle_renderer_types_map.count(pr_type))
+	{
+		return particle_renderer_types_map[pr_type]->create_instance(name);
+	} else {
+		conoutf("Particle renderer type %s not found!", pr_type.c_str());
+		return 0;
+	}
+}
+
+void particle_system::remove_particle_renderer_type(std::string name)
+{
+	if (particle_renderer_types_map.count(name))
+	{
+		particle_renderer_types_map.erase(name);
+	} else {
+		conoutf("Particle renderer type %s not found!", name.c_str());
+	}
+}
+
+void particle_system::remove_all_particle_renderer_types()
+{
+	particle_renderer_types_map.clear();
+	particle_renderer_types.clear();
+}
+
+void create_particle_renderer_instance(std::string name, std::string pr_type) {
+	ps.create_particle_renderer_instance(name, pr_type);
 }
 
 // ICOMMAND(add_particle_renderer_type, "sssiiiis", (char *name, char *texture, char *shader, int *r, int *g, int *b, int *a, char *impl), add_particle_renderer_type(name, texture, shader, vec4(*r, *g, *b, *a), impl));

@@ -858,7 +858,7 @@ namespace entities
             "gravity", "friction", "jump", "speed",
             "", "", // two empty strings follows.
         };
-        return i>=0 && size_t(i)<sizeof(entnames)/sizeof(entnames[0]) ? entnames[i] : "";
+        return i>=0 && size_t(i)<sizeof(entnames)/sizeof(entnames[0]) ? entnames[i] : (i == 255 ? "particleemitter" : (i == 254 ? "particlemodifier" : ""));
     }
 
     void editent(int i, bool local)

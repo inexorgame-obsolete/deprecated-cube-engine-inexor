@@ -5,19 +5,27 @@ particle_state_worker::particle_state_worker()
 {
 	thread = NULL;
 	running = false;
+	stopped = true;
 }
 
 particle_state_worker::~particle_state_worker() { }
 
 void particle_state_worker::start()
 {
-	running = true;
-	thread = SDL_CreateThread(work, this);
+	if (stopped)
+	{
+		conoutf("starting worker thread");
+		thread = SDL_CreateThread(work, this);
+	}
 }
 
 void particle_state_worker::stop() {
-	running = false;
-	SDL_KillThread(thread);
+	if (!stopped)
+	{
+		running = false;
+		// SDL_KillThread(thread);
+		conoutf("stopping worker thread");
+	}
 }
 
 int particle_state_worker::work(void *data)
@@ -26,6 +34,9 @@ int particle_state_worker::work(void *data)
 	int totalmillis = 0;
 	try
 	{
+		w->running = true;
+		w->stopped = false;
+		conoutf("worker thread started");
 		while(w->running)
 		{
 	        int millis = getclockmillis();
@@ -41,5 +52,7 @@ int particle_state_worker::work(void *data)
 	} catch (int e) {
 		conoutf("worker e: %d", e);
 	}
+	w->stopped = true;
+	conoutf("worker thread stopped");
 	return 0;
 }

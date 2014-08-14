@@ -10,6 +10,7 @@ particle_system::particle_system()
 	timer_emitter = 0;
 	timer_modifier = 0;
 	timer_renderer = 0;
+	spring_lock = false;
 }
 
 particle_system::~particle_system()
@@ -18,35 +19,43 @@ particle_system::~particle_system()
 
 void particle_system::init_particles()
 {
-	reset_particle_system();
 	p_worker.start();
-}
-
-void particle_system::shutdown_particles()
-{
-	p_worker.stop();
 }
 
 void particle_system::clear_particle_pools()
 {
-	p_worker.stop();
 	std::list<particle_instance*>::iterator i = alive_pool.begin();
 	while (i != alive_pool.end())
 	{
-		(*i)->remaining = 0;
-		dead_pool.push_front(*i);
+		// (*i)->remaining = 0;
+		// dead_pool.push_front(*i);
 		i = alive_pool.erase(i);
 	}
 	for(std::vector<particle_renderer_instance*>::iterator pr_it = particle_renderer_instances.begin(); pr_it != particle_renderer_instances.end(); ++pr_it)
 	{
 		(*pr_it)->particles.clear();
 	}
-	p_worker.start();
 }
 
-void particle_system::reset_particle_system()
+void particle_system::cleanup()
 {
-	init_particle_renderer();
+	for(std::vector<particle_emitter_instance*>::iterator it = particle_emitter_instances.begin(); it != particle_emitter_instances.end(); ++it)
+		(*it)->enabled = false;
+	for(std::vector<particle_renderer_instance*>::iterator pr_it = particle_renderer_instances.begin(); pr_it != particle_renderer_instances.end(); ++pr_it)
+	{
+		(*pr_it)->particles.clear();
+	}
+	particle_renderer_instances.clear();
+	particle_renderer_instances_map.clear();
+	particle_instances.clear();
+	particle_modifier_instances.clear();
+	particle_emitter_instances.clear();
+	alive_pool.clear();
+	dead_pool.clear();
+	remove_all_particle_renderer_types();
+	remove_all_particle_emitter_types();
+	remove_all_particle_modifier_types();
+	remove_all_particle_types();
 }
 
 /**
@@ -76,7 +85,6 @@ void particle_system::update_particle_pools(int elapsedtime)
 	std::list<particle_instance*>::iterator i = alive_pool.begin();
 	while (i != alive_pool.end())
 	{
-		// conoutf("remaining: %d", (*i)->remaining);
 		if ((*i)->remaining > 0)
 		{
 			(*i)->elapsed += elapsedtime;
@@ -86,7 +94,6 @@ void particle_system::update_particle_pools(int elapsedtime)
 			// dead_pool.push_front(*i);
 			// int before = (int) alive_pool.size();
 			i = alive_pool.erase(i);
-			// conoutf("%d:%d", before, (int) alive_pool.size());
 		}
 	}
 }
