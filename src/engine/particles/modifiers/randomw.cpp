@@ -35,7 +35,7 @@ public:
 private:
 
 	randomw() : particle_modifier_implementation("randomw") {
-		ps.particle_modifier_implementations.push_back(this);
+		ps.add_modifier_implementation(this);
 	}
 	randomw( const randomw& );
 	randomw & operator = (const randomw &);

@@ -60,6 +60,7 @@ particle_modifier_type* particle_system::add_particle_modifier_type(std::string 
 		particle_modifier_types.push_back(pm_type);
 		particle_modifier_types_map[name] = pm_type;
 		conoutf("Added particle modifier type \"%s\" of implementation \"%s\"", name.c_str(), impl.c_str());
+		count_particle_modifier_types++;
 		return pm_type;
 	} else {
 		conoutf("Particle modifier type %s already exists!", name.c_str());
@@ -84,6 +85,7 @@ particle_modifier_instance* particle_modifier_type::create_instance(const vec &o
 	pm_inst->ent->spawned = true;
 
 	ps.particle_modifier_instances.push_back(pm_inst);
+	ps.count_particle_modifier_instances++;
 	return pm_inst;
 }
 
@@ -103,6 +105,8 @@ void particle_system::remove_particle_modifier_type(std::string name)
 	if (particle_modifier_types_map.count(name))
 	{
 		particle_modifier_types_map.erase(name);
+		// TODO: remove from particle_modifier_types
+		count_particle_modifier_types--;
 	} else {
 		conoutf("Particle modifier type %s not found!", name.c_str());
 	}
@@ -112,6 +116,7 @@ void particle_system::remove_all_particle_modifier_types()
 {
 	particle_modifier_types_map.clear();
 	particle_modifier_types.clear();
+	count_particle_modifier_types = 0;
 }
 
 void create_particle_modifier_instance(std::string pm_type, const vec &o) {

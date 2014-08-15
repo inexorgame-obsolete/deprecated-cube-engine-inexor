@@ -48,6 +48,7 @@ public:
 			p_inst->remaining = pe_inst->lifetime;
 			// add particle instance to the alive pool
 			ps.alive_pool.push_back(p_inst);
+			ps.count_alive_pool++;
 			// add particle instance to it's renderer
 			p_inst->p_type->pr_inst->particles.push_back(p_inst);
 
@@ -67,6 +68,7 @@ public:
 				p_inst_s->density = pe_inst->density / 10.0f;
 				p_inst_s->remaining = pe_inst->lifetime;
 				ps.alive_pool.push_back(p_inst_s);
+				ps.count_alive_pool++;
 				p_inst_s->p_type->pr_inst->particles.push_back(p_inst_s);
 
 				spring_instance *spring_inst = new spring_instance;
@@ -76,8 +78,7 @@ public:
 				spring_inst->spring_friction = 0.9f;
 				spring_inst->spring_length = pe_inst->density;
 				spring_inst->alive = true;
-				ps.spring_instances.push_back(spring_inst);
-
+				ps.add_spring(spring_inst);
 			}
 		}
 	}
@@ -86,7 +87,7 @@ private:
 
 	satellite_emitter() : particle_emitter_implementation("satellite_emitter")
 	{
-		ps.particle_emitter_implementations.push_back(this);
+		ps.add_emitter_implementation(this);
 	}
 	satellite_emitter( const satellite_emitter& );
 	satellite_emitter & operator = (const satellite_emitter &);

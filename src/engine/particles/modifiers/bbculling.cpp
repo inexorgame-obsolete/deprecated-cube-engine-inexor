@@ -41,7 +41,7 @@ public:
 private:
 
 	bb_culling() : particle_modifier_implementation("bb_culling") {
-		ps.particle_modifier_implementations.push_back(this);
+		ps.add_modifier_implementation(this);
 	}
 	bb_culling( const bb_culling& );
 	bb_culling & operator = (const bb_culling &);

@@ -41,7 +41,7 @@ private:
 	float elasticity;
 
 	geometry_culling() : particle_modifier_implementation("geometry_culling") {
-		ps.particle_modifier_implementations.push_back(this);
+		ps.add_modifier_implementation(this);
 		elasticity = 0.95f;
 		d.type = ENT_BOUNCE;
 		d.state = CS_ALIVE;

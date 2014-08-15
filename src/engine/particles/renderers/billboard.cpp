@@ -92,7 +92,7 @@ private:
 	Shader *particlesoftshader;
 
 	billboard_renderer() : particle_renderer_implementation("billboard_renderer") {
-		ps.particle_renderer_implementations.push_back(this);
+		ps.add_renderer_implementation(this);
 		tex = NULL;
 		texclamp = 0;
 		fade_threshold_size = 0.5f;

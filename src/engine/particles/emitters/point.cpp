@@ -45,6 +45,7 @@ public:
 				p_inst->remaining = pe_inst->lifetime;
 				// add particle instance to the alive pool
 				ps.alive_pool.push_back(p_inst);
+				ps.count_alive_pool++;
 				// add particle instance to it's renderer
 				p_inst->p_type->pr_inst->particles.push_back(p_inst);
 				// initialize particle instance in modifiers
@@ -63,7 +64,7 @@ private:
 
 	point_emitter() : particle_emitter_implementation("point_emitter")
 	{
-		ps.particle_emitter_implementations.push_back(this);
+		ps.add_emitter_implementation(this);
 	}
 	point_emitter( const point_emitter& );
 	point_emitter & operator = (const point_emitter &);

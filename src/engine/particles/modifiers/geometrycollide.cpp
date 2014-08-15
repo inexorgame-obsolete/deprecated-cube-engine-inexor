@@ -23,7 +23,8 @@ public:
 	{
 		d.o = vec(p_inst->o);
 		d.vel = vec(p_inst->vel);
-		if (collide(&d, p_inst->vel, 0.5f, false))
+		// suppress collision check for mapmodels
+		if (collide(&d, vec(p_inst->vel), 0.1f, false, false))
 		{
 	        game::bounced(&d, collidewall);
 	        float c = collidewall.dot(d.vel);
@@ -36,7 +37,9 @@ public:
 		}
 	}
 
-	inline void modify(particle_modifier_instance *pm_inst, int elapsedtime) { }
+	inline void modify(particle_modifier_instance *pm_inst, int elapsedtime) {
+		elasticity = pm_inst->attributes["elasticity"];
+	}
 
 	inline void modify(int elapsedtime) { }
 
@@ -48,7 +51,7 @@ private:
 	float elasticity;
 
 	geometry_collide() : particle_modifier_implementation("geometry_collide") {
-		ps.particle_modifier_implementations.push_back(this);
+		ps.add_modifier_implementation(this);
 		elasticity = 0.95f;
 		d.type = ENT_BOUNCE;
 		d.state = CS_ALIVE;

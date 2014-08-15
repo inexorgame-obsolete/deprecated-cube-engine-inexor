@@ -49,7 +49,7 @@ private:
 	float dx, dy, dz;
 
 	pulsar() : particle_modifier_implementation("pulsar") {
-		ps.particle_modifier_implementations.push_back(this);
+		ps.add_modifier_implementation(this);
 		gravity = 0.0f;
 		mass = 0.0f;
 		distance = 0.0f;

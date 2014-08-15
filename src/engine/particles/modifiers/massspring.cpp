@@ -54,7 +54,7 @@ private:
 	float time_factor;
 
 	mass_spring_transformation() : particle_modifier_implementation("mass_spring_transformation") {
-		ps.particle_modifier_implementations.push_back(this);
+		ps.add_modifier_implementation(this);
 		time_factor = 0.0f;
 	}
 	mass_spring_transformation( const mass_spring_transformation& );

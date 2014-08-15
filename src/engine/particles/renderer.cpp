@@ -64,6 +64,7 @@ particle_renderer_type* particle_system::add_particle_renderer_type(std::string 
 		pr_type->pr_impl = particle_renderer_implementations_map[impl];
 		particle_renderer_types.push_back(pr_type);
 		particle_renderer_types_map[name] = pr_type;
+		ps.count_particle_renderer_types++;
 		conoutf("Added particle renderer type \"%s\" (shader: %s) of implementation \"%s\"", name.c_str(), shader.c_str(), impl.c_str());
 		return pr_type;
 	} else {
@@ -83,6 +84,7 @@ particle_renderer_instance* particle_renderer_type::create_instance(std::string 
 	pr_inst->attributes.insert(attributes.begin(), attributes.end());
 	ps.particle_renderer_instances.push_back(pr_inst);
 	ps.particle_renderer_instances_map[name] = pr_inst;
+	ps.count_particle_renderer_instances++;
 	return pr_inst;
 }
 
@@ -102,6 +104,8 @@ void particle_system::remove_particle_renderer_type(std::string name)
 	if (particle_renderer_types_map.count(name))
 	{
 		particle_renderer_types_map.erase(name);
+		// TODO: iterate and remove from particle_renderer_types
+		count_particle_renderer_types--;
 	} else {
 		conoutf("Particle renderer type %s not found!", name.c_str());
 	}
@@ -111,6 +115,7 @@ void particle_system::remove_all_particle_renderer_types()
 {
 	particle_renderer_types_map.clear();
 	particle_renderer_types.clear();
+	count_particle_renderer_types = 0;
 }
 
 void create_particle_renderer_instance(std::string name, std::string pr_type) {

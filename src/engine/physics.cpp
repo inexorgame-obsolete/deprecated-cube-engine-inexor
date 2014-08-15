@@ -1023,15 +1023,15 @@ static inline bool cubecollide(physent *d, const vec &dir, float cutoff, const c
     }
 }
 
-static inline bool octacollide(physent *d, const vec &dir, float cutoff, const ivec &bo, const ivec &bs, const cube *c, const ivec &cor, int size) // collide with octants
+static inline bool octacollide(physent *d, const vec &dir, float cutoff, const ivec &bo, const ivec &bs, const cube *c, const ivec &cor, int size, bool mmcol) // collide with octants
 {
     loopoctabox(cor, size, bo, bs)
     {
-        if(c[i].ext && c[i].ext->ents) if(mmcollide(d, dir, *c[i].ext->ents)) return true;
+        if(mmcol && c[i].ext && c[i].ext->ents) if(mmcollide(d, dir, *c[i].ext->ents)) return true;
         ivec o(i, cor.x, cor.y, cor.z, size);
         if(c[i].children)
         {
-            if(octacollide(d, dir, cutoff, bo, bs, c[i].children, o, size>>1)) return true;
+            if(octacollide(d, dir, cutoff, bo, bs, c[i].children, o, size>>1, mmcol)) return true;
         }
         else
         {
@@ -1049,22 +1049,23 @@ static inline bool octacollide(physent *d, const vec &dir, float cutoff, const i
     return false;
 }
 
-static inline bool octacollide(physent *d, const vec &dir, float cutoff, const ivec &bo, const ivec &bs)
+static inline bool octacollide(physent *d, const vec &dir, float cutoff, const ivec &bo, const ivec &bs, bool mmcol)
 {
     int diff = (bo.x^bs.x) | (bo.y^bs.y) | (bo.z^bs.z),
         scale = worldscale-1;
     if(diff&~((1<<scale)-1) || uint(bo.x|bo.y|bo.z|bs.x|bs.y|bs.z) >= uint(worldsize))
-       return octacollide(d, dir, cutoff, bo, bs, worldroot, ivec(0, 0, 0), worldsize>>1);
+       return octacollide(d, dir, cutoff, bo, bs, worldroot, ivec(0, 0, 0), worldsize>>1, mmcol);
     const cube *c = &worldroot[octastep(bo.x, bo.y, bo.z, scale)];
-    if(c->ext && c->ext->ents && mmcollide(d, dir, *c->ext->ents)) return true;
+    if(mmcol && c->ext && c->ext->ents && mmcollide(d, dir, *c->ext->ents)) return true;
     scale--;
-    while(c->children && !(diff&(1<<scale)))
+    if (mmcol) while(c->children && !(diff&(1<<scale)))
     {
         c = &c->children[octastep(bo.x, bo.y, bo.z, scale)];
+        // conoutf("mmcollide: %d", c->ext->ents->mapmodels);
         if(c->ext && c->ext->ents && mmcollide(d, dir, *c->ext->ents)) return true;
         scale--;
     }
-    if(c->children) return octacollide(d, dir, cutoff, bo, bs, c->children, ivec(bo).mask(~((2<<scale)-1)), 1<<scale);
+    if(c->children) return octacollide(d, dir, cutoff, bo, bs, c->children, ivec(bo).mask(~((2<<scale)-1)), 1<<scale, mmcol);
     bool solid = false;
     switch(c->material&MATF_CLIP)
     {
@@ -1078,7 +1079,7 @@ static inline bool octacollide(physent *d, const vec &dir, float cutoff, const i
 }
 
 // all collision happens here
-bool collide(physent *d, const vec &dir, float cutoff, bool playercol)
+bool collide(physent *d, const vec &dir, float cutoff, bool playercol, bool mmcol)
 {
     collideinside = false;
     collideplayer = NULL;
@@ -1086,7 +1087,7 @@ bool collide(physent *d, const vec &dir, float cutoff, bool playercol)
     ivec bo(int(d->o.x-d->radius), int(d->o.y-d->radius), int(d->o.z-d->eyeheight)),
          bs(int(d->o.x+d->radius), int(d->o.y+d->radius), int(d->o.z+d->aboveeye));
     bs.add(1);  // guard space for rounding errors
-    return octacollide(d, dir, cutoff, bo, bs) || (playercol && plcollide(d, dir));
+    return octacollide(d, dir, cutoff, bo, bs, mmcol) || (playercol && plcollide(d, dir));
 }
 
 void recalcdir(physent *d, const vec &oldvel, vec &dir)

@@ -54,6 +54,7 @@ public:
 				p_inst->remaining = pe_inst->lifetime;
 				// add particle instance to the alive pool
 				ps.alive_pool.push_back(p_inst);
+				ps.count_alive_pool++;
 				// add particle instance to it's renderer
 				p_inst->p_type->pr_inst->particles.push_back(p_inst);
 				current.push_back(p_inst);
@@ -65,7 +66,7 @@ public:
 					spring_inst1->spring_constant = cloth_constant;
 					spring_inst1->spring_friction = cloth_friction;
 					spring_inst1->spring_length = pe_inst->density;
-					ps.spring_instances.push_back(spring_inst1);
+					ps.add_spring(spring_inst1);
 				}
 				if (previous.size() > i)
 				{
@@ -75,7 +76,7 @@ public:
 					spring_inst2->spring_constant = cloth_constant;
 					spring_inst2->spring_friction = cloth_friction;
 					spring_inst2->spring_length = pe_inst->density;
-					ps.spring_instances.push_back(spring_inst2);
+					ps.add_spring(spring_inst2);
 					if (i > 0)
 					{
 						spring_instance *spring_inst3 = new spring_instance;
@@ -84,7 +85,7 @@ public:
 						spring_inst3->spring_constant = cloth_constant;
 						spring_inst3->spring_friction = cloth_friction;
 						spring_inst3->spring_length = pe_inst->density; // sqrt(2 * (pe_inst->density * pe_inst->density));
-						ps.spring_instances.push_back(spring_inst3);
+						ps.add_spring(spring_inst3);
 					}
 					if (i < (cloth_width - 1))
 					{
@@ -94,7 +95,7 @@ public:
 						spring_inst4->spring_constant = cloth_constant;
 						spring_inst4->spring_friction = cloth_friction;
 						spring_inst4->spring_length = pe_inst->density; // sqrt(2 * (pe_inst->density * pe_inst->density));
-						ps.spring_instances.push_back(spring_inst4);
+						ps.add_spring(spring_inst4);
 					}
 				}
 			}
@@ -111,7 +112,7 @@ private:
 
 	cloth_emitter() : particle_emitter_implementation("cloth_emitter")
 	{
-		ps.particle_emitter_implementations.push_back(this);
+		ps.add_emitter_implementation(this);
 		cloth_width = 10;
 		cloth_constant = 0.08f;
 		cloth_friction = 0.60f;

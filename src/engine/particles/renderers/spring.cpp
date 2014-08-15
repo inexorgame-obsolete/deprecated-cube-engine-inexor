@@ -80,7 +80,7 @@ private:
 	Shader *shader;
 
 	spring_renderer() : particle_renderer_implementation("spring_renderer") {
-		ps.particle_renderer_implementations.push_back(this);
+		ps.add_renderer_implementation(this);
 		max_force = vec(1.0f, 1.0f, 1.0f);
 		color_forces = true;
 		shader = lookupshaderbyname("stdworld");

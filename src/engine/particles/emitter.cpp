@@ -35,6 +35,7 @@ particle_instance* particle_system::emit_particle()
 		// reanimate a dead particle
 		particle_instance* p_inst = dead_pool.back();
 		dead_pool.pop_back();
+		count_dead_pool--;
 		p_inst->elapsed = 0;
 		return p_inst;
 	} else {
@@ -59,6 +60,7 @@ particle_emitter_type* particle_system::add_particle_emitter_type(const std::str
 		pe_type->pe_impl = particle_emitter_implementations_map[impl];
 		particle_emitter_types.push_back(pe_type);
 		particle_emitter_types_map[name] = pe_type;
+		count_particle_emitter_types++;
 		return pe_type;
 	} else {
 		conoutf("Particle modifier type %s already exists!", name.c_str());
@@ -100,6 +102,7 @@ particle_emitter_instance* particle_emitter_type::create_instance(const vec &o, 
 	pe_inst->ent->spawned = true;
 
 	ps.particle_emitter_instances.push_back(pe_inst);
+	ps.count_particle_emitter_instances++;
 	return pe_inst;
 }
 
@@ -120,6 +123,7 @@ void particle_system::remove_particle_emitter_type(std::string name)
 	{
 		particle_emitter_types_map.erase(name);
 		// TODO: iterate particle_emitter_types and check by name
+		count_particle_emitter_types--;
 	} else {
 		conoutf("Particle emitter type %s not found!", name.c_str());
 	}
@@ -129,6 +133,7 @@ void particle_system::remove_all_particle_emitter_types()
 {
 	particle_emitter_types_map.clear();
 	particle_emitter_types.clear();
+	count_particle_emitter_types = 0;
 }
 
 void create_particle_emitter_instance(std::string pe_type, const vec &o, const vec &vel) {

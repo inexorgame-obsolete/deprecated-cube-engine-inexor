@@ -44,7 +44,7 @@ private:
 	float damper;
 
 	velocity_damper() : particle_modifier_implementation("velocity_damper") {
-		ps.particle_modifier_implementations.push_back(this);
+		ps.add_modifier_implementation(this);
 		time_factor = 0.0f;
 		damper = 0.0f;
 	}

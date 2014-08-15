@@ -52,6 +52,7 @@ public:
 				p_inst->remaining = pe_inst->lifetime;
 				// add particle instance to the alive pool
 				ps.alive_pool.push_back(p_inst);
+				ps.count_alive_pool++;
 				// add particle instance to it's renderer
 				p_inst->p_type->pr_inst->particles.push_back(p_inst);
 				// initialize particle instance in modifiers
@@ -61,17 +62,6 @@ public:
 					(*pm_it)->pm_type->pm_impl->init(p_inst);
 				}
 				*/
-
-				// Spring Emitter
-				if (last != NULL) {
-					spring_instance *spring_inst = new spring_instance;
-					spring_inst->p_inst_1 = last;
-					spring_inst->p_inst_2 = p_inst;
-					spring_inst->spring_constant = 0.8f;
-					spring_inst->spring_friction = 0.01f;
-					spring_inst->spring_length = 100.0f;
-					ps.spring_instances.push_back(spring_inst);
-				}
 				last = p_inst;
 
 			}
@@ -85,7 +75,7 @@ private:
 
 	sphere_emitter() : particle_emitter_implementation("sphere_emitter")
 	{
-		ps.particle_emitter_implementations.push_back(this);
+		ps.add_emitter_implementation(this);
 		last = NULL;
 	}
 	sphere_emitter( const sphere_emitter& );

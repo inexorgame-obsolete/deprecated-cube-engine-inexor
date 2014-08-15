@@ -19,6 +19,7 @@ public:
 	void before(particle_renderer_instance *pr_inst) {
 		// glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
+        default_shader->set();
 		glDisable(GL_CULL_FACE);
 		// glEnable(GL_TEXTURE_2D);
 		// glShadeModel(GL_SMOOTH);
@@ -96,15 +97,13 @@ private:
 
 	Texture *tex;
 	int texclamp;
-	Shader *particle_shader;
-	Shader *particle_shader_notexture;
+	Shader *default_shader;
 
 	cube_renderer() : particle_renderer_implementation("cube_renderer") {
-		ps.particle_renderer_implementations.push_back(this);
+		ps.add_renderer_implementation(this);
 		tex = NULL;
 		texclamp = 0;
-		particle_shader = lookupshaderbyname("particle");
-		particle_shader_notexture = lookupshaderbyname("particlenotexture");
+		default_shader = lookupshaderbyname("default");
 	}
 	cube_renderer( const cube_renderer& );
 	cube_renderer & operator = (const cube_renderer &);

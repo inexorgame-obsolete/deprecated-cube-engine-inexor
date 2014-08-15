@@ -558,6 +558,24 @@ struct particle_system
 	 */
 	int particlemillis;
 
+	/**
+	 * Stats MT.
+	 */
+	int count_particle_types;
+	int count_particle_emitter_types;
+	int count_particle_renderer_types;
+	int count_particle_modifier_types;
+	int count_particle_emitter_implementations;
+	int count_particle_renderer_implementations;
+	int count_particle_modifier_implementations;
+	int count_particles_instances;
+	int count_particle_emitter_instances;
+	int count_particle_renderer_instances;
+	int count_particle_modifier_instances;
+	int count_spring_instances;
+	int count_alive_pool;
+	int count_dead_pool;
+
 	int timer_emitter;
 	int timer_modifier;
 	int timer_renderer;
@@ -641,6 +659,10 @@ struct particle_system
 	void remove_particle_modifier_type(std::string name);
 	void remove_all_particle_modifier_types();
 
+	void add_spring(spring_instance *spring_inst);
+	void add_emitter_implementation(particle_emitter_implementation *pe_impl);
+	void add_modifier_implementation(particle_modifier_implementation *pm_impl);
+	void add_renderer_implementation(particle_renderer_implementation *pr_impl);
 };
 
 extern particle_system ps;

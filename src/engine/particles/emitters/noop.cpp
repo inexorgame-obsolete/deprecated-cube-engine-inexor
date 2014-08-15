@@ -27,7 +27,7 @@ private:
 
 	noop_emitter() : particle_emitter_implementation("noop_emitter")
 	{
-		ps.particle_emitter_implementations.push_back(this);
+		ps.add_emitter_implementation(this);
 	}
 	noop_emitter( const noop_emitter& );
 	noop_emitter & operator = (const noop_emitter &);

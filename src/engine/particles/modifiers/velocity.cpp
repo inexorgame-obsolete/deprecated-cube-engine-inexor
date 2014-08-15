@@ -37,7 +37,7 @@ private:
 	float time_factor;
 
 	velocity_transformation() : particle_modifier_implementation("velocity_transformation") {
-		ps.particle_modifier_implementations.push_back(this);
+		ps.add_modifier_implementation(this);
 		time_factor = 0.0f;
 	}
 	velocity_transformation( const velocity_transformation& );
