@@ -1,7 +1,6 @@
 *.o
 *.gch
 /.project
-.cproject
 
 bin
 bin64
@@ -25,4 +24,3 @@ build*
 bin*
 
 Debug
-
