@@ -8,6 +8,8 @@ bin64
 bin_osx
 packages
 data
+config
+media
 src/vcpp
 src/xcode
 src/rpggame
