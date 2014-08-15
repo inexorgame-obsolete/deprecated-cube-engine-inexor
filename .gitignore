@@ -1,6 +1,7 @@
 *.o
 *.gch
 /.project
+/.cproject
 
 bin
 bin64
@@ -22,3 +23,5 @@ xcode
 
 build*
 bin*
+
+Debug
