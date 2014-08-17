@@ -39,9 +39,7 @@ public:
 		}
 	}
 
-	inline void modify(particle_modifier_instance *pm_inst, int elapsedtime) {
-		// elasticity = pm_inst->attributes["elasticity"];
-	}
+	inline void modify(particle_modifier_instance *pm_inst, int elapsedtime) { }
 
 	inline void modify(int elapsedtime) { }
 

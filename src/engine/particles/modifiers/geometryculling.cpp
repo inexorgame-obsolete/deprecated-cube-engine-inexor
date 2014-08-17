@@ -1,5 +1,4 @@
 #include "cube.h"
-#include "octa.h"
 #include "engine/particles/particles.h"
 
 /**
@@ -23,7 +22,8 @@ public:
 	inline void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime) {
 		d.o = vec(p_inst->o);
 		d.vel = vec(p_inst->vel);
-		if (collide(&d, p_inst->vel, 0.5f, false))
+		// suppress collision check for mapmodels
+		if (collide(&d, vec(p_inst->vel), 0.1f, false, false))
 		{
 			p_inst->remaining = 0;
 		}
@@ -38,11 +38,9 @@ public:
 private:
 
 	physent d;
-	float elasticity;
 
 	geometry_culling() : particle_modifier_implementation("geometry_culling") {
 		ps.add_modifier_implementation(this);
-		elasticity = 0.95f;
 		d.type = ENT_BOUNCE;
 		d.state = CS_ALIVE;
 		d.collidetype = COLLIDE_ELLIPSE_PRECISE;
