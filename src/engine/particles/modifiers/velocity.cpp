@@ -21,6 +21,9 @@ public:
 	 */
 	inline void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime) {
 		time_factor = elapsedtime / ps.particle_frame;
+		p_inst->last.x = p_inst->o.x;
+		p_inst->last.y = p_inst->o.y;
+		p_inst->last.z = p_inst->o.z;
 		p_inst->o.x += p_inst->vel.x * time_factor;
 		p_inst->o.y += p_inst->vel.y * time_factor;
 		p_inst->o.z += p_inst->vel.z * time_factor;

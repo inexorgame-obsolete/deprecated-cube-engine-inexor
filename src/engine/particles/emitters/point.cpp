@@ -39,6 +39,7 @@ public:
 				// conoutf("x:%3.1f y:%3.1f z:%3.1f", pe_inst->o.x, pe_inst->o.y, pe_inst->o.z);
 				p_inst->o = vec(pe_inst->o);
 				p_inst->vel = pe_inst->vel;
+				p_inst->roll = 0;
 				p_inst->mass = pe_inst->mass;
 				p_inst->density = pe_inst->density;
 				// set the remaining iterations from the emitter type's lifetime

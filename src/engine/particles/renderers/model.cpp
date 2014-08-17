@@ -37,9 +37,9 @@ public:
             // float dist =  2.0f*max(radius.magnitude2(), 1.1f*radius.z);
             // float yaw = fmod(lastmillis/10000.0f*360.0f, 360.0f);
             // vec o(-center.x, dist - center.y, -0.1f*dist - center.z);
-            float yaw, pitch;
             vectoyawpitch(p_inst->vel, yaw, pitch);
-            rendermodel(NULL, pr_inst->texture.c_str(), ANIM_MAPMODEL|ANIM_LOOP, p_inst->o, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_LIGHT_FAST|MDL_DYNSHADOW, NULL, NULL, 0);
+            yaw += 90;
+            rendermodel(NULL, pr_inst->texture.c_str(), ANIM_MAPMODEL|ANIM_LOOP, p_inst->o, yaw, -p_inst->roll, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_LIGHT_FAST|MDL_DYNSHADOW, NULL, NULL, 0);
         }
 	}
 
@@ -55,6 +55,8 @@ private:
 	Texture *tex;
 	int texclamp;
 	Shader *default_shader;
+	float yaw;
+	float pitch;
 
 	model_renderer() : particle_renderer_implementation("model_renderer") {
 		ps.add_renderer_implementation(this);
@@ -62,6 +64,8 @@ private:
 		tex = NULL;
 		texclamp = 0;
 		default_shader = lookupshaderbyname("default");
+		yaw = 0.0f;
+		pitch = 0.0f;
 	}
 	model_renderer( const model_renderer& );
 	model_renderer & operator = (const model_renderer &);

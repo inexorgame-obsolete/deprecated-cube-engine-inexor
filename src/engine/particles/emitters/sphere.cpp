@@ -45,6 +45,7 @@ public:
 				p_inst->vel.x += (rx * 2 * pe_inst->vel.x) - pe_inst->vel.x;
 				p_inst->vel.y += (ry * 2 * pe_inst->vel.y) - pe_inst->vel.y;
 				p_inst->vel.z += (rz * 2 * pe_inst->vel.z) - pe_inst->vel.z;
+				p_inst->roll = 0;
 
 				p_inst->mass = pe_inst->mass;
 				p_inst->density = pe_inst->density;

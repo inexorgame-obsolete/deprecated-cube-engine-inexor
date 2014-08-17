@@ -47,6 +47,7 @@ public:
 				p_inst->o.z = pe_inst->o.z + rz * pe_inst->density;
 
 				p_inst->vel = vec(pe_inst->vel);
+				p_inst->roll = 0;
 
 				p_inst->mass = pe_inst->mass;
 				p_inst->density = pe_inst->density;

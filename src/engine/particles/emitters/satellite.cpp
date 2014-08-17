@@ -42,6 +42,7 @@ public:
 			p_inst->o.y = pe_inst->o.y;
 			p_inst->o.z = pe_inst->o.z;
 			p_inst->vel = pe_inst->vel;
+			p_inst->roll = 0;
 			p_inst->mass = pe_inst->mass;
 			p_inst->density = pe_inst->density;
 			// set the remaining iterations from the emitter type's lifetime
@@ -64,6 +65,7 @@ public:
 				p_inst_s->o.y = pe_inst->o.y + (ry - 0.5f) * 10.0f * pe_inst->density;
 				p_inst_s->o.z = pe_inst->o.z + (rz - 0.5f) * 10.0f * pe_inst->density;
 				p_inst_s->vel = pe_inst->vel;
+				p_inst_s->roll = 0;
 				p_inst_s->mass = pe_inst->mass / 10.0f; // the satellites are much weaker!
 				p_inst_s->density = pe_inst->density / 10.0f;
 				p_inst_s->remaining = pe_inst->lifetime;

@@ -133,9 +133,20 @@ struct particle_instance
 	vec o;
 
 	/**
-	 * The current velocity of the particle instance.
+	 * The last current position of the particle instance.
+	 */
+	vec last;
+
+	/**
+	 * The current velocity of the particle instance. The last velocity can be calculated
+	 * by the current and last position of the particle instance.
 	 */
     vec vel;
+
+    /**
+     * Rolling particles.
+     */
+    float roll;
 
     /**
      * The remaining iterations of the particle instance. There might be
@@ -152,6 +163,8 @@ struct particle_instance
      * over time, you should use this!
      */
     int elapsed;
+
+    int last_elapsed;
 
     /**
      * Every particle instance has a mass. Needed for modifiers which are

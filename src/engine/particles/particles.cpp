@@ -132,6 +132,7 @@ void particle_system::update_particle_pools(int elapsedtime)
 	{
 		if ((*i)->remaining > 0)
 		{
+			(*i)->last_elapsed += (*i)->elapsed;
 			(*i)->elapsed += elapsedtime;
 			(*i)->remaining -= elapsedtime;
 			++i;

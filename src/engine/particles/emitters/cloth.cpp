@@ -48,6 +48,7 @@ public:
 				float ry = rndscale(1.0f);
 				p_inst->vel.y = pe_inst->vel.y + ry * (pe_inst->vel.z);
 				p_inst->vel.z = pe_inst->vel.z + pe_inst->vel.z * sin(ps.particlemillis * 0.001f);
+				p_inst->roll = 0;
 				p_inst->mass = pe_inst->mass;
 				p_inst->density = pe_inst->density;
 				// set the remaining iterations from the emitter type's lifetime

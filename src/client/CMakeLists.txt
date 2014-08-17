@@ -74,6 +74,7 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/simplegravity
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/geometrycollide
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/geometryculling
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/rolling
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/wind
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/noop
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/point
