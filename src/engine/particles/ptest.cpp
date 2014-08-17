@@ -482,19 +482,14 @@ struct ptest
 
 	void setup11()
     {
-		float mass = 1.0f;
+		float mass = 5.0f;
 		float density = 1.0f;
-		int lifetime = 10000;
-		int rate = 5;
+		int lifetime = 20000;
+		int rate = 50;
 
-		float mass_fog = 0.5f;
-		float density_fog = 1.0f;
-		int lifetime_fog = 10000;
-		int rate_fog = 5;
-		float size_fog = 15.0f;
-
-		particle_renderer_type* pr_type_grendade = ps.add_particle_renderer_type("grenade_renderer", "projectiles/grenade", "shader", vec4(0.0f, 0.0f, 0.0f, 0.0f), "model_renderer");
-		particle_renderer_instance* pr_inst_snow = pr_type_grendade->create_instance("grendade_11");
+		particle_renderer_type* pr_type_grenade = ps.add_particle_renderer_type("grenade_renderer", "projectiles/grenade", "shader", vec4(0.0f, 0.0f, 0.0f, 0.0f), "model_renderer");
+		particle_renderer_instance* pr_inst_grenade = pr_type_grenade->create_instance("grendade_11");
+		pr_inst_grenade->offset = vec(0.0f, 0.0f, 2.0f);
 		particle_type* p_type_grendade = ps.add_particle_type("grendade_11", "grendade_11");
 
 		particle_modifier_type* pm_type_velocity_transformation = ps.add_particle_modifier_type("velocity_transformation", "velocity_transformation");

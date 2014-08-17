@@ -39,7 +39,8 @@ public:
             // vec o(-center.x, dist - center.y, -0.1f*dist - center.z);
             vectoyawpitch(p_inst->vel, yaw, pitch);
             yaw += 90;
-            rendermodel(NULL, pr_inst->texture.c_str(), ANIM_MAPMODEL|ANIM_LOOP, p_inst->o, yaw, -p_inst->roll, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_LIGHT_FAST|MDL_DYNSHADOW, NULL, NULL, 0);
+            vec o(p_inst->o);
+            rendermodel(NULL, pr_inst->texture.c_str(), ANIM_MAPMODEL|ANIM_LOOP, o.add(pr_inst->offset), yaw, -p_inst->roll, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_LIGHT_FAST|MDL_DYNSHADOW, NULL, NULL, 0);
         }
 	}
 

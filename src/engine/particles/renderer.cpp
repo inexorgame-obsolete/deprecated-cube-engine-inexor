@@ -81,6 +81,7 @@ particle_renderer_instance* particle_renderer_type::create_instance(std::string 
 	pr_inst->shader = shader;
 	pr_inst->color = color;
 	pr_inst->pr_type = this;
+	pr_inst->offset = vec(0.0f, 0.0f, 0.0f);
 	pr_inst->attributes.insert(attributes.begin(), attributes.end());
 	ps.particle_renderer_instances.push_back(pr_inst);
 	ps.particle_renderer_instances_map[name] = pr_inst;

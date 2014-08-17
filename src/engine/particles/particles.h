@@ -212,6 +212,11 @@ struct particle_renderer_instance
 	std::string shader;
 
 	/**
+	 * Position offset.
+	 */
+	vec offset;
+
+	/**
 	 * The color to use.
 	 */
 	vec4 color;
