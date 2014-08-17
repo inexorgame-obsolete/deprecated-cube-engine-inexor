@@ -53,7 +53,7 @@ private:
 		force = 0.0f;
 		dz = 0.0f;
 		dzmin = 10.0f;
-		dzmax = 40.0f;
+		dzmax = 80.0f;
 	}
 	global_gravity( const global_gravity& );
 	global_gravity & operator = (const global_gravity &);

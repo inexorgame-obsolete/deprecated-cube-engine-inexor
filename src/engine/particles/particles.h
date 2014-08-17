@@ -232,9 +232,14 @@ struct particle_modifier_instance
 	particle_modifier_type *pm_type;
 
 	/**
-	 * The current position of the particle modifier instance.
+	 * The current position of the particle modifier instance (if any).
 	 */
 	vec o;
+
+	/**
+	 * The velocity of the particle modifier instance.
+	 */
+	vec vel;
 
 	/**
 	 * The entity. May be replaced by a new entity implementation.

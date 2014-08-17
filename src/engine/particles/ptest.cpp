@@ -19,6 +19,8 @@ struct ptest
 			case 6: setup6(); break;
 			case 7: setup7(); break;
 			case 8: setup8(); break;
+			case 9: setup9(); break;
+			case 10: setup10(); break;
 		}
 	}
 
@@ -171,7 +173,7 @@ struct ptest
 		int rate = 1;
 
 		particle_renderer_type* pr_type_ball = ps.add_particle_renderer_type("ball_renderer", "packages/particles/ball1.png", "shader", vec4(255.0f, 255.0f, 0.0f, 0.3f), "billboard_renderer");
-		pr_type_ball->attributes["size"] = 20.0f;
+		pr_type_ball->attributes["size"] = 100.0f;
 		particle_renderer_instance* pr_inst_fire = pr_type_ball->create_instance("fire");
 		particle_type* p_type_fire = ps.add_particle_type("fire", "fire");
 		particle_modifier_type* pm_type_velocity_transformation = ps.add_particle_modifier_type("velocity_transformation", "velocity_transformation");
@@ -373,6 +375,79 @@ struct ptest
 		pe_inst_point_3->add_modifier(pm_inst_velocity_transformation);
 		pe_inst_point_3->add_modifier(pm_inst_randomv);
 		pe_inst_point_3->add_modifier(pm_inst_geometry_collide_7);
+    }
+
+	void setup9()
+    {
+		float mass = 1.0f;
+		float density = 1.0f;
+		int lifetime = 30000;
+		int rate = 10;
+
+		particle_renderer_type* pr_type_snow = ps.add_particle_renderer_type("snow_renderer_9", "packages/particles/smoke.png", "shader", vec4(255.0f, 255.0f, 255.0f, 0.3f), "billboard_renderer");
+		pr_type_snow->attributes["size"] = 30.0f;
+		particle_renderer_instance* pr_inst_snow = pr_type_snow->create_instance("snow_9");
+		particle_type* p_type_snow = ps.add_particle_type("snow_9", "snow_9");
+		particle_modifier_type* pm_type_velocity_transformation = ps.add_particle_modifier_type("velocity_transformation", "velocity_transformation");
+		particle_modifier_instance* pm_inst_velocity_transformation = pm_type_velocity_transformation->create_instance();
+		particle_modifier_type* pm_type_randomv = ps.add_particle_modifier_type("randomv_9", "randomv");
+		particle_modifier_instance* pm_inst_randomv = pm_type_randomv->create_instance();
+		particle_modifier_type* pm_type_velocity_damper = ps.add_particle_modifier_type("velocity_damper_9", "velocity_damper");
+		particle_modifier_instance* pm_inst_velocity_damper = pm_type_velocity_damper->create_instance(vec(0.01f, 0.02f, 0.1f));
+		particle_modifier_type* pm_type_wind = ps.add_particle_modifier_type("wind_9", "wind");
+		particle_modifier_instance* pm_inst_wind = pm_type_wind->create_instance();
+		pm_inst_wind->vel = vec(0.8f, 0.4f, 0.0f);
+		particle_modifier_type* pm_type_geometry_collide = ps.add_particle_modifier_type("geometry_collide_9", "geometry_collide");
+		particle_modifier_instance* pm_inst_geometry_collide = pm_type_geometry_collide->create_instance();
+		pm_inst_geometry_collide->attributes["elasticity"] = 0.8f;
+		particle_modifier_type* pm_type_gravity_point = ps.add_particle_modifier_type("gravity_point_9", "gravity_point");
+		pm_type_gravity_point->attributes["mass"] = 5000.0f;
+		pm_type_gravity_point->attributes["gravity"] = -30.0f;
+		particle_modifier_instance* pm_inst_gravity_point = pm_type_gravity_point->create_instance(vec(1024.0f, 1024.0f, 550.0f));
+
+		particle_emitter_type* pe_box_snow_type = ps.add_particle_emitter_type("box_emitter_9", "snow_9", mass, density, lifetime, rate, "box_emitter");
+		pe_box_snow_type->density = 600.0f;
+		particle_emitter_instance* pe_inst_box_snow = pe_box_snow_type->create_instance(vec(1024.0f, 1024.0f, 800.0f), vec(0.0f, 0.0f, -25.0f));
+		pe_inst_box_snow->add_modifier(pm_inst_velocity_transformation);
+		pe_inst_box_snow->add_modifier(pm_inst_velocity_damper);
+		pe_inst_box_snow->add_modifier(pm_inst_wind);
+		pe_inst_box_snow->add_modifier(pm_inst_geometry_collide);
+		pe_inst_box_snow->add_modifier(pm_inst_gravity_point);
+    }
+
+	void setup10()
+    {
+		float mass = 1.0f;
+		float density = 1.0f;
+		int lifetime = 10000;
+		int rate = 100;
+
+		// packages/models/
+		particle_renderer_type* pr_type_grendade = ps.add_particle_renderer_type("grenade_renderer", "projectiles/grenade", "shader", vec4(255.0f, 255.0f, 255.0f, 0.3f), "model_renderer");
+		pr_type_grendade->attributes["size"] = 30.0f;
+		particle_renderer_instance* pr_inst_snow = pr_type_grendade->create_instance("grendade_10");
+		particle_type* p_type_grendade = ps.add_particle_type("grendade_10", "grendade_10");
+		particle_modifier_type* pm_type_velocity_transformation = ps.add_particle_modifier_type("velocity_transformation", "velocity_transformation");
+		particle_modifier_instance* pm_inst_velocity_transformation = pm_type_velocity_transformation->create_instance();
+		// particle_modifier_type* pm_type_velocity_damper = ps.add_particle_modifier_type("velocity_damper_10", "velocity_damper");
+		// particle_modifier_instance* pm_inst_velocity_damper = pm_type_velocity_damper->create_instance(vec(0.01f, 0.02f, 0.1f));
+		particle_modifier_type* pm_type_wind = ps.add_particle_modifier_type("wind_10", "wind");
+		particle_modifier_instance* pm_inst_wind = pm_type_wind->create_instance();
+		pm_inst_wind->vel = vec(30.0f, 40.0f, 0.0f);
+		particle_modifier_type* pm_type_simple_gravity = ps.add_particle_modifier_type("global_gravity_10", "simple_gravity");
+		particle_modifier_instance* pm_inst_simple_gravity = pm_type_simple_gravity->create_instance(vec(0.0f, 0.0f, 0.0f));
+
+		particle_modifier_type* pm_type_geometry_collide = ps.add_particle_modifier_type("geometry_collide_10", "geometry_collide");
+		particle_modifier_instance* pm_inst_geometry_collide = pm_type_geometry_collide->create_instance();
+		pm_inst_geometry_collide->attributes["elasticity"] = 0.75f;
+
+		particle_emitter_type* pe_box_snow_type = ps.add_particle_emitter_type("box_emitter_10", "grendade_10", mass, density, lifetime, rate, "box_emitter");
+		pe_box_snow_type->density = 600.0f;
+		particle_emitter_instance* pe_inst_box_snow = pe_box_snow_type->create_instance(vec(1024.0f, 1024.0f, 520.0f), vec(0.0f, 0.0f, 0.0f));
+		pe_inst_box_snow->add_modifier(pm_inst_velocity_transformation);
+		pe_inst_box_snow->add_modifier(pm_inst_wind);
+		pe_inst_box_snow->add_modifier(pm_inst_simple_gravity);
+		pe_inst_box_snow->add_modifier(pm_inst_geometry_collide);
     }
 
 };

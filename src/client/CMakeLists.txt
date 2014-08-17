@@ -71,9 +71,12 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/damper
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/bbculling
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/globalgravity
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/simplegravity
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/geometrycollide
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/wind
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/noop
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/point
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/box
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/field
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/sphere
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/satellite
@@ -81,6 +84,7 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/renderers/billboard
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/renderers/cube
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/renderers/spring
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/renderers/model
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/ptest
 
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/ai

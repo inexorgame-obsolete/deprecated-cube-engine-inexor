@@ -19,8 +19,10 @@ public:
 	/**
 	 * Simulate a simple bouncer
 	 */
+	// TODO: template the type (instead particle_modifier_instance -> static cast to geometry_collide_modifier_instance)
 	inline void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime)
 	{
+		elasticity = pm_inst->attributes["elasticity"];
 		d.o = vec(p_inst->o);
 		d.vel = vec(p_inst->vel);
 		// suppress collision check for mapmodels
@@ -38,7 +40,7 @@ public:
 	}
 
 	inline void modify(particle_modifier_instance *pm_inst, int elapsedtime) {
-		elasticity = pm_inst->attributes["elasticity"];
+		// elasticity = pm_inst->attributes["elasticity"];
 	}
 
 	inline void modify(int elapsedtime) { }
