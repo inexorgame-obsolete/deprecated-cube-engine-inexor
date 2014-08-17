@@ -25,6 +25,8 @@ void particle_state_worker::stop() {
 		running = false;
 		// SDL_KillThread(thread);
 		conoutf("stopping worker thread");
+	    int retValue;
+		SDL_WaitThread(thread, &retValue);
 	}
 }
 
