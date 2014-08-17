@@ -21,6 +21,7 @@ struct ptest
 			case 8: setup8(); break;
 			case 9: setup9(); break;
 			case 10: setup10(); break;
+			case 11: setup11(); break;
 		}
 	}
 
@@ -455,23 +456,71 @@ struct ptest
 		particle_modifier_type* pm_type_geometry_culling = ps.add_particle_modifier_type("geometry_culling_10", "geometry_culling");
 		particle_modifier_instance* pm_inst_geometry_culling = pm_type_geometry_culling->create_instance();
 
-		particle_emitter_type* pe_box_grenade_type = ps.add_particle_emitter_type("box_grenade_emitter_10", "grendade_10", mass, density, lifetime, rate, "box_emitter");
-		pe_box_grenade_type->density = 600.0f;
-		particle_emitter_instance* pe_inst_grenade_snow = pe_box_grenade_type->create_instance(vec(1024.0f, 1024.0f, 520.0f), vec(0.0f, 0.0f, 0.0f));
-		pe_inst_grenade_snow->add_modifier(pm_inst_velocity_transformation);
-		pe_inst_grenade_snow->add_modifier(pm_inst_wind);
-		pe_inst_grenade_snow->add_modifier(pm_inst_simple_gravity);
-		pe_inst_grenade_snow->add_modifier(pm_inst_geometry_collide);
+		particle_modifier_type* pm_type_rolling = ps.add_particle_modifier_type("rolling_10", "rolling");
+		particle_modifier_instance* pm_inst_rolling = pm_type_rolling->create_instance();
 
-		particle_emitter_type* pe_box_smoke_type = ps.add_particle_emitter_type("box_fog_emitter_10", "smoke_10", mass_fog, density_fog, lifetime_fog, rate_fog, "box_emitter");
-		pe_box_smoke_type->density = 600.0f;
-		particle_emitter_instance* pe_inst_box_fog = pe_box_smoke_type->create_instance(vec(1024.0f, 1024.0f, 520.0f), vec(0.0f, 0.0f, -20.0f));
+		particle_emitter_type* pe_type_box_grenade = ps.add_particle_emitter_type("box_grenade_emitter_10", "grendade_10", mass, density, lifetime, rate, "box_emitter");
+		pe_type_box_grenade->density = 600.0f;
+		particle_emitter_instance* pe_inst_box_grenade = pe_type_box_grenade->create_instance(vec(1024.0f, 1024.0f, 520.0f), vec(0.0f, 0.0f, 0.0f));
+		pe_inst_box_grenade->add_modifier(pm_inst_velocity_transformation);
+		pe_inst_box_grenade->add_modifier(pm_inst_wind);
+		pe_inst_box_grenade->add_modifier(pm_inst_simple_gravity);
+		pe_inst_box_grenade->add_modifier(pm_inst_geometry_collide);
+		pe_inst_box_grenade->add_modifier(pm_inst_rolling);
+
+		particle_emitter_type* pe_type_box_fog = ps.add_particle_emitter_type("box_fog_emitter_10", "smoke_10", mass_fog, density_fog, lifetime_fog, rate_fog, "box_emitter");
+		pe_type_box_fog->density = 600.0f;
+		particle_emitter_instance* pe_inst_box_fog = pe_type_box_fog->create_instance(vec(1024.0f, 1024.0f, 520.0f), vec(0.0f, 0.0f, -20.0f));
 		pe_inst_box_fog->add_modifier(pm_inst_velocity_transformation);
 		pe_inst_box_fog->add_modifier(pm_inst_wind);
 		pe_inst_box_fog->add_modifier(pm_inst_simple_gravity);
 		pe_inst_box_fog->add_modifier(pm_inst_geometry_culling);
 		// pe_inst_box_fog->add_modifier(pm_inst_geometry_collide);
 
+    }
+
+
+	void setup11()
+    {
+		float mass = 1.0f;
+		float density = 1.0f;
+		int lifetime = 10000;
+		int rate = 5;
+
+		float mass_fog = 0.5f;
+		float density_fog = 1.0f;
+		int lifetime_fog = 10000;
+		int rate_fog = 5;
+		float size_fog = 15.0f;
+
+		particle_renderer_type* pr_type_grendade = ps.add_particle_renderer_type("grenade_renderer", "projectiles/grenade", "shader", vec4(0.0f, 0.0f, 0.0f, 0.0f), "model_renderer");
+		particle_renderer_instance* pr_inst_snow = pr_type_grendade->create_instance("grendade_11");
+		particle_type* p_type_grendade = ps.add_particle_type("grendade_11", "grendade_11");
+
+		particle_modifier_type* pm_type_velocity_transformation = ps.add_particle_modifier_type("velocity_transformation", "velocity_transformation");
+		particle_modifier_instance* pm_inst_velocity_transformation = pm_type_velocity_transformation->create_instance();
+		particle_modifier_type* pm_type_wind = ps.add_particle_modifier_type("wind_11", "wind");
+		particle_modifier_instance* pm_inst_wind = pm_type_wind->create_instance();
+		pm_inst_wind->vel = vec(30.0f, 40.0f, 0.0f);
+		particle_modifier_type* pm_type_simple_gravity = ps.add_particle_modifier_type("global_gravity_11", "simple_gravity");
+		particle_modifier_instance* pm_inst_simple_gravity = pm_type_simple_gravity->create_instance(vec(0.0f, 0.0f, 0.0f));
+
+		particle_modifier_type* pm_type_geometry_collide = ps.add_particle_modifier_type("geometry_collide_11", "geometry_collide");
+		particle_modifier_instance* pm_inst_geometry_collide = pm_type_geometry_collide->create_instance();
+		pm_inst_geometry_collide->attributes["elasticity"] = 0.75f;
+
+		particle_modifier_type* pm_type_rolling = ps.add_particle_modifier_type("rolling_11", "rolling");
+		particle_modifier_instance* pm_inst_rolling = pm_type_rolling->create_instance();
+
+		particle_emitter_type* pe_type_box_grenade = ps.add_particle_emitter_type("box_grenade_emitter_11", "grendade_11", mass, density, lifetime, rate, "box_emitter");
+		pe_type_box_grenade->density = 600.0f;
+
+		particle_emitter_instance* pe_inst_box_grenade = pe_type_box_grenade->create_instance(vec(100.0f, 100.0f, 520.0f), vec(0.0f, 0.0f, 0.0f));
+		pe_inst_box_grenade->add_modifier(pm_inst_velocity_transformation);
+		pe_inst_box_grenade->add_modifier(pm_inst_wind);
+		pe_inst_box_grenade->add_modifier(pm_inst_simple_gravity);
+		pe_inst_box_grenade->add_modifier(pm_inst_geometry_collide);
+		pe_inst_box_grenade->add_modifier(pm_inst_rolling);
     }
 
 };
