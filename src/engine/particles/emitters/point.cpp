@@ -19,13 +19,14 @@ public:
 	/**
 	 * Emits particles from a single point (x,y,z).
 	 */
-	inline void emit(particle_emitter_instance *pe_inst, int elapsedtime)
+	inline std::list<particle_instance*> emit(particle_emitter_instance *pe_inst, int elapsedtime)
 	{
 		particle_emitter_type* pe_type = pe_inst->pe_type;
 		pe_inst->millistoprocess += elapsedtime;
 		int particlestoemit = pe_inst->millistoprocess / pe_type->rate;
 		pe_inst->millistoprocess = pe_inst->millistoprocess % pe_type->rate;
 
+		std::list<particle_instance*> emitted;
 		if (particlestoemit > 0)
 		{
 			loopi(particlestoemit)
@@ -49,16 +50,10 @@ public:
 				ps.count_alive_pool++;
 				// add particle instance to it's renderer
 				p_inst->p_type->pr_inst->particles.push_back(p_inst);
-				// initialize particle instance in modifiers
-				/*
-				for(std::vector<particle_modifier_instance*>::iterator pm_it = pe_inst->modifiers.begin(); pm_it != pe_inst->modifiers.end(); ++pm_it)
-				{
-					(*pm_it)->pm_type->pm_impl->init(p_inst);
-				}
-				*/
+				emitted.push_back(p_inst);
 			}
 		}
-
+		return emitted;
 	}
 
 private:

@@ -22,6 +22,8 @@ struct ptest
 			case 9: setup9(); break;
 			case 10: setup10(); break;
 			case 11: setup11(); break;
+			case 12: setup12(); break;
+			case 13: setup13(); break;
 		}
 	}
 
@@ -324,20 +326,24 @@ struct ptest
 		float mass = 5.0f;
 		float density = 250.0f;
 		int lifetime = 5000;
-		int rate = 1;
+		int rate = 10;
 
-		particle_renderer_type* pr_type_fire_ball = ps.add_particle_renderer_type("fire_ball_7", "packages/particles/ball2.png", "shader", vec4(255.0f, 255.0f, 0.0f, 0.3f), "billboard_renderer");
-		pr_type_fire_ball->attributes["size"] = 15.0f;
+		particle_renderer_type* pr_type_fire_ball = ps.add_particle_renderer_type("fire_ball_7", "media/particle/shockwave01.png", "shader", vec4(255.0f, 255.0f, 0.0f, 0.1f), "billboard_renderer");
+		pr_type_fire_ball->attributes["size"] = 45.0f;
 		particle_renderer_instance* pr_inst_fire_ball = pr_type_fire_ball->create_instance("fire_ball_7");
 		particle_type* p_type_fire_ball = ps.add_particle_type("fire_ball_7", "fire_ball_7");
 
 		particle_modifier_type* pm_type_velocity_transformation = ps.add_particle_modifier_type("velocity_transformation", "velocity_transformation");
 		particle_modifier_instance* pm_inst_velocity_transformation = pm_type_velocity_transformation->create_instance();
 
+/*
 		particle_modifier_type* pm_type_global_gravity_7 = ps.add_particle_modifier_type("global_gravity_7", "global_gravity");
 		pm_type_global_gravity_7->attributes["mass"] = 450.0f;
 		pm_type_global_gravity_7->attributes["gravity"] = 3.0f;
 		particle_modifier_instance* pm_inst_global_gravity_7 = pm_type_global_gravity_7->create_instance(vec(0.0f, 0.0f, 400.0f));
+*/
+		particle_modifier_type* pm_type_simple_gravity = ps.add_particle_modifier_type("global_gravity_10", "simple_gravity");
+		particle_modifier_instance* pm_inst_simple_gravity = pm_type_simple_gravity->create_instance(vec(0.0f, 0.0f, 0.0f));
 
 		particle_modifier_type* pm_type_geometry_collide_7 = ps.add_particle_modifier_type("geometry_collide_7", "geometry_collide");
 		particle_modifier_instance* pm_inst_geometry_collide_7 = pm_type_geometry_collide_7->create_instance();
@@ -347,9 +353,9 @@ struct ptest
 		particle_modifier_instance* pm_inst_randomv_7 = pm_type_randomv_7->create_instance();
 
 		particle_emitter_type* pe_type_fire_ball_7 = ps.add_particle_emitter_type("fire_ball_emitter_7", "fire_ball_7", mass, density, lifetime, rate, "point_emitter");
-		particle_emitter_instance* pe_inst_fire_ball_7 = pe_type_fire_ball_7->create_instance(vec(1860.0f, 1860.0f, 400.0f), vec(0.0f, 0.0f, 200.0f));
+		particle_emitter_instance* pe_inst_fire_ball_7 = pe_type_fire_ball_7->create_instance(vec(512.0f, 512.0f, 400.0f), vec(1.0f, 1.0f, 3.0f));
 		pe_inst_fire_ball_7->add_modifier(pm_inst_velocity_transformation);
-		pe_inst_fire_ball_7->add_modifier(pm_inst_global_gravity_7);
+		pe_inst_fire_ball_7->add_modifier(pm_inst_simple_gravity);
 		pe_inst_fire_ball_7->add_modifier(pm_inst_geometry_collide_7);
 		pe_inst_fire_ball_7->add_modifier(pm_inst_randomv_7);
     }
@@ -479,7 +485,6 @@ struct ptest
 
     }
 
-
 	void setup11()
     {
 		float mass = 5.0f;
@@ -494,9 +499,11 @@ struct ptest
 
 		particle_modifier_type* pm_type_velocity_transformation = ps.add_particle_modifier_type("velocity_transformation", "velocity_transformation");
 		particle_modifier_instance* pm_inst_velocity_transformation = pm_type_velocity_transformation->create_instance();
+
 		particle_modifier_type* pm_type_wind = ps.add_particle_modifier_type("wind_11", "wind");
 		particle_modifier_instance* pm_inst_wind = pm_type_wind->create_instance();
 		pm_inst_wind->vel = vec(30.0f, 40.0f, 0.0f);
+
 		particle_modifier_type* pm_type_simple_gravity = ps.add_particle_modifier_type("global_gravity_11", "simple_gravity");
 		particle_modifier_instance* pm_inst_simple_gravity = pm_type_simple_gravity->create_instance(vec(0.0f, 0.0f, 0.0f));
 
@@ -516,6 +523,97 @@ struct ptest
 		pe_inst_box_grenade->add_modifier(pm_inst_simple_gravity);
 		pe_inst_box_grenade->add_modifier(pm_inst_geometry_collide);
 		pe_inst_box_grenade->add_modifier(pm_inst_rolling);
+    }
+
+	void setup12()
+    {
+		float mass = 5.0f;
+		float density = 1.0f;
+		int lifetime = 20000;
+		int rate = 10;
+
+		particle_renderer_type* pr_type_grenade = ps.add_particle_renderer_type("grenade_renderer", "projectiles/rocket", "shader", vec4(0.0f, 0.0f, 0.0f, 0.0f), "model_renderer");
+		particle_renderer_instance* pr_inst_grenade = pr_type_grenade->create_instance("grendade_12");
+		pr_inst_grenade->offset = vec(0.0f, 0.0f, 2.0f);
+		particle_type* p_type_grendade = ps.add_particle_type("grendade_12", "grendade_12");
+
+		particle_modifier_type* pm_type_velocity_transformation = ps.add_particle_modifier_type("velocity_transformation", "velocity_transformation");
+		particle_modifier_instance* pm_inst_velocity_transformation = pm_type_velocity_transformation->create_instance();
+
+		particle_modifier_type* pm_type_geometry_collide = ps.add_particle_modifier_type("geometry_collide_12", "geometry_collide");
+		particle_modifier_instance* pm_inst_geometry_collide = pm_type_geometry_collide->create_instance();
+		pm_inst_geometry_collide->attributes["elasticity"] = 0.75f;
+
+		particle_modifier_type* pm_type_rolling = ps.add_particle_modifier_type("rolling_12", "rolling");
+		particle_modifier_instance* pm_inst_rolling = pm_type_rolling->create_instance();
+
+		particle_modifier_type* pm_type_gravity_point_a = ps.add_particle_modifier_type("gravity_point_12a", "pulsar");
+		pm_type_gravity_point_a->attributes["mass"] = 1000.0f;
+		pm_type_gravity_point_a->attributes["gravity"] = 5.0f;
+		particle_modifier_instance* pm_inst_gravity_point_a = pm_type_gravity_point_a->create_instance(vec(256.0f, 512.0f, 390.0f));
+
+		particle_modifier_type* pm_type_gravity_point_b = ps.add_particle_modifier_type("gravity_point_12b", "pulsar");
+		pm_type_gravity_point_b->attributes["mass"] = 1000.0f;
+		pm_type_gravity_point_b->attributes["gravity"] = 5.0f;
+		particle_modifier_instance* pm_inst_gravity_point_b = pm_type_gravity_point_b->create_instance(vec(768.0f, 512.0f, 390.0f));
+
+		particle_modifier_type* pm_type_gravity_point_c = ps.add_particle_modifier_type("gravity_point_12c", "pulsar");
+		pm_type_gravity_point_c->attributes["mass"] = 1000.0f;
+		pm_type_gravity_point_c->attributes["gravity"] = 5.0f;
+		particle_modifier_instance* pm_inst_gravity_point_c = pm_type_gravity_point_c->create_instance(vec(512.0f, 256.0f, 390.0f));
+
+		particle_modifier_type* pm_type_gravity_point_d = ps.add_particle_modifier_type("gravity_point_12d", "pulsar");
+		pm_type_gravity_point_d->attributes["mass"] = 1000.0f;
+		pm_type_gravity_point_d->attributes["gravity"] = 5.0f;
+		particle_modifier_instance* pm_inst_gravity_point_d = pm_type_gravity_point_d->create_instance(vec(512.0f, 768.0f, 390.0f));
+
+		particle_modifier_type* pm_type_gravity_point_e = ps.add_particle_modifier_type("gravity_point_12e", "pulsar");
+		pm_type_gravity_point_e->attributes["mass"] = 1000.0f;
+		pm_type_gravity_point_e->attributes["gravity"] = -5.0f;
+		particle_modifier_instance* pm_inst_gravity_point_e = pm_type_gravity_point_e->create_instance(vec(512.0f, 512.0f, 134.0f));
+
+		particle_modifier_type* pm_type_gravity_point_f = ps.add_particle_modifier_type("gravity_point_12f", "pulsar");
+		pm_type_gravity_point_f->attributes["mass"] = 1000.0f;
+		pm_type_gravity_point_f->attributes["gravity"] = -5.0f;
+		particle_modifier_instance* pm_inst_gravity_point_f = pm_type_gravity_point_f->create_instance(vec(512.0f, 512.0f, 646.0f));
+
+
+		particle_modifier_type* pm_type_randomv = ps.add_particle_modifier_type("randomv_12", "randomv");
+		particle_modifier_instance* pm_inst_randomv = pm_type_randomv->create_instance();
+
+
+		particle_emitter_type* pe_type_sphere_grenade = ps.add_particle_emitter_type("sphere_grenade_emitter_12", "grendade_12", mass, density, lifetime, rate, "sphere_emitter");
+
+		particle_emitter_instance* pe_inst_sphere_grenade = pe_type_sphere_grenade->create_instance(vec(512.0f, 512.0f, 390.0f), vec(10.0f, 10.0f, 0.0f));
+		pe_inst_sphere_grenade->add_modifier(pm_inst_velocity_transformation);
+		pe_inst_sphere_grenade->add_modifier(pm_inst_gravity_point_a);
+		pe_inst_sphere_grenade->add_modifier(pm_inst_gravity_point_b);
+		pe_inst_sphere_grenade->add_modifier(pm_inst_gravity_point_c);
+		pe_inst_sphere_grenade->add_modifier(pm_inst_gravity_point_d);
+		pe_inst_sphere_grenade->add_modifier(pm_inst_geometry_collide);
+		pe_inst_sphere_grenade->add_modifier(pm_inst_rolling);
+		pe_inst_sphere_grenade->add_modifier(pm_inst_randomv);
+    }
+
+	void setup13()
+    {
+		float mass = 1.0f;
+		float density = 1.0f;
+		int lifetime = 30000;
+		int rate = 200;
+
+		particle_renderer_type* pr_type_plasma = ps.add_particle_renderer_type("ball_renderer", "packages/particles/plasma.png", "shader", vec4(128.0f, 128.0f, 255.0f, 0.3f), "billboard_renderer");
+		pr_type_plasma->attributes["size"] = 40.0f;
+		particle_renderer_instance* pr_inst_plasma = pr_type_plasma->create_instance("plasma_13");
+		particle_type* p_type_plasma = ps.add_particle_type("plasma_13", "plasma_13");
+		particle_modifier_type* pm_type_velocity_transformation = ps.add_particle_modifier_type("velocity_transformation_13", "velocity_transformation");
+		particle_modifier_instance* pm_inst_velocity_transformation = pm_type_velocity_transformation->create_instance();
+		particle_initializer_type* pi_type_random_velocity = ps.add_particle_initializer_type("random_velocity_13", "random_velocity");
+		particle_initializer_instance* pi_inst_random_velocity = pi_type_random_velocity->create_instance();
+		particle_emitter_type* pe_type_point_plasma = ps.add_particle_emitter_type("plasma_point_emitter_13", "plasma_13", mass, density, lifetime, rate, "point_emitter");
+		particle_emitter_instance* pe_inst_point_plasma = pe_type_point_plasma->create_instance(vec(512.0f, 512.0f, 514.0f), vec(0.0f, 0.0f, 0.0f));
+		pe_inst_point_plasma->add_modifier(pm_inst_velocity_transformation);
+		pe_inst_point_plasma->add_initializer(pi_inst_random_velocity);
     }
 
 };

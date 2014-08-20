@@ -137,6 +137,7 @@ void particle_system::update_particle_pools(int elapsedtime)
 			(*i)->remaining -= elapsedtime;
 			++i;
 		} else {
+			// (*i)->reset();
 			dead_pool.push_front(*i);
 			i = alive_pool.erase(i);
 			count_dead_pool++;
@@ -157,16 +158,22 @@ void particle_system::add_emitter_implementation(particle_emitter_implementation
 	count_particle_emitter_implementations++;
 }
 
+void particle_system::add_renderer_implementation(particle_renderer_implementation *pr_impl)
+{
+	particle_renderer_implementations.push_back(pr_impl);
+	count_particle_renderer_implementations++;
+}
+
 void particle_system::add_modifier_implementation(particle_modifier_implementation *pm_impl)
 {
 	particle_modifier_implementations.push_back(pm_impl);
 	count_particle_modifier_implementations++;
 }
 
-void particle_system::add_renderer_implementation(particle_renderer_implementation *pr_impl)
+void particle_system::add_initializer_implementation(particle_initializer_implementation *pi_impl)
 {
-	particle_renderer_implementations.push_back(pr_impl);
-	count_particle_renderer_implementations++;
+	particle_initializer_implementations.push_back(pi_impl);
+	count_particle_initializer_implementations++;
 }
 
 particle_implementation_base::particle_implementation_base(const std::string& name) : name(name) { }
@@ -186,6 +193,12 @@ particle_modifier_implementation::particle_modifier_implementation(const std::st
 	ps.particle_modifier_implementations_map[name] = this;
 }
 particle_modifier_implementation::~particle_modifier_implementation() { }
+
+particle_initializer_implementation::particle_initializer_implementation(const std::string& name) : particle_implementation_base(name) {
+	ps.particle_initializer_implementations_map[name] = this;
+}
+particle_initializer_implementation::~particle_initializer_implementation() { }
+
 
 // COMMANDN(init_particles, particle_system::init_particles(), "");
 // ICOMMAND(clear_particle_pools, "");

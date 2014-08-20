@@ -8,23 +8,22 @@
 #include <list>
 #include <deque>
 
-/**
- * Particle frame in milliseconds.
- */
-
 struct particle_type;
 struct particle_emitter_type;
 struct particle_renderer_type;
 struct particle_modifier_type;
+struct particle_initializer_type;
 
 struct particle_instance;
 struct particle_emitter_instance;
 struct particle_renderer_instance;
 struct particle_modifier_instance;
+struct particle_initializer_instance;
 
 struct particle_emitter_implementation;
 struct particle_renderer_implementation;
 struct particle_modifier_implementation;
+struct particle_initializer_implementation;
 
 /**
  * A particle emitter instance is an instance of a particle emitter
@@ -94,6 +93,11 @@ struct particle_emitter_instance
 	std::vector<particle_modifier_instance*> modifiers;
 
 	/**
+	 * The initializers to apply on particles spawned by emitters of this type.
+	 */
+	std::vector<particle_initializer_instance*> initializers;
+
+	/**
 	 * Extra attributes per emitter instance.
 	 */
 	std::map<std::string, float> attributes;
@@ -102,6 +106,11 @@ struct particle_emitter_instance
 	 * Adds a modifier instance
 	 */
 	void add_modifier(particle_modifier_instance* pm_inst);
+
+	/**
+	 * Adds a initializer instance
+	 */
+	void add_initializer(particle_initializer_instance* pi_inst);
 
 };
 
@@ -271,6 +280,24 @@ struct particle_modifier_instance
 
 };
 
+/**
+ * Particle initializers are initializing the state of a particle.
+ */
+struct particle_initializer_instance
+{
+
+	/**
+	 * The initializer type.
+	 */
+	particle_initializer_type *pi_type;
+
+	/**
+	 * Extra attributes per modifier instance.
+	 */
+	std::map<std::string, float> attributes;
+
+};
+
 struct particle_implementation_base {
 
 	/**
@@ -298,7 +325,7 @@ struct particle_emitter_implementation : public particle_implementation_base
 	/**
 	 * Emits new particle(s).
 	 */
-	virtual void emit(particle_emitter_instance *pe_inst, int elapsedtime) = 0;
+	virtual std::list<particle_instance*> emit(particle_emitter_instance *pe_inst, int elapsedtime) = 0;
 
 };
 
@@ -361,7 +388,26 @@ struct particle_modifier_implementation : public particle_implementation_base
 	/**
 	 * Called directly after emitation.
 	 */
-	virtual void init(particle_instance* p_inst) = 0;
+//	virtual void init(particle_instance* p_inst) = 0;
+
+};
+
+/**
+ * Interface for a particle initializer implementation.
+ *
+ * Particle initializers should register themselves in their constructor
+ * using add_particle_initializer_type()
+ */
+struct particle_initializer_implementation : public particle_implementation_base
+{
+
+	particle_initializer_implementation(const std::string& name);
+	virtual ~particle_initializer_implementation();
+
+	/**
+	 * Initializes particle(s).
+	 */
+	virtual void init(std::list<particle_instance *> particles, int elapsedtime) = 0;
 
 };
 
@@ -436,6 +482,11 @@ struct particle_emitter_type : public particle_type_base
 	std::vector<particle_modifier_instance*> modifiers;
 
 	/**
+	 * The initializers to apply on particles spawned by emitters of this type.
+	 */
+	std::vector<particle_initializer_instance*> initializers;
+
+	/**
 	 * Creates an particle emitter instance of this type.
 	 */
 	particle_emitter_instance* create_instance(const vec &o, const vec &vel);
@@ -495,6 +546,24 @@ struct particle_modifier_type : public particle_type_base
 	 * Creates an particle modifier instance of this type.
 	 */
 	particle_modifier_instance* create_instance(const vec &o);
+
+};
+
+/**
+ * A particle initializer type.
+ */
+struct particle_initializer_type : public particle_type_base
+{
+
+	/**
+	 * The implementation.
+	 */
+	particle_initializer_implementation *pi_impl;
+
+	/**
+	 * Creates an particle initializer instance of this type.
+	 */
+	particle_initializer_instance* create_instance();
 
 };
 
@@ -582,61 +651,69 @@ struct particle_system
 	int particlemillis;
 
 	/**
-	 * Stats MT.
+	 * We count the sizes by ourselves to be faster, thread-safe and vendor independent.
 	 */
 	int count_particle_types;
 	int count_particle_emitter_types;
 	int count_particle_renderer_types;
 	int count_particle_modifier_types;
+	int count_particle_initializer_types;
 	int count_particle_emitter_implementations;
 	int count_particle_renderer_implementations;
 	int count_particle_modifier_implementations;
+	int count_particle_initializer_implementations;
 	int count_particles_instances;
 	int count_particle_emitter_instances;
 	int count_particle_renderer_instances;
 	int count_particle_modifier_instances;
+	int count_particle_initializer_instances;
 	int count_spring_instances;
 	int count_alive_pool;
 	int count_dead_pool;
 
 	int timer_emitter;
-	int timer_modifier;
 	int timer_renderer;
+	int timer_modifier;
+	int timer_initializer;
 
 	// Abstract types - makes everything dynamic
 	std::vector<particle_type*> particle_types;
 	std::vector<particle_emitter_type*> particle_emitter_types;
 	std::vector<particle_renderer_type*> particle_renderer_types;
 	std::vector<particle_modifier_type*> particle_modifier_types;
+	std::vector<particle_initializer_type*> particle_initializer_types;
 
 	// Name to type mappings
 	std::map<std::string, particle_type*> particle_types_map;
 	std::map<std::string, particle_emitter_type*> particle_emitter_types_map;
 	std::map<std::string, particle_renderer_type*> particle_renderer_types_map;
 	std::map<std::string, particle_modifier_type*> particle_modifier_types_map;
+	std::map<std::string, particle_initializer_type*> particle_initializer_types_map;
 
 	// Implementations - singleton instances of a concrete implementation
 	std::vector<particle_emitter_implementation*> particle_emitter_implementations;
 	std::vector<particle_renderer_implementation*> particle_renderer_implementations;
 	std::vector<particle_modifier_implementation*> particle_modifier_implementations;
+	std::vector<particle_initializer_implementation*> particle_initializer_implementations;
 
 	// Name to implementation mappings
 	std::map<std::string, particle_emitter_implementation*> particle_emitter_implementations_map;
 	std::map<std::string, particle_renderer_implementation*> particle_renderer_implementations_map;
 	std::map<std::string, particle_modifier_implementation*> particle_modifier_implementations_map;
+	std::map<std::string, particle_initializer_implementation*> particle_initializer_implementations_map;
 
 	// Instances of types
 	std::vector<particle_instance*> particle_instances;
 	std::vector<particle_emitter_instance*> particle_emitter_instances;
 	std::vector<particle_renderer_instance*> particle_renderer_instances;
 	std::vector<particle_modifier_instance*> particle_modifier_instances;
+	std::vector<particle_initializer_instance*> particle_initializer_instances;
 	std::list<spring_instance *> spring_instances;
 
 	// Name to instance mappings
 	std::map<std::string, particle_renderer_instance*> particle_renderer_instances_map;
 
 	// Use pools for performance reasons
-	// TODO: may be replaced by pointers
 	std::list<particle_instance*> alive_pool;
 	std::deque<particle_instance*> dead_pool;
 
@@ -682,10 +759,17 @@ struct particle_system
 	void remove_particle_modifier_type(std::string name);
 	void remove_all_particle_modifier_types();
 
+	particle_initializer_type* add_particle_initializer_type(std::string name, std::string pi_impl);
+	particle_initializer_instance* create_particle_initializer_instance(std::string pi_type);
+	void remove_particle_initializer_type(std::string name);
+	void remove_all_particle_initializer_types();
+
 	void add_spring(spring_instance *spring_inst);
 	void add_emitter_implementation(particle_emitter_implementation *pe_impl);
 	void add_modifier_implementation(particle_modifier_implementation *pm_impl);
 	void add_renderer_implementation(particle_renderer_implementation *pr_impl);
+	void add_initializer_implementation(particle_initializer_implementation *pi_impl);
+
 };
 
 extern particle_system ps;

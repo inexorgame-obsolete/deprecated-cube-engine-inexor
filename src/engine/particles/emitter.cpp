@@ -10,7 +10,16 @@ void particle_system::emit_particles(int elapsedtime)
 		int started = SDL_GetTicks();
 		for(std::vector<particle_emitter_instance*>::iterator it = particle_emitter_instances.begin(); it != particle_emitter_instances.end(); ++it)
 		{
-			if ((*it)->enabled && (*it)->lifetime > 0) (*it)->pe_type->pe_impl->emit(*it, elapsedtime);
+			if ((*it)->enabled && (*it)->lifetime > 0)
+			{
+				// emit particles
+				std::list<particle_instance*> particles = (*it)->pe_type->pe_impl->emit(*it, elapsedtime);
+				// initialize emitted particles
+				for(std::vector<particle_initializer_instance*>::iterator pi_it = (*it)->initializers.begin(); pi_it != (*it)->initializers.end(); ++pi_it)
+				{
+					(*pi_it)->pi_type->pi_impl->init(particles, elapsedtime);
+				}
+			}
 		}
 		timer_emitter = SDL_GetTicks() - started;
 	}
@@ -73,6 +82,11 @@ void particle_emitter_instance::add_modifier(particle_modifier_instance* pm_inst
 	modifiers.push_back(pm_inst);
 }
 
+void particle_emitter_instance::add_initializer(particle_initializer_instance* pi_inst)
+{
+	initializers.push_back(pi_inst);
+}
+
 particle_emitter_instance* particle_emitter_type::create_instance(const vec &o, const vec &vel)
 {
 	particle_emitter_instance* pe_inst = new particle_emitter_instance;
@@ -88,6 +102,8 @@ particle_emitter_instance* particle_emitter_type::create_instance(const vec &o, 
 	pe_inst->millistoprocess = 0;
 	// initialize default modifiers by copy all modifiers
 	pe_inst->modifiers = modifiers;
+	// initialize default initializers by copy all initializers
+	pe_inst->initializers = initializers;
 	// initialize default attributes by copy the attributes map
 	pe_inst->attributes.insert(attributes.begin(), attributes.end());
 

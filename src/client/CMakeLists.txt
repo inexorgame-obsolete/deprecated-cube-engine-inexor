@@ -59,6 +59,7 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitter
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/renderer
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifier
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/initializer
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/particletype
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/worker
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/massspring
@@ -87,6 +88,7 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/renderers/cube
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/renderers/spring
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/renderers/model
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/initializers/randomvelocity
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/ptest
 
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/ai

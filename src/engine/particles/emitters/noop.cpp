@@ -19,8 +19,10 @@ public:
 	/**
 	 * Emits particles from a single point (x,y,z).
 	 */
-	inline void emit(particle_emitter_instance *pe_inst, int elapsedtime)
+	inline std::list<particle_instance*> emit(particle_emitter_instance *pe_inst, int elapsedtime)
 	{
+		std::list<particle_instance*> emitted;
+		return emitted;
 	}
 
 private:

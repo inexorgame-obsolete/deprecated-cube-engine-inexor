@@ -43,7 +43,7 @@ public:
 
 	inline void modify(int elapsedtime) { }
 
-	inline void init(particle_instance *p_inst) { }
+//	inline void init(particle_instance *p_inst) { }
 
 private:
 

@@ -21,13 +21,14 @@ public:
 	 * by the grid size attributes: grid_size_x, grid_size_y, grid_size_z. The distance of the
 	 * points in the grid is specified by the grid_dist attribute.
 	 */
-	void emit(particle_emitter_instance *pe_inst, int elapsedtime)
+	inline std::list<particle_instance*> emit(particle_emitter_instance *pe_inst, int elapsedtime)
 	{
 		particle_emitter_type* pe_type = pe_inst->pe_type;
 		pe_inst->millistoprocess += elapsedtime;
 		int particlestoemit = pe_inst->millistoprocess / pe_type->rate;
 		pe_inst->millistoprocess = pe_inst->millistoprocess % pe_type->rate;
 
+		std::list<particle_instance*> emitted;
 		if (particlestoemit > 0)
 		{
 
@@ -83,6 +84,7 @@ public:
 				ps.add_spring(spring_inst);
 			}
 		}
+		return emitted;
 	}
 
 private:
