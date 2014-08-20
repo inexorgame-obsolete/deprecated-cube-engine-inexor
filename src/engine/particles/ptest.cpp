@@ -24,6 +24,7 @@ struct ptest
 			case 11: setup11(); break;
 			case 12: setup12(); break;
 			case 13: setup13(); break;
+			case 14: setup14(); break;
 		}
 	}
 
@@ -602,7 +603,7 @@ struct ptest
 		int lifetime = 30000;
 		int rate = 200;
 
-		particle_renderer_type* pr_type_plasma = ps.add_particle_renderer_type("ball_renderer", "packages/particles/plasma.png", "shader", vec4(128.0f, 128.0f, 255.0f, 0.3f), "billboard_renderer");
+		particle_renderer_type* pr_type_plasma = ps.add_particle_renderer_type("plasma_renderer_13", "media/particle/plasma.png", "shader", vec4(128.0f, 128.0f, 255.0f, 0.3f), "billboard_renderer");
 		pr_type_plasma->attributes["size"] = 40.0f;
 		particle_renderer_instance* pr_inst_plasma = pr_type_plasma->create_instance("plasma_13");
 		particle_type* p_type_plasma = ps.add_particle_type("plasma_13", "plasma_13");
@@ -614,6 +615,27 @@ struct ptest
 		particle_emitter_instance* pe_inst_point_plasma = pe_type_point_plasma->create_instance(vec(512.0f, 512.0f, 514.0f), vec(0.0f, 0.0f, 0.0f));
 		pe_inst_point_plasma->add_modifier(pm_inst_velocity_transformation);
 		pe_inst_point_plasma->add_initializer(pi_inst_random_velocity);
+    }
+
+	void setup14()
+    {
+		float mass = 1.0f;
+		float density = 1.0f;
+		int lifetime = 30000;
+		int rate = 200;
+
+		particle_renderer_type* pr_type_plasma = ps.add_particle_renderer_type("sparkle_renderer_14", "media/particle/spark01.png", "shader", vec4(128.0f, 128.0f, 255.0f, 0.3f), "billboard_renderer");
+		pr_type_plasma->attributes["size"] = 40.0f;
+		particle_renderer_instance* pr_inst_plasma = pr_type_plasma->create_instance("plasma_14");
+		particle_type* p_type_plasma = ps.add_particle_type("plasma_14", "plasma_14");
+		particle_modifier_type* pm_type_velocity_transformation = ps.add_particle_modifier_type("velocity_transformation_14", "velocity_transformation");
+		particle_modifier_instance* pm_inst_velocity_transformation = pm_type_velocity_transformation->create_instance();
+		particle_initializer_type* pi_type_random_position = ps.add_particle_initializer_type("random_position_14", "random_position");
+		particle_initializer_instance* pi_inst_random_position = pi_type_random_position->create_instance();
+		particle_emitter_type* pe_type_point_plasma = ps.add_particle_emitter_type("plasma_point_emitter_14", "plasma_14", mass, density, lifetime, rate, "point_emitter");
+		particle_emitter_instance* pe_inst_point_plasma = pe_type_point_plasma->create_instance(vec(512.0f, 512.0f, 614.0f), vec(0.0f, 0.0f, -30.0f));
+		pe_inst_point_plasma->add_modifier(pm_inst_velocity_transformation);
+		pe_inst_point_plasma->add_initializer(pi_inst_random_position);
     }
 
 };

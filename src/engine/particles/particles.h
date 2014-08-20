@@ -407,7 +407,7 @@ struct particle_initializer_implementation : public particle_implementation_base
 	/**
 	 * Initializes particle(s).
 	 */
-	virtual void init(std::list<particle_instance *> particles, int elapsedtime) = 0;
+	virtual void init(particle_initializer_instance *pi_inst, std::list<particle_instance *> particles, int elapsedtime) = 0;
 
 };
 

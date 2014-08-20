@@ -17,7 +17,7 @@ void particle_system::emit_particles(int elapsedtime)
 				// initialize emitted particles
 				for(std::vector<particle_initializer_instance*>::iterator pi_it = (*it)->initializers.begin(); pi_it != (*it)->initializers.end(); ++pi_it)
 				{
-					(*pi_it)->pi_type->pi_impl->init(particles, elapsedtime);
+					(*pi_it)->pi_type->pi_impl->init(*pi_it, particles, elapsedtime);
 				}
 			}
 		}
