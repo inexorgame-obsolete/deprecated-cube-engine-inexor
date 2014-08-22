@@ -20,7 +20,9 @@ public:
 		// glShadeModel(GL_SMOOTH);
 		// glEnable(GL_POINT_SMOOTH);
         // glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-        // glEnable(GL_DEPTH_TEST);
+        // glDisable(GL_DEPTH_TEST);
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         default_shader->set();
 		glEnable(GL_TEXTURE_2D);
@@ -41,6 +43,8 @@ public:
 		glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
 */
 
+		glPointSize(pr_inst->attributes["size"]);
+
 		glEnable(GL_POINT_SPRITE_ARB);
 		glPointParameterfvARB_(GL_POINT_DISTANCE_ATTENUATION_ARB, quadratic);
 		glPointParameterfARB_(GL_POINT_FADE_THRESHOLD_SIZE_ARB, fade_threshold_size);
@@ -48,9 +52,11 @@ public:
 		glPointParameterfARB_(GL_POINT_SIZE_MAX_ARB, fSizes[1]);
 		glTexEnvi(GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, GL_TRUE);
 
-		glPointSize(pr_inst->attributes["size"]);
+		// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		// glDisable(GL_TEXTURE_2D);
 
-		glDepthMask(false);
+		glDepthMask(GL_FALSE);
+
 		glBegin(GL_POINTS);
 		glColor4f(pr_inst->color.r, pr_inst->color.g, pr_inst->color.b, pr_inst->color.a);
 
@@ -65,13 +71,13 @@ public:
 
 	void after(particle_renderer_instance *pr_inst) {
 		glEnd();
-		glDepthMask(true);
+		glDepthMask(GL_TRUE);
 //		glDisable(GL_POINT_SPRITE);
 		glDisable(GL_POINT_SPRITE_ARB);
 		glDisable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glDisable(GL_TEXTURE_2D);
-		glTexEnvi(GL_POINT_SPRITE_ARB, GL_COORD_REPLACE, GL_TRUE);
+//		glTexEnvi(GL_POINT_SPRITE_ARB, GL_COORD_REPLACE, GL_TRUE);
 //		glDisable(GL_DEPTH_TEST);
 //		glEnable(GL_CULL_FACE);
 		glPopMatrix();
@@ -101,9 +107,9 @@ private:
 		// quadratic[0] = 1.0f;
 		// quadratic[1] = 0.0f;
 		// quadratic[2] = 0.01f;
-		quadratic[0] = 1.0f;
+		quadratic[0] = 0.25f;
 		quadratic[1] = 0.0f;
-		quadratic[2] = 0.01f;
+		quadratic[2] = 1 / 60.0f;
 	    stdworldshader = lookupshaderbyname("stdworld");
 		default_shader = lookupshaderbyname("default");
 		particle_shader = lookupshaderbyname("particle");

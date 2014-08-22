@@ -18,14 +18,8 @@ public:
 	virtual ~random_velocity() { }
 
 	inline void init(particle_initializer_instance *pi_inst, std::list<particle_instance *> particles, int elapsedtime) {
-		/*
-		outer_scale.x = pi_inst->attributes["osx"];
-		outer_scale.y = pi_inst->attributes["osy"];
-		outer_scale.z = pi_inst->attributes["osz"];
-		inner_scale.x = pi_inst->attributes["isx"];
-		inner_scale.y = pi_inst->attributes["isy"];
-		inner_scale.z = pi_inst->attributes["isz"];
-		*/
+		outer_scale = vec(pi_inst->attributes["osx"], pi_inst->attributes["osy"], pi_inst->attributes["osz"]);
+		inner_scale = vec(pi_inst->attributes["isx"], pi_inst->attributes["isy"], pi_inst->attributes["isz"]);
 		for(std::list<particle_instance*>::iterator p_it = particles.begin(); p_it != particles.end(); ++p_it)
 		{
 			(*p_it)->vel.add(vec(rndscale(outer_scale.x), rndscale(outer_scale.y), rndscale(outer_scale.z))).sub(inner_scale);

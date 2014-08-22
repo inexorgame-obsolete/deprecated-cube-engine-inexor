@@ -11,6 +11,7 @@ struct ptest
 	void setup(int setup)
 	{
 		switch (setup) {
+/*
 			case 1: setup1(); break;
 			case 2: setup2(); break;
 			case 3: setup3(); break;
@@ -21,13 +22,17 @@ struct ptest
 			case 8: setup8(); break;
 			case 9: setup9(); break;
 			case 10: setup10(); break;
+*/
 			case 11: setup11(); break;
 			case 12: setup12(); break;
 			case 13: setup13(); break;
 			case 14: setup14(); break;
+			case 15: setup15(); break;
+			case 16: setup16(); break;
 		}
 	}
 
+/*
 	void setup1()
     {
 		float mass = 1.0f;
@@ -64,8 +69,6 @@ struct ptest
 		int lifetime4 = 500;
 		int rate4 = 10;
 
-		/** Renderer types and instances **/
-
 		particle_renderer_type* pr_type_cube = ps.add_particle_renderer_type("cube_renderer", "packages/particles/flare.jpg", "shader", vec4(255.0f, 255.0f, 255.0f, 0.9f), "cube_renderer");
 
 		particle_renderer_type* pr_type_ball = ps.add_particle_renderer_type("ball_renderer", "packages/particles/ball1.png", "shader", vec4(255.0f, 255.0f, 255.0f, 0.3f), "billboard_renderer");
@@ -87,14 +90,10 @@ struct ptest
 		particle_renderer_instance* pr_inst_cube = pr_type_cube->create_instance("cube");
 		pr_inst_cube->color.g = 100.0f;
 
-		/** Particle types **/
-
 		particle_type* p_type_fire = ps.add_particle_type("fire", "fire");
 		particle_type* p_type_poison = ps.add_particle_type("poison", "poison");
 		particle_type* p_type_smoke = ps.add_particle_type("smoke", "smoke");
 		particle_type* p_type_cube = ps.add_particle_type("cube", "cube");
-
-		/** Modifier types and instances **/
 
 		particle_modifier_type* pm_type_velocity_transformation = ps.add_particle_modifier_type("velocity_transformation", "velocity_transformation");
 		particle_modifier_instance* pm_inst_velocity_transformation = pm_type_velocity_transformation->create_instance();
@@ -119,8 +118,6 @@ struct ptest
 
 		particle_modifier_instance* pm_inst_black_hole = pm_type_black_hole->create_instance(vec(768.0f, 768.0f, 532.0f));
 
-		/** Emitter types and instances **/
-
 		particle_emitter_type* pe_point_fire_type = ps.add_particle_emitter_type("fire_point_emitter", "fire", mass, density, lifetime2, rate2, "point_emitter");
 		particle_emitter_instance* pe_inst_point_1 = pe_point_fire_type->create_instance(vec(512.0f, 512.0f, 514.0f), vec(-40.0f, 0.0f, 0.0f));
 		particle_emitter_instance* pe_inst_point_2 = pe_point_fire_type->create_instance(vec(512.0f, 512.0f, 514.0f), vec(0.0f, -40.0f, 0.0f));
@@ -142,8 +139,6 @@ struct ptest
 		pe_type_cube_field->attributes["grid_size_z"] = 1.0f;
 		pe_type_cube_field->attributes["grid_dist"] = 20.0f;
 		particle_emitter_instance* pe_inst_cube_field = pe_type_cube_field->create_instance(vec(256.0f, 256.0f, 514.0f), vec(0.0f, 0.0f, 70.0f));
-
-		/** Connect emitters and modifiers **/
 
 		pe_inst_point_1->add_modifier(pm_inst_velocity_transformation);
 		pe_inst_point_2->add_modifier(pm_inst_velocity_transformation);
@@ -337,12 +332,6 @@ struct ptest
 		particle_modifier_type* pm_type_velocity_transformation = ps.add_particle_modifier_type("velocity_transformation", "velocity_transformation");
 		particle_modifier_instance* pm_inst_velocity_transformation = pm_type_velocity_transformation->create_instance();
 
-/*
-		particle_modifier_type* pm_type_global_gravity_7 = ps.add_particle_modifier_type("global_gravity_7", "global_gravity");
-		pm_type_global_gravity_7->attributes["mass"] = 450.0f;
-		pm_type_global_gravity_7->attributes["gravity"] = 3.0f;
-		particle_modifier_instance* pm_inst_global_gravity_7 = pm_type_global_gravity_7->create_instance(vec(0.0f, 0.0f, 400.0f));
-*/
 		particle_modifier_type* pm_type_simple_gravity = ps.add_particle_modifier_type("global_gravity_10", "simple_gravity");
 		particle_modifier_instance* pm_inst_simple_gravity = pm_type_simple_gravity->create_instance(vec(0.0f, 0.0f, 0.0f));
 
@@ -486,6 +475,7 @@ struct ptest
 
     }
 
+*/
 	void setup11()
     {
 		float mass = 5.0f;
@@ -536,7 +526,7 @@ struct ptest
 		particle_renderer_type* pr_type_grenade = ps.add_particle_renderer_type("grenade_renderer", "projectiles/rocket", "shader", vec4(0.0f, 0.0f, 0.0f, 0.0f), "model_renderer");
 		particle_renderer_instance* pr_inst_grenade = pr_type_grenade->create_instance("grendade_12");
 		pr_inst_grenade->offset = vec(0.0f, 0.0f, 2.0f);
-		particle_type* p_type_grendade = ps.add_particle_type("grendade_12", "grendade_12");
+		particle_type* p_type_grendade = ps.add_particle_type("grendade_12", pr_inst_grenade);
 
 		particle_modifier_type* pm_type_velocity_transformation = ps.add_particle_modifier_type("velocity_transformation", "velocity_transformation");
 		particle_modifier_instance* pm_inst_velocity_transformation = pm_type_velocity_transformation->create_instance();
@@ -600,42 +590,212 @@ struct ptest
     {
 		float mass = 1.0f;
 		float density = 1.0f;
-		int lifetime = 30000;
-		int rate = 200;
+		int lifetime = 10000;
+		int rate = 50;
 
-		particle_renderer_type* pr_type_plasma = ps.add_particle_renderer_type("plasma_renderer_13", "media/particle/plasma.png", "shader", vec4(128.0f, 128.0f, 255.0f, 0.3f), "billboard_renderer");
-		pr_type_plasma->attributes["size"] = 40.0f;
-		particle_renderer_instance* pr_inst_plasma = pr_type_plasma->create_instance("plasma_13");
-		particle_type* p_type_plasma = ps.add_particle_type("plasma_13", "plasma_13");
+		particle_renderer_type* pr_type_shockwave = ps.add_particle_renderer_type("plasma_renderer_13", "media/particle/shockwave01.png", "shader", vec4(128.0f, 128.0f, 255.0f, 0.3f), "billboard_renderer");
+		pr_type_shockwave->attributes["size"] = 40.0f;
+		particle_renderer_instance* pr_inst_shockwave_1 = pr_type_shockwave->create_instance("shockwave_1");
+		pr_inst_shockwave_1->color = vec4(0.0f, 192.0f, 255.0f, 0.1f);
+		pr_inst_shockwave_1->attributes["size"] = 80.0f;
+		particle_renderer_instance* pr_inst_shockwave_2 = pr_type_shockwave->create_instance("shockwave_2");
+		pr_inst_shockwave_2->color = vec4(255.0f, 192.0f, 0.0f, 0.1f);
+		pr_inst_shockwave_2->attributes["size"] = 40.0f;
+		particle_renderer_instance* pr_inst_shockwave_3 = pr_type_shockwave->create_instance("shockwave_3");
+		pr_inst_shockwave_3->color = vec4(192.0f, 255.0f, 0.0f, 0.1f);
+		pr_inst_shockwave_3->attributes["size"] = 20.0f;
+		particle_renderer_instance* pr_inst_shockwave_4 = pr_type_shockwave->create_instance("shockwave_4");
+		pr_inst_shockwave_4->color = vec4(192.0f, 0.0f, 255.0f, 0.1f);
+		pr_inst_shockwave_4->attributes["size"] = 60.0f;
+		particle_renderer_instance* pr_inst_shockwave_5 = pr_type_shockwave->create_instance("shockwave_5");
+		pr_inst_shockwave_5->color = vec4(0.0f, 0.0f, 255.0f, 0.1f);
+		pr_inst_shockwave_5->attributes["size"] = 100.0f;
+
+		particle_type* p_type_shockwave_1 = ps.add_particle_type("shockwave_13_1", pr_inst_shockwave_1);
+		particle_type* p_type_shockwave_2 = ps.add_particle_type("shockwave_13_2", pr_inst_shockwave_2);
+		particle_type* p_type_shockwave_3 = ps.add_particle_type("shockwave_13_3", pr_inst_shockwave_3);
+		particle_type* p_type_shockwave_4 = ps.add_particle_type("shockwave_13_4", pr_inst_shockwave_4);
+		particle_type* p_type_shockwave_5 = ps.add_particle_type("shockwave_13_5", pr_inst_shockwave_5);
+
 		particle_modifier_type* pm_type_velocity_transformation = ps.add_particle_modifier_type("velocity_transformation_13", "velocity_transformation");
 		particle_modifier_instance* pm_inst_velocity_transformation = pm_type_velocity_transformation->create_instance();
+
 		particle_initializer_type* pi_type_random_velocity = ps.add_particle_initializer_type("random_velocity_13", "random_velocity");
+		pi_type_random_velocity->attributes["osx"] = 40.0f;
+		pi_type_random_velocity->attributes["osy"] = 0.0f;
+		pi_type_random_velocity->attributes["osz"] = 40.0f;
+		pi_type_random_velocity->attributes["isx"] = 20.0f;
+		pi_type_random_velocity->attributes["isy"] = 0.0f;
+		pi_type_random_velocity->attributes["isz"] = 0.0f;
 		particle_initializer_instance* pi_inst_random_velocity = pi_type_random_velocity->create_instance();
+
+		particle_initializer_type* pi_type_random_particle_type = ps.add_particle_initializer_type("random_particle_type_15", "random_particle_type");
+		particle_initializer_instance* pi_inst_random_particle_type = pi_type_random_particle_type->create_instance();
+		pi_inst_random_particle_type->particle_types.push_back(p_type_shockwave_1);
+		pi_inst_random_particle_type->particle_types.push_back(p_type_shockwave_2);
+		pi_inst_random_particle_type->particle_types.push_back(p_type_shockwave_3);
+		pi_inst_random_particle_type->particle_types.push_back(p_type_shockwave_4);
+		pi_inst_random_particle_type->particle_types.push_back(p_type_shockwave_5);
+
 		particle_emitter_type* pe_type_point_plasma = ps.add_particle_emitter_type("plasma_point_emitter_13", "plasma_13", mass, density, lifetime, rate, "point_emitter");
-		particle_emitter_instance* pe_inst_point_plasma = pe_type_point_plasma->create_instance(vec(512.0f, 512.0f, 514.0f), vec(0.0f, 0.0f, 0.0f));
+		particle_emitter_instance* pe_inst_point_plasma = pe_type_point_plasma->create_instance(vec(512.0f, 512.0f, 350.0f), vec(0.0f, 0.0f, 0.0f));
 		pe_inst_point_plasma->add_modifier(pm_inst_velocity_transformation);
 		pe_inst_point_plasma->add_initializer(pi_inst_random_velocity);
+		pe_inst_point_plasma->add_initializer(pi_inst_random_particle_type);
     }
 
 	void setup14()
     {
 		float mass = 1.0f;
 		float density = 1.0f;
-		int lifetime = 30000;
-		int rate = 200;
+		int lifetime = 1000;
+		int rate = 5;
 
-		particle_renderer_type* pr_type_plasma = ps.add_particle_renderer_type("sparkle_renderer_14", "media/particle/spark01.png", "shader", vec4(128.0f, 128.0f, 255.0f, 0.3f), "billboard_renderer");
-		pr_type_plasma->attributes["size"] = 40.0f;
-		particle_renderer_instance* pr_inst_plasma = pr_type_plasma->create_instance("plasma_14");
-		particle_type* p_type_plasma = ps.add_particle_type("plasma_14", "plasma_14");
+		particle_renderer_type* pr_type_sparkle = ps.add_particle_renderer_type("sparkle_renderer_14", "media/particle/spark01.png", "shader", vec4(128.0f, 128.0f, 255.0f, 0.3f), "billboard_renderer");
+		pr_type_sparkle->attributes["size"] = 60.0f;
+		particle_renderer_instance* pr_inst_sparkle = pr_type_sparkle->create_instance("sparkle_14");
+
+		particle_type* p_type_sparkle = ps.add_particle_type("sparkle_14", pr_inst_sparkle);
+
 		particle_modifier_type* pm_type_velocity_transformation = ps.add_particle_modifier_type("velocity_transformation_14", "velocity_transformation");
 		particle_modifier_instance* pm_inst_velocity_transformation = pm_type_velocity_transformation->create_instance();
+		particle_modifier_type* pm_type_geometry_culling = ps.add_particle_modifier_type("geometry_culling_14", "geometry_culling");
+		particle_modifier_instance* pm_inst_geometry_culling = pm_type_geometry_culling->create_instance();
+
 		particle_initializer_type* pi_type_random_position = ps.add_particle_initializer_type("random_position_14", "random_position");
+		pi_type_random_position->attributes["osx"] = 0.0f;
+		pi_type_random_position->attributes["osy"] = 0.0f;
+		pi_type_random_position->attributes["osz"] = 50.0f;
+		pi_type_random_position->attributes["isx"] = 0.0f;
+		pi_type_random_position->attributes["isy"] = 0.0f;
+		pi_type_random_position->attributes["isz"] = 0.0f;
 		particle_initializer_instance* pi_inst_random_position = pi_type_random_position->create_instance();
-		particle_emitter_type* pe_type_point_plasma = ps.add_particle_emitter_type("plasma_point_emitter_14", "plasma_14", mass, density, lifetime, rate, "point_emitter");
-		particle_emitter_instance* pe_inst_point_plasma = pe_type_point_plasma->create_instance(vec(512.0f, 512.0f, 614.0f), vec(0.0f, 0.0f, -30.0f));
+		particle_initializer_type* pi_type_random_velocity = ps.add_particle_initializer_type("random_velocity_14", "random_velocity");
+		pi_type_random_velocity->attributes["osx"] = 40.0f;
+		pi_type_random_velocity->attributes["osy"] = 40.0f;
+		pi_type_random_velocity->attributes["osz"] = 0.0f;
+		pi_type_random_velocity->attributes["isx"] = 20.0f;
+		pi_type_random_velocity->attributes["isy"] = 20.0f;
+		pi_type_random_velocity->attributes["isz"] = 0.0f;
+		particle_initializer_instance* pi_inst_random_velocity = pi_type_random_velocity->create_instance();
+
+		particle_emitter_type* pe_type_point_sparkle = ps.add_particle_emitter_type("sparkle_point_emitter_14", "sparkle_14", mass, density, lifetime, rate, "point_emitter");
+		particle_emitter_instance* pe_inst_point_plasma = pe_type_point_sparkle->create_instance(vec(512.0f, 512.0f, 514.0f), vec(0.0f, 0.0f, 0.0f));
 		pe_inst_point_plasma->add_modifier(pm_inst_velocity_transformation);
+		pe_inst_point_plasma->add_modifier(pm_inst_geometry_culling);
 		pe_inst_point_plasma->add_initializer(pi_inst_random_position);
+		pe_inst_point_plasma->add_initializer(pi_inst_random_velocity);
+    }
+
+	void setup15()
+    {
+		float mass = 1.0f;
+		float density = 1.0f;
+		int lifetime = 1000;
+		int rate = 10;
+
+		particle_renderer_type* pr_type_flash = ps.add_particle_renderer_type("flash_renderer_15", "media/particle/flash01.png", "shader", vec4(255.0f, 0.0f, 0.0f, 0.2f), "billboard_renderer");
+		pr_type_flash->attributes["size"] = 45.0f;
+		particle_renderer_instance* pr_inst_flash_1 = pr_type_flash->create_instance("flash_15_1");
+		particle_renderer_instance* pr_inst_flash_2 = pr_type_flash->create_instance("flash_15_2");
+		pr_inst_flash_2->color = vec4(255.0f, 192.0f, 0.0f, 0.1f);
+
+		particle_type* p_type_flash_1 = ps.add_particle_type("flash_15_1", pr_inst_flash_1);
+		particle_type* p_type_flash_2 = ps.add_particle_type("flash_15_2", pr_inst_flash_2);
+
+		particle_modifier_type* pm_type_velocity_transformation = ps.add_particle_modifier_type("velocity_transformation_15", "velocity_transformation");
+		particle_modifier_instance* pm_inst_velocity_transformation = pm_type_velocity_transformation->create_instance();
+		particle_modifier_type* pm_type_geometry_culling = ps.add_particle_modifier_type("geometry_culling_15", "geometry_culling");
+		particle_modifier_instance* pm_inst_geometry_culling = pm_type_geometry_culling->create_instance();
+
+		particle_initializer_type* pi_type_random_position = ps.add_particle_initializer_type("random_position_15", "random_position");
+		pi_type_random_position->attributes["osx"] = 10.0f;
+		pi_type_random_position->attributes["osy"] = 10.0f;
+		pi_type_random_position->attributes["osz"] = 0.0f;
+		pi_type_random_position->attributes["isx"] = 5.0f;
+		pi_type_random_position->attributes["isy"] = 5.0f;
+		pi_type_random_position->attributes["isz"] = 0.0f;
+		particle_initializer_instance* pi_inst_random_position = pi_type_random_position->create_instance();
+		particle_initializer_type* pi_type_random_velocity = ps.add_particle_initializer_type("random_velocity_15", "random_velocity");
+		pi_type_random_velocity->attributes["osx"] = 0.0f;
+		pi_type_random_velocity->attributes["osy"] = 0.0f;
+		pi_type_random_velocity->attributes["osz"] = 40.0f;
+		pi_type_random_velocity->attributes["isx"] = 0.0f;
+		pi_type_random_velocity->attributes["isy"] = 0.0f;
+		pi_type_random_velocity->attributes["isz"] = 0.0f;
+		particle_initializer_instance* pi_inst_random_velocity = pi_type_random_velocity->create_instance();
+
+		particle_initializer_type* pi_type_random_particle_type = ps.add_particle_initializer_type("random_particle_type_15", "random_particle_type");
+		particle_initializer_instance* pi_inst_random_particle_type = pi_type_random_particle_type->create_instance();
+		pi_inst_random_particle_type->particle_types.push_back(p_type_flash_1);
+		pi_inst_random_particle_type->particle_types.push_back(p_type_flash_2);
+
+		particle_emitter_type* pe_type_field_flash = ps.add_particle_emitter_type("flash_field_emitter_15", "flash_15_1", mass, density, lifetime, rate, "field_emitter");
+		pe_type_field_flash->batch_size = 1;
+		pe_type_field_flash->attributes["grid_size_x"] = 3.0f;
+		pe_type_field_flash->attributes["grid_size_y"] = 3.0f;
+		pe_type_field_flash->attributes["grid_size_z"] = 3.0f;
+		pe_type_field_flash->attributes["grid_dist"] = 50.0f;
+
+		particle_emitter_instance* pe_inst_field_flash = pe_type_field_flash->create_instance(vec(512.0f, 512.0f, 514.0f), vec(0.0f, 0.0f, 0.0f));
+		pe_inst_field_flash->add_modifier(pm_inst_velocity_transformation);
+		pe_inst_field_flash->add_modifier(pm_inst_geometry_culling);
+		pe_inst_field_flash->add_initializer(pi_inst_random_position);
+		pe_inst_field_flash->add_initializer(pi_inst_random_velocity);
+		pe_inst_field_flash->add_initializer(pi_inst_random_particle_type);
+    }
+
+	void setup16()
+    {
+		float mass = 1.0f;
+		float density = 1.0f;
+		int lifetime = 3000;
+		int rate = 10;
+
+		particle_renderer_type* pr_type_dust = ps.add_particle_renderer_type("dust_renderer_16", "media/particle/dust01.png", "shader", vec4(255.0f, 0.0f, 0.0f, 0.2f), "billboard_renderer");
+		pr_type_dust->attributes["size"] = 45.0f;
+
+		particle_renderer_instance* pr_inst_dust_1 = pr_type_dust->create_instance("dust_16_1");
+		pr_inst_dust_1->color = vec4(255.0f, 192.0f, 0.0f, 0.1f);
+		pr_inst_dust_1->texture = "media/particle/smalljunk01.png";
+		particle_renderer_instance* pr_inst_dust_2 = pr_type_dust->create_instance("dust_16_2");
+		pr_inst_dust_2->color = vec4(192.0f, 192.0f, 0.0f, 0.1f);
+		pr_inst_dust_2->texture = "media/particle/smalljunk02.png";
+		particle_renderer_instance* pr_inst_dust_3 = pr_type_dust->create_instance("dust_16_3");
+		pr_inst_dust_3->color = vec4(128.0f, 192.0f, 0.0f, 0.1f);
+		pr_inst_dust_3->texture = "media/particle/smalljunk03.png";
+
+		particle_type* p_type_dust_1 = ps.add_particle_type("dust_16_1", pr_inst_dust_1);
+		particle_type* p_type_dust_2 = ps.add_particle_type("dust_16_2", pr_inst_dust_2);
+		particle_type* p_type_dust_3 = ps.add_particle_type("dust_16_3", pr_inst_dust_3);
+
+		particle_modifier_type* pm_type_velocity_transformation = ps.add_particle_modifier_type("velocity_transformation_16", "velocity_transformation");
+		particle_modifier_instance* pm_inst_velocity_transformation = pm_type_velocity_transformation->create_instance();
+		particle_modifier_type* pm_type_geometry_culling = ps.add_particle_modifier_type("geometry_culling_16", "geometry_culling");
+		particle_modifier_instance* pm_inst_geometry_culling = pm_type_geometry_culling->create_instance();
+
+		particle_initializer_type* pi_type_random_velocity = ps.add_particle_initializer_type("random_velocity_16", "random_velocity");
+		pi_type_random_velocity->attributes["osx"] = 200.0f;
+		pi_type_random_velocity->attributes["osy"] = 200.0f;
+		pi_type_random_velocity->attributes["osz"] = -5.0f;
+		pi_type_random_velocity->attributes["isx"] = 100.0f;
+		pi_type_random_velocity->attributes["isy"] = 100.0f;
+		pi_type_random_velocity->attributes["isz"] = -2.5f;
+		particle_initializer_instance* pi_inst_random_velocity = pi_type_random_velocity->create_instance();
+
+		particle_initializer_type* pi_type_random_particle_type = ps.add_particle_initializer_type("random_particle_type_16", "random_particle_type");
+		particle_initializer_instance* pi_inst_random_particle_type = pi_type_random_particle_type->create_instance();
+		pi_inst_random_particle_type->particle_types.push_back(p_type_dust_1);
+		pi_inst_random_particle_type->particle_types.push_back(p_type_dust_2);
+		pi_inst_random_particle_type->particle_types.push_back(p_type_dust_3);
+
+		particle_emitter_type* pe_type_box_dust = ps.add_particle_emitter_type("dust_box_emitter_16", p_type_dust_1, mass, density, lifetime, rate, "box_emitter");
+		pe_type_box_dust->density = 512.0f;
+
+		particle_emitter_instance* pe_inst_box_dust = pe_type_box_dust->create_instance(vec(512.0f, 512.0f, 514.0f), vec(0.0f, 0.0f, 0.0f));
+		pe_inst_box_dust->add_modifier(pm_inst_velocity_transformation);
+		pe_inst_box_dust->add_initializer(pi_inst_random_velocity);
+		pe_inst_box_dust->add_initializer(pi_inst_random_particle_type);
     }
 
 };

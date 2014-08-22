@@ -18,6 +18,8 @@ public:
 	virtual ~random_position() { }
 
 	inline void init(particle_initializer_instance *pi_inst, std::list<particle_instance *> particles, int elapsedtime) {
+		outer_scale = vec(pi_inst->attributes["osx"], pi_inst->attributes["osy"], pi_inst->attributes["osz"]);
+		inner_scale = vec(pi_inst->attributes["isx"], pi_inst->attributes["isy"], pi_inst->attributes["isz"]);
 		for(std::list<particle_instance*>::iterator p_it = particles.begin(); p_it != particles.end(); ++p_it)
 		{
 			(*p_it)->o.add(vec(rndscale(outer_scale.x), rndscale(outer_scale.y), rndscale(outer_scale.z))).sub(inner_scale);

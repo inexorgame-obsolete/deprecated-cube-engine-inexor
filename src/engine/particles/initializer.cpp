@@ -21,7 +21,8 @@ particle_initializer_type* particle_system::add_particle_initializer_type(std::s
 	}
 }
 
-particle_initializer_instance* particle_initializer_type::create_instance() {
+particle_initializer_instance* particle_initializer_type::create_instance()
+{
 	particle_initializer_instance* pi_inst = new particle_initializer_instance;
 	pi_inst->pi_type = this;
 	pi_inst->attributes.insert(attributes.begin(), attributes.end());
@@ -61,7 +62,18 @@ void particle_system::remove_all_particle_initializer_types()
 	count_particle_initializer_types = 0;
 }
 
-void create_particle_initializer_instance(std::string pi_type) {
+void create_particle_initializer_instance(std::string pi_type)
+{
 	ps.create_particle_initializer_instance(pi_type);
+}
+
+void particle_initializer_instance::add_particle_type(particle_type* p_type)
+{
+	particle_types.push_back(p_type);
+}
+
+void particle_initializer_instance::add_particle_modifier(particle_modifier_instance* pm_inst)
+{
+	particle_modifiers.push_back(pm_inst);
 }
 

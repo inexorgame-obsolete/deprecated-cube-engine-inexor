@@ -3,19 +3,6 @@
 
 VARP(modifiers, 0, 1, 1);
 
-/*
-// abstract definitions - makes everything dynamic
-std::vector<particle_modifier_type*> particle_modifier_types;
-std::map<std::string, particle_modifier_type*> particle_modifier_types_map;
-
-// implementations - the concrete implementations
-std::vector<particle_modifier_implementation*> particle_modifier_implementations;
-std::map<std::string, particle_modifier_implementation*> particle_modifier_implementations_map;
-
-// concrete instances refers to the abstract definitions
-std::vector<particle_modifier_instance*> particle_modifier_instances;
-*/
-
 void particle_system::modify_particles(int elapsedtime)
 {
 	if (modifiers) {

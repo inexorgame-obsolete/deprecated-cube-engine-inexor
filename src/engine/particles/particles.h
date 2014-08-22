@@ -7,6 +7,7 @@
 #include <vector>
 #include <list>
 #include <deque>
+#include <iterator>
 
 struct particle_type;
 struct particle_emitter_type;
@@ -81,6 +82,11 @@ struct particle_emitter_instance
 	 * Emit particles every <rate> milliseconds.
 	 */
 	int rate;
+
+	/**
+	 * Number of particles to emit in a single batch.
+	 */
+	int batch_size;
 
 	/**
 	 * Remaining millis to process.
@@ -296,6 +302,30 @@ struct particle_initializer_instance
 	 */
 	std::map<std::string, float> attributes;
 
+	// The following lists allows the initializers to make more complex
+	// initializations that an emitter would be able. For example, choose
+	// the particle_type by rules.
+
+	/**
+	 * The a list of particle types.
+	 */
+	std::list<particle_type*> particle_types;
+
+	/**
+	 * The a list of particle modifier instances.
+	 */
+	std::list<particle_modifier_instance*> particle_modifiers;
+
+	/**
+	 * Adds a particle type.
+	 */
+	void add_particle_type(particle_type* p_type);
+
+	/**
+	 * Adds a modifier instance.
+	 */
+	void add_particle_modifier(particle_modifier_instance* pm_inst);
+
 };
 
 struct particle_implementation_base {
@@ -470,6 +500,11 @@ struct particle_emitter_type : public particle_type_base
 	 * Emit particles every <rate> milliseconds.
 	 */
 	int rate;
+
+	/**
+	 * Number of particles to emit in a single batch.
+	 */
+	int batch_size;
 
 	/**
 	 * The implementation.
@@ -743,6 +778,7 @@ struct particle_system
 	void remove_all_particle_types();
 
 	particle_emitter_type* add_particle_emitter_type(std::string name, std::string p_type, float mass, float density, int lifetime, int rate, std::string pe_impl);
+	particle_emitter_type* add_particle_emitter_type(std::string name, particle_type* p_type, float mass, float density, int lifetime, int rate, std::string pe_impl);
 	particle_emitter_instance* create_particle_emitter_instance(std::string pe_type, const vec &o, const vec &vel);
 	void remove_particle_emitter_type(std::string name);
 	void remove_all_particle_emitter_types();

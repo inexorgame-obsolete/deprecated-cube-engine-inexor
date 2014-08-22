@@ -52,7 +52,7 @@ public:
 			ps.alive_pool.push_back(p_inst);
 			ps.count_alive_pool++;
 			// add particle instance to it's renderer
-			p_inst->p_type->pr_inst->particles.push_back(p_inst);
+			// p_inst->p_type->pr_inst->particles.push_back(p_inst);
 
 			for (int i = 0; i < 20; i++)
 			{
@@ -72,7 +72,7 @@ public:
 				p_inst_s->remaining = pe_inst->lifetime;
 				ps.alive_pool.push_back(p_inst_s);
 				ps.count_alive_pool++;
-				p_inst_s->p_type->pr_inst->particles.push_back(p_inst_s);
+				// p_inst_s->p_type->pr_inst->particles.push_back(p_inst_s);
 
 				spring_instance *spring_inst = new spring_instance;
 				spring_inst->p_inst_1 = p_inst;

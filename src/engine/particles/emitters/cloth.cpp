@@ -58,7 +58,7 @@ public:
 				ps.alive_pool.push_back(p_inst);
 				ps.count_alive_pool++;
 				// add particle instance to it's renderer
-				p_inst->p_type->pr_inst->particles.push_back(p_inst);
+				// p_inst->p_type->pr_inst->particles.push_back(p_inst);
 				current.push_back(p_inst);
 				if (i > 0)
 				{

@@ -90,6 +90,7 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/renderers/model
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/initializers/randomvelocity
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/initializers/randomposition
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/initializers/randomparticletype
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/ptest
 
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/ai

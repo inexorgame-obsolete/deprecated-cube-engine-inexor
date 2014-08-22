@@ -12,12 +12,29 @@ void particle_system::emit_particles(int elapsedtime)
 		{
 			if ((*it)->enabled && (*it)->lifetime > 0)
 			{
-				// emit particles
-				std::list<particle_instance*> particles = (*it)->pe_type->pe_impl->emit(*it, elapsedtime);
-				// initialize emitted particles
-				for(std::vector<particle_initializer_instance*>::iterator pi_it = (*it)->initializers.begin(); pi_it != (*it)->initializers.end(); ++pi_it)
+				// calculate how many batches have to be emitted
+				(*it)->millistoprocess += elapsedtime;
+				int batches_to_be_emitted = (*it)->millistoprocess / (*it)->pe_type->rate;
+				(*it)->millistoprocess = (*it)->millistoprocess % (*it)->pe_type->rate;
+
+				// handle batches separate
+				for (int batch = 0; batch < batches_to_be_emitted; batch++)
 				{
-					(*pi_it)->pi_type->pi_impl->init(*pi_it, particles, elapsedtime);
+					// emit particles for a single batch; the number of particles
+					// per batch is defined in the batch_size variable
+					std::list<particle_instance*> particles = (*it)->pe_type->pe_impl->emit(*it, elapsedtime);
+					// initialize emitted particles for the current batch
+					for(std::vector<particle_initializer_instance*>::iterator pi_it = (*it)->initializers.begin(); pi_it != (*it)->initializers.end(); ++pi_it)
+					{
+						(*pi_it)->pi_type->pi_impl->init(*pi_it, particles, elapsedtime);
+					}
+
+					// add particle instance to it's renderer
+					for(std::list<particle_instance*>::iterator p_it = particles.begin(); p_it != particles.end(); ++p_it)
+					{
+						(*p_it)->p_type->pr_inst->particles.push_back(*p_it);
+					}
+
 				}
 			}
 		}
@@ -65,7 +82,31 @@ particle_emitter_type* particle_system::add_particle_emitter_type(const std::str
 		pe_type->density = density;
 		pe_type->lifetime = lifetime;
 		pe_type->rate = rate;
+		pe_type->batch_size = 1;
 		pe_type->p_type = particle_types_map[p_type];
+		pe_type->pe_impl = particle_emitter_implementations_map[impl];
+		particle_emitter_types.push_back(pe_type);
+		particle_emitter_types_map[name] = pe_type;
+		count_particle_emitter_types++;
+		return pe_type;
+	} else {
+		conoutf("Particle modifier type %s already exists!", name.c_str());
+		return particle_emitter_types_map[name];
+	}
+}
+
+particle_emitter_type* particle_system::add_particle_emitter_type(const std::string name, particle_type* p_type, float mass, float density, int lifetime, int rate, const std::string impl)
+{
+	if (!particle_emitter_types_map.count(name))
+	{
+		particle_emitter_type* pe_type = new particle_emitter_type;
+		pe_type->name = name;
+		pe_type->mass = mass;
+		pe_type->density = density;
+		pe_type->lifetime = lifetime;
+		pe_type->rate = rate;
+		pe_type->batch_size = 1;
+		pe_type->p_type = p_type;
 		pe_type->pe_impl = particle_emitter_implementations_map[impl];
 		particle_emitter_types.push_back(pe_type);
 		particle_emitter_types_map[name] = pe_type;
@@ -99,6 +140,7 @@ particle_emitter_instance* particle_emitter_type::create_instance(const vec &o, 
 	pe_inst->density = density;
 	pe_inst->lifetime = lifetime;
 	pe_inst->rate = rate;
+	pe_inst->batch_size = batch_size;
 	pe_inst->millistoprocess = 0;
 	// initialize default modifiers by copy all modifiers
 	pe_inst->modifiers = modifiers;
