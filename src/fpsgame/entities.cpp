@@ -143,6 +143,9 @@ namespace entities
         }
     }
 
+	/* Render entities' models
+	   entities' model-names describe the model to render
+	*/
     void renderentities()
     {
         loopv(ents)
@@ -170,7 +173,9 @@ namespace entities
             if(mdlname)
             {
                 vec p = e.o;
+				// add rotation to weapon models
                 p.z += 1+sinf(lastmillis/100.0+e.o.x+e.o.y)/20;
+				// render model (NOT model text!)
                 rendermodel(&e.light, mdlname, ANIM_MAPMODEL|ANIM_LOOP, p, lastmillis/(float)revs, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_DIST | MDL_CULL_OCCLUDED);
             }
         }
@@ -856,6 +861,18 @@ namespace entities
             "obstacle",
             "start", "finish", "checkpoint",
             "gravity", "friction", "jump", "speed",
+			
+			/************************************************/
+			/* Flowchart-Codeblock
+			*/
+			"mainstart" // Start des Hauptprogramms, welches beim Laden der Map gestartet wird
+			"event" // Ereignis-Trigger
+			"timer" // Timer
+			"code" // Codeblock
+			/************************************************/
+
+			/* Two empty strings seem to end this list (?)
+			*/
             "", "", // two empty strings follows.
         };
         return i>=0 && size_t(i)<sizeof(entnames)/sizeof(entnames[0]) ? entnames[i] : "";

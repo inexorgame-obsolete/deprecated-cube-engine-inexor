@@ -1675,6 +1675,8 @@ namespace modelpreview
 
     physent camera;
 
+	/* Start 2D/3D Menu rendering
+	*/
     void start(bool background)
     {
         float fovy = 90.f, aspect = 1.f;
@@ -1690,10 +1692,15 @@ namespace modelpreview
         camera.roll = 0;
         camera1 = &camera;
 
+		/* Get fog parameters (probably to reset the fog)
+		   test result: negative! no fog in gui?!
+		*/
         glGetFloatv(GL_FOG_START, &oldfogstart);
         glGetFloatv(GL_FOG_END, &oldfogend);
         glGetFloatv(GL_FOG_COLOR, oldfogcolor);
 
+		/* Reset Fog
+		*/
         GLfloat fogc[4] = { 0, 0, 0, 1 };
         glFogf(GL_FOG_START, 0);
         glFogf(GL_FOG_END, 1000000);

@@ -12,6 +12,13 @@
 #include "texture.h"
 #include "model.h"
 
+
+/**
+* Include flowgraph header file
+*/
+#include "flowgraph/flowgraph.h"
+
+
 // GL_ARB_multitexture
 extern PFNGLACTIVETEXTUREARBPROC       glActiveTexture_;
 extern PFNGLCLIENTACTIVETEXTUREARBPROC glClientActiveTexture_;

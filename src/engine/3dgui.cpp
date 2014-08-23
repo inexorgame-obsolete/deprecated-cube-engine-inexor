@@ -810,8 +810,19 @@ struct gui : g3d_gui
                 const patch &p = patches[start+i];
                 int left = skinx[p.left]*SKIN_SCALE, right = skinx[p.right]*SKIN_SCALE,
                     top = skiny[p.top]*SKIN_SCALE, bottom = skiny[p.bottom]*SKIN_SCALE;
+
                 float tleft = left*wscale, tright = right*wscale,
                       ttop = top*hscale, tbottom = bottom*hscale;
+
+				
+				/* Give some debug messages
+				*/
+				#define DEBUG_MENU_RENDER_POSITION 1
+				#ifdef DEBUG_MENU_RENDER_POSITION
+					conoutf(CON_DEBUG, "left: %f top: %f", left, top);
+				#endif
+
+
                 if(p.flags&0x1)
                 {
                     gapx1 = left;
@@ -854,10 +865,18 @@ struct gui : g3d_gui
                             tright = tleft+xstep*wscale;
                         }
                         if(!quads) { quads = true; glBegin(GL_QUADS); }
+						
+						/* Debug render position
+						*/
+						#ifdef DEBUG_MENU_RENDER_POSITION
+							conoutf(CON_DEBUG, "tleft: %f ttop: %f tright: %d tbottom: %d", tleft, ttop, tright, tbottom);
+						#endif
+
                         glTexCoord2f(tleft,  ttop);    glVertex2f(xo,       yo);
                         glTexCoord2f(tright, ttop);    glVertex2f(xo+xstep, yo);
                         glTexCoord2f(tright, tbottom); glVertex2f(xo+xstep, yo+ystep);
                         glTexCoord2f(tleft,  tbottom); glVertex2f(xo,       yo+ystep);
+
                         xtraverts += 4;
                         if(!(p.flags&0x01)) break;
                         xo += xstep;
@@ -872,6 +891,8 @@ struct gui : g3d_gui
         }
         if(passes>1) glDepthFunc(GL_ALWAYS);
     } 
+
+
 
     vec origin, scale, *savedorigin;
     float dist;
@@ -896,13 +917,19 @@ struct gui : g3d_gui
         scale = vec(aspect*scale.x*fit, scale.y*fit, 1);
     }
 
+	/* GUI render function found! 
+	   There it is Visual Studio, not in modelpreview:: !
+	*/
     void start(int starttime, float initscale, int *tab, bool allowinput)
     {	
+		/* Ah 2D rendering specified...
+		*/ 
         if(gui2d) 
         {
             initscale *= 0.025f; 
             if(allowinput) hascursor = true;
         }
+
         basescale = initscale;
         if(layoutpass) scale.x = scale.y = scale.z = guifadein ? basescale*min((totalmillis-starttime)/300.0f, 1.0f) : basescale;
         alpha = allowinput ? 0.80f : 0.60f;
@@ -915,6 +942,7 @@ struct gui : g3d_gui
         tcurrent = tab;
         tcolor = 0xFFFFFF;
         pushlist();
+
         if(layoutpass) 
         {
             firstlist = nextlist = curlist;
@@ -936,7 +964,13 @@ struct gui : g3d_gui
             else
             {
                 float yaw = atan2f(origin.y-camera1->o.y, origin.x-camera1->o.x);
-                glTranslatef(origin.x, origin.y, origin.z);
+                
+				/* Where to render this stuff...
+				    it works!
+				*/
+				glTranslatef(origin.x, origin.y, origin.z);
+				//glTranslatef(530, 530, 530);
+
                 glRotatef(yaw/RAD-90, 0, 0, 1); 
                 glRotatef(-90, 1, 0, 0);
                 glScalef(-scale.x, scale.y, scale.z);
@@ -948,9 +982,64 @@ struct gui : g3d_gui
             }
 
             drawskin(curx-skinx[2]*SKIN_SCALE, cury-skiny[6]*SKIN_SCALE, xsize, ysize, 0, 9, gui2d ? 1 : 2, light, alpha);
-            if(!tcurrent) drawskin(curx-skinx[5]*SKIN_SCALE, cury-skiny[6]*SKIN_SCALE, xsize, 0, 9, 1, gui2d ? 1 : 2, light, alpha);
+			if(!tcurrent) {
+				drawskin(curx-skinx[5]*SKIN_SCALE, cury-skiny[6]*SKIN_SCALE, xsize, 0, 9, 1, gui2d ? 1 : 2, light, alpha);
+			}
         }
     }
+
+	/* This function is called once per frame
+	    to render the flowcharts!
+	*/
+	/*
+	    THIS FUNCTION IS DEPRECATED!
+	*/
+	void render_flowcharts(void) 
+	{
+		// Debug message to see if this function is called
+		conoutf(CON_DEBUG, "Hello World from render_flowcharts(void)");
+
+		// We will use the standard skin for the beginning
+        if(!skintex) skintex = textureload("data/guiskin.png", 3);
+        
+		// set the current texture
+		glBindTexture(GL_TEXTURE_2D, skintex->id);
+		// Set depth compare function for faces (see: Z-fighting)
+		glDepthFunc(/*GL_LEQUAL*/ GL_GREATER);
+		// Set color
+		glColor4f(255.0f, 0.0f, 0.0f, 1.0f);
+		
+
+		/* Do some transformation and roation/scale stuff
+		*/
+		/*glTranslatef(512.0f, 512.0f, 512.0f);
+		float yaw = atan2f(530.0f-camera1->o.y, 530.0f-camera1->o.x);
+        glRotatef(yaw/RAD-90, 0, 0, 1); 
+        glRotatef(-90, 1, 0, 0);
+        glScalef(-scale.x, scale.y, scale.z);
+		*/
+		
+		/* delimit the vertices of a primitive or a group of like primitives
+		*/
+		glBegin(GL_QUADS);
+
+		
+		/* Set vertex coordinates X/Y/Z and texture coordinates U/V
+		*/
+        glTexCoord2f(0.0f,  0.0f);    
+		glVertex2f(1.0f, 0.5f);
+		glTexCoord2f(1.0f, 0.0f);    
+		glVertex2f(0.5f, 0.5f);
+		glTexCoord2f(1.0f, 1.0f); 
+		glVertex2f(0.75f, 0.75f);
+		glTexCoord2f(0.0f,  1.0f); 
+		glVertex2f(1.0f, 1.0f);
+
+
+        // end render process
+		glEnd();
+		//glDepthFunc(GL_ALWAYS);
+	}
 
     void adjusthorizontalcolumn(int col, int i)
     {
