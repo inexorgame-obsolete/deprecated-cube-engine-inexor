@@ -62,6 +62,7 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/initializer
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/particletype
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/worker
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/noop
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/massspring
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/velocity
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/randomv
@@ -77,6 +78,7 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/geometryculling
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/rolling
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/wind
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/positiontrace
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/noop
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/point
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/box
@@ -84,14 +86,22 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/sphere
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/satellite
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/cloth
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/renderers/noop
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/renderers/billboard
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/renderers/cube
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/renderers/spring
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/renderers/model
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/initializers/noop
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/initializers/randomvelocity
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/initializers/randomposition
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/initializers/randomparticletype
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/ptest
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/mu/muParser.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/mu/muParserBase.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/mu/muParserBytecode.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/mu/muParserCallback.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/mu/muParserError.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/mu/muParserTokenReader.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/ai
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/client       

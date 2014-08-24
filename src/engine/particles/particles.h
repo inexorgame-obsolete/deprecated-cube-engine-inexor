@@ -26,6 +26,11 @@ struct particle_renderer_implementation;
 struct particle_modifier_implementation;
 struct particle_initializer_implementation;
 
+struct noop_emitter;
+struct noop_renderer;
+struct noop_modifier;
+struct noop_initializer;
+
 /**
  * A particle emitter instance is an instance of a particle emitter
  * type.
@@ -756,12 +761,28 @@ struct particle_system
 
 	bool spring_lock;
 
+	// Default types and implementations
+	particle_type* noop_particle_type;
+	particle_emitter_implementation* noop_emitter_impl;
+	particle_emitter_type* noop_emitter_type;
+	particle_emitter_instance* noop_emitter_inst;
+	particle_modifier_implementation* noop_modifier_impl;
+	particle_modifier_type* noop_modifier_type;
+	particle_modifier_instance* noop_modifier_inst;
+	particle_renderer_implementation* noop_renderer_impl;
+	particle_renderer_type* noop_renderer_type;
+	particle_renderer_instance* noop_renderer_inst;
+	particle_initializer_implementation* noop_initializer_impl;
+	particle_initializer_type* noop_initializer_type;
+	particle_initializer_instance* noop_initializer_inst;
+
 	particle_system();
 	~particle_system();
 
 	void init_particles();
-	// void shutdown_particles();
+	void init_defaults();
 	void clear_particle_pools();
+	void clear_particle_instances();
 	void cleanup();
 
 	void update_particle_system();
@@ -780,25 +801,30 @@ struct particle_system
 	particle_emitter_type* add_particle_emitter_type(std::string name, std::string p_type, float mass, float density, int lifetime, int rate, std::string pe_impl);
 	particle_emitter_type* add_particle_emitter_type(std::string name, particle_type* p_type, float mass, float density, int lifetime, int rate, std::string pe_impl);
 	particle_emitter_instance* create_particle_emitter_instance(std::string pe_type, const vec &o, const vec &vel);
+	particle_emitter_instance* create_particle_emitter_instance(particle_emitter_type* pe_type, const vec &o, const vec &vel);
 	void remove_particle_emitter_type(std::string name);
 	void remove_all_particle_emitter_types();
-	// int assign_modifier_to_emitter(std::string emitter_name, std::string modifier_name);
+	void remove_all_particle_emitter_instances();
 
 	// void init_particle_renderer();
 	particle_renderer_type* add_particle_renderer_type(std::string name, std::string texture, std::string shader, const vec4 &color, std::string impl);
 	particle_renderer_instance* create_particle_renderer_instance(std::string name, std::string pr_type);
+	particle_renderer_instance* create_particle_renderer_instance(std::string name, particle_renderer_type* pr_type);
 	void remove_particle_renderer_type(std::string name);
 	void remove_all_particle_renderer_types();
+	void remove_all_particle_renderer_instances();
 
 	particle_modifier_type* add_particle_modifier_type(std::string name, std::string pm_impl);
 	particle_modifier_instance* create_particle_modifier_instance(std::string pm_type, const vec &o);
 	void remove_particle_modifier_type(std::string name);
 	void remove_all_particle_modifier_types();
+	void remove_all_particle_modifier_instances();
 
 	particle_initializer_type* add_particle_initializer_type(std::string name, std::string pi_impl);
 	particle_initializer_instance* create_particle_initializer_instance(std::string pi_type);
 	void remove_particle_initializer_type(std::string name);
 	void remove_all_particle_initializer_types();
+	void remove_all_particle_initializer_instances();
 
 	void add_spring(spring_instance *spring_inst);
 	void add_emitter_implementation(particle_emitter_implementation *pe_impl);

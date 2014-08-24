@@ -10,21 +10,38 @@ particle_system::particle_system()
 	timer_emitter = 0;
 	timer_modifier = 0;
 	timer_renderer = 0;
+	timer_initializer = 0;
 	count_particle_types = 0;
 	count_particle_emitter_types = 0;
 	count_particle_renderer_types = 0;
 	count_particle_modifier_types = 0;
+	count_particle_initializer_types = 0;
 	count_particle_emitter_implementations = 0;
 	count_particle_renderer_implementations = 0;
 	count_particle_modifier_implementations = 0;
+	count_particle_initializer_implementations = 0;
 	count_particles_instances = 0;
 	count_particle_emitter_instances = 0;
 	count_particle_renderer_instances = 0;
 	count_particle_modifier_instances = 0;
+	count_particle_initializer_instances = 0;
 	count_spring_instances = 0;
 	count_alive_pool = 0;
 	count_dead_pool = 0;
 	spring_lock = false;
+	noop_emitter_impl = 0;
+	noop_modifier_impl = 0;
+	noop_renderer_impl = 0;
+	noop_initializer_impl = 0;
+	noop_particle_type = 0;
+	noop_emitter_type = 0;
+	noop_modifier_type = 0;
+	noop_renderer_type = 0;
+	noop_initializer_type = 0;
+	noop_emitter_inst = 0;
+	noop_modifier_inst = 0;
+	noop_renderer_inst = 0;
+	noop_initializer_inst = 0;
 }
 
 particle_system::~particle_system()
@@ -33,13 +50,30 @@ particle_system::~particle_system()
 
 void particle_system::init_particles()
 {
+	init_defaults();
     /** MT **/
 	p_worker.start();
     /** END MT **/
 }
 
+void particle_system::init_defaults()
+{
+	// noop_emitter = create_particle_emitter_instance("noop_emitter", vec(0.0f, 0.0f, 0.0f), vec(0.0f, 0.0f, 0.0f));
+	noop_renderer_type = add_particle_renderer_type("noop", "", "", vec4(0.0f, 0.0f, 0.0f, 0.0f), "noop_renderer");
+	noop_renderer_inst = noop_renderer_type->create_instance("noop");
+	noop_particle_type = add_particle_type("noop", noop_renderer_inst);
+	noop_emitter_type = add_particle_emitter_type("noop_emitter", noop_particle_type, 0.0f, 0.0f, 0, 1000000000, "noop_emitter");
+	noop_emitter_inst = noop_emitter_type->create_instance(vec(0.0f, 0.0f, 0.0f), vec(0.0f, 0.0f, 0.0f));
+	noop_modifier_type = add_particle_modifier_type("noop", "noop_modifier");
+	noop_modifier_inst = noop_modifier_type->create_instance(vec(0.0f, 0.0f, 0.0f));
+	noop_initializer_type = add_particle_initializer_type("noop", "noop_initializer");
+	noop_initializer_inst = noop_initializer_type->create_instance();
+	conoutf("finished init defaults");
+}
+
 void particle_system::clear_particle_pools()
 {
+	// Destroy alive particles.
 	std::list<particle_instance*>::iterator i = alive_pool.begin();
 	while (i != alive_pool.end())
 	{
@@ -48,10 +82,19 @@ void particle_system::clear_particle_pools()
 		i = alive_pool.erase(i);
 		count_alive_pool--;
 	}
+	count_alive_pool = 0;
+	count_dead_pool = 0;
+	// Also clean up every particle instance reference in the renderers
 	for(std::vector<particle_renderer_instance*>::iterator pr_it = particle_renderer_instances.begin(); pr_it != particle_renderer_instances.end(); ++pr_it)
 	{
 		(*pr_it)->particles.clear();
 	}
+}
+
+void particle_system::clear_particle_instances()
+{
+	particle_instances.clear();
+	count_particles_instances = 0;
 }
 
 void particle_system::cleanup()
@@ -62,32 +105,19 @@ void particle_system::cleanup()
 	{
 		(*pr_it)->particles.clear();
 	}
-	particle_renderer_instances.clear();
-	particle_renderer_instances_map.clear();
-	particle_instances.clear();
-	particle_modifier_instances.clear();
-	particle_emitter_instances.clear();
-	alive_pool.clear();
-	dead_pool.clear();
+	remove_all_particle_renderer_instances();
+	clear_particle_instances();
+	remove_all_particle_modifier_instances();
+	remove_all_particle_emitter_instances();
+	remove_all_particle_initializer_instances();
+	clear_particle_pools();
 	remove_all_particle_renderer_types();
 	remove_all_particle_emitter_types();
 	remove_all_particle_modifier_types();
+	remove_all_particle_initializer_types();
 	remove_all_particle_types();
 
-	count_particle_types = 0;
-	count_particle_emitter_types = 0;
-	count_particle_renderer_types = 0;
-	count_particle_modifier_types = 0;
-	count_particle_emitter_implementations = 0;
-	count_particle_renderer_implementations = 0;
-	count_particle_modifier_implementations = 0;
-	count_particles_instances = 0;
-	count_particle_emitter_instances = 0;
-	count_particle_renderer_instances = 0;
-	count_particle_modifier_instances = 0;
 	count_spring_instances = 0;
-	count_alive_pool = 0;
-	count_dead_pool = 0;
 }
 
 /**
@@ -156,24 +186,28 @@ void particle_system::add_emitter_implementation(particle_emitter_implementation
 {
 	particle_emitter_implementations.push_back(pe_impl);
 	count_particle_emitter_implementations++;
+	conoutf("Added particle emitter implementation \"%s\"", pe_impl->name.c_str());
 }
 
 void particle_system::add_renderer_implementation(particle_renderer_implementation *pr_impl)
 {
 	particle_renderer_implementations.push_back(pr_impl);
 	count_particle_renderer_implementations++;
+	conoutf("Added particle renderer implementation \"%s\"", pr_impl->name.c_str());
 }
 
 void particle_system::add_modifier_implementation(particle_modifier_implementation *pm_impl)
 {
 	particle_modifier_implementations.push_back(pm_impl);
 	count_particle_modifier_implementations++;
+	conoutf("Added particle modifier implementation \"%s\"", pm_impl->name.c_str());
 }
 
 void particle_system::add_initializer_implementation(particle_initializer_implementation *pi_impl)
 {
 	particle_initializer_implementations.push_back(pi_impl);
 	count_particle_initializer_implementations++;
+	conoutf("Added particle initializer implementation \"%s\"", pi_impl->name.c_str());
 }
 
 particle_implementation_base::particle_implementation_base(const std::string& name) : name(name) { }

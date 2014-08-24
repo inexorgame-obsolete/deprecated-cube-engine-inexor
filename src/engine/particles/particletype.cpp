@@ -20,6 +20,7 @@ particle_type* particle_system::add_particle_type(std::string name, particle_ren
 	particle_types.push_back(pt);
 	particle_types_map[name] = pt;
 	count_particle_types++;
+	conoutf("Added particle type \"%s\" for renderer \"%s\"", name.c_str(), renderer->name.c_str());
 	return pt;
 }
 
@@ -37,8 +38,11 @@ void particle_system::remove_particle_type(std::string name)
 
 void particle_system::remove_all_particle_types()
 {
+	particle_types.clear();
 	particle_types_map.clear();
-	count_particle_types = 0;
+	particle_types.push_back(noop_particle_type);
+	particle_types_map["noop"] = noop_particle_type;
+	count_particle_types = 1;
 }
 
 // ICOMMAND(add_particle_type, "ss", (char *name, char *renderer), add_particle_type(name, renderer));

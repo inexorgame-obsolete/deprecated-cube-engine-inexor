@@ -86,6 +86,7 @@ particle_renderer_instance* particle_renderer_type::create_instance(std::string 
 	ps.particle_renderer_instances.push_back(pr_inst);
 	ps.particle_renderer_instances_map[name] = pr_inst;
 	ps.count_particle_renderer_instances++;
+	conoutf("Created particle renderer instance of type \"%s\"", name.c_str());
 	return pr_inst;
 }
 
@@ -96,7 +97,7 @@ particle_renderer_instance* particle_system::create_particle_renderer_instance(s
 		return particle_renderer_types_map[pr_type]->create_instance(name);
 	} else {
 		conoutf("Particle renderer type %s not found!", pr_type.c_str());
-		return 0;
+		return noop_renderer_inst;
 	}
 }
 
@@ -116,7 +117,18 @@ void particle_system::remove_all_particle_renderer_types()
 {
 	particle_renderer_types_map.clear();
 	particle_renderer_types.clear();
-	count_particle_renderer_types = 0;
+	particle_renderer_types.push_back(noop_renderer_type);
+	particle_renderer_types_map["noop"] = noop_renderer_type;
+	count_particle_renderer_types = 1;
+}
+
+void particle_system::remove_all_particle_renderer_instances()
+{
+	particle_renderer_instances_map.clear();
+	particle_renderer_instances.clear();
+	particle_renderer_instances.push_back(noop_renderer_inst);
+	particle_renderer_instances_map["noop"] = noop_renderer_inst;
+	count_particle_renderer_instances = 1;
 }
 
 void create_particle_renderer_instance(std::string name, std::string pr_type) {

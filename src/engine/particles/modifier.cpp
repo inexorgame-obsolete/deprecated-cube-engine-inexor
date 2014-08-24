@@ -73,6 +73,7 @@ particle_modifier_instance* particle_modifier_type::create_instance(const vec &o
 
 	ps.particle_modifier_instances.push_back(pm_inst);
 	ps.count_particle_modifier_instances++;
+	conoutf("Created particle modifier instance of type \"%s\"", name.c_str());
 	return pm_inst;
 }
 
@@ -83,7 +84,7 @@ particle_modifier_instance* particle_system::create_particle_modifier_instance(s
 		return particle_modifier_types_map[pm_type]->create_instance(o);
 	} else {
 		conoutf("Particle modifier type %s not found!", pm_type.c_str());
-		return 0;
+		return noop_modifier_inst;
 	}
 }
 
@@ -103,7 +104,16 @@ void particle_system::remove_all_particle_modifier_types()
 {
 	particle_modifier_types_map.clear();
 	particle_modifier_types.clear();
-	count_particle_modifier_types = 0;
+	particle_modifier_types.push_back(noop_modifier_type);
+	particle_modifier_types_map["noop"] = noop_modifier_type;
+	count_particle_modifier_types = 1;
+}
+
+void particle_system::remove_all_particle_modifier_instances()
+{
+	particle_modifier_instances.clear();
+	particle_modifier_instances.push_back(noop_modifier_inst);
+	count_particle_modifier_instances = 1;
 }
 
 void create_particle_modifier_instance(std::string pm_type, const vec &o) {

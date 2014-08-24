@@ -1163,6 +1163,7 @@ int main(int argc, char **argv)
     logoutf("init: gl: effects");
     loadshaders();
     particleinit();
+    ps.init_particles();
     initdecals();
 
     logoutf("init: world");
@@ -1225,8 +1226,6 @@ int main(int argc, char **argv)
 
     inputgrab(grabinput = true);
     ignoremousemotion();
-
-    ps.init_particles();
 
     for(;;)
     {

@@ -161,6 +161,7 @@ particle_emitter_instance* particle_emitter_type::create_instance(const vec &o, 
 
 	ps.particle_emitter_instances.push_back(pe_inst);
 	ps.count_particle_emitter_instances++;
+	conoutf("Created particle emitter instance of type \"%s\"", name.c_str());
 	return pe_inst;
 }
 
@@ -171,7 +172,7 @@ particle_emitter_instance* particle_system::create_particle_emitter_instance(std
 		return particle_emitter_types_map[pe_type]->create_instance(o, vel);
 	} else {
 		conoutf("Particle emitter type %s not found!", pe_type.c_str());
-		return 0;
+		return noop_emitter_inst;
 	}
 }
 
@@ -191,7 +192,16 @@ void particle_system::remove_all_particle_emitter_types()
 {
 	particle_emitter_types_map.clear();
 	particle_emitter_types.clear();
-	count_particle_emitter_types = 0;
+	particle_emitter_types.push_back(noop_emitter_type);
+	particle_emitter_types_map["noop"] = noop_emitter_type;
+	count_particle_emitter_types = 1;
+}
+
+void particle_system::remove_all_particle_emitter_instances()
+{
+	particle_emitter_instances.clear();
+	particle_emitter_instances.push_back(noop_emitter_inst);
+	count_particle_emitter_instances = 1;
 }
 
 void create_particle_emitter_instance(std::string pe_type, const vec &o, const vec &vel) {
