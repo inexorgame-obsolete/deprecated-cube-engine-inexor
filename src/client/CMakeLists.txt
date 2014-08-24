@@ -80,6 +80,7 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/wind
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/positiontrace
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/subemitter
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/vectorfield
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/noop
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/point
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/box

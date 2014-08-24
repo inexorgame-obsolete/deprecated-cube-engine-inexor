@@ -30,6 +30,7 @@ struct ptest
 			case 15: setup15(); break;
 			case 16: setup16(); break;
 			case 17: position_trace_modifier_test(); break;
+			case 18: vector_field_test(); break;
 		}
 	}
 
@@ -879,6 +880,35 @@ struct ptest
 
 		pm_inst_sub_emitter->pointers["sub_emitter"] = pe_inst_point_sub_sparkle;
 
+    }
+
+	void vector_field_test()
+    {
+		float mass = 1.0f;
+		float density = 1.0f;
+		int lifetime = 5000;
+		int rate = 10;
+
+		particle_renderer_type* pr_type_sparkle = ps.add_particle_renderer_type("sparkle_renderer_18", "media/particle/flash01.png", "shader", vec4(128.0f, 128.0f, 0.0f, 0.3f), "billboard_renderer");
+		pr_type_sparkle->attributes["size"] = 60.0f;
+		particle_renderer_instance* pr_inst_sparkle_0 = pr_type_sparkle->create_instance("sparkle_18");
+		pr_inst_sparkle_0->color = vec4(255.0f, 0.0f, 0.0f, 0.5f);
+		pr_inst_sparkle_0->attributes["size"] = 30.0f;
+
+		particle_type* p_type_sparkle_0 = ps.add_particle_type("sparkle_18", pr_inst_sparkle_0);
+
+		particle_modifier_type* pm_type_velocity_transformation = ps.add_particle_modifier_type("velocity_transformation_18", "velocity_transformation");
+		particle_modifier_instance* pm_inst_velocity_transformation = pm_type_velocity_transformation->create_instance();
+		particle_modifier_type* pm_type_geometry_culling = ps.add_particle_modifier_type("geometry_culling_18", "geometry_culling");
+		particle_modifier_instance* pm_inst_geometry_culling = pm_type_geometry_culling->create_instance();
+		particle_modifier_type* pm_type_vector_field = ps.add_particle_modifier_type("vector_field_18", "vector_field");
+		particle_modifier_instance* pm_inst_vector_field = pm_type_vector_field->create_instance();
+
+		particle_emitter_type* pe_type_point_sparkle = ps.add_particle_emitter_type("sparkle_point_emitter_18", "sparkle_18", mass, density, lifetime, rate, "point_emitter");
+		particle_emitter_instance* pe_inst_point_sparkle = pe_type_point_sparkle->create_instance(vec(512.0f, 512.0f, 514.0f), vec(0.0f, 0.0f, 10.0f));
+		pe_inst_point_sparkle->add_modifier(pm_inst_velocity_transformation);
+		// pe_inst_point_sparkle->add_modifier(pm_inst_geometry_culling);
+		pe_inst_point_sparkle->add_modifier(pm_inst_vector_field);
     }
 
 };

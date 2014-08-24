@@ -8,6 +8,7 @@
 #include <list>
 #include <deque>
 #include <iterator>
+#include "mu/muParser.h"
 
 struct particle_type;
 struct particle_emitter_type;
