@@ -20,11 +20,7 @@ env:
 
 notifications:
   webhooks: http://n.tkte.ch/h/2910/Rm7oDLYIC1icyntUug11eWi1
-<<<<<<< HEAD
     on_success: always
     on_failure: always
-=======
-  on_success: never # default: always
-  on_failure: always # default: always
-  on_start: false # default: false
->>>>>>> e77505e879f613c7446406554e436761685b2620
+    on_start: change
+    on_pending: never
