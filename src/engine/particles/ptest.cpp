@@ -29,6 +29,7 @@ struct ptest
 			case 14: setup14(); break;
 			case 15: setup15(); break;
 			case 16: setup16(); break;
+			case 17: position_trace_modifier_test(); break;
 		}
 	}
 
@@ -762,7 +763,7 @@ struct ptest
 		pr_inst_dust_2->color = vec4(192.0f, 192.0f, 0.0f, 0.1f);
 		pr_inst_dust_2->texture = "media/particle/smalljunk02.png";
 		particle_renderer_instance* pr_inst_dust_3 = pr_type_dust->create_instance("dust_16_3");
-		pr_inst_dust_3->color = vec4(128.0f, 192.0f, 0.0f, 0.1f);
+		pr_inst_dust_3->color = vec4(64.0f, 192.0f, 255.0f, 0.2f);
 		pr_inst_dust_3->texture = "media/particle/smalljunk03.png";
 
 		particle_type* p_type_dust_1 = ps.add_particle_type("dust_16_1", pr_inst_dust_1);
@@ -777,10 +778,10 @@ struct ptest
 		particle_initializer_type* pi_type_random_velocity = ps.add_particle_initializer_type("random_velocity_16", "random_velocity");
 		pi_type_random_velocity->attributes["osx"] = 200.0f;
 		pi_type_random_velocity->attributes["osy"] = 200.0f;
-		pi_type_random_velocity->attributes["osz"] = -5.0f;
+		pi_type_random_velocity->attributes["osz"] = 600.0f;
 		pi_type_random_velocity->attributes["isx"] = 100.0f;
 		pi_type_random_velocity->attributes["isy"] = 100.0f;
-		pi_type_random_velocity->attributes["isz"] = -2.5f;
+		pi_type_random_velocity->attributes["isz"] = 200.0f;
 		particle_initializer_instance* pi_inst_random_velocity = pi_type_random_velocity->create_instance();
 
 		particle_initializer_type* pi_type_random_particle_type = ps.add_particle_initializer_type("random_particle_type_16", "random_particle_type");
@@ -796,6 +797,69 @@ struct ptest
 		pe_inst_box_dust->add_modifier(pm_inst_velocity_transformation);
 		pe_inst_box_dust->add_initializer(pi_inst_random_velocity);
 		pe_inst_box_dust->add_initializer(pi_inst_random_particle_type);
+    }
+
+	void position_trace_modifier_test()
+    {
+		float mass = 1.0f;
+		float density = 1.0f;
+		int lifetime = 1000;
+		int rate = 5;
+
+		particle_renderer_type* pr_type_sparkle = ps.add_particle_renderer_type("sparkle_renderer_17", "media/particle/flash01.png", "shader", vec4(128.0f, 128.0f, 0.0f, 0.3f), "billboard_renderer");
+		pr_type_sparkle->attributes["size"] = 60.0f;
+		particle_renderer_instance* pr_inst_sparkle_1 = pr_type_sparkle->create_instance("sparkle_17_1");
+		pr_inst_sparkle_1->color = vec4(255.0f, 0.0f, 0.0f, 0.1f);
+		pr_inst_sparkle_1->attributes["size"] = 30.0f;
+		particle_renderer_instance* pr_inst_sparkle_2 = pr_type_sparkle->create_instance("sparkle_17_2");
+		pr_inst_sparkle_2->color = vec4(0.0f, 255.0f, 0.0f, 0.1f);
+		pr_inst_sparkle_2->attributes["size"] = 40.0f;
+		particle_renderer_instance* pr_inst_sparkle_3 = pr_type_sparkle->create_instance("sparkle_17_3");
+		pr_inst_sparkle_3->color = vec4(0.0f, 0.0f, 255.0f, 0.1f);
+		pr_inst_sparkle_3->attributes["size"] = 50.0f;
+
+		particle_type* p_type_sparkle_1 = ps.add_particle_type("sparkle_17_1", pr_inst_sparkle_1);
+		particle_type* p_type_sparkle_2 = ps.add_particle_type("sparkle_17_2", pr_inst_sparkle_2);
+		particle_type* p_type_sparkle_3 = ps.add_particle_type("sparkle_17_3", pr_inst_sparkle_3);
+
+		particle_modifier_type* pm_type_velocity_transformation = ps.add_particle_modifier_type("velocity_transformation_17", "velocity_transformation");
+		particle_modifier_instance* pm_inst_velocity_transformation = pm_type_velocity_transformation->create_instance();
+		particle_modifier_type* pm_type_geometry_culling = ps.add_particle_modifier_type("geometry_culling_17", "geometry_culling");
+		particle_modifier_instance* pm_inst_geometry_culling = pm_type_geometry_culling->create_instance();
+		particle_modifier_type* pm_type_position_trace = ps.add_particle_modifier_type("position_trace_17", "position_trace");
+		particle_modifier_instance* pm_inst_position_trace = pm_type_position_trace->create_instance();
+
+		particle_initializer_type* pi_type_random_position = ps.add_particle_initializer_type("random_position_17", "random_position");
+		pi_type_random_position->attributes["osx"] = 0.0f;
+		pi_type_random_position->attributes["osy"] = 0.0f;
+		pi_type_random_position->attributes["osz"] = 50.0f;
+		pi_type_random_position->attributes["isx"] = 0.0f;
+		pi_type_random_position->attributes["isy"] = 0.0f;
+		pi_type_random_position->attributes["isz"] = 0.0f;
+		particle_initializer_instance* pi_inst_random_position = pi_type_random_position->create_instance();
+		particle_initializer_type* pi_type_random_velocity = ps.add_particle_initializer_type("random_velocity_17", "random_velocity");
+		pi_type_random_velocity->attributes["osx"] = 600.0f;
+		pi_type_random_velocity->attributes["osy"] = 600.0f;
+		pi_type_random_velocity->attributes["osz"] = 0.0f;
+		pi_type_random_velocity->attributes["isx"] = 300.0f;
+		pi_type_random_velocity->attributes["isy"] = 300.0f;
+		pi_type_random_velocity->attributes["isz"] = 0.0f;
+		particle_initializer_instance* pi_inst_random_velocity = pi_type_random_velocity->create_instance();
+
+		particle_initializer_type* pi_type_random_particle_type = ps.add_particle_initializer_type("random_particle_type_17", "random_particle_type");
+		particle_initializer_instance* pi_inst_random_particle_type = pi_type_random_particle_type->create_instance();
+		pi_inst_random_particle_type->particle_types.push_back(p_type_sparkle_1);
+		pi_inst_random_particle_type->particle_types.push_back(p_type_sparkle_2);
+		pi_inst_random_particle_type->particle_types.push_back(p_type_sparkle_3);
+
+		particle_emitter_type* pe_type_point_sparkle = ps.add_particle_emitter_type("sparkle_point_emitter_17", "sparkle_17", mass, density, lifetime, rate, "point_emitter");
+		particle_emitter_instance* pe_inst_point_sparkle = pe_type_point_sparkle->create_instance(vec(512.0f, 512.0f, 514.0f), vec(0.0f, 0.0f, 0.0f));
+		pe_inst_point_sparkle->add_modifier(pm_inst_velocity_transformation);
+		pe_inst_point_sparkle->add_modifier(pm_inst_geometry_culling);
+		pe_inst_point_sparkle->add_modifier(pm_inst_position_trace);
+		pe_inst_point_sparkle->add_initializer(pi_inst_random_position);
+		pe_inst_point_sparkle->add_initializer(pi_inst_random_velocity);
+		pe_inst_point_sparkle->add_initializer(pi_inst_random_particle_type);
     }
 
 };

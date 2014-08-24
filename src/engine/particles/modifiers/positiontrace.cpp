@@ -18,7 +18,7 @@ public:
 
 	inline void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime) {
 		p_inst->attributes["millistoprocess"] += elapsedtime;
-		if (p_inst->attributes["millistoprocess"] > 2000.0f || p_inst->attributes["millistoprocess"] < 0.0f)
+		if (p_inst->attributes["millistoprocess"] > 30.0f || p_inst->attributes["millistoprocess"] < 0.0f)
 		{
 			p_inst->attributes["millistoprocess"] = 0.0f;
 			// get new particle, may increase the pool
@@ -33,6 +33,7 @@ public:
 			trace->mass = p_inst->mass;
 			trace->density = p_inst->density;
 			// set the remaining iterations from the emitter type's lifetime
+			trace->elapsed = 0;
 			trace->remaining = 100;
 			// add particle instance to the alive pool
 			ps.alive_pool.push_back(trace);
