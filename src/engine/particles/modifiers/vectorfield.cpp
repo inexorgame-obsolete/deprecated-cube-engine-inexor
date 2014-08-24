@@ -20,12 +20,12 @@ public:
 		ix = p_inst->o.x - pm_inst->o.x;
 		iy = p_inst->o.y - pm_inst->o.y;
 		iz = p_inst->o.z - pm_inst->o.z;
-		conoutf("ix: %2.2f p_x: %2.2f pm_x: %2.2f", ix, p_inst->o.x, pm_inst->o.x);
 		try {
 			mu::value_type *v = parser.Eval(args);
 			p_inst->o.x = v[0];
 			p_inst->o.y = v[1];
 			p_inst->o.z = v[2];
+			conoutf("ix: %2.2f iy: %2.2f iz: %2.2f ox: %2.2f oy: %2.2f oz: %2.2f", ix, iy, iz, v[0], v[1], v[2]);
 			// parser.Eval();
 		} catch (mu::Parser::exception_type &e) {
 			conoutf("Error parsing vector field expression %s: %s", e.GetExpr().c_str(), e.GetMsg().c_str());

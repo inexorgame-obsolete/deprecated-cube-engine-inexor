@@ -901,7 +901,7 @@ struct ptest
 		particle_modifier_instance* pm_inst_velocity_transformation = pm_type_velocity_transformation->create_instance();
 
 		particle_modifier_type* pm_type_vector_field = ps.add_particle_modifier_type("vector_field_18", "vector_field");
-		particle_modifier_instance* pm_inst_vector_field = pm_type_vector_field->create_instance();
+		particle_modifier_instance* pm_inst_vector_field = pm_type_vector_field->create_instance(vec(512.0f, 512.0f, 512.0f));
 
 		particle_initializer_type* pi_type_random_position = ps.add_particle_initializer_type("random_position_18", "random_position");
 		pi_type_random_position->attributes["osx"] = 10.0f;
