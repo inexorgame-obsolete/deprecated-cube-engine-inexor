@@ -63,10 +63,7 @@ enum                            // static entity types
     P_JUMP,
     P_SPEED,
     // I_INVISIBLE,                // hide and seek
-    MAXENTTYPES,
-	/*  3d flowchart editors need code blocks!
-	*/
-	FLOWCHART_CODE_BLOCK
+    MAXENTTYPES
 };
 
 enum

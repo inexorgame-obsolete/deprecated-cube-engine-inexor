@@ -393,7 +393,7 @@ namespace game
         {
             g.start(menustart, 0.03f, NULL, false);
             renderscoreboard(g, firstpass);
-			g.end();
+            g.end();
         }
 
         void render()

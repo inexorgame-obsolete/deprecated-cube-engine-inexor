@@ -194,9 +194,6 @@ namespace game
     VARP(teamskins, 0, 0, 1);
     // VARP(showplayernames, 0, 0, 1);
 
-	/* Render game
-	  ...
-	*/
     void rendergame(bool mainpass)
     {
         if(mainpass) ai::render();
@@ -241,29 +238,8 @@ namespace game
         entities::renderentities();
         renderbouncers();
         renderprojectiles();
-
-
-		/*******************************************************************************************/
-
-		//#define FLOWCHART_DEBUG_POSITION
-		#ifdef FLOWCHART_DEBUG_POSITION
-			conoutf(CON_DEBUG, "Position: %f %f %f", player1->o.x, player1->o.y, player1->o.z);
-		#endif
-
-		/* TODO: renderflowcharts();
-		   but only in editmode!
-		   EDITMODE = SCRIPTING MODE!
-		*/
-
-		if(editmode) 
-		{
-			vec text_position(512.0f,512.0f,512.0f);
-			particle_text(text_position, "HELLOWORLD", PART_TEXT, 1, 0xFF00B2, 10.0f);
-		}
-
-		/*******************************************************************************************/
-
         if(cmode) cmode->rendergame();
+
         endmodelbatches();
     }
 
