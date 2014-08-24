@@ -64,6 +64,7 @@ particle_modifier_instance* particle_modifier_type::create_instance(const vec &o
 	pm_inst->pm_type = this;
 	pm_inst->o = o;
 	pm_inst->attributes.insert(attributes.begin(), attributes.end());
+	pm_inst->pointers.insert(pointers.begin(), pointers.end());
 
 	// create entity and attach to the instance object
 	int idx;

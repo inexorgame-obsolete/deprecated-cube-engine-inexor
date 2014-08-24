@@ -289,6 +289,11 @@ struct particle_modifier_instance
 	 */
 	std::map<std::string, float> attributes;
 
+	/**
+	 * Generic pointers per modifier instance.
+	 */
+	std::map<std::string, void*> pointers;
+
 };
 
 /**
@@ -587,6 +592,11 @@ struct particle_modifier_type : public particle_type_base
 	 */
 	particle_modifier_instance* create_instance(const vec &o);
 
+	/**
+	 * Generic pointers per type.
+	 */
+	std::map<std::string, void*> pointers;
+
 };
 
 /**
@@ -789,6 +799,7 @@ struct particle_system
 	void update_particle_pools(int elapsedtime);
 
 	void emit_particles(int elapsedtime);
+	void emit_particles(particle_emitter_instance* pe_inst, int elapsedtime);
 	void modify_particles(int elapsedtime);
 	void render_particles();
 	particle_instance* emit_particle();

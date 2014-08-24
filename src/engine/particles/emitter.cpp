@@ -10,33 +10,7 @@ void particle_system::emit_particles(int elapsedtime)
 		int started = SDL_GetTicks();
 		for(std::vector<particle_emitter_instance*>::iterator it = particle_emitter_instances.begin(); it != particle_emitter_instances.end(); ++it)
 		{
-			if ((*it)->enabled && (*it)->lifetime > 0)
-			{
-				// calculate how many batches have to be emitted
-				(*it)->millistoprocess += elapsedtime;
-				int batches_to_be_emitted = (*it)->millistoprocess / (*it)->pe_type->rate;
-				(*it)->millistoprocess = (*it)->millistoprocess % (*it)->pe_type->rate;
-
-				// handle batches separate
-				for (int batch = 0; batch < batches_to_be_emitted; batch++)
-				{
-					// emit particles for a single batch; the number of particles
-					// per batch is defined in the batch_size variable
-					std::list<particle_instance*> particles = (*it)->pe_type->pe_impl->emit(*it, elapsedtime);
-					// initialize emitted particles for the current batch
-					for(std::vector<particle_initializer_instance*>::iterator pi_it = (*it)->initializers.begin(); pi_it != (*it)->initializers.end(); ++pi_it)
-					{
-						(*pi_it)->pi_type->pi_impl->init(*pi_it, particles, elapsedtime);
-					}
-
-					// add particle instance to it's renderer
-					for(std::list<particle_instance*>::iterator p_it = particles.begin(); p_it != particles.end(); ++p_it)
-					{
-						(*p_it)->p_type->pr_inst->particles.push_back(*p_it);
-					}
-
-				}
-			}
+			emit_particles(*it, elapsedtime);
 		}
 		timer_emitter = SDL_GetTicks() - started;
 	}
@@ -46,6 +20,36 @@ void particle_system::emit_particles(int elapsedtime)
 		{
 			// conoutf("%3.1f %3.1f", (*it)->o.x, (*it)->ent->o.x);
 			(*it)->o = vec((*it)->ent->o);
+		}
+	}
+}
+
+inline void particle_system::emit_particles(particle_emitter_instance* pe_inst, int elapsedtime)
+{
+	if (pe_inst->enabled && pe_inst->lifetime > 0)
+	{
+		// calculate how many batches have to be emitted
+		pe_inst->millistoprocess += elapsedtime;
+		int batches_to_be_emitted = pe_inst->millistoprocess / pe_inst->pe_type->rate;
+		pe_inst->millistoprocess = pe_inst->millistoprocess % pe_inst->pe_type->rate;
+
+		// handle batches separate
+		for (int batch = 0; batch < batches_to_be_emitted; batch++)
+		{
+			// emit particles for a single batch; the number of particles
+			// per batch is defined in the batch_size variable
+			std::list<particle_instance*> particles = pe_inst->pe_type->pe_impl->emit(pe_inst, elapsedtime);
+			// initialize emitted particles for the current batch
+			for(std::vector<particle_initializer_instance*>::iterator pi_it = pe_inst->initializers.begin(); pi_it != pe_inst->initializers.end(); ++pi_it)
+			{
+				(*pi_it)->pi_type->pi_impl->init(*pi_it, particles, elapsedtime);
+			}
+
+			// add particle instance to it's renderer
+			for(std::list<particle_instance*>::iterator p_it = particles.begin(); p_it != particles.end(); ++p_it)
+			{
+				(*p_it)->p_type->pr_inst->particles.push_back(*p_it);
+			}
 		}
 	}
 }
