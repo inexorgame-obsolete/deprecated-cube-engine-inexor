@@ -24,7 +24,7 @@ void particle_system::emit_particles(int elapsedtime)
 	}
 }
 
-inline void particle_system::emit_particles(particle_emitter_instance* pe_inst, int elapsedtime)
+void particle_system::emit_particles(particle_emitter_instance* pe_inst, int elapsedtime)
 {
 	if (pe_inst->enabled && pe_inst->lifetime > 0)
 	{
