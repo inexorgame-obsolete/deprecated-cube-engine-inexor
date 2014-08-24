@@ -899,16 +899,24 @@ struct ptest
 
 		particle_modifier_type* pm_type_velocity_transformation = ps.add_particle_modifier_type("velocity_transformation_18", "velocity_transformation");
 		particle_modifier_instance* pm_inst_velocity_transformation = pm_type_velocity_transformation->create_instance();
-		particle_modifier_type* pm_type_geometry_culling = ps.add_particle_modifier_type("geometry_culling_18", "geometry_culling");
-		particle_modifier_instance* pm_inst_geometry_culling = pm_type_geometry_culling->create_instance();
+
 		particle_modifier_type* pm_type_vector_field = ps.add_particle_modifier_type("vector_field_18", "vector_field");
 		particle_modifier_instance* pm_inst_vector_field = pm_type_vector_field->create_instance();
+
+		particle_initializer_type* pi_type_random_position = ps.add_particle_initializer_type("random_position_18", "random_position");
+		pi_type_random_position->attributes["osx"] = 10.0f;
+		pi_type_random_position->attributes["osy"] = 10.0f;
+		pi_type_random_position->attributes["osz"] = 0.0f;
+		pi_type_random_position->attributes["isx"] = 5.0f;
+		pi_type_random_position->attributes["isy"] = 5.0f;
+		pi_type_random_position->attributes["isz"] = 0.0f;
+		particle_initializer_instance* pi_inst_random_position = pi_type_random_position->create_instance();
 
 		particle_emitter_type* pe_type_point_sparkle = ps.add_particle_emitter_type("sparkle_point_emitter_18", "sparkle_18", mass, density, lifetime, rate, "point_emitter");
 		particle_emitter_instance* pe_inst_point_sparkle = pe_type_point_sparkle->create_instance(vec(512.0f, 512.0f, 514.0f), vec(0.0f, 0.0f, 10.0f));
 		pe_inst_point_sparkle->add_modifier(pm_inst_velocity_transformation);
-		// pe_inst_point_sparkle->add_modifier(pm_inst_geometry_culling);
 		pe_inst_point_sparkle->add_modifier(pm_inst_vector_field);
+		pe_inst_point_sparkle->add_initializer(pi_inst_random_position);
     }
 
 };

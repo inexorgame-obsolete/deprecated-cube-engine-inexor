@@ -18,16 +18,15 @@ public:
 
 	inline void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime) {
 		ix = p_inst->o.x - pm_inst->o.x;
-		// iy = p_inst->o.y - pm_inst->o.y;
-		// iz = p_inst->o.z - pm_inst->o.z;
-		// mu::value_type *v = parser.Eval(args);
-		// p_inst->o.x = v[0];
-		// p_inst->o.y = v[1];
-		// p_inst->o.z = v[2];
+		iy = p_inst->o.y - pm_inst->o.y;
+		iz = p_inst->o.z - pm_inst->o.z;
 		conoutf("ix: %2.2f p_x: %2.2f pm_x: %2.2f", ix, p_inst->o.x, pm_inst->o.x);
 		try {
-			// p_inst->o.x =
-			parser.Eval();
+			mu::value_type *v = parser.Eval(args);
+			p_inst->o.x = v[0];
+			p_inst->o.y = v[1];
+			p_inst->o.z = v[2];
+			// parser.Eval();
 		} catch (mu::Parser::exception_type &e) {
 			conoutf("Error parsing vector field expression %s: %s", e.GetExpr().c_str(), e.GetMsg().c_str());
 		}
@@ -40,7 +39,7 @@ public:
 private:
 
 	float time_factor;
-	double ix;
+	float ix;
 	float iy;
 	float iz;
 	int args;
@@ -54,11 +53,11 @@ private:
 		ix = 0;
 		iy = 0;
 		iz = 0;
-		// parser.DefineVar("x", &ix);
-		// parser.DefineVar("y", &iy);
-		// parser.DefineVar("z", &iz);
+		parser.DefineVar("x", &ix);
+		parser.DefineVar("y", &iy);
+		parser.DefineVar("z", &iz);
 		// parser.SetExpr("y,x,z");
-		expression = "1";
+		expression = "y,x,z";
 		parser.SetExpr(expression);
 	}
 	vector_field( const vector_field& );
