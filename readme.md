@@ -158,4 +158,4 @@ freely, subject to the following restrictions:
 ### Logo
 The following Logo is the provisional logo. It is more or less based on the original logo and simplified.
 
-![Logo](https://raw.githubusercontent.com/sauerbraten-fork/website/master/sites/all/logo.png)
+![Logo](https://avatars1.githubusercontent.com/u/5883878?v=2&s=420)
