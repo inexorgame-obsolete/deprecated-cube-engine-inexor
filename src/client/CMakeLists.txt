@@ -103,6 +103,7 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/mu/muParserBytecode.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/mu/muParserCallback.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/mu/muParserError.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/mu/muParserInt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/mu/muParserTokenReader.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/ai

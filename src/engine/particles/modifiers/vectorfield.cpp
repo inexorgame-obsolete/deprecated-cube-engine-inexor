@@ -17,15 +17,18 @@ public:
 	virtual ~vector_field() { }
 
 	inline void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime) {
+		time_factor = elapsedtime / ps.particle_frame;
 		ix = p_inst->o.x - pm_inst->o.x;
 		iy = p_inst->o.y - pm_inst->o.y;
 		iz = p_inst->o.z - pm_inst->o.z;
 		try {
+			// conoutf("num args: [%d] expression: [%s] separator: [%c] result count: [%d]", args, parser.GetExpr().c_str(), parser.GetArgSep(), parser.GetNumResults());
 			mu::value_type *v = parser.Eval(args);
-			p_inst->o.x = v[0];
-			p_inst->o.y = v[1];
-			p_inst->o.z = v[2];
-			conoutf("ix: %2.2f iy: %2.2f iz: %2.2f ox: %2.2f oy: %2.2f oz: %2.2f", ix, iy, iz, v[0], v[1], v[2]);
+			// p_inst->o.x += v[0];
+			// p_inst->o.y += v[1];
+			// p_inst->o.z += v[2];
+			p_inst->vel.add(vec(v[0], v[1], v[2]).mul(time_factor));
+//			conoutf("ix: %2.2f iy: %2.2f iz: %2.2f ox: %2.2f oy: %2.2f oz: %2.2f", ix, iy, iz, v[0], v[1], v[2]);
 			// parser.Eval();
 		} catch (mu::Parser::exception_type &e) {
 			conoutf("Error parsing vector field expression %s: %s", e.GetExpr().c_str(), e.GetMsg().c_str());
@@ -36,12 +39,18 @@ public:
 
 	inline void modify(int elapsedtime) { }
 
+	void set_expression(std::string expression)
+	{
+		this->expression = expression;
+		parser.SetExpr(this->expression);
+	}
+
 private:
 
 	float time_factor;
-	float ix;
-	float iy;
-	float iz;
+	mu::value_type ix;
+	mu::value_type iy;
+	mu::value_type iz;
 	int args;
 	mu::Parser parser;
 	std::string expression;
@@ -56,8 +65,10 @@ private:
 		parser.DefineVar("x", &ix);
 		parser.DefineVar("y", &iy);
 		parser.DefineVar("z", &iz);
-		// parser.SetExpr("y,x,z");
-		expression = "y,x,z";
+		expression = "sin(y) * 500, sin(x + y) * 500, z + 0.2";
+		// expression = "2 * x - 3 * y, 2 * x + 3 * y, z + 0.2";
+		// expression = "cos(x) * 50, sin(y) * 50, 50.0";
+		// conoutf("expression: [%s]", expression.c_str());
 		parser.SetExpr(expression);
 	}
 	vector_field( const vector_field& );
@@ -66,3 +77,5 @@ private:
 };
 
 vector_field& ps_modifier_vector_field = vector_field::instance();
+
+ICOMMAND(psvvexpr, "s", (char *expression), ps_modifier_vector_field.set_expression(expression));
