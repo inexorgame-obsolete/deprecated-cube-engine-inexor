@@ -891,6 +891,7 @@ struct ptest
 
 		particle_renderer_type* pr_type_sparkle = ps.add_particle_renderer_type("sparkle_renderer_18", "media/particle/flash01.png", "shader", vec4(128.0f, 128.0f, 0.0f, 0.3f), "billboard_renderer");
 		pr_type_sparkle->attributes["size"] = 60.0f;
+
 		particle_renderer_instance* pr_inst_sparkle_0 = pr_type_sparkle->create_instance("sparkle_18_0");
 		pr_inst_sparkle_0->color = vec4(255.0f, 0.0f, 128.0f, 0.5f);
 		pr_inst_sparkle_0->attributes["size"] = 40.0f;
@@ -901,14 +902,26 @@ struct ptest
 		pr_inst_sparkle_2->color = vec4(0.0f, 128.0f, 255.0f, 0.5f);
 		pr_inst_sparkle_2->attributes["size"] = 50.0f;
 
-		particle_renderer_type* pr_type_grenade = ps.add_particle_renderer_type("grenade_renderer_18", "projectiles/grenade", "shader", vec4(0.0f, 0.0f, 0.0f, 0.0f), "model_renderer");
-		particle_renderer_instance* pr_inst_grenade = pr_type_grenade->create_instance("grendade_18");
-		pr_inst_grenade->offset = vec(0.0f, 0.0f, 2.0f);
-
 		particle_type* p_type_sparkle_0 = ps.add_particle_type("sparkle_18_0", pr_inst_sparkle_0);
 		particle_type* p_type_sparkle_1 = ps.add_particle_type("sparkle_18_1", pr_inst_sparkle_1);
 		particle_type* p_type_sparkle_2 = ps.add_particle_type("sparkle_18_2", pr_inst_sparkle_2);
-		particle_type* p_type_grendade = ps.add_particle_type("grendade_18", pr_inst_grenade);
+
+		particle_renderer_type* pr_type_ball = ps.add_particle_renderer_type("ball_renderer_18", "media/particle/shockwave01.png", "shader", vec4(128.0f, 128.0f, 0.0f, 0.3f), "billboard_renderer");
+		pr_type_ball->attributes["size"] = 40.0f;
+
+		particle_renderer_instance* pr_inst_ball_0 = pr_type_ball->create_instance("ball_18_0");
+		pr_inst_ball_0->color = vec4(128.0f, 0.0f, 255.0f, 0.5f);
+		pr_inst_ball_0->attributes["size"] = 40.0f;
+		particle_renderer_instance* pr_inst_ball_1 = pr_type_ball->create_instance("ball_18_1");
+		pr_inst_ball_1->color = vec4(0.0f, 255.0f, 128.0f, 0.3f);
+		pr_inst_ball_1->attributes["size"] = 30.0f;
+		particle_renderer_instance* pr_inst_ball_2 = pr_type_ball->create_instance("ball_18_2");
+		pr_inst_ball_2->color = vec4(255.0f, 128.0f, 0.0f, 0.5f);
+		pr_inst_ball_2->attributes["size"] = 50.0f;
+
+		particle_type* p_type_ball_0 = ps.add_particle_type("ball_18_0", pr_inst_ball_0);
+		particle_type* p_type_ball_1 = ps.add_particle_type("ball_18_1", pr_inst_ball_1);
+		particle_type* p_type_ball_2 = ps.add_particle_type("ball_18_2", pr_inst_ball_2);
 
 		particle_modifier_type* pm_type_velocity_transformation = ps.add_particle_modifier_type("velocity_transformation_18", "velocity_transformation");
 		particle_modifier_instance* pm_inst_velocity_transformation = pm_type_velocity_transformation->create_instance();
@@ -926,11 +939,11 @@ struct ptest
 		particle_modifier_instance* pm_inst_rolling = pm_type_rolling->create_instance();
 
 		particle_initializer_type* pi_type_random_position = ps.add_particle_initializer_type("random_position_18", "random_position");
-		pi_type_random_position->attributes["osx"] = 20.0f;
-		pi_type_random_position->attributes["osy"] = 20.0f;
+		pi_type_random_position->attributes["osx"] = 50.0f;
+		pi_type_random_position->attributes["osy"] = 50.0f;
 		pi_type_random_position->attributes["osz"] = 0.0f;
-		pi_type_random_position->attributes["isx"] = 10.0f;
-		pi_type_random_position->attributes["isy"] = 10.0f;
+		pi_type_random_position->attributes["isx"] = 25.0f;
+		pi_type_random_position->attributes["isy"] = 25.0f;
 		pi_type_random_position->attributes["isz"] = 0.0f;
 		particle_initializer_instance* pi_inst_random_position = pi_type_random_position->create_instance();
 
@@ -939,7 +952,9 @@ struct ptest
 		pi_inst_random_particle_type->particle_types.push_back(p_type_sparkle_0);
 		pi_inst_random_particle_type->particle_types.push_back(p_type_sparkle_1);
 		pi_inst_random_particle_type->particle_types.push_back(p_type_sparkle_2);
-		pi_inst_random_particle_type->particle_types.push_back(p_type_grendade);
+		pi_inst_random_particle_type->particle_types.push_back(p_type_ball_0);
+		pi_inst_random_particle_type->particle_types.push_back(p_type_ball_1);
+		pi_inst_random_particle_type->particle_types.push_back(p_type_ball_2);
 
 		particle_emitter_type* pe_type_point_sparkle = ps.add_particle_emitter_type("sparkle_point_emitter_18", "sparkle_18", mass, density, lifetime, rate, "point_emitter");
 		particle_emitter_instance* pe_inst_point_sparkle = pe_type_point_sparkle->create_instance(vec(512.0f, 512.0f, 514.0f), vec(0.0f, 0.0f, 0.0f));

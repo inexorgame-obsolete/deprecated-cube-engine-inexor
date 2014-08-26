@@ -65,7 +65,8 @@ private:
 		parser.DefineVar("x", &ix);
 		parser.DefineVar("y", &iy);
 		parser.DefineVar("z", &iz);
-		expression = "sin(y) * 500, sin(x + y) * 500, z + 0.2";
+		expression = "(z * -0.3)*x,(z * -0.1)*y + 100,500*sin(z)+175";
+		// expression = "sin(y) * 500, sin(x + y) * 500, z + 0.2";
 		// expression = "2 * x - 3 * y, 2 * x + 3 * y, z + 0.2";
 		// expression = "cos(x) * 50, sin(y) * 50, 50.0";
 		// conoutf("expression: [%s]", expression.c_str());
