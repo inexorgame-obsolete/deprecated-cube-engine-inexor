@@ -6,7 +6,7 @@ before_install:
   - sudo apt-get -y install mingw32
 
 script:
-  - (mkdir cmakebuild && cd cmakebuild && cmake $CMAKE_FLAGS .. && make -j5 && cd .. && rm -rf cmakebuild)
+  - (mkdir cmakebuild && cd cmakebuild && cmake $CMAKE_FLAGS .. && make -j5 install && cd .. && rm -rf cmakebuild)
 
 compiler:
   - clang
@@ -17,10 +17,19 @@ env:
   - CMAKE_FLAGS=-DRELEASE_BUILD=1
   - CMAKE_FLAGS="-DCMAKE_TOOLCHAIN_FILE=../src/platform_windows/linux-toolchain-mingw.cmake -DMINGW_TYPE=classic"
   - CMAKE_FLAGS="-DCMAKE_TOOLCHAIN_FILE=../src/platform_windows/linux-toolchain-mingw.cmake -DRELEASE_BUILD=1  -DMINGW_TYPE=classic"
+  - secure: "MTtHk1WtIXI9LNVw6I545sJZiI0QO6IZcgH0mcd7/P77RCFquiT+Rrf3PkOSfVweC9jHE/X9ZapmYFAAhPaeKaSHxNVid309pJDISf3EAwz9Ge1JZ3cMcmTv+XkKGUf7RsdJIk9wyvQ9J5VkOLILKA9sEHd/jSPKzA88jOFk15w="
+  - secure: "M/FV24V5PmynNb6qONaeAfxFcv6tFbG2yCzZ6XIJlCFdr6SWEhatLjBdOUNP+PMml1jPPL/35lVEsODO/I4cbXWL74U4zZwN81IypTZpWziW0N5lBvkIRbEgZZ6nyUSDA+HgOfm7Yr01nmMmX/cqxDBYWkCSD+cAGhXaajRxKqw="
+
 
 notifications:
   webhooks: http://n.tkte.ch/h/2910/Rm7oDLYIC1icyntUug11eWi1
     on_success: always
     on_failure: always
     on_start: change
-    on_pending: never
+
+after_success:
+  - git clone --depth 1 https://github.com/sauerbraten-fork/sauerbraten-fork-data.git nightly
+  - cp -r bin_* nightly && cp sauerbraten_unix nightly && cp sauerbraten.bat nightly 
+  - VER="$TRAVIS_COMMIT-$TRAVIS_BUILD_ID"
+  - zip ${VER}.zip nightly
+  - "curl --ftp-create-dirs -T ${VER}.zip -u $FTP_USER:$FTP_PASSWORD ftps://37.59.98.138/nightly/"
