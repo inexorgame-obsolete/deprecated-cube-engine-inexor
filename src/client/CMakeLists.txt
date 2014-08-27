@@ -83,7 +83,7 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifiers/vectorfield
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/noop
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/point
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/box
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/cubic
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/field
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/sphere
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitters/satellite

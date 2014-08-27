@@ -404,7 +404,7 @@ struct ptest
 		pm_type_gravity_point->attributes["gravity"] = -30.0f;
 		particle_modifier_instance* pm_inst_gravity_point = pm_type_gravity_point->create_instance(vec(1024.0f, 1024.0f, 550.0f));
 
-		particle_emitter_type* pe_box_snow_type = ps.add_particle_emitter_type("box_emitter_9", "snow_9", mass, density, lifetime, rate, "box_emitter");
+		particle_emitter_type* pe_box_snow_type = ps.add_particle_emitter_type("cubic_emitter_9", "snow_9", mass, density, lifetime, rate, "cubic_emitter");
 		pe_box_snow_type->density = 600.0f;
 		particle_emitter_instance* pe_inst_box_snow = pe_box_snow_type->create_instance(vec(1024.0f, 1024.0f, 800.0f), vec(0.0f, 0.0f, -25.0f));
 		pe_inst_box_snow->add_modifier(pm_inst_velocity_transformation);
@@ -457,7 +457,7 @@ struct ptest
 		particle_modifier_type* pm_type_rolling = ps.add_particle_modifier_type("rolling_10", "rolling");
 		particle_modifier_instance* pm_inst_rolling = pm_type_rolling->create_instance();
 
-		particle_emitter_type* pe_type_box_grenade = ps.add_particle_emitter_type("box_grenade_emitter_10", "grendade_10", mass, density, lifetime, rate, "box_emitter");
+		particle_emitter_type* pe_type_box_grenade = ps.add_particle_emitter_type("box_grenade_emitter_10", "grendade_10", mass, density, lifetime, rate, "cubic_emitter");
 		pe_type_box_grenade->density = 600.0f;
 		particle_emitter_instance* pe_inst_box_grenade = pe_type_box_grenade->create_instance(vec(1024.0f, 1024.0f, 520.0f), vec(0.0f, 0.0f, 0.0f));
 		pe_inst_box_grenade->add_modifier(pm_inst_velocity_transformation);
@@ -466,7 +466,7 @@ struct ptest
 		pe_inst_box_grenade->add_modifier(pm_inst_geometry_collide);
 		pe_inst_box_grenade->add_modifier(pm_inst_rolling);
 
-		particle_emitter_type* pe_type_box_fog = ps.add_particle_emitter_type("box_fog_emitter_10", "smoke_10", mass_fog, density_fog, lifetime_fog, rate_fog, "box_emitter");
+		particle_emitter_type* pe_type_box_fog = ps.add_particle_emitter_type("box_fog_emitter_10", "smoke_10", mass_fog, density_fog, lifetime_fog, rate_fog, "cubic_emitter");
 		pe_type_box_fog->density = 600.0f;
 		particle_emitter_instance* pe_inst_box_fog = pe_type_box_fog->create_instance(vec(1024.0f, 1024.0f, 520.0f), vec(0.0f, 0.0f, -20.0f));
 		pe_inst_box_fog->add_modifier(pm_inst_velocity_transformation);
@@ -507,7 +507,7 @@ struct ptest
 		particle_modifier_type* pm_type_rolling = ps.add_particle_modifier_type("rolling_11", "rolling");
 		particle_modifier_instance* pm_inst_rolling = pm_type_rolling->create_instance();
 
-		particle_emitter_type* pe_type_box_grenade = ps.add_particle_emitter_type("box_grenade_emitter_11", "grendade_11", mass, density, lifetime, rate, "box_emitter");
+		particle_emitter_type* pe_type_box_grenade = ps.add_particle_emitter_type("box_grenade_emitter_11", "grendade_11", mass, density, lifetime, rate, "cubic_emitter");
 		pe_type_box_grenade->density = 600.0f;
 
 		particle_emitter_instance* pe_inst_box_grenade = pe_type_box_grenade->create_instance(vec(100.0f, 100.0f, 520.0f), vec(0.0f, 0.0f, 0.0f));
@@ -791,10 +791,12 @@ struct ptest
 		pi_inst_random_particle_type->particle_types.push_back(p_type_dust_2);
 		pi_inst_random_particle_type->particle_types.push_back(p_type_dust_3);
 
-		particle_emitter_type* pe_type_box_dust = ps.add_particle_emitter_type("dust_box_emitter_16", p_type_dust_1, mass, density, lifetime, rate, "box_emitter");
-		pe_type_box_dust->density = 512.0f;
+		particle_emitter_type* pe_type_box_dust = ps.add_particle_emitter_type("dust_cubic_emitter_16", p_type_dust_1, mass, density, lifetime, rate, "cubic_emitter");
+		pe_type_box_dust->attributes["size_x"] = 1024.0f;
+		pe_type_box_dust->attributes["size_y"] = 1025.0f;
+		pe_type_box_dust->attributes["size_z"] = 0.0f;
 
-		particle_emitter_instance* pe_inst_box_dust = pe_type_box_dust->create_instance(vec(512.0f, 512.0f, 514.0f), vec(0.0f, 0.0f, 0.0f));
+		particle_emitter_instance* pe_inst_box_dust = pe_type_box_dust->create_instance(vec(0.0f, 0.0f, 1024.0f), vec(0.0f, 0.0f, 0.0f));
 		pe_inst_box_dust->add_modifier(pm_inst_velocity_transformation);
 		pe_inst_box_dust->add_initializer(pi_inst_random_velocity);
 		pe_inst_box_dust->add_initializer(pi_inst_random_particle_type);

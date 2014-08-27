@@ -2,19 +2,19 @@
 #include "engine/particles/particles.h"
 
 /**
- * Singleton implementation of a box emitter.
+ * Singleton implementation of a cubic emitter.
  */
-struct box_emitter : public particle_emitter_implementation
+struct cubic_emitter : public particle_emitter_implementation
 {
 
 public:
 
-	static box_emitter& instance()
+	static cubic_emitter& instance()
 	{
-		static box_emitter _instance;
+		static cubic_emitter _instance;
 		return _instance;
 	}
-	virtual ~box_emitter() { }
+	virtual ~cubic_emitter() { }
 
 	/**
 	 * Emits particles from a single sphere (x,y,z).
@@ -35,18 +35,16 @@ public:
 			p_inst->pe_inst = pe_inst;
 			// get the particle type, mass and density from the emitter type
 			p_inst->p_type = pe_inst->p_type;
-
-			float rx = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-			float ry = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-			float rz = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-
-			p_inst->o.x = pe_inst->o.x + rx * pe_inst->density;
-			p_inst->o.y = pe_inst->o.y + ry * pe_inst->density;
-			p_inst->o.z = pe_inst->o.z + rz * pe_inst->density;
+			// random position
+			rx = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+			ry = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+			rz = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+			p_inst->o.x = pe_inst->o.x - pe_inst->attributes["size_x"] * (rx - 0.5f);
+			p_inst->o.y = pe_inst->o.y - pe_inst->attributes["size_y"] * (ry - 0.5f);
+			p_inst->o.z = pe_inst->o.z - pe_inst->attributes["size_z"] * (rz - 0.5f);
 
 			p_inst->vel = vec(pe_inst->vel);
 			p_inst->roll = 0;
-
 			p_inst->mass = pe_inst->mass;
 			p_inst->density = pe_inst->density;
 			// set the remaining iterations from the emitter type's lifetime
@@ -62,15 +60,21 @@ public:
 private:
 
 	particle_instance* last;
+	float rx;
+	float ry;
+	float rz;
 
-	box_emitter() : particle_emitter_implementation("box_emitter")
+	cubic_emitter() : particle_emitter_implementation("cubic_emitter")
 	{
 		ps.add_emitter_implementation(this);
 		last = NULL;
+		rx = 0.0f;
+		ry = 0.0f;
+		rz = 0.0f;
 	}
-	box_emitter( const box_emitter& );
-	box_emitter & operator = (const box_emitter &);
+	cubic_emitter( const cubic_emitter& );
+	cubic_emitter & operator = (const cubic_emitter &);
 
 };
 
-box_emitter& ps_emitter_box = box_emitter::instance();
+cubic_emitter& ps_emitter_cubic = cubic_emitter::instance();
