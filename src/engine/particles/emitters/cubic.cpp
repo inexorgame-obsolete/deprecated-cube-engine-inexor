@@ -39,9 +39,9 @@ public:
 			rx = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 			ry = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 			rz = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-			p_inst->o.x = pe_inst->o.x - pe_inst->attributes["size_x"] * (rx - 0.5f);
-			p_inst->o.y = pe_inst->o.y - pe_inst->attributes["size_y"] * (ry - 0.5f);
-			p_inst->o.z = pe_inst->o.z - pe_inst->attributes["size_z"] * (rz - 0.5f);
+			p_inst->o.x = pe_inst->o.x + pe_inst->attributes["size_x"] * (rx - 0.5f);
+			p_inst->o.y = pe_inst->o.y + pe_inst->attributes["size_y"] * (ry - 0.5f);
+			p_inst->o.z = pe_inst->o.z + pe_inst->attributes["size_z"] * (rz - 0.5f);
 
 			p_inst->vel = vec(pe_inst->vel);
 			p_inst->roll = 0;
