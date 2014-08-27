@@ -756,22 +756,16 @@ struct ptest
 		int lifetime = 3000;
 		int rate = 10;
 
-		particle_renderer_type* pr_type_dust = ps.add_particle_renderer_type("dust_renderer_16", "media/particle/dust01.png", "shader", vec4(255.0f, 0.0f, 0.0f, 0.2f), "billboard_renderer");
-		pr_type_dust->attributes["size"] = 45.0f;
+		particle_renderer_type* pr_type_base = ps.add_particle_renderer_type("base_renderer_16", "media/particle/base.png", "shader", vec4(255.0f, 0.0f, 255.0f, 0.4f), "billboard_renderer");
+		pr_type_base->attributes["size"] = 120.0f;
+		particle_renderer_instance* pr_inst_base_1 = pr_type_base->create_instance("base_16_1");
 
-		particle_renderer_instance* pr_inst_dust_1 = pr_type_dust->create_instance("dust_16_1");
-		pr_inst_dust_1->color = vec4(255.0f, 192.0f, 0.0f, 0.1f);
-		pr_inst_dust_1->texture = "media/particle/smalljunk01.png";
-		particle_renderer_instance* pr_inst_dust_2 = pr_type_dust->create_instance("dust_16_2");
-		pr_inst_dust_2->color = vec4(192.0f, 192.0f, 0.0f, 0.1f);
-		pr_inst_dust_2->texture = "media/particle/smalljunk02.png";
-		particle_renderer_instance* pr_inst_dust_3 = pr_type_dust->create_instance("dust_16_3");
-		pr_inst_dust_3->color = vec4(64.0f, 192.0f, 255.0f, 0.2f);
-		pr_inst_dust_3->texture = "media/particle/smalljunk03.png";
+		particle_renderer_type* pr_type_blob = ps.add_particle_renderer_type("blob_renderer_16", "media/particle/blob.png", "shader", vec4(0.0f, 255.0f, 0.0f, 0.4f), "billboard_renderer");
+		pr_type_blob->attributes["size"] = 60.0f;
+		particle_renderer_instance* pr_inst_blob_1 = pr_type_blob->create_instance("blob_16_1");
 
-		particle_type* p_type_dust_1 = ps.add_particle_type("dust_16_1", pr_inst_dust_1);
-		particle_type* p_type_dust_2 = ps.add_particle_type("dust_16_2", pr_inst_dust_2);
-		particle_type* p_type_dust_3 = ps.add_particle_type("dust_16_3", pr_inst_dust_3);
+		particle_type* p_type_base_1 = ps.add_particle_type("base_16_1", pr_inst_base_1);
+		particle_type* p_type_blob_1 = ps.add_particle_type("blob_16_1", pr_inst_blob_1);
 
 		particle_modifier_type* pm_type_velocity_transformation = ps.add_particle_modifier_type("velocity_transformation_16", "velocity_transformation");
 		particle_modifier_instance* pm_inst_velocity_transformation = pm_type_velocity_transformation->create_instance();
@@ -779,26 +773,25 @@ struct ptest
 		particle_modifier_instance* pm_inst_geometry_culling = pm_type_geometry_culling->create_instance();
 
 		particle_initializer_type* pi_type_random_velocity = ps.add_particle_initializer_type("random_velocity_16", "random_velocity");
-		pi_type_random_velocity->attributes["osx"] = 200.0f;
-		pi_type_random_velocity->attributes["osy"] = 200.0f;
+		pi_type_random_velocity->attributes["osx"] = 400.0f;
+		pi_type_random_velocity->attributes["osy"] = 100.0f;
 		pi_type_random_velocity->attributes["osz"] = 600.0f;
-		pi_type_random_velocity->attributes["isx"] = 100.0f;
-		pi_type_random_velocity->attributes["isy"] = 100.0f;
-		pi_type_random_velocity->attributes["isz"] = 200.0f;
+		pi_type_random_velocity->attributes["isx"] = 200.0f;
+		pi_type_random_velocity->attributes["isy"] = 50.0f;
+		pi_type_random_velocity->attributes["isz"] = 0.0f;
 		particle_initializer_instance* pi_inst_random_velocity = pi_type_random_velocity->create_instance();
 
 		particle_initializer_type* pi_type_random_particle_type = ps.add_particle_initializer_type("random_particle_type_16", "random_particle_type");
 		particle_initializer_instance* pi_inst_random_particle_type = pi_type_random_particle_type->create_instance();
-		pi_inst_random_particle_type->particle_types.push_back(p_type_dust_1);
-		pi_inst_random_particle_type->particle_types.push_back(p_type_dust_2);
-		pi_inst_random_particle_type->particle_types.push_back(p_type_dust_3);
+		pi_inst_random_particle_type->particle_types.push_back(p_type_base_1);
+		pi_inst_random_particle_type->particle_types.push_back(p_type_blob_1);
 
-		particle_emitter_type* pe_type_box_dust = ps.add_particle_emitter_type("dust_cubic_emitter_16", p_type_dust_1, mass, density, lifetime, rate, "cubic_emitter");
+		particle_emitter_type* pe_type_box_dust = ps.add_particle_emitter_type("dust_cubic_emitter_16", p_type_base_1, mass, density, lifetime, rate, "cubic_emitter");
 		pe_type_box_dust->attributes["size_x"] = 1024.0f;
 		pe_type_box_dust->attributes["size_y"] = 1024.0f;
-		pe_type_box_dust->attributes["size_z"] = 0.0f;
+		pe_type_box_dust->attributes["size_z"] = 1.0f;
 
-		particle_emitter_instance* pe_inst_box_dust = pe_type_box_dust->create_instance(vec(0.0f, 0.0f, 1536.0f), vec(0.0f, 0.0f, 0.0f));
+		particle_emitter_instance* pe_inst_box_dust = pe_type_box_dust->create_instance(vec(512.0f, 512.0f, 514.0f), vec(0.0f, 0.0f, 0.0f));
 		pe_inst_box_dust->add_modifier(pm_inst_velocity_transformation);
 		pe_inst_box_dust->add_initializer(pi_inst_random_velocity);
 		pe_inst_box_dust->add_initializer(pi_inst_random_particle_type);
