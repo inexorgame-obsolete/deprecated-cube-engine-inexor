@@ -490,6 +490,11 @@ struct ptest
 		pr_inst_grenade->offset = vec(0.0f, 0.0f, 2.0f);
 		particle_type* p_type_grendade = ps.add_particle_type("grendade_11", "grendade_11");
 
+		particle_renderer_type* pr_type_sparkle = ps.add_particle_renderer_type("sparkle_renderer_11", "media/particle/flash01.png", "shader", vec4(0.0f, 128.0f, 196.0f, 0.3f), "billboard_renderer");
+		pr_type_sparkle->attributes["size"] = 20.0f;
+		particle_renderer_instance* pr_inst_sparkle = pr_type_sparkle->create_instance("sparkle_11");
+		particle_type* p_type_sparkle = ps.add_particle_type("sparkle_11", pr_inst_sparkle);
+
 		particle_modifier_type* pm_type_velocity_transformation = ps.add_particle_modifier_type("velocity_transformation", "velocity_transformation");
 		particle_modifier_instance* pm_inst_velocity_transformation = pm_type_velocity_transformation->create_instance();
 
@@ -507,6 +512,18 @@ struct ptest
 		particle_modifier_type* pm_type_rolling = ps.add_particle_modifier_type("rolling_11", "rolling");
 		particle_modifier_instance* pm_inst_rolling = pm_type_rolling->create_instance();
 
+		particle_modifier_type* pm_type_sub_emitter = ps.add_particle_modifier_type("sub_emitter_11", "sub_emitter");
+		particle_modifier_instance* pm_inst_sub_emitter = pm_type_sub_emitter->create_instance();
+
+		particle_initializer_type* pi_type_random_velocity_sub = ps.add_particle_initializer_type("random_velocity_17_sub", "random_velocity");
+		pi_type_random_velocity_sub->attributes["osx"] = 100.0f;
+		pi_type_random_velocity_sub->attributes["osy"] = 100.0f;
+		pi_type_random_velocity_sub->attributes["osz"] = 100.0f;
+		pi_type_random_velocity_sub->attributes["isx"] = 0.0f;
+		pi_type_random_velocity_sub->attributes["isy"] = 0.0f;
+		pi_type_random_velocity_sub->attributes["isz"] = 0.0f;
+		particle_initializer_instance* pi_inst_random_velocity_sub = pi_type_random_velocity_sub->create_instance();
+
 		particle_emitter_type* pe_type_box_grenade = ps.add_particle_emitter_type("box_grenade_emitter_11", "grendade_11", mass, density, lifetime, rate, "cubic_emitter");
 		pe_type_box_grenade->attributes["size_x"] = 1024.0f;
 		pe_type_box_grenade->attributes["size_y"] = 1024.0f;
@@ -518,6 +535,15 @@ struct ptest
 		pe_inst_box_grenade->add_modifier(pm_inst_simple_gravity);
 		pe_inst_box_grenade->add_modifier(pm_inst_geometry_collide);
 		pe_inst_box_grenade->add_modifier(pm_inst_rolling);
+		pe_inst_box_grenade->add_modifier(pm_inst_sub_emitter);
+
+		particle_emitter_type* pe_type_point_sub_sparkle = ps.add_particle_emitter_type("sub_sparkle_point_emitter_11", p_type_sparkle, mass, density, 200, 30, "point_emitter");
+		particle_emitter_instance* pe_inst_point_sub_sparkle = pe_type_point_sub_sparkle->create_instance(vec(512.0f, 512.0f, 514.0f), vec(0.0f, 0.0f, 0.0f));
+		pe_inst_point_sub_sparkle->add_modifier(pm_inst_velocity_transformation);
+		pe_inst_point_sub_sparkle->add_initializer(pi_inst_random_velocity_sub);
+
+		pm_inst_sub_emitter->pointers["sub_emitter"] = pe_inst_point_sub_sparkle;
+
     }
 
 	void setup12()
