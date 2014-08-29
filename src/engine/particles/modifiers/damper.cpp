@@ -22,14 +22,14 @@ public:
 	 */
 	inline void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime) {
 		time_factor = elapsedtime / ps.particle_frame;
-		// damper = pm_inst->attributes["damper"];
-		// p_inst->vel.x *= (1.0f - damper * time_factor);
-		// p_inst->vel.y *= (1.0f - damper * time_factor);
-		// p_inst->vel.z *= (1.0f - damper * time_factor);
+		damper = pm_inst->attributes["damper"];
+		p_inst->vel.x *= (1.0f - damper * time_factor);
+		p_inst->vel.y *= (1.0f - damper * time_factor);
+		p_inst->vel.z *= (1.0f - damper * time_factor);
 		// Use the modifier vec3
-		p_inst->vel.x *= (1.0f - pm_inst->o.x * time_factor);
-		p_inst->vel.y *= (1.0f - pm_inst->o.y * time_factor);
-		p_inst->vel.z *= (1.0f - pm_inst->o.z * time_factor);
+		// p_inst->vel.x *= (1.0f - pm_inst->o.x * time_factor);
+		// p_inst->vel.y *= (1.0f - pm_inst->o.y * time_factor);
+		// p_inst->vel.z *= (1.0f - pm_inst->o.z * time_factor);
 	}
 
 	inline void modify(particle_modifier_instance *pm_inst, int elapsedtime) { }

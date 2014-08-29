@@ -47,8 +47,6 @@ public:
 		}
 	}
 
-//	inline void init(particle_instance *p_inst) { }
-
 private:
 
 	float time_factor;

@@ -313,6 +313,11 @@ struct particle_initializer_instance
 	 */
 	std::map<std::string, float> attributes;
 
+	/**
+	 * Generic pointers per modifier instance.
+	 */
+	std::map<std::string, void*> pointers;
+
 	// The following lists allows the initializers to make more complex
 	// initializations that an emitter would be able. For example, choose
 	// the particle_type by rules.
@@ -584,6 +589,11 @@ struct particle_modifier_type : public particle_type_base
 	particle_modifier_implementation *pm_impl;
 
 	/**
+	 * Generic pointers per type.
+	 */
+	std::map<std::string, void*> pointers;
+
+	/**
 	 * Creates an particle modifier instance of this type.
 	 */
 	particle_modifier_instance* create_instance();
@@ -592,11 +602,6 @@ struct particle_modifier_type : public particle_type_base
 	 * Creates an particle modifier instance of this type.
 	 */
 	particle_modifier_instance* create_instance(const vec &o);
-
-	/**
-	 * Generic pointers per type.
-	 */
-	std::map<std::string, void*> pointers;
 
 };
 
@@ -610,6 +615,11 @@ struct particle_initializer_type : public particle_type_base
 	 * The implementation.
 	 */
 	particle_initializer_implementation *pi_impl;
+
+	/**
+	 * Generic pointers per type.
+	 */
+	std::map<std::string, void*> pointers;
 
 	/**
 	 * Creates an particle initializer instance of this type.
@@ -763,6 +773,9 @@ struct particle_system
 
 	// Name to instance mappings
 	std::map<std::string, particle_renderer_instance*> particle_renderer_instances_map;
+
+	// The spring transformation rules
+	std::map<std::string, ivec> spring_transformation_rules;
 
 	// Use pools for performance reasons
 	std::list<particle_instance*> alive_pool;

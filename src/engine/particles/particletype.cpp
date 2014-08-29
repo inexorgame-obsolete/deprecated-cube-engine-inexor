@@ -1,12 +1,6 @@
 #include "cube.h"
 #include "particles.h"
 
-/*
-// abstract definitions - makes everything dynamic
-std::vector<particle_type*> particle_types;
-std::map<std::string, particle_type*> particle_types_map;
-*/
-
 particle_type* particle_system::add_particle_type(std::string name, std::string renderer)
 {
 	return add_particle_type(name, particle_renderer_instances_map[renderer]);

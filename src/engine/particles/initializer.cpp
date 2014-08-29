@@ -26,6 +26,7 @@ particle_initializer_instance* particle_initializer_type::create_instance()
 	particle_initializer_instance* pi_inst = new particle_initializer_instance;
 	pi_inst->pi_type = this;
 	pi_inst->attributes.insert(attributes.begin(), attributes.end());
+	pi_inst->pointers.insert(pointers.begin(), pointers.end());
 
 	ps.particle_initializer_instances.push_back(pi_inst);
 	ps.count_particle_initializer_instances++;
