@@ -666,6 +666,33 @@ struct spring_instance
 
 };
 
+struct spring_builder
+{
+	std::vector<std::string> *rules;
+	spring_builder* stretch_x();
+	spring_builder* stretch_y();
+	spring_builder* stretch_z();
+	spring_builder* stretch_xy();
+	spring_builder* stretch_xz();
+	spring_builder* stretch_yz();
+	spring_builder* stretch_xyz();
+	spring_builder* sheer_xy();
+	spring_builder* sheer_xz();
+	spring_builder* sheer_yz();
+	spring_builder* sheer_xyz();
+	spring_builder* bend_x();
+	spring_builder* bend_y();
+	spring_builder* bend_z();
+	spring_builder* bend_xy();
+	spring_builder* bend_xz();
+	spring_builder* bend_yz();
+	spring_builder* bend_xyz();
+	std::vector<std::string>* get();
+
+	spring_builder();
+	~spring_builder();
+};
+
 /**
  * Worker thread container for calculate particle physics in it's own thread.
  */
@@ -775,7 +802,7 @@ struct particle_system
 	std::map<std::string, particle_renderer_instance*> particle_renderer_instances_map;
 
 	// The spring transformation rules
-	std::map<std::string, ivec> spring_transformation_rules;
+	std::map<std::string, ivec> spring_construction_rules;
 
 	// Use pools for performance reasons
 	std::list<particle_instance*> alive_pool;
@@ -852,6 +879,10 @@ struct particle_system
 	void remove_all_particle_initializer_instances();
 
 	void add_spring(spring_instance *spring_inst);
+	void add_spring_construction_rule(std::string name, ivec rule);
+	void add_spring_construction_rule(std::string name, int x, int y, int z);
+	void init_spring_construction_rules();
+
 	void add_emitter_implementation(particle_emitter_implementation *pe_impl);
 	void add_modifier_implementation(particle_modifier_implementation *pm_impl);
 	void add_renderer_implementation(particle_renderer_implementation *pr_impl);

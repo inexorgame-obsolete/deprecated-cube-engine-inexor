@@ -42,6 +42,7 @@ particle_system::particle_system()
 	noop_modifier_inst = 0;
 	noop_renderer_inst = 0;
 	noop_initializer_inst = 0;
+	init_spring_construction_rules();
 }
 
 particle_system::~particle_system()
@@ -174,12 +175,6 @@ void particle_system::update_particle_pools(int elapsedtime)
 			count_alive_pool--;
 		}
 	}
-}
-
-void particle_system::add_spring(spring_instance *spring_inst)
-{
-	spring_instances.push_back(spring_inst);
-	count_spring_instances++;
 }
 
 void particle_system::add_emitter_implementation(particle_emitter_implementation *pe_impl)
