@@ -8,6 +8,7 @@
 #include <list>
 #include <deque>
 #include <iterator>
+#include "../entities/entities.h"
 #include "mu/muParser.h"
 
 struct particle_type;
@@ -36,7 +37,7 @@ struct noop_initializer;
  * A particle emitter instance is an instance of a particle emitter
  * type.
  */
-struct particle_emitter_instance
+struct particle_emitter_instance : public entity_instance
 {
 
 	/**
@@ -110,11 +111,6 @@ struct particle_emitter_instance
 	std::vector<particle_initializer_instance*> initializers;
 
 	/**
-	 * Extra attributes per emitter instance.
-	 */
-	std::map<std::string, float> attributes;
-
-	/**
 	 * Adds a modifier instance
 	 */
 	void add_modifier(particle_modifier_instance* pm_inst);
@@ -129,7 +125,7 @@ struct particle_emitter_instance
 /**
  * A particle instance.
  */
-struct particle_instance
+struct particle_instance : public entity_instance
 {
 	/*** Non-mutable states ***/
 
@@ -185,6 +181,9 @@ struct particle_instance
      */
     int elapsed;
 
+    /**
+     * The time elapsed in the previous iteration.
+     */
     int last_elapsed;
 
     /**
@@ -199,23 +198,13 @@ struct particle_instance
      */
     float density;
 
-    /*** Optional states; mutable ***/
-
-    /**
-     * An unlimited number of additional attributes. These might not as
-     * performant as the attributes above because of the additional
-     * hashtable lookup. But it allows maximum flexibility for emitters,
-     * modifiers and renderers.
-     */
-	std::map<std::string, float> attributes;
-
 };
 
 /**
  * A particle renderer instance.
  * Different rendering of particles bound on a single particle.
  */
-struct particle_renderer_instance
+struct particle_renderer_instance : public entity_instance
 {
 	/**
 	 * The name of the renderer instance.
@@ -248,11 +237,6 @@ struct particle_renderer_instance
 	particle_renderer_type *pr_type;
 
 	/**
-	 * Extra attributes per renderer instance.
-	 */
-	std::map<std::string, float> attributes;
-
-	/**
 	 * The particle instances to render.
 	 */
 	std::list<particle_instance*> particles;
@@ -262,7 +246,7 @@ struct particle_renderer_instance
 /**
  * Particle modifiers are altering the state of a particle (for example the position).
  */
-struct particle_modifier_instance
+struct particle_modifier_instance : public entity_instance
 {
 
 	/**
@@ -286,11 +270,6 @@ struct particle_modifier_instance
 	extentity *ent;
 
 	/**
-	 * Extra attributes per modifier instance.
-	 */
-	std::map<std::string, float> attributes;
-
-	/**
 	 * Generic pointers per modifier instance.
 	 */
 	std::map<std::string, void*> pointers;
@@ -300,18 +279,13 @@ struct particle_modifier_instance
 /**
  * Particle initializers are initializing the state of a particle.
  */
-struct particle_initializer_instance
+struct particle_initializer_instance : public entity_instance
 {
 
 	/**
 	 * The initializer type.
 	 */
 	particle_initializer_type *pi_type;
-
-	/**
-	 * Extra attributes per modifier instance.
-	 */
-	std::map<std::string, float> attributes;
 
 	/**
 	 * Generic pointers per modifier instance.
@@ -457,25 +431,10 @@ struct particle_initializer_implementation : public particle_implementation_base
 
 };
 
-struct particle_type_base
-{
-
-	/**
-	 * The name of the particle type.
-	 */
-	std::string name;
-
-	/**
-	 * Type attributes.
-	 */
-	std::map<std::string, float> attributes;
-
-};
-
 /**
  * A particle type.
  */
-struct particle_type : public particle_type_base
+struct particle_type : public entity_type
 {
 
 	/**
@@ -489,7 +448,7 @@ struct particle_type : public particle_type_base
  * A particle emitter type. Notice that the actual implementation of
  * an particle emitter type needs to be bind using a function pointer.
  */
-struct particle_emitter_type : public particle_type_base
+struct particle_emitter_type : public entity_type
 {
 
 	/**
@@ -547,7 +506,7 @@ struct particle_emitter_type : public particle_type_base
 /**
  * A particle renderer type.
  */
-struct particle_renderer_type : public particle_type_base
+struct particle_renderer_type : public entity_type
 {
 
 	/**
@@ -580,7 +539,7 @@ struct particle_renderer_type : public particle_type_base
 /**
  * A particle modifier type.
  */
-struct particle_modifier_type : public particle_type_base
+struct particle_modifier_type : public entity_type
 {
 
 	/**
@@ -608,7 +567,7 @@ struct particle_modifier_type : public particle_type_base
 /**
  * A particle initializer type.
  */
-struct particle_initializer_type : public particle_type_base
+struct particle_initializer_type : public entity_type
 {
 
 	/**
