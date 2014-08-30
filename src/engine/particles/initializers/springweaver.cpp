@@ -3,7 +3,7 @@
 
 /**
  * Spring weaver:
- * 1. Raster with distances: size_x, size_y
+ * 1. Raster with distances: size_x, size_y, size_z
  * 2.
  */
 struct spring_weaver : public particle_initializer_implementation
@@ -24,18 +24,34 @@ public:
 		spring_friction = pi_inst->attributes["spring_friction"];
 		spring_length_x = pi_inst->attributes["spring_length_x"];
 		spring_length_y = pi_inst->attributes["spring_length_y"];
+		spring_length_z = pi_inst->attributes["spring_length_z"];
 		size_x = (int) pi_inst->attributes["size_x"];
 		size_y = (int) pi_inst->attributes["size_y"];
+		size_z = (int) pi_inst->attributes["size_z"];
 
-		// init matrix [size_x X size_y]
-		std::vector<std::vector<particle_instance *> > matrix(size_x);
-		for (int i = 0; i < size_x; i++) matrix[i].resize(size_y);
+		// init matrix [size_x, size_y, size_z]
+		std::vector<std::vector<std::vector<particle_instance *> > > matrix(size_x);
+		for (int x = 0; x < size_x; x++)
+		{
+			matrix[x].resize(size_y);
+			for (int y = 0; y < size_y; y++) matrix[x][y].resize(size_z);
+		}
 
-		// fill matrix with particle instances from list
+		// transform 1D list of particles into a 3D matrix
 		int p = 0;
+		int x = 0;
+		int y = 0;
+		int z = 0;
 		for(std::list<particle_instance*>::iterator p_it = particles.begin(); p_it != particles.end(); ++p_it)
 		{
-			matrix[p / size_x][p % size_x] = (*p_it);
+			// 2D
+			// matrix[p / size_x][p % size_x] = (*p_it);
+			// p++;
+			// 3D
+			z = p / (size_x * size_y);
+			y = (p % (size_x * size_y)) / size_x;
+			x = p - y * size_x - z * size_x * size_y;
+			matrix[x][y][z] = (*p_it);
 			p++;
 		}
 
@@ -45,32 +61,30 @@ public:
 		{
 			for (int y = 0; y < size_y; y++)
 			{
-				for (std::vector<std::string>::iterator it = rules->begin() ; it != rules->end(); ++it)
+				for (int z = 0; z < size_z; z++)
 				{
-					ivec spring_transformation_rule = ps.spring_transformation_rules[(*it)];
-					int sx = x + spring_transformation_rule.x;
-					int sy = y + spring_transformation_rule.y;
-					if (sx >= 0 && sx < size_x && sy >= 0 && sy < size_y)
+					for (std::vector<std::string>::iterator it = rules->begin() ; it != rules->end(); ++it)
 					{
-						float slx = spring_length_x * (float) spring_transformation_rule.x;
-						float sly = spring_length_y * (float) spring_transformation_rule.y;
-						spring_length = sqrt((slx * slx) + (sly * sly));
-						// conoutf("x:%d y:%d | sx:%d sy:%d | len:%2.2f", x, y, sx, sy, spring_length);
-						create_spring(matrix[x][y], matrix[sx][sy], spring_constant, spring_friction, spring_length);
+						ivec spring_transformation_rule = ps.spring_transformation_rules[(*it)];
+						ivec t = ivec(x, y, z).add(spring_transformation_rule);
+						/*
+						int sx = x + spring_transformation_rule.x;
+						int sy = y + spring_transformation_rule.y;
+						int sz = z + spring_transformation_rule.z;
+						*/
+						if (t.x >= 0 && t.x < size_x && t.y >= 0 && t.y < size_y && t.z >= 0 && t.z < size_z)
+						{
+							float slx = spring_length_x * (float) spring_transformation_rule.x;
+							float sly = spring_length_y * (float) spring_transformation_rule.y;
+							float slz = spring_length_z * (float) spring_transformation_rule.z;
+							spring_length = sqrt((slx * slx) + (sly * sly) + (slz * slz));
+							// conoutf("x:%d y:%d | sx:%d sy:%d | len:%2.2f", x, y, sx, sy, spring_length);
+							create_spring(matrix[x][y][z], matrix[t.x][t.y][t.z], spring_constant, spring_friction, spring_length);
+						}
 					}
 				}
 			}
 		}
-
-		// stretch
-		//   x+1,y,z,lx
-		//   x,y+1,z,ly
-		// sheer
-		//   x+1,y+1,z,sqrt((lx*lx)+(ly*ly))
-		//   x-1,y+1,z,sqrt((lx*lx)+(ly*ly))
-		// bend
-		//   x+2,y,z,lx*2
-		//   x,y+2,z,ly*2
 	}
 
 	void create_spring(particle_instance *p1, particle_instance *p2, float spring_constant, float spring_friction, float spring_length)
@@ -93,12 +107,12 @@ private:
 	float spring_constant;
 	float spring_friction;
 	float spring_length;
-	float satellite_mass_factor;
-	float satellite_density_factor;
 	int size_x;
 	int size_y;
+	int size_z;
 	int spring_length_x;
 	int spring_length_y;
+	int spring_length_z;
 
 	spring_weaver() : particle_initializer_implementation("spring_weaver") {
 		ps.add_initializer_implementation(this);
@@ -106,12 +120,12 @@ private:
 		spring_constant = 0.1f;
 		spring_friction = 0.95f;
 		spring_length = 10.0f;
-		satellite_mass_factor = 0.1f;
-		satellite_density_factor = 0.1f;
 		size_x = 0;
 		size_y = 0;
+		size_z = 0;
 		spring_length_x = 0.0f;
 		spring_length_y = 0.0f;
+		spring_length_z = 0.0f;
 	}
 	spring_weaver( const spring_weaver& );
 	spring_weaver & operator = (const spring_weaver &);
