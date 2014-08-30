@@ -55,6 +55,7 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/glare
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/blob
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/osd
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entities/entities
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/particles
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/springs
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitter

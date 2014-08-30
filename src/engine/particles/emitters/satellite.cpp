@@ -23,7 +23,7 @@ public:
 	 */
 	inline std::list<particle_instance*> emit(particle_emitter_instance *pe_inst, int elapsedtime)
 	{
-		particle_emitter_type* pe_type = pe_inst->pe_type;
+		particle_emitter_type* pe_type = pe_inst->type;
 		pe_inst->millistoprocess += elapsedtime;
 		int particlestoemit = pe_inst->millistoprocess / pe_type->rate;
 		pe_inst->millistoprocess = pe_inst->millistoprocess % pe_type->rate;
@@ -37,7 +37,7 @@ public:
 			// set the origin emitter
 			p_inst->pe_inst = pe_inst;
 			// get the particle type, mass and density from the emitter type
-			p_inst->p_type = ps.particle_types_map["primary"];
+			p_inst->type = ps.particle_types_map["primary"];
 			// conoutf("x:%3.1f y:%3.1f z:%3.1f", pe_inst->o.x, pe_inst->o.y, pe_inst->o.z);
 			p_inst->o.x = pe_inst->o.x;
 			p_inst->o.y = pe_inst->o.y;
@@ -58,7 +58,7 @@ public:
 			{
 				particle_instance *p_inst_s = ps.emit_particle();
 				p_inst_s->pe_inst = pe_inst;
-				p_inst_s->p_type = pe_inst->p_type;
+				p_inst_s->type = pe_inst->p_type;
 				float rx = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 				float ry = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 				float rz = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);

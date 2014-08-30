@@ -24,7 +24,7 @@ public:
 		{
 			pt_it = pi_inst->particle_types.begin();
 			std::advance(pt_it, rnd(i));
-			(*p_it)->p_type = (*pt_it);
+			(*p_it)->type = (*pt_it);
 		}
 	}
 

@@ -24,7 +24,7 @@ particle_initializer_type* particle_system::add_particle_initializer_type(std::s
 particle_initializer_instance* particle_initializer_type::create_instance()
 {
 	particle_initializer_instance* pi_inst = new particle_initializer_instance;
-	pi_inst->pi_type = this;
+	pi_inst->type = this;
 	pi_inst->attributes.insert(attributes.begin(), attributes.end());
 	pi_inst->pointers.insert(pointers.begin(), pointers.end());
 

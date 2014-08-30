@@ -30,20 +30,20 @@ void particle_system::render_particles()
 			int started = SDL_GetTicks();
 			for(std::vector<particle_renderer_instance*>::iterator pr_it = particle_renderer_instances.begin(); pr_it != particle_renderer_instances.end(); ++pr_it)
 			{
-				(*pr_it)->pr_type->pr_impl->before(*pr_it);
+				(*pr_it)->type->pr_impl->before(*pr_it);
 
 				std::list<particle_instance*>::iterator p_it = (*pr_it)->particles.begin();
 				while (p_it != (*pr_it)->particles.end())
 				{
 					if ((*p_it)->remaining > 0)
 					{
-						(*pr_it)->pr_type->pr_impl->render(*pr_it, *p_it);
+						(*pr_it)->type->pr_impl->render(*pr_it, *p_it);
 						++p_it;
 					} else {
 						p_it = (*pr_it)->particles.erase(p_it);
 					}
 				}
-				(*pr_it)->pr_type->pr_impl->after(*pr_it);
+				(*pr_it)->type->pr_impl->after(*pr_it);
 			}
 			timer_renderer = SDL_GetTicks() - started;
 		} catch (int e) {
@@ -80,7 +80,7 @@ particle_renderer_instance* particle_renderer_type::create_instance(std::string 
 	pr_inst->texture = texture;
 	pr_inst->shader = shader;
 	pr_inst->color = color;
-	pr_inst->pr_type = this;
+	pr_inst->type = this;
 	pr_inst->offset = vec(0.0f, 0.0f, 0.0f);
 	pr_inst->attributes.insert(attributes.begin(), attributes.end());
 	ps.particle_renderer_instances.push_back(pr_inst);

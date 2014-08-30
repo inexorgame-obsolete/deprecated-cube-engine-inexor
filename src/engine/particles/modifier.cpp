@@ -15,14 +15,14 @@ void particle_system::modify_particles(int elapsedtime)
 		// Called for each modifier instances.
 		for(std::vector<particle_modifier_instance*>::iterator pm_it = particle_modifier_instances.begin(); pm_it != particle_modifier_instances.end(); ++pm_it)
 		{
-			(*pm_it)->pm_type->pm_impl->modify(*pm_it, elapsedtime);
+			(*pm_it)->type->pm_impl->modify(*pm_it, elapsedtime);
 		}
 		// Called for each particle instance and their modifier instances.
 		for(std::list<particle_instance*>::iterator p_it = alive_pool.begin(); p_it != alive_pool.end(); ++p_it)
 		{
 			for(std::vector<particle_modifier_instance*>::iterator pm_it = (*p_it)->pe_inst->modifiers.begin(); pm_it != (*p_it)->pe_inst->modifiers.end(); ++pm_it)
 			{
-				(*pm_it)->pm_type->pm_impl->modify(*pm_it, *p_it, elapsedtime);
+				(*pm_it)->type->pm_impl->modify(*pm_it, *p_it, elapsedtime);
 			}
 		}
 		timer_modifier = SDL_GetTicks() - started;
@@ -61,7 +61,7 @@ particle_modifier_instance* particle_modifier_type::create_instance() {
 
 particle_modifier_instance* particle_modifier_type::create_instance(const vec &o) {
 	particle_modifier_instance* pm_inst = new particle_modifier_instance;
-	pm_inst->pm_type = this;
+	pm_inst->type = this;
 	pm_inst->o = o;
 	pm_inst->attributes.insert(attributes.begin(), attributes.end());
 	pm_inst->pointers.insert(pointers.begin(), pointers.end());

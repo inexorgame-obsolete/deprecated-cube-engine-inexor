@@ -29,7 +29,7 @@ public:
 			// set the origin emitter
 			p_inst->pe_inst = pe_inst;
 			// get the particle type, mass and density from the emitter type
-			p_inst->p_type = pe_inst->p_type;
+			p_inst->type = pe_inst->p_type;
 			// conoutf("x:%3.1f y:%3.1f z:%3.1f", pe_inst->o.x, pe_inst->o.y, pe_inst->o.z);
 			p_inst->o = vec(pe_inst->o);
 

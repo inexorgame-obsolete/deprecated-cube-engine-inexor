@@ -37,13 +37,13 @@ struct noop_initializer;
  * A particle emitter instance is an instance of a particle emitter
  * type.
  */
-struct particle_emitter_instance : public entity_instance
+struct particle_emitter_instance : public entity_instance<particle_emitter_type>
 {
 
 	/**
 	 * The emitter type.
 	 */
-	particle_emitter_type *pe_type;
+	// particle_emitter_type *pe_type;
 
 	/**
 	 * The particle type of an emitted particle instance.
@@ -125,7 +125,7 @@ struct particle_emitter_instance : public entity_instance
 /**
  * A particle instance.
  */
-struct particle_instance : public entity_instance
+struct particle_instance : public entity_instance<particle_type>
 {
 	/*** Non-mutable states ***/
 
@@ -134,7 +134,7 @@ struct particle_instance : public entity_instance
 	 * belonging to this particle instance is defined in the particle
 	 * type definition.
 	 */
-	particle_type *p_type;
+	// particle_type *p_type;
 
 	/**
 	 * Reference to the origin particle emitter. Therefore we can
@@ -204,7 +204,7 @@ struct particle_instance : public entity_instance
  * A particle renderer instance.
  * Different rendering of particles bound on a single particle.
  */
-struct particle_renderer_instance : public entity_instance
+struct particle_renderer_instance : public entity_instance<particle_renderer_type>
 {
 	/**
 	 * The name of the renderer instance.
@@ -234,7 +234,7 @@ struct particle_renderer_instance : public entity_instance
 	/**
 	 * The particle renderer type.
 	 */
-	particle_renderer_type *pr_type;
+	// particle_renderer_type *pr_type;
 
 	/**
 	 * The particle instances to render.
@@ -246,13 +246,13 @@ struct particle_renderer_instance : public entity_instance
 /**
  * Particle modifiers are altering the state of a particle (for example the position).
  */
-struct particle_modifier_instance : public entity_instance
+struct particle_modifier_instance : public entity_instance<particle_modifier_type>
 {
 
 	/**
 	 * The modifier type.
 	 */
-	particle_modifier_type *pm_type;
+	// particle_modifier_type *pm_type;
 
 	/**
 	 * The current position of the particle modifier instance (if any).
@@ -279,13 +279,13 @@ struct particle_modifier_instance : public entity_instance
 /**
  * Particle initializers are initializing the state of a particle.
  */
-struct particle_initializer_instance : public entity_instance
+struct particle_initializer_instance : public entity_instance<particle_initializer_type>
 {
 
 	/**
 	 * The initializer type.
 	 */
-	particle_initializer_type *pi_type;
+	// particle_initializer_type *pi_type;
 
 	/**
 	 * Generic pointers per modifier instance.

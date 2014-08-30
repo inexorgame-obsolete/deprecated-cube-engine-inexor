@@ -15,14 +15,43 @@ struct entity_type
 {
 
 	/**
-	 * The name of the particle type.
+	 * The name of the entity type.
 	 */
 	std::string name;
 
 	/**
-	 * Type attributes.
+	 * Entity type attributes.
 	 */
 	std::map<std::string, float> attributes;
+
+};
+
+/**
+ * An instance of an entity type.
+ */
+template<class ENTITY_TYPE>
+struct entity_instance
+{
+
+	/**
+	 * The entity type.
+	 */
+	ENTITY_TYPE *type;
+
+	/**
+	 * Entity instance attributes.
+	 */
+	std::map<std::string, float> attributes;
+
+	/**
+	 * Returns the list of parent entity instances.
+	 */
+	std::list<entity_instance*> get_parents();
+
+	/**
+	 * Returns the list of child entity instances.
+	 */
+	std::list<entity_instance*> get_childs();
 
 };
 
@@ -45,34 +74,6 @@ struct entity_relationship_type
 };
 
 /**
- * An instance of an entity type.
- */
-struct entity_instance
-{
-
-	/**
-	 * The entity type.
-	 */
-	entity_type *e_type;
-
-	/**
-	 * Attributes per entity instance.
-	 */
-	std::map<std::string, float> attributes;
-
-	/**
-	 * Returns the list of parent entity instances.
-	 */
-	std::list<entity_instance*> get_parents();
-
-	/**
-	 * Returns the list of child entity instances.
-	 */
-	std::list<entity_instance*> get_childs();
-
-};
-
-/**
  * Relationship between to entity instances.
  */
 struct entity_relationship_instance
@@ -86,16 +87,17 @@ struct entity_relationship_instance
 	/**
 	 * The start node.
 	 */
-	entity_instance* parent;
+	// entity_instance* parent;
 
 	/**
 	 * The end node.
 	 */
-	entity_instance* child;
+	// entity_instance* child;
 
 };
 
-struct positional_entity_instance : public entity_instance
+template<class ENTITY_TYPE>
+struct positional_entity_instance : public entity_instance<ENTITY_TYPE>
 {
 
 	/**
@@ -118,15 +120,15 @@ struct positional_entity_instance : public entity_instance
 struct entity_system
 {
 
-	entity_instance* create_entity();
+	// entity_instance* create_entity();
 
-	void remove_entity(entity_instance* entity);
+	// void remove_entity(entity_instance* entity);
 
-	entity_relationship_instance* create_relationship(entity_relationship_type* er_type, entity_instance *e_inst1, entity_instance *e_inst2);
+	// entity_relationship_instance* create_relationship(entity_relationship_type* er_type, entity_instance *e_inst1, entity_instance *e_inst2);
 
-	void remove_relationship(entity_relationship_type* er_type, entity_instance *e_inst1, entity_instance *e_inst2);
+	// void remove_relationship(entity_relationship_type* er_type, entity_instance *e_inst1, entity_instance *e_inst2);
 
-	std::list<entity_instance *> get_entities_by_type(entity_type *e_type);
+	// std::list<entity_instance *> get_entities_by_type(entity_type *e_type);
 
 };
 

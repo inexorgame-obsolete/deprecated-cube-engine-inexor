@@ -26,7 +26,7 @@ public:
 			// don't set the origin emitter
 			trace->pe_inst = ps.noop_emitter_inst;
 			// get the particle type, mass and density from the emitter type
-			trace->p_type = p_inst->p_type;
+			trace->type = p_inst->type;
 			trace->o = vec(p_inst->o);
 			trace->vel = vec(0.0f, 0.0f, 0.0f);
 			trace->roll = p_inst->roll;
@@ -39,7 +39,7 @@ public:
 			ps.alive_pool.push_back(trace);
 			ps.count_alive_pool++;
 			// add particle instance to it's renderer (this time we have to do it by ourself, because we are in a modifier)
-			trace->p_type->pr_inst->particles.push_back(trace);
+			trace->type->pr_inst->particles.push_back(trace);
 		}
 	}
 

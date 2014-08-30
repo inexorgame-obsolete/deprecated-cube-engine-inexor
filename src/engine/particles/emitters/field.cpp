@@ -51,7 +51,7 @@ public:
 						// set the origin emitter
 						p_inst->pe_inst = pe_inst;
 						// get the particle type, mass and density from the emitter type
-						p_inst->p_type = pe_inst->p_type;
+						p_inst->type = pe_inst->p_type;
 						p_inst->o.x = ox + dx;
 						p_inst->o.y = oy + dy;
 						p_inst->o.z = oz + dz;
