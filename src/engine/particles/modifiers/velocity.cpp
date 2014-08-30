@@ -2,7 +2,7 @@
 #include "engine/particles/particles.h"
 
 /**
- * Singleton implementation of the velocity transformation.
+ * Forward euler integration.
  */
 struct velocity_transformation : public particle_modifier_implementation
 {
