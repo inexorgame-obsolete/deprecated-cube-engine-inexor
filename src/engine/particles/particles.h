@@ -34,16 +34,84 @@ struct noop_modifier;
 struct noop_initializer;
 
 /**
+ * The actual particle instance is of a particle type.
+ */
+struct particle_instance : public entity_instance<particle_type>
+{
+	/*** Non-mutable states ***/
+
+	/**
+	 * Reference to the origin particle emitter. Therefore we can
+	 * restore the start conditions of this particle instance.
+	 */
+	particle_emitter_instance *pe_inst;
+
+	/*** Required states; mutable ***/
+
+	/**
+	 * The current position of the particle instance.
+	 * We don't inherit from positional_entity, because the particle
+	 * rendering isn't done by the entity render system.
+	 */
+	vec o;
+
+	/**
+	 * The last current position of the particle instance.
+	 */
+	vec last;
+
+	/**
+	 * The current velocity of the particle instance. The last velocity can be
+	 * calculated by the current and last position of the particle instance.
+	 */
+    vec vel;
+
+    /**
+     * Rolling particles.
+     */
+    float roll;
+
+    /**
+     * The remaining iterations of the particle instance. There might be
+     * particle modifiers that change the remaining lifetime, for example
+     * particle culling would set the remaining iterations to zero.
+     */
+    int remaining;
+
+    /**
+     * The elapsed iterations since birth. This attribute gets constantly
+     * increased and should not be modified. It also might differ to
+     * calculating (lifetime - remaining iterations) if the remaining
+     * iterations attribute was modified. If you need a constant change
+     * over time, you should use this!
+     */
+    int elapsed;
+
+    /**
+     * The time elapsed in the previous iteration.
+     */
+    int last_elapsed;
+
+    /**
+     * Every particle instance has a mass. Needed for modifiers which are
+     * applying physical transformations like gravity.
+     */
+    float mass;
+
+    /**
+     * The density (or volume) of the particle. Needed for volumetric
+     * rendering (for example metaballs or cloth).
+     */
+    float density;
+
+};
+
+/**
  * A particle emitter instance is an instance of a particle emitter
  * type.
  */
-struct particle_emitter_instance : public entity_instance<particle_emitter_type>
+struct particle_emitter_instance : public positional_entity_instance<particle_emitter_type>
 {
-
-	/**
-	 * The emitter type.
-	 */
-	// particle_emitter_type *pe_type;
 
 	/**
 	 * The particle type of an emitted particle instance.
@@ -119,84 +187,6 @@ struct particle_emitter_instance : public entity_instance<particle_emitter_type>
 	 * Adds a initializer instance
 	 */
 	void add_initializer(particle_initializer_instance* pi_inst);
-
-};
-
-/**
- * A particle instance.
- */
-struct particle_instance : public entity_instance<particle_type>
-{
-	/*** Non-mutable states ***/
-
-	/**
-	 * Reference to the id of the particle type. The particle renderer
-	 * belonging to this particle instance is defined in the particle
-	 * type definition.
-	 */
-	// particle_type *p_type;
-
-	/**
-	 * Reference to the origin particle emitter. Therefore we can
-	 * restore the start conditions of this particle instance.
-	 */
-	particle_emitter_instance *pe_inst;
-
-	/*** Required states; mutable ***/
-
-	/**
-	 * The current position of the particle instance.
-	 */
-	vec o;
-
-	/**
-	 * The last current position of the particle instance.
-	 */
-	vec last;
-
-	/**
-	 * The current velocity of the particle instance. The last velocity can be calculated
-	 * by the current and last position of the particle instance.
-	 */
-    vec vel;
-
-    /**
-     * Rolling particles.
-     */
-    float roll;
-
-    /**
-     * The remaining iterations of the particle instance. There might be
-     * particle modifiers that change the remaining lifetime, for example
-     * particle culling would set the remaining iterations to zero.
-     */
-    int remaining;
-
-    /**
-     * The elapsed iterations since birth. This attribute gets constantly
-     * increased and should not be modified. It also might differ to
-     * calculating (lifetime - remaining iterations) if the remaining
-     * iterations attribute was modified. If you need a constant change
-     * over time, you should use this!
-     */
-    int elapsed;
-
-    /**
-     * The time elapsed in the previous iteration.
-     */
-    int last_elapsed;
-
-    /**
-     * Every particle instance has a mass. Needed for modifiers which are
-     * applying physical transformations like gravity.
-     */
-    float mass;
-
-    /**
-     * The density (or volume) of the particle. Needed for volumetric
-     * rendering (for example metaballs or cloth).
-     */
-    float density;
 
 };
 
