@@ -31,6 +31,10 @@ void particle_system::init_spring_construction_rules()
 	add_spring_construction_rule("sheer_xz_n", ivec(-1, 0, 1));
 	add_spring_construction_rule("sheer_yz_p", ivec(0, 1, 1));
 	add_spring_construction_rule("sheer_yz_n", ivec(0, -1, 1));
+	add_spring_construction_rule("sheer_xyz_ppp", ivec(1, 1, 1));
+	add_spring_construction_rule("sheer_xyz_npp", ivec(-1, 1, 1));
+	add_spring_construction_rule("sheer_xyz_pnp", ivec(1, -1, 1));
+	add_spring_construction_rule("sheer_xyz_ppn", ivec(1, 1, -1));
 	add_spring_construction_rule("bend_x", ivec(2, 0, 0));
 	add_spring_construction_rule("bend_y", ivec(0, 2, 0));
 	add_spring_construction_rule("bend_z", ivec(0, 0, 2));
@@ -119,6 +123,10 @@ spring_builder* spring_builder::sheer_xyz()
 	rules->push_back("sheer_xz_n");
 	rules->push_back("sheer_yz_p");
 	rules->push_back("sheer_yz_n");
+	rules->push_back("sheer_xyz_ppp");
+	rules->push_back("sheer_xyz_npp");
+	rules->push_back("sheer_xyz_pnp");
+	rules->push_back("sheer_xyz_ppn");
 	return this;
 }
 
