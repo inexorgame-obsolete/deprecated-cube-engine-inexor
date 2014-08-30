@@ -630,7 +630,7 @@ struct ptest
 		pe_inst_sub_sparkle->add_modifier(pm_inst_geometry_collide);
 		// pe_inst_sub_sparkle->add_modifier(pm_inst_velocity_damper);
 		// pe_inst_sub_sparkle->add_initializer(pi_inst_random_velocity_sub);
-		pe_inst_sub_sparkle->add_initializer(pi_inst_random_particle_type);
+		// pe_inst_sub_sparkle->add_initializer(pi_inst_random_particle_type);
 		pe_inst_sub_sparkle->add_initializer(pi_inst_spring_weaver);
 
 		particle_emitter_type* pe_type_noop = ps.add_particle_emitter_type("noop_emitter_19", p_type_spring, mass, density, 0, 1000000, "noop_emitter");
@@ -641,18 +641,24 @@ struct ptest
 
 	void spring_weaver_jelly_test()
     {
-		float mass = 5.0f;
+		float mass = 25.0f;
 		float density = 1.0f;
 		int lifetime = 1000;
 		int rate = 250;
+		float jellycube_size = 6.0f;
+		float jellycube_dist = 50.0f;
+		float jellycube_spring_length = jellycube_dist * 2.0f;
+		float elasticity = 0.6f;
+		float jellycube_constant = 0.64f;
+		float jellycube_friction = 0.32f;
 
 		particle_renderer_type* pr_type_flash = ps.add_particle_renderer_type("flash_renderer_19", "media/particle/flash01.png", "shader", vec4(128.0f, 128.0f, 0.0f, 0.3f), "billboard_renderer");
 		pr_type_flash->attributes["size"] = 60.0f;
 		particle_renderer_instance* pr_inst_flash = pr_type_flash->create_instance("flash_19");
 		particle_type* p_type_flash = ps.add_particle_type("flash_19", pr_inst_flash);
 
-		particle_renderer_type* pr_type_sparkle = ps.add_particle_renderer_type("sparkle_renderer_19", "media/particle/sparkle01.png", "shader", vec4(0.0f, 128.0f, 128.0f, 0.3f), "billboard_renderer");
-		pr_type_sparkle->attributes["size"] = 20.0f;
+		particle_renderer_type* pr_type_sparkle = ps.add_particle_renderer_type("sparkle_renderer_19", "media/particle/flash01.png", "shader", vec4(0.0f, 128.0f, 128.0f, 0.3f), "billboard_renderer");
+		pr_type_sparkle->attributes["size"] = 100.0f;
 		particle_renderer_instance* pr_inst_sparkle = pr_type_sparkle->create_instance("sparkle_19");
 		particle_type* p_type_sparkle = ps.add_particle_type("sparkle_19", pr_inst_sparkle);
 
@@ -683,7 +689,7 @@ struct ptest
 
 		particle_modifier_type* pm_type_geometry_collide = ps.add_particle_modifier_type("geometry_collide_19", "geometry_collide");
 		particle_modifier_instance* pm_inst_geometry_collide = pm_type_geometry_collide->create_instance();
-		pm_inst_geometry_collide->attributes["elasticity"] = 0.50f;
+		pm_inst_geometry_collide->attributes["elasticity"] = elasticity;
 
 		particle_modifier_type* pm_type_sub_emitter = ps.add_particle_modifier_type("sub_emitter_19", "sub_emitter");
 		particle_modifier_instance* pm_inst_sub_emitter = pm_type_sub_emitter->create_instance();
@@ -691,8 +697,8 @@ struct ptest
 		particle_modifier_type* pm_type_mass_spring_transformation = ps.add_particle_modifier_type("mass_spring_transformation_19", "mass_spring_transformation");
 		particle_modifier_instance* pm_inst_mass_spring_transformation = pm_type_mass_spring_transformation->create_instance();
 
-		particle_modifier_type* pm_type_simple_gravity = ps.add_particle_modifier_type("global_gravity_19", "simple_gravity");
-		particle_modifier_instance* pm_inst_simple_gravity = pm_type_simple_gravity->create_instance(vec(0.0f, 0.0f, 0.0f));
+		// particle_modifier_type* pm_type_simple_gravity = ps.add_particle_modifier_type("global_gravity_19", "simple_gravity");
+		// particle_modifier_instance* pm_inst_simple_gravity = pm_type_simple_gravity->create_instance(vec(0.0f, 0.0f, 0.0f));
 
 		particle_initializer_type* pi_type_random_particle_type = ps.add_particle_initializer_type("random_particle_type_19", "random_particle_type");
 		particle_initializer_instance* pi_inst_random_particle_type = pi_type_random_particle_type->create_instance();
@@ -701,14 +707,14 @@ struct ptest
 		pi_inst_random_particle_type->particle_types.push_back(p_type_sparkle_2);
 
 		particle_initializer_type* pi_type_spring_weaver = ps.add_particle_initializer_type("spring_weaver_19", "spring_weaver");
-		pi_type_spring_weaver->attributes["spring_constant"] = 0.5f;
-		pi_type_spring_weaver->attributes["spring_friction"] = 0.0001f;
-		pi_type_spring_weaver->attributes["size_x"] = 20.0f;
-		pi_type_spring_weaver->attributes["size_y"] = 20.0f;
-		pi_type_spring_weaver->attributes["size_z"] = 20.0f;
-		pi_type_spring_weaver->attributes["spring_length_x"] = 16.0f;
-		pi_type_spring_weaver->attributes["spring_length_y"] = 16.0f;
-		pi_type_spring_weaver->attributes["spring_length_z"] = 16.0f;
+		pi_type_spring_weaver->attributes["spring_constant"] = jellycube_constant;
+		pi_type_spring_weaver->attributes["spring_friction"] = jellycube_friction;
+		pi_type_spring_weaver->attributes["size_x"] = jellycube_size;
+		pi_type_spring_weaver->attributes["size_y"] = jellycube_size;
+		pi_type_spring_weaver->attributes["size_z"] = jellycube_size;
+		pi_type_spring_weaver->attributes["spring_length_x"] = jellycube_spring_length;
+		pi_type_spring_weaver->attributes["spring_length_y"] = jellycube_spring_length;
+		pi_type_spring_weaver->attributes["spring_length_z"] = jellycube_spring_length;
 		particle_initializer_instance* pi_inst_spring_weaver = pi_type_spring_weaver->create_instance();
 
 		// jelly 3D rules
@@ -716,35 +722,24 @@ struct ptest
 		pi_inst_spring_weaver->pointers["rules"] = sb.stretch_xyz()->sheer_xyz()->bend_xyz()->get();
 
 		particle_initializer_type* pi_type_random_velocity_sub = ps.add_particle_initializer_type("random_velocity_19_sub", "random_velocity");
-		pi_type_random_velocity_sub->attributes["osx"] = 100.0f;
-		pi_type_random_velocity_sub->attributes["osy"] = 0.0f;
+		pi_type_random_velocity_sub->attributes["osx"] = 5.0f;
+		pi_type_random_velocity_sub->attributes["osy"] = 5.0f;
 		pi_type_random_velocity_sub->attributes["osz"] = 0.0f;
 		pi_type_random_velocity_sub->attributes["isx"] = 0.0f;
 		pi_type_random_velocity_sub->attributes["isy"] = 0.0f;
 		pi_type_random_velocity_sub->attributes["isz"] = 0.0f;
 		particle_initializer_instance* pi_inst_random_velocity_sub = pi_type_random_velocity_sub->create_instance();
 
-		/*
-		particle_emitter_type* pe_type_point_flash = ps.add_particle_emitter_type("flash_emitter_19", p_type_flash, mass, density, lifetime, rate, "point_emitter");
-		particle_emitter_instance* pe_inst_point_flash = pe_type_point_flash->create_instance(vec(512.0f, 512.0f, 812.0f), vec(30.0f, 0.0f, 30.0f));
-		pe_inst_point_flash->add_modifier(pm_inst_velocity_transformation);
-		pe_inst_point_flash->add_modifier(pm_inst_sub_emitter);
-		pe_inst_point_flash->add_modifier(pm_inst_geometry_collide);
-		*/
+		particle_emitter_type* pe_type_sub_sparkle = ps.add_particle_emitter_type("sub_sparkle_point_emitter_19", p_type_sparkle, mass, density, 30000, 31000, "field_emitter");
+		pe_type_sub_sparkle->attributes["grid_size_x"] = jellycube_size;
+		pe_type_sub_sparkle->attributes["grid_size_y"] = jellycube_size;
+		pe_type_sub_sparkle->attributes["grid_size_z"] = jellycube_size;
+		pe_type_sub_sparkle->attributes["grid_dist"] = jellycube_dist;
 
-		// particle_emitter_type* pe_type_sub_sparkle = ps.add_particle_emitter_type("sub_sparkle_point_emitter_19", p_type_sparkle, mass, density, 10000, 10000, "point_emitter");
-		// pe_type_sub_sparkle->batch_size = 100;
-
-		particle_emitter_type* pe_type_sub_sparkle = ps.add_particle_emitter_type("sub_sparkle_point_emitter_19", p_type_sparkle, mass, density, 10000, 11000, "field_emitter");
-		pe_type_sub_sparkle->attributes["grid_size_x"] = 20.0f;
-		pe_type_sub_sparkle->attributes["grid_size_y"] = 20.0f;
-		pe_type_sub_sparkle->attributes["grid_size_z"] = 20.0f;
-		pe_type_sub_sparkle->attributes["grid_dist"] = 8.0f;
-
-		particle_emitter_instance* pe_inst_sub_sparkle = pe_type_sub_sparkle->create_instance(vec(512.0f, 512.0f, 712.0f), vec(0.0f, 0.0f, -50.0f));
+		particle_emitter_instance* pe_inst_sub_sparkle = pe_type_sub_sparkle->create_instance(vec(512.0f, 512.0f, 772.0f), vec(5.0f, 0.0f, -25.0f));
 		pe_inst_sub_sparkle->add_modifier(pm_inst_velocity_transformation);
 		pe_inst_sub_sparkle->add_modifier(pm_inst_mass_spring_transformation);
-		pe_inst_sub_sparkle->add_modifier(pm_inst_simple_gravity);
+		// pe_inst_sub_sparkle->add_modifier(pm_inst_simple_gravity);
 		pe_inst_sub_sparkle->add_modifier(pm_inst_geometry_collide);
 		// pe_inst_sub_sparkle->add_modifier(pm_inst_velocity_damper);
 		// pe_inst_sub_sparkle->add_initializer(pi_inst_random_velocity_sub);
