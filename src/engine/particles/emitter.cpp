@@ -101,29 +101,6 @@ particle_emitter_type* particle_system::add_particle_emitter_type(const std::str
 	}
 }
 
-particle_emitter_type* particle_system::add_particle_emitter_type(const std::string name, particle_type* p_type, float mass, float density, int lifetime, int rate, const std::string impl)
-{
-	if (!particle_emitter_types_map.count(name))
-	{
-		particle_emitter_type* pe_type = new particle_emitter_type;
-		pe_type->name = name;
-		pe_type->mass = mass;
-		pe_type->density = density;
-		pe_type->lifetime = lifetime;
-		pe_type->rate = rate;
-		pe_type->batch_size = 1;
-		pe_type->p_type = p_type;
-		pe_type->impl = particle_emitter_implementations_map[impl];
-		particle_emitter_types.push_back(pe_type);
-		particle_emitter_types_map[name] = pe_type;
-		count_particle_emitter_types++;
-		return pe_type;
-	} else {
-		conoutf("Particle modifier type %s already exists!", name.c_str());
-		return particle_emitter_types_map[name];
-	}
-}
-
 void particle_emitter_instance::add_modifier(particle_modifier_instance* pm_inst)
 {
 	modifiers.push_back(pm_inst);
@@ -171,6 +148,29 @@ particle_emitter_instance* particle_emitter_type::create_instance(const vec &o, 
 	ps.count_particle_emitter_instances++;
 	conoutf("Created particle emitter instance of type \"%s\"", name.c_str());
 	return pe_inst;
+}
+
+particle_emitter_type* particle_system::add_particle_emitter_type(const std::string name, particle_type* p_type, float mass, float density, int lifetime, int rate, const std::string impl)
+{
+	if (!particle_emitter_types_map.count(name))
+	{
+		particle_emitter_type* pe_type = new particle_emitter_type;
+		pe_type->name = name;
+		pe_type->mass = mass;
+		pe_type->density = density;
+		pe_type->lifetime = lifetime;
+		pe_type->rate = rate;
+		pe_type->batch_size = 1;
+		pe_type->p_type = p_type;
+		pe_type->impl = particle_emitter_implementations_map[impl];
+		particle_emitter_types.push_back(pe_type);
+		particle_emitter_types_map[name] = pe_type;
+		count_particle_emitter_types++;
+		return pe_type;
+	} else {
+		conoutf("Particle modifier type %s already exists!", name.c_str());
+		return particle_emitter_types_map[name];
+	}
 }
 
 particle_emitter_instance* particle_system::create_particle_emitter_instance(std::string pe_type, const vec &o, const vec &vel)

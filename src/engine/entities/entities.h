@@ -40,6 +40,86 @@ struct entity_implemenation_type : public entity_type
 
 };
 
+template<class ENTITY_IMPLEMENTATION, class EMITTER_INSTANCE, class MODIFIER_INSTANCE, class INITIALIZER_INSTANCE>
+struct entity_emitter_type : public entity_implemenation_type<ENTITY_IMPLEMENTATION>
+{
+
+	/**
+	 * Emit entity instances every <rate> milliseconds.
+	 */
+	int rate;
+
+	/**
+	 * Number of entity instances to emit in a single batch.
+	 */
+	int batch_size;
+
+	/**
+	 * The modifiers to apply on entity instances spawned by emitters of this type.
+	 */
+	std::vector<MODIFIER_INSTANCE*> modifiers;
+
+	/**
+	 * The initializers to apply on entity instances spawned by emitters of this type.
+	 */
+	std::vector<INITIALIZER_INSTANCE*> initializers;
+
+	entity_emitter_type() {
+		rate = 0;
+		batch_size = 1;
+	};
+
+	virtual ~entity_emitter_type() { };
+
+	/**
+	 * Creates an entity emitter instance of this type.
+	 */
+	virtual EMITTER_INSTANCE* create_instance(const vec &o, const vec &vel) = 0;
+
+};
+
+template<class ENTITY_IMPLEMENTATION, class RENDERER_INSTANCE>
+struct entity_renderer_type : public entity_implemenation_type<ENTITY_IMPLEMENTATION>
+{
+
+	entity_renderer_type() { };
+	virtual ~entity_renderer_type() { };
+
+	/**
+	 * Creates an entity renderer instance of this type.
+	 */
+	virtual RENDERER_INSTANCE* create_instance(std::string name) = 0;
+
+};
+
+template<class ENTITY_IMPLEMENTATION, class MODIFIER_INSTANCE>
+struct entity_modifier_type : public entity_implemenation_type<ENTITY_IMPLEMENTATION>
+{
+
+	entity_modifier_type() { };
+	virtual ~entity_modifier_type() { };
+
+	/**
+	 * Creates an entity modifier instance of this type.
+	 */
+	virtual MODIFIER_INSTANCE* create_instance() = 0;
+
+};
+
+template<class ENTITY_IMPLEMENTATION, class INITIALIZER_INSTANCE>
+struct entity_initializer_type : public entity_implemenation_type<ENTITY_IMPLEMENTATION>
+{
+
+	entity_initializer_type() { };
+	virtual ~entity_initializer_type() { };
+
+	/**
+	 * Creates an entity initializer instance of this type.
+	 */
+	virtual INITIALIZER_INSTANCE* create_instance() = 0;
+
+};
+
 /**
  * An instance of an entity type.
  */

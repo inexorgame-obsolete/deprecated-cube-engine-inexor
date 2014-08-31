@@ -353,7 +353,7 @@ struct particle_type : public entity_type
  * A particle emitter type. Notice that the actual implementation of
  * an particle emitter type needs to be bind using a function pointer.
  */
-struct particle_emitter_type : public entity_implemenation_type<particle_emitter_implementation>
+struct particle_emitter_type : public entity_emitter_type<particle_emitter_implementation, particle_emitter_instance, particle_modifier_instance, particle_initializer_instance>
 {
 
 	/**
@@ -377,36 +377,26 @@ struct particle_emitter_type : public entity_implemenation_type<particle_emitter
 	int lifetime;
 
 	/**
-	 * Emit particles every <rate> milliseconds.
-	 */
-	int rate;
-
-	/**
-	 * Number of particles to emit in a single batch.
-	 */
-	int batch_size;
-
-	/**
 	 * The modifiers to apply on particles spawned by emitters of this type.
 	 */
-	std::vector<particle_modifier_instance*> modifiers;
+//	std::vector<particle_modifier_instance*> modifiers;
 
 	/**
 	 * The initializers to apply on particles spawned by emitters of this type.
 	 */
-	std::vector<particle_initializer_instance*> initializers;
+//	std::vector<particle_initializer_instance*> initializers;
 
 	/**
 	 * Creates an particle emitter instance of this type.
 	 */
-	particle_emitter_instance* create_instance(const vec &o, const vec &vel);
+	virtual particle_emitter_instance* create_instance(const vec &o, const vec &vel);
 
 };
 
 /**
  * A particle renderer type.
  */
-struct particle_renderer_type : public entity_implemenation_type<particle_renderer_implementation>
+struct particle_renderer_type : public entity_renderer_type<particle_renderer_implementation, particle_renderer_instance>
 {
 
 	/**
@@ -427,14 +417,14 @@ struct particle_renderer_type : public entity_implemenation_type<particle_render
 	/**
 	 * Creates an particle renderer instance of this type.
 	 */
-	particle_renderer_instance* create_instance(std::string name);
+	virtual particle_renderer_instance* create_instance(std::string name);
 
 };
 
 /**
  * A particle modifier type.
  */
-struct particle_modifier_type : public entity_implemenation_type<particle_modifier_implementation>
+struct particle_modifier_type : public entity_modifier_type<particle_modifier_implementation, particle_modifier_instance>
 {
 
 	/**
@@ -445,19 +435,14 @@ struct particle_modifier_type : public entity_implemenation_type<particle_modifi
 	/**
 	 * Creates an particle modifier instance of this type.
 	 */
-	particle_modifier_instance* create_instance();
-
-	/**
-	 * Creates an particle modifier instance of this type.
-	 */
-	// particle_modifier_instance* create_instance(const vec &o);
+	virtual particle_modifier_instance* create_instance();
 
 };
 
 /**
  * A particle initializer type.
  */
-struct particle_initializer_type : public entity_implemenation_type<particle_initializer_implementation>
+struct particle_initializer_type : public entity_initializer_type<particle_initializer_implementation, particle_initializer_instance>
 {
 
 	/**
@@ -468,7 +453,7 @@ struct particle_initializer_type : public entity_implemenation_type<particle_ini
 	/**
 	 * Creates an particle initializer instance of this type.
 	 */
-	particle_initializer_instance* create_instance();
+	virtual particle_initializer_instance* create_instance();
 
 };
 
