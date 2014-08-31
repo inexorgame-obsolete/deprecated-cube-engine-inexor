@@ -28,8 +28,6 @@ public:
 
 	inline void modify(int elapsedtime) { }
 
-//	inline void init(particle_instance *p_inst) { }
-
 private:
 
 	float _gravity;

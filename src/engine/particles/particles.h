@@ -36,7 +36,7 @@ struct noop_initializer;
 /**
  * The actual particle instance is of a particle type.
  */
-struct particle_instance : public entity_instance<particle_type>
+struct particle_instance : public positional_entity_instance<particle_type>
 {
 	/*** Non-mutable states ***/
 
@@ -47,13 +47,6 @@ struct particle_instance : public entity_instance<particle_type>
 	particle_emitter_instance *pe_inst;
 
 	/*** Required states; mutable ***/
-
-	/**
-	 * The current position of the particle instance.
-	 * We don't inherit from positional_entity, because the particle
-	 * rendering isn't done by the entity render system.
-	 */
-	vec o;
 
 	/**
 	 * The last current position of the particle instance.
@@ -110,7 +103,7 @@ struct particle_instance : public entity_instance<particle_type>
  * A particle emitter instance is an instance of a particle emitter
  * type.
  */
-struct particle_emitter_instance : public positional_entity_instance<particle_emitter_type>
+struct particle_emitter_instance : public entity_emitter_instance<particle_emitter_type>
 {
 
 	/**
@@ -119,12 +112,7 @@ struct particle_emitter_instance : public positional_entity_instance<particle_em
 	particle_type *p_type;
 
 	/**
-	 * The current position of the particle emitter instance.
-	 */
-	vec o;
-
-	/**
-	 * The velocity.
+	 * The start velocity of the emitted particle.
 	 */
 	vec vel;
 
@@ -132,11 +120,6 @@ struct particle_emitter_instance : public positional_entity_instance<particle_em
 	 * The entity. May be replaced by a new entity implementation.
 	 */
 	extentity *ent;
-
-	/**
-	 * If true, particles will be emitted.
-	 */
-	bool enabled;
 
 	/**
 	 * The start mass of an emitted particle instance.
@@ -152,21 +135,6 @@ struct particle_emitter_instance : public positional_entity_instance<particle_em
 	 * The lifetime of an emitted particle instance.
 	 */
 	int lifetime;
-
-	/**
-	 * Emit particles every <rate> milliseconds.
-	 */
-	int rate;
-
-	/**
-	 * Number of particles to emit in a single batch.
-	 */
-	int batch_size;
-
-	/**
-	 * Remaining millis to process.
-	 */
-	int millistoprocess;
 
 	/**
 	 * The modifiers to apply on particles spawned by this emitter.
@@ -194,12 +162,8 @@ struct particle_emitter_instance : public positional_entity_instance<particle_em
  * A particle renderer instance.
  * Different rendering of particles bound on a single particle.
  */
-struct particle_renderer_instance : public entity_instance<particle_renderer_type>
+struct particle_renderer_instance : public entity_renderer_instance<particle_renderer_type, particle_instance>
 {
-	/**
-	 * The name of the renderer instance.
-	 */
-	std::string name;
 
 	/**
 	 * The name of the texture.
@@ -221,70 +185,26 @@ struct particle_renderer_instance : public entity_instance<particle_renderer_typ
 	 */
 	vec4 color;
 
-	/**
-	 * The particle renderer type.
-	 */
-	// particle_renderer_type *pr_type;
-
-	/**
-	 * The particle instances to render.
-	 */
-	std::list<particle_instance*> particles;
-
 };
 
 /**
  * Particle modifiers are altering the state of a particle (for example the position).
  */
-struct particle_modifier_instance : public entity_instance<particle_modifier_type>
+struct particle_modifier_instance : public entity_modifier_instance<particle_modifier_type, entity_type>
 {
-
-	/**
-	 * The modifier type.
-	 */
-	// particle_modifier_type *pm_type;
-
-	/**
-	 * The current position of the particle modifier instance (if any).
-	 */
-	vec o;
-
-	/**
-	 * The velocity of the particle modifier instance.
-	 */
-	vec vel;
 
 	/**
 	 * The entity. May be replaced by a new entity implementation.
 	 */
 	extentity *ent;
 
-	/**
-	 * Generic pointers per modifier instance.
-	 */
-	std::map<std::string, void*> pointers;
-
 };
 
 /**
  * Particle initializers are initializing the state of a particle.
  */
-struct particle_initializer_instance : public entity_instance<particle_initializer_type>
+struct particle_initializer_instance : public entity_initializer_instance<particle_initializer_type, entity_type>
 {
-
-	/**
-	 * The initializer type.
-	 */
-	// particle_initializer_type *pi_type;
-
-	/**
-	 * Generic pointers per modifier instance.
-	 */
-	std::map<std::string, void*> pointers;
-
-	// The following lists allows the initializers to make more complex
-	// initializations that an emitter would be able. For example, choose
-	// the particle_type by rules.
 
 	/**
 	 * The a list of particle types.
@@ -550,7 +470,7 @@ struct particle_modifier_type : public entity_type
 	/**
 	 * Creates an particle modifier instance of this type.
 	 */
-	particle_modifier_instance* create_instance(const vec &o);
+	// particle_modifier_instance* create_instance(const vec &o);
 
 };
 
@@ -816,7 +736,7 @@ struct particle_system
 	void remove_all_particle_renderer_instances();
 
 	particle_modifier_type* add_particle_modifier_type(std::string name, std::string pm_impl);
-	particle_modifier_instance* create_particle_modifier_instance(std::string pm_type, const vec &o);
+	particle_modifier_instance* create_particle_modifier_instance(std::string pm_type); // , const vec &o
 	void remove_particle_modifier_type(std::string name);
 	void remove_all_particle_modifier_types();
 	void remove_all_particle_modifier_instances();

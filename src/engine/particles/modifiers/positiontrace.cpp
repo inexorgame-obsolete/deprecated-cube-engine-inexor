@@ -39,7 +39,7 @@ public:
 			ps.alive_pool.push_back(trace);
 			ps.count_alive_pool++;
 			// add particle instance to it's renderer (this time we have to do it by ourself, because we are in a modifier)
-			trace->type->pr_inst->particles.push_back(trace);
+			trace->type->pr_inst->instances.push_back(trace);
 		}
 	}
 

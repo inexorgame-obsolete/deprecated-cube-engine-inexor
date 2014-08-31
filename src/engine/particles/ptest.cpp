@@ -46,10 +46,12 @@ struct ptest
 
 		particle_modifier_type* pm_type_wind = ps.add_particle_modifier_type("wind_11", "wind");
 		particle_modifier_instance* pm_inst_wind = pm_type_wind->create_instance();
-		pm_inst_wind->vel = vec(30.0f, 40.0f, 0.0f);
+		// the wind velocity built by two positions
+		pm_inst_wind->add_position(vec(0.0f, 0.0f, 0.0f));
+		pm_inst_wind->add_position(vec(30.0f, 40.0f, 0.0f));
 
 		particle_modifier_type* pm_type_simple_gravity = ps.add_particle_modifier_type("global_gravity_11", "simple_gravity");
-		particle_modifier_instance* pm_inst_simple_gravity = pm_type_simple_gravity->create_instance(vec(0.0f, 0.0f, 0.0f));
+		particle_modifier_instance* pm_inst_simple_gravity = pm_type_simple_gravity->create_instance();
 
 		particle_modifier_type* pm_type_geometry_collide = ps.add_particle_modifier_type("geometry_collide_11", "geometry_collide");
 		particle_modifier_instance* pm_inst_geometry_collide = pm_type_geometry_collide->create_instance();
@@ -117,32 +119,38 @@ struct ptest
 		particle_modifier_type* pm_type_gravity_point_a = ps.add_particle_modifier_type("gravity_point_12a", "pulsar");
 		pm_type_gravity_point_a->attributes["mass"] = 1000.0f;
 		pm_type_gravity_point_a->attributes["gravity"] = 5.0f;
-		particle_modifier_instance* pm_inst_gravity_point_a = pm_type_gravity_point_a->create_instance(vec(256.0f, 512.0f, 390.0f));
+		particle_modifier_instance* pm_inst_gravity_point_a = pm_type_gravity_point_a->create_instance();
+		pm_inst_gravity_point_a->add_position(vec(256.0f, 512.0f, 390.0f));
 
 		particle_modifier_type* pm_type_gravity_point_b = ps.add_particle_modifier_type("gravity_point_12b", "pulsar");
 		pm_type_gravity_point_b->attributes["mass"] = 1000.0f;
 		pm_type_gravity_point_b->attributes["gravity"] = 5.0f;
-		particle_modifier_instance* pm_inst_gravity_point_b = pm_type_gravity_point_b->create_instance(vec(768.0f, 512.0f, 390.0f));
+		particle_modifier_instance* pm_inst_gravity_point_b = pm_type_gravity_point_b->create_instance();
+		pm_inst_gravity_point_b->add_position(vec(768.0f, 512.0f, 390.0f));
 
 		particle_modifier_type* pm_type_gravity_point_c = ps.add_particle_modifier_type("gravity_point_12c", "pulsar");
 		pm_type_gravity_point_c->attributes["mass"] = 1000.0f;
 		pm_type_gravity_point_c->attributes["gravity"] = 5.0f;
-		particle_modifier_instance* pm_inst_gravity_point_c = pm_type_gravity_point_c->create_instance(vec(512.0f, 256.0f, 390.0f));
+		particle_modifier_instance* pm_inst_gravity_point_c = pm_type_gravity_point_c->create_instance();
+		pm_inst_gravity_point_c->add_position(vec(512.0f, 256.0f, 390.0f));
 
 		particle_modifier_type* pm_type_gravity_point_d = ps.add_particle_modifier_type("gravity_point_12d", "pulsar");
 		pm_type_gravity_point_d->attributes["mass"] = 1000.0f;
 		pm_type_gravity_point_d->attributes["gravity"] = 5.0f;
-		particle_modifier_instance* pm_inst_gravity_point_d = pm_type_gravity_point_d->create_instance(vec(512.0f, 768.0f, 390.0f));
+		particle_modifier_instance* pm_inst_gravity_point_d = pm_type_gravity_point_d->create_instance();
+		pm_inst_gravity_point_d->add_position(vec(512.0f, 768.0f, 390.0f));
 
 		particle_modifier_type* pm_type_gravity_point_e = ps.add_particle_modifier_type("gravity_point_12e", "pulsar");
 		pm_type_gravity_point_e->attributes["mass"] = 1000.0f;
 		pm_type_gravity_point_e->attributes["gravity"] = -5.0f;
-		particle_modifier_instance* pm_inst_gravity_point_e = pm_type_gravity_point_e->create_instance(vec(512.0f, 512.0f, 134.0f));
+		particle_modifier_instance* pm_inst_gravity_point_e = pm_type_gravity_point_e->create_instance();
+		pm_inst_gravity_point_e->add_position(vec(512.0f, 512.0f, 134.0f));
 
 		particle_modifier_type* pm_type_gravity_point_f = ps.add_particle_modifier_type("gravity_point_12f", "pulsar");
 		pm_type_gravity_point_f->attributes["mass"] = 1000.0f;
 		pm_type_gravity_point_f->attributes["gravity"] = -5.0f;
-		particle_modifier_instance* pm_inst_gravity_point_f = pm_type_gravity_point_f->create_instance(vec(512.0f, 512.0f, 646.0f));
+		particle_modifier_instance* pm_inst_gravity_point_f = pm_type_gravity_point_f->create_instance();
+		pm_inst_gravity_point_f->add_position(vec(512.0f, 512.0f, 646.0f));
 
 
 		particle_modifier_type* pm_type_randomv = ps.add_particle_modifier_type("randomv_12", "randomv");
@@ -496,7 +504,8 @@ struct ptest
 		particle_modifier_instance* pm_inst_velocity_transformation = pm_type_velocity_transformation->create_instance();
 
 		particle_modifier_type* pm_type_vector_field = ps.add_particle_modifier_type("vector_field_18", "vector_field");
-		particle_modifier_instance* pm_inst_vector_field = pm_type_vector_field->create_instance(vec(512.0f, 512.0f, 512.0f));
+		particle_modifier_instance* pm_inst_vector_field = pm_type_vector_field->create_instance();
+		pm_inst_vector_field->add_position(vec(512.0f, 512.0f, 512.0f));
 
 		/*
 		particle_modifier_type* pm_type_geometry_collide = ps.add_particle_modifier_type("geometry_collide_18", "geometry_collide");
@@ -585,7 +594,7 @@ struct ptest
 		particle_modifier_instance* pm_inst_mass_spring_transformation = pm_type_mass_spring_transformation->create_instance();
 
 		particle_modifier_type* pm_type_simple_gravity = ps.add_particle_modifier_type("global_gravity_19", "simple_gravity");
-		particle_modifier_instance* pm_inst_simple_gravity = pm_type_simple_gravity->create_instance(vec(0.0f, 0.0f, 0.0f));
+		particle_modifier_instance* pm_inst_simple_gravity = pm_type_simple_gravity->create_instance();
 
 		particle_initializer_type* pi_type_random_particle_type = ps.add_particle_initializer_type("random_particle_type_19", "random_particle_type");
 		particle_initializer_instance* pi_inst_random_particle_type = pi_type_random_particle_type->create_instance();

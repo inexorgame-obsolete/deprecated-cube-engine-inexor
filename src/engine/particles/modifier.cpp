@@ -28,6 +28,7 @@ void particle_system::modify_particles(int elapsedtime)
 		timer_modifier = SDL_GetTicks() - started;
 		// TODO: special types of modifiers which are called afterwards only
 	}
+	/*
 	if (editmode)
 	{
 		for(std::vector<particle_modifier_instance*>::iterator it = particle_modifier_instances.begin(); it != particle_modifier_instances.end(); ++it)
@@ -35,6 +36,7 @@ void particle_system::modify_particles(int elapsedtime)
 			(*it)->o = vec((*it)->ent->o);
 		}
 	}
+	*/
 }
 
 particle_modifier_type* particle_system::add_particle_modifier_type(std::string name, std::string impl)
@@ -55,22 +57,27 @@ particle_modifier_type* particle_system::add_particle_modifier_type(std::string 
 	}
 }
 
+// TODO: no positions anymore!
 particle_modifier_instance* particle_modifier_type::create_instance() {
-	return create_instance(vec(0.0f, 0.0f, 0.0f));
-}
+// 	return create_instance(vec(0.0f, 0.0f, 0.0f));
+// }
 
-particle_modifier_instance* particle_modifier_type::create_instance(const vec &o) {
+// TODO: no positions anymore!
+// particle_modifier_instance* particle_modifier_type::create_instance(const vec &o) {
 	particle_modifier_instance* pm_inst = new particle_modifier_instance;
 	pm_inst->type = this;
-	pm_inst->o = o;
+	// pm_inst->o = o;
+	// pm_inst->positions =
 	pm_inst->attributes.insert(attributes.begin(), attributes.end());
 	pm_inst->pointers.insert(pointers.begin(), pointers.end());
 
+/*
 	// create entity and attach to the instance object
 	int idx;
 	pm_inst->ent = newentity(true, vec(o), EP_MODIFIER, 0, 0, 0, 0, 0, idx);  // yeah i love the hard coded entity system, which would break every map if i would insert a new entity type on engine level. This is only a quick fix and have to replace by an integration into the new entity system
 	addentity(idx);
 	pm_inst->ent->spawned = true;
+*/
 
 	ps.particle_modifier_instances.push_back(pm_inst);
 	ps.count_particle_modifier_instances++;
@@ -78,11 +85,12 @@ particle_modifier_instance* particle_modifier_type::create_instance(const vec &o
 	return pm_inst;
 }
 
-particle_modifier_instance* particle_system::create_particle_modifier_instance(std::string pm_type, const vec &o)
+// TODO: no positions anymore!
+particle_modifier_instance* particle_system::create_particle_modifier_instance(std::string pm_type) // , const vec &o
 {
 	if (particle_modifier_types_map.count(pm_type))
 	{
-		return particle_modifier_types_map[pm_type]->create_instance(o);
+		return particle_modifier_types_map[pm_type]->create_instance(); // o);
 	} else {
 		conoutf("Particle modifier type %s not found!", pm_type.c_str());
 		return noop_modifier_inst;
@@ -117,8 +125,8 @@ void particle_system::remove_all_particle_modifier_instances()
 	count_particle_modifier_instances = 1;
 }
 
-void create_particle_modifier_instance(std::string pm_type, const vec &o) {
-	ps.create_particle_modifier_instance(pm_type, o);
+void create_particle_modifier_instance(std::string pm_type) { //, const vec &o
+	ps.create_particle_modifier_instance(pm_type); //, o);
 }
 
 // ICOMMAND(add_particle_modifier_type, "ss", (char *name, char *impl), add_particle_modifier_type(name, impl));

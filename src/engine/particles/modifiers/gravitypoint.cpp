@@ -23,9 +23,9 @@ public:
 		// TODO: time factor
 		gravity = pm_inst->attributes["gravity"];
 		mass = pm_inst->attributes["mass"];
-		dx = p_inst->o.x - pm_inst->o.x;
-		dy = p_inst->o.y - pm_inst->o.y;
-		dz = p_inst->o.z - pm_inst->o.z;
+		dx = p_inst->o.x - pm_inst->positions[0]->o.x;
+		dy = p_inst->o.y - pm_inst->positions[0]->o.y;
+		dz = p_inst->o.z - pm_inst->positions[0]->o.z;
 		distance = sqrtf(dx * dx + dy * dy + dz * dz);
 		if (distance == 0.0f) distance = 0.00000000001f;
 		force = -(p_inst->mass) * mass * gravity / (distance * distance);

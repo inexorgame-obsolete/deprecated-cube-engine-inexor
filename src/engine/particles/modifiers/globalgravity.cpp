@@ -1,9 +1,7 @@
 #include "cube.h"
 #include "engine/particles/particles.h"
 
-/**
- * Singleton implementation of global gravity.
- */
+// TODO: remove this modifier in favor of simplegravity
 struct global_gravity : public particle_modifier_implementation
 {
 
@@ -24,7 +22,7 @@ public:
 		mass = pm_inst->attributes["mass"];
 		for(std::list<particle_instance*>::iterator p_it = ps.alive_pool.begin(); p_it != ps.alive_pool.end(); ++p_it)
 		{
-			dz = (*p_it)->o.z - pm_inst->o.z;
+			dz = (*p_it)->o.z - pm_inst->positions[0]->o.z;
 			if (dz <= dzmin || dz >= dzmax) continue;
 			force = -((*p_it)->mass) * mass * gravity / (dz * dz);
 			(*p_it)->vel.z += (force * dz) / (dz * (*p_it)->mass);
@@ -32,8 +30,6 @@ public:
 	}
 
 	inline void modify(int elapsedtime) { }
-
-//	inline void init(particle_instance *p_inst) { }
 
 private:
 

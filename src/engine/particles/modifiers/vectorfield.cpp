@@ -18,9 +18,9 @@ public:
 
 	inline void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime) {
 		time_factor = elapsedtime / ps.particle_frame;
-		ix = p_inst->o.x - pm_inst->o.x;
-		iy = p_inst->o.y - pm_inst->o.y;
-		iz = p_inst->o.z - pm_inst->o.z;
+		ix = p_inst->o.x - pm_inst->positions[0]->o.x;
+		iy = p_inst->o.y - pm_inst->positions[0]->o.y;
+		iz = p_inst->o.z - pm_inst->positions[0]->o.z;
 		try {
 			// conoutf("num args: [%d] expression: [%s] separator: [%c] result count: [%d]", args, parser.GetExpr().c_str(), parser.GetArgSep(), parser.GetNumResults());
 			mu::value_type *v = parser.Eval(args);

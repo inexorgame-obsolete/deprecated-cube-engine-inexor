@@ -66,7 +66,7 @@ void particle_system::init_defaults()
 	noop_emitter_type = add_particle_emitter_type("noop_emitter", noop_particle_type, 0.0f, 0.0f, 0, 1000000000, "noop_emitter");
 	noop_emitter_inst = noop_emitter_type->create_instance(vec(0.0f, 0.0f, 0.0f), vec(0.0f, 0.0f, 0.0f));
 	noop_modifier_type = add_particle_modifier_type("noop", "noop_modifier");
-	noop_modifier_inst = noop_modifier_type->create_instance(vec(0.0f, 0.0f, 0.0f));
+	noop_modifier_inst = noop_modifier_type->create_instance(); // vec(0.0f, 0.0f, 0.0f));
 	noop_initializer_type = add_particle_initializer_type("noop", "noop_initializer");
 	noop_initializer_inst = noop_initializer_type->create_instance();
 	conoutf("finished init defaults");
@@ -88,7 +88,7 @@ void particle_system::clear_particle_pools()
 	// Also clean up every particle instance reference in the renderers
 	for(std::vector<particle_renderer_instance*>::iterator pr_it = particle_renderer_instances.begin(); pr_it != particle_renderer_instances.end(); ++pr_it)
 	{
-		(*pr_it)->particles.clear();
+		(*pr_it)->instances.clear();
 	}
 }
 
@@ -104,7 +104,7 @@ void particle_system::cleanup()
 		(*it)->enabled = false;
 	for(std::vector<particle_renderer_instance*>::iterator pr_it = particle_renderer_instances.begin(); pr_it != particle_renderer_instances.end(); ++pr_it)
 	{
-		(*pr_it)->particles.clear();
+		(*pr_it)->instances.clear();
 	}
 	remove_all_particle_renderer_instances();
 	clear_particle_instances();

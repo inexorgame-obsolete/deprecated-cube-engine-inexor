@@ -32,15 +32,15 @@ void particle_system::render_particles()
 			{
 				(*pr_it)->type->pr_impl->before(*pr_it);
 
-				std::list<particle_instance*>::iterator p_it = (*pr_it)->particles.begin();
-				while (p_it != (*pr_it)->particles.end())
+				std::list<particle_instance*>::iterator p_it = (*pr_it)->instances.begin();
+				while (p_it != (*pr_it)->instances.end())
 				{
 					if ((*p_it)->remaining > 0)
 					{
 						(*pr_it)->type->pr_impl->render(*pr_it, *p_it);
 						++p_it;
 					} else {
-						p_it = (*pr_it)->particles.erase(p_it);
+						p_it = (*pr_it)->instances.erase(p_it);
 					}
 				}
 				(*pr_it)->type->pr_impl->after(*pr_it);

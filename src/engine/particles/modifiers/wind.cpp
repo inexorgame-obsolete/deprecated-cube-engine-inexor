@@ -23,8 +23,9 @@ public:
 		time_factor = elapsedtime / ps.particle_frame;
 		float rx = fabs(sin(ps.particlemillis));
 		float ry = fabs(cos(ps.particlemillis));
-		p_inst->vel.x += pm_inst->vel.x * rx * time_factor;
-		p_inst->vel.y += pm_inst->vel.y * ry * time_factor;
+		vec vel = vec(pm_inst->positions[1]->o).sub(pm_inst->positions[0]->o);
+		p_inst->vel.x += vel.x * rx * time_factor;
+		p_inst->vel.y += vel.y * ry * time_factor;
 	}
 
 	inline void modify(particle_modifier_instance *pm_inst, int elapsedtime) { }

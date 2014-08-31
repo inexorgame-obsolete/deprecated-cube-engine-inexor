@@ -48,7 +48,7 @@ void particle_system::emit_particles(particle_emitter_instance* pe_inst, int ela
 			// add particle instance to it's renderer
 			for(std::list<particle_instance*>::iterator p_it = particles.begin(); p_it != particles.end(); ++p_it)
 			{
-				(*p_it)->type->pr_inst->particles.push_back(*p_it);
+				(*p_it)->type->pr_inst->instances.push_back(*p_it);
 			}
 		}
 	}

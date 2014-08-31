@@ -17,16 +17,15 @@ public:
 	virtual ~bb_culling() { }
 
 	/**
-	 * The bounding box center is the origin emitter. The boundaries are
-	 * the emitter position plus/minus x/y/z of the o-vector of the modifier.
+	 * The bounding box boundaries are the two attached positions.
 	 */
 	inline void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime) {
-		if (p_inst->o.x < p_inst->pe_inst->o.x - pm_inst->o.x
-			|| p_inst->o.y < p_inst->pe_inst->o.y - pm_inst->o.y
-			|| p_inst->o.z < p_inst->pe_inst->o.z - pm_inst->o.z
-			|| p_inst->o.x > p_inst->pe_inst->o.x + pm_inst->o.x
-			|| p_inst->o.y > p_inst->pe_inst->o.y + pm_inst->o.y
-			|| p_inst->o.z > p_inst->pe_inst->o.z + pm_inst->o.z
+		if (p_inst->o.x < pm_inst->positions[0]->o.x
+			|| p_inst->o.y < pm_inst->positions[0]->o.y
+			|| p_inst->o.z < pm_inst->positions[0]->o.z
+			|| p_inst->o.x > pm_inst->positions[1]->o.x
+			|| p_inst->o.y > pm_inst->positions[1]->o.y
+			|| p_inst->o.z > pm_inst->positions[1]->o.z
 		) {
 			p_inst->remaining = 0;
 		}
