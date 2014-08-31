@@ -30,20 +30,20 @@ void particle_system::render_particles()
 			int started = SDL_GetTicks();
 			for(std::vector<particle_renderer_instance*>::iterator pr_it = particle_renderer_instances.begin(); pr_it != particle_renderer_instances.end(); ++pr_it)
 			{
-				(*pr_it)->type->pr_impl->before(*pr_it);
+				(*pr_it)->type->impl->before(*pr_it);
 
 				std::list<particle_instance*>::iterator p_it = (*pr_it)->instances.begin();
 				while (p_it != (*pr_it)->instances.end())
 				{
 					if ((*p_it)->remaining > 0)
 					{
-						(*pr_it)->type->pr_impl->render(*pr_it, *p_it);
+						(*pr_it)->type->impl->render(*pr_it, *p_it);
 						++p_it;
 					} else {
 						p_it = (*pr_it)->instances.erase(p_it);
 					}
 				}
-				(*pr_it)->type->pr_impl->after(*pr_it);
+				(*pr_it)->type->impl->after(*pr_it);
 			}
 			timer_renderer = SDL_GetTicks() - started;
 		} catch (int e) {
@@ -61,7 +61,7 @@ particle_renderer_type* particle_system::add_particle_renderer_type(std::string 
 		pr_type->texture = texture;
 		pr_type->shader = shader;
 		pr_type->color = color;
-		pr_type->pr_impl = particle_renderer_implementations_map[impl];
+		pr_type->impl = particle_renderer_implementations_map[impl];
 		particle_renderer_types.push_back(pr_type);
 		particle_renderer_types_map[name] = pr_type;
 		ps.count_particle_renderer_types++;

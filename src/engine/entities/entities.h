@@ -27,6 +27,20 @@ struct entity_type
 };
 
 /**
+ * An entity type.
+ */
+template<class ENTITY_IMPLEMENTATION>
+struct entity_implemenation_type : public entity_type
+{
+
+	/**
+	 * The implementation.
+	 */
+	ENTITY_IMPLEMENTATION *impl;
+
+};
+
+/**
  * An instance of an entity type.
  */
 template<class ENTITY_TYPE>
@@ -63,16 +77,6 @@ struct positional_entity_instance : public entity_instance<ENTITY_TYPE>
 	 * Entity position.
 	 */
 	vec o;
-
-	/**
-	 * Rendering of the entity in normal mode.
-	 */
-	void render();
-
-	/**
-	 * Rendering of the entity in edit mode;
-	 */
-	void render_edit();
 
 };
 
@@ -248,6 +252,12 @@ struct entity_relationship_type
 struct entity_system
 {
 
+	entity_system();
+	~entity_system();
+
+	void cleanup();
+
+	void render_entities();
 	// entity_instance* create_entity();
 
 	// void remove_entity(entity_instance* entity);

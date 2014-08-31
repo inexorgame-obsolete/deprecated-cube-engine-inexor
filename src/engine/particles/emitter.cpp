@@ -40,11 +40,11 @@ void particle_system::emit_particles(particle_emitter_instance* pe_inst, int ela
 		{
 			// emit particles for a single batch; the number of particles
 			// per batch is defined in the batch_size variable
-			std::list<particle_instance*> particles = pe_inst->type->pe_impl->emit(pe_inst, elapsedtime);
+			std::list<particle_instance*> particles = pe_inst->type->impl->emit(pe_inst, elapsedtime);
 			// initialize emitted particles for the current batch
 			for(std::vector<particle_initializer_instance*>::iterator pi_it = pe_inst->initializers.begin(); pi_it != pe_inst->initializers.end(); ++pi_it)
 			{
-				(*pi_it)->type->pi_impl->init(*pi_it, particles, elapsedtime);
+				(*pi_it)->type->impl->init(*pi_it, particles, elapsedtime);
 			}
 
 			// add particle instance to it's renderer
@@ -90,7 +90,7 @@ particle_emitter_type* particle_system::add_particle_emitter_type(const std::str
 		pe_type->rate = rate;
 		pe_type->batch_size = 1;
 		pe_type->p_type = particle_types_map[p_type];
-		pe_type->pe_impl = particle_emitter_implementations_map[impl];
+		pe_type->impl = particle_emitter_implementations_map[impl];
 		particle_emitter_types.push_back(pe_type);
 		particle_emitter_types_map[name] = pe_type;
 		count_particle_emitter_types++;
@@ -113,7 +113,7 @@ particle_emitter_type* particle_system::add_particle_emitter_type(const std::str
 		pe_type->rate = rate;
 		pe_type->batch_size = 1;
 		pe_type->p_type = p_type;
-		pe_type->pe_impl = particle_emitter_implementations_map[impl];
+		pe_type->impl = particle_emitter_implementations_map[impl];
 		particle_emitter_types.push_back(pe_type);
 		particle_emitter_types_map[name] = pe_type;
 		count_particle_emitter_types++;

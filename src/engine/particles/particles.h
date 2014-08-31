@@ -185,7 +185,7 @@ struct particle_renderer_instance : public entity_renderer_instance<particle_ren
 /**
  * Particle modifiers are altering the state of a particle (for example the position).
  */
-struct particle_modifier_instance : public entity_modifier_instance<particle_modifier_type, entity_type>
+struct particle_modifier_instance : public entity_modifier_instance<particle_modifier_type, entity_implemenation_type<particle_modifier_implementation> >
 {
 
 	/**
@@ -198,7 +198,7 @@ struct particle_modifier_instance : public entity_modifier_instance<particle_mod
 /**
  * Particle initializers are initializing the state of a particle.
  */
-struct particle_initializer_instance : public entity_initializer_instance<particle_initializer_type, entity_type>
+struct particle_initializer_instance : public entity_initializer_instance<particle_initializer_type, entity_implemenation_type<particle_initializer_implementation> >
 {
 
 	/**
@@ -353,7 +353,7 @@ struct particle_type : public entity_type
  * A particle emitter type. Notice that the actual implementation of
  * an particle emitter type needs to be bind using a function pointer.
  */
-struct particle_emitter_type : public entity_type
+struct particle_emitter_type : public entity_implemenation_type<particle_emitter_implementation>
 {
 
 	/**
@@ -387,11 +387,6 @@ struct particle_emitter_type : public entity_type
 	int batch_size;
 
 	/**
-	 * The implementation.
-	 */
-	particle_emitter_implementation *pe_impl;
-
-	/**
 	 * The modifiers to apply on particles spawned by emitters of this type.
 	 */
 	std::vector<particle_modifier_instance*> modifiers;
@@ -411,7 +406,7 @@ struct particle_emitter_type : public entity_type
 /**
  * A particle renderer type.
  */
-struct particle_renderer_type : public entity_type
+struct particle_renderer_type : public entity_implemenation_type<particle_renderer_implementation>
 {
 
 	/**
@@ -430,11 +425,6 @@ struct particle_renderer_type : public entity_type
 	vec4 color;
 
 	/**
-	 * The implementation.
-	 */
-	particle_renderer_implementation *pr_impl;
-
-	/**
 	 * Creates an particle renderer instance of this type.
 	 */
 	particle_renderer_instance* create_instance(std::string name);
@@ -444,13 +434,8 @@ struct particle_renderer_type : public entity_type
 /**
  * A particle modifier type.
  */
-struct particle_modifier_type : public entity_type
+struct particle_modifier_type : public entity_implemenation_type<particle_modifier_implementation>
 {
-
-	/**
-	 * The implementation.
-	 */
-	particle_modifier_implementation *pm_impl;
 
 	/**
 	 * Generic pointers per type.
@@ -472,13 +457,8 @@ struct particle_modifier_type : public entity_type
 /**
  * A particle initializer type.
  */
-struct particle_initializer_type : public entity_type
+struct particle_initializer_type : public entity_implemenation_type<particle_initializer_implementation>
 {
-
-	/**
-	 * The implementation.
-	 */
-	particle_initializer_implementation *pi_impl;
 
 	/**
 	 * Generic pointers per type.

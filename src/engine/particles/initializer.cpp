@@ -9,7 +9,7 @@ particle_initializer_type* particle_system::add_particle_initializer_type(std::s
 	{
 		particle_initializer_type* pi_type = new particle_initializer_type;
 		pi_type->name = name;
-		pi_type->pi_impl = particle_initializer_implementations_map[impl];
+		pi_type->impl = particle_initializer_implementations_map[impl];
 		particle_initializer_types.push_back(pi_type);
 		particle_initializer_types_map[name] = pi_type;
 		conoutf("Added particle initializer type \"%s\" of implementation \"%s\"", name.c_str(), impl.c_str());

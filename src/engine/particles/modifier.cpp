@@ -15,14 +15,14 @@ void particle_system::modify_particles(int elapsedtime)
 		// Called for each modifier instances.
 		for(std::vector<particle_modifier_instance*>::iterator pm_it = particle_modifier_instances.begin(); pm_it != particle_modifier_instances.end(); ++pm_it)
 		{
-			(*pm_it)->type->pm_impl->modify(*pm_it, elapsedtime);
+			(*pm_it)->type->impl->modify(*pm_it, elapsedtime);
 		}
 		// Called for each particle instance and their modifier instances.
 		for(std::list<particle_instance*>::iterator p_it = alive_pool.begin(); p_it != alive_pool.end(); ++p_it)
 		{
 			for(std::vector<particle_modifier_instance*>::iterator pm_it = (*p_it)->pe_inst->modifiers.begin(); pm_it != (*p_it)->pe_inst->modifiers.end(); ++pm_it)
 			{
-				(*pm_it)->type->pm_impl->modify(*pm_it, *p_it, elapsedtime);
+				(*pm_it)->type->impl->modify(*pm_it, *p_it, elapsedtime);
 			}
 		}
 		timer_modifier = SDL_GetTicks() - started;
@@ -45,7 +45,7 @@ particle_modifier_type* particle_system::add_particle_modifier_type(std::string 
 	{
 		particle_modifier_type* pm_type = new particle_modifier_type;
 		pm_type->name = name;
-		pm_type->pm_impl = particle_modifier_implementations_map[impl];
+		pm_type->impl = particle_modifier_implementations_map[impl];
 		particle_modifier_types.push_back(pm_type);
 		particle_modifier_types_map[name] = pm_type;
 		conoutf("Added particle modifier type \"%s\" of implementation \"%s\"", name.c_str(), impl.c_str());
