@@ -85,6 +85,20 @@ struct entity_emitter_instance : public positional_entity_instance<ENTITY_TYPE>
 	 */
 	bool enabled;
 
+};
+
+template<class ENTITY_TYPE>
+struct entity_event_emitter_instance : public entity_emitter_instance<ENTITY_TYPE>
+{
+
+	// TODO: event stuff
+
+};
+
+template<class ENTITY_TYPE>
+struct entity_time_emitter_instance : public entity_emitter_instance<ENTITY_TYPE>
+{
+
 	/**
 	 * Emit entities every <rate> milliseconds.
 	 */

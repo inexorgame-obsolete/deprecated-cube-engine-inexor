@@ -103,7 +103,7 @@ struct particle_instance : public positional_entity_instance<particle_type>
  * A particle emitter instance is an instance of a particle emitter
  * type.
  */
-struct particle_emitter_instance : public entity_emitter_instance<particle_emitter_type>
+struct particle_emitter_instance : public entity_time_emitter_instance<particle_emitter_type>
 {
 
 	/**
@@ -115,11 +115,6 @@ struct particle_emitter_instance : public entity_emitter_instance<particle_emitt
 	 * The start velocity of the emitted particle.
 	 */
 	vec vel;
-
-	/**
-	 * The entity. May be replaced by a new entity implementation.
-	 */
-	extentity *ent;
 
 	/**
 	 * The start mass of an emitted particle instance.

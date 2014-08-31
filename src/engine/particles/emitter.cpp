@@ -14,6 +14,7 @@ void particle_system::emit_particles(int elapsedtime)
 		}
 		timer_emitter = SDL_GetTicks() - started;
 	}
+	/*
 	if (editmode)
 	{
 		for(std::vector<particle_emitter_instance*>::iterator it = particle_emitter_instances.begin(); it != particle_emitter_instances.end(); ++it)
@@ -22,6 +23,7 @@ void particle_system::emit_particles(int elapsedtime)
 			(*it)->o = vec((*it)->ent->o);
 		}
 	}
+	*/
 }
 
 void particle_system::emit_particles(particle_emitter_instance* pe_inst, int elapsedtime)
@@ -158,10 +160,12 @@ particle_emitter_instance* particle_emitter_type::create_instance(const vec &o, 
 	// float yaw;
 	// float pitch;
 	// vectoyawpitch(*vel, &yaw, &pitch);
+/*
 	int idx;
 	pe_inst->ent = newentity(true, vec(o), EP_EMITTER, 0, 0, 0, 0, 0, idx);  // yeah i love the hard coded entity system, which would break every map if i would insert a new entity type on engine level. This is only a quick fix and have to replace by an integration into the new entity system
 	addentity(idx);
 	pe_inst->ent->spawned = true;
+*/
 
 	ps.particle_emitter_instances.push_back(pe_inst);
 	ps.count_particle_emitter_instances++;
