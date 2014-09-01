@@ -2357,7 +2357,25 @@ VARP(wallclock, 0, 0, 1);
 VARP(wallclock24, 0, 0, 1);
 VARP(wallclocksecs, 0, 0, 1);
 
-static time_t walltime = 0;
+static time_t systime = 0;
+static string timebuf;
+
+//returns the time in the given format
+const char *gettimestr(const char *format, bool forcelowercase)
+{
+	if(!systime) { systime = time(NULL); systime -= totalmillis/1000; if(!systime) systime++; }
+    time_t timeoffset = systime + totalmillis/1000;
+    strftime(timebuf, sizeof(timebuf), format, localtime(&timeoffset));
+
+    if(forcelowercase)// hack because not all platforms (windows) support %P lowercase option // also strip leading 0 from 12 hour time
+    {
+        char *dst = timebuf;
+        const char *src = &timebuf[timebuf[0]=='0' ? 1 : 0];
+        while(*src) *dst++ = tolower(*src++);
+        *dst++ = '\0'; 
+    }
+	return timebuf;
+}
 
 VARP(showfps, 0, 1, 1);
 VARP(showfpsrange, 0, 0, 1);
@@ -2453,19 +2471,10 @@ void gl_drawhud()
 
             if(wallclock)
             {
-                if(!walltime) { walltime = time(NULL); walltime -= totalmillis/1000; if(!walltime) walltime++; }
-                time_t walloffset = walltime + totalmillis/1000;
-                struct tm *localvals = localtime(&walloffset);
-                static string buf;
-                if(localvals && strftime(buf, sizeof(buf), wallclocksecs ? (wallclock24 ? "%H:%M:%S" : "%I:%M:%S%p") : (wallclock24 ? "%H:%M" : "%I:%M%p"), localvals))
+				const char *walltime = gettimestr(wallclocksecs ? (wallclock24 ? "%H:%M:%S" : "%I:%M:%S%p") : (wallclock24 ? "%H:%M" : "%I:%M%p"), wallclock24 ? false : true);
+                if(walltime)
                 {
-                    // hack because not all platforms (windows) support %P lowercase option
-                    // also strip leading 0 from 12 hour time
-                    char *dst = buf;
-                    const char *src = &buf[!wallclock24 && buf[0]=='0' ? 1 : 0];
-                    while(*src) *dst++ = tolower(*src++);
-                    *dst++ = '\0'; 
-                    draw_text(buf, conw-5*FONTH, conh-FONTH*3/2-roffset);
+                    draw_text(walltime, conw-5*FONTH, conh-FONTH*3/2-roffset);
                     roffset += FONTH;
                 }
             }
