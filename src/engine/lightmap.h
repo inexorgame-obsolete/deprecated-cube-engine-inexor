@@ -1,15 +1,23 @@
 #define LM_MINW 2
 #define LM_MINH 2
 #define LM_MAXW 128
-#define LM_MAXH 128
-#define LM_PACKW 512
+#define LM_MAXH 128  //min and maximum dimensions of one lightmap-sample (the smaller the samples the bigger the resolution)
+#define LM_PACKW 512 //size of one packed and saved lightmap
 #define LM_PACKH 512
 
+//a helper node to save more lightmaps on a lightmaptexture
+//it basicly just containes its position on the lmtex (x, y) , the area it contains (w,h) and how much unused pixels in this area are
+//structure is as follows: 
+//                          rootnode (every lightmaptex has one)
+//           child1                       child2
+//    child1a      child1b         child2a       child2b 
+//       ...
+//
 struct PackNode
 {
     PackNode *child1, *child2;
     ushort x, y, w, h;
-    int available;
+    int available; //amount of pixels without lightmap-information
 
     PackNode() : child1(0), child2(0), x(0), y(0), w(LM_PACKW), h(LM_PACKH), available(min(LM_PACKW, LM_PACKH)) {}
     PackNode(ushort x, ushort y, ushort w, ushort h) : child1(0), child2(0), x(x), y(y), w(w), h(h), available(min(w, h)) {}
@@ -42,9 +50,9 @@ enum
 struct LightMap
 {
     int type, bpp, tex, offsetx, offsety;
-    PackNode packroot;
-    uint lightmaps, lumels;
-    int unlitx, unlity; 
+    PackNode packroot;		//the availability-information-tree
+    uint lightmaps, lumels; //lumel = lightmap pixel
+    int unlitx, unlity;		//one unlit lumel
     uchar *data;
 
     LightMap()

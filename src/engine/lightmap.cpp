@@ -6,6 +6,7 @@
 struct lightmapinfo;
 struct lightmaptask;
 
+/// Structure containing anything to calculate while calclighting, which gets passed to the lightmap threads.
 struct lightmapworker
 {
     uchar *buf;
@@ -17,6 +18,7 @@ struct lightmapworker
     bvec *raybuf;
     uchar *ambient, *blur;
     vec *colordata, *raydata;
+    char *occlusiondata;
     int type, bpp, w, h, orient, rotate;
     VSlot *vslot;
     Slot *slot;
@@ -275,10 +277,13 @@ void show_calclight_progress()
 #define CHECK_PROGRESS_LOCKED(exit, before, after) CHECK_CALCLIGHT_PROGRESS_LOCKED(exit, show_calclight_progress, before, after)
 #define CHECK_PROGRESS(exit) CHECK_PROGRESS_LOCKED(exit, , )
 
+//returns the position on a lightmaptexture, where it finds enough space
+//tx and ty will be the returned positions, tw and th are the dimensions for the needed space
+//it will maybe create subnodes if necessary
 bool PackNode::insert(ushort &tx, ushort &ty, ushort tw, ushort th)
 {
     if((available < tw && available < th) || w < tw || h < th)
-        return false;
+        return false; //if there are not enough unused pixels than needed, return false and go for another texture
     if(child1)
     {
         bool inserted = child1->insert(tx, ty, tw, th) ||
@@ -310,7 +315,8 @@ bool PackNode::insert(ushort &tx, ushort &ty, ushort tw, ushort th)
     available = max(child1->available, child2->available);
     return inserted;
 }
-
+//copys pixels of the dimensions tw and th from src into this lightmap
+//it returns in tx and ty, where it copied the pixels to (the position on the lightmaptex) 
 bool LightMap::insert(ushort &tx, ushort &ty, uchar *src, ushort tw, ushort th)
 {
     if((type&LM_TYPE) != LM_BUMPMAP1 && !packroot.insert(tx, ty, tw, th))
@@ -319,7 +325,8 @@ bool LightMap::insert(ushort &tx, ushort &ty, uchar *src, ushort tw, ushort th)
     copy(tx, ty, src, tw, th);
     return true;
 }
-
+//copy pixels of the dimensions tw and th from src to tx and ty on this lightmap         //todo
+//overwrites any existing pixels in this area
 void LightMap::copy(ushort tx, ushort ty, uchar *src, ushort tw, ushort th)
 {
     uchar *dst = data + bpp * tx + ty * bpp * LM_PACKW;
@@ -333,6 +340,8 @@ void LightMap::copy(ushort tx, ushort ty, uchar *src, ushort tw, ushort th)
     lumels += tw * th;
 }
 
+//copies one "unlit"-pixel to the lightmap and set 
+// unlitx and unlity to the postion of this
 static void insertunlit(int i)
 {
     LightMap &l = lightmaps[i];
@@ -523,13 +532,14 @@ static void updatelightmap(const layoutinfo &surface)
 //(rays-hitting-a-wall / total-rays-sent -> value between 0 and 1.0) 1.0 = totally occlued, 0.0 = no occlusion
 
 VARR(ambientocclusion, 0, 128, 255); //factor how much the corners will be darkened
-FVARR(ambientocclusionradius, 1.0, 2.0, 40.0);
-FVARR(ambientocclusionprecision, 0, 4., 17.); 
+FVARR(ambientocclusionradius, 1.0, 2.0, 200.0);
 
 VAR(debugao, 0, 0, 1);
 
+/// Calculates a value between 0 and 1 representing the occulation of a pixel
+/// @attention crashes if a normal vector of length zero occurs
 static float calcocclusion(const vec &o, const vec &normal, float tolerance)
-{
+{ /* more precise but slower:
 	static const vec rays[17] =
     { 
 		vec(0, 0, 1), //the main direction of the rays: upwards
@@ -555,15 +565,26 @@ static float calcocclusion(const vec &o, const vec &normal, float tolerance)
         vec(cosf(358*RAD)*cosf(80*RAD), sinf(358*RAD)*cosf(80*RAD), sinf(80*RAD)),
        //degrees around z     21  43  66  88  111 133 156 178 201 223 246 268 291 313 336 358         (building the circle)
        //degrees around xandy 50  60  70  80   50  60  70  80  50  60  70  80  50  60  70  80         (making it an upwardly open cone)					  
+    }; */
+    #define AO_NUM_RAYS 5
+	static const vec rays[AO_NUM_RAYS] =
+    {
+			vec(0, 0, 1),
+            vec(cosf(66*RAD)*cosf(65*RAD), sinf(66*RAD)*cosf(65*RAD), sinf(65*RAD)),
+            vec(cosf(156*RAD)*cosf(65*RAD), sinf(156*RAD)*cosf(65*RAD), sinf(65*RAD)),
+            vec(cosf(246*RAD)*cosf(65*RAD), sinf(246*RAD)*cosf(65*RAD), sinf(65*RAD)),
+            vec(cosf(336*RAD)*cosf(65*RAD), sinf(336*RAD)*cosf(65*RAD), sinf(65*RAD))        
     };
+
+
 	//rotate the rays into the normal direction
 	//(normals have to be normalized!)
 	matrix3x3 rotationmatrix;
 	bool needsrotation = false;
 	if( normal != rays[0]) 
 	{
-	vec axis; 
-		axis.cross(rays[0], normal); //todo (?) special case null normal (?)
+	    vec axis; 
+		axis.cross(rays[0], normal);
 		if(axis.magnitude() == 0)  axis = vec(1, 0, 0);// special case angle == 180 (cross product == 0)
 		float angle = acos(rays[0].dot(normal));
 		rotationmatrix.rotate(angle, axis); //create a matrix
@@ -571,15 +592,14 @@ static float calcocclusion(const vec &o, const vec &normal, float tolerance)
 	}
 
 	int occluedrays = 0;
-	loopi(17) 
+	loopi(AO_NUM_RAYS) 
     {	
-		if(occluedrays >= ambientocclusionprecision) break;		
 		vec ray(needsrotation ? rotationmatrix.transform(rays[i]) : rays[i]);
 		if(shadowray(vec(ray).mul(tolerance).add(o), ray, ambientocclusionradius, RAY_ALPHAPOLY|RAY_SHADOW, NULL) <= (ambientocclusionradius-1.0f)) occluedrays++; 
 				//check whether there's a wall in the field around the sample
     }
 
-	return min(1.0f, max( 0.0f, float(occluedrays)/ambientocclusionprecision));
+	return clamp(float(occluedrays)/float(AO_NUM_RAYS), 0.0f, 1.0f);
 }
 
 static uint generatelumel(lightmapworker *w, const float tolerance, uint lightmask, const vector<const extentity *> &lights, const vec &target, const vec &normal, vec &sample, int x, int y)
@@ -680,9 +700,9 @@ static uint generatelumel(lightmapworker *w, const float tolerance, uint lightma
 		sample.b = 0;
 	}
 	else {
-		sample.r = min(255.0f, max(r, float(ambientcolor[0])) - ambientocclusion * occlusion);
-		sample.g = min(255.0f, max(g, float(ambientcolor[1])) - ambientocclusion * occlusion);
-		sample.b = min(255.0f, max(b, float(ambientcolor[2])) - ambientocclusion * occlusion);	
+		sample.r = clamp( max(r, float(ambientcolor[0])) - ambientocclusion*occlusion, 0.0f, 255.0f);
+		sample.g = clamp( max(g, float(ambientcolor[1])) - ambientocclusion*occlusion, 0.0f, 255.0f);
+		sample.b = clamp( max(b, float(ambientcolor[2])) - ambientocclusion*occlusion, 0.0f, 255.0f);	
 	}
     return lightused;
 }
@@ -845,6 +865,7 @@ static bool generatelightmap(lightmapworker *w, float lpu, const lerpvert *lv, i
      || y < blurlms \
      || y+1 > w->h - blurlms \
      ? edgetolerance : 1)
+
             float t = EDGE_TOLERANCE(x, y) * tolerance;
             vec u = x < sidex ? vec(xstep1).mul(x).add(vec(ystep1).mul(y)).add(origin1) : vec(xstep2).mul(x).add(vec(ystep2).mul(y)).add(origin2);
             lightused |= generatelumel(w, t, 0, w->lights, u, vec(normal).normalize(), *sample, x, y);
@@ -2197,6 +2218,13 @@ static void cleanupthreads()
     cleanuplocks();
     lightmapping = 0;
 }
+/* calclight
+*  Calculate the impact of the light-entities on the Geometry and consequently generates the Lightmaps
+*  Parameters: int quality - Either -1 0 or 1 .
+*             -1 performance optimized version
+*              0 reuses the last used quality-options 
+*              1 is best quality (antialiased lightmaps, ambient occlusion, shadows of mapmodels). It has no impact on the light precission thou. 
+*/
 
 void calclight(int *quality)
 {
@@ -2206,7 +2234,7 @@ void calclight(int *quality)
         return;
     }
     renderbackground("computing lightmaps... (esc to abort)");
-    mpremip(true);
+    mpremip(true);                                                        //merge faces and consequently reduce vertex data
     optimizeblendmap();
     loadlayermasks();
     int numthreads = lightthreads > 0 ? lightthreads : numcpus;
@@ -2253,7 +2281,9 @@ void calclight(int *quality)
 COMMAND(calclight, "i");
 
 VAR(patchnormals, 0, 0, 1);
-
+/* patchlight
+* Same as calclight, but generates lightmaps just for parts of the geometry without those.
+*/
 void patchlight(int *quality)
 {
     if(noedit(true)) return;

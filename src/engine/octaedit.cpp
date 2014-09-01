@@ -2038,7 +2038,7 @@ void gettex()
         return;
     }
 }
-
+//receive current texture index
 void getcurtex()
 {
     if(noedit(true)) return;
@@ -2047,7 +2047,7 @@ void getcurtex()
     if(!texmru.inrange(index)) return;
     intret(texmru[index]);
 }
-
+//receive tex id of selected face
 void getseltex()
 {
     if(noedit(true)) return;
@@ -2055,7 +2055,7 @@ void getseltex()
     if(c.children || isempty(c)) return;
     intret(c.texture[sel.orient]);
 }
-
+//receive the namestring of a tex id. (subslot is which subtexture, default is diffuse. others may be bumpmap, depthmap, specmap..)
 void gettexname(int *tex, int *subslot)
 {
     if(noedit(true) || *tex<0) return;
