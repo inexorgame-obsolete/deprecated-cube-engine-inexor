@@ -13,12 +13,15 @@ compiler:
   - gcc
   
 env:
+  global:
+  - secure: "MTtHk1WtIXI9LNVw6I545sJZiI0QO6IZcgH0mcd7/P77RCFquiT+Rrf3PkOSfVweC9jHE/X9ZapmYFAAhPaeKaSHxNVid309pJDISf3EAwz9Ge1JZ3cMcmTv+XkKGUf7RsdJIk9wyvQ9J5VkOLILKA9sEHd/jSPKzA88jOFk15w="
+  - secure: "M/FV24V5PmynNb6qONaeAfxFcv6tFbG2yCzZ6XIJlCFdr6SWEhatLjBdOUNP+PMml1jPPL/35lVEsODO/I4cbXWL74U4zZwN81IypTZpWziW0N5lBvkIRbEgZZ6nyUSDA+HgOfm7Yr01nmMmX/cqxDBYWkCSD+cAGhXaajRxKqw="  
+
+  matrix:
   - CMAKE_FLAGS=
   - CMAKE_FLAGS=-DRELEASE_BUILD=1
   - CMAKE_FLAGS="-DCMAKE_TOOLCHAIN_FILE=../src/platform_windows/linux-toolchain-mingw.cmake -DMINGW_TYPE=classic"
   - CMAKE_FLAGS="-DCMAKE_TOOLCHAIN_FILE=../src/platform_windows/linux-toolchain-mingw.cmake -DRELEASE_BUILD=1  -DMINGW_TYPE=classic"
-  - secure: "MTtHk1WtIXI9LNVw6I545sJZiI0QO6IZcgH0mcd7/P77RCFquiT+Rrf3PkOSfVweC9jHE/X9ZapmYFAAhPaeKaSHxNVid309pJDISf3EAwz9Ge1JZ3cMcmTv+XkKGUf7RsdJIk9wyvQ9J5VkOLILKA9sEHd/jSPKzA88jOFk15w="
-  - secure: "M/FV24V5PmynNb6qONaeAfxFcv6tFbG2yCzZ6XIJlCFdr6SWEhatLjBdOUNP+PMml1jPPL/35lVEsODO/I4cbXWL74U4zZwN81IypTZpWziW0N5lBvkIRbEgZZ6nyUSDA+HgOfm7Yr01nmMmX/cqxDBYWkCSD+cAGhXaajRxKqw="
 
 
 notifications:
