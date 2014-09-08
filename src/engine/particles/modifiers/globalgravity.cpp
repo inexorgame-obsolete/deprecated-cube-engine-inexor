@@ -22,7 +22,7 @@ public:
 		mass = pm_inst->attributes["mass"];
 		for(std::list<particle_instance*>::iterator p_it = ps.alive_pool.begin(); p_it != ps.alive_pool.end(); ++p_it)
 		{
-			dz = (*p_it)->o.z - pm_inst->positions[0]->o.z;
+			dz = (*p_it)->pos->o.z - pm_inst->positions[0]->o.z;
 			if (dz <= dzmin || dz >= dzmax) continue;
 			force = -((*p_it)->mass) * mass * gravity / (dz * dz);
 			(*p_it)->vel.z += (force * dz) / (dz * (*p_it)->mass);
@@ -30,6 +30,8 @@ public:
 	}
 
 	inline void modify(int elapsedtime) { }
+
+	void render_edit_overlay(particle_modifier_instance *entity_instance) { }
 
 private:
 

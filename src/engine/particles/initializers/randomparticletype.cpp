@@ -28,6 +28,8 @@ public:
 		}
 	}
 
+	void render_edit_overlay(particle_initializer_instance *entity_instance) { }
+
 private:
 
 	random_particle_type() : particle_initializer_implementation("random_particle_type") {

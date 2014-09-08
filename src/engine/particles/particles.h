@@ -9,6 +9,8 @@
 #include <deque>
 #include <iterator>
 #include "../entities/entities.h"
+#include "faces.h"
+#include "springs.h"
 #include "mu/muParser.h"
 
 struct particle_type;
@@ -16,12 +18,14 @@ struct particle_emitter_type;
 struct particle_renderer_type;
 struct particle_modifier_type;
 struct particle_initializer_type;
+struct face_type;
 
 struct particle_instance;
 struct particle_emitter_instance;
 struct particle_renderer_instance;
 struct particle_modifier_instance;
 struct particle_initializer_instance;
+struct face_instance;
 
 struct particle_emitter_implementation;
 struct particle_renderer_implementation;
@@ -185,20 +189,20 @@ struct particle_renderer_instance : public entity_renderer_instance<particle_ren
 /**
  * Particle modifiers are altering the state of a particle (for example the position).
  */
-struct particle_modifier_instance : public entity_modifier_instance<particle_modifier_type, entity_implemenation_type<particle_modifier_implementation> >
+struct particle_modifier_instance : public entity_modifier_instance<particle_modifier_type>
 {
 
 	/**
 	 * The entity. May be replaced by a new entity implementation.
 	 */
-	extentity *ent;
+	// extentity *ent;
 
 };
 
 /**
  * Particle initializers are initializing the state of a particle.
  */
-struct particle_initializer_instance : public entity_initializer_instance<particle_initializer_type, entity_implemenation_type<particle_initializer_implementation> >
+struct particle_initializer_instance : public entity_initializer_instance<particle_initializer_type>
 {
 
 	/**
@@ -223,25 +227,13 @@ struct particle_initializer_instance : public entity_initializer_instance<partic
 
 };
 
-struct particle_implementation_base {
-
-	/**
-	 * The name of the implementation.
-	 */
-	const std::string name;
-
-	particle_implementation_base(const std::string& name);
-	~particle_implementation_base();
-
-};
-
 /**
  * Interface for a particle emitter implementation.
  *
  * Particle emitters should register themselves in their constructor
  * using add_particle_emitter_type()
  */
-struct particle_emitter_implementation : public particle_implementation_base
+struct particle_emitter_implementation : public entity_implementation_base<particle_emitter_instance>
 {
 
 	particle_emitter_implementation(const std::string& name);
@@ -260,7 +252,7 @@ struct particle_emitter_implementation : public particle_implementation_base
  * Particle renderers should register themselves in their constructor
  * using add_particle_renderer_type()
  */
-struct particle_renderer_implementation : public particle_implementation_base
+struct particle_renderer_implementation : public entity_implementation_base<particle_renderer_instance>
 {
 
 	particle_renderer_implementation(const std::string& name);
@@ -289,7 +281,7 @@ struct particle_renderer_implementation : public particle_implementation_base
  * Particle modifiers should register themselves in their constructor
  * using add_particle_modifier_type()
  */
-struct particle_modifier_implementation : public particle_implementation_base
+struct particle_modifier_implementation : public entity_implementation_base<particle_modifier_instance>
 {
 
 	particle_modifier_implementation(const std::string& name);
@@ -323,7 +315,7 @@ struct particle_modifier_implementation : public particle_implementation_base
  * Particle initializers should register themselves in their constructor
  * using add_particle_initializer_type()
  */
-struct particle_initializer_implementation : public particle_implementation_base
+struct particle_initializer_implementation : public entity_implementation_base<particle_initializer_instance>
 {
 
 	particle_initializer_implementation(const std::string& name);
@@ -458,71 +450,6 @@ struct particle_initializer_type : public entity_initializer_type<particle_initi
 };
 
 /**
- * Springs between two particles.
- */
-struct spring_instance
-{
-
-	/**
-	 * The particle at the one side of the spring.
-	 */
-	particle_instance *p_inst_1;
-
-	/**
-	 * The particle at the other side of the spring.
-	 */
-	particle_instance *p_inst_2;
-
-	/**
-	 * The ideal length of the spring.
-	 */
-	float spring_length;
-
-	/**
-	 * The spring constant.
-	 */
-	float spring_constant;
-
-	/**
-	 * The spring friction.
-	 */
-	float spring_friction;
-
-	/**
-	 * If true, the spring is alive.
-	 */
-	bool alive;
-
-};
-
-struct spring_builder
-{
-	std::vector<std::string> *rules;
-	spring_builder* stretch_x();
-	spring_builder* stretch_y();
-	spring_builder* stretch_z();
-	spring_builder* stretch_xy();
-	spring_builder* stretch_xz();
-	spring_builder* stretch_yz();
-	spring_builder* stretch_xyz();
-	spring_builder* sheer_xy();
-	spring_builder* sheer_xz();
-	spring_builder* sheer_yz();
-	spring_builder* sheer_xyz();
-	spring_builder* bend_x();
-	spring_builder* bend_y();
-	spring_builder* bend_z();
-	spring_builder* bend_xy();
-	spring_builder* bend_xz();
-	spring_builder* bend_yz();
-	spring_builder* bend_xyz();
-	std::vector<std::string>* get();
-
-	spring_builder();
-	~spring_builder();
-};
-
-/**
  * Worker thread container for calculate particle physics in it's own thread.
  */
 struct particle_state_worker
@@ -575,6 +502,7 @@ struct particle_system
 	int count_particle_renderer_types;
 	int count_particle_modifier_types;
 	int count_particle_initializer_types;
+	int count_face_types;
 	int count_particle_emitter_implementations;
 	int count_particle_renderer_implementations;
 	int count_particle_modifier_implementations;
@@ -584,6 +512,7 @@ struct particle_system
 	int count_particle_renderer_instances;
 	int count_particle_modifier_instances;
 	int count_particle_initializer_instances;
+	int count_face_instances;
 	int count_spring_instances;
 	int count_alive_pool;
 	int count_dead_pool;
@@ -592,6 +521,7 @@ struct particle_system
 	int timer_renderer;
 	int timer_modifier;
 	int timer_initializer;
+	int timer_face;
 
 	// Abstract types - makes everything dynamic
 	std::vector<particle_type*> particle_types;
@@ -599,6 +529,7 @@ struct particle_system
 	std::vector<particle_renderer_type*> particle_renderer_types;
 	std::vector<particle_modifier_type*> particle_modifier_types;
 	std::vector<particle_initializer_type*> particle_initializer_types;
+	std::vector<face_type*> face_types;
 
 	// Name to type mappings
 	std::map<std::string, particle_type*> particle_types_map;
@@ -606,6 +537,7 @@ struct particle_system
 	std::map<std::string, particle_renderer_type*> particle_renderer_types_map;
 	std::map<std::string, particle_modifier_type*> particle_modifier_types_map;
 	std::map<std::string, particle_initializer_type*> particle_initializer_types_map;
+	std::map<std::string, face_type*> face_types_map;
 
 	// Implementations - singleton instances of a concrete implementation
 	std::vector<particle_emitter_implementation*> particle_emitter_implementations;
@@ -625,13 +557,17 @@ struct particle_system
 	std::vector<particle_renderer_instance*> particle_renderer_instances;
 	std::vector<particle_modifier_instance*> particle_modifier_instances;
 	std::vector<particle_initializer_instance*> particle_initializer_instances;
-	std::list<spring_instance *> spring_instances;
+	std::list<face_instance*> face_instances;
+	std::list<spring_instance*> spring_instances;
 
 	// Name to instance mappings
 	std::map<std::string, particle_renderer_instance*> particle_renderer_instances_map;
 
-	// The spring transformation rules
+	// The spring construction rules
 	std::map<std::string, ivec> spring_construction_rules;
+
+	// The face construction rules
+	std::map<std::string, ivec> face_construction_rules;
 
 	// Use pools for performance reasons
 	std::list<particle_instance*> alive_pool;
@@ -655,6 +591,7 @@ struct particle_system
 	particle_initializer_implementation* noop_initializer_impl;
 	particle_initializer_type* noop_initializer_type;
 	particle_initializer_instance* noop_initializer_inst;
+	face_type* noop_face_type;
 
 	particle_system();
 	~particle_system();
@@ -707,6 +644,17 @@ struct particle_system
 	void remove_all_particle_initializer_types();
 	void remove_all_particle_initializer_instances();
 
+	void render_faces();
+	face_type* add_face_type(std::string name, std::string texture);
+	face_instance* create_face_instance(face_type* f_type, particle_instance* p0, particle_instance* p1, particle_instance* p2, particle_instance* p3);
+	face_instance* create_face_instance(std::string f_type, particle_instance* p0, particle_instance* p1, particle_instance* p2, particle_instance* p3);
+	void remove_face_type(std::string name);
+	void remove_all_face_types();
+	void remove_all_face_instances();
+	// void add_face_construction_rule(std::string name, ivec rule);
+	// void add_face_construction_rule(std::string name, int x, int y, int z);
+	// void init_face_construction_rules();
+
 	void add_spring(spring_instance *spring_inst);
 	void add_spring_construction_rule(std::string name, ivec rule);
 	void add_spring_construction_rule(std::string name, int x, int y, int z);
@@ -720,5 +668,9 @@ struct particle_system
 };
 
 extern particle_system ps;
+
+#define printOpenGLError() printOglError(__FILE__, __LINE__)
+
+extern int printOglError(std::string file, int line);
 
 #endif /* ENGINE_PARTICLES_H */

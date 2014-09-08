@@ -17,20 +17,20 @@ public:
 	virtual ~cube_renderer() { }
 
 	void before(particle_renderer_instance *pr_inst) {
-		// glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
-        default_shader->set();
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		defaultshader->set();
 		glDisable(GL_CULL_FACE);
+		glDisable(GL_TEXTURE_2D);
 		// glEnable(GL_TEXTURE_2D);
-		// glShadeModel(GL_SMOOTH);
-		// particle_shader_notexture->set();
-        // tex = textureload(pr_inst->texture.c_str(), texclamp);
-        // glBindTexture(GL_TEXTURE_2D, tex->id);
+		// tex = textureload(pr_inst->texture.c_str(), texclamp);
+		// glBindTexture(GL_TEXTURE_2D, tex->id);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 		glEnable(GL_DEPTH_TEST);
-		// glDepthFunc(GL_LEQUAL);
-		glDepthMask(false);
+		glDepthMask(GL_FALSE);
 		glColor4f(pr_inst->color.r, pr_inst->color.g, pr_inst->color.b, pr_inst->color.a);
 		glBegin(GL_QUADS);
 	}
@@ -39,12 +39,12 @@ public:
 	 * Rendering of a colored cube.
 	 */
 	void render(particle_renderer_instance *pr_inst, particle_instance *p_inst) {
-		float bbMinX = p_inst->o.x - p_inst->density;
-		float bbMinY = p_inst->o.y - p_inst->density;
-		float bbMinZ = p_inst->o.z - p_inst->density;
-		float bbMaxX = p_inst->o.x + p_inst->density;
-		float bbMaxY = p_inst->o.y + p_inst->density;
-		float bbMaxZ = p_inst->o.z + p_inst->density;
+		float bbMinX = p_inst->pos->o.x - p_inst->density;
+		float bbMinY = p_inst->pos->o.y - p_inst->density;
+		float bbMinZ = p_inst->pos->o.z - p_inst->density;
+		float bbMaxX = p_inst->pos->o.x + p_inst->density;
+		float bbMaxY = p_inst->pos->o.y + p_inst->density;
+		float bbMaxZ = p_inst->pos->o.z + p_inst->density;
 
 		// TEST: colorize by velocity vector entries
 		glColor4f(p_inst->vel.r, p_inst->vel.g, p_inst->vel.b / 255.0f, 0.3f);
@@ -83,27 +83,31 @@ public:
 
 	void after(particle_renderer_instance *pr_inst) {
 		glEnd();
-		glDepthMask(true);
-        glDisable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
+		glDepthMask(GL_TRUE);
 		glDisable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glDisable(GL_TEXTURE_2D);
+        // glEnable(GL_DEPTH_TEST);
+		// glEnable(GL_CULL_FACE);
 		// glEnable(GL_TEXTURE_2D);
 		// particle_shader->set();
 		glPopMatrix();
+        // defaultshader->set();
 	}
+
+	void render_edit_overlay(particle_renderer_instance *entity_instance) { }
 
 private:
 
 	Texture *tex;
 	int texclamp;
-	Shader *default_shader;
+	Shader *shader;
 
 	cube_renderer() : particle_renderer_implementation("cube_renderer") {
 		ps.add_renderer_implementation(this);
 		tex = NULL;
 		texclamp = 0;
-		default_shader = lookupshaderbyname("default");
+		shader = lookupshaderbyname("stdworld");
 	}
 	cube_renderer( const cube_renderer& );
 	cube_renderer & operator = (const cube_renderer &);

@@ -31,7 +31,7 @@ public:
 			// get the particle type, mass and density from the emitter type
 			p_inst->type = pe_inst->p_type;
 			// conoutf("x:%3.1f y:%3.1f z:%3.1f", pe_inst->o.x, pe_inst->o.y, pe_inst->o.z);
-			p_inst->o = vec(pe_inst->o);
+			p_inst->pos->o = vec(pe_inst->pos->o);
 
 			// TODO: make sure the length of the vector from emitter to the spawn position is constant
 
@@ -54,6 +54,8 @@ public:
 		}
 		return emitted;
 	}
+
+	void render_edit_overlay(particle_emitter_instance *entity_instance) { }
 
 private:
 

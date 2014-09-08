@@ -1260,6 +1260,7 @@ int main(int argc, char **argv)
         recomputecamera();
         updateparticles();
         ps.update_particle_system();
+        es.update_entity_system();
         updatesounds();
 
         if(minimized) continue;

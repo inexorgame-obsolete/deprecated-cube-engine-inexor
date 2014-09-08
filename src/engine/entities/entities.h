@@ -2,11 +2,49 @@
 
 #define ENGINE_ENTITIES_H
 
+#include "engine.h"
 #include <string>
 #include <map>
 #include <vector>
 #include <list>
 #include <deque>
+#include <algorithm>
+
+struct position;
+
+struct entity_system
+{
+
+	int count_positions;
+	std::vector<position*> positions;
+	Shader *default_shader;
+
+	entity_system();
+	~entity_system();
+
+	void cleanup();
+
+	void update_entity_system();
+
+	void render_entities();
+
+	position* create_position(const vec &o);
+
+	void remove_position(position* pos);
+
+	// entity_instance* create_entity();
+
+	// void remove_entity(entity_instance* entity);
+
+	// entity_relationship_instance* create_relationship(entity_relationship_type* er_type, entity_instance *e_inst1, entity_instance *e_inst2);
+
+	// void remove_relationship(entity_relationship_type* er_type, entity_instance *e_inst1, entity_instance *e_inst2);
+
+	// std::list<entity_instance *> get_entities_by_type(entity_type *e_type);
+
+};
+
+extern entity_system es;
 
 /**
  * An entity type.
@@ -123,7 +161,7 @@ struct entity_initializer_type : public entity_implemenation_type<ENTITY_IMPLEME
 /**
  * An instance of an entity type.
  */
-template<class ENTITY_TYPE>
+template<class ENTITY_TYPE = entity_type>
 struct entity_instance
 {
 
@@ -149,14 +187,33 @@ struct entity_instance
 
 };
 
+struct position
+{
+	/**
+	 * Entity position.
+	 */
+	vec o;
+
+	position() { };
+
+	position(const vec &o) {
+		this->o = o;
+	};
+
+	position(float x, float y, float z) {
+		this->o = vec(x, y, z);
+	};
+
+};
+
 template<class ENTITY_TYPE>
 struct positional_entity_instance : public entity_instance<ENTITY_TYPE>
 {
 
 	/**
-	 * Entity position.
+	 * Managed position.
 	 */
-	vec o;
+	position* pos;
 
 };
 
@@ -216,7 +273,7 @@ struct entity_renderer_instance : public entity_instance<ENTITY_TYPE>
 
 };
 
-template<class ENTITY_TYPE, class ENTITY_INSTANCE_TYPE>
+template<class ENTITY_TYPE>
 struct entity_modifier_instance : public entity_instance<ENTITY_TYPE>
 {
 
@@ -228,17 +285,18 @@ struct entity_modifier_instance : public entity_instance<ENTITY_TYPE>
 	/**
 	 * A modifier can have multiple positions.
 	 */
-	std::vector<positional_entity_instance<ENTITY_INSTANCE_TYPE> *> positions;
+	std::vector<position*> positions;
+
+	// TODO: destructor destructs all positions with es->remove_position(pos)
 
 	/**
 	 * Adds a modifier position.
 	 */
-	positional_entity_instance<ENTITY_INSTANCE_TYPE>* add_position(vec o)
+	position* add_position(const vec &o)
 	{
-		positional_entity_instance<ENTITY_INSTANCE_TYPE>* position = new positional_entity_instance<ENTITY_INSTANCE_TYPE>;
-		position->o = o;
-		positions.push_back(position);
-		return position;
+		position* pos = es.create_position(o);
+		positions.push_back(pos);
+		return pos;
 	}
 
 	/**
@@ -251,7 +309,7 @@ struct entity_modifier_instance : public entity_instance<ENTITY_TYPE>
 
 };
 
-template<class ENTITY_TYPE, class ENTITY_INSTANCE_TYPE>
+template<class ENTITY_TYPE>
 struct entity_initializer_instance : public entity_instance<ENTITY_TYPE>
 {
 
@@ -263,17 +321,18 @@ struct entity_initializer_instance : public entity_instance<ENTITY_TYPE>
 	/**
 	 * A modifier can have multiple positions.
 	 */
-	std::vector<positional_entity_instance<ENTITY_INSTANCE_TYPE> *> positions;
+	std::vector<position*> positions;
+
+	// TODO: destructor destructs all positions with es->remove_position(pos)
 
 	/**
 	 * Adds a modifier position.
 	 */
-	positional_entity_instance<ENTITY_INSTANCE_TYPE>* add_position(vec o)
+	position* add_position(const vec &o)
 	{
-		positional_entity_instance<ENTITY_INSTANCE_TYPE>* position = new positional_entity_instance<ENTITY_INSTANCE_TYPE>;
-		position->o = o;
-		positions.push_back(position);
-		return position;
+		position* pos = es.create_position(o);
+		positions.push_back(pos);
+		return pos;
 	}
 
 	/**
@@ -281,9 +340,25 @@ struct entity_initializer_instance : public entity_instance<ENTITY_TYPE>
 	 */
 	void set_position(int index, vec o)
 	{
-		// TODO: range check
 		positions[index]->o = o;
 	}
+
+};
+
+template<class SPECIALIZED_ENTITY_INSTANCE>
+struct entity_implementation_base {
+
+	/**
+	 * The name of the implementation.
+	 */
+	std::string name;
+
+	entity_implementation_base(const std::string& name) {
+		this->name = name;
+	}
+	virtual ~entity_implementation_base() { };
+
+	virtual void render_edit_overlay(SPECIALIZED_ENTITY_INSTANCE *entity_instance) = 0;
 
 };
 
@@ -328,29 +403,6 @@ struct entity_relationship_type
 	// entity_instance* child;
 
 // };
-
-struct entity_system
-{
-
-	entity_system();
-	~entity_system();
-
-	void cleanup();
-
-	void render_entities();
-	// entity_instance* create_entity();
-
-	// void remove_entity(entity_instance* entity);
-
-	// entity_relationship_instance* create_relationship(entity_relationship_type* er_type, entity_instance *e_inst1, entity_instance *e_inst2);
-
-	// void remove_relationship(entity_relationship_type* er_type, entity_instance *e_inst1, entity_instance *e_inst2);
-
-	// std::list<entity_instance *> get_entities_by_type(entity_type *e_type);
-
-};
-
-extern entity_system es;
 
 #endif /* ENGINE_PARTICLES_H */
 

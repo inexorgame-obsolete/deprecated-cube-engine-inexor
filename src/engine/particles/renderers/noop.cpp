@@ -22,6 +22,8 @@ public:
 
 	void after(particle_renderer_instance *pr_inst) { }
 
+	void render_edit_overlay(particle_renderer_instance *entity_instance) { }
+
 private:
 
 	noop_renderer() : particle_renderer_implementation("noop_renderer") {

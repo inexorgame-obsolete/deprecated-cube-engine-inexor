@@ -39,9 +39,7 @@ public:
 			// get the particle type, mass and density from the emitter type
 			p_inst->type = ps.particle_types_map["primary"];
 			// conoutf("x:%3.1f y:%3.1f z:%3.1f", pe_inst->o.x, pe_inst->o.y, pe_inst->o.z);
-			p_inst->o.x = pe_inst->o.x;
-			p_inst->o.y = pe_inst->o.y;
-			p_inst->o.z = pe_inst->o.z;
+			p_inst->pos->o = vec(pe_inst->pos->o);
 			p_inst->vel = pe_inst->vel;
 			p_inst->roll = 0;
 			p_inst->mass = pe_inst->mass;
@@ -62,9 +60,9 @@ public:
 				float rx = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 				float ry = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 				float rz = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-				p_inst_s->o.x = pe_inst->o.x + (rx - 0.5f) * 10.0f * pe_inst->density;
-				p_inst_s->o.y = pe_inst->o.y + (ry - 0.5f) * 10.0f * pe_inst->density;
-				p_inst_s->o.z = pe_inst->o.z + (rz - 0.5f) * 10.0f * pe_inst->density;
+				p_inst_s->pos->o.x = pe_inst->pos->o.x + (rx - 0.5f) * 10.0f * pe_inst->density;
+				p_inst_s->pos->o.y = pe_inst->pos->o.y + (ry - 0.5f) * 10.0f * pe_inst->density;
+				p_inst_s->pos->o.z = pe_inst->pos->o.z + (rz - 0.5f) * 10.0f * pe_inst->density;
 				p_inst_s->vel = pe_inst->vel;
 				p_inst_s->roll = 0;
 				p_inst_s->mass = pe_inst->mass / 10.0f; // the satellites are much weaker!
@@ -86,6 +84,8 @@ public:
 		}
 		return emitted;
 	}
+
+	void render_edit_overlay(particle_emitter_instance *entity_instance) { }
 
 private:
 

@@ -25,6 +25,8 @@ public:
 		return emitted;
 	}
 
+	void render_edit_overlay(particle_emitter_instance *entity_instance) { }
+
 private:
 
 	noop_emitter() : particle_emitter_implementation("noop_emitter")

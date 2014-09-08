@@ -66,7 +66,7 @@ public:
 
 	void render(particle_renderer_instance *pr_inst, particle_instance *p_inst) {
 		// glTexCoord2f(0.5f, 0.5f);
-		glVertex3f(p_inst->o.x, p_inst->o.y, p_inst->o.z);
+		glVertex3f(p_inst->pos->o.x, p_inst->pos->o.y, p_inst->pos->o.z);
 	}
 
 	void after(particle_renderer_instance *pr_inst) {
@@ -82,6 +82,8 @@ public:
 //		glEnable(GL_CULL_FACE);
 		glPopMatrix();
 	}
+
+	void render_edit_overlay(particle_renderer_instance *entity_instance) { }
 
 private:
 

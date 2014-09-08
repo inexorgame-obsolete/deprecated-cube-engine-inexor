@@ -54,6 +54,7 @@ public:
 
 		// connect particles in the matrix by construction rules
 		std::vector<std::string> *rules = static_cast<std::vector<std::string>*>(pi_inst->pointers["rules"]);
+		// conoutf("%d spring construction rules", (int) rules->size());
 		for (x = 0; x < size_x; x++)
 		{
 			for (y = 0; y < size_y; y++)
@@ -62,7 +63,6 @@ public:
 				{
 					for (std::vector<std::string>::iterator it = rules->begin() ; it != rules->end(); ++it)
 					{
-						// conoutf("rule: %s", (*it).c_str());
 						ivec spring_construction_rule = ps.spring_construction_rules[(*it)];
 						ivec t = ivec(x, y, z).add(spring_construction_rule);
 						if (t.x >= 0 && t.x < size_x && t.y >= 0 && t.y < size_y && t.z >= 0 && t.z < size_z)
@@ -92,6 +92,8 @@ public:
 		spring_inst->alive = true;
 		ps.add_spring(spring_inst);
 	}
+
+	void render_edit_overlay(particle_initializer_instance *entity_instance) { }
 
 private:
 

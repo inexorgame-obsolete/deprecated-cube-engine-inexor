@@ -23,9 +23,9 @@ public:
 		// TODO: time factor
 		gravity = pm_inst->attributes["gravity"];
 		mass = pm_inst->attributes["mass"];
-		dx = p_inst->o.x - pm_inst->positions[0]->o.x;
-		dy = p_inst->o.y - pm_inst->positions[0]->o.y;
-		dz = p_inst->o.z - pm_inst->positions[0]->o.z;
+		dx = p_inst->pos->o.x - pm_inst->positions[0]->o.x;
+		dy = p_inst->pos->o.y - pm_inst->positions[0]->o.y;
+		dz = p_inst->pos->o.z - pm_inst->positions[0]->o.z;
 		distance = sqrtf(dx * dx + dy * dy + dz * dz);
 		if (distance < 5.0f) {
 			p_inst->remaining = 0;
@@ -41,7 +41,7 @@ public:
 
 	inline void modify(int elapsedtime) { }
 
-//	inline void init(particle_instance *p_inst) { }
+	void render_edit_overlay(particle_modifier_instance *entity_instance) { }
 
 private:
 

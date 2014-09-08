@@ -1424,6 +1424,7 @@ void drawglare()
 
     renderreflectedmapmodels();
     rendergame();
+
     if(!isthirdperson())
     {
         project(curavatarfov, aspect, farplane, false, false, false, avatardepth);
@@ -1434,6 +1435,7 @@ void drawglare()
     renderwater();
     rendermaterials();
     renderalphageom();
+    ps.render_faces();
     ps.render_particles();
     // renderparticles();
 
@@ -1580,6 +1582,7 @@ void drawreflection(float z, bool refract, int fogdepth, const bvec &col)
     if(refracting) rendergrass();
     rendermaterials();
     renderalphageom(fogging);
+    ps.render_faces();
     ps.render_particles();
     // renderparticles();
 
@@ -2102,6 +2105,7 @@ void gl_drawframe(int w, int h)
 
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+    ps.render_faces();
     ps.render_particles();
 
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

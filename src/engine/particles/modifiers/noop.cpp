@@ -22,6 +22,8 @@ public:
 
 	inline void modify(int elapsedtime) { }
 
+	void render_edit_overlay(particle_modifier_instance *entity_instance) { }
+
 private:
 
 	noop_modifier() : particle_modifier_implementation("noop_modifier") {

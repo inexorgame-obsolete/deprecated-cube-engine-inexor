@@ -30,9 +30,9 @@ public:
 		grid_size_y = int(pe_inst->attributes["grid_size_y"]);
 		grid_size_z = int(pe_inst->attributes["grid_size_z"]);
 		// the particle emitter is center, so calculate the origin
-		ox = pe_inst->o.x - (grid_size_x > 1 ? (grid_size_x - 1) * grid_dist_2 : 0);
-		oy = pe_inst->o.y - (grid_size_y > 1 ? (grid_size_y - 1) * grid_dist_2 : 0);
-		oz = pe_inst->o.z - (grid_size_z > 1 ? (grid_size_z - 1) * grid_dist_2 : 0);
+		ox = pe_inst->pos->o.x - (grid_size_x > 1 ? (grid_size_x - 1) * grid_dist_2 : 0);
+		oy = pe_inst->pos->o.y - (grid_size_y > 1 ? (grid_size_y - 1) * grid_dist_2 : 0);
+		oz = pe_inst->pos->o.z - (grid_size_z > 1 ? (grid_size_z - 1) * grid_dist_2 : 0);
 
 		std::list<particle_instance*> emitted;
 		for (int i = 0; i < pe_inst->batch_size; i++)
@@ -52,9 +52,9 @@ public:
 						p_inst->pe_inst = pe_inst;
 						// get the particle type, mass and density from the emitter type
 						p_inst->type = pe_inst->p_type;
-						p_inst->o.x = ox + dx;
-						p_inst->o.y = oy + dy;
-						p_inst->o.z = oz + dz;
+						p_inst->pos->o.x = ox + dx;
+						p_inst->pos->o.y = oy + dy;
+						p_inst->pos->o.z = oz + dz;
 						p_inst->vel = pe_inst->vel;
 						p_inst->roll = 0;
 						p_inst->mass = pe_inst->mass;
@@ -73,6 +73,8 @@ public:
 		}
 		return emitted;
 	}
+
+	void render_edit_overlay(particle_emitter_instance *entity_instance) { }
 
 private:
 

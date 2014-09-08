@@ -21,17 +21,17 @@ public:
 	 */
 	inline void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime) {
 		time_factor = elapsedtime / ps.particle_frame;
-		p_inst->last.x = p_inst->o.x;
-		p_inst->last.y = p_inst->o.y;
-		p_inst->last.z = p_inst->o.z;
-		p_inst->o.x += p_inst->vel.x * time_factor;
-		p_inst->o.y += p_inst->vel.y * time_factor;
-		p_inst->o.z += p_inst->vel.z * time_factor;
+		p_inst->last = vec(p_inst->pos->o);
+		p_inst->pos->o.x += p_inst->vel.x * time_factor;
+		p_inst->pos->o.y += p_inst->vel.y * time_factor;
+		p_inst->pos->o.z += p_inst->vel.z * time_factor;
 	}
 
 	inline void modify(particle_modifier_instance *pm_inst, int elapsedtime) { }
 
 	inline void modify(int elapsedtime) { }
+
+	void render_edit_overlay(particle_modifier_instance *entity_instance) { }
 
 //	inline void init(particle_instance *p_inst) { }
 

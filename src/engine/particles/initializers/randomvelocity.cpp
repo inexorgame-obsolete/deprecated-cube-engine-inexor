@@ -26,6 +26,8 @@ public:
 		}
 	}
 
+	void render_edit_overlay(particle_initializer_instance *entity_instance) { }
+
 private:
 
 	vec outer_scale;

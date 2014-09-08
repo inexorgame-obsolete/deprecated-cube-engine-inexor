@@ -30,8 +30,8 @@ public:
 			{
 				while (!ps.spring_lock && spring_it != ps.spring_instances.end())
 				{
-					vec o1 = vec((*spring_it)->p_inst_1->o);
-					vec o2 = vec((*spring_it)->p_inst_2->o);
+					vec o1 = vec((*spring_it)->p_inst_1->pos->o);
+					vec o2 = vec((*spring_it)->p_inst_2->pos->o);
 					vec spring = vec(o1).sub(o2);
 					float actual_spring_length = spring.magnitude();
 					vec force(0.0f, 0.0f, 0.0f);
@@ -44,15 +44,15 @@ public:
 					max_force.r = std::max(max_force.r, force.r);
 					max_force.g = std::max(max_force.g, force.g);
 					max_force.b = std::max(max_force.b, force.b);
-					glVertex3d((*spring_it)->p_inst_1->o.x, (*spring_it)->p_inst_1->o.y, (*spring_it)->p_inst_1->o.z);
-					glVertex3d((*spring_it)->p_inst_2->o.x, (*spring_it)->p_inst_2->o.y, (*spring_it)->p_inst_2->o.z);
+					glVertex3d((*spring_it)->p_inst_1->pos->o.x, (*spring_it)->p_inst_1->pos->o.y, (*spring_it)->p_inst_1->pos->o.z);
+					glVertex3d((*spring_it)->p_inst_2->pos->o.x, (*spring_it)->p_inst_2->pos->o.y, (*spring_it)->p_inst_2->pos->o.z);
 					++spring_it;
 				}
 			} else {
 				while (!ps.spring_lock && spring_it != ps.spring_instances.end())
 				{
-					glVertex3d((*spring_it)->p_inst_1->o.x, (*spring_it)->p_inst_1->o.y, (*spring_it)->p_inst_1->o.z);
-					glVertex3d((*spring_it)->p_inst_2->o.x, (*spring_it)->p_inst_2->o.y, (*spring_it)->p_inst_2->o.z);
+					glVertex3d((*spring_it)->p_inst_1->pos->o.x, (*spring_it)->p_inst_1->pos->o.y, (*spring_it)->p_inst_1->pos->o.z);
+					glVertex3d((*spring_it)->p_inst_2->pos->o.x, (*spring_it)->p_inst_2->pos->o.y, (*spring_it)->p_inst_2->pos->o.z);
 					++spring_it;
 				}
 				// conoutf("springs: %d", (int) ps.spring_instances.size());
@@ -72,6 +72,8 @@ public:
 	void after(particle_renderer_instance *pr_inst)
 	{
 	}
+
+	void render_edit_overlay(particle_renderer_instance *entity_instance) { }
 
 private:
 

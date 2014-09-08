@@ -27,7 +27,7 @@ public:
 			trace->pe_inst = ps.noop_emitter_inst;
 			// get the particle type, mass and density from the emitter type
 			trace->type = p_inst->type;
-			trace->o = vec(p_inst->o);
+			trace->pos->o = vec(p_inst->pos->o);
 			trace->vel = vec(0.0f, 0.0f, 0.0f);
 			trace->roll = p_inst->roll;
 			trace->mass = p_inst->mass;
@@ -46,6 +46,8 @@ public:
 	inline void modify(particle_modifier_instance *pm_inst, int elapsedtime) { }
 
 	inline void modify(int elapsedtime) { }
+
+	void render_edit_overlay(particle_modifier_instance *entity_instance) { }
 
 private:
 

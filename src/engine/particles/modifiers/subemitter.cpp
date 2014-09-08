@@ -18,7 +18,7 @@ public:
 
 	inline void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime) {
 		particle_emitter_instance* pe_inst = static_cast<particle_emitter_instance*>(pm_inst->pointers["sub_emitter"]);
-		pe_inst->o = vec(p_inst->o);
+		pe_inst->pos->o = vec(p_inst->pos->o);
 		pe_inst->vel = vec(p_inst->vel);
 		ps.emit_particles(pe_inst, elapsedtime);
 	}
@@ -26,6 +26,8 @@ public:
 	inline void modify(particle_modifier_instance *pm_inst, int elapsedtime) { }
 
 	inline void modify(int elapsedtime) { }
+
+	void render_edit_overlay(particle_modifier_instance *entity_instance) { }
 
 private:
 

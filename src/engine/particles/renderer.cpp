@@ -49,6 +49,7 @@ void particle_system::render_particles()
 		} catch (int e) {
 			conoutf("renderer e: %d", e);
 		}
+		printOpenGLError();
 	}
 }
 

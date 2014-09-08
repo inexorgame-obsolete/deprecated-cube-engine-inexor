@@ -22,9 +22,11 @@ public:
 		inner_scale = vec(pi_inst->attributes["isx"], pi_inst->attributes["isy"], pi_inst->attributes["isz"]);
 		for(std::list<particle_instance*>::iterator p_it = particles.begin(); p_it != particles.end(); ++p_it)
 		{
-			(*p_it)->o.add(vec(rndscale(outer_scale.x), rndscale(outer_scale.y), rndscale(outer_scale.z))).sub(inner_scale);
+			(*p_it)->pos->o.add(vec(rndscale(outer_scale.x), rndscale(outer_scale.y), rndscale(outer_scale.z))).sub(inner_scale);
 		}
 	}
+
+	void render_edit_overlay(particle_initializer_instance *entity_instance) { }
 
 private:
 

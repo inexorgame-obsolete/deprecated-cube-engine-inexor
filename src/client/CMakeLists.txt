@@ -58,6 +58,7 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entities/entities
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/particles
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/springs
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/faces
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/emitter
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/renderer
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/modifier
@@ -97,11 +98,13 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/renderers/cube
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/renderers/spring
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/renderers/model
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/renderers/vel
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/initializers/noop
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/initializers/randomvelocity
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/initializers/randomposition
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/initializers/randomparticletype
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/initializers/springweaver
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/initializers/jellyfaces
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/ptest
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/mu/muParser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/particles/mu/muParserBase.cpp

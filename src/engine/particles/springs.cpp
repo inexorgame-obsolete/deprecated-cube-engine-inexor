@@ -1,5 +1,6 @@
 #include "engine.h"
 #include "particles.h"
+#include "springs.h"
 
 void particle_system::add_spring(spring_instance *spring_inst)
 {
@@ -10,11 +11,13 @@ void particle_system::add_spring(spring_instance *spring_inst)
 void particle_system::add_spring_construction_rule(std::string name, ivec rule)
 {
 	ps.spring_construction_rules[name] = rule;
+	conoutf("Added spring construction rule %s (%d, %d, %d)", name.c_str(), rule.x, rule.y, rule.z);
 }
 
 void particle_system::add_spring_construction_rule(std::string name, int x, int y, int z)
 {
 	ps.spring_construction_rules[name] = ivec(x, y, z);
+	conoutf("Added spring construction rule %s (%d, %d, %d)", name.c_str(), x, y, z);
 }
 
 /**
@@ -43,6 +46,7 @@ void particle_system::init_spring_construction_rules()
 spring_builder::spring_builder()
 {
 	rules = new std::vector<std::string>;
+	// TODO: care about deleting these rules again
 }
 
 spring_builder::~spring_builder() { }
@@ -179,5 +183,11 @@ spring_builder* spring_builder::bend_xyz()
 
 std::vector<std::string>* spring_builder::get()
 {
+	/*
+	for (std::vector<std::string>::iterator it = rules->begin() ; it != rules->end(); ++it)
+	{
+		conoutf("spring construction rule: %s", (*it).c_str());
+	}
+	*/
 	return rules;
 }

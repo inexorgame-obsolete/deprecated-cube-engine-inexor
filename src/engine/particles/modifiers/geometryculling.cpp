@@ -20,7 +20,7 @@ public:
 	 * Particles dies when colliding with the geometry.
 	 */
 	inline void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime) {
-		d.o = vec(p_inst->o);
+		d.o = vec(p_inst->pos->o);
 		d.vel = vec(p_inst->vel);
 		// suppress collision check for mapmodels
 		if (collide(&d, vec(p_inst->vel), 0.1f, false, false))
@@ -33,7 +33,7 @@ public:
 
 	inline void modify(int elapsedtime) { }
 
-//	inline void init(particle_instance *p_inst) { }
+	void render_edit_overlay(particle_modifier_instance *entity_instance) { }
 
 private:
 

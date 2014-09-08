@@ -18,6 +18,8 @@ public:
 
 	inline void init(particle_initializer_instance *pi_inst, std::list<particle_instance *> particles, int elapsedtime) { }
 
+	void render_edit_overlay(particle_initializer_instance *entity_instance) { }
+
 private:
 
 	noop_initializer() : particle_initializer_implementation("noop_initializer") {

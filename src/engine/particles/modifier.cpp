@@ -28,15 +28,15 @@ void particle_system::modify_particles(int elapsedtime)
 		timer_modifier = SDL_GetTicks() - started;
 		// TODO: special types of modifiers which are called afterwards only
 	}
-	/*
 	if (editmode)
 	{
 		for(std::vector<particle_modifier_instance*>::iterator it = particle_modifier_instances.begin(); it != particle_modifier_instances.end(); ++it)
 		{
-			(*it)->o = vec((*it)->ent->o);
+			// (*it)->o = vec((*it)->ent->o);
+			// es.render_entity_box(*it);
+			// (*it)->render_box();
 		}
 	}
-	*/
 }
 
 particle_modifier_type* particle_system::add_particle_modifier_type(std::string name, std::string impl)

@@ -1,5 +1,6 @@
 #include "cube.h"
 #include "particles.h"
+#include "entities/entities.h"
 
 VARP(emitters, 0, 1, 1);
 
@@ -14,16 +15,6 @@ void particle_system::emit_particles(int elapsedtime)
 		}
 		timer_emitter = SDL_GetTicks() - started;
 	}
-	/*
-	if (editmode)
-	{
-		for(std::vector<particle_emitter_instance*>::iterator it = particle_emitter_instances.begin(); it != particle_emitter_instances.end(); ++it)
-		{
-			// conoutf("%3.1f %3.1f", (*it)->o.x, (*it)->ent->o.x);
-			(*it)->o = vec((*it)->ent->o);
-		}
-	}
-	*/
 }
 
 void particle_system::emit_particles(particle_emitter_instance* pe_inst, int elapsedtime)
@@ -74,6 +65,7 @@ particle_instance* particle_system::emit_particle()
 		// dynamically create a new particle instance
 		particle_instance *p_inst = new particle_instance;
 		p_inst->elapsed = 0;
+		p_inst->pos = new position();
 		return p_inst;
 	}
 }
@@ -116,7 +108,8 @@ particle_emitter_instance* particle_emitter_type::create_instance(const vec &o, 
 	particle_emitter_instance* pe_inst = new particle_emitter_instance;
 	pe_inst->type = this;
 	pe_inst->p_type = p_type;
-	pe_inst->o = o;
+	// pe_inst->pos = es.create_position(vec(o));
+	pe_inst->pos = new position(o);
 	pe_inst->vel = vel;
 	pe_inst->enabled = true;
 	pe_inst->mass = mass;
@@ -124,7 +117,8 @@ particle_emitter_instance* particle_emitter_type::create_instance(const vec &o, 
 	pe_inst->lifetime = lifetime;
 	pe_inst->rate = rate;
 	pe_inst->batch_size = batch_size;
-	pe_inst->millistoprocess = 0;
+	// pe_inst->millistoprocess = 0;
+	pe_inst->millistoprocess = rate + 1;
 	// initialize default modifiers by copy all modifiers
 	pe_inst->modifiers = modifiers;
 	// initialize default initializers by copy all initializers

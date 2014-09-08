@@ -11,11 +11,13 @@ particle_system::particle_system()
 	timer_modifier = 0;
 	timer_renderer = 0;
 	timer_initializer = 0;
+	timer_face = 0;
 	count_particle_types = 0;
 	count_particle_emitter_types = 0;
 	count_particle_renderer_types = 0;
 	count_particle_modifier_types = 0;
 	count_particle_initializer_types = 0;
+	count_face_types = 0;
 	count_particle_emitter_implementations = 0;
 	count_particle_renderer_implementations = 0;
 	count_particle_modifier_implementations = 0;
@@ -25,6 +27,7 @@ particle_system::particle_system()
 	count_particle_renderer_instances = 0;
 	count_particle_modifier_instances = 0;
 	count_particle_initializer_instances = 0;
+	count_face_instances = 0;
 	count_spring_instances = 0;
 	count_alive_pool = 0;
 	count_dead_pool = 0;
@@ -38,11 +41,13 @@ particle_system::particle_system()
 	noop_modifier_type = 0;
 	noop_renderer_type = 0;
 	noop_initializer_type = 0;
+	noop_face_type = 0;
 	noop_emitter_inst = 0;
 	noop_modifier_inst = 0;
 	noop_renderer_inst = 0;
 	noop_initializer_inst = 0;
 	init_spring_construction_rules();
+	// init_face_construction_rules();
 }
 
 particle_system::~particle_system()
@@ -69,6 +74,7 @@ void particle_system::init_defaults()
 	noop_modifier_inst = noop_modifier_type->create_instance(); // vec(0.0f, 0.0f, 0.0f));
 	noop_initializer_type = add_particle_initializer_type("noop", "noop_initializer");
 	noop_initializer_inst = noop_initializer_type->create_instance();
+	noop_face_type = add_face_type("noop", "no_texture");
 	conoutf("finished init defaults");
 }
 
@@ -96,6 +102,7 @@ void particle_system::clear_particle_instances()
 {
 	particle_instances.clear();
 	count_particles_instances = 0;
+	// TODO: also in the renderers!
 }
 
 void particle_system::cleanup()
@@ -111,13 +118,16 @@ void particle_system::cleanup()
 	remove_all_particle_modifier_instances();
 	remove_all_particle_emitter_instances();
 	remove_all_particle_initializer_instances();
+	remove_all_face_instances();
 	clear_particle_pools();
 	remove_all_particle_renderer_types();
 	remove_all_particle_emitter_types();
 	remove_all_particle_modifier_types();
 	remove_all_particle_initializer_types();
 	remove_all_particle_types();
+	remove_all_face_types();
 
+	// TODO: remove_all_spring_instances();
 	count_spring_instances = 0;
 }
 
@@ -143,7 +153,10 @@ void particle_system::update_particle_system()
     	ps.modify_particles(elapsedtime);
 */
         /** END NON-MT **/
-	    render_particles();
+	    // render_particles();
+	    // render_faces();
+	    // glEnable(GL_DEPTH_TEST);
+//	    if (editmode) render_overlay();
 	} catch (int e) {
 		conoutf("update_particle_system e: %d", e);
 	}
@@ -168,7 +181,6 @@ void particle_system::update_particle_pools(int elapsedtime)
 			(*i)->remaining -= elapsedtime;
 			++i;
 		} else {
-			// (*i)->reset();
 			dead_pool.push_front(*i);
 			i = alive_pool.erase(i);
 			count_dead_pool++;
@@ -205,25 +217,22 @@ void particle_system::add_initializer_implementation(particle_initializer_implem
 	conoutf("Added particle initializer implementation \"%s\"", pi_impl->name.c_str());
 }
 
-particle_implementation_base::particle_implementation_base(const std::string& name) : name(name) { }
-particle_implementation_base::~particle_implementation_base() { }
-
-particle_emitter_implementation::particle_emitter_implementation(const std::string& name) : particle_implementation_base(name) {
+particle_emitter_implementation::particle_emitter_implementation(const std::string& name) : entity_implementation_base(name) {
 	ps.particle_emitter_implementations_map[name] = this;
 }
 particle_emitter_implementation::~particle_emitter_implementation() { }
 
-particle_renderer_implementation::particle_renderer_implementation(const std::string& name) : particle_implementation_base(name) {
+particle_renderer_implementation::particle_renderer_implementation(const std::string& name) : entity_implementation_base(name) {
 	ps.particle_renderer_implementations_map[name] = this;
 }
 particle_renderer_implementation::~particle_renderer_implementation() { }
 
-particle_modifier_implementation::particle_modifier_implementation(const std::string& name) : particle_implementation_base(name) {
+particle_modifier_implementation::particle_modifier_implementation(const std::string& name) : entity_implementation_base(name) {
 	ps.particle_modifier_implementations_map[name] = this;
 }
 particle_modifier_implementation::~particle_modifier_implementation() { }
 
-particle_initializer_implementation::particle_initializer_implementation(const std::string& name) : particle_implementation_base(name) {
+particle_initializer_implementation::particle_initializer_implementation(const std::string& name) : entity_implementation_base(name) {
 	ps.particle_initializer_implementations_map[name] = this;
 }
 particle_initializer_implementation::~particle_initializer_implementation() { }
@@ -232,3 +241,19 @@ particle_initializer_implementation::~particle_initializer_implementation() { }
 // COMMANDN(init_particles, particle_system::init_particles(), "");
 // ICOMMAND(clear_particle_pools, "");
 // ICOMMAND(reset_particle_system, "");
+
+int printOglError(std::string file, int line)
+{
+
+    GLenum glErr;
+    int    retCode = 0;
+
+    glErr = glGetError();
+    if (glErr != GL_NO_ERROR)
+    {
+        conoutf("glError in file %s @ line %d: %s\n", file.c_str(), line, gluErrorString(glErr));
+        retCode = 1;
+    }
+    return retCode;
+}
+

@@ -28,6 +28,8 @@ public:
 
 	inline void modify(int elapsedtime) { }
 
+	void render_edit_overlay(particle_modifier_instance *entity_instance) { }
+
 private:
 
 	float time_factor;

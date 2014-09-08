@@ -32,6 +32,8 @@ public:
 
 	inline void modify(int elapsedtime) { }
 
+	void render_edit_overlay(particle_modifier_instance *entity_instance) { }
+
 //	inline void init(particle_instance *p_inst) { }
 
 private:

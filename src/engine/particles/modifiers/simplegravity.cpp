@@ -16,17 +16,24 @@ public:
 	}
 	virtual ~simple_gravity() { }
 
-	inline void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime) { }
+	inline void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime)
+	{
+		p_inst->vel.z += ((-(p_inst->mass) * _mass * _gravity / (dz * dz)) * dz) / (dz * p_inst->mass);
+	}
 
 	inline void modify(particle_modifier_instance *pm_inst, int elapsedtime)
 	{
+		/*
 		for(std::list<particle_instance*>::iterator p_it = ps.alive_pool.begin(); p_it != ps.alive_pool.end(); ++p_it)
 		{
 			(*p_it)->vel.z += ((-((*p_it)->mass) * _mass * _gravity / (dz * dz)) * dz) / (dz * (*p_it)->mass);
 		}
+		*/
 	}
 
 	inline void modify(int elapsedtime) { }
+
+	void render_edit_overlay(particle_modifier_instance *entity_instance) { }
 
 private:
 

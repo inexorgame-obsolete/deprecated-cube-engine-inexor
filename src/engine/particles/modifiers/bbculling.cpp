@@ -20,12 +20,12 @@ public:
 	 * The bounding box boundaries are the two attached positions.
 	 */
 	inline void modify(particle_modifier_instance *pm_inst, particle_instance *p_inst, int elapsedtime) {
-		if (p_inst->o.x < pm_inst->positions[0]->o.x
-			|| p_inst->o.y < pm_inst->positions[0]->o.y
-			|| p_inst->o.z < pm_inst->positions[0]->o.z
-			|| p_inst->o.x > pm_inst->positions[1]->o.x
-			|| p_inst->o.y > pm_inst->positions[1]->o.y
-			|| p_inst->o.z > pm_inst->positions[1]->o.z
+		if (p_inst->pos->o.x < pm_inst->positions[0]->o.x
+			|| p_inst->pos->o.y < pm_inst->positions[0]->o.y
+			|| p_inst->pos->o.z < pm_inst->positions[0]->o.z
+			|| p_inst->pos->o.x > pm_inst->positions[1]->o.x
+			|| p_inst->pos->o.y > pm_inst->positions[1]->o.y
+			|| p_inst->pos->o.z > pm_inst->positions[1]->o.z
 		) {
 			p_inst->remaining = 0;
 		}
@@ -35,7 +35,7 @@ public:
 
 	inline void modify(int elapsedtime) { }
 
-//	inline void init(particle_instance *p_inst) { }
+	void render_edit_overlay(particle_modifier_instance *entity_instance) { }
 
 private:
 

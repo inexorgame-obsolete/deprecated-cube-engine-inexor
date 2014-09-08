@@ -30,7 +30,14 @@ public:
 			p_inst->pe_inst = pe_inst;
 			// get the particle type, mass and density from the emitter type
 			p_inst->type = pe_inst->p_type;
-			p_inst->o = vec(pe_inst->o);
+			// particle_emitter_instance* pe_inst2 = pe_inst;
+			// position* pos = pe_inst->pos;
+			// vec o = vec(pos->o);
+			// float x = o.x;
+			// conoutf("pe_inst->pos->o.x=%2.2f", pe_inst->pos->o.x);
+			// conoutf("x=%2.2f", x);
+			// p_inst->pos->o = vec(pe_inst->pos->o);
+			p_inst->pos->o = pe_inst->pos->o;
 			p_inst->vel = pe_inst->vel;
 			p_inst->roll = 0;
 			p_inst->mass = pe_inst->mass;
@@ -46,6 +53,8 @@ public:
 		}
 		return emitted;
 	}
+
+	void render_edit_overlay(particle_emitter_instance *entity_instance) { }
 
 private:
 
