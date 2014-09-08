@@ -217,22 +217,22 @@ void particle_system::add_initializer_implementation(particle_initializer_implem
 	conoutf("Added particle initializer implementation \"%s\"", pi_impl->name.c_str());
 }
 
-particle_emitter_implementation::particle_emitter_implementation(const std::string& name) : entity_implementation_base(name) {
+particle_emitter_implementation::particle_emitter_implementation(const std::string& name) : entity_implementation_base<particle_emitter_instance>(name) {
 	ps.particle_emitter_implementations_map[name] = this;
 }
 particle_emitter_implementation::~particle_emitter_implementation() { }
 
-particle_renderer_implementation::particle_renderer_implementation(const std::string& name) : entity_implementation_base(name) {
+particle_renderer_implementation::particle_renderer_implementation(const std::string& name) : entity_implementation_base<particle_renderer_instance>(name) {
 	ps.particle_renderer_implementations_map[name] = this;
 }
 particle_renderer_implementation::~particle_renderer_implementation() { }
 
-particle_modifier_implementation::particle_modifier_implementation(const std::string& name) : entity_implementation_base(name) {
+particle_modifier_implementation::particle_modifier_implementation(const std::string& name) : entity_implementation_base<particle_modifier_instance>(name) {
 	ps.particle_modifier_implementations_map[name] = this;
 }
 particle_modifier_implementation::~particle_modifier_implementation() { }
 
-particle_initializer_implementation::particle_initializer_implementation(const std::string& name) : entity_implementation_base(name) {
+particle_initializer_implementation::particle_initializer_implementation(const std::string& name) : entity_implementation_base<particle_initializer_instance>(name) {
 	ps.particle_initializer_implementations_map[name] = this;
 }
 particle_initializer_implementation::~particle_initializer_implementation() { }
