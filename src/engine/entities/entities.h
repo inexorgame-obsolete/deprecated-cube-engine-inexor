@@ -353,6 +353,7 @@ struct entity_implementation_base {
 	 */
 	std::string name;
 
+	entity_implementation_base() { }
 	entity_implementation_base(const std::string& name) {
 		this->name = name;
 	}
