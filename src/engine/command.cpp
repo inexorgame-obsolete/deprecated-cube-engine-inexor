@@ -867,7 +867,7 @@ static inline const char *parseword(const char *p)
             case ']': if(brakdepth <= 0 || brakstack[--brakdepth] != '[') return p; break;
             case ')': if(brakdepth <= 0 || brakstack[--brakdepth] != '(') return p; break;
         }
-        } 
+    }
     return p;
 }
 
@@ -1251,7 +1251,7 @@ done:
             break;
     }
 } 
-        
+
 static bool compileword(vector<uint> &code, const char *&p, int wordtype, char *&word, int &wordlen)
 {
     skipcomments(p);
@@ -1379,7 +1379,7 @@ static void compilestatements(vector<uint> &code, const char *&p, int rettype, i
                     case '$': compileident(code, id); numargs++; break;
                     case 'N': compileint(code, numargs-fakeargs); numargs++; break;
 #ifndef STANDALONE
-                    case 'D': comtype = CODE_COMD; numargs++; break; 
+                    case 'D': comtype = CODE_COMD; numargs++; break;
 #endif
                     case 'C': comtype = CODE_COMC; if(more) while(numargs < MAXARGS && (more = compilearg(code, p, VAL_ANY))) numargs++; numargs = 1; goto endfmt;
                     case 'V': comtype = CODE_COMV; if(more) while(numargs < MAXARGS && (more = compilearg(code, p, VAL_ANY))) numargs++; numargs = 2; goto endfmt;
@@ -1433,7 +1433,7 @@ static void compilestatements(vector<uint> &code, const char *&p, int rettype, i
                 if(c == brak) return;
                 debugcodeline(line, "unexpected \"%c\"", c); 
                 break;
- 
+
             case '/':
                 if(*p == '/') p += strcspn(p, "\n\0");
                 goto endstatement;
@@ -1991,7 +1991,7 @@ static const uint *runcode(const uint *code, tagval &result)
                     goto forceresult;
                 }
                 CALLALIAS(0);
-                    continue;
+                continue;
             case CODE_CALLARG|RET_NULL: case CODE_CALLARG|RET_STR: case CODE_CALLARG|RET_FLOAT: case CODE_CALLARG|RET_INT:
                 forcenull(result);
                 id = identmap[op>>8];
@@ -2383,11 +2383,11 @@ static inline void setiter(ident &id, int i, identstack &stack)
             id.valtype = VAL_INT;
         }
         id.val.i = i;
-        }
-        else 
-        {
-            tagval zero;
-            zero.setint(0);
+    }
+    else
+    {
+        tagval zero;
+        zero.setint(0);
         pusharg(id, zero, stack);
         id.flags &= ~IDF_UNKNOWN;
     }
@@ -2532,7 +2532,7 @@ static bool parselist(const char *&s, const char *&start = liststart, const char
                 s += strcspn(s, "\"/;()[]\0");
                 int c = *s++;
                 switch(c)
-    {
+                {
                     case '\0': s--; quoteend = end = s; return true;
                     case '"': s = parsestring(s); if(*s == '"') s++; break;
                     case '/': if(*s == '/') s += strcspn(s, "\n\0"); break;
@@ -2552,7 +2552,7 @@ static bool parselist(const char *&s, const char *&start = liststart, const char
     if(*s == ';') s++;
     return true;
 }
-                
+
 void explodelist(const char *s, vector<char *> &elems, int limit)
 {
     const char *start, *end;
@@ -2769,19 +2769,19 @@ char *listdel(const char *s, const char *del)
 }
 ICOMMAND(listdel, "ss", (char *list, char *del), commandret->setstr(listdel(list, del)));
 
-void listsplice(const char *s, const char *vals, int *skip, int *count, int *numargs)
+void listsplice(const char *s, const char *vals, int *skip, int *count)
 {
-    int offset = max(*skip, 0), len = *numargs >= 4 ? max(*count, 0) : -1;
+    int offset = max(*skip, 0), len = max(*count, 0);
     const char *list = s, *start, *end, *qstart, *qend = s;
     loopi(offset) if(!parselist(s, start, end, qstart, qend)) break;
     vector<char> p;
     if(qend > list) p.put(list, qend-list);
     if(*vals)
-        {
-            if(!p.empty()) p.add(' ');
+    {
+        if(!p.empty()) p.add(' ');
         p.put(vals, strlen(vals));
-        }
-    while(len-- > 0) if(!parselist(s)) break;
+    }
+    loopi(len) if(!parselist(s)) break;
     skiplist(s);
     switch(*s)
     {
@@ -2794,7 +2794,7 @@ void listsplice(const char *s, const char *vals, int *skip, int *count, int *num
     p.add('\0');
     commandret->setstr(newstring(p.getbuf(), p.length()-1));
 }
-COMMAND(listsplice, "ssiiN");
+COMMAND(listsplice, "ssii");
 
 ICOMMAND(loopfiles, "rsse", (ident *id, char *dir, char *ext, uint *body),
 {
@@ -3099,6 +3099,20 @@ char *strreplace(const char *s, const char *oldval, const char *newval)
 }
 
 ICOMMAND(strreplace, "sss", (char *s, char *o, char *n), commandret->setstr(strreplace(s, o, n)));
+
+void strsplice(const char *s, const char *vals, int *skip, int *count)
+{
+    int slen = strlen(s), vlen = strlen(vals),
+        offset = clamp(*skip, 0, slen),
+        len = clamp(*count, 0, slen - offset);
+    char *p = newstring(slen - len + vlen);
+    if(offset) memcpy(p, s, offset);
+    if(vlen) memcpy(&p[offset], vals, vlen);
+    if(offset + len < slen) memcpy(&p[offset + vlen], &s[offset + len], slen - (offset + len));
+    p[slen - len + vlen] = '\0';
+    commandret->setstr(p);
+}
+COMMAND(strsplice, "ssii");
 
 #ifndef STANDALONE
 ICOMMAND(getmillis, "i", (int *total), intret(*total ? totalmillis : lastmillis));
