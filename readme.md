@@ -29,9 +29,9 @@ Sauerbraten Fork is a fork of the quake-like fps Sauerbraten/Cube2. It is compat
 
 ## Resources
 
-* [Web site, well probably somewhen](http://.org)
-* [Wiki](http://forge.nooblounge.net/projects/bomberman/wiki)
-* [Issue Tracker](http://forge.nooblounge.net/projects/bomberman/issues)
+* [Website, well probably somewhen](http://.org)
+* [Wiki](https://github.com/sauerbraten-fork/sauerbraten-fork/wiki)
+* [Issue Tracker](https://github.com/sauerbraten-fork/sauerbraten-fork/issues)
 * [Source Repository](https://github.com/sauerbraten-fork/sauerbraten-fork)
 * [Chat (irc.gamesurge.net #sauerfork)](irc://irc.gamesurge.net/#sauerfork)
 * [Sauerbraten Wiki](http://cube.wikispaces.com/)
@@ -45,11 +45,11 @@ Sauerbraten Fork is a fork of the quake-like fps Sauerbraten/Cube2. It is compat
 
 ### Sauerbraten/Cube2
 
-* Wouter "Aardappel" van Oortmerssen: A lot of the general code, and the original concept and design. (website)
-* Lee "eihrul" Salzman: ENet networking library, nix ports, and a lot of the general code, especially rendering/lightmaps/physics related. (website)
+* Wouter "Aardappel" van Oortmerssen: A lot of the general code, and the original concept and design. [(website)](http://strlen.com/)
+* Lee "eihrul" Salzman: ENet networking library, nix ports, and a lot of the general code, especially rendering/lightmaps/physics related. [(website)](http://sauerbraten.org/lee/)
 * Mike "Gilt" Dysart: General programming, especially editing/physics related.
-* Robert "baby-rabbit" Pointon: GUI, particle rendering, and movie recording code, MacOSX porting. (website)
-* Quinton "quin" Reeves: Bots/AI code. Asissts with community management, documentation/wiki, and development. (website)
+* Robert "baby-rabbit" Pointon: GUI, particle rendering, and movie recording code, MacOSX porting. [(website)](http://www.fernlightning.com/)
+* Quinton "quin" Reeves: Bots/AI code. Asissts with community management, documentation/wiki, and development. [(website)](http://www.redeclipse.net/)
 
 with contributions from:
 
@@ -72,8 +72,8 @@ with contributions from:
 * Dietmar "dcp" Pier: Mapmodels, old hudguns.
 * DarthVim: Old hudguns.
 * Shane Nieb: Textures, Mapmodels, Skyboxes.
-* Sock: The egyptian & tech texture sets (website).
-* Iikka "Fingers" Keranen: The ikbase ik2k texture sets (website).
+* Sock: The egyptian & tech texture sets.
+* Iikka "Fingers" Keranen: The ikbase ik2k texture sets.
 * Lunaran, Gibbie, Gregor Koch, Jésus "aftasardem" Maia, MitaMan, and philipk: Normalmapped texture sets.
 * Additional art by: metlslime (textures), Than (textures), Remedy Entertainment Ltd (textures), Seth & Ulrich Galbraith (GPL models), Brian "EvilBastard" Collins, Conrad, Magarnigal, Psionic, James Green, Andreas Möller, Ryan Butts & Jeramy Cooke (md2 models), KaiserTodretter (items), Tentus (mapmodels), Kurt Kessler (mapmodels), Philip Klevestav (textures), leileilol/OpenArena (GPL bullet hole decal).
 
@@ -85,7 +85,7 @@ with contributions from:
 
 * Kristian "sleepwalkr" Duske: website / messageboard, hosting, master server.
 * Pushplay: Documentation help.
-* The SDL team: For their libraries (website).
+* The SDL team: For their libraries [(website)](http://www.libsdl.org/).
 
 ## Copyright
 
@@ -158,4 +158,4 @@ freely, subject to the following restrictions:
 ### Logo
 The following Logo is the provisional logo. It is more or less based on the original logo and simplified.
 
-![Logo](https://raw.githubusercontent.com/sauerbraten-fork/website/master/sites/all/logo.png)
+![Logo](https://avatars1.githubusercontent.com/u/5883878?v=2&s=420)
