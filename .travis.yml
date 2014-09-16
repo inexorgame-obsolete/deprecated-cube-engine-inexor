@@ -36,4 +36,4 @@ after_success:
   - cp -r bin_* nightly && cp sauerbraten_unix nightly && cp sauerbraten.bat nightly 
   - VER="$TRAVIS_COMMIT-$TRAVIS_BUILD_ID"
   - zip ${VER}.zip nightly
-  - "curl --ftp-create-dirs --ftp-ssl -k -T ${VER}.zip -u $FTP_USER:$FTP_PASSWORD ftp://37.59.98.138/"
+  - "curl --ftp-create-dirs -T ${VER}.zip -u $FTP_USER:$FTP_PASSWORD ftp://37.59.98.138/"
