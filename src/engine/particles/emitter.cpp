@@ -53,6 +53,7 @@ void particle_system::emit_particles(particle_emitter_instance* pe_inst, int ela
  */
 particle_instance* particle_system::emit_particle()
 {
+	conoutf("%d/%d/%d", count_alive_pool, count_particle_instances, max_particle_instances);
 	if (dead_pool.size() > 0)
 	{
 		// reanimate a dead particle
@@ -62,10 +63,26 @@ particle_instance* particle_system::emit_particle()
 		p_inst->elapsed = 0;
 		return p_inst;
 	} else {
+		// Particle-Limiting
+		//
+		// Limiting to an exact number of particles is waste of time. Instead
+		// we kill the oldest, push it to back and let him die in the next
+		// iteration performantly.
+		if (count_alive_pool > max_particle_instances) {
+			particle_instance* p_inst_old = alive_pool.front();
+			conoutf("%d/%d/%d", p_inst_old->remaining, count_alive_pool, max_particle_instances);
+			// kill on next iteration
+			p_inst_old->remaining = 0;
+			// move to back (don't kill the same particle multiple times)
+			alive_pool.pop_front();
+			alive_pool.push_back(p_inst_old);
+		}
+
 		// dynamically create a new particle instance
 		particle_instance *p_inst = new particle_instance;
 		p_inst->elapsed = 0;
 		p_inst->pos = new position();
+		count_particle_instances++;
 		return p_inst;
 	}
 }

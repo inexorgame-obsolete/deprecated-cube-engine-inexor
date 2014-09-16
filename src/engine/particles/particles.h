@@ -507,7 +507,7 @@ struct particle_system
 	int count_particle_renderer_implementations;
 	int count_particle_modifier_implementations;
 	int count_particle_initializer_implementations;
-	int count_particles_instances;
+	int count_particle_instances;
 	int count_particle_emitter_instances;
 	int count_particle_renderer_instances;
 	int count_particle_modifier_instances;
@@ -516,6 +516,10 @@ struct particle_system
 	int count_spring_instances;
 	int count_alive_pool;
 	int count_dead_pool;
+
+	// Limits
+	int max_particle_instances;
+	int max_face_instances;
 
 	int timer_emitter;
 	int timer_renderer;
@@ -563,10 +567,8 @@ struct particle_system
 	// Name to instance mappings
 	std::map<std::string, particle_renderer_instance*> particle_renderer_instances_map;
 
-	// The spring construction rules
+	// Construction rules for springs and faces
 	std::map<std::string, ivec> spring_construction_rules;
-
-	// The face construction rules
 	std::map<std::string, ivec> face_construction_rules;
 
 	// Use pools for performance reasons

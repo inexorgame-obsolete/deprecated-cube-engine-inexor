@@ -7,6 +7,8 @@ particle_system::particle_system()
 {
 	particle_frame = 1000.0f;
 	particlemillis = 0;
+	max_particle_instances = 600;
+	max_face_instances = 10000;
 	timer_emitter = 0;
 	timer_modifier = 0;
 	timer_renderer = 0;
@@ -22,7 +24,7 @@ particle_system::particle_system()
 	count_particle_renderer_implementations = 0;
 	count_particle_modifier_implementations = 0;
 	count_particle_initializer_implementations = 0;
-	count_particles_instances = 0;
+	count_particle_instances = 0;
 	count_particle_emitter_instances = 0;
 	count_particle_renderer_instances = 0;
 	count_particle_modifier_instances = 0;
@@ -91,6 +93,7 @@ void particle_system::clear_particle_pools()
 	}
 	count_alive_pool = 0;
 	count_dead_pool = 0;
+	count_particle_instances = 0;
 	// Also clean up every particle instance reference in the renderers
 	for(std::vector<particle_renderer_instance*>::iterator pr_it = particle_renderer_instances.begin(); pr_it != particle_renderer_instances.end(); ++pr_it)
 	{
@@ -101,7 +104,7 @@ void particle_system::clear_particle_pools()
 void particle_system::clear_particle_instances()
 {
 	particle_instances.clear();
-	count_particles_instances = 0;
+	count_particle_instances = 0;
 	// TODO: also in the renderers!
 }
 
