@@ -50,25 +50,15 @@ namespace entities
     const char *itemname(int i)
     {
         int t = ents[i]->type;
-        if(t>=I_BOMBS && t<=I_BOMBDELAY) {
-            return itemstats[P_AMMO_BO+t-I_BOMBS].name;
-        } else if (t>=I_SHELLS && t<=I_QUAD) {
+        if(t<I_SHELLS || t>I_QUAD) return NULL;
             return itemstats[t-I_SHELLS].name;
-        } else {
-            return NULL;
-        }
     }
 
     int itemicon(int i)
     {
         int t = ents[i]->type;
-        if(t>=I_BOMBS && t<=I_BOMBDELAY) {
-            return itemstats[P_AMMO_BO+t-I_BOMBS].icon;
-        } else if (t>=I_SHELLS && t<=I_QUAD) {
+        if(t<I_SHELLS || t>I_QUAD) return -1;
             return itemstats[t-I_SHELLS].icon;
-        } else {
-            return -1;
-        }
     }
 
     const char *entmdlname(int type)
@@ -77,6 +67,7 @@ namespace entities
         {
             NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
             "ammo/shells", "ammo/bullets", "ammo/rockets", "ammo/rrounds", "ammo/grenades", "ammo/cartridges",
+            "ammo/bombs", "ammo/bombradius", "ammo/bombdelay",
             "health", "boost", "armor/green", "armor/yellow", "quad", "teleporter",
             NULL, NULL,
             "carrot",
@@ -85,7 +76,6 @@ namespace entities
             NULL, NULL,
             NULL, NULL,
             NULL,
-            "ammo/bombs", "ammo/bombradius", "ammo/bombdelay", NULL, NULL, NULL, NULL, NULL, // bomb
             NULL, //obstacle
         };
         return entmdlnames[type];
@@ -154,12 +144,7 @@ namespace entities
                     if(e.attr2 < 0) continue;
                     break;
                 default:
-                    if(!e.spawned) continue;
-                    if(m_bomb) {
-                        if(!e.spawned || e.type < I_BOMBS || e.type > I_BOMBDELAY) continue;
-                    } else {
                         if(!e.spawned || e.type < I_SHELLS || e.type > I_QUAD) continue;
-                    }
             }
             const char *mdlname = entmodel(e);
             if(mdlname)
@@ -173,9 +158,7 @@ namespace entities
 
     void addammo(int type, int &v, bool local)
     {
-        int tindex = type-I_SHELLS;
-        if(type==I_BOMBS) tindex = 11;
-        itemstat &is = itemstats[tindex];
+        itemstat &is = itemstats[type-I_SHELLS];
         v += is.add;
         if(v>is.max) v = is.max;
         if(local) msgsound(is.sound);
@@ -183,8 +166,7 @@ namespace entities
 
     void repammo(fpsent *d, int type, bool local)
     {
-    	if(type==I_BOMBS) addammo(type, d->ammo[GUN_BOMB], local);
-    	else addammo(type, d->ammo[type-I_SHELLS+GUN_SG], local);
+        addammo(type, d->ammo[type-I_SHELLS+GUN_SG], local);
     }
 
     // these two functions are called when the server acknowledges that you really
@@ -194,13 +176,10 @@ namespace entities
     {
         if(!ents.inrange(n)) return;
         int type = ents[n]->type;
-        if (m_bomb && (type<I_BOMBS || type>I_BOMBDELAY)) return;
-        else if (!m_bomb && (type<I_SHELLS || type>I_QUAD)) return;
+        if(type<I_SHELLS || type>I_QUAD) return;
         ents[n]->spawned = false;
         if(!d) return;
-        int tindex = type-I_SHELLS;
-        if(type>=I_BOMBS) tindex = 11+type-I_BOMBS;
-        itemstat &is = itemstats[tindex];
+        itemstat &is = itemstats[type-I_SHELLS];
         if(d!=player1 || isthirdperson())
         {
             //particle_text(d->abovehead(), is.name, PART_TEXT, 2000, 0xFFC864, 4.0f, -8);
@@ -227,7 +206,7 @@ namespace entities
                 break;
 
             case I_BOMBDELAY:
-                conoutf(CON_GAMEINFO, "\f2your bombs explodes faster!");
+                conoutf(CON_GAMEINFO, "\f2your bombs explode faster!");
                 playsound(S_ITEMHEALTH, NULL, NULL, 0, 0, -1, 0, 3000);
                 break;
         }
@@ -370,7 +349,6 @@ namespace entities
                 d->vel = v;
                 break;
             }
-
         }
     }
 
@@ -715,6 +693,7 @@ namespace entities
         {
             "none?", "light", "mapmodel", "playerstart", "envmap", "particles", "sound", "spotlight",
             "shells", "bullets", "rockets", "riflerounds", "grenades", "cartridges",
+            "bombs", "bombradius", "bombdelay",
             "health", "healthboost", "greenarmour", "yellowarmour", "quaddamage",
             "teleport", "teledest",
             "monster", "carrot", "jumppad",
@@ -722,7 +701,6 @@ namespace entities
             "box", "barrel",
             "platform", "elevator",
             "flag",
-            "bombs", "bombradius", "bombdelay", "bombreserved2", "bombreserved3", "bombreserved4", "bombreserved5", "bombreserved6",
             "obstacle",
             "", "", // two empty strings follows.
         };

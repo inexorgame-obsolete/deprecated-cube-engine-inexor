@@ -497,7 +497,7 @@ namespace game
 
                 adddynlight(v, 1.15f*exprad, vec(0.5f, 1.5f, 2), 600, 100, 0, 8, vec(0.25f, 1, 1));
 
-                if(owner->ammo[GUN_BOMB] < itemstats[P_AMMO_BO].max)
+                if(owner->ammo[GUN_BOMB] < itemstats[GUN_BOMB].max)
                     owner->ammo[GUN_BOMB]++; // add a bomb if the bomb explodes
                 break;
 
