@@ -263,7 +263,7 @@ namespace game
         {
             if(d->physstate >= PHYS_SLOPE)
             {
-                swayspeed = min(sqrtf(d->vel.x*d->vel.x + d->vel.y*d->vel.y), (d->maxspeed+d->p_playerspeed));
+                swayspeed = min(sqrtf(d->vel.x*d->vel.x + d->vel.y*d->vel.y), d->maxspeed);
                 swaydist += swayspeed*curtime/1000.0f;
                 swaydist = fmod(swaydist, 2*swaystep);
                 swayfade = 1;
@@ -272,14 +272,14 @@ namespace game
             {
                 swaydist += swayspeed*swayfade*curtime/1000.0f;
                 swaydist = fmod(swaydist, 2*swaystep);
-                swayfade -= 0.5f*(curtime*(d->maxspeed+d->p_playerspeed))/(swaystep*1000.0f);
+                swayfade -= 0.5f*(curtime*d->maxspeed)/(swaystep*1000.0f);
             }
 
             float k = pow(0.7f, curtime/10.0f);
             swaydir.mul(k);
             vec vel(d->vel);
             vel.add(d->falling);
-            swaydir.add(vec(vel).mul((1-k)/(15*max(vel.magnitude(), (d->maxspeed+d->p_playerspeed)))));
+            swaydir.add(vec(vel).mul((1-k)/(15*max(vel.magnitude(), d->maxspeed))));
         }
     }
 

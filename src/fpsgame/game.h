@@ -58,10 +58,6 @@ enum                            // static entity types
     RACE_START,
     RACE_FINISH,
     RACE_CHECKPOINT,            // attr1 = angle, attr2 = checkpoint no
-    P_GRAVITY,                  // attr1 = ?, attr2 = radius, attr3 = manipulation value
-    P_FRICTION,
-    P_JUMP,
-    P_SPEED,
     // I_INVISIBLE,                // hide and seek
     MAXENTTYPES
 };
@@ -839,7 +835,6 @@ namespace entities
     extern void resettriggers();
     extern void checktriggers();
     extern void checkitems(fpsent *d);
-    extern void checkphysics(fpsent *d);
     extern void checkquad(int time, fpsent *d);
     extern void resetspawns();
     extern void spawnitems(bool force = false);
