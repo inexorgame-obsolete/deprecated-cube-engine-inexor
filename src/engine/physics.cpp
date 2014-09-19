@@ -1,4 +1,3 @@
-
 // physics.cpp: no physics books were hurt nor consulted in the construction of this code.
 // All physics computations and constants were invented on the fly and simply tweaked until
 // they "felt right", and have no basis in reality. Collision detection is simplistic but
@@ -678,38 +677,6 @@ bool plcollide(physent *d, const vec &dir)    // collide with player or monster
     }
     return false;
 }
-
-#define MMROT(x, y) \
-    vec2(x, y), vec2(x, y), vec2(x, y), vec2(x, y), vec2(x, y), vec2(x, y), vec2(x, y), vec2(x, y), \
-    vec2(x, y), vec2(x, y), vec2(x, y), vec2(x, y), vec2(x, y), vec2(x, y), vec2(x, y)
-extern const vec2 mmrots[((360/15)+1)*15] =
-{
-    MMROT(1.00000000, 0.00000000), // 0
-    MMROT(0.96592583, 0.25881905), // 15
-    MMROT(0.86602540, 0.50000000), // 30
-    MMROT(0.70710678, 0.70710678), // 45
-    MMROT(0.50000000, 0.86602540), // 60
-    MMROT(0.25881905, 0.96592583), // 75
-    MMROT(0.00000000, 1.00000000), // 90
-    MMROT(-0.25881905, 0.96592583), // 105
-    MMROT(-0.50000000, 0.86602540), // 120
-    MMROT(-0.70710678, 0.70710678), // 135
-    MMROT(-0.86602540, 0.50000000), // 150
-    MMROT(-0.96592583, 0.25881905), // 165
-    MMROT(-1.00000000, 0.00000000), // 180
-    MMROT(-0.96592583, -0.25881905), // 195
-    MMROT(-0.86602540, -0.50000000), // 210
-    MMROT(-0.70710678, -0.70710678), // 225
-    MMROT(-0.50000000, -0.86602540), // 240
-    MMROT(-0.25881905, -0.96592583), // 255
-    MMROT(-0.00000000, -1.00000000), // 270
-    MMROT(0.25881905, -0.96592583), // 285
-    MMROT(0.50000000, -0.86602540), // 300
-    MMROT(0.70710678, -0.70710678), // 315
-    MMROT(0.86602540, -0.50000000), // 330
-    MMROT(0.96592583, -0.25881905), // 345
-    MMROT(1.00000000, 0.00000000) // 360
-};
 
 void rotatebb(vec &center, vec &radius, int yaw)
 {

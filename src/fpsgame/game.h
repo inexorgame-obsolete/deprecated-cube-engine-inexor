@@ -425,12 +425,7 @@ static struct itemstat { int add, max, sound; const char *name; int icon, info; 
 #define EXP_SELFDAMDIV 2
 #define EXP_SELFPUSH 2.5f
 #define EXP_DISTSCALE 1.5f
-
 #define BOMB_DAMRAD 20
-#define BOMB_FADE 7
-#define BOMB_COLLHEIGHT 70
-#define BOMB_COLLGROUND 5
-#define BOMB_COLLBULGE 40
 
 static const struct guninfo { int   sound, attackdelay, damage, spread, projspeed,       kickamount, range, rays, hitpush, exprad, ttl; const char *name, *file; short part; } guns[NUMGUNS] =
 {
@@ -462,8 +457,7 @@ struct fpsstate
     int gunselect, gunwait;
     int ammo[NUMGUNS];
     int aitype, skill;
-    int backupweapon;
-	//bomberman
+    int backupweapon; //no ammo - weapon
     int bombradius;
     int bombdelay;
 
