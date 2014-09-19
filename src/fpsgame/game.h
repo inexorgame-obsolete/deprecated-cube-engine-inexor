@@ -102,11 +102,10 @@ enum
     M_COLLECT    = 1<<19,
     M_LMS        = 1<<20,
     M_BOMB       = 1<<21,
-    M_TIMEFORWARD= 1<<23,
-    M_OBSTACLES  = 1<<24,
-    M_HIDEANDSEEK= 1<<25,
-    M_FREEZE     = 1<<26 /*,
-    M_SAFARI     = 1<<27 */
+    M_TIMEFORWARD= 1<<22,
+    M_OBSTACLES  = 1<<23,
+    M_HIDEANDSEEK= 1<<24,
+    //M_RACE       = 1<<25,
 };
 
 static struct gamemodeinfo
@@ -145,9 +144,6 @@ static struct gamemodeinfo
     { "bomberman", M_LMS | M_BOMB | M_OBSTACLES, "Bomberman: Place bombs to kill enemies. Collect items to increase amount of bombs or damage radius. Survive to win." },
     { "bomberman team", M_LMS | M_BOMB | M_TEAM | M_OBSTACLES, "Bomberman Team: Place bombs to kill \fs\f3enemies\fr. Collect items to increase amount of bombs or damage radius. Your team wins if one player survives." },
     { "hideandseek", M_HIDEANDSEEK | M_TEAM | M_OBSTACLES, "Hide and Seek: Hiders hides, seekers seeks. No teamkills." },
-    { "insta hideandseek", M_HIDEANDSEEK | M_NOITEMS | M_INSTA | M_TEAM | M_OBSTACLES, "Hide and Seek: Hiders hides, seekers seeks. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
-    { "hideandseek freeze", M_HIDEANDSEEK | M_TEAM | M_FREEZE | M_OBSTACLES, "Hide and Seek: Hiders hides, Seekers seeks. Hiders freezes Seekers, Seekers catches Hiders. No teamkills." } /*,
-    { "hideandseek safari", M_HIDEANDSEEK | M_TEAM | M_SAFARI | M_OBSTACLES, "Hide and Seek: Hiders hides, Seekers seeks. Seekers drugs Hiders, then hunt them down." } */
 };
 
 #define STARTGAMEMODE (-3)
@@ -179,7 +175,6 @@ static struct gamemodeinfo
 
 #define m_obstacles    (m_check(gamemode, M_OBSTACLES))
 #define m_timeforward  (m_check(gamemode, M_TIMEFORWARD))
-#define m_freeze       (m_check(gamemode, M_FREEZE))
 
 #define m_demo         (m_check(gamemode, M_DEMO))
 #define m_edit         (m_check(gamemode, M_EDIT))

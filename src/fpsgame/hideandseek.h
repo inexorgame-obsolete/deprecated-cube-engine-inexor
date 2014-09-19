@@ -186,29 +186,7 @@ struct hideandseekclientmode : clientmode
         // sendservmsg(msg);
         // if(!m_freeze && isteam(actor->team, target->team) || ishider(actor)) return false;
         if (!actor || !target || actor==target) return false;
-        if (!m_freeze) {
-            if (isteam(actor->team, target->team) || ishider(actor)) return false;
-        } else {
-            if (ishider(actor) && isseeker(target)) {
-                if (isfreezed(target)) return false;
-                // freeze seeker
-                setfreezedstate(target, true);
-                sendf(target->clientnum, 1, "rii", N_PAUSEGAME, 1);
-                defformatstring(msg)("%s got freezed by %s!", target->name, actor->name);
-                announceseekers(msg);
-                return false;
-            } else if (isseeker(actor) && isseeker(target)) {
-                if (!isfreezed(target)) return false;
-                // unfreeze seeker
-                setfreezedstate(target, false);
-                sendf(target->clientnum, 1, "rii", N_PAUSEGAME, 0);
-                defformatstring(msg)("You got unfreezed by %s", actor->name);
-                sendf(target->clientnum, 1, "ri3s ", N_HUDANNOUNCE, 3000, E_ZOOM_OUT, msg);
-                defformatstring(msg2)("You unfreezed %s", target->name);
-                sendf(actor->clientnum, 1, "ri3s ", N_HUDANNOUNCE, 3000, E_ZOOM_OUT, msg2);
-                return false;
-            }
-        }
+        if (isteam(actor->team, target->team) || ishider(actor)) return false;
         conoutf("d");
         return true;
     }
