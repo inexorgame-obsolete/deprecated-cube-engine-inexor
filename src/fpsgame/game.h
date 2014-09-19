@@ -55,10 +55,6 @@ enum                            // static entity types
     I_BOMBRESERVED5,
     I_BOMBRESERVED6,
     OBSTACLE,                   // attr1 = angle, attr2 = idx (mapmodel index), attr3 = health, attr4 = weight, attr5 = respawnmillis
-    RACE_START,
-    RACE_FINISH,
-    RACE_CHECKPOINT,            // attr1 = angle, attr2 = checkpoint no
-    // I_INVISIBLE,                // hide and seek
     MAXENTTYPES
 };
 
@@ -106,7 +102,6 @@ enum
     M_COLLECT    = 1<<19,
     M_LMS        = 1<<20,
     M_BOMB       = 1<<21,
-    M_RACE       = 1<<22,
     M_TIMEFORWARD= 1<<23,
     M_OBSTACLES  = 1<<24,
     M_HIDEANDSEEK= 1<<25,
@@ -153,7 +148,6 @@ static struct gamemodeinfo
     { "lms tactics", M_LMS | M_TACTICS | M_NOITEMS, ""},
     { "bomberman", M_LMS | M_BOMB | M_OBSTACLES, "Bomberman: Place bombs to kill enemies. Collect items to increase amount of bombs or damage radius. Survive to win." },
     { "bomberman team", M_LMS | M_BOMB | M_TEAM | M_OBSTACLES, "Bomberman Team: Place bombs to kill \fs\f3enemies\fr. Collect items to increase amount of bombs or damage radius. Your team wins if one player survives." },
-    { "race", M_RACE | M_TIMEFORWARD | M_OBSTACLES, "Race: Be the first who completes 3 laps. Kill people to repulse them." },
     { "hideandseek", M_HIDEANDSEEK | M_TEAM | M_OBSTACLES, "Hide and Seek: Hiders hides, seekers seeks. No teamkills." },
     { "insta hideandseek", M_HIDEANDSEEK | M_NOITEMS | M_INSTA | M_TEAM | M_OBSTACLES, "Hide and Seek: Hiders hides, seekers seeks. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
     { "hideandseek freeze", M_HIDEANDSEEK | M_TEAM | M_FREEZE | M_OBSTACLES, "Hide and Seek: Hiders hides, Seekers seeks. Hiders freezes Seekers, Seekers catches Hiders. No teamkills." } /*,
@@ -185,7 +179,6 @@ static struct gamemodeinfo
 
 #define m_lms          (m_check(gamemode, M_LMS))
 #define m_bomb         (m_check(gamemode, M_BOMB))
-#define m_race         (m_check(gamemode, M_RACE))
 #define m_hideandseek  (m_check(gamemode, M_HIDEANDSEEK))
 
 #define m_obstacles    (m_check(gamemode, M_OBSTACLES))
@@ -284,7 +277,6 @@ enum
     N_SERVCMD,
     N_DEMOPACKET,
     N_ITEMPUSH, N_SPAWNLOC,
-    N_RACESTART, N_RACEFINISH, N_RACECHECKPOINT, N_RACELAP, N_RACEINFO,
     N_HUDANNOUNCE,
     NUMMSG
 };
@@ -317,7 +309,6 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
     N_SERVCMD, 0,
     N_DEMOPACKET, 0,
     N_ITEMPUSH, 6, N_SPAWNLOC, 0,
-    N_RACESTART, 0, N_RACEFINISH, 0, N_RACECHECKPOINT, 2, N_RACELAP, 2, N_RACEINFO, 7,
     N_HUDANNOUNCE, 0,
     -1
 };
@@ -475,12 +466,6 @@ struct fpsstate
 	//bomberman
     int bombradius;
     int bombdelay;
-    //race
-    int racetime;
-    int racelaps;
-    int racecheckpoint;
-    int racerank;
-    int racestate;
 
     fpsstate() : maxhealth(100), aitype(AI_NONE), skill(0), backupweapon(GUN_FIST) {}
 
@@ -658,18 +643,6 @@ struct fpsstate
             gunselect = GUN_BOMB;
             backupweapon = GUN_BOMB;
         }
-        else if(m_race)
-        {
-            // racetime = 0;
-            // racelaps = 0;
-            // racecheckpoint = 0;
-            health = 100;
-            armourtype = A_GREEN;
-            armour = 50;
-            gunselect = GUN_GL;
-            ammo[GUN_PISTOL] = 0;
-            ammo[GUN_GL] = 8;
-        }
         else if(m_hideandseek)
         {
             health = 100;
@@ -726,7 +699,7 @@ struct fpsent : dynent, fpsstate
     bool attacking;
     int attacksound, attackchan, idlesound, idlechan;
     int lasttaunt;
-    int lastpickup, lastpickupmillis, lastpickupindex, lastbase, lastrepammo, flagpickup, tokens;
+    int lastpickup, lastpickupmillis, lastbase, lastrepammo, flagpickup, tokens;
     vec lastcollect;
     int frags, flags, deaths, totaldamage, totalshots;
     editinfo *edit;
@@ -864,8 +837,6 @@ namespace game
         virtual void drawhud(fpsent *d, int w, int h) {}
         virtual bool isinvisible(fpsent *d) { return false; }
         virtual void rendergame() {}
-        virtual int getplayerattackanim(fpsent *d, int attack) { return attack; }
-        virtual int getplayerholdanim(fpsent *d, int hold) { return hold; }
         virtual void respawned(fpsent *d) {}
         virtual void setup() {}
         virtual void checkitems(fpsent *d) {}
@@ -1051,7 +1022,7 @@ namespace game
         const char *ffa, *blueteam, *redteam, *hudguns,
                    *vwep, *quad, *armour[3],
                    *ffaicon, *blueicon, *redicon;
-        bool ragdoll, selectable;
+        bool ragdoll;
     };
 
     extern int playermodel, teamskins, testteam;
@@ -1060,7 +1031,6 @@ namespace game
     extern void clearragdolls();
     extern void moveragdolls();
     extern void changedplayermodel();
-    extern void renderplayer(fpsent *d, const playermodelinfo &mdl, int team, float fade, bool mainpass);
     extern const playermodelinfo &getplayermodelinfo(fpsent *d);
     extern int chooserandomplayermodel(int seed);
     extern void swayhudgun(int curtime);

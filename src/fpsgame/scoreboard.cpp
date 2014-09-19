@@ -39,11 +39,6 @@ namespace game
             if(a->flags > b->flags) return true;
             if(a->flags < b->flags) return false;
         }
-        if(m_race)
-        {
-            if(a->racerank > b->racerank) return true;
-            if(a->racerank < b->racerank) return false;
-        }
         if(a->frags > b->frags) return true;
         if(a->frags < b->frags) return false;
         return strcmp(a->name, b->name) < 0;
