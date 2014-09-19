@@ -353,23 +353,6 @@ enum
     HICON_SPACE   = 40
 };
 
-enum pickupitems {                      // pickup items
-    P_AMMO_SG = 0,
-    P_AMMO_CG,
-    P_AMMO_RL,
-    P_AMMO_RI,
-    P_AMMO_GL,
-    P_AMMO_PI,
-    P_HEALTH_H,
-    P_HEALTH_MH,
-    P_ARMOUR_GA,
-    P_ARMOUR_YA,
-    P_UP_Q,
-    P_AMMO_BO,
-    P_UP_BR,
-    P_UP_BD
-};
-
 enum hudannounceeffects {
     E_STATIC_CENTER = 0,
     E_STATIC_LEFT,
@@ -447,50 +430,24 @@ struct fpsstate
 
     void baseammo(int gun, int k = 2, int scale = 1)
     {
-        if(gun==GUN_BOMB) ammo[gun] = (itemstats[P_AMMO_BO].add*k)/scale;
-        else ammo[gun] = (itemstats[gun-GUN_SG].add*k)/scale;
+        ammo[gun] = (itemstats[gun-GUN_SG].add*k)/scale;
     }
 
     void addammo(int gun, int k = 1, int scale = 1)
     {
-        if(gun==GUN_BOMB) {
-            itemstat &is = itemstats[P_AMMO_BO];
-            ammo[gun] = min(ammo[gun] + (is.add*k)/scale, is.max);
-        } else {
             itemstat &is = itemstats[gun-GUN_SG];
             ammo[gun] = min(ammo[gun] + (is.add*k)/scale, is.max);
-        }
     }
 
     bool hasmaxammo(int type)
     {
-        if(type>=I_BOMBS && type<=I_BOMBDELAY) {
-            itemstat &is = itemstats[P_AMMO_BO+type-I_BOMBS];
-            return ammo[GUN_BOMB]>=is.max;
-        } else {
-            itemstat &is = itemstats[type-I_SHELLS];
+       const itemstat &is = itemstats[type-I_SHELLS];
             return ammo[type-I_SHELLS+GUN_SG]>=is.max;
-        }
     }
 
     bool canpickup(int type)
     {
-        if(type>=I_BOMBS && type<=I_BOMBDELAY) {
-            itemstat &is = itemstats[P_AMMO_BO+type-I_BOMBS];
-            switch(type) {
-                case I_BOMBRADIUS:
-                    return bombradius<is.max;
-                    break;
-                case I_BOMBDELAY:
-                    return bombdelay<is.max;
-                    break;
-                default:
-                    return ammo[is.info]<is.max;
-                    break;
-            }
-    	} 
-		else if(type>=I_SHELLS && type<=I_QUAD) 
-		{
+        if(type<I_SHELLS || type>I_QUAD) return false;
 			itemstat &is = itemstats[type-I_SHELLS];
 	        switch(type)
 	        {
@@ -501,29 +458,19 @@ struct fpsstate
 	                    if(armourtype==A_YELLOW && armour>=100) return false;
 	            case I_YELLOWARMOUR: return !armourtype || armour<is.max;
 	            case I_QUAD: return quadmillis<is.max;
+                case I_BOMBRADIUS:
+                    return bombradius<is.max;
+                    break;
+                case I_BOMBDELAY:
+                    return bombdelay<is.max;
+                    break;
 	            default: return ammo[is.info]<is.max;
 	    	}
 		}
-		else return false;
-    }
 
     void pickup(int type)
     {
-       	if(type>=I_BOMBS && type<=I_BOMBDELAY) {
-            itemstat &is = itemstats[P_AMMO_BO+type-I_BOMBS];
-            switch(type)
-            {
-                case I_BOMBRADIUS:
-                    bombradius = min(bombradius+is.add, is.max);
-                    break;
-                case I_BOMBDELAY:
-                    bombdelay = min(bombdelay+is.add, is.max);
-                    break;
-                default:
-                    ammo[is.info] = min(ammo[is.info]+is.add, is.max);
-                    break;
-            }
-        } else if(type>=I_SHELLS && type<=I_QUAD) {
+        if(type<I_SHELLS || type>I_QUAD) return;
             itemstat &is = itemstats[type-I_SHELLS];
             switch(type)
             {
@@ -540,12 +487,17 @@ struct fpsstate
                 case I_QUAD:
                     quadmillis = min(quadmillis+is.add, is.max);
                     break;
+                case I_BOMBRADIUS:
+                    bombradius = min(bombradius+is.add, is.max);
+                    break;
+                case I_BOMBDELAY:
+                    bombdelay = min(bombdelay+is.add, is.max);
+                    break;
                 default:
                     ammo[is.info] = min(ammo[is.info]+is.add, is.max);
                     break;
             }
         }
-    }
 
     void respawn(int gamemode = NULL)
     {

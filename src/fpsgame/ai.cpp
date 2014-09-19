@@ -424,9 +424,9 @@ namespace ai
             }
             default:
             {
-                if(((e.type >= I_SHELLS && e.type <= I_CARTRIDGES) || (e.type >= I_BOMBS && e.type <= I_BOMBDELAY)) && !d->hasmaxammo(e.type))
+                if(e.type >= I_SHELLS && e.type <= I_BOMBDELAY && !d->hasmaxammo(e.type))
                 {
-                    int gun = m_bomb ? GUN_BOMB : e.type - I_SHELLS + GUN_SG;
+                    int gun = m_bomb ? GUN_BOMB : e.type - I_SHELLS + GUN_SG; //todo bomberman
                     // go get a weapon upgrade
                     if(gun == d->ai->weappref) score = 1e8f;
                     else if(isgoodammo(gun)) score = hasgoodammo(d) ? 1e2f : 1e4f;
@@ -496,7 +496,7 @@ namespace ai
             {
                 static vector<int> nearby;
                 nearby.setsize(0);
-                findents(I_SHELLS, I_QUAD, false, d->feetpos(), vec(32, 32, 24), nearby); // TODO: BOMB
+                findents(I_SHELLS, I_QUAD, false, d->feetpos(), vec(32, 32, 24), nearby);
                 loopv(nearby)
                 {
                     int id = nearby[i];
@@ -596,7 +596,7 @@ namespace ai
 
     void itemspawned(int ent)
     {
-        if(entities::ents.inrange(ent) && ((entities::ents[ent]->type >= I_SHELLS && entities::ents[ent]->type <= I_QUAD) || (entities::ents[ent]->type >= I_BOMBS && entities::ents[ent]->type <= I_BOMBDELAY)) )
+        if(entities::ents.inrange(ent) && entities::ents[ent]->type >= I_SHELLS && entities::ents[ent]->type <= I_QUAD)
         {
             loopv(players) if(players[i] && players[i]->ai && players[i]->aitype == AI_BOT && players[i]->canpickup(entities::ents[ent]->type))
             {
@@ -608,7 +608,7 @@ namespace ai
                     case I_GREENARMOUR: case I_YELLOWARMOUR: case I_QUAD: break;
                     default:
                     {
-                        itemstat &is = itemstats[entities::ents[ent]->type-I_SHELLS]; // TODO I_BOMBS, I_BOMBRADIUS
+                        itemstat &is = itemstats[entities::ents[ent]->type-I_SHELLS];
                         wantsitem = isgoodammo(is.info) && d->ammo[is.info] <= (d->ai->weappref == is.info ? is.add : is.add/2);
                         break;
                     }
@@ -1147,7 +1147,7 @@ namespace ai
         fpsent *e = getclient(d->ai->enemy);
         if(!d->hasammo(d->gunselect) || !hasrange(d, e, d->gunselect) || (d->gunselect != d->ai->weappref && (!isgoodammo(d->gunselect) || d->hasammo(d->ai->weappref))))
         {
-            static const int gunprefs[] = { GUN_CG, GUN_RL, GUN_SG, GUN_RIFLE, GUN_GL, GUN_PISTOL, GUN_FIST, GUN_BOMB }; // TODO: Bomb
+            static const int gunprefs[] = { GUN_CG, GUN_RL, GUN_SG, GUN_RIFLE, GUN_GL, GUN_PISTOL, GUN_FIST, GUN_BOMB };
             int gun = -1;
             if(d->hasammo(d->ai->weappref) && hasrange(d, e, d->ai->weappref)) gun = d->ai->weappref;
             else
@@ -1234,7 +1234,7 @@ namespace ai
         {
             if(allowmove)
             {
-                if(!request(d, b)) target(d, b, d->gunselect == GUN_FIST, b.idle ? true : false);
+                if(!request(d, b)) target(d, b, d->gunselect == GUN_FIST ? 1 : 0, b.idle ? true : false);
                 shoot(d, d->ai->target);
             }
             if(!intermission)
