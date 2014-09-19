@@ -320,7 +320,6 @@ namespace entities
                     if(identexists(hookname) && !execute(hookname)) break;
                 }
                 d->lastpickup = ents[n]->type;
-                d->lastpickupindex = n;
                 d->lastpickupmillis = lastmillis;
                 teleport(n, d);
                 break;
@@ -338,7 +337,6 @@ namespace entities
             {
                 if(d->lastpickup==ents[n]->type && lastmillis-d->lastpickupmillis<300) break;
                 d->lastpickup = ents[n]->type;
-                d->lastpickupindex = n;
                 d->lastpickupmillis = lastmillis;
                 jumppadeffects(d, n, true);
                 vec v((int)(char)ents[n]->attr3*10.0f, (int)(char)ents[n]->attr2*10.0f, ents[n]->attr1*12.5f);
