@@ -189,11 +189,6 @@ namespace server
         float effectiveness;
         int bombradius;
         int bombdelay;
-        int racetime;
-        int racelaps;
-        int racecheckpoint;
-        int racerank;
-        int racestate;
 
         void save(gamestate &gs)
         {
@@ -208,11 +203,6 @@ namespace server
             effectiveness = gs.effectiveness;
             bombradius = gs.bombradius;
             bombdelay = gs.bombdelay;
-            racetime = gs.racetime;
-            racelaps = gs.racelaps;
-            racecheckpoint = gs.racecheckpoint;
-            racerank = gs.racerank;
-            racestate = gs.racestate;
         }
 
         void restore(gamestate &gs)
@@ -229,11 +219,6 @@ namespace server
             gs.effectiveness = effectiveness;
             gs.bombradius = bombradius;
             gs.bombdelay = bombdelay;
-            gs.racetime = racetime;
-            gs.racelaps = racelaps;
-            gs.racecheckpoint = racecheckpoint;
-            gs.racerank = racerank;
-            gs.racestate = racestate;
         }
     };
 
@@ -313,7 +298,7 @@ namespace server
         
         bool checkexceeded()
         {
-            return state.state==CS_ALIVE && exceeded && gamemillis > exceeded + calcpushrange() && !m_race; // TODO: check if there are physics manipulation entities
+            return state.state==CS_ALIVE && exceeded && gamemillis > exceeded + calcpushrange();
         }
 
         void mapchange()
@@ -879,14 +864,12 @@ namespace server
     #include "ctf.h"
     #include "collect.h"
     #include "bomb.h"
-    #include "race.h"
     #include "hideandseek.h"
 
     captureservmode capturemode;
     ctfservmode ctfmode;
     collectservmode collectmode;
     bombservmode bombmode;
-    raceservmode racemode;
     hideandseekservmode hideandseekmode;
 
     servmode *smode = NULL;
@@ -2037,7 +2020,6 @@ namespace server
         else if(m_ctf) smode = &ctfmode;
         else if(m_collect) smode = &collectmode;
         else if(m_bomb) smode = &bombmode;
-        else if(m_race) smode = &racemode;
         else if(m_hideandseek) smode = &hideandseekmode;
         else smode = NULL;
 
@@ -3733,7 +3715,6 @@ namespace server
             #include "ctf.h"
             #include "collect.h"
             #include "bomb.h"
-            #include "race.h"
             #include "hideandseek.h"
             #undef PARSEMESSAGES
 

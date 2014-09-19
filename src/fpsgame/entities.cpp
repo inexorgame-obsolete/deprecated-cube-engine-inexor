@@ -87,7 +87,6 @@ namespace entities
             NULL,
             "ammo/bombs", "ammo/bombradius", "ammo/bombdelay", NULL, NULL, NULL, NULL, NULL, // bomb
             NULL, //obstacle
-            NULL, NULL, NULL, // race
         };
         return entmdlnames[type];
     }
@@ -117,10 +116,7 @@ namespace entities
                 case CARROT: case RESPAWNPOINT:
                     if(!m_classicsp) continue;
                     break;
-                case RACE_START: case RACE_FINISH: case RACE_CHECKPOINT:
-                    if(!m_race) continue;
-                    break;
-                case I_BOMBS: case I_BOMBRADIUS: case I_BOMBDELAY: case I_BOMBRESERVED2: case I_BOMBRESERVED3: case I_BOMBRESERVED4: case I_BOMBRESERVED5: case I_BOMBRESERVED6:
+                case I_BOMBS: case I_BOMBRADIUS: case I_BOMBDELAY:
                     if(!m_bomb) continue;
                     break;
             }
@@ -334,33 +330,6 @@ namespace entities
                     addmsg(N_ITEMPICKUP, "rci", d, n);
                     ents[n]->spawned = false; // even if someone else gets it first
                 }
-                break;
-
-            case RACE_FINISH:
-                if (m_race) {
-                    addmsg(N_RACEFINISH, "rc", d);
-                }
-                d->lastpickup = ents[n]->type;
-                d->lastpickupindex = n;
-                d->lastpickupmillis = lastmillis;
-                break;
-
-            case RACE_START:
-                if (m_race) {
-                    addmsg(N_RACESTART, "rc", d);
-                }
-                d->lastpickup = ents[n]->type;
-                d->lastpickupindex = n;
-                d->lastpickupmillis = lastmillis;
-                break;
-
-            case RACE_CHECKPOINT:
-                if (m_race) {
-                    addmsg(N_RACECHECKPOINT, "rci", d, ents[n]->attr2);
-                }
-                d->lastpickup = ents[n]->type;
-                d->lastpickupindex = n;
-                d->lastpickupmillis = lastmillis;
                 break;
 
             case TELEPORT:
@@ -690,9 +659,6 @@ namespace entities
             case TELEDEST:
                 e.attr3 = e.attr2;
             case MONSTER:
-            case RACE_START:
-            case RACE_FINISH:
-            case RACE_CHECKPOINT:
                 e.attr2 = e.attr1;
             case RESPAWNPOINT:
                 e.attr1 = (int)player1->yaw;
@@ -702,7 +668,6 @@ namespace entities
 
     void entradius(extentity &e, bool color)
     {
-        int maxcheckpoints = 0;
         switch(e.type)
         {
             case TELEPORT:
@@ -716,54 +681,6 @@ namespace entities
             case JUMPPAD:
                 renderentarrow(e, vec((int)(char)e.attr3*10.0f, (int)(char)e.attr2*10.0f, e.attr1*12.5f).normalize(), 4);
                 break;
-
-            case RACE_START:
-                loopv(ents) {
-                    // successor
-                    if(ents[i]->type == RACE_CHECKPOINT && ents[i]->attr2 == 1) {
-                        renderentarrow(e, vec(ents[i]->o).sub(e.o).normalize(), e.o.dist(ents[i]->o));
-                    }
-                    // precessor
-                    if(ents[i]->type == RACE_FINISH) {
-                        renderentarrow(*ents[i], vec(e.o).sub(ents[i]->o).normalize(), ents[i]->o.dist(e.o));
-                    }
-                }
-                break;
-
-            case RACE_CHECKPOINT:
-                loopv(ents) {
-                    // successor
-                    if(ents[i]->type == RACE_CHECKPOINT && (e.attr2+1) == ents[i]->attr2) {
-                        renderentarrow(e, vec(ents[i]->o).sub(e.o).normalize(), e.o.dist(ents[i]->o));
-                    }
-                    // precessor
-                    if(ents[i]->type == RACE_CHECKPOINT && (e.attr2-1) == ents[i]->attr2) {
-                        renderentarrow(*ents[i], vec(e.o).sub(ents[i]->o).normalize(), ents[i]->o.dist(e.o));
-                    }
-                }
-                break;
-
-            case RACE_FINISH:
-                loopv(ents) if(ents[i]->type == RACE_CHECKPOINT && ents[i]->attr2 > maxcheckpoints) {
-                    maxcheckpoints = ents[i]->attr2;
-                }
-                // successor
-                loopv(ents) if(ents[i]->type == RACE_START) {
-                    renderentarrow(e, vec(ents[i]->o).sub(e.o).normalize(), e.o.dist(ents[i]->o));
-                }
-                // precessor
-                loopv(ents) if(ents[i]->type == RACE_CHECKPOINT && ents[i]->attr2 == maxcheckpoints) {
-                    renderentarrow(*ents[i], vec(e.o).sub(ents[i]->o).normalize(), ents[i]->o.dist(e.o));
-                }
-                break;
-
-            case P_GRAVITY:
-            case P_FRICTION:
-            case P_JUMP:
-            case P_SPEED:
-                renderentsphere(e, e.attr2);
-                break;
-
 
             case FLAG:
             case MONSTER:
@@ -807,7 +724,6 @@ namespace entities
             "flag",
             "bombs", "bombradius", "bombdelay", "bombreserved2", "bombreserved3", "bombreserved4", "bombreserved5", "bombreserved6",
             "obstacle",
-            "start", "finish", "checkpoint",
             "", "", // two empty strings follows.
         };
         return i>=0 && size_t(i)<sizeof(entnames)/sizeof(entnames[0]) ? entnames[i] : "";

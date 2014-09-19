@@ -10,8 +10,6 @@ SVARR(maptitle, "Untitled Map by Unknown");
 VAR(octaentsize, 0, 64, 1024);
 VAR(entselradius, 0, 2, 10);
 
-VARR(racelaps, 1, 3, 255);
-
 int efocus = -1, enthover = -1, entorient = -1, oldhover = -1;
 VARF(entediting, 0, 0, 1, { if(!entediting) { entcancel(); efocus = enthover = -1; } });
 
