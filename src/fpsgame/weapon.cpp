@@ -236,8 +236,6 @@ namespace game
         }
     }
 
-    VARP(bombsmoke, 0, 1, 1);
-
     void updatebouncers(int time)
     {
         loopv(bouncers)
@@ -253,14 +251,14 @@ namespace game
             {
                 vec pos(bnc.o);
                 pos.add(vec(bnc.offset).mul(bnc.offsetmillis/float(OFFSETMILLIS)));
-                if(bombsmoke) regular_particle_splash(PART_SMOKE, 1, 150, pos, 0x0080f0, 6.4f, 120, -120);
+                regular_particle_splash(PART_SMOKE, 1, 150, pos, 0x0080f0, 6.4f, 120, -120);
             }
             vec old(bnc.o);
             bool stopped = false;
             if(bnc.bouncetype==BNC_GRENADE) stopped = bounce(&bnc, 0.6f, 0.5f, 0.8f) || (bnc.lifetime -= time)<0;
-	          else if(bnc.bouncetype==BNC_BOMB)
+	        else if(bnc.bouncetype==BNC_BOMB)
             {
-	              bounce(&bnc, 0.2f, 0.3f, 0.8f);
+	            bounce(&bnc, 0.2f, 0.3f, 0.8f);
                 stopped = (bnc.lifetime -= time)<0;
             }
             else
