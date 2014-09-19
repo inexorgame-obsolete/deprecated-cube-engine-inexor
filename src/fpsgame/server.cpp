@@ -173,9 +173,9 @@ namespace server
             bombs.reset();
         }
 
-        void setbackupweapon(int backupweapon)
+        void setbackupweapon(int weapon)
         {
-        	fpsstate::backupweapon = GUN_BOMB;
+        	fpsstate::backupweapon = weapon;
         }
 
     };
@@ -401,7 +401,6 @@ namespace server
     #define MM_COOPSERV (MM_AUTOAPPROVE | MM_PUBSERV | (1<<MM_LOCKED))
 
     bool notgotitems = true;        // true when map has changed and waiting for clients to send item
-//Hanack    int gamemode = 0; // moved to top
     int gamemillis = 0, gamelimit = 0, nextexceeded = 0, gamespeed = 100;
     bool gamepaused = false, shouldstep = true;
 
@@ -2196,12 +2195,12 @@ namespace server
         if(smode) smode->intermission();
     }
 
-    /**
-     * Checks if the game has ended because only one player is still alive.
-     * It does this by checking if less than 2 players have their state set to alive.
-     * This means, the game will also end if someone is gagging
-     * If only one is still alive this method forces intermission.
-     */
+    ///
+    // Checks if the game has ended because only one player is still alive.
+    // It does this by checking if less than 2 players have their state set to alive.
+    // This means, the game will also end if someone is gagging
+    // If only one is still alive this method forces intermission.
+    ///
     void checklms()
     {
         if(m_teammode)
@@ -2351,22 +2350,13 @@ namespace server
         {
             hitinfo &h = hits[i];
             clientinfo *target = getinfo(h.target);
-
             if(!target || target->state.state!=CS_ALIVE || h.lifesequence!=target->state.lifesequence || h.dist<0 || h.dist>guns[gun].exprad) continue;
-            // conoutf("server.cpp::explodeevent target=%i from=%i",target->clientnum, ci->clientnum);
 
             bool dup = false;
             loopj(i) if(hits[j].target==h.target) { dup = true; break; }
             if(dup) continue;
 
             int damage = guns[gun].damage;
-
-            //if(gun!=GUN_BOMB && gun!=GUN_SPLINTER) {
-                //if(gs.quadmillis) damage *= 4;
-                //damage = int(damage*(1-h.dist/RL_DISTSCALE/RL_DAMRAD));
-            //}
-            //if(gun==GUN_RL && target==ci) damage /= RL_SELFDAMDIV;
-            //// conoutf("server.cpp::explodeevent damage=%i",damage);
             if(gs.quadmillis) damage *= 4;
             damage = int(damage*(1-h.dist/EXP_DISTSCALE/guns[gun].exprad));
             if(target==ci) damage /= EXP_SELFDAMDIV;

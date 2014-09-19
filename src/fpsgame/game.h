@@ -31,7 +31,10 @@ enum                            // static entity types
     MAPSOUND = ET_SOUND,
     SPOTLIGHT = ET_SPOTLIGHT,
     I_SHELLS, I_BULLETS, I_ROCKETS, I_ROUNDS, I_GRENADES, I_CARTRIDGES,
-    I_HEALTH, I_BOOST,
+    I_BOMBS,
+    I_BOMBRADIUS,
+    I_BOMBDELAY,
+	I_HEALTH, I_BOOST,
     I_GREENARMOUR, I_YELLOWARMOUR,
     I_QUAD,
     TELEPORT,                   // attr1 = idx, attr2 = model, attr3 = tag
@@ -46,14 +49,6 @@ enum                            // static entity types
     PLATFORM,                   // attr1 = angle, attr2 = idx, attr3 = tag, attr4 = speed
     ELEVATOR,                   // attr1 = angle, attr2 = idx, attr3 = tag, attr4 = speed
     FLAG,                       // attr1 = angle, attr2 = team
-    I_BOMBS,
-    I_BOMBRADIUS,
-    I_BOMBDELAY,
-    I_BOMBRESERVED2,
-    I_BOMBRESERVED3,
-    I_BOMBRESERVED4,
-    I_BOMBRESERVED5,
-    I_BOMBRESERVED6,
     OBSTACLE,                   // attr1 = angle, attr2 = idx (mapmodel index), attr3 = health, attr4 = weight, attr5 = respawnmillis
     MAXENTTYPES
 };
@@ -247,7 +242,9 @@ enum
     N_DIED, N_DAMAGE, N_HITPUSH, N_SHOTFX, N_EXPLODEFX,
     N_TRYSPAWN, N_SPAWNSTATE, N_SPAWN, N_FORCEDEATH,
     N_GUNSELECT, N_TAUNT,
-    N_MAPCHANGE, N_MAPVOTE, N_TEAMINFO, N_ITEMSPAWN, N_ITEMPICKUP, N_ITEMACC, N_TELEPORT, N_JUMPPAD,
+    N_MAPCHANGE, N_MAPVOTE, N_TEAMINFO, 
+    N_ITEMSPAWN, N_ITEMPICKUP, N_ITEMACC, N_ITEMPUSH, 
+	N_TELEPORT, N_JUMPPAD,
     N_PING, N_PONG, N_CLIENTPING,
     N_TIMEUP, N_FORCEINTERMISSION,
     N_SERVMSG, N_ITEMLIST, N_RESUME,
@@ -257,7 +254,7 @@ enum
     N_LISTDEMOS, N_SENDDEMOLIST, N_GETDEMO, N_SENDDEMO,
     N_DEMOPLAYBACK, N_RECORDDEMO, N_STOPDEMO, N_CLEARDEMOS,
     N_TAKEFLAG, N_RETURNFLAG, N_RESETFLAG, N_INVISFLAG, N_TRYDROPFLAG, N_DROPFLAG, N_SCOREFLAG, N_INITFLAGS,
-    N_SAYTEAM,
+    N_SAYTEAM, N_HUDANNOUNCE,
     N_CLIENT,
     N_AUTHTRY, N_AUTHKICK, N_AUTHCHAL, N_AUTHANS, N_REQAUTH,
     N_PAUSEGAME, N_GAMESPEED,
@@ -267,8 +264,7 @@ enum
     N_INITTOKENS, N_TAKETOKEN, N_EXPIRETOKENS, N_DROPTOKENS, N_DEPOSITTOKENS, N_STEALTOKENS,
     N_SERVCMD,
     N_DEMOPACKET,
-    N_ITEMPUSH, N_SPAWNLOC,
-    N_HUDANNOUNCE,
+    N_SPAWNLOC,
     NUMMSG
 };
 
@@ -279,7 +275,8 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
     N_DIED, 5, N_DAMAGE, 6, N_HITPUSH, 7, N_SHOTFX, 10, N_EXPLODEFX, 4,
     N_TRYSPAWN, 1, N_SPAWNSTATE, 14, N_SPAWN, 3, N_FORCEDEATH, 2,
     N_GUNSELECT, 2, N_TAUNT, 1,
-    N_MAPCHANGE, 0, N_MAPVOTE, 0, N_TEAMINFO, 0, N_ITEMSPAWN, 2, N_ITEMPICKUP, 2, N_ITEMACC, 3,
+    N_MAPCHANGE, 0, N_MAPVOTE, 0, N_TEAMINFO, 0, 
+	N_ITEMSPAWN, 2, N_ITEMPICKUP, 2, N_ITEMACC, 3, N_ITEMPUSH, 6,
     N_PING, 2, N_PONG, 2, N_CLIENTPING, 2,
     N_TIMEUP, 2, N_FORCEINTERMISSION, 1,
     N_SERVMSG, 0, N_ITEMLIST, 0, N_RESUME, 0,
@@ -289,7 +286,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
     N_LISTDEMOS, 1, N_SENDDEMOLIST, 0, N_GETDEMO, 2, N_SENDDEMO, 0,
     N_DEMOPLAYBACK, 3, N_RECORDDEMO, 2, N_STOPDEMO, 1, N_CLEARDEMOS, 2,
     N_TAKEFLAG, 3, N_RETURNFLAG, 4, N_RESETFLAG, 6, N_INVISFLAG, 3, N_TRYDROPFLAG, 1, N_DROPFLAG, 7, N_SCOREFLAG, 10, N_INITFLAGS, 0,
-    N_SAYTEAM, 0,
+    N_SAYTEAM, 0, N_HUDANNOUNCE, 0,
     N_CLIENT, 0,
     N_AUTHTRY, 0, N_AUTHKICK, 0, N_AUTHCHAL, 0, N_AUTHANS, 0, N_REQAUTH, 0,
     N_PAUSEGAME, 0, N_GAMESPEED, 0,
@@ -299,8 +296,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
     N_INITTOKENS, 0, N_TAKETOKEN, 2, N_EXPIRETOKENS, 0, N_DROPTOKENS, 0, N_DEPOSITTOKENS, 2, N_STEALTOKENS, 0,
     N_SERVCMD, 0,
     N_DEMOPACKET, 0,
-    N_ITEMPUSH, 6, N_SPAWNLOC, 0,
-    N_HUDANNOUNCE, 0,
+    N_SPAWNLOC, 0,
     -1
 };
 
@@ -348,11 +344,6 @@ enum
 
     HICON_BOMBRADIUS,
     HICON_BOMBDELAY,
-    HICON_BOMBRESERVED2,
-    HICON_BOMBRESERVED3,
-    HICON_BOMBRESERVED4,
-    HICON_BOMBRESERVED5,
-    HICON_BOMBRESERVED6,
 
     HICON_X       = 20,
     HICON_Y       = 1650,
@@ -396,20 +387,20 @@ enum hudannounceeffects {
 
 static struct itemstat { int add, max, sound; const char *name; int icon, info; } itemstats[] =
 {
-    {10,    30,    S_ITEMAMMO,   "SG", HICON_SG, GUN_SG},
-    {20,    60,    S_ITEMAMMO,   "CG", HICON_CG, GUN_CG},
-    {5,     15,    S_ITEMAMMO,   "RL", HICON_RL, GUN_RL},
-    {5,     15,    S_ITEMAMMO,   "RI", HICON_RIFLE, GUN_RIFLE},
-    {10,    30,    S_ITEMAMMO,   "GL", HICON_GL, GUN_GL},
-    {30,    120,   S_ITEMAMMO,   "PI", HICON_PISTOL, GUN_PISTOL},
-    {25,    100,   S_ITEMHEALTH, "H",  HICON_HEALTH},
-    {10,    1000,  S_ITEMHEALTH, "MH", HICON_HEALTH, -1},
-    {100,   100,   S_ITEMARMOUR, "GA", HICON_GREEN_ARMOUR, A_GREEN},
+    {10,    30,    S_ITEMAMMO,   "SG", HICON_SG,            GUN_SG},
+    {20,    60,    S_ITEMAMMO,   "CG", HICON_CG,            GUN_CG},
+    {5,     15,    S_ITEMAMMO,   "RL", HICON_RL,            GUN_RL},
+    {5,     15,    S_ITEMAMMO,   "RI", HICON_RIFLE,         GUN_RIFLE},
+    {10,    30,    S_ITEMAMMO,   "GL", HICON_GL,            GUN_GL},
+    {30,    120,   S_ITEMAMMO,   "PI", HICON_PISTOL,        GUN_PISTOL},
+	{1,     12,    S_ITEMAMMO,   "BO", HICON_BOMB,          GUN_BOMB},
+    {1,     10,    S_ITEMPUP,    "BR", HICON_BOMBRADIUS,    -1},
+    {1,     7,     S_ITEMPUP,    "BD", HICON_BOMBDELAY,     -1},
+    {25,    100,   S_ITEMHEALTH, "H",  HICON_HEALTH,        -1},
+    {10,    1000,  S_ITEMHEALTH, "MH", HICON_HEALTH,        -1},
+    {100,   100,   S_ITEMARMOUR, "GA", HICON_GREEN_ARMOUR,  A_GREEN},
     {200,   200,   S_ITEMARMOUR, "YA", HICON_YELLOW_ARMOUR, A_YELLOW},
-    {20000, 30000, S_ITEMPUP,    "Q", HICON_QUAD, -1},
-    {1,     12,    S_ITEMAMMO,   "BO", HICON_BOMB, GUN_BOMB},
-    {1,     10,     S_ITEMPUP,    "BR", HICON_BOMBRADIUS},
-    {1,     7,     S_ITEMPUP,    "BD", HICON_BOMBDELAY},
+    {20000, 30000, S_ITEMPUP,    "Q",  HICON_QUAD,          -1}
 };
 
 #define MAXRAYS 20
@@ -567,8 +558,7 @@ struct fpsstate
         bombradius = 1;
         bombdelay = 1;
         loopi(NUMGUNS) ammo[i] = 0;
-        if (m_bomb) backupweapon = GUN_BOMB;
-        else backupweapon = GUN_FIST;
+        backupweapon = m_bomb ? GUN_BOMB : GUN_FIST;
         ammo[backupweapon] = 1;
     }
 
