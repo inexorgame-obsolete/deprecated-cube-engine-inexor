@@ -1220,8 +1220,7 @@ static inline int colorfromattr(int attr)
  * 24..26 flat plane
  * +32 to inverse direction
  *
- * Bomberman:
- * Add modfrom and modto to be able to modify the tos and froms
+ * modfrom and modto to be able to modify the tos and froms
  */
 void regularshape(int type, int radius, int color, int dir, int num, int fade, const vec &p, float size, int gravity, int vel, const vec* modfrom, const vec* modto)
 {
@@ -1287,7 +1286,6 @@ void regularshape(int type, int radius, int color, int dir, int num, int fade, c
             to.add(p);
             from = p;
         }
-        // Bomberman
         if(modfrom && modto){
             from.add(*modfrom);
             to.add(*modto);

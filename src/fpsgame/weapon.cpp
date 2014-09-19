@@ -913,7 +913,6 @@ namespace game
                 d->gunwait = 600;
                 d->lastattackgun = -1;
                 if (d->gunselect != GUN_BOMB) weaponswitch(d); // only switch if current weapon is not the bomb
-                // weaponswitch(d);
             }
             return;
         }
