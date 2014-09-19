@@ -5,7 +5,7 @@ enum                            // hardcoded texture numbers
     DEFAULT_GEOM
 };
 
-#define MAPVERSION 33           // bump if map format changes, see worldio.cpp
+#define MAPVERSION 40           // bump if map format changes, see worldio.cpp last sauerbraten-one was 33
 
 struct octaheader
 {
