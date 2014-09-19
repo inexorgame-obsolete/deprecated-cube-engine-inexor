@@ -88,7 +88,6 @@ namespace entities
             "ammo/bombs", "ammo/bombradius", "ammo/bombdelay", NULL, NULL, NULL, NULL, NULL, // bomb
             NULL, //obstacle
             NULL, NULL, NULL, // race
-            NULL, NULL, NULL, NULL // physics
         };
         return entmdlnames[type];
     }
@@ -414,52 +413,10 @@ namespace entities
         {
             extentity &e = *ents[i];
             if(e.type==NOTUSED) continue;
-            if(!e.spawned && e.type!=TELEPORT && e.type!=JUMPPAD && e.type!=RESPAWNPOINT && (m_race && e.type!=RACE_START && e.type!=RACE_FINISH && e.type!=RACE_CHECKPOINT) ) continue;
+            if(!e.spawned && e.type!=TELEPORT && e.type!=JUMPPAD && e.type!=RESPAWNPOINT) continue;
             float dist = e.o.dist(o);
             if(dist<(e.type==TELEPORT ? 16 : 12)) trypickup(i, d);
         }
-    }
-
-    void checkphysics(fpsent *d)
-    {
-        float p_gravity = 0.0f;
-        float p_friction_land = 0.0f;
-        float p_jumpvel = 0.0f;
-        float p_playerspeed = 0.0f;
-        loopv(ents) {
-            extentity &e = *ents[i];
-            if(e.type < P_GRAVITY || e.type > P_SPEED) continue;
-            float dist = camera1->o.dist(e.o);
-            if(dist < e.attr2) {
-                /*
-                float addval = ((float) e.attr3) / ((dist*dist)/100); // physics influence depends on distance
-                e.attr3 < 0 ? addval = max((float) e.attr3, addval) : min((float) e.attr3, addval);
-                */
-                float addval = (float) e.attr3;
-                switch(e.type) {
-                    case P_GRAVITY:
-                        p_gravity += addval;
-                        // conoutf("+ attr1:%d attr2:%d attr3:%d p_gravity:%1.2f", e.attr1, e.attr2, e.attr3, p_gravity);
-                        break;
-                    case P_FRICTION:
-                        p_friction_land += addval;
-                        break;
-                    case P_JUMP:
-                        p_jumpvel += addval;
-                        break;
-                    case P_SPEED:
-                        p_playerspeed += addval;
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-        d->p_gravity = p_gravity;
-        d->p_friction_land = p_friction_land;
-        d->p_jumpvel = p_jumpvel;
-        d->p_playerspeed = p_playerspeed;
-        // conoutf("physics manipulation: gravity:%1.2f friction:%1.2f jump:%1.2f speed:%1.2f", d->p_gravity, d->p_friction_land, d->p_jumpvel, d->p_playerspeed);
     }
 
     void checkquad(int time, fpsent *d)
@@ -731,10 +688,6 @@ namespace entities
                 e.attr5 = e.attr4;
                 e.attr4 = e.attr3;
             case TELEDEST:
-            case P_GRAVITY:
-            case P_FRICTION:
-            case P_JUMP:
-            case P_SPEED:
                 e.attr3 = e.attr2;
             case MONSTER:
             case RACE_START:
@@ -855,7 +808,6 @@ namespace entities
             "bombs", "bombradius", "bombdelay", "bombreserved2", "bombreserved3", "bombreserved4", "bombreserved5", "bombreserved6",
             "obstacle",
             "start", "finish", "checkpoint",
-            "gravity", "friction", "jump", "speed",
             "", "", // two empty strings follows.
         };
         return i>=0 && size_t(i)<sizeof(entnames)/sizeof(entnames[0]) ? entnames[i] : "";

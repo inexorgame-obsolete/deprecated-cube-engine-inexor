@@ -263,7 +263,6 @@ namespace game
             moveplayer(player1, 10, true);
             swayhudgun(curtime);
             entities::checkitems(player1);
-            entities::checkphysics(player1);
             if(m_sp)
             {
                 if(slowmosp) checkslowmo();
