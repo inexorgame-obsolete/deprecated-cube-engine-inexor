@@ -46,6 +46,7 @@ static void fixent(entity &e, int version)
     if(version <= 30 && (e.type == ET_MAPMODEL || e.type == ET_PLAYERSTART)) e.attr1 = (int(e.attr1)+180)%360;
     if(version <= 31 && e.type == ET_MAPMODEL) { int yaw = (int(e.attr1)%360 + 360)%360 + 7; e.attr1 = yaw - yaw%15; }
 	if(version <= 39 && e.type >= ET_BOMBS) e.type += 3;
+	if(version <= 39 && e.type >= ET_OBSTACLE) e.type += 8; //old sauerbomber maps
 }
 
 bool loadents(const char *fname, vector<entity> &ents, uint *crc)
