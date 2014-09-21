@@ -33,7 +33,7 @@ after_success:
   - cd $TRAVIS_BUILD_DIR
   - export BUILD_NAME=$(echo "${TRAVIS_BRANCH}-${TRAVIS_JOB_NUMBER}-${TRAVIS_COMMIT}" | sed 's#/#-#')
   - git clone --depth 1 https://github.com/sauerbraten-fork/sauerbraten-fork-data.git nightly
-  - rm -r ./nightly/.git*
+  - rm -rf ./nightly/.git*
   - cp -r ./bin_* nightly
   - cp ./sauerbraten_unix nightly
   - cp ./sauerbraten.bat nightly
