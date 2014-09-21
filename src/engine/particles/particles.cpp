@@ -7,7 +7,7 @@ particle_system::particle_system()
 {
 	particle_frame = 1000.0f;
 	particlemillis = 0;
-	max_particle_instances = 600;
+	max_particle_instances = 10000;
 	max_face_instances = 10000;
 	timer_emitter = 0;
 	timer_modifier = 0;
@@ -77,7 +77,6 @@ void particle_system::init_defaults()
 	noop_initializer_type = add_particle_initializer_type("noop", "noop_initializer");
 	noop_initializer_inst = noop_initializer_type->create_instance();
 	noop_face_type = add_face_type("noop", "no_texture");
-	conoutf("finished init defaults");
 }
 
 void particle_system::clear_particle_pools()
