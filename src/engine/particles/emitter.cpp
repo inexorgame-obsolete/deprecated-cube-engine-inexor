@@ -53,7 +53,6 @@ void particle_system::emit_particles(particle_emitter_instance* pe_inst, int ela
  */
 particle_instance* particle_system::emit_particle()
 {
-	conoutf("%d/%d/%d", count_alive_pool, count_particle_instances, max_particle_instances);
 	if (dead_pool.size() > 0)
 	{
 		// reanimate a dead particle
@@ -70,7 +69,7 @@ particle_instance* particle_system::emit_particle()
 		// iteration performantly.
 		if (count_alive_pool > max_particle_instances) {
 			particle_instance* p_inst_old = alive_pool.front();
-			conoutf("%d/%d/%d", p_inst_old->remaining, count_alive_pool, max_particle_instances);
+			// conoutf("%d/%d/%d", p_inst_old->remaining, count_alive_pool, max_particle_instances);
 			// kill on next iteration
 			p_inst_old->remaining = 0;
 			// move to back (don't kill the same particle multiple times)
