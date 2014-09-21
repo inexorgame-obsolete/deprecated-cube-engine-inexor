@@ -23,26 +23,21 @@ env:
 
 
 notifications:
-#  webhooks:
-#    urls:
-#      - http://n.tkte.ch/h/2910/Rm7oDLYIC1icyntUug11eWi1
-#    on_success: never
-#    on_failure: never
-#    on_pending: never
-#    on_start: never
   irc:
     channels:
       - "irc.gamesurge.net#sauerfork"
     template: "%{repository_name}/%{branch} %{commit} - %{message}"
-    use_notice: true
+    use_notice: false
     skip_join: true
 after_success:
   - cd $TRAVIS_BUILD_DIR
   - export BUILD_NAME=$(echo "${TRAVIS_BRANCH}-${TRAVIS_JOB_NUMBER}-${TRAVIS_COMMIT}" | sed 's#/#-#')
   - git clone --depth 1 https://github.com/sauerbraten-fork/sauerbraten-fork-data.git nightly
+  - rm -r ./nightly/.git*
   - cp -r ./bin_* nightly
   - cp ./sauerbraten_unix nightly
   - cp ./sauerbraten.bat nightly
   - zip -r ${BUILD_NAME}.zip nightly
+  - echo $TRAVIS_JOB_ID
   - echo "sending ${BUILD_NAME}.zip"
-  - curl --ftp-create-dirs -T "${BUILD_NAME}.zip" -u $FTP_USER:$FTP_PASSWORD ftp://37.59.98.138/
+  - if [ $TRAVIS_JOB_ID == 4 ] then curl --ftp-create-dirs -T "${BUILD_NAME}.zip" -u $FTP_USER:$FTP_PASSWORD ftp://37.59.98.138/ fi
