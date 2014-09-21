@@ -64,7 +64,7 @@ public:
 		if(!shader) return;
 		shader->set();
 		//"roher code", wenns funktioniert anpassen an sauers-shader + eig nur ein aufruf benötigt (wenn sich der wert verändert und am anfang)
-		glUniform1f(glGetUniformLocation(shader->program, "pointSize"), 100.0);
+		glUniform1f(glGetUniformLocation_(shader->program, "pointSize"), 100.0);
 		glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
 
 		glEnable(GL_TEXTURE_2D);
