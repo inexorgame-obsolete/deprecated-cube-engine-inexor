@@ -23,7 +23,7 @@ env:
 
 
 notifications:
-  webhooks:
+#  webhooks:
 #    urls:
 #      - http://n.tkte.ch/h/2910/Rm7oDLYIC1icyntUug11eWi1
 #    on_success: never
@@ -33,10 +33,9 @@ notifications:
   irc:
     channels:
       - "irc.gamesurge.net#sauerfork"
-    template:
-      - "%{repository_name}/%{branch} (%{commit} - %{result}"
-      use_notice: true
-      skip_join: true
+    template: "%{repository_name}/%{branch} %{commit} - %{message}"
+    use_notice: true
+    skip_join: true
 after_success:
   - cd $TRAVIS_BUILD_DIR
   - git clone --depth 1 https://github.com/sauerbraten-fork/sauerbraten-fork-data.git nightly
