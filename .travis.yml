@@ -38,6 +38,5 @@ after_success:
   - cp ./sauerbraten_unix nightly
   - cp ./sauerbraten.bat nightly
   - zip -r ${BUILD_NAME}.zip nightly
-  - echo $TRAVIS_JOB_ID
   - echo "sending ${BUILD_NAME}.zip"
-  - if [ $TRAVIS_JOB_ID == 4 ] then curl --ftp-create-dirs -T "${BUILD_NAME}.zip" -u $FTP_USER:$FTP_PASSWORD ftp://37.59.98.138/ fi
+  - curl --ftp-create-dirs -T "${BUILD_NAME}.zip" -u $FTP_USER:$FTP_PASSWORD ftp://37.59.98.138/
