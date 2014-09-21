@@ -24,8 +24,11 @@ public:
 /*
 		GLfloat fSizes[2];
         glGetFloatv(GL_SMOOTH_POINT_SIZE_RANGE, fSizes);
-		glPointSize(pr_inst->attributes["size"]);
 */
+
+		if (pr_inst->attributes.count("size") == 1) pointSize = pr_inst->attributes["size"];
+		else pointSize = 1.0f;
+
 		glDepthMask(GL_FALSE);
 
 
@@ -36,7 +39,7 @@ public:
 		if(!shader) return;
 		shader->set();
 		//"roher code", wenns funktioniert anpassen an sauers-shader + eig nur ein aufruf benötigt (wenn sich der wert verändert und am anfang)
-		glUniform1f_(glGetUniformLocation_(shader->program, "pointSize"), 100.0);
+		glUniform1f_(glGetUniformLocation_(shader->program, "pointSize"), pointSize);
 		glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
 
 		glEnable(GL_TEXTURE_2D);
@@ -75,6 +78,7 @@ private:
 	float min_size;
 	float max_size;
 	float quadratic[3];
+	float pointSize;
 	Shader *shader;
 
 	billboard_renderer() : particle_renderer_implementation("billboard_renderer") {
@@ -84,6 +88,7 @@ private:
 		fade_threshold_size = 0.5f;
 		min_size = 1.0f;
 		max_size = 150.0f;
+		pointSize = 1.0f;
 		// quadratic[0] = 1.0f;
 		// quadratic[1] = 0.0f;
 		// quadratic[2] = 0.01f;
