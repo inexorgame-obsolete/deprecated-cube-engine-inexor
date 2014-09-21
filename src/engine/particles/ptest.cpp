@@ -255,11 +255,11 @@ struct ptest
 		pi_type_random_position->attributes["isz"] = 0.0f;
 		particle_initializer_instance* pi_inst_random_position = pi_type_random_position->create_instance();
 		particle_initializer_type* pi_type_random_velocity = ps.add_particle_initializer_type("random_velocity_14", "random_velocity");
-		pi_type_random_velocity->attributes["osx"] = 40.0f;
-		pi_type_random_velocity->attributes["osy"] = 40.0f;
+		pi_type_random_velocity->attributes["osx"] = 140.0f;
+		pi_type_random_velocity->attributes["osy"] = 140.0f;
 		pi_type_random_velocity->attributes["osz"] = 0.0f;
-		pi_type_random_velocity->attributes["isx"] = 20.0f;
-		pi_type_random_velocity->attributes["isy"] = 20.0f;
+		pi_type_random_velocity->attributes["isx"] = 70.0f;
+		pi_type_random_velocity->attributes["isy"] = 70.0f;
 		pi_type_random_velocity->attributes["isz"] = 0.0f;
 		particle_initializer_instance* pi_inst_random_velocity = pi_type_random_velocity->create_instance();
 
