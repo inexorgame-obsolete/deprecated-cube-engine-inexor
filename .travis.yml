@@ -38,11 +38,11 @@ notifications:
     skip_join: true
 after_success:
   - cd $TRAVIS_BUILD_DIR
+  - export BUILD_NAME=$(echo "${TRAVIS_BRANCH}-${TRAVIS_JOB_NUMBER}-${TRAVIS_COMMIT}" | sed 's#/#-#')
   - git clone --depth 1 https://github.com/sauerbraten-fork/sauerbraten-fork-data.git nightly
   - cp -r ./bin_* nightly
   - cp ./sauerbraten_unix nightly
   - cp ./sauerbraten.bat nightly
-  - echo $TRAVIS_BUILD_NUMBER
-  - zip -r nightly.zip nightly
-  - echo "sending nightly.zip"
-  - curl --ftp-create-dirs -T nightly.zip -u $FTP_USER:$FTP_PASSWORD ftp://37.59.98.138/
+  - zip -r ${BUILD_NAME}.zip nightly
+  - echo "sending ${BUILD_NAME}.zip"
+  - curl --ftp-create-dirs -T "${BUILD_NAME}.zip" -u $FTP_USER:$FTP_PASSWORD ftp://37.59.98.138/
