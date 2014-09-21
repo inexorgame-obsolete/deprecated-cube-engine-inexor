@@ -417,21 +417,21 @@ struct ptest
 		particle_modifier_instance* pm_inst_sub_emitter = pm_type_sub_emitter->create_instance();
 
 		particle_initializer_type* pi_type_random_velocity = ps.add_particle_initializer_type("random_velocity_17", "random_velocity");
-		pi_type_random_velocity->attributes["osx"] = 100.0f;
-		pi_type_random_velocity->attributes["osy"] = 100.0f;
+		pi_type_random_velocity->attributes["osx"] = 1200.0f;
+		pi_type_random_velocity->attributes["osy"] = 1200.0f;
 		pi_type_random_velocity->attributes["osz"] = 50.0f;
-		pi_type_random_velocity->attributes["isx"] = 50.0f;
-		pi_type_random_velocity->attributes["isy"] = 50.0f;
+		pi_type_random_velocity->attributes["isx"] = 600.0f;
+		pi_type_random_velocity->attributes["isy"] = 600.0f;
 		pi_type_random_velocity->attributes["isz"] = 0.0f;
 		particle_initializer_instance* pi_inst_random_velocity = pi_type_random_velocity->create_instance();
 
 		particle_initializer_type* pi_type_random_velocity_sub = ps.add_particle_initializer_type("random_velocity_17_sub", "random_velocity");
-		pi_type_random_velocity_sub->attributes["osx"] = 30.0f;
-		pi_type_random_velocity_sub->attributes["osy"] = 30.0f;
-		pi_type_random_velocity_sub->attributes["osz"] = 30.0f;
-		pi_type_random_velocity_sub->attributes["isx"] = 0.0f;
-		pi_type_random_velocity_sub->attributes["isy"] = 0.0f;
-		pi_type_random_velocity_sub->attributes["isz"] = 0.0f;
+		pi_type_random_velocity_sub->attributes["osx"] = 180.0f;
+		pi_type_random_velocity_sub->attributes["osy"] = 180.0f;
+		pi_type_random_velocity_sub->attributes["osz"] = 180.0f;
+		pi_type_random_velocity_sub->attributes["isx"] = 90.0f;
+		pi_type_random_velocity_sub->attributes["isy"] = 90.0f;
+		pi_type_random_velocity_sub->attributes["isz"] = 90.0f;
 		particle_initializer_instance* pi_inst_random_velocity_sub = pi_type_random_velocity_sub->create_instance();
 
 		particle_initializer_type* pi_type_random_particle_type = ps.add_particle_initializer_type("random_particle_type_17", "random_particle_type");
