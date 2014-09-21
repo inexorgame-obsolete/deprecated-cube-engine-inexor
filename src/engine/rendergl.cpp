@@ -1437,7 +1437,7 @@ void drawglare()
     renderalphageom();
     ps.render_faces();
     ps.render_particles();
-    // renderparticles();
+    renderparticles();
 
     glFogf(GL_FOG_START, oldfogstart);
     glFogf(GL_FOG_END, oldfogend);
@@ -1584,7 +1584,7 @@ void drawreflection(float z, bool refract, int fogdepth, const bvec &col)
     renderalphageom(fogging);
     ps.render_faces();
     ps.render_particles();
-    // renderparticles();
+    renderparticles();
 
     if(fading) glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
@@ -2119,7 +2119,7 @@ void gl_drawframe(int w, int h)
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     // ps.render_particles();
-    // renderparticles(true);
+    renderparticles(true);
 
     glDisable(GL_FOG);
     glDisable(GL_CULL_FACE);
