@@ -2,9 +2,10 @@
 #include "engine/particles/particles.h"
 
 /**
- * Spring weaver:
- * 1. Raster with distances: size_x, size_y, size_z
- * 2.
+ * With this initializer it is possible to create structures of particles
+ * connected with springs by using construction rules. The rules contains
+ * the distance relative to the current particle in x,y,z. The spring
+ * length is calculated automatically.
  */
 struct spring_weaver : public particle_initializer_implementation
 {
@@ -29,7 +30,7 @@ public:
 		size_y = (int) pi_inst->attributes["size_y"];
 		size_z = (int) pi_inst->attributes["size_z"];
 
-		// init matrix [size_x, size_y, size_z]
+		// init 3D matrix [size_x, size_y, size_z]
 		std::vector<std::vector<std::vector<particle_instance *> > > matrix(size_x);
 		for (x = 0; x < size_x; x++)
 		{
@@ -41,10 +42,6 @@ public:
 		int p = 0;
 		for(std::list<particle_instance*>::iterator p_it = particles.begin(); p_it != particles.end(); ++p_it)
 		{
-			// 2D
-			// matrix[p / size_x][p % size_x] = (*p_it);
-			// p++;
-			// 3D
 			z = p / (size_x * size_y);
 			y = (p % (size_x * size_y)) / size_x;
 			x = p - y * size_x - z * size_x * size_y;
@@ -54,7 +51,6 @@ public:
 
 		// connect particles in the matrix by construction rules
 		std::vector<std::string> *rules = static_cast<std::vector<std::string>*>(pi_inst->pointers["rules"]);
-		// conoutf("%d spring construction rules", (int) rules->size());
 		for (x = 0; x < size_x; x++)
 		{
 			for (y = 0; y < size_y; y++)
@@ -81,8 +77,6 @@ public:
 
 	void create_spring(particle_instance *p1, particle_instance *p2, float spring_constant, float spring_friction, float spring_length)
 	{
-		// conoutf("p1:%d", p1->remaining);
-		// conoutf("p2:%d", p2->remaining);
 		spring_instance *spring_inst = new spring_instance;
 		spring_inst->p_inst_1 = p1;
 		spring_inst->p_inst_2 = p2;

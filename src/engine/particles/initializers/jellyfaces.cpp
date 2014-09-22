@@ -2,9 +2,7 @@
 #include "engine/particles/particles.h"
 
 /**
- * Spring weaver:
- * 1. Raster with distances: size_x, size_y, size_z
- * 2.
+ * Creates faces for the surface of a 3D jello.
  */
 struct jelly_faces : public particle_initializer_implementation
 {

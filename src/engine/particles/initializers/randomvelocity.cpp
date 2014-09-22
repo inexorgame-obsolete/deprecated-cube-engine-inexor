@@ -2,8 +2,8 @@
 #include "engine/particles/particles.h"
 
 /**
- * Singleton implementation of an initializer that applies a
- * random start velocity.
+ * This initializer applies a random velocity on the emitted particles. The
+ * boundaries can be set using the particle initializer attributes.
  */
 struct random_velocity : public particle_initializer_implementation
 {

@@ -38,7 +38,6 @@ public:
 		if (!shader) shader = lookupshaderbyname("particlepoints");
 		if(!shader) return;
 		shader->set();
-		//"roher code", wenns funktioniert anpassen an sauers-shader + eig nur ein aufruf benötigt (wenn sich der wert verändert und am anfang)
 		glUniform1f_(glGetUniformLocation_(shader->program, "pointSize"), pointSize);
 		glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
 

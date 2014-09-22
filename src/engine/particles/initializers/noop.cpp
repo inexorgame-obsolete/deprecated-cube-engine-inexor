@@ -2,7 +2,7 @@
 #include "engine/particles/particles.h"
 
 /**
- * Singleton implementation of an noop initializer.
+ * Pseudo initializer which does nothing.
  */
 struct noop_initializer : public particle_initializer_implementation
 {

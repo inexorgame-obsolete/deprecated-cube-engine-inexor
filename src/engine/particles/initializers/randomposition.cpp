@@ -2,8 +2,8 @@
 #include "engine/particles/particles.h"
 
 /**
- * Singleton implementation of an initializer that applies a
- * random start position.
+ * This initializer applies a random position on the emitted particles. The
+ * boundaries can be set using the particle initializer attributes.
  */
 struct random_position : public particle_initializer_implementation
 {

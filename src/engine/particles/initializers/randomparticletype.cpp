@@ -2,8 +2,7 @@
 #include "engine/particles/particles.h"
 
 /**
- * Singleton implementation of an initializer that applies a
- * random start velocity.
+ * This initializer applies a random particle type on the emitted particles.
  */
 struct random_particle_type : public particle_initializer_implementation
 {
