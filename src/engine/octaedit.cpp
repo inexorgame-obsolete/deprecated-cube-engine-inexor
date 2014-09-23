@@ -145,7 +145,7 @@ void toggleedit(bool force)
     }
     cancelsel();
     stoppaintblendmap();
-    keyrepeat(editmode);
+    keyrepeat(editmode, KR_EDITMODE);
     editing = entediting = editmode;
     extern int fullbright;
     if(fullbright) { initlights(); lightents(); }

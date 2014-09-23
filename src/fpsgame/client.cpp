@@ -1686,8 +1686,12 @@ namespace game
             }
 
             case N_PONG:
-                addmsg(N_CLIENTPING, "i", player1->ping = (player1->ping*5+totalmillis-getint(p))/6);
-                break;
+            {
+                packetbuf cping(10);
+                putint(cping, N_CLIENTPING);
+                putint(cping, player1->ping = (player1->ping*5+totalmillis-getint(p))/6);
+                sendclientpacket(cping.finalize(), 1);
+            }
 
             case N_CLIENTPING:
                 if(!d) return;
