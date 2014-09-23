@@ -2,8 +2,18 @@ language: cpp
 before_install:
   # Install dependencies
   - sudo apt-get update
-  - sudo apt-get -y install build-essential zlib1g-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libenet-dev
+  - sudo apt-get -y install build-essential zlib1g-dev libenet-dev
   - sudo apt-get -y install mingw32
+  - mkdir dummyprefix
+  - export PREFIX=$PWD/dummyprefix
+  - export PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig
+  - export PATH=$PATH:$PWD/rock/bin:$PWD/dummyprefix/bin
+  - wget http://libsdl.org/release/SDL2-2.0.1.tar.gz -O - | tar xz
+  - (cd SDL2-2.0.1 && ./configure --prefix=$PREFIX && make -j5 && make install)
+  - wget http://www.libsdl.org/projects/SDL_image/release/SDL2_image-2.0.0.tar.gz -O - | tar xz
+  - (cd SDL2_image-2.0.0 && ./configure --prefix=$PREFIX && make -j5 && make install)
+  - wget http://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-2.0.0.tar.gz -O - | tar xz
+  - (cd SDL2_mixer-2.0.0 && ./configure --prefix=$PREFIX && make -j5 && make install)
 
 script:
   - (mkdir cmakebuild && cd cmakebuild && cmake $CMAKE_FLAGS .. && make -j5 && cd .. && rm -rf cmakebuild)
