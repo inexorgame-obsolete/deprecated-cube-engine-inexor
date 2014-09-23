@@ -19,8 +19,9 @@ env:
   - CMAKE_FLAGS="-DCMAKE_TOOLCHAIN_FILE=../src/platform_windows/linux-toolchain-mingw.cmake -DRELEASE_BUILD=1  -DMINGW_TYPE=classic"
 
 notifications:
-  webhooks: http://n.tkte.ch/h/2910/Rm7oDLYIC1icyntUug11eWi1
-    on_success: always
-    on_failure: always
-    on_start: change
-    on_pending: never
+  irc:
+    channels:
+      - "irc.gamesurge.net#sauerfork"
+    template: "%{repository_name}/%{branch} %{commit} - %{message}"
+    use_notice: false
+    skip_join: true
