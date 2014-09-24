@@ -126,8 +126,8 @@ struct bombclientmode : clientmode
         {
             bouncer *p = bouncers[i];
             if(p->bouncetype != BNC_BOMB) continue;
-            settexture("packages/hud/blip_bomb_orange.png", 3);
-            drawblip(d, x, y, s, p->o, (p->owner->bombradius * 1.5f + p->owner->bombradius * 1.5f * sin((SDL_GetTicks() / (5.5f-p->owner->bombdelay)) / 75.0f))/1.5f);
+            settexture("packages/hud/blip_bomb.png", 3);
+            drawblip(d, x, y, s, p->o, (p->owner->bombradius * 1.5f + p->owner->bombradius * 1.5f * sin((totalmillis / (5.5f-p->owner->bombdelay)) / 75.0f))/1.5f);
         }
 
         if(d->state == CS_ALIVE && !game::intermission)
