@@ -136,7 +136,7 @@ static struct shadowmaptexture : rendertarget
         if(!hasFBO && rtscissor)
         {
             glEnable(GL_SCISSOR_TEST);
-            glScissor(screen->w-vieww, screen->h-viewh, vieww, viewh);
+            glScissor(screenw-vieww, screenh-viewh, vieww, viewh);
         }
         glClearColor(0, 0, 0, 0);
         glClear(GL_DEPTH_BUFFER_BIT | (renderpath!=R_FIXEDFUNCTION ? GL_COLOR_BUFFER_BIT : 0));
@@ -219,8 +219,8 @@ static struct shadowmaptexture : rendertarget
             {
                 if(!hasFBO)
                 {
-                    sx += screen->w-vieww;
-                    sy += screen->h-viewh;
+                    sx += screenw-vieww;
+                    sy += screenh-viewh;
                 }
                 glScissor(sx, sy, sw, sh);
             }

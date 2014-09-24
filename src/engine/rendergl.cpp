@@ -511,7 +511,7 @@ void gl_checkextensions()
 #endif
 #ifdef WIN32
             intel_immediate_bug = 1;
-            intel_vertexarray_bug = 1;
+            //intel_vertexarray_bug = 1;
 #endif
         }
 
@@ -753,14 +753,18 @@ void glext(char *ext)
 }
 COMMAND(glext, "s");
 
-void gl_init(int w, int h, int bpp, int depth, int fsaa)
+void gl_resize()
 {
-    glViewport(0, 0, w, h);
+    glViewport(0, 0, screenw, screenh);
+}
+ 
+void gl_init(int depth, int fsaa)
+{
+    gl_resize();
     glClearColor(0, 0, 0, 0);
     glClearDepth(1);
     glDepthFunc(GL_LESS);
     glDisable(GL_DEPTH_TEST);
-    glShadeModel(GL_SMOOTH);
     
     
     glDisable(GL_FOG);
@@ -1782,7 +1786,7 @@ void drawminimap()
 
     renderprogress(0, "generating mini-map...", 0, !renderedframe);
 
-    int size = 1<<minimapsize, sizelimit = min(hwtexsize, min(screen->w, screen->h));
+    int size = 1<<minimapsize, sizelimit = min(hwtexsize, min(screenw, screenh));
     while(size > sizelimit) size /= 2;
     if(!minimaptex) glGenTextures(1, &minimaptex);
 
@@ -1880,7 +1884,7 @@ void drawminimap()
     glDisable(GL_CULL_FACE);
     glDisable(GL_FOG);
 
-    glViewport(0, 0, screen->w, screen->h);
+    glViewport(0, 0, screenw, screenh);
 
     camera1 = oldcamera;
     envmapping = minimapping = false;
@@ -1921,15 +1925,15 @@ FVARP(motionblurscale, 0, 0.5f, 1);
 
 void addmotionblur()
 {
-    if(!motionblur || !hasTR || max(screen->w, screen->h) > hwtexsize) return;
+    if(!motionblur || !hasTR || max(screenw, screenh) > hwtexsize) return;
 
     if(game::ispaused()) { lastmotion = 0; return; }
 
-    if(!motiontex || motionw != screen->w || motionh != screen->h)
+    if(!motiontex || motionw != screenw || motionh != screenh)
     {
         if(!motiontex) glGenTextures(1, &motiontex);
-        motionw = screen->w;
-        motionh = screen->h;
+        motionw = screenw;
+        motionh = screenh;
         lastmotion = 0;
         createtexture(motiontex, motionw, motionh, NULL, 3, 0, GL_RGB, GL_TEXTURE_RECTANGLE_ARB);
     }
@@ -1975,7 +1979,7 @@ void addmotionblur()
     {
         lastmotion = lastmillis - lastmillis%motionblurmillis;
 
-        glCopyTexSubImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, 0, 0, 0, 0, screen->w, screen->h);
+        glCopyTexSubImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, 0, 0, 0, 0, screenw, screenh);
     }
 }
 
@@ -1990,7 +1994,7 @@ void gl_drawhud(int w, int h);
 
 int xtraverts, xtravertsva;
 
-void gl_drawframe(int w, int h)
+void gl_drawframe()
 {
     if(deferdrawtextures) drawtextures();
 
@@ -1998,7 +2002,7 @@ void gl_drawframe(int w, int h)
 
     updatedynlights();
 
-    aspect = forceaspect ? forceaspect : w/float(h);
+    aspect = forceaspect ? forceaspect : screenw/float(screenh);
     fovy = 2*atan2(tan(curfov/2*RAD), aspect)/RAD;
     
     int fogmat = lookupmaterial(camera1->o)&(MATF_VOLUME|MATF_INDEX), abovemat = MAT_AIR;
@@ -2114,12 +2118,12 @@ void gl_drawframe(int w, int h)
     glDisable(GL_TEXTURE_2D);
     notextureshader->set();
 
-    gl_drawhud(w, h);
+    gl_drawhud();
 
     renderedgame = false;
 }
 
-void gl_drawmainmenu(int w, int h)
+void gl_drawmainmenu()
 {
     xtravertsva = xtraverts = glde = gbatches = 0;
 
@@ -2138,7 +2142,7 @@ void gl_drawmainmenu(int w, int h)
     notextureshader->set();
     glDisable(GL_TEXTURE_2D);
 
-    gl_drawhud(w, h);
+    gl_drawhud();
 }
 
 VARNP(damagecompass, usedamagecompass, 0, 1, 1);
@@ -2347,8 +2351,9 @@ VAR(statrate, 1, 200, 1000);
 
 FVARP(conscale, 1e-3f, 0.33f, 1e3f);
 
-void gl_drawhud(int w, int h)
+void gl_drawhud()
 {
+    int w = screenw, h = screenh;
     if(forceaspect) w = int(ceil(h*forceaspect));
 
     if(editmode && !hidehud && !mainmenu)

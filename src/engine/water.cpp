@@ -866,7 +866,7 @@ void genwatertex(GLuint &tex, GLuint &fb, GLuint &db, bool refract = false)
         refractfmt = GL_FALSE;
     }
     int size = 1<<reflectsize;
-    if(!hasFBO) while(size>screen->w || size>screen->h) size /= 2;
+    if(!hasFBO) while(size>screenw || size>screenh) size /= 2;
     while(size>hwtexsize) size /= 2;
 
     glGenTextures(1, &tex);
@@ -1045,7 +1045,7 @@ void queryreflections()
 
     static int lastsize = 0;
     int size = 1<<reflectsize;
-    if(!hasFBO) while(size>screen->w || size>screen->h) size /= 2;
+    if(!hasFBO) while(size>screenw || size>screenh) size /= 2;
     while(size>hwtexsize) size /= 2;
     if(size!=lastsize) { if(lastsize) cleanreflections(); lastsize = size; }
 
@@ -1250,10 +1250,10 @@ static bool calcscissorbox(Reflection &ref, int size, vec &clipmin, vec &clipmax
         clipmax.x = clamp(clipmax.x, sx1, sx2);
         clipmax.y = clamp(clipmax.y, sy1, sy2);
     }
-    sx = int(floor((hasFBO ? 0 : screen->w-size) + (sx1+1)*0.5f*size));
-    sy = int(floor((hasFBO ? 0 : screen->h-size) + (sy1+1)*0.5f*size));
-    sw = max(int(ceil((hasFBO ? 0 : screen->w-size) + (sx2+1)*0.5f*size)) - sx, 0);
-    sh = max(int(ceil((hasFBO ? 0 : screen->h-size) + (sy2+1)*0.5f*size)) - sy, 0);
+    sx = int(floor((hasFBO ? 0 : screenw-size) + (sx1+1)*0.5f*size));
+    sy = int(floor((hasFBO ? 0 : screenh-size) + (sy1+1)*0.5f*size));
+    sw = max(int(ceil((hasFBO ? 0 : screenw-size) + (sx2+1)*0.5f*size)) - sx, 0);
+    sh = max(int(ceil((hasFBO ? 0 : screenh-size) + (sy2+1)*0.5f*size)) - sy, 0);
     return true;
 }
 
@@ -1269,7 +1269,7 @@ void drawreflections()
     int refs = 0, n = lastdrawn;
     float offset = -WATER_OFFSET;
     int size = 1<<reflectsize;
-    if(!hasFBO) while(size>screen->w || size>screen->h) size /= 2;
+    if(!hasFBO) while(size>screenw || size>screenh) size /= 2;
     while(size>hwtexsize) size /= 2;
 
     if(waterreflect || waterrefract) loopi(MAXREFLECTIONS)
@@ -1286,7 +1286,7 @@ void drawreflections()
 
         if(!refs) 
         {
-            glViewport(hasFBO ? 0 : screen->w-size, hasFBO ? 0 : screen->h-size, size, size);
+            glViewport(hasFBO ? 0 : screenw-size, hasFBO ? 0 : screenh-size, size, size);
             if(hasFBO) glBindFramebuffer_(GL_FRAMEBUFFER_EXT, reflectionfb);
         }
         refs++;
@@ -1299,8 +1299,8 @@ void drawreflections()
         if(scissor) glScissor(sx, sy, sw, sh);
         else
         {
-            sx = hasFBO ? 0 : screen->w-size;
-            sy = hasFBO ? 0 : screen->h-size;
+            sx = hasFBO ? 0 : screenw-size;
+            sy = hasFBO ? 0 : screenh-size;
             sw = sh = size;
         }
 
@@ -1321,7 +1321,7 @@ void drawreflections()
             if(!hasFBO)
             {
                 glBindTexture(GL_TEXTURE_2D, ref.tex);
-                glCopyTexSubImage2D(GL_TEXTURE_2D, 0, sx-(screen->w-size), sy-(screen->h-size), sx, sy, sw, sh);
+                glCopyTexSubImage2D(GL_TEXTURE_2D, 0, sx-(screenw-size), sy-(screenh-size), sx, sy, sw, sh);
             }
         }
 
@@ -1342,7 +1342,7 @@ void drawreflections()
             if(!hasFBO)
             {
                 glBindTexture(GL_TEXTURE_2D, ref.refracttex);
-                glCopyTexSubImage2D(GL_TEXTURE_2D, 0, sx-(screen->w-size), sy-(screen->h-size), sx, sy, sw, sh);
+                glCopyTexSubImage2D(GL_TEXTURE_2D, 0, sx-(screenw-size), sy-(screenh-size), sx, sy, sw, sh);
             }   
         }    
 
@@ -1364,7 +1364,7 @@ void drawreflections()
 
         if(!refs)
         {
-            glViewport(hasFBO ? 0 : screen->w-size, hasFBO ? 0 : screen->h-size, size, size);
+            glViewport(hasFBO ? 0 : screenw-size, hasFBO ? 0 : screenh-size, size, size);
             if(hasFBO) glBindFramebuffer_(GL_FRAMEBUFFER_EXT, reflectionfb);
         }
         refs++;
@@ -1376,8 +1376,8 @@ void drawreflections()
         if(scissor) glScissor(sx, sy, sw, sh);
         else
         {
-            sx = hasFBO ? 0 : screen->w-size;
-            sy = hasFBO ? 0 : screen->h-size;
+            sx = hasFBO ? 0 : screenw-size;
+            sy = hasFBO ? 0 : screenh-size;
             sw = sh = size;
         }
 
@@ -1394,13 +1394,13 @@ void drawreflections()
         if(!hasFBO)
         {
             glBindTexture(GL_TEXTURE_2D, ref.refracttex);
-            glCopyTexSubImage2D(GL_TEXTURE_2D, 0, sx-(screen->w-size), sy-(screen->h-size), sx, sy, sw, sh);
+            glCopyTexSubImage2D(GL_TEXTURE_2D, 0, sx-(screenw-size), sy-(screenh-size), sx, sy, sw, sh);
         }
     }
 nowaterfall:
 
     if(!refs) return;
-    glViewport(0, 0, screen->w, screen->h);
+    glViewport(0, 0, screenw, screenh);
     if(hasFBO) glBindFramebuffer_(GL_FRAMEBUFFER_EXT, 0);
 
     defaultshader->set();
