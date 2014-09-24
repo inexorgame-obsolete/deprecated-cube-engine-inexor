@@ -1,8 +1,9 @@
 language: cpp
 before_install:
   # Install dependencies
+  - sudo add-apt-repository "deb http://ppa.launchpad.net/zoogie/sdl2-snapshots/ubuntu precise main"
   - sudo apt-get update
-  - sudo apt-get -y install build-essential zlib1g-dev libsdl1.2-dev libsdl-image1.2-dev libsdl-mixer1.2-dev libenet-dev
+  - sudo apt-get -y install build-essential zlib1g-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libenet-dev
   - sudo apt-get -y install mingw32
 
 script:
