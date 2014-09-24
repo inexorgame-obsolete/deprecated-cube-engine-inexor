@@ -55,6 +55,7 @@ struct spring_builder
 	spring_builder* stretch_yz();
 	spring_builder* stretch_xyz();
 	spring_builder* sheer_xy();
+	spring_builder* sheer_xy2();
 	spring_builder* sheer_xz();
 	spring_builder* sheer_yz();
 	spring_builder* sheer_xyz();

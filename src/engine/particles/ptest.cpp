@@ -591,11 +591,12 @@ struct ptest
 		float density = 1.0f;
 		int lifetime = 1000;
 		int rate = 250;
-		float elasticity = 0.60f;
-		float size_x = 30.0f;
-		float size_y = 30.0f;
-		float cloth_constant = 16.0f;
-		float cloth_friction = 0.001f;
+		float elasticity = 0.30f;
+		float size_x = 80.0f;
+		float size_y = 80.0f;
+		float cloth_dist = 4.0f;
+		float cloth_constant = 8.0f;
+		float cloth_friction = 0.0001f;
 
 		particle_renderer_type* pr_type_flash = ps.add_particle_renderer_type("flash_renderer_19", "media/particle/flash01.png", "shader", vec4(128.0f, 128.0f, 0.0f, 0.3f), "noop_renderer");
 		pr_type_flash->attributes["size"] = 60.0f;
@@ -631,29 +632,20 @@ struct ptest
 		pi_type_spring_weaver->attributes["size_x"] = size_x;
 		pi_type_spring_weaver->attributes["size_y"] = size_y;
 		pi_type_spring_weaver->attributes["size_z"] = 1.0f;
-		pi_type_spring_weaver->attributes["spring_length_x"] = 15.0f;
-		pi_type_spring_weaver->attributes["spring_length_y"] = 15.0f;
-		pi_type_spring_weaver->attributes["spring_length_z"] = 15.0f;
+		pi_type_spring_weaver->attributes["spring_length_x"] = cloth_dist;
+		pi_type_spring_weaver->attributes["spring_length_y"] = cloth_dist;
+		pi_type_spring_weaver->attributes["spring_length_z"] = cloth_dist;
 		particle_initializer_instance* pi_inst_spring_weaver = pi_type_spring_weaver->create_instance();
 
 		// cloth 2D rules
 		spring_builder sb;
-		pi_inst_spring_weaver->pointers["rules"] = sb.stretch_xy()->sheer_xy()->bend_xy()->get();
-
-		particle_initializer_type* pi_type_random_velocity_sub = ps.add_particle_initializer_type("random_velocity_19_sub", "random_velocity");
-		pi_type_random_velocity_sub->attributes["osx"] = 100.0f;
-		pi_type_random_velocity_sub->attributes["osy"] = 0.0f;
-		pi_type_random_velocity_sub->attributes["osz"] = 0.0f;
-		pi_type_random_velocity_sub->attributes["isx"] = 0.0f;
-		pi_type_random_velocity_sub->attributes["isy"] = 0.0f;
-		pi_type_random_velocity_sub->attributes["isz"] = 0.0f;
-		particle_initializer_instance* pi_inst_random_velocity_sub = pi_type_random_velocity_sub->create_instance();
+		pi_inst_spring_weaver->pointers["rules"] = sb.stretch_xy()->sheer_xy()->bend_xy()->sheer_xy2()->get();
 
 		particle_emitter_type* pe_type_sub_sparkle = ps.add_particle_emitter_type("sub_sparkle_point_emitter_19", p_type_flash, mass, density, 10000, 11000, "field_emitter");
-		pe_type_sub_sparkle->attributes["grid_size_x"] = 30.0f;
-		pe_type_sub_sparkle->attributes["grid_size_y"] = 30.0f;
+		pe_type_sub_sparkle->attributes["grid_size_x"] = size_x;
+		pe_type_sub_sparkle->attributes["grid_size_y"] = size_y;
 		pe_type_sub_sparkle->attributes["grid_size_z"] = 1.0f;
-		pe_type_sub_sparkle->attributes["grid_dist"] = 15.0f;
+		pe_type_sub_sparkle->attributes["grid_dist"] = cloth_dist;
 
 		particle_emitter_instance* pe_inst_sub_sparkle = pe_type_sub_sparkle->create_instance(vec(356.0f, 512.0f, 572.0f), vec(60.0f, 0.0f, 60.0f));
 		pe_inst_sub_sparkle->add_modifier(pm_inst_velocity_transformation);
