@@ -445,6 +445,7 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)   
     swapbuffers(false);
 }
 
+VARNP(relativemouse, userelativemouse, 0, 1, 1);
 
 bool shouldgrab = false, grabinput = false, minimized = false, canrelativemouse = true, relativemouse = false;
 int keyrepeatmask = 0, textinputmask = 0;
@@ -884,7 +885,6 @@ void checkinput()
 
                     case SDL_WINDOWEVENT_SIZE_CHANGED:
                     {
-                        holdscreenlock;
                         SDL_GetWindowSize(screen, &screenw, &screenh);
                         if(!(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN))
                         {
