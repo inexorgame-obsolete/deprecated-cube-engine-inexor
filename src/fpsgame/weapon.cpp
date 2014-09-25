@@ -251,7 +251,8 @@ namespace game
             {
                 vec pos(bnc.o);
                 pos.add(vec(bnc.offset).mul(bnc.offsetmillis/float(OFFSETMILLIS)));
-                regular_particle_splash(PART_SMOKE, 1, 150, pos, 0x0080f0, 6.4f, 120, -120);
+                regular_particle_splash(PART_SMOKE, 2, 400, vec(pos.x, pos.y, pos.z + 9), 0x404040, 1.6f, 50, -2000);
+					particle_splash(PART_SPARK, 5, 50, vec(pos.x, pos.y, pos.z + 8), 0xFFFFFF, 0.24f, 300, 1);
             }
             vec old(bnc.o);
             bool stopped = false;
