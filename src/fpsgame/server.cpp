@@ -1279,14 +1279,11 @@ namespace server
         else enddemorecord();
     }
 
-    void pausegame(bool val, clientinfo *ci)
+    void pausegame(bool val, clientinfo *ci = NULL)
     {
         if(gamepaused==val) return;
         gamepaused = val;
         sendf(-1, 1, "riii", N_PAUSEGAME, gamepaused ? 1 : 0, ci ? ci->clientnum : -1);
-    }
-    void pausegame(bool val) {
-      pausegame(val, NULL);
     }
 
     void checkpausegame()
@@ -1294,12 +1291,12 @@ namespace server
         if(!gamepaused) return;
         int admins = 0;
         loopv(clients) if(clients[i]->privilege >= (restrictpausegame ? PRIV_ADMIN : PRIV_MASTER) || clients[i]->local) admins++;
-        if(!admins) pausegame(false,NULL);
+        if(!admins) pausegame(false);
     }
 
     void forcepaused(bool paused)
     {
-        pausegame(paused, NULL);
+        pausegame(paused);
     }
 
     bool ispaused() { return gamepaused; }
@@ -1987,7 +1984,7 @@ namespace server
     void changemap(const char *s, int mode)
     {
         stopdemo();
-        pausegame(false,NULL);
+        pausegame(false);
         changegamespeed(100);
         if(smode) smode->cleanup();
         aiman::clearai();

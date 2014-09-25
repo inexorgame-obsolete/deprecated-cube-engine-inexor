@@ -7,7 +7,6 @@
 
 
 extern void sendspawn(clientinfo *ci);
-extern void pausegame(bool val);
 
 struct bombservmode : servmode
 #else
@@ -269,7 +268,7 @@ struct bombclientmode : clientmode
     	sequence = 0;
     	countdown = COUNTDOWNSECONDS;
     	timecounter = totalmillis;
-    	pausegame(true);
+    	forcepaused(true);
     	notgotspawnlocations = true;
     	spawnlocs.deletecontents();
     	if(!notgotitems){
@@ -326,7 +325,7 @@ struct bombclientmode : clientmode
     		if(remaining <= 0){
     			sequence = 2;
           sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 2000, E_ZOOM_IN, "F I G H T");
-    			pausegame(false);
+    			forcepaused(false);
     		}
     		else if(remaining/1000 != countdown){
           defformatstring(msg)("- %d -", countdown--);
