@@ -136,27 +136,37 @@ namespace game
 
     void switchname(const char *name)
     {
-        if(name[0])
-        {
-            filtertext(player1->name, name, false, MAXNAMELEN);
-            if(!player1->name[0]) copystring(player1->name, "unnamed");
-            addmsg(N_SWITCHNAME, "rs", player1->name);
-        }
-        else conoutf("your name is: %s", colorname(player1));
+        filtertext(player1->name, name, false, MAXNAMELEN);
+        if(!player1->name[0]) copystring(player1->name, "unnamed");
+        addmsg(N_SWITCHNAME, "rs", player1->name);
     }
-    ICOMMAND(name, "s", (char *s), switchname(s));
+    void printname()
+    {
+        conoutf("your name is: %s", colorname(player1));
+    }
+    ICOMMAND(name, "sN", (char *s, int *numargs),
+    {
+        if(*numargs > 0) switchname(s);
+        else if(!*numargs) printname();
+        else result(colorname(player1));
+    });
     ICOMMAND(getname, "", (), result(player1->name));
 
     void switchteam(const char *team)
     {
-        if(team[0])
-        {
-            if(player1->clientnum < 0) filtertext(player1->team, team, false, MAXTEAMLEN);
-            else addmsg(N_SWITCHTEAM, "rs", team);
-        }
-        else conoutf("your team is: %s", player1->team);
+        if(player1->clientnum < 0) filtertext(player1->team, team, false, MAXTEAMLEN);
+        else addmsg(N_SWITCHTEAM, "rs", team);
     }
-    ICOMMAND(team, "s", (char *s), switchteam(s));
+    void printteam()
+    {
+        conoutf("your team is: %s", player1->team);
+    }
+    ICOMMAND(team, "sN", (char *s, int *numargs),
+    {
+        if(*numargs > 0) switchteam(s);
+        else if(!*numargs) printteam();
+        else result(player1->team);
+    });
     ICOMMAND(getteam, "", (), result(player1->team));
 
     void switchplayermodel(int playermodel)
@@ -249,7 +259,7 @@ namespace game
     bool allowedittoggle()
     {
         if(editmode) return true;
-        if(connected && multiplayer(false) && !m_edit)
+        if(isconnected() && multiplayer(false) && !m_edit)
         {
             conoutf(CON_ERROR, "editing in multiplayer requires coop edit mode (1)");
             return false;
@@ -568,7 +578,7 @@ namespace game
         if(!remote)
         {
             server::forcemap(name, mode);
-            if(!connected) localconnect();
+            if(!isconnected()) localconnect();
         }
         else if(player1->state!=CS_SPECTATOR || player1->privilege) addmsg(N_MAPVOTE, "rsi", name, mode);
     }
@@ -826,7 +836,6 @@ namespace game
 
     void gameconnect(bool _remote)
     {
-        connected = true;
         remote = _remote;
         if(editmode) toggleedit();
     }
@@ -1214,6 +1223,7 @@ namespace game
 
             case N_WELCOME:
             {
+                connected = true;
                 notifywelcome();
                 break;
             }
@@ -1861,7 +1871,12 @@ namespace game
                     vector<char> buf;
                     answerchallenge(a->key, text, buf);
                     //conoutf(CON_DEBUG, "answering %u, challenge %s with %s", id, text, buf.getbuf());
-                    addmsg(N_AUTHANS, "rsis", a->desc, id, buf.getbuf());
+                    packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
+                    putint(p, N_AUTHANS);
+                    sendstring(a->desc, p);
+                    putint(p, id);
+                    sendstring(buf.getbuf(), p);
+                    sendclientpacket(p.finalize(), 1);
                 }
                 break;
             }

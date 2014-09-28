@@ -40,11 +40,7 @@ void clearusers()
 }
 COMMAND(clearusers, "");
 
-struct baninfo
-{
-    enet_uint32 ip, mask;
-};
-vector<baninfo> bans, servbans, gbans;
+vector<ipmask> bans, servbans, gbans;
 
 void clearbans()
 {
@@ -54,47 +50,19 @@ void clearbans()
 }
 COMMAND(clearbans, "");
 
-void addban(vector<baninfo> &bans, const char *name)
+void addban(vector<ipmask> &bans, const char *name)
 {
-    union { uchar b[sizeof(enet_uint32)]; enet_uint32 i; } ip, mask;
-    ip.i = 0;
-    mask.i = 0;
-    loopi(4)
-    {
-        char *end = NULL;
-        int n = strtol(name, &end, 10);
-        if(!end) break;
-        if(end > name) { ip.b[i] = n; mask.b[i] = 0xFF; }
-        name = end;
-        while(*name && *name++ != '.');
-    }
-    baninfo &ban = bans.add();
-    ban.ip = ip.i;
-    ban.mask = mask.i;
+    ipmask ban;
+    ban.parse(name);
+    bans.add(ban);
 }
 ICOMMAND(ban, "s", (char *name), addban(bans, name));
 ICOMMAND(servban, "s", (char *name), addban(servbans, name));
 ICOMMAND(gban, "s", (char *name), addban(gbans, name));
 
-char *printban(const baninfo &ban, char *buf)
+bool checkban(vector<ipmask> &bans, enet_uint32 host)
 {
-    union { uchar b[sizeof(enet_uint32)]; enet_uint32 i; } ip, mask;
-    ip.i = ban.ip;
-    mask.i = ban.mask;
-    int lastdigit = -1;
-    loopi(4) if(mask.b[i])
-    {
-        if(lastdigit >= 0) *buf++ = '.';
-        loopj(i - lastdigit - 1) { *buf++ = '*'; *buf++ = '.'; }
-        buf += sprintf(buf, "%d", ip.b[i]);
-        lastdigit = i;
-    }
-    return buf;
-}
-
-bool checkban(vector<baninfo> &bans, enet_uint32 host)
-{
-    loopv(bans) if((host & bans[i].mask) == bans[i].ip) return true;
+    loopv(bans) if(bans[i].check(host)) return true;
     return false;
 }
 
@@ -296,8 +264,8 @@ void gengbanlist()
     int cmdlen = strlen(cmd);
     loopv(gbans)
     {
-        baninfo &b = gbans[i];
-        l->buf.put(cmd, printban(b, &cmd[cmdlen]) - cmd); 
+        ipmask &b = gbans[i];
+        l->buf.put(cmd, cmdlen + b.print(&cmd[cmdlen])); 
         l->buf.add('\n');
     }
     if(gbanlists.length() && gbanlists.last()->equals(*l))
@@ -573,7 +541,7 @@ bool checkclientinput(client &c)
         else if(sscanf(c.input, "regserv %d", &port) == 1)
         {
             if(checkban(servbans, c.address.host)) return false;
-            if(port < 0 || port + 1 < 0 || (c.servport >= 0 && port != c.servport)) outputf(c, "failreg invalid port\n");
+            if(port < 0 || port > 0xFFFF-1 || (c.servport >= 0 && port != c.servport)) outputf(c, "failreg invalid port\n");
             else
             {
                 c.servport = port;
@@ -697,12 +665,14 @@ void banclients()
     loopvrev(clients) if(checkban(bans, clients[i]->address.host)) purgeclient(i);
 }
 
-volatile bool reloadcfg = true;
+volatile int reloadcfg = 1;
 
+#ifndef WIN32
 void reloadsignal(int signum)
 {
-    reloadcfg = true;
+    reloadcfg = signum == SIGUSR1 ? 1 : -1;
 }
+#endif
 
 int main(int argc, char **argv)
 {
@@ -723,6 +693,7 @@ int main(int argc, char **argv)
     setvbuf(logfile, NULL, _IOLBF, BUFSIZ);
 #ifndef WIN32
     signal(SIGUSR1, reloadsignal);
+    signal(SIGUSR2, reloadsignal);
 #endif
     setupserver(port, ip);
     for(;;)
@@ -733,8 +704,8 @@ int main(int argc, char **argv)
             execfile(cfgname);
             bangameservers();
             banclients();
-            gengbanlist();
-            reloadcfg = false;
+            if(reloadcfg > 0) gengbanlist();
+            reloadcfg = 0;
         }
 
         servtime = enet_time_get();

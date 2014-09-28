@@ -61,6 +61,7 @@ struct ptest
 		pe_inst_point_ball->add_modifier(pm_inst_velocity_transformation);
 		pe_inst_point_ball->add_modifier(pm_inst_simple_gravity);
 		pe_inst_point_ball->add_modifier(pm_inst_geometry_collide);
+		// pe_inst_point_ball->add_modifier(pm_inst_gravity_point);
 		// pe_inst_point_ball->add_initializer(pi_inst_random_velocity);
     }
 
@@ -285,6 +286,12 @@ struct ptest
 		particle_modifier_instance* pm_inst_geometry_collide = pm_type_geometry_collide->create_instance();
 		pm_inst_geometry_collide->attributes["elasticity"] = elasticity;
 
+		particle_modifier_type* pm_type_gravity_point = ps.add_particle_modifier_type("gravity_point_10", "pulsar");
+		pm_type_gravity_point->attributes["mass"] = 1000.0f;
+		pm_type_gravity_point->attributes["gravity"] = 35.0f;
+		particle_modifier_instance* pm_inst_gravity_point = pm_type_gravity_point->create_instance();
+		pm_inst_gravity_point->add_position(vec(512.0f, 512.0f, 824.0f));
+
 		particle_initializer_type* pi_type_random_position = ps.add_particle_initializer_type("random_position_14", "random_position");
 		pi_type_random_position->attributes["osx"] = 0.0f;
 		pi_type_random_position->attributes["osy"] = 0.0f;
@@ -296,7 +303,7 @@ struct ptest
 		particle_initializer_type* pi_type_random_velocity = ps.add_particle_initializer_type("random_velocity_14", "random_velocity");
 		pi_type_random_velocity->attributes["osx"] = 140.0f;
 		pi_type_random_velocity->attributes["osy"] = 140.0f;
-		pi_type_random_velocity->attributes["osz"] = 0.0f;
+		pi_type_random_velocity->attributes["osz"] = 100.0f;
 		pi_type_random_velocity->attributes["isx"] = 70.0f;
 		pi_type_random_velocity->attributes["isy"] = 70.0f;
 		pi_type_random_velocity->attributes["isz"] = 0.0f;
@@ -308,6 +315,7 @@ struct ptest
 		// pe_inst_point_plasma->add_modifier(pm_inst_geometry_culling);
 		pe_inst_point_plasma->add_modifier(pm_inst_simple_gravity);
 		pe_inst_point_plasma->add_modifier(pm_inst_geometry_collide);
+		pe_inst_point_plasma->add_modifier(pm_inst_gravity_point);
 		pe_inst_point_plasma->add_initializer(pi_inst_random_position);
 		pe_inst_point_plasma->add_initializer(pi_inst_random_velocity);
     }

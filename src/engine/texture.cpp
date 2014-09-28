@@ -1096,7 +1096,9 @@ SDL_Surface *loadsurface(const char *name)
         SDL_RWops *rw = z->rwops();
         if(rw) 
         {
-            s = IMG_Load_RW(rw, 0);
+            char *ext = (char *)strrchr(name, '.');
+            if(ext) ++ext;
+            s = IMG_LoadTyped_RW(rw, 0, ext);
             SDL_FreeRW(rw);
         }
         delete z;
@@ -1145,7 +1147,7 @@ static bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex = NULL, 
     {
         cmds = tname;
         file = strrchr(tname, '>');
-        if(!file) { if(msg) conoutf(CON_ERROR, "could not load texture %s", tname); return NULL; }
+        if(!file) { if(msg) conoutf(CON_ERROR, "could not load texture %s", tname); return false; }
         file++;
     }
 
@@ -1316,6 +1318,12 @@ void texturereset(int *n)
         delete s;
     }
     slots.setsize(limit);
+    while(vslots.length())
+    {
+        VSlot *vs = vslots.last();
+        if(vs->slot != &dummyslot || vs->changed) break;
+        delete vslots.pop();
+    }
 }
 
 COMMAND(texturereset, "i");
@@ -2676,7 +2684,7 @@ bool loaddds(const char *filename, ImageData &image)
         case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT: bpp = 16; break;
     }
     image.setdata(NULL, d.dwWidth, d.dwHeight, bpp, d.dwMipMapCount, 4, format); 
-    int size = image.calcsize();
+    size_t size = image.calcsize();
     if(f->read(image.data, size) != size) { delete f; image.cleanup(); return false; }
     delete f;
     return true;

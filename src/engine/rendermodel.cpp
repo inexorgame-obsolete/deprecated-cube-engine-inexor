@@ -1,7 +1,7 @@
 #include "engine.h"
 
-VARP(oqdynent, 0, 1, 1);
-VARP(animationinterpolationtime, 0, 150, 1000);
+VAR(oqdynent, 0, 1, 1);
+VAR(animationinterpolationtime, 0, 150, 1000);
 
 model *loadingmodel = NULL;
 
@@ -23,7 +23,7 @@ static model *__loadmodel__##modelclass(const char *filename) \
 { \
     return new modelclass(filename); \
 } \
-static int __dummy__##modelclass = addmodeltype((modeltype), __loadmodel__##modelclass);
+UNUSED static int __dummy__##modelclass = addmodeltype((modeltype), __loadmodel__##modelclass);
  
 #include "md2.h"
 #include "md3.h"
@@ -731,7 +731,7 @@ void endmodelquery()
     modelattached.setsize(minattached);
 }
 
-VARP(maxmodelradiusdistance, 10, 200, 1000);
+VAR(maxmodelradiusdistance, 10, 200, 1000);
 
 void rendermodelquery(model *m, dynent *d, const vec &center, float radius)
 {

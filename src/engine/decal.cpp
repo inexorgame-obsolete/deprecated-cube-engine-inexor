@@ -4,8 +4,7 @@ struct decalvert
 {
     vec pos;
     float u, v;
-    bvec color;
-    uchar alpha;
+    bvec4 color;
 };
 
 struct decalinfo
@@ -37,14 +36,14 @@ struct decalrenderer
     decalinfo *decals;
     int maxdecals, startdecal, enddecal;
     decalvert *verts;
-    int maxverts, startvert, endvert, availverts;
+    int maxverts, startvert, endvert, lastvert, availverts;
 
     decalrenderer(const char *texname, int flags = 0, int fadeintime = 0, int fadeouttime = 1000, int timetolive = -1)
         : texname(texname), flags(flags),
           fadeintime(fadeintime), fadeouttime(fadeouttime), timetolive(timetolive),
           tex(NULL),
           decals(NULL), maxdecals(0), startdecal(0), enddecal(0),
-          verts(NULL), maxverts(0), startvert(0), endvert(0), availverts(0),
+          verts(NULL), maxverts(0), startvert(0), endvert(0), lastvert(0), availverts(0),
           decalu(0), decalv(0)
     {
     }
@@ -59,7 +58,7 @@ struct decalrenderer
         if(verts)
         {
             DELETEA(verts);
-            maxverts = startvert = endvert = availverts = 0;
+            maxverts = startvert = endvert = lastvert = availverts = 0;
         }
         decals = new decalinfo[tris];
         maxdecals = tris;
@@ -77,7 +76,7 @@ struct decalrenderer
     void cleardecals()
     {
         startdecal = enddecal = 0;
-        startvert = endvert = 0;
+        startvert = endvert = lastvert = 0;
         availverts = maxverts - 3;
     }
 
@@ -91,7 +90,7 @@ struct decalrenderer
         
         int removed = d.endvert < d.startvert ? maxverts - (d.startvert - d.endvert) : d.endvert - d.startvert;
         startvert = d.endvert;
-        if(startvert==endvert) startvert = endvert = 0;
+        if(startvert==endvert) startvert = endvert = lastvert = 0;
         availverts += removed;
 
         return removed;
@@ -99,24 +98,24 @@ struct decalrenderer
 
     void fadedecal(decalinfo &d, uchar alpha)
     {
-        bvec color;
+        bvec rgb;
         if(flags&DF_OVERBRIGHT)
         {
-            if(renderpath!=R_FIXEDFUNCTION || hasTE) color = bvec(128, 128, 128);
-            else color = bvec(alpha, alpha, alpha);
+            if(renderpath!=R_FIXEDFUNCTION || hasTE) rgb = bvec(128, 128, 128);
+            else rgb = bvec(alpha, alpha, alpha);
         }
         else
         {
-            color = d.color;
-            if(flags&(DF_ADD|DF_INVMOD)) loopk(3) color[k] = uchar((int(color[k])*int(alpha))>>8);
+            rgb = d.color;
+            if(flags&(DF_ADD|DF_INVMOD)) rgb.scale(alpha, 255);
         }
+        bvec4 color(rgb, alpha);
 
         decalvert *vert = &verts[d.startvert],
                   *end = &verts[d.endvert < d.startvert ? maxverts : d.endvert]; 
         while(vert < end)
         {
             vert->color = color;
-            vert->alpha = alpha;
             vert++;
         }
         if(d.endvert < d.startvert)
@@ -126,7 +125,6 @@ struct decalrenderer
             while(vert < end)
             {
                 vert->color = color;
-                vert->alpha = alpha;
                 vert++;
             }
         }
@@ -146,7 +144,7 @@ struct decalrenderer
         }
         startdecal = d - decals;
         if(startdecal!=enddecal) startvert = decals[startdecal].startvert;
-        else startvert = endvert = 0;
+        else startvert = endvert = lastvert = 0;
         availverts = endvert < startvert ? startvert - endvert - 3 : maxverts - 3 - (endvert - startvert);
     }
  
@@ -301,7 +299,7 @@ struct decalrenderer
     ivec bbmin, bbmax;
     vec decalcenter, decalnormal, decaltangent, decalbitangent;
     float decalradius, decalu, decalv;
-    bvec decalcolor;
+    bvec4 decalcolor;
 
     void adddecal(const vec &center, const vec &dir, float radius, const bvec &color, int info)
     {
@@ -309,7 +307,7 @@ struct decalrenderer
         bbmin = ivec(center).sub(bbradius);
         bbmax = ivec(center).add(bbradius);
 
-        decalcolor = color;
+        decalcolor = bvec4(color, 255);
         decalcenter = center;
         decalradius = radius;
         decalnormal = dir;
@@ -328,19 +326,19 @@ struct decalrenderer
             decalv = 0.5f*((info>>1)&1);
         }
 
-        ushort dstart = endvert;
+        lastvert = endvert;
         gentris(worldroot, ivec(0, 0, 0), worldsize>>1);
         if(dbgdec)
         {
-            int nverts = endvert < dstart ? endvert + maxverts - dstart : endvert - dstart;
+            int nverts = endvert < lastvert ? endvert + maxverts - lastvert : endvert - lastvert;
             conoutf(CON_DEBUG, "tris = %d, verts = %d, total tris = %d", nverts/3, nverts, (maxverts - 3 - availverts)/3);
         }
-        if(endvert==dstart) return;
+        if(endvert==lastvert) return;
 
         decalinfo &d = newdecal();
         d.color = color;
         d.millis = lastmillis;
-        d.startvert = dstart;
+        d.startvert = lastvert;
         d.endvert = endvert;
     }
 
@@ -473,8 +471,8 @@ struct decalrenderer
             float tsz = flags&DF_RND4 ? 0.5f : 1.0f, scale = tsz*0.5f/decalradius,
                   tu = decalu + tsz*0.5f - ptc*scale, tv = decalv + tsz*0.5f - pbc*scale;
             pt.mul(scale); pb.mul(scale);
-            decalvert dv1 = { v2[0], pt.dot(v2[0]) + tu, pb.dot(v2[0]) + tv, decalcolor, 255 },
-                      dv2 = { v2[1], pt.dot(v2[1]) + tu, pb.dot(v2[1]) + tv, decalcolor, 255 };
+            decalvert dv1 = { v2[0], pt.dot(v2[0]) + tu, pb.dot(v2[0]) + tv, decalcolor },
+                      dv2 = { v2[1], pt.dot(v2[1]) + tu, pb.dot(v2[1]) + tv, decalcolor };
             int totalverts = 3*(numv-2);
             if(totalverts > maxverts-3) return;
             while(availverts < totalverts) 
