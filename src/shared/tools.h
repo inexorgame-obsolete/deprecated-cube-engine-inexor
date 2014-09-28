@@ -239,6 +239,14 @@ extern char *tempformatstring(const char *fmt, ...) PRINTFARGS(1, 2);
 #define defformatstring(d) string d; formatstring(d)
 #define defvformatstring(d,last,fmt) string d; { va_list ap; va_start(ap, last); vformatstring(d, fmt, ap); va_end(ap); }
 
+template<size_t N> inline bool matchstring(const char *s, size_t len, const char (&d)[N])
+{
+    return len == N-1 && !memcmp(s, d, N-1);
+}
+
+inline char *newstring(size_t l)                { return new char[l+1]; }
+inline char *newstring(const char *s, size_t l) { return copystring(newstring(l), s, l+1); }
+inline char *newstring(const char *s)           { size_t l = strlen(s); char *d = newstring(l); memcpy(d, s, l+1); return d; }
 
 /// macros for looping though vectors
 /// loop macros are deprecated and should not be used anymore!
@@ -1298,12 +1306,6 @@ template <class T, int SIZE> struct reversequeue : queue<T, SIZE>
     T &operator[](int offset) { return queue<T, SIZE>::added(offset); }
     const T &operator[](int offset) const { return queue<T, SIZE>::added(offset); }
 };
-
-
-/// inline string memory allocation functions
-inline char *newstring(size_t l)                { return new char[l+1]; }
-inline char *newstring(const char *s, size_t l) { return copystring(newstring(l), s, l+1); }
-inline char *newstring(const char *s)           { size_t l = strlen(s); char *d = newstring(l); memcpy(d, s, l+1); return d; }
 
 const int islittleendian = 1;
 
