@@ -120,6 +120,7 @@ void writeinitcfg()
     f->printf("stencilbits %d\n", stencilbits);
     f->printf("fsaa %d\n", fsaa);
     f->printf("vsync %d\n", vsync);
+	f->printf("vsynctear %d\n", vsynctear);
     extern int useshaders, shaderprecision, forceglsl;
     f->printf("shaders %d\n", useshaders);
     f->printf("shaderprecision %d\n", shaderprecision);
