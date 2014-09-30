@@ -22,6 +22,7 @@ env:
   - CMAKE_FLAGS="-DCMAKE_TOOLCHAIN_FILE=../src/platform_windows/linux-toolchain-mingw.cmake -DRELEASE_BUILD=1  -DMINGW_TYPE=classic"
 
 
+<<<<<<< HEAD
 #notifications:
 #  webhooks:
 #    urls:
@@ -39,3 +40,23 @@ after_success:
   - "curl --ftp-create-dirs -T ${TRAVIS_JOB_ID}.zip -u $FTP_USER:$FTP_PASSWORD ftp://37.59.98.138/"
   - on:
     - branch: master  
+=======
+notifications:
+  irc:
+    channels:
+      - "irc.gamesurge.net#sauerfork"
+    template: "%{repository_name}/%{branch} %{commit} - %{message}"
+    use_notice: false
+    skip_join: true
+after_success:
+  - cd $TRAVIS_BUILD_DIR
+  - export BUILD_NAME=$(echo "${TRAVIS_BRANCH}-${TRAVIS_JOB_NUMBER}-${TRAVIS_COMMIT}" | sed 's#/#-#')
+  - git clone --depth 1 https://github.com/sauerbraten-fork/sauerbraten-fork-data.git nightly
+  - rm -rf ./nightly/.git*
+  - cp -r ./bin_* nightly
+  - cp ./sauerbraten_unix nightly
+  - cp ./sauerbraten.bat nightly
+  - zip -r ${BUILD_NAME}.zip nightly
+  - echo "sending ${BUILD_NAME}.zip"
+  - curl --ftp-create-dirs -T "${BUILD_NAME}.zip" -u $FTP_USER:$FTP_PASSWORD ftp://37.59.98.138/
+>>>>>>> b6680047b44420703e1a1b3eb12ad8f99ca53383
