@@ -6,21 +6,36 @@ before_install:
   - sudo apt-get -y install mingw32
 
 script:
-  - (mkdir cmakebuild && cd cmakebuild && cmake $CMAKE_FLAGS .. && make -j5 && cd .. && rm -rf cmakebuild)
+  - (mkdir cmakebuild && cd cmakebuild && cmake $CMAKE_FLAGS .. && make -j5 install && cd .. && rm -rf cmakebuild)
 
-compiler:
-  - clang
-  - gcc
-  
 env:
-  - CMAKE_FLAGS=
-  - CMAKE_FLAGS=-DRELEASE_BUILD=1
+  global:
+  - secure: UUtdYLhd9+cY+bMrcRvvtjmsQBqM5L9zgzyLeQZLMmmWbHwLsfpQask9A8eD1oc1K1o0tYmK+Qk1flxNTbnUtlryPNgJxJ95a/TwLl1P9yN6plMleNbuwMs5dyS9VnmcK3LzDFuoje/9rtX2seNR2PW2EJSvPz20ENaT693Kfa8=
+  - secure: G8rRE17KDx83crRLQSEkIyvMbXlbpKDvIYoKE+y9Bg3qu79tsB/RrNdo6OGHx4x3KhBGpuo4NdN/4FAGS599P4W+KN3kNr9VFSCMJhJK59+KkYfGq2rX1oGDhB4B1xjVk0tj6bFIJ333hVLEYFviIKYxRSZfnKa0RmgBJZbvMfs= 
+
+  matrix:
+  - CXX=clang++ CC=clang CMAKE_FLAGS=
+  - CXX=clang++ CC=clang CMAKE_FLAGS=-DRELEASE_BUILD=1
+  - CXX=g++ CC=cc CMAKE_FLAGS=
+  - CXX=g++ CC=cc CMAKE_FLAGS=-DRELEASE_BUILD=1
   - CMAKE_FLAGS="-DCMAKE_TOOLCHAIN_FILE=../src/platform_windows/linux-toolchain-mingw.cmake -DMINGW_TYPE=classic"
   - CMAKE_FLAGS="-DCMAKE_TOOLCHAIN_FILE=../src/platform_windows/linux-toolchain-mingw.cmake -DRELEASE_BUILD=1  -DMINGW_TYPE=classic"
 
-notifications:
-  webhooks: http://n.tkte.ch/h/2910/Rm7oDLYIC1icyntUug11eWi1
-    on_success: always
-    on_failure: always
-    on_start: change
-    on_pending: never
+
+#notifications:
+#  webhooks:
+#    urls:
+#      - http://n.tkte.ch/h/2910/Rm7oDLYIC1icyntUug11eWi1
+#    on_success: always
+#    on_failure: always
+#    on_pending: never
+#    on_start: never
+
+after_success:
+  - git clone --depth 1 https://github.com/sauerbraten-fork/sauerbraten-fork-data.git nightly
+  - cp -r /home/travis/build/sauerbraten-fork/sauerbraten-fork/bin_* nightly
+  - cp /home/travis/build/sauerbraten-fork/sauerbraten-fork/sauerbraten_unix nightly && cp /home/travis/build/sauerbraten-fork/sauerbraten-fork/sauerbraten.bat nightly
+  - zip -r $TRAVIS_JOB_ID nightly
+  - "curl --ftp-create-dirs -T ${TRAVIS_JOB_ID}.zip -u $FTP_USER:$FTP_PASSWORD ftp://37.59.98.138/"
+  - on:
+    - branch: master  
