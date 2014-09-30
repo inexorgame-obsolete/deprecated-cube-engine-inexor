@@ -8,9 +8,9 @@ void cleanup()
 {
     recorder::stop();
     cleanupserver();
-    SDL_ShowCursor(SDL_TRUE);
-    SDL_SetRelativeMouseMode(SDL_FALSE);
     if(screen) SDL_SetWindowGrab(screen, SDL_FALSE);
+    SDL_SetRelativeMouseMode(SDL_FALSE);
+    SDL_ShowCursor(SDL_TRUE);
     cleargamma();
     freeocta(worldroot);
     extern void clear_command(); clear_command();
@@ -49,9 +49,9 @@ void fatal(const char *s, ...)    // failure exit
         {
             if(SDL_WasInit(SDL_INIT_VIDEO))
             {
-                SDL_ShowCursor(SDL_TRUE);
-                SDL_SetRelativeMouseMode(SDL_FALSE);
                 if(screen) SDL_SetWindowGrab(screen, SDL_FALSE);
+                SDL_SetRelativeMouseMode(SDL_FALSE);
+                SDL_ShowCursor(SDL_TRUE);
                 cleargamma();
             }
             #ifdef WIN32
@@ -96,7 +96,15 @@ VAR(colorbits, 0, 0, 32);
 VARF(depthbits, 0, 0, 32, initwarning("depth-buffer precision"));
 VARF(stencilbits, 0, 0, 32, initwarning("stencil-buffer precision"));
 VARF(fsaa, -1, -1, 16, initwarning("anti-aliasing"));
-VARF(vsync, -1, -1, 1, initwarning("vertical sync"));
+
+void restorevsync()
+{
+    extern int vsync, vsynctear;
+    if(glcontext) SDL_GL_SetSwapInterval(vsync ? (vsynctear ? -1 : 1) : 0);
+}
+
+VARFP(vsync, 0, 0, 1, restorevsync());
+VARFP(vsynctear, 0, 0, 1, { if(vsync) restorevsync(); });
 
 void writeinitcfg()
 {
@@ -335,8 +343,7 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)   
     interceptkey(SDLK_UNKNOWN); // keep the event queue awake to avoid 'beachball' cursor
     #endif
 
-    extern int sdl_backingstore_bug;
-    if(background || sdl_backingstore_bug > 0) restorebackground();
+    if(background) restorebackground();
 
     int w = screenw, h = screenh;
     if(forceaspect) w = int(ceil(h*forceaspect));
@@ -495,8 +502,8 @@ void inputgrab(bool on)
         SDL_ShowCursor(SDL_TRUE);
         if(relativemouse)
         {
-            SDL_SetRelativeMouseMode(SDL_FALSE);
             SDL_SetWindowGrab(screen, SDL_FALSE);
+            SDL_SetRelativeMouseMode(SDL_FALSE);
             relativemouse = false;
         }
     }
@@ -510,13 +517,12 @@ void setfullscreen(bool enable)
     if(!screen) return;
     //initwarning(enable ? "fullscreen" : "windowed");
     SDL_SetWindowFullscreen(screen, enable ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
-    if(!enable) 
+    if(!enable)
     {
         SDL_SetWindowSize(screen, scr_w, scr_h);
         if(initwindowpos)
         {
-            int winx = SDL_WINDOWPOS_CENTERED, winy = SDL_WINDOWPOS_CENTERED;
-            SDL_SetWindowPosition(screen, winx, winy);
+            SDL_SetWindowPosition(screen, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
             initwindowpos = false;
         }
     }
@@ -591,14 +597,16 @@ void setupscreen(int &useddepthbits, int &usedfsaa)
     scr_w = min(scr_w, desktopw);
     scr_h = min(scr_h, desktoph);
 
-    int winx = SDL_WINDOWPOS_UNDEFINED, winy = SDL_WINDOWPOS_UNDEFINED, winw = scr_w, winh = scr_h, flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
+    int winw = scr_w, winh = scr_h, flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
     if(fullscreen)
-        {
+    {
         winw = desktopw;
         winh = desktoph;
         flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+#ifdef WIN32
         initwindowpos = true;
-        }
+#endif
+    }
 
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
@@ -635,7 +643,7 @@ void setupscreen(int &useddepthbits, int &usedfsaa)
             SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, config&4 ? 1 : 0);
             SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, config&4 ? fsaa : 0);
         }
-        screen = SDL_CreateWindow("Cube 2: Sauerbraten", winx, winy, winw, winh, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | flags);
+        screen = SDL_CreateWindow("Cube 2: Sauerbraten", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, winw, winh, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | flags);
         if(screen) break;
     }
     if(!screen) fatal("failed to create OpenGL window: %s", SDL_GetError());
@@ -656,6 +664,7 @@ void setupscreen(int &useddepthbits, int &usedfsaa)
 
     useddepthbits = config&1 ? depthbits : 0;
     usedfsaa = config&4 ? fsaa : 0;
+    restorevsync();
 }
 
 void resetgl()
@@ -1126,7 +1135,7 @@ int main(int argc, char **argv)
             case 'z': depthbits = atoi(&argv[i][2]); break;
             case 'b': /* compat, ignore */ break;
             case 'a': fsaa = atoi(&argv[i][2]); break;
-            case 'v': vsync = atoi(&argv[i][2]); break;
+            case 'v': vsync = atoi(&argv[i][2]); restorevsync(); break;
             case 't': fullscreen = atoi(&argv[i][2]); break;
             case 's': stencilbits = atoi(&argv[i][2]); break;
             case 'f': 
