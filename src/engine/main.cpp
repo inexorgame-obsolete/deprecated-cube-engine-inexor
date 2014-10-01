@@ -118,8 +118,7 @@ void writeinitcfg()
     f->printf("// automatically written on exit, DO NOT MODIFY\n// modify settings in game\n");
     extern int fullscreen;
     f->printf("fullscreen %d\n", fullscreen);
-    f->printf("scr_w %d\n", scr_w);
-    f->printf("scr_h %d\n", scr_h);
+    f->printf("screenres %d %d\n", scr_w, scr_h);
     f->printf("colorbits %d\n", colorbits);
     f->printf("depthbits %d\n", depthbits);
     f->printf("stencilbits %d\n", stencilbits);
