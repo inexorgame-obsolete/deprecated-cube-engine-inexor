@@ -90,8 +90,13 @@ bool initwarning(const char *desc, int level, int type)
 #define SCR_MAXH 10000
 #define SCR_DEFAULTW 1024
 #define SCR_DEFAULTH 768
-VARF(scr_w, SCR_MINW, -1, SCR_MAXW, initwarning("screen resolution"));
-VARF(scr_h, SCR_MINH, -1, SCR_MAXH, initwarning("screen resolution"));
+
+void screenres(int w, int h);
+ICOMMAND(screenres, "ii", (int *w, int *h), screenres(*w, *h));
+
+VARF(scr_w, SCR_MINW, -1, SCR_MAXW, screenres(scr_w, -1));
+VARF(scr_h, SCR_MINH, -1, SCR_MAXH, screenres(-1, scr_h));
+
 VAR(colorbits, 0, 0, 32);
 VARF(depthbits, 0, 0, 32, initwarning("depth-buffer precision"));
 VARF(stencilbits, 0, 0, 32, initwarning("stencil-buffer precision"));
@@ -537,8 +542,8 @@ VARF(fullscreen, 0, 1, 1, setfullscreen(fullscreen!=0));
 
 void screenres(int w, int h)
 {
-    scr_w = clamp(w, SCR_MINW, SCR_MAXW);
-    scr_h = clamp(h, SCR_MINH, SCR_MAXH);
+    scr_w = w!=-1 ? clamp(w, SCR_MINW, SCR_MAXW) : scr_w;
+    scr_h = h!=-1 ? clamp(h, SCR_MINH, SCR_MAXH) : scr_h;
     if(screen)
     {
         scr_w = min(scr_w, desktopw);
@@ -551,8 +556,6 @@ void screenres(int w, int h)
         initwarning("screen resolution");
     }
 }
-
-ICOMMAND(screenres, "ii", (int *w, int *h), screenres(*w, *h));
 
 static int curgamma = 100;
 VARFP(gamma, 30, 100, 300,
