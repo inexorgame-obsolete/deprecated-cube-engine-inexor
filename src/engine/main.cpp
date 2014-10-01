@@ -517,15 +517,15 @@ void inputgrab(bool on)
 
 bool initwindowpos = false;
 
-void setfullscreen(bool enable)
+void setfullscreen(int mode)
 {
     if(!screen) return;
-    //initwarning(enable ? "fullscreen" : "windowed");
-    SDL_SetWindowFullscreen(screen, enable ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
-    if(!enable)
+
+	SDL_SetWindowFullscreen(screen, mode > 0 ? (mode > 1 ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_FULLSCREEN_DESKTOP) : 0);
+    if(!mode || mode>1)
     {
         SDL_SetWindowSize(screen, scr_w, scr_h);
-        if(initwindowpos)
+        if(initwindowpos && !mode)
         {
             SDL_SetWindowPosition(screen, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
             initwindowpos = false;
@@ -533,11 +533,18 @@ void setfullscreen(bool enable)
     }
 }
 
+//fullscreen can be 0 (Off), 1 (enabled and fixed to your monitors resolution), 2 (enabled and independend of monitor res)
 #ifdef _DEBUG
-VARF(fullscreen, 0, 0, 1, setfullscreen(fullscreen!=0));
+VARF(fullscreen, 0, 0, 2, setfullscreen(fullscreen));
 #else
-VARF(fullscreen, 0, 1, 1, setfullscreen(fullscreen!=0));
+VARF(fullscreen, 0, 1, 2, setfullscreen(fullscreen));
 #endif
+
+void sdlres_bugfix() //SDL isnt changing windowsize if fullscreen is enabled
+{
+	setfullscreen(0);
+	setfullscreen(fullscreen); //2
+}
 
 void screenres(int w, int h)
 {
@@ -547,8 +554,11 @@ void screenres(int w, int h)
     {
         scr_w = min(scr_w, desktopw);
         scr_h = min(scr_h, desktoph);
-        if(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN) gl_resize();
-        else SDL_SetWindowSize(screen, scr_w, scr_h);
+		if((SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN_DESKTOP) && fullscreen==1) { gl_resize(); }
+		else {
+			SDL_SetWindowSize(screen, scr_w, scr_h);
+			if((SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN)) sdlres_bugfix();
+		}
     }
     else 
     {
@@ -597,15 +607,23 @@ void setupscreen(int &useddepthbits, int &usedfsaa)
 
     if(scr_h < 0) scr_h = SCR_DEFAULTH;
     if(scr_w < 0) scr_w = (scr_h*desktopw)/desktoph;
-    scr_w = min(scr_w, desktopw);
-    scr_h = min(scr_h, desktoph);
+
+	if(fullscreen < 2) //fake fullscreen allows resolution bigger than one desktop
+	{
+		scr_w = min(scr_w, desktopw);
+		scr_h = min(scr_h, desktoph);
+    }
 
     int winw = scr_w, winh = scr_h, flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
     if(fullscreen)
     {
-        winw = desktopw;
-        winh = desktoph;
-        flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+		if(fullscreen < 2)
+		{
+            winw = desktopw;
+            winh = desktoph;
+            flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+		}
+		else flags |= SDL_WINDOW_FULLSCREEN;
 #ifdef WIN32
         initwindowpos = true;
 #endif
@@ -898,14 +916,15 @@ void checkinput()
                     case SDL_WINDOWEVENT_SIZE_CHANGED:
                     {
                         SDL_GetWindowSize(screen, &screenw, &screenh);
-                        if(!(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN))
+                        if(!(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN_DESKTOP))
                         {
                             scr_w = clamp(screenw, SCR_MINW, SCR_MAXW);
                             scr_h = clamp(screenh, SCR_MINH, SCR_MAXH);
                         }
                         gl_resize();
+						break;
                     }
-                        break;
+                        
                 }
                 break;
 
