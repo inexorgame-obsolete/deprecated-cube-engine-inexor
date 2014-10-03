@@ -34,6 +34,7 @@ Sauerbraten Fork is a fork of the quake-like fps Sauerbraten/Cube2. It is compat
 * [Issue Tracker](https://github.com/sauerbraten-fork/sauerbraten-fork/issues)
 * [Source Repository](https://github.com/sauerbraten-fork/sauerbraten-fork)
 * [Chat (irc.gamesurge.net #sauerfork)](irc://irc.gamesurge.net/#sauerfork)
+ * [Webchat](http://webchat.gamesurge.net/?channels=sauerfork)
 * [Sauerbraten Wiki](http://cube.wikispaces.com/)
 * [Sauerbraten Docs](http://sauerbraten.org/README.html)
 
