@@ -563,6 +563,7 @@ void screenres(int w, int h)
 			SDL_SetWindowSize(screen, scr_w, scr_h);
 			if((SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN)) sdlres_bugfix();
 		}
+		SDL_GetWindowSize(screen, &screenw, &screenh);
 		gl_resize();
     }
     else 
