@@ -173,9 +173,9 @@ namespace server
             bombs.reset();
         }
 
-        void setbackupweapon(int backupweapon)
+        void setbackupweapon(int weapon)
         {
-        	fpsstate::backupweapon = GUN_BOMB;
+        	fpsstate::backupweapon = weapon;
         }
 
     };
@@ -189,11 +189,6 @@ namespace server
         float effectiveness;
         int bombradius;
         int bombdelay;
-        int racetime;
-        int racelaps;
-        int racecheckpoint;
-        int racerank;
-        int racestate;
 
         void save(gamestate &gs)
         {
@@ -208,11 +203,6 @@ namespace server
             effectiveness = gs.effectiveness;
             bombradius = gs.bombradius;
             bombdelay = gs.bombdelay;
-            racetime = gs.racetime;
-            racelaps = gs.racelaps;
-            racecheckpoint = gs.racecheckpoint;
-            racerank = gs.racerank;
-            racestate = gs.racestate;
         }
 
         void restore(gamestate &gs)
@@ -229,11 +219,6 @@ namespace server
             gs.effectiveness = effectiveness;
             gs.bombradius = bombradius;
             gs.bombdelay = bombdelay;
-            gs.racetime = racetime;
-            gs.racelaps = racelaps;
-            gs.racecheckpoint = racecheckpoint;
-            gs.racerank = racerank;
-            gs.racestate = racestate;
         }
     };
 
@@ -313,7 +298,7 @@ namespace server
         
         bool checkexceeded()
         {
-            return state.state==CS_ALIVE && exceeded && gamemillis > exceeded + calcpushrange() && !m_race; // TODO: check if there are physics manipulation entities
+            return state.state==CS_ALIVE && exceeded && gamemillis > exceeded + calcpushrange();
         }
 
         void mapchange()
@@ -416,7 +401,6 @@ namespace server
     #define MM_COOPSERV (MM_AUTOAPPROVE | MM_PUBSERV | (1<<MM_LOCKED))
 
     bool notgotitems = true;        // true when map has changed and waiting for clients to send item
-//Hanack    int gamemode = 0; // moved to top
     int gamemillis = 0, gamelimit = 0, nextexceeded = 0, gamespeed = 100;
     bool gamepaused = false, shouldstep = true;
 
@@ -879,14 +863,12 @@ namespace server
     #include "ctf.h"
     #include "collect.h"
     #include "bomb.h"
-    #include "race.h"
     #include "hideandseek.h"
 
     captureservmode capturemode;
     ctfservmode ctfmode;
     collectservmode collectmode;
     bombservmode bombmode;
-    raceservmode racemode;
     hideandseekservmode hideandseekmode;
 
     servmode *smode = NULL;
@@ -2037,7 +2019,6 @@ namespace server
         else if(m_ctf) smode = &ctfmode;
         else if(m_collect) smode = &collectmode;
         else if(m_bomb) smode = &bombmode;
-        else if(m_race) smode = &racemode;
         else if(m_hideandseek) smode = &hideandseekmode;
         else smode = NULL;
 
@@ -2214,12 +2195,12 @@ namespace server
         if(smode) smode->intermission();
     }
 
-    /**
-     * Checks if the game has ended because only one player is still alive.
-     * It does this by checking if less than 2 players have their state set to alive.
-     * This means, the game will also end if someone is gagging
-     * If only one is still alive this method forces intermission.
-     */
+    ///
+    // Checks if the game has ended because only one player is still alive.
+    // It does this by checking if less than 2 players have their state set to alive.
+    // This means, the game will also end if someone is gagging
+    // If only one is still alive this method forces intermission.
+    ///
     void checklms()
     {
         if(m_teammode)
@@ -2364,27 +2345,18 @@ namespace server
                 return;
         }
         sendf(-1, 1, "ri4x", N_EXPLODEFX, ci->clientnum, gun, id, ci->ownernum);
-        if(gun==GUN_BOMB && ci->state.ammo[GUN_BOMB] < itemstats[P_AMMO_BO].max) ci->state.ammo[GUN_BOMB]++; // add a bomb if the bomb explodes
+        if(gun==GUN_BOMB && ci->state.ammo[GUN_BOMB] < itemstats[GUN_BOMB].max) ci->state.ammo[GUN_BOMB]++; // add a bomb if the bomb explodes
         loopv(hits)
         {
             hitinfo &h = hits[i];
             clientinfo *target = getinfo(h.target);
-
             if(!target || target->state.state!=CS_ALIVE || h.lifesequence!=target->state.lifesequence || h.dist<0 || h.dist>guns[gun].exprad) continue;
-            // conoutf("server.cpp::explodeevent target=%i from=%i",target->clientnum, ci->clientnum);
 
             bool dup = false;
             loopj(i) if(hits[j].target==h.target) { dup = true; break; }
             if(dup) continue;
 
             int damage = guns[gun].damage;
-
-            //if(gun!=GUN_BOMB && gun!=GUN_SPLINTER) {
-                //if(gs.quadmillis) damage *= 4;
-                //damage = int(damage*(1-h.dist/RL_DISTSCALE/RL_DAMRAD));
-            //}
-            //if(gun==GUN_RL && target==ci) damage /= RL_SELFDAMDIV;
-            //// conoutf("server.cpp::explodeevent damage=%i",damage);
             if(gs.quadmillis) damage *= 4;
             damage = int(damage*(1-h.dist/EXP_DISTSCALE/guns[gun].exprad));
             if(target==ci) damage /= EXP_SELFDAMDIV;
@@ -3733,7 +3705,6 @@ namespace server
             #include "ctf.h"
             #include "collect.h"
             #include "bomb.h"
-            #include "race.h"
             #include "hideandseek.h"
             #undef PARSEMESSAGES
 

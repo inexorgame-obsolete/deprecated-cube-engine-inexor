@@ -263,7 +263,6 @@ namespace game
             moveplayer(player1, 10, true);
             swayhudgun(curtime);
             entities::checkitems(player1);
-            entities::checkphysics(player1);
             if(m_sp)
             {
                 if(slowmosp) checkslowmo();
@@ -723,7 +722,7 @@ namespace game
     }
     ICOMMAND(suicide, "", (), suicide(player1));
 
-    bool needminimap() { return m_ctf || m_protect || m_hold || m_capture || m_collect|| m_bomb || m_race; }
+    bool needminimap() { return m_ctf || m_protect || m_hold || m_capture || m_collect|| m_bomb; }
 
     void drawicon(int icon, float x, float y, float sz)
     {
@@ -912,7 +911,6 @@ namespace game
         {
             if(d->state!=CS_SPECTATOR) drawhudicons(d);
             drawhudannounce(w, h);
-            drawosd(w, h);
             if(cmode) cmode->drawhud(d, w, h);
         }
 

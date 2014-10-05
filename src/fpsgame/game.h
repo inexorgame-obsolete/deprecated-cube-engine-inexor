@@ -31,7 +31,10 @@ enum                            // static entity types
     MAPSOUND = ET_SOUND,
     SPOTLIGHT = ET_SPOTLIGHT,
     I_SHELLS, I_BULLETS, I_ROCKETS, I_ROUNDS, I_GRENADES, I_CARTRIDGES,
-    I_HEALTH, I_BOOST,
+    I_BOMBS = ET_BOMBS,
+    I_BOMBRADIUS,
+    I_BOMBDELAY,
+	I_HEALTH, I_BOOST,
     I_GREENARMOUR, I_YELLOWARMOUR,
     I_QUAD,
     TELEPORT,                   // attr1 = idx, attr2 = model, attr3 = tag
@@ -46,23 +49,7 @@ enum                            // static entity types
     PLATFORM,                   // attr1 = angle, attr2 = idx, attr3 = tag, attr4 = speed
     ELEVATOR,                   // attr1 = angle, attr2 = idx, attr3 = tag, attr4 = speed
     FLAG,                       // attr1 = angle, attr2 = team
-    I_BOMBS,
-    I_BOMBRADIUS,
-    I_BOMBDELAY,
-    I_BOMBRESERVED2,
-    I_BOMBRESERVED3,
-    I_BOMBRESERVED4,
-    I_BOMBRESERVED5,
-    I_BOMBRESERVED6,
-    OBSTACLE,                   // attr1 = angle, attr2 = idx (mapmodel index), attr3 = health, attr4 = weight, attr5 = respawnmillis
-    RACE_START,
-    RACE_FINISH,
-    RACE_CHECKPOINT,            // attr1 = angle, attr2 = checkpoint no
-    P_GRAVITY,                  // attr1 = ?, attr2 = radius, attr3 = manipulation value
-    P_FRICTION,
-    P_JUMP,
-    P_SPEED,
-    // I_INVISIBLE,                // hide and seek
+    OBSTACLE = ET_OBSTACLE,     // attr1 = angle, attr2 = idx (mapmodel index), attr3 = health, attr4 = weight, attr5 = respawnmillis
     MAXENTTYPES
 };
 
@@ -110,12 +97,10 @@ enum
     M_COLLECT    = 1<<19,
     M_LMS        = 1<<20,
     M_BOMB       = 1<<21,
-    M_RACE       = 1<<22,
-    M_TIMEFORWARD= 1<<23,
-    M_OBSTACLES  = 1<<24,
-    M_HIDEANDSEEK= 1<<25,
-    M_FREEZE     = 1<<26 /*,
-    M_SAFARI     = 1<<27 */
+    M_TIMEFORWARD= 1<<22,
+    M_OBSTACLES  = 1<<23,
+    M_HIDEANDSEEK= 1<<24,
+    //M_RACE       = 1<<25,
 };
 
 static struct gamemodeinfo
@@ -151,17 +136,9 @@ static struct gamemodeinfo
     { "collect", M_COLLECT | M_TEAM, "Skull Collector: Frag \fs\f3the enemy team\fr to drop \fs\f3skulls\fr. Collect them and bring them to \fs\f3the enemy base\fr to score points for \fs\f1your team\fr or steal back \fs\f1your skulls\fr. Collect items for ammo." },
     { "insta collect", M_NOITEMS | M_INSTA | M_COLLECT | M_TEAM, "Instagib Skull Collector: Frag \fs\f3the enemy team\fr to drop \fs\f3skulls\fr. Collect them and bring them to \fs\f3the enemy base\fr to score points for \fs\f1your team\fr or steal back \fs\f1your skulls\fr. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
     { "effic collect", M_NOITEMS | M_EFFICIENCY | M_COLLECT | M_TEAM, "Efficiency Skull Collector: Frag \fs\f3the enemy team\fr to drop \fs\f3skulls\fr. Collect them and bring them to \fs\f3the enemy base\fr to score points for \fs\f1your team\fr or steal back \fs\f1your skulls\fr. You spawn with all weapons and armour. There are no items." },
-    { "lms", M_LMS, "Last Man Standing: The last player alive wins." },
-    { "lms insta", M_LMS | M_INSTA | M_NOITEMS, ""},
-    { "lms effic", M_LMS | M_EFFICIENCY | M_NOITEMS, ""},
-    { "lms tactics", M_LMS | M_TACTICS | M_NOITEMS, ""},
     { "bomberman", M_LMS | M_BOMB | M_OBSTACLES, "Bomberman: Place bombs to kill enemies. Collect items to increase amount of bombs or damage radius. Survive to win." },
     { "bomberman team", M_LMS | M_BOMB | M_TEAM | M_OBSTACLES, "Bomberman Team: Place bombs to kill \fs\f3enemies\fr. Collect items to increase amount of bombs or damage radius. Your team wins if one player survives." },
-    { "race", M_RACE | M_TIMEFORWARD | M_OBSTACLES, "Race: Be the first who completes 3 laps. Kill people to repulse them." },
     { "hideandseek", M_HIDEANDSEEK | M_TEAM | M_OBSTACLES, "Hide and Seek: Hiders hides, seekers seeks. No teamkills." },
-    { "insta hideandseek", M_HIDEANDSEEK | M_NOITEMS | M_INSTA | M_TEAM | M_OBSTACLES, "Hide and Seek: Hiders hides, seekers seeks. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
-    { "hideandseek freeze", M_HIDEANDSEEK | M_TEAM | M_FREEZE | M_OBSTACLES, "Hide and Seek: Hiders hides, Seekers seeks. Hiders freezes Seekers, Seekers catches Hiders. No teamkills." } /*,
-    { "hideandseek safari", M_HIDEANDSEEK | M_TEAM | M_SAFARI | M_OBSTACLES, "Hide and Seek: Hiders hides, Seekers seeks. Seekers drugs Hiders, then hunt them down." } */
 };
 
 #define STARTGAMEMODE (-3)
@@ -189,12 +166,10 @@ static struct gamemodeinfo
 
 #define m_lms          (m_check(gamemode, M_LMS))
 #define m_bomb         (m_check(gamemode, M_BOMB))
-#define m_race         (m_check(gamemode, M_RACE))
 #define m_hideandseek  (m_check(gamemode, M_HIDEANDSEEK))
 
 #define m_obstacles    (m_check(gamemode, M_OBSTACLES))
 #define m_timeforward  (m_check(gamemode, M_TIMEFORWARD))
-#define m_freeze       (m_check(gamemode, M_FREEZE))
 
 #define m_demo         (m_check(gamemode, M_DEMO))
 #define m_edit         (m_check(gamemode, M_EDIT))
@@ -267,7 +242,9 @@ enum
     N_DIED, N_DAMAGE, N_HITPUSH, N_SHOTFX, N_EXPLODEFX,
     N_TRYSPAWN, N_SPAWNSTATE, N_SPAWN, N_FORCEDEATH,
     N_GUNSELECT, N_TAUNT,
-    N_MAPCHANGE, N_MAPVOTE, N_TEAMINFO, N_ITEMSPAWN, N_ITEMPICKUP, N_ITEMACC, N_TELEPORT, N_JUMPPAD,
+    N_MAPCHANGE, N_MAPVOTE, N_TEAMINFO, 
+    N_ITEMSPAWN, N_ITEMPICKUP, N_ITEMACC, N_ITEMPUSH, 
+	N_TELEPORT, N_JUMPPAD,
     N_PING, N_PONG, N_CLIENTPING,
     N_TIMEUP, N_FORCEINTERMISSION,
     N_SERVMSG, N_ITEMLIST, N_RESUME,
@@ -277,7 +254,7 @@ enum
     N_LISTDEMOS, N_SENDDEMOLIST, N_GETDEMO, N_SENDDEMO,
     N_DEMOPLAYBACK, N_RECORDDEMO, N_STOPDEMO, N_CLEARDEMOS,
     N_TAKEFLAG, N_RETURNFLAG, N_RESETFLAG, N_INVISFLAG, N_TRYDROPFLAG, N_DROPFLAG, N_SCOREFLAG, N_INITFLAGS,
-    N_SAYTEAM,
+    N_SAYTEAM, N_HUDANNOUNCE,
     N_CLIENT,
     N_AUTHTRY, N_AUTHKICK, N_AUTHCHAL, N_AUTHANS, N_REQAUTH,
     N_PAUSEGAME, N_GAMESPEED,
@@ -287,9 +264,7 @@ enum
     N_INITTOKENS, N_TAKETOKEN, N_EXPIRETOKENS, N_DROPTOKENS, N_DEPOSITTOKENS, N_STEALTOKENS,
     N_SERVCMD,
     N_DEMOPACKET,
-    N_ITEMPUSH, N_SPAWNLOC,
-    N_RACESTART, N_RACEFINISH, N_RACECHECKPOINT, N_RACELAP, N_RACEINFO,
-    N_HUDANNOUNCE,
+    N_SPAWNLOC,
     NUMMSG
 };
 
@@ -300,7 +275,8 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
     N_DIED, 5, N_DAMAGE, 6, N_HITPUSH, 7, N_SHOTFX, 10, N_EXPLODEFX, 4,
     N_TRYSPAWN, 1, N_SPAWNSTATE, 14, N_SPAWN, 3, N_FORCEDEATH, 2,
     N_GUNSELECT, 2, N_TAUNT, 1,
-    N_MAPCHANGE, 0, N_MAPVOTE, 0, N_TEAMINFO, 0, N_ITEMSPAWN, 2, N_ITEMPICKUP, 2, N_ITEMACC, 3,
+    N_MAPCHANGE, 0, N_MAPVOTE, 0, N_TEAMINFO, 0, 
+	N_ITEMSPAWN, 2, N_ITEMPICKUP, 2, N_ITEMACC, 3, N_ITEMPUSH, 6,
     N_PING, 2, N_PONG, 2, N_CLIENTPING, 2,
     N_TIMEUP, 2, N_FORCEINTERMISSION, 1,
     N_SERVMSG, 0, N_ITEMLIST, 0, N_RESUME, 0,
@@ -310,7 +286,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
     N_LISTDEMOS, 1, N_SENDDEMOLIST, 0, N_GETDEMO, 2, N_SENDDEMO, 0,
     N_DEMOPLAYBACK, 3, N_RECORDDEMO, 2, N_STOPDEMO, 1, N_CLEARDEMOS, 2,
     N_TAKEFLAG, 3, N_RETURNFLAG, 4, N_RESETFLAG, 6, N_INVISFLAG, 3, N_TRYDROPFLAG, 1, N_DROPFLAG, 7, N_SCOREFLAG, 10, N_INITFLAGS, 0,
-    N_SAYTEAM, 0,
+    N_SAYTEAM, 0, N_HUDANNOUNCE, 0,
     N_CLIENT, 0,
     N_AUTHTRY, 0, N_AUTHKICK, 0, N_AUTHCHAL, 0, N_AUTHANS, 0, N_REQAUTH, 0,
     N_PAUSEGAME, 0, N_GAMESPEED, 0,
@@ -320,9 +296,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
     N_INITTOKENS, 0, N_TAKETOKEN, 2, N_EXPIRETOKENS, 0, N_DROPTOKENS, 0, N_DEPOSITTOKENS, 2, N_STEALTOKENS, 0,
     N_SERVCMD, 0,
     N_DEMOPACKET, 0,
-    N_ITEMPUSH, 6, N_SPAWNLOC, 0,
-    N_RACESTART, 0, N_RACEFINISH, 0, N_RACECHECKPOINT, 2, N_RACELAP, 2, N_RACEINFO, 7,
-    N_HUDANNOUNCE, 0,
+    N_SPAWNLOC, 0,
     -1
 };
 
@@ -330,7 +304,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
 #define SAUERBRATEN_SERVER_PORT 28785
 #define SAUERBRATEN_SERVINFO_PORT 28786
 #define SAUERBRATEN_MASTER_PORT 28787
-#define PROTOCOL_VERSION 259            // bump when protocol changes
+#define PROTOCOL_VERSION 300            // bump when protocol changes last sauerbraten protocol was 259
 #define DEMO_VERSION 1                  // bump when demo format changes
 #define DEMO_MAGIC "SAUERBRATEN_DEMO"
 
@@ -370,11 +344,6 @@ enum
 
     HICON_BOMBRADIUS,
     HICON_BOMBDELAY,
-    HICON_BOMBRESERVED2,
-    HICON_BOMBRESERVED3,
-    HICON_BOMBRESERVED4,
-    HICON_BOMBRESERVED5,
-    HICON_BOMBRESERVED6,
 
     HICON_X       = 20,
     HICON_Y       = 1650,
@@ -382,23 +351,6 @@ enum
     HICON_STEP    = 490,
     HICON_SIZE    = 120,
     HICON_SPACE   = 40
-};
-
-enum pickupitems {                      // pickup items
-    P_AMMO_SG = 0,
-    P_AMMO_CG,
-    P_AMMO_RL,
-    P_AMMO_RI,
-    P_AMMO_GL,
-    P_AMMO_PI,
-    P_HEALTH_H,
-    P_HEALTH_MH,
-    P_ARMOUR_GA,
-    P_ARMOUR_YA,
-    P_UP_Q,
-    P_AMMO_BO,
-    P_UP_BR,
-    P_UP_BD
 };
 
 enum hudannounceeffects {
@@ -418,32 +370,27 @@ enum hudannounceeffects {
 
 static struct itemstat { int add, max, sound; const char *name; int icon, info; } itemstats[] =
 {
-    {10,    30,    S_ITEMAMMO,   "SG", HICON_SG, GUN_SG},
-    {20,    60,    S_ITEMAMMO,   "CG", HICON_CG, GUN_CG},
-    {5,     15,    S_ITEMAMMO,   "RL", HICON_RL, GUN_RL},
-    {5,     15,    S_ITEMAMMO,   "RI", HICON_RIFLE, GUN_RIFLE},
-    {10,    30,    S_ITEMAMMO,   "GL", HICON_GL, GUN_GL},
-    {30,    120,   S_ITEMAMMO,   "PI", HICON_PISTOL, GUN_PISTOL},
-    {25,    100,   S_ITEMHEALTH, "H",  HICON_HEALTH},
-    {10,    1000,  S_ITEMHEALTH, "MH", HICON_HEALTH, -1},
-    {100,   100,   S_ITEMARMOUR, "GA", HICON_GREEN_ARMOUR, A_GREEN},
+    {10,    30,    S_ITEMAMMO,   "SG", HICON_SG,            GUN_SG},
+    {20,    60,    S_ITEMAMMO,   "CG", HICON_CG,            GUN_CG},
+    {5,     15,    S_ITEMAMMO,   "RL", HICON_RL,            GUN_RL},
+    {5,     15,    S_ITEMAMMO,   "RI", HICON_RIFLE,         GUN_RIFLE},
+    {10,    30,    S_ITEMAMMO,   "GL", HICON_GL,            GUN_GL},
+    {30,    120,   S_ITEMAMMO,   "PI", HICON_PISTOL,        GUN_PISTOL},
+	{1,     12,    S_ITEMAMMO,   "BO", HICON_BOMB,          GUN_BOMB},
+    {1,     10,    S_ITEMPUP,    "BR", HICON_BOMBRADIUS,    -1},
+    {1,     7,     S_ITEMPUP,    "BD", HICON_BOMBDELAY,     -1},
+    {25,    100,   S_ITEMHEALTH, "H",  HICON_HEALTH,        -1},
+    {10,    1000,  S_ITEMHEALTH, "MH", HICON_HEALTH,        -1},
+    {100,   100,   S_ITEMARMOUR, "GA", HICON_GREEN_ARMOUR,  A_GREEN},
     {200,   200,   S_ITEMARMOUR, "YA", HICON_YELLOW_ARMOUR, A_YELLOW},
-    {20000, 30000, S_ITEMPUP,    "Q", HICON_QUAD, -1},
-    {1,     12,    S_ITEMAMMO,   "BO", HICON_BOMB, GUN_BOMB},
-    {1,     10,     S_ITEMPUP,    "BR", HICON_BOMBRADIUS},
-    {1,     7,     S_ITEMPUP,    "BD", HICON_BOMBDELAY},
+    {20000, 30000, S_ITEMPUP,    "Q",  HICON_QUAD,          -1}
 };
 
 #define MAXRAYS 20
 #define EXP_SELFDAMDIV 2
 #define EXP_SELFPUSH 2.5f
 #define EXP_DISTSCALE 1.5f
-
 #define BOMB_DAMRAD 20
-#define BOMB_FADE 7
-#define BOMB_COLLHEIGHT 70
-#define BOMB_COLLGROUND 5
-#define BOMB_COLLBULGE 40
 
 static const struct guninfo { int   sound, attackdelay, damage, spread, projspeed,       kickamount, range, rays, hitpush, exprad, ttl; const char *name, *file; short part; } guns[NUMGUNS] =
 {
@@ -475,65 +422,32 @@ struct fpsstate
     int gunselect, gunwait;
     int ammo[NUMGUNS];
     int aitype, skill;
-    int backupweapon;
-	//bomberman
+    int backupweapon; //no ammo - weapon
     int bombradius;
     int bombdelay;
-    //race
-    int racetime;
-    int racelaps;
-    int racecheckpoint;
-    int racerank;
-    int racestate;
 
     fpsstate() : maxhealth(100), aitype(AI_NONE), skill(0), backupweapon(GUN_FIST) {}
 
     void baseammo(int gun, int k = 2, int scale = 1)
     {
-        if(gun==GUN_BOMB) ammo[gun] = (itemstats[P_AMMO_BO].add*k)/scale;
-        else ammo[gun] = (itemstats[gun-GUN_SG].add*k)/scale;
+        ammo[gun] = (itemstats[gun-GUN_SG].add*k)/scale;
     }
 
     void addammo(int gun, int k = 1, int scale = 1)
     {
-        if(gun==GUN_BOMB) {
-            itemstat &is = itemstats[P_AMMO_BO];
-            ammo[gun] = min(ammo[gun] + (is.add*k)/scale, is.max);
-        } else {
             itemstat &is = itemstats[gun-GUN_SG];
             ammo[gun] = min(ammo[gun] + (is.add*k)/scale, is.max);
-        }
     }
 
     bool hasmaxammo(int type)
     {
-        if(type>=I_BOMBS && type<=I_BOMBDELAY) {
-            itemstat &is = itemstats[P_AMMO_BO+type-I_BOMBS];
-            return ammo[GUN_BOMB]>=is.max;
-        } else {
-            itemstat &is = itemstats[type-I_SHELLS];
+       const itemstat &is = itemstats[type-I_SHELLS];
             return ammo[type-I_SHELLS+GUN_SG]>=is.max;
-        }
     }
 
     bool canpickup(int type)
     {
-        if(type>=I_BOMBS && type<=I_BOMBDELAY) {
-            itemstat &is = itemstats[P_AMMO_BO+type-I_BOMBS];
-            switch(type) {
-                case I_BOMBRADIUS:
-                    return bombradius<is.max;
-                    break;
-                case I_BOMBDELAY:
-                    return bombdelay<is.max;
-                    break;
-                default:
-                    return ammo[is.info]<is.max;
-                    break;
-            }
-    	} 
-		else if(type>=I_SHELLS && type<=I_QUAD) 
-		{
+        if(type<I_SHELLS || type>I_QUAD) return false;
 			itemstat &is = itemstats[type-I_SHELLS];
 	        switch(type)
 	        {
@@ -544,29 +458,19 @@ struct fpsstate
 	                    if(armourtype==A_YELLOW && armour>=100) return false;
 	            case I_YELLOWARMOUR: return !armourtype || armour<is.max;
 	            case I_QUAD: return quadmillis<is.max;
+                case I_BOMBRADIUS:
+                    return bombradius<is.max;
+                    break;
+                case I_BOMBDELAY:
+                    return bombdelay<is.max;
+                    break;
 	            default: return ammo[is.info]<is.max;
 	    	}
 		}
-		else return false;
-    }
 
     void pickup(int type)
     {
-       	if(type>=I_BOMBS && type<=I_BOMBDELAY) {
-            itemstat &is = itemstats[P_AMMO_BO+type-I_BOMBS];
-            switch(type)
-            {
-                case I_BOMBRADIUS:
-                    bombradius = min(bombradius+is.add, is.max);
-                    break;
-                case I_BOMBDELAY:
-                    bombdelay = min(bombdelay+is.add, is.max);
-                    break;
-                default:
-                    ammo[is.info] = min(ammo[is.info]+is.add, is.max);
-                    break;
-            }
-        } else if(type>=I_SHELLS && type<=I_QUAD) {
+        if(type<I_SHELLS || type>I_QUAD) return;
             itemstat &is = itemstats[type-I_SHELLS];
             switch(type)
             {
@@ -583,12 +487,17 @@ struct fpsstate
                 case I_QUAD:
                     quadmillis = min(quadmillis+is.add, is.max);
                     break;
+                case I_BOMBRADIUS:
+                    bombradius = min(bombradius+is.add, is.max);
+                    break;
+                case I_BOMBDELAY:
+                    bombdelay = min(bombdelay+is.add, is.max);
+                    break;
                 default:
                     ammo[is.info] = min(ammo[is.info]+is.add, is.max);
                     break;
             }
         }
-    }
 
     void respawn(int gamemode = NULL)
     {
@@ -601,8 +510,7 @@ struct fpsstate
         bombradius = 1;
         bombdelay = 1;
         loopi(NUMGUNS) ammo[i] = 0;
-        if (m_bomb) backupweapon = GUN_BOMB;
-        else backupweapon = GUN_FIST;
+        backupweapon = m_bomb ? GUN_BOMB : GUN_FIST;
         ammo[backupweapon] = 1;
     }
 
@@ -662,18 +570,6 @@ struct fpsstate
             gunselect = GUN_BOMB;
             backupweapon = GUN_BOMB;
         }
-        else if(m_race)
-        {
-            // racetime = 0;
-            // racelaps = 0;
-            // racecheckpoint = 0;
-            health = 100;
-            armourtype = A_GREEN;
-            armour = 50;
-            gunselect = GUN_GL;
-            ammo[GUN_PISTOL] = 0;
-            ammo[GUN_GL] = 8;
-        }
         else if(m_hideandseek)
         {
             health = 100;
@@ -730,7 +626,7 @@ struct fpsent : dynent, fpsstate
     bool attacking;
     int attacksound, attackchan, idlesound, idlechan;
     int lasttaunt;
-    int lastpickup, lastpickupmillis, lastpickupindex, lastbase, lastrepammo, flagpickup, tokens;
+    int lastpickup, lastpickupmillis, lastbase, lastrepammo, flagpickup, tokens;
     vec lastcollect;
     int frags, flags, deaths, totaldamage, totalshots;
     editinfo *edit;
@@ -839,7 +735,6 @@ namespace entities
     extern void resettriggers();
     extern void checktriggers();
     extern void checkitems(fpsent *d);
-    extern void checkphysics(fpsent *d);
     extern void checkquad(int time, fpsent *d);
     extern void resetspawns();
     extern void spawnitems(bool force = false);
@@ -869,8 +764,6 @@ namespace game
         virtual void drawhud(fpsent *d, int w, int h) {}
         virtual bool isinvisible(fpsent *d) { return false; }
         virtual void rendergame() {}
-        virtual int getplayerattackanim(fpsent *d, int attack) { return attack; }
-        virtual int getplayerholdanim(fpsent *d, int hold) { return hold; }
         virtual void respawned(fpsent *d) {}
         virtual void setup() {}
         virtual void checkitems(fpsent *d) {}
@@ -1056,7 +949,7 @@ namespace game
         const char *ffa, *blueteam, *redteam, *hudguns,
                    *vwep, *quad, *armour[3],
                    *ffaicon, *blueicon, *redicon;
-        bool ragdoll, selectable;
+        bool ragdoll;
     };
 
     extern int playermodel, teamskins, testteam;
@@ -1065,7 +958,6 @@ namespace game
     extern void clearragdolls();
     extern void moveragdolls();
     extern void changedplayermodel();
-    extern void renderplayer(fpsent *d, const playermodelinfo &mdl, int team, float fade, bool mainpass);
     extern const playermodelinfo &getplayermodelinfo(fpsent *d);
     extern int chooserandomplayermodel(int seed);
     extern void swayhudgun(int curtime);

@@ -820,7 +820,7 @@ SDL_Surface *creatergbasurface(SDL_Surface *os)
     SDL_Surface *ns = SDL_CreateRGBSurface(SDL_SWSURFACE, os->w, os->h, 32, RGBAMASKS);
     if(ns) 
     {
-        SDL_SetAlpha(os, 0, 0);
+        SDL_SetSurfaceBlendMode(os, SDL_BLENDMODE_NONE);
         SDL_BlitSurface(os, NULL, ns, NULL);
     }
     SDL_FreeSurface(os);
@@ -832,7 +832,7 @@ bool checkgrayscale(SDL_Surface *s)
     // gray scale images have 256 levels, no colorkey, and the palette is a ramp
     if(s->format->palette)
     {
-        if(s->format->palette->ncolors != 256 || s->format->colorkey) return false;
+        if(s->format->palette->ncolors != 256 || SDL_GetColorKey(s, NULL) >= 0) return false;
         const SDL_Color *colors = s->format->palette->colors;
         loopi(256) if(colors[i].r != i || colors[i].g != i || colors[i].b != i) return false;
     }
@@ -851,7 +851,7 @@ SDL_Surface *fixsurfaceformat(SDL_Surface *s)
     switch(s->format->BytesPerPixel)
     {
         case 1:
-            if(!checkgrayscale(s)) return s->format->colorkey ? creatergbasurface(s) : creatergbsurface(s);
+            if(!checkgrayscale(s)) return SDL_GetColorKey(s, NULL) >= 0 ? creatergbasurface(s) : creatergbsurface(s);
             break;
         case 3:
             if(s->format->Rmask != rgbmasks[0] || s->format->Gmask != rgbmasks[1] || s->format->Bmask != rgbmasks[2]) 
@@ -2384,7 +2384,7 @@ VAR(aaenvmap, 0, 2, 4);
 
 GLuint genenvmap(const vec &o, int envmapsize, int blur)
 {
-    int rendersize = 1<<(envmapsize+aaenvmap), sizelimit = min(hwcubetexsize, min(screen->w, screen->h));
+    int rendersize = 1<<(envmapsize+aaenvmap), sizelimit = min(hwcubetexsize, min(screenw, screenh));
     if(maxtexsize) sizelimit = min(sizelimit, maxtexsize);
     while(rendersize > sizelimit) rendersize /= 2;
     int texsize = min(rendersize, 1<<envmapsize);
@@ -2430,8 +2430,8 @@ GLuint genenvmap(const vec &o, int envmapsize, int blur)
         createtexture(tex, texsize, texsize, src, 3, 2, GL_RGB5, side.target);
     }
     glFrontFace(GL_CW);
+    glViewport(0, 0, screenw, screenh);
     delete[] pixels;
-    glViewport(0, 0, screen->w, screen->h);
     clientkeepalive();
     forcecubemapload(tex);
     return tex;
@@ -3068,9 +3068,9 @@ void screenshot(char *filename)
         concatstring(buf, imageexts[format]);         
     }
 
-    ImageData image(screen->w, screen->h, 3);
-    glPixelStorei(GL_PACK_ALIGNMENT, texalign(image.data, screen->w, 3));
-    glReadPixels(0, 0, screen->w, screen->h, GL_RGB, GL_UNSIGNED_BYTE, image.data);
+    ImageData image(screenw, screenh, 3);
+    glPixelStorei(GL_PACK_ALIGNMENT, texalign(image.data, screenw, 3));
+    glReadPixels(0, 0, screenw, screenh, GL_RGB, GL_UNSIGNED_BYTE, image.data);
     saveimage(path(buf), format, image, true);
 }
 

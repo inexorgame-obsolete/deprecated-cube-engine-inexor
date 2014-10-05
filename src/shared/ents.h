@@ -3,7 +3,7 @@
 
 // ET_*: the only static entity types dictated by the engine... rest are gamecode dependent
 
-enum { ET_EMPTY=0, ET_LIGHT, ET_MAPMODEL, ET_PLAYERSTART, ET_ENVMAP, ET_PARTICLES, ET_SOUND, ET_SPOTLIGHT, ET_GAMESPECIFIC };
+enum { ET_EMPTY=0, ET_LIGHT, ET_MAPMODEL, ET_PLAYERSTART, ET_ENVMAP, ET_PARTICLES, ET_SOUND, ET_SPOTLIGHT, ET_GAMESPECIFIC, ET_BOMBS = 14, ET_OBSTACLE = 34};
 
 struct entity                                   // persistent map entity
 {
@@ -72,17 +72,11 @@ struct physent                                  // base entity type, can be affe
 
     bool blocked;                               // used by physics to signal ai
 
-    float p_gravity;                            // physics manipulation
-    float p_friction_land;
-    float p_jumpvel;
-    float p_playerspeed;
-
     physent() : o(0, 0, 0), deltapos(0, 0, 0), newpos(0, 0, 0), yaw(0), pitch(0), roll(0), maxspeed(100), 
                radius(4.1f), eyeheight(14), aboveeye(1), xradius(4.1f), yradius(4.1f), zmargin(0),
                state(CS_ALIVE), editstate(CS_ALIVE), type(ENT_PLAYER),
                collidetype(COLLIDE_ELLIPSE),
-               blocked(false),
-               p_gravity(200.0f), p_friction_land(6.0f), p_jumpvel(0), p_playerspeed(100.0f)
+               blocked(false)
                { reset(); }
               
     void resetinterp()

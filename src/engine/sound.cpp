@@ -92,9 +92,6 @@ soundchannel &newchannel(int n, soundslot *slot, const vec *loc = NULL, extentit
 
 void freechannel(int n)
 {
-    // Note that this can potentially be called from the SDL_mixer audio thread.
-    // Be careful of race conditions when checking chan.inuse without locking audio.
-    // Can't use Mix_Playing() checks due to bug with looping sounds in SDL_mixer.
     if(!channels.inrange(n) || !channels[n].inuse) return;
     soundchannel &chan = channels[n];
     chan.inuse = false;
@@ -152,7 +149,7 @@ void stopmusic()
 }
 
 VARF(soundchans, 1, 32, 128, initwarning("sound configuration", INIT_RESET, CHANGE_SOUND));
-VARF(soundfreq, 0, MIX_DEFAULT_FREQUENCY, 44100, initwarning("sound configuration", INIT_RESET, CHANGE_SOUND));
+VARF(soundfreq, 0, 44100, 44100, initwarning("sound configuration", INIT_RESET, CHANGE_SOUND));
 VARF(soundbufferlen, 128, 1024, 4096, initwarning("sound configuration", INIT_RESET, CHANGE_SOUND));
 
 void initsound()
@@ -164,7 +161,6 @@ void initsound()
         return;
     }
 	Mix_AllocateChannels(soundchans);	
-    Mix_ChannelFinished(freechannel);
     maxchannels = soundchans;
     nosound = false;
 }
@@ -190,7 +186,7 @@ Mix_Music *loadmusic(const char *name)
         if(!musicrw) musicrw = musicstream->rwops();
         if(!musicrw) DELETEP(musicstream);
     }
-    if(musicrw) music = Mix_LoadMUS_RW(musicrw);
+    if(musicrw) music = Mix_LoadMUSType_RW(musicrw, MUS_NONE, 0);
     else music = Mix_LoadMUS(findfile(name, "rb")); 
     if(!music)
     {
@@ -200,13 +196,7 @@ Mix_Music *loadmusic(const char *name)
     return music;
 }
 
-SVARP(musicdir, "music");
-SVARP(currentartist, "zero-project");
-SVARP(currentalbum, "e-world");
-SVARP(currentsong, "");
-SVARP(albumcover, "Cover.jpg");
-
-void startmusic(char *name, char *cmd, char *cmd_success, char *cmd_failed)
+void startmusic(char *name, char *cmd)
 {
     if(nosound) return;
     stopmusic();
@@ -223,125 +213,16 @@ void startmusic(char *name, char *cmd, char *cmd_success, char *cmd_failed)
             Mix_PlayMusic(music, cmd[0] ? 0 : -1);
             Mix_VolumeMusic((musicvol*MAXVOL)/255);
             intret(1);
-            execute(cmd_success);
         }
         else
         {
             conoutf(CON_ERROR, "could not play music: %s", file);
             intret(0); 
-            execute(cmd_failed);
         }
     }
 }
 
-COMMANDN(music, startmusic, "ssss");
-
-/*
-void previousalbum(char *cmd, char *cmd_success, char *cmd_failed)
-{
-    defformatstring(albumdir)("packages/%s/%s/%s", musicdir, currentartist, currentalbum);
-    vector<char *> files;
-    listfiles(albumdir, NULL, files);
-    if (files.length() < 2) return;
-    int currentindex = -1;
-    loopv(files) if (strcmp(files[i], currentsong) == 0) {
-        currentindex = i;
-    }
-    if (currentindex <= 0) currentindex = files.length();
-    int nextindex = (currentindex - 1) % files.length();
-    defformatstring(file)("%s/%s/%s/%s", musicdir, currentartist, currentalbum, files[nextindex]);
-    startmusic(file, cmd, cmd_success, cmd_failed);
-    setsvar("currentsong", files[nextindex]);
-}
-COMMAND(previousalbum, "sss");
-*/
-
-void nextsong(char *cmd, char *cmd_success, char *cmd_failed)
-{
-    defformatstring(albumdir)("packages/%s/%s/%s", musicdir, currentartist, currentalbum);
-    vector<char *> files;
-    listfiles(albumdir, "ogg", files);
-    removehiddendirs(files);
-    sortfiles(files);
-    int currentindex = -1;
-    loopv(files) if (strcmp(files[i], currentsong) == 0) {
-        currentindex = i;
-    }
-    int nextindex = (currentindex + 1) % files.length();
-    if (nextindex < currentindex || (nextindex == currentindex && strcmp(files[nextindex], currentsong) == 0)) {
-        nextalbum(cmd, cmd_success, cmd_failed);
-    } else {
-        defformatstring(file)("%s/%s/%s/%s.ogg", musicdir, currentartist, currentalbum, files[nextindex]);
-        startmusic(file, cmd, cmd_success, cmd_failed);
-        setsvar("currentsong", files[nextindex]);
-    }
-}
-COMMAND(nextsong, "sss");
-
-void previoussong(char *cmd, char *cmd_success, char *cmd_failed)
-{
-    defformatstring(albumdir)("packages/%s/%s/%s", musicdir, currentartist, currentalbum);
-    vector<char *> files;
-    listfiles(albumdir, "ogg", files);
-    removehiddendirs(files);
-    sortfiles(files);
-    int currentindex = -1;
-    loopv(files) if (strcmp(files[i], currentsong) == 0) {
-        currentindex = i;
-    }
-    if (currentindex <= 0) currentindex = files.length();
-    int nextindex = (currentindex - 1) % files.length();
-    defformatstring(file)("%s/%s/%s/%s.ogg", musicdir, currentartist, currentalbum, files[nextindex]);
-    startmusic(file, cmd, cmd_success, cmd_failed);
-    setsvar("currentsong", files[nextindex]);
-}
-COMMAND(previoussong, "sss");
-
-void nextalbum(char *cmd, char *cmd_success, char *cmd_failed)
-{
-    defformatstring(artistdir)("packages/%s/%s", musicdir, currentartist);
-    vector<char *> files;
-    listfiles(artistdir, NULL, files);
-    removehiddendirs(files);
-    sortfiles(files);
-    int currentindex = -1;
-    loopv(files) if (strcmp(files[i], currentalbum) == 0) {
-        currentindex = i;
-    }
-    int nextindex = (currentindex + 1) % files.length();
-    if (nextindex < currentindex || (nextindex == currentindex && strcmp(files[nextindex], currentalbum) == 0)) {
-        nextartist(cmd, cmd_success, cmd_failed);
-    } else {
-        setsvar("currentalbum", files[nextindex]);
-        nextsong(cmd, cmd_success, cmd_failed);
-    }
-}
-COMMAND(nextalbum, "sss");
-
-void nextartist(char *cmd, char *cmd_success, char *cmd_failed)
-{
-    defformatstring(allartistsdir)("packages/%s", musicdir);
-    vector<char *> files;
-    listfiles(allartistsdir, NULL, files);
-    removehiddendirs(files);
-    sortfiles(files);
-    int currentindex = -1;
-    loopv(files) if (strcmp(files[i], currentartist) == 0 && files[i][0] != '.') {
-        currentindex = i;
-    }
-    int nextindex = (currentindex + 1) % files.length();
-    setsvar("currentartist", files[nextindex]);
-    nextalbum(cmd, cmd_success, cmd_failed);
-}
-COMMAND(nextartist, "sss");
-
-void removehiddendirs(vector<char *> &files)
-{
-    loopv(files) if (files[i][0] == '.') {
-        files.remove(i);
-        i--;
-    }
-}
+COMMANDN(music, startmusic, "ss");
 
 static hashtable<const char *, soundsample> samples;
 static vector<soundslot> gameslots, mapslots;
@@ -521,28 +402,35 @@ bool updatechannel(soundchannel &chan)
     return true;
 }  
 
+void reclaimchannels()
+{
+    loopv(channels)
+    {
+        soundchannel &chan = channels[i];
+        if(chan.inuse && !Mix_Playing(i)) freechannel(i);
+    }
+}
+
+void syncchannels()
+{
+        loopv(channels) 
+        {
+            soundchannel &chan = channels[i];
+        if(chan.inuse && chan.hasloc() && updatechannel(chan)) syncchannel(chan);
+        }
+}
+
 void updatesounds()
 {
     updatemumble();
     if(nosound) return;
     if(minimized) stopsounds();
-    else if(mainmenu) stopmapsounds();
-    else checkmapsounds();
-    int dirty = 0;
-    loopv(channels)
+    else 
     {
-        soundchannel &chan = channels[i];
-        if(chan.inuse && chan.hasloc() && updatechannel(chan)) dirty++;
-    }
-    if(dirty)
-    {
-        SDL_LockAudio(); // workaround for race conditions inside Mix_SetPanning
-        loopv(channels) 
-        {
-            soundchannel &chan = channels[i];
-            if(chan.inuse && chan.dirty) syncchannel(chan);
-        }
-        SDL_UnlockAudio();
+        reclaimchannels();
+        if(mainmenu) stopmapsounds();
+        else checkmapsounds();
+        syncchannels();
     }
     if(music)
     {
@@ -679,15 +567,9 @@ int playsound(int n, const vec *loc, extentity *ent, int flags, int loops, int f
     chanid = -1;
     loopv(channels) if(!channels[i].inuse) { chanid = i; break; }
     if(chanid < 0 && channels.length() < maxchannels) chanid = channels.length();
-    if(chanid < 0) loopv(channels) if(!channels[i].volume) { chanid = i; break; }
+    if(chanid < 0) loopv(channels) if(!channels[i].volume) { Mix_HaltChannel(i); freechannel(i); chanid = i; break; }
     if(chanid < 0) return -1;
 
-    SDL_LockAudio(); // must lock here to prevent freechannel/Mix_SetPanning race conditions
-    if(channels.inrange(chanid) && channels[chanid].inuse)
-    {
-        Mix_HaltChannel(chanid);
-        freechannel(chanid);
-    }
     soundchannel &chan = newchannel(chanid, &slot, loc, ent, flags, radius);
     updatechannel(chan);
     int playing = -1;
@@ -699,7 +581,6 @@ int playsound(int n, const vec *loc, extentity *ent, int flags, int loops, int f
     else playing = expire >= 0 ? Mix_PlayChannelTimed(chanid, slot.sample->chunk, loops, expire) : Mix_PlayChannel(chanid, slot.sample->chunk, loops);
     if(playing >= 0) syncchannel(chan); 
     else freechannel(chanid);
-    SDL_UnlockAudio();
     return playing;
 }
 
@@ -737,12 +618,6 @@ COMMAND(sound, "i");
 
 void resetsound()
 {
-    const SDL_version *v = Mix_Linked_Version();
-    if(SDL_VERSIONNUM(v->major, v->minor, v->patch) <= SDL_VERSIONNUM(1, 2, 8))
-    {
-        conoutf(CON_ERROR, "Sound reset not available in-game due to SDL_mixer-1.2.8 bug. Please restart for changes to take effect.");
-        return;
-    }
     clearchanges(CHANGE_SOUND);
     if(!nosound) 
     {

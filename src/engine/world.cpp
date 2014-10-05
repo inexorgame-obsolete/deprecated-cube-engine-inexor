@@ -10,8 +10,6 @@ SVARR(maptitle, "Untitled Map by Unknown");
 VAR(octaentsize, 0, 64, 1024);
 VAR(entselradius, 0, 2, 10);
 
-VARR(racelaps, 1, 3, 255);
-
 int efocus = -1, enthover = -1, entorient = -1, oldhover = -1;
 VARF(entediting, 0, 0, 1, { if(!entediting) { entcancel(); efocus = enthover = -1; } });
 
@@ -33,7 +31,7 @@ bool getentboundingbox(const extentity &e, ivec &o, ivec &r)
     {
         case ET_EMPTY:
             return false;
-        case 39: // OBSTACLE
+        case ET_OBSTACLE:
             if(!entediting || !entities::hasmapmodel(e))
             {
                 model *m = loadmodel(NULL, e.attr2);
@@ -101,7 +99,7 @@ void modifyoctaentity(int flags, int id, extentity &e, cube *c, const ivec &cor,
             octaentities &oe = *c[i].ext->ents;
             switch(e.type)
             {
-                case 39: // OBSTACLE
+			    case ET_OBSTACLE:
                     if(!entediting || !entities::hasmapmodel(*entities::getents()[id]))
                     {
                         oe.other.add(id);

@@ -932,7 +932,7 @@ void renderparticles(bool mainpass)
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
         glLoadIdentity();
-        glOrtho(0, FONTH*n*2*screen->w/float(screen->h), FONTH*n*2, 0, -1, 1); //squeeze into top-left corner        
+        glOrtho(0, FONTH*n*2*screenw/float(screenh), FONTH*n*2, 0, -1, 1); //squeeze into top-left corner        
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
         glLoadIdentity();
@@ -1220,8 +1220,7 @@ static inline int colorfromattr(int attr)
  * 24..26 flat plane
  * +32 to inverse direction
  *
- * Bomberman:
- * Add modfrom and modto to be able to modify the tos and froms
+ * modfrom and modto to be able to modify the tos and froms
  */
 void regularshape(int type, int radius, int color, int dir, int num, int fade, const vec &p, float size, int gravity, int vel, const vec* modfrom, const vec* modto)
 {
@@ -1287,7 +1286,6 @@ void regularshape(int type, int radius, int color, int dir, int num, int fade, c
             to.add(p);
             from = p;
         }
-        // Bomberman
         if(modfrom && modto){
             from.add(*modfrom);
             to.add(*modto);

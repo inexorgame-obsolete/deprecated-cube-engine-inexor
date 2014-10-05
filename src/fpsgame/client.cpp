@@ -100,7 +100,6 @@ namespace game
     #include "ctf.h"
     #include "collect.h"
     #include "bomb.h"
-    #include "race.h"
     #include "hideandseek.h"
 
     clientmode *cmode = NULL;
@@ -108,7 +107,6 @@ namespace game
     ctfclientmode ctfmode;
     collectclientmode collectmode;
     bombclientmode bombmode;
-    raceclientmode racemode;
     hideandseekclientmode hideandseekmode;
 
     void setclientmode()
@@ -117,7 +115,6 @@ namespace game
         else if(m_ctf) cmode = &ctfmode;
         else if(m_collect) cmode = &collectmode;
         else if(m_bomb) cmode = &bombmode;
-        else if(m_race) cmode = &racemode;
         else if(m_hideandseek) cmode = &hideandseekmode;
         else cmode = NULL;
     }
@@ -566,7 +563,6 @@ namespace game
     ICOMMANDS("m_classicsp", "i", (int *mode), { int gamemode = *mode; intret(m_classicsp); });
     ICOMMANDS("m_lms", "i", (int *mode), { int gamemode = *mode; intret(m_lms); });
     ICOMMANDS("m_bomb", "i", (int *mode), { int gamemode = *mode; intret(m_bomb); });
-    ICOMMANDS("m_race", "i", (int *mode), { int gamemode = *mode; intret(m_race); });
     ICOMMANDS("m_timeforward", "i", (int *mode), { int gamemode = *mode; intret(m_timeforward); });
     ICOMMANDS("m_obstacles", "i", (int *mode), { int gamemode = *mode; intret(m_obstacles); });
 	
@@ -1508,8 +1504,7 @@ namespace game
                     particle_textcopy(actor->abovehead(), ds, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
                 }
                 if(!victim) break;
-                killed(victim, actor);
-				
+                killed(victim, actor);			
                 break;
             }
 
@@ -1568,7 +1563,7 @@ namespace game
                 break;
             }
 
-            case N_ITEMPUSH:
+            case N_ITEMPUSH: //lose items when killed
             {
                 int id = getint(p), type = getint(p);
                 vec itemloc;
@@ -1691,8 +1686,12 @@ namespace game
             }
 
             case N_PONG:
-                addmsg(N_CLIENTPING, "i", player1->ping = (player1->ping*5+totalmillis-getint(p))/6);
-                break;
+            {
+                packetbuf cping(10);
+                putint(cping, N_CLIENTPING);
+                putint(cping, player1->ping = (player1->ping*5+totalmillis-getint(p))/6);
+                sendclientpacket(cping.finalize(), 1);
+            }
 
             case N_CLIENTPING:
                 if(!d) return;
@@ -1824,7 +1823,6 @@ namespace game
             #include "ctf.h"
             #include "collect.h"
             #include "bomb.h"
-            #include "race.h"
             #include "hideandseek.h"
             #undef PARSEMESSAGES
 

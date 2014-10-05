@@ -125,7 +125,8 @@ extern const uchar fvmasks[64];
 extern const uchar faceedgesidx[6][4];
 extern bool inbetweenframes, renderedframe;
 
-extern SDL_Surface *screen;
+extern SDL_Window *screen;
+extern int screenw, screenh;
 extern int zpass, glowpass;
 
 extern vector<int> entgroup;
@@ -227,12 +228,14 @@ extern glmatrixf mvmatrix, projmatrix, mvpmatrix, invmvmatrix, invmvpmatrix, fog
 extern bvec fogcolor;
 
 extern void gl_checkextensions();
-extern void gl_init(int w, int h, int bpp, int depth, int fsaa);
+extern void gl_init(int depth, int fsaa);
+extern void gl_resize();
 extern void cleangl();
 extern void rendergame(bool mainpass = false);
 extern void invalidatepostfx();
-extern void gl_drawframe(int w, int h);
-extern void gl_drawmainmenu(int w, int h);
+extern void gl_drawframe();
+extern void gl_drawmainmenu();
+extern void gl_drawhud();
 extern void drawminimap();
 extern void drawtextures();
 extern void enablepolygonoffset(GLenum type);
@@ -474,7 +477,8 @@ extern void checksleep(int millis);
 extern void clearsleep(bool clearoverrides = true);
 
 // console
-extern void keypress(int code, bool isdown, int cooked);
+extern void processkey(int code, bool isdown);
+extern void processtextinput(const char *str, int len);
 extern int rendercommand(int x, int y, int w);
 extern int renderconsole(int w, int h, int abovehud);
 extern void conoutf(const char *s, ...) PRINTFARGS(1, 2);
@@ -514,6 +518,14 @@ extern void renderprogress(float bar, const char *text, GLuint tex = 0, bool bac
 extern void getfps(int &fps, int &bestdiff, int &worstdiff);
 extern void swapbuffers(bool overlay = true);
 extern int getclockmillis();
+
+enum { KR_CONSOLE = 1<<0, KR_GUI = 1<<1, KR_EDITMODE = 1<<2 };
+
+extern void keyrepeat(bool on, int mask = ~0);
+
+enum { TI_CONSOLE = 1<<0, TI_GUI = 1<<1 };
+
+extern void textinput(bool on, int mask = ~0);
 
 // menu
 extern void menuprocess();
@@ -607,6 +619,8 @@ extern bool limitsky();
 // 3dgui
 extern void g3d_render();
 extern bool g3d_windowhit(bool on, bool act);
+extern bool g3d_key(int code, bool isdown);
+extern bool g3d_input(const char *str, int len);
 
 // menus
 extern int mainmenu;
@@ -623,11 +637,6 @@ extern void preloadmapsounds();
 extern void initmumble();
 extern void closemumble();
 extern void updatemumble();
-
-extern void nextsong(char *cmd, char *cmd_success, char *cmd_failed);
-extern void nextartist(char *cmd, char *cmd_success, char *cmd_failed);
-extern void nextalbum(char *cmd, char *cmd_success, char *cmd_failed);
-extern void removehiddendirs(vector<char *> &files);
 
 // grass
 extern void generategrass();

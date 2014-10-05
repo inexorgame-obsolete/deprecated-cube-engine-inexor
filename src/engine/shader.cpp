@@ -1906,7 +1906,7 @@ static int allocatepostfxtex(int scale)
     postfxtex &t = postfxtexs.add();
     t.scale = scale;
     glGenTextures(1, &t.id);
-    createtexture(t.id, max(screen->w>>scale, 1), max(screen->h>>scale, 1), NULL, 3, 1, GL_RGB, GL_TEXTURE_RECTANGLE_ARB);
+    createtexture(t.id, max(screenw>>scale, 1), max(screenh>>scale, 1), NULL, 3, 1, GL_RGB, GL_TEXTURE_RECTANGLE_ARB);
     return postfxtexs.length()-1;
 }
 
@@ -1929,11 +1929,11 @@ void renderpostfx()
 {
     if(postfxpasses.empty() || renderpath==R_FIXEDFUNCTION) return;
 
-    if(postfxw != screen->w || postfxh != screen->h) 
+    if(postfxw != screenw || postfxh != screenh) 
     {
         cleanuppostfx(false);
-        postfxw = screen->w;
-        postfxh = screen->h;
+        postfxw = screenw;
+        postfxh = screenh;
     }
 
     int binds[NUMPOSTFXBINDS];
@@ -1943,7 +1943,7 @@ void renderpostfx()
     binds[0] = allocatepostfxtex(0);
     postfxtexs[binds[0]].used = 0;
     glBindTexture(GL_TEXTURE_RECTANGLE_ARB, postfxtexs[binds[0]].id);
-    glCopyTexSubImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, 0, 0, 0, 0, screen->w, screen->h);
+    glCopyTexSubImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, 0, 0, 0, 0, screenw, screenh);
 
     if(hasFBO && postfxpasses.length() > 1)
     {
@@ -1968,8 +1968,8 @@ void renderpostfx()
             if(hasFBO) glFramebufferTexture2D_(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_RECTANGLE_ARB, postfxtexs[tex].id, 0);
         }
 
-        int w = tex >= 0 ? max(screen->w>>postfxtexs[tex].scale, 1) : screen->w, 
-            h = tex >= 0 ? max(screen->h>>postfxtexs[tex].scale, 1) : screen->h;
+        int w = tex >= 0 ? max(screenw>>postfxtexs[tex].scale, 1) : screenw, 
+            h = tex >= 0 ? max(screenh>>postfxtexs[tex].scale, 1) : screenh;
         glViewport(0, 0, w, h);
         p.shader->set();
         setlocalparamfv("params", SHPARAM_VERTEX, 0, p.params.v);
@@ -1979,8 +1979,8 @@ void renderpostfx()
         {
             if(!tmu)
             {
-                tw = max(screen->w>>postfxtexs[binds[j]].scale, 1);
-                th = max(screen->h>>postfxtexs[binds[j]].scale, 1);
+                tw = max(screenw>>postfxtexs[binds[j]].scale, 1);
+                th = max(screenh>>postfxtexs[binds[j]].scale, 1);
             }
             else glActiveTexture_(GL_TEXTURE0_ARB + tmu);
             glBindTexture(GL_TEXTURE_RECTANGLE_ARB, postfxtexs[binds[j]].id);

@@ -142,7 +142,7 @@ namespace game
             delay = 1000;
         }
         modelattach a[5];
-        static const char * const vweps[] = {"vwep/fist", "vwep/shotg", "vwep/chaing", "vwep/rocket", "vwep/rifle", "vwep/gl", "vwep/pistol", "vwep/gl"}; // TODO: BOMB
+        static const char * const vweps[] = {"vwep/fist", "vwep/shotg", "vwep/chaing", "vwep/rocket", "vwep/rifle", "vwep/gl", "vwep/pistol", "vwep/bomb"}; // TODO: BOMB
         int ai = 0;
         if((!mdl.vwep || d->gunselect!=GUN_FIST) && d->gunselect<=GUN_BOMB)
         {
@@ -176,11 +176,6 @@ namespace game
             case 1: mdlname = mdl.blueteam; break;
             case 2: mdlname = mdl.redteam; break;
         }
-        if(cmode) {
-            attack = cmode->getplayerattackanim(d, attack);
-            hold = cmode->getplayerholdanim(d, hold);
-            // conoutf("attack:%d hold:%d", attack, hold);
-        }
         renderclient(d, mdlname, a[0].tag ? a : NULL, hold, attack, delay, lastaction, intermission && d->state!=CS_DEAD ? 0 : d->lastpain, fade, ragdoll && mdl.ragdoll);
 #if 0
         if(d->state!=CS_DEAD && d->quadmillis) 
@@ -192,7 +187,6 @@ namespace game
     }
 
     VARP(teamskins, 0, 0, 1);
-    // VARP(showplayernames, 0, 0, 1);
 
     void rendergame(bool mainpass)
     {
@@ -219,7 +213,6 @@ namespace game
             renderplayer(d, getplayermodelinfo(d), team, 1, mainpass);
             copystring(d->info, colorname(d));
             if(d->maxhealth>100) { defformatstring(sn)(" +%d", d->maxhealth-100); concatstring(d->info, sn); }
-            // TODO: VARP(showplayernames, 0, 0, 1)
             if(d->state!=CS_DEAD) particle_text(d->abovehead(), d->info, PART_TEXT, 1, team ? (team==1 ? 0x6496FF : 0xFF4B19) : 0x1EC850, 2.0f);
         }
         loopv(ragdolls)
@@ -263,7 +256,7 @@ namespace game
         {
             if(d->physstate >= PHYS_SLOPE)
             {
-                swayspeed = min(sqrtf(d->vel.x*d->vel.x + d->vel.y*d->vel.y), (d->maxspeed+d->p_playerspeed));
+                swayspeed = min(sqrtf(d->vel.x*d->vel.x + d->vel.y*d->vel.y), d->maxspeed);
                 swaydist += swayspeed*curtime/1000.0f;
                 swaydist = fmod(swaydist, 2*swaystep);
                 swayfade = 1;
@@ -272,14 +265,14 @@ namespace game
             {
                 swaydist += swayspeed*swayfade*curtime/1000.0f;
                 swaydist = fmod(swaydist, 2*swaystep);
-                swayfade -= 0.5f*(curtime*(d->maxspeed+d->p_playerspeed))/(swaystep*1000.0f);
+                swayfade -= 0.5f*(curtime*d->maxspeed)/(swaystep*1000.0f);
             }
 
             float k = pow(0.7f, curtime/10.0f);
             swaydir.mul(k);
             vec vel(d->vel);
             vel.add(d->falling);
-            swaydir.add(vec(vel).mul((1-k)/(15*max(vel.magnitude(), (d->maxspeed+d->p_playerspeed)))));
+            swaydir.add(vec(vel).mul((1-k)/(15*max(vel.magnitude(), d->maxspeed))));
         }
     }
 

@@ -1,4 +1,3 @@
-
 // physics.cpp: no physics books were hurt nor consulted in the construction of this code.
 // All physics computations and constants were invented on the fly and simply tweaked until
 // they "felt right", and have no basis in reality. Collision detection is simplistic but
@@ -458,36 +457,8 @@ const float STAIRHEIGHT = 4.1f;
 const float FLOORZ = 0.867f;
 const float SLOPEZ = 0.5f;
 const float WALLZ = 0.2f;
-
-/////// ON MOD //////
-// #extern const float JUMPVEL = 125.0f;
-// #extern const float GRAVITY = 200.0f;
-FVARNR(jumpvel, JUMPVEL, -8000.0f, 125.0f, 8000.0f);
-FVARNR(gravity, GRAVITY, -8000.0f, 200.0f, 8000.0f);
-FVARFR(playerspeed,      -8000.0f, 100.0f, 8000.0f, player->maxspeed = playerspeed);
-
-#define old_friction_air_default   30.0f
-#define old_friction_water_default 20.0f
-#define old_friction_land_default  6.0f
-
-FVARR(old_friction_air,   1.0f, old_friction_air_default,   2000.0f);
-FVARR(old_friction_water, 1.0f, old_friction_water_default, 2000.0f);
-FVARR(old_friction_land,  1.0f, old_friction_land_default,  2000.0f);
-
-#define LULZVAR(n) FVARR(n,   -2000.0f, 1.0f, 2000.0f);
-LULZVAR(friction_air);
-LULZVAR(friction_water);
-LULZVAR(friction_land);
-
-LULZVAR(inertia_air);
-LULZVAR(inertia_water);
-LULZVAR(inertia_land);
-
-LULZVAR(steerconrol_air);
-LULZVAR(steerconrol_water);
-LULZVAR(steerconrol_land);
-#undef LULZVAR
-//////////////////////
+extern const float JUMPVEL = 125.0f;
+extern const float GRAVITY = 200.0f;
 
 bool ellipseboxcollide(physent *d, const vec &dir, const vec &o, const vec &center, float yaw, float xr, float yr, float hi, float lo)
 {
@@ -707,38 +678,6 @@ bool plcollide(physent *d, const vec &dir)    // collide with player or monster
     return false;
 }
 
-#define MMROT(x, y) \
-    vec2(x, y), vec2(x, y), vec2(x, y), vec2(x, y), vec2(x, y), vec2(x, y), vec2(x, y), vec2(x, y), \
-    vec2(x, y), vec2(x, y), vec2(x, y), vec2(x, y), vec2(x, y), vec2(x, y), vec2(x, y)
-extern const vec2 mmrots[((360/15)+1)*15] =
-{
-    MMROT(1.00000000, 0.00000000), // 0
-    MMROT(0.96592583, 0.25881905), // 15
-    MMROT(0.86602540, 0.50000000), // 30
-    MMROT(0.70710678, 0.70710678), // 45
-    MMROT(0.50000000, 0.86602540), // 60
-    MMROT(0.25881905, 0.96592583), // 75
-    MMROT(0.00000000, 1.00000000), // 90
-    MMROT(-0.25881905, 0.96592583), // 105
-    MMROT(-0.50000000, 0.86602540), // 120
-    MMROT(-0.70710678, 0.70710678), // 135
-    MMROT(-0.86602540, 0.50000000), // 150
-    MMROT(-0.96592583, 0.25881905), // 165
-    MMROT(-1.00000000, 0.00000000), // 180
-    MMROT(-0.96592583, -0.25881905), // 195
-    MMROT(-0.86602540, -0.50000000), // 210
-    MMROT(-0.70710678, -0.70710678), // 225
-    MMROT(-0.50000000, -0.86602540), // 240
-    MMROT(-0.25881905, -0.96592583), // 255
-    MMROT(-0.00000000, -1.00000000), // 270
-    MMROT(0.25881905, -0.96592583), // 285
-    MMROT(0.50000000, -0.86602540), // 300
-    MMROT(0.70710678, -0.70710678), // 315
-    MMROT(0.86602540, -0.50000000), // 330
-    MMROT(0.96592583, -0.25881905), // 345
-    MMROT(1.00000000, 0.00000000) // 360
-};
-
 void rotatebb(vec &center, vec &radius, int yaw)
 {
     if(yaw < 0) yaw = 360 + yaw%360;
@@ -802,7 +741,7 @@ bool mmcollide(physent *d, const vec &dir, octaentities &oc)               // co
             default: continue;
         }
     }
-    return game::weaponcollide(d, dir);
+    return game::weaponcollide(d, dir); //projectile doesnt explode on collide but is not noclipped
 }
 
 template<class E>
@@ -1443,11 +1382,7 @@ bool bounce(physent *d, float secs, float elasticity, float waterfric, float gra
         d->vel.z -= grav*GRAVITY/16*secs;
         d->vel.mul(max(1.0f - secs/waterfric, 0.0f));
     }
-    else 
-    {
-      d->vel.z -= grav*GRAVITY*secs;
-    }
-
+    else d->vel.z -= grav*GRAVITY*secs;
     vec old(d->o);
     loopi(2)
     {
@@ -1626,7 +1561,7 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
         if(pl->jumping)
         {
             pl->jumping = false;
-            pl->vel.z = max(pl->vel.z, JUMPVEL + (pl->state == CS_ALIVE ? pl->p_jumpvel : 0));
+            pl->vel.z = max(pl->vel.z, JUMPVEL);
         }
     }
     else if(pl->physstate >= PHYS_SLOPE || water)
@@ -1636,7 +1571,7 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
         {
             pl->jumping = false;
 
-            pl->vel.z = max(pl->vel.z, JUMPVEL + (pl->state == CS_ALIVE ? pl->p_jumpvel : 0)); // physics impulse upwards
+            pl->vel.z = max(pl->vel.z, JUMPVEL); // physics impulse upwards
             if(water) { pl->vel.x /= 8.0f; pl->vel.y /= 8.0f; } // dampen velocity change even harder, gives correct water feel
 
             game::physicstrigger(pl, local, 1, 0);
@@ -1644,103 +1579,59 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
     }
     if(!floating && pl->physstate == PHYS_FALL) pl->timeinair += curtime;
 
-    // FMost (<_<) firces get applied to this
-    vec d(0.0f, 0.0f, 0.0f);
+    vec m(0.0f, 0.0f, 0.0f);
+    if(game::allowmove(pl) && (pl->move || pl->strafe))
+    {
+        vecfromyawpitch(pl->yaw, floating || water || pl->type==ENT_CAMERA ? pl->pitch : 0, pl->move, pl->strafe, m);
 
-
-    if(game::allowmove(pl) && (pl->move || pl->strafe)) {
-
-	// Apply movement keys
-	vecfromyawpitch(pl->yaw, floating || water || pl->type==ENT_CAMERA ? pl->pitch : 0, pl->move, pl->strafe, d);
-
-	
-        if(!floating && pl->physstate >= PHYS_SLOPE && false ){
-	    // move up or down slopes in air
-	    // but only move up slopes in waterfric           
-	    float dz = -(d.x*pl->floor.x + d.y*pl->floor.y)/pl->floor.z;
-            d.z = water ? max(d.z, dz) : dz;
+        if(!floating && pl->physstate >= PHYS_SLOPE)
+        {
+            /* move up or down slopes in air
+             * but only move up slopes in water
+            */
+            float dz = -(m.x*pl->floor.x + m.y*pl->floor.y)/pl->floor.z;
+            m.z = water ? max(m.z, dz) : dz;
         }
-	
-	// Len = 1
-        d.normalize();
+
+        m.normalize();
     }
 
-    // Apply speed
-    d.mul(pl->maxspeed+(pl->state == CS_ALIVE ? pl->p_playerspeed : 0));
-
-    if(pl->type==ENT_PLAYER) {
-        if(floating) {
-            if(pl==player)
-		d.mul(floatspeed/100.0f);
-        } else if(!water && game::allowmove(pl))
-	    d.mul((pl->move && !pl->strafe ? 1.3f : 1.0f) * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f));
+    vec d(m);
+    d.mul(pl->maxspeed);
+    if(pl->type==ENT_PLAYER)
+    {
+        if(floating)
+        {
+            if(pl==player) d.mul(floatspeed/100.0f);
+        }
+        else if(!water && game::allowmove(pl)) d.mul((pl->move && !pl->strafe ? 1.3f : 1.0f) * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f));
     }
-    
-    float oldfriction, friction, inertia, steerconrol; 
-    if (floating) {  // float (:= spec, edit) => default
-        oldfriction = old_friction_land_default;
-	friction = 1;
-	inertia = 1;
-	steerconrol = 1;
-    } else if (water) { // water & !float => water
-	oldfriction = old_friction_water;
-	friction    = friction_water;
-	inertia     = inertia_water;
-	steerconrol = steerconrol_water;
-    } else if (pl->physstate < PHYS_SLOPE) { // slide, air => air
-	oldfriction = old_friction_air;
-	friction    = friction_air;
-	inertia     = inertia_air; 
-	steerconrol = steerconrol_air;
-    } else { // otherwise => land
-	oldfriction = old_friction_land+ (pl->state == CS_ALIVE ? pl->p_friction_land : 0);;
-	friction    = friction_land;
-	inertia     = inertia_land;
-	steerconrol = steerconrol_land;
-    }
-
-    d = vec(0).lerp( // C(): Interpolate between (0,0,0) and d to reduce control over the movement
-		vec(d), //vec(0.0f, 0.0f, 0.0f),
-		steerconrol), // Interpolation amount for C()                    
-
-    
-    /*
-     * Friction:
-     *
-     * pl->vel := "Old velocity of the player (and some other stuff <_<)"
-     * d := "Basicly the forces (most <_<)" (Would be the result vel if inertia = 0)
-     * 
-     * pl->vel + d = Modified movement (over a specified duration 's')
-     */
-    pl->vel.lerp( // A(): Interpolate between vel and B() (short: d+vel) to account for the fact, that duration (= time between this and last frame = curtime) us not 's'
-		 vec(d).sub(pl->vel).lerp( // B(): Interpolate between d and d+vel to modify inertia (-> definition of d)
-					  d,
-					  inertia), // Interpolation amount for B()
-		 pl->vel,
-		 pow(                    // Interpolation amount for A()
-		     1 -1/oldfriction,  
-		     curtime/20.0f));
-    pl->vel.div(1+0.05f*(friction-1));
+    float fric = water && !floating ? 20.0f : (pl->physstate >= PHYS_SLOPE || floating ? 6.0f : 30.0f);
+    pl->vel.lerp(d, pl->vel, pow(1 - 1/fric, curtime/20.0f));
+// old fps friction
+//    float friction = water && !floating ? 20.0f : (pl->physstate >= PHYS_SLOPE || floating ? 6.0f : 30.0f);
+//    float fpsfric = min(curtime/(20.0f*friction), 1.0f);
+//    pl->vel.lerp(pl->vel, d, fpsfric);
 }
 
 void modifygravity(physent *pl, bool water, int curtime)
 {
     float secs = curtime/1000.0f;
     vec g(0, 0, 0);
-    if(pl->physstate == PHYS_FALL) g.z -= (GRAVITY+(pl->state == CS_ALIVE ? pl->p_gravity : 0))*secs;
+    if(pl->physstate == PHYS_FALL) g.z -= GRAVITY*secs;
     else if(pl->floor.z > 0 && pl->floor.z < FLOORZ)
     {
         g.z = -1;
         g.project(pl->floor);
         g.normalize();
-        g.mul((GRAVITY+(pl->state == CS_ALIVE ? pl->p_gravity : 0))*secs);
+        g.mul(GRAVITY*secs);
     }
     if(!water || !game::allowmove(pl) || (!pl->move && !pl->strafe)) pl->falling.add(g);
 
     if(water || pl->physstate >= PHYS_SLOPE)
     {
-        float fric = water ? (friction_water-1)/5 + 1: 6.0;
-        float c    = water ? 1.0f : clamp((pl->floor.z - SLOPEZ)/(FLOORZ-SLOPEZ), 0.0f, 1.0f);
+        float fric = water ? 2.0f : 6.0f,
+              c = water ? 1.0f : clamp((pl->floor.z - SLOPEZ)/(FLOORZ-SLOPEZ), 0.0f, 1.0f);
         pl->falling.mul(pow(1 - c/fric, curtime/20.0f));
 // old fps friction
 //        float friction = water ? 2.0f : 6.0f,

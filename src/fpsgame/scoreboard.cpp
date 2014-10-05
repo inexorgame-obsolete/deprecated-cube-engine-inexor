@@ -39,11 +39,6 @@ namespace game
             if(a->flags > b->flags) return true;
             if(a->flags < b->flags) return false;
         }
-        if(m_race)
-        {
-            if(a->racerank > b->racerank) return true;
-            if(a->racerank < b->racerank) return false;
-        }
         if(a->frags > b->frags) return true;
         if(a->frags < b->frags) return false;
         return strcmp(a->name, b->name) < 0;
@@ -158,17 +153,10 @@ namespace game
         if(m_timed && mname[0] && (maplimit >= 0 || intermission))
         {
             g.separator();
-            if(intermission) {
-                g.text("intermission", 0xFFFF80);
-            } else if(m_timeforward) {
-                int secs = max(lastmillis-maptime, 0)/1000, mins = secs/60;
-                secs %= 60;
-                g.pushlist();
-                g.strut(mins >= 10 ? 4.5f : 3.5f);
-                g.textf("%d:%02d", 0xFFFF80, NULL, mins, secs);
-                g.poplist();
-            } else {
-                int secs = max(maplimit-lastmillis, 0)/1000, mins = secs/60;
+            if(intermission) g.text("intermission", 0xFFFF80);
+            else 
+            {
+                int secs = max(m_timeforward ? (lastmillis-maptime) : (maplimit-lastmillis), 0)/1000, mins = secs/60;
                 secs %= 60;
                 g.pushlist();
                 g.strut(mins >= 10 ? 4.5f : 3.5f);
