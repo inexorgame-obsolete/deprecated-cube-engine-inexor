@@ -551,14 +551,19 @@ void screenres(int w, int h)
     scr_w = w!=-1 ? clamp(w, SCR_MINW, SCR_MAXW) : scr_w;
     scr_h = h!=-1 ? clamp(h, SCR_MINH, SCR_MAXH) : scr_h;
     if(screen)
-    {
-        scr_w = min(scr_w, desktopw);
-        scr_h = min(scr_h, desktoph);
-		if((SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN_DESKTOP) && fullscreen==1) { gl_resize(); }
-		else {
+    {	
+		if(fullscreen < 2) 
+		{
+			scr_w = min(scr_w, desktopw);
+			scr_h = min(scr_h, desktoph);
+		}
+		if(fullscreen != 1) 
+		{
+
 			SDL_SetWindowSize(screen, scr_w, scr_h);
 			if((SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN)) sdlres_bugfix();
 		}
+		gl_resize();
     }
     else 
     {
