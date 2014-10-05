@@ -630,9 +630,7 @@ void setupscreen(int &useddepthbits, int &usedfsaa)
             flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 		}
 		else flags |= SDL_WINDOW_FULLSCREEN;
-#ifdef WIN32
         initwindowpos = true;
-#endif
     }
 
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
