@@ -785,10 +785,8 @@ namespace game
         bool dup = !name[0] || duplicatename(d, name, alt) || d->aitype != AI_NONE;
         if(dup || prefix[0] || suffix[0])
         {
-            cidx = (cidx+1)%3;
-            if(dup) formatstring(cname[cidx])(d->aitype == AI_NONE ? "%s%s \fs\f5(%d)\fr%s" : "%s%s \fs\f5[%d]\fr%s", prefix, name, d->clientnum, suffix);
-            else formatstring(cname[cidx])("%s%s%s", prefix, name, suffix);
-            return cname[cidx];
+            if(dup) return tempformatstring(d->aitype == AI_NONE ? "%s%s \fs\f5(%d)\fr%s" : "%s%s \fs\f5[%d]\fr%s", prefix, name, d->clientnum, suffix);
+            return tempformatstring("%s%s%s", prefix, name, suffix);
         }
         return name;
     }
@@ -804,13 +802,11 @@ namespace game
     const char *teamcolor(const char *name, bool sameteam, const char *alt)
     {
         if(!teamcolortext || !m_teammode) return sameteam || !alt ? name : alt;
-        cidx = (cidx+1)%3;
-        formatstring(cname[cidx])(sameteam ? "\fs\f1%s\fr" : "\fs\f3%s\fr", sameteam || !alt ? name : alt);
-        return cname[cidx];
-    }    
-    
-	// this function calls the function above but also validates that team is a valid char pointer
-	// it is not possible to return memory to an invalid char* pointer!
+        return tempformatstring(sameteam ? "\fs\f1%s\fr" : "\fs\f3%s\fr", sameteam || !alt ? name : alt);
+    }
+
+    // this function calls the function above but also validates that team is a valid char pointer
+    // it is not possible to return memory to an invalid char* pointer!
     const char *teamcolor(const char *name, const char *team, const char *alt)
     {
         return teamcolor(name, team && isteam(team, player1->team), alt);

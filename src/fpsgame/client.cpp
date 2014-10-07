@@ -661,11 +661,7 @@ namespace game
     ICOMMAND(timeremaining, "i", (int *formatted), 
     {
         int val = max(maplimit - lastmillis, 0)/1000;
-        if(*formatted)
-        {
-            defformatstring(str)("%d:%02d", val/60, val%60);
-            result(str);
-        }
+        if(*formatted) result(tempformatstring("%d:%02d", val/60, val%60));
         else intret(val);
     });
 
@@ -1684,12 +1680,9 @@ namespace game
                 actor->frags = frags;
                 if(m_teammode) setteaminfo(actor->team, tfrags);
                 if(actor!=player1 && (!cmode || !cmode->hidefrags()))
-                {
-                    defformatstring(ds)("%d", actor->frags);
-                    particle_textcopy(actor->abovehead(), ds, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
-                }
+                    particle_textcopy(actor->abovehead(), tempformatstring("%d", actor->frags), PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
                 if(!victim) break;
-                killed(victim, actor);			
+                killed(victim, actor);
                 break;
             }
 
