@@ -1056,22 +1056,27 @@ namespace game
         return 0;
     }
 
-	// use blue "blocking" team crosshair when pointing at teamate
+	// use blue "blocking" crosshair when pointing at teamate
     VARP(teamcrosshair, 0, 1, 1);
 
 	// display hit crosshair increases hit feedback impression
     VARP(hitcrosshair, 0, 425, 1000);
-	
+
+    // Directory where crosshairs are stored. Relative to interfacedir
+    SVARP(crosshairdir, "crosshair");
+
 	// crosshair file names are stored in a constant functions
 	// that return strings depending on indices
     const char *defaultcrosshair(int index)
     {
+    	string crosshair;
         switch(index)
         {
-            case 2: return "data/hit.png";
-            case 1: return "data/teammate.png";
-            default: return "data/crosshair.png";
+            case 2: formatstring(crosshair)("%s/default_hit.png", crosshairdir); break;
+            case 1: formatstring(crosshair)("%s/default_teammate.png", crosshairdir); break;
+            default: formatstring(crosshair)("%s/default_crosshair.png", crosshairdir); break;
         }
+    	return newstring(crosshair);
     }
 
 	// switch crosshair depending on player state and player health
