@@ -182,11 +182,11 @@ struct md3 : vertmodel, vertloader<md3>
         parts.add(&mdl);
         mdl.model = this;
         mdl.index = 0;
-        defformatstring(name1)("packages/models/%s/tris.md3", loadname);
+        defformatstring(name1)("%s/%s/tris.md3", modeldir, loadname);
         mdl.meshes = sharemeshes(path(name1));
         if(!mdl.meshes)
         {
-            defformatstring(name2)("packages/models/%s/tris.md3", pname);    // try md3 in parent folder (vert sharing)
+            defformatstring(name2)("%s/%s/tris.md3", modeldir, pname);    // try md3 in parent folder (vert sharing)
             mdl.meshes = sharemeshes(path(name2));
             if(!mdl.meshes) return false;
         }
@@ -200,8 +200,8 @@ struct md3 : vertmodel, vertloader<md3>
     bool load()
     {
         if(loaded) return true;
-        formatstring(dir)("packages/models/%s", loadname);
-        defformatstring(cfgname)("packages/models/%s/md3.cfg", loadname);
+        formatstring(dir)("%s/%s", modeldir, loadname);
+        defformatstring(cfgname)("%s/%s/md3.cfg", modeldir, loadname);
 
         loading = this;
         identflags &= ~IDF_PERSIST;

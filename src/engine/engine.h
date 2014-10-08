@@ -559,6 +559,8 @@ extern void resetmap();
 extern void startmap(const char *name);
 
 // rendermodel
+extern char *modeldir;
+
 struct mapmodelinfo { string name; model *m; };
 
 extern void findanims(const char *pattern, vector<int> &anims);
