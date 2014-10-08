@@ -164,6 +164,8 @@ void writeinitcfg()
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // main menu background and loading screen renderer
 
+// Main Directory where files depending the ui are stored
+SVARP(interfacedir, "media/interface");
 
 // correct background resolution "suggestion" 
 // from the user by scaling down the larger side
@@ -240,7 +242,8 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
     loopi(restore ? 1 : 3)
     {
         glColor3f(1, 1, 1);
-        settexture("data/background.png", 0);
+		
+        settexture(tempformatstring("%s/background.png", interfacedir), 0);
         float bu = w*0.67f/256.0f + backgroundu, bv = h*0.67f/256.0f + backgroundv;
         glBegin(GL_TRIANGLE_STRIP);
         glTexCoord2f(0,  0);  glVertex2f(0, 0);
@@ -250,7 +253,8 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
         glEnd();
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);
-        settexture("data/background_detail.png", 0);
+
+		settexture(tempformatstring("%s/background_detail.png", interfacedir), 0);
         float du = w*0.8f/512.0f + detailu, dv = h*0.8f/512.0f + detailv;
         glBegin(GL_TRIANGLE_STRIP);
         glTexCoord2f(0,  0);  glVertex2f(0, 0);
@@ -258,7 +262,8 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
         glTexCoord2f(0,  dv); glVertex2f(0, h);
         glTexCoord2f(du, dv); glVertex2f(w, h);
         glEnd();
-        settexture("data/background_decal.png", 3);
+
+        settexture(tempformatstring("%s/background_decal.png", interfacedir), 3);
         glBegin(GL_QUADS);
         loopj(numdecals)
         {
@@ -271,7 +276,8 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
         glEnd();
         float lh = 0.5f*min(w, h), lw = lh*2,
               lx = 0.5f*(w - lw), ly = 0.5f*(h*0.5f - lh);
-        settexture((maxtexsize ? min(maxtexsize, hwtexsize) : hwtexsize) >= 1024 && (screenw > 1280 || screenh > 800) ? "data/logo_1024.png" : "data/logo.png", 3);
+		defformatstring(interfacetex) ("%s/logo%s.png", interfacedir, (maxtexsize ? min(maxtexsize, hwtexsize) : hwtexsize) >= 1024 && (screenw > 1280 || screenh > 800) ? "_1024" : ""); //HQ logo if settings allow
+		settexture(interfacetex, 3);
         glBegin(GL_TRIANGLE_STRIP);
         glTexCoord2f(0, 0); glVertex2f(lx,    ly);
         glTexCoord2f(1, 0); glVertex2f(lx+lw, ly);
@@ -322,7 +328,8 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
                 glPopMatrix();
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             }        
-            settexture("data/mapshot_frame.png", 3);
+
+			settexture(tempformatstring("%s/mapshot_frame.png", interfacedir), 3);
             glBegin(GL_TRIANGLE_STRIP);
             glTexCoord2f(0, 0); glVertex2f(x,    y);
             glTexCoord2f(1, 0); glVertex2f(x+sz, y);
@@ -406,7 +413,8 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
           fy = renderedframe ? fh/4 : h - fh*1.5f,
           fu1 = 0/512.0f, fu2 = 511/512.0f,
           fv1 = 0/64.0f, fv2 = 52/64.0f;
-    settexture("data/loading_frame.png", 3);
+
+	settexture(tempformatstring("%s/loading_frame.png", interfacedir), 3);
     glBegin(GL_TRIANGLE_STRIP);
     glTexCoord2f(fu1, fv1); glVertex2f(fx,    fy);
     glTexCoord2f(fu2, fv1); glVertex2f(fx+fw, fy);
@@ -426,7 +434,7 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
           ex = bx+sw + max(mw*bar, fw*7/511.0f);
     if(bar > 0)
     {
-        settexture("data/loading_bar.png", 3);
+		settexture(tempformatstring("%s/loading_bar.png", interfacedir), 3);
         glBegin(GL_QUADS);
         glTexCoord2f(su1, bv1); glVertex2f(bx,    by);
         glTexCoord2f(su2, bv1); glVertex2f(bx+sw, by);
@@ -472,7 +480,7 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        settexture("data/mapshot_frame.png", 3);
+		settexture(tempformatstring("%s/mapshot_frame.png", interfacedir), 3);
         glBegin(GL_TRIANGLE_STRIP);
         glTexCoord2f(0, 0); glVertex2f(x,    y);
         glTexCoord2f(1, 0); glVertex2f(x+sz, y);
@@ -767,15 +775,15 @@ void resetgl()
     extern void reloadtextures();
     extern void reloadshaders();
     inbetweenframes = false;
-    if(!reloadtexture(*notexture) ||
-       !reloadtexture("data/logo.png") ||
-       !reloadtexture("data/logo_1024.png") || 
-       !reloadtexture("data/background.png") ||
-       !reloadtexture("data/background_detail.png") ||
-       !reloadtexture("data/background_decal.png") ||
-       !reloadtexture("data/mapshot_frame.png") ||
-       !reloadtexture("data/loading_frame.png") ||
-       !reloadtexture("data/loading_bar.png"))
+    if(!reloadtexture(*notexture) || //todo
+       !reloadtexture("media/interface/logo.png") ||
+       !reloadtexture("media/interface/logo_1024.png") || 
+       !reloadtexture("media/interface/background.png") ||
+       !reloadtexture("media/interface/background_detail.png") ||
+       !reloadtexture("media/interface/background_decal.png") ||
+       !reloadtexture("media/interface/mapshot_frame.png") ||
+       !reloadtexture("media/interface/loading_frame.png") ||
+       !reloadtexture("media/interface/loading_bar.png"))
         fatal("failed to reload core texture");
     reloadfonts();
     inbetweenframes = true;
