@@ -30,6 +30,7 @@ static float cursorx = 0.5f, cursory = 0.5f;
 VARP(guiautotab, 6, 16, 40);
 VARP(guiclicktab, 0, 0, 1);
 VARP(guifadein, 0, 1, 1);
+SVARP(icondir, "media/interface/icon");
 
 struct gui : g3d_gui
 {
@@ -776,8 +777,7 @@ struct gui : g3d_gui
                 if(icon[0] != ' ')
                 {
                     const char *ext = strrchr(icon, '.');
-                    defformatstring(tname)("packages/icons/%s%s", icon, ext ? "" : ".jpg");
-                    icon_(textureload(tname, 3), false, x, cury, ICON_SIZE, clickable && hit);
+					icon_(textureload(tempformatstring("%s/%s%s", icondir, icon, ext ? "" : ".jpg"), 3), false, x, cury, ICON_SIZE, clickable && hit);
                 }
                 x += ICON_SIZE;
             }
