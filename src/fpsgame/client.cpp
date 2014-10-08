@@ -88,8 +88,7 @@ namespace game
     //Set specific textures for teammates, skulls.. on the minimap
     void setbliptex(int team, const char *type = "")
     {
-        defformatstring(blipname)("%s/blip%s%s.png", radardir, teamblipcolor[team], type);
-        settexture(blipname, 3);
+        settexture(tempformatstring("%s/blip%s%s.png", radardir, teamblipcolor[team], type), 3);
     }
 
     // draw all teamate icons in minimap

@@ -62,8 +62,7 @@ struct bombclientmode : clientmode
     void drawicon(int icon, float x, float y, float sz) //todo merge with other items
     {
         int bicon = icon - HICON_BOMBRADIUS;
-        defformatstring(bomb_items_filename)("%s/bomb_items.png", radardir);
-        settexture(bomb_items_filename);
+		settexture(tempformatstring("%s/bomb_items.png", radardir));
         glBegin(GL_TRIANGLE_STRIP);
         float tsz = 0.25f, tx = tsz*(bicon%4), ty = tsz*(bicon/4);
         glTexCoord2f(tx,     ty);     glVertex2f(x,    y);
