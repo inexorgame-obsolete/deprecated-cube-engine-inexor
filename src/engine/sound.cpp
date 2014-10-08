@@ -120,6 +120,7 @@ void stopchannels()
 void setmusicvol(int musicvol);
 VARFP(soundvol, 0, 255, 255, if(!soundvol) { stopchannels(); setmusicvol(0); });
 VARFP(musicvol, 0, 128, 255, setmusicvol(soundvol ? musicvol : 0));
+SVARP(sounddir, "media/sound");
 
 char *musicfile = NULL, *musicdonecmd = NULL;
 
@@ -196,13 +197,15 @@ Mix_Music *loadmusic(const char *name)
     return music;
 }
 
+SVARP(musicdir, "media/music");
+
 void startmusic(char *name, char *cmd)
 {
     if(nosound) return;
     stopmusic();
     if(soundvol && musicvol && *name)
     {
-        defformatstring(file)("packages/%s", name);
+        defformatstring(file)("%s/%s", musicdir, name);
         path(file);
         if(loadmusic(file))
         {
@@ -470,14 +473,14 @@ static bool loadsoundslot(soundslot &slot, bool msg = false)
     string filename;
     loopi(sizeof(exts)/sizeof(exts[0]))
     {
-        formatstring(filename)("packages/sounds/%s%s", slot.sample->name, exts[i]);
+        formatstring(filename)("%s/%s%s", sounddir, slot.sample->name, exts[i]);
         if(msg && !i) renderprogress(0, filename);
         path(filename);
         slot.sample->chunk = loadwav(filename);
         if(slot.sample->chunk) return true;
     }
 
-    conoutf(CON_ERROR, "failed to load sample: packages/sounds/%s", slot.sample->name); 
+    conoutf(CON_ERROR, "failed to load sample: %s/%s", sounddir, slot.sample->name);
     return false;
 }
 
