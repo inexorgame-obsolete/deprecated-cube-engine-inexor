@@ -482,10 +482,11 @@ struct ctfclientmode : clientmode
     void drawblip(fpsent *d, float x, float y, float s, int i, bool flagblip)
     {
         flag &f = flags[i];
-        settexture(m_hold && (!flagblip || !f.owner || lastmillis%1000 < 500) ? (flagblip ? "packages/hud/blip_neutral_flag.png" : "packages/hud/blip_neutral.png") :
-                    ((m_hold ? ctfteamflag(f.owner->team) : f.team)==ctfteamflag(player1->team) ?
-                        (flagblip ? "packages/hud/blip_blue_flag.png" : "packages/hud/blip_blue.png") :
-                        (flagblip ? "packages/hud/blip_red_flag.png" : "packages/hud/blip_red.png")), 3);
+		int blip = TEAM_NONE;
+		if(m_hold && f.owner && (flagblip || lastmillis%1000 >= 500) ) blip = ctfteamflag(f.owner->team) == ctfteamflag(player1->team) ? TEAM_OWN : TEAM_OPPONENT;
+		else if(!m_hold) blip = f.team == ctfteamflag(player1->team) ? TEAM_OWN : TEAM_OPPONENT;
+        setbliptex( blip, flagblip ? "_flag" : "");
+
         drawblip(d, x, y, s, flagblip ? (f.owner ? f.owner->o : (f.droptime ? f.droploc : f.spawnloc)) : f.spawnloc, flagblip);
     }
 
@@ -522,19 +523,12 @@ struct ctfclientmode : clientmode
         if(minimapalpha >= 1) glEnable(GL_BLEND);
         glColor3f(1, 1, 1);
         float margin = 0.04f, roffset = s*margin, rsize = s + 2*roffset;
-        settexture("packages/hud/radar.png", 3);
+        setradartex();
         drawradar(x - roffset, y - roffset, rsize);
-        #if 0
-        settexture("packages/hud/compass.png", 3);
-        glPushMatrix();
-        glTranslatef(x - roffset + 0.5f*rsize, y - roffset + 0.5f*rsize, 0);
-        glRotatef(camera1->yaw + 180, 0, 0, -1);
-        drawradar(-0.5f*rsize, -0.5f*rsize, rsize);
-        glPopMatrix();
-        #endif
-        if(m_hold)
+
+        if(m_hold)  //possible flag spawns
         {
-            settexture("packages/hud/blip_neutral.png", 3);
+            setbliptex(TEAM_NONE); 
             loopv(holdspawns) drawblip(d, x, y, s, holdspawns[i].o, false);
         }
         loopv(flags)

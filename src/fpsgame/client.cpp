@@ -18,6 +18,7 @@ namespace game
     VARP(maxradarscale, 1, 1024, 10000);
     VARP(radarteammates, 0, 1, 1);
     FVARP(minimapalpha, 0, 1, 1);
+    SVARP(radardir, "media/interface/radar");
 
 	// HUD
     int hudannounce_begin = 0;
@@ -48,7 +49,13 @@ namespace game
         glEnd();
     }
 
-	// draw radar frame over minimap
+    // Bind the minimap_frame-texture
+    void setradartex()
+    {
+		defformatstring(radar_filename)("%s/radar_frame.png", radardir);
+        settexture(radar_filename, 3);
+    }
+
     void drawradar(float x, float y, float s)
     {
         glBegin(GL_TRIANGLE_STRIP);
@@ -78,7 +85,14 @@ namespace game
         glTexCoord2f(0.0f, 1.0f); glVertex2f(bx - bs*v.y, by + bs*v.x);
     }
 
-	// draw all teamate icons in minimap
+    //Set specific textures for teammates, skulls.. on the minimap
+    void setbliptex(int team, const char *type = "")
+    {
+        defformatstring(blipname)("%s/blip%s%s.png", radardir, teamblipcolor[team], type);
+        settexture(blipname, 3);
+    }
+
+    // draw all teamate icons in minimap
     void drawteammates(fpsent *d, float x, float y, float s)
     {
         if(!radarteammates) return;
@@ -91,7 +105,7 @@ namespace game
             {
                 if(!alive++) 
                 {
-                    settexture(isteam(d->team, player1->team) ? "packages/hud/blip_blue_alive.png" : "packages/hud/blip_red_alive.png");
+                    setbliptex(TEAM_OWN, "_alive");
                     glBegin(GL_QUADS);
                 }
                 drawteammate(d, x, y, s, o, scale);
@@ -105,7 +119,7 @@ namespace game
             {
                 if(!dead++) 
                 {
-                    settexture(isteam(d->team, player1->team) ? "packages/hud/blip_blue_dead.png" : "packages/hud/blip_red_dead.png");
+                    setbliptex(TEAM_OWN, "_dead");
                     glBegin(GL_QUADS);
                 }
                 drawteammate(d, x, y, s, o, scale);
@@ -1687,7 +1701,7 @@ namespace game
             }
 
             case N_TEAMINFO:
-                for(;;)
+                loopi(MAXTEAMS)
                 {
                     getstring(text, p);
                     if(p.overread() || !text[0]) break;
