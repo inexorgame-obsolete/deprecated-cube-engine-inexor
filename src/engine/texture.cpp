@@ -2339,7 +2339,7 @@ Texture *cubemapload(const char *name, bool mipit, bool msg, bool transient)
 {
     if(!hasCM) return NULL;
     string pname;
-    copystring(pname, makerelpath("packages", name));
+    copystring(pname, makerelpath(skyboxdir, name));
     path(pname);
     Texture *t = NULL;
     if(!strchr(pname, '*'))
