@@ -157,6 +157,7 @@ struct font
 extern font *curfont;
 
 // texture
+extern char *texturedir;
 extern int hwtexsize, hwcubetexsize, hwmaxaniso, maxtexsize;
 
 extern Texture *textureload(const char *name, int clamp = 0, bool mipit = true, bool msg = true);

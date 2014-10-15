@@ -1372,7 +1372,7 @@ void writeobj(char *name)
     {
         VSlot &vslot = lookupvslot(usedmtl[i], false);
         f->printf("newmtl slot%d\n", usedmtl[i]);
-        f->printf("map_Kd %s\n", vslot.slot->sts.empty() ? notexture->name : path(makerelpath("packages", vslot.slot->sts[0].name)));
+		f->printf("map_Kd %s\n", vslot.slot->sts.empty() ? notexture->name : path(makerelpath(texturedir, vslot.slot->sts[0].name)));
         f->printf("\n");
     } 
     delete f;
