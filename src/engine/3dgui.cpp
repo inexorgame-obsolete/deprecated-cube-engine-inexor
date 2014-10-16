@@ -348,7 +348,7 @@ struct gui : g3d_gui
                     glEnable(GL_TEXTURE_2D);
                     defaultshader->set();
                 }
-                if(!overlaytex) overlaytex = textureload("data/guioverlay.png", 3);
+				if(!overlaytex) overlaytex = textureload(tempformatstring("%s/guioverlay.png", interfacedir), 3);
                 glColor3fv(light.v);
                 glBindTexture(GL_TEXTURE_2D, overlaytex->id);
                 rect_(xi, yi, xs, ys, 0);
@@ -413,7 +413,7 @@ struct gui : g3d_gui
                     glEnable(GL_TEXTURE_2D);
                     defaultshader->set();
                 }
-                if(!overlaytex) overlaytex = textureload("data/guioverlay.png", 3);
+				if(!overlaytex) overlaytex = textureload(tempformatstring("%s/guioverlay.png", interfacedir), 3);
                 glColor3fv(light.v);
                 glBindTexture(GL_TEXTURE_2D, overlaytex->id);
                 rect_(xi, yi, xs, ys, 0);
@@ -630,7 +630,7 @@ struct gui : g3d_gui
 
         if(overlaid)
         {
-            if(!overlaytex) overlaytex = textureload("data/guioverlay.png", 3);
+            if(!overlaytex) overlaytex = textureload(tempformatstring("%s/guioverlay.png", interfacedir), 3);
             glBindTexture(GL_TEXTURE_2D, overlaytex->id);
             glColor3fv(light.v);
             rect_(x, y, xs, ys, 0);
@@ -716,7 +716,7 @@ struct gui : g3d_gui
         defaultshader->set();
         if(overlaid) 
         {
-            if(!overlaytex) overlaytex = textureload("data/guioverlay.png", 3);
+            if(!overlaytex) overlaytex = textureload(tempformatstring("%s/guioverlay.png", interfacedir), 3);
             glBindTexture(GL_TEXTURE_2D, overlaytex->id);
             glColor3fv(light.v);
             rect_(x, y, xs, ys, 0);
@@ -727,7 +727,7 @@ struct gui : g3d_gui
     {		
         if(visible())
         {
-            if(!slidertex) slidertex = textureload("data/guislider.png", 3);
+            if(!slidertex) slidertex = textureload(tempformatstring("%s/guislider.png", interfacedir), 3);
             glBindTexture(GL_TEXTURE_2D, slidertex->id);
             if(percent < 0.99f) 
             {
@@ -793,7 +793,7 @@ struct gui : g3d_gui
 
     static void drawskin(int x, int y, int gapw, int gaph, int start, int n, int passes = 1, const vec &light = vec(1, 1, 1), float alpha = 0.80f)//int vleft, int vright, int vtop, int vbottom, int start, int n) 
     {
-        if(!skintex) skintex = textureload("data/guiskin.png", 3);
+		if(!skintex) skintex = textureload(tempformatstring("%s/guiskin.png", interfacedir), 3);
         glBindTexture(GL_TEXTURE_2D, skintex->id);
         int gapx1 = INT_MAX, gapy1 = INT_MAX, gapx2 = INT_MAX, gapy2 = INT_MAX;
         float wscale = 1.0f/(SKIN_W*SKIN_SCALE), hscale = 1.0f/(SKIN_H*SKIN_SCALE);
