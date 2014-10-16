@@ -1,5 +1,6 @@
 // the interface the game uses to access the engine
 
+extern char *mediadir;
 extern char *mapdir;
 extern char *interfacedir;
 

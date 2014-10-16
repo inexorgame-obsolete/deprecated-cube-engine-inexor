@@ -1249,7 +1249,7 @@ int main(int argc, char **argv)
             }
             case 'l': 
             {
-                char pkgdir[] = "packages/"; 
+                char pkgdir[] = "media/"; //todo
                 load = strstr(path(&argv[i][2]), path(pkgdir)); 
                 if(load) load += sizeof(pkgdir)-1; 
                 else load = &argv[i][2]; 

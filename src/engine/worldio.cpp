@@ -2,6 +2,7 @@
 
 #include "engine.h"
 
+SVARP(mediadir, "media");
 SVARP(mapdir, "media/map");
 
 void cutogz(char *s) 
