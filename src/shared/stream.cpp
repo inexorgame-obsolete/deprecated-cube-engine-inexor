@@ -314,6 +314,7 @@ char *path(const char *s, bool copy)
     return tmp;
 }
 
+//returns just the parent dir without the file
 const char *parentdir(const char *directory)
 {
     const char *p = directory + strlen(directory);
@@ -401,8 +402,8 @@ const char *addpackagedir(const char *dir)
     char *filter = pdir;
     for(;;)
     {
-        static int len = strlen(mediadir);
-        filter = strstr(filter, mediadir);
+        static int len = strlen("packages");
+        filter = strstr(filter, "packages");
         if(!filter) break;
         if(filter > pdir && filter[-1] == PATHDIV && filter[len] == PATHDIV) break;
         filter += len;
