@@ -1257,16 +1257,16 @@ namespace game
 
 	// file name of important configuration files
 	// are stored in constant functions that return strings...
-    const char *savedconfig() { return "config.cfg"; }
-    const char *restoreconfig() { return "restore.cfg"; }
-    const char *defaultconfig() { return "data/defaults.cfg"; }
-    const char *autoexec() { return "autoexec.cfg"; }
-    const char *savedservers() { return "servers.cfg"; }
+    const char *savedconfig() { return "config/saved.cfg"; }
+    const char *restoreconfig() { return "config/restore.cfg"; }
+    const char *defaultconfig() { return "config/defaults.cfg"; }
+    const char *autoexec() { return "config/autoexec.cfg"; }
+    const char *savedservers() { return "config/servers.cfg"; }
 
 	// load "auth.cfg" configuration file with disabled log messages (?)
     void loadconfigs()
     {
-        execfile("auth.cfg", false);
+        execfile("config/auth.cfg", false);
     }
 }
 

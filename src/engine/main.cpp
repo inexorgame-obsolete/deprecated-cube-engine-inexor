@@ -1305,8 +1305,8 @@ int main(int argc, char **argv)
     if(!notexture) fatal("could not find core textures");
 
     logoutf("init: console");
-    if(!execfile("data/stdlib.cfg", false)) fatal("cannot find data files (you are running from the wrong folder, try .bat file in the main folder)");   // this is the first file we load.
-    if(!execfile("data/font.cfg", false)) fatal("cannot find font definitions");
+    if(!execfile("config/stdlib.cfg", false)) fatal("cannot find config files (you are running from the wrong folder, try .bat file in the main folder)");   // this is the first file we load.
+    if(!execfile("config/font.cfg", false)) fatal("cannot find font definitions");
     if(!setfont("default")) fatal("no default font specified");
 
     inbetweenframes = true;
@@ -1325,12 +1325,12 @@ int main(int argc, char **argv)
     initsound();
 
     logoutf("init: cfg");
-    execfile("data/keymap.cfg");
-    execfile("data/stdedit.cfg");
-    execfile("data/menus.cfg");
-    execfile("data/sounds.cfg");
-    execfile("data/heightmap.cfg");
-    execfile("data/blendbrush.cfg");
+    execfile("config/keymap.cfg");
+    execfile("config/stdedit.cfg");
+    execfile("config/menus.cfg");
+    execfile("config/sounds.cfg");
+    execfile("config/heightmap.cfg");
+    execfile("config/blendbrush.cfg");
     if(game::savedservers()) execfile(game::savedservers(), false);
     
     identflags |= IDF_PERSIST;
@@ -1347,7 +1347,7 @@ int main(int argc, char **argv)
     identflags &= ~IDF_PERSIST;
 
     string gamecfgname;
-    copystring(gamecfgname, "data/game_");
+    copystring(gamecfgname, "config/game_");
     concatstring(gamecfgname, game::gameident());
     concatstring(gamecfgname, ".cfg");
     execfile(gamecfgname);
