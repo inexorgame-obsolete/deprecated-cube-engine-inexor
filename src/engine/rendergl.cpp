@@ -2298,6 +2298,9 @@ void writecrosshairs(stream *f)
     f->printf("\n");
 }
 
+static Texture *cursortex = NULL;
+SVARFP(cursor, "media/interface/cursor.png", cursortex = NULL);
+
 void drawcrosshair(int w, int h)
 {
     bool windowhit = g3d_windowhit(true, false);
@@ -2307,9 +2310,8 @@ void drawcrosshair(int w, int h)
     Texture *crosshair;
     if(windowhit)
     {
-        static Texture *cursor = NULL;
-        if(!cursor) cursor = textureload("data/guicursor.png", 3, true);
-        crosshair = cursor;
+		if(!cursortex) cursortex = textureload(cursor, 3, true);
+        crosshair = cursortex;
         chsize = cursorsize*w/900.0f;
         g3d_cursorpos(cx, cy);
     }
