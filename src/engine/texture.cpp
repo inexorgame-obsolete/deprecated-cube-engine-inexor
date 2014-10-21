@@ -421,8 +421,6 @@ void texagrad(ImageData &s, float x2, float y2, float x1, float y1)
     }
 }
 
-SVARP(texturedir, "media/texture");
-
 VAR(hwtexsize, 1, 0, 0);
 VAR(hwcubetexsize, 1, 0, 0);
 VAR(hwmaxaniso, 1, 0, 0);
@@ -1136,13 +1134,13 @@ static bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex = NULL, 
         {
             cmds = tex->name;
             file = strrchr(tex->name, '>');
-            if(!file) { if(msg) conoutf(CON_ERROR, "could not load texture %s/%s", texturedir, tex->name); return false; }
+            if(!file) { if(msg) conoutf(CON_ERROR, "could not load texture %s", tex->name); return false; }
             file++;
         }
         else file = tex->name;
         
         static string pname;
-        formatstring(pname)("%s/%s", texturedir, file);
+        formatstring(pname)("%s", file);
         file = path(pname);
     }
     else if(tname[0]=='<') 
@@ -1721,7 +1719,8 @@ void texture(char *type, char *name, int *rot, int *xoffset, int *yoffset, float
     st.type = tnum;
     st.combined = -1;
     st.t = NULL;
-    copystring(st.name, name);
+	if(name && strpbrk(name, "/\\")) copystring(st.name, makerelpath(getcurexecdir(), name)); //relative path to current folder
+    else copystring(st.name, name);
     path(st.name);
     if(tnum==TEX_DIFFUSE)
     {
@@ -1743,7 +1742,7 @@ void autograss(char *name)
     if(slots.empty()) return;
     Slot &s = *slots.last();
     DELETEA(s.autograss);
-    s.autograss = name[0] ? newstring(makerelpath(texturedir, name, NULL, "<ffskip><premul>")) : NULL;
+    s.autograss = name[0] ? newstring(makerelpath(getcurexecdir(), name, NULL, "<ffskip><premul>")) : NULL;
 }
 COMMAND(autograss, "s");
 
@@ -1790,7 +1789,7 @@ void texlayer(int *layer, char *name, int *mode, float *scale)
     if(slots.empty()) return;
     Slot &s = *slots.last();
     s.variants->layer = *layer < 0 ? max(slots.length()-1+*layer, 0) : *layer;
-	s.layermaskname = name[0] ? newstring(path(makerelpath(texturedir, name))) : NULL; 
+	s.layermaskname = name[0] ? newstring(path(makerelpath(getcurexecdir(), name))) : NULL; 
     s.layermaskmode = *mode;
     s.layermaskscale = *scale <= 0 ? 1 : *scale;
     propagatevslot(s.variants, 1<<VSLOT_LAYER);
@@ -1932,8 +1931,7 @@ static void addname(vector<char> &key, Slot &slot, Slot::Tex &t, bool combined =
 {
     if(combined) key.add('&');
     if(prefix) { while(*prefix) key.add(*prefix++); }
-    defformatstring(tname)("%s/%s", texturedir, t.name);
-    for(const char *s = path(tname); *s; key.add(*s++));
+    for(const char *s = path(t.name); *s; key.add(*s++));
 }
 
 static void texcombine(Slot &s, int index, Slot::Tex &t, bool forceload = false)

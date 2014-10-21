@@ -15,6 +15,10 @@ void newfont(char *name, char *tex, int *defaultw, int *defaulth)
     if(!f->name) f->name = newstring(name);
     f->texs.shrink(0);
     f->texs.add(textureload(tex));
+	if(f->texs[0] == notexture) 
+	{ //try in same folder as the config file
+		f->texs[0] = textureload(makerelpath(getcurexecdir(), tex));
+	}
     f->chars.shrink(0);
     f->charoffset = '!';
     f->defaultw = *defaultw;
@@ -43,7 +47,12 @@ void fonttex(char *s)
 {
     if(!fontdef) return;
 
-    Texture *t = textureload(s);
+    Texture *t = textureload(s, 0, true, false);
+	if(t == notexture) 
+	{ //try in same folder as the config file
+		t = textureload(makerelpath(getcurexecdir(), s));
+	}
+
     loopv(fontdef->texs) if(fontdef->texs[i] == t) { fontdeftex = i; return; }
     fontdeftex = fontdef->texs.length();
     fontdef->texs.add(t);

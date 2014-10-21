@@ -2176,6 +2176,9 @@ bool executebool(const char *p)
     return b;
 }
 
+static string execdir;
+const char *getcurexecdir() { return execdir; } //returns the path of the file the command is called from
+
 bool execfile(const char *cfgfile, bool msg)
 {
     string s;
@@ -2189,6 +2192,8 @@ bool execfile(const char *cfgfile, bool msg)
     const char *oldsourcefile = sourcefile, *oldsourcestr = sourcestr;
     sourcefile = cfgfile;
     sourcestr = buf;
+	copystring(execdir, parentdir(cfgfile)); //make the current path available to the executed commands
+
     execute(buf);
     sourcefile = oldsourcefile;
     sourcestr = oldsourcestr;

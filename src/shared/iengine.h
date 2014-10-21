@@ -143,6 +143,7 @@ extern int execute(const char *p);
 extern bool executebool(const uint *code);
 extern bool executebool(const char *p);
 extern bool execfile(const char *cfgfile, bool msg = true);
+extern const char *getcurexecdir();
 extern void alias(const char *name, const char *action);
 extern void alias(const char *name, tagval &v);
 extern const char *getalias(const char *name);
