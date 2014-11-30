@@ -1,6 +1,6 @@
-# Sauerbraten Fork
+# Inexor
 
-Sauerbraten Fork is a fork of the quake-like fps Sauerbraten/Cube2. It is compatible to the current Sauerbraten/Cube 2 release.
+Inexor is a fork of the quake-like fps Cube 2: Sauerbraten. It is backwards compatible to the current Cube 2: Sauerbraten release.
 
 ## Game Features
 
@@ -35,63 +35,35 @@ Sauerbraten Fork is a fork of the quake-like fps Sauerbraten/Cube2. It is compat
 * [Source Repository](https://github.com/sauerbraten-fork/sauerbraten-fork)
 * [Chat (irc.gamesurge.net #sauerfork)](irc://irc.gamesurge.net/#sauerfork)
  * [Webchat](http://webchat.gamesurge.net/?channels=sauerfork)
-* [Sauerbraten Wiki](http://cube.wikispaces.com/)
-* [Sauerbraten Docs](http://sauerbraten.org/README.html)
 
 ## Credits
 
-### Sauerbraten Fork
+### Inexor
 
 * see wiki for the actual list of developers and content designers
 
 ### Sauerbraten/Cube2
 
-* Wouter "Aardappel" van Oortmerssen: A lot of the general code, and the original concept and design. [(website)](http://strlen.com/)
-* Lee "eihrul" Salzman: ENet networking library, nix ports, and a lot of the general code, especially rendering/lightmaps/physics related. [(website)](http://sauerbraten.org/lee/)
+* Wouter "[Aardappel](http://strlen.com/)" van Oortmerssen: A lot of the general code, and the original concept and design. 
+* Lee "[eihrul](http://sauerbraten.org/lee/)" Salzman: ENet networking library, nix ports, and a lot of the general code, especially rendering/lightmaps/physics related. 
 * Mike "Gilt" Dysart: General programming, especially editing/physics related.
-* Robert "baby-rabbit" Pointon: GUI, particle rendering, and movie recording code, MacOSX porting. [(website)](http://www.fernlightning.com/)
-* Quinton "quin" Reeves: Bots/AI code. Asissts with community management, documentation/wiki, and development. [(website)](http://www.redeclipse.net/)
+* Robert "[baby-rabbit](http://www.fernlightning.com/)" Pointon: GUI, particle rendering, and movie recording code, MacOSX porting. 
+* Quinton "[quin](http://www.redeclipse.net/)" Reeves: Bots/AI code. Asissts with community management, documentation/wiki, and development. 
 
 with contributions from:
 
 * Adrian "driAn" Henke: MD3 code.
 * Jerry Siebe: Geometry rendering optimisations.
 
-### Level Design
-
-* Kurt "kdoom" Kessler: A bunch of DM/capture maps, k_rpg1.
-* Shane Nieb: academy, authentic, autumn, bt_falls, c_valley, complex, curvy_castle, flagstone, garden, hallo, hashi, island, justice, nevil_c, nmp4, nmp8, nmp9, ot, park, shipwreck, turbine
-* John "metlslime" fitzgibbons: metl maps.
-* MitaMan: singleplayer episodes
-* With additional maps by: Aardappel, driAn, Gilt, voot, Bryan "KillHour" Shalke, staffy, sparr, JCDPC, ZappaZ, RatBoy, Fanatic, rocknrol, KaiserTodretter, BlikjeBier, wurfel, aftasardem, Lazy [HUN], Gregor Koch, Junebug, Gabriele "Blindabuser" Magurno, MeatROme, TUX, Mayhem, mIscreant, schmutzwurst, Kal, DairyKing, Hero, WahnFred, jonlimle, and others.
-
-### Art / Content
-
-* John "Geartrooper" Siar: Mr. Fixit, Ironsnout, RPG characters, monsters, new hudguns and vweps.
-* Gabriele "Blindabuser" Magurno: Logos, loading screen, announcer voices.
-* MakkE: Mapmodels, old hudguns, items.
-* Dietmar "dcp" Pier: Mapmodels, old hudguns.
-* DarthVim: Old hudguns.
-* Shane Nieb: Textures, Mapmodels, Skyboxes.
-* Sock: The egyptian & tech texture sets.
-* Iikka "Fingers" Keranen: The ikbase ik2k texture sets.
-* Lunaran, Gibbie, Gregor Koch, Jésus "aftasardem" Maia, MitaMan, and philipk: Normalmapped texture sets.
-* Additional art by: metlslime (textures), Than (textures), Remedy Entertainment Ltd (textures), Seth & Ulrich Galbraith (GPL models), Brian "EvilBastard" Collins, Conrad, Magarnigal, Psionic, James Green, Andreas Möller, Ryan Butts & Jeramy Cooke (md2 models), KaiserTodretter (items), Tentus (mapmodels), Kurt Kessler (mapmodels), Philip Klevestav (textures), leileilol/OpenArena (GPL bullet hole decal).
-
-### Sound / Music
-
-* Marc "Fanatic" A. Pullen: Soundtrack.
 
 ### Other
 
-* Kristian "sleepwalkr" Duske: website / messageboard, hosting, master server.
-* Pushplay: Documentation help.
-* The SDL team: For their libraries [(website)](http://www.libsdl.org/).
+* The [SDL team](http://www.libsdl.org/): For their libraries.
 
 ## Copyright
 
-The Sauerbraten Fork source code, the Sauerbraten Fork source code, 
-and Sauerbraten Fork files are provided under the terms of the
+The Inexor source code, the Cube 2: Sauerbraten source code, 
+and Inexor files are provided under the terms of the
 ZLIB license:
 
 http://www.opensource.org/licenses/zlib-license.php
@@ -100,10 +72,9 @@ http://www.opensource.org/licenses/zlib-license.php
 ### Notes
 
 The license covers the source code found in the "src"
-directory of this archive as well as the .cfg files under
-the "data" directory and content provided by the Sauerbraten
-Fork project. The included ENet network library which
-Sauerbraten Fork uses is covered by an MIT-style license,
+directory of this archive (or the source repository on GitHub) as well as the .cfg files under
+the "data" directory (or the data repository on GitHub). The included ENet network library which
+Inexor uses is covered by an MIT-style license,
 which is however compatible with the above license for all
 practical purposes.
 
@@ -112,9 +83,9 @@ models etc.) are NOT covered by this license, and may have
 individual copyrights and distribution restrictions (see
 individual readmes).
 
-### Sauerbraten Fork
+### Inexor
 
-Sauerbraten Fork/game engine.
+Inexor.
 
 Copyright (C) 2011-2014 **TODO**
 
@@ -134,7 +105,7 @@ freely, subject to the following restrictions:
    misrepresented as being the original software.
 3. This notice may not be removed or altered from any source distribution.
 
-### Sauerbraten
+### Cube 2: Sauerbraten
 
 Sauerbraten game engine source code, any release.
 
