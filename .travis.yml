@@ -22,7 +22,7 @@ env:
 notifications:
   irc:
     channels:
-      - "irc.gamesurge.net#sauerfork"
+      - "irc.gamesurge.net#inexor"
     template: "%{repository_name}/%{branch} %{commit} - %{message}"
     use_notice: false
     skip_join: true
