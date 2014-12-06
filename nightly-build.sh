@@ -25,6 +25,6 @@ cp ./sauerbraten_unix nightly
 cp ./sauerbraten.bat nightly
 zip -r ${BUILD_NAME}.zip nightly
 echo "sending ${BUILD_NAME}.zip"
-curl --ftp-create-dirs -T "${BUILD_NAME}.zip" -u $FTP_USER:$FTP_PASSWORD ftp://37.59.98.138/
+curl --ftp-create-dirs -T "${BUILD_NAME}.zip" -u $FTP_USER:$FTP_PASSWORD ftp://inexor.org/
 
 exit 0
