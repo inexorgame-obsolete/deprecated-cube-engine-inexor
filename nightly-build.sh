@@ -24,7 +24,9 @@ cp -r ./bin_* nightly
 cp ./sauerbraten_unix nightly
 cp ./sauerbraten.bat nightly
 zip -r ${BUILD_NAME}.zip nightly
+sha512sum ${BUILD_NAME}.zip > ${BUILD_NAME}.zip.sum
 echo "sending ${BUILD_NAME}.zip"
-curl --ftp-create-dirs -T "${BUILD_NAME}.zip" -u $FTP_USER:$FTP_PASSWORD ftp://inexor.org/
+curl --connect-timeout 1800 --ftp-create-dirs -T "${BUILD_NAME}.zip" -u $FTP_USER:$FTP_PASSWORD ftp://inexor.org/
+curl --ftp-create-dirs -T "${BUILD_NAME}.zip.sum" -u $FTP_USER:$FTP_PASSWORD ftp://inexor.org/
 
 exit 0
