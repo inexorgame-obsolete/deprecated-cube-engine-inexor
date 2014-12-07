@@ -30,9 +30,9 @@ Inexor is a fork of the quake-like fps Cube 2: Sauerbraten. It is backwards comp
 ## Resources
 
 * [Website](http://inexor.org)
-* [Wiki](https://github.com/sauerbraten-fork/inexor/wiki)
-* [Issue Tracker](https://github.com/sauerbraten-fork/inexor/issues)
-* [Source Repository](https://github.com/sauerbraten-fork/inexor)
+* [Wiki](https://github.com/inexor-game/code/wiki)
+* [Issue Tracker](https://github.com/inexor/code/issues)
+* [Source Repository](https://github.com/inexor/code)
 * [Chat (irc.gamesurge.net #inexor)](irc://irc.gamesurge.net/#inexor)
  * [Webchat](http://webchat.gamesurge.net/?channels=inexor)
 
