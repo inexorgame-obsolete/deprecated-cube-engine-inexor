@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 cmake_policy(SET CMP0012 NEW)
-project(sauerbraten-fork)
+project(Inexor)
 
 option(RELEASE_BUILD "Creates a release package in release mode" 0)
 

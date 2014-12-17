@@ -14,7 +14,7 @@ export BUILD_NAME="$(echo "${TRAVIS_BRANCH}-${TRAVIS_JOB_NUMBER}-${TRAVIS_COMMIT
 
 if [ "${TRAVIS_BRANCH}" == "master" ] 
 then # the master-nightly-build has the data-folder included
-    git clone --depth 1 https://github.com/sauerbraten-fork/sauerbraten-fork-data.git nightly
+    git clone --depth 1 https://github.com/inexor-game/data.git nightly
     rm -rf ./nightly/.git*
 else
     mkdir nightly
