@@ -84,11 +84,24 @@ if(BUILD_TARGET_WINDOWS)
     endif()
 endif()
 
-set(BUILD_DEBUG_FLAGS   "${BUILD_FLAGS} -O0 -g -D_DEBUG -DBUILD_DEBUG")
-set(BUILD_RELEASE_FLAGS "${BUILD_FLAGS} -O3 -DNDEBUG -DBUILD_NO_DEBUG")
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-set(BUILD_C_FLAGS "-fomit-frame-pointer -Wall -fsigned-char")
-set(BUILD_CXX_FLAGS "-fno-exceptions -fno-rtti")
+if(MSVC)
+    set(BUILD_C_FLAGS " -W3 -fsigned-char")
+    set(BUILD_CXX_FLAGS "/fp:fast /fp:except- /MT /EHa /GS- ")
+    set(BUILD_DEBUG_FLAGS "-D_DEBUG -DBUILD_DEBUG /Z7 /Od /Gy-") #deaktivate optimizations, create dbg-info
+    set(BUILD_RELEASE_FLAGS "-DNDEBUG -DBUILD_NO_DEBUG -O2 /GF /Oy /Og /Ob /Oi /Ot /GL /Gy /Gw")
+
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /DYNAMICBASE /NXCOMPAT /SAFESEH:NO")
+    if("${CMAKE_BUILD_TYPE}" MATCHES "Release")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /OPT:REF,ICF,NOWIN98 /LTCG /GF") #optimizations
+    endif()
+else()
+    set(BUILD_C_FLAGS "-fomit-frame-pointer -Wall -fsigned-char")
+    set(BUILD_CXX_FLAGS "-fno-exceptions -fno-rtti")
+    set(BUILD_DEBUG_FLAGS   "${BUILD_FLAGS} -O0 -g -D_DEBUG -DBUILD_DEBUG")
+    set(BUILD_RELEASE_FLAGS "${BUILD_FLAGS} -O3 -DNDEBUG -DBUILD_NO_DEBUG")
+endif()
 
 set(BUILD_C_DEBUG_FLAGS "${BUILD_C_FLAGS} ${BUILD_DEBUG_FLAGS}")
 set(BUILD_CXX_DEBUG_FLAGS "${BUILD_CXX_FLAGS} ${BUILD_DEBUG_FLAGS}")
@@ -129,7 +142,7 @@ if(NOT BUILD_INSTALL_DIR)
 endif()
 
 if(NOT BUILD_INSTALL_BIN_DIR)
-    set(BUILD_INSTALL_BIN_DIR "${BUILD_INSTALL_DIR}/bin_${BUILD_PLATFORM_BIN}")
+    set(BUILD_INSTALL_BIN_DIR "${BUILD_INSTALL_DIR}/${BUILD_PLATFORM_BIN_DIR}")
 
     set(CMAKE_CURRENT_BINARY_DIR ${BUILD_INSTALL_BIN_DIR})
     set(INSTALL_HEADER_DIR      ${BUILD_TEMP_INCLUDE_DIR})

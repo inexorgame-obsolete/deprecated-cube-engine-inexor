@@ -1,21 +1,24 @@
 add_definitions(-DCLIENT)
 
 if(${BUILD_TARGET_WINDOWS})
-    set(BUILD_EXTRA_LIBS ${BUILD_EXTRA_LIBS} opengl32 ws2_32 winmm)
-    add_definitions(-mwindows)
+    set(BUILD_EXTRA_LIBS ${BUILD_EXTRA_LIBS} ws2_32 winmm dbghelp)
+    if(GNU) 
+        add_definitions(-mwindows)
+    endif()
 elseif(${BUILD_TARGET_LINUX})
     set(BUILD_EXTRA_LIBS ${BUILD_EXTRA_LIBS} dl rt)
 elseif(${BUILD_TARGET_SOLARIS})
     set(BUILD_EXTRA_LIBS ${BUILD_EXTRA_LIBS} socket nsl)
 endif()
 
-set(CLIENT_SOURCES
+set(CLIENT_SOURCES_SHARED
     ${CMAKE_CURRENT_SOURCE_DIR}/../shared/crypto
     ${CMAKE_CURRENT_SOURCE_DIR}/../shared/geom
     ${CMAKE_CURRENT_SOURCE_DIR}/../shared/stream
     ${CMAKE_CURRENT_SOURCE_DIR}/../shared/tools
-    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/zip
+    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/zip)
 
+set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/3dgui
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/bih
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/blend
@@ -52,8 +55,9 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/shadowmap
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/lightmap
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/glare
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/blob
-
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/blob)
+    
+set(CLIENT_SOURCES_FPSGAME
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/ai
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/client       
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/entities
@@ -66,6 +70,11 @@ set(CLIENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/waypoint
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/weapon
 )
+
+set(CLIENT_SOURCES
+    ${CLIENT_SOURCES_SHARED}
+    ${CLIENT_SOURCES_ENGINE}
+    ${CLIENT_SOURCES_FPSGAME})
 
 if(${BUILD_TARGET_OSX})
     set(CLIENT_SOURCES
@@ -86,8 +95,36 @@ elseif(${BUILD_TARGET_WINDOWS})
     endif()
 endif()
 
+if(MSVC)
+    message(STATUS "Setting up source groups.")
+    
+    foreach(GROUP SHARED ENGINE FPSGAME)
+        set(SOURCE_GROUP_${GROUP} "")
+        foreach(FILE ${CLIENT_SOURCES_${GROUP}})
+            set(SOURCE_GROUP_${GROUP}
+                ${SOURCE_GROUP_${GROUP}}
+                ${FILE}.cpp
+                ${FILE}.h)
+        endforeach(FILE)
+        string(SUBSTRING ${GROUP} 0 1 GROUPNAME1)
+        string(TOLOWER ${GROUP} GROUPNAME)
+        if(GROUP_NAME_CAMEL_CASE)
+            string(REGEX REPLACE "^.(.*)" "${GROUPNAME1}\\1" GROUPNAME "${GROUPNAME}")
+        endif()
+        source_group(${GROUPNAME} FILES ${SOURCE_GROUP_${GROUP}}})
+    endforeach(GROUP)
+endif()
+
 set(SB_CLIENT_BINARY client_${BUILD_PLATFORM_BIN}_${BUILD_TARGET_ARCH} CACHE INTERNAL "Client binary name.")
-add_executable(${SB_CLIENT_BINARY} ${CLIENT_SOURCES})
+
+if(WIN32)
+    add_executable(${SB_CLIENT_BINARY} WIN32 ${CLIENT_SOURCES})
+elseif(APPLE)
+    add_executable(${SB_CLIENT_BINARY} MACOSX_BUNDLE ${CLIENT_SOURCES})
+else()
+    add_executable(${SB_CLIENT_BINARY} ${CLIENT_SOURCES})
+endif()
+
 target_link_libraries(${SB_CLIENT_BINARY}
     ${ENET_LIBRARIES}
     ${SDL2_LIBRARIES}
@@ -95,6 +132,10 @@ target_link_libraries(${SB_CLIENT_BINARY}
     ${ZLIB_LIBRARIES}
     ${BUILD_EXTRA_LIBS}
 )
+
+if(MSVC)
+    set_property(TARGET ${SB_CLIENT_BINARY} PROPERTY FOLDER "executables")
+endif()
 
 install(TARGETS
     ${SB_CLIENT_BINARY}
