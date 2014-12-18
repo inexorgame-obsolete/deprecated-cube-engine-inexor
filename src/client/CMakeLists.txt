@@ -1,7 +1,7 @@
 add_definitions(-DCLIENT)
 
 if(${BUILD_TARGET_WINDOWS})
-    set(BUILD_EXTRA_LIBS ${BUILD_EXTRA_LIBS} ws2_32 winmm dbghelp)
+    set(BUILD_EXTRA_LIBS ${BUILD_EXTRA_LIBS} ws2_32 winmm)
     if(GNU) 
         add_definitions(-mwindows)
     endif()
