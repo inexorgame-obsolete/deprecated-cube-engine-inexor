@@ -4,5 +4,5 @@ OLIB=LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
 
 for pref in build/src/client bin/{native,linux{64,32}}; do
   export LD_LIBRARY_PATH="$OLIB:pref"
-  find "$DIR"/data/* -maxdepth 1 -print0  | sed 's/^/-k/' -z | xargs --null "$pref/client"* -q"~/.sauerbraten-fork" && exit
+  find "$DIR"/data/* -maxdepth 1 -print0  | sed 's/^/-k/' -z | xargs --null "$pref/client"* -q"~/.inexor" && exit
 done

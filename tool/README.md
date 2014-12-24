@@ -1,9 +1,9 @@
 # Compiling with the tools
 
 The script `install-homunculus.sh` above can be used to
-automatically compile Sauerbraten fork or to generate
-Eclipse, Code Blocks, Xcode projects. For Mingw users it
-can also generate visual studio projects.
+automatically compile Inexor or to generate Eclipse, Code
+Blocks, Xcode projects. For Mingw users it can also generate
+visual studio projects.
 
 It works on OS X, Debian (and derivatives, e.g. Ubuntu),
 Arch Linux and MinGW.

@@ -390,19 +390,19 @@ boxxy() {
 installer() {
   clear
   boxxy 2 4 <<< "
-    Hello. Let me introduce you to the sauerbraten fork setup homunculus.
+    Hello. Let me introduce you to the inexor setup homunculus.
 
     The homunculus Will guide you through creating your initial development
     setup. She will work on debian and derivatives (e.g. Ubuntu),
     Arch Linux Mac OS X and MinGW.
 
     If your computer does not run one of these platforms, please
-    reference https://github.com/sauerbraten-fork/sauerbraten-fork/wiki/Build
+    reference https://github.com/inexor/code/wiki/Build
     on how to create the compilation setup manually. It's really easy.
 
     If you are using mingw, you will need to install git and
     cmake manually. Please consider using the install homunculus
-    for windows. See https://github.com/sauerbraten-fork/sauerbraten-fork/wiki/Build.
+    for windows. See https://github.com/inexor/code/wiki/Build.
 
     On linux and mac this homunculus possesses the ability to
     fetch and install some dependencies automatically. On mac
@@ -461,9 +461,9 @@ installer() {
     fi
   fi
 
-  repo="${HOME}/sauerbraten-fork-`date +%s`"
-  dbg "Sauerbraten fork will be put into $repo"
-  git clone "https://github.com/sauerbraten-fork/sauerbraten-fork.git" "$repo"
+  repo="${HOME}/inexor-`date +%s`"
+  dbg "Inexor will be put into $repo"
+  git clone "https://github.com/inexor/code.git" "$repo"
 
   evcd "$repo"
 

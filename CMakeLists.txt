@@ -179,8 +179,8 @@ if(${RELEASE_BUILD})
     install(
         FILES
             readme.md
-            sauerbraten.bat
-            sauerbraten_unix
+            inexor.bat
+            inexor_unix
             server.bat
             server-init.cfg
         DESTINATION ${BUILD_INSTALL_DIR})

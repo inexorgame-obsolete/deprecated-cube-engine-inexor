@@ -73,7 +73,7 @@ void fatal(const char *fmt, ...)
 	defvformatstring(msg,fmt,fmt);
 	if(logfile) logoutf("%s", msg);
 #ifdef WIN32
-	MessageBox(NULL, msg, "Cube 2: Sauerbraten fatal error", MB_OK|MB_SYSTEMMODAL);
+	MessageBox(NULL, msg, "Inexor fatal error", MB_OK|MB_SYSTEMMODAL);
 #else
     fprintf(stderr, "server error: %s\n", msg);
 #endif
@@ -1084,7 +1084,7 @@ void initserver(bool listen, bool dedicated)
     if(dedicated) 
     {
 #ifdef WIN32
-        setupwindow("Cube 2: Sauerbraten server");
+        setupwindow("Inexor server");
 #endif
     }
     

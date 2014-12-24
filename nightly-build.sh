@@ -21,8 +21,8 @@ else
 fi
 
 cp -r ./bin_* nightly
-cp ./sauerbraten_unix nightly
-cp ./sauerbraten.bat nightly
+cp ./inexor_unix nightly
+cp ./inexor.bat nightly
 zip -r ${BUILD_NAME}.zip nightly
 sha512sum ${BUILD_NAME}.zip > ${BUILD_NAME}.zip.sum
 echo "sending ${BUILD_NAME}.zip"
