@@ -397,12 +397,12 @@ installer() {
     Arch Linux Mac OS X and MinGW.
 
     If your computer does not run one of these platforms, please
-    reference https://github.com/inexor/code/wiki/Build
+    reference https://github.com/inexor-game/code/wiki/Build
     on how to create the compilation setup manually. It's really easy.
 
     If you are using mingw, you will need to install git and
     cmake manually. Please consider using the install homunculus
-    for windows. See https://github.com/inexor/code/wiki/Build.
+    for windows. See https://github.com/inexor-game/code/wiki/Build.
 
     On linux and mac this homunculus possesses the ability to
     fetch and install some dependencies automatically. On mac
@@ -463,7 +463,7 @@ installer() {
 
   repo="${HOME}/inexor-`date +%s`"
   dbg "Inexor will be put into $repo"
-  git clone "https://github.com/inexor/code.git" "$repo"
+  git clone "https://github.com/inexor-game/code.git" "$repo"
 
   evcd "$repo"
 
