@@ -23,6 +23,8 @@ fi
 cp -r ./bin_* nightly
 cp ./inexor_unix nightly
 cp ./inexor.bat nightly
+cp ./readme.md nightly
+cp ./license.md nightly
 zip -r ${BUILD_NAME}.zip nightly
 sha512sum ${BUILD_NAME}.zip > ${BUILD_NAME}.zip.sum
 echo "sending ${BUILD_NAME}.zip"
