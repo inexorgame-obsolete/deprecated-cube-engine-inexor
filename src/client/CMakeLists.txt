@@ -115,7 +115,7 @@ if(MSVC)
     endforeach(GROUP)
 endif()
 
-set(SB_CLIENT_BINARY client_${BUILD_PLATFORM_BIN}_${BUILD_TARGET_ARCH} CACHE INTERNAL "Client binary name.")
+set(SB_CLIENT_BINARY inexor CACHE INTERNAL "Client binary name.")
 
 if(WIN32)
     add_executable(${SB_CLIENT_BINARY} WIN32 ${CLIENT_SOURCES})

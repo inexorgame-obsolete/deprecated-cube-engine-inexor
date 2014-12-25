@@ -49,7 +49,7 @@ if(MSVC)
     endforeach(GROUP)
 endif()
 
-set(SB_SERVER_BINARY server_${BUILD_PLATFORM_BIN}_${BUILD_TARGET_ARCH} CACHE INTERNAL "Server binary name.")
+set(SB_SERVER_BINARY server CACHE INTERNAL "Server binary name.")
 
 if(WIN32)
     add_executable(${SB_SERVER_BINARY} WIN32 ${SERVER_SOURCES})
