@@ -29,4 +29,4 @@ notifications:
     template: "%{repository_name}/%{branch} %{commit} - %{message}"
     use_notice: false
     skip_join: true
-after_success: bash ./nightly-build.sh
+after_success: bash ./tool/nightly-build.sh
