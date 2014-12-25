@@ -7,11 +7,9 @@ Inexor is a fork of Cube 2: Sauerbraten, which is also licensed under the ZLIB l
 
 ### Notes
 
-The license covers the source code found in the "src"
-directory of this archive (or the source repository on GitHub) as well as the .cfg files under
-the "data" directory (or the data repository on GitHub). The included ENet network library which
-Inexor uses is covered by an MIT-style license, which is however compatible with the above license 
-for all practical purposes.
+The license covers the source code directory of this archive (or the source repository on GitHub) as well as the .cfg files under
+the "data" directory (or the data repository on GitHub). 
+The included ENet network library which Inexor uses is covered by an MIT-style license, which is however compatible with the above license for all practical purposes. Other libraries have also individual licenses, which you can see in the respective readmes.
 
 Game media included in the game (maps, textures, sounds,
 models etc.) are NOT covered by this license, and may have
