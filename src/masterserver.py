@@ -11,13 +11,13 @@ import string
 class masterserver(object):
 
     settings = {
-        "host": "sauerbraten-fork.org",
+        "host": "master.inexor.org",
         "port": 28787,
         "log": "master.log"
     }
     
     proxy = {
-        "host": "sauerbraten.org",
+        "host": "master.inexor.org",
         "port": 28787
     }
     
