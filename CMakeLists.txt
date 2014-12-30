@@ -90,11 +90,11 @@ if(MSVC)
     set(BUILD_C_FLAGS " -W3 -fsigned-char")
     set(BUILD_CXX_FLAGS "/fp:fast /fp:except- /MT /EHa /GS- ")
     set(BUILD_DEBUG_FLAGS "-D_DEBUG -DBUILD_DEBUG /Z7 /Od /Gy-") #deaktivate optimizations, create dbg-info
-    set(BUILD_RELEASE_FLAGS "-DNDEBUG -DBUILD_NO_DEBUG -O2 /GF /Oy /Og /Ob /Oi /Ot /GL /Gy /Gw")
+    set(BUILD_RELEASE_FLAGS "-DNDEBUG -DBUILD_NO_DEBUG /O2 /GF /Oy /Ob /Oi /Ot /GL /Gy /Gw")
 
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /DYNAMICBASE /NXCOMPAT /SAFESEH:NO")
     if("${CMAKE_BUILD_TYPE}" MATCHES "Release")
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /OPT:REF,ICF,NOWIN98 /LTCG /GF") #optimizations
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /OPT:REF,ICF /LTCG /GF") #optimizations
     endif()
 else()
     set(BUILD_C_FLAGS "-fomit-frame-pointer -Wall -fsigned-char")
