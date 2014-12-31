@@ -1,4 +1,5 @@
-//  cJSON 1.0r58 (Copyright (c) 2009 Dave Gamble) rewrite in Inexor-optimized object-orientated C-ish C++
+//  Rewrite of cJSON 1.0r58 in Inexor-optimized object-orientated C-ish C++
+//  cJSON by Dave Gamble is licensed under the MIT-license
 
 #include "engine.h"
 #include <float.h>
