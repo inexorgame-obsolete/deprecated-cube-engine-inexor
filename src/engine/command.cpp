@@ -2390,7 +2390,7 @@ void loopend(ident *id, identstack &stack)
 
 static inline void setiter(ident &id, int i, identstack &stack)
 {
-    if(i)
+    if(id.stack == &stack)
     {
         if(id.valtype != VAL_INT)
         {
@@ -2402,9 +2402,9 @@ static inline void setiter(ident &id, int i, identstack &stack)
     }
     else
     {
-        tagval zero;
-        zero.setint(0);
-        pusharg(id, zero, stack);
+        tagval t;
+        t.setint(i);
+        pusharg(id, t, stack);
         id.flags &= ~IDF_UNKNOWN;
     }
 }
