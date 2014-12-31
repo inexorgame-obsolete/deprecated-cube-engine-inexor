@@ -567,7 +567,7 @@ JSON *JSON::getitem(const char *name)
  //Add Item to Array
 void JSON::additem(JSON *item)
 {
-    //if((type&255) != JSON_ARRAY) return NULL; //invalid JSON
+    //if(type != JSON_ARRAY) return; //invalid JSON
     JSON *c = this->child;
     if (!item) return;
 
@@ -623,13 +623,15 @@ void JSON::replaceitem(int which, JSON *newitem)
     JSON *c = this->child;
     while (c && which>0) { c = c->next; which--; }
     if (!c) return;
+
+    if(type != JSON_ARRAY && !newitem->name) newitem->name = newstring(c->name); //misuse prevention
+
     newitem->next = c->next;
     newitem->prev = c->prev;
     if (newitem->next) newitem->next->prev = newitem;
 
     if (c == this->child) this->child = newitem;
     else newitem->prev->next = newitem;
-    c->next = c->prev = NULL;
     DELETEP(c);
 }
 
@@ -642,7 +644,7 @@ void JSON::replaceitem(const char *name, JSON *newitem)
     if(!c) return;
 
     newitem->name = newstring(name);
-    this->replaceitem(i, newitem);
+    replaceitem(i, newitem);
 }
 
 //Minify JSON buffer
