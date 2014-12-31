@@ -13,8 +13,6 @@ enum {
     JSON_OBJECT                     //unordered list { }
 }; // JSON types
 
-#define JSON_IsReference 256        //References are JSONs not connected to the chain
-
 struct JSON
 {
     JSON *next, *prev;   // next/prev allow you to walk array/object chains.
@@ -24,7 +22,7 @@ struct JSON
 
     char *valuestring;              // The item's string, if type==JSON_String
     int valueint;                   // The item's number, if type==JSON_Number
-    float valuefloat;             // The item's number, if type==JSON_Number
+    float valuefloat;               // The item's number, if type==JSON_Number
 
     char *name;                     // The item's name string, if this item is the child of, or is in the list of subitems of an object.
 
@@ -32,7 +30,7 @@ struct JSON
 
     JSON(JSON *old)       //Copy constructor
     {
-        type = old->type&(~JSON_IsReference); //no ref
+        type = old->type;
         valueint = old->valueint; valuefloat = old->valuefloat;
         if(old->valuestring) valuestring = newstring(old->valuestring);
         if(old->name) name = newstring(old->name);
@@ -56,20 +54,14 @@ struct JSON
     ~JSON()
     {
         DELETEA(name);
-        if(!(type&JSON_IsReference))
+        DELETEA(valuestring);
+        JSON *c = child;
+        while (c)
         {
-            DELETEA(valuestring);
-            JSON *c = child;
-            while (c)
-            {
-                JSON *b = c;
-                c = c->next;
-                DELETEP(b);
-            }
-            DELETEP(child);
-            DELETEP(next);
+            JSON *b = c;
+            c = c->next;
+            DELETEP(b);
         }
-
     }
 
     JSON *getitem(int item);           //Get Item of Array
@@ -88,7 +80,7 @@ struct JSON
     void replaceitem(const char *name, JSON *newitem);  //Replace Item in Object
 };
 
-// Parse the input text to generate a number, and populate the result into item.
+ // Parse the input text to generate a number, and populate the result into item.
 static const char *parse_number(JSON *item, const char *num)
 {
     float n = 0, sign=1, scale=0; int subscale=0, signsubscale=1;
@@ -115,7 +107,7 @@ static const char *parse_number(JSON *item, const char *num)
     return num;
 }
 
-// Render the number nicely from the given item into a string.
+ // Render the number nicely from the given item into a string.
 static char *print_number(JSON *item)
 {
     char *str;
@@ -151,7 +143,7 @@ static unsigned parse_hex4(const char *str)
     return h;
 }
 
-// Parse the input text into an unescaped cstring, and populate item.
+ // Parse the input text into an unescaped cstring, and populate item.
 static const char *ep; //error pointer
 static const unsigned char firstByteMark[7] = { 0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC };
 static const char *parse_string(JSON *item, const char *str)
@@ -220,7 +212,7 @@ static const char *parse_string(JSON *item, const char *str)
     return ptr;
 }
 
-// Render the cstring provided to an escaped version that can be printed.
+ // Render the cstring provided to an escaped version that can be printed.
 static char *print_string_ptr(const char *str)
 {
     const char *ptr; char *ptr2,*out; int len=0; unsigned char token;
@@ -262,10 +254,10 @@ static char *print_string_ptr(const char *str)
     return out;
 }
 
-// Invote print_string_ptr (which is useful) on an item.
+ // Invote print_string_ptr (which is useful) on an item.
 static char *print_string(JSON *item) { return print_string_ptr(item->valuestring); }
 
-// Predeclare these prototypes.
+ // Predeclare these prototypes.
 static const char *parse_value(JSON *item, const char *value);
 static char *print_value(JSON *item, int depth, int fmt);
 static const char *parse_array(JSON *item, const char *value);
@@ -273,10 +265,10 @@ static char *print_array(JSON *item, int depth, int fmt);
 static const char *parse_object(JSON *item, const char *value);
 static char *print_object(JSON *item, int depth, int fmt);
 
-// Utility to jump whitespace and cr/lf
+ // Utility to jump whitespace and cr/lf
 static const char *skip(const char *in) {while (in && *in && (unsigned char)*in<=32) in++; return in;}
 
-// Parse an object - create a new root, and populate.
+ // Parse an object - create a new root, and populate.
 JSON *JSON_ParseWithOpts(const char *value, const char **return_parse_end, bool require_null_terminated)
 {
     const char *end = 0;
@@ -295,14 +287,14 @@ JSON *JSON_ParseWithOpts(const char *value, const char **return_parse_end, bool 
     if(return_parse_end) *return_parse_end = end;
     return c;
 }
-// Default options for JSON_Parse
+ // Default options for JSON_Parse
 JSON *JSON_Parse(const char *value) { return JSON_ParseWithOpts(value, 0, false); }
 
-// Render a JSON item/entity/structure to text.
+ // Render a JSON item/entity/structure to text.
 char *JSON_Print(JSON *item)            { return print_value( item, 0, 1); }
 char *JSON_PrintUnformatted(JSON *item)    { return print_value( item, 0, 0); }
 
-// Parser core - when encountering text, process appropriately.
+ // Parser core - when encountering text, process appropriately.
 static const char *parse_value(JSON *item, const char *value)
 {
     if(!value)                        return 0;    // Fail on null.
@@ -317,7 +309,7 @@ static const char *parse_value(JSON *item, const char *value)
     ep = value; return 0;    // failure.
 }
 
-// Render a value to text.
+ // Render a value to text.
 static char *print_value(JSON *item, int depth, int fmt)
 {
     char *out=0;
@@ -335,7 +327,7 @@ static char *print_value(JSON *item, int depth, int fmt)
     return out;
 }
 
-// Build an array from input text.
+ // Build an array from input text.
 static const char *parse_array(JSON *item, const char *value)
 {
     JSON *child;
@@ -363,7 +355,7 @@ static const char *parse_array(JSON *item, const char *value)
     ep = value; return 0;    // malformed.
 }
 
-// Render an array to text
+ // Render an array to text
 static char *print_array(JSON *item, int depth, int fmt)
 {
     char **entries;
@@ -428,7 +420,7 @@ static char *print_array(JSON *item, int depth, int fmt)
     return out;
 }
 
-// Build an object from the text.
+ // Build an object from the text.
 static const char *parse_object(JSON *item, const char *value)
 {
     JSON *child;
@@ -470,7 +462,7 @@ static const char *parse_object(JSON *item, const char *value)
     ep = value; return 0;    // malformed.
 }
 
-// Render an object to text.
+ // Render an object to text.
 static char *print_object(JSON *item, int depth, int fmt)
 {
     char **entries = 0, **names = 0;
@@ -550,22 +542,12 @@ static char *print_object(JSON *item, int depth, int fmt)
     return out;
 }
 
-// Utility for array list handling.
+ // Utility for array list handling.
 static void suffix_object(JSON *prev, JSON *item) { prev->next = item; item->prev = prev; }
-// Utility for handling references.
-static JSON *create_reference(JSON *item)
-{
-    JSON *ref = new JSON(item);
-    DELETEA(ref->name);
-    ref->type |= JSON_IsReference;
-    ref->next = ref->prev = NULL;
-    return ref;
-}
 
-//Get Item of Array:
+ //Get Item of Array:
 JSON *JSON::getitem(int item)
 {
-    //if((type&255) != JSON_ARRAY) return NULL;
     JSON *c = this->child;
     while (c && item > 0) {
         item--;
@@ -574,7 +556,7 @@ JSON *JSON::getitem(int item)
     return c;
 }
 
-//Get Item of Object:
+ //Get Item of Object:
 JSON *JSON::getitem(const char *name)
 {
     JSON *c = this->child;
@@ -582,7 +564,7 @@ JSON *JSON::getitem(const char *name)
     return c;
 }
 
-//Add Item to Array
+ //Add Item to Array
 void JSON::additem(JSON *item)
 {
     //if((type&255) != JSON_ARRAY) return NULL; //invalid JSON
