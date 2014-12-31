@@ -40,6 +40,7 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/decal
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/dynlight
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/grass
+	${CMAKE_CURRENT_SOURCE_DIR}/../engine/json
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/main
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/material
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/menus
