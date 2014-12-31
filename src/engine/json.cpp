@@ -24,16 +24,16 @@ struct JSON
 
     char *valuestring;              // The item's string, if type==JSON_String
     int valueint;                   // The item's number, if type==JSON_Number
-    double valuedouble;             // The item's number, if type==JSON_Number
+    float valuefloat;             // The item's number, if type==JSON_Number
 
     char *name;                     // The item's name string, if this item is the child of, or is in the list of subitems of an object.
 
-    JSON() : next(NULL), prev(NULL), child(NULL), type(0), valuestring(NULL), valueint(0), valuedouble(0), name(NULL)  { }
+    JSON() : next(NULL), prev(NULL), child(NULL), type(0), valuestring(NULL), valueint(0), valuefloat(0), name(NULL)  { }
 
     JSON(JSON *old)       //Copy constructor
     {
         type = old->type&(~JSON_IsReference); //no ref
-        valueint = old->valueint; valuedouble = old->valuedouble;
+        valueint = old->valueint; valuefloat = old->valuefloat;
         if(old->valuestring) valuestring = newstring(old->valuestring);
         if(old->name) name = newstring(old->name);
 
@@ -91,7 +91,7 @@ struct JSON
 // Parse the input text to generate a number, and populate the result into item.
 static const char *parse_number(JSON *item, const char *num)
 {
-    double n=0, sign=1, scale=0; int subscale=0, signsubscale=1;
+    float n = 0, sign=1, scale=0; int subscale=0, signsubscale=1;
 
     if(*num=='-') sign=-1,num++;      // Has sign?
     if(*num=='0') num++;              // is zero
@@ -107,9 +107,9 @@ static const char *parse_number(JSON *item, const char *num)
         while (*num>='0' && *num<='9') subscale=(subscale*10)+(*num++ - '0');      // Number?
     }
 
-    n = sign*n*pow(10.0, (scale+subscale*signsubscale));    // number = +/- number.fraction * 10^+/- exponent
+    n = sign*n*pow(10.0f, (scale+subscale*signsubscale));    // number = +/- number.fraction * 10^+/- exponent
 
-    item->valuedouble = n;
+    item->valuefloat = n;
     item->valueint = (int)n;
     item->type = JSON_NUMBER;
     return num;
@@ -119,8 +119,8 @@ static const char *parse_number(JSON *item, const char *num)
 static char *print_number(JSON *item)
 {
     char *str;
-    double d=item->valuedouble;
-    if(fabs(((double)item->valueint)-d)<=DBL_EPSILON && d<=INT_MAX && d>=INT_MIN)
+    float d = item->valuefloat;
+    if(fabs(((float)item->valueint)-d) <= FLT_EPSILON && d<=INT_MAX && d>=INT_MIN)
     {
         str= new char[21];    // 2^64+1 can be represented in 21 chars.
         formatstring(str) ("%d", item->valueint);
@@ -130,7 +130,7 @@ static char *print_number(JSON *item)
         str= new char[64];    // This is a nice tradeoff.
         if(str)
         {
-            if(fabs(floor(d)-d)<=DBL_EPSILON && fabs(d)<1.0e60) formatstring(str)("%.0f",d);
+            if(fabs(floor(d)-d)<=FLT_EPSILON && fabs(d)<1.0e60) formatstring(str)("%.0f",d);
             else if(fabs(d)<1.0e-6 || fabs(d)>1.0e9)            formatstring(str)("%e",d);
             else                                                formatstring(str)("%f",d);
         }
@@ -692,7 +692,7 @@ void JSON_Minify(char *json)
 // Create basic types:
 JSON *JSON_CreateBool(bool b)               { JSON *item= new JSON(); item->type = b ? JSON_TRUE : JSON_FALSE;  return item; }
 JSON *JSON_CreateInt(int num)               { JSON *item= new JSON(); item->type = JSON_NUMBER;     item->valueint = num;       return item; }
-JSON *JSON_CreateDouble(double num)         { JSON *item= new JSON(); item->type = JSON_NUMBER;     item->valuedouble = num;    return item; }
+JSON *JSON_CreateFloat(float num)           { JSON *item= new JSON(); item->type = JSON_NUMBER;     item->valuefloat = num;     return item; }
 JSON *JSON_CreateString(const char *str)    { JSON *item= new JSON(); item->type = JSON_STRING;     item->valuestring = newstring(str);  return item; }
 JSON *JSON_CreateArray()                    { JSON *item= new JSON(); item->type = JSON_ARRAY;      return item; }
 JSON *JSON_CreateObject()                   { JSON *item= new JSON(); item->type = JSON_OBJECT;     return item; }
@@ -711,12 +711,12 @@ JSON *JSON_CreateIntArray(const int *numbers, int count)
     return out;
 }
 
-JSON *JSON_CreateDoubleArray(const double *numbers, int count)
+JSON *JSON_CreateFloatArray(const float *numbers, int count)
 {
     JSON *last = NULL, *out = JSON_CreateArray();
     loopi(count)
     {
-        JSON *cur = JSON_CreateDouble(numbers[i]);
+        JSON *cur = JSON_CreateFloat(numbers[i]);
         if(!i) out->child = cur;
         else suffix_object(last, cur);
         last = cur;
@@ -744,4 +744,4 @@ JSON *JSON_CreateStringArray(const char **strings, int count)
 
 //JSON *JSON_CreateTrue()                        { JSON *item= new JSON(); item->type = JSON_TRUE;   return item; }
 //JSON *JSON_CreateFalse()                    { JSON *item= new JSON(); item->type = JSON_FALSE;  return item; }
-//cJSON *cJSON_CreateNumber(double num)            {cJSON *item=cJSON_New_Item();if(item){item->type=cJSON_Number;item->valuedouble=num;item->valueint=(int)num;}return item;} //its int or double now
+//cJSON *cJSON_CreateNumber(double num)            {cJSON *item=cJSON_New_Item();if(item){item->type=cJSON_Number;item->valuedouble=num;item->valueint=(int)num;}return item;} //its int or float now
