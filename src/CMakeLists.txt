@@ -70,6 +70,33 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/game
 )
 
+# Builds source groups for MSVC
+function(sb_msvc_build_source_groups TARGET)
+    if(MSVC)
+        message(STATUS "Setting up source groups.")
+
+        string(TOUPPER "${TARGET}" TARGET)
+        string(TOUPPER "${ARGN}" GROUPS)
+
+        foreach(GROUP ${GROUPS})
+            set(SOURCE_GROUP_${GROUP} "")
+            foreach(FILE "${${TARGET}_SOURCES_${GROUP}};${${TARGET}_HEADERS_${GROUP}}")
+                set(SOURCE_GROUP_${GROUP}
+                    ${SOURCE_GROUP_${GROUP}}
+                    ${FILE}.cpp
+                    ${FILE}.h)
+                message(STATUS "Adding ${TARGET}_{SOURCES,HEADERS}_${GROUP} -> ${FILE}")
+            endforeach(FILE)
+            string(SUBSTRING ${GROUP} 0 1 GROUPNAME1)
+            string(TOLOWER ${GROUP} GROUPNAME)
+            if(GROUP_NAME_CAMEL_CASE)
+                string(REGEX REPLACE "^.(.*)" "${GROUPNAME1}\\1" GROUPNAME "${GROUPNAME}")
+            endif()
+            source_group(${GROUPNAME} FILES ${SOURCE_GROUP_${GROUP}}})
+        endforeach(GROUP)
+    endif()
+endfunction()
+
 if(${BUILD_CLIENT})
     add_subdirectory(client)
 else()

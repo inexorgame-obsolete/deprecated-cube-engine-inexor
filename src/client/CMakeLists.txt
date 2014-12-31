@@ -20,6 +20,16 @@ set(CLIENT_SOURCES_SHARED
     ${CMAKE_CURRENT_SOURCE_DIR}/../shared/tools
     ${CMAKE_CURRENT_SOURCE_DIR}/../shared/zip)
 
+# Only used for MSVC
+set(CLIENT_HEADERS_SHARED
+    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/command
+    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/cube
+    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/ents
+    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/geom
+    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/iengine
+    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/igame
+    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/tools)
+
 set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/3dgui
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/bih
@@ -58,6 +68,34 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/lightmap
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/glare
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/blob)
+
+set(CLIENT_HEADERS_ENGINE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/animmodel
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/bih
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/depthfx
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/engine
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/explosion
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/iqm
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/lensflare
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/lightmap
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/lightning
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/md2
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/md3
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/md5
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/model
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/mpr
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/obj
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/octa
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/ragdoll
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/rendertarget
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/scale
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/skelmodel
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/smd
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/textedit
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/texture
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/varray
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/vertmodel
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/world)
     
 set(CLIENT_SOURCES_FPSGAME
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/ai
@@ -70,8 +108,18 @@ set(CLIENT_SOURCES_FPSGAME
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/scoreboard
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/server
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/waypoint
-    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/weapon
-)
+    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/weapon)
+
+set(CLIENT_HEADERS_FPSGAME
+    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/ai
+    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/aiman
+    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/bomb
+    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/capture
+    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/collect
+    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/ctf
+    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/extinfo
+    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/game
+    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/hideandseek)
 
 set(CLIENT_SOURCES
     ${CLIENT_SOURCES_SHARED}
@@ -97,25 +145,7 @@ elseif(${BUILD_TARGET_WINDOWS})
     endif()
 endif()
 
-if(MSVC)
-    message(STATUS "Setting up source groups.")
-    
-    foreach(GROUP SHARED ENGINE FPSGAME)
-        set(SOURCE_GROUP_${GROUP} "")
-        foreach(FILE ${CLIENT_SOURCES_${GROUP}})
-            set(SOURCE_GROUP_${GROUP}
-                ${SOURCE_GROUP_${GROUP}}
-                ${FILE}.cpp
-                ${FILE}.h)
-        endforeach(FILE)
-        string(SUBSTRING ${GROUP} 0 1 GROUPNAME1)
-        string(TOLOWER ${GROUP} GROUPNAME)
-        if(GROUP_NAME_CAMEL_CASE)
-            string(REGEX REPLACE "^.(.*)" "${GROUPNAME1}\\1" GROUPNAME "${GROUPNAME}")
-        endif()
-        source_group(${GROUPNAME} FILES ${SOURCE_GROUP_${GROUP}}})
-    endforeach(GROUP)
-endif()
+sb_msvc_build_source_groups(CLIENT engine fpsgame shared)
 
 set(SB_CLIENT_BINARY inexor CACHE INTERNAL "Client binary name.")
 

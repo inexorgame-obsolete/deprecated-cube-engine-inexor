@@ -15,39 +15,44 @@ set(SERVER_SOURCES_SHARED
     ${CMAKE_CURRENT_SOURCE_DIR}/../shared/tools
     ${CMAKE_CURRENT_SOURCE_DIR}/../shared/zip)
 
+set(SERVER_HEADERS_SHARED
+    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/command
+    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/cube
+    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/ents
+    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/geom
+    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/iengine
+    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/igame
+    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/tools)
+
 set(SERVER_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/server
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/command
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/worldio)
 
+set(SERVER_HEADERS_ENGINE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/engine
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/world)
+
 set(SERVER_SOURCES_FPSGAME
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/server
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/entities)
+
+set(SERVER_HEADERS_FPSGAME
+    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/aiman
+    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/bomb
+    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/capture
+    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/collect
+    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/ctf
+    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/extinfo
+    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/game
+    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/hideandseek)
 
 set(SERVER_SOURCES
     ${SERVER_SOURCES_SHARED}
     ${SERVER_SOURCES_ENGINE}
     ${SERVER_SOURCES_FPSGAME})
 
-if(MSVC)
-    message(STATUS "Setting up source groups.")
-    
-    foreach(GROUP SHARED ENGINE FPSGAME)
-        set(SOURCE_GROUP_${GROUP} "")
-        foreach(FILE ${SERVER_SOURCES_${GROUP}})
-            set(SOURCE_GROUP_${GROUP}
-                ${SOURCE_GROUP_${GROUP}}
-                ${FILE}.cpp
-                ${FILE}.h)
-        endforeach(FILE)
-        string(SUBSTRING ${GROUP} 0 1 GROUPNAME1)
-        string(TOLOWER ${GROUP} GROUPNAME)
-        if(GROUP_NAME_CAMEL_CASE)
-            string(REGEX REPLACE "^.(.*)" "${GROUPNAME1}\\1" GROUPNAME "${GROUPNAME}")
-        endif()
-        source_group(${GROUPNAME} FILES ${SOURCE_GROUP_${GROUP}}})
-    endforeach(GROUP)
-endif()
+sb_msvc_build_source_groups(ENGINE engine fpsgame shared)
 
 set(SB_SERVER_BINARY server CACHE INTERNAL "Server binary name.")
 
