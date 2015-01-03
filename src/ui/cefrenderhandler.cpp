@@ -37,11 +37,12 @@ extern void logoutf(const char *fmt, ...);
 #define VERIFY_NO_ERROR
 #endif
 
-InexorCefRenderHandler::InexorCefRenderHandler(bool transparent, bool show_update_rect, int width, int height)
+InexorCefRenderHandler::InexorCefRenderHandler(bool transparent, int x, int y, int width, int height)
     : transparent_(transparent),
-      show_update_rect_(show_update_rect),
       initialized_(false),
       texture_id_(900),
+      view_x_(x),
+      view_y_(y),
       view_width_(width),
       view_height_(height) {
 }
@@ -175,8 +176,7 @@ void InexorCefRenderHandler::ClearPopupRects()
 
 bool InexorCefRenderHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect)
 {
-    logoutf("InexorCefRenderHandler::GetViewRect()");
-    rect = CefRect(0, 0, view_width_, view_height_);
+    rect = CefRect(view_x_, view_y_, view_width_, view_height_);
     return true;
 }
 
@@ -207,9 +207,6 @@ void InexorCefRenderHandler::OnPaint(
 
         view_width_ = width;
         view_height_ = height;
-
-        if (show_update_rect_)
-            update_rect_ = dirtyRects[0];
 
         glPixelStorei(GL_UNPACK_ROW_LENGTH, view_width_); VERIFY_NO_ERROR;
 

@@ -7,7 +7,8 @@
 
 class InexorCefClientHandler : public CefClient,
                                public CefLifeSpanHandler,
-                               public CefLoadHandler
+                               public CefLoadHandler,
+                               public CefKeyboardHandler
 {
     public:
         InexorCefClientHandler(InexorCefRenderHandler *renderHandler); // : m_renderHandler(renderHandler) { };
@@ -21,6 +22,9 @@ class InexorCefClientHandler : public CefClient,
         void OnBeforeClose(CefRefPtr<CefBrowser> browser);
 
         virtual void OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, ErrorCode errorCode, const CefString& errorText, const CefString& failedUrl);
+
+        bool OnPreKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event, bool* is_keyboard_shortcut);
+        bool OnKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event);
 
         CefRefPtr<CefBrowser> GetBrowser() { return m_Browser; }
         bool IsClosing() { return m_bIsClosing; }
