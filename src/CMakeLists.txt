@@ -252,11 +252,12 @@ function(target_link_libraries_wrapper BINARYNAME)
     endif()
 endfunction()
 
-add_subdirectory(libraries) # muparser
+add_subdirectory(libraries) # muparser and cef
 declare_module(shared ./shared)
 declare_module(engine ./engine)
 declare_module(fpsgame ./fpsgame)
 declare_module(util ./util)
+declare_module(ui ./ui)
 add_subdirectory(rpc) # rpc module, protobuf lib
 add_subdirectory(net) # net module, asio lib
 
@@ -267,7 +268,7 @@ include_directories(
     ${ASIO_INCLUDE_DIRS}
     ${PROTOBUF_INCLUDE_DIRS}
     ${RPC_INCLUDE_DIRS}
-    ${FREETYPE_INCLUDE_DIRS}
+    ${CEF_INCLUDE_DIRS}
     ${SOURCE_DIR}
     ${SOURCE_DIR}/shared
     ${SOURCE_DIR}/engine
@@ -275,24 +276,38 @@ include_directories(
 
 # This should contain all sources in the project,
 # TODO: Append every time we glob some headers
-set(ALL_HEADERS ${MUPARSER_HEADERS} ${SHARED_MODULE_HEADERS}
-  ${ENGINE_MODULE_HEADERS} ${FPSGAME_MODULE_HEADERS}
-  ${UTIL_MODULE_HEADERS} ${RPC_MODULE_HEADERS}
-  ${NET_MODULE_HEADERS} CACHE INTERNAL "")
+set(ALL_HEADERS
+	${ENGINE_MODULE_HEADERS}
+	${FPSGAME_MODULE_HEADERS}
+	${MUPARSER_HEADERS}
+	${NET_MODULE_HEADERS}
+	${RPC_MODULE_HEADERS}
+	${SHARED_MODULE_HEADERS}
+	${UI_MODULE_HEADERS}
+	${UTIL_MODULE_HEADERS}
+	CACHE INTERNAL "")
 
 # This should contain all sources that are used by all
 # targets. This only excludes fpsgame/ and engine/
 # TODO: Append every time we glob for sources
-set(COMMON_SOURCES ${MUPARSER_SOURCES} ${SHARED_MODULE_SOURCES}
-  ${UTIL_MODULE_SOURCES} ${NET_MODULE_SOURCES}
-  ${RPC_MODULE_SOURCES} CACHE INTERNAL "")
+set(COMMON_SOURCES
+	${MUPARSER_SOURCES}
+	${SHARED_MODULE_SOURCES}
+	${UTIL_MODULE_SOURCES}
+	${NET_MODULE_SOURCES}
+	${RPC_MODULE_SOURCES}
+	CACHE INTERNAL "")
 
 # This contains the libraries that are used by all targets.
 # Excludes OpenGL and SDL, because those are only used by
 # the client.
-set(COMMON_LIBS ${ENET_LIBRARIES} ${OPENGL_LIBRARIES}
-  ${ZLIB_LIBRARIES} ${PROTOBUF_LIBRARIES}
-  ${ADDITIONAL_LIBRARIES} CACHE INTERNAL "")
+set(COMMON_LIBS
+	${ENET_LIBRARIES}
+	${OPENGL_LIBRARIES}
+	${ZLIB_LIBRARIES}
+	${PROTOBUF_LIBRARIES}
+	${ADDITIONAL_LIBRARIES}
+	CACHE INTERNAL "")
 
 get_property(INCLUDE_DIRECTORIES DIRECTORY
   ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
