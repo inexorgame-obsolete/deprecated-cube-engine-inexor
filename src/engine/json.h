@@ -41,7 +41,7 @@ struct JSON
         {
             JSON *newchild = new JSON(loop); //duplicate every child and its subchilds ..
 
-            if(!last) { this->child = newchild; last = newchild; } //set first child
+            if(!last) { child = newchild; last = newchild; } //set first child
             else {         //If child already set, then crosswire ->prev and ->next and move on
                 last->next = newchild;
                 newchild->prev = last;
@@ -83,7 +83,7 @@ struct JSON
 
     JSON *getitem(int item)           //Get Item of Array
     {
-        JSON *c = this->child;
+        JSON *c = child;
         while (c && item > 0) {
             item--;
             c = c->next;
@@ -93,7 +93,7 @@ struct JSON
 
     JSON *getitem(const char *name)   //Get Item of Object
     {
-        JSON *c = this->child;
+        JSON *c = child;
         while (c && strcasecmp(c->name, name)) c = c->next;
         return c;
     }
@@ -101,10 +101,10 @@ struct JSON
     void additem(JSON *item)                      //add item to Array
     {
         //if(type != JSON_ARRAY) return; //invalid JSON
-        JSON *c = this->child;
+        JSON *c = child;
         if (!item) return;
 
-        if (!c) { this->child = item; }
+        if (!c) { child = item; }
         else
         { //last place in the chain
             while (c && c->next) c = c->next;
@@ -123,19 +123,19 @@ struct JSON
 
     JSON *detachitem(int which)         //Detach Item from Array
     {
-        JSON *c = this->child;
+        JSON *c = child;
         while (c && which>0) { c = c->next; which--; }
         if (!c) return 0;
         if (c->prev) c->prev->next = c->next;
         if (c->next) c->next->prev = c->prev;
-        if (c == this->child) this->child = c->next;
+        if (c == child) child = c->next;
         c->prev = c->next = NULL;
         return c;
     }
     JSON *detachitem(const char *name)  //Detach Item from Object
     {
         int i=0;
-        JSON *c = this->child;
+        JSON *c = child;
         while (c && strcasecmp(c->name, name)){ i++; c = c->next; }
         if (c) return JSON::detachitem(i);
         return 0;
@@ -146,7 +146,7 @@ struct JSON
 
     void replaceitem(int which, JSON *newitem)          //Replace Item in Array
     {
-        JSON *c = this->child;
+        JSON *c = child;
         while (c && which>0) { c = c->next; which--; }
         if (!c) return;
 
@@ -156,7 +156,7 @@ struct JSON
         newitem->prev = c->prev;
         if (newitem->next) newitem->next->prev = newitem;
 
-        if (c == this->child) this->child = newitem;
+        if (c == child) child = newitem;
         else newitem->prev->next = newitem;
         DELETEP(c);
     }
@@ -164,7 +164,7 @@ struct JSON
     void replaceitem(const char *name, JSON *newitem)   //Replace Item in Object
     {
         int i = 0;
-        JSON *c = this->child;
+        JSON *c = child;
         while(c && strcasecmp(c->name, name)) { i++; c = c->next; }
         if(!c) return;
 
