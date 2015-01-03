@@ -9,8 +9,10 @@
 #include "octa.h"
 #include "lightmap.h"
 #include "bih.h"
+#include "json.h"
 #include "texture.h"
 #include "model.h"
+
 
 // GL_ARB_multitexture
 extern PFNGLACTIVETEXTUREARBPROC       glActiveTexture_;
