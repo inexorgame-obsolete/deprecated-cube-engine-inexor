@@ -8,7 +8,7 @@
 
 class InexorCefRenderHandler : public CefRenderHandler {
     public:
-        InexorCefRenderHandler(bool transparent, bool show_update_rect, int width, int height);
+        InexorCefRenderHandler(bool transparent, int x, int y, int width, int height);
         virtual ~InexorCefRenderHandler();
 
         // Initialize the OpenGL environment.
@@ -34,6 +34,8 @@ class InexorCefRenderHandler : public CefRenderHandler {
 
         bool IsTransparent() { return transparent_; }
 
+        int GetViewX() { return view_x_; }
+        int GetViewY() { return view_y_; }
         int GetViewWidth() { return view_width_; }
         int GetViewHeight() { return view_height_; }
 
@@ -45,14 +47,14 @@ class InexorCefRenderHandler : public CefRenderHandler {
 
     private:
         const bool transparent_;
-        const bool show_update_rect_;
         bool initialized_;
         unsigned int texture_id_;
+        int view_x_;
+        int view_y_;
         int view_width_;
         int view_height_;
         CefRect popup_rect_;
         CefRect original_popup_rect_;
-        CefRect update_rect_;
 
         // Provides atomic refcounting implementation.
         IMPLEMENT_REFCOUNTING(InexorCefRenderHandler);

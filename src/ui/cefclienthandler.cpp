@@ -74,3 +74,13 @@ void InexorCefClientHandler::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPt
 	    ").</h2></body></html>";
     frame->LoadString(ss.str(), failedUrl);
 }
+
+bool InexorCefClientHandler::OnPreKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event, bool* is_keyboard_shortcut) {
+	logoutf("InexorCefClientHandler::OnPreKeyEvent: key_event.type: %d native_key_code: %d windows_key_code: %d is_system_key: %d", key_event.type, key_event.native_key_code, key_event.windows_key_code, key_event.is_system_key);
+	return false;
+}
+
+bool InexorCefClientHandler::OnKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event) {
+	logoutf("InexorCefClientHandler::OnKeyEvent: key_event.type: %d native_key_code: %d windows_key_code: %d is_system_key: %d", key_event.type, key_event.native_key_code, key_event.windows_key_code, key_event.is_system_key);
+    return false;
+}
