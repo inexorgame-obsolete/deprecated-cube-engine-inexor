@@ -22,11 +22,4 @@ env:
   - CMAKE_FLAGS="-DCMAKE_TOOLCHAIN_FILE=../src/platform_windows/linux-toolchain-mingw.cmake -DMINGW_TYPE=classic"
   - CMAKE_FLAGS="-DCMAKE_TOOLCHAIN_FILE=../src/platform_windows/linux-toolchain-mingw.cmake -DRELEASE_BUILD=1  -DMINGW_TYPE=classic"
 
-notifications:
-  irc:
-    channels:
-      - "irc.gamesurge.net#inexor"
-    template: "%{repository_name}/%{branch} %{commit} - %{message}"
-    use_notice: false
-    skip_join: true
 after_success: bash ./tool/nightly-build.sh
