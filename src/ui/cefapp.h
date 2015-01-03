@@ -9,10 +9,8 @@ class InexorCefApp : public CefApp,
 {
 
     public:
-
-	    // InexorCefApp();
 	    InexorCefApp(std::string url);
-	    // InexorCefApp(std::string url, unsigned int width, unsigned int height);
+	    InexorCefApp(std::string url, int x, int y, int width, int height);
 
 	    virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() { return this; }
 	    virtual void OnContextInitialized();
@@ -23,12 +21,9 @@ class InexorCefApp : public CefApp,
 
 
 	private:
-
 	    std::string url;
-	    // std::string url2;
 	    CefWindowInfo window_info;
         CefRefPtr<CefBrowser> browser;
-        // CefRefPtr<CefBrowser> browser2;
 	    CefRefPtr<InexorCefClientHandler> client_handler;
 	    CefBrowserSettings browser_settings;
 	    CefRefPtr<InexorCefRenderHandler> render_handler;
