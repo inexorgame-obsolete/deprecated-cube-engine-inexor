@@ -330,13 +330,17 @@ function(opt_subdir subdir initial)
   endif()
 endfunction()
 
+set(CEF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/src/libraries/cef3")
 include_directories(
     ${ENET_INCLUDE_DIRS}
     ${SDL2_INCLUDE_DIRS}
     ${SOURCE_DIR}
+    ${CEF_INCLUDE_DIRS}
     ${SOURCE_DIR}/shared
     ${SOURCE_DIR}/engine
     ${SOURCE_DIR}/fpsgame)
+
+add_subdirectory(libraries/cef3/libcef_dll)
 
 add_subdirectory(libraries) # muparser
 declare_module(shared ./shared)

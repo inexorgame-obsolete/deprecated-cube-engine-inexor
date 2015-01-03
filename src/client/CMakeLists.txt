@@ -50,7 +50,12 @@ prepend(CLIENT_SOURCES_FPSGAME ${SOURCE_DIR}/fpsgame
     waypoint.cpp
     weapon.cpp)
 
+set(CLIENT_SOURCES_CEFDLL
+    ${CMAKE_CURRENT_SOURCE_DIR}/../libraries/cef3/libcef_dll
+)
+
 set(CLIENT_SOURCES
+  ${CLIENT_SOURCES_CEFDLL}
   ${CLIENT_SOURCES_ENGINE}
   ${CLIENT_SOURCES_FPSGAME}
   ${COMMON_SOURCES} CACHE INTERNAL "")
@@ -74,12 +79,15 @@ elseif(OS_WINDOWS)
     endif()
 endif()
 
+set(CEF_LIBRARIES "${PROJECT_SOURCE_DIR}/src/libraries/cef3/bin/linux/x86_64/cef/libcef.so;libcef_dll_wrapper")
+
 add_app(${CLIENT_BINARY} ${CLIENT_SOURCES})
 target_link_libs(${CLIENT_BINARY}
   ${COMMON_LIBS}
   ${SDL2_LIBRARIES}
   ${OPENGL_LIBRARIES}
-  ${ADDITIONAL_LIBRARIES})
+  ${ADDITIONAL_LIBRARIES}
+  ${CEF_LIBRARIES})
 
 config_net(${CLIENT_BINARY})
 config_rpc(${CLIENT_BINARY})
