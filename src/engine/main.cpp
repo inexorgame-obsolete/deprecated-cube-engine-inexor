@@ -2,6 +2,12 @@
 
 #include "engine.h"
 #include "rpc/rpc_sb_compat.h"
+#include "ui/cefapp.h"
+#include "ui/cefsettings.h"
+#include "ui/cefclienthandler.h"
+#include "ui/cefrenderhandler.h"
+#include "ui/cefrequestcontexthandler.h"
+#include "include/wrapper/cef_helpers.h"
 
 // extern functions and data here
 extern void cleargamma();
@@ -1268,6 +1274,15 @@ int main(int argc, char **argv)
 
     numcpus = clamp(SDL_GetCPUCount(), 1, 16);
 
+    logoutf("init: cef: fork process");
+    CefRefPtr<InexorCefApp> cef_app(new InexorCefApp("http://inexor.t-r-w.com/ui-prototype/menu-arrow-navigation/"));
+    CefMainArgs main_args(argc, argv);
+    int exit_code = CefExecuteProcess(main_args, cef_app.get(), NULL);
+    if (exit_code >= 0) {
+        logoutf("cef exit_code: %d", exit_code);
+        return exit_code;
+    }
+
     if(dedicated <= 1)
     {
         logoutf("init: sdl");
@@ -1327,6 +1342,10 @@ int main(int argc, char **argv)
 
     logoutf("init: sound");
     initsound();
+
+    logoutf("init: cef: initialize application");
+    InexorCefSettings settings;
+    CefInitialize(main_args, settings, cef_app.get(), NULL);
 
     logoutf("init: cfg");
     execfile("config/keymap.cfg");
@@ -1417,15 +1436,23 @@ int main(int argc, char **argv)
         updateparticles();
         updatesounds();
 
+        // cef message loop iteration
+        CefDoMessageLoopWork();
+
         if(minimized) continue;
 
         inbetweenframes = false;
         if(mainmenu) gl_drawmainmenu();
         else gl_drawframe();
+        // cef rendering
+        cef_app->GetRenderHandler()->Render();
         swapbuffers();
+
         renderedframe = inbetweenframes = true;
     }
     
+    CefShutdown();
+
     ASSERT(0);
     return EXIT_FAILURE;
 

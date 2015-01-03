@@ -99,6 +99,17 @@ set(CLIENT_HEADERS_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/vertmodel
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/world)
     
+set(CLIENT_SOURCES_UI
+    ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefapp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefrenderhandler
+    ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefclienthandler
+    ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefrequestcontexthandler
+)
+
+set(CLIENT_SOURCES_CEFDLL
+    ${CMAKE_CURRENT_SOURCE_DIR}/../libraries/cef3/libcef_dll
+)
+
 set(CLIENT_SOURCES_FPSGAME
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/ai
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/client
@@ -150,6 +161,8 @@ set(CLIENT_SOURCES_MUPARSER
 set(CLIENT_SOURCES
     ${CLIENT_SOURCES_SHARED}
     ${CLIENT_SOURCES_ENGINE}
+    ${CLIENT_SOURCES_UI}
+    ${CLIENT_SOURCES_CEFDLL}
     ${CLIENT_SOURCES_FPSGAME}
     ${CLIENT_SOURCES_MUPARSER}
     ${CLIENT_SOURCES_NET}
@@ -186,11 +199,21 @@ else()
     add_executable(${SB_CLIENT_BINARY} ${CLIENT_SOURCES})
 endif()
 
+set(CEF_LIBRARIES "${PROJECT_SOURCE_DIR}/src/libraries/cef3/bin/linux/x86_64/cef/libcef.so;libcef_dll_wrapper")
+
+#message(STATUS "ENET_LIBRARIES ${ENET_LIBRARIES}")
+#message(STATUS "SDL2_LIBRARIES ${SDL2_LIBRARIES}")
+#message(STATUS "OPENGL_LIBRARIES ${OPENGL_LIBRARIES}")
+#message(STATUS "ZLIB_LIBRARIES ${ZLIB_LIBRARIES}")
+#message(STATUS "CEF_LIBRARIES ${CEF_LIBRARIES}")
+#message(STATUS "PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}")
+
 target_link_libraries(${SB_CLIENT_BINARY}
     ${ENET_LIBRARIES}
     ${SDL2_LIBRARIES}
     ${OPENGL_LIBRARIES}
     ${ZLIB_LIBRARIES}
+    ${CEF_LIBRARIES}
     ${BUILD_EXTRA_LIBS}
     ${PROTOBUF_LIBRARIES}
 )

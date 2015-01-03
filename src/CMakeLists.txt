@@ -90,6 +90,7 @@ if(${LOCAL_ENET})
 endif()
 
 set(MUPARSER_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/src/libraries/muparser/include")
+set(CEF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/src/libraries/cef3")
 
 include_directories(
     ${ENET_INCLUDE_DIRS}
@@ -97,6 +98,7 @@ include_directories(
     ${MUPARSER_INCLUDE_DIRS}
     ${ASIO_INCLUDE_DIRS}
     ${PROTOBUF_INCLUDE_DIRS}
+    ${CEF_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/shared
     ${CMAKE_CURRENT_SOURCE_DIR}/engine
@@ -130,6 +132,9 @@ function(sb_msvc_build_source_groups TARGET)
         endforeach(GROUP)
     endif()
 endfunction()
+
+message(STATUS "Building local libcef_dll")
+add_subdirectory(libraries/cef3/libcef_dll)
 
 if(${BUILD_CLIENT})
     add_subdirectory(client)
