@@ -3,4 +3,4 @@ DIR="`dirname "$0"`"
 OLIB=LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
 
 export LD_LIBRARY_PATH="$OLIB:pref"
-find "$DIR"/data/* -maxdepth 1 -print0  | sed 's/^/-k/' -z | xargs --null bin_linux/inexor -q"~/.inexor" && exit
+find "$DIR"/data/ -maxdepth 1 -print0  | sed 's/^/-k/' -z | xargs --null bin_linux/inexor -q"~/.inexor" && exit
