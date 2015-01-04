@@ -133,9 +133,6 @@ function(sb_msvc_build_source_groups TARGET)
     endif()
 endfunction()
 
-message(STATUS "Building local libcef_dll")
-add_subdirectory(libraries/cef3/libcef_dll)
-
 if(NOT DEFINED LIBCEF_DLL_LIBRARIES AND NOT DEFINED LOCAL_LIBCEF_DLL)
     set(LOCAL_LIBCEF_DLL 1 CACHE INTERNAL "Use local libcef_dll library")
 elseif(DEFINED LOCAL_LIBCEF_DLL)
