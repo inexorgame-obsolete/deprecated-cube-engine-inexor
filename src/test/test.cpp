@@ -123,6 +123,10 @@ namespace suites {
         "on different choppers.");
   }
 
+  // TODO: Test hubs
+  void hub() {
+    N = "MCHub";
+  }
 }
 
 // MAIN //////////////////////////////////////
@@ -135,6 +139,7 @@ int main() {
   }
   suites::self();
   suites::chopper();
+  suites::hub();
 
   cerr << cnt << " tests; "
     << success << " passed; "
