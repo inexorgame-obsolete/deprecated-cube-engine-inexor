@@ -3,13 +3,6 @@
 #ifndef _TOOLS_H
 #define _TOOLS_H
 
-// undefine NULL and make sure it is defined as 0
-// try to use std::nullptr in C++ 11 for pointers!
-#ifdef NULL
-#undef NULL // is there even a reason why NULL should not be 0?
-#endif
-#define NULL 0
-
 // short type definitions please note that these 
 // are real definitions and not just macros!
 typedef unsigned char uchar;
@@ -43,6 +36,7 @@ typedef unsigned long long int ullong;
 // include std::new operator to allocate memory 
 // explicitly needed to include new for sauers selfmade vector-functions
 #include <new>
+#include <cstddef>
 
 // make sure swap is not defined somewhere else
 #ifdef swap
