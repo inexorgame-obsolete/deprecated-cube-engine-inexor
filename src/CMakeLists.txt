@@ -340,7 +340,18 @@ include_directories(
     ${SOURCE_DIR}/engine
     ${SOURCE_DIR}/fpsgame)
 
-add_subdirectory(libraries/cef3/libcef_dll)
+if(NOT DEFINED LIBCEF_DLL_LIBRARIES AND NOT DEFINED LOCAL_LIBCEF_DLL)
+    set(LOCAL_LIBCEF_DLL 1 CACHE INTERNAL "Use local libcef_dll library")
+elseif(DEFINED LOCAL_LIBCEF_DLL)
+    set(LOCAL_LIBCEF_DLL ${LOCAL_LIBCEF_DLL} CACHE INTERNAL "Use local libcef_dll library")
+else()
+    set(LOCAL_LIBCEF_DLL 0 CACHE INTERNAL "Use local libcef_dll library")
+endif()
+
+if(${LOCAL_LIBCEF_DLL})
+    message(STATUS "Building local libcef_dll")
+    add_subdirectory(libraries/cef3/libcef_dll)
+endif()
 
 add_subdirectory(libraries) # muparser
 declare_module(shared ./shared)
