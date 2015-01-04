@@ -5,5 +5,7 @@
 #include "net/MCHub.h"
 #include "net/StreamChopper.h"
 #include "net/MCServer.h"
+#include "net/MCSocketServer.h"
+#include "net/MCSocket.h"
 
 #endif

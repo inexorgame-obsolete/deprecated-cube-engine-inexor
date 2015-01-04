@@ -127,6 +127,64 @@ namespace suites {
   void hub() {
     N = "MCHub";
   }
+
+  // TODO: Test multiple connections (will need to use
+  //       threading)
+  // TODO: Test broadcasts -> HUBS
+  void _proto_connect(MCServer *srv, MessageConnect &ca) {
+    bool b;
+
+    MessageConnect *sa = srv->accept();
+    tst(sa != NULL, "Can connect a single client");
+
+    MessageConnect *sinv = srv->accept();
+    tst(sinv == NULL, "Can not connect any more clients.");
+
+    b = helpers::send_packet(ca, *sa);
+    tst(b, "Can send packet from client to server.");
+
+    b = helpers::send_packet(*sa, ca);
+    tst(b, "Can send packet from server to client.");
+  }
+
+  void _proto_tcp_connect(boost::asio::ip::tcp proto,
+        const char *addr, unsigned short port) {
+
+    cerr << "[INFO] Testing on TCP SOCKET: " <<
+        "address='" << addr << "' port=" << port << endl;
+    MCTcpServer srv(proto, port);
+    MCTcp client(addr, port);
+    tst(true, "Can create a server");
+
+    _proto_connect(&srv, client);
+  }
+
+  void unix_connect() {
+    N = "MCUnixServer";
+
+    stringstream metap(ios::in | ios::out);
+    metap << "/tmp/sb_ipc_test." << uuidgen() << ".socket";
+    const char *path = metap.str().c_str();
+    cerr << "[INFO] Testing on UNIX SOCKET: " << path << endl;
+
+    MCUnixServer srv(path);
+    MCUnix client(path);
+    tst(true, "Can create a server");
+
+    _proto_connect(&srv, client);
+  }
+
+  void ipv4_connect() {
+    N = "MCTcpServerV4";
+    // TODO: Do not use a static port
+    _proto_tcp_connect(v4(), "127.0.0.1", 9999);
+  }
+
+  void ipv6_connect() {
+    N = "MCTcpServerV6";
+    // TODO: Do not use a static port
+    _proto_tcp_connect(v6(), "::1", 9999);
+  }
 }
 
 // MAIN //////////////////////////////////////
@@ -140,6 +198,9 @@ int main() {
   suites::self();
   suites::chopper();
   suites::hub();
+  suites::unix_connect();
+  suites::ipv4_connect();
+  suites::ipv6_connect();
 
   cerr << cnt << " tests; "
     << success << " passed; "
