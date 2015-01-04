@@ -1,25 +1,6 @@
 // implementation of generic tools
 
 #include "cube.h"
-
-void *operator new(size_t size) throw()
-{
-    void *p = malloc(size);
-    if(!p) abort();
-    return p;
-}
-
-void *operator new[](size_t size) throw()
-{
-    void *p = malloc(size);
-    if(!p) abort();
-    return p;
-}
-
-void operator delete(void *p) throw() { if(p) free(p); }
-
-void operator delete[](void *p) throw() { if(p) free(p); }
-
 #ifndef WIN32
 #include <unistd.h>
 #endif
@@ -44,9 +25,9 @@ char *tempformatstring(const char *fmt, ...)
 
 ////////////////////////// rnd numbers ////////////////////////////////////////
 
-#define N (624)             
-#define M (397)                
-#define K (0x9908B0DFU)       
+#define N (624)
+#define M (397)
+#define K (0x9908B0DFU)
 
 static uint state[N];
 static int next = N;
