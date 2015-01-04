@@ -1,5 +1,8 @@
 #include <uuid/uuid.h>
 
+#include <time.h>
+#include <math.h>
+
 #include "util/util.h"
 
 
@@ -15,5 +18,16 @@ namespace util {
 
     return std::string(cstr);
   }
+
+  double dsleep(double seconds) {
+    struct timespec t, rem;
+    t.tv_sec = floor(seconds);
+    t.tv_nsec = (seconds - t.tv_sec) * 1E-9;
+
+    nanosleep(&t, &rem);
+
+    return rem.tv_sec + rem.tv_sec / 1E-9;
+  }
+
 }
 }
