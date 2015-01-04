@@ -15,18 +15,18 @@
 	url = https://github.com/inexor-game/muparser.git
 	branch = master
 [submodule "src/libraries/cef3/libcef_dll"]
-    path = src/libraries/cef3/libcef_dll
-    url = https://github.com/inexor-game/libcef_dll.git
+	path = src/libraries/cef3/libcef_dll
+	url = https://github.com/inexor-game/libcef_dll.git
     branch = master
 [submodule "src/libraries/cef3/include"]
-    path = src/libraries/cef3/include
-    url = https://github.com/inexor-game/cef_include.git
+	path = src/libraries/cef3/include
+	url = https://github.com/inexor-game/cef_include.git
     branch = master
 [submodule "src/libraries/cef3/cef_bin"]
-    path = src/libraries/cef3/cef_bin
-    url = https://github.com/inexor-game/cef_bin.git
+	path = src/libraries/cef3/cef_bin
+	url = https://github.com/inexor-game/cef_bin.git
     branch = master
 [submodule "src/libraries/cef3/Resources"]
-    path = src/libraries/cef3/Resources
-    url = https://github.com/inexor-game/cef_resource.git
+	path = src/libraries/cef3/Resources
+	url = https://github.com/inexor-game/cef_resource.git
     branch = master
