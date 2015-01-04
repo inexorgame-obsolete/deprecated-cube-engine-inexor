@@ -101,7 +101,7 @@ set(CLIENT_HEADERS_ENGINE
     
 set(CLIENT_SOURCES_FPSGAME
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/ai
-    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/client       
+    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/client
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/entities
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/fps
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/monster
@@ -111,6 +111,21 @@ set(CLIENT_SOURCES_FPSGAME
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/server
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/waypoint
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/weapon)
+
+set(CLIENT_SOURCES_RPC
+    ${CMAKE_BINARY_DIR}/src/rpc/inexor_service.pb.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/../rpc/InexorServiceImpl
+    ${CMAKE_CURRENT_SOURCE_DIR}/../rpc/MCRpcServer
+    ${CMAKE_CURRENT_SOURCE_DIR}/../rpc/rpc)
+
+set_source_files_properties(
+    ${CMAKE_BINARY_DIR}/src/rpc/inexor_service.pb.cc
+    PROPERTIES GENERATED TRUE)
+
+set(CLIENT_SOURCES_NET
+  ${CMAKE_CURRENT_SOURCE_DIR}/../net/MCHub
+  ${CMAKE_CURRENT_SOURCE_DIR}/../net/MCSocketServer
+  ${CMAKE_CURRENT_SOURCE_DIR}/../net/StreamChopper)
 
 set(CLIENT_HEADERS_FPSGAME
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/ai
@@ -137,7 +152,9 @@ set(CLIENT_SOURCES
     ${CLIENT_SOURCES_SHARED}
     ${CLIENT_SOURCES_ENGINE}
     ${CLIENT_SOURCES_FPSGAME}
-    ${CLIENT_SOURCES_MUPARSER})
+    ${CLIENT_SOURCES_MUPARSER}
+    ${CLIENT_SOURCES_NET}
+    ${CLIENT_SOURCES_RPC})
 
 if(${BUILD_TARGET_OSX})
     set(CLIENT_SOURCES
@@ -158,9 +175,9 @@ elseif(${BUILD_TARGET_WINDOWS})
     endif()
 endif()
 
-sb_msvc_build_source_groups(CLIENT engine fpsgame shared)
 
 set(SB_CLIENT_BINARY inexor CACHE INTERNAL "Client binary name.")
+sb_msvc_build_source_groups(CLIENT engine fpsgame shared)
 
 if(WIN32)
     add_executable(${SB_CLIENT_BINARY} WIN32 ${CLIENT_SOURCES})
@@ -176,11 +193,15 @@ target_link_libraries(${SB_CLIENT_BINARY}
     ${OPENGL_LIBRARIES}
     ${ZLIB_LIBRARIES}
     ${BUILD_EXTRA_LIBS}
+    ${PROTOBUF_LIBRARIES}
+    ${ASIO_LIBRARIES}
 )
 
 if(MSVC)
     set_property(TARGET ${SB_CLIENT_BINARY} PROPERTY FOLDER "executables")
 endif()
+
+add_dependencies(${SB_CLIENT_BINARY} inexor_rpc_protobuf)
 
 install(TARGETS
     ${SB_CLIENT_BINARY}

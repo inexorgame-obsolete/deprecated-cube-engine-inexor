@@ -185,22 +185,31 @@ namespace suites {
     // TODO: Do not use a static port
     _proto_tcp_connect(v6(), "::1", 9999);
   }
+
+  void rpc() {
+    N = "IPC/RPC";
+
+    rpc_init();
+    tst(true, "Can initialize the rpc subsystem");
+
+    rpc_tick();
+    tst(true, "Can run a single tick (without effect)");
+
+    rpc_destroy();
+    tst(true, "Can destroy the rpc subsystem");
+  }
 }
 
 // MAIN //////////////////////////////////////
 
 int main() {
-  rpc_init();
-  while (true) {
-    rpc_tick();
-    dsleep(1E-2);
-  }
   suites::self();
   suites::chopper();
   suites::hub();
   suites::unix_connect();
   suites::ipv4_connect();
   suites::ipv6_connect();
+  suites::rpc();
 
   cerr << cnt << " tests; "
     << success << " passed; "

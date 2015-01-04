@@ -1,6 +1,7 @@
 // main.cpp: initialisation & main loop
 
 #include "engine.h"
+#include "rpc/rpc_sb_compat.h"
 
 // extern functions and data here
 extern void cleargamma();
@@ -1275,6 +1276,9 @@ int main(int argc, char **argv)
 
         if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO|par)<0) fatal("Unable to initialize SDL: %s", SDL_GetError());
     }
+
+    logoutf("init: rpc");
+    inexor::rpc::rpc_init();
     
 	// initialise game components
     logoutf("init: net");
@@ -1392,6 +1396,8 @@ int main(int argc, char **argv)
 		lastmillis += curtime;
         totalmillis = millis;
         updatetime();
+
+        inexor::rpc::rpc_tick();
 
         checkinput();
         menuprocess();

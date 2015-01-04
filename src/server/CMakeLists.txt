@@ -37,6 +37,22 @@ set(SERVER_SOURCES_FPSGAME
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/server
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/entities)
 
+set(CLIENT_SOURCES_RPC
+    ${CMAKE_BINARY_DIR}/src/rpc/inexor_service.pb.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/../rpc/InexorServiceImpl
+    ${CMAKE_CURRENT_SOURCE_DIR}/../rpc/MCRpcServer
+    ${CMAKE_CURRENT_SOURCE_DIR}/../rpc/rpc)
+
+set_source_files_properties(
+    ${CMAKE_BINARY_DIR}/src/rpc/inexor_service.pb.cc
+    PROPERTIES GENERATED TRUE)
+
+set(CLIENT_SOURCES_NET
+  ${CMAKE_CURRENT_SOURCE_DIR}/../net/MCHub
+  ${CMAKE_CURRENT_SOURCE_DIR}/../net/MCSocketServer
+  ${CMAKE_CURRENT_SOURCE_DIR}/../net/StreamChopper
+)
+
 set(SERVER_HEADERS_FPSGAME
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/aiman
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/bomb
@@ -50,7 +66,9 @@ set(SERVER_HEADERS_FPSGAME
 set(SERVER_SOURCES
     ${SERVER_SOURCES_SHARED}
     ${SERVER_SOURCES_ENGINE}
-    ${SERVER_SOURCES_FPSGAME})
+    ${SERVER_SOURCES_FPSGAME}
+    ${CLIENT_SOURCES_NET}
+    ${CLIENT_SOURCES_RPC})
 
 sb_msvc_build_source_groups(ENGINE engine fpsgame shared)
 
@@ -68,7 +86,12 @@ target_link_libraries(${SB_SERVER_BINARY}
     ${ENET_LIBRARIES}
     ${OPENGL_LIBRARIES}
     ${ZLIB_LIBRARIES}
-    ${EXTRA_LIBS})
+    ${EXTRA_LIBS}
+    ${PROTOBUF_LIBRARIES}
+    ${ASIO_LIBRARIES}
+)
+
+add_dependencies(${SB_SERVER_BINARY} inexor_rpc_protobuf)
     
 if(MSVC)
     set_property(TARGET ${SB_SERVER_BINARY} PROPERTY FOLDER "executables")

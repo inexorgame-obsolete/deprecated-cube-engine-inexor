@@ -48,6 +48,28 @@ elseif(${BUILD_TARGET_OSX})
     #include_directories(${SDL2_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2_MIXER_INCLUDE_DIR})
 endif()
 
+# TODO: This should go insted net/
+message(STATUS "Detecting ASIO...")
+find_library(BOOST_SYSTEM_LIB boost_system)
+find_library(BOOST_REGEX_LIB boost_system)
+set(ASIO_LIBRARIES "${BOOST_SYSTEM_LIB};${BOOST_REGEX_LIB}")
+find_path(ASIO_INCLUDE_DIRS boost/asio.hpp)
+
+# TODO: This should go inside rpc/
+message(STATUS "Detecting Protobuf...")
+find_library(PROTOBUF_LIBRARIES protobuf)
+find_PATH(PROTOBUF_INCLUDE_DIRS google/protobuf/service.h)
+
+# TODO: This should go inside rpc/
+add_custom_command(
+  OUTPUT rpc/inexor_service.pb.h rpc/inexor_service.pb.cc
+  COMMAND protoc --proto_path=${CMAKE_CURRENT_SOURCE_DIR} --cpp_out=${CMAKE_BINARY_DIR}/src/ ${CMAKE_CURRENT_SOURCE_DIR}/rpc/inexor_service.proto
+  DEPENDS rpc/inexor_service.proto
+)
+add_custom_target(inexor_rpc_protobuf DEPENDS
+    ${CMAKE_BINARY_DIR}/src/rpc/inexor_service.pb.h
+    ${CMAKE_BINARY_DIR}/src/rpc/inexor_service.pb.cc)
+
 if(NOT DEFINED ENET_LIBRARIES AND NOT DEFINED LOCAL_ENET)
     set(LOCAL_ENET 1 CACHE INTERNAL "Use local enet library")
 elseif(DEFINED LOCAL_ENET)
@@ -67,10 +89,13 @@ include_directories(
     ${ENET_INCLUDE_DIRS}
     ${SDL2_INCLUDE_DIRS}
     ${MUPARSER_INCLUDE_DIRS}
+    ${ASIO_INCLUDE_DIRS}
+    ${PROTOBUF_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/shared
     ${CMAKE_CURRENT_SOURCE_DIR}/engine
     ${CMAKE_CURRENT_SOURCE_DIR}/game
+    ${CMAKE_BINARY_DIR}/src/
 )
 
 # Builds source groups for MSVC

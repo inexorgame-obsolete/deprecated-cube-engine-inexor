@@ -2,6 +2,7 @@
 // runs dedicated or as client coroutine
 
 #include "engine.h"
+#include "rpc/rpc_sb_compat.h"
 
 #define LOGSTRLEN 512
 
@@ -177,6 +178,7 @@ void cleanupserver()
     if(pongsock != ENET_SOCKET_NULL) enet_socket_destroy(pongsock);
     if(lansock != ENET_SOCKET_NULL) enet_socket_destroy(lansock);
     pongsock = lansock = ENET_SOCKET_NULL;
+    inexor::rpc::rpc_destroy();
 }
 
 VARF(maxclients, 0, DEFAULTCLIENTS, MAXCLIENTS, { if(!maxclients) maxclients = DEFAULTCLIENTS; });
@@ -621,6 +623,9 @@ void updatetime()
 
 void serverslice(bool dedicated, uint timeout)   // main server update, called from main loop in sp, or from below in dedicated server
 {
+    if (dedicated)
+      inexor::rpc::rpc_tick();
+
     if(!serverhost) 
     {
         server::serverupdate();
@@ -1089,6 +1094,9 @@ void initserver(bool listen, bool dedicated)
     }
     
     execfile("server-init.cfg", false);
+
+    if (dedicated)
+      inexor::rpc::rpc_init();
 
     if(listen) setuplistenserver(dedicated);
 

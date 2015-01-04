@@ -26,3 +26,5 @@ build*
 bin*
 
 Debug
+
+node/node_modules/
