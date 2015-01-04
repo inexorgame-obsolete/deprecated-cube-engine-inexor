@@ -14,3 +14,9 @@
 	path = src/libraries/muparser
 	url = https://github.com/inexor-game/muparser.git
 	branch = master
+[submodule "src/libraries/cef3/libcef_dll"]
+	path = src/libraries/cef3/libcef_dll
+	url = https://github.com/inexor-game/libcef_dll.git
+[submodule "src/libraries/cef3/include"]
+	path = src/libraries/cef3/include
+	url = https://github.com/inexor-game/cef_include.git
