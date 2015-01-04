@@ -8,7 +8,7 @@ arch="`uname -m | tolower`"
 os="`uname | tolower`"
 bin="${dir}/bin/${os}/${arch}"
 exe="${bin}/inexor"
-export LD_LIBRARY_PATH="${bin}:$LD_LIBRARY_PATH"
+
 echo >&2 "CALLING: ${exe}"
 find "$dir"/media/ -maxdepth 1 -print0                      \
   | sed 's/^/-k/' -z                                       \
