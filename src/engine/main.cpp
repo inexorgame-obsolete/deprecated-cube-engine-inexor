@@ -941,6 +941,8 @@ void checkinput()
             case SDL_KEYUP:
                 if(keyrepeatmask || !event.key.repeat) {
             		// conoutf("KeyEvent: keycode: %d scancode: %d mod: %d state: %d", event.key.keysym.sym, event.key.keysym.scancode, event.key.keysym.mod, event.key.state);
+                	if (event.key.keysym.sym == 27)
+                		hudinput = (hudinput + 1) % 2;
                 	if (hudinput) {
                 		CefKeyEvent keyEvent;
                 		if (event.key.state == SDL_PRESSED) {
