@@ -1,0 +1,14 @@
+{
+  "name": "Inexor_IPC_Client",
+  "version": "0.0.1",
+  "dependencies": {
+    "coffee-script": ">=1.6.2",
+    "protobufjs":    "*",
+    "uuid":          "*",
+    "long":          "*",
+    "lodash":        "*"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  }
+}
