@@ -5,7 +5,7 @@
 class InexorCefSettings : public CefSettings {
     public:
 	    InexorCefSettings() {
-	    	no_sandbox = false;
+	    	no_sandbox = true;
 	    	ignore_certificate_errors = true;
 	        multi_threaded_message_loop = false;
 	        windowless_rendering_enabled = true;
