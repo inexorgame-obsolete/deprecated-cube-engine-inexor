@@ -62,12 +62,11 @@ void InexorCefClientHandler::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPt
 	    return;
     logoutf("Failed to load URL %s: %s", failedUrl.c_str(), errorText.c_str());
     // Display a load error message.
-    std::stringstream ss;
-    ss << "<html><body>"
-        "<h2>Failed to load URL " << std::string(failedUrl) <<
-	    " with error " << std::string(errorText) << " (" << errorCode <<
-	    ").</h2></body></html>";
-    frame->LoadString(ss.str(), failedUrl);
+    std::stringstream error_message;
+    error_message << "<html><body><h2>Failed to load URL " << std::string(failedUrl)
+                  << " with error " << std::string(errorText) << " (" << errorCode
+                  << ").</h2></body></html>";
+    frame->LoadString(error_message.str(), failedUrl);
 }
 
 bool InexorCefClientHandler::OnPreKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event, bool* is_keyboard_shortcut) {
