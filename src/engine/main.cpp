@@ -1324,7 +1324,7 @@ int main(int argc, char **argv)
     numcpus = clamp(SDL_GetCPUCount(), 1, 16);
 
     logoutf("init: cef: fork process (%dx%dpx)", scr_w, scr_h);
-    cef_app = new InexorCefApp("http://inexor.t-r-w.com/ui-prototype/menu-arrow-navigation/", 0, 0, scr_w, scr_h);
+    cef_app = new InexorCefApp("http://inexor.t-r-w.com/ui-prototype/menu-arrow-navigation/", 0, 0, scr_w, scr_h); // http://www.chromeexperiments.com/
     CefMainArgs main_args(argc, argv);
     int exit_code = CefExecuteProcess(main_args, cef_app.get(), NULL);
     if (exit_code >= 0) {
@@ -1494,7 +1494,7 @@ int main(int argc, char **argv)
         if(mainmenu) gl_drawmainmenu();
         else gl_drawframe();
         // cef rendering
-        cef_app->GetRenderHandler()->Render();
+        // cef_app->GetRenderHandler()->Render();
         swapbuffers();
 
         renderedframe = inbetweenframes = true;
