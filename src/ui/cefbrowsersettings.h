@@ -2,6 +2,8 @@
 #define _CEF_BROWSER_SETTINGS_H
 #pragma once
 
+#include "include/cef_app.h"
+
 class InexorCefBrowserSettings : public CefBrowserSettings {
     public:
         InexorCefBrowserSettings() {
