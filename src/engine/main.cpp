@@ -940,25 +940,17 @@ void checkinput()
             case SDL_KEYDOWN:
             case SDL_KEYUP:
                 if(keyrepeatmask || !event.key.repeat) {
-            		// conoutf("KeyEvent: keycode: %d scancode: %d mod: %d state: %d", event.key.keysym.sym, event.key.keysym.scancode, event.key.keysym.mod, event.key.state);
-                	if (event.key.keysym.sym == 27)
-                		hudinput = (hudinput + 1) % 2;
                 	if (hudinput) {
                 		CefKeyEvent keyEvent;
+            			keyEvent.modifiers = event.key.keysym.mod;
                 		if (event.key.state == SDL_PRESSED) {
-                    		keyEvent.type = KEYEVENT_KEYDOWN;
+                    		keyEvent.windows_key_code = event.key.keysym.sym;
+                    		keyEvent.native_key_code = event.key.keysym.sym;
                 		} else if (event.key.state == SDL_RELEASED) {
-                    		keyEvent.type = KEYEVENT_KEYUP;
-                		}
-                		keyEvent.modifiers = event.key.keysym.mod;
-                		keyEvent.windows_key_code = event.key.keysym.sym;
-                		keyEvent.native_key_code = event.key.keysym.sym;
-                		cef_app->GetBrowser()->GetHost()->SendKeyEvent(keyEvent);
-                		CefKeyEvent charKeyEvent;
-                		charKeyEvent.type = KEYEVENT_CHAR;
-                		charKeyEvent.modifiers = event.key.keysym.mod;
-                		charKeyEvent.character = event.key.keysym.sym;
-                		cef_app->GetBrowser()->GetHost()->SendKeyEvent(charKeyEvent);
+                			keyEvent.type = KEYEVENT_CHAR;
+                			keyEvent.character = event.key.keysym.sym;
+                        }
+                		cef_app->GetClientHandler()->SendKeyEvent(keyEvent);
                 	} else {
                         processkey(event.key.keysym.sym, event.key.state==SDL_PRESSED);
                 	}
@@ -1017,7 +1009,6 @@ void checkinput()
                     checkmousemotion(dx, dy);
                     if(!g3d_movecursor(dx, dy)) mousemove(dx, dy);
                     mousemoved = true;
-                    // logoutf("mouse moved x: %d (%d) y: %d (%d)", event.motion.x, dx, event.motion.y, dy);
                     // CEF Mouse Movement
                     CefMouseEvent mouse_move_event;
                     mouse_move_event.x = event.motion.x;
@@ -1042,7 +1033,6 @@ void checkinput()
                     mouse_click_event.y = event.motion.y;
                     mouse_click_event.modifiers = 0;
                     CefBrowserHost::MouseButtonType mouse_button_type = (event.button.button == 1 ? MBT_LEFT : ( event.button.button == 3 ? MBT_RIGHT : MBT_MIDDLE));
-                    // logoutf("mouse button x: %d y: %d button.button: %d button.type: %d up: %d clickCount: 1", event.motion.x, event.motion.y, event.button.button, mouse_button_type, event.button.state!=SDL_PRESSED);
                     cef_app->GetBrowser()->GetHost()->SendMouseClickEvent(mouse_click_event, mouse_button_type, event.button.state!=SDL_PRESSED, 1);
                     break;
                 }
@@ -1057,7 +1047,7 @@ void checkinput()
                     mouse_wheel_event.x = event.motion.x;
                     mouse_wheel_event.y = event.motion.y;
                     mouse_wheel_event.modifiers = 1;
-                    cef_app->GetBrowser()->GetHost()->SendMouseWheelEvent(mouse_wheel_event, event.wheel.x > 0 ? 10 : 0, event.wheel.y > 0 ? 10 : 0);
+                    cef_app->GetBrowser()->GetHost()->SendMouseWheelEvent(mouse_wheel_event, event.wheel.x > 0 ? 20 : (event.wheel.x < 0 ? -20 : 0), event.wheel.y > 0 ? 20 : (event.wheel.y < 0 ? -20 : 0));
                     break;
                 }
         }
@@ -1324,7 +1314,7 @@ int main(int argc, char **argv)
     numcpus = clamp(SDL_GetCPUCount(), 1, 16);
 
     logoutf("init: cef: fork process (%dx%dpx)", scr_w, scr_h);
-    cef_app = new InexorCefApp("http://inexor.t-r-w.com/ui-prototype/menu-arrow-navigation/", 0, 0, scr_w, scr_h); // http://www.chromeexperiments.com/
+    cef_app = new InexorCefApp("https://www.youtube.com/", 0, 0, scr_w, scr_h); // http://www.chromeexperiments.com/ // http://inexor.t-r-w.com/ui-prototype/menu-arrow-navigation/
     CefMainArgs main_args(argc, argv);
     int exit_code = CefExecuteProcess(main_args, cef_app.get(), NULL);
     if (exit_code >= 0) {
