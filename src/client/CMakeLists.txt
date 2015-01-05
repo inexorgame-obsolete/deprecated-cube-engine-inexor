@@ -207,11 +207,13 @@ if(BUILD_TARGET_LINUX)
     set(CEF_LINUX_DIR "${CEF_BASE_DIR}/cef_bin/linux")
     if(BUILD_TARGET_X86)
         set(CEF_LINUX_X86_DIR "${CEF_LINUX_DIR}/bin_x86")
+        set(UDEV_LIBRARY "${CEF_LINUX_X86_DIR}/libudev.so")
         set(CEF_LIBRARY "${CEF_LINUX_X86_DIR}/libcef.so")
         set(FFMPEGSUMO_LIBRARY "${CEF_LINUX_X86_DIR}/libffmpegsumo.so")
         set(CHROME_SANDBOX_BIN "${CEF_LINUX_X86_DIR}/chrome-sandbox")
     else()
         set(CEF_LINUX_X86_64_DIR "${CEF_LINUX_DIR}/bin_x86_64")
+        set(UDEV_LIBRARY "${CEF_LINUX_X86_64_DIR}/libudev.so")
         set(CEF_LIBRARY "${CEF_LINUX_X86_64_DIR}/libcef.so")
         set(FFMPEGSUMO_LIBRARY "${CEF_LINUX_X86_64_DIR}/libffmpegsumo.so")
         set(CHROME_SANDBOX_BIN "${CEF_LINUX_X86_64_DIR}/chrome-sandbox")
@@ -223,7 +225,7 @@ elseif(BUILD_TARGET_WINDOWS)
         set(CEF_LIBRARY "${CEF_BASE_DIR}/cef_bin/windows/lib64/libcef.lib")
     endif()
 endif()
-set(CEF_LIBRARIES "${CEF_DLL_LIBRARY};-Wl,-rpath,. ${CEF_LIBRARY}")
+set(CEF_LIBRARIES "${CEF_DLL_LIBRARY};-Wl,-rpath,. ${CEF_LIBRARY};-Wl,-rpath,. ${UDEV_LIBRARY}")
 
 target_link_libraries(${SB_CLIENT_BINARY}
     ${ENET_LIBRARIES}
@@ -247,6 +249,9 @@ install(TARGETS
     LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}
     ARCHIVE DESTINATION ${INSTALL_ARCHIVE_DIR})
 
+message(STATUS "UDEV_LIBRARY ${UDEV_LIBRARY}")
+
+file(COPY ${UDEV_LIBRARY} DESTINATION ${INSTALL_RUNTIME_DIR})
 file(COPY ${CEF_LIBRARY} DESTINATION ${INSTALL_RUNTIME_DIR})
 file(COPY ${FFMPEGSUMO_LIBRARY} DESTINATION ${INSTALL_RUNTIME_DIR})
 file(COPY ${CHROME_SANDBOX_BIN} DESTINATION ${INSTALL_RUNTIME_DIR})
