@@ -13,11 +13,6 @@ InexorCefClientHandler::InexorCefClientHandler(InexorCefRenderHandler *renderHan
 
 InexorCefClientHandler::~InexorCefClientHandler() { }
 
-CefRefPtr<CefRenderHandler> InexorCefClientHandler::GetRenderHandler()
-{
-    return m_renderHandler;
-};
-
 void InexorCefClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser)
 {
     CEF_REQUIRE_UI_THREAD();
@@ -83,4 +78,15 @@ bool InexorCefClientHandler::OnPreKeyEvent(CefRefPtr<CefBrowser> browser, const 
 bool InexorCefClientHandler::OnKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event) {
 	logoutf("InexorCefClientHandler::OnKeyEvent: key_event.type: %d native_key_code: %d windows_key_code: %d is_system_key: %d", key_event.type, key_event.native_key_code, key_event.windows_key_code, key_event.is_system_key);
     return false;
+}
+
+void InexorCefClientHandler::OnStatusMessage(CefRefPtr<CefBrowser> browser, const CefString& value)
+{
+    logoutf("status: %s", value.ToString().c_str());
+}
+
+bool InexorCefClientHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser, const CefString& message, const CefString& source, int line)
+{
+    logoutf("jsconsole [%s (%d)]: %s", source.ToString().c_str(), line, message.ToString().c_str());
+	return true;
 }
