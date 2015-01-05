@@ -12,6 +12,7 @@ class InexorCefRequestContextHandler : public CefRequestContextHandler {
         InexorCefRequestContextHandler();
         virtual ~InexorCefRequestContextHandler();
 
+        // CefRequestContextHandler
         CefRefPtr<CefCookieManager> GetCookieManager();
 
     private:

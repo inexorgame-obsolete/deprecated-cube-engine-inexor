@@ -1,37 +1,46 @@
-#ifndef _CEF_BROWSER_H
-#define _CEF_BROWSER_H
+#ifndef _CEF_APP_H
+#define _CEF_APP_H
 
-#include "cefclienthandler.h"
-#include "cefwindowinfo.h"
-#include "cefbrowsersettings.h"
+#include <string>
+#include <list>
+
 #include "include/cef_app.h"
+#include "include/cef_browser.h"
+#include "include/cef_command_line.h"
+#include "cefbrowsersettings.h"
+#include "cefclienthandler.h"
+#include "ceflayer.h"
+#include "cefwindowinfo.h"
 
 class InexorCefApp : public CefApp,
                      public CefBrowserProcessHandler
 {
 
     public:
-	    InexorCefApp(std::string url);
-	    InexorCefApp(std::string url, int x, int y, int width, int height);
+        InexorCefApp(int width, int height);
+        InexorCefLayer* CreateLayer(std::string name, int x, int y, int width, int height, std::string url);
+        InexorCefLayer* GetLayer(std::string name);
+        void SetScreenSize(int width, int height);
+        void RenderLayer(std::string name);
+        void RenderAllLayers();
+        // void BringToFront(std::string name);
+        void SendKeyEvent(CefKeyEvent event);
+        void SendMouseClickEvent(const CefMouseEvent& event, CefBrowserHost::MouseButtonType type, bool mouseUp, int clickCount);
+        void SendMouseMoveEvent(const CefMouseEvent& event, bool mouseLeave);
+        void SendMouseWheelEvent(const CefMouseEvent& event, int deltaX, int deltaY);
 
-	    virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() { return this; }
-	    virtual void OnContextInitialized();
-	    CefBrowserSettings GetBrowserSettings() { return browser_settings; };
-	    CefRefPtr<InexorCefClientHandler> GetClientHandler() { return client_handler; };
-	    CefRefPtr<CefBrowser> GetBrowser() { return browser; };
-	    CefRefPtr<InexorCefRenderHandler> GetRenderHandler() { return render_handler; };
+        // CefBrowserProcessHandler
+        virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() { return this; }
+        virtual void OnContextInitialized();
 
 	private:
-	    std::string url;
-	    InexorCefWindowInfo window_info;
-	    InexorCefBrowserSettings browser_settings;
-        CefRefPtr<CefBrowser> browser;
-	    CefRefPtr<InexorCefClientHandler> client_handler;
-	    CefRefPtr<InexorCefRenderHandler> render_handler;
+        std::list<InexorCefLayer*> layers;
+        int width;
+        int height;
 
-	    // Include the default reference counting implementation.
-	    IMPLEMENT_REFCOUNTING(InexorCefApp);
+        // Include the default reference counting implementation.
+        IMPLEMENT_REFCOUNTING(InexorCefApp);
 
 };
 
-#endif  // _CEF_BROWSER_H
+#endif  // _CEF_APP_H

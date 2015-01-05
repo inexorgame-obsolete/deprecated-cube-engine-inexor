@@ -2124,7 +2124,7 @@ void gl_drawframe()
     glDisable(GL_TEXTURE_2D);
     notextureshader->set();
 
-    cef_app->GetRenderHandler()->Render();
+    cef_app->RenderAllLayers();
 
     gl_drawhud();
 
@@ -2145,7 +2145,7 @@ void gl_drawmainmenu()
 
     defaultshader->set();
     glEnable(GL_TEXTURE_2D);
-    cef_app->GetRenderHandler()->Render();
+    cef_app->RenderAllLayers();
     g3d_render();
 
     notextureshader->set();
