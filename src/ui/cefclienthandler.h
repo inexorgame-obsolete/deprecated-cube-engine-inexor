@@ -33,6 +33,7 @@ class InexorCefClientHandler : public CefClient,
         // CefKeyboardHandler
         bool OnPreKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event, bool* is_keyboard_shortcut);
         bool OnKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event);
+        void SendKeyEvent(const CefKeyEvent& event) { m_Browser->GetHost()->SendKeyEvent(event); }
 
         // CefDisplayHandler
         void OnStatusMessage(CefRefPtr<CefBrowser> browser, const CefString& value);
