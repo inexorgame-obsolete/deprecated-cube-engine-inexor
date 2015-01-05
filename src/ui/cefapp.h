@@ -2,6 +2,8 @@
 #define _CEF_BROWSER_H
 
 #include "cefclienthandler.h"
+#include "cefwindowinfo.h"
+#include "cefbrowsersettings.h"
 #include "include/cef_app.h"
 
 class InexorCefApp : public CefApp,
@@ -22,10 +24,10 @@ class InexorCefApp : public CefApp,
 
 	private:
 	    std::string url;
-	    CefWindowInfo window_info;
+	    InexorCefWindowInfo window_info;
+	    InexorCefBrowserSettings browser_settings;
         CefRefPtr<CefBrowser> browser;
 	    CefRefPtr<InexorCefClientHandler> client_handler;
-	    CefBrowserSettings browser_settings;
 	    CefRefPtr<InexorCefRenderHandler> render_handler;
 
 	    // Include the default reference counting implementation.
