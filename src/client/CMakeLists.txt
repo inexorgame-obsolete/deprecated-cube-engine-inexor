@@ -1,5 +1,5 @@
+
 prepend(CLIENT_SOURCES_ENGINE ${SOURCE_DIR}/engine
-    3dgui.cpp
     bih.cpp
     blend.cpp
     client.cpp

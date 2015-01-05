@@ -950,7 +950,7 @@ void checkinput()
                 			keyEvent.type = KEYEVENT_CHAR;
                 			keyEvent.character = event.key.keysym.sym;
                         }
-                		cef_app->GetClientHandler()->SendKeyEvent(keyEvent);
+                		cef_app->SendKeyEvent(keyEvent);
                 	} else {
                         processkey(event.key.keysym.sym, event.key.state==SDL_PRESSED);
                 	}
@@ -1013,7 +1013,7 @@ void checkinput()
                     CefMouseEvent mouse_move_event;
                     mouse_move_event.x = event.motion.x;
                     mouse_move_event.y = event.motion.y;
-                    cef_app->GetBrowser()->GetHost()->SendMouseMoveEvent(mouse_move_event, false);
+                    cef_app->SendMouseMoveEvent(mouse_move_event, false);
                 }
                 else if(shouldgrab) inputgrab(grabinput = true);
                 break;
@@ -1033,7 +1033,12 @@ void checkinput()
                     mouse_click_event.y = event.motion.y;
                     mouse_click_event.modifiers = 0;
                     CefBrowserHost::MouseButtonType mouse_button_type = (event.button.button == 1 ? MBT_LEFT : ( event.button.button == 3 ? MBT_RIGHT : MBT_MIDDLE));
-                    cef_app->GetBrowser()->GetHost()->SendMouseClickEvent(mouse_click_event, mouse_button_type, event.button.state!=SDL_PRESSED, 1);
+                    cef_app->SendMouseClickEvent(
+                        mouse_click_event,
+                        mouse_button_type,
+                        event.button.state != SDL_PRESSED,
+                        1
+                    );
                     break;
                 }
             case SDL_MOUSEWHEEL:
@@ -1047,7 +1052,11 @@ void checkinput()
                     mouse_wheel_event.x = event.motion.x;
                     mouse_wheel_event.y = event.motion.y;
                     mouse_wheel_event.modifiers = 1;
-                    cef_app->GetBrowser()->GetHost()->SendMouseWheelEvent(mouse_wheel_event, event.wheel.x > 0 ? 20 : (event.wheel.x < 0 ? -20 : 0), event.wheel.y > 0 ? 20 : (event.wheel.y < 0 ? -20 : 0));
+                    cef_app->SendMouseWheelEvent(
+                        mouse_wheel_event,
+                        event.wheel.x > 0 ? 20 : (event.wheel.x < 0 ? -20 : 0),
+                        event.wheel.y > 0 ? 20 : (event.wheel.y < 0 ? -20 : 0)
+                    );
                     break;
                 }
         }
@@ -1313,8 +1322,8 @@ int main(int argc, char **argv)
 
     numcpus = clamp(SDL_GetCPUCount(), 1, 16);
 
-    logoutf("init: cef: fork process (%dx%dpx)", scr_w, scr_h);
-    cef_app = new InexorCefApp("https://www.youtube.com/", 0, 0, scr_w, scr_h); // http://www.chromeexperiments.com/ // http://inexor.t-r-w.com/ui-prototype/menu-arrow-navigation/
+    logoutf("init: cef: fork process (%dpx x %dpx)", scr_w, scr_h);
+    cef_app = new InexorCefApp(scr_w, scr_h);
     CefMainArgs main_args(argc, argv);
     int exit_code = CefExecuteProcess(main_args, cef_app.get(), NULL);
     if (exit_code >= 0) {
