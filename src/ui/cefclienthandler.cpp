@@ -4,11 +4,12 @@
 
 extern void logoutf(const char *fmt, ...);
 
-InexorCefClientHandler::InexorCefClientHandler(InexorCefRenderHandler *renderHandler) : m_renderHandler(renderHandler)
+InexorCefClientHandler::InexorCefClientHandler(InexorCefRenderHandler *renderHandler) : render_handler(renderHandler)
 {
-	m_BrowserId = -1;
-	m_BrowserCount = 0;
-	m_bIsClosing = false;
+	browser_id = -1;
+	browser_count = 0;
+	is_closing = false;
+	cookie_manager = CefCookieManager::CreateManager("/tmp/inexorc", false);
 }
 
 InexorCefClientHandler::~InexorCefClientHandler() { }
@@ -16,13 +17,13 @@ InexorCefClientHandler::~InexorCefClientHandler() { }
 void InexorCefClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser)
 {
     CEF_REQUIRE_UI_THREAD();
-    if (!m_Browser.get())   {
+    if (!browser.get())   {
         // Keep a reference to the main browser.
-        m_Browser = browser;
-        m_BrowserId = browser->GetIdentifier();
+        this->browser = browser;
+        browser_id = browser->GetIdentifier();
     }
     // Keep track of how many browsers currently exist.
-    m_BrowserCount++;
+    browser_count++;
 }
 
 bool InexorCefClientHandler::DoClose(CefRefPtr<CefBrowser> browser)
@@ -31,11 +32,11 @@ bool InexorCefClientHandler::DoClose(CefRefPtr<CefBrowser> browser)
     // Closing the main window requires special handling. See the DoClose()
     // documentation in the CEF header for a detailed description of this
     // process.
-    if (m_BrowserId == browser->GetIdentifier()) {
+    if (browser_id == browser->GetIdentifier()) {
         // Notify the browser that the parent window is about to close.
     	// browser->GetHost()->ParentWindowWillClose();
     	// Set a flag to indicate that the window close should be allowed.
-    	m_bIsClosing = true;
+    	is_closing = true;
     }
     // Allow the close. For windowed browsers this will result in the OS close
     // event being sent.
@@ -45,11 +46,11 @@ bool InexorCefClientHandler::DoClose(CefRefPtr<CefBrowser> browser)
 void InexorCefClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 {
     CEF_REQUIRE_UI_THREAD();
-    if (m_BrowserId == browser->GetIdentifier()) {
+    if (browser_id == browser->GetIdentifier()) {
         // Free the browser pointer so that the browser can be destroyed.
-        m_Browser = NULL;
+        browser = NULL;
     }
-    if (--m_BrowserCount == 0) {
+    if (--browser_count == 0) {
         // All browser windows have closed. Quit the application message loop.
         // CefQuitMessageLoop();
     }
@@ -77,6 +78,11 @@ bool InexorCefClientHandler::OnPreKeyEvent(CefRefPtr<CefBrowser> browser, const 
 bool InexorCefClientHandler::OnKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event) {
 	logoutf("InexorCefClientHandler::OnKeyEvent: key_event.type: %d native_key_code: %d windows_key_code: %d is_system_key: %d", key_event.type, key_event.native_key_code, key_event.windows_key_code, key_event.is_system_key);
     return false;
+}
+
+void InexorCefClientHandler::OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& url)
+{
+    logoutf("address change: %s", url.ToString().c_str());
 }
 
 void InexorCefClientHandler::OnStatusMessage(CefRefPtr<CefBrowser> browser, const CefString& value)
