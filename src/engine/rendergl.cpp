@@ -2,6 +2,9 @@
 
 #include "engine.h"
 #include "filesystem.h"
+#include "ui/cefapp.h"
+#include "include/cef_browser.h"
+#include "include/wrapper/cef_helpers.h"
 
 bool hasVBO = false, hasDRE = false, hasOQ = false, hasTR = false, hasFBO = false, hasDS = false, hasTF = false, hasBE = false, hasBC = false, hasCM = false, hasNP2 = false, hasTC = false, hasS3TC = false, hasFXT1 = false, hasTE = false, hasMT = false, hasD3 = false, hasAF = false, hasVP2 = false, hasVP3 = false, hasPP = false, hasMDA = false, hasTE3 = false, hasTE4 = false, hasVP = false, hasFP = false, hasGLSL = false, hasGM = false, hasNVFB = false, hasSGIDT = false, hasSGISH = false, hasDT = false, hasSH = false, hasNVPCF = false, hasRN = false, hasPBO = false, hasFBB = false, hasUBO = false, hasBUE = false, hasMBR = false, hasFC = false, hasTEX = false;
 int hasstencil = 0;
@@ -1995,6 +1998,8 @@ void gl_drawhud(int w, int h);
 
 int xtraverts, xtravertsva;
 
+extern CefRefPtr<InexorCefApp> cef_app;
+
 void gl_drawframe()
 {
     if(deferdrawtextures) drawtextures();
@@ -2119,6 +2124,8 @@ void gl_drawframe()
     glDisable(GL_TEXTURE_2D);
     notextureshader->set();
 
+    cef_app->GetRenderHandler()->Render();
+
     gl_drawhud();
 
     renderedgame = false;
@@ -2138,6 +2145,7 @@ void gl_drawmainmenu()
 
     defaultshader->set();
     glEnable(GL_TEXTURE_2D);
+    cef_app->GetRenderHandler()->Render();
     g3d_render();
 
     notextureshader->set();
