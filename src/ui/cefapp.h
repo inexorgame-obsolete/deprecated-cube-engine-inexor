@@ -21,7 +21,6 @@ class InexorCefApp : public CefApp,
 	    CefRefPtr<CefBrowser> GetBrowser() { return browser; };
 	    CefRefPtr<InexorCefRenderHandler> GetRenderHandler() { return render_handler; };
 
-
 	private:
 	    std::string url;
 	    InexorCefWindowInfo window_info;
