@@ -1,0 +1,12 @@
+#! /bin/sh
+
+x="`dirname $0`"
+inexor_dir="`readlink -f "$x"`"
+node_dir="${inexor_dir}/node"
+
+which node    2>&1 1>/dev/null && NODE_CMD="`which node`"
+which node.js 2>&1 1>/dev/null && NODE_CMD="`which node.js`"
+
+cd "${node_dir}"
+npm install
+NODE_PATH="${node_dir}" "${NODE_CMD}" "${node_dir}/"node_modules/.bin/coffee
