@@ -22,6 +22,8 @@ InexorCefLayer* InexorCefApp::GetLayer(std::string name)
 void InexorCefApp::SetScreenSize(int width, int height) {
     this->width = width;
     this->height = height;
+    mouse.max_x = width;
+    mouse.max_y = height;
 }
 
 void InexorCefApp::RenderLayer(std::string name)
@@ -29,7 +31,7 @@ void InexorCefApp::RenderLayer(std::string name)
 	GetLayer(name)->GetRenderHandler()->Render();
 }
 
-void InexorCefApp::RenderAllLayers()
+void InexorCefApp::Render()
 {
     for(std::list<InexorCefLayer*>::iterator it = layers.begin(); it != layers.end(); ++it)
     {
@@ -38,6 +40,7 @@ void InexorCefApp::RenderAllLayers()
         	layer->GetRenderHandler()->Render();
     	}
     }
+    mouse.Render();
 }
 
 void InexorCefApp::SendKeyEvent(CefKeyEvent event)
@@ -71,6 +74,9 @@ void InexorCefApp::SendMouseMoveEvent(const CefMouseEvent& event, bool mouseLeav
             layer->GetBrowser()->GetHost()->SendMouseMoveEvent(event, mouseLeave);
         }
     }
+    // Set mouse pointer position
+    mouse.x = event.x;
+    mouse.y = event.y;
 }
 
 void InexorCefApp::SendMouseWheelEvent(const CefMouseEvent& event, int deltaX, int deltaY)
