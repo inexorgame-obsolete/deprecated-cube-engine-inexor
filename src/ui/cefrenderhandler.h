@@ -6,6 +6,8 @@
 #include "include/cef_render_handler.h"
 #include "include/wrapper/cef_helpers.h"
 
+extern void logoutf(const char *fmt, ...);
+
 class InexorCefRenderHandler : public CefRenderHandler {
     public:
         InexorCefRenderHandler(bool transparent, int x, int y, int width, int height);

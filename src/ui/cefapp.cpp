@@ -31,6 +31,7 @@ void InexorCefApp::RenderLayer(std::string name)
 
 void InexorCefApp::Render()
 {
+	CEF_REQUIRE_UI_THREAD();
     for(std::list<InexorCefLayer*>::iterator it = layers.begin(); it != layers.end(); ++it)
     {
     	InexorCefLayer* layer = (*it);
@@ -91,18 +92,12 @@ void InexorCefApp::SendMouseWheelEvent(const CefMouseEvent& event, int deltaX, i
 void InexorCefApp::OnContextInitialized()
 {
     CEF_REQUIRE_UI_THREAD();
-    logoutf("Create HUD layers");
-    /*
-    InexorCefLayer* layer1 = CreateLayer("hud", 0, 0, width, height, "http://www.youtube.com/");
-    layer1->SetVisibility(true);
-    layer1->SetIsAcceptingInput(true);
-    layer1->SetFocus(true);
-    */
+    logoutf("init: cef: create layers");
     InexorCefLayer* layer2 = CreateLayer("menu-navigation", 0, 0, width, height, "http://gitdemo.inexor.org/menu/"); // http://gitdemo.inexor.org/menu-arrow-navigation/
     layer2->SetVisibility(true);
     layer2->SetIsAcceptingInput(true);
     layer2->SetFocus(true);
-    InexorCefLayer* layer3 = CreateLayer("menu-navigation", 0, 0, width, height, "http://gitdemo.inexor.org/inexor-object/");
+    InexorCefLayer* layer3 = CreateLayer("inexor-object", 0, 0, width, height, "http://gitdemo.inexor.org/inexor-object/");
     layer3->SetVisibility(true);
     layer3->SetIsAcceptingInput(true);
     layer3->SetFocus(true);
