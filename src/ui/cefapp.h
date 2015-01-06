@@ -7,18 +7,24 @@
 #include "include/cef_app.h"
 #include "include/cef_browser.h"
 #include "include/cef_command_line.h"
+#include "include/cef_render_process_handler.h"
 #include "cefbrowsersettings.h"
 #include "cefclienthandler.h"
+#include "cefcontext.h"
 #include "cefmouse.h"
 #include "ceflayer.h"
 #include "cefwindowinfo.h"
 
+extern void logoutf(const char *fmt, ...);
+
 class InexorCefApp : public CefApp,
-                     public CefBrowserProcessHandler
+                     public CefBrowserProcessHandler,
+                     public CefRenderProcessHandler
 {
 
     public:
         InexorCefApp(int width, int height);
+
         InexorCefLayer* CreateLayer(std::string name, int x, int y, int width, int height, std::string url);
         InexorCefLayer* GetLayer(std::string name);
         void SetScreenSize(int width, int height);
@@ -30,9 +36,15 @@ class InexorCefApp : public CefApp,
         void SendMouseMoveEvent(const CefMouseEvent& event, bool mouseLeave);
         void SendMouseWheelEvent(const CefMouseEvent& event, int deltaX, int deltaY);
 
+        // Getters for handlers
+        CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() { return this; }
+        CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() { return this; }
+
         // CefBrowserProcessHandler
-        virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() { return this; }
-        virtual void OnContextInitialized();
+        void OnContextInitialized();
+
+        // CefRenderProcessHandler
+        void OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context);
 
 	private:
         std::list<InexorCefLayer*> layers;
@@ -40,6 +52,7 @@ class InexorCefApp : public CefApp,
         int height;
 
         InexorCefMouse mouse;
+        InexorCefContext context;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(InexorCefApp);
