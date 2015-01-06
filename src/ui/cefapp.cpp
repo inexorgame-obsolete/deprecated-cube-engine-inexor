@@ -1,5 +1,3 @@
-extern void logoutf(const char *fmt, ...);
-
 #include "cefapp.h"
 
 InexorCefApp::InexorCefApp(int width, int height)
@@ -94,12 +92,24 @@ void InexorCefApp::OnContextInitialized()
 {
     CEF_REQUIRE_UI_THREAD();
     logoutf("Create HUD layers");
+    /*
     InexorCefLayer* layer1 = CreateLayer("hud", 0, 0, width, height, "http://www.youtube.com/");
     layer1->SetVisibility(true);
     layer1->SetIsAcceptingInput(true);
     layer1->SetFocus(true);
+    */
     InexorCefLayer* layer2 = CreateLayer("menu-navigation", 0, 0, width, height, "http://gitdemo.inexor.org/menu/"); // http://gitdemo.inexor.org/menu-arrow-navigation/
     layer2->SetVisibility(true);
-    layer2->SetIsAcceptingInput(false);
-    layer2->SetFocus(false);
+    layer2->SetIsAcceptingInput(true);
+    layer2->SetFocus(true);
+    InexorCefLayer* layer3 = CreateLayer("menu-navigation", 0, 0, width, height, "http://gitdemo.inexor.org/inexor-object/");
+    layer3->SetVisibility(true);
+    layer3->SetIsAcceptingInput(true);
+    layer3->SetFocus(true);
+}
+
+void InexorCefApp::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> browser_context)
+{
+    logoutf("Injecting inexor object into javascript context");
+    browser_context->GetGlobal()->SetValue("inexor", context.GetContext(), V8_PROPERTY_ATTRIBUTE_NONE);
 }
