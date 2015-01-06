@@ -1,7 +1,5 @@
 #include "cefrenderhandler.h"
 
-extern void logoutf(const char *fmt, ...);
-
 #if defined(OS_WIN)
 #include <gl/gl.h>
 #include <gl/glu.h>
@@ -40,7 +38,7 @@ extern void logoutf(const char *fmt, ...);
 InexorCefRenderHandler::InexorCefRenderHandler(bool transparent, int x, int y, int width, int height)
     : transparent_(transparent),
       initialized_(false),
-      texture_id_(900),
+      texture_id_(0),
       view_x_(x),
       view_y_(y),
       view_width_(width),
@@ -79,7 +77,7 @@ void InexorCefRenderHandler::Cleanup() {
 }
 
 void InexorCefRenderHandler::Render() {
-    if (view_width_ == 0 || view_height_ == 0)
+    if (view_width_ == 0 || view_height_ == 0 || !initialized_)
         return;
 
     DCHECK(initialized_);
@@ -94,24 +92,16 @@ void InexorCefRenderHandler::Render() {
         {0.0f, 0.0f, -1.0f,  1.0f, 0.0f}
     };
 
-    /*
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); VERIFY_NO_ERROR;
-    glMatrixMode(GL_MODELVIEW); VERIFY_NO_ERROR;
-    glLoadIdentity(); VERIFY_NO_ERROR;
-    */
-
     // Match GL units to screen coordinates.
     // glViewport(0, 0, view_width_, view_height_); VERIFY_NO_ERROR;
     glMatrixMode(GL_PROJECTION); VERIFY_NO_ERROR;
     glLoadIdentity(); VERIFY_NO_ERROR;
 
-    if (transparent_) {
-        // Alpha blending style. Texture values have premultiplied alpha.
-        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA); VERIFY_NO_ERROR;
+    // Alpha blending style. Texture values have premultiplied alpha.
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA); VERIFY_NO_ERROR;
 
-        // Enable alpha blending.
-        glEnable(GL_BLEND); VERIFY_NO_ERROR;
-    }
+    // Enable alpha blending.
+    glEnable(GL_BLEND); VERIFY_NO_ERROR;
 
     // Enable 2D textures.
     glEnable(GL_TEXTURE_2D); VERIFY_NO_ERROR;
@@ -125,10 +115,8 @@ void InexorCefRenderHandler::Render() {
     // Disable 2D textures.
     glDisable(GL_TEXTURE_2D); VERIFY_NO_ERROR;
 
-    if (transparent_) {
-        // Disable alpha blending.
-        glDisable(GL_BLEND); VERIFY_NO_ERROR;
-    }
+    // Disable alpha blending.
+    glDisable(GL_BLEND); VERIFY_NO_ERROR;
 }
 
 void InexorCefRenderHandler::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show)
@@ -186,14 +174,14 @@ void InexorCefRenderHandler::OnPaint(
     const CefRenderHandler::RectList& dirtyRects,
     const void* buffer, int width, int height
 ) {
-
-    if (!initialized_)
-        Initialize();
-
-    if (transparent_) {
-        // Enable alpha blending.
-        glEnable(GL_BLEND); VERIFY_NO_ERROR;
+    if (!initialized_) {
+    	if (CefCurrentlyOn(TID_UI))
+             Initialize();
+    	return;
     }
+
+   	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA); VERIFY_NO_ERROR;
+    glEnable(GL_BLEND); VERIFY_NO_ERROR;
 
     // Enable 2D textures.
     glEnable(GL_TEXTURE_2D); VERIFY_NO_ERROR;
@@ -204,12 +192,9 @@ void InexorCefRenderHandler::OnPaint(
     if (type == PET_VIEW) {
         int old_width = view_width_;
         int old_height = view_height_;
-
         view_width_ = width;
         view_height_ = height;
-
         glPixelStorei(GL_UNPACK_ROW_LENGTH, view_width_); VERIFY_NO_ERROR;
-
         if (old_width != view_width_ || old_height != view_height_
             || (dirtyRects.size() == 1 && dirtyRects[0] == CefRect(0, 0, view_width_, view_height_))
         ) {
@@ -229,7 +214,11 @@ void InexorCefRenderHandler::OnPaint(
                     buffer); VERIFY_NO_ERROR;
             }
         }
-    } else if (type == PET_POPUP && popup_rect_.width > 0 && popup_rect_.height > 0) {
+        glPixelStorei(GL_UNPACK_ROW_LENGTH, 0); VERIFY_NO_ERROR;
+    }
+    /*
+    else if (type == PET_POPUP && popup_rect_.width > 0 && popup_rect_.height > 0) {
+    	logoutf("PET_POPUP");
         int skip_pixels = 0, x = popup_rect_.x;
         int skip_rows = 0, y = popup_rect_.y;
         int w = width;
@@ -256,12 +245,11 @@ void InexorCefRenderHandler::OnPaint(
         glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, GL_BGRA,
             GL_UNSIGNED_INT_8_8_8_8_REV, buffer); VERIFY_NO_ERROR;
     }
+    */
 
     // Disable 2D textures.
     glDisable(GL_TEXTURE_2D); VERIFY_NO_ERROR;
 
-    if (transparent_) {
-        // Disable alpha blending.
-        glDisable(GL_BLEND); VERIFY_NO_ERROR;
-    }
+    // Disable alpha blending.
+    glDisable(GL_BLEND); VERIFY_NO_ERROR;
 }
