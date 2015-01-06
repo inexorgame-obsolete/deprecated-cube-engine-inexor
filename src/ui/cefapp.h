@@ -9,6 +9,7 @@
 #include "include/cef_command_line.h"
 #include "cefbrowsersettings.h"
 #include "cefclienthandler.h"
+#include "cefmouse.h"
 #include "ceflayer.h"
 #include "cefwindowinfo.h"
 
@@ -22,7 +23,7 @@ class InexorCefApp : public CefApp,
         InexorCefLayer* GetLayer(std::string name);
         void SetScreenSize(int width, int height);
         void RenderLayer(std::string name);
-        void RenderAllLayers();
+        void Render();
         // void BringToFront(std::string name);
         void SendKeyEvent(CefKeyEvent event);
         void SendMouseClickEvent(const CefMouseEvent& event, CefBrowserHost::MouseButtonType type, bool mouseUp, int clickCount);
@@ -37,6 +38,8 @@ class InexorCefApp : public CefApp,
         std::list<InexorCefLayer*> layers;
         int width;
         int height;
+
+        InexorCefMouse mouse;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(InexorCefApp);
