@@ -2123,9 +2123,9 @@ void gl_drawframe()
     glDisable(GL_TEXTURE_2D);
     notextureshader->set();
 
-    cef_app->Render();
-
     gl_drawhud();
+
+    cef_app->Render();
 
     renderedgame = false;
 }

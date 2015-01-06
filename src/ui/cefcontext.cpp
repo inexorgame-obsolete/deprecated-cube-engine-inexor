@@ -1,11 +1,11 @@
 #include "cefcontext.h"
 
 CefRefPtr<CefV8Value> InexorCefContext::GetContext() {
-	if (!context.get())
-	{
-	    // This has to be happen when the context is initialized
-		InitializeContext();
-	}
+    if (!context.get())
+    {
+        // This has to be happen when the context is initialized
+    	InitializeContext();
+    }
     return context;
 }
 
@@ -22,6 +22,7 @@ void InexorCefContext::InitializeContext() {
 
 bool InexorCefContext::Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception)
 {
+    CEF_REQUIRE_RENDERER_THREAD();
     logoutf("Executing function %s", name.ToString().c_str());
     if (name == "logoutf") {
         logoutf("logoutf lastmillis: %d", lastmillis);
@@ -33,6 +34,7 @@ bool InexorCefContext::Execute(const CefString& name, CefRefPtr<CefV8Value> obje
 
 bool InexorCefContext::Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& return_value, CefString& exception)
 {
+    CEF_REQUIRE_RENDERER_THREAD();
 logoutf("Get(%s)", name.ToString().c_str());
     if (name == "curtime")
         return_value = CefV8Value::CreateInt(curtime);
@@ -53,6 +55,7 @@ logoutf("Get(%s)", name.ToString().c_str());
 
 bool InexorCefContext::Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception)
 {
+    CEF_REQUIRE_RENDERER_THREAD();
 logoutf("Set(%s)", name.ToString().c_str());
 	if (value->IsInt()) {
 		if (name == "thirdperson")

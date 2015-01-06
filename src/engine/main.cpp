@@ -1328,6 +1328,11 @@ int main(int argc, char **argv)
         return exit_code;
     }
 
+    logoutf("init: cef: initialize application");
+    InexorCefSettings settings;
+    CefInitialize(main_args, settings, cef_app.get(), NULL);
+    CefDoMessageLoopWork();
+
     if(dedicated <= 1)
     {
         logoutf("init: sdl");
@@ -1387,10 +1392,6 @@ int main(int argc, char **argv)
 
     logoutf("init: sound");
     initsound();
-
-    logoutf("init: cef: initialize application");
-    InexorCefSettings settings;
-    CefInitialize(main_args, settings, cef_app.get(), NULL);
 
     logoutf("init: cfg");
     execfile("config/keymap.cfg");
@@ -1487,8 +1488,6 @@ int main(int argc, char **argv)
         inbetweenframes = false;
         if(mainmenu) gl_drawmainmenu();
         else gl_drawframe();
-        // cef rendering
-        // cef_app->GetRenderHandler()->Render();
         swapbuffers();
 
         renderedframe = inbetweenframes = true;
