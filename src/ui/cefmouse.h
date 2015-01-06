@@ -5,13 +5,18 @@
 #include "cefclienthandler.h"
 #include "cefwindowinfo.h"
 #include "include/cef_app.h"
+#include "engine.h"
 
 class InexorCefMouse
 {
 
     public:
-        InexorCefMouse(std::string name, int x, int y, int width, int height, std::string url) {};
+        InexorCefMouse() : x(0), y(0), max_x(0), max_y(0) {};
         void Render();
+        int x;
+        int y;
+        int max_x;
+        int max_y;
 
 	private:
         // Include the default reference counting implementation.
