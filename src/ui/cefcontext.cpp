@@ -12,6 +12,7 @@ CefRefPtr<CefV8Value> InexorCefContext::GetContext() {
 void InexorCefContext::InitializeContext() {
     context = CefV8Value::CreateObject(this);
     context->SetValue("logoutf", CefV8Value::CreateFunction("logoutf", this), V8_PROPERTY_ATTRIBUTE_READONLY);
+    context->SetValue("quit", CefV8Value::CreateFunction("quit", this), V8_PROPERTY_ATTRIBUTE_READONLY);
     context->SetValue("curtime", V8_ACCESS_CONTROL_ALL_CAN_READ, V8_PROPERTY_ATTRIBUTE_READONLY);
     context->SetValue("lastmillis", V8_ACCESS_CONTROL_ALL_CAN_READ, V8_PROPERTY_ATTRIBUTE_READONLY);
     context->SetValue("elapsedtime", V8_ACCESS_CONTROL_ALL_CAN_READ, V8_PROPERTY_ATTRIBUTE_READONLY);
@@ -28,6 +29,9 @@ bool InexorCefContext::Execute(const CefString& name, CefRefPtr<CefV8Value> obje
         logoutf("logoutf lastmillis: %d", lastmillis);
         retval = CefV8Value::CreateUndefined();
         return true;
+    } else if (name == "quit") {
+    	quit();
+    	return true;
     }
     return false;
 }
