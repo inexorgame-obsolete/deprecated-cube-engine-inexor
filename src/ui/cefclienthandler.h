@@ -16,6 +16,9 @@ class InexorCefClientHandler : public CefClient,
         InexorCefClientHandler(InexorCefRenderHandler *renderHandler); // : m_renderHandler(renderHandler) { };
         virtual ~InexorCefClientHandler();
 
+        CefRefPtr<CefBrowser> GetBrowser() { return browser; }
+        bool IsClosing() { return is_closing; }
+
         // Getters for handlers
         virtual CefRefPtr<CefRenderHandler> GetRenderHandler() { return render_handler; }
         virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() { return this; }
@@ -44,9 +47,6 @@ class InexorCefClientHandler : public CefClient,
 
         // CefRequestContextHandler
         CefRefPtr<CefCookieManager> GetCookieManager() { return cookie_manager; }
-
-        CefRefPtr<CefBrowser> GetBrowser() { return browser; }
-        bool IsClosing() { return is_closing; }
 
     protected:
         CefRefPtr<CefBrowser> browser;
