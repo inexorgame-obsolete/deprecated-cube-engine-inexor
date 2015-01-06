@@ -93,7 +93,7 @@ void InexorCefApp::OnContextInitialized()
 {
     CEF_REQUIRE_UI_THREAD();
     logoutf("init: cef: create layers");
-    InexorCefLayer* layer2 = CreateLayer("menu-navigation", 0, 0, width, height, "http://gitdemo.inexor.org/menu/"); // http://gitdemo.inexor.org/menu-arrow-navigation/
+    InexorCefLayer* layer2 = CreateLayer("menu-navigation", 0, 0, width, height, "http://gitdemo.inexor.org/menuprototype/"); // http://gitdemo.inexor.org/menu-arrow-navigation/
     layer2->SetVisibility(true);
     layer2->SetIsAcceptingInput(true);
     layer2->SetFocus(true);
