@@ -1004,8 +1004,9 @@ void checkinput()
                         }
                 		cef_app->SendKeyEvent(keyEvent);
                 	} else {
-                        processkey(event.key.keysym.sym, event.key.state==SDL_PRESSED);
+                		// processkey(event.key.keysym.sym, event.key.state==SDL_PRESSED);
                 	}
+                    processkey(event.key.keysym.sym, event.key.state==SDL_PRESSED);
                 }
                 break;
 
