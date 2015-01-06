@@ -23,7 +23,7 @@ InexorCefLayer::InexorCefLayer(std::string name, int x, int y, int width, int he
     client_handler = new InexorCefClientHandler(render_handler);
     browser = CefBrowserHost::CreateBrowserSync(window_info, client_handler.get(), url, browser_settings, NULL);
     if (browser.get()) {
-        logoutf("init: cef: created layer");
+        logoutf("init: cef: created layer \"%s\"", name.c_str());
         browser->GetHost()->SendFocusEvent(has_focus);
     }
 
