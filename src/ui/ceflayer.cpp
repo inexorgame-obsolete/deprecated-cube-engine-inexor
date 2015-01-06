@@ -19,14 +19,12 @@ InexorCefLayer::InexorCefLayer(std::string name, int x, int y, int width, int he
     window_info.width = width;
     window_info.height = height;
     render_handler = new InexorCefRenderHandler(true, x, y, width, height);
-    render_handler->Initialize();
     client_handler = new InexorCefClientHandler(render_handler);
     browser = CefBrowserHost::CreateBrowserSync(window_info, client_handler.get(), url, browser_settings, NULL);
     if (browser.get()) {
         logoutf("init: cef: created layer \"%s\"", name.c_str());
         browser->GetHost()->SendFocusEvent(has_focus);
     }
-
 }
 
 void InexorCefLayer::SetVisibility(bool is_visible)
