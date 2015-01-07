@@ -2,6 +2,7 @@
 #define _CEF_CONEXT_H
 
 #include "engine.h"
+#include "fpsgame/game.h"
 #include "include/cef_app.h"
 #include "include/cef_render_process_handler.h"
 #include "include/wrapper/cef_helpers.h"
@@ -12,6 +13,11 @@ extern int fullscreen;
 extern int scr_w;
 extern int scr_h;
 extern int vsync;
+
+namespace game {
+    extern fpsent *player1;
+    extern void switchname(const char *name);
+}
 
 class InexorCefContext : public CefV8Handler,
                          public CefV8Accessor
