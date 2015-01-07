@@ -48,7 +48,7 @@ void InexorCefApp::SendKeyEvent(CefKeyEvent event)
     for(std::list<InexorCefLayer*>::iterator it = layers.begin(); it != layers.end(); ++it)
     {
         InexorCefLayer* layer = (*it);
-        if (layer->IsVisible()) {
+        if (layer->IsVisible() && layer->IsAcceptingInput()) {
             layer->GetBrowser()->GetHost()->SendKeyEvent(event);
         }
     }
@@ -59,7 +59,7 @@ void InexorCefApp::SendMouseClickEvent(const CefMouseEvent& event, CefBrowserHos
     for(std::list<InexorCefLayer*>::iterator it = layers.begin(); it != layers.end(); ++it)
     {
         InexorCefLayer* layer = (*it);
-        if (layer->IsVisible()) {
+        if (layer->IsVisible() && layer->IsAcceptingInput()) {
             layer->GetBrowser()->GetHost()->SendMouseClickEvent(event, type, mouseUp, clickCount);
         }
     }
@@ -70,7 +70,7 @@ void InexorCefApp::SendMouseMoveEvent(const CefMouseEvent& event, bool mouseLeav
     for(std::list<InexorCefLayer*>::iterator it = layers.begin(); it != layers.end(); ++it)
     {
         InexorCefLayer* layer = (*it);
-        if (layer->IsVisible()) {
+        if (layer->IsVisible() && layer->IsAcceptingInput()) {
             layer->GetBrowser()->GetHost()->SendMouseMoveEvent(event, mouseLeave);
         }
     }
@@ -83,7 +83,7 @@ void InexorCefApp::SendMouseWheelEvent(const CefMouseEvent& event, int deltaX, i
     for(std::list<InexorCefLayer*>::iterator it = layers.begin(); it != layers.end(); ++it)
     {
         InexorCefLayer* layer = (*it);
-        if (layer->IsVisible()) {
+        if (layer->IsVisible() && layer->IsAcceptingInput()) {
             layer->GetBrowser()->GetHost()->SendMouseWheelEvent(event, deltaX, deltaY);
         }
     }
