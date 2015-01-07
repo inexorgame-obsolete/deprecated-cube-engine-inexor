@@ -8,6 +8,11 @@
 
 extern void quit();
 
+extern int fullscreen;
+extern int scr_w;
+extern int scr_h;
+extern int vsync;
+
 class InexorCefContext : public CefV8Handler,
                          public CefV8Accessor
 {
