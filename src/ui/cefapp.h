@@ -25,12 +25,24 @@ class InexorCefApp : public CefApp,
     public:
         InexorCefApp(int width, int height);
 
+        // Layers
         InexorCefLayer* CreateLayer(std::string name, int x, int y, int width, int height, std::string url);
         InexorCefLayer* GetLayer(std::string name);
         void SetScreenSize(int width, int height);
         void RenderLayer(std::string name);
         void Render();
-        // void BringToFront(std::string name);
+        // void ShowLayer(std::string name);
+        // void HideLayer(std::string name);
+        // void BringLayerToFront(std::string name);
+        // void BringLayerToBack(std::string name);
+        // void MoveLayerUp(std::string name);
+        // void MoveLayerBack(std::string name);
+
+        // JavaScript Events
+        // void FireEvent();
+        // void SubscribeEvent();
+
+        // Input events
         void SendKeyEvent(CefKeyEvent event);
         void SendMouseClickEvent(const CefMouseEvent& event, CefBrowserHost::MouseButtonType type, bool mouseUp, int clickCount);
         void SendMouseMoveEvent(const CefMouseEvent& event, bool mouseLeave);
@@ -51,7 +63,10 @@ class InexorCefApp : public CefApp,
         int width;
         int height;
 
+        // Global mouse
         InexorCefMouse mouse;
+
+        // Global context
         InexorCefContext context;
 
         // Include the default reference counting implementation.
