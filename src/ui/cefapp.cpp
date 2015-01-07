@@ -3,6 +3,7 @@
 InexorCefApp::InexorCefApp(int width, int height)
 {
     SetScreenSize(width, height);
+    mouse.Show();
 }
 
 InexorCefLayer* InexorCefApp::CreateLayer(std::string name, int x, int y, int width, int height, std::string url)
@@ -20,8 +21,7 @@ InexorCefLayer* InexorCefApp::GetLayer(std::string name)
 void InexorCefApp::SetScreenSize(int width, int height) {
     this->width = width;
     this->height = height;
-    mouse.max_x = width;
-    mouse.max_y = height;
+    mouse.SetMax(width, height);
 }
 
 void InexorCefApp::RenderLayer(std::string name)
@@ -39,6 +39,7 @@ void InexorCefApp::Render()
         	layer->GetRenderHandler()->Render();
     	}
     }
+    // Render mouse in front
     mouse.Render();
 }
 
@@ -74,8 +75,7 @@ void InexorCefApp::SendMouseMoveEvent(const CefMouseEvent& event, bool mouseLeav
         }
     }
     // Set mouse pointer position
-    mouse.x = event.x;
-    mouse.y = event.y;
+    mouse.Update(event);
 }
 
 void InexorCefApp::SendMouseWheelEvent(const CefMouseEvent& event, int deltaX, int deltaY)
@@ -93,7 +93,7 @@ void InexorCefApp::OnContextInitialized()
 {
     CEF_REQUIRE_UI_THREAD();
     logoutf("init: cef: create layers");
-    InexorCefLayer* layer2 = CreateLayer("menu-navigation", 0, 0, width, height, "http://gitdemo.inexor.org/menuprototype/"); // http://gitdemo.inexor.org/menu-arrow-navigation/
+    InexorCefLayer* layer2 = CreateLayer("menu-navigation", 0, 0, width, height, "http://gitdemo.inexor.org/menuprototype/");
     layer2->SetVisibility(true);
     layer2->SetIsAcceptingInput(true);
     layer2->SetFocus(true);
@@ -106,5 +106,6 @@ void InexorCefApp::OnContextInitialized()
 void InexorCefApp::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> browser_context)
 {
     logoutf("Injecting inexor object into javascript context");
+    // only inject context if...
     browser_context->GetGlobal()->SetValue("inexor", context.GetContext(), V8_PROPERTY_ATTRIBUTE_NONE);
 }
