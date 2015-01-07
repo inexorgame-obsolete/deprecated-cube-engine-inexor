@@ -34,29 +34,29 @@ class InexorCefRenderHandler : public CefRenderHandler {
             const CefRenderHandler::RectList& dirtyRects,
             const void* buffer, int width, int height);
 
-        bool IsTransparent() { return transparent_; }
+        bool IsTransparent() { return transparent; }
 
-        int GetViewX() { return view_x_; }
-        int GetViewY() { return view_y_; }
-        int GetViewWidth() { return view_width_; }
-        int GetViewHeight() { return view_height_; }
+        int GetViewX() { return view_x; }
+        int GetViewY() { return view_y; }
+        int GetViewWidth() { return view_width; }
+        int GetViewHeight() { return view_height; }
 
-        const CefRect& popup_rect() const { return popup_rect_; }
-        const CefRect& original_popup_rect() const { return original_popup_rect_; }
+        const CefRect& PopupRect() const { return popup_rect; }
+        const CefRect& OriginalPopupRect() const { return original_popup_rect; }
 
         CefRect GetPopupRectInWebView(const CefRect& original_rect);
         void ClearPopupRects();
 
     private:
-        const bool transparent_;
-        bool initialized_;
-        unsigned int texture_id_;
-        int view_x_;
-        int view_y_;
-        int view_width_;
-        int view_height_;
-        CefRect popup_rect_;
-        CefRect original_popup_rect_;
+        const bool transparent;
+        bool initialized;
+        unsigned int texture_id;
+        int view_x;
+        int view_y;
+        int view_width;
+        int view_height;
+        CefRect popup_rect;
+        CefRect original_popup_rect;
 
         // Provides atomic refcounting implementation.
         IMPLEMENT_REFCOUNTING(InexorCefRenderHandler);
