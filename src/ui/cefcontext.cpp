@@ -30,6 +30,8 @@ void InexorCefContext::InitializeContext() {
     context->SetValue("scr_w", V8_ACCESS_CONTROL_DEFAULT, V8_PROPERTY_ATTRIBUTE_NONE);
     context->SetValue("scr_h", V8_ACCESS_CONTROL_DEFAULT, V8_PROPERTY_ATTRIBUTE_NONE);
     context->SetValue("vsync", V8_ACCESS_CONTROL_DEFAULT, V8_PROPERTY_ATTRIBUTE_NONE);
+    // Variables Client
+    context->SetValue("name", V8_ACCESS_CONTROL_DEFAULT, V8_PROPERTY_ATTRIBUTE_NONE);
 
 }
 
@@ -82,6 +84,8 @@ logoutf("Get(%s)", name.ToString().c_str());
         return_value = CefV8Value::CreateInt(scr_h);
     else if (name == "vsync")
         return_value = CefV8Value::CreateInt(vsync);
+    else if (name == "name")
+        return_value = CefV8Value::CreateString(game::player1->name);
     else
         return false;
     return true;
@@ -102,6 +106,8 @@ bool InexorCefContext::Set(const CefString& name, const CefRefPtr<CefV8Value> ob
             scr_h = value->GetIntValue();
         else if (name == "vsync")
             vsync = value->GetIntValue();
+        else if (name == "name")
+            game::switchname(value->GetStringValue().ToString().c_str());
         else
             return false;
         return true;
