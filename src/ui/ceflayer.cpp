@@ -8,6 +8,22 @@ extern void logoutf(const char *fmt, ...);
 #include "include/cef_command_line.h"
 
 
+InexorCefLayerManager::InexorCefLayerManager(int width, int height)
+{
+    SetScreenSize(width, height);
+}
+
+void InexorCefLayerManager::SetScreenSize(int width, int height)
+{
+    this->width = width;
+    this->height = height;
+}
+
+InexorCefLayer* InexorCefLayerManager::CreateLayer(std::string name, std::string url)
+{
+    return InexorCefLayerManager::CreateLayer(name, 0, 0, width, height, url);
+}
+
 InexorCefLayer* InexorCefLayerManager::CreateLayer(std::string name, int x, int y, int width, int height, std::string url)
 {
     InexorCefLayer* layer = new InexorCefLayer(name, x, y, width, height, url);

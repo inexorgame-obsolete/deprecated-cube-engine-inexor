@@ -48,9 +48,6 @@ class InexorCefApp : public CefApp,
         void OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context);
 
 	private:
-        int width;
-        int height;
-
         // Layer Management
         CefRefPtr<InexorCefLayerManager> layer_manager;
 
