@@ -55,16 +55,17 @@ class InexorCefLayerManager
 {
 
     public:
-        InexorCefLayerManager() {};
+        InexorCefLayerManager(int width, int height);
 
         // Rendering
         void Render();
         void RenderLayer(std::string name);
+        void SetScreenSize(int width, int height);
 
         // Layers
+        InexorCefLayer* CreateLayer(std::string name, std::string url);
         InexorCefLayer* CreateLayer(std::string name, int x, int y, int width, int height, std::string url);
         InexorCefLayer* GetLayer(std::string name);
-        void SetScreenSize(int width, int height);
         void ShowLayer(std::string name);
         void HideLayer(std::string name);
         // void BringLayerToFront(std::string name);
@@ -80,6 +81,9 @@ class InexorCefLayerManager
 
     private:
         std::list<InexorCefLayer*> layers;
+
+        int width;
+        int height;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(InexorCefLayerManager);

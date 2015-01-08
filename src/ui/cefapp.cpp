@@ -3,7 +3,7 @@
 InexorCefApp::InexorCefApp(int width, int height)
 {
     mouse = new InexorCefMouse();
-    layer_manager = new InexorCefLayerManager();
+    layer_manager = new InexorCefLayerManager(width, height);
     context = new InexorCefContext(layer_manager);
     SetScreenSize(width, height);
     mouse->Show();
@@ -16,9 +16,8 @@ void InexorCefApp::Render()
 }
 
 void InexorCefApp::SetScreenSize(int width, int height) {
-    this->width = width;
-    this->height = height;
     mouse->SetMax(width, height);
+    layer_manager->SetScreenSize(width, height);
 }
 
 void InexorCefApp::SendKeyEvent(CefKeyEvent event)
@@ -46,11 +45,11 @@ void InexorCefApp::OnContextInitialized()
 {
     CEF_REQUIRE_UI_THREAD();
     // cefdebug("InexorCefApp::OnContextInitialized", "Create Layers");
-    InexorCefLayer* layer2 = layer_manager->CreateLayer("menu-navigation", 0, 0, width, height, "http://gitdemo.inexor.org/menuprototype/");
+    InexorCefLayer* layer2 = layer_manager->CreateLayer("menu-navigation", "http://gitdemo.inexor.org/menuprototype/");
     layer2->SetVisibility(true);
     layer2->SetIsAcceptingInput(true);
     layer2->SetFocus(true);
-    InexorCefLayer* layer3 = layer_manager->CreateLayer("inexor-object", 0, 0, width, height, "http://gitdemo.inexor.org/inexor-object/");
+    InexorCefLayer* layer3 = layer_manager->CreateLayer("inexor-object", "http://gitdemo.inexor.org/inexor-object/");
     layer3->SetVisibility(true);
     layer3->SetIsAcceptingInput(true);
     layer3->SetFocus(true);

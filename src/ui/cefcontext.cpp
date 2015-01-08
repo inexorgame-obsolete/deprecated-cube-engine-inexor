@@ -32,6 +32,7 @@ void InexorCefContext::InitializeContext()
     context->SetValue("quit", CefV8Value::CreateFunction("quit", this), V8_PROPERTY_ATTRIBUTE_READONLY);
 
     // Layer Management Methods
+    context->SetValue("createLayer", CefV8Value::CreateFunction("createLayer", this), V8_PROPERTY_ATTRIBUTE_READONLY);
     context->SetValue("showLayer", CefV8Value::CreateFunction("showLayer", this), V8_PROPERTY_ATTRIBUTE_READONLY);
     context->SetValue("hideLayer", CefV8Value::CreateFunction("hideLayer", this), V8_PROPERTY_ATTRIBUTE_READONLY);
 
@@ -75,6 +76,10 @@ bool InexorCefContext::Execute(const CefString& name, CefRefPtr<CefV8Value> obje
         if (arguments.size() >= 1 && arguments[0]->IsString()) {
             CefV8ValueList event_arguments(arguments.begin() + 1, arguments.end());
             event_manager->FireEvent(arguments[0]->GetStringValue(), event_arguments);
+        }
+    } else if (name == "createLayer") {
+        if (arguments.size() == 2 && arguments[0]->IsString() && arguments[1]->IsString()) {
+            layer_manager->CreateLayer(arguments[0]->GetStringValue().ToString(), arguments[1]->GetStringValue().ToString());
         }
     } else if (name == "showLayer") {
         if (arguments.size() == 1 && arguments[0]->IsString()) {
