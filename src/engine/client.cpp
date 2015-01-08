@@ -70,6 +70,7 @@ ICOMMAND(connectedport, "", (),
 SVARP(connectname, "");
 VARP(connectport, 0, 0, 0xFFFF);
 
+// abort attempt to connect
 void abortconnect()
 {
     if(!connpeer) return;
@@ -81,6 +82,7 @@ void abortconnect()
     clienthost = NULL;
 }
 
+// connect to a server (serverpassword only for mastermode 3 servers)
 void connectserv(const char *servername, int serverport, const char *serverpassword)
 {   
     if(connpeer)
@@ -129,6 +131,7 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
     else conoutf("\f3could not connect to server");
 }
 
+// use stored data of last connected server to connect again
 void reconnect(const char *serverpassword)
 {
     if(!connectname[0] || connectport <= 0)
@@ -136,10 +139,10 @@ void reconnect(const char *serverpassword)
         conoutf(CON_ERROR, "no previous connection");
         return;
     }
-
     connectserv(connectname, connectport, serverpassword);
 }
 
+// disconnect from a server
 void disconnect(bool async, bool cleanup)
 {
     if(curpeer) 
@@ -168,6 +171,7 @@ void disconnect(bool async, bool cleanup)
     }
 }
 
+// try to disconnect (attempting, connected or locally)
 void trydisconnect(bool local)
 {
     if(connpeer)
@@ -191,32 +195,41 @@ ICOMMAND(disconnect, "b", (int *local), trydisconnect(*local != 0));
 ICOMMAND(localconnect, "", (), { if(!isconnected()) localconnect(); });
 ICOMMAND(localdisconnect, "", (), { if(haslocalclients()) localdisconnect(); });
 
+// send network packet to server
 void sendclientpacket(ENetPacket *packet, int chan)
 {
     if(curpeer) enet_peer_send(curpeer, chan, packet);
     else localclienttoserver(chan, packet);
 }
 
+// empty network message queue (?)
 void flushclient()
 {
     if(clienthost) enet_host_flush(clienthost);
 }
 
+// print illegal network message to console (wrong protocol?)
 void neterr(const char *s, bool disc)
 {
     conoutf(CON_ERROR, "\f3illegal network message (%s)", s);
     if(disc) disconnect();
 }
 
-void localservertoclient(int chan, ENetPacket *packet)   // processes any updates from the server
+// processes any updates from the server
+void localservertoclient(int chan, ENetPacket *packet)
 {
     packetbuf p(packet);
     game::parsepacketclient(chan, p);
 }
 
-void clientkeepalive() { if(clienthost) enet_host_service(clienthost, NULL, 0); }
+// send ping to server (?)
+void clientkeepalive() 
+{ 
+	if(clienthost) enet_host_service(clienthost, NULL, 0); 
+}
 
-void gets2c()           // get updates from the server
+// get updates from the server
+void gets2c()           
 {
     ENetEvent event;
     if(!clienthost) return;
