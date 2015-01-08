@@ -43,6 +43,7 @@ namespace game
         glEnd();
     }
 
+	// draw teamate icon arrow in minimap
     void drawteammate(fpsent *d, float x, float y, float s, fpsent *o, float scale)
     {
         vec dir = d->o;

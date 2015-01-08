@@ -288,4 +288,3 @@ void gets2c()
             break;
     }
 }
-
