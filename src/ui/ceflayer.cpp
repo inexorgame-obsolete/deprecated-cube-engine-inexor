@@ -17,22 +17,34 @@ InexorCefLayer* InexorCefLayerManager::CreateLayer(std::string name, int x, int 
 
 InexorCefLayer* InexorCefLayerManager::GetLayer(std::string name)
 {
+    for(std::list<InexorCefLayer*>::iterator it = layers.begin(); it != layers.end(); ++it)
+    {
+        InexorCefLayer* layer = (*it);
+        if (layer->GetName() == name)
+            return layer;
+    }
     return NULL;
 }
 
 void InexorCefLayerManager::ShowLayer(std::string name)
 {
-    GetLayer(name)->SetVisibility(true);
+    InexorCefLayer* layer = GetLayer(name);
+    if (layer)
+        layer->SetVisibility(true);
 }
 
 void InexorCefLayerManager::HideLayer(std::string name)
 {
-    GetLayer(name)->SetVisibility(false);
+    InexorCefLayer* layer = GetLayer(name);
+    if (layer)
+        layer->SetVisibility(false);
 }
 
 void InexorCefLayerManager::RenderLayer(std::string name)
 {
-    GetLayer(name)->GetRenderHandler()->Render();
+    InexorCefLayer* layer = GetLayer(name);
+    if (layer)
+        layer->GetRenderHandler()->Render();
 }
 
 void InexorCefLayerManager::Render()
