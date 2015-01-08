@@ -7,7 +7,9 @@ extern void cleargamma();
 extern void writeinitcfg();
 extern int vsync, vsynctear;
 
+// local player
 dynent *player = NULL;
+
 SDL_Window *screen = NULL;
 SDL_GLContext glcontext = NULL;
 
@@ -18,6 +20,7 @@ int screenw = 0, screenh = 0, desktopw = 0, desktoph = 0;
 int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1;
 int initing = NOT_INITING;
 
+// ---------------------------- initialisation and exit ----------------------------
 
 // cleans up game memory and SDL at exit
 void cleanup()
@@ -57,7 +60,6 @@ void fatal(const char *s, ...)
 {
     static int errors = 0;
     errors++;
-
     if(errors <= 2) // print up to one extra recursive error
     {
         defvformatstring(msg,s,s);
@@ -92,6 +94,8 @@ bool initwarning(const char *desc, int level, int type)
     return false;
 }
 
+// ---------------------------- screen setup and window settings ----------------------------
+
 // hardcoded macros for screen settings
 #define SCR_MINW 320
 #define SCR_MINH 200
@@ -108,7 +112,7 @@ ICOMMAND(screenres, "ii", (int *w, int *h), screenres(*w, *h));
 VARF(scr_w, SCR_MINW, -1, SCR_MAXW, screenres(scr_w, -1));
 VARF(scr_h, SCR_MINH, -1, SCR_MAXH, screenres(-1, scr_h));
 
-// ?
+// buffer precision (in bits) and AA
 VAR(colorbits, 0, 0, 32);
 VARF(depthbits, 0, 0, 32, initwarning("depth-buffer precision"));
 VARF(stencilbits, 0, 0, 32, initwarning("stencil-buffer precision"));
@@ -354,7 +358,8 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 
 float loadprogress = 0;
 
-void renderprogress(float bar, const char *text, GLuint tex, bool background)   // also used during loading
+// render progress bar and map screenshot
+void renderprogress(float bar, const char *text, GLuint tex, bool background)
 {
     if(!inbetweenframes || envmapping) return;
 
@@ -473,11 +478,13 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)   
     swapbuffers(false);
 }
 
-VARNP(relativemouse, userelativemouse, 0, 1, 1);
+
+// ---------------------------- mouse and keyboard management (input) ----------------------------
 
 // controlling SDL input
 bool shouldgrab = false, grabinput = false, minimized = false, canrelativemouse = true, relativemouse = false;
 int keyrepeatmask = 0, textinputmask = 0;
+VARNP(relativemouse, userelativemouse, 0, 1, 1);
 
 void keyrepeat(bool on, int mask)
 {
@@ -757,6 +764,7 @@ void resetgl()
 }
 COMMAND(resetgl, "");
 
+
 vector<SDL_Event> events;
 
 void pushevent(const SDL_Event &e)
@@ -993,6 +1001,7 @@ void limitfps(int &millis, int curmillis)
     }
 }
 
+// stack dumper function for release builts on Windows
 #if defined(WIN32) && !defined(_DEBUG) && !defined(__GNUC__)
 void stackdumper(unsigned int type, EXCEPTION_POINTERS *ep)
 {
