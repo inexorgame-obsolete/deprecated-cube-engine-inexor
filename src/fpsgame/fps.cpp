@@ -7,6 +7,7 @@
 #include "game.h"
 #include "filesystem.h"
 #include "include/cef_v8.h"
+#include "ui/ui.h"
 #include "ui/cefapp.h"
 #include "ui/ceftypes.h"
 
