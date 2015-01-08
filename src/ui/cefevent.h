@@ -21,6 +21,7 @@ class InexorCefCallback
     public:
         InexorCefCallback(CefRefPtr<CefV8Value> callback, CefRefPtr<CefV8Context> context) : callback(callback), context(context) { };
 
+        // Returns handlers
         CefRefPtr<CefV8Value> GetCallbackFunction() { return callback; };
         CefRefPtr<CefV8Context> GetCallbackContext() { return context; };
 
@@ -56,7 +57,7 @@ class InexorCefEvent
         IMPLEMENT_REFCOUNTING(InexorCefEvent);
 };
 
-class InexorCefEventManager
+class InexorCefEventManager : public CefV8Handler
 {
 
     public:
@@ -67,6 +68,9 @@ class InexorCefEventManager
 
         void FireEventWithContext(const CefString& name, const InexorCefValueList& arguments);
         void FireEvent(const CefString& name, const CefV8ValueList& arguments);
+
+        // CefV8Handler
+        bool Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception);
 
     private:
         std::list<InexorCefEvent*> events;

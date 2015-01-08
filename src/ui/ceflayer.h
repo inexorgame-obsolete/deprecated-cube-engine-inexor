@@ -51,7 +51,7 @@ class InexorCefLayer
 
 };
 
-class InexorCefLayerManager
+class InexorCefLayerManager : public CefV8Handler
 {
 
     public:
@@ -66,6 +66,7 @@ class InexorCefLayerManager
         InexorCefLayer* CreateLayer(std::string name, std::string url);
         InexorCefLayer* CreateLayer(std::string name, int x, int y, int width, int height, std::string url);
         InexorCefLayer* GetLayer(std::string name);
+        std::list<std::string> GetLayers();
         void ShowLayer(std::string name);
         void HideLayer(std::string name);
         // void BringLayerToFront(std::string name);
@@ -78,6 +79,9 @@ class InexorCefLayerManager
         void SendMouseClickEvent(const CefMouseEvent& event, CefBrowserHost::MouseButtonType type, bool mouseUp, int clickCount);
         void SendMouseMoveEvent(const CefMouseEvent& event, bool mouseLeave);
         void SendMouseWheelEvent(const CefMouseEvent& event, int deltaX, int deltaY);
+
+        // CefV8Handler
+        bool Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception);
 
     private:
         std::list<InexorCefLayer*> layers;

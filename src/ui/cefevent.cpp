@@ -64,6 +64,7 @@ void InexorCefEvent::ExecuteCallbackWithContext(CefRefPtr<CefV8Value> callback_f
 
 void InexorCefEvent::FireEventWithContext(const InexorCefValueList& arguments)
 {
+    logoutf("Fired event: %s", name.ToString().c_str());
     // cefdebug("InexorCefEvent::FireEventWithContext", name.ToString());
     // logoutf("  Arguments: %d", arguments.size());
     // logoutf("  Callbacks: %d", callbacks.size());
@@ -140,4 +141,25 @@ void InexorCefEventManager::FireEvent(const CefString& name, const CefV8ValueLis
 {
     // cefdebug("InexorCefEventManager::FireEvent", name.ToString());
     GetEvent(name)->FireEvent(arguments);
+}
+
+bool InexorCefEventManager::Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception)
+{
+    // cefdebug("InexorCefEventManager::Execute", name.ToString());
+
+    CEF_REQUIRE_RENDERER_THREAD();
+
+    if (name == "subscribe") {
+        if (arguments.size() == 2 && arguments[0]->IsString() && arguments[1]->IsFunction()) {
+            SubscribeEvent(arguments[0]->GetStringValue(), new InexorCefCallback(arguments[1], CefV8Context::GetCurrentContext()));
+            return true;
+        }
+    } else if (name == "fire") {
+        if (arguments.size() >= 1 && arguments[0]->IsString()) {
+            CefV8ValueList event_arguments(arguments.begin() + 1, arguments.end());
+            FireEvent(arguments[0]->GetStringValue(), event_arguments);
+            return true;
+        }
+    }
+    return false;
 }
