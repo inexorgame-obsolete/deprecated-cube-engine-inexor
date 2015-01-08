@@ -279,6 +279,8 @@ namespace game
 
 	// ---------------------------------------- various ----------------------------------------
 
+	// enable crc and senditemstoserver
+	// called just after map load by startmap
     void sendmapinfo()
     {
         if(!connected) return;
@@ -286,11 +288,13 @@ namespace game
         if(player1->state!=CS_SPECTATOR || player1->privilege || !remote) senditemstoserver = true;
     }
 
+	// write my player name to a stream
     void writeclientinfo(stream *f)
     {
         f->printf("name %s\n", escapestring(player1->name));
     }
 
+	// check if editing is available (alos print error it not)
     bool allowedittoggle()
     {
         if(editmode) return true;
@@ -304,6 +308,7 @@ namespace game
         return true;
     }
 
+	// send edit toggle to server
     void edittoggled(bool on)
     {
         addmsg(N_EDITMODE, "ri", on ? 1 : 0);
@@ -312,7 +317,12 @@ namespace game
         disablezoom();
         player1->suicided = player1->respawned = -2;
     }
+	
+	// ---------------------------------------- cubescript get functions ----------------------------------------
 
+	// cn means client number
+
+	// get nick name from cn
     const char *getclientname(int cn)
     {
         fpsent *d = getclient(cn);
@@ -320,6 +330,7 @@ namespace game
     }
     ICOMMAND(getclientname, "i", (int *cn), result(getclientname(*cn)));
 
+	// get team name from cn
     const char *getclientteam(int cn)
     {
         fpsent *d = getclient(cn);
@@ -327,6 +338,7 @@ namespace game
     }
     ICOMMAND(getclientteam, "i", (int *cn), result(getclientteam(*cn)));
 
+	// get client model from cn
     int getclientmodel(int cn)
     {
         fpsent *d = getclient(cn);
@@ -334,6 +346,8 @@ namespace game
     }
     ICOMMAND(getclientmodel, "i", (int *cn), intret(getclientmodel(*cn)));
 
+	// get client icon from cn
+	// depends on player model and spectator mode
     const char *getclienticon(int cn)
     {
         fpsent *d = getclient(cn);
@@ -343,6 +357,7 @@ namespace game
     }
     ICOMMAND(getclienticon, "i", (int *cn), result(getclienticon(*cn)));
 
+	// check if this cn is game master (green)
     bool ismaster(int cn)
     {
         fpsent *d = getclient(cn);
@@ -350,6 +365,7 @@ namespace game
     }
     ICOMMAND(ismaster, "i", (int *cn), intret(ismaster(*cn) ? 1 : 0));
 
+	// check if this cn is auth master (green, should be violet to distinguish from gm..)
     bool isauth(int cn)
     {
         fpsent *d = getclient(cn);
@@ -357,6 +373,7 @@ namespace game
     }
     ICOMMAND(isauth, "i", (int *cn), intret(isauth(*cn) ? 1 : 0));
 
+	// check if this cn is administrator (orange)
     bool isadmin(int cn)
     {
         fpsent *d = getclient(cn);
@@ -364,9 +381,12 @@ namespace game
     }
     ICOMMAND(isadmin, "i", (int *cn), intret(isadmin(*cn) ? 1 : 0));
 
+	// return master mode 
     ICOMMAND(getmastermode, "", (), intret(mastermode));
+	// return master mode name
     ICOMMAND(mastermodename, "i", (int *mm), result(server::mastermodename(*mm, "")));
 
+	// check if this cn is spectator
     bool isspectator(int cn)
     {
         fpsent *d = getclient(cn);
@@ -374,18 +394,22 @@ namespace game
     }
     ICOMMAND(isspectator, "i", (int *cn), intret(isspectator(*cn) ? 1 : 0));
 
-    bool isai(int cn, int type)
+	// check if this cn is a bot (computer controlled player)
+    bool isai(int cn, int type) 
     {
         fpsent *d = getclient(cn);
-        int aitype = type > 0 && type < AI_MAX ? type : AI_BOT;
+        int aitype = type > 0 && type < AI_MAX ? type : AI_BOT; // a.i. = "artificial intelligence"
         return d && d->aitype==aitype;
     }
     ICOMMAND(isai, "ii", (int *cn, int *type), intret(isai(*cn, *type) ? 1 : 0));
 
+	// all functions can be called using client number or full name
+	// name should be case sensitive but the engine checks is both ways
     int parseplayer(const char *arg)
     {
         char *end;
         int n = strtol(arg, &end, 10);
+		// try to parse it as cn
         if(*arg && !*end)
         {
             if(n!=player1->clientnum && !clients.inrange(n)) return -1;
@@ -403,10 +427,12 @@ namespace game
             fpsent *o = players[i];
             if(!strcasecmp(arg, o->name)) return o->clientnum;
         }
+		// parsing failed
         return -1;
     }
     ICOMMAND(getclientnum, "s", (char *name), intret(name[0] ? parseplayer(name) : player1->clientnum));
 
+	// return a list of players
     void listclients(bool local, bool bots)
     {
         vector<char> buf;
@@ -429,12 +455,18 @@ namespace game
     }
     ICOMMAND(listclients, "bb", (int *local, int *bots), listclients(*local>0, *bots!=0));
 
+	// ---------------------------------------- server administration ----------------------------------------
+
+	// many server administration commands require administrative permissions!
+
+	// clears server ban lists
     void clearbans()
     {
         addmsg(N_CLEARBANS, "r");
     }
     COMMAND(clearbans, "");
 
+	// kickban a player
     void kick(const char *victim, const char *reason)
     {
         int vn = parseplayer(victim);
@@ -458,6 +490,7 @@ namespace game
 
     vector<int> ignores;
 
+	// ignore all chat messags
     void ignore(int cn)
     {
         fpsent *d = getclient(cn);
@@ -466,6 +499,7 @@ namespace game
         if(ignores.find(cn) < 0) ignores.add(cn);
     }
 
+	// stop ignoring all chat messages
     void unignore(int cn)
     {
         if(ignores.find(cn) < 0) return;
@@ -474,6 +508,7 @@ namespace game
         ignores.removeobj(cn);
     }
 
+	// check if this person is ingored by you
     bool isignored(int cn) { return ignores.find(cn) >= 0; }
 
     ICOMMAND(ignore, "s", (char *arg), ignore(parseplayer(arg)));
