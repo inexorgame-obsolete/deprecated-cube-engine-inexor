@@ -2,13 +2,14 @@
 
 namespace game
 {
+    fpsent *player1 = NULL; // our client
+    vector<fpsent *> players; // other clients
+
     bool intermission = false;
     int maptime = 0, maprealtime = 0, maplimit = -1;
     int respawnent = -1;
     int lasthit = 0, lastspawnattempt = 0;
     int following = -1, followdir = 0;
-    fpsent *player1 = NULL;         // our client
-    vector<fpsent *> players;       // other clients
     int savedammo[NUMGUNS];
 
 	// this does not make sense at all
@@ -17,6 +18,7 @@ namespace game
 		return false;
 	}
 
+	// send network message for taunt animation to server
     void taunt()
     {
         if(player1->state!=CS_ALIVE || player1->physstate<PHYS_SLOPE) return;
@@ -26,12 +28,14 @@ namespace game
     }
     COMMAND(taunt, "");
 
+	// cubescript: get following player
     ICOMMAND(getfollow, "", (),
     {
         fpsent *f = followingplayer();
         intret(f ? f->clientnum : -1);
     });
 
+	// follow a specific player if you are in spectator mode
     void follow(char *arg)
     {
         if(arg[0] ? player1->state==CS_SPECTATOR : following>=0)
@@ -44,6 +48,8 @@ namespace game
 	}
     COMMAND(follow, "s");
 
+
+	// follow previous/next client number
     void nextfollow(int dir)
     {
         if(player1->state!=CS_SPECTATOR || clients.empty())
@@ -67,35 +73,45 @@ namespace game
     }
     ICOMMAND(nextfollow, "i", (int *dir), nextfollow(*dir < 0 ? -1 : 1));
 
+	// get client map name
+    const char *getclientmap() 
+	{ 
+		return clientmap;
+	}
 
-    const char *getclientmap() { return clientmap; }
-
+	// all monsters back at their spawns for editing
     void resetgamestate()
     {
         if(m_obstacles || m_classicsp) clearmovables();
         if(m_classicsp)
         {
-            clearmonsters();                 // all monsters back at their spawns for editing
+            clearmonsters();                 
             entities::resettriggers();
         }
         clearprojectiles();
         clearbouncers();
     }
 
-    fpsent *spawnstate(fpsent *d)              // reset player state not persistent accross spawns
+	// reset player state not persistent accross spawns
+    fpsent *spawnstate(fpsent *d) 
     {
         d->respawn(gamemode);
         d->spawnstate(gamemode);
         return d;
     }
 
+	// Send "I would like to spawn" to server
     void respawnself()
     {
         if(ispaused()) return;
         if(m_mp(gamemode))
         {
             int seq = (player1->lifesequence<<16)|((lastmillis/1000)&0xFFFF);
-            if(player1->respawned!=seq) { addmsg(N_TRYSPAWN, "rc", player1); player1->respawned = seq; }
+            if(player1->respawned!=seq) 
+			{
+				addmsg(N_TRYSPAWN, "rc", player1);
+				player1->respawned = seq;
+			}
         }
         else
         {
@@ -106,6 +122,7 @@ namespace game
         }
     }
 
+	// the player I am aiming at
     fpsent *pointatplayer()
     {
         loopv(players) if(players[i] != player1 && intersect(players[i], player1->o, worldpos)) return players[i];
