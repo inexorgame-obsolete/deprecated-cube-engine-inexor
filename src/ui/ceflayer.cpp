@@ -7,6 +7,90 @@ extern void logoutf(const char *fmt, ...);
 #include "include/cef_browser.h"
 #include "include/cef_command_line.h"
 
+
+InexorCefLayer* InexorCefLayerManager::CreateLayer(std::string name, int x, int y, int width, int height, std::string url)
+{
+    InexorCefLayer* layer = new InexorCefLayer(name, x, y, width, height, url);
+    layers.push_back(layer);
+    return layer;
+}
+
+InexorCefLayer* InexorCefLayerManager::GetLayer(std::string name)
+{
+    return NULL;
+}
+
+void InexorCefLayerManager::ShowLayer(std::string name)
+{
+    GetLayer(name)->SetVisibility(true);
+}
+
+void InexorCefLayerManager::HideLayer(std::string name)
+{
+    GetLayer(name)->SetVisibility(false);
+}
+
+void InexorCefLayerManager::RenderLayer(std::string name)
+{
+    GetLayer(name)->GetRenderHandler()->Render();
+}
+
+void InexorCefLayerManager::Render()
+{
+    CEF_REQUIRE_UI_THREAD();
+    for(std::list<InexorCefLayer*>::iterator it = layers.begin(); it != layers.end(); ++it)
+    {
+        InexorCefLayer* layer = (*it);
+        if (layer->IsVisible()) {
+            layer->GetRenderHandler()->Render();
+        }
+    }
+}
+
+void InexorCefLayerManager::SendKeyEvent(CefKeyEvent event)
+{
+    for(std::list<InexorCefLayer*>::iterator it = layers.begin(); it != layers.end(); ++it)
+    {
+        InexorCefLayer* layer = (*it);
+        if (layer->IsVisible() && layer->IsAcceptingInput()) {
+            layer->GetBrowser()->GetHost()->SendKeyEvent(event);
+        }
+    }
+}
+
+void InexorCefLayerManager::SendMouseClickEvent(const CefMouseEvent& event, CefBrowserHost::MouseButtonType type, bool mouseUp, int clickCount)
+{
+    for(std::list<InexorCefLayer*>::iterator it = layers.begin(); it != layers.end(); ++it)
+    {
+        InexorCefLayer* layer = (*it);
+        if (layer->IsVisible() && layer->IsAcceptingInput()) {
+            layer->GetBrowser()->GetHost()->SendMouseClickEvent(event, type, mouseUp, clickCount);
+        }
+    }
+}
+
+void InexorCefLayerManager::SendMouseMoveEvent(const CefMouseEvent& event, bool mouseLeave)
+{
+    for(std::list<InexorCefLayer*>::iterator it = layers.begin(); it != layers.end(); ++it)
+    {
+        InexorCefLayer* layer = (*it);
+        if (layer->IsVisible() && layer->IsAcceptingInput()) {
+            layer->GetBrowser()->GetHost()->SendMouseMoveEvent(event, mouseLeave);
+        }
+    }
+}
+
+void InexorCefLayerManager::SendMouseWheelEvent(const CefMouseEvent& event, int deltaX, int deltaY)
+{
+    for(std::list<InexorCefLayer*>::iterator it = layers.begin(); it != layers.end(); ++it)
+    {
+        InexorCefLayer* layer = (*it);
+        if (layer->IsVisible() && layer->IsAcceptingInput()) {
+            layer->GetBrowser()->GetHost()->SendMouseWheelEvent(event, deltaX, deltaY);
+        }
+    }
+}
+
 InexorCefLayer::InexorCefLayer(std::string name, int x, int y, int width, int height, std::string url)
     : name(name),
       url(url),

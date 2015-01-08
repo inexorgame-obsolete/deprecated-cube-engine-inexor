@@ -1,28 +1,28 @@
 #include "cefrenderhandler.h"
 
-#if defined(OS_WIN)
-#include <gl/gl.h>
-#include <gl/glu.h>
-#elif defined(OS_MACOSX)
-#include <OpenGL/gl.h>
-#elif defined(OS_LINUX)
-#include <GL/gl.h>
-#include <GL/glu.h>
-#else
-#error Platform is not supported.
-#endif
+// #if defined(OS_WIN)
+// #include <gl/gl.h>
+// #include <gl/glu.h>
+// #elif defined(OS_MACOSX)
+// #include <OpenGL/gl.h>
+// #elif defined(OS_LINUX)
+// #include <GL/gl.h>
+// #include <GL/glu.h>
+// #else
+// #error Platform is not supported.
+// #endif
 
-#include "include/wrapper/cef_helpers.h"
+// #include "include/wrapper/cef_helpers.h"
 
-#ifndef GL_BGR
-#define GL_BGR 0x80E0
-#endif
-#ifndef GL_BGRA
-#define GL_BGRA 0x80E1
-#endif
-#ifndef GL_UNSIGNED_INT_8_8_8_8_REV
-#define GL_UNSIGNED_INT_8_8_8_8_REV 0x8367
-#endif
+// #ifndef GL_BGR
+// #define GL_BGR 0x80E0
+// #endif
+// #ifndef GL_BGRA
+// #define GL_BGRA 0x80E1
+// #endif
+// #ifndef GL_UNSIGNED_INT_8_8_8_8_REV
+// #define GL_UNSIGNED_INT_8_8_8_8_REV 0x8367
+// #endif
 
 // DCHECK on gl errors.
 #ifndef NDEBUG

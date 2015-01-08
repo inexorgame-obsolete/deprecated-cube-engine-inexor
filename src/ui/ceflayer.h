@@ -1,10 +1,13 @@
 #ifndef _CEF_LAYER_H
 #define _CEF_LAYER_H
 
+#include <list>
+
+#include "include/cef_app.h"
+
 #include "cefbrowsersettings.h"
 #include "cefclienthandler.h"
 #include "cefwindowinfo.h"
-#include "include/cef_app.h"
 
 class InexorCefLayer
 {
@@ -45,6 +48,41 @@ class InexorCefLayer
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(InexorCefLayer);
+
+};
+
+class InexorCefLayerManager
+{
+
+    public:
+        InexorCefLayerManager() {};
+
+        // Rendering
+        void Render();
+        void RenderLayer(std::string name);
+
+        // Layers
+        InexorCefLayer* CreateLayer(std::string name, int x, int y, int width, int height, std::string url);
+        InexorCefLayer* GetLayer(std::string name);
+        void SetScreenSize(int width, int height);
+        void ShowLayer(std::string name);
+        void HideLayer(std::string name);
+        // void BringLayerToFront(std::string name);
+        // void BringLayerToBack(std::string name);
+        // void MoveLayerUp(std::string name);
+        // void MoveLayerBack(std::string name);
+
+        // Input events
+        void SendKeyEvent(CefKeyEvent event);
+        void SendMouseClickEvent(const CefMouseEvent& event, CefBrowserHost::MouseButtonType type, bool mouseUp, int clickCount);
+        void SendMouseMoveEvent(const CefMouseEvent& event, bool mouseLeave);
+        void SendMouseWheelEvent(const CefMouseEvent& event, int deltaX, int deltaY);
+
+    private:
+        std::list<InexorCefLayer*> layers;
+
+        // Include the default reference counting implementation.
+        IMPLEMENT_REFCOUNTING(InexorCefLayerManager);
 
 };
 

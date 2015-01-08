@@ -6,6 +6,11 @@
 //
 
 #include "game.h"
+#include "include/cef_v8.h"
+#include "ui/cefapp.h"
+#include "ui/ceftypes.h"
+
+extern CefRefPtr<InexorCefApp> cef_app;
 
 namespace game
 {
@@ -514,6 +519,11 @@ namespace game
         deathstate(d);
         ai::killed(d, actor);
         if(cmode) cmode->killed(d, actor);
+        // Fire Event
+        InexorCefValueList arguments;
+        arguments.push_back(new InexorCefValue(d->clientnum));
+        arguments.push_back(new InexorCefValue(actor->clientnum));
+        cef_app->GetEventManager()->FireEventWithContext("frag", arguments);
     }
 
     void timeupdate(int secs)

@@ -2,6 +2,7 @@
 #define _CEF_RENDER_HANDLER_H
 #pragma once
 
+#include "shared/cube.h"
 #include "include/cef_browser.h"
 #include "include/cef_render_handler.h"
 #include "include/wrapper/cef_helpers.h"
