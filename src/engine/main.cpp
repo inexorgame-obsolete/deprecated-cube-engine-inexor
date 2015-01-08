@@ -5,6 +5,7 @@
 // extern functions and data here
 extern void cleargamma();
 extern void writeinitcfg();
+extern int vsync, vsynctear;
 
 // cleans up game memory and SDL at exit
 void cleanup()
@@ -37,6 +38,8 @@ void quit()
     cleanup();
     exit(EXIT_SUCCESS);
 }
+COMMAND(quit, "");
+
 
 // failure exit
 void fatal(const char *s, ...)   
@@ -64,20 +67,22 @@ void fatal(const char *s, ...)
             SDL_Quit();
         }
     }
-
     exit(EXIT_FAILURE);
 }
 
+dynent *player = NULL;
 SDL_Window *screen = NULL;
-int screenw = 0, screenh = 0, desktopw = 0, desktoph = 0;
 SDL_GLContext glcontext = NULL;
 
+// screen resolution management integers
+int screenw = 0, screenh = 0, desktopw = 0, desktoph = 0;
+
+// time management integers
 int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1;
-
-dynent *player = NULL;
-
 int initing = NOT_INITING;
 
+
+// print initialisation warning in game console
 bool initwarning(const char *desc, int level, int type)
 {
     if(initing < level) 
@@ -88,6 +93,7 @@ bool initwarning(const char *desc, int level, int type)
     return false;
 }
 
+// hardcoded macros for screen settings
 #define SCR_MINW 320
 #define SCR_MINH 200
 #define SCR_MAXW 10000
@@ -95,12 +101,15 @@ bool initwarning(const char *desc, int level, int type)
 #define SCR_DEFAULTW 1024
 #define SCR_DEFAULTH 768
 
+// function to change screen resolution (forward)
 void screenres(int w, int h);
 ICOMMAND(screenres, "ii", (int *w, int *h), screenres(*w, *h));
 
+// change screen width and height
 VARF(scr_w, SCR_MINW, -1, SCR_MAXW, screenres(scr_w, -1));
 VARF(scr_h, SCR_MINH, -1, SCR_MAXH, screenres(-1, scr_h));
 
+// ?
 VAR(colorbits, 0, 0, 32);
 VARF(depthbits, 0, 0, 32, initwarning("depth-buffer precision"));
 VARF(stencilbits, 0, 0, 32, initwarning("stencil-buffer precision"));
@@ -108,13 +117,13 @@ VARF(fsaa, -1, -1, 16, initwarning("anti-aliasing"));
 
 void restorevsync()
 {
-    extern int vsync, vsynctear;
     if(glcontext) SDL_GL_SetSwapInterval(vsync ? (vsynctear ? -1 : 1) : 0);
 }
 
 VARFP(vsync, 0, 0, 1, restorevsync());
 VARFP(vsynctear, 0, 0, 1, { if(vsync) restorevsync(); });
 
+// write configuration file (also called at exit)
 void writeinitcfg()
 {
     stream *f = openutf8file("init.cfg", "w");
@@ -139,8 +148,6 @@ void writeinitcfg()
     f->printf("soundbufferlen %d\n", soundbufferlen);
     delete f;
 }
-
-COMMAND(quit, "");
 
 static void getbackgroundres(int &w, int &h)
 {
