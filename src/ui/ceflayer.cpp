@@ -126,6 +126,8 @@ InexorCefLayer::InexorCefLayer(std::string name, int x, int y, int width, int he
 void InexorCefLayer::SetVisibility(bool is_visible)
 {
 	this->is_visible = is_visible;
+	browser->GetHost()->SetWindowVisibility(is_visible);
+	browser->GetHost()->WasHidden(!is_visible);
 }
 
 void InexorCefLayer::SetFocus(bool has_focus)
