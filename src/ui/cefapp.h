@@ -8,14 +8,14 @@
 #include "include/cef_browser.h"
 #include "include/cef_command_line.h"
 #include "include/cef_render_process_handler.h"
+
 #include "cefbrowsersettings.h"
 #include "cefclienthandler.h"
 #include "cefcontext.h"
-#include "cefmouse.h"
+#include "cefdebug.h"
 #include "ceflayer.h"
+#include "cefmouse.h"
 #include "cefwindowinfo.h"
-
-extern void logoutf(const char *fmt, ...);
 
 class InexorCefApp : public CefApp,
                      public CefBrowserProcessHandler,
@@ -25,22 +25,15 @@ class InexorCefApp : public CefApp,
     public:
         InexorCefApp(int width, int height);
 
-        // Layers
-        InexorCefLayer* CreateLayer(std::string name, int x, int y, int width, int height, std::string url);
-        InexorCefLayer* GetLayer(std::string name);
-        void SetScreenSize(int width, int height);
-        void RenderLayer(std::string name);
-        void Render();
-        // void ShowLayer(std::string name);
-        // void HideLayer(std::string name);
-        // void BringLayerToFront(std::string name);
-        // void BringLayerToBack(std::string name);
-        // void MoveLayerUp(std::string name);
-        // void MoveLayerBack(std::string name);
+        // Getters for handlers
+        CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() { return this; }
+        CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() { return this; }
+        CefRefPtr<InexorCefLayerManager> GetLayerManager() { return layer_manager; }
+        CefRefPtr<InexorCefEventManager> GetEventManager() { return context->GetEventManager(); }
 
-        // JavaScript Events
-        // void FireEvent();
-        // void SubscribeEvent();
+        // Rendering / Window Management
+        void Render();
+        void SetScreenSize(int width, int height);
 
         // Input events
         void SendKeyEvent(CefKeyEvent event);
@@ -48,9 +41,9 @@ class InexorCefApp : public CefApp,
         void SendMouseMoveEvent(const CefMouseEvent& event, bool mouseLeave);
         void SendMouseWheelEvent(const CefMouseEvent& event, int deltaX, int deltaY);
 
-        // Getters for handlers
-        CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() { return this; }
-        CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() { return this; }
+        // JavaScript Events
+        // void FireEvent(const CefString& name, const CefV8ValueList& arguments);
+        // void SubscribeEvent();
 
         // CefBrowserProcessHandler
         void OnContextInitialized();
@@ -59,15 +52,17 @@ class InexorCefApp : public CefApp,
         void OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context);
 
 	private:
-        std::list<InexorCefLayer*> layers;
         int width;
         int height;
 
+        // Layer Management
+        CefRefPtr<InexorCefLayerManager> layer_manager;
+
         // Global mouse
-        InexorCefMouse mouse;
+        CefRefPtr<InexorCefMouse> mouse;
 
         // Global context
-        InexorCefContext context;
+        CefRefPtr<InexorCefContext> context;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(InexorCefApp);

@@ -52,11 +52,13 @@ prepend(CLIENT_SOURCES_FPSGAME ${SOURCE_DIR}/fpsgame
 
 set(CLIENT_SOURCES_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefapp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefrenderhandler
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefclienthandler
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefcontext
+    ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefdebug
+    ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefevent
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/ceflayer
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefmouse
+    ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefrenderhandler
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefrequestcontexthandler
 
 set(CLIENT_SOURCES_CEFDLL

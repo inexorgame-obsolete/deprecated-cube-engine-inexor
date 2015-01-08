@@ -1,6 +1,14 @@
 #include "cefcontext.h"
 
-CefRefPtr<CefV8Value> InexorCefContext::GetContext() {
+InexorCefContext::InexorCefContext(CefRefPtr<InexorCefLayerManager> layer_manager) {
+    this->event_manager = new InexorCefEventManager();
+    this->layer_manager = layer_manager;
+}
+
+CefRefPtr<CefV8Value> InexorCefContext::GetContext()
+{
+    // cefdebug("InexorCefContext::GetContext", "");
+
     if (!context.get())
     {
         // This has to be happen when the context is initialized
@@ -9,15 +17,23 @@ CefRefPtr<CefV8Value> InexorCefContext::GetContext() {
     return context;
 }
 
-void InexorCefContext::InitializeContext() {
+void InexorCefContext::InitializeContext()
+{
+    // cefdebug("InexorCefContext::InitializeContext", "");
+
     context = CefV8Value::CreateObject(this);
 
     // Events
     context->SetValue("subscribe", CefV8Value::CreateFunction("subscribe", this), V8_PROPERTY_ATTRIBUTE_NONE);
+    context->SetValue("fire", CefV8Value::CreateFunction("fire", this), V8_PROPERTY_ATTRIBUTE_NONE);
 
     // Methods
     context->SetValue("logoutf", CefV8Value::CreateFunction("logoutf", this), V8_PROPERTY_ATTRIBUTE_READONLY);
     context->SetValue("quit", CefV8Value::CreateFunction("quit", this), V8_PROPERTY_ATTRIBUTE_READONLY);
+
+    // Layer Management Methods
+    context->SetValue("showLayer", CefV8Value::CreateFunction("showLayer", this), V8_PROPERTY_ATTRIBUTE_READONLY);
+    context->SetValue("hideLayer", CefV8Value::CreateFunction("hideLayer", this), V8_PROPERTY_ATTRIBUTE_READONLY);
 
     // Variables
     context->SetValue("curtime", V8_ACCESS_CONTROL_ALL_CAN_READ, V8_PROPERTY_ATTRIBUTE_READONLY);
@@ -30,6 +46,7 @@ void InexorCefContext::InitializeContext() {
     context->SetValue("scr_w", V8_ACCESS_CONTROL_DEFAULT, V8_PROPERTY_ATTRIBUTE_NONE);
     context->SetValue("scr_h", V8_ACCESS_CONTROL_DEFAULT, V8_PROPERTY_ATTRIBUTE_NONE);
     context->SetValue("vsync", V8_ACCESS_CONTROL_DEFAULT, V8_PROPERTY_ATTRIBUTE_NONE);
+    context->SetValue("fps", V8_ACCESS_CONTROL_ALL_CAN_READ, V8_PROPERTY_ATTRIBUTE_READONLY);
     // Variables Client
     context->SetValue("name", V8_ACCESS_CONTROL_DEFAULT, V8_PROPERTY_ATTRIBUTE_NONE);
 
@@ -37,17 +54,35 @@ void InexorCefContext::InitializeContext() {
 
 bool InexorCefContext::Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception)
 {
+    // cefdebug("InexorCefContext::Execute", name.ToString());
+
     CEF_REQUIRE_RENDERER_THREAD();
-    logoutf("Executing function %s", name.ToString().c_str());
+
     if (name == "subscribe") {
-        if (arguments.size() == 1 && arguments[0]->IsFunction()) {
-            /*
-            CefRefPtr<CefV8Handler> callback_handler = arguments[0]->GetFunctionHandler();
-            CefString function_name = arguments[0]->GetFunctionName();
-            CefRefPtr<CefV8Context> context = CefV8Context::GetCurrentContext();
-            */
-            // manage the
+        // JavaScript:
+        //
+        // inexor.subscribe("event_name", callback_function);
+        //
+        if (arguments.size() == 2 && arguments[0]->IsString() && arguments[1]->IsFunction()) {
+            event_manager->SubscribeEvent(arguments[0]->GetStringValue(), new InexorCefCallback(arguments[1], CefV8Context::GetCurrentContext()));
             return true;
+        }
+    } else if (name == "fire") {
+        // JavaScript:
+        //
+        // inexor.fire("event_name", arg1, arg2, ...);
+        //
+        if (arguments.size() >= 1 && arguments[0]->IsString()) {
+            CefV8ValueList event_arguments(arguments.begin() + 1, arguments.end());
+            event_manager->FireEvent(arguments[0]->GetStringValue(), event_arguments);
+        }
+    } else if (name == "showLayer") {
+        if (arguments.size() == 1 && arguments[0]->IsString()) {
+            layer_manager->ShowLayer(arguments[0]->GetStringValue().ToString());
+        }
+    } else if (name == "hideLayer") {
+        if (arguments.size() == 1 && arguments[0]->IsString()) {
+            layer_manager->HideLayer(arguments[0]->GetStringValue().ToString());
         }
     } else if (name == "logoutf") {
         logoutf("logoutf lastmillis: %d", lastmillis);
@@ -62,8 +97,10 @@ bool InexorCefContext::Execute(const CefString& name, CefRefPtr<CefV8Value> obje
 
 bool InexorCefContext::Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& return_value, CefString& exception)
 {
+    // cefdebug("InexorCefContext::Get", name.ToString());
+
     CEF_REQUIRE_RENDERER_THREAD();
-logoutf("Get(%s)", name.ToString().c_str());
+
     if (name == "curtime")
         return_value = CefV8Value::CreateInt(curtime);
     else if (name == "lastmillis")
@@ -86,6 +123,11 @@ logoutf("Get(%s)", name.ToString().c_str());
         return_value = CefV8Value::CreateInt(vsync);
     else if (name == "name")
         return_value = CefV8Value::CreateString(game::player1->name);
+    else if (name == "fps") {
+        int fps, bestdiff, worstdiff;
+        getfps(fps, bestdiff, worstdiff);
+        return_value = CefV8Value::CreateInt(fps);
+    }
     else
         return false;
     return true;
@@ -93,15 +135,17 @@ logoutf("Get(%s)", name.ToString().c_str());
 
 bool InexorCefContext::Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception)
 {
+    // cefdebug("InexorCefContext::Set", name.ToString());
+
     CEF_REQUIRE_RENDERER_THREAD();
-    logoutf("Set(%s)", name.ToString().c_str());
+
     if (value->IsInt()) {
         if (name == "thirdperson")
             thirdperson = value->GetIntValue();
         else if (name == "fullscreen")
             fullscreen = value->GetIntValue();
-        else if (name == "scr_h")
-            scr_h = value->GetIntValue();
+        else if (name == "scr_w")
+            scr_w = value->GetIntValue();
         else if (name == "scr_h")
             scr_h = value->GetIntValue();
         else if (name == "vsync")
