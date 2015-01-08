@@ -6,14 +6,16 @@ namespace game
     int maptime = 0, maprealtime = 0, maplimit = -1;
     int respawnent = -1;
     int lasthit = 0, lastspawnattempt = 0;
-
     int following = -1, followdir = 0;
-
     fpsent *player1 = NULL;         // our client
     vector<fpsent *> players;       // other clients
     int savedammo[NUMGUNS];
 
-    bool clientoption(const char *arg) { return false; }
+	// this does not make sense at all
+    bool clientoption(const char *arg) 
+	{ 
+		return false;
+	}
 
     void taunt()
     {
