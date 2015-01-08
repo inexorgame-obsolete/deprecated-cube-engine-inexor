@@ -2,11 +2,15 @@
 
 namespace game
 {
+	// ---------------------------------------- minimap and radar ----------------------------------------
+
+	// radar and minimap settings
     VARP(minradarscale, 0, 384, 10000);
     VARP(maxradarscale, 1, 1024, 10000);
     VARP(radarteammates, 0, 1, 1);
     FVARP(minimapalpha, 0, 1, 1);
 
+	// HUD
     int hudannounce_begin = 0;
     int hudannounce_timeout = 0;
     int hudannounce_effect = 0;
@@ -100,7 +104,6 @@ namespace game
         }
         if(dead) glEnd();
     }
-       
 
 	// game mode header files
     #include "capture.h"
@@ -109,6 +112,7 @@ namespace game
     #include "bomb.h"
     #include "hideandseek.h"
 
+	// gamemodes
     clientmode *cmode = NULL;
     captureclientmode capturemode;
     ctfclientmode ctfmode;
@@ -133,7 +137,10 @@ namespace game
     int sessionid = 0, mastermode = MM_OPEN, gamespeed = 100;
     string servinfo = "", servauth = "", connectpass = "";
 
+	// push dead bodies (?)
     VARP(deadpush, 1, 2, 20);
+
+	// ---------------------------------------- team, name and playermodel settings ----------------------------------------
 
 	// change my own nick name
     void switchname(const char *name)
@@ -162,24 +169,34 @@ namespace game
         if(player1->clientnum < 0) filtertext(player1->team, team, false, MAXTEAMLEN);
         else addmsg(N_SWITCHTEAM, "rs", team);
     }
+
+	// print my own team name
     void printteam()
     {
         conoutf("your team is: %s", player1->team);
     }
+
+	// switch team or print team name 
     ICOMMAND(team, "sN", (char *s, int *numargs),
     {
         if(*numargs > 0) switchteam(s);
         else if(!*numargs) printteam();
         else result(player1->team);
     });
+
+	// cubescript getteam implementation
     ICOMMAND(getteam, "", (), result(player1->team));
 
+	// switch my player model (inky, ogro..)
     void switchplayermodel(int playermodel)
     {
         player1->playermodel = playermodel;
         addmsg(N_SWITCHMODEL, "ri", player1->playermodel);
     }
 
+	// ---------------------------------------- authkeys ----------------------------------------
+
+	// structure for authentification keys
     struct authkey
     {
         char *name, *key, *desc;
@@ -191,15 +208,18 @@ namespace game
         {
         }
 
-        ~authkey()
+        ~authkey() // delete heap memory for members in destructur
         {
             DELETEA(name);
             DELETEA(key);
             DELETEA(desc);
         }
     };
+
+	// a vector fo authkeys for authentification on servers
     vector<authkey *> authkeys;
 
+	// find auth key by description
     authkey *findauthkey(const char *desc = "")
     {
         loopv(authkeys) if(!strcmp(authkeys[i]->desc, desc) && !strcasecmp(authkeys[i]->name, player1->name)) return authkeys[i];
@@ -207,8 +227,11 @@ namespace game
         return NULL;
     }
 
+	// do authentification automaticly
     VARP(autoauth, 0, 1, 1);
 
+
+	// add a new authkey to authkey library
     void addauthkey(const char *name, const char *key, const char *desc)
     {
         loopvrev(authkeys) if(!strcmp(authkeys[i]->desc, desc) && !strcmp(authkeys[i]->name, name)) delete authkeys.remove(i);
@@ -216,28 +239,33 @@ namespace game
     }
     ICOMMAND(authkey, "sss", (char *name, char *key, char *desc), addauthkey(name, key, desc));
 
+
+	// check if both description and name for this authkey are available
     bool hasauthkey(const char *name, const char *desc)
     {
         if(!name[0] && !desc[0]) return authkeys.length() > 0;
-        loopvrev(authkeys) if(!strcmp(authkeys[i]->desc, desc) && !strcmp(authkeys[i]->name, name)) return true;
+        loopvrev(authkeys) if(!strcmp(authkeys[i]->desc, desc) && !strcmp(authkeys[i]->name, name)) return true; // if both name and desc are available, return true
         return false;
     }
-
     ICOMMAND(hasauthkey, "ss", (char *name, char *desc), intret(hasauthkey(name, desc) ? 1 : 0));
 
+
+	// generate new public/private auth key pair using tiger hash algorithm
     void genauthkey(const char *secret)
     {
         if(!secret[0]) { conoutf(CON_ERROR, "you must specify a secret password"); return; }
         vector<char> privkey, pubkey;
-        genprivkey(secret, privkey, pubkey);
+        genprivkey(secret, privkey, pubkey); // generate public and private key
         conoutf("private key: %s", privkey.getbuf());
         conoutf("public key: %s", pubkey.getbuf());
     }
     COMMAND(genauthkey, "s");
 
+
+	// save all authkeys to "auth.cfg"
     void saveauthkeys()
     {
-        stream *f = openfile("auth.cfg", "w");
+        stream *f = openfile("auth.cfg", "w"); // why is this file name not optional?
         if(!f) { conoutf(CON_ERROR, "failed to open auth.cfg for writing"); return; }
         loopv(authkeys)
         {
@@ -248,6 +276,8 @@ namespace game
         delete f;
     }
     COMMAND(saveauthkeys, "");
+
+	// ---------------------------------------- various ----------------------------------------
 
     void sendmapinfo()
     {
