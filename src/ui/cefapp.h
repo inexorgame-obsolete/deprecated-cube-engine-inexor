@@ -41,10 +41,6 @@ class InexorCefApp : public CefApp,
         void SendMouseMoveEvent(const CefMouseEvent& event, bool mouseLeave);
         void SendMouseWheelEvent(const CefMouseEvent& event, int deltaX, int deltaY);
 
-        // JavaScript Events
-        // void FireEvent(const CefString& name, const CefV8ValueList& arguments);
-        // void SubscribeEvent();
-
         // CefBrowserProcessHandler
         void OnContextInitialized();
 
