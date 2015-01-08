@@ -100,7 +100,9 @@ namespace game
         }
         if(dead) glEnd();
     }
-        
+       
+
+	// game mode header files
     #include "capture.h"
     #include "ctf.h"
     #include "collect.h"
@@ -114,6 +116,7 @@ namespace game
     bombclientmode bombmode;
     hideandseekclientmode hideandseekmode;
 
+	// set game mode pointer
     void setclientmode()
     {
         if(m_capture) cmode = &capturemode;
@@ -126,19 +129,21 @@ namespace game
 
     bool senditemstoserver = false, sendcrc = false; // after a map change, since server doesn't have map data
     int lastping = 0;
-
     bool connected = false, remote = false, demoplayback = false, gamepaused = false;
     int sessionid = 0, mastermode = MM_OPEN, gamespeed = 100;
     string servinfo = "", servauth = "", connectpass = "";
 
     VARP(deadpush, 1, 2, 20);
 
+	// change my own nick name
     void switchname(const char *name)
     {
-        filtertext(player1->name, name, false, MAXNAMELEN);
+        filtertext(player1->name, name, false, MAXNAMELEN); // server filters as well
         if(!player1->name[0]) copystring(player1->name, "unnamed");
         addmsg(N_SWITCHNAME, "rs", player1->name);
     }
+
+	// get my own nick name
     void printname()
     {
         conoutf("your name is: %s", colorname(player1));
@@ -151,6 +156,7 @@ namespace game
     });
     ICOMMAND(getname, "", (), result(player1->name));
 
+	// switch my own team
     void switchteam(const char *team)
     {
         if(player1->clientnum < 0) filtertext(player1->team, team, false, MAXTEAMLEN);
