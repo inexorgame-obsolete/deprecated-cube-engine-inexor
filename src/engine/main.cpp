@@ -20,7 +20,7 @@ int screenw = 0, screenh = 0, desktopw = 0, desktoph = 0;
 int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1;
 int initing = NOT_INITING;
 
-// ---------------------------- initialisation and exit ----------------------------
+// ---------------------------- game exit ----------------------------
 
 // cleans up game memory and SDL at exit
 void cleanup()
@@ -154,6 +154,9 @@ void writeinitcfg()
     delete f;
 }
 
+
+// ---------------------------- main menu background and loading screen renderer ----------------------------
+
 // correct background resolution "suggestion" 
 // from the user by scaling down the larger side
 // of the 2 screen dimensions. (call by reference!)
@@ -172,13 +175,15 @@ string backgroundmapname = "";
 char *backgroundmapinfo = NULL;
 Texture *backgroundmapshot = NULL;
 
-// ?
+// this function is called to render the main menu background once
+// so loading progress can be rendered over it continuously
 void restorebackground()
 {
     if(renderedframe) return;
     renderbackground(backgroundcaption[0] ? backgroundcaption : NULL, backgroundmapshot, backgroundmapname[0] ? backgroundmapname : NULL, backgroundmapinfo, true);
 }
 
+// render main menu background with decals
 void renderbackground(const char *caption, Texture *mapshot, const char *mapname, const char *mapinfo, bool restore, bool force)
 {
     if(!inbetweenframes && !force) return;
@@ -486,6 +491,7 @@ bool shouldgrab = false, grabinput = false, minimized = false, canrelativemouse 
 int keyrepeatmask = 0, textinputmask = 0;
 VARNP(relativemouse, userelativemouse, 0, 1, 1);
 
+// check if key was pressed repeatedly (?)
 void keyrepeat(bool on, int mask)
 {
     if(on) keyrepeatmask |= mask;
@@ -507,6 +513,7 @@ void textinput(bool on, int mask)
     }
 }
 
+// sets input grab mode for mouse and keyboard
 void inputgrab(bool on)
 {
     if(on)
@@ -529,7 +536,7 @@ void inputgrab(bool on)
     }
     else
     {
-        SDL_ShowCursor(SDL_TRUE);
+        SDL_ShowCursor(SDL_TRUE); // show OS cursor
         if(relativemouse)
         {
             SDL_SetWindowGrab(screen, SDL_FALSE);
@@ -584,6 +591,8 @@ void screenres(int w, int h)
     }
 }
 
+// gamma as float value
+// do we even need this static here?
 static int curgamma = 100;
 VARFP(gamma, 30, 100, 300,
 {
@@ -592,12 +601,12 @@ VARFP(gamma, 30, 100, 300,
     if(SDL_SetWindowBrightness(screen, gamma/100.0f)==-1) conoutf(CON_ERROR, "Could not set gamma: %s", SDL_GetError());
 });
 
+// reset gamma
 void restoregamma()
 {
     if(curgamma == 100) return;
     SDL_SetWindowBrightness(screen, curgamma/100.0f);
 }
-
 void cleargamma()
 {
     if(curgamma != 100 && screen) SDL_SetWindowBrightness(screen, 1.0f);
@@ -764,14 +773,15 @@ void resetgl()
 }
 COMMAND(resetgl, "");
 
-
+// global vector for (input) events
 vector<SDL_Event> events;
-
+// add a new event to event vector
 void pushevent(const SDL_Event &e)
 {
     events.add(e); 
 }
 
+// filter mouse motion events (?)
 static bool filterevent(const SDL_Event &event)
 {
     switch(event.type)
@@ -791,6 +801,7 @@ static bool filterevent(const SDL_Event &event)
     return true;
 }
 
+// poll and filter all events in the SDL (input) event queue
 static inline bool pollevent(SDL_Event &event)
 {
     while(SDL_PollEvent(&event))
@@ -800,6 +811,7 @@ static inline bool pollevent(SDL_Event &event)
     return false;
 }
 
+// "abort" key (for calclight e.g.) ??
 bool interceptkey(int sym)
 {
     static int lastintercept = SDLK_UNKNOWN;
@@ -809,7 +821,7 @@ bool interceptkey(int sym)
     {
         switch(event.type)
         {
-            case SDL_MOUSEMOTION: break;
+            case SDL_MOUSEMOTION: break; // ignore mouse motion events during loading processes
             default: pushevent(event); break;
         }
     }
@@ -821,13 +833,15 @@ bool interceptkey(int sym)
     return false;
 }
 
+// ignore mouse motion events
 static void ignoremousemotion()
 {
     SDL_Event e;
-    SDL_PumpEvents();
-    while(SDL_PeepEvents(&e, 1, SDL_GETEVENT, SDL_MOUSEMOTION, SDL_MOUSEMOTION));
+    SDL_PumpEvents(); // pumps the event loop, gathering events from the input devices. 
+    while(SDL_PeepEvents(&e, 1, SDL_GETEVENT, SDL_MOUSEMOTION, SDL_MOUSEMOTION)); // check the event queue for messages and optionally return them
 }
 
+// move mouse to screen center
 static void resetmousemotion()
 {
     if(grabinput && !relativemouse && !(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN))
@@ -836,6 +850,7 @@ static void resetmousemotion()
     }
 }
 
+// handle mouse motion coordinates
 static void checkmousemotion(int &dx, int &dy)
 {
     loopv(events)
@@ -969,15 +984,16 @@ void checkinput()
     if(mousemoved) resetmousemotion();
 }
 
+// swap back buffers
 void swapbuffers(bool overlay)
 {
     recorder::capture(overlay);
     SDL_GL_SwapWindow(screen);
 }
- 
+
+// limit frames per seconds 
 VAR(menufps, 0, 60, 1000);
 VARP(maxfps, 0, 200, 1000);
-
 void limitfps(int &millis, int curmillis)
 {
     int limit = (mainmenu || minimized) && menufps ? (maxfps ? min(maxfps, menufps) : menufps) : maxfps;
@@ -1001,7 +1017,9 @@ void limitfps(int &millis, int curmillis)
     }
 }
 
+
 // stack dumper function for release builts on Windows
+// It looks strange. Do not touch, look at or even think about it.
 #if defined(WIN32) && !defined(_DEBUG) && !defined(__GNUC__)
 void stackdumper(unsigned int type, EXCEPTION_POINTERS *ep)
 {
@@ -1045,22 +1063,27 @@ void stackdumper(unsigned int type, EXCEPTION_POINTERS *ep)
 }
 #endif
 
+// ---------------------------- fps and timing ----------------------------
+
 #define MAXFPSHISTORY 60
-
 int fpspos = 0, fpshistory[MAXFPSHISTORY];
+bool inbetweenframes = false, renderedframe = true;
 
+// clear fps history array
 void resetfpshistory()
 {
     loopi(MAXFPSHISTORY) fpshistory[i] = 1;
     fpspos = 0;
 }
 
+// add current frames per seconds score to fps history array
 void updatefpshistory(int millis)
 {
     fpshistory[fpspos++] = max(1, min(1000, millis));
     if(fpspos>=MAXFPSHISTORY) fpspos = 0;
 }
 
+// get average fps, best fps and worst fps (used for /fpsrange)
 void getfps(int &fps, int &bestdiff, int &worstdiff)
 {
     int total = fpshistory[MAXFPSHISTORY-1], best = total, worst = total;
@@ -1077,6 +1100,7 @@ void getfps(int &fps, int &bestdiff, int &worstdiff)
     worstdiff = fps-1000/worst;
 }
 
+// get fps as float or integer (??)
 void getfps_(int *raw)
 {
     if(*raw) floatret(1000.0f/fpshistory[(fpspos+MAXFPSHISTORY-1)%MAXFPSHISTORY]);
@@ -1087,22 +1111,19 @@ void getfps_(int *raw)
         intret(fps);
     }
 }
-
 COMMANDN(getfps, getfps_, "i");
 
-bool inbetweenframes = false, renderedframe = true;
-
-static bool findarg(int argc, char **argv, const char *str)
-{
-    for(int i = 1; i<argc; i++) if(strstr(argv[i], str)==argv[i]) return true;
-    return false;
-}
-
+// clock management
 static int clockrealbase = 0, clockvirtbase = 0;
-static void clockreset() { clockrealbase = SDL_GetTicks(); clockvirtbase = totalmillis; }
+static void clockreset() 
+{ 
+	clockrealbase = SDL_GetTicks(); 
+	clockvirtbase = totalmillis;
+}
 VARFP(clockerror, 990000, 1000000, 1010000, clockreset());
 VARFP(clockfix, 0, 0, 1, clockreset());
 
+// get milliseconds since program start
 int getclockmillis()
 {
     int millis = SDL_GetTicks() - clockrealbase;
@@ -1110,8 +1131,16 @@ int getclockmillis()
     millis += clockvirtbase;
     return max(millis, totalmillis);
 }
-
 VAR(numcpus, 1, 1, 16);
+
+// ---------------------------- main program start ----------------------------
+
+// find command line argument
+static bool findarg(int argc, char **argv, const char *str)
+{
+    for(int i = 1; i<argc; i++) if(strstr(argv[i], str)==argv[i]) return true;
+    return false;
+}
 
 // FIXME: WTF? - main is in macutils.mm?
 #ifdef __APPLE__
@@ -1134,6 +1163,7 @@ int main(int argc, char **argv)
     int dedicated = 0;
     char *load = NULL, *initscript = NULL;
 
+	// setting home directory
     initing = INIT_RESET;
     for(int i = 1; i<argc; i++)
     {
@@ -1147,6 +1177,8 @@ int main(int argc, char **argv)
 			}
         }
     }
+
+	// parsing command line arguments
     execfile("init.cfg", false);
     for(int i = 1; i<argc; i++)
     {
@@ -1215,6 +1247,7 @@ int main(int argc, char **argv)
         if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO|par)<0) fatal("Unable to initialize SDL: %s", SDL_GetError());
     }
     
+	// initialise game components
     logoutf("init: net");
     if(enet_initialize()<0) fatal("Unable to initialise network module");
     atexit(enet_deinitialize);
@@ -1314,6 +1347,7 @@ int main(int argc, char **argv)
     inputgrab(grabinput = true);
     ignoremousemotion();
 
+	// game loop
     for(;;)
     {
         static int frames = 0;
