@@ -4,14 +4,12 @@
 // implementationwise, it is *stateless*: it keeps no internal gui structure, hit tests are instant, usage & implementation is greatly simplified
 
 #include "engine.h"
-
 #include "textedit.h"
 
-static bool layoutpass, actionon = false;
-static int mousebuttons = 0;
 static struct gui *windowhit = NULL;
-
+static bool layoutpass, actionon = false;
 static float firstx, firsty;
+static int mousebuttons = 0;
 
 enum {FIELDCOMMIT, FIELDABORT, FIELDEDIT, FIELDSHOW, FIELDKEY};
 

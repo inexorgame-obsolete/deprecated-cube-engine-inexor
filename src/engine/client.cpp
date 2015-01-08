@@ -2,10 +2,13 @@
 
 #include "engine.h"
 
+// host and peer
 ENetHost *clienthost = NULL;
 ENetPeer *curpeer = NULL, *connpeer = NULL;
 int connmillis = 0, connattempts = 0, discmillis = 0;
 
+// is player in multiplayer
+// also print multiplayer restricted game function warnings
 bool multiplayer(bool msg)
 {
     bool val = curpeer || hasnonlocalclients(); 
@@ -13,20 +16,21 @@ bool multiplayer(bool msg)
     return val;
 }
 
+// set network bandwidth rate (in kilobytes)
 void setrate(int rate)
 {
    if(!curpeer) return;
    enet_host_bandwidth_limit(clienthost, rate*1024, rate*1024);
 }
-
 VARF(rate, 0, 0, 1024, setrate(rate));
 
+// forward of network throttle
 void throttle();
-
 VARF(throttle_interval, 0, 5, 30, throttle());
 VARF(throttle_accel,    0, 2, 32, throttle());
 VARF(throttle_decel,    0, 2, 32, throttle());
 
+// implementation fo network throttle
 void throttle()
 {
     if(!curpeer) return;
@@ -34,18 +38,20 @@ void throttle()
     enet_peer_throttle_configure(curpeer, throttle_interval*1000, throttle_accel, throttle_decel);
 }
 
+// is game connected or trying to connect
 bool isconnected(bool attempt, bool local)
 {
     return curpeer || (attempt && connpeer) || (local && haslocalclients());
 }
-
 ICOMMAND(isconnected, "bb", (int *attempt, int *local), intret(isconnected(*attempt > 0, *local != 0) ? 1 : 0));
 
+// return the current network address
 const ENetAddress *connectedpeer()
 {
     return curpeer ? &curpeer->address : NULL;
 }
 
+// return the ip of the current server
 ICOMMAND(connectedip, "", (),
 {
     const ENetAddress *address = connectedpeer();
@@ -53,11 +59,16 @@ ICOMMAND(connectedip, "", (),
     result(address && enet_address_get_host_ip(address, hostname, sizeof(hostname)) >= 0 ? hostname : "");
 });
 
+// return the port of the current server
 ICOMMAND(connectedport, "", (),
 {
     const ENetAddress *address = connectedpeer();
     intret(address ? address->port : -1);
 });
+
+// servername and connection port (?)
+SVARP(connectname, "");
+VARP(connectport, 0, 0, 0xFFFF);
 
 void abortconnect()
 {
@@ -69,9 +80,6 @@ void abortconnect()
     enet_host_destroy(clienthost);
     clienthost = NULL;
 }
-
-SVARP(connectname, "");
-VARP(connectport, 0, 0, 0xFFFF);
 
 void connectserv(const char *servername, int serverport, const char *serverpassword)
 {   

@@ -1183,8 +1183,8 @@ VARP(moviesound, 0, 1, 1);
 
 void movie(char *name)
 {
-    if(name[0] == '\0') recorder::stop();
-    else if(!recorder::isrecording()) recorder::start(name, moviefps, moview ? moview : screenw, movieh ? movieh : screenh, moviesound!=0);
+    if(name[0] == '\0') recorder::stop(); // if no parameter is set stop recording
+    else if(!recorder::isrecording()) recorder::start(name, moviefps, moview ? moview : screenw, movieh ? movieh : screenh, moviesound!=0); // otherwise start recording
 }
 
 COMMAND(movie, "s");
