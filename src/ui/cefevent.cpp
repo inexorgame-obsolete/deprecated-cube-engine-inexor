@@ -118,7 +118,7 @@ void InexorCefEventManager::SubscribeEvent(const CefString& name, InexorCefCallb
 {
     // cefdebug("InexorCefEventManager::SubscribeEvent", name.ToString());
     if (!CefCurrentlyOn(TID_RENDERER)) {
-        logoutf("  ==> switch to TID_RENDERER");
+        // logoutf("  ==> switch to TID_RENDERER");
         CefPostTask(TID_RENDERER, NewCefRunnableMethod(this, &InexorCefEventManager::SubscribeEvent, name, callback));
     } else {
         GetEvent(name)->AddCallback(callback);
@@ -129,7 +129,7 @@ void InexorCefEventManager::FireEventWithContext(const CefString& name, const In
 {
     // cefdebug("InexorCefEventManager::FireEventWithContext", name.ToString());
     if (!CefCurrentlyOn(TID_RENDERER)) {
-        logoutf("  ==> switch to TID_RENDERER");
+        // logoutf("  ==> switch to TID_RENDERER");
         CefPostTask(TID_RENDERER, NewCefRunnableMethod(this, &InexorCefEventManager::FireEventWithContext, name, arguments));
     } else {
         GetEvent(name)->FireEventWithContext(arguments);
