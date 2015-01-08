@@ -7,6 +7,18 @@ extern void cleargamma();
 extern void writeinitcfg();
 extern int vsync, vsynctear;
 
+dynent *player = NULL;
+SDL_Window *screen = NULL;
+SDL_GLContext glcontext = NULL;
+
+// screen resolution management integers
+int screenw = 0, screenh = 0, desktopw = 0, desktoph = 0;
+
+// time management integers
+int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1;
+int initing = NOT_INITING;
+
+
 // cleans up game memory and SDL at exit
 void cleanup()
 {
@@ -40,7 +52,6 @@ void quit()
 }
 COMMAND(quit, "");
 
-
 // failure exit
 void fatal(const char *s, ...)   
 {
@@ -56,7 +67,7 @@ void fatal(const char *s, ...)
         {
             if(SDL_WasInit(SDL_INIT_VIDEO))
             {
-                if(screen) SDL_SetWindowGrab(screen, SDL_FALSE);
+                if(screen) SDL_SetWindowGrab(screen, SDL_FALSE); // free SDL context
                 SDL_SetRelativeMouseMode(SDL_FALSE);
                 SDL_ShowCursor(SDL_TRUE);
                 cleargamma();
@@ -69,18 +80,6 @@ void fatal(const char *s, ...)
     }
     exit(EXIT_FAILURE);
 }
-
-dynent *player = NULL;
-SDL_Window *screen = NULL;
-SDL_GLContext glcontext = NULL;
-
-// screen resolution management integers
-int screenw = 0, screenh = 0, desktopw = 0, desktoph = 0;
-
-// time management integers
-int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1;
-int initing = NOT_INITING;
-
 
 // print initialisation warning in game console
 bool initwarning(const char *desc, int level, int type)
@@ -115,11 +114,13 @@ VARF(depthbits, 0, 0, 32, initwarning("depth-buffer precision"));
 VARF(stencilbits, 0, 0, 32, initwarning("stencil-buffer precision"));
 VARF(fsaa, -1, -1, 16, initwarning("anti-aliasing"));
 
+// use this function to set the swap interval for the current OpenGL context (VSYNC)
 void restorevsync()
 {
     if(glcontext) SDL_GL_SetSwapInterval(vsync ? (vsynctear ? -1 : 1) : 0);
 }
 
+// VSYNC settings
 VARFP(vsync, 0, 0, 1, restorevsync());
 VARFP(vsynctear, 0, 0, 1, { if(vsync) restorevsync(); });
 
@@ -149,6 +150,9 @@ void writeinitcfg()
     delete f;
 }
 
+// correct background resolution "suggestion" 
+// from the user by scaling down the larger side
+// of the 2 screen dimensions. (call by reference!)
 static void getbackgroundres(int &w, int &h)
 {
     float wk = 1, hk = 1;
@@ -160,10 +164,11 @@ static void getbackgroundres(int &w, int &h)
 }
 
 string backgroundcaption = "";
-Texture *backgroundmapshot = NULL;
 string backgroundmapname = "";
 char *backgroundmapinfo = NULL;
+Texture *backgroundmapshot = NULL;
 
+// ?
 void restorebackground()
 {
     if(renderedframe) return;
@@ -470,6 +475,7 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)   
 
 VARNP(relativemouse, userelativemouse, 0, 1, 1);
 
+// controlling SDL input
 bool shouldgrab = false, grabinput = false, minimized = false, canrelativemouse = true, relativemouse = false;
 int keyrepeatmask = 0, textinputmask = 0;
 
@@ -479,11 +485,12 @@ void keyrepeat(bool on, int mask)
     else keyrepeatmask &= ~mask;
 }
 
+// start and stop accepting Unicode text input events
 void textinput(bool on, int mask)
 {
     if(on) 
     {
-        if(!textinputmask) SDL_StartTextInput(); 
+        if(!textinputmask) SDL_StartTextInput();
         textinputmask |= mask;
     }
     else
@@ -528,6 +535,7 @@ void inputgrab(bool on)
 
 bool initwindowpos = false;
 
+// switch fullscreen mode
 void setfullscreen(bool enable)
 {
     if(!screen) return;
@@ -544,12 +552,14 @@ void setfullscreen(bool enable)
     }
 }
 
+// do not go full screen in debug mode (doesn't work with MSVC)
 #ifdef _DEBUG
 VARF(fullscreen, 0, 0, 1, setfullscreen(fullscreen!=0));
 #else
 VARF(fullscreen, 0, 1, 1, setfullscreen(fullscreen!=0));
 #endif
 
+// implementation of screen resolution changer
 void screenres(int w, int h)
 {
     scr_w = w!=-1 ? clamp(w, SCR_MINW, SCR_MAXW) : scr_w;
@@ -586,6 +596,7 @@ void cleargamma()
     if(curgamma != 100 && screen) SDL_SetWindowBrightness(screen, 1.0f);
 }
 
+// debug modus?
 VAR(dbgmodes, 0, 0, 1);
 
 void setupscreen(int &useddepthbits, int &usedfsaa)
@@ -679,6 +690,7 @@ void setupscreen(int &useddepthbits, int &usedfsaa)
     restorevsync();
 }
 
+// reset OpenGL
 void resetgl()
 {
     clearchanges(CHANGE_GFX);
@@ -743,7 +755,6 @@ void resetgl()
     initlights();
     allchanged(true);
 }
-
 COMMAND(resetgl, "");
 
 vector<SDL_Event> events;
