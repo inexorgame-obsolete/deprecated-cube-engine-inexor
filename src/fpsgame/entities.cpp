@@ -1,4 +1,5 @@
 #include "game.h"
+#include "ui/ui.h"
 
 namespace entities
 {
@@ -308,6 +309,15 @@ namespace entities
                 {
                     addmsg(N_ITEMPICKUP, "rci", d, n);
                     ents[n]->spawned = false; // even if someone else gets it first
+
+                    if (ents[n]->type > I_SHELLS && ents[n]->type > I_CARTRIDGES) {
+                        // Fire Event: ammo
+                        InexorCefValueList arguments;
+                        arguments.push_back(new InexorCefValue(d->clientnum));
+                        arguments.push_back(new InexorCefValue(ents[n]->type - I_SHELLS));
+                        arguments.push_back(new InexorCefValue(d->ammo[ents[n]->type - I_SHELLS]));
+                        cef_app->GetEventManager()->FireEventWithContext("ammo", arguments);
+                    }
                 }
                 break;
 

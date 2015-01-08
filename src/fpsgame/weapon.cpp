@@ -1,6 +1,7 @@
 // weapon.cpp: all shooting and effects code, projectile management
 #include "game.h"
 #include "engine.h"
+#include "ui/ui.h"
 
 namespace game
 {
@@ -28,6 +29,11 @@ namespace game
         {
             addmsg(N_GUNSELECT, "rci", d, gun);
             playsound(S_WEAPLOAD, &d->o);
+            // Fire Event: gunselect
+            InexorCefValueList arguments;
+            arguments.push_back(new InexorCefValue(d->clientnum));
+            arguments.push_back(new InexorCefValue(gun));
+            cef_app->GetEventManager()->FireEventWithContext("gunselect", arguments);
         }
         d->gunselect = gun;
     }
@@ -911,7 +917,17 @@ namespace game
             }
             return;
         }
-        if(d->gunselect) d->ammo[d->gunselect]--;
+        if(d->gunselect)
+        {
+            d->ammo[d->gunselect]--;
+        }
+
+        // Fire Event: gunselect
+        InexorCefValueList event_args_shoot;
+        event_args_shoot.push_back(new InexorCefValue(d->clientnum));
+        event_args_shoot.push_back(new InexorCefValue(d->gunselect));
+        cef_app->GetEventManager()->FireEventWithContext("shoot", event_args_shoot);
+
         vec from = d->o;
         vec to = targ;
 
@@ -945,6 +961,13 @@ namespace game
                    (int)(to.x*DMF), (int)(to.y*DMF), (int)(to.z*DMF),
                    hits.length(), hits.length()*sizeof(hitmsg)/sizeof(int), hits.getbuf());
         }
+
+        // Fire Event: ammo
+        InexorCefValueList event_args_ammo;
+        event_args_ammo.push_back(new InexorCefValue(d->clientnum));
+        event_args_ammo.push_back(new InexorCefValue(d->gunselect));
+        event_args_ammo.push_back(new InexorCefValue(d->ammo[d->gunselect]));
+        cef_app->GetEventManager()->FireEventWithContext("ammo", event_args_ammo);
 
 		d->gunwait = guns[d->gunselect].attackdelay;
 		if(d->gunselect == GUN_PISTOL && d->ai) d->gunwait += int(d->gunwait*(((101-d->skill)+rnd(111-d->skill))/100.f));
