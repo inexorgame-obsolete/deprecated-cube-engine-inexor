@@ -2,6 +2,9 @@
 
 #include "engine.h"
 
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// mostly network related stuff
+
 // host and peer
 ENetHost *clienthost = NULL;
 ENetPeer *curpeer = NULL, *connpeer = NULL;

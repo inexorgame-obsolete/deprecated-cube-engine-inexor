@@ -18,7 +18,9 @@ namespace game
 		return false;
 	}
 
-	// send network message for taunt animation to server
+	// send taunt network animation message to server
+	// taunt animation is this "im gonna kill you" gesture 
+	// that can be seen by other players
     void taunt()
     {
         if(player1->state!=CS_ALIVE || player1->physstate<PHYS_SLOPE) return;
@@ -129,6 +131,7 @@ namespace game
         return NULL;
     }
 
+	// stop spectating a specific player and allow free camery fly
     void stopfollowing()
     {
         if(following<0) return;
@@ -137,6 +140,7 @@ namespace game
         conoutf("follow off");
     }
 
+	// return the fpsent instance of the player you are currently spectating
     fpsent *followingplayer()
     {
         if(player1->state!=CS_SPECTATOR || following<0) return NULL;

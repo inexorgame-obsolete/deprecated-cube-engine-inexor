@@ -20,7 +20,10 @@ int screenw = 0, screenh = 0, desktopw = 0, desktoph = 0;
 int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1;
 int initing = NOT_INITING;
 
-// ---------------------------- game exit ----------------------------
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// game exit
+
 
 // cleans up game memory and SDL at exit
 void cleanup()
@@ -94,7 +97,10 @@ bool initwarning(const char *desc, int level, int type)
     return false;
 }
 
-// ---------------------------- screen setup and window settings ----------------------------
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// screen setup and window settings
+
 
 // hardcoded macros for screen settings
 #define SCR_MINW 320
@@ -128,7 +134,7 @@ void restorevsync()
 VARFP(vsync, 0, 0, 1, restorevsync());
 VARFP(vsynctear, 0, 0, 1, { if(vsync) restorevsync(); });
 
-// write configuration file (also called at exit)
+// write most important settings to init.cfg using UTF-8 streams
 void writeinitcfg()
 {
     stream *f = openutf8file("init.cfg", "w");
@@ -155,7 +161,9 @@ void writeinitcfg()
 }
 
 
-// ---------------------------- main menu background and loading screen renderer ----------------------------
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// main menu background and loading screen renderer
+
 
 // correct background resolution "suggestion" 
 // from the user by scaling down the larger side
@@ -183,7 +191,7 @@ void restorebackground()
     renderbackground(backgroundcaption[0] ? backgroundcaption : NULL, backgroundmapshot, backgroundmapname[0] ? backgroundmapname : NULL, backgroundmapinfo, true);
 }
 
-// render main menu background with decals
+// render map loading progress background including map name and game mode info
 void renderbackground(const char *caption, Texture *mapshot, const char *mapname, const char *mapinfo, bool restore, bool force)
 {
     if(!inbetweenframes && !force) return;
@@ -484,14 +492,18 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
 }
 
 
-// ---------------------------- mouse and keyboard management (input) ----------------------------
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// mouse and keyboard management (input)
+
 
 // controlling SDL input
 bool shouldgrab = false, grabinput = false, minimized = false, canrelativemouse = true, relativemouse = false;
 int keyrepeatmask = 0, textinputmask = 0;
+
+// try to initialise mouse with relative coordinates instead of absolute coordinates
 VARNP(relativemouse, userelativemouse, 0, 1, 1);
 
-// check if key was pressed repeatedly (?)
+// check if key was pressed repeatedly using bit masking technique
 void keyrepeat(bool on, int mask)
 {
     if(on) keyrepeatmask |= mask;
@@ -574,6 +586,7 @@ VARF(fullscreen, 0, 1, 1, setfullscreen(fullscreen!=0));
 #endif
 
 // implementation of screen resolution changer
+// forward must be declared above in the code because of dependencies
 void screenres(int w, int h)
 {
     scr_w = w!=-1 ? clamp(w, SCR_MINW, SCR_MAXW) : scr_w;
@@ -601,7 +614,8 @@ VARFP(gamma, 30, 100, 300,
     if(SDL_SetWindowBrightness(screen, gamma/100.0f)==-1) conoutf(CON_ERROR, "Could not set gamma: %s", SDL_GetError());
 });
 
-// reset gamma
+
+// TODO: what do these functions do? 
 void restoregamma()
 {
     if(curgamma == 100) return;
@@ -612,21 +626,22 @@ void cleargamma()
     if(curgamma != 100 && screen) SDL_SetWindowBrightness(screen, 1.0f);
 }
 
-// debug modus?
+// TODO: this has no reference at all!
 VAR(dbgmodes, 0, 0, 1);
 
+// setting up screen using various attempts with different options
 void setupscreen(int &useddepthbits, int &usedfsaa)
 {
     if(glcontext)
     {
         SDL_GL_DeleteContext(glcontext);
         glcontext = NULL;
-        }
+    }
     if(screen)
-        {
+	{
         SDL_DestroyWindow(screen);
         screen = NULL;
-            }
+    }
 
     SDL_DisplayMode desktop;
     if(SDL_GetDesktopDisplayMode(0, &desktop) < 0) fatal("failed querying desktop display mode: %s", SDL_GetError());
@@ -706,11 +721,11 @@ void setupscreen(int &useddepthbits, int &usedfsaa)
     restorevsync();
 }
 
-// reset OpenGL
+// resetting OpenGL is only used by resetgl command
+// no other reference in the code
 void resetgl()
 {
     clearchanges(CHANGE_GFX);
-
     renderbackground("resetting OpenGL");
 
     extern void cleanupva();
@@ -775,6 +790,7 @@ COMMAND(resetgl, "");
 
 // global vector for (input) events
 vector<SDL_Event> events;
+
 // add a new event to event vector
 void pushevent(const SDL_Event &e)
 {
@@ -878,6 +894,7 @@ static void checkmousemotion(int &dx, int &dy)
     }
 }
 
+// SDL input process handler also takes care of program exit
 void checkinput()
 {
     SDL_Event event;
@@ -984,39 +1001,13 @@ void checkinput()
     if(mousemoved) resetmousemotion();
 }
 
-// swap back buffers
+// swapping buffers allows to render to a new buffer
+// while the other is being presented to the screen
 void swapbuffers(bool overlay)
 {
     recorder::capture(overlay);
     SDL_GL_SwapWindow(screen);
 }
-
-// limit frames per seconds 
-VAR(menufps, 0, 60, 1000);
-VARP(maxfps, 0, 200, 1000);
-void limitfps(int &millis, int curmillis)
-{
-    int limit = (mainmenu || minimized) && menufps ? (maxfps ? min(maxfps, menufps) : menufps) : maxfps;
-    if(!limit) return;
-    static int fpserror = 0;
-    int delay = 1000/limit - (millis-curmillis);
-    if(delay < 0) fpserror = 0;
-    else
-    {
-        fpserror += 1000%limit;
-        if(fpserror >= limit)
-        {
-            ++delay;
-            fpserror -= limit;
-        }
-        if(delay > 0)
-        {
-            SDL_Delay(delay);
-            millis += delay;
-        }
-    }
-}
-
 
 // stack dumper function for release builts on Windows
 // It looks strange. Do not touch, look at or even think about it.
@@ -1063,11 +1054,40 @@ void stackdumper(unsigned int type, EXCEPTION_POINTERS *ep)
 }
 #endif
 
-// ---------------------------- fps and timing ----------------------------
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// fps and timing
+
 
 #define MAXFPSHISTORY 60
 int fpspos = 0, fpshistory[MAXFPSHISTORY];
 bool inbetweenframes = false, renderedframe = true;
+
+// limiting frames per seconds to use resources intelligently
+VAR(menufps, 0, 60, 1000);
+VARP(maxfps, 0, 200, 1000);
+void limitfps(int &millis, int curmillis)
+{
+    int limit = (mainmenu || minimized) && menufps ? (maxfps ? min(maxfps, menufps) : menufps) : maxfps;
+    if(!limit) return;
+    static int fpserror = 0;
+    int delay = 1000/limit - (millis-curmillis);
+    if(delay < 0) fpserror = 0;
+    else
+    {
+        fpserror += 1000%limit;
+        if(fpserror >= limit)
+        {
+            ++delay;
+            fpserror -= limit;
+        }
+        if(delay > 0)
+        {
+            SDL_Delay(delay);
+            millis += delay;
+        }
+    }
+}
 
 // clear fps history array
 void resetfpshistory()
@@ -1083,7 +1103,7 @@ void updatefpshistory(int millis)
     if(fpspos>=MAXFPSHISTORY) fpspos = 0;
 }
 
-// get average fps, best fps and worst fps (used for /fpsrange)
+// get average fps, best fps and worst fps (see command fpsrange)
 void getfps(int &fps, int &bestdiff, int &worstdiff)
 {
     int total = fpshistory[MAXFPSHISTORY-1], best = total, worst = total;
@@ -1133,7 +1153,8 @@ int getclockmillis()
 }
 VAR(numcpus, 1, 1, 16);
 
-// ---------------------------- main program start ----------------------------
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// main program start
 
 // find command line argument
 static bool findarg(int argc, char **argv, const char *str)
