@@ -526,8 +526,11 @@ namespace game
     ICOMMAND(unignore, "s", (char *arg), unignore(parseplayer(arg))); 
     ICOMMAND(isignored, "s", (char *arg), intret(isignored(parseplayer(arg)) ? 1 : 0));
 	
-	// ---------------------------------------- ignoring players ----------------------------------------
+	// ---------------------------------------- multiplayer/server stuff ----------------------------------------
 
+	// hash setmaster password
+	// unfortunately, cn and sessionid are used to hash which means that servers will not be abled to store the hash value!
+	// therefore, we have an authentification system - auth!
     void hashpwd(const char *pwd)
     {
         if(player1->clientnum<0) return;
@@ -537,6 +540,8 @@ namespace game
     }
     COMMAND(hashpwd, "s");
 
+
+	// acquire game master or give game master to players
     void setmaster(const char *arg, const char *who)
     {
         if(!arg[0]) return;
@@ -558,6 +563,8 @@ namespace game
     COMMAND(setmaster, "ss");
     ICOMMAND(mastermode, "i", (int *val), addmsg(N_MASTERMODE, "ri", *val));
 
+
+	// try to authentificate using specified auth key
     bool tryauth(const char *desc)
     {
         authkey *a = findauthkey(desc);
@@ -570,6 +577,8 @@ namespace game
     ICOMMAND(sauth, "", (), if(servauth[0]) tryauth(servauth));
     ICOMMAND(dauth, "s", (char *desc), if(desc[0]) tryauth(desc));
 
+
+	// toggle own spectator or put player into spectator (permissions requred)
     void togglespectator(int val, const char *who)
     {
         int i = who[0] ? parseplayer(who) : player1->clientnum;
@@ -577,12 +586,16 @@ namespace game
     }
     ICOMMAND(spectator, "is", (int *val, char *who), togglespectator(*val, who));
 
+
+	// ask the server to acquire CRC32 checksum of all player's maps (permissions requred)
     ICOMMAND(checkmaps, "", (), addmsg(N_CHECKMAPS, "r"));
 
     int gamemode = INT_MAX, nextmode = INT_MAX;
     string clientmap = "";
 
-    void changemapserv(const char *name, int mode)        // forced map change from the server
+
+	// force server to change map (permissions requred)
+    void changemapserv(const char *name, int mode)
     {
         if(multiplayer(false) && !m_mp(mode))
         {
@@ -602,6 +615,7 @@ namespace game
         startgame();
     }
 
+	// force server to change game mode (permissions required)
     void setmode(int mode)
     {
         if(multiplayer(false) && !m_mp(mode))
@@ -613,8 +627,16 @@ namespace game
         nextmode = mode;
         intret(1);
     }
+
+	// ---------------------------------------- cubescript ----------------------------------------
+
+	// set game mode
     ICOMMAND(mode, "i", (int *val), setmode(*val));
+
+	// get game mode in cubescript
     ICOMMAND(getmode, "", (), intret(gamemode));
+
+	// return remaining time
     ICOMMAND(timeremaining, "i", (int *formatted), 
     {
         int val = max(maplimit - lastmillis, 0)/1000;
@@ -625,6 +647,8 @@ namespace game
         }
         else intret(val);
     });
+
+	// gamemodes for cubescript
     ICOMMANDS("m_noitems", "i", (int *mode), { int gamemode = *mode; intret(m_noitems); });
     ICOMMANDS("m_noammo", "i", (int *mode), { int gamemode = *mode; intret(m_noammo); });
     ICOMMANDS("m_insta", "i", (int *mode), { int gamemode = *mode; intret(m_insta); });
@@ -648,7 +672,8 @@ namespace game
     ICOMMANDS("m_timeforward", "i", (int *mode), { int gamemode = *mode; intret(m_timeforward); });
     ICOMMANDS("m_obstacles", "i", (int *mode), { int gamemode = *mode; intret(m_obstacles); });
 	
-    void changemap(const char *name, int mode) // request map change, server may ignore
+	// request map change, server may ignore
+    void changemap(const char *name, int mode)
     {
         if(!remote)
         {
@@ -657,22 +682,27 @@ namespace game
         }
         else if(player1->state!=CS_SPECTATOR || player1->privilege) addmsg(N_MAPVOTE, "rsi", name, mode);
     }
+
+	// validates game mode name and calls changemap above
     void changemap(const char *name)
     {
         changemap(name, m_valid(nextmode) ? nextmode : (remote ? 0 : 1));
     }
     ICOMMAND(map, "s", (char *name), changemap(name));
 
+	// force edit mode
     void forceedit(const char *name)
     {
         changemap(name, 1);
     }
 
+	// request server to start new map (requires editmode)
     void newmap(int size)
     {
         addmsg(N_NEWMAP, "ri", size);
     }
 
+	// ?
     int needclipboard = -1;
 
 	// send copied data from your clipboard to server
@@ -694,6 +724,8 @@ namespace game
         needclipboard = -1;
     }
 
+	// ?
+	// send edit messages to servers
     void edittrigger(const selinfo &sel, int op, int arg1, int arg2, int arg3)
     {
         if(m_edit) switch(op)
@@ -753,6 +785,7 @@ namespace game
         }
     }
 
+	// print map var change commited by other players in edit mode
     void printvar(fpsent *d, ident *id)
     {
         if(id) switch(id->type)
@@ -779,6 +812,7 @@ namespace game
         }
     }
 
+	// change map vars in edit mode in multiplayer
     void vartrigger(ident *id)
     {
         if(!m_edit) return;
@@ -797,9 +831,10 @@ namespace game
                 break;
             default: return;
         }
-        printvar(player1, id);
+        printvar(player1, id); // print my own change as well
     }
 
+	// pause game 
     void pausegame(bool val)
     {
         if(!connected) return;
@@ -807,6 +842,8 @@ namespace game
         else addmsg(N_PAUSEGAME, "ri", val ? 1 : 0);
     }
     ICOMMAND(pausegame, "i", (int *val), pausegame(*val > 0));
+
+	// cubescript: check if game is paused
     ICOMMAND(paused, "iN$", (int *val, int *numargs, ident *id),
     { 
         if(*numargs > 0) pausegame(clampvar(id, *val, 0, 1) > 0); 
@@ -814,10 +851,19 @@ namespace game
         else printvar(id, gamepaused ? 1 : 0); 
     });
 
-    bool ispaused() { return gamepaused; }
+    // check if game is paused
+	bool ispaused() 
+	{ 
+		return gamepaused; 
+	}
 
-    bool allowmouselook() { return !gamepaused || !remote || m_edit; }
+	// check if mouse looking is allowed
+    bool allowmouselook() 
+	{ 
+		return !gamepaused || !remote || m_edit;
+	}
 
+	// change game speed (requires permissions)
     void changegamespeed(int val)
     {
         if(!connected) return;
@@ -831,12 +877,17 @@ namespace game
         else printvar(id, gamespeed);
     });
 
-    int scaletime(int t) { return t*gamespeed; }
+	// scale time with gametime
+    int scaletime(int t) 
+	{
+		return t*gamespeed;
+	}
 
-    // collect c2s messages conveniently
+    // collect client to server messages conveniently
     vector<uchar> messages;
     int messagecn = -1, messagereliable = false;
 
+	// add network message
     void addmsg(int type, const char *fmt, ...)
     {
         if(!connected) return;
@@ -900,13 +951,16 @@ namespace game
         messages.put(buf, p.length());
     }
 
+	// copy connection password (?)
     void connectattempt(const char *name, const char *password, const ENetAddress &address)
     {
         copystring(connectpass, password);
     }
 
+	// reset connection password after connection failed
     void connectfail()
     {
+		// WARNING: Shouldn't we clear the history as well?
         memset(connectpass, 0, sizeof(connectpass));
     }
 
