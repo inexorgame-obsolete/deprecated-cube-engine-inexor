@@ -455,7 +455,7 @@ namespace game
     }
     ICOMMAND(listclients, "bb", (int *local, int *bots), listclients(*local>0, *bots!=0));
 
-	// ---------------------------------------- server administration ----------------------------------------
+	// ---------------------------------------- kick and ban list ----------------------------------------
 
 	// many server administration commands require administrative permissions!
 
@@ -465,6 +465,14 @@ namespace game
         addmsg(N_CLEARBANS, "r");
     }
     COMMAND(clearbans, "");
+	
+	// change a players team
+	void setteam(const char *arg1, const char *arg2)
+    {
+        int i = parseplayer(arg1);
+        if(i>=0) addmsg(N_SETTEAM, "ris", i, arg2);
+    }
+    COMMAND(setteam, "ss");
 
 	// kickban a player
     void kick(const char *victim, const char *reason)
@@ -474,6 +482,7 @@ namespace game
     }
     COMMAND(kick, "ss");
 
+	// kick a player using authentification key
     void authkick(const char *desc, const char *victim, const char *reason)
     {
         authkey *a = findauthkey(desc);
@@ -487,6 +496,8 @@ namespace game
     ICOMMAND(authkick, "ss", (const char *victim, const char *reason), authkick("", victim, reason));
     ICOMMAND(sauthkick, "ss", (const char *victim, const char *reason), if(servauth[0]) authkick(servauth, victim, reason));
     ICOMMAND(dauthkick, "sss", (const char *desc, const char *victim, const char *reason), if(desc[0]) authkick(desc, victim, reason));
+	
+	// ---------------------------------------- ignoring players feature ----------------------------------------
 
     vector<int> ignores;
 
@@ -514,13 +525,8 @@ namespace game
     ICOMMAND(ignore, "s", (char *arg), ignore(parseplayer(arg)));
     ICOMMAND(unignore, "s", (char *arg), unignore(parseplayer(arg))); 
     ICOMMAND(isignored, "s", (char *arg), intret(isignored(parseplayer(arg)) ? 1 : 0));
-
-    void setteam(const char *arg1, const char *arg2)
-    {
-        int i = parseplayer(arg1);
-        if(i>=0) addmsg(N_SETTEAM, "ris", i, arg2);
-    }
-    COMMAND(setteam, "ss");
+	
+	// ---------------------------------------- ignoring players ----------------------------------------
 
     void hashpwd(const char *pwd)
     {
@@ -669,6 +675,7 @@ namespace game
 
     int needclipboard = -1;
 
+	// send copied data from your clipboard to server
     void sendclipboard()
     {
         uchar *outbuf = NULL;
