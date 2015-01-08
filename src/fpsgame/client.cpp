@@ -2,7 +2,8 @@
 
 namespace game
 {
-	// ---------------------------------------- minimap and radar ----------------------------------------
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	// minimap and radar
 
 	// radar and minimap settings
     VARP(minradarscale, 0, 384, 10000);
@@ -140,7 +141,8 @@ namespace game
 	// push dead bodies (?)
     VARP(deadpush, 1, 2, 20);
 
-	// ---------------------------------------- team, name and playermodel settings ----------------------------------------
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	// team, name and playermodel settings
 
 	// change my own nick name
     void switchname(const char *name)
@@ -194,7 +196,8 @@ namespace game
         addmsg(N_SWITCHMODEL, "ri", player1->playermodel);
     }
 
-	// ---------------------------------------- authkeys ----------------------------------------
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	// authkeys
 
 	// structure for authentification keys
     struct authkey
@@ -277,7 +280,7 @@ namespace game
     }
     COMMAND(saveauthkeys, "");
 
-	// ---------------------------------------- various ----------------------------------------
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	// enable crc and senditemstoserver
 	// called just after map load by startmap
@@ -318,7 +321,8 @@ namespace game
         player1->suicided = player1->respawned = -2;
     }
 	
-	// ---------------------------------------- cubescript get functions ----------------------------------------
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	// cubescript get - functions
 
 	// cn means client number
 
@@ -455,7 +459,8 @@ namespace game
     }
     ICOMMAND(listclients, "bb", (int *local, int *bots), listclients(*local>0, *bots!=0));
 
-	// ---------------------------------------- kick and ban list ----------------------------------------
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	// server administration
 
 	// many server administration commands require administrative permissions!
 
@@ -497,7 +502,8 @@ namespace game
     ICOMMAND(sauthkick, "ss", (const char *victim, const char *reason), if(servauth[0]) authkick(servauth, victim, reason));
     ICOMMAND(dauthkick, "sss", (const char *desc, const char *victim, const char *reason), if(desc[0]) authkick(desc, victim, reason));
 	
-	// ---------------------------------------- ignoring players feature ----------------------------------------
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	// ignoring players
 
     vector<int> ignores;
 
@@ -526,7 +532,8 @@ namespace game
     ICOMMAND(unignore, "s", (char *arg), unignore(parseplayer(arg))); 
     ICOMMAND(isignored, "s", (char *arg), intret(isignored(parseplayer(arg)) ? 1 : 0));
 	
-	// ---------------------------------------- multiplayer/server stuff ----------------------------------------
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	// multiplayer stuff
 
 	// hash setmaster password
 	// unfortunately, cn and sessionid are used to hash which means that servers will not be abled to store the hash value!
@@ -628,7 +635,8 @@ namespace game
         intret(1);
     }
 
-	// ---------------------------------------- cubescript ----------------------------------------
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	// cubescript interface
 
 	// set game mode
     ICOMMAND(mode, "i", (int *val), setmode(*val));
@@ -964,12 +972,14 @@ namespace game
         memset(connectpass, 0, sizeof(connectpass));
     }
 
+	// ? 
     void gameconnect(bool _remote)
     {
         remote = _remote;
         if(editmode) toggleedit();
     }
 
+	// clean up local storage/vars after disconnect from server
     void gamedisconnect(bool cleanup)
     {
         if(remote) stopfollowing();
@@ -997,15 +1007,23 @@ namespace game
         }
     }
 
+	// send chat messages to server
     void toserver(char *text) { conoutf(CON_CHAT, "%s:\f0 %s", colorname(player1), text); addmsg(N_TEXT, "rcs", player1, text); }
     COMMANDN(say, toserver, "C");
 
+	// send team messages to server
     void sayteam(char *text) { conoutf(CON_TEAMCHAT, "%s:\f1 %s", colorname(player1), text); addmsg(N_SAYTEAM, "rcs", player1, text); }
     COMMAND(sayteam, "C");
 
+	// send custom server messages to servers 
+	// this feature is not used on most servers (?)
     ICOMMAND(servcmd, "C", (char *cmd), addmsg(N_SERVCMD, "rs", cmd));
 
-    static void sendposition(fpsent *d, packetbuf &q)
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	// network message parser
+
+	// format position in network packet
+	static void sendposition(fpsent *d, packetbuf &q)
     {
         putint(q, N_POS);
         putuint(q, d->clientnum);
@@ -1060,14 +1078,16 @@ namespace game
         }
     }
 
+    // send my own player position to server (call function above)
     void sendposition(fpsent *d, bool reliable)
     {
-        if(d->state != CS_ALIVE && d->state != CS_EDITING) return;
+        if(d->state != CS_ALIVE && d->state != CS_EDITING) return; // do not send position in spectator mode
         packetbuf q(100, reliable ? ENET_PACKET_FLAG_RELIABLE : 0);
         sendposition(d, q);
         sendclientpacket(q.finalize(), 0);
     }
 
+	// ?
     void sendpositions()
     {
         loopv(players)
@@ -1089,6 +1109,7 @@ namespace game
         }
     }
 
+	// ?
     void sendmessages()
     {
         packetbuf p(MAXTRANS);
@@ -1125,7 +1146,8 @@ namespace game
         sendclientpacket(p.finalize(), 1);
     }
 
-    void c2sinfo(bool force) // send update to the server
+	// send update to the server
+    void c2sinfo(bool force) 
     {
         static int lastupdate = -1000;
         if(totalmillis - lastupdate < 33 && !force) return; // don't update faster than 30fps
@@ -1135,6 +1157,7 @@ namespace game
         flushclient();
     }
 
+	// send authkey and hashed password during connection progress
     void sendintro()
     {
         packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
@@ -1163,12 +1186,11 @@ namespace game
         sendclientpacket(p.finalize(), 1);
     }
 
+    // update the position of other clients in the game in our world
+    // don't care if he's in the scenery or other players,
+    // just don't overlap with our client
     void updatepos(fpsent *d)
     {
-        // update the position of other clients in the game in our world
-        // don't care if he's in the scenery or other players,
-        // just don't overlap with our client
-
         const float r = player1->radius+d->radius;
         const float dx = player1->o.x-d->o.x;
         const float dy = player1->o.y-d->o.y;
@@ -1188,6 +1210,7 @@ namespace game
         }
     }
 
+	// parse player positions from network packages
     void parsepositions(ucharbuf &p)
     {
         int type;
@@ -1201,7 +1224,13 @@ namespace game
                 float yaw, pitch, roll;
                 loopk(3)
                 {
-                    int n = p.get(); n |= p.get()<<8; if(flags&(1<<k)) { n |= p.get()<<16; if(n&0x800000) n |= -1<<24; }
+                    int n = p.get(); 
+					n |= p.get()<<8; 
+					if(flags&(1<<k)) 
+					{ 
+						n |= p.get()<<16; 
+						if(n&0x800000) n |= -1<<24; 
+					}
                     o[k] = n/DMF;
                 }
                 int dir = p.get(); dir |= p.get()<<8;
@@ -1272,7 +1301,7 @@ namespace game
                 int cn = getint(p), tp = getint(p), td = getint(p);
                 fpsent *d = getclient(cn);
                 if(!d || d->lifesequence < 0 || d->state==CS_DEAD) continue;
-                entities::teleporteffects(d, tp, td, false);
+                entities::teleporteffects(d, tp, td, false); // play teleport sound, set position
                 break;
             }
 
@@ -1291,6 +1320,7 @@ namespace game
         }
     }
 
+	// parse player states from network packages
     void parsestate(fpsent *d, ucharbuf &p, bool resume = false)
     {
         if(!d) { static fpsent dummy; d = &dummy; }
@@ -1323,6 +1353,9 @@ namespace game
 
     extern int deathscore;
 
+	// parse other network messages
+	// because state and position have their own functions
+	// we can assume that they're packed differently (?)
     void parsemessages(int cn, fpsent *d, ucharbuf &p)
     {
         static char text[MAXTRANS];
@@ -2037,6 +2070,7 @@ namespace game
         }
     }
 
+	// accept file download from server
     void receivefile(packetbuf &p)
     {
         int type;
@@ -2076,7 +2110,8 @@ namespace game
         }
     }
 
-    void parsepacketclient(int chan, packetbuf &p)   // processes any updates from the server
+	// processes any updates from the server
+    void parsepacketclient(int chan, packetbuf &p)
     {
         if(p.packet->flags&ENET_PACKET_FLAG_UNSEQUENCED) return;
         switch(chan)
@@ -2095,6 +2130,9 @@ namespace game
         }
     }
 
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	// server communication about demos and maps
+
     void getmap()
     {
         if(!m_edit) { conoutf(CON_ERROR, "\"getmap\" only works in coop edit mode"); return; }
@@ -2112,7 +2150,7 @@ namespace game
         }
         else server::stopdemo();
     }
-    COMMAND(stopdemo, "");
+    COMMAND(stopdemo, ""); 
 
     void recorddemo(int val)
     {

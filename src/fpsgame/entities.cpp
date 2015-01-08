@@ -223,7 +223,7 @@ namespace entities
             {
                 int snd = S_TELEPORT, flags = 0;
                 if(e.attr4 > 0) { snd = e.attr4; flags = SND_MAP; }
-                if(d == player1) playsound(snd, NULL, NULL, flags);
+                if(d == player1) playsound(snd, NULL, NULL, flags); 
                 else
                 {
                     playsound(snd, &e.o, NULL, flags);
