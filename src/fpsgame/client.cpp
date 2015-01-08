@@ -12,11 +12,13 @@ namespace game
     int hudannounce_effect = 0;
     char* hudannounce_text;
 
+	// calculate required radar scale
     float calcradarscale()
     {
         return clamp(max(minimapradius.x, minimapradius.y)/3, float(minradarscale), float(maxradarscale));
     }
 
+	// draw rotated minimap
     void drawminimap(fpsent *d, float x, float y, float s)
     {
         vec pos = vec(d->o).sub(minimapcenter).mul(minimapscale).add(0.5f), dir;
@@ -33,6 +35,7 @@ namespace game
         glEnd();
     }
 
+	// draw radar frame over minimap
     void drawradar(float x, float y, float s)
     {
         glBegin(GL_TRIANGLE_STRIP);
@@ -43,7 +46,7 @@ namespace game
         glEnd();
     }
 
-	// draw teamate icon arrow in minimap
+	// draw a specific teamate's icon arrow in minimap
     void drawteammate(fpsent *d, float x, float y, float s, fpsent *o, float scale)
     {
         vec dir = d->o;
@@ -62,6 +65,7 @@ namespace game
         glTexCoord2f(0.0f, 1.0f); glVertex2f(bx - bs*v.y, by + bs*v.x);
     }
 
+	// draw all teamate icons in minimap
     void drawteammates(fpsent *d, float x, float y, float s)
     {
         if(!radarteammates) return;
