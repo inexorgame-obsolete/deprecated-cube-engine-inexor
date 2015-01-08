@@ -2,8 +2,11 @@
 
 #include "engine.h"
 
+// extern functions and data here
 extern void cleargamma();
+extern void writeinitcfg();
 
+// cleans up game memory and SDL at exit
 void cleanup()
 {
     recorder::stop();
@@ -21,9 +24,9 @@ void cleanup()
     SDL_Quit();
 }
 
-void quit()                     // normal exit
+// normal game quit
+void quit()
 {
-    extern void writeinitcfg();
     writeinitcfg();
     writeservercfg();
 	writehistory();
@@ -35,7 +38,8 @@ void quit()                     // normal exit
     exit(EXIT_SUCCESS);
 }
 
-void fatal(const char *s, ...)    // failure exit
+// failure exit
+void fatal(const char *s, ...)   
 {
     static int errors = 0;
     errors++;
