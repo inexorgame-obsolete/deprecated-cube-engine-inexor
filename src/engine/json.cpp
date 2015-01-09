@@ -229,7 +229,7 @@ static const char *parse_value(JSON *item, const char *value)
 }
 
  // Render a value to text.
-char *print_value(JSON *item, int depth, bool fmt)
+static char *print_value(JSON *item, int depth, bool fmt)
 {
     char *out = 0;
     if(!item) return 0;
@@ -544,6 +544,10 @@ JSON *loadjson(const char *filename)
     copystring(s, filename);
     char *buf = loadfile(path(s), NULL);
     return JSON_Parse(buf);
+}
+
+char *JSON::render(bool formatted, bool minified) {
+    return print_value(this, 0, formatted);
 }
 
 //not used yet:

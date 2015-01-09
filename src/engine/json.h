@@ -65,12 +65,9 @@ struct JSON
     }
     
      //Returns rendered JSON, as you would find it in a file
-    char *render(bool formatted = true, bool minified = false)
-    {
-        extern  char *print_value(JSON *item, int depth, bool fmt);
-        char *buf = print_value(this, 0, formatted);
-        return buf;
-    }
+     //NOTE: This is implemented in json.cpp, because it
+     //      needs access to a static variable.
+    char *render(bool formatted = true, bool minified = false);
 
      //Save's to a specific JSON-File
     void save(const char *filename)
