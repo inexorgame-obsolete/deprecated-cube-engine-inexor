@@ -50,7 +50,6 @@ namespace game
 	}
     COMMAND(follow, "s");
 
-
 	// follow previous/next client number
     void nextfollow(int dir)
     {
@@ -149,6 +148,7 @@ namespace game
         return NULL;
     }
 
+	// return fpsent instance whose coordinates are used to calculate camera position
     fpsent *hudplayer()
     {
         if(thirdperson) return player1;
@@ -156,6 +156,7 @@ namespace game
         return target ? target : player1;
     }
 
+	// initialise camera when entering spectator mode
     void setupcamera()
     {
         fpsent *target = followingplayer();
@@ -168,12 +169,15 @@ namespace game
         }
     }
 
+	// check if it is neccesary to detach the camera 
+	// this is mostly triggered by player death
     bool detachcamera()
     {
         fpsent *d = hudplayer();
         return d->state==CS_DEAD;
     }
 
+	// check if camera collision detection is neccesary
     bool collidecamera()
     {
         switch(player1->state)
@@ -184,15 +188,23 @@ namespace game
         return true;
     }
 
+	// interpolation factor for player positions
+	// low smoothmove means jumpily player movement
     VARP(smoothmove, 0, 75, 100);
+
+	// distance in which interpolation will be applied (?)
     VARP(smoothdist, 0, 32, 64);
 
+	// use latency and assume player movement to
+	// predict new position. Improves visual appearance
+	// of player movement - even under lag
     void predictplayer(fpsent *d, bool move)
     {
         d->o = d->newpos;
         d->yaw = d->newyaw;
         d->pitch = d->newpitch;
         d->roll = d->newroll;
+
         if(move)
         {
             moveplayer(d, 1, false);
