@@ -8,6 +8,11 @@ if (!inexor || !inexor.console) {
 	inexor.console.log = function() {}
 }
 
+var getKeyCode = function(e) {
+    if (!e) e = window.event;
+    return e.keyCode || e.which;
+}
+
 inexor.console.expanded = false;
 
 inexor.console.jslog = console.log.bind(console);
