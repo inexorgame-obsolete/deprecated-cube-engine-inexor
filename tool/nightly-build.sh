@@ -28,7 +28,8 @@ cp ./readme.md nightly
 cp ./license.md nightly
 zip -r ${BUILD_NAME}.zip nightly
 
-echo "Commit: ${TRAVIS_COMMIT}\n\n SHA 512: \n" >> ${BUILD_NAME}.txt
+echo "Commit: ${TRAVIS_COMMIT}" >> ${BUILD_NAME}.txt
+echo "SHA 512: " >> ${BUILD_NAME}.txt
 sha512sum ${BUILD_NAME}.zip >> ${BUILD_NAME}.txt
 
 echo "sending ${BUILD_NAME}.zip"
