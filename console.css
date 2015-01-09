@@ -13,8 +13,8 @@ a {
 }
 
 .consoleout.inactive {
-    text-shadow: 0 0 1px black;
-    color: black;
+    text-shadow: 2px 2px 7px black;
+    color: white;
 	background: transparent;
 	opacity: 1.0;
 	overflow-y: hidden;
