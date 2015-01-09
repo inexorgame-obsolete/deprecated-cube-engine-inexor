@@ -132,10 +132,7 @@ void InexorCefLayerManager::SendMouseWheelEvent(const CefMouseEvent& event, int 
 
 bool InexorCefLayerManager::Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception)
 {
-    // cefdebug("InexorCefContext::Execute", name.ToString());
-
     CEF_REQUIRE_RENDERER_THREAD();
-
     if (name == "createLayer") {
         if (arguments.size() == 2 && arguments[0]->IsString() && arguments[1]->IsString()) {
             CreateLayer(arguments[0]->GetStringValue().ToString(), arguments[1]->GetStringValue().ToString());
