@@ -22,6 +22,7 @@ inexor.console.out = function(string) {
     var output = document.getElementById('consoleout-data');
     var html = output.innerHTML + '<br />' + string;
     output.innerHTML = html;
+    inexor.console.consoleOut.scrollTop = inexor.console.consoleOut.scrollHeight;
 	inexor.console.log(string);
 	inexor.console.jslog(string);
 }

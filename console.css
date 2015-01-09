@@ -73,7 +73,6 @@ a {
 	padding: 0px;
 	overflow-x: hidden;
 	overflow-y: hidden;
-	z-index: -1;
 }
 
 .consolesidebar a {
