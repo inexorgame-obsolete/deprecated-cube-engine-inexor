@@ -222,12 +222,15 @@ namespace game
         }
     }
 
+	// parse player state, move players, predict their position,
+	// handle ragdoll, check for lag
+	// called by updateworld only
     void otherplayers(int curtime)
     {
         loopv(players)
         {
             fpsent *d = players[i];
-            if(d == player1 || d->ai) continue;
+            if(d == player1 || d->ai) continue; // do not handle bots and myself
 
             if(d->state==CS_DEAD && d->ragdoll) moveragdoll(d);
             else if(!intermission)
@@ -308,7 +311,7 @@ namespace game
         if(player1->clientnum>=0) c2sinfo();   // do this last, to reduce the effective frame lag
     }
 
-    void spawnplayer(fpsent *d)   // place at random spawn
+    void spawnplayer(fpsent *d)   
     {
         if(cmode) cmode->pickspawn(d);
         else findplayerspawn(d, d==player1 && respawnent>=0 ? respawnent : -1);
@@ -354,20 +357,24 @@ namespace game
         if((player1->attacking = on)) respawn(gamemode);
     }
 
+	// check if I am allowed to jump at the moment
     bool canjump()
     {
         if(!intermission) respawn(gamemode);
         return player1->state!=CS_DEAD && !intermission;
     }
 
+	// check if I am allowed to move
     bool allowmove(physent *d)
     {
         if(d->type!=ENT_PLAYER) return true;
         return !((fpsent *)d)->lasttaunt || lastmillis-((fpsent *)d)->lasttaunt>=1000;
     }
 
+	// play a sound when you hit a player
     VARP(hitsound, 0, 0, 1);
 
+	// this callback is called when players take damage
     void damaged(int damage, fpsent *d, fpsent *actor, bool local)
     {
         if((d->state!=CS_ALIVE && d->state != CS_LAGGED && d->state != CS_SPAWNING) || intermission) return;
@@ -426,6 +433,7 @@ namespace game
 
     VARP(teamcolorfrags, 0, 1, 1);
 
+	// this callback is called when player actor kills d
     void killed(fpsent *d, fpsent *actor)
     {
         if(d->state==CS_EDITING)
@@ -499,12 +507,15 @@ namespace game
         }
     }
 
+	// return player statistics to cubescript
     ICOMMAND(getfrags, "", (), intret(player1->frags));
     ICOMMAND(getflags, "", (), intret(player1->flags));
     ICOMMAND(getdeaths, "", (), intret(player1->deaths));
     ICOMMAND(getaccuracy, "", (), intret((player1->totaldamage*100)/max(player1->totalshots, 1)));
     ICOMMAND(gettotaldamage, "", (), intret(player1->totaldamage));
     ICOMMAND(gettotalshots, "", (), intret(player1->totalshots));
+
+
 
     vector<fpsent *> clients;
 
@@ -567,6 +578,8 @@ namespace game
         filtertext(player1->name, "unnamed", false, MAXNAMELEN);
         players.add(player1);
     }
+
+
 
     VARP(showmodeinfo, 0, 1, 1);
 
@@ -693,6 +706,11 @@ namespace game
         return NULL;
     }
 
+
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	// player name coloring
+
+
     bool duplicatename(fpsent *d, const char *name = NULL, const char *alt = NULL)
     {
         if(!name) name = d->name;
@@ -726,6 +744,7 @@ namespace game
         return colorname(d, NULL, isteam(d->team, player1->team) ? "\fs\f1" : "\fs\f3", "\fr", alt); 
     }
 
+	// color player name blue if he is in your team (\f1) otherwise red (\f3)
     const char *teamcolor(const char *name, bool sameteam, const char *alt)
     {
         if(!teamcolortext || !m_teammode) return sameteam || !alt ? name : alt;
@@ -734,11 +753,19 @@ namespace game
         return cname[cidx];
     }    
     
+	// this function calls the function above but also validates that team is a valid char pointer
+	// it is not possible to return memory to an invalid char* pointer!
     const char *teamcolor(const char *name, const char *team, const char *alt)
     {
         return teamcolor(name, team && isteam(team, player1->team), alt);
     }
 
+
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	// 
+
+
+	// kill yourself (in game only)
     void suicide(physent *d)
     {
         if(d==player1 || (d->type==ENT_PLAYER && ((fpsent *)d)->ai))
@@ -757,7 +784,11 @@ namespace game
     }
     ICOMMAND(suicide, "", (), suicide(player1));
 
-    bool needminimap() { return m_ctf || m_protect || m_hold || m_capture || m_collect|| m_bomb; }
+	// checks if minimap is required in this game mode
+    bool needminimap() 
+	{ 
+		return m_ctf || m_protect || m_hold || m_capture || m_collect|| m_bomb; 
+	}
 
     void drawicon(int icon, float x, float y, float sz)
     {
@@ -1131,16 +1162,21 @@ namespace game
         return false;
     }
 
-    // any data written into this vector will get saved with the map data. Must take care to do own versioning, and endianess if applicable. Will not get called when loading maps from other games, so provide defaults.
+    // any data written into this vector will get saved with the map data.
+	// must take care to do own versioning, and endianess if applicable. 
+	// will not get called when loading maps from other games, so provide defaults.
     void writegamedata(vector<char> &extras) {}
     void readgamedata(vector<char> &extras) {}
 
+	// file name of important configuration files
+	// are stored in constant string functions
     const char *savedconfig() { return "config.cfg"; }
     const char *restoreconfig() { return "restore.cfg"; }
     const char *defaultconfig() { return "data/defaults.cfg"; }
     const char *autoexec() { return "autoexec.cfg"; }
     const char *savedservers() { return "servers.cfg"; }
 
+	// 
     void loadconfigs()
     {
         execfile("auth.cfg", false);
