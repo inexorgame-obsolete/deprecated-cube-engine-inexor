@@ -2,13 +2,12 @@
 
 void InexorCefMouseManager::InitializeContext()
 {
-    context = CefV8Value::CreateObject(this);
-    AddFunction("show", this);
-    AddFunction("hide", this);
-    AddFunction("setTexture", this);
-    AddVariable("visible", true);
-    AddVariable("x", true);
-    AddVariable("y", true);
+    CreateFunction("show", this);
+    CreateFunction("hide", this);
+    CreateFunction("setTexture", this);
+    CreateVariable("visible", true);
+    CreateVariable("x", true);
+    CreateVariable("y", true);
 }
 
 bool InexorCefMouseManager::Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception)

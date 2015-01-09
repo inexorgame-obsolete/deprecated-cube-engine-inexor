@@ -11,9 +11,12 @@
 
 #include "cefbrowsersettings.h"
 #include "cefclienthandler.h"
-#include "cefcontext.h"
+#include "cefconsole.h"
+#include "cefcontextmanager.h"
 #include "cefdebug.h"
-#include "ceflayer.h"
+#include "cefeventmanager.h"
+#include "ceflayermanager.h"
+#include "cefmenu.h"
 #include "cefmouse.h"
 #include "cefwindowinfo.h"
 
@@ -28,8 +31,12 @@ class InexorCefApp : public CefApp,
         // Getters for handlers
         CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() { return this; }
         CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() { return this; }
+        CefRefPtr<InexorCefContextManager> GetContextManager() { return context_manager; }
         CefRefPtr<InexorCefLayerManager> GetLayerManager() { return layer_manager; }
         CefRefPtr<InexorCefEventManager> GetEventManager() { return event_manager; }
+        CefRefPtr<InexorCefMouseManager> GetMouseManager() { return mouse_manager; }
+        CefRefPtr<InexorCefConsole> GetConsole() { return console; }
+        CefRefPtr<InexorCefMenu> GetMenu() { return menu; }
 
         // Rendering / Window Management
         void Render();
@@ -48,6 +55,10 @@ class InexorCefApp : public CefApp,
         void OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context);
 
 	private:
+
+        // JavaScript Context Manager
+        CefRefPtr<InexorCefContextManager> context_manager;
+
         // Layer Manager
         CefRefPtr<InexorCefLayerManager> layer_manager;
 
@@ -57,8 +68,11 @@ class InexorCefApp : public CefApp,
         // Global mouse
         CefRefPtr<InexorCefMouseManager> mouse_manager;
 
-        // Global context
-        CefRefPtr<InexorCefContext> context;
+        // Console
+        CefRefPtr<InexorCefConsole> console;
+
+        // Menu
+        CefRefPtr<InexorCefMenu> menu;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(InexorCefApp);
