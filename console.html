@@ -5,30 +5,41 @@
     </head>
     <body style="background: transparent; margin: 0px; padding: 0px;">
         <div id="consoleout" class="consoleout-shrinked">
-            <div id="output-window" style="margin: 10px;"><pre><span id="output"></span></pre></div>
+            <div id="consoleout-container" style="margin: 10px;"><pre><span id="consoleout-data"></span></pre></div>
         </div>
-        <div style="position: absolute; bottom: 0px; left: 0px; width: 100%; height: 160px; color: white; background-color: black; opacity: 0.8; margin: 0px; padding: 0px; overflow-x: hidden; overflow-y: hidden;">
+        <div id="consolein" class="consolein">
+            <div id="input-window" style="margin: 10px;">
+                <input id="consolein-field" type="text" />
+            </div>
+        </div>
+        <div id="consolesidebar" class="consolesidebar">
             <div style="margin: 5px;">
 	            <ul>
 	                <li>
-	                    Console:
-	                    <a href="javascript:inexor.layer.show('console');">Show</a>
-	                    <a href="javascript:inexor.layer.hide('console');">Hide</a>
-                        <a href="javascript:inexor.console.expand();">Expand</a>
-                        <a href="javascript:inexor.console.shrink();">Shrink</a>
+	                    <h4>Console</h4>
+	                    <ul>
+                           <li><a href="javascript:inexor.console.toggle();">Toggle</a></li>
+	                       <li><a href="javascript:inexor.console.expand();">Expand</a></li>
+                           <li><a href="javascript:inexor.console.shrink();">Shrink</a></li>
+                           <li><a href="javascript:inexor.layer.show('console');">Show</a></li>
+                           <li><a href="javascript:inexor.layer.hide('console');">Hide</a></li>
+	                    </ul>
 	                </li>
 	                <li>
-	                    Menu:
-	                    <a href="javascript:inexor.layer.show('menu');">Show</a>
-	                    <a href="javascript:inexor.layer.hide('menu');">Hide</a>
+	                    <h4>Menu:</h4>
+                        <ul>
+                           <li><a href="javascript:inexor.layer.show('menu');">Show</a></li>
+                           <li><a href="javascript:inexor.layer.hide('menu');">Hide</a></li>
+                        </ul>
 	                </li>
 	                <li>
-	                    Inexor Object:
-	                    <a href="javascript:check();">Check</a>
-	                    <a href="javascript:printInexor();">Print Inexor As JSON</a>
-                        <a href="javascript:printEvents();">Print events (JSON)</a>
+	                    <h4>Inexor Object:</h4>
+                        <ul>
+                           <li><a href="javascript:check();">Check</a></li>
+                           <li><a href="javascript:printInexor();">Print Inexor As JSON</a></li>
+                           <li><a href="javascript:printEvents();">Print events (JSON)</a></li>
+                        </ul>
 	                </li>
-	                 
 	            </ul>
             </div>
         </div>
