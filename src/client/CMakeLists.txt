@@ -103,6 +103,7 @@ set(CLIENT_SOURCES_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefapp
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefclienthandler
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefcontext
+    ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefcontextprovider
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefdebug
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefevent
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/ceflayer

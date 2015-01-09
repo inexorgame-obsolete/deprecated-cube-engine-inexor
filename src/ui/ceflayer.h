@@ -7,6 +7,7 @@
 
 #include "cefbrowsersettings.h"
 #include "cefclienthandler.h"
+#include "cefcontextprovider.h"
 #include "cefwindowinfo.h"
 
 class InexorCefLayer
@@ -51,7 +52,7 @@ class InexorCefLayer
 
 };
 
-class InexorCefLayerManager : public CefV8Handler
+class InexorCefLayerManager : public InexorCefContextProvider
 {
 
     public:
@@ -80,8 +81,11 @@ class InexorCefLayerManager : public CefV8Handler
         void SendMouseMoveEvent(const CefMouseEvent& event, bool mouseLeave);
         void SendMouseWheelEvent(const CefMouseEvent& event, int deltaX, int deltaY);
 
-        // CefV8Handler
+        // InexorCefContextProvider
+        void InitializeContext();
         bool Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception);
+        bool Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& retval, CefString& exception);
+        bool Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception);
 
     private:
         std::list<InexorCefLayer*> layers;
