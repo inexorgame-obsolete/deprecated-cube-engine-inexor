@@ -12,18 +12,13 @@
 #include "cefdebug.h"
 #include "cefevent.h"
 #include "ceflayer.h"
+#include "cefmouse.h"
 
 class InexorCefContext : public InexorCefContextProvider
 {
 
     public:
-        InexorCefContext(CefRefPtr<InexorCefLayerManager> layer_manager, CefRefPtr<InexorCefEventManager> event_manager);
-
-        // Returns the event manager.
-        CefRefPtr<InexorCefLayerManager> GetLayerManager() { return layer_manager; };
-
-        // Returns the event manager.
-        CefRefPtr<InexorCefEventManager> GetEventManager() { return event_manager; };
+        InexorCefContext(CefRefPtr<InexorCefLayerManager> layer_manager, CefRefPtr<InexorCefEventManager> event_manager, CefRefPtr<InexorCefMouseManager> mouse_manager);
 
         // InexorCefContextProvider
         void InitializeContext();
@@ -34,6 +29,7 @@ class InexorCefContext : public InexorCefContextProvider
 	private:
 	    CefRefPtr<InexorCefLayerManager> layer_manager;
 	    CefRefPtr<InexorCefEventManager> event_manager;
+	    CefRefPtr<InexorCefMouseManager> mouse_manager;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(InexorCefContext);
