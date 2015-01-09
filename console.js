@@ -14,6 +14,7 @@ var getKeyCode = function(e) {
 }
 
 inexor.console.expanded = false;
+inexor.console.follow = false;
 
 inexor.console.jslog = console.log.bind(console);
 
@@ -47,8 +48,8 @@ inexor.console.expand = function() {
 
 inexor.console.shrink = function() {
     inexor.console.expanded = false;
-    inexor.console.consoleOut.className = 'consoleout';
-    inexor.console.consoleIn.className = 'consolein';
+    inexor.console.consoleOut.className = 'consoleout inactive';
+    inexor.console.consoleIn.className = 'consolein inactive';
     inexor.console.consoleInputField.blur();
     delete inexor.console.consoleInputField.onkeypress;
 }
@@ -61,6 +62,22 @@ inexor.console.toggle = function() {
 	}
 }
 
+inexor.console.tail = function() {
+	var diff = inexor.console.consoleOut.scrollHeight - (inexor.console.consoleOut.scrollTop + inexor.console.consoleOut.offsetHeight);
+	if (inexor.console.follow) {
+		if (diff > 50) {
+			inexor.console.follow = false;
+		} else {
+		    inexor.console.consoleOut.scrollTop = inexor.console.consoleOut.scrollHeight;
+		}
+	} else {
+		if (diff < 50) {
+			inexor.console.follow = true;
+		}
+	}
+    window.setTimeout(inexor.console.tail, 100);
+};
+
 inexor.event.subscribe("frag", function(victim, actor) {
 	inexor.console.out(actor + " fragged " + victim);
 });
@@ -70,6 +87,7 @@ inexor.console.init = function() {
     inexor.console.consoleIn = document.getElementById('consolein');
     inexor.console.consoleInputField = document.getElementById('consolein-field');
     inexor.console.out("Console Initialized!");
+    inexor.console.tail();
     window.onkeypress = function(e) {
       if (getKeyCode(e) == '27') {
         inexor.console.toggle();
