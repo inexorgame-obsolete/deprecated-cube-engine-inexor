@@ -7,8 +7,6 @@ InexorCefContext::InexorCefContext(CefRefPtr<InexorCefLayerManager> layer_manage
 
 CefRefPtr<CefV8Value> InexorCefContext::GetContext()
 {
-    // cefdebug("InexorCefContext::GetContext", "");
-
     if (!context.get())
     {
         // This has to be happen when the context is initialized
@@ -19,8 +17,6 @@ CefRefPtr<CefV8Value> InexorCefContext::GetContext()
 
 void InexorCefContext::InitializeContext()
 {
-    // cefdebug("InexorCefContext::InitializeContext", "");
-
     context = CefV8Value::CreateObject(this);
 
     // Global Methods
@@ -49,17 +45,14 @@ void InexorCefContext::InitializeContext()
     context->SetValue("scr_h", V8_ACCESS_CONTROL_DEFAULT, V8_PROPERTY_ATTRIBUTE_NONE);
     context->SetValue("vsync", V8_ACCESS_CONTROL_DEFAULT, V8_PROPERTY_ATTRIBUTE_NONE);
     context->SetValue("fps", V8_ACCESS_CONTROL_ALL_CAN_READ, V8_PROPERTY_ATTRIBUTE_READONLY);
+
     // Variables Client
     context->SetValue("name", V8_ACCESS_CONTROL_DEFAULT, V8_PROPERTY_ATTRIBUTE_NONE);
-
 }
 
 bool InexorCefContext::Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception)
 {
-    // cefdebug("InexorCefContext::Execute", name.ToString());
-
     CEF_REQUIRE_RENDERER_THREAD();
-
     if (name == "logoutf") {
         if (arguments.size() == 1 && arguments[0]->IsString()) {
             logoutf("[%d] %s", lastmillis, arguments[0]->GetStringValue().ToString().c_str());
@@ -74,10 +67,7 @@ bool InexorCefContext::Execute(const CefString& name, CefRefPtr<CefV8Value> obje
 
 bool InexorCefContext::Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& return_value, CefString& exception)
 {
-    // cefdebug("InexorCefContext::Get", name.ToString());
-
     CEF_REQUIRE_RENDERER_THREAD();
-
     if (name == "curtime")
         return_value = CefV8Value::CreateInt(curtime);
     else if (name == "lastmillis")
@@ -112,10 +102,7 @@ bool InexorCefContext::Get(const CefString& name, const CefRefPtr<CefV8Value> ob
 
 bool InexorCefContext::Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception)
 {
-    // cefdebug("InexorCefContext::Set", name.ToString());
-
     CEF_REQUIRE_RENDERER_THREAD();
-
     if (value->IsInt()) {
         if (name == "thirdperson")
             thirdperson = value->GetIntValue();
