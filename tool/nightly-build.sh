@@ -9,7 +9,7 @@ fi
 
 cd $TRAVIS_BUILD_DIR
 
-export BUILD_NAME="$(echo "${TRAVIS_BRANCH}-${TRAVIS_JOB_NUMBER}-${TRAVIS_COMMIT}-" | sed 's#/#-#')-$([[ ${TRAVIS_JOB_NUMBER} != *5 ]] && echo linux || echo windows)"
+export BUILD_NAME="$(echo "${TRAVIS_BRANCH}-${TRAVIS_JOB_NUMBER}" | sed 's#/#-#')-$([[ ${TRAVIS_JOB_NUMBER} != *5 ]] && echo linux || echo windows)"
 #e.g. master-251.5-10240128410510-linux
 
 if [ "${TRAVIS_BRANCH}" == "master" ] 
@@ -27,9 +27,12 @@ cp ./server.bat nightly
 cp ./readme.md nightly
 cp ./license.md nightly
 zip -r ${BUILD_NAME}.zip nightly
-sha512sum ${BUILD_NAME}.zip > ${BUILD_NAME}.zip.sum
+
+echo "Commit: ${TRAVIS_COMMIT}\n\n SHA 512: \n" >> ${BUILD_NAME}.txt
+sha512sum ${BUILD_NAME}.zip >> ${BUILD_NAME}.txt
+
 echo "sending ${BUILD_NAME}.zip"
 curl --connect-timeout 1800 --ftp-create-dirs -T "${BUILD_NAME}.zip" -u $FTP_USER:$FTP_PASSWORD ftp://inexor.org/
-curl --ftp-create-dirs -T "${BUILD_NAME}.zip.sum" -u $FTP_USER:$FTP_PASSWORD ftp://inexor.org/
+curl --ftp-create-dirs -T "${BUILD_NAME}.txt" -u $FTP_USER:$FTP_PASSWORD ftp://inexor.org/
 
 exit 0
