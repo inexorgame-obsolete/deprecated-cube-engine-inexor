@@ -1,6 +1,5 @@
 /**
- * True, if the console is expanded.
- * @param string
+ * Fake inexor object if not available (i.e. not started by inexor)
  */
 if (!inexor || !inexor.console) {
 	var inexor = {console:{},event:{}};
@@ -8,68 +7,98 @@ if (!inexor || !inexor.console) {
 	inexor.console.log = function() {}
 }
 
+var consoleOut = null;
+var consoleIn = null;
+var consoleInputField = null;
+
 var getKeyCode = function(e) {
     if (!e) e = window.event;
     return e.keyCode || e.which;
-}
+};
 
+/**
+ * If true, the console is in expanded state, else in shrinked state.
+ */
 inexor.console.expanded = false;
+
+/**
+ * If true, the console is tailing the console output.
+ */
 inexor.console.follow = false;
 
+/**
+ * Redirect the native browser console, print in output window and
+ * redirect back into the native browser console.
+ */
 inexor.console.jslog = console.log.bind(console);
-
 inexor.console.out = function(string) {
     var output = document.getElementById('consoleout-data');
     var html = output.innerHTML + '<br />' + string;
     output.innerHTML = html;
-    inexor.console.consoleOut.scrollTop = inexor.console.consoleOut.scrollHeight;
+    consoleOut.scrollTop = consoleOut.scrollHeight;
 	inexor.console.log(string);
 	inexor.console.jslog(string);
-}
-
+};
 console.log = inexor.console.out;
 
+/**
+ * Execute JS code.
+ */
 inexor.console.eval = function(code) {
 	inexor.console.jslog("Eval: " + code);
 	eval(code);
-}
+};
 
+/**
+ * Switch to expanded state.
+ */
 inexor.console.expand = function() {
 	inexor.console.expanded = true;
-	inexor.console.consoleOut.className = 'consoleout active';
-	inexor.console.consoleIn.className = 'consolein active';
-	inexor.console.consoleInputField.focus();
-	inexor.console.consoleInputField.onkeypress = function(e) {
+	consoleOut.className = 'consoleout active';
+	consoleIn.className = 'consolein active';
+	consoleInputField.focus();
+	consoleInputField.onkeypress = function(e) {
 		if (getKeyCode(e) == '13') {
-			inexor.console.eval(inexor.console.consoleInputField.value);
+			inexor.console.eval(consoleInputField.value);
 			return false;
 		}
 	};
-}
+};
 
+/**
+ * Switch to shrinked state.
+ */
 inexor.console.shrink = function() {
     inexor.console.expanded = false;
-    inexor.console.consoleOut.className = 'consoleout inactive';
-    inexor.console.consoleIn.className = 'consolein inactive';
-    inexor.console.consoleInputField.blur();
-    delete inexor.console.consoleInputField.onkeypress;
-}
+    consoleOut.className = 'consoleout inactive';
+    consoleIn.className = 'consolein inactive';
+    consoleInputField.blur();
+    delete consoleInputField.onkeypress;
+};
 
+
+/**
+ * Toggles expanded and shrinked state.
+ */
 inexor.console.toggle = function() {
 	if (inexor.console.expanded) {
 		inexor.console.shrink();
 	} else {
 		inexor.console.expand();
 	}
-}
+};
 
+/**
+ * Follow the last output lines. Automatically unfollow and
+ * follow again if the user has used the scrollbars.
+ */
 inexor.console.tail = function() {
-	var diff = inexor.console.consoleOut.scrollHeight - (inexor.console.consoleOut.scrollTop + inexor.console.consoleOut.offsetHeight);
+	var diff = consoleOut.scrollHeight - (consoleOut.scrollTop + consoleOut.offsetHeight);
 	if (inexor.console.follow) {
 		if (diff > 50) {
 			inexor.console.follow = false;
 		} else {
-		    inexor.console.consoleOut.scrollTop = inexor.console.consoleOut.scrollHeight;
+		    consoleOut.scrollTop = consoleOut.scrollHeight;
 		}
 	} else {
 		if (diff < 50) {
@@ -79,27 +108,36 @@ inexor.console.tail = function() {
     window.setTimeout(inexor.console.tail, 100);
 };
 
-inexor.event.subscribe("frag", function(victim, actor) {
-	inexor.console.out(actor + " fragged " + victim);
-});
-
+/**
+ * Console initialization.
+ */
 inexor.console.init = function() {
-    inexor.console.consoleOut = document.getElementById('consoleout');
-    inexor.console.consoleIn = document.getElementById('consolein');
-    inexor.console.consoleInputField = document.getElementById('consolein-field');
+    consoleOut = document.getElementById('consoleout');
+    consoleIn = document.getElementById('consolein');
+    consoleInputField = document.getElementById('consolein-field');
     inexor.console.out("Console Initialized!");
     inexor.console.tail();
-    window.onkeypress = function(e) {
-      if (getKeyCode(e) == '27') {
-        inexor.console.toggle();
-        return false;
-      }
-	};
-}
-
+};
 window.setTimeout(function() {
     inexor.console.init();
 }, 100);
+
+/**
+ * Bind ESC on toggle console.
+ */
+window.onkeypress = function(e) {
+    if (getKeyCode(e) == '27') {
+        inexor.console.toggle();
+        return false;
+    }
+};
+
+/**
+ * Subscribe events.
+ */
+inexor.event.subscribe("frag", function(victim, actor) {
+	inexor.console.out(actor + " fragged " + victim);
+});
 
 
 /** Some Debug Stuff **/
