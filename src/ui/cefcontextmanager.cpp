@@ -1,51 +1,35 @@
-#include "cefcontext.h"
+#include "cefcontextmanager.h"
 
-InexorCefContext::InexorCefContext(CefRefPtr<InexorCefLayerManager> layer_manager, CefRefPtr<InexorCefEventManager> event_manager, CefRefPtr<InexorCefMouseManager> mouse_manager) {
-    this->layer_manager = layer_manager;
-    this->event_manager = event_manager;
-    this->mouse_manager = mouse_manager;
-}
-
-void InexorCefContext::InitializeContext()
+void InexorCefContextManager::InitializeContext()
 {
-    context = CefV8Value::CreateObject(this);
-    AddSubContext("layer", layer_manager);
-    AddSubContext("event", event_manager);
-
     // Global Methods
-    AddFunction("logoutf", this);
-    AddFunction("quit", this);
+    CreateFunction("quit", this);
 
     // Variables
-    AddVariable("curtime", true);
-    AddVariable("lastmillis", true);
-    AddVariable("elapsedtime", true);
-    AddVariable("totalmillis", true);
-    AddVariable("thirdperson");
-    AddVariable("fullscreen");
-    AddVariable("scr_w");
-    AddVariable("scr_h");
-    AddVariable("vsync");
-    AddVariable("fps", true);
-    AddVariable("name");
+    CreateVariable("curtime", true);
+    CreateVariable("lastmillis", true);
+    CreateVariable("elapsedtime", true);
+    CreateVariable("totalmillis", true);
+    CreateVariable("thirdperson");
+    CreateVariable("fullscreen");
+    CreateVariable("scr_w");
+    CreateVariable("scr_h");
+    CreateVariable("vsync");
+    CreateVariable("fps", true);
+    CreateVariable("name");
 }
 
-bool InexorCefContext::Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception)
+bool InexorCefContextManager::Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception)
 {
     CEF_REQUIRE_RENDERER_THREAD();
-    if (name == "logoutf") {
-        if (arguments.size() == 1 && arguments[0]->IsString()) {
-            logoutf("[%d] %s", lastmillis, arguments[0]->GetStringValue().ToString().c_str());
-        }
-        return true;
-    } else if (name == "quit") {
+    if (name == "quit") {
     	quit();
     	return true;
     }
     return false;
 }
 
-bool InexorCefContext::Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& return_value, CefString& exception)
+bool InexorCefContextManager::Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& return_value, CefString& exception)
 {
     CEF_REQUIRE_RENDERER_THREAD();
     if (name == "curtime")
@@ -80,7 +64,7 @@ bool InexorCefContext::Get(const CefString& name, const CefRefPtr<CefV8Value> ob
     return true;
 }
 
-bool InexorCefContext::Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception)
+bool InexorCefContextManager::Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception)
 {
     CEF_REQUIRE_RENDERER_THREAD();
     if (value->IsInt()) {

@@ -10,29 +10,24 @@
 #include "cefcontextbindings.h"
 #include "cefcontextprovider.h"
 #include "cefdebug.h"
-#include "cefevent.h"
-#include "ceflayer.h"
-#include "cefmouse.h"
 
-class InexorCefContext : public InexorCefContextProvider
+class InexorCefContextManager : public InexorCefContextProvider
 {
 
     public:
-        InexorCefContext(CefRefPtr<InexorCefLayerManager> layer_manager, CefRefPtr<InexorCefEventManager> event_manager, CefRefPtr<InexorCefMouseManager> mouse_manager);
+        InexorCefContextManager() {};
 
         // InexorCefContextProvider
         void InitializeContext();
         bool Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception);
         bool Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& retval, CefString& exception);
         bool Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception);
+        std::string GetContextName() { return "inexor"; };
 
 	private:
-	    CefRefPtr<InexorCefLayerManager> layer_manager;
-	    CefRefPtr<InexorCefEventManager> event_manager;
-	    CefRefPtr<InexorCefMouseManager> mouse_manager;
 
         // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(InexorCefContext);
+        IMPLEMENT_REFCOUNTING(InexorCefContextManager);
 
 };
 
