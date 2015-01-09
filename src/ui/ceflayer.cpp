@@ -13,6 +13,60 @@ InexorCefLayerManager::InexorCefLayerManager(int width, int height)
     SetScreenSize(width, height);
 }
 
+void InexorCefLayerManager::InitializeContext()
+{
+    context = CefV8Value::CreateObject(this);
+    AddFunction("createLayer", this);
+    AddFunction("showLayer", this);
+    AddFunction("hideLayer", this);
+    AddFunction("getLayers", this);
+}
+
+bool InexorCefLayerManager::Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception)
+{
+    CEF_REQUIRE_RENDERER_THREAD();
+    if (name == "createLayer") {
+        if (arguments.size() == 2 && arguments[0]->IsString() && arguments[1]->IsString()) {
+            CreateLayer(arguments[0]->GetStringValue().ToString(), arguments[1]->GetStringValue().ToString());
+            return true;
+        }
+    } else if (name == "showLayer") {
+        if (arguments.size() == 1 && arguments[0]->IsString()) {
+            ShowLayer(arguments[0]->GetStringValue().ToString());
+            return true;
+        }
+    } else if (name == "hideLayer") {
+        if (arguments.size() == 1 && arguments[0]->IsString()) {
+            HideLayer(arguments[0]->GetStringValue().ToString());
+            return true;
+        }
+    } else if (name == "getLayers") {
+        std::list<std::string> layer_names = GetLayers();
+        retval = CefV8Value::CreateArray(layer_names.size());
+        int i = 0;
+        for(std::list<std::string>::iterator it = layer_names.begin(); it != layer_names.end(); ++it)
+        {
+            std::string layer_name = (*it);
+            retval->SetValue(i, CefV8Value::CreateString(layer_name));
+            i++;
+        }
+        return true;
+    }
+    return false;
+}
+
+bool InexorCefLayerManager::Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& return_value, CefString& exception)
+{
+    CEF_REQUIRE_RENDERER_THREAD();
+    return false;
+}
+
+bool InexorCefLayerManager::Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception)
+{
+    CEF_REQUIRE_RENDERER_THREAD();
+    return false;
+}
+
 void InexorCefLayerManager::SetScreenSize(int width, int height)
 {
     this->width = width;
@@ -128,39 +182,6 @@ void InexorCefLayerManager::SendMouseWheelEvent(const CefMouseEvent& event, int 
             layer->GetBrowser()->GetHost()->SendMouseWheelEvent(event, deltaX, deltaY);
         }
     }
-}
-
-bool InexorCefLayerManager::Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception)
-{
-    CEF_REQUIRE_RENDERER_THREAD();
-    if (name == "createLayer") {
-        if (arguments.size() == 2 && arguments[0]->IsString() && arguments[1]->IsString()) {
-            CreateLayer(arguments[0]->GetStringValue().ToString(), arguments[1]->GetStringValue().ToString());
-            return true;
-        }
-    } else if (name == "showLayer") {
-        if (arguments.size() == 1 && arguments[0]->IsString()) {
-            ShowLayer(arguments[0]->GetStringValue().ToString());
-            return true;
-        }
-    } else if (name == "hideLayer") {
-        if (arguments.size() == 1 && arguments[0]->IsString()) {
-            HideLayer(arguments[0]->GetStringValue().ToString());
-            return true;
-        }
-    } else if (name == "getLayers") {
-        std::list<std::string> layer_names = GetLayers();
-        retval = CefV8Value::CreateArray(layer_names.size());
-        int i = 0;
-        for(std::list<std::string>::iterator it = layer_names.begin(); it != layer_names.end(); ++it)
-        {
-            std::string layer_name = (*it);
-            retval->SetValue(i, CefV8Value::CreateString(layer_name));
-            i++;
-        }
-        return true;
-    }
-    return false;
 }
 
 InexorCefLayer::InexorCefLayer(std::string name, int x, int y, int width, int height, std::string url)

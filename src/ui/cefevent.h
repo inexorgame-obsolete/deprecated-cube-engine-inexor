@@ -10,6 +10,7 @@
 #include "include/wrapper/cef_closure_task.h"
 #include "include/wrapper/cef_helpers.h"
 
+#include "cefcontextprovider.h"
 #include "cefdebug.h"
 #include "ceftypes.h"
 
@@ -57,7 +58,7 @@ class InexorCefEvent
         IMPLEMENT_REFCOUNTING(InexorCefEvent);
 };
 
-class InexorCefEventManager : public CefV8Handler
+class InexorCefEventManager : public InexorCefContextProvider
 {
 
     public:
@@ -69,8 +70,11 @@ class InexorCefEventManager : public CefV8Handler
         void FireEventWithContext(const CefString& name, const InexorCefValueList& arguments);
         void FireEvent(const CefString& name, const CefV8ValueList& arguments);
 
-        // CefV8Handler
+        // InexorCefContextProvider
+        void InitializeContext();
         bool Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception);
+        bool Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& retval, CefString& exception);
+        bool Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception);
 
     private:
         std::list<InexorCefEvent*> events;
