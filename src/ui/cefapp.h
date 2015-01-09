@@ -29,7 +29,7 @@ class InexorCefApp : public CefApp,
         CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() { return this; }
         CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() { return this; }
         CefRefPtr<InexorCefLayerManager> GetLayerManager() { return layer_manager; }
-        CefRefPtr<InexorCefEventManager> GetEventManager() { return context->GetEventManager(); }
+        CefRefPtr<InexorCefEventManager> GetEventManager() { return event_manager; }
 
         // Rendering / Window Management
         void Render();
@@ -48,8 +48,11 @@ class InexorCefApp : public CefApp,
         void OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context);
 
 	private:
-        // Layer Management
+        // Layer Manager
         CefRefPtr<InexorCefLayerManager> layer_manager;
+
+        // Event Manager
+        CefRefPtr<InexorCefEventManager> event_manager;
 
         // Global mouse
         CefRefPtr<InexorCefMouse> mouse;

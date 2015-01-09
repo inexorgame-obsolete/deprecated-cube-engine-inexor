@@ -68,6 +68,43 @@ void InexorCefEvent::FireEvent(const CefV8ValueList& arguments)
     }
 }
 
+void InexorCefEventManager::InitializeContext()
+{
+    context = CefV8Value::CreateObject(this);
+    AddFunction("subscribe", this);
+    AddFunction("fire", this);
+}
+
+bool InexorCefEventManager::Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception)
+{
+    CEF_REQUIRE_RENDERER_THREAD();
+    if (name == "subscribe") {
+        if (arguments.size() == 2 && arguments[0]->IsString() && arguments[1]->IsFunction()) {
+            SubscribeEvent(arguments[0]->GetStringValue(), new InexorCefCallback(arguments[1], CefV8Context::GetCurrentContext()));
+            return true;
+        }
+    } else if (name == "fire") {
+        if (arguments.size() >= 1 && arguments[0]->IsString()) {
+            CefV8ValueList event_arguments(arguments.begin() + 1, arguments.end());
+            FireEvent(arguments[0]->GetStringValue(), event_arguments);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool InexorCefEventManager::Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& return_value, CefString& exception)
+{
+    CEF_REQUIRE_RENDERER_THREAD();
+    return false;
+}
+
+bool InexorCefEventManager::Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception)
+{
+    CEF_REQUIRE_RENDERER_THREAD();
+    return false;
+}
+
 InexorCefEvent* InexorCefEventManager::GetEvent(const CefString& name)
 {
     for(std::list<InexorCefEvent*>::iterator it = events.begin(); it != events.end(); ++it)
@@ -103,22 +140,4 @@ void InexorCefEventManager::FireEventWithContext(const CefString& name, const In
 void InexorCefEventManager::FireEvent(const CefString& name, const CefV8ValueList& arguments)
 {
     GetEvent(name)->FireEvent(arguments);
-}
-
-bool InexorCefEventManager::Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception)
-{
-    CEF_REQUIRE_RENDERER_THREAD();
-    if (name == "subscribe") {
-        if (arguments.size() == 2 && arguments[0]->IsString() && arguments[1]->IsFunction()) {
-            SubscribeEvent(arguments[0]->GetStringValue(), new InexorCefCallback(arguments[1], CefV8Context::GetCurrentContext()));
-            return true;
-        }
-    } else if (name == "fire") {
-        if (arguments.size() >= 1 && arguments[0]->IsString()) {
-            CefV8ValueList event_arguments(arguments.begin() + 1, arguments.end());
-            FireEvent(arguments[0]->GetStringValue(), event_arguments);
-            return true;
-        }
-    }
-    return false;
 }
