@@ -1,0 +1,57 @@
+<html>
+    <head>
+        <script type="text/javascript">
+function addOutput(string) {
+    var output = document.getElementById('output');
+    var html = string + '<br />' + output.innerHTML;
+    output.innerHTML = html;
+}
+function check() {
+    if(typeof inexor == 'object') addOutput('inexor == object');
+    if(typeof inexor.layer == 'object') addOutput('inexor.layer == object');
+    if(typeof inexor.layer.show == 'function') addOutput('inexor.layer.show == function');
+    if(typeof inexor.layer.hide == 'function') addOutput('inexor.layer.hide == function');
+    if(typeof inexor.event == 'object') addOutput('inexor.event == object');
+    if(typeof inexor.menu == 'object') addOutput('inexor.menu == object');
+    if(typeof inexor.console == 'object') addOutput('inexor.console == object');
+}
+function printInexor() {
+    addOutput(JSON.stringify(inexor, undefined, 2));
+}
+function printEvents() {
+    addOutput(JSON.stringify(inexor.event.list(), undefined, 2));
+}
+inexor.event.subscribe("frag", function(victim, actor) {
+	addOutput(victim + " fragged " + actor);
+});
+        </script>
+    </head>
+    <body style="background: transparent; margin: 0px; padding: 0px;">
+        <div style="position: absolute; top: 0px; left: 0px; width: 100%; height: 40%; color: white; background-color: black; opacity: 0.8; margin: 0px; padding: 0px; overflow-x: hidden; overflow-y: scroll;">
+            <div id="output-window" style="margin: 10px;"><pre><span id="output"></span></pre></div>
+        </div>
+        <div style="position: absolute; bottom: 0px; left: 0px; width: 100%; height: 160px; color: white; background-color: black; opacity: 0.8; margin: 0px; padding: 0px; overflow-x: hidden; overflow-y: hidden;">
+            <div style="margin: 5px;">
+	            <ul>
+	                <li>
+	                    Console:
+	                    <a href="javascript:inexor.layer.show('console');">Show</a>
+	                    <a href="javascript:inexor.layer.hide('console');">Hide</a>
+	                </li>
+	                <li>
+	                    Menu:
+	                    <a href="javascript:inexor.layer.show('menu');">Show</a>
+	                    <a href="javascript:inexor.layer.hide('menu');">Hide</a>
+	                </li>
+	                <li>
+	                    Inexor Object:
+	                    <a href="javascript:check();">Check</a>
+	                    <a href="javascript:printInexor();">Print inexor As JSON</a>
+                        <a href="javascript:printEvents();">Print events (JSON)</a>
+	                </li>
+	                 
+	            </ul>
+            </div>
+        </div>
+    </body>
+</html>
