@@ -29,32 +29,23 @@ inexor.console.eval = function(code) {
 
 inexor.console.expand = function() {
 	inexor.console.expanded = true;
-	var consoleOut = document.getElementById('consoleout');
-	var consoleIn = document.getElementById('consolein');
-	var consoleInputField = document.getElementById('consolein-field');
-	consoleOut.className = 'consoleout active';
-	consoleIn.className = 'consolein active';
-	consoleInputField.focus();
-	consoleIn.onkeypress = function(e) {
-		if (!e) e = window.event;
-		var keyCode = e.keyCode || e.which;
-		if (keyCode == '13') {
-			inexor.console.eval(consoleInputField.value);
+	inexor.console.consoleOut.className = 'consoleout active';
+	inexor.console.consoleIn.className = 'consolein active';
+	inexor.console.consoleInputField.focus();
+	inexor.console.consoleInputField.onkeypress = function(e) {
+		if (getKeyCode(e) == '13') {
+			inexor.console.eval(inexor.console.consoleInputField.value);
 			return false;
 		}
 	};
 }
 
 inexor.console.shrink = function() {
-	inexor.console.expanded = false;
-	var consoleOut = document.getElementById('consoleout');
-	var consoleIn = document.getElementById('consolein');
-	var consoleInputField = document.getElementById('consolein-field');
-	
-	consoleOut.className = 'consoleout';
-	consoleIn.className = 'consolein';
-	consoleInputField.blur();
-	delete consoleIn.onkeypress;
+    inexor.console.expanded = false;
+    inexor.console.consoleOut.className = 'consoleout';
+    inexor.console.consoleIn.className = 'consolein';
+    inexor.console.consoleInputField.blur();
+    delete inexor.console.consoleInputField.onkeypress;
 }
 
 inexor.console.toggle = function() {
@@ -65,6 +56,29 @@ inexor.console.toggle = function() {
 	}
 }
 
+inexor.event.subscribe("frag", function(victim, actor) {
+	inexor.console.out(actor + " fragged " + victim);
+});
+
+inexor.console.init = function() {
+    inexor.console.consoleOut = document.getElementById('consoleout');
+    inexor.console.consoleIn = document.getElementById('consolein');
+    inexor.console.consoleInputField = document.getElementById('consolein-field');
+    inexor.console.out("Console Initialized!");
+    window.onkeypress = function(e) {
+      if (getKeyCode(e) == '27') {
+        inexor.console.toggle();
+        return false;
+      }
+	};
+}
+
+window.setTimeout(function() {
+    inexor.console.init();
+}, 100);
+
+
+/** Some Debug Stuff **/
 
 
 function check() {
@@ -86,12 +100,3 @@ function printInexor() {
 function printEvents() {
 	inexor.console.out(JSON.stringify(inexor.event.list(), undefined, 2));
 }
-
-inexor.event.subscribe("frag", function(victim, actor) {
-	inexor.console.out(victim + " fragged " + actor);
-});
-
-window.setTimeout(function() {
-	inexor.console.out("Console Initialized!");
-	inexor.console.expand();
-}, 3000);
