@@ -4,7 +4,8 @@ InexorCefApp::InexorCefApp(int width, int height)
 {
     mouse = new InexorCefMouse();
     layer_manager = new InexorCefLayerManager(width, height);
-    context = new InexorCefContext(layer_manager);
+    event_manager = new InexorCefEventManager();
+    context = new InexorCefContext(layer_manager, event_manager);
     SetScreenSize(width, height);
     mouse->Show();
 }
