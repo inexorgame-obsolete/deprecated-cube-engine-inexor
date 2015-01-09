@@ -55,7 +55,7 @@ class InexorCefApp : public CefApp,
         CefRefPtr<InexorCefEventManager> event_manager;
 
         // Global mouse
-        CefRefPtr<InexorCefMouse> mouse;
+        CefRefPtr<InexorCefMouseManager> mouse_manager;
 
         // Global context
         CefRefPtr<InexorCefContext> context;

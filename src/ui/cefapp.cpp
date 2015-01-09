@@ -2,22 +2,22 @@
 
 InexorCefApp::InexorCefApp(int width, int height)
 {
-    mouse = new InexorCefMouse();
+    mouse_manager = new InexorCefMouseManager();
     layer_manager = new InexorCefLayerManager(width, height);
     event_manager = new InexorCefEventManager();
-    context = new InexorCefContext(layer_manager, event_manager);
+    context = new InexorCefContext(layer_manager, event_manager, mouse_manager);
     SetScreenSize(width, height);
-    mouse->Show();
+    mouse_manager->Show();
 }
 
 void InexorCefApp::Render()
 {
     layer_manager->Render();
-    mouse->Render();
+    mouse_manager->Render();
 }
 
 void InexorCefApp::SetScreenSize(int width, int height) {
-    mouse->SetMax(width, height);
+    mouse_manager->SetMax(width, height);
     layer_manager->SetScreenSize(width, height);
 }
 
@@ -34,7 +34,7 @@ void InexorCefApp::SendMouseClickEvent(const CefMouseEvent& event, CefBrowserHos
 void InexorCefApp::SendMouseMoveEvent(const CefMouseEvent& event, bool mouseLeave)
 {
     layer_manager->SendMouseMoveEvent(event, mouseLeave);
-    mouse->Update(event);
+    mouse_manager->Update(event);
 }
 
 void InexorCefApp::SendMouseWheelEvent(const CefMouseEvent& event, int deltaX, int deltaY)

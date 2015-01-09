@@ -1,8 +1,9 @@
 #include "cefcontext.h"
 
-InexorCefContext::InexorCefContext(CefRefPtr<InexorCefLayerManager> layer_manager, CefRefPtr<InexorCefEventManager> event_manager) {
+InexorCefContext::InexorCefContext(CefRefPtr<InexorCefLayerManager> layer_manager, CefRefPtr<InexorCefEventManager> event_manager, CefRefPtr<InexorCefMouseManager> mouse_manager) {
     this->layer_manager = layer_manager;
     this->event_manager = event_manager;
+    this->mouse_manager = mouse_manager;
 }
 
 void InexorCefContext::InitializeContext()
