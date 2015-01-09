@@ -28,7 +28,7 @@ a {
 }
 
 .consolein.active {
-    display: inline;
+    display: block;
 	position: absolute;
 	bottom: 0px;
 	left: 0px;
@@ -44,11 +44,12 @@ a {
 }
 
 #consolein-field {
-	width: 100%;
+    width: 100%;
     height: 40px;
     color: black;
     font-size: large;
-	background-color: white;
+    background-color: white;
+    border: 2px solid #ffaaaa;
     opacity: 0.8;
     margin: 0px;
     padding: 0px;
