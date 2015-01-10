@@ -98,6 +98,42 @@ struct JSON
         return c;
     }
 
+    float getfloat(const char *key)  //Get float of Object. Used if floatvalue is expected. otherwise returns -1.0f
+    {
+        JSON *sub = getitem(key);
+        return sub ? sub->valuefloat : -1.0f;
+    }
+
+    float getfloat(int item)        //Get float of Array. Used if floatvalue is expected. otherwise returns -1.0f
+    {
+        JSON *sub = getitem(item);
+        return sub ? sub->valuefloat : -1.0f;
+    }
+
+    int getint(const char *key)     //Get int of Object. Used if value is expected to be int. otherwise returns -1
+    {
+        JSON *sub = getitem(key);
+        return sub ? sub->valueint : -1;
+    }
+
+    int getint(int item)            //Get int of Array. Used if value is expected to be int. otherwise returns -1
+    {
+        JSON *sub = getitem(item);
+        return sub ? sub->valueint : -1;
+    }
+
+    const char *getstring(const char *key)     //Get string of Object. Used if value is expected to be a string. otherwise returns NULL (be careful!)
+    {
+        JSON *sub = getitem(key);
+        return sub ? sub->valuestring : NULL;
+    }
+
+    const char *getstring(int item)            //Get string of Array. Used if value is expected to be string. otherwise returns NULL (be careful!)
+    {
+        JSON *sub = getitem(item);
+        return sub ? sub->valuestring : NULL;
+    }
+
     void additem(JSON *item)                      //add item to Array
     {
         //if(type != JSON_ARRAY) return; //invalid JSON
