@@ -37,30 +37,6 @@ void InexorCefApp::SetScreenSize(int width, int height) {
     layer_manager->SetScreenSize(width, height);
 }
 
-/*
-void InexorCefApp::SendKeyEvent(CefKeyEvent event)
-{
-    event.character = keyboard_manager->SDL2toJavaScript(event.character);
-    layer_manager->SendKeyEvent(event);
-}
-
-void InexorCefApp::SendMouseClickEvent(const CefMouseEvent& event, CefBrowserHost::MouseButtonType type, bool mouseUp, int clickCount)
-{
-    layer_manager->SendMouseClickEvent(event, type, mouseUp, clickCount);
-}
-
-void InexorCefApp::SendMouseMoveEvent(const CefMouseEvent& event, bool mouseLeave)
-{
-    layer_manager->SendMouseMoveEvent(event, mouseLeave);
-    mouse_manager->Update(event);
-}
-
-void InexorCefApp::SendMouseWheelEvent(const CefMouseEvent& event, int deltaX, int deltaY)
-{
-    layer_manager->SendMouseWheelEvent(event, deltaX, deltaY);
-}
-*/
-
 void InexorCefApp::OnContextInitialized()
 {
     CEF_REQUIRE_UI_THREAD();
