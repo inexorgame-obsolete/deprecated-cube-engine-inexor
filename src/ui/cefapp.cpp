@@ -8,6 +8,7 @@ InexorCefApp::InexorCefApp(int width, int height)
     event_manager = new InexorCefEventManager();
     console = new InexorCefConsole();
     menu = new InexorCefMenu();
+    network_manager = new InexorCefNetworkManager();
     context_manager = new InexorCefContextManager();
     layer_manager->AddLayerProvider(console);
     layer_manager->AddLayerProvider(menu);
@@ -17,6 +18,7 @@ InexorCefApp::InexorCefApp(int width, int height)
     context_manager->AddSubContext(event_manager);
     context_manager->AddSubContext(console);
     context_manager->AddSubContext(menu);
+    context_manager->AddSubContext(network_manager);
     SetScreenSize(width, height);
     mouse_manager->Show();
 }
