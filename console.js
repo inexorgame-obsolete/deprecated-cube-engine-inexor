@@ -27,6 +27,11 @@ inexor.console.expanded = false;
 inexor.console.follow = false;
 
 /**
+ * If true, the console debug is enabled.
+ */
+inexor.console.debug = false;
+
+/**
  * Redirect the native browser console, print in output window and
  * redirect back into the native browser console.
  */
@@ -127,7 +132,9 @@ var debugKeyEvent = function(t, e) {
    	document.getElementById('keys-' + t + '-keycode').value = e.keyCode;
    	document.getElementById('keys-' + t + '-charcode').value = e.charCode;
    	document.getElementById('keys-' + t + '-which').value = e.which;
-   	inexor.console.out(t + "," + e.keyCode + "," + e.charCode + "," + e.which);
+	if (inexor.console.debug) {
+	   	inexor.console.out(t + "," + e.keyCode + "," + e.charCode + "," + e.which);
+	}
 };
 
 /**
@@ -135,7 +142,6 @@ var debugKeyEvent = function(t, e) {
  */
 window.onkeydown = function(e) {
 	debugKeyEvent("onkeydown", e);
-// window.onkeypress = function(e) {
     if (getKeyCode(e) == '27') {
         inexor.console.toggle();
         return false;
