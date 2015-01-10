@@ -28,6 +28,7 @@ int screenw = 0, screenh = 0, desktopw = 0, desktoph = 0;
 int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1;
 int initing = NOT_INITING;
 
+CefRefPtr<InexorCefApp> cef_app;
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // game exit
@@ -54,6 +55,8 @@ void cleanup()
 // normal game quit
 void quit()
 {
+    cef_app->Destroy();
+    // CefShutdown();
     writeinitcfg();
     writeservercfg();
 	writehistory();
@@ -910,9 +913,6 @@ static void checkmousemotion(int &dx, int &dy)
     }
 }
 
-CefRefPtr<InexorCefApp> cef_app;
-VAR(hudinput, 0, 1, 1);
-
 // SDL input process handler also takes care of program exit
 void checkinput()
 {
@@ -939,21 +939,8 @@ void checkinput()
 
             case SDL_KEYDOWN:
             case SDL_KEYUP:
+                cef_app->GetKeyboardManager()->SendKeyEvent(event);
                 if(keyrepeatmask || !event.key.repeat) {
-                	if (hudinput) {
-                		CefKeyEvent keyEvent;
-            			keyEvent.modifiers = event.key.keysym.mod;
-                		if (event.key.state == SDL_PRESSED) {
-                    		keyEvent.windows_key_code = event.key.keysym.sym;
-                    		keyEvent.native_key_code = event.key.keysym.sym;
-                		} else if (event.key.state == SDL_RELEASED) {
-                			keyEvent.type = KEYEVENT_CHAR;
-                			keyEvent.character = event.key.keysym.sym;
-                        }
-                		cef_app->SendKeyEvent(keyEvent);
-                	} else {
-                		// processkey(event.key.keysym.sym, event.key.state==SDL_PRESSED);
-                	}
                     processkey(event.key.keysym.sym, event.key.state==SDL_PRESSED);
                 }
                 break;
@@ -1010,11 +997,7 @@ void checkinput()
                     checkmousemotion(dx, dy);
                     if(!g3d_movecursor(dx, dy)) mousemove(dx, dy);
                     mousemoved = true;
-                    // CEF Mouse Movement
-                    CefMouseEvent mouse_move_event;
-                    mouse_move_event.x = event.motion.x;
-                    mouse_move_event.y = event.motion.y;
-                    cef_app->SendMouseMoveEvent(mouse_move_event, false);
+                    cef_app->GetMouseManager()->SendMouseMoveEvent(event);
                 }
                 else if(shouldgrab) inputgrab(grabinput = true);
                 break;
@@ -1028,18 +1011,7 @@ void checkinput()
 #endif
                 {
             	    processkey(-event.button.button - keycodeshift, event.button.state==SDL_PRESSED);
-                    // CEF Mouse Click
-                    CefMouseEvent mouse_click_event;
-                    mouse_click_event.x = event.motion.x;
-                    mouse_click_event.y = event.motion.y;
-                    mouse_click_event.modifiers = 0;
-                    CefBrowserHost::MouseButtonType mouse_button_type = (event.button.button == 1 ? MBT_LEFT : ( event.button.button == 3 ? MBT_RIGHT : MBT_MIDDLE));
-                    cef_app->SendMouseClickEvent(
-                        mouse_click_event,
-                        mouse_button_type,
-                        event.button.state != SDL_PRESSED,
-                        1
-                    );
+            	    cef_app->GetMouseManager()->SendMouseClickEvent(event);
                     break;
                 }
             case SDL_MOUSEWHEEL:
@@ -1048,16 +1020,7 @@ void checkinput()
                     else if(event.wheel.y < 0) { processkey(-5, true); processkey(-5, false); }
                     if(event.wheel.x > 0) { processkey(-35, true); processkey(-35, false); }
                     else if(event.wheel.x < 0) { processkey(-36, true); processkey(-36, false); }
-                    // CEF mouse wheel
-                    CefMouseEvent mouse_wheel_event;
-                    mouse_wheel_event.x = event.motion.x;
-                    mouse_wheel_event.y = event.motion.y;
-                    mouse_wheel_event.modifiers = 1;
-                    cef_app->SendMouseWheelEvent(
-                        mouse_wheel_event,
-                        event.wheel.x > 0 ? 20 : (event.wheel.x < 0 ? -20 : 0),
-                        event.wheel.y > 0 ? 20 : (event.wheel.y < 0 ? -20 : 0)
-                    );
+                    cef_app->GetMouseManager()->SendMouseWheelEvent(event);
                     break;
                 }
         }
@@ -1498,7 +1461,6 @@ int main(int argc, char **argv)
 
         renderedframe = inbetweenframes = true;
     }
-    
     CefShutdown();
 
     ASSERT(0);

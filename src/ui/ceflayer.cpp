@@ -37,3 +37,19 @@ void InexorCefLayer::SetIsAcceptingInput(bool is_accepting_input)
 {
 	this->is_accepting_input = is_accepting_input;
 }
+
+void InexorCefLayer::Destroy()
+{
+    logoutf("InexorCefLayer::Destroy()");
+    client_handler->DoClose(browser);
+}
+
+CefRefPtr<InexorCefClientHandler> InexorCefLayer::GetClientHandler()
+{
+    return client_handler;
+}
+
+CefRefPtr<InexorCefRenderHandler> InexorCefLayer::GetRenderHandler()
+{
+    return render_handler;
+}

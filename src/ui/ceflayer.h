@@ -12,11 +12,6 @@
 
 extern void logoutf(const char *fmt, ...);
 
-/*
-#include "include/cef_browser.h"
-#include "include/cef_command_line.h"
-*/
-
 class InexorCefLayer
 {
 
@@ -27,9 +22,11 @@ class InexorCefLayer
         std::string GetUrl() { return url; }
         InexorCefWindowInfo GetWindowInfo() { return window_info; }
         CefBrowserSettings GetBrowserSettings() { return browser_settings; };
-        CefRefPtr<InexorCefClientHandler> GetClientHandler() { return client_handler; };
-        CefRefPtr<InexorCefRenderHandler> GetRenderHandler() { return render_handler; };
+        CefRefPtr<InexorCefClientHandler> GetClientHandler();
+        CefRefPtr<InexorCefRenderHandler> GetRenderHandler();
         CefRefPtr<CefBrowser> GetBrowser() { return browser; };
+
+        void Destroy();
 
         bool IsVisible() { return is_visible; };
         void SetVisibility(bool is_visible);
