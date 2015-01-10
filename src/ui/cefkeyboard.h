@@ -181,7 +181,6 @@ class InexorCefKeyboardManager : public InexorCefContextProvider,
     public:
         InexorCefKeyboardManager(CefRefPtr<InexorCefLayerManager> layer_manager);
 
-        int SDL2toJavaScript(SDL_Event event);
         void SendKeyEvent(SDL_Event event);
 
         // InexorCefContextProvider
