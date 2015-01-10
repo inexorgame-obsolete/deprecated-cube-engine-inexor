@@ -3,9 +3,6 @@
 /.project
 /.cproject
 
-bin
-bin64
-bin_osx
 packages
 data
 config
