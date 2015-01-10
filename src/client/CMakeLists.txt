@@ -108,6 +108,7 @@ set(CLIENT_SOURCES_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefdebug
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefevent
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefeventmanager
+    ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefkeyboard
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/ceflayer
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/ceflayermanager
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefmenu
