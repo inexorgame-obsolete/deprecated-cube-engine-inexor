@@ -2,6 +2,9 @@
 
 namespace game
 {
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	// general game functionality (spawn, attack, spectate...)
+	
     fpsent *player1 = NULL; // our client
     vector<fpsent *> players; // other clients
 
@@ -101,7 +104,8 @@ namespace game
         return d;
     }
 
-	// Send "I would like to spawn" to server
+	// Send "I would like to spawn" to server in multiplayer
+	// try to spawn yourself in singleplayer
     void respawnself()
     {
         if(ispaused()) return;
@@ -255,8 +259,15 @@ namespace game
         }
     }
 
-    VARFP(slowmosp, 0, 0, 1, { if(m_sp && !slowmosp) server::forcegamespeed(100); }); 
+	// ?
+    VARFP(slowmosp, 0, 0, 1, 
+	{ 
+		if(m_sp && !slowmosp) server::forcegamespeed(100); 
+	}); 
 
+	// refill health slowly in slowmotion sp game mode
+	// (singleplayer only, check game mode slowmosp)
+	// called by updateworld only
     void checkslowmo()
     {
         static int lastslowmohealth = 0;
@@ -268,7 +279,8 @@ namespace game
         }
     }
 
-    void updateworld()        // main game update loop
+	// main game update loop
+    void updateworld()        
     {
         if(!maptime) { maptime = lastmillis; maprealtime = totalmillis; return; }
         if(!curtime) { gets2c(); if(player1->clientnum>=0) c2sinfo(); return; }
@@ -311,6 +323,9 @@ namespace game
         if(player1->clientnum>=0) c2sinfo();   // do this last, to reduce the effective frame lag
     }
 
+	// spawn yourself im map, also called for monsters in singleplayer
+	// of course not used for other players in multiplayer - everyone 
+	// determins his spawn point for himself.
     void spawnplayer(fpsent *d)   
     {
         if(cmode) cmode->pickspawn(d);
@@ -324,8 +339,11 @@ namespace game
         else d->state = CS_ALIVE;
     }
 
+	// time interval until next spawen is possible
+	// in local singleplayer (botmatch e.g.)
     VARP(spawnwait, 0, 0, 1000);
 
+	// spawn myself in sp and dmsp game mode (singleplayer only)
     void respawn(int gamemode = NULL)
     {
         if(player1->state==CS_DEAD)
@@ -339,7 +357,12 @@ namespace game
                 return;
             }
             if(lastmillis < player1->lastpain + spawnwait) return;
-            if(m_dmsp) { changemap(clientmap, gamemode); return; }    // if we die in SP we try the same map again
+            if(m_dmsp) 
+			{
+				// if we die in SP we try the same map again
+				changemap(clientmap, gamemode); 
+				return; 
+			}
             respawnself();
             if(m_classicsp)
             {
@@ -349,7 +372,9 @@ namespace game
         }
     }
 
-    // inputs
+
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	// mutiplayer game functions
 
     void doattack(bool on)
     {
@@ -358,6 +383,7 @@ namespace game
     }
 
 	// check if I am allowed to jump at the moment
+	// called every time before jump command is executed
     bool canjump()
     {
         if(!intermission) respawn(gamemode);
@@ -515,8 +541,7 @@ namespace game
     ICOMMAND(gettotaldamage, "", (), intret(player1->totaldamage));
     ICOMMAND(gettotalshots, "", (), intret(player1->totalshots));
 
-
-
+	// other clients connected to this server
     vector<fpsent *> clients;
 
     fpsent *newclient(int cn)   // ensure valid entity
@@ -540,7 +565,8 @@ namespace game
         return clients[cn];
     }
 
-    fpsent *getclient(int cn)   // ensure valid entity
+	// ensure valid client entity
+    fpsent *getclient(int cn)   
     {
         if(cn == player1->clientnum) return player1;
         return clients.inrange(cn) ? clients[cn] : NULL;

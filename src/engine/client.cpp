@@ -185,6 +185,7 @@ void trydisconnect(bool local)
     else if(curpeer)
     {
         conoutf("attempting to disconnect...");
+		// try to disconnect synchronously for a while then disconnect asynchronously
         disconnect(!discmillis);
     }
     else if(local && haslocalclients()) localdisconnect();
