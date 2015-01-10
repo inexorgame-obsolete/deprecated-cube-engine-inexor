@@ -15,6 +15,7 @@
 #include "cefcontextmanager.h"
 #include "cefdebug.h"
 #include "cefeventmanager.h"
+#include "cefkeyboard.h"
 #include "ceflayermanager.h"
 #include "cefmenu.h"
 #include "cefmouse.h"
@@ -28,6 +29,8 @@ class InexorCefApp : public CefApp,
     public:
         InexorCefApp(int width, int height);
 
+        void Destroy();
+
         // Getters for handlers
         CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() { return this; }
         CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() { return this; }
@@ -35,18 +38,13 @@ class InexorCefApp : public CefApp,
         CefRefPtr<InexorCefLayerManager> GetLayerManager() { return layer_manager; }
         CefRefPtr<InexorCefEventManager> GetEventManager() { return event_manager; }
         CefRefPtr<InexorCefMouseManager> GetMouseManager() { return mouse_manager; }
+        CefRefPtr<InexorCefKeyboardManager> GetKeyboardManager() { return keyboard_manager; }
         CefRefPtr<InexorCefConsole> GetConsole() { return console; }
         CefRefPtr<InexorCefMenu> GetMenu() { return menu; }
 
         // Rendering / Window Management
         void Render();
         void SetScreenSize(int width, int height);
-
-        // Input events
-        void SendKeyEvent(CefKeyEvent event);
-        void SendMouseClickEvent(const CefMouseEvent& event, CefBrowserHost::MouseButtonType type, bool mouseUp, int clickCount);
-        void SendMouseMoveEvent(const CefMouseEvent& event, bool mouseLeave);
-        void SendMouseWheelEvent(const CefMouseEvent& event, int deltaX, int deltaY);
 
         // CefBrowserProcessHandler
         void OnContextInitialized();
@@ -65,8 +63,11 @@ class InexorCefApp : public CefApp,
         // Event Manager
         CefRefPtr<InexorCefEventManager> event_manager;
 
-        // Global mouse
+        // Mouse Manager
         CefRefPtr<InexorCefMouseManager> mouse_manager;
+
+        // Keyboard Manager
+        CefRefPtr<InexorCefKeyboardManager> keyboard_manager;
 
         // Console
         CefRefPtr<InexorCefConsole> console;
