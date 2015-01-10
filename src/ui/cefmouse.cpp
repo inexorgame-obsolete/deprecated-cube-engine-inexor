@@ -105,6 +105,7 @@ void InexorCefMouseManager::SendMouseMoveEvent(SDL_Event event)
     CefMouseEvent mouse_move_event;
     mouse_move_event.x = event.motion.x;
     mouse_move_event.y = event.motion.y;
+    Update(mouse_move_event);
     layer_manager->SendMouseMoveEvent(mouse_move_event, false);
 }
 
