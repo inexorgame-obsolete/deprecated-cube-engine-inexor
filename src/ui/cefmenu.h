@@ -9,12 +9,15 @@
 extern void logoutf(const char *fmt, ...);
 
 class InexorCefMenu : public InexorCefContextProvider,
-                         public InexorCefLayerProvider
+                      public InexorCefLayerProvider
 {
 
     public:
-        InexorCefMenu() {};
+        InexorCefMenu() : is_visible(false) {};
         ~InexorCefMenu() {};
+
+        void Show() { SetVisibility(true); };
+        void Hide() { SetVisibility(false); };
 
         // InexorCefContextProvider
         void InitializeContext();
@@ -26,13 +29,14 @@ class InexorCefMenu : public InexorCefContextProvider,
         // InexorCefLayerProvider
         std::string GetLayerName() { return "menu"; };
         std::string GetUrl() { return "http://gitdemo.inexor.org/menuprototype/"; };
-        bool GetVisibility() { return false; };
-        bool GetAcceptingInput() { return false; };
-        bool GetFocus() { return false; };
+        bool GetVisibility() { return is_visible; };
+        bool GetAcceptingInput() { return is_visible; };
+        bool GetFocus() { return is_visible; };
 
     private:
-        //
+        bool is_visible;
 
+        void SetVisibility(bool visible);
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(InexorCefMenu);
