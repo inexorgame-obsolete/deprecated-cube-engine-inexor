@@ -111,6 +111,7 @@ set(CLIENT_SOURCES_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefkeyboard
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/ceflayer
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/ceflayermanager
+    ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefnetwork
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefmenu
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefmouse
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefrenderhandler
