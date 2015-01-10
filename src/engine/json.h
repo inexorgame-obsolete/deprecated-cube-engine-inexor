@@ -24,7 +24,7 @@ struct JSON
     int valueint;                   // The item's number, if type==JSON_Number
     float valuefloat;               // The item's number, if type==JSON_Number
 
-    char *name;                     // The item's name string, if this item is the child of, or is in the list of subitems of an object.
+    char *name;                     // The item's name string, if the item in an object this is equivalent to the key. In an array its the string of the value!
 
     JSON() : next(NULL), prev(NULL), child(NULL), type(0), valuestring(NULL), valueint(0), valuefloat(0), name(NULL)  { }
 
