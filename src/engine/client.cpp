@@ -192,10 +192,13 @@ void trydisconnect(bool local)
     else conoutf("not connected");
 }
 
+// commands to establish and destroy network connections
 ICOMMAND(connect, "sis", (char *name, int *port, char *pw), connectserv(name, *port, pw));
-ICOMMAND(lanconnect, "is", (int *port, char *pw), connectserv(NULL, *port, pw));
 COMMAND(reconnect, "s");
 ICOMMAND(disconnect, "b", (int *local), trydisconnect(*local != 0));
+
+// see startlistenserver command to start local servers in game
+ICOMMAND(lanconnect, "is", (int *port, char *pw), connectserv(NULL, *port, pw));
 ICOMMAND(localconnect, "", (), { if(!isconnected()) localconnect(); });
 ICOMMAND(localdisconnect, "", (), { if(haslocalclients()) localdisconnect(); });
 

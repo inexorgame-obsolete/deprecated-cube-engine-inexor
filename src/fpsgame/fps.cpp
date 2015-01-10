@@ -430,6 +430,7 @@ namespace game
         else playsound(S_PAIN1+rnd(5), &d->o);
     }
 
+	// show score at death
     VARP(deathscore, 0, 1, 1);
 
     void deathstate(fpsent *d, bool restore)
@@ -572,6 +573,7 @@ namespace game
         return clients.inrange(cn) ? clients[cn] : NULL;
     }
 
+	// notify my client to change data when another clients disconnect
     void clientdisconnected(int cn, bool notify)
     {
         if(!clients.inrange(cn)) return;
@@ -593,11 +595,14 @@ namespace game
         cleardynentcache();
     }
 
+	// delete all clients (used whenever I disconnect e.g.)
+	// disconnect notification of other players when I disconnect are optional
     void clearclients(bool notify)
     {
         loopv(clients) if(clients[i]) clientdisconnected(i, notify);
     }
 
+	// initialize new client and add him to client vector
     void initclient()
     {
         player1 = spawnstate(new fpsent);
@@ -605,10 +610,10 @@ namespace game
         players.add(player1);
     }
 
-
-
+	// show game mode info during map load
     VARP(showmodeinfo, 0, 1, 1);
 
+	// clear all game data for session/new map
     void startgame()
     {
         clearmovables();
@@ -665,10 +670,11 @@ namespace game
         disablezoom();
         lasthit = 0;
 
-        if(identexists("mapstart")) execute("mapstart");
+        if(identexists("mapstart")) execute("mapstart"); // execute cube script map start macro
     }
 
-    void startmap(const char *name)   // called just after a map load
+	// called just after a map load
+    void startmap(const char *name)   
     {
         ai::savewaypoints();
         ai::clearwaypoints(true);
@@ -682,20 +688,24 @@ namespace game
         sendmapinfo();
     }
 
+	// return game mode info text depending on game mode
     const char *getmapinfo()
     {
         return showmodeinfo && m_valid(gamemode) ? gamemodes[gamemode - STARTGAMEMODE].info : NULL;
     }
 
+	// trigger sound effects depending on the material you enter
     void physicstrigger(physent *d, bool local, int floorlevel, int waterlevel, int material)
     {
         if(d->type==ENT_INANIMATE) return;
         if     (waterlevel>0) { if(material!=MAT_LAVA) playsound(S_SPLASH1, d==player1 ? NULL : &d->o); }
         else if(waterlevel<0) playsound(material==MAT_LAVA ? S_BURN : S_SPLASH2, d==player1 ? NULL : &d->o);
+		// only send server message if I entered the water and fpsent d is not a bot
         if     (floorlevel>0) { if(d==player1 || d->type!=ENT_PLAYER || ((fpsent *)d)->ai) msgsound(S_JUMP, d); }
         else if(floorlevel<0) { if(d==player1 || d->type!=ENT_PLAYER || ((fpsent *)d)->ai) msgsound(S_LAND, d); }
     }
 
+	// push monsters (or objects) together when they hit walls or other objects
     void dynentcollide(physent *d, physent *o, const vec &dir)
     {
         switch(d->type)
@@ -705,6 +715,7 @@ namespace game
         }
     }
 
+	// play sound and send sound notification to server
     void msgsound(int n, physent *d)
     {
         if(!d || d==player1)
@@ -720,8 +731,14 @@ namespace game
         }
     }
 
-    int numdynents() { return players.length()+monsters.length()+movables.length(); }
+	// return the sum of dynamic entities currently in scene
+    int numdynents()
+	{
+		return players.length()+monsters.length()+movables.length();
+	}
 
+	// iterate through all dynamic entities and return the dyn. entity with index [i]
+	// returned entities could be players, monsters or movables
     dynent *iterdynents(int i)
     {
         if(i<players.length()) return players[i];
@@ -732,10 +749,15 @@ namespace game
         return NULL;
     }
 
-
 	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	// player name coloring
 
+	// color team names in frag notifications in my 
+	// game console in red/blue, depending on my team
+    VARP(teamcolortext, 0, 1, 1);
+
+    static string cname[3];
+    static int cidx = 0;
 
     bool duplicatename(fpsent *d, const char *name = NULL, const char *alt = NULL)
     {
@@ -744,9 +766,6 @@ namespace game
         loopv(players) if(d!=players[i] && !strcmp(name, players[i]->name)) return true;
         return false;
     }
-
-    static string cname[3];
-    static int cidx = 0;
 
     const char *colorname(fpsent *d, const char *name, const char *prefix, const char *suffix, const char *alt)
     {
@@ -761,8 +780,6 @@ namespace game
         }
         return name;
     }
-
-    VARP(teamcolortext, 0, 1, 1);
 
     const char *teamcolorname(fpsent *d, const char *alt)
     {
