@@ -23,6 +23,7 @@ class InexorCefSettings : public CefSettings {
 	        command_line_args_disabled = true;
 	        log_severity = LOGSEVERITY_INFO;
 	        single_process = true;
+	        remote_debugging_port = 13012;
 	        char base_path[FILENAME_MAX];
 	        GetCurrentDir(base_path, sizeof(base_path));
 	        CefString(&resources_dir_path).FromString(std::string(base_path) + "/src/libraries/cef3/Resources");
