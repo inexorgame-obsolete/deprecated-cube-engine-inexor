@@ -17,6 +17,7 @@
 #include "cefeventmanager.h"
 #include "cefkeyboard.h"
 #include "ceflayermanager.h"
+#include "cefnetwork.h"
 #include "cefmenu.h"
 #include "cefmouse.h"
 #include "cefwindowinfo.h"
@@ -39,6 +40,7 @@ class InexorCefApp : public CefApp,
         CefRefPtr<InexorCefEventManager> GetEventManager() { return event_manager; }
         CefRefPtr<InexorCefMouseManager> GetMouseManager() { return mouse_manager; }
         CefRefPtr<InexorCefKeyboardManager> GetKeyboardManager() { return keyboard_manager; }
+        CefRefPtr<InexorCefNetworkManager> GetNetworkManager() { return network_manager; }
         CefRefPtr<InexorCefConsole> GetConsole() { return console; }
         CefRefPtr<InexorCefMenu> GetMenu() { return menu; }
 
@@ -74,6 +76,9 @@ class InexorCefApp : public CefApp,
 
         // Menu
         CefRefPtr<InexorCefMenu> menu;
+
+        // Network Manager
+        CefRefPtr<InexorCefNetworkManager> network_manager;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(InexorCefApp);
