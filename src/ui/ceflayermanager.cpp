@@ -14,6 +14,7 @@ void InexorCefLayerManager::InitializeLayers()
         layer->SetVisibility(layer_provider->GetVisibility());
         layer->SetIsAcceptingInput(layer_provider->GetAcceptingInput());
         layer->SetFocus(layer_provider->GetFocus());
+        layer_provider->SetLayer(layer);
     }
 }
 
