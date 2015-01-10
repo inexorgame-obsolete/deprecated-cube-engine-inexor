@@ -759,6 +759,7 @@ namespace game
     static string cname[3];
     static int cidx = 0;
 
+	// are there any duplicate names in our client list?
     bool duplicatename(fpsent *d, const char *name = NULL, const char *alt = NULL)
     {
         if(!name) name = d->name;
@@ -767,6 +768,8 @@ namespace game
         return false;
     }
 
+	// add colored client number in [] brackets behind the name 
+	// in case another player has the same name (duplicated name)
     const char *colorname(fpsent *d, const char *name, const char *prefix, const char *suffix, const char *alt)
     {
         if(!name) name = alt && d == player1 ? alt : d->name; 
@@ -781,9 +784,10 @@ namespace game
         return name;
     }
 
+	// color name depending on my team in red or blue
     const char *teamcolorname(fpsent *d, const char *alt)
     {
-        if(!teamcolortext || !m_teammode) return colorname(d, NULL, "", "", alt);
+        if(!teamcolortext || !m_teammode) return colorname(d, NULL, "", "", alt); // do not color names if no team mode or color mode is disabled
         return colorname(d, NULL, isteam(d->team, player1->team) ? "\fs\f1" : "\fs\f3", "\fr", alt); 
     }
 
@@ -807,8 +811,7 @@ namespace game
 	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	// 
 
-
-	// kill yourself (in game only)
+	// suicide your player
     void suicide(physent *d)
     {
         if(d==player1 || (d->type==ENT_PLAYER && ((fpsent *)d)->ai))
@@ -827,12 +830,13 @@ namespace game
     }
     ICOMMAND(suicide, "", (), suicide(player1));
 
-	// checks if minimap is required in this game mode
+	// checks if minimap is required (is one of these game modes is active?)
     bool needminimap() 
 	{ 
 		return m_ctf || m_protect || m_hold || m_capture || m_collect|| m_bomb; 
 	}
 
+	// draw (blit) item (weapon, flags, armours, quad) texture on screen at x,y
     void drawicon(int icon, float x, float y, float sz)
     {
         settexture("packages/hud/items.png");
@@ -844,6 +848,7 @@ namespace game
         glTexCoord2f(tx+tsz, ty+tsz); glVertex2f(x+sz, y+sz);
         glEnd();
     }
+
 
     float abovegameplayhud(int w, int h)
     {
