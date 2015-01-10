@@ -13,6 +13,8 @@ enum {
     JSON_OBJECT                     //unordered list { }
 }; // JSON types
 
+extern char *emptystring();
+
 struct JSON
 {
     JSON *next, *prev;   // next/prev allow you to walk array/object chains.
@@ -26,13 +28,13 @@ struct JSON
 
     char *name;                     // The item's name string, if the item in an object this is equivalent to the key. In an array its the string of the value!
 
-    JSON() : next(NULL), prev(NULL), child(NULL), type(0), valuestring(NULL), valueint(0), valuefloat(0), name(NULL)  { }
+    JSON() : next(NULL), prev(NULL), child(NULL), type(0), valuestring(emptystring()), valueint(0), valuefloat(0), name(NULL)  { }
 
     JSON(JSON *old)       //Copy constructor
     {
         type = old->type;
         valueint = old->valueint; valuefloat = old->valuefloat;
-        if(old->valuestring) valuestring = newstring(old->valuestring);
+        if(old->valuestring && old->valuestring[0]) valuestring = newstring(old->valuestring);
         if(old->name) name = newstring(old->name);
 
         //copy children:
@@ -54,7 +56,7 @@ struct JSON
     ~JSON()
     {
         DELETEA(name);
-        DELETEA(valuestring);
+        if(valuestring && valuestring[0]) delete valuestring;
         JSON *c = child;
         while (c)
         {
@@ -122,16 +124,16 @@ struct JSON
         return sub ? sub->valueint : -1;
     }
 
-    const char *getstring(const char *key)     //Get string of Object. Used if value is expected to be a string. otherwise returns NULL (be careful!)
+    const char *getstring(const char *key)     //Get string of Object. Used if value is expected to be a string. otherwise returns ""
     {
         JSON *sub = getitem(key);
-        return sub ? sub->valuestring : NULL;
+        return sub ? sub->valuestring : emptystring();
     }
 
-    const char *getstring(int item)            //Get string of Array. Used if value is expected to be string. otherwise returns NULL (be careful!)
+    const char *getstring(int item)            //Get string of Array. Used if value is expected to be string. otherwise returns ""
     {
         JSON *sub = getitem(item);
-        return sub ? sub->valuestring : NULL;
+        return sub ? sub->valuestring : emptystring();
     }
 
     void additem(JSON *item)                      //add item to Array
