@@ -22,6 +22,7 @@ class InexorCefLayerManager : public InexorCefContextProvider
 
         // Layers
         void InitializeLayers();
+        void DestroyLayers();
         void AddLayerProvider(InexorCefLayerProvider* layer_provider);
 
         InexorCefLayer* CreateLayer(std::string name, std::string url);

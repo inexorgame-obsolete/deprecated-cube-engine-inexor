@@ -1,9 +1,10 @@
 #ifndef _CEF_CLIENT_HANDLER_H
 #define _CEF_CLIENT_HANDLER_H
 
-#include "cefrenderhandler.h"
 #include "include/cef_client.h"
 #include "include/wrapper/cef_helpers.h"
+
+#include "cefrenderhandler.h"
 
 class InexorCefClientHandler : public CefClient,
                                public CefLifeSpanHandler,
@@ -13,7 +14,7 @@ class InexorCefClientHandler : public CefClient,
                                public CefRequestContextHandler
 {
     public:
-        InexorCefClientHandler(InexorCefRenderHandler *renderHandler); // : m_renderHandler(renderHandler) { };
+        InexorCefClientHandler(InexorCefRenderHandler *renderHandler);
         virtual ~InexorCefClientHandler();
 
         CefRefPtr<CefBrowser> GetBrowser() { return browser; }

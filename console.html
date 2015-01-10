@@ -15,21 +15,49 @@
         <div id="consolesidebar" class="consolesidebar">
             <div style="margin: 5px;">
 	            <ul>
+                    <li>
+                        <h4>Keys</h4>
+                        <table style="font-size: 8px;">
+                            <tr>
+                                <th></th>
+                                <th>onKeyDown</th>
+                                <th>onKeyPress</th>
+                                <th>onKeyUp</th>
+                            </tr>
+                            <tr>
+                                <td><strong>keyCode</strong></td>
+                                <td><input id="keys-onkeydown-keycode" type="text" size="3" /></td>
+                                <td><input id="keys-onkeypress-keycode" type="text" size="3" /></td>
+                                <td><input id="keys-onkeyup-keycode" type="text" size="3" /></td>
+                            </tr>
+                            <tr>
+                                <td><strong>charCode</strong></td>
+                                <td><input id="keys-onkeydown-charcode" type="text" size="3" /></td>
+                                <td><input id="keys-onkeypress-charcode" type="text" size="3" /></td>
+                                <td><input id="keys-onkeyup-charcode" type="text" size="3" /></td>
+                            </tr>
+                            <tr>
+                                <td><strong>which</strong></td>
+                                <td><input id="keys-onkeydown-which" type="text" size="3" /></td>
+                                <td><input id="keys-onkeypress-which" type="text" size="3" /></td>
+                                <td><input id="keys-onkeyup-which" type="text" size="3" /></td>
+                            </tr>
+                        </table>
+                    </li>
 	                <li>
 	                    <h4>Console</h4>
 	                    <ul>
                            <li><a href="javascript:inexor.console.toggle();">Toggle</a></li>
 	                       <li><a href="javascript:inexor.console.expand();">Expand</a></li>
                            <li><a href="javascript:inexor.console.shrink();">Shrink</a></li>
-                           <li><a href="javascript:inexor.layer.show('console');">Show</a></li>
-                           <li><a href="javascript:inexor.layer.hide('console');">Hide</a></li>
 	                    </ul>
 	                </li>
 	                <li>
-	                    <h4>Menu:</h4>
+	                    <h4>Layers</h4>
+	                    <input id="layers-field" type="text" value="menu" />
                         <ul>
-                           <li><a href="javascript:inexor.layer.show('menu');">Show</a></li>
-                           <li><a href="javascript:inexor.layer.hide('menu');">Hide</a></li>
+                           <li><a href="javascript:inexor.layer.show(document.getElementById('layers-field'));">Show</a></li>
+                           <li><a href="javascript:inexor.layer.hide(document.getElementById('layers-field'));">Hide</a></li>
                         </ul>
 	                </li>
 	                <li>

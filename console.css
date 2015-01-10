@@ -13,7 +13,7 @@ a {
 }
 
 .consoleout.inactive {
-    text-shadow: 2px 2px 7px black;
+    text-shadow: 0px 0px 7px black;
     color: white;
 	background: transparent;
 	opacity: 1.0;
@@ -64,7 +64,7 @@ a {
 	position: absolute;
 	bottom: 0px;
 	right: 0px;
-	width: 250px;
+	width: 375px;
 	height: 100%;
 	color: black;
 	background-color: white;

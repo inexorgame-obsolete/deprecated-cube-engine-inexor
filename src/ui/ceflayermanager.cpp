@@ -17,6 +17,15 @@ void InexorCefLayerManager::InitializeLayers()
     }
 }
 
+void InexorCefLayerManager::DestroyLayers()
+{
+    logoutf("InexorCefLayerManager::DestroyLayers()");
+    for(std::list<InexorCefLayer*>::iterator it = layers.begin(); it != layers.end(); ++it)
+    {
+        (*it)->Destroy();
+    }
+}
+
 void InexorCefLayerManager::AddLayerProvider(InexorCefLayerProvider* layer_provider) {
     layer_providers.push_back(layer_provider);
 }
