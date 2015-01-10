@@ -3,6 +3,9 @@
 
 #include "engine.h"
 
+static char *emptstr = ""; //every unassigned 'string' points here
+char *emptystring() { return emptstr; } 
+
  // Parse the input text to generate a number, and populate the result into item.
 static const char *parse_number(JSON *item, const char *num)
 {
@@ -80,9 +83,8 @@ static const char *parse_string(JSON *item, const char *str)
     while (*ptr!='\"' && *ptr && ++len) if(*ptr++ == '\\') ptr++;    // Skip escaped quotes.
 
     out = new char [len+1];                 // This is how long we need for the string, roughly.
-    if(!out) return 0;
 
-    ptr=str+1;ptr2=out;
+    ptr = str+1; ptr2 = out;
     while (*ptr!='\"' && *ptr)
     {
         if(*ptr!='\\') *ptr2++ = *ptr++;
@@ -355,7 +357,7 @@ static const char *parse_object(JSON *item, const char *value)
     value = skip(parse_string(child, skip(value)));
     if(!value) return 0;
     child->name = child->valuestring;
-    child->valuestring = 0;
+    child->valuestring = emptystring();
 
     if(*value!=':') { ep = value; return 0; }    // fail!
     value = skip(parse_value(child, skip(value+1)));    // skip any spacing, get the value.
@@ -370,7 +372,7 @@ static const char *parse_object(JSON *item, const char *value)
         value = skip(parse_string(child, skip(value+1)));
         if(!value) return 0;
         child->name = child->valuestring;
-        child->valuestring = 0;
+        child->valuestring = emptystring();
 
         if(*value!=':') { ep = value; return 0; }    // fail!
         value = skip(parse_value( child, skip(value+1)));    // skip any spacing, get the value.
