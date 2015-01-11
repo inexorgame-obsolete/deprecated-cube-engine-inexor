@@ -21,10 +21,10 @@ class InexorCefDebugOverlay : public InexorCefContextProvider,
         bool Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception);
         bool Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& retval, CefString& exception);
         bool Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception);
-        std::string GetContextName() { return "debugoverlay"; };
+        std::string GetContextName() { return "debug"; };
 
         // InexorCefLayerProvider
-        std::string GetLayerName() { return "debugoverlay"; };
+        std::string GetLayerName() { return "debug"; };
         std::string GetUrl() { return GetLocalUrl("/src/ui/web/debugoverlay.html"); };
 
     private:
