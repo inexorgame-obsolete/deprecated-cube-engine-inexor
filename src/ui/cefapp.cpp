@@ -7,6 +7,7 @@ InexorCefApp::InexorCefApp(int width, int height)
     keyboard_manager = new InexorCefKeyboardManager(layer_manager);
     event_manager = new InexorCefEventManager();
     network_manager = new InexorCefNetworkManager();
+    game_manager = new InexorCefGameManager();
     console = new InexorCefConsole();
     menu = new InexorCefMenu();
     debug_overlay = new InexorCefDebugOverlay();
@@ -19,6 +20,7 @@ InexorCefApp::InexorCefApp(int width, int height)
     context_manager->AddSubContext(layer_manager);
     context_manager->AddSubContext(event_manager);
     context_manager->AddSubContext(network_manager);
+    context_manager->AddSubContext(game_manager);
     context_manager->AddSubContext(console);
     context_manager->AddSubContext(menu);
     context_manager->AddSubContext(debug_overlay);
