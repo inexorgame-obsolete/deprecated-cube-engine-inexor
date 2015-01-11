@@ -36,6 +36,10 @@ void InexorCefLayerManager::InitializeContext()
     CreateFunction("create", this);
     CreateFunction("show", this);
     CreateFunction("hide", this);
+    CreateFunction("bringToFront", this);
+    CreateFunction("sendToBack", this);
+    CreateFunction("bringForward", this);
+    CreateFunction("sendBackward", this);
     CreateFunction("getLayerNames", this);
 }
 
@@ -55,6 +59,26 @@ bool InexorCefLayerManager::Execute(const CefString& name, CefRefPtr<CefV8Value>
     } else if (name == "hide") {
         if (arguments.size() == 1 && arguments[0]->IsString()) {
             HideLayer(arguments[0]->GetStringValue().ToString());
+            return true;
+        }
+    } else if (name == "bringToFront") {
+        if (arguments.size() == 1 && arguments[0]->IsString()) {
+            BringToFront(arguments[0]->GetStringValue().ToString());
+            return true;
+        }
+    } else if (name == "sendToBack") {
+        if (arguments.size() == 1 && arguments[0]->IsString()) {
+            SendToBack(arguments[0]->GetStringValue().ToString());
+            return true;
+        }
+    } else if (name == "bringForward") {
+        if (arguments.size() == 1 && arguments[0]->IsString()) {
+            BringForward(arguments[0]->GetStringValue().ToString());
+            return true;
+        }
+    } else if (name == "sendBackward") {
+        if (arguments.size() == 1 && arguments[0]->IsString()) {
+            SendBackward(arguments[0]->GetStringValue().ToString());
             return true;
         }
     } else if (name == "getLayerNames") {
@@ -113,6 +137,28 @@ InexorCefLayer* InexorCefLayerManager::GetLayer(std::string name)
     return NULL;
 }
 
+/**
+ * Returns an iterator instance pointing to the layer element with the given
+ * name. If no element was found, the iterator points to end() which means
+ * there is no layer with the given name.
+ */
+std::list<InexorCefLayer*>::iterator InexorCefLayerManager::GetIterator(std::string name)
+{
+    std::list<InexorCefLayer*>::iterator it = layers.begin();
+    for(it = layers.begin(); it != layers.end(); ++it)
+    {
+        InexorCefLayer* layer = (*it);
+        if (layer->GetName() == name)
+            break;
+    }
+    return it;
+}
+
+bool InexorCefLayerManager::LayerExists(std::string name)
+{
+    return GetIterator(name) != layers.end();
+}
+
 std::list<std::string> InexorCefLayerManager::GetLayers()
 {
     std::list<std::string> _layers;
@@ -139,6 +185,43 @@ void InexorCefLayerManager::HideLayer(std::string name)
         layer->SetVisibility(false);
 }
 
+void InexorCefLayerManager::BringToFront(std::string name)
+{
+    std::list<InexorCefLayer*>::iterator it = GetIterator(name);
+    if (it != layers.end())
+        layers.splice(layers.begin(), layers, it);
+}
+
+void InexorCefLayerManager::SendToBack(std::string name)
+{
+    std::list<InexorCefLayer*>::iterator it = GetIterator(name);
+    if (it != layers.end())
+        layers.splice(layers.end(), layers, it);
+}
+
+void InexorCefLayerManager::BringForward(std::string name)
+{
+    std::list<InexorCefLayer*>::iterator it = GetIterator(name);
+    // name exists and not already on front
+    if (it != layers.end() && it != layers.begin()) {
+        std::list<InexorCefLayer*>::iterator it2 = it;
+        --it2;
+        layers.splice(it2, layers, it);
+    }
+}
+
+void InexorCefLayerManager::SendBackward(std::string name)
+{
+    std::list<InexorCefLayer*>::iterator it = GetIterator(name);
+    // name exists and not already on back
+    std::list<InexorCefLayer*>::iterator it_back = layers.end();
+    if (it != layers.end() && it != --it_back) {
+        std::list<InexorCefLayer*>::iterator it2 = it;
+        ++it2;
+        layers.splice(it2, layers, it);
+    }
+}
+
 void InexorCefLayerManager::RenderLayer(std::string name)
 {
     InexorCefLayer* layer = GetLayer(name);
@@ -149,7 +232,8 @@ void InexorCefLayerManager::RenderLayer(std::string name)
 void InexorCefLayerManager::Render()
 {
     CEF_REQUIRE_UI_THREAD();
-    for(std::list<InexorCefLayer*>::iterator it = layers.begin(); it != layers.end(); ++it)
+    // Render from back to front
+    for(std::list<InexorCefLayer*>::reverse_iterator it = layers.rbegin(); it != layers.rend(); ++it)
     {
         InexorCefLayer* layer = (*it);
         if (layer->IsVisible()) {

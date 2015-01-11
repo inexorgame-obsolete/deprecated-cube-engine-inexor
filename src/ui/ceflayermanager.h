@@ -29,12 +29,13 @@ class InexorCefLayerManager : public InexorCefContextProvider
         InexorCefLayer* CreateLayer(std::string name, int x, int y, int width, int height, std::string url);
         InexorCefLayer* GetLayer(std::string name);
         std::list<std::string> GetLayers();
+        bool LayerExists(std::string name);
         void ShowLayer(std::string name);
         void HideLayer(std::string name);
-        // void BringLayerToFront(std::string name);
-        // void BringLayerToBack(std::string name);
-        // void MoveLayerUp(std::string name);
-        // void MoveLayerBack(std::string name);
+        void BringToFront(std::string name);
+        void SendToBack(std::string name);
+        void BringForward(std::string name);
+        void SendBackward(std::string name);
 
         // Input events
         void SendKeyEvent(CefKeyEvent event);
@@ -55,6 +56,8 @@ class InexorCefLayerManager : public InexorCefContextProvider
 
         int width;
         int height;
+
+        std::list<InexorCefLayer*>::iterator GetIterator(std::string name);
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(InexorCefLayerManager);
