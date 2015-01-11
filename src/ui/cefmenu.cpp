@@ -35,10 +35,3 @@ bool InexorCefMenu::Set(const CefString& name, const CefRefPtr<CefV8Value> objec
     CEF_REQUIRE_RENDERER_THREAD();
     return false;
 }
-
-void InexorCefMenu::SetVisibility(bool visible) {
-    this->is_visible = visible;
-    layer->SetVisibility(visible);
-    layer->SetIsAcceptingInput(visible);
-    layer->SetFocus(visible);
-};
