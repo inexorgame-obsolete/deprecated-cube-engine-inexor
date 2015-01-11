@@ -7,7 +7,7 @@ before_install:
   - sudo apt-get -y install mingw32
 
 script:
-  - (mkdir cmakebuild && cd cmakebuild && cmake $CMAKE_FLAGS .. && make -j5 install && cd .. && rm -rf cmakebuild)
+  - (mkdir cmakebuild && cd cmakebuild && cmake $CMAKE_FLAGS .. && make -k  -j5 install && cd .. && rm -rf cmakebuild)
 
 env:
   global:
