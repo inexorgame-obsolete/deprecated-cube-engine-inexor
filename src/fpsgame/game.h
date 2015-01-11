@@ -1,8 +1,15 @@
+// game.h
+// definitions for network protocol, game modes, 
+// entities, guns, singleplayer monsters, mastermode,
+// pickups, triggers, team scores, armour, and permission levels.
+//
+//
+//
+
 #ifndef __GAME_H__
 #define __GAME_H__
 
 #include "cube.h"
-
 
 // console message types
 // also see enumeration CON_DEBUG in iengine.h
@@ -843,6 +850,11 @@ struct teamscore
     }
 };
 
+// PLEASE NOTE:
+// "map uses a red-black tree as the data structure, so the elements you put in there are sorted, and insert/delete is O(log(n)). The elements need to be implement at least operator<.
+// hashmap uses a hash, so elements are unsorted, insert/delete is O(1). Elements need to implement at least operator== and you need a hash function."
+//  - quote from user martinus from stackoverflow
+
 // create hashes to access hashmapsSS
 static inline uint hthash(const teamscore &t) 
 {
@@ -855,7 +867,7 @@ static inline bool htcmp(const char *key, const teamscore &t)
 	return htcmp(key, t.team);
 }
 
-// 
+// scoreboard team block description
 struct teaminfo
 {
     char team[MAXTEAMLEN+1];

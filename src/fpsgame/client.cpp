@@ -1,3 +1,11 @@
+// fpsgame/client.cpp 
+// implementation of various game core functions such as
+// minimap, hud, administration, auth, connect, network message parser and more
+// implementation of many cube script get functions 
+//
+//
+//
+
 #include "game.h"
 
 namespace game
@@ -105,6 +113,9 @@ namespace game
         }
         if(dead) glEnd();
     }
+
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	// game modes
 
 	// game mode header files
     #include "capture.h"

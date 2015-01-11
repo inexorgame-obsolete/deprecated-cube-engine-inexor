@@ -1,4 +1,10 @@
+// fpsgame/client.cpp 
 // client.cpp, mostly network related client game code
+// implementation of connect and disconnect
+// implementation of enet network parser
+//
+//
+//
 
 #include "engine.h"
 

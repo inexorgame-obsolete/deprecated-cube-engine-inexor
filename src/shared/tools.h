@@ -3,23 +3,31 @@
 #ifndef _TOOLS_H
 #define _TOOLS_H
 
+// undefine NULL and make sure it is defined as 0
+// try to use std::nullptr in C++ 11 for pointers!
 #ifdef NULL
-#undef NULL
+#undef NULL // is there even a reason why NULL should not be 0?
 #endif
 #define NULL 0
 
+// short type definitions please note that these 
+// are real definitions and not just macros!
 typedef unsigned char uchar;
 typedef unsigned short ushort;
 typedef unsigned int uint;
 typedef signed long long int llong;
 typedef unsigned long long int ullong;
 
+// debug assertions
 #ifdef _DEBUG
 #define ASSERT(c) assert(c)
 #else
-#define ASSERT(c) if(c) {}
+#define ASSERT(c) if(c) {} // if not in debug mode, ignore assertion
 #endif
 
+// __restrict is a keyword that can be used in pointer declarations
+// http://stackoverflow.com/questions/745870/realistic-usage-of-the-c99-restrict-keyword
+// http://en.wikipedia.org/wiki/Restrict
 #if defined(__GNUC__) || (defined(_MSC_VER) && _MSC_VER >= 1400)
 #define RESTRICT __restrict
 #else
@@ -32,8 +40,11 @@ typedef unsigned long long int ullong;
 #define UNUSED
 #endif
 
+// include std::new operator to allocate memory instead of 
+// the old equivalent but selfmade memory allocators (removed)
 #include <new>
 
+// version check macros
 #define GCC_VERSION_AT_LEAST(major, minor, patch) \
     (defined(__GNUC__) && \
     (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__) >= \
@@ -49,19 +60,24 @@ typedef unsigned long long int ullong;
     ((__INTEL_COMPILER * 10000 + __INTEL_COMPILER_UPDATE) >= \
     ((major * 100 + minor) * 10000) + patch))
 
-#define stringify_(x)		#x
+// use expressions as strings
+#define stringify_(x)		#x 
 #define stringify_macro(x)	stringify_(x)
 
-
+// is C++11 available?
 #if __cplusplus < 201103L
 #define decltype typeof
 #else
 #define CPP11
 #endif
 
+// make sure swap is not defined somewhere else
 #ifdef swap
 #undef swap
 #endif
+
+// make sure swap is defined here again
+// swapping two items means to change the value with each other
 template<class T>
 static inline void swap(T &a, T &b)
 {
@@ -69,12 +85,16 @@ static inline void swap(T &a, T &b)
     a = b;
     b = t;
 }
+
+// make sure min and max are not defined somewhere else
 #ifdef max
 #undef max
 #endif
 #ifdef min
 #undef min
 #endif
+
+// return minimal or maximal of two values
 template<class T>
 static inline T max(T a, T b)
 {
@@ -85,16 +105,23 @@ static inline T min(T a, T b)
 {
     return a < b ? a : b;
 }
+
+// clamping means to return values in a specific range
+// there is a minimal and a maximal value
 template<class T, class U>
 static inline T clamp(T a, U b, U c)
 {
     return max(T(b), min(a, T(c)));
 }
 
-#define rnd(x) ((int)(randomMT()&0x7FFFFFFF)%(x))
+// weird random number generator
+#define rnd(x) ((int)(randomMT()&0x7FFFFFFF)%(x)) // remove +- (sign) bit ?
 #define rndscale(x) (float((randomMT()&0x7FFFFFFF)*double(x)/double(0x7FFFFFFF)))
 #define detrnd(s, x) ((int)(((((uint)(s))*1103515245+12345)>>16)%(x)))
 
+// for loop macros
+// macros should become extinct because they're deprecated (for this purpose)
+// and are difficult to debug in some IDEs
 #define loop(v,m) for(int v = 0; v < int(m); ++v)
 #define loopi(m) loop(i,m)
 #define loopj(m) loop(j,m)
@@ -106,15 +133,18 @@ static inline T clamp(T a, U b, U c)
 #define loopkrev(m) looprev(k,m)
 #define looplrev(m) looprev(l,m)
 
+// delete dynamicly allocated memory on the heap correctly
 #define DELETEP(p) if(p) { delete   p; p = 0; }
 #define DELETEA(p) if(p) { delete[] p; p = 0; }
 
+// some important mathematical constants
 #define PI  (3.1415927f)
 #define PI2 (2*PI)
 #define SQRT2 (1.4142136f)
 #define SQRT3 (1.7320508f)
 #define RAD (PI / 180.0f)
 
+// more mathematical constants
 #ifdef WIN32
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -123,6 +153,7 @@ static inline T clamp(T a, U b, U c)
 #define M_LN2 0.693147180559945309417
 #endif
 
+// disable unuseful MSVC compiler warnings
 #ifndef __GNUC__
 #pragma warning (3: 4189)       // local variable is initialized but not referenced
 #pragma warning (disable: 4244) // conversion from 'int' to 'float', possible loss of data
@@ -133,11 +164,14 @@ static inline T clamp(T a, U b, U c)
 
 #define strcasecmp _stricmp
 #define strncasecmp _strnicmp
+// divide multiple paths in one string with this value
 #define PATHDIV '\\'
 
 #else
-#define __cdecl
+// adapt macros to OS specifications
+#define __cdecl // is this Win32 specific?
 #define _vsnprintf vsnprintf
+// use / as path divider in not-windows systems
 #define PATHDIV '/'
 #endif
 
@@ -147,21 +181,44 @@ static inline T clamp(T a, U b, U c)
 #define PRINTFARGS(fmt, args)
 #endif
 
-// easy safe strings
-
+// "easy safe strings"
 #define MAXSTRLEN 260
 typedef char string[MAXSTRLEN];
 
-inline void vformatstring(char *d, const char *fmt, va_list v, int len = MAXSTRLEN) { _vsnprintf(d, len, fmt, v); d[len-1] = 0; }
+// format string using variable parameter lists
+inline void vformatstring(char *d, const char *fmt, va_list v, int len = MAXSTRLEN) 
+{ 
+	_vsnprintf(d, len, fmt, v);
+	d[len-1] = 0; // end string using binary 0 (\0)
+}
+
+// Please note that some functions could be replaced with standard librarie's functions
+// but the reason why it was implemented manually is that the C++ standard library was not as 
+// funished and tested as it is today in these days.
+
+// the suffix _s means that the standard librarie's functions are memory size safe
+// because you must pass the amount of bytes you want to copy to the destination string
+
+// copy string from source to destination
+// DEPRECATED! use strcpy_s instead!
 inline char *copystring(char *d, const char *s, size_t len = MAXSTRLEN)
 {
     size_t slen = min(strlen(s)+1, len);
     memcpy(d, s, slen);
-    d[slen-1] = 0;
+    d[slen-1] = 0; // end string using binary 0 (\0)
     return d;
 }
-inline char *concatstring(char *d, const char *s, size_t len = MAXSTRLEN) { size_t used = strlen(d); return used < len ? copystring(d+used, s, len-used) : d; }
 
+// glue two strings together
+// DEPRECATED! use strcat_s instead
+inline char *concatstring(char *d, const char *s, size_t len = MAXSTRLEN) 
+{
+	size_t used = strlen(d);
+	return used < len ? copystring(d+used, s, len-used) : d;
+}
+
+// strings in the old code are usually initialized with
+// formatstring(hanni)("hello world"); where hello world is the constructor call for a stringformatter instance
 struct stringformatter
 {
     char *buf;
@@ -175,10 +232,19 @@ struct stringformatter
     }
 };
 
+// C++11 correct way to initialize strings safely:
+/* 
+   char str[1024];
+   strcpy_s(char,1024,"hello world");
+*/
+
+// there are no disadvantages in this way of initializing strings
 #define formatstring(d) stringformatter((char *)d)
 #define defformatstring(d) string d; formatstring(d)
 #define defvformatstring(d,last,fmt) string d; { va_list ap; va_start(ap, last); vformatstring(d, fmt, ap); va_end(ap); }
 
+// macros for looping though vectors
+// loop macros are deprecated and should not be used anymore!
 #define loopv(v)    for(int i = 0; i<(v).length(); i++)
 #define loopvj(v)   for(int j = 0; j<(v).length(); j++)
 #define loopvk(v)   for(int k = 0; k<(v).length(); k++)
@@ -260,6 +326,7 @@ struct databuf
     }
 };
 
+
 typedef databuf<char> charbuf;
 typedef databuf<uchar> ucharbuf;
 
@@ -321,12 +388,23 @@ struct packetbuf : ucharbuf
     }
 };
 
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// sorting algorithms templates
+
 template<class T>
 static inline float heapscore(const T &n) { return n; }
 
+// template function to compare two values
+// advanced data types must implement support for < operator!
 template<class T>
 static inline bool compareless(const T &x, const T &y) { return x < y; }
 
+
+// there are various sorting algorithms known
+// please gain some knowledge about them before using these functions
+
+// template implementation of insertionsort
 template<class T, class F>
 static inline void insertionsort(T *start, T *end, F fun)
 {
@@ -344,19 +422,19 @@ static inline void insertionsort(T *start, T *end, F fun)
     }
 
 }
-
 template<class T, class F>
 static inline void insertionsort(T *buf, int n, F fun)
 {
     insertionsort(buf, buf+n, fun);
 }
-
 template<class T>
 static inline void insertionsort(T *buf, int n)
 {
     insertionsort(buf, buf+n, compareless<T>);
 }
 
+
+// template implementation of quicksort (fastest algorithm)
 template<class T, class F>
 static inline void quicksort(T *start, T *end, F fun)
 {
@@ -398,26 +476,35 @@ static inline void quicksort(T *start, T *end, F fun)
 
     insertionsort(start, end, fun);
 }
-
 template<class T, class F>
 static inline void quicksort(T *buf, int n, F fun)
 {
     quicksort(buf, buf+n, fun);
 }
-
 template<class T>
 static inline void quicksort(T *buf, int n)
 {
     quicksort(buf, buf+n, compareless<T>);
 }
 
+
+// I have no idea what that is supposed to be...
 template<class T> struct isclass
 {
     template<class C> static char test(void (C::*)(void));
     template<class C> static int test(...);
-    enum { yes = sizeof(test<T>(0)) == 1 ? 1 : 0, no = yes^1 };
+    enum 
+	{
+		yes = sizeof(test<T>(0)) == 1 ? 1 : 0,
+		no = yes^1
+	};
 };
 
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// sorting algorithms templates
+
+// simple bernstein hashing algorithm
+// invented by Dan Bernstein
 static inline uint hthash(const char *key)
 {
     uint h = 5381;
@@ -451,6 +538,12 @@ static inline bool htcmp(GLuint x, GLuint y)
     return x==y;
 }
 #endif
+
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// manual implementation of vectors
+// DEPRECATED! (but difficult to replace in code)
+// We recommend to use std::vector instead!
 
 template <class T> struct vector
 {
@@ -740,6 +833,10 @@ template <class T> struct vector
     }
 };
 
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// manual implementation of hashsets
+// please make sure you know the difference between hashset and std::map!
+
 template<class T> struct hashset
 {
     typedef T elem;
@@ -939,6 +1036,7 @@ template<class K, class T> struct hashtable : hashset<hashtableentry<K, T> >
     static inline T &getdata(void *i) { return ((chain *)i)->elem.data; }
 };
 
+// enumeration macros to loop through hashsets
 #define enumerates(ht,t,e,b)      loopi((ht).size)  for(hashset<t>::chain *enumc = (ht).chains[i]; enumc;) { t &e = enumc->elem; enumc = enumc->next; b; }
 #define enumeratekt(ht,k,e,t,f,b) loopi((ht).size)  for(hashtable<k,t>::chain *enumc = (ht).chains[i]; enumc;) { const hashtable<k,t>::key &e = enumc->elem.key; t &f = enumc->elem.data; enumc = enumc->next; b; }
 #define enumerate(ht,t,e,b)       loopi((ht).size) for(void *enumc = (ht).chains[i]; enumc;) { t &e = (ht).getdata(enumc); enumc = (ht).getnext(enumc); b; }
@@ -982,6 +1080,10 @@ struct unionfind
         }
     }
 };
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// manual implementation of queues
+// DEPRECATED! please use std::deque instead!
 
 template <class T, int SIZE> struct queue
 {
@@ -1089,6 +1191,9 @@ template<class T> inline void bigswap(T *buf, size_t len) { if(*(const uchar *)&
 #ifdef putchar
 #undef putchar
 #endif
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// stream implementation
 
 struct stream
 {
