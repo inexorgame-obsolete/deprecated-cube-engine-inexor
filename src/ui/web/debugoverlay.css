@@ -1,0 +1,20 @@
+
+.consolesidebar {
+    position: absolute;
+    top: 25%;
+    right: 0px;
+    width: 375px;
+    height: 50%;
+    color: black;
+    background-color: white;
+    opacity: 0.5;
+    margin: 0px;
+    padding: 0px;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.consolesidebar a {
+    color: black;
+    text-decoration: none;
+}
