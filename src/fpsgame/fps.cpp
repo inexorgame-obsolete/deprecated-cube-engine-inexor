@@ -376,6 +376,8 @@ namespace game
 	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	// mutiplayer game functions
 
+	// filter attack attempts
+	// not possible in intermission or state = CS_DEAD
     void doattack(bool on)
     {
         if(intermission) return;
@@ -808,9 +810,6 @@ namespace game
     }
 
 
-	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	// 
-
 	// suicide your player
     void suicide(physent *d)
     {
@@ -830,6 +829,9 @@ namespace game
     }
     ICOMMAND(suicide, "", (), suicide(player1));
 
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	// hud rendering
+	
 	// checks if minimap is required (is one of these game modes is active?)
     bool needminimap() 
 	{ 
@@ -849,8 +851,9 @@ namespace game
         glEnd();
     }
 
-
-    float abovegameplayhud(int w, int h)
+	// calculate distance of hud from bottom of my screen depending on player state
+	// referenced only in gl_drawhud in render.cpp
+	float abovegameplayhud(int w, int h)
     {
         switch(hudplayer()->state)
         {
@@ -862,27 +865,34 @@ namespace game
         }
     }
 
+	// this static data is used to describe the sorting of the 3 next weapons in your holster preview.
     int ammohudup[3] = { GUN_CG, GUN_RL, GUN_GL },
         ammohuddown[3] = { GUN_RIFLE, GUN_SG, GUN_PISTOL },
         ammohudcycle[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
 
-    ICOMMAND(ammohudup, "V", (tagval *args, int numargs),
+
+	// those 3 functions are used to rotate in circles through your weapons
+	// so you see different preview images of the other weapons in your holsters
+    ICOMMAND(ammohudup, "V", (tagval *args, int numargs), // 1 up
     {
         loopi(3) ammohudup[i] = i < numargs ? getweapon(args[i].getstr()) : -1;
     });
-
-    ICOMMAND(ammohuddown, "V", (tagval *args, int numargs),
+    ICOMMAND(ammohuddown, "V", (tagval *args, int numargs), // 1 down
     {
         loopi(3) ammohuddown[i] = i < numargs ? getweapon(args[i].getstr()) : -1;
     });
-
-    ICOMMAND(ammohudcycle, "V", (tagval *args, int numargs),
+    ICOMMAND(ammohudcycle, "V", (tagval *args, int numargs), // begin again
     {
         loopi(8) ammohudcycle[i] = i < numargs ? getweapon(args[i].getstr()) : -1;
     });
 
+
+	// decide if you want to display the little icons of your
+	// other weapons in the slot
     VARP(ammohud, 0, 1, 1);
 
+	// draw other weapons in weapon slots beside 
+	// the icon of the currently selected weapon
     void drawammohud(fpsent *d)
     {
         float x = HICON_X + 2*HICON_STEP, y = HICON_Y, sz = HICON_SIZE;
@@ -923,6 +933,8 @@ namespace game
         glPopMatrix();
     }
 
+	// draw health icon, armour icon and icon of selected gun
+	// other gun's preview icons are not included here
     void drawhudicons(fpsent *d)
     {
         glPushMatrix();
@@ -947,6 +959,7 @@ namespace game
         }
     }
 
+	// draw announcement for upcoming pickup entities in bomberman mode
     void drawhudannounce(int w, int h)
     {
         if(hudannounce_timeout < totalmillis) return;
@@ -993,6 +1006,8 @@ namespace game
 
     }
 
+	// render game hud depending on hudplayer's state
+	// render "SPECTATOR" in spectator mode
     void gameplayhud(int w, int h)
     {
         glPushMatrix();
@@ -1014,7 +1029,7 @@ namespace game
                 if(f->privilege)
                 {
                     color = f->privilege>=PRIV_ADMIN ? 0xFF8000 : 0x40FF80;
-                    if(f->state==CS_DEAD) color = (color>>1)&0x7F7F7F;
+                    if(f->state==CS_DEAD) color = (color>>1)&0x7F7F7F; // darken name of dead players
                 }
                 draw_text(colorname(f), w*1800/h - fw - pw, 1650 - fh, (color>>16)&0xFF, (color>>8)&0xFF, color&0xFF);
             }
@@ -1031,15 +1046,21 @@ namespace game
         glPopMatrix();
     }
 
+	// ?
     int clipconsole(int w, int h)
     {
         if(cmode) return cmode->clipconsole(w, h);
         return 0;
     }
 
+	// use blue "blocking" team crosshair when pointing at teamate
     VARP(teamcrosshair, 0, 1, 1);
-    VARP(hitcrosshair, 0, 425, 1000);
 
+	// display hit crosshair increases hit feedback impression
+    VARP(hitcrosshair, 0, 425, 1000);
+	
+	// crosshair file names are stored in a constant functions
+	// that return strings depending on indices
     const char *defaultcrosshair(int index)
     {
         switch(index)
@@ -1050,6 +1071,7 @@ namespace game
         }
     }
 
+	// switch crosshair depending on player state and player health
     int selectcrosshair(float &r, float &g, float &b)
     {
         fpsent *d = hudplayer();
@@ -1064,6 +1086,9 @@ namespace game
             dynent *o = intersectclosest(d->o, worldpos, d);
             if(o && o->type==ENT_PLAYER && isteam(((fpsent *)o)->team, d->team))
             {
+				// please place your triggerbot here
+				// and feel ashamed! You should have fun
+				// and not advantages in multiplayer games!
                 crosshair = 1;
                 r = g = 0;
             }
@@ -1074,10 +1099,11 @@ namespace game
             if(d->health<=25) { r = 1.0f; g = b = 0; }
             else if(d->health<=50) { r = 1.0f; g = 0.5f; b = 0; }
         }
-        if(d->gunwait) { r *= 0.5f; g *= 0.5f; b *= 0.5f; }
+        if(d->gunwait) { r *= 0.5f; g *= 0.5f; b *= 0.5f; } // make crosshair gray during reload
         return crosshair;
     }
 
+	// - this functions is not enabled -
     void lighteffects(dynent *e, vec &color, vec &dir)
     {
 #if 0
@@ -1090,6 +1116,7 @@ namespace game
 #endif
     }
 
+	// specify master server table columns
     bool serverinfostartcolumn(g3d_gui *g, int i)
     {
         static const char * const names[] = { "ping ", "players ", "mode ", "map ", "time ", "master ", "host ", "port ", "description " };
@@ -1102,23 +1129,27 @@ namespace game
         return true;
     }
 
+	// end master server list
     void serverinfoendcolumn(g3d_gui *g, int i)
     {
         g->mergehits(false);
         g->column(i);
-        g->poplist();
+        g->poplist(); // end master server gui list
     }
 
+	// receive master mode color from global constant buffer via indices
     const char *mastermodecolor(int n, const char *unknown)
     {
         return (n>=MM_START && size_t(n-MM_START)<sizeof(mastermodecolors)/sizeof(mastermodecolors[0])) ? mastermodecolors[n-MM_START] : unknown;
     }
 
+	// receive master mode icon from global constant buffer via indices
     const char *mastermodeicon(int n, const char *unknown)
     {
         return (n>=MM_START && size_t(n-MM_START)<sizeof(mastermodeicons)/sizeof(mastermodeicons[0])) ? mastermodeicons[n-MM_START] : unknown;
     }
 
+	// render servers with server attributes in master server list
     bool serverinfoentry(g3d_gui *g, int i, const char *name, int port, const char *sdesc, const char *map, int ping, const vector<int> &attr, int np)
     {
         if(ping < 0 || attr.empty() || attr[0]!=PROTOCOL_VERSION)
@@ -1217,14 +1248,14 @@ namespace game
     void readgamedata(vector<char> &extras) {}
 
 	// file name of important configuration files
-	// are stored in constant string functions
+	// are stored in constant functions that return strings...
     const char *savedconfig() { return "config.cfg"; }
     const char *restoreconfig() { return "restore.cfg"; }
     const char *defaultconfig() { return "data/defaults.cfg"; }
     const char *autoexec() { return "autoexec.cfg"; }
     const char *savedservers() { return "servers.cfg"; }
 
-	// 
+	// load "auth.cfg" configuration file with disabled log messages (?)
     void loadconfigs()
     {
         execfile("auth.cfg", false);
