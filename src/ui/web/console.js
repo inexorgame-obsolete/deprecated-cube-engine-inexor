@@ -32,11 +32,6 @@ inexor.console.follow = false;
 inexor.console.debug = false;
 
 /**
- * The key bindings.
- */
-inexor.console.keyBindings = {};
-
-/**
  * Redirect the native browser console, print in output window and
  * redirect back into the native browser console.
  */
@@ -105,16 +100,19 @@ inexor.console.toggle = function() {
 inexor.console.tail = function() {
 	var diff = consoleOut.scrollHeight - (consoleOut.scrollTop + consoleOut.offsetHeight);
 	if (inexor.console.follow) {
+		// TODO: make scrollheight diff configurable
 		if (diff > 50) {
 			inexor.console.follow = false;
 		} else {
 		    consoleOut.scrollTop = consoleOut.scrollHeight;
 		}
 	} else {
+		// TODO: make scrollheight diff configurable
 		if (diff < 50) {
 			inexor.console.follow = true;
 		}
 	}
+	// TODO: make tail interval configurable
     window.setTimeout(inexor.console.tail, 100);
 };
 
@@ -128,35 +126,16 @@ inexor.console.init = function() {
     inexor.console.out("Console Initialized!");
     inexor.console.tail();
 };
-window.setTimeout(function() {
-    inexor.console.init();
-}, 100);
-
-var debugKeyEvent = function(t, e) {
-    if (!e) e = window.event;
-   	document.getElementById('keys-' + t + '-keycode').value = e.keyCode;
-   	document.getElementById('keys-' + t + '-charcode').value = e.charCode;
-   	document.getElementById('keys-' + t + '-which').value = e.which;
-	if (inexor.console.debug) {
-	   	inexor.console.out(t + "," + e.keyCode + "," + e.charCode + "," + e.which);
-	}
-};
+window.setTimeout(inexor.console.init, 100);
 
 /**
  * Bind ESC on toggle console.
  */
 window.onkeydown = function(e) {
-	debugKeyEvent("onkeydown", e);
     if (getKeyCode(e) == '27') {
         inexor.console.toggle();
         return false;
     }
-};
-window.onkeypress = function(e) {
-	debugKeyEvent("onkeypress", e);
-};
-window.onkeyup = function(e) {
-	debugKeyEvent("onkeyup", e);
 };
 
 /**
@@ -177,24 +156,3 @@ inexor.event.subscribe("rename", function(cn, oldName, newName) {
 
 
 /** Some Debug Stuff **/
-
-
-function check() {
-    if(typeof inexor == 'object') inexor.console.out('inexor == object');
-    if(typeof inexor.layer == 'object') inexor.console.out('inexor.layer == object');
-    if(typeof inexor.layer.show == 'function') inexor.console.out('inexor.layer.show == function');
-    if(typeof inexor.layer.hide == 'function') inexor.console.out('inexor.layer.hide == function');
-    if(typeof inexor.event == 'object') inexor.console.out('inexor.event == object');
-    if(typeof inexor.event.subscribe == 'function') inexor.console.out('inexor.event.subscribe == function');
-    if(typeof inexor.event.fire == 'function') inexor.console.out('inexor.event.fire == function');
-    if(typeof inexor.menu == 'object') inexor.console.out('inexor.menu == object');
-    if(typeof inexor.console == 'object') inexor.console.out('inexor.console == object');
-}
-
-function printInexor() {
-	inexor.console.out(JSON.stringify(inexor, undefined, 2));
-}
-
-function printEvents() {
-	inexor.console.out(JSON.stringify(inexor.event.list(), undefined, 2));
-}
