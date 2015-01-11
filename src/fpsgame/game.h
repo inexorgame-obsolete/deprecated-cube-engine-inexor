@@ -3,8 +3,9 @@
 
 #include "cube.h"
 
-// console message types
 
+// console message types
+// also see enumeration CON_DEBUG in iengine.h
 enum
 {
     CON_CHAT       = 1<<8,
@@ -15,12 +16,16 @@ enum
     CON_TEAMKILL   = 1<<13
 };
 
+
 // network quantization scale
-#define DMF 16.0f                // for world locations
+#define DMF 16.0f               // for world locations
 #define DNF 100.0f              // for normalized vectors
 #define DVELF 1.0f              // for playerspeed based velocity vectors
 
-enum                            // static entity types
+
+// static entity types
+// will be replaced with new entity system later!
+enum                            
 {
     NOTUSED = ET_EMPTY,         // entity slot not in use in map
     LIGHT = ET_LIGHT,           // lightsource, attr1 = radius, attr2 = intensity
@@ -53,6 +58,9 @@ enum                            // static entity types
     MAXENTTYPES
 };
 
+
+// trigger for singleplayer maps
+// in game modes sp and dmsp
 enum
 {
     TRIGGER_RESET = 0,
@@ -62,17 +70,60 @@ enum
     TRIGGER_DISAPPEARED
 };
 
+// trigger handling
 struct fpsentity : extentity
 {
     int triggerstate, lasttrigger;
-    
     fpsentity() : triggerstate(TRIGGER_RESET), lasttrigger(0) {} 
 };
 
-enum { GUN_FIST = 0, GUN_SG, GUN_CG, GUN_RL, GUN_RIFLE, GUN_GL, GUN_PISTOL, GUN_BOMB, GUN_FIREBALL, GUN_ICEBALL, GUN_SLIMEBALL, GUN_BITE, GUN_BARREL, GUN_SPLINTER, NUMGUNS };
-enum { A_BLUE, A_GREEN, A_YELLOW };     // armour types... take 20/40/60 % off
-enum { M_NONE = 0, M_SEARCH, M_HOME, M_ATTACKING, M_PAIN, M_SLEEP, M_AIMING };  // monster states
+// static gun enumeration
+enum 
+{
+	GUN_FIST = 0,	// fist
+	GUN_SG,			// shotgun
+	GUN_CG,			// 
+	GUN_RL,			// rocket launcher
+	GUN_RIFLE,		// rifle
+	GUN_GL,			// grenade launcher
+	GUN_PISTOL,		// pistol
+	GUN_BOMB,		// BOMBERMAN gamemode: bomb
+	GUN_FIREBALL,	// monster/bot: fireball
+	GUN_ICEBALL,	// monster/bot: iceball
+	GUN_SLIMEBALL,	// monster/bot: slimeball
+	GUN_BITE,		// bite
+	GUN_BARREL,		// barrel damage
+	GUN_SPLINTER,	// splinter?
+	NUMGUNS 
+};
 
+// armour type enumeration... take 20/40/60 % off
+enum 
+{
+	A_BLUE,
+	A_GREEN,
+	A_YELLOW
+};
+
+// monster states
+enum 
+{ 
+	M_NONE = 0,
+	M_SEARCH,
+	M_HOME,
+	M_ATTACKING,
+	M_PAIN,
+	M_SLEEP,
+	M_AIMING
+};  
+
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// game mode handling
+
+
+// basic game mode bitmask "FLAGS"
+// (NOT game modes but attributes of game modes!!)
 enum
 {
     M_TEAM       = 1<<0,
@@ -103,12 +154,15 @@ enum
     //M_RACE       = 1<<25,
 };
 
+// a structure to describe gamemodes
+// followed by an array of instances 
 static struct gamemodeinfo
 {
     const char *name;
     int flags;
     const char *info;
-} gamemodes[] =
+} 
+gamemodes[] =
 {
     { "SP", M_LOCAL | M_CLASSICSP, NULL },
     { "DMSP", M_LOCAL | M_DMSP, NULL },
@@ -142,12 +196,23 @@ static struct gamemodeinfo
 };
 
 #define STARTGAMEMODE (-3)
+
+
+// macro to determine the amount of available game modes
+// division: (size of array) / (size of one game mode)
 #define NUMGAMEMODES ((int)(sizeof(gamemodes)/sizeof(gamemodes[0])))
 
+// validate game mode number
 #define m_valid(mode)          ((mode) >= STARTGAMEMODE && (mode) < STARTGAMEMODE + NUMGAMEMODES)
+// validate game mode number and attribute (to check if this gamemode has items or bases e.g.)
 #define m_check(mode, flag)    (m_valid(mode) && gamemodes[(mode) - STARTGAMEMODE].flags&(flag))
+// validate game mode number and check if game mode does NOT have these attribuges
 #define m_checknot(mode, flag) (m_valid(mode) && !(gamemodes[(mode) - STARTGAMEMODE].flags&(flag)))
+// validate game mode number and check if game mode supports parameter flag bit masks
+// to check if this game mode supports multiple attributes (EFFICIENCY | CTF  e.g.)
 #define m_checkall(mode, flag) (m_valid(mode) && (gamemodes[(mode) - STARTGAMEMODE].flags&(flag)) == (flag))
+
+// those game mode check macros are built on top of the layer above
 
 #define m_noitems      (m_check(gamemode, M_NOITEMS))
 #define m_noammo       (m_check(gamemode, M_NOAMMO|M_NOITEMS))
@@ -182,11 +247,28 @@ static struct gamemodeinfo
 #define m_dmsp         (m_check(gamemode, M_DMSP))
 #define m_classicsp    (m_check(gamemode, M_CLASSICSP))
 
-enum { MM_AUTH = -1, MM_OPEN = 0, MM_VETO, MM_LOCKED, MM_PRIVATE, MM_PASSWORD, MM_START = MM_AUTH };
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// master server list handling
 
+// master mode enumeration
+enum 
+{ 
+	MM_AUTH = -1,
+	MM_OPEN = 0,
+	MM_VETO,
+	MM_LOCKED, 
+	MM_PRIVATE, 
+	MM_PASSWORD, 
+	MM_START = MM_AUTH
+};
+
+// static strings for server description in master server list
 static const char * const mastermodenames[] =  { "auth",   "open",   "veto",       "locked",     "private",    "password" };
 static const char * const mastermodecolors[] = { "",       "\f0",    "\f2",        "\f2",        "\f3",        "\f3" };
 static const char * const mastermodeicons[] =  { "server", "server", "serverlock", "serverlock", "serverpriv", "serverpriv" };
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// sound list and description of administrative levels
 
 // hardcoded sounds, defined in sounds.cfg
 enum
@@ -231,10 +313,21 @@ enum
     S_FLAGFAIL
 };
 
+// permission levels
+enum
+{ 
+	PRIV_NONE = 0, // white
+	PRIV_MASTER,  // green
+	PRIV_AUTH,  // also green, should be violet!
+	PRIV_ADMIN // orange 
+};
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // network messages codes, c2s, c2c, s2c
 
-enum { PRIV_NONE = 0, PRIV_MASTER, PRIV_AUTH, PRIV_ADMIN };
-
+// server message list
+// modifying this list may cause damage to network behaviour!
+// BE AWARE OF WHAT YOU ARE DOING.
 enum
 {
     N_CONNECT = 0, N_SERVINFO, N_WELCOME, N_INITCLIENT, N_POS, N_TEXT, N_SOUND, N_CDIS,
@@ -268,7 +361,8 @@ enum
     NUMMSG
 };
 
-static const int msgsizes[] =               // size inclusive message token, 0 for variable or not-checked sizes
+// size inclusive message token, 0 for variable or not-checked sizes
+static const int msgsizes[] =               
 {
     N_CONNECT, 0, N_SERVINFO, 0, N_WELCOME, 1, N_INITCLIENT, 0, N_POS, 0, N_TEXT, 0, N_SOUND, 2, N_CDIS, 2,
     N_SHOOT, 0, N_EXPLODE, 0, N_SUICIDE, 1,
