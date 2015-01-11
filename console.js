@@ -160,6 +160,15 @@ window.onkeyup = function(e) {
 inexor.event.subscribe("frag", function(victim, actor) {
 	inexor.console.out(actor + " fragged " + victim);
 });
+inexor.event.subscribe("connect", function(cn, name) {
+	inexor.console.out("connect: " + name + "(" + cn + ")");
+});
+inexor.event.subscribe("disconnect", function(cn, name) {
+	inexor.console.out("leave: " + name + "(" + cn + ")");
+});
+inexor.event.subscribe("rename", function(cn, oldName, newName) {
+	inexor.console.out(oldName + " is now known as " + newName);
+});
 
 
 /** Some Debug Stuff **/

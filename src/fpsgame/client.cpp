@@ -7,6 +7,7 @@
 //
 
 #include "game.h"
+#include "ui/ui.h"
 
 namespace game
 {
@@ -1545,13 +1546,26 @@ namespace game
                 if(!text[0]) copystring(text, "unnamed");
                 if(d->name[0])          // already connected
                 {
-                    if(strcmp(d->name, text) && !isignored(d->clientnum))
+                    if(strcmp(d->name, text) && !isignored(d->clientnum)) {
                         conoutf("%s is now known as %s", colorname(d), colorname(d, text));
+                        // Fire Event: rename
+                        InexorCefValueList arguments;
+                        arguments.push_back(new InexorCefValue(d->clientnum));
+                        arguments.push_back(new InexorCefValue(d->name));
+                        arguments.push_back(new InexorCefValue(text));
+                        cef_app->GetEventManager()->FireEventWithContext("rename", arguments);
+                    }
                 }
                 else                    // new client
                 {
                     conoutf("\f0join:\f7 %s", colorname(d, text));
                     if(needclipboard >= 0) needclipboard++;
+
+                    // Fire Event: connect
+                    InexorCefValueList arguments;
+                    arguments.push_back(new InexorCefValue(d->clientnum));
+                    arguments.push_back(new InexorCefValue(text));
+                    cef_app->GetEventManager()->FireEventWithContext("connect", arguments);
                 }
                 copystring(d->name, text, MAXNAMELEN+1);
                 getstring(text, p);
@@ -1569,6 +1583,12 @@ namespace game
                     if(strcmp(text, d->name))
                     {
                         if(!isignored(d->clientnum)) conoutf("%s is now known as %s", colorname(d), colorname(d, text));
+                        // Fire Event: rename
+                        InexorCefValueList arguments;
+                        arguments.push_back(new InexorCefValue(d->clientnum));
+                        arguments.push_back(new InexorCefValue(d->name));
+                        arguments.push_back(new InexorCefValue(text));
+                        cef_app->GetEventManager()->FireEventWithContext("rename", arguments);
                         copystring(d->name, text, MAXNAMELEN+1);
                     }
                 }
@@ -1586,8 +1606,16 @@ namespace game
             }
 
             case N_CDIS:
-                clientdisconnected(getint(p));
+            {
+                fpsent *t = getclient(getint(p));
+                clientdisconnected(t->clientnum);
+                // Fire Event: disconnect
+                InexorCefValueList arguments;
+                arguments.push_back(new InexorCefValue(t->clientnum));
+                arguments.push_back(new InexorCefValue(t->name));
+                cef_app->GetEventManager()->FireEventWithContext("disconnect", arguments);
                 break;
+            }
 
             case N_SPAWN:
             {
@@ -2078,6 +2106,11 @@ namespace game
                 fpsent *b = newclient(bn);
                 if(!b) break;
                 ai::init(b, at, on, sk, bn, pm, name, team);
+                // Fire Event: disconnect
+                InexorCefValueList arguments;
+                arguments.push_back(new InexorCefValue(bn));
+                arguments.push_back(new InexorCefValue("bot"));
+                cef_app->GetEventManager()->FireEventWithContext("connect", arguments);
                 break;
             }
 
