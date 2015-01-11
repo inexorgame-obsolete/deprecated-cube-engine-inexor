@@ -1,5 +1,5 @@
 
-.consolesidebar {
+.debugsidebar {
     position: absolute;
     top: 25%;
     right: 0px;
@@ -14,7 +14,7 @@
     overflow-y: hidden;
 }
 
-.consolesidebar a {
+.debugsidebar a {
     color: black;
     text-decoration: none;
 }
