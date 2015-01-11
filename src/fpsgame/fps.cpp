@@ -173,8 +173,8 @@ namespace game
         }
     }
 
-	// check if it is neccesary to detach the camera 
-	// this is mostly triggered by player death
+	// check if it is neccesary to detach the camera from first person view
+	// to third person view. this is mostly triggered by player death
     bool detachcamera()
     {
         fpsent *d = hudplayer();

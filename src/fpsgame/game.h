@@ -16,12 +16,10 @@ enum
     CON_TEAMKILL   = 1<<13
 };
 
-
 // network quantization scale
 #define DMF 16.0f               // for world locations
 #define DNF 100.0f              // for normalized vectors
 #define DVELF 1.0f              // for playerspeed based velocity vectors
-
 
 // static entity types
 // will be replaced with new entity system later!
@@ -119,8 +117,7 @@ enum
 
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// game mode handling
-
+// game mode definitions
 
 // basic game mode bitmask "FLAGS"
 // (NOT game modes but attributes of game modes!!)
@@ -195,8 +192,11 @@ gamemodes[] =
     { "hideandseek", M_HIDEANDSEEK | M_TEAM | M_OBSTACLES, "Hide and Seek: Hiders hides, seekers seeks. No teamkills." },
 };
 
-#define STARTGAMEMODE (-3)
 
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// game mode validation and attribute handling
+
+#define STARTGAMEMODE (-3)
 
 // macro to determine the amount of available game modes
 // division: (size of array) / (size of one game mode)
@@ -213,7 +213,6 @@ gamemodes[] =
 #define m_checkall(mode, flag) (m_valid(mode) && (gamemodes[(mode) - STARTGAMEMODE].flags&(flag)) == (flag))
 
 // those game mode check macros are built on top of the layer above
-
 #define m_noitems      (m_check(gamemode, M_NOITEMS))
 #define m_noammo       (m_check(gamemode, M_NOAMMO|M_NOITEMS))
 #define m_insta        (m_check(gamemode, M_INSTA))
@@ -247,6 +246,7 @@ gamemodes[] =
 #define m_dmsp         (m_check(gamemode, M_DMSP))
 #define m_classicsp    (m_check(gamemode, M_CLASSICSP))
 
+
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // master server list handling
 
@@ -266,6 +266,7 @@ enum
 static const char * const mastermodenames[] =  { "auth",   "open",   "veto",       "locked",     "private",    "password" };
 static const char * const mastermodecolors[] = { "",       "\f0",    "\f2",        "\f2",        "\f3",        "\f3" };
 static const char * const mastermodeicons[] =  { "server", "server", "serverlock", "serverlock", "serverpriv", "serverpriv" };
+
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // sound list and description of administrative levels
@@ -321,6 +322,7 @@ enum
 	PRIV_AUTH,  // also green, should be violet!
 	PRIV_ADMIN // orange 
 };
+
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // network messages codes, c2s, c2c, s2c
@@ -394,6 +396,7 @@ static const int msgsizes[] =
     -1
 };
 
+// constant protocol and version definitions
 #define INEXOR_LANINFO_PORT 28784
 #define INEXOR_SERVER_PORT 28785
 #define INEXOR_SERVINFO_PORT 28786
@@ -402,15 +405,15 @@ static const int msgsizes[] =
 #define DEMO_VERSION 1                  // bump when demo format changes
 #define DEMO_MAGIC "INEXOR_DEMO"
 
+// demos contain stored network messages of a game
+// which can be replayed to review games
 struct demoheader
 {
     char magic[16];
     int version, protocol;
 };
 
-#define MAXNAMELEN 15
-#define MAXTEAMLEN 4
-
+// Enumeration for icons
 enum
 {
     HICON_BLUE_ARMOUR = 0,
@@ -435,7 +438,8 @@ enum
     HICON_NEUTRAL_FLAG,
 
     HICON_TOKEN,
-
+	
+	// bomberman
     HICON_BOMBRADIUS,
     HICON_BOMBDELAY,
 
@@ -447,7 +451,9 @@ enum
     HICON_SPACE   = 40
 };
 
-enum hudannounceeffects {
+// Bomberman: HUD announce effects
+enum hudannounceeffects 
+{
     E_STATIC_CENTER = 0,
     E_STATIC_LEFT,
     E_STATIC_RIGHT,
@@ -462,7 +468,24 @@ enum hudannounceeffects {
     E_BLINK_CENTER
 };
 
-static struct itemstat { int add, max, sound; const char *name; int icon, info; } itemstats[] =
+#define MAXRAYS 20
+#define EXP_SELFDAMDIV 2
+#define EXP_SELFPUSH 2.5f
+#define EXP_DISTSCALE 1.5f
+#define BOMB_DAMRAD 20
+
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// hard coded weapons and pickups
+
+// hard coded pickup description
+static struct itemstat 
+{ 
+	int add, max, sound; 
+	const char *name; 
+	int icon, info;
+}
+itemstats[] =
 {
     {10,    30,    S_ITEMAMMO,   "SG", HICON_SG,            GUN_SG},
     {20,    60,    S_ITEMAMMO,   "CG", HICON_CG,            GUN_CG},
@@ -480,13 +503,14 @@ static struct itemstat { int add, max, sound; const char *name; int icon, info; 
     {20000, 30000, S_ITEMPUP,    "Q",  HICON_QUAD,          -1}
 };
 
-#define MAXRAYS 20
-#define EXP_SELFDAMDIV 2
-#define EXP_SELFPUSH 2.5f
-#define EXP_DISTSCALE 1.5f
-#define BOMB_DAMRAD 20
-
-static const struct guninfo { int   sound, attackdelay, damage, spread, projspeed,       kickamount, range, rays, hitpush, exprad, ttl; const char *name, *file; short part; } guns[NUMGUNS] =
+// hard coded weapon description
+static const struct guninfo
+{ 
+	int sound, attackdelay, damage, spread, projspeed;
+	int kickamount, range, rays, hitpush, exprad, ttl; 
+	const char *name, *file; short part;
+}
+guns[NUMGUNS] =
 {
     { S_PUNCH1,    250,  50,   0,   0,  0,   14,  1,  80,   0,    0, "fist",            "fist",   0 },
     { S_SG,       1400,  10, 400,   0, 20, 1024, 20,  80,   0,    0, "shotgun",         "shotg",  0 },
@@ -506,6 +530,10 @@ static const struct guninfo { int   sound, attackdelay, damage, spread, projspee
 };
 
 #include "ai.h"
+
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// fpsstate and fpsent definitions
 
 // inherited by fpsent and server clients
 struct fpsstate
@@ -709,6 +737,7 @@ struct fpsstate
     }
 };
 
+// mostly players can be described with this
 struct fpsent : dynent, fpsstate
 {
     int weight;                         // affects the effectiveness of hitpush
@@ -787,6 +816,17 @@ struct fpsent : dynent, fpsstate
 
 };
 
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// team handling
+
+// those limits should be increased
+#define MAXNAMELEN 15
+#define MAXTEAMLEN 4
+#define MAXTEAMS 128
+
+// many competetive team modes allow more than 2 teams
+// allow sorting multiple teams using team scores
 struct teamscore
 {
     const char *team;
@@ -794,6 +834,7 @@ struct teamscore
     teamscore() {}
     teamscore(const char *s, int n) : team(s), score(n) {}
 
+	// used for quicksort template to compare teams
     static bool compare(const teamscore &x, const teamscore &y)
     {
         if(x.score > y.score) return true;
@@ -802,19 +843,40 @@ struct teamscore
     }
 };
 
-static inline uint hthash(const teamscore &t) { return hthash(t.team); }
-static inline bool htcmp(const char *key, const teamscore &t) { return htcmp(key, t.team); }
+// create hashes to access hashmapsSS
+static inline uint hthash(const teamscore &t) 
+{
+	return hthash(t.team); 
+}
 
-#define MAXTEAMS 128
+// compare those two two teamnames
+static inline bool htcmp(const char *key, const teamscore &t) 
+{
+	return htcmp(key, t.team);
+}
 
+// 
 struct teaminfo
 {
     char team[MAXTEAMLEN+1];
     int frags;
 };
 
-static inline uint hthash(const teaminfo &t) { return hthash(t.team); }
-static inline bool htcmp(const char *team, const teaminfo &t) { return !strcmp(team, t.team); }
+// create hash for hashsts
+static inline uint hthash(const teaminfo &t) 
+{ 
+	return hthash(t.team); 
+}
+
+// compare two team names
+static inline bool htcmp(const char *team, const teaminfo &t)
+{
+	return !strcmp(team, t.team);
+}
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// entity handling
+// entity system will be replaced with new entity system later...
 
 namespace entities
 {
@@ -841,6 +903,9 @@ namespace entities
 
     extern void repammo(fpsent *d, int type, bool local = true);
 }
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// full game handling
 
 namespace game
 {
@@ -970,7 +1035,15 @@ namespace game
     extern bool isobstaclealive(movable *m);
 
     // weapon
-    enum { BNC_GRENADE, BNC_BOMB, BNC_SPLINTER, BNC_GIBS, BNC_DEBRIS, BNC_BARRELDEBRIS };
+    enum 
+	{ 
+		BNC_GRENADE, 
+		BNC_BOMB, 
+		BNC_SPLINTER, 
+		BNC_GIBS, 
+		BNC_DEBRIS, 
+		BNC_BARRELDEBRIS
+	};
 
     struct projectile
     {
@@ -1057,6 +1130,9 @@ namespace game
     extern void swayhudgun(int curtime);
     extern vec hudgunorigin(int gun, const vec &from, const vec &to, fpsent *d);
 }
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// local dedicated server handling
 
 namespace server
 {

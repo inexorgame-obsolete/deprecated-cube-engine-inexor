@@ -1351,6 +1351,7 @@ namespace game
         }
     }
 
+	// see deathscore command
     extern int deathscore;
 
 	// parse other network messages
