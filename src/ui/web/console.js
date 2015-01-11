@@ -149,7 +149,7 @@ window.onkeydown = function(e) {
  * Subscribe events.
  */
 inexor.event.subscribe("frag", function(victim, actor) {
-	inexor.console.out(actor + " fragged " + victim);
+	inexor.console.out(inexor.game.getClientName(actor) + " fragged " + inexor.game.getClientName(victim));
 });
 inexor.event.subscribe("connect", function(cn, name) {
 	inexor.console.out("connect: " + name + "(" + cn + ")");

@@ -16,6 +16,7 @@
 #include "cefdebug.h"
 #include "cefdebugoverlay.h"
 #include "cefeventmanager.h"
+#include "cefgame.h"
 #include "cefkeyboard.h"
 #include "ceflayermanager.h"
 #include "cefnetwork.h"
@@ -42,6 +43,7 @@ class InexorCefApp : public CefApp,
         CefRefPtr<InexorCefMouseManager> GetMouseManager() { return mouse_manager; }
         CefRefPtr<InexorCefKeyboardManager> GetKeyboardManager() { return keyboard_manager; }
         CefRefPtr<InexorCefNetworkManager> GetNetworkManager() { return network_manager; }
+        CefRefPtr<InexorCefGameManager> GetGameManager() { return game_manager; }
         CefRefPtr<InexorCefConsole> GetConsole() { return console; }
         CefRefPtr<InexorCefMenu> GetMenu() { return menu; }
         CefRefPtr<InexorCefDebugOverlay> GetDebugOverlay() { return debug_overlay; }
@@ -75,6 +77,9 @@ class InexorCefApp : public CefApp,
 
         // Network Manager
         CefRefPtr<InexorCefNetworkManager> network_manager;
+
+        // Game Manager
+        CefRefPtr<InexorCefGameManager> game_manager;
 
         // Console
         CefRefPtr<InexorCefConsole> console;
