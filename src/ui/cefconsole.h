@@ -1,17 +1,6 @@
 #ifndef _CEF_CONSOLE_H
 #define _CEF_CONSOLE_H
 
-#include <string>
-#include <stdio.h>  /* defines FILENAME_MAX */
-
-#ifdef WINDOWS
-#include <direct.h>
-#define GetCurrentDir _getcwd
-#else
-#include <unistd.h>
-#define GetCurrentDir getcwd
-#endif
-
 #include "include/cef_app.h"
 
 #include "cefcontextprovider.h"
@@ -36,18 +25,12 @@ class InexorCefConsole : public InexorCefContextProvider,
 
         // InexorCefLayerProvider
         std::string GetLayerName() { return "console"; };
-        std::string GetUrl() {
-            char base_path[FILENAME_MAX];
-            GetCurrentDir(base_path, sizeof(base_path));
-            return "file://" + std::string(base_path) + "/console.html";
-        };
+        std::string GetUrl() { return GetLocalUrl("/src/ui/web/console.html"); };
         bool GetVisibility() { return true; };
         bool GetAcceptingInput() { return true; };
         bool GetFocus() { return true; };
 
     private:
-        //
-
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(InexorCefConsole);
