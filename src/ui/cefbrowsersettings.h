@@ -12,7 +12,7 @@ class InexorCefBrowserSettings : public CefBrowserSettings {
             plugins = STATE_DISABLED;
             webgl = STATE_DISABLED;
             java = STATE_DISABLED;
-            caret_browsing = STATE_ENABLED;
+            caret_browsing = STATE_DISABLED;
             javascript = STATE_ENABLED;
         };
 };
