@@ -14,6 +14,7 @@
 #include "cefconsole.h"
 #include "cefcontextmanager.h"
 #include "cefdebug.h"
+#include "cefdebugoverlay.h"
 #include "cefeventmanager.h"
 #include "cefkeyboard.h"
 #include "ceflayermanager.h"
@@ -43,6 +44,7 @@ class InexorCefApp : public CefApp,
         CefRefPtr<InexorCefNetworkManager> GetNetworkManager() { return network_manager; }
         CefRefPtr<InexorCefConsole> GetConsole() { return console; }
         CefRefPtr<InexorCefMenu> GetMenu() { return menu; }
+        CefRefPtr<InexorCefDebugOverlay> GetDebugOverlay() { return debug_overlay; }
 
         // Rendering / Window Management
         void Render();
@@ -71,14 +73,17 @@ class InexorCefApp : public CefApp,
         // Keyboard Manager
         CefRefPtr<InexorCefKeyboardManager> keyboard_manager;
 
+        // Network Manager
+        CefRefPtr<InexorCefNetworkManager> network_manager;
+
         // Console
         CefRefPtr<InexorCefConsole> console;
 
         // Menu
         CefRefPtr<InexorCefMenu> menu;
 
-        // Network Manager
-        CefRefPtr<InexorCefNetworkManager> network_manager;
+        // Debug Overlay
+        CefRefPtr<InexorCefDebugOverlay> debug_overlay;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(InexorCefApp);

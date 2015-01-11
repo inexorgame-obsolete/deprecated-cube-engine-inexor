@@ -32,6 +32,11 @@ inexor.console.follow = false;
 inexor.console.debug = false;
 
 /**
+ * The key bindings.
+ */
+inexor.console.keyBindings = {};
+
+/**
  * Redirect the native browser console, print in output window and
  * redirect back into the native browser console.
  */
