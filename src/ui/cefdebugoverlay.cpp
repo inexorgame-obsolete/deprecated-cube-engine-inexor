@@ -4,6 +4,7 @@ void InexorCefDebugOverlay::InitializeContext()
 {
     CreateFunction("show", this);
     CreateFunction("hide", this);
+    CreateFunction("toggle", this);
     CreateVariable("visible", true);
 }
 
@@ -15,6 +16,9 @@ bool InexorCefDebugOverlay::Execute(const CefString& name, CefRefPtr<CefV8Value>
         return true;
     } else if (name == "hide") {
         Hide();
+        return true;
+    } else if (name == "toggle") {
+        Toggle();
         return true;
     }
     return false;
