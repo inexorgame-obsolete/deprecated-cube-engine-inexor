@@ -1,8 +1,8 @@
 # Compiling with the tools
 
-The script `install-homunculus.sh` above can be used to
-automatically compile Inexor or to generate Eclipse, Code
-Blocks, Xcode projects. For Mingw users it can also generate
+The script `install-homunculus.command` above can be used to
+automatically compile Inexor or to generate Eclipse, CodeBlocks, 
+Xcode projects. For Mingw users it can also generate
 visual studio projects.
 
 It works on OS X, Debian (and derivatives, e.g. Ubuntu),
@@ -30,8 +30,10 @@ to:
 
 Depending on your environment you also need some of those:
 
-* make (linux, mingw)
-* Eclipse or (if you want to use eclipse)
-* Xcode (under Mac OS X)
+* make (on linux, mingw)
+* Eclipse (if you want to use Eclipse)
+  * egit Plugin (install it using the Eclipse Marketplace)
+* CodeBlocks (if you want to use CodeBlocks)
+* Xcode (on Mac OS X)
 * CMake GUI (optional)
 * Github for Mac/Windows (optional)
