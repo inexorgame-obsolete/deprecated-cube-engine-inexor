@@ -49,6 +49,7 @@ class AbstractInexorCefLayerProvider : public InexorCefLayerProvider
 
         void Show() { SetVisibility(true); };
         void Hide() { SetVisibility(false); };
+        void Toggle() { SetVisibility(!is_visible); };
 
         bool GetVisibility() { return is_visible; };
         bool GetAcceptingInput() { return is_visible; };

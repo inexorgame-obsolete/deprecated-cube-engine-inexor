@@ -4,6 +4,7 @@ void InexorCefMenu::InitializeContext()
 {
     CreateFunction("show", this);
     CreateFunction("hide", this);
+    CreateFunction("toggle", this);
     CreateVariable("visible", true);
 }
 
@@ -15,6 +16,9 @@ bool InexorCefMenu::Execute(const CefString& name, CefRefPtr<CefV8Value> object,
         return true;
     } else if (name == "hide") {
         Hide();
+        return true;
+    } else if (name == "toggle") {
+        Toggle();
         return true;
     }
     return false;

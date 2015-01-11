@@ -125,18 +125,25 @@ inexor.console.init = function() {
     consoleInputField = document.getElementById('consolein-field');
     inexor.console.out("Console Initialized!");
     inexor.console.tail();
+
+    // Bind keys
+    Mousetrap.bind('esc', inexor.menu.toggle);
+    Mousetrap.bind('f11', inexor.console.toggle);
+    Mousetrap.bind('f10', inexor.debug.toggle);
 };
 window.setTimeout(inexor.console.init, 100);
 
 /**
  * Bind ESC on toggle console.
  */
+/*
 window.onkeydown = function(e) {
     if (getKeyCode(e) == '27') {
         inexor.console.toggle();
         return false;
     }
 };
+*/
 
 /**
  * Subscribe events.
