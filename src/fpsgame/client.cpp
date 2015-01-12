@@ -579,6 +579,8 @@ namespace game
         addmsg(N_SETMASTER, "riis", cn, val, hash);
     }
     COMMAND(setmaster, "ss");
+
+	// request to change server master mode (permissions requires)
     ICOMMAND(mastermode, "i", (int *val), addmsg(N_MASTERMODE, "ri", *val));
 
 
@@ -837,6 +839,7 @@ namespace game
         if(!m_edit) return;
         switch(id->type)
         {
+			// access memory storage union depending on var type
             case ID_VAR:
                 addmsg(N_EDITVAR, "risi", ID_VAR, id->name, *id->storage.i);
                 break;

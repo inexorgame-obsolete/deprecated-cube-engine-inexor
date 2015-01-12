@@ -1266,7 +1266,7 @@ case N_RESETFLAG:
 }
 
 case N_INVISFLAG:
-{
+{	
     int flag = getint(p), invis = getint(p);
     if(m_ctf) ctfmode.invisflag(flag, invis);
     break;

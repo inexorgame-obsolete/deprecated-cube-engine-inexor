@@ -373,6 +373,7 @@ enum
     N_SERVMSG,				// S2C  server messages can be colored and will be rendered in game console
 	N_ITEMLIST,				// C2S|S2C  client request a list of items available in the current match / server answers with list
 	N_RESUME,				// S2C  resume transmission of new data from lagged client (NOT: RESUMING A PAUSED GAME!)
+	
 	// edit mode specific network messages
 	N_EDITMODE,				// C2S|S2C  a player toggled his edit mode on/off (requires editmode)
 	N_EDITENT,				// S2C  a player creates a new entity (requires editmode)
@@ -390,38 +391,45 @@ enum
 	N_GETMAP,				// C2S  a client downloaded the current map from server's map buffer (NOT ALWAYS UP TO DATE! MAP MUST BE SENT BEFORE DOWNLOADING!)
 	N_SENDMAP,				// S2C  server sends map to client (requires coop mode. YOU CAN'T SEND MAPS IN INSTACTF e.g. (YET))
 	N_CLIPBOARD,			// C2S  send copied data from your clipboard to server
-	N_EDITVAR,
-    N_MASTERMODE, 
-	N_KICK, 
+	N_EDITVAR,				// C2S|S2C  set map var value (requires editmode)
+    N_MASTERMODE,			// C2S  change master mode (requires permissions)
+	N_KICK,					// C2S  kick a specific player
 	N_CLEARBANS,			// C2S	clear ban list
 	N_CURRENTMASTER,		// S2C	server sent information about who is the current game master
-	N_SPECTATOR, 
+	N_SPECTATOR,			// C2S|S2C  toggle spectator status
 	N_SETMASTER,			// C2S	claim game master
-	N_SETTEAM,
-    N_BASES, 
-	N_BASEINFO, 
-	N_BASESCORE, 
-	N_REPAMMO, 
-	N_BASEREGEN, 
-	N_ANNOUNCE,
-    N_LISTDEMOS, 
-	N_SENDDEMOLIST, 
-	N_GETDEMO, 
-	N_SENDDEMO,
-    N_DEMOPLAYBACK, 
-	N_RECORDDEMO, 
-	N_STOPDEMO, 
-	N_CLEARDEMOS,
-    N_TAKEFLAG, 
-	N_RETURNFLAG, 
-	N_RESETFLAG, 
-	N_INVISFLAG, 
-	N_TRYDROPFLAG, 
-	N_DROPFLAG, 
-	N_SCOREFLAG, 
-	N_INITFLAGS,
-    N_SAYTEAM,				// team chat
-	N_HUDANNOUNCE,
+	N_SETTEAM,				// C2S|S2C  team chat
+
+    // capture mode specific network messages
+	N_BASES,				// S2C  send a list of available bases in capture mode
+	N_BASEINFO,				// S2C  send extended information about bases
+	N_BASESCORE,			// S2C  send base score to client
+	N_REPAMMO,				// S2C  replace ammo around bases in capture mode
+	N_BASEREGEN,			// S2C  regen capture: refill health and ammo of players near captured bases
+	N_ANNOUNCE,				// S2C  announce spawn of quad damage or health boost (normal capture only)
+
+	// demo specific network messages
+    N_LISTDEMOS,			// C2S  request a list of demos available for download
+	N_SENDDEMOLIST,			// S2C  send a list of demos available for download
+	N_GETDEMO,				// C2S  a client requests to download a demo
+	N_SENDDEMO,				// S2C  server sends a demo
+    N_DEMOPLAYBACK,			// S2C  FINISH demo playback
+	N_RECORDDEMO,			// C2S  advise the server to record demo
+	N_STOPDEMO,				// C2S  finish demo recording add add recorded material to demo list
+	N_CLEARDEMOS,			// C2S  clear the last n / all demos
+
+	// ctf/hold specific network messages
+    N_TAKEFLAG,				// S2C  a player took a flag
+	N_RETURNFLAG,			// S2C  a player returned a flag
+	N_RESETFLAG,			// S2C  a flag has been reset
+	N_INVISFLAG,			// S2C  send how long flag will stay transparent in hold mode ? (vistime)
+	N_TRYDROPFLAG,			// C2S  tell the server that you would like to drop your flag
+	N_DROPFLAG,				// S2C  a client has dropped the flag
+	N_SCOREFLAG,			// S2C  a client has scored the flag
+	N_INITFLAGS,			// S2C  send a list of flags available in game
+
+    N_SAYTEAM,				// C2S|S2C  team chat
+	N_HUDANNOUNCE,			// S2C  BOMBERMAN Announcement
     N_CLIENT,
     N_AUTHTRY, 
 	N_AUTHKICK, 
