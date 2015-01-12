@@ -299,25 +299,20 @@ enum
     S_PAIND, S_DEATHD,
     S_PIGR1, S_ICEBALL, S_SLIMEBALL,
     S_JUMPPAD, S_PISTOL,
-
     S_V_BASECAP, S_V_BASELOST,
     S_V_FIGHT,
     S_V_BOOST, S_V_BOOST10,
     S_V_QUAD, S_V_QUAD10,
     S_V_RESPAWNPOINT,
-
     S_FLAGPICKUP,
     S_FLAGDROP,
     S_FLAGRETURN,
     S_FLAGSCORE,
     S_FLAGRESET,
-
     S_BURN,
     S_CHAINSAW_ATTACK,
     S_CHAINSAW_IDLE,
-
     S_HIT,
-    
     S_FLAGFAIL
 };
 
@@ -339,32 +334,120 @@ enum
 // BE AWARE OF WHAT YOU ARE DOING.
 enum
 {
-    N_CONNECT = 0, N_SERVINFO, N_WELCOME, N_INITCLIENT, N_POS, N_TEXT, N_SOUND, N_CDIS,
-    N_SHOOT, N_EXPLODE, N_SUICIDE,
-    N_DIED, N_DAMAGE, N_HITPUSH, N_SHOTFX, N_EXPLODEFX,
-    N_TRYSPAWN, N_SPAWNSTATE, N_SPAWN, N_FORCEDEATH,
-    N_GUNSELECT, N_TAUNT,
-    N_MAPCHANGE, N_MAPVOTE, N_TEAMINFO, 
-    N_ITEMSPAWN, N_ITEMPICKUP, N_ITEMACC, N_ITEMPUSH, 
-	N_TELEPORT, N_JUMPPAD,
-    N_PING, N_PONG, N_CLIENTPING,
-    N_TIMEUP, N_FORCEINTERMISSION,
-    N_SERVMSG, N_ITEMLIST, N_RESUME,
-    N_EDITMODE, N_EDITENT, N_EDITF, N_EDITT, N_EDITM, N_FLIP, N_COPY, N_PASTE, N_ROTATE, N_REPLACE, N_DELCUBE, N_REMIP, N_NEWMAP, N_GETMAP, N_SENDMAP, N_CLIPBOARD, N_EDITVAR,
-    N_MASTERMODE, N_KICK, N_CLEARBANS, N_CURRENTMASTER, N_SPECTATOR, N_SETMASTER, N_SETTEAM,
-    N_BASES, N_BASEINFO, N_BASESCORE, N_REPAMMO, N_BASEREGEN, N_ANNOUNCE,
-    N_LISTDEMOS, N_SENDDEMOLIST, N_GETDEMO, N_SENDDEMO,
-    N_DEMOPLAYBACK, N_RECORDDEMO, N_STOPDEMO, N_CLEARDEMOS,
-    N_TAKEFLAG, N_RETURNFLAG, N_RESETFLAG, N_INVISFLAG, N_TRYDROPFLAG, N_DROPFLAG, N_SCOREFLAG, N_INITFLAGS,
-    N_SAYTEAM, N_HUDANNOUNCE,
+    N_CONNECT = 0,			// C2S  send connection request to server
+	N_SERVINFO,				// S2C  send connection attempt answer (can be denied in case of wrong protocol or server password protection)
+	N_WELCOME,				// S2C  we are now connected. also close my GUI
+	N_INITCLIENT,			// S2C  another client connected or existing client changed name, team, or player model
+	N_POS,					// C2S|C2S send player position and rotation
+	N_TEXT,					// C2S  send chat message to global game chat
+	N_SOUND,				// C2S  send sound signal
+	N_CDIS,					// S2C  a client disconnected
+    N_SHOOT,				// C2S  a shot was fired	
+	N_EXPLODE,				// C2S  an explosion was triggered (grenades, rockets..)
+	N_SUICIDE,				// C2S  I suicided (other clients receive N_DIED where actor = victim)
+    N_DIED,					// S2C  a player got killed (or suicided)
+	N_DAMAGE,				// S2C  a player got damages
+	N_HITPUSH,				// S2C  a player got pushed back
+	N_SHOTFX,				// S2C  the EFFECT OF A SHOT (see N_SHOT)
+	N_EXPLODEFX,			// S2C  the EFFECT OF AN EXPLOSION (see N_EXPLODE)
+    N_TRYSPAWN,				// C2S	a players tries to spawn
+	N_SPAWNSTATE,			// S2C  send clients spawn information
+	N_SPAWN,				// C2S|S2C  a client is now spawning
+	N_FORCEDEATH,			// S2C  force a client to die
+    N_GUNSELECT,			// C2S  a client selects a weapon
+	N_TAUNT,				// C2S|S2C (?)  a client sent "Im gonna kill you" animation
+    N_MAPCHANGE,			// S2C  server changed map
+	N_MAPVOTE,				// C2S  client suggests a map/mode
+	N_TEAMINFO,				// S2C  send information about teams and their frags
+    N_ITEMSPAWN,			// S2C  an item has spawned
+	N_ITEMPICKUP,			// C2S  I just picked up this item
+	N_ITEMACC,				// S2C  item pickup was acknowledged for a client (item is occupied/despawned. wait for spawn)
+	N_ITEMPUSH,				// C2S  (BOMBERMAN) lose items when killed
+	N_TELEPORT,				// C2S|S2C a player in game has teleported to a teleport destination
+	N_JUMPPAD,				// C2S|S2C a player in game has used a jumppad
+    N_PING,					// C2S client sends ping packet to server
+	N_PONG,					// S2C servers answers ping packet
+	N_CLIENTPING,			// C2S|S2C  send client ping mesaure request / servers sends clients' pings
+    N_TIMEUP,				// S2C  change remaining time
+	N_FORCEINTERMISSION,	// S2C  server ended current game: set game time to 0 ("intermission")
+    N_SERVMSG,				// S2C  server messages can be colored and will be rendered in game console
+	N_ITEMLIST,				// C2S|S2C  client request a list of items available in the current match / server answers with list
+	N_RESUME,				// S2C  resume transmission of new data from lagged client (NOT: RESUMING A PAUSED GAME!)
+	// edit mode specific network messages
+	N_EDITMODE,				// C2S|S2C  a player toggled his edit mode on/off (requires editmode)
+	N_EDITENT,				// S2C  a player creates a new entity (requires editmode)
+	N_EDITF,				// C2S|S2C  a player changed a FACE (requires editmode)
+	N_EDITT,				// C2S|S2C  a player changed a TEXTURE (requires editmode)
+	N_EDITM,				// C2S|S2C  a player edited MATERIAL (requires editmode)
+	N_FLIP,					// C2S|S2C  a player flipped the current selection (requires editmode)
+	N_COPY,					// C2S|S2C (?)  a player wants to copy a certain selection (requires editmode)
+	N_PASTE,				// C2S|S2C (?)  send clipboard to other palyers (requires editmode)
+	N_ROTATE,				// C2S|S2C  a player rotated a selection (requires editmode)
+	N_REPLACE,				// C2S|S2C  a player wants to replace a selection (requires editmode)
+	N_DELCUBE,				// C2S|S2C  a player wants to delete a selection (requires editmode)
+	N_REMIP,				// C2S|S2C  a client forcedremip (requires editmode, no administrative levels required)
+	N_NEWMAP,				// C2S|S2C  a client started a new map (requires editmode)
+	N_GETMAP,				// C2S  a client downloaded the current map from server's map buffer (NOT ALWAYS UP TO DATE! MAP MUST BE SENT BEFORE DOWNLOADING!)
+	N_SENDMAP,				// S2C  server sends map to client (requires coop mode. YOU CAN'T SEND MAPS IN INSTACTF e.g. (YET))
+	N_CLIPBOARD,			// C2S  send copied data from your clipboard to server
+	N_EDITVAR,
+    N_MASTERMODE, 
+	N_KICK, 
+	N_CLEARBANS,			// C2S	clear ban list
+	N_CURRENTMASTER,		// S2C	server sent information about who is the current game master
+	N_SPECTATOR, 
+	N_SETMASTER,			// C2S	claim game master
+	N_SETTEAM,
+    N_BASES, 
+	N_BASEINFO, 
+	N_BASESCORE, 
+	N_REPAMMO, 
+	N_BASEREGEN, 
+	N_ANNOUNCE,
+    N_LISTDEMOS, 
+	N_SENDDEMOLIST, 
+	N_GETDEMO, 
+	N_SENDDEMO,
+    N_DEMOPLAYBACK, 
+	N_RECORDDEMO, 
+	N_STOPDEMO, 
+	N_CLEARDEMOS,
+    N_TAKEFLAG, 
+	N_RETURNFLAG, 
+	N_RESETFLAG, 
+	N_INVISFLAG, 
+	N_TRYDROPFLAG, 
+	N_DROPFLAG, 
+	N_SCOREFLAG, 
+	N_INITFLAGS,
+    N_SAYTEAM,				// team chat
+	N_HUDANNOUNCE,
     N_CLIENT,
-    N_AUTHTRY, N_AUTHKICK, N_AUTHCHAL, N_AUTHANS, N_REQAUTH,
-    N_PAUSEGAME, N_GAMESPEED,
-    N_ADDBOT, N_DELBOT, N_INITAI, N_FROMAI, N_BOTLIMIT, N_BOTBALANCE,
-    N_MAPCRC, N_CHECKMAPS,
-    N_SWITCHNAME, N_SWITCHMODEL, N_SWITCHTEAM,
-    N_INITTOKENS, N_TAKETOKEN, N_EXPIRETOKENS, N_DROPTOKENS, N_DEPOSITTOKENS, N_STEALTOKENS,
-    N_SERVCMD,
+    N_AUTHTRY, 
+	N_AUTHKICK, 
+	N_AUTHCHAL, 
+	N_AUTHANS, 
+	N_REQAUTH,
+    N_PAUSEGAME,			// server paused game. stop player movement and actions
+	N_GAMESPEED,			// change game speed
+    N_ADDBOT, 
+	N_DELBOT, 
+	N_INITAI, 
+	N_FROMAI, 
+	N_BOTLIMIT, 
+	N_BOTBALANCE,
+    N_MAPCRC, 
+	N_CHECKMAPS,
+    N_SWITCHNAME,			// a player has changed his name
+	N_SWITCHMODEL,			// a player has changed his player model
+	N_SWITCHTEAM,			// a player has switched his team (some game modes have more than 2 teams!)
+    N_INITTOKENS, 
+	N_TAKETOKEN, 
+	N_EXPIRETOKENS, 
+	N_DROPTOKENS, 
+	N_DEPOSITTOKENS, 
+	N_STEALTOKENS,
+    N_SERVCMD,				// servers could send advanced messages to clients. standard clients do not interpret this custom message
     N_DEMOPACKET,
     N_SPAWNLOC,
     NUMMSG

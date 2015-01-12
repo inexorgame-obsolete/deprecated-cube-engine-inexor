@@ -1,10 +1,21 @@
+// aiman.h (A.I. manager)
 // server-side ai manager
+// 
+// 
+// 
+// 
+
 namespace aiman
 {
     bool dorefresh = false;
-    VARN(serverbotlimit, botlimit, 0, 8, MAXBOTS);
-    VARN(serverbotbalance, botbalance, 0, 1, 1);
 
+	// limit amount of computer controlled players on your server
+    VARN(serverbotlimit, botlimit, 0, 8, MAXBOTS);
+    // use (prefere) bots to balance teams
+	// not accepted my most modded servers
+	VARN(serverbotbalance, botbalance, 0, 1, 1);
+
+	// quicksort teams to rank them in scoreboard
     void calcteams(vector<teamscore> &teams)
     {
         static const char * const defaults[2] = { "good", "evil" };
@@ -17,13 +28,15 @@ namespace aiman
             if(t) t->score++;
             else teams.add(teamscore(ci->team, 1));
         }
-        teams.sort(teamscore::compare);
+        teams.sort(teamscore::compare); // quicksort
         if(teams.length() < int(sizeof(defaults)/sizeof(defaults[0])))
         {
             loopi(sizeof(defaults)/sizeof(defaults[0])) if(teams.htfind(defaults[i]) < 0) teams.add(teamscore(defaults[i], 0));
         }
     }
 
+	// switch team of players to preserve fairness
+	// this algorithm could be improved based on player's statistics!
     void balanceteams()
     {
         vector<teamscore> teams;
@@ -56,6 +69,8 @@ namespace aiman
         }
     }
 
+	// return the name of the team with fewer players
+	// used to balance with new connected players
     const char *chooseteam()
     {
         vector<teamscore> teams;
@@ -85,7 +100,7 @@ namespace aiman
 		int numai = 0, cn = -1, maxai = limit >= 0 ? min(limit, MAXBOTS) : MAXBOTS;
 		loopv(bots)
         {
-      clientinfo *ci = bots[i];
+			clientinfo *ci = bots[i];
             if(!ci || ci->ownernum < 0) { if(cn < 0) cn = i; continue; }
 			numai++;
 		}
@@ -94,17 +109,21 @@ namespace aiman
         {
             clientinfo *ci = bots[cn];
             if(ci)
-            { // reuse a slot that was going to removed
-
-        clientinfo *owner = findaiclient();
-        ci->ownernum = owner ? owner->clientnum : -1;
+            { 
+				// reuse a slot that was going to removed
+				clientinfo *owner = findaiclient();
+				ci->ownernum = owner ? owner->clientnum : -1;
                 if(owner) owner->bots.add(ci);
-        ci->aireinit = 2;
-        dorefresh = true;
-        return true;
-      }
-    }
-        else { cn = bots.length(); bots.add(NULL); }
+				ci->aireinit = 2;
+				dorefresh = true;
+				return true;
+			}
+		}
+        else
+		{
+			cn = bots.length();
+			bots.add(NULL);
+		}
     	const char *team = m_teammode ? chooseteam() : "";
         if(!bots[cn]) bots[cn] = new clientinfo;
     	clientinfo *ci = bots[cn];
@@ -175,9 +194,9 @@ namespace aiman
         dorefresh = true;
 	}
 
+	// either schedules a removal, or someone else to assign to
 	void removeai(clientinfo *ci)
-	{ // either schedules a removal, or someone else to assign to
-
+	{
 		loopvrev(ci->bots) shiftai(ci->bots[i], findaiclient(ci));
 	}
 
@@ -202,15 +221,16 @@ namespace aiman
 		return false;
 	}
 
-
+	// 
 	void checksetup()
 	{
 	    if(m_teammode && botbalance) balanceteams();
 		loopvrev(bots) if(bots[i]) reinitai(bots[i]);
 	}
 
+	// clear and remove all ai immediately
 	void clearai()
-	{ // clear and remove all ai immediately
+	{ 
         loopvrev(bots) if(bots[i]) deleteai(bots[i]);
 	}
 
@@ -264,12 +284,16 @@ namespace aiman
         if(!botbalance) setbotbalance(NULL, true);
     }
 
+	// a new human player connected
+	// change/refresh the way computer controlled players think
     void addclient(clientinfo *ci)
     {
         if(ci->state.aitype == AI_NONE) dorefresh = true;
     }
 
-    void changeteam(clientinfo *ci)
+	// a human player has changed team
+	// change/refresh the way computer controlled players think
+	void changeteam(clientinfo *ci)
     {
         if(ci->state.aitype == AI_NONE) dorefresh = true;
     }

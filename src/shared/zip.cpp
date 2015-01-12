@@ -65,7 +65,10 @@ struct ziparchive
     ~ziparchive()
     {
         DELETEA(name);
-        if(data) { fclose(data); data = NULL; }
+        if(data) 
+		{
+			fclose(data); data = NULL; 
+		}
     }
 };
 
