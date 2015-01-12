@@ -1,3 +1,10 @@
+// fps.cpp 
+// implementation of basic game functions
+// implementation of many cubescript bindings
+//
+//
+//
+
 #include "game.h"
 
 namespace game
