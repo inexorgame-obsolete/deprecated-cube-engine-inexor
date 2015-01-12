@@ -11,6 +11,23 @@
 namespace game
 {
     extern const char* getclientname(int cn);
+    const char* getclientteam(int cn);
+    int getclientmodel(int cn);
+    const char *getclienticon(int cn);
+    bool ismaster(int cn);
+    bool isauth(int cn);
+    bool isadmin(int cn);
+    bool isspectator(int cn);
+    bool isai(int cn, int type);
+
+    void clearbans();
+    void setteam(const char *arg1, const char *arg2);
+    void kick(const char *victim, const char *reason);
+    void authkick(const char *desc, const char *victim, const char *reason);
+    void ignore(int cn);
+    void unignore(int cn);
+    bool isignored(int cn);
+    void togglespectator(int val, const char *who);
 }
 
 class InexorCefGameManager : public InexorCefContextProvider
@@ -18,6 +35,13 @@ class InexorCefGameManager : public InexorCefContextProvider
 
     public:
         InexorCefGameManager() {};
+
+        CefRefPtr<CefV8Value> GetPlayer(int cn);
+        void SetValue(CefRefPtr<CefV8Value> player, std::string key, CefRefPtr<CefV8Value> value);
+        void UpdatePlayer(CefRefPtr<CefV8Value> player, int cn);
+        void UpdatePlayer(CefRefPtr<CefV8Value> player);
+        void UpdatePlayer(int cn);
+        void UpdatePlayers();
 
         // InexorCefContextProvider
         void InitializeContext();
