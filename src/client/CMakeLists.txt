@@ -101,7 +101,6 @@ set(CLIENT_HEADERS_ENGINE
     
 set(CLIENT_SOURCES_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefapp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefclienthandler
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefconsole
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefcontextmanager
     ${CMAKE_CURRENT_SOURCE_DIR}/../ui/cefcontextprovider
