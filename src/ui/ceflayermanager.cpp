@@ -226,7 +226,7 @@ void InexorCefLayerManager::RenderLayer(std::string name)
 {
     InexorCefLayer* layer = GetLayer(name);
     if (layer)
-        layer->GetRenderHandler()->Render();
+        layer->Render();
 }
 
 void InexorCefLayerManager::Render()
@@ -237,7 +237,7 @@ void InexorCefLayerManager::Render()
     {
         InexorCefLayer* layer = (*it);
         if (layer->IsVisible()) {
-            layer->GetRenderHandler()->Render();
+            layer->Render();
         }
     }
 }
