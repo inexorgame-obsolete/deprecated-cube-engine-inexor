@@ -930,6 +930,8 @@ void checkinput()
 
             case SDL_TEXTINPUT:
             {
+                // logoutf("TEXTINPUT type: %d mod: %d sym: %d (%s) scan: %d (%s)", event.key.state, event.key.keysym.mod, event.key.keysym.sym, SDL_GetKeyName(event.key.keysym.sym), event.key.keysym.scancode, SDL_GetScancodeName(event.key.keysym.scancode));
+                cef_app->GetKeyboardManager()->SendKeyEvent(event);
                 static uchar buf[SDL_TEXTINPUTEVENT_TEXT_SIZE+1];
                 int len = decodeutf8(buf, int(sizeof(buf)-1), (const uchar *)event.text.text, strlen(event.text.text));
                 if(len > 0) { buf[len] = '\0'; processtextinput((const char *)buf, len); }
@@ -938,6 +940,7 @@ void checkinput()
 
             case SDL_KEYDOWN:
             case SDL_KEYUP:
+                // logoutf("KEY type: %d mod: %d sym: %d (%s) scan: %d (%s)", event.key.state, event.key.keysym.mod, event.key.keysym.sym, SDL_GetKeyName(event.key.keysym.sym), event.key.keysym.scancode, SDL_GetScancodeName(event.key.keysym.scancode));
                 cef_app->GetKeyboardManager()->SendKeyEvent(event);
                 if(keyrepeatmask || !event.key.repeat) {
                     processkey(event.key.keysym.sym, event.key.state==SDL_PRESSED);
@@ -1309,6 +1312,7 @@ int main(int argc, char **argv)
         #endif
 
         if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO|par)<0) fatal("Unable to initialize SDL: %s", SDL_GetError());
+        SDL_StartTextInput();
     }
     
 	// initialise game components
@@ -1331,7 +1335,7 @@ int main(int argc, char **argv)
     int useddepthbits = 0, usedfsaa = 0;
     setupscreen(useddepthbits, usedfsaa);
     SDL_ShowCursor(SDL_FALSE);
-    SDL_StopTextInput(); // workaround for spurious text-input events getting sent on first text input toggle?
+    // SDL_StopTextInput(); // workaround for spurious text-input events getting sent on first text input toggle?
 
     logoutf("init: gl");
     gl_checkextensions();
