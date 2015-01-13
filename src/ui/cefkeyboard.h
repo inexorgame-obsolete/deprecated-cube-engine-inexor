@@ -113,18 +113,34 @@
 #define JSK_RIGHT_ALT     225
 
 #define JSC_DOUBLE_QUOTE   34
+#define JSC_HASH           35
 #define JSC_DOLLAR         36
 #define JSC_PERCENT        37
 #define JSC_AMPERSAND      38
-#define JSC_BRACE_LEFT     40
-#define JSC_BRACE_RIGHT    41
+#define JSC_SINGLE_QUOTE   39
+#define JSC_PARENTHESES_LEFT  40
+#define JSC_PARENTHESES_RIGHT 41
+#define JSC_ASTERISK       42
 #define JSC_NUM_MULTIPLY   42
+#define JSC_PLUS           43
 #define JSC_NUM_ADD        43
+#define JSC_COMMA          44
+#define JSC_SUBTRACT       45
 #define JSC_NUM_SUBTRACT   45
 #define JSC_SLASH          47
 #define JSC_NUM_DIVIDE     47
+#define JSC_SEMI_COLON     59
 #define JSC_EXCLAIM        33
 #define JSC_EQUAL          61
+#define JSC_QUESTION       63
+#define JSC_BRACKET_LEFT   91
+#define JSC_BACK_SLASH     92
+#define JSC_UNDERSCORE     95
+#define JSC_BRACKET_RIGHT  93
+#define JSC_BRACE_LEFT    123
+#define JSC_PIPE          124
+#define JSC_BRACE_RIGHT   125
+#define JSC_TILDE         126
 #define JSC_DELETE        127
 
 #define _SDLK_DELETE      127
