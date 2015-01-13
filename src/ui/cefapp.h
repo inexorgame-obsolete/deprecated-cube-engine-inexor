@@ -10,7 +10,6 @@
 #include "include/cef_render_process_handler.h"
 
 #include "cefbrowsersettings.h"
-#include "cefclienthandler.h"
 #include "cefconsole.h"
 #include "cefcontextmanager.h"
 #include "cefdebug.h"
