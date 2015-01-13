@@ -621,11 +621,8 @@ extern double skyarea;
 extern void drawskybox(int farplane, bool limited);
 extern bool limitsky();
 
-// 3dgui
-extern void g3d_render();
-extern bool g3d_windowhit(bool on, bool act);
-extern bool g3d_key(int code, bool isdown);
-extern bool g3d_input(const char *str, int len);
+//UI
+
 
 // menus
 extern int mainmenu;
