@@ -50,6 +50,11 @@ void InexorCefLayer::Destroy()
     DoClose(browser);
 }
 
+void InexorCefLayer::ShowDevTools()
+{
+    browser->GetHost()->ShowDevTools(window_info, this, browser_settings, CefPoint());
+}
+
 void InexorCefLayer::OnAfterCreated(CefRefPtr<CefBrowser> browser)
 {
     CEF_REQUIRE_UI_THREAD();

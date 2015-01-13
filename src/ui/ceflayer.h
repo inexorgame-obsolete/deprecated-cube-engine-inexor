@@ -36,6 +36,8 @@ class InexorCefLayer : public CefClient,
         void Render() { render_handler->Render(); };
         void Destroy();
 
+        void ShowDevTools();
+
         bool IsVisible() { return is_visible; };
         void SetVisibility(bool is_visible);
 
