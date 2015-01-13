@@ -33,7 +33,6 @@ set(CLIENT_HEADERS_SHARED
     ${CMAKE_CURRENT_SOURCE_DIR}/../shared/tools)
 
 set(CLIENT_SOURCES_ENGINE
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/3dgui
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/bih
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/blend
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/client
