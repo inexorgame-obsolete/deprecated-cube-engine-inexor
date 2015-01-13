@@ -4,7 +4,6 @@
 #include "rpc/rpc_sb_compat.h"
 #include "ui/cefapp.h"
 #include "ui/cefsettings.h"
-#include "ui/cefclienthandler.h"
 #include "ui/cefrenderhandler.h"
 #include "ui/cefrequestcontexthandler.h"
 #include "include/cef_browser.h"
