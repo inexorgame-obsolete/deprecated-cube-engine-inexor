@@ -994,7 +994,7 @@ void checkinput()
                 {
                     int dx = event.motion.xrel, dy = event.motion.yrel;
                     checkmousemotion(dx, dy);
-                    if(!g3d_movecursor(dx, dy)) mousemove(dx, dy);
+                    if(/*!UI::movecursor(dx, dy)*/true) mousemove(dx, dy);
                     mousemoved = true;
                     cef_app->GetMouseManager()->SendMouseMoveEvent(event);
                 }

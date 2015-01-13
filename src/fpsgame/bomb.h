@@ -192,44 +192,9 @@ struct bombclientmode : clientmode
     	renderplayersposindicator();
     }
 
-    void renderscoreboard(g3d_gui &g, game::scoregroup &sg, int fgcolor, int bgcolor)
+    void renderscoreboard(game::scoregroup &sg, int fgcolor, int bgcolor)
     {
-        if(showbombs)
-        {
-            g.pushlist();
-            g.strut(7);
-            g.text("bombs", fgcolor);
-            loopv(sg.players)
-            {
-                fpsent *d = sg.players[i];
-                g.textf("%d", 0xFFFFDD, NULL, d->ammo[GUN_BOMB]);
-            }
-            g.poplist();
-        }
-        if(showbombdelay)
-        {
-            g.pushlist();
-            g.strut(7);
-            g.text("time", fgcolor);
-            loopv(sg.players)
-            {
-                fpsent *d = sg.players[i];
-                g.textf("%1.1fs", 0xFFFFDD, NULL, 5.5f-(d->bombdelay*0.5f));
-            }
-            g.poplist();
-        }
-        if(showbombradius)
-        {
-            g.pushlist();
-            g.strut(7);
-            g.text("radius", fgcolor);
-            loopv(sg.players)
-            {
-                fpsent *d = sg.players[i];
-                g.textf("%d", 0xFFFFDD, NULL, d->bombradius);
-            }
-            g.poplist();
-        }
+       
     }
 
     void killed(fpsent *d, fpsent *actor)
