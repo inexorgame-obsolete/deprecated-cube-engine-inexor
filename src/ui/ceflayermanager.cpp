@@ -41,6 +41,7 @@ void InexorCefLayerManager::InitializeContext()
     CreateFunction("bringForward", this);
     CreateFunction("sendBackward", this);
     CreateFunction("getLayerNames", this);
+    CreateFunction("showDevTools", this);
 }
 
 bool InexorCefLayerManager::Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception)
@@ -92,6 +93,13 @@ bool InexorCefLayerManager::Execute(const CefString& name, CefRefPtr<CefV8Value>
             i++;
         }
         return true;
+    } else if (name == "showDevTools") {
+        if (arguments.size() == 1 && arguments[0]->IsString()) {
+            std::string name = arguments[0]->GetStringValue().ToString();
+            if (LayerExists(name))
+                GetLayer(name)->ShowDevTools();
+            return true;
+        }
     }
     return false;
 }
