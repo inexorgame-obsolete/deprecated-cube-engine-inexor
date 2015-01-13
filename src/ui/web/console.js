@@ -51,7 +51,16 @@ console.log = inexor.console.out;
  */
 inexor.console.eval = function(code) {
 	inexor.console.jslog("Eval: " + code);
-	eval(code);
+	try {
+		eval(code);
+	} catch (e) {
+		inexor.console.out(e.stack);
+	}
+	inexor.console.clear();
+};
+
+inexor.console.clear = function() {
+	consoleInputField.value = "";
 };
 
 /**
@@ -129,21 +138,10 @@ inexor.console.init = function() {
     // Bind keys
     Mousetrap.bind('esc', inexor.menu.toggle);
     Mousetrap.bind('f11', inexor.console.toggle);
+    Mousetrap.bind('shift+backspace', inexor.console.clear);
     Mousetrap.bind('f10', inexor.debug.toggle);
 };
 window.setTimeout(inexor.console.init, 100);
-
-/**
- * Bind ESC on toggle console.
- */
-/*
-window.onkeydown = function(e) {
-    if (getKeyCode(e) == '27') {
-        inexor.console.toggle();
-        return false;
-    }
-};
-*/
 
 /**
  * Subscribe events.
