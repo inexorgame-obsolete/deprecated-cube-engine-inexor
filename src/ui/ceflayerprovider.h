@@ -39,6 +39,8 @@ class InexorCefLayerProvider
             GetCurrentDir(base_path, sizeof(base_path));
             return "file://" + std::string(base_path) + relpath;
         };
+
+        IMPLEMENT_REFCOUNTING(InexorCefLayerProvider);
 };
 
 class AbstractInexorCefLayerProvider : public InexorCefLayerProvider

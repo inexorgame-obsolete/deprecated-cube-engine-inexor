@@ -14,6 +14,8 @@ class InexorCefBrowserSettings : public CefBrowserSettings {
             java = STATE_DISABLED;
             caret_browsing = STATE_DISABLED;
             javascript = STATE_ENABLED;
+            javascript_access_clipboard = STATE_ENABLED;
+            javascript_dom_paste = STATE_ENABLED;
         };
 };
 
