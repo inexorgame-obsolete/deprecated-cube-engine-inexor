@@ -200,7 +200,7 @@ static const char *skip(const char *in) {while (in && *in && (unsigned char)*in<
 JSON *JSON_ParseWithOpts(const char *value, const char **return_parse_end, bool require_null_terminated)
 {
     const char *end = 0;
-    JSON *c= new JSON();
+    JSON *c = new JSON();
     ep = 0;
 
     end = parse_value( c, skip(value));
