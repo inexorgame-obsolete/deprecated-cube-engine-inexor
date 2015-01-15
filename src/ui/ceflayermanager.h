@@ -4,6 +4,7 @@
 #include <list>
 
 #include "include/cef_app.h"
+#include "include/cef_runnable.h"
 
 #include "cefcontextprovider.h"
 #include "ceflayer.h"
@@ -23,11 +24,11 @@ class InexorCefLayerManager : public InexorCefContextProvider
         // Layers
         void InitializeLayers();
         void DestroyLayers();
-        void AddLayerProvider(InexorCefLayerProvider* layer_provider);
+        void AddLayerProvider(CefRefPtr<InexorCefLayerProvider> layer_provider);
 
-        InexorCefLayer* CreateLayer(std::string name, std::string url);
-        InexorCefLayer* CreateLayer(std::string name, int x, int y, int width, int height, std::string url);
-        InexorCefLayer* GetLayer(std::string name);
+        CefRefPtr<InexorCefLayer> CreateLayer(std::string name, std::string url);
+        CefRefPtr<InexorCefLayer> CreateLayer(std::string name, int x, int y, int width, int height, std::string url);
+        CefRefPtr<InexorCefLayer> GetLayer(std::string name);
         std::list<std::string> GetLayers();
         bool LayerExists(std::string name);
         void ShowLayer(std::string name);
@@ -51,13 +52,14 @@ class InexorCefLayerManager : public InexorCefContextProvider
         std::string GetContextName() { return "layer"; };
 
     private:
-        std::list<InexorCefLayer*> layers;
-        std::list<InexorCefLayerProvider*> layer_providers;
+        std::list<CefRefPtr<InexorCefLayer> > layers;
+        std::list<CefRefPtr<InexorCefLayerProvider> > layer_providers;
 
         int width;
         int height;
 
-        std::list<InexorCefLayer*>::iterator GetIterator(std::string name);
+        std::list<CefRefPtr<InexorCefLayer> >::iterator GetIterator(std::string name);
+        void _CreateLayer(std::string name, std::string url);
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(InexorCefLayerManager);

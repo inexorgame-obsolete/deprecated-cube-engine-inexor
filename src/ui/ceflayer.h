@@ -36,15 +36,19 @@ class InexorCefLayer : public CefClient,
         void Render() { render_handler->Render(); };
         void Destroy();
 
+        void Copy();
+        void Paste();
+        void Cut();
+
         void ShowDevTools();
 
-        bool IsVisible() { return is_visible; };
+        bool IsVisible() { return is_visible && browser.get(); };
         void SetVisibility(bool is_visible);
 
-        bool HasFocus() { return has_focus; };
+        bool HasFocus() { return has_focus && browser.get(); };
         void SetFocus(bool has_focus);
 
-        bool IsAcceptingInput() { return is_accepting_input; };
+        bool IsAcceptingInput() { return is_accepting_input && browser.get(); };
         void SetIsAcceptingInput(bool is_accepting_input);
 
         bool IsClosing() { return is_closing; }

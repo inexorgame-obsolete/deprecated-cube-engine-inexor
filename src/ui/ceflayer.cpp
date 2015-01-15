@@ -47,7 +47,26 @@ void InexorCefLayer::SetIsAcceptingInput(bool is_accepting_input)
 void InexorCefLayer::Destroy()
 {
     logoutf("InexorCefLayer::Destroy()");
-    DoClose(browser);
+    browser->GetHost()->CloseBrowser(true);
+    // DoClose(browser);
+}
+
+void InexorCefLayer::Copy()
+{
+    browser->GetFocusedFrame()->Copy();
+}
+
+void InexorCefLayer::Paste()
+{
+    // SDL_SetClipboardText()
+    // SDL_GetClipboardText()
+    // browser->GetMainFrame()
+    browser->GetFocusedFrame()->Paste();
+}
+
+void InexorCefLayer::Cut()
+{
+    browser->GetFocusedFrame()->Cut();
 }
 
 void InexorCefLayer::ShowDevTools()
