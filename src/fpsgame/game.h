@@ -428,36 +428,40 @@ enum
 	N_SCOREFLAG,			// S2C  a client has scored the flag
 	N_INITFLAGS,			// S2C  send a list of flags available in game
 
+	// text, auth, bots, options, gamespeed
     N_SAYTEAM,				// C2S|S2C  team chat
 	N_HUDANNOUNCE,			// S2C  BOMBERMAN Announcement
-    N_CLIENT,
-    N_AUTHTRY, 
-	N_AUTHKICK, 
-	N_AUTHCHAL, 
-	N_AUTHANS, 
-	N_REQAUTH,
-    N_PAUSEGAME,			// server paused game. stop player movement and actions
-	N_GAMESPEED,			// change game speed
-    N_ADDBOT, 
-	N_DELBOT, 
-	N_INITAI, 
-	N_FROMAI, 
-	N_BOTLIMIT, 
-	N_BOTBALANCE,
-    N_MAPCRC, 
-	N_CHECKMAPS,
-    N_SWITCHNAME,			// a player has changed his name
-	N_SWITCHMODEL,			// a player has changed his player model
-	N_SWITCHTEAM,			// a player has switched his team (some game modes have more than 2 teams!)
-    N_INITTOKENS, 
-	N_TAKETOKEN, 
-	N_EXPIRETOKENS, 
-	N_DROPTOKENS, 
-	N_DEPOSITTOKENS, 
-	N_STEALTOKENS,
-    N_SERVCMD,				// servers could send advanced messages to clients. standard clients do not interpret this custom message
+    N_CLIENT,				// S2C  client synchronisation
+    N_AUTHTRY,				// C2S  try to authentificate using auth key(s)
+	N_AUTHKICK,				// C2S  try to authentificate using my auth key(s), kick a specific person [hacker] and then relinquish master again
+	N_AUTHCHAL,				// C2S  authentification challenge
+	N_AUTHANS,				// S2C  authentification answer
+	N_REQAUTH,				// S2C  this nick name requires authentification
+    N_PAUSEGAME,			// S2C  server paused game. stop player movement and actions
+	N_GAMESPEED,			// S2C  change game speed
+    N_ADDBOT,				// -S-  add a bot to the current game
+	N_DELBOT,				// -S-  remove a bot from the current game
+	N_INITAI,				// S2C  commit AI settings to server. bots are still server side
+	N_FROMAI,				// C2S  take client number from bot x?
+	N_BOTLIMIT,				// -S-  set the bot limit
+	N_BOTBALANCE,			// -S-  set bot balance
+    N_MAPCRC,				// C2S  send map CRC32 hash value
+	N_CHECKMAPS,			// C2S  force server to check client maps manually (requires permissions)
+    N_SWITCHNAME,			// C2S|S2C  a player has changed his name
+	N_SWITCHMODEL,			// C2S|S2C  a player has changed his player model
+	N_SWITCHTEAM,			// C2S|S2C  a player has switched his team (some game modes have more than 2 teams!)
+
+	// Collect mode messages
+    N_INITTOKENS,			// ?
+	N_TAKETOKEN,			// ?
+	N_EXPIRETOKENS,			// ??
+	N_DROPTOKENS,			// ??
+	N_DEPOSITTOKENS,		// ??
+	N_STEALTOKENS,			// ??
+
+    N_SERVCMD,				// S2C  servers could send advanced messages to clients. standard clients do not interpret this custom message
     N_DEMOPACKET,
-    N_SPAWNLOC,
+    N_SPAWNLOC,				// S2C  BOMBERMAN spawn location?
     NUMMSG
 };
 
