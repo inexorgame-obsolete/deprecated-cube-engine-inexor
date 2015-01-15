@@ -125,6 +125,19 @@ inexor.console.tail = function() {
     window.setTimeout(inexor.console.tail, 100);
 };
 
+inexor.console.copy = function() {
+	console.log("copy");
+	inexor.layer.copy("console");
+};
+inexor.console.paste = function() {
+	console.log("paste");
+	inexor.layer.paste("console");
+};
+inexor.console.cut = function() {
+	console.log("cut");
+	inexor.layer.cut("console");
+};
+
 /**
  * Console initialization.
  */
@@ -138,8 +151,12 @@ inexor.console.init = function() {
     // Bind keys
     Mousetrap.bind('esc', inexor.menu.toggle);
     Mousetrap.bind('f11', inexor.console.toggle);
-    Mousetrap.bind('shift+backspace', inexor.console.clear);
     Mousetrap.bind('f10', inexor.debug.toggle);
+
+    Mousetrap.bind('shift+backspace', inexor.console.clear);
+    // Mousetrap.bind('f2', inexor.console.copy);
+    // Mousetrap.bind('f3', inexor.console.paste);
+    // Mousetrap.bind('f4', inexor.console.cut);
 };
 window.setTimeout(inexor.console.init, 100);
 
