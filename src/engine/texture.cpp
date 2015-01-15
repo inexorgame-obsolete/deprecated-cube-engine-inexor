@@ -1281,6 +1281,37 @@ void loadalphamask(Texture *t)
     }
 }
 
+void jsonparsetest()
+{
+    JSON *j = loadjson("test.json");
+    //if(!j) { conoutf("no json"); return; }
+
+    //JSON *ob = j->getitem("testobject");
+    
+    //if(!ob) { conoutf("no testobject"); return; }
+    //JSON *emp = ob->getitem("emptykey");
+    //conoutf("val empty: f %f i %i s %s", emp->valuefloat, emp->valueint, emp->valuestring);
+    //ob->getfloat("float");
+    //conoutf("vals: f %f i %i s %s", ob->getfloat("float"), ob->getint("int"), ob->getstring("string"));
+
+    //JSON *arr = j->getitem("testarrays");
+    //
+    //conoutf("testarrays: i f s");
+    //JSON *ari = arr->getitem("testiarray");
+    //loopi(ari->numchilds()) conoutf("%d %d", i, ari->getint(i));
+    //
+    //JSON *arf = arr->getitem("testfarray");
+    //loopi(arf->numchilds()) conoutf("%d %f", i, ari->getfloat(i));
+    //
+    //JSON *ars = arr->getitem("testsarray");
+    //loopi(ars->numchilds()) conoutf("%d %s", i, ars->getstring(i));
+
+    //conoutf("firstvalue stringchild: %s", ars->getitem(0)->valuestring);
+
+    //delete j;
+}
+COMMAND(jsonparsetest,"");
+
 Texture *textureload(const char *name, int clamp, bool mipit, bool msg)
 {
     string tname;
