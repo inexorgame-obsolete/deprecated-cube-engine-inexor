@@ -79,7 +79,7 @@ struct JSON
         delete f;
     }
 
-    int numchilds()
+    int numchilds()					  //Get number of children (if array or object, though not useful for objects)
     { 
         JSON *c = child;
         int i = 0;
