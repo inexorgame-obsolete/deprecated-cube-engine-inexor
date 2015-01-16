@@ -16,6 +16,7 @@ endif()
 set(CLIENT_SOURCES_SHARED
     ${CMAKE_CURRENT_SOURCE_DIR}/../shared/crypto
     ${CMAKE_CURRENT_SOURCE_DIR}/../shared/geom
+	${CMAKE_CURRENT_SOURCE_DIR}/../shared/json
     ${CMAKE_CURRENT_SOURCE_DIR}/../shared/stream
     ${CMAKE_CURRENT_SOURCE_DIR}/../shared/tools
     ${CMAKE_CURRENT_SOURCE_DIR}/../shared/zip)
@@ -28,6 +29,7 @@ set(CLIENT_HEADERS_SHARED
     ${CMAKE_CURRENT_SOURCE_DIR}/../shared/geom
     ${CMAKE_CURRENT_SOURCE_DIR}/../shared/iengine
     ${CMAKE_CURRENT_SOURCE_DIR}/../shared/igame
+	${CMAKE_CURRENT_SOURCE_DIR}/../shared/json
     ${CMAKE_CURRENT_SOURCE_DIR}/../shared/tools)
 
 set(CLIENT_SOURCES_ENGINE
@@ -40,7 +42,6 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/decal
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/dynlight
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/grass
-	${CMAKE_CURRENT_SOURCE_DIR}/../engine/json
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/main
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/material
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/menus

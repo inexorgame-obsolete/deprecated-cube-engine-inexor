@@ -1,5 +1,7 @@
 //  Rewrite of cJSON 1.0r58 in Inexor-optimized object-orientated C-ish C++
 //  cJSON (Copyright (c) 2009 by Dave Gamble) is licensed under the MIT-license
+#ifndef __JSON__H
+#define __JSON__H
 
 #include <float.h>
 
@@ -225,3 +227,4 @@ extern JSON *JSON_CreateString(const char *str);
 extern JSON *JSON_CreateArray();  //new ordered list. access: position
 extern JSON *JSON_CreateObject(); //new unordered list. access: name
 
+#endif
