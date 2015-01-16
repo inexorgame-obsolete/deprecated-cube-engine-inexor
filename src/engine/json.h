@@ -13,8 +13,6 @@ enum {
     JSON_OBJECT                     //unordered list { }
 }; // JSON types
 
-extern char *emptystring();
-
 struct JSON
 {
     JSON *next, *prev;   // next/prev allow you to walk array/object chains.
@@ -28,7 +26,7 @@ struct JSON
 
     char *name;                     // The item's name string, if the item in an object this is equivalent to the key. In an array its the string of the value!
 
-    JSON() : next(NULL), prev(NULL), child(NULL), type(0), valuestring(emptystring()), valueint(0), valuefloat(0), name(emptystring())  { }
+	JSON() : next(NULL), prev(NULL), child(NULL), type(0), valueint(0), valuefloat(0)  { name = newstring(""); valuestring = newstring(""); }
 
     JSON(JSON *old)       //Copy constructor
     {
@@ -55,8 +53,8 @@ struct JSON
 
     ~JSON()
     {
-        //DELETEA(name);
-        //DELETEA(valuestring);
+        DELETEA(name);
+        DELETEA(valuestring);
         JSON *c = child;
         while (c)
         {
@@ -67,8 +65,6 @@ struct JSON
     }
     
      //Returns rendered JSON, as you would find it in a file
-     //NOTE: This is implemented in json.cpp, because it
-     //      needs access to a static variable.
     char *render(bool formatted = true, bool minified = false);
 
      //Save's to a specific JSON-File
@@ -135,20 +131,20 @@ struct JSON
     const char *getstring(const char *key)     //Get string of Object. Used if value is expected to be a string. otherwise returns ""
     {
         JSON *sub = getitem(key);
-        return sub ? sub->valuestring : emptystring();
+        return sub ? sub->valuestring : newstring("");
     }
 
     const char *getstring(int item)            //Get string of Array. Used if value is expected to be string. otherwise returns ""
     {
         JSON *sub = getitem(item);
-        return sub ? sub->valuestring : emptystring();
+        return sub ? sub->valuestring : newstring("");
     }
 
     void additem(JSON *item)                      //add item to Array
     {
+		if (!item) return;
         //if(type != JSON_ARRAY) return; //invalid JSON
         JSON *c = child;
-        if (!item) return;
 
         if (!c) { child = item; }
         else
@@ -162,7 +158,7 @@ struct JSON
     void additem(const char *name, JSON *item)  //add item to Object
     {
         if (!item) return;
-        DELETEA(item->name);
+		delete[] item->name;
         item->name = newstring(name);
         additem(item);
     }
@@ -228,8 +224,4 @@ extern JSON *JSON_CreateFloat(float num);
 extern JSON *JSON_CreateString(const char *str);
 extern JSON *JSON_CreateArray();  //new ordered list. access: position
 extern JSON *JSON_CreateObject(); //new unordered list. access: name
-
-extern JSON *JSON_CreateIntArray(const int *numbers, int count);
-extern JSON *JSON_CreateFloatArray(const float *numbers, int count);
-extern JSON *JSON_CreateStringArray(const char **strings, int count);
 

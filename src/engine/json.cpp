@@ -3,12 +3,6 @@
 
 #include "engine.h"
 
-static char *emptstr = NULL; //every unassigned 'string' points here
-char *emptystring() { 
-    if(!emptstr) { emptstr = new char [1]; emptstr[0] = '\0'; } 
-    return emptstr; 
-} 
-
  // Parse the input text to generate a number, and populate the result into item.
 static const char *parse_number(JSON *item, const char *num)
 {
@@ -39,24 +33,8 @@ static const char *parse_number(JSON *item, const char *num)
  // Render the number nicely from the given item into a string.
 static char *print_number(JSON *item)
 {
-    char *str;
-    float d = item->valuefloat;
-    if(fabs(((float)item->valueint)-d) <= FLT_EPSILON && d<=INT_MAX && d>=INT_MIN)
-    {
-        str= new char[21];    // 2^64+1 can be represented in 21 chars.
-        formatstring(str) ("%d", item->valueint);
-    }
-    else
-    {
-        str= new char[64];    // This is a nice tradeoff.
-        if(str)
-        {
-            if(fabs(floor(d)-d)<=FLT_EPSILON && fabs(d)<1.0e60) formatstring(str)("%.0f",d);
-            else if(fabs(d)<1.0e-6 || fabs(d)>1.0e9)            formatstring(str)("%e",d);
-            else                                                formatstring(str)("%f",d);
-        }
-    }
-    return str;
+	defformatstring(val) ("%g", item->valuefloat);
+	return newstring(val);
 }
 
 static unsigned parse_hex4(const char *str)
@@ -204,13 +182,13 @@ JSON *JSON_ParseWithOpts(const char *value, const char **return_parse_end, bool 
     ep = 0;
 
     end = parse_value( c, skip(value));
-    if(!end) { DELETEP(c); return 0; }    // parse failure. ep is set.
+    if(!end) { delete c; return 0; }    // parse failure. ep is set.
 
     // if we require null-terminated JSON without appended garbage, skip and then check for a null terminator
     if(require_null_terminated)
     {
         end = skip(end);
-        if(*end) { DELETEP(c); ep=end; return 0; }
+        if(*end) { delete c; ep=end; return 0; }
     }
     if(return_parse_end) *return_parse_end = end;
     return c;
@@ -238,7 +216,7 @@ static char *print_value(JSON *item, int depth, bool fmt)
 {
     char *out = 0;
     if(!item) return 0;
-    switch ((item->type)&255)
+    switch (item->type)
     {
         case JSON_NULL:     out = newstring("null");    break;
         case JSON_FALSE:    out = newstring("false");   break;
@@ -322,8 +300,8 @@ static char *print_array(JSON *item, int depth, bool fmt)
     // Handle failure.
     if(fail)
     {
-        for (i=0; i<numentries; i++) DELETEA(entries[i]);
-        DELETEA(entries);
+        for (i=0; i<numentries; i++) delete[] entries[i];
+        delete[] entries;
         return 0;
     }
 
@@ -336,9 +314,9 @@ static char *print_array(JSON *item, int depth, bool fmt)
         strcpy(ptr, entries[i]);
         ptr += strlen(entries[i]);
         if(i!=numentries-1) { *ptr++=','; if(fmt) *ptr++=' '; *ptr=0;}
-        DELETEA(entries[i]);
+        delete[] entries[i];
     }
-    DELETEA(entries);
+    delete[] entries;
 
     *ptr++=']'; *ptr++=0;
     return out;
@@ -360,7 +338,7 @@ static const char *parse_object(JSON *item, const char *value)
     value = skip(parse_string(child, skip(value)));
     if(!value) return 0;
     child->name = child->valuestring;
-    child->valuestring = emptystring();
+    child->valuestring = newstring("");
 
     if(*value!=':') { ep = value; return 0; }    // fail!
     value = skip(parse_value(child, skip(value+1)));    // skip any spacing, get the value.
@@ -375,7 +353,7 @@ static const char *parse_object(JSON *item, const char *value)
         value = skip(parse_string(child, skip(value+1)));
         if(!value) return 0;
         child->name = child->valuestring;
-        child->valuestring = emptystring();
+        child->valuestring = newstring("");
 
         if(*value!=':') { ep = value; return 0; }    // fail!
         value = skip(parse_value( child, skip(value+1)));    // skip any spacing, get the value.
@@ -412,7 +390,6 @@ static char *print_object(JSON *item, int depth, bool fmt)
     entries = new char *[numentries*sizeof(char*)];
     if(!entries) return 0;
     names = new char *[numentries*sizeof(char*)];
-    if(!names) { DELETEA(entries); return 0; }
 
     memset(entries, 0, sizeof(char*)*numentries);
     memset(names, 0, sizeof(char*)*numentries);
@@ -436,9 +413,9 @@ static char *print_object(JSON *item, int depth, bool fmt)
     // Handle failure
     if(fail)
     {
-        loopi(numentries) { DELETEA(names[i]); DELETEA(entries[i]);}
-        DELETEA(names);
-        DELETEA(entries);
+        loopi(numentries) { delete[] names[i]; delete[] entries[i];}
+        delete[] names;
+        delete[] entries;
         return 0;
     }
 
@@ -455,12 +432,12 @@ static char *print_object(JSON *item, int depth, bool fmt)
         strcpy(ptr, entries[i]); ptr += strlen(entries[i]);
         if(i != numentries-1) *ptr++ = ',';
         if(fmt) *ptr++='\n'; *ptr = 0;
-        DELETEA(names[i]);
-        DELETEA(entries[i]);
+        delete[] names[i];
+        delete[] entries[i];
     }
 
-    DELETEA(names);
-    DELETEA(entries);
+    delete[] names;
+    delete[] entries;
     if(fmt) loopi(depth-1) *ptr++='\t';
     *ptr++='}';*ptr++=0;
     return out;
@@ -494,53 +471,11 @@ void JSON_Minify(char *json)
 
 // Create basic types:
 JSON *JSON_CreateBool(bool b)               { JSON *item= new JSON(); item->type = b ? JSON_TRUE : JSON_FALSE;  return item; }
-JSON *JSON_CreateInt(int num)               { JSON *item= new JSON(); item->type = JSON_NUMBER;     item->valueint = num;       return item; }
+JSON *JSON_CreateInt(int num)               { JSON *item= new JSON(); item->type = JSON_NUMBER;     item->valueint = num; item->valuefloat = num; return item; }
 JSON *JSON_CreateFloat(float num)           { JSON *item= new JSON(); item->type = JSON_NUMBER;     item->valuefloat = num;     return item; }
 JSON *JSON_CreateString(const char *str)    { JSON *item= new JSON(); item->type = JSON_STRING;     item->valuestring = newstring(str);  return item; }
 JSON *JSON_CreateArray()                    { JSON *item= new JSON(); item->type = JSON_ARRAY;      return item; }
 JSON *JSON_CreateObject()                   { JSON *item= new JSON(); item->type = JSON_OBJECT;     return item; }
-
-static void suffix_object(JSON *prev, JSON *item) { prev->next = item; item->prev = prev; }  // Utility for array list handling.
-
-// Create Arrays:
-JSON *JSON_CreateIntArray(const int *numbers, int count)
-{
-    JSON *last = NULL, *out = JSON_CreateArray();
-    loopi(count)
-    {
-        JSON *cur = JSON_CreateInt(numbers[i]);
-        if(!i) out->child = cur;
-        else suffix_object(last, cur);
-        last = cur;
-    }
-    return out;
-}
-
-JSON *JSON_CreateFloatArray(const float *numbers, int count)
-{
-    JSON *last = NULL, *out = JSON_CreateArray();
-    loopi(count)
-    {
-        JSON *cur = JSON_CreateFloat(numbers[i]);
-        if(!i) out->child = cur;
-        else suffix_object(last, cur);
-        last = cur;
-    }
-    return out;
-}
-
-JSON *JSON_CreateStringArray(const char **strings, int count)
-{
-    JSON *last = NULL, *out = JSON_CreateArray();
-    loopi(count)
-    {
-        JSON *cur = JSON_CreateString(strings[i]);
-        if(!i) out->child = cur;
-        else suffix_object(last, cur);
-        last = cur;
-    }
-    return out;
-}
 
  //Loads .JSON file
 JSON *loadjson(const char *filename)
@@ -554,12 +489,3 @@ JSON *loadjson(const char *filename)
 char *JSON::render(bool formatted, bool minified) {
     return print_value(this, 0, formatted);
 }
-
-//not used yet:
-//int    cJSON_GetArraySize(cJSON *array)                            {cJSON *c=array->child;int i=0;while(c)i++,c=c->next;return i;}
-//void    cJSON_AddItemReferenceToArray(cJSON *array, cJSON *item)                        {cJSON_AddItemToArray(array,create_reference(item));}
-//void    cJSON_AddItemReferenceToObject(cJSON *object,const char *string,cJSON *item)    {cJSON_AddItemToObject(object,string,create_reference(item));}
-
-//JSON *JSON_CreateTrue()                        { JSON *item= new JSON(); item->type = JSON_TRUE;   return item; }
-//JSON *JSON_CreateFalse()                    { JSON *item= new JSON(); item->type = JSON_FALSE;  return item; }
-//cJSON *cJSON_CreateNumber(double num)            {cJSON *item=cJSON_New_Item();if(item){item->type=cJSON_Number;item->valuedouble=num;item->valueint=(int)num;}return item;} //its int or float now
