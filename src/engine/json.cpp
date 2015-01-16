@@ -204,13 +204,13 @@ JSON *JSON_ParseWithOpts(const char *value, const char **return_parse_end, bool 
     ep = 0;
 
     end = parse_value( c, skip(value));
-    if(!end) { delete c; return 0; }    // parse failure. ep is set.
+    if(!end) { DELETEP(c); return 0; }    // parse failure. ep is set.
 
     // if we require null-terminated JSON without appended garbage, skip and then check for a null terminator
     if(require_null_terminated)
     {
         end = skip(end);
-        if(*end) { delete c; ep=end; return 0; }
+        if(*end) { DELETEP(c); ep=end; return 0; }
     }
     if(return_parse_end) *return_parse_end = end;
     return c;
@@ -322,8 +322,8 @@ static char *print_array(JSON *item, int depth, bool fmt)
     // Handle failure.
     if(fail)
     {
-        for (i=0; i<numentries; i++) delete[] entries[i];
-        delete[] entries;
+        for (i=0; i<numentries; i++) DELETEA(entries[i]);
+        DELETEA(entries);
         return 0;
     }
 
@@ -336,9 +336,9 @@ static char *print_array(JSON *item, int depth, bool fmt)
         strcpy(ptr, entries[i]);
         ptr += strlen(entries[i]);
         if(i!=numentries-1) { *ptr++=','; if(fmt) *ptr++=' '; *ptr=0;}
-        delete[] entries[i];
+        DELETEA(entries[i]);
     }
-    delete[] entries;
+    DELETEA(entries);
 
     *ptr++=']'; *ptr++=0;
     return out;
@@ -412,6 +412,7 @@ static char *print_object(JSON *item, int depth, bool fmt)
     entries = new char *[numentries*sizeof(char*)];
     if(!entries) return 0;
     names = new char *[numentries*sizeof(char*)];
+    if(!names) { DELETEA(entries); return 0; }
 
     memset(entries, 0, sizeof(char*)*numentries);
     memset(names, 0, sizeof(char*)*numentries);
@@ -435,9 +436,9 @@ static char *print_object(JSON *item, int depth, bool fmt)
     // Handle failure
     if(fail)
     {
-        loopi(numentries) { delete[] names[i]; delete[] entries[i];}
-        delete[] names;
-        delete[] entries;
+        loopi(numentries) { DELETEA(names[i]); DELETEA(entries[i]);}
+        DELETEA(names);
+        DELETEA(entries);
         return 0;
     }
 
@@ -454,12 +455,12 @@ static char *print_object(JSON *item, int depth, bool fmt)
         strcpy(ptr, entries[i]); ptr += strlen(entries[i]);
         if(i != numentries-1) *ptr++ = ',';
         if(fmt) *ptr++='\n'; *ptr = 0;
-        delete[] names[i];
-        delete[] entries[i];
+        DELETEA(names[i]);
+        DELETEA(entries[i]);
     }
 
-    delete[] names;
-    delete[] entries;
+    DELETEA(names);
+    DELETEA(entries);
     if(fmt) loopi(depth-1) *ptr++='\t';
     *ptr++='}';*ptr++=0;
     return out;

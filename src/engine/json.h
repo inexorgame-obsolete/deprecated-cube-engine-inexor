@@ -55,14 +55,14 @@ struct JSON
 
     ~JSON()
     {
-        delete[] name;
-        delete[] valuestring;
+        //DELETEA(name);
+        //DELETEA(valuestring);
         JSON *c = child;
         while (c)
         {
             JSON *b = c;
             c = c->next;
-            delete b;
+            DELETEP(b);
         }
     }
     
@@ -162,7 +162,7 @@ struct JSON
     void additem(const char *name, JSON *item)  //add item to Object
     {
         if (!item) return;
-        delete[] item->name;
+        DELETEA(item->name);
         item->name = newstring(name);
         additem(item);
     }
@@ -188,8 +188,8 @@ struct JSON
         return 0;
     }
 
-    void deleteitem(int which) { JSON *c = detachitem(which); delete c; }        //Delete Item from Array
-    void deleteitem(const char *name) { JSON *c = detachitem(name); delete c; }  //Delete Item from Object
+    void deleteitem(int which) { JSON *c = detachitem(which); DELETEP(c); }        //Delete Item from Array
+    void deleteitem(const char *name) { JSON *c = detachitem(name); DELETEP(c); }  //Delete Item from Object
 
     void replaceitem(int which, JSON *newitem)          //Replace Item in Array
     {
@@ -205,7 +205,7 @@ struct JSON
 
         if (c == child) child = newitem;
         else newitem->prev->next = newitem;
-        delete c;
+        DELETEP(c);
     }
 
     void replaceitem(const char *name, JSON *newitem)   //Replace Item in Object
@@ -220,7 +220,7 @@ struct JSON
     }
 };
 
-extern JSON *loadjson(const char *filename);          // Loads JSON-tree from File
+extern JSON *loadjson(const char *filename);
 
 extern JSON *JSON_CreateBool(bool b);
 extern JSON *JSON_CreateInt(int num);
