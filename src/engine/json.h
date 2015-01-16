@@ -83,6 +83,14 @@ struct JSON
         delete f;
     }
 
+    int numchilds()
+    { 
+        JSON *c = child;
+        int i = 0;
+        while(c) { i++; c = c->next; }
+        return i;
+    }
+
     JSON *getitem(int item)           //Get Item of Array
     {
         JSON *c = child;
