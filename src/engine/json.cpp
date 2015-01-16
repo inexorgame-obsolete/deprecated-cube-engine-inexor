@@ -3,8 +3,11 @@
 
 #include "engine.h"
 
-static char *emptstr = ""; //every unassigned 'string' points here
-char *emptystring() { return emptstr; } 
+static char *emptstr = NULL; //every unassigned 'string' points here
+char *emptystring() { 
+    if(!emptstr) { emptstr = new char [1]; emptstr[0] = '\0'; } 
+    return emptstr; 
+} 
 
  // Parse the input text to generate a number, and populate the result into item.
 static const char *parse_number(JSON *item, const char *num)
@@ -433,7 +436,7 @@ static char *print_object(JSON *item, int depth, bool fmt)
     // Handle failure
     if(fail)
     {
-        loopi(numentries) { if(names[i]) DELETEA(names[i]); if(entries[i]) DELETEA(entries[i]);}
+        loopi(numentries) { DELETEA(names[i]); DELETEA(entries[i]);}
         DELETEA(names);
         DELETEA(entries);
         return 0;

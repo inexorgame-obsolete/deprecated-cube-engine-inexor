@@ -28,7 +28,7 @@ struct JSON
 
     char *name;                     // The item's name string, if the item in an object this is equivalent to the key. In an array its the string of the value!
 
-    JSON() : next(NULL), prev(NULL), child(NULL), type(0), valuestring(emptystring()), valueint(0), valuefloat(0), name(NULL)  { }
+    JSON() : next(NULL), prev(NULL), child(NULL), type(0), valuestring(emptystring()), valueint(0), valuefloat(0), name(emptystring())  { }
 
     JSON(JSON *old)       //Copy constructor
     {
@@ -55,8 +55,8 @@ struct JSON
 
     ~JSON()
     {
-        DELETEA(name);
-        if(valuestring && valuestring[0]) delete valuestring;
+        //DELETEA(name);
+        //DELETEA(valuestring);
         JSON *c = child;
         while (c)
         {
@@ -151,7 +151,7 @@ struct JSON
         }
     }
 
-    void additem(const char *string, JSON *item)  //add item to Object
+    void additem(const char *name, JSON *item)  //add item to Object
     {
         if (!item) return;
         DELETEA(item->name);
@@ -170,6 +170,7 @@ struct JSON
         c->prev = c->next = NULL;
         return c;
     }
+
     JSON *detachitem(const char *name)  //Detach Item from Object
     {
         int i=0;
