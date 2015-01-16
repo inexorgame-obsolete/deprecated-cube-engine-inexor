@@ -59,5 +59,6 @@
 #include "iengine.h"
 #include "igame.h"
 
+#include "json.h"
 #endif
 
