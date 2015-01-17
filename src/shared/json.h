@@ -77,7 +77,7 @@ struct JSON
         stream *f = openutf8file(path(s), "w");
         if(!f) { conoutf(CON_WARN, "could not save %s", s); return; }
         char *buf = render();
-        f->printf(buf);
+        f->putstring(buf);
         delete f;
     }
 
