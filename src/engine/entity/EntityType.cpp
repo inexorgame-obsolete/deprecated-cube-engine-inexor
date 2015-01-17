@@ -8,11 +8,8 @@
 #include "EntityType.h"
 
 EntityType::EntityType(std::string name, bool persist, bool synchronize)
-    : name(name),
-      persist(persist),
-      synchronize(synchronize)
+    : TypeBase(name, persist, synchronize)
 {
-    uuid = "0";
 }
 
 EntityType::~EntityType()
