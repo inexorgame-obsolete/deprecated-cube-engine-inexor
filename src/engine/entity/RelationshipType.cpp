@@ -8,11 +8,8 @@
 #include "RelationshipType.h"
 
 RelationshipType::RelationshipType(std::string name, bool persist, bool synchronize)
-    : name(name),
-      persist(persist),
-      synchronize(synchronize)
+    : TypeBase(name, persist, synchronize)
 {
-    uuid = "0";
 }
 
 RelationshipType::~RelationshipType()
