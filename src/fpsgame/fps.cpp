@@ -351,7 +351,7 @@ namespace game
     VARP(spawnwait, 0, 0, 1000);
 
 	// spawn myself in sp and dmsp game mode (singleplayer only)
-    void respawn(int gamemode = NULL)
+    void respawn(int gamemode = 0)
     {
         if(player1->state==CS_DEAD)
         {
