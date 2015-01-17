@@ -732,7 +732,7 @@ struct fpsstate
             }
         }
 
-    void respawn(int gamemode = NULL)
+    void respawn()
     {
         health = maxhealth;
         armour = 0;
@@ -743,7 +743,6 @@ struct fpsstate
         bombradius = 1;
         bombdelay = 1;
         loopi(NUMGUNS) ammo[i] = 0;
-        backupweapon = m_bomb ? GUN_BOMB : GUN_FIST;
         ammo[backupweapon] = 1;
     }
 
@@ -906,10 +905,10 @@ struct fpsent : dynent, fpsstate
         idlesound = idlechan = -1;
     }
 
-    void respawn(int gamemode = NULL)
+    void respawn()
     {
         dynent::reset();
-        fpsstate::respawn(gamemode);
+        fpsstate::respawn();
         respawned = suicided = -1;
         lastaction = 0;
         lastattackgun = gunselect;

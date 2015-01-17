@@ -106,7 +106,7 @@ namespace game
 	// reset player state not persistent accross spawns
     fpsent *spawnstate(fpsent *d) 
     {
-        d->respawn(gamemode);
+        d->respawn();
         d->spawnstate(gamemode);
         return d;
     }
