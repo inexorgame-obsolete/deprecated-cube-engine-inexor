@@ -8,9 +8,7 @@
 #ifndef SRC_ENGINE_ENTITY_RELATIONSHIPTYPE_H_
 #define SRC_ENGINE_ENTITY_RELATIONSHIPTYPE_H_
 
-#include <string>
-
-#include "EntitySystem.h"
+#include "EntitySystemBase.h"
 
 #include "EntityAction.h"
 #include "EntityAttribute.h"
@@ -19,7 +17,7 @@
 class RelationshipType
 {
     public:
-        RelationshipType();
+        RelationshipType(std::string name, bool persist, bool synchronize);
         virtual ~RelationshipType();
 
     private:
