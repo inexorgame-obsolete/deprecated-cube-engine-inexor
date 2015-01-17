@@ -1281,6 +1281,58 @@ void loadalphamask(Texture *t)
     }
 }
 
+void jsonparsetest()
+{
+    JSON *j = loadjson("test.json");
+    if(!j) { conoutf("no json"); return; }
+
+    JSON *ob = j->getitem("testobject");
+    
+    if(!ob) { conoutf("no testobject"); return; }
+    //conoutf("val empty: f %f i %i s %s", emp->valuefloat, emp->valueint, emp->valuestring);
+    ob->getfloat("float");
+    conoutf("vals: f %f i %i s %s", ob->getfloat("float"), ob->getint("int"), ob->getstring("string"));
+	conoutf("getfloat(\"float\")->valuefloat %f getfloat(\"float\")->valuestring %s", ob->getitem("float")->valuefloat, ob->getitem("float")->valuestring); 
+
+    JSON *arr = j->getitem("testarrays");
+    
+    conoutf("testarrays: i f s");
+    JSON *ari = arr->getitem("testiarray");
+    loopi(ari->numchilds()) conoutf("%d %d", i, ari->getint(i));
+    
+    JSON *arf = arr->getitem("testfarray");
+    loopi(arf->numchilds()) conoutf("%d %f", i, ari->getfloat(i));
+    
+    JSON *ars = arr->getitem("testsarray");
+    loopi(ars->numchilds()) conoutf("%d %s", i, ars->getstring(i));
+
+    conoutf("firstvalue stringchild: %s", ars->getitem(0)->valuestring);
+
+    delete j; 
+}
+COMMAND(jsonparsetest,"");
+
+void jsoncreatetest()
+{
+	JSON *j = JSON_CreateObject();
+
+	j->additem("firstfloat", JSON_CreateFloat(20.28f));
+	j->additem("firstint", JSON_CreateInt(300));
+	j->additem("firststring", JSON_CreateString("hey du da!"));
+
+	JSON *arrb = JSON_CreateArray();
+	loopi(4) arrb->additem(JSON_CreateBool(true));
+	j->additem("boolarray", arrb);
+
+	JSON *arrf = JSON_CreateArray();
+	loopi(4) arrf->additem(JSON_CreateFloat(28.2*i));
+	j->additem("floatarray", arrf);
+
+	j->save("create.json");
+	delete j;
+}
+COMMAND(jsoncreatetest,"");
+
 Texture *textureload(const char *name, int clamp, bool mipit, bool msg)
 {
     string tname;
