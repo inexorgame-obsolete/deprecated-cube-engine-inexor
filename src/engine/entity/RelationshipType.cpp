@@ -7,10 +7,12 @@
 
 #include "RelationshipType.h"
 
-RelationshipType::RelationshipType()
+RelationshipType::RelationshipType(std::string name, bool persist, bool synchronize)
+    : name(name),
+      persist(persist),
+      synchronize(synchronize)
 {
-    // TODO Auto-generated constructor stub
-
+    uuid = "0";
 }
 
 RelationshipType::~RelationshipType()
