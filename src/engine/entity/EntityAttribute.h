@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "EntitySystem.h"
+#include "EntitySystemBase.h"
 
 enum {
     ENTATTR_FALSE = 0,

@@ -8,7 +8,7 @@
 #ifndef SRC_ENGINE_ENTITY_ENTITYACTION_H_
 #define SRC_ENGINE_ENTITY_ENTITYACTION_H_
 
-#include "EntitySystem.h"
+#include "EntitySystemBase.h"
 
 class EntityAction
 {

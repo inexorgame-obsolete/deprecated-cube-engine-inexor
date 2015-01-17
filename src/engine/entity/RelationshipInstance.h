@@ -8,10 +8,7 @@
 #ifndef SRC_ENGINE_ENTITY_RELATIONSHIPINSTANCE_H_
 #define SRC_ENGINE_ENTITY_RELATIONSHIPINSTANCE_H_
 
-#include <string>
-#include <map>
-
-#include "EntitySystem.h"
+#include "EntitySystemBase.h"
 
 #include "EntityAttribute.h"
 // #include "EntityInstance.h"
