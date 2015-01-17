@@ -258,6 +258,7 @@ declare_module(engine ./engine)
 declare_module(fpsgame ./fpsgame)
 declare_module(util ./util)
 declare_module(ui ./ui)
+declare_module(entity ./engine/entity)
 add_subdirectory(rpc) # rpc module, protobuf lib
 add_subdirectory(net) # net module, asio lib
 
@@ -284,6 +285,7 @@ set(ALL_HEADERS
 	${RPC_MODULE_HEADERS}
 	${SHARED_MODULE_HEADERS}
 	${UI_MODULE_HEADERS}
+    ${ENTITY_MODULE_HEADERS}
 	${UTIL_MODULE_HEADERS}
 	CACHE INTERNAL "")
 

@@ -52,7 +52,9 @@ prepend(CLIENT_SOURCES_FPSGAME ${SOURCE_DIR}/fpsgame
 
 set(CLIENT_SOURCES 
     ${CLIENT_SOURCES_ENGINE}
-    ${CLIENT_SOURCES_FPSGAME} 
+    ${CLIENT_SOURCES_FPSGAME}
+    ${UI_MODULE_SOURCES}
+    ${ENTITY_MODULE_SOURCES}
 	${COMMON_SOURCES}
   CACHE INTERNAL "")
 
@@ -91,8 +93,7 @@ endif()
 
 # Assemble executable in specific mode
 if(OS_WINDOWS)
-  add_executable(${CLIENT_BINARY} WIN32 ${CLIENT_SOURCES}
-      ${ALL_HEADERS})
+    add_executable(${CLIENT_BINARY} WIN32 ${CLIENT_SOURCES} ${ALL_HEADERS})
 elseif(OS_MACOSX)
     add_executable(${CLIENT_BINARY} MACOSX_BUNDLE ${CLIENT_SOURCES})
 else()
