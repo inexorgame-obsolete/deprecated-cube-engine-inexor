@@ -1005,7 +1005,7 @@ namespace game
         messages.setsize(0);
         messagereliable = false;
         messagecn = -1;
-        player1->respawn(gamemode);
+        player1->respawn();
         player1->lifesequence = 0;
         player1->state = CS_ALIVE;
         player1->privilege = PRIV_NONE;
@@ -1585,7 +1585,7 @@ namespace game
                 if(d)
                 {
                     if(d->state==CS_DEAD && d->lastpain) saveragdoll(d);
-                    d->respawn(gamemode);
+                    d->respawn();
                 }
                 parsestate(d, p);
                 if(!d) break;
@@ -1606,7 +1606,7 @@ namespace game
                     if(editmode) toggleedit();
                     stopfollowing();
                 }
-                s->respawn(gamemode);
+                s->respawn();
                 parsestate(s, p);
                 s->state = CS_ALIVE;
                 if(cmode) cmode->pickspawn(s);

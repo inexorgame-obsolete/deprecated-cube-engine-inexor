@@ -155,9 +155,9 @@ namespace server
             respawn();
         }
 
-        void respawn(int gamemode = NULL)
+        void respawn()
         {
-            fpsstate::respawn(gamemode);
+            fpsstate::respawn();
             o = vec(-1e10f, -1e10f, -1e10f);
             deadflush = 0;
             lastspawn = -1;
@@ -167,7 +167,7 @@ namespace server
 
         void reassign()
         {
-            respawn(gamemode);
+            respawn();
             rockets.reset();
             grenades.reset();
             bombs.reset();
@@ -2280,7 +2280,7 @@ namespace server
             ts.lastdeath = gamemillis;
 
             if (m_lms) checklms(); // Last Man Standing
-            else ts.respawn(gamemode);
+            else ts.respawn();
 
             if(actor!=target && isteam(actor->team, target->team)) 
             {
