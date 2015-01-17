@@ -742,6 +742,7 @@ struct fpsstate
         if(m_demo)
         {
             gunselect = GUN_FIST;
+            backupweapon = GUN_FIST;
         }
         else if(m_insta)
         {
@@ -749,6 +750,7 @@ struct fpsstate
             health = 1;
             gunselect = GUN_RIFLE;
             ammo[GUN_RIFLE] = 100;
+            backupweapon = GUN_FIST;
         }
         else if(m_regencapture)
         {
@@ -757,12 +759,14 @@ struct fpsstate
             gunselect = GUN_PISTOL;
             ammo[GUN_PISTOL] = 40;
             ammo[GUN_GL] = 1;
+            backupweapon = GUN_FIST;
         }
         else if(m_tactics)
         {
             armourtype = A_GREEN;
             armour = 100;
             ammo[GUN_PISTOL] = 40;
+            backupweapon = GUN_FIST;
             int spawngun1 = rnd(5)+1, spawngun2;
             gunselect = spawngun1;
             baseammo(spawngun1, m_noitems ? 2 : 1);
@@ -777,6 +781,7 @@ struct fpsstate
             loopi(5) baseammo(i+1);
             gunselect = GUN_CG;
             ammo[GUN_CG] /= 2;
+            backupweapon = GUN_FIST;
         }
         else if(m_ctf || m_collect)
         {
@@ -784,6 +789,7 @@ struct fpsstate
             armour = 50;
             ammo[GUN_PISTOL] = 40;
             ammo[GUN_GL] = 1;
+            backupweapon = GUN_FIST;
         }
         else if(m_bomb)
         {
@@ -801,6 +807,7 @@ struct fpsstate
             ammo[GUN_RL] = 10;
             ammo[GUN_PISTOL] = 0;
             ammo[GUN_GL] = 0;
+            backupweapon = GUN_FIST;
         }
         else if(m_sp)
         {
@@ -811,6 +818,7 @@ struct fpsstate
             }
             ammo[GUN_PISTOL] = 80;
             ammo[GUN_GL] = 1;
+            backupweapon = GUN_FIST;
         }
         else
         {
@@ -818,6 +826,7 @@ struct fpsstate
             armour = 25;
             ammo[GUN_PISTOL] = 40;
             ammo[GUN_GL] = 1;
+            backupweapon = GUN_FIST;
         }
     }
 
