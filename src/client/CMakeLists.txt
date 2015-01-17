@@ -46,6 +46,7 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/EntityType
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/RelationshipInstance
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/RelationshipType
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/TypeBase
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/grass
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/main
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/material
