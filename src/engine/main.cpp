@@ -1366,7 +1366,7 @@ int main(int argc, char **argv)
     logoutf("init: cfg");
     execfile("config/keymap.cfg");
     execfile("config/stdedit.cfg");
-    execfile("config/menus.cfg");
+    // execfile("config/menus.cfg");
     execfile("config/sounds.cfg");
     execfile("config/heightmap.cfg");
     execfile("config/blendbrush.cfg");
