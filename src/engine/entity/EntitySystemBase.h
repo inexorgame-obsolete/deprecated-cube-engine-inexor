@@ -15,4 +15,6 @@
 #include "include/cef_base.h"
 #include "include/internal/cef_ptr.h"
 
+extern void logoutf(const char *fmt, ...);
+
 #endif /* SRC_ENGINE_ENTITY_ENTITYSYSTEMBASE_H_ */

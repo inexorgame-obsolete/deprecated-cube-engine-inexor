@@ -8,7 +8,12 @@
 #ifndef SRC_ENGINE_ENTITY_ENTITYSYSTEM_H_
 #define SRC_ENGINE_ENTITY_ENTITYSYSTEM_H_
 
+#include "TypeBase.h"
 #include "EntitySystemBase.h"
+#include "EntityType.h"
+#include "EntityInstance.h"
+#include "RelationshipType.h"
+#include "RelationshipInstance.h"
 
 class EntitySystem
 {
