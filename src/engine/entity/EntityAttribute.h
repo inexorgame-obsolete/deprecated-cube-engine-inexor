@@ -23,6 +23,12 @@ enum {
     ENTATTR_FUNCTION
 }; // JSON types
 
+class TypeBase;
+class EntityType;
+class RelationshipType;
+class EntityInstance;
+class RelationshipInstance;
+
 class EntityAttribute
 {
     public:
@@ -160,6 +166,13 @@ class EntityAttribute
             return *this;
         };
 
+        void operator()();
+        void operator()(TypeBase* type);
+        void operator()(EntityType* type);
+        void operator()(RelationshipType* type);
+        void operator()(EntityInstance* inst);
+        void operator()(RelationshipInstance* inst);
+
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(EntityAttribute);
 };
@@ -239,8 +252,6 @@ class AttributeRefPtr : public CefRefPtr<EntityAttribute> {
             attr->type = b1;
             return *attr;
         }
-        /*
-        */
 
         EntityAttribute& operator=(const int &i) {
             EntityAttribute* attr = this->get();
@@ -280,6 +291,13 @@ class AttributeRefPtr : public CefRefPtr<EntityAttribute> {
             attr->functionVal = f;
             return *attr;
         }
+
+        void operator()();
+        void operator()(TypeBase* type);
+        void operator()(EntityType* type);
+        void operator()(RelationshipType* type);
+        void operator()(EntityInstance* inst);
+        void operator()(RelationshipInstance* inst);
 
 };
 

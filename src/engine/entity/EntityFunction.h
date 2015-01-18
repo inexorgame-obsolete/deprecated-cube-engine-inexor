@@ -10,14 +10,33 @@
 
 #include "EntitySystemBase.h"
 
+class TypeBase;
+class EntityType;
+class RelationshipType;
+class EntityInstance;
+class RelationshipInstance;
+
 class EntityFunction
 {
     public:
         EntityFunction() : name("test") {};
         virtual ~EntityFunction() {};
 
-        void Execute() {};
+        void Execute();
+        void Execute(TypeBase* type);
+        void Execute(EntityType* type);
+        void Execute(RelationshipType* type);
+        void Execute(EntityInstance* inst);
+        void Execute(RelationshipInstance* inst);
+
         std::string GetName() { return name; };
+
+        void operator()();
+        void operator()(TypeBase* type);
+        void operator()(EntityType* type);
+        void operator()(RelationshipType* type);
+        void operator()(EntityInstance* inst);
+        void operator()(RelationshipInstance* inst);
 
     private:
         std::string name;
@@ -43,6 +62,13 @@ class FunctionRefPtr : public CefRefPtr<EntityFunction> {
         template <typename U>
         FunctionRefPtr(const CefRefPtr<U>& r) : parent(r) {
         }
+
+        void operator()();
+        void operator()(TypeBase* type);
+        void operator()(EntityType* type);
+        void operator()(RelationshipType* type);
+        void operator()(EntityInstance* inst);
+        void operator()(RelationshipInstance* inst);
 
 };
 
