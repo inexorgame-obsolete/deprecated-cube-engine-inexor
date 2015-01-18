@@ -9,20 +9,23 @@
 #define SRC_ENGINE_ENTITY_ENTITYINSTANCE_H_
 
 #include "EntitySystemBase.h"
+#include "InstanceBase.h"
 
 #include "EntityAttribute.h"
 #include "EntityType.h"
-// #include "RelationshipInstance.h"
 
 class RelationshipInstance;
 
-class EntityInstance
+class EntityInstance : public InstanceBase
 {
     public:
-        EntityInstance();
+        EntityInstance(CefRefPtr<EntityType> type);
         virtual ~EntityInstance();
 
-    private:
+        CefRefPtr<EntityType> GetType() { return type; };
+        std::list<CefRefPtr<RelationshipInstance> > GetRelationships() { return relationships; };
+
+    protected:
         /**
         std::string type;
         bool persist;
@@ -33,11 +36,6 @@ class EntityInstance
          * The entity type.
          */
         CefRefPtr<EntityType> type;
-
-        /**
-         * The attributes of this entity instance.
-         */
-        std::map<std::string, CefRefPtr<EntityAttribute> > attributes;
 
         /**
          * The relationships.

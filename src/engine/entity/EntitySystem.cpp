@@ -43,8 +43,25 @@ EntitySystem::EntitySystem()
     logoutf("test 14: type: %d expected: %s value: %s", et["function1"]->GetType(), "test", et["function1"]->GetFunction()->GetName().c_str());
     et["function2"] = (FunctionRefPtr) new EntityFunction();
     logoutf("test 15: type: %d expected: %s value: %s", et["function2"]->GetType(), "test", et["function2"]->GetFunction()->GetName().c_str());
-    // et["function2"]->
-
+    et["function2"]->GetFunction()->Execute();
+    et["function2"]->GetFunction()->Execute(et);
+    et["function2"]->operator ()();
+    et["function2"]->operator ()(et);
+    et["function2"]();
+    et["function2"](et);
+    TypeRefPtr<RelationshipType> rt = new RelationshipType("rt1", false, false);
+    rt["function3"] = (FunctionRefPtr) new EntityFunction();
+    rt["function3"]->GetFunction()->Execute();
+    rt["function3"]->GetFunction()->Execute(rt);
+    rt["function3"]->operator ()();
+    rt["function3"]->operator ()(rt);
+    rt["function3"]();
+    rt["function3"](rt);
+    InstanceRefPtr<EntityInstance> ei = new EntityInstance(et);
+    ei["x"] = 10.0;
+    logoutf("test 16: type: %s name: %s type: %d expected: %3f value: %3f", ei->GetType()->GetName().c_str(), ei["x"]->name.c_str(), ei["x"]->type, 10.0, ei["x"]->GetDouble());
+    ei["y"] = -10.0;
+    logoutf("test 17: type: %s name: %s type: %d expected: %3f value: %3f", ei->GetType()->GetName().c_str(), ei["y"]->name.c_str(), ei["x"]->type, -10.0, ei["y"]->GetDouble());
 }
 
 EntitySystem::~EntitySystem()

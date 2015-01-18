@@ -9,62 +9,29 @@
 #define SRC_ENGINE_ENTITY_TYPEBASE_H_
 
 #include "EntitySystemBase.h"
+#include "AttributeBase.h"
 
 #include "EntityAttribute.h"
 #include "EntityFunction.h"
 
-class TypeBase
+class TypeBase : public AttributeBase
 {
     public:
         TypeBase(std::string name, bool persist, bool synchronize);
         virtual ~TypeBase();
 
-        std::string GetUuid();
-        std::string GetName();
-        bool IsPersisting();
-        bool IsSynchronizing();
+        std::string GetUuid() { return uuid; };
+        std::string GetName() { return name; };
+        bool IsPersisting() { return persist; };
+        bool IsSynchronizing() { return synchronize; };
 
-        AttributeRefPtr operator[](std::string key) const;
-        AttributeRefPtr & operator[](std::string key);
-
-        void AddAttribute(std::string key, AttributeRefPtr attribute) {
-            attribute.get()->name = key;
-            attributes[key] = attribute;
+        /*
+        void Execute(std::string key) {
+            if (attributes[key]->type == ENTATTR_FUNCTION) {
+                attributes[key]->functionVal->Execute(this);
+            }
         }
-
-        void AddAttribute(std::string key, bool value) {
-            attributes[key] = value;
-            attributes[key]->type = value;
-            attributes[key]->name = key;
-        }
-
-        void AddAttribute(std::string key, int value) {
-            attributes[key] = value;
-            attributes[key]->type = ENTATTR_INT;
-            attributes[key]->name = key;
-        }
-
-        void AddAttribute(std::string key, double value) {
-            attributes[key] = value;
-            attributes[key]->type = ENTATTR_DOUBLE;
-            attributes[key]->name = key;
-        }
-
-        void AddAttribute(std::string key, std::string value) {
-            attributes[key] = value;
-            attributes[key]->type = ENTATTR_STRING;
-            attributes[key]->name = key;
-        }
-
-        void AddAttribute(std::string key, FunctionRefPtr action) {
-            attributes[key] = action;
-            attributes[key]->type = ENTATTR_FUNCTION;
-            attributes[key]->name = key;
-        }
-
-        AttributeRefPtr GetAttribute(std::string key) {
-            return attributes[key];
-        }
+        */
 
     protected:
 
@@ -87,11 +54,6 @@ class TypeBase
          * Instances of this type should be synchronized.
          */
         bool synchronize;
-
-        /**
-         * The attributes of this type.
-         */
-        std::map<std::string, AttributeRefPtr> attributes;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(TypeBase);
