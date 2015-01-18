@@ -228,3 +228,4 @@ extern JSON *JSON_CreateArray();  //new ordered list. access: position
 extern JSON *JSON_CreateObject(); //new unordered list. access: name
 
 #endif
+
