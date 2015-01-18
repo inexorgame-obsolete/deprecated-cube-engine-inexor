@@ -9,18 +9,26 @@
 #define SRC_ENGINE_ENTITY_RELATIONSHIPINSTANCE_H_
 
 #include "EntitySystemBase.h"
+#include "InstanceBase.h"
 
 #include "EntityAttribute.h"
-// #include "EntityInstance.h"
 #include "RelationshipType.h"
 
 class EntityInstance;
 
-class RelationshipInstance
+class RelationshipInstance : public InstanceBase
 {
     public:
         RelationshipInstance();
         virtual ~RelationshipInstance();
+
+        CefRefPtr<RelationshipType> GetType() { return type; };
+
+        CefRefPtr<EntityInstance> Parent() { return parent; };
+
+        CefRefPtr<EntityInstance> Child() { return child; };
+
+    protected:
 
         /**
          * The relationship type.
@@ -36,11 +44,6 @@ class RelationshipInstance
          * The end node is an entity instance.
          */
         CefRefPtr<EntityInstance> child;
-
-        /**
-         * The attributes of
-         */
-        std::map<std::string, CefRefPtr<EntityAttribute> > attributes;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(RelationshipInstance);

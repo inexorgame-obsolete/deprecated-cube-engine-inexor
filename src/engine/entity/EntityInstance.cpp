@@ -8,14 +8,11 @@
 #include "EntityInstance.h"
 #include "RelationshipInstance.h"
 
-EntityInstance::EntityInstance()
+EntityInstance::EntityInstance(CefRefPtr<EntityType> type) : type(type)
 {
-    // TODO Auto-generated constructor stub
-
 }
 
 EntityInstance::~EntityInstance()
 {
-    // TODO Auto-generated destructor stub
 }
 
