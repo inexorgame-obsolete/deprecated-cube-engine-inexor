@@ -14,6 +14,4 @@ EntityType::EntityType(std::string name, bool persist, bool synchronize)
 
 EntityType::~EntityType()
 {
-    // TODO Auto-generated destructor stub
 }
-

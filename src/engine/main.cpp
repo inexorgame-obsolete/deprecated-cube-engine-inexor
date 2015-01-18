@@ -8,6 +8,7 @@
 #include "ui/cefrequestcontexthandler.h"
 #include "include/cef_browser.h"
 #include "include/wrapper/cef_helpers.h"
+#include "engine/entity/EntitySystem.h"
 
 // extern functions and data here
 extern void cleargamma();
@@ -1362,6 +1363,8 @@ int main(int argc, char **argv)
 
     logoutf("init: sound");
     initsound();
+
+    EntitySystem e;
 
     logoutf("init: cfg");
     execfile("config/keymap.cfg");
