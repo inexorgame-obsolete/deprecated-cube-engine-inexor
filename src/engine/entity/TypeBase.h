@@ -11,7 +11,7 @@
 #include "EntitySystemBase.h"
 
 #include "EntityAttribute.h"
-#include "EntityAction.h"
+#include "EntityFunction.h"
 
 class TypeBase
 {
@@ -24,10 +24,10 @@ class TypeBase
         bool IsPersisting();
         bool IsSynchronizing();
 
-        AttributeCefRefPtr operator[](std::string key) const;
-        AttributeCefRefPtr & operator[](std::string key);
+        AttributeRefPtr operator[](std::string key) const;
+        AttributeRefPtr & operator[](std::string key);
 
-        void AddAttribute(std::string key, AttributeCefRefPtr attribute) {
+        void AddAttribute(std::string key, AttributeRefPtr attribute) {
             attribute.get()->name = key;
             attributes[key] = attribute;
         }
@@ -56,7 +56,13 @@ class TypeBase
             attributes[key]->name = key;
         }
 
-        AttributeCefRefPtr GetAttribute(std::string key) {
+        void AddAttribute(std::string key, FunctionRefPtr action) {
+            attributes[key] = action;
+            attributes[key]->type = ENTATTR_FUNCTION;
+            attributes[key]->name = key;
+        }
+
+        AttributeRefPtr GetAttribute(std::string key) {
             return attributes[key];
         }
 
@@ -85,38 +91,33 @@ class TypeBase
         /**
          * The attributes of this type.
          */
-        std::map<std::string, AttributeCefRefPtr> attributes;
-
-        /**
-         * The actions which are available on instances of this type.
-         */
-        std::map<std::string, CefRefPtr<EntityAction> > actions;
+        std::map<std::string, AttributeRefPtr> attributes;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(TypeBase);
 };
 
 template <class T>
-class TypeCefRefPtr : public CefRefPtr<T> {
+class TypeRefPtr : public CefRefPtr<T> {
     public:
         typedef CefRefPtr<T> parent;
 
-        TypeCefRefPtr() : parent() {
+        TypeRefPtr() : parent() {
         }
 
-        TypeCefRefPtr(T* p) : parent(p) {
+        TypeRefPtr(T* p) : parent(p) {
         }
 
-        TypeCefRefPtr(const CefRefPtr<T>& r) : parent(r) {
+        TypeRefPtr(const CefRefPtr<T>& r) : parent(r) {
         }
 
         template <typename U>
-        TypeCefRefPtr(const CefRefPtr<U>& r) : parent(r) {
+        TypeRefPtr(const CefRefPtr<U>& r) : parent(r) {
         }
 
-        AttributeCefRefPtr operator[](std::string key) const
+        AttributeRefPtr operator[](std::string key) const
         {
-            AttributeCefRefPtr attribute = this->get()->GetAttribute(key);
+            AttributeRefPtr attribute = this->get()->GetAttribute(key);
             attribute->name = key;
             return attribute;
         };

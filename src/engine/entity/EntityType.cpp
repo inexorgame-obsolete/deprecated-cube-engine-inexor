@@ -6,12 +6,3 @@
  */
 
 #include "EntityType.h"
-
-EntityType::EntityType(std::string name, bool persist, bool synchronize)
-    : TypeBase(name, persist, synchronize)
-{
-}
-
-EntityType::~EntityType()
-{
-}
