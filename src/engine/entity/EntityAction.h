@@ -15,6 +15,9 @@ class EntityAction
     public:
         EntityAction();
         virtual ~EntityAction();
+
+        void Execute() {};
+
     private:
 
         // Include the default reference counting implementation.
