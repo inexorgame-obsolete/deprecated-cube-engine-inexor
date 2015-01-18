@@ -40,14 +40,14 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/console
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/decal
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/dynlight
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/EntityAction
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/EntityAttribute
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/EntityFunction
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/EntityInstance
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/RelationshipInstance
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/TypeBase
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/EntityType
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/RelationshipType
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/EntitySystem
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/EntityType
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/RelationshipInstance
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/RelationshipType
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/TypeBase
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/grass
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/main
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/material

@@ -13,8 +13,8 @@
 class EntityType : public TypeBase
 {
     public:
-        EntityType(std::string name, bool persist, bool synchronize);
-        virtual ~EntityType();
+        EntityType(std::string name, bool persist, bool synchronize) : TypeBase(name, persist, synchronize) {};
+        virtual ~EntityType() {};
 
     private:
 
