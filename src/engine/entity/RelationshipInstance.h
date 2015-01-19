@@ -19,14 +19,14 @@ class EntityInstance;
 class RelationshipInstance : public InstanceBase
 {
     public:
-        RelationshipInstance();
+        RelationshipInstance(CefRefPtr<RelationshipType> type, CefRefPtr<EntityInstance> startNode, CefRefPtr<EntityInstance> endNode);
         virtual ~RelationshipInstance();
 
         CefRefPtr<RelationshipType> GetType() { return type; };
 
-        CefRefPtr<EntityInstance> Parent() { return parent; };
+        CefRefPtr<EntityInstance> GetStartNode() { return startNode; };
 
-        CefRefPtr<EntityInstance> Child() { return child; };
+        CefRefPtr<EntityInstance> GetEndNode() { return endNode; };
 
     protected:
 
@@ -36,14 +36,14 @@ class RelationshipInstance : public InstanceBase
         CefRefPtr<RelationshipType> type;
 
         /**
-         * The start node is an entity instance.
+         * The start node (parent node) is an entity instance.
          */
-        CefRefPtr<EntityInstance> parent;
+        CefRefPtr<EntityInstance> startNode;
 
         /**
-         * The end node is an entity instance.
+         * The end node (child node) is an entity instance.
          */
-        CefRefPtr<EntityInstance> child;
+        CefRefPtr<EntityInstance> endNode;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(RelationshipInstance);
