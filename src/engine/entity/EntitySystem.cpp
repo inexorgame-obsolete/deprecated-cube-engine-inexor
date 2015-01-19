@@ -49,19 +49,32 @@ EntitySystem::EntitySystem()
     et["function2"]->operator ()(et);
     et["function2"]();
     et["function2"](et);
-    TypeRefPtr<RelationshipType> rt = new RelationshipType("rt1", false, false);
-    rt["function3"] = (FunctionRefPtr) new EntityFunction();
-    rt["function3"]->GetFunction()->Execute();
-    rt["function3"]->GetFunction()->Execute(rt);
-    rt["function3"]->operator ()();
-    rt["function3"]->operator ()(rt);
-    rt["function3"]();
-    rt["function3"](rt);
     InstanceRefPtr<EntityInstance> ei = new EntityInstance(et);
     ei["x"] = 10.0;
     logoutf("test 16: type: %s name: %s type: %d expected: %3f value: %3f", ei->GetType()->GetName().c_str(), ei["x"]->name.c_str(), ei["x"]->type, 10.0, ei["x"]->GetDouble());
     ei["y"] = -10.0;
     logoutf("test 17: type: %s name: %s type: %d expected: %3f value: %3f", ei->GetType()->GetName().c_str(), ei["y"]->name.c_str(), ei["x"]->type, -10.0, ei["y"]->GetDouble());
+
+
+    TypeRefPtr<EntityType> et_teleport = new EntityType("teleport", true, true);
+    TypeRefPtr<EntityType> et_teledest = new EntityType("teledest", true, true);
+
+    TypeRefPtr<RelationshipType> teleports_to = new RelationshipType("teleports_to", true, true, et_teleport, et_teledest);
+    teleports_to["teleport"] = (FunctionRefPtr) new EntityFunction();
+    teleports_to["teleport"]();
+
+    InstanceRefPtr<EntityInstance> ei_teleporter_1 = new EntityInstance(et_teleport);
+    InstanceRefPtr<EntityInstance> ei_teleporter_2 = new EntityInstance(et_teleport);
+
+    InstanceRefPtr<EntityInstance> ei_teledest_1 = new EntityInstance(et_teledest);
+    InstanceRefPtr<EntityInstance> ei_teledest_2 = new EntityInstance(et_teledest);
+    InstanceRefPtr<EntityInstance> ei_teledest_3 = new EntityInstance(et_teledest);
+
+    InstanceRefPtr<RelationshipInstance> ri_is_target_1_1 = new RelationshipInstance(teleports_to, ei_teleporter_1, ei_teledest_1);
+    InstanceRefPtr<RelationshipInstance> ri_is_target_1_3 = new RelationshipInstance(teleports_to, ei_teleporter_1, ei_teledest_3);
+    InstanceRefPtr<RelationshipInstance> ri_is_target_2_2 = new RelationshipInstance(teleports_to, ei_teleporter_2, ei_teledest_2);
+    InstanceRefPtr<RelationshipInstance> ri_is_target_2_3 = new RelationshipInstance(teleports_to, ei_teleporter_2, ei_teledest_3);
+
 }
 
 EntitySystem::~EntitySystem()
@@ -75,9 +88,14 @@ CefRefPtr<EntityType> EntitySystem::CreateEntityType(std::string name, bool pers
     return entity_type;
 }
 
-CefRefPtr<RelationshipType> EntitySystem::CreateRelationshipType(std::string name, bool persist, bool synchronize)
+CefRefPtr<RelationshipType> EntitySystem::CreateRelationshipType(std::string name, CefRefPtr<EntityType> startNodeType, CefRefPtr<EntityType> endNodeType)
 {
-    CefRefPtr<RelationshipType> relationship_type = new RelationshipType(name, persist, synchronize);
+    return CreateRelationshipType(name, false, false, startNodeType, endNodeType);
+}
+
+CefRefPtr<RelationshipType> EntitySystem::CreateRelationshipType(std::string name, bool persist, bool synchronize, CefRefPtr<EntityType> startNodeType, CefRefPtr<EntityType> endNodeType)
+{
+    CefRefPtr<RelationshipType> relationship_type = new RelationshipType(name, persist, synchronize, startNodeType, endNodeType);
     relationship_types[name] = relationship_type;
     return relationship_type;
 }

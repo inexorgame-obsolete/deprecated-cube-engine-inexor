@@ -30,7 +30,8 @@ class EntitySystem
         /**
          * Creates an relationship type.
          */
-        CefRefPtr<RelationshipType> CreateRelationshipType(std::string name, bool persist, bool synchronize);
+        CefRefPtr<RelationshipType> CreateRelationshipType(std::string name, CefRefPtr<EntityType> startNodeType, CefRefPtr<EntityType> endNodeType);
+        CefRefPtr<RelationshipType> CreateRelationshipType(std::string name, bool persist, bool synchronize, CefRefPtr<EntityType> startNodeType, CefRefPtr<EntityType> endNodeType);
 
         /**
          * Returns the entity type with the given name.
