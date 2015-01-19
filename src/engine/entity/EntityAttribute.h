@@ -18,6 +18,7 @@ enum {
     ENTATTR_TRUE,
     ENTATTR_NULL,
     ENTATTR_INT,
+    ENTATTR_FLOAT,
     ENTATTR_DOUBLE,
     ENTATTR_STRING,
     ENTATTR_FUNCTION
@@ -32,13 +33,14 @@ class RelationshipInstance;
 class EntityAttribute
 {
     public:
-        EntityAttribute() : type(ENTATTR_NULL), name(""), intVal(0), doubleVal(0.0), stringVal(""), functionVal(0) { }
-        EntityAttribute(bool value) : type(value), name(""), intVal(0), doubleVal(0.0), stringVal(""), functionVal(0) { }
-        EntityAttribute(int value) : type(ENTATTR_INT), name(""), intVal(value), doubleVal(0.0), stringVal(""), functionVal(0) { }
-        EntityAttribute(double value) : type(ENTATTR_DOUBLE), name(""), intVal(0), doubleVal(value), stringVal(""), functionVal(0) { }
-        EntityAttribute(std::string value) : type(ENTATTR_STRING), name(""), intVal(0), doubleVal(0.0), stringVal(value), functionVal(0) { }
-        EntityAttribute(FunctionRefPtr value) : type(ENTATTR_FUNCTION), name(""), intVal(0), doubleVal(0.0), stringVal(""), functionVal(value) { }
-        EntityAttribute(FunctionRefPtr *value) : type(ENTATTR_FUNCTION), name(""), intVal(0), doubleVal(0.0), stringVal(""), functionVal(*value) { }
+        EntityAttribute() : type(ENTATTR_NULL), name(""), intVal(0), floatVal(0.0f), doubleVal(0.0), stringVal(""), functionVal(0) { }
+        EntityAttribute(bool value) : type(value), name(""), intVal(0), floatVal(0.0f), doubleVal(0.0), stringVal(""), functionVal(0) { }
+        EntityAttribute(int value) : type(ENTATTR_INT), name(""), intVal(value), floatVal(0.0f), doubleVal(0.0), stringVal(""), functionVal(0) { }
+        EntityAttribute(float value) : type(ENTATTR_FLOAT), name(""), intVal(0), floatVal(value), doubleVal(0.0), stringVal(""), functionVal(0) { }
+        EntityAttribute(double value) : type(ENTATTR_DOUBLE), name(""), intVal(0), floatVal(0.0f), doubleVal(value), stringVal(""), functionVal(0) { }
+        EntityAttribute(std::string value) : type(ENTATTR_STRING), name(""), intVal(0), floatVal(0.0f), doubleVal(0.0), stringVal(value), functionVal(0) { }
+        EntityAttribute(FunctionRefPtr value) : type(ENTATTR_FUNCTION), name(""), intVal(0), floatVal(0.0f), doubleVal(0.0), stringVal(""), functionVal(value) { }
+        EntityAttribute(FunctionRefPtr *value) : type(ENTATTR_FUNCTION), name(""), intVal(0), floatVal(0.0f), doubleVal(0.0), stringVal(""), functionVal(*value) { }
         ~EntityAttribute() { }
 
         void SetType(int type)
@@ -57,6 +59,11 @@ class EntityAttribute
         {
             this->type = ENTATTR_INT;
             this->intVal = value;
+        };
+        void SetValue(float value)
+        {
+            this->type = ENTATTR_FLOAT;
+            this->floatVal = value;
         };
         void SetValue(double value)
         {
@@ -89,6 +96,14 @@ class EntityAttribute
                 return 0;
             }
         };
+        double GetFloat()
+        {
+            if (this->type == ENTATTR_FLOAT) {
+                return floatVal;
+            } else {
+                return 0.0f;
+            }
+        };
         double GetDouble()
         {
             if (this->type == ENTATTR_DOUBLE) {
@@ -117,6 +132,7 @@ class EntityAttribute
         int type;
         std::string name;
         int intVal;
+        float floatVal;
         double doubleVal;
         std::string stringVal;
         FunctionRefPtr functionVal;
@@ -125,6 +141,7 @@ class EntityAttribute
             type = attribute.type;
             name = attribute.name;
             intVal = attribute.intVal;
+            floatVal = attribute.floatVal;
             doubleVal = attribute.doubleVal;
             stringVal = attribute.stringVal;
             functionVal = attribute.functionVal;
@@ -139,6 +156,12 @@ class EntityAttribute
         EntityAttribute& operator=(int* value) {
             this->type = ENTATTR_INT;
             this->intVal = *value;
+            return *this;
+        };
+
+        EntityAttribute& operator=(float* value) {
+            this->type = ENTATTR_FLOAT;
+            this->floatVal = *value;
             return *this;
         };
 
@@ -188,6 +211,7 @@ class AttributeRefPtr : public CefRefPtr<EntityAttribute> {
             attr->type = p->type;
             attr->name = p->name;
             attr->intVal = p->intVal;
+            attr->floatVal = p->floatVal;
             attr->doubleVal = p->doubleVal;
             attr->stringVal = p->stringVal;
             attr->functionVal = p->functionVal;
@@ -198,6 +222,7 @@ class AttributeRefPtr : public CefRefPtr<EntityAttribute> {
             attr->type = r->type;
             attr->name = r->name;
             attr->intVal = r->intVal;
+            attr->floatVal = r->floatVal;
             attr->doubleVal = r->doubleVal;
             attr->stringVal = r->stringVal;
             attr->functionVal = r->functionVal;
@@ -209,6 +234,7 @@ class AttributeRefPtr : public CefRefPtr<EntityAttribute> {
             attr->type = r->type;
             attr->name = r->name;
             attr->intVal = r->intVal;
+            attr->floatVal = r->floatVal;
             attr->doubleVal = r->doubleVal;
             attr->stringVal = r->stringVal;
             attr->functionVal = r->functionVal;
@@ -217,6 +243,8 @@ class AttributeRefPtr : public CefRefPtr<EntityAttribute> {
         AttributeRefPtr(bool value) : parent(new EntityAttribute(value)) { }
 
         AttributeRefPtr(int value) : parent(new EntityAttribute(value)) { }
+
+        AttributeRefPtr(float value) : parent(new EntityAttribute(value)) { }
 
         AttributeRefPtr(double value) : parent(new EntityAttribute(value)) { }
 
@@ -231,6 +259,7 @@ class AttributeRefPtr : public CefRefPtr<EntityAttribute> {
             attr->type = attribute.type;
             attr->intVal = attribute.intVal;
             attr->doubleVal = attribute.doubleVal;
+            attr->floatVal = attribute.floatVal;
             attr->stringVal = attribute.stringVal;
             attr->functionVal = attribute.functionVal;
             return *attr;
@@ -240,6 +269,7 @@ class AttributeRefPtr : public CefRefPtr<EntityAttribute> {
             EntityAttribute* attr = this->get();
             attr->type = r->type;
             attr->intVal = r->intVal;
+            attr->floatVal = r->floatVal;
             attr->doubleVal = r->doubleVal;
             attr->stringVal = r->stringVal;
             attr->functionVal = r->functionVal;
@@ -258,6 +288,14 @@ class AttributeRefPtr : public CefRefPtr<EntityAttribute> {
             attr->type = ENTATTR_INT;
             int i1 = i;
             attr->intVal = i1;
+            return *attr;
+        }
+
+        EntityAttribute& operator=(const float &f) {
+            EntityAttribute* attr = this->get();
+            attr->type = ENTATTR_FLOAT;
+            float f1 = f;
+            attr->floatVal = f1;
             return *attr;
         }
 
