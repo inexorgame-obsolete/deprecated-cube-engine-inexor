@@ -7,13 +7,12 @@
 
 #include "RelationshipType.h"
 
-RelationshipType::RelationshipType(std::string name, bool persist, bool synchronize)
-    : TypeBase(name, persist, synchronize)
+RelationshipType::RelationshipType(std::string name, bool persist, bool synchronize, CefRefPtr<EntityType> startNodeType, CefRefPtr<EntityType> endNodeType)
+    : TypeBase(name, persist, synchronize), startNodeType(startNodeType), endNodeType(endNodeType)
 {
 }
 
 RelationshipType::~RelationshipType()
 {
-    // TODO Auto-generated destructor stub
 }
 
