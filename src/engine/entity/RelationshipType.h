@@ -14,8 +14,13 @@
 class RelationshipType : public TypeBase
 {
     public:
-        RelationshipType(std::string name, bool persist, bool synchronize);
+        RelationshipType(std::string name, bool persist, bool synchronize, CefRefPtr<EntityType> startNodeType, CefRefPtr<EntityType> endNodeType);
         virtual ~RelationshipType();
+
+        CefRefPtr<EntityType> GetStartNodeType() { return this->startNodeType; };
+        void SetStartNodeType(CefRefPtr<EntityType> startNodeType) { this->startNodeType = startNodeType; };
+        CefRefPtr<EntityType> GetEndNodeType() { return this->endNodeType; };
+        void SetEndNodeType(CefRefPtr<EntityType> startNodeType) { this->endNodeType = endNodeType; };
 
     private:
 
@@ -28,6 +33,8 @@ class RelationshipType : public TypeBase
          * The entity type of the end node.
          */
         CefRefPtr<EntityType> endNodeType;
+
+        void operator()(EntityInstance* inst);
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(RelationshipType);

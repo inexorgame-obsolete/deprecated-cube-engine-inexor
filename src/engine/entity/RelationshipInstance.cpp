@@ -8,14 +8,19 @@
 #include "RelationshipInstance.h"
 #include "EntityInstance.h"
 
-RelationshipInstance::RelationshipInstance()
+RelationshipInstance::RelationshipInstance(CefRefPtr<RelationshipType> type, CefRefPtr<EntityInstance> startNode, CefRefPtr<EntityInstance> endNode)
+    : type(type)
 {
-    // TODO Auto-generated constructor stub
-
+    // Type checks
+    if (startNode->GetType()->GetUuid() == type->GetStartNodeType()->GetUuid()) {
+        this->startNode = startNode;
+    }
+    if (endNode->GetType()->GetUuid() == type->GetEndNodeType()->GetUuid()) {
+        this->endNode = endNode;
+    }
 }
 
 RelationshipInstance::~RelationshipInstance()
 {
-    // TODO Auto-generated destructor stub
 }
 
