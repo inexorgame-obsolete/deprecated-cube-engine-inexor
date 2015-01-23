@@ -7,6 +7,7 @@
 
 #include <vector>
 
+using namespace std;
 using namespace inexor::util;
 using namespace inexor::net;
 using namespace google::protobuf;
@@ -42,7 +43,7 @@ namespace rpc {
       cerr << "[NOTE] Received bad RPC call: "
             << "Message was a response instead of a "
             << "request! This should not happen."
-            << std::endl;
+            << endl;
       return false;
     }
     // TODO: Moar error checking
@@ -50,9 +51,15 @@ namespace rpc {
 
     // Prepare all the data for doing the actual call
     string name = split_find_last(cd.function_name(), '.');
-    std::cerr << "GOT CAL REQUEST: " << cd.function_name() << " -> " << name << std::endl;
     const MethodDescriptor *md =
       service->GetDescriptor()->FindMethodByName(name);
+
+    if (!md) {
+      // TODO: Proper error handling!
+      cerr << "[RPC] Received invalid message; could "
+        << "not find method '" << name << "'." << endl;
+      return false;
+    }
 
     Message *request =
       service->GetRequestPrototype(md).New();
