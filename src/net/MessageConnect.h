@@ -24,6 +24,9 @@ namespace net {
     typedef std::vector<char> bytes;
     typedef std::pair<bytes, MessageConnect*> bytes_on_channel;
 
+    const static size_t default_max_len = 16<<10; //16kib
+    size_t max_len = default_max_len;
+
     /**
      * Receive a Message.
      *

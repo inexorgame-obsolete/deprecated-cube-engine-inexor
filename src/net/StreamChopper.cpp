@@ -41,18 +41,30 @@ namespace net {
       return vector<char>(0);
 
     // else: We do have enough data; use the buffer red in
-    // some way and reset stuff for reading new data:w
-    
+    // some way and reset stuff for reading new data
+
     buf_pt = 0;
 
     // Got the size of the message; prepare buffer for
     // reading the big message and go into message reading
     // state
     if (!have_size) {
-      have_size = true;
       uint64_t *sz = (uint64_t*)&buf[0];
+
+      // Uups, too long, invalid message; reset
+      if (*sz > max_len) {
+        // TODO: We need some sort of error/logger
+        std::cerr << "[Stream Chopper] Message out of "
+          << "bounds (" << *sz << " bytes)" << std::endl;
+
+        buf_pt = 0;
+        str->ignore();
+        reader_thread_reveive();
+      }
+
+      have_size = true;
       buf = vector<char>(*sz);
-      return Receive(); // Try to read the payload NOW
+      return reader_thread_reveive(); // Try to read the payload NOW
 
     // The full message could be red; go into size reading
     // state, prepare buffer for reading the size and return
