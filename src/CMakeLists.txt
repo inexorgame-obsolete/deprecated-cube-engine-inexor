@@ -50,10 +50,13 @@ endif()
 
 # TODO: This should go insted net/
 message(STATUS "Detecting ASIO...")
-find_library(BOOST_SYSTEM_LIB boost_system)
-find_library(BOOST_REGEX_LIB boost_system)
-set(ASIO_LIBRARIES "${BOOST_SYSTEM_LIB};${BOOST_REGEX_LIB}")
-find_path(ASIO_INCLUDE_DIRS boost/asio.hpp)
+find_path(ASIO_INCLUDE_DIRS asio.hpp)
+if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+  message(STATUS "Using ASIO in standalone mode")
+  add_definitions(-DASIO_STANDALONE)
+else()
+  message(STATUS "Using ASIO with boost. Detecting Boost...")
+endif()
 
 # TODO: This should go inside rpc/
 message(STATUS "Detecting Protobuf...")

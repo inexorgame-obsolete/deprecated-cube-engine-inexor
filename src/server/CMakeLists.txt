@@ -49,7 +49,6 @@ set_source_files_properties(
 
 set(CLIENT_SOURCES_NET
   ${CMAKE_CURRENT_SOURCE_DIR}/../net/MCHub
-  ${CMAKE_CURRENT_SOURCE_DIR}/../net/MCSocketServer
   ${CMAKE_CURRENT_SOURCE_DIR}/../net/StreamChopper
 )
 
@@ -88,7 +87,6 @@ target_link_libraries(${SB_SERVER_BINARY}
     ${ZLIB_LIBRARIES}
     ${EXTRA_LIBS}
     ${PROTOBUF_LIBRARIES}
-    ${ASIO_LIBRARIES}
 )
 
 add_dependencies(${SB_SERVER_BINARY} inexor_rpc_protobuf)

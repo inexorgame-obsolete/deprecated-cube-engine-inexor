@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <cstdio>
 
-#include <boost/asio.hpp>
+#include <asio.hpp>
 
 #include "net/MessageConnect.h"
 #include "net/MCHub.h"
@@ -29,13 +29,13 @@ namespace net {
   protected:
 
     typedef
-      boost::asio::basic_socket_acceptor< protocol >
+      asio::basic_socket_acceptor< protocol >
       acceptor;
     typedef
-      boost::asio::basic_socket_iostream< protocol >
+      asio::basic_socket_iostream< protocol >
       stream;
     typedef typename protocol::endpoint endpoint;
-    typedef boost::asio::io_service service;
+    typedef asio::io_service service;
 
     service srv;
     endpoint end;
@@ -48,16 +48,16 @@ namespace net {
   protected:
     virtual MessageConnect* getNextStream() {
       streamitr s = streams.emplace(streams.end());
-      boost::system::error_code er;
+      asio::error_code er;
 
       ack.accept(*s->rdbuf(), er);
       
-      if (er == boost::asio::error::basic_errors::try_again) {
+      if (er == asio::error::basic_errors::try_again) {
         streams.erase(s);
         return NULL;
       } else if (er) {
         streams.erase(s);
-        throw boost::system::system_error(er,
+        throw asio::system_error(er,
             "Can not accept connection");
       }
 
@@ -74,21 +74,25 @@ namespace net {
   };
 
   // TODO: This belongs somewhere else
-  extern boost::asio::ip::tcp v4();
-  extern boost::asio::ip::tcp v6();
+  asio::ip::tcp v4() {
+    return asio::ip::tcp::v4();
+  }
+  asio::ip::tcp v6() {
+    return asio::ip::tcp::v6();
+  }
 
   /**
    * MCServer that listens on TCPv4/TCPv6.
    *
    * Initialize with
-   *   MCTcpServer(boost::asio::ip::tcp protocol, unsigned short port)
+   *   MCTcpServer(asio::ip::tcp protocol, unsigned short port)
    *   where protocol is one of v4() or v6().
    *
    * TODO: Support listening on specific interface.
    * TODO: Support authentification via file permissions.
    */
   typedef
-    MCSocketServer< boost::asio::ip::tcp >
+    MCSocketServer< asio::ip::tcp >
     MCTcpServer;
 
 #if defined(unix) || defined(__unix__) || defined(__unix)
@@ -102,7 +106,7 @@ namespace net {
    * TODO: Auto delete socket file
    */
   class MCUnixServer :
-    public MCSocketServer< boost::asio::local::stream_protocol > {
+    public MCSocketServer< asio::local::stream_protocol > {
 
       std::string path;
   public:

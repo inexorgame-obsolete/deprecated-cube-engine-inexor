@@ -2,7 +2,7 @@ add_definitions(-DCLIENT)
 
 if(${BUILD_TARGET_WINDOWS})
     set(BUILD_EXTRA_LIBS ${BUILD_EXTRA_LIBS} ws2_32 winmm)
-    if(GNU) 
+    if(GNU)
         add_definitions(-mwindows)
     elseif(MSVC)
         set(BUILD_EXTRA_LIBS ${BUILD_EXTRA_LIBS} dbghelp)
@@ -124,7 +124,6 @@ set_source_files_properties(
 
 set(CLIENT_SOURCES_NET
   ${CMAKE_CURRENT_SOURCE_DIR}/../net/MCHub
-  ${CMAKE_CURRENT_SOURCE_DIR}/../net/MCSocketServer
   ${CMAKE_CURRENT_SOURCE_DIR}/../net/StreamChopper)
 
 set(CLIENT_HEADERS_FPSGAME
@@ -194,7 +193,6 @@ target_link_libraries(${SB_CLIENT_BINARY}
     ${ZLIB_LIBRARIES}
     ${BUILD_EXTRA_LIBS}
     ${PROTOBUF_LIBRARIES}
-    ${ASIO_LIBRARIES}
 )
 
 if(MSVC)

@@ -1,19 +1,17 @@
 language: cpp
 before_install:
   # Install dependencies
-  - sudo apt-get install wget subversion
+  - sudo apt-get install wget git
   - wget -O - http://llvm.org/apt/llvm-snapshot.gpg.key | sudo apt-key add -
   - sudo add-apt-repository -y "deb http://llvm.org/apt/precise/ llvm-toolchain-precise-3.5 main"
   - sudo add-apt-repository -y "deb http://ppa.launchpad.net/zoogie/sdl2-snapshots/ubuntu precise main"
   - sudo apt-add-repository -y "deb http://ppa.launchpad.net/boost-latest/ppa/ubuntu precise main"
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get update
-  - sudo apt-get -y install build-essential zlib1g-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libenet-dev
-  - sudo apt-get -y install mingw32
+  - sudo apt-get -y install gcc-4.9 g++-4.9 clang-3.5 mingw32 build-essential
+  - (cd /tmp; git clone https://github.com/chriskohlhoff/asio.git; cd asio; git checkout asio-1-10-4; sudo cp -vr asio/include/asio* /usr/include; cd -)
   - sudo apt-get -y install libboost-regex1.55-dev libboost-system1.55-dev
-  - (cd /tmp/; svn co http://svn.boost.org/svn/boost/trunk/boost boost --depth empty; cd boost; svn up asio asio.hpp; sudo cp -r * /usr/include/boost)
-  - sudo apt-get -y install libprotobuf-dev protobuf-compiler
-  - sudo apt-get -y install gcc-4.9 g++-4.9 clang-3.5
+  - sudo apt-get -y install zlib1g-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libenet-dev libprotobuf-dev protobuf-compiler
 
 script:
   - (mkdir cmakebuild && cd cmakebuild && cmake $CMAKE_FLAGS .. && make -k  -j5 install && cd .. && rm -rf cmakebuild)

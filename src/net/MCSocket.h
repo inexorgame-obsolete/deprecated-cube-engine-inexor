@@ -1,4 +1,4 @@
-#include <boost/asio.hpp>
+#include <asio.hpp>
 
 #ifndef INEXOR_NET_IOSTREAM_MESSAGE_CONNECT_SOCKET_HEADER
 #define INEXOR_NET_IOSTREAM_MESSAGE_CONNECT_SOCKET_HEADER
@@ -24,7 +24,7 @@ namespace net {
   protected:
 
     typedef
-      boost::asio::basic_socket_iostream< protocol >
+      asio::basic_socket_iostream< protocol >
       stream;
 
     typedef
@@ -47,9 +47,9 @@ namespace net {
   /**
    * MessageConnect via IPv4 or IPv6 TCP Socket.
    */
-  class MCTcp : public MCSocket<boost::asio::ip::tcp> {
+  class MCTcp : public MCSocket<asio::ip::tcp> {
   protected:
-    typedef boost::asio::ip::address address;
+    typedef asio::ip::address address;
 
   public:
     /**
@@ -82,7 +82,7 @@ namespace net {
    * TODO: Support initialization via std::string ?
    */
   typedef
-    MCSocket<boost::asio::local::stream_protocol>
+    MCSocket<asio::local::stream_protocol>
     MCUnix;
 #endif
 
