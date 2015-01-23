@@ -40,36 +40,9 @@ typedef unsigned long long int ullong;
 #define UNUSED
 #endif
 
-// include std::new operator to allocate memory instead of 
-// the old equivalent but selfmade memory allocators (removed)
+// include std::new operator to allocate memory 
+// explicitly needed to include new for sauers selfmade vector-functions
 #include <new>
-
-// version check macros
-#define GCC_VERSION_AT_LEAST(major, minor, patch) \
-    (defined(__GNUC__) && \
-    (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__) >= \
-    (major * 10000 + minor * 100 + patch))
-
-#define CLANG_VERSION_AT_LEAST(major, minor, patch) \
-    (defined(__clang__) && \
-    (__clang_major__ * 10000 + __clang_minor__ * 100 + __clang_patchlevel__) >= \
-    (major * 10000 + minor * 100 + patch))
-
-#define ICC_VERSION_AT_LEAST(major, minor, patch) \
-    (defined(__INTEL_COMPILER) && \
-    ((__INTEL_COMPILER * 10000 + __INTEL_COMPILER_UPDATE) >= \
-    ((major * 100 + minor) * 10000) + patch))
-
-// use expressions as strings
-#define stringify_(x)		#x 
-#define stringify_macro(x)	stringify_(x)
-
-// is C++11 available?
-#if __cplusplus < 201103L
-#define decltype typeof
-#else
-#define CPP11
-#endif
 
 // make sure swap is not defined somewhere else
 #ifdef swap
