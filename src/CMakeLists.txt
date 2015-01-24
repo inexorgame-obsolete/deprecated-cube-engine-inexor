@@ -61,9 +61,12 @@ if(${LOCAL_ENET})
     add_subdirectory(libraries/enet)
 endif()
 
+set(MUPARSER_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/src/libraries/muparser/include")
+
 include_directories(
     ${ENET_INCLUDE_DIRS}
     ${SDL2_INCLUDE_DIRS}
+    ${MUPARSER_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/shared
     ${CMAKE_CURRENT_SOURCE_DIR}/engine

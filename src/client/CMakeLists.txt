@@ -123,10 +123,21 @@ set(CLIENT_HEADERS_FPSGAME
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/game
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/hideandseek)
 
+set(CLIENT_SOURCES_MUPARSER
+    ${CMAKE_CURRENT_SOURCE_DIR}/../libraries/muparser/src/muParser
+    ${CMAKE_CURRENT_SOURCE_DIR}/../libraries/muparser/src/muParserBase
+    ${CMAKE_CURRENT_SOURCE_DIR}/../libraries/muparser/src/muParserBytecode
+    ${CMAKE_CURRENT_SOURCE_DIR}/../libraries/muparser/src/muParserCallback
+    ${CMAKE_CURRENT_SOURCE_DIR}/../libraries/muparser/src/muParserError
+    ${CMAKE_CURRENT_SOURCE_DIR}/../libraries/muparser/src/muParserInt
+    ${CMAKE_CURRENT_SOURCE_DIR}/../libraries/muparser/src/muParserTokenReader
+)
+
 set(CLIENT_SOURCES
     ${CLIENT_SOURCES_SHARED}
     ${CLIENT_SOURCES_ENGINE}
-    ${CLIENT_SOURCES_FPSGAME})
+    ${CLIENT_SOURCES_FPSGAME}
+    ${CLIENT_SOURCES_MUPARSER})
 
 if(${BUILD_TARGET_OSX})
     set(CLIENT_SOURCES
