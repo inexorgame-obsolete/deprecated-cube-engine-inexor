@@ -52,7 +52,7 @@ namespace game
     // Bind the minimap_frame-texture
     void setradartex()
     {
-		defformatstring(radar_filename)("%s/radar_frame.png", radardir);
+		defformatstring(radar_filename)("%s/radar.png", radardir);
         settexture(radar_filename, 3);
     }
 

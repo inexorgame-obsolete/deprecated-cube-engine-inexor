@@ -972,7 +972,7 @@ namespace game
         }
     }
 
-    static const char * const projnames[3] = { "projectiles/grenade", "projectiles/rocket", "projectiles/bomb" };
+    static const char * const projnames[3] = { "projectile/grenade", "projectile/rocket", "projectile/bomb" };
     static const char * const gibnames[3] = { "gibs/gib01", "gibs/gib02", "gibs/gib03" };
     static const char * const debrisnames[4] = { "debris/debris01", "debris/debris02", "debris/debris03", "debris/debris04" };
     static const char * const barreldebrisnames[4] = { "barreldebris/debris01", "barreldebris/debris02", "barreldebris/debris03", "barreldebris/debris04" };
@@ -1021,7 +1021,7 @@ namespace game
             }
             pitch = -bnc.roll;
             if(bnc.bouncetype==BNC_GRENADE)
-                rendermodel(&bnc.light, "projectiles/grenade", ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_LIGHT_FAST|MDL_DYNSHADOW);
+                rendermodel(&bnc.light, "projectile/grenade", ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_LIGHT_FAST|MDL_DYNSHADOW);
             else if(bnc.bouncetype==BNC_BOMB) // Render BOMB projectile
             {
                 vec mov_from(0, 0, bombcolliderad-bbarr_overlap);                                                // shift the lower part of the Barrier upwards
@@ -1031,13 +1031,13 @@ namespace game
 
                 if(bombbarrier)
                     regularshape(bbarr_type, bombcolliderad + tremble, bbarr_color, bbarr_dir, bbarr_num, bbarr_fade, floor, bbarr_size, bbarr_gravity, 200, &mov_from, &mov_to);
-                rendermodel(&bnc.light, "projectiles/bomb", ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_DYNSHADOW);
+                rendermodel(&bnc.light, "projectile/bomb", ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_DYNSHADOW);
             }
             // DEBUG: vvv REMOVE RENDERMODEL FOR SPLINTERS vvv
             /*
             else if(bnc.bouncetype==BNC_SPLINTER)
             {
-                rendermodel(&bnc.light, "projectiles/grenade", ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_DYNSHADOW);
+                rendermodel(&bnc.light, "projectile/grenade", ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_DYNSHADOW);
             }
             */
             // TODO: ^^^ REMOVE RENDERMODEL FOR SPLINTERS ^^^
@@ -1077,7 +1077,7 @@ namespace game
             yaw += 90;
             v.mul(3);
             v.add(pos);
-            rendermodel(&p.light, "projectiles/rocket", ANIM_MAPMODEL|ANIM_LOOP, v, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_LIGHT_FAST);
+            rendermodel(&p.light, "projectile/rocket", ANIM_MAPMODEL|ANIM_LOOP, v, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_LIGHT_FAST);
         }
     }
 
