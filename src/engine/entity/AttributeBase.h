@@ -37,6 +37,12 @@ class AttributeBase
             attributes[key]->name = key;
         }
 
+        void AddAttribute(std::string key, float value) {
+            attributes[key] = value;
+            attributes[key]->type = ENTATTR_FLOAT;
+            attributes[key]->name = key;
+        }
+
         void AddAttribute(std::string key, double value) {
             attributes[key] = value;
             attributes[key]->type = ENTATTR_DOUBLE;
