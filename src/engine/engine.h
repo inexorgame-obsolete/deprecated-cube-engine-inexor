@@ -559,6 +559,8 @@ extern void resetmap();
 extern void startmap(const char *name);
 
 // rendermodel
+extern char *modeldir;
+
 struct mapmodelinfo { string name; model *m; };
 
 extern void findanims(const char *pattern, vector<int> &anims);
@@ -611,6 +613,8 @@ extern void renderblob(int type, const vec &o, float radius, float fade = 1);
 extern void flushblobs();
 
 // rendersky
+extern char *skyboxdir;
+
 extern int explicitsky;
 extern double skyarea;
 

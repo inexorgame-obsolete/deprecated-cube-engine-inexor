@@ -34,7 +34,7 @@ VAR(dbgshader, 0, 0, 2);
 void loadshaders()
 {
     standardshader = true;
-    execfile(renderpath==R_GLSLANG ? "data/glsl.cfg" : "data/stdshader.cfg");
+    execfile(renderpath==R_GLSLANG ? "config/glsl.cfg" : "config/stdshader.cfg");
     standardshader = false;
 
     defaultshader = lookupshaderbyname("default");

@@ -28,9 +28,11 @@ enum
 #define DNF 100.0f              // for normalized vectors
 #define DVELF 1.0f              // for playerspeed based velocity vectors
 
+extern char *radardir;
+
 // static entity types
 // will be replaced with new entity system later!
-enum                            
+enum                            // static entity types
 {
     NOTUSED = ET_EMPTY,         // entity slot not in use in map
     LIGHT = ET_LIGHT,           // lightsource, attr1 = radius, attr2 = intensity
@@ -515,6 +517,13 @@ struct demoheader
     int version, protocol;
 };
 
+// Important teamspecific declarations
+#define MAXTEAMS 128
+#define MAXNAMELEN 15
+#define MAXTEAMLEN 4
+enum { TEAM_NONE, TEAM_OWN, TEAM_OPPONENT, TEAM_NUM };
+static const char * const teamblipcolor[TEAM_NUM] = { "_neutral", "_blue", "_red" };
+
 // Enumeration for icons
 enum
 {
@@ -944,11 +953,6 @@ struct teamscore
         return strcmp(x.team, y.team) < 0;
     }
 };
-
-// PLEASE NOTE:
-// "map uses a red-black tree as the data structure, so the elements you put in there are sorted, and insert/delete is O(log(n)). The elements need to be implement at least operator<.
-// hashmap uses a hash, so elements are unsorted, insert/delete is O(1). Elements need to implement at least operator== and you need a hash function."
-//  - quote from user martinus from stackoverflow
 
 // create hashes to access hashmapsSS
 static inline uint hthash(const teamscore &t) 

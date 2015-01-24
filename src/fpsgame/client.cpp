@@ -18,6 +18,7 @@ namespace game
     VARP(maxradarscale, 1, 1024, 10000);
     VARP(radarteammates, 0, 1, 1);
     FVARP(minimapalpha, 0, 1, 1);
+    SVARP(radardir, "media/interface/radar");
 
 	// HUD
     int hudannounce_begin = 0;
@@ -48,7 +49,13 @@ namespace game
         glEnd();
     }
 
-	// draw radar frame over minimap
+    // Bind the minimap_frame-texture
+    void setradartex()
+    {
+		defformatstring(radar_filename)("%s/radar_frame.png", radardir);
+        settexture(radar_filename, 3);
+    }
+
     void drawradar(float x, float y, float s)
     {
         glBegin(GL_TRIANGLE_STRIP);
@@ -78,7 +85,13 @@ namespace game
         glTexCoord2f(0.0f, 1.0f); glVertex2f(bx - bs*v.y, by + bs*v.x);
     }
 
-	// draw all teamate icons in minimap
+    //Set specific textures for teammates, skulls.. on the minimap
+    void setbliptex(int team, const char *type = "")
+    {
+        settexture(tempformatstring("%s/blip%s%s.png", radardir, teamblipcolor[team], type), 3);
+    }
+
+    // draw all teamate icons in minimap
     void drawteammates(fpsent *d, float x, float y, float s)
     {
         if(!radarteammates) return;
@@ -91,7 +104,7 @@ namespace game
             {
                 if(!alive++) 
                 {
-                    settexture(isteam(d->team, player1->team) ? "packages/hud/blip_blue_alive.png" : "packages/hud/blip_red_alive.png");
+                    setbliptex(TEAM_OWN, "_alive");
                     glBegin(GL_QUADS);
                 }
                 drawteammate(d, x, y, s, o, scale);
@@ -105,7 +118,7 @@ namespace game
             {
                 if(!dead++) 
                 {
-                    settexture(isteam(d->team, player1->team) ? "packages/hud/blip_blue_dead.png" : "packages/hud/blip_red_dead.png");
+                    setbliptex(TEAM_OWN, "_dead");
                     glBegin(GL_QUADS);
                 }
                 drawteammate(d, x, y, s, o, scale);
@@ -661,11 +674,7 @@ namespace game
     ICOMMAND(timeremaining, "i", (int *formatted), 
     {
         int val = max(maplimit - lastmillis, 0)/1000;
-        if(*formatted)
-        {
-            defformatstring(str)("%d:%02d", val/60, val%60);
-            result(str);
-        }
+        if(*formatted) result(tempformatstring("%d:%02d", val/60, val%60));
         else intret(val);
     });
 
@@ -1684,17 +1693,14 @@ namespace game
                 actor->frags = frags;
                 if(m_teammode) setteaminfo(actor->team, tfrags);
                 if(actor!=player1 && (!cmode || !cmode->hidefrags()))
-                {
-                    defformatstring(ds)("%d", actor->frags);
-                    particle_textcopy(actor->abovehead(), ds, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
-                }
+                    particle_textcopy(actor->abovehead(), tempformatstring("%d", actor->frags), PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
                 if(!victim) break;
-                killed(victim, actor);			
+                killed(victim, actor);
                 break;
             }
 
             case N_TEAMINFO:
-                for(;;)
+                loopi(MAXTEAMS)
                 {
                     getstring(text, p);
                     if(p.overread() || !text[0]) break;
@@ -2110,7 +2116,7 @@ namespace game
                 string oldname;
                 copystring(oldname, getclientmap());
                 defformatstring(mname)("getmap_%d", lastmillis);
-                defformatstring(fname)("packages/base/%s.ogz", mname);
+                defformatstring(fname)("%s/%s.ogz", mapdir, mname);
                 stream *map = openrawfile(path(fname), "wb");
                 if(!map) return;
                 conoutf("received map");
@@ -2202,7 +2208,7 @@ namespace game
         conoutf("sending map...");
         defformatstring(mname)("sendmap_%d", lastmillis);
         save_world(mname, true);
-        defformatstring(fname)("packages/base/%s.ogz", mname);
+        defformatstring(fname)("%s/%s.ogz", mapdir, mname);
         stream *map = openrawfile(path(fname), "rb");
         if(map)
         {

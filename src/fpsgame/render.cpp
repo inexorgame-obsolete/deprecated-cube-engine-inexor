@@ -46,14 +46,14 @@ namespace game
         }
     }
 
-    static const playermodelinfo playermodels[5] =
+    static const playermodelinfo playermodels[3] =
     {
-        { "mrfixit", "mrfixit/blue", "mrfixit/red", "mrfixit/hudguns", NULL, "mrfixit/horns", { "mrfixit/armor/blue", "mrfixit/armor/green", "mrfixit/armor/yellow" }, "mrfixit", "mrfixit_blue", "mrfixit_red", true },
-        { "snoutx10k", "snoutx10k/blue", "snoutx10k/red", "snoutx10k/hudguns", NULL, "snoutx10k/wings", { "snoutx10k/armor/blue", "snoutx10k/armor/green", "snoutx10k/armor/yellow" }, "snoutx10k", "snoutx10k_blue", "snoutx10k_red", true },
+        { "playermodel/mrfixit2", "playermodel/mrfixit2/blue", "playermodel/mrfixit2/red", "playermodel/mrfixit2/hudguns", NULL, "playermodel/mrfixit2/horns", { "playermodel/mrfixit2/armor/blue", "playermodel/mrfixit2/armor/green", "playermodel/mrfixit2/armor/yellow" }, "mrfixit", "mrfixit_blue", "mrfixit_red", true },
+        { "playermodel/snoutx10k", "playermodel/snoutx10k/blue", "playermodel/snoutx10k/red", "playermodel/snoutx10k/hudguns", NULL, "playermodel/snoutx10k/wings", { "playermodel/snoutx10k/armor/blue", "playermodel/snoutx10k/armor/green", "playermodel/snoutx10k/armor/yellow" }, "snoutx10k", "snoutx10k_blue", "snoutx10k_red", true },
         //{ "ogro/green", "ogro/blue", "ogro/red", "mrfixit/hudguns", "ogro/vwep", NULL, { NULL, NULL, NULL }, "ogro", "ogro_blue", "ogro_red", false },
-        { "ogro2", "ogro2/blue", "ogro2/red", "mrfixit/hudguns", NULL, "ogro2/quad", { "ogro2/armor/blue", "ogro2/armor/green", "ogro2/armor/yellow" }, "ogro", "ogro_blue", "ogro_red", true },
-        { "inky", "inky/blue", "inky/red", "inky/hudguns", NULL, "inky/quad", { "inky/armor/blue", "inky/armor/green", "inky/armor/yellow" }, "inky", "inky_blue", "inky_red", true },
-        { "captaincannon", "captaincannon/blue", "captaincannon/red", "captaincannon/hudguns", NULL, "captaincannon/quad", { "captaincannon/armor/blue", "captaincannon/armor/green", "captaincannon/armor/yellow" }, "captaincannon", "captaincannon_blue", "captaincannon_red", true }
+        { "playermodel/ogro2", "playermodel/ogro2/blue", "playermodel/ogro2/red", "playermodel/mrfixit/hudguns", NULL, "playermodel/ogro2/quad", { "playermodel/ogro2/armor/blue", "playermodel/ogro2/armor/green", "playermodel/ogro2/armor/yellow" }, "ogro", "ogro_blue", "ogro_red", true },
+        //{ "inky", "inky/blue", "inky/red", "inky/hudguns", NULL, "inky/quad", { "inky/armor/blue", "inky/armor/green", "inky/armor/yellow" }, "inky", "inky_blue", "inky_red", true },
+        //{ "captaincannon", "captaincannon/blue", "captaincannon/red", "captaincannon/hudguns", NULL, "captaincannon/quad", { "captaincannon/armor/blue", "captaincannon/armor/green", "captaincannon/armor/yellow" }, "captaincannon", "captaincannon_blue", "captaincannon_red", true }
     };
 
     int chooserandomplayermodel(int seed)

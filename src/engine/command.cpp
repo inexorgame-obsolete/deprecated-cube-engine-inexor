@@ -2176,6 +2176,9 @@ bool executebool(const char *p)
     return b;
 }
 
+static string execdir;
+const char *getcurexecdir() { return execdir; } //returns the path of the file the command is called from
+
 bool execfile(const char *cfgfile, bool msg)
 {
     string s;
@@ -2183,15 +2186,28 @@ bool execfile(const char *cfgfile, bool msg)
     char *buf = loadfile(path(s), NULL);
     if(!buf)
     {
-        if(msg) conoutf(CON_ERROR, "could not read \"%s\"", cfgfile);
-        return false;
+        buf = loadfile(makerelpath(getcurexecdir(), path(s)), NULL);
+        if(!buf) 
+        {
+            if(msg) conoutf(CON_ERROR, "could not read \"%s\"", cfgfile);
+            return false;
+        }
     }
     const char *oldsourcefile = sourcefile, *oldsourcestr = sourcestr;
     sourcefile = cfgfile;
     sourcestr = buf;
+	
+    copystring(execdir, parentdir(s)); //make the current path available to the executed commands
+
     execute(buf);
+    
     sourcefile = oldsourcefile;
     sourcestr = oldsourcestr;
+    if(sourcefile) 
+    {
+        copystring(s, sourcefile);
+        copystring(execdir, parentdir(path(s))); //remember the old executing dir, useful when executing a file from another cfg
+    }
     delete[] buf;
     return true;
 }

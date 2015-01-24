@@ -1,5 +1,9 @@
 // the interface the game uses to access the engine
 
+extern char *mediadir;
+extern char *mapdir;
+extern char *interfacedir;
+
 extern int curtime;                     // current frame time
 extern int lastmillis;                  // last time
 extern int elapsedtime;                 // elapsed frame time
@@ -139,6 +143,7 @@ extern int execute(const char *p);
 extern bool executebool(const uint *code);
 extern bool executebool(const char *p);
 extern bool execfile(const char *cfgfile, bool msg = true);
+extern const char *getcurexecdir();
 extern void alias(const char *name, const char *action);
 extern void alias(const char *name, tagval &v);
 extern const char *getalias(const char *name);
@@ -334,7 +339,7 @@ extern void adddecal(int type, const vec &center, const vec &surface, float radi
 // worldio
 extern bool load_world(const char *mname, const char *cname = NULL);
 extern bool save_world(const char *mname, bool nolms = false);
-extern void getmapfilenames(const char *fname, const char *cname, char *pakname, char *mapname, char *cfgname);
+extern void getmapfilename(const char *fname, const char *cname, char *mapname);
 extern uint getmapcrc();
 extern void clearmapcrc();
 extern bool loadents(const char *fname, vector<entity> &ents, uint *crc = NULL);

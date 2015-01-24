@@ -59,10 +59,10 @@ struct bombclientmode : clientmode
 		}
 	}
 
-    void drawicon(int icon, float x, float y, float sz)
+    void drawicon(int icon, float x, float y, float sz) //todo merge with other items
     {
         int bicon = icon - HICON_BOMBRADIUS;
-        settexture("packages/hud/bomb_items.png");
+		settexture(tempformatstring("%s/bomb_items.png", radardir));
         glBegin(GL_TRIANGLE_STRIP);
         float tsz = 0.25f, tx = tsz*(bicon%4), ty = tsz*(bicon/4);
         glTexCoord2f(tx,     ty);     glVertex2f(x,    y);
@@ -98,35 +98,38 @@ struct bombclientmode : clientmode
         if(minimapalpha >= 1) glEnable(GL_BLEND);
         glColor3f(1, 1, 1);
         float margin = 0.04f, roffset = s*margin, rsize = s + 2*roffset;
-        settexture("packages/hud/radar.png", 3);
+        setradartex();
         drawradar(x - roffset, y - roffset, rsize);
 
         // show obstacles on minimap
+        defformatstring(blip)("%s/blip_block.png", radardir);
         if(showminimapobstacles) loopv(movables)
         {
             dynent *m = (dynent *) movables[i];
             if(!isobstaclealive((movable *) m)) continue;
-            settexture("packages/hud/block_yellow_t.png", 3);
+            settexture(blip, 3);
             drawblip(d, x, y, s, m->o, 1.0f);
         }
 
         // show other players on minimap
         loopv(players)
         {
-            fpsent *p = players[i];
-            if(p == player1 || p->state!=CS_ALIVE) continue;
-            if(!m_teammode || strcmp(p->team, player1->team) != 0) settexture("packages/hud/blip_red.png", 3);
-            else settexture("packages/hud/blip_blue.png", 3);
-            drawblip(d, x, y, s, p->o, 2.0f);
+            fpsent *o = players[i];
+            if(o != d && o->state == CS_ALIVE)
+            {
+				setbliptex(!m_teammode || !isteam(o->team, player1->team) ? TEAM_OPPONENT : TEAM_OWN);
+                drawblip(d, x, y, s, o->o, 2.0f);
+            }
         }
 
         // show fired bombs on minimap
+		formatstring(blip) ("%s/blip_bomb.png", radardir);
         loopv(bouncers)
         {
             bouncer *p = bouncers[i];
             if(p->bouncetype != BNC_BOMB) continue;
-            settexture("packages/hud/blip_bomb.png", 3);
-            drawblip(d, x, y, s, p->o, (p->owner->bombradius * 1.5f + p->owner->bombradius * 1.5f * sin((totalmillis / (5.5f-p->owner->bombdelay)) / 75.0f))/1.5f);
+            settexture(blip, 3);
+            drawblip(d, x, y, s, p->o, (p->owner->bombradius * 1.5f + p->owner->bombradius * 1.5f * sin((SDL_GetTicks() / (5.5f-p->owner->bombdelay)) / 75.0f))/1.5f);
         }
 
         if(d->state == CS_ALIVE && !game::intermission)

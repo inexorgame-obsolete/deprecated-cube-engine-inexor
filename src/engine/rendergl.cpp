@@ -2227,7 +2227,10 @@ void drawdamagescreen(int w, int h)
     glEnable(GL_TEXTURE_2D);
 
     static Texture *damagetex = NULL;
-    if(!damagetex) damagetex = textureload("packages/hud/damage.png", 3);
+    if(!damagetex) {
+        defformatstring(damagetex_filename)("%s/damage.png", interfacedir);
+    	damagetex = textureload(damagetex_filename, 3);
+    }
 
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glBindTexture(GL_TEXTURE_2D, damagetex->id);
@@ -2265,7 +2268,7 @@ void loadcrosshair(const char *name, int i)
     if(crosshairs[i] == notexture) 
     {
         name = game::defaultcrosshair(i);
-        if(!name) name = "data/crosshair.png";
+        if(!name) name = "media/crosshair/default_crosshair.png"; //backupcrosshair
         crosshairs[i] = textureload(name, 3, true);
     }
 }
@@ -2283,7 +2286,7 @@ ICOMMAND(getcrosshair, "i", (int *i),
     if(*i >= 0 && *i < MAXCROSSHAIRS)
     {
         name = crosshairs[*i] ? crosshairs[*i]->name : game::defaultcrosshair(*i);
-        if(!name) name = "data/crosshair.png";
+        if(!name) name = "media/crosshair/default_crosshair.png";
     }
     result(name);
 });
@@ -2295,6 +2298,9 @@ void writecrosshairs(stream *f)
     f->printf("\n");
 }
 
+static Texture *cursortex = NULL;
+SVARFP(cursor, "media/interface/cursor.png", cursortex = NULL);
+
 void drawcrosshair(int w, int h)
 {
     bool windowhit = g3d_windowhit(true, false);
@@ -2304,9 +2310,8 @@ void drawcrosshair(int w, int h)
     Texture *crosshair;
     if(windowhit)
     {
-        static Texture *cursor = NULL;
-        if(!cursor) cursor = textureload("data/guicursor.png", 3, true);
-        crosshair = cursor;
+		if(!cursortex) cursortex = textureload(cursor, 3, true);
+        crosshair = cursortex;
         chsize = cursorsize*w/900.0f;
         g3d_cursorpos(cx, cy);
     }

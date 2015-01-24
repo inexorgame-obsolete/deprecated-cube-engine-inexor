@@ -785,10 +785,8 @@ namespace game
         bool dup = !name[0] || duplicatename(d, name, alt) || d->aitype != AI_NONE;
         if(dup || prefix[0] || suffix[0])
         {
-            cidx = (cidx+1)%3;
-            if(dup) formatstring(cname[cidx])(d->aitype == AI_NONE ? "%s%s \fs\f5(%d)\fr%s" : "%s%s \fs\f5[%d]\fr%s", prefix, name, d->clientnum, suffix);
-            else formatstring(cname[cidx])("%s%s%s", prefix, name, suffix);
-            return cname[cidx];
+            if(dup) return tempformatstring(d->aitype == AI_NONE ? "%s%s \fs\f5(%d)\fr%s" : "%s%s \fs\f5[%d]\fr%s", prefix, name, d->clientnum, suffix);
+            return tempformatstring("%s%s%s", prefix, name, suffix);
         }
         return name;
     }
@@ -804,13 +802,11 @@ namespace game
     const char *teamcolor(const char *name, bool sameteam, const char *alt)
     {
         if(!teamcolortext || !m_teammode) return sameteam || !alt ? name : alt;
-        cidx = (cidx+1)%3;
-        formatstring(cname[cidx])(sameteam ? "\fs\f1%s\fr" : "\fs\f3%s\fr", sameteam || !alt ? name : alt);
-        return cname[cidx];
-    }    
-    
-	// this function calls the function above but also validates that team is a valid char pointer
-	// it is not possible to return memory to an invalid char* pointer!
+        return tempformatstring(sameteam ? "\fs\f1%s\fr" : "\fs\f3%s\fr", sameteam || !alt ? name : alt);
+    }
+
+    // this function calls the function above but also validates that team is a valid char pointer
+    // it is not possible to return memory to an invalid char* pointer!
     const char *teamcolor(const char *name, const char *team, const char *alt)
     {
         return teamcolor(name, team && isteam(team, player1->team), alt);
@@ -1060,22 +1056,27 @@ namespace game
         return 0;
     }
 
-	// use blue "blocking" team crosshair when pointing at teamate
+	// use blue "blocking" crosshair when pointing at teamate
     VARP(teamcrosshair, 0, 1, 1);
 
 	// display hit crosshair increases hit feedback impression
     VARP(hitcrosshair, 0, 425, 1000);
-	
+
+    // Directory where crosshairs are stored. Relative to interfacedir
+    SVARP(crosshairdir, "crosshair");
+
 	// crosshair file names are stored in a constant functions
 	// that return strings depending on indices
     const char *defaultcrosshair(int index)
     {
+    	string crosshair;
         switch(index)
         {
-            case 2: return "data/hit.png";
-            case 1: return "data/teammate.png";
-            default: return "data/crosshair.png";
+            case 2: formatstring(crosshair)("%s/default_hit.png", crosshairdir); break;
+            case 1: formatstring(crosshair)("%s/default_teammate.png", crosshairdir); break;
+            default: formatstring(crosshair)("%s/default_crosshair.png", crosshairdir); break;
         }
+    	return newstring(crosshair);
     }
 
 	// switch crosshair depending on player state and player health
@@ -1256,16 +1257,16 @@ namespace game
 
 	// file name of important configuration files
 	// are stored in constant functions that return strings...
-    const char *savedconfig() { return "config.cfg"; }
-    const char *restoreconfig() { return "restore.cfg"; }
-    const char *defaultconfig() { return "data/defaults.cfg"; }
-    const char *autoexec() { return "autoexec.cfg"; }
-    const char *savedservers() { return "servers.cfg"; }
+    const char *savedconfig() { return "config/saved.cfg"; }
+    const char *restoreconfig() { return "config/restore.cfg"; }
+    const char *defaultconfig() { return "config/defaults.cfg"; }
+    const char *autoexec() { return "config/autoexec.cfg"; }
+    const char *savedservers() { return "config/servers.cfg"; }
 
 	// load "auth.cfg" configuration file with disabled log messages (?)
     void loadconfigs()
     {
-        execfile("auth.cfg", false);
+        execfile("config/auth.cfg", false);
     }
 }
 

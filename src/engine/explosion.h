@@ -526,5 +526,5 @@ struct fireballrenderer : listrenderer
         glPopMatrix();
     }
 };
-static fireballrenderer fireballs("packages/particles/explosion.png"), bluefireballs("packages/particles/plasma.png");
+static fireballrenderer fireballs("media/particle/explosion.png"), bluefireballs("media/particle/plasma.png");
 

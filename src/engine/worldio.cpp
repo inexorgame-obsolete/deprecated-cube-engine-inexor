@@ -2,32 +2,21 @@
 
 #include "engine.h"
 
+SVARP(mediadir, "media");
+SVARP(mapdir, "media/map");
+
 void cutogz(char *s) 
 {   
     char *ogzp = strstr(s, ".ogz");
     if(ogzp) *ogzp = '\0';
 }   
-        
-void getmapfilenames(const char *fname, const char *cname, char *pakname, char *mapname, char *cfgname)
+
+void getmapfilename(const char *fname, const char *realname, char *mapname)
 {   
-    if(!cname) cname = fname;
-    string name;
-    copystring(name, cname, 100);
+    if(!realname) realname = fname;
+	defformatstring(name) ("%s/%s", mapdir, realname);
     cutogz(name);
-    char *slash = strpbrk(name, "/\\");
-    if(slash)
-    {
-        copystring(pakname, name, slash-name+1);
-        copystring(cfgname, slash+1);
-    }
-    else
-    {
-        copystring(pakname, "base");
-        copystring(cfgname, name);
-    }
-    if(strpbrk(fname, "/\\")) copystring(mapname, fname);
-    else formatstring(mapname)("base/%s", fname);
-    cutogz(mapname);
+    copystring(mapname, name, 100);
 }   
 
 static void fixent(entity &e, int version)
@@ -51,9 +40,9 @@ static void fixent(entity &e, int version)
 
 bool loadents(const char *fname, vector<entity> &ents, uint *crc)
 {
-    string pakname, mapname, mcfgname, ogzname;
-    getmapfilenames(fname, NULL, pakname, mapname, mcfgname);
-    formatstring(ogzname)("packages/%s.ogz", mapname);
+    string mapname, ogzname;
+    getmapfilename(fname, NULL, mapname);
+    formatstring(ogzname)("%s/%s.ogz", mapdir, mapname);
     path(ogzname);
     stream *f = opengzfile(ogzname, "rb");
     if(!f) return false;
@@ -168,14 +157,14 @@ VARP(savebak, 0, 2, 2);
 
 void setmapfilenames(const char *fname, const char *cname = 0)
 {
-    string pakname, mapname, mcfgname;
-    getmapfilenames(fname, cname, pakname, mapname, mcfgname);
+    string mapname;
+    getmapfilename(fname, cname, mapname);
 
-    formatstring(ogzname)("packages/%s.ogz", mapname);
-    if(savebak==1) formatstring(bakname)("packages/%s.BAK", mapname);
-    else formatstring(bakname)("packages/%s_%d.BAK", mapname, totalmillis);
-    formatstring(cfgname)("packages/%s/%s.cfg", pakname, mcfgname);
-    formatstring(picname)("packages/%s.jpg", mapname);
+    formatstring(ogzname)("%s.ogz", mapname);
+    if(savebak==1) formatstring(bakname)("%s.BAK", mapname);
+    else formatstring(bakname)("%s_%d.BAK", mapname, totalmillis);
+    formatstring(cfgname)("%s.cfg", mapname);
+    formatstring(picname)("%s.jpg", mapname);
 
     path(ogzname);
     path(bakname);
@@ -188,9 +177,9 @@ void mapcfgname()
     const char *mname = game::getclientmap();
     if(!*mname) mname = "untitled";
 
-    string pakname, mapname, mcfgname;
-    getmapfilenames(mname, NULL, pakname, mapname, mcfgname);
-    defformatstring(cfgname)("packages/%s/%s.cfg", pakname, mcfgname);
+    string mapname;
+    getmapfilename(mname, NULL, mapname);
+	defformatstring(cfgname)("%s.cfg", mapname);
     path(cfgname);
     result(cfgname);
 }
@@ -1240,7 +1229,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
     clearmainmenu();
 
     identflags |= IDF_OVERRIDDEN;
-    execfile("data/default_map_settings.cfg", false);
+    execfile("config/default_map_settings.cfg", false);
     execfile(cfgname, false);
     identflags &= ~IDF_OVERRIDDEN;
    
@@ -1372,7 +1361,7 @@ void writeobj(char *name)
     {
         VSlot &vslot = lookupvslot(usedmtl[i], false);
         f->printf("newmtl slot%d\n", usedmtl[i]);
-        f->printf("map_Kd %s\n", vslot.slot->sts.empty() ? notexture->name : path(makerelpath("packages", vslot.slot->sts[0].name)));
+		f->printf("map_Kd %s\n", vslot.slot->sts.empty() ? notexture->name : path(vslot.slot->sts[0].name));
         f->printf("\n");
     } 
     delete f;

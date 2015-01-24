@@ -205,13 +205,8 @@ struct stringformatter
     }
 };
 
-// C++11 correct way to initialize strings safely:
-/* 
-   char str[1024];
-   strcpy_s(char,1024,"hello world");
-*/
+extern char *tempformatstring(const char *fmt, ...) PRINTFARGS(1, 2);
 
-// there are no disadvantages in this way of initializing strings
 #define formatstring(d) stringformatter((char *)d)
 #define defformatstring(d) string d; formatstring(d)
 #define defvformatstring(d,last,fmt) string d; { va_list ap; va_start(ap, last); vformatstring(d, fmt, ap); va_end(ap); }
