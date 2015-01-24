@@ -6,6 +6,7 @@
  */
 
 #include "EntitySystem.h"
+#include "type/Teleporter.h"
 
 EntitySystem::EntitySystem()
 {
@@ -56,10 +57,10 @@ EntitySystem::EntitySystem()
     logoutf("test 17: type: %s name: %s type: %d expected: %3f value: %3f", ei->GetType()->GetName().c_str(), ei["y"]->name.c_str(), ei["x"]->type, -10.0, ei["y"]->GetDouble());
 
 
-    TypeRefPtr<EntityType> et_teleport = new EntityType("teleport", true, true);
-    TypeRefPtr<EntityType> et_teledest = new EntityType("teledest", true, true);
+    TypeRefPtr<EntityType> et_teleport = new EntityType(ENTTYPE_TELEPORT, true, true);
+    TypeRefPtr<EntityType> et_teledest = new EntityType(ENTTYPE_TELEDEST, true, true);
 
-    TypeRefPtr<RelationshipType> teleports_to = new RelationshipType("teleports_to", true, true, et_teleport, et_teledest);
+    TypeRefPtr<RelationshipType> teleports_to = new RelationshipType(RELTYPE_TELEPORTS_TO, true, true, et_teleport, et_teledest);
     teleports_to["teleport"] = (FunctionRefPtr) new EntityFunction();
     teleports_to["teleport"]();
 
