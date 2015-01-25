@@ -5,8 +5,8 @@
  *      Author: aschaeffer
  */
 
-#ifndef SRC_ENGINE_ENTITY_SUBSYSTEM_SUBSYSTEM_H_
-#define SRC_ENGINE_ENTITY_SUBSYSTEM_SUBSYSTEM_H_
+#ifndef SRC_ENGINE_ENTITY_SUBSYSTEM_SUBSYSTEMBASE_H_
+#define SRC_ENGINE_ENTITY_SUBSYSTEM_SUBSYSTEMBASE_H_
 
 #include "../EntitySystemBase.h"
 #include "../manager/EntityTypeManager.h"
@@ -17,18 +17,18 @@
 /**
  * Base class for subsystem managers.
  */
-class Subsystem
+class SubsystemBase
 {
     public:
-        Subsystem(std::string name);
-        Subsystem(
+        SubsystemBase(std::string name);
+        SubsystemBase(
             std::string name,
             CefRefPtr<EntityTypeManager> entity_type_manager,
             CefRefPtr<EntityInstanceManager> entity_instance_manager,
             CefRefPtr<RelationshipTypeManager> relationship_type_manager,
             CefRefPtr<RelationshipInstanceManager> relationship_instance_manager
         );
-        virtual ~Subsystem() {};
+        virtual ~SubsystemBase() {};
 
         std::string GetName() { return name; };
         void SetName(std::string) { this->name = name; };
@@ -50,7 +50,7 @@ class Subsystem
 
     private:
         // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(Subsystem);
+        IMPLEMENT_REFCOUNTING(SubsystemBase);
 };
 
-#endif /* SRC_ENGINE_ENTITY_SUBSYSTEM_SUBSYSTEM_H_ */
+#endif /* SRC_ENGINE_ENTITY_SUBSYSTEM_SUBSYSTEMBASE_H_ */

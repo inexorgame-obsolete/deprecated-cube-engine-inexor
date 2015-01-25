@@ -59,7 +59,7 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/RelationshipTypeProvider
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/Positional
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/Teleporter
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/Subsystem
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/SubsystemBase
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/TeleportSubsystem
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/grass
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/main

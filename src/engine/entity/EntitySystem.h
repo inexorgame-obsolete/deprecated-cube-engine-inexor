@@ -52,7 +52,7 @@ class EntitySystem
         /**
          * The subsystems.
          */
-        std::map<std::string, CefRefPtr<Subsystem> > subsystems;
+        std::map<std::string, CefRefPtr<SubsystemBase> > subsystems;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(EntitySystem);

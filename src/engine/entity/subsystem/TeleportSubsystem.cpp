@@ -7,9 +7,8 @@
 
 #include "TeleportSubsystem.h"
 
-TeleportSubsystem::TeleportSubsystem() : Subsystem(TELEPORT_SUBSYSTEM)
+TeleportSubsystem::TeleportSubsystem() : SubsystemBase(TELEPORT_SUBSYSTEM)
 {
-    logoutf("x1");
 }
 
 TeleportSubsystem::TeleportSubsystem(
@@ -17,9 +16,8 @@ TeleportSubsystem::TeleportSubsystem(
     CefRefPtr<EntityInstanceManager> entity_instance_manager,
     CefRefPtr<RelationshipTypeManager> relationship_type_manager,
     CefRefPtr<RelationshipInstanceManager> relationship_instance_manager
-) : Subsystem(TELEPORT_SUBSYSTEM, entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager)
+) : SubsystemBase(TELEPORT_SUBSYSTEM, entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager)
 {
-    logoutf("x2");
 }
 
 InstanceRefPtr<EntityInstance> TeleportSubsystem::CreateTeleport(double x, double y, double z)
