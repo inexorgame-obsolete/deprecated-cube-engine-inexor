@@ -10,14 +10,14 @@
 
 #include "../EntitySystemBase.h"
 #include "../provider/Teleporter.h"
-#include "Subsystem.h"
+#include "SubsystemBase.h"
 
 #define TELEPORT_SUBSYSTEM "teleport"
 
 /**
  * This subsystems manages teleporters.
  */
-class TeleportSubsystem : public Subsystem
+class TeleportSubsystem : public SubsystemBase
 {
     public:
         TeleportSubsystem();
