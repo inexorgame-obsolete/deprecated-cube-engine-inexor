@@ -28,6 +28,11 @@ class EntitySystem
         EntitySystem();
         virtual ~EntitySystem() {};
 
+        CefRefPtr<EntityTypeManager> GetEntityTypeManager() { return entity_type_manager; };
+        CefRefPtr<RelationshipTypeManager> GetRelationshipTypeManager() { return relationship_type_manager; };
+        CefRefPtr<EntityInstanceManager> GetEntityInstanceManager() { return entity_instance_manager; };
+        CefRefPtr<RelationshipInstanceManager> GetRelationshipInstanceManager() { return relationship_instance_manager; };
+
     private:
 
         /**
