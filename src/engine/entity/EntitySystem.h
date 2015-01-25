@@ -20,6 +20,7 @@
 #include "manager/RelationshipInstanceManager.h"
 #include "manager/RelationshipTypeManager.h"
 #include "subsystem/TeleportSubsystem.h"
+#include "subsystem/ParticleSubsystem.h"
 
 class EntitySystem
 {
