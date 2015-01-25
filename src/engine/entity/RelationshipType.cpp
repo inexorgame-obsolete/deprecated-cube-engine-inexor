@@ -7,7 +7,7 @@
 
 #include "RelationshipType.h"
 
-RelationshipType::RelationshipType(std::string name, bool persist, bool synchronize, CefRefPtr<EntityType> startNodeType, CefRefPtr<EntityType> endNodeType)
+RelationshipType::RelationshipType(std::string name, bool persist, bool synchronize, TypeRefPtr<EntityType> startNodeType, TypeRefPtr<EntityType> endNodeType)
     : TypeBase(name, persist, synchronize), startNodeType(startNodeType), endNodeType(endNodeType)
 {
 }

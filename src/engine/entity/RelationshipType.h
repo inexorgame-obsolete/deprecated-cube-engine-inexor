@@ -14,7 +14,7 @@
 class RelationshipType : public TypeBase
 {
     public:
-        RelationshipType(std::string name, bool persist, bool synchronize, CefRefPtr<EntityType> startNodeType, CefRefPtr<EntityType> endNodeType);
+        RelationshipType(std::string name, bool persist, bool synchronize, TypeRefPtr<EntityType> startNodeType, TypeRefPtr<EntityType> endNodeType);
         virtual ~RelationshipType();
 
         CefRefPtr<EntityType> GetStartNodeType() { return this->startNodeType; };
@@ -27,12 +27,12 @@ class RelationshipType : public TypeBase
         /**
          * The entity type of the start node.
          */
-        CefRefPtr<EntityType> startNodeType;
+        TypeRefPtr<EntityType> startNodeType;
 
         /**
          * The entity type of the end node.
          */
-        CefRefPtr<EntityType> endNodeType;
+        TypeRefPtr<EntityType> endNodeType;
 
         void operator()(EntityInstance* inst);
 

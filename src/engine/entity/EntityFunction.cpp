@@ -12,8 +12,9 @@
 #include "EntityInstance.h"
 #include "RelationshipInstance.h"
 
+/*
 void EntityFunction::Execute() {
-    logoutf("execute");
+    logoutf("execute, Without parameters");
 };
 
 void EntityFunction::Execute(TypeBase* type)
@@ -40,6 +41,7 @@ void EntityFunction::Execute(RelationshipInstance* inst)
 {
     logoutf("execute, Type: RelationshipInstance, Type Name: %s", inst->GetType()->GetName().c_str());
 };
+*/
 
 void EntityFunction::operator()()
 {

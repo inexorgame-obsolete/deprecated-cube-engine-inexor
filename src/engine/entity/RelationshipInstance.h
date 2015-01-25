@@ -9,9 +9,9 @@
 #define SRC_ENGINE_ENTITY_RELATIONSHIPINSTANCE_H_
 
 #include "EntitySystemBase.h"
-#include "InstanceBase.h"
-
+#include "EntityInstance.h"
 #include "EntityAttribute.h"
+#include "InstanceBase.h"
 #include "RelationshipType.h"
 
 class EntityInstance;
@@ -19,31 +19,32 @@ class EntityInstance;
 class RelationshipInstance : public InstanceBase
 {
     public:
-        RelationshipInstance(CefRefPtr<RelationshipType> type, CefRefPtr<EntityInstance> startNode, CefRefPtr<EntityInstance> endNode);
-        virtual ~RelationshipInstance();
+        RelationshipInstance(TypeRefPtr<RelationshipType> type, InstanceRefPtr<EntityInstance> startNode, InstanceRefPtr<EntityInstance> endNode);
+        RelationshipInstance(TypeRefPtr<RelationshipType> type, InstanceRefPtr<EntityInstance> startNode, InstanceRefPtr<EntityInstance> endNode, std::string uuid);
+        virtual ~RelationshipInstance() {};
 
-        CefRefPtr<RelationshipType> GetType() { return type; };
+        TypeRefPtr<RelationshipType> GetType() { return type; };
 
-        CefRefPtr<EntityInstance> GetStartNode() { return startNode; };
+        InstanceRefPtr<EntityInstance> GetStartNode() { return startNode; };
 
-        CefRefPtr<EntityInstance> GetEndNode() { return endNode; };
+        InstanceRefPtr<EntityInstance> GetEndNode() { return endNode; };
 
     protected:
 
         /**
          * The relationship type.
          */
-        CefRefPtr<RelationshipType> type;
+        TypeRefPtr<RelationshipType> type;
 
         /**
          * The start node (parent node) is an entity instance.
          */
-        CefRefPtr<EntityInstance> startNode;
+        InstanceRefPtr<EntityInstance> startNode;
 
         /**
          * The end node (child node) is an entity instance.
          */
-        CefRefPtr<EntityInstance> endNode;
+        InstanceRefPtr<EntityInstance> endNode;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(RelationshipInstance);
