@@ -8,7 +8,6 @@
 #include "EntitySystem.h"
 
 #include "provider/Teleporter.h"
-#include "subsystem/TeleportSubsystem.h"
 
 EntitySystem::EntitySystem()
 {
@@ -33,6 +32,11 @@ EntitySystem::EntitySystem()
     // Create subsystems
     CefRefPtr<TeleportSubsystem> teleport_subsystem = new TeleportSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
     subsystems[teleport_subsystem->GetName()] = teleport_subsystem;
+    CefRefPtr<ParticleSubsystem> particle_subsystem = new ParticleSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
+    subsystems[particle_subsystem->GetName()] = particle_subsystem;
+
+// === TESTS ===
+
     InstanceRefPtr<EntityInstance> teleport1 = teleport_subsystem->CreateTeleport(0.0, 0.0, 0.0);
     InstanceRefPtr<EntityInstance> teledest1 = teleport_subsystem->CreateTeledest(0.0, 0.0, 0.0);
     InstanceRefPtr<RelationshipInstance> teleporting1 = teleport_subsystem->Connect(teleport1, teledest1);
