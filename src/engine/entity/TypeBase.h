@@ -18,10 +18,14 @@ class TypeBase : public AttributeBase
 {
     public:
         TypeBase(std::string name, bool persist, bool synchronize);
+        TypeBase(std::string name, bool persist, bool synchronize, std::string uuid);
         virtual ~TypeBase();
 
         std::string GetUuid() { return uuid; };
+        void SetUuid(std::string uuid) { this->uuid = uuid; };
+
         std::string GetName() { return name; };
+        std::string GetParentType() { return parent_type; };
         bool IsPersisting() { return persist; };
         bool IsSynchronizing() { return synchronize; };
 
@@ -44,6 +48,11 @@ class TypeBase : public AttributeBase
          * The name of the type.
          */
         std::string name;
+
+        /**
+         * The parent type.
+         */
+        std::string parent_type;
 
         /**
          * Instances of this type should be persisted.

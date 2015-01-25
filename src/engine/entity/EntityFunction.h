@@ -19,15 +19,21 @@ class RelationshipInstance;
 class EntityFunction
 {
     public:
-        EntityFunction() : name("test") {};
+        EntityFunction(std::string name) : name(name) {};
         virtual ~EntityFunction() {};
 
-        void Execute();
-        void Execute(TypeBase* type);
-        void Execute(EntityType* type);
-        void Execute(RelationshipType* type);
-        void Execute(EntityInstance* inst);
-        void Execute(RelationshipInstance* inst);
+        // The Execute methods are not implemented. Sub classes can implement
+        // whatever they want.
+        void Execute() {};
+        void Execute(TypeBase* type) {};
+        void Execute(EntityType* type) {};
+        void Execute(RelationshipType* type) {};
+        void Execute(EntityInstance* inst) {};
+        void Execute(RelationshipInstance* inst) {};
+        void Execute(EntityInstance* entity_instance, RelationshipInstance* relationship_instance) {};
+        void Execute(EntityInstance* entity_instance_1, EntityInstance* entity_instance_2) {};
+        void Execute(EntityInstance* entity_instance_1, EntityInstance* entity_instance_2, EntityInstance* entity_instance_3) {};
+        void Execute(EntityInstance* entity_instance_1, EntityInstance* entity_instance_2, RelationshipInstance* relationship_instance) {};
 
         std::string GetName() { return name; };
 

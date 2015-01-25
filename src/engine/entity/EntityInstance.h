@@ -19,28 +19,38 @@ class RelationshipInstance;
 class EntityInstance : public InstanceBase
 {
     public:
-        EntityInstance(CefRefPtr<EntityType> type);
+        EntityInstance(TypeRefPtr<EntityType> type);
+        EntityInstance(TypeRefPtr<EntityType> type, std::string uuid);
         virtual ~EntityInstance();
 
-        CefRefPtr<EntityType> GetType() { return type; };
-        std::list<CefRefPtr<RelationshipInstance> > GetRelationships() { return relationships; };
+        TypeRefPtr<EntityType> GetType() { return type; };
+
+        void AddOutgoingRelationship(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<RelationshipInstance> relationship_instance);
+        void AddIncomingRelationship(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<RelationshipInstance> relationship_instance);
+
+        std::list<InstanceRefPtr<RelationshipInstance> > GetAllRelationships();
+        std::list<InstanceRefPtr<RelationshipInstance> > GetRelationshipsOfType(TypeRefPtr<RelationshipType> relationship_type);
+        std::list<InstanceRefPtr<RelationshipInstance> > GetAllOutgoingRelationships();
+        std::list<InstanceRefPtr<RelationshipInstance> > GetAllOutgoingRelationshipsOfType(TypeRefPtr<RelationshipType> relationship_type);
+        std::list<InstanceRefPtr<RelationshipInstance> > GetAllIncomingRelationships();
+        std::list<InstanceRefPtr<RelationshipInstance> > GetAllIncomingRelationshipsOfType(TypeRefPtr<RelationshipType> relationship_type);
 
     protected:
-        /**
-        std::string type;
-        bool persist;
-        float x, y, z;
-        */
 
         /**
          * The entity type.
          */
-        CefRefPtr<EntityType> type;
+        TypeRefPtr<EntityType> type;
 
         /**
-         * The relationships.
+         * The child relationships by type (this instance is the start node).
          */
-        std::list<CefRefPtr<RelationshipInstance> > relationships;
+        std::map<TypeRefPtr<RelationshipType>, std::list<InstanceRefPtr<RelationshipInstance> > > outgoing;
+
+        /**
+         * The parent relationships by type (this instance is the end node).
+         */
+        std::map<TypeRefPtr<RelationshipType>, std::list<InstanceRefPtr<RelationshipInstance> > > incoming;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(EntityInstance);

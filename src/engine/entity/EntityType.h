@@ -9,11 +9,12 @@
 #define SRC_ENGINE_ENTITY_ENTITYTYPE_H_
 
 #include "TypeBase.h"
+#include "manager/EntityTypeManager.h"
 
 class EntityType : public TypeBase
 {
     public:
-        EntityType(std::string name, bool persist, bool synchronize) : TypeBase(name, persist, synchronize) {};
+        EntityType(std::string name, bool persist, bool synchronize);
         virtual ~EntityType() {};
 
     private:

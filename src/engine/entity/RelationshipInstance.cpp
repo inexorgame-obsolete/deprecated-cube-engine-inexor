@@ -8,8 +8,12 @@
 #include "RelationshipInstance.h"
 #include "EntityInstance.h"
 
-RelationshipInstance::RelationshipInstance(CefRefPtr<RelationshipType> type, CefRefPtr<EntityInstance> startNode, CefRefPtr<EntityInstance> endNode)
-    : type(type)
+RelationshipInstance::RelationshipInstance(
+    TypeRefPtr<RelationshipType> type,
+    InstanceRefPtr<EntityInstance> startNode,
+    InstanceRefPtr<EntityInstance> endNode
+) : type(type),
+    InstanceBase()
 {
     // Type checks
     if (startNode->GetType()->GetUuid() == type->GetStartNodeType()->GetUuid()) {
@@ -20,7 +24,19 @@ RelationshipInstance::RelationshipInstance(CefRefPtr<RelationshipType> type, Cef
     }
 }
 
-RelationshipInstance::~RelationshipInstance()
+RelationshipInstance::RelationshipInstance(
+    TypeRefPtr<RelationshipType> type,
+    InstanceRefPtr<EntityInstance> startNode,
+    InstanceRefPtr<EntityInstance> endNode,
+    std::string uuid
+) : type(type),
+    InstanceBase(uuid)
 {
+    // Type checks
+    if (startNode->GetType()->GetUuid() == type->GetStartNodeType()->GetUuid()) {
+        this->startNode = startNode;
+    }
+    if (endNode->GetType()->GetUuid() == type->GetEndNodeType()->GetUuid()) {
+        this->endNode = endNode;
+    }
 }
-
