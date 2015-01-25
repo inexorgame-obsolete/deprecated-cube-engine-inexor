@@ -19,9 +19,14 @@ class InstanceBase : public AttributeBase
 
     public:
         InstanceBase();
-        virtual ~InstanceBase();
+        InstanceBase(std::string uuid) : uuid(uuid) {};
+        virtual ~InstanceBase() {};
+
+        std::string GetUuid() { return uuid; };
+        void SetUuid(std::string uuid) { this->uuid = uuid; };
 
     private:
+        std::string uuid;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(InstanceBase);

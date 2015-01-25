@@ -8,62 +8,51 @@
 #ifndef SRC_ENGINE_ENTITY_ENTITYSYSTEM_H_
 #define SRC_ENGINE_ENTITY_ENTITYSYSTEM_H_
 
+#include "EntitySystemBase.h"
 #include "InstanceBase.h"
 #include "TypeBase.h"
-#include "EntitySystemBase.h"
-#include "EntityType.h"
 #include "EntityInstance.h"
+#include "EntityType.h"
 #include "RelationshipType.h"
 #include "RelationshipInstance.h"
+#include "manager/EntityInstanceManager.h"
+#include "manager/EntityTypeManager.h"
+#include "manager/RelationshipInstanceManager.h"
+#include "manager/RelationshipTypeManager.h"
+#include "subsystem/TeleportSubsystem.h"
 
 class EntitySystem
 {
     public:
         EntitySystem();
-        virtual ~EntitySystem();
-
-        /**
-         * Creates an entity type.
-         */
-        CefRefPtr<EntityType> CreateEntityType(std::string name, bool persist, bool synchronize);
-
-        /**
-         * Creates an relationship type.
-         */
-        CefRefPtr<RelationshipType> CreateRelationshipType(std::string name, CefRefPtr<EntityType> startNodeType, CefRefPtr<EntityType> endNodeType);
-        CefRefPtr<RelationshipType> CreateRelationshipType(std::string name, bool persist, bool synchronize, CefRefPtr<EntityType> startNodeType, CefRefPtr<EntityType> endNodeType);
-
-        /**
-         * Returns the entity type with the given name.
-         */
-        CefRefPtr<EntityType> GetEntityType(std::string name);
-
-        /**
-         * Returns the relationship type with the given name.
-         */
-        CefRefPtr<RelationshipType> GetRelationshipType(std::string name);
+        virtual ~EntitySystem() {};
 
     private:
 
         /**
-         * The entity types by name.
+         * The entity type manager.
          */
-        std::map<std::string, CefRefPtr<EntityType> > entity_types;
+        CefRefPtr<EntityTypeManager> entity_type_manager;
 
         /**
-         * The relationship types by name.
+         * The relationship type manager.
          */
-        std::map<std::string, CefRefPtr<RelationshipType> > relationship_types;
+        CefRefPtr<RelationshipTypeManager> relationship_type_manager;
 
         /**
-         * The entity instances.
+         * The entity instance manager.
          */
-        std::list<CefRefPtr<EntityInstance> > entity_instances;
+        CefRefPtr<EntityInstanceManager> entity_instance_manager;
 
         /**
-         * The relationship instances.
+         * The relationship instance manager.
          */
-        std::list<CefRefPtr<RelationshipInstance> > relationship_instances;
+        CefRefPtr<RelationshipInstanceManager> relationship_instance_manager;
+
+        /**
+         * The subsystems.
+         */
+        std::map<std::string, CefRefPtr<Subsystem> > subsystems;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(EntitySystem);
