@@ -5,14 +5,13 @@
  *      Author: aschaeffer
  */
 
-#include "Subsystem.h"
+#include "SubsystemBase.h"
 
-Subsystem::Subsystem(std::string name) : name(name)
+SubsystemBase::SubsystemBase(std::string name) : name(name)
 {
-    logoutf("y1");
 }
 
-Subsystem::Subsystem(
+SubsystemBase::SubsystemBase(
     std::string name,
     CefRefPtr<EntityTypeManager> entity_type_manager,
     CefRefPtr<EntityInstanceManager> entity_instance_manager,
@@ -24,5 +23,4 @@ Subsystem::Subsystem(
     relationship_type_manager(relationship_type_manager),
     relationship_instance_manager(relationship_instance_manager)
 {
-    logoutf("y2");
 }
