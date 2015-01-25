@@ -5,7 +5,6 @@
 #include "net/MessageConnect.h"
 #include "net/StreamChopper.h"
 
-#include <unistd.h>
 
 using namespace std;
 
