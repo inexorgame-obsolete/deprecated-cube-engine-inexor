@@ -61,6 +61,7 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/Teleporter
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/SubsystemBase
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/TeleportSubsystem
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/ParticleSubsystem
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/grass
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/main
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/material
