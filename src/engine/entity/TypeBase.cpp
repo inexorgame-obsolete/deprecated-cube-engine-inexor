@@ -15,6 +15,14 @@ TypeBase::TypeBase(std::string name, bool persist, bool synchronize)
 {
 }
 
+TypeBase::TypeBase(std::string name, bool persist, bool synchronize, std::string uuid)
+    : name(name),
+      persist(persist),
+      synchronize(synchronize),
+      uuid(uuid)
+{
+}
+
 TypeBase::~TypeBase()
 {
 }

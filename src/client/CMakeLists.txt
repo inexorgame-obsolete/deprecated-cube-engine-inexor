@@ -19,6 +19,7 @@ set(CLIENT_SOURCES_SHARED
 	${CMAKE_CURRENT_SOURCE_DIR}/../shared/json
     ${CMAKE_CURRENT_SOURCE_DIR}/../shared/stream
     ${CMAKE_CURRENT_SOURCE_DIR}/../shared/tools
+    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/uuid
     ${CMAKE_CURRENT_SOURCE_DIR}/../shared/zip)
 
 # Only used for MSVC
@@ -50,7 +51,16 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/RelationshipInstance
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/RelationshipType
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/TypeBase
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/type/Teleporter
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/manager/EntityInstanceManager
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/manager/EntityTypeManager
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/manager/RelationshipInstanceManager
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/manager/RelationshipTypeManager
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/EntityTypeProvider
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/RelationshipTypeProvider
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/Positional
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/Teleporter
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/Subsystem
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/TeleportSubsystem
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/grass
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/main
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/material
