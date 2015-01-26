@@ -9,7 +9,6 @@
 #define SRC_ENGINE_ENTITY_ENTITYTYPE_H_
 
 #include "TypeBase.h"
-#include "manager/EntityTypeManager.h"
 
 class EntityType : public TypeBase
 {

@@ -10,15 +10,13 @@
 
 #include "../TypeBase.h"
 #include "../EntityType.h"
-
-class RelationshipTypeManager;
+#include "../manager/EntityTypeManager.h"
 
 class RelationshipTypeProvider
 {
     public:
         RelationshipTypeProvider(
             std::string relationship_name,
-            CefRefPtr<RelationshipTypeManager> relationship_type_manager,
             CefRefPtr<EntityTypeManager> entity_type_manager
         );
         virtual ~RelationshipTypeProvider() {};
@@ -27,7 +25,6 @@ class RelationshipTypeProvider
         TypeRefPtr<RelationshipType> GetRelationshipType() { return relationship_type; };
 
     protected:
-        CefRefPtr<RelationshipTypeManager> relationship_type_manager;
         CefRefPtr<EntityTypeManager> entity_type_manager;
         TypeRefPtr<RelationshipType> relationship_type;
         std::string relationship_name;

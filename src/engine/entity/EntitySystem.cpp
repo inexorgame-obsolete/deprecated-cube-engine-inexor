@@ -7,7 +7,7 @@
 
 #include "EntitySystem.h"
 
-#include "provider/Teleporter.h"
+#include "provider/TeleportEntityTypeProvider.h"
 
 EntitySystem::EntitySystem()
 {
@@ -19,23 +19,13 @@ EntitySystem::EntitySystem()
     entity_instance_manager = new EntityInstanceManager(entity_type_manager);
     relationship_instance_manager = new RelationshipInstanceManager(relationship_type_manager);
 
-    // Create entity type providers
-    CefRefPtr<EntityTypeProvider> teleport_provider = new TeleportEntityTypeProvider(entity_type_manager);
-    CefRefPtr<EntityTypeProvider> teledest_provider = new TeledestEntityTypeProvider(entity_type_manager);
-    entity_type_manager->Register(teleport_provider);
-    entity_type_manager->Register(teledest_provider);
-
-    // Create relationship type providers
-    CefRefPtr<RelationshipTypeProvider> teleporting_provider = new TeleportingRelationshipTypeProvider(relationship_type_manager, entity_type_manager);
-    relationship_type_manager->Register(teleporting_provider);
-
     // Create subsystems
     CefRefPtr<TeleportSubsystem> teleport_subsystem = new TeleportSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
-    subsystems[teleport_subsystem->GetName()] = teleport_subsystem;
     CefRefPtr<ParticleSubsystem> particle_subsystem = new ParticleSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
+    subsystems[teleport_subsystem->GetName()] = teleport_subsystem;
     subsystems[particle_subsystem->GetName()] = particle_subsystem;
 
-// === TESTS ===
+// === TESTS: Subsystems ===
 
     InstanceRefPtr<EntityInstance> teleport1 = teleport_subsystem->CreateTeleport(0.0, 0.0, 0.0);
     InstanceRefPtr<EntityInstance> teledest1 = teleport_subsystem->CreateTeledest(0.0, 0.0, 0.0);
@@ -45,10 +35,23 @@ EntitySystem::EntitySystem()
         InstanceRefPtr<EntityInstance> teledest = teleport_subsystem->CreateTeledest(0.0, 0.0, 0.0);
         InstanceRefPtr<RelationshipInstance> teleporting = teleport_subsystem->Connect(teleport1, teledest);
     }
+
     logoutf("Entity: Types: %d Instances: %d", entity_type_manager->Size(), entity_instance_manager->Size());
     logoutf("Relationships: Types: %d Instances: %d", relationship_type_manager->Size(), relationship_instance_manager->Size());
 
-// === TESTS ===
+    for (int i = 0; i < 5; i++)
+    {
+        std::string particle_type_name = "default_particle_" + i;
+        std::string particle_emitter_type_name = "simple_emitter_" + i;
+        TypeRefPtr<EntityType> default_particle_type = particle_subsystem->CreateParticleType(particle_type_name);
+        TypeRefPtr<EntityType> simple_particle_emitter_type = particle_subsystem->CreateParticleEmitterType(particle_emitter_type_name);
+    }
+
+    logoutf("Entity: Types: %d Instances: %d", entity_type_manager->Size(), entity_instance_manager->Size());
+    logoutf("Relationships: Types: %d Instances: %d", relationship_type_manager->Size(), relationship_instance_manager->Size());
+
+
+// === TESTS: Attributes ===
 
     // Entity Attribute Test Cases
 

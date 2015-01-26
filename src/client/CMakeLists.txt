@@ -51,14 +51,17 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/RelationshipInstance
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/RelationshipType
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/TypeBase
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/factory/EntityTypeFactory
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/factory/ParticleEmitterTypeFactory
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/factory/ParticleTypeFactory
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/manager/EntityInstanceManager
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/manager/EntityTypeManager
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/manager/RelationshipInstanceManager
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/manager/RelationshipTypeManager
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/EntityTypeProvider
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/RelationshipTypeProvider
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/Positional
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/Teleporter
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/RelationshipTypeProvider
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/TeleportEntityTypeProvider
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/SubsystemBase
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/TeleportSubsystem
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/ParticleSubsystem
