@@ -10,7 +10,6 @@
 
 #include "../EntitySystemBase.h"
 #include "../RelationshipType.h"
-#include "../TypeBase.h"
 
 class RelationshipTypeProvider;
 
@@ -23,8 +22,8 @@ class RelationshipTypeManager
         TypeRefPtr<RelationshipType> Create(std::string name, TypeRefPtr<EntityType> startNodeType, TypeRefPtr<EntityType> endNodeType);
         TypeRefPtr<RelationshipType> Create(std::string name, bool persist, bool synchronize, TypeRefPtr<EntityType> startNodeType, TypeRefPtr<EntityType> endNodeType);
 
-        void Register(std::string relationship_type_name, TypeRefPtr<RelationshipType> relationship_type);
-        void Register(CefRefPtr<RelationshipTypeProvider> relationship_type_provider);
+        void RegisterType(std::string relationship_type_name, TypeRefPtr<RelationshipType> relationship_type);
+        void RegisterProvider(CefRefPtr<RelationshipTypeProvider> relationship_type_provider);
 
         TypeRefPtr<RelationshipType> Get(std::string relationship_type_name);
         bool Exists(std::string relationship_type_name);
