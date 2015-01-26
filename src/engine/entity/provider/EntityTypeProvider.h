@@ -10,19 +10,16 @@
 
 #include "../TypeBase.h"
 
-class EntityTypeManager;
-
 class EntityTypeProvider
 {
     public:
-        EntityTypeProvider(std::string entity_name, CefRefPtr<EntityTypeManager> entity_type_manager);
-        virtual ~EntityTypeProvider() {};
+        EntityTypeProvider(std::string entity_name);
+        virtual ~EntityTypeProvider();
 
-        std::string GetEntityName() { return entity_name; };
-        TypeRefPtr<EntityType> GetEntityType() { return entity_type; };
+        std::string GetEntityName();
+        TypeRefPtr<EntityType> GetEntityType();
 
     protected:
-        CefRefPtr<EntityTypeManager> entity_type_manager;
         TypeRefPtr<EntityType> entity_type;
         std::string entity_name;
 

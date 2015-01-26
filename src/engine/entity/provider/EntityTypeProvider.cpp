@@ -8,8 +8,13 @@
 #include "EntityTypeProvider.h"
 #include "../manager/EntityTypeManager.h"
 
-EntityTypeProvider::EntityTypeProvider(
-    std::string entity_name,
-    CefRefPtr<EntityTypeManager> entity_type_manager
-) : entity_name(entity_name),
-    entity_type_manager(entity_type_manager) {}
+EntityTypeProvider::EntityTypeProvider(std::string entity_name) : entity_name(entity_name) {}
+EntityTypeProvider::~EntityTypeProvider() {}
+
+std::string EntityTypeProvider::GetEntityName() {
+    return entity_name;
+}
+
+TypeRefPtr<EntityType> EntityTypeProvider::GetEntityType() {
+    return entity_type;
+}

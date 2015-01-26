@@ -10,19 +10,24 @@
 
 #include "../EntitySystemBase.h"
 #include "../EntityType.h"
+#include "../provider/EntityTypeProvider.h"
+#include "../factory/EntityTypeFactory.h"
 
-class EntityTypeProvider;
+// class EntityTypeProvider;
+// class EntityTypeFactory;
 
 class EntityTypeManager
 {
     public:
-        EntityTypeManager() {};
-        virtual ~EntityTypeManager() {};
+        EntityTypeManager();
+        virtual ~EntityTypeManager();
 
-        TypeRefPtr<EntityType> Create(std::string name, bool persist, bool synchronize);
+        TypeRefPtr<EntityType> Create(std::string entity_type_name, bool persist, bool synchronize);
+        TypeRefPtr<EntityType> Create(std::string factory_name, std::string entity_type_name_suffix);
 
-        void Register(std::string entity_type_name, TypeRefPtr<EntityType> entity_type);
-        void Register(CefRefPtr<EntityTypeProvider> entity_type_provider);
+        void RegisterType(std::string entity_type_name, TypeRefPtr<EntityType> entity_type);
+        void RegisterProvider(CefRefPtr<EntityTypeProvider> entity_type_provider);
+        void RegisterFactory(CefRefPtr<EntityTypeFactory> entity_type_factory);
 
         TypeRefPtr<EntityType> Get(std::string entity_type_name);
         bool Exists(std::string entity_type_name);
@@ -31,6 +36,8 @@ class EntityTypeManager
 
     private:
         std::map<std::string, TypeRefPtr<EntityType> > entity_types;
+
+        std::map<std::string, CefRefPtr<EntityTypeFactory> > entity_type_factories;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(EntityTypeManager);

@@ -21,12 +21,12 @@ TypeRefPtr<RelationshipType> RelationshipTypeManager::Create(std::string name, b
     return relationship_type;
 }
 
-void RelationshipTypeManager::Register(std::string relationship_type_name, TypeRefPtr<RelationshipType> relationship_type) {
+void RelationshipTypeManager::RegisterType(std::string relationship_type_name, TypeRefPtr<RelationshipType> relationship_type) {
     relationship_types[relationship_type_name] = relationship_type;
 };
 
-void RelationshipTypeManager::Register(CefRefPtr<RelationshipTypeProvider> relationship_type_provider) {
-   Register(relationship_type_provider->GetRelationshipName(), relationship_type_provider->GetRelationshipType());
+void RelationshipTypeManager::RegisterProvider(CefRefPtr<RelationshipTypeProvider> relationship_type_provider) {
+    RegisterType(relationship_type_provider->GetRelationshipName(), relationship_type_provider->GetRelationshipType());
 };
 
 TypeRefPtr<RelationshipType> RelationshipTypeManager::Get(std::string relationship_type_name) {

@@ -18,6 +18,17 @@ TeleportSubsystem::TeleportSubsystem(
     CefRefPtr<RelationshipInstanceManager> relationship_instance_manager
 ) : SubsystemBase(TELEPORT_SUBSYSTEM, entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager)
 {
+
+    // Create entity type providers
+    CefRefPtr<EntityTypeProvider> teleport_provider = new TeleportEntityTypeProvider();
+    CefRefPtr<EntityTypeProvider> teledest_provider = new TeledestEntityTypeProvider();
+    entity_type_manager->RegisterProvider(teleport_provider);
+    entity_type_manager->RegisterProvider(teledest_provider);
+
+    // Create relationship type providers
+    CefRefPtr<RelationshipTypeProvider> teleporting_provider = new TeleportingRelationshipTypeProvider(entity_type_manager);
+    relationship_type_manager->RegisterProvider(teleporting_provider);
+
 }
 
 InstanceRefPtr<EntityInstance> TeleportSubsystem::CreateTeleport(double x, double y, double z)

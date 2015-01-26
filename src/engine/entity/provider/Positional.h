@@ -16,10 +16,7 @@
 class PositionalEntityTypeProvider : public EntityTypeProvider
 {
     public:
-        PositionalEntityTypeProvider(
-            std::string entity_type_name,
-            CefRefPtr<EntityTypeManager> entity_type_manager
-        ) : EntityTypeProvider(entity_type_name, entity_type_manager) {};
+        PositionalEntityTypeProvider(std::string entity_type_name) : EntityTypeProvider(entity_type_name) {};
         virtual ~PositionalEntityTypeProvider() {};
 
     private:
