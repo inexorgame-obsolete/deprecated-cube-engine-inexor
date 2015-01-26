@@ -9,6 +9,8 @@
 #define SRC_ENGINE_ENTITY_SUBSYSTEM_PARTICLESUBSYSTEM_H_
 
 #include "SubsystemBase.h"
+#include "../factory/ParticleTypeFactory.h"
+#include "../factory/ParticleEmitterTypeFactory.h"
 
 #define PARTICLE_SUBSYSTEM "particle"
 
@@ -24,7 +26,13 @@ class ParticleSubsystem : public SubsystemBase
         );
         virtual ~ParticleSubsystem() {};
 
+        TypeRefPtr<EntityType> CreateParticleType(std::string particle_type_name);
+        TypeRefPtr<EntityType> CreateParticleEmitterType(std::string particle_emitter_type_name);
+
     private:
+        CefRefPtr<EntityTypeFactory> particle_type_factory;
+        CefRefPtr<ParticleEmitterTypeFactory> particle_emitter_type_factory;
+
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(ParticleSubsystem);
 
