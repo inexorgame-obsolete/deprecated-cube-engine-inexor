@@ -53,6 +53,8 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/graph/RelationshipType
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/factory/EntityTypeFactory
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/factory/ParticleEmitterTypeFactory
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/factory/ParticleInitializerTypeFactory
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/factory/ParticleModifierTypeFactory
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/factory/ParticleTypeFactory
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/manager/EntityInstanceManager
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/manager/EntityTypeManager
@@ -65,6 +67,8 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/SubsystemBase
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/TeleportSubsystem
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/ParticleSubsystem
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/emitter/PointEmitter
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/initializer/PulseInitializer
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/grass
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/main
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/material

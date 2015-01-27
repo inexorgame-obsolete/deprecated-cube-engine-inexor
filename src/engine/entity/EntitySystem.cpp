@@ -8,6 +8,8 @@
 #include "EntitySystem.h"
 
 #include "provider/TeleportEntityTypeProvider.h"
+#include "subsystem/particle/emitter/PointEmitter.h"
+#include "subsystem/particle/initializer/PulseInitializer.h"
 
 EntitySystem::EntitySystem()
 {
@@ -22,10 +24,28 @@ EntitySystem::EntitySystem()
     // Create subsystems
     CefRefPtr<TeleportSubsystem> teleport_subsystem = new TeleportSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
     CefRefPtr<ParticleSubsystem> particle_subsystem = new ParticleSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
-    subsystems[teleport_subsystem->GetName()] = teleport_subsystem;
-    subsystems[particle_subsystem->GetName()] = particle_subsystem;
+    subsystems.Set<TeleportSubsystem>(teleport_subsystem);
+    subsystems.Set<ParticleSubsystem>(particle_subsystem);
 
-// === TESTS: Subsystems ===
+    SubsystemTest();
+    AttributeTest();
+    InstanceCreationTest();
+    TypeCreationTest();
+
+}
+
+void EntitySystem::SubsystemTest()
+{
+    logoutf("     Subsystem Tests");
+    CefRefPtr<TeleportSubsystem> teleport_subsystem = this->GetSubsystem<TeleportSubsystem>();
+    CefRefPtr<ParticleSubsystem> particle_subsystem = this->GetSubsystem<ParticleSubsystem>();
+    logoutf("[ok] Subsystem Tests");
+}
+
+void EntitySystem::InstanceCreationTest()
+{
+    logoutf("     Instance Creation Tests");
+    CefRefPtr<TeleportSubsystem> teleport_subsystem = this->GetSubsystem<TeleportSubsystem>();
 
     InstanceRefPtr<EntityInstance> teleport1 = teleport_subsystem->CreateTeleport(0.0, 0.0, 0.0);
     InstanceRefPtr<EntityInstance> teledest1 = teleport_subsystem->CreateTeledest(0.0, 0.0, 0.0);
@@ -38,6 +58,13 @@ EntitySystem::EntitySystem()
 
     logoutf("Entity: Types: %d Instances: %d", entity_type_manager->Size(), entity_instance_manager->Size());
     logoutf("Relationships: Types: %d Instances: %d", relationship_type_manager->Size(), relationship_instance_manager->Size());
+    logoutf("[ok] Instance Creation Tests");
+}
+
+void EntitySystem::TypeCreationTest()
+{
+    logoutf("     Type Creation Tests");
+    CefRefPtr<ParticleSubsystem> particle_subsystem = this->GetSubsystem<ParticleSubsystem>();
 
     for (int i = 0; i < 5; i++)
     {
@@ -49,12 +76,12 @@ EntitySystem::EntitySystem()
 
     logoutf("Entity: Types: %d Instances: %d", entity_type_manager->Size(), entity_instance_manager->Size());
     logoutf("Relationships: Types: %d Instances: %d", relationship_type_manager->Size(), relationship_instance_manager->Size());
+    logoutf("[ok] Type Creation Tests");
+}
 
-
-// === TESTS: Attributes ===
-
-    // Entity Attribute Test Cases
-
+void EntitySystem::AttributeTest()
+{
+    logoutf("     Attribute Tests");
     AttributeRefPtr attr_int_1 = new EntityAttribute(1);
     logoutf("test  1: type: %d expected: %d value: %d", attr_int_1->GetType(), 1, attr_int_1->GetInteger());
     AttributeRefPtr attr_int_2 = 2;
@@ -97,16 +124,7 @@ EntitySystem::EntitySystem()
     logoutf("test 16: type: %s name: %s type: %d expected: %3f value: %3f", ei->GetType()->GetName().c_str(), ei["x"]->name.c_str(), ei["x"]->type, 10.0, ei["x"]->GetDouble());
     ei["y"] = -10.0;
     logoutf("test 17: type: %s name: %s type: %d expected: %3f value: %3f", ei->GetType()->GetName().c_str(), ei["y"]->name.c_str(), ei["x"]->type, -10.0, ei["y"]->GetDouble());
-
-
-/*
-    InstanceRefPtr<EntityInstance> teleport1 = entity_instance_manager->Create(teleport_provider->GetEntityType());
-    teleport1["x"] = 1;
-    InstanceRefPtr<EntityInstance> teledest1 = entity_instance_manager->Create(teledest_provider->GetEntityType());
-    teledest1["x"] = 1;
-
-    InstanceRefPtr<RelationshipInstance> teleporting1 = relationship_instance_manager->CreateInstance(teleporting_provider->GetRelationshipType(), teleport1, teledest1);
-*/
+    logoutf("[ok] Attribute Tests");
 
     /*
     particle_renderer_type* pr_type_ball = ps.add_particle_renderer_type("ball_renderer", "media/particle/flash01.png", "shader", vec4(255.0f, 255.0f, 255.0f, 0.0f), "billboard_renderer");
@@ -136,27 +154,63 @@ pe_inst_point_ball->add_modifier(pm_inst_simple_gravity);
 
 */
 
-/*
-    TypeRefPtr<EntityType> et_teleport = new EntityType(ENTTYPE_TELEPORT, true, true);
-    TypeRefPtr<EntityType> et_teledest = new EntityType(ENTTYPE_TELEDEST, true, true);
+}
 
-    TypeRefPtr<RelationshipType> teleports_to = new RelationshipType(RELTYPE_TELEPORTS_TO, true, true, et_teleport, et_teledest);
-    teleports_to["teleport"] = (FunctionRefPtr) new EntityFunction();
-    teleports_to["teleport"]();
+void EntitySystem::ParticleSystemTest()
+{
+    logoutf("[ok] Particle System Tests");
+    CefRefPtr<ParticleSubsystem> particle_subsystem = this->GetSubsystem<ParticleSubsystem>();
 
-    InstanceRefPtr<EntityInstance> ei_teleporter_1 = new EntityInstance(et_teleport);
-    InstanceRefPtr<EntityInstance> ei_teleporter_2 = new EntityInstance(et_teleport);
+    FunctionRefPtr point_emit = new PointEmitter();
+    FunctionRefPtr pulse_init = new PulseInitializer();
 
-    InstanceRefPtr<EntityInstance> ei_teledest_1 = new EntityInstance(et_teledest);
-    InstanceRefPtr<EntityInstance> ei_teledest_2 = new EntityInstance(et_teledest);
-    InstanceRefPtr<EntityInstance> ei_teledest_3 = new EntityInstance(et_teledest);
+    TypeRefPtr<EntityType> point_emitter = particle_subsystem->CreateParticleEmitterType("point_emitter");
+    point_emitter["rate"] = 4;
+    point_emitter["lifetime"] = 0.0;
+    point_emitter["mass"] = 0.1;
+    point_emitter["density"] = 1.0;
+    point_emitter["vel_x"] = 1.0;
+    point_emitter["vel_y"] = 1.0;
+    point_emitter["vel_z"] = 1.0;
+    point_emitter["emit"] = point_emit; // Usage 1
 
-    InstanceRefPtr<RelationshipInstance> ri_is_target_1_1 = new RelationshipInstance(teleports_to, ei_teleporter_1, ei_teledest_1);
-    InstanceRefPtr<RelationshipInstance> ri_is_target_1_3 = new RelationshipInstance(teleports_to, ei_teleporter_1, ei_teledest_3);
-    InstanceRefPtr<RelationshipInstance> ri_is_target_2_2 = new RelationshipInstance(teleports_to, ei_teleporter_2, ei_teledest_2);
-    InstanceRefPtr<RelationshipInstance> ri_is_target_2_3 = new RelationshipInstance(teleports_to, ei_teleporter_2, ei_teledest_3);
-*/
 
+    TypeRefPtr<EntityType> pulse_point_emitter = particle_subsystem->CreateParticleEmitterType("pulse_point_emitter");
+    pulse_point_emitter["emit"] = point_emit; // Usage 2
+    pulse_point_emitter["initialize"] = pulse_init; // But this time let an initializer make particles scattering
+
+    TypeRefPtr<EntityType> velocity_transformation_modifier = particle_subsystem->CreateParticleModifierType("velocity_transformation_modifier");
+    velocity_transformation_modifier["x"] = 0.1;
+    velocity_transformation_modifier["y"] = 2.2;
+    velocity_transformation_modifier["z"] = 0.9;
+
+    // TypeRefPtr<EntityInstance> point_emitter_1 = particle_subsystem->CreateParticleEmitterInstance(point_emitter, x, y, z);
+    // param1: entweder über typerefptr oder über namen
+    // positionen: entweder keine, x,y,z oder vec3/vec4
+    // point_emitter["x"] = 10.0;
+    // point_emitter["y"] = 10.0;
+    // point_emitter["z"] = -10.0;
+
+    // Emitter-Instanzen werden der Emitter-Verarbeitungswarteschlange hinzugefügt
+    // Main-Loop für Emitter
+    // Main-Loop für Modifier
+    // Main-Loop für Renderer
+    //
+    // Modifier haben Referenzen auf ihre Partikel
+    // Renderer haben Referenzen auf ihre Partikel
+    //
+    // processing_queue->push_back(point_emitter_instance);
+    // processing_queue->push_back(velocity_transformation_modifier_instance);
+
+    // InstanceFactory
+    // Emitter is/uses an InstanceFactory
+
+    // Fiese Thread-Safety: wir haben mehrere processing queues und jeweils einen thread pro queue
+
+    // Ein Emitter/Modifier/usw wird beim hinzufügen zur processing queue gecheckt, ob z.b. ein attribut fehlt.
+    // In der processing queue werden bestimmte dinge gecached z.b. positionen
+
+    logoutf("[ok] Particle System Tests");
 }
 
 void EntitySystem::Save(std::string filename)
