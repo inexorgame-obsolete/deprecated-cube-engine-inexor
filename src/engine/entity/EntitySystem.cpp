@@ -158,3 +158,11 @@ pe_inst_point_ball->add_modifier(pm_inst_simple_gravity);
 */
 
 }
+
+void EntitySystem::Save(std::string filename)
+{
+}
+
+void EntitySystem::Load(std::string filename)
+{
+}

@@ -33,6 +33,10 @@ class EntitySystem
         CefRefPtr<EntityInstanceManager> GetEntityInstanceManager() { return entity_instance_manager; };
         CefRefPtr<RelationshipInstanceManager> GetRelationshipInstanceManager() { return relationship_instance_manager; };
 
+        void Save(std::string filename);
+
+        void Load(std::string filename);
+
     private:
 
         /**
