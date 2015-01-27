@@ -11,6 +11,8 @@
 #include "SubsystemBase.h"
 #include "../factory/ParticleTypeFactory.h"
 #include "../factory/ParticleEmitterTypeFactory.h"
+#include "../factory/ParticleInitializerTypeFactory.h"
+#include "../factory/ParticleModifierTypeFactory.h"
 
 #define PARTICLE_SUBSYSTEM "particle"
 
@@ -28,10 +30,14 @@ class ParticleSubsystem : public SubsystemBase
 
         TypeRefPtr<EntityType> CreateParticleType(std::string particle_type_name);
         TypeRefPtr<EntityType> CreateParticleEmitterType(std::string particle_emitter_type_name);
+        TypeRefPtr<EntityType> CreateParticleInitializerType(std::string particle_initializer_type_name);
+        TypeRefPtr<EntityType> CreateParticleModifierType(std::string particle_modifier_type_name);
 
     private:
         CefRefPtr<EntityTypeFactory> particle_type_factory;
         CefRefPtr<ParticleEmitterTypeFactory> particle_emitter_type_factory;
+        CefRefPtr<ParticleInitializerTypeFactory> particle_initializer_type_factory;
+        CefRefPtr<ParticleModifierTypeFactory> particle_modifier_type_factory;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(ParticleSubsystem);
