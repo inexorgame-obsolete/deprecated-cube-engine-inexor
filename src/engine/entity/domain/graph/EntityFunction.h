@@ -27,6 +27,7 @@ class EntityFunction
         void Execute() {};
         void Execute(TypeBase* type) {};
         void Execute(EntityType* type) {};
+        void Execute(EntityType* type, EntityInstance* inst) {};
         void Execute(RelationshipType* type) {};
         void Execute(EntityInstance* inst) {};
         void Execute(RelationshipInstance* inst) {};
