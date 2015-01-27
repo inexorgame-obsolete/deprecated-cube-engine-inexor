@@ -8,6 +8,8 @@
 #ifndef SRC_ENGINE_ENTITY_ENTITYSYSTEM_H_
 #define SRC_ENGINE_ENTITY_ENTITYSYSTEM_H_
 
+#include <typeinfo>
+
 #include "EntitySystemBase.h"
 #include "domain/InstanceBase.h"
 #include "domain/TypeBase.h"
@@ -22,6 +24,35 @@
 #include "subsystem/TeleportSubsystem.h"
 #include "subsystem/ParticleSubsystem.h"
 
+struct type_info_less
+{
+    bool operator() (const std::type_info* lhs, const std::type_info* rhs) const
+    {
+        return lhs->before(*rhs) != 0;
+    }
+};
+
+class TypeMap
+{
+    typedef std::map<std::type_info const*, void *, type_info_less> TypenameToObject;
+    TypenameToObject ObjectMap;
+
+    public:
+        template <typename T>
+        T *Get () const
+        {
+            TypenameToObject::const_iterator iType = ObjectMap.find(&typeid(T));
+            if (iType == ObjectMap.end())
+                return NULL;
+            return reinterpret_cast<T *>(iType->second);
+        }
+        template <typename T>
+        void Set(T *value)
+        {
+            ObjectMap[&typeid(T)] = reinterpret_cast<void *>(value);
+        }
+};
+
 class EntitySystem
 {
     public:
@@ -32,6 +63,18 @@ class EntitySystem
         CefRefPtr<RelationshipTypeManager> GetRelationshipTypeManager() { return relationship_type_manager; };
         CefRefPtr<EntityInstanceManager> GetEntityInstanceManager() { return entity_instance_manager; };
         CefRefPtr<RelationshipInstanceManager> GetRelationshipInstanceManager() { return relationship_instance_manager; };
+
+        template <typename T>
+        T *GetSubsystem () const
+        {
+            return subsystems.Get<T>();
+        }
+
+        void SubsystemTest();
+        void AttributeTest();
+        void InstanceCreationTest();
+        void TypeCreationTest();
+        void ParticleSystemTest();
 
         void Save(std::string filename);
 
@@ -62,7 +105,7 @@ class EntitySystem
         /**
          * The subsystems.
          */
-        std::map<std::string, CefRefPtr<SubsystemBase> > subsystems;
+        TypeMap subsystems;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(EntitySystem);

@@ -21,10 +21,14 @@ ParticleSubsystem::ParticleSubsystem(
     // Create entity type factories
     particle_type_factory = new ParticleTypeFactory(entity_type_manager);
     particle_emitter_type_factory = new ParticleEmitterTypeFactory(entity_type_manager);
+    particle_initializer_type_factory = new ParticleInitializerTypeFactory(entity_type_manager);
+    particle_modifier_type_factory = new ParticleModifierTypeFactory(entity_type_manager);
 
     // Register entity type factories
     entity_type_manager->RegisterFactory(particle_type_factory);
     entity_type_manager->RegisterFactory(particle_emitter_type_factory);
+    entity_type_manager->RegisterFactory(particle_initializer_type_factory);
+    entity_type_manager->RegisterFactory(particle_modifier_type_factory);
 }
 
 TypeRefPtr<EntityType> ParticleSubsystem::CreateParticleType(std::string particle_type_name)
@@ -35,4 +39,14 @@ TypeRefPtr<EntityType> ParticleSubsystem::CreateParticleType(std::string particl
 TypeRefPtr<EntityType> ParticleSubsystem::CreateParticleEmitterType(std::string particle_emitter_type_name)
 {
     return particle_emitter_type_factory->Create(particle_emitter_type_name);
+}
+
+TypeRefPtr<EntityType> ParticleSubsystem::CreateParticleInitializerType(std::string particle_initializer_type_name)
+{
+    return particle_initializer_type_factory->Create(particle_initializer_type_name);
+}
+
+TypeRefPtr<EntityType> ParticleSubsystem::CreateParticleModifierType(std::string particle_modifier_type_name)
+{
+    return particle_modifier_type_factory->Create(particle_modifier_type_name);
 }
