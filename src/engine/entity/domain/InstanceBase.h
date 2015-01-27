@@ -5,14 +5,15 @@
  *      Author: aschaeffer
  */
 
-#ifndef SRC_ENGINE_ENTITY_INSTANCEBASE_H_
-#define SRC_ENGINE_ENTITY_INSTANCEBASE_H_
+#ifndef SRC_ENGINE_ENTITY_DOMAIN_INSTANCEBASE_H_
+#define SRC_ENGINE_ENTITY_DOMAIN_INSTANCEBASE_H_
 
-#include "EntitySystemBase.h"
+#include "shared/uuid.h"
+
+#include "../EntitySystemBase.h"
 #include "AttributeBase.h"
-
-#include "EntityAttribute.h"
-#include "EntityFunction.h"
+#include "graph/EntityAttribute.h"
+#include "graph/EntityFunction.h"
 
 class InstanceBase : public AttributeBase
 {
@@ -38,18 +39,14 @@ class InstanceRefPtr : public CefRefPtr<T> {
     public:
         typedef CefRefPtr<T> parent;
 
-        InstanceRefPtr() : parent() {
-        }
+        InstanceRefPtr() : parent() {}
 
-        InstanceRefPtr(T* p) : parent(p) {
-        }
+        InstanceRefPtr(T* p) : parent(p) {}
 
-        InstanceRefPtr(const CefRefPtr<T>& r) : parent(r) {
-        }
+        InstanceRefPtr(const CefRefPtr<T>& r) : parent(r) {}
 
         template <typename U>
-        InstanceRefPtr(const CefRefPtr<U>& r) : parent(r) {
-        }
+        InstanceRefPtr(const CefRefPtr<U>& r) : parent(r) {}
 
         AttributeRefPtr operator[](std::string key) const
         {
@@ -60,4 +57,4 @@ class InstanceRefPtr : public CefRefPtr<T> {
 
 };
 
-#endif /* SRC_ENGINE_ENTITY_INSTANCEBASE_H_ */
+#endif /* SRC_ENGINE_ENTITY_DOMAIN_INSTANCEBASE_H_ */

@@ -5,11 +5,11 @@
  *      Author: aschaeffer
  */
 
-#ifndef SRC_ENGINE_ENTITY_ATTRIBUTEBASE_H_
-#define SRC_ENGINE_ENTITY_ATTRIBUTEBASE_H_
+#ifndef SRC_ENGINE_ENTITY_DOMAIN_ATTRIBUTEBASE_H_
+#define SRC_ENGINE_ENTITY_DOMAIN_ATTRIBUTEBASE_H_
 
-#include "EntitySystemBase.h"
-#include "EntityAttribute.h"
+#include "../EntitySystemBase.h"
+#include "graph/EntityAttribute.h"
 
 class AttributeBase
 {
@@ -76,4 +76,4 @@ class AttributeBase
         IMPLEMENT_REFCOUNTING(AttributeBase);
 };
 
-#endif /* SRC_ENGINE_ENTITY_ATTRIBUTEBASE_H_ */
+#endif /* SRC_ENGINE_ENTITY_DOMAIN_ATTRIBUTEBASE_H_ */

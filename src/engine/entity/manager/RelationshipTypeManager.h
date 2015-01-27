@@ -9,7 +9,7 @@
 #define SRC_ENGINE_ENTITY_RELATIONSHIPTYPEMANAGER_H_
 
 #include "../EntitySystemBase.h"
-#include "../RelationshipType.h"
+#include "../domain/graph/RelationshipType.h"
 
 class RelationshipTypeProvider;
 

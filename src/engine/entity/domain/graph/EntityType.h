@@ -8,7 +8,7 @@
 #ifndef SRC_ENGINE_ENTITY_ENTITYTYPE_H_
 #define SRC_ENGINE_ENTITY_ENTITYTYPE_H_
 
-#include "TypeBase.h"
+#include "../TypeBase.h"
 
 class EntityType : public TypeBase
 {
