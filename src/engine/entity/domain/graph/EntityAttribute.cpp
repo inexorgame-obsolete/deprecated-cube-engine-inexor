@@ -6,11 +6,6 @@
  */
 
 #include "EntityAttribute.h"
-#include "TypeBase.h"
-#include "EntityType.h"
-#include "RelationshipType.h"
-#include "EntityInstance.h"
-#include "RelationshipInstance.h"
 
 void EntityAttribute::operator()()
 {

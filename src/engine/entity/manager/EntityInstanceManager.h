@@ -8,9 +8,9 @@
 #ifndef SRC_ENGINE_ENTITY_ENTITYINSTANCEMANAGER_H_
 #define SRC_ENGINE_ENTITY_ENTITYINSTANCEMANAGER_H_
 
-#include "../EntitySystemBase.h"
-#include "../EntityInstance.h"
 #include "EntityTypeManager.h"
+#include "../EntitySystemBase.h"
+#include "../domain/graph/EntityInstance.h"
 
 /**
  * The EntityInstanceManager manages all entity instances.

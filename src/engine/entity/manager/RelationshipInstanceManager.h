@@ -8,10 +8,10 @@
 #ifndef SRC_ENGINE_ENTITY_RELATIONSHIPINSTANCEMANAGER_H_
 #define SRC_ENGINE_ENTITY_RELATIONSHIPINSTANCEMANAGER_H_
 
-#include "../EntitySystemBase.h"
-#include "../RelationshipInstance.h"
-#include "../RelationshipType.h"
 #include "RelationshipTypeManager.h"
+#include "../EntitySystemBase.h"
+#include "../domain/graph/RelationshipInstance.h"
+#include "../domain/graph/RelationshipType.h"
 
 class RelationshipInstanceManager
 {

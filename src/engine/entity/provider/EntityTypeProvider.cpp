@@ -11,10 +11,12 @@
 EntityTypeProvider::EntityTypeProvider(std::string entity_name) : entity_name(entity_name) {}
 EntityTypeProvider::~EntityTypeProvider() {}
 
-std::string EntityTypeProvider::GetEntityName() {
+std::string EntityTypeProvider::GetEntityName()
+{
     return entity_name;
 }
 
-TypeRefPtr<EntityType> EntityTypeProvider::GetEntityType() {
+TypeRefPtr<EntityType> EntityTypeProvider::GetEntityType()
+{
     return entity_type;
 }

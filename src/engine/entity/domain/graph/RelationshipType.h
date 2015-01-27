@@ -8,7 +8,7 @@
 #ifndef SRC_ENGINE_ENTITY_RELATIONSHIPTYPE_H_
 #define SRC_ENGINE_ENTITY_RELATIONSHIPTYPE_H_
 
-#include "TypeBase.h"
+#include "../TypeBase.h"
 #include "EntityType.h"
 
 class RelationshipType : public TypeBase

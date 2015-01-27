@@ -11,7 +11,7 @@
 #include <string>
 
 #include "EntityFunction.h"
-#include "EntitySystemBase.h"
+#include "../../EntitySystemBase.h"
 
 enum {
     ENTATTR_FALSE = 0,

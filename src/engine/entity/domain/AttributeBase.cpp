@@ -9,12 +9,9 @@
 
 AttributeBase::AttributeBase()
 {
-    // TODO Auto-generated constructor stub
-
 }
 
 AttributeBase::~AttributeBase()
 {
-    // TODO Auto-generated destructor stub
 }
 
