@@ -8,7 +8,7 @@
 #ifndef SRC_ENGINE_ENTITY_FACTORY_ENTITYTYPEFACTORY_H_
 #define SRC_ENGINE_ENTITY_FACTORY_ENTITYTYPEFACTORY_H_
 
-#include "../TypeBase.h"
+#include "../domain/TypeBase.h"
 
 class EntityTypeManager;
 

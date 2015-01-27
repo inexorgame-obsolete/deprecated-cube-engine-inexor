@@ -5,14 +5,13 @@
  *      Author: aschaeffer
  */
 
-#ifndef SRC_ENGINE_ENTITY_TYPEBASE_H_
-#define SRC_ENGINE_ENTITY_TYPEBASE_H_
+#ifndef SRC_ENGINE_ENTITY_DOMAIN_TYPEBASE_H_
+#define SRC_ENGINE_ENTITY_DOMAIN_TYPEBASE_H_
 
-#include "EntitySystemBase.h"
+#include "../EntitySystemBase.h"
 #include "AttributeBase.h"
-
-#include "EntityAttribute.h"
-#include "EntityFunction.h"
+#include "graph/EntityAttribute.h"
+#include "graph/EntityFunction.h"
 
 class TypeBase : public AttributeBase
 {
@@ -73,18 +72,14 @@ class TypeRefPtr : public CefRefPtr<T> {
     public:
         typedef CefRefPtr<T> parent;
 
-        TypeRefPtr() : parent() {
-        }
+        TypeRefPtr() : parent() {}
 
-        TypeRefPtr(T* p) : parent(p) {
-        }
+        TypeRefPtr(T* p) : parent(p) {}
 
-        TypeRefPtr(const CefRefPtr<T>& r) : parent(r) {
-        }
+        TypeRefPtr(const CefRefPtr<T>& r) : parent(r) {}
 
         template <typename U>
-        TypeRefPtr(const CefRefPtr<U>& r) : parent(r) {
-        }
+        TypeRefPtr(const CefRefPtr<U>& r) : parent(r) {}
 
         AttributeRefPtr operator[](std::string key) const
         {
@@ -95,4 +90,4 @@ class TypeRefPtr : public CefRefPtr<T> {
 
 };
 
-#endif /* SRC_ENGINE_ENTITY_TYPEBASE_H_ */
+#endif /* SRC_ENGINE_ENTITY_DOMAIN_TYPEBASE_H_ */

@@ -8,10 +8,10 @@
 #ifndef SRC_ENGINE_ENTITY_RELATIONSHIPINSTANCE_H_
 #define SRC_ENGINE_ENTITY_RELATIONSHIPINSTANCE_H_
 
-#include "EntitySystemBase.h"
+#include "../../EntitySystemBase.h"
+#include "../InstanceBase.h"
 #include "EntityInstance.h"
 #include "EntityAttribute.h"
-#include "InstanceBase.h"
 #include "RelationshipType.h"
 
 class EntityInstance;

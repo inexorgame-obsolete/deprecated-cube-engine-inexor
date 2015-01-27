@@ -7,7 +7,8 @@
 
 #include "TeleportEntityTypeProvider.h"
 
-TeleportEntityTypeProvider::TeleportEntityTypeProvider() : EntityTypeProvider(ENTTYPE_TELEPORT) {
+TeleportEntityTypeProvider::TeleportEntityTypeProvider() : EntityTypeProvider(ENTTYPE_TELEPORT)
+{
     entity_type = new EntityType(ENTTYPE_TELEPORT, true, true);
 }
 
@@ -15,7 +16,8 @@ TeleportEntityTypeProvider::~TeleportEntityTypeProvider()
 {
 }
 
-TeledestEntityTypeProvider::TeledestEntityTypeProvider() : EntityTypeProvider(ENTTYPE_TELEDEST) {
+TeledestEntityTypeProvider::TeledestEntityTypeProvider() : EntityTypeProvider(ENTTYPE_TELEDEST)
+{
     entity_type = new EntityType(ENTTYPE_TELEDEST, true, true);
     FunctionRefPtr on_teleported = new EntityFunction("on_teleported");
     entity_type["on_teleported"] = on_teleported;
