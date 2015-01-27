@@ -8,12 +8,12 @@
 #ifndef SRC_ENGINE_ENTITY_FACTORY_PARTICLETYPEFACTORY_H_
 #define SRC_ENGINE_ENTITY_FACTORY_PARTICLETYPEFACTORY_H_
 
-#include "../EntityFunction.h"
-#include "../EntityType.h"
-#include "../RelationshipType.h"
+#include "EntityTypeFactory.h"
+#include "../domain/graph/EntityFunction.h"
+#include "../domain/graph/EntityType.h"
+#include "../domain/graph/RelationshipType.h"
 #include "../manager/EntityTypeManager.h"
 #include "../manager/RelationshipTypeManager.h"
-#include "EntityTypeFactory.h"
 
 #define PARTICLE_TYPE_FACTORY "particle_type_factory"
 #define ENTTYPE_PREFIX_PARTICLE_TYPE "particle_type_"

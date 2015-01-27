@@ -6,7 +6,6 @@
  */
 
 #include "InstanceBase.h"
-#include "shared/uuid.h"
 
 InstanceBase::InstanceBase()
 {

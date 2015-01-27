@@ -9,12 +9,12 @@
 #define SRC_ENGINE_ENTITY_ENTITYSYSTEM_H_
 
 #include "EntitySystemBase.h"
-#include "InstanceBase.h"
-#include "TypeBase.h"
-#include "EntityInstance.h"
-#include "EntityType.h"
-#include "RelationshipType.h"
-#include "RelationshipInstance.h"
+#include "domain/InstanceBase.h"
+#include "domain/TypeBase.h"
+#include "domain/graph/EntityInstance.h"
+#include "domain/graph/EntityType.h"
+#include "domain/graph/RelationshipType.h"
+#include "domain/graph/RelationshipInstance.h"
 #include "manager/EntityInstanceManager.h"
 #include "manager/EntityTypeManager.h"
 #include "manager/RelationshipInstanceManager.h"

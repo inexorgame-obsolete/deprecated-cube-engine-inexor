@@ -8,10 +8,10 @@
 #ifndef SRC_ENGINE_ENTITY_PROVIDER_POSITIONAL_H_
 #define SRC_ENGINE_ENTITY_PROVIDER_POSITIONAL_H_
 
-#include "../EntityFunction.h"
-#include "../EntityType.h"
-#include "../RelationshipType.h"
 #include "EntityTypeProvider.h"
+#include "../domain/graph/EntityFunction.h"
+#include "../domain/graph/EntityType.h"
+#include "../domain/graph/RelationshipType.h"
 
 class PositionalEntityTypeProvider : public EntityTypeProvider
 {

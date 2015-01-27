@@ -8,8 +8,8 @@
 #ifndef SRC_ENGINE_ENTITY_PROVIDER_RELATIONSHIPTYPEPROVIDER_H_
 #define SRC_ENGINE_ENTITY_PROVIDER_RELATIONSHIPTYPEPROVIDER_H_
 
-#include "../TypeBase.h"
-#include "../EntityType.h"
+#include "../domain/TypeBase.h"
+#include "../domain/graph/EntityType.h"
 #include "../manager/EntityTypeManager.h"
 
 class RelationshipTypeProvider

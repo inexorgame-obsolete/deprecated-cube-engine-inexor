@@ -8,8 +8,8 @@
 #ifndef SRC_ENGINE_ENTITY_ENTITYINSTANCE_H_
 #define SRC_ENGINE_ENTITY_ENTITYINSTANCE_H_
 
-#include "EntitySystemBase.h"
-#include "InstanceBase.h"
+#include "../../EntitySystemBase.h"
+#include "../InstanceBase.h"
 
 #include "EntityAttribute.h"
 #include "EntityType.h"

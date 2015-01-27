@@ -21,6 +21,4 @@ SubsystemBase::SubsystemBase(
     entity_type_manager(entity_type_manager),
     entity_instance_manager(entity_instance_manager),
     relationship_type_manager(relationship_type_manager),
-    relationship_instance_manager(relationship_instance_manager)
-{
-}
+    relationship_instance_manager(relationship_instance_manager) {}

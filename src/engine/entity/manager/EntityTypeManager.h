@@ -9,7 +9,7 @@
 #define SRC_ENGINE_ENTITY_ENTITYTYPEMANAGER_H_
 
 #include "../EntitySystemBase.h"
-#include "../EntityType.h"
+#include "../domain/graph/EntityType.h"
 #include "../provider/EntityTypeProvider.h"
 #include "../factory/EntityTypeFactory.h"
 

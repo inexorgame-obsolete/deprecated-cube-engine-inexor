@@ -41,16 +41,16 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/console
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/decal
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/dynlight
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/AttributeBase
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/EntityAttribute
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/EntityFunction
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/EntityInstance
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/EntitySystem
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/EntityType
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/InstanceBase
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/RelationshipInstance
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/RelationshipType
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/TypeBase
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/AttributeBase
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/InstanceBase
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/TypeBase
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/graph/EntityAttribute
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/graph/EntityFunction
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/graph/EntityInstance
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/graph/EntityType
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/graph/RelationshipInstance
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/graph/RelationshipType
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/factory/EntityTypeFactory
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/factory/ParticleEmitterTypeFactory
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/factory/ParticleTypeFactory
