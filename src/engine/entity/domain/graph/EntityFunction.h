@@ -30,9 +30,15 @@ class EntityFunction
         void Execute(EntityType* type, EntityInstance* inst) {};
         void Execute(RelationshipType* type) {};
         void Execute(EntityInstance* inst) {};
+        void Execute(EntityInstance* inst, int elapsed_time) {};
+        void Execute(EntityInstance* inst, float time_factor) {};
         void Execute(RelationshipInstance* inst) {};
+        void Execute(RelationshipInstance* inst, int elapsed_time) {};
+        void Execute(RelationshipInstance* inst, float time_factor) {};
         void Execute(EntityInstance* entity_instance, RelationshipInstance* relationship_instance) {};
         void Execute(EntityInstance* entity_instance_1, EntityInstance* entity_instance_2) {};
+        void Execute(EntityInstance* entity_instance_1, EntityInstance* entity_instance_2, int elapsed_time) {};
+        void Execute(EntityInstance* entity_instance_1, EntityInstance* entity_instance_2, float time_factor) {};
         void Execute(EntityInstance* entity_instance_1, EntityInstance* entity_instance_2, EntityInstance* entity_instance_3) {};
         void Execute(EntityInstance* entity_instance_1, EntityInstance* entity_instance_2, RelationshipInstance* relationship_instance) {};
 
