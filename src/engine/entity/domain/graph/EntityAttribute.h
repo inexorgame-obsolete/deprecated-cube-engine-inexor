@@ -20,6 +20,7 @@ enum {
     ENTATTR_INT,
     ENTATTR_FLOAT,
     ENTATTR_DOUBLE,
+	// TODO: vec3, vec4
     ENTATTR_STRING,
     ENTATTR_FUNCTION
 }; // JSON types

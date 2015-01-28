@@ -74,6 +74,7 @@ class EntitySystem
         void AttributeTest();
         void InstanceCreationTest();
         void TypeCreationTest();
+        void LowLevelTypeCreationTest();
         void ParticleSystemTest();
 
         void Save(std::string filename);
