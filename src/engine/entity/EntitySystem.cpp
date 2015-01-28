@@ -36,7 +36,6 @@ EntitySystem::EntitySystem()
 
 void EntitySystem::SubsystemTest()
 {
-    logoutf("     Subsystem Tests");
     CefRefPtr<TeleportSubsystem> teleport_subsystem = this->GetSubsystem<TeleportSubsystem>();
     CefRefPtr<ParticleSubsystem> particle_subsystem = this->GetSubsystem<ParticleSubsystem>();
     logoutf("[ok] Subsystem Tests");
@@ -44,7 +43,6 @@ void EntitySystem::SubsystemTest()
 
 void EntitySystem::InstanceCreationTest()
 {
-    logoutf("     Instance Creation Tests");
     CefRefPtr<TeleportSubsystem> teleport_subsystem = this->GetSubsystem<TeleportSubsystem>();
 
     InstanceRefPtr<EntityInstance> teleport1 = teleport_subsystem->CreateTeleport(0.0, 0.0, 0.0);
@@ -58,7 +56,17 @@ void EntitySystem::InstanceCreationTest()
 
     logoutf("Entity: Types: %d Instances: %d", entity_type_manager->Size(), entity_instance_manager->Size());
     logoutf("Relationships: Types: %d Instances: %d", relationship_type_manager->Size(), relationship_instance_manager->Size());
-    logoutf("[ok] Instance Creation Tests");
+    logoutf("[ok] Instance Creation Test");
+}
+
+void EntitySystem::LowLevelTypeCreationTest()
+{
+    TypeRefPtr<EntityType> source_type = entity_type_manager->Create("source_type", false, false);
+    TypeRefPtr<EntityType> target_type = entity_type_manager->Create("target_type", false, false);
+    TypeRefPtr<RelationshipType> relationship_type = relationship_type_manager->Create("relationship_type", false, false, source_type, target_type);
+    logoutf("Entity: Types: %d Instances: %d", entity_type_manager->Size(), entity_instance_manager->Size());
+    logoutf("Relationships: Types: %d Instances: %d", relationship_type_manager->Size(), relationship_instance_manager->Size());
+    logoutf("[ok] Low Level Type Creation Test");
 }
 
 void EntitySystem::TypeCreationTest()
@@ -76,12 +84,11 @@ void EntitySystem::TypeCreationTest()
 
     logoutf("Entity: Types: %d Instances: %d", entity_type_manager->Size(), entity_instance_manager->Size());
     logoutf("Relationships: Types: %d Instances: %d", relationship_type_manager->Size(), relationship_instance_manager->Size());
-    logoutf("[ok] Type Creation Tests");
+    logoutf("[ok] High Level Type Creation Test");
 }
 
 void EntitySystem::AttributeTest()
 {
-    logoutf("     Attribute Tests");
     AttributeRefPtr attr_int_1 = new EntityAttribute(1);
     logoutf("test  1: type: %d expected: %d value: %d", attr_int_1->GetType(), 1, attr_int_1->GetInteger());
     AttributeRefPtr attr_int_2 = 2;
