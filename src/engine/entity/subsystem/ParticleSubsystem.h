@@ -27,7 +27,10 @@ class ParticleSubsystem : public SubsystemBase
             CefRefPtr<RelationshipTypeManager> relationship_type_manager,
             CefRefPtr<RelationshipInstanceManager> relationship_instance_manager
         );
-        virtual ~ParticleSubsystem() {};
+        virtual ~ParticleSubsystem();
+
+        void RenderFaces();
+        void RenderParticles();
 
         TypeRefPtr<EntityType> CreateParticleType(std::string particle_type_name);
         TypeRefPtr<EntityType> CreateEmitterType(std::string emitter_type_name);

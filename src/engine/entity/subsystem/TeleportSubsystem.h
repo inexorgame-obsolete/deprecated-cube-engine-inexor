@@ -27,7 +27,7 @@ class TeleportSubsystem : public SubsystemBase
             CefRefPtr<RelationshipTypeManager> relationship_type_manager,
             CefRefPtr<RelationshipInstanceManager> relationship_instance_manager
         );
-        virtual ~TeleportSubsystem() {};
+        virtual ~TeleportSubsystem();
 
         InstanceRefPtr<EntityInstance> CreateTeleport(double x, double y, double z);
         InstanceRefPtr<EntityInstance> CreateTeledest(double x, double y, double z);

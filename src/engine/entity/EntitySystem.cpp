@@ -39,6 +39,23 @@ EntitySystem::EntitySystem()
 
 }
 
+void EntitySystem::Update()
+{
+    // Update Subsystems
+}
+
+void EntitySystem::Cleanup()
+{
+    // TODO: Cleanup Subsystems
+    // TODO: Cleanup Types and Entities
+    // TODO: Stop particle threads
+}
+
+void EntitySystem::Reset()
+{
+    // TODO: cleanup particles, temporarily stop renderers
+}
+
 void EntitySystem::SubsystemTest()
 {
     CefRefPtr<TeleportSubsystem> teleport_subsystem = this->GetSubsystem<TeleportSubsystem>();
