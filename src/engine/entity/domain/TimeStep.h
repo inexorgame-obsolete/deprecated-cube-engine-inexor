@@ -1,0 +1,22 @@
+/*
+ * TimeStep.h
+ *
+ *  Created on: 30.01.2015
+ *      Author: aschaeffer
+ */
+
+#ifndef SRC_ENGINE_ENTITY_DOMAIN_TIMESTEP_H_
+#define SRC_ENGINE_ENTITY_DOMAIN_TIMESTEP_H_
+
+class TimeStep
+{
+    public:
+        TimeStep(int elapsed_time, double time_factor, double time_unit);
+        virtual ~TimeStep();
+
+        int elapsed_time;
+        double time_factor;
+        double time_unit;
+};
+
+#endif /* SRC_ENGINE_ENTITY_DOMAIN_TIMESTEP_H_ */

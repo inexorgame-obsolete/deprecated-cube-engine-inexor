@@ -9,6 +9,7 @@
 #define SRC_ENGINE_ENTITY_ENTITYTYPEMANAGER_H_
 
 #include "../EntitySystemBase.h"
+#include "../domain/TypeRefPtr.h"
 #include "../domain/graph/EntityType.h"
 #include "../provider/EntityTypeProvider.h"
 #include "../factory/EntityTypeFactory.h"
@@ -23,6 +24,7 @@ class EntityTypeManager
         virtual ~EntityTypeManager();
 
         TypeRefPtr<EntityType> Create(std::string entity_type_name, bool persist, bool synchronize);
+        TypeRefPtr<EntityType> Create(std::string entity_type_name, bool persist, bool synchronize, TypeRefPtr<EntityType> parent_type);
         TypeRefPtr<EntityType> Create(std::string factory_name, std::string entity_type_name_suffix);
 
         void RegisterType(std::string entity_type_name, TypeRefPtr<EntityType> entity_type);

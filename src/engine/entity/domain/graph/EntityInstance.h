@@ -10,8 +10,8 @@
 
 #include "../../EntitySystemBase.h"
 #include "../InstanceBase.h"
-
-#include "EntityAttribute.h"
+#include "../TypeRefPtr.h"
+#include "../InstanceRefPtr.h"
 #include "EntityType.h"
 
 class RelationshipInstance;
@@ -22,6 +22,9 @@ class EntityInstance : public InstanceBase
         EntityInstance(TypeRefPtr<EntityType> type);
         EntityInstance(TypeRefPtr<EntityType> type, std::string uuid);
         virtual ~EntityInstance();
+
+        // AttributeRefPtr operator[](std::string key) const;
+        // AttributeRefPtr & operator[](std::string key);
 
         TypeRefPtr<EntityType> GetType() { return type; };
 
@@ -52,6 +55,7 @@ class EntityInstance : public InstanceBase
          */
         std::map<TypeRefPtr<RelationshipType>, std::list<InstanceRefPtr<RelationshipInstance> > > incoming;
 
+    private:
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(EntityInstance);
 

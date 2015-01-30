@@ -9,14 +9,17 @@
 #define SRC_ENGINE_ENTITY_ENTITYTYPE_H_
 
 #include "../TypeBase.h"
+#include "../TypeRefPtr.h"
 
 class EntityType : public TypeBase
 {
     public:
         EntityType(std::string name, bool persist, bool synchronize);
+        EntityType(std::string name, bool persist, bool synchronize, TypeRefPtr<EntityType> parent);
         virtual ~EntityType() {};
 
     private:
+        TypeRefPtr<EntityType> parent;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(EntityType);

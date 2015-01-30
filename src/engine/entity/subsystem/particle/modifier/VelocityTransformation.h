@@ -10,6 +10,7 @@
 
 #include "../../../EntitySystemBase.h"
 #include "../../../domain/graph/EntityFunction.h"
+#include "../../../domain/graph/EntityInstance.h"
 
 class VelocityTransformation : public EntityFunction
 {
@@ -17,7 +18,7 @@ class VelocityTransformation : public EntityFunction
         VelocityTransformation();
         virtual ~VelocityTransformation();
 
-        void Execute(EntityInstance* particle, float time_factor);
+        void Execute(TimeStep time_step, EntityInstance* particle);
 
     private:
         // Include the default reference counting implementation.

@@ -13,6 +13,7 @@
 #include "../factory/ParticleEmitterTypeFactory.h"
 #include "../factory/ParticleInitializerTypeFactory.h"
 #include "../factory/ParticleModifierTypeFactory.h"
+#include "../provider/ParticleProvider.h"
 
 #define PARTICLE_SUBSYSTEM "particle"
 
@@ -29,9 +30,19 @@ class ParticleSubsystem : public SubsystemBase
         virtual ~ParticleSubsystem() {};
 
         TypeRefPtr<EntityType> CreateParticleType(std::string particle_type_name);
-        TypeRefPtr<EntityType> CreateParticleEmitterType(std::string particle_emitter_type_name);
-        TypeRefPtr<EntityType> CreateParticleInitializerType(std::string particle_initializer_type_name);
-        TypeRefPtr<EntityType> CreateParticleModifierType(std::string particle_modifier_type_name);
+        TypeRefPtr<EntityType> CreateEmitterType(std::string emitter_type_name);
+        TypeRefPtr<EntityType> CreateInitializerType(std::string initializer_type_name);
+        TypeRefPtr<EntityType> CreateModifierType(std::string modifier_type_name);
+
+        InstanceRefPtr<EntityInstance> CreateEmitterInstance(std::string emitter_type_name, double x, double y, double z);
+        InstanceRefPtr<EntityInstance> CreateEmitterInstance(TypeRefPtr<EntityType> emitter_type, double x, double y, double z);
+        InstanceRefPtr<EntityInstance> CreateInitializerInstance(std::string initializer_type_name);
+        InstanceRefPtr<EntityInstance> CreateInitializerInstance(TypeRefPtr<EntityType> initializer_type);
+        InstanceRefPtr<EntityInstance> CreateModifierInstance(std::string modifier_type_name);
+        InstanceRefPtr<EntityInstance> CreateModifierInstance(TypeRefPtr<EntityType> modifier_type);
+
+        InstanceRefPtr<RelationshipInstance> AddModifierToEmitter(InstanceRefPtr<EntityInstance> emitter_instance, InstanceRefPtr<EntityInstance> modifier_instance);
+        InstanceRefPtr<RelationshipInstance> AddInitializerToEmitter(InstanceRefPtr<EntityInstance> emitter_instance, InstanceRefPtr<EntityInstance> initializer_instance);
 
     private:
         CefRefPtr<EntityTypeFactory> particle_type_factory;

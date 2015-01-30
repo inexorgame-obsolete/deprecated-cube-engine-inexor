@@ -9,11 +9,13 @@
 #define SRC_ENGINE_ENTITY_FACTORY_PARTICLEMODIFIERTYPEFACTORY_H_
 
 #include "EntityTypeFactory.h"
+#include "../domain/TypeRefPtr.h"
 #include "../domain/graph/EntityFunction.h"
 #include "../domain/graph/EntityType.h"
 #include "../domain/graph/RelationshipType.h"
 #include "../manager/EntityTypeManager.h"
 #include "../manager/RelationshipTypeManager.h"
+#include "../provider/ParticleProvider.h"
 
 #define PARTICLE_MODIFIER_TYPE_FACTORY "particle_modifier_type_factory"
 #define ENTTYPE_PREFIX_PARTICLE_MODIFIER_TYPE "particle_modifier_type_"

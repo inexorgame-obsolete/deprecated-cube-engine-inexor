@@ -43,12 +43,17 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/dynlight
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/EntitySystem
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/AttributeBase
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/AttributeRefPtr
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/FunctionRefPtr
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/InstanceBase
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/TimeStep
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/TypeBase
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/graph/EntityAttribute
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/graph/EntityFunction
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/graph/EntityInstance
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/graph/EntityType
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/graph/JsFunction
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/graph/MathFunction
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/graph/RelationshipInstance
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/graph/RelationshipType
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/factory/EntityTypeFactory
@@ -61,6 +66,7 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/manager/RelationshipInstanceManager
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/manager/RelationshipTypeManager
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/EntityTypeProvider
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/ParticleProvider
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/Positional
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/RelationshipTypeProvider
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/TeleportEntityTypeProvider
@@ -69,6 +75,8 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/ParticleSubsystem
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/emitter/PointEmitter
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/initializer/PulseInitializer
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/VelocityTransformation
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/VectorField
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/grass
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/main
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/material

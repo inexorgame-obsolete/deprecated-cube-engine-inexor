@@ -15,3 +15,21 @@ InstanceBase::InstanceBase()
     uuid::Uuid u = uuid::uuid1();
     uuid = u.hex();
 }
+
+InstanceBase::InstanceBase(std::string uuid) : uuid(uuid)
+{
+}
+
+InstanceBase::~InstanceBase()
+{
+}
+
+std::string InstanceBase::GetUuid()
+{
+    return uuid;
+}
+
+void InstanceBase::SetUuid(std::string uuid)
+{
+    this->uuid = uuid;
+}
