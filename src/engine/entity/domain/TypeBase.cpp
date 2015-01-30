@@ -27,34 +27,27 @@ TypeBase::~TypeBase()
 {
 }
 
-/*
- * type["var"] = a;
- * value = type["var"];
- * type->Method(val1, val2);
- *
-CefRefPtr<EntityAttribute>& TypeBase::operator[](std::string key)
+std::string TypeBase::GetUuid()
 {
-    logoutf("get attribute: %s", key.c_str());
-    return attributes[key];
+    return uuid;
 }
- */
 
-/*
-CefRefPtr<EntityAction>& TypeBase::operator ->*(std::string name) {
-    return actions[name];
+void TypeBase::SetUuid(std::string uuid) {
+    this->uuid = uuid;
 }
-*/
 
-/*
-CefRefPtr<EntityAction>& TypeBase::operator ->*(S b)
-{
-    return (operator*()).*memptr;
+std::string TypeBase::GetName() {
+    return name;
 }
-*/
 
-/*
-std::map<std::string, CefRefPtr<EntityAction> >& TypeBase::operator->*(std::map<std::string, CefRefPtr<EntityAction> > CefRefPtr<EntityAction>::*)
-{
-    return memptr[];
+std::string TypeBase::GetParentType() {
+    return parent_type;
 }
-*/
+
+bool TypeBase::IsPersisting() {
+    return persist;
+}
+
+bool TypeBase::IsSynchronizing() {
+    return synchronize;
+}

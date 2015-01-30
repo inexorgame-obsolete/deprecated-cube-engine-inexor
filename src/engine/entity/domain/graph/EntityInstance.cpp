@@ -20,6 +20,18 @@ EntityInstance::~EntityInstance()
 {
 }
 
+/*
+AttributeRefPtr EntityInstance::operator[](std::string key) const
+{
+    return attributes[key];
+}
+
+AttributeRefPtr & EntityInstance::operator[](std::string key)
+{
+    return attributes[key];
+}
+*/
+
 void EntityInstance::AddOutgoingRelationship(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<RelationshipInstance> relationship_instance)
 {
     // TODO: check first for key and create key if not exists!

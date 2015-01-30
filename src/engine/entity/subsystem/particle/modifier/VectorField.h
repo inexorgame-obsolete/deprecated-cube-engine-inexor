@@ -10,6 +10,8 @@
 
 #include "../../../EntitySystemBase.h"
 #include "../../../domain/graph/EntityFunction.h"
+#include "../../../domain/graph/EntityInstance.h"
+#include "muParser.h"
 
 class VectorField : public EntityFunction
 {
@@ -17,7 +19,8 @@ class VectorField : public EntityFunction
         VectorField(std::string expression);
         virtual ~VectorField();
 
-        void Execute(EntityInstance* modifier, EntityInstance* particle, float time_factor);
+        void Execute(TimeStep time_step, EntityInstance* particle);
+        void Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle);
 
     private:
         mu::Parser parser;

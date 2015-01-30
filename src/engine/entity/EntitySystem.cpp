@@ -6,10 +6,14 @@
  */
 
 #include "EntitySystem.h"
+#include <time.h>
+#include <cube.h>
 
 #include "provider/TeleportEntityTypeProvider.h"
 #include "subsystem/particle/emitter/PointEmitter.h"
 #include "subsystem/particle/initializer/PulseInitializer.h"
+#include "subsystem/particle/modifier/VelocityTransformation.h"
+#include "subsystem/particle/modifier/VectorField.h"
 
 EntitySystem::EntitySystem()
 {
@@ -31,6 +35,7 @@ EntitySystem::EntitySystem()
     AttributeTest();
     InstanceCreationTest();
     TypeCreationTest();
+    ParticleSystemTest();
 
 }
 
@@ -79,7 +84,7 @@ void EntitySystem::TypeCreationTest()
         std::string particle_type_name = "default_particle_" + i;
         std::string particle_emitter_type_name = "simple_emitter_" + i;
         TypeRefPtr<EntityType> default_particle_type = particle_subsystem->CreateParticleType(particle_type_name);
-        TypeRefPtr<EntityType> simple_particle_emitter_type = particle_subsystem->CreateParticleEmitterType(particle_emitter_type_name);
+        TypeRefPtr<EntityType> simple_particle_emitter_type = particle_subsystem->CreateEmitterType(particle_emitter_type_name);
     }
 
     logoutf("Entity: Types: %d Instances: %d", entity_type_manager->Size(), entity_instance_manager->Size());
@@ -117,15 +122,16 @@ void EntitySystem::AttributeTest()
     logoutf("test 13: type: %d expected: %d value: %d", et["booltrue"]->GetType(), 1, et["booltrue"]->GetBool());
     FunctionRefPtr entAction = new EntityFunction("action1");
     et["function1"] = entAction;
-    logoutf("test 14: type: %d expected: %s value: %s", et["function1"]->GetType(), "test", et["function1"]->GetFunction()->GetName().c_str());
+    logoutf("test 14: type: %d expected: %s value: %s", et["function1"]->GetType(), "action1", et["function1"]->GetFunction()->GetName().c_str());
     et["function2"] = (FunctionRefPtr) new EntityFunction("action2");
-    logoutf("test 15: type: %d expected: %s value: %s", et["function2"]->GetType(), "test", et["function2"]->GetFunction()->GetName().c_str());
-    et["function2"]->GetFunction()->Execute();
-    et["function2"]->GetFunction()->Execute(et);
-    et["function2"]->operator ()();
-    et["function2"]->operator ()(et);
-    et["function2"]();
-    et["function2"](et);
+    logoutf("test 15: type: %d expected: %s value: %s", et["function2"]->GetType(), "action2", et["function2"]->GetFunction()->GetName().c_str());
+    TimeStep t(0, 1.0, 1.0);
+    et["function2"]->GetFunction()->Execute(t);
+    et["function2"]->GetFunction()->Execute(t, et);
+    et["function2"]->operator ()(t);
+    et["function2"]->operator ()(t, et);
+    et["function2"](t);
+    et["function2"](t, et);
     InstanceRefPtr<EntityInstance> ei = new EntityInstance(et);
     ei["x"] = 10.0;
     logoutf("test 16: type: %s name: %s type: %d expected: %3f value: %3f", ei->GetType()->GetName().c_str(), ei["x"]->name.c_str(), ei["x"]->type, 10.0, ei["x"]->GetDouble());
@@ -165,13 +171,14 @@ pe_inst_point_ball->add_modifier(pm_inst_simple_gravity);
 
 void EntitySystem::ParticleSystemTest()
 {
-    logoutf("[ok] Particle System Tests");
     CefRefPtr<ParticleSubsystem> particle_subsystem = this->GetSubsystem<ParticleSubsystem>();
 
     FunctionRefPtr point_emit = new PointEmitter();
     FunctionRefPtr pulse_init = new PulseInitializer();
+    FunctionRefPtr velocity_transformation_function = new VelocityTransformation();
+    FunctionRefPtr vector_field_function = new VectorField("x * 1.2,y * 1.2,z * 1.2");
 
-    TypeRefPtr<EntityType> point_emitter = particle_subsystem->CreateParticleEmitterType("point_emitter");
+    TypeRefPtr<EntityType> point_emitter = particle_subsystem->CreateEmitterType("point_emitter");
     point_emitter["rate"] = 4;
     point_emitter["lifetime"] = 0.0;
     point_emitter["mass"] = 0.1;
@@ -181,15 +188,74 @@ void EntitySystem::ParticleSystemTest()
     point_emitter["vel_z"] = 1.0;
     point_emitter["emit"] = point_emit; // Usage 1
 
-
-    TypeRefPtr<EntityType> pulse_point_emitter = particle_subsystem->CreateParticleEmitterType("pulse_point_emitter");
+    TypeRefPtr<EntityType> pulse_point_emitter = particle_subsystem->CreateEmitterType("pulse_point_emitter");
     pulse_point_emitter["emit"] = point_emit; // Usage 2
     pulse_point_emitter["initialize"] = pulse_init; // But this time let an initializer make particles scattering
 
-    TypeRefPtr<EntityType> velocity_transformation_modifier = particle_subsystem->CreateParticleModifierType("velocity_transformation_modifier");
-    velocity_transformation_modifier["x"] = 0.1;
-    velocity_transformation_modifier["y"] = 2.2;
-    velocity_transformation_modifier["z"] = 0.9;
+    TypeRefPtr<EntityType> velocity_transformation_modifier_type = particle_subsystem->CreateModifierType("velocity_transformation_modifier");
+    velocity_transformation_modifier_type["modify"] = velocity_transformation_function;
+    velocity_transformation_modifier_type["x"] = 0.1;
+    velocity_transformation_modifier_type["y"] = 2.2;
+    velocity_transformation_modifier_type["z"] = 0.9;
+
+    // modifier_type["modify"]
+    // TODO: CreateModifierType("vector_field_modifier", vector_field_function)
+    // TODO: SetModifierFunction(vector_field_function)
+    TypeRefPtr<EntityType> vector_field_modifier_type = particle_subsystem->CreateModifierType("vector_field_modifier");
+    vector_field_modifier_type["modify"] = vector_field_function;
+    vector_field_modifier_type["x"] = 0.1;
+    vector_field_modifier_type["y"] = 2.2;
+    vector_field_modifier_type["z"] = 0.9;
+
+    TypeRefPtr<EntityType> particle_type = entity_type_manager->Create("particle", false, false /* , parent */);
+    InstanceRefPtr<EntityInstance> particle = new EntityInstance(particle_type);
+    particle["x"] = 0.0;
+    particle["y"] = 0.0;
+    particle["z"] = 0.0;
+    particle["vx"] = 1.0;
+    particle["vy"] = 2.0;
+    particle["vz"] = 3.0;
+    logoutf("x: %2.2f y: %2.2f z: %2.2f vx: %2.2f vy: %2.2f vz: %2.2f", particle["x"]->GetDouble(), particle["y"]->GetDouble(), particle["z"]->GetDouble(), particle["vx"]->GetDouble(), particle["vy"]->GetDouble(), particle["vz"]->GetDouble());
+
+    // a full time unit elapsed
+    TimeStep tf(0, 1.0, 1.0);
+    velocity_transformation_function->Execute(tf, particle.get());
+    logoutf("x: %2.2f y: %2.2f z: %2.2f vx: %2.2f vy: %2.2f vz: %2.2f", particle["x"]->GetDouble(), particle["y"]->GetDouble(), particle["z"]->GetDouble(), particle["vx"]->GetDouble(), particle["vy"]->GetDouble(), particle["vz"]->GetDouble());
+    velocity_transformation_function(tf, particle.get());
+    logoutf("x: %2.2f y: %2.2f z: %2.2f vx: %2.2f vy: %2.2f vz: %2.2f", particle["x"]->GetDouble(), particle["y"]->GetDouble(), particle["z"]->GetDouble(), particle["vx"]->GetDouble(), particle["vy"]->GetDouble(), particle["vz"]->GetDouble());
+
+    FunctionRefPtr vt_mt = velocity_transformation_modifier_type["modify"]->GetFunction();
+    vt_mt(tf, particle.get());
+    logoutf("x: %2.2f y: %2.2f z: %2.2f vx: %2.2f vy: %2.2f vz: %2.2f", particle["x"]->GetDouble(), particle["y"]->GetDouble(), particle["z"]->GetDouble(), particle["vx"]->GetDouble(), particle["vy"]->GetDouble(), particle["vz"]->GetDouble());
+
+    logoutf("vector field");
+    TimeStep vf_tf(0, 0.1, 1.0);
+    FunctionRefPtr vf_mt = vector_field_modifier_type["modify"]->GetFunction();
+    for (int i = 0; i < 10; i++) {
+        SDL_Delay(10);
+        vf_mt(vf_tf, particle.get());
+        logoutf("vx: %2.2f vy: %2.2f vz: %2.2f", particle["vx"]->GetDouble(), particle["vy"]->GetDouble(), particle["vz"]->GetDouble());
+        vt_mt(vf_tf, particle.get());
+        logoutf("x: %2.2f y: %2.2f z: %2.2f", particle["x"]->GetDouble(), particle["y"]->GetDouble(), particle["z"]->GetDouble());
+    }
+
+    // Create emitter and modifier instances
+    InstanceRefPtr<EntityInstance> point_emitter_1 = particle_subsystem->CreateEmitterInstance(point_emitter, 0.0, 0.0, 0.0);
+    InstanceRefPtr<EntityInstance> pulse_point_emitter_1 = particle_subsystem->CreateEmitterInstance(pulse_point_emitter, 0.0, 0.0, 0.0);
+    InstanceRefPtr<EntityInstance> velocity_transformation_modifier_1 = particle_subsystem->CreateModifierInstance(velocity_transformation_modifier_type);
+
+    // This creates an relation from an emitter to an modifier
+    InstanceRefPtr<RelationshipInstance> point_emitter_velocity = particle_subsystem->AddModifierToEmitter(point_emitter_1, velocity_transformation_modifier_1);
+    InstanceRefPtr<RelationshipInstance> pulse_point_velocity = particle_subsystem->AddModifierToEmitter(pulse_point_emitter_1, velocity_transformation_modifier_1);
+
+    // particle_subsystem->LetThemDie();
+    // particle_subsystem->ProcessEmitters();
+    // particle_subsystem->ProcessInitializers();
+    // particle_subsystem->ProcessModifiers();
+
+    // pulse_point_emitter["emit"]();
+    // pulse_point_emitter["initialize"]();
+    // velocity_transformation_modifier["modify"]();
 
     // TypeRefPtr<EntityInstance> point_emitter_1 = particle_subsystem->CreateParticleEmitterInstance(point_emitter, x, y, z);
     // param1: entweder über typerefptr oder über namen
