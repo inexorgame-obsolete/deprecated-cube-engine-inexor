@@ -22,36 +22,36 @@ VectorField::~VectorField()
 }
 
 // Without modifier, expression was set on function creation!
-void VectorField::Execute(EntityInstance* particle, float time_factor)
+void VectorField::Execute(TimeStep time_step, EntityInstance* particle)
 {
     // TODO: check this -> use mu::value_type as EntityAttribute
-	mu::value_type ix = particle["x"];
-	mu::value_type iy = particle["y"];
-	mu::value_type iz = particle["z"];
+	ix = (*particle)["x"]->doubleVal;
+	iy = (*particle)["y"]->doubleVal;
+	iz = (*particle)["z"]->doubleVal;
 	try {
 		mu::value_type *v = parser.Eval(args);
-		particle["vx"] += v[0] * time_factor;
-		particle["vy"] += v[1] * time_factor;
-		particle["vz"] += v[2] * time_factor;
+		(*particle)["vx"]->doubleVal = (*particle)["vx"]->doubleVal + v[0] * time_step.time_factor;
+		(*particle)["vy"]->doubleVal = (*particle)["vy"]->doubleVal + v[1] * time_step.time_factor;
+		(*particle)["vz"]->doubleVal = (*particle)["vz"]->doubleVal + v[2] * time_step.time_factor;
 	} catch (mu::Parser::exception_type &e) {
 		logoutf("Error parsing vector field expression %s: %s", e.GetExpr().c_str(), e.GetMsg().c_str());
 	}
 }
 
 // The expression is taken from the modifier
-void VectorField::Execute(EntityInstance* modifier, EntityInstance* particle, float time_factor)
+void VectorField::Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle)
 {
     // TODO: check this -> use mu::value_type as EntityAttribute
-	mu::value_type ix = particle["x"] - modifier["x"];
-	mu::value_type iy = particle["y"] - modifier["y"];
-	mu::value_type iz = particle["z"] - modifier["z"];
+	ix = (*particle)["x"]->doubleVal - (*modifier)["x"]->doubleVal;
+	iy = (*particle)["y"]->doubleVal - (*modifier)["y"]->doubleVal;
+	iz = (*particle)["z"]->doubleVal - (*modifier)["z"]->doubleVal;
     // TODO: check this -> add modfier position variables: mx, my, mz
 	try {
-		parser.SetExpr(modifier["expression"]);
+		parser.SetExpr(modifier->GetType()->GetAttribute("expression")->GetString());
 		mu::value_type *v = parser.Eval(args);
-		particle["vx"] += v[0] * time_factor;
-		particle["vy"] += v[1] * time_factor;
-		particle["vz"] += v[2] * time_factor;
+        (*particle)["vx"]->doubleVal = (*particle)["vx"] + v[0] * time_step.time_factor;
+        (*particle)["vy"]->doubleVal = (*particle)["vy"] + v[1] * time_step.time_factor;
+        (*particle)["vz"]->doubleVal = (*particle)["vz"] + v[2] * time_step.time_factor;
 	} catch (mu::Parser::exception_type &e) {
 		logoutf("Error parsing vector field expression %s: %s", e.GetExpr().c_str(), e.GetMsg().c_str());
 	}

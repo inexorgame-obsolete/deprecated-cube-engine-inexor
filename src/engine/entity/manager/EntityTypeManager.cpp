@@ -24,6 +24,13 @@ TypeRefPtr<EntityType> EntityTypeManager::Create(std::string entity_type_name, b
     return entity_type;
 }
 
+TypeRefPtr<EntityType> EntityTypeManager::Create(std::string entity_type_name, bool persist, bool synchronize, TypeRefPtr<EntityType> parent_type)
+{
+    TypeRefPtr<EntityType> entity_type = new EntityType(entity_type_name, persist, synchronize, parent_type);
+    entity_types[entity_type_name] = entity_type;
+    return entity_type;
+}
+
 TypeRefPtr<EntityType> EntityTypeManager::Create(std::string factory_name, std::string entity_type_name_suffix)
 {
     return entity_type_factories[factory_name]->Create(entity_type_name_suffix);

@@ -10,95 +10,44 @@
 #include "RelationshipType.h"
 #include "EntityInstance.h"
 #include "RelationshipInstance.h"
-#include "../TypeBase.h"
 
-/*
-void EntityFunction::Execute() {
-    logoutf("execute, Without parameters");
-};
-
-void EntityFunction::Execute(TypeBase* type)
+EntityFunction::EntityFunction(std::string name) : name(name)
 {
-    logoutf("execute, Type: TypeBase, Type Name: %s", type->GetName().c_str());
-};
 
-void EntityFunction::Execute(EntityType* type)
-{
-    logoutf("execute, Type: EntityType, Type Name: %s", type->GetName().c_str());
-};
-
-void EntityFunction::Execute(RelationshipType* type)
-{
-    logoutf("execute, Type: RelationshipType, Type Name: %s", type->GetName().c_str());
-};
-
-void EntityFunction::Execute(EntityInstance* inst)
-{
-    logoutf("execute, Type: EntityInstance, Type Name: %s", inst->GetType()->GetName().c_str());
-};
-
-void EntityFunction::Execute(RelationshipInstance* inst)
-{
-    logoutf("execute, Type: RelationshipInstance, Type Name: %s", inst->GetType()->GetName().c_str());
-};
-*/
-
-void EntityFunction::operator()()
-{
-    Execute();
 }
 
-void EntityFunction::operator()(TypeBase* type)
+EntityFunction::~EntityFunction()
 {
-    Execute(type);
 }
 
-void EntityFunction::operator()(EntityType* type)
+std::string EntityFunction::GetName()
 {
-    Execute(type);
+    return name;
 }
 
-void EntityFunction::operator()(RelationshipType* type)
-{
-    Execute(type);
-}
+// Default
+void EntityFunction::Execute(TimeStep time_step) {}
+void EntityFunction::Execute(TimeStep time_step, EntityType* type) {}
+void EntityFunction::Execute(TimeStep time_step, EntityType* type, EntityInstance* inst) {}
+void EntityFunction::Execute(TimeStep time_step, EntityInstance* inst) {}
+void EntityFunction::Execute(TimeStep time_step, EntityInstance* inst, RelationshipType* rel_type) {}
+void EntityFunction::Execute(TimeStep time_step, EntityInstance* inst, RelationshipInstance* rel_inst) {}
+void EntityFunction::Execute(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2) {}
+void EntityFunction::Execute(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipType* rel_type) {}
+void EntityFunction::Execute(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipInstance* rel_inst) {}
+void EntityFunction::Execute(TimeStep time_step, RelationshipType* type) {}
+void EntityFunction::Execute(TimeStep time_step, RelationshipType* type, RelationshipInstance* inst) {}
+void EntityFunction::Execute(TimeStep time_step, RelationshipInstance* inst) {}
 
-void EntityFunction::operator()(EntityInstance* inst)
-{
-    Execute(inst);
-}
-
-void EntityFunction::operator()(RelationshipInstance* inst)
-{
-    Execute(inst);
-}
-
-void FunctionRefPtr::operator()()
-{
-    get()->Execute();
-}
-
-void FunctionRefPtr::operator()(TypeBase* type)
-{
-    get()->Execute(type);
-}
-
-void FunctionRefPtr::operator()(EntityType* type)
-{
-    get()->Execute(type);
-}
-
-void FunctionRefPtr::operator()(RelationshipType* type)
-{
-    get()->Execute(type);
-}
-
-void FunctionRefPtr::operator()(EntityInstance* inst)
-{
-    get()->Execute(inst);
-}
-
-void FunctionRefPtr::operator()(RelationshipInstance* inst)
-{
-    get()->Execute(inst);
-}
+void EntityFunction::operator()(TimeStep time_step) { Execute(time_step); }
+void EntityFunction::operator()(TimeStep time_step, EntityType* type) { Execute(time_step, type); }
+void EntityFunction::operator()(TimeStep time_step, EntityType* type, EntityInstance* inst) { Execute(time_step, type, inst); }
+void EntityFunction::operator()(TimeStep time_step, EntityInstance* inst) { Execute(time_step, inst); }
+void EntityFunction::operator()(TimeStep time_step, EntityInstance* inst, RelationshipType* rel_type) { Execute(time_step, inst, rel_type); }
+void EntityFunction::operator()(TimeStep time_step, EntityInstance* inst, RelationshipInstance* rel_inst) { Execute(time_step, inst, rel_inst); }
+void EntityFunction::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2) { Execute(time_step, inst_1, inst_2); }
+void EntityFunction::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipType* rel_type) { Execute(time_step, inst_1, inst_2, rel_type); }
+void EntityFunction::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipInstance* rel_inst) { Execute(time_step, inst_1, inst_2, rel_inst); }
+void EntityFunction::operator()(TimeStep time_step, RelationshipType* type) { Execute(time_step, type); }
+void EntityFunction::operator()(TimeStep time_step, RelationshipType* type, RelationshipInstance* inst) { Execute(time_step, type, inst); }
+void EntityFunction::operator()(TimeStep time_step, RelationshipInstance* inst) { Execute(time_step, inst); }

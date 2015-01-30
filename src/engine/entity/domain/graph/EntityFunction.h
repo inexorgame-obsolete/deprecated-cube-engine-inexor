@@ -9,8 +9,8 @@
 #define SRC_ENGINE_ENTITY_ENTITYFUNCTION_H_
 
 #include "../../EntitySystemBase.h"
+#include "../TimeStep.h"
 
-class TypeBase;
 class EntityType;
 class RelationshipType;
 class EntityInstance;
@@ -19,69 +19,42 @@ class RelationshipInstance;
 class EntityFunction
 {
     public:
-        EntityFunction(std::string name) : name(name) {};
-        virtual ~EntityFunction() {};
+        EntityFunction(std::string name);
+        virtual ~EntityFunction();
 
-        // The Execute methods are not implemented. Sub classes can implement
-        // whatever they want.
-        void Execute() {};
-        void Execute(TypeBase* type) {};
-        void Execute(EntityType* type) {};
-        void Execute(EntityType* type, EntityInstance* inst) {};
-        void Execute(RelationshipType* type) {};
-        void Execute(EntityInstance* inst) {};
-        void Execute(EntityInstance* inst, int elapsed_time) {};
-        void Execute(EntityInstance* inst, float time_factor) {};
-        void Execute(RelationshipInstance* inst) {};
-        void Execute(RelationshipInstance* inst, int elapsed_time) {};
-        void Execute(RelationshipInstance* inst, float time_factor) {};
-        void Execute(EntityInstance* entity_instance, RelationshipInstance* relationship_instance) {};
-        void Execute(EntityInstance* entity_instance_1, EntityInstance* entity_instance_2) {};
-        void Execute(EntityInstance* entity_instance_1, EntityInstance* entity_instance_2, int elapsed_time) {};
-        void Execute(EntityInstance* entity_instance_1, EntityInstance* entity_instance_2, float time_factor) {};
-        void Execute(EntityInstance* entity_instance_1, EntityInstance* entity_instance_2, EntityInstance* entity_instance_3) {};
-        void Execute(EntityInstance* entity_instance_1, EntityInstance* entity_instance_2, RelationshipInstance* relationship_instance) {};
+        std::string GetName();
 
-        std::string GetName() { return name; };
+        virtual void Execute(TimeStep time_step);
+        virtual void Execute(TimeStep time_step, EntityType* type);
+        virtual void Execute(TimeStep time_step, EntityType* type, EntityInstance* inst);
+        virtual void Execute(TimeStep time_step, EntityInstance* inst);
+        virtual void Execute(TimeStep time_step, EntityInstance* inst, RelationshipType* rel_type);
+        virtual void Execute(TimeStep time_step, EntityInstance* inst, RelationshipInstance* rel_inst);
+        virtual void Execute(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2);
+        virtual void Execute(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipType* rel_type);
+        virtual void Execute(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipInstance* rel_inst);
+        virtual void Execute(TimeStep time_step, RelationshipType* type);
+        virtual void Execute(TimeStep time_step, RelationshipType* type, RelationshipInstance* inst);
+        virtual void Execute(TimeStep time_step, RelationshipInstance* inst);
 
-        void operator()();
-        void operator()(TypeBase* type);
-        void operator()(EntityType* type);
-        void operator()(RelationshipType* type);
-        void operator()(EntityInstance* inst);
-        void operator()(RelationshipInstance* inst);
+        void operator()(TimeStep time_step);
+        void operator()(TimeStep time_step, EntityType* type);
+        void operator()(TimeStep time_step, EntityType* type, EntityInstance* inst);
+        void operator()(TimeStep time_step, EntityInstance* inst);
+        void operator()(TimeStep time_step, EntityInstance* inst, RelationshipType* rel_type);
+        void operator()(TimeStep time_step, EntityInstance* inst, RelationshipInstance* rel_inst);
+        void operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2);
+        void operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipType* rel_type);
+        void operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipInstance* rel_inst);
+        void operator()(TimeStep time_step, RelationshipType* type);
+        void operator()(TimeStep time_step, RelationshipType* type, RelationshipInstance* inst);
+        void operator()(TimeStep time_step, RelationshipInstance* inst);
 
     private:
         std::string name;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(EntityFunction);
-
-};
-
-class FunctionRefPtr : public CefRefPtr<EntityFunction> {
-    public:
-        typedef CefRefPtr<EntityFunction> parent;
-
-        FunctionRefPtr() : parent() {
-        }
-
-        FunctionRefPtr(EntityFunction* p) : parent(p) {
-        }
-
-        FunctionRefPtr(const CefRefPtr<EntityFunction>& r) : parent(r) {
-        }
-
-        template <typename U>
-        FunctionRefPtr(const CefRefPtr<U>& r) : parent(r) {
-        }
-
-        void operator()();
-        void operator()(TypeBase* type);
-        void operator()(EntityType* type);
-        void operator()(RelationshipType* type);
-        void operator()(EntityInstance* inst);
-        void operator()(RelationshipInstance* inst);
 
 };
 

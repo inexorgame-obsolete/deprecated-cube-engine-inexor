@@ -9,7 +9,9 @@
 #define SRC_ENGINE_ENTITY_DOMAIN_ATTRIBUTEBASE_H_
 
 #include "../EntitySystemBase.h"
-#include "graph/EntityAttribute.h"
+
+class AttributeRefPtr;
+class FunctionRefPtr;
 
 class AttributeBase
 {
@@ -20,58 +22,26 @@ class AttributeBase
         AttributeRefPtr operator[](std::string key) const;
         AttributeRefPtr & operator[](std::string key);
 
-        void AddAttribute(std::string key, AttributeRefPtr attribute) {
-            attribute.get()->name = key;
-            attributes[key] = attribute;
-        }
+        void AddAttribute(std::string key, AttributeRefPtr attribute);
+        void AddAttribute(std::string key, bool value);
+        void AddAttribute(std::string key, int value);
+        void AddAttribute(std::string key, float value);
+        void AddAttribute(std::string key, double value);
+        void AddAttribute(std::string key, std::string value);
+        void AddAttribute(std::string key, FunctionRefPtr action);
 
-        void AddAttribute(std::string key, bool value) {
-            attributes[key] = value;
-            attributes[key]->type = value;
-            attributes[key]->name = key;
-        }
-
-        void AddAttribute(std::string key, int value) {
-            attributes[key] = value;
-            attributes[key]->type = ENTATTR_INT;
-            attributes[key]->name = key;
-        }
-
-        void AddAttribute(std::string key, float value) {
-            attributes[key] = value;
-            attributes[key]->type = ENTATTR_FLOAT;
-            attributes[key]->name = key;
-        }
-
-        void AddAttribute(std::string key, double value) {
-            attributes[key] = value;
-            attributes[key]->type = ENTATTR_DOUBLE;
-            attributes[key]->name = key;
-        }
-
-        void AddAttribute(std::string key, std::string value) {
-            attributes[key] = value;
-            attributes[key]->type = ENTATTR_STRING;
-            attributes[key]->name = key;
-        }
-
-        void AddAttribute(std::string key, FunctionRefPtr action) {
-            attributes[key] = action;
-            attributes[key]->type = ENTATTR_FUNCTION;
-            attributes[key]->name = key;
-        }
-
-        AttributeRefPtr GetAttribute(std::string key) {
-            return attributes[key];
-        }
+        AttributeRefPtr GetAttribute(std::string key);
+        void SetAttribute(std::string key, AttributeRefPtr attributeRefPtr);
 
     protected:
 
         /**
          * The attributes of this type.
+         * TODO: std::unordered_map (C++11)
          */
         std::map<std::string, AttributeRefPtr> attributes;
 
+    private:
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(AttributeBase);
 };

@@ -10,3 +10,7 @@
 EntityType::EntityType(std::string name, bool persist, bool synchronize) : TypeBase(name, persist, synchronize)
 {
 }
+
+EntityType::EntityType(std::string name, bool persist, bool synchronize, TypeRefPtr<EntityType> parent) : TypeBase(name, persist, synchronize), parent(parent)
+{
+}

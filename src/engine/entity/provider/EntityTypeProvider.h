@@ -9,6 +9,7 @@
 #define SRC_ENGINE_ENTITY_PROVIDER_ENTITYTYPEPROVIDER_H_
 
 #include "../domain/TypeBase.h"
+#include "../domain/TypeRefPtr.h"
 
 class EntityTypeProvider
 {

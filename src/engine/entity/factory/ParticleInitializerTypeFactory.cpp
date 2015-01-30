@@ -10,7 +10,9 @@
 TypeRefPtr<EntityType> ParticleInitializerTypeFactory::Create(std::string name_suffix)
 {
     std::string entity_type_name = entity_type_name_prefix + name_suffix;
-    TypeRefPtr<EntityType> particle_initializer_type = entity_type_manager->Create(entity_type_name, true, true);
+    // The parent type is the generic initializer type
+    TypeRefPtr<EntityType> parent_initializer_type = entity_type_manager->Get(ENTTYPE_PARTICLE_INITIALIZER);
+    TypeRefPtr<EntityType> particle_initializer_type = entity_type_manager->Create(entity_type_name, true, true, parent_initializer_type);
     particle_initializer_type["name_suffix"] = name_suffix;
     return particle_initializer_type;
 }
