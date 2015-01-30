@@ -28,6 +28,8 @@ int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1;
 int initing = NOT_INITING;
 
 CefRefPtr<InexorCefApp> cef_app;
+CefRefPtr<EntitySystem> entity_system;
+CefRefPtr<ParticleSubsystem> particle_subsystem;
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // game exit
@@ -36,6 +38,7 @@ CefRefPtr<InexorCefApp> cef_app;
 // cleans up game memory and SDL at exit
 void cleanup()
 {
+    entity_system->Cleanup();
     recorder::stop();
     cleanupserver();
     if(screen) SDL_SetWindowGrab(screen, SDL_FALSE);
@@ -759,6 +762,7 @@ void resetgl()
     extern void cleanupdepthfx();
     extern void cleanupshaders();
     extern void cleanupgl();
+    entity_system->Reset();
     recorder::cleanup();
     cleanupva();
     cleanupparticles();
@@ -1348,6 +1352,10 @@ int main(int argc, char **argv)
     inbetweenframes = true;
     renderbackground("initializing...");
 
+    logoutf("init: entity system");
+    entity_system = new EntitySystem();
+    particle_subsystem = entity_system->GetSubsystem<ParticleSubsystem>();
+
     logoutf("init: gl: effects");
     loadshaders();
     particleinit();
@@ -1359,8 +1367,6 @@ int main(int argc, char **argv)
 
     logoutf("init: sound");
     initsound();
-
-    EntitySystem e;
 
     logoutf("init: cfg");
     execfile("config/keymap.cfg");
@@ -1447,6 +1453,7 @@ int main(int argc, char **argv)
         // miscellaneous general game effects
         recomputecamera();
         updateparticles();
+        entity_system->Update();
         updatesounds();
 
         // cef message loop iteration
