@@ -9,6 +9,7 @@
 #define SRC_ENGINE_ENTITY_FACTORY_PARTICLETYPEFACTORY_H_
 
 #include "EntityTypeFactory.h"
+#include "../domain/TypeRefPtr.h"
 #include "../domain/graph/EntityFunction.h"
 #include "../domain/graph/EntityType.h"
 #include "../domain/graph/RelationshipType.h"

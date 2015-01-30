@@ -15,14 +15,18 @@ VelocityTransformation::~VelocityTransformation()
 {
 }
 
-void VelocityTransformation::Execute(EntityInstance* particle, float time_factor)
+void VelocityTransformation::Execute(TimeStep time_step, EntityInstance* particle)
 {
 	// Store last position
-    particle["lx"] = particle["x"];
-    particle["ly"] = particle["y"];
-    particle["lz"] = particle["z"];
+    // EntityInstance i = (*particle);
+    (*particle)["lx"] = (*particle)["x"];
+    (*particle)["ly"] = (*particle)["y"];
+    (*particle)["lz"] = (*particle)["z"];
     // Add velocity vector
-    particle["x"] += particle["vx"] * time_factor;
-    particle["y"] += particle["vy"] * time_factor;
-    particle["z"] += particle["vz"] * time_factor;
+    (*particle)["x"]->doubleVal = (*particle)["x"]->doubleVal + (*particle)["vx"]->doubleVal * time_step.time_factor;
+    (*particle)["y"]->doubleVal = (*particle)["y"]->doubleVal + (*particle)["vy"]->doubleVal * time_step.time_factor;
+    (*particle)["z"]->doubleVal = (*particle)["z"]->doubleVal + (*particle)["vz"]->doubleVal * time_step.time_factor;
+
+    logoutf("VelocityTransformation::Execute type: %d result: %2.2f += %2.2f * %2.2f", (*particle)["x"]->type, (*particle)["x"]->doubleVal, (*particle)["vx"]->doubleVal, time_step.time_factor);
+
 }

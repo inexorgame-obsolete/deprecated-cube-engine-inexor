@@ -8,8 +8,10 @@
 #ifndef SRC_ENGINE_ENTITY_ENTITYINSTANCEMANAGER_H_
 #define SRC_ENGINE_ENTITY_ENTITYINSTANCEMANAGER_H_
 
-#include "EntityTypeManager.h"
 #include "../EntitySystemBase.h"
+#include "EntityTypeManager.h"
+#include "../domain/InstanceRefPtr.h"
+#include "../domain/TypeRefPtr.h"
 #include "../domain/graph/EntityInstance.h"
 
 /**
