@@ -31,6 +31,10 @@ TeleportSubsystem::TeleportSubsystem(
 
 }
 
+TeleportSubsystem::~TeleportSubsystem()
+{
+}
+
 InstanceRefPtr<EntityInstance> TeleportSubsystem::CreateTeleport(double x, double y, double z)
 {
     TypeRefPtr<EntityType> entity_type = entity_type_manager->Get(ENTTYPE_TELEPORT);

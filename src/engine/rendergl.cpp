@@ -4,9 +4,12 @@
 #include "ui/cefapp.h"
 #include "include/cef_browser.h"
 #include "include/wrapper/cef_helpers.h"
+#include "engine/entity/subsystem/ParticleSubsystem.h"
 
 bool hasVBO = false, hasDRE = false, hasOQ = false, hasTR = false, hasFBO = false, hasDS = false, hasTF = false, hasBE = false, hasBC = false, hasCM = false, hasNP2 = false, hasTC = false, hasS3TC = false, hasFXT1 = false, hasTE = false, hasMT = false, hasD3 = false, hasAF = false, hasVP2 = false, hasVP3 = false, hasPP = false, hasMDA = false, hasTE3 = false, hasTE4 = false, hasVP = false, hasFP = false, hasGLSL = false, hasGM = false, hasNVFB = false, hasSGIDT = false, hasSGISH = false, hasDT = false, hasSH = false, hasNVPCF = false, hasRN = false, hasPBO = false, hasFBB = false, hasUBO = false, hasBUE = false, hasMBR = false, hasFC = false, hasTEX = false;
 int hasstencil = 0;
+
+extern CefRefPtr<ParticleSubsystem> particle_subsystem;
 
 VAR(renderpath, 1, 0, 0);
 VAR(glversion, 1, 0, 0);
@@ -66,6 +69,10 @@ PFNGLGENERATEMIPMAPEXTPROC          glGenerateMipmap_          = NULL;
 
 // GL_EXT_framebuffer_blit
 PFNGLBLITFRAMEBUFFEREXTPROC         glBlitFramebuffer_         = NULL;
+
+// GL_ARB_point_parameters
+PFNGLPOINTPARAMETERFARBPROC glPointParameterfARB_ = NULL;
+PFNGLPOINTPARAMETERFVARBPROC glPointParameterfvARB_ = NULL;
 
 // OpenGL 2.0: GL_ARB_shading_language_100, GL_ARB_shader_objects, GL_ARB_fragment_shader, GL_ARB_vertex_shader
 #ifndef __APPLE__
@@ -357,6 +364,13 @@ void gl_checkextensions()
         }
     }
     else conoutf(CON_WARN, "WARNING: No framebuffer object support. (reflective water may be slow)");
+
+    if(hasext(exts, "GL_ARB_point_parameters"))
+    {
+        glPointParameterfARB_ = (PFNGLPOINTPARAMETERFARBPROC) getprocaddress("glPointParameterfARB");
+        glPointParameterfvARB_ = (PFNGLPOINTPARAMETERFVARBPROC) getprocaddress("glPointParameterfvARB");
+    }
+    else conoutf(CON_WARN, "WARNING: No point sprite support.");
 
     if(hasext(exts, "GL_ARB_occlusion_query"))
     {
@@ -1430,6 +1444,8 @@ void drawglare()
     renderwater();
     rendermaterials();
     renderalphageom();
+    particle_subsystem->RenderFaces();
+    particle_subsystem->RenderParticles();
     renderparticles();
 
     glFogf(GL_FOG_START, oldfogstart);
@@ -1575,6 +1591,8 @@ void drawreflection(float z, bool refract, int fogdepth, const bvec &col)
     if(refracting) rendergrass();
     rendermaterials();
     renderalphageom(fogging);
+    particle_subsystem->RenderFaces();
+    particle_subsystem->RenderParticles();
     renderparticles();
 
     if(fading) glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
@@ -2098,6 +2116,12 @@ void gl_drawframe()
 
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+    // TODO:
+    // particle_subsystem->RenderFaces();
+    // particle_subsystem->RenderParticles();
+
+    if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
     renderwater();
     rendergrass();
 
@@ -2105,6 +2129,10 @@ void gl_drawframe()
     renderalphageom();
 
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    // TODO:
+    particle_subsystem->RenderFaces();
+    particle_subsystem->RenderParticles();
 
     renderparticles(true);
 
