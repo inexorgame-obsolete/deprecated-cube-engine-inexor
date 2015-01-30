@@ -45,6 +45,20 @@ ParticleSubsystem::ParticleSubsystem(
     entity_type_manager->RegisterFactory(particle_modifier_type_factory);
 }
 
+ParticleSubsystem::~ParticleSubsystem()
+{
+}
+
+void ParticleSubsystem::RenderFaces()
+{
+    // TODO: Implement
+}
+
+void ParticleSubsystem::RenderParticles()
+{
+    // TODO: Implement
+}
+
 TypeRefPtr<EntityType> ParticleSubsystem::CreateParticleType(std::string particle_type_name)
 {
     return particle_type_factory->Create(particle_type_name);
