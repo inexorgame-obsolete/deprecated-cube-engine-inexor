@@ -7,26 +7,26 @@ before_install:
   - sudo add-apt-repository -y "deb http://ppa.launchpad.net/zoogie/sdl2-snapshots/ubuntu precise main"
   - sudo apt-add-repository -y "deb http://ppa.launchpad.net/boost-latest/ppa/ubuntu precise main"
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+  - echo -e "\ndeb http://archive.ubuntu.com/ubuntu utopic "{main,multiverse,universe,restricted} | sudo tee -a /etc/apt/sources.list
   - sudo apt-get update
-  - sudo apt-get -y install gcc-4.9 g++-4.9 clang-3.5 mingw32 build-essential
+  - sudo apt-get -y install gcc-4.9 g++-4.9 clang-3.5 build-essential
+  - sudo apt-get -y -t utopic install mingw-w64
   - (cd /tmp; git clone https://github.com/chriskohlhoff/asio.git; cd asio; git checkout asio-1-10-4; sudo cp -vr asio/include/asio* /usr/include; cd -)
   - sudo apt-get -y install libboost-regex1.55-dev libboost-system1.55-dev
   - sudo apt-get -y install zlib1g-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libenet-dev libprotobuf-dev protobuf-compiler
 
 script:
-  - (mkdir cmakebuild && cd cmakebuild && cmake $CMAKE_FLAGS .. && make -k  -j5 install && cd .. && rm -rf cmakebuild)
+  - (mkdir cmakebuild && cd cmakebuild && cmake $CMAKE_FLAGS .. && make -k -j6 install && cd .. && rm -rf cmakebuild)
 
 env:
   global:
   - secure: UUtdYLhd9+cY+bMrcRvvtjmsQBqM5L9zgzyLeQZLMmmWbHwLsfpQask9A8eD1oc1K1o0tYmK+Qk1flxNTbnUtlryPNgJxJ95a/TwLl1P9yN6plMleNbuwMs5dyS9VnmcK3LzDFuoje/9rtX2seNR2PW2EJSvPz20ENaT693Kfa8=
-  - secure: G8rRE17KDx83crRLQSEkIyvMbXlbpKDvIYoKE+y9Bg3qu79tsB/RrNdo6OGHx4x3KhBGpuo4NdN/4FAGS599P4W+KN3kNr9VFSCMJhJK59+KkYfGq2rX1oGDhB4B1xjVk0tj6bFIJ333hVLEYFviIKYxRSZfnKa0RmgBJZbvMfs= 
-  
+  - secure: G8rRE17KDx83crRLQSEkIyvMbXlbpKDvIYoKE+y9Bg3qu79tsB/RrNdo6OGHx4x3KhBGpuo4NdN/4FAGS599P4W+KN3kNr9VFSCMJhJK59+KkYfGq2rX1oGDhB4B1xjVk0tj6bFIJ333hVLEYFviIKYxRSZfnKa0RmgBJZbvMfs=
+
   matrix:
   - CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=g++-4.9 -DCMAKE_C_COMPILER=gcc-4.9"
-  - CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=g++-4.9 -DCMAKE_C_COMPILER=gcc-4.9 -DRELEASE_BUILD=1"
   - CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=clang++-3.5 -DCMAKE_C_COMPILER=clang-3.5"
-  - CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=clang++-3.5 -DCMAKE_C_COMPILER=clang-3.5 -DRELEASE_BUILD=1"
-  - CMAKE_FLAGS="-DCMAKE_TOOLCHAIN_FILE=../src/platform_windows/linux-toolchain-mingw.cmake -DMINGW_TYPE=classic"
-  - CMAKE_FLAGS="-DCMAKE_TOOLCHAIN_FILE=../src/platform_windows/linux-toolchain-mingw.cmake -DRELEASE_BUILD=1  -DMINGW_TYPE=classic"
+  - CMAKE_FLAGS="-DCMAKE_TOOLCHAIN_FILE=../src/platform_windows/linux-toolchain-mingw.cmake -DMINGW_TYPE=i686"
+  - CMAKE_FLAGS="-DCMAKE_TOOLCHAIN_FILE=../src/platform_windows/linux-toolchain-mingw.cmake -DMINGW_TYPE=x86_64"
 
 after_success: bash ./tool/nightly-build.sh

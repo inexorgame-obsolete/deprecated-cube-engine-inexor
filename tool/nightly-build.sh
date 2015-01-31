@@ -3,10 +3,6 @@ set -ev
 
 echo "branch: ${TRAVIS_BRANCH}, Job No: ${TRAVIS_JOB_NUMBER}" #e.g. "branch: master, Job No: 251.4"
 
-if [[ ${TRAVIS_JOB_NUMBER} != *1 && ${TRAVIS_JOB_NUMBER} != *5 ]]; then #just deploy one build for windows and one for linux
-    exit 0 #do not display as failure
-fi
-
 cd $TRAVIS_BUILD_DIR
 
 export BUILD_NAME="$(echo "${TRAVIS_BRANCH}-${TRAVIS_JOB_NUMBER}" | sed 's#/#-#')-$([[ ${TRAVIS_JOB_NUMBER} != *5 ]] && echo linux || echo windows)"

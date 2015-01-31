@@ -64,9 +64,12 @@ find_library(PROTOBUF_LIBRARIES protobuf)
 find_PATH(PROTOBUF_INCLUDE_DIRS google/protobuf/service.h)
 
 # TODO: This should go inside rpc/
+if (NOT DEFINED PROTOC_EXE)
+  set(PROTOC_EXE "protoc")
+endif()
 add_custom_command(
   OUTPUT rpc/inexor_service.pb.h rpc/inexor_service.pb.cc
-  COMMAND protoc --proto_path=${CMAKE_CURRENT_SOURCE_DIR} --cpp_out=${CMAKE_BINARY_DIR}/src/ ${CMAKE_CURRENT_SOURCE_DIR}/rpc/inexor_service.proto
+  COMMAND ${PROTOC_EXE} --proto_path=${CMAKE_CURRENT_SOURCE_DIR} --cpp_out=${CMAKE_BINARY_DIR}/src/ ${CMAKE_CURRENT_SOURCE_DIR}/rpc/inexor_service.proto
   DEPENDS rpc/inexor_service.proto
 )
 add_custom_target(inexor_rpc_protobuf DEPENDS

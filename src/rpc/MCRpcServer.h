@@ -59,7 +59,7 @@ namespace rpc {
      *
      * @return The number of calls processed.
      */
-    uint ProcessAllCalls();
+    unsigned int ProcessAllCalls();
 
     /**
      * Receive one call if available and execute the

@@ -1,6 +1,6 @@
 [submodule "src/platform_windows"]
 	path = src/platform_windows
-	url = https://github.com/Theintercooler/Platform-Windows.git
+	url = https://github.com/inexor-game/platform_windows.git
 	branch = master
 [submodule "src/libraries/enet"]
 	path = src/libraries/enet
