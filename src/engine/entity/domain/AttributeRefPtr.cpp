@@ -20,6 +20,7 @@ AttributeRefPtr::AttributeRefPtr(EntityAttribute* p) : parent(p)
     attr->doubleVal = p->doubleVal;
     attr->stringVal = p->stringVal;
     attr->functionVal = p->functionVal;
+    attr->initialized = true;
 }
 
 AttributeRefPtr::AttributeRefPtr(const CefRefPtr<EntityAttribute>& r) : parent(r)
@@ -32,6 +33,7 @@ AttributeRefPtr::AttributeRefPtr(const CefRefPtr<EntityAttribute>& r) : parent(r
     attr->doubleVal = r->doubleVal;
     attr->stringVal = r->stringVal;
     attr->functionVal = r->functionVal;
+    attr->initialized = true;
 }
 
 /*

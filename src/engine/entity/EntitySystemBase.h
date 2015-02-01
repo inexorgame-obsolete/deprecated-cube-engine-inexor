@@ -11,6 +11,7 @@
 #include <string>
 #include <map>
 #include <list>
+#include <vector>
 
 #include "include/cef_base.h"
 #include "include/internal/cef_ptr.h"

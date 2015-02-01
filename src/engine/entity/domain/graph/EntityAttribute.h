@@ -85,6 +85,7 @@ class EntityAttribute
 
     // protected:
         int type;
+        bool initialized;
         std::string name;
         int intVal;
         float floatVal;

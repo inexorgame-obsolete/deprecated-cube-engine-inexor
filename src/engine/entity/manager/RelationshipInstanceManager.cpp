@@ -7,10 +7,20 @@
 
 #include "RelationshipInstanceManager.h"
 
+RelationshipInstanceManager::RelationshipInstanceManager(CefRefPtr<RelationshipTypeManager> relationship_type_manager) : relationship_type_manager(relationship_type_manager)
+{
+}
+
+RelationshipInstanceManager::~RelationshipInstanceManager()
+{
+}
+
 InstanceRefPtr<RelationshipInstance> RelationshipInstanceManager::CreateInstance(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<EntityInstance> start_node, InstanceRefPtr<EntityInstance> end_node)
 {
     InstanceRefPtr<RelationshipInstance> relationship_instance = new RelationshipInstance(relationship_type, start_node, end_node);
     relationship_instances[relationship_instance->GetUuid()] = relationship_instance;
+    start_node->AddOutgoingRelationship(relationship_type, relationship_instance);
+    end_node->AddIncomingRelationship(relationship_type, relationship_instance);
     return relationship_instance;
 }
 

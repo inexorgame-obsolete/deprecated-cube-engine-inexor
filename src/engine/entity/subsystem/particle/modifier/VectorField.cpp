@@ -21,6 +21,18 @@ VectorField::~VectorField()
 {
 }
 
+void VectorField::Before(TimeStep time_step, EntityInstance* modifier)
+{
+    parser.SetExpr(modifier->GetType()->GetAttribute("expression")->GetString());
+    // TODO: check for existence: x, y and z
+    // TODO: check for existence: expression
+}
+
+void VectorField::After(TimeStep time_step, EntityInstance* inst)
+{
+
+}
+
 // Without modifier, expression was set on function creation!
 void VectorField::Execute(TimeStep time_step, EntityInstance* particle)
 {
@@ -38,16 +50,18 @@ void VectorField::Execute(TimeStep time_step, EntityInstance* particle)
 	}
 }
 
-// The expression is taken from the modifier
+/**
+ * The base position is the modifiers position.
+ */
 void VectorField::Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle)
 {
     // TODO: check this -> use mu::value_type as EntityAttribute
 	ix = (*particle)["x"]->doubleVal - (*modifier)["x"]->doubleVal;
 	iy = (*particle)["y"]->doubleVal - (*modifier)["y"]->doubleVal;
 	iz = (*particle)["z"]->doubleVal - (*modifier)["z"]->doubleVal;
-    // TODO: check this -> add modfier position variables: mx, my, mz
+    // TODO: check this -> add modifier position variables: mx, my, mz
 	try {
-		parser.SetExpr(modifier->GetType()->GetAttribute("expression")->GetString());
+		// parser.SetExpr(modifier->GetType()->GetAttribute("expression")->GetString());
 		mu::value_type *v = parser.Eval(args);
         (*particle)["vx"]->doubleVal = (*particle)["vx"] + v[0] * time_step.time_factor;
         (*particle)["vy"]->doubleVal = (*particle)["vy"] + v[1] * time_step.time_factor;

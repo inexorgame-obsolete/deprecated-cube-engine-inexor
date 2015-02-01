@@ -66,17 +66,19 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/manager/RelationshipInstanceManager
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/manager/RelationshipTypeManager
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/EntityTypeProvider
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/ParticleProvider
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/Positional
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/RelationshipTypeProvider
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/TeleportEntityTypeProvider
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/SubsystemBase
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/TeleportSubsystem
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/ParticleSubsystem
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/ParticleSubsystem
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/emitter/PointEmitter
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/initializer/PulseInitializer
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/VelocityTransformation
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/VectorField
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/worker/ParticleWorker
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/worker/EmitterWorker
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/worker/ModifierWorker
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/grass
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/main
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/material

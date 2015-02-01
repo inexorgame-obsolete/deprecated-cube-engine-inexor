@@ -26,7 +26,9 @@ class InstanceRefPtr : public CefRefPtr<T> {
         AttributeRefPtr operator[](std::string key) const
         {
             AttributeRefPtr attribute = this->get()->GetAttribute(key);
-            attribute->name = key;
+            if (!attribute->initialized) {
+                attribute->name = key;
+            }
             return attribute;
         };
 
