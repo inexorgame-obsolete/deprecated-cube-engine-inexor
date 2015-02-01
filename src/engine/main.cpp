@@ -1177,6 +1177,9 @@ static bool findarg(int argc, char **argv, const char *str)
 #define main SDL_main
 #endif
 
+
+ICOMMAND(initrpc, "", (), logoutf("init: rpc"); inexor::rpc::rpc_init());
+
 int main(int argc, char **argv)
 {
     #ifdef WIN32
@@ -1276,9 +1279,6 @@ int main(int argc, char **argv)
 
         if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO|par)<0) fatal("Unable to initialize SDL: %s", SDL_GetError());
     }
-
-    logoutf("init: rpc");
-    inexor::rpc::rpc_init();
     
 	// initialise game components
     logoutf("init: net");
@@ -1340,7 +1340,7 @@ int main(int argc, char **argv)
     identflags |= IDF_PERSIST;
     
     initing = INIT_LOAD;
-    if(!execfile(game::savedconfig(), false)) 
+    if(!execfile(game::savedconfig(), false))
     {
         execfile(game::defaultconfig());
         writecfg(game::restoreconfig());
@@ -1426,7 +1426,7 @@ int main(int argc, char **argv)
         renderedframe = inbetweenframes = true;
     }
     
-    ASSERT(0);   
+    ASSERT(0);
     return EXIT_FAILURE;
 
     #if defined(WIN32) && !defined(_DEBUG) && !defined(__GNUC__)

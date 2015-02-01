@@ -1086,7 +1086,7 @@ bool setuplistenserver(bool dedicated)
 
 void initserver(bool listen, bool dedicated)
 {
-    if(dedicated) 
+    if(dedicated)
     {
 #ifdef WIN32
         setupwindow("Inexor server");
@@ -1094,9 +1094,6 @@ void initserver(bool listen, bool dedicated)
     }
     
     execfile("server-init.cfg", false);
-
-    if (dedicated)
-      inexor::rpc::rpc_init();
 
     if(listen) setuplistenserver(dedicated);
 
@@ -1113,18 +1110,22 @@ void initserver(bool listen, bool dedicated)
     }
 }
 
+#ifdef STANDALONE
+ICOMMAND(initrpc, "", (), logoutf("init: rpc"); inexor::rpc::rpc_init());
+#endif
+
 #ifndef STANDALONE
 void startlistenserver(int *usemaster)
 {
     if(serverhost) { conoutf(CON_ERROR, "listen server is already running"); return; }
 
     allowupdatemaster = *usemaster>0 ? 1 : 0;
- 
+
     if(!setuplistenserver(false)) return;
     
     updatemasterserver();
-   
-    conoutf("listen server started for %d clients%s", maxclients, allowupdatemaster ? " and listed with master server" : ""); 
+
+    conoutf("listen server started for %d clients%s", maxclients, allowupdatemaster ? " and listed with master server" : "");
 }
 COMMAND(startlistenserver, "i");
 

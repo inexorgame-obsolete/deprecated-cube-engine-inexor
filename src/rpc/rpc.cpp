@@ -44,6 +44,7 @@ namespace rpc {
   }
 
   void rpc_tick() {
+    if (!(ipc_socket && ipc_server)) return;
     ipc_socket->accept_all();
     ipc_server->ProcessAllCalls();
   }

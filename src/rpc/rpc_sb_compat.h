@@ -21,6 +21,7 @@ namespace rpc {
    * calls.
    *
    * Should be called once every frame or so.
+   * Does nothing if rpc_init has not been called.
    */
   extern void rpc_tick();
 
@@ -28,6 +29,7 @@ namespace rpc {
    * Shut down the RPC subsystem.
    *
    * Frees all the resources allocated by rpc_init()
+   * Does nothing if rpc_init has not been called.
    */
   extern void rpc_destroy();
 
