@@ -101,7 +101,7 @@ else()
     # code that it is counterproductive to show them. Get
     # rid of those warnings!
     set(BUILD_C_FLAGS "-fomit-frame-pointer -Wall -Wextra -fsigned-char")
-    set(BUILD_CXX_FLAGS "-std=c++11 -Wall -Wextra -Wno-unused-parameter")
+    set(BUILD_CXX_FLAGS "-std=gnu++11 -Wall -Wextra -Wno-unused-parameter")
     set(BUILD_DEBUG_FLAGS   "${BUILD_FLAGS} -O0 -g -D_DEBUG -DBUILD_DEBUG")
     set(BUILD_RELEASE_FLAGS "${BUILD_FLAGS} -O3 -DNDEBUG -DBUILD_NO_DEBUG")
 endif()
