@@ -10,9 +10,10 @@
 TypeBase::TypeBase(std::string name, bool persist, bool synchronize)
     : name(name),
       persist(persist),
-      synchronize(synchronize),
-      uuid("")
+      synchronize(synchronize)
 {
+    uuid::Uuid u = uuid::uuid1();
+    uuid = u.hex();
 }
 
 TypeBase::TypeBase(std::string name, bool persist, bool synchronize, std::string uuid)

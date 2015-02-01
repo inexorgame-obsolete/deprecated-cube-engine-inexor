@@ -23,19 +23,51 @@ class EntityInstance : public InstanceBase
         EntityInstance(TypeRefPtr<EntityType> type, std::string uuid);
         virtual ~EntityInstance();
 
-        // AttributeRefPtr operator[](std::string key) const;
-        // AttributeRefPtr & operator[](std::string key);
+        /**
+         * Returns the entity type for this entity instance.
+         */
+        TypeRefPtr<EntityType> GetType();
 
-        TypeRefPtr<EntityType> GetType() { return type; };
-
+        /**
+         * Adds an outgoing relationship. This instance is the start node for
+         * the created relation.
+         */
         void AddOutgoingRelationship(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<RelationshipInstance> relationship_instance);
+
+        /**
+         * Adds an incoming relationship. This instance is the end node for
+         * the created relation.
+         */
         void AddIncomingRelationship(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<RelationshipInstance> relationship_instance);
 
+        /**
+         * Returns all relationships (incoming and outgoing).
+         */
         std::list<InstanceRefPtr<RelationshipInstance> > GetAllRelationships();
+
+        /**
+         * Returns all relationships of the given relationship type.
+         */
         std::list<InstanceRefPtr<RelationshipInstance> > GetRelationshipsOfType(TypeRefPtr<RelationshipType> relationship_type);
+
+        /**
+         * Returns all outgoing relationships.
+         */
         std::list<InstanceRefPtr<RelationshipInstance> > GetAllOutgoingRelationships();
+
+        /**
+         * Returns all outgoing relationships of the given relationship type.
+         */
         std::list<InstanceRefPtr<RelationshipInstance> > GetAllOutgoingRelationshipsOfType(TypeRefPtr<RelationshipType> relationship_type);
+
+        /**
+         * Returns all incoming relationships.
+         */
         std::list<InstanceRefPtr<RelationshipInstance> > GetAllIncomingRelationships();
+
+        /**
+         * Returns all incoming relationships of the given relationship type.
+         */
         std::list<InstanceRefPtr<RelationshipInstance> > GetAllIncomingRelationshipsOfType(TypeRefPtr<RelationshipType> relationship_type);
 
     protected:

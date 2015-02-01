@@ -11,9 +11,14 @@
 #include "EntityInstance.h"
 #include "RelationshipInstance.h"
 
-EntityFunction::EntityFunction(std::string name) : name(name)
+EntityFunction::EntityFunction(std::string name) : name(name), signature(-1)
 {
+    // No signature
+}
 
+EntityFunction::EntityFunction(std::string name, int signature) : name(name), signature(signature)
+{
+    // Sets the signature of the entity function
 }
 
 EntityFunction::~EntityFunction()
@@ -25,7 +30,15 @@ std::string EntityFunction::GetName()
     return name;
 }
 
-// Default
+int EntityFunction::GetSignature()
+{
+    return signature;
+}
+
+void EntityFunction::Before(TimeStep time_step, EntityInstance* inst) {}
+void EntityFunction::After(TimeStep time_step, EntityInstance* inst) {}
+
+// Default: do nothing
 void EntityFunction::Execute(TimeStep time_step) {}
 void EntityFunction::Execute(TimeStep time_step, EntityType* type) {}
 void EntityFunction::Execute(TimeStep time_step, EntityType* type, EntityInstance* inst) {}
@@ -39,6 +52,7 @@ void EntityFunction::Execute(TimeStep time_step, RelationshipType* type) {}
 void EntityFunction::Execute(TimeStep time_step, RelationshipType* type, RelationshipInstance* inst) {}
 void EntityFunction::Execute(TimeStep time_step, RelationshipInstance* inst) {}
 
+// Calls the overwritten method, if there is any
 void EntityFunction::operator()(TimeStep time_step) { Execute(time_step); }
 void EntityFunction::operator()(TimeStep time_step, EntityType* type) { Execute(time_step, type); }
 void EntityFunction::operator()(TimeStep time_step, EntityType* type, EntityInstance* inst) { Execute(time_step, type, inst); }

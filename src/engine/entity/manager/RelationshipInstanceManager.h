@@ -18,8 +18,8 @@
 class RelationshipInstanceManager
 {
     public:
-        RelationshipInstanceManager(CefRefPtr<RelationshipTypeManager> relationship_type_manager) : relationship_type_manager(relationship_type_manager) {};
-        virtual ~RelationshipInstanceManager() {};
+        RelationshipInstanceManager(CefRefPtr<RelationshipTypeManager> relationship_type_manager);
+        virtual ~RelationshipInstanceManager();
 
         InstanceRefPtr<RelationshipInstance> CreateInstance(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<EntityInstance> start_node, InstanceRefPtr<EntityInstance> end_node);
         InstanceRefPtr<RelationshipInstance> CreateInstance(std::string relationship_type_name, InstanceRefPtr<EntityInstance> start_node, InstanceRefPtr<EntityInstance> end_node);

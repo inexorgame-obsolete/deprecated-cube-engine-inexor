@@ -19,6 +19,9 @@ class VectorField : public EntityFunction
         VectorField(std::string expression);
         virtual ~VectorField();
 
+        void Before(TimeStep time_step, EntityInstance* modifier);
+        void After(TimeStep time_step, EntityInstance* modifier);
+
         void Execute(TimeStep time_step, EntityInstance* particle);
         void Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle);
 

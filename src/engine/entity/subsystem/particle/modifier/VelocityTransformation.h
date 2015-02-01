@@ -18,7 +18,7 @@ class VelocityTransformation : public EntityFunction
         VelocityTransformation();
         virtual ~VelocityTransformation();
 
-        void Execute(TimeStep time_step, EntityInstance* particle);
+        void Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle);
 
     private:
         // Include the default reference counting implementation.

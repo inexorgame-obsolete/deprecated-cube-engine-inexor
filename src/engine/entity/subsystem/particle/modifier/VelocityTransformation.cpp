@@ -15,9 +15,11 @@ VelocityTransformation::~VelocityTransformation()
 {
 }
 
-void VelocityTransformation::Execute(TimeStep time_step, EntityInstance* particle)
+void VelocityTransformation::Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle)
 {
-	// Store last position
+    // TODO: too verbose (due to pointers instead of RefPtrs)
+
+    // Store last position
     // EntityInstance i = (*particle);
     (*particle)["lx"] = (*particle)["x"];
     (*particle)["ly"] = (*particle)["y"];
@@ -27,6 +29,7 @@ void VelocityTransformation::Execute(TimeStep time_step, EntityInstance* particl
     (*particle)["y"]->doubleVal = (*particle)["y"]->doubleVal + (*particle)["vy"]->doubleVal * time_step.time_factor;
     (*particle)["z"]->doubleVal = (*particle)["z"]->doubleVal + (*particle)["vz"]->doubleVal * time_step.time_factor;
 
-    logoutf("VelocityTransformation::Execute type: %d result: %2.2f += %2.2f * %2.2f", (*particle)["x"]->type, (*particle)["x"]->doubleVal, (*particle)["vx"]->doubleVal, time_step.time_factor);
+    // TODO: remove debug
+    // logoutf("VelocityTransformation::Execute type: %d result: %2.2f += %2.2f * %2.2f", (*particle)["x"]->type, (*particle)["x"]->doubleVal, (*particle)["vx"]->doubleVal, time_step.time_factor);
 
 }

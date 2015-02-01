@@ -36,6 +36,7 @@ class AttributeRefPtr : public CefRefPtr<EntityAttribute> {
             attr->doubleVal = r->doubleVal;
             attr->stringVal = r->stringVal;
             attr->functionVal = r->functionVal;
+            attr->initialized = true;
         }
 
         AttributeRefPtr(bool value);
