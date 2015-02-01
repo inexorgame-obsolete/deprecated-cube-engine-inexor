@@ -124,7 +124,7 @@ set_source_files_properties(
 
 set(CLIENT_SOURCES_NET
   ${CMAKE_CURRENT_SOURCE_DIR}/../net/MCHub
-  ${CMAKE_CURRENT_SOURCE_DIR}/../net/StreamChopper)
+  ${CMAKE_CURRENT_SOURCE_DIR}/../net/MCByteBuffer)
 
 set(CLIENT_HEADERS_FPSGAME
     ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/ai

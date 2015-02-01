@@ -1,4 +1,11 @@
+#include <algorithm>
+#include <cstddef>
+
+#include <iostream>
+
 #include <asio.hpp>
+
+#include "net/MCByteBuffer.h"
 
 #ifndef INEXOR_NET_IOSTREAM_MESSAGE_CONNECT_SOCKET_HEADER
 #define INEXOR_NET_IOSTREAM_MESSAGE_CONNECT_SOCKET_HEADER
@@ -6,42 +13,69 @@
 namespace inexor {
 namespace net {
 
-  // TODO: Write URL handlers
 
-  /**
-   * Client for a MCSocketServer.
-   *
-   * Generic template for opening ASIO socket based
-   * connections.
-   *
-   * The actual connection is maintained by the
-   * StreamChopper code.
-   * This class merely opens a connection as an ASIO
-   * iostream and passes that down to StreamChopper.
-   */
+  /// Client for a MCSocketServer.
+  ///
+  /// Generic template for opening ASIO socket based
+  /// connections.
+  ///
+  /// TODO: Write URL handlers
   template <typename protocol>
-  class MCSocket : public StreamChopper {
+  class MCSocket : public MCByteBuffer {
   protected:
+    typedef typename protocol::endpoint endpoint;
+    typedef typename protocol::socket   socket;
 
-    typedef
-      asio::basic_socket_iostream< protocol >
-      stream;
+    typedef asio::io_service service;
 
-    typedef
-      typename protocol::endpoint
-      endpoint;
+    bool own_srv = false;
+    service *srv;
 
-    stream s;
     endpoint e;
+    socket s;
 
   public:
+    /// Default constructor with special service.
+    /// Do something with socket()
+    MCSocket(service &srv_) : srv(&srv_), s(*srv) {}
+
+    /// Default constructor with fresh ASIO io service
+    /// Do something with socket()
+    MCSocket() : own_srv(true), srv(new service), s(*srv) {}
+
+    /// Initialize with endpoint arguments and a service.
     template<typename... T>
-    MCSocket(T... x) : StreamChopper(s) {
-      e = endpoint(x...);
-      s.connect(e);
+    MCSocket(service &srv_, T... x) :
+        srv(&srv_), e(x...), s(*srv, e) {}
+
+    /// Initialize with endpoint arguments and a fresh io
+    /// service.
+    template<typename... T>
+    MCSocket(T... x) : own_srv(true), srv(new service),
+        e(x...), s(*srv, e) {}
+
+    ~MCSocket() {
+      if (own_srv) delete srv;
     }
 
-    virtual ~MCSocket() {}
+    /// Get the endpoint attached to this
+    endpoint& Endpoint() { return e; }
+
+    /// Get the ASIO socket attached to this
+    socket& Socket() { return s; }
+
+    /// Get the ASIO io srvice of this
+    service* Service() { return srv; }
+
+    virtual size_t read(char *buf, size_t max) {
+      size_t n = std::min(s.available(), max);
+      if (n>0) s.read_some(asio::buffer(buf, n));
+      return n;
+    }
+
+    virtual void write(char *buf, size_t len) {
+      s.write_some(asio::buffer(buf,len));
+    }
   };
 
   /**

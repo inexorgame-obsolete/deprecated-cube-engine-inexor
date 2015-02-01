@@ -11,9 +11,8 @@
 #include <asio.hpp>
 
 #include "net/MessageConnect.h"
-#include "net/MCHub.h"
 #include "net/MCServer.h"
-#include "net/StreamChopper.h"
+#include "net/MCSocket.h"
 
 namespace inexor {
 namespace net {
@@ -28,42 +27,30 @@ namespace net {
   class MCSocketServer : public MCServer {
   protected:
 
-    typedef
-      asio::basic_socket_acceptor< protocol >
-      acceptor;
-    typedef
-      asio::basic_socket_iostream< protocol >
-      stream;
+    typedef asio::basic_socket_acceptor<protocol> acceptor;
     typedef typename protocol::endpoint endpoint;
     typedef asio::io_service service;
+    
+    typedef MCSocket<protocol> mcsoc;
 
     service srv;
     endpoint end;
     acceptor ack;
 
-    typedef std::list<stream> streamv;
-    typedef typename streamv::iterator streamitr;
-    std::list<stream> streams; // auto destruct
-
   protected:
     virtual MessageConnect* getNextStream() {
-      streamitr s = streams.emplace(streams.end());
       asio::error_code er;
+      mcsoc *s = new mcsoc(srv);
 
-      ack.accept(*s->rdbuf(), er);
+      ack.accept(s->Socket(), er);
       
-      if (er == asio::error::basic_errors::try_again) {
-        streams.erase(s);
+      if (er == asio::error::basic_errors::try_again)
         return NULL;
-      } else if (er) {
-        streams.erase(s);
-        throw asio::system_error(er,
-            "Can not accept connection");
-      }
+      else if (er)
+        throw asio::system_error(er, "Can not accept connection");
 
       std::cerr << "[INFO] New connection" << std::endl;
-      
-      return new StreamChopper(*s);
+      return s;
     }
 
   public:
