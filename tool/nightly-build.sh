@@ -5,10 +5,9 @@ echo "branch: ${TRAVIS_BRANCH}, Job No: ${TRAVIS_JOB_NUMBER}" #e.g. "branch: mas
 
 cd $TRAVIS_BUILD_DIR
 
-export BUILD_NAME="$(echo "${TRAVIS_BRANCH}-${TRAVIS_JOB_NUMBER}" | sed 's#/#-#g')-$([[ ${TRAVIS_JOB_NUMBER} != *5 ]] && echo linux || echo windows)"
-#e.g. master-251.5-10240128410510-linux
+export BUILD_NAME="$(echo "${TRAVIS_BRANCH}-${TRAVIS_JOB_NUMBER}" | sed 's#/#-#g')-${TARGET}"
 
-if [ "${TRAVIS_BRANCH}" == "master" ] 
+if [ "${TRAVIS_BRANCH}" == "master" ]
 then # the master-nightly-build has the data-folder included
     git clone --depth 1 https://github.com/inexor-game/data.git nightly
     rm -rf ./nightly/.git*
