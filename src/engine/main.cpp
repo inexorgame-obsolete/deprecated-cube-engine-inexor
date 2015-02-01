@@ -1359,6 +1359,7 @@ int main(int argc, char **argv)
     logoutf("init: entity system");
     entity_system = new EntitySystem();
     particle_subsystem = entity_system->GetSubsystem<ParticleSubsystem>();
+    entity_system->RunTests();
 
     logoutf("init: gl: effects");
     loadshaders();

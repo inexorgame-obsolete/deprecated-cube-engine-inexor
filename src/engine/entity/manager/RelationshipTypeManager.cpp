@@ -7,8 +7,23 @@
 
 #include "RelationshipTypeManager.h"
 #include "../provider/RelationshipTypeProvider.h"
+#include "../manager/EntityTypeManager.h"
 
-TypeRefPtr<RelationshipType> RelationshipTypeManager::Create(std::string name, TypeRefPtr<EntityType> startNodeType, TypeRefPtr<EntityType> endNodeType)
+RelationshipTypeManager::RelationshipTypeManager(CefRefPtr<EntityTypeManager> entity_type_manager) : entity_type_manager(entity_type_manager)
+{
+}
+
+RelationshipTypeManager::~RelationshipTypeManager()
+{
+}
+
+TypeRefPtr<RelationshipType> RelationshipTypeManager::Create(std::string name, TypeRefPtr<EntityType> startNodeTypeName, TypeRefPtr<EntityType> endNodeTypeName)
+{
+    // Create an relationship type that won't be persisted/synchronized
+    return Create(name, false, false, startNodeTypeName, endNodeTypeName);
+}
+
+TypeRefPtr<RelationshipType> RelationshipTypeManager::Create(std::string name, std::string startNodeType, std::string endNodeType)
 {
     // Create an relationship type that won't be persisted/synchronized
     return Create(name, false, false, startNodeType, endNodeType);
@@ -16,6 +31,15 @@ TypeRefPtr<RelationshipType> RelationshipTypeManager::Create(std::string name, T
 
 TypeRefPtr<RelationshipType> RelationshipTypeManager::Create(std::string name, bool persist, bool synchronize, TypeRefPtr<EntityType> startNodeType, TypeRefPtr<EntityType> endNodeType)
 {
+    TypeRefPtr<RelationshipType> relationship_type = new RelationshipType(name, persist, synchronize, startNodeType, endNodeType);
+    relationship_types[name] = relationship_type;
+    return relationship_type;
+}
+
+TypeRefPtr<RelationshipType> RelationshipTypeManager::Create(std::string name, bool persist, bool synchronize, std::string startNodeTypeName, std::string endNodeTypeName)
+{
+    TypeRefPtr<EntityType> startNodeType = entity_type_manager->Get(startNodeTypeName);
+    TypeRefPtr<EntityType> endNodeType = entity_type_manager->Get(endNodeTypeName);
     TypeRefPtr<RelationshipType> relationship_type = new RelationshipType(name, persist, synchronize, startNodeType, endNodeType);
     relationship_types[name] = relationship_type;
     return relationship_type;

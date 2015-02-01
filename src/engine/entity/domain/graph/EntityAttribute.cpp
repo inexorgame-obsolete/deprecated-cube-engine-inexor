@@ -7,14 +7,14 @@
 
 #include "EntityAttribute.h"
 
-EntityAttribute::EntityAttribute() : type(ENTATTR_NULL), name(""), intVal(0), floatVal(0.0f), doubleVal(0.0), stringVal(""), functionVal(0) { }
-EntityAttribute::EntityAttribute(bool value) : type(value), name(""), intVal(0), floatVal(0.0f), doubleVal(0.0), stringVal(""), functionVal(0) { }
-EntityAttribute::EntityAttribute(int value) : type(ENTATTR_INT), name(""), intVal(value), floatVal(0.0f), doubleVal(0.0), stringVal(""), functionVal(0) { }
-EntityAttribute::EntityAttribute(float value) : type(ENTATTR_FLOAT), name(""), intVal(0), floatVal(value), doubleVal(0.0), stringVal(""), functionVal(0) { }
-EntityAttribute::EntityAttribute(double value) : type(ENTATTR_DOUBLE), name(""), intVal(0), floatVal(0.0f), doubleVal(value), stringVal(""), functionVal(0) { }
-EntityAttribute::EntityAttribute(std::string value) : type(ENTATTR_STRING), name(""), intVal(0), floatVal(0.0f), doubleVal(0.0), stringVal(value), functionVal(0) { }
-EntityAttribute::EntityAttribute(FunctionRefPtr value) : type(ENTATTR_FUNCTION), name(""), intVal(0), floatVal(0.0f), doubleVal(0.0), stringVal(""), functionVal(value) { }
-EntityAttribute::EntityAttribute(FunctionRefPtr *value) : type(ENTATTR_FUNCTION), name(""), intVal(0), floatVal(0.0f), doubleVal(0.0), stringVal(""), functionVal(*value) { }
+EntityAttribute::EntityAttribute() : type(ENTATTR_NULL), initialized(false), name(""), intVal(0), floatVal(0.0f), doubleVal(0.0), stringVal(""), functionVal(0) { }
+EntityAttribute::EntityAttribute(bool value) : type(value), initialized(false), name(""), intVal(0), floatVal(0.0f), doubleVal(0.0), stringVal(""), functionVal(0) { }
+EntityAttribute::EntityAttribute(int value) : type(ENTATTR_INT), initialized(false), name(""), intVal(value), floatVal(0.0f), doubleVal(0.0), stringVal(""), functionVal(0) { }
+EntityAttribute::EntityAttribute(float value) : type(ENTATTR_FLOAT), initialized(false), name(""), intVal(0), floatVal(value), doubleVal(0.0), stringVal(""), functionVal(0) { }
+EntityAttribute::EntityAttribute(double value) : type(ENTATTR_DOUBLE), initialized(false), name(""), intVal(0), floatVal(0.0f), doubleVal(value), stringVal(""), functionVal(0) { }
+EntityAttribute::EntityAttribute(std::string value) : type(ENTATTR_STRING), initialized(false), name(""), intVal(0), floatVal(0.0f), doubleVal(0.0), stringVal(value), functionVal(0) { }
+EntityAttribute::EntityAttribute(FunctionRefPtr value) : type(ENTATTR_FUNCTION), initialized(false), name(""), intVal(0), floatVal(0.0f), doubleVal(0.0), stringVal(""), functionVal(value) { }
+EntityAttribute::EntityAttribute(FunctionRefPtr *value) : type(ENTATTR_FUNCTION), initialized(false), name(""), intVal(0), floatVal(0.0f), doubleVal(0.0), stringVal(""), functionVal(*value) { }
 EntityAttribute::~EntityAttribute() { }
 
 void EntityAttribute::SetType(int type)
@@ -111,6 +111,7 @@ EntityAttribute& EntityAttribute::operator=(const EntityAttribute &attribute) {
     doubleVal = attribute.doubleVal;
     stringVal = attribute.stringVal;
     functionVal = attribute.functionVal;
+    initialized = true;
     return *this;
 };
 

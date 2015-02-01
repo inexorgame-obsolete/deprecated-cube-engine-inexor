@@ -18,6 +18,11 @@ class EntityType : public TypeBase
         EntityType(std::string name, bool persist, bool synchronize, TypeRefPtr<EntityType> parent);
         virtual ~EntityType() {};
 
+        bool IsA(TypeRefPtr<EntityType> type);
+        bool IsA(std::string uuid);
+        bool IsExactlyA(TypeRefPtr<EntityType> type);
+        bool IsExactlyA(std::string uuid);
+
     private:
         TypeRefPtr<EntityType> parent;
 

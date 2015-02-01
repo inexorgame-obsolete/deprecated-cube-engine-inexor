@@ -11,10 +11,11 @@
 class TimeStep
 {
     public:
-        TimeStep(int elapsed_time, double time_factor, double time_unit);
+        TimeStep(int elapsed_millis, double time_factor, double time_unit);
+        TimeStep(int elapsed_millis, double time_unit);
         virtual ~TimeStep();
 
-        int elapsed_time;
+        int elapsed_millis;
         double time_factor;
         double time_unit;
 };

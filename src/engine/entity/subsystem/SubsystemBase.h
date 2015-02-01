@@ -9,6 +9,7 @@
 #define SRC_ENGINE_ENTITY_SUBSYSTEM_SUBSYSTEMBASE_H_
 
 #include "../EntitySystemBase.h"
+#include "../domain/TimeStep.h"
 #include "../manager/EntityTypeManager.h"
 #include "../manager/EntityInstanceManager.h"
 #include "../manager/RelationshipTypeManager.h"
@@ -29,6 +30,10 @@ class SubsystemBase
             CefRefPtr<RelationshipInstanceManager> relationship_instance_manager
         );
         virtual ~SubsystemBase() {};
+
+        virtual void Update(TimeStep time_step);
+        virtual void Cleanup();
+        virtual void Reset();
 
         std::string GetName() { return name; };
         void SetName(std::string) { this->name = name; };

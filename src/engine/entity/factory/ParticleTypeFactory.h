@@ -9,15 +9,13 @@
 #define SRC_ENGINE_ENTITY_FACTORY_PARTICLETYPEFACTORY_H_
 
 #include "EntityTypeFactory.h"
+#include "../subsystem/particle/ParticleModel.h"
 #include "../domain/TypeRefPtr.h"
 #include "../domain/graph/EntityFunction.h"
 #include "../domain/graph/EntityType.h"
 #include "../domain/graph/RelationshipType.h"
 #include "../manager/EntityTypeManager.h"
 #include "../manager/RelationshipTypeManager.h"
-
-#define PARTICLE_TYPE_FACTORY "particle_type_factory"
-#define ENTTYPE_PREFIX_PARTICLE_TYPE "particle_type_"
 
 class ParticleTypeFactory : public EntityTypeFactory
 {
@@ -26,6 +24,7 @@ class ParticleTypeFactory : public EntityTypeFactory
         virtual ~ParticleTypeFactory();
 
         TypeRefPtr<EntityType> Create(std::string name_suffix);
+        TypeRefPtr<EntityType> Create(std::string name_suffix, std::string renderer_instance_name);
 
     private:
         // Include the default reference counting implementation.

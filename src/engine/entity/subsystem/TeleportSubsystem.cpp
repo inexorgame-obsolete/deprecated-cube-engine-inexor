@@ -35,6 +35,19 @@ TeleportSubsystem::~TeleportSubsystem()
 {
 }
 
+void TeleportSubsystem::Update(TimeStep time_step)
+{
+    // logoutf("TeleportSubsystem::Update() elapsed_millis: %d time_factor: %2.3f time_unit: %4.1f", time_step.elapsed_millis, time_step.time_factor, time_step.time_unit);
+}
+
+void TeleportSubsystem::Cleanup()
+{
+}
+
+void TeleportSubsystem::Reset()
+{
+}
+
 InstanceRefPtr<EntityInstance> TeleportSubsystem::CreateTeleport(double x, double y, double z)
 {
     TypeRefPtr<EntityType> entity_type = entity_type_manager->Get(ENTTYPE_TELEPORT);

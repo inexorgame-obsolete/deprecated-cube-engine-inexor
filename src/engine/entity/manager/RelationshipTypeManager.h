@@ -13,15 +13,18 @@
 #include "../domain/graph/RelationshipType.h"
 
 class RelationshipTypeProvider;
+class EntityTypeManager;
 
 class RelationshipTypeManager
 {
     public:
-        RelationshipTypeManager() {};
-        virtual ~RelationshipTypeManager() {};
+        RelationshipTypeManager(CefRefPtr<EntityTypeManager> entity_type_manager);
+        virtual ~RelationshipTypeManager();
 
         TypeRefPtr<RelationshipType> Create(std::string name, TypeRefPtr<EntityType> startNodeType, TypeRefPtr<EntityType> endNodeType);
+        TypeRefPtr<RelationshipType> Create(std::string name, std::string startNodeTypeName, std::string endNodeTypeName);
         TypeRefPtr<RelationshipType> Create(std::string name, bool persist, bool synchronize, TypeRefPtr<EntityType> startNodeType, TypeRefPtr<EntityType> endNodeType);
+        TypeRefPtr<RelationshipType> Create(std::string name, bool persist, bool synchronize, std::string startNodeTypeName, std::string endNodeTypeName);
 
         void RegisterType(std::string relationship_type_name, TypeRefPtr<RelationshipType> relationship_type);
         void RegisterProvider(CefRefPtr<RelationshipTypeProvider> relationship_type_provider);
@@ -33,6 +36,9 @@ class RelationshipTypeManager
 
     private:
         std::map<std::string, TypeRefPtr<RelationshipType> > relationship_types;
+
+        // The entity type manager.
+        CefRefPtr<EntityTypeManager> entity_type_manager;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(RelationshipTypeManager);
