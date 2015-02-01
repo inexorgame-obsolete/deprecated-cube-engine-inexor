@@ -5,7 +5,7 @@ echo "branch: ${TRAVIS_BRANCH}, Job No: ${TRAVIS_JOB_NUMBER}" #e.g. "branch: mas
 
 cd $TRAVIS_BUILD_DIR
 
-export BUILD_NAME="$(echo "${TRAVIS_BRANCH}-${TRAVIS_JOB_NUMBER}" | sed 's#/#-#')-$([[ ${TRAVIS_JOB_NUMBER} != *5 ]] && echo linux || echo windows)"
+export BUILD_NAME="$(echo "${TRAVIS_BRANCH}-${TRAVIS_JOB_NUMBER}" | sed 's#/#-#g')-$([[ ${TRAVIS_JOB_NUMBER} != *5 ]] && echo linux || echo windows)"
 #e.g. master-251.5-10240128410510-linux
 
 if [ "${TRAVIS_BRANCH}" == "master" ] 
