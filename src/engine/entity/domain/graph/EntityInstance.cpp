@@ -20,17 +20,10 @@ EntityInstance::~EntityInstance()
 {
 }
 
-/*
-AttributeRefPtr EntityInstance::operator[](std::string key) const
+TypeRefPtr<EntityType> EntityInstance::GetType()
 {
-    return attributes[key];
+    return type;
 }
-
-AttributeRefPtr & EntityInstance::operator[](std::string key)
-{
-    return attributes[key];
-}
-*/
 
 void EntityInstance::AddOutgoingRelationship(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<RelationshipInstance> relationship_instance)
 {
@@ -61,7 +54,7 @@ std::list<InstanceRefPtr<RelationshipInstance> > EntityInstance::GetAllOutgoingR
 
 std::list<InstanceRefPtr<RelationshipInstance> > EntityInstance::GetAllOutgoingRelationshipsOfType(TypeRefPtr<RelationshipType> relationship_type)
 {
-    // TODO: implement
+    return outgoing[relationship_type];
 }
 
 std::list<InstanceRefPtr<RelationshipInstance> > EntityInstance::GetAllIncomingRelationships()
@@ -71,5 +64,5 @@ std::list<InstanceRefPtr<RelationshipInstance> > EntityInstance::GetAllIncomingR
 
 std::list<InstanceRefPtr<RelationshipInstance> > EntityInstance::GetAllIncomingRelationshipsOfType(TypeRefPtr<RelationshipType> relationship_type)
 {
-    // TODO: implement
+    return incoming[relationship_type];
 }

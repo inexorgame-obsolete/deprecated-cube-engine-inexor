@@ -19,8 +19,12 @@ class AttributeBase
         AttributeBase();
         virtual ~AttributeBase();
 
-        AttributeRefPtr operator[](std::string key) const;
-        AttributeRefPtr & operator[](std::string key);
+        virtual AttributeRefPtr GetAttribute(std::string key);
+        void SetAttribute(std::string key, AttributeRefPtr attributeRefPtr);
+        bool HasAttribute(std::string key);
+
+        virtual AttributeRefPtr operator[](std::string key) const;
+        virtual AttributeRefPtr & operator[](std::string key);
 
         void AddAttribute(std::string key, AttributeRefPtr attribute);
         void AddAttribute(std::string key, bool value);
@@ -29,9 +33,6 @@ class AttributeBase
         void AddAttribute(std::string key, double value);
         void AddAttribute(std::string key, std::string value);
         void AddAttribute(std::string key, FunctionRefPtr action);
-
-        AttributeRefPtr GetAttribute(std::string key);
-        void SetAttribute(std::string key, AttributeRefPtr attributeRefPtr);
 
     protected:
 

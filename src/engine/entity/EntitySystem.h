@@ -22,7 +22,7 @@
 #include "manager/RelationshipInstanceManager.h"
 #include "manager/RelationshipTypeManager.h"
 #include "subsystem/TeleportSubsystem.h"
-#include "subsystem/ParticleSubsystem.h"
+#include "subsystem/particle/ParticleSubsystem.h"
 
 struct type_info_less
 {
@@ -32,9 +32,15 @@ struct type_info_less
     }
 };
 
+class EntitySystem;
+
+typedef std::map<std::type_info const*, void *, type_info_less> TypenameToObject;
+typedef std::map<std::type_info const*, void *, type_info_less>::iterator TypeMapIterator;
+
 class TypeMap
 {
-    typedef std::map<std::type_info const*, void *, type_info_less> TypenameToObject;
+    friend class EntitySystem;
+
     TypenameToObject ObjectMap;
 
     public:
@@ -57,15 +63,10 @@ class EntitySystem
 {
     public:
         EntitySystem();
-        virtual ~EntitySystem() {};
-
-        CefRefPtr<EntityTypeManager> GetEntityTypeManager() { return entity_type_manager; };
-        CefRefPtr<RelationshipTypeManager> GetRelationshipTypeManager() { return relationship_type_manager; };
-        CefRefPtr<EntityInstanceManager> GetEntityInstanceManager() { return entity_instance_manager; };
-        CefRefPtr<RelationshipInstanceManager> GetRelationshipInstanceManager() { return relationship_instance_manager; };
+        virtual ~EntitySystem();
 
         /**
-         * Frame.
+         * Frame update (main thread).
          */
         void Update();
 
@@ -75,16 +76,67 @@ class EntitySystem
         void Cleanup();
 
         /**
-         * GFX reset.
+         * Called on a GFX reset. Each subsystem's Reset() method is called
+         * for cleanup purposes.
          */
         void Reset();
 
+        /**
+         * Returns a typed reference to the concrete subsystem. You can
+         * retrieve the subsystem with it's original type from everywhere.
+         */
         template <typename T>
         T *GetSubsystem () const
         {
-            return subsystems.Get<T>();
+            return subsystemTypeMap.Get<T>();
         }
 
+        /**
+         * Save the current entity system.
+         */
+        void Save(std::string filename);
+
+        /**
+         * Loads a entity system from file.
+         */
+        void Load(std::string filename);
+
+        /**
+         * Reset timer.
+         */
+        void ResetTimer();
+
+        /**
+         * Sets the time unit.
+         */
+        void SetTimeUnit(double time_unit);
+
+        /**
+         * Returns the entity type manager which is responsible for
+         * managing the entity types.
+         */
+        CefRefPtr<EntityTypeManager> GetEntityTypeManager();
+
+        /**
+         * Returns the relationship type manager which is responsible for
+         * managing the relationship types.
+         */
+        CefRefPtr<RelationshipTypeManager> GetRelationshipTypeManager();
+
+        /**
+         * Returns the entity instance manager which is responsible for
+         * managing the entity instances.
+         */
+        CefRefPtr<EntityInstanceManager> GetEntityInstanceManager();
+
+        /**
+         * Returns the relationship instance manager which is responsible for
+         * managing the relationship instances.
+         */
+        CefRefPtr<RelationshipInstanceManager> GetRelationshipInstanceManager();
+
+        // Tests. TODO: remove
+        void RunTests();
         void SubsystemTest();
         void AttributeTest();
         void InstanceCreationTest();
@@ -92,11 +144,34 @@ class EntitySystem
         void LowLevelTypeCreationTest();
         void ParticleSystemTest();
 
-        void Save(std::string filename);
-
-        void Load(std::string filename);
-
     private:
+
+        /**
+         * Frame calculation: The current frame millis.
+         */
+        int frame_millis;
+
+        /**
+         * Frame calculation: The last frame millis.
+         */
+        int frame_last_millis;
+
+        /**
+         * Frame calculation: The elapsed millis since the last frame.
+         */
+        int elapsed_millis;
+
+        /**
+         * The time unit in milliseconds. Normally set to 1000 for one
+         * second.
+         *
+         * The time unit is used for timing calculations. In the particle
+         * system a rate of 10 would mean to spawn 10 particles per time
+         * unit. If the time unit is 1000 millis, 10 particles would be
+         * spawned within a second. If the gamespeed is lowered the time
+         * unit should be reduced, too.
+         */
+        double time_unit;
 
         /**
          * The entity type manager.
@@ -119,12 +194,34 @@ class EntitySystem
         CefRefPtr<RelationshipInstanceManager> relationship_instance_manager;
 
         /**
-         * The subsystems.
+         * The list of subsystems to iterate over. Only the common API
+         * provided by SubsystemBase is available.
          */
-        TypeMap subsystems;
+        std::vector<SubsystemBase*> subsystems;
+
+        /**
+         * The subsystem type map grants access to the real type of the
+         * implemented subsystem.
+         */
+        TypeMap subsystemTypeMap;
+
+        /**
+         * The teleport subsystem.
+         */
+        CefRefPtr<TeleportSubsystem> teleport_subsystem;
+
+        /**
+         * The particle subsystem.
+         */
+        CefRefPtr<ParticleSubsystem> particle_subsystem;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(EntitySystem);
 };
+
+/**
+ * Provide the entity system as global reference.
+ */
+extern CefRefPtr<EntitySystem> entity_system;
 
 #endif /* SRC_ENGINE_ENTITY_ENTITYSYSTEM_H_ */

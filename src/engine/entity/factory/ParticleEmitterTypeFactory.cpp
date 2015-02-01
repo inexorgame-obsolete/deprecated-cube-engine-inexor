@@ -7,18 +7,27 @@
 
 #include "ParticleEmitterTypeFactory.h"
 
-TypeRefPtr<EntityType> ParticleEmitterTypeFactory::Create(std::string name_suffix)
+ParticleEmitterTypeFactory::ParticleEmitterTypeFactory(CefRefPtr<EntityTypeManager> entity_type_manager)
+    : EntityTypeFactory(PARTICLE_EMITTER_TYPE_FACTORY, PARTICLE_EMITTER_FUNCTION_ATTRIBUTE_NAME, ENTTYPE_PREFIX_PARTICLE_EMITTER_TYPE, entity_type_manager)
+{
+}
+
+ParticleEmitterTypeFactory::~ParticleEmitterTypeFactory()
+{
+}
+
+TypeRefPtr<EntityType> ParticleEmitterTypeFactory::Create(std::string name_suffix, FunctionRefPtr function, std::string particle_type_name, int rate, int batch_size, int lifetime, double mass, double density)
 {
     std::string entity_type_name = entity_type_name_prefix + name_suffix;
-    // The parent type is the generic emitter type
-    TypeRefPtr<EntityType> parent_emitter_type = entity_type_manager->Get(ENTTYPE_PARTICLE_EMITTER);
+    // Set the parent type, so that we know that the entity type is a particle emitter type.
+    TypeRefPtr<EntityType> parent_emitter_type = entity_type_manager->Get(ENTTYPE_PARENT_EMITTER_TYPE);
     TypeRefPtr<EntityType> particle_emitter_type = entity_type_manager->Create(entity_type_name, true, true, parent_emitter_type);
-    particle_emitter_type["rate"] = 4;
-    particle_emitter_type["lifetime"] = 0.0;
-    particle_emitter_type["mass"] = 0.1;
-    particle_emitter_type["density"] = 1.0;
-    particle_emitter_type["vel_x"] = 1.0;
-    particle_emitter_type["vel_y"] = 0.0;
-    particle_emitter_type["vel_z"] = 0.0;
+    particle_emitter_type[function_attribute_name] = function;
+    particle_emitter_type["particle_type"] = particle_type_name;
+    particle_emitter_type["rate"] = rate;
+    particle_emitter_type["batch_size"] = batch_size;
+    particle_emitter_type["lifetime"] = lifetime;
+    particle_emitter_type["mass"] = mass;
+    particle_emitter_type["density"] = density;
     return particle_emitter_type;
 }

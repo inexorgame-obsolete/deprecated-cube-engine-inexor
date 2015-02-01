@@ -21,6 +21,12 @@ InstanceRefPtr<EntityInstance> EntityInstanceManager::Create(std::string entity_
     return entity_instance;
 }
 
+InstanceRefPtr<EntityInstance> EntityInstanceManager::Create(InstanceRefPtr<EntityInstance> entity_instance)
+{
+    entity_instances[entity_instance->GetUuid()] = entity_instance;
+    return entity_instance;
+}
+
 bool EntityInstanceManager::Exists(std::string uuid)
 {
     return entity_instances.count(uuid);

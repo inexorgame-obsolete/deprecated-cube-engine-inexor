@@ -16,11 +16,15 @@ RelationshipInstance::RelationshipInstance(
     InstanceBase()
 {
     // Type checks
-    if (startNode->GetType()->GetUuid() == type->GetStartNodeType()->GetUuid()) {
+    if (startNode->GetType()->IsA(type->GetStartNodeType())) {
         this->startNode = startNode;
+    } else {
+        logoutf("Start node not of expected type: (%s, %s)", type->GetStartNodeType()->GetName().c_str(), startNode->GetType()->GetName().c_str());
     }
-    if (endNode->GetType()->GetUuid() == type->GetEndNodeType()->GetUuid()) {
+    if (endNode->GetType()->IsA(type->GetEndNodeType())) {
         this->endNode = endNode;
+    } else {
+        logoutf("End node not of expected type: (%s, %s)", type->GetEndNodeType()->GetName().c_str(), endNode->GetType()->GetName().c_str());
     }
 }
 
@@ -33,10 +37,14 @@ RelationshipInstance::RelationshipInstance(
     InstanceBase(uuid)
 {
     // Type checks
-    if (startNode->GetType()->GetUuid() == type->GetStartNodeType()->GetUuid()) {
+    if (startNode->GetType()->IsA(type->GetStartNodeType())) {
         this->startNode = startNode;
+    } else {
+        logoutf("Start node not of expected type: (%s, %s)", type->GetStartNodeType()->GetName().c_str(), startNode->GetType()->GetName().c_str());
     }
-    if (endNode->GetType()->GetUuid() == type->GetEndNodeType()->GetUuid()) {
+    if (endNode->GetType()->IsA(type->GetEndNodeType())) {
         this->endNode = endNode;
+    } else {
+        logoutf("End node not of expected type: (%s, %s)", type->GetEndNodeType()->GetName().c_str(), endNode->GetType()->GetName().c_str());
     }
 }

@@ -25,6 +25,7 @@ class EntityInstanceManager
 
         InstanceRefPtr<EntityInstance> Create(TypeRefPtr<EntityType> entity_type);
         InstanceRefPtr<EntityInstance> Create(std::string entity_type_name);
+        InstanceRefPtr<EntityInstance> Create(InstanceRefPtr<EntityInstance> entity_instance);
 
         bool Exists(std::string uuid);
         InstanceRefPtr<EntityInstance> Get(std::string uuid);

@@ -29,6 +29,10 @@ class TeleportSubsystem : public SubsystemBase
         );
         virtual ~TeleportSubsystem();
 
+        void Update(TimeStep time_step);
+        void Cleanup();
+        void Reset();
+
         InstanceRefPtr<EntityInstance> CreateTeleport(double x, double y, double z);
         InstanceRefPtr<EntityInstance> CreateTeledest(double x, double y, double z);
 
