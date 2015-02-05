@@ -35,7 +35,7 @@ test "$media" = true && {
   rm -rf "./${outd}/.git"*
 } || true
 
-cp -rv ./bin_* ./inexor_unix ./inexor.bat ./server.bat ./readme.md ./license.md ${outd}
+cp -rv ./bin_* ./inexor_unix ./inexor_sipc_unix ./inexor.bat ./server.bat ./readme.md ./license.md ${outd}
 zip -r "$zipf" "$outd"
 
 echo "Commit: ${TRAVIS_COMMIT}" >> ${build}.txt
