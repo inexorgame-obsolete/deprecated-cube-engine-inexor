@@ -24,9 +24,11 @@ to:
 * A linker (e.g. GCC)
 * Cmake
 * OpenGL
-* SDL
-* SDL_Image
-* SDL_Mixer
+* SDL2
+* SDL2_Image
+* SDL2_Mixer
+* ASIO
+* Google Protobuf
 
 Depending on your environment you also need some of those:
 
