@@ -14,10 +14,10 @@ void newfont(char *name, char *tex, int *defaultw, int *defaulth)
     font *f = &fonts[name];
     if(!f->name) f->name = newstring(name);
     f->texs.shrink(0);
-    f->texs.add(textureload(tex));
-	if(f->texs[0] == notexture) 
+    f->texs.add(textureload(tex, 0, true, false));
+	if(f->texs.last() == notexture) 
 	{ //try in same folder as the config file
-		f->texs[0] = textureload(makerelpath(getcurexecdir(), tex));
+		f->texs.last() = textureload(makerelpath(getcurexecdir(), tex));
 	}
     f->chars.shrink(0);
     f->charoffset = '!';

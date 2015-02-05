@@ -2176,7 +2176,7 @@ bool executebool(const char *p)
     return b;
 }
 
-static string execdir;
+static string execdir = "";
 const char *getcurexecdir() { return execdir; } //returns the path of the file the command is called from
 
 bool execfile(const char *cfgfile, bool msg)
