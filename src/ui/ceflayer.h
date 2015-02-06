@@ -89,9 +89,9 @@ class InexorCefLayer : public CefClient,
 	    bool is_visible;
 	    bool is_accepting_input;
 	    bool has_focus;
-        bool is_closing;
         int browser_id;
         int browser_count;
+        bool is_closing;
 
         InexorCefWindowInfo window_info;
         InexorCefBrowserSettings browser_settings;

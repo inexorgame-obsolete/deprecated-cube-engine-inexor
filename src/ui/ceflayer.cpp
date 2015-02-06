@@ -122,7 +122,7 @@ void InexorCefLayer::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFra
     // Don't display an error for downloaded files.
     if (errorCode == ERR_ABORTED)
         return;
-    logoutf("Failed to load URL %s: %s", failedUrl.c_str(), errorText.c_str());
+    logoutf("Failed to load URL %s: %s", failedUrl.ToString().c_str(), errorText.ToString().c_str());
     // Display a load error message.
     std::stringstream error_message;
     error_message << "<html><body><h2>Failed to load URL " << std::string(failedUrl)
