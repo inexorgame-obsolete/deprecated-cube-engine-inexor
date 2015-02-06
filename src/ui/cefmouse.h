@@ -8,7 +8,10 @@
 #include "cefcontextprovider.h"
 #include "ceflayermanager.h"
 
-#define GL_ONE 1
+#ifndef GL_ONE
+#define GL_ONE 0x1
+#endif
+
 extern bool settexture(const char *name, int clamp);
 
 class InexorCefMouseManager : public InexorCefContextProvider
