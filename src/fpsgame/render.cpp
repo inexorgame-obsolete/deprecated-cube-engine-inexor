@@ -48,12 +48,10 @@ namespace game
 
     static const playermodelinfo playermodels[3] =
     {
-        { "playermodel/mrfixit2", "playermodel/mrfixit2/blue", "playermodel/mrfixit2/red", "playermodel/mrfixit2/hudguns", NULL, "playermodel/mrfixit2/horns", { "playermodel/mrfixit2/armor/blue", "playermodel/mrfixit2/armor/green", "playermodel/mrfixit2/armor/yellow" }, "mrfixit", "mrfixit_blue", "mrfixit_red", true },
-        { "playermodel/snoutx10k", "playermodel/snoutx10k/blue", "playermodel/snoutx10k/red", "playermodel/snoutx10k/hudguns", NULL, "playermodel/snoutx10k/wings", { "playermodel/snoutx10k/armor/blue", "playermodel/snoutx10k/armor/green", "playermodel/snoutx10k/armor/yellow" }, "snoutx10k", "snoutx10k_blue", "snoutx10k_red", true },
-        //{ "ogro/green", "ogro/blue", "ogro/red", "mrfixit/hudguns", "ogro/vwep", NULL, { NULL, NULL, NULL }, "ogro", "ogro_blue", "ogro_red", false },
-        // { "playermodel/ogro2", "playermodel/ogro2/blue", "playermodel/ogro2/red", "playermodel/mrfixit/hudguns", NULL, "playermodel/ogro2/quad", { "playermodel/ogro2/armor/blue", "playermodel/ogro2/armor/green", "playermodel/ogro2/armor/yellow" }, "ogro", "ogro_blue", "ogro_red", true },
-        //{ "inky", "inky/blue", "inky/red", "inky/hudguns", NULL, "inky/quad", { "inky/armor/blue", "inky/armor/green", "inky/armor/yellow" }, "inky", "inky_blue", "inky_red", true },
-        //{ "captaincannon", "captaincannon/blue", "captaincannon/red", "captaincannon/hudguns", NULL, "captaincannon/quad", { "captaincannon/armor/blue", "captaincannon/armor/green", "captaincannon/armor/yellow" }, "captaincannon", "captaincannon_blue", "captaincannon_red", true }
+		// Todo: Don't hardcode them here, build playermodel packages which can be added by simple add the files!
+        { "player/mrfixit2", "player/mrfixit2/blue", "player/mrfixit2/red", "player/mrfixit2/hudgun", NULL, "player/mrfixit2/horns", { "player/mrfixit2/armor/blue", "player/mrfixit2/armor/green", "player/mrfixit2/armor/yellow" }, "mrfixit2", "mrfixit2_blue", "mrfixit2_red", true },
+        { "player/ironsnoutx10k", "player/ironsnoutx10k/blue", "player/ironsnoutx10k/red", "player/ironsnoutx10k/hudgun", NULL, "player/ironsnoutx10k/wings", { "player/ironsnoutx10k/armor/blue", "player/ironsnoutx10k/armor/green", "player/ironsnoutx10k/armor/yellow" }, "ironsnoutx10k", "ironsnoutx10k_blue", "ironsnoutx10k_red", true },
+        //{ "captaincannon", "captaincannon/blue", "captaincannon/red", "captaincannon/hudgun", NULL, "captaincannon/quad", { "captaincannon/armor/blue", "captaincannon/armor/green", "captaincannon/armor/yellow" }, "captaincannon", "captaincannon_blue", "captaincannon_red", true }
     };
 
     int chooserandomplayermodel(int seed)
@@ -142,7 +140,7 @@ namespace game
             delay = 1000;
         }
         modelattach a[5];
-        static const char * const vweps[] = {"vwep/fist", "vwep/shotg", "vwep/chaing", "vwep/rocket", "vwep/rifle", "vwep/gl", "vwep/pistol", "vwep/bomb"}; // TODO: BOMB
+        static const char * const vweps[] = {"worldgun/chainsaw", "worldgun/shotgun", "worldgun/chaingun", "worldgun/rocket", "worldgun/rifle", "worldgun/grenadelauncher", "worldgun/pistol", "worldgun/bomb"}; // TODO: BOMB
         int ai = 0;
         if((!mdl.vwep || d->gunselect!=GUN_FIST) && d->gunselect<=GUN_BOMB)
         {
@@ -412,7 +410,7 @@ namespace game
                 formatstring(fname)("%s/%s", hudgunsdir[0] ? hudgunsdir : mdl.hudguns, file);
                 preloadmodel(fname);
             }
-            formatstring(fname)("vwep/%s", file);
+            formatstring(fname)("worldgun/%s", file);
             preloadmodel(fname);
         }
     }

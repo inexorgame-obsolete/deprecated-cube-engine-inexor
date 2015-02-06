@@ -66,9 +66,9 @@ namespace entities
         static const char * const entmdlnames[] =
         {
             NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-            "ammo/shells", "ammo/bullets", "ammo/rockets", "ammo/rrounds", "ammo/grenades", "ammo/cartridges",
-            "ammo/bombs", "ammo/bombradius", "ammo/bombdelay",
-            "health", "boost", "armor/green", "armor/yellow", "quad", "teleporter",
+            "item/ammo/shell", "item/ammo/bullet", "item/ammo/rocket", "item/ammo/rifleround", "item/ammo/grenade", "item/ammo/cartridge",
+            "item/ammo/bomb", "item/ammo/bombradius", "item/ammo/bombdelay",
+            "item/health", "item/boost", "item/armor/green", "item/armor/yellow", "item/quad", "game/teleporter",
             NULL, NULL,
             "carrot",
             NULL, NULL,

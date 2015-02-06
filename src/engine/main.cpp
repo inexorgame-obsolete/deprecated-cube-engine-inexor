@@ -1305,7 +1305,7 @@ int main(int argc, char **argv)
     logoutf("init: gl");
     gl_checkextensions();
     gl_init(useddepthbits, usedfsaa);
-    notexture = textureload("media/texture/notexture.png");
+    notexture = textureload("media/texture/inexor/notexture.png");
     if(!notexture) fatal("could not find core textures");
 
     logoutf("init: console");
