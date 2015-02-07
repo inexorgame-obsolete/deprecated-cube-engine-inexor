@@ -9,11 +9,15 @@
 #include "../ParticleSubsystem.h"
 #include "../../../EntitySystem.h"
 
+namespace inexor {
+namespace entity {
+namespace particle {
+
 ModifierWorker::ModifierWorker(std::string name, FunctionRefPtr function, InstanceRefPtr<EntityInstance> modifier_instance)
-    : modifier_instance(modifier_instance), ParticleWorker(name, function)
+    : ParticleWorker(name, function), modifier_instance(modifier_instance)
 {
     // TODO: analyse function, so that we can use the fitting Worker implementation
-    int signature = function->GetSignature();
+    // int signature = function->GetSignature();
 
     modifies = entity_system->GetRelationshipTypeManager()->Get(REL_MODIFIES);
 }
@@ -52,11 +56,46 @@ int ModifierWorker::Work(void *data)
                 // over all relationships of the type modifies to get the
                 // particle instances. Then call the modifier function with
                 // the modifier and particle instances as arguments.
+                int alive = 0;
+                int died = 0;
+                try {
+                    std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = w->modifier_instance->outgoing[w->modifies].begin();
+                    while (it != w->modifier_instance->outgoing[w->modifies].end())
+                    {
+                        if ((*it)->endNode[REMAINING]->intVal > 0)
+                        {
+                            w->function->Execute(time_step, w->modifier_instance.get(), (*it)->endNode.get());
+                            ++it;
+                            alive++;
+                        } else {
+                            // Remove the particle side of the relationship (most costly)
+                            (*it)->endNode->incoming[w->modifies].remove(*it);
+                            // Remove the manager side of the relationship
+                            particle_subsystem->DeleteRelationship(*it);
+                            // Remove the modifier side of the relationship
+                            // std::list is efficient in removing with iterators
+                            it = w->modifier_instance->outgoing[w->modifies].erase(it);
+                            died++;
+                        }
+                    }
+                    if (alive > 0 || died > 0) logoutf("[mod] alive: %d died: %d", alive, died);
+                } catch (int e) {
+                    logoutf("exception modifier worker %d", e);
+                }
+                /*
                 std::list<InstanceRefPtr<RelationshipInstance> > modifies = w->modifier_instance->GetAllOutgoingRelationshipsOfType(w->modifies);
                 for(std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = modifies.begin(); it != modifies.end(); ++it)
                 {
+                    InstanceRefPtr<EntityInstance> particle = (*it)->GetEndNode();
+                    if (particle["remaining"] <= 0)
+                    {
+                        // std::list is efficient in removing
+                        modifies.erase(it);
+                    }
                     w->function->Execute(time_step, w->modifier_instance.get(), (*it)->GetEndNode().get());
                 }
+                */
+
             }
             w->frame_last_millis = w->frame_millis;
         }
@@ -67,4 +106,8 @@ int ModifierWorker::Work(void *data)
     w->stopped = true;
     logoutf("Worker thread stopped");
     return 0;
+}
+
+}
+}
 }

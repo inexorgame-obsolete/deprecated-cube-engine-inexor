@@ -10,6 +10,10 @@
 
 #include "ParticleWorker.h"
 
+namespace inexor {
+namespace entity {
+namespace particle {
+
 /**
  * Specializes ParticleWorker for modifier instances.
  */
@@ -38,5 +42,9 @@ class ModifierWorker : public ParticleWorker
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(ModifierWorker);
 };
+
+}
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_SUBSYSTEM_PARTICLE_WORKER_MODIFIERWORKER_H_ */

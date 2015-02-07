@@ -11,6 +11,9 @@
 #include "../domain/TypeBase.h"
 #include "../domain/TypeRefPtr.h"
 
+namespace inexor {
+namespace entity {
+
 class EntityTypeManager;
 
 class EntityTypeFactory
@@ -46,5 +49,8 @@ class EntityTypeFactory
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(EntityTypeFactory);
 };
+
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_FACTORY_ENTITYTYPEFACTORY_H_ */

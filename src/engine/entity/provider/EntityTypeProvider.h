@@ -11,6 +11,9 @@
 #include "../domain/TypeBase.h"
 #include "../domain/TypeRefPtr.h"
 
+namespace inexor {
+namespace entity {
+
 class EntityTypeProvider
 {
     public:
@@ -28,5 +31,8 @@ class EntityTypeProvider
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(EntityTypeProvider);
 };
+
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_PROVIDER_ENTITYTYPEPROVIDER_H_ */

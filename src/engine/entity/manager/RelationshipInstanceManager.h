@@ -15,6 +15,9 @@
 #include "../domain/graph/RelationshipInstance.h"
 #include "../domain/graph/RelationshipType.h"
 
+namespace inexor {
+namespace entity {
+
 class RelationshipInstanceManager
 {
     public:
@@ -29,7 +32,16 @@ class RelationshipInstanceManager
         std::list<InstanceRefPtr<RelationshipInstance> > GetAll(TypeRefPtr<RelationshipType> relationship_type);
         std::list<InstanceRefPtr<RelationshipInstance> > GetAll(std::string relationship_type_name);
 
+        /**
+         * Does only remove the relationship from this instance manager.
+         * @param instance The relationship instance.
+         */
         void DeleteInstance(InstanceRefPtr<RelationshipInstance> instance);
+
+        /**
+         * Does only remove the relationship from this instance manager.
+         * @param uuid The unique identifier of the relationship instance.
+         */
         void DeleteInstance(std::string uuid);
 
         void DeleteAllInstances();
@@ -48,5 +60,8 @@ class RelationshipInstanceManager
         IMPLEMENT_REFCOUNTING(RelationshipInstanceManager);
 
 };
+
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_RELATIONSHIPINSTANCEMANAGER_H_ */

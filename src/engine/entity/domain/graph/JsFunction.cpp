@@ -7,6 +7,9 @@
 
 #include "JsFunction.h"
 
+namespace inexor {
+namespace entity {
+
 JsFunction::JsFunction(std::string name, std::string callback_name) : EntityFunction(name), callback_name(callback_name)
 {
 }
@@ -23,4 +26,7 @@ std::string JsFunction::GetCallbackName()
 void JsFunction::SetCallbackName(std::string callback_name)
 {
     this->callback_name = callback_name;
+}
+
+}
 }

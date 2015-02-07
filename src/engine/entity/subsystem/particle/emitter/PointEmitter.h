@@ -13,7 +13,9 @@
 #include "../../../EntitySystem.h"
 #include "../../../domain/graph/EntityFunction.h"
 
-#define POINT_EMITTER_FUNCTION "point_emitter"
+namespace inexor {
+namespace entity {
+namespace particle {
 
 class PointEmitter : public EntityFunction
 {
@@ -30,7 +32,7 @@ class PointEmitter : public EntityFunction
          *     particle--[:emitted_by]-->emitter
          *
          */
-        TypeRefPtr<RelationshipType> emitted_by_type;
+        TypeRefPtr<RelationshipType> emitted_by;
 
         /**
          * The relationship type:
@@ -50,5 +52,9 @@ class PointEmitter : public EntityFunction
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(PointEmitter);
 };
+
+}
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_SUBSYSTEM_PARTICLE_EMITTER_POINTEMITTER_H_ */

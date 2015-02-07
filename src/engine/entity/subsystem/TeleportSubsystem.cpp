@@ -7,6 +7,9 @@
 
 #include "TeleportSubsystem.h"
 
+namespace inexor {
+namespace entity {
+
 TeleportSubsystem::TeleportSubsystem() : SubsystemBase(TELEPORT_SUBSYSTEM)
 {
 }
@@ -111,3 +114,5 @@ void TeleportSubsystem::DeleteAllConnections()
     relationship_instance_manager->DeleteAllInstances(relationship_type);
 }
 
+}
+}

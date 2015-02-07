@@ -11,6 +11,9 @@
 #include "EntityInstance.h"
 #include "RelationshipInstance.h"
 
+namespace inexor {
+namespace entity {
+
 EntityFunction::EntityFunction(std::string name) : name(name), signature(-1)
 {
     // No signature
@@ -65,3 +68,6 @@ void EntityFunction::operator()(TimeStep time_step, EntityInstance* inst_1, Enti
 void EntityFunction::operator()(TimeStep time_step, RelationshipType* type) { Execute(time_step, type); }
 void EntityFunction::operator()(TimeStep time_step, RelationshipType* type, RelationshipInstance* inst) { Execute(time_step, type, inst); }
 void EntityFunction::operator()(TimeStep time_step, RelationshipInstance* inst) { Execute(time_step, inst); }
+
+}
+}

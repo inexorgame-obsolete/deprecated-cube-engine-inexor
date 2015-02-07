@@ -10,6 +10,10 @@
 
 #include "ParticleWorker.h"
 
+namespace inexor {
+namespace entity {
+namespace particle {
+
 /**
  * Specializes ParticleWorker for emitter instances.
  */
@@ -34,8 +38,20 @@ class EmitterWorker : public ParticleWorker
          */
         TypeRefPtr<EntityType> particle_type;
 
+        /**
+         * The relationship type:
+         *
+         *     particle--[:emitted_by]-->emitter
+         *
+         */
+        TypeRefPtr<RelationshipType> emitted_by;
+
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(EmitterWorker);
 };
+
+}
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_SUBSYSTEM_PARTICLE_WORKER_EMITTERWORKER_H_ */

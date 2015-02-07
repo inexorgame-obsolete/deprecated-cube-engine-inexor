@@ -11,6 +11,9 @@
 #include "../TypeBase.h"
 #include "../TypeRefPtr.h"
 
+namespace inexor {
+namespace entity {
+
 class EntityType : public TypeBase
 {
     public:
@@ -30,5 +33,8 @@ class EntityType : public TypeBase
         IMPLEMENT_REFCOUNTING(EntityType);
 
 };
+
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_ENTITYTYPE_H_ */

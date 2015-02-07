@@ -7,6 +7,9 @@
 
 #include "SubsystemBase.h"
 
+namespace inexor {
+namespace entity {
+
 SubsystemBase::SubsystemBase(std::string name) : name(name)
 {
 }
@@ -34,4 +37,7 @@ void SubsystemBase::Cleanup()
 
 void SubsystemBase::Reset()
 {
+}
+
+}
 }

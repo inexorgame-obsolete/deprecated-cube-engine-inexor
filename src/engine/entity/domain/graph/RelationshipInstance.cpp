@@ -8,12 +8,15 @@
 #include "RelationshipInstance.h"
 #include "EntityInstance.h"
 
+namespace inexor {
+namespace entity {
+
 RelationshipInstance::RelationshipInstance(
     TypeRefPtr<RelationshipType> type,
     InstanceRefPtr<EntityInstance> startNode,
     InstanceRefPtr<EntityInstance> endNode
-) : type(type),
-    InstanceBase()
+) : InstanceBase(),
+    type(type)
 {
     // Type checks
     if (startNode->GetType()->IsA(type->GetStartNodeType())) {
@@ -33,8 +36,8 @@ RelationshipInstance::RelationshipInstance(
     InstanceRefPtr<EntityInstance> startNode,
     InstanceRefPtr<EntityInstance> endNode,
     std::string uuid
-) : type(type),
-    InstanceBase(uuid)
+) : InstanceBase(uuid),
+    type(type)
 {
     // Type checks
     if (startNode->GetType()->IsA(type->GetStartNodeType())) {
@@ -47,4 +50,26 @@ RelationshipInstance::RelationshipInstance(
     } else {
         logoutf("End node not of expected type: (%s, %s)", type->GetEndNodeType()->GetName().c_str(), endNode->GetType()->GetName().c_str());
     }
+}
+
+RelationshipInstance::~RelationshipInstance()
+{
+}
+
+TypeRefPtr<RelationshipType> RelationshipInstance::GetType()
+{
+    return type;
+}
+
+InstanceRefPtr<EntityInstance> RelationshipInstance::GetStartNode()
+{
+    return startNode;
+}
+
+InstanceRefPtr<EntityInstance> RelationshipInstance::GetEndNode()
+{
+    return endNode;
+}
+
+}
 }

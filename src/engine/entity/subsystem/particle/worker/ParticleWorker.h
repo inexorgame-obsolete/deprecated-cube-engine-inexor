@@ -10,11 +10,14 @@
 
 #include "engine.h"
 #include "../../../EntitySystemBase.h"
-// #include "../ParticleSubsystem.h"
 #include "../../../domain/TimeStep.h"
 #include "../../../domain/InstanceRefPtr.h"
 #include "../../../domain/FunctionRefPtr.h"
 #include "../../../domain/graph/EntityInstance.h"
+
+namespace inexor {
+namespace entity {
+namespace particle {
 
 /**
  * Worker thread container for calculate particle physics in it's own thread.
@@ -100,5 +103,9 @@ class ParticleWorker
         IMPLEMENT_REFCOUNTING(ParticleWorker);
 
 };
+
+}
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_SUBSYSTEM_PARTICLE_PARTICLEWORKER_H_ */

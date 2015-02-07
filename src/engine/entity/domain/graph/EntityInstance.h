@@ -14,6 +14,9 @@
 #include "../InstanceRefPtr.h"
 #include "EntityType.h"
 
+namespace inexor {
+namespace entity {
+
 class RelationshipInstance;
 
 class EntityInstance : public InstanceBase
@@ -41,19 +44,9 @@ class EntityInstance : public InstanceBase
         void AddIncomingRelationship(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<RelationshipInstance> relationship_instance);
 
         /**
-         * Returns all relationships (incoming and outgoing).
-         */
-        std::list<InstanceRefPtr<RelationshipInstance> > GetAllRelationships();
-
-        /**
          * Returns all relationships of the given relationship type.
          */
         std::list<InstanceRefPtr<RelationshipInstance> > GetRelationshipsOfType(TypeRefPtr<RelationshipType> relationship_type);
-
-        /**
-         * Returns all outgoing relationships.
-         */
-        std::list<InstanceRefPtr<RelationshipInstance> > GetAllOutgoingRelationships();
 
         /**
          * Returns all outgoing relationships of the given relationship type.
@@ -61,14 +54,21 @@ class EntityInstance : public InstanceBase
         std::list<InstanceRefPtr<RelationshipInstance> > GetAllOutgoingRelationshipsOfType(TypeRefPtr<RelationshipType> relationship_type);
 
         /**
-         * Returns all incoming relationships.
-         */
-        std::list<InstanceRefPtr<RelationshipInstance> > GetAllIncomingRelationships();
-
-        /**
          * Returns all incoming relationships of the given relationship type.
          */
         std::list<InstanceRefPtr<RelationshipInstance> > GetAllIncomingRelationshipsOfType(TypeRefPtr<RelationshipType> relationship_type);
+
+        /**
+         * The child relationships by type (this instance is the start node).
+         * Because of performance aspects, this is public.
+         */
+        std::map<TypeRefPtr<RelationshipType>, std::list<InstanceRefPtr<RelationshipInstance> > > outgoing;
+
+        /**
+         * The parent relationships by type (this instance is the end node).
+         * Because of performance aspects, this is public.
+         */
+        std::map<TypeRefPtr<RelationshipType>, std::list<InstanceRefPtr<RelationshipInstance> > > incoming;
 
     protected:
 
@@ -77,20 +77,13 @@ class EntityInstance : public InstanceBase
          */
         TypeRefPtr<EntityType> type;
 
-        /**
-         * The child relationships by type (this instance is the start node).
-         */
-        std::map<TypeRefPtr<RelationshipType>, std::list<InstanceRefPtr<RelationshipInstance> > > outgoing;
-
-        /**
-         * The parent relationships by type (this instance is the end node).
-         */
-        std::map<TypeRefPtr<RelationshipType>, std::list<InstanceRefPtr<RelationshipInstance> > > incoming;
-
     private:
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(EntityInstance);
 
 };
+
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_ENTITYINSTANCE_H_ */

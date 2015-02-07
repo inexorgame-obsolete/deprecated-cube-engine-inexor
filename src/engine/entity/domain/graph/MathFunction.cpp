@@ -7,6 +7,9 @@
 
 #include "MathFunction.h"
 
+namespace inexor {
+namespace entity {
+
 MathFunction::MathFunction(std::string name, std::string expression) : EntityFunction(name), expression(expression)
 {
 }
@@ -23,4 +26,7 @@ std::string MathFunction::GetExpression()
 void MathFunction::SetExpression(std::string expression)
 {
     this->expression = expression;
+}
+
+}
 }

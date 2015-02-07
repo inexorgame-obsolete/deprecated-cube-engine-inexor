@@ -7,6 +7,10 @@
 
 #include "ParticleTypeFactory.h"
 
+namespace inexor {
+namespace entity {
+namespace particle {
+
 ParticleTypeFactory::ParticleTypeFactory(CefRefPtr<EntityTypeManager> entity_type_manager)
     : EntityTypeFactory(PARTICLE_TYPE_FACTORY, PARTICLE_TYPE_FUNCTION_ATTRIBUTE_NAME, ENTTYPE_PREFIX_PARTICLE_TYPE, entity_type_manager)
 {
@@ -24,4 +28,8 @@ TypeRefPtr<EntityType> ParticleTypeFactory::Create(std::string name_suffix, std:
     TypeRefPtr<EntityType> particle_type = entity_type_manager->Create(entity_type_name, true, true, parent_emitter_type);
     particle_type[PARTICLE_TYPE_RENDERER_INSTANCE_ATTRIBUTE_NAME] = renderer_instance_name;
     return particle_type;
+}
+
+}
+}
 }

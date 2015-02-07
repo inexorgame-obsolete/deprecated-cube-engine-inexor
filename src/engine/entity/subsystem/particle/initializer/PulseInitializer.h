@@ -11,6 +11,10 @@
 #include "../../../EntitySystemBase.h"
 #include "../../../domain/graph/EntityFunction.h"
 
+namespace inexor {
+namespace entity {
+namespace particle {
+
 class PulseInitializer : public EntityFunction
 {
     public:
@@ -23,5 +27,9 @@ class PulseInitializer : public EntityFunction
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(PulseInitializer);
 };
+
+}
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_SUBSYSTEM_PARTICLE_INITIALIZER_PULSEINITIALIZER_H_ */

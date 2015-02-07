@@ -12,6 +12,12 @@
 #include "TimeStep.h"
 #include "graph/EntityAttribute.h"
 
+class vec;
+class vec4;
+
+namespace inexor {
+namespace entity {
+
 class FunctionRefPtr;
 class EntityType;
 class RelationshipType;
@@ -34,6 +40,8 @@ class AttributeRefPtr : public CefRefPtr<EntityAttribute> {
             attr->intVal = r->intVal;
             attr->floatVal = r->floatVal;
             attr->doubleVal = r->doubleVal;
+            attr->vec3Val = r->vec3Val;
+            attr->vec4Val = r->vec4Val;
             attr->stringVal = r->stringVal;
             attr->functionVal = r->functionVal;
             attr->initialized = true;
@@ -43,6 +51,10 @@ class AttributeRefPtr : public CefRefPtr<EntityAttribute> {
         AttributeRefPtr(int value);
         AttributeRefPtr(float value);
         AttributeRefPtr(double value);
+        AttributeRefPtr(vec value);
+        AttributeRefPtr(double x, double y, double z);
+        AttributeRefPtr(vec4 value);
+        AttributeRefPtr(double x, double y, double z, double w);
         AttributeRefPtr(std::string value);
         AttributeRefPtr(FunctionRefPtr value);
         AttributeRefPtr(FunctionRefPtr *value);
@@ -53,6 +65,8 @@ class AttributeRefPtr : public CefRefPtr<EntityAttribute> {
         EntityAttribute& operator=(const int &i);
         EntityAttribute& operator=(const float &f);
         EntityAttribute& operator=(const double &d);
+        EntityAttribute& operator=(const vec &v3);
+        EntityAttribute& operator=(const vec4 &v4);
         EntityAttribute& operator=(const std::string &s);
         EntityAttribute& operator=(const FunctionRefPtr &f);
         EntityAttribute& operator=(FunctionRefPtr &f);
@@ -111,8 +125,7 @@ class AttributeRefPtr : public CefRefPtr<EntityAttribute> {
 
 };
 
-
-
-
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_DOMAIN_ATTRIBUTEREFPTR_H_ */

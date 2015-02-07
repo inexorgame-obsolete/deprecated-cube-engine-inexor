@@ -9,6 +9,9 @@
 #include "../provider/RelationshipTypeProvider.h"
 #include "../manager/EntityTypeManager.h"
 
+namespace inexor {
+namespace entity {
+
 RelationshipTypeManager::RelationshipTypeManager(CefRefPtr<EntityTypeManager> entity_type_manager) : entity_type_manager(entity_type_manager)
 {
 }
@@ -63,4 +66,7 @@ bool RelationshipTypeManager::Exists(std::string relationship_type_name) {
 
 int RelationshipTypeManager::Size() {
     return relationship_types.size();
+}
+
+}
 }

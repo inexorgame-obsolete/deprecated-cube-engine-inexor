@@ -8,6 +8,9 @@
 #ifndef SRC_ENGINE_ENTITY_DOMAIN_TIMESTEP_H_
 #define SRC_ENGINE_ENTITY_DOMAIN_TIMESTEP_H_
 
+namespace inexor {
+namespace entity {
+
 class TimeStep
 {
     public:
@@ -19,5 +22,8 @@ class TimeStep
         double time_factor;
         double time_unit;
 };
+
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_DOMAIN_TIMESTEP_H_ */
