@@ -15,6 +15,9 @@
 #include "graph/EntityAttribute.h"
 #include "graph/EntityFunction.h"
 
+namespace inexor {
+namespace entity {
+
 FunctionRefPtr::FunctionRefPtr() : parent()
 {
 }
@@ -85,4 +88,7 @@ void FunctionRefPtr::operator()(TimeStep time_step, RelationshipType* type, Rela
 void FunctionRefPtr::operator()(TimeStep time_step, RelationshipInstance* inst)
 {
     get()->Execute(time_step, inst);
+}
+
+}
 }

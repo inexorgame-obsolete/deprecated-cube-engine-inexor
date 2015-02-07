@@ -9,7 +9,7 @@
 bool hasVBO = false, hasDRE = false, hasOQ = false, hasTR = false, hasFBO = false, hasDS = false, hasTF = false, hasBE = false, hasBC = false, hasCM = false, hasNP2 = false, hasTC = false, hasS3TC = false, hasFXT1 = false, hasTE = false, hasMT = false, hasD3 = false, hasAF = false, hasVP2 = false, hasVP3 = false, hasPP = false, hasMDA = false, hasTE3 = false, hasTE4 = false, hasVP = false, hasFP = false, hasGLSL = false, hasGM = false, hasNVFB = false, hasSGIDT = false, hasSGISH = false, hasDT = false, hasSH = false, hasNVPCF = false, hasRN = false, hasPBO = false, hasFBB = false, hasUBO = false, hasBUE = false, hasMBR = false, hasFC = false, hasTEX = false;
 int hasstencil = 0;
 
-extern CefRefPtr<ParticleSubsystem> particle_subsystem;
+extern CefRefPtr<inexor::entity::particle::ParticleSubsystem> particle_subsystem;
 
 VAR(renderpath, 1, 0, 0);
 VAR(glversion, 1, 0, 0);

@@ -14,6 +14,9 @@
 
 #define TELEPORT_SUBSYSTEM "teleport"
 
+namespace inexor {
+namespace entity {
+
 /**
  * This subsystems manages teleporters.
  */
@@ -48,5 +51,8 @@ class TeleportSubsystem : public SubsystemBase
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(TeleportSubsystem);
 };
+
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_SUBSYSTEM_TELEPORTSUBSYSTEM_H_ */

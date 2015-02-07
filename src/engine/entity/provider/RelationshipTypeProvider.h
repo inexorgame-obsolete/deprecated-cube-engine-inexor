@@ -12,6 +12,9 @@
 #include "../domain/graph/EntityType.h"
 #include "../manager/EntityTypeManager.h"
 
+namespace inexor {
+namespace entity {
+
 class RelationshipTypeProvider
 {
     public:
@@ -25,13 +28,16 @@ class RelationshipTypeProvider
         TypeRefPtr<RelationshipType> GetRelationshipType() { return relationship_type; };
 
     protected:
+        std::string relationship_name;
         CefRefPtr<EntityTypeManager> entity_type_manager;
         TypeRefPtr<RelationshipType> relationship_type;
-        std::string relationship_name;
 
     private:
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(RelationshipTypeProvider);
 };
+
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_PROVIDER_RELATIONSHIPTYPEPROVIDER_H_ */

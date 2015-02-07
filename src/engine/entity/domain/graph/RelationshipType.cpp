@@ -7,6 +7,9 @@
 
 #include "RelationshipType.h"
 
+namespace inexor {
+namespace entity {
+
 RelationshipType::RelationshipType(std::string name, bool persist, bool synchronize, TypeRefPtr<EntityType> startNodeType, TypeRefPtr<EntityType> endNodeType)
     : TypeBase(name, persist, synchronize), startNodeType(startNodeType), endNodeType(endNodeType)
 {
@@ -16,3 +19,5 @@ RelationshipType::~RelationshipType()
 {
 }
 
+}
+}

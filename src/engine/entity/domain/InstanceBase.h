@@ -13,6 +13,9 @@
 #include "../EntitySystemBase.h"
 #include "AttributeBase.h"
 
+namespace inexor {
+namespace entity {
+
 class InstanceBase : public AttributeBase
 {
 
@@ -32,5 +35,8 @@ class InstanceBase : public AttributeBase
         IMPLEMENT_REFCOUNTING(InstanceBase);
 
 };
+
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_DOMAIN_INSTANCEBASE_H_ */

@@ -8,6 +8,10 @@
 #include "AttributeBase.h"
 #include "AttributeRefPtr.h"
 #include "FunctionRefPtr.h"
+#include "engine.h"
+
+namespace inexor {
+namespace entity {
 
 AttributeBase::AttributeBase()
 {
@@ -81,6 +85,38 @@ void AttributeBase::AddAttribute(std::string key, double value)
     attributes[key]->initialized = true;
 }
 
+void AttributeBase::AddAttribute(std::string key, vec value)
+{
+    attributes[key] = value;
+    attributes[key]->type = ENTATTR_VEC3;
+    attributes[key]->name = key;
+    attributes[key]->initialized = true;
+}
+
+void AttributeBase::AddAttribute(std::string key, double x, double y, double z)
+{
+    attributes[key] = vec(x, y, z);
+    attributes[key]->type = ENTATTR_VEC3;
+    attributes[key]->name = key;
+    attributes[key]->initialized = true;
+}
+
+void AttributeBase::AddAttribute(std::string key, vec4 value)
+{
+    attributes[key] = value;
+    attributes[key]->type = ENTATTR_VEC4;
+    attributes[key]->name = key;
+    attributes[key]->initialized = true;
+}
+
+void AttributeBase::AddAttribute(std::string key, double x, double y, double z, double w)
+{
+    attributes[key] = vec4(x, y, z, w);
+    attributes[key]->type = ENTATTR_VEC4;
+    attributes[key]->name = key;
+    attributes[key]->initialized = true;
+}
+
 void AttributeBase::AddAttribute(std::string key, std::string value)
 {
     attributes[key] = value;
@@ -95,4 +131,7 @@ void AttributeBase::AddAttribute(std::string key, FunctionRefPtr action)
     attributes[key]->type = ENTATTR_FUNCTION;
     attributes[key]->name = key;
     attributes[key]->initialized = true;
+}
+
+}
 }

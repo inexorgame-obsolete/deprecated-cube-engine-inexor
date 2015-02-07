@@ -11,6 +11,9 @@
 #include "../../EntitySystemBase.h"
 #include "EntityFunction.h"
 
+namespace inexor {
+namespace entity {
+
 class MathFunction : public EntityFunction
 {
     public:
@@ -27,5 +30,8 @@ class MathFunction : public EntityFunction
         IMPLEMENT_REFCOUNTING(MathFunction);
 
 };
+
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_DOMAIN_GRAPH_MATHFUNCTION_H_ */

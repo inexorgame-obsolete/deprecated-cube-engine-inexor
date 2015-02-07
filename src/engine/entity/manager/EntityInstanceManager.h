@@ -14,6 +14,9 @@
 #include "../domain/TypeRefPtr.h"
 #include "../domain/graph/EntityInstance.h"
 
+namespace inexor {
+namespace entity {
+
 /**
  * The EntityInstanceManager manages all entity instances.
  */
@@ -51,5 +54,8 @@ class EntityInstanceManager
         IMPLEMENT_REFCOUNTING(EntityInstanceManager);
 
 };
+
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_ENTITYINSTANCEMANAGER_H_ */

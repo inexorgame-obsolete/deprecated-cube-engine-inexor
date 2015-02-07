@@ -12,6 +12,9 @@
 #include "../domain/TypeRefPtr.h"
 #include "../domain/graph/RelationshipType.h"
 
+namespace inexor {
+namespace entity {
+
 class RelationshipTypeProvider;
 class EntityTypeManager;
 
@@ -43,5 +46,8 @@ class RelationshipTypeManager
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(RelationshipTypeManager);
 };
+
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_RELATIONSHIPTYPEMANAGER_H_ */

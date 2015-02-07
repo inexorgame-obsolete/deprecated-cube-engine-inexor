@@ -7,6 +7,9 @@
 
 #include "EntityInstanceManager.h"
 
+namespace inexor {
+namespace entity {
+
 InstanceRefPtr<EntityInstance> EntityInstanceManager::Create(TypeRefPtr<EntityType> entity_type)
 {
     InstanceRefPtr<EntityInstance> entity_instance = new EntityInstance(entity_type);
@@ -72,4 +75,7 @@ void EntityInstanceManager::DeleteAllInstances(TypeRefPtr<EntityType> entity_typ
 
 int EntityInstanceManager::Size() {
     return entity_instances.size();
+}
+
+}
 }

@@ -8,11 +8,16 @@
 #include "EmitterWorker.h"
 #include "../ParticleSubsystem.h"
 
+namespace inexor {
+namespace entity {
+namespace particle {
+
 EmitterWorker::EmitterWorker(std::string name, FunctionRefPtr function, InstanceRefPtr<EntityInstance> emitter_instance)
-    : emitter_instance(emitter_instance), ParticleWorker(name, function)
+    : ParticleWorker(name, function), emitter_instance(emitter_instance)
 {
     std::string particle_type_name = emitter_instance->GetAttribute("particle_type")->stringVal;
     particle_type = particle_subsystem->GetParticleType(particle_type_name);
+    emitted_by = particle_subsystem->GetRelationshipType(REL_EMITTED_BY);
     // logoutf("EmitterWorker::EmitterWorker particle type Name: %s UUID: %s", particle_type_name.c_str(), particle_type->GetUuid().c_str());
     // logoutf("EmitterWorker::EmitterWorker emitter instance UUID: %s", emitter_instance->GetUuid().c_str());
 }
@@ -51,18 +56,52 @@ int EmitterWorker::Work(void *data)
                     w->time_unit
                 );
 
-                int millistoprocess = w->emitter_instance["millistoprocess"]->intVal + w->elapsed_millis;
-                int batches_to_be_emitted = millistoprocess / w->emitter_instance["rate"]->intVal;
-                w->emitter_instance["millistoprocess"] = millistoprocess % w->emitter_instance["rate"]->intVal;
+                // Calculate number of batches to emit
+                int millistoprocess = w->emitter_instance[MILLIS_TO_PROCESS]->intVal + w->elapsed_millis;
+                int batches_to_be_emitted = millistoprocess / w->emitter_instance[RATE]->intVal;
+                w->emitter_instance[MILLIS_TO_PROCESS] = millistoprocess % w->emitter_instance[RATE]->intVal;
 
+                // Emit particles
                 for (int batch = 0; batch < batches_to_be_emitted; batch++)
                 {
-                    w->function->Execute(time_step, w->particle_type.get(), w->emitter_instance.get());
+                    for (int part = 0; part < w->emitter_instance[BATCH_SIZE]->intVal; part++)
+                    {
+                        w->function->Execute(time_step, w->particle_type.get(), w->emitter_instance.get());
+                    }
                 }
-//                logoutf("EmitterWorker::Work() elapsed_millis: %d time_factor: %2.3f time_unit: %4.1f", time_step.elapsed_millis, time_step.time_factor, time_step.time_unit);
-//                logoutf("Emitter Instance UUID: %s",w->emitter_instance->GetUuid().c_str());
-//                logoutf("Particle Type Name: %s UUID: %s", w->particle_type->GetName().c_str(), w->particle_type->GetUuid().c_str());
-//                w->function->Execute(time_step, w->particle_type.get(), w->emitter_instance.get());
+
+                // Time step updates for each particle and remove dead particles
+                int alive = 0;
+                int died = 0;
+                try {
+                    std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = w->emitter_instance->incoming[w->emitted_by].begin();
+                    while (it != w->emitter_instance->incoming[w->emitted_by].end())
+                    {
+                        if ((*it)->startNode[REMAINING]->intVal > 0)
+                        {
+                            // Time step updates
+                            (*it)->startNode[LAST_ELAPSED]->intVal = (*it)->startNode[ELAPSED]->intVal;
+                            (*it)->startNode[ELAPSED]->intVal += w->elapsed_millis;
+                            (*it)->startNode[REMAINING]->intVal -= w->elapsed_millis;
+                            ++it;
+                            // logoutf("[emi] elapsed: %d remaining: %d", particle["elapsed"]->intVal, particle["remaining"]->intVal);
+                            alive++;
+                        } else {
+                            // TODO: pooling!
+                            // Remove the particle side of the relationship (most costly)
+                            (*it)->startNode->outgoing[w->emitted_by].remove(*it);
+                            // Remove the manager side of the relationship
+                            particle_subsystem->DeleteRelationship(*it);
+                            // Remove the emitter side of the relationship
+                            // std::list is efficient in removing with iterators
+                            it = w->emitter_instance->incoming[w->emitted_by].erase(it);
+                            died++;
+                        }
+                    }
+                    if (alive > 0 || died > 0) logoutf("[emi] alive: %d died: %d", alive, died);
+                } catch (int e) {
+                    logoutf("exception emitter worker %d", e);
+                }
             }
             w->frame_last_millis = w->frame_millis;
         }
@@ -73,4 +112,8 @@ int EmitterWorker::Work(void *data)
     w->stopped = true;
     logoutf("Worker thread stopped");
     return 0;
+}
+
+}
+}
 }

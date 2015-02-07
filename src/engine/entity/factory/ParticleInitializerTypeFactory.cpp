@@ -7,6 +7,10 @@
 
 #include "ParticleInitializerTypeFactory.h"
 
+namespace inexor {
+namespace entity {
+namespace particle {
+
 ParticleInitializerTypeFactory::ParticleInitializerTypeFactory(CefRefPtr<EntityTypeManager> entity_type_manager)
     : EntityTypeFactory(PARTICLE_INITIALIZER_TYPE_FACTORY, PARTICLE_INITIALIZER_FUNCTION_ATTRIBUTE_NAME, ENTTYPE_PREFIX_PARTICLE_INITIALIZER_TYPE, entity_type_manager)
 {
@@ -24,4 +28,8 @@ TypeRefPtr<EntityType> ParticleInitializerTypeFactory::Create(std::string name_s
     TypeRefPtr<EntityType> particle_initializer_type = entity_type_manager->Create(entity_type_name, true, true, parent_initializer_type);
     particle_initializer_type[function_attribute_name] = function;
     return particle_initializer_type;
+}
+
+}
+}
 }

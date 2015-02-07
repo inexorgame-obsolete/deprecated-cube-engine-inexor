@@ -7,6 +7,9 @@
 
 #include "EntityType.h"
 
+namespace inexor {
+namespace entity {
+
 EntityType::EntityType(std::string name, bool persist, bool synchronize) : TypeBase(name, persist, synchronize)
 {
 }
@@ -33,4 +36,7 @@ bool EntityType::IsExactlyA(TypeRefPtr<EntityType> type)
 bool EntityType::IsExactlyA(std::string uuid)
 {
     return this->uuid == uuid;
+}
+
+}
 }

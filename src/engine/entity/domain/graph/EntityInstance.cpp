@@ -8,11 +8,16 @@
 #include "EntityInstance.h"
 #include "RelationshipInstance.h"
 
-EntityInstance::EntityInstance(TypeRefPtr<EntityType> type) : type(type), InstanceBase()
+namespace inexor {
+namespace entity {
+
+EntityInstance::EntityInstance(TypeRefPtr<EntityType> type)
+    : InstanceBase(), type(type)
 {
 }
 
-EntityInstance::EntityInstance(TypeRefPtr<EntityType> type, std::string uuid) : type(type), InstanceBase(uuid)
+EntityInstance::EntityInstance(TypeRefPtr<EntityType> type, std::string uuid)
+    : InstanceBase(uuid), type(type)
 {
 }
 
@@ -37,17 +42,7 @@ void EntityInstance::AddIncomingRelationship(TypeRefPtr<RelationshipType> relati
     this->incoming[relationship_type].push_back(relationship_instance);
 }
 
-std::list<InstanceRefPtr<RelationshipInstance> > EntityInstance::GetAllRelationships()
-{
-    // TODO: implement
-}
-
 std::list<InstanceRefPtr<RelationshipInstance> > EntityInstance::GetRelationshipsOfType(TypeRefPtr<RelationshipType> relationship_type)
-{
-    // TODO: implement
-}
-
-std::list<InstanceRefPtr<RelationshipInstance> > EntityInstance::GetAllOutgoingRelationships()
 {
     // TODO: implement
 }
@@ -57,12 +52,10 @@ std::list<InstanceRefPtr<RelationshipInstance> > EntityInstance::GetAllOutgoingR
     return outgoing[relationship_type];
 }
 
-std::list<InstanceRefPtr<RelationshipInstance> > EntityInstance::GetAllIncomingRelationships()
-{
-    // TODO: implement
-}
-
 std::list<InstanceRefPtr<RelationshipInstance> > EntityInstance::GetAllIncomingRelationshipsOfType(TypeRefPtr<RelationshipType> relationship_type)
 {
     return incoming[relationship_type];
+}
+
+}
 }

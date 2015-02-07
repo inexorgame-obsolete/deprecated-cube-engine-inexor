@@ -17,7 +17,12 @@
 #include "../../factory/ParticleEmitterTypeFactory.h"
 #include "../../factory/ParticleInitializerTypeFactory.h"
 #include "../../factory/ParticleModifierTypeFactory.h"
-// #include "../../provider/ParticleProvider.h"
+
+using namespace inexor::entity;
+
+namespace inexor {
+namespace entity {
+namespace particle {
 
 class ParticleSubsystem : public SubsystemBase
 {
@@ -56,6 +61,9 @@ class ParticleSubsystem : public SubsystemBase
         TypeRefPtr<EntityType> GetEmitterType(std::string emitter_type_name);
         TypeRefPtr<EntityType> GetInitializerType(std::string initializer_type_name);
         TypeRefPtr<EntityType> GetModifierType(std::string modifier_type_name);
+
+        TypeRefPtr<RelationshipType> GetRelationshipType(std::string relationship_type_name);
+        void DeleteRelationship(InstanceRefPtr<RelationshipInstance> instance);
 
         InstanceRefPtr<EntityInstance> CreateEmitterInstance(std::string emitter_type_name, double x, double y, double z, double vx, double vy, double vz);
         InstanceRefPtr<EntityInstance> CreateEmitterInstance(TypeRefPtr<EntityType> emitter_type, double x, double y, double z, double vx, double vy, double vz);
@@ -114,9 +122,13 @@ class ParticleSubsystem : public SubsystemBase
 
 };
 
+}
+}
+}
+
 /**
  * Provide the particle subsystem as global reference.
  */
-extern CefRefPtr<ParticleSubsystem> particle_subsystem;
+extern CefRefPtr<inexor::entity::particle::ParticleSubsystem> particle_subsystem;
 
 #endif /* SRC_ENGINE_ENTITY_SUBSYSTEM_PARTICLESUBSYSTEM_H_ */

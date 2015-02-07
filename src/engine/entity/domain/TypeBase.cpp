@@ -7,6 +7,9 @@
 
 #include "TypeBase.h"
 
+namespace inexor {
+namespace entity {
+
 TypeBase::TypeBase(std::string name, bool persist, bool synchronize)
     : name(name),
       persist(persist),
@@ -17,10 +20,10 @@ TypeBase::TypeBase(std::string name, bool persist, bool synchronize)
 }
 
 TypeBase::TypeBase(std::string name, bool persist, bool synchronize, std::string uuid)
-    : name(name),
+    : uuid(uuid),
+      name(name),
       persist(persist),
-      synchronize(synchronize),
-      uuid(uuid)
+      synchronize(synchronize)
 {
 }
 
@@ -51,4 +54,7 @@ bool TypeBase::IsPersisting() {
 
 bool TypeBase::IsSynchronizing() {
     return synchronize;
+}
+
+}
 }

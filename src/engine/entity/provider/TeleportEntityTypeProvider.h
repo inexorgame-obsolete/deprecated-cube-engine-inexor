@@ -18,6 +18,10 @@
 #define ENTTYPE_TELEDEST "teledest"
 #define RELTYPE_TELEPORTING "teleporting"
 
+namespace inexor {
+namespace entity {
+
+
 class EntityTypeManager;
 
 /**
@@ -64,5 +68,8 @@ class TeleportingRelationshipTypeProvider : public RelationshipTypeProvider
         IMPLEMENT_REFCOUNTING(TeleportingRelationshipTypeProvider);
 
 };
+
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_PROVIDER_TELEPORTENTITYTYPEPROVIDER_H_ */
