@@ -1074,7 +1074,7 @@ namespace game
         {
             case 2: formatstring(crosshair)("%s/default_hit.png", crosshairdir); break;
             case 1: formatstring(crosshair)("%s/default_teammate.png", crosshairdir); break;
-            default: formatstring(crosshair)("%s/default_crosshair.png", crosshairdir); break;
+            default: formatstring(crosshair)("%s/default.png", crosshairdir); break;
         }
     	return newstring(crosshair);
     }

@@ -409,10 +409,10 @@ struct collectclientmode : clientmode
 
     void preload()
     {
-        preloadmodel("base/red");
-        preloadmodel("base/blue");
-        preloadmodel("skull/red");
-        preloadmodel("skull/blue");
+        preloadmodel("game/base/red");
+        preloadmodel("game/base/blue");
+        preloadmodel("game/skull/red");
+        preloadmodel("game/skull/blue");
         static const int sounds[] = { S_FLAGDROP, S_FLAGSCORE, S_FLAGFAIL };
         loopi(sizeof(sounds)/sizeof(sounds[0])) preloadsound(sounds[i]);
     }
