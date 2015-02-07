@@ -46,9 +46,9 @@ namespace game
         }
     }
 
-    static const playermodelinfo playermodels[3] =
+    // Todo: Don't hardcode them here, build playermodel packages which can be added by simple add the files!
+    static const playermodelinfo playermodels[2] =
     {
-		// Todo: Don't hardcode them here, build playermodel packages which can be added by simple add the files!
         { "player/mrfixit2", "player/mrfixit2/blue", "player/mrfixit2/red", "player/mrfixit2/hudgun", NULL, "player/mrfixit2/horns", { "player/mrfixit2/armor/blue", "player/mrfixit2/armor/green", "player/mrfixit2/armor/yellow" }, "mrfixit2", "mrfixit2_blue", "mrfixit2_red", true },
         { "player/ironsnoutx10k", "player/ironsnoutx10k/blue", "player/ironsnoutx10k/red", "player/ironsnoutx10k/hudgun", NULL, "player/ironsnoutx10k/wings", { "player/ironsnoutx10k/armor/blue", "player/ironsnoutx10k/armor/green", "player/ironsnoutx10k/armor/yellow" }, "ironsnoutx10k", "ironsnoutx10k_blue", "ironsnoutx10k_red", true },
         //{ "captaincannon", "captaincannon/blue", "captaincannon/red", "captaincannon/hudgun", NULL, "captaincannon/quad", { "captaincannon/armor/blue", "captaincannon/armor/green", "captaincannon/armor/yellow" }, "captaincannon", "captaincannon_blue", "captaincannon_red", true }
