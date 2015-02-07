@@ -82,20 +82,6 @@ int ModifierWorker::Work(void *data)
                 } catch (int e) {
                     logoutf("exception modifier worker %d", e);
                 }
-                /*
-                std::list<InstanceRefPtr<RelationshipInstance> > modifies = w->modifier_instance->GetAllOutgoingRelationshipsOfType(w->modifies);
-                for(std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = modifies.begin(); it != modifies.end(); ++it)
-                {
-                    InstanceRefPtr<EntityInstance> particle = (*it)->GetEndNode();
-                    if (particle["remaining"] <= 0)
-                    {
-                        // std::list is efficient in removing
-                        modifies.erase(it);
-                    }
-                    w->function->Execute(time_step, w->modifier_instance.get(), (*it)->GetEndNode().get());
-                }
-                */
-
             }
             w->frame_last_millis = w->frame_millis;
         }
