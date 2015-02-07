@@ -16,7 +16,10 @@
 #include "../domain/graph/RelationshipType.h"
 #include "../manager/EntityTypeManager.h"
 #include "../manager/RelationshipTypeManager.h"
-// #include "../provider/ParticleProvider.h"
+
+namespace inexor {
+namespace entity {
+namespace particle {
 
 class ParticleInitializerTypeFactory : public EntityTypeFactory
 {
@@ -31,5 +34,9 @@ class ParticleInitializerTypeFactory : public EntityTypeFactory
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(ParticleInitializerTypeFactory);
 };
+
+}
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_FACTORY_PARTICLEINITIALIZERTYPEFACTORY_H_ */

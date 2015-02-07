@@ -7,6 +7,9 @@
 
 #include "TimeStep.h"
 
+namespace inexor {
+namespace entity {
+
 TimeStep::TimeStep(int elapsed_millis, double time_factor, double time_unit)
     : elapsed_millis(elapsed_millis), time_factor(time_factor), time_unit(time_unit)
 {
@@ -22,3 +25,5 @@ TimeStep::~TimeStep()
 {
 }
 
+}
+}

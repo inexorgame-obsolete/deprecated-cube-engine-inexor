@@ -8,6 +8,9 @@
 #include "EntityTypeFactory.h"
 #include "../manager/EntityTypeManager.h"
 
+namespace inexor {
+namespace entity {
+
 EntityTypeFactory::EntityTypeFactory(
     std::string factory_name,
     std::string function_attribute_name,
@@ -44,4 +47,7 @@ TypeRefPtr<EntityType> EntityTypeFactory::Create(std::string name_suffix)
     std::string entity_type_name = entity_type_name_prefix + name_suffix;
     TypeRefPtr<EntityType> entity_type = entity_type_manager->Create(name_suffix, false, false);
     return entity_type;
+}
+
+}
 }

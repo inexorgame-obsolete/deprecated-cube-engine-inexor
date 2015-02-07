@@ -7,6 +7,10 @@
 
 #include "TeleportEntityTypeProvider.h"
 
+namespace inexor {
+namespace entity {
+
+
 TeleportEntityTypeProvider::TeleportEntityTypeProvider() : EntityTypeProvider(ENTTYPE_TELEPORT)
 {
     entity_type = new EntityType(ENTTYPE_TELEPORT, true, true);
@@ -42,4 +46,7 @@ TeleportingRelationshipTypeProvider::TeleportingRelationshipTypeProvider(CefRefP
 
 TeleportingRelationshipTypeProvider::~TeleportingRelationshipTypeProvider()
 {
+}
+
+}
 }

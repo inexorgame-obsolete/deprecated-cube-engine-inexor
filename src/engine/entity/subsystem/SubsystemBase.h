@@ -15,6 +15,9 @@
 #include "../manager/RelationshipTypeManager.h"
 #include "../manager/RelationshipInstanceManager.h"
 
+namespace inexor {
+namespace entity {
+
 /**
  * Base class for subsystem managers.
  */
@@ -48,14 +51,17 @@ class SubsystemBase
         std::string name;
 
         CefRefPtr<EntityTypeManager> entity_type_manager;
-        CefRefPtr<RelationshipTypeManager> relationship_type_manager;
-
         CefRefPtr<EntityInstanceManager> entity_instance_manager;
+
+        CefRefPtr<RelationshipTypeManager> relationship_type_manager;
         CefRefPtr<RelationshipInstanceManager> relationship_instance_manager;
 
     private:
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(SubsystemBase);
 };
+
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_SUBSYSTEM_SUBSYSTEMBASE_H_ */

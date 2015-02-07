@@ -16,6 +16,11 @@
 #include "subsystem/particle/modifier/VelocityTransformation.h"
 #include "subsystem/particle/modifier/VectorField.h"
 
+using namespace inexor::entity::particle;
+
+namespace inexor {
+namespace entity {
+
 EntitySystem::EntitySystem()
 {
     // Reset the time calculation
@@ -67,7 +72,7 @@ void EntitySystem::Update()
         (double) elapsed_millis / time_unit,
         time_unit
     );
-    for (int i = 0; i < subsystems.size(); i++)
+    for (unsigned int i = 0; i < subsystems.size(); i++)
     {
         SubsystemBase* subsystem = subsystems[i];
         if (!subsystem) throw std::invalid_argument("cannot be null, plz");
@@ -78,7 +83,7 @@ void EntitySystem::Update()
 
 void EntitySystem::Cleanup()
 {
-    for (int i = 0; i < subsystems.size(); i++)
+    for (unsigned int i = 0; i < subsystems.size(); i++)
     {
         subsystems[i]->Cleanup();
     }
@@ -89,7 +94,7 @@ void EntitySystem::Cleanup()
 void EntitySystem::Reset()
 {
     // TODO: cleanup entities, temporarily stop renderers
-    for (int i = 0; i < subsystems.size(); i++)
+    for (unsigned int i = 0; i < subsystems.size(); i++)
     {
         subsystems[i]->Reset();
     }
@@ -266,8 +271,8 @@ void EntitySystem::ParticleSystemTest()
     TypeRefPtr<EntityType> default_particle_type = particle_subsystem->CreateParticleType("default_particle", "default_renderer");
     // TypeRefPtr<EntityType> particle_type = entity_type_manager->Create("default_particle", false, false /* , parent */);
 
-    logoutf("Create emitter type 'point_emitter (rate: every 500ms, lifetime: 250ms)'");
-    TypeRefPtr<EntityType> point_emitter = particle_subsystem->CreateEmitterType("point_emitter", point_emitter_function, default_particle_type, 500, 1, 300, 1.0, 1.0);
+    logoutf("Create emitter type 'point_emitter (rate: every 1500ms, lifetime: 1000ms)'");
+    TypeRefPtr<EntityType> point_emitter = particle_subsystem->CreateEmitterType("point_emitter", point_emitter_function, default_particle_type, 1250, 1, 1000, 1.0, 1.0);
 
     logoutf("Create emitter type 'pulse_point_emitter (rate: every 1250ms, lifetime: 250ms)'");
     TypeRefPtr<EntityType> pulse_point_emitter = particle_subsystem->CreateEmitterType("pulse_point_emitter", point_emitter_function, default_particle_type, 1250, 250);
@@ -281,6 +286,7 @@ void EntitySystem::ParticleSystemTest()
     logoutf("Create modifier type 'vector_field_modifier'");
     TypeRefPtr<EntityType> vector_field_modifier_type = particle_subsystem->CreateModifierType("vector_field_modifier", vector_field_function);
 
+    /*
     logoutf("Create a particle instance");
     InstanceRefPtr<EntityInstance> particle = new EntityInstance(default_particle_type);
     particle["x"] = 0.0;
@@ -312,15 +318,18 @@ void EntitySystem::ParticleSystemTest()
         vt_mt(vf_tf, particle.get());
         logoutf("     x: %2.2f  y: %2.2f  z: %2.2f", particle["x"]->GetDouble(), particle["y"]->GetDouble(), particle["z"]->GetDouble());
     }
+    */
 
     // Create emitter instances
     logoutf("Create emitter instances");
     InstanceRefPtr<EntityInstance> point_emitter_1 = particle_subsystem->CreateEmitterInstance(point_emitter, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+/*
     InstanceRefPtr<EntityInstance> point_emitter_2 = particle_subsystem->CreateEmitterInstance(point_emitter, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0);
     InstanceRefPtr<EntityInstance> point_emitter_3 = particle_subsystem->CreateEmitterInstance(point_emitter, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
     InstanceRefPtr<EntityInstance> point_emitter_4 = particle_subsystem->CreateEmitterInstance(point_emitter, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0);
     InstanceRefPtr<EntityInstance> pulse_point_emitter_1 = particle_subsystem->CreateEmitterInstance(pulse_point_emitter, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
     InstanceRefPtr<EntityInstance> pulse_point_emitter_2 = particle_subsystem->CreateEmitterInstance(pulse_point_emitter, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0);
+*/
 
     // Create modifier instances
     logoutf("Create modifier instances");
@@ -329,12 +338,15 @@ void EntitySystem::ParticleSystemTest()
     // This creates an relation from an emitter to an modifier
     logoutf("Create relation from emitter to modifier");
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_1 = particle_subsystem->AddModifierToEmitter(point_emitter_1, velocity_transformation_modifier_1);
+/*
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_2 = particle_subsystem->AddModifierToEmitter(point_emitter_2, velocity_transformation_modifier_1);
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_3 = particle_subsystem->AddModifierToEmitter(point_emitter_3, velocity_transformation_modifier_1);
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_4 = particle_subsystem->AddModifierToEmitter(point_emitter_4, velocity_transformation_modifier_1);
     InstanceRefPtr<RelationshipInstance> rel_pulse_point_velocity_1 = particle_subsystem->AddModifierToEmitter(pulse_point_emitter_1, velocity_transformation_modifier_1);
     InstanceRefPtr<RelationshipInstance> rel_pulse_point_velocity_2 = particle_subsystem->AddModifierToEmitter(pulse_point_emitter_2, velocity_transformation_modifier_1);
+*/
 
+/*
     logoutf("Fire emitter 1: Call function directly");
     point_emitter_function->Execute(vf_tf, default_particle_type, point_emitter_1);
 
@@ -347,6 +359,10 @@ void EntitySystem::ParticleSystemTest()
 
     logoutf("Fire emitter 4: Shorter version: Call the attribute of the type");
     point_emitter_1->GetType()["emit"](vf_tf, default_particle_type, point_emitter_1);
+*/
 
     logoutf("Finished particle system tests");
+}
+
+}
 }

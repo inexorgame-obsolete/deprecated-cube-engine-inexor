@@ -24,6 +24,9 @@
 #include "subsystem/TeleportSubsystem.h"
 #include "subsystem/particle/ParticleSubsystem.h"
 
+namespace inexor {
+namespace entity {
+
 struct type_info_less
 {
     bool operator() (const std::type_info* lhs, const std::type_info* rhs) const
@@ -213,15 +216,18 @@ class EntitySystem
         /**
          * The particle subsystem.
          */
-        CefRefPtr<ParticleSubsystem> particle_subsystem;
+        CefRefPtr<particle::ParticleSubsystem> particle_subsystem;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(EntitySystem);
 };
 
+}
+}
+
 /**
  * Provide the entity system as global reference.
  */
-extern CefRefPtr<EntitySystem> entity_system;
+extern CefRefPtr<inexor::entity::EntitySystem> entity_system;
 
 #endif /* SRC_ENGINE_ENTITY_ENTITYSYSTEM_H_ */

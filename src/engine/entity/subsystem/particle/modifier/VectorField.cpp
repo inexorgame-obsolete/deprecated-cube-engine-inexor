@@ -7,7 +7,12 @@
 
 #include "VectorField.h"
 
-VectorField::VectorField(std::string expression) : expression(expression), args(3), EntityFunction("vector_field")
+namespace inexor {
+namespace entity {
+namespace particle {
+
+VectorField::VectorField(std::string expression)
+    : EntityFunction("vector_field"), args(3), expression(expression)
 {
     // TODO: check this -> use mu::value_type as EntityAttribute
     parser.DefineVar("x", &ix);
@@ -37,14 +42,12 @@ void VectorField::After(TimeStep time_step, EntityInstance* inst)
 void VectorField::Execute(TimeStep time_step, EntityInstance* particle)
 {
     // TODO: check this -> use mu::value_type as EntityAttribute
-	ix = (*particle)["x"]->doubleVal;
-	iy = (*particle)["y"]->doubleVal;
-	iz = (*particle)["z"]->doubleVal;
+	ix = (*particle)[POS]->vec3Val.x;
+	iy = (*particle)[POS]->vec3Val.y;
+	iz = (*particle)[POS]->vec3Val.z;
 	try {
 		mu::value_type *v = parser.Eval(args);
-		(*particle)["vx"]->doubleVal = (*particle)["vx"]->doubleVal + v[0] * time_step.time_factor;
-		(*particle)["vy"]->doubleVal = (*particle)["vy"]->doubleVal + v[1] * time_step.time_factor;
-		(*particle)["vz"]->doubleVal = (*particle)["vz"]->doubleVal + v[2] * time_step.time_factor;
+		(*particle)[VELOCITY]->vec3Val.add(vec(v[0] * time_step.time_factor, v[1] * time_step.time_factor, v[2] * time_step.time_factor));
 	} catch (mu::Parser::exception_type &e) {
 		logoutf("Error parsing vector field expression %s: %s", e.GetExpr().c_str(), e.GetMsg().c_str());
 	}
@@ -69,4 +72,8 @@ void VectorField::Execute(TimeStep time_step, EntityInstance* modifier, EntityIn
 	} catch (mu::Parser::exception_type &e) {
 		logoutf("Error parsing vector field expression %s: %s", e.GetExpr().c_str(), e.GetMsg().c_str());
 	}
+}
+
+}
+}
 }

@@ -13,6 +13,9 @@
 #include "../EntitySystemBase.h"
 #include "AttributeBase.h"
 
+namespace inexor {
+namespace entity {
+
 class TypeBase : public AttributeBase
 {
     public:
@@ -59,5 +62,8 @@ class TypeBase : public AttributeBase
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(TypeBase);
 };
+
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_DOMAIN_TYPEBASE_H_ */

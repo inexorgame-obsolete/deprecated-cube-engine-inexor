@@ -17,6 +17,10 @@
 #include "../manager/EntityTypeManager.h"
 #include "../manager/RelationshipTypeManager.h"
 
+namespace inexor {
+namespace entity {
+namespace particle {
+
 class ParticleTypeFactory : public EntityTypeFactory
 {
     public:
@@ -30,5 +34,9 @@ class ParticleTypeFactory : public EntityTypeFactory
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(ParticleTypeFactory);
 };
+
+}
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_FACTORY_PARTICLETYPEFACTORY_H_ */

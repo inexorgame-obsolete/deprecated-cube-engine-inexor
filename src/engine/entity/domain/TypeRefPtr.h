@@ -11,6 +11,9 @@
 #include "../EntitySystemBase.h"
 #include "AttributeRefPtr.h"
 
+namespace inexor {
+namespace entity {
+
 template <class T>
 class TypeRefPtr : public CefRefPtr<T> {
     public:
@@ -33,5 +36,8 @@ class TypeRefPtr : public CefRefPtr<T> {
         };
 
 };
+
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_DOMAIN_TYPEREFPTR_H_ */

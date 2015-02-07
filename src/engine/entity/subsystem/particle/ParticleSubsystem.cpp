@@ -7,6 +7,10 @@
 
 #include "ParticleSubsystem.h"
 
+namespace inexor {
+namespace entity {
+namespace particle {
+
 ParticleSubsystem::ParticleSubsystem() : SubsystemBase(PARTICLE_SUBSYSTEM)
 {
 }
@@ -18,22 +22,6 @@ ParticleSubsystem::ParticleSubsystem(
     CefRefPtr<RelationshipInstanceManager> relationship_instance_manager
 ) : SubsystemBase(PARTICLE_SUBSYSTEM, entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager)
 {
-    /*
-    // Create entity type providers
-    CefRefPtr<EntityTypeProvider> emitter_type_provider = new EmitterTypeProvider();
-    CefRefPtr<EntityTypeProvider> initializer_type_provider = new InitializerTypeProvider();
-    CefRefPtr<EntityTypeProvider> modifier_type_provider = new ModifierTypeProvider();
-    entity_type_manager->RegisterProvider(emitter_type_provider);
-    entity_type_manager->RegisterProvider(initializer_type_provider);
-    entity_type_manager->RegisterProvider(modifier_type_provider);
-
-    // Create relationship type providers
-    CefRefPtr<RelationshipTypeProvider> apply_initializer_on_emitted_particles_relationship_type_provider = new ApplyInitializerOnEmittedParticlesRelationshipTypeProvider(entity_type_manager);
-    CefRefPtr<RelationshipTypeProvider> apply_modifier_on_emitted_particles_relationship_type_provider = new ApplyModifierOnEmittedParticlesRelationshipTypeProvider(entity_type_manager);
-    relationship_type_manager->RegisterProvider(apply_initializer_on_emitted_particles_relationship_type_provider);
-    relationship_type_manager->RegisterProvider(apply_modifier_on_emitted_particles_relationship_type_provider);
-    */
-
     // Create entity type factories
     particle_type_factory = new ParticleTypeFactory(entity_type_manager);
     particle_emitter_type_factory = new ParticleEmitterTypeFactory(entity_type_manager);
@@ -79,17 +67,17 @@ void ParticleSubsystem::Update(TimeStep time_step)
 void ParticleSubsystem::Cleanup()
 {
     // Stop default workers
-    for (int i = 0; i < particle_workers.size(); i++)
+    for (unsigned int i = 0; i < particle_workers.size(); i++)
     {
         particle_workers[i]->Stop();
     }
     // Stop emitter workers
-    for (int i = 0; i < emitter_workers.size(); i++)
+    for (unsigned int i = 0; i < emitter_workers.size(); i++)
     {
         emitter_workers[i]->Stop();
     }
     // Stop modifier workers
-    for (int i = 0; i < modifier_workers.size(); i++)
+    for (unsigned int i = 0; i < modifier_workers.size(); i++)
     {
         modifier_workers[i]->Stop();
     }
@@ -167,6 +155,16 @@ TypeRefPtr<EntityType> ParticleSubsystem::GetModifierType(std::string modifier_t
     return modifier_types[modifier_type_name];
 }
 
+TypeRefPtr<RelationshipType> ParticleSubsystem::GetRelationshipType(std::string relationship_type_name)
+{
+    return relationship_type_manager->Get(relationship_type_name);
+}
+
+void ParticleSubsystem::DeleteRelationship(InstanceRefPtr<RelationshipInstance> instance)
+{
+    relationship_instance_manager->DeleteInstance(instance);
+}
+
 InstanceRefPtr<EntityInstance> ParticleSubsystem::CreateEmitterInstance(std::string emitter_type_name, double x, double y, double z, double vx, double vy, double vz)
 {
     TypeRefPtr<EntityType> emitter_type = entity_type_manager->Get(emitter_type_name);
@@ -178,26 +176,22 @@ InstanceRefPtr<EntityInstance> ParticleSubsystem::CreateEmitterInstance(TypeRefP
     InstanceRefPtr<EntityInstance> emitter_instance = entity_instance_manager->Create(emitter_type);
 
     // Assign defaults from emitter type
-    emitter_instance["particle_type"] = emitter_type["particle_type"]->stringVal;
-    emitter_instance["rate"] = emitter_type["rate"]->intVal;
-    emitter_instance["batch_size"] = emitter_type["batch_size"]->intVal;
-    emitter_instance["lifetime"] = emitter_type["lifetime"]->intVal;
-    emitter_instance["mass"] = emitter_type["mass"]->doubleVal;
-    emitter_instance["density"] = emitter_type["density"]->doubleVal;
+    emitter_instance[PARTICLE_TYPE] = emitter_type[PARTICLE_TYPE]->stringVal;
+    emitter_instance[RATE] = emitter_type[RATE]->intVal;
+    emitter_instance[BATCH_SIZE] = emitter_type[BATCH_SIZE]->intVal;
+    emitter_instance[LIFETIME] = emitter_type[LIFETIME]->intVal;
+    emitter_instance[MASS] = emitter_type[MASS]->doubleVal;
+    emitter_instance[DENSITY] = emitter_type[DENSITY]->doubleVal;
 
     // Set initial position and velocity
-    emitter_instance["x"] = x;
-    emitter_instance["y"] = y;
-    emitter_instance["z"] = z;
-    emitter_instance["vx"] = vx;
-    emitter_instance["vy"] = vy;
-    emitter_instance["vz"] = vz;
+    emitter_instance[POS] = vec(x, y, z);
+    emitter_instance[VELOCITY] = vec(vx, vy, vz);
 
     // The millis to process
-    emitter_instance["millistoprocess"] = 0;
+    emitter_instance[MILLIS_TO_PROCESS] = 0;
 
     // Enable the emitter instance
-    emitter_instance["enabled"] = true;
+    emitter_instance[ENABLED] = true;
 
     // Starts the worker thread for the emitter instance (which also calls the connected initializer instances)
     CreateEmitterWorker(emitter_instance->GetUuid(), emitter_type, emitter_instance);
@@ -234,10 +228,10 @@ InstanceRefPtr<EntityInstance> ParticleSubsystem::CreateModifierInstance(TypeRef
     // modifier_instance["x"] = x;
 
     // The millis to process
-    modifier_instance["millistoprocess"] = 0;
+    modifier_instance[MILLIS_TO_PROCESS] = 0;
 
     // Enable the modifier instance
-    modifier_instance["enabled"] = true;
+    modifier_instance[ENABLED] = true;
 
     // Starts the worker thread for the modifier instance
     CreateModifierWorker(modifier_instance->GetUuid(), modifier_type, modifier_instance);
@@ -335,7 +329,7 @@ CefRefPtr<ModifierWorker> ParticleSubsystem::CreateModifierWorker(std::string na
 
 void ParticleSubsystem::DestroyParticleWorker(std::string name)
 {
-    for (int i = 0; i < particle_workers.size(); i++)
+    for (unsigned int i = 0; i < particle_workers.size(); i++)
     {
         if (particle_workers[i]->GetName() == name) {
             particle_workers[i]->Stop();
@@ -346,21 +340,21 @@ void ParticleSubsystem::DestroyParticleWorker(std::string name)
 
 void ParticleSubsystem::DestroyParticleWorker(InstanceRefPtr<EntityInstance> entity_instance)
 {
-    for (int i = 0; i < particle_workers.size(); i++)
+    for (unsigned int i = 0; i < particle_workers.size(); i++)
     {
         if (particle_workers[i]->GetName() == entity_instance->GetUuid()) {
             particle_workers[i]->Stop();
             break;
         }
     }
-    for (int i = 0; i < emitter_workers.size(); i++)
+    for (unsigned int i = 0; i < emitter_workers.size(); i++)
     {
         if (emitter_workers[i]->GetName() == entity_instance->GetUuid()) {
             emitter_workers[i]->Stop();
             break;
         }
     }
-    for (int i = 0; i < modifier_workers.size(); i++)
+    for (unsigned int i = 0; i < modifier_workers.size(); i++)
     {
         if (modifier_workers[i]->GetName() == entity_instance->GetUuid()) {
             modifier_workers[i]->Stop();
@@ -371,7 +365,7 @@ void ParticleSubsystem::DestroyParticleWorker(InstanceRefPtr<EntityInstance> ent
 
 void ParticleSubsystem::DestroyEmitterWorker(InstanceRefPtr<EntityInstance> emitter_instance)
 {
-    for (int i = 0; i < emitter_workers.size(); i++)
+    for (unsigned int i = 0; i < emitter_workers.size(); i++)
     {
         if (emitter_workers[i]->GetName() == emitter_instance->GetUuid()) {
             emitter_workers[i]->Stop();
@@ -382,11 +376,15 @@ void ParticleSubsystem::DestroyEmitterWorker(InstanceRefPtr<EntityInstance> emit
 
 void ParticleSubsystem::DestroyModifierWorker(InstanceRefPtr<EntityInstance> modifier_instance)
 {
-    for (int i = 0; i < modifier_workers.size(); i++)
+    for (unsigned int i = 0; i < modifier_workers.size(); i++)
     {
         if (modifier_workers[i]->GetName() == modifier_instance->GetUuid()) {
             modifier_workers[i]->Stop();
             return;
         }
     }
+}
+
+}
+}
 }

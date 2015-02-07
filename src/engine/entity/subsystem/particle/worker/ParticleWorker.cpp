@@ -7,14 +7,18 @@
 
 #include "ParticleWorker.h"
 
+namespace inexor {
+namespace entity {
+namespace particle {
+
 ParticleWorker::ParticleWorker()
-    : name(""), running (false), stopped (true), thread (NULL), function(NULL)
+    : thread (NULL), name(""), running (false), stopped (true), function(NULL)
 {
     ResetTimer();
 }
 
 ParticleWorker::ParticleWorker(std::string name, FunctionRefPtr function)
-    : name(name), running (false), stopped (true), thread (NULL), function(function)
+    : thread (NULL), name(name), running (false), stopped (true), function(function)
 {
     ResetTimer();
 }
@@ -66,26 +70,8 @@ int ParticleWorker::Work(void *data)
                     (double) w->elapsed_millis / w->time_unit,
                     w->time_unit
                 );
-
+                // Simple worker
                 w->function->Execute(time_step);
-
-                // CAUTION: This applies for modifiers only!
-                //
-                // 1. Get all relationships of type "modifies" for this modifier
-                // w->modifier_instance->GetRelationshipsOfType();
-                // 2. Iterate over the relationships
-                // 2.1 Call the function
-                // w->function->Execute(time_step, w->modifier_instance, particle);
-                // w->function->Execute(time_step, w->particle_type, w->emitter_instance);
-
-                // TODO: emitters
-
-
-                /* TODO: the actual work
-                ps.update_particle_pools (elapsedtime);
-                ps.emit_particles (elapsedtime);
-                ps.modify_particles (elapsedtime);
-                */
             }
             w->frame_last_millis = w->frame_millis;
         }
@@ -118,4 +104,8 @@ void ParticleWorker::ResetTimer()
 void ParticleWorker::SetTimeUnit(double time_unit)
 {
     this->time_unit = time_unit;
+}
+
+}
+}
 }

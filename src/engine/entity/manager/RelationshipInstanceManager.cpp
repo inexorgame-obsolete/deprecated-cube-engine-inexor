@@ -7,6 +7,9 @@
 
 #include "RelationshipInstanceManager.h"
 
+namespace inexor {
+namespace entity {
+
 RelationshipInstanceManager::RelationshipInstanceManager(CefRefPtr<RelationshipTypeManager> relationship_type_manager) : relationship_type_manager(relationship_type_manager)
 {
 }
@@ -52,7 +55,6 @@ std::list<InstanceRefPtr<RelationshipInstance> > RelationshipInstanceManager::Ge
     return GetAll(relationship_type);
 }
 
-
 void RelationshipInstanceManager::DeleteInstance(InstanceRefPtr<RelationshipInstance> instance)
 {
     relationship_instances.erase(instance->GetUuid());
@@ -77,4 +79,7 @@ void RelationshipInstanceManager::DeleteAllInstances(TypeRefPtr<RelationshipType
 
 int RelationshipInstanceManager::Size() {
     return relationship_instances.size();
+}
+
+}
 }

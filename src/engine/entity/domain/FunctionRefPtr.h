@@ -12,6 +12,9 @@
 #include "TimeStep.h"
 #include "graph/EntityFunction.h"
 
+namespace inexor {
+namespace entity {
+
 class TypeBase;
 class EntityType;
 class RelationshipType;
@@ -44,5 +47,8 @@ class FunctionRefPtr : public CefRefPtr<EntityFunction> {
         void operator()(TimeStep time_step, RelationshipInstance* inst);
 
 };
+
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_DOMAIN_FUNCTIONREFPTR_H_ */

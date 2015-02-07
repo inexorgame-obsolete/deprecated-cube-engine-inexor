@@ -7,6 +7,10 @@
 
 #include "AttributeRefPtr.h"
 #include "FunctionRefPtr.h"
+#include "engine.h"
+
+namespace inexor {
+namespace entity {
 
 AttributeRefPtr::AttributeRefPtr() : parent(new EntityAttribute()) {}
 
@@ -18,6 +22,8 @@ AttributeRefPtr::AttributeRefPtr(EntityAttribute* p) : parent(p)
     attr->intVal = p->intVal;
     attr->floatVal = p->floatVal;
     attr->doubleVal = p->doubleVal;
+    attr->vec3Val = p->vec3Val;
+    attr->vec4Val = p->vec4Val;
     attr->stringVal = p->stringVal;
     attr->functionVal = p->functionVal;
     attr->initialized = true;
@@ -30,26 +36,13 @@ AttributeRefPtr::AttributeRefPtr(const CefRefPtr<EntityAttribute>& r) : parent(r
     attr->name = r->name;
     attr->intVal = r->intVal;
     attr->floatVal = r->floatVal;
+    attr->vec3Val = r->vec3Val;
+    attr->vec4Val = r->vec4Val;
     attr->doubleVal = r->doubleVal;
     attr->stringVal = r->stringVal;
     attr->functionVal = r->functionVal;
     attr->initialized = true;
 }
-
-/*
-template <typename U>
-AttributeRefPtr::AttributeRefPtr(const CefRefPtr<U>& r) : parent(r)
-{
-    EntityAttribute* attr = this->get();
-    attr->type = r->type;
-    attr->name = r->name;
-    attr->intVal = r->intVal;
-    attr->floatVal = r->floatVal;
-    attr->doubleVal = r->doubleVal;
-    attr->stringVal = r->stringVal;
-    attr->functionVal = r->functionVal;
-}
-*/
 
 AttributeRefPtr::AttributeRefPtr(bool value) : parent(new EntityAttribute(value)) {}
 
@@ -58,6 +51,14 @@ AttributeRefPtr::AttributeRefPtr(int value) : parent(new EntityAttribute(value))
 AttributeRefPtr::AttributeRefPtr(float value) : parent(new EntityAttribute(value)) {}
 
 AttributeRefPtr::AttributeRefPtr(double value) : parent(new EntityAttribute(value)) {}
+
+AttributeRefPtr::AttributeRefPtr(vec value) : parent(new EntityAttribute(value)) {}
+
+AttributeRefPtr::AttributeRefPtr(double x, double y, double z) : parent(new EntityAttribute(x, y, z)) {}
+
+AttributeRefPtr::AttributeRefPtr(vec4 value) : parent(new EntityAttribute(value)) {}
+
+AttributeRefPtr::AttributeRefPtr(double x, double y, double z, double w) : parent(new EntityAttribute(x, y, z, w)) {}
 
 AttributeRefPtr::AttributeRefPtr(std::string value) : parent(new EntityAttribute(value)) {}
 
@@ -71,6 +72,8 @@ EntityAttribute& AttributeRefPtr::operator=(const EntityAttribute &attribute)
     attr->type = attribute.type;
     attr->intVal = attribute.intVal;
     attr->doubleVal = attribute.doubleVal;
+    attr->vec3Val = attribute.vec3Val;
+    attr->vec4Val = attribute.vec4Val;
     attr->floatVal = attribute.floatVal;
     attr->stringVal = attribute.stringVal;
     attr->functionVal = attribute.functionVal;
@@ -84,6 +87,8 @@ EntityAttribute& AttributeRefPtr::operator=(const AttributeRefPtr &r)
     attr->intVal = r->intVal;
     attr->floatVal = r->floatVal;
     attr->doubleVal = r->doubleVal;
+    attr->vec3Val = r->vec3Val;
+    attr->vec4Val = r->vec4Val;
     attr->stringVal = r->stringVal;
     attr->functionVal = r->functionVal;
     return *attr;
@@ -121,6 +126,24 @@ EntityAttribute& AttributeRefPtr::operator=(const double &d)
     attr->type = ENTATTR_DOUBLE;
     double d1 = d;
     attr->doubleVal = d1;
+    return *attr;
+}
+
+EntityAttribute& AttributeRefPtr::operator=(const vec &v3)
+{
+    EntityAttribute* attr = this->get();
+    attr->type = ENTATTR_VEC3;
+    vec v = v3;
+    attr->vec3Val = v;
+    return *attr;
+}
+
+EntityAttribute& AttributeRefPtr::operator=(const vec4 &v4)
+{
+    EntityAttribute* attr = this->get();
+    attr->type = ENTATTR_VEC4;
+    vec4 v = v4;
+    attr->vec4Val = v;
     return *attr;
 }
 
@@ -864,4 +887,7 @@ void AttributeRefPtr::operator()(TimeStep time_step, RelationshipType* type, Rel
 void AttributeRefPtr::operator()(TimeStep time_step, RelationshipInstance* inst)
 {
     get()->functionVal->Execute(time_step, inst);
+}
+
+}
 }

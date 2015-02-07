@@ -9,6 +9,9 @@
 #include "../provider/EntityTypeProvider.h"
 #include "../factory/EntityTypeFactory.h"
 
+namespace inexor {
+namespace entity {
+
 EntityTypeManager::EntityTypeManager()
 {
 }
@@ -63,4 +66,7 @@ bool EntityTypeManager::Exists(std::string entity_type_name)
 
 int EntityTypeManager::Size() {
     return entity_types.size();
+}
+
+}
 }

@@ -11,6 +11,11 @@
 #include "../../../EntitySystemBase.h"
 #include "../../../domain/graph/EntityFunction.h"
 #include "../../../domain/graph/EntityInstance.h"
+#include "../ParticleModel.h"
+
+namespace inexor {
+namespace entity {
+namespace particle {
 
 class VelocityTransformation : public EntityFunction
 {
@@ -24,5 +29,9 @@ class VelocityTransformation : public EntityFunction
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(VelocityTransformation);
 };
+
+}
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_SUBSYSTEM_PARTICLE_MODIFIER_VELOCITYTRANSFORMATION_H_ */

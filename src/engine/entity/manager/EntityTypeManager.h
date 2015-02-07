@@ -14,8 +14,8 @@
 #include "../provider/EntityTypeProvider.h"
 #include "../factory/EntityTypeFactory.h"
 
-// class EntityTypeProvider;
-// class EntityTypeFactory;
+namespace inexor {
+namespace entity {
 
 class EntityTypeManager
 {
@@ -45,5 +45,8 @@ class EntityTypeManager
         IMPLEMENT_REFCOUNTING(EntityTypeManager);
 
 };
+
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_ENTITYTYPEMANAGER_H_ */

@@ -11,6 +11,9 @@
 #include "../../EntitySystemBase.h"
 #include "../TimeStep.h"
 
+namespace inexor {
+namespace entity {
+
 class EntityType;
 class RelationshipType;
 class EntityInstance;
@@ -111,5 +114,8 @@ class EntityFunction
         IMPLEMENT_REFCOUNTING(EntityFunction);
 
 };
+
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_ENTITYFUNCTION_H_ */

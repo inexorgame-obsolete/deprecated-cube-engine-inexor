@@ -7,9 +7,13 @@
 
 #include "PointEmitter.h"
 
+namespace inexor {
+namespace entity {
+namespace particle {
+
 PointEmitter::PointEmitter() : EntityFunction(POINT_EMITTER_FUNCTION)
 {
-    emitted_by_type = entity_system->GetRelationshipTypeManager()->Get(REL_EMITTED_BY);
+    emitted_by = entity_system->GetRelationshipTypeManager()->Get(REL_EMITTED_BY);
     apply_modifier = entity_system->GetRelationshipTypeManager()->Get(REL_APPLY_MODIFIER);
     modifies = entity_system->GetRelationshipTypeManager()->Get(REL_MODIFIES);
 }
@@ -27,32 +31,44 @@ void PointEmitter::Execute(TimeStep time_step, EntityType* particle_type, Entity
 
     InstanceRefPtr<EntityInstance> particle_inst = entity_system->GetEntityInstanceManager()->Create(particle_type);
 
-    // Position
-    particle_inst["x"] = emitter_inst->GetAttribute("x")->doubleVal;
-    particle_inst["y"] = emitter_inst->GetAttribute("y")->doubleVal;
-    particle_inst["z"] = emitter_inst->GetAttribute("z")->doubleVal;
+    /**
+     * The current position of the particle instance. May be overwritten by an
+     * initializer.
+     */
+    particle_inst[POS] = vec(emitter_inst->GetAttribute("pos")->vec3Val);
+    /*
+    particle_inst["x"]->doubleVal = emitter_inst->GetAttribute("x")->doubleVal;
+    particle_inst["y"]->doubleVal = emitter_inst->GetAttribute("y")->doubleVal;
+    particle_inst["z"]->doubleVal = emitter_inst->GetAttribute("z")->doubleVal;
+    */
 
     /**
      * The last current position of the particle instance.
      */
-    particle_inst["lx"] = emitter_inst->GetAttribute("x")->doubleVal;
-    particle_inst["ly"] = emitter_inst->GetAttribute("y")->doubleVal;
-    particle_inst["lz"] = emitter_inst->GetAttribute("z")->doubleVal;
+    particle_inst[LAST_POS] = vec(emitter_inst->GetAttribute(LAST_POS)->vec3Val);
+    /*
+    particle_inst["lx"]->doubleVal = emitter_inst->GetAttribute("x")->doubleVal;
+    particle_inst["ly"]->doubleVal = emitter_inst->GetAttribute("y")->doubleVal;
+    particle_inst["lz"]->doubleVal = emitter_inst->GetAttribute("z")->doubleVal;
+    */
 
     /**
      * The current velocity of the particle instance. The last velocity can be
      * calculated by the current and last position of the particle instance.
      */
-    particle_inst["vx"] = emitter_inst->GetAttribute("vx")->doubleVal;
-    particle_inst["vy"] = emitter_inst->GetAttribute("vy")->doubleVal;
-    particle_inst["vz"] = emitter_inst->GetAttribute("vz")->doubleVal;
+    particle_inst[VELOCITY] = vec(emitter_inst->GetAttribute(VELOCITY)->vec3Val);
+    /*
+    particle_inst["vx"]->doubleVal = emitter_inst->GetAttribute("vx")->doubleVal;
+    particle_inst["vy"]->doubleVal = emitter_inst->GetAttribute("vy")->doubleVal;
+    particle_inst["vz"]->doubleVal = emitter_inst->GetAttribute("vz")->doubleVal;
+    */
 
     /**
      * The remaining iterations of the particle instance. There might be
      * particle modifiers that change the remaining lifetime, for example
      * particle culling would set the remaining iterations to zero.
      */
-    particle_inst["remaining"] = 0;
+    particle_inst[REMAINING] = emitter_inst->GetAttribute(LIFETIME)->intVal;
 
     /**
      * The elapsed iterations since birth. This attribute gets constantly
@@ -61,34 +77,34 @@ void PointEmitter::Execute(TimeStep time_step, EntityType* particle_type, Entity
      * iterations attribute was modified. If you need a constant change
      * over time, you should use this!
      */
-    particle_inst["elapsed"] = 0;
+    particle_inst[ELAPSED] = 0;
 
     /**
      * The time elapsed in the previous iteration.
      */
-    particle_inst["last_elapsed"] = 0;
+    particle_inst[LAST_ELAPSED] = 0;
 
     /**
      * Rolling particles
      */
-    particle_inst["roll"] = 0.0;
+    particle_inst[ROLL] = 0.0;
 
     /**
      * Every particle instance has a mass. Needed for modifiers which are
      * applying physical transformations like gravity.
      */
-    particle_inst["mass"] = 0.0;
+    particle_inst[MASS] = 0.0;
 
     /**
      * The density (or volume) of the particle. Needed for volumetric
      * rendering (for example metaballs or cloth).
      */
-    particle_inst["density"] = 0.0;
+    particle_inst[DENSITY] = 0.0;
 
     // Create relationship from particle to emitter
     entity_system->GetRelationshipInstanceManager()->CreateInstance(
         // The relationship type
-        emitted_by_type,
+        emitted_by,
         // Start node: The particle instance
         particle_inst,
         // End node: The emitter instance
@@ -119,8 +135,9 @@ void PointEmitter::Execute(TimeStep time_step, EntityType* particle_type, Entity
         entity_system->GetRelationshipInstanceManager()->CreateInstance(
             // The relationship type
             modifies,
-            // Start node: The modifier instance
-            (*it)->GetEndNode(),
+            // Start node: The modifier instance (which is the end node of the
+            // apply_modifiers relationship)
+            (*it)->endNode,
             // End node: The particle instance
             particle_inst
         );
@@ -130,4 +147,8 @@ void PointEmitter::Execute(TimeStep time_step, EntityType* particle_type, Entity
 
     // TODO: remove debug
     // logoutf("particle instance emitted");
+}
+
+}
+}
 }

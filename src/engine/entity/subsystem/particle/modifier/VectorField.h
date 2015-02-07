@@ -11,7 +11,12 @@
 #include "../../../EntitySystemBase.h"
 #include "../../../domain/graph/EntityFunction.h"
 #include "../../../domain/graph/EntityInstance.h"
+#include "../ParticleModel.h"
 #include "muParser.h"
+
+namespace inexor {
+namespace entity {
+namespace particle {
 
 class VectorField : public EntityFunction
 {
@@ -36,5 +41,9 @@ class VectorField : public EntityFunction
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(VectorField);
 };
+
+}
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_SUBSYSTEM_PARTICLE_MODIFIER_VECTORFIELD_H_ */

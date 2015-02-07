@@ -8,6 +8,9 @@
 #include "EntityTypeProvider.h"
 #include "../manager/EntityTypeManager.h"
 
+namespace inexor {
+namespace entity {
+
 EntityTypeProvider::EntityTypeProvider(std::string entity_name) : entity_name(entity_name) {}
 EntityTypeProvider::~EntityTypeProvider() {}
 
@@ -19,4 +22,7 @@ std::string EntityTypeProvider::GetEntityName()
 TypeRefPtr<EntityType> EntityTypeProvider::GetEntityType()
 {
     return entity_type;
+}
+
+}
 }

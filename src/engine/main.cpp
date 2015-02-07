@@ -29,8 +29,8 @@ int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1;
 int initing = NOT_INITING;
 
 CefRefPtr<InexorCefApp> cef_app;
-CefRefPtr<EntitySystem> entity_system;
-CefRefPtr<ParticleSubsystem> particle_subsystem;
+CefRefPtr<inexor::entity::EntitySystem> entity_system;
+CefRefPtr<inexor::entity::particle::ParticleSubsystem> particle_subsystem;
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // game exit
@@ -1358,7 +1358,7 @@ int main(int argc, char **argv)
 
     logoutf("init: entity system");
     entity_system = new EntitySystem();
-    particle_subsystem = entity_system->GetSubsystem<ParticleSubsystem>();
+    particle_subsystem = entity_system->GetSubsystem<inexor::entity::particle::ParticleSubsystem>();
     entity_system->RunTests();
 
     logoutf("init: gl: effects");

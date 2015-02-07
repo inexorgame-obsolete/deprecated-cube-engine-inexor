@@ -13,6 +13,9 @@
 #include "../domain/graph/EntityType.h"
 #include "../domain/graph/RelationshipType.h"
 
+namespace inexor {
+namespace entity {
+
 class PositionalEntityTypeProvider : public EntityTypeProvider
 {
     public:
@@ -25,5 +28,8 @@ class PositionalEntityTypeProvider : public EntityTypeProvider
         IMPLEMENT_REFCOUNTING(PositionalEntityTypeProvider);
 
 };
+
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_PROVIDER_POSITIONAL_H_ */

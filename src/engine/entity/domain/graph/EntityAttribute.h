@@ -8,10 +8,14 @@
 #ifndef SRC_ENGINE_ENTITY_ENTITYATTRIBUTE_H_
 #define SRC_ENGINE_ENTITY_ENTITYATTRIBUTE_H_
 
+#include "engine.h"
+// #include "geom.h"
 #include "../../EntitySystemBase.h"
 #include "../TimeStep.h"
 #include "../FunctionRefPtr.h"
-// #include "../TypeRefPtr.h"
+
+namespace inexor {
+namespace entity {
 
 enum {
     ENTATTR_FALSE = 0,
@@ -20,10 +24,10 @@ enum {
     ENTATTR_INT,
     ENTATTR_FLOAT,
     ENTATTR_DOUBLE,
+    ENTATTR_VEC3,
+    ENTATTR_VEC4,
     ENTATTR_STRING,
     ENTATTR_FUNCTION
-    // TODO: vec3, vec4
-    // TODO: muparser types
 }; // JSON types
 
 class TypeBase;
@@ -31,7 +35,6 @@ class EntityType;
 class RelationshipType;
 class EntityInstance;
 class RelationshipInstance;
-// class FunctionRefPtr;
 
 class EntityAttribute
 {
@@ -41,6 +44,10 @@ class EntityAttribute
         EntityAttribute(int value);
         EntityAttribute(float value);
         EntityAttribute(double value);
+        EntityAttribute(vec value);
+        EntityAttribute(double x, double y, double z);
+        EntityAttribute(vec4 value);
+        EntityAttribute(double x, double y, double z, double w);
         EntityAttribute(std::string value);
         EntityAttribute(FunctionRefPtr value);
         EntityAttribute(FunctionRefPtr *value);
@@ -52,12 +59,18 @@ class EntityAttribute
         void SetValue(int value);
         void SetValue(float value);
         void SetValue(double value);
+        void SetValue(vec value);
+        void SetValue(double x, double y, double z);
+        void SetValue(vec4 value);
+        void SetValue(double x, double y, double z, double w);
         void SetValue(std::string value);
         void SetValue(FunctionRefPtr value);
         bool GetBool();
         int GetInteger();
         double GetFloat();
         double GetDouble();
+        vec GetVec3();
+        vec4 GetVec4();
         std::string GetString();
         FunctionRefPtr GetFunction();
 
@@ -66,6 +79,8 @@ class EntityAttribute
         EntityAttribute& operator=(int* value);
         EntityAttribute& operator=(float* value);
         EntityAttribute& operator=(double* value);
+        EntityAttribute& operator=(vec value);
+        EntityAttribute& operator=(vec4 value);
         EntityAttribute& operator=(std::string* value);
         EntityAttribute& operator=(FunctionRefPtr* value);
         EntityAttribute& operator=(FunctionRefPtr value);
@@ -90,6 +105,8 @@ class EntityAttribute
         int intVal;
         float floatVal;
         double doubleVal;
+        vec vec3Val;
+        vec4 vec4Val;
         std::string stringVal;
         FunctionRefPtr functionVal;
 
@@ -97,5 +114,8 @@ class EntityAttribute
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(EntityAttribute);
 };
+
+}
+}
 
 #endif /* SRC_ENGINE_ENTITY_ENTITYATTRIBUTE_H_ */

@@ -7,6 +7,9 @@
 
 #include "InstanceBase.h"
 
+namespace inexor {
+namespace entity {
+
 InstanceBase::InstanceBase()
 {
     // Generate UUID
@@ -32,4 +35,7 @@ std::string InstanceBase::GetUuid()
 void InstanceBase::SetUuid(std::string uuid)
 {
     this->uuid = uuid;
+}
+
+}
 }
