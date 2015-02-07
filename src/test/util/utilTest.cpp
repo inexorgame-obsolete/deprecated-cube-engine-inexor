@@ -56,3 +56,8 @@ namespace {
     t(22, "22");
   }
 }
+
+test(StringFormatter, works) {
+  string s = fmt << "Hello World " << 22 << 'c';
+  expectEq(s, "Hello World 22c");
+}
