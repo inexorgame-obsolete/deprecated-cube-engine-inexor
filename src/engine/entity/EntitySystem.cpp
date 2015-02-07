@@ -67,11 +67,7 @@ void EntitySystem::Update()
     // Calculate the time step
     frame_millis = SDL_GetTicks();
     elapsed_millis = frame_millis - frame_last_millis;
-    TimeStep time_step(
-        elapsed_millis,
-        (double) elapsed_millis / time_unit,
-        time_unit
-    );
+    TimeStep time_step(elapsed_millis, time_unit);
     for (unsigned int i = 0; i < subsystems.size(); i++)
     {
         SubsystemBase* subsystem = subsystems[i];
