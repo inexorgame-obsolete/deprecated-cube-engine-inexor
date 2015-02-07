@@ -2268,7 +2268,7 @@ void loadcrosshair(const char *name, int i)
     if(crosshairs[i] == notexture) 
     {
         name = game::defaultcrosshair(i);
-        if(!name) name = "media/crosshair/default_crosshair.png"; //backupcrosshair
+        if(!name) name = tempformatstring("%s/default.png", crosshairdir); //backupcrosshair
         crosshairs[i] = textureload(name, 3, true);
     }
 }
@@ -2286,7 +2286,7 @@ ICOMMAND(getcrosshair, "i", (int *i),
     if(*i >= 0 && *i < MAXCROSSHAIRS)
     {
         name = crosshairs[*i] ? crosshairs[*i]->name : game::defaultcrosshair(*i);
-        if(!name) name = "media/crosshair/default_crosshair.png";
+        if(!name) name = tempformatstring("%s/default.png", crosshairdir);
     }
     result(name);
 });
@@ -2299,7 +2299,7 @@ void writecrosshairs(stream *f)
 }
 
 static Texture *cursortex = NULL;
-SVARFP(cursor, "media/interface/cursor.png", cursortex = NULL);
+SVARFP(cursor, tempformatstring("%s/cursor/default.png", interfacedir), cursortex = NULL);
 
 void drawcrosshair(int w, int h)
 {

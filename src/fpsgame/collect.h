@@ -501,18 +501,18 @@ struct collectclientmode : clientmode
     {
         int team = collectteambase(player1->team);
         vec theight(0, 0, 0);
-        abovemodel(theight, "skull/red");
+        abovemodel(theight, "game/skull/red");
         loopv(bases)
         {
             base &b = bases[i];
-            const char *basename = b.team==team ? "base/blue" : "base/red";
+            const char *basename = b.team==team ? "game/base/blue" : "game/base/red";
             rendermodel(&b.light, basename, ANIM_MAPMODEL|ANIM_LOOP, b.o, 0, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_OCCLUDED);
             float fradius = 1.0f, fheight = 0.5f;
             regular_particle_flame(PART_FLAME, vec(b.tokenpos.x, b.tokenpos.y, b.tokenpos.z - 4.5f), fradius, fheight, b.team==team ? 0x2020FF : 0x802020, 3, 2.0f);
             vec tokenpos(b.tokenpos);
             tokenpos.z -= theight.z/2 + sinf(lastmillis/100.0f)/20;
             float alpha = player1->state == CS_ALIVE && player1->tokens <= 0 && lastmillis < b.laststeal + STEALTOKENTIME ? 0.5f : 1.0f; 
-            rendermodel(&b.light, b.team==team ? "skull/blue" : "skull/red", ANIM_MAPMODEL|ANIM_LOOP, tokenpos, lastmillis/10.0f, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_OCCLUDED, NULL, NULL, 0, 0, alpha);
+            rendermodel(&b.light, b.team==team ? "game/skull/blue" : "game/skull/red", ANIM_MAPMODEL|ANIM_LOOP, tokenpos, lastmillis/10.0f, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_OCCLUDED, NULL, NULL, 0, 0, alpha);
             formatstring(b.info)("%d", totalscore(b.team));
             vec above(b.tokenpos);
             above.z += TOKENHEIGHT;
@@ -555,7 +555,7 @@ struct collectclientmode : clientmode
             if(!addbase(index, e->o, e->attr2)) continue;
             base &b = bases[index];
             b.tokenpos = b.o;
-            abovemodel(b.tokenpos, "base/blue");
+            abovemodel(b.tokenpos, "game/base/blue");
             b.tokenpos.z += TOKENHEIGHT-2;
             b.light = e->light;
         }

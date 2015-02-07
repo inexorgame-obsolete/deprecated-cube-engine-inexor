@@ -1069,14 +1069,12 @@ namespace game
 	// that return strings depending on indices
     const char *defaultcrosshair(int index)
     {
-    	string crosshair;
         switch(index)
         {
-            case 2: formatstring(crosshair)("%s/default_hit.png", crosshairdir); break;
-            case 1: formatstring(crosshair)("%s/default_teammate.png", crosshairdir); break;
-            default: formatstring(crosshair)("%s/default.png", crosshairdir); break;
+            case 2: return tempformatstring("%s/default_hit.png", crosshairdir);
+            case 1: return tempformatstring("%s/default_teammate.png", crosshairdir);
+            default: return tempformatstring("%s/default.png", crosshairdir);
         }
-    	return newstring(crosshair);
     }
 
 	// switch crosshair depending on player state and player health

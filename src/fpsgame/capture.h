@@ -329,7 +329,7 @@ struct captureclientmode : clientmode
 
     void preload()
     {
-        static const char * const basemodels[3] = { "base/neutral", "base/red", "base/blue" };
+        static const char * const basemodels[3] = { "game/base/neutral", "game/base/red", "game/base/blue" };
         loopi(3) preloadmodel(basemodels[i]);
         preloadsound(S_V_BASECAP);
         preloadsound(S_V_BASELOST);
@@ -350,7 +350,7 @@ struct captureclientmode : clientmode
         {
             baseinfo &b = bases[i];
             if(!b.valid()) continue;
-            const char *basename = b.owner[0] ? (strcmp(b.owner, player1->team) ? "base/red" : "base/blue") : "base/neutral";
+            const char *basename = b.owner[0] ? (strcmp(b.owner, player1->team) ? "game/base/red" : "game/base/blue") : "game/base/neutral";
             rendermodel(&b.light, basename, ANIM_MAPMODEL|ANIM_LOOP, b.o, 0, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_OCCLUDED);
             float fradius = 1.0f, fheight = 0.5f;
             regular_particle_flame(PART_FLAME, vec(b.ammopos.x, b.ammopos.y, b.ammopos.z - 4.5f), fradius, fheight, b.owner[0] ? (strcmp(b.owner, player1->team) ? 0x802020 : 0x2020FF) : 0x208020, 3, 2.0f);
@@ -527,7 +527,7 @@ struct captureclientmode : clientmode
             baseinfo &b = bases.add();
             b.o = e->o;
             b.ammopos = b.o;
-            abovemodel(b.ammopos, "base/neutral");
+            abovemodel(b.ammopos, "game/base/neutral");
             b.ammopos.z += AMMOHEIGHT-2;
             b.ammotype = e->attr1;
             defformatstring(alias)("base_%d", e->attr2);
