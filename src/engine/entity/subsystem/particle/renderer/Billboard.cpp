@@ -61,11 +61,6 @@ void Billboard::Before(TimeStep time_step, EntityInstance* renderer_inst)
 void Billboard::Execute(TimeStep time_step, EntityInstance* renderer_inst, EntityInstance* particle_inst)
 {
     glVertex3f((*particle_inst)[POS]->vec3Val.x, (*particle_inst)[POS]->vec3Val.y, (*particle_inst)[POS]->vec3Val.z);
-    logoutf(
-        "( %2.2f, %2.2f, %2.2f )  ( %2.2f, %2.2f, %2.2f )",
-        (*particle_inst)[POS]->vec3Val.x, (*particle_inst)[POS]->vec3Val.y, (*particle_inst)[POS]->vec3Val.z,
-        game::player1->o.x, game::player1->o.y, game::player1->o.z
-    );
 }
 
 void Billboard::After(TimeStep time_step, EntityInstance* renderer_inst)

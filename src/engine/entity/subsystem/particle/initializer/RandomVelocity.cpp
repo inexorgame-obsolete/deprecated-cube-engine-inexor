@@ -21,11 +21,7 @@ RandomVelocity::~RandomVelocity()
 
 void RandomVelocity::Execute(TimeStep time_step, EntityInstance* emitter_inst, EntityInstance* initializer_inst, EntityInstance* particle_inst)
 {
-    (*particle_inst)[VELOCITY]->vec3Val = vec(rndscale(5.0f), rndscale(5.0f), rndscale(5.0f));
-    logoutf("set random velocity: ( %2.2f, %2.2f, %2.2f )",
-        (*particle_inst)[VELOCITY]->vec3Val.x, (*particle_inst)[VELOCITY]->vec3Val.y, (*particle_inst)[VELOCITY]->vec3Val.z
-    );
-
+    (*particle_inst)[VELOCITY]->vec3Val = vec(rndscale(20.0f) - 10.0f, rndscale(20.0f) - 10.0f, rndscale(20.0f));
 }
 
 }

@@ -113,7 +113,6 @@ void ParticleSubsystem::RenderParticles()
                 function->Execute(time_step, (*it).get(), (*it2)->endNode.get());
                 ++it2;
             } else {
-                logoutf("r5");
                 // Remove the particle side of the relationship (most costly)
                 (*it2)->endNode->incoming[renders].remove(*it2);
                 // Remove the manager side of the relationship
