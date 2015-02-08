@@ -37,6 +37,9 @@ namespace net {
      *
      * @return The Message or an empty vector if no message
      *         is available.
+     * @throws logic_error If receiving on this MessageConnect
+     *         is not supported.
+     * @see supportsReceive
      */
     virtual bytes Receive() {
       return ReceiveChannel().first;
@@ -61,6 +64,9 @@ namespace net {
      *    If no message is available, the message will be an
      *    empty vector and the value of the MessageConnect*
      *    is undefined.
+     * @throws logic_error If receiving on this MessageConnect
+     *         is not supported.
+     * @see supportsReceive
      * @see MCHub
      */
     virtual bytes_on_channel ReceiveChannel() {
@@ -71,6 +77,9 @@ namespace net {
      * Send a Message.
      *
      * @param dat The message
+     * @throws logic_error If sending on this MessageConnect
+     *         is not supported.
+     * @see supportsSend
      */
     virtual void Send(bytes &dat) = 0;
 
@@ -82,12 +91,26 @@ namespace net {
      *
      * @param dat A pointer to the memory containing the message
      * @param len The length of the message
+     * @throws logic_error If sending on this MessageConnect
+     *         is not supported.
+     * @see supportsSend
      */
     virtual void Send(void *dat, size_t len) {
       bytes d(len);
       memcpy(&d[0], dat, len); // TODO: This is shit and very inefficient
       Send(d);
     }
+
+    /// Check whether this message connect supports sending.
+    ///
+    /// If not overwritten, this always returns true.
+    virtual bool supportSend() { return true; }
+
+    /// Check whether this message connect supports
+    /// receiving.
+    ///
+    /// If not overwritten, this always returns true.
+    virtual bool supportReceive() { return true; }
     
     virtual ~MessageConnect() {}
   };
