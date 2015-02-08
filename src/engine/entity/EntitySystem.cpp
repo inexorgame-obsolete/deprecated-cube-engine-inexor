@@ -289,7 +289,7 @@ void EntitySystem::ParticleSystemTest()
 
     logoutf("Create emitter instances");
     InstanceRefPtr<EntityInstance> point_emitter_1 = particle_subsystem->CreateEmitterInstance(point_emitter, 512.0, 768.0, 512.0, 0.0, 0.0, 0.0);
-    // InstanceRefPtr<EntityInstance> point_emitter_2 = particle_subsystem->CreateEmitterInstance(point_emitter, 512.0, 256.0, 512.0, 0.0, 0.0, 0.0);
+    InstanceRefPtr<EntityInstance> point_emitter_2 = particle_subsystem->CreateEmitterInstance(point_emitter, 512.0, 256.0, 512.0, 0.0, 0.0, 0.0);
     // InstanceRefPtr<EntityInstance> point_emitter_3 = particle_subsystem->CreateEmitterInstance(point_emitter, 768.0, 512.0, 512.0, 0.0, 0.0, 0.0);
     // InstanceRefPtr<EntityInstance> point_emitter_4 = particle_subsystem->CreateEmitterInstance(point_emitter, 256.0, 512.0, 512.0, 0.0, 0.0, 0.0);
 
@@ -303,26 +303,26 @@ void EntitySystem::ParticleSystemTest()
 
     logoutf("Create renderer instances");
     InstanceRefPtr<EntityInstance> billboard_renderer_1 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "media/particle/ball1.png", 15.0f);
-    // InstanceRefPtr<EntityInstance> billboard_renderer_2 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "media/particle/ball2.png", 25.0f);
+    InstanceRefPtr<EntityInstance> billboard_renderer_2 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "media/particle/ball2.png", 25.0f);
     // InstanceRefPtr<EntityInstance> billboard_renderer_3 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "media/particle/ball3.png", 15.0f);
     // InstanceRefPtr<EntityInstance> billboard_renderer_4 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "media/particle/flash01.png", 25.0f);
 
     logoutf("Create relation from emitter to initializer");
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_random_velocity_1 = particle_subsystem->AddInitializerToEmitter(point_emitter_1, random_velocity_initializer_1);
-    // InstanceRefPtr<RelationshipInstance> rel_point_emitter_random_velocity_2 = particle_subsystem->AddInitializerToEmitter(point_emitter_2, random_velocity_initializer_1);
+    InstanceRefPtr<RelationshipInstance> rel_point_emitter_random_velocity_2 = particle_subsystem->AddInitializerToEmitter(point_emitter_2, random_velocity_initializer_1);
     // InstanceRefPtr<RelationshipInstance> rel_point_emitter_random_velocity_3 = particle_subsystem->AddInitializerToEmitter(point_emitter_3, random_velocity_initializer_1);
     // InstanceRefPtr<RelationshipInstance> rel_point_emitter_random_velocity_4 = particle_subsystem->AddInitializerToEmitter(point_emitter_4, random_velocity_initializer_1);
 
     logoutf("Create relation from emitter to modifier");
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_transformation_1 = particle_subsystem->AddModifierToEmitter(point_emitter_1, velocity_transformation_modifier_1);
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_vector_field_1 = particle_subsystem->AddModifierToEmitter(point_emitter_1, vector_field_modifier_1);
-    // InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_transformation_2 = particle_subsystem->AddModifierToEmitter(point_emitter_2, velocity_transformation_modifier_1);
+    InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_transformation_2 = particle_subsystem->AddModifierToEmitter(point_emitter_2, velocity_transformation_modifier_1);
     // InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_transformation_3 = particle_subsystem->AddModifierToEmitter(point_emitter_3, velocity_transformation_modifier_1);
     // InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_transformation_4 = particle_subsystem->AddModifierToEmitter(point_emitter_4, velocity_transformation_modifier_1);
 
     logoutf("Create relation from emitter to renderer");
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_billboard_renderer_1 = particle_subsystem->AddRendererToEmitter(point_emitter_1, billboard_renderer_1);
-    // InstanceRefPtr<RelationshipInstance> rel_point_emitter_billboard_renderer_2 = particle_subsystem->AddRendererToEmitter(point_emitter_2, billboard_renderer_2);
+    InstanceRefPtr<RelationshipInstance> rel_point_emitter_billboard_renderer_2 = particle_subsystem->AddRendererToEmitter(point_emitter_2, billboard_renderer_2);
     // InstanceRefPtr<RelationshipInstance> rel_point_emitter_billboard_renderer_3 = particle_subsystem->AddRendererToEmitter(point_emitter_3, billboard_renderer_3);
     // InstanceRefPtr<RelationshipInstance> rel_point_emitter_billboard_renderer_4 = particle_subsystem->AddRendererToEmitter(point_emitter_4, billboard_renderer_4);
 
