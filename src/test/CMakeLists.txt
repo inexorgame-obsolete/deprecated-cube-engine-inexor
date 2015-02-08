@@ -7,6 +7,8 @@ link_directories(${GTEST_LIB_DIR})
 
 add_app(${TEST_BINARY} ${TEST_MODULE_SOURCES})
 
+config_net(${TEST_BINARY})
+config_util(${TEST_BINARY})
 config_gtest(${TEST_BINARY})
 
 target_link_libraries_wrapper(${TEST_BINARY} ${ADDITIONAL_LIBRARIES})
