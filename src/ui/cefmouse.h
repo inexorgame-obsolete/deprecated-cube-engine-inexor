@@ -20,11 +20,11 @@ class InexorCefMouseManager : public InexorCefContextProvider
     public:
         InexorCefMouseManager(CefRefPtr<InexorCefLayerManager> layer_manager) : x(0), y(0), max_x(0), max_y(0), size(0.03f), visible(false) {
             this->layer_manager = layer_manager;
-            SetTexture("media/interface/guicursor.png", GL_ONE);
+            SetTexture("media/interface/cursor/default.png", GL_ONE);
         };
         InexorCefMouseManager(CefRefPtr<InexorCefLayerManager> layer_manager, int width, int height) : x(0), y(0), size(0.03f), visible(true) {
             this->layer_manager = layer_manager;
-            SetTexture("media/interface/guicursor.png", GL_ONE);
+            SetTexture("media/interface/cursor/default.png", GL_ONE);
             SetMax(width, height);
         };
 
