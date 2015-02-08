@@ -60,6 +60,7 @@ int ModifierWorker::Work(void *data)
                 int died = 0;
                 try {
                     std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = w->modifier_instance->outgoing[w->modifies].begin();
+                    w->function->Before(time_step, w->modifier_instance.get());
                     while (it != w->modifier_instance->outgoing[w->modifies].end())
                     {
                         if ((*it)->endNode[REMAINING]->intVal > 0)
@@ -78,6 +79,7 @@ int ModifierWorker::Work(void *data)
                             died++;
                         }
                     }
+                    w->function->After(time_step, w->modifier_instance.get());
                     // if (alive > 0 || died > 0) logoutf("[mod] alive: %d died: %d", alive, died);
                 } catch (int e) {
                     logoutf("exception modifier worker %d", e);
