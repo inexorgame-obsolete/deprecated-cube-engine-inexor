@@ -31,6 +31,7 @@ class TypeRefPtr : public CefRefPtr<T> {
             AttributeRefPtr attribute = this->get()->GetAttribute(key);
             if (!attribute->initialized) {
                 attribute->name = key;
+                attribute->initialized = true;
             }
             return attribute;
         };
