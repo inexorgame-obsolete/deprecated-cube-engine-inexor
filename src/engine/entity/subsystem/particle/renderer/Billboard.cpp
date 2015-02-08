@@ -20,6 +20,8 @@ namespace particle {
 
 Billboard::Billboard() : EntityFunction(RENDERER_BILLBOARD_FUNCTION)
 {
+    shader = lookupshaderbyname("particlepoints");
+    tex = NULL;
 }
 
 Billboard::~Billboard()
@@ -29,30 +31,31 @@ Billboard::~Billboard()
 void Billboard::Before(TimeStep time_step, EntityInstance* renderer_inst)
 {
     glPushMatrix();
-    // glShadeModel(GL_SMOOTH);
-    // glEnable(GL_POINT_SMOOTH);
-    // glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+    glShadeModel(GL_SMOOTH);
+    glEnable(GL_POINT_SMOOTH);
+    glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    defaultshader->set();
-    // ... TODO get point size
-    // if (pr_inst->attributes.count("size") == 1) pointSize = pr_inst->attributes["size"];
-    // else pointSize = 1.0f;
     glDepthMask(GL_FALSE);
-    // glEnable(GL_POINT_SPRITE);
-    // glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+    glEnable(GL_POINT_SPRITE);
+    glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
-    // if (!shader) shader = lookupshaderbyname("particlepoints");
-    // if(!shader) return;
-    // shader->set();
-    // glUniform1f_(glGetUniformLocation_(shader->program, "pointSize"), pointSize);
-    // glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
-    // glEnable(GL_TEXTURE_2D);
-    // tex = textureload(pr_inst->texture.c_str(), texclamp);
-    // glBindTexture(GL_TEXTURE_2D, tex->id);
+    // logoutf("shader: %s texture: %s size: %2.2f", (*renderer_inst)[SHADER]->stringVal.c_str(), (*renderer_inst)[TEXTURE]->stringVal.c_str(), (*renderer_inst)[SIZE]->floatVal);
+    if (!shader)
+        shader = lookupshaderbyname("particlepoints"); // (*renderer_inst)[SHADER]->stringVal.c_str()
+    if(shader)
+    {
+        shader->set();
+        glUniform1f_(glGetUniformLocation_(shader->program, "pointSize"), (*renderer_inst)[SIZE]->floatVal);
+
+        glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
+        glEnable(GL_TEXTURE_2D);
+        tex = textureload((*renderer_inst)[TEXTURE]->stringVal.c_str(), 0);
+        glBindTexture(GL_TEXTURE_2D, tex->id);
+    }
+
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-    glPointSize(5.0f);
     glBegin(GL_POINTS);
     // TODO: get particle color
     glColor4f(1.0f, 0.5f, 0.5f, 0.5f);
@@ -68,9 +71,12 @@ void Billboard::After(TimeStep time_step, EntityInstance* renderer_inst)
     glEnd();
     glDisable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    // glDisable(GL_POINT_SPRITE);
-    // glDisable(GL_VERTEX_PROGRAM_POINT_SIZE);
-    // glDisable(GL_TEXTURE_2D);
+    if (shader)
+    {
+        glDisable(GL_POINT_SPRITE);
+        glDisable(GL_VERTEX_PROGRAM_POINT_SIZE);
+        glDisable(GL_TEXTURE_2D);
+    }
     glDepthMask(GL_TRUE);
     glPopMatrix();
 }

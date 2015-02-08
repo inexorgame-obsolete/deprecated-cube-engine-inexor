@@ -281,15 +281,25 @@ InstanceRefPtr<EntityInstance> ParticleSubsystem::CreateModifierInstance(TypeRef
     return modifier_instance;
 }
 
-InstanceRefPtr<EntityInstance> ParticleSubsystem::CreateRendererInstance(std::string renderer_type_name)
+InstanceRefPtr<EntityInstance> ParticleSubsystem::CreateRendererInstance(std::string renderer_type_name, std::string shader, std::string texture, float size)
 {
     TypeRefPtr<EntityType> renderer_type = entity_type_manager->Get(renderer_type_name);
-    return CreateRendererInstance(renderer_type);
+    return CreateRendererInstance(renderer_type, shader, texture, size);
 }
 
-InstanceRefPtr<EntityInstance> ParticleSubsystem::CreateRendererInstance(TypeRefPtr<EntityType> renderer_type)
+InstanceRefPtr<EntityInstance> ParticleSubsystem::CreateRendererInstance(TypeRefPtr<EntityType> renderer_type, std::string shader, std::string texture, float size)
 {
     InstanceRefPtr<EntityInstance> renderer_instance = entity_instance_manager->Create(renderer_type);
+
+    // Sets the shader name
+    renderer_instance[SHADER] = shader;
+
+    // Sets the texture name
+    renderer_instance[TEXTURE] = texture;
+
+    // Sets the size
+    renderer_instance[SIZE] = size;
+
     renderers.push_back(renderer_instance);
     return renderer_instance;
 }
