@@ -864,6 +864,11 @@ void AttributeRefPtr::operator()(TimeStep time_step, EntityInstance* inst_1, Ent
     get()->functionVal->Execute(time_step, inst_1, inst_2);
 }
 
+void AttributeRefPtr::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, EntityInstance* inst_3)
+{
+    get()->functionVal->Execute(time_step, inst_1, inst_2, inst_3);
+}
+
 void AttributeRefPtr::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipType* rel_type)
 {
     get()->functionVal->Execute(time_step, inst_1, inst_2, rel_type);

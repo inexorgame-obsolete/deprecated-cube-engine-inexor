@@ -27,27 +27,29 @@ ParticleSubsystem::ParticleSubsystem(
     particle_emitter_type_factory = new ParticleEmitterTypeFactory(entity_type_manager);
     particle_initializer_type_factory = new ParticleInitializerTypeFactory(entity_type_manager);
     particle_modifier_type_factory = new ParticleModifierTypeFactory(entity_type_manager);
+    particle_renderer_type_factory = new ParticleRendererTypeFactory(entity_type_manager);
 
     // Register entity type factories
     entity_type_manager->RegisterFactory(particle_type_factory);
     entity_type_manager->RegisterFactory(particle_emitter_type_factory);
     entity_type_manager->RegisterFactory(particle_initializer_type_factory);
     entity_type_manager->RegisterFactory(particle_modifier_type_factory);
+    entity_type_manager->RegisterFactory(particle_renderer_type_factory);
 
     // Create graph model: Node types
-    TypeRefPtr<EntityType> parent_particle_type = entity_type_manager->Create(ENTTYPE_PARENT_PARTICLE_TYPE, false, false);
+    TypeRefPtr<EntityType> parent_particle_type = entity_type_manager->Create(ENTTYPE_PARENT_PARTICLE_TYPE, true, true);
     TypeRefPtr<EntityType> parent_emitter_type = entity_type_manager->Create(ENTTYPE_PARENT_EMITTER_TYPE, true, true);
     TypeRefPtr<EntityType> parent_initializer_type = entity_type_manager->Create(ENTTYPE_PARENT_INITIALIZER_TYPE, true, true);
     TypeRefPtr<EntityType> parent_modifier_type = entity_type_manager->Create(ENTTYPE_PARENT_MODIFIER_TYPE, true, true);
     TypeRefPtr<EntityType> parent_renderer_type = entity_type_manager->Create(ENTTYPE_PARENT_RENDERER_TYPE, true, true);
 
     // Create graph model: Relationship types
-    TypeRefPtr<RelationshipType> emitted_by = relationship_type_manager->Create(REL_EMITTED_BY, false, false, parent_particle_type, parent_emitter_type);
-    TypeRefPtr<RelationshipType> modifies = relationship_type_manager->Create(REL_MODIFIES, false, false, parent_modifier_type, parent_particle_type);
-    TypeRefPtr<RelationshipType> renders = relationship_type_manager->Create(REL_RENDERS, false, false, parent_renderer_type, parent_particle_type);
-    TypeRefPtr<RelationshipType> apply_initializer = relationship_type_manager->Create(REL_APPLY_INITIALIZER, true, true, parent_emitter_type, parent_initializer_type);
-    TypeRefPtr<RelationshipType> apply_modifier = relationship_type_manager->Create(REL_APPLY_MODIFIER, true, true, parent_emitter_type, parent_modifier_type);
-    TypeRefPtr<RelationshipType> apply_renderer = relationship_type_manager->Create(REL_APPLY_RENDERER, true, true, parent_emitter_type, parent_renderer_type);
+    emitted_by = relationship_type_manager->Create(REL_EMITTED_BY, false, false, parent_particle_type, parent_emitter_type);
+    modifies = relationship_type_manager->Create(REL_MODIFIES, false, false, parent_modifier_type, parent_particle_type);
+    renders = relationship_type_manager->Create(REL_RENDERS, false, false, parent_renderer_type, parent_particle_type);
+    apply_initializer = relationship_type_manager->Create(REL_APPLY_INITIALIZER, true, true, parent_emitter_type, parent_initializer_type);
+    apply_modifier = relationship_type_manager->Create(REL_APPLY_MODIFIER, true, true, parent_emitter_type, parent_modifier_type);
+    apply_renderer = relationship_type_manager->Create(REL_APPLY_RENDERER, true, true, parent_emitter_type, parent_renderer_type);
 
     logoutf("Created particle graph model");
 }
@@ -81,6 +83,9 @@ void ParticleSubsystem::Cleanup()
     {
         modifier_workers[i]->Stop();
     }
+
+    // TODO: remove renderers
+    // TODO: remove types
 }
 
 void ParticleSubsystem::Reset()
@@ -94,7 +99,33 @@ void ParticleSubsystem::RenderFaces()
 
 void ParticleSubsystem::RenderParticles()
 {
-    // TODO: Implement
+    std::vector<InstanceRefPtr<EntityInstance> >::iterator it = renderers.begin();
+    while (it != renderers.end())
+    {
+        std::list<InstanceRefPtr<RelationshipInstance> >::iterator it2 = (*it)->outgoing[renders].begin();
+        TimeStep time_step(0.0, 1000.0);
+        FunctionRefPtr function = (*it)->GetType()[PARTICLE_RENDERER_FUNCTION_ATTRIBUTE_NAME]->functionVal;
+        function->Before(time_step, (*it).get());
+        while (it2 != (*it)->outgoing[renders].end())
+        {
+            if ((*it2)->endNode[REMAINING]->intVal > 0)
+            {
+                function->Execute(time_step, (*it).get(), (*it2)->endNode.get());
+                ++it2;
+            } else {
+                logoutf("r5");
+                // Remove the particle side of the relationship (most costly)
+                (*it2)->endNode->incoming[renders].remove(*it2);
+                // Remove the manager side of the relationship
+                DeleteRelationship(*it2);
+                // Remove the renderer side of the relationship
+                // std::list is efficient in removing with iterators
+                it2 = (*it)->outgoing[renders].erase(it2);
+            }
+        }
+        function->After(time_step, (*it).get());
+        ++it;
+    }
 }
 
 TypeRefPtr<EntityType> ParticleSubsystem::CreateParticleType(std::string particle_type_name, std::string renderer_instance_name)
@@ -135,6 +166,13 @@ TypeRefPtr<EntityType> ParticleSubsystem::CreateModifierType(std::string modifie
     return modifier_type;
 }
 
+TypeRefPtr<EntityType> ParticleSubsystem::CreateRendererType(std::string renderer_type_name, FunctionRefPtr function)
+{
+    TypeRefPtr<EntityType> renderer_type = particle_renderer_type_factory->Create(renderer_type_name, function);
+    renderer_types[renderer_type->GetName()] = renderer_type;
+    return renderer_type;
+}
+
 TypeRefPtr<EntityType> ParticleSubsystem::GetParticleType(std::string particle_type_name)
 {
     return particle_types[particle_type_name];
@@ -153,6 +191,11 @@ TypeRefPtr<EntityType> ParticleSubsystem::GetInitializerType(std::string initial
 TypeRefPtr<EntityType> ParticleSubsystem::GetModifierType(std::string modifier_type_name)
 {
     return modifier_types[modifier_type_name];
+}
+
+TypeRefPtr<EntityType> ParticleSubsystem::GetRendererType(std::string renderer_type_name)
+{
+    return renderer_types[renderer_type_name];
 }
 
 TypeRefPtr<RelationshipType> ParticleSubsystem::GetRelationshipType(std::string relationship_type_name)
@@ -239,6 +282,19 @@ InstanceRefPtr<EntityInstance> ParticleSubsystem::CreateModifierInstance(TypeRef
     return modifier_instance;
 }
 
+InstanceRefPtr<EntityInstance> ParticleSubsystem::CreateRendererInstance(std::string renderer_type_name)
+{
+    TypeRefPtr<EntityType> renderer_type = entity_type_manager->Get(renderer_type_name);
+    return CreateRendererInstance(renderer_type);
+}
+
+InstanceRefPtr<EntityInstance> ParticleSubsystem::CreateRendererInstance(TypeRefPtr<EntityType> renderer_type)
+{
+    InstanceRefPtr<EntityInstance> renderer_instance = entity_instance_manager->Create(renderer_type);
+    renderers.push_back(renderer_instance);
+    return renderer_instance;
+}
+
 void ParticleSubsystem::DestroyEmitterInstance(std::string uuid)
 {
     InstanceRefPtr<EntityInstance> emitter_instance = entity_instance_manager->Get(uuid);
@@ -261,7 +317,7 @@ void ParticleSubsystem::DestroyInitializerInstance(std::string uuid)
 
 void ParticleSubsystem::DestroyInitializerInstance(InstanceRefPtr<EntityInstance> initializer_instance)
 {
-    // Remove emitter
+    // Remove initializer
     entity_instance_manager->DeleteInstance(initializer_instance);
 }
 
@@ -275,15 +331,26 @@ void ParticleSubsystem::DestroyModifierInstance(InstanceRefPtr<EntityInstance> m
 {
     // Stop worker
     DestroyModifierWorker(modifier_instance);
-    // Remove emitter
+    // Remove modifier
     entity_instance_manager->DeleteInstance(modifier_instance);
+}
+
+void ParticleSubsystem::DestroyRendererInstance(std::string uuid)
+{
+    InstanceRefPtr<EntityInstance> renderer_instance = entity_instance_manager->Get(uuid);
+    DestroyRendererInstance(renderer_instance);
+}
+
+void ParticleSubsystem::DestroyRendererInstance(InstanceRefPtr<EntityInstance> renderer_instance)
+{
+    // Remove renderer
+    entity_instance_manager->DeleteInstance(renderer_instance);
 }
 
 InstanceRefPtr<RelationshipInstance> ParticleSubsystem::AddModifierToEmitter(InstanceRefPtr<EntityInstance> emitter_instance, InstanceRefPtr<EntityInstance> modifier_instance)
 {
-    TypeRefPtr<RelationshipType> apply_modifier_type = relationship_type_manager->Get(REL_APPLY_MODIFIER);
-    if (apply_modifier_type.get()) {
-        InstanceRefPtr<RelationshipInstance> relationship_instance = relationship_instance_manager->CreateInstance(apply_modifier_type, emitter_instance, modifier_instance);
+    if (apply_modifier.get()) {
+        InstanceRefPtr<RelationshipInstance> relationship_instance = relationship_instance_manager->CreateInstance(apply_modifier, emitter_instance, modifier_instance);
         return relationship_instance;
     } else {
         return NULL;
@@ -292,9 +359,18 @@ InstanceRefPtr<RelationshipInstance> ParticleSubsystem::AddModifierToEmitter(Ins
 
 InstanceRefPtr<RelationshipInstance> ParticleSubsystem::AddInitializerToEmitter(InstanceRefPtr<EntityInstance> emitter_instance, InstanceRefPtr<EntityInstance> initializer_instance)
 {
-    TypeRefPtr<RelationshipType> apply_initializer_type = relationship_type_manager->Get(REL_APPLY_INITIALIZER);
-    if (apply_initializer_type.get()) {
-        InstanceRefPtr<RelationshipInstance> relationship_instance = relationship_instance_manager->CreateInstance(apply_initializer_type, emitter_instance, initializer_instance);
+    if (apply_initializer.get()) {
+        InstanceRefPtr<RelationshipInstance> relationship_instance = relationship_instance_manager->CreateInstance(apply_initializer, emitter_instance, initializer_instance);
+        return relationship_instance;
+    } else {
+        return NULL;
+    }
+}
+
+InstanceRefPtr<RelationshipInstance> ParticleSubsystem::AddRendererToEmitter(InstanceRefPtr<EntityInstance> emitter_instance, InstanceRefPtr<EntityInstance> renderer_instance)
+{
+    if (apply_renderer.get()) {
+        InstanceRefPtr<RelationshipInstance> relationship_instance = relationship_instance_manager->CreateInstance(apply_renderer, emitter_instance, renderer_instance);
         return relationship_instance;
     } else {
         return NULL;

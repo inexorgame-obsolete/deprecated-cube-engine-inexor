@@ -17,6 +17,7 @@
 #include "../../factory/ParticleEmitterTypeFactory.h"
 #include "../../factory/ParticleInitializerTypeFactory.h"
 #include "../../factory/ParticleModifierTypeFactory.h"
+#include "../../factory/ParticleRendererTypeFactory.h"
 
 using namespace inexor::entity;
 
@@ -56,11 +57,13 @@ class ParticleSubsystem : public SubsystemBase
         TypeRefPtr<EntityType> CreateEmitterType(std::string emitter_type_name, FunctionRefPtr function, TypeRefPtr<EntityType> particle_type, int rate, int lifetime);
         TypeRefPtr<EntityType> CreateInitializerType(std::string initializer_type_name, FunctionRefPtr function);
         TypeRefPtr<EntityType> CreateModifierType(std::string modifier_type_name, FunctionRefPtr function);
+        TypeRefPtr<EntityType> CreateRendererType(std::string renderer_type_name, FunctionRefPtr function);
 
         TypeRefPtr<EntityType> GetParticleType(std::string particle_type_name);
         TypeRefPtr<EntityType> GetEmitterType(std::string emitter_type_name);
         TypeRefPtr<EntityType> GetInitializerType(std::string initializer_type_name);
         TypeRefPtr<EntityType> GetModifierType(std::string modifier_type_name);
+        TypeRefPtr<EntityType> GetRendererType(std::string renderer_type_name);
 
         TypeRefPtr<RelationshipType> GetRelationshipType(std::string relationship_type_name);
         void DeleteRelationship(InstanceRefPtr<RelationshipInstance> instance);
@@ -71,6 +74,8 @@ class ParticleSubsystem : public SubsystemBase
         InstanceRefPtr<EntityInstance> CreateInitializerInstance(TypeRefPtr<EntityType> initializer_type);
         InstanceRefPtr<EntityInstance> CreateModifierInstance(std::string modifier_type_name);
         InstanceRefPtr<EntityInstance> CreateModifierInstance(TypeRefPtr<EntityType> modifier_type);
+        InstanceRefPtr<EntityInstance> CreateRendererInstance(std::string renderer_type_name);
+        InstanceRefPtr<EntityInstance> CreateRendererInstance(TypeRefPtr<EntityType> renderer_type);
 
         void DestroyEmitterInstance(std::string uuid);
         void DestroyEmitterInstance(InstanceRefPtr<EntityInstance> emitter_instance);
@@ -78,9 +83,12 @@ class ParticleSubsystem : public SubsystemBase
         void DestroyInitializerInstance(InstanceRefPtr<EntityInstance> initializer_instance);
         void DestroyModifierInstance(std::string uuid);
         void DestroyModifierInstance(InstanceRefPtr<EntityInstance> modifier_instance);
+        void DestroyRendererInstance(std::string uuid);
+        void DestroyRendererInstance(InstanceRefPtr<EntityInstance> renderer_instance);
 
         InstanceRefPtr<RelationshipInstance> AddModifierToEmitter(InstanceRefPtr<EntityInstance> emitter_instance, InstanceRefPtr<EntityInstance> modifier_instance);
         InstanceRefPtr<RelationshipInstance> AddInitializerToEmitter(InstanceRefPtr<EntityInstance> emitter_instance, InstanceRefPtr<EntityInstance> initializer_instance);
+        InstanceRefPtr<RelationshipInstance> AddRendererToEmitter(InstanceRefPtr<EntityInstance> emitter_instance, InstanceRefPtr<EntityInstance> renderer_instance);
 
         CefRefPtr<ParticleWorker> CreateParticleWorker(std::string name, FunctionRefPtr function);
         CefRefPtr<EmitterWorker> CreateEmitterWorker(std::string name, TypeRefPtr<EntityType> emitter_type, InstanceRefPtr<EntityInstance> emitter_instance);
@@ -96,11 +104,13 @@ class ParticleSubsystem : public SubsystemBase
         CefRefPtr<ParticleEmitterTypeFactory> particle_emitter_type_factory;
         CefRefPtr<ParticleInitializerTypeFactory> particle_initializer_type_factory;
         CefRefPtr<ParticleModifierTypeFactory> particle_modifier_type_factory;
+        CefRefPtr<ParticleRendererTypeFactory> particle_renderer_type_factory;
 
         std::map<std::string, TypeRefPtr<EntityType> > particle_types;
         std::map<std::string, TypeRefPtr<EntityType> > emitter_types;
         std::map<std::string, TypeRefPtr<EntityType> > initializer_types;
         std::map<std::string, TypeRefPtr<EntityType> > modifier_types;
+        std::map<std::string, TypeRefPtr<EntityType> > renderer_types;
 
         /**
          * The particle workers.
@@ -116,6 +126,18 @@ class ParticleSubsystem : public SubsystemBase
          * The modifier workers.
          */
         std::vector<CefRefPtr<ModifierWorker> > modifier_workers;
+
+        /**
+         * The modifier workers.
+         */
+        std::vector<InstanceRefPtr<EntityInstance> > renderers;
+
+        TypeRefPtr<RelationshipType> emitted_by;
+        TypeRefPtr<RelationshipType> modifies;
+        TypeRefPtr<RelationshipType> renders;
+        TypeRefPtr<RelationshipType> apply_initializer;
+        TypeRefPtr<RelationshipType> apply_modifier;
+        TypeRefPtr<RelationshipType> apply_renderer;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(ParticleSubsystem);

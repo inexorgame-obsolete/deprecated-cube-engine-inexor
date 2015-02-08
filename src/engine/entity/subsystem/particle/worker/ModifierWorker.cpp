@@ -78,7 +78,7 @@ int ModifierWorker::Work(void *data)
                             died++;
                         }
                     }
-                    if (alive > 0 || died > 0) logoutf("[mod] alive: %d died: %d", alive, died);
+                    // if (alive > 0 || died > 0) logoutf("[mod] alive: %d died: %d", alive, died);
                 } catch (int e) {
                     logoutf("exception modifier worker %d", e);
                 }

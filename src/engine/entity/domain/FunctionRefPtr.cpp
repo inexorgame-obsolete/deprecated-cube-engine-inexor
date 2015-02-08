@@ -65,6 +65,11 @@ void FunctionRefPtr::operator()(TimeStep time_step, EntityInstance* inst_1, Enti
     get()->Execute(time_step, inst_1, inst_2);
 }
 
+void FunctionRefPtr::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, EntityInstance* inst_3)
+{
+    get()->Execute(time_step, inst_1, inst_2, inst_3);
+}
+
 void FunctionRefPtr::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipType* rel_type)
 {
     get()->Execute(time_step, inst_1, inst_2, rel_type);
