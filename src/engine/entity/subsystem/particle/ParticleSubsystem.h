@@ -74,8 +74,8 @@ class ParticleSubsystem : public SubsystemBase
         InstanceRefPtr<EntityInstance> CreateInitializerInstance(TypeRefPtr<EntityType> initializer_type);
         InstanceRefPtr<EntityInstance> CreateModifierInstance(std::string modifier_type_name);
         InstanceRefPtr<EntityInstance> CreateModifierInstance(TypeRefPtr<EntityType> modifier_type);
-        InstanceRefPtr<EntityInstance> CreateRendererInstance(std::string renderer_type_name);
-        InstanceRefPtr<EntityInstance> CreateRendererInstance(TypeRefPtr<EntityType> renderer_type);
+        InstanceRefPtr<EntityInstance> CreateRendererInstance(std::string renderer_type_name, std::string shader, std::string texture, float size);
+        InstanceRefPtr<EntityInstance> CreateRendererInstance(TypeRefPtr<EntityType> renderer_type, std::string shader, std::string texture, float size);
 
         void DestroyEmitterInstance(std::string uuid);
         void DestroyEmitterInstance(InstanceRefPtr<EntityInstance> emitter_instance);

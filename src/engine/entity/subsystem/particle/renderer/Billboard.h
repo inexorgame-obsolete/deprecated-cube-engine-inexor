@@ -47,6 +47,9 @@ class Billboard : public EntityFunction
 
     private:
 
+        Shader *shader;
+        Texture *tex;
+
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(Billboard);
 
