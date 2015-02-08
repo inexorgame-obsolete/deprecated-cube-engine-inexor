@@ -378,6 +378,14 @@ void EntityAttribute::operator()(TimeStep time_step, EntityInstance* inst_1, Ent
     }
 }
 
+void EntityAttribute::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, EntityInstance* inst_3)
+{
+    if (this->type == ENTATTR_FUNCTION)
+    {
+        functionVal(time_step, inst_1, inst_2, inst_3);
+    }
+}
+
 void EntityAttribute::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipType* rel_type)
 {
     if (this->type == ENTATTR_FUNCTION)

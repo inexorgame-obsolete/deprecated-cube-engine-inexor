@@ -98,7 +98,7 @@ int EmitterWorker::Work(void *data)
                             died++;
                         }
                     }
-                    if (alive > 0 || died > 0) logoutf("[emi] alive: %d died: %d", alive, died);
+                    // if (alive > 0 || died > 0) logoutf("[emi] alive: %d died: %d", alive, died);
                 } catch (int e) {
                     logoutf("exception emitter worker %d", e);
                 }

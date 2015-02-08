@@ -79,18 +79,21 @@ class EntityFunction
         virtual void Execute(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2);
 
         // Signature 7
-        virtual void Execute(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipType* rel_type);
+        virtual void Execute(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, EntityInstance* inst_3);
 
         // Signature 8
-        virtual void Execute(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipInstance* rel_inst);
+        virtual void Execute(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipType* rel_type);
 
         // Signature 9
-        virtual void Execute(TimeStep time_step, RelationshipType* type);
+        virtual void Execute(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipInstance* rel_inst);
 
         // Signature 10
-        virtual void Execute(TimeStep time_step, RelationshipType* type, RelationshipInstance* inst);
+        virtual void Execute(TimeStep time_step, RelationshipType* type);
 
         // Signature 11
+        virtual void Execute(TimeStep time_step, RelationshipType* type, RelationshipInstance* inst);
+
+        // Signature 12
         virtual void Execute(TimeStep time_step, RelationshipInstance* inst);
 
         void operator()(TimeStep time_step);
@@ -100,6 +103,7 @@ class EntityFunction
         void operator()(TimeStep time_step, EntityInstance* inst, RelationshipType* rel_type);
         void operator()(TimeStep time_step, EntityInstance* inst, RelationshipInstance* rel_inst);
         void operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2);
+        void operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, EntityInstance* inst_3);
         void operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipType* rel_type);
         void operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipInstance* rel_inst);
         void operator()(TimeStep time_step, RelationshipType* type);

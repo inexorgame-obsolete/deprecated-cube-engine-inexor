@@ -8,13 +8,15 @@
 #include "EntitySystem.h"
 #include <time.h>
 #include <cube.h>
+#include <entity/subsystem/particle/initializer/RandomVelocity.h>
 
 #include "domain/TimeStep.h"
 #include "provider/TeleportEntityTypeProvider.h"
-#include "subsystem/particle/emitter/PointEmitter.h"
-#include "subsystem/particle/initializer/PulseInitializer.h"
+#include "subsystem/particle/emitter/Point.h"
+#include "subsystem/particle/initializer/RandomVelocity.h"
 #include "subsystem/particle/modifier/VelocityTransformation.h"
 #include "subsystem/particle/modifier/VectorField.h"
+#include "subsystem/particle/renderer/Billboard.h"
 
 using namespace inexor::entity::particle;
 
@@ -251,113 +253,60 @@ void EntitySystem::ParticleSystemTest()
 {
     CefRefPtr<ParticleSubsystem> particle_subsystem = this->GetSubsystem<ParticleSubsystem>();
 
-    logoutf("Create entity function 'PointEmitter'");
-    FunctionRefPtr point_emitter_function = new PointEmitter();
+    logoutf("Create entity function 'Point'");
+    FunctionRefPtr point_emitter_function = new Point();
 
-    logoutf("Create entity function 'PulseInitializer'");
-    FunctionRefPtr pulse_initializer_function = new PulseInitializer();
+    logoutf("Create entity function 'RandomVelocity'");
+    FunctionRefPtr random_velocity_function = new RandomVelocity();
 
     logoutf("Create entity function 'VelocityTransformation'");
     FunctionRefPtr velocity_transformation_function = new VelocityTransformation();
+
+    logoutf("Create entity function 'Billboard'");
+    FunctionRefPtr billboard_renderer_function = new Billboard();
 
     logoutf("Create entity function 'VectorField' with expression 'x * 1.2,y * 1.2,z * 1.2'");
     FunctionRefPtr vector_field_function = new VectorField("x * 1.2,y * 1.2,z * 1.2");
 
     logoutf("Create a particle type");
     TypeRefPtr<EntityType> default_particle_type = particle_subsystem->CreateParticleType("default_particle", "default_renderer");
-    // TypeRefPtr<EntityType> particle_type = entity_type_manager->Create("default_particle", false, false /* , parent */);
 
-    logoutf("Create emitter type 'point_emitter (rate: every 1500ms, lifetime: 1000ms)'");
-    TypeRefPtr<EntityType> point_emitter = particle_subsystem->CreateEmitterType("point_emitter", point_emitter_function, default_particle_type, 1250, 1, 1000, 1.0, 1.0);
+    logoutf("Create emitter type 'point_emitter (rate: every 250ms, lifetime: 2500ms)'");
+    TypeRefPtr<EntityType> point_emitter = particle_subsystem->CreateEmitterType("point_emitter", point_emitter_function, default_particle_type, 250, 1, 2500, 1.0, 1.0);
 
-    logoutf("Create emitter type 'pulse_point_emitter (rate: every 1250ms, lifetime: 250ms)'");
-    TypeRefPtr<EntityType> pulse_point_emitter = particle_subsystem->CreateEmitterType("pulse_point_emitter", point_emitter_function, default_particle_type, 1250, 250);
+    logoutf("Create initializer type 'random_velocity_initializer'");
+    TypeRefPtr<EntityType> random_velocity_initializer_type = particle_subsystem->CreateInitializerType("random_velocity_initializer", random_velocity_function);
 
     logoutf("Create modifier type 'velocity_transformation_modifier'");
     TypeRefPtr<EntityType> velocity_transformation_modifier_type = particle_subsystem->CreateModifierType("velocity_transformation_modifier", velocity_transformation_function);
 
-    // modifier_type["modify"]
-    // TODO: CreateModifierType("vector_field_modifier", vector_field_function)
-    // TODO: SetModifierFunction(vector_field_function)
+    logoutf("Create renderer type 'billboard_renderer'");
+    TypeRefPtr<EntityType> billboard_renderer_type = particle_subsystem->CreateRendererType("billboard_renderer", billboard_renderer_function);
+
     logoutf("Create modifier type 'vector_field_modifier'");
     TypeRefPtr<EntityType> vector_field_modifier_type = particle_subsystem->CreateModifierType("vector_field_modifier", vector_field_function);
 
-    /*
-    logoutf("Create a particle instance");
-    InstanceRefPtr<EntityInstance> particle = new EntityInstance(default_particle_type);
-    particle["x"] = 0.0;
-    particle["y"] = 0.0;
-    particle["z"] = 0.0;
-    particle["vx"] = 1.0;
-    particle["vy"] = 2.0;
-    particle["vz"] = 3.0;
-    logoutf("    x: %2.2f y: %2.2f z: %2.2f vx: %2.2f vy: %2.2f vz: %2.2f", particle["x"]->GetDouble(), particle["y"]->GetDouble(), particle["z"]->GetDouble(), particle["vx"]->GetDouble(), particle["vy"]->GetDouble(), particle["vz"]->GetDouble());
-
-    logoutf("Apply modifier 'velocity_transformation_modifier' with different approaches");
-    // a full time unit elapsed
-    TimeStep tf(0, 1.0, 1.0);
-    velocity_transformation_function->Execute(tf, particle.get());
-    logoutf("     x: %2.2f y: %2.2f z: %2.2f vx: %2.2f vy: %2.2f vz: %2.2f", particle["x"]->GetDouble(), particle["y"]->GetDouble(), particle["z"]->GetDouble(), particle["vx"]->GetDouble(), particle["vy"]->GetDouble(), particle["vz"]->GetDouble());
-    velocity_transformation_function(tf, particle.get());
-    logoutf("     x: %2.2f y: %2.2f z: %2.2f vx: %2.2f vy: %2.2f vz: %2.2f", particle["x"]->GetDouble(), particle["y"]->GetDouble(), particle["z"]->GetDouble(), particle["vx"]->GetDouble(), particle["vy"]->GetDouble(), particle["vz"]->GetDouble());
-    FunctionRefPtr vt_mt = velocity_transformation_modifier_type["modify"]->GetFunction();
-    vt_mt(tf, particle.get());
-    logoutf("     x: %2.2f y: %2.2f z: %2.2f vx: %2.2f vy: %2.2f vz: %2.2f", particle["x"]->GetDouble(), particle["y"]->GetDouble(), particle["z"]->GetDouble(), particle["vx"]->GetDouble(), particle["vy"]->GetDouble(), particle["vz"]->GetDouble());
-
-    logoutf("Apply modifier 'vector_field_modifier' and 'velocity_transformation_modifier' multiple times");
-    TimeStep vf_tf(0, 0.1, 1.0);
-    FunctionRefPtr vf_mt = vector_field_modifier_type["modify"]->GetFunction();
-    for (int i = 0; i < 10; i++) {
-        SDL_Delay(10);
-        vf_mt(vf_tf, particle.get());
-        logoutf("    vx: %2.2f vy: %2.2f vz: %2.2f", particle["vx"]->GetDouble(), particle["vy"]->GetDouble(), particle["vz"]->GetDouble());
-        vt_mt(vf_tf, particle.get());
-        logoutf("     x: %2.2f  y: %2.2f  z: %2.2f", particle["x"]->GetDouble(), particle["y"]->GetDouble(), particle["z"]->GetDouble());
-    }
-    */
-
-    // Create emitter instances
     logoutf("Create emitter instances");
-    InstanceRefPtr<EntityInstance> point_emitter_1 = particle_subsystem->CreateEmitterInstance(point_emitter, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0);
-/*
-    InstanceRefPtr<EntityInstance> point_emitter_2 = particle_subsystem->CreateEmitterInstance(point_emitter, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0);
-    InstanceRefPtr<EntityInstance> point_emitter_3 = particle_subsystem->CreateEmitterInstance(point_emitter, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-    InstanceRefPtr<EntityInstance> point_emitter_4 = particle_subsystem->CreateEmitterInstance(point_emitter, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0);
-    InstanceRefPtr<EntityInstance> pulse_point_emitter_1 = particle_subsystem->CreateEmitterInstance(pulse_point_emitter, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
-    InstanceRefPtr<EntityInstance> pulse_point_emitter_2 = particle_subsystem->CreateEmitterInstance(pulse_point_emitter, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0);
-*/
+    InstanceRefPtr<EntityInstance> point_emitter_1 = particle_subsystem->CreateEmitterInstance(point_emitter, 512.0, 512.0, 512.0, 0.0, 0.0, 15.0);
 
-    // Create modifier instances
+    logoutf("Create initializer instances");
+    InstanceRefPtr<EntityInstance> random_velocity_initializer_1 = particle_subsystem->CreateInitializerInstance(random_velocity_initializer_type);
+
     logoutf("Create modifier instances");
     InstanceRefPtr<EntityInstance> velocity_transformation_modifier_1 = particle_subsystem->CreateModifierInstance(velocity_transformation_modifier_type);
 
-    // This creates an relation from an emitter to an modifier
+    logoutf("Create renderer instances");
+    InstanceRefPtr<EntityInstance> billboard_renderer_1 = particle_subsystem->CreateRendererInstance(billboard_renderer_type);
+
+    logoutf("Create relation from emitter to initializer");
+    InstanceRefPtr<RelationshipInstance> rel_point_emitter_random_velocity_1 = particle_subsystem->AddInitializerToEmitter(point_emitter_1, random_velocity_initializer_1);
+
     logoutf("Create relation from emitter to modifier");
-    InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_1 = particle_subsystem->AddModifierToEmitter(point_emitter_1, velocity_transformation_modifier_1);
-/*
-    InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_2 = particle_subsystem->AddModifierToEmitter(point_emitter_2, velocity_transformation_modifier_1);
-    InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_3 = particle_subsystem->AddModifierToEmitter(point_emitter_3, velocity_transformation_modifier_1);
-    InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_4 = particle_subsystem->AddModifierToEmitter(point_emitter_4, velocity_transformation_modifier_1);
-    InstanceRefPtr<RelationshipInstance> rel_pulse_point_velocity_1 = particle_subsystem->AddModifierToEmitter(pulse_point_emitter_1, velocity_transformation_modifier_1);
-    InstanceRefPtr<RelationshipInstance> rel_pulse_point_velocity_2 = particle_subsystem->AddModifierToEmitter(pulse_point_emitter_2, velocity_transformation_modifier_1);
-*/
+    InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_transformation_1 = particle_subsystem->AddModifierToEmitter(point_emitter_1, velocity_transformation_modifier_1);
 
-/*
-    logoutf("Fire emitter 1: Call function directly");
-    point_emitter_function->Execute(vf_tf, default_particle_type, point_emitter_1);
+    logoutf("Create relation from emitter to renderer");
+    InstanceRefPtr<RelationshipInstance> rel_point_emitter_billboard_renderer_1 = particle_subsystem->AddRendererToEmitter(point_emitter_1, billboard_renderer_1);
 
-    logoutf("Fire emitter 2: Retrieve function first, then call it");
-    FunctionRefPtr point_emitter_function_2 = point_emitter_1->GetType()->GetAttribute("emit")->GetFunction();
-    point_emitter_function_2(vf_tf, default_particle_type, point_emitter_1);
-
-    logoutf("Fire emitter 3: Long(est) version: Get Type, then the attribute, then the function, then execute it");
-    point_emitter_1->GetType()->GetAttribute("emit")->GetFunction()->Execute(vf_tf, default_particle_type, point_emitter_1);
-
-    logoutf("Fire emitter 4: Shorter version: Call the attribute of the type");
-    point_emitter_1->GetType()["emit"](vf_tf, default_particle_type, point_emitter_1);
-*/
-
-    logoutf("Finished particle system tests");
 }
 
 }

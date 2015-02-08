@@ -60,6 +60,7 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/factory/ParticleEmitterTypeFactory
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/factory/ParticleInitializerTypeFactory
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/factory/ParticleModifierTypeFactory
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/factory/ParticleRendererTypeFactory
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/factory/ParticleTypeFactory
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/manager/EntityInstanceManager
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/manager/EntityTypeManager
@@ -72,10 +73,11 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/SubsystemBase
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/TeleportSubsystem
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/ParticleSubsystem
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/emitter/PointEmitter
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/initializer/PulseInitializer
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/emitter/Point
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/initializer/RandomVelocity
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/VelocityTransformation
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/VectorField
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/renderer/Billboard
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/worker/ParticleWorker
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/worker/EmitterWorker
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/worker/ModifierWorker
