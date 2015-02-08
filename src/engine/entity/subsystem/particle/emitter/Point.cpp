@@ -5,24 +5,27 @@
  *      Author: aschaeffer
  */
 
-#include "PointEmitter.h"
+#include "Point.h"
 
 namespace inexor {
 namespace entity {
 namespace particle {
 
-PointEmitter::PointEmitter() : EntityFunction(POINT_EMITTER_FUNCTION)
+Point::Point() : EntityFunction(EMITTER_POINT_FUNCTION)
 {
     emitted_by = entity_system->GetRelationshipTypeManager()->Get(REL_EMITTED_BY);
+    apply_initializer = entity_system->GetRelationshipTypeManager()->Get(REL_APPLY_INITIALIZER);
     apply_modifier = entity_system->GetRelationshipTypeManager()->Get(REL_APPLY_MODIFIER);
+    apply_renderer = entity_system->GetRelationshipTypeManager()->Get(REL_APPLY_RENDERER);
     modifies = entity_system->GetRelationshipTypeManager()->Get(REL_MODIFIES);
+    renders = entity_system->GetRelationshipTypeManager()->Get(REL_RENDERS);
 }
 
-PointEmitter::~PointEmitter()
+Point::~Point()
 {
 }
 
-void PointEmitter::Execute(TimeStep time_step, EntityType* particle_type, EntityInstance* emitter_inst)
+void Point::Execute(TimeStep time_step, EntityType* particle_type, EntityInstance* emitter_inst)
 {
 
     // TODO: fetch dead particle from pool instead of creating new
@@ -111,13 +114,11 @@ void PointEmitter::Execute(TimeStep time_step, EntityType* particle_type, Entity
         emitter_inst
     );
 
-
-
-
     // TODO: Call all initializers
-
-
-
+    for(std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = emitter_inst->outgoing[apply_initializer].begin(); it != emitter_inst->outgoing[apply_initializer].end(); ++it)
+    {
+        (*it)->endNode->GetType()[PARTICLE_INITIALIZER_FUNCTION_ATTRIBUTE_NAME]->functionVal(time_step, emitter_inst, (*it)->endNode.get(), particle_inst.get());
+    }
 
     // The emitter instance has relationships to modifiers:
     //
@@ -129,8 +130,7 @@ void PointEmitter::Execute(TimeStep time_step, EntityType* particle_type, Entity
     //
     //     modifier--[:modifies]-->particle
     //
-    std::list<InstanceRefPtr<RelationshipInstance> > apply_modifiers = emitter_inst->GetAllOutgoingRelationshipsOfType(apply_modifier);
-    for(std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = apply_modifiers.begin(); it != apply_modifiers.end(); ++it)
+    for(std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = emitter_inst->outgoing[apply_modifier].begin(); it != emitter_inst->outgoing[apply_modifier].end(); ++it)
     {
         entity_system->GetRelationshipInstanceManager()->CreateInstance(
             // The relationship type
@@ -143,10 +143,20 @@ void PointEmitter::Execute(TimeStep time_step, EntityType* particle_type, Entity
         );
     }
 
-    // TODO: Create relationship from the renderer instance to the newly created particle instance
+    // Create relationship from the renderer instance to the newly created particle instance
+    for(std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = emitter_inst->outgoing[apply_renderer].begin(); it != emitter_inst->outgoing[apply_renderer].end(); ++it)
+    {
+        entity_system->GetRelationshipInstanceManager()->CreateInstance(
+            // The relationship type
+            renders,
+            // Start node: The renderer instance (which is the end node of the
+            // apply_renderers relationship)
+            (*it)->endNode,
+            // End node: The particle instance
+            particle_inst
+        );
+    }
 
-    // TODO: remove debug
-    // logoutf("particle instance emitted");
 }
 
 }

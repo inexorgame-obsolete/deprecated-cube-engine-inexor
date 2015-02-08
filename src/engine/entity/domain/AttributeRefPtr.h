@@ -117,6 +117,7 @@ class AttributeRefPtr : public CefRefPtr<EntityAttribute> {
         void operator()(TimeStep time_step, EntityInstance* inst, RelationshipType* rel_type);
         void operator()(TimeStep time_step, EntityInstance* inst, RelationshipInstance* rel_inst);
         void operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2);
+        void operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, EntityInstance* inst_3);
         void operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipType* rel_type);
         void operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipInstance* rel_inst);
         void operator()(TimeStep time_step, RelationshipType* type);

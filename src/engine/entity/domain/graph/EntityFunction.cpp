@@ -49,6 +49,7 @@ void EntityFunction::Execute(TimeStep time_step, EntityInstance* inst) {}
 void EntityFunction::Execute(TimeStep time_step, EntityInstance* inst, RelationshipType* rel_type) {}
 void EntityFunction::Execute(TimeStep time_step, EntityInstance* inst, RelationshipInstance* rel_inst) {}
 void EntityFunction::Execute(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2) {}
+void EntityFunction::Execute(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, EntityInstance* inst_3) {}
 void EntityFunction::Execute(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipType* rel_type) {}
 void EntityFunction::Execute(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipInstance* rel_inst) {}
 void EntityFunction::Execute(TimeStep time_step, RelationshipType* type) {}
@@ -63,6 +64,7 @@ void EntityFunction::operator()(TimeStep time_step, EntityInstance* inst) { Exec
 void EntityFunction::operator()(TimeStep time_step, EntityInstance* inst, RelationshipType* rel_type) { Execute(time_step, inst, rel_type); }
 void EntityFunction::operator()(TimeStep time_step, EntityInstance* inst, RelationshipInstance* rel_inst) { Execute(time_step, inst, rel_inst); }
 void EntityFunction::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2) { Execute(time_step, inst_1, inst_2); }
+void EntityFunction::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, EntityInstance* inst_3) { Execute(time_step, inst_1, inst_2, inst_3); }
 void EntityFunction::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipType* rel_type) { Execute(time_step, inst_1, inst_2, rel_type); }
 void EntityFunction::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipInstance* rel_inst) { Execute(time_step, inst_1, inst_2, rel_inst); }
 void EntityFunction::operator()(TimeStep time_step, RelationshipType* type) { Execute(time_step, type); }

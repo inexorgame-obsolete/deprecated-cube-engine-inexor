@@ -2117,8 +2117,8 @@ void gl_drawframe()
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     // TODO:
-    // particle_subsystem->RenderFaces();
-    // particle_subsystem->RenderParticles();
+    particle_subsystem->RenderFaces();
+    particle_subsystem->RenderParticles();
 
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -2131,8 +2131,8 @@ void gl_drawframe()
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     // TODO:
-    particle_subsystem->RenderFaces();
-    particle_subsystem->RenderParticles();
+    // particle_subsystem->RenderFaces();
+    // particle_subsystem->RenderParticles();
 
     renderparticles(true);
 
