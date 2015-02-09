@@ -13,6 +13,7 @@
 #include "domain/TimeStep.h"
 #include "provider/TeleportEntityTypeProvider.h"
 #include "subsystem/particle/emitter/Point.h"
+#include "subsystem/particle/initializer/RandomPosition.h"
 #include "subsystem/particle/initializer/RandomVelocity.h"
 #include "subsystem/particle/modifier/Rolling.h"
 #include "subsystem/particle/modifier/VelocityTransformation.h"
@@ -260,6 +261,9 @@ void EntitySystem::ParticleSystemTest()
     logoutf("Create entity function 'Point'");
     FunctionRefPtr point_emitter_function = new Point();
 
+    logoutf("Create entity function 'RandomPosition'");
+    FunctionRefPtr random_position_function = new RandomPosition();
+
     logoutf("Create entity function 'RandomVelocity'");
     FunctionRefPtr random_velocity_function = new RandomVelocity();
 
@@ -291,6 +295,9 @@ void EntitySystem::ParticleSystemTest()
 
     logoutf("Create emitter type 'point_emitter (rate: every 250ms, lifetime: 2500ms)'");
     TypeRefPtr<EntityType> point_emitter = particle_subsystem->CreateEmitterType("point_emitter", point_emitter_function, default_particle_type, 250, 10, 2500, 1.0, 1.0);
+
+    logoutf("Create initializer type 'random_position_initializer'");
+    TypeRefPtr<EntityType> random_position_initializer_type = particle_subsystem->CreateInitializerType("random_position_initializer", random_position_function);
 
     logoutf("Create initializer type 'random_velocity_initializer'");
     TypeRefPtr<EntityType> random_velocity_initializer_type = particle_subsystem->CreateInitializerType("random_velocity_initializer", random_velocity_function);
@@ -327,6 +334,7 @@ void EntitySystem::ParticleSystemTest()
 
     logoutf("Create initializer instances");
     InstanceRefPtr<EntityInstance> random_velocity_initializer_1 = particle_subsystem->CreateInitializerInstance(random_velocity_initializer_type);
+    InstanceRefPtr<EntityInstance> random_position_initializer_1 = particle_subsystem->CreateInitializerInstance(random_position_initializer_type);
 
     logoutf("Create modifier instances");
     InstanceRefPtr<EntityInstance> velocity_transformation_modifier_1 = particle_subsystem->CreateModifierInstance(velocity_transformation_modifier_type);
@@ -347,6 +355,7 @@ void EntitySystem::ParticleSystemTest()
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_random_velocity_2 = particle_subsystem->AddInitializerToEmitter(point_emitter_2, random_velocity_initializer_1);
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_random_velocity_3 = particle_subsystem->AddInitializerToEmitter(point_emitter_3, random_velocity_initializer_1);
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_random_velocity_4 = particle_subsystem->AddInitializerToEmitter(point_emitter_4, random_velocity_initializer_1);
+    InstanceRefPtr<RelationshipInstance> rel_point_emitter_random_position_4 = particle_subsystem->AddInitializerToEmitter(point_emitter_4, random_position_initializer_1);
 
     logoutf("Create relation from emitter to modifier");
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_transformation_1 = particle_subsystem->AddModifierToEmitter(point_emitter_1, velocity_transformation_modifier_1);
