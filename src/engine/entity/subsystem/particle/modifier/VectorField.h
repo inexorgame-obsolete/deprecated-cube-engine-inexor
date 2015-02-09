@@ -37,6 +37,8 @@ class VectorField : public EntityFunction
         mu::value_type iy;
         mu::value_type iz;
 
+        void SetExpression(std::string expression);
+
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(VectorField);
 };
