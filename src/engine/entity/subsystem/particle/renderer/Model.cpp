@@ -41,7 +41,7 @@ void Model::Execute(TimeStep time_step, EntityInstance* renderer_inst, EntityIns
         yaw += 90;
         vec o((*particle_inst)[POS]->vec3Val);
         o.add((*renderer_inst)[OFFSET]->vec3Val);
-        rendermodel(NULL, (*renderer_inst)[MODEL]->stringVal.c_str(), ANIM_MAPMODEL|ANIM_LOOP, o, yaw, -((*particle_inst)[ROLL]->doubleVal), MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_LIGHT_FAST|MDL_DYNSHADOW, NULL, NULL, 0);
+        rendermodel(NULL, (*renderer_inst)[MODEL]->stringVal.c_str(), ANIM_MAPMODEL|ANIM_LOOP, o, yaw, -((*particle_inst)[ROLL]->floatVal), MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_LIGHT_FAST|MDL_DYNSHADOW, NULL, NULL, 0);
     }
 }
 
