@@ -41,15 +41,20 @@ namespace particle {
     const std::string ENABLED("enabled");
     const std::string MILLIS_TO_PROCESS("millistoprocess");
 
-    // Renderer information
+    // Renderer attributes
 
     const std::string SIZE("size");
     const std::string TEXTURE("texture");
+    const std::string MODEL("model");
     const std::string SHADER("shader");
+    const std::string OFFSET("offset");
+    const std::string EXPRESSION("expression");
 
-    // Entity type definitions
+    // Emitter type attributes
 
     const std::string PARTICLE_TYPE("particle_type");
+
+    // Entity type definitions
 
     const std::string ENTTYPE_PARENT_PARTICLE_TYPE("particle_type");
     const std::string ENTTYPE_PARENT_EMITTER_TYPE("particle_emitter");
