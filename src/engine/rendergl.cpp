@@ -2336,7 +2336,7 @@ SVARFP(cursor, "media/interface/cursor/default.png", cursortex = NULL);
 
 void drawcrosshair(int w, int h)
 {
-    bool windowhit = true; //g3d_windowhit(true, false);
+    bool windowhit = false; //g3d_windowhit(true, false);
     if(!windowhit && (hidehud || mainmenu)) return; //(hidehud || player->state==CS_SPECTATOR || player->state==CS_DEAD)) return;
 
     float r = 1, g = 1, b = 1, cx = 0.5f, cy = 0.5f, chsize;
