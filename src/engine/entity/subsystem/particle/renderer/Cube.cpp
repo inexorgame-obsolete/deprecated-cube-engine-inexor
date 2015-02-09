@@ -42,7 +42,7 @@ void Cube::Execute(TimeStep time_step, EntityInstance* renderer_inst, EntityInst
     vec pmax(pmin);
     // pmin.sub((*particle_inst)[DENSITY]->doubleVal);
     // pmax.add((*particle_inst)[DENSITY]->doubleVal);
-    float size = (*renderer_inst)[SIZE]->floatVal / 2.0f;
+    float size = (*renderer_inst)[SIZE]->floatVal * ((float) (*particle_inst)[DENSITY]->doubleVal) / 2.0f;
     pmin.sub(size);
     pmax.add(size);
     // FRONT
