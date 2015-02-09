@@ -15,7 +15,7 @@ namespace particle {
 EmitterWorker::EmitterWorker(std::string name, FunctionRefPtr function, InstanceRefPtr<EntityInstance> emitter_instance)
     : ParticleWorker(name, function), emitter_instance(emitter_instance)
 {
-    std::string particle_type_name = emitter_instance->GetAttribute("particle_type")->stringVal;
+    std::string particle_type_name = emitter_instance[PARTICLE_TYPE]->stringVal;
     particle_type = particle_subsystem->GetParticleType(particle_type_name);
     emitted_by = particle_subsystem->GetRelationshipType(REL_EMITTED_BY);
     // logoutf("EmitterWorker::EmitterWorker particle type Name: %s UUID: %s", particle_type_name.c_str(), particle_type->GetUuid().c_str());
