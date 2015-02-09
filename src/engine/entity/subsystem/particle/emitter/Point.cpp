@@ -75,19 +75,19 @@ void Point::Execute(TimeStep time_step, EntityType* particle_type, EntityInstanc
     /**
      * Rolling particles
      */
-    particle_inst[ROLL] = 0.0;
+    particle_inst[ROLL] = 0.0f;
 
     /**
      * Every particle instance has a mass. Needed for modifiers which are
      * applying physical transformations like gravity.
      */
-    particle_inst[MASS] = 1.0;
+    particle_inst[MASS] = 1.0f;
 
     /**
      * The density (or volume) of the particle. Needed for volumetric
      * rendering (for example metaballs or cloth).
      */
-    particle_inst[DENSITY] = 1.0;
+    particle_inst[DENSITY] = 1.0f;
 
     // Create relationship from particle to emitter
     entity_system->GetRelationshipInstanceManager()->CreateInstance(
