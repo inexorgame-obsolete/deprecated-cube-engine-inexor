@@ -11,7 +11,7 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-VelocityTransformation::VelocityTransformation() : EntityFunction("velocity_transformation")
+VelocityTransformation::VelocityTransformation() : EntityFunction(MODIFIER_VELOCITY_TRANSFORMATION_FUNCTION)
 {
 }
 

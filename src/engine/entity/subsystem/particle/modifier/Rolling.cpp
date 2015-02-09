@@ -11,7 +11,7 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-Rolling::Rolling() : EntityFunction("velocity_transformation")
+Rolling::Rolling() : EntityFunction(MODIFIER_ROLLING_FUNCTION)
 {
 }
 
