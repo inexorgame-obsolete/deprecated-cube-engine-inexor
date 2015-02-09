@@ -13,7 +13,7 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-Cube::Cube() : EntityFunction(RENDERER_BILLBOARD_FUNCTION)
+Cube::Cube() : EntityFunction(RENDERER_CUBE_FUNCTION)
 {
 }
 
