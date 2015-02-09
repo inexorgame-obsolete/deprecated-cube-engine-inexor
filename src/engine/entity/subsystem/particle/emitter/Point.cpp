@@ -38,33 +38,18 @@ void Point::Execute(TimeStep time_step, EntityType* particle_type, EntityInstanc
      * The current position of the particle instance. May be overwritten by an
      * initializer.
      */
-    particle_inst[POS] = vec(emitter_inst->GetAttribute("pos")->vec3Val);
-    /*
-    particle_inst["x"]->doubleVal = emitter_inst->GetAttribute("x")->doubleVal;
-    particle_inst["y"]->doubleVal = emitter_inst->GetAttribute("y")->doubleVal;
-    particle_inst["z"]->doubleVal = emitter_inst->GetAttribute("z")->doubleVal;
-    */
+    particle_inst[POS] = vec(emitter_inst->GetAttribute(POS)->vec3Val);
 
     /**
      * The last current position of the particle instance.
      */
     particle_inst[LAST_POS] = vec(emitter_inst->GetAttribute(LAST_POS)->vec3Val);
-    /*
-    particle_inst["lx"]->doubleVal = emitter_inst->GetAttribute("x")->doubleVal;
-    particle_inst["ly"]->doubleVal = emitter_inst->GetAttribute("y")->doubleVal;
-    particle_inst["lz"]->doubleVal = emitter_inst->GetAttribute("z")->doubleVal;
-    */
 
     /**
      * The current velocity of the particle instance. The last velocity can be
      * calculated by the current and last position of the particle instance.
      */
     particle_inst[VELOCITY] = vec(emitter_inst->GetAttribute(VELOCITY)->vec3Val);
-    /*
-    particle_inst["vx"]->doubleVal = emitter_inst->GetAttribute("vx")->doubleVal;
-    particle_inst["vy"]->doubleVal = emitter_inst->GetAttribute("vy")->doubleVal;
-    particle_inst["vz"]->doubleVal = emitter_inst->GetAttribute("vz")->doubleVal;
-    */
 
     /**
      * The remaining iterations of the particle instance. There might be
