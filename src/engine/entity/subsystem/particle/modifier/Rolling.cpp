@@ -21,7 +21,8 @@ Rolling::~Rolling()
 
 void Rolling::Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle)
 {
-    (*particle)[ROLL]->floatVal += (*particle)[LAST_POS]->vec3Val.magnitude() / (4 * RAD);
+    vec l((*particle)[LAST_POS]->vec3Val);
+    (*particle)[ROLL]->floatVal += l.sub((*particle)[POS]->vec3Val).magnitude() / (4 * RAD);
 }
 
 }
