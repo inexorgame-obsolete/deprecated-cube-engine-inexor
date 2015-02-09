@@ -8,12 +8,6 @@
 #include "Billboard.h"
 #include "fpsgame/game.h"
 
-/*
-namespace game {
-    extern fpsent *player1;
-}
-*/
-
 namespace inexor {
 namespace entity {
 namespace particle {
