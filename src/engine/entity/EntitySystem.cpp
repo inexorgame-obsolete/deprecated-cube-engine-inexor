@@ -20,6 +20,7 @@
 #include "subsystem/particle/renderer/Billboard.h"
 #include "subsystem/particle/renderer/Cube.h"
 #include "subsystem/particle/renderer/Model.h"
+#include "subsystem/particle/renderer/Origin.h"
 
 using namespace inexor::entity::particle;
 
@@ -281,6 +282,9 @@ void EntitySystem::ParticleSystemTest()
     logoutf("Create entity function 'Model'");
     FunctionRefPtr model_renderer_function = new Model();
 
+    logoutf("Create entity function 'Origin'");
+    FunctionRefPtr origin_renderer_function = new Origin();
+
 
     logoutf("Create a particle type");
     TypeRefPtr<EntityType> default_particle_type = particle_subsystem->CreateParticleType("default_particle", "default_renderer");
@@ -310,6 +314,9 @@ void EntitySystem::ParticleSystemTest()
     logoutf("Create renderer type 'model_renderer'");
     TypeRefPtr<EntityType> model_renderer_type = particle_subsystem->CreateRendererType("model_renderer", model_renderer_function);
 
+    logoutf("Create renderer type 'origin_renderer'");
+    TypeRefPtr<EntityType> origin_renderer_type = particle_subsystem->CreateRendererType("origin_renderer", origin_renderer_function);
+
 
     logoutf("Create emitter instances");
     InstanceRefPtr<EntityInstance> point_emitter_1 = particle_subsystem->CreateEmitterInstance(point_emitter, 512.0, 768.0, 512.0, 0.0, 0.0, 0.0);
@@ -332,6 +339,7 @@ void EntitySystem::ParticleSystemTest()
     InstanceRefPtr<EntityInstance> billboard_renderer_2 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "media/particle/ball2.png", 5.0f);
     InstanceRefPtr<EntityInstance> model_renderer_1 = particle_subsystem->CreateRendererInstance(model_renderer_type, "projectile/grenade", vec(0.0f, 0.0f, 2.0f));
     InstanceRefPtr<EntityInstance> cube_renderer_1 = particle_subsystem->CreateRendererInstance(cube_renderer_type, "particlepoints", "media/particle/ball3.png", 3.0f);
+    InstanceRefPtr<EntityInstance> origin_renderer_1 = particle_subsystem->CreateRendererInstance(origin_renderer_type, "particlepoints", "media/particle/ball3.png", 3.0f);
 
 
     logoutf("Create relation from emitter to initializer");
@@ -351,6 +359,7 @@ void EntitySystem::ParticleSystemTest()
     logoutf("Create relation from emitter to renderer");
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_billboard_renderer_1 = particle_subsystem->AddRendererToEmitter(point_emitter_1, billboard_renderer_1);
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_billboard_renderer_2 = particle_subsystem->AddRendererToEmitter(point_emitter_2, billboard_renderer_2);
+    InstanceRefPtr<RelationshipInstance> rel_point_emitter_origin_renderer_1 = particle_subsystem->AddRendererToEmitter(point_emitter_2, origin_renderer_1);
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_model_renderer_1 = particle_subsystem->AddRendererToEmitter(point_emitter_3, model_renderer_1);
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_cube_renderer_1 = particle_subsystem->AddRendererToEmitter(point_emitter_4, cube_renderer_1);
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_billboard_renderer_3 = particle_subsystem->AddRendererToEmitter(point_emitter_4, billboard_renderer_2);

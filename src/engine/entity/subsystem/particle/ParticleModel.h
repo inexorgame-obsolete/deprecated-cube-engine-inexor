@@ -101,6 +101,9 @@ namespace particle {
     const std::string EMITTER_POINT_FUNCTION("point_emitter");
     const std::string INITIALIZER_RANDOM_VELOCITY_FUNCTION("random_velocity");
     const std::string RENDERER_BILLBOARD_FUNCTION("billboard_renderer");
+    const std::string RENDERER_CUBE_FUNCTION("cube_renderer");
+    const std::string RENDERER_MODEL_FUNCTION("model_renderer");
+    const std::string RENDERER_ORIGIN_FUNCTION("origin_renderer");
 
 }
 }

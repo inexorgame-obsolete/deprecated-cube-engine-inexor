@@ -13,7 +13,7 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-Model::Model() : EntityFunction(RENDERER_BILLBOARD_FUNCTION)
+Model::Model() : EntityFunction(RENDERER_MODEL_FUNCTION)
 {
     m = NULL;
     yaw = 0.0f;
