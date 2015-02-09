@@ -12,7 +12,7 @@ namespace entity {
 namespace particle {
 
 VectorField::VectorField(std::string expression)
-    : EntityFunction("vector_field"), args(3), expression(expression)
+    : EntityFunction(MODIFIER_VECTOR_FIELD_FUNCTION), args(3), expression(expression)
 {
     parser.DefineVar("x", &ix);
     parser.DefineVar("y", &iy);

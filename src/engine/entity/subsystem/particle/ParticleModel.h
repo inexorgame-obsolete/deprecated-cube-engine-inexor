@@ -100,6 +100,11 @@ namespace particle {
 
     const std::string EMITTER_POINT_FUNCTION("point_emitter");
     const std::string INITIALIZER_RANDOM_VELOCITY_FUNCTION("random_velocity");
+    const std::string MODIFIER_DENSITY_FADEOUT_FUNCTION("density_fadeout");
+    const std::string MODIFIER_IMMORTAL_FUNCTION("immortal");
+    const std::string MODIFIER_ROLLING_FUNCTION("rolling");
+    const std::string MODIFIER_VECTOR_FIELD_FUNCTION("vector_field");
+    const std::string MODIFIER_VELOCITY_TRANSFORMATION_FUNCTION("velocity_transformation");
     const std::string RENDERER_BILLBOARD_FUNCTION("billboard_renderer");
     const std::string RENDERER_CUBE_FUNCTION("cube_renderer");
     const std::string RENDERER_MODEL_FUNCTION("model_renderer");

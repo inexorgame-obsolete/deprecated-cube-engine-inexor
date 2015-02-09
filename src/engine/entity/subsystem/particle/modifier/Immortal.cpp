@@ -11,7 +11,7 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-Immortal::Immortal() : EntityFunction("immortal")
+Immortal::Immortal() : EntityFunction(MODIFIER_IMMORTAL_FUNCTION)
 {
 }
 
