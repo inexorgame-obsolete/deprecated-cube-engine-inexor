@@ -79,6 +79,7 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/VelocityTransformation
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/VectorField
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/renderer/Billboard
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/renderer/Cube
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/renderer/Model
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/worker/ParticleWorker
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/worker/EmitterWorker
