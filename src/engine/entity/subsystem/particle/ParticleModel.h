@@ -26,6 +26,7 @@ namespace particle {
     const std::string ROLL("roll");
     const std::string MASS("mass");
     const std::string DENSITY("density");
+    const std::string GRAVITY("gravity");
 
     // Particle lifetime
 
@@ -101,6 +102,7 @@ namespace particle {
     const std::string EMITTER_POINT_FUNCTION("point_emitter");
     const std::string INITIALIZER_RANDOM_VELOCITY_FUNCTION("random_velocity");
     const std::string MODIFIER_DENSITY_FADEOUT_FUNCTION("density_fadeout");
+    const std::string MODIFIER_GRAVITY_POINT_FUNCTION("gravity_point");
     const std::string MODIFIER_IMMORTAL_FUNCTION("immortal");
     const std::string MODIFIER_ROLLING_FUNCTION("rolling");
     const std::string MODIFIER_VECTOR_FIELD_FUNCTION("vector_field");

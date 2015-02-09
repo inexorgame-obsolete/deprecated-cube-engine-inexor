@@ -15,6 +15,8 @@
 #include "subsystem/particle/emitter/Point.h"
 #include "subsystem/particle/initializer/RandomPosition.h"
 #include "subsystem/particle/initializer/RandomVelocity.h"
+#include "subsystem/particle/modifier/DensityFadeout.h"
+#include "subsystem/particle/modifier/GravityPoint.h"
 #include "subsystem/particle/modifier/Rolling.h"
 #include "subsystem/particle/modifier/VelocityTransformation.h"
 #include "subsystem/particle/modifier/VectorField.h"
@@ -267,11 +269,16 @@ void EntitySystem::ParticleSystemTest()
     logoutf("Create entity function 'RandomVelocity'");
     FunctionRefPtr random_velocity_function = new RandomVelocity();
 
+    logoutf("Create entity function 'DensityFadeout'");
+    FunctionRefPtr density_fadeout_function = new DensityFadeout();
+
+    logoutf("Create entity function 'GravityPoint'");
+    FunctionRefPtr gravity_point_function = new GravityPoint();
+
     logoutf("Create entity function 'VelocityTransformation'");
     FunctionRefPtr velocity_transformation_function = new VelocityTransformation();
 
-    logoutf("Create entity function 'VectorField' with expression 'x * 1.2,y * 1.2,z * 1.2'");
-    // FunctionRefPtr vector_field_function = new VectorField("x * 1.2,y * 1.2,z * 1.2");
+    logoutf("Create entity function 'VectorField' with expression '(z * -0.3) * x, (z * -0.2) * y, 50 * sin(x) + 25'");
     FunctionRefPtr vector_field_function = new VectorField("(z * -0.3) * x, (z * -0.2) * y, 50 * sin(x) + 25");
 
     logoutf("Create entity function 'Rolling'");
@@ -302,6 +309,12 @@ void EntitySystem::ParticleSystemTest()
     logoutf("Create initializer type 'random_velocity_initializer'");
     TypeRefPtr<EntityType> random_velocity_initializer_type = particle_subsystem->CreateInitializerType("random_velocity_initializer", random_velocity_function);
 
+    logoutf("Create modifier type 'density_fadeout_modifier'");
+    TypeRefPtr<EntityType> density_fadeout_modifier_type = particle_subsystem->CreateModifierType("density_fadeout_modifier", density_fadeout_function);
+
+    logoutf("Create modifier type 'gravity_point_modifier'");
+    TypeRefPtr<EntityType> gravity_point_modifier_type = particle_subsystem->CreateModifierType("gravity_point_modifier", gravity_point_function);
+
     logoutf("Create modifier type 'velocity_transformation_modifier'");
     TypeRefPtr<EntityType> velocity_transformation_modifier_type = particle_subsystem->CreateModifierType("velocity_transformation_modifier", velocity_transformation_function);
 
@@ -328,6 +341,7 @@ void EntitySystem::ParticleSystemTest()
     logoutf("Create emitter instances");
     InstanceRefPtr<EntityInstance> point_emitter_1 = particle_subsystem->CreateEmitterInstance(point_emitter, 512.0, 768.0, 512.0, 0.0, 0.0, 0.0);
     InstanceRefPtr<EntityInstance> point_emitter_2 = particle_subsystem->CreateEmitterInstance(point_emitter, 512.0, 256.0, 512.0, 0.0, 0.0, 0.0);
+    point_emitter_2[LIFETIME] = 7500;
     InstanceRefPtr<EntityInstance> point_emitter_3 = particle_subsystem->CreateEmitterInstance(point_emitter, 768.0, 512.0, 512.0, 0.0, 0.0, 0.0);
     point_emitter_3[BATCH_SIZE] = 1;
     InstanceRefPtr<EntityInstance> point_emitter_4 = particle_subsystem->CreateEmitterInstance(point_emitter, 256.0, 512.0, 512.0, 0.0, 0.0, 0.0);
@@ -341,6 +355,10 @@ void EntitySystem::ParticleSystemTest()
     InstanceRefPtr<EntityInstance> vector_field_modifier_1 = particle_subsystem->CreateModifierInstance(vector_field_modifier_type);
     vector_field_modifier_1[POS] = vec(512.0f, 768.0f, 524.0f);
     InstanceRefPtr<EntityInstance> rolling_modifier_1 = particle_subsystem->CreateModifierInstance(rolling_modifier_type);
+    InstanceRefPtr<EntityInstance> gravity_point_modifier_1 = particle_subsystem->CreateModifierInstance(gravity_point_modifier_type);
+    gravity_point_modifier_1[MASS] = 5000.0f;
+    gravity_point_modifier_1[GRAVITY] = 100.0f;
+    gravity_point_modifier_1[POS] = vec(512.0f, 512.0f, 512.0f);
 
     logoutf("Create renderer instances");
     InstanceRefPtr<EntityInstance> billboard_renderer_1 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "media/particle/ball1.png", 10.0f);
@@ -361,6 +379,7 @@ void EntitySystem::ParticleSystemTest()
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_transformation_1 = particle_subsystem->AddModifierToEmitter(point_emitter_1, velocity_transformation_modifier_1);
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_vector_field_1 = particle_subsystem->AddModifierToEmitter(point_emitter_1, vector_field_modifier_1);
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_transformation_2 = particle_subsystem->AddModifierToEmitter(point_emitter_2, velocity_transformation_modifier_1);
+    InstanceRefPtr<RelationshipInstance> rel_point_emitter_gravity_point_modifier_2 = particle_subsystem->AddModifierToEmitter(point_emitter_2, gravity_point_modifier_1);
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_transformation_3 = particle_subsystem->AddModifierToEmitter(point_emitter_3, velocity_transformation_modifier_1);
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_rolling_1 = particle_subsystem->AddModifierToEmitter(point_emitter_3, rolling_modifier_1);
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_transformation_4 = particle_subsystem->AddModifierToEmitter(point_emitter_4, velocity_transformation_modifier_1);
