@@ -74,7 +74,9 @@ class ParticleSubsystem : public SubsystemBase
         InstanceRefPtr<EntityInstance> CreateInitializerInstance(TypeRefPtr<EntityType> initializer_type);
         InstanceRefPtr<EntityInstance> CreateModifierInstance(std::string modifier_type_name);
         InstanceRefPtr<EntityInstance> CreateModifierInstance(TypeRefPtr<EntityType> modifier_type);
+        InstanceRefPtr<EntityInstance> CreateRendererInstance(std::string renderer_type_name, std::string model, vec offset);
         InstanceRefPtr<EntityInstance> CreateRendererInstance(std::string renderer_type_name, std::string shader, std::string texture, float size);
+        InstanceRefPtr<EntityInstance> CreateRendererInstance(TypeRefPtr<EntityType> renderer_type, std::string model, vec offset);
         InstanceRefPtr<EntityInstance> CreateRendererInstance(TypeRefPtr<EntityType> renderer_type, std::string shader, std::string texture, float size);
 
         void DestroyEmitterInstance(std::string uuid);
@@ -91,8 +93,8 @@ class ParticleSubsystem : public SubsystemBase
         InstanceRefPtr<RelationshipInstance> AddRendererToEmitter(InstanceRefPtr<EntityInstance> emitter_instance, InstanceRefPtr<EntityInstance> renderer_instance);
 
         CefRefPtr<ParticleWorker> CreateParticleWorker(std::string name, FunctionRefPtr function);
-        CefRefPtr<EmitterWorker> CreateEmitterWorker(std::string name, TypeRefPtr<EntityType> emitter_type, InstanceRefPtr<EntityInstance> emitter_instance);
-        CefRefPtr<ModifierWorker> CreateModifierWorker(std::string name, TypeRefPtr<EntityType> modifier_type, InstanceRefPtr<EntityInstance> modifier_instance);
+        CefRefPtr<EmitterWorker> CreateEmitterWorker(TypeRefPtr<EntityType> emitter_type, InstanceRefPtr<EntityInstance> emitter_instance);
+        CefRefPtr<ModifierWorker> CreateModifierWorker(TypeRefPtr<EntityType> modifier_type, InstanceRefPtr<EntityInstance> modifier_instance);
 
         void DestroyParticleWorker(std::string name);
         void DestroyParticleWorker(InstanceRefPtr<EntityInstance> entity_instance);

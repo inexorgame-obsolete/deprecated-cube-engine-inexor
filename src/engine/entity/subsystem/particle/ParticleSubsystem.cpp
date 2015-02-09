@@ -236,7 +236,7 @@ InstanceRefPtr<EntityInstance> ParticleSubsystem::CreateEmitterInstance(TypeRefP
     emitter_instance[ENABLED] = true;
 
     // Starts the worker thread for the emitter instance (which also calls the connected initializer instances)
-    CreateEmitterWorker(emitter_instance->GetUuid(), emitter_type, emitter_instance);
+    CreateEmitterWorker(emitter_type, emitter_instance);
 
     return emitter_instance;
 }
@@ -276,15 +276,44 @@ InstanceRefPtr<EntityInstance> ParticleSubsystem::CreateModifierInstance(TypeRef
     modifier_instance[ENABLED] = true;
 
     // Starts the worker thread for the modifier instance
-    CreateModifierWorker(modifier_instance->GetUuid(), modifier_type, modifier_instance);
+    CreateModifierWorker(modifier_type, modifier_instance);
 
     return modifier_instance;
+}
+
+InstanceRefPtr<EntityInstance> ParticleSubsystem::CreateRendererInstance(std::string renderer_type_name, std::string model, vec offset)
+{
+    TypeRefPtr<EntityType> renderer_type = entity_type_manager->Get(renderer_type_name);
+    return CreateRendererInstance(renderer_type, model, offset);
 }
 
 InstanceRefPtr<EntityInstance> ParticleSubsystem::CreateRendererInstance(std::string renderer_type_name, std::string shader, std::string texture, float size)
 {
     TypeRefPtr<EntityType> renderer_type = entity_type_manager->Get(renderer_type_name);
     return CreateRendererInstance(renderer_type, shader, texture, size);
+}
+
+InstanceRefPtr<EntityInstance> ParticleSubsystem::CreateRendererInstance(TypeRefPtr<EntityType> renderer_type, std::string model, vec offset)
+{
+    InstanceRefPtr<EntityInstance> renderer_instance = entity_instance_manager->Create(renderer_type);
+
+    // Sets the shader name
+    renderer_instance[SHADER] = "";
+
+    // Sets the texture name
+    renderer_instance[TEXTURE] = "";
+
+    // Sets the model
+    renderer_instance[MODEL] = model;
+
+    // Sets the size
+    renderer_instance[SIZE] = 1.0f;
+
+    // Sets the offset
+    renderer_instance[OFFSET] = vec(offset);
+
+    renderers.push_back(renderer_instance);
+    return renderer_instance;
 }
 
 InstanceRefPtr<EntityInstance> ParticleSubsystem::CreateRendererInstance(TypeRefPtr<EntityType> renderer_type, std::string shader, std::string texture, float size)
@@ -297,8 +326,14 @@ InstanceRefPtr<EntityInstance> ParticleSubsystem::CreateRendererInstance(TypeRef
     // Sets the texture name
     renderer_instance[TEXTURE] = texture;
 
+    // Sets the model
+    renderer_instance[MODEL] = "";
+
     // Sets the size
     renderer_instance[SIZE] = size;
+
+    // Sets the offset
+    renderer_instance[OFFSET] = vec(0.0f, 0.0f, 0.0f);
 
     renderers.push_back(renderer_instance);
     return renderer_instance;
@@ -394,19 +429,21 @@ CefRefPtr<ParticleWorker> ParticleSubsystem::CreateParticleWorker(std::string na
     return worker;
 }
 
-CefRefPtr<EmitterWorker> ParticleSubsystem::CreateEmitterWorker(std::string name, TypeRefPtr<EntityType> emitter_type, InstanceRefPtr<EntityInstance> emitter_instance)
+CefRefPtr<EmitterWorker> ParticleSubsystem::CreateEmitterWorker(TypeRefPtr<EntityType> emitter_type, InstanceRefPtr<EntityInstance> emitter_instance)
 {
     FunctionRefPtr function = emitter_type->GetAttribute(PARTICLE_EMITTER_FUNCTION_ATTRIBUTE_NAME)->GetFunction();
-    CefRefPtr<EmitterWorker> worker = new EmitterWorker(name, function, emitter_instance);
+    std::string thread_name = emitter_type->GetName() + "_" + emitter_instance->GetUuid();
+    CefRefPtr<EmitterWorker> worker = new EmitterWorker(thread_name, function, emitter_instance);
     emitter_workers.push_back(worker);
     worker->Start();
     return worker;
 }
 
-CefRefPtr<ModifierWorker> ParticleSubsystem::CreateModifierWorker(std::string name, TypeRefPtr<EntityType> modifier_type, InstanceRefPtr<EntityInstance> modifier_instance)
+CefRefPtr<ModifierWorker> ParticleSubsystem::CreateModifierWorker(TypeRefPtr<EntityType> modifier_type, InstanceRefPtr<EntityInstance> modifier_instance)
 {
     FunctionRefPtr function = modifier_type->GetAttribute(PARTICLE_MODIFIER_FUNCTION_ATTRIBUTE_NAME)->GetFunction();
-    CefRefPtr<ModifierWorker> worker = new ModifierWorker(name, function, modifier_instance);
+    std::string thread_name = modifier_type->GetName() + "_" + modifier_instance->GetUuid();
+    CefRefPtr<ModifierWorker> worker = new ModifierWorker(thread_name, function, modifier_instance);
     modifier_workers.push_back(worker);
     worker->Start();
     return worker;
