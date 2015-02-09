@@ -87,7 +87,7 @@ void Point::Execute(TimeStep time_step, EntityType* particle_type, EntityInstanc
      * The density (or volume) of the particle. Needed for volumetric
      * rendering (for example metaballs or cloth).
      */
-    particle_inst[DENSITY] = 10.0;
+    particle_inst[DENSITY] = 1.0;
 
     // Create relationship from particle to emitter
     entity_system->GetRelationshipInstanceManager()->CreateInstance(
