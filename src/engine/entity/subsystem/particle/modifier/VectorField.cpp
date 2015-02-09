@@ -14,7 +14,6 @@ namespace particle {
 VectorField::VectorField(std::string expression)
     : EntityFunction("vector_field"), args(3), expression(expression)
 {
-    // TODO: check this -> use mu::value_type as EntityAttribute
     parser.DefineVar("x", &ix);
     parser.DefineVar("y", &iy);
     parser.DefineVar("z", &iz);
@@ -26,9 +25,19 @@ VectorField::~VectorField()
 {
 }
 
+void VectorField::SetExpression(std::string expression)
+{
+    if (this->expression != expression)
+    {
+        this->expression = expression;
+        parser.SetExpr(expression);
+    }
+}
+
 void VectorField::Before(TimeStep time_step, EntityInstance* modifier)
 {
-    parser.SetExpr(modifier->GetType()->GetAttribute("expression")->GetString());
+    // TODO: check performance
+    SetExpression(modifier->GetType()[EXPRESSION]->stringVal);
     // TODO: check for existence: x, y and z
     // TODO: check for existence: expression
 }
