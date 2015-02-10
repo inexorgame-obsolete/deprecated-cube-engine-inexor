@@ -521,28 +521,49 @@ static inline bool htcmp(GLuint x, GLuint y)
 
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// manual implementation of vectors
-// DEPRECATED! (but difficult to replace in code)
-// We recommend to use std::vector instead!
-
+/// Vector template
+/// @brief a manual implementation of vector templates (self managing dynamic arrays which store one type).
+/// @see std::vector
+/// @sideeffects DEPRECATED! (but difficult to replace in the engine) We recommend to use std::vector instead!
 template <class T> struct vector
 {
+	/// minimal vector size
     static const int MINSIZE = 8;
 
+	/// data pointer
     T *buf;
-    int alen, ulen;
+	/// length of allocated memory
+    int alen;
+	/// length of used memory
+	int ulen;
 
-    vector() : buf(NULL), alen(0), ulen(0)
+    /// Default constructor
+	/// @brief sets all members to 0
+	vector() : buf(NULL), alen(0), ulen(0)
     {
     }
 
+	/// Copy constructor
+	/// @brief this constructor initialises the vector by copying another vector.
+	/// @param v the vector from which data will be copied (call by reference).
     vector(const vector &v) : buf(NULL), alen(0), ulen(0)
     {
         *this = v;
     }
 
-    ~vector() { shrink(0); if(buf) free(buf); }
+	/// Destructor
+	/// @brief Deletes all allocated memory and sets vector size to 0.
+	/// @sideeffects Calling this method manually means that all data contained in this vector will be lost.
+    ~vector() 
+	{
+		shrink(0);
+		if(buf) free(buf);
+	}
 
+	/// Operator =
+	/// @brief Resets own memory and copies all data from the other vector.
+	/// @param v The vector from which data will be copied.
+	/// @return Returns a pointer to itself.
     vector<T> &operator=(const vector<T> &v)
     {
         shrink(0);
@@ -551,6 +572,12 @@ template <class T> struct vector
         return *this;
     }
 
+	/// Add new index to vector
+	/// @brief Pushs a new element at the end of the vector. Allocates memory automaticly if neccesary.
+	/// @param x Element which will be added at the end
+	/// @sideeffects May allocates a lot of memory without your notice
+	/// @see growbuf
+	/// @return The last element of the vector (which is parameter x)
     T &add(const T &x)
     {
         if(ulen==alen) growbuf(ulen+1);
@@ -558,6 +585,12 @@ template <class T> struct vector
         return buf[ulen++];
     }
 
+	/// Add new EMPTY index to vector.
+	/// @brief Pushs a new EMPTY element at the end of the vector. Allocates memory automaticly if neccesary.
+	/// @param x Element which will be added at the end.
+	/// @see growbuf
+	/// @sideeffects May allocates a lot of memory without your notice.
+	/// @return The last element of the vector (which is parameter x).
     T &add()
     {
         if(ulen==alen) growbuf(ulen+1);
@@ -565,6 +598,11 @@ template <class T> struct vector
         return buf[ulen++];
     }
 
+	/// Duplicate vector's last index.
+	/// @brief Duplicates last index of the vector and appends it to the end. Allocates memory automaticly if neccesary.
+	/// @see growbuf
+	/// @sideeffects May allocates a lot of memory without your notice.
+	/// @return The last element of the vector.
     T &dup()
     {
         if(ulen==alen) growbuf(ulen+1);
