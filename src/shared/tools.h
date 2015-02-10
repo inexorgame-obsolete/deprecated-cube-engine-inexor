@@ -1,10 +1,11 @@
 // generic useful stuff for any C++ program
 
+// include guard to prevent this file from being included twice (similar to #pgrama once on Windows)
 #ifndef _TOOLS_H
 #define _TOOLS_H
 
-// short type definitions please note that these 
-// are real definitions and not just macros!
+// short type definitions 
+// please note that these are real definitions and not just macros!
 typedef unsigned char uchar;
 typedef unsigned short ushort;
 typedef unsigned int uint;
@@ -15,7 +16,7 @@ typedef unsigned long long int ullong;
 #ifdef _DEBUG
 #define ASSERT(c) assert(c)
 #else
-#define ASSERT(c) if(c) {} // if not in debug mode, ignore assertion
+#define ASSERT(c) if(c) {} // if not in debug mode, ignore assertion ("did it work? alright then do nothing")
 #endif
 
 // __restrict is a keyword that can be used in pointer declarations
@@ -61,12 +62,13 @@ static inline void swap(T &a, T &b)
 #undef min
 #endif
 
-// return minimal or maximal of two values
+// return maximum of two values
 template<class T>
 static inline T max(T a, T b)
 {
     return a > b ? a : b;
 }
+// return minimum of two values
 template<class T>
 static inline T min(T a, T b)
 {
@@ -212,24 +214,29 @@ extern char *tempformatstring(const char *fmt, ...) PRINTFARGS(1, 2);
 #define loopvk(v)   for(int k = 0; k<(v).length(); k++)
 #define loopvrev(v) for(int i = (v).length()-1; i>=0; i--)
 
+// template implementation of buffers (network e.g.)
 template <class T>
 struct databuf
 {
+	// state of the buffer
     enum
     {
         OVERREAD  = 1<<0,
         OVERWROTE = 1<<1
     };
 
-    T *buf;
+    T *buf; // buffer object
     int len, maxlen;
     uchar flags;
 
+	// all members are initialised in this constructur's constructor list
     databuf() : buf(NULL), len(0), maxlen(0), flags(0) {}
 
+	// copy constructor
     template<class U>
     databuf(T *buf, U maxlen) : buf(buf), len(0), maxlen((int)maxlen), flags(0) {}
 
+	// get one byte from the buffer
     const T &get()
     {
         static T overreadval = 0;
@@ -238,6 +245,7 @@ struct databuf
         return overreadval;
     }
 
+	// create a sub buffer copy from this buffer
     databuf subbuf(int sz)
     {
         sz = clamp(sz, 0, maxlen-len);
@@ -245,12 +253,14 @@ struct databuf
         return databuf(&buf[len-sz], sz);
     }
 
+	// put one byte at the end of a buffer
     void put(const T &val)
     {
         if(len<maxlen) buf[len++] = val;
         else flags |= OVERWROTE;
     }
 
+	// copy numval bytes from memory pointer
     void put(const T *vals, int numvals)
     {
         if(maxlen-len<numvals) flags |= OVERWROTE;
@@ -258,6 +268,7 @@ struct databuf
         len += min(maxlen-len, numvals);
     }
 
+	// get numval bytes from memory pointer
     int get(T *vals, int numvals)
     {
         int read = min(maxlen-len, numvals);
@@ -267,6 +278,7 @@ struct databuf
         return read;
     }
 
+	// change buffer offset
     void offset(int n)
     {
         n = min(n, maxlen);
@@ -274,13 +286,19 @@ struct databuf
         maxlen -= n;
         len = max(len-n, 0);
     }
-
+	
+	// is this buffer empty?
     bool empty() const { return len==0; }
-    int length() const { return len; }
+    // what is the length of this buffer?
+	int length() const { return len; }
+	// how much space is left?
     int remaining() const { return maxlen-len; }
+	// did I overread the buffer (is the overread flag set)
     bool overread() const { return (flags&OVERREAD)!=0; }
+	// did I overwrite the buffer (id the overwrote flag set)
     bool overwrote() const { return (flags&OVERWROTE)!=0; }
 
+	// force buffer to skip all free memory space
     void forceoverread()
     {
         len = maxlen;
@@ -1046,7 +1064,7 @@ struct unionfind
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // manual implementation of queues
 // DEPRECATED! please use std::deque instead!
-
+// hello world
 template <class T, int SIZE> struct queue
 {
     int head, tail, len;

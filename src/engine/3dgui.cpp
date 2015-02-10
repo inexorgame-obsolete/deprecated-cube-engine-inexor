@@ -11,7 +11,14 @@ static bool layoutpass, actionon = false;
 static float firstx, firsty;
 static int mousebuttons = 0;
 
-enum {FIELDCOMMIT, FIELDABORT, FIELDEDIT, FIELDSHOW, FIELDKEY};
+enum
+{
+	FIELDCOMMIT,
+	FIELDABORT,
+	FIELDEDIT,
+	FIELDSHOW,
+	FIELDKEY
+};
 
 static int fieldmode = FIELDSHOW; 
 static bool fieldsactive = false;
