@@ -37,8 +37,19 @@ class ParticleSubsystem : public SubsystemBase
         );
         virtual ~ParticleSubsystem();
 
+        /**
+         * Updates the particle system by the given time step.
+         */
         void Update(TimeStep time_step);
+
+        /**
+         * Shutdown.
+         */
         void Cleanup();
+
+        /**
+         * TODO
+         */
         void Reset();
 
         /**
@@ -47,7 +58,7 @@ class ParticleSubsystem : public SubsystemBase
         void RenderFaces();
 
         /**
-         * Renders the particles.
+         * Renders the particles. This method is called in the main thread.
          */
         void RenderParticles();
 
@@ -66,7 +77,6 @@ class ParticleSubsystem : public SubsystemBase
         TypeRefPtr<EntityType> GetRendererType(std::string renderer_type_name);
 
         TypeRefPtr<RelationshipType> GetRelationshipType(std::string relationship_type_name);
-        void DeleteRelationship(InstanceRefPtr<RelationshipInstance> instance);
 
         InstanceRefPtr<EntityInstance> CreateEmitterInstance(std::string emitter_type_name, double x, double y, double z, double vx, double vy, double vz);
         InstanceRefPtr<EntityInstance> CreateEmitterInstance(TypeRefPtr<EntityType> emitter_type, double x, double y, double z, double vx, double vy, double vz);
@@ -93,8 +103,11 @@ class ParticleSubsystem : public SubsystemBase
         InstanceRefPtr<RelationshipInstance> AddRendererToEmitter(InstanceRefPtr<EntityInstance> emitter_instance, InstanceRefPtr<EntityInstance> renderer_instance);
 
         CefRefPtr<ParticleWorker> CreateParticleWorker(std::string name, FunctionRefPtr function);
+        CefRefPtr<ParticleWorker> CreateParticleWorker(std::string name, FunctionRefPtr function, int maxfps);
         CefRefPtr<EmitterWorker> CreateEmitterWorker(TypeRefPtr<EntityType> emitter_type, InstanceRefPtr<EntityInstance> emitter_instance);
+        CefRefPtr<EmitterWorker> CreateEmitterWorker(TypeRefPtr<EntityType> emitter_type, InstanceRefPtr<EntityInstance> emitter_instance, int maxfps);
         CefRefPtr<ModifierWorker> CreateModifierWorker(TypeRefPtr<EntityType> modifier_type, InstanceRefPtr<EntityInstance> modifier_instance);
+        CefRefPtr<ModifierWorker> CreateModifierWorker(TypeRefPtr<EntityType> modifier_type, InstanceRefPtr<EntityInstance> modifier_instance, int maxfps);
 
         void DestroyParticleWorker(std::string name);
         void DestroyParticleWorker(InstanceRefPtr<EntityInstance> entity_instance);
@@ -102,17 +115,23 @@ class ParticleSubsystem : public SubsystemBase
         void DestroyModifierWorker(InstanceRefPtr<EntityInstance> modifier_instance);
 
     private:
+
+        /**
+         * The maximum frames per second.
+         */
+        int maxfps;
+
         CefRefPtr<ParticleTypeFactory> particle_type_factory;
         CefRefPtr<ParticleEmitterTypeFactory> particle_emitter_type_factory;
         CefRefPtr<ParticleInitializerTypeFactory> particle_initializer_type_factory;
         CefRefPtr<ParticleModifierTypeFactory> particle_modifier_type_factory;
         CefRefPtr<ParticleRendererTypeFactory> particle_renderer_type_factory;
 
-        std::map<std::string, TypeRefPtr<EntityType> > particle_types;
-        std::map<std::string, TypeRefPtr<EntityType> > emitter_types;
-        std::map<std::string, TypeRefPtr<EntityType> > initializer_types;
-        std::map<std::string, TypeRefPtr<EntityType> > modifier_types;
-        std::map<std::string, TypeRefPtr<EntityType> > renderer_types;
+        std::unordered_map<std::string, TypeRefPtr<EntityType> > particle_types;
+        std::unordered_map<std::string, TypeRefPtr<EntityType> > emitter_types;
+        std::unordered_map<std::string, TypeRefPtr<EntityType> > initializer_types;
+        std::unordered_map<std::string, TypeRefPtr<EntityType> > modifier_types;
+        std::unordered_map<std::string, TypeRefPtr<EntityType> > renderer_types;
 
         /**
          * The particle workers.

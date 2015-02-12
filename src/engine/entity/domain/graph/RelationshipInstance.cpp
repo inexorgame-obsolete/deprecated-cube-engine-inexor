@@ -16,6 +16,7 @@ RelationshipInstance::RelationshipInstance(
     InstanceRefPtr<EntityInstance> startNode,
     InstanceRefPtr<EntityInstance> endNode
 ) : InstanceBase(),
+    alive(true),
     type(type)
 {
     // Type checks
@@ -37,6 +38,7 @@ RelationshipInstance::RelationshipInstance(
     InstanceRefPtr<EntityInstance> endNode,
     std::string uuid
 ) : InstanceBase(uuid),
+    alive(true),
     type(type)
 {
     // Type checks

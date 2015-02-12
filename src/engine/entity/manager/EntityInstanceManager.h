@@ -45,7 +45,7 @@ class EntityInstanceManager
 
     private:
         // The entity instances.
-        std::map<std::string, InstanceRefPtr<EntityInstance> > entity_instances;
+        std::unordered_map<std::string, InstanceRefPtr<EntityInstance> > entity_instances;
 
         // The entity type manager.
         CefRefPtr<EntityTypeManager> entity_type_manager;

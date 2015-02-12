@@ -27,7 +27,7 @@ class InstanceBase : public AttributeBase
         std::string GetUuid();
         void SetUuid(std::string uuid);
 
-    protected:
+    // protected:
         std::string uuid;
 
     private:

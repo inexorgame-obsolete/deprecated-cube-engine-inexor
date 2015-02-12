@@ -40,7 +40,7 @@ void Origin::Before(TimeStep time_step, EntityInstance* renderer_inst)
 void Origin::Execute(TimeStep time_step, EntityInstance* renderer_inst, EntityInstance* particle_inst)
 {
     vec p_particle((*particle_inst)[POS]->vec3Val);
-    vec p_emitter(particle_inst->outgoing[emitted_by].front()->endNode[POS]->vec3Val);
+    vec p_emitter(particle_inst->outgoing[emitted_by->uuid].front()->endNode[POS]->vec3Val);
     glVertex3f(p_particle.x, p_particle.y, p_particle.z);
     glVertex3f(p_emitter.x, p_emitter.y, p_emitter.z);
 }
