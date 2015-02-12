@@ -38,7 +38,7 @@ class RelationshipTypeManager
         int Size();
 
     private:
-        std::map<std::string, TypeRefPtr<RelationshipType> > relationship_types;
+        std::unordered_map<std::string, TypeRefPtr<RelationshipType> > relationship_types;
 
         // The entity type manager.
         CefRefPtr<EntityTypeManager> entity_type_manager;

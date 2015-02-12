@@ -13,7 +13,7 @@ namespace entity {
 InstanceRefPtr<EntityInstance> EntityInstanceManager::Create(TypeRefPtr<EntityType> entity_type)
 {
     InstanceRefPtr<EntityInstance> entity_instance = new EntityInstance(entity_type);
-    entity_instances[entity_instance->GetUuid()] = entity_instance;
+    entity_instances[entity_instance->uuid] = entity_instance;
     return entity_instance;
 }
 
@@ -26,7 +26,7 @@ InstanceRefPtr<EntityInstance> EntityInstanceManager::Create(std::string entity_
 
 InstanceRefPtr<EntityInstance> EntityInstanceManager::Create(InstanceRefPtr<EntityInstance> entity_instance)
 {
-    entity_instances[entity_instance->GetUuid()] = entity_instance;
+    entity_instances[entity_instance->uuid] = entity_instance;
     return entity_instance;
 }
 
@@ -54,7 +54,7 @@ std::list<InstanceRefPtr<EntityInstance> > EntityInstanceManager::GetAll(std::st
 
 void EntityInstanceManager::DeleteInstance(InstanceRefPtr<EntityInstance> instance)
 {
-    entity_instances.erase(instance->GetUuid());
+    entity_instances.erase(instance->uuid);
 }
 
 void EntityInstanceManager::DeleteInstance(std::string uuid)

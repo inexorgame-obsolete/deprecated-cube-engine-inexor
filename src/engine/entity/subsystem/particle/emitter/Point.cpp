@@ -14,49 +14,41 @@ namespace particle {
 Point::Point() : EntityFunction(EMITTER_POINT_FUNCTION)
 {
     emitted_by = entity_system->GetRelationshipTypeManager()->Get(REL_EMITTED_BY);
-    apply_initializer = entity_system->GetRelationshipTypeManager()->Get(REL_APPLY_INITIALIZER);
-    apply_modifier = entity_system->GetRelationshipTypeManager()->Get(REL_APPLY_MODIFIER);
-    apply_renderer = entity_system->GetRelationshipTypeManager()->Get(REL_APPLY_RENDERER);
-    modifies = entity_system->GetRelationshipTypeManager()->Get(REL_MODIFIES);
-    renders = entity_system->GetRelationshipTypeManager()->Get(REL_RENDERS);
 }
 
 Point::~Point()
 {
 }
 
-void Point::Execute(TimeStep time_step, EntityType* particle_type, EntityInstance* emitter_inst)
+void Point::Execute(TimeStep time_step, EntityInstance* emitter_inst, EntityInstance* particle_inst)
 {
 
-    // TODO: fetch dead particle from pool instead of creating new
-    // TODO: migrate rate / batch from the old...
-    // TODO:
-
-    InstanceRefPtr<EntityInstance> particle_inst = entity_system->GetEntityInstanceManager()->Create(particle_type);
+    // InstanceRefPtr<EntityInstance> particle_inst = entity_system->GetEntityInstanceManager()->Create(particle_type);
+    // InstanceRefPtr<EntityInstance> particle_inst = particle;
 
     /**
      * The current position of the particle instance. May be overwritten by an
      * initializer.
      */
-    particle_inst[POS] = vec(emitter_inst->GetAttribute(POS)->vec3Val);
+    (*particle_inst)[POS] = vec(emitter_inst->GetAttribute(POS)->vec3Val);
 
     /**
      * The last current position of the particle instance.
      */
-    particle_inst[LAST_POS] = vec(emitter_inst->GetAttribute(LAST_POS)->vec3Val);
+    (*particle_inst)[LAST_POS] = vec(emitter_inst->GetAttribute(LAST_POS)->vec3Val);
 
     /**
      * The current velocity of the particle instance. The last velocity can be
      * calculated by the current and last position of the particle instance.
      */
-    particle_inst[VELOCITY] = vec(emitter_inst->GetAttribute(VELOCITY)->vec3Val);
+    (*particle_inst)[VELOCITY] = vec(emitter_inst->GetAttribute(VELOCITY)->vec3Val);
 
     /**
      * The remaining iterations of the particle instance. There might be
      * particle modifiers that change the remaining lifetime, for example
      * particle culling would set the remaining iterations to zero.
      */
-    particle_inst[REMAINING] = emitter_inst->GetAttribute(LIFETIME)->intVal;
+    (*particle_inst)[REMAINING] = emitter_inst->GetAttribute(LIFETIME)->intVal;
 
     /**
      * The elapsed iterations since birth. This attribute gets constantly
@@ -65,30 +57,31 @@ void Point::Execute(TimeStep time_step, EntityType* particle_type, EntityInstanc
      * iterations attribute was modified. If you need a constant change
      * over time, you should use this!
      */
-    particle_inst[ELAPSED] = 0;
+    // particle_inst[ELAPSED] = 0;
 
     /**
      * The time elapsed in the previous iteration.
      */
-    particle_inst[LAST_ELAPSED] = 0;
+    // particle_inst[LAST_ELAPSED] = 0;
 
     /**
      * Rolling particles
      */
-    particle_inst[ROLL] = 0.0f;
+    (*particle_inst)[ROLL] = 0.0f;
 
     /**
      * Every particle instance has a mass. Needed for modifiers which are
      * applying physical transformations like gravity.
      */
-    particle_inst[MASS] = 1.0f;
+    (*particle_inst)[MASS] = 1.0f;
 
     /**
      * The density (or volume) of the particle. Needed for volumetric
      * rendering (for example metaballs or cloth).
      */
-    particle_inst[DENSITY] = 1.0f;
+    (*particle_inst)[DENSITY] = 1.0f;
 
+/*
     // Create relationship from particle to emitter
     entity_system->GetRelationshipInstanceManager()->CreateInstance(
         // The relationship type
@@ -141,6 +134,7 @@ void Point::Execute(TimeStep time_step, EntityType* particle_type, EntityInstanc
             particle_inst
         );
     }
+*/
 
 }
 

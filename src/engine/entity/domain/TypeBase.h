@@ -31,8 +31,6 @@ class TypeBase : public AttributeBase
         bool IsPersisting();
         bool IsSynchronizing();
 
-    protected:
-
         /**
          * The unique identifier of this type.
          */
@@ -42,6 +40,8 @@ class TypeBase : public AttributeBase
          * The name of the type.
          */
         std::string name;
+
+    protected:
 
         /**
          * The parent type.

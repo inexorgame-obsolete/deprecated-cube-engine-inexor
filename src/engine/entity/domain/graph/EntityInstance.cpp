@@ -33,13 +33,13 @@ TypeRefPtr<EntityType> EntityInstance::GetType()
 void EntityInstance::AddOutgoingRelationship(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<RelationshipInstance> relationship_instance)
 {
     // TODO: check first for key and create key if not exists!
-    this->outgoing[relationship_type].push_back(relationship_instance);
+    this->outgoing[relationship_type->uuid].push_back(relationship_instance);
 }
 
 void EntityInstance::AddIncomingRelationship(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<RelationshipInstance> relationship_instance)
 {
     // TODO: check first for key and create key if not exists!
-    this->incoming[relationship_type].push_back(relationship_instance);
+    this->incoming[relationship_type->uuid].push_back(relationship_instance);
 }
 
 std::list<InstanceRefPtr<RelationshipInstance> > EntityInstance::GetRelationshipsOfType(TypeRefPtr<RelationshipType> relationship_type)
@@ -49,12 +49,12 @@ std::list<InstanceRefPtr<RelationshipInstance> > EntityInstance::GetRelationship
 
 std::list<InstanceRefPtr<RelationshipInstance> > EntityInstance::GetAllOutgoingRelationshipsOfType(TypeRefPtr<RelationshipType> relationship_type)
 {
-    return outgoing[relationship_type];
+    return outgoing[relationship_type->uuid];
 }
 
 std::list<InstanceRefPtr<RelationshipInstance> > EntityInstance::GetAllIncomingRelationshipsOfType(TypeRefPtr<RelationshipType> relationship_type)
 {
-    return incoming[relationship_type];
+    return incoming[relationship_type->uuid];
 }
 
 }

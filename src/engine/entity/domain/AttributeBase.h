@@ -9,15 +9,13 @@
 #define SRC_ENGINE_ENTITY_DOMAIN_ATTRIBUTEBASE_H_
 
 #include "../EntitySystemBase.h"
+#include "AttributeRefPtr.h"
 
 class vec;
 class vec4;
 
 namespace inexor {
 namespace entity {
-
-class AttributeRefPtr;
-class FunctionRefPtr;
 
 class AttributeBase
 {
@@ -50,7 +48,7 @@ class AttributeBase
          * The attributes of this type.
          * TODO: std::unordered_map (C++11)
          */
-        std::map<std::string, AttributeRefPtr> attributes;
+        std::unordered_map<std::string, AttributeRefPtr> attributes;
 
     private:
         // Include the default reference counting implementation.

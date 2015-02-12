@@ -12,13 +12,13 @@ namespace entity {
 namespace particle {
 
 ParticleWorker::ParticleWorker()
-    : thread (NULL), name(""), running (false), stopped (true), function(NULL)
+    : thread (NULL), name(""), running (false), stopped (true), maxfps(30), function(NULL)
 {
     ResetTimer();
 }
 
-ParticleWorker::ParticleWorker(std::string name, FunctionRefPtr function)
-    : thread (NULL), name(name), running (false), stopped (true), function(function)
+ParticleWorker::ParticleWorker(std::string name, int maxfps, FunctionRefPtr function)
+    : thread (NULL), name(name), running (false), stopped (true), maxfps(maxfps), function(function)
 {
     ResetTimer();
 }
@@ -61,7 +61,7 @@ int ParticleWorker::Work(void *data)
         while (w->running)
         {
             w->frame_millis = SDL_GetTicks();
-            limitfps(w->frame_millis, w->frame_last_millis);
+            w->LimitFps(w->frame_millis, w->frame_last_millis, w->maxfps);
             if (!game::ispaused())
             {
                 w->elapsed_millis = w->frame_millis - w->frame_last_millis;
@@ -104,6 +104,31 @@ void ParticleWorker::ResetTimer()
 void ParticleWorker::SetTimeUnit(double time_unit)
 {
     this->time_unit = time_unit;
+}
+
+/**
+ * Limits the frames per second.
+ */
+void ParticleWorker::LimitFps(int &millis, int curmillis, int maxfps)
+{
+    if(!maxfps) return;
+    static int fpserror = 0;
+    int delay = 1000 / maxfps - (millis - curmillis);
+    if(delay < 0) fpserror = 0;
+    else
+    {
+        fpserror += 1000 % maxfps;
+        if(fpserror >= maxfps)
+        {
+            ++delay;
+            fpserror -= maxfps;
+        }
+        if(delay > 0)
+        {
+            SDL_Delay(delay);
+            millis += delay;
+        }
+    }
 }
 
 }
