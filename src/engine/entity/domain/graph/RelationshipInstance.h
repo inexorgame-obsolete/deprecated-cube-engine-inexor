@@ -85,12 +85,17 @@ class RelationshipInstance : public InstanceBase
          */
         InstanceRefPtr<EntityInstance> endNode;
 
-    protected:
+        /**
+         * If not alive, remove this element at next iteration.
+         */
+        bool alive;
 
         /**
          * The relationship type.
          */
         TypeRefPtr<RelationshipType> type;
+
+    protected:
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(RelationshipInstance);

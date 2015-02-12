@@ -62,13 +62,13 @@ class EntityInstance : public InstanceBase
          * The child relationships by type (this instance is the start node).
          * Because of performance aspects, this is public.
          */
-        std::map<TypeRefPtr<RelationshipType>, std::list<InstanceRefPtr<RelationshipInstance> > > outgoing;
+        std::unordered_map<std::string, std::list<InstanceRefPtr<RelationshipInstance> > > outgoing;
 
         /**
          * The parent relationships by type (this instance is the end node).
          * Because of performance aspects, this is public.
          */
-        std::map<TypeRefPtr<RelationshipType>, std::list<InstanceRefPtr<RelationshipInstance> > > incoming;
+        std::unordered_map<std::string, std::list<InstanceRefPtr<RelationshipInstance> > > incoming;
 
     protected:
 

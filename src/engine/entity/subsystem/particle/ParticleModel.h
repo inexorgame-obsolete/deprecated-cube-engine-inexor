@@ -42,6 +42,10 @@ namespace particle {
     const std::string ENABLED("enabled");
     const std::string MILLIS_TO_PROCESS("millistoprocess");
 
+    // Modifier attributes
+
+    const std::string DELTA("delta");
+
     // Renderer attributes
 
     const std::string SIZE("size");

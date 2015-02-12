@@ -11,7 +11,9 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-ParticleSubsystem::ParticleSubsystem() : SubsystemBase(PARTICLE_SUBSYSTEM)
+ParticleSubsystem::ParticleSubsystem()
+    : SubsystemBase(PARTICLE_SUBSYSTEM),
+      maxfps(30)
 {
 }
 
@@ -20,7 +22,8 @@ ParticleSubsystem::ParticleSubsystem(
     CefRefPtr<EntityInstanceManager> entity_instance_manager,
     CefRefPtr<RelationshipTypeManager> relationship_type_manager,
     CefRefPtr<RelationshipInstanceManager> relationship_instance_manager
-) : SubsystemBase(PARTICLE_SUBSYSTEM, entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager)
+) : SubsystemBase(PARTICLE_SUBSYSTEM, entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager),
+    maxfps(30)
 {
     // Create entity type factories
     particle_type_factory = new ParticleTypeFactory(entity_type_manager);
@@ -64,6 +67,26 @@ void ParticleSubsystem::Update(TimeStep time_step)
     // modifier. Therefore, we do nothing in the subsystem update method.
 
     // logoutf("ParticleSubsystem::Update() elapsed_millis: %d time_factor: %2.3f time_unit: %4.1f", time_step.elapsed_millis, time_step.time_factor, time_step.time_unit);
+
+    if (mainmenu)
+    {
+        std::vector<InstanceRefPtr<EntityInstance> >::iterator it = renderers.begin();
+        while (it != renderers.end())
+        {
+            std::list<InstanceRefPtr<RelationshipInstance> >::iterator it2 = (*it)->outgoing[renders->uuid].begin();
+            while (it2 != (*it)->outgoing[renders->uuid].end())
+            {
+                if ((*it2)->endNode[REMAINING]->intVal <= 0)
+                {
+                    (*it2)->alive = false;
+                }
+                ++it2;
+            }
+            ++it;
+        }
+    }
+
+
 }
 
 void ParticleSubsystem::Cleanup()
@@ -102,25 +125,19 @@ void ParticleSubsystem::RenderParticles()
     std::vector<InstanceRefPtr<EntityInstance> >::iterator it = renderers.begin();
     while (it != renderers.end())
     {
-        std::list<InstanceRefPtr<RelationshipInstance> >::iterator it2 = (*it)->outgoing[renders].begin();
+        std::list<InstanceRefPtr<RelationshipInstance> >::iterator it2 = (*it)->outgoing[renders->uuid].begin();
         TimeStep time_step(0.0, 1000.0);
         FunctionRefPtr function = (*it)->GetType()[PARTICLE_RENDERER_FUNCTION_ATTRIBUTE_NAME]->functionVal;
         function->Before(time_step, (*it).get());
-        while (it2 != (*it)->outgoing[renders].end())
+        while (it2 != (*it)->outgoing[renders->uuid].end())
         {
             if ((*it2)->endNode[REMAINING]->intVal > 0)
             {
                 function->Execute(time_step, (*it).get(), (*it2)->endNode.get());
-                ++it2;
             } else {
-                // Remove the particle side of the relationship (most costly)
-                (*it2)->endNode->incoming[renders].remove(*it2);
-                // Remove the manager side of the relationship
-                DeleteRelationship(*it2);
-                // Remove the renderer side of the relationship
-                // std::list is efficient in removing with iterators
-                it2 = (*it)->outgoing[renders].erase(it2);
+                (*it2)->alive = false;
             }
+            ++it2;
         }
         function->After(time_step, (*it).get());
         ++it;
@@ -200,11 +217,6 @@ TypeRefPtr<EntityType> ParticleSubsystem::GetRendererType(std::string renderer_t
 TypeRefPtr<RelationshipType> ParticleSubsystem::GetRelationshipType(std::string relationship_type_name)
 {
     return relationship_type_manager->Get(relationship_type_name);
-}
-
-void ParticleSubsystem::DeleteRelationship(InstanceRefPtr<RelationshipInstance> instance)
-{
-    relationship_instance_manager->DeleteInstance(instance);
 }
 
 InstanceRefPtr<EntityInstance> ParticleSubsystem::CreateEmitterInstance(std::string emitter_type_name, double x, double y, double z, double vx, double vy, double vz)
@@ -423,7 +435,12 @@ InstanceRefPtr<RelationshipInstance> ParticleSubsystem::AddRendererToEmitter(Ins
 
 CefRefPtr<ParticleWorker> ParticleSubsystem::CreateParticleWorker(std::string name, FunctionRefPtr function)
 {
-    CefRefPtr<ParticleWorker> worker = new ParticleWorker(name, function);
+    return CreateParticleWorker(name, function, maxfps);
+}
+
+CefRefPtr<ParticleWorker> ParticleSubsystem::CreateParticleWorker(std::string name, FunctionRefPtr function, int maxfps)
+{
+    CefRefPtr<ParticleWorker> worker = new ParticleWorker(name, maxfps, function);
     particle_workers.push_back(worker);
     worker->Start();
     return worker;
@@ -431,9 +448,14 @@ CefRefPtr<ParticleWorker> ParticleSubsystem::CreateParticleWorker(std::string na
 
 CefRefPtr<EmitterWorker> ParticleSubsystem::CreateEmitterWorker(TypeRefPtr<EntityType> emitter_type, InstanceRefPtr<EntityInstance> emitter_instance)
 {
+    return CreateEmitterWorker(emitter_type, emitter_instance, maxfps);
+}
+
+CefRefPtr<EmitterWorker> ParticleSubsystem::CreateEmitterWorker(TypeRefPtr<EntityType> emitter_type, InstanceRefPtr<EntityInstance> emitter_instance, int maxfps)
+{
     FunctionRefPtr function = emitter_type->GetAttribute(PARTICLE_EMITTER_FUNCTION_ATTRIBUTE_NAME)->GetFunction();
-    std::string thread_name = emitter_type->GetName() + "_" + emitter_instance->GetUuid();
-    CefRefPtr<EmitterWorker> worker = new EmitterWorker(thread_name, function, emitter_instance);
+    std::string thread_name = emitter_type->GetName() + "_" + emitter_instance->uuid;
+    CefRefPtr<EmitterWorker> worker = new EmitterWorker(thread_name, maxfps, function, emitter_instance, entity_instance_manager, relationship_instance_manager);
     emitter_workers.push_back(worker);
     worker->Start();
     return worker;
@@ -441,9 +463,14 @@ CefRefPtr<EmitterWorker> ParticleSubsystem::CreateEmitterWorker(TypeRefPtr<Entit
 
 CefRefPtr<ModifierWorker> ParticleSubsystem::CreateModifierWorker(TypeRefPtr<EntityType> modifier_type, InstanceRefPtr<EntityInstance> modifier_instance)
 {
+    return CreateModifierWorker(modifier_type, modifier_instance, maxfps);
+}
+
+CefRefPtr<ModifierWorker> ParticleSubsystem::CreateModifierWorker(TypeRefPtr<EntityType> modifier_type, InstanceRefPtr<EntityInstance> modifier_instance, int maxfps)
+{
     FunctionRefPtr function = modifier_type->GetAttribute(PARTICLE_MODIFIER_FUNCTION_ATTRIBUTE_NAME)->GetFunction();
-    std::string thread_name = modifier_type->GetName() + "_" + modifier_instance->GetUuid();
-    CefRefPtr<ModifierWorker> worker = new ModifierWorker(thread_name, function, modifier_instance);
+    std::string thread_name = modifier_type->GetName() + "_" + modifier_instance->uuid;
+    CefRefPtr<ModifierWorker> worker = new ModifierWorker(thread_name, maxfps, function, modifier_instance, entity_instance_manager, relationship_instance_manager);
     modifier_workers.push_back(worker);
     worker->Start();
     return worker;
@@ -464,21 +491,21 @@ void ParticleSubsystem::DestroyParticleWorker(InstanceRefPtr<EntityInstance> ent
 {
     for (unsigned int i = 0; i < particle_workers.size(); i++)
     {
-        if (particle_workers[i]->GetName() == entity_instance->GetUuid()) {
+        if (particle_workers[i]->GetName() == entity_instance->uuid) {
             particle_workers[i]->Stop();
             break;
         }
     }
     for (unsigned int i = 0; i < emitter_workers.size(); i++)
     {
-        if (emitter_workers[i]->GetName() == entity_instance->GetUuid()) {
+        if (emitter_workers[i]->GetName() == entity_instance->uuid) {
             emitter_workers[i]->Stop();
             break;
         }
     }
     for (unsigned int i = 0; i < modifier_workers.size(); i++)
     {
-        if (modifier_workers[i]->GetName() == entity_instance->GetUuid()) {
+        if (modifier_workers[i]->GetName() == entity_instance->uuid) {
             modifier_workers[i]->Stop();
             break;
         }
@@ -489,7 +516,7 @@ void ParticleSubsystem::DestroyEmitterWorker(InstanceRefPtr<EntityInstance> emit
 {
     for (unsigned int i = 0; i < emitter_workers.size(); i++)
     {
-        if (emitter_workers[i]->GetName() == emitter_instance->GetUuid()) {
+        if (emitter_workers[i]->GetName() == emitter_instance->uuid) {
             emitter_workers[i]->Stop();
             return;
         }
@@ -500,7 +527,7 @@ void ParticleSubsystem::DestroyModifierWorker(InstanceRefPtr<EntityInstance> mod
 {
     for (unsigned int i = 0; i < modifier_workers.size(); i++)
     {
-        if (modifier_workers[i]->GetName() == modifier_instance->GetUuid()) {
+        if (modifier_workers[i]->GetName() == modifier_instance->uuid) {
             modifier_workers[i]->Stop();
             return;
         }

@@ -13,8 +13,11 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-ModifierWorker::ModifierWorker(std::string name, FunctionRefPtr function, InstanceRefPtr<EntityInstance> modifier_instance)
-    : ParticleWorker(name, function), modifier_instance(modifier_instance)
+ModifierWorker::ModifierWorker(std::string name, int maxfps, FunctionRefPtr function, InstanceRefPtr<EntityInstance> modifier_instance, CefRefPtr<EntityInstanceManager> entity_instance_manager, CefRefPtr<RelationshipInstanceManager> relationship_instance_manager)
+    : ParticleWorker(name, maxfps, function),
+      modifier_instance(modifier_instance),
+      entity_instance_manager(entity_instance_manager),
+      relationship_instance_manager(relationship_instance_manager)
 {
     // TODO: analyse function, so that we can use the fitting Worker implementation
     // int signature = function->GetSignature();
@@ -46,8 +49,9 @@ int ModifierWorker::Work(void *data)
         while (w->running)
         {
             w->frame_millis = SDL_GetTicks();
-            limitfps(w->frame_millis, w->frame_last_millis);
-            if (!game::ispaused())
+            w->LimitFps(w->frame_millis, w->frame_last_millis, w->maxfps);
+
+            if (/* w->relationship_instance_manager->relationship_instances_mutex.try_lock() && */ !game::ispaused()) // lieber ein frame auslassen (wird eh wieder "reingeholt")
             {
                 w->elapsed_millis = w->frame_millis - w->frame_last_millis;
                 TimeStep time_step(w->elapsed_millis, w->time_unit);
@@ -56,36 +60,26 @@ int ModifierWorker::Work(void *data)
                 // over all relationships of the type modifies to get the
                 // particle instances. Then call the modifier function with
                 // the modifier and particle instances as arguments.
-                int alive = 0;
-                int died = 0;
                 try {
-                    std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = w->modifier_instance->outgoing[w->modifies].begin();
+                    std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = w->modifier_instance->outgoing[w->modifies->uuid].begin();
                     w->function->Before(time_step, w->modifier_instance.get());
-                    while (it != w->modifier_instance->outgoing[w->modifies].end())
+                    while (it != w->modifier_instance->outgoing[w->modifies->uuid].end())
                     {
-                        if ((*it)->endNode[REMAINING]->intVal > 0)
+                        if ((*it)->alive && (*it)->endNode[REMAINING]->intVal > 0)
                         {
                             w->function->Execute(time_step, w->modifier_instance.get(), (*it)->endNode.get());
-                            ++it;
-                            alive++;
                         } else {
-                            // Remove the particle side of the relationship (most costly)
-                            (*it)->endNode->incoming[w->modifies].remove(*it);
-                            // Remove the manager side of the relationship
-                            particle_subsystem->DeleteRelationship(*it);
-                            // Remove the modifier side of the relationship
-                            // std::list is efficient in removing with iterators
-                            it = w->modifier_instance->outgoing[w->modifies].erase(it);
-                            died++;
+                            (*it)->alive = false;
                         }
+                        ++it;
                     }
                     w->function->After(time_step, w->modifier_instance.get());
-                    // if (alive > 0 || died > 0) logoutf("[mod] alive: %d died: %d", alive, died);
                 } catch (int e) {
                     logoutf("exception modifier worker %d", e);
                 }
+                w->frame_last_millis = w->frame_millis;
+                // w->relationship_instance_manager->relationship_instances_mutex.unlock();
             }
-            w->frame_last_millis = w->frame_millis;
         }
     } catch (int e)
     {

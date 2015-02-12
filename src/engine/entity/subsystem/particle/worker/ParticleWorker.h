@@ -26,7 +26,7 @@ class ParticleWorker
 {
     public:
         ParticleWorker();
-        ParticleWorker(std::string name, FunctionRefPtr function);
+        ParticleWorker(std::string name, int maxfps, FunctionRefPtr function);
         virtual ~ParticleWorker();
 
         /**
@@ -66,7 +66,13 @@ class ParticleWorker
          */
         void SetTimeUnit(double time_unit);
 
+        /**
+         * Limits the frames per second.
+         */
+        void LimitFps(int &millis, int curmillis, int maxfps);
+
     protected:
+
         /**
         * The worker thread.
         */
@@ -92,6 +98,11 @@ class ParticleWorker
         int frame_last_millis;
         int elapsed_millis;
         double time_unit;
+
+        /**
+         * The maximum frames per second.
+         */
+        int maxfps;
 
         /**
          * The worker function.

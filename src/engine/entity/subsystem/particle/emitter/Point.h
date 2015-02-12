@@ -28,7 +28,7 @@ class Point : public EntityFunction
         Point();
         virtual ~Point();
 
-        void Execute(TimeStep time_step, EntityType* particle_type, EntityInstance* emitter_inst);
+        void Execute(TimeStep time_step, EntityInstance* emitter_inst, EntityInstance* particle_inst);
 
     private:
         /**
@@ -38,44 +38,6 @@ class Point : public EntityFunction
          *
          */
         TypeRefPtr<RelationshipType> emitted_by;
-
-        /**
-         * The relationship type:
-         *
-         *     emitter--[:apply_initializer]-->initializer
-         *
-         */
-        TypeRefPtr<RelationshipType> apply_initializer;
-
-        /**
-         * The relationship type:
-         *
-         *     emitter--[:apply_modifier]-->modifier
-         *
-         */
-        TypeRefPtr<RelationshipType> apply_modifier;
-
-        /**
-         * The relationship type:
-         *
-         *     emitter--[:apply_renderer]-->renderer
-         *
-         */
-        TypeRefPtr<RelationshipType> apply_renderer;
-
-        /**
-         * The relationship type:
-         *
-         *     modifier--[:modifies]-->particle
-         */
-        TypeRefPtr<RelationshipType> modifies;
-
-        /**
-         * The relationship type:
-         *
-         *     renderer--[:renders]-->particle
-         */
-        TypeRefPtr<RelationshipType> renders;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(Point);

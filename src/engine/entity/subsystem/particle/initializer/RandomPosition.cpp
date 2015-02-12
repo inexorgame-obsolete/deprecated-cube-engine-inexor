@@ -21,7 +21,8 @@ RandomPosition::~RandomPosition()
 
 void RandomPosition::Execute(TimeStep time_step, EntityInstance* emitter_inst, EntityInstance* initializer_inst, EntityInstance* particle_inst)
 {
-    (*particle_inst)[POS]->vec3Val.add(vec(rndscale(20.0f) - 10.0f, rndscale(20.0f) - 10.0f, rndscale(20.0f)));
+    vec d = (*initializer_inst)[DELTA]->vec3Val;
+    (*particle_inst)[POS]->vec3Val.add(vec(rndscale(d.x * 2.0f) - d.x, rndscale(d.y * 2.0f) - d.y, rndscale(d.z * 2.0f) - d.z));
 }
 
 }

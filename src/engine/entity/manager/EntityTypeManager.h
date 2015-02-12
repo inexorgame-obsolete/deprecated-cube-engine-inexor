@@ -37,9 +37,9 @@ class EntityTypeManager
         int Size();
 
     private:
-        std::map<std::string, TypeRefPtr<EntityType> > entity_types;
+        std::unordered_map<std::string, TypeRefPtr<EntityType> > entity_types;
 
-        std::map<std::string, CefRefPtr<EntityTypeFactory> > entity_type_factories;
+        std::unordered_map<std::string, CefRefPtr<EntityTypeFactory> > entity_type_factories;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(EntityTypeManager);
