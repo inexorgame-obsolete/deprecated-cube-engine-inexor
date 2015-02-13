@@ -406,7 +406,7 @@ void EntitySystem::ParticleSystemTest()
     logoutf("Create renderer instances");
     InstanceRefPtr<EntityInstance> billboard_renderer_1 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "media/particle/ball1.png", 10.0f);
     InstanceRefPtr<EntityInstance> billboard_renderer_2 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "media/particle/ball2.png", 5.0f);
-    InstanceRefPtr<EntityInstance> billboard_renderer_3 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "media/particle/ball3.png", 2.0f);
+    InstanceRefPtr<EntityInstance> billboard_renderer_3 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "media/particle/ball3.png", 8.0f);
     InstanceRefPtr<EntityInstance> model_renderer_1 = particle_subsystem->CreateRendererInstance(model_renderer_type, "projectile/grenade", vec(0.0f, 0.0f, 2.0f));
     InstanceRefPtr<EntityInstance> cube_renderer_1 = particle_subsystem->CreateRendererInstance(cube_renderer_type, "particlepoints", "media/particle/ball3.png", 3.0f);
     InstanceRefPtr<EntityInstance> origin_renderer_1 = particle_subsystem->CreateRendererInstance(origin_renderer_type, "particlepoints", "media/particle/ball3.png", 3.0f);
