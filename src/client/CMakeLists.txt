@@ -80,6 +80,7 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/GeometryCollide
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/GravityPoint
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/Immortal
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/SimpleGravity
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/Rolling
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/VelocityTransformation
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/VectorField
