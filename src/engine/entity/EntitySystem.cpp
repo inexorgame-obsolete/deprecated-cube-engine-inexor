@@ -16,6 +16,7 @@
 #include "subsystem/particle/initializer/RandomPosition.h"
 #include "subsystem/particle/initializer/RandomVelocity.h"
 #include "subsystem/particle/modifier/DensityFadeout.h"
+#include "subsystem/particle/modifier/GeometryCollide.h"
 #include "subsystem/particle/modifier/GravityPoint.h"
 #include "subsystem/particle/modifier/Rolling.h"
 #include "subsystem/particle/modifier/VelocityTransformation.h"
@@ -277,6 +278,9 @@ void EntitySystem::ParticleSystemTest()
     logoutf("Create entity function 'DensityFadeout'");
     FunctionRefPtr density_fadeout_function = new DensityFadeout();
 
+    logoutf("Create entity function 'GeometryCollide'");
+    FunctionRefPtr geometry_collide_function = new GeometryCollide();
+
     logoutf("Create entity function 'GravityPoint'");
     FunctionRefPtr gravity_point_function = new GravityPoint();
 
@@ -317,6 +321,9 @@ void EntitySystem::ParticleSystemTest()
     logoutf("Create modifier type 'density_fadeout_modifier'");
     TypeRefPtr<EntityType> density_fadeout_modifier_type = particle_subsystem->CreateModifierType("density_fadeout_modifier", density_fadeout_function);
 
+    logoutf("Create modifier type 'geometry_collide_modifier'");
+    TypeRefPtr<EntityType> geometry_collide_modifier_type = particle_subsystem->CreateModifierType("geometry_collide_modifier", geometry_collide_function);
+
     logoutf("Create modifier type 'gravity_point_modifier'");
     TypeRefPtr<EntityType> gravity_point_modifier_type = particle_subsystem->CreateModifierType("gravity_point_modifier", gravity_point_function);
 
@@ -347,12 +354,15 @@ void EntitySystem::ParticleSystemTest()
     InstanceRefPtr<EntityInstance> point_emitter_1 = particle_subsystem->CreateEmitterInstance(point_emitter, 512.0, 768.0, 512.0, 0.0, 0.0, 0.0);
     InstanceRefPtr<EntityInstance> point_emitter_2 = particle_subsystem->CreateEmitterInstance(point_emitter, 512.0, 256.0, 512.0, 0.0, 0.0, 0.0);
     point_emitter_2[LIFETIME] = 7500;
-    InstanceRefPtr<EntityInstance> point_emitter_3 = particle_subsystem->CreateEmitterInstance(point_emitter, 768.0, 512.0, 512.0, 0.0, 0.0, 0.0);
+    InstanceRefPtr<EntityInstance> point_emitter_3 = particle_subsystem->CreateEmitterInstance(point_emitter, 768.0, 512.0, 562.0, 0.0, 0.0, 0.0);
     point_emitter_3[BATCH_SIZE] = 1;
     InstanceRefPtr<EntityInstance> point_emitter_4 = particle_subsystem->CreateEmitterInstance(point_emitter, 256.0, 512.0, 512.0, 0.0, 0.0, 0.0);
 
     logoutf("Create initializer instances");
     InstanceRefPtr<EntityInstance> random_velocity_initializer_1 = particle_subsystem->CreateInitializerInstance(random_velocity_initializer_type);
+    random_velocity_initializer_1[DELTA] = vec(15.0f, 15.0f, 10.0f);
+    InstanceRefPtr<EntityInstance> random_velocity_initializer_2 = particle_subsystem->CreateInitializerInstance(random_velocity_initializer_type);
+    random_velocity_initializer_2[DELTA] = vec(15.0f, 15.0f, 40.0f);
     InstanceRefPtr<EntityInstance> random_position_initializer_1 = particle_subsystem->CreateInitializerInstance(random_position_initializer_type);
     random_position_initializer_1[DELTA] = vec(15.0f, 15.0f, 10.0f);
 
@@ -361,6 +371,7 @@ void EntitySystem::ParticleSystemTest()
     InstanceRefPtr<EntityInstance> vector_field_modifier_1 = particle_subsystem->CreateModifierInstance(vector_field_modifier_type);
     vector_field_modifier_1[POS] = vec(512.0f, 768.0f, 524.0f);
     InstanceRefPtr<EntityInstance> rolling_modifier_1 = particle_subsystem->CreateModifierInstance(rolling_modifier_type);
+    InstanceRefPtr<EntityInstance> geometry_collide_modifier_1 = particle_subsystem->CreateModifierInstance(geometry_collide_modifier_type);
     InstanceRefPtr<EntityInstance> gravity_point_modifier_1 = particle_subsystem->CreateModifierInstance(gravity_point_modifier_type);
     gravity_point_modifier_1[MASS] = 5000.0f;
     gravity_point_modifier_1[GRAVITY] = 15.0f;
@@ -391,7 +402,7 @@ void EntitySystem::ParticleSystemTest()
     // InstanceRefPtr<RelationshipInstance> rel_point_emitter_random_velocity_1 = particle_subsystem->AddInitializerToEmitter(point_emitter_1, random_velocity_initializer_1);
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_random_position_1 = particle_subsystem->AddInitializerToEmitter(point_emitter_1, random_position_initializer_1);
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_random_velocity_2 = particle_subsystem->AddInitializerToEmitter(point_emitter_2, random_velocity_initializer_1);
-    InstanceRefPtr<RelationshipInstance> rel_point_emitter_random_velocity_3 = particle_subsystem->AddInitializerToEmitter(point_emitter_3, random_velocity_initializer_1);
+    InstanceRefPtr<RelationshipInstance> rel_point_emitter_random_velocity_3 = particle_subsystem->AddInitializerToEmitter(point_emitter_3, random_velocity_initializer_2);
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_random_velocity_4 = particle_subsystem->AddInitializerToEmitter(point_emitter_4, random_velocity_initializer_1);
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_random_position_4 = particle_subsystem->AddInitializerToEmitter(point_emitter_4, random_position_initializer_1);
 
@@ -405,6 +416,7 @@ void EntitySystem::ParticleSystemTest()
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_gravity_point_modifier_2_4 = particle_subsystem->AddModifierToEmitter(point_emitter_2, gravity_point_modifier_4);
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_transformation_3 = particle_subsystem->AddModifierToEmitter(point_emitter_3, velocity_transformation_modifier_1);
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_rolling_1 = particle_subsystem->AddModifierToEmitter(point_emitter_3, rolling_modifier_1);
+    InstanceRefPtr<RelationshipInstance> rel_point_emitter_geometry_collide_modifier_1 = particle_subsystem->AddModifierToEmitter(point_emitter_3, geometry_collide_modifier_1);
     InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_transformation_4 = particle_subsystem->AddModifierToEmitter(point_emitter_4, velocity_transformation_modifier_1);
 
     logoutf("Create relation from emitter to renderer");
