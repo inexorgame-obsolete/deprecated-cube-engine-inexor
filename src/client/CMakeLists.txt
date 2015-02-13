@@ -77,6 +77,7 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/initializer/RandomPosition
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/initializer/RandomVelocity
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/DensityFadeout
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/GeometryCollide
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/GravityPoint
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/Immortal
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/Rolling
