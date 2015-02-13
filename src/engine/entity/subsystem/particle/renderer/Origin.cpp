@@ -26,14 +26,14 @@ void Origin::Before(TimeStep time_step, EntityInstance* renderer_inst)
 {
     glPushMatrix();
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    defaultshader->set();
-    glDisable(GL_CULL_FACE);
-    glDisable(GL_TEXTURE_2D);
+    lineshader->set();
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_FALSE);
-    glColor4f(1.0f, 1.0f, 1.0f, 0.4f);
+    glColor4f(1.0f, 0.8f, 0.6f, 0.4f);
+    glLineStipple(1, 0x0C0F);
+    glEnable(GL_LINE_STIPPLE);
     glBegin(GL_LINES);
 }
 
@@ -48,10 +48,9 @@ void Origin::Execute(TimeStep time_step, EntityInstance* renderer_inst, EntityIn
 void Origin::After(TimeStep time_step, EntityInstance* renderer_inst)
 {
     glEnd();
+    glDisable(GL_LINE_STIPPLE);
     glDepthMask(GL_TRUE);
     glDisable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDisable(GL_TEXTURE_2D);
     glPopMatrix();
 }
 

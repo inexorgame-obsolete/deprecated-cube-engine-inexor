@@ -49,6 +49,8 @@ class Model : public EntityFunction
         model *m;
         float yaw;
         float pitch;
+        std::string model_name;
+        vec offset;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(Model);

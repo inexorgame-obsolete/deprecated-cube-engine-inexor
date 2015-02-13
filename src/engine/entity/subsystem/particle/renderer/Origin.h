@@ -13,6 +13,9 @@
 #include "../../../EntitySystem.h"
 #include "../../../domain/graph/EntityFunction.h"
 
+extern void enablepolygonoffset(GLenum type);
+extern void disablepolygonoffset(GLenum type);
+
 namespace inexor {
 namespace entity {
 namespace particle {
