@@ -108,6 +108,7 @@ namespace particle {
     const std::string MODIFIER_DENSITY_FADEOUT_FUNCTION("density_fadeout");
     const std::string MODIFIER_GRAVITY_POINT_FUNCTION("gravity_point");
     const std::string MODIFIER_IMMORTAL_FUNCTION("immortal");
+    const std::string MODIFIER_SIMPLE_GRAVITY_FUNCTION("simple_gravity");
     const std::string MODIFIER_ROLLING_FUNCTION("rolling");
     const std::string MODIFIER_VECTOR_FIELD_FUNCTION("vector_field");
     const std::string MODIFIER_VELOCITY_TRANSFORMATION_FUNCTION("velocity_transformation");
