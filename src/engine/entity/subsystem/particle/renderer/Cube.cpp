@@ -24,15 +24,14 @@ Cube::~Cube()
 void Cube::Before(TimeStep time_step, EntityInstance* renderer_inst)
 {
     glPushMatrix();
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    defaultshader->set();
+    rectshader->set();
     glDisable(GL_CULL_FACE);
-    glDisable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_FALSE);
-    glColor4f(1.0f, 1.0f, 1.0f, 0.4f);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glColor4f(0.1f, 1.0f, 0.9f, 0.2f);
     glBegin(GL_QUADS);
 }
 
@@ -80,8 +79,8 @@ void Cube::After(TimeStep time_step, EntityInstance* renderer_inst)
     glEnd();
     glDepthMask(GL_TRUE);
     glDisable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDisable(GL_TEXTURE_2D);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glEnable(GL_CULL_FACE);
     glPopMatrix();
 }
 

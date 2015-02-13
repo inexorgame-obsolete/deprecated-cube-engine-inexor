@@ -18,6 +18,7 @@ Model::Model() : EntityFunction(RENDERER_MODEL_FUNCTION)
     m = NULL;
     yaw = 0.0f;
     pitch = 0.0f;
+    offset = vec(0.0f, 0.0f, 0.0f);
 }
 
 Model::~Model()
@@ -26,7 +27,11 @@ Model::~Model()
 
 void Model::Before(TimeStep time_step, EntityInstance* renderer_inst)
 {
-    m = loadmodel((*renderer_inst)[MODEL]->stringVal.c_str());
+    model_name = (*renderer_inst)[MODEL]->stringVal;
+    offset = (*renderer_inst)[OFFSET]->vec3Val;
+    /*if (!m) {
+        m = loadmodel(model_name.c_str());
+    }*/
     glPushMatrix();
     defaultshader->set();
     glDepthMask(false);
@@ -34,22 +39,22 @@ void Model::Before(TimeStep time_step, EntityInstance* renderer_inst)
 
 void Model::Execute(TimeStep time_step, EntityInstance* renderer_inst, EntityInstance* particle_inst)
 {
-    if (m)
-    {
+    //if (m)
+    //{
         vec v((*particle_inst)[VELOCITY]->vec3Val);
         vectoyawpitch(v, yaw, pitch);
         yaw += 90;
         vec o((*particle_inst)[POS]->vec3Val);
-        o.add((*renderer_inst)[OFFSET]->vec3Val);
-        rendermodel(NULL, (*renderer_inst)[MODEL]->stringVal.c_str(), ANIM_MAPMODEL|ANIM_LOOP, o, yaw, -((*particle_inst)[ROLL]->floatVal), MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_LIGHT_FAST|MDL_DYNSHADOW, NULL, NULL, 0);
-    }
+        o.add(offset);
+        rendermodel(NULL, model_name.c_str(), ANIM_MAPMODEL|ANIM_LOOP, o, yaw, -((*particle_inst)[ROLL]->floatVal), MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_LIGHT_FAST|MDL_DYNSHADOW, NULL, NULL, 0);
+        //}
 }
 
 void Model::After(TimeStep time_step, EntityInstance* renderer_inst)
 {
     glDepthMask(true);
     glPopMatrix();
-    m = NULL;
+    // m = NULL;
 }
 
 }
