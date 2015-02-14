@@ -21,6 +21,7 @@ ParticleTest::ParticleTest()
     random_velocity_function = new RandomVelocity();
 
     logoutf("Create modifier functions");
+    brownian_motion_function = new BrownianMotion();
     density_fadeout_function = new DensityFadeout();
     geometry_collide_function = new GeometryCollide();
     gravity_point_function = new GravityPoint();
@@ -46,6 +47,7 @@ ParticleTest::ParticleTest()
     random_velocity_initializer_type = particle_subsystem->CreateInitializerType("random_velocity_initializer", random_velocity_function);
 
     logoutf("Create modifier types");
+    brownian_motion_modifier_type = particle_subsystem->CreateModifierType("brownian_motion_modifier", brownian_motion_function);
     density_fadeout_modifier_type = particle_subsystem->CreateModifierType("density_fadeout_modifier", density_fadeout_function);
     geometry_collide_modifier_type = particle_subsystem->CreateModifierType("geometry_collide_modifier", geometry_collide_function);
     gravity_point_modifier_type = particle_subsystem->CreateModifierType("gravity_point_modifier", gravity_point_function);
@@ -61,7 +63,20 @@ ParticleTest::ParticleTest()
     model_renderer_type = particle_subsystem->CreateRendererType("model_renderer", model_renderer_function);
     origin_renderer_type = particle_subsystem->CreateRendererType("origin_renderer", origin_renderer_function);
 
+}
 
+ParticleTest::~ParticleTest()
+{
+}
+
+void ParticleTest::RunTests()
+{
+    // ShowCase();
+    PerformanceTest();
+}
+
+void ParticleTest::ShowCase()
+{
     logoutf("Create emitter instances");
     point_emitter_1 = particle_subsystem->CreateEmitterInstance(point_emitter, 512.0, 768.0, 512.0, 0.0, 0.0, 0.0);
     point_emitter_2 = particle_subsystem->CreateEmitterInstance(point_emitter, 512.0, 256.0, 512.0, 0.0, 0.0, 0.0);
@@ -72,7 +87,6 @@ ParticleTest::ParticleTest()
     point_emitter_3[BATCH_SIZE] = 1;
     point_emitter_4 = particle_subsystem->CreateEmitterInstance(point_emitter, 256.0, 512.0, 512.0, 0.0, 0.0, 0.0);
 
-
     logoutf("Create initializer instances");
     random_velocity_initializer_1 = particle_subsystem->CreateInitializerInstance(random_velocity_initializer_type);
     random_velocity_initializer_1[DELTA] = vec(15.0f, 15.0f, 10.0f);
@@ -82,7 +96,6 @@ ParticleTest::ParticleTest()
     random_position_initializer_1[DELTA] = vec(25.0f, 25.0f, 0.0f);
     random_position_initializer_2 = particle_subsystem->CreateInitializerInstance(random_position_initializer_type);
     random_position_initializer_2[DELTA] = vec(5.0f, 5.0f, 5.0f);
-
 
     logoutf("Create modifier instances");
     velocity_transformation_modifier_1 = particle_subsystem->CreateModifierInstance(velocity_transformation_modifier_type);
@@ -110,15 +123,15 @@ ParticleTest::ParticleTest()
     gravity_point_modifier_4[POS] = vec(512.0f, 256.0f - 96.0f, 562.0f);
     */
 
-
     logoutf("Create renderer instances");
     billboard_renderer_1 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "media/particle/ball1.png", 10.0f);
     billboard_renderer_2 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "media/particle/ball2.png", 5.0f);
     billboard_renderer_3 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "media/particle/ball3.png", 8.0f);
+    billboard_renderer_4 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "media/particle/base.png", 8.0f);
+    billboard_renderer_5 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "media/particle/flash01.png", 8.0f);
     model_renderer_1 = particle_subsystem->CreateRendererInstance(model_renderer_type, "projectile/grenade", vec(0.0f, 0.0f, 2.0f));
     cube_renderer_1 = particle_subsystem->CreateRendererInstance(cube_renderer_type, "particlepoints", "media/particle/ball3.png", 3.0f);
     origin_renderer_1 = particle_subsystem->CreateRendererInstance(origin_renderer_type, "particlepoints", "media/particle/ball3.png", 3.0f);
-
 
     logoutf("Create relations from emitters to initializers");
     // rel_point_emitter_random_velocity_1 = particle_subsystem->AddInitializerToEmitter(point_emitter_1, random_velocity_initializer_1);
@@ -128,21 +141,19 @@ ParticleTest::ParticleTest()
     rel_point_emitter_random_velocity_4 = particle_subsystem->AddInitializerToEmitter(point_emitter_4, random_velocity_initializer_1);
     rel_point_emitter_random_position_4 = particle_subsystem->AddInitializerToEmitter(point_emitter_4, random_position_initializer_2);
 
-
     logoutf("Create relations from emitters to modifiers");
     rel_point_emitter_velocity_transformation_1 = particle_subsystem->AddModifierToEmitter(point_emitter_1, velocity_transformation_modifier_1);
     rel_point_emitter_vector_field_1 = particle_subsystem->AddModifierToEmitter(point_emitter_1, vector_field_modifier_1);
     rel_point_emitter_velocity_transformation_2 = particle_subsystem->AddModifierToEmitter(point_emitter_2, velocity_transformation_modifier_1);
-    rel_point_emitter_gravity_point_modifier_2_1 = particle_subsystem->AddModifierToEmitter(point_emitter_2, gravity_point_modifier_1);
-    rel_point_emitter_gravity_point_modifier_2_2 = particle_subsystem->AddModifierToEmitter(point_emitter_2, gravity_point_modifier_2);
-    // rel_point_emitter_gravity_point_modifier_2_3 = particle_subsystem->AddModifierToEmitter(point_emitter_2, gravity_point_modifier_3);
-    // rel_point_emitter_gravity_point_modifier_2_4 = particle_subsystem->AddModifierToEmitter(point_emitter_2, gravity_point_modifier_4);
+    rel_point_emitter_gravity_point_modifier_1 = particle_subsystem->AddModifierToEmitter(point_emitter_2, gravity_point_modifier_1);
+    rel_point_emitter_gravity_point_modifier_2 = particle_subsystem->AddModifierToEmitter(point_emitter_2, gravity_point_modifier_2);
+    // rel_point_emitter_gravity_point_modifier_3 = particle_subsystem->AddModifierToEmitter(point_emitter_2, gravity_point_modifier_3);
+    // rel_point_emitter_gravity_point_modifier_4 = particle_subsystem->AddModifierToEmitter(point_emitter_2, gravity_point_modifier_4);
     rel_point_emitter_velocity_transformation_3 = particle_subsystem->AddModifierToEmitter(point_emitter_3, velocity_transformation_modifier_1);
     rel_point_emitter_rolling_1 = particle_subsystem->AddModifierToEmitter(point_emitter_3, rolling_modifier_1);
     rel_point_emitter_simple_gravity_1 = particle_subsystem->AddModifierToEmitter(point_emitter_3, simple_gravity_modifier_1);
     rel_point_emitter_geometry_collide_modifier_1 = particle_subsystem->AddModifierToEmitter(point_emitter_3, geometry_collide_modifier_1);
     rel_point_emitter_velocity_transformation_4 = particle_subsystem->AddModifierToEmitter(point_emitter_4, velocity_transformation_modifier_1);
-
 
     logoutf("Create relations from emitters to renderers");
     rel_point_emitter_billboard_renderer_1 = particle_subsystem->AddRendererToEmitter(point_emitter_1, billboard_renderer_1);
@@ -151,11 +162,32 @@ ParticleTest::ParticleTest()
     rel_point_emitter_model_renderer_1 = particle_subsystem->AddRendererToEmitter(point_emitter_3, model_renderer_1);
     // rel_point_emitter_cube_renderer_1 = particle_subsystem->AddRendererToEmitter(point_emitter_4, cube_renderer_1);
     rel_point_emitter_billboard_renderer_3 = particle_subsystem->AddRendererToEmitter(point_emitter_4, billboard_renderer_3);
-
 }
 
-ParticleTest::~ParticleTest()
+/**
+ * 50 emitations per second, 10 particles per emitation, lifetime is 50
+ * seconds = 25.000 particles in total.
+ */
+void ParticleTest::PerformanceTest()
 {
+    point_emitter_1 = particle_subsystem->CreateEmitterInstance(point_emitter, 512.0, 512.0, 512.0 + 128.0, 0.0, 0.0, 0.0);
+    point_emitter_1[RATE] = 100;
+    point_emitter_1[LIFETIME] = 2500;
+    point_emitter_1[BATCH_SIZE] = 50;
+
+    random_velocity_initializer_1 = particle_subsystem->CreateInitializerInstance(random_velocity_initializer_type);
+    random_velocity_initializer_1[DELTA] = vec(100.0f, 100.0f, 25.0f);
+    random_position_initializer_1 = particle_subsystem->CreateInitializerInstance(random_position_initializer_type);
+    random_position_initializer_1[DELTA] = vec(256.0f, 256.0f, 128.0f);
+    brownian_motion_modifier_1 = particle_subsystem->CreateModifierInstance(brownian_motion_modifier_type);
+    velocity_transformation_modifier_1 = particle_subsystem->CreateModifierInstance(velocity_transformation_modifier_type);
+    billboard_renderer_1 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "media/particle/flash01.png", 20.0f);
+
+    // particle_subsystem->AddInitializerToEmitter(point_emitter_1, random_velocity_initializer_1);
+    particle_subsystem->AddInitializerToEmitter(point_emitter_1, random_position_initializer_1);
+    particle_subsystem->AddModifierToEmitter(point_emitter_1, brownian_motion_modifier_1);
+    particle_subsystem->AddModifierToEmitter(point_emitter_1, velocity_transformation_modifier_1);
+    particle_subsystem->AddRendererToEmitter(point_emitter_1, billboard_renderer_1);
 }
 
 }
