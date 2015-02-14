@@ -1,0 +1,37 @@
+/*
+ * BrownianMotion.cpp
+ *
+ *  Created on: 28.01.2015
+ *      Author: aschaeffer
+ */
+
+#include "BrownianMotion.h"
+
+namespace inexor {
+namespace entity {
+namespace particle {
+
+BrownianMotion::BrownianMotion()
+    : EntityFunction(MODIFIER_BROWNIAN_MOTION_FUNCTION)
+{
+    gen = std::mt19937(rd());
+    distribution = std::normal_distribution<float>(0.0f, 12.0f * 4.0f);
+}
+
+BrownianMotion::~BrownianMotion()
+{
+}
+
+void BrownianMotion::Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle)
+{
+    // Add velocity vector
+    (*particle)[VELOCITY]->vec3Val.add(vec(
+        distribution(gen) * time_step.time_factor,
+        distribution(gen) * time_step.time_factor,
+        distribution(gen) * time_step.time_factor
+    ));
+}
+
+}
+}
+}
