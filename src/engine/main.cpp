@@ -1372,6 +1372,8 @@ int main(int argc, char **argv)
     logoutf("init: particle subsystem tests");
     particle_test = new inexor::entity::particle::ParticleTest();
     entity_test->PrintStats();
+    particle_test->RunTests();
+    entity_test->PrintStats();
 
     logoutf("init: gl: effects");
     loadshaders();
