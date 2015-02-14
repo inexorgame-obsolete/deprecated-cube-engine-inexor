@@ -75,8 +75,8 @@ void EntitySystem::Update()
         subsystems[i]->Update(time_step);
     }
     // Cleanup invalidated relationships
-    relationship_instance_manager->Invalidate();
-    relationship_instance_manager->DoCreateInstances();
+    relationship_instance_manager->InvalidateInstances();
+    relationship_instance_manager->DequeInstances();
     frame_last_millis = frame_millis;
 }
 
@@ -87,12 +87,11 @@ void EntitySystem::Cleanup()
         subsystems[i]->Cleanup();
     }
     // Cleanup all instances
-    entity_instance_manager->DeleteAllInstances();
     relationship_instance_manager->DeleteAllInstances();
+    entity_instance_manager->DeleteAllInstances();
     // Cleanup all types
-    // entity_type_manager->
-    // relationship_type_manager->DeleteAllInstances();
-    // TODO: Cleanup Types and Entities
+    relationship_type_manager->DeleteAllTypes();
+    entity_type_manager->DeleteAllTypes();
 }
 
 void EntitySystem::Reset()

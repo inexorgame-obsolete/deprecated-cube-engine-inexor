@@ -76,24 +76,35 @@ int EmitterWorker::Work(void *data)
                         // w->function->Execute(time_step, w->particle_type.get(), w->emitter_instance.get());
                         if (w->particle_pool.size() > 0)
                         {
+                            // If a particle is available, we make it reusable again
+                            // by removing it from the pool and reanimate the
+                            // relationships
+
                             // Fetch particle from pool
                             InstanceRefPtr<EntityInstance> particle_inst = w->particle_pool.back();
                             w->particle_pool.pop_back();
                             particle_inst[ELAPSED] = 0;
                             particle_inst[LAST_ELAPSED] = 0;
-                            particle_inst->incoming.clear();
-                            particle_inst->outgoing.clear();
+
                             w->function->Execute(time_step, w->emitter_instance.get(), particle_inst.get());
 
-                            // Create relationship from particle to emitter
-                            w->relationship_instance_manager->CreateInstance(
-                                // The relationship type
-                                w->emitted_by,
-                                // Start node: The particle instance
-                                particle_inst,
-                                // End node: The emitter instance
-                                w->emitter_instance
-                            );
+                            // Reanimate all outgoing relationships
+                            for(std::unordered_map<std::string, std::list<InstanceRefPtr<RelationshipInstance> > >::iterator it = particle_inst->outgoing.begin(); it != particle_inst->outgoing.end(); ++it)
+                            {
+                                for(std::list<InstanceRefPtr<RelationshipInstance> >::iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2)
+                                {
+                                    (*it2)->alive = true;
+                                }
+                            }
+
+                            // Reanimate all incoming relationships
+                            for(std::unordered_map<std::string, std::list<InstanceRefPtr<RelationshipInstance> > >::iterator it = particle_inst->incoming.begin(); it != particle_inst->incoming.end(); ++it)
+                            {
+                                for(std::list<InstanceRefPtr<RelationshipInstance> >::iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2)
+                                {
+                                    (*it2)->alive = true;
+                                }
+                            }
 
                             // Call all initializers
                             for(std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = w->emitter_instance->outgoing[w->apply_initializer->uuid].begin(); it != w->emitter_instance->outgoing[w->apply_initializer->uuid].end(); ++it)
@@ -101,103 +112,35 @@ int EmitterWorker::Work(void *data)
                                 (*it)->endNode->GetType()[PARTICLE_INITIALIZER_FUNCTION_ATTRIBUTE_NAME]->functionVal(time_step, w->emitter_instance.get(), (*it)->endNode.get(), particle_inst.get());
                             }
 
-                            // The emitter instance has relationships to modifiers:
-                            //
-                            //     emitter--[:apply_modifier]-->modifier
-                            //
-                            // This means that each of these connected modifiers should be applied
-                            // on the newly created particle. Therefore we connect the newly created
-                            // particle with the modifier:
-                            //
-                            //     modifier--[:modifies]-->particle
-                            //
-                            for(std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = w->emitter_instance->outgoing[w->apply_modifier->uuid].begin(); it != w->emitter_instance->outgoing[w->apply_modifier->uuid].end(); ++it)
-                            {
-                                w->relationship_instance_manager->CreateInstance(
-                                    // The relationship type
-                                    w->modifies,
-                                    // Start node: The modifier instance (which is the end node of the
-                                    // apply_modifiers relationship)
-                                    (*it)->endNode,
-                                    // End node: The particle instance
-                                    particle_inst
-                                );
-                            }
-
-                            // Create relationship from the renderer instance to the newly created particle instance
-                            for(std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = w->emitter_instance->outgoing[w->apply_renderer->uuid].begin(); it != w->emitter_instance->outgoing[w->apply_renderer->uuid].end(); ++it)
-                            {
-                                w->relationship_instance_manager->CreateInstance(
-                                    // The relationship type
-                                    w->renders,
-                                    // Start node: The renderer instance (which is the end node of the
-                                    // apply_renderers relationship)
-                                    (*it)->endNode,
-                                    // End node: The particle instance
-                                    particle_inst
-                                );
-                            }
-
                         } else {
-                            // Create new instance
+                            // No more particles available in the pool
+                            // Create a new particle instance and wire them together
+
                             InstanceRefPtr<EntityInstance> particle_inst = w->entity_instance_manager->Create(w->particle_type);
                             particle_inst[ELAPSED] = 0;
                             particle_inst[LAST_ELAPSED] = 0;
                             w->function->Execute(time_step, w->emitter_instance.get(), particle_inst.get());
 
-                            // Create relationship from particle to emitter
-                            w->relationship_instance_manager->CreateInstance(
-                                // The relationship type
-                                w->emitted_by,
-                                // Start node: The particle instance
-                                particle_inst,
-                                // End node: The emitter instance
-                                w->emitter_instance
-                            );
+                            // Create a relationship from particle instance to it's origin emitter instance
+                            w->relationship_instance_manager->CreateUnmanagedInstance(w->emitted_by, particle_inst, w->emitter_instance);
+
+                            // Create relationships from the modifier instances to the newly created particle instance
+                            for(std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = w->emitter_instance->outgoing[w->apply_modifier->uuid].begin(); it != w->emitter_instance->outgoing[w->apply_modifier->uuid].end(); ++it)
+                            {
+                                w->relationship_instance_manager->CreateUnmanagedInstance(w->modifies, (*it)->endNode, particle_inst);
+                            }
+
+                            // Create relationships from the renderer instances to the newly created particle instance
+                            for(std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = w->emitter_instance->outgoing[w->apply_renderer->uuid].begin(); it != w->emitter_instance->outgoing[w->apply_renderer->uuid].end(); ++it)
+                            {
+                                w->relationship_instance_manager->CreateUnmanagedInstance(w->renders, (*it)->endNode, particle_inst);
+                            }
 
                             // Call all initializers
                             for(std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = w->emitter_instance->outgoing[w->apply_initializer->uuid].begin(); it != w->emitter_instance->outgoing[w->apply_initializer->uuid].end(); ++it)
                             {
                                 (*it)->endNode->GetType()[PARTICLE_INITIALIZER_FUNCTION_ATTRIBUTE_NAME]->functionVal(time_step, w->emitter_instance.get(), (*it)->endNode.get(), particle_inst.get());
                             }
-
-                            // The emitter instance has relationships to modifiers:
-                            //
-                            //     emitter--[:apply_modifier]-->modifier
-                            //
-                            // This means that each of these connected modifiers should be applied
-                            // on the newly created particle. Therefore we connect the newly created
-                            // particle with the modifier:
-                            //
-                            //     modifier--[:modifies]-->particle
-                            //
-                            for(std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = w->emitter_instance->outgoing[w->apply_modifier->uuid].begin(); it != w->emitter_instance->outgoing[w->apply_modifier->uuid].end(); ++it)
-                            {
-                                w->relationship_instance_manager->CreateInstance(
-                                    // The relationship type
-                                    w->modifies,
-                                    // Start node: The modifier instance (which is the end node of the
-                                    // apply_modifiers relationship)
-                                    (*it)->endNode,
-                                    // End node: The particle instance
-                                    particle_inst
-                                );
-                            }
-
-                            // Create relationship from the renderer instance to the newly created particle instance
-                            for(std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = w->emitter_instance->outgoing[w->apply_renderer->uuid].begin(); it != w->emitter_instance->outgoing[w->apply_renderer->uuid].end(); ++it)
-                            {
-                                w->relationship_instance_manager->CreateInstance(
-                                    // The relationship type
-                                    w->renders,
-                                    // Start node: The renderer instance (which is the end node of the
-                                    // apply_renderers relationship)
-                                    (*it)->endNode,
-                                    // End node: The particle instance
-                                    particle_inst
-                                );
-                            }
-
 
                         }
                     }
@@ -205,7 +148,6 @@ int EmitterWorker::Work(void *data)
 
                 // Time step updates for each particle and remove dead particles
                 try {
-                    // w->relationship_instance_manager->relationship_instances_mutex.lock();
                     std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = w->emitter_instance->incoming[w->emitted_by->uuid].begin();
                     while (it != w->emitter_instance->incoming[w->emitted_by->uuid].end())
                     {
@@ -219,12 +161,12 @@ int EmitterWorker::Work(void *data)
                                 (*it)->startNode[REMAINING]->intVal -= w->elapsed_millis;
                             } else {
                                 (*it)->alive = false;
+                                // push particle back to the pool
                                 w->particle_pool.push_front((*it)->startNode);
                             }
                         }
                         ++it;
                     }
-                    // w->relationship_instance_manager->relationship_instances_mutex.unlock();
                 } catch (int e) {
                     logoutf("exception emitter worker %d", e);
                 }

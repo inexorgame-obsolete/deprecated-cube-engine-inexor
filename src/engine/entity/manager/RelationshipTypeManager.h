@@ -33,12 +33,27 @@ class RelationshipTypeManager
         void RegisterProvider(CefRefPtr<RelationshipTypeProvider> relationship_type_provider);
 
         TypeRefPtr<RelationshipType> Get(std::string relationship_type_name);
+        TypeRefPtr<RelationshipType> GetByUuid(std::string relationship_type_uuid);
         bool Exists(std::string relationship_type_name);
+
+        void DeleteType(TypeRefPtr<RelationshipType> relationship_type);
+        void DeleteTypeByName(std::string relationship_type_name);
+        void DeleteTypeByUuid(std::string relationship_type_uuid);
+        void DeleteAllTypes();
 
         int Size();
 
     private:
+
+        /**
+         * The key is the NAME of the relationship type.
+         */
         std::unordered_map<std::string, TypeRefPtr<RelationshipType> > relationship_types;
+
+        /**
+         * The key is the UUID, the value is the NAME of the relationship type.
+         */
+        std::unordered_map<std::string, std::string> relationship_type_uuids;
 
         // The entity type manager.
         CefRefPtr<EntityTypeManager> entity_type_manager;

@@ -36,6 +36,7 @@ TypeRefPtr<RelationshipType> RelationshipTypeManager::Create(std::string name, b
 {
     TypeRefPtr<RelationshipType> relationship_type = new RelationshipType(name, persist, synchronize, startNodeType, endNodeType);
     relationship_types[name] = relationship_type;
+    relationship_type_uuids[relationship_type->uuid] = name;
     return relationship_type;
 }
 
@@ -45,11 +46,13 @@ TypeRefPtr<RelationshipType> RelationshipTypeManager::Create(std::string name, b
     TypeRefPtr<EntityType> endNodeType = entity_type_manager->Get(endNodeTypeName);
     TypeRefPtr<RelationshipType> relationship_type = new RelationshipType(name, persist, synchronize, startNodeType, endNodeType);
     relationship_types[name] = relationship_type;
+    relationship_type_uuids[relationship_type->uuid] = name;
     return relationship_type;
 }
 
 void RelationshipTypeManager::RegisterType(std::string relationship_type_name, TypeRefPtr<RelationshipType> relationship_type) {
     relationship_types[relationship_type_name] = relationship_type;
+    relationship_type_uuids[relationship_type->uuid] = relationship_type_name;
 };
 
 void RelationshipTypeManager::RegisterProvider(CefRefPtr<RelationshipTypeProvider> relationship_type_provider) {
@@ -60,9 +63,35 @@ TypeRefPtr<RelationshipType> RelationshipTypeManager::Get(std::string relationsh
     return relationship_types[relationship_type_name];
 };
 
+TypeRefPtr<RelationshipType> RelationshipTypeManager::GetByUuid(std::string relationship_type_uuid) {
+    return Get(relationship_type_uuids[relationship_type_uuid]);
+};
+
 bool RelationshipTypeManager::Exists(std::string relationship_type_name) {
     return relationship_types.count(relationship_type_name);
 };
+
+void RelationshipTypeManager::DeleteType(TypeRefPtr<RelationshipType> relationship_type)
+{
+    relationship_type_uuids.erase(relationship_type->uuid);
+    relationship_types.erase(relationship_type->name);
+}
+
+void RelationshipTypeManager::DeleteTypeByName(std::string relationship_type_name)
+{
+    DeleteType(Get(relationship_type_name));
+}
+
+void RelationshipTypeManager::DeleteTypeByUuid(std::string relationship_type_uuid)
+{
+    DeleteType(GetByUuid(relationship_type_uuid));
+}
+
+void RelationshipTypeManager::DeleteAllTypes()
+{
+    relationship_type_uuids.clear();
+    relationship_types.clear();
+}
 
 int RelationshipTypeManager::Size() {
     return relationship_types.size();

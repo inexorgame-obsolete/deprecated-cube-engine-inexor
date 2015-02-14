@@ -31,8 +31,31 @@ class RelationshipInstanceManager
         RelationshipInstanceManager(CefRefPtr<RelationshipTypeManager> relationship_type_manager);
         virtual ~RelationshipInstanceManager();
 
+        /**
+         * Creates a managed relationship instance of the given type, start
+         * node and end node.
+         */
         InstanceRefPtr<RelationshipInstance> CreateInstance(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<EntityInstance> start_node, InstanceRefPtr<EntityInstance> end_node);
+
+        /**
+         * Creates a managed relationship instance of the given type, start
+         * node and end node.
+         */
         InstanceRefPtr<RelationshipInstance> CreateInstance(std::string relationship_type_name, InstanceRefPtr<EntityInstance> start_node, InstanceRefPtr<EntityInstance> end_node);
+
+        /**
+         * Creates an un managed relationship instance of the given type, start
+         * node and end node. This means the relationship cannot be resolved
+         * by it's id.
+         */
+        InstanceRefPtr<RelationshipInstance> CreateUnmanagedInstance(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<EntityInstance> start_node, InstanceRefPtr<EntityInstance> end_node);
+
+        /**
+         * Creates an unmanaged relationship instance of the given type, start
+         * node and end node. This means the relationship cannot be resolved
+         * by it's id.
+         */
+        InstanceRefPtr<RelationshipInstance> CreateUnmanagedInstance(std::string relationship_type_name, InstanceRefPtr<EntityInstance> start_node, InstanceRefPtr<EntityInstance> end_node);
 
         bool Exists(std::string uuid);
         InstanceRefPtr<RelationshipInstance> Get(std::string uuid);
@@ -60,8 +83,8 @@ class RelationshipInstanceManager
          * the relationships are removed in a thread safe way. During this
          * manager is "locked", no modification should happen!
          */
-        void Invalidate();
-        void DoCreateInstances();
+        void InvalidateInstances();
+        void DequeInstances();
 
         /**
          * Starts the thread. Overwrite this in custom workers.
@@ -76,7 +99,7 @@ class RelationshipInstanceManager
         int Size();
 
         /**
-         * A mutex
+         * Mutex for relationship instances.
          */
         std::mutex relationship_instances_mutex;
 
@@ -119,8 +142,8 @@ class RelationshipInstanceManager
 
         /**
          * The relationship instances. Don't insert directly. Instead use the
-         * CreateInstance methods which buffers the insertions and is lock
-         * protected.
+         * CreateInstance methods which buffers the insertions and protects
+         * the removal with locking.
          */
         std::unordered_map<std::string, InstanceRefPtr<RelationshipInstance> > relationship_instances;
 
@@ -128,8 +151,8 @@ class RelationshipInstanceManager
          * List of instances to be created. This happens asynchronously and
          * is lock protected.
          */
-        std::list<InstanceRefPtr<RelationshipInstance> > create_instances;
-        std::mutex create_instances_mutex;
+        std::deque<InstanceRefPtr<RelationshipInstance> > instance_creation_queue;
+        std::mutex instance_creation_queue_mutex;
 
         // The relationship type manager.
         CefRefPtr<RelationshipTypeManager> relationship_type_manager;
