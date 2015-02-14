@@ -28,6 +28,7 @@ ParticleTest::ParticleTest()
     rolling_function = new Rolling();
     simple_gravity_function = new SimpleGravity();
     vector_field_function = new VectorField("(z * -0.3) * x, (z * -0.2) * y, 20");
+    velocity_damper_function = new VelocityDamper();
     velocity_transformation_function = new VelocityTransformation();
 
     logoutf("Create renderer functions");
@@ -55,6 +56,8 @@ ParticleTest::ParticleTest()
     simple_gravity_modifier_type = particle_subsystem->CreateModifierType("simple_gravity_modifier", simple_gravity_function);
     vector_field_modifier_type = particle_subsystem->CreateModifierType("vector_field_modifier", vector_field_function);
     vector_field_modifier_type[EXPRESSION] = std::string("(z * -0.3) * x, (z * -0.2) * y, 20");
+    velocity_damper_modifier_type = particle_subsystem->CreateModifierType("velocity_damper_modifier", velocity_damper_function);
+    velocity_damper_modifier_type[DAMPER] = 0.2f;
     velocity_transformation_modifier_type = particle_subsystem->CreateModifierType("velocity_transformation_modifier", velocity_transformation_function);
 
     logoutf("Create renderer types");
@@ -71,8 +74,8 @@ ParticleTest::~ParticleTest()
 
 void ParticleTest::RunTests()
 {
-    // ShowCase();
-    PerformanceTest();
+    ShowCase();
+    // PerformanceTest();
 }
 
 void ParticleTest::ShowCase()
@@ -98,11 +101,6 @@ void ParticleTest::ShowCase()
     random_position_initializer_2[DELTA] = vec(5.0f, 5.0f, 5.0f);
 
     logoutf("Create modifier instances");
-    velocity_transformation_modifier_1 = particle_subsystem->CreateModifierInstance(velocity_transformation_modifier_type);
-    vector_field_modifier_1 = particle_subsystem->CreateModifierInstance(vector_field_modifier_type);
-    vector_field_modifier_1[POS] = vec(512.0f, 768.0f, 480.0f);
-    simple_gravity_modifier_1 = particle_subsystem->CreateModifierInstance(simple_gravity_modifier_type);
-    rolling_modifier_1 = particle_subsystem->CreateModifierInstance(rolling_modifier_type);
     geometry_collide_modifier_1 = particle_subsystem->CreateModifierInstance(geometry_collide_modifier_type);
     gravity_point_modifier_1 = particle_subsystem->CreateModifierInstance(gravity_point_modifier_type);
     gravity_point_modifier_1[MASS] = 5000.0f;
@@ -122,6 +120,12 @@ void ParticleTest::ShowCase()
     gravity_point_modifier_4[GRAVITY] = 15.0f;
     gravity_point_modifier_4[POS] = vec(512.0f, 256.0f - 96.0f, 562.0f);
     */
+    rolling_modifier_1 = particle_subsystem->CreateModifierInstance(rolling_modifier_type);
+    simple_gravity_modifier_1 = particle_subsystem->CreateModifierInstance(simple_gravity_modifier_type);
+    vector_field_modifier_1 = particle_subsystem->CreateModifierInstance(vector_field_modifier_type);
+    vector_field_modifier_1[POS] = vec(512.0f, 768.0f, 480.0f);
+    velocity_damper_modifier_1 = particle_subsystem->CreateModifierInstance(velocity_damper_modifier_type);
+    velocity_transformation_modifier_1 = particle_subsystem->CreateModifierInstance(velocity_transformation_modifier_type);
 
     logoutf("Create renderer instances");
     billboard_renderer_1 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "media/particle/ball1.png", 10.0f);
@@ -151,6 +155,7 @@ void ParticleTest::ShowCase()
     // rel_point_emitter_gravity_point_modifier_4 = particle_subsystem->AddModifierToEmitter(point_emitter_2, gravity_point_modifier_4);
     rel_point_emitter_velocity_transformation_3 = particle_subsystem->AddModifierToEmitter(point_emitter_3, velocity_transformation_modifier_1);
     rel_point_emitter_rolling_1 = particle_subsystem->AddModifierToEmitter(point_emitter_3, rolling_modifier_1);
+    rel_point_emitter_velocity_damper_1 = particle_subsystem->AddModifierToEmitter(point_emitter_3, velocity_damper_modifier_1);
     rel_point_emitter_simple_gravity_1 = particle_subsystem->AddModifierToEmitter(point_emitter_3, simple_gravity_modifier_1);
     rel_point_emitter_geometry_collide_modifier_1 = particle_subsystem->AddModifierToEmitter(point_emitter_3, geometry_collide_modifier_1);
     rel_point_emitter_velocity_transformation_4 = particle_subsystem->AddModifierToEmitter(point_emitter_4, velocity_transformation_modifier_1);
