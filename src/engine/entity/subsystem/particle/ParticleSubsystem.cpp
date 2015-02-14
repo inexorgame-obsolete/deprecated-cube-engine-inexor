@@ -283,6 +283,10 @@ InstanceRefPtr<EntityInstance> ParticleSubsystem::CreateModifierInstance(TypeRef
     // Set initial position and velocity
     // modifier_instance["x"] = x;
 
+    // TODO: maybe copy attributes from the modifier type to the modifier instance, if a flag is set to do so
+    // -> New flag in EntityAttribute "initializes_instance"
+    // -> Iterate over all attributes and copy it
+
     // The millis to process
     modifier_instance[MILLIS_TO_PROCESS] = 0;
 

@@ -18,6 +18,7 @@
 #include "modifier/GravityPoint.h"
 #include "modifier/SimpleGravity.h"
 #include "modifier/Rolling.h"
+#include "modifier/VelocityDamper.h"
 #include "modifier/VelocityTransformation.h"
 #include "modifier/VectorField.h"
 #include "renderer/Billboard.h"
@@ -48,10 +49,11 @@ class ParticleTest
         FunctionRefPtr density_fadeout_function;
         FunctionRefPtr geometry_collide_function;
         FunctionRefPtr gravity_point_function;
-        FunctionRefPtr velocity_transformation_function;
-        FunctionRefPtr vector_field_function;
-        FunctionRefPtr simple_gravity_function;
         FunctionRefPtr rolling_function;
+        FunctionRefPtr simple_gravity_function;
+        FunctionRefPtr vector_field_function;
+        FunctionRefPtr velocity_damper_function;
+        FunctionRefPtr velocity_transformation_function;
         FunctionRefPtr billboard_renderer_function;
         FunctionRefPtr cube_renderer_function;
         FunctionRefPtr model_renderer_function;
@@ -65,10 +67,11 @@ class ParticleTest
         TypeRefPtr<EntityType> density_fadeout_modifier_type;
         TypeRefPtr<EntityType> geometry_collide_modifier_type;
         TypeRefPtr<EntityType> gravity_point_modifier_type;
+        TypeRefPtr<EntityType> rolling_modifier_type;
+        TypeRefPtr<EntityType> simple_gravity_modifier_type;
+        TypeRefPtr<EntityType> velocity_damper_modifier_type;
         TypeRefPtr<EntityType> velocity_transformation_modifier_type;
         TypeRefPtr<EntityType> vector_field_modifier_type;
-        TypeRefPtr<EntityType> simple_gravity_modifier_type;
-        TypeRefPtr<EntityType> rolling_modifier_type;
         TypeRefPtr<EntityType> billboard_renderer_type;
         TypeRefPtr<EntityType> cube_renderer_type;
         TypeRefPtr<EntityType> model_renderer_type;
@@ -93,6 +96,7 @@ class ParticleTest
         InstanceRefPtr<EntityInstance> rolling_modifier_1;
         InstanceRefPtr<EntityInstance> simple_gravity_modifier_1;
         InstanceRefPtr<EntityInstance> vector_field_modifier_1;
+        InstanceRefPtr<EntityInstance> velocity_damper_modifier_1;
         InstanceRefPtr<EntityInstance> velocity_transformation_modifier_1;
 
         InstanceRefPtr<EntityInstance> billboard_renderer_1;
@@ -114,14 +118,12 @@ class ParticleTest
         InstanceRefPtr<RelationshipInstance> rel_point_emitter_random_velocity_3;
         InstanceRefPtr<RelationshipInstance> rel_point_emitter_random_velocity_4;
 
-        InstanceRefPtr<RelationshipInstance> rel_point_emitter_vector_field_1;
-        InstanceRefPtr<RelationshipInstance> rel_point_emitter_vector_field_2;
-        InstanceRefPtr<RelationshipInstance> rel_point_emitter_vector_field_3;
-        InstanceRefPtr<RelationshipInstance> rel_point_emitter_vector_field_4;
-        InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_transformation_1;
-        InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_transformation_2;
-        InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_transformation_3;
-        InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_transformation_4;
+        InstanceRefPtr<RelationshipInstance> rel_point_emitter_brownian_motion_1;
+        InstanceRefPtr<RelationshipInstance> rel_point_emitter_density_fadeout_1;
+        InstanceRefPtr<RelationshipInstance> rel_point_emitter_geometry_collide_modifier_1;
+        InstanceRefPtr<RelationshipInstance> rel_point_emitter_geometry_collide_modifier_2;
+        InstanceRefPtr<RelationshipInstance> rel_point_emitter_geometry_collide_modifier_3;
+        InstanceRefPtr<RelationshipInstance> rel_point_emitter_geometry_collide_modifier_4;
         InstanceRefPtr<RelationshipInstance> rel_point_emitter_gravity_point_modifier_1;
         InstanceRefPtr<RelationshipInstance> rel_point_emitter_gravity_point_modifier_2;
         InstanceRefPtr<RelationshipInstance> rel_point_emitter_gravity_point_modifier_3;
@@ -134,12 +136,15 @@ class ParticleTest
         InstanceRefPtr<RelationshipInstance> rel_point_emitter_simple_gravity_2;
         InstanceRefPtr<RelationshipInstance> rel_point_emitter_simple_gravity_3;
         InstanceRefPtr<RelationshipInstance> rel_point_emitter_simple_gravity_4;
-        InstanceRefPtr<RelationshipInstance> rel_point_emitter_geometry_collide_modifier_1;
-        InstanceRefPtr<RelationshipInstance> rel_point_emitter_geometry_collide_modifier_2;
-        InstanceRefPtr<RelationshipInstance> rel_point_emitter_geometry_collide_modifier_3;
-        InstanceRefPtr<RelationshipInstance> rel_point_emitter_geometry_collide_modifier_4;
-        InstanceRefPtr<RelationshipInstance> rel_point_emitter_brownian_motion_1;
-        InstanceRefPtr<RelationshipInstance> rel_point_emitter_density_fadeout_1;
+        InstanceRefPtr<RelationshipInstance> rel_point_emitter_vector_field_1;
+        InstanceRefPtr<RelationshipInstance> rel_point_emitter_vector_field_2;
+        InstanceRefPtr<RelationshipInstance> rel_point_emitter_vector_field_3;
+        InstanceRefPtr<RelationshipInstance> rel_point_emitter_vector_field_4;
+        InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_damper_1;
+        InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_transformation_1;
+        InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_transformation_2;
+        InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_transformation_3;
+        InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_transformation_4;
 
         InstanceRefPtr<RelationshipInstance> rel_point_emitter_billboard_renderer_1;
         InstanceRefPtr<RelationshipInstance> rel_point_emitter_billboard_renderer_2;
@@ -149,8 +154,8 @@ class ParticleTest
         InstanceRefPtr<RelationshipInstance> rel_point_emitter_model_renderer_2;
         InstanceRefPtr<RelationshipInstance> rel_point_emitter_model_renderer_3;
         InstanceRefPtr<RelationshipInstance> rel_point_emitter_model_renderer_4;
-        // InstanceRefPtr<RelationshipInstance> rel_point_emitter_cube_renderer_1;
-        // InstanceRefPtr<RelationshipInstance> rel_point_emitter_origin_renderer_1;
+        InstanceRefPtr<RelationshipInstance> rel_point_emitter_cube_renderer_1;
+        InstanceRefPtr<RelationshipInstance> rel_point_emitter_origin_renderer_1;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(ParticleTest);
