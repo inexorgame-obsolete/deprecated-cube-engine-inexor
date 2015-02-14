@@ -42,6 +42,7 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/decal
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/dynlight
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/EntitySystem
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/EntityTest
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/AttributeBase
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/AttributeRefPtr
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/domain/FunctionRefPtr
@@ -73,6 +74,7 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/SubsystemBase
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/TeleportSubsystem
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/ParticleSubsystem
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/ParticleTest
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/emitter/Point
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/initializer/RandomPosition
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/initializer/RandomVelocity

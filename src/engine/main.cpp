@@ -9,6 +9,8 @@
 #include "include/cef_browser.h"
 #include "include/wrapper/cef_helpers.h"
 #include "engine/entity/EntitySystem.h"
+#include "engine/entity/EntityTest.h"
+#include "engine/entity/subsystem/particle/ParticleTest.h"
 
 // extern functions and data here
 extern void cleargamma();
@@ -30,7 +32,9 @@ int initing = NOT_INITING;
 
 CefRefPtr<InexorCefApp> cef_app;
 CefRefPtr<inexor::entity::EntitySystem> entity_system;
+CefRefPtr<inexor::entity::EntityTest> entity_test;
 CefRefPtr<inexor::entity::particle::ParticleSubsystem> particle_subsystem;
+CefRefPtr<inexor::entity::particle::ParticleTest> particle_test;
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // game exit
@@ -1358,8 +1362,14 @@ int main(int argc, char **argv)
 
     logoutf("init: entity system");
     entity_system = new EntitySystem();
+    entity_test = new inexor::entity::EntityTest();
+    entity_test->RunTests();
+    entity_test->PrintStats();
+    entity_test->CleanupTests();
+    entity_test->PrintStats();
     particle_subsystem = entity_system->GetSubsystem<inexor::entity::particle::ParticleSubsystem>();
-    entity_system->RunTests();
+    particle_test = new inexor::entity::particle::ParticleTest();
+    entity_test->PrintStats();
 
     logoutf("init: gl: effects");
     loadshaders();
@@ -1461,6 +1471,7 @@ int main(int argc, char **argv)
         recomputecamera();
         updateparticles();
         entity_system->Update();
+        // entity_test->PrintStats();
         updatesounds();
 
         // cef message loop iteration

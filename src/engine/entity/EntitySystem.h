@@ -138,15 +138,6 @@ class EntitySystem
          */
         CefRefPtr<RelationshipInstanceManager> GetRelationshipInstanceManager();
 
-        // Tests. TODO: remove
-        void RunTests();
-        void SubsystemTest();
-        void AttributeTest();
-        void InstanceCreationTest();
-        void TypeCreationTest();
-        void LowLevelTypeCreationTest();
-        void ParticleSystemTest();
-
     private:
 
         /**
