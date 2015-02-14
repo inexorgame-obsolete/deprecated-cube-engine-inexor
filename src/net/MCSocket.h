@@ -78,46 +78,77 @@ namespace net {
     }
   };
 
-  /**
-   * MessageConnect via IPv4 or IPv6 TCP Socket.
-   */
+  /// MessageConnect via IPv4 or IPv6 TCP Socket.
+  ///
+  /// TODO: Support generic endpoint initialization
   class MCTcp : public MCSocket<asio::ip::tcp> {
   protected:
     typedef asio::ip::address address;
 
   public:
-    /**
-     * Create the connection from an IPv4 or IPv6 address
-     * and the remote port number.
-     *
-     * TODO: Support generic endpoint initialization
-     */
+    /// Create the connection from an IPv4 or IPv6 address
+    /// and the remote port number.
+    ///
+    /// A new ASIO service will be creates for this.
     MCTcp(const char *addr, unsigned short port) :
       MCSocket(address::from_string(addr), port) {}
 
-    /**
-     * Get the ASIO address.
-     *
-     * @return The address as represented by the ASIO lib.
-     */
+    /// Create the connection from an IPv4 or IPv6 address
+    /// and the remote port number in a specific service.
+    MCTcp(service &srv, const char *addr, unsigned short port) :
+      MCSocket(srv, address::from_string(addr), port) {}
+
+    /// Create the connection from an IPv4 or IPv6 address
+    /// and the remote port number in a specific service.
+    ///
+    /// A new ASIO service will be creates for this.
+    MCTcp(std::string addr, unsigned short port) :
+      MCTcp(addr.c_str(), port) {}
+
+    /// Create the connection from an IPv4 or IPv6 address
+    /// and the remote port number in a specific service.
+    MCTcp(service &srv, std::string addr, unsigned short port) :
+      MCTcp(srv, addr.c_str(), port) {}
+
+    /// Get the ASIO address.
+    ///
+    /// @return The address as represented by the ASIO lib.
     address GetAddress() {
       return e.address();
     }
   };
 
 #if defined(unix) || defined(__unix__) || defined(__unix)
-  /**
-   * MessageConnect via Unix Domain Socket.
-   *
-   * Initialize by MCUnix(const char* path)
-   *
-   * This is only available on unix systems
-   *
-   * TODO: Support initialization via std::string ?
-   */
-  typedef
-    MCSocket<asio::local::stream_protocol>
-    MCUnix;
+  /// MessageConnect via Unix Domain Socket.
+  ///
+  /// This is only available on Unix systems.
+  class MCUnix : MCSocket<asio::local::stream_protocol> {
+  protected:
+    std::string path;
+
+  public:
+
+    /// Connect to the unix socket at path.
+    MCUnix(const char *path_)
+      : MCSocket(path_), path(path_) {}
+
+    /// Connect to the unix socket at path with a specific
+    /// ASIO service.
+    MCUnix(service &srv, const char *path_) :
+      MCSocket(srv, path_), path(path_) {}
+
+    /// Connect to the unix socket at path.
+    MCUnix(std::string path_)
+      : MCSocket(path_.c_str()), path(path_) {}
+
+    /// Connect to the unix socket at path with a specific
+    /// ASIO service.
+    MCUnix(service &srv, std::string path_)
+      : MCSocket(srv, path_.c_str()), path(path_) {}
+
+    /// Get the path of the underlying unix socket
+    std::string Path() { return path; }
+  };
 #endif
 
 }
