@@ -44,6 +44,7 @@ namespace particle {
 
     // Modifier attributes
 
+    const std::string DAMPER("damper");
     const std::string DELTA("delta");
 
     // Renderer attributes
@@ -112,6 +113,7 @@ namespace particle {
     const std::string MODIFIER_SIMPLE_GRAVITY_FUNCTION("simple_gravity");
     const std::string MODIFIER_ROLLING_FUNCTION("rolling");
     const std::string MODIFIER_VECTOR_FIELD_FUNCTION("vector_field");
+    const std::string MODIFIER_VELOCITY_DAMPER_FUNCTION("velocity_damper");
     const std::string MODIFIER_VELOCITY_TRANSFORMATION_FUNCTION("velocity_transformation");
     const std::string RENDERER_BILLBOARD_FUNCTION("billboard_renderer");
     const std::string RENDERER_CUBE_FUNCTION("cube_renderer");
