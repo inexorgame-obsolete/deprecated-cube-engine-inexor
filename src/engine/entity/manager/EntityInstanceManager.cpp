@@ -69,8 +69,18 @@ void EntityInstanceManager::DeleteAllInstances()
 
 void EntityInstanceManager::DeleteAllInstances(TypeRefPtr<EntityType> entity_type)
 {
-    // TODO: implement
-    // Iterate through all instances and check type (costly), then remove instance
+    auto it = entity_instances.begin();
+    while (it != entity_instances.end())
+    {
+        // This check removes an instance if the entity type equals the given
+        // entity type or it's parent entity_type.
+        if (it->second->GetType()->IsA(entity_type))
+        {
+            it = entity_instances.erase(it);
+        } else {
+            ++it;
+        }
+    }
 }
 
 int EntityInstanceManager::Size() {
