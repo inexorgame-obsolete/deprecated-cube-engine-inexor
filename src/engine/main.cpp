@@ -1362,12 +1362,14 @@ int main(int argc, char **argv)
 
     logoutf("init: entity system");
     entity_system = new EntitySystem();
-    entity_test = new inexor::entity::EntityTest();
-    entity_test->RunTests();
-    entity_test->PrintStats();
-    entity_test->CleanupTests();
-    entity_test->PrintStats();
+    logoutf("init: particle subsystem");
     particle_subsystem = entity_system->GetSubsystem<inexor::entity::particle::ParticleSubsystem>();
+
+    logoutf("init: entity system tests");
+    entity_test = new inexor::entity::EntityTest();
+    entity_test->PrintStats();
+
+    logoutf("init: particle subsystem tests");
     particle_test = new inexor::entity::particle::ParticleTest();
     entity_test->PrintStats();
 

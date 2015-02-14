@@ -43,6 +43,11 @@ class ParticleSubsystem : public SubsystemBase
         void Update(TimeStep time_step);
 
         /**
+         * Initializes the graph model for the particle system.
+         */
+        void InitializeModel();
+
+        /**
          * Shutdown.
          */
         void Cleanup();
