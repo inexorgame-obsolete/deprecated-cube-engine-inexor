@@ -23,13 +23,11 @@ RelationshipInstanceManager::~RelationshipInstanceManager()
 InstanceRefPtr<RelationshipInstance> RelationshipInstanceManager::CreateInstance(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<EntityInstance> start_node, InstanceRefPtr<EntityInstance> end_node)
 {
     InstanceRefPtr<RelationshipInstance> relationship_instance = new RelationshipInstance(relationship_type, start_node, end_node);
-    create_instances_mutex.lock();
-    create_instances.push_back(relationship_instance);
-    create_instances_mutex.unlock();
+    instance_creation_queue_mutex.lock();
+    instance_creation_queue.push_back(relationship_instance);
+    instance_creation_queue_mutex.unlock();
     start_node->outgoing[relationship_type->uuid].push_back(relationship_instance);
     end_node->incoming[relationship_type->uuid].push_back(relationship_instance);
-    // start_node->AddOutgoingRelationship(relationship_type, relationship_instance);
-    // end_node->AddIncomingRelationship(relationship_type, relationship_instance);
     return relationship_instance;
 }
 
@@ -37,6 +35,21 @@ InstanceRefPtr<RelationshipInstance> RelationshipInstanceManager::CreateInstance
 {
     TypeRefPtr<RelationshipType> relationship_type = relationship_type_manager->Get(relationship_type_name);
     return CreateInstance(relationship_type, start_node, end_node);
+}
+
+InstanceRefPtr<RelationshipInstance> RelationshipInstanceManager::CreateUnmanagedInstance(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<EntityInstance> start_node, InstanceRefPtr<EntityInstance> end_node)
+{
+    InstanceRefPtr<RelationshipInstance> relationship_instance = new RelationshipInstance(relationship_type, start_node, end_node);
+    // Note: no insertion into the instance_creation_queue! -> No lock but no global reference
+    start_node->outgoing[relationship_type->uuid].push_back(relationship_instance);
+    end_node->incoming[relationship_type->uuid].push_back(relationship_instance);
+    return relationship_instance;
+}
+
+InstanceRefPtr<RelationshipInstance> RelationshipInstanceManager::CreateUnmanagedInstance(std::string relationship_type_name, InstanceRefPtr<EntityInstance> start_node, InstanceRefPtr<EntityInstance> end_node)
+{
+    TypeRefPtr<RelationshipType> relationship_type = relationship_type_manager->Get(relationship_type_name);
+    return CreateUnmanagedInstance(relationship_type, start_node, end_node);
 }
 
 bool RelationshipInstanceManager::Exists(std::string uuid)
@@ -51,8 +64,17 @@ InstanceRefPtr<RelationshipInstance> RelationshipInstanceManager::Get(std::strin
 
 std::list<InstanceRefPtr<RelationshipInstance> > RelationshipInstanceManager::GetAll(TypeRefPtr<RelationshipType> relationship_type)
 {
-    // TODO: implement
-    // Iterate through all instances and check type (costly)
+    std::list<InstanceRefPtr<RelationshipInstance> > instances;
+    std::unordered_map<std::string, InstanceRefPtr<RelationshipInstance> >::const_iterator it = relationship_instances.begin();
+    while (it != relationship_instances.end())
+    {
+        if (it->second->GetType()->uuid == relationship_type->uuid)
+        {
+            instances.push_back(it->second);
+        }
+        ++it;
+    }
+    return instances;
 }
 
 std::list<InstanceRefPtr<RelationshipInstance> > RelationshipInstanceManager::GetAll(std::string relationship_type_name)
@@ -84,6 +106,7 @@ void RelationshipInstanceManager::DeleteAllInstances(TypeRefPtr<RelationshipType
     auto it = relationship_instances.begin();
     while (it != relationship_instances.end())
     {
+        // TODO: check also the parent type!
         if (it->second->GetType()->GetUuid() == relationship_type->GetUuid())
         {
             it = relationship_instances.erase(it);
@@ -94,13 +117,12 @@ void RelationshipInstanceManager::DeleteAllInstances(TypeRefPtr<RelationshipType
     relationship_instances_mutex.unlock();
 }
 
-void RelationshipInstanceManager::Invalidate()
+void RelationshipInstanceManager::InvalidateInstances()
 {
     relationship_instances_mutex.lock();
     std::unordered_map<std::string, InstanceRefPtr<RelationshipInstance> >::const_iterator it = relationship_instances.begin();
     while (it != relationship_instances.end())
     {
-        // InstanceRefPtr<RelationshipInstance> inst = (*it).second;
         if (!(*it).second->alive) {
             (*it).second->startNode->outgoing[(*it).second->type->uuid].remove((*it).second);
             (*it).second->endNode->incoming[(*it).second->type->uuid].remove((*it).second);
@@ -112,22 +134,20 @@ void RelationshipInstanceManager::Invalidate()
     relationship_instances_mutex.unlock();
 }
 
-void RelationshipInstanceManager::DoCreateInstances()
+void RelationshipInstanceManager::DequeInstances()
 {
-    // create_instances.push_back(relationship_instance);
     relationship_instances_mutex.lock();
-    std::list<InstanceRefPtr<RelationshipInstance> >::const_iterator it = create_instances.begin();
-    while (it != create_instances.end())
+    std::deque<InstanceRefPtr<RelationshipInstance> >::const_iterator it = instance_creation_queue.begin();
+    while (it != instance_creation_queue.end())
     {
         relationship_instances[(*it)->uuid] = (*it);
         ++it;
     }
     relationship_instances_mutex.unlock();
-    create_instances_mutex.lock();
-    create_instances.clear();
-    create_instances_mutex.unlock();
+    instance_creation_queue_mutex.lock();
+    instance_creation_queue.clear();
+    instance_creation_queue_mutex.unlock();
 }
-
 
 int RelationshipInstanceManager::Work(void *data)
 {
@@ -141,8 +161,8 @@ int RelationshipInstanceManager::Work(void *data)
         {
             w->frame_millis = SDL_GetTicks();
             w->LimitFps(w->frame_millis, w->frame_last_millis, w->maxfps);
-            w->Invalidate();
-            w->DoCreateInstances();
+            w->InvalidateInstances();
+            w->DequeInstances();
             w->frame_last_millis = w->frame_millis;
         }
     } catch (int e)

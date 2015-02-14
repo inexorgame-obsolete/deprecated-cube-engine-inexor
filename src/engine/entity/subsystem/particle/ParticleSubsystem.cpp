@@ -39,22 +39,7 @@ ParticleSubsystem::ParticleSubsystem(
     entity_type_manager->RegisterFactory(particle_modifier_type_factory);
     entity_type_manager->RegisterFactory(particle_renderer_type_factory);
 
-    // Create graph model: Node types
-    TypeRefPtr<EntityType> parent_particle_type = entity_type_manager->Create(ENTTYPE_PARENT_PARTICLE_TYPE, true, true);
-    TypeRefPtr<EntityType> parent_emitter_type = entity_type_manager->Create(ENTTYPE_PARENT_EMITTER_TYPE, true, true);
-    TypeRefPtr<EntityType> parent_initializer_type = entity_type_manager->Create(ENTTYPE_PARENT_INITIALIZER_TYPE, true, true);
-    TypeRefPtr<EntityType> parent_modifier_type = entity_type_manager->Create(ENTTYPE_PARENT_MODIFIER_TYPE, true, true);
-    TypeRefPtr<EntityType> parent_renderer_type = entity_type_manager->Create(ENTTYPE_PARENT_RENDERER_TYPE, true, true);
-
-    // Create graph model: Relationship types
-    emitted_by = relationship_type_manager->Create(REL_EMITTED_BY, false, false, parent_particle_type, parent_emitter_type);
-    modifies = relationship_type_manager->Create(REL_MODIFIES, false, false, parent_modifier_type, parent_particle_type);
-    renders = relationship_type_manager->Create(REL_RENDERS, false, false, parent_renderer_type, parent_particle_type);
-    apply_initializer = relationship_type_manager->Create(REL_APPLY_INITIALIZER, true, true, parent_emitter_type, parent_initializer_type);
-    apply_modifier = relationship_type_manager->Create(REL_APPLY_MODIFIER, true, true, parent_emitter_type, parent_modifier_type);
-    apply_renderer = relationship_type_manager->Create(REL_APPLY_RENDERER, true, true, parent_emitter_type, parent_renderer_type);
-
-    logoutf("Created particle graph model");
+    InitializeModel();
 }
 
 ParticleSubsystem::~ParticleSubsystem()
@@ -63,11 +48,6 @@ ParticleSubsystem::~ParticleSubsystem()
 
 void ParticleSubsystem::Update(TimeStep time_step)
 {
-    // In the particle system we use worker threads for each emitter and
-    // modifier. Therefore, we do nothing in the subsystem update method.
-
-    // logoutf("ParticleSubsystem::Update() elapsed_millis: %d time_factor: %2.3f time_unit: %4.1f", time_step.elapsed_millis, time_step.time_factor, time_step.time_unit);
-
     if (mainmenu)
     {
         std::vector<InstanceRefPtr<EntityInstance> >::iterator it = renderers.begin();
@@ -85,8 +65,26 @@ void ParticleSubsystem::Update(TimeStep time_step)
             ++it;
         }
     }
+}
 
+void ParticleSubsystem::InitializeModel()
+{
+    // Create graph model: Node types
+    TypeRefPtr<EntityType> parent_particle_type = entity_type_manager->Create(ENTTYPE_PARENT_PARTICLE_TYPE, true, true);
+    TypeRefPtr<EntityType> parent_emitter_type = entity_type_manager->Create(ENTTYPE_PARENT_EMITTER_TYPE, true, true);
+    TypeRefPtr<EntityType> parent_initializer_type = entity_type_manager->Create(ENTTYPE_PARENT_INITIALIZER_TYPE, true, true);
+    TypeRefPtr<EntityType> parent_modifier_type = entity_type_manager->Create(ENTTYPE_PARENT_MODIFIER_TYPE, true, true);
+    TypeRefPtr<EntityType> parent_renderer_type = entity_type_manager->Create(ENTTYPE_PARENT_RENDERER_TYPE, true, true);
 
+    // Create graph model: Relationship types
+    emitted_by = relationship_type_manager->Create(REL_EMITTED_BY, false, false, parent_particle_type, parent_emitter_type);
+    modifies = relationship_type_manager->Create(REL_MODIFIES, false, false, parent_modifier_type, parent_particle_type);
+    renders = relationship_type_manager->Create(REL_RENDERS, false, false, parent_renderer_type, parent_particle_type);
+    apply_initializer = relationship_type_manager->Create(REL_APPLY_INITIALIZER, true, true, parent_emitter_type, parent_initializer_type);
+    apply_modifier = relationship_type_manager->Create(REL_APPLY_MODIFIER, true, true, parent_emitter_type, parent_modifier_type);
+    apply_renderer = relationship_type_manager->Create(REL_APPLY_RENDERER, true, true, parent_emitter_type, parent_renderer_type);
+
+    logoutf("Particle subsystem graph model initialized");
 }
 
 void ParticleSubsystem::Cleanup()
@@ -107,8 +105,12 @@ void ParticleSubsystem::Cleanup()
         modifier_workers[i]->Stop();
     }
 
-    // TODO: remove renderers
-    // TODO: remove types
+    // TODO: 1. remove renderers
+    // TODO: 2. remove instances
+    // TODO: 3. remove types
+
+    // Recreate the graph model
+    InitializeModel();
 }
 
 void ParticleSubsystem::Reset()
@@ -131,7 +133,7 @@ void ParticleSubsystem::RenderParticles()
         function->Before(time_step, (*it).get());
         while (it2 != (*it)->outgoing[renders->uuid].end())
         {
-            if ((*it2)->endNode[REMAINING]->intVal > 0)
+            if ((*it2)->alive && (*it2)->endNode[REMAINING]->intVal > 0)
             {
                 function->Execute(time_step, (*it).get(), (*it2)->endNode.get());
             } else {
