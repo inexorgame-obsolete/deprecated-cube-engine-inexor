@@ -80,8 +80,18 @@ void RelationshipInstanceManager::DeleteAllInstances()
 
 void RelationshipInstanceManager::DeleteAllInstances(TypeRefPtr<RelationshipType> relationship_type)
 {
-    // TODO: implement
-    // Iterate through all instances and check type (costly), then remove instance
+    relationship_instances_mutex.lock();
+    auto it = relationship_instances.begin();
+    while (it != relationship_instances.end())
+    {
+        if (it->second->GetType()->GetUuid() == relationship_type->GetUuid())
+        {
+            it = relationship_instances.erase(it);
+        } else {
+            ++it;
+        }
+    }
+    relationship_instances_mutex.unlock();
 }
 
 void RelationshipInstanceManager::Invalidate()
