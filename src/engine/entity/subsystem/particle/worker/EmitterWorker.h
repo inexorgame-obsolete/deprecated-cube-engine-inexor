@@ -26,6 +26,7 @@ class EmitterWorker : public ParticleWorker
         virtual ~EmitterWorker();
 
         void Start();
+        void Stop();
         static int Work(void *data);
 
     private:
