@@ -5,11 +5,13 @@
 #include "include/cef_browser.h"
 #include "include/wrapper/cef_helpers.h"
 #include "engine/entity/subsystem/particle/ParticleSubsystem.h"
+#include "engine/entity/subsystem/HandleSubsystem.h"
 
 bool hasVBO = false, hasDRE = false, hasOQ = false, hasTR = false, hasFBO = false, hasDS = false, hasTF = false, hasBE = false, hasBC = false, hasCM = false, hasNP2 = false, hasTC = false, hasS3TC = false, hasFXT1 = false, hasTE = false, hasMT = false, hasD3 = false, hasAF = false, hasVP2 = false, hasVP3 = false, hasPP = false, hasMDA = false, hasTE3 = false, hasTE4 = false, hasVP = false, hasFP = false, hasGLSL = false, hasGM = false, hasNVFB = false, hasSGIDT = false, hasSGISH = false, hasDT = false, hasSH = false, hasNVPCF = false, hasRN = false, hasPBO = false, hasFBB = false, hasUBO = false, hasBUE = false, hasMBR = false, hasFC = false, hasTEX = false;
 int hasstencil = 0;
 
 extern CefRefPtr<inexor::entity::particle::ParticleSubsystem> particle_subsystem;
+extern CefRefPtr<inexor::entity::HandleSubsystem> handle_subsystem;
 
 VAR(renderpath, 1, 0, 0);
 VAR(glversion, 1, 0, 0);
@@ -1444,6 +1446,7 @@ void drawglare()
     renderwater();
     rendermaterials();
     renderalphageom();
+    handle_subsystem->RenderHandles();
     particle_subsystem->RenderFaces();
     particle_subsystem->RenderParticles();
     renderparticles();
@@ -1591,6 +1594,7 @@ void drawreflection(float z, bool refract, int fogdepth, const bvec &col)
     if(refracting) rendergrass();
     rendermaterials();
     renderalphageom(fogging);
+    handle_subsystem->RenderHandles();
     particle_subsystem->RenderFaces();
     particle_subsystem->RenderParticles();
     renderparticles();
@@ -2117,6 +2121,7 @@ void gl_drawframe()
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     // TODO:
+    handle_subsystem->RenderHandles();
     particle_subsystem->RenderFaces();
     particle_subsystem->RenderParticles();
 

@@ -22,7 +22,7 @@
 #include "manager/EntityTypeManager.h"
 #include "manager/RelationshipInstanceManager.h"
 #include "manager/RelationshipTypeManager.h"
-#include "provider/Handle.h"
+#include "subsystem/HandleSubsystem.h"
 #include "subsystem/TeleportSubsystem.h"
 #include "subsystem/particle/ParticleSubsystem.h"
 
@@ -210,6 +210,11 @@ class EntitySystem
          * implemented subsystem.
          */
         TypeMap subsystemTypeMap;
+
+        /**
+         * The handle subsystem.
+         */
+        CefRefPtr<HandleSubsystem> handle_subsystem;
 
         /**
          * The teleport subsystem.

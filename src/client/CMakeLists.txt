@@ -72,6 +72,7 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/RelationshipTypeProvider
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/TeleportEntityTypeProvider
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/SubsystemBase
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/HandleSubsystem
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/TeleportSubsystem
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/ParticleSubsystem
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/ParticleTest
