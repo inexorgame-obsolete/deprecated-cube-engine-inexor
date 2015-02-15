@@ -30,6 +30,7 @@ EmitterWorker::EmitterWorker(std::string name, int maxfps, FunctionRefPtr functi
 
 EmitterWorker::~EmitterWorker()
 {
+    Stop();
 }
 
 void EmitterWorker::Start()
@@ -38,6 +39,19 @@ void EmitterWorker::Start()
     {
         logoutf("Starting emitter worker thread %s", name.c_str());
         thread = SDL_CreateThread(Work, name.c_str(), this);
+    }
+}
+
+void EmitterWorker::Stop()
+{
+    if (!stopped)
+    {
+        running = false;
+// SDL_KillThread(thread);
+        logoutf("Stopping worker thread %s", name.c_str());
+        int retValue;
+        SDL_WaitThread(thread, &retValue);
+        particle_pool.clear();
     }
 }
 

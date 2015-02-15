@@ -37,7 +37,7 @@ class ParticleWorker
         /**
          * Stops the thread.
          */
-        void Stop();
+        virtual void Stop();
 
         /**
          * The worker implementation. Must be static. Overwrite this in custom
