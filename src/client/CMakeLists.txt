@@ -68,7 +68,7 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/manager/RelationshipInstanceManager
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/manager/RelationshipTypeManager
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/EntityTypeProvider
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/Positional
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/Handle
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/RelationshipTypeProvider
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/provider/TeleportEntityTypeProvider
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/SubsystemBase
@@ -79,6 +79,7 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/initializer/RandomPosition
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/initializer/RandomVelocity
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/BrownianMotion
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/Culling
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/DensityFadeout
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/GeometryCollide
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/GravityPoint

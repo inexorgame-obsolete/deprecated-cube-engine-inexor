@@ -12,6 +12,7 @@
 
 #include "EntitySystemBase.h"
 #include "domain/InstanceBase.h"
+#include "domain/TimeStep.h"
 #include "domain/TypeBase.h"
 #include "domain/graph/EntityInstance.h"
 #include "domain/graph/EntityType.h"
@@ -21,6 +22,7 @@
 #include "manager/EntityTypeManager.h"
 #include "manager/RelationshipInstanceManager.h"
 #include "manager/RelationshipTypeManager.h"
+#include "provider/Handle.h"
 #include "subsystem/TeleportSubsystem.h"
 #include "subsystem/particle/ParticleSubsystem.h"
 
@@ -67,6 +69,16 @@ class EntitySystem
     public:
         EntitySystem();
         virtual ~EntitySystem();
+
+        /**
+         * Initializes the providers.
+         */
+        void InitProviders();
+
+        /**
+         * Initializes the subsystems.
+         */
+        void InitSubsystems();
 
         /**
          * Frame update (main thread).

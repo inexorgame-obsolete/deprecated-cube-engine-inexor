@@ -20,15 +20,15 @@ RelationshipInstance::RelationshipInstance(
     type(type)
 {
     // Type checks
-    if (startNode->GetType()->IsA(type->GetStartNodeType())) {
+    if (type->start_node_type != NULL || startNode->type->IsA(type->start_node_type)) {
         this->startNode = startNode;
     } else {
-        logoutf("Start node not of expected type: (%s, %s)", type->GetStartNodeType()->GetName().c_str(), startNode->GetType()->GetName().c_str());
+        logoutf("Start node not of expected type: (%s, %s)", type->start_node_type->name.c_str(), startNode->type->name.c_str());
     }
-    if (endNode->GetType()->IsA(type->GetEndNodeType())) {
+    if (type->end_node_type != NULL || endNode->type->IsA(type->end_node_type)) {
         this->endNode = endNode;
     } else {
-        logoutf("End node not of expected type: (%s, %s)", type->GetEndNodeType()->GetName().c_str(), endNode->GetType()->GetName().c_str());
+        logoutf("End node not of expected type: (%s, %s)", type->end_node_type->name.c_str(), endNode->type->name.c_str());
     }
 }
 
@@ -42,15 +42,15 @@ RelationshipInstance::RelationshipInstance(
     type(type)
 {
     // Type checks
-    if (startNode->GetType()->IsA(type->GetStartNodeType())) {
+    if (type->start_node_type != NULL || startNode->type->IsA(type->start_node_type)) {
         this->startNode = startNode;
     } else {
-        logoutf("Start node not of expected type: (%s, %s)", type->GetStartNodeType()->GetName().c_str(), startNode->GetType()->GetName().c_str());
+        logoutf("Start node not of expected type: (%s, %s)", type->start_node_type->name.c_str(), startNode->type->name.c_str());
     }
-    if (endNode->GetType()->IsA(type->GetEndNodeType())) {
+    if (type->end_node_type != NULL || endNode->type->IsA(type->end_node_type)) {
         this->endNode = endNode;
     } else {
-        logoutf("End node not of expected type: (%s, %s)", type->GetEndNodeType()->GetName().c_str(), endNode->GetType()->GetName().c_str());
+        logoutf("End node not of expected type: (%s, %s)", type->end_node_type->name.c_str(), endNode->type->name.c_str());
     }
 }
 
