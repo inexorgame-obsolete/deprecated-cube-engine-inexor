@@ -1,6 +1,6 @@
 # Inexor
 
-Inexor is a fork of the quake-like fps Cube 2: Sauerbraten. It is backwards compatible to the current Cube 2: Sauerbraten release.
+Inexor is a fork of the quake-like FPS Cube 2: Sauerbraten. It is backwards compatible to the current Cube 2: Sauerbraten release.
 
 ## Game Features
 
@@ -8,8 +8,8 @@ Inexor is a fork of the quake-like fps Cube 2: Sauerbraten. It is backwards comp
 * Sauerbraten Features
 
  * Old-school fast & intense gameplay (read: similar to Doom 2 / Quake 1).
- * 21 multiplayer gameplay modes, most in teamplay variants as well: deathmatch, instagib, efficiency, tactics, capture (domination/battlefield style), CTF (capture the flag), coop edit (!).
- * 7 weapons: double barrelled shogun, rocket launcher, machine gun, rifle, grenade launcher, pistol, fist.
+ * 23 multiplayer gameplay modes, most in teamplay variants as well: ffa (free for all, deathmatch alike), instagib, efficiency, tactics, capture (domination/battlefield style), CTF (capture the flag), protect (one teammate have to carry the flag), hold (hold a randomly spawning flag for a specific time to score), collect (kill enemies and collect their skulls) and coop edit (create maps together!).
+ * 7 weapons: double barrelled shotgun, rocket launcher, machine gun, rifle, grenade launcher, pistol and chainsaw.
  
 ### Engine Features
 
@@ -31,5 +31,6 @@ Inexor is a fork of the quake-like fps Cube 2: Sauerbraten. It is backwards comp
 * [Wiki](https://github.com/inexor-game/code/wiki)
 * [Issue Tracker](https://github.com/inexor-game/code/issues)
 * [Source Repository](https://github.com/inexor-game/code)
+* [Data Repository](https://github.com/inexor-game/data)
 * [Chat (irc.gamesurge.net #inexor)](irc://irc.gamesurge.net/#inexor)
  * [Webchat](https://webchat.gamesurge.net/?channels=inexor)
