@@ -252,6 +252,10 @@ InstanceRefPtr<EntityInstance> ParticleSubsystem::CreateEmitterInstance(TypeRefP
     // Starts the worker thread for the emitter instance (which also calls the connected initializer instances)
     CreateEmitterWorker(emitter_type, emitter_instance);
 
+    // Create an handle for the emitter and connect them
+    InstanceRefPtr<EntityInstance> handle_instance = entity_instance_manager->Create(ENT_HANDLE);
+    relationship_instance_manager->CreateInstance(REL_HANDLES, handle_instance, emitter_instance);
+
     return emitter_instance;
 }
 

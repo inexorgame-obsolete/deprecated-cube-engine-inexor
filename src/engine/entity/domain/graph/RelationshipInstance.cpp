@@ -20,12 +20,12 @@ RelationshipInstance::RelationshipInstance(
     type(type)
 {
     // Type checks
-    if (type->start_node_type != NULL || startNode->type->IsA(type->start_node_type)) {
+    if (type->start_node_type == NULL || startNode->type->IsA(type->start_node_type)) {
         this->startNode = startNode;
     } else {
         logoutf("Start node not of expected type: (%s, %s)", type->start_node_type->name.c_str(), startNode->type->name.c_str());
     }
-    if (type->end_node_type != NULL || endNode->type->IsA(type->end_node_type)) {
+    if (type->end_node_type == NULL || endNode->type->IsA(type->end_node_type)) {
         this->endNode = endNode;
     } else {
         logoutf("End node not of expected type: (%s, %s)", type->end_node_type->name.c_str(), endNode->type->name.c_str());
