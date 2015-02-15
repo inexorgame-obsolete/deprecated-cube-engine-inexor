@@ -47,6 +47,7 @@ EntitySystem::~EntitySystem()
 
 void EntitySystem::InitProviders()
 {
+/*
     // Create entity type providers
     CefRefPtr<EntityTypeProvider> handle_provider = new HandleEntityTypeProvider();
     entity_type_manager->RegisterProvider(handle_provider);
@@ -54,12 +55,13 @@ void EntitySystem::InitProviders()
     // Create relationship type providers
     CefRefPtr<RelationshipTypeProvider> handles_provider = new HandlesRelationshipTypeProvider(entity_type_manager);
     relationship_type_manager->RegisterProvider(handles_provider);
-
+*/
 }
 
 void EntitySystem::InitSubsystems()
 {
     // Create subsystem instances
+    handle_subsystem = new HandleSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
     teleport_subsystem = new TeleportSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
     particle_subsystem = new ParticleSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
 
@@ -68,10 +70,12 @@ void EntitySystem::InitSubsystems()
     //
     // ex: CefRefPtr<TeleportSubsystem> teleport_subsystem = entity_system->GetSubsystem<TeleportSubsystem>();
     //
+    subsystemTypeMap.Set<HandleSubsystem>(handle_subsystem.get());
     subsystemTypeMap.Set<TeleportSubsystem>(teleport_subsystem.get());
     subsystemTypeMap.Set<ParticleSubsystem>(particle_subsystem.get());
 
     // Store all subsystems in a vector:
+    subsystems.push_back(handle_subsystem);
     subsystems.push_back(teleport_subsystem);
     subsystems.push_back(particle_subsystem);
 }

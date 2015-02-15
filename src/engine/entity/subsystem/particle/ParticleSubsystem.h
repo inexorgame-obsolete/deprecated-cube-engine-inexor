@@ -10,6 +10,7 @@
 
 #include "ParticleModel.h"
 #include "../SubsystemBase.h"
+#include "../HandleSubsystem.h"
 #include "worker/ParticleWorker.h"
 #include "worker/EmitterWorker.h"
 #include "worker/ModifierWorker.h"

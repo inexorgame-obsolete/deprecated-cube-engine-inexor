@@ -13,9 +13,17 @@
 namespace inexor {
 namespace entity {
 
-    // Standard attributes
+    // Subsystems
+
+    const std::string SYS_HANDLE("handle_subsystem");
+    const std::string SYS_TELEPORT("teleport_subsystem");
+
+    // Entity attributes
 
     const std::string POS("pos");
+    const std::string TYPE("type");
+    const std::string DIR("direction");
+    const std::string DIM("dimension");
 
     // Relationship type definitions
 
@@ -33,6 +41,10 @@ namespace entity {
     // Entity function definitions
 
     const std::string FUNC_TELEPORTED("teleported");
+
+    // Handle types
+
+    const int HANDLE_POINT = 1;
 
 }
 }
