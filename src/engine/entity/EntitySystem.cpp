@@ -9,9 +9,6 @@
 #include <time.h>
 #include <cube.h>
 
-#include "domain/TimeStep.h"
-#include "provider/TeleportEntityTypeProvider.h"
-
 using namespace inexor::entity::particle;
 
 namespace inexor {
@@ -30,21 +27,8 @@ EntitySystem::EntitySystem()
     entity_instance_manager = new EntityInstanceManager(entity_type_manager);
     relationship_instance_manager = new RelationshipInstanceManager(relationship_type_manager);
 
-    // Create subsystems and store it
-    teleport_subsystem = new TeleportSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
-    particle_subsystem = new ParticleSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
-
-    // Store the subsystems and it's type(!) in the subsystem type map, so that
-    // the concrete subsystem can be retrieved instead of only as SubsystemBase
-    //
-    // ex: CefRefPtr<TeleportSubsystem> teleport_subsystem = entity_system->GetSubsystem<TeleportSubsystem>();
-    //
-    subsystemTypeMap.Set<TeleportSubsystem>(teleport_subsystem.get());
-    subsystemTypeMap.Set<ParticleSubsystem>(particle_subsystem.get());
-
-    // Store all subsystems in a vector:
-    subsystems.push_back(teleport_subsystem);
-    subsystems.push_back(particle_subsystem);
+    InitProviders();
+    InitSubsystems();
 
     // Start worker threads
     // Doesn't work in multithreading! Conflicts with renderer!
@@ -59,6 +43,37 @@ EntitySystem::~EntitySystem()
     Cleanup();
     subsystems.clear();
     subsystemTypeMap.ObjectMap.clear();
+}
+
+void EntitySystem::InitProviders()
+{
+    // Create entity type providers
+    CefRefPtr<EntityTypeProvider> handle_provider = new HandleEntityTypeProvider();
+    entity_type_manager->RegisterProvider(handle_provider);
+
+    // Create relationship type providers
+    CefRefPtr<RelationshipTypeProvider> handles_provider = new HandlesRelationshipTypeProvider(entity_type_manager);
+    relationship_type_manager->RegisterProvider(handles_provider);
+
+}
+
+void EntitySystem::InitSubsystems()
+{
+    // Create subsystem instances
+    teleport_subsystem = new TeleportSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
+    particle_subsystem = new ParticleSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
+
+    // Store the subsystems and it's type(!) in the subsystem type map, so that
+    // the concrete subsystem can be retrieved instead of only as SubsystemBase
+    //
+    // ex: CefRefPtr<TeleportSubsystem> teleport_subsystem = entity_system->GetSubsystem<TeleportSubsystem>();
+    //
+    subsystemTypeMap.Set<TeleportSubsystem>(teleport_subsystem.get());
+    subsystemTypeMap.Set<ParticleSubsystem>(particle_subsystem.get());
+
+    // Store all subsystems in a vector:
+    subsystems.push_back(teleport_subsystem);
+    subsystems.push_back(particle_subsystem);
 }
 
 /**
