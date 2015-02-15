@@ -7,6 +7,8 @@
 
 #include "ParticleSubsystem.h"
 
+extern CefRefPtr<inexor::entity::HandleSubsystem> handle_subsystem;
+
 namespace inexor {
 namespace entity {
 namespace particle {
@@ -253,8 +255,9 @@ InstanceRefPtr<EntityInstance> ParticleSubsystem::CreateEmitterInstance(TypeRefP
     CreateEmitterWorker(emitter_type, emitter_instance);
 
     // Create an handle for the emitter and connect them
-    InstanceRefPtr<EntityInstance> handle_instance = entity_instance_manager->Create(ENT_HANDLE);
-    relationship_instance_manager->CreateInstance(REL_HANDLES, handle_instance, emitter_instance);
+    InstanceRefPtr<EntityInstance> handle = handle_subsystem->CreateHandle(emitter_instance);
+    handle[DIR] = vec(vx, vy, vz);
+    handle[DIM] = vec(4.0f, 4.0f, 4.0f);
 
     return emitter_instance;
 }
