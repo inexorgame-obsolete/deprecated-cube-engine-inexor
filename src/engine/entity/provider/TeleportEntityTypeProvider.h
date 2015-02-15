@@ -14,10 +14,6 @@
 #include "../domain/graph/EntityType.h"
 #include "../domain/graph/RelationshipType.h"
 
-#define ENTTYPE_TELEPORT "teleport"
-#define ENTTYPE_TELEDEST "teledest"
-#define RELTYPE_TELEPORTING "teleporting"
-
 namespace inexor {
 namespace entity {
 

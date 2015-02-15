@@ -67,37 +67,37 @@ class RelationshipType : public TypeBase
          * Returns the entity type of the start node.
          * @return The entity type of the start node, which may be a parent entity type.
          */
-        CefRefPtr<EntityType> GetStartNodeType() { return this->startNodeType; };
+        CefRefPtr<EntityType> GetStartNodeType() { return this->start_node_type; };
 
         /**
          * Sets the entity type of the start node.
          * @param startNodeType The entity type of the start node.
          */
-        void SetStartNodeType(CefRefPtr<EntityType> startNodeType) { this->startNodeType = startNodeType; };
+        void SetStartNodeType(CefRefPtr<EntityType> startNodeType) { this->start_node_type = startNodeType; };
 
         /**
          * Returns the entity type of the end node.
          * @return The entity type of the end node, which may be a parent entity type.
          */
-        CefRefPtr<EntityType> GetEndNodeType() { return this->endNodeType; };
+        CefRefPtr<EntityType> GetEndNodeType() { return this->end_node_type; };
 
         /**
          * Sets the entity type of the end node.
          * @param startNodeType The entity type of the end node.
          */
-        void SetEndNodeType(CefRefPtr<EntityType> startNodeType) { this->endNodeType = endNodeType; };
-
-    private:
+        void SetEndNodeType(CefRefPtr<EntityType> startNodeType) { this->end_node_type = end_node_type; };
 
         /**
          * The entity type of the start node.
          */
-        TypeRefPtr<EntityType> startNodeType;
+        TypeRefPtr<EntityType> start_node_type;
 
         /**
          * The entity type of the end node.
          */
-        TypeRefPtr<EntityType> endNodeType;
+        TypeRefPtr<EntityType> end_node_type;
+
+    private:
 
         // TODO: remove?
         void operator()(EntityInstance* inst);

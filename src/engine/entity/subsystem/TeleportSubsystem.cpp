@@ -53,7 +53,7 @@ void TeleportSubsystem::Reset()
 
 InstanceRefPtr<EntityInstance> TeleportSubsystem::CreateTeleport(double x, double y, double z)
 {
-    TypeRefPtr<EntityType> entity_type = entity_type_manager->Get(ENTTYPE_TELEPORT);
+    TypeRefPtr<EntityType> entity_type = entity_type_manager->Get(ENT_TELEPORT);
     // Let the entity instance manager create the instance
     InstanceRefPtr<EntityInstance> entity_instance = entity_instance_manager->Create(entity_type);
     entity_instance["x"] = x;
@@ -64,7 +64,7 @@ InstanceRefPtr<EntityInstance> TeleportSubsystem::CreateTeleport(double x, doubl
 
 InstanceRefPtr<EntityInstance> TeleportSubsystem::CreateTeledest(double x, double y, double z)
 {
-    TypeRefPtr<EntityType> entity_type = entity_type_manager->Get(ENTTYPE_TELEDEST);
+    TypeRefPtr<EntityType> entity_type = entity_type_manager->Get(ENT_TELEDEST);
     InstanceRefPtr<EntityInstance> entity_instance = entity_instance_manager->Create(entity_type);
     entity_instance["x"] = x;
     entity_instance["y"] = y;
@@ -74,7 +74,7 @@ InstanceRefPtr<EntityInstance> TeleportSubsystem::CreateTeledest(double x, doubl
 
 InstanceRefPtr<RelationshipInstance> TeleportSubsystem::Connect(InstanceRefPtr<EntityInstance> teleport, InstanceRefPtr<EntityInstance> teledest)
 {
-    TypeRefPtr<RelationshipType> relationship_type = relationship_type_manager->Get(RELTYPE_TELEPORTING);
+    TypeRefPtr<RelationshipType> relationship_type = relationship_type_manager->Get(REL_TELEPORTING);
     if (relationship_type.get()) {
         InstanceRefPtr<RelationshipInstance> relationship_instance = relationship_instance_manager->CreateInstance(relationship_type, teleport, teledest);
         return relationship_instance;
@@ -98,19 +98,19 @@ void TeleportSubsystem::DeleteAll()
 
 void TeleportSubsystem::DeleteAllTeleports()
 {
-    TypeRefPtr<EntityType> entity_type = entity_type_manager->Get(ENTTYPE_TELEPORT);
+    TypeRefPtr<EntityType> entity_type = entity_type_manager->Get(ENT_TELEPORT);
     entity_instance_manager->DeleteAllInstances(entity_type);
 }
 
 void TeleportSubsystem::DeleteAllTeledests()
 {
-    TypeRefPtr<EntityType> entity_type = entity_type_manager->Get(ENTTYPE_TELEDEST);
+    TypeRefPtr<EntityType> entity_type = entity_type_manager->Get(ENT_TELEDEST);
     entity_instance_manager->DeleteAllInstances(entity_type);
 }
 
 void TeleportSubsystem::DeleteAllConnections()
 {
-    TypeRefPtr<RelationshipType> relationship_type = relationship_type_manager->Get(RELTYPE_TELEPORTING);
+    TypeRefPtr<RelationshipType> relationship_type = relationship_type_manager->Get(REL_TELEPORTING);
     relationship_instance_manager->DeleteAllInstances(relationship_type);
 }
 

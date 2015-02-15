@@ -70,8 +70,6 @@ class EntityInstance : public InstanceBase
          */
         std::unordered_map<std::string, std::list<InstanceRefPtr<RelationshipInstance> > > incoming;
 
-    protected:
-
         /**
          * The entity type.
          */
