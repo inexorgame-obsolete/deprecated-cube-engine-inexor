@@ -19,7 +19,16 @@ HandleEntityTypeProvider::HandleEntityTypeProvider()
 
 HandleEntityTypeProvider::~HandleEntityTypeProvider()
 {
+}
 
+HandleRendererEntityTypeProvider::HandleRendererEntityTypeProvider()
+    : EntityTypeProvider(ENT_HANDLE_RENDERER)
+{
+    entity_type = new EntityType(ENT_HANDLE_RENDERER, true, true);
+}
+
+HandleRendererEntityTypeProvider::~HandleRendererEntityTypeProvider()
+{
 }
 
 HandlesRelationshipTypeProvider::HandlesRelationshipTypeProvider(CefRefPtr<EntityTypeManager> entity_type_manager)
@@ -36,6 +45,23 @@ HandlesRelationshipTypeProvider::HandlesRelationshipTypeProvider(CefRefPtr<Entit
 }
 
 HandlesRelationshipTypeProvider::~HandlesRelationshipTypeProvider()
+{
+}
+
+RendersHandleRelationshipTypeProvider::RendersHandleRelationshipTypeProvider(CefRefPtr<EntityTypeManager> entity_type_manager)
+    : RelationshipTypeProvider(REL_RENDERS_HANDLE, entity_type_manager)
+{
+    // Define the relationship type
+    relationship_type = new RelationshipType(
+        REL_RENDERS_HANDLE,
+        true,
+        true,
+        entity_type_manager->Get(ENT_HANDLE_RENDERER),
+		entity_type_manager->Get(ENT_HANDLE)
+    );
+}
+
+RendersHandleRelationshipTypeProvider::~RendersHandleRelationshipTypeProvider()
 {
 }
 
