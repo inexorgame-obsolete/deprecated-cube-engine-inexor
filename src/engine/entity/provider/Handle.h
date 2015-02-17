@@ -30,6 +30,19 @@ class HandleEntityTypeProvider : public EntityTypeProvider
 
 };
 
+class HandleRendererEntityTypeProvider : public EntityTypeProvider
+{
+    public:
+        HandleRendererEntityTypeProvider();
+        virtual ~HandleRendererEntityTypeProvider();
+
+    private:
+
+        // Include the default reference counting implementation.
+        IMPLEMENT_REFCOUNTING(HandleRendererEntityTypeProvider);
+
+};
+
 /**
  * Defines a relationship between a handle and any other entity instance with a position.
  */
@@ -42,6 +55,21 @@ class HandlesRelationshipTypeProvider : public RelationshipTypeProvider
     private:
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(HandlesRelationshipTypeProvider);
+
+};
+
+/**
+ * Defines a relationship between a handle renderer and a handle.
+ */
+class RendersHandleRelationshipTypeProvider : public RelationshipTypeProvider
+{
+    public:
+        RendersHandleRelationshipTypeProvider(CefRefPtr<EntityTypeManager> entity_type_manager);
+        virtual ~RendersHandleRelationshipTypeProvider();
+
+    private:
+        // Include the default reference counting implementation.
+        IMPLEMENT_REFCOUNTING(RendersHandleRelationshipTypeProvider);
 
 };
 
