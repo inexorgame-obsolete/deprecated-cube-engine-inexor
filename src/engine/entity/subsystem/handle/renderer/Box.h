@@ -9,13 +9,11 @@
 #define ENTITY_SUBSYSTEM_PARTICLE_RENDERER_CUBE_H_
 
 #include "../../../EntitySystemBase.h"
-#include "../ParticleSubsystem.h"
 #include "../../../EntitySystem.h"
 #include "../../../domain/graph/EntityFunction.h"
 
 namespace inexor {
 namespace entity {
-namespace particle {
 
 class Box : public EntityFunction
 {
@@ -36,7 +34,7 @@ class Box : public EntityFunction
          * @param handle_renderer The handle renderer instance.
          * @param handle The handle instance.
          */
-        void Execute(TimeStep time_step, EntityInstance* handle_renderer, EntityInstance* handle);
+        void Execute(TimeStep time_step, RelationshipInstance* renders_handle_inst);
 
         /**
          * Executed after handles are rendered.
@@ -52,7 +50,6 @@ class Box : public EntityFunction
 
 };
 
-}
 }
 }
 

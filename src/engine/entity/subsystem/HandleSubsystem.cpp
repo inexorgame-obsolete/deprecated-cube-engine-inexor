@@ -6,6 +6,7 @@
  */
 
 #include "HandleSubsystem.h"
+#include "handle/renderer/Box.h"
 
 namespace inexor {
 namespace entity {
@@ -35,7 +36,10 @@ HandleSubsystem::HandleSubsystem(
     relationship_type_manager->RegisterProvider(renders_handle_provider);
 
     FunctionRefPtr handle_renderer_box = new Box();
-    CreateHandleRenderer("box", handle_renderer_box);
+    CreateHandleRenderer(FUNC_BOX_HANDLE_RENDERER, handle_renderer_box);
+
+    handles = relationship_type_manager->Get(REL_HANDLES);
+    renders_handle = relationship_type_manager->Get(REL_RENDERS_HANDLE);
 }
 
 HandleSubsystem::~HandleSubsystem()
@@ -44,7 +48,7 @@ HandleSubsystem::~HandleSubsystem()
 
 InstanceRefPtr<EntityInstance> HandleSubsystem::CreateHandle(InstanceRefPtr<EntityInstance> entity_instance)
 {
-    return CreateHandle(entity_instance, HANDLE_POINT, vec(entity_instance[POS]->vec3Val), vec(0.0f, 0.0f, 0.0f), vec(4.0f, 4.0f, 4.0f));
+    return CreateHandle(entity_instance, FUNC_BOX_HANDLE_RENDERER, vec(entity_instance[POS]->vec3Val), vec(0.0f, 0.0f, 0.0f), vec(4.0f, 4.0f, 4.0f));
 }
 
 InstanceRefPtr<EntityInstance> HandleSubsystem::CreateHandle(InstanceRefPtr<EntityInstance> entity_instance, std::string handle_renderer_name, vec pos, vec dir, vec dim)
@@ -55,18 +59,18 @@ InstanceRefPtr<EntityInstance> HandleSubsystem::CreateHandle(InstanceRefPtr<Enti
 InstanceRefPtr<EntityInstance> HandleSubsystem::CreateHandle(InstanceRefPtr<EntityInstance> entity_instance, InstanceRefPtr<EntityInstance> handle_renderer, vec pos, vec dir, vec dim)
 {
     InstanceRefPtr<EntityInstance> handle = entity_instance_manager->Create(ENT_HANDLE);
-    handle[TYPE] = type;
     handle[POS] = pos;
     handle[DIR] = dir;
     handle[DIM] = dim;
-    relationship_instance_manager->CreateInstance(REL_HANDLES, handle, entity_instance);
-    relationship_instance_manager->CreateInstance(REL_RENDERS_HANDLE, handle_renderer, handle);
+    relationship_instance_manager->CreateInstance(handles, handle, entity_instance);
+    relationship_instance_manager->CreateInstance(renders_handle, handle_renderer, handle);
     return handle;
 }
 
 InstanceRefPtr<EntityInstance> HandleSubsystem::CreateHandleRenderer(std::string name, FunctionRefPtr function)
 {
-	InstanceRefPtr<EntityInstance> handle_renderer = entity_instance_manager->CreateInstance(entity_type_manager->Get(ENT_HANDLE_RENDERER));
+    TypeRefPtr<EntityType> handle_renderer_type = entity_type_manager->Get(ENT_HANDLE_RENDERER);
+	InstanceRefPtr<EntityInstance> handle_renderer = entity_instance_manager->Create(handle_renderer_type);
 	handle_renderer[FUNC_RENDERS_HANDLE_ATTRIBUTE_NAME] = function;
 	renderers[name] = handle_renderer;
 	return handle_renderer;
@@ -78,15 +82,24 @@ void HandleSubsystem::RenderHandles()
     std::unordered_map<std::string, InstanceRefPtr<EntityInstance> >::iterator it = renderers.begin();
     while(it != renderers.end())
     {
-        std::list<InstanceRefPtr<RelationshipInstance> >::iterator it2 = (*it)->second->outgoing[REL_RENDERS_HANDLE].begin();
-        while (it2 != (*it)->second->outgoing[REL_RENDERS_HANDLE].end())
+        InstanceRefPtr<EntityInstance> handle_renderer = it->second;
+        FunctionRefPtr func = handle_renderer[FUNC_RENDERS_HANDLE_ATTRIBUTE_NAME]->functionVal;
+        func->Before(time_step, handle_renderer.get());
+        std::list<InstanceRefPtr<RelationshipInstance> >::iterator it2 = handle_renderer->outgoing[renders_handle->uuid].begin();
+        while (it2 != handle_renderer->outgoing[renders_handle->uuid].end())
         {
-        	(*it2)->endNode[FUNC_RENDERS_HANDLE_ATTRIBUTE_NAME]->Execute(time_step, (*it), (*it2));
+            func->Execute(time_step, (*it2).get());
             ++it2;
         }
+        func->After(time_step, handle_renderer.get());
         ++it;
     }
     // render3dbox((*it).second[POS]->vec3Val, 1.0f, 1.0f, 1.0f, 0);
+}
+
+void HandleSubsystem::Drag(vec camdir)
+{
+    logoutf("drag");
 }
 
 void HandleSubsystem::Update(TimeStep time_step)

@@ -1,8 +1,11 @@
 #include "engine.h"
+#include "engine/entity/subsystem/HandleSubsystem.h"
 
 extern int outline;
 
 bool boxoutline = false;
+
+extern CefRefPtr<inexor::entity::HandleSubsystem> handle_subsystem;
 
 void boxs(int orient, vec o, const vec &s)
 {
@@ -324,6 +327,7 @@ void rendereditcursor()
     if(entmoving)
     {
         entdrag(camdir);
+        handle_subsystem->Drag(camdir);
     }
     else
     {

@@ -36,10 +36,16 @@ class HandleSubsystem : public SubsystemBase
         void RenderHandles();
 
         /**
+         * Dragging a handle.
+         */
+        void Drag(vec camdir);
+
+        /**
          * Creates a handle for the given entity.
          */
         InstanceRefPtr<EntityInstance> CreateHandle(InstanceRefPtr<EntityInstance> entity_instance);
         InstanceRefPtr<EntityInstance> CreateHandle(InstanceRefPtr<EntityInstance> entity_instance, std::string handle_renderer_name, vec pos, vec dir, vec dim);
+        InstanceRefPtr<EntityInstance> CreateHandle(InstanceRefPtr<EntityInstance> entity_instance, InstanceRefPtr<EntityInstance> handle_renderer, vec pos, vec dir, vec dim);
 
         /**
          * Creates a handle renderer.
@@ -58,6 +64,10 @@ class HandleSubsystem : public SubsystemBase
         void DeleteAll();
 
     private:
+
+        TypeRefPtr<RelationshipType> handles;
+        TypeRefPtr<RelationshipType> renders_handle;
+
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(HandleSubsystem);
 };
