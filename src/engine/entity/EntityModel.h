@@ -43,6 +43,8 @@ namespace entity {
     // Entity function definitions
 
     const std::string FUNC_TELEPORTED("teleported");
+    const std::string FUNC_RENDERS_HANDLE("renders_handle");
+    const std::string FUNC_BOX_HANDLE_RENDERER("box_handle_renderer");
 
     // Attribute names
 

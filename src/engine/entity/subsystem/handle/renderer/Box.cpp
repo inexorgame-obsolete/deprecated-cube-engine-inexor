@@ -11,9 +11,8 @@
 
 namespace inexor {
 namespace entity {
-namespace particle {
 
-Box::Box() : EntityFunction(RENDERER_CUBE_FUNCTION)
+Box::Box() : EntityFunction(FUNC_BOX_HANDLE_RENDERER)
 {
 }
 
@@ -35,12 +34,13 @@ void Box::Before(TimeStep time_step, EntityInstance* handle_renderer)
     glBegin(GL_QUADS);
 }
 
-void Box::Execute(TimeStep time_step, EntityInstance* handle_renderer, EntityInstance* handle)
+void Box::Execute(TimeStep time_step, RelationshipInstance* renders_handle_inst)
 {
-    vec pmin((*handle)[POS]->vec3Val);
+    vec pmin(renders_handle_inst->endNode[POS]->vec3Val);
     vec pmax(pmin);
-    pmin.sub((*handle)[DIM]->vec3Val);
-    pmax.add((*handle)[DIM]->vec3Val);
+    vec dim(renders_handle_inst->endNode[DIM]->vec3Val);
+    pmin.sub(dim);
+    pmax.add(dim);
     // FRONT
     glVertex3d(pmin.x, pmin.y, pmin.z);
     glVertex3d(pmax.x, pmin.y, pmin.z);
@@ -83,6 +83,5 @@ void Box::After(TimeStep time_step, EntityInstance* handle_renderer)
     glPopMatrix();
 }
 
-}
 }
 }

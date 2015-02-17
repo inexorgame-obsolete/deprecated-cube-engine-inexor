@@ -257,7 +257,6 @@ InstanceRefPtr<EntityInstance> ParticleSubsystem::CreateEmitterInstance(TypeRefP
     // Create an handle for the emitter and connect them
     InstanceRefPtr<EntityInstance> handle = handle_subsystem->CreateHandle(emitter_instance);
     handle[DIR] = vec(vx, vy, vz);
-    handle[DIM] = vec(4.0f, 4.0f, 4.0f);
 
     return emitter_instance;
 }
