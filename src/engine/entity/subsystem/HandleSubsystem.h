@@ -39,12 +39,17 @@ class HandleSubsystem : public SubsystemBase
          * Creates a handle for the given entity.
          */
         InstanceRefPtr<EntityInstance> CreateHandle(InstanceRefPtr<EntityInstance> entity_instance);
-        InstanceRefPtr<EntityInstance> CreateHandle(InstanceRefPtr<EntityInstance> entity_instance, int type, vec pos, vec dir, vec dim);
+        InstanceRefPtr<EntityInstance> CreateHandle(InstanceRefPtr<EntityInstance> entity_instance, std::string handle_renderer_name, vec pos, vec dir, vec dim);
 
         /**
-         * The modifier workers.
+         * Creates a handle renderer.
          */
-        std::unordered_map<std::string, InstanceRefPtr<EntityInstance> > handles;
+        InstanceRefPtr<EntityInstance> CreateHandleRenderer(std::string name, FunctionRefPtr function);
+
+        /**
+         * The handle renderers.
+         */
+        std::unordered_map<std::string, InstanceRefPtr<EntityInstance> > renderers;
 
         void Update(TimeStep time_step);
         void Cleanup();
