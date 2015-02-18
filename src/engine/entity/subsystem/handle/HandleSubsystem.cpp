@@ -78,21 +78,24 @@ InstanceRefPtr<EntityInstance> HandleSubsystem::CreateHandleRenderer(std::string
 
 void HandleSubsystem::RenderHandles()
 {
-    TimeStep time_step(0, 1000);
-    std::unordered_map<std::string, InstanceRefPtr<EntityInstance> >::iterator it = renderers.begin();
-    while(it != renderers.end())
+    if (editmode)
     {
-        InstanceRefPtr<EntityInstance> handle_renderer = it->second;
-        FunctionRefPtr func = handle_renderer[FUNC_RENDERS_HANDLE_ATTRIBUTE_NAME]->functionVal;
-        func->Before(time_step, handle_renderer.get());
-        std::list<InstanceRefPtr<RelationshipInstance> >::iterator it2 = handle_renderer->outgoing[renders_handle->uuid].begin();
-        while (it2 != handle_renderer->outgoing[renders_handle->uuid].end())
+        TimeStep time_step(0, 1000);
+        std::unordered_map<std::string, InstanceRefPtr<EntityInstance> >::iterator it = renderers.begin();
+        while(it != renderers.end())
         {
-            func->Execute(time_step, (*it2).get());
-            ++it2;
+            InstanceRefPtr<EntityInstance> handle_renderer = it->second;
+            FunctionRefPtr func = handle_renderer[FUNC_RENDERS_HANDLE_ATTRIBUTE_NAME]->functionVal;
+            func->Before(time_step, handle_renderer.get());
+            std::list<InstanceRefPtr<RelationshipInstance> >::iterator it2 = handle_renderer->outgoing[renders_handle->uuid].begin();
+            while (it2 != handle_renderer->outgoing[renders_handle->uuid].end())
+            {
+                func->Execute(time_step, (*it2).get());
+                ++it2;
+            }
+            func->After(time_step, handle_renderer.get());
+            ++it;
         }
-        func->After(time_step, handle_renderer.get());
-        ++it;
     }
     // render3dbox((*it).second[POS]->vec3Val, 1.0f, 1.0f, 1.0f, 0);
 }
