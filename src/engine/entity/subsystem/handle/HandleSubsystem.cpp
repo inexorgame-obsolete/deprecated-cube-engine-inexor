@@ -6,7 +6,7 @@
  */
 
 #include "HandleSubsystem.h"
-#include "handle/renderer/Box.h"
+#include "renderer/Box.h"
 
 namespace inexor {
 namespace entity {
@@ -48,7 +48,7 @@ HandleSubsystem::~HandleSubsystem()
 
 InstanceRefPtr<EntityInstance> HandleSubsystem::CreateHandle(InstanceRefPtr<EntityInstance> entity_instance)
 {
-    return CreateHandle(entity_instance, FUNC_BOX_HANDLE_RENDERER, vec(entity_instance[POS]->vec3Val), vec(0.0f, 0.0f, 0.0f), vec(4.0f, 4.0f, 4.0f));
+    return CreateHandle(entity_instance, FUNC_BOX_HANDLE_RENDERER, vec(entity_instance[POS]->vec3Val), vec(0.0f, 0.0f, 0.0f), vec(2.0f, 2.0f, 2.0f));
 }
 
 InstanceRefPtr<EntityInstance> HandleSubsystem::CreateHandle(InstanceRefPtr<EntityInstance> entity_instance, std::string handle_renderer_name, vec pos, vec dir, vec dim)
@@ -99,7 +99,7 @@ void HandleSubsystem::RenderHandles()
 
 void HandleSubsystem::Drag(vec camdir)
 {
-    logoutf("drag");
+    logoutf("drag (%2.2f, %2.2f, %2.2f)", camdir.x, camdir.y, camdir.z);
 }
 
 void HandleSubsystem::Update(TimeStep time_step)
