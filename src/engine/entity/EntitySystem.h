@@ -22,7 +22,7 @@
 #include "manager/EntityTypeManager.h"
 #include "manager/RelationshipInstanceManager.h"
 #include "manager/RelationshipTypeManager.h"
-#include "subsystem/HandleSubsystem.h"
+#include "subsystem/handle/HandleSubsystem.h"
 #include "subsystem/TeleportSubsystem.h"
 #include "subsystem/particle/ParticleSubsystem.h"
 

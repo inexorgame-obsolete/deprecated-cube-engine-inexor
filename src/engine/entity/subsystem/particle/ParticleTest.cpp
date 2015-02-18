@@ -186,7 +186,7 @@ void ParticleTest::PerformanceTest()
     random_position_initializer_1[DELTA] = vec(256.0f, 256.0f, 128.0f);
     brownian_motion_modifier_1 = particle_subsystem->CreateModifierInstance(brownian_motion_modifier_type);
     velocity_transformation_modifier_1 = particle_subsystem->CreateModifierInstance(velocity_transformation_modifier_type);
-    billboard_renderer_1 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "media/particle/flash01.png", 20.0f);
+    billboard_renderer_1 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "media/particle/flash01.png", 40.0f);
 
     // particle_subsystem->AddInitializerToEmitter(point_emitter_1, random_velocity_initializer_1);
     particle_subsystem->AddInitializerToEmitter(point_emitter_1, random_position_initializer_1);
