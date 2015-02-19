@@ -29,6 +29,26 @@ struct vec
     bool operator==(const vec &o) const { return x == o.x && y == o.y && z == o.z; }
     bool operator!=(const vec &o) const { return x != o.x || y != o.y || z != o.z; }
 
+
+	// add operator
+	vec operator + (vec &o) { return this->add(o); }
+	vec operator + (float o) { return this->add(o); }
+	// subtraction operator
+	vec operator - (vec &o) { return this->sub(o); }
+	vec operator - (float o) { return this->sub(o); }
+	// multiplication operator
+	//vec operator * (vec &o) { return this->mul(o); }
+	vec operator * (float o) { return this->mul(o); }
+	vec operator * (vec &o) { return this->mul(o); }
+	// division operator
+	vec operator / (vec &o) { return this->div(o); }
+	vec operator / (float o) { return this->div(o); }
+
+	// *= ?
+	// /= ?
+	// += ?
+	// -= ?
+
     bool iszero() const { return x==0 && y==0 && z==0; }
     float squaredlen() const { return x*x + y*y + z*z; }
     float dot2(const vec &o) const { return x*o.x + y*o.y; }
