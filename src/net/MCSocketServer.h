@@ -61,12 +61,8 @@ namespace net {
   };
 
   // TODO: This belongs somewhere else
-  asio::ip::tcp v4() {
-    return asio::ip::tcp::v4();
-  }
-  asio::ip::tcp v6() {
-    return asio::ip::tcp::v6();
-  }
+  extern asio::ip::tcp v4();
+  extern asio::ip::tcp v6();
 
   /**
    * MCServer that listens on TCPv4/TCPv6.
