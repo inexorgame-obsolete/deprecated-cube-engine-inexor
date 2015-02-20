@@ -50,8 +50,6 @@ namespace net {
     // Override
     virtual void Send(MC::bytes &dat);
 
-  protected:
-
     /// Low level function to read some bytes.
     ///
     /// Read up to max bytes from the underlying transport
@@ -59,6 +57,9 @@ namespace net {
     ///
     /// This function never blocks.
     /// This function must be implemented by subclasses.
+    ///
+    /// Don't call this from outside. This is only exposed
+    /// for the tests (TODO: Find some other way)
     ///
     /// @param buf The buffer to read into
     /// @param max The maximum number of bytes to read
@@ -73,6 +74,9 @@ namespace net {
     /// This function never blocks.
     /// This function does not buffer data!
     /// This function must be implemented by subclasses.
+    ///
+    /// Don't call this from outside. This is only exposed
+    /// for the tests (TODO: Find some other way)
     ///
     /// @param buf The data to write
     /// @param len The number of bytes to write
