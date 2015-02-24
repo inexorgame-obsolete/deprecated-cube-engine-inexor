@@ -1,6 +1,10 @@
 # Inexor
 
-Inexor is a fork of the quake-like FPS Cube 2: Sauerbraten. It is backwards compatible to the current Cube 2: Sauerbraten release.
+Inexor is a fork of the quake-like FPS Cube 2: Sauerbraten.
+It adds a lot of functionality and tries to stay open for improvements and suggestions.
+The task is to be more flexible and create an environment where developement is easy and fast and creativity can prosper.
+
+You will find more information in our wiki.
 
 ## Game Features
 
