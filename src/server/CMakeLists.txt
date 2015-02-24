@@ -1,101 +1,148 @@
-add_definitions(-DSERVER -DSTANDALONE)
+# Client Project Definitions
 
-if(${BUILD_TARGET_WINDOWS})
-    set(EXTRA_LIBS ${EXTRA_LIBS} opengl32 ws2_32 winmm)
-elseif(${BUILD_TARGET_WINDOWS})
-    set(EXTRA_LIBS ${EXTRA_LIBS} dl -pthread)
-elseif(${BUILD_TARGET_WINDOWS})
-    set(EXTRA_LIBS ${EXTRA_LIBS} socket nsl)
-endif()
+set( SERVER_SOURCES_SHARED
+    shared/crypto.cpp
+    shared/geom.cpp
+    shared/stream.cpp
+    shared/tools.cpp
+    shared/zip.cpp )
 
-set(SERVER_SOURCES_SHARED
-    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/crypto
-    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/geom
-    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/stream
-    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/tools
-    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/zip)
+set( SERVER_SOURCES_ENGINE
+    engine/server.cpp
+    engine/command.cpp
+    engine/worldio.cpp )
 
-set(SERVER_HEADERS_SHARED
-    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/command
-    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/cube
-    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/ents
-    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/geom
-    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/iengine
-    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/igame
-    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/tools)
+set( SERVER_SOURCES_FPSGAME
+    fpsgame/server.cpp
+    fpsgame/entities.cpp )
 
-set(SERVER_SOURCES_ENGINE
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/server
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/command
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/worldio)
+set( SERVER_SOURCES_RPC
+    rpc/inexor_service.pb.cc
+    rpc/InexorServiceImpl.cpp
+    rpc/MCRpcServer.cpp
+    rpc/rpc.cpp )
 
-set(SERVER_HEADERS_ENGINE
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/engine
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/world)
+set( SERVER_SOURCES_NET
+    net/MCHub.cpp
+    net/MCByteBuffer.cpp )
 
-set(SERVER_SOURCES_FPSGAME
-    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/server
-    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/entities)
+# MSVC Filter groups need headers:
+set( SERVER_HEADERS_SHARED
+    shared/command.h
+    shared/cube.h
+    shared/ents.h
+    shared/geom.h
+    shared/iengine.h
+    shared/igame.h
+    shared/tools.h )
 
-set(CLIENT_SOURCES_RPC
-    ${CMAKE_BINARY_DIR}/src/rpc/inexor_service.pb.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/../rpc/InexorServiceImpl
-    ${CMAKE_CURRENT_SOURCE_DIR}/../rpc/MCRpcServer
-    ${CMAKE_CURRENT_SOURCE_DIR}/../rpc/rpc)
+set( SERVER_HEADERS_ENGINE
+    engine/engine.h
+    engine/world.h )
 
+set( SERVER_HEADERS_FPSGAME
+    fpsgame/aiman.h
+    fpsgame/bomb.h
+    fpsgame/capture.h
+    fpsgame/collect.h
+    fpsgame/ctf.h
+    fpsgame/extinfo.h
+    fpsgame/game.h
+    fpsgame/hideandseek.h )
+
+set( SERVER_HEADERS_RPC
+    rpc/inexor_service.pb.h
+    rpc/InexorServiceImpl.h
+    rpc/MCRpcServer.h
+    rpc/rpc.h
+    rpc/rpc_sb_compat.h )
+
+set( SERVER_HEADERS_NET
+    net/MCByteBuffer.h
+    net/MCHub.h
+    net/MCServer.h
+    net/MCSocket.h
+    net/MCSocketServer.h
+    net/MessageConnect.h
+    net/net.h )
+
+# Generate the protobuf c++ header
 set_source_files_properties(
-    ${CMAKE_BINARY_DIR}/src/rpc/inexor_service.pb.cc
+    ${SOURCE_DIR}/rpc/inexor_service.pb.cc
     PROPERTIES GENERATED TRUE)
 
-set(CLIENT_SOURCES_NET
-  ${CMAKE_CURRENT_SOURCE_DIR}/../net/MCHub
-  ${CMAKE_CURRENT_SOURCE_DIR}/../net/MCByteBuffer)
+# Set Binary name
+set(SERVER_BINARY server CACHE INTERNAL "Server binary name.")
 
-set(SERVER_HEADERS_FPSGAME
-    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/aiman
-    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/bomb
-    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/capture
-    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/collect
-    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/ctf
-    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/extinfo
-    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/game
-    ${CMAKE_CURRENT_SOURCE_DIR}/../fpsgame/hideandseek)
+# Set Server Definition
+add_definitions(-DSERVER -DSTANDALONE)
+
+# Prepend source folder to name
+# For VS create filters as well
+create_names(SERVER engine fpsgame shared rpc net)
 
 set(SERVER_SOURCES
     ${SERVER_SOURCES_SHARED}
     ${SERVER_SOURCES_ENGINE}
     ${SERVER_SOURCES_FPSGAME}
-    ${CLIENT_SOURCES_NET}
-    ${CLIENT_SOURCES_RPC})
+    ${SERVER_SOURCES_RPC}
+    ${SERVER_SOURCES_NET})
 
-sb_msvc_build_source_groups(ENGINE engine fpsgame shared)
 
-set(SB_SERVER_BINARY server CACHE INTERNAL "Server binary name.")
-
-if(WIN32)
-    add_executable(${SB_SERVER_BINARY} WIN32 ${SERVER_SOURCES})
-elseif(APPLE)
-    add_executable(${SB_SERVER_BINARY} MACOSX_BUNDLE ${SERVER_SOURCES})
-else()
-    add_executable(${SB_SERVER_BINARY} ${SERVER_SOURCES})
+# Add headers to the VS filter groups on windows
+if(MSVC)
+    set(SERVER_HEADERS
+        ${SERVER_HEADERS_SHARED}
+        ${SERVER_HEADERS_ENGINE}
+        ${SERVER_HEADERS_FPSGAME}
+        ${SERVER_HEADERS_RPC}
+        ${SERVER_HEADERS_NET})
 endif()
 
-target_link_libraries(${SB_SERVER_BINARY}
+# Linux Libraries and Configuration
+if(OS_LINUX})
+    set(ADDITIONAL_LIBRARIES ${ADDITIONAL_LIBRARIES} dl -pthread)
+endif()
+
+# Assemble executable in specific mode
+if(OS_WINDOWS)
+    add_executable(${SERVER_BINARY} WIN32 ${SERVER_SOURCES} ${SERVER_HEADERS})
+elseif(OS_MACOSX)
+    add_executable(${SERVER_BINARY} MACOSX_BUNDLE ${SERVER_SOURCES})
+else()
+    add_executable(${SERVER_BINARY} ${SERVER_SOURCES})
+endif()
+
+target_link_libraries(${SERVER_BINARY}
     ${ENET_LIBRARIES}
     ${OPENGL_LIBRARIES}
     ${ZLIB_LIBRARIES}
-    ${EXTRA_LIBS}
     ${PROTOBUF_LIBRARIES}
+    ${ADDITIONAL_LIBRARIES}
 )
 
-add_dependencies(${SB_SERVER_BINARY} inexor_rpc_protobuf)
-    
+# C++ Libraries depending on the stdlib are NOT binary compatible for different VS versions.
+# Also a debug .lib is incompatible to Inexor in releasemode then.
 if(MSVC)
-    set_property(TARGET ${SB_SERVER_BINARY} PROPERTY FOLDER "executables")
+    target_link_libraries(${SERVER_BINARY} debug ${PROTOBUF_LIBRARIES_MSVC_DEBUG})
+    target_link_libraries(${SERVER_BINARY} optimized ${PROTOBUF_LIBRARIES_MSVC_RELEASE})
+    add_definitions(-DPROTOBUF_USE_DLLS)
 endif()
 
-install(TARGETS
-    ${SB_SERVER_BINARY}
-    RUNTIME DESTINATION ${INSTALL_RUNTIME_DIR}
-    LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}
-    ARCHIVE DESTINATION ${INSTALL_ARCHIVE_DIR})
+# Status Message
+message(STATUS "ENET_LIBRARIES:                 ${ENET_LIBRARIES}")
+message(STATUS "OPENGL_LIBRARIES:               ${OPENGL_LIBRARIES}")
+message(STATUS "ZLIB_LIBRARIES:                 ${ZLIB_LIBRARIES}")
+message(STATUS "PROTOBUF_LIBRARIES:             ${PROTOBUF_LIBRARIES}")
+message(STATUS "ADDITIONAL_LIBRARIES:           ${ADDITIONAL_LIBRARIES}")
+
+# generate protobuf c++ headers/sources first
+add_dependencies(${SERVER_BINARY} inexor_rpc_protobuf)
+
+if(MSVC)
+    set_property(TARGET ${SERVER_BINARY} PROPERTY FOLDER "executables")
+endif()
+
+# Install Binary
+install(TARGETS ${SERVER_BINARY}
+        DESTINATION ${EXE_DIR})

@@ -1,192 +1,320 @@
-cmake_minimum_required(VERSION 2.6)
-cmake_policy(SET CMP0012 NEW)
+cmake_minimum_required(VERSION 2.8.7)
+
+### Different Configuration Types (Debug release)
+
+# Only generate Debug and Release configuration types.
+set(CMAKE_CONFIGURATION_TYPES Debug Release)
+
+# First choice is Debug
+if(NOT DEFINED CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug)
+endif()
+
+# Project Name
 project(Inexor)
 
-option(RELEASE_BUILD "Creates a release package in release mode" 0)
+# Use folders in the resulting project files.
+set_property(GLOBAL PROPERTY OS_FOLDERS ON)
 
-set(SB_VERSION_MAJOR 0)
-set(SB_VERSION_MINOR 0)
-set(SB_VERSION_PATCH 0)
+# Warning if paths arent set well
+get_filename_component(MAINDIR "${CMAKE_SOURCE_DIR}" REALPATH)  # Main inexor folder
+get_filename_component(BINDIR "${CMAKE_BINARY_DIR}" REALPATH)   # Where it generates the projects into
 
-set(SB_VERSION_STATUS "none")
-set(SB_VERSION_RELEASE 0)
+if(${MAINDIR} STREQUAL ${BINDIR})
+    message(FATAL_ERROR "Keep your directories clean, don't generate the project-files in the main directory! ${MAINDIR} ${BINDIR}")
+endif()
 
-set(SB_VERSION_CLEAN "")
+# Set the path to inexor/src/ explicitly to simplify some following definitions
+set(SOURCE_DIR ${MAINDIR}/src)
 
-# Detect git hash
-include(FindGit)
-IF(GIT_FOUND)
-    EXECUTE_PROCESS(
-        COMMAND ${GIT_EXECUTABLE} rev-parse HEAD
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        OUTPUT_VARIABLE SB_VERSION_TAG
-        OUTPUT_STRIP_TRAILING_WHITESPACE)
+### Platform Detection:
 
-    EXECUTE_PROCESS(COMMAND ${GIT_EXECUTABLE} status -s --porcelain -uno
-        OUTPUT_VARIABLE SOURCEDIR_IS_CLEAN
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        OUTPUT_STRIP_TRAILING_WHITESPACE)
-    if("${SOURCEDIR_IS_CLEAN}" STREQUAL "")
-        set(SOURCEDIR_IS_CLEAN 1)
+# Determine the project architecture.
+if(NOT DEFINED PROJECT_ARCH)
+  if(CMAKE_SIZEOF_VOID_P MATCHES 8)
+    set(PROJECT_ARCH "x86_64")
+    set(X64 1)
+  else()
+    set(PROJECT_ARCH "x86")
+  endif()
+
+  if(OS_MACOSX)
+    # PROJECT_ARCH should be specified on Mac OS X.
+    message(WARNING "No PROJECT_ARCH value specified, using ${PROJECT_ARCH}")
+  endif()
+endif()
+
+# Determine the platform.
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
+  set(OS_MACOSX 1)
+  set(OS_POSIX 1)
+  message(STATUS "Platform: OSX ${PROJECT_ARCH}")
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+  set(OS_LINUX 1)
+  set(OS_POSIX 1)
+  message(STATUS "Platform: Linux ${PROJECT_ARCH}")
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+  set(OS_WINDOWS 1)
+  message(STATUS "Platform: Windows ${PROJECT_ARCH}")
+endif()
+
+# Allow C++ programs to use stdint.h macros specified in the C99 standard that
+# aren't in the C++ standard (e.g. UINT8_MAX, INT64_MIN, etc).
+add_definitions(-D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS)
+
+
+### Platform-specific compiler/linker flags.
+
+#
+# Linux configuration. Or Cross Compilation for Windows
+#
+if(OS_LINUX OR (OS_WINDOWS AND NOT MSVC))
+    set(I_LIBTYPE                 SHARED)
+    # -fomit-frame-pointer            = Don't keep the frame pointer for functions that don't need one
+    # -fno-strict-aliasing            = Avoid assumptions regarding non-aliasing of objects of different types
+    # -fsigned-char                   = Let the type char be signed, like signed char.
+    # -pipe                           = Use pipes rather than temporary files for communication between build stages
+    # -Wall                           = Enable all warnings
+    # -Wno-switch                     = Execpt Warnings for missing switch cases
+    # -fdiagnostics-show-option       = Show Warning IDs
+    set(I_COMPILER_FLAGS          "-fomit-frame-pointer -fno-strict-aliasing -fsigned-char -pipe -Wall -Wno-switch -fdiagnostics-show-option ")
+    # -std=c99                        = Use the C99 language standard
+    set(I_C_COMPILER_FLAGS        "-std=c99")
+    # -fno-threadsafe-statics         = Don't generate thread-safe statics
+    # -std=c++11                      = Use the C++11 language standard
+    set(I_CXX_COMPILER_FLAGS      "-fno-threadsafe-statics -std=c++11")
+    # -Og                             = Enable optimizations that do not interfere with debugging
+    # -g                              = Generate debug information
+    # -D_DEBUG                        = Debug build
+    set(I_COMPILER_FLAGS_DEBUG    "-Og -g -D_DEBUG")
+    # -O3                             = Optimize for maximum speed
+    # -fno-rtti                       = Disable run-time type information
+    # -fdata-sections                 = Enable linker optimizations to improve locality of reference for data sections
+    # -ffunction-sections             = Enable linker optimizations to improve locality of reference for function sections
+    # -fno-ident                      = Ignore the #ident directive
+    # -DNDEBUG                        = Not a debug build
+    # -U_FORTIFY_SOURCE               = Undefine _FORTIFY_SOURCE in case it was previously defined
+    # -D_FORTIFY_SOURCE=1             = Add memory and string function protection (security feature)
+    set(I_COMPILER_FLAGS_RELEASE  "-O3 -fno-rtti -fdata-sections -ffunction-sections -fno-ident -DNDEBUG -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=1")
+    # -Wl,-rpath,.                    = Set rpath so that libraries can be placed next to the executable
+    set(I_LINKER_FLAGS            "-Wl,-rpath,.")
+    # -Wl,-O1                         = Enable linker optimizations
+    # -Wl,--as-needed                 = Only link libraries that export symbols used by the binary
+    # -Wl,--gc-sections               = Remove unused code resulting from -fdata-sections and -function-sections
+    set(I_LINKER_FLAGS_RELEASE    "-Wl,-O1 -Wl,--as-needed -Wl,--gc-sections")
+
+    if(X64)
+        # 64-bit architecture.
+        set(I_COMPILER_FLAGS        "${I_COMPILER_FLAGS} -m64 -march=x86-64")
+        set(I_LINKER_FLAGS          "${I_LINKER_FLAGS} -m64")
     else()
-        set(SOURCEDIR_IS_CLEAN 0)
-        set(SB_VERSION_CLEAN "-dirty")
+        # 32-bit architecture.
+        set(I_COMPILER_FLAGS        "${I_COMPILER_FLAGS} -msse2 -mfpmath=sse -mmmx -m32")
+        set(I_LINKER_FLAGS          "${I_LINKER_FLAGS} -m32")
     endif()
-ELSE()
-    SET(SB_VERSION_TAG unkown)
-ENDIF() 
 
-IF(${RELEASE_BUILD})
-    set(SB_VERSION_TYPE 0)
-else()
-    set(SB_VERSION_TYPE 1)
-endif()
+    # Allow the Large File Support (LFS) interface to replace the old interface.
+    add_definitions(-D_FILE_OFFSET_BITS=64)
 
-if(${SB_VERSION_TYPE})
-    set(SB_DEFAULT_BUILD_TYPE  "Debug")
-    set(SB_VERSION_ADDITIONAL_INFO "")
-    set(SB_VERSION "${SB_VERSION_MAJOR}.${SB_VERSION_MINOR}.${SB_VERSION_PATCH}-${SB_VERSION_STATUS}-${SB_VERSION_RELEASE}-${SB_VERSION_TAG}${SB_VERSION_CLEAN}")
-else()
-    set(SB_DEFAULT_BUILD_TYPE  "Release")
-    set(SB_VERSION_ADDITIONAL_INFO " (${SB_VERSION_TAG}${SB_VERSION_CLEAN})")
-    set(SB_VERSION "${SB_VERSION_MAJOR}.${SB_VERSION_MINOR}.${SB_VERSION_PATCH}-${SB_VERSION_STATUS}-${SB_VERSION_RELEASE}${SB_VERSION_CLEAN}")
-endif()
-
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE ${SB_DEFAULT_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: Debug Release." FORCE)
-endif()
-
-get_filename_component(SRCDIR "${CMAKE_SOURCE_DIR}" REALPATH)
-get_filename_component(BINDIR "${CMAKE_BINARY_DIR}" REALPATH) 
-
-if(${SRCDIR} STREQUAL ${BINDIR})
-    message(FATAL_ERROR "Keep your directories clean, don't build in the main directory! ${SRCDIR} ${BINDIR}")
+    # Define where to move the binary by install
+    set(EXE_SUB_DIR "bin/linux/${PROJECT_ARCH}")
 endif()
 
 
+#
+# Mac OS X configuration.
+#
 
-set(CMAKE_MODULE_PATH
-    ${CMAKE_MODULE_PATH}
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/CMakeModules CACHE INTERNAL "")
+if(OS_MACOSX)
+    # See also SET_XCODE_TARGET_PROPERTIES in macros.cmake.
+    set(I_LIBTYPE                 SHARED)
+    # -fomit-frame-pointer            = Don't keep the frame pointer for functions that don't need one
+    # -fno-strict-aliasing            = Avoid assumptions regarding non-aliasing of objects of different types
+    # -funwind-tables                 = Support stack unwinding for backtrace()
+    # -Wall                           = Enable all warnings
+    set(I_COMPILER_FLAGS          "-fomit-frame-pointer -fno-strict-aliasing -funwind-tables -Wall")
+    # -std=c99                        = Use the C99 language standard
+    set(I_C_COMPILER_FLAGS        "-std=c99")
+    # -fno-threadsafe-statics         = Don't generate thread-safe statics
+    # -fobjc-call-cxx-cdtors          = Call the constructor/destructor of C++ instance variables in ObjC objects
+    # -std=c++11                    = Use the C++11 language standard including
+    # -Wno-narrowing                  = Don't warn about type narrowing
+    # -Wsign-compare                  = Warn about mixed signed/unsigned type comparisons
+    set(I_CXX_COMPILER_FLAGS      "-fno-threadsafe-statics -fobjc-call-cxx-cdtors -Wno-narrowing -Wsign-compare -std=c++11")
+    # -O0                             = Disable optimizations
+    # -g                              = Generate debug information
+    # -D_DEBUG                        = Debug build
+    set(I_COMPILER_FLAGS_DEBUG    "-O0 -g -D_DEBUG")
+    # -O3                             = Optimize for maximum speed plus a few extras
+    # -fno-rtti                       = Disable real-time type information
+    set(I_COMPILER_FLAGS_RELEASE  "-O3 -fno-rtti ")
+    # -Wl,-search_paths_first         = Search for static or shared library versions in the same pass
+    # -Wl,-ObjC                       = Support creation of creation of ObjC static libraries
+    # -Wl,-pie                        = Generate position-independent code suitable for executables only
+    set(I_LINKER_FLAGS            "-Wl,-search_paths_first -Wl,-ObjC -Wl,-pie")
+    # -Wl,-dead_strip                 = Strip dead code
+    set(I_LINKER_FLAGS_RELEASE    "-Wl,-dead_strip")
 
-include(PlatformDetection)
+    # Standard libraries.
+    set(I_STANDARD_LIBS "-framework Cocoa" "-framework AppKit")
 
-message(STATUS "Compiling for ${BUILD_TARGET_OS} ${BUILD_TARGET_ARCH} (${CMAKE_SIZEOF_VOID_P})")
+    # Find the newest available base SDK.
+    execute_process(COMMAND xcode-select --print-path OUTPUT_VARIABLE XCODE_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
+    foreach(OS_VERSION 10.10 10.9 10.8 10.7)
+        set(SDK "${XCODE_PATH}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${OS_VERSION}.sdk")
+        if(NOT "${CMAKE_OSX_SYSROOT}" AND EXISTS "${SDK}" AND IS_DIRECTORY "${SDK}")
+            set(CMAKE_OSX_SYSROOT ${SDK})
+        endif()
+    endforeach()
 
-# Compiler flags
+    # Target SDK.
+    set(I_TARGET_SDK               "10.6")
+    set(I_COMPILER_FLAGS           "${I_COMPILER_FLAGS} -mmacosx-version-min=${I_TARGET_SDK}")
+    set(CMAKE_OSX_DEPLOYMENT_TARGET  ${I_TARGET_SDK})
 
-set(BUILD_FLAGS "")
-
-if(BUILD_TARGET_WINDOWS)
-    set(BUILD_FLAGS "${BUILD_FLAGS} -DWIN32 -DWINDOWS")
-    if(BUILD_TARGET_X64)
-        set(BUILD_FLAGS "${BUILD_FLAGS} -DWIN64")
-    endif()
-endif()
-
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-if(MSVC)
-    set(BUILD_C_FLAGS " -W3 -fsigned-char")
-    set(BUILD_CXX_FLAGS "/fp:fast /fp:except- /MT /EHa /GS- ")
-    set(BUILD_DEBUG_FLAGS "-D_DEBUG -DBUILD_DEBUG /Z7 /Od /Gy-") #deaktivate optimizations, create dbg-info
-    set(BUILD_RELEASE_FLAGS "-DNDEBUG -DBUILD_NO_DEBUG /O2 /GF /Oy /Ob /Oi /Ot /GL /Gy /Gw")
-
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /DYNAMICBASE /NXCOMPAT /SAFESEH:NO")
-    if("${CMAKE_BUILD_TYPE}" MATCHES "Release")
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /OPT:REF,ICF /LTCG /GF") #optimizations
-    endif()
-else()
-    # TODO: There are so many unused-parameter warnings in
-    # code that it is counterproductive to show them. Get
-    # rid of those warnings!
-    set(BUILD_C_FLAGS "-fomit-frame-pointer -Wall -Wextra -fsigned-char")
-    set(BUILD_CXX_FLAGS "-std=gnu++11 -Wall -Wextra -Wno-unused-parameter")
-    set(BUILD_DEBUG_FLAGS   "${BUILD_FLAGS} -O0 -g -D_DEBUG -DBUILD_DEBUG")
-    set(BUILD_RELEASE_FLAGS "${BUILD_FLAGS} -O3 -DNDEBUG -DBUILD_NO_DEBUG")
-endif()
-
-set(BUILD_C_DEBUG_FLAGS "${BUILD_C_FLAGS} ${BUILD_DEBUG_FLAGS}")
-set(BUILD_CXX_DEBUG_FLAGS "${BUILD_CXX_FLAGS} ${BUILD_DEBUG_FLAGS}")
-
-set(BUILD_C_RELEASE_FLAGS "${BUILD_C_FLAGS} ${BUILD_RELEASE_FLAGS}")
-set(BUILD_CXX_RELEASE_FLAGS "${BUILD_CXX_FLAGS} ${BUILD_RELEASE_FLAGS}")
-
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${BUILD_C_DEBUG_FLAGS}")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${BUILD_CXX_DEBUG_FLAGS}")
-message(STATUS "Set debug mode flags (${BUILD_DEBUG_FLAGS}) (Current mode: ${CMAKE_BUILD_TYPE}, compiler: ${CMAKE_CXX_COMPILER_ID})")
-
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${BUILD_C_RELEASE_FLAGS}")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${BUILD_CXX_RELEASE_FLAGS}")
-message(STATUS "Set release mode flags (${BUILD_RELEASE_FLAGS}) (Current mode: ${CMAKE_BUILD_TYPE}, compiler: ${CMAKE_CXX_COMPILER_ID})")
-
-# Temp file directories
-set(BUILD_TEMP_DIR         ${CMAKE_BINARY_DIR}/tmp)
-set(BUILD_TEMP_INCLUDE_DIR ${BUILD_TEMP_DIR}/include)
-file(MAKE_DIRECTORY        ${BUILD_TEMP_DIR})
-file(MAKE_DIRECTORY        ${BUILD_TEMP_INCLUDE_DIR})
-
-# Detect date, TODO: use time command if available
-set(DATE_FILE ${BUILD_TEMP_DIR}/date CACHE INTERNAL "Temp date file path.")
-
-file(DOWNLOAD http://cgi.theintercooler.com/time.py ${DATE_FILE})
-file(READ ${DATE_FILE} DATE)
-
-message(STATUS "Build version: ${SB_VERSION} ${DATE} (${CMAKE_BUILD_TYPE})${SB_VERSION_ADDITIONAL_INFO}")
-
-# Install paths
-
-if(NOT BUILD_INSTALL_DIR)
-    if(${RELEASE_BUILD})
-        set(BUILD_INSTALL_DIR ${PROJECT_SOURCE_DIR}/release)
+    # Target architecture.
+    if(X64)
+        set(CMAKE_OSX_ARCHITECTURES "x86_64")
     else()
-        set(BUILD_INSTALL_DIR ${PROJECT_SOURCE_DIR})
+        set(CMAKE_OSX_ARCHITECTURES "i386")
+    endif()
+
+    # Define where to move the binary by install
+    set(EXE_SUB_DIR "bin/mac/${CMAKE_OSX_ARCHITECTURES}")
+
+    # Submodule providing osx-specific build stuff (e.g. libs)
+    set(PLATFORM_FILE "${SOURCE_DIR}/platform_osx")
+endif()
+
+
+#
+# Windows configuration.
+#
+
+if(OS_WINDOWS)
+
+    ## Cross compilation flags already set
+    if(MSVC)
+        set(I_LIBTYPE                 STATIC)
+        # /MP                                   = Multiprocess compilation
+        # /Gy                                   = Enable function-level linking
+        # /GR-                                  = Disable run-time type information
+        # /Zi                                   = Enable program database
+        # /EHsc                                 = assume extern C stuff never throws exceptions
+        # /W2                                   = Warning level 2
+        # /wd"4305"                             = Ignore "truncation from 'double' to 'float'" warning
+        set(I_COMPILER_FLAGS          "-MP -Gy -GR- -Zi -EHsc -W2 -wd\"4305\"")
+        # /MTd                                  = Multithreaded debug runtime
+        # /Od                                   = Disable optimizations
+        # /RTC1                                 = Enable basic run-time checks
+        # -D_DEBUG                              = Debug build
+        set(I_COMPILER_FLAGS_DEBUG    "-MTd -RTC1 -Od -D_DEBUG")
+        # /MT                                   = Multithreaded release runtime
+        # /O2                                   = Optimize for maximum speed
+        # /Ob2                                  = Inline any suitable function
+        # /GF                                   = Enable string pooling
+        # /D NDEBUG /D _NDEBUG                  = Not a debug build
+        set(I_COMPILER_FLAGS_RELEASE  "-MT -O2 -Ob2 -GF -DNDEBUG -D_NDEBUG")
+        # /DEBUG                                = Generate debug information
+        set(I_LINKER_FLAGS_DEBUG      "-DEBUG")
+        # /MANIFEST:NO                          = No default manifest
+        set(I_EXE_LINKER_FLAGS        "-MANIFEST:NO")
+    endif()
+
+    # Standard definitions
+    # -DWIN32 -D_WIN32 -D_WINDOWS           = Windows platform
+    # -DNOMINMAX                            = Use the standard's templated min/max
+    add_definitions(-DWIN32 -D_WIN32 -D_WINDOWS -DWINDOWS -DNOMINMAX)
+    if(X64)
+        add_definitions(-DWIN64)
+    endif()
+
+    # Configure use of the sandbox.
+    set(USE_SANDBOX OFF)
+    if(MSVC_VERSION EQUAL 1800)
+        # The I_sandbox.lib static library is currently built with VS2013. It will
+        # not link successfully with other VS versions.
+        set(USE_SANDBOX ON)
+        option(USE_SANDBOX "Enable or disable use of the sandbox. (VS 2013 or later required)" ON)
+    elseif(MSVC)
+        message(WARNING "Use Visual Studio 2013 in order to compile Inexor. (Otherwise you would need to recompile the dependencies yourself)")
+    endif()
+
+    if(USE_SANDBOX)
+        # Definition required by CEF_sandbox.lib.
+        add_definitions(-DPSAPI_VERSION=1)
+        # Definition used by apps to test if the sandbox is enabled.
+        add_definitions(-DCEF_USE_SANDBOX)
+    endif()
+
+    # Rename project_arch from x86_64 to 64 and x86 to 32 on windows:
+    if(X64)
+        set(PROJECT_ARCH "64")
+    else()
+        set(PROJECT_ARCH "32")
+    endif()
+
+    # Define where to move the binary by install
+    set(EXE_SUB_DIR "bin/windows/${PROJECT_ARCH}")
+
+    # Submodule providing windows-specific build stuff (e.g. libs)
+    set(PLATFORM_FILE "${SOURCE_DIR}/platform_windows")
+endif()
+
+# Ability to use your environment own cflags/ldflags.. as well
+if(NOT MSVC)
+    option( USE_ENVFLAGS "Enable or Disable Use of environment own Compiler/Linker-Flags" ON)
+
+    if(USE_ENVFLAGS)
+        set(I_C_COMPILER_FLAGS      "${I_C_COMPILER_FLAGS} $ENV{CFLAGS}")
+        set(I_CXX_COMPILER_FLAGS    "${I_CXX_COMPILER_FLAGS} $ENV{CXXFLAGS}")
+        set(I_LINKER_FLAGS          "${I_LINKER_FLAGS} $ENV{LDLAGS}")
     endif()
 endif()
 
-if(NOT BUILD_INSTALL_BIN_DIR)
-    set(BUILD_INSTALL_BIN_DIR "${BUILD_INSTALL_DIR}/bin_${BUILD_PLATFORM_BIN_DIR}")
+# Merge compiler/linker flags.
+set(CMAKE_C_FLAGS                     "${I_COMPILER_FLAGS} ${I_C_COMPILER_FLAGS}")
+set(CMAKE_CXX_FLAGS                   "${I_COMPILER_FLAGS} ${I_CXX_COMPILER_FLAGS}")
+set(CMAKE_CXX_FLAGS_DEBUG             "${I_COMPILER_FLAGS_DEBUG} ${I_CXX_COMPILER_FLAGS_DEBUG}")
+set(CMAKE_CXX_FLAGS_RELEASE           "${I_COMPILER_FLAGS_RELEASE} ${I_CXX_COMPILER_FLAGS_RELEASE}")
+set(CMAKE_EXE_LINKER_FLAGS            "${I_LINKER_FLAGS} ${I_EXE_LINKER_FLAGS}")
+set(CMAKE_EXE_LINKER_FLAGS_DEBUG      "${I_LINKER_FLAGS_DEBUG} ${I_EXE_LINKER_FLAGS_DEBUG}")
+set(CMAKE_EXE_LINKER_FLAGS_RELEASE    "${I_LINKER_FLAGS_RELEASE} ${I_EXE_LINKER_FLAGS_RELEASE}")
 
-    set(CMAKE_CURRENT_BINARY_DIR ${BUILD_INSTALL_BIN_DIR})
-    set(INSTALL_HEADER_DIR      ${BUILD_TEMP_INCLUDE_DIR})
-    set(INSTALL_LIBRARY_DIR     ${BUILD_INSTALL_BIN_DIR} CACHE INTERNAL "")
-    set(INSTALL_ARCHIVE_DIR     ${BUILD_INSTALL_BIN_DIR} CACHE INTERNAL "")
-    set(INSTALL_RUNTIME_DIR     ${BUILD_INSTALL_BIN_DIR} CACHE INTERNAL "")
+message(STATUS "Current mode:                   ${CMAKE_BUILD_TYPE}")
+message(STATUS "Compiler:                       ${CMAKE_CXX_COMPILER_ID}")
 
-    set(INSTALL_DOC_DIR         ${BUILD_INSTALL_DIR}/docs    CACHE INTERNAL "")
+message(STATUS "Compiler definitions:           ${DEFINITIONS}")
 
-    set(INSTALL_RESOURCES_DIR   ${BUILD_INSTALL_DIR}/resources  CACHE INTERNAL "")
-    set(INSTALL_LUA_DIR         ${INSTALL_RESOURCES_DIR}/lua  CACHE INTERNAL "")
+message(STATUS "C_FLAGS:                        ${CMAKE_C_FLAGS}")
+message(STATUS "CXX_FLAGS:                      ${CMAKE_CXX_FLAGS}")
+message(STATUS "CXX_FLAGS_DEBUG:                ${CMAKE_CXX_FLAGS_DEBUG}")
+message(STATUS "CXX_FLAGS_RELEASE:              ${CMAKE_CXX_FLAGS_RELEASE}")
+message(STATUS "EXE_LINKER_FLAGS:               ${CMAKE_EXE_LINKER_FLAGS}")
+message(STATUS "EXE_LINKER_FLAGS_DEBUG:         ${CMAKE_EXE_LINKER_FLAGS_DEBUG}")
+message(STATUS "EXE_LINKER_FLAGS_RELEASE:       ${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
 
-    message(STATUS "Installing to ${BUILD_INSTALL_DIR} (bin: ${CMAKE_CURRENT_BINARY_DIR}, resources: ${INSTALL_RESOURCES_DIR}, header: ${INSTALL_HEADER_DIR})")
-endif()
+### Install paths
 
-set(PLATFORM_FILE "${CMAKE_SOURCE_DIR}/src/platform_${BUILD_PLATFORM_SRC}")
+# Set output path for the compiled executable
+set(EXE_DIR "${PROJECT_SOURCE_DIR}/${EXE_SUB_DIR}")
+
+set(INSTALL_RESOURCES_DIR   ${BUILD_INSTALL_DIR}/resources  CACHE INTERNAL "")
+
+message(STATUS "Generating Project-Files to ${CMAKE_CURRENT_BINARY_DIR}")
+message(STATUS " - Resulting Executable goes to ${EXE_DIR}")
+
+
 if(EXISTS ${PLATFORM_FILE})
     message(STATUS "Found platform definition. (${PLATFORM_FILE})")
     add_subdirectory(${PLATFORM_FILE})
     link_directories(${PLATFORM_LINK_DIRECTORIES})
     include_directories(${PLATFORM_INCLUDE_DIRECTORIES})
-else()
-    message(STATUS "Could not find platform definition. (${PLATFORM_FILE})")
+elseif(NOT OS_LINUX)
+    message(WARNING "Could not find platform definition. (${PLATFORM_FILE})")
 endif()
 
-if(${RELEASE_BUILD})
-#     install(
-#         DIRECTORY
-#             packages
-#             data
-#         DESTINATION ${BUILD_INSTALL_DIR}
-#         PATTERN ".*" EXCLUDE)
-    
-    install(
-        FILES
-            readme.md
-            inexor.bat
-            inexor_unix
-            server.bat
-            server-init.cfg
-        DESTINATION ${BUILD_INSTALL_DIR})
-endif()
-
+# Go for the next folder:
 add_subdirectory(src)
+
+####
