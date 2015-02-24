@@ -5,8 +5,10 @@ VARFP(waterrefract, 0, 1, 1, { cleanreflections(); preloadwatershaders(); });
 VARFP(waterenvmap, 0, 1, 1, { cleanreflections(); preloadwatershaders(); });
 VARFP(waterfallrefract, 0, 0, 1, { cleanreflections(); preloadwatershaders(); });
 
-/* vertex water */
+// water rendering options
+// water vertex subdivision level
 VARP(watersubdiv, 0, 2, 3);
+// water level of detail
 VARP(waterlod, 0, 1, 3);
 
 static int wx1, wy1, wx2, wy2, wsize;

@@ -7,10 +7,13 @@
 
 namespace aiman
 {
+	// refresh 
+	// only used in checkai() method
     bool dorefresh = false;
 
 	// limit amount of computer controlled players on your server
     VARN(serverbotlimit, botlimit, 0, 8, MAXBOTS);
+
     // use (prefere) bots to balance teams
 	// not accepted my most modded servers
 	VARN(serverbotbalance, botbalance, 0, 1, 1);
@@ -22,9 +25,16 @@ namespace aiman
         loopv(clients)
         {
             clientinfo *ci = clients[i];
-            if(ci->state.state==CS_SPECTATOR || !ci->team[0]) continue;
+            if(ci->state.state==CS_SPECTATOR || !ci->team[0]) continue; // skip spectators
             teamscore *t = NULL;
-            loopvj(teams) if(!strcmp(teams[j].team, ci->team)) { t = &teams[j]; break; }
+            loopvj(teams) 
+			{
+				if(!strcmp(teams[j].team, ci->team))
+				{
+					t = &teams[j]; 
+					break;
+				}
+			}
             if(t) t->score++;
             else teams.add(teamscore(ci->team, 1));
         }
@@ -69,7 +79,7 @@ namespace aiman
         }
     }
 
-	// return the name of the team with fewer players
+	// return the name of the team with fewest players
 	// used to balance with new connected players
     const char *chooseteam()
     {
@@ -78,11 +88,13 @@ namespace aiman
         return teams.length() ? teams.last().team : "";
     }
 
+	// 
     static inline bool validaiclient(clientinfo *ci)
     {
         return ci->clientnum >= 0 && ci->state.aitype == AI_NONE && (ci->state.state!=CS_SPECTATOR || ci->local || (ci->privilege && !ci->warned));
     }
 
+	// 
 	clientinfo *findaiclient(clientinfo *exclude = NULL)
 	{
         clientinfo *least = NULL;
@@ -95,6 +107,7 @@ namespace aiman
         return least;
 	}
 
+	// initialise and add a computer controlled player to the current game
 	bool addai(int skill, int limit)
 	{
 		int numai = 0, cn = -1, maxai = limit >= 0 ? min(limit, MAXBOTS) : MAXBOTS;
@@ -146,6 +159,7 @@ namespace aiman
 		return true;
 	}
 
+	// delete AI from game
 	void deleteai(clientinfo *ci)
 	{
         int cn = ci->clientnum - MAXCLIENTS;
@@ -159,6 +173,7 @@ namespace aiman
 		dorefresh = true;
 	}
 
+	// overloaded function which will remove ALL AI from the game
 	bool deleteai()
 	{
         loopvrev(bots) if(bots[i] && bots[i]->ownernum >= 0)
@@ -169,6 +184,8 @@ namespace aiman
 		return false;
 	}
 
+	// remove a bot and recreate him afterwards
+	// 
 	void reinitai(clientinfo *ci)
 	{
 		if(ci->ownernum < 0) deleteai(ci);
@@ -234,6 +251,8 @@ namespace aiman
         loopvrev(bots) if(bots[i]) deleteai(bots[i]);
 	}
 
+	// check if we do even need AI in this game
+	// if the server is empty delete all bots
 	void checkai()
 	{
         if(!dorefresh) return;
@@ -246,18 +265,21 @@ namespace aiman
 		else clearai();
 	}
 
+	// master requires to add a bot
 	void reqadd(clientinfo *ci, int skill)
 	{
         if(!ci->local && !ci->privilege) return;
         if(!addai(skill, !ci->local && ci->privilege < PRIV_ADMIN ? botlimit : -1)) sendf(ci->clientnum, 1, "ris", N_SERVMSG, "failed to create or assign bot");
 	}
 
+	// master requires to delete a bot
 	void reqdel(clientinfo *ci)
 	{
         if(!ci->local && !ci->privilege) return;
         if(!deleteai()) sendf(ci->clientnum, 1, "ris", N_SERVMSG, "failed to remove any bots");
 	}
 
+	// set the bot limit and send a message to all clients
     void setbotlimit(clientinfo *ci, int limit)
     {
         if(ci && !ci->local && ci->privilege < PRIV_ADMIN) return;
@@ -267,6 +289,7 @@ namespace aiman
         sendservmsg(msg);
     }
 
+	// enable or disable bot balancing and send a message to all clients
     void setbotbalance(clientinfo *ci, bool balance)
     {
         if(ci && !ci->local && !ci->privilege) return;
@@ -276,7 +299,8 @@ namespace aiman
         sendservmsg(msg);
     }
 
-
+	// notify bots that map has been changed
+	// force server bot manager to refresh bot balance
     void changemap()
     {
         dorefresh = true;
