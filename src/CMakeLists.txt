@@ -80,61 +80,79 @@ if(OS_MACOSX)
     set(SDL2_INCLUDE_DIRS "${SDL2_INCLUDE_DIR};${SDL2_IMAGE_INCLUDE_DIR};${SDL2_MIXER_INCLUDE_DIR}")
 endif()
 
-
-# POSIX Libraries
-if(OS_MACOSX OR OS_LINUX)
-
-    # ASIO package detection     TODO: This should go inside net/
-    message(STATUS "Detecting ASIO...")
-    find_path(ASIO_INCLUDE_DIRS asio.hpp)
-
-    # Clang + ASIO require boost
-    if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-      message(STATUS "Using ASIO in standalone mode")
-      add_definitions(-DASIO_STANDALONE)
-    else()
-      message(STATUS "Using ASIO with boost. Detecting Boost...")
-    endif()
-
-    # TODO: This should go inside rpc/
-    message(STATUS "Detecting Protobuf...")
-    find_library(PROTOBUF_LIBRARIES protobuf)
-    find_PATH(PROTOBUF_INCLUDE_DIRS google/protobuf/service.h)
-endif()
-
-
 # Windows Libraries for Server AND Client
 if(OS_WINDOWS)
     if(NOT MSVC)
         set(ADDITIONAL_LIBRARIES ${ADDITIONAL_LIBRARIES} -static-libgcc -static-libstdc++)
     endif()
     set(ADDITIONAL_LIBRARIES ${ADDITIONAL_LIBRARIES} kernel32 ws2_32 winmm)
-
-    add_definitions(-DASIO_STANDALONE)
 endif()
 
+# USAGE: declare_module(<NAME> [PATH])
+#
+# Automatically search for headers and source files inside
+# a module, export these and add a group for visual studio
+# that contains all the sources.
+#
+# ARGUMENTS:
+#   NAME – The name of the module
+#   PATH – The relative path all the sources are inside
+#
+# SIDE EFFECTS:
+#   * ${NAME}_MODULE_HEADERS – such a variable is created;
+#     it contains a list of all headers in this module
+#   * ${NAME}_MODULE_SOURCES – such a variable is created;
+#     it contains a list of all source files in this module
+#   * A VS source group is added with the name ${NAME}; it
+#     contains all the headers and source files in this module
+function(declare_module NAME PATH)
+  get_filename_component(abs
+    "${CMAKE_CURRENT_SOURCE_DIR}/${PATH}" REALPATH)
+  string(TOUPPER "${NAME}" mod)
+  message(STATUS "DECLARE MODULE(${NAME}, ${PATH}) -> ${mod} inside ${abs}")
 
-# Generate protobuf-Headers from its general definition file (.proto -> .h and .c)
-if (NOT DEFINED PROTOC_EXE)
-  set(PROTOC_EXE "protoc")
-endif()
+  # Search headers
+  file(GLOB_RECURSE headers ${abs}/**.h)
+  set(${mod}_MODULE_HEADERS ${headers}
+    CACHE INTERNAL "Headers of the ${NAME} module")
 
-execute_process(COMMAND ${PROTOC_EXE} -I=${SOURCE_DIR}/rpc/ --cpp_out=${SOURCE_DIR}/rpc/ ${SOURCE_DIR}/rpc/inexor_service.proto
-               WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  # Search sources
+  file(GLOB_RECURSE sources ${abs}/**.cpp)
+  set(${mod}_MODULE_SOURCES ${sources}
+    CACHE INTERNAL "Sources of the ${NAME} module")
 
-add_custom_command(
-  OUTPUT rpc/inexor_service.pb.h rpc/inexor_service.pb.cc
-  COMMAND ${PROTOC_EXE} --proto_path=${SOURCE_DIR}/rpc/ --cpp_out=${SOURCE_DIR}/rpc/ ${SOURCE_DIR}/rpc/inexor_service.proto
-  DEPENDS rpc/inexor_service.proto
-)
+  # VS source group
+  source_group(${NAME} FILES $headers ${sources})
+endfunction()
 
-add_custom_target(inexor_rpc_protobuf DEPENDS
-    ${SOURCE_DIR}/rpc/inexor_service.pb.h
-    ${SOURCE_DIR}/rpc/inexor_service.pb.cc)
+# USAGE: prepend(<VARIABLE> <PREP> [ARGS]...)
+#
+# Prepend ${PREP} to each element of ${ARGS} and save the
+# result in VARIABLE.
+#
+# ARGUMENTS:
+#   VARIABLE – The variable to save the sources in
+#   PREP     – The string to prepend
+#   ARGS...  – The strings to prepend to
+# SIDE EFFECTS:
+#   * Creates a variable named VARIABLE and writes our
+#     result there.
+#
+function(prepend variable prep)
+  set(res "")
+  foreach(s ${ARGN})
+    set(res ${res} "${prep}/${s}")
+  endforeach()
+  set(${variable} ${res} PARENT_SCOPE)
+endfunction()
 
-# MuParser Lib for parsing mathematical expressions
-set(MUPARSER_INCLUDE_DIRS "${SOURCE_DIR}/libraries/muparser/include")
-
+add_subdirectory(libraries) # muparser
+declare_module(shared ./shared)
+declare_module(engine ./engine)
+declare_module(fpsgame ./fpsgame)
+declare_module(util ./util)
+add_subdirectory(rpc) # rpc module, protobuf lib
+add_subdirectory(net) # net module, asio lib
 
 include_directories(
     ${ENET_INCLUDE_DIRS}
@@ -142,55 +160,36 @@ include_directories(
     ${MUPARSER_INCLUDE_DIRS}
     ${ASIO_INCLUDE_DIRS}
     ${PROTOBUF_INCLUDE_DIRS}
+    ${RPC_INCLUDE_DIRS}
+    ${FREETYPE_INCLUDE_DIRS}
     ${SOURCE_DIR}
     ${SOURCE_DIR}/shared
     ${SOURCE_DIR}/engine
-    ${SOURCE_DIR}/fpsgame
-)
+    ${SOURCE_DIR}/fpsgame)
 
+# This should contain all sources in the project,
+# TODO: Append every time we glob some headers
+set(ALL_HEADERS ${MUPARSER_HEADERS} ${SHARED_MODULE_HEADERS}
+  ${ENGINE_MODULE_HEADERS} ${FPSGAME_MODULE_HEADERS}
+  ${UTIL_MODULE_HEADERS} ${RPC_MODULE_HEADERS}
+  ${NET_MODULE_HEADERS} CACHE INTERNAL "")
 
-# Set names of Source Files (prepend correct path)
-function(create_names TARGET)
-    message(STATUS "Appending names")
-    string(TOUPPER "${TARGET}" TARGET)
-    string(TOUPPER "${ARGN}" GROUPS)
+# This should contain all sources that are used by all
+# targets. This only excludes fpsgame/ and engine/
+# TODO: Append every time we glob for sources
+set(COMMON_SOURCES ${MUPARSER_SOURCES} ${SHARED_MODULE_SOURCES}
+  ${UTIL_MODULE_SOURCES} ${NET_MODULE_SOURCES}
+  ${RPC_MODULE_SOURCES} CACHE INTERNAL "")
 
-    foreach(GROUP ${GROUPS})
+# This contains the libraries that are used by all targets.
+# Excludes OpenGL and SDL, because those are only used by
+# the client.
+set(COMMON_LIBS ${ENET_LIBRARIES} ${OPENGL_LIBRARIES}
+  ${ZLIB_LIBRARIES} ${PROTOBUF_LIBRARIES}
+  ${ADDITIONAL_LIBRARIES} CACHE INTERNAL "")
 
-        # Sources:
-        set(SOURCE_GROUP_${GROUP} "")
-        foreach(FILE ${${TARGET}_SOURCES_${GROUP}})
-            set(SOURCE_GROUP_${GROUP}
-                ${SOURCE_GROUP_${GROUP}}
-                ${SOURCE_DIR}/${FILE})
-            #message(STATUS "Prepend path for ${FILE} (becoming ${SOURCE_DIR}/${FILE})")
-        endforeach(FILE)
-
-        # Replace old Source Array
-        set(${TARGET}_SOURCES_${GROUP} ${SOURCE_GROUP_${GROUP}} PARENT_SCOPE)
-
-        # For Visual Studio create filter groups as well
-        if(MSVC)
-            message(STATUS "Setting up Filter group ${GROUP}")
-
-            # We want the Header files in our Solution Explorer as well:
-            set(HEADER_GROUP_${GROUP} "")
-            foreach(FILE ${${TARGET}_HEADERS_${GROUP}})
-                set(HEADER_GROUP_${GROUP}
-                    ${HEADER_GROUP_${GROUP}}
-                    ${SOURCE_DIR}/${FILE})
-            endforeach(FILE)
-
-            # Replace old Header Array
-            set(${TARGET}_HEADERS_${GROUP} ${HEADER_GROUP_${GROUP}} PARENT_SCOPE)
-
-            # Create filter:
-            string(TOLOWER ${GROUP} GROUPNAME)
-            source_group(${GROUPNAME} FILES ${SOURCE_GROUP_${GROUP}} ${HEADER_GROUP_${GROUP}})
-        endif()
-
-    endforeach(GROUP)
-endfunction()
+get_property(INCLUDE_DIRECTORIES DIRECTORY
+  ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
 
 # Subprojects Client and Server
 if(${BUILD_CLIENT})
