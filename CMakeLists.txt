@@ -88,14 +88,13 @@ if(OS_LINUX OR (OS_WINDOWS AND NOT MSVC))
     # -D_DEBUG                        = Debug build
     set(I_COMPILER_FLAGS_DEBUG    "-Og -g -D_DEBUG")
     # -O3                             = Optimize for maximum speed
-    # -fno-rtti                       = Disable run-time type information
     # -fdata-sections                 = Enable linker optimizations to improve locality of reference for data sections
     # -ffunction-sections             = Enable linker optimizations to improve locality of reference for function sections
     # -fno-ident                      = Ignore the #ident directive
     # -DNDEBUG                        = Not a debug build
     # -U_FORTIFY_SOURCE               = Undefine _FORTIFY_SOURCE in case it was previously defined
     # -D_FORTIFY_SOURCE=1             = Add memory and string function protection (security feature)
-    set(I_COMPILER_FLAGS_RELEASE  "-O3 -fno-rtti -fdata-sections -ffunction-sections -fno-ident -DNDEBUG -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=1")
+    set(I_COMPILER_FLAGS_RELEASE  "-O3 -fdata-sections -ffunction-sections -fno-ident -DNDEBUG -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=1")
     # -Wl,-rpath,.                    = Set rpath so that libraries can be placed next to the executable
     set(I_LINKER_FLAGS            "-Wl,-rpath,.")
     # -Wl,-O1                         = Enable linker optimizations
@@ -146,8 +145,7 @@ if(OS_MACOSX)
     # -D_DEBUG                        = Debug build
     set(I_COMPILER_FLAGS_DEBUG    "-O0 -g -D_DEBUG")
     # -O3                             = Optimize for maximum speed plus a few extras
-    # -fno-rtti                       = Disable real-time type information
-    set(I_COMPILER_FLAGS_RELEASE  "-O3 -fno-rtti ")
+    set(I_COMPILER_FLAGS_RELEASE  "-O3")
     # -Wl,-search_paths_first         = Search for static or shared library versions in the same pass
     # -Wl,-ObjC                       = Support creation of creation of ObjC static libraries
     # -Wl,-pie                        = Generate position-independent code suitable for executables only
@@ -198,12 +196,11 @@ if(OS_WINDOWS)
         set(I_LIBTYPE                 STATIC)
         # /MP                                   = Multiprocess compilation
         # /Gy                                   = Enable function-level linking
-        # /GR-                                  = Disable run-time type information
         # /Zi                                   = Enable program database
         # /EHsc                                 = assume extern C stuff never throws exceptions
         # /W2                                   = Warning level 2
         # /wd"4305"                             = Ignore "truncation from 'double' to 'float'" warning
-        set(I_COMPILER_FLAGS          "-MP -Gy -GR- -Zi -EHsc -W2 -wd\"4305\"")
+        set(I_COMPILER_FLAGS          "-MP -Gy -Zi -EHsc -W2 -wd\"4305\"")
         # /MTd                                  = Multithreaded debug runtime
         # /Od                                   = Disable optimizations
         # /RTC1                                 = Enable basic run-time checks
