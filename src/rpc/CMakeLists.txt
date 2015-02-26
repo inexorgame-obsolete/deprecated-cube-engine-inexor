@@ -14,6 +14,8 @@ set(PROTOC_EXE ${PROTOC_EXE} CACHE INTERNAL "")
 set(RPC_FILE_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "")
 
 function(config_protoc targ)
+  add_definitions(-DGOOGLE_PROTOBUF_NO_RTTI)
+
   add_custom_command(
     OUTPUT
       ${CMAKE_BINARY_DIR}/src/rpc/inexor_service.pb.h
@@ -24,10 +26,12 @@ function(config_protoc targ)
         ${RPC_FILE_DIR}/inexor_service.proto
     DEPENDS
     ${RPC_FILE_DIR}/inexor_service.proto)
+
   set_source_files_properties(
     ${CMAKE_BINARY_DIR}/src/rpc/inexor_service.pb.h
     ${CMAKE_BINARY_DIR}/src/rpc/inexor_service.pb.cc
     PROPERTIES GENERATED TRUE)
+
   add_custom_target(${targ}_protoc DEPENDS
     ${CMAKE_BINARY_DIR}/src/rpc/inexor_service.pb.h
     ${CMAKE_BINARY_DIR}/src/rpc/inexor_service.pb.cc)
