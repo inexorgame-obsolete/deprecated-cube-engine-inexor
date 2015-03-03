@@ -1,6 +1,14 @@
 #!/bin/bash
-DIR="`dirname "$0"`"
-OLIB=LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
+tolower() {
+  tr '[:upper:]' '[:lower:]'
+}
 
-export LD_LIBRARY_PATH="$OLIB:pref"
-find "$DIR"/data/ -maxdepth 1 -print0  | sed 's/^/-k/' -z | xargs --null bin_linux/inexor -q"~/.inexor" && exit
+dir="`dirname "$0"`"
+arch="`uname -m | tolower`"
+os="`uname | tolower`"
+exe="${dir}/bin/${os}/${arch}/inexor"
+
+echo >&2 "CALLING: ${exe}"
+find "$dir"/data/ -maxdepth 1 -print0                      \
+  | sed 's/^/-k/' -z                                       \
+  | xargs --null "${exe}" -q"~/.inexor"
