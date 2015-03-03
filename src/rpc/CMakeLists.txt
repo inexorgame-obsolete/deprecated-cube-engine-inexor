@@ -1,19 +1,19 @@
 message(STATUS "Detecting Protobuf...")
+
 find_library(PROTOBUF_LIBRARIES protobuf)
-find_PATH(PROTOBUF_INCLUDE_DIRS google/protobuf/service.h)
+find_path(PROTOBUF_INCLUDE_DIRS google/protobuf/service.h)
 
 # PROTOBUF COMPILER #######
 
 if (NOT DEFINED PROTOC_EXE)
-  set(PROTOC_EXE "protoc")
+  find_program(PROTOC_EXE protoc)
 endif()
-set(PROTOC_EXE ${PROTOC_EXE} CACHE INTERNAL "")
 
 # RPC PROTOCOL FILE TARGET
 
 set(RPC_FILE_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "")
 
-function(config_protoc targ)
+function(config_rpc targ)
   add_definitions(-DGOOGLE_PROTOBUF_NO_RTTI)
 
   add_custom_command(

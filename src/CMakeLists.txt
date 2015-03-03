@@ -1,6 +1,8 @@
-## Definitions for both the Client and the Server
-## Mainly detecting Libs is done here
-
+# TODO: Unify flags and lib detection on ALL plattforms as much as possible
+# TODO: Move functions to an extra file
+# TODO: Automatically detect new modules
+# TODO: Encapsulate all settings in a module
+# TODO: Write a lib detector that does the following: Search for cmake definitions; search for pkg-cfg's; search for libs and headers; everyting may be specified multiple times
 
 # Wrong folder: User attempted to generate from src instead of the main-inexor folder
 if(NOT DEFINED PROJECT_ARCH)
@@ -8,8 +10,22 @@ if(NOT DEFINED PROJECT_ARCH)
 endif()
 
 
-# Core Libs
-find_package(ZLIB REQUIRED)
+# TODO: Write function fallback_find_package?
+# TODO: We should stick to singular in all lib detection
+find_package(ZLIB)
+if(NOT ${ZLIB_FOUND})
+  find_library(ZLIB_LIBRARY2 NAMES z zlib1)
+  find_path(ZLIB_INCLUDE_DIR2 zlib.h)
+
+  message(STATUS "ZLIB_LIBRARY2 = ${ZLIB_LIBRARY2}")
+  message(STATUS "ZLIB_INCLUDE_DIR2 = ${ZLIB_INCLUDE_DIR2}")
+
+  if (EXISTS ${ZLIB_LIBRARY} AND EXISTS ${ZLIB_INCLUDE_DIR})
+    set(ZLIB_FOUND 1)
+  else()
+    message(ERROR "Could not find zlib")
+  endif()
+endif()
 
 find_package(OpenGL)
 find_package(PkgConfig)
@@ -64,20 +80,30 @@ endif()
 
 
 # MACOSX Libraries for Server AND Client
-if(OS_MACOSX)
+if(OS_MACOSX OR OS_WINDOWS)
+    find_library(ENET_LIBRARIES enet)
+    find_path(ENET_INCLUDE_DIRS enet/enet.h)
+
+
     find_library(SDL2_LIBRARY SDL2)
     find_library(SDL2_IMAGE_LIBRARY SDL2_image)
     find_library(SDL2_MIXER_LIBRARY SDL2_mixer)
+    set(SDL2_LIBRARIES ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY}
+        ${SDL2_IMAGE_LIBRARY})
 
-    find_library(CORESERVICES_LIBRARY CoreServices)
-    find_library(COCOA_LIBRARY Cocoa)
+    find_path(SDL2_INCLUDE_DIR       SDL.h       PATH_SUFFIXES SDL2)
+    find_path(SDL2_IMAGE_INCLUDE_DIR SDL_image.h PATH_SUFFIXES SDL2)
+    find_path(SDL2_MIXER_INCLUDE_DIR SDL_mixer.h PATH_SUFFIXES SDL2)
+    set(SDL2_INCLUDE_DIRS ${SDL2_INCLUDE_DIR}
+        ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2_MIXER_INCLUDE_DIR})
+endif()
 
-    set(SDL2_LIBRARIES "${SDL2_LIBRARY};${SDL2_MIXER_LIBRARY};${SDL2_IMAGE_LIBRARY};${CORESERVICES_LIBRARY};${COCOA_LIBRARY}")
-
-    find_path(SDL2_INCLUDE_DIR SDL.h)
-    find_path(SDL2_IMAGE_INCLUDE_DIR SDL2_image.h)
-    find_path(SDL2_MIXER_INCLUDE_DIR SDL2_mixer.h)
-    set(SDL2_INCLUDE_DIRS "${SDL2_INCLUDE_DIR};${SDL2_IMAGE_INCLUDE_DIR};${SDL2_MIXER_INCLUDE_DIR}")
+# COCOA for SQL on OSX
+if(OS_MACOSX)
+  find_library(CORESERVICES_LIBRARY CoreServices)
+  find_library(COCOA_LIBRARY Cocoa)
+  list(APPEND SDL2_LIBRARIES
+      ${CORESERVICES_LIBRARY} ${COCOA_LIBRARY})
 endif()
 
 # Windows Libraries for Server AND Client

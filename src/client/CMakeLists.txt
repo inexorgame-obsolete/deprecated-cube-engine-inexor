@@ -94,19 +94,13 @@ else()
     add_executable(${CLIENT_BINARY} ${CLIENT_SOURCES})
 endif()
 
-config_protoc(${CLIENT_BINARY})
 
 set(CLIENT_LIBS ${COMMON_LIBS} ${SDL2_LIBRARIES}
   ${OPENGL_LIBRARIES} ${ADDITIONAL_LIBRARIES} CACHE INTERNAL "")
 target_link_libraries(${CLIENT_BINARY} ${CLIENT_LIBS})
 
-# C++ Libraries depending on the stdlib are NOT binary compatible for different VS versions.
-# Also a debug .lib is incompatible to Inexor in releasemode then.
-if(MSVC)
-    target_link_libraries(${CLIENT_BINARY} debug ${PROTOBUF_LIBRARIES_MSVC_DEBUG})
-    target_link_libraries(${CLIENT_BINARY} optimized ${PROTOBUF_LIBRARIES_MSVC_RELEASE})
-    add_definitions(-DPROTOBUF_USE_DLLS)
-endif()
+config_net(${CLIENT_BINARY})
+config_rpc(${CLIENT_BINARY})
 
 message(STATUS "CLIENT ENET_LIBRARIES:       ${ENET_LIBRARIES}")
 message(STATUS "CLIENT SDL2_LIBRARIES:       ${SDL2_LIBRARIES}")
@@ -115,6 +109,7 @@ message(STATUS "CLIENT ZLIB_LIBRARIES:       ${ZLIB_LIBRARIES}")
 message(STATUS "CLIENT PROTOBUF_LIBRARIES:   ${PROTOBUF_LIBRARIES}")
 message(STATUS "CLIENT ADDITIONAL_LIBRARIES: ${ADDITIONAL_LIBRARIES}")
 message(STATUS "CLIENT INCLUDE DIRECTORIES:  ${INCLUDE_DIRECTORIES}")
+
 if(MSVC)
     set_property(TARGET ${CLIENT_BINARY} PROPERTY FOLDER "executables")
 endif()

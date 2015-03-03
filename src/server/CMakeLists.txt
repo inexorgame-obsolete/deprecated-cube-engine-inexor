@@ -15,7 +15,7 @@ set(SERVER_BINARY server CACHE INTERNAL "Server binary name.")
 add_definitions(-DSERVER -DSTANDALONE)
 
 # Linux Libraries and Configuration
-if(OS_LINUX})
+if(OS_LINUX)
     set(ADDITIONAL_LIBRARIES ${ADDITIONAL_LIBRARIES} dl -pthread)
 endif()
 
@@ -28,18 +28,11 @@ else()
     add_executable(${SERVER_BINARY} ${SERVER_SOURCES})
 endif()
 
-config_protoc(${SERVER_BINARY})
-
 target_link_libraries(${SERVER_BINARY} ${COMMON_LIBS}
   ${ADDITIONAL_LIBRARIES})
 
-# C++ Libraries depending on the stdlib are NOT binary compatible for different VS versions.
-# Also a debug .lib is incompatible to Inexor in releasemode then.
-if(MSVC)
-    target_link_libraries(${SERVER_BINARY} debug ${PROTOBUF_LIBRARIES_MSVC_DEBUG})
-    target_link_libraries(${SERVER_BINARY} optimized ${PROTOBUF_LIBRARIES_MSVC_RELEASE})
-    add_definitions(-DPROTOBUF_USE_DLLS)
-endif()
+config_net(${SERVER_BINARY})
+config_rpc(${SERVER_BINARY})
 
 message(STATUS "SERVER ENET_LIBRARIES:       ${ENET_LIBRARIES}")
 message(STATUS "SERVER SDL2_LIBRARIES:       ${SDL2_LIBRARIES}")
@@ -48,6 +41,7 @@ message(STATUS "SERVER ZLIB_LIBRARIES:       ${ZLIB_LIBRARIES}")
 message(STATUS "SERVER PROTOBUF_LIBRARIES:   ${PROTOBUF_LIBRARIES}")
 message(STATUS "SERVER ADDITIONAL_LIBRARIES: ${ADDITIONAL_LIBRARIES}")
 message(STATUS "SERVER INCLUDE DIRECTORIES:  ${INCLUDE_DIRECTORIES}")
+
 if(MSVC)
     set_property(TARGET ${SERVER_BINARY} PROPERTY FOLDER "executables")
 endif()

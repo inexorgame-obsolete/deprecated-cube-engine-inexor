@@ -179,9 +179,6 @@ if(OS_MACOSX)
 
     # Define where to move the binary by install
     set(EXE_SUB_DIR "bin/mac/${CMAKE_OSX_ARCHITECTURES}")
-
-    # Submodule providing osx-specific build stuff (e.g. libs)
-    set(PLATFORM_FILE "${SOURCE_DIR}/platform_osx")
 endif()
 
 
@@ -253,9 +250,6 @@ if(OS_WINDOWS)
 
     # Define where to move the binary by install
     set(EXE_SUB_DIR "bin/windows/${PROJECT_ARCH}")
-
-    # Submodule providing windows-specific build stuff (e.g. libs)
-    set(PLATFORM_FILE "${SOURCE_DIR}/platform_windows")
 endif()
 
 # Ability to use your environment own cflags/ldflags.. as well
@@ -302,16 +296,7 @@ message(STATUS "Generating Project-Files to ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS " - Resulting Executable goes to ${EXE_DIR}")
 
 
-if(EXISTS ${PLATFORM_FILE})
-    message(STATUS "Found platform definition. (${PLATFORM_FILE})")
-    add_subdirectory(${PLATFORM_FILE})
-    link_directories(${PLATFORM_LINK_DIRECTORIES})
-    include_directories(${PLATFORM_INCLUDE_DIRECTORIES})
-elseif(NOT OS_LINUX)
-    message(WARNING "Could not find platform definition. (${PLATFORM_FILE})")
-endif()
 
-# Go for the next folder:
 add_subdirectory(src)
 
-####
+install(FILES ${INSTALL_SHARED_LIBS} DESTINATION ${EXE_DIR})
