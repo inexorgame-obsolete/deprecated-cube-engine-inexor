@@ -47,11 +47,25 @@ void conline(int type, const char *sf)        // add a line to the console buffe
     copystring(cl.line, sf, CONSTRLEN);
 }
 
+static hashtable<const char *, char *> warningsDisplayed; //output error and warning messages just once
+
 void conoutfv(int type, const char *fmt, va_list args)
 {
+	
     static char buf[CONSTRLEN];
     vformatstring(buf, fmt, args, sizeof(buf));
-    conline(type, buf);
+
+    if(type == CON_WARN) {//do not display warnings (e.g. missing files ..) a second time.
+		char **warning = warningsDisplayed.access(buf);
+        if(warning == NULL)
+		{
+			char *newWarning = newstring(buf);
+			warningsDisplayed[newWarning] = newWarning;
+        }
+		else return; 
+	}
+	
+	conline(type, buf);
     logoutf("%s", buf);
 }
 
