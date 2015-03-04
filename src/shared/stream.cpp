@@ -240,6 +240,9 @@ struct packagedir
 };
 vector<packagedir> packagedirs;
 
+/// Create a relative path
+/// @Return (const char*) file relative to (const char*) dir
+/// @Eg file=/home/user/Inexor/media/textures/notexture.jpg and dir=/home/user/Inexor/media/ returns textures/notexture.jpg
 char *makerelpath(const char *dir, const char *file, const char *prefix, const char *cmd)
 {
     static string tmp;
@@ -314,17 +317,25 @@ char *path(const char *s, bool copy)
     return tmp;
 }
 
-//returns just the parent dir without the file
-const char *parentdir(const char *directory)
+/// Returns the parent directory only of given filename
+/// ATTENTION: Removes last slash!
+/// media/texture/lastly.dg becomes media/texture
+const char *parentdir(const char *filename)
 {
-    const char *p = directory + strlen(directory);
-    while(p > directory && *p != '/' && *p != '\\') p--;
+    const char *p = filename + strlen(filename);
+    while(p > filename && *p != '/' && *p != '\\') p--;
     static string parent;
-    size_t len = p-directory+1;
-    copystring(parent, directory, len);
+    size_t len = p-filename+1;
+    copystring(parent, filename, len);
     return parent;
 }
 
+/// Checks whether given file exists (and is available in the specific mode)
+/// Where Path is the filename and mode can optionally be set (but only effects posix systems)
+/// ATTENTION: DO NOT USE THIS METHOD DIRECTLY! It doesn't give a fuck about your homedir 
+/// or any additional package dir, so use findfile instead!
+/// Available Modes are "w"/"a" for writeable files only and "d" for executeable files only
+/// ATTENTION2:  if mode "w" or "a" are specified it checks for (parent) directory existence!
 bool fileexists(const char *path, const char *mode)
 {
     bool exists = true;
@@ -337,6 +348,8 @@ bool fileexists(const char *path, const char *mode)
     return exists;
 }
 
+/// Creates a directory of given name
+/// @Return Returns true on success
 bool createdir(const char *path)
 {
     size_t len = strlen(path);
@@ -364,6 +377,7 @@ size_t fixpackagedir(char *dir)
     return len;
 }
 
+/// Replaces "$HOME" in string src with the user platforms home-directory
 bool subhomedir(char *dst, int len, const char *src)
 {
 	const char *sub = strstr(src, "$HOME");
@@ -385,6 +399,8 @@ bool subhomedir(char *dst, int len, const char *src)
 	  return true;
 }
 
+/// Sets Inexors Home directory
+/// Afterwards Inexor saves data there instead of in the main install folder
 const char *sethomedir(const char *dir)
 {
     string pdir;
@@ -394,6 +410,9 @@ const char *sethomedir(const char *dir)
 	return homedir;
 }
 
+/// Add an optional media directory
+/// Inexor can have multiple source-directories for its content
+/// @Example "media" and "media-other-old-stuff" both can be used simoultaneously
 const char *addpackagedir(const char *dir)
 {
     string pdir;
@@ -416,6 +435,11 @@ const char *addpackagedir(const char *dir)
     return pf.dir;
 }
 
+/// Checks whether given file exists (and is available in the specific mode)
+/// Where Path is the filename and mode can optionally be set
+/// Available Modes are "e" (see @Return) "w"/"a" for writeable files only and "d" for executeable files only
+/// @Return Returns the filename of the found file (or the, if "e" is specified it returns NULL if nothing was found.
+///         Otherwise it returns the inital filename.
 const char *findfile(const char *filename, const char *mode)
 {
     static string s;
@@ -450,6 +474,8 @@ const char *findfile(const char *filename, const char *mode)
     return filename;
 }
 
+/// Internal use only Use listfiles instead.
+/// @Returns false if dirname does not exists
 bool listdir(const char *dirname, bool rel, const char *ext, vector<char *> &files)
 {
     size_t extsize = ext ? strlen(ext)+1 : 0;
@@ -502,6 +528,8 @@ bool listdir(const char *dirname, bool rel, const char *ext, vector<char *> &fil
     else return false;
 }
 
+/// Lists all files in given directory and put it into vector files
+/// @Argument ext optionally filters for occurences with such extension only 
 int listfiles(const char *dir, const char *ext, vector<char *> &files)
 {
     string dirname;
