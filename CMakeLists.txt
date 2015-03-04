@@ -250,6 +250,17 @@ if(OS_WINDOWS)
 
     # Define where to move the binary by install
     set(EXE_SUB_DIR "bin/windows/${PROJECT_ARCH}")
+
+    # Define Global Toolchain file if none present
+    if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+        if(MSVC)
+            include(${SOURCE_DIR}/platform_windows/vs.cmake)
+        elseif(MINGW)
+            include(${SOURCE_DIR}/platform_windows/mingw.cmake)
+        else()
+            include(${SOURCE_DIR}/platform_windows/common_windows.cmake)
+        endif()
+    endif()
 endif()
 
 # Ability to use your environment own cflags/ldflags.. as well
