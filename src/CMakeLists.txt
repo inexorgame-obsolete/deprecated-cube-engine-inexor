@@ -172,6 +172,70 @@ function(prepend variable prep)
   set(${variable} ${res} PARENT_SCOPE)
 endfunction()
 
+# Wrapper around find_library to autodetect _debug and _release versions of a library
+# Reason see lib/readme
+#
+# Note: only effects msvc so far
+# Usage: find_cpp_library(<RETURNVAR> <name>)
+# Arguments:
+#   Returnvar   -   Usually the <LibraryName>_LIBRARY, but can be set differently.
+#                   It will contain the found lib afterwards.
+#   name        -   the Library name
+# Example: find_cpp_library(PROTOBUF_LIBRARIES protobuf)
+#
+function(find_cpp_library RETURNVAR LIBNAME)
+    if(DEFINED HAS_FIND_LIBRARY_WRAPPER)
+        definition_find_cpp_library(${RETURNVAR} ${LIBNAME})
+        set(${RETURNVAR} ${${RETURNVAR}} CACHE INTERNAL "")
+    else()
+        find_library(${RETURNVAR} ${LIBNAME})
+    endif()
+endfunction()
+
+# USAGE: target_link_libraries_wrapper( <BINARYNAME> [ARGS] )
+#
+# Wrapper around target_link libs to be able to set different libs for debug and release
+# (Necessary for MSVC in combination with stdlib-dependend Libs)
+#
+# ARGUMENTS
+#  BINARYNAME - The Name of the target to link the libraries to
+#  ARGS...    - The Libraries
+#
+function(target_link_libraries_wrapper BINARYNAME)
+    if(DEFINED HAS_FIND_LIBRARY_WRAPPER)
+
+        set(C_LIBS "")   # No need to seperately link c-libs
+        set(CPP_LIBS_DEBUG "")
+        set(CPP_LIBS_RELEASE "")
+
+        foreach(CURLIB ${ARGN})
+            if(${CURLIB} MATCHES "(.*)_release(.*)")
+                set(CPP_LIBS_RELEASE ${CURLIB})
+            elseif(${CURLIB} MATCHES "(.*)_debug(.*)")
+                set(CPP_LIBS_DEBUG ${CURLIB})
+            else()
+                set(C_LIBS ${C_LIBS} ${CURLIB})
+            endif()
+        endforeach()
+
+        message(STATUS "${BINARYNAME} - General Libs: ${C_LIBS}")
+        message(STATUS "${BINARYNAME} - Debug   Libs: ${CPP_LIBS_DEBUG}")
+        message(STATUS "${BINARYNAME} - Release Libs: ${CPP_LIBS_RELEASE}")
+
+        target_link_libraries(${BINARYNAME} ${C_LIBS})
+        if(NOT ${CPP_LIBS_DEBUG} STREQUAL "")
+            target_link_libraries(${BINARYNAME} debug ${CPP_LIBS_DEBUG})
+        endif()
+        if(NOT ${CPP_LIBS_RELEASE} STREQUAL "")
+            target_link_libraries(${BINARYNAME} optimized ${CPP_LIBS_RELEASE})
+        endif()
+
+    else()
+        # No need on Unix systems, because of binary compatibility between different configurations
+        target_link_libraries(${BINARYNAME} ${ARGN})
+    endif()
+endfunction()
+
 add_subdirectory(libraries) # muparser
 declare_module(shared ./shared)
 declare_module(engine ./engine)

@@ -28,7 +28,7 @@ else()
     add_executable(${SERVER_BINARY} ${SERVER_SOURCES})
 endif()
 
-target_link_libraries(${SERVER_BINARY} ${COMMON_LIBS}
+target_link_libraries_wrapper(${SERVER_BINARY} ${COMMON_LIBS}
   ${ADDITIONAL_LIBRARIES})
 
 config_net(${SERVER_BINARY})
