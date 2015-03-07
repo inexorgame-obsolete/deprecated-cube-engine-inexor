@@ -97,7 +97,8 @@ endif()
 
 set(CLIENT_LIBS ${COMMON_LIBS} ${SDL2_LIBRARIES}
   ${OPENGL_LIBRARIES} ${ADDITIONAL_LIBRARIES} CACHE INTERNAL "")
-target_link_libraries(${CLIENT_BINARY} ${CLIENT_LIBS})
+
+target_link_libraries_wrapper(${CLIENT_BINARY} ${CLIENT_LIBS})
 
 config_net(${CLIENT_BINARY})
 config_rpc(${CLIENT_BINARY})

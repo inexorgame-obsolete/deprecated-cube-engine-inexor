@@ -29,6 +29,8 @@ set(SOURCE_DIR ${MAINDIR}/src)
 
 ### Platform Detection:
 
+message(STATUS "GIVEN TOOLCHAIN FILE: ${CMAKE_TOOLCHAIN_FILE}")
+
 # Determine the project architecture.
 if(NOT DEFINED PROJECT_ARCH)
   if(CMAKE_SIZEOF_VOID_P MATCHES 8)
@@ -252,13 +254,16 @@ if(OS_WINDOWS)
     set(EXE_SUB_DIR "bin/windows/${PROJECT_ARCH}")
 
     # Define Global Toolchain file if none present
-    if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+    if(NOT CMAKE_TOOLCHAIN_FILE)
         if(MSVC)
             include(${SOURCE_DIR}/platform_windows/vs.cmake)
+            message(STATUS "Automatically set VS toolchain file")
         elseif(MINGW)
             include(${SOURCE_DIR}/platform_windows/mingw.cmake)
+            message(STATUS "Automatically Set MINGW Toolchain file")
         else()
             include(${SOURCE_DIR}/platform_windows/common_windows.cmake)
+            message(WARNING "Set rudimentary toolchain file, probably wont work. Define a toolchain file for your system manually!")
         endif()
     endif()
 endif()
