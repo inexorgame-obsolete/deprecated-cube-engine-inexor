@@ -313,13 +313,6 @@ include_directories(
     ${SOURCE_DIR}/engine
     ${SOURCE_DIR}/fpsgame)
 
-# This should contain all sources in the project,
-# TODO: Append every time we glob some headers
-set(ALL_HEADERS ${MUPARSER_HEADERS} ${SHARED_MODULE_HEADERS}
-  ${ENGINE_MODULE_HEADERS} ${FPSGAME_MODULE_HEADERS}
-  ${UTIL_MODULE_HEADERS} ${RPC_MODULE_HEADERS}
-  ${NET_MODULE_HEADERS} CACHE INTERNAL "")
-
 # This should contain all sources that are used by all
 # targets. This only excludes fpsgame/ and engine/
 # TODO: Append every time we glob for sources
