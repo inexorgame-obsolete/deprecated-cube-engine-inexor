@@ -94,3 +94,5 @@ target_link_libraries_wrapper(${CLIENT_BINARY} ${CLIENT_LIBS})
 
 config_net(${CLIENT_BINARY})
 config_rpc(${CLIENT_BINARY})
+config_util(${CLIENT_BINARY})
+config_muparser(${CLIENT_BINARY})

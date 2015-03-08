@@ -292,33 +292,26 @@ function(opt_subdir subdir initial)
   endif()
 endfunction()
 
-add_subdirectory(libraries) # muparser
-declare_module(shared ./shared)
-declare_module(engine ./engine)
-declare_module(fpsgame ./fpsgame)
-declare_module(util ./util)
-add_subdirectory(rpc) # rpc module, protobuf lib
-add_subdirectory(net) # net module, asio lib
-
 include_directories(
     ${ENET_INCLUDE_DIRS}
     ${SDL2_INCLUDE_DIRS}
-    ${MUPARSER_INCLUDE_DIRS}
-    ${ASIO_INCLUDE_DIRS}
-    ${PROTOBUF_INCLUDE_DIRS}
-    ${RPC_INCLUDE_DIRS}
     ${FREETYPE_INCLUDE_DIRS}
     ${SOURCE_DIR}
     ${SOURCE_DIR}/shared
     ${SOURCE_DIR}/engine
     ${SOURCE_DIR}/fpsgame)
 
-# This should contain all sources that are used by all
-# targets. This only excludes fpsgame/ and engine/
-# TODO: Append every time we glob for sources
-set(COMMON_SOURCES ${MUPARSER_SOURCES} ${SHARED_MODULE_SOURCES}
-  ${UTIL_MODULE_SOURCES} ${NET_MODULE_SOURCES}
-  ${RPC_MODULE_SOURCES} CACHE INTERNAL "")
+add_subdirectory(libraries) # muparser
+declare_module(shared ./shared)
+declare_module(engine ./engine)
+declare_module(fpsgame ./fpsgame)
+add_subdirectory(util)
+add_subdirectory(net) # net module, asio lib
+add_subdirectory(rpc) # rpc module, protobuf lib
+
+# *sigh* We can't make shared a real module. Yet.
+# It's too interdependant
+set(COMMON_SOURCES ${SHARED_MODULE_SOURCES} CACHE INTERNAL "")
 
 # This contains the libraries that are used by all targets.
 # Excludes OpenGL and SDL, because those are only used by
@@ -326,7 +319,6 @@ set(COMMON_SOURCES ${MUPARSER_SOURCES} ${SHARED_MODULE_SOURCES}
 set(COMMON_LIBS
   ${ENET_LIBRARIES}
   ${ZLIB_LIBRARIES}
-  ${PROTOBUF_LIBRARIES}
   ${ADDITIONAL_LIBRARIES} CACHE INTERNAL "")
 
 # Actual targets

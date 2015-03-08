@@ -28,3 +28,5 @@ target_link_libraries_wrapper(${SERVER_BINARY} ${COMMON_LIBS}
 
 config_net(${SERVER_BINARY})
 config_rpc(${SERVER_BINARY})
+config_util(${SERVER_BINARY})
+config_muparser(${SERVER_BINARY})
