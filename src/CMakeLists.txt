@@ -30,12 +30,6 @@ endif()
 find_package(OpenGL)
 find_package(PkgConfig)
 
-
-# Allow disabling Server/Client-subproject
-option(BUILD_CLIENT "Build the client" ${OPENGL_FOUND})
-option(BUILD_SERVER "Build the server" ON)
-
-
 message(STATUS "Detecting Libs...")
 
 # Linux Libraries for Server AND Client
@@ -250,6 +244,22 @@ function(target_link_libraries_wrapper BINARYNAME)
     endif()
 endfunction()
 
+# USAGE: opt_subdir SUBDIR INITIAL
+#
+# Optionally include a sub directory.
+# This adds an option called BUILD_${subdir} (all caps) and
+# includes the named subdir if that option is ON.
+function(opt_subdir subdir initial)
+  string(TOUPPER "BUILD_${subdir}" option_name)
+  option(${option_name} "Build ${subdir}" ${initial})
+
+  if(${${option_name}})
+      add_subdirectory(${subdir})
+  else()
+      message(WARNING "not building ${subdir}")
+  endif()
+endfunction()
+
 add_subdirectory(libraries) # muparser
 declare_module(shared ./shared)
 declare_module(engine ./engine)
@@ -295,15 +305,6 @@ set(COMMON_LIBS ${ENET_LIBRARIES} ${OPENGL_LIBRARIES}
 get_property(INCLUDE_DIRECTORIES DIRECTORY
   ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
 
-# Subprojects Client and Server
-if(${BUILD_CLIENT})
-    add_subdirectory(client)
-else()
-    message(STATUS "not building the client")
-endif()
-
-if(${BUILD_SERVER})
-    add_subdirectory(server)
-else()
-    message(STATUS "not building the server")
-endif()
+# Actual targets
+opt_subdir(client ${OPENGL_FOUND})
+opt_subdir(server on)
