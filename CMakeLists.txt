@@ -211,7 +211,8 @@ if(OS_WINDOWS)
         # /EHsc                                 = assume extern C stuff never throws exceptions
         # /W2                                   = Warning level 2
         # /wd"4305"                             = Ignore "truncation from 'double' to 'float'" warning
-        set(I_COMPILER_FLAGS          "-MP -Gy -Zi -EHsc -W2 -wd\"4305\"")
+        # /wd"4251"                             = Ignore "class 'type' needs to have dll-interface .." warning
+        set(I_COMPILER_FLAGS          "-MP -Gy -Zi -EHsc -W2 -wd\"4305\" -wd\"4251\"")
         # /MTd                                  = Multithreaded debug runtime
         # /Od                                   = Disable optimizations
         # /RTC1                                 = Enable basic run-time checks
@@ -226,7 +227,8 @@ if(OS_WINDOWS)
         # /DEBUG                                = Generate debug information
         set(I_LINKER_FLAGS_DEBUG      "-DEBUG")
         # /MANIFEST:NO                          = No default manifest
-        set(I_EXE_LINKER_FLAGS        "-MANIFEST:NO")
+        # /SAFESEH:NO                           = Do Not Create a table of safe exception handlers (binary incompatible)
+        set(I_EXE_LINKER_FLAGS        "-MANIFEST:NO -SAFESEH:NO ")
     endif()
 
     # Standard definitions
