@@ -323,8 +323,10 @@ set(COMMON_SOURCES ${MUPARSER_SOURCES} ${SHARED_MODULE_SOURCES}
 # This contains the libraries that are used by all targets.
 # Excludes OpenGL and SDL, because those are only used by
 # the client.
-set(COMMON_LIBS ${ENET_LIBRARIES} ${OPENGL_LIBRARIES}
-  ${ZLIB_LIBRARIES} ${PROTOBUF_LIBRARIES}
+set(COMMON_LIBS
+  ${ENET_LIBRARIES}
+  ${ZLIB_LIBRARIES}
+  ${PROTOBUF_LIBRARIES}
   ${ADDITIONAL_LIBRARIES} CACHE INTERNAL "")
 
 # Actual targets
