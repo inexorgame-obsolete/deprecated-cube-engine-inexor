@@ -13,12 +13,10 @@ group_modules()
 # Set Binary name
 set(SERVER_BINARY server CACHE INTERNAL "Server binary name.")
 
-# Set Server Definition
 add_definitions(-DSERVER -DSTANDALONE)
 
-# Linux Libraries and Configuration
 if(OS_LINUX)
-    set(ADDITIONAL_LIBRARIES ${ADDITIONAL_LIBRARIES} dl -pthread)
+  set(ADDITIONAL_LIBRARIES ${ADDITIONAL_LIBRARIES} dl -pthread)
 endif()
 
 add_app(${SERVER_BINARY} ${SERVER_SOURCES})
