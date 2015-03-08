@@ -19,10 +19,7 @@ namespace rpc {
 
   void rpc_init() {
 #if defined(unix) || defined(__unix__) || defined(__unix)
-    stringstream metap(ios::in | ios::out);
-    //metap << "/tmp/inexor_ipc." << uuidgen() << ".socket";
-    metap << "/tmp/inexor.socket";
-    std::string path = metap.str();
+    string path = "/tmp/inexor.socket";
     cerr << "[INFO] Listening for IPC connections on: "
       << path << endl;
 
