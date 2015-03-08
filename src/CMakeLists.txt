@@ -79,7 +79,7 @@ if(OS_LINUX)
 endif()
 
 
-# MACOSX Libraries for Server AND Client
+# common MACOSX and Windows Libraries
 if(OS_MACOSX OR OS_WINDOWS)
     find_library(ENET_LIBRARIES enet)
     find_path(ENET_INCLUDE_DIRS enet/enet.h)
@@ -148,7 +148,7 @@ function(declare_module NAME PATH)
     CACHE INTERNAL "Sources of the ${NAME} module")
 
   # VS source group
-  source_group(${NAME} FILES $headers ${sources})
+  source_group(${NAME} FILES ${headers} ${sources})
 endfunction()
 
 # USAGE: prepend(<VARIABLE> <PREP> [ARGS]...)
