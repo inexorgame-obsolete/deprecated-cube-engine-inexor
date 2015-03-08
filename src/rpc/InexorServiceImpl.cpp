@@ -1,6 +1,25 @@
-#include "rpc/InexorServiceImpl.h"
+#if defined(__MINGW32__) && (defined(__X86__) || defined(_X86_) || defined(i386))
+// Work around a mingw bug: Both intrin.h (included by
+// SDL.h) and x86intrin.h (included by the stdlib) declare
+// intrinsics. However the former one uses "extern C", while
+// the latter one does not. Hence g++ complains about
+// conflicting declarations
+// The linkage for intrinsics doesn't matter, but at that
+// stage the compiler doesn't know; so, to avoid compile
+// errors we ensure that x86intrin.h is included with an
+// `extern C` declaration.
+//
+// See:
+// * https://sourceforge.net/tracker/index.php?func=detail&aid=3018394&group_id=202880&atid=983354
+// * http://eigen.tuxfamily.org/bz/attachment.cgi?id=48&action=diff#a/Eigen/Core_sec2
+// * http://eigen.tuxfamily.org/bz/show_bug.cgi?id=125
+extern "C" {
+#include <x86intrin.h>
+}
+#endif
 
 #include <iostream>
+#include "rpc/InexorServiceImpl.h"
 
 // Legacy
 #include "shared/cube.h"
