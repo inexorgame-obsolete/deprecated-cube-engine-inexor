@@ -1,22 +1,4 @@
 language: cpp
-before_install:
-  # Install dependencies
-  - sudo apt-get install wget git
-  - wget -O - http://llvm.org/apt/llvm-snapshot.gpg.key | sudo apt-key add -
-  - sudo add-apt-repository -y "deb http://llvm.org/apt/precise/ llvm-toolchain-precise-3.5 main"
-  - sudo add-apt-repository -y "deb http://ppa.launchpad.net/zoogie/sdl2-snapshots/ubuntu precise main"
-  - sudo apt-add-repository -y "deb http://ppa.launchpad.net/boost-latest/ppa/ubuntu precise main"
-  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-  - echo -e "\ndeb http://archive.ubuntu.com/ubuntu utopic "{main,multiverse,universe,restricted} | sudo tee -a /etc/apt/sources.list
-  - sudo apt-get update
-  - sudo apt-get -y install gcc-4.9 g++-4.9 clang-3.5 build-essential
-  - sudo apt-get -y -t utopic install mingw-w64
-  - (cd /tmp; git clone https://github.com/chriskohlhoff/asio.git; cd asio; git checkout asio-1-10-4; sudo cp -vr asio/include/asio* /usr/include; cd -)
-  - sudo apt-get -y install libboost-regex1.55-dev libboost-system1.55-dev
-  - sudo apt-get -y install zlib1g-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libenet-dev libprotobuf-dev protobuf-compiler
-
-script:
-  - (mkdir cmakebuild && cd cmakebuild && cmake $CMAKE_FLAGS .. && make -k -j6 install && cd .. && rm -rf cmakebuild)
 
 env:
   global:
@@ -29,4 +11,12 @@ env:
     - TARGET=win32 CMAKE_FLAGS="-DMINGW=1 -DMINGW_TYPE=i686"
     - TARGET=win64 CMAKE_FLAGS="-DMINGW=1 -DMINGW_TYPE=x86_64"
 
-after_success: bash ./tool/nightly-build.sh
+
+before_install:
+  - bash tool/travis.sh target_before_install
+
+script:
+  - bash tool/travis.sh target_script
+
+after_success:
+  - bash ./tool/nightly-build.sh
