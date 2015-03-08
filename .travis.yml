@@ -26,7 +26,7 @@ env:
   matrix:
     - TARGET=linux_gcc CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=g++-4.9 -DCMAKE_C_COMPILER=gcc-4.9"
     - TARGET=linux_clang CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=clang++-3.5 -DCMAKE_C_COMPILER=clang-3.5"
-    - TARGET=win32 CMAKE_FLAGS="-DCMAKE_TOOLCHAIN_FILE=../src/platform_windows/mingw.cmake -DMINGW_TYPE=i686"
-    - TARGET=win64 CMAKE_FLAGS="-DCMAKE_TOOLCHAIN_FILE=../src/platform_windows/mingw.cmake -DMINGW_TYPE=x86_64"
+    - TARGET=win32 CMAKE_FLAGS="-DMINGW=1 -DMINGW_TYPE=i686"
+    - TARGET=win64 CMAKE_FLAGS="-DMINGW=1 -DMINGW_TYPE=x86_64"
 
 after_success: bash ./tool/nightly-build.sh

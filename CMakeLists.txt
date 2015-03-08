@@ -10,13 +10,27 @@ if(NOT DEFINED CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
 endif()
 
+# Set a default toolchain file
+message(STATUS "CMAKE_GENERATOR = ${CMAKE_GENERATOR}")
+
+string(TOLOWER "${CMAKE_GENERATOR}" GEN)
+if(GEN MATCHES ".*visual studio.*")
+  set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/src/platform_windows/vs.cmake)
+elseif(GEN MATCHES ".*mingw.*" OR MINGW)
+  set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/src/platform_windows/mingw.cmake)
+elseif(CMAKE_TOOLCHAIN_FILE)
+    message(STATUS "Using Toolchain File ${CMAKE_TOOLCHAIN_FILE}")
+else()
+    message(STATUS "No CMAKE_TOOLCHAIN_FILE set manually or automatically.")
+endif()
+
 # Project Name
 project(Inexor)
 
 # Use folders in the resulting project files.
 set_property(GLOBAL PROPERTY OS_FOLDERS ON)
 
-# Warning if paths arent set well
+# Warning if paths aren't set well
 get_filename_component(MAINDIR "${CMAKE_SOURCE_DIR}" REALPATH)  # Main inexor folder
 get_filename_component(BINDIR "${CMAKE_BINARY_DIR}" REALPATH)   # Where it generates the projects into
 
