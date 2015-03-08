@@ -323,3 +323,4 @@ set(COMMON_LIBS
 # Actual targets
 opt_subdir(client ${OPENGL_FOUND})
 opt_subdir(server on)
+opt_subdir(test   on)
