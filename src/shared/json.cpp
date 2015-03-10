@@ -443,7 +443,7 @@ static char *print_object(JSON *item, int depth, bool fmt)
     return out;
 }
 
-//Minify JSON buffer
+/// Minify JSON buffer (remove whitespaces and even comments)
 void JSON_Minify(char *json)
 {
     char *into = json;
@@ -469,7 +469,73 @@ void JSON_Minify(char *json)
     *into=0;    // and null-terminate.
 }
 
-// Create basic types:
+/// Basic and really simplistic routine to fix malformatted .json files
+/// It will replace the old version of your file on success and create a backup of the old one (called <filename>_backup.json) 
+/// Currently it fixes: double commata, missing " for non-numeric strings
+int JSON_Fix(const char *filename)
+{
+    string s;
+    copystring(s, filename);
+    const char *found = findfile(path(s), "");
+    char *buf = loadfile(found, NULL);
+    if(!buf) return -1;
+    JSON_Minify(buf);
+    
+    size_t len = strlen(buf);
+    
+    char *newbuf = new char[len + 1];
+
+    size_t pos = 0; //current position in the newbuf
+    for(size_t i = 0; i < len; i++)
+    {
+        if(buf[i] == ',')
+        {
+                if(!i) i++;                     //buf starts with a commata
+                else if(buf[i + 1] == ',') i++; //two subsequent commata
+                else
+                {
+                    newbuf[pos] = buf[i];
+                    pos++;
+                }
+        }
+        else if(isalpha(buf[i]))
+        {
+            if(!i) //todo worst case: is it an array or object?
+                return 0;
+            else if(buf[i - 1] != '\"') {
+                newbuf[pos] = '\"'; pos++;
+            } //string was missing a leading "
+            newbuf[pos] = buf[i];
+            pos++;
+        }
+        else
+        {
+            if(i && isalpha(i - 1)) {
+                newbuf[pos] = '\"'; pos++;
+            } //string was missing a trailing "
+            newbuf[pos] = buf[i];
+            pos++;
+        }
+    }
+
+    JSON *j = JSON_Parse(newbuf);
+    if(j) 
+    {
+        //cutextension .. getextension
+        defformatstring(backupname)("%s_backup", found);
+        rename(found, backupname);
+        j->save(found);
+        delete[] buf;
+        delete[] newbuf;
+        return 1;
+    }
+
+    delete[] buf;
+    delete[] newbuf;
+    return 0;
+}
+
+/// Create basic types:
 JSON *JSON_CreateBool(bool b)               { JSON *item= new JSON(); item->type = b ? JSON_TRUE : JSON_FALSE;  return item; }
 JSON *JSON_CreateInt(int num)               { JSON *item= new JSON(); item->type = JSON_NUMBER;     item->valueint = num; item->valuefloat = num; return item; }
 JSON *JSON_CreateFloat(float num)           { JSON *item= new JSON(); item->type = JSON_NUMBER;     item->valuefloat = num;     return item; }
@@ -477,13 +543,27 @@ JSON *JSON_CreateString(const char *str)    { JSON *item= new JSON(); item->type
 JSON *JSON_CreateArray()                    { JSON *item= new JSON(); item->type = JSON_ARRAY;      return item; }
 JSON *JSON_CreateObject()                   { JSON *item= new JSON(); item->type = JSON_OBJECT;     return item; }
 
- //Loads .JSON file
+ /// Load a .json file
 JSON *loadjson(const char *filename)
 {
     string s;
     copystring(s, filename);
-    char *buf = loadfile(path(s), NULL);
-    return JSON_Parse(buf);
+    char *buf = loadfile(findfile(path(s), ""), NULL);
+    if(!buf)
+    {
+        conoutf(CON_WARN, "could not find %s", s);
+        return NULL;
+    }
+    JSON *j = JSON_Parse(buf);
+    if(!j)
+    {
+        //if(JSON_Fix(filename)) j = loadjson(filename);
+        return NULL;
+    }
+    j->currentdir = newstring(parentdir(s));
+
+    delete[] buf;
+    return j;
 }
 
 char *JSON::render(bool formatted, bool minified) {
