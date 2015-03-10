@@ -1,5 +1,10 @@
-//  Rewrite of cJSON 1.0r58 in Inexor-optimized object-orientated C-ish C++
-//  cJSON (Copyright (c) 2009 by Dave Gamble) is licensed under the MIT-license
+///  JSON is used to store data-information
+///  Rewrite of cJSON 1.0r58 in Inexor-optimized object-orientated C-ish C++
+///  Author: Malte "a_teammate" Haase
+///  Date:   31.12.2014
+///  cJSON (Copyright (c) 2009 by Dave Gamble) is licensed under the MIT-license
+
+
 #ifndef __JSON__H
 #define __JSON__H
 
@@ -13,8 +18,9 @@ enum {
     JSON_STRING,
     JSON_ARRAY,                     //ordered list [ ]
     JSON_OBJECT                     //unordered list { }
-}; // JSON types
+}; /// JSON Types
 
+/// A Class to hold the parsed data of a json-file
 struct JSON
 {
     JSON *next, *prev;   // next/prev allow you to walk array/object chains.
@@ -26,16 +32,19 @@ struct JSON
     int valueint;                   // The item's number, if type==JSON_Number
     float valuefloat;               // The item's number, if type==JSON_Number
 
-    char *name;                     // The item's name string, if the item in an object this is equivalent to the key. In an array its the string of the value!
+    char *name;                     /// The item's name string, if the item in an object this is equivalent to the key. In an array its the string of the value!
 
-	JSON() : next(NULL), prev(NULL), child(NULL), type(0), valueint(0), valuefloat(0)  { name = newstring(""); valuestring = newstring(""); }
+    const char *currentdir;         /// The parent directory of the .json-file ( If the JSON is the result of a .json-file beeing loaded)
 
-    JSON(JSON *old)       //Copy constructor
+    JSON() : next(NULL), prev(NULL), child(NULL), type(0), valueint(0), valuefloat(0), currentdir(NULL)  { name = newstring(""); valuestring = newstring(""); currentdir = newstring(""); }
+
+    JSON(JSON *old)       /// Copy constructor
     {
         type = old->type;
         valueint = old->valueint; valuefloat = old->valuefloat;
         if(old->valuestring && old->valuestring[0]) valuestring = newstring(old->valuestring);
         if(old->name) name = newstring(old->name);
+        if(old->currentdir) currentdir = newstring(old->currentdir);
 
         //copy children:
         JSON *loop = old->child, *last = NULL;
@@ -57,6 +66,7 @@ struct JSON
     {
         DELETEA(name);
         DELETEA(valuestring);
+        DELETEA(currentdir);
         JSON *c = child;
         while (c)
         {
@@ -79,6 +89,7 @@ struct JSON
         char *buf = render();
         f->putstring(buf);
         delete f;
+        currentdir = newstring(s);
     }
 
     int numchilds()					  //Get number of children (if array or object, though not useful for objects)
