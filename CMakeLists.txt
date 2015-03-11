@@ -265,7 +265,7 @@ if(OS_WINDOWS)
     endif()
 
     # Define where to move the binary by install
-    set(EXE_SUB_DIR "bin/windows/${PROJECT_ARCH}")
+    set(EXE_SUB_DIR "bin/windows/win${PROJECT_ARCH}")
 endif()
 
 # Ability to use your environment own cflags/ldflags.. as well

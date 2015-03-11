@@ -1,12 +1,12 @@
 @ECHO OFF
 
-set INEXOR_BIN=bin_win32
+set INEXOR_ARCH=win32
 
-IF /I "%PROCESSOR_ARCHITECTURE%" == "x86" (
-    set INEXOR_BIN=bin_win32
+IF /I "%PROCESSOR_ARCHITECTURE%" == "amd64" (
+    set INEXOR_ARCH=win64
 )
 IF /I "%PROCESSOR_ARCHITEW6432%" == "amd64" (
-    set INEXOR_BIN=bin_win64
+    set INEXOR_ARCH=win64
 )
 
-start %INEXOR_BIN%\inexor.exe "-q$HOME\My Games\Inexor" -gserver-log.txt -d %*
+start bin\windows\%INEXOR_ARCH%\inexor.exe "-q$HOME\My Games\Inexor" -gserver-log.txt -d %*
