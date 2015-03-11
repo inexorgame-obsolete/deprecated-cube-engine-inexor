@@ -5,6 +5,8 @@
 #ifndef INEXOR_TEST_HELPERS_HEADER
 #define INEXOR_TEST_HELPERS_HEADER
 
+#define test TEST
+
 #undef assert // Ignore assert.h asserts
 #define assert ASSERT_TRUE
 #define assertThrow ASSERT_THROW
