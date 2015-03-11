@@ -131,6 +131,8 @@ endif()
 #     it contains a list of all source files in this module
 #   * A VS source group is added with the name ${NAME}; it
 #     contains all the headers and source files in this module
+
+set(ALLMODULES "" CACHE INTERNAL "")
 function(declare_module NAME PATH)
   get_filename_component(abs
     "${CMAKE_CURRENT_SOURCE_DIR}/${PATH}" REALPATH)
@@ -147,8 +149,22 @@ function(declare_module NAME PATH)
   set(${mod}_MODULE_SOURCES ${sources}
     CACHE INTERNAL "Sources of the ${NAME} module")
 
-  # VS source group
-  source_group(${NAME} FILES ${headers} ${sources})
+  # Save for group_modules()
+  set(ALLMODULES ${ALLMODULES} ${mod} CACHE INTERNAL "")
+endfunction()
+
+# USAGE: group_modules()
+# 
+# Set up Source_groups for VS/XCode
+# Has to be called for every target
+# 
+function(group_modules)
+    message(STATUS "allmodules ${ALLMODULES}")
+    foreach(mod ${ALLMODULES})
+        string(TOLOWER "${mod}" gname)
+        source_group(${gname} FILES ${${mod}_MODULE_HEADERS} ${${mod}_MODULE_SOURCES})
+        message(STATUS "set group ${gname} FILES ${${mod}_MODULE_HEADERS} ${${mod}_MODULE_SOURCES}")
+    endforeach()
 endfunction()
 
 # USAGE: prepend(<VARIABLE> <PREP> [ARGS]...)

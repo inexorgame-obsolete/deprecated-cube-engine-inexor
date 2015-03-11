@@ -54,6 +54,8 @@ set(CLIENT_SOURCES ${CLIENT_SOURCES_ENGINE}
   ${CLIENT_SOURCES_FPSGAME} ${COMMON_SOURCES}
   CACHE INTERNAL "")
 
+group_modules()
+
 # Set Binary name
 set(CLIENT_BINARY inexor CACHE INTERNAL "Client binary name.")
 

@@ -8,6 +8,8 @@ set(SERVER_SOURCES ${SERVER_SOURCES_FPSGAME}
   ${SERVER_SOURCES_ENGINE} ${COMMON_SOURCES}
   CACHE INTERNAL "")
 
+group_modules()
+
 # Set Binary name
 set(SERVER_BINARY server CACHE INTERNAL "Server binary name.")
 
