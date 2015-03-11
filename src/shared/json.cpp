@@ -1,5 +1,8 @@
-//  Rewrite of cJSON 1.0r58 in Inexor-optimized object-orientated C-ish C++
-//  cJSON (Copyright (c) 2009 by Dave Gamble) is licensed under the MIT-license
+///  JSON is used to store data-information
+///  Rewrite of cJSON 1.0r58 in Inexor-optimized object-orientated C-ish C++
+///  Author: Malte "a_teammate" Haase
+///  Created:   31.12.2014
+///  cJSON (Copyright (c) 2009 by Dave Gamble) is licensed under the MIT-license
 
 #include "engine.h"
 
@@ -534,6 +537,47 @@ int JSON_Fix(const char *filename)
     delete[] newbuf;
     return 0;
 }
+
+
+
+/// "anims": { "#import" : "generics.json" }
+/// "anims": { "#import" : { "file": "generics.json", "key": "animations", "replace": { "arg4" : "codefragment" }
+/// "anims": { "#import" : { "file": "generics.json", "key": "animations", "replace": { "arg4" : { "#import": } }
+/// "$moreanims": { "#import" : "generics.json" },
+/// "anims": [ "anim1", "anim2", "anim3", "$moreanims"] 
+void JSON_ResolveImport(JSON *j)
+{
+
+}
+
+/// j => "anims"
+void JSON_ScanImport(JSON *j)
+{
+    loopi(j->numchilds())
+    {
+        JSON *c = j->getitem(i);
+        JSON *g = c->child;
+        while(g)
+        {
+            JSON_ScanImport(g);
+            g = g->next;
+        }
+        if(!strcmp(c->name, "#import")) JSON_ResolveImport(c);
+    }
+}
+
+
+/// Resolve any #import filestructure advisers
+void JSON_ResolveImports(JSON *j)
+{
+    JSON *cur = j;
+    while(cur)
+    {
+
+    }
+
+}
+
 
 /// Create basic types:
 JSON *JSON_CreateBool(bool b)               { JSON *item= new JSON(); item->type = b ? JSON_TRUE : JSON_FALSE;  return item; }
