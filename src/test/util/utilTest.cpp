@@ -37,9 +37,22 @@ namespace {
     tchar("asdf",    ".", "asdf");
     tchar(".asdf",   ".", "asdf");
     tchar(".asdf.",  ".", "");
-    tchar("",        "",  "");
-    tchar("hello",   "",  "hello");
+    tchar("hello world this is patric", " ", "patric");
     tstr("asdxx",    "asd", "xx");
-    tstr("asdasd",   "asdasd", "");
+    tstr("", "sauhdsaiuhd", ""); // bugfix test!
+    tstr("asdasd",   "asdasd", ""); // bugfix test!
+  }
+}
+
+namespace {
+  template<typename T> void t(T x, const char *cmp) {
+    string res = to_string(x);
+    expectEq(res, cmp);
+  }
+
+  test(to_string,works) {
+    t("asd", "asd");
+    t(string("asd"), "asd");
+    t(22, "22");
   }
 }

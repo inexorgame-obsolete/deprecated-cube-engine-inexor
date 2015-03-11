@@ -15,6 +15,16 @@ namespace util {
     delete x;
   }
 
+  /// Convert stuff to a string.
+  ///
+  /// This works for anything that has the ostream <<
+  /// operator defined.
+  ///
+  /// This internally simply uses the StringFormatter
+  template<typename T> std::string to_string(T x) {
+    return fmt << x;
+  }
+
   // Split a string and get the last component.
   //
   // Example:
@@ -22,10 +32,7 @@ namespace util {
   // split_find_last("hello world this is patric", ' ')
   // => "patric"
   //
-  // TODO: Generalize; provide slicing iterator for
-  // iterating bidirectionally through a list; provide
-  // a converter to a std::list<string>
-  // TODO: Generalize; make work on any sequence
+  // TODO: Use the boost tokenize lib.
   //
   // @tparam T The type of the separator: Anything that
   //           std::string::find_last_of would take (at
@@ -35,16 +42,17 @@ namespace util {
   // @return The last element of s separated by sep
   //
   template<typename T>
-  std::string split_find_last(const std::string &s, T sep,
-          std::string::size_type pos=std::string::npos ) {
+  std::string split_find_last(const std::string &s, T sep__) {
 
-    std::string::size_type sep_pos, tok_pos;
+    std::string sep = to_string(sep__);
 
-    sep_pos = s.find_last_of(sep);
-    tok_pos = sep_pos == std::string::npos ? 0 : sep_pos+1;
+    size_t pos = s.rfind(sep);
+    if (pos == std::string::npos) return s;
 
-    // TODO: Slice, do not copy.
-    return s.substr(tok_pos);
+    pos += sep.size();
+    if (pos == s.length()) return "";
+
+    return s.substr(pos);
   }
 }
 }
