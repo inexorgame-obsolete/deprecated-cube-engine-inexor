@@ -214,7 +214,7 @@ class EntitySystem
         /**
          * The handle subsystem.
          */
-        CefRefPtr<HandleSubsystem> handle_subsystem;
+        CefRefPtr<handle::HandleSubsystem> handle_subsystem;
 
         /**
          * The teleport subsystem.

@@ -11,9 +11,11 @@
 #include "../../EntitySystemBase.h"
 #include "../../provider/Handle.h"
 #include "../SubsystemBase.h"
+#include "HandleModel.h"
 
 namespace inexor {
 namespace entity {
+namespace handle {
 
 /**
  * This subsystems manages handles.
@@ -33,7 +35,12 @@ class HandleSubsystem : public SubsystemBase
         /**
          * Rendering of the handles.
          */
-        void RenderHandles();
+        void RenderHandles(vec camdir);
+
+        /**
+         * Camera hits a handle.
+         */
+        bool HitHandle(const vec &o, const vec &ray, InstanceRefPtr<EntityInstance> handle);
 
         /**
          * Dragging a handle.
@@ -72,6 +79,7 @@ class HandleSubsystem : public SubsystemBase
         IMPLEMENT_REFCOUNTING(HandleSubsystem);
 };
 
+}
 }
 }
 

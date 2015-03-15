@@ -27,12 +27,14 @@ namespace particle {
     const std::string MASS("mass");
     const std::string DENSITY("density");
     const std::string GRAVITY("gravity");
+    const std::string COLOR("color");
 
     // Particle lifetime
 
     const std::string REMAINING("remaining");
     const std::string ELAPSED("elapsed");
     const std::string LAST_ELAPSED("last_elapsed");
+    const std::string SEQUENCE_NUMBER("sequence_number");
 
     // Emitter time step
 
@@ -105,6 +107,10 @@ namespace particle {
     // Function names
 
     const std::string EMITTER_POINT_FUNCTION("point_emitter");
+    const std::string INITIALIZER_COLOR_EXPRESSION_FUNCTION("color_expression");
+    const std::string INITIALIZER_POSITION_EXPRESSION_FUNCTION("position_expression");
+    const std::string INITIALIZER_VELOCITY_EXPRESSION_FUNCTION("velocity_expression");
+    const std::string INITIALIZER_RANDOM_POSITION_FUNCTION("random_position");
     const std::string INITIALIZER_RANDOM_VELOCITY_FUNCTION("random_velocity");
     const std::string MODIFIER_BROWNIAN_MOTION_FUNCTION("brownian_motion");
     const std::string MODIFIER_CULLING_FUNCTION("culling");

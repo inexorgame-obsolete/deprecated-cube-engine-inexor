@@ -81,60 +81,16 @@ void Point::Execute(TimeStep time_step, EntityInstance* emitter_inst, EntityInst
      */
     (*particle_inst)[DENSITY] = 1.0f;
 
-/*
-    // Create relationship from particle to emitter
-    entity_system->GetRelationshipInstanceManager()->CreateInstance(
-        // The relationship type
-        emitted_by,
-        // Start node: The particle instance
-        particle_inst,
-        // End node: The emitter instance
-        emitter_inst
-    );
-
-    // TODO: Call all initializers
-    for(std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = emitter_inst->outgoing[apply_initializer].begin(); it != emitter_inst->outgoing[apply_initializer].end(); ++it)
-    {
-        (*it)->endNode->GetType()[PARTICLE_INITIALIZER_FUNCTION_ATTRIBUTE_NAME]->functionVal(time_step, emitter_inst, (*it)->endNode.get(), particle_inst.get());
+    /**
+     * The particle color.
+     */
+    (*particle_inst)[COLOR] = vec4(0.8f, 0.8f, 0.8f, 0.8f);
+    /*
+    if (emitter_inst->HasAttribute(COLOR)) {
+        (*particle_inst)[COLOR] = vec4(emitter_inst->GetAttribute(COLOR)->vec4Val);
+    } else {
     }
-
-    // The emitter instance has relationships to modifiers:
-    //
-    //     emitter--[:apply_modifier]-->modifier
-    //
-    // This means that each of these connected modifiers should be applied
-    // on the newly created particle. Therefore we connect the newly created
-    // particle with the modifier:
-    //
-    //     modifier--[:modifies]-->particle
-    //
-    for(std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = emitter_inst->outgoing[apply_modifier].begin(); it != emitter_inst->outgoing[apply_modifier].end(); ++it)
-    {
-        entity_system->GetRelationshipInstanceManager()->CreateInstance(
-            // The relationship type
-            modifies,
-            // Start node: The modifier instance (which is the end node of the
-            // apply_modifiers relationship)
-            (*it)->endNode,
-            // End node: The particle instance
-            particle_inst
-        );
-    }
-
-    // Create relationship from the renderer instance to the newly created particle instance
-    for(std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = emitter_inst->outgoing[apply_renderer].begin(); it != emitter_inst->outgoing[apply_renderer].end(); ++it)
-    {
-        entity_system->GetRelationshipInstanceManager()->CreateInstance(
-            // The relationship type
-            renders,
-            // Start node: The renderer instance (which is the end node of the
-            // apply_renderers relationship)
-            (*it)->endNode,
-            // End node: The particle instance
-            particle_inst
-        );
-    }
-*/
+    */
 
 }
 

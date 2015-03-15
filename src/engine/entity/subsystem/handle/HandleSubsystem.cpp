@@ -8,8 +8,11 @@
 #include "HandleSubsystem.h"
 #include "renderer/Box.h"
 
+// extern physent *camera1 = NULL;
+
 namespace inexor {
 namespace entity {
+namespace handle {
 
 HandleSubsystem::HandleSubsystem() : SubsystemBase(SYS_HANDLE)
 {
@@ -62,6 +65,8 @@ InstanceRefPtr<EntityInstance> HandleSubsystem::CreateHandle(InstanceRefPtr<Enti
     handle[POS] = pos;
     handle[DIR] = dir;
     handle[DIM] = dim;
+    handle[SELECTED] = false;
+    handle[HOVERED] = false;
     relationship_instance_manager->CreateInstance(handles, handle, entity_instance);
     relationship_instance_manager->CreateInstance(renders_handle, handle_renderer, handle);
     return handle;
@@ -76,7 +81,10 @@ InstanceRefPtr<EntityInstance> HandleSubsystem::CreateHandleRenderer(std::string
 	return handle_renderer;
 }
 
-void HandleSubsystem::RenderHandles()
+// extern float rayent(const vec &o, const vec &ray, float radius, int mode, int size, int &orient, int &ent);
+// extern bool rayboxintersect(const vec &b, const vec &s, const vec &o, const vec &ray, float &dist, int &orient);
+
+void HandleSubsystem::RenderHandles(vec camdir)
 {
     if (editmode)
     {
@@ -90,7 +98,34 @@ void HandleSubsystem::RenderHandles()
             std::list<InstanceRefPtr<RelationshipInstance> >::iterator it2 = handle_renderer->outgoing[renders_handle->uuid].begin();
             while (it2 != handle_renderer->outgoing[renders_handle->uuid].end())
             {
-                func->Execute(time_step, (*it2).get());
+                InstanceRefPtr<RelationshipInstance> renders_handle = (*it2);
+                if (renders_handle->alive)
+                {
+
+                    /*
+                    vec pmin(pos);
+                    vec pmax(pmin);
+                    pmin.sub(dim);
+                    pmax.add(dim);
+                    */
+
+
+                    func->Execute(time_step, renders_handle.get());
+
+                } else {
+                    renders_handle->endNode[HOVERED] = false;
+                }
+
+                /*
+                float wdist = rayent(player->o, camdir, 1e16f,
+                                       (editmode && showmat ? RAY_EDITMAT : 0)   // select cubes first
+                                       | (!dragging && entediting ? RAY_ENTS : 0)
+                                       | RAY_SKIPFIRST
+                                       | (passthroughcube==1 ? RAY_PASS : 0), gridsize, entorient, ent);
+*/
+
+
+
                 ++it2;
             }
             func->After(time_step, handle_renderer.get());
@@ -98,6 +133,29 @@ void HandleSubsystem::RenderHandles()
         }
     }
     // render3dbox((*it).second[POS]->vec3Val, 1.0f, 1.0f, 1.0f, 0);
+}
+
+/*
+float rayent(const vec &o, const vec &ray, float radius, int mode, int size, int &orient, int &ent)
+{
+    hitent = -1;
+    hitentdist = radius;
+    hitorient = -1;
+    float dist = raycube(o, ray, radius, mode, size);
+    if((mode&RAY_ENTS) == RAY_ENTS)
+    {
+        float dent = disttooutsideent(o, ray, dist < 0 ? 1e16f : dist, mode, NULL);
+        if(dent < 1e15f && (dist < 0 || dent < dist)) dist = dent;
+    }
+    orient = hitorient;
+    ent = hitentdist == dist ? hitent : -1;
+    return dist;
+}
+*/
+
+bool HandleSubsystem::HitHandle(const vec &o, const vec &ray, InstanceRefPtr<EntityInstance> handle)
+{
+
 }
 
 void HandleSubsystem::Drag(vec camdir)
@@ -121,5 +179,6 @@ void HandleSubsystem::DeleteAll()
 {
 }
 
+}
 }
 }

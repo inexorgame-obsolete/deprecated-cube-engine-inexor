@@ -43,7 +43,7 @@ struct SPointStructure : public vec
 /// after (at least) one parameter point has changed significantly!
 struct SPreComputedPointStructure : public SPointStructure
 {
-	/// normal vector stands 90° to the curve's current position
+	/// normal vector stands 90ï¿½ to the curve's current position
 	vec normal;
 
 	/// tangent vector leaves the curve in point p tangentially
@@ -92,7 +92,7 @@ enum BEZIER_ALGORITHM
 ///
 /// IN HONOR OF
 /// Pierre Etienne BEZIER       (September 1, 1910 - November 25, 1999), French mathematician and engineer at RENAULT
-/// Paul de CASTELJAU           (November 19, 1930), French mathematician and physicist  and engineer ar Citroen
+/// Paul de CASTELJAU           (November 19, 1930), French mathematician and physicist and engineer at Citroen
 /// Sergei Natanovich BERNSTEIN (March 5, 1880 - October 26, 1968), Russian mathematician
 /// Charles HERMITE             (December 24, 1822 - January 14, 1901), French mathematician
 /// Leonardo FIBONACCI          (~1170, ~1240), Italian mathematician
@@ -104,6 +104,7 @@ enum BEZIER_ALGORITHM
 /// http://learn.scannerlicker.net/2014/04/16/bezier-curves-and-type-design-a-tutorial/
 /// https://geom.ivd.kit.edu/downloads/pubs/pub-boehm-prautzsch_2002_preview.pdf
 /// https://www.clear.rice.edu/comp360/lectures/BezSubd.pdf
+///
 class CBezierCurve
 {
 public:
@@ -122,13 +123,13 @@ public:
   /// set the limit of parameter points
   /// @param limit the maximal amount of parameter points which can be passed to the engine
   void SetParamPointLimit(unsigned int input_point_limit) {
-    m_uiParamLimit = input_point_limit
+    m_uiParamLimit = input_point_limit;
   }
 
   /// set the precision of the precomputed points
   /// @param precision the precision level. Higher values mean higher precision.
   void SetCachedCurvePrecision(float precision) {
-    m_fCalcPrecision = precision
+    m_fCalcPrecision = precision;
   }
 
 

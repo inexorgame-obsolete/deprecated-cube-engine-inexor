@@ -33,6 +33,8 @@ class VectorField : public EntityFunction
         mu::Parser parser;
         int args;
         std::string expression;
+        mu::value_type time;
+        mu::value_type sequence_number;
         mu::value_type ix;
         mu::value_type iy;
         mu::value_type iz;

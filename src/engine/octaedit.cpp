@@ -5,7 +5,7 @@ extern int outline;
 
 bool boxoutline = false;
 
-extern CefRefPtr<inexor::entity::HandleSubsystem> handle_subsystem;
+extern CefRefPtr<inexor::entity::handle::HandleSubsystem> handle_subsystem;
 
 void boxs(int orient, vec o, const vec &s)
 {
@@ -326,7 +326,7 @@ void rendereditcursor()
     else
     if(entmoving)
     {
-        entdrag(camdir);
+        // entdrag(camdir);
         handle_subsystem->Drag(camdir);
     }
     else

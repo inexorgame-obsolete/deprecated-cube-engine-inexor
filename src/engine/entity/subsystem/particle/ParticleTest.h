@@ -10,8 +10,11 @@
 
 #include "ParticleSubsystem.h"
 #include "emitter/Point.h"
+#include "initializer/ColorExpression.h"
+#include "initializer/PositionExpression.h"
 #include "initializer/RandomPosition.h"
 #include "initializer/RandomVelocity.h"
+#include "initializer/VelocityExpression.h"
 #include "modifier/BrownianMotion.h"
 #include "modifier/Culling.h"
 #include "modifier/DensityFadeout.h"
@@ -23,6 +26,7 @@
 #include "modifier/VelocityTransformation.h"
 #include "modifier/VectorField.h"
 #include "renderer/Billboard.h"
+#include "renderer/ColorBillboard.h"
 #include "renderer/Cube.h"
 #include "renderer/Model.h"
 #include "renderer/Origin.h"
@@ -44,8 +48,11 @@ class ParticleTest
     private:
 
         FunctionRefPtr point_emitter_function;
+        FunctionRefPtr color_expression_function;
+        FunctionRefPtr position_expression_function;
         FunctionRefPtr random_position_function;
         FunctionRefPtr random_velocity_function;
+        FunctionRefPtr velocity_expression_function;
         FunctionRefPtr brownian_motion_function;
         FunctionRefPtr culling_function;
         FunctionRefPtr density_fadeout_function;
@@ -57,14 +64,18 @@ class ParticleTest
         FunctionRefPtr velocity_damper_function;
         FunctionRefPtr velocity_transformation_function;
         FunctionRefPtr billboard_renderer_function;
+        FunctionRefPtr color_billboard_renderer_function;
         FunctionRefPtr cube_renderer_function;
         FunctionRefPtr model_renderer_function;
         FunctionRefPtr origin_renderer_function;
 
         TypeRefPtr<EntityType> default_particle_type;
         TypeRefPtr<EntityType> point_emitter;
+        TypeRefPtr<EntityType> color_expression_initializer_type;
+        TypeRefPtr<EntityType> position_expression_initializer_type;
         TypeRefPtr<EntityType> random_position_initializer_type;
         TypeRefPtr<EntityType> random_velocity_initializer_type;
+        TypeRefPtr<EntityType> velocity_expression_initializer_type;
         TypeRefPtr<EntityType> brownian_motion_modifier_type;
         TypeRefPtr<EntityType> culling_modifier_type;
         TypeRefPtr<EntityType> density_fadeout_modifier_type;
@@ -76,6 +87,7 @@ class ParticleTest
         TypeRefPtr<EntityType> velocity_transformation_modifier_type;
         TypeRefPtr<EntityType> vector_field_modifier_type;
         TypeRefPtr<EntityType> billboard_renderer_type;
+        TypeRefPtr<EntityType> color_billboard_renderer_type;
         TypeRefPtr<EntityType> cube_renderer_type;
         TypeRefPtr<EntityType> model_renderer_type;
         TypeRefPtr<EntityType> origin_renderer_type;
@@ -85,10 +97,13 @@ class ParticleTest
         InstanceRefPtr<EntityInstance> point_emitter_3;
         InstanceRefPtr<EntityInstance> point_emitter_4;
 
+        InstanceRefPtr<EntityInstance> color_expression_initializer_1;
+        InstanceRefPtr<EntityInstance> position_expression_initializer_1;
         InstanceRefPtr<EntityInstance> random_velocity_initializer_1;
         InstanceRefPtr<EntityInstance> random_velocity_initializer_2;
         InstanceRefPtr<EntityInstance> random_position_initializer_1;
         InstanceRefPtr<EntityInstance> random_position_initializer_2;
+        InstanceRefPtr<EntityInstance> velocity_expression_initializer_1;
 
         InstanceRefPtr<EntityInstance> brownian_motion_modifier_1;
         InstanceRefPtr<EntityInstance> culling_modifier_1;
@@ -108,11 +123,15 @@ class ParticleTest
         InstanceRefPtr<EntityInstance> billboard_renderer_3;
         InstanceRefPtr<EntityInstance> billboard_renderer_4;
         InstanceRefPtr<EntityInstance> billboard_renderer_5;
+        InstanceRefPtr<EntityInstance> color_billboard_renderer_1;
         InstanceRefPtr<EntityInstance> model_renderer_1;
         InstanceRefPtr<EntityInstance> cube_renderer_1;
         InstanceRefPtr<EntityInstance> origin_renderer_1;
 
         // InstanceRefPtr<RelationshipInstance> rel_point_emitter_random_velocity_1;
+        InstanceRefPtr<RelationshipInstance> rel_point_emitter_color_expression_1;
+        InstanceRefPtr<RelationshipInstance> rel_point_emitter_position_expression_1;
+        InstanceRefPtr<RelationshipInstance> rel_point_emitter_velocity_expression_1;
         InstanceRefPtr<RelationshipInstance> rel_point_emitter_random_position_1;
         InstanceRefPtr<RelationshipInstance> rel_point_emitter_random_position_2;
         InstanceRefPtr<RelationshipInstance> rel_point_emitter_random_position_3;
@@ -154,6 +173,7 @@ class ParticleTest
         InstanceRefPtr<RelationshipInstance> rel_point_emitter_billboard_renderer_2;
         InstanceRefPtr<RelationshipInstance> rel_point_emitter_billboard_renderer_3;
         InstanceRefPtr<RelationshipInstance> rel_point_emitter_billboard_renderer_4;
+        InstanceRefPtr<RelationshipInstance> rel_point_emitter_color_billboard_renderer_1;
         InstanceRefPtr<RelationshipInstance> rel_point_emitter_model_renderer_1;
         InstanceRefPtr<RelationshipInstance> rel_point_emitter_model_renderer_2;
         InstanceRefPtr<RelationshipInstance> rel_point_emitter_model_renderer_3;

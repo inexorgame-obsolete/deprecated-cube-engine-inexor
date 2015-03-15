@@ -5,8 +5,8 @@
  *      Author: aschaeffer
  */
 
-#ifndef ENTITY_SUBSYSTEM_PARTICLE_RENDERER_CUBE_H_
-#define ENTITY_SUBSYSTEM_PARTICLE_RENDERER_CUBE_H_
+#ifndef ENTITY_SUBSYSTEM_HANDLE_RENDERER_BOX_H_
+#define ENTITY_SUBSYSTEM_HANDLE_RENDERER_BOX_H_
 
 #include "../../../EntitySystemBase.h"
 #include "../../../EntitySystem.h"
@@ -14,6 +14,7 @@
 
 namespace inexor {
 namespace entity {
+namespace handle {
 
 class Box : public EntityFunction
 {
@@ -45,6 +46,9 @@ class Box : public EntityFunction
 
     private:
 
+        void RenderFace(vec pos, vec pmax, int orient, int actual_orient);
+        void SetColor(int orient, int orient2);
+
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(Box);
 
@@ -52,5 +56,6 @@ class Box : public EntityFunction
 
 }
 }
+}
 
-#endif /* ENTITY_SUBSYSTEM_PARTICLE_RENDERER_CUBE_H_ */
+#endif /* ENTITY_SUBSYSTEM_HANDLE_RENDERER_BOX_H_ */

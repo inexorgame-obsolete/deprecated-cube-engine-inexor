@@ -11,7 +11,7 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-RandomPosition::RandomPosition() : EntityFunction(INITIALIZER_RANDOM_VELOCITY_FUNCTION)
+RandomPosition::RandomPosition() : EntityFunction(INITIALIZER_RANDOM_POSITION_FUNCTION)
 {
 }
 

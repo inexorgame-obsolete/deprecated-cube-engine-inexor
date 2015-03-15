@@ -76,10 +76,14 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/handle/HandleSubsystem
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/handle/renderer/Box
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/ParticleSubsystem
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/ExpressionBase
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/ParticleTest
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/emitter/Point
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/initializer/ColorExpression
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/initializer/PositionExpression
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/initializer/RandomPosition
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/initializer/RandomVelocity
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/initializer/VelocityExpression
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/BrownianMotion
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/Culling
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/DensityFadeout
@@ -92,6 +96,7 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/VelocityTransformation
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/modifier/VectorField
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/renderer/Billboard
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/renderer/ColorBillboard
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/renderer/Cube
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/renderer/Model
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/entity/subsystem/particle/renderer/Origin
@@ -126,7 +131,8 @@ set(CLIENT_SOURCES_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/shadowmap
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/lightmap
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/glare
-    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/blob)
+    ${CMAKE_CURRENT_SOURCE_DIR}/../engine/blob
+    ${CMAKE_CURRENT_SOURCE_DIR}/../geom/BezierCurve)
 
 set(CLIENT_HEADERS_ENGINE
     ${CMAKE_CURRENT_SOURCE_DIR}/../engine/animmodel

@@ -28,27 +28,27 @@ namespace entity {
     // Relationship type definitions
 
     const std::string REL_ANY("*");
-    const std::string REL_HANDLES("handles");
-    const std::string REL_RENDERS_HANDLE("renders_handle");
+    // const std::string REL_HANDLES("handles");
+    // const std::string REL_RENDERS_HANDLE("renders_handle");
     const std::string REL_TELEPORTING("teleporting");
 
     // Entity type definitions
 
     const std::string ENT_ANY("*");
-    const std::string ENT_HANDLE("handle");
-    const std::string ENT_HANDLE_RENDERER("handle_renderer");
+    // const std::string ENT_HANDLE("handle");
+    // const std::string ENT_HANDLE_RENDERER("handle_renderer");
     const std::string ENT_TELEPORT("teleport");
     const std::string ENT_TELEDEST("teledest");
 
     // Entity function definitions
 
     const std::string FUNC_TELEPORTED("teleported");
-    const std::string FUNC_RENDERS_HANDLE("renders_handle");
-    const std::string FUNC_BOX_HANDLE_RENDERER("box_handle_renderer");
+    // const std::string FUNC_RENDERS_HANDLE("renders_handle");
+    // const std::string FUNC_BOX_HANDLE_RENDERER("box_handle_renderer");
 
     // Attribute names
 
-    const std::string FUNC_RENDERS_HANDLE_ATTRIBUTE_NAME("renders_handle");
+    // const std::string FUNC_RENDERS_HANDLE_ATTRIBUTE_NAME("renders_handle");
 
 }
 }

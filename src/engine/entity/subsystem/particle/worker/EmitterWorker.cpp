@@ -68,7 +68,7 @@ int EmitterWorker::Work(void *data)
             w->frame_millis = SDL_GetTicks();
             w->LimitFps(w->frame_millis, w->frame_last_millis, w->maxfps);
 
-            if (!game::ispaused()) // lieber ein frame auslassen (wird eh wieder "reingeholt")
+            if (!game::ispaused())
             {
                 w->elapsed_millis = w->frame_millis - w->frame_last_millis;
                 TimeStep time_step(
@@ -82,9 +82,16 @@ int EmitterWorker::Work(void *data)
                 int batches_to_be_emitted = millistoprocess / w->emitter_instance[RATE]->intVal;
                 w->emitter_instance[MILLIS_TO_PROCESS] = millistoprocess % w->emitter_instance[RATE]->intVal;
 
-                // Emit particles
+                // Emit n batches of particles
                 for (int batch = 0; batch < batches_to_be_emitted; batch++)
                 {
+                    // Call the before function of all initializers
+                    for(std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = w->emitter_instance->outgoing[w->apply_initializer->uuid].begin(); it != w->emitter_instance->outgoing[w->apply_initializer->uuid].end(); ++it)
+                    {
+                        (*it)->endNode->GetType()[PARTICLE_INITIALIZER_FUNCTION_ATTRIBUTE_NAME]->functionVal->Before(time_step, (*it)->endNode.get());
+                    }
+
+                    // Emit a single batch of n particles
                     for (int part = 0; part < w->emitter_instance[BATCH_SIZE]->intVal; part++)
                     {
                         // w->function->Execute(time_step, w->particle_type.get(), w->emitter_instance.get());
@@ -94,12 +101,14 @@ int EmitterWorker::Work(void *data)
                             // by removing it from the pool and reanimate the
                             // relationships
 
-                            // Fetch particle from pool
+                            // Reanimate a dead particle: fetch a particle from pool and set the required attributes
                             InstanceRefPtr<EntityInstance> particle_inst = w->particle_pool.back();
                             w->particle_pool.pop_back();
                             particle_inst[ELAPSED] = 0;
                             particle_inst[LAST_ELAPSED] = 0;
+                            particle_inst[SEQUENCE_NUMBER] = part;
 
+                            // Call emitter
                             w->function->Execute(time_step, w->emitter_instance.get(), particle_inst.get());
 
                             // Reanimate all outgoing relationships
@@ -123,16 +132,20 @@ int EmitterWorker::Work(void *data)
                             // Call all initializers
                             for(std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = w->emitter_instance->outgoing[w->apply_initializer->uuid].begin(); it != w->emitter_instance->outgoing[w->apply_initializer->uuid].end(); ++it)
                             {
-                                (*it)->endNode->GetType()[PARTICLE_INITIALIZER_FUNCTION_ATTRIBUTE_NAME]->functionVal(time_step, w->emitter_instance.get(), (*it)->endNode.get(), particle_inst.get());
+                                (*it)->endNode->GetType()[PARTICLE_INITIALIZER_FUNCTION_ATTRIBUTE_NAME]->functionVal->Execute(time_step, w->emitter_instance.get(), (*it)->endNode.get(), particle_inst.get());
                             }
 
                         } else {
                             // No more particles available in the pool
-                            // Create a new particle instance and wire them together
+                            // We need to create a completely new particle and wire them together
 
+                            // Create a new particle instance and set the required attributes
                             InstanceRefPtr<EntityInstance> particle_inst = w->entity_instance_manager->Create(w->particle_type);
                             particle_inst[ELAPSED] = 0;
                             particle_inst[LAST_ELAPSED] = 0;
+                            particle_inst[SEQUENCE_NUMBER] = part;
+
+                            // Call emitter
                             w->function->Execute(time_step, w->emitter_instance.get(), particle_inst.get());
 
                             // Create a relationship from particle instance to it's origin emitter instance
@@ -157,6 +170,12 @@ int EmitterWorker::Work(void *data)
                             }
 
                         }
+                    }
+
+                    // Call the after function of all initializers
+                    for(std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = w->emitter_instance->outgoing[w->apply_initializer->uuid].begin(); it != w->emitter_instance->outgoing[w->apply_initializer->uuid].end(); ++it)
+                    {
+                        (*it)->endNode->GetType()[PARTICLE_INITIALIZER_FUNCTION_ATTRIBUTE_NAME]->functionVal->After(time_step, (*it)->endNode.get());
                     }
                 }
 
