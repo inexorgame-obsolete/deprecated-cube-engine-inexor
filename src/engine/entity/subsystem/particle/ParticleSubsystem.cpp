@@ -7,7 +7,7 @@
 
 #include "ParticleSubsystem.h"
 
-extern CefRefPtr<inexor::entity::HandleSubsystem> handle_subsystem;
+extern CefRefPtr<inexor::entity::handle::HandleSubsystem> handle_subsystem;
 
 namespace inexor {
 namespace entity {

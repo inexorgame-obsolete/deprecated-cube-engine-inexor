@@ -9,8 +9,6 @@
 #include <time.h>
 #include <cube.h>
 
-using namespace inexor::entity::particle;
-
 namespace inexor {
 namespace entity {
 
@@ -61,18 +59,18 @@ void EntitySystem::InitProviders()
 void EntitySystem::InitSubsystems()
 {
     // Create subsystem instances
-    handle_subsystem = new HandleSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
+    handle_subsystem = new handle::HandleSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
     teleport_subsystem = new TeleportSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
-    particle_subsystem = new ParticleSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
+    particle_subsystem = new particle::ParticleSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
 
     // Store the subsystems and it's type(!) in the subsystem type map, so that
     // the concrete subsystem can be retrieved instead of only as SubsystemBase
     //
     // ex: CefRefPtr<TeleportSubsystem> teleport_subsystem = entity_system->GetSubsystem<TeleportSubsystem>();
     //
-    subsystemTypeMap.Set<HandleSubsystem>(handle_subsystem.get());
+    subsystemTypeMap.Set<handle::HandleSubsystem>(handle_subsystem.get());
     subsystemTypeMap.Set<TeleportSubsystem>(teleport_subsystem.get());
-    subsystemTypeMap.Set<ParticleSubsystem>(particle_subsystem.get());
+    subsystemTypeMap.Set<particle::ParticleSubsystem>(particle_subsystem.get());
 
     // Store all subsystems in a vector:
     subsystems.push_back(handle_subsystem);

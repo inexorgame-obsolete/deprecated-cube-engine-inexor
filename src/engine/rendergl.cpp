@@ -11,7 +11,7 @@ bool hasVBO = false, hasDRE = false, hasOQ = false, hasTR = false, hasFBO = fals
 int hasstencil = 0;
 
 extern CefRefPtr<inexor::entity::particle::ParticleSubsystem> particle_subsystem;
-extern CefRefPtr<inexor::entity::HandleSubsystem> handle_subsystem;
+extern CefRefPtr<inexor::entity::handle::HandleSubsystem> handle_subsystem;
 
 VAR(renderpath, 1, 0, 0);
 VAR(glversion, 1, 0, 0);
@@ -1446,7 +1446,7 @@ void drawglare()
     renderwater();
     rendermaterials();
     renderalphageom();
-    handle_subsystem->RenderHandles();
+    handle_subsystem->RenderHandles(camdir);
     particle_subsystem->RenderFaces();
     particle_subsystem->RenderParticles();
     renderparticles();
@@ -1594,7 +1594,7 @@ void drawreflection(float z, bool refract, int fogdepth, const bvec &col)
     if(refracting) rendergrass();
     rendermaterials();
     renderalphageom(fogging);
-    handle_subsystem->RenderHandles();
+    handle_subsystem->RenderHandles(camdir);
     particle_subsystem->RenderFaces();
     particle_subsystem->RenderParticles();
     renderparticles();
@@ -2121,7 +2121,7 @@ void gl_drawframe()
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     // TODO:
-    handle_subsystem->RenderHandles();
+    handle_subsystem->RenderHandles(camdir);
     particle_subsystem->RenderFaces();
     particle_subsystem->RenderParticles();
 

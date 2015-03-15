@@ -13,9 +13,11 @@
 #include "../domain/graph/EntityFunction.h"
 #include "../domain/graph/EntityType.h"
 #include "../domain/graph/RelationshipType.h"
+#include "../subsystem/handle/HandleModel.h"
 
 namespace inexor {
 namespace entity {
+namespace handle {
 
 class HandleEntityTypeProvider : public EntityTypeProvider
 {
@@ -73,6 +75,7 @@ class RendersHandleRelationshipTypeProvider : public RelationshipTypeProvider
 
 };
 
+}
 }
 }
 

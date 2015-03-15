@@ -12,8 +12,10 @@ namespace entity {
 namespace particle {
 
 VectorField::VectorField(std::string expression)
-    : EntityFunction(MODIFIER_VECTOR_FIELD_FUNCTION), args(3), expression(expression)
+    : EntityFunction(MODIFIER_VECTOR_FIELD_FUNCTION), args(4), expression(expression)
 {
+    parser.DefineVar("time", &time);
+    parser.DefineVar("sn", &sequence_number);
     parser.DefineVar("x", &ix);
     parser.DefineVar("y", &iy);
     parser.DefineVar("z", &iz);
@@ -48,6 +50,8 @@ void VectorField::Before(TimeStep time_step, EntityInstance* modifier)
 void VectorField::Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle)
 {
     // TODO: check this -> add modifier position variables: mx, my, mz
+    time = (float) SDL_GetTicks();
+    sequence_number = (*particle)[SEQUENCE_NUMBER]->intVal;
     ix = (*particle)[POS]->vec3Val.x - (*modifier)[POS]->vec3Val.x;
     iy = (*particle)[POS]->vec3Val.y - (*modifier)[POS]->vec3Val.y;
     iz = (*particle)[POS]->vec3Val.z - (*modifier)[POS]->vec3Val.z;

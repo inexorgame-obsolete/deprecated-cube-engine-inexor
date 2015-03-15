@@ -35,7 +35,7 @@ CefRefPtr<inexor::entity::EntitySystem> entity_system;
 CefRefPtr<inexor::entity::EntityTest> entity_test;
 CefRefPtr<inexor::entity::particle::ParticleSubsystem> particle_subsystem;
 CefRefPtr<inexor::entity::particle::ParticleTest> particle_test;
-CefRefPtr<inexor::entity::HandleSubsystem> handle_subsystem;
+CefRefPtr<inexor::entity::handle::HandleSubsystem> handle_subsystem;
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // game exit
@@ -1366,7 +1366,7 @@ int main(int argc, char **argv)
     logoutf("init: particle subsystem");
     particle_subsystem = entity_system->GetSubsystem<inexor::entity::particle::ParticleSubsystem>();
     logoutf("init: handle subsystem");
-    handle_subsystem = entity_system->GetSubsystem<inexor::entity::HandleSubsystem>();
+    handle_subsystem = entity_system->GetSubsystem<inexor::entity::handle::HandleSubsystem>();
 
     logoutf("init: entity system tests");
     entity_test = new inexor::entity::EntityTest();

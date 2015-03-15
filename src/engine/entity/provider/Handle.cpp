@@ -9,7 +9,7 @@
 
 namespace inexor {
 namespace entity {
-
+namespace handle {
 
 HandleEntityTypeProvider::HandleEntityTypeProvider()
     : EntityTypeProvider(ENT_HANDLE)
@@ -65,6 +65,6 @@ RendersHandleRelationshipTypeProvider::~RendersHandleRelationshipTypeProvider()
 {
 }
 
-
+}
 }
 }
