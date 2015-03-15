@@ -62,17 +62,18 @@ static inline void swap(T &a, T &b)
 #undef min
 #endif
 
-// return maximum of two values
-template<class T>
-static inline T max(T a, T b)
+#include <algorithm>
+
+// return minimal or maximal of two values
+template<class T, class U>
+static inline T max(T a, U b)
 {
-    return a > b ? a : b;
+    return std::max(a, b);
 }
-// return minimum of two values
-template<class T>
-static inline T min(T a, T b)
+template<class T, class U>
+static inline T min(T a, U b)
 {
-    return a < b ? a : b;
+    return std::min(a, b);
 }
 
 // clamping means to return values in a specific range
@@ -1102,7 +1103,7 @@ struct unionfind
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // manual implementation of queues
 // DEPRECATED! please use std::deque instead!
-// hello world
+
 template <class T, int SIZE> struct queue
 {
     int head, tail, len;

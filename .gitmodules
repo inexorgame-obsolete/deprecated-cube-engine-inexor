@@ -8,7 +8,7 @@
 	branch = master
 [submodule "src/platform_osx"]
 	path = src/platform_osx
-	url = https://github.com/Theintercooler/Platform-osx.git
+	url = https://github.com/inexor-game/platform_osx.git
 	branch = master
 [submodule "src/libraries/muparser"]
 	path = src/libraries/muparser
