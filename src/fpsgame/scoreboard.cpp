@@ -1,3 +1,9 @@
+/// Warning
+/// Do not comment or use the following code in new work!
+/// The old scoreboard will be replaced with new user interfaces using CEF...
+/// -Hanni
+
+
 // creation of scoreboard
 #include "game.h"
 

@@ -1,3 +1,9 @@
+/// Warning
+/// Do not comment or use the following code in new work!
+/// Hanacks new entity system will replace this system sooner or later...
+/// -Hanni
+
+
 #include "game.h"
 
 namespace entities

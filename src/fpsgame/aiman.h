@@ -88,7 +88,7 @@ namespace aiman
         return teams.length() ? teams.last().team : "";
     }
 
-	// 
+	/// 
     static inline bool validaiclient(clientinfo *ci)
     {
         return ci->clientnum >= 0 && ci->state.aitype == AI_NONE && (ci->state.state!=CS_SPECTATOR || ci->local || (ci->privilege && !ci->warned));

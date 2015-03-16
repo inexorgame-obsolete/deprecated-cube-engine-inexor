@@ -1,3 +1,10 @@
+/// Warning
+/// Do not comment or use the following code in new work!
+/// It will soon be thrown away due to the success of rendering user interfaces with Chromium Embedded Framework (CEF)
+/// The old scoreboard will be replaced sooner or later...
+/// -Hanni
+
+
 #include "engine.h"
 
 struct resolverthread

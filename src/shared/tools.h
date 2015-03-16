@@ -855,7 +855,6 @@ template <class T> struct vector
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // manual implementation of hashsets
 // please make sure you know the difference between hashset and std::map!
-
 template<class T> struct hashset
 {
     typedef T elem;

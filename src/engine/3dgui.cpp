@@ -1,3 +1,9 @@
+/// Warning
+/// Do not comment or use the following code in new work!
+/// It will soon be thrown away due to the success of rendering user interfaces with Chromium Embedded Framework (CEF)
+/// -Hanni
+
+
 // creates multiple gui windows that float inside the 3d world
 
 // special feature is that its mostly *modeless*: you can use this menu while playing, without turning menus on or off

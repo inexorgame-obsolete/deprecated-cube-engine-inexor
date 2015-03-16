@@ -1,3 +1,10 @@
+/// Warning
+/// Do not comment or use the following code in new work!
+/// It will soon be thrown away due to the success of rendering user interfaces with Chromium Embedded Framework (CEF)
+/// A new console interface using CEF is already being implemented!
+/// -Hanni
+
+
 // console.cpp: the console buffer, its display, and command line control
 
 #include "engine.h"
