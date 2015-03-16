@@ -1,51 +1,60 @@
-// generic useful stuff for any C++ program
+/// generic useful stuff for any C++ program
 
-// include guard to prevent this file from being included twice (similar to #pgrama once on Windows)
+/// include guard to prevent this file from being included twice (similar to #pragma once on Windows)
 #ifndef _TOOLS_H
 #define _TOOLS_H
 
-// short type definitions 
-// please note that these are real definitions and not just macros!
+
+/// short type definitions 
+/// please note: these are real type definitions and not just macros!
+/// (those definitions are not really neccesary)
 typedef unsigned char uchar;
 typedef unsigned short ushort;
 typedef unsigned int uint;
 typedef signed long long int llong;
 typedef unsigned long long int ullong;
 
-// debug assertions
+
+/// debug assertions
+/// assert.h is part of standard library
 #ifdef _DEBUG
-#define ASSERT(c) assert(c)
+  #define ASSERT(c) assert(c)
 #else
-#define ASSERT(c) if(c) {} // if not in debug mode, ignore assertion ("did it work? alright then do nothing")
+  #define ASSERT(c) if(c) {} /// if not in debug mode, ignore assertion ("did it work? alright then do nothing {}")
 #endif
 
-// __restrict is a keyword that can be used in pointer declarations
-// http://stackoverflow.com/questions/745870/realistic-usage-of-the-c99-restrict-keyword
-// http://en.wikipedia.org/wiki/Restrict
+
+/// __restrict is a keyword that can be used in pointer declarations
+/// http://stackoverflow.com/questions/745870/realistic-usage-of-the-c99-restrict-keyword
+/// http://en.wikipedia.org/wiki/Restrict
 #if defined(__GNUC__) || (defined(_MSC_VER) && _MSC_VER >= 1400)
-#define RESTRICT __restrict
+  #define RESTRICT __restrict
 #else
-#define RESTRICT
+  #define RESTRICT
 #endif
 
+
+/// ?
 #ifdef __GNUC__
-#define UNUSED __attribute__((unused))
+  #define UNUSED __attribute__((unused))
 #else
-#define UNUSED
+  #define UNUSED
 #endif
 
-// include std::new operator to allocate memory 
-// explicitly needed to include new for sauers selfmade vector-functions
+
+/// include std::new operator to allocate memory 
+/// explicitly needed to include new for sauers selfmade vector-functions
 #include <new>
 #include <cstddef>
 
-// make sure swap is not defined somewhere else
+
+/// make sure swap is not defined somewhere else
 #ifdef swap
-#undef swap
+  #undef swap
 #endif
 
-// make sure swap is defined here again
-// swapping two items means to change the value with each other
+/// make sure swap is defined here again
+/// (swapping two items means to change the value with each other)
 template<class T>
 static inline void swap(T &a, T &b)
 {
@@ -54,17 +63,26 @@ static inline void swap(T &a, T &b)
     b = t;
 }
 
-// make sure min and max are not defined somewhere else
+
+/// make sure min and max are not defined somewhere else
 #ifdef max
-#undef max
+  #undef max
 #endif
 #ifdef min
-#undef min
+  #undef min
 #endif
 
+/// "A range is any sequence of objects that can be accessed through iterators or pointers, 
+///  such as an array or an instance of some of the STL containers. Notice though, that algorithms 
+///  operate through iterators directly on the values, not affecting in any way the structure of any 
+///  possible container (it never affects the size or storage allocation of the container)."
+///  ---------------------------------------------------------------------------------------
+///  source: http://www.cplusplus.com/reference/algorithm/  [16.03.2015]
 #include <algorithm>
 
-// return minimal or maximal of two values
+
+/// return minimal or maximal of two values
+/// based on C++ standard library
 template<class T, class U>
 static inline T max(T a, U b)
 {
@@ -76,22 +94,27 @@ static inline T min(T a, U b)
     return std::min(a, b);
 }
 
-// clamping means to return values in a specific range
-// there is a minimal and a maximal value
+
+/// clamping means to return values in a specific range
+/// there is a minimal and a maximal value
+/// if the parameter is out of range, the range limit (min/max)
+/// will be returned
 template<class T, class U>
 static inline T clamp(T a, U b, U c)
 {
     return max(T(b), min(a, T(c)));
 }
 
-// weird random number generator
-#define rnd(x) ((int)(randomMT()&0x7FFFFFFF)%(x)) // remove +- (sign) bit ?
-#define rndscale(x) (float((randomMT()&0x7FFFFFFF)*double(x)/double(0x7FFFFFFF)))
-#define detrnd(s, x) ((int)(((((uint)(s))*1103515245+12345)>>16)%(x)))
 
-// for loop macros
-// macros should become extinct because they're deprecated (for this purpose)
-// and are difficult to debug in some IDEs
+/// weird random number generator
+#define rnd(x) ((int)(randomMT()&0x7FFFFFFF)%(x)) /// remove +- (sign) bit ?
+#define rndscale(x) (float((randomMT()&0x7FFFFFFF)*double(x)/double(0x7FFFFFFF)))
+#define detrnd(s, x) ((int)(((((uint)(s))*1103515245+12345)>>16)%(x))) /// black magic
+
+
+/// "for"-loop macro definitions
+/// macros should become extinct because they're deprecated (for this purpose)
+/// and are difficult to debug in some IDEs
 #define loop(v,m) for(int v = 0; v < int(m); ++v)
 #define loopi(m) loop(i,m)
 #define loopj(m) loop(j,m)
@@ -103,79 +126,82 @@ static inline T clamp(T a, U b, U c)
 #define loopkrev(m) looprev(k,m)
 #define looplrev(m) looprev(l,m)
 
-// delete dynamicly allocated memory on the heap correctly
-#define DELETEP(p) if(p) { delete   p; p = 0; }
-#define DELETEA(p) if(p) { delete[] p; p = 0; }
 
-// some important mathematical constants
+/// delete dynamicly allocated memory on the heap correctly
+/// please make sure you have appropriate garbage collectors!
+#define DELETEP(p) if(p) { delete   p; p = 0; } /// "delta pointer"
+#define DELETEA(p) if(p) { delete[] p; p = 0; } /// "delta array"
+
+
+/// some important mathematical macro constants
 #define PI  (3.1415927f)
 #define PI2 (2*PI)
 #define SQRT2 (1.4142136f)
 #define SQRT3 (1.7320508f)
 #define RAD (PI / 180.0f)
 
+
 // more mathematical constants
 #ifdef WIN32
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
-#ifndef M_LN2
-#define M_LN2 0.693147180559945309417
-#endif
-
-// disable unuseful MSVC compiler warnings
-#ifndef __GNUC__
-#pragma warning (3: 4189)       // local variable is initialized but not referenced
-#pragma warning (disable: 4244) // conversion from 'int' to 'float', possible loss of data
-#pragma warning (disable: 4267) // conversion from 'size_t' to 'int', possible loss of data
-#pragma warning (disable: 4355) // 'this' : used in base member initializer list
-#pragma warning (disable: 4996) // 'strncpy' was declared deprecated
-#endif
-
-#define strcasecmp _stricmp
-#define strncasecmp _strnicmp
-// divide multiple paths in one string with this value
-#define PATHDIV '\\'
-
+  #ifndef M_PI
+    #define M_PI 3.14159265358979323846
+  #endif
+  #ifndef M_LN2
+    #define M_LN2 0.693147180559945309417
+  #endif
+  // disable unuseful Visual Studio compiler warnings
+  #ifndef __GNUC__
+    #pragma warning (3: 4189)       // local variable is initialized but not referenced
+    #pragma warning (disable: 4244) // conversion from 'int' to 'float', possible loss of data
+    #pragma warning (disable: 4267) // conversion from 'size_t' to 'int', possible loss of data
+    #pragma warning (disable: 4355) // 'this' : used in base member initializer list
+    #pragma warning (disable: 4996) // 'strncpy' was declared deprecated
+  #endif
+  #define strcasecmp _stricmp
+  #define strncasecmp _strnicmp
+  #define PATHDIV '\\' /// divide multiple paths in one string with this value
 #else
-// adapt macros to OS specifications
-#define __cdecl // is this Win32 specific?
-#define _vsnprintf vsnprintf
-// use / as path divider in not-windows systems
-#define PATHDIV '/'
+  // adapt macros to OS specifications
+  #define __cdecl // is this Win32 specific?
+  #define _vsnprintf vsnprintf
+  #define PATHDIV '/' /// use / as path divider in not-windows systems
 #endif
 
+
+/// ?
 #ifdef __GNUC__
-#define PRINTFARGS(fmt, args) __attribute__((format(printf, fmt, args)))
+  #define PRINTFARGS(fmt, args) __attribute__((format(printf, fmt, args)))
 #else
-#define PRINTFARGS(fmt, args)
+  #define PRINTFARGS(fmt, args)
 #endif
+
 
 // "easy safe strings"
 #define MAXSTRLEN 260
 typedef char string[MAXSTRLEN];
 
-// format string using variable parameter lists
+
+/// format string using variable parameter lists (va_list)
 inline void vformatstring(char *d, const char *fmt, va_list v, int len = MAXSTRLEN) 
 { 
 	_vsnprintf(d, len, fmt, v);
-	d[len-1] = 0; // end string using binary 0 (\0)
+	d[len-1] = 0; /// end string using binary 0 ('\0')
 }
+
 
 // Please note that some functions could be replaced with standard librarie's functions
 // but the reason why it was implemented manually is that the C++ standard library was not as 
-// funished and tested as it is today in these days.
-
+// finished and tested enough as it is today in these days.
 // the suffix _s means that the standard librarie's functions are memory size safe
-// because you must pass the amount of bytes you want to copy to the destination string
+// because you must pass the amount of bytes you want to copy to the destination string.
 
 // copy string from source to destination
-// DEPRECATED! use strcpy_s instead!
+// DEPRECATED! use  'strcpy_s'  from <string> instead!
 inline char *copystring(char *d, const char *s, size_t len = MAXSTRLEN)
 {
     size_t slen = min(strlen(s)+1, len);
     memcpy(d, s, slen);
-    d[slen-1] = 0; // end string using binary 0 (\0)
+    d[slen-1] = 0; /// end string using binary 0 (\0)
     return d;
 }
 
@@ -187,8 +213,8 @@ inline char *concatstring(char *d, const char *s, size_t len = MAXSTRLEN)
 	return used < len ? copystring(d+used, s, len-used) : d;
 }
 
-// strings in the old code are usually initialized with
-// formatstring(hanni)("hello world"); where hello world is the constructor call for a stringformatter instance
+/// strings in the old code are usually initialized with
+/// formatstring(hanni)("hello world"); where hello world is the constructor call for a stringformatter instance
 struct stringformatter
 {
     char *buf;
@@ -202,42 +228,53 @@ struct stringformatter
     }
 };
 
+/// ?
 extern char *tempformatstring(const char *fmt, ...) PRINTFARGS(1, 2);
 
+/// Sauerbraten mostly initialises string using 
+/// 
+/// defformatstring(test_string)("hello_world");
+/// 
 #define formatstring(d) stringformatter((char *)d)
 #define defformatstring(d) string d; formatstring(d)
 #define defvformatstring(d,last,fmt) string d; { va_list ap; va_start(ap, last); vformatstring(d, fmt, ap); va_end(ap); }
 
-// macros for looping though vectors
-// loop macros are deprecated and should not be used anymore!
+
+/// macros for looping though vectors
+/// loop macros are deprecated and should not be used anymore!
 #define loopv(v)    for(int i = 0; i<(v).length(); i++)
 #define loopvj(v)   for(int j = 0; j<(v).length(); j++)
 #define loopvk(v)   for(int k = 0; k<(v).length(); k++)
 #define loopvrev(v) for(int i = (v).length()-1; i>=0; i--)
 
-// template implementation of buffers (network e.g.)
+
+/// template implementation of buffers (networking e.g.)
 template <class T>
 struct databuf
 {
-	// state of the buffer
+	/// state enumeration of the buffer
     enum
     {
         OVERREAD  = 1<<0,
         OVERWROTE = 1<<1
     };
 
-    T *buf; // buffer object
+    T *buf; /// buffer template object
     int len, maxlen;
     uchar flags;
 
-	// all members are initialised in this constructur's constructor list
-    databuf() : buf(NULL), len(0), maxlen(0), flags(0) {}
+	/// all members are initialised in this constructur's constructor list
+	/// please note: some compilers throw warning if the order of initialisation
+	/// is not the same as the order of declaration!
+    databuf() : buf(NULL), len(0), maxlen(0), flags(0) 
+	{
+	}
 
-	// copy constructor
+	/// copy constructor
     template<class U>
     databuf(T *buf, U maxlen) : buf(buf), len(0), maxlen((int)maxlen), flags(0) {}
 
-	// get one byte from the buffer
+	/// get one byte from the buffer and 
     const T &get()
     {
         static T overreadval = 0;
@@ -246,7 +283,7 @@ struct databuf
         return overreadval;
     }
 
-	// create a sub buffer copy from this buffer
+	/// create a sub buffer copy from this buffer (from the beginning)
     databuf subbuf(int sz)
     {
         sz = clamp(sz, 0, maxlen-len);
@@ -254,14 +291,14 @@ struct databuf
         return databuf(&buf[len-sz], sz);
     }
 
-	// put one byte at the end of a buffer
+	/// put one byte at the end of a buffer
     void put(const T &val)
     {
         if(len<maxlen) buf[len++] = val;
         else flags |= OVERWROTE;
     }
 
-	// copy numval bytes from memory pointer
+	/// copy [numval] bytes from memory pointer
     void put(const T *vals, int numvals)
     {
         if(maxlen-len<numvals) flags |= OVERWROTE;
@@ -269,7 +306,7 @@ struct databuf
         len += min(maxlen-len, numvals);
     }
 
-	// get numval bytes from memory pointer
+	/// get numval bytes from memory pointer
     int get(T *vals, int numvals)
     {
         int read = min(maxlen-len, numvals);
@@ -279,7 +316,7 @@ struct databuf
         return read;
     }
 
-	// change buffer offset
+	/// change buffer offset
     void offset(int n)
     {
         n = min(n, maxlen);
@@ -288,18 +325,18 @@ struct databuf
         len = max(len-n, 0);
     }
 	
-	// is this buffer empty?
+	/// is this buffer empty?
     bool empty() const { return len==0; }
-    // what is the length of this buffer?
+    /// what is the length of this buffer?
 	int length() const { return len; }
-	// how much space is left?
+	/// how much space is left?
     int remaining() const { return maxlen-len; }
-	// did I overread the buffer (is the overread flag set)
+	/// did I overread the buffer (is the overread flag set)?
     bool overread() const { return (flags&OVERREAD)!=0; }
-	// did I overwrite the buffer (id the overwrote flag set)
+	/// did I overwrite the buffer (id the overwrote flag set)?
     bool overwrote() const { return (flags&OVERWROTE)!=0; }
 
-	// force buffer to skip all free memory space
+	/// force buffer to skip all free memory space
     void forceoverread()
     {
         len = maxlen;
@@ -307,26 +344,43 @@ struct databuf
     }
 };
 
-
+/// type definitions for char and unsigned char buffers 
+/// based on the template architecture above
 typedef databuf<char> charbuf;
 typedef databuf<uchar> ucharbuf;
 
+/// network packet buffer
 struct packetbuf : ucharbuf
 {
     ENetPacket *packet;
     int growth;
 
-    packetbuf(ENetPacket *packet) : ucharbuf(packet->data, packet->dataLength), packet(packet), growth(0) {}
+	/// call constructor from inherited class in this constructor
+    packetbuf(ENetPacket *packet) : ucharbuf(packet->data, packet->dataLength), packet(packet), growth(0) 
+	{
+	}
+
+	/// reserve memory in this constructor
     packetbuf(int growth, int pflags = 0) : growth(growth)
     {
         packet = enet_packet_create(NULL, growth, pflags);
         buf = (uchar *)packet->data;
         maxlen = packet->dataLength;
     }
-    ~packetbuf() { cleanup(); }
 
-    void reliable() { packet->flags |= ENET_PACKET_FLAG_RELIABLE; }
+    /// call cleanup in destructor!
+	~packetbuf() 
+	{
+		cleanup();
+	}
 
+	/// set ENET_PACKET_FLAG_RELIABLE - flag
+    void reliable() 
+	{
+		packet->flags |= ENET_PACKET_FLAG_RELIABLE;
+	}
+
+	/// resize ENET packet, copy data and buffer length
     void resize(int n)
     {
         enet_packet_resize(packet, n);
@@ -334,58 +388,71 @@ struct packetbuf : ucharbuf
         maxlen = packet->dataLength;
     }
 
+	/// check if [n] bytes memory are available in this buffer
+	/// if not reserve memory!
     void checkspace(int n)
     {
         if(len + n > maxlen && packet && growth > 0) resize(max(len + n, maxlen + growth));
     }
 
+	/// create a sub buffer of [sz] bytes size
     ucharbuf subbuf(int sz)
     {
         checkspace(sz);
         return ucharbuf::subbuf(sz);
     }
 
+	/// write to buffer functions
     void put(const uchar &val)
     {
         checkspace(1);
         ucharbuf::put(val);
     }
-
     void put(const uchar *vals, int numvals)
     {
         checkspace(numvals);
         ucharbuf::put(vals, numvals);
     }
 
+	/// ?
     ENetPacket *finalize()
     {
         resize(len);
         return packet;
     }
 
+	/// destroy ENET packet and reset memory
     void cleanup()
     {
-        if(growth > 0 && packet && !packet->referenceCount) { enet_packet_destroy(packet); packet = NULL; buf = NULL; len = maxlen = 0; }
+        if(growth > 0 && packet && !packet->referenceCount) 
+		{
+			enet_packet_destroy(packet); 
+			packet = NULL; 
+			buf = NULL; 
+			len = maxlen = 0;
+		}
     }
 };
 
 
-// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// sorting algorithms templates
+/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/// sorting algorithms templates
 
+/// convert to float (?)
+/// clever way to avoid static_casts (?)
 template<class T>
 static inline float heapscore(const T &n) { return n; }
 
-// template function to compare two values
-// advanced data types must implement support for < operator!
+/// template function to compare two values
+/// advanced data types must implement support for < operator!
 template<class T>
 static inline bool compareless(const T &x, const T &y) { return x < y; }
 
 
-// there are various sorting algorithms known
-// please gain some knowledge about them before using these functions
+/// there are various sorting algorithms known
+/// please gain some knowledge about them before using these functions
 
-// template implementation of insertionsort
+/// template implementation of insertionsort
 template<class T, class F>
 static inline void insertionsort(T *start, T *end, F fun)
 {
@@ -415,7 +482,7 @@ static inline void insertionsort(T *buf, int n)
 }
 
 
-// template implementation of quicksort (fastest algorithm)
+/// template implementation of quicksort (one of the fastest sorting algorithms)
 template<class T, class F>
 static inline void quicksort(T *start, T *end, F fun)
 {
@@ -454,7 +521,6 @@ static inline void quicksort(T *start, T *end, F fun)
             end = i;
         }
     }
-
     insertionsort(start, end, fun);
 }
 template<class T, class F>
@@ -469,7 +535,8 @@ static inline void quicksort(T *buf, int n)
 }
 
 
-// I have no idea what that is supposed to be...
+/// I have no idea what that is supposed to be...
+/// Is it checking if a data type is a class ??
 template<class T> struct isclass
 {
     template<class C> static char test(void (C::*)(void));
@@ -481,15 +548,15 @@ template<class T> struct isclass
 	};
 };
 
-// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// sorting algorithms templates
+/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/// sorting algorithms templates
 
 // simple bernstein hashing algorithm
 // invented by Dan Bernstein
 static inline uint hthash(const char *key)
 {
     uint h = 5381;
-    for(int i = 0, k; (k = key[i]); i++) h = ((h<<5)+h)^k;    // bernstein k=33 xor
+    for(int i = 0, k; (k = key[i]); i++) h = ((h<<5)+h)^k;    /// bernstein k=33 xor
     return h;
 }
 
@@ -498,16 +565,20 @@ static inline bool htcmp(const char *x, const char *y)
     return !strcmp(x, y);
 }
 
+/// convert key to unsigned int?
 static inline uint hthash(int key)
 {
     return key;
 }
 
+/// compares values of x and y
 static inline bool htcmp(int x, int y)
 {
     return x==y;
 }
 
+
+/// ?
 #ifndef STANDALONE
 static inline uint hthash(GLuint key)
 {
@@ -533,9 +604,10 @@ template <class T> struct vector
 
 	/// data pointer
     T *buf;
-	/// length of allocated memory
+
+	/// ALLOCATED memory size
     int alen;
-	/// length of used memory
+	/// USED memory size
 	int ulen;
 
     /// Default constructor
@@ -611,6 +683,7 @@ template <class T> struct vector
         return buf[ulen++];
     }
 
+	/// copy vector from vector reference
     void move(vector<T> &v)
     {
         if(!ulen)
@@ -628,39 +701,68 @@ template <class T> struct vector
         }
     }
 
+	/// safety check: tests if index i exists in this vector
     bool inrange(size_t i) const { return i<size_t(ulen); }
+	/// safety check: tests if index i exists in this vector
+	/// integer version: i must be greater (or equal to) 0
     bool inrange(int i) const { return i>=0 && i<ulen; }
 
+	/// get the last index and decrement the vector's size
     T &pop() { return buf[--ulen]; }
+	/// get the last index
     T &last() { return buf[ulen-1]; }
-    void drop() { ulen--; buf[ulen].~T(); }
+
+	/// decrement vector's size and call the DESTRUCTOR of the template in the last index
+    void drop()
+	{
+		ulen--;
+		buf[ulen].~T(); /// call template's destructor
+	}
+
+	/// is this vector empty?
     bool empty() const { return ulen==0; }
 
+	/// return size of reserved memory
     int capacity() const { return alen; }
+	/// return size of used memory
     int length() const { return ulen; }
+
+	/// [] array access operators
     T &operator[](int i) { ASSERT(i>=0 && i<ulen); return buf[i]; }
     const T &operator[](int i) const { ASSERT(i >= 0 && i<ulen); return buf[i]; }
 
-    void disown() { buf = NULL; alen = ulen = 0; }
-
+	/// resets all members to 0
+	/// @warning This member does NOT clean up its memory!
+    void disown()
+	{ 
+		buf = NULL; 
+		alen = ulen = 0;
+	}
+	
+	/// shrink vector memory size AND DELETE UNUSED MEMORY
     void shrink(int i) { ASSERT(i<=ulen); if(isclass<T>::no) ulen = i; else while(ulen>i) drop(); }
-    void setsize(int i) { ASSERT(i<=ulen); ulen = i; }
+    /// shrink vector memory size
+	void setsize(int i) { ASSERT(i<=ulen); ulen = i; }
 
     void deletecontents() { while(!empty()) delete   pop(); }
     void deletearrays() { while(!empty()) delete[] pop(); }
 
+	/// get the whole vector
     T *getbuf() { return buf; }
+	/// get the whole vector as const value
     const T *getbuf() const { return buf; }
     bool inbuf(const T *e) const { return e >= buf && e < &buf[ulen]; }
 
+	/// sort the vector using quicksort template and sort criteria F
     template<class F>
     void sort(F fun, int i = 0, int n = -1)
     {
         quicksort(&buf[i], n < 0 ? ulen-i : n, fun);
     }
-
+	/// sort the vector using compareless function
     void sort() { sort(compareless<T>); }
 
+	/// mix the vector's content randomly
     void shuffle(){
     	extern uint randomMT();
     	for(int i = 0; i < ulen; i++){
@@ -671,6 +773,7 @@ template <class T> struct vector
     	}
     }
 
+	/// reallocate memory for vector (its size)
     void growbuf(int sz)
     {
         int olen = alen;
@@ -681,22 +784,26 @@ template <class T> struct vector
         if(!buf) abort();
     }
 
+	/// reserved memory and returns vector of the reserved memory
     databuf<T> reserve(int sz)
     {
         if(ulen+sz > alen) growbuf(ulen+sz);
         return databuf<T>(&buf[ulen], sz);
     }
 
+	/// increase value of used bytes manually (?)
     void advance(int sz)
     {
         ulen += sz;
     }
 
+	/// increase value of used bytes by size of a vector
     void addbuf(const databuf<T> &p)
     {
         advance(p.length());
     }
 
+	/// 
     T *pad(int n)
     {
         T *buf = reserve(n).buf;
@@ -704,8 +811,11 @@ template <class T> struct vector
         return buf;
     }
 
-    void put(const T &v) { add(v); }
-
+	/// write bytes to vector
+    void put(const T &v) 
+	{
+		add(v);
+	}
     void put(const T *v, int n)
     {
         databuf<T> buf = reserve(n);
@@ -713,12 +823,13 @@ template <class T> struct vector
         addbuf(buf);
     }
 
+	/// remove indices from vector
+	/// remove ordered?
     void remove(int i, int n)
     {
         for(int p = i+n; p<ulen; p++) buf[p-n] = buf[p];
         ulen -= n;
     }
-
     T remove(int i)
     {
         T e = buf[i];
@@ -726,7 +837,6 @@ template <class T> struct vector
         ulen--;
         return e;
     }
-
     T removeunordered(int i)
     {
         T e = buf[i];
@@ -735,6 +845,7 @@ template <class T> struct vector
         return e;
     }
 
+	/// find (first) index in vector
     template<class U>
     int find(const U &o)
     {
@@ -742,11 +853,13 @@ template <class T> struct vector
         return -1;
     }
 
+	/// only add new element if it is unique
     void addunique(const T &o)
     {
         if(find(o) < 0) add(o);
     }
 
+	/// remove an index using a template parameter key
     void removeobj(const T &o)
     {
         loopi(ulen) if(buf[i] == o)
@@ -758,6 +871,7 @@ template <class T> struct vector
         }
     }
 
+	/// replace an index with the last vector index using a template parameter key
     void replacewithlast(const T &o)
     {
         if(!ulen) return;
@@ -769,6 +883,7 @@ template <class T> struct vector
         ulen--;
     }
 
+	/// insertion functions
     T &insert(int i, const T &e)
     {
         add(T());
@@ -776,7 +891,6 @@ template <class T> struct vector
         buf[i] = e;
         return buf[i];
     }
-
     T *insert(int i, const T *e, int n)
     {
         if(ulen+n>alen) growbuf(ulen+n);
@@ -786,19 +900,23 @@ template <class T> struct vector
         return &buf[i];
     }
 
+	/// reverse all indices (first becomes last and so on...)
     void reverse()
     {
         loopi(ulen/2) swap(buf[i], buf[ulen-1-i]);
     }
 
+	/// ?
     static int heapparent(int i) { return (i - 1) >> 1; }
     static int heapchild(int i) { return (i << 1) + 1; }
 
+	/// ?
     void buildheap()
     {
         for(int i = ulen/2; i >= 0; i--) downheap(i);
     }
 
+	/// ?
     int upheap(int i)
     {
         float score = heapscore(buf[i]);
@@ -812,12 +930,14 @@ template <class T> struct vector
         return i;
     }
 
+	/// ?
     T &addheap(const T &x)
     {
         add(x);
         return buf[upheap(ulen-1)];
     }
 
+	/// ?
     int downheap(int i)
     {
         float score = heapscore(buf[i]);
@@ -837,6 +957,7 @@ template <class T> struct vector
         return i;
     }
 
+	/// ?
     T removeheap()
     {
         T e = removeunordered(0);
@@ -844,6 +965,7 @@ template <class T> struct vector
         return e;
     }
 
+	/// similar to find but uses hashtable keys
     template<class K> 
     int htfind(const K &key)
     {
@@ -860,10 +982,21 @@ template<class T> struct hashset
     typedef T elem;
     typedef const T const_elem;
 
-    enum { CHUNKSIZE = 64 };
+    enum 
+	{
+		CHUNKSIZE = 64 
+	};
 
-    struct chain { T elem; chain *next; };
-    struct chainchunk { chain chains[CHUNKSIZE]; chainchunk *next; };
+    struct chain 
+	{
+		T elem; 
+		chain *next;
+	};
+    struct chainchunk 
+	{
+		chain chains[CHUNKSIZE];
+		chainchunk *next;
+	};
 
     int size;
     int numelems;
@@ -1054,11 +1187,13 @@ template<class K, class T> struct hashtable : hashset<hashtableentry<K, T> >
     static inline T &getdata(void *i) { return ((chain *)i)->elem.data; }
 };
 
-// enumeration macros to loop through hashsets
+/// enumeration macros to loop through hashsets
+/// consider them as DEPRECATED because using macreos as a code-excuse is not logical
 #define enumerates(ht,t,e,b)      loopi((ht).size)  for(hashset<t>::chain *enumc = (ht).chains[i]; enumc;) { t &e = enumc->elem; enumc = enumc->next; b; }
 #define enumeratekt(ht,k,e,t,f,b) loopi((ht).size)  for(hashtable<k,t>::chain *enumc = (ht).chains[i]; enumc;) { const hashtable<k,t>::key &e = enumc->elem.key; t &f = enumc->elem.data; enumc = enumc->next; b; }
 #define enumerate(ht,t,e,b)       loopi((ht).size) for(void *enumc = (ht).chains[i]; enumc;) { t &e = (ht).getdata(enumc); enumc = (ht).getnext(enumc); b; }
 
+/// ?
 struct unionfind
 {
     struct ufval
@@ -1099,10 +1234,10 @@ struct unionfind
     }
 };
 
+
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // manual implementation of queues
 // DEPRECATED! please use std::deque instead!
-
 template <class T, int SIZE> struct queue
 {
     int head, tail, len;
@@ -1156,63 +1291,69 @@ template <class T, int SIZE> struct queue
     const T &operator[](int offset) const { return removing(offset); }
 };
 
+
+/// reversequeue is the same as std::deque
 template <class T, int SIZE> struct reversequeue : queue<T, SIZE>
 {
     T &operator[](int offset) { return queue<T, SIZE>::added(offset); }
     const T &operator[](int offset) const { return queue<T, SIZE>::added(offset); }
 };
 
+
+/// inline string memory allocation functions
 inline char *newstring(size_t l)                { return new char[l+1]; }
 inline char *newstring(const char *s, size_t l) { return copystring(newstring(l), s, l+1); }
 inline char *newstring(const char *s)           { size_t l = strlen(s); char *d = newstring(l); memcpy(d, s, l+1); return d; }
 
 const int islittleendian = 1;
+
 #ifdef SDL_BYTEORDER
-#define endianswap16 SDL_Swap16
-#define endianswap32 SDL_Swap32
-#define endianswap64 SDL_Swap64
+  #define endianswap16 SDL_Swap16
+  #define endianswap32 SDL_Swap32
+  #define endianswap64 SDL_Swap64
 #else
-inline ushort endianswap16(ushort n) { return (n<<8) | (n>>8); }
-inline uint endianswap32(uint n) { return (n<<24) | (n>>24) | ((n>>8)&0xFF00) | ((n<<8)&0xFF0000); }
-inline ullong endianswap64(ullong n) { return endianswap32(uint(n >> 32)) | ((ullong)endianswap32(uint(n)) << 32); }
+  inline ushort endianswap16(ushort n) { return (n<<8) | (n>>8); }
+  inline uint endianswap32(uint n) { return (n<<24) | (n>>24) | ((n>>8)&0xFF00) | ((n<<8)&0xFF0000); }
+  inline ullong endianswap64(ullong n) { return endianswap32(uint(n >> 32)) | ((ullong)endianswap32(uint(n)) << 32); }
 #endif
-template<class T> inline T endianswap(T n) { union { T t; uint i; } conv; conv.t = n; conv.i = endianswap32(conv.i); return conv.t; }
-template<> inline ushort endianswap<ushort>(ushort n) { return endianswap16(n); }
-template<> inline short endianswap<short>(short n) { return endianswap16(n); }
-template<> inline uint endianswap<uint>(uint n) { return endianswap32(n); }
-template<> inline int endianswap<int>(int n) { return endianswap32(n); }
-template<> inline ullong endianswap<ullong>(ullong n) { return endianswap64(n); }
-template<> inline llong endianswap<llong>(llong n) { return endianswap64(n); }
-template<> inline double endianswap<double>(double n) { union { double t; uint i; } conv; conv.t = n; conv.i = endianswap64(conv.i); return conv.t; }
-template<class T> inline void endianswap(T *buf, size_t len) { for(T *end = &buf[len]; buf < end; buf++) *buf = endianswap(*buf); }
-template<class T> inline T endiansame(T n) { return n; }
-template<class T> inline void endiansame(T *buf, size_t len) {}
+  template<class T> inline T endianswap(T n) { union { T t; uint i; } conv; conv.t = n; conv.i = endianswap32(conv.i); return conv.t; }
+  template<> inline ushort endianswap<ushort>(ushort n) { return endianswap16(n); }
+  template<> inline short endianswap<short>(short n) { return endianswap16(n); }
+  template<> inline uint endianswap<uint>(uint n) { return endianswap32(n); }
+  template<> inline int endianswap<int>(int n) { return endianswap32(n); }
+  template<> inline ullong endianswap<ullong>(ullong n) { return endianswap64(n); }
+  template<> inline llong endianswap<llong>(llong n) { return endianswap64(n); }
+  template<> inline double endianswap<double>(double n) { union { double t; uint i; } conv; conv.t = n; conv.i = endianswap64(conv.i); return conv.t; }
+  template<class T> inline void endianswap(T *buf, size_t len) { for(T *end = &buf[len]; buf < end; buf++) *buf = endianswap(*buf); }
+  template<class T> inline T endiansame(T n) { return n; }
+  template<class T> inline void endiansame(T *buf, size_t len) {}
 #ifdef SDL_BYTEORDER
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
-#define lilswap endiansame
-#define bigswap endianswap
+  #if SDL_BYTEORDER == SDL_LIL_ENDIAN
+    #define lilswap endiansame
+    #define bigswap endianswap
+  #else
+    #define lilswap endianswap
+    #define bigswap endiansame
+  #endif
 #else
-#define lilswap endianswap
-#define bigswap endiansame
+  template<class T> inline T lilswap(T n) { return *(const uchar *)&islittleendian ? n : endianswap(n); }
+  template<class T> inline void lilswap(T *buf, size_t len) { if(!*(const uchar *)&islittleendian) endianswap(buf, len); }
+  template<class T> inline T bigswap(T n) { return *(const uchar *)&islittleendian ? endianswap(n) : n; }
+  template<class T> inline void bigswap(T *buf, size_t len) { if(*(const uchar *)&islittleendian) endianswap(buf, len); }
 #endif
-#else
-template<class T> inline T lilswap(T n) { return *(const uchar *)&islittleendian ? n : endianswap(n); }
-template<class T> inline void lilswap(T *buf, size_t len) { if(!*(const uchar *)&islittleendian) endianswap(buf, len); }
-template<class T> inline T bigswap(T n) { return *(const uchar *)&islittleendian ? endianswap(n) : n; }
-template<class T> inline void bigswap(T *buf, size_t len) { if(*(const uchar *)&islittleendian) endianswap(buf, len); }
-#endif
+
 
 /* workaround for some C platforms that have these two functions as macros - not used anywhere */
 #ifdef getchar
-#undef getchar
+  #undef getchar
 #endif
 #ifdef putchar
-#undef putchar
+  #undef putchar
 #endif
+
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // stream implementation
-
 struct stream
 {
 #ifdef WIN32
@@ -1259,6 +1400,9 @@ struct stream
 #endif
 };
 
+
+
+
 template<class T>
 struct streambuf
 {
@@ -1273,6 +1417,8 @@ struct streambuf
     size_t length() { return s->size(); }
 };
 
+
+/// bitmask for text formatting (?)
 enum
 {
     CT_PRINT   = 1<<0,
@@ -1283,6 +1429,8 @@ enum
     CT_UPPER   = 1<<5,
     CT_UNICODE = 1<<6
 };
+
+
 extern const uchar cubectype[256];
 static inline int iscubeprint(uchar c) { return cubectype[c]&CT_PRINT; }
 static inline int iscubespace(uchar c) { return cubectype[c]&CT_SPACE; }
@@ -1311,6 +1459,8 @@ static inline uchar cubeupper(uchar c)
     extern const uchar cubeupperchars[256];
     return cubeupperchars[c];
 }
+
+/// UTF-8 encoder/decoder function prototypes
 extern size_t decodeutf8(uchar *dst, size_t dstlen, const uchar *src, size_t srclen, size_t *carry = NULL);
 extern size_t encodeutf8(uchar *dstbuf, size_t dstlen, const uchar *srcbuf, size_t srclen, size_t *carry = NULL);
 
@@ -1357,6 +1507,7 @@ extern void getstring(char *t, ucharbuf &p, size_t len);
 template<size_t N> static inline void getstring(char (&t)[N], ucharbuf &p) { getstring(t, p, N); }
 extern void filtertext(char *dst, const char *src, bool whitespace = true, size_t len = sizeof(string)-1);
 
+/// structure to describe IPs
 struct ipmask
 {
     enet_uint32 ip, mask;
@@ -1365,6 +1516,6 @@ struct ipmask
     int print(char *buf) const;
     bool check(enet_uint32 host) const { return (host & mask) == ip; }
 };
-    
+  
 #endif
 
