@@ -76,10 +76,10 @@ struct JSON
         }
     }
     
-     //Returns rendered JSON, as you would find it in a file
+    /// Returns rendered JSON, as you would find it in a file.
     char *render(bool formatted = true, bool minified = false);
 
-     //Save's to a specific JSON-File
+    /// Save's to a specific .json-file
     void save(const char *filename)
     {
         string s; 
@@ -92,7 +92,9 @@ struct JSON
         currentdir = newstring(s);
     }
 
-    int numchilds()					  //Get number of children (if array or object, though not useful for objects)
+    /// Get number of children.
+    /// More useful for arrays probably.
+    int numchilds()
     { 
         JSON *c = child;
         int i = 0;
@@ -100,7 +102,9 @@ struct JSON
         return i;
     }
 
-    JSON *getitem(int item)           //Get Item of Array
+    /// Return Children number <item>.
+    /// Used for Arrays.
+    JSON *getitem(int item)
     {
         JSON *c = child;
         while (c && item > 0) {
@@ -110,14 +114,19 @@ struct JSON
         return c;
     }
 
-    JSON *getitem(const char *name)   /// Get Item of Object
+    /// Return Children with name <name>.
+    /// Used for Objects.
+    /// Case insensitive.
+    JSON *getitem(const char *name)
     {
         JSON *c = child;
         while (c && strcasecmp(c->name, name)) c = c->next;
         return c;
     }
 
-    float getfloat(const char *key)  /// Get float of Object. Used if floatvalue is expected. otherwise returns -1.0f
+    /// Get float of Object. 
+    /// Used if floatvalue is expected. otherwise returns -1
+    float getfloat(const char *key)
     {
         JSON *sub = getitem(key);
         return sub ? sub->valuefloat : -1.0f;

@@ -587,7 +587,8 @@ JSON *JSON_CreateString(const char *str)    { JSON *item= new JSON(); item->type
 JSON *JSON_CreateArray()                    { JSON *item= new JSON(); item->type = JSON_ARRAY;      return item; }
 JSON *JSON_CreateObject()                   { JSON *item= new JSON(); item->type = JSON_OBJECT;     return item; }
 
- /// Load a .json file
+/// Load a .json file.
+/// @sideeffects allocates memory for a JSON structure, needs to be deleted
 JSON *loadjson(const char *filename)
 {
     string s;
