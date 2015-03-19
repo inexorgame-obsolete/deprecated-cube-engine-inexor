@@ -4,10 +4,21 @@
 /// -Hanni
 
 
-// script binding functionality
+/// contains all kind of different script objects
+/// such as commands, variables, macros or idents
+enum 
+{
+	VAL_NULL = 0,
+	VAL_INT,
+	VAL_FLOAT,
+	VAL_STR,
+	VAL_ANY,
+	VAL_CODE,
+	VAL_MACRO,
+	VAL_IDENT
+};
 
-enum { VAL_NULL = 0, VAL_INT, VAL_FLOAT, VAL_STR, VAL_ANY, VAL_CODE, VAL_MACRO, VAL_IDENT };
-
+/// ?
 enum
 {
     CODE_START = 0,
@@ -44,9 +55,29 @@ enum
     RET_FLOAT  = VAL_FLOAT<<CODE_RET,
 };
 
-enum { ID_VAR, ID_FVAR, ID_SVAR, ID_COMMAND, ID_ALIAS, ID_LOCAL };
+/// contains all kind of IDs for command engine
+/// such as variables (float,int,string) or commands
+enum
+{ 
+	ID_VAR,
+	ID_FVAR,
+	ID_SVAR,
+	ID_COMMAND,
+	ID_ALIAS,
+	ID_LOCAL
+};
 
-enum { IDF_PERSIST = 1<<0, IDF_OVERRIDE = 1<<1, IDF_HEX = 1<<2, IDF_READONLY = 1<<3, IDF_OVERRIDDEN = 1<<4, IDF_UNKNOWN = 1<<5, IDF_ARG = 1<<6 };
+/// ?
+enum 
+{
+	IDF_PERSIST = 1<<0,
+	IDF_OVERRIDE = 1<<1,
+	IDF_HEX = 1<<2,
+	IDF_READONLY = 1<<3,
+	IDF_OVERRIDDEN = 1<<4,
+	IDF_UNKNOWN = 1<<5,
+	IDF_ARG = 1<<6
+};
 
 struct ident;
 
