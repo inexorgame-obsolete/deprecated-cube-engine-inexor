@@ -36,6 +36,7 @@ struct vec
     vec(float a, float b, float c) : x(a), y(b), z(c) {}
     explicit vec(int v[3]) : x(v[0]), y(v[1]), z(v[2]) {}
     explicit vec(float *v) : x(v[0]), y(v[1]), z(v[2]) {}
+	/// copy from 2- and 4-dimensional vectors
     explicit vec(const vec4 &v);
     explicit vec(const vec2 &v, float z = 0);
 
@@ -187,7 +188,7 @@ struct vec
         return *this;
     }
 
-
+	/// orthogonal projection
     void orthogonal(const vec &d)
     {
         *this = fabs(d.x) > fabs(d.z) ? vec(-d.y, d.x, 0) : vec(0, -d.z, d.y);
@@ -223,18 +224,19 @@ struct vec
         }
         return sqrtf(sqrdist);
     }
-
     template<class T, class S> float dist_to_bb(const T &o, S size) const
     {
         return dist_to_bb(o, T(o).add(size));
     }
 };
 
+/// hashtable comparism function 
 static inline bool htcmp(const vec &x, const vec &y)
 {
     return x == y;
 }
 
+/// hashtable hashing function to create unique key
 static inline uint hthash(const vec &k)
 {
     union { uint i; float f; } x, y, z;
@@ -243,6 +245,14 @@ static inline uint hthash(const vec &k)
     return v + (v>>12);
 }
 
+
+/// “An attempt at visualizing the Fourth Dimension: Take a point, stretch it into a line, 
+/// curl it into a circle, twist it into a sphere, and punch through the sphere.” 
+///   -ALBERT EINSTEIN
+
+
+/// 4-dimensional vectors
+/// all methods stay basicly the same but with an extra dimension
 struct vec4
 {
     union
@@ -251,17 +261,21 @@ struct vec4
         float v[4];
     };
 
+	/// constructors
     vec4() {}
     explicit vec4(const vec &p, float w = 0) : x(p.x), y(p.y), z(p.z), w(w) {}
     vec4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
 
+	/// operators for XYZ coordinate access
     float &operator[](int i)       { return v[i]; }
     float  operator[](int i) const { return v[i]; }
 
+	/// dot products
     float dot3(const vec4 &o) const { return x*o.x + y*o.y + z*o.z; }
     float dot3(const vec &o) const { return x*o.x + y*o.y + z*o.z; }
     float dot(const vec4 &o) const { return dot3(o) + w*o.w; }
     float dot(const vec &o) const  { return x*o.x + y*o.y + z*o.z + w; }
+
     float squaredlen() const { return dot(*this); }
     float magnitude() const  { return sqrtf(squaredlen()); }
     float magnitude3() const { return sqrtf(dot3(*this)); }
@@ -284,6 +298,7 @@ struct vec4
         return *this;
     }
 
+	/// basic algebraic methods
     vec4 &mul3(float f)      { x *= f; y *= f; z *= f; return *this; }
     vec4 &mul(float f)       { mul3(f); w *= f; return *this; }
     vec4 &mul(const vec4 &o) { x *= o.x; y *= o.y; z *= o.z; w *= o.w; return *this; }
@@ -299,10 +314,10 @@ struct vec4
 
     void setxyz(const vec &v) { x = v.x; y = v.y; z = v.z; }
 
+	/// rotation members
     vec4 &rotate_around_z(float c, float s) { float rx = x, ry = y; x = c*rx-s*ry; y = c*ry+s*rx; return *this; }
     vec4 &rotate_around_x(float c, float s) { float ry = y, rz = z; y = c*ry-s*rz; z = c*rz+s*ry; return *this; }
     vec4 &rotate_around_y(float c, float s) { float rx = x, rz = z; x = c*rx+s*rz; z = c*rz-s*rx; return *this; }
-
     vec4 &rotate_around_z(float angle) { return rotate_around_z(cosf(angle), sinf(angle)); }
     vec4 &rotate_around_x(float angle) { return rotate_around_x(cosf(angle), sinf(angle)); }
     vec4 &rotate_around_y(float angle) { return rotate_around_y(cosf(angle), sinf(angle)); }
@@ -310,6 +325,11 @@ struct vec4
 
 inline vec::vec(const vec4 &v) : x(v.x), y(v.y), z(v.z) {}
 
+/// why is there no hashtable function for 4-dimensional vectors?
+/// just asking...
+
+/// 2-dimensional vectors
+/// all methods stay basicly the same but with an extra dimension
 struct vec2
 {
     union
@@ -352,11 +372,14 @@ struct vec2
 
 inline vec::vec(const vec2 &v, float z) : x(v.x), y(v.y), z(z) {}
 
+
+/// hashtable comparism function 
 static inline bool htcmp(const vec2 &x, const vec2 &y)
 {
     return x == y;
 }
 
+/// hashtable hashing function to create unique key
 static inline uint hthash(const vec2 &k)
 {
     union { uint i; float f; } x, y;
@@ -365,9 +388,15 @@ static inline uint hthash(const vec2 &k)
     return v + (v>>12);
 }
 
+
 struct matrix3x3;
 struct matrix3x4;
 
+/// quaternions are number systems that extend complex numbers
+/// complex numbers extend the number system of real numbers in a way so x²=-1 can be solved
+/// in this example x = i (imaginary). As you shoud know complex numbers have a real and an imaginary part.
+/// in quarterions, xy is NOT yx:   xy != yx; but i² = k² = j² = ijk = -1
+/// some calculations can be done much easier if you consider this extra condition/dimension
 struct quat : vec4
 {
     quat() {}
@@ -1037,6 +1066,8 @@ struct plane : vec
     float zdist(const vec &p) const { return p.z-zintersect(p); }
 };
 
+/// triangle interface does not inherit from vec because
+/// 3 members (the 3 vertices) are required to describe a triangle
 struct triangle
 {
     vec a, b, c;
@@ -1072,6 +1103,7 @@ const int R[3]  = {1, 2, 0}; // row
 const int C[3]  = {2, 0, 1}; // col
 const int D[3]  = {0, 1, 2}; // depth
 
+/// 3-dimensional INTEGER vectors
 struct ivec
 {
     union
@@ -1146,6 +1178,7 @@ static inline uint hthash(const ivec &k)
 
 struct bvec4;
 
+/// 3-dimensional UNSIGNED CHAR vectors
 struct bvec
 {
     union
@@ -1193,6 +1226,7 @@ struct bvec
     vec tocolor() const { return vec(x*(1.0f/255.0f), y*(1.0f/255.0f), z*(1.0f/255.0f)); }
 };
 
+//// 4-dimensional UNSIGNED CHAR vectors
 struct bvec4
 {
     union
@@ -1230,6 +1264,7 @@ struct bvec4
 
 inline bvec::bvec(const bvec4 &v) : x(v.x), y(v.y), z(v.z) {}
 
+/// 4x4 float matrix
 struct glmatrixf
 {
     float v[16];
@@ -1536,9 +1571,14 @@ struct glmatrixf
     bool invert(const glmatrixf &m, float mindet = 1.0e-10f);
 };
 
+/// physics engine: collision (intersection) check functions
 extern bool raysphereintersect(const vec &center, float radius, const vec &o, const vec &ray, float &dist);
 extern bool rayboxintersect(const vec &b, const vec &s, const vec &o, const vec &ray, float &dist, int &orient);
 extern bool linecylinderintersect(const vec &from, const vec &to, const vec &start, const vec &end, float radius, float &dist);
 
+/// sine and cosine values are stored in approximated valuey
+/// because calculating them in realtime would be too slow
+/// take a look at the EULER SINE AND COSINE definition
+/// and the TAYLOR SERIES EXPANSION theorem
 extern const vec2 sincos360[];
 

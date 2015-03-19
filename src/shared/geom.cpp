@@ -143,6 +143,7 @@ bool linecylinderintersect(const vec &from, const vec &to, const vec &start, con
     return dist >= 0 && dist <= 1;
 }
 
+/// 
 extern const vec2 sincos360[721] =
 {
     vec2(1.00000000, 0.00000000), vec2(0.99984770, 0.01745241), vec2(0.99939083, 0.03489950), vec2(0.99862953, 0.05233596), vec2(0.99756405, 0.06975647), vec2(0.99619470, 0.08715574), // 0
