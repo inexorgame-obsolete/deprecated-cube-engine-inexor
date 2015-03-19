@@ -762,7 +762,7 @@ template <class T> struct vector
 	/// sort the vector using compareless function
     void sort() { sort(compareless<T>); }
 
-	/// mix the vector's content randomly
+	/// mix the vector's indices randomly
     void shuffle(){
     	extern uint randomMT();
     	for(int i = 0; i < ulen; i++){

@@ -1,8 +1,27 @@
+/// @file geom.h
+/// mathmatics for vectors, matrices, quaterions and more
+/// 
+/// 
+/// 
+/// 
+/// 
+
+/// declaration of 2- and 4-dimensional vectors
 struct vec4;
 struct vec2;
 
+
+/// Please note: the whole vector structure could be
+/// recoded as n-dimensional vectors that share the same base class
+
+
+/// structure for vector algebra
+/// all common operations are implemented
+/// http://mathworld.wolfram.com/topics/VectorAlgebra.html
 struct vec
 {
+	/// memory union which contains position, color or 3 float values
+	/// please note that only one of these members can be accessed!
     union
     {
         struct { float x, y, z; };
@@ -10,6 +29,7 @@ struct vec
         float v[3];
     };
 
+	/// a variety of constructor calls is supported
     vec() {}
     explicit vec(int a) : x(a), y(a), z(a) {} 
     explicit vec(float a) : x(a), y(a), z(a) {} 
@@ -19,71 +39,106 @@ struct vec
     explicit vec(const vec4 &v);
     explicit vec(const vec2 &v, float z = 0);
 
+	/// vector constructor which converts yaw and pitch angles to XYZ coordinates
     vec(float yaw, float pitch) : x(-sinf(yaw)*cosf(pitch)), y(cosf(yaw)*cosf(pitch)), z(sinf(pitch)) {}
 
+	/// operators for accessing XYZ vector coordinates
     float &operator[](int i)       { return v[i]; }
     float  operator[](int i) const { return v[i]; }
     
     vec &set(int i, float f) { v[i] = f; return *this; }
 
+	/// operators for vector comparisn
     bool operator==(const vec &o) const { return x == o.x && y == o.y && z == o.z; }
     bool operator!=(const vec &o) const { return x != o.x || y != o.y || z != o.z; }
 
-
-	// add operator
+	/// algebraic + (add) operator
 	vec operator + (vec &o) { return this->add(o); }
 	vec operator + (float o) { return this->add(o); }
-	// subtraction operator
+	/// algebraic - (subtraction) operator
 	vec operator - (vec &o) { return this->sub(o); }
 	vec operator - (float o) { return this->sub(o); }
-	// multiplication operator
-	//vec operator * (vec &o) { return this->mul(o); }
+	/// algebraic * (multiplication) operator
 	vec operator * (float o) { return this->mul(o); }
 	vec operator * (vec &o) { return this->mul(o); }
-	// division operator
+	/// algebraic / (division) operator
 	vec operator / (vec &o) { return this->div(o); }
 	vec operator / (float o) { return this->div(o); }
 
-	// *= ?
-	// /= ?
-	// += ?
-	// -= ?
+	/// TODO: implement the following operators
+	/// *= ?
+	/// /= ?
+	/// += ?
+	/// -= ?
 
+	/// "do all cartesian coordinates (XYZ) of this vector have the value zero?"
     bool iszero() const { return x==0 && y==0 && z==0; }
+	/// calculate the squared length of this vector (pythagoras)
     float squaredlen() const { return x*x + y*y + z*z; }
+	/// dot product (line by line) of 2 dimensions
     float dot2(const vec &o) const { return x*o.x + y*o.y; }
+	/// dot product (line by line) of all 3 dimensions
     float dot(const vec &o) const  { return x*o.x + y*o.y + z*o.z; }
+	
+	/// scalar multiplication
     vec &mul(const vec &o)   { x *= o.x;       y *= o.y;       z *= o.z;       return *this; }
     vec &mul(float f)        { x *= f;         y *= f;         z *= f;         return *this; }
-    vec &div(const vec &o)   { x /= o.x;       y /= o.y;       z /= o.z;       return *this; }
+    /// scalar division
+	vec &div(const vec &o)   { x /= o.x;       y /= o.y;       z /= o.z;       return *this; }
     vec &div(float f)        { x /= f;         y /= f;         z /= f;         return *this; }
-    vec &add(const vec &o)   { x += o.x;       y += o.y;       z += o.z;       return *this; }
+    /// scalar sum
+	vec &add(const vec &o)   { x += o.x;       y += o.y;       z += o.z;       return *this; }
     vec &add(float f)        { x += f;         y += f;         z += f;         return *this; }
-    vec &sub(const vec &o)   { x -= o.x;       y -= o.y;       z -= o.z;       return *this; }
+    /// scalar subtraction
+	vec &sub(const vec &o)   { x -= o.x;       y -= o.y;       z -= o.z;       return *this; }
     vec &sub(float f)        { x -= f;         y -= f;         z -= f;         return *this; }
+
+	/// turn XY coordinates into its negative values
     vec &neg2()              { x = -x;         y = -y;                         return *this; }
-    vec &neg()               { x = -x;         y = -y;         z = -z;         return *this; }
-    vec &min(const vec &o)   { x = ::min(x, o.x);  y = ::min(y, o.y);  z = ::min(z, o.z);  return *this; }
+    /// turn all 3 (XYZ) coordinates into its negative values
+	vec &neg()               { x = -x;         y = -y;         z = -z;         return *this; }
+    
+	/// vector min/max-comparison and clamp methods
+	vec &min(const vec &o)   { x = ::min(x, o.x);  y = ::min(y, o.y);  z = ::min(z, o.z);  return *this; }
     vec &max(const vec &o)   { x = ::max(x, o.x);  y = ::max(y, o.y);  z = ::max(z, o.z);  return *this; }
     vec &min(float f)        { x = ::min(x, f);    y = ::min(y, f);    z = ::min(z, f);    return *this; }
     vec &max(float f)        { x = ::max(x, f);    y = ::max(y, f);    z = ::max(z, f);    return *this; }
     vec &clamp(float f, float h) { x = ::clamp(x, f, h);   y = ::clamp(y, f, h);   z = ::clamp(z, f, h);   return *this; }
-    float magnitude2() const { return sqrtf(dot2(*this)); }
+   
+	/// vector's magnitude in XY dimension
+	float magnitude2() const { return sqrtf(dot2(*this)); }
+	/// vector's magnitude in all 3 (XYZ) dimensions
     float magnitude() const  { return sqrtf(squaredlen()); }
+
+	/// normalize vector: divide it by its length (magnitude)
     vec &normalize()         { div(magnitude()); return *this; }
+	/// "is this vector normalized?"
     bool isnormalized() const { float m = squaredlen(); return (m>0.99f && m<1.01f); }
+
+	/// distance calculation methods
     float squaredist(const vec &e) const { return vec(*this).sub(e).squaredlen(); }
     float dist(const vec &e) const { vec t; return dist(e, t); }
     float dist(const vec &e, vec &t) const { t = *this; t.sub(e); return t.magnitude(); }
     float dist2(const vec &o) const { float dx = x-o.x, dy = y-o.y; return sqrtf(dx*dx + dy*dy); }
     bool reject(const vec &o, float r) { return x>o.x+r || x<o.x-r || y>o.y+r || y<o.y-r; }
-    template<class A, class B>
+    
+	/// template based vector cross product
+	template<class A, class B>
     vec &cross(const A &a, const B &b) { x = a.y*b.z-a.z*b.y; y = a.z*b.x-a.x*b.z; z = a.x*b.y-a.y*b.x; return *this; }
     vec &cross(const vec &o, const vec &a, const vec &b) { return cross(vec(a).sub(o), vec(b).sub(o)); }
-    float scalartriple(const vec &a, const vec &b) const { return x*(a.y*b.z-a.z*b.y) + y*(a.z*b.x-a.x*b.z) + z*(a.x*b.y-a.y*b.x); }
-    vec &reflectz(float rz) { z = 2*rz - z; return *this; }
+    
+	/// scalar triple product
+	/// can be used to calculate the volume of a 3 dimensional parallelogram
+	/// http://mathworld.wolfram.com/ScalarTripleProduct.html
+	float scalartriple(const vec &a, const vec &b) const { return x*(a.y*b.z-a.z*b.y) + y*(a.z*b.x-a.x*b.z) + z*(a.x*b.y-a.y*b.x); }
+    
+	/// vector reflection (around angle or other vectors)
+	/// http://mathworld.wolfram.com/Reflection.html
+	vec &reflectz(float rz) { z = 2*rz - z; return *this; }
     vec &reflect(const vec &n) { float k = 2*dot(n); x -= k*n.x; y -= k*n.y; z -= k*n.z; return *this; }
-    vec &project(const vec &n) { float k = dot(n); x -= k*n.x; y -= k*n.y; z -= k*n.z; return *this; }
+    
+	/// vector projection
+	vec &project(const vec &n) { float k = dot(n); x -= k*n.x; y -= k*n.y; z -= k*n.z; return *this; }
     vec &projectxydir(const vec &n) { if(n.z) z = -(x*n.x/n.z + y*n.y/n.z); return *this; }
     vec &projectxy(const vec &n)
     {
@@ -99,9 +154,12 @@ struct vec
         rescale(sqrtf(::max(m - k*k, 0.0f)));
         return *this;
     }
+
+	/// interpolation between two vectors
     vec &lerp(const vec &b, float t) { x += (b.x-x)*t; y += (b.y-y)*t; z += (b.z-z)*t; return *this; }
     vec &lerp(const vec &a, const vec &b, float t) { x = a.x + (b.x-a.x)*t; y = a.y + (b.y-a.y)*t; z = a.z + (b.z-a.z)*t; return *this; }
 
+	/// scale a vector to a certain length
     vec &rescale(float k)
     {
         float mag = magnitude();
@@ -109,20 +167,18 @@ struct vec
         return *this;
     }
 
+	/// vector rotation methods
     vec &rotate_around_z(float c, float s) { float rx = x, ry = y; x = c*rx-s*ry; y = c*ry+s*rx; return *this; }
     vec &rotate_around_x(float c, float s) { float ry = y, rz = z; y = c*ry-s*rz; z = c*rz+s*ry; return *this; }
     vec &rotate_around_y(float c, float s) { float rx = x, rz = z; x = c*rx+s*rz; z = c*rz-s*rx; return *this; }
-
     vec &rotate_around_z(float angle) { return rotate_around_z(cosf(angle), sinf(angle)); }
     vec &rotate_around_x(float angle) { return rotate_around_x(cosf(angle), sinf(angle)); }
     vec &rotate_around_y(float angle) { return rotate_around_y(cosf(angle), sinf(angle)); }
-
     vec &rotate(float angle, const vec &d)
     {
         float c = cosf(angle), s = sinf(angle);
         return rotate(c, s, d);
     }
-
     vec &rotate(float c, float s, const vec &d)
     {
         *this = vec(x*(d.x*d.x*(1-c)+c) + y*(d.x*d.y*(1-c)-d.z*s) + z*(d.x*d.z*(1-c)+d.y*s),
@@ -131,11 +187,11 @@ struct vec
         return *this;
     }
 
+
     void orthogonal(const vec &d)
     {
         *this = fabs(d.x) > fabs(d.z) ? vec(-d.y, d.x, 0) : vec(0, -d.z, d.y);
     }
-
     void orthonormalize(vec &s, vec &t) const
     {
         s.sub(vec(*this).mul(dot(s)));
@@ -143,18 +199,20 @@ struct vec
          .sub(vec(s).mul(s.dot(t)));
     }
 
+	/// is vector inside bounding box
+	/// bounding boxes have a minimal vector and a maximal vector
     template<class T>
     bool insidebb(const T &bbmin, const T &bbmax) const
     {
         return x >= bbmin.x && x <= bbmax.x && y >= bbmin.y && y <= bbmax.y && z >= bbmin.z && z <= bbmax.z;
     }
-
     template<class T, class U>
     bool insidebb(const T &o, U size) const
     {
         return x >= o.x && x <= o.x + size && y >= o.y && y <= o.y + size && z >= o.z && z <= o.z + size;
     }
 
+	/// calculate vector's distance to a bounding box
     template<class T> float dist_to_bb(const T &min, const T &max) const
     {
         float sqrdist = 0;
