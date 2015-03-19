@@ -1,19 +1,18 @@
-// fps.cpp 
-// implementation of basic game functions
-// implementation of many cubescript bindings
-//
-//
-//
+/// fps.cpp 
+/// implementation of basic game functionsand cubescript bindings
+///
+///
+///
 
 #include "game.h"
 
 namespace game
 {
-	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	// general game functionality (spawn, attack, spectate...)
+    /// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    /// general game functionality (spawn, attack, spectate...)
 	
-    fpsent *player1 = NULL; // our client
-    vector<fpsent *> players; // other clients
+    fpsent *player1 = NULL; /// our client
+    vector<fpsent *> players; /// other clients
 
     bool intermission = false;
     int maptime = 0, maprealtime = 0, maplimit = -1;
@@ -22,15 +21,17 @@ namespace game
     int following = -1, followdir = 0;
     int savedammo[NUMGUNS];
 
-	// this does not make sense at all
+	/// this does not make sense at all
+    /// in case this is not a standalone, eihrul wanted the programmers
+    /// to implement their client option condition here... somehow
     bool clientoption(const char *arg) 
 	{ 
 		return false;
 	}
 
-	// send taunt network animation message to server
-	// taunt animation is this "im gonna kill you" gesture 
-	// that can be seen by other players
+	/// send taunt network animation message to server
+	/// taunt animation is this "im gonna kill you" gesture 
+    /// that can be seen by other players
     void taunt()
     {
         if(player1->state!=CS_ALIVE || player1->physstate<PHYS_SLOPE) return;
@@ -40,14 +41,18 @@ namespace game
     }
     COMMAND(taunt, "");
 
-	// cubescript: get following player
+
+    /// cubescript: get the player I am following
     ICOMMAND(getfollow, "", (),
     {
         fpsent *f = followingplayer();
         intret(f ? f->clientnum : -1);
     });
 
-	// follow a specific player if you are in spectator mode
+
+	/// follow a specific player if you are in spectator mode
+    /// @param arg either the player's name or his client number
+    /// @seee parseplayer
     void follow(char *arg)
     {
         if(arg[0] ? player1->state==CS_SPECTATOR : following>=0)
@@ -60,7 +65,9 @@ namespace game
 	}
     COMMAND(follow, "s");
 
-	// follow previous/next client number
+
+	/// follow previous/next client number
+    /// @param dir either forwards (1) or backwards (-1)
     void nextfollow(int dir)
     {
         if(player1->state!=CS_SPECTATOR || clients.empty())
@@ -84,13 +91,15 @@ namespace game
     }
     ICOMMAND(nextfollow, "i", (int *dir), nextfollow(*dir < 0 ? -1 : 1));
 
-	// get client map name
+
+	/// get client map name
     const char *getclientmap() 
 	{ 
 		return clientmap;
 	}
 
-	// all monsters back at their spawns for editing
+	/// reset game state in singleplayer
+    /// reset all monsters, triggers, bouncers, movables, and projectiles
     void resetgamestate()
     {
         if(m_obstacles || m_classicsp) clearmovables();
@@ -103,7 +112,8 @@ namespace game
         clearbouncers();
     }
 
-	// reset player state not persistent accross spawns
+    /// reset player state not persistent accross spawns
+    /// @param d the affected fpsent ("player"/"monster"/"bot")
     fpsent *spawnstate(fpsent *d) 
     {
         d->respawn();
@@ -111,8 +121,10 @@ namespace game
         return d;
     }
 
-	// Send "I would like to spawn" to server in multiplayer
-	// try to spawn yourself in singleplayer
+    /// Send "I would like to spawn" to server in multiplayer
+    /// try to spawn yourself in singleplayer
+    /// @see addmsg
+    /// @see spawnplayer
     void respawnself()
     {
         if(ispaused()) return;
@@ -134,14 +146,14 @@ namespace game
         }
     }
 
-	// the player I am aiming at
+    /// Give me the player I am aiming at
     fpsent *pointatplayer()
     {
         loopv(players) if(players[i] != player1 && intersect(players[i], player1->o, worldpos)) return players[i];
         return NULL;
     }
 
-	// stop spectating a specific player and allow free camery fly
+    /// stop spectating a specific player and start free camery fly
     void stopfollowing()
     {
         if(following<0) return;
@@ -150,7 +162,7 @@ namespace game
         conoutf("follow off");
     }
 
-	// return the fpsent instance of the player you are currently spectating
+    /// Give me the fpsent instance of the player you are currently spectating
     fpsent *followingplayer()
     {
         if(player1->state!=CS_SPECTATOR || following<0) return NULL;
@@ -159,7 +171,8 @@ namespace game
         return NULL;
     }
 
-	// return fpsent instance whose coordinates are used to calculate camera position
+    /// Give me the fpsent instance of the player whose coordinates will be used to calculate my camera's position
+    /// @see followingplayer
     fpsent *hudplayer()
     {
         if(thirdperson) return player1;
@@ -167,7 +180,8 @@ namespace game
         return target ? target : player1;
     }
 
-	// initialise camera when entering spectator mode
+    /// initialise camera when entering spectator mode
+    /// @see followingplayer
     void setupcamera()
     {
         fpsent *target = followingplayer();
@@ -180,15 +194,17 @@ namespace game
         }
     }
 
-	// check if it is neccesary to detach the camera from first person view
-	// to third person view. this is mostly triggered by player death
+	/// check if it is neccesary to detach the camera from first person view
+	/// to third person view. this is mostly triggered by player death
+    /// @see hudplayer
     bool detachcamera()
     {
         fpsent *d = hudplayer();
         return d->state==CS_DEAD;
     }
 
-	// check if camera collision detection is neccesary
+    /// check if camera collision detection is neccesary
+    /// @see followingplayer
     bool collidecamera()
     {
         switch(player1->state)
@@ -199,16 +215,17 @@ namespace game
         return true;
     }
 
-	// interpolation factor for player positions
-	// low smoothmove means jumpily player movement
+	/// interpolation factor for player positions
+	/// low smoothmove means jumpily player movement
     VARP(smoothmove, 0, 75, 100);
 
-	// distance in which interpolation will be applied (?)
+    /// distance in which interpolation will be applied (?)
     VARP(smoothdist, 0, 32, 64);
 
-	// use latency and assume player movement to
-	// predict new position. Improves visual appearance
-	// of player movement - even under lag
+	/// use latency and assume player movement to
+	/// predict a player's new position. Improves visual appearance
+	/// of his movement tremendous - even under lag
+    /// @see moveplayer
     void predictplayer(fpsent *d, bool move)
     {
         d->o = d->newpos;
@@ -233,9 +250,11 @@ namespace game
         }
     }
 
-	// parse player state, move players, predict their position,
-	// handle ragdoll, check for lag
-	// called by updateworld only
+	/// parse player state, move players, predict their position,
+	/// handle ragdoll, check for lag
+    /// @see updateworld
+    /// @see moveragdoll
+    /// @see predictplayer
     void otherplayers(int curtime)
     {
         loopv(players)
@@ -266,15 +285,17 @@ namespace game
         }
     }
 
-	// ?
+	/// if slow motion SP game mode is disabled, set
+    /// local game speed ("server") to 100 (normal speed)
+    /// @see forcegamespeed
     VARFP(slowmosp, 0, 0, 1, 
 	{ 
 		if(m_sp && !slowmosp) server::forcegamespeed(100); 
 	}); 
 
-	// refill health slowly in slowmotion sp game mode
-	// (singleplayer only, check game mode slowmosp)
-	// called by updateworld only
+	/// refill health slowly in slowmotion sp game mode
+	/// (singleplayer only, check game mode slowmosp)
+	/// @see updateworld 
     void checkslowmo()
     {
         static int lastslowmohealth = 0;
@@ -286,7 +307,7 @@ namespace game
         }
     }
 
-	// main game update loop
+    /// called in game loop to the update game world
     void updateworld()        
     {
         if(!maptime) { maptime = lastmillis; maprealtime = totalmillis; return; }
@@ -327,12 +348,13 @@ namespace game
             }
             else if(cmode) cmode->checkitems(player1);
         }
-        if(player1->clientnum>=0) c2sinfo();   // do this last, to reduce the effective frame lag
+        /// well why not pack this into an own thread?
+        if(player1->clientnum>=0) c2sinfo();   /// do this last, to reduce the effective frame lag
     }
 
-	// spawn yourself im map, also called for monsters in singleplayer
-	// of course not used for other players in multiplayer - everyone 
-	// determins his spawn point for himself.
+    /// spawn yourself im the game world, also called for monsters/AI in singleplayer
+	/// of course not used for other players in multiplayer because everyone determins his spawn point for himself.
+    /// @see spawnstate
     void spawnplayer(fpsent *d)   
     {
         if(cmode) cmode->pickspawn(d);
@@ -350,7 +372,8 @@ namespace game
 	// in local singleplayer (botmatch e.g.)
     VARP(spawnwait, 0, 0, 1000);
 
-	// spawn myself in sp and dmsp game mode (singleplayer only)
+	/// spawn myself in SP and DMSP game mode (singleplayer only)
+    /// @see changemap
     void respawn(int gamemode = 0)
     {
         if(player1->state==CS_DEAD)
@@ -380,26 +403,28 @@ namespace game
     }
 
 
-	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	// mutiplayer game functions
+	/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    /// mutiplayer game functionality
 
-	// filter attack attempts
-	// not possible in intermission or state = CS_DEAD
+
+	/// filter attack attempts
+	/// not possible in intermission or if player's state is CS_DEAD
     void doattack(bool on)
     {
         if(intermission) return;
         if((player1->attacking = on)) respawn(gamemode);
     }
 
-	// check if I am allowed to jump at the moment
-	// called every time before jump command is executed
+    /// check if I am allowed to jump at the moment
+    /// called every time before jump command is executed
+    /// @see respawn
     bool canjump()
     {
         if(!intermission) respawn(gamemode);
         return player1->state!=CS_DEAD && !intermission;
     }
 
-	// check if I am allowed to move
+	/// check if I am allowed to move
     bool allowmove(physent *d)
     {
         if(d->type!=ENT_PLAYER) return true;
@@ -409,7 +434,8 @@ namespace game
 	// play a sound when you hit a player
     VARP(hitsound, 0, 0, 1);
 
-	// this callback is called when players take damage
+	/// an fpsent (player/monster/bot) took damage
+    /// @see damageeffect
     void damaged(int damage, fpsent *d, fpsent *actor, bool local)
     {
         if((d->state!=CS_ALIVE && d->state != CS_LAGGED && d->state != CS_SPAWNING) || intermission) return;
@@ -442,6 +468,7 @@ namespace game
 	// show score at death
     VARP(deathscore, 0, 1, 1);
 
+    /// mark players as dead and update their state data
     void deathstate(fpsent *d, bool restore)
     {
         d->state = CS_DEAD;
@@ -456,6 +483,7 @@ namespace game
             if(!restore) d->deaths++;
             //d->pitch = 0;
             d->roll = 0;
+            /// play a random death sound
             playsound(S_DIE1+rnd(2));
         }
         else
@@ -463,13 +491,16 @@ namespace game
             d->move = d->strafe = 0;
             d->resetinterp();
             d->smoothmillis = 0;
-            playsound(S_DIE1+rnd(2), &d->o);
+            /// play a random death sound
+            playsound(S_DIE1 + rnd(2), &d->o);
         }
     }
 
+    /// highlight frags in team colors
     VARP(teamcolorfrags, 0, 1, 1);
 
-	// this callback is called when player actor kills d
+    /// this callback is called when player actor kills d
+    /// prints death messages to all kind of consoles
     void killed(fpsent *d, fpsent *actor)
     {
         if(d->state==CS_EDITING)
@@ -516,6 +547,8 @@ namespace game
         if(cmode) cmode->killed(d, actor);
     }
 
+    /// update game session time
+    /// display intermission statistics in console
     void timeupdate(int secs)
     {
         if(secs > 0)
@@ -543,7 +576,7 @@ namespace game
         }
     }
 
-	// return player statistics to cubescript
+    /// return a player's statistics to cubescript
     ICOMMAND(getfrags, "", (), intret(player1->frags));
     ICOMMAND(getflags, "", (), intret(player1->flags));
     ICOMMAND(getdeaths, "", (), intret(player1->deaths));
@@ -551,10 +584,11 @@ namespace game
     ICOMMAND(gettotaldamage, "", (), intret(player1->totaldamage));
     ICOMMAND(gettotalshots, "", (), intret(player1->totalshots));
 
-	// other clients connected to this server
+    /// other clients connected to this server
     vector<fpsent *> clients;
 
-    fpsent *newclient(int cn)   // ensure valid entity
+    /// ensure new client is a valid entity
+    fpsent *newclient(int cn)
     {
         if(cn < 0 || cn > max(0xFF, MAXCLIENTS + MAXBOTS))
         {
@@ -575,14 +609,15 @@ namespace game
         return clients[cn];
     }
 
-	// ensure valid client entity
+	/// access fpsent object safely using index
+    /// @return NULL if index is invalid
     fpsent *getclient(int cn)   
     {
         if(cn == player1->clientnum) return player1;
         return clients.inrange(cn) ? clients[cn] : NULL;
     }
 
-	// notify my client to change data when another clients disconnect
+    /// notify my client to change data when another clients disconnect
     void clientdisconnected(int cn, bool notify)
     {
         if(!clients.inrange(cn)) return;
@@ -591,7 +626,9 @@ namespace game
             if(followdir) nextfollow(followdir);
             else stopfollowing();
         }
+        /// remove client number from ingore list
         unignore(cn);
+
         fpsent *d = clients[cn];
         if(!d) return;
         if(notify && d->name[0]) conoutf("\f4leave:\f7 %s", colorname(d));
@@ -604,34 +641,33 @@ namespace game
         cleardynentcache();
     }
 
-	// delete all clients (used whenever I disconnect e.g.)
-	// disconnect notification of other players when I disconnect are optional
-    void clearclients(bool notify)
+    /// delete all clients
+    /// @see disconnect
+	void clearclients(bool notify)
     {
         loopv(clients) if(clients[i]) clientdisconnected(i, notify);
     }
 
-	// initialize new client and add him to client vector
+    /// initialize new client
     void initclient()
     {
         player1 = spawnstate(new fpsent);
+        /// also filter player's name locally
         filtertext(player1->name, "unnamed", false, MAXNAMELEN);
         players.add(player1);
     }
 
-	// show game mode info during map load
+    /// show game mode description text during map load
     VARP(showmodeinfo, 0, 1, 1);
 
-	// clear all game data for session/new map
+	/// clear all game data to start a new game
     void startgame()
     {
         clearmovables();
         clearmonsters();
-
         clearprojectiles();
         clearbouncers();
         clearragdolls();
-
         clearteaminfo();
 
         // reset perma-state
@@ -679,10 +715,12 @@ namespace game
         disablezoom();
         lasthit = 0;
 
-        if(identexists("mapstart")) execute("mapstart"); // execute cube script map start macro
+        if(identexists("mapstart")) execute("mapstart"); /// execute cube script map start macro
     }
 
-	// called just after a map load
+    /// called just after a map load
+    /// send CRC32 to server
+    /// @see sendmapinfo
     void startmap(const char *name)   
     {
         ai::savewaypoints();
@@ -694,27 +732,34 @@ namespace game
         entities::resetspawns();
         copystring(clientmap, name ? name : "");
         
+        /// send CRC32 checksum of my current map
+        /// yeah if you would like to cheat this is the code passage you must modify you little ****** *
         sendmapinfo();
     }
 
-	// return game mode info text depending on game mode
+    /// return game mode info text depending on game mode
     const char *getmapinfo()
     {
+        /// return depends on array index
         return showmodeinfo && m_valid(gamemode) ? gamemodes[gamemode - STARTGAMEMODE].info : NULL;
     }
 
-	// trigger sound effects depending on the material you enter
+	/// trigger sound effects depending on the material you enter
     void physicstrigger(physent *d, bool local, int floorlevel, int waterlevel, int material)
     {
         if(d->type==ENT_INANIMATE) return;
-        if     (waterlevel>0) { if(material!=MAT_LAVA) playsound(S_SPLASH1, d==player1 ? NULL : &d->o); }
+        if(waterlevel>0) 
+        {
+            /// as long as you do not enter lava play a splash sound
+            if(material!=MAT_LAVA) playsound(S_SPLASH1, d==player1 ? NULL : &d->o); 
+        }
         else if(waterlevel<0) playsound(material==MAT_LAVA ? S_BURN : S_SPLASH2, d==player1 ? NULL : &d->o);
-		// only send server message if I entered the water and fpsent d is not a bot
-        if     (floorlevel>0) { if(d==player1 || d->type!=ENT_PLAYER || ((fpsent *)d)->ai) msgsound(S_JUMP, d); }
+        /// only send server message if I entered the water and fpsent d is not a bot
+        if(floorlevel>0) { if(d==player1 || d->type!=ENT_PLAYER || ((fpsent *)d)->ai) msgsound(S_JUMP, d); }
         else if(floorlevel<0) { if(d==player1 || d->type!=ENT_PLAYER || ((fpsent *)d)->ai) msgsound(S_LAND, d); }
     }
 
-	// push monsters (or objects) together when they hit walls or other objects
+	/// push monsters (or objects) together when they hit walls or other objects
     void dynentcollide(physent *d, physent *o, const vec &dir)
     {
         switch(d->type)
@@ -724,7 +769,8 @@ namespace game
         }
     }
 
-	// play sound and send sound notification to server
+	/// play sound and send sound notification to server
+    /// @see playsound
     void msgsound(int n, physent *d)
     {
         if(!d || d==player1)
@@ -740,14 +786,14 @@ namespace game
         }
     }
 
-	// return the sum of dynamic entities currently in scene
+	/// return the sum of dynamic entities currently in scene
     int numdynents()
 	{
 		return players.length()+monsters.length()+movables.length();
 	}
 
-	// iterate through all dynamic entities and return the dyn. entity with index [i]
-	// returned entities could be players, monsters or movables
+    /// iterate through all dynamic entities and return entity with index [i]
+	/// @returned a player, monster or movable (all dynamic entities)
     dynent *iterdynents(int i)
     {
         if(i<players.length()) return players[i];
@@ -758,17 +804,19 @@ namespace game
         return NULL;
     }
 
-	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	// player name coloring
 
-	// color team names in frag notifications in my 
-	// game console in red/blue, depending on my team
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	/// player name coloring
+
+
+	/// color team names in frag notifications in game console in red/blue, depending on my team
     VARP(teamcolortext, 0, 1, 1);
 
     static string cname[3];
     static int cidx = 0;
 
-	// are there any duplicate names in our client list?
+    /// are there any duplicate names in our client list?
+    /// in case this is true, their client numbers will be displayed behind both nicknames
     bool duplicatename(fpsent *d, const char *name = NULL, const char *alt = NULL)
     {
         if(!name) name = d->name;
@@ -777,8 +825,9 @@ namespace game
         return false;
     }
 
-	// add colored client number in [] brackets behind the name 
-	// in case another player has the same name (duplicated name)
+	/// add colored client number in [] brackets behind the name 
+	/// in case another player has the same name (duplicated name)
+    /// @see duplicatename
     const char *colorname(fpsent *d, const char *name, const char *prefix, const char *suffix, const char *alt)
     {
         if(!name) name = alt && d == player1 ? alt : d->name; 
@@ -791,29 +840,30 @@ namespace game
         return name;
     }
 
-	// color name depending on my team in red or blue
+    /// color name depending on my team in red or blue
     const char *teamcolorname(fpsent *d, const char *alt)
     {
-        if(!teamcolortext || !m_teammode) return colorname(d, NULL, "", "", alt); // do not color names if no team mode or color mode is disabled
+        /// do not color names if no team mode or color mode is disabled
+        if(!teamcolortext || !m_teammode) return colorname(d, NULL, "", "", alt);
         return colorname(d, NULL, isteam(d->team, player1->team) ? "\fs\f1" : "\fs\f3", "\fr", alt); 
     }
 
-	// color player name blue if he is in your team (\f1) otherwise red (\f3)
+	/// color player name blue if you have the same team (\f1) otherwise red (\f3)
     const char *teamcolor(const char *name, bool sameteam, const char *alt)
     {
         if(!teamcolortext || !m_teammode) return sameteam || !alt ? name : alt;
         return tempformatstring(sameteam ? "\fs\f1%s\fr" : "\fs\f3%s\fr", sameteam || !alt ? name : alt);
     }
 
-    // this function calls the function above but also validates that team is a valid char pointer
-    // it is not possible to return memory to an invalid char* pointer!
+    /// this function calls the function above but also validates that team is a valid char pointer
+    /// it is not possible to return memory to an invalid char* pointer!7
+    /// @see teamcolor
     const char *teamcolor(const char *name, const char *team, const char *alt)
     {
         return teamcolor(name, team && isteam(team, player1->team), alt);
     }
 
-
-	// suicide your player
+    /// suicide your player
     void suicide(physent *d)
     {
         if(d==player1 || (d->type==ENT_PLAYER && ((fpsent *)d)->ai))
@@ -832,16 +882,16 @@ namespace game
     }
     ICOMMAND(suicide, "", (), suicide(player1));
 
-	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	// hud rendering
+    /// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	/// hud rendering
 	
-	// checks if minimap is required (is one of these game modes is active?)
+    /// checks if minimap is required for this game mode
     bool needminimap() 
 	{ 
 		return m_ctf || m_protect || m_hold || m_capture || m_collect|| m_bomb; 
 	}
 
-	// draw (blit) item (weapon, flags, armours, quad) texture on screen at x,y
+	/// draw (blit) item texture (weapon, flags, armours, quad) on screen at x,y
     void drawicon(int icon, float x, float y, float sz)
     {
         settexture(tempformatstring("%s/hud/items.png", interfacedir));
@@ -854,8 +904,8 @@ namespace game
         glEnd();
     }
 
-	// calculate distance of hud from bottom of my screen depending on player state
-	// referenced only in gl_drawhud in render.cpp
+	/// calculate distance of hud from bottom of my screen depending on player state
+	/// referenced only in gl_drawhud in render.cpp
 	float abovegameplayhud(int w, int h)
     {
         switch(hudplayer()->state)
@@ -868,14 +918,13 @@ namespace game
         }
     }
 
-	// this static data is used to describe the sorting of the 3 next weapons in your holster preview.
+	/// this static data is used to describe the sorting of the 3 next weapons in your holster preview.
     int ammohudup[3] = { GUN_CG, GUN_RL, GUN_GL },
         ammohuddown[3] = { GUN_RIFLE, GUN_SG, GUN_PISTOL },
         ammohudcycle[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
 
-
-	// those 3 functions are used to rotate in circles through your weapons
-	// so you see different preview images of the other weapons in your holsters
+    /// those 3 functions are used to rotate in circles through your weapons
+	/// so you see different preview images of the other weapons in your holsters
     ICOMMAND(ammohudup, "V", (tagval *args, int numargs), // 1 up
     {
         loopi(3) ammohudup[i] = i < numargs ? getweapon(args[i].getstr()) : -1;
@@ -889,13 +938,10 @@ namespace game
         loopi(8) ammohudcycle[i] = i < numargs ? getweapon(args[i].getstr()) : -1;
     });
 
-
-	// decide if you want to display the little icons of your
-	// other weapons in the slot
+	/// decide if you want to display the little icons of your other weapons in the slot
     VARP(ammohud, 0, 1, 1);
 
-	// draw other weapons in weapon slots beside 
-	// the icon of the currently selected weapon
+	/// draw other weapons in weapon slots beside the icon of the currently selected weapon
     void drawammohud(fpsent *d)
     {
         float x = HICON_X + 2*HICON_STEP, y = HICON_Y, sz = HICON_SIZE;
@@ -936,8 +982,8 @@ namespace game
         glPopMatrix();
     }
 
-	// draw health icon, armour icon and icon of selected gun
-	// other gun's preview icons are not included here
+    /// draw health icon, armour icon and icon of selected gun
+	/// other gun's preview icons are not included here
     void drawhudicons(fpsent *d)
     {
         glPushMatrix();
@@ -962,7 +1008,7 @@ namespace game
         }
     }
 
-	// draw announcement for upcoming pickup entities in bomberman mode
+	/// draw announcement for upcoming pickup entities in BOMBERMAN mode
     void drawhudannounce(int w, int h)
     {
         if(hudannounce_timeout < totalmillis) return;
@@ -1009,8 +1055,7 @@ namespace game
 
     }
 
-	// render game hud depending on hudplayer's state
-	// render "SPECTATOR" in spectator mode
+	/// render game hud depending on hudplayer's state and "SPECTATOR" in spectator mode
     void gameplayhud(int w, int h)
     {
         glPushMatrix();
@@ -1049,24 +1094,25 @@ namespace game
         glPopMatrix();
     }
 
-	// ?
+	/// ?
     int clipconsole(int w, int h)
     {
         if(cmode) return cmode->clipconsole(w, h);
         return 0;
     }
 
-	// use blue "blocking" crosshair when pointing at teamate
+    /// use blue blocking crosshair when pointing at a teamate
     VARP(teamcrosshair, 0, 1, 1);
 
-	// display hit crosshair increases hit feedback impression
+	/// displaying a hit crosshair increases the players hit impression ('feel')
     VARP(hitcrosshair, 0, 425, 1000);
 
-    // Directory where crosshairs are stored. Relative to interfacedir
+    /// Directory where crosshairs are stored. Relative to interfacedir
     SVARP(crosshairdir, "crosshair");
 
-	// crosshair file names are stored in a constant functions
-	// that return strings depending on indices
+	/// crosshair file names are stored in a constant functions
+	/// that return strings depending on indices
+    /// TODO: remove this hardcoded passage and move on to JSON!
     const char *defaultcrosshair(int index)
     {
         switch(index)
@@ -1077,7 +1123,7 @@ namespace game
         }
     }
 
-	// switch crosshair depending on player state and player health
+	/// switch crosshair depending on player state and player health
     int selectcrosshair(float &r, float &g, float &b)
     {
         fpsent *d = hudplayer();
@@ -1092,9 +1138,9 @@ namespace game
             dynent *o = intersectclosest(d->o, worldpos, d);
             if(o && o->type==ENT_PLAYER && isteam(((fpsent *)o)->team, d->team))
             {
-				// please place your triggerbot here
-				// and feel ashamed! You should have fun
-				// and not advantages in multiplayer games!
+				/// please place your triggerbot here
+				/// and feel ashamed! You should have fun
+				/// and not unfair advantages in multiplayer games!
                 crosshair = 1;
                 r = g = 0;
             }
@@ -1112,6 +1158,8 @@ namespace game
 	// - this functions is not enabled -
     void lighteffects(dynent *e, vec &color, vec &dir)
     {
+        /// #if 0 is another way to comment out like this: /**/
+        /// because it is a macro it is evern more powerful than /**/
 #if 0
         fpsent *d = (fpsent *)e;
         if(d->state!=CS_DEAD && d->quadmillis)
@@ -1122,7 +1170,8 @@ namespace game
 #endif
     }
 
-	// specify master server table columns
+    /// specify master server table columns
+    /// TODO: remove this hardcoded passage and move on to JSON!
     bool serverinfostartcolumn(g3d_gui *g, int i)
     {
         static const char * const names[] = { "ping ", "players ", "mode ", "map ", "time ", "master ", "host ", "port ", "description " };
@@ -1135,27 +1184,30 @@ namespace game
         return true;
     }
 
-	// end master server list
+	/// end master server list
     void serverinfoendcolumn(g3d_gui *g, int i)
     {
         g->mergehits(false);
         g->column(i);
-        g->poplist(); // end master server gui list
+        g->poplist(); /// end master server gui list
     }
 
-	// receive master mode color from global constant buffer via indices
+	/// receive master mode color from global constant buffer via indices
+    /// TODO: remove this hardcoded passage and move on to JSON!
     const char *mastermodecolor(int n, const char *unknown)
     {
         return (n>=MM_START && size_t(n-MM_START)<sizeof(mastermodecolors)/sizeof(mastermodecolors[0])) ? mastermodecolors[n-MM_START] : unknown;
     }
 
 	// receive master mode icon from global constant buffer via indices
+    /// TODO: remove this hardcoded passage and move on to JSON!
     const char *mastermodeicon(int n, const char *unknown)
     {
         return (n>=MM_START && size_t(n-MM_START)<sizeof(mastermodeicons)/sizeof(mastermodeicons[0])) ? mastermodeicons[n-MM_START] : unknown;
     }
 
-	// render servers with server attributes in master server list
+	/// render servers with server attributes in master server list
+    /// TODO: remove this hardcoded passage and move on to JSON!
     bool serverinfoentry(g3d_gui *g, int i, const char *name, int port, const char *sdesc, const char *map, int ping, const vector<int> &attr, int np)
     {
         if(ping < 0 || attr.empty() || attr[0]!=PROTOCOL_VERSION)
@@ -1255,6 +1307,7 @@ namespace game
 
 	// file name of important configuration files
 	// are stored in constant functions that return strings...
+    /// TODO: remove this hardcoded passage and move on to JSON!
     const char *savedconfig() { return "config/saved.cfg"; }
     const char *restoreconfig() { return "config/restore.cfg"; }
     const char *defaultconfig() { return "config/defaults.cfg"; }
@@ -1262,6 +1315,7 @@ namespace game
     const char *savedservers() { return "config/servers.cfg"; }
 
 	// load "auth.cfg" configuration file with disabled log messages (?)
+    /// TODO: remove this hardcoded passage and move on to JSON!
     void loadconfigs()
     {
         execfile("config/auth.cfg", false);
