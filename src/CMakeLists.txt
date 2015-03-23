@@ -114,6 +114,8 @@ if(OS_WINDOWS)
     set(ADDITIONAL_LIBRARIES ${ADDITIONAL_LIBRARIES} kernel32 ws2_32 winmm)
 endif()
 
+set(ALLMODULES "" CACHE INTERNAL "")
+
 # USAGE: declare_module(<NAME> [PATH])
 #
 # Automatically search for headers and source files inside
@@ -131,8 +133,6 @@ endif()
 #     it contains a list of all source files in this module
 #   * A VS source group is added with the name ${NAME}; it
 #     contains all the headers and source files in this module
-
-set(ALLMODULES "" CACHE INTERNAL "")
 function(declare_module NAME PATH)
   get_filename_component(abs
     "${CMAKE_CURRENT_SOURCE_DIR}/${PATH}" REALPATH)
@@ -154,16 +154,14 @@ function(declare_module NAME PATH)
 endfunction()
 
 # USAGE: group_modules()
-# 
+#
 # Set up Source_groups for VS/XCode
 # Has to be called for every target
-# 
+#
 function(group_modules)
-    message(STATUS "allmodules ${ALLMODULES}")
     foreach(mod ${ALLMODULES})
         string(TOLOWER "${mod}" gname)
         source_group(${gname} FILES ${${mod}_MODULE_HEADERS} ${${mod}_MODULE_SOURCES})
-        message(STATUS "set group ${gname} FILES ${${mod}_MODULE_HEADERS} ${${mod}_MODULE_SOURCES}")
     endforeach()
 endfunction()
 
