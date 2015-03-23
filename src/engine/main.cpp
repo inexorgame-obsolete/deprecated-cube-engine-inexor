@@ -1300,7 +1300,9 @@ int main(int argc, char **argv)
 
     logoutf("init: cef: fork process (%dpx x %dpx)", scr_w, scr_h);
     cef_app = new InexorCefApp(scr_w, scr_h);
-	CefMainArgs main_args(GetModuleHandle(NULL));
+
+    CefMainArgs main_args(GetModuleHandle(NULL)); // TODO: wrapper
+
     int exit_code = CefExecuteProcess(main_args, cef_app.get(), NULL);
     if (exit_code >= 0) {
         logoutf("cef exit_code: %d", exit_code);
