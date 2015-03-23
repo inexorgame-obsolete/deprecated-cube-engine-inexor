@@ -1,38 +1,39 @@
-// fpsgame/client.cpp 
-// implementation of various game core functions such as
-// minimap, hud, administration, auth, connect, network message parser and more
-// implementation of many cube script get functions 
-//
-//
-//
+/// fpsgame/client.cpp 
+/// implementation of various game core functions such as
+/// minimap, hud, administration, auth, connect, network message parser and more
+/// implementation of many cube script get functions 
+///
+///
+///
 
 #include "game.h"
 
 namespace game
 {
-	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	// minimap and radar
+    /// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    /// minimap and radar
 
-	// radar and minimap settings
+	/// radar and minimap settings
     VARP(minradarscale, 0, 384, 10000);
     VARP(maxradarscale, 1, 1024, 10000);
     VARP(radarteammates, 0, 1, 1);
     FVARP(minimapalpha, 0, 1, 1);
     SVARP(radardir, "media/interface/radar");
 
-	// HUD
+	/// Bomberman HUD
     int hudannounce_begin = 0;
     int hudannounce_timeout = 0;
     int hudannounce_effect = 0;
     char* hudannounce_text;
 
-	// calculate required radar scale
+	/// calculate required radar scale
     float calcradarscale()
     {
         return clamp(max(minimapradius.x, minimapradius.y)/3, float(minradarscale), float(maxradarscale));
     }
 
-	// draw rotated minimap
+	/// draw rotated minimap
+    /// @see calcradarscale
     void drawminimap(fpsent *d, float x, float y, float s)
     {
         vec pos = vec(d->o).sub(minimapcenter).mul(minimapscale).add(0.5f), dir;
@@ -49,13 +50,15 @@ namespace game
         glEnd();
     }
 
-    // Bind the minimap_frame-texture
+    /// bind the minimap frame's texture
+    /// @see settexture
     void setradartex()
     {
 		defformatstring(radar_filename)("%s/radar.png", radardir);
         settexture(radar_filename, 3);
     }
 
+    /// draw radar (a trangle square with matching texture coordinates to be precise) to target coordinates
     void drawradar(float x, float y, float s)
     {
         glBegin(GL_TRIANGLE_STRIP);
@@ -66,7 +69,7 @@ namespace game
         glEnd();
     }
 
-	// draw a specific teamate's icon arrow in minimap
+	/// draw a specific teamate's icon arrow in minimap
     void drawteammate(fpsent *d, float x, float y, float s, fpsent *o, float scale)
     {
         vec dir = d->o;
@@ -85,13 +88,13 @@ namespace game
         glTexCoord2f(0.0f, 1.0f); glVertex2f(bx - bs*v.y, by + bs*v.x);
     }
 
-    //Set specific textures for teammates, skulls.. on the minimap
+    /// set specific textures for teammates, skulls... on the minimap
     void setbliptex(int team, const char *type = "")
     {
         settexture(tempformatstring("%s/blip%s%s.png", radardir, teamblipcolor[team], type), 3);
     }
 
-    // draw all teamate icons in minimap
+    /// draw all teamate arrow icons in minimap
     void drawteammates(fpsent *d, float x, float y, float s)
     {
         if(!radarteammates) return;
@@ -127,17 +130,17 @@ namespace game
         if(dead) glEnd();
     }
 
-	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	// game modes
+    /// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	/// game modes
 
-	// game mode header files
+	/// game mode header files
     #include "capture.h"
     #include "ctf.h"
     #include "collect.h"
     #include "bomb.h"
     #include "hideandseek.h"
 
-	// gamemodes
+	/// gamemodes
     clientmode *cmode = NULL;
     captureclientmode capturemode;
     ctfclientmode ctfmode;
@@ -145,7 +148,7 @@ namespace game
     bombclientmode bombmode;
     hideandseekclientmode hideandseekmode;
 
-	// set game mode pointer
+	/// set game mode pointer
     void setclientmode()
     {
         if(m_capture) cmode = &capturemode;
@@ -154,29 +157,34 @@ namespace game
         else if(m_bomb) cmode = &bombmode;
         else if(m_hideandseek) cmode = &hideandseekmode;
         else cmode = NULL;
+
     }
 
-    bool senditemstoserver = false, sendcrc = false; // after a map change, since server doesn't have map data
+    /// after a map change, since server doesn't have map data
+    bool senditemstoserver = false, sendcrc = false; 
     int lastping = 0;
     bool connected = false, remote = false, demoplayback = false, gamepaused = false;
     int sessionid = 0, mastermode = MM_OPEN, gamespeed = 100;
     string servinfo = "", servauth = "", connectpass = "";
 
-	// push dead bodies (?)
+    /// push dead bodies (?)
     VARP(deadpush, 1, 2, 20);
 
-	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	// team, name and playermodel settings
+    /// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    /// team, name and playermodel settings
 
-	// change my own nick name
+    /// change my own nick name
+    /// @param name my new nickname
+    /// @see filtertext
     void switchname(const char *name)
     {
-        filtertext(player1->name, name, false, MAXNAMELEN); // server filters as well
+        /// your nickname will be filtered by clients again
+        filtertext(player1->name, name, false, MAXNAMELEN);
         if(!player1->name[0]) copystring(player1->name, "unnamed");
         addmsg(N_SWITCHNAME, "rs", player1->name);
     }
 
-	// get my own nick name
+	/// print my own nick name to the game console
     void printname()
     {
         conoutf("your name is: %s", colorname(player1));
@@ -189,20 +197,21 @@ namespace game
     });
     ICOMMAND(getname, "", (), result(player1->name));
 
-	// switch my own team
+	/// switch my own team
+    /// @see filtertext
     void switchteam(const char *team)
     {
         if(player1->clientnum < 0) filtertext(player1->team, team, false, MAXTEAMLEN);
         else addmsg(N_SWITCHTEAM, "rs", team);
     }
 
-	// print my own team name
+    /// print my own team name to the game console
     void printteam()
     {
         conoutf("your team is: %s", player1->team);
     }
 
-	// switch team or print team name 
+	/// switch team or print team name 
     ICOMMAND(team, "sN", (char *s, int *numargs),
     {
         if(*numargs > 0) switchteam(s);
@@ -210,20 +219,21 @@ namespace game
         else result(player1->team);
     });
 
-	// cubescript getteam implementation
+	/// cubescript implementation of getteam 
     ICOMMAND(getteam, "", (), result(player1->team));
 
-	// switch my player model (inky, ogro..)
+	/// switch my player model (inky, ogro..)
+    /// @see addmsg
     void switchplayermodel(int playermodel)
     {
         player1->playermodel = playermodel;
         addmsg(N_SWITCHMODEL, "ri", player1->playermodel);
     }
 
-	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	// authkeys
+	/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    /// authkeys (asymmetrical encryption using TIGER3 hashes)
 
-	// structure for authentification keys
+	/// structure for authentification keys
     struct authkey
     {
         char *name, *key, *desc;
@@ -243,10 +253,10 @@ namespace game
         }
     };
 
-	// a vector fo authkeys for authentification on servers
+    /// a vector fo authkeys for authentification on servers
     vector<authkey *> authkeys;
 
-	// find auth key by description
+	/// find auth key by description
     authkey *findauthkey(const char *desc = "")
     {
         loopv(authkeys) if(!strcmp(authkeys[i]->desc, desc) && !strcasecmp(authkeys[i]->name, player1->name)) return authkeys[i];
@@ -254,11 +264,10 @@ namespace game
         return NULL;
     }
 
-	// do authentification automaticly
+    /// do authentification automaticly
     VARP(autoauth, 0, 1, 1);
 
-
-	// add a new authkey to authkey library
+    /// add a new authkey to authkey library
     void addauthkey(const char *name, const char *key, const char *desc)
     {
         loopvrev(authkeys) if(!strcmp(authkeys[i]->desc, desc) && !strcmp(authkeys[i]->name, name)) delete authkeys.remove(i);
@@ -266,8 +275,7 @@ namespace game
     }
     ICOMMAND(authkey, "sss", (char *name, char *key, char *desc), addauthkey(name, key, desc));
 
-
-	// check if both description and name for this authkey are available
+	/// check if both description and name for this authkey are available
     bool hasauthkey(const char *name, const char *desc)
     {
         if(!name[0] && !desc[0]) return authkeys.length() > 0;
@@ -276,8 +284,7 @@ namespace game
     }
     ICOMMAND(hasauthkey, "ss", (char *name, char *desc), intret(hasauthkey(name, desc) ? 1 : 0));
 
-
-	// generate new public/private auth key pair using tiger hash algorithm
+	/// generate new public/private auth key pair using TIGER3 hashing algorithm
     void genauthkey(const char *secret)
     {
         if(!secret[0]) { conoutf(CON_ERROR, "you must specify a secret password"); return; }
@@ -288,11 +295,11 @@ namespace game
     }
     COMMAND(genauthkey, "s");
 
-
-	// save all authkeys to "auth.cfg"
+    /// save all authkeys to "auth.cfg"
+    /// TODO: remove this hardcoded passage and move on to JSON!
     void saveauthkeys()
     {
-        stream *f = openfile("auth.cfg", "w"); // why is this file name not optional?
+        stream *f = openfile("auth.cfg", "w");
         if(!f) { conoutf(CON_ERROR, "failed to open auth.cfg for writing"); return; }
         loopv(authkeys)
         {
@@ -304,10 +311,10 @@ namespace game
     }
     COMMAND(saveauthkeys, "");
 
-	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-	// enable crc and senditemstoserver
-	// called just after map load by startmap
+	/// enable crc and senditemstoserver
+	/// called just after map load by startmap
     void sendmapinfo()
     {
         if(!connected) return;
@@ -315,13 +322,14 @@ namespace game
         if(player1->state!=CS_SPECTATOR || player1->privilege || !remote) senditemstoserver = true;
     }
 
-	// write my player name to a stream
+	/// write my player name to a stream
+    /// @see escapestring
     void writeclientinfo(stream *f)
     {
         f->printf("name %s\n", escapestring(player1->name));
     }
 
-	// check if editing is available (alos print error it not)
+    /// check if editing is available
     bool allowedittoggle()
     {
         if(editmode) return true;
@@ -335,7 +343,9 @@ namespace game
         return true;
     }
 
-	// send edit toggle to server
+	/// send edit toggle to server
+    /// @see addmsg
+    /// @see deathstate
     void edittoggled(bool on)
     {
         addmsg(N_EDITMODE, "ri", on ? 1 : 0);
@@ -345,12 +355,12 @@ namespace game
         player1->suicided = player1->respawned = -2;
     }
 	
-	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	// cubescript get - functions
+	/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	/// cubescript get functions
 
-	// cn means client number
+    /// please note: 'cn' means client number
 
-	// get nick name from cn
+	/// get nick name from cn
     const char *getclientname(int cn)
     {
         fpsent *d = getclient(cn);
@@ -358,7 +368,7 @@ namespace game
     }
     ICOMMAND(getclientname, "i", (int *cn), result(getclientname(*cn)));
 
-	// get team name from cn
+	/// get team name from cn
     const char *getclientteam(int cn)
     {
         fpsent *d = getclient(cn);
@@ -366,7 +376,7 @@ namespace game
     }
     ICOMMAND(getclientteam, "i", (int *cn), result(getclientteam(*cn)));
 
-	// get client model from cn
+    /// get client player model ID from cn
     int getclientmodel(int cn)
     {
         fpsent *d = getclient(cn);
@@ -374,8 +384,9 @@ namespace game
     }
     ICOMMAND(getclientmodel, "i", (int *cn), intret(getclientmodel(*cn)));
 
-	// get client icon from cn
-	// depends on player model and spectator mode
+	/// get client icon from cn
+	/// depends on player model and spectator mode
+    /// @see getplayermodelinfo
     const char *getclienticon(int cn)
     {
         fpsent *d = getclient(cn);
@@ -385,7 +396,7 @@ namespace game
     }
     ICOMMAND(getclienticon, "i", (int *cn), result(getclienticon(*cn)));
 
-	// check if this cn is game master (green)
+    /// check if this cn is game master, auth master or administrator
     bool ismaster(int cn)
     {
         fpsent *d = getclient(cn);
@@ -393,7 +404,8 @@ namespace game
     }
     ICOMMAND(ismaster, "i", (int *cn), intret(ismaster(*cn) ? 1 : 0));
 
-	// check if this cn is auth master (green, should be violet to distinguish from gm..)
+    /// check if this cn is auth master or administrator
+    /// TODO: change the color of auth masters to purple!
     bool isauth(int cn)
     {
         fpsent *d = getclient(cn);
@@ -401,20 +413,21 @@ namespace game
     }
     ICOMMAND(isauth, "i", (int *cn), intret(isauth(*cn) ? 1 : 0));
 
-	// check if this cn is administrator (orange)
+    /// check if this cn is administrator (orange)
     bool isadmin(int cn)
     {
         fpsent *d = getclient(cn);
+        /// there is no higher permission level than administrator at the moment
         return d && d->privilege >= PRIV_ADMIN;
     }
     ICOMMAND(isadmin, "i", (int *cn), intret(isadmin(*cn) ? 1 : 0));
 
-	// return master mode 
+	/// return master mode 
     ICOMMAND(getmastermode, "", (), intret(mastermode));
-	// return master mode name
+	/// return master mode name
     ICOMMAND(mastermodename, "i", (int *mm), result(server::mastermodename(*mm, "")));
 
-	// check if this cn is spectator
+	/// check if this cn is spectator
     bool isspectator(int cn)
     {
         fpsent *d = getclient(cn);
@@ -422,45 +435,47 @@ namespace game
     }
     ICOMMAND(isspectator, "i", (int *cn), intret(isspectator(*cn) ? 1 : 0));
 
-	// check if this cn is a bot (computer controlled player)
+    /// please note:  A.I. = "artificial intelligence"
+
+	/// check if this cn is a bot (computer controlled player)
     bool isai(int cn, int type) 
     {
         fpsent *d = getclient(cn);
-        int aitype = type > 0 && type < AI_MAX ? type : AI_BOT; // a.i. = "artificial intelligence"
+        int aitype = type > 0 && type < AI_MAX ? type : AI_BOT; 
         return d && d->aitype==aitype;
     }
     ICOMMAND(isai, "ii", (int *cn, int *type), intret(isai(*cn, *type) ? 1 : 0));
 
-	// all functions can be called using client number or full name
-	// name should be case sensitive but the engine checks is both ways
+	/// all functions can be called using client number or full name
+	/// name should be case sensitive but the engine checks is both ways
     int parseplayer(const char *arg)
     {
         char *end;
         int n = strtol(arg, &end, 10);
-		// try to parse it as cn
+		/// try to parse it as cn
         if(*arg && !*end)
         {
             if(n!=player1->clientnum && !clients.inrange(n)) return -1;
             return n;
         }
-        // try case sensitive first
+        /// try case sensitive first
         loopv(players)
         {
             fpsent *o = players[i];
             if(!strcmp(arg, o->name)) return o->clientnum;
         }
-        // nothing found, try case insensitive
+        /// nothing found, try case insensitive
         loopv(players)
         {
             fpsent *o = players[i];
             if(!strcasecmp(arg, o->name)) return o->clientnum;
         }
-		// parsing failed
+		/// no match found!
         return -1;
     }
     ICOMMAND(getclientnum, "s", (char *name), intret(name[0] ? parseplayer(name) : player1->clientnum));
 
-	// return a list of players
+    /// return a list of players
     void listclients(bool local, bool bots)
     {
         vector<char> buf;
@@ -483,19 +498,21 @@ namespace game
     }
     ICOMMAND(listclients, "bb", (int *local, int *bots), listclients(*local>0, *bots!=0));
 
-	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	// server administration
+    /// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	/// server administration
 
-	// many server administration commands require administrative permissions!
+	/// many server commands require administrative permissions!
 
-	// clears server ban lists
+    /// clears server ban lists
+    /// @see addmsg
     void clearbans()
     {
         addmsg(N_CLEARBANS, "r");
     }
     COMMAND(clearbans, "");
 	
-	// change a players team
+	/// change a players team
+    /// @see addmsg
 	void setteam(const char *arg1, const char *arg2)
     {
         int i = parseplayer(arg1);
@@ -503,7 +520,10 @@ namespace game
     }
     COMMAND(setteam, "ss");
 
-	// kickban a player
+    /// please note: there is no difference between kick and ban
+
+	/// kickban a player
+    /// @see addmsg
     void kick(const char *victim, const char *reason)
     {
         int vn = parseplayer(victim);
@@ -511,7 +531,7 @@ namespace game
     }
     COMMAND(kick, "ss");
 
-	// kick a player using authentification key
+    /// kick a player using authentification key
     void authkick(const char *desc, const char *victim, const char *reason)
     {
         authkey *a = findauthkey(desc);
@@ -526,12 +546,13 @@ namespace game
     ICOMMAND(sauthkick, "ss", (const char *victim, const char *reason), if(servauth[0]) authkick(servauth, victim, reason));
     ICOMMAND(dauthkick, "sss", (const char *desc, const char *victim, const char *reason), if(desc[0]) authkick(desc, victim, reason));
 	
-	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	// ignoring players
+    /// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    /// ignoring players
 
+    /// a vector of ignored client numbers (cns)
     vector<int> ignores;
 
-	// ignore all chat messags
+    /// ignore all chat messags from a certain client number
     void ignore(int cn)
     {
         fpsent *d = getclient(cn);
@@ -540,7 +561,7 @@ namespace game
         if(ignores.find(cn) < 0) ignores.add(cn);
     }
 
-	// stop ignoring all chat messages
+	/// stop ignoring all chat messages from a certain client number
     void unignore(int cn)
     {
         if(ignores.find(cn) < 0) return;
@@ -549,19 +570,20 @@ namespace game
         ignores.removeobj(cn);
     }
 
-	// check if this person is ingored by you
+	/// cubescript: check if this person is ingored by you
     bool isignored(int cn) { return ignores.find(cn) >= 0; }
 
     ICOMMAND(ignore, "s", (char *arg), ignore(parseplayer(arg)));
     ICOMMAND(unignore, "s", (char *arg), unignore(parseplayer(arg))); 
     ICOMMAND(isignored, "s", (char *arg), intret(isignored(parseplayer(arg)) ? 1 : 0));
 	
-	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	// multiplayer stuff
+	/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	/// multiplayer functionality
 
-	// hash setmaster password
-	// unfortunately, cn and sessionid are used to hash which means that servers will not be abled to store the hash value!
-	// therefore, we have an authentification system - auth!
+	/// hash setmaster password
+	/// unfortunately, cn and sessionid are used to hash which means that servers will not be abled to store the hash value!
+    /// therefore, we have an authentification system: auth!
+    /// @see hashpassword
     void hashpwd(const char *pwd)
     {
         if(player1->clientnum<0) return;
@@ -571,8 +593,7 @@ namespace game
     }
     COMMAND(hashpwd, "s");
 
-
-	// acquire game master or give game master to players
+    /// acquire game master or give game master to players
     void setmaster(const char *arg, const char *who)
     {
         if(!arg[0]) return;
@@ -593,11 +614,10 @@ namespace game
     }
     COMMAND(setmaster, "ss");
 
-	// request to change server master mode (permissions requires)
+    /// request to change server master mode (permissions requires)
     ICOMMAND(mastermode, "i", (int *val), addmsg(N_MASTERMODE, "ri", *val));
 
-
-	// try to authentificate using specified auth key
+	/// try to authentificate using specified auth key
     bool tryauth(const char *desc)
     {
         authkey *a = findauthkey(desc);
@@ -610,8 +630,7 @@ namespace game
     ICOMMAND(sauth, "", (), if(servauth[0]) tryauth(servauth));
     ICOMMAND(dauth, "s", (char *desc), if(desc[0]) tryauth(desc));
 
-
-	// toggle own spectator or put player into spectator (permissions requred)
+    /// toggle own spectator or put player into spectator (permissions requred)
     void togglespectator(int val, const char *who)
     {
         int i = who[0] ? parseplayer(who) : player1->clientnum;
@@ -619,15 +638,14 @@ namespace game
     }
     ICOMMAND(spectator, "is", (int *val, char *who), togglespectator(*val, who));
 
-
-	// ask the server to acquire CRC32 checksum of all player's maps (permissions requred)
+    /// ask the server to acquire CRC32 checksum of all player's maps (permissions requred)
     ICOMMAND(checkmaps, "", (), addmsg(N_CHECKMAPS, "r"));
 
     int gamemode = INT_MAX, nextmode = INT_MAX;
     string clientmap = "";
 
-
-	// force server to change map (permissions requred)
+    /// force server to change map (permissions requred)
+    /// @see startgame
     void changemapserv(const char *name, int mode)
     {
         if(multiplayer(false) && !m_mp(mode))
@@ -648,7 +666,7 @@ namespace game
         startgame();
     }
 
-	// force server to change game mode (permissions required)
+	/// force server to change game mode (permissions required)
     void setmode(int mode)
     {
         if(multiplayer(false) && !m_mp(mode))
@@ -661,16 +679,16 @@ namespace game
         intret(1);
     }
 
-	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	// cubescript interface
+	/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	/// cubescript interface
 
-	// set game mode
+	/// set game mode
     ICOMMAND(mode, "i", (int *val), setmode(*val));
 
-	// get game mode in cubescript
+	/// get game mode in cubescript
     ICOMMAND(getmode, "", (), intret(gamemode));
 
-	// return remaining time
+	/// return remaining time
     ICOMMAND(timeremaining, "i", (int *formatted), 
     {
         int val = max(maplimit - lastmillis, 0)/1000;
@@ -702,7 +720,7 @@ namespace game
     ICOMMANDS("m_timeforward", "i", (int *mode), { int gamemode = *mode; intret(m_timeforward); });
     ICOMMANDS("m_obstacles", "i", (int *mode), { int gamemode = *mode; intret(m_obstacles); });
 	
-	// request map change, server may ignore
+	/// request map change, server may ignore
     void changemap(const char *name, int mode)
     {
         if(!remote)
@@ -713,29 +731,29 @@ namespace game
         else if(player1->state!=CS_SPECTATOR || player1->privilege) addmsg(N_MAPVOTE, "rsi", name, mode);
     }
 
-	// validates game mode name and calls changemap above
+    /// validates game mode name and calls changemap above
     void changemap(const char *name)
     {
         changemap(name, m_valid(nextmode) ? nextmode : (remote ? 0 : 1));
     }
     ICOMMAND(map, "s", (char *name), changemap(name));
 
-	// force edit mode
+	/// force edit mode
     void forceedit(const char *name)
     {
         changemap(name, 1);
     }
 
-	// request server to start new map (requires editmode)
+	/// request server to start new map (requires editmode)
     void newmap(int size)
     {
         addmsg(N_NEWMAP, "ri", size);
     }
 
-	// ?
+	/// ?
     int needclipboard = -1;
 
-	// send copied data from your clipboard to server
+	/// send copied data from your clipboard to server
     void sendclipboard()
     {
         uchar *outbuf = NULL;
@@ -754,8 +772,7 @@ namespace game
         needclipboard = -1;
     }
 
-	// ?
-	// send edit messages to servers
+    /// send edit messages to servers
     void edittrigger(const selinfo &sel, int op, int arg1, int arg2, int arg3)
     {
         if(m_edit) switch(op)
@@ -815,7 +832,7 @@ namespace game
         }
     }
 
-	// print map var change commited by other players in edit mode
+	/// print map var change commited by other players in edit mode
     void printvar(fpsent *d, ident *id)
     {
         if(id) switch(id->type)
@@ -842,13 +859,13 @@ namespace game
         }
     }
 
-	// change map vars in edit mode in multiplayer
+	/// change map vars in edit mode in multiplayer
     void vartrigger(ident *id)
     {
         if(!m_edit) return;
         switch(id->type)
         {
-			// access memory storage union depending on var type
+			/// access memory storage union depending on var type
             case ID_VAR:
                 addmsg(N_EDITVAR, "risi", ID_VAR, id->name, *id->storage.i);
                 break;
@@ -862,10 +879,10 @@ namespace game
                 break;
             default: return;
         }
-        printvar(player1, id); // print my own change as well
+        printvar(player1, id); /// print my own change as well
     }
 
-	// pause game 
+	/// pause game 
     void pausegame(bool val)
     {
         if(!connected) return;
@@ -874,7 +891,7 @@ namespace game
     }
     ICOMMAND(pausegame, "i", (int *val), pausegame(*val > 0));
 
-	// cubescript: check if game is paused
+	/// cubescript: check if game is paused
     ICOMMAND(paused, "iN$", (int *val, int *numargs, ident *id),
     { 
         if(*numargs > 0) pausegame(clampvar(id, *val, 0, 1) > 0); 
@@ -882,19 +899,19 @@ namespace game
         else printvar(id, gamepaused ? 1 : 0); 
     });
 
-    // check if game is paused
+    /// check if game is paused
 	bool ispaused() 
 	{ 
 		return gamepaused; 
 	}
 
-	// check if mouse looking is allowed
+	/// check if mouse looking is allowed
     bool allowmouselook() 
 	{ 
 		return !gamepaused || !remote || m_edit;
 	}
 
-	// change game speed (requires permissions)
+    /// change game speed (requires permissions)
     void changegamespeed(int val)
     {
         if(!connected) return;
@@ -908,17 +925,17 @@ namespace game
         else printvar(id, gamespeed);
     });
 
-	// scale time with gametime
+	/// scale time with gametime
     int scaletime(int t) 
 	{
 		return t*gamespeed;
 	}
 
-    // collect client to server messages conveniently
+    /// collect client to server messages conveniently
     vector<uchar> messages;
     int messagecn = -1, messagereliable = false;
 
-	// add network message
+	/// add network message
     void addmsg(int type, const char *fmt, ...)
     {
         if(!connected) return;
@@ -982,27 +999,27 @@ namespace game
         messages.put(buf, p.length());
     }
 
-	// copy connection password (?)
+	/// copy connection password (?)
     void connectattempt(const char *name, const char *password, const ENetAddress &address)
     {
         copystring(connectpass, password);
     }
 
-	// reset connection password after connection failed
+    /// reset connection password after connection failed
     void connectfail()
     {
 		// WARNING: Shouldn't we clear the history as well?
         memset(connectpass, 0, sizeof(connectpass));
     }
 
-	// ? 
+	/// ? 
     void gameconnect(bool _remote)
     {
         remote = _remote;
         if(editmode) toggleedit();
     }
 
-	// clean up local storage/vars after disconnect from server
+	/// clean up local storage/vars after disconnect from server
     void gamedisconnect(bool cleanup)
     {
         if(remote) stopfollowing();
@@ -1030,22 +1047,22 @@ namespace game
         }
     }
 
-	// send chat messages to server
+	/// send chat messages to server
     void toserver(char *text) { conoutf(CON_CHAT, "%s:\f0 %s", colorname(player1), text); addmsg(N_TEXT, "rcs", player1, text); }
     COMMANDN(say, toserver, "C");
 
-	// send team messages to server
+	/// send team messages to server
     void sayteam(char *text) { conoutf(CON_TEAMCHAT, "%s:\f1 %s", colorname(player1), text); addmsg(N_SAYTEAM, "rcs", player1, text); }
     COMMAND(sayteam, "C");
 
-	// send custom server messages to servers 
-	// this feature is not used on most servers (?)
+	/// send custom server messages to servers 
+    /// this feature is not used on most servers (?)
     ICOMMAND(servcmd, "C", (char *cmd), addmsg(N_SERVCMD, "rs", cmd));
 
-	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	// network message parser
+	/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	/// network message parser
 
-	// format position in network packet
+	/// format position in network packet
 	static void sendposition(fpsent *d, packetbuf &q)
     {
         putint(q, N_POS);
@@ -1101,7 +1118,7 @@ namespace game
         }
     }
 
-    // send my own player position to server (call function above)
+    /// send my own player position to server (call function above)
     void sendposition(fpsent *d, bool reliable)
     {
         if(d->state != CS_ALIVE && d->state != CS_EDITING) return; // do not send position in spectator mode
@@ -1110,7 +1127,7 @@ namespace game
         sendclientpacket(q.finalize(), 0);
     }
 
-	// ?
+	/// ?
     void sendpositions()
     {
         loopv(players)
@@ -1132,7 +1149,7 @@ namespace game
         }
     }
 
-	// ?
+	/// ?
     void sendmessages()
     {
         packetbuf p(MAXTRANS);
@@ -1169,7 +1186,7 @@ namespace game
         sendclientpacket(p.finalize(), 1);
     }
 
-	// send update to the server
+	/// send update to the server
     void c2sinfo(bool force) 
     {
         static int lastupdate = -1000;
@@ -1180,7 +1197,7 @@ namespace game
         flushclient();
     }
 
-	// send authkey and hashed password during connection progress
+	/// send authkey and hashed password during connection progress
     void sendintro()
     {
         packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);

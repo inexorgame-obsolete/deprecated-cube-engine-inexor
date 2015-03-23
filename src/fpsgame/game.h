@@ -1,18 +1,17 @@
-// game.h
-// definitions for network protocol, game modes, 
-// entities, guns, singleplayer monsters, mastermode,
-// pickups, triggers, team scores, armour, and permission levels.
-//
-//
-//
+/// @file game.h
+/// definitions of network protocol, game modes, entities, guns, monsters, mastermode
+/// pickups, triggers, team scores, armour, permission levels, 
+///
+///
+///
 
+/// include guard protectes this file from being included twice
 #ifndef __GAME_H__
 #define __GAME_H__
 
 #include "cube.h"
 
-// console message types
-// also see enumeration CON_DEBUG in iengine.h
+/// game console entry types
 enum
 {
     CON_CHAT       = 1<<8,
@@ -23,51 +22,57 @@ enum
     CON_TEAMKILL   = 1<<13
 };
 
-// network quantization scale
-#define DMF 16.0f               // for world locations
-#define DNF 100.0f              // for normalized vectors
-#define DVELF 1.0f              // for playerspeed based velocity vectors
 
+/// network quantization scale
+#define DMF 16.0f   /// for world locations
+#define DNF 100.0f  /// for normalized vectors
+#define DVELF 1.0f  /// for playerspeed based velocity vectors
+
+/// SVARP radardir defines the directory of radar images (arrows, frame, flags, skulls..)
 extern char *radardir;
 
-// static entity types
-// will be replaced with new entity system later!
-enum                            // static entity types
+
+/// static entity types
+/// @warning this system may becomes deprecated because of the new entity system!
+enum
 {
-    NOTUSED = ET_EMPTY,         // entity slot not in use in map
-    LIGHT = ET_LIGHT,           // lightsource, attr1 = radius, attr2 = intensity
-    MAPMODEL = ET_MAPMODEL,     // attr1 = angle, attr2 = idx
-    PLAYERSTART,                // attr1 = angle, attr2 = team
-    ENVMAP = ET_ENVMAP,         // attr1 = radius
-    PARTICLES = ET_PARTICLES,
-    MAPSOUND = ET_SOUND,
-    SPOTLIGHT = ET_SPOTLIGHT,
-    I_SHELLS, I_BULLETS, I_ROCKETS, I_ROUNDS, I_GRENADES, I_CARTRIDGES,
-    I_BOMBS = ET_BOMBS,
-    I_BOMBRADIUS,
-    I_BOMBDELAY,
-	I_HEALTH, I_BOOST,
-    I_GREENARMOUR, I_YELLOWARMOUR,
-    I_QUAD,
-    TELEPORT,                   // attr1 = idx, attr2 = model, attr3 = tag
-    TELEDEST,                   // attr1 = angle, attr2 = idx
-    MONSTER,                    // attr1 = angle, attr2 = monstertype
-    CARROT,                     // attr1 = tag, attr2 = type
-    JUMPPAD,                    // attr1 = zpush, attr2 = ypush, attr3 = xpush
-    BASE,
-    RESPAWNPOINT,
-    BOX,                        // attr1 = angle, attr2 = idx, attr3 = weight
-    BARREL,                     // attr1 = angle, attr2 = idx, attr3 = weight, attr4 = health
-    PLATFORM,                   // attr1 = angle, attr2 = idx, attr3 = tag, attr4 = speed
-    ELEVATOR,                   // attr1 = angle, attr2 = idx, attr3 = tag, attr4 = speed
-    FLAG,                       // attr1 = angle, attr2 = team
-    OBSTACLE = ET_OBSTACLE,     // attr1 = angle, attr2 = idx (mapmodel index), attr3 = health, attr4 = weight, attr5 = respawnmillis
+    NOTUSED = ET_EMPTY,         /// entity slot not in used in maps
+    LIGHT = ET_LIGHT,           /// lightsource, attr1 = radius, attr2 = intensity
+    MAPMODEL = ET_MAPMODEL,     /// attr1 = z-angle, attr2 = idx
+    PLAYERSTART,                /// attr1 = z-angle, attr2 = team
+    ENVMAP = ET_ENVMAP,         /// attr1 = radius
+    PARTICLES = ET_PARTICLES,   /// particles (may becomes deprecated because of the new particle system)
+    MAPSOUND = ET_SOUND,        /// sounds
+    SPOTLIGHT = ET_SPOTLIGHT,   /// cone-shaped spotlights
+
+    /// prefix I_ stands for "Inexor"...
+    I_SHELLS, I_BULLETS, I_ROCKETS, I_ROUNDS, I_GRENADES, I_CARTRIDGES, /// ammo pickups
+    I_BOMBS = ET_BOMBS,         /// bomberman game mode
+    I_BOMBRADIUS,               /// bomb radius (see bomberman game mode)
+    I_BOMBDELAY,                /// bomberman game mode
+	I_HEALTH, I_BOOST,          /// bomberman game mode
+    I_GREENARMOUR, I_YELLOWARMOUR, /// bomberman game mode
+    I_QUAD,                     /// bomberman game mode
+
+    TELEPORT,                   /// attr1 = idx, attr2 = model, attr3 = tag
+    TELEDEST,                   /// attr1 = z-angle, attr2 = idx
+    MONSTER,                    /// attr1 = z-angle, attr2 = monstertype
+    CARROT,                     /// attr1 = tag, attr2 = type
+    JUMPPAD,                    /// attr1 = z-push, attr2 = y-push, attr3 = x-push
+    BASE,                       /// base (regencapture and capture game modes)
+    RESPAWNPOINT,               /// singleplayer: respawn points ('respawnpoint set' :))
+    BOX,                        /// attr1 = z-angle, attr2 = idx, attr3 = weight
+    BARREL,                     /// attr1 = z-angle, attr2 = idx, attr3 = weight, attr4 = health
+    PLATFORM,                   /// attr1 = z-angle, attr2 = idx, attr3 = tag, attr4 = speed
+    ELEVATOR,                   /// attr1 = z-angle, attr2 = idx, attr3 = tag, attr4 = speed
+    FLAG,                       /// attr1 = z-angle, attr2 = team
+    OBSTACLE = ET_OBSTACLE,     /// attr1 = z-angle, attr2 = idx (mapmodel index), attr3 = health, attr4 = weight, attr5 = respawnmillis
     MAXENTTYPES
 };
 
 
-// trigger for singleplayer maps
-// in game modes sp and dmsp
+/// (door) triggers in singleplayer maps (sp and dmsp game modes)
+/// @warning may becomes deprecated if visual scripting will be implemented one day...
 enum
 {
     TRIGGER_RESET = 0,
@@ -77,34 +82,37 @@ enum
     TRIGGER_DISAPPEARED
 };
 
-// trigger handling
+
+/// trigger handler
 struct fpsentity : extentity
 {
     int triggerstate, lasttrigger;
     fpsentity() : triggerstate(TRIGGER_RESET), lasttrigger(0) {} 
 };
 
-// static gun enumeration
+/// static gun and projectile enumeration
+/// TODO: replace this hardcoded stuff and move on to JSON!
 enum 
 {
-	GUN_FIST = 0,	// fist
-	GUN_SG,			// shotgun
-	GUN_CG,			// 
-	GUN_RL,			// rocket launcher
-	GUN_RIFLE,		// rifle
-	GUN_GL,			// grenade launcher
-	GUN_PISTOL,		// pistol
-	GUN_BOMB,		// BOMBERMAN gamemode: bomb
-	GUN_FIREBALL,	// monster/bot: fireball
-	GUN_ICEBALL,	// monster/bot: iceball
-	GUN_SLIMEBALL,	// monster/bot: slimeball
-	GUN_BITE,		// bite
-	GUN_BARREL,		// barrel damage
-	GUN_SPLINTER,	// splinter?
-	NUMGUNS 
+	GUN_FIST = 0,	/// fist
+	GUN_SG,			/// shotgun
+	GUN_CG,			/// 
+	GUN_RL,			/// rocket launcher
+	GUN_RIFLE,		/// rifle
+	GUN_GL,			/// grenade launcher
+	GUN_PISTOL,		/// pistol
+	GUN_BOMB,		/// BOMBERMAN gamemode: bomb
+	GUN_FIREBALL,	/// monster/bot: fireball
+	GUN_ICEBALL,	/// monster/bot: iceball
+	GUN_SLIMEBALL,	/// monster/bot: slimeball
+	GUN_BITE,		/// bite
+	GUN_BARREL,		/// barrel damage
+	GUN_SPLINTER,	/// splinter
+	NUMGUNS         /// 
 };
 
-// armour type enumeration... take 20/40/60 % off
+
+/// armour type enumeration... take 20/40/60 % off
 enum 
 {
 	A_BLUE,
@@ -112,7 +120,8 @@ enum
 	A_YELLOW
 };
 
-// monster states
+/// Artificial intelligence: BOT states
+/// "Artificial intelligence is the perpetuum mobile of computer science"
 enum 
 { 
 	M_NONE = 0,
@@ -125,49 +134,54 @@ enum
 };  
 
 
-// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// game mode definitions
+/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/// game mode specific code
 
-// basic game mode bitmask "FLAGS"
-// (NOT game modes but attributes of game modes!!)
+/// basic game mode bitmask "FLAGS"
+/// (NOT game modes but attributes of game modes!)
 enum
 {
-    M_TEAM       = 1<<0,
-    M_NOITEMS    = 1<<1,
-    M_NOAMMO     = 1<<2,
-    M_INSTA      = 1<<3,
-    M_EFFICIENCY = 1<<4,
-    M_TACTICS    = 1<<5,
-    M_CAPTURE    = 1<<6,
-    M_REGEN      = 1<<7,
-    M_CTF        = 1<<8,
-    M_PROTECT    = 1<<9,
-    M_HOLD       = 1<<10,
-    M_OVERTIME   = 1<<11,
-    M_EDIT       = 1<<12,
-    M_DEMO       = 1<<13,
-    M_LOCAL      = 1<<14,
-    M_LOBBY      = 1<<15,
-    M_DMSP       = 1<<16,
-    M_CLASSICSP  = 1<<17,
-    M_SLOWMO     = 1<<18,
-    M_COLLECT    = 1<<19,
-    M_LMS        = 1<<20,
-    M_BOMB       = 1<<21,
-    M_TIMEFORWARD= 1<<22,
-    M_OBSTACLES  = 1<<23,
-    M_HIDEANDSEEK= 1<<24,
+    M_TEAM       = 1<<0,   /// game mode contains teams
+    M_NOITEMS    = 1<<1,   /// game mode has no items
+    M_NOAMMO     = 1<<2,   /// game mode has no ammo?
+    M_INSTA      = 1<<3,   /// game mode has an instagib modifier
+    M_EFFICIENCY = 1<<4,   /// game mode has an efficiency modifier
+    M_TACTICS    = 1<<5,   /// game mode offers random spawn weapons (see tactics mode)
+    M_CAPTURE    = 1<<6,   /// game mode is about capturing bases
+    M_REGEN      = 1<<7,   /// game mode is about capturing supply bases (see regencapture mode)
+    M_CTF        = 1<<8,   /// game mode is about capturing a flag
+    M_PROTECT    = 1<<9,   /// game mode is about protecting a flag
+    M_HOLD       = 1<<10,  /// game mode is about holding a flag (for 20 seconds)
+    M_OVERTIME   = 1<<11,  /// game mode allows overtime (?)
+    M_EDIT       = 1<<12,  /// game mode allows cooperative editing (coopedit)
+    M_DEMO       = 1<<13,  /// game mode is a demo playback
+    M_LOCAL      = 1<<14,  /// game mode is played in singleplayer only (locally)
+    M_LOBBY      = 1<<15,  /// game mode does not imply certain grouped gameplay but also allows to built lobbys (pseudoteams working against each other)
+    M_DMSP       = 1<<16,  /// death match single player
+    M_CLASSICSP  = 1<<17,  /// classic singleplayer
+    M_SLOWMO     = 1<<18,  /// game mode is played in slow motion
+    M_COLLECT    = 1<<19,  /// game mode is about collecting skulls
+
+    M_LMS        = 1<<20,  /// 
+    M_BOMB       = 1<<21,  /// 
+    M_TIMEFORWARD= 1<<22,  ///
+    M_OBSTACLES  = 1<<23,  ///
+    M_HIDEANDSEEK= 1<<24,  /// 
     //M_RACE       = 1<<25,
 };
 
-// a structure to describe gamemodes
-// followed by an array of instances 
+
+/// structure for game mode description
 static struct gamemodeinfo
 {
-    const char *name;
-    int flags;
-    const char *info;
-} 
+    const char *name; /// game mode's name
+    int flags;        /// a bitmask container (see flags above)
+    const char *info; /// a description text which will be displayed during map load
+}
+
+
+/// create a static hard coded array of gamemodeinfo-instances
+/// TODO: replace this hardcoded stuff and move on to JSON!
 gamemodes[] =
 {
     { "SP", M_LOCAL | M_CLASSICSP, NULL },
@@ -202,26 +216,27 @@ gamemodes[] =
 };
 
 
-// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// game mode validation and attribute handling
+/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/// game mode validation and attribute handling
 
+/// the first 3 game modes are not used in multiplayer
 #define STARTGAMEMODE (-3)
 
-// macro to determine the amount of available game modes
-// division: (size of array) / (size of one game mode)
+/// macro to determine the amount of available game modes
+/// division: (size of array) / (size of one gamemodeinfo instance)
 #define NUMGAMEMODES ((int)(sizeof(gamemodes)/sizeof(gamemodes[0])))
 
-// validate game mode number
+/// validate game mode number (array index)
 #define m_valid(mode)          ((mode) >= STARTGAMEMODE && (mode) < STARTGAMEMODE + NUMGAMEMODES)
-// validate game mode number and attribute (to check if this gamemode has items or bases e.g.)
+/// validate game mode number and attribute (to check if this gamemode has items or bases e.g.)
 #define m_check(mode, flag)    (m_valid(mode) && gamemodes[(mode) - STARTGAMEMODE].flags&(flag))
-// validate game mode number and check if game mode does NOT have these attribuges
+/// validate game mode number and check if game mode does NOT have these attribuges
 #define m_checknot(mode, flag) (m_valid(mode) && !(gamemodes[(mode) - STARTGAMEMODE].flags&(flag)))
-// validate game mode number and check if game mode supports parameter flag bit masks
-// to check if this game mode supports multiple attributes (EFFICIENCY | CTF  e.g.)
+/// validate game mode number and check if game mode supports parameter flag bit masks
+/// to check if this game mode supports multiple attributes (EFFICIENCY | CTF  e.g.)
 #define m_checkall(mode, flag) (m_valid(mode) && (gamemodes[(mode) - STARTGAMEMODE].flags&(flag)) == (flag))
 
-// those game mode check macros are built on top of the layer above
+/// those game mode check macros are built on top of the layer above
 #define m_noitems      (m_check(gamemode, M_NOITEMS))
 #define m_noammo       (m_check(gamemode, M_NOAMMO|M_NOITEMS))
 #define m_insta        (m_check(gamemode, M_INSTA))
@@ -256,10 +271,11 @@ gamemodes[] =
 #define m_classicsp    (m_check(gamemode, M_CLASSICSP))
 
 
-// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// master server list handling
+/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/// master server list handling
 
-// master mode enumeration
+/// master mode status enumeration
+/// TODO: replace this hardcoded stuff and move on to JSON!
 enum 
 { 
 	MM_AUTH = -1,
@@ -271,16 +287,19 @@ enum
 	MM_START = MM_AUTH
 };
 
-// static strings for server description in master server list
+
+/// static strings for server description in master server list
+/// TODO: replace this hardcoded stuff and move on to JSON!
 static const char * const mastermodenames[] =  { "auth",   "open",   "veto",       "locked",     "private",    "password" };
 static const char * const mastermodecolors[] = { "",       "\f0",    "\f2",        "\f2",        "\f3",        "\f3" };
 static const char * const mastermodeicons[] =  { "server", "server", "serverlock", "serverlock", "serverpriv", "serverpriv" };
 
 
-// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// sound list and description of administrative levels
+/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/// sound list and description of administrative levels
 
-// hardcoded sounds, defined in sounds.cfg
+/// hardcoded sounds, defined in sounds.cfg
+/// TODO: replace this hardcoded stuff and move on to JSON!
 enum
 {
     S_JUMP = 0, S_LAND, S_RIFLE, S_PUNCH1, S_SG, S_CG,
@@ -318,156 +337,159 @@ enum
     S_FLAGFAIL
 };
 
-// permission levels
+/// permission levels
+/// TODO: replace this hardcoded stuff and move on to JSON!
 enum
 { 
 	PRIV_NONE = 0, // white
-	PRIV_MASTER,  // green
-	PRIV_AUTH,  // also green, should be violet!
-	PRIV_ADMIN // orange 
+	PRIV_MASTER,   // green
+	PRIV_AUTH,     // also green, (should be violet!)
+	PRIV_ADMIN     // orange 
 };
 
 
-// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// network messages codes, c2s, c2c, s2c
+/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/// network messages codes, c2s, c2c, s2c
 
-// server message list
-// modifying this list may cause damage to network behaviour!
-// BE AWARE OF WHAT YOU ARE DOING.
+/// server message list
+/// @warning modifying this list may cause damage to the known network behaviour! 
+/// @warning you might also get kicked from server because you modified the protocol!
+/// @warning BE AWARE OF WHAT YOU ARE DOING.
 enum
 {
-    N_CONNECT = 0,			// C2S  send connection request to server
-	N_SERVINFO,				// S2C  send connection attempt answer (can be denied in case of wrong protocol or server password protection)
-	N_WELCOME,				// S2C  we are now connected. also close my GUI
-	N_INITCLIENT,			// S2C  another client connected or existing client changed name, team, or player model
-	N_POS,					// C2S|C2S send player position and rotation
-	N_TEXT,					// C2S  send chat message to global game chat
-	N_SOUND,				// C2S  send sound signal
-	N_CDIS,					// S2C  a client disconnected
-    N_SHOOT,				// C2S  a shot was fired	
-	N_EXPLODE,				// C2S  an explosion was triggered (grenades, rockets..)
-	N_SUICIDE,				// C2S  I suicided (other clients receive N_DIED where actor = victim)
-    N_DIED,					// S2C  a player got killed (or suicided)
-	N_DAMAGE,				// S2C  a player got damages
-	N_HITPUSH,				// S2C  a player got pushed back
-	N_SHOTFX,				// S2C  the EFFECT OF A SHOT (see N_SHOT)
-	N_EXPLODEFX,			// S2C  the EFFECT OF AN EXPLOSION (see N_EXPLODE)
-    N_TRYSPAWN,				// C2S	a players tries to spawn
-	N_SPAWNSTATE,			// S2C  send clients spawn information
-	N_SPAWN,				// C2S|S2C  a client is now spawning
-	N_FORCEDEATH,			// S2C  force a client to die
-    N_GUNSELECT,			// C2S  a client selects a weapon
-	N_TAUNT,				// C2S|S2C (?)  a client sent "Im gonna kill you" animation
-    N_MAPCHANGE,			// S2C  server changed map
-	N_MAPVOTE,				// C2S  client suggests a map/mode
-	N_TEAMINFO,				// S2C  send information about teams and their frags
-    N_ITEMSPAWN,			// S2C  an item has spawned
-	N_ITEMPICKUP,			// C2S  I just picked up this item
-	N_ITEMACC,				// S2C  item pickup was acknowledged for a client (item is occupied/despawned. wait for spawn)
-	N_ITEMPUSH,				// C2S  (BOMBERMAN) lose items when killed
-	N_TELEPORT,				// C2S|S2C a player in game has teleported to a teleport destination
-	N_JUMPPAD,				// C2S|S2C a player in game has used a jumppad
-    N_PING,					// C2S client sends ping packet to server
-	N_PONG,					// S2C servers answers ping packet
-	N_CLIENTPING,			// C2S|S2C  send client ping mesaure request / servers sends clients' pings
-    N_TIMEUP,				// S2C  change remaining time
-	N_FORCEINTERMISSION,	// S2C  server ended current game: set game time to 0 ("intermission")
-    N_SERVMSG,				// S2C  server messages can be colored and will be rendered in game console
-	N_ITEMLIST,				// C2S|S2C  client request a list of items available in the current match / server answers with list
-	N_RESUME,				// S2C  resume transmission of new data from lagged client (NOT: RESUMING A PAUSED GAME!)
+    N_CONNECT = 0,			/// C2S      send connection request to server
+	N_SERVINFO,				/// S2C      send connection attempt answer (can be denied in case of wrong protocol or server password protection)
+	N_WELCOME,				/// S2C      we are now connected. also close my GUI
+	N_INITCLIENT,			/// S2C      another client connected or existing client changed name, team, or player model
+	N_POS,					/// C2S|C2S  send player position and rotation
+	N_TEXT,					/// C2S      send chat message to global game chat
+	N_SOUND,				/// C2S      send sound signal
+	N_CDIS,					/// S2C      a client disconnected
+    N_SHOOT,				/// C2S      a shot was fired	
+	N_EXPLODE,				/// C2S      an explosion was triggered (grenades, rockets..)
+	N_SUICIDE,				/// C2S      I suicided (other clients receive N_DIED where actor = victim)
+    N_DIED,					/// S2C      a player got killed (or suicided)
+	N_DAMAGE,				/// S2C      a player got damages
+	N_HITPUSH,				/// S2C      a player got pushed back
+	N_SHOTFX,				/// S2C      the EFFECT OF A SHOT (see N_SHOT)
+	N_EXPLODEFX,			/// S2C      the EFFECT OF AN EXPLOSION (see N_EXPLODE)
+    N_TRYSPAWN,				/// C2S	     a players tries to spawn
+	N_SPAWNSTATE,			/// S2C      send clients spawn information
+	N_SPAWN,				/// C2S|S2C  a client is now spawning
+	N_FORCEDEATH,			/// S2C      force a client to die
+    N_GUNSELECT,			/// C2S      a client selects a weapon
+	N_TAUNT,				/// C2S|S2C (?)  a client sent "Im gonna kill you" animation
+    N_MAPCHANGE,			/// S2C      server changed map
+	N_MAPVOTE,				/// C2S      client suggests a map/mode
+	N_TEAMINFO,				/// S2C      send information about teams and their frags
+    N_ITEMSPAWN,			/// S2C      an item has spawned
+	N_ITEMPICKUP,			/// C2S      I just picked up this item
+	N_ITEMACC,				/// S2C      item pickup was acknowledged for a client (item is occupied/despawned. wait for spawn)
+	N_ITEMPUSH,				/// C2S      lose items when killed (BOMBERMAN)
+	N_TELEPORT,				/// C2S|S2C  a player in game has teleported to a teleport destination
+	N_JUMPPAD,				/// C2S|S2C  a player in game has used a jumppad
+    N_PING,					/// C2S      client sends ping packet to server
+	N_PONG,					/// S2C      servers answers ping packet
+	N_CLIENTPING,			/// C2S|S2C  send client ping mesaure request / servers sends clients' pings
+    N_TIMEUP,				/// S2C      change remaining time
+	N_FORCEINTERMISSION,	/// S2C      server ended current game: set game time to 0 ("intermission")
+    N_SERVMSG,				/// S2C      server messages can be colored and will be rendered in game console
+	N_ITEMLIST,				/// C2S|S2C  client request a list of items available in the current match / server answers with list
+	N_RESUME,				/// S2C      resume transmission of new data from lagged client (NOT: RESUMING A PAUSED GAME!)
 	
-	// edit mode specific network messages
-	N_EDITMODE,				// C2S|S2C  a player toggled his edit mode on/off (requires editmode)
-	N_EDITENT,				// S2C  a player creates a new entity (requires editmode)
-	N_EDITF,				// C2S|S2C  a player changed a FACE (requires editmode)
-	N_EDITT,				// C2S|S2C  a player changed a TEXTURE (requires editmode)
-	N_EDITM,				// C2S|S2C  a player edited MATERIAL (requires editmode)
-	N_FLIP,					// C2S|S2C  a player flipped the current selection (requires editmode)
-	N_COPY,					// C2S|S2C (?)  a player wants to copy a certain selection (requires editmode)
-	N_PASTE,				// C2S|S2C (?)  send clipboard to other palyers (requires editmode)
-	N_ROTATE,				// C2S|S2C  a player rotated a selection (requires editmode)
-	N_REPLACE,				// C2S|S2C  a player wants to replace a selection (requires editmode)
-	N_DELCUBE,				// C2S|S2C  a player wants to delete a selection (requires editmode)
-	N_REMIP,				// C2S|S2C  a client forcedremip (requires editmode, no administrative levels required)
-	N_NEWMAP,				// C2S|S2C  a client started a new map (requires editmode)
-	N_GETMAP,				// C2S  a client downloaded the current map from server's map buffer (NOT ALWAYS UP TO DATE! MAP MUST BE SENT BEFORE DOWNLOADING!)
-	N_SENDMAP,				// S2C  server sends map to client (requires coop mode. YOU CAN'T SEND MAPS IN INSTACTF e.g. (YET))
-	N_CLIPBOARD,			// C2S  send copied data from your clipboard to server
-	N_EDITVAR,				// C2S|S2C  set map var value (requires editmode)
-    N_MASTERMODE,			// C2S  change master mode (requires permissions)
-	N_KICK,					// C2S  kick a specific player
-	N_CLEARBANS,			// C2S	clear ban list
-	N_CURRENTMASTER,		// S2C	server sent information about who is the current game master
-	N_SPECTATOR,			// C2S|S2C  toggle spectator status
-	N_SETMASTER,			// C2S	claim game master
-	N_SETTEAM,				// C2S|S2C  team chat
+	/// edit mode specific network messages
+	N_EDITMODE,				/// C2S|S2C  a player toggled his edit mode on/off (requires editmode)
+	N_EDITENT,				/// S2C      a player creates a new entity (requires editmode)
+	N_EDITF,				/// C2S|S2C  a player changed a FACE (requires editmode)
+	N_EDITT,				/// C2S|S2C  a player changed a TEXTURE (requires editmode)
+	N_EDITM,				/// C2S|S2C  a player edited MATERIAL (requires editmode)
+	N_FLIP,					/// C2S|S2C  a player flipped the current selection (requires editmode)
+	N_COPY,					/// C2S|S2C  (?) a player wants to copy a certain selection (requires editmode)
+	N_PASTE,				/// C2S|S2C  (?) send clipboard to other palyers (requires editmode)
+	N_ROTATE,				/// C2S|S2C  a player rotated a selection (requires editmode)
+	N_REPLACE,				/// C2S|S2C  a player wants to replace a selection (requires editmode)
+	N_DELCUBE,				/// C2S|S2C  a player wants to delete a selection (requires editmode)
+	N_REMIP,				/// C2S|S2C  a client forcedremip (requires editmode, no administrative levels required)
+	N_NEWMAP,				/// C2S|S2C  a client started a new map (requires editmode)
+	N_GETMAP,				/// C2S      a client downloaded the current map from server's map buffer (NOT ALWAYS UP TO DATE! MAP MUST BE SENT BEFORE DOWNLOADING!)
+	N_SENDMAP,				/// S2C      server sends map to client (requires coop mode. YOU CAN'T SEND MAPS IN INSTACTF e.g. (YET))
+	N_CLIPBOARD,			/// C2S      send copied data from your clipboard to server
+	N_EDITVAR,				/// C2S|S2C  set map var value (requires editmode)
+    N_MASTERMODE,			/// C2S      change master mode (requires permissions)
+	N_KICK,					/// C2S      kick a specific player
+	N_CLEARBANS,			/// C2S	     clear ban list
+	N_CURRENTMASTER,		/// S2C	     server sent information about who is the current game master
+	N_SPECTATOR,			/// C2S|S2C  toggle spectator status
+	N_SETMASTER,			/// C2S	     claim game master
+	N_SETTEAM,				/// C2S|S2C  team chat
 
-    // capture mode specific network messages
-	N_BASES,				// S2C  send a list of available bases in capture mode
-	N_BASEINFO,				// S2C  send extended information about bases
-	N_BASESCORE,			// S2C  send base score to client
-	N_REPAMMO,				// S2C  replace ammo around bases in capture mode
-	N_BASEREGEN,			// S2C  regen capture: refill health and ammo of players near captured bases
-	N_ANNOUNCE,				// S2C  announce spawn of quad damage or health boost (normal capture only)
+    /// capture mode specific network messages
+	N_BASES,				/// S2C      send a list of available bases in capture mode
+	N_BASEINFO,				/// S2C      send extended information about bases
+	N_BASESCORE,			/// S2C      send base score to client
+	N_REPAMMO,				/// S2C      replace ammo around bases in capture mode
+	N_BASEREGEN,			/// S2C      regen capture: refill health and ammo of players near captured bases
+	N_ANNOUNCE,				/// S2C      announce spawn of quad damage or health boost (normal capture only)
 
-	// demo specific network messages
-    N_LISTDEMOS,			// C2S  request a list of demos available for download
-	N_SENDDEMOLIST,			// S2C  send a list of demos available for download
-	N_GETDEMO,				// C2S  a client requests to download a demo
-	N_SENDDEMO,				// S2C  server sends a demo
-    N_DEMOPLAYBACK,			// S2C  FINISH demo playback
-	N_RECORDDEMO,			// C2S  advise the server to record demo
-	N_STOPDEMO,				// C2S  finish demo recording add add recorded material to demo list
-	N_CLEARDEMOS,			// C2S  clear the last n / all demos
+	/// demo specific network messages
+    N_LISTDEMOS,			/// C2S      request a list of demos available for download
+	N_SENDDEMOLIST,			/// S2C      send a list of demos available for download
+	N_GETDEMO,				/// C2S      a client requests to download a demo
+	N_SENDDEMO,				/// S2C      server sends a demo
+    N_DEMOPLAYBACK,			/// S2C      finish demo playback
+	N_RECORDDEMO,			/// C2S      advise the server to record demo
+	N_STOPDEMO,				/// C2S      finish demo recording add add recorded material to demo list
+	N_CLEARDEMOS,			/// C2S      clear the last n / all demos
 
-	// ctf/hold specific network messages
-    N_TAKEFLAG,				// S2C  a player took a flag
-	N_RETURNFLAG,			// S2C  a player returned a flag
-	N_RESETFLAG,			// S2C  a flag has been reset
-	N_INVISFLAG,			// S2C  send how long flag will stay transparent in hold mode ? (vistime)
-	N_TRYDROPFLAG,			// C2S  tell the server that you would like to drop your flag
-	N_DROPFLAG,				// S2C  a client has dropped the flag
-	N_SCOREFLAG,			// S2C  a client has scored the flag
-	N_INITFLAGS,			// S2C  send a list of flags available in game
+	/// ctf/hold specific network messages
+    N_TAKEFLAG,				/// S2C      a player took a flag
+	N_RETURNFLAG,			/// S2C      a player returned a flag
+	N_RESETFLAG,			/// S2C      a flag has been reset
+	N_INVISFLAG,			/// S2C      send how long flag will stay transparent in hold mode ? (vistime)
+	N_TRYDROPFLAG,			/// C2S      tell the server that you would like to drop your flag
+	N_DROPFLAG,				/// S2C      a client has dropped the flag
+	N_SCOREFLAG,			/// S2C      a client has scored the flag
+	N_INITFLAGS,			/// S2C      send a list of flags available in game
 
-	// text, auth, bots, options, gamespeed
-    N_SAYTEAM,				// C2S|S2C  team chat
-	N_HUDANNOUNCE,			// S2C  BOMBERMAN Announcement
-    N_CLIENT,				// S2C  client synchronisation
-    N_AUTHTRY,				// C2S  try to authentificate using auth key(s)
-	N_AUTHKICK,				// C2S  try to authentificate using my auth key(s), kick a specific person [hacker] and then relinquish master again
-	N_AUTHCHAL,				// C2S  authentification challenge
-	N_AUTHANS,				// S2C  authentification answer
-	N_REQAUTH,				// S2C  this nick name requires authentification
-    N_PAUSEGAME,			// S2C  server paused game. stop player movement and actions
-	N_GAMESPEED,			// S2C  change game speed
-    N_ADDBOT,				// -S-  add a bot to the current game
-	N_DELBOT,				// -S-  remove a bot from the current game
-	N_INITAI,				// S2C  commit AI settings to server. bots are still server side
-	N_FROMAI,				// C2S  take client number from bot x?
-	N_BOTLIMIT,				// -S-  set the bot limit
-	N_BOTBALANCE,			// -S-  set bot balance
-    N_MAPCRC,				// C2S  send map CRC32 hash value
-	N_CHECKMAPS,			// C2S  force server to check client maps manually (requires permissions)
-    N_SWITCHNAME,			// C2S|S2C  a player has changed his name
-	N_SWITCHMODEL,			// C2S|S2C  a player has changed his player model
-	N_SWITCHTEAM,			// C2S|S2C  a player has switched his team (some game modes have more than 2 teams!)
+	/// text, auth, bots, options, gamespeed
+    N_SAYTEAM,				/// C2S|S2C  team chat
+	N_HUDANNOUNCE,			/// S2C      BOMBERMAN Announcement
+    N_CLIENT,				/// S2C      client synchronisation
+    N_AUTHTRY,				/// C2S      try to authentificate using auth key(s)
+	N_AUTHKICK,				/// C2S      try to authentificate using my auth key(s), kick a specific person [hacker] and then relinquish master again
+	N_AUTHCHAL,				/// C2S      authentification challenge
+	N_AUTHANS,				/// S2C      authentification response
+	N_REQAUTH,				/// S2C      this nick name requires authentification
+    N_PAUSEGAME,			/// S2C      server paused game. stop player movement and actions
+	N_GAMESPEED,			/// S2C      change game speed
+    N_ADDBOT,				/// -S-      add a bot to the current game
+	N_DELBOT,				/// -S-      remove a bot from the current game
+	N_INITAI,				/// S2C      commit AI settings to server. bots are still server side
+	N_FROMAI,				/// C2S      take client number from bot x?
+	N_BOTLIMIT,				/// -S-      set the bot limit
+	N_BOTBALANCE,			/// -S-      set bot balance
+    N_MAPCRC,				/// C2S      send map CRC32 hash value
+	N_CHECKMAPS,			/// C2S      force server to check client maps manually (requires permissions)
+    N_SWITCHNAME,			/// C2S|S2C  a player has changed his name
+	N_SWITCHMODEL,			/// C2S|S2C  a player has changed his player model
+	N_SWITCHTEAM,			/// C2S|S2C  a player has switched his team (some game modes have more than 2 teams!)
 
-	// Collect mode messages
-    N_INITTOKENS,			// ?
-	N_TAKETOKEN,			// ?
-	N_EXPIRETOKENS,			// ??
-	N_DROPTOKENS,			// ??
-	N_DEPOSITTOKENS,		// ??
-	N_STEALTOKENS,			// ??
+    /// collect mode messages
+    N_INITTOKENS,			/// ?
+	N_TAKETOKEN,			/// ?
+	N_EXPIRETOKENS,			/// ?
+	N_DROPTOKENS,			/// ?
+	N_DEPOSITTOKENS,		/// ?
+	N_STEALTOKENS,			/// ?
 
-    N_SERVCMD,				// S2C  servers could send advanced messages to clients. standard clients do not interpret this custom message
-    N_DEMOPACKET,
-    N_SPAWNLOC,				// S2C  BOMBERMAN spawn location?
+    N_SERVCMD,				/// S2C      servers could send advanced messages to clients. standard clients do not interpret this custom message
+    N_DEMOPACKET,           /// S2C      send a requested demo packet
+    N_SPAWNLOC,				/// S2C      BOMBERMAN spawn location?
     NUMMSG
 };
 
-// size inclusive message token, 0 for variable or not-checked sizes
+/// size inclusive message token, 0 for variable or not-checked sizes
+/// TODO: replace this hardcoded stuff and move on to JSON!
 static const int msgsizes[] =               
 {
     N_CONNECT, 0, N_SERVINFO, 0, N_WELCOME, 1, N_INITCLIENT, 0, N_POS, 0, N_TEXT, 0, N_SOUND, 2, N_CDIS, 2,
@@ -500,31 +522,47 @@ static const int msgsizes[] =
     -1
 };
 
-// constant protocol and version definitions
-#define INEXOR_LANINFO_PORT 28784
-#define INEXOR_SERVER_PORT 28785
-#define INEXOR_SERVINFO_PORT 28786
-#define INEXOR_MASTER_PORT 28787
-#define PROTOCOL_VERSION 300            // bump when protocol changes last sauerbraten protocol was 259
-#define DEMO_VERSION 1                  // bump when demo format changes
+/// constant protocol and version definitions
+#define INEXOR_LANINFO_PORT 28784       /// not changed compared to Sauerbraten (remove this comment on change)
+#define INEXOR_SERVER_PORT 28785        /// not changed compared to Sauerbraten (remove this comment on change)
+#define INEXOR_SERVINFO_PORT 28786      /// not changed compared to Sauerbraten (remove this comment on change)
+#define INEXOR_MASTER_PORT 28787        /// not changed compared to Sauerbraten (remove this comment on change)
+
+#define PROTOCOL_VERSION 300            /// bump when protocol changes last sauerbraten protocol was 259
+#define DEMO_VERSION 1                  /// bump when demo format changes
 #define DEMO_MAGIC "INEXOR_DEMO"
 
-// demos contain stored network messages of a game
-// which can be replayed to review games
+/// demos contain stored network messages of a game
+/// which can be replayed to review games
 struct demoheader
 {
     char magic[16];
     int version, protocol;
 };
 
-// Important teamspecific declarations
+/// important teamspecific declarations
 #define MAXTEAMS 128
-#define MAXNAMELEN 15
-#define MAXTEAMLEN 4
-enum { TEAM_NONE, TEAM_OWN, TEAM_OPPONENT, TEAM_NUM };
-static const char * const teamblipcolor[TEAM_NUM] = { "_neutral", "_blue", "_red" };
+#define MAXNAMELEN 15  /// max player name length
+#define MAXTEAMLEN 4   /// max team name length
 
-// Enumeration for icons
+enum 
+{
+    TEAM_NONE,
+    TEAM_OWN,
+    TEAM_OPPONENT,
+    TEAM_NUM
+};
+
+/// const radar blip colors
+static const char * const teamblipcolor[TEAM_NUM] = 
+{
+    "_neutral", /// = 'gray'
+    "_blue",
+    "_red"
+};
+
+
+/// enumeration for icons
 enum
 {
     HICON_BLUE_ARMOUR = 0,
@@ -562,7 +600,8 @@ enum
     HICON_SPACE   = 40
 };
 
-// Bomberman: HUD announce effects
+
+/// Bomberman: HUD announce effects
 enum hudannounceeffects 
 {
     E_STATIC_CENTER = 0,
@@ -579,6 +618,7 @@ enum hudannounceeffects
     E_BLINK_CENTER
 };
 
+/// Bomberman constants
 #define MAXRAYS 20
 #define EXP_SELFDAMDIV 2
 #define EXP_SELFPUSH 2.5f
@@ -586,16 +626,19 @@ enum hudannounceeffects
 #define BOMB_DAMRAD 20
 
 
-// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// hard coded weapons and pickups
+/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/// hard coded weapons and pickups
 
-// hard coded pickup description
+/// pickup description structure
 static struct itemstat 
 { 
 	int add, max, sound; 
 	const char *name; 
 	int icon, info;
 }
+
+/// create an array of itemstat instances ('pickups')
+/// TODO: replace this hardcoded stuff and move on to JSON!
 itemstats[] =
 {
     {10,    30,    S_ITEMAMMO,   "SG", HICON_SG,            GUN_SG},
@@ -614,13 +657,16 @@ itemstats[] =
     {20000, 30000, S_ITEMPUP,    "Q",  HICON_QUAD,          -1}
 };
 
-// hard coded weapon description
+/// weapon description structure
 static const struct guninfo
 { 
 	int sound, attackdelay, damage, spread, projspeed;
 	int kickamount, range, rays, hitpush, exprad, ttl; 
 	const char *name, *file; short part;
 }
+
+/// create an array of guninfo instances ('guns')
+/// TODO: replace this hardcoded stuff and move on to JSON!
 guns[NUMGUNS] =
 {
     { S_PUNCH1,    250,  50,   0,   0,  0,   14,  1,  80,   0,    0, "fist",            "chainsaw",        0 },
@@ -643,10 +689,10 @@ guns[NUMGUNS] =
 #include "ai.h"
 
 
-// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// fpsstate and fpsent definitions
+/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/// fpsstate and fpsent definitions
 
-// inherited by fpsent and server clients
+/// inherited by fpsent and server clients
 struct fpsstate
 {
     int health, maxhealth;
@@ -661,23 +707,27 @@ struct fpsstate
 
     fpsstate() : maxhealth(100), aitype(AI_NONE), skill(0), backupweapon(GUN_FIST) {}
 
+    /// set initial ammo
     void baseammo(int gun, int k = 2, int scale = 1)
     {
         ammo[gun] = (itemstats[gun-GUN_SG].add*k)/scale;
     }
 
+    /// add ammo
     void addammo(int gun, int k = 1, int scale = 1)
     {
-            itemstat &is = itemstats[gun-GUN_SG];
-            ammo[gun] = min(ammo[gun] + (is.add*k)/scale, is.max);
+        itemstat &is = itemstats[gun-GUN_SG];
+        ammo[gun] = min(ammo[gun] + (is.add*k)/scale, is.max);
     }
 
+    /// ammo limitation reached/exceeded?
     bool hasmaxammo(int type)
     {
        const itemstat &is = itemstats[type-I_SHELLS];
-            return ammo[type-I_SHELLS+GUN_SG]>=is.max;
+       return ammo[type-I_SHELLS+GUN_SG]>=is.max;
     }
 
+    /// check if I can pick up this item depending on the radius
     bool canpickup(int type)
     {
         if(type<I_SHELLS || type>I_QUAD) return false;
@@ -701,6 +751,7 @@ struct fpsstate
 	    	}
 		}
 
+    /// pick up this item
     void pickup(int type)
     {
         if(type<I_SHELLS || type>I_QUAD) return;
@@ -732,6 +783,7 @@ struct fpsstate
             }
         }
 
+    /// reset all members when spawning
     void respawn()
     {
         health = maxhealth;
@@ -746,6 +798,7 @@ struct fpsstate
         ammo[backupweapon] = 1;
     }
 
+    /// configure spawn settings (weapons, ammo, health...) depending on game mode
     void spawnstate(int gamemode)
     {
         if(m_demo)
@@ -839,7 +892,7 @@ struct fpsstate
         }
     }
 
-    // just subtract damage here, can set death, etc. later in code calling this
+    /// just subtract damage here, we can set death, etc. later in code calling this
     int dodamage(int damage)
     {
         int ad = damage*(armourtype+1)*25/100; // let armour absorb when possible
@@ -850,6 +903,7 @@ struct fpsstate
         return damage;
     }
 
+    /// is there ammo left for this gun
     int hasammo(int gun, int exclude = -1)
     {
         return gun >= 0 && gun <= NUMGUNS && gun != exclude && ammo[gun] > 0;
@@ -895,6 +949,7 @@ struct fpsent : dynent, fpsstate
         if(ai) delete ai;
     }
 
+    /// apply push event to object's velocity vector
     void hitpush(int damage, const vec &dir, fpsent *actor, int gun)
     {
         vec push(dir);
@@ -902,18 +957,21 @@ struct fpsent : dynent, fpsstate
         vel.add(push);
     }
 
+    /// @see stopsound
     void stopattacksound()
     {
         if(attackchan >= 0) stopsound(attacksound, attackchan, 250);
         attacksound = attackchan = -1;
     }
 
+    /// @see stopsound
     void stopidlesound()
     {
         if(idlechan >= 0) stopsound(idlesound, idlechan, 100);
         idlesound = idlechan = -1;
     }
 
+    /// respawn item
     void respawn()
     {
         dynent::reset();
@@ -932,20 +990,19 @@ struct fpsent : dynent, fpsstate
         stopattacksound();
         lastnode = -1;
     }
-
 };
 
 
-// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// team handling
+/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/// team handling
 
-// those limits should be increased
+/// @warning those limits should be increased
 #define MAXNAMELEN 15
 #define MAXTEAMLEN 4
 #define MAXTEAMS 128
 
-// many competetive team modes allow more than 2 teams
-// allow sorting multiple teams using team scores
+/// many competetive team modes allow more than 2 teams
+/// allow sorting multiple teams using team scores
 struct teamscore
 {
     const char *team;
@@ -953,7 +1010,7 @@ struct teamscore
     teamscore() {}
     teamscore(const char *s, int n) : team(s), score(n) {}
 
-	// used for quicksort template to compare teams
+	/// used for quicksort template to compare teams
     static bool compare(const teamscore &x, const teamscore &y)
     {
         if(x.score > y.score) return true;
@@ -962,40 +1019,40 @@ struct teamscore
     }
 };
 
-// create hashes to access hashmapsSS
+/// create hashes to access hashmaps
 static inline uint hthash(const teamscore &t) 
 {
 	return hthash(t.team); 
 }
 
-// compare those two two teamnames
+/// compare two teamnames
 static inline bool htcmp(const char *key, const teamscore &t) 
 {
 	return htcmp(key, t.team);
 }
 
-// scoreboard team block description
+/// scoreboard team block description
 struct teaminfo
 {
     char team[MAXTEAMLEN+1];
     int frags;
 };
 
-// create hash for hashsts
+/// create hash for hashsts
 static inline uint hthash(const teaminfo &t) 
 { 
 	return hthash(t.team); 
 }
 
-// compare two team names
+/// compare two team names
 static inline bool htcmp(const char *team, const teaminfo &t)
 {
 	return !strcmp(team, t.team);
 }
 
-// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// entity handling
-// entity system will be replaced with new entity system later...
+/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/// entity handling
+/// entity system will be replaced with new entity system later...
 
 namespace entities
 {
@@ -1023,8 +1080,8 @@ namespace entities
     extern void repammo(fpsent *d, int type, bool local = true);
 }
 
-// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// full game handling
+/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/// full game handling
 
 namespace game
 {
@@ -1250,8 +1307,8 @@ namespace game
     extern vec hudgunorigin(int gun, const vec &from, const vec &to, fpsent *d);
 }
 
-// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// local dedicated server handling
+/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/// (local) dedicated server handling
 
 namespace server
 {
@@ -1269,5 +1326,5 @@ namespace server
     extern bool delayspawn(int type);
 }
 
-#endif
+#endif /// __GAME_H__
 
