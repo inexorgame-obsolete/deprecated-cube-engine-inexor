@@ -622,6 +622,44 @@ static bool lumelsample(const vec &sample, int aasample, int stride)
     NCHECK(n[0]); NCHECK(n[aasample]); NCHECK(n[2*aasample]);
     return false;
 }
+//calculate the ambient occlusion factor: 
+//ao works as follows:
+//you check for every point how much light possible comes onto it when the light comes from the whole sky (no lights/spotlights, whatever)
+//this will darken cracks and sharp edges and hence give a more realistic rendering output.
+//from every point we send out ray casts into the main directions (see below) and get a hit back if it touched the sky (or a skytextured cube, see RAY_SKIPSKY)
+//we then darken the lightmap color depending on how much the pixel is occlued. (rays-hitting-the-sky / total-rays-sent -> value between 0 and 1.0)
+
+VARR(ambientocclusion, 0, 48, 255); //factor how much the scene will be darkened
+static void calcambient(const vec &o, const vec &normal, float tolerance, uchar *ambient, int flags = RAY_ALPHAPOLY)
+{
+	static const vec rays[14] = //to make the calculations not to heavy, 14 ray paths (in the main directions) are enough.. 
+    {
+		vec( 1,  0,  0),  //forwards
+		vec(-1,  0,  0),  //backwards
+		vec( 0,  1,  0),  //rightwards
+		vec( 0, -1,  0),  //leftwards
+		vec( 0,  0,  1),  //upwards
+		vec( 0,  0, -1),  //downwards
+		vec( 1,  1,  1),  //upper forward right
+		vec( 1, -1,  1),  //upper forward left
+		vec( 1,  1, -1),  //lower forward right
+		vec( 1, -1, -1),  //lower forward left
+		vec(-1,  1,  1),  //upper backward right
+		vec(-1, -1,  1),  //upper backward left
+		vec(-1,  1, -1),  //lower backward right
+		vec(-1, -1, -1),  //lower backward left
+    };
+	 
+    flags |= RAY_SHADOW;
+    if(skytexturelight) flags |= RAY_SKIPSKY;
+	int hit = 0;
+	loopi(14) 
+    {
+        if(normal.dot(rays[i])>=0 //skip the rays on the invisible side of the cube
+			&& shadowray(vec(rays[i]).mul(tolerance).add(o), rays[i], 1e16f, flags, NULL)>1e15f) hit++; //check for a hit of the sky
+    }
+	loopk(3) ambient[k] = uchar(ambientocclusion * hit/14.0f);
+}
 
 static void calcskylight(lightmapworker *w, const vec &o, const vec &normal, float tolerance, uchar *skylight, int flags = RAY_ALPHAPOLY, extentity *t = NULL)
 {
@@ -650,6 +688,7 @@ static void calcskylight(lightmapworker *w, const vec &o, const vec &normal, flo
         vec(cosf(358*RAD)*cosf(80*RAD), sinf(358*RAD)*cosf(80*RAD), sinf(80*RAD)),
 
     };
+	 
     flags |= RAY_SHADOW;
     if(skytexturelight) flags |= RAY_SKIPSKY;
     int hit = 0;
@@ -661,7 +700,7 @@ static void calcskylight(lightmapworker *w, const vec &o, const vec &normal, flo
     {
         if(normal.dot(rays[i])>=0 && shadowray(vec(rays[i]).mul(tolerance).add(o), rays[i], 1e16f, flags, t)>1e15f) hit++;
     }
-
+	
     loopk(3) skylight[k] = uchar(ambientcolor[k] + (max(skylightcolor[k], ambientcolor[k]) - ambientcolor[k])*hit/17.0f);
 }
 
@@ -2713,6 +2752,7 @@ void lightreaching(const vec &target, vec &color, vec &dir, bool fast, extentity
         loopk(3) color[k] = min(1.5f, max(max(skylight[k]/255.0f, ambient), color[k]));
     }
     else loopk(3) color[k] = min(1.5f, max(max(ambientcolor[k]/255.0f, ambient), color[k]));
+ 
     if(dir.iszero()) dir = vec(0, 0, 1);
     else dir.normalize();
 }
