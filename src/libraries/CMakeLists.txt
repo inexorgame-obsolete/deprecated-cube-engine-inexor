@@ -17,13 +17,13 @@ source_group(muparser FILES ${headers} ${sources})
 set(MUPARSER_INCLUDE_DIRS "${muparser_dir}/include" CACHE INTERNAL "")
 
 include_directories(${MUPARSER_INCLUDE_DIRS})
-add_library(inexor_muparser STATIC ${MUPARSER_SOURCES})
+add_library(module_muparser STATIC ${MUPARSER_SOURCES} ${headers})
 
 function(config_muparser targ)
   message(STATUS "Configuring ${targ} with muparser")
 
   include_directories(${MUPARSER_INCLUDE_DIRS})
-  target_link_libraries_wrapper(${targ} inexor_muparser)
+  target_link_libs(${targ} module_muparser)
 endfunction()
 
 #### Googletest
@@ -56,5 +56,5 @@ function(config_gtest targ)
 
   add_dependencies(${targ} build_gtest)
   include_directories(${GTEST_INCLUDE_DIRS})
-  target_link_libraries_wrapper(${targ} gtest)
+  target_link_libs(${targ} gtest)
 endfunction()

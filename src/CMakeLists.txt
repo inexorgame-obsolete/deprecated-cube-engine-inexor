@@ -108,7 +108,9 @@ if(OS_WINDOWS)
     set(ADDITIONAL_LIBRARIES ${ADDITIONAL_LIBRARIES} kernel32 ws2_32 winmm)
 endif()
 
-set(ALLMODULES "" CACHE INTERNAL "")
+set(ALL_MODULES "" CACHE INTERNAL "")
+set(ALL_HEADERS "" CACHE INTERNAL "")
+set(OUTSOURCED_MODULES "" CACHE INTERNAL "")
 
 # USAGE: declare_module(<NAME> [PATH])
 #
@@ -144,7 +146,8 @@ function(declare_module NAME PATH)
     CACHE INTERNAL "Sources of the ${NAME} module")
 
   # Save for group_modules()
-  set(ALLMODULES ${ALLMODULES} ${mod} CACHE INTERNAL "")
+  set(ALL_MODULES ${ALL_MODULES} ${mod} CACHE INTERNAL "")
+  set(ALL_HEADERS ${ALL_HEADERS} ${headers} CACHE INTERNAL "")
 endfunction()
 
 # USAGE: group_modules()
@@ -153,10 +156,21 @@ endfunction()
 # Has to be called for every target
 #
 function(group_modules)
-    foreach(mod ${ALLMODULES})
-        string(TOLOWER "${mod}" gname)
-        source_group(${gname} FILES ${${mod}_MODULE_HEADERS} ${${mod}_MODULE_SOURCES})
+  foreach(mod ${ALL_MODULES})
+    # skip creating a source_group for outsourced_modules
+    set(skip 0)
+    foreach(not_mod ${OUTSOURCED_MODULES})
+      string(COMPARE EQUAL ${mod} ${not_mod} skip)
+      if(skip)
+        break()
+      endif()
     endforeach()
+
+    if(NOT skip)
+      string(TOLOWER "${mod}" gname)
+      source_group(${gname} FILES ${${mod}_MODULE_HEADERS} ${${mod}_MODULE_SOURCES})
+    endif()
+  endforeach()
 endfunction()
 
 # USAGE: prepend(<VARIABLE> <PREP> [ARGS]...)
@@ -200,7 +214,7 @@ function(find_cpp_library RETURNVAR LIBNAME)
     set(${RETURNVAR} ${${RETURNVAR}} CACHE INTERN "")
 endfunction()
 
-# USAGE: target_link_libraries_wrapper( <BINARYNAME> [ARGS] )
+# USAGE: target_link_libs( <BINARYNAME> [ARGS] )
 #
 # Wrapper around target_link libs to be able to set different libs for debug and release
 # (Necessary for MSVC in combination with stdlib-dependend Libs)
@@ -209,38 +223,33 @@ endfunction()
 #  BINARYNAME - The Name of the target to link the libraries to
 #  ARGS...    - The Libraries
 #
-function(target_link_libraries_wrapper BINARYNAME)
+function(target_link_libs BINARYNAME)
     if(DEFINED HAS_FIND_LIBRARY_WRAPPER)
+      set(C_LIBS "")   # No need to seperately link c-libs
+      set(CPP_LIBS_DEBUG "")
+      set(CPP_LIBS_RELEASE "")
 
-        set(C_LIBS "")   # No need to seperately link c-libs
-        set(CPP_LIBS_DEBUG "")
-        set(CPP_LIBS_RELEASE "")
-
-        foreach(CURLIB ${ARGN})
-            if(${CURLIB} MATCHES "(.*)_release(.*)")
-                set(CPP_LIBS_RELEASE ${CURLIB})
-            elseif(${CURLIB} MATCHES "(.*)_debug(.*)")
-                set(CPP_LIBS_DEBUG ${CURLIB})
-            else()
-                set(C_LIBS ${C_LIBS} ${CURLIB})
-            endif()
-        endforeach()
-
-        message(STATUS "${BINARYNAME} - General Libs: ${C_LIBS}")
-        message(STATUS "${BINARYNAME} - Debug   Libs: ${CPP_LIBS_DEBUG}")
-        message(STATUS "${BINARYNAME} - Release Libs: ${CPP_LIBS_RELEASE}")
-
-        target_link_libraries(${BINARYNAME} ${C_LIBS})
-        if(NOT ${CPP_LIBS_DEBUG} STREQUAL "")
-            target_link_libraries(${BINARYNAME} debug ${CPP_LIBS_DEBUG})
+      foreach(CURLIB ${ARGN})
+        if(${CURLIB} MATCHES "(.*)_release(.*)")
+          set(CPP_LIBS_RELEASE ${CURLIB})
+        elseif(${CURLIB} MATCHES "(.*)_debug(.*)")
+          set(CPP_LIBS_DEBUG ${CURLIB})
+        else()
+          set(C_LIBS ${C_LIBS} ${CURLIB})
         endif()
-        if(NOT ${CPP_LIBS_RELEASE} STREQUAL "")
-            target_link_libraries(${BINARYNAME} optimized ${CPP_LIBS_RELEASE})
-        endif()
+      endforeach()
+
+      target_link_libraries(${BINARYNAME} ${C_LIBS})
+      if(NOT ${CPP_LIBS_DEBUG} STREQUAL "")
+        target_link_libraries(${BINARYNAME} debug ${CPP_LIBS_DEBUG})
+      endif()
+      if(NOT ${CPP_LIBS_RELEASE} STREQUAL "")
+        target_link_libraries(${BINARYNAME} optimized ${CPP_LIBS_RELEASE})
+      endif()
 
     else()
-        # No need on Unix systems, because of binary compatibility between different configurations
-        target_link_libraries(${BINARYNAME} ${ARGN})
+      # No need on Unix systems, because of binary compatibility between different configurations
+      target_link_libraries(${BINARYNAME} ${ARGN})
     endif()
 endfunction()
 
@@ -262,7 +271,7 @@ function(add_app exe )
   set(sources ${ARGN})
 
   if(OS_WINDOWS)
-    add_executable(${exe} WIN32 ${sources})
+    add_executable(${exe} WIN32 ${sources} ${ALL_HEADERS})
   elseif(OS_MACOSX)
     add_executable(${exe} MACOSX_BUNDLE ${sources})
   else()
@@ -274,6 +283,24 @@ function(add_app exe )
   endif()
 
   install(TARGETS ${exe} DESTINATION ${EXE_DIR})
+endfunction()
+
+# USAGE: add_lib(modulename)
+#
+# Set up a STATIC LIB for the corresponding module.
+# Used for solving source_group issues for some IDEs
+# @example add_lib(net)
+# @sideeffects creates a library called module_<modulname>.
+#
+# see add_library
+function(add_lib module)
+  string(TOUPPER ${module} mod)
+  string(TOLOWER ${module} mod_lil)
+
+  set(name module_${mod_lil})
+  add_library(${name} STATIC ${${mod}_MODULE_SOURCES} ${${mod}_MODULE_HEADERS})
+
+  set(OUTSOURCED_MODULES ${OUTSOURCED_MODULES} ${mod} CACHE INTERNAL "")
 endfunction()
 
 # USAGE: opt_subdir SUBDIR INITIAL

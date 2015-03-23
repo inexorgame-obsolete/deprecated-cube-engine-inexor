@@ -11,6 +11,6 @@ config_net(${TEST_BINARY})
 config_util(${TEST_BINARY})
 config_gtest(${TEST_BINARY})
 
-target_link_libraries_wrapper(${TEST_BINARY} ${ADDITIONAL_LIBRARIES})
+target_link_libs(${TEST_BINARY} ${ADDITIONAL_LIBRARIES})
 
 add_custom_target(run_tests COMMAND $<TARGET_FILE:${TEST_BINARY}>)

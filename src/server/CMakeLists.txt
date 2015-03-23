@@ -21,7 +21,7 @@ endif()
 
 add_app(${SERVER_BINARY} ${SERVER_SOURCES})
 
-target_link_libraries_wrapper(${SERVER_BINARY} ${COMMON_LIBS}
+target_link_libs(${SERVER_BINARY} ${COMMON_LIBS}
   ${ADDITIONAL_LIBRARIES})
 
 config_net(${SERVER_BINARY})

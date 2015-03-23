@@ -77,7 +77,7 @@ elseif(OS_WINDOWS)
 endif()
 
 add_app(${CLIENT_BINARY} ${CLIENT_SOURCES})
-target_link_libraries_wrapper(${CLIENT_BINARY}
+target_link_libs(${CLIENT_BINARY}
   ${COMMON_LIBS}
   ${SDL2_LIBRARIES}
   ${OPENGL_LIBRARIES}
