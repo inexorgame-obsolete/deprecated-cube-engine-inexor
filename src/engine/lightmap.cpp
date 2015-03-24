@@ -18,7 +18,7 @@ struct lightmapworker
     bvec *raybuf;
     uchar *ambient, *blur;
     vec *colordata, *raydata;
-    char *occlusiondata;
+    uchar *occlusiondata;
     int type, bpp, w, h, orient, rotate;
     VSlot *vslot;
     Slot *slot;
@@ -599,10 +599,10 @@ static float calcocclusion(const vec &o, const vec &normal, float tolerance)
 				//check whether there's a wall in the field around the sample
     }
 
-	return clamp(float(occluedrays)/float(AO_NUM_RAYS), 0.0f, 1.0f);
+	return float(occluedrays)/float(AO_NUM_RAYS);
 }
 
-static uint generatelumel(lightmapworker *w, const float tolerance, uint lightmask, const vector<const extentity *> &lights, const vec &target, const vec &normal, vec &sample, int x, int y)
+static uint generatelumel(lightmapworker *w, const float tolerance, uint lightmask, const vector<const extentity *> &lights, const vec &target, const vec &normal, vec &sample, uchar &occlusionsample, int x, int y)
 {
     vec avgray(0, 0, 0);
     float r = 0, g = 0, b = 0;
@@ -694,19 +694,24 @@ static uint generatelumel(lightmapworker *w, const float tolerance, uint lightma
     }
 
 
-	if(debugao) {
-		sample.r = min(255.0f, ambientocclusion * occlusion); //colorize every occlued part red
+    occlusionsample = 0;
+	
+    if(debugao) {
+		sample.r = min(255.0f, 96 + ambientocclusion * occlusion); //colorize every occlued part red
 		sample.g = 0;
 		sample.b = 0;
 	}
-	else {
-		sample.r = clamp( max(r, float(ambientcolor[0])) - ambientocclusion*occlusion, 0.0f, 255.0f);
-		sample.g = clamp( max(g, float(ambientcolor[1])) - ambientocclusion*occlusion, 0.0f, 255.0f);
-		sample.b = clamp( max(b, float(ambientcolor[2])) - ambientocclusion*occlusion, 0.0f, 255.0f);	
+	else { //save color (sample) + how much it is occluded
+        sample.x = clamp(r, float(ambientcolor[0]), 255.0f);
+        sample.y = clamp(g, float(ambientcolor[1]), 255.0f);
+        sample.z = clamp(b, float(ambientcolor[2]), 255.0f);
+        if(occlusion) occlusionsample = ambientocclusion*occlusion;
 	}
     return lightused;
 }
 
+/// Returns whether sample does need to be saved.
+/// true if sample colour is not darker than the ambient light (hence saveworthy).
 static bool lumelsample(const vec &sample, int aasample, int stride)
 {
     if(sample.x >= int(ambientcolor[0])+1 || sample.y >= int(ambientcolor[1])+1 || sample.z >= int(ambientcolor[2])+1) return true;
@@ -848,6 +853,7 @@ static bool generatelightmap(lightmapworker *w, float lpu, const lerpvert *lv, i
     int aasample = min(1 << lmaa, 4);
     int stride = aasample*(w->w+1);
     vec *sample = w->colordata;
+    uchar *occlusion = w->occlusiondata;
     uchar *skylight = w->ambient;
     lerpbounds start, end;
     initlerpbounds(-blurlms, -blurlms, lv, numv, start, end);
@@ -868,7 +874,7 @@ static bool generatelightmap(lightmapworker *w, float lpu, const lerpvert *lv, i
 
             float t = EDGE_TOLERANCE(x, y) * tolerance;
             vec u = x < sidex ? vec(xstep1).mul(x).add(vec(ystep1).mul(y)).add(origin1) : vec(xstep2).mul(x).add(vec(ystep2).mul(y)).add(origin2);
-            lightused |= generatelumel(w, t, 0, w->lights, u, vec(normal).normalize(), *sample, x, y);
+            lightused |= generatelumel(w, t, 0, w->lights, u, vec(normal).normalize(), *sample, *occlusion, x, y);
             if(hasskylight())
             {
                 if((w->type&LM_TYPE)==LM_BUMPMAP0 || !adaptivesample || sample->x<skylightcolor[0] || sample->y<skylightcolor[1] || sample->z<skylightcolor[2])
@@ -878,11 +884,16 @@ static bool generatelightmap(lightmapworker *w, float lpu, const lerpvert *lv, i
             else loopk(3) skylight[k] = ambientcolor[k];
             if(w->type&LM_ALPHA) generatealpha(w, t, u, skylight[3]);
             sample += aasample;
+            occlusion += aasample;
         }
         sample += aasample;
+        occlusion += aasample;
     }
     if(adaptivesample > 1 && min(w->w, w->h) >= 2) lightmask = ~lightused;
+
+    // 2nd go through: Create antialised borders if desired + create lumels of sample if lit
     sample = w->colordata;
+    occlusion = w->occlusiondata;
     initlerpbounds(-blurlms, -blurlms, lv, numv, start, end);
     sidex = side0 + blurlms*sidestep;
     for(int y = 0; y < w->h; ++y, sidex += sidestep)
@@ -893,8 +904,12 @@ static bool generatelightmap(lightmapworker *w, float lpu, const lerpvert *lv, i
         for(int x = 0; x < w->w; ++x, normal.add(nstep)) 
         {
             vec &center = *sample++;
-            if(adaptivesample && x > 0 && x+1 < w->w && y > 0 && y+1 < w->h && !lumelsample(center, aasample, stride))
-                loopi(aasample-1) *sample++ = center;
+            uchar &curocc = *occlusion++;
+            if(adaptivesample && x > 0 && x+1 < w->w && y > 0 && y+1 < w->h && !curocc && !lumelsample(center, aasample, stride) )
+                loopi(aasample - 1) {
+                    *sample++ = center;
+                    *occlusion++ = curocc;
+                }
             else
             {
 #define AA_EDGE_TOLERANCE(x, y, i) EDGE_TOLERANCE(x + aacoords[i][0], y + aacoords[i][1])
@@ -902,13 +917,14 @@ static bool generatelightmap(lightmapworker *w, float lpu, const lerpvert *lv, i
                 const vec *offsets = x < sidex ? offsets1 : offsets2;
                 vec n = vec(normal).normalize();
                 loopi(aasample-1)
-                    generatelumel(w, AA_EDGE_TOLERANCE(x, y, i+1) * tolerance, lightmask, w->lights, vec(u).add(offsets[i+1]), n, *sample++, x, y);
+                    generatelumel(w, AA_EDGE_TOLERANCE(x, y, i+1) * tolerance, lightmask, w->lights, vec(u).add(offsets[i+1]), n, *sample++, *occlusion++, x, y);
                 if(lmaa == 3) 
                 {
                     loopi(4)
                     {
                         vec s;
-                        generatelumel(w, AA_EDGE_TOLERANCE(x, y, i+4) * tolerance, lightmask, w->lights, vec(u).add(offsets[i+4]), n, s, x, y);
+                        uchar dummy;
+                        generatelumel(w, AA_EDGE_TOLERANCE(x, y, i+4) * tolerance, lightmask, w->lights, vec(u).add(offsets[i+4]), n, s, dummy, x, y);
                         center.add(s);
                     }
                     center.div(5);
@@ -920,11 +936,12 @@ static bool generatelightmap(lightmapworker *w, float lpu, const lerpvert *lv, i
             vec u = w->w < sidex ? vec(xstep1).mul(w->w).add(vec(ystep1).mul(y)).add(origin1) : vec(xstep2).mul(w->w).add(vec(ystep2).mul(y)).add(origin2);
             const vec *offsets = w->w < sidex ? offsets1 : offsets2;
             vec n = vec(normal).normalize();
-            generatelumel(w, edgetolerance * tolerance, lightmask, w->lights, vec(u).add(offsets[1]), n, sample[1], w->w-1, y);
+            generatelumel(w, edgetolerance * tolerance, lightmask, w->lights, vec(u).add(offsets[1]), n, sample[1], occlusion[1], w->w-1, y);
             if(aasample > 2)
-                generatelumel(w, edgetolerance * tolerance, lightmask, w->lights, vec(u).add(offsets[3]), n, sample[3], w->w-1, y);
+                generatelumel(w, edgetolerance * tolerance, lightmask, w->lights, vec(u).add(offsets[3]), n, sample[3], occlusion[3], w->w-1, y);
         }
         sample += aasample;
+        occlusion += aasample;
     }
 
     if(aasample > 1)
@@ -937,10 +954,11 @@ static bool generatelightmap(lightmapworker *w, float lpu, const lerpvert *lv, i
             vec u = x < sidex ? vec(xstep1).mul(x).add(vec(ystep1).mul(w->h)).add(origin1) : vec(xstep2).mul(x).add(vec(ystep2).mul(w->h)).add(origin2);
             const vec *offsets = x < sidex ? offsets1 : offsets2;
             vec n = vec(normal).normalize();
-            generatelumel(w, edgetolerance * tolerance, lightmask, w->lights, vec(u).add(offsets[1]), n, sample[1], min(x, w->w-1), w->h-1);
+            generatelumel(w, edgetolerance * tolerance, lightmask, w->lights, vec(u).add(offsets[1]), n, sample[1], occlusion[1], min(x, w->w-1), w->h-1);
             if(aasample > 2)
-                generatelumel(w, edgetolerance * tolerance, lightmask, w->lights, vec(u).add(offsets[2]), n, sample[2], min(x, w->w-1), w->h-1);
+                generatelumel(w, edgetolerance * tolerance, lightmask, w->lights, vec(u).add(offsets[2]), n, sample[2], occlusion[2], min(x, w->w-1), w->h-1);
             sample += aasample;
+            occlusion += aasample;
         }
     }
     return true;
@@ -954,6 +972,7 @@ static int finishlightmap(lightmapworker *w)
         swap(w->blur, w->ambient);
     }
     vec *sample = w->colordata;
+    uchar *occlusion = w->occlusiondata;
     int aasample = min(1 << lmaa, 4), stride = aasample*(w->w+1);
     float weight = 1.0f / (1.0f + 4.0f*lmaa),
           cweight = weight * (lmaa == 3 ? 5.0f : 1.0f);
@@ -969,7 +988,11 @@ static int finishlightmap(lightmapworker *w)
         {
             vec l(0, 0, 0);
             const vec &center = *sample++;
-            loopi(aasample-1) l.add(*sample++);
+            const uchar &centerocc = *occlusion++;
+            loopi(aasample - 1) {
+                l.add(*sample++);
+                *occlusion++;
+            }
             if(aasample > 1)
             {
                 l.add(sample[1]);
@@ -987,9 +1010,9 @@ static int finishlightmap(lightmapworker *w)
                 g = int(center.y*cweight + l.y*weight),
                 b = int(center.z*cweight + l.z*weight),
                 ar = skylight[0], ag = skylight[1], ab = skylight[2];
-            dstcolor[0] = max(ar, r);
-            dstcolor[1] = max(ag, g);
-            dstcolor[2] = max(ab, b);
+            dstcolor[0] = max(0, max(ar, r) - centerocc);
+            dstcolor[1] = max(0, max(ag, g) - centerocc);
+            dstcolor[2] = max(0, max(ab, b) - centerocc);
             loopk(3)
             {
                 mincolor[k] = min(mincolor[k], dstcolor[k]);
@@ -1001,6 +1024,7 @@ static int finishlightmap(lightmapworker *w)
                 mincolor[3] = min(mincolor[3], dstcolor[3]);
                 maxcolor[3] = max(maxcolor[3], dstcolor[3]);
             }
+
             if((w->type&LM_TYPE) == LM_BUMPMAP0)
             {
                 if(ray->iszero()) dstray[0] = bvec(128, 128, 255);
@@ -1026,6 +1050,7 @@ static int finishlightmap(lightmapworker *w)
             skylight += w->bpp;
         }
         sample += aasample;
+        occlusion += aasample;
     }
     if(int(maxcolor[0]) - int(mincolor[0]) <= lighterror &&
        int(maxcolor[1]) - int(mincolor[1]) <= lighterror &&
@@ -2089,6 +2114,7 @@ lightmapworker::lightmapworker()
     firstlightmap = lastlightmap = curlightmaps = NULL;
     ambient = new uchar[4*(LM_MAXW + 4)*(LM_MAXH + 4)];
     blur = new uchar[4*(LM_MAXW + 4)*(LM_MAXH + 4)];
+    occlusiondata = new uchar[4*(LM_MAXW+1 + 4)*(LM_MAXH+1 + 4)];
     colordata = new vec[4*(LM_MAXW+1 + 4)*(LM_MAXH+1 + 4)];
     raydata = new vec[(LM_MAXW + 4)*(LM_MAXH + 4)];
     shadowraycache = newshadowraycache();
@@ -2486,6 +2512,7 @@ void fixrotatedlightmaps()
 
 static void convertlightmap(LightMap &lmc, LightMap &lmlv, uchar *dst, size_t stride)
 {
+    conoutf("konvertierte lightmap");
     const uchar *c = lmc.data;
     const bvec *lv = (const bvec *)lmlv.data;
     loopi(LM_PACKH)
