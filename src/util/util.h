@@ -1,8 +1,8 @@
-#include <string>
-#include "util/StringFormatter.h"
-
 #ifndef INEXOR_UTIL_UTIL_HEADER
 #define INEXOR_UTIL_UTIL_HEADER
+
+#include <string>
+#include "util/StringFormatter.h"
 
 namespace inexor {
 namespace util {

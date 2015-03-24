@@ -1,9 +1,8 @@
-#include <list>
-
-#include "net/MessageConnect.h"
-
 #ifndef INEXOR_NET_MULTI_CONNECT_HEADER
 #define INEXOR_NET_MULTI_CONNECT_HEADER
+
+#include <list>
+#include "net/MessageConnect.h"
 
 namespace inexor {
 namespace net {

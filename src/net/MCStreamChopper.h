@@ -1,10 +1,10 @@
+#ifndef INEXOR_NET_MCSTREAMCHOPPER_HEADER
+#define INEXOR_NET_MCSTREAMCHOPPER_HEADER
+
 #include <stdexcept>
 #include <iostream>
 
 #include "net/MCByteBuffer.h"
-
-#ifndef INEXOR_NET_MCSTREAMCHOPPER_HEADER
-#define INEXOR_NET_MCSTREAMCHOPPER_HEADER
 
 namespace inexor {
 namespace net {

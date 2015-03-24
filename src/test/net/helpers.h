@@ -1,9 +1,8 @@
-#include "test/helpers.h"
-
-#include "net/net.h"
-
 #ifndef INEXOR_TEST_NET_HELPERS_HEADER
 #define INEXOR_TEST_NET_HELPERS_HEADER
+
+#include "test/helpers.h"
+#include "net/net.h"
 
 typedef inexor::net::bytes bytes;
 

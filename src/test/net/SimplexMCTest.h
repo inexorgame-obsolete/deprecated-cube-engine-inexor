@@ -1,3 +1,6 @@
+#ifndef INEXOR_TEST_NET_SIMPLEX_MC_TEST_HEADER
+#define INEXOR_TEST_NET_SIMPLEX_MC_TEST_HEADER
+
 #include "gtest/gtest.h"
 
 #include "test/helpers.h"
@@ -10,9 +13,6 @@
 #include <algorithm>
 #include <vector>
 #include <cstddef>
-
-#ifndef INEXOR_TEST_NET_SIMPLEX_MC_TEST_HEADER
-#define INEXOR_TEST_NET_SIMPLEX_MC_TEST_HEADER
 
 class SimplexMCTest_Provider {
 public:

@@ -1,8 +1,8 @@
-#include <sstream>
-#include <string>
-
 #ifndef INEXOR_UTIL_STRING_FORMATTER_HEADER
 #define INEXOR_UTIL_STRING_FORMATTER_HEADER
+
+#include <sstream>
+#include <string>
 
 namespace inexor {
 namespace util {

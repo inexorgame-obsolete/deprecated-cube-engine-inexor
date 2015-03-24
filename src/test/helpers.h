@@ -1,9 +1,9 @@
+#ifndef INEXOR_TEST_HELPERS_HEADER
+#define INEXOR_TEST_HELPERS_HEADER
+
 #include "gtest/gtest.h"
 
 #include <random>
-
-#ifndef INEXOR_TEST_HELPERS_HEADER
-#define INEXOR_TEST_HELPERS_HEADER
 
 #define test TEST
 

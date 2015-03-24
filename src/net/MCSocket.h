@@ -1,3 +1,6 @@
+#ifndef INEXOR_NET_IOSTREAM_MESSAGE_CONNECT_SOCKET_HEADER
+#define INEXOR_NET_IOSTREAM_MESSAGE_CONNECT_SOCKET_HEADER
+
 #include <algorithm>
 #include <cstddef>
 
@@ -6,9 +9,6 @@
 #include <asio.hpp>
 
 #include "net/MCByteBuffer.h"
-
-#ifndef INEXOR_NET_IOSTREAM_MESSAGE_CONNECT_SOCKET_HEADER
-#define INEXOR_NET_IOSTREAM_MESSAGE_CONNECT_SOCKET_HEADER
 
 namespace inexor {
 namespace net {

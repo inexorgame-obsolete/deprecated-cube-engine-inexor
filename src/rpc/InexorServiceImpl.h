@@ -2,7 +2,6 @@
 #define INEXOR_RPC_INEXOR_SERVICE_IMPL_HEADER
 
 #include <google/protobuf/service.h>
-
 #include "rpc/inexor_service.pb.h"
 
 namespace inexor {
