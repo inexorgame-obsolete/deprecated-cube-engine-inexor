@@ -5,12 +5,19 @@
 SVARP(mediadir, "media");
 SVARP(mapdir, "media/map");
 
+/// remove map postfix (.ogz) from file path/name to get map name
 void cutogz(char *s) 
 {   
     char *ogzp = strstr(s, ".ogz");
     if(ogzp) *ogzp = '\0';
 }   
 
+
+/// get the map name from a path/file
+/// @param fname folder name
+/// @param realname file name
+/// @param mapname a pointer to where the final map name will be copied (call by reference)
+/// @see cutogz
 void getmapfilename(const char *fname, const char *realname, char *mapname)
 {   
     if(!realname) realname = fname;
@@ -19,6 +26,13 @@ void getmapfilename(const char *fname, const char *realname, char *mapname)
     copystring(mapname, name, 100);
 }   
 
+
+/// fix entity attributes according to the program version
+/// (the entity format has changed over time)
+/// @param e a reference to an entity
+/// @param version the Inexor (Sauerbraten / Cube game) version
+/// @see load_world
+/// @see loadents
 static void fixent(entity &e, int version)
 {
     if(version <= 10 && e.type >= 7) e.type++;
@@ -35,9 +49,15 @@ static void fixent(entity &e, int version)
     if(version <= 30 && (e.type == ET_MAPMODEL || e.type == ET_PLAYERSTART)) e.attr1 = (int(e.attr1)+180)%360;
     if(version <= 31 && e.type == ET_MAPMODEL) { int yaw = (int(e.attr1)%360 + 360)%360 + 7; e.attr1 = yaw - yaw%15; }
 	if(version <= 39 && e.type >= ET_BOMBS) e.type += 3;
-	if(version <= 39 && e.type >= ET_OBSTACLE) e.type += 8; //old sauerbomber maps
+	if(version <= 39 && e.type >= ET_OBSTACLE) e.type += 8; /// old sauerbomber maps
 }
 
+
+/// load/parse entities from a file
+/// @param fname file name which conains compressed OGZ content (a map)
+/// @param ents a reference to a vector of entites in which parsed entities from this file will be copied
+/// @param crc the CRC32 hash sum of this map
+/// @see getmapfilename
 bool loadents(const char *fname, vector<entity> &ents, uint *crc)
 {
     string mapname, ogzname;
@@ -139,6 +159,7 @@ bool loadents(const char *fname, vector<entity> &ents, uint *crc)
         }
     }
 
+    /// calculate CRC32 hash sum from file stream
     if(crc)
     {
         f->seek(0, SEEK_END);
@@ -150,11 +171,22 @@ bool loadents(const char *fname, vector<entity> &ents, uint *crc)
     return true;
 }
 
+
+
+
 #ifndef STANDALONE
+
 string ogzname, bakname, cfgname, picname;
 
+/// all map files will be backuped as .BAK files when changes will be saved
 VARP(savebak, 0, 2, 2);
 
+
+/// generate file path from file and folder name
+/// @param cname foldername
+/// @param fname file name (if not specified: "untitled")
+/// @see load_world
+/// @see save_world
 void setmapfilenames(const char *fname, const char *cname = 0)
 {
     string mapname;
@@ -172,6 +204,9 @@ void setmapfilenames(const char *fname, const char *cname = 0)
     path(picname);
 }
 
+
+/// generate map configuration file (.cfg)
+/// @see getmapfilename
 void mapcfgname()
 {
     const char *mname = game::getclientmap();
@@ -183,23 +218,48 @@ void mapcfgname()
     path(cfgname);
     result(cfgname);
 }
-
 COMMAND(mapcfgname, "");
 
+
+/// remove old backup file but keep the file name for the new backup
+/// @param name file name of the new backup
+/// @param backupname file name of the old backup
+/// @see save_world
 void backup(char *name, char *backupname)
 {   
     string backupfile;
     copystring(backupfile, findfile(backupname, "wb"));
+    /// remove old backup file
     remove(backupfile);
+    /// rename 
     rename(findfile(name, "wb"), backupfile);
 }
 
-enum { OCTSAV_CHILDREN = 0, OCTSAV_EMPTY, OCTSAV_SOLID, OCTSAV_NORMAL, OCTSAV_LODCUBE };
+
+/// OCTREE children type enumeration
+enum 
+{
+    OCTSAV_CHILDREN = 0,
+    OCTSAV_EMPTY, 
+    OCTSAV_SOLID, 
+    OCTSAV_NORMAL,
+    OCTSAV_LODCUBE
+};
 
 static int savemapprogress = 0;
 
+
+/// save OCTREE (and its children) to stream (file)
+/// this file calls itself (recursion) because of the OCTREE's structure
+/// @param c the cube (or child of a parent's cube) which contains the OCTREE data
+/// @param o a reference to an integer vector [mathematic vector]
+/// @param size the size of the stream
+/// @param f the stream to which data will be written
+/// @param nolms save without lightmaps
+/// @see 
 void savec(cube *c, const ivec &o, int size, stream *f, bool nolms)
 {
+    /// render progress bar in the background
     if((savemapprogress++&0xFFF)==0) renderprogress(float(savemapprogress)/allocnodes, "saving octree...");
 
     loopi(8)
@@ -208,6 +268,7 @@ void savec(cube *c, const ivec &o, int size, stream *f, bool nolms)
         if(c[i].children)
         {
             f->putchar(OCTSAV_CHILDREN);
+            /// save children (recursion!)
             savec(c[i].children, co, size>>1, f, nolms);
         }
         else
@@ -217,6 +278,7 @@ void savec(cube *c, const ivec &o, int size, stream *f, bool nolms)
             if(isempty(c[i])) f->putchar(oflags | OCTSAV_EMPTY);
             else
             {
+                /// lightmaps will be saved
                 if(!nolms)
                 {
                     if(c[i].merged) oflags |= 0x80;
@@ -237,8 +299,10 @@ void savec(cube *c, const ivec &o, int size, stream *f, bool nolms)
                     f->write(c[i].edges, 12);
                 }
             }
+            /// texture coordinates
             loopj(6) f->putlil<ushort>(c[i].texture[j]);
 
+            /// material type
             if(oflags&0x40) f->putlil<ushort>(c[i].material);
             if(oflags&0x80) f->putchar(c[i].merged);
             if(oflags&0x20) 
@@ -307,6 +371,7 @@ void savec(cube *c, const ivec &o, int size, stream *f, bool nolms)
                         }
                     }
                     surf.verts = vertmask;
+                    /// surface information
                     f->write(&surf, sizeof(surfaceinfo));
                     bool hasxyz = (vertmask&0x04)!=0, hasuv = (vertmask&0x40)!=0, hasnorm = (vertmask&0x80)!=0;
                     if(layerverts == 4)
@@ -355,6 +420,8 @@ void savec(cube *c, const ivec &o, int size, stream *f, bool nolms)
     }
 }
 
+
+/// surface description
 struct surfacecompat
 {
     uchar texcoords[8];
@@ -363,24 +430,40 @@ struct surfacecompat
     uchar lmid, layer;
 };
 
+/// normal vector description
 struct normalscompat
 {
     bvec normals[4];
 };
 
+/// merged edge description
 struct mergecompat
 {
     ushort u1, u2, v1, v2;
 };
 
+/// forward function "loadchildren"
 cube *loadchildren(stream *f, const ivec &co, int size, bool &failed);
 
+
+/// convert a surface from a newer map version to a surface of older version (?)
+/// @param c a reference to a cube whose surfaces will be converted
+/// @param co a reference to an output integer vector [mathematical vector] 
+/// @param size
+/// @param srcsurfs
+/// @param hassurfs
+/// @param normals
+/// @param merges
+/// @param hasmerges
+/// @see loadc
 void convertoldsurfaces(cube &c, const ivec &co, int size, surfacecompat *srcsurfs, int hassurfs, normalscompat *normals, int hasnorms, mergecompat *merges, int hasmerges)
 {
+    /// each cube consists of 6 faces
     surfaceinfo dstsurfs[6];
+    memset(dstsurfs, 0, sizeof(dstsurfs));
+    /// a cube consists of 2 vertices per face * 6 faces
     vertinfo verts[6*2*MAXFACEVERTS];
     int totalverts = 0, numsurfs = 6;
-    memset(dstsurfs, 0, sizeof(dstsurfs));
     loopi(6) if((hassurfs|hasnorms|hasmerges)&(1<<i))
     {
         surfaceinfo &dst = dstsurfs[i];
@@ -475,11 +558,23 @@ void convertoldsurfaces(cube &c, const ivec &co, int size, surfacecompat *srcsur
     setsurfaces(c, dstsurfs, verts, totalverts);
 }
 
+/// convert a material index from Cube2 to a material index from Cube1
+/// @return the index in the old material format
 static inline int convertoldmaterial(int mat)
 {
+    /// weird bit operations
     return ((mat&7)<<MATF_VOLUME_SHIFT) | (((mat>>3)&3)<<MATF_CLIP_SHIFT) | (((mat>>5)&7)<<MATF_FLAG_SHIFT);
 }
  
+
+
+
+/// load a cube from a stream (file)
+/// @param f (file) stream
+/// @param c a reference to a cube structure to which data will be parsed
+/// @param co ?
+/// @param size ?
+/// @param failed a reference to a bool variable which will be informed about failure or success (the function itself is typeless)
 void loadc(stream *f, cube &c, const ivec &co, int size, bool &failed)
 {
     bool haschildren = false;
@@ -506,7 +601,17 @@ void loadc(stream *f, cube &c, const ivec &co, int size, bool &failed)
             int mat = f->getchar();
             if(mapversion < 27)
             {
-                static const ushort matconv[] = { MAT_AIR, MAT_WATER, MAT_CLIP, MAT_GLASS|MAT_CLIP, MAT_NOCLIP, MAT_LAVA|MAT_DEATH, MAT_GAMECLIP, MAT_DEATH };
+                static const ushort matconv[] = 
+                { 
+                    MAT_AIR, 
+                    MAT_WATER, 
+                    MAT_CLIP, 
+                    MAT_GLASS|MAT_CLIP, 
+                    MAT_NOCLIP, 
+                    MAT_LAVA|MAT_DEATH, 
+                    MAT_GAMECLIP, 
+                    MAT_DEATH
+                };
                 c.material = size_t(mat) < sizeof(matconv)/sizeof(matconv[0]) ? matconv[mat] : MAT_AIR;
             }
             else c.material = convertoldmaterial(mat);
@@ -707,17 +812,29 @@ void loadc(stream *f, cube &c, const ivec &co, int size, bool &failed)
     c.children = (haschildren ? loadchildren(f, co, size>>1, failed) : NULL);
 }
 
+/// load all 8 children from a octree cube (from a file stream)
+/// @param f (file) stream
+/// @param f (file) stream
+/// @param size ?
+/// @param failed a reference to a bool variable which will be informed about failure or success (the function itself is typeless)
+/// @see loadc
 cube *loadchildren(stream *f, const ivec &co, int size, bool &failed)
 {
+    /// allocate memory for a new cube
     cube *c = newcubes();
     loopi(8) 
     {
+        /// load octree cubes
         loadc(f, c[i], ivec(i, co.x, co.y, co.z, size), size, failed);
         if(failed) break;
     }
     return c;
 }
 
+
+
+
+/// print map variables to screen
 VAR(dbgvars, 0, 0, 1);
 
 void savevslot(stream *f, VSlot &vs, int prev)
@@ -759,6 +876,9 @@ void savevslot(stream *f, VSlot &vs, int prev)
     }
 }
 
+/// save vertex slots (vslots) to a (file) stream
+/// @param f (file) stream
+/// @param numvslots the number of vslots which will be written to the file stream
 void savevslots(stream *f, int numvslots)
 {
     if(vslots.empty()) return;
@@ -788,7 +908,11 @@ void savevslots(stream *f, int numvslots)
     if(lastroot < numvslots) f->putlil<int>(-(numvslots - lastroot));
     delete[] prev;
 }
-            
+
+/// load one vertex slot from a (file) stream
+/// @param f (file) stream)
+/// @param v a reference to a vslot to which data will be written
+/// @param changed ?
 void loadvslot(stream *f, VSlot &vs, int changed)
 {
     vs.changed = changed;
@@ -834,6 +958,9 @@ void loadvslot(stream *f, VSlot &vs, int changed)
     }
 }
 
+/// load all vertex slots from a (file) stream
+/// @param f (file) stream
+/// @param numvslots the number of vslots to read
 void loadvslots(stream *f, int numvslots)
 {
     int *prev = new int[numvslots];
@@ -857,44 +984,64 @@ void loadvslots(stream *f, int numvslots)
     delete[] prev;
 }
 
+
+
+
+
+/// save the current game world to a map file (.OGZ)
+/// @param mname map name
+/// @param nolms enable or disable lightmap loading
+/// @warning map stream will be compressed using GZIP automaticly!
 bool save_world(const char *mname, bool nolms)
 {
+    /// validate map name
     if(!*mname) mname = game::getclientmap();
     setmapfilenames(*mname ? mname : "untitled");
+    /// eventually save backup file
     if(savebak) backup(ogzname, bakname);
+    /// open output stream
     stream *f = opengzfile(ogzname, "wb");
-    if(!f) { conoutf(CON_WARN, "could not write map to %s", ogzname); return false; }
-
+    if(!f) 
+    {
+        conoutf(CON_WARN, "could not write map to %s", ogzname); 
+        return false;
+    }
+    /// get light map data
     int numvslots = vslots.length();
     if(!nolms && !multiplayer(false))
     {
         numvslots = compactvslots();
         allchanged();
     }
-
+    /// render savemap progress background
     savemapprogress = 0;
     renderprogress(0, "saving map...");
 
+    /// write map header
     octaheader hdr;
-    memcpy(hdr.magic, "OCTA", 4);
-    hdr.version = MAPVERSION;
-    hdr.headersize = sizeof(hdr);
-    hdr.worldsize = worldsize;
-    hdr.numents = 0;
+    memcpy(hdr.magic, "OCTA", 4);    /// "magic number"
+    hdr.version = MAPVERSION;        /// map version
+    hdr.headersize = sizeof(hdr);    /// size of header structure
+    hdr.worldsize = worldsize;       /// size of the game world
+    hdr.numents = 0;                 /// set amount of entities to 0
+    /// ernumerate and count entities
     const vector<extentity *> &ents = entities::getents();
     loopv(ents) if(ents[i]->type!=ET_EMPTY || nolms) hdr.numents++;
-    hdr.numpvs = nolms ? 0 : getnumviewcells();
-    hdr.lightmaps = nolms ? 0 : lightmaps.length();
-    hdr.blendmap = shouldsaveblendmap();
-    hdr.numvars = 0;
+    hdr.numpvs = nolms ? 0 : getnumviewcells();     /// PVS (potentially visible set) tree
+    hdr.lightmaps = nolms ? 0 : lightmaps.length(); /// ligthmaps
+    hdr.blendmap = shouldsaveblendmap();            /// blendmap
+    hdr.numvars = 0;                                
     hdr.numvslots = numvslots;
+    /// enumerate and count idents which represent map variables (settings like "fog"...)
     enumerate(idents, ident, id, 
     {
         if((id.type == ID_VAR || id.type == ID_FVAR || id.type == ID_SVAR) && id.flags&IDF_OVERRIDE && !(id.flags&IDF_READONLY) && id.flags&IDF_OVERRIDDEN) hdr.numvars++;
     });
     lilswap(&hdr.version, 9);
+    /// write header to map file
     f->write(&hdr, sizeof(hdr));
    
+    /// write map variables/settings from ident list
     enumerate(idents, ident, id, 
     {
         if((id.type!=ID_VAR && id.type!=ID_FVAR && id.type!=ID_SVAR) || !(id.flags&IDF_OVERRIDE) || id.flags&IDF_READONLY || !(id.flags&IDF_OVERRIDDEN)) continue;
@@ -926,13 +1073,18 @@ bool save_world(const char *mname, bool nolms)
     f->putchar((int)strlen(game::gameident()));
     f->write(game::gameident(), (int)strlen(game::gameident())+1);
     f->putlil<ushort>(entities::extraentinfosize());
+
+    /// TODO: extend map format here...(?)
     vector<char> extras;
     game::writegamedata(extras);
     f->putlil<ushort>(extras.length());
     f->write(extras.getbuf(), extras.length());
     
+    /// save texture IDs in map file
     f->putlil<ushort>(texmru.length());
     loopv(texmru) f->putlil<ushort>(texmru[i]);
+
+    /// save "extra entities" ?
     char *ebuf = new char[entities::extraentinfosize()];
     loopv(ents)
     {
@@ -948,8 +1100,10 @@ bool save_world(const char *mname, bool nolms)
     }
     delete[] ebuf;
 
+    /// vertex shader slots?
     savevslots(f, numvslots);
 
+    /// save octree structure and display another progress bar menawhile
     renderprogress(0, "saving octree...");
     savec(worldroot, ivec(0, 0, 0), worldsize>>1, f, nolms);
 
@@ -973,14 +1127,53 @@ bool save_world(const char *mname, bool nolms)
     if(shouldsaveblendmap()) { renderprogress(0, "saving blendmap..."); saveblendmap(f); }
 
     delete f;
+    /// done
     conoutf("wrote map file %s", ogzname);
     return true;
 }
 
+
+/// save map data to a file
+/// automaticly detect map name
+void savecurrentmap()
+{
+    save_world(game::getclientmap());
+}
+COMMAND(savecurrentmap, "");
+
+
+/// save map data to a map file
+/// @param mname map name
+void savemap(char *mname)
+{
+    save_world(mname);
+}
+COMMAND(savemap, "s");
+
+
+
+
+
+/// CRC32 is a checksum (and error detection) algorithm to generate map checksums
+/// so servers can detect modified maps (mostly cheaters)
+/// http://reveng.sourceforge.net/crc-catalogue/all.htm
+/// http://en.wikipedia.org/wiki/Cyclic_redundancy_check#cite_note-cook-catalogue-8
+
+/// @warning use getmapcrc() and clearmapcrc() to access/clear the checksum do NOT directly access it!
 static uint mapcrc = 0;
 
-uint getmapcrc() { return mapcrc; }
-void clearmapcrc() { mapcrc = 0; }
+// get the precomputed CRC32 checksum of the current map
+uint getmapcrc() 
+{
+    return mapcrc;
+}
+
+/// clear the CRC32 checksum
+void clearmapcrc() 
+{
+    mapcrc = 0;
+}
+
 
 bool load_world(const char *mname, const char *cname)        // still supports all map formats that have existed since the earliest cube betas!
 {
@@ -1259,20 +1452,19 @@ bool load_world(const char *mname, const char *cname)        // still supports a
     return true;
 }
 
-void savecurrentmap() { save_world(game::getclientmap()); }
-void savemap(char *mname) { save_world(mname); }
-
-COMMAND(savemap, "s");
-COMMAND(savecurrentmap, "");
-
+/// Export/Convert the current octree map, texture coordinates, material information 
+/// and more to an Object File and a Material Library File
+/// @param name the .OBJ file name
 void writeobj(char *name)
 {
     defformatstring(fname)("%s.obj", name);
     stream *f = openfile(path(fname), "w"); 
     if(!f) return;
+    /// print a small comment to file
     f->printf("# obj file of Cube 2 level\n\n");
     defformatstring(mtlname)("%s.mtl", name);
     path(mtlname);
+    /// link reference to material library
     f->printf("mtllib %s\n\n", mtlname); 
     extern vector<vtxarray *> valist;
     vector<vec> verts;
@@ -1281,6 +1473,8 @@ void writeobj(char *name)
     hashtable<vec2, int> sharetc(1<<16);
     hashtable<int, vector<ivec> > mtls(1<<8);
     vector<int> usedmtl;
+
+    /// extract geometric data from OCTREE
     vec bbmin(1e16f, 1e16f, 1e16f), bbmax(-1e16f, -1e16f, -1e16f);
     loopv(valist)
     {
@@ -1321,6 +1515,7 @@ void writeobj(char *name)
         delete[] vdata;
     }
 
+    /// add center vector to vertices and write them to file
     vec center(-(bbmax.x + bbmin.x)/2, -(bbmax.y + bbmin.y)/2, -bbmin.z);
     loopv(verts)
     {
@@ -1329,7 +1524,9 @@ void writeobj(char *name)
         if(v.y != floor(v.y)) f->printf("v %.3f ", -v.y); else f->printf("v %d ", int(-v.y));
         if(v.z != floor(v.z)) f->printf("%.3f ", v.z); else f->printf("%d ", int(v.z));
         if(v.x != floor(v.x)) f->printf("%.3f\n", v.x); else f->printf("%d\n", int(v.x));
-    } 
+    }
+    
+    /// write texture coordinates to file
     f->printf("\n");
     loopv(texcoords)
     {
@@ -1338,6 +1535,7 @@ void writeobj(char *name)
     }
     f->printf("\n");
 
+    /// write materials to file
     usedmtl.sort();
     loopv(usedmtl)
     {
@@ -1354,11 +1552,14 @@ void writeobj(char *name)
     }
     delete f;
 
+    /// write material library file
     f = openfile(mtlname, "w");
     if(!f) return;
+    /// add a little comment line
     f->printf("# mtl file of Cube 2 level\n\n");
     loopv(usedmtl)
     {
+        /// print abstract material descriptions to file
         VSlot &vslot = lookupvslot(usedmtl[i], false);
         f->printf("newmtl slot%d\n", usedmtl[i]);
 		f->printf("map_Kd %s\n", vslot.slot->sts.empty() ? notexture->name : path(vslot.slot->sts[0].name));
@@ -1366,8 +1567,7 @@ void writeobj(char *name)
     } 
     delete f;
 }  
-    
 COMMAND(writeobj, "s"); 
 
-#endif
 
+#endif /// if not defined: STANDALONE
