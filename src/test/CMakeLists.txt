@@ -5,7 +5,7 @@ declare_module(test .)
 # This needs to come before the target, sigh
 link_directories(${GTEST_LIB_DIR})
 
-add_app(${TEST_BINARY} ${TEST_MODULE_SOURCES})
+add_app(${TEST_BINARY} ${TEST_MODULE_SOURCES} CONSOLE_APP)
 
 config_net(${TEST_BINARY})
 config_util(${TEST_BINARY})

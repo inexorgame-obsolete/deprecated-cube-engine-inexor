@@ -254,12 +254,14 @@ function(target_link_libs BINARYNAME)
     endif()
 endfunction()
 
-# USAGE: add_app(executable SOURCE_FILES)
+# USAGE: add_app(executable SOURCE_FILES [CONSOLE_APP])
 #
 # Set up an executable.
 # First this function creates a platform specific
 # executable. On windows it creates a WIN32 executable, on
 # OSX it creates a bundle.
+# If "CONSOLE_APP" is given within the arguments,
+# it wont create a WIN32 but a console app on windows.
 #
 # The executable created is also installed: On windows we
 # add it to the executables folder, and we have it installed
@@ -269,12 +271,18 @@ endfunction()
 function(add_app exe )
   message(STATUS "Adding Application: ${exe}")
 
+  # Remove "CONSOLE_APP" if specified
+  set(sources "${ARGN}")
+  list(REMOVE_ITEM sources "CONSOLE_APP")
+
   group_modules()
 
-  set(sources ${ARGN})
-
   if(OS_WINDOWS)
-    add_executable(${exe} WIN32 ${sources} ${ALL_HEADERS})
+    if(";${ARGN};" MATCHES ";CONSOLE_APP;")
+      add_executable(${exe} ${sources} ${ALL_HEADERS})
+    else()
+      add_executable(${exe} WIN32 ${sources} ${ALL_HEADERS})
+    endif()
   elseif(OS_MACOSX)
     add_executable(${exe} MACOSX_BUNDLE ${sources})
   else()

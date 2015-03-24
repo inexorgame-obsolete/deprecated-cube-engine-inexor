@@ -739,7 +739,7 @@ void localconnect()
 #endif
 
 #ifdef WIN32
-#include "shellapi.h"
+#include <shellapi.h>
 
 #define IDI_ICON1 1
 

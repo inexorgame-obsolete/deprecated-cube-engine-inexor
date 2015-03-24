@@ -4,7 +4,9 @@
 #include "test/helpers.h"
 #include "net/net.h"
 
-typedef inexor::net::bytes bytes;
+// Easy access of byte, bytes
+// TODO: Is there a better way to do this?
+using namespace inexor::net;
 
 /// Create a message connect message with random content.
 ///
