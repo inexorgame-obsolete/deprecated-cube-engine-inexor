@@ -14,7 +14,7 @@ namespace net {
     return cons;
   }
 
-  void MCHub::Send(vector<char> &dat) {
+  void MCHub::Send(bytes &dat) {
     list<MessageConnect*>::iterator itr;
     for (itr = cons->begin(); itr != cons->end(); itr++)
       (*itr)->Send(dat);

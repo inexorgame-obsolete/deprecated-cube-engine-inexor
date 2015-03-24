@@ -16,7 +16,7 @@ namespace net {
   protected:
     /// Buffer storing the input
     /// TODO: Use some sort of buffer builder?
-    std::vector<char> buf;
+    bytes buf;
 
     /// Write pointer within buf
     uint64_t buf_pt = 0;
@@ -38,7 +38,7 @@ namespace net {
     /// @param reading_ The new reading state to set
     /// @param size The new size of the buffer to allocate
     /// @return The current buf
-    MC::bytes xchrbuf(int reading_, size_t size=8);
+    bytes xchrbuf(int reading_, size_t size=8);
 
   public:
     MCByteBuffer() {
@@ -46,9 +46,9 @@ namespace net {
     }
 
     // Override
-    virtual MC::bytes Receive();
+    virtual bytes Receive();
     // Override
-    virtual void Send(MC::bytes &dat);
+    virtual void Send(bytes &dat);
 
     /// Low level function to read some bytes.
     ///
@@ -64,7 +64,7 @@ namespace net {
     /// @param buf The buffer to read into
     /// @param max The maximum number of bytes to read
     /// @return The number of bytes actually red
-    virtual size_t read(char *buf, size_t max) = 0;
+    virtual size_t read(byte *buf, size_t max) = 0;
 
     /// Low level function to write some bytes.
     ///
@@ -80,7 +80,7 @@ namespace net {
     ///
     /// @param buf The data to write
     /// @param len The number of bytes to write
-    virtual void write(char *buf, size_t len) = 0;
+    virtual void write(byte *buf, size_t len) = 0;
   };
 
 }

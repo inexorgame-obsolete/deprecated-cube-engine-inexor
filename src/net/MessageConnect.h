@@ -11,6 +11,9 @@
 namespace inexor {
 namespace net {
 
+  typedef unsigned char     byte;
+  typedef std::vector<byte> bytes;
+
   /**
    * Abstract interface for a reliable, connection
    * connection that transmits Messages (Datagrams).
@@ -19,9 +22,6 @@ namespace net {
    */
   class MessageConnect {
   public:
-    // TODO: Use uchar
-    // TODO: This should be called message
-    typedef std::vector<char> bytes;
     typedef std::pair<bytes, MessageConnect*> bytes_on_channel;
 
     const static size_t default_max_len = 16<<10; //16kib

@@ -9,22 +9,22 @@ using namespace std;
 namespace inexor {
 namespace net {
 
-  MC::bytes MCByteBuffer::xchrbuf(int reading_, size_t size) {
+  bytes MCByteBuffer::xchrbuf(int reading_, size_t size) {
     reading = reading_;
     buf_pt = 0;
-    MC::bytes xb(size);
+    bytes xb(size);
     buf.swap(xb);
     return xb;
   }
 
   // TODO: Support systems using big endian
   // TODO: SUPPORT DISCONNECT
-  MC::bytes MCByteBuffer::Receive() {
+  bytes MCByteBuffer::Receive() {
     // Try to fill the current buffer
     buf_pt += read(&buf[buf_pt], buf.size()-buf_pt);
 
     // Not enough data available; try again later
-    if (buf.size() != buf_pt) return MC::bytes(0);
+    if (buf.size() != buf_pt) return bytes(0);
 
     if (reading == rSize) { // Got the size
       uint64_t *sz = (uint64_t*)&buf[0];
@@ -45,9 +45,9 @@ namespace net {
       return xchrbuf(rSize);
   }
 
-  void MCByteBuffer::Send(MC::bytes &dat) {
+  void MCByteBuffer::Send(bytes &dat) {
     uint64_t size = dat.size();
-    write((char*)&size, sizeof(uint64_t));
+    write((byte*)&size, sizeof(uint64_t));
     write(&dat[0], size);
   }
 

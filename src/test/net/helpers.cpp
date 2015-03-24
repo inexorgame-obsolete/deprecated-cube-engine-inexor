@@ -12,7 +12,7 @@ std::default_random_engine default_rng;
 bytes mkpkg() {
   bytes r(1024);
   generate(r.begin(), r.end(),
-      [&]{ return rand<char>(); });
+      [&]{ return rand<byte>(); });
 
   return r;
 }

@@ -5,7 +5,7 @@
 #ifndef INEXOR_TEST_NET_HELPERS_HEADER
 #define INEXOR_TEST_NET_HELPERS_HEADER
 
-typedef inexor::net::MessageConnect::bytes bytes;
+typedef inexor::net::bytes bytes;
 
 /// Create a message connect message with random content.
 ///

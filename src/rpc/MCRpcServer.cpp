@@ -28,7 +28,7 @@ namespace rpc {
 
     // Process call request
     MC::bytes_on_channel res = mc->ReceiveChannel();
-    MC::bytes call_bytes = res.first;
+    bytes call_bytes = res.first;
     if (call_bytes.empty()) {
       return false;
     }
@@ -80,7 +80,7 @@ namespace rpc {
     rd.set_type(ServiceCall::RESPONSE);
     rd.set_payload(response->SerializeAsString());
 
-    std::vector<char> ret_bytes(rd.ByteSize());
+    bytes ret_bytes(rd.ByteSize());
     rd.SerializeToArray(&ret_bytes[0], ret_bytes.size());
 
     // And send the response message

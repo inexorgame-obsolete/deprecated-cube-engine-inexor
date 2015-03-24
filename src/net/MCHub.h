@@ -49,7 +49,7 @@ namespace net {
     }
 
     virtual bytes_on_channel ReceiveChannel();
-    virtual void Send(std::vector<char> &dat);
+    virtual void Send(bytes &dat);
 
     /** The list of attached connects */
     std::list<MessageConnect*>* connects();

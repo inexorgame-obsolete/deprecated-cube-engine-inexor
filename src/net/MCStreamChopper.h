@@ -24,18 +24,6 @@ namespace net {
     /// @see InOut()
     std::iostream *recv_send = NULL;
 
-    virtual size_t read(char *buf, size_t max) {
-      if (!recv) throw std:: logic_error("This MCStreamChopper"
-          " does not support receiving/reading data.");
-      return recv->readsome(buf, max);
-    }
-
-    virtual void write(char *buf, size_t len) {
-      if (!send) throw std::logic_error("This MCStreamChopper"
-          " does not support sending/writing data.");
-      send->write(buf, len);
-    }
-
   public:
 
     /// Initialize both IN and OUT from the same IOStream.
@@ -53,6 +41,18 @@ namespace net {
     /// @param _send The stream to write to
     MCStreamChopper(std::ostream *_send, std::istream *_recv)
         : recv(_recv), send(_send) {}
+
+    virtual size_t read(byte *buf, size_t max) {
+      if (!recv) throw std:: logic_error("This MCStreamChopper"
+          " does not support receiving/reading data.");
+      return recv->readsome((char*)buf, max);
+    }
+
+    virtual void write(byte *buf, size_t len) {
+      if (!send) throw std::logic_error("This MCStreamChopper"
+          " does not support sending/writing data.");
+      send->write((char*)buf, len);
+    }
 
     virtual bool supportSend() { return send; }
     virtual bool supportReceive() { return recv; }

@@ -67,13 +67,13 @@ namespace net {
     /// Get the ASIO io srvice of this
     service* Service() { return srv; }
 
-    virtual size_t read(char *buf, size_t max) {
+    virtual size_t read(byte *buf, size_t max) {
       size_t n = std::min(s.available(), max);
       if (n>0) s.read_some(asio::buffer(buf, n));
       return n;
     }
 
-    virtual void write(char *buf, size_t len) {
+    virtual void write(byte *buf, size_t len) {
       s.write_some(asio::buffer(buf,len));
     }
   };
