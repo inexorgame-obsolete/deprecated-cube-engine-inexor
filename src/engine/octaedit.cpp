@@ -4,30 +4,44 @@ extern int outline;
 
 bool boxoutline = false;
 
+
+/// renders a rectangular box to the target location
+/// @param orient cube face orientation index (3 dimensions x 2 directions = 6 possible orientation indices)
+/// @parm o target rendering position
+/// @param s a constant scalar vector
 void boxs(int orient, vec o, const vec &s)
 {
     int d = dimension(orient), dc = dimcoord(orient);
     float f = boxoutline ? (dc>0 ? 0.2f : -0.2f) : 0;
     o[D[d]] += dc * s[D[d]] + f;
-
+    
+    /// render box
     glBegin(GL_LINE_LOOP);
-
     glVertex3fv(o.v); o[R[d]] += s[R[d]];
     glVertex3fv(o.v); o[C[d]] += s[C[d]];
     glVertex3fv(o.v); o[R[d]] -= s[R[d]];
     glVertex3fv(o.v);
-
     glEnd();
+
+    /// a rendered box causes 4 additional vertices
     xtraverts += 4;
 }
 
+/// render cube (6 boxes) to target location
+/// @param o selection start vector
+/// @param s selection end vector
+/// @param g gridsize
 void boxs3D(const vec &o, vec s, int g)
 {
     s.mul(g);
-    loopi(6)
-        boxs(i, o, s);
+    loopi(6) boxs(i, o, s);
 }
 
+/// renders box grid on the face of the selected volume/area
+/// @param orient orientation
+/// @param o origin vector (start)
+/// @param s end vector
+/// @param g grid size
 void boxsgrid(int orient, vec o, vec s, int g)
 {
     int d = dimension(orient), dc = dimcoord(orient);
@@ -39,6 +53,7 @@ void boxsgrid(int orient, vec o, vec s, int g)
 
     o[D[d]] += dc * s[D[d]]*g + f;
 
+    /// render grid
     glBegin(GL_LINES);
     loop(x, xs) {
         o[R[d]] += g;
@@ -55,9 +70,12 @@ void boxsgrid(int orient, vec o, vec s, int g)
         glVertex3fv(o.v);
     }
     glEnd();
+
     xtraverts += 2*int(xs+ys);
 }
 
+
+/// @see selinfo
 selinfo sel, lastsel, savedsel;
 
 int orient = 0;
@@ -73,6 +91,9 @@ int horient  = 0;
 
 extern int entmoving;
 
+/// dragging is enabled (1) once a grid start cube is selected
+/// once you select a cube the selection box will be drawn a little brighter
+/// @warning this has nothing to do with particles, pickups or entities!
 VARF(dragging, 0, 0, 1,
     if(!dragging || cor[0]<0) return;
     lastcur = cur;
@@ -81,6 +102,10 @@ VARF(dragging, 0, 0, 1,
     sel.orient = orient;
 );
 
+
+/// moving will be set to 1 as soon as you right-click a selected area/volume to move it
+/// once you release the key, moving(0) will be called
+/// @warning this has nothing to do with particles, pickups or entities!
 int moving = 0;
 ICOMMAND(moving, "b", (int *n),
 {
@@ -92,6 +117,7 @@ ICOMMAND(moving, "b", (int *n),
     intret(moving);
 });
 
+/// will be called every time the gridpower (gridsize) changes
 VARF(gridpower, 0, 3, 12,
 {
     if(dragging) return;
@@ -100,15 +126,31 @@ VARF(gridpower, 0, 3, 12,
     cancelsel();
 });
 
+///////// selection functionality /////////////
+
+/// allow the editor to select new areas/volumes through the current selection
+/// otherwise select cubes ON the current selection
 VAR(passthroughsel, 0, 0, 1);
+/// represent the user's editing status (is he editing or not?)
 VAR(editing, 1, 0, 0);
+/// when intruding (pushing towards the inside) a selected cube/face keep the corners rounded
 VAR(selectcorners, 0, 0, 1);
+/// start/stop heightmap editing
 VARF(hmapedit, 0, 0, 1, horient = sel.orient);
 
-void forcenextundo() { lastsel.orient = -1; }
+
+/// reset orientation of the last selection
+/// this is called every time the user changes grid size or editing status
+void forcenextundo() 
+{
+    lastsel.orient = -1;
+}
 
 extern void hmapcancel();
 
+/// aborts heightsmap editing and resets selection data
+/// @see forcenextundo
+/// @see forcenextundo
 void cubecancel()
 {
     havesel = false;
@@ -117,12 +159,19 @@ void cubecancel()
     hmapcancel();
 }
 
+/// reset the current selection
+/// called every time user changes grid size of editing status
+/// @ee cubecancel
+/// @see entcancel
 void cancelsel()
 {
     cubecancel();
     entcancel();
 }
 
+/// change editing status
+/// also cancel selection, blendmaps and more
+/// @param force represents if the user was forced by administrators
 void toggleedit(bool force)
 {
     if(!force)
@@ -148,10 +197,16 @@ void toggleedit(bool force)
     keyrepeat(editmode, KR_EDITMODE);
     editing = entediting = editmode;
     extern int fullbright;
-    if(fullbright) { initlights(); lightents(); }
+    if(fullbright) 
+    {
+        initlights();
+        lightents();
+    }
     if(!force) game::edittoggled(editmode);
 }
 
+/// check if user is allowed to edit
+/// concerns may be a scene selection which is not in view or disbaled editing status
 bool noedit(bool view, bool msg)
 {
     if(!editmode) { if(msg) conoutf(CON_ERROR, "operation only allowed in edit mode"); return true; }
@@ -166,6 +221,7 @@ bool noedit(bool view, bool msg)
     return !viewable;
 }
 
+/// change the selection orientation according to the cursor's position
 void reorient()
 {
     sel.cx = 0;
@@ -175,6 +231,7 @@ void reorient()
     sel.orient = orient;
 }
 
+/// extend the selection according to the cursor's position
 void selextend()
 {
     if(noedit(true)) return;
@@ -192,21 +249,28 @@ void selextend()
     }
 }
 
+
+/// cubescript command hook: toggle editing
 ICOMMAND(edittoggle, "", (), toggleedit(false));
+/// cubescript command hook: remove entity selection
 COMMAND(entcancel, "");
+/// cubescript command hook: remove cube selection
 COMMAND(cubecancel, "");
+/// cubescript command hook: remove both cube and entity selection
 COMMAND(cancelsel, "");
+/// cubescript command hook: change orientation of selected cubes according to the cursor
 COMMAND(reorient, "");
+
+/// cubescript command hook: extend selection of cubes according to the cursor
 COMMAND(selextend, "");
 
-ICOMMAND(selmoved, "", (), { if(noedit(true)) return; intret(sel.o != savedsel.o ? 1 : 0); });
-ICOMMAND(selsave, "", (), { if(noedit(true)) return; savedsel = sel; });
+ICOMMAND(selmoved,   "", (), { if(noedit(true)) return; intret(sel.o != savedsel.o ? 1 : 0); });
+ICOMMAND(selsave,    "", (), { if(noedit(true)) return; savedsel = sel; });
 ICOMMAND(selrestore, "", (), { if(noedit(true)) return; sel = savedsel; });
-ICOMMAND(selswap, "", (), { if(noedit(true)) return; swap(sel, savedsel); });
+ICOMMAND(selswap,    "", (), { if(noedit(true)) return; swap(sel, savedsel); });
 
-///////// selection support /////////////
-
-cube &blockcube(int x, int y, int z, const block3 &b, int rgrid) // looks up a world cube, based on coordinates mapped by the block
+/// looks up a world cube, based on coordinates mapped by the block
+cube &blockcube(int x, int y, int z, const block3 &b, int rgrid) 
 {
     int dim = dimension(b.orient), dc = dimcoord(b.orient);
     ivec s(dim, x*b.grid, y*b.grid, dc*(b.s[dim]-1)*b.grid);
@@ -215,10 +279,14 @@ cube &blockcube(int x, int y, int z, const block3 &b, int rgrid) // looks up a w
     return lookupcube(s.x, s.y, s.z, rgrid);
 }
 
+/// @warning loop macros are deprecated
 #define loopxy(b)        loop(y,(b).s[C[dimension((b).orient)]]) loop(x,(b).s[R[dimension((b).orient)]])
 #define loopxyz(b, r, f) { loop(z,(b).s[D[dimension((b).orient)]]) loopxy((b)) { cube &c = blockcube(x,y,z,b,r); f; } }
 #define loopselxyz(f)    { if(local) makeundo(); loopxyz(sel, sel.grid, f); changed(sel); }
 #define selcube(x, y, z) blockcube(x, y, z, sel, sel.grid)
+
+
+
 
 ////////////// cursor ///////////////
 
@@ -294,6 +362,7 @@ extern float rayent(const vec &o, const vec &ray, float radius, int mode, int si
 VAR(gridlookup, 0, 0, 1);
 VAR(passthroughcube, 0, 1, 1);
 
+/// render selection box to the cursor target
 void rendereditcursor()
 {
     int d   = dimension(sel.orient),
@@ -780,8 +849,15 @@ void swapundo(undolist &a, undolist &b, const char *s)
     forcenextundo();
 }
 
-void editundo() { swapundo(undos, redos, "undo"); }
-void editredo() { swapundo(redos, undos, "redo"); }
+void editundo() 
+{
+    swapundo(undos, redos, "undo"); 
+}
+
+void editredo()
+{
+    swapundo(redos, undos, "redo");
+}
 
 // guard against subdivision
 #define protectsel(f) { undoblock *_u = newundocube(sel); f; if(_u) { pasteundo(_u); freeundo(_u); } }
@@ -2075,7 +2151,14 @@ void rotate(int *cw)
 COMMAND(flip, "");
 COMMAND(rotate, "i");
 
-enum { EDITMATF_EMPTY = 0x10000, EDITMATF_NOTEMPTY = 0x20000, EDITMATF_SOLID = 0x30000, EDITMATF_NOTSOLID = 0x40000 };
+enum 
+{
+    EDITMATF_EMPTY = 0x10000,
+    EDITMATF_NOTEMPTY = 0x20000,
+    EDITMATF_SOLID = 0x30000,
+    EDITMATF_NOTSOLID = 0x40000
+};
+
 static const struct { const char *name; int filter; } editmatfilters[] = 
 { 
     { "empty", EDITMATF_EMPTY },
@@ -2247,6 +2330,7 @@ void g3d_texturemenu()
     gui.show();
 }
 
+/// show texture 
 void showtexgui(int *n)
 {
     if(!editmode) { conoutf(CON_ERROR, "operation only allowed in edit mode"); return; }
@@ -2256,6 +2340,8 @@ void showtexgui(int *n)
 // 0/noargs = toggle, 1 = on, other = off - will autoclose if too far away or exit editmode
 COMMAND(showtexgui, "i");
 
+/// render quick selection preview for surface textures
+/// standard edit key binding: press Z
 void rendertexturepanel(int w, int h)
 {
     if((texpaneltimer -= curtime)>0 && editmode)

@@ -334,6 +334,7 @@ bool haveselent()
     return entgroup.length() > 0;
 }
 
+/// cancel (remove) entity selection
 void entcancel()
 {
     entgroup.shrink(0);
