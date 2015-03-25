@@ -244,6 +244,38 @@ function(target_link_libraries_wrapper BINARYNAME)
     endif()
 endfunction()
 
+# USAGE: add_app(executable SOURCE_FILES)
+#
+# Set up an executable.
+# First this function creates a platform specific
+# executable. On windows it creates a WIN32 executable, on
+# OSX it creates a bundle.
+#
+# The executable created is also installed: On windows we
+# add it to the executables folder, and we have it installed
+# in ${EXE_DIR}.
+#
+# see: add_executable
+function(add_app exe )
+  message(STATUS "Adding Application: ${exe}")
+
+  set(sources ${ARGN})
+
+  if(OS_WINDOWS)
+    add_executable(${exe} WIN32 ${sources})
+  elseif(OS_MACOSX)
+    add_executable(${exe} MACOSX_BUNDLE ${sources})
+  else()
+    add_executable(${exe} ${sources})
+  endif()
+
+  if(MSVC)
+    set_property(TARGET ${exe} PROPERTY FOLDER "executables")
+  endif()
+
+  install(TARGETS ${exe} DESTINATION ${EXE_DIR})
+endfunction()
+
 # USAGE: opt_subdir SUBDIR INITIAL
 #
 # Optionally include a sub directory.

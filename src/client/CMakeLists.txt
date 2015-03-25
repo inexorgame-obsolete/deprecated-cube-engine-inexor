@@ -85,17 +85,7 @@ if(OS_WINDOWS)
     endif()
 endif()
 
-
-# Assemble executable in specific mode
-if(OS_WINDOWS)
-  add_executable(${CLIENT_BINARY} WIN32 ${CLIENT_SOURCES}
-      ${ALL_HEADERS})
-elseif(OS_MACOSX)
-    add_executable(${CLIENT_BINARY} MACOSX_BUNDLE ${CLIENT_SOURCES})
-else()
-    add_executable(${CLIENT_BINARY} ${CLIENT_SOURCES})
-endif()
-
+add_app(${CLIENT_BINARY} ${CLIENT_SOURCES})
 
 set(CLIENT_LIBS ${COMMON_LIBS} ${SDL2_LIBRARIES}
   ${OPENGL_LIBRARIES} ${ADDITIONAL_LIBRARIES} CACHE INTERNAL "")
@@ -104,11 +94,3 @@ target_link_libraries_wrapper(${CLIENT_BINARY} ${CLIENT_LIBS})
 
 config_net(${CLIENT_BINARY})
 config_rpc(${CLIENT_BINARY})
-
-if(MSVC)
-    set_property(TARGET ${CLIENT_BINARY} PROPERTY FOLDER "executables")
-endif()
-
-# Install Binary
-install(TARGETS ${CLIENT_BINARY}
-        DESTINATION ${EXE_DIR})

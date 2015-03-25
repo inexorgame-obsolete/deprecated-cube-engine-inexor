@@ -21,25 +21,10 @@ if(OS_LINUX)
     set(ADDITIONAL_LIBRARIES ${ADDITIONAL_LIBRARIES} dl -pthread)
 endif()
 
-# Assemble executable in specific mode
-if(OS_WINDOWS)
-    add_executable(${SERVER_BINARY} WIN32 ${SERVER_SOURCES} ${SERVER_HEADERS})
-elseif(OS_MACOSX)
-    add_executable(${SERVER_BINARY} MACOSX_BUNDLE ${SERVER_SOURCES})
-else()
-    add_executable(${SERVER_BINARY} ${SERVER_SOURCES})
-endif()
+add_app(${SERVER_BINARY} ${SERVER_SOURCES})
 
 target_link_libraries_wrapper(${SERVER_BINARY} ${COMMON_LIBS}
   ${ADDITIONAL_LIBRARIES})
 
 config_net(${SERVER_BINARY})
 config_rpc(${SERVER_BINARY})
-
-if(MSVC)
-    set_property(TARGET ${SERVER_BINARY} PROPERTY FOLDER "executables")
-endif()
-
-# Install Binary
-install(TARGETS ${SERVER_BINARY}
-        DESTINATION ${EXE_DIR})
