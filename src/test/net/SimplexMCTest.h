@@ -87,7 +87,7 @@ itest(CanTransmitManyMessages) {
   auto from = this->from;
 
   std::list<bytes> pl(16);
-  std::generate(pl.begin(), pl.end(), mkpkg);
+  std::generate(pl.begin(), pl.end(), [](){ return mkpkg(); });
 
   expect(this->force_receive().empty()) << "Expected to receive "
     << "nothing before sending anything, but we did "

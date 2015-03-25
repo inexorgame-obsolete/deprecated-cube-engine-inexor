@@ -7,13 +7,9 @@
 using namespace std;
 using namespace inexor::net;
 
-std::default_random_engine default_rng;
-
-bytes mkpkg() {
-  bytes r(1024);
-  generate(r.begin(), r.end(),
-      [&]{ return rand<byte>(); });
-
+bytes mkpkg(size_t size) {
+  bytes r(size);
+  rndcopy(&r[0], size);
   return r;
 }
 

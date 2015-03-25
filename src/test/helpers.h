@@ -18,7 +18,14 @@
 #define expectEq EXPECT_EQ
 #define expectNeq EXPECT_NE
 
-extern std::default_random_engine default_rng;
+// TODO: Seed?
+extern std::default_random_engine trand;
+
+/// Copy any number of random bytes into a buffer
+///
+/// @param dst – The buffer to write to
+/// @param len – The size of the buffer
+void rndcopy(void *dst, size_t len);
 
 /// Create a random number
 ///
@@ -32,7 +39,7 @@ template <typename R=int>
 R rand(R a=std::numeric_limits<R>::min(),
        R z=std::numeric_limits<R>::max()) {
   std::uniform_int_distribution<R> d(a,z);
-  return d(default_rng);
+  return d(trand);
 }
 
 #endif

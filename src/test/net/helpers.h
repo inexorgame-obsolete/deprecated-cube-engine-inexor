@@ -14,7 +14,7 @@ typedef inexor::net::bytes bytes;
 ///
 /// @param len The length of the message to generate
 /// @return The random message
-extern bytes mkpkg();
+extern bytes mkpkg(size_t size=1024);
 
 /// Encode a MessageConnect message like MCByteBuffer would.
 ///
