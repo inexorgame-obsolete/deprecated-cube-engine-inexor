@@ -317,9 +317,8 @@ char *path(const char *s, bool copy)
     return tmp;
 }
 
-/// Returns the parent directory only of given filename
-/// ATTENTION: Removes last slash!
-/// media/texture/lastly.dg becomes media/texture
+/// @return the parent directory of a file path
+/// @warning Removes last slash: media/texture/lastly.dg becomes media/texture
 const char *parentdir(const char *filename)
 {
     const char *p = filename + strlen(filename);
@@ -399,8 +398,7 @@ bool subhomedir(char *dst, int len, const char *src)
 	  return true;
 }
 
-/// Sets Inexors Home directory
-/// Afterwards Inexor saves data there instead of in the main install folder
+/// sets home directory
 const char *sethomedir(const char *dir)
 {
     string pdir;

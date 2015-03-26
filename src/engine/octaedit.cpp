@@ -75,6 +75,7 @@ void boxsgrid(int orient, vec o, vec s, int g)
 }
 
 
+
 /// @see selinfo
 selinfo sel, lastsel, savedsel;
 
@@ -116,6 +117,7 @@ ICOMMAND(moving, "b", (int *n),
     }
     intret(moving);
 });
+
 
 /// will be called every time the gridpower (gridsize) changes
 VARF(gridpower, 0, 3, 12,
@@ -160,7 +162,7 @@ void cubecancel()
 }
 
 /// reset the current selection
-/// called every time user changes grid size of editing status
+/// called every time user changes grid size or editing status
 /// @ee cubecancel
 /// @see entcancel
 void cancelsel()
@@ -261,6 +263,7 @@ COMMAND(cancelsel, "");
 /// cubescript command hook: change orientation of selected cubes according to the cursor
 COMMAND(reorient, "");
 
+
 /// cubescript command hook: extend selection of cubes according to the cursor
 COMMAND(selextend, "");
 
@@ -279,24 +282,31 @@ cube &blockcube(int x, int y, int z, const block3 &b, int rgrid)
     return lookupcube(s.x, s.y, s.z, rgrid);
 }
 
+
 /// @warning loop macros are deprecated
 #define loopxy(b)        loop(y,(b).s[C[dimension((b).orient)]]) loop(x,(b).s[R[dimension((b).orient)]])
+/// @warning loop macros are deprecated
 #define loopxyz(b, r, f) { loop(z,(b).s[D[dimension((b).orient)]]) loopxy((b)) { cube &c = blockcube(x,y,z,b,r); f; } }
+/// @warning loop macros are deprecated
 #define loopselxyz(f)    { if(local) makeundo(); loopxyz(sel, sel.grid, f); changed(sel); }
+/// @warning loop macros are deprecated
 #define selcube(x, y, z) blockcube(x, y, z, sel, sel.grid)
 
+/// the amount of selected child cubes
+/// they will be displayed in the bottom left of you screen in coopedit mode
+int selchildcount = 0;
+int selchildmat = -1;
 
-
-
-////////////// cursor ///////////////
-
-int selchildcount = 0, selchildmat = -1;
-
+/// cubescript: return number of selected cubes
+/// @see selchildcount
 ICOMMAND(havesel, "", (), intret(havesel ? selchildcount : 0));
 
+/// count the number of selected child cubes and materials in your selection
+/// @see gl_drawhud
+/// @see selchildcount
 void countselchild(cube *c, const ivec &cor, int size)
 {
-    ivec ss = ivec(sel.s).mul(sel.grid);
+    ivec ss = ivec(sel.s).mul(sel.grid); /// selected volume * grid = list of child cubes
     loopoctaboxsize(cor, size, sel.o, ss)
     {
         ivec o(i, cor.x, cor.y, cor.z, size);
@@ -313,6 +323,10 @@ void countselchild(cube *c, const ivec &cor, int size)
     }
 }
 
+/// get the selected cube's position from the origin vector (0,0,0)
+/// @param x the x coordinate of the cube
+/// @param y the x coordinate of the cube
+/// @param z the x coordinate of the cube
 void normalizelookupcube(int x, int y, int z)
 {
     if(lusize>gridsize)
@@ -330,6 +344,9 @@ void normalizelookupcube(int x, int y, int z)
     lusize = gridsize;
 }
 
+/// validate the coordinates of the selected face/volume
+/// make sure the selected grid is not outside of the map
+/// @see sel
 void updateselection()
 {
     sel.o.x = min(lastcur.x, cur.x);
@@ -340,6 +357,8 @@ void updateselection()
     sel.s.z = abs(lastcur.z-cur.z)/sel.grid+1;
 }
 
+/// move the selection grid (the "plane") along
+/// the selection has an origin and can only be moved in 2 dimensions simultaneously
 bool editmoveplane(const vec &o, const vec &ray, int d, float off, vec &handle, vec &dest, bool first)
 {
     plane pl(d, off);
@@ -359,10 +378,14 @@ extern bool hoveringonent(int ent, int orient);
 extern void renderentselection(const vec &o, const vec &ray, bool entmoving);
 extern float rayent(const vec &o, const vec &ray, float radius, int mode, int size, int &orient, int &ent);
 
+/// automaticly select the grid size of the selected face
 VAR(gridlookup, 0, 0, 1);
+
+/// ignore the first cube when view ray intersects it and select the second ("select through cubes")
 VAR(passthroughcube, 0, 1, 1);
 
 /// render selection box to the cursor target
+/// also moves entities!
 void rendereditcursor()
 {
     int d   = dimension(sel.orient),
@@ -559,6 +582,8 @@ void rendereditcursor()
     glDisable(GL_BLEND);
 }
 
+/// check if editing can be done
+/// @warning please note that editing is not allowed when the HUD (head up dispaly) is disabled!
 void tryedit()
 {
     extern int hidehud;
@@ -570,6 +595,7 @@ void tryedit()
 
 static bool haschanged = false;
 
+/// checks and validates changes in the octree system
 void readychanges(const ivec &bbmin, const ivec &bbmax, cube *c, const ivec &cor, int size)
 {
     loopoctabox(cor, size, bbmin, bbmax)
@@ -601,6 +627,7 @@ void readychanges(const ivec &bbmin, const ivec &bbmax, cube *c, const ivec &cor
     }
 }
 
+/// commits changes in geometry
 void commitchanges(bool force)
 {
     if(!force && !haschanged) return;
@@ -619,6 +646,9 @@ void commitchanges(bool force)
     resetblobs();
 }
 
+/// validates editing changes using readychanges() and calls commitchanges()
+/// @see readychanges
+/// @see commitchanges
 void changed(const block3 &sel, bool commit = true)
 {
     if(sel.s.iszero()) return;
@@ -627,6 +657,7 @@ void changed(const block3 &sel, bool commit = true)
 
     if(commit) commitchanges();
 }
+
 
 //////////// copy and undo /////////////
 static inline void copycube(const cube &src, cube &dst)
@@ -675,6 +706,14 @@ void selgridmap(selinfo &sel, int *g)                           // generates a m
 {
     loopxyz(sel, -sel.grid, (*g++ = lusize, (void)c));
 }
+
+
+
+
+
+
+
+
 
 void freeundo(undoblock *u)
 {
@@ -858,6 +897,13 @@ void editredo()
 {
     swapundo(redos, undos, "redo");
 }
+
+
+
+
+
+
+
 
 // guard against subdivision
 #define protectsel(f) { undoblock *_u = newundocube(sel); f; if(_u) { pasteundo(_u); freeundo(_u); } }
@@ -1149,6 +1195,11 @@ void compacteditvslots()
         if(!u->numents)
             compactvslots(u->block()->c(), u->block()->size());
 }
+
+
+
+
+
 
 ///////////// height maps ////////////////
 
@@ -1503,6 +1554,10 @@ void edithmap(int dir, int mode) {
     hmap::run(dir, mode);
 }
 
+
+
+
+
 ///////////// main cube edit ////////////////
 
 int bounded(int n) { return n<0 ? 0 : (n>8 ? 8 : n); }
@@ -1659,6 +1714,10 @@ void delcube()
 COMMAND(pushsel, "i");
 COMMAND(editface, "ii");
 COMMAND(delcube, "");
+
+
+
+
 
 /////////// texture editing //////////////////
 
@@ -2042,6 +2101,10 @@ void replace(bool insel)
 
 ICOMMAND(replace, "", (), replace(false));
 ICOMMAND(replacesel, "", (), replace(true));
+
+
+
+
 
 ////////// flip and rotate ///////////////
 uint dflip(uint face) { return face==F_EMPTY ? face : 0x88888888 - (((face&0xF0F0F0F0)>>4) | ((face&0x0F0F0F0F)<<4)); }

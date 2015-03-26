@@ -216,8 +216,11 @@ void validatec(cube *c, int size)
     }
 }
 
+/// lookup integer vector
 ivec lu;
+/// lookup size
 int lusize;
+
 cube &lookupcube(int tx, int ty, int tz, int tsize, ivec &ro, int &rsize)
 {
     tx = clamp(tx, 0, worldsize-1);
