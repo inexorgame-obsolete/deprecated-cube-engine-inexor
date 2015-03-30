@@ -97,10 +97,10 @@ if(OS_LINUX OR (OS_WINDOWS AND NOT MSVC))
     # -fno-threadsafe-statics         = Don't generate thread-safe statics
     # -std=c++11                      = Use the C++11 language standard
     set(I_CXX_COMPILER_FLAGS      "-fno-threadsafe-statics -std=c++11")
-    # -Og                             = Enable optimizations that do not interfere with debugging
+    # -O0                             = No optimization
     # -g                              = Generate debug information
     # -D_DEBUG                        = Debug build
-    set(I_COMPILER_FLAGS_DEBUG    "-Og -g -D_DEBUG")
+    set(I_COMPILER_FLAGS_DEBUG    "-O0 -g -D_DEBUG")
     # -O3                             = Optimize for maximum speed
     # -fdata-sections                 = Enable linker optimizations to improve locality of reference for data sections
     # -ffunction-sections             = Enable linker optimizations to improve locality of reference for function sections
@@ -154,7 +154,7 @@ if(OS_MACOSX)
     # -Wno-narrowing                  = Don't warn about type narrowing
     # -Wsign-compare                  = Warn about mixed signed/unsigned type comparisons
     set(I_CXX_COMPILER_FLAGS      "-fno-threadsafe-statics -fobjc-call-cxx-cdtors -Wno-narrowing -Wsign-compare -std=c++11")
-    # -O0                             = Disable optimizations
+    # -O0                             = No optimization
     # -g                              = Generate debug information
     # -D_DEBUG                        = Debug build
     set(I_COMPILER_FLAGS_DEBUG    "-O0 -g -D_DEBUG")
