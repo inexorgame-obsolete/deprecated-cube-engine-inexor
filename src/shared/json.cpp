@@ -633,7 +633,7 @@ JSON *loadjson(const char *filename)
         //if(JSON_Fix(filename)) j = loadjson(filename);
         return NULL;
     }
-    j->currentdir = newstring(parentdir(s));
+    j->currentfile = newstring(s);
 
     delete[] buf;
     return j;
@@ -647,10 +647,10 @@ void JSON::additem(JSON *item)
 {
     if(!item) return;
     
-    if(strcmp(item->currentdir, currentdir))
+    if(strcmp(item->currentfile, currentfile))
     {
-        delete[] item->currentdir;
-        foralljson(this, k->currentdir = currentdir;);
+        delete[] item->currentfile;
+        foralljson(this, k->currentfile = currentfile;);
     }
     item->parent = this;
 
@@ -671,9 +671,9 @@ void JSON::replaceitem(int which, JSON *newitem)
     if(!c) return;
 
     if(type != JSON_ARRAY && !newitem->name) newitem->name = newstring(c->name); //misuse prevention
-    if(strcmp(newitem->currentdir, c->currentdir))
+    if(strcmp(newitem->currentfile, c->currentfile))
     {
-        foralljson(newitem, k->currentdir = c->currentdir;);
+        foralljson(newitem, k->currentfile = c->currentfile;);
     }
 
     newitem->parent = this;
@@ -687,6 +687,5 @@ void JSON::replaceitem(int which, JSON *newitem)
 }
 
 // TODO:
-// render -> import commands automatisch wenn currentdir inkorrekt
-// currentdir -> curfile (+ curdir)
+// render -> import commands automatisch wenn currentfile inkorrekt
 // refractor replace, additem, replaceimport

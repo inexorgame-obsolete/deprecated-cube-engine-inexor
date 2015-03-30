@@ -35,9 +35,9 @@ struct JSON
 
     char *name;                     /// The item's name string, if the item in an object this is equivalent to the key. In an array its the string of the value!
 
-    const char *currentdir;         /// The parent directory of the .json-file ( If the JSON is the result of a .json-file beeing loaded)
+    const char *currentfile;         /// The parent directory of the .json-file ( If the JSON is the result of a .json-file beeing loaded)
 
-    JSON() : next(NULL), prev(NULL), child(NULL), parent(NULL), type(0), valueint(0), valuefloat(0) { name = newstring(""); valuestring = newstring(""); currentdir = newstring(""); }
+    JSON() : next(NULL), prev(NULL), child(NULL), parent(NULL), type(0), valueint(0), valuefloat(0) { name = newstring(""); valuestring = newstring(""); currentfile = newstring(""); }
 
     /// Copies contents from old, without copying the dependencies to other JSONs.
     JSON(JSON *old)
@@ -46,7 +46,7 @@ struct JSON
         valueint = old->valueint; valuefloat = old->valuefloat;
         if(old->valuestring && old->valuestring[0]) valuestring = newstring(old->valuestring);
         if(old->name) name = newstring(old->name);
-        if(old->currentdir) currentdir = newstring(old->currentdir);
+        if(old->currentfile) currentfile = newstring(old->currentfile);
 
         //copy children:
         JSON *loop = old->child, *last = NULL;
@@ -69,7 +69,7 @@ struct JSON
     {
         DELETEA(name);
         DELETEA(valuestring);
-        DELETEA(currentdir);
+        DELETEA(currentfile);
         JSON *c = child;
         while (c)
         {
@@ -92,7 +92,7 @@ struct JSON
         char *buf = render();
         f->putstring(buf);
         delete f;
-        currentdir = newstring(s);
+        currentfile = newstring(s);
     }
 
     /// Get number of children.
