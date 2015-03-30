@@ -23,22 +23,24 @@ enum {
 /// A Class to hold the parsed data of a json-file
 struct JSON
 {
-    JSON *next, *prev;   // next/prev allow you to walk array/object chains.
-    JSON *child;         // An array or object item will have a child pointer pointing to the first item of a childchain.
+    JSON *next, *prev;   /// next/prev allow you to walk array/object chains.
+    JSON *child,         /// child pointer to the FIRST ITEM of the children chain.
+         *parent;        /// Pointer to the parent JSON
 
     int type;                       // The type of the item, as above.
 
-    char *valuestring;              // The item's string, if type==JSON_String
-    int valueint;                   // The item's number, if type==JSON_Number
-    float valuefloat;               // The item's number, if type==JSON_Number
+    char *valuestring;              /// The item's string, if type==JSON_String
+    int valueint;                   /// The item's number, if type==JSON_Number
+    float valuefloat;               /// The item's number, if type==JSON_Number
 
     char *name;                     /// The item's name string, if the item in an object this is equivalent to the key. In an array its the string of the value!
 
     const char *currentdir;         /// The parent directory of the .json-file ( If the JSON is the result of a .json-file beeing loaded)
 
-    JSON() : next(NULL), prev(NULL), child(NULL), type(0), valueint(0), valuefloat(0) { name = newstring(""); valuestring = newstring(""); currentdir = newstring(""); }
+    JSON() : next(NULL), prev(NULL), child(NULL), parent(NULL), type(0), valueint(0), valuefloat(0) { name = newstring(""); valuestring = newstring(""); currentdir = newstring(""); }
 
-    JSON(JSON *old)       /// Copy constructor
+    /// Copies contents from old, without copying the dependencies to other JSONs.
+    JSON(JSON *old)
     {
         type = old->type;
         valueint = old->valueint; valuefloat = old->valuefloat;
@@ -51,6 +53,7 @@ struct JSON
         while(loop)
         {
             JSON *newchild = new JSON(loop); //duplicate every child and its subchilds ..
+            newchild->parent = this;
 
             if(!last) { child = newchild; last = newchild; } //set first child
             else {         //If child already set, then crosswire ->prev and ->next and move on
@@ -79,7 +82,7 @@ struct JSON
     /// Returns rendered JSON, as you would find it in a file.
     char *render(bool formatted = true, bool minified = false);
 
-    /// Save's to a specific .json-file
+    /// Save's to a specific .json-file.
     void save(const char *filename)
     {
         string s; 
@@ -162,30 +165,22 @@ struct JSON
         return sub ? sub->valuestring : newstring("");
     }
 
-    void additem(JSON *item)                      //add item to Array
-    {
-		if (!item) return;
-        //if(type != JSON_ARRAY) return; //invalid JSON
-        JSON *c = child;
+    /// add Item to the last place of an Array (item == another JSON).
+    void additem(JSON *item);
 
-        if (!c) { child = item; }
-        else
-        { //last place in the chain
-            while (c && c->next) c = c->next;
-            c->next = item;
-            item->prev = c;
-        }
-    }
-
-    void additem(const char *name, JSON *item)  //add item to Object
-    {
+    /// add Item to Object (item == another JSON).
+    /// @param name is the new name of the item.
+    void additem(const char *name, JSON *item)
+    { 
         if (!item) return;
 		delete[] item->name;
         item->name = newstring(name);
         additem(item);
     }
 
-    JSON *detachitem(int which)         //Detach Item from Array
+    /// Remove Item from Array but do not delete it.
+    /// @param which tells which place to remove in the Array.
+    JSON *detachitem(int which)
     {
         JSON *c = child;
         while (c && which>0) { c = c->next; which--; }
@@ -193,40 +188,32 @@ struct JSON
         if (c->prev) c->prev->next = c->next;
         if (c->next) c->next->prev = c->prev;
         if (c == child) child = c->next;
-        c->prev = c->next = NULL;
+        c->parent = c->prev = c->next = NULL;
         return c;
     }
 
-    JSON *detachitem(const char *name)  //Detach Item from Object
+    /// Detach Item from Object but do not delete it.
+    /// @param name gives the name of the item.
+    JSON *detachitem(const char *name)
     {
         int i=0;
         JSON *c = child;
         while (c && strcasecmp(c->name, name)){ i++; c = c->next; }
         if (c) return JSON::detachitem(i);
-        return 0;
+        return NULL;
     }
 
     void deleteitem(int which) { JSON *c = detachitem(which); DELETEP(c); }        //Delete Item from Array
     void deleteitem(const char *name) { JSON *c = detachitem(name); DELETEP(c); }  //Delete Item from Object
+    
+    /// Replace Item in Array with newitem.
+    /// @sideeffects Deletes the old item.
+    /// @param which represents which position in the Array the old item had.
+    /// of recognizing imported/replaced stuff.
+    void replaceitem(int which, JSON *newitem);
 
-    void replaceitem(int which, JSON *newitem)          //Replace Item in Array
-    {
-        JSON *c = child;
-        while (c && which>0) { c = c->next; which--; }
-        if (!c) return;
-
-        if(type != JSON_ARRAY && !newitem->name) newitem->name = newstring(c->name); //misuse prevention
-
-        newitem->next = c->next;
-        newitem->prev = c->prev;
-        if (newitem->next) newitem->next->prev = newitem;
-
-        if (c == child) child = newitem;
-        else newitem->prev->next = newitem;
-        DELETEP(c);
-    }
-
-    void replaceitem(const char *name, JSON *newitem)   //Replace Item in Object
+    /// Replace Item in Object.
+    void replaceitem(const char *name, JSON *newitem)
     {
         int i = 0;
         JSON *c = child;
@@ -247,5 +234,26 @@ extern JSON *JSON_CreateString(const char *str);
 extern JSON *JSON_CreateArray();  //new ordered list. access: position
 extern JSON *JSON_CreateObject(); //new unordered list. access: name
 
-#endif
+/// Executes b for all JSON elements below the given (t), but not t itself.
+/// Use "k" to access these JSON subelements.
+#define foralljsonchildren(t, b) \
+{ \
+    JSON *curchildlayer = t->child; \
+    while(curchildlayer) \
+    { \
+    JSON *k = curchildlayer; \
+        while(k) \
+        { \
+            b; \
+            k = k->next; \
+        } \
+        curchildlayer = curchildlayer->child; \
+    } \
+}
+
+/// Executes b for all JSON elements below the given (t) and for the given one.
+/// Use "k" to access all these JSON subelements.
+#define foralljson(t, b)     JSON *k = t; if(k) { b; } foralljsonchildren(t, b)
+
+#endif // JSON_H
 

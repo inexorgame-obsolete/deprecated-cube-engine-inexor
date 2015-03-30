@@ -243,13 +243,15 @@ static const char *parse_array(JSON *item, const char *value)
     if(*value==']') return value+1;    // empty array.
 
     item->child = child = new JSON();
+    child->parent = item;
 
     value = skip( parse_value(child, skip(value)));    // skip any spacing, get the value.
     if(!value) return 0;
 
-    while (*value==',')
+    while(*value==',')
     {
         JSON *new_item = new JSON();
+        new_item->parent = item;
         child->next = new_item;
         new_item->prev = child; child = new_item;
         value = skip( parse_value( child, skip(value+1)));
@@ -336,7 +338,7 @@ static const char *parse_object(JSON *item, const char *value)
     if(*value=='}') return value+1;    // empty array.
 
     item->child = child = new JSON();
-    if(!item->child) return 0;
+    child->parent = item;
 
     value = skip(parse_string(child, skip(value)));
     if(!value) return 0;
@@ -350,6 +352,7 @@ static const char *parse_object(JSON *item, const char *value)
     while (*value==',')
     {
         JSON *new_item = new JSON();
+        new_item->parent = item;
         child->next = new_item;
         new_item->prev = child; child = new_item;
 
@@ -538,46 +541,69 @@ int JSON_Fix(const char *filename)
     return 0;
 }
 
+#define IMPORTPHRASE "#import"
 
-
-/// "anims": { "#import" : "generics.json" }
 /// "anims": { "#import" : { "file": "generics.json", "key": "animations", "replace": { "arg4" : "codefragment" }
 /// "anims": { "#import" : { "file": "generics.json", "key": "animations", "replace": { "arg4" : { "#import": } }
 /// "$moreanims": { "#import" : "generics.json" },
-/// "anims": [ "anim1", "anim2", "anim3", "$moreanims"] 
-void JSON_ResolveImport(JSON *j)
+/// "anims": [ "anim1", "anim2", "anim3", "$moreanims"]
+bool JSON_ReplaceImport(JSON *g)
 {
+    JSON *j = g->getitem(IMPORTPHRASE);
+    JSON *f = NULL;       // the exporting file: "generics.json"
+    JSON *newg = NULL;    // the JSON which will replace the old section
 
+    if(!j) return false;
+    JSON *src = j->getitem("file"); 
+    JSON *key = j->getitem("key");
+  //  JSON *replace = j->getitem("replace");
+    
+    if(!src) { return false; }
+    const char *srcname = src->valuestring;
+    f = loadjson(srcname);
+    
+    if(!f) { return false; }
+
+    if(key) newg = f->getitem(key->valuestring);
+    else newg = f;
+    
+    if(!newg){ return false; }
+
+    // Replace j with newg:
+    copystring(newg->name, g->name); // "anims"
+    newg->parent = g->parent;
+
+    newg->next = g->next;
+    newg->prev = g->prev;
+
+    // tell the others
+    if(g->next) g->next->prev = newg;
+    if(g->parent->child == g) g->parent->child = newg;
+    else g->prev->next = newg;
+
+   // DELETEP(g);
+
+    return true;
 }
 
 /// j => "anims"
-void JSON_ScanImport(JSON *j)
-{
-    loopi(j->numchilds())
-    {
-        JSON *c = j->getitem(i);
-        JSON *g = c->child;
-        while(g)
-        {
-            JSON_ScanImport(g);
-            g = g->next;
-        }
-        if(!strcmp(c->name, "#import")) JSON_ResolveImport(c);
-    }
-}
-
-
-/// Resolve any #import filestructure advisers
 void JSON_ResolveImports(JSON *j)
 {
-    JSON *cur = j;
-    while(cur)
+    foralljson(j, 
     {
-
+        if(k->getitem(IMPORTPHRASE)) JSON_ReplaceImport(k);
     }
-
+    )
 }
 
+void testjson(const char *name)
+{
+    JSON *j = loadjson(name);
+    if(!j) { conoutf("could not load testjson file"); return; }
+    JSON_ResolveImports(j);
+    conoutf("content %s", j->render());
+}
+COMMAND(testjson, "s");
 
 /// Create basic types:
 JSON *JSON_CreateBool(bool b)               { JSON *item= new JSON(); item->type = b ? JSON_TRUE : JSON_FALSE;  return item; }
@@ -591,6 +617,8 @@ JSON *JSON_CreateObject()                   { JSON *item= new JSON(); item->type
 /// @sideeffects allocates memory for a JSON structure, needs to be deleted
 JSON *loadjson(const char *filename)
 {
+    if(!filename) return NULL;
+
     string s;
     copystring(s, filename);
     char *buf = loadfile(findfile(path(s), ""), NULL);
@@ -614,3 +642,51 @@ JSON *loadjson(const char *filename)
 char *JSON::render(bool formatted, bool minified) {
     return print_value(this, 0, formatted);
 }
+
+void JSON::additem(JSON *item)
+{
+    if(!item) return;
+    
+    if(strcmp(item->currentdir, currentdir))
+    {
+        delete[] item->currentdir;
+        foralljson(this, k->currentdir = currentdir;);
+    }
+    item->parent = this;
+
+    JSON *c = child; //rewire:
+    if(!c) { child = item; }
+    else
+    { //last place in the chain
+        while(c && c->next) c = c->next;
+        c->next = item;
+        item->prev = c;
+    }
+}
+
+void JSON::replaceitem(int which, JSON *newitem)
+{
+    JSON *c = child;
+    while(c && which>0) { c = c->next; which--; }
+    if(!c) return;
+
+    if(type != JSON_ARRAY && !newitem->name) newitem->name = newstring(c->name); //misuse prevention
+    if(strcmp(newitem->currentdir, c->currentdir))
+    {
+        foralljson(newitem, k->currentdir = c->currentdir;);
+    }
+
+    newitem->parent = this;
+    newitem->next = c->next;
+    newitem->prev = c->prev;
+    if(newitem->next) newitem->next->prev = newitem;
+
+    if(c == child) child = newitem;
+    else newitem->prev->next = newitem;
+    DELETEP(c);
+}
+
+// TODO:
+// render -> import commands automatisch wenn currentdir inkorrekt
+// currentdir -> curfile (+ curdir)
+// refractor replace, additem, replaceimport
