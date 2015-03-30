@@ -7,7 +7,7 @@ set(CMAKE_CONFIGURATION_TYPES Debug Release)
 
 # First choice is Debug
 if(NOT DEFINED CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug)
+  set(CMAKE_BUILD_TYPE Debug CACHE INTERN "")
 endif()
 
 # Set a default toolchain file
