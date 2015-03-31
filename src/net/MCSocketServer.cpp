@@ -1,17 +1,9 @@
 #include "net/MCSocketServer.h"
 
-using namespace asio::ip;
-
-namespace inexor {
-namespace net {
-
-  tcp v4() {
-    return v4();
-  }
-  tcp v6() {
-    return v6();
-  }
-
-}
+asio::ip::tcp inexor::net::v4() {
+  return asio::ip::tcp::v4();
 }
 
+asio::ip::tcp inexor::net::v6() {
+  return asio::ip::tcp::v6();
+}
