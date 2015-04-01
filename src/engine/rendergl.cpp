@@ -2258,17 +2258,20 @@ VARP(cursorsize, 0, 30, 50);
 VARP(crosshairfx, 0, 1, 1);
 VARP(crosshaircolors, 0, 1, 1);
 
+// Directory where crosshairs are stored.
+SVARP(crosshairdir, "media/interface/crosshair");
+
 #define MAXCROSSHAIRS 4
 static Texture *crosshairs[MAXCROSSHAIRS] = { NULL, NULL, NULL, NULL };
 
 void loadcrosshair(const char *name, int i)
 {
     if(i < 0 || i >= MAXCROSSHAIRS) return;
-	crosshairs[i] = name ? textureload(name, 3, true) : notexture;
-    if(crosshairs[i] == notexture) 
+    crosshairs[i] = name ? textureload(tempformatstring("%s/%s", crosshairdir, name), 3, true) : notexture;
+    if(!crosshairs[i] || crosshairs[i] == notexture) 
     {
         name = game::defaultcrosshair(i);
-        crosshairs[i] = textureload(name, 3, true);
+        crosshairs[i] = textureload(tempformatstring("%s/%s", crosshairdir, name), 3, true);
     }
 }
 
@@ -2291,8 +2294,15 @@ ICOMMAND(getcrosshair, "i", (int *i),
  
 void writecrosshairs(stream *f)
 {
-    loopi(MAXCROSSHAIRS) if(crosshairs[i] && crosshairs[i]!=notexture)
+    loopi(MAXCROSSHAIRS) if(crosshairs[i] && crosshairs[i] != notexture)
+    {
+        size_t len = strlen(crosshairdir);
+        if(!strncmp(crosshairs[i]->name, path(crosshairdir), len))
+        {
+            crosshairs[i]->name += len+1;
+        }
         f->printf("loadcrosshair %s %d\n", escapestring(crosshairs[i]->name), i);
+    }
     f->printf("\n");
 }
 
