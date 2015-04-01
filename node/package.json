@@ -6,7 +6,8 @@
     "protobufjs":    "*",
     "uuid":          "*",
     "long":          "*",
-    "lodash":        "*"
+    "lodash":        "*",
+    "async":         "*"
   },
   "engines": {
     "node": ">=0.10.0"
