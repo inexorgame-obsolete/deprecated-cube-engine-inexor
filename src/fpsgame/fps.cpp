@@ -1107,19 +1107,15 @@ namespace game
 	/// displaying a hit crosshair increases the players hit impression ('feel')
     VARP(hitcrosshair, 0, 425, 1000);
 
-    /// Directory where crosshairs are stored. Relative to interfacedir
-    SVARP(crosshairdir, "crosshair");
-
-	/// crosshair file names are stored in a constant functions
-	/// that return strings depending on indices
-    /// TODO: remove this hardcoded passage and move on to JSON!
+	// crosshair file names are stored in a constant functions
+	// that return strings depending on indices
     const char *defaultcrosshair(int index)
     {
         switch(index)
         {
-            case 2: return tempformatstring("%s/default_hit.png", crosshairdir);
-            case 1: return tempformatstring("%s/default_teammate.png", crosshairdir);
-            default: return tempformatstring("%s/default.png", crosshairdir);
+            case 2: return "default_hit.png";
+            case 1: return "default_teammate.png";
+            default: return "default.png";
         }
     }
 
