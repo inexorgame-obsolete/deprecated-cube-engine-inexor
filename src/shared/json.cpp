@@ -4,6 +4,15 @@
 
 #include "engine.h"
 
+// Debugging
+
+VARP(debugjson, 0, 0, 1);
+static const char *ep; //error pointer
+const char *JSON_GetError()
+{ 
+    return ep;
+}
+
  // Parse the input text to generate a number, and populate the result into item.
 static const char *parse_number(JSON *item, const char *num)
 {
@@ -52,7 +61,6 @@ static unsigned parse_hex4(const char *str)
 }
 
  // Parse the input text into an unescaped cstring, and populate item.
-static const char *ep; //error pointer
 static const unsigned char firstByteMark[7] = { 0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC };
 static const char *parse_string(JSON *item, const char *str)
 {
@@ -628,6 +636,8 @@ JSON *loadjson(const char *filename)
     JSON *j = JSON_Parse(buf);
     if(!j)
     {
+        conoutf(CON_WARN, "JSON File %s malformatted. (Use /debugjson to enable find error position)", s);
+        if(debugjson) conoutf(CON_DEBUG, "could not parse: %s", ep ? ep : "");
         //if(JSON_Fix(filename)) j = loadjson(filename);
         return NULL;
     }
