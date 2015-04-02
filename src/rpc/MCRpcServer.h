@@ -42,7 +42,9 @@ namespace rpc {
     /**
      * Create a new MCRpcServer.
      *
-     * @param service_ The service to serve.
+     * @param service_ The service to serve. That pretty
+     *   much should be a singleton instance of
+     *   InexorServiceImpl
      * @param mc_ The message connect to use for receiving
      *   calls and sending return values.
      */

@@ -7,25 +7,21 @@
 namespace inexor {
 namespace net {
 
-  /**
-   * This is a Hub for multiple MessageConnect.
-   *
-   * Supports listening for Messages on the attached
-   * connects and broadcasting messages to the attached
-   * connects.
-   */
+  /// This is a Hub for multiple MessageConnect.
+  ///
+  /// Supports listening for Messages on the attached
+  /// connects and broadcasting messages to the attached
+  /// connects.
   class MCHub : public MessageConnect {
-    /** All the connects that are attached to this */
+    /// All the connects that are attached to this
     std::list<MessageConnect*> *cons;
 
     /// We want ownership over the list for the
     /// template/non-pointer constructor.
     std::list<MessageConnect*> mine_cons;
   public:
-    /**
-     * Create a new MCHub and set the list of attached
-     * connects.
-     */
+    /// Create a new MCHub and set the list of attached
+    /// connects.
     MCHub(std::list<MessageConnect*> *cons_) : cons(cons_) {}
 
     /// Create a MCHub from any sequence type that
@@ -50,7 +46,7 @@ namespace net {
     virtual bytes_on_channel ReceiveChannel();
     virtual void Send(bytes &dat);
 
-    /** The list of attached connects */
+    /// The list of attached connects
     std::list<MessageConnect*>* connects();
   };
 }
