@@ -87,7 +87,7 @@ class Inexor
   # @param [String] jname Javascript name of that function
   # @param [Function] rmap Optionally transform the return value
   #
-  @C: (cname, argn, jname=cname, rmap=(x)->x) ->
+  @C: (cname, argn=0, jname=cname, rmap=(x)->x) ->
     @.cbs_generated.push jname
     @::[jname] = (argv...) ->
       cb = argv[argn] || (->)
@@ -95,6 +95,11 @@ class Inexor
       @eval "#{cname} #{cbs_args.join " "}", (err, x) ->
         return cb err, null if err
         cb null, rmap x
+
+  # Print to the inexor console
+  #
+  # @param [String] 1 The text to print
+  @C "echo", 1
 
   # Get the name of a connected client
   #
@@ -132,6 +137,18 @@ class Inexor
   #
   # @param [Int] 1. Skill level. value between 0 and 100
   @C "addbot", 1
+
+  # Delete a bot
+  @C "delbot"
+
+  # Kick a player
+  #
+  # @param [Int] 1 Clientnumber of the player
+  # @param [String] 2 Reason for the kick
+  @C "kick", 2
+
+  # Quit inexor
+  @C "quit"
 
   # List the clients connected
   #
