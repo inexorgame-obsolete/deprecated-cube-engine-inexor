@@ -156,7 +156,7 @@ target_script() {
 
 # Upload nightly
 target_after_success() {
-  nigthly_build || true
+  test "$TRAVIS_PULL_REQUEST" == false && nigthly_build || true
 }
 
 ## MAIN ####################################################
