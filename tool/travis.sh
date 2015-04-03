@@ -46,7 +46,7 @@ root_install() {
   apt-get -y install zlib1g-dev libsdl2-dev         \
     libsdl2-image-dev libsdl2-mixer-dev libenet-dev \
     libprotobuf-dev protobuf-compiler wget          \
-    libboost-system1.55-dev
+    libboost-system1.55-dev doxygen ncftp
 
   (
     cd /tmp;
@@ -58,24 +58,15 @@ root_install() {
 }
 
 upload() {
-  local dest="ftp://inexor.org/$2/$1"
-  echo >&2 "Uploading: `readlink -f "$1"` to $dest"
-  curl --connect-timeout 1800 --ftp-create-dirs \
-    -u "$FTP_USER:$FTP_PASSWORD" "$dest" -T "$1"
-}
-
-upload_file() {
-  (
-    local d="`dirname $1`" n="`basename "$1"`"
-    cd "$d"
-    upload "$n" "$2"
-  )
+  ncftpput -R -v -u "$FTP_USER" -p "$FTP_PASSWORD" \
+    inexor.org "$@"
 }
 
 nigthly_build() {
   local outd="/tmp/${build}.d/"
   local zipf="/tmp/${build}.zip"
   local descf="/tmp/${build}.txt"
+  local docd="/tmp/${build}-apidoc"
 
   # Include the media files
   local media="${media}"
@@ -93,6 +84,7 @@ nigthly_build() {
     gitroot: ${gitroot}
     zip: ${zipf}
     dir: ${outd}
+    docd: ${docd}
 
     data export: $media
   "
@@ -105,11 +97,19 @@ nigthly_build() {
     rm -rf data/.git/
   ) fi
 
+  (
+    cd "$gitroot" -v
+    doxygen doxygen.conf
+    cp -rv "doc/html/" "$outd"
+    cp -rv "doc/html/" "$docd"
+  )
+
   local ignore="$(<<< '
     .
     ..
     .gitignore
     build
+    doc
     CMakeLists.txt
     doxygen.conf
     .git
@@ -136,9 +136,7 @@ nigthly_build() {
     sha512sum "$zipf"
   ) > "$descf"
 
-  echo "Uploading: ${zipf} and $descf"
-  upload_file "$zipf" &
-  upload_file "$descf"
+  upload / "$zipf" "$descf" "$docd"
 
   return 0
 }
