@@ -1190,7 +1190,7 @@ struct bvec
 
     bvec() {}
     bvec(uchar x, uchar y, uchar z) : x(x), y(y), z(z) {}
-    bvec(const vec &v) : x((uchar)((v.x+1)*255/2)), y((uchar)((v.y+1)*255/2)), z((uchar)((v.z+1)*255/2)) {}
+    bvec(const vec &v) : x(uchar((v.x+1)*(255.0f/2.0f))), y(uchar((v.y+1)*(255.0f/2.0f))), z(uchar((v.z+1)*(255.0f/2.0f))) {}
     explicit bvec(const bvec4 &v);
 
     uchar &operator[](int i)       { return v[i]; }
@@ -1215,6 +1215,13 @@ struct bvec
 
     void lerp(const bvec &a, const bvec &b, float t) { x = uchar(a.x + (b.x-a.x)*t); y = uchar(a.y + (b.y-a.y)*t); z = uchar(a.z + (b.z-a.z)*t); }
 
+    void lerp(const bvec &a, const bvec &b, int ka, int kb, int d)
+    {
+        x = uchar((a.x*ka + b.x*kb)/d);
+        y = uchar((a.y*ka + b.y*kb)/d);
+        z = uchar((a.z*ka + b.z*kb)/d);
+    }
+
     void flip() { x ^= 0x80; y ^= 0x80; z ^= 0x80; }
 
     void scale(int k, int d) { x = uchar((x*k)/d); y = uchar((y*k)/d); z = uchar((z*k)/d); }
@@ -1224,6 +1231,8 @@ struct bvec
 
     static bvec fromcolor(const vec &v) { return bvec(uchar(v.x*255.0f), uchar(v.y*255.0f), uchar(v.z*255.0f)); }
     vec tocolor() const { return vec(x*(1.0f/255.0f), y*(1.0f/255.0f), z*(1.0f/255.0f)); }
+
+    static bvec from565(ushort c) { return bvec((((c>>11)&0x1F)*527 + 15) >> 6, (((c>>5)&0x3F)*259 + 35) >> 6, ((c&0x1F)*527 + 15) >> 6); }
 };
 
 //// 4-dimensional UNSIGNED CHAR vectors
@@ -1256,6 +1265,14 @@ struct bvec4
         x = uchar(a.x + (b.x-a.x)*t);
         y = uchar(a.y + (b.y-a.y)*t);
         z = uchar(a.z + (b.z-a.z)*t);
+        w = a.w;
+    }
+
+    void lerp(const bvec4 &a, const bvec4 &b, int ka, int kb, int d)
+    {
+        x = uchar((a.x*ka + b.x*kb)/d);
+        y = uchar((a.y*ka + b.y*kb)/d);
+        z = uchar((a.z*ka + b.z*kb)/d);
         w = a.w;
     }
 

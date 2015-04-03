@@ -690,13 +690,13 @@ bool addcommand(const char *name, identfun fun, const char *args)
         default: fatal("builtin %s declared with illegal type: %s", name, args); break;
     }
     if(limit && numargs > MAXCOMARGS) fatal("builtin %s declared with too many args: %d", name, numargs);
-    addident(ident(ID_COMMAND, name, args, argmask, (void *)fun));
+    addident(ident(ID_COMMAND, name, args, argmask, numargs, (void *)fun));
     return false;
 }
 
 bool addkeyword(int type, const char *name)
 {
-    addident(ident(type, name, "", 0, NULL));
+    addident(ident(type, name, "", 0, 0, NULL));
     return true;
 }
 
@@ -2390,7 +2390,7 @@ void loopend(ident *id, identstack &stack)
 
 static inline void setiter(ident &id, int i, identstack &stack)
 {
-    if(i)
+    if(id.stack == &stack)
     {
         if(id.valtype != VAL_INT)
         {
@@ -2402,9 +2402,9 @@ static inline void setiter(ident &id, int i, identstack &stack)
     }
     else
     {
-        tagval zero;
-        zero.setint(0);
-        pusharg(id, zero, stack);
+        tagval t;
+        t.setint(i);
+        pusharg(id, t, stack);
         id.flags &= ~IDF_UNKNOWN;
     }
 }
@@ -2628,7 +2628,7 @@ ICOMMAND(stripcolors, "s", (char *s),
 {
     int len = strlen(s);
     char *d = newstring(len);
-    filtertext(d, s, true, len);
+    filtertext(d, s, true, false, len);
     stringret(d);
 });
 
@@ -2958,7 +2958,7 @@ ICOMMAND(^~, "ii", (int *a, int *b), intret(*a ^ ~*b));
 ICOMMAND(&~, "ii", (int *a, int *b), intret(*a & ~*b));
 ICOMMAND(|~, "ii", (int *a, int *b), intret(*a | ~*b));
 ICOMMAND(<<, "ii", (int *a, int *b), intret(*b < 32 ? *a << max(*b, 0) : 0));
-ICOMMAND(>>, "ii", (int *a, int *b), intret(*b < 32 ? *a >> max(*b, 0) : 0));
+ICOMMAND(>>, "ii", (int *a, int *b), intret(*a >> clamp(*b, 0, 31)));
 ICOMMAND(&&, "e1V", (tagval *args, int numargs),
 {
     if(!numargs) intret(1);

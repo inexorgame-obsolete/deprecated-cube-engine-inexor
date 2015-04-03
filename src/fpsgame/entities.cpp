@@ -150,7 +150,7 @@ namespace entities
                     if(e.attr2 < 0) continue;
                     break;
                 default:
-                        if(!e.spawned || e.type < I_SHELLS || e.type > I_QUAD) continue;
+                    if(!e.spawned() || e.type < I_SHELLS || e.type > I_QUAD) continue;
             }
             const char *mdlname = entmodel(e);
             if(mdlname)
@@ -183,7 +183,7 @@ namespace entities
         if(!ents.inrange(n)) return;
         int type = ents[n]->type;
         if(type<I_SHELLS || type>I_QUAD) return;
-        ents[n]->spawned = false;
+        ents[n]->clearspawned();
         if(!d) return;
         itemstat &is = itemstats[type-I_SHELLS];
         if(d!=player1 || isthirdperson())
@@ -313,7 +313,7 @@ namespace entities
                 if(d->canpickup(ents[n]->type))
                 {
                     addmsg(N_ITEMPICKUP, "rci", d, n);
-                    ents[n]->spawned = false; // even if someone else gets it first
+                    ents[n]->clearspawned(); // even if someone else gets it first
                 }
                 break;
 
@@ -364,7 +364,7 @@ namespace entities
         {
             extentity &e = *ents[i];
             if(e.type==NOTUSED) continue;
-            if(!e.spawned && e.type!=TELEPORT && e.type!=JUMPPAD && e.type!=RESPAWNPOINT) continue;
+            if(!e.spawned() && e.type!=TELEPORT && e.type!=JUMPPAD && e.type!=RESPAWNPOINT) continue;
             float dist = e.o.dist(o);
             if(dist<(e.type==TELEPORT ? 16 : 12)) trypickup(i, d);
         }
@@ -396,22 +396,22 @@ namespace entities
         putint(p, -1);
     }
 
-    void resetspawns() { loopv(ents) ents[i]->spawned = false; }
+    void resetspawns() { loopv(ents) ents[i]->clearspawned(); }
 
     void spawnitems(bool force)
     {
         if(m_noitems) return;
         loopv(ents) {
             if((m_bomb  && ents[i]->type>=I_BOMBS && ents[i]->type<=I_BOMBDELAY) || (!m_bomb && ents[i]->type>=I_SHELLS && ents[i]->type<=I_QUAD)) {
-                ents[i]->spawned = force || m_sp || !server::delayspawn(ents[i]->type);
+                ents[i]->setspawned(force || m_sp || !server::delayspawn(ents[i]->type));
             }
             if(!m_noammo && ents[i]->type>=I_HEALTH && ents[i]->type<=I_QUAD) {
-                ents[i]->spawned = force || m_sp || !server::delayspawn(ents[i]->type);
+                ents[i]->setspawned(force || m_sp || !server::delayspawn(ents[i]->type));
             }
         }
     }
 
-    void setspawn(int i, bool on) { if(ents.inrange(i)) ents[i]->spawned = on; }
+    void setspawn(int i, bool on) { if(ents.inrange(i)) ents[i]->setspawned(on); }
 
     extentity *newentity() { return new fpsentity(); }
     void deleteentity(extentity *e) { delete (fpsentity *)e; }
@@ -475,21 +475,27 @@ namespace entities
     #define validtrigger(type) (triggertypes[(type) & (NUMTRIGGERTYPES-1)]>=0)
     #define checktriggertype(type, flag) (triggertypes[(type) & (NUMTRIGGERTYPES-1)] & (flag))
 
+    static inline void cleartriggerflags(extentity &e)
+    {
+        e.flags &= ~(EF_ANIM | EF_NOVIS | EF_NOSHADOW | EF_NOCOLLIDE);
+    }
+
     static inline void setuptriggerflags(fpsentity &e)
     {
-        e.flags = extentity::F_ANIM;
-        if(checktriggertype(e.attr3, TRIG_COLLIDE|TRIG_DISAPPEAR)) e.flags |= extentity::F_NOSHADOW;
-        if(!checktriggertype(e.attr3, TRIG_COLLIDE)) e.flags |= extentity::F_NOCOLLIDE;
+        cleartriggerflags(e);
+        e.flags |= EF_ANIM;
+        if(checktriggertype(e.attr3, TRIG_COLLIDE|TRIG_DISAPPEAR)) e.flags |= EF_NOSHADOW;
+        if(!checktriggertype(e.attr3, TRIG_COLLIDE)) e.flags |= EF_NOCOLLIDE;
         switch(e.triggerstate)
         {
             case TRIGGERING:
-                if(checktriggertype(e.attr3, TRIG_COLLIDE) && lastmillis-e.lasttrigger >= 500) e.flags |= extentity::F_NOCOLLIDE;
+                if(checktriggertype(e.attr3, TRIG_COLLIDE) && lastmillis-e.lasttrigger >= 500) e.flags |= EF_NOCOLLIDE;
                 break;
             case TRIGGERED:
-                if(checktriggertype(e.attr3, TRIG_COLLIDE)) e.flags |= extentity::F_NOCOLLIDE;
+                if(checktriggertype(e.attr3, TRIG_COLLIDE)) e.flags |= EF_NOCOLLIDE;
                 break;
             case TRIGGER_DISAPPEARED:
-                e.flags |= extentity::F_NOVIS | extentity::F_NOCOLLIDE;
+                e.flags |= EF_NOVIS | EF_NOCOLLIDE;
                 break;
         }
     }
@@ -721,7 +727,7 @@ namespace entities
             f.lasttrigger = 0;
             setuptriggerflags(f);
         }
-        else e.flags = 0;
+        else cleartriggerflags(e);
         if(local) addmsg(N_EDITENT, "rii3ii5", i, (int)(e.o.x*DMF), (int)(e.o.y*DMF), (int)(e.o.z*DMF), e.type, e.attr1, e.attr2, e.attr3, e.attr4, e.attr5);
     }
 

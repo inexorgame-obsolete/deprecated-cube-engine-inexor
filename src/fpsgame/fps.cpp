@@ -326,27 +326,30 @@ namespace game
         gets2c();
         updatemovables(curtime);
         updatemonsters(curtime);
-        if(player1->state == CS_DEAD)
+        if(connected)
         {
-            if(player1->ragdoll) moveragdoll(player1);
-            else if(lastmillis-player1->lastpain<2000)
+            if(player1->state == CS_DEAD)
             {
-                player1->move = player1->strafe = 0;
+                if(player1->ragdoll) moveragdoll(player1);
+                else if(lastmillis-player1->lastpain<2000)
+                {
+                    player1->move = player1->strafe = 0;
+                    moveplayer(player1, 10, true);
+                }
+            }
+            else if(!intermission)
+            {
+                if(player1->ragdoll) cleanragdoll(player1);
                 moveplayer(player1, 10, true);
+                swayhudgun(curtime);
+                entities::checkitems(player1);
+                if(m_sp)
+                {
+                    if(slowmosp) checkslowmo();
+                    if(m_classicsp) entities::checktriggers();
+                }
+                else if(cmode) cmode->checkitems(player1);
             }
-        }
-        else if(!intermission)
-        {
-            if(player1->ragdoll) cleanragdoll(player1);
-            moveplayer(player1, 10, true);
-            swayhudgun(curtime);
-            entities::checkitems(player1);
-            if(m_sp)
-            {
-                if(slowmosp) checkslowmo();
-                if(m_classicsp) entities::checktriggers();
-            }
-            else if(cmode) cmode->checkitems(player1);
         }
         /// well why not pack this into an own thread?
         if(player1->clientnum>=0) c2sinfo();   /// do this last, to reduce the effective frame lag
@@ -411,7 +414,7 @@ namespace game
 	/// not possible in intermission or if player's state is CS_DEAD
     void doattack(bool on)
     {
-        if(intermission) return;
+        if(!connected || intermission) return;
         if((player1->attacking = on)) respawn(gamemode);
     }
 
@@ -420,8 +423,9 @@ namespace game
     /// @see respawn
     bool canjump()
     {
-        if(!intermission) respawn(gamemode);
-        return player1->state!=CS_DEAD && !intermission;
+        if(!connected || intermission) return false;
+        respawn(gamemode);
+        return player1->state!=CS_DEAD;
     }
 
 	/// check if I am allowed to move
@@ -653,7 +657,7 @@ namespace game
     {
         player1 = spawnstate(new fpsent);
         /// also filter player's name locally
-        filtertext(player1->name, "unnamed", false, MAXNAMELEN);
+        filtertext(player1->name, "unnamed", false, false, MAXNAMELEN);
         players.add(player1);
     }
 

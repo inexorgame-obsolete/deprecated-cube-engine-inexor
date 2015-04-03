@@ -23,7 +23,7 @@ namespace server
     {
         int type;
         int spawntime;
-        char spawned;
+        bool spawned;
     };
 
     static const int DEATHMILLIS = 300;
@@ -807,14 +807,14 @@ namespace server
         return n;
     }
 
-    bool duplicatename(clientinfo *ci, char *name)
+    bool duplicatename(clientinfo *ci, const char *name)
     {
         if(!name) name = ci->name;
         loopv(clients) if(clients[i]!=ci && !strcmp(name, clients[i]->name)) return true;
         return false;
     }
 
-    const char *colorname(clientinfo *ci, char *name = NULL)
+    const char *colorname(clientinfo *ci, const char *name = NULL)
     {
         if(!name) name = ci->name;
         if(name[0] && !duplicatename(ci, name) && ci->state.aitype == AI_NONE) return name;
@@ -1352,6 +1352,7 @@ namespace server
         {
             case 'a': case 'A': u.privilege = PRIV_ADMIN; break;
             case 'm': case 'M': default: u.privilege = PRIV_AUTH; break;
+            case 'n': case 'N': u.privilege = PRIV_NONE; break;
         }
     }
     COMMAND(adduser, "ssss");
@@ -1366,7 +1367,7 @@ namespace server
     {
         char buf[2*sizeof(string)];
         formatstring(buf)("%d %d ", cn, sessionid);
-        copystring(&buf[strlen(buf)], pwd);
+        concatstring(buf, pwd, sizeof(buf));
         if(!hashstring(buf, result, maxlen)) *result = '\0';
     }
 
@@ -1393,10 +1394,7 @@ namespace server
         {
             bool haspass = adminpass[0] && checkpassword(ci, adminpass, pass);
             int wantpriv = ci->local || haspass ? PRIV_ADMIN : authpriv;
-            if(ci->privilege)
-            {
-                if(wantpriv <= ci->privilege) return true;
-            }
+            if(wantpriv <= ci->privilege) return true;
             else if(wantpriv <= PRIV_MASTER && !force)
             {
                 if(ci->state.state==CS_SPECTATOR) 
@@ -2627,8 +2625,8 @@ namespace server
         ci->state.respawn();
         ci->state.lasttimeplayed = lastmillis;
         aiman::addclient(ci);
-        if(ci->clientmap[0] || ci->mapcrc) checkmaps();
         sendf(-1, 1, "ri3", N_SPECTATOR, ci->clientnum, 0);
+        if(ci->clientmap[0] || ci->mapcrc) checkmaps();
         if(!hasmap(ci)) rotatemap(true);
     }
 
@@ -2795,7 +2793,7 @@ namespace server
         ci->cleanauth();
         if(!nextauthreq) nextauthreq = 1;
         ci->authreq = nextauthreq++;
-        filtertext(ci->authname, user, false, 100);
+        filtertext(ci->authname, user, false, false, 100);
         copystring(ci->authdesc, desc);
         if(ci->authdesc[0])
         {
@@ -2879,7 +2877,7 @@ namespace server
             authsucceeded(id);
         else if(sscanf(cmd, "chalauth %u %255s", &id, val) == 2)
             authchallenged(id, val);
-        else if(!strncmp(cmd, "cleargbans", cmdlen))
+        else if(matchstring(cmd, cmdlen, "cleargbans"))
             cleargbans();
         else if(sscanf(cmd, "addgban %100s", val) == 1)
             addgban(val);
@@ -2959,7 +2957,7 @@ namespace server
                 case N_CONNECT:
                 {
                     getstring(text, p);
-                    filtertext(text, text, false, MAXNAMELEN);
+                    filtertext(text, text, false, false, MAXNAMELEN);
                     if(!text[0]) copystring(text, "unnamed");
                     copystring(ci->name, text, MAXNAMELEN+1);
                     ci->playermodel = getint(p);
@@ -3278,7 +3276,7 @@ namespace server
                 QUEUE_AI;
                 QUEUE_MSG;
                 getstring(text, p);
-                filtertext(text, text);
+                filtertext(text, text, true, true);
                 QUEUE_STR(text);
                 if(isdedicatedserver() && cq) logoutf("%s: %s", colorname(cq), text);
                 break;
@@ -3288,6 +3286,7 @@ namespace server
             {
                 getstring(text, p);
                 if(!ci || !cq || (ci->state.state==CS_SPECTATOR && !ci->local && !ci->privilege) || !m_teammode || !cq->team[0]) break;
+                filtertext(text, text, true, true);
                 loopv(clients)
                 {
                     clientinfo *t = clients[i];
@@ -3302,7 +3301,7 @@ namespace server
             {
                 QUEUE_MSG;
                 getstring(text, p);
-                filtertext(ci->name, text, false, MAXNAMELEN);
+                filtertext(ci->name, text, false, false, MAXNAMELEN);
                 if(!ci->name[0]) copystring(ci->name, "unnamed");
                 QUEUE_STR(ci->name);
                 break;
@@ -3318,7 +3317,7 @@ namespace server
             case N_SWITCHTEAM:
             {
                 getstring(text, p);
-                filtertext(text, text, false, MAXTEAMLEN);
+                filtertext(text, text, false, false, MAXTEAMLEN);
                 if(m_teammode && text[0] && strcmp(ci->team, text) && (!smode || smode->canchangeteam(ci, ci->team, text)) && addteaminfo(text))
                 {
                     if(ci->state.state==CS_ALIVE) suicide(ci);
@@ -3472,7 +3471,7 @@ namespace server
             {
                 int who = getint(p);
                 getstring(text, p);
-                filtertext(text, text, false, MAXTEAMLEN);
+                filtertext(text, text, false, false, MAXTEAMLEN);
                 if(!ci->privilege && !ci->local) break;
                 clientinfo *wi = getinfo(who);
                 if(!m_teammode || !text[0] || !wi || !wi->connected || !strcmp(wi->team, text)) break;

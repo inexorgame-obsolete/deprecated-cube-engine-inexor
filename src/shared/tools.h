@@ -239,6 +239,14 @@ extern char *tempformatstring(const char *fmt, ...) PRINTFARGS(1, 2);
 #define defformatstring(d) string d; formatstring(d)
 #define defvformatstring(d,last,fmt) string d; { va_list ap; va_start(ap, last); vformatstring(d, fmt, ap); va_end(ap); }
 
+template<size_t N> inline bool matchstring(const char *s, size_t len, const char (&d)[N])
+{
+    return len == N-1 && !memcmp(s, d, N-1);
+}
+
+inline char *newstring(size_t l)                { return new char[l+1]; }
+inline char *newstring(const char *s, size_t l) { return copystring(newstring(l), s, l+1); }
+inline char *newstring(const char *s)           { size_t l = strlen(s); char *d = newstring(l); memcpy(d, s, l+1); return d; }
 
 /// macros for looping though vectors
 /// loop macros are deprecated and should not be used anymore!
@@ -778,7 +786,7 @@ template <class T> struct vector
     {
         int olen = alen;
         if(!alen) alen = max(MINSIZE, sz);
-        else while(alen < sz) alen *= 2;
+        else while(alen < sz) alen += alen/2;
         if(alen <= olen) return;
         buf = (T *)realloc(buf, alen*sizeof(T));
         if(!buf) abort();
@@ -1299,12 +1307,6 @@ template <class T, int SIZE> struct reversequeue : queue<T, SIZE>
     const T &operator[](int offset) const { return queue<T, SIZE>::added(offset); }
 };
 
-
-/// inline string memory allocation functions
-inline char *newstring(size_t l)                { return new char[l+1]; }
-inline char *newstring(const char *s, size_t l) { return copystring(newstring(l), s, l+1); }
-inline char *newstring(const char *s)           { size_t l = strlen(s); char *d = newstring(l); memcpy(d, s, l+1); return d; }
-
 const int islittleendian = 1;
 
 #ifdef SDL_BYTEORDER
@@ -1505,7 +1507,7 @@ extern void sendstring(const char *t, packetbuf &p);
 extern void sendstring(const char *t, vector<uchar> &p);
 extern void getstring(char *t, ucharbuf &p, size_t len);
 template<size_t N> static inline void getstring(char (&t)[N], ucharbuf &p) { getstring(t, p, N); }
-extern void filtertext(char *dst, const char *src, bool whitespace = true, size_t len = sizeof(string)-1);
+extern void filtertext(char *dst, const char *src, bool whitespace = true, bool forcespace = false, size_t len = sizeof(string)-1);
 
 /// structure to describe IPs
 struct ipmask
