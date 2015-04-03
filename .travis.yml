@@ -19,4 +19,4 @@ script:
   - bash tool/travis.sh target_script
 
 after_success:
-  - bash ./tool/nightly-build.sh
+  - bash tool/travis.sh target_after_success
