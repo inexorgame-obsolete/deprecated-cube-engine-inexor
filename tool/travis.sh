@@ -105,7 +105,25 @@ nigthly_build() {
     rm -rf data/.git/
   ) fi
 
-  cp -rv ./bin_* ./inexor_unix ./inexor_cipc_unix ./inexor.bat ./server.bat ./readme.md ./license.md "${outd}"
+  local ignore="$(<<< '
+    .
+    ..
+    .gitignore
+    build
+    CMakeLists.txt
+    doxygen.conf
+    .git
+    .gitignore
+    .gitmodules
+    src
+    tool
+    .travis.yml
+  ' tr -d " " | grep -v '^\s*$')"
+
+  (
+    cd "$gitroot"
+    ls -a | grep -Fivx "$ignore" | xargs -t cp -rvt "$outd"
+  )
 
   (
     cd "`dirname "$outd"`"
