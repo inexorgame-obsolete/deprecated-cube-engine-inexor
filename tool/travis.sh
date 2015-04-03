@@ -99,7 +99,7 @@ nigthly_build() {
 
   (
     cd "$gitroot" -v
-    doxygen doxygen.conf
+    doxygen doxygen.conf 2>&1 | grep -vF 'sqlite3_step failed: memberdef.id_file may not be NULL'
     cp -rv doc/ "$docd"
   )
 
