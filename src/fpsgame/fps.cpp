@@ -584,13 +584,6 @@ namespace game
         }
     }
 
-    /// force intermission to test free camera fly
-    void test_intermission()
-    {
-        timeupdate(0);
-    }
-    COMMAND(test_intermission, "");
-
     /// return a player's statistics to cubescript
     ICOMMAND(getfrags, "", (), intret(player1->frags));
     ICOMMAND(getflags, "", (), intret(player1->flags));
