@@ -480,7 +480,7 @@ static bool loadsoundslot(soundslot &slot, bool msg = false)
         if(slot.sample->chunk) return true;
     }
 
-    conoutf(CON_ERROR, "failed to load sample: %s/%s", sounddir, slot.sample->name);
+    conoutf(CON_WARN, "failed to load sample: %s/%s", sounddir, slot.sample->name);
     return false;
 }
 
