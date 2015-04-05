@@ -337,7 +337,8 @@ namespace game
                     moveplayer(player1, 10, true);
                 }
             }
-            else if(!intermission)
+            /// fix: allow spectators to fly around during intermission!
+            else if(!intermission || player1->state == CS_SPECTATOR)
             {
                 if(player1->ragdoll) cleanragdoll(player1);
                 moveplayer(player1, 10, true);
@@ -551,6 +552,9 @@ namespace game
         if(cmode) cmode->killed(d, actor);
     }
 
+
+
+
     /// update game session time
     /// display intermission statistics in console
     void timeupdate(int secs)
@@ -579,6 +583,12 @@ namespace game
             if(identexists("intermission")) execute("intermission");
         }
     }
+
+    void test_test()
+    {
+        timeupdate(0);
+    }
+    COMMAND(test_test, "");
 
     /// return a player's statistics to cubescript
     ICOMMAND(getfrags, "", (), intret(player1->frags));
