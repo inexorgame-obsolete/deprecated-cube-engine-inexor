@@ -338,7 +338,7 @@ namespace game
                 }
             }
             /// fix: allow spectators to fly around during intermission!
-            else if(!intermission || player1->state == CS_SPECTATOR)
+            else if (!intermission || (intermission && player1->state == CS_SPECTATOR))
             {
                 if(player1->ragdoll) cleanragdoll(player1);
                 moveplayer(player1, 10, true);
@@ -584,11 +584,12 @@ namespace game
         }
     }
 
-    void test_test()
+    /// force intermission to test free camera fly
+    void test_intermission()
     {
         timeupdate(0);
     }
-    COMMAND(test_test, "");
+    COMMAND(test_intermission, "");
 
     /// return a player's statistics to cubescript
     ICOMMAND(getfrags, "", (), intret(player1->frags));
