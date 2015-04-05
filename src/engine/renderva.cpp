@@ -1962,11 +1962,11 @@ static GLuint createattenztex(int size)
     return tex;
 }
 
-#define NUMCAUSTICS 32
+#define NUMCAUSTICS 16
 
 static Texture *caustictex[NUMCAUSTICS] = { NULL };
 
-SVARP(causticdir, "media/texture/caustic");
+SVARP(causticdir, "media/texture/inexor/material/water/caustic");
 
 void loadcaustics(bool force)
 {
@@ -1979,8 +1979,8 @@ void loadcaustics(bool force)
     {
         defformatstring(name)(
             renderpath==R_FIXEDFUNCTION ? 
-                "<grey><mad:0.6,0.4>%s/caust%.2d.png" :
-                "<grey><mad:-0.6,0.6>%s/caust%.2d.png",
+                "<grey><mad:0.6,0.4>%s/caustic%.2d.png" :
+                "<grey><mad:-0.6,0.6>%s/caustic%.2d.png",
             causticdir, i);
         caustictex[i] = textureload(name);
     }
