@@ -334,7 +334,8 @@ namespace game
                     moveplayer(player1, 10, true);
                 }
             }
-            else if(!intermission)
+            // TODO: Spectate everyone during intermission
+            else if (!intermission || player1->state == CS_SPECTATOR)
             {
                 if(player1->ragdoll) cleanragdoll(player1);
                 moveplayer(player1, 10, true);
