@@ -3182,7 +3182,7 @@ bool loadimage(const char *filename, ImageData &image)
     return true;
 }
 
-SVARP(screenshotdir, "");
+SVARP(screenshotdir, "screenshot");
 
 void screenshot(char *filename)
 {
