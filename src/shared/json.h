@@ -37,19 +37,15 @@ struct JSON
 
     JSON *original;                 /// Contains the original info if it got overridden by an import.
 
-    JSON() : next(NULL), prev(NULL), child(NULL), parent(NULL), type(0), valueint(0), valuefloat(0), original(NULL)
-    { 
-        name = newstring("");
-        valuestring = newstring("");
-        currentfile = newstring("");
-    }
+    JSON() : next(NULL), prev(NULL), child(NULL), parent(NULL), type(0), valuestring(NULL), valueint(0), valuefloat(0), name(NULL), currentfile(NULL), original(NULL) { }
 
     /// Copies contents from old, without copying the dependencies to other JSONs.
     JSON(JSON *old)
     {
+        JSON();
         type = old->type;
         valueint = old->valueint; valuefloat = old->valuefloat;
-        if(old->valuestring && old->valuestring[0]) valuestring = newstring(old->valuestring);
+        if(old->valuestring) valuestring = newstring(old->valuestring);
         if(old->name) name = newstring(old->name);
         if(old->currentfile) currentfile = newstring(old->currentfile);
 
@@ -179,7 +175,7 @@ struct JSON
     { 
         if (!item) return;
 		delete[] item->name;
-        item->name = newstring(name);
+        if(name) item->name = newstring(name);
         additem(item);
     }
 
@@ -225,7 +221,7 @@ struct JSON
         while(c && strcasecmp(c->name, name)) { i++; c = c->next; }
         if(!c) return;
 
-        newitem->name = newstring(name);
+        if(name) newitem->name = newstring(name);
         replaceitem(i, newitem);
     }
 };
