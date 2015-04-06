@@ -251,7 +251,7 @@ static const char *parse_array(JSON *item, const char *value)
     value = skip(value+1);
     if(*value==']') return value+1;    // empty array.
 
-    item->child = child = new JSON();
+    item->firstchild = child = new JSON();
     child->parent = item;
 
     value = skip( parse_value(child, skip(value)));    // skip any spacing, get the value.
@@ -278,7 +278,7 @@ static char *print_array(JSON *item, int depth, bool fmt)
     char *out = 0, *ptr, *ret;
     int len = 5;
 
-    JSON *child = item->child;
+    JSON *child = item->firstchild;
     int numentries = 0 , i = 0, fail = 0;
 
     // How many entries in the array?
@@ -296,7 +296,7 @@ static char *print_array(JSON *item, int depth, bool fmt)
     memset(entries, 0, numentries*sizeof(char*));
 
     // Retrieve all the results:
-    child = item->child;
+    child = item->firstchild;
     while (child && !fail)
     {
         ret = print_value(child, depth+1, fmt);
@@ -346,7 +346,7 @@ static const char *parse_object(JSON *item, const char *value)
     value = skip(value+1);
     if(*value=='}') return value+1;    // empty array.
 
-    item->child = child = new JSON();
+    item->firstchild = child = new JSON();
     child->parent = item;
 
     value = skip(parse_string(child, skip(value)));
@@ -386,7 +386,7 @@ static char *print_object(JSON *item, int depth, bool fmt)
     char *out = 0, *ptr, *ret, *str;
     int len=7, i=0;
 
-    JSON *child=item->child;
+    JSON *child = item->firstchild;
     int numentries=0, fail=0;
     // Count the number of entries.
     while (child) numentries++, child = child->next;
@@ -410,7 +410,7 @@ static char *print_object(JSON *item, int depth, bool fmt)
     memset(names, 0, sizeof(char*)*numentries);
 
     // Collect all the results into our arrays:
-    child = item->child;
+    child = item->firstchild;
     depth++;
     if(fmt) len+=depth;
     while (child)
@@ -593,7 +593,7 @@ bool JSON_ReplaceImport(JSON *g)
 
     // tell the others
     if(g->next) g->next->prev = newg;
-    if(g->parent->child == g) g->parent->child = newg;
+    if(g->parent->firstchild == g) g->parent->firstchild = newg;
     else g->prev->next = newg;
 
     newg->original = g;
@@ -673,8 +673,8 @@ void JSON::additem(JSON *item)
 
     item->parent = this;
 
-    JSON *c = child; //rewire:
-    if(!c) { child = item; }
+    JSON *c = firstchild; //rewire:
+    if(!c) { firstchild = item; }
     else
     { //last place in the chain
         while(c && c->next) c = c->next;
@@ -685,7 +685,7 @@ void JSON::additem(JSON *item)
 
 void JSON::replaceitem(int which, JSON *newitem)
 {
-    JSON *c = child;
+    JSON *c = firstchild;
     while(c && which>0) { c = c->next; which--; }
     if(!c) return;
 
@@ -700,7 +700,7 @@ void JSON::replaceitem(int which, JSON *newitem)
     newitem->prev = c->prev;
     if(newitem->next) newitem->next->prev = newitem;
 
-    if(c == child) child = newitem;
+    if(c == firstchild) firstchild = newitem;
     else newitem->prev->next = newitem;
     DELETEP(c);
 }
