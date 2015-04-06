@@ -22,7 +22,7 @@ enum {
 struct JSON
 {
     JSON *next, *prev;   /// next/prev allow you to walk array/object chains.
-    JSON *child,         /// child pointer to the FIRST ITEM of the children chain.
+    JSON *firstchild,    /// child pointer to the FIRST ITEM of the children chain.
          *parent;        /// Pointer to the parent JSON
 
     int type;                       // The type of the item, as above.
@@ -37,7 +37,7 @@ struct JSON
 
     JSON *original;                 /// Contains the original info if it got overridden by an import.
 
-    JSON() : next(NULL), prev(NULL), child(NULL), parent(NULL), type(0), valuestring(NULL), valueint(0), valuefloat(0), name(NULL), currentfile(NULL), original(NULL) { }
+    JSON() : next(NULL), prev(NULL), firstchild(NULL), parent(NULL), type(0), valuestring(NULL), valueint(0), valuefloat(0), name(NULL), currentfile(NULL), original(NULL) { }
 
     /// Copies contents from old, without copying the dependencies to other JSONs.
     JSON(JSON *old)
@@ -50,13 +50,13 @@ struct JSON
         if(old->currentfile) currentfile = newstring(old->currentfile);
 
         //copy children:
-        JSON *loop = old->child, *last = NULL;
+        JSON *loop = old->firstchild, *last = NULL;
         while(loop)
         {
             JSON *newchild = new JSON(loop); //duplicate every child and its subchilds ..
             newchild->parent = this;
 
-            if(!last) { child = newchild; last = newchild; } //set first child
+            if(!last) { firstchild = newchild; last = newchild; } //set first child
             else {         //If child already set, then crosswire ->prev and ->next and move on
                 last->next = newchild;
                 newchild->prev = last;
@@ -71,7 +71,7 @@ struct JSON
         DELETEA(name);
         DELETEA(valuestring);
         DELETEA(currentfile);
-        JSON *c = child;
+        JSON *c = firstchild;
         while (c)
         {
             JSON *b = c;
@@ -100,7 +100,7 @@ struct JSON
     /// More useful for arrays probably.
     int numchilds()
     { 
-        JSON *c = child;
+        JSON *c = firstchild;
         int i = 0;
         while(c) { i++; c = c->next; }
         return i;
@@ -110,7 +110,7 @@ struct JSON
     /// Used for Arrays.
     JSON *getitem(int item)
     {
-        JSON *c = child;
+        JSON *c = firstchild;
         while (c && item > 0) {
             item--;
             c = c->next;
@@ -123,7 +123,7 @@ struct JSON
     /// Case insensitive.
     JSON *getitem(const char *name)
     {
-        JSON *c = child;
+        JSON *c = firstchild;
         while (c && strcasecmp(c->name, name)) c = c->next;
         return c;
     }
@@ -183,12 +183,12 @@ struct JSON
     /// @param which tells which place to remove in the Array.
     JSON *detachitem(int which)
     {
-        JSON *c = child;
+        JSON *c = firstchild;
         while (c && which>0) { c = c->next; which--; }
         if (!c) return 0;
         if (c->prev) c->prev->next = c->next;
         if (c->next) c->next->prev = c->prev;
-        if (c == child) child = c->next;
+        if (c == firstchild) firstchild = c->next;
         c->parent = c->prev = c->next = NULL;
         return c;
     }
@@ -198,7 +198,7 @@ struct JSON
     JSON *detachitem(const char *name)
     {
         int i=0;
-        JSON *c = child;
+        JSON *c = firstchild;
         while (c && strcasecmp(c->name, name)){ i++; c = c->next; }
         if (c) return JSON::detachitem(i);
         return NULL;
@@ -217,7 +217,7 @@ struct JSON
     void replaceitem(const char *name, JSON *newitem)
     {
         int i = 0;
-        JSON *c = child;
+        JSON *c = firstchild;
         while(c && strcasecmp(c->name, name)) { i++; c = c->next; }
         if(!c) return;
 
@@ -239,7 +239,7 @@ extern JSON *JSON_CreateObject(); //new unordered list. access: name
 /// Use "k" to access these JSON subelements.
 #define foralljsonchildren(t, b) \
 { \
-    JSON *curchildlayer = t->child; \
+    JSON *curchildlayer = t->firstchild; \
     while(curchildlayer) \
     { \
     JSON *k = curchildlayer; \
@@ -248,7 +248,7 @@ extern JSON *JSON_CreateObject(); //new unordered list. access: name
             b; \
             k = k->next; \
         } \
-        curchildlayer = curchildlayer->child; \
+        curchildlayer = curchildlayer->firstchild; \
     } \
 }
 
