@@ -352,7 +352,7 @@ static const char *parse_object(JSON *item, const char *value)
     value = skip(parse_string(child, skip(value)));
     if(!value) return 0;
     child->name = child->valuestring;
-    child->valuestring = newstring("");
+    child->valuestring = NULL;
 
     if(*value!=':') { ep = value; return 0; }    // fail!
     value = skip(parse_value(child, skip(value+1)));    // skip any spacing, get the value.
@@ -368,7 +368,7 @@ static const char *parse_object(JSON *item, const char *value)
         value = skip(parse_string(child, skip(value+1)));
         if(!value) return 0;
         child->name = child->valuestring;
-        child->valuestring = newstring("");
+        child->valuestring = NULL;
 
         if(*value!=':') { ep = value; return 0; }    // fail!
         value = skip(parse_value( child, skip(value+1)));    // skip any spacing, get the value.
@@ -625,7 +625,7 @@ JSON *JSON_CreateInt(int num)               { JSON *item= new JSON(); item->type
 JSON *JSON_CreateFloat(float num)           { JSON *item= new JSON(); item->type = JSON_NUMBER;     item->valuefloat = num;     return item; }
 
 /// Create a JSON, set its type to String and allocate a valuestring for it.
-JSON *JSON_CreateString(const char *str)    { JSON *item= new JSON(); item->type = JSON_STRING;     item->valuestring = newstring(str);  return item; }
+JSON *JSON_CreateString(const char *str)    { if(!str) return NULL; JSON *item = new JSON(); item->type = JSON_STRING;     item->valuestring = newstring(str);  return item; }
 JSON *JSON_CreateArray()                    { JSON *item= new JSON(); item->type = JSON_ARRAY;      return item; }
 JSON *JSON_CreateObject()                   { JSON *item= new JSON(); item->type = JSON_OBJECT;     return item; }
 
@@ -689,7 +689,7 @@ void JSON::replaceitem(int which, JSON *newitem)
     while(c && which>0) { c = c->next; which--; }
     if(!c) return;
 
-    if(type != JSON_ARRAY && !newitem->name) newitem->name = newstring(c->name); //misuse prevention
+    if(type != JSON_ARRAY && !newitem->name && c->name) newitem->name = newstring(c->name); //misuse prevention
     if(strcmp(newitem->currentfile, c->currentfile))
     {
         foralljson(newitem, k->currentfile = c->currentfile;);
