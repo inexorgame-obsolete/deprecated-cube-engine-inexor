@@ -236,8 +236,9 @@ extern JSON *JSON_CreateArray();  //new ordered list. access: position
 extern JSON *JSON_CreateObject(); //new unordered list. access: name
 
 /// Executes b for all JSON elements below the given (t), but not t itself.
-/// Use "k" to access these JSON subelements.
-#define foralljsonchildren(t, b) \
+/// @param k is the variable name to access these JSON subelements.
+/// @example foralljsonchildren(rootjson, j, j->valuestring = NULL)
+#define foralljsonchildren(t, k, b) \
 { \
     JSON *curchildlayer = t->firstchild; \
     while(curchildlayer) \
@@ -246,15 +247,16 @@ extern JSON *JSON_CreateObject(); //new unordered list. access: name
         while(k) \
         { \
             b; \
-            k = k->next; \
+            k = (k)->next; \
         } \
         curchildlayer = curchildlayer->firstchild; \
     } \
 }
 
 /// Executes b for all JSON elements below the given (t) and for the given one.
-/// Use "k" to access all these JSON subelements.
-#define foralljson(t, b)     JSON *k = t; if(k) { b; } foralljsonchildren(t, b)
+/// @param k is the variable name to access all these JSON subelements.
+/// @example foralljson(rootjson, j, { j->name = newstring("allocated string") })
+#define foralljson(t, k, b)     JSON *k = t; if(k) { b; } foralljsonchildren(t, k, b)
 
 #endif // JSON_H
 
