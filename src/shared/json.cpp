@@ -225,6 +225,9 @@ static char *print_value(JSON *item, int depth, bool fmt)
 {
     char *out = 0;
     if(!item) return 0;
+    if(item->original) { //imported item
+        item = item->original;
+    }
     switch (item->type)
     {
         case JSON_NULL:     out = newstring("null");    break;
@@ -558,6 +561,7 @@ bool JSON_ReplaceImport(JSON *g)
     JSON *j = g->getitem(IMPORTPHRASE);
     JSON *f = NULL;       // the exporting file: "generics.json"
     JSON *newg = NULL;    // the JSON which will replace the old section
+    string sourcedesc;    // importedsource description for the JSON struct, where it contents actually came from
 
     if(!j) return false;
     JSON *src = j->getitem("file"); 
@@ -567,15 +571,20 @@ bool JSON_ReplaceImport(JSON *g)
     if(!src) { return false; }
     const char *srcname = src->valuestring;
     f = loadjson(srcname);
+    strcpy_s(sourcedesc, srcname);
     
     if(!f) { return false; }
 
-    if(key) newg = f->getitem(key->valuestring);
+    if(key) {
+        newg = f->getitem(key->valuestring);
+        strcat_s(sourcedesc, "<>");
+        strcat_s(sourcedesc, key->valuestring);
+    }
     else newg = f;
     
     if(!newg){ return false; }
 
-    // Replace j with newg:
+    // Replace g with newg:
     copystring(newg->name, g->name); // "anims"
     newg->parent = g->parent;
 
@@ -587,8 +596,7 @@ bool JSON_ReplaceImport(JSON *g)
     if(g->parent->child == g) g->parent->child = newg;
     else g->prev->next = newg;
 
-   // DELETEP(g);
-
+    newg->original = g;
     return true;
 }
 
@@ -615,6 +623,8 @@ COMMAND(testjson, "s");
 JSON *JSON_CreateBool(bool b)               { JSON *item= new JSON(); item->type = b ? JSON_TRUE : JSON_FALSE;  return item; }
 JSON *JSON_CreateInt(int num)               { JSON *item= new JSON(); item->type = JSON_NUMBER;     item->valueint = num; item->valuefloat = num; return item; }
 JSON *JSON_CreateFloat(float num)           { JSON *item= new JSON(); item->type = JSON_NUMBER;     item->valuefloat = num;     return item; }
+
+/// Create a JSON, set its type to String and allocate a valuestring for it.
 JSON *JSON_CreateString(const char *str)    { JSON *item= new JSON(); item->type = JSON_STRING;     item->valuestring = newstring(str);  return item; }
 JSON *JSON_CreateArray()                    { JSON *item= new JSON(); item->type = JSON_ARRAY;      return item; }
 JSON *JSON_CreateObject()                   { JSON *item= new JSON(); item->type = JSON_OBJECT;     return item; }
@@ -658,8 +668,9 @@ void JSON::additem(JSON *item)
     if(strcmp(item->currentfile, currentfile))
     {
         delete[] item->currentfile;
-        foralljson(this, k->currentfile = currentfile;);
+        foralljson(item, k->currentfile = currentfile;);
     }
+
     item->parent = this;
 
     JSON *c = child; //rewire:
@@ -695,6 +706,6 @@ void JSON::replaceitem(int which, JSON *newitem)
 }
 
 // TODO:
-// render -> import commands automatisch wenn currentfile inkorrekt
+// render -> import commands automatisch wenn currentfile inkorrekt :) [DONE ? ]
 // refractor replace, additem, replaceimport
 // namespace
