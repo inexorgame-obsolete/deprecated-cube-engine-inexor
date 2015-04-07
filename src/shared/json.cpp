@@ -536,10 +536,12 @@ int JSON_Fix(const char *filename)
     JSON *j = JSON_Parse(newbuf);
     if(j) 
     {
+        conoutf("%s was malformatted but has been fixed automatically. \nThe original file has been overwritten, but backuped");
         //cutextension .. getextension
         defformatstring(backupname)("%s_backup", found);
         rename(found, backupname);
         j->save(found);
+        delete j;
         delete[] buf;
         delete[] newbuf;
         return 1;
@@ -552,37 +554,53 @@ int JSON_Fix(const char *filename)
 
 #define IMPORTPHRASE "#import"
 
+/// Replace an occurence of string from in string src with string to.
+/// @example replace("hallo welt", 
+// TODO
+
+
+void JSON_ResolveReplacements(JSON *g, JSON *replacements)
+{
+    if(!g || !replacements) return;
+    foralljsonchildren(replacements, k,
+    {
+        foralljson(g, h,
+        {
+            if(strstr(g->name, k->name));
+        })
+    })
+}
+
 /// "anims": { "#import" : { "file": "generics.json", "key": "animations", "replace": { "arg4" : "codefragment" }
 /// "anims": { "#import" : { "file": "generics.json", "key": "animations", "replace": { "arg4" : { "#import": } }
 /// "$moreanims": { "#import" : "generics.json" },
 /// "anims": [ "anim1", "anim2", "anim3", "$moreanims"]
-bool JSON_ReplaceImport(JSON *g)
+bool JSON_ResolveImport(JSON *g)
 {
     JSON *j = g->getchild(IMPORTPHRASE);
     JSON *f = NULL;       // the exporting file: "generics.json"
     JSON *newg = NULL;    // the JSON which will replace the old section
-    string sourcedesc;    // importedsource description for the JSON struct, where it contents actually came from
 
     if(!j) return false;
+
     JSON *src = j->getchild("file"); 
     JSON *key = j->getchild("key");
-  //  JSON *replace = j->getchild("replace");
-    
+    JSON *replace = j->getchild("replace");
+
     if(!src) { return false; }
     const char *srcname = src->valuestring;
     f = loadjson(srcname);
-    strcpy_s(sourcedesc, srcname);
-    
+
     if(!f) { return false; }
 
     if(key) {
         newg = f->getchild(key->valuestring);
-        strcat_s(sourcedesc, "<>");
-        strcat_s(sourcedesc, key->valuestring);
     }
     else newg = f;
-    
+
     if(!newg){ return false; }
+
+    JSON_ResolveReplacements(newg, replace);
 
     // Replace g with newg:
     copystring(newg->name, g->name); // "anims"
@@ -603,9 +621,9 @@ bool JSON_ReplaceImport(JSON *g)
 /// j => "anims"
 void JSON_ResolveImports(JSON *j)
 {
-    foralljson(j, 
+    foralljson(j, k,
     {
-        if(k->getchild(IMPORTPHRASE)) JSON_ReplaceImport(k);
+        if(k->getchild(IMPORTPHRASE)) JSON_ResolveImport(k);
     }
     )
 }
@@ -624,13 +642,13 @@ JSON *JSON_CreateBool(bool b)               { JSON *item= new JSON(); item->type
 JSON *JSON_CreateInt(int num)               { JSON *item= new JSON(); item->type = JSON_NUMBER;     item->valueint = num; item->valuefloat = num; return item; }
 JSON *JSON_CreateFloat(float num)           { JSON *item= new JSON(); item->type = JSON_NUMBER;     item->valuefloat = num;     return item; }
 
-/// Create a JSON, set its type to String and allocate a valuestring for it.
+/// Create a JSON containing just a valuestring.
 JSON *JSON_CreateString(const char *str)    { if(!str) return NULL; JSON *item = new JSON(); item->type = JSON_STRING;     item->valuestring = newstring(str);  return item; }
 JSON *JSON_CreateArray()                    { JSON *item= new JSON(); item->type = JSON_ARRAY;      return item; }
 JSON *JSON_CreateObject()                   { JSON *item= new JSON(); item->type = JSON_OBJECT;     return item; }
 
 /// Load a .json file.
-/// @sideeffects allocates memory for a JSON structure, needs to be deleted
+/// @sideeffects allocates memory for a JSON structure, needs to be deleted.
 JSON *loadjson(const char *filename)
 {
     if(!filename) return NULL;
@@ -648,7 +666,7 @@ JSON *loadjson(const char *filename)
     {
         conoutf(CON_WARN, "JSON File %s malformatted. (Use /debugjson to enable find error position)", s);
         if(debugjson) conoutf(CON_DEBUG, "could not parse: %s", ep ? ep : "");
-        //if(JSON_Fix(filename)) j = loadjson(filename);
+       // if(JSON_Fix(filename)) j = loadjson(filename);
         return NULL;
     }
     j->currentfile = newstring(s);
@@ -658,7 +676,9 @@ JSON *loadjson(const char *filename)
 }
 
 char *JSON::render(bool formatted, bool minified) {
-    return print_value(this, 0, formatted);
+    char *out = print_value(this, 0, formatted);
+    if(minified) JSON_Minify(out);
+    return out;
 }
 
 void JSON::addchild(JSON *item)
@@ -668,7 +688,7 @@ void JSON::addchild(JSON *item)
     if(strcmp(item->currentfile, currentfile))
     {
         delete[] item->currentfile;
-        foralljson(item, k->currentfile = currentfile;);
+        foralljson(item, k, k->currentfile = currentfile;);
     }
 
     item->parent = this;
@@ -692,7 +712,7 @@ void JSON::replacechild(int which, JSON *newitem)
     if(type != JSON_ARRAY && !newitem->name && c->name) newitem->name = newstring(c->name); //misuse prevention
     if(strcmp(newitem->currentfile, c->currentfile))
     {
-        foralljson(newitem, k->currentfile = c->currentfile;);
+        foralljson(newitem, k, k->currentfile = c->currentfile;);
     }
 
     newitem->parent = this;
@@ -706,6 +726,7 @@ void JSON::replacechild(int which, JSON *newitem)
 }
 
 // TODO:
-// render -> import commands automatisch wenn currentfile inkorrekt :) [DONE ? ]
+// render -> import commands automatisch wenn currentfile inkorrekt [DONE ? ]
 // refractor replace, addchild, replaceimport
 // namespace
+// class instead of struct (?)
