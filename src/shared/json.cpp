@@ -1,7 +1,5 @@
 ///  JSON is used to store data-information
 ///  Rewrite of cJSON 1.0r58 in Inexor-optimized object-orientated C-ish C++
-///  Author: Malte "a_teammate" Haase
-///  Created:   31.12.2014
 ///  cJSON (Copyright (c) 2009 by Dave Gamble) is licensed under the MIT-license
 
 #include "engine.h"
@@ -689,3 +687,4 @@ void JSON::replaceitem(int which, JSON *newitem)
 // TODO:
 // render -> import commands automatisch wenn currentfile inkorrekt
 // refractor replace, additem, replaceimport
+// namespace
