@@ -33,9 +33,16 @@ struct JSON
 
     char *name;                     /// The item's name string, if the item in an object this is equivalent to the key. In an array its the string of the value!
 
-    const char *currentfile;         /// The parent directory of the .json-file ( If the JSON is the result of a .json-file beeing loaded)
+    const char *currentfile;        /// The parent directory of the .json-file ( If the JSON is the result of a .json-file beeing loaded)
 
-    JSON() : next(NULL), prev(NULL), child(NULL), parent(NULL), type(0), valueint(0), valuefloat(0) { name = newstring(""); valuestring = newstring(""); currentfile = newstring(""); }
+    JSON *original;                 /// Contains the original info if it got overridden by an import.
+
+    JSON() : next(NULL), prev(NULL), child(NULL), parent(NULL), type(0), valueint(0), valuefloat(0), original(NULL)
+    { 
+        name = newstring("");
+        valuestring = newstring("");
+        currentfile = newstring("");
+    }
 
     /// Copies contents from old, without copying the dependencies to other JSONs.
     JSON(JSON *old)
