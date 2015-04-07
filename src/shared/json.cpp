@@ -558,15 +558,15 @@ int JSON_Fix(const char *filename)
 /// "anims": [ "anim1", "anim2", "anim3", "$moreanims"]
 bool JSON_ReplaceImport(JSON *g)
 {
-    JSON *j = g->getitem(IMPORTPHRASE);
+    JSON *j = g->getchild(IMPORTPHRASE);
     JSON *f = NULL;       // the exporting file: "generics.json"
     JSON *newg = NULL;    // the JSON which will replace the old section
     string sourcedesc;    // importedsource description for the JSON struct, where it contents actually came from
 
     if(!j) return false;
-    JSON *src = j->getitem("file"); 
-    JSON *key = j->getitem("key");
-  //  JSON *replace = j->getitem("replace");
+    JSON *src = j->getchild("file"); 
+    JSON *key = j->getchild("key");
+  //  JSON *replace = j->getchild("replace");
     
     if(!src) { return false; }
     const char *srcname = src->valuestring;
@@ -576,7 +576,7 @@ bool JSON_ReplaceImport(JSON *g)
     if(!f) { return false; }
 
     if(key) {
-        newg = f->getitem(key->valuestring);
+        newg = f->getchild(key->valuestring);
         strcat_s(sourcedesc, "<>");
         strcat_s(sourcedesc, key->valuestring);
     }
@@ -605,7 +605,7 @@ void JSON_ResolveImports(JSON *j)
 {
     foralljson(j, 
     {
-        if(k->getitem(IMPORTPHRASE)) JSON_ReplaceImport(k);
+        if(k->getchild(IMPORTPHRASE)) JSON_ReplaceImport(k);
     }
     )
 }
@@ -661,7 +661,7 @@ char *JSON::render(bool formatted, bool minified) {
     return print_value(this, 0, formatted);
 }
 
-void JSON::additem(JSON *item)
+void JSON::addchild(JSON *item)
 {
     if(!item) return;
     
@@ -683,7 +683,7 @@ void JSON::additem(JSON *item)
     }
 }
 
-void JSON::replaceitem(int which, JSON *newitem)
+void JSON::replacechild(int which, JSON *newitem)
 {
     JSON *c = firstchild;
     while(c && which>0) { c = c->next; which--; }
@@ -707,5 +707,5 @@ void JSON::replaceitem(int which, JSON *newitem)
 
 // TODO:
 // render -> import commands automatisch wenn currentfile inkorrekt :) [DONE ? ]
-// refractor replace, additem, replaceimport
+// refractor replace, addchild, replaceimport
 // namespace

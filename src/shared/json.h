@@ -106,13 +106,13 @@ struct JSON
         return i;
     }
 
-    /// Return Children number <item>.
+    /// Return Children of a specific number.
     /// Used for Arrays.
-    JSON *getitem(int item)
+    JSON *getchild(int number)
     {
         JSON *c = firstchild;
-        while (c && item > 0) {
-            item--;
+        while (c && number > 0) {
+            number--;
             c = c->next;
         }
         return c;
@@ -121,7 +121,7 @@ struct JSON
     /// Return Children with name <name>.
     /// Used for Objects.
     /// Case insensitive.
-    JSON *getitem(const char *name)
+    JSON *getchild(const char *name)
     {
         JSON *c = firstchild;
         while (c && strcasecmp(c->name, name)) c = c->next;
@@ -130,58 +130,58 @@ struct JSON
 
     /// Get float of Object. 
     /// Used if floatvalue is expected. otherwise returns -1
-    float getfloat(const char *key)
+    float getchildfloat(const char *key)
     {
-        JSON *sub = getitem(key);
+        JSON *sub = getchild(key);
         return sub ? sub->valuefloat : -1.0f;
     }
 
-    float getfloat(int item)        //Get float of Array. Used if floatvalue is expected. otherwise returns -1.0f
+    float getchildfloat(int item)        //Get float of Array. Used if floatvalue is expected. otherwise returns -1.0f
     {
-        JSON *sub = getitem(item);
+        JSON *sub = getchild(item);
         return sub ? sub->valuefloat : -1.0f;
     }
 
-    int getint(const char *key)     //Get int of Object. Used if value is expected to be int. otherwise returns -1
+    int getchildint(const char *key)     //Get int of Object. Used if value is expected to be int. otherwise returns -1
     {
-        JSON *sub = getitem(key);
+        JSON *sub = getchild(key);
         return sub ? sub->valueint : -1;
     }
 
-    int getint(int item)            //Get int of Array. Used if value is expected to be int. otherwise returns -1
+    int getchildint(int item)            //Get child int of Array. Used if value is expected to be int. otherwise returns -1
     {
-        JSON *sub = getitem(item);
+        JSON *sub = getchild(item);
         return sub ? sub->valueint : -1;
     }
 
-    const char *getstring(const char *key)     //Get string of Object. Used if value is expected to be a string. otherwise returns ""
+    const char *getchildstring(const char *key)     //Get string of Object. Used if value is expected to be a string. otherwise returns ""
     {
-        JSON *sub = getitem(key);
+        JSON *sub = getchild(key);
         return sub ? sub->valuestring : newstring("");
     }
 
     const char *getstring(int item)            //Get string of Array. Used if value is expected to be string. otherwise returns ""
     {
-        JSON *sub = getitem(item);
+        JSON *sub = getchild(item);
         return sub ? sub->valuestring : newstring("");
     }
 
     /// add Item to the last place of an Array (item == another JSON).
-    void additem(JSON *item);
+    void addchild(JSON *item);
 
     /// add Item to Object (item == another JSON).
     /// @param name is the new name of the item.
-    void additem(const char *name, JSON *item)
+    void addchild(const char *name, JSON *item)
     { 
         if (!item) return;
 		delete[] item->name;
         if(name) item->name = newstring(name);
-        additem(item);
+        addchild(item);
     }
 
     /// Remove Item from Array but do not delete it.
     /// @param which tells which place to remove in the Array.
-    JSON *detachitem(int which)
+    JSON *detachchild(int which)
     {
         JSON *c = firstchild;
         while (c && which>0) { c = c->next; which--; }
@@ -195,26 +195,26 @@ struct JSON
 
     /// Detach Item from Object but do not delete it.
     /// @param name gives the name of the item.
-    JSON *detachitem(const char *name)
+    JSON *detachchild(const char *name)
     {
         int i=0;
         JSON *c = firstchild;
         while (c && strcasecmp(c->name, name)){ i++; c = c->next; }
-        if (c) return JSON::detachitem(i);
+        if (c) return JSON::detachchild(i);
         return NULL;
     }
 
-    void deleteitem(int which) { JSON *c = detachitem(which); DELETEP(c); }        //Delete Item from Array
-    void deleteitem(const char *name) { JSON *c = detachitem(name); DELETEP(c); }  //Delete Item from Object
+    void deletechild(int which) { JSON *c = detachchild(which); DELETEP(c); }        //Delete Item from Array
+    void deletechild(const char *name) { JSON *c = detachchild(name); DELETEP(c); }  //Delete Item from Object
     
     /// Replace Item in Array with newitem.
     /// @sideeffects Deletes the old item.
     /// @param which represents which position in the Array the old item had.
     /// of recognizing imported/replaced stuff.
-    void replaceitem(int which, JSON *newitem);
+    void replacechild(int which, JSON *newitem);
 
     /// Replace Item in Object.
-    void replaceitem(const char *name, JSON *newitem)
+    void replacechild(const char *name, JSON *newitem)
     {
         int i = 0;
         JSON *c = firstchild;
@@ -222,7 +222,7 @@ struct JSON
         if(!c) return;
 
         if(name) newitem->name = newstring(name);
-        replaceitem(i, newitem);
+        replacechild(i, newitem);
     }
 };
 
