@@ -9,7 +9,7 @@
 VARP(debugjson, 0, 0, 1);
 static const char *ep; //error pointer
 const char *JSON_GetError()
-{ 
+{
     return ep;
 }
 
@@ -485,7 +485,7 @@ void JSON_Minify(char *json)
 }
 
 /// Basic and really simplistic routine to fix malformatted .json files
-/// It will replace the old version of your file on success and create a backup of the old one (called <filename>_backup.json) 
+/// It will replace the old version of your file on success and create a backup of the old one (called <filename>_backup.json)
 /// Currently it fixes: double commata, missing " for non-numeric strings
 int JSON_Fix(const char *filename)
 {
@@ -495,9 +495,9 @@ int JSON_Fix(const char *filename)
     char *buf = loadfile(found, NULL);
     if(!buf) return -1;
     JSON_Minify(buf);
-    
+
     size_t len = strlen(buf);
-    
+
     char *newbuf = new char[len + 1];
 
     size_t pos = 0; //current position in the newbuf
@@ -534,9 +534,9 @@ int JSON_Fix(const char *filename)
     }
 
     JSON *j = JSON_Parse(newbuf);
-    if(j) 
+    if(j)
     {
-        conoutf("%s was malformatted but has been fixed automatically. \nThe original file has been overwritten, but backuped");
+        conoutf("%s was malformatted but has been fixed automatically. \nThe original file has been overwritten, but backuped", found);
         //cutextension .. getextension
         defformatstring(backupname)("%s_backup", found);
         rename(found, backupname);
@@ -555,7 +555,7 @@ int JSON_Fix(const char *filename)
 #define IMPORTPHRASE "#import"
 
 /// Replace an occurence of string from in string src with string to.
-/// @example replace("hallo welt", 
+/// @example replace("hallo welt",
 // TODO
 
 
@@ -583,7 +583,7 @@ bool JSON_ResolveImport(JSON *g)
 
     if(!j) return false;
 
-    JSON *src = j->getchild("file"); 
+    JSON *src = j->getchild("file");
     JSON *key = j->getchild("key");
     JSON *replace = j->getchild("replace");
 
@@ -684,7 +684,7 @@ char *JSON::render(bool formatted, bool minified) {
 void JSON::addchild(JSON *item)
 {
     if(!item) return;
-    
+
     if(strcmp(item->currentfile, currentfile))
     {
         delete[] item->currentfile;
