@@ -9,4 +9,4 @@ IF /I "%PROCESSOR_ARCHITEW6432%" == "amd64" (
     set INEXOR_ARCH=win64
 )
 
-start bin\windows\%INEXOR_ARCH%\inexor.exe "-q$HOME\My Games\Inexor" -gserver-log.txt -d %*
+start bin\windows\%INEXOR_ARCH%\inexor.exe "-q%USERPROFILE%\My Games\Inexor" -gserver-log.txt -d %*
