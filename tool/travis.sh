@@ -64,23 +64,27 @@ run_tests() {
   fi
 }
 
-install_apidoc() {
-  apt-get install -y doxygen
+install_tool() {
+  apt-get -y install ncftp
 }
 
-# This needs to be called as root!
-install() {
-  add-apt-repository -y "deb http://ppa.launchpad.net/zoogie/sdl2-snapshots/ubuntu precise main"
+install_utopic_repo() {
   echo -e "\ndeb http://archive.ubuntu.com/ubuntu utopic "{main,multiverse,universe,restricted} >> /etc/apt/sources.list
+}
+
+install_linux() {
+  install_utopic_repo
+  add-apt-repository -y "deb http://ppa.launchpad.net/zoogie/sdl2-snapshots/ubuntu precise main"
 
   sudo apt-get update
 
-  apt-get -y -t utopic install mingw-w64 gcc-4.9 g++-4.9 \
-      clang-3.5 build-essential
+  install_tool
+
   apt-get -y install zlib1g-dev libsdl2-dev         \
     libsdl2-image-dev libsdl2-mixer-dev libenet-dev \
-    libprotobuf-dev protobuf-compiler wget          \
-    libboost-system1.55-dev doxygen ncftp
+    libprotobuf-dev protobuf-compiler               \
+    libboost-system1.55-dev ncftp
+  apt-get -y -t utopic install build-essential
 
   (
     cd /tmp;
@@ -89,6 +93,28 @@ install() {
     git checkout asio-1-10-4
     cp -vr asio/include/asio* /usr/include
   )
+}
+
+install_win64() {
+  install_utopic_repo
+  sudo apt-get update
+  install_tool
+  apt-get -y -t utopic install mingw-w64
+}
+install_win32() {
+  install_win64
+}
+install_linux_clang() {
+  install_linux
+  apt-get -y -t utopic install clang-3.5
+}
+install_linux_gcc() {
+  install_linux
+  apt-get -y -t utopic install gcc-4.9 g++-4.9
+}
+install_apidoc() {
+  install_tool
+  apt-get install -y doxygen
 }
 
 upload() {
@@ -185,11 +211,7 @@ build() {
 }
 
 target_before_install() {
-  if test "$TARGET" = apidoc; then
-    sudo "$script" install_apidoc
-  else
-    sudo "$script" install
-  fi
+  sudo "$script" install_"$TARGET"
 }
 
 target_script() {
