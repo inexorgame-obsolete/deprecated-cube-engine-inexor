@@ -79,21 +79,24 @@ struct JSON
             DELETEP(b);
         }
     }
-    
+
     /// Returns rendered JSON, as you would find it in a file.
     char *render(bool formatted = true, bool minified = false);
 
     /// Save's to a specific .json-file.
-    void save(const char *filename)
+    /// @return true after saving successfully.
+    bool save(const char *filename)
     {
         string s; 
         copystring(s, filename);
         stream *f = openutf8file(path(s), "w");
-        if(!f) { conoutf(CON_WARN, "could not save %s", s); return; }
+        if(!f) { conoutf(CON_WARN, "could not save %s", s); return false; }
         char *buf = render();
         f->putstring(buf);
         delete f;
+        delete[] currentfile;
         currentfile = newstring(s);
+        return true;
     }
 
     /// Get number of children.
@@ -123,8 +126,9 @@ struct JSON
     /// Case insensitive.
     JSON *getchild(const char *name)
     {
+        if(!name) return NULL;
         JSON *c = firstchild;
-        while (c && strcasecmp(c->name, name)) c = c->next;
+        while (c && (!c->name || strcasecmp(c->name, name))) c = c->next;
         return c;
     }
 
@@ -160,7 +164,7 @@ struct JSON
         return sub ? sub->valuestring : newstring("");
     }
 
-    const char *getstring(int item)            //Get string of Array. Used if value is expected to be string. otherwise returns ""
+    const char *getchildstring(int item)            //Get string of Array. Used if value is expected to be string. otherwise returns ""
     {
         JSON *sub = getchild(item);
         return sub ? sub->valuestring : newstring("");
@@ -174,8 +178,10 @@ struct JSON
     void addchild(const char *name, JSON *item)
     { 
         if (!item) return;
-		delete[] item->name;
-        if(name) item->name = newstring(name);
+        if(name) {
+            delete[] item->name;
+            item->name = newstring(name);
+        }
         addchild(item);
     }
 
@@ -197,9 +203,10 @@ struct JSON
     /// @param name gives the name of the item.
     JSON *detachchild(const char *name)
     {
+        if(!name) return NULL;
         int i=0;
         JSON *c = firstchild;
-        while (c && strcasecmp(c->name, name)){ i++; c = c->next; }
+        while (c && (!c->name || strcasecmp(c->name, name))){ i++; c = c->next; }
         if (c) return JSON::detachchild(i);
         return NULL;
     }
@@ -216,12 +223,16 @@ struct JSON
     /// Replace Item in Object.
     void replacechild(const char *name, JSON *newitem)
     {
+        if(!name) return;
         int i = 0;
         JSON *c = firstchild;
-        while(c && strcasecmp(c->name, name)) { i++; c = c->next; }
+        while(c && (!c->name || strcasecmp(c->name, name))) { i++; c = c->next; }
         if(!c) return;
 
-        if(name) newitem->name = newstring(name);
+        if(name) {
+            delete[] newitem->name;
+            newitem->name = newstring(name);
+        }
         replacechild(i, newitem);
     }
 };

@@ -566,7 +566,7 @@ void JSON_ResolveReplacements(JSON *g, JSON *replacements)
     {
         foralljson(g, h,
         {
-            if(strstr(g->name, k->name));
+            if(g->name && k->name && strstr(g->name, k->name));
         })
     })
 }
@@ -603,7 +603,7 @@ bool JSON_ResolveImport(JSON *g)
     JSON_ResolveReplacements(newg, replace);
 
     // Replace g with newg:
-    copystring(newg->name, g->name); // "anims"
+    if(g->name) copystring(newg->name, g->name); // "anims"
     newg->parent = g->parent;
 
     newg->next = g->next;
@@ -685,7 +685,7 @@ void JSON::addchild(JSON *item)
 {
     if(!item) return;
 
-    if(strcmp(item->currentfile, currentfile))
+    if(!currentfile || !item->currentfile || strcmp(item->currentfile, currentfile) )
     {
         delete[] item->currentfile;
         foralljson(item, k, k->currentfile = currentfile;);
@@ -710,7 +710,7 @@ void JSON::replacechild(int which, JSON *newitem)
     if(!c) return;
 
     if(type != JSON_ARRAY && !newitem->name && c->name) newitem->name = newstring(c->name); //misuse prevention
-    if(strcmp(newitem->currentfile, c->currentfile))
+    if(!currentfile || !newitem->currentfile || strcmp(newitem->currentfile, c->currentfile))
     {
         foralljson(newitem, k, k->currentfile = c->currentfile;);
     }
