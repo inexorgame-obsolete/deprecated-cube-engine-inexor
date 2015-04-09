@@ -1,11 +1,14 @@
 #! /bin/bash
+#
+# Structure
+# * Utility functions
+# * Installation target implementations
+# * Nightly build/APIDOC uploading
+# * Compiling and testing
+# * Targets as called by .travis.conf
+# * Main routine
 
-set -e
-
-script="$0"
-tool="`dirname "$0"`"
-code="${tool}/.."
-bin="${code}/bin"
+## UTILITY FUNCTIONS #######################################
 
 # Check if a string contains something
 contains() {
@@ -52,24 +55,22 @@ external_pull_request() {
   fi
 }
 
-run_tests() {
-  if contains "$TARGET" linux; then
-    "${bin}/linux/`uname -m`/testcmd"
-  elif contains "$TARGET" win; then
-    echo >&2 "Sorry, win is not supported for testing yet."
-    exit 0
-  else
-    echo >&2 "ERROR: UNKNOWN TRAVIS TARGET: ${TARGET}"
-    exit 23
-  fi
+# upload remote_path local_path [local_paths]...
+#
+# Upload one or more files to nightly.inexor.org
+upload() {
+  ncftpput -R -v -u "$FTP_USER" -p "$FTP_PASSWORD" \
+    inexor.org "$@"
+}
+
+## INSTALLATION ROUTINES ###################################
+
+install_utopic_repo() {
+  echo -e "\ndeb http://archive.ubuntu.com/ubuntu utopic "{main,multiverse,universe,restricted} >> /etc/apt/sources.list
 }
 
 install_tool() {
   apt-get -y install ncftp
-}
-
-install_utopic_repo() {
-  echo -e "\ndeb http://archive.ubuntu.com/ubuntu utopic "{main,multiverse,universe,restricted} >> /etc/apt/sources.list
 }
 
 install_linux() {
@@ -95,6 +96,8 @@ install_linux() {
   )
 }
 
+# We have a slightly different install routine for each target
+
 install_win64() {
   install_utopic_repo
   sudo apt-get update
@@ -117,10 +120,7 @@ install_apidoc() {
   apt-get install -y doxygen
 }
 
-upload() {
-  ncftpput -R -v -u "$FTP_USER" -p "$FTP_PASSWORD" \
-    inexor.org "$@"
-}
+## UPLOADING NIGHTLY BUILDS AND THE APIDOC #################
 
 upload_apidoc() {
   (
@@ -202,6 +202,8 @@ nigthly_build() {
   return 0
 }
 
+# ACTUALLY COMPILING AND TESTING INEXOR ####################
+
 build() {
   (
     mkcd "/tmp/inexor-build-${build}"
@@ -209,6 +211,20 @@ build() {
     make -kj 5 install
   )
 }
+
+run_tests() {
+  if contains "$TARGET" linux; then
+    "${bin}/linux/`uname -m`/testcmd"
+  elif contains "$TARGET" win; then
+    echo >&2 "Sorry, win is not supported for testing yet."
+    exit 0
+  else
+    echo >&2 "ERROR: UNKNOWN TRAVIS TARGET: ${TARGET}"
+    exit 23
+  fi
+}
+
+## TARGETS CALLED BY TRAVIS ################################
 
 target_before_install() {
   sudo "$script" install_"$TARGET"
@@ -231,6 +247,13 @@ target_after_success() {
 }
 
 ## MAIN ####################################################
+
+set -e
+
+script="$0"
+tool="`dirname "$0"`"
+code="${tool}/.."
+bin="${code}/bin"
 
 export main_repo="inexor-game/code"
 export branch="$TRAVIS_BRANCH" # The branch we're on
