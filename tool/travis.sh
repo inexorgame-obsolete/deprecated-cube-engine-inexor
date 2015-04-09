@@ -64,8 +64,12 @@ run_tests() {
   fi
 }
 
+install_apidoc() {
+  apt-get install -y doxygen
+}
+
 # This needs to be called as root!
-root_install() {
+install() {
   add-apt-repository -y "deb http://ppa.launchpad.net/zoogie/sdl2-snapshots/ubuntu precise main"
   echo -e "\ndeb http://archive.ubuntu.com/ubuntu utopic "{main,multiverse,universe,restricted} >> /etc/apt/sources.list
 
@@ -92,6 +96,16 @@ upload() {
     inexor.org "$@"
 }
 
+upload_apidoc() {
+  (
+    cd "$gitroot" -v
+    doxygen doxygen.conf 2>&1 | grep -vF 'sqlite3_step " \
+      "failed: memberdef.id_file may not be NULL'
+    cp -r doc/ "/tmp/$build"
+    upload / "/tmp/$build"
+  )
+}
+
 nigthly_build() {
   local outd="/tmp/${build}.d/"
   local zipf="/tmp/${build}.zip"
@@ -114,7 +128,6 @@ nigthly_build() {
     gitroot: ${gitroot}
     zip: ${zipf}
     dir: ${outd}
-    docd: ${docd}
 
     data export: $media
   "
@@ -126,12 +139,6 @@ nigthly_build() {
     git clone --depth 1 https://github.com/inexor-game/data.git data
     rm -rf data/.git/
   ) fi
-
-  (
-    cd "$gitroot" -v
-    doxygen doxygen.conf 2>&1 | grep -vF 'sqlite3_step failed: memberdef.id_file may not be NULL'
-    cp -rv doc/ "$docd"
-  )
 
   local ignore="$(<<< '
     .
@@ -164,27 +171,41 @@ nigthly_build() {
     sha512sum "$zipf"
   ) > "$descf"
 
-  upload / "$zipf" "$descf" "$docd"
+  upload / "$zipf" "$descf"
 
   return 0
 }
 
-target_before_install() {
-  sudo "$script" root_install
-}
-
-target_script() {
+build() {
   (
     mkcd "/tmp/inexor-build-${build}"
     cmake $CMAKE_FLAGS "$gitroot"
     make -kj 5 install
   )
-  run_tests
+}
+
+target_before_install() {
+  if test "$TARGET" = apidoc; then
+    sudo "$script" install_apidoc
+  else
+    sudo "$script" install
+  fi
+}
+
+target_script() {
+  if test "$TARGET" = apidoc; then
+    upload_apidoc
+  else
+    build
+    run_tests
+  fi
 }
 
 # Upload nightly
 target_after_success() {
-  external_pull_request || nigthly_build || true
+  if test "$TARGET" != apidoc; then
+    external_pull_request || nigthly_build || true
+  fi
 }
 
 ## MAIN ####################################################
