@@ -22,6 +22,36 @@ mkcd() {
   cd "$1"
 }
 
+# Check whether this travis job runs for the main repository
+# that is inexor-game/code
+is_main_repo() {
+  test "${TRAVIS_REPO_SLUG}" = "${main_repo}"
+}
+
+# Check whether this build is for a pull request
+is_pull_request() {
+  test "${TRAVIS_PULL_REQUEST}" != false
+}
+
+# Check whether this is a pull request, wants to merge a
+# branch within the main repo into the main repo.
+#
+# E.g. Merge inexor-game/code: karo/unittesting
+#      into  inexor-game/code: master
+self_pull_request() {
+  is_pull_request && is_main_repo
+}
+
+# Check whether this is a pull request, that pulls a branch
+# from a different repo.
+external_pull_request() {
+  if is_main_repo; then
+    false
+  else
+    is_pull_request
+  fi
+}
+
 run_tests() {
   if contains "$TARGET" linux; then
     "${bin}/linux/`uname -m`/testcmd"
@@ -154,11 +184,12 @@ target_script() {
 
 # Upload nightly
 target_after_success() {
-  test "$TRAVIS_PULL_REQUEST" == false && nigthly_build || true
+  external_pull_request || nigthly_build || true
 }
 
 ## MAIN ####################################################
 
+export main_repo="inexor-game/code"
 export branch="$TRAVIS_BRANCH" # The branch we're on
 export jobno="$TRAVIS_JOB_NUMBER" # The job number
 export comitt="${TRAVIS_COMMIT}"
@@ -166,7 +197,13 @@ export comitt="${TRAVIS_COMMIT}"
 export build="$(echo "${branch}-${jobno}" | sed 's#/#-#g')-${TARGET}"
 export gitroot="$TRAVIS_BUILD_DIR"
 
-cd "$gitroot"
+self_pull_request && {
+  echo >&2 -e "Skipping build, because this is a pull " \
+    "request with a branch in the main repo.\n"         \
+    "This means, there should already be a ci job for " \
+    "this branch. No need to do things twice."
+  exit 0
+}
 
-# Call the desired function
-"$@"
+cd "$gitroot"
+"$@"  # Call the desired function
