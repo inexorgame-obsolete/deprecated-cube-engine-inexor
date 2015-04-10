@@ -1,8 +1,8 @@
 #include "engine.h"
+#include "filesystem.h"
 
 Texture *sky[6] = { 0, 0, 0, 0, 0, 0 }, *clouds[6] = { 0, 0, 0, 0, 0, 0 };
 
-SVARP(skyboxdir, "media/skybox");
 void loadsky(const char *basename, Texture *texs[6])
 {
     const char *wildcard = strchr(basename, '*');
@@ -10,7 +10,8 @@ void loadsky(const char *basename, Texture *texs[6])
     {
         const char *side = cubemapsides[i].name;
         string name;
-        copystring(name, makerelpath(skyboxdir, basename));
+        inexor::filesystem::getmedianame(name, basename, DIR_SKYBOX);
+
         if(wildcard)
         {
             char *chop = strchr(name, '*');
@@ -37,7 +38,8 @@ Texture *loadskyoverlay(const char *basename)
 {
     const char *ext = strrchr(basename, '.'); 
     string name;
-    copystring(name, makerelpath(skyboxdir, basename));
+    inexor::filesystem::getmedianame(name, basename, DIR_SKYBOX);
+
     Texture *t = notexture;
     if(ext) t = textureload(name, 0, true, false);
     else

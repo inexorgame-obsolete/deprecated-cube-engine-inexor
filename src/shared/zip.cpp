@@ -1,4 +1,4 @@
-#include "cube.h"
+#include "filesystem.h"
 
 enum
 {
@@ -214,13 +214,14 @@ static bool checkprefix(vector<zipfile> &files, const char *prefix, int prefixle
 
 static void mountzip(ziparchive &arch, vector<zipfile> &files, const char *mountdir, const char *stripdir)
 {
-    string mediadir = "media/";
-    path(mediadir);
+    string medidir;
+    copystring(medidir, mediadir);
+    path(medidir);
     size_t striplen = stripdir ? strlen(stripdir) : 0;
     if(!mountdir && !stripdir) loopv(files)
     {
         zipfile &f = files[i];
-        const char *foundmedia = strstr(f.name, mediadir);
+        const char *foundmedia = strstr(f.name, medidir);
         if(foundmedia)
         {
             if(foundmedia > f.name) 

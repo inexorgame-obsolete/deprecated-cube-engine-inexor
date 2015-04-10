@@ -613,8 +613,6 @@ extern void renderblob(int type, const vec &o, float radius, float fade = 1);
 extern void flushblobs();
 
 // rendersky
-extern char *skyboxdir;
-
 extern int explicitsky;
 extern double skyarea;
 

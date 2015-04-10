@@ -7,6 +7,7 @@
 ///
 
 #include "game.h"
+#include "filesystem.h"
 
 namespace game
 {
@@ -644,7 +645,7 @@ namespace game
     int gamemode = INT_MAX, nextmode = INT_MAX;
     string clientmap = "";
 
-    /// force server to change map (permissions requred)
+    /// force server to change map (permissions required)
     /// @see startgame
     void changemapserv(const char *name, int mode)
     {
@@ -2133,7 +2134,8 @@ namespace game
                 string oldname;
                 copystring(oldname, getclientmap());
                 defformatstring(mname)("getmap_%d", lastmillis);
-                defformatstring(fname)("%s/%s.ogz", mapdir, mname);
+                string fname;
+                inexor::filesystem::appendmediadir(fname, mname, DIR_MAP, ".ogz");
                 stream *map = openrawfile(path(fname), "wb");
                 if(!map) return;
                 conoutf("received map");
@@ -2225,7 +2227,8 @@ namespace game
         conoutf("sending map...");
         defformatstring(mname)("sendmap_%d", lastmillis);
         save_world(mname, true);
-        defformatstring(fname)("%s/%s.ogz", mapdir, mname);
+        string fname;
+        inexor::filesystem::appendmediadir(fname, mname, DIR_MAP, ".ogz");
         stream *map = openrawfile(path(fname), "rb");
         if(map)
         {
