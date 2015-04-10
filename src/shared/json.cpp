@@ -655,7 +655,7 @@ JSON *loadjson(const char *filename)
 
     string s;
     copystring(s, filename);
-    char *buf = loadfile(findfile(path(s), ""), NULL);
+    char *buf = loadfile(path(s), NULL);
     if(!buf)
     {
         conoutf(CON_WARN, "could not find %s", s);
