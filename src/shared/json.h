@@ -90,7 +90,7 @@ struct JSON
         string s; 
         copystring(s, filename);
         stream *f = openutf8file(path(s), "w");
-        if(!f) { conoutf(CON_WARN, "could not save %s", s); return false; }
+        if(!f) return false;
         char *buf = render();
         f->putstring(buf);
         delete f;
