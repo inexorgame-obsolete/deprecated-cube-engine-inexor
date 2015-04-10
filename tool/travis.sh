@@ -77,7 +77,7 @@ install_linux() {
   install_utopic_repo
   add-apt-repository -y "deb http://ppa.launchpad.net/zoogie/sdl2-snapshots/ubuntu precise main"
 
-  sudo apt-get update
+  apt-get update
 
   install_tool
 
