@@ -86,13 +86,13 @@
 /// command line and scripting engine
 #include "command.h"
 
+/// JSON (Javascript Object Notation) parser
+/// Static data storage format
+#include "json.h"
+
 /// header files for communication between the game and Cube engine
 #include "iengine.h"
 #include "igame.h"
-
-/// JSON (Javascript Object Notation) parser
-/// http://json.org/
-#include "json.h"
 
 
 #endif /// end include guard __CUBE_H__

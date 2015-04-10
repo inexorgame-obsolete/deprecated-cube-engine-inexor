@@ -539,8 +539,7 @@ int JSON_Fix(const char *filename)
         conoutf("%s was malformatted but has been fixed automatically. \nThe original file has been overwritten, but backuped", found);
         //cutextension .. getextension
         defformatstring(backupname)("%s_backup", found);
-        rename(found, backupname);
-        j->save(found);
+        if(!rename(found, backupname)) j->save(found);
         delete j;
         delete[] buf;
         delete[] newbuf;
