@@ -273,7 +273,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
     {
         glColor3f(1, 1, 1);
 		
-        settexture(tempformatstring("%s/background.png", interfacedir), 0);
+        settexture("media/interface/background.png", 0);
         float bu = w*0.67f/256.0f + backgroundu, bv = h*0.67f/256.0f + backgroundv;
         glBegin(GL_TRIANGLE_STRIP);
         glTexCoord2f(0,  0);  glVertex2f(0, 0);
@@ -284,7 +284,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);
 
-		settexture(tempformatstring("%s/background_detail.png", interfacedir), 0);
+		settexture("media/interface/background_detail.png", 0);
         float du = w*0.8f/512.0f + detailu, dv = h*0.8f/512.0f + detailv;
         glBegin(GL_TRIANGLE_STRIP);
         glTexCoord2f(0,  0);  glVertex2f(0, 0);
@@ -293,7 +293,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
         glTexCoord2f(du, dv); glVertex2f(w, h);
         glEnd();
 
-        settexture(tempformatstring("%s/background_decal.png", interfacedir), 3);
+        settexture("media/interface/background_decal.png", 3);
         glBegin(GL_QUADS);
         loopj(numdecals)
         {
@@ -359,7 +359,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             }        
 
-			settexture(tempformatstring("%s/mapshot_frame.png", interfacedir), 3);
+			settexture("media/interface/mapshot_frame.png", 3);
             glBegin(GL_TRIANGLE_STRIP);
             glTexCoord2f(0, 0); glVertex2f(x,    y);
             glTexCoord2f(1, 0); glVertex2f(x+sz, y);
@@ -444,7 +444,7 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
           fu1 = 0/512.0f, fu2 = 511/512.0f,
           fv1 = 0/64.0f, fv2 = 52/64.0f;
 
-	settexture(tempformatstring("%s/loading_frame.png", interfacedir), 3);
+	settexture("media/interface/loading_frame.png", 3);
     glBegin(GL_TRIANGLE_STRIP);
     glTexCoord2f(fu1, fv1); glVertex2f(fx,    fy);
     glTexCoord2f(fu2, fv1); glVertex2f(fx+fw, fy);
@@ -464,7 +464,7 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
           ex = bx+sw + max(mw*bar, fw*7/511.0f);
     if(bar > 0)
     {
-		settexture(tempformatstring("%s/loading_bar.png", interfacedir), 3);
+		settexture("media/interface/loading_bar.png", 3);
         glBegin(GL_QUADS);
         glTexCoord2f(su1, bv1); glVertex2f(bx,    by);
         glTexCoord2f(su2, bv1); glVertex2f(bx+sw, by);
@@ -510,7 +510,7 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		settexture(tempformatstring("%s/mapshot_frame.png", interfacedir), 3);
+		settexture("media/interface/mapshot_frame.png", 3);
         glBegin(GL_TRIANGLE_STRIP);
         glTexCoord2f(0, 0); glVertex2f(x,    y);
         glTexCoord2f(1, 0); glVertex2f(x+sz, y);
