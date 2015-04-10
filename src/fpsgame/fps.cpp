@@ -5,6 +5,7 @@
 ///
 
 #include "game.h"
+#include "filesystem.h"
 
 namespace game
 {
@@ -898,7 +899,9 @@ namespace game
 	/// draw (blit) item texture (weapon, flags, armours, quad) on screen at x,y
     void drawicon(int icon, float x, float y, float sz)
     {
-        settexture(tempformatstring("%s/hud/items.png", interfacedir));
+        static string itname;
+        inexor::filesystem::appendmediadir(itname, "hud/items.png", DIR_UI);
+        settexture(itname);
         glBegin(GL_TRIANGLE_STRIP);
         float tsz = 0.25f, tx = tsz*(icon%4), ty = tsz*(icon/4);
         glTexCoord2f(tx,     ty);     glVertex2f(x,    y);

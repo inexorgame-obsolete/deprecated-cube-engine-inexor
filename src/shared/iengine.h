@@ -1,9 +1,5 @@
 // the interface the game uses to access the engine
 
-extern char *mediadir;
-extern char *mapdir;
-extern char *interfacedir;
-
 extern int curtime;                     // current frame time
 extern int lastmillis;                  // last time
 extern int elapsedtime;                 // elapsed frame time

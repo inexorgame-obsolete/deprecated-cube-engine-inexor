@@ -2,6 +2,7 @@
 
 #include "engine.h"
 #include "SDL_image.h"
+#include "filesystem.h"
 
 #define FUNCNAME(name) name##1
 #define DEFPIXEL uint OP(r, 0);
@@ -2347,8 +2348,9 @@ Texture *cubemapload(const char *name, bool mipit, bool msg, bool transient)
 {
     if(!hasCM) return NULL;
     string pname;
-    copystring(pname, makerelpath(skyboxdir, name));
+    inexor::filesystem::getmedianame(pname, name, DIR_SKYBOX);
     path(pname);
+
     Texture *t = NULL;
     if(!strchr(pname, '*'))
     {

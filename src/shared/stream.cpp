@@ -424,8 +424,9 @@ const char *addpackagedir(const char *dir)
     char *filter = pdir;
     for(;;)
     {
-        static int len = strlen(mediadir);
-        filter = strstr(filter, mediadir);
+        const char *meddir = "media"; //wont find any dynamic package dir here anyways (before loading the configs).
+        static int len = strlen(meddir);
+        filter = strstr(filter, meddir);
         if(!filter) break;
         if(filter > pdir && filter[-1] == PATHDIV && filter[len] == PATHDIV) break;
         filter += len;
@@ -1259,4 +1260,3 @@ char *loadfile(const char *fn, size_t *size, bool utf8)
     if(size!=NULL) *size = len;
     return buf;
 }
-

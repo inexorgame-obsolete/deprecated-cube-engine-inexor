@@ -11,6 +11,7 @@
 
 #include "engine.h"
 #include "textedit.h"
+#include "filesystem.h"
 
 static struct gui *windowhit = NULL;
 static bool layoutpass, actionon = false;
@@ -43,7 +44,6 @@ static float cursorx = 0.5f, cursory = 0.5f;
 VARP(guiautotab, 6, 16, 40);
 VARP(guiclicktab, 0, 0, 1);
 VARP(guifadein, 0, 1, 1);
-SVARP(icondir, "media/interface/icon");
 
 struct gui : g3d_gui
 {
@@ -361,7 +361,11 @@ struct gui : g3d_gui
                     glEnable(GL_TEXTURE_2D);
                     defaultshader->set();
                 }
-				if(!overlaytex) overlaytex = textureload(tempformatstring("%s/guioverlay.png", interfacedir), 3);
+                if(!overlaytex) {
+                    string otname;
+                    inexor::filesystem::appendmediadir(otname, "guioverlay.png", DIR_UI);
+                    overlaytex = textureload(otname, 3);
+                }
                 glColor3fv(light.v);
                 glBindTexture(GL_TEXTURE_2D, overlaytex->id);
                 rect_(xi, yi, xs, ys, 0);
@@ -426,7 +430,11 @@ struct gui : g3d_gui
                     glEnable(GL_TEXTURE_2D);
                     defaultshader->set();
                 }
-				if(!overlaytex) overlaytex = textureload(tempformatstring("%s/guioverlay.png", interfacedir), 3);
+                if(!overlaytex) {
+                    string otname;
+                    inexor::filesystem::appendmediadir(otname, "guioverlay.png", DIR_UI);
+                    overlaytex = textureload(otname, 3);
+                }
                 glColor3fv(light.v);
                 glBindTexture(GL_TEXTURE_2D, overlaytex->id);
                 rect_(xi, yi, xs, ys, 0);
@@ -643,7 +651,11 @@ struct gui : g3d_gui
 
         if(overlaid)
         {
-            if(!overlaytex) overlaytex = textureload(tempformatstring("%s/guioverlay.png", interfacedir), 3);
+            if(!overlaytex) {
+                string otname;
+                inexor::filesystem::appendmediadir(otname, "guioverlay.png", DIR_UI);
+                overlaytex = textureload(otname, 3);
+            }
             glBindTexture(GL_TEXTURE_2D, overlaytex->id);
             glColor3fv(light.v);
             rect_(x, y, xs, ys, 0);
@@ -729,7 +741,11 @@ struct gui : g3d_gui
         defaultshader->set();
         if(overlaid) 
         {
-            if(!overlaytex) overlaytex = textureload(tempformatstring("%s/guioverlay.png", interfacedir), 3);
+            if(!overlaytex) {
+                string otname;
+                inexor::filesystem::appendmediadir(otname, "guioverlay.png", DIR_UI);
+                overlaytex = textureload(otname, 3);
+            }
             glBindTexture(GL_TEXTURE_2D, overlaytex->id);
             glColor3fv(light.v);
             rect_(x, y, xs, ys, 0);
@@ -740,7 +756,11 @@ struct gui : g3d_gui
     {		
         if(visible())
         {
-            if(!slidertex) slidertex = textureload(tempformatstring("%s/guislider.png", interfacedir), 3);
+            if(!slidertex) {
+                string otname;
+                inexor::filesystem::appendmediadir(otname, "guislider.png", DIR_UI);
+                slidertex = textureload(otname, 3);
+            }
             glBindTexture(GL_TEXTURE_2D, slidertex->id);
             if(percent < 0.99f) 
             {
@@ -790,7 +810,9 @@ struct gui : g3d_gui
                 if(icon[0] != ' ')
                 {
                     const char *ext = strrchr(icon, '.');
-					icon_(textureload(tempformatstring("%s/%s%s", icondir, icon, ext ? "" : ".jpg"), 3), false, x, cury, ICON_SIZE, clickable && hit);
+                    static string iname;
+                    inexor::filesystem::appendmediadir(iname, icon, DIR_ICON, ext ? NULL : ".jpg");
+                    icon_(textureload(iname, 3), false, x, cury, ICON_SIZE, clickable && hit);
                 }
                 x += ICON_SIZE;
             }
@@ -806,7 +828,11 @@ struct gui : g3d_gui
 
     static void drawskin(int x, int y, int gapw, int gaph, int start, int n, int passes = 1, const vec &light = vec(1, 1, 1), float alpha = 0.80f)//int vleft, int vright, int vtop, int vbottom, int start, int n) 
     {
-		if(!skintex) skintex = textureload(tempformatstring("%s/guiskin.png", interfacedir), 3);
+        if(!skintex) {
+            static string stname;
+            inexor::filesystem::appendmediadir(stname, "guiskin.png", DIR_UI);
+            skintex = textureload(stname, 3);
+        }
         glBindTexture(GL_TEXTURE_2D, skintex->id);
         int gapx1 = INT_MAX, gapy1 = INT_MAX, gapx2 = INT_MAX, gapy2 = INT_MAX;
         float wscale = 1.0f/(SKIN_W*SKIN_SCALE), hscale = 1.0f/(SKIN_H*SKIN_SCALE);

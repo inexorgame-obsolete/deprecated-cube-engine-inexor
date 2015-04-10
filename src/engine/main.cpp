@@ -5,6 +5,7 @@
 
 #include "engine.h"
 #include "rpc/rpc_sb_compat.h"
+#include "filesystem.h"
 
 /// extern functions and data here
 extern void cleargamma();
@@ -194,8 +195,6 @@ void writeinitcfg()
 
 /// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 /// main menu background and loading screen renderer
-
-SVARP(interfacedir, "media/interface");
 
 /// create a resolution suggestion by scaling down the larger side of the 2 screen dimensions.
 /// @warning this is a call by reference function!

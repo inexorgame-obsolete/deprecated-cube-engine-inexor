@@ -1,9 +1,7 @@
 // worldio.cpp: loading & saving of maps and savegames
 
 #include "engine.h"
-
-SVARP(mediadir, "media");
-SVARP(mapdir, "media/map");
+#include "filesystem.h"
 
 /// remove map postfix (.ogz) from file path/name to get map name
 void cutogz(char *s) 
@@ -17,11 +15,11 @@ void cutogz(char *s)
 /// @param fname folder name
 /// @param realname file name
 /// @param mapname a pointer to where the final map name will be copied (call by reference)
-/// @see cutogz
 void getmapfilename(const char *fname, const char *realname, char *mapname)
 {   
     if(!realname) realname = fname;
-	defformatstring(name) ("%s/%s", mapdir, realname);
+    string name;
+    inexor::filesystem::appendmediadir(name, realname, DIR_MAP);
     cutogz(name);
     copystring(mapname, name, 100);
 }   

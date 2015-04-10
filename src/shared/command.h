@@ -1,8 +1,8 @@
-/// Warning
-/// Do not comment or use the following code in new work!
-/// The whole command and scripting engine is deprecated and will be replaced with javascript (or coffeescript) sooner or later.
-/// -Hanni
+/// Cubescript API
+/// Deprecated.
 
+#ifndef SAUER_COMMAND_H
+#define SAUER_COMMAND_H
 
 /// contains all kind of different script objects
 /// such as commands, variables, macros or idents
@@ -371,3 +371,4 @@ inline void ident::getval(tagval &v) const
 #define ICOMMANDSNAME _icmds_
 #define ICOMMANDS(name, nargs, proto, b) ICOMMANDNS(name, ICOMMANDSNAME, nargs, proto, b)
  
+#endif // SAUER_COMMAND_H

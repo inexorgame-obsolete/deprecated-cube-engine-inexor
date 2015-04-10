@@ -1,4 +1,7 @@
+/// Bot Movement, according to waypoints (saved within the map in an excluded file).
+
 #include "game.h"
+#include "filesystem.h"
 
 extern selinfo sel;
 
@@ -681,7 +684,7 @@ namespace ai
 
         string mapname;
         getmapfilename(mname, NULL, mapname);
-        formatstring(wptname)("%s/%s.wpt", mapdir, mapname);
+        inexor::filesystem::appendmediadir(wptname, mapname, DIR_MAP, ".wpt");
         path(wptname);
         return true;
     }
