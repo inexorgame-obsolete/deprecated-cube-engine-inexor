@@ -1065,6 +1065,7 @@ namespace game
 	/// render game hud depending on hudplayer's state and "SPECTATOR" in spectator mode
     void gameplayhud(int w, int h)
     {
+        return;
         glPushMatrix();
         glScalef(h/1800.0f, h/1800.0f, 1);
 
