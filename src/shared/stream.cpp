@@ -269,37 +269,39 @@ char *makerelpath(const char *dir, const char *file, const char *prefix, const c
 }
 
 
+/// Modifies the input string to only contain slashes in the direction the platform allows.
+/// Which is \ on windows and / on any other platform.
 char *path(char *s)
 {
     for(char *curpart = s;;)
     {
         char *endpart = strchr(curpart, '&');
         if(endpart) *endpart = '\0';
-        if(curpart[0]=='<')
+        if(curpart[0] == '<')
         {
             char *file = strrchr(curpart, '>');
             if(!file) return s;
-            curpart = file+1;
+            curpart = file + 1;
         }
         for(char *t = curpart; (t = strpbrk(t, "/\\")); *t++ = PATHDIV);
         for(char *prevdir = NULL, *curdir = curpart;;)
         {
-            prevdir = curdir[0]==PATHDIV ? curdir+1 : curdir;
+            prevdir = curdir[0] == PATHDIV ? curdir + 1 : curdir;
             curdir = strchr(prevdir, PATHDIV);
             if(!curdir) break;
-            if(prevdir+1==curdir && prevdir[0]=='.')
+            if(prevdir + 1 == curdir && prevdir[0] == '.')
             {
-                memmove(prevdir, curdir+1, strlen(curdir+1)+1);
+                memmove(prevdir, curdir + 1, strlen(curdir + 1) + 1);
                 curdir = prevdir;
             }
-            else if(curdir[1]=='.' && curdir[2]=='.' && curdir[3]==PATHDIV)
+            else if(curdir[1] == '.' && curdir[2] == '.' && curdir[3] == PATHDIV)
             {
-                if(prevdir+2==curdir && prevdir[0]=='.' && prevdir[1]=='.') continue;
-                memmove(prevdir, curdir+4, strlen(curdir+4)+1);
-                if(prevdir-2 >= curpart && prevdir[-1]==PATHDIV)
+                if(prevdir + 2 == curdir && prevdir[0] == '.' && prevdir[1] == '.') continue;
+                memmove(prevdir, curdir + 4, strlen(curdir + 4) + 1);
+                if(prevdir - 2 >= curpart && prevdir[-1] == PATHDIV)
                 {
                     prevdir -= 2;
-                    while(prevdir-1 >= curpart && prevdir[-1] != PATHDIV) --prevdir;
+                    while(prevdir - 1 >= curpart && prevdir[-1] != PATHDIV) --prevdir;
                 }
                 curdir = prevdir;
             }
@@ -307,13 +309,15 @@ char *path(char *s)
         if(endpart)
         {
             *endpart = '&';
-            curpart = endpart+1;
+            curpart = endpart + 1;
         }
         else break;
     }
     return s;
 }
 
+/// Returns a static string with adapted slashes according to the platforms prefered pathseperator.
+/// @warning not threadsafe!
 char *path(const char *s, bool copy)
 {
     static string tmp;
