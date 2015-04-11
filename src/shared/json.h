@@ -85,13 +85,13 @@ struct JSON
 
     /// Save's to a specific .json-file.
     /// @return true after saving successfully.
-    bool save(const char *filename)
+    bool save(const char *filename, bool formatted = true)
     {
         string s; 
         copystring(s, filename);
         stream *f = openutf8file(path(s), "w");
         if(!f) return false;
-        char *buf = render();
+        char *buf = render(formatted);
         f->putstring(buf);
         delete f;
         delete[] currentfile;
