@@ -14,23 +14,30 @@ SVARP(icondir, "media/interface/icon");
 namespace inexor {
     namespace filesystem {
 
+        /// Returns the specific media dir according to type.
+        const char *getmediadir(int type)
+        {
+            switch(type)
+            {
+            case DIR_MEDIA:     return mediadir;
+            case DIR_MAP:       return mapdir;
+            case DIR_TEXTURE:   return texturedir;
+            case DIR_SKYBOX:    return skyboxdir;
+            case DIR_UI:        return interfacedir;
+            case DIR_ICON:      return icondir;
+            }
+            return NULL;
+        }
+
         /// Append the media directory specified by type to the basename.
         char *appendmediadir(char *output, const char *basename, int type, const char *extension)
         {
-            string dir;
-            switch(type)
-            {
-            case DIR_MEDIA:     copystring(dir, mediadir);          break;
-            case DIR_MAP:       copystring(dir, mapdir);            break;
-            case DIR_TEXTURE:   copystring(dir, texturedir);        break;
-            case DIR_SKYBOX:    copystring(dir, skyboxdir);         break;
-            case DIR_UI:        copystring(dir, interfacedir);      break;
-            case DIR_ICON:      copystring(dir, icondir);           break;
-            }
+
             //size_t dirlen = strlen(dir);
            // if(dirlen >= 2 && (dir[dirlen - 1] == '/' || dir[dirlen - 1] == '\\')) dir[dirlen - 1] = '\0';
 
-            formatstring(output)("%s/%s%s", dir, basename, extension ? extension : "");
+            const char *dir = getmediadir(type);
+            formatstring(output)("%s/%s%s", dir ? dir : "", basename, extension ? extension : "");
             return output;
         }
 

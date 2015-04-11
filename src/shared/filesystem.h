@@ -25,6 +25,7 @@ extern char *icondir;
 namespace inexor
 {
     namespace filesystem {
+        extern const char *getmediadir(int type);
         extern char *appendmediadir(char *output, const char *basename, int type, const char *extension = NULL);
         extern char *getmedianame(char *output, const char *basename, int type, JSON *j = NULL);
     }
