@@ -637,12 +637,10 @@ void testjson(const char *name)
 }
 COMMAND(testjson, "s");
 
-/// Create basic types:
+// Create basic types:
 JSON *JSON_CreateBool(bool b)               { JSON *item= new JSON(); item->type = b ? JSON_TRUE : JSON_FALSE;  return item; }
 JSON *JSON_CreateInt(int num)               { JSON *item= new JSON(); item->type = JSON_NUMBER;     item->valueint = num; item->valuefloat = num; return item; }
 JSON *JSON_CreateFloat(float num)           { JSON *item= new JSON(); item->type = JSON_NUMBER;     item->valuefloat = num;     return item; }
-
-/// Create a JSON containing just a valuestring.
 JSON *JSON_CreateString(const char *str)    { if(!str) return NULL; JSON *item = new JSON(); item->type = JSON_STRING;     item->valuestring = newstring(str);  return item; }
 JSON *JSON_CreateArray()                    { JSON *item= new JSON(); item->type = JSON_ARRAY;      return item; }
 JSON *JSON_CreateObject()                   { JSON *item= new JSON(); item->type = JSON_OBJECT;     return item; }
@@ -727,7 +725,6 @@ void JSON::replacechild(int which, JSON *newitem)
 }
 
 // TODO:
-// render -> import commands automatisch wenn currentfile inkorrekt [DONE ? ]
 // refractor replace, addchild, replaceimport
-// namespace
-// class instead of struct (?)
+// namespace ? 
+// class instead of struct ?

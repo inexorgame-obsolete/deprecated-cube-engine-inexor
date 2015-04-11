@@ -255,14 +255,33 @@ struct JSON
     }
 };
 
+/// Load a .json file.
+/// Prints out the error position if it failed to parse if debugjson is enabled.
+/// @sideeffects allocates memory for a JSON structure, needs to be deleted.
 extern JSON *loadjson(const char *filename);
 
+
+/// Create a JSON with a boolean value.
 extern JSON *JSON_CreateBool(bool b);
+
+/// Create a JSON with given integer number as value.
 extern JSON *JSON_CreateInt(int num);
+
+/// Create a JSON with given floating point number as value.
 extern JSON *JSON_CreateFloat(float num);
+
+/// Create a JSON containing just a valuestring.
 extern JSON *JSON_CreateString(const char *str);
-extern JSON *JSON_CreateArray();  //new ordered list. access: position
-extern JSON *JSON_CreateObject(); //new unordered list. access: name
+
+/// Create a new ordered list.
+/// Access childs through its position number.
+extern JSON *JSON_CreateArray();
+
+/// Create a new unordered list.
+/// Access Childs through their keys (name-strings).
+extern JSON *JSON_CreateObject();
+
+
 
 /// Executes b for all JSON elements below the given (t), but not t itself.
 /// @param k is the variable name to access these JSON subelements.
