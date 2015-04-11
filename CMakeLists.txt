@@ -129,6 +129,9 @@ if(OS_LINUX OR (OS_WINDOWS AND NOT MSVC))
     # Allow the Large File Support (LFS) interface to replace the old interface.
     add_definitions(-D_FILE_OFFSET_BITS=64)
 
+    # Do not use STRICT_ANSI (important for some MINGW versions)
+    add_definitions(-U__STRICT_ANSI__)
+
     # Define where to move the binary by install
     set(EXE_SUB_DIR "bin/linux/${PROJECT_ARCH}")
 endif()
