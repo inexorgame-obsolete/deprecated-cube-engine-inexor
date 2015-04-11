@@ -87,7 +87,7 @@ struct JSON
     /// @return true after saving successfully.
     bool save(const char *filename, bool formatted = true)
     {
-        string s; 
+        string s;
         copystring(s, filename);
         stream *f = openutf8file(path(s), "w");
         if(!f) return false;
@@ -102,7 +102,7 @@ struct JSON
     /// Get number of children.
     /// More useful for arrays probably.
     int numchilds()
-    { 
+    {
         JSON *c = firstchild;
         int i = 0;
         while(c) { i++; c = c->next; }
@@ -139,7 +139,7 @@ struct JSON
         JSON *sub = getchild(key);
         return sub ? sub->valuefloat : -1.0f;
     }
-    
+
     /// Get floatvalue of a specific child in an Array.
     /// @return floatvalue of child or -1.0 if not found.
     float getchildfloat(int item)
@@ -188,7 +188,7 @@ struct JSON
     /// add a child to this JSON Object (at the last place).
     /// @param name is the new key/name the added item will be accessed.
     void addchild(const char *name, JSON *item)
-    { 
+    {
         if (!item) return;
         if(name) {
             delete[] item->name;
@@ -230,7 +230,7 @@ struct JSON
 
     /// Delete Child according to its name (from Object).
     void deletechild(const char *name) { JSON *c = detachchild(name); DELETEP(c); }
-    
+
     /// Replace Child in an Array with newitem.
     /// @sideeffects Deletes the old item.
     /// @param which represents which position in the Array the old item has.
