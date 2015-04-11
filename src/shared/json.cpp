@@ -220,7 +220,7 @@ static const char *parse_value(JSON *item, const char *value)
     ep = value; return 0;    // failure.
 }
 
- // Render a value to text.
+/// Render a value to text.
 static char *print_value(JSON *item, int depth, bool fmt)
 {
     char *out = 0;
@@ -669,6 +669,7 @@ JSON *loadjson(const char *filename)
         return NULL;
     }
     j->currentfile = newstring(s);
+    foralljsonchildren(j, k, k->currentfile = j->currentfile;);
 
     delete[] buf;
     return j;
