@@ -222,15 +222,16 @@ COMMAND(mapcfgname, "");
 /// remove old backup file but keep the file name for the new backup
 /// @param name file name of the new backup
 /// @param backupname file name of the old backup
+/// @return true on success.
 /// @see save_world
-void backup(char *name, char *backupname)
-{   
+bool backup(char *name, char *backupname)
+{
     string backupfile;
     copystring(backupfile, findfile(backupname, "wb"));
     /// remove old backup file
     remove(backupfile);
     /// rename 
-    rename(findfile(name, "wb"), backupfile);
+    return rename(findfile(name, "wb"), backupfile) == 0;
 }
 
 
@@ -996,7 +997,11 @@ bool save_world(const char *mname, bool nolms)
     if(!*mname) mname = game::getclientmap();
     setmapfilenames(*mname ? mname : "untitled");
     /// eventually save backup file
-    if(savebak) backup(ogzname, bakname);
+    if(savebak && !backup(ogzname, bakname))
+    {
+        conoutf(CON_WARN, "could not create backup, skipping saving %s", ogzname);
+        return false;
+    }
     /// open output stream
     stream *f = opengzfile(ogzname, "wb");
     if(!f) 
