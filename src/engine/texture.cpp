@@ -1728,8 +1728,7 @@ void texture(char *type, char *name, int *rot, int *xoffset, int *yoffset, float
     st.type = tnum;
     st.combined = -1;
     st.t = NULL;
-	if(name && strpbrk(name, "/\\")) copystring(st.name, makerelpath(getcurexecdir(), name)); //relative path to current folder
-    else copystring(st.name, name);
+    inexor::filesystem::getmedianame(st.name, name, DIR_TEXTURE);
     path(st.name);
     if(tnum==TEX_DIFFUSE)
     {
