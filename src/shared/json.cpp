@@ -13,7 +13,7 @@ const char *JSON_GetError()
     return ep;
 }
 
- // Parse the input text to generate a number, and populate the result into item.
+/// Internal: Parse the input text to generate a number, and populate the result into item.
 static const char *parse_number(JSON *item, const char *num)
 {
     float n = 0, sign=1, scale=0; int subscale=0, signsubscale=1;
@@ -40,7 +40,7 @@ static const char *parse_number(JSON *item, const char *num)
     return num;
 }
 
- // Render the number nicely from the given item into a string.
+/// Internal: Render the number nicely from the given item into a string.
 static char *print_number(JSON *item)
 {
 	defformatstring(val) ("%g", item->valuefloat);
@@ -60,7 +60,7 @@ static unsigned parse_hex4(const char *str)
     return h;
 }
 
- // Parse the input text into an unescaped cstring, and populate item.
+/// Internal: Parse the input text into an unescaped cstring, and populate item.
 static const unsigned char firstByteMark[7] = { 0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC };
 static const char *parse_string(JSON *item, const char *str)
 {
@@ -127,7 +127,7 @@ static const char *parse_string(JSON *item, const char *str)
     return ptr;
 }
 
- // Render the cstring provided to an escaped version that can be printed.
+/// Internal: Render the cstring provided to an escaped version that can be printed.
 static char *print_string_ptr(const char *str)
 {
     const char *ptr; char *ptr2,*out; int len=0; unsigned char token;
@@ -169,10 +169,10 @@ static char *print_string_ptr(const char *str)
     return out;
 }
 
- // Invote print_string_ptr (which is useful) on an item.
+/// Internal: Invote print_string_ptr (which is useful) on an item.
 static char *print_string(JSON *item) { return print_string_ptr(item->valuestring); }
 
- // Predeclare these prototypes.
+/// Internal: Predeclare these prototypes.
 static const char *parse_value(JSON *item, const char *value);
 static char *print_value(JSON *item, int depth, bool fmt);
 static const char *parse_array(JSON *item, const char *value);
@@ -180,10 +180,10 @@ static char *print_array(JSON *item, int depth, bool fmt);
 static const char *parse_object(JSON *item, const char *value);
 static char *print_object(JSON *item, int depth, bool fmt);
 
- // Utility to jump whitespace and cr/lf
+/// Internal: Utility to jump whitespace and cr/lf
 static const char *skip(const char *in) {while (in && *in && (unsigned char)*in<=32) in++; return in;}
 
- // Parse an object - create a new root, and populate.
+/// Internal: Parse an object - create a new root, and populate.
 JSON *JSON_ParseWithOpts(const char *value, const char **return_parse_end, bool require_null_terminated)
 {
     const char *end = 0;
@@ -202,10 +202,10 @@ JSON *JSON_ParseWithOpts(const char *value, const char **return_parse_end, bool 
     if(return_parse_end) *return_parse_end = end;
     return c;
 }
- // Default options for JSON_Parse
+/// Internal: Default options for JSON_Parse
 JSON *JSON_Parse(const char *value) { return JSON_ParseWithOpts(value, 0, false); }
 
- // Parser core - when encountering text, process appropriately.
+/// Internal: Parser core - when encountering text, process appropriately.
 static const char *parse_value(JSON *item, const char *value)
 {
     if(!value)                        return 0;    // Fail on null.
@@ -220,7 +220,7 @@ static const char *parse_value(JSON *item, const char *value)
     ep = value; return 0;    // failure.
 }
 
-/// Render a value to text.
+/// Internal: Render a value to text.
 static char *print_value(JSON *item, int depth, bool fmt)
 {
     char *out = 0;
@@ -241,7 +241,7 @@ static char *print_value(JSON *item, int depth, bool fmt)
     return out;
 }
 
- // Build an array from input text.
+/// Internal: Build an array from input text.
 static const char *parse_array(JSON *item, const char *value)
 {
     JSON *child;
@@ -271,7 +271,7 @@ static const char *parse_array(JSON *item, const char *value)
     ep = value; return 0;    // malformed.
 }
 
- // Render an array to text
+/// Internal: Render an array to text
 static char *print_array(JSON *item, int depth, bool fmt)
 {
     char **entries;
@@ -336,7 +336,7 @@ static char *print_array(JSON *item, int depth, bool fmt)
     return out;
 }
 
- // Build an object from the text.
+/// Internal: Build an object from the text.
 static const char *parse_object(JSON *item, const char *value)
 {
     JSON *child;
@@ -379,7 +379,7 @@ static const char *parse_object(JSON *item, const char *value)
     ep = value; return 0;    // malformed.
 }
 
- // Render an object to text.
+/// Internal: Render an object to text.
 static char *print_object(JSON *item, int depth, bool fmt)
 {
     char **entries = 0, **names = 0;
@@ -458,7 +458,7 @@ static char *print_object(JSON *item, int depth, bool fmt)
     return out;
 }
 
-/// Minify JSON buffer (remove whitespaces and even comments)
+/// Minify JSON buffer (remove whitespaces and even comments).
 void JSON_Minify(char *json)
 {
     char *into = json;
@@ -617,7 +617,7 @@ bool JSON_ResolveImport(JSON *g)
     return true;
 }
 
-/// j => "anims"
+/// Load all occurences of import-markers from the referring json-files.
 void JSON_ResolveImports(JSON *j)
 {
     foralljson(j, k,
@@ -627,6 +627,7 @@ void JSON_ResolveImports(JSON *j)
     )
 }
 
+/// Load a JSON File and display its contents.
 void testjson(const char *name)
 {
     JSON *j = loadjson(name);

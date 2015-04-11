@@ -132,49 +132,61 @@ struct JSON
         return c;
     }
 
-    /// Get float of Object. 
-    /// Used if floatvalue is expected. otherwise returns -1
+    /// Get floatvalue of a specific child in an Object.
+    /// @return floatvalue of child or -1.0 if not found.
     float getchildfloat(const char *key)
     {
         JSON *sub = getchild(key);
         return sub ? sub->valuefloat : -1.0f;
     }
-
-    float getchildfloat(int item)        //Get float of Array. Used if floatvalue is expected. otherwise returns -1.0f
+    
+    /// Get floatvalue of a specific child in an Array.
+    /// @return floatvalue of child or -1.0 if not found.
+    float getchildfloat(int item)
     {
         JSON *sub = getchild(item);
         return sub ? sub->valuefloat : -1.0f;
     }
 
-    int getchildint(const char *key)     //Get int of Object. Used if value is expected to be int. otherwise returns -1
+    /// Get intvalue of a specific child in an Object.
+    /// @return intvalue of child or -1 if not found.
+    int getchildint(const char *key)
     {
         JSON *sub = getchild(key);
         return sub ? sub->valueint : -1;
     }
 
-    int getchildint(int item)            //Get child int of Array. Used if value is expected to be int. otherwise returns -1
+    /// Get intvalue of a specific child in an Array.
+    /// @return intvalue of child or -1 if not found.
+    int getchildint(int item)
     {
         JSON *sub = getchild(item);
         return sub ? sub->valueint : -1;
     }
 
-    const char *getchildstring(const char *key)     //Get string of Object. Used if value is expected to be a string. otherwise returns ""
+    /// Get (allways allocated!) string of a specific child in an Object.
+    /// @return intvalue of child or a new allocated string "" if not found.
+    /// @sideeffects allocates memory if no such key is found, needs deletion.
+    const char *getchildstring(const char *key)
     {
         JSON *sub = getchild(key);
         return sub ? sub->valuestring : newstring("");
     }
 
-    const char *getchildstring(int item)            //Get string of Array. Used if value is expected to be string. otherwise returns ""
+    /// Get (allways allocated!) string of a specific child in an Object.
+    /// @return intvalue of child or a new allocated string "" if not found.
+    /// @sideeffects allocates memory if no such key is found, needs deletion.
+    const char *getchildstring(int item)
     {
         JSON *sub = getchild(item);
         return sub ? sub->valuestring : newstring("");
     }
 
-    /// add Item to the last place of an Array (item == another JSON).
+    /// add a child to this JSON Array (at the last place, not setting a new name).
     void addchild(JSON *item);
 
-    /// add Item to Object (item == another JSON).
-    /// @param name is the new name of the item.
+    /// add a child to this JSON Object (at the last place).
+    /// @param name is the new key/name the added item will be accessed.
     void addchild(const char *name, JSON *item)
     { 
         if (!item) return;
@@ -185,8 +197,9 @@ struct JSON
         addchild(item);
     }
 
-    /// Remove Item from Array but do not delete it.
-    /// @param which tells which place to remove in the Array.
+    /// Remove Child from Array but do not delete it.
+    /// @param which specifies which place the Child is.
+    /// @return the detached Child.
     JSON *detachchild(int which)
     {
         JSON *c = firstchild;
@@ -199,8 +212,9 @@ struct JSON
         return c;
     }
 
-    /// Detach Item from Object but do not delete it.
-    /// @param name gives the name of the item.
+    /// Detach Child from Object but do not delete it.
+    /// @param name specifies the key/name of the Child.
+    /// @return the detached Child.
     JSON *detachchild(const char *name)
     {
         if(!name) return NULL;
@@ -211,16 +225,20 @@ struct JSON
         return NULL;
     }
 
-    void deletechild(int which) { JSON *c = detachchild(which); DELETEP(c); }        //Delete Item from Array
-    void deletechild(const char *name) { JSON *c = detachchild(name); DELETEP(c); }  //Delete Item from Object
+    /// Delete Child according to its position (from Array).
+    void deletechild(int which) { JSON *c = detachchild(which); DELETEP(c); }
+
+    /// Delete Child according to its name (from Object).
+    void deletechild(const char *name) { JSON *c = detachchild(name); DELETEP(c); }
     
-    /// Replace Item in Array with newitem.
+    /// Replace Child in an Array with newitem.
     /// @sideeffects Deletes the old item.
-    /// @param which represents which position in the Array the old item had.
-    /// of recognizing imported/replaced stuff.
+    /// @param which represents which position in the Array the old item has.
     void replacechild(int which, JSON *newitem);
 
-    /// Replace Item in Object.
+    /// Replace Child in an Object with newitem.
+    /// @sideeffects Deletes the old item.
+    /// @param name represents the key/name of the old item.
     void replacechild(const char *name, JSON *newitem)
     {
         if(!name) return;
