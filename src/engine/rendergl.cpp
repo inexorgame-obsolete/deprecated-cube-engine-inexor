@@ -2289,7 +2289,7 @@ ICOMMAND(getcrosshair, "i", (int *i),
     const char *name = "";
     if(*i >= 0 && *i < MAXCROSSHAIRS)
     {
-        name = crosshairs[*i] ? crosshairs[*i]->name : game::defaultcrosshair(*i);
+        name = crosshairs[*i] ? crosshairs[*i]->name : tempformatstring("%s/%s", crosshairdir, game::defaultcrosshair(*i));
     }
     result(name);
 });
