@@ -45,10 +45,11 @@ namespace inexor {
         /// @warning not threadsafe! (since makerelpath, parentdir and getcurexecdir are not)
         char *getmedianame(char *output, const char *basename, int type, JSON *j)
         {
-            ASSERT(basename != NULL);
-            if(basename[0] == '/') appendmediadir(output, basename, type);
-            else if(j) copystring(output, makerelpath(parentdir(j->currentfile), basename));
-            else copystring(output, makerelpath(getcurexecdir(), basename));
+            ASSERT(basename != NULL && strlen(basename)>=2);
+            if(basename[0] == '/') appendmediadir(output, basename+1, type);
+            else if(j && j->currentfile) copystring(output, makerelpath(parentdir(j->currentfile), basename));
+            else if(!j) copystring(output, makerelpath(getcurexecdir(), basename));
+            else copystring(output, basename);
             return output;
         }
     }
