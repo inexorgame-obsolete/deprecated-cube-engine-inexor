@@ -30,7 +30,7 @@
 * muparser (math expression library)
 * JSON API
 * JSON Import API (not completed yet)
-* JSON references to other JSON files
+ * JSON references to other JSON files
 
 #### Unit tests
 
@@ -47,11 +47,6 @@
 * Choose legitimate licenses to use for content ("License Policy")
 * Removed non-free content (textures, models, maps)
 * Fixed file paths
-
-#### Texture management and distribution
-
-* JSON files contains information about the texture files, the texture settings and the texture meta data
-* Distribution of textures using JSON files
 
 #### Gameplay
 
