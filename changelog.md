@@ -8,6 +8,7 @@
 
 * Github source code, issues, wiki
 * Travis build server
+ * Nightly builds for testing
 * Waffle.io kanboard
 * Separate repositories for code and content
 
@@ -27,14 +28,14 @@
 #### Integration of 3rd party libraries
 
 * SDL2 (including better fullscreen support under linux)
-* muparser (math expression library)
+* Muparser (math expression library)
 * JSON API
 * JSON Import API (not completed yet)
  * JSON references to other JSON files
 
 #### Unit tests
 
-* Integrated unit test framework: google test
+* Integrated unit test framework: Google test
 
 #### API documentation
 
@@ -45,16 +46,20 @@
 #### Licensing and content management
 
 * Choose legitimate licenses to use for content ("License Policy")
-* Removed non-free content (textures, models, maps)
-* Fixed file paths
+* Provide some freely licensed basic textures and maps
 
 #### Gameplay
 
 * Renamed /kill to /suicide
+* Console improvements
+ * Warnings won't spam the console anymore
+ * Lines are fading out, instead of simple disappear
+ * Timestamps
+ * History, reuse commands easily from your last game session
 
 #### Inter process communication
 
-* Communication with the inexor process
+* Communication with the Inexor process
 * External NodeJS integration
 
 #### Graphics
