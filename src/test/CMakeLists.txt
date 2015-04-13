@@ -1,4 +1,4 @@
-set(TEST_BINARY testcmd CACHE INTERN "")
+set(TEST_BINARY unit_tests CACHE INTERN "")
 
 declare_module(test .)
 
