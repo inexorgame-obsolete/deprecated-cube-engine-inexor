@@ -100,9 +100,9 @@ static inline T min(T a, U b)
 /// if the parameter is out of range, the range limit (min/max)
 /// will be returned
 template<class T, class U>
-static inline T clamp(T a, U b, U c)
+static inline T clamp(T val, U minimum, U maximum)
 {
-    return max(T(b), min(a, T(c)));
+    return max(T(minimum), min(val, T(maximum)));
 }
 
 
