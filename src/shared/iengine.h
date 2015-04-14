@@ -164,6 +164,8 @@ static inline void loopiter(ident *id, identstack &stack, int i) { tagval v; v.s
 static inline void loopiter(ident *id, identstack &stack, float f) { tagval v; v.setfloat(f); loopiter(id, stack, v); }
 static inline void loopiter(ident *id, identstack &stack, const char *s) { tagval v; v.setstr(newstring(s)); loopiter(id, stack, v); }
 
+extern void cutextension(char *str, char *ext = NULL);
+
 // console
 
 enum

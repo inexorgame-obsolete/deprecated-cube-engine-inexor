@@ -3,26 +3,18 @@
 #include "engine.h"
 #include "filesystem.h"
 
-/// remove map postfix (.ogz) from file path/name to get map name
-void cutogz(char *s) 
-{   
-    char *ogzp = strstr(s, ".ogz");
-    if(ogzp) *ogzp = '\0';
-}   
-
-
 /// get the map name from a path/file
 /// @param fname folder name
 /// @param realname file name
 /// @param mapname a pointer to where the final map name will be copied (call by reference)
 void getmapfilename(const char *fname, const char *realname, char *mapname)
-{   
+{
     if(!realname) realname = fname;
     string name;
     inexor::filesystem::appendmediadir(name, realname, DIR_MAP);
-    cutogz(name);
+    cutextension(name, "ogz");
     copystring(mapname, name, 100);
-}   
+}
 
 
 /// fix entity attributes according to the program version
