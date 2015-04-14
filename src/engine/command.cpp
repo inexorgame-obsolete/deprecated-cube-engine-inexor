@@ -2268,7 +2268,7 @@ bool validateblock(const char *s)
 /// Returns a pointer to the extension of string str (but does not allocate a new string) without the dot.
 const char *getextension(const char *str)
 {
-    if(!str) return NULL;
+    ASSERT(str != NULL);
     loopirev(strlen(str)) {
         if(str[i] == '\\' || str[i] == '/') return NULL; //reached the previous folder seperator
         if(str[i] == '.') return &str[i + 1];
@@ -2284,12 +2284,17 @@ result(a ? a : "");
 /// @param ext if != NULL, just this given extension will be cut.
 void cutextension(char *str, const char *ext)
 {
-    if(!str) return;
+    ASSERT(str != NULL);
+
     int len = strlen(str);
+
     char *pos = NULL;
-    loopirev(len) if(str[i] == '.') { pos = &str[i]; break; }
+    loopirev(len) {
+        if(str[i] == '.') { pos = &str[i]; break; }
+        else if(str[i] == '/' || str[i] == '\\') break;
+    }
     if(ext && ext[0] == '.') ext++;
-    if(pos && (!ext || !strcmp(pos+1, ext))) pos[0] = '\0';
+    if(pos && pos+1 && (!ext || !strcmp(pos+1, ext))) pos[0] = '\0';
 }
 
 ICOMMAND(cutextension, "ss", (char *str, char *ext), 
@@ -2305,6 +2310,7 @@ static string timebuf;
 /// @see srftime
 const char *gettimestr(const char *format, bool forcelowercase)
 {
+    ASSERT(format != NULL);
     if(!systime) { systime = time(NULL); systime -= totalmillis/1000; if(!systime) systime++; }
     time_t timeoffset = systime + totalmillis/1000;
     strftime(timebuf, sizeof(timebuf), format, localtime(&timeoffset));
