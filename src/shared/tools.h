@@ -1470,6 +1470,7 @@ extern char *makerelpath(const char *dir, const char *file, const char *prefix =
 extern char *path(char *s);
 extern char *path(const char *s, bool copy);
 extern const char *parentdir(const char *directory);
+extern char *cutdir(char *filename);
 extern bool fileexists(const char *path, const char *mode);
 extern bool createdir(const char *path);
 extern size_t fixpackagedir(char *dir);

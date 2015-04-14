@@ -328,6 +328,7 @@ char *path(const char *s, bool copy)
 
 /// @return the parent directory of a file path
 /// @warning Removes last slash: media/texture/lastly.dg becomes media/texture
+/// @warning not threadsafe!
 const char *parentdir(const char *filename)
 {
     const char *p = filename + strlen(filename);
@@ -338,10 +339,23 @@ const char *parentdir(const char *filename)
     return parent;
 }
 
+/// modifies "filename" to contain only the rare filename without path.
+/// @return filename gets modified(!) and returned.
+/// @example "media/textures/default.json" becomes "default.json"
+char *cutdir(char *filename)
+{
+    size_t len = strlen(filename);
+    char *p = filename + len;
+    while(p > filename && *p != '/' && *p != '\\') p--; //p pointing to '/'
+
+    size_t rarelen = strlen(p);
+    loopi(rarelen) filename[i] = p[i + 1]; //copies NUL as well
+    return filename;
+}
+
 /// Checks whether given file exists (and is available in the specific mode)
 /// Where Path is the filename and mode can optionally be set (but only effects posix systems)
-/// ATTENTION: DO NOT USE THIS METHOD DIRECTLY! It doesn't give a fuck about your homedir 
-/// or any additional package dir, so use findfile instead!
+/// ATTENTION: DO NOT USE THIS METHOD DIRECTLY! USE findfile instead!
 /// Available Modes are "w"/"a" for writeable files only and "d" for executeable files only
 /// ATTENTION2:  if mode "w" or "a" are specified it checks for (parent) directory existence!
 bool fileexists(const char *path, const char *mode)
@@ -445,8 +459,9 @@ const char *addpackagedir(const char *dir)
 
 /// Checks whether given file exists (and is available in the specific mode)
 /// Where Path is the filename and mode can optionally be set
-/// Available Modes are "e" (see @Return) "w"/"a" for writeable files only and "d" for executeable files only
-/// @Return Returns the filename of the found file (or the, if "e" is specified it returns NULL if nothing was found.
+/// @warning not threadsafe!
+/// @param mode Available Modes are "e" (see @return) "w"/"a" for writeable files only and "d" for executeable files only
+/// @return Returns the filename of the found file (or the, if "e" is specified it returns NULL if nothing was found.
 ///         Otherwise it returns the inital filename.
 const char *findfile(const char *filename, const char *mode)
 {
