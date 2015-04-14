@@ -519,7 +519,6 @@ extern void renderprogress(float bar, const char *text, GLuint tex = 0, bool bac
 extern void getfps(int &fps, int &bestdiff, int &worstdiff);
 extern void swapbuffers(bool overlay = true);
 extern int getclockmillis();
-extern const char *gettimestr(const char *format = "%d_%b_%y_%H.%M.%S", bool forcelowercase = false);
 
 enum { KR_CONSOLE = 1<<0, KR_GUI = 1<<1, KR_EDITMODE = 1<<2 };
 

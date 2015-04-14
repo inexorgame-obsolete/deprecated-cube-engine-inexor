@@ -165,6 +165,7 @@ static inline void loopiter(ident *id, identstack &stack, float f) { tagval v; v
 static inline void loopiter(ident *id, identstack &stack, const char *s) { tagval v; v.setstr(newstring(s)); loopiter(id, stack, v); }
 
 extern void cutextension(char *str, char *ext = NULL);
+extern const char *gettimestr(const char *format = "%d_%b_%y_%H.%M.%S", bool forcelowercase = false);
 
 // console
 

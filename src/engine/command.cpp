@@ -2288,6 +2288,27 @@ ICOMMAND(cutextension, "ss", (char *str, char *ext),
 	result(str ? str : ""); 
 );
 
+static time_t systime = 0;
+static string timebuf;
+
+//returns the time in the given format
+const char *gettimestr(const char *format, bool forcelowercase)
+{
+	if(!systime) { systime = time(NULL); systime -= totalmillis/1000; if(!systime) systime++; }
+    time_t timeoffset = systime + totalmillis/1000;
+    strftime(timebuf, sizeof(timebuf), format, localtime(&timeoffset));
+
+    if(forcelowercase)// hack because not all platforms (windows) support %P lowercase option // also strip leading 0 from 12 hour time
+    {
+        char *dst = timebuf;
+        const char *src = &timebuf[timebuf[0]=='0' ? 1 : 0];
+        while(*src) *dst++ = tolower(*src++);
+        *dst++ = '\0'; 
+    }
+	return timebuf;
+}
+ICOMMAND(gettimestr, "si", (const char *format, int *forcecase), gettimestr(format, *forcecase!=0));
+
 void writecfg(const char *name)
 {
     stream *f = openutf8file(path(name && name[0] ? name : game::savedconfig(), true), "w");
