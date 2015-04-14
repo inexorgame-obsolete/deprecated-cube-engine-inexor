@@ -266,9 +266,9 @@ char *makerelpath(const char *dir, const char *file, const char *prefix, const c
     return tmp;
 }
 
-// Given the absolute current directory and an absolute file name, returns a relative file name.
-// For example, if the current directory is C:\foo\bar and the filename C:\foo\whee\text.txt is given,
-// GetRelativeFilename will return ..\whee\text.txt.
+/// Given the absolute current directory and an absolute file name, returns a relative file name.
+/// For example, if the current directory is C:\foo\bar and the filename C:\foo\whee\text.txt is given,
+/// GetRelativeFilename will return ..\whee\text.txt.
 char* GetRelativeFilename(const char *currentDirectory, const char *absoluteFilename)
 {
     // declarations - put here so this should work in a C compiler
