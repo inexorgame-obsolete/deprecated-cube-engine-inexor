@@ -426,6 +426,15 @@ char *cutdir(char *filename)
     return filename;
 }
 
+/// Rudamentary "unpath" command to only allow slashes (no backslashes) in a string.
+char *uniformfilename(char *filename)
+{
+    ASSERT(filename != NULL);
+    size_t len = strlen(filename);
+    loopi(len) if(filename[i] == '\\') filename[i] = '/';
+    return filename;
+}
+
 /// Checks whether given file exists (and is available in the specific mode)
 /// Where Path is the filename and mode can optionally be set (but only effects posix systems)
 /// ATTENTION: DO NOT USE THIS METHOD DIRECTLY! USE findfile instead!

@@ -1470,6 +1470,7 @@ extern char* GetRelativeFilename(const char *currentDirectory, const char *absol
 extern char *makerelpath(const char *dir, const char *file, const char *prefix = NULL, const char *cmd = NULL);
 extern char *path(char *s);
 extern char *path(const char *s, bool copy);
+extern char *uniformfilename(char *filename);
 extern const char *parentdir(const char *directory);
 extern char *cutdir(char *filename);
 extern bool fileexists(const char *path, const char *mode);
