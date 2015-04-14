@@ -1466,6 +1466,7 @@ static inline uchar cubeupper(uchar c)
 extern size_t decodeutf8(uchar *dst, size_t dstlen, const uchar *src, size_t srclen, size_t *carry = NULL);
 extern size_t encodeutf8(uchar *dstbuf, size_t dstlen, const uchar *srcbuf, size_t srclen, size_t *carry = NULL);
 
+extern char* GetRelativeFilename(const char *currentDirectory, const char *absoluteFilename);
 extern char *makerelpath(const char *dir, const char *file, const char *prefix = NULL, const char *cmd = NULL);
 extern char *path(char *s);
 extern char *path(const char *s, bool copy);
