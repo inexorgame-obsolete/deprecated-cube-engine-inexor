@@ -208,11 +208,12 @@ if(OS_WINDOWS)
         # /MP                                   = Multiprocess compilation
         # /Gy                                   = Enable function-level linking
         # /Zi                                   = Enable program database
+        # /fp:fast                              = Calculate with less precise floating point values
         # /EHsc                                 = assume extern C stuff never throws exceptions
         # /W2                                   = Warning level 2
         # /wd"4305"                             = Ignore "truncation from 'double' to 'float'" warning
         # /wd"4251"                             = Ignore "class 'type' needs to have dll-interface .." warning
-        set(I_COMPILER_FLAGS          "-MP -Gy -Zi -EHsc -W2 -wd\"4305\" -wd\"4251\"")
+        set(I_COMPILER_FLAGS          "-MP -Gy -Zi -fp:fast -EHsc -W2 -wd\"4305\" -wd\"4251\"")
         # /MTd                                  = Multithreaded debug runtime
         # /Od                                   = Disable optimizations
         # /RTC1                                 = Enable basic run-time checks
