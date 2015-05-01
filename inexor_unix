@@ -6,8 +6,9 @@ tolower() {
 dir="`dirname "$0"`"
 arch="`uname -m | tolower`"
 os="`uname | tolower`"
-exe="${dir}/bin/${os}/${arch}/inexor"
-
+bin="${dir}/bin/${os}/${arch}"
+exe="${bin}/inexor"
+export LD_LIBRARY_PATH="${bin}:$LD_LIBRARY_PATH"
 echo >&2 "CALLING: ${exe}"
 find "$dir"/data/ -maxdepth 1 -print0                      \
   | sed 's/^/-k/' -z                                       \
