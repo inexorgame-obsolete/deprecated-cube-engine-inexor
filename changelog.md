@@ -1,6 +1,6 @@
 ## Changelog
 
-### Inexor - Coffein Edition (alpha 0.1, 2015-04-11)
+### Inexor - Caffeine Edition (v0.1-alpha, 2015-05-01)
 
 * Choosed the name of the game
 
