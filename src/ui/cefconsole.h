@@ -25,7 +25,7 @@ class InexorCefConsole : public InexorCefContextProvider,
 
         // InexorCefLayerProvider
         std::string GetLayerName() { return "console"; };
-        std::string GetUrl() { return GetLocalUrl("/src/ui/web/console.html"); };
+        std::string GetUrl() { return GetLocalUrl("/web/console.html"); };
         bool GetVisibility() { return true; };
         bool GetAcceptingInput() { return true; };
         bool GetFocus() { return true; };

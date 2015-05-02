@@ -25,7 +25,7 @@ class InexorCefDebugOverlay : public InexorCefContextProvider,
 
         // InexorCefLayerProvider
         std::string GetLayerName() { return "debug"; };
-        std::string GetUrl() { return GetLocalUrl("/src/ui/web/debugoverlay.html"); };
+        std::string GetUrl() { return GetLocalUrl("/web/debugoverlay.html"); };
 
     private:
         // Include the default reference counting implementation.
