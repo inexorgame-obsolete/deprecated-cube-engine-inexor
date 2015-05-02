@@ -6,7 +6,7 @@
 
 #### Develoment environment
 
-* Github source code, issues, wiki
+* GitHub source code, issues, wiki
 * Travis build server
  * Nightly builds for testing
 * Waffle.io kanboard
@@ -16,7 +16,7 @@
 
 * CMake setup (unified cross platform build environment)
 * New file structure for generated binaries
-* Separated external libraries from our source (including enet)
+* Separated external libraries from our source (including ENet)
 
 #### Refactoring and code cleanup
 
@@ -27,7 +27,7 @@
 
 #### Integration of 3rd party libraries
 
-* SDL2 (including better fullscreen support under linux)
+* SDL2 (including better fullscreen support under Linux)
 * Muparser (math expression library)
 * JSON API
 * JSON Import API (not completed yet)
@@ -35,7 +35,7 @@
 
 #### Unit tests
 
-* Integrated unit test framework: Google test
+* Integrated unit test framework: Google Test
 
 #### API documentation
 
