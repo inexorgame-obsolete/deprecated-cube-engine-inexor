@@ -12,6 +12,7 @@
 #include "ui/cefrequestcontexthandler.h"
 #include "include/cef_browser.h"
 #include "include/wrapper/cef_helpers.h"
+#include "util/Subsystem.h"
 
 /// extern functions and data here
 extern void cleargamma();
@@ -33,6 +34,8 @@ int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1;
 int initing = NOT_INITING;
 
 CefRefPtr<InexorCefApp> cef_app;
+
+inexor::util::Metasystem *metapp;
 
 /// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 /// exiting the game
@@ -80,6 +83,7 @@ void cleanup()
 void quit()
 {
     cef_app->Destroy();
+    delete metapp;
     // CefShutdown();
     writeinitcfg();
     writeservercfg();
@@ -1255,11 +1259,11 @@ static bool findarg(int argc, char **argv, const char *str)
    #define main SDL_main
 #endif
 
-
 /// IPC
 ICOMMAND(initrpc, "", (), logoutf("init: rpc"); inexor::rpc::rpc_init());
 
-
+ICOMMAND(subsystem_start, "s", (char *s), metapp->start(s));
+ICOMMAND(subsystem_stop, "s", (char *s), metapp->stop(s));
 
 /// main program start
 ///
@@ -1486,7 +1490,11 @@ int main(int argc, char **argv)
     inputgrab(grabinput = true);
     ignoremousemotion();
 
-	/// main game loop
+    //Initialize the metasystem
+    metapp = new inexor::util::Metasystem();
+    metapp->start("cef");
+
+	  /// main game loop
     for(;;)
     {
         static int frames = 0;
@@ -1505,6 +1513,7 @@ int main(int argc, char **argv)
 
         /// IPC
         inexor::rpc::rpc_tick();
+        metapp->tick();
 
         checkinput();
         menuprocess();
@@ -1532,11 +1541,15 @@ int main(int argc, char **argv)
         inbetweenframes = false;
         if(mainmenu) gl_drawmainmenu();
         else gl_drawframe();
+
+        metapp->paint();
+
         swapbuffers();
 
         renderedframe = inbetweenframes = true;
     }
     CefShutdown();
+    delete metapp;
 
     ASSERT(0);
     return EXIT_FAILURE;
