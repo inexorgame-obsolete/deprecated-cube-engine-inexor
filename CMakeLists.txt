@@ -237,7 +237,8 @@ if(OS_WINDOWS)
     # Standard definitions
     # -DWIN32 -D_WIN32 -D_WINDOWS           = Windows platform
     # -DNOMINMAX                            = Use the standard's templated min/max
-    add_definitions(-DWIN32 -D_WIN32 -D_WINDOWS -DWINDOWS -DNOMINMAX)
+    # -D_WIN32_WINNT=0x0501                 = Target is Windows XP
+    add_definitions(-DWIN32 -D_WIN32 -D_WINDOWS -DWINDOWS -DNOMINMAX -D_WIN32_WINNT=0x0501)
     if(X64)
         add_definitions(-DWIN64)
     endif()
