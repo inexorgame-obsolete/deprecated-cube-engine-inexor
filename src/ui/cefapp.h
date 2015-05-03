@@ -51,6 +51,21 @@ class InexorCefApp : public CefApp,
         // CefRenderProcessHandler
         void OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context);
 
+        /// Whether the keyboard/mouse events should go to
+        /// CEF rather than the 3D renderer.
+        ///
+        /// Getter and setter
+        bool steal_input() {
+            return menu->GetVisibility() \
+              || debug_overlay->GetVisibility();
+        }
+        /// Handle SDL events for CEF
+        ///
+        /// @return Whether this event was handled by CEF;
+        ///     if false the event should be handled by
+        ///     inexor
+        bool handle_sdl_event(SDL_Event ev);
+
 	private:
 
         // JavaScript Context Manager

@@ -962,10 +962,15 @@ void checkinput()
 {
     SDL_Event event;
     //int lasttype = 0, lastbut = 0;
-    bool mousemoved = false; 
+    bool mousemoved = false;
     while(events.length() || pollevent(event))
     {
         if(events.length()) event = events.remove(0);
+
+        if (cef_app.get() && cef_app->steal_input()) {
+          bool handled = cef_app->handle_sdl_event(event);
+          if (handled) continue;
+        }
 
         switch(event.type)
         {
@@ -975,8 +980,6 @@ void checkinput()
 
             case SDL_TEXTINPUT:
             {
-                // logoutf("TEXTINPUT type: %d mod: %d sym: %d (%s) scan: %d (%s)", event.key.state, event.key.keysym.mod, event.key.keysym.sym, SDL_GetKeyName(event.key.keysym.sym), event.key.keysym.scancode, SDL_GetScancodeName(event.key.keysym.scancode));
-                cef_app->GetKeyboardManager()->SendKeyEvent(event);
                 static uchar buf[SDL_TEXTINPUTEVENT_TEXT_SIZE+1];
                 int len = decodeutf8(buf, int(sizeof(buf)-1), (const uchar *)event.text.text, strlen(event.text.text));
                 if(len > 0) { buf[len] = '\0'; processtextinput((const char *)buf, len); }
@@ -985,11 +988,8 @@ void checkinput()
 
             case SDL_KEYDOWN:
             case SDL_KEYUP:
-                // logoutf("KEY type: %d mod: %d sym: %d (%s) scan: %d (%s)", event.key.state, event.key.keysym.mod, event.key.keysym.sym, SDL_GetKeyName(event.key.keysym.sym), event.key.keysym.scancode, SDL_GetScancodeName(event.key.keysym.scancode));
-                cef_app->GetKeyboardManager()->SendKeyEvent(event);
-                if(keyrepeatmask || !event.key.repeat) {
+                if(keyrepeatmask || !event.key.repeat)
                     processkey(event.key.keysym.sym, event.key.state==SDL_PRESSED);
-                }
                 break;
 
             case SDL_WINDOWEVENT:
@@ -1044,7 +1044,6 @@ void checkinput()
                     checkmousemotion(dx, dy);
                     if(!g3d_movecursor(dx, dy)) mousemove(dx, dy);
                     mousemoved = true;
-                    cef_app->GetMouseManager()->SendMouseMoveEvent(event);
                 }
                 else if(shouldgrab) inputgrab(grabinput = true);
                 break;
@@ -1056,20 +1055,15 @@ void checkinput()
 #else
    #define keycodeshift 2*(event.button.button>=SDL_BUTTON_X1)
 #endif
-                {
-            	    processkey(-event.button.button - keycodeshift, event.button.state==SDL_PRESSED);
-            	    cef_app->GetMouseManager()->SendMouseClickEvent(event);
-                    break;
-                }
+                processkey(-event.button.button - keycodeshift, event.button.state==SDL_PRESSED);
+                break;
+
             case SDL_MOUSEWHEEL:
-                {
-                    if(event.wheel.y > 0) { processkey(-4, true); processkey(-4, false); }
-                    else if(event.wheel.y < 0) { processkey(-5, true); processkey(-5, false); }
-                    if(event.wheel.x > 0) { processkey(-35, true); processkey(-35, false); }
-                    else if(event.wheel.x < 0) { processkey(-36, true); processkey(-36, false); }
-                    cef_app->GetMouseManager()->SendMouseWheelEvent(event);
-                    break;
-                }
+                if(event.wheel.y > 0) { processkey(-4, true); processkey(-4, false); }
+                else if(event.wheel.y < 0) { processkey(-5, true); processkey(-5, false); }
+                if(event.wheel.x > 0) { processkey(-35, true); processkey(-35, false); }
+                else if(event.wheel.x < 0) { processkey(-36, true); processkey(-36, false); }
+                break;
         }
     }
     if(mousemoved) resetmousemotion();
@@ -1250,6 +1244,11 @@ static bool findarg(int argc, char **argv, const char *str)
 
 ICOMMAND(subsystem_start, "s", (char *s), metapp->start(s));
 ICOMMAND(subsystem_stop, "s", (char *s), metapp->stop(s));
+
+ICOMMAND(cef_menu, "i", (int b),
+    if (cef_app.get()) cef_app->GetMenu()->SetVisibility(b));
+ICOMMAND(cef_debug, "i", (int b),
+    if (cef_app.get()) cef_app->GetDebugOverlay()->SetVisibility(b));
 
 /// main program start
 ///

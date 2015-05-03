@@ -49,3 +49,29 @@ void InexorCefApp::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<Cef
     // cefdebug("InexorCefApp::OnContextCreated", "Injecting inexor object into javascript context");
     browser_context->GetGlobal()->SetValue(context_manager->GetContextName(), context_manager->GetContext(), V8_PROPERTY_ATTRIBUTE_NONE);
 }
+
+bool InexorCefApp::handle_sdl_event(SDL_Event ev) {
+    switch(ev.type) {
+      case SDL_TEXTINPUT:
+      case SDL_KEYDOWN:
+      case SDL_KEYUP:
+        GetKeyboardManager()->SendKeyEvent(ev);
+        return true;
+
+      case SDL_MOUSEMOTION:
+        GetMouseManager()->SendMouseMoveEvent(ev);
+        return true;
+
+      case SDL_MOUSEBUTTONDOWN:
+      case SDL_MOUSEBUTTONUP:
+        GetMouseManager()->SendMouseClickEvent(ev);
+        return true;
+
+      case SDL_MOUSEWHEEL:
+        GetMouseManager()->SendMouseWheelEvent(ev);
+        return true;
+
+      default:
+        return false;
+    }
+}

@@ -4,8 +4,7 @@
 using namespace inexor::util;
 
 // TODO: Namespace; encapsulate in the class; damint
-CefRefPtr<InexorCefApp> cef_app;
-bool cef_running = false;
+CefRefPtr<InexorCefApp> cef_app = NULL;
 
 SUBSYSTEM_REGISTER(cef, inexor::ui::CefSubsystem);
 
@@ -27,13 +26,11 @@ CefSubsystem::CefSubsystem() {
     CefInitialize(args, settings, cef_app.get(), NULL);
 
     tick();
-
-    ::cef_running = true;
 }
 
 CefSubsystem::~CefSubsystem() {
     ::cef_app->Destroy();
-    ::cef_running = false;
+    ::cef_app = NULL;
 }
 
 void CefSubsystem::tick() {
