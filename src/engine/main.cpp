@@ -1,10 +1,7 @@
 /// @file main.cpp
 /// game initialisation & main loop
-/// 
-/// 
 
 #include "engine.h"
-#include "rpc/rpc_sb_compat.h"
 #include "filesystem.h"
 #include "ui/cefapp.h"
 #include "ui/cefsettings.h"
@@ -1259,9 +1256,6 @@ static bool findarg(int argc, char **argv, const char *str)
    #define main SDL_main
 #endif
 
-/// IPC
-ICOMMAND(initrpc, "", (), logoutf("init: rpc"); inexor::rpc::rpc_init());
-
 ICOMMAND(subsystem_start, "s", (char *s), metapp->start(s));
 ICOMMAND(subsystem_stop, "s", (char *s), metapp->stop(s));
 
@@ -1399,7 +1393,7 @@ int main(int argc, char **argv)
     game::initclient();
 
     logoutf("init: video");
-    
+
     /// https://wiki.libsdl.org/CategoryHints#Hints
     SDL_SetHint(SDL_HINT_GRAB_KEYBOARD, "0");
     #if !defined(WIN32) && !defined(__APPLE__)
@@ -1492,6 +1486,7 @@ int main(int argc, char **argv)
 
     //Initialize the metasystem
     metapp = new inexor::util::Metasystem();
+    SUBSYSTEM_REQUIRE(rpc);
     metapp->start("cef");
 
 	  /// main game loop
@@ -1511,8 +1506,6 @@ int main(int argc, char **argv)
         totalmillis = millis;
         updatetime();
 
-        /// IPC
-        inexor::rpc::rpc_tick();
         metapp->tick();
 
         checkinput();

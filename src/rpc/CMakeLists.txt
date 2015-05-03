@@ -51,7 +51,7 @@ function(config_rpc targ)
   add_dependencies(${targ} run_protoc)
   include_directories(${PROTOBUF_INCLUDE_DIRS} ${RPC_INCLUDE_DIRS})
   target_link_libs(${targ}
-    module_rpc module_net ${PROTOBUF_LIBRARIES})
+    module_rpc module_net ${PROTOBUF_LIBRARIES} module_util)
   config_net(${targ})
 endfunction()
 
