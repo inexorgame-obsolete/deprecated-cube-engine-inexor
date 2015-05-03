@@ -3,12 +3,7 @@
 
 #include "engine.h"
 #include "filesystem.h"
-#include "ui/cefapp.h"
-#include "ui/cefsettings.h"
-#include "ui/cefrenderhandler.h"
-#include "ui/cefrequestcontexthandler.h"
-#include "include/cef_browser.h"
-#include "include/wrapper/cef_helpers.h"
+#include "ui/ui.h"
 #include "util/Subsystem.h"
 
 /// extern functions and data here
@@ -29,8 +24,6 @@ int screenw = 0, screenh = 0, desktopw = 0, desktoph = 0;
 /// microtiming management integers
 int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1;
 int initing = NOT_INITING;
-
-CefRefPtr<InexorCefApp> cef_app;
 
 inexor::util::Metasystem *metapp;
 
@@ -79,7 +72,6 @@ void cleanup()
 /// @see cleanup
 void quit()
 {
-    cef_app->Destroy();
     delete metapp;
     // CefShutdown();
     writeinitcfg();
@@ -1352,20 +1344,6 @@ int main(int argc, char **argv)
 
     numcpus = clamp(SDL_GetCPUCount(), 1, 16);
 
-    logoutf("init: cef: fork process (%dpx x %dpx)", scr_w, scr_h);
-    cef_app = new InexorCefApp(scr_w, scr_h);
-    CefMainArgs main_args(argc, argv);
-    int exit_code = CefExecuteProcess(main_args, cef_app.get(), NULL);
-    if (exit_code >= 0) {
-        logoutf("cef exit_code: %d", exit_code);
-        return exit_code;
-    }
-
-    logoutf("init: cef: initialize application");
-    InexorCefSettings settings;
-    CefInitialize(main_args, settings, cef_app.get(), NULL);
-    CefDoMessageLoopWork();
-
     if(dedicated <= 1)
     {
         logoutf("init: sdl");
@@ -1487,6 +1465,7 @@ int main(int argc, char **argv)
     //Initialize the metasystem
     metapp = new inexor::util::Metasystem();
     SUBSYSTEM_REQUIRE(rpc);
+    SUBSYSTEM_REQUIRE(cef);
     metapp->start("cef");
 
 	  /// main game loop
@@ -1526,9 +1505,6 @@ int main(int argc, char **argv)
         updateparticles();
         updatesounds();
 
-        // cef message loop iteration
-        CefDoMessageLoopWork();
-
         if(minimized) continue;
 
         inbetweenframes = false;
@@ -1541,7 +1517,6 @@ int main(int argc, char **argv)
 
         renderedframe = inbetweenframes = true;
     }
-    CefShutdown();
     delete metapp;
 
     ASSERT(0);
