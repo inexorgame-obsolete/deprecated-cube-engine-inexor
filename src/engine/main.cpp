@@ -1465,7 +1465,6 @@ int main(int argc, char **argv)
     metapp = new inexor::util::Metasystem();
     SUBSYSTEM_REQUIRE(rpc);
     SUBSYSTEM_REQUIRE(cef);
-    metapp->start("cef");
 
 	  /// main game loop
     for(;;)
