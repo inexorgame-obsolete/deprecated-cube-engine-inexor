@@ -5,7 +5,6 @@ InexorCefApp::InexorCefApp(int width, int height)
     layer_manager = new InexorCefLayerManager(width, height);
     mouse_manager = new InexorCefMouseManager(layer_manager);
     keyboard_manager = new InexorCefKeyboardManager(layer_manager);
-    event_manager = new InexorCefEventManager();
     network_manager = new InexorCefNetworkManager();
     game_manager = new InexorCefGameManager();
     console = new InexorCefConsole();
@@ -18,7 +17,6 @@ InexorCefApp::InexorCefApp(int width, int height)
     context_manager->AddSubContext(mouse_manager);
     context_manager->AddSubContext(keyboard_manager);
     context_manager->AddSubContext(layer_manager);
-    context_manager->AddSubContext(event_manager);
     context_manager->AddSubContext(network_manager);
     context_manager->AddSubContext(game_manager);
     context_manager->AddSubContext(console);

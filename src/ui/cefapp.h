@@ -14,7 +14,6 @@
 #include "cefcontextmanager.h"
 #include "cefdebug.h"
 #include "cefdebugoverlay.h"
-#include "cefeventmanager.h"
 #include "cefgame.h"
 #include "cefkeyboard.h"
 #include "ceflayermanager.h"
@@ -38,7 +37,6 @@ class InexorCefApp : public CefApp,
         CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() { return this; }
         CefRefPtr<InexorCefContextManager> GetContextManager() { return context_manager; }
         CefRefPtr<InexorCefLayerManager> GetLayerManager() { return layer_manager; }
-        CefRefPtr<InexorCefEventManager> GetEventManager() { return event_manager; }
         CefRefPtr<InexorCefMouseManager> GetMouseManager() { return mouse_manager; }
         CefRefPtr<InexorCefKeyboardManager> GetKeyboardManager() { return keyboard_manager; }
         CefRefPtr<InexorCefNetworkManager> GetNetworkManager() { return network_manager; }
@@ -64,9 +62,6 @@ class InexorCefApp : public CefApp,
 
         // Layer Manager
         CefRefPtr<InexorCefLayerManager> layer_manager;
-
-        // Event Manager
-        CefRefPtr<InexorCefEventManager> event_manager;
 
         // Mouse Manager
         CefRefPtr<InexorCefMouseManager> mouse_manager;
