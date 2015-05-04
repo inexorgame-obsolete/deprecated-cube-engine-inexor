@@ -14,6 +14,15 @@
 namespace inexor {
 namespace util {
 
+IEXCEPTION(SubsystemException, "Some problem with the "
+  "subsystems occurred.");
+EXCEPTION(NoSuchSubsystem, SubsystemException,
+  "The subsystem you're trying to start does not exist.");
+EXCEPTION(SubsystemAlreadyRunning, SubsystemException,
+  "The subsystem you're trying to start is already running.");
+EXCEPTION(SubsystemNotRunning, SubsystemException,
+  "The subsystem you're trying to stop is not running.");
+
 /// Subsystems are loosely coupled parts of inexor.
 ///
 /// Instead of using subsystems, one could just call one
@@ -76,6 +85,24 @@ public:
             return instance;
         }
 
+        /// Check if the given subsystem exists
+        static bool Exist(std::string k) {
+            auto &m = GetInstance();
+            return m.find(k) != m.end();
+        }
+
+
+        /// Ensure that the given subsystem exists. If it does
+        /// not, throws an exception.
+        static void EnsureExist(std::string k) {
+            if (!Exist(k)) {
+                std::string s = inexor::util::fmt
+                  << "The subsystem '" << k
+                  << "' does not exist.";
+                throw NoSuchSubsystem(s);
+            }
+        }
+
         static Starter& Get(std::string k) {
             return GetInstance()[k];
         }
@@ -117,9 +144,18 @@ public:
 
     /// Start a subsystem by name
     void start(std::string &sub) {
+        Subsystem::Register::EnsureExist(sub);
+        if (subsystems.find(sub) != subsystems.end()){
+            std::string s = inexor::util::fmt
+              << "Trying to start subsystem '" << sub
+              << "', but it is already running.";
+            throw SubsystemAlreadyRunning(s);
+        }
+
         auto &starter = Subsystem::Register::Get(sub);
         subsystems[sub] = starter();
     }
+
     void start(const char *sub) {
         std::string s(sub);
         start(s);
@@ -127,6 +163,14 @@ public:
 
     /// Stop a subsystem by name
     void stop(std::string &sub) {
+        Subsystem::Register::EnsureExist(sub);
+        if (subsystems.find(sub) == subsystems.end()){
+            std::string s = inexor::util::fmt << "Trying to "
+              << "stop subsystem '" << sub << "', but it is "
+              << "not running.";
+            throw SubsystemNotRunning(s);
+        }
+
         delete subsystems[sub];
         subsystems.erase(sub);
     }

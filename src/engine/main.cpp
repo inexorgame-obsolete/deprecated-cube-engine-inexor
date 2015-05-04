@@ -1242,8 +1242,8 @@ static bool findarg(int argc, char **argv, const char *str)
    #define main SDL_main
 #endif
 
-ICOMMAND(subsystem_start, "s", (char *s), metapp->start(s));
-ICOMMAND(subsystem_stop, "s", (char *s), metapp->stop(s));
+ICOMMANDERR(subsystem_start, "s", (char *s), metapp->start(s));
+ICOMMANDERR(subsystem_stop, "s", (char *s), metapp->stop(s));
 
 ICOMMAND(cef_menu, "i", (int b),
     if (cef_app.get()) cef_app->GetMenu()->SetVisibility(b));
