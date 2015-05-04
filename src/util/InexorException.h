@@ -3,6 +3,7 @@
 
 #include <exception>
 #include <string>
+#include "util/StringFormatter.h"
 
 namespace inexor {
 namespace util {
@@ -16,6 +17,10 @@ namespace util {
 ///
 /// @see IEXCEPTION This macro allows you to subclass
 ///      InexorException on the fly.
+///
+/// TODO: STACK TRACE
+/// TODO: Allow setting the message on the fly with the <<
+///       operator
 class InexorException : public std::exception {
 public:
     const char *_what;
@@ -50,6 +55,18 @@ public:
         _what = e._what;
     }
 
+    /// The name of this exception class.
+    virtual const char* clazz() {
+        return "InexorException";
+    }
+
+    /// Generates an error message appropriate for logging
+    virtual const char* message() {
+        std::string s =
+          inexor::util::fmt << clazz() << ": " << what();
+        return s.c_str();
+    }
+
     virtual const char* what() const noexcept {
         return _what;
     }
@@ -68,13 +85,16 @@ public:
 /// @param base The name of the base exception class to extend
 /// @param __what The default error message, when none is
 ///               set on the fly
-#define EXCEPTION(name, base, __what)                 \
-    class name : base {                               \
-    public:                                           \
-        name () noexcept : base ( __what ) {}         \
-        name (const char *s) noexcept : base (s) {}   \
-        name (std::string &s) noexcept : base (s) {}  \
-        name (const name &e) noexcept : base (e) {}   \
+#define EXCEPTION(name, base, __what)                   \
+    class name : public base {                          \
+    public:                                             \
+        name () noexcept : base ( __what ) {}           \
+        name (const char *s) noexcept : base (s) {}     \
+        name (std::string &s) noexcept : base (s) {}    \
+        name (const name &e) noexcept : base (e) {}     \
+        virtual const char* clazz() {                   \
+            return #name ;                              \
+        }                                               \
     }
 
 /// Like EXCEPTION but uses InexorException as base, so no
