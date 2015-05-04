@@ -370,5 +370,18 @@ inline void ident::getval(tagval &v) const
 #define ICOMMAND(name, nargs, proto, b) ICOMMANDN(name, ICOMMANDNAME(name), nargs, proto, b)
 #define ICOMMANDSNAME _icmds_
 #define ICOMMANDS(name, nargs, proto, b) ICOMMANDNS(name, ICOMMANDSNAME, nargs, proto, b)
- 
+
+#include "util/InexorException.h"
+
+/// Version of the ICOMMAND macro that automatically catches
+/// errors and prints them to the console.
+#define ICOMMANDERR(name, nargs, proto, b)                 \
+  ICOMMAND(name, nargs, proto,                             \
+      try {                                                \
+        b ;                                                \
+      } catch (inexor::util::InexorException &e) {         \
+        conoutf("EXCEPTION in " #name ": %s", e.message());\
+      }                                                    \
+  )
+
 #endif // SAUER_COMMAND_H
