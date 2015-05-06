@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.8.7)
 
+include(src/functions.cmake)
+
 ### Different Configuration Types (Debug release)
 
 # Only generate Debug and Release configuration types.
