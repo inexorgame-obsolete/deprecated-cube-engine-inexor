@@ -75,15 +75,11 @@ endif()
 
 # common MACOSX and Windows Libraries
 if(OS_MACOSX OR OS_WINDOWS)
-    find_library(ENET_LIBRARIES enet)
+
+    find_libs(ENET_LIBRARIES enet)
     find_path(ENET_INCLUDE_DIRS enet/enet.h)
 
-
-    find_library(SDL2_LIBRARY SDL2)
-    find_library(SDL2_IMAGE_LIBRARY SDL2_image)
-    find_library(SDL2_MIXER_LIBRARY SDL2_mixer)
-    set(SDL2_LIBRARIES ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY}
-        ${SDL2_IMAGE_LIBRARY})
+    find_libs(SDL2_LIBRARIES SDL2 LIB SDL2_image LIB SDL2_mixer)
 
     find_path(SDL2_INCLUDE_DIR       SDL.h       PATH_SUFFIXES SDL2)
     find_path(SDL2_IMAGE_INCLUDE_DIR SDL_image.h PATH_SUFFIXES SDL2)
@@ -94,10 +90,8 @@ endif()
 
 # COCOA for SQL on OSX
 if(OS_MACOSX)
-  find_library(CORESERVICES_LIBRARY CoreServices)
-  find_library(COCOA_LIBRARY Cocoa)
-  list(APPEND SDL2_LIBRARIES
-      ${CORESERVICES_LIBRARY} ${COCOA_LIBRARY})
+  find_libs(osx_libs CoreServices LIB Cocoa NOCACHE)
+  list(APPEND SDL2_LIBRARIES ${osx_libs})
 endif()
 
 # Windows Libraries for Server AND Client
@@ -112,6 +106,7 @@ set(ALL_MODULES "" CACHE INTERNAL "")
 set(ALL_HEADERS "" CACHE INTERNAL "")
 set(OUTSOURCED_MODULES "" CACHE INTERNAL "")
 
+# TODO: use proper config in libraries/
 include_directories(
     ${ENET_INCLUDE_DIRS}
     ${SDL2_INCLUDE_DIRS}

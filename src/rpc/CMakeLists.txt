@@ -1,6 +1,6 @@
 message(STATUS "Detecting Protobuf...")
 
-find_cpp_library(PROTOBUF_LIBRARIES protobuf)
+find_libs(PROTOBUF_LIBRARIES protobuf)
 find_path(PROTOBUF_INCLUDE_DIRS google/protobuf/service.h)
 
 # PROTOBUF COMPILER #######
