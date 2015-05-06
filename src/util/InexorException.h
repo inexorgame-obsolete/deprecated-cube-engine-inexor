@@ -5,6 +5,15 @@
 #include <string>
 #include "util/StringFormatter.h"
 
+/// Visual studio does not support noexcept;
+/// INEXOR_NOEXCEPT only enable noexcept on platforms that
+/// support it
+#ifndef _MSC_VER
+    #define INEXOR_NOEXCEPT noexcept
+#else
+    #define INEXOR_NOEXCEPT
+#endif
+
 namespace inexor {
 namespace util {
 
@@ -28,14 +37,14 @@ public:
     /// Default constructor
     ///
     /// Initializes what() with a generic message.
-    InexorException() noexcept {
+    InexorException() INEXOR_NOEXCEPT {
         _what = "Some problem occurred in the inexor code. Dunno what.";
     }
 
     /// Initialize this exception with a custom error
     /// message
     /// @param s The error message
-    InexorException(const char *s) noexcept {
+    InexorException(const char *s) INEXOR_NOEXCEPT {
         _what = s;
     }
 
@@ -43,15 +52,15 @@ public:
     /// message
     ///
     /// @param s The error message
-    InexorException(std::string &s) noexcept {
+    InexorException(std::string &s) INEXOR_NOEXCEPT {
         _what = s.c_str();
     }
 
     /// Initialize this exception with a custom error
     /// message in a string
     /// @param s The error message
-    InexorException(const InexorException &e) noexcept
-          : std::exception(e) {
+    InexorException(const InexorException &e) 
+          INEXOR_NOEXCEPT : std::exception(e) {
         _what = e._what;
     }
 
@@ -67,7 +76,7 @@ public:
         return s.c_str();
     }
 
-    virtual const char* what() const noexcept {
+    virtual const char* what() const INEXOR_NOEXCEPT {
         return _what;
     }
 };
@@ -85,16 +94,16 @@ public:
 /// @param base The name of the base exception class to extend
 /// @param __what The default error message, when none is
 ///               set on the fly
-#define EXCEPTION(name, base, __what)                   \
-    class name : public base {                          \
-    public:                                             \
-        name () noexcept : base ( __what ) {}           \
-        name (const char *s) noexcept : base (s) {}     \
-        name (std::string &s) noexcept : base (s) {}    \
-        name (const name &e) noexcept : base (e) {}     \
-        virtual const char* clazz() {                   \
-            return #name ;                              \
-        }                                               \
+#define EXCEPTION(name, base, __what   )                    \
+    class name : public base {                              \
+    public:                                                 \
+        name () INEXOR_NOEXCEPT : base ( __what ) {}        \
+        name (const char *s) INEXOR_NOEXCEPT : base (s) {}  \
+        name (std::string &s) INEXOR_NOEXCEPT : base (s) {} \
+        name (const name &e) INEXOR_NOEXCEPT : base (e) {}  \
+        virtual const char* clazz() INEXOR_NOEXCEPT {       \
+            return #name ;                                  \
+        }                                                   \
     }
 
 /// Like EXCEPTION but uses InexorException as base, so no
