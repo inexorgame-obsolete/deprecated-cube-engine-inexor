@@ -2103,9 +2103,11 @@ void replace(bool insel)
 ICOMMAND(replace, "", (), replace(false));
 ICOMMAND(replacesel, "", (), replace(true));
 
-
-
-
+//replace texture xy with texture yz in the whole map or just in the selection if third arg given
+ICOMMAND(replacetex, "iii", (int *oldtex, int *newtex, int *insel), {
+	if(noedit()) return;
+	mpreplacetex(*oldtex, *newtex, *insel!=0, sel, true);
+});
 
 ////////// flip and rotate ///////////////
 uint dflip(uint face) { return face==F_EMPTY ? face : 0x88888888 - (((face&0xF0F0F0F0)>>4) | ((face&0x0F0F0F0F)<<4)); }

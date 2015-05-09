@@ -240,9 +240,7 @@ struct packagedir
 };
 vector<packagedir> packagedirs;
 
-/// Create a relative path
-/// @Return (const char*) file relative to (const char*) dir
-/// @Eg file=/home/user/Inexor/media/textures/notexture.jpg and dir=/home/user/Inexor/media/ returns textures/notexture.jpg
+/// Create an appended path! same as dir << file << endl;
 char *makerelpath(const char *dir, const char *file, const char *prefix, const char *cmd)
 {
     static string tmp;
@@ -266,6 +264,81 @@ char *makerelpath(const char *dir, const char *file, const char *prefix, const c
     }
     else concatstring(tmp, file);
     return tmp;
+}
+
+/// Given the absolute current directory and an absolute file name, returns a relative file name.
+/// For example, if the current directory is C:\foo\bar and the filename C:\foo\whee\text.txt is given,
+/// GetRelativeFilename will return ..\whee\text.txt.
+char* GetRelativeFilename(const char *currentDirectory, const char *absoluteFilename)
+{
+    // declarations - put here so this should work in a C compiler
+    int afMarker = 0, rfMarker = 0;
+    int cdLen = 0, afLen = 0;
+    int i = 0;
+    int levels = 0;
+    static string relativeFilename;
+    cdLen = strlen(currentDirectory);
+    afLen = strlen(absoluteFilename);
+
+    // find out how much of the current directory
+    // is in the absolute filename
+    while(i < afLen && i < cdLen && currentDirectory[i] == absoluteFilename[i])
+    {
+        i++;
+    }
+    if(i == cdLen && (absoluteFilename[i] == PATHDIV || absoluteFilename[i - 1] == PATHDIV))
+    {
+        // the whole current directory name is in the file name,
+        // so we just trim off the current directory name to get the
+        // current file name.
+        if(absoluteFilename[i] == PATHDIV)
+        {
+            // a directory name might have a trailing PATHDIV but a relative
+            // file name should not have a leading one...
+            i++;
+        }
+        strcpy(relativeFilename, &absoluteFilename[i]);
+        return relativeFilename;
+    }
+    // The file is not in a child directory of the current directory, so we
+    // need to step back the appropriate number of parent directories by
+    // using "..\"s.  First find out how many levels deeper we are than the
+    // common directory
+    afMarker = i;
+    levels = 1;
+    // count the number of directory levels we have to go up to get to the
+    // common directory
+    while(i < cdLen)
+    {
+        i++;
+        if(currentDirectory[i] == PATHDIV)
+        {
+            // make sure it's not a trailing PATHDIV
+            i++;
+            if(currentDirectory[i] != '\0')
+            {
+                levels++;
+            }
+        }
+    }
+    // move the absolute filename marker back to the start of the directory name
+    // that it has stopped in.
+    while(afMarker > 0 && absoluteFilename[afMarker - 1] != PATHDIV)
+    {
+        afMarker--;
+    }
+
+    // add the appropriate number of "..\"s.
+    rfMarker = 0;
+    for(i = 0; i < levels; i++)
+    {
+        relativeFilename[rfMarker++] = '.';
+        relativeFilename[rfMarker++] = '.';
+        relativeFilename[rfMarker++] = PATHDIV;
+    }
+    // copy the rest of the filename into the result string
+    strcpy(&relativeFilename[rfMarker], &absoluteFilename[afMarker]);
+    return relativeFilename;
 }
 
 
@@ -328,6 +401,7 @@ char *path(const char *s, bool copy)
 
 /// @return the parent directory of a file path
 /// @warning Removes last slash: media/texture/lastly.dg becomes media/texture
+/// @warning not threadsafe!
 const char *parentdir(const char *filename)
 {
     const char *p = filename + strlen(filename);
@@ -338,10 +412,32 @@ const char *parentdir(const char *filename)
     return parent;
 }
 
+/// modifies "filename" to contain only the rare filename without path.
+/// @return filename gets modified(!) and returned.
+/// @example "media/textures/default.json" becomes "default.json"
+char *cutdir(char *filename)
+{
+    size_t len = strlen(filename);
+    char *p = filename + len;
+    while(p > filename && *p != '/' && *p != '\\') p--; //p pointing to '/'
+
+    size_t rarelen = strlen(p);
+    loopi(rarelen) filename[i] = p[i + 1]; //copies NUL as well
+    return filename;
+}
+
+/// Rudamentary "unpath" command to only allow slashes (no backslashes) in a string.
+char *uniformfilename(char *filename)
+{
+    ASSERT(filename != NULL);
+    size_t len = strlen(filename);
+    loopi(len) if(filename[i] == '\\') filename[i] = '/';
+    return filename;
+}
+
 /// Checks whether given file exists (and is available in the specific mode)
 /// Where Path is the filename and mode can optionally be set (but only effects posix systems)
-/// ATTENTION: DO NOT USE THIS METHOD DIRECTLY! It doesn't give a fuck about your homedir 
-/// or any additional package dir, so use findfile instead!
+/// ATTENTION: DO NOT USE THIS METHOD DIRECTLY! USE findfile instead!
 /// Available Modes are "w"/"a" for writeable files only and "d" for executeable files only
 /// ATTENTION2:  if mode "w" or "a" are specified it checks for (parent) directory existence!
 bool fileexists(const char *path, const char *mode)
@@ -445,8 +541,9 @@ const char *addpackagedir(const char *dir)
 
 /// Checks whether given file exists (and is available in the specific mode)
 /// Where Path is the filename and mode can optionally be set
-/// Available Modes are "e" (see @Return) "w"/"a" for writeable files only and "d" for executeable files only
-/// @Return Returns the filename of the found file (or the, if "e" is specified it returns NULL if nothing was found.
+/// @warning not threadsafe!
+/// @param mode Available Modes are "e" (see @return) "w"/"a" for writeable files only and "d" for executeable files only
+/// @return Returns the filename of the found file (or the, if "e" is specified it returns NULL if nothing was found.
 ///         Otherwise it returns the inital filename.
 const char *findfile(const char *filename, const char *mode)
 {

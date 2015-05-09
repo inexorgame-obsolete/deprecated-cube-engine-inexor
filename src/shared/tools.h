@@ -100,9 +100,9 @@ static inline T min(T a, U b)
 /// if the parameter is out of range, the range limit (min/max)
 /// will be returned
 template<class T, class U>
-static inline T clamp(T a, U b, U c)
+static inline T clamp(T val, U minimum, U maximum)
 {
-    return max(T(b), min(a, T(c)));
+    return max(T(minimum), min(val, T(maximum)));
 }
 
 
@@ -1466,10 +1466,13 @@ static inline uchar cubeupper(uchar c)
 extern size_t decodeutf8(uchar *dst, size_t dstlen, const uchar *src, size_t srclen, size_t *carry = NULL);
 extern size_t encodeutf8(uchar *dstbuf, size_t dstlen, const uchar *srcbuf, size_t srclen, size_t *carry = NULL);
 
+extern char* GetRelativeFilename(const char *currentDirectory, const char *absoluteFilename);
 extern char *makerelpath(const char *dir, const char *file, const char *prefix = NULL, const char *cmd = NULL);
 extern char *path(char *s);
 extern char *path(const char *s, bool copy);
+extern char *uniformfilename(char *filename);
 extern const char *parentdir(const char *directory);
+extern char *cutdir(char *filename);
 extern bool fileexists(const char *path, const char *mode);
 extern bool createdir(const char *path);
 extern size_t fixpackagedir(char *dir);
