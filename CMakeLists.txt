@@ -312,8 +312,6 @@ set(INSTALL_RESOURCES_DIR   ${BUILD_INSTALL_DIR}/resources  CACHE INTERNAL "")
 message(STATUS "Generating Project-Files to ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS " - Resulting Executable goes to ${EXE_DIR}")
 
-
-
 add_subdirectory(src)
 
-install(FILES ${INSTALL_SHARED_LIBS} DESTINATION ${EXE_DIR})
+install(FILES ${INSTALL_SHARED_LIBS} ${INSTALL_EXES} DESTINATION ${EXE_DIR})
