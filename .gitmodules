@@ -1,15 +1,7 @@
-[submodule "src/platform_windows"]
-	path = src/platform_windows
-	url = https://github.com/inexor-game/platform_windows.git
-	branch = master
 [submodule "src/libraries/enet"]
     path = src/libraries/enet
     url = https://github.com/Theintercooler/enet.git
     branch = master
-[submodule "src/platform_osx"]
-	path = src/platform_osx
-	url = https://github.com/inexor-game/platform_osx.git
-	branch = master
 [submodule "src/libraries/muparser"]
 	path = src/libraries/muparser
 	url = https://github.com/inexor-game/muparser.git
@@ -17,19 +9,6 @@
 [submodule "src/libraries/googletest"]
 	path = src/libraries/googletest
 	url = https://github.com/inexor-game/googletest.git
-[submodule "src/libraries/cef3/libcef_dll"]
-	path = src/libraries/cef3/libcef_dll
-	url = https://github.com/inexor-game/libcef_dll.git
-    branch = master
-[submodule "src/libraries/cef3/include"]
-	path = src/libraries/cef3/include
-	url = https://github.com/inexor-game/cef_include.git
-    branch = master
-[submodule "src/libraries/cef3/cef_bin"]
-	path = src/libraries/cef3/cef_bin
-	url = https://github.com/inexor-game/cef_bin.git
-    branch = master
-[submodule "src/libraries/cef3/Resources"]
-	path = src/libraries/cef3/Resources
-	url = https://github.com/inexor-game/cef_resource.git
-    branch = master
+[submodule "src/platform"]
+	path = src/platform
+	url = https://github.com/inexor-game/platform_windows.git

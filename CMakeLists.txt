@@ -15,14 +15,14 @@ message(STATUS "CMAKE_GENERATOR = ${CMAKE_GENERATOR}")
 
 string(TOLOWER "${CMAKE_GENERATOR}" GEN)
 if(GEN MATCHES ".*visual studio.*")
-  set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/src/platform_windows/vs.cmake)
+  set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/src/platform/vs.cmake)
 elseif(GEN MATCHES ".*mingw.*" OR MINGW)
-  set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/src/platform_windows/mingw.cmake)
-elseif(CMAKE_TOOLCHAIN_FILE)
-    message(STATUS "Using Toolchain File ${CMAKE_TOOLCHAIN_FILE}")
+  set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/src/platform/mingw.cmake)
 else()
-    message(STATUS "No CMAKE_TOOLCHAIN_FILE set manually or automatically.")
+  set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/src/platform/linux.cmake)
 endif()
+
+message(STATUS "Using Toolchain File ${CMAKE_TOOLCHAIN_FILE}")
 
 # Project Name
 project(Inexor)
