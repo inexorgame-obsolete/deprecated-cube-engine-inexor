@@ -146,6 +146,9 @@ public:
     }
 };
 
+#define __SUBSYSTEM_DUMMY(name) \
+  subsystem_register_stub_for_ ## name
+
 /// Register a subsystem so it can later be started by name
 /// in a Metasystem
 ///
@@ -160,12 +163,28 @@ public:
 ///       if not included) and we would create that variable
 ///       in multiple files.
 ///
+/// NOTE: This must be called in the GLOBAL namespace!
+/// TODO: Can we get rid of that restriction?
+///
 /// @param name The name to register the subsystem as
 /// @param clazz The class of the subsystem
-#define SUBSYSTEM_REGISTER(name, clazz)                            \
-    int subsystem_register_stub_for_ ## clazz INEXOR_ATTR_UNUSED = \
-      ::inexor::util::Subsystem::Register::Set( name,              \
-          []() -> ::inexor::util::Subsystem* { return new clazz ; })
+#define SUBSYSTEM_REGISTER(name, clazz)               \
+    int __SUBSYSTEM_DUMMY(name) INEXOR_ATTR_UNUSED = \
+      ::inexor::util::Subsystem::Register::Set( #name, \
+          []() -> ::inexor::util::Subsystem* {        \
+              return new clazz ; });
+
+/// Make sure that a specific subsystem is included
+///
+/// NOTE: This must be called in a function in the global
+///       namespace!
+/// @param name The name of the subsystem to require
+#define SUBSYSTEM_REQUIRE(name)                 \
+    {                                                \
+        extern int __SUBSYSTEM_DUMMY(name); \
+        __SUBSYSTEM_DUMMY(name) = 0;        \
+    }
+
 }
 }
 
