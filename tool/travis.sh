@@ -176,7 +176,7 @@ nigthly_build() {
     .git
     .gitignore
     .gitmodules
-    src
+    inexor
     tool
     .travis.yml
   ' tr -d " " | grep -v '^\s*$')"

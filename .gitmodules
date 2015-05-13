@@ -1,14 +1,12 @@
-[submodule "src/libraries/enet"]
-    path = src/libraries/enet
-    url = https://github.com/Theintercooler/enet.git
-    branch = master
-[submodule "src/libraries/muparser"]
-	path = src/libraries/muparser
-	url = https://github.com/inexor-game/muparser.git
-	branch = master
-[submodule "src/libraries/googletest"]
-	path = src/libraries/googletest
-	url = https://github.com/inexor-game/googletest.git
-[submodule "src/platform"]
-	path = src/platform
+[submodule "inexor/libraries/enet"]
+	path = inexor/libraries/enet
+	url = https://github.com/Theintercooler/enet.git
+[submodule "inexor/platform"]
+	path = inexor/platform
 	url = https://github.com/inexor-game/platform_windows.git
+[submodule "inexor/libraries/googletest"]
+	path = inexor/libraries/googletest
+	url = https://github.com/inexor-game/googletest.git
+[submodule "inexor/libraries/muparser"]
+	path = inexor/libraries/muparser
+	url = https://github.com/inexor-game/muparser.git

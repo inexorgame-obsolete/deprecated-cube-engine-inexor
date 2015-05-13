@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.7)
 
-include(src/functions.cmake)
+include(inexor/functions.cmake)
 
 ### Different Configuration Types (Debug release)
 
@@ -17,11 +17,11 @@ message(STATUS "CMAKE_GENERATOR = ${CMAKE_GENERATOR}")
 
 string(TOLOWER "${CMAKE_GENERATOR}" GEN)
 if(GEN MATCHES ".*visual studio.*")
-  set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/src/platform/vs.cmake)
+  set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/inexor/platform/vs.cmake)
 elseif(GEN MATCHES ".*mingw.*" OR MINGW)
-  set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/src/platform/mingw.cmake)
+  set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/inexor/platform/mingw.cmake)
 else()
-  set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/src/platform/linux.cmake)
+  set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/inexor/platform/linux.cmake)
 endif()
 
 message(STATUS "Using Toolchain File ${CMAKE_TOOLCHAIN_FILE}")
@@ -40,8 +40,8 @@ if(${MAINDIR} STREQUAL ${BINDIR})
     message(FATAL_ERROR "Keep your directories clean, don't generate the project-files in the main directory! ${MAINDIR} ${BINDIR}")
 endif()
 
-# Set the path to inexor/src/ explicitly to simplify some following definitions
-set(SOURCE_DIR ${MAINDIR}/src)
+# Set the path to inexor/ explicitly to simplify some following definitions
+set(SOURCE_DIR ${MAINDIR}/inexor)
 
 ### Platform Detection:
 
@@ -314,6 +314,6 @@ set(INSTALL_RESOURCES_DIR   ${BUILD_INSTALL_DIR}/resources  CACHE INTERNAL "")
 message(STATUS "Generating Project-Files to ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS " - Resulting Executable goes to ${EXE_DIR}")
 
-add_subdirectory(src)
+add_subdirectory(inexor)
 
 install(FILES ${INSTALL_SHARED_LIBS} ${INSTALL_EXES} DESTINATION ${EXE_DIR})
