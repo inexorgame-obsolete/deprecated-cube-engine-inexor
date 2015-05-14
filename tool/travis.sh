@@ -124,11 +124,13 @@ install_apidoc() {
 
 upload_apidoc() {
   (
+    local zipp="/tmp/$build-apidoc"
     cd "$gitroot" -v
     doxygen doxygen.conf 2>&1 | grep -vF 'sqlite3_step " \
       "failed: memberdef.id_file may not be NULL'
-    cp -r doc/ "/tmp/$build"
-    upload / "/tmp/$build"
+    mv doc "$zipp"
+    zip -r "${zipp}.zip" "$zipp"
+    upload / "$zipp.zip"
   )
 }
 
@@ -136,7 +138,6 @@ nigthly_build() {
   local outd="/tmp/${build}.d/"
   local zipf="/tmp/${build}.zip"
   local descf="/tmp/${build}.txt"
-  local docd="/tmp/${build}-apidoc"
 
   # Include the media files
   local media="${media}"
