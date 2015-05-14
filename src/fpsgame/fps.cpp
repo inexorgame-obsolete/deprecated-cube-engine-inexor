@@ -338,7 +338,8 @@ namespace game
                     moveplayer(player1, 10, true);
                 }
             }
-            else if(!intermission)
+            /// fix: allow spectators to fly around during intermission!
+            else if (!intermission || (intermission && player1->state == CS_SPECTATOR))
             {
                 if(player1->ragdoll) cleanragdoll(player1);
                 moveplayer(player1, 10, true);
@@ -551,6 +552,9 @@ namespace game
         ai::killed(d, actor);
         if(cmode) cmode->killed(d, actor);
     }
+
+
+
 
     /// update game session time
     /// display intermission statistics in console
