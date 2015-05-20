@@ -87,15 +87,18 @@ endfunction()
 # This is necessary when building on Windows.
 #
 # Note: only effects msvc so far
-# Usage: find_cpp_library(<RETURNVAR> <name> [NOCACHE])
+# Usage: find_cpp_library(<RETURNVAR> <LIBNAME> [NOCACHE])
 # Arguments:
-#   VAR – Output variable
+#   VAR        –   Output variable
 #   LIB        -   the Library name
 # Example: find_cpp_library(PROTOBUF_LIBRARIES protobuf)
 #
 function(find_cpp_library VAR LIB)
   if(DEFINED HAS_FIND_LIBRARY_WRAPPER)
     definition_find_cpp_library(tmp ${LIB})
+    if(NOT tmp)
+      find_library(tmp ${LIB})
+    endif()
   else()
     find_library(tmp ${LIB})
   endif()
@@ -140,10 +143,10 @@ function(find_libs)
 
   foreach(arg ${ARGN})
 
-    if("${arg}" STREQUAL "NOCACHE")
+    if(${arg} STREQUAL "NOCACHE")
       set(nocache true)
 
-    elseif("${arg}" STREQUAL "LIB")
+    elseif(${arg} STREQUAL "LIB")
       if (NOT found AND NOT attempts STREQUAL "")
         message(SEND_ERROR "Could not find a lib for ${attempts} !")
       endif()
