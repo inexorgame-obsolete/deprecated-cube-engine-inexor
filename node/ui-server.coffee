@@ -5,10 +5,7 @@ RequireJS = require 'requirejs'
 Browserify = require 'browserify'
 Fs = require 'fs'
 
-App = new Express
-
-App.use ServeStatic "../web"
-App.use Assets
+assets = Assets
   paths: "../web"
   servePath: "/"
   precompile: []
@@ -17,34 +14,57 @@ App.use Assets
   compress: false
   fingerprinting: false
 
+App = new Express
+App.use ServeStatic "../web"
+App.use assets
+
+
 RequireJS.config
   nodeRequire: require
 
-App.get '/node/:module', (req, res) ->
-  mod = req.params.module.replace /\.js$/, ""
-  if mod == 'requirejs'
-    # Requirejs is a special case; for this lib we just cat
-    # the script
-    str = Fs.createReadStream \
-      "node_modules/requirejs-browser/require.js"
-  else
+class Broz
+  @node_module: (mod) ->
     b = new Browserify
       fullPaths: true
       bundleExternal: false
       standalone: mod
     b.require mod
+    b.bundle()
 
-    str = b.bundle()
+  @lib: (mod) ->
+    assets.environment.findAsset("lib/#{mod}.js")?.__source__
+
+  rnode = (mod) -> -> Broz.node_module mod
+  rfile = (file) -> -> Fs.createReadStream file
+  @Modmap:
+    requirejs: rfile "node_modules/requirejs-browser/require.js"
+    angularAMD: rfile "node_modules/angularAMD/dist/angularAMD.js"
+
+  @require: (what) ->
+    @Modmap[what]?() || @lib(what) || @node_module what
+
+# Used by requirejs to load node.js modules
+#
+# see Broz; this is a wrapper around it.
+App.get '/require/:module', (req, res) ->
+  mod = req.params.module.replace /\.js$/, ""
+  str = Broz.require mod
+
+  res.contentType "application/javascript"
+
+  if (typeof str) == "string"
+    res.send(str)
+    return
 
   str.on 'error', (err) ->
     return if res.finished
+    res.contentType "text/plain"
     res.status(404).send """
       Error 404: Could not bundle  "#{mod}"!
-      
+
       #{err.stack}
     """
 
-  res.contentType "application/javascript"
   str.on 'data', (chunk) -> res.write chunk
   str.on 'end', -> res.end()
 
