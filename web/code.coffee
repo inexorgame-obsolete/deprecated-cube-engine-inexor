@@ -1,2 +1,0 @@
-requirejs.config
-  baseUrl: "/node/"
