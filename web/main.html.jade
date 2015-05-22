@@ -3,8 +3,8 @@ html
   head
     meta(charset="utf-8")
     title Inexor Example site
-    script(src="/node/requirejs")
+    link(href="/main.css", rel="stylesheet")
+    script(src="/require/requirejs")
     script(src="/main.js")
-    link(href="main.css", rel="stylesheet")
   body
-    h1 This site is fancy!
+    inx-example(say="Woord")

@@ -14,11 +14,13 @@
     "requirejs": "^2.1.17",
     "requirejs-browser": "^2.1.9",
     "jade": "^1.9.2",
+    "jquery": "^2.1.4",
     "lodash": "^3.8.0",
     "long": "^2.2.3",
     "protobufjs": "^4.0.0-b2",
     "serve-static": "^1.9.2",
     "stylus": "^0.51.1",
+    "underscore.string": "^3.0.3",
     "uuid": "^2.0.1"
   },
   "engines": {

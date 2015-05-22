@@ -1,0 +1,195 @@
+define ["_", "requireOptional"], (_, req_opt) ->
+
+  # NgInjectable - Basic tools to declare angular staff in
+  # coffee script classes. And support for AMD.
+  #
+  # # Features
+  #
+  # * Framework for declaring controllers/directives/… in classes
+  # * Injection of angular and requirejs modules with @inject
+  # * Declaring the angular module this is in by name
+  #
+  # # Usage
+  #
+  # This is not to be used directly, rather it should be
+  # used as means to wrap angular declaration functions like
+  # .controller, .factory or .directive.
+  #
+  # In order to use NgInjectable, a class must be declared
+  # that extends NgInjectable. The resulting class must then
+  # be passed to NgInjectable.wrap, which calls requirejs'
+  # define() and wraps the constructor to provide automatic
+  # dependency injection.
+  # NgInjectable.wrap also takes a callback; this callback
+  # is given the resulting class and should be used to
+  # actually call .controller or another of those functions.
+  #
+  # # Example
+  #
+  # See InxComponent for a complex wrapper around .directive
+  #
+  # This quickly illustrates how a very simple wrapper
+  # around .controller() could be created.
+  #
+  # `BaseController.coffee`
+  # ```
+  #   define ["NgInjectable"], (NgInjectable) ->
+  #     class BaseController extends NgInjectable
+  #       # Will provide @$scope and @underscore while the
+  #       # object is alive
+  #       @inject "$scope", "underscore"
+  #
+  #     # We need to use our own wrapper
+  #     BaseController.wrap (name, clz) ->
+  #       # define is called here
+  #       NgInjectable.wrap clz, (new_clz) ->
+  #
+  #         # new_clz needs to be instantiated with new
+  #         factory = (a...) -> new new_clz a...
+  #         # The factory needs to have a the $inject
+  #         # property for dependency injection to work
+  #         factory.$inject = new_clz
+  #
+  #         new_clz.angular_module.controller name, factory
+  #
+  #     # Usually we should never move something into the
+  #     # global namespace; except the main dependency
+  #     # resolving mechanism; BaseController is our primary
+  #     # dependency resolver in this case
+  #     window.BaseController = BaseController
+  #     window.defineBaseController = BaseController.wrap
+  #
+  #     return BaseController
+  # ```
+  #
+  # `MyController.coffee`
+  # ```
+  #   defineBaseController 'MyController', class extends BaseController
+  #     @inject "uuid", ["underscore"]
+  #
+  #     # The module this controller will be added to
+  #     # Must be a string; it must be possible to require
+  #     # 'my_application' with requirejs
+  #     @mod "my_application"
+  #
+  #     constructor: ->
+  #       @$scope.boat = "Titanic"
+  # ```
+  #
+  class NgInjectable
+    # A list of the dependencies added with @inject
+    @dependencies = []
+    # Add a dependency to be provided by angular or requirejs
+    # Takes any number of arguments including nested lists
+    #
+    # Dependencies requested this way are accessible as
+    # fields. `@inject 'foo'` -> `@foo`
+    #
+    # TODO: Allow inject alias
+    @inject = (args...) ->
+      for x in _.flattenDeep args
+        @dependencies.push x
+
+    # Set the angular module this is supposed to be added
+    # to.
+    # The argument must be the name of an amd-loadable
+    # module.
+    # Defaults to app.
+    @mod = (mod) ->
+      @angular_module_name = mod
+
+    @mod "app"
+    @inject []
+
+    # The angular module instance this is supposed to be
+    # added to. This is resolved by the wrapper from the
+    # value set by @mod()
+    @angular_module: null
+    # The amd module; The wrapper is calling define(["module"])
+    # automatically; this will contain information like the
+    # file the wrapper is called in.
+    @amd_module: null
+
+    # A map {$name: $value} of resolved AMD dependencies.
+    # This is filled by the wrapper.
+    @amd_loaded: null
+
+    # The usual angular $inject property. Dependencies that
+    # could not be resolved by amd and that are now to be
+    # resolved by the angular dependency injector on class
+    # instantiation.
+    # List of names; set by the wrapper.
+    @$inject: null
+  
+  # The wrapper must be called on the class that extends
+  # NgInjectable. (see the class doc for examples)
+  #
+  # * It calls define to make the whole class an AMD module
+  # * It resolves AMD dependencies added with @inject
+  # * It wraps the constructor so that angular dependencies
+  #   are automatically added as fields.
+  #
+  # TODO: Get rid of NgInjectable.wrap
+  #
+  # @param clz [Class] The class this wraps
+  # @param deps [Array<String>] Any number of AMD dependencies.
+  #        Those are passed to the callback
+  # @param cb - [Function] The callback. This is passed
+  #        another class created by the wrapper and any deps
+  #        resolved
+  NgInjectable.wrap = (clz, deps..., cb) ->
+    define [clz.angular_module_name, deps..., "module"], \
+            (angular_module, resolved_deps..., amd_module) ->
+
+      # We first try to load the @dependencies with AMD;
+      # any dependencies that could not be loaded are then
+      # injected as angular dependencies
+      # This is a bit problematic because the amd_loader
+      # should have a lower priority than the angular injector.
+      #
+      # TODO: Extend the angular injector to natively load
+      #       amd modules as fallback. (amd is async;
+      #       angular is sync - we need to bridge that)
+      req_opt clz.dependencies, (amd_injects...) ->
+
+        # [[$dependency_name, $amd_resolved]]
+        req_zip = _.chain _.zip clz.dependencies, amd_injects
+        class Wrapper extends clz
+          # disable, otherwise this will be NgInjectable.wrap
+          @wrap = null
+
+          @angular_module: angular_module
+          @amd_module: amd_module
+
+          @amd_loaded =  req_zip
+              .filter ([name, mod]) -> mod != null
+              .object()
+              .value()
+
+          @$inject = req_zip
+              .filter ([name, mod]) -> mod == null
+              .map ([name]) -> name
+              .value()
+
+          constructor: (args...) ->
+            @clz = Wrapper
+
+            # Insert all the modules loaded by AMD
+            _.merge @, @clz.angular_loaded
+
+            # Handle all the injected arguments by storing
+            # them with the correct name ass a class
+            # variable
+            for dep,i in @clz.$inject
+              @[dep] ||= args[i]
+
+            # Call the class constructor, removing all the
+            # injected arguments
+            new_args = _.slice args, (@clz.$inject.length)
+            super new_args...
+
+        # end: class Wrapper
+        cb Wrapper, resolved_deps
+
+  # end NgInjectable.wrap
+  return NgInjectable
