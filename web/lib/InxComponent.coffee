@@ -11,7 +11,7 @@ define ["NgInjectable", "_", "underscore.string"], \
   # * Event declaration during class definition with @on
   # * Automatic template loading
   # * Automatically provides jQuery (@$), the jquery element (@elem),
-  #   the element attributes (@$attrs) and the transclude 
+  #   the element attributes (@$attrs) and the transclude
   #   function (@$transclude)
   #
   # # Default values
@@ -63,7 +63,10 @@ define ["NgInjectable", "_", "underscore.string"], \
   #
   class InxComponent extends NgInjectable
     # TODO: Use jQuery rather than jQlite for $element
-    @inject "$", "$element", "$attrs", "$transclude"
+    @inject "$", "$transclude"
+    @inject
+      elem: "$element"
+      attrs: "$attrs"
 
     # [[$event_name, $function_name, $function], ...]
     #
@@ -102,9 +105,6 @@ define ["NgInjectable", "_", "underscore.string"], \
     # NgInjectable's wrapper -> this wrapper -> clz -> InxComponent -> NgInjectable
     class __constructor_wrapper extends clz
       constructor: (a...) ->
-        @elem = @$ @$element
-        @attrs = @$attrs
-
         super a...
 
         for [ev, name, f] in @clz.req_queue
@@ -127,7 +127,7 @@ define ["NgInjectable", "_", "underscore.string"], \
       Nu.scope ||= {}
       Nu.bindToController ||= true
       Nu.controller ||= ctrl_factory
-      
+
       Nu.angular_module.directive name, ->
         # This is the actual directive factory; angular
         # won't act correctly if the result of this is

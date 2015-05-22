@@ -78,24 +78,61 @@ define ["_", "requireOptional"], (_, req_opt) ->
   #
   class NgInjectable
     # A list of the dependencies added with @inject
-    @dependencies = []
+    @dependencies: []
+
+    # If a dependency has an alias, it's name
+    @dependency_aliases: {}
+
     # Add a dependency to be provided by angular or requirejs
-    # Takes any number of arguments including nested lists
     #
     # Dependencies requested this way are accessible as
     # fields. `@inject 'foo'` -> `@foo`
     #
-    # TODO: Allow inject alias
-    @inject = (args...) ->
-      for x in _.flattenDeep args
-        @dependencies.push x
+    # This takes strings, lists of strings and objects to
+    # specify aliases:
+    #
+    # ```
+    #   # Will be available as @async
+    #   @inject "asyn"
+    #
+    #   # Will be available as @$ and @_
+    #   @inject
+    #     _: "underscore"
+    #     $: "jQuery"
+    # ```
+    @inject: (args...) ->
+      for x in args
+        if (typeof x) == 'string'
+          @dependencies.push x
+        else if x instanceof Array
+          @inject x...
+        else if x instanceof Object
+          _.merge @dependency_aliases, _.invert x
+          @inject (_.values x)...
+        else
+          throw Error "Invalid argument #{x}"
+
+    # Insert a dependency
+    #
+    # Should be called during instantiation by NgInjectable
+    # only
+    #
+    # First resolves whether the dependency has an alias and
+    # then sets the instance variable with the alias or the
+    # name.
+    #
+    # @param name_ The name of the depnendency
+    # @param mod   The actual module
+    insert_dependency: (name_, mod) =>
+      name = @clz.dependency_aliases[name_] || name_
+      @[name] = mod
 
     # Set the angular module this is supposed to be added
     # to.
     # The argument must be the name of an amd-loadable
     # module.
     # Defaults to app.
-    @mod = (mod) ->
+    @mod: (mod) ->
       @angular_module_name = mod
 
     @mod "app"
@@ -153,7 +190,7 @@ define ["_", "requireOptional"], (_, req_opt) ->
       req_opt clz.dependencies, (amd_injects...) ->
 
         # [[$dependency_name, $amd_resolved]]
-        req_zip = _.chain _.zip clz.dependencies, amd_injects
+        req_zip = _.chain(clz.dependencies).zip amd_injects
         class Wrapper extends clz
           # disable, otherwise this will be NgInjectable.wrap
           @wrap = null
@@ -175,13 +212,14 @@ define ["_", "requireOptional"], (_, req_opt) ->
             @clz = Wrapper
 
             # Insert all the modules loaded by AMD
-            _.merge @, @clz.angular_loaded
+            for name, mod of @clz.amd_loaded
+              @insert_dependency name, mod
 
             # Handle all the injected arguments by storing
             # them with the correct name ass a class
             # variable
             for dep,i in @clz.$inject
-              @[dep] ||= args[i]
+              @insert_dependency dep, args[i]
 
             # Call the class constructor, removing all the
             # injected arguments
