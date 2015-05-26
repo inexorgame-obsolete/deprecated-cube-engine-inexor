@@ -5,6 +5,7 @@ Assets = require 'connect-assets'
 ServeStatic = require 'serve-static'
 Browzerify = require 'browzerify'
 _ = require 'lodash'
+AssetManager = require 'asset-manager'
 
 # Configure requirejs for node #############################
 
@@ -31,3 +32,16 @@ for path, dir of Modmap.web_assets
 # Load node_modules in the browser #########################
 
 App.get '/require/:module', Browzerify.request_handler assetsv
+
+# API ######################################################
+
+App.get '/api/:version/asset-manager/listStatic', (req, res) ->
+  AssetManager.listStatic (err, data) ->
+    # TODO: We need generic error handling
+    if err
+      res.mime "text/plain"
+      res.status 500
+      res.send "Some unknown error occurred on the server"
+      throw err
+    else
+      res.json data

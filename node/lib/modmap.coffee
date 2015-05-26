@@ -48,6 +48,18 @@ class ModmapBrowser
       app: "/lib/angular-app"
 
 class Modmap extends (is_node && ModmapNode || ModmapBrowser)
+  # A list of assets types that are known; The data structure
+  # represents file name conversion schemes:
+  # [[$regex, $replacement], ...]
+  #
+  # TODO: We should infer this from the asset lib somehow
+  dynamic_assets: do ->
+    r = []
+    $ = (k,v) -> r.push [k,v]; r
+
+    $ /\.coffee$/, ".js"
+    $ /\.html\.jade$/, ".html"
+    $ /\.styl$/, ".css"
 
 # INITIALIZE REQUIREJS #####################################
 # (in the browser only)
