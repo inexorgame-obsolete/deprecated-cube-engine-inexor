@@ -53,5 +53,3 @@ App.get '/require/:module', (req, res) ->
 
   str.on 'data', (chunk) -> res.write chunk
   str.on 'end', -> res.end()
-
-App.listen 8000, "localhost"

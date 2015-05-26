@@ -1,0 +1,5 @@
+#! /usr/bin/env node
+
+require('coffee-script/register');
+
+require("ui-server").listen(8000, "localhost");
