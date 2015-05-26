@@ -1,4 +1,4 @@
-define ["NgInjectable", "_", "underscore.string"], \
+define ["NgInjectable", "lodash", "underscore.string"], \
        (NgInjectable, _, _s) ->
   # InxComponent - Object oriented class definition
   #
@@ -63,10 +63,11 @@ define ["NgInjectable", "_", "underscore.string"], \
   #
   class InxComponent extends NgInjectable
     # TODO: Use jQuery rather than jQlite for $element
-    @inject "$", "$transclude"
+    @inject "$transclude"
     @inject
       elem: "$element"
       attrs: "$attrs"
+      $: "jquery"
 
     # [[$event_name, $function_name, $function], ...]
     #

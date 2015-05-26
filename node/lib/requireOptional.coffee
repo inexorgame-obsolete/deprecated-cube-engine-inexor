@@ -6,13 +6,16 @@
 #
 # TODO: Suppress HTTP error messages on the console when
 #       a module is not found
-define ["async"], (async) -> (mods, cb) ->
+def = define? && define || require('amdefine')(module)
+def ["async"], (async) -> (mods, cb) ->
   if (typeof mods) == 'string'
     return try require mod
 
   f = (m, cb_) ->
     try
-      require [m], (i) -> cb_ null, i
+      suc = (i) -> cb_ null, i
+      err = -> cb_ null, null
+      require [m], suc, err
     catch er
       cb_ null, null
   async.map mods, f, (err, insts) -> cb insts...

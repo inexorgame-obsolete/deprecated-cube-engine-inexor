@@ -1,8 +1,5 @@
 requirejs.config
   baseUrl: "/require/"
-  paths:
-    _: "/require/lodash"
-    $: "/require/jquery"
 
 delay = (t,f) -> setTimeout f,t
 

@@ -1,5 +1,6 @@
 defineInxComponent 'inxExample', class extends InxComponent
-  @inject "_"
+  @inject
+    _: "lodash"
   @scope:
     say: '='
 

@@ -1,4 +1,4 @@
-define ["_", "requireOptional"], (_, req_opt) ->
+define ["lodash", "requireOptional"], (_, req_opt) ->
 
   # NgInjectable - Basic tools to declare angular staff in
   # coffee script classes. And support for AMD.

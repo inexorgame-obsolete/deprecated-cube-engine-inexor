@@ -4,10 +4,9 @@ ServeStatic = require 'serve-static'
 RequireJS = require 'requirejs'
 Browserify = require 'browserify'
 Fs = require 'fs'
+_ = require 'lodash'
 
-assets = Assets
-  paths: "../web"
-  servePath: "/"
+asset_cfg =
   precompile: []
   build: false
   compile: true
@@ -15,8 +14,14 @@ assets = Assets
   fingerprinting: false
 
 App = new Express
-App.use ServeStatic "../web"
-App.use assets
+App.use "/", ServeStatic "../web"
+App.use "/lib", ServeStatic "./lib"
+App.use Assets _.merge {}, asset_cfg,
+  paths: "../web"
+  servePath: "/"
+App.use Assets _.merge {}, asset_cfg,
+  paths: "./lib"
+  servePath: "/lib"
 
 
 RequireJS.config
