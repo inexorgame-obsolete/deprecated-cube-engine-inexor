@@ -19,6 +19,8 @@ class Modmap
   # AMD Config for use in the browser
   @amd_browser_cfg:
     baseUrl: "/require/"
+    paths:
+      app: "/lib/angular-app"
 
   # The default config for connect-assets; do not set
   # paths and servePath; see @web_assets

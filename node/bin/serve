@@ -2,4 +2,4 @@
 
 require('coffee-script/register');
 
-require("ui-server").listen(8000, "localhost");
+require("express-server").listen(8000, "localhost");
