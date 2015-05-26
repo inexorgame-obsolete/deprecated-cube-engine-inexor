@@ -1,6 +1,3 @@
-requirejs.config
-  baseUrl: "/require/"
-
 delay = (t,f) -> setTimeout f,t
 
 require ["InxComponent", "angular"], (InxComponent, Angular) ->

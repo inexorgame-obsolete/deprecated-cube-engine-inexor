@@ -1,59 +1,39 @@
+RJs = require 'requirejs'
+Modmap = require 'modmap'
 Express = require 'express'
-Assets = require "connect-assets"
+Assets = require 'connect-assets'
 ServeStatic = require 'serve-static'
-RequireJS = require 'requirejs'
-Browserify = require 'browserify'
-Fs = require 'fs'
 _ = require 'lodash'
 
-asset_cfg =
-  precompile: []
-  build: false
-  compile: true
-  compress: false
-  fingerprinting: false
-
-App = new Express
-App.use "/", ServeStatic "../web"
-App.use "/lib", ServeStatic "./lib"
-App.use Assets _.merge {}, asset_cfg,
-  paths: "../web"
-  servePath: "/"
-App.use Assets _.merge {}, asset_cfg,
-  paths: "./lib"
-  servePath: "/lib"
+# Configure requirejs for node #############################
 
 
-RequireJS.config
-  nodeRequire: require
+RJs.config Modmap.amd_node_cfg
 
-class Broz
-  @node_module: (mod) ->
-    b = new Browserify
-      fullPaths: true
-      bundleExternal: false
-      standalone: mod
-    b.require mod
-    b.bundle()
 
-  @lib: (mod) ->
-    assets.environment.findAsset("lib/#{mod}.js")?.__source__
+# Export/compile our assets ################################
 
-  rnode = (mod) -> -> Broz.node_module mod
-  rfile = (file) -> -> Fs.createReadStream file
-  @Modmap:
-    requirejs: rfile "node_modules/requirejs-browser/require.js"
-    angularAMD: rfile "node_modules/angularAMD/dist/angularAMD.js"
 
-  @require: (what) ->
-    @Modmap[what]?() || @lib(what) || @node_module what
+module.exports = App = new Express
 
-# Used by requirejs to load node.js modules
-#
-# see Broz; this is a wrapper around it.
+assetsv = []
+
+# Mount all the asset paths
+for path, dir of Modmap.web_assets
+  a = Assets _.merge {}, Modmap.connect_assets_cfg,
+    paths: dir
+    servePath: path
+  assetsv.push a
+  App.use a
+  App.use path, ServeStatic dir
+
+
+# Load node_modules in the browser #########################
+
+
 App.get '/require/:module', (req, res) ->
   mod = req.params.module.replace /\.js$/, ""
-  str = Broz.require mod
+  str = Modmap.Broz.require mod, assetsv
 
   res.contentType "application/javascript"
 
@@ -61,6 +41,7 @@ App.get '/require/:module', (req, res) ->
     res.send(str)
     return
 
+  # TODO: Does express have native stream handling?
   str.on 'error', (err) ->
     return if res.finished
     res.contentType "text/plain"
