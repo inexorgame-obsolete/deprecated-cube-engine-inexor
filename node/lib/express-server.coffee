@@ -33,7 +33,7 @@ for path, dir of Modmap.web_assets
 
 App.get '/require/:module', (req, res) ->
   mod = req.params.module.replace /\.js$/, ""
-  str = Modmap.Broz.require mod, assetsv
+  str = Modmap.browzerify mod, assetsv
 
   res.contentType "application/javascript"
 
