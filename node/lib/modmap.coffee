@@ -1,5 +1,4 @@
 # (Node only requires)
-Browserify = try require?("browserify")
 Fs = try require?("fs")
 
 is_node = GLOBAL?.process?
@@ -30,6 +29,18 @@ class ModmapNode
     "/":    @::web_dir
     "/lib": @::lib_dir
 
+  # This map is used when the browser requests that a module
+  # be browserified; By default browzerify below will return
+  # a node module, but this map can be used to take specific
+  # action for a specific module;
+  # The map contains module names as keys and functions as
+  # values; these function must either return the contents
+  # of the module as string or a readable stream.
+  rfile = (file) -> -> Fs.createReadStream file
+  browserify_map:
+    requirejs: rfile "node_modules/requirejs-browser/require.js"
+    angularAMD: rfile "node_modules/angularAMD/dist/angularAMD.js"
+
 class ModmapBrowser
   amd_browser_cfg:
     baseUrl: "/require/"
@@ -42,6 +53,7 @@ class Modmap extends (is_node && ModmapNode || ModmapBrowser)
 # (in the browser only)
 
 modmap = new Modmap
+
 # TODO: This goes in main.coffee
 if window?
   requirejs.config modmap.amd_browser_cfg
