@@ -8,6 +8,12 @@ def = define? && define || require('amdefine')(module)
 def ["modmap", "async", "lodash", "jquery"], (Modmap, Async, _, $) ->
 
   class AssetManager
+    constructor: ->
+      # TODO: Cache invalidation
+      @list = Async.memoize @list
+      @listStatic = Async.memoize @listStatic
+      @listDynamic = Async.memoize @listDynamic
+
     transformName: (name, map=Modmap.dynamic_assets) =>
       for [re, s] in map when name.match re
         return Array (name.replace re, s), true
@@ -15,8 +21,6 @@ def ["modmap", "async", "lodash", "jquery"], (Modmap, Async, _, $) ->
 
     # List all assets that are static files;
     # the result is passed to the callback as array
-    #
-    # TODO: Caching
     listStatic: (cb) =>
       dirs = _.pairs Modmap.web_assets
 
