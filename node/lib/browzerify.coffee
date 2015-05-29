@@ -1,4 +1,4 @@
-def = define? && define || require('amdefine')(module)
+def = define? && define || require('amdefine') module
 def ["browserify", "modmap"], (Browserify, Modmap) ->
 
   # Format modules for use in the browser
@@ -17,21 +17,14 @@ def ["browserify", "modmap"], (Browserify, Modmap) ->
   #   as readable stream.
   #
   # @param what [string] The module to browserify
-  # @param assetsv (soon to be Deprecated)
   # @param map [Object] This map can be used to configure
   #   specific modules; it contains an association of
   #   {$module_name: $loader, ....}; where loader is
   #   a function that returns JS code suitable for the
   #   browser either as readable stream or as string;
   #   By default configured in Modmap.browserify_map
-  browz = (what, assetsv, map=Modmap.browserify_map) ->
-    map[what]?() || browz.lib(what, assetsv) || browz.node_module what
-
-  # Browserify a file from lib/ (so we can require them too)
-  browz.lib = (mod, assetsv) ->
-    for man in assetsv
-      i = man.environment.findAsset("#{mod}.js")?.__source__
-      return i if i
+  browz = (what, map=Modmap.browserify_map) ->
+    map[what]?() || browz.node_module what
 
   # Browserify a module
   browz.node_module = (mod) ->
@@ -46,9 +39,9 @@ def ["browserify", "modmap"], (Browserify, Modmap) ->
   # things;
   #
   # Takes a :module parameter.
-  browz.request_handler = (assetsv) -> (req, res) ->
+  browz.request_handler = (req, res) ->
     mod = req.params.module.replace /\.js$/, ""
-    str = browz mod, assetsv
+    str = browz mod
 
     res.contentType "application/javascript"
 

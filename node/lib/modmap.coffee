@@ -43,9 +43,20 @@ class ModmapNode
 
 class ModmapBrowser
   amd_browser_cfg:
-    baseUrl: "/require/"
+    baseUrl: "/lib/"
     paths:
       app: "/lib/angular-app"
+
+      # Courtesy to  the AssetManager; it requires these,
+      # but the asset manager will only later be able to
+      # tell us where they are
+      async: "/require/async"
+      lodash: "/require/lodash"
+      jquery: "/require/jquery"
+
+  # TODO: Use DI for those kinds of configurations
+  fuzzy_amd_cfg:
+    roots: Array "/lib", "/components"
 
 class Modmap extends (is_node && ModmapNode || ModmapBrowser)
   # A list of assets types that are known; The data structure
@@ -61,21 +72,9 @@ class Modmap extends (is_node && ModmapNode || ModmapBrowser)
     $ /\.html\.jade$/, ".html"
     $ /\.styl$/, ".css"
 
-# INITIALIZE REQUIREJS #####################################
-# (in the browser only)
-
-modmap = new Modmap
-
-# TODO: This goes in main.coffee
-if window?
-  requirejs.config modmap.amd_browser_cfg
-
 # EXPORT BOILERPLATE #######################################
 
-if not define? # Amdefine can not deal with the explicit name
-  __def = require('amdefine')(module)
-  def = (name, deps, f) -> __def deps, f
-else
-  def = define
-
-def "modmap", [], -> modmap
+# This module shall not require anything, as it contains the
+# amd config
+def = define? && define || require('amdefine') module
+def [], -> new Modmap
