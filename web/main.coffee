@@ -1,3 +1,22 @@
+# INITIALIZATION
+#
+# Any global variables should be set here.
+#
+# 1. Activate minimal requirejs configuration
+# 2. Retrieve the real requirejs configuration from Modmap
+# 3. List the available node-modules with the asset manager;
+#    inject them statically in the requirejs config
+# 4. Load the new configuration into requirejs
+# 5. Activate the real requirejs configuration
+# 6. Load the InxComponent and inject into the global
+#    namespace (it wraps define for the components)
+# 7. List the available components
+# 8. require them with requirejs; They will also be added to
+#    angular as directives
+# 9. (wait a bit to give the components time to really load)
+# 10. Initialize angular
+
+# TODO: Put into some util module
 delay = (t,f) -> setTimeout f,t
 
 # We need to have some sort of requirejs config since we
@@ -13,27 +32,38 @@ requirejs.config
       jquery: "/require/jquery"
 
 # Load base config; including static module paths
+# Modmap has the base amd config; AssetManager provides the
+# list of node-modules
 require ["modmap", "asset-manager"], (Modmap, AssetManager) ->
-
-  AssetManager.listNodeModules (err, mods) ->
+  AssetManager.list (err, files) ->
     throw err if err
 
-    # Statically configure what node-modules we have
+    # Inject all the node modules into the amd configuration
     Modmap.amd_browser_cfg.paths ||= {}
-    for m in mods
-      Modmap.amd_browser_cfg.paths[m] ||= "/require/#{m}"
+    for m in files when m.match /^\/require\/./
+      name = m.replace "/require/", ""
+      Modmap.amd_browser_cfg.paths[name] ||= m
 
+    # Load the proper amd config
     requirejs.config Modmap.amd_browser_cfg
 
-    require ["angular", "InxComponent"], (Angular, InxComponent) ->
+
+    require ["angular", "InxComponent", "async", "lodash"], \
+            (Angular, InxComponent, Async, _) ->
+
+      # The components use this as loader
       window.InxComponent = InxComponent
       window.defineInxComponent = InxComponent.wrap
 
+      # Component files to load
+      components = _.filter files, (f) ->
+          f.match /^\/components\/.*\.js$/
+
       # Load all our actual components
-      require ["/components/inxExample"], ->
+      __load = (m, cb) -> require [m], cb
+      Async.map components, __load, (loaded) ->
         # TODO: The delay is shitty; we need this because
         # InxComponent returns before the component is added,
         # but do something better
         delay 1000, ->
-          console.log "BOOT"
           Angular.bootstrap document, ["inexor_web_app"]
