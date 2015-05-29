@@ -8,6 +8,15 @@
 # * Targets as called by .travis.conf
 # * Main routine
 
+# ATTENTION:
+# Please USE the following naming format for any files uploaded to our distribution server (nightly.inexor.org):
+# ...-BUILDNUMBER-<PACKAGENAME>.EXTENSION 
+# where <PACKAGENAME> is NOT CONTAINING any -
+# correct: master-oldbranch-olddirty-1043.2-linux_gcc.txt
+# correct: ...-992.2-apidoc.hip
+# wrong: ...-1043.2-linux-gcc.zip
+# wrong: ...-linux_gcc-1043.2.zip
+
 ## UTILITY FUNCTIONS #######################################
 
 # Check if a string contains something
@@ -124,7 +133,7 @@ install_apidoc() {
 
 upload_apidoc() {
   (
-    local zipp="/tmp/$build-apidoc"
+    local zipp="/tmp/$build"
     cd "$gitroot" -v
     doxygen doxygen.conf 2>&1 | grep -vF 'sqlite3_step " \
       "failed: memberdef.id_file may not be NULL'
