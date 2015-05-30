@@ -1,5 +1,5 @@
-define ["NgInjectable", "lodash", "underscore.string"], \
-       (NgInjectable, _, _s) ->
+# TODO: Simplify this code
+define ["NgInjectable", "lodash", "underscore.string", "asset-manager"], (NgInjectable, _, _s, AssetManager) ->
   # InxComponent - Object oriented class definition
   #
   # This is based on NgInjectable.
@@ -106,11 +106,19 @@ define ["NgInjectable", "lodash", "underscore.string"], \
     # NgInjectable's wrapper -> this wrapper -> clz -> InxComponent -> NgInjectable
     class __constructor_wrapper extends clz
       constructor: (a...) ->
-        super a...
+        # Autoload the CSS
+        cssf = "#{@clz.component_prefix}.css"
+        if cssf in AssetManager.list()
+          @$("head").append @$("<link/>").attr
+            href: cssf
+            rel: "stylesheet"
 
+        # Register all events
         for [ev, name, f] in @clz.req_queue
           @[name] = f
           @elem.on ev, (a...) => @[name] a...
+
+        super a...
 
     #  This is where define is called
     NgInjectable.wrap __constructor_wrapper, (Nu) ->
@@ -124,10 +132,13 @@ define ["NgInjectable", "lodash", "underscore.string"], \
       ctrl_factory.$inject = Nu.$inject
 
       Nu.component_prefix = Nu.amd_module.uri.replace /\.js$/, ""
-      Nu.templateUrl ||= "#{Nu.component_prefix}.html"
       Nu.scope ||= {}
       Nu.bindToController ||= true
       Nu.controller ||= ctrl_factory
+
+      htmlf = "#{Nu.component_prefix}.html"
+      if htmlf in AssetManager.list()
+        Nu.templateUrl ||= htmlf
 
       Nu.angular_module.directive name, ->
         # This is the actual directive factory; angular
