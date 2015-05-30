@@ -32,23 +32,7 @@ App.get '/require/:module', Browzerify.request_handler
 # API ######################################################
 
 App.get '/api/:version/asset-manager/listStatic', (req, res) ->
-  AssetManager.listStatic (err, data) ->
-    # TODO: We need generic error handling
-    if err
-      res.mime "text/plain"
-      res.status 500
-      res.send "Some unknown error occurred on the server"
-      throw err
-    else
-      res.json data
+  res.json AssetManager.listStatic()
 
 App.get '/api/:version/asset-manager/listNodeModules', (req, res) ->
-  AssetManager.listNodeModules (err, data) ->
-    # TODO: We need generic error handling
-    if err
-      res.mime "text/plain"
-      res.status 500
-      res.send "Some unknown error occurred on the server"
-      throw err
-    else
-      res.json data
+  res.json AssetManager.listNodeModules()

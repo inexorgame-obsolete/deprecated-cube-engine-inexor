@@ -27,7 +27,6 @@ requirejs.config
       # Courtesy to  the AssetManager; it requires these,
       # but the asset manager will only later be able to
       # tell us where they are
-      async: "/require/async"
       lodash: "/require/lodash"
       jquery: "/require/jquery"
 
@@ -35,35 +34,35 @@ requirejs.config
 # Modmap has the base amd config; AssetManager provides the
 # list of node-modules
 require ["modmap", "asset-manager"], (Modmap, AssetManager) ->
-  AssetManager.list (err, files) ->
-    throw err if err
+  assets = AssetManager.list()
 
-    # Inject all the node modules into the amd configuration
-    Modmap.amd_browser_cfg.paths ||= {}
-    for m in files when m.match /^\/require\/./
-      name = m.replace "/require/", ""
-      Modmap.amd_browser_cfg.paths[name] ||= m
+  # Inject all the node modules into the amd configuration
+  Modmap.amd_browser_cfg.paths ||= {}
+  for m in assets when m.match /^\/require\/./
+    name = m.replace "/require/", ""
+    Modmap.amd_browser_cfg.paths[name] ||= m
 
-    # Load the proper amd config
-    requirejs.config Modmap.amd_browser_cfg
+  # Load the proper amd config
+  requirejs.config Modmap.amd_browser_cfg
 
 
-    require ["angular", "InxComponent", "async", "lodash"], \
-            (Angular, InxComponent, Async, _) ->
+  require ["angular", "InxComponent", "async", "lodash", "app"], \
+          (Angular, InxComponent, Async, _, app) ->
 
-      # The components use this as loader
-      window.InxComponent = InxComponent
-      window.defineInxComponent = InxComponent.wrap
+    # The components use this as loader
+    window.InxComponent = InxComponent
+    window.defineInxComponent = InxComponent.wrap
 
-      # Component files to load
-      components = _.filter files, (f) ->
-          f.match /^\/components\/.*\.js$/
+    # Component files to load
+    components = _.filter assets, (f) ->
+        f.match /^\/components\/.*\.js$/
 
-      # Load all our actual components
-      __load = (m, cb) -> require [m], cb
-      Async.map components, __load, (loaded) ->
-        # TODO: The delay is shitty; we need this because
-        # InxComponent returns before the component is added,
-        # but do something better
-        delay 1000, ->
-          Angular.bootstrap document, ["inexor_web_app"]
+
+    # Load all our actual components
+    __load = (m, cb) -> require [m], cb
+    Async.map components, __load, (loaded) ->
+      # TODO: The delay is shitty; we need this because
+      # InxComponent returns before the component is added,
+      # but do something better
+      delay 1000, ->
+        Angular.bootstrap document, ["inexor_web_app"]
