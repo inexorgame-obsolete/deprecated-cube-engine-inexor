@@ -10,11 +10,12 @@
 # 5. Activate the real requirejs configuration
 # 6. Load the InxComponent and inject into the global
 #    namespace (it wraps define for the components)
-# 7. List the available components
-# 8. require them with requirejs; They will also be added to
+# 7. Load angular modules (window manager)
+# 8. List the available components
+# 9. require them with requirejs; They will also be added to
 #    angular as directives
-# 9. (wait a bit to give the components time to really load)
-# 10. Initialize angular
+# 10. (wait a bit to give the components time to really load)
+# 11. Initialize angular
 
 # TODO: Put into some util module
 delay = (t,f) -> setTimeout f,t
@@ -46,23 +47,34 @@ require ["modmap", "asset-manager"], (Modmap, AssetManager) ->
   requirejs.config Modmap.amd_browser_cfg
 
 
-  require ["angular", "InxComponent", "async", "lodash", "app"], \
-          (Angular, InxComponent, Async, _, app) ->
+  require ["angular", "InxComponent", "async", "lodash", "app", "jquery"], \
+          (Angular, InxComponent, Async, _, app, $) ->
 
     # The components use this as loader
     window.InxComponent = InxComponent
     window.defineInxComponent = InxComponent.wrap
 
+    # Load angular modules (window manager)
+    # TODO: Add a generic css/js tag routine
+    # TODO: We should load those at a better place, in here
+    #       does not scale and it should not be necessary to
+    #       require the modules in bootstrap below
+    window.Angular = window.angular = Angular
+    $("head").append $("<link/>").attr
+      href: "/require/css_wmwindow"
+      rel: "stylesheet"
+    $.getScript "/require/wmwindow"
+
     # Component files to load
     components = _.filter assets, (f) ->
         f.match /^\/components\/.*\.js$/
 
-
     # Load all our actual components
     __load = (m, cb) -> require [m], cb
     Async.map components, __load, (loaded) ->
-      # TODO: The delay is shitty; we need this because
-      # InxComponent returns before the component is added,
-      # but do something better
+      # TODO: The delay is shitty; we need this for the
+      # angular modules and because InxComponent returns
+      # before the component is added, but do something
+      # better
       delay 1000, ->
-        Angular.bootstrap document, ["inexor_web_app"]
+        Angular.bootstrap document, ["inexor_web_app", "ngWindowManager"]

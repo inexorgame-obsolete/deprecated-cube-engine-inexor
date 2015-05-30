@@ -186,7 +186,8 @@ define ["lodash", "requireOptional"], (_, req_opt) ->
       #
       # TODO: Extend the angular injector to natively load
       #       amd modules as fallback. (amd is async;
-      #       angular is sync - we need to bridge that)
+      #       angular is sync - we need to bridge that).
+      #       use https://oclazyload.readme.io/ ?
       req_opt clz.dependencies, (amd_injects...) ->
 
         # [[$dependency_name, $amd_resolved]]

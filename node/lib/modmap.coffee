@@ -40,6 +40,8 @@ class ModmapNode
   browserify_map:
     requirejs: rfile "node_modules/requirejs-browser/require.js"
     angularAMD: rfile "node_modules/angularAMD/dist/angularAMD.js"
+    wmwindow: rfile "node_modules/winamn/app/scripts/directives/wmwindow.js"
+    css_wmwindow: rfile "node_modules/winamn/app/styles/wmwindow.css"
 
 class ModmapBrowser
   amd_browser_cfg:

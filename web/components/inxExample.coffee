@@ -16,5 +16,8 @@ defineInxComponent 'inxExample', class extends InxComponent
     console.log "GOT INSTANCE: ", @
     console.log "GOT CLASS: ", @clz
 
+    if @attrs.bg
+      @elem.css background: @attrs.bg
+
   @on "click", (ev) -> console.log "CLICK: ", ev
 

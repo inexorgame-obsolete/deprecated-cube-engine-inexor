@@ -7,6 +7,8 @@
     "async": "^0.9.0",
     "bootstrap-styl": "^4.0.4",
     "bootstrap-stylus": "^0.2.2",
+    "angular": "^1.4.0",
+    "winamn": "git+https://github.com/sinmsinm/ng-window-manager.git",
     "coffee-script": "^1.9.2",
     "connect-assets": "^4.7.0",
     "express": "^4.12.3",
