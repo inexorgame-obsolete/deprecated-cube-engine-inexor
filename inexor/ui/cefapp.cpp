@@ -30,7 +30,8 @@ void InexorCefApp::Destroy()
 void InexorCefApp::Render()
 {
     layer_manager->Render();
-    mouse_manager->Render();
+    if (hasFocus())
+      mouse_manager->Render();
 }
 
 void InexorCefApp::SetScreenSize(int width, int height) {
