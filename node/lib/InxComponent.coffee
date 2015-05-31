@@ -134,6 +134,7 @@ define ["NgInjectable", "lodash", "underscore.string", "asset-manager"], (NgInje
       Nu.component_prefix = Nu.amd_module.uri.replace /\.js$/, ""
       Nu.scope ||= {}
       Nu.bindToController ||= true
+      Nu.controllerAs ||= "C"
       Nu.controller ||= ctrl_factory
 
       htmlf = "#{Nu.component_prefix}.html"
