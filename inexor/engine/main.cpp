@@ -966,7 +966,7 @@ void checkinput()
     {
         if(events.length()) event = events.remove(0);
 
-        if (cef_app.get() && cef_app->steal_input()) {
+        if (cef_app.get() && cef_app->hasFocus()) {
           bool handled = cef_app->handle_sdl_event(event);
           if (handled) continue;
         }
@@ -1253,6 +1253,8 @@ ICOMMAND(cef_reload, "", (),
       cef_app->GetFrame()->SetUrl(url);
     }
 );
+ICOMMAND(cef_focus, "b", (bool *b),
+    if (cef_app.get()) cef_app->setFocus(*b); );
 
 /// main program start
 ///

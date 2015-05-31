@@ -50,6 +50,14 @@ require ["modmap", "asset-manager"], (Modmap, AssetManager) ->
   require ["angular", "InxComponent", "async", "lodash", "app", "jquery"], \
           (Angular, InxComponent, Async, _, app, $) ->
 
+    # Handle focus; Make sure CEF looses focus and Inexor
+    # gains it, when we click on the background
+    $("body, html").on "click", ->
+      console.log "LOOSE FOCUS; inexor."
+      for k,v of inexor
+        console.log "INEXOR(#{k}) = #{v}"
+      inexor.releaseFocus()
+
     # The components use this as loader
     window.InxComponent = InxComponent
     window.defineInxComponent = InxComponent.wrap

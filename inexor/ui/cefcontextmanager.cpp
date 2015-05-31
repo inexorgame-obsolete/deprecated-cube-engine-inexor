@@ -4,6 +4,8 @@ void InexorCefContextManager::InitializeContext()
 {
     // Global Methods
     CreateFunction("quit", this);
+    CreateFunction("stealFocus", this);
+    CreateFunction("releaseFocus", this);
 
     // Variables
     CreateVariable("curtime", true);
@@ -17,16 +19,21 @@ void InexorCefContextManager::InitializeContext()
     CreateVariable("vsync");
     CreateVariable("fps", true);
     CreateVariable("name");
+    CreateVariable("cef_focus", cef_focus);
 }
 
 bool InexorCefContextManager::Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception)
 {
     CEF_REQUIRE_RENDERER_THREAD();
-    if (name == "quit") {
+    if (name == "quit")
     	quit();
-    	return true;
-    }
-    return false;
+    else if (name == "stealFocus")
+      cef_focus = true;
+    else if (name == "releaseFocus")
+      cef_focus = false;
+     else
+      return false;
+    return true;
 }
 
 bool InexorCefContextManager::Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& return_value, CefString& exception)
@@ -59,10 +66,13 @@ bool InexorCefContextManager::Get(const CefString& name, const CefRefPtr<CefV8Va
     }
     else if (name == "name")
         return_value = CefV8Value::CreateString(game::player1->name);
+    else if (name == "cef_focus")
+        return_value = CefV8Value::CreateBool(cef_focus);
     else
         return false;
     return true;
 }
+
 
 bool InexorCefContextManager::Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception)
 {
