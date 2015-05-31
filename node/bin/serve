@@ -2,4 +2,6 @@
 
 require('coffee-script/register');
 
-require("express-server").listen(8000, "localhost");
+# TODO: Dynamically select a port and tell the server!
+# TODO: Use basic auth with a PSK over IPC
+require("express-server").listen(48702, "localhost");

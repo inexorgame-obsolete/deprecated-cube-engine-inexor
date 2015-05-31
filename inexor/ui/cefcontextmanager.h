@@ -9,7 +9,6 @@
 
 #include "inexor/ui/cefcontextbindings.h"
 #include "inexor/ui/cefcontextprovider.h"
-#include "inexor/ui/cefdebug.h"
 
 class InexorCefContextManager : public InexorCefContextProvider
 {

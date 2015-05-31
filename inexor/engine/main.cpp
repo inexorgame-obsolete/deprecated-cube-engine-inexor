@@ -1244,10 +1244,15 @@ static bool findarg(int argc, char **argv, const char *str)
 ICOMMANDERR(subsystem_start, "s", (char *s), metapp->start(s));
 ICOMMANDERR(subsystem_stop, "s", (char *s), metapp->stop(s));
 
-ICOMMAND(cef_menu, "i", (int b),
-    if (cef_app.get()) cef_app->GetMenu()->SetVisibility(b));
-ICOMMAND(cef_debug, "i", (int b),
-    if (cef_app.get()) cef_app->GetDebugOverlay()->SetVisibility(b));
+ICOMMAND(cef_load, "s", (char *cv),
+    std::string u(cv);
+    if (cef_app.get()) cef_app->GetFrame()->SetUrl(u); );
+ICOMMAND(cef_reload, "", (),
+    if (cef_app.get()) {
+      std::string url = cef_app->GetFrame()->GetUrl();
+      cef_app->GetFrame()->SetUrl(url);
+    }
+);
 
 /// main program start
 ///

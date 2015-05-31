@@ -10,13 +10,10 @@
 #include "include/cef_render_process_handler.h"
 
 #include "inexor/ui/cefbrowsersettings.h"
-#include "inexor/ui/cefconsole.h"
+#include "inexor/ui/cefframe.h"
 #include "inexor/ui/cefcontextmanager.h"
-#include "inexor/ui/cefdebug.h"
-#include "inexor/ui/cefdebugoverlay.h"
 #include "inexor/ui/cefkeyboard.h"
 #include "inexor/ui/ceflayermanager.h"
-#include "inexor/ui/cefmenu.h"
 #include "inexor/ui/cefmouse.h"
 #include "inexor/ui/cefwindowinfo.h"
 
@@ -37,9 +34,7 @@ class InexorCefApp : public CefApp,
         CefRefPtr<InexorCefLayerManager> GetLayerManager() { return layer_manager; }
         CefRefPtr<InexorCefMouseManager> GetMouseManager() { return mouse_manager; }
         CefRefPtr<InexorCefKeyboardManager> GetKeyboardManager() { return keyboard_manager; }
-        CefRefPtr<InexorCefConsole> GetConsole() { return console; }
-        CefRefPtr<InexorCefMenu> GetMenu() { return menu; }
-        CefRefPtr<InexorCefDebugOverlay> GetDebugOverlay() { return debug_overlay; }
+        CefRefPtr<InexorCefFrame> GetFrame() { return frame; }
 
         // Rendering / Window Management
         void Render();
@@ -56,8 +51,7 @@ class InexorCefApp : public CefApp,
         ///
         /// Getter and setter
         bool steal_input() {
-            return menu->GetVisibility() \
-              || debug_overlay->GetVisibility();
+            return frame->GetVisibility();
         }
         /// Handle SDL events for CEF
         ///
@@ -67,31 +61,13 @@ class InexorCefApp : public CefApp,
         bool handle_sdl_event(SDL_Event ev);
 
 	private:
-
-        // JavaScript Context Manager
         CefRefPtr<InexorCefContextManager> context_manager;
-
-        // Layer Manager
         CefRefPtr<InexorCefLayerManager> layer_manager;
-
-        // Mouse Manager
         CefRefPtr<InexorCefMouseManager> mouse_manager;
-
-        // Keyboard Manager
         CefRefPtr<InexorCefKeyboardManager> keyboard_manager;
+        CefRefPtr<InexorCefFrame> frame;
 
-        // Console
-        CefRefPtr<InexorCefConsole> console;
-
-        // Menu
-        CefRefPtr<InexorCefMenu> menu;
-
-        // Debug Overlay
-        CefRefPtr<InexorCefDebugOverlay> debug_overlay;
-
-        // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(InexorCefApp);
-
 };
 
 #endif  // _CEF_APP_H
