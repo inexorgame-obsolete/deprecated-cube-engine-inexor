@@ -9,12 +9,16 @@
 
 #undef assert // Ignore assert.h asserts
 #define assert ASSERT_TRUE
+#define assertNot ASSERT_FALSE
 #define assertThrow ASSERT_THROW
+#define assertNothrow ASSERT_NO_THROW
 #define assertEq ASSERT_EQ
 #define assertNeq ASSERT_NE
 
 #define expect EXPECT_TRUE
+#define expectNot EXPECT_FALSE
 #define expectThrow EXPECT_THROW
+#define expectNothrow EXPECT_NO_THROW
 #define expectEq EXPECT_EQ
 #define expectNeq EXPECT_NE
 
