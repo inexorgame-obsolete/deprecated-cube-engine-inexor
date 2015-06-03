@@ -1,19 +1,17 @@
-/// generic useful stuff for any C++ program
-
-/// include guard to prevent this file from being included twice (similar to #pragma once on Windows)
 #ifndef _TOOLS_H
 #define _TOOLS_H
 
+#include <new>
+#include <cstddef>
+#include <algorithm>
 
-/// short type definitions 
-/// please note: these are real type definitions and not just macros!
-/// (those definitions are not really neccesary)
+#include <boost/algorithm/clamp.hpp>
+
 typedef unsigned char uchar;
 typedef unsigned short ushort;
 typedef unsigned int uint;
 typedef signed long long int llong;
 typedef unsigned long long int ullong;
-
 
 /// debug assertions
 /// assert.h is part of standard library
@@ -22,7 +20,6 @@ typedef unsigned long long int ullong;
 #else
   #define ASSERT(c) if(c) {} /// if not in debug mode, ignore assertion ("did it work? alright then do nothing {}")
 #endif
-
 
 /// __restrict is a keyword that can be used in pointer declarations
 /// http://stackoverflow.com/questions/745870/realistic-usage-of-the-c99-restrict-keyword
@@ -33,88 +30,26 @@ typedef unsigned long long int ullong;
   #define RESTRICT
 #endif
 
-
-/// ?
 #ifdef __GNUC__
   #define UNUSED __attribute__((unused))
 #else
   #define UNUSED
 #endif
 
+using std::swap;
+using std::min;
+using std::max;
+using boost::algorithm::clamp;
 
-/// include std::new operator to allocate memory 
-/// explicitly needed to include new for sauers selfmade vector-functions
-#include <new>
-#include <cstddef>
-
-
-/// make sure swap is not defined somewhere else
-#ifdef swap
-  #undef swap
-#endif
-
-/// make sure swap is defined here again
-/// (swapping two items means to change the value with each other)
-template<class T>
-static inline void swap(T &a, T &b)
-{
-    T t = a;
-    a = b;
-    b = t;
-}
-
-
-/// make sure min and max are not defined somewhere else
-#ifdef max
-  #undef max
-#endif
-#ifdef min
-  #undef min
-#endif
-
-/// "A range is any sequence of objects that can be accessed through iterators or pointers, 
-///  such as an array or an instance of some of the STL containers. Notice though, that algorithms 
-///  operate through iterators directly on the values, not affecting in any way the structure of any 
-///  possible container (it never affects the size or storage allocation of the container)."
-///  ---------------------------------------------------------------------------------------
-///  source: http://www.cplusplus.com/reference/algorithm/  [16.03.2015]
-#include <algorithm>
-
-
-/// return minimal or maximal of two values
-/// based on C++ standard library
-template<class T, class U>
-static inline T max(T a, U b)
-{
-    return std::max(a, b);
-}
-template<class T, class U>
-static inline T min(T a, U b)
-{
-    return std::min(a, b);
-}
-
-
-/// clamping means to return values in a specific range
-/// there is a minimal and a maximal value
-/// if the parameter is out of range, the range limit (min/max)
-/// will be returned
-template<class T, class U>
-static inline T clamp(T a, U b, U c)
-{
-    return max(T(b), min(a, T(c)));
-}
-
-
-/// weird random number generator
-#define rnd(x) ((int)(randomMT()&0x7FFFFFFF)%(x)) /// remove +- (sign) bit ?
+extern void seedMT(uint seed);
+extern uint randomMT();
+#define rnd(x) ((int)(randomMT()&0x7FFFFFFF)%(x))
 #define rndscale(x) (float((randomMT()&0x7FFFFFFF)*double(x)/double(0x7FFFFFFF)))
-#define detrnd(s, x) ((int)(((((uint)(s))*1103515245+12345)>>16)%(x))) /// black magic
+#define detrnd(s, x) ((int)(((((uint)(s))*1103515245+12345)>>16)%(x)))
 
 
 /// "for"-loop macro definitions
-/// macros should become extinct because they're deprecated (for this purpose)
-/// and are difficult to debug in some IDEs
+/// DEPRECATED: Use c++ range based loops instead
 #define loop(v,m) for(int v = 0; v < int(m); ++v)
 #define loopi(m) loop(i,m)
 #define loopj(m) loop(j,m)
@@ -126,12 +61,8 @@ static inline T clamp(T a, U b, U c)
 #define loopkrev(m) looprev(k,m)
 #define looplrev(m) looprev(l,m)
 
-
-/// delete dynamicly allocated memory on the heap correctly
-/// please make sure you have appropriate garbage collectors!
-#define DELETEP(p) if(p) { delete   p; p = 0; } /// "delta pointer"
-#define DELETEA(p) if(p) { delete[] p; p = 0; } /// "delta array"
-
+#define DELETEP(p) if(p) { delete   p; p = 0; }
+#define DELETEA(p) if(p) { delete[] p; p = 0; }
 
 /// some important mathematical macro constants
 #define PI  (3.1415927f)
@@ -604,11 +535,7 @@ static inline bool htcmp(GLuint x, GLuint y)
 /// Vector template
 /// @brief a manual implementation of vector templates (self managing dynamic arrays which store one type).
 /// @see std::vector
-/// @sideeffects DEPRECATED! (but difficult to replace in the engine) We recommend to use std::vector instead!
-template <class T> struct vector
-{
-	/// minimal vector size
-    static const int MINSIZE = 8;
+template <class T, int MINSIZE = 8> struct vector {
 
 	/// data pointer
     T *buf;
@@ -772,7 +699,6 @@ template <class T> struct vector
 
 	/// mix the vector's indices randomly
     void shuffle(){
-    	extern uint randomMT();
     	for(int i = 0; i < ulen; i++){
     		int indx = rnd(ulen);
     		T temp = buf[i];
@@ -1487,8 +1413,6 @@ extern char *loadfile(const char *fn, size_t *size, bool utf8 = true);
 extern bool listdir(const char *dir, bool rel, const char *ext, vector<char *> &files);
 extern int listfiles(const char *dir, const char *ext, vector<char *> &files);
 extern int listzipfiles(const char *dir, const char *ext, vector<char *> &files);
-extern void seedMT(uint seed);
-extern uint randomMT();
 
 extern void putint(ucharbuf &p, int n);
 extern void putint(packetbuf &p, int n);
