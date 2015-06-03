@@ -56,6 +56,20 @@ namespace util {
     return s.substr(pos);
   }
 
+/// Create a function alias
+///
+/// THX:
+/// https://stackoverflow.com/questions/9864125/c11-how-to-alias-a-function
+///
+/// @param orig Name of the original functon
+/// @param alias Name of the new alias function
+#define INEXOR_FUNCTION_ALIAS(alias, orig)                 \
+    template <typename... Args>                            \
+    auto alias (Args&&... args)                            \
+      -> decltype( orig(std::forward<Args>(args)...)) {    \
+        return orig(std::forward<Args>(args)...);          \
+    }
+
 /// INEXOR_ATTR_UNUSED: Prevent the compiler from optimizing
 /// variables that are never used away.
 /// Useful, when all the interesting logic happens on the
