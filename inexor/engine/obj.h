@@ -174,11 +174,11 @@ struct obj : vertmodel, vertloader<obj>
         mdl.model = this;
         mdl.index = 0;
         const char *pname = parentdir(loadname);
-        defformatstring(name1)("%s/%s/tris.obj", modeldir, loadname);
+        defformatstring(name1)("%s/%s/tris.obj", *modeldir, loadname);
         mdl.meshes = sharemeshes(path(name1), 2.0);
         if(!mdl.meshes)
         {
-            defformatstring(name2)("%s/%s/tris.obj", modeldir, pname);    // try obj in parent folder (vert sharing)
+            defformatstring(name2)("%s/%s/tris.obj", *modeldir, pname);    // try obj in parent folder (vert sharing)
             mdl.meshes = sharemeshes(path(name2), 2.0);
             if(!mdl.meshes) return false;
         }
@@ -192,8 +192,8 @@ struct obj : vertmodel, vertloader<obj>
     bool load()
     { 
         if(loaded) return true;
-        formatstring(dir)("%s/%s", modeldir, loadname);
-        defformatstring(cfgname)("%s/%s/obj.cfg", modeldir, loadname);
+        formatstring(dir)("%s/%s", *modeldir, loadname);
+        defformatstring(cfgname)("%s/%s/obj.cfg", *modeldir, loadname);
 
         loading = this;
         identflags &= ~IDF_PERSIST;

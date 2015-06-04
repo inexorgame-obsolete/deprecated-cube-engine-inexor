@@ -52,7 +52,7 @@ namespace game
     /// @see settexture
     void setradartex()
     {
-		defformatstring(radar_filename)("%s/radar.png", radardir);
+        defformatstring(radar_filename)("%s/radar.png", *radardir);
         settexture(radar_filename, 3);
     }
 
@@ -89,7 +89,7 @@ namespace game
     /// set specific textures for teammates, skulls... on the minimap
     void setbliptex(int team, const char *type = "")
     {
-        settexture(tempformatstring("%s/blip%s%s.png", radardir, teamblipcolor[team], type), 3);
+        settexture(tempformatstring("%s/blip%s%s.png", *radardir, teamblipcolor[team], type), 3);
     }
 
     /// draw all teamate arrow icons in minimap
@@ -852,7 +852,7 @@ namespace game
                 conoutf("%s set map var \"%s\" to %s", colorname(d), id->name, floatstr(*id->storage.f));
                 break;
             case ID_SVAR:
-                conoutf("%s set map var \"%s\" to \"%s\"", colorname(d), id->name, *id->storage.s);
+                conoutf("%s set map var \"%s\" to \"%s\"", colorname(d), id->name, **id->storage.s);
                 break;
         }
     }
@@ -865,15 +865,15 @@ namespace game
         {
 			/// access memory storage union depending on var type
             case ID_VAR:
-                addmsg(N_EDITVAR, "risi", ID_VAR, id->name, *id->storage.i);
+                addmsg(N_EDITVAR, "risi", ID_VAR, id->name, **id->storage.i);
                 break;
 
             case ID_FVAR:
-                addmsg(N_EDITVAR, "risf", ID_FVAR, id->name, *id->storage.f);
+                addmsg(N_EDITVAR, "risf", ID_FVAR, id->name, **id->storage.f);
                 break;
 
             case ID_SVAR:
-                addmsg(N_EDITVAR, "riss", ID_SVAR, id->name, *id->storage.s);
+                addmsg(N_EDITVAR, "riss", ID_SVAR, id->name, **id->storage.s);
                 break;
             default: return;
         }
@@ -1390,7 +1390,7 @@ namespace game
     }
 
 	// see deathscore command
-    extern int deathscore;
+    extern SharedVar<int> deathscore;
 
 	// parse other network messages
 	// because state and position have their own functions
@@ -1450,7 +1450,7 @@ namespace game
                 int val = clamp(getint(p), 10, 1000), cn = getint(p);
                 fpsent *a = cn >= 0 ? getclient(cn) : NULL;
                 if(!demopacket) gamespeed = val;
-                extern int slowmosp;
+                extern SharedVar<int> slowmosp;
                 if(m_sp && slowmosp) break;
                 if(a) conoutf("%s set gamespeed to %d", colorname(a), val);
                 else conoutf("gamespeed is %d", val);

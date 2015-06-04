@@ -81,10 +81,12 @@ public:
     operator T&() { return value; }
 
     // Proxies
+    
+    explicit Observe() : value() {}
 
     template<typename... Args>
     explicit Observe(Args&&... args)
-        : value{std::forward<Args>(args)...} {}
+        : value(std::forward<Args>(args)...) {}
 
     explicit Observe(T &otr) : value(otr) {}
     explicit Observe(T &&otr) : value(otr) {}

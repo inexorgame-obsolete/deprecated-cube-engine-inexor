@@ -2,6 +2,7 @@
 // is largely backwards compatible with the quake console language.
 
 #include "inexor/engine/engine.h"
+#include "inexor/rpc/SharedVar.h"
 
 hashset<ident> idents; // contains ALL vars/commands/aliases
 vector<ident *> identmap;
@@ -482,19 +483,19 @@ ICOMMAND(alias, "st", (const char *name, tagval *v),
 
 // variable's and commands are registered through globals, see cube.h
 
-int variable(const char *name, int min, int cur, int max, int *storage, identfun fun, int flags)
+int variable(const char *name, int min, int cur, int max, SharedVar<int> *storage, identfun fun, int flags)
 {
     addident(ident(ID_VAR, name, min, max, storage, (void *)fun, flags));
     return cur;
 }
 
-float fvariable(const char *name, float min, float cur, float max, float *storage, identfun fun, int flags)
+float fvariable(const char *name, float min, float cur, float max, SharedVar<float> *storage, identfun fun, int flags)
 {
     addident(ident(ID_FVAR, name, min, max, storage, (void *)fun, flags));
     return cur;
 }
 
-char *svariable(const char *name, const char *cur, char **storage, identfun fun, int flags)
+char *svariable(const char *name, const char *cur, SharedVar<char*> *storage, identfun fun, int flags)
 {
     addident(ident(ID_SVAR, name, storage, (void *)fun, flags));
     return newstring(cur);
@@ -2288,7 +2289,7 @@ void writecfg(const char *name)
         ident &id = *ids[i];
         if(id.flags&IDF_PERSIST) switch(id.type)
         {
-            case ID_VAR: f->printf("%s %d\n", escapeid(id), *id.storage.i); break;
+            case ID_VAR: f->printf("%s %d\n", escapeid(id), **id.storage.i); break;
             case ID_FVAR: f->printf("%s %s\n", escapeid(id), floatstr(*id.storage.f)); break;
             case ID_SVAR: f->printf("%s %s\n", escapeid(id), escapestring(*id.storage.s)); break;
         }

@@ -639,7 +639,7 @@ COMMAND(setblendbrush, "s");
 COMMAND(getblendbrushname, "i");
 COMMAND(curblendbrush, "");
 
-extern int nompedit;
+extern SharedVar<int> nompedit;
 
 bool canpaintblendmap(bool brush = true, bool sel = false, bool msg = true)
 {

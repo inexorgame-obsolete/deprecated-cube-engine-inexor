@@ -285,7 +285,7 @@ namespace aiman
         if(ci && !ci->local && ci->privilege < PRIV_ADMIN) return;
         botlimit = clamp(limit, 0, MAXBOTS);
         dorefresh = true;
-        defformatstring(msg)("bot limit is now %d", botlimit);
+        defformatstring(msg)("bot limit is now %d", *botlimit);
         sendservmsg(msg);
     }
 

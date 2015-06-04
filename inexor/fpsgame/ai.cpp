@@ -1,6 +1,6 @@
 #include "inexor/fpsgame/game.h"
 
-extern int fog;
+extern SharedVar<int> fog;
 
 namespace ai
 {

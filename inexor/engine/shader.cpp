@@ -44,7 +44,7 @@ void loadshaders()
     extern Slot dummyslot;
     dummyslot.shader = stdworldshader;
 
-    extern int ati_line_bug;
+    extern SharedVar<int> ati_line_bug;
     rectshader = lookupshaderbyname("rect");
     cubemapshader = lookupshaderbyname("cubemap");
     notextureshader = lookupshaderbyname("notexture");
@@ -72,7 +72,7 @@ static bool compileasmshader(GLenum type, GLuint &idx, const char *def, const ch
     glProgramStringARB_(type, GL_PROGRAM_FORMAT_ASCII_ARB, (GLsizei)strlen(def), def);
     GLint err = -1, native = 1;
     glGetIntegerv(GL_PROGRAM_ERROR_POSITION_ARB, &err);
-    extern int apple_vp_bug;
+    extern SharedVar<int> apple_vp_bug;
     if(type!=GL_VERTEX_PROGRAM_ARB || !apple_vp_bug)
         glGetProgramivARB_(type, GL_PROGRAM_UNDER_NATIVE_LIMITS_ARB, &native);
     if(msg && err!=-1)
@@ -1184,7 +1184,7 @@ static void gendynlightvariant(Shader &s, const char *sname, const char *vs, con
             lights[numlights++] = i;    
             if(numlights>=limit) break;
         }
-        extern int emulatefog;
+        extern SharedVar<int> emulatefog;
         if(emulatefog && reservetc>0 && numlights+1<limit && !(usedtc&(1<<(maxtexcoords-reservetc))) && strstr(ps, "OPTION ARB_fog_linear;") && strstr(vs, "result.fogcoord"))
         {
             if(!findunusedtexcoordcomponent(vs, emufogtc, emufogcomp))
@@ -1251,7 +1251,7 @@ static void gendynlightvariant(Shader &s, const char *sname, const char *vs, con
 
         loopk(i+1)
         {
-            extern int ati_dph_bug;
+            extern SharedVar<int> ati_dph_bug;
             string tc, dl;
             if(s.type & SHADER_GLSLANG) formatstring(tc)(
                 k<numlights ? 
@@ -1319,7 +1319,7 @@ static void genshadowmapvariant(Shader &s, const char *sname, const char *vs, co
         uint usedtc = findusedtexcoords(vs);
         if(maxtexcoords-reserveshadowmaptc<0) return;
         loopi(maxtexcoords-reserveshadowmaptc) if(!(usedtc&(1<<i))) { smtc = i; break; }
-        extern int emulatefog;
+        extern SharedVar<int> emulatefog;
         if(smtc<0 && emulatefog && reserveshadowmaptc>0 && !(usedtc&(1<<(maxtexcoords-reserveshadowmaptc))) && strstr(ps, "OPTION ARB_fog_linear;"))
         {
             if(!strstr(vs, "result.fogcoord") || !findunusedtexcoordcomponent(vs, emufogtc, emufogcomp)) return;
@@ -1363,7 +1363,7 @@ static void genshadowmapvariant(Shader &s, const char *sname, const char *vs, co
     vssm.put(vsmain, vspragma-vsmain);
     pssm.put(psmain, pspragma-psmain);
 
-    extern int smoothshadowmappeel;
+    extern SharedVar<int> smoothshadowmappeel;
     if(s.type & SHADER_GLSLANG)
     {
         const char *tc =
@@ -2237,7 +2237,7 @@ void inittmus()
         if(maxtmus<2)
         {
             nolights = nowater = nomasks = 1;
-            extern int lightmodels;
+            extern SharedVar<int> lightmodels;
             lightmodels = 0;
         }
     }

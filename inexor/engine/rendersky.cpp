@@ -376,7 +376,7 @@ void drawskyoutline()
 
     glDisable(GL_TEXTURE_2D);
     glDepthMask(GL_FALSE);
-    extern int wireframe;
+    extern SharedVar<int> wireframe;
     if(!wireframe)
     {
         enablepolygonoffset(GL_POLYGON_OFFSET_LINE);
@@ -446,7 +446,7 @@ void drawskybox(int farplane, bool limited)
     {
         explicitonly = alwaysrender || !sparklyfix || refracting; 
         if(!drawskylimits(explicitonly) && !alwaysrender) return;
-        extern int ati_skybox_bug;
+        extern SharedVar<int> ati_skybox_bug;
         if(!alwaysrender && !renderedskyfaces && !ati_skybox_bug) explicitonly = false;
     }
     else if(!alwaysrender)

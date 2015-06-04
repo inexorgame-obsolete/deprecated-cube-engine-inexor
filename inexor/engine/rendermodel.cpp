@@ -423,7 +423,7 @@ model *loadmodel(const char *name, int i, bool msg)
         if(!name[0] || loadingmodel || lightmapping > 1) return NULL;
         if(msg)
         {
-            defformatstring(filename)("%s/%s", modeldir, name);
+            defformatstring(filename)("%s/%s", *modeldir, name);
             renderprogress(loadprogress, filename);
         }
         loopi(NUMMODELTYPES)
@@ -757,7 +757,7 @@ void rendermodelquery(model *m, dynent *d, const vec &center, float radius)
     glDepthMask(GL_TRUE);
 }   
 
-extern int oqfrags;
+extern SharedVar<int> oqfrags;
 
 void rendermodel(entitylight *light, const char *mdl, int anim, const vec &o, float yaw, float pitch, int flags, dynent *d, modelattach *a, int basetime, int basetime2, float trans)
 {
@@ -1026,8 +1026,8 @@ void loadskin(const char *dir, const char *altdir, Texture *&skin, Texture *&mas
         } \
     }
    
-    defformatstring(mdir)("%s/%s", modeldir, dir);
-    defformatstring(maltdir)("%s/%s", modeldir, altdir);
+    defformatstring(mdir)("%s/%s", *modeldir, dir);
+    defformatstring(maltdir)("%s/%s", *modeldir, altdir);
     masks = notexture;
     tryload(skin, NULL, NULL, "skin");
     tryload(masks, "<stub>", NULL, "masks");

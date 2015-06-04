@@ -2632,7 +2632,7 @@ namespace server
 
     void sendservinfo(clientinfo *ci)
     {
-        sendf(ci->clientnum, 1, "ri5ss", N_SERVINFO, ci->clientnum, PROTOCOL_VERSION, ci->sessionid, serverpass[0] ? 1 : 0, serverdesc, serverauth);
+        sendf(ci->clientnum, 1, "ri5ss", N_SERVINFO, ci->clientnum, PROTOCOL_VERSION, ci->sessionid, serverpass[0] ? 1 : 0, *serverdesc, *serverauth);
     }
 
     void noclients()
@@ -2939,7 +2939,7 @@ namespace server
 
         if(m_demo) setupdemoplayback();
 
-        if(servermotd[0]) sendf(ci->clientnum, 1, "ris", N_SERVMSG, servermotd);
+        if(servermotd[0]) sendf(ci->clientnum, 1, "ris", N_SERVMSG, *servermotd);
     }
 
     void parsepacket(int sender, int chan, packetbuf &p)     // has to parse exactly each byte of the packet

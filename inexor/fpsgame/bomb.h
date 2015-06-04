@@ -104,7 +104,7 @@ struct bombclientmode : clientmode
         drawradar(x - roffset, y - roffset, rsize);
 
         // show obstacles on minimap
-        defformatstring(blip)("%s/blip_block.png", radardir);
+        defformatstring(blip)("%s/blip_block.png", *radardir);
         if(showminimapobstacles) loopv(movables)
         {
             dynent *m = (dynent *) movables[i];
@@ -125,7 +125,7 @@ struct bombclientmode : clientmode
         }
 
         // show fired bombs on minimap
-		formatstring(blip) ("%s/blip_bomb.png", radardir);
+        formatstring(blip) ("%s/blip_bomb.png", *radardir);
         loopv(bouncers)
         {
             bouncer *p = bouncers[i];

@@ -4,13 +4,12 @@
 #include "inexor/engine/engine.h"
 #include "inexor/fpsgame/game.h"
 
+#include "inexor/rpc/SharedVar.h"
+
 extern void quit();
 extern void getfps(int &fps, int &bestdiff, int &worstdiff);
 
-extern int fullscreen;
-extern int scr_w;
-extern int scr_h;
-extern int vsync;
+extern SharedVar<int> fullscreen, scr_w, scr_h, vsync;
 
 namespace game {
     extern fpsent *player1;

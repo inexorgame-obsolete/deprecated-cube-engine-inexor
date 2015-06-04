@@ -377,7 +377,7 @@ namespace game
     {
         if(at==player1 && d!=at)
         {
-            extern int hitsound;
+            extern SharedVar<int> hitsound;
             if(hitsound && lasthit != lastmillis) playsound(S_HIT);
             lasthit = lastmillis;
         }
@@ -690,7 +690,7 @@ namespace game
         }
     }
 
-    extern int chainsawhudgun;
+    extern SharedVar<int> chainsawhudgun;
 
     VARP(muzzleflash, 0, 1, 1);
     VARP(muzzlelight, 0, 1, 1);

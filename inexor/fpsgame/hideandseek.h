@@ -57,7 +57,7 @@ struct hideandseekclientmode : clientmode
         setradartex();
         drawradar(x - roffset, y - roffset, rsize);
         // show obstacles on minimap
-        defformatstring(blip)("%s/blip_block.png", radardir);
+        defformatstring(blip)("%s/blip_block.png", *radardir);
         if(showminimapobstacles) loopv(movables) {
             dynent *m = (dynent *) movables[i];
             if(!isobstaclealive((movable *) m)) continue;

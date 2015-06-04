@@ -1,6 +1,6 @@
 #include "inexor/engine/engine.h"
 
-extern int outline;
+extern SharedVar<int> outline;
 
 bool boxoutline = false;
 
@@ -84,7 +84,7 @@ int gridsize = 8;
 ivec cor, lastcor;
 ivec cur, lastcur;
 
-extern int entediting;
+extern SharedVar<int> entediting;
 bool editmode = false;
 bool havesel = false;
 bool hmapsel = false;
@@ -198,7 +198,7 @@ void toggleedit(bool force)
     stoppaintblendmap();
     keyrepeat(editmode, KR_EDITMODE);
     editing = entediting = editmode;
-    extern int fullbright;
+    extern SharedVar<int> fullbright;
     if(fullbright) 
     {
         initlights();
@@ -586,7 +586,7 @@ void rendereditcursor()
 /// @warning please note that editing is not allowed when the HUD (head up dispaly) is disabled!
 void tryedit()
 {
-    extern int hidehud;
+    extern SharedVar<int> hidehud;
     if(!editmode || hidehud || mainmenu) return;
     if(blendpaintmode) trypaintblendmap();
 }
@@ -1083,7 +1083,7 @@ void saveprefab(char *name)
     if(b->copy) freeblock(b->copy);
     protectsel(b->copy = blockcopy(block3(sel), sel.grid));
     changed(sel);
-    defformatstring(filename)("%s/%s.obr", prefabdir, name);
+    defformatstring(filename)("%s/%s.obr", *prefabdir, name);
     path(filename);
     stream *f = opengzfile(filename, "wb");
     if(!f) { conoutf(CON_ERROR, "could not write prefab to %s", filename); return; }
@@ -1115,7 +1115,7 @@ void pasteprefab(char *name)
     prefab *b = prefabs.access(name);
     if(!b)
     {
-        defformatstring(filename)("%s/%s.obr", prefabdir, name);
+        defformatstring(filename)("%s/%s.obr", *prefabdir, name);
         path(filename);
         stream *f = opengzfile(filename, "rb");
         if(!f) { conoutf(CON_ERROR, "could not read prefab %s", filename); return; }
@@ -2306,7 +2306,7 @@ void editmat(char *name, char *filtername)
 
 COMMAND(editmat, "ss");
 
-extern int menudistance, menuautoclose;
+extern SharedVar<int> menudistance, menuautoclose;
 
 VARP(texguiwidth, 1, 12, 1000);
 VARP(texguiheight, 1, 8, 1000);
@@ -2383,7 +2383,7 @@ struct texturegui : g3d_callback
     {
         if(!menuon) return;
         filltexlist();
-        extern int usegui2d;
+        extern SharedVar<int> usegui2d;
         if(!editmode || ((!texgui2d || !usegui2d) && camera1->o.dist(menupos) > menuautoclose)) menuon = false;
         else g3d_addgui(this, menupos, texgui2d ? GUI_2D : 0);
     }

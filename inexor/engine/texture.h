@@ -195,7 +195,7 @@ extern PFNGLUNIFORMBUFFEREXTPROC        glUniformBuffer_;
 extern PFNGLGETUNIFORMBUFFERSIZEEXTPROC glGetUniformBufferSize_;
 extern PFNGLGETUNIFORMOFFSETEXTPROC     glGetUniformOffset_;
 
-extern int renderpath;
+extern SharedVar<int> renderpath;
 
 enum { R_FIXEDFUNCTION = 0, R_ASMSHADER, R_GLSLANG, R_ASMGLSLANG };
 
@@ -262,7 +262,7 @@ enum
 #define MAXSHADERDETAIL 3
 #define MAXVARIANTROWS 5
 
-extern int shaderdetail;
+extern SharedVar<int> shaderdetail;
 
 struct Slot;
 struct VSlot;
@@ -692,7 +692,7 @@ struct cubemapside
 extern cubemapside cubemapsides[6];
 extern Texture *notexture;
 extern Shader *defaultshader, *rectshader, *cubemapshader, *notextureshader, *nocolorshader, *nocolorglslshader, *foggedshader, *foggednotextureshader, *stdworldshader, *lineshader, *foggedlineshader;
-extern int reservevpparams, maxvpenvparams, maxvplocalparams, maxfpenvparams, maxfplocalparams, maxvsuniforms, maxfsuniforms;
+extern SharedVar<int> reservevpparams, maxvpenvparams, maxvplocalparams, maxfpenvparams, maxfplocalparams, maxvsuniforms, maxfsuniforms;
 
 extern Shader *lookupshaderbyname(const char *name);
 extern Shader *useshaderbyname(const char *name);
@@ -713,7 +713,7 @@ extern ShaderParam *findshaderparam(Slot &s, const char *name, int type, int ind
 extern ShaderParam *findshaderparam(VSlot &s, const char *name, int type, int index);
 extern const char *getshaderparamname(const char *name);
 
-extern int maxtmus, nolights, nowater, nomasks;
+extern SharedVar<int> maxtmus, nolights, nowater, nomasks;
 
 extern void inittmus();
 extern void resettmu(int n);

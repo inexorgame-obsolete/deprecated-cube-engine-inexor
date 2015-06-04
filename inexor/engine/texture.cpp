@@ -434,7 +434,7 @@ VARFP(trilinear, 0, 1, 1, initwarning("texture filtering", INIT_LOAD));
 VARFP(bilinear, 0, 1, 1, initwarning("texture filtering", INIT_LOAD));
 VARFP(aniso, 0, 0, 16, initwarning("texture filtering", INIT_LOAD));
 
-extern int usetexcompress;
+extern SharedVar<int> usetexcompress;
 
 void setuptexcompress()
 {
@@ -1468,7 +1468,7 @@ int compactvslots()
 
 ICOMMAND(compactvslots, "", (),
 {
-    extern int nompedit;
+    extern SharedVar<int> nompedit;
     if(nompedit && multiplayer()) return;
     compactvslots();
     allchanged();
@@ -1680,7 +1680,7 @@ static void fixinsidefaces(cube *c, const ivec &o, int size, int tex)
 
 ICOMMAND(fixinsidefaces, "i", (int *tex),
 {
-    extern int nompedit;
+    extern SharedVar<int> nompedit;
     if(noedit(true) || (nompedit && multiplayer())) return;
     fixinsidefaces(worldroot, ivec(0, 0, 0), worldsize>>1, *tex && vslots.inrange(*tex) ? *tex : DEFAULT_GEOM);
     allchanged();
@@ -2188,7 +2188,7 @@ void loadlayermasks()
 
 void forcecubemapload(GLuint tex)
 {
-    extern int ati_cubemap_bug;
+    extern SharedVar<int> ati_cubemap_bug;
     if(!ati_cubemap_bug || !tex) return;
 
     glMatrixMode(GL_PROJECTION);
@@ -2450,7 +2450,7 @@ void initenvmaps()
 {
     if(!hasCM) return;
     clearenvmaps();
-    extern char *skybox;
+    extern SharedVar<char*> skybox;
     skyenvmap = skybox[0] ? cubemapload(skybox, true, false, true) : NULL;
     const vector<extentity *> &ents = entities::getents();
     loopv(ents)

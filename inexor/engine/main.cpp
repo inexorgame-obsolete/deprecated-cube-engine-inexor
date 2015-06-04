@@ -8,7 +8,7 @@
 /// extern functions and data here
 extern void cleargamma();
 extern void writeinitcfg();
-extern int vsync, vsynctear;
+extern SharedVar<int> vsync, vsynctear;
 
 /// local player
 dynent *player = NULL;
@@ -173,23 +173,23 @@ void writeinitcfg()
     stream *f = openutf8file("init.cfg", "w");
     if(!f) return;
     f->printf("// automatically written on exit, DO NOT MODIFY\n// modify settings in game\n");
-    extern int fullscreen;
-    f->printf("fullscreen %d\n", fullscreen);
-    f->printf("screenres %d %d\n", scr_w, scr_h);
-    f->printf("colorbits %d\n", colorbits);
-    f->printf("depthbits %d\n", depthbits);
-    f->printf("stencilbits %d\n", stencilbits);
-    f->printf("fsaa %d\n", fsaa);
-    f->printf("vsync %d\n", vsync);
-	f->printf("vsynctear %d\n", vsynctear);
-    extern int useshaders, shaderprecision, forceglsl;
-    f->printf("shaders %d\n", useshaders);
-    f->printf("shaderprecision %d\n", shaderprecision);
-    f->printf("forceglsl %d\n", forceglsl);
-    extern int soundchans, soundfreq, soundbufferlen;
-    f->printf("soundchans %d\n", soundchans);
-    f->printf("soundfreq %d\n", soundfreq);
-    f->printf("soundbufferlen %d\n", soundbufferlen);
+    extern SharedVar<int> fullscreen;
+    f->printf("fullscreen %d\n", *fullscreen);
+    f->printf("screenres %d %d\n", *scr_w, *scr_h);
+    f->printf("colorbits %d\n", *colorbits);
+    f->printf("depthbits %d\n", *depthbits);
+    f->printf("stencilbits %d\n", *stencilbits);
+    f->printf("fsaa %d\n", *fsaa);
+    f->printf("vsync %d\n", *vsync);
+    f->printf("vsynctear %d\n", *vsynctear);
+    extern SharedVar<int> useshaders, shaderprecision, forceglsl;
+    f->printf("shaders %d\n", *useshaders);
+    f->printf("shaderprecision %d\n", *shaderprecision);
+    f->printf("forceglsl %d\n", *forceglsl);
+    extern SharedVar<int> soundchans, soundfreq, soundbufferlen;
+    f->printf("soundchans %d\n", *soundchans);
+    f->printf("soundfreq %d\n", *soundfreq);
+    f->printf("soundbufferlen %d\n", *soundbufferlen);
     delete f;
 }
 
@@ -230,7 +230,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
     if(!inbetweenframes && !force) return;
 
     stopsounds(); /// stop sounds while loading
- 
+
     int w = screenw, h = screenh;
     if(forceaspect) w = int(ceil(h*forceaspect));
     getbackgroundres(w, h);
@@ -307,7 +307,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
         glEnd();
         float lh = 0.5f*min(w, h), lw = lh*2,
               lx = 0.5f*(w - lw), ly = 0.5f*(h*0.5f - lh);
-		defformatstring(interfacetex) ("%s/logo%s.png", interfacedir, (maxtexsize ? min(maxtexsize, hwtexsize) : hwtexsize) >= 1024 && (screenw > 1280 || screenh > 800) ? "_1024" : ""); //HQ logo if settings allow
+        defformatstring(interfacetex) ("%s/logo%s.png", *interfacedir, (maxtexsize ? min(maxtexsize, hwtexsize) : hwtexsize) >= 1024 && (screenw > 1280 || screenh > 800) ? "_1024" : ""); //HQ logo if settings allow
 		settexture(interfacetex, 3);
         glBegin(GL_TRIANGLE_STRIP);
         glTexCoord2f(0, 0); glVertex2f(lx,    ly);
@@ -753,9 +753,9 @@ void setupscreen(int &useddepthbits, int &usedfsaa)
     if(!screen) fatal("failed to create OpenGL window: %s", SDL_GetError());
     else
     {
-        if(depthbits && (config&1)==0) conoutf(CON_WARN, "%d bit z-buffer not supported - disabling", depthbits);
+        if(depthbits && (config&1)==0) conoutf(CON_WARN, "%d bit z-buffer not supported - disabling", *depthbits);
         if(stencilbits && (config&2)==0) conoutf(CON_WARN, "Stencil buffer not supported - disabling");
-        if(fsaa>0 && (config&4)==0) conoutf(CON_WARN, "%dx anti-aliasing not supported - disabling", fsaa);
+        if(fsaa>0 && (config&4)==0) conoutf(CON_WARN, "%dx anti-aliasing not supported - disabling", *fsaa);
     }
 
     SDL_SetWindowMinimumSize(screen, SCR_MINW, SCR_MINH);
@@ -1317,7 +1317,7 @@ int main(int argc, char **argv)
             case 's': stencilbits = atoi(&argv[i][2]); break;
             case 'f': 
             {
-                extern int useshaders, shaderprecision, forceglsl;
+                extern SharedVar<int> useshaders, shaderprecision, forceglsl;
                 int sh = -1, prec = shaderprecision;
                 for(int j = 2; argv[i][j]; j++) switch(argv[i][j])
                 {

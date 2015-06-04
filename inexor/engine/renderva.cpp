@@ -166,7 +166,7 @@ void setvfcP(float z, const vec &bbmin, const vec &bbmax)
     vfcP[4] = plane(vec4(pw).add(pz)).normalize(); // near/far planes
     if(z >= 0) loopi(5) vfcP[i].reflectz(z);
 
-    extern int fog;
+    extern SharedVar<int> fog;
     vfcDfog = fog;
     calcvfcD();
 }
@@ -336,7 +336,7 @@ void drawbb(const ivec &bo, const ivec &br, const vec &camera)
     glEnd();
 }
 
-extern int octaentsize;
+extern SharedVar<int> octaentsize;
 
 static octaentities *visiblemms, **lastvisiblemms;
 
@@ -404,7 +404,7 @@ void rendermapmodel(extentity &e)
     if(mmi) rendermodel(&e.light, mmi->name, anim, e.o, e.attr1, 0, MDL_CULL_VFC | MDL_CULL_DIST | MDL_DYNLIGHT, NULL, NULL, basetime);
 }
 
-extern int reflectdist;
+extern SharedVar<int> reflectdist;
 
 vtxarray *reflectedva;
 
@@ -724,7 +724,7 @@ void rendershadowmapreceivers()
     glDepthMask(GL_FALSE);
     glDepthFunc(GL_GREATER);
 
-    extern int ati_minmax_bug;
+    extern SharedVar<int> ati_minmax_bug;
     if(!ati_minmax_bug) glColorMask(GL_FALSE, GL_FALSE, GL_TRUE, GL_FALSE);
 
     glEnable(GL_BLEND);
@@ -888,7 +888,7 @@ void renderquery(renderstate &cur, occludequery *query, vtxarray *va, bool full 
 
     endquery(query);
     
-    extern int intel_immediate_bug;
+    extern SharedVar<int> intel_immediate_bug;
     if(intel_immediate_bug && cur.vbuf) cur.vbuf = 0;
 }
 
@@ -1140,7 +1140,7 @@ static void changebatchtmus(renderstate &cur, int pass, geombatch &b)
 {
     bool changed = false;
     extern bool brightengeom;
-    extern int fullbright;
+    extern SharedVar<int> fullbright;
     int lmid = brightengeom && (b.es.lmid < LMID_RESERVED || (fullbright && editmode)) ? LMID_BRIGHT : b.es.lmid; 
     if(cur.textures[cur.lightmaptmu]!=lightmaptexs[lmid].id)
     {
@@ -1742,7 +1742,7 @@ void renderzpass(renderstate &cur, vtxarray *va)
     if(cur.vbuf!=va->vbuf) changevbuf(cur, RENDERPASS_Z, va);
     if(!cur.depthmask) { cur.depthmask = true; glDepthMask(GL_TRUE); }
     if(cur.colormask) { cur.colormask = false; glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); }
-    extern int apple_glsldepth_bug;
+    extern SharedVar<int> apple_glsldepth_bug;
     int firsttex = 0, numtexs = va->texs, numtris = va->tris;
     ushort *edata = va->edata;
     if(cur.alphaing)
@@ -1981,7 +1981,7 @@ void loadcaustics(bool force)
             renderpath==R_FIXEDFUNCTION ? 
                 "<grey><mad:0.6,0.4>%s/caustic%.2d.png" :
                 "<grey><mad:-0.6,0.6>%s/caustic%.2d.png",
-            causticdir, i);
+            *causticdir, i);
         caustictex[i] = textureload(name);
     }
 }

@@ -60,7 +60,7 @@ bool loadents(const char *fname, vector<entity> &ents, uint *crc)
 {
     string mapname, ogzname;
     getmapfilename(fname, NULL, mapname);
-    formatstring(ogzname)("%s/%s.ogz", mapdir, mapname);
+    formatstring(ogzname)("%s/%s.ogz", *mapdir, mapname);
     path(ogzname);
     stream *f = opengzfile(ogzname, "rb");
     if(!f) return false;
@@ -1049,17 +1049,17 @@ bool save_world(const char *mname, bool nolms)
         switch(id.type)
         {
             case ID_VAR:
-                if(dbgvars) conoutf(CON_DEBUG, "wrote var %s: %d", id.name, *id.storage.i);
+                if(dbgvars) conoutf(CON_DEBUG, "wrote var %s: %d", id.name, **id.storage.i);
                 f->putlil<int>(*id.storage.i);
                 break;
 
             case ID_FVAR:
-                if(dbgvars) conoutf(CON_DEBUG, "wrote fvar %s: %f", id.name, *id.storage.f);
+                if(dbgvars) conoutf(CON_DEBUG, "wrote fvar %s: %f", id.name, **id.storage.f);
                 f->putlil<float>(*id.storage.f);
                 break;
 
             case ID_SVAR:
-                if(dbgvars) conoutf(CON_DEBUG, "wrote svar %s: %s", id.name, *id.storage.s);
+                if(dbgvars) conoutf(CON_DEBUG, "wrote svar %s: %s", id.name, **id.storage.s);
                 f->putlil<ushort>(strlen(*id.storage.s));
                 f->write(*id.storage.s, strlen(*id.storage.s));
                 break;
@@ -1441,7 +1441,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
 
     renderbackground("loading...", mapshot, mname, game::getmapinfo());
 
-    if(maptitle[0] && strcmp(maptitle, "Untitled Map by Unknown")) conoutf(CON_ECHO, "%s", maptitle);
+    if(maptitle[0] && strcmp(maptitle, "Untitled Map by Unknown")) conoutf(CON_ECHO, "%s", *maptitle);
 
     startmap(cname ? cname : mname);
     

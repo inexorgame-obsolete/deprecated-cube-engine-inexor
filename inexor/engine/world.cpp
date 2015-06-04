@@ -685,7 +685,7 @@ void renderentradius(extentity &e, bool color)
 
         case ET_ENVMAP:
         {
-            extern int envmapradius;
+            extern SharedVar<int> envmapradius;
             if(color) glColor3f(0, 1, 1);
             renderentsphere(e, e.attr1 ? max(0, min(10000, int(e.attr1))) : envmapradius);
             break;
@@ -1295,7 +1295,7 @@ static bool isallempty(cube &c)
 
 void shrinkmap()
 {
-    extern int nompedit;
+    extern SharedVar<int> nompedit;
     if(noedit(true) || (nompedit && multiplayer())) return;
     if(worldsize <= 1<<10) return;
 
@@ -1325,7 +1325,7 @@ void shrinkmap()
  
     allchanged();
 
-    conoutf("shrunk map to size %d", worldscale);
+    conoutf("shrunk map to size %d", *worldscale);
 }
 
 void newmap(int *i) { bool force = !isconnected(); if(force) game::forceedit(""); if(emptymap(*i, force, NULL)) game::newmap(max(*i, 0)); }

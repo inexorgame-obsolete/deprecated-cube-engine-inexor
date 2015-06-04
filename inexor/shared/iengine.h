@@ -1,5 +1,7 @@
 // the interface the game uses to access the engine
 
+#include "inexor/rpc/SharedVar.h"
+
 extern int curtime;                     // current frame time
 extern int lastmillis;                  // last time
 extern int elapsedtime;                 // elapsed frame time
@@ -50,10 +52,12 @@ extern float raycubepos(const vec &o, const vec &ray, vec &hit, float radius = 0
 extern float rayfloor  (const vec &o, vec &floor, int mode = 0, float radius = 0);
 extern bool  raycubelos(const vec &o, const vec &dest, vec &hitpos);
 
-extern int thirdperson;
+extern SharedVar<int> thirdperson;
 extern bool isthirdperson();
 
 extern bool settexture(const char *name, int clamp = 0);
+
+extern SharedVar<int> worldsize;
 
 // octaedit
 
@@ -71,7 +75,6 @@ struct selinfo
     bool operator==(const selinfo &sel) const { return o==sel.o && s==sel.s && grid==sel.grid && orient==sel.orient; }
     bool validate()
     {
-        extern int worldsize;
         if(grid <= 0 || grid >= worldsize) return false;
         if(o.x >= worldsize || o.y >= worldsize || o.z >= worldsize) return false;
         if(o.x < 0) { s.x -= (grid - 1 - o.x)/grid; o.x = 0; } 
@@ -107,9 +110,9 @@ extern void mpdelcube(selinfo &sel, bool local);
 extern void mpremip(bool local);
 
 // command
-extern int variable(const char *name, int min, int cur, int max, int *storage, identfun fun, int flags);
-extern float fvariable(const char *name, float min, float cur, float max, float *storage, identfun fun, int flags);
-extern char *svariable(const char *name, const char *cur, char **storage, identfun fun, int flags);
+extern int variable(const char *name, int min, int cur, int max, SharedVar<int> *storage, identfun fun, int flags);
+extern float fvariable(const char *name, float min, float cur, float max, SharedVar<float> *storage, identfun fun, int flags);
+extern char *svariable(const char *name, const char *cur, SharedVar<char*> *storage, identfun fun, int flags);
 extern void setvar(const char *name, int i, bool dofunc = true, bool doclamp = true);
 extern void setfvar(const char *name, float f, bool dofunc = true, bool doclamp = true);
 extern void setsvar(const char *name, const char *str, bool dofunc = true);
@@ -197,13 +200,11 @@ extern int lookupmaterial(const vec &o);
 
 static inline bool insideworld(const vec &o)
 {
-	extern int worldsize;
     return o.x>=0 && o.x<worldsize && o.y>=0 && o.y<worldsize && o.z>=0 && o.z<worldsize;
 }
 
 static inline bool insideworld(const ivec &o)
 {
-	extern int worldsize;
     return uint(o.x)<uint(worldsize) && uint(o.y)<uint(worldsize) && uint(o.z)<uint(worldsize);
 }
 
@@ -420,7 +421,7 @@ extern void cleanragdoll(dynent *d);
 #define MAXCLIENTS 128                 // DO NOT set this any higher
 #define MAXTRANS 5000                  // max amount of data to swallow in 1 go
 
-extern int maxclients;
+extern SharedVar<int> maxclients;
 
 enum { DISC_NONE = 0, DISC_EOP, DISC_LOCAL, DISC_KICK, DISC_MSGERR, DISC_IPBAN, DISC_PRIVATE, DISC_MAXCLIENTS, DISC_TIMEOUT, DISC_OVERFLOW, DISC_PASSWORD, DISC_NUM };
 

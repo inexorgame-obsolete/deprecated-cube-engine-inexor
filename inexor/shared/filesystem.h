@@ -15,12 +15,8 @@ enum {
     DIR_NUM
 }; /// media path types.
 
-extern char *mediadir;
-extern char *mapdir;
-extern char *texturedir;
-extern char *skyboxdir;
-extern char *interfacedir;
-extern char *icondir;
+extern SharedVar<char*> mediadir, mapdir, texturedir,
+                        skyboxdir, interfacedir, icondir;
 
 namespace inexor
 {

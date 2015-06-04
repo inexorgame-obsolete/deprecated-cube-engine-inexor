@@ -617,8 +617,8 @@ void retrieveservers(vector<char> &data)
     ENetSocket sock = connectmaster(true);
     if(sock == ENET_SOCKET_NULL) return;
 
-    extern char *mastername;
-    defformatstring(text)("retrieving servers from %s... (esc to abort)", mastername);
+    extern SharedVar<char*> mastername;
+    defformatstring(text)("retrieving servers from %s... (esc to abort)", *mastername);
     renderprogress(0, text);
 
     int starttime = SDL_GetTicks(), timeout = 0;

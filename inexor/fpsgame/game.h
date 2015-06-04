@@ -1133,7 +1133,7 @@ namespace game
     extern int lasthit;
     extern int respawnent;
     extern int following;
-    extern int smoothmove, smoothdist;
+    extern SharedVar<int> smoothmove, smoothdist;
 
     extern int hudannounce_begin;
     extern int hudannounce_timeout;
@@ -1295,7 +1295,7 @@ namespace game
         bool ragdoll;
     };
 
-    extern int playermodel, teamskins, testteam;
+    extern SharedVar<int> playermodel, teamskins, testteam;
 
     extern void saveragdoll(fpsent *d);
     extern void clearragdolls();

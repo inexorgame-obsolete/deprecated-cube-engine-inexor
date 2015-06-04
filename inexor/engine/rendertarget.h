@@ -1,4 +1,4 @@
-extern int rtsharefb, rtscissor, blurtile;
+extern SharedVar<int> rtsharefb, rtscissor, blurtile;
 
 struct rendertarget
 {

@@ -321,7 +321,7 @@ void gl_checkextensions()
         hasTF = true;
         if(dbgexts) conoutf(CON_INIT, "Using GL_ARB_texture_float extension.");
         shadowmap = 1;
-        extern int smoothshadowmappeel;
+        extern SharedVar<int> smoothshadowmappeel;
         smoothshadowmappeel = 1;
     }
 
@@ -380,7 +380,7 @@ void gl_checkextensions()
     if(!hasOQ)
     {
         conoutf(CON_WARN, "WARNING: No occlusion query support! (large maps may be SLOW)");
-        extern int vacubesize;
+        extern SharedVar<int> vacubesize;
         vacubesize = 64;
         waterreflect = 0;
     }
@@ -479,7 +479,7 @@ void gl_checkextensions()
         }
     }
 
-    extern int reservedynlighttc, reserveshadowmaptc, batchlightmaps, ffdynlights, fpdepthfx;
+    extern SharedVar<int> reservedynlighttc, reserveshadowmaptc, batchlightmaps, ffdynlights, fpdepthfx;
     if(ati)
     {
         //conoutf(CON_WARN, "WARNING: ATI cards may show garbage in skybox. (use \"/ati_skybox_bug 1\" to fix)");
@@ -494,11 +494,11 @@ void gl_checkextensions()
     {
         reservevpparams = 10;
         rtsharefb = 0; // work-around for strange driver stalls involving when using many FBOs
-        extern int filltjoints;
+        extern SharedVar<int> filltjoints;
         if(!hasext(exts, "GL_EXT_gpu_shader4")) filltjoints = 0; // DX9 or less NV cards seem to not cause many sparklies
 
         if(hasFBO && !hasTF) nvidia_scissor_bug = 1; // 5200 bug, clearing with scissor on an FBO messes up on reflections, may affect lesser cards too 
-        extern int fpdepthfx;
+        extern SharedVar<int> fpdepthfx;
         if(hasTF && (!strstr(renderer, "GeForce") || !checkseries(renderer, 6000, 6600)))
             fpdepthfx = 1; // FP filtering causes software fallback on 6200?
     }
@@ -535,7 +535,7 @@ void gl_checkextensions()
     bool hasshaders = (hasVP && hasFP) || hasGLSL;
     if(hasshaders)
     {
-        extern int matskel;
+        extern SharedVar<int> matskel;
         if(!avoidshaders) 
         {
             matskel = 0;
@@ -636,7 +636,7 @@ void gl_checkextensions()
     }
     else conoutf(CON_WARN, "WARNING: No cube map texture support. (no reflective glass)");
 
-    extern int usenp2;
+    extern SharedVar<int> usenp2;
     if(hasext(exts, "GL_ARB_texture_non_power_of_two"))
     {
         hasNP2 = true;
@@ -729,7 +729,7 @@ void gl_checkextensions()
     if(hasext(exts, "GL_EXT_gpu_shader4") && !avoidshaders)
     {
         // on DX10 or above class cards (i.e. GF8 or RadeonHD) enable expensive features
-        extern int grass, glare, maxdynlights, depthfxsize, depthfxrect, depthfxfilter, blurdepthfx;
+        extern SharedVar<int> grass, glare, maxdynlights, depthfxsize, depthfxrect, depthfxfilter, blurdepthfx;
         grass = 1;
         if(hasOQ)
         {
@@ -795,7 +795,7 @@ void gl_init(int depth, int fsaa)
     }
 #endif
 
-    extern int useshaders, forceglsl;
+    extern SharedVar<int> useshaders, forceglsl;
     bool hasshaders = (hasVP && hasFP) || hasGLSL;
     if(!useshaders || (useshaders<0 && avoidshaders) || !hasMT || !hasshaders)
     {
@@ -817,7 +817,7 @@ void gl_init(int depth, int fsaa)
 
 void cleanupgl()
 {
-    extern int nomasks, nolights, nowater;
+    extern SharedVar<int> nomasks, nolights, nowater;
     nomasks = nolights = nowater = 0;
 
     extern void cleanupmotionblur();
@@ -2063,7 +2063,7 @@ void gl_drawframe()
 
     rendergeom(causticspass);
 
-    extern int outline;
+    extern SharedVar<int> outline;
     if(!wireframe && editmode && outline) renderoutline();
 
     queryreflections();
@@ -2269,11 +2269,11 @@ static Texture *crosshairs[MAXCROSSHAIRS] = { NULL, NULL, NULL, NULL };
 void loadcrosshair(const char *name, int i)
 {
     if(i < 0 || i >= MAXCROSSHAIRS) return;
-    crosshairs[i] = name ? textureload(tempformatstring("%s/%s", crosshairdir, name), 3, true) : notexture;
+    crosshairs[i] = name ? textureload(tempformatstring("%s/%s", *crosshairdir, name), 3, true) : notexture;
     if(!crosshairs[i] || crosshairs[i] == notexture) 
     {
         name = game::defaultcrosshair(i);
-        crosshairs[i] = textureload(tempformatstring("%s/%s", crosshairdir, name), 3, true);
+        crosshairs[i] = textureload(tempformatstring("%s/%s", *crosshairdir, name), 3, true);
     }
 }
 
@@ -2289,7 +2289,7 @@ ICOMMAND(getcrosshair, "i", (int *i),
     const char *name = "";
     if(*i >= 0 && *i < MAXCROSSHAIRS)
     {
-        name = crosshairs[*i] ? crosshairs[*i]->name : tempformatstring("%s/%s", crosshairdir, game::defaultcrosshair(*i));
+        name = crosshairs[*i] ? crosshairs[*i]->name : tempformatstring("%s/%s", *crosshairdir, game::defaultcrosshair(*i));
     }
     result(name);
 });
@@ -2394,21 +2394,21 @@ void gl_drawhud()
     
     glColor3f(1, 1, 1);
 
-    extern int debugsm;
+    extern SharedVar<int> debugsm;
     if(debugsm)
     {
         extern void viewshadowmap();
         viewshadowmap();
     }
 
-    extern int debugglare;
+    extern SharedVar<int> debugglare;
     if(debugglare)
     {
         extern void viewglaretex();
         viewglaretex();
     }
 
-    extern int debugdepthfx;
+    extern SharedVar<int> debugdepthfx;
     if(debugdepthfx)
     {
         extern void viewdepthfxtex();
@@ -2551,7 +2551,7 @@ void gl_drawhud()
     glPushMatrix();
     glScalef(conscale, conscale, 1);
     abovehud -= rendercommand(FONTH/2, abovehud - FONTH/2, conw-FONTH);
-    extern int fullconsole;
+    extern SharedVar<int> fullconsole;
     if(!hidehud || fullconsole) renderconsole(conw, conh, abovehud - FONTH/2);
     glPopMatrix();
 

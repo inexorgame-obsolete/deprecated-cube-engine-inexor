@@ -160,7 +160,7 @@ static void gengrassquads(grassgroup *&group, const grasswedge &w, const grasstr
             group->tri = &g;
             group->tex = tex->id;
             extern bool brightengeom;
-            extern int fullbright;
+            extern SharedVar<int> fullbright;
             int lmid = brightengeom && (g.lmid < LMID_RESERVED || (fullbright && editmode)) ? LMID_BRIGHT : g.lmid;
             group->lmtex = lightmaptexs.inrange(lmid) ? lightmaptexs[lmid].id : notexture->id;
             group->offset = grassverts.length();

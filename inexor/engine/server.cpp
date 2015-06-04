@@ -400,7 +400,7 @@ ENetSocket connectmaster(bool wait)
     if(!mastername[0]) return ENET_SOCKET_NULL;
     if(masteraddress.host == ENET_HOST_ANY)
     {
-        if(isdedicatedserver()) logoutf("looking up %s...", mastername);
+        if(isdedicatedserver()) logoutf("looking up %s...", *mastername);
         masteraddress.port = masterport;
         if(!resolverwait(mastername, &masteraddress)) return ENET_SOCKET_NULL;
     }
@@ -602,7 +602,7 @@ int curtime = 0, lastmillis = 0, elapsedtime = 0, totalmillis = 0;
 void updatemasterserver()
 {
     if(!masterconnected && lastconnectmaster && totalmillis-lastconnectmaster <= 5*60*1000) return;
-    if(mastername[0] && allowupdatemaster) requestmasterf("regserv %d\n", serverport);
+    if(mastername[0] && allowupdatemaster) requestmasterf("regserv %d\n", *serverport);
     lastupdatemaster = totalmillis ? totalmillis : 1;
 }
 
@@ -1116,7 +1116,7 @@ void startlistenserver(int *usemaster)
     
     updatemasterserver();
 
-    conoutf("listen server started for %d clients%s", maxclients, allowupdatemaster ? " and listed with master server" : "");
+    conoutf("listen server started for %d clients%s", *maxclients, allowupdatemaster ? " and listed with master server" : "");
 }
 COMMAND(startlistenserver, "i");
 

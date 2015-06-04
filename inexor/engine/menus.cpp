@@ -747,7 +747,7 @@ void g3d_mainmenu()
 {
     if(!guistack.empty()) 
     {   
-        extern int usegui2d;
+        extern SharedVar<int> usegui2d;
         if(!mainmenu && !usegui2d && camera1->o.dist(menupos) > menuautoclose) cleargui();
         else g3d_addgui(guistack.last(), menupos, GUI_2D | GUI_FOLLOW);
     }

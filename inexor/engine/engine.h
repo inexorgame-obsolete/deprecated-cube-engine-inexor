@@ -4,6 +4,8 @@
 #include "inexor/shared/cube.h"
 #include "inexor/engine/world.h"
 
+#include "inexor/rpc/SharedVar.h"
+
 #ifndef STANDALONE
 
 #include "inexor/engine/octa.h"
@@ -114,9 +116,9 @@ extern PFNGLFLUSHMAPPEDBUFFERRANGEPROC glFlushMappedBufferRange_;
 extern dynent *player;
 extern physent *camera1;                // special ent that acts as camera, same object as player1 in FPS mode
 
-extern int worldscale, worldsize;
-extern int mapversion;
-extern char *maptitle;
+extern SharedVar<int> worldscale, worldsize;
+extern SharedVar<int> mapversion;
+extern SharedVar<char*> maptitle;
 extern vector<ushort> texmru;
 extern int xtraverts, xtravertsva;
 extern const ivec cubecoords[8];
@@ -128,7 +130,7 @@ extern bool inbetweenframes, renderedframe;
 
 extern SDL_Window *screen;
 extern int screenw, screenh;
-extern int zpass, glowpass;
+extern SharedVar<int> zpass, glowpass;
 
 extern vector<int> entgroup;
 
@@ -157,7 +159,7 @@ struct font
 extern font *curfont;
 
 // texture
-extern int hwtexsize, hwcubetexsize, hwmaxaniso, maxtexsize;
+extern SharedVar<int> hwtexsize, hwcubetexsize, hwmaxaniso, maxtexsize;
 
 extern Texture *textureload(const char *name, int clamp = 0, bool mipit = true, bool msg = true);
 extern int texalign(void *data, int w, int bpp);
@@ -190,7 +192,7 @@ extern int compactvslots();
 
 // shadowmap
 
-extern int shadowmap, shadowmapcasters;
+extern SharedVar<int> shadowmap, shadowmapcasters;
 extern bool shadowmapping;
 
 extern bool isshadowmapcaster(const vec &o, float rad);
@@ -220,9 +222,10 @@ static inline bool pvsoccluded(const ivec &bborigin, int size)
 // rendergl
 extern bool hasVBO, hasDRE, hasOQ, hasTR, hasFBO, hasDS, hasTF, hasBE, hasBC, hasCM, hasNP2, hasTC, hasS3TC, hasFXT1, hasTE, hasMT, hasD3, hasAF, hasVP2, hasVP3, hasPP, hasMDA, hasTE3, hasTE4, hasVP, hasFP, hasGLSL, hasGM, hasNVFB, hasSGIDT, hasSGISH, hasDT, hasSH, hasNVPCF, hasRN, hasPBO, hasFBB, hasUBO, hasBUE, hasMBR, hasFC, hasTEX;
 extern int hasstencil;
-extern int glversion, glslversion;
+extern SharedVar<int> glversion, glslversion;
 
-extern float curfov, fovy, aspect, forceaspect;
+extern SharedVar<float> forceaspect;
+extern float curfov, fovy, aspect;
 extern bool envmapping, minimapping, renderedgame, modelpreviewing;
 extern const glmatrixf viewmatrix;
 extern glmatrixf mvmatrix, projmatrix, mvpmatrix, invmvmatrix, invmvpmatrix, fogmatrix, invfogmatrix, envmatrix;
@@ -367,7 +370,7 @@ extern void drawbb(const ivec &bo, const ivec &br, const vec &camera = camera1->
 #define endquery(query) \
     { \
         glEndQuery_(GL_SAMPLES_PASSED_ARB); \
-        extern int ati_oq_bug; \
+        extern SharedVar<int> ati_oq_bug; \
         if(ati_oq_bug) glFlush(); \
     }
 
@@ -381,7 +384,7 @@ extern bool getdynlight(int n, vec &o, float &radius, vec &color);
 
 // material
 
-extern int showmat;
+extern SharedVar<int> showmat;
 
 extern int findmaterial(const char *name);
 extern const char *findmaterialname(int mat);
@@ -399,7 +402,7 @@ extern int refracting, refractfog;
 extern bvec refractcolor;
 extern bool reflecting, fading, fogging;
 extern float reflectz;
-extern int reflectdist, vertwater, waterrefract, waterreflect, waterfade, caustics, waterfallrefract;
+extern SharedVar<int> reflectdist, vertwater, waterrefract, waterreflect, waterfade, caustics, waterfallrefract;
 
 #define GETMATIDXVAR(name, var, type) \
     type get##name##var(int mat) \
@@ -498,7 +501,8 @@ enum
     INIT_LOAD,
     INIT_RESET
 };
-extern int initing, numcpus;
+extern int initing;
+extern SharedVar<int> numcpus;
 
 enum
 {
@@ -559,7 +563,7 @@ extern void resetmap();
 extern void startmap(const char *name);
 
 // rendermodel
-extern char *modeldir;
+extern SharedVar<char*> modeldir;
 
 struct mapmodelinfo { string name; model *m; };
 
@@ -605,7 +609,7 @@ enum
     BLOB_DYNAMIC
 };
 
-extern int showblobs;
+extern SharedVar<int> showblobs;
 
 extern void initblobs(int type = -1);
 extern void resetblobs();
@@ -626,7 +630,7 @@ extern bool g3d_key(int code, bool isdown);
 extern bool g3d_input(const char *str, int len);
 
 // menus
-extern int mainmenu;
+extern SharedVar<int> mainmenu;
 
 extern void clearmainmenu();
 extern void g3d_mainmenu();
@@ -646,7 +650,7 @@ extern void generategrass();
 extern void rendergrass();
 
 // blendmap
-extern int blendpaintmode;
+extern SharedVar<int> blendpaintmode;
 
 struct BlendMapCache;
 extern BlendMapCache *newblendmapcache();
