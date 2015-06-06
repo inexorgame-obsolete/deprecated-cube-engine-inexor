@@ -69,7 +69,7 @@ void test_primitive(T seed, T overw) {
     {                                                      \
         called = false;                                    \
         Observe<T> X(seed);                                \
-        X.onChange.listen(listener);                       \
+        X.onChange.connect(listener);                      \
         desc = description;                                \
         exold = seed;                                      \
         exnew = (_new);                                    \
@@ -176,7 +176,7 @@ test(Observe, Boolean) {
 test(Observe, String) {
   Observe<string> s("Hello World");
   s = "foo";
-  expectEq(s->size(), 3);
+  expectEq(s->size(), (size_t)3);
   expectEq(*s, string("foo"));
 }
 
