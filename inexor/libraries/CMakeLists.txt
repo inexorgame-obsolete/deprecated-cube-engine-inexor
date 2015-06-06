@@ -254,28 +254,85 @@ function(config_gtest targ)
   target_link_libs(${targ} gtest ${NOLINK})
 endfunction()
 
-#### ASIO
+#### BOOST (System)
 
-find_path(ASIO_INCLUDE_DIRS asio.hpp)
+find_libs(BOOST_SYSTEM_LIBS boost_system)
+find_path(BOOST_SYSTEM_INCLUDE_DIRS boost/system/config.hpp)
 
-if (NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-  message(STATUS "Using ASIO in standalone mode")
-  set(ASIO_COMPILER_FLAGS -DASIO_STANDALONE CACHE INTERN "")
+function(config_boost_system targ)
+  message(STATUS "Configuring ${targ} with Boost System")
+
+  target_link_libs(${targ} ${BOOST_SYSTEM_LIBS})
+  target_include_directories(${targ} PUBLIC ${BOOST_SYSTEM_INCLUDE_DIRS})
+endfunction()
+
+#### BOOST (Thread)
+
+find_path(BOOST_THREAD_INCLUDE_DIRS boost/thread.hpp)
+
+if (THREADAPI_WIN32)
+  find_libs(BOOST_THREAD_LIBS boost_thread_win32 boost_thread)
 else()
-  message(STATUS "Using ASIO with boost.")
-  set(ASIO_COMPILER_FLAGS "" CACHE INTERN "")
+  find_libs(BOOST_THREAD_LIBS boost_thread)
 endif()
 
-function(config_asio targ)
-  message(STATUS "Configuring ${targ} with asio")
+function(config_boost_thread targ)
+  message(STATUS "Configuring ${targ} with Boost Thread")
   if (";${ARGN};" MATCHES ";NOLINK;")
     set(NOLINK "NOLINK")
   endif()
 
-  add_definitions(${ASIO_COMPILER_FLAGS})
+  config_boost_system(${targ} ${NOLINK})
+  config_threads(${targ} ${NOLINK})
+
+  add_definitions(-DBOOST_THREAD_LIB)
+
+  if (THREADAPI_PTHREADS)
+    add_definitions(-DBOOST_THREAD_PTHREAD -DBOOST_THREAD_POSIX)
+  elseif(THREADAPI_WIN32)
+    #add_definitions(-DBOOST_THREAD_WIN32) # redundant
+  endif()
+
+  target_link_libs(${targ} ${BOOST_THREAD_LIBS} ${NOLINK})
+  target_include_directories(${targ} PUBLIC ${BOOST_THREAD_INCLUDE_DIRS})
+endfunction()
+
+#### BOOST (Random)
+
+find_libs(BOOST_RANDOM_LIBS boost_random)
+find_path(BOOST_RANDOM_INCLUDE_DIRS boost/random.hpp)
+
+function(config_boost_random targ)
+  message(STATUS "Configuring ${targ} with Boost Random")
+  if (";${ARGN};" MATCHES ";NOLINK;")
+    set(NOLINK "NOLINK")
+  endif()
+
+  config_boost_system(${targ} ${NOLINK})
+
+  include_directories(${BOOST_RANDOM_INCLUDE_DIRS})
+  target_link_libs(${targ} ${BOOST_RANDOM_LIBS} ${NOLINK})
+endfunction()
+
+#### BOOST (ASIO)
+
+find_path(ASIO_INCLUDE_DIRS boost/asio.hpp)
+
+function(config_asio targ)
+  message(STATUS "Configuring ${targ} with Boost Asio")
+  if (";${ARGN};" MATCHES ";NOLINK;")
+    set(NOLINK "NOLINK")
+  endif()
+
   include_directories(${ASIO_INCLUDE_DIRS})
 
   if (WIN32)
     target_link_libs(${targ} ws2_32 ${NOLINK})
   endif()
+
+  config_boost_system(${targ})
+endfunction()
+
+function(config_boost_asio)
+  config_asio(${ARGN})
 endfunction()

@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-#include <asio.hpp>
+#include <boost/asio.hpp>
 
 #include "inexor/net/MCByteBuffer.h"
 
@@ -26,7 +26,7 @@ namespace net {
     typedef typename protocol::endpoint endpoint;
     typedef typename protocol::socket   socket;
 
-    typedef asio::io_service service;
+    typedef boost::asio::io_service service;
 
     bool own_srv = false;
     service *srv;
@@ -69,21 +69,21 @@ namespace net {
 
     virtual size_t read(byte *buf, size_t max) {
       size_t n = std::min(s.available(), max);
-      if (n>0) s.read_some(asio::buffer(buf, n));
+      if (n>0) s.read_some(boost::asio::buffer(buf, n));
       return n;
     }
 
     virtual void write(const byte *buf, size_t len) {
-      s.write_some(asio::buffer(buf,len));
+      s.write_some(boost::asio::buffer(buf,len));
     }
   };
 
   /// MessageConnect via IPv4 or IPv6 TCP Socket.
   ///
   /// TODO: Support generic endpoint initialization
-  class MCTcp : public MCSocket<asio::ip::tcp> {
+  class MCTcp : public MCSocket<boost::asio::ip::tcp> {
   protected:
-    typedef asio::ip::address address;
+    typedef boost::asio::ip::address address;
 
   public:
     /// Create the connection from an IPv4 or IPv6 address
@@ -122,7 +122,7 @@ namespace net {
   /// MessageConnect via Unix Domain Socket.
   ///
   /// This is only available on Unix systems.
-  class MCUnix : MCSocket<asio::local::stream_protocol> {
+  class MCUnix : MCSocket<boost::asio::local::stream_protocol> {
   protected:
     std::string path;
 
