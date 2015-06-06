@@ -1,9 +1,9 @@
 #include "inexor/net/MCSocketServer.h"
 
-asio::ip::tcp inexor::net::v4() {
-  return asio::ip::tcp::v4();
+boost::asio::ip::tcp inexor::net::v4() {
+  return boost::asio::ip::tcp::v4();
 }
 
-asio::ip::tcp inexor::net::v6() {
-  return asio::ip::tcp::v6();
+boost::asio::ip::tcp inexor::net::v6() {
+  return boost::asio::ip::tcp::v6();
 }
