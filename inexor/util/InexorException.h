@@ -31,38 +31,31 @@ namespace util {
 /// TODO: Allow setting the message on the fly with the <<
 ///       operator
 class InexorException : public std::exception {
+    std::string what_ = "Some problem occurred in the "
+        "inexor code. Dunno what.";
 public:
-    const char *_what;
 
     /// Default constructor
     ///
     /// Initializes what() with a generic message.
-    InexorException() INEXOR_NOEXCEPT {
-        _what = "Some problem occurred in the inexor code. Dunno what.";
-    }
+    InexorException() {}
 
     /// Initialize this exception with a custom error
     /// message
     /// @param s The error message
-    InexorException(const char *s) INEXOR_NOEXCEPT {
-        _what = s;
-    }
+    InexorException(const char *s) : what_(s) {}
 
     /// Initialize this exception with a custom error
     /// message
     ///
     /// @param s The error message
-    InexorException(std::string &s) INEXOR_NOEXCEPT {
-        _what = s.c_str();
-    }
+    InexorException(const std::string &s) : what_(s) {}
 
     /// Initialize this exception with a custom error
     /// message in a string
     /// @param s The error message
-    InexorException(const InexorException &e) 
-          INEXOR_NOEXCEPT : std::exception(e) {
-        _what = e._what;
-    }
+    InexorException(const InexorException &e)
+        : std::exception(e), what_(e.what_){}
 
     /// The name of this exception class.
     virtual const char* clazz() {
@@ -70,14 +63,12 @@ public:
     }
 
     /// Generates an error message appropriate for logging
-    virtual const char* message() {
-        std::string s =
-          inexor::util::fmt << clazz() << ": " << what();
-        return s.c_str();
+    virtual std::string message() {
+        return inexor::util::fmt << clazz() << ": " << what_;
     }
 
     virtual const char* what() const INEXOR_NOEXCEPT {
-        return _what;
+        return what_.c_str();
     }
 };
 
@@ -94,16 +85,16 @@ public:
 /// @param base The name of the base exception class to extend
 /// @param __what The default error message, when none is
 ///               set on the fly
-#define EXCEPTION(name, base, __what   )                    \
-    class name : public base {                              \
-    public:                                                 \
-        name () INEXOR_NOEXCEPT : base ( __what ) {}        \
-        name (const char *s) INEXOR_NOEXCEPT : base (s) {}  \
-        name (std::string &s) INEXOR_NOEXCEPT : base (s) {} \
-        name (const name &e) INEXOR_NOEXCEPT : base (e) {}  \
-        virtual const char* clazz() INEXOR_NOEXCEPT {       \
-            return #name ;                                  \
-        }                                                   \
+#define EXCEPTION(name, base, __what   )                   \
+    class name : public base {                             \
+    public:                                                \
+        name() : base(__what) {}                           \
+        name(const char *s) : base(s) {}                   \
+        name(const std::string &s) : base(s) {}            \
+        name(const InexorException &e) : base(e) {}        \
+        virtual const char* clazz() INEXOR_NOEXCEPT {      \
+            return #name ;                                 \
+        }                                                  \
     }
 
 /// Like EXCEPTION but uses InexorException as base, so no

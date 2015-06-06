@@ -380,7 +380,7 @@ inline void ident::getval(tagval &v) const
       try {                                                \
         b ;                                                \
       } catch (inexor::util::InexorException &e) {         \
-        conoutf("EXCEPTION in " #name ": %s", e.message());\
+        conoutf("EXCEPTION in " #name ": %s", e.message().c_str());\
       }                                                    \
   )
 
