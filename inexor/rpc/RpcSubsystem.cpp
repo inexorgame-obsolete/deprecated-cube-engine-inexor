@@ -20,7 +20,7 @@ RpcSubsystem::RpcSubsystem() {
     cerr << "[INFO] Listening for IPC connections on: "
       << path << endl;
 
-    socket = new MCUnixServer(path);
+    socket = inexor::compat::make_unique<MCUnixServer>(path);
 
     // TODO: Windows needs a fast (more secure) IPC transport
 #else
@@ -29,16 +29,11 @@ RpcSubsystem::RpcSubsystem() {
           << port << endl;
 
     // TODO: This should not require ipv4
-    socket = new MCTcpServer(v4(), port);
+    socket = inexor::compat::make_unique<MCTcpServer>(v4(), port);
 #endif
 
-    server = new MCRpcServer(rpc_service, &socket->broadcast());
-}
-
-RpcSubsystem::~RpcSubsystem() {
-    delete server;
-    delete rpc_service;
-    delete socket;
+    server = inexor::compat::make_unique<MCRpcServer>(
+        rpc_service.get(), socket.get());
 }
 
 void RpcSubsystem::tick() {
