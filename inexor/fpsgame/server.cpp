@@ -1,5 +1,7 @@
 #include "inexor/fpsgame/game.h"
 
+#include "inexor/util/random.h"
+
 namespace game
 {
     void parseoptions(vector<const char *> &args)
@@ -2800,7 +2802,7 @@ namespace server
             userinfo *u = users.access(userkey(ci->authname, ci->authdesc));
             if(u) 
             {
-                uint seed[3] = { ::hthash(serverauth) + detrnd(size_t(ci) + size_t(user) + size_t(desc), 0x10000), uint(totalmillis), randomMT() };
+                uint seed[3] = { ::hthash(serverauth) + detrnd(size_t(ci) + size_t(user) + size_t(desc), 0x10000), uint(totalmillis), inexor::util::rnd_raw<uint>() };
                 vector<char> buf;
                 ci->authchallenge = genchallenge(u->pubkey, seed, sizeof(seed), buf);
                 sendf(ci->clientnum, 1, "risis", N_AUTHCHAL, desc, ci->authreq, buf.getbuf());

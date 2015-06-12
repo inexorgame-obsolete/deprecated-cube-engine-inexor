@@ -7,6 +7,9 @@
 
 #include <boost/algorithm/clamp.hpp>
 
+#include "inexor/util/random.h"
+#include "inexor/util/util.h"
+
 typedef unsigned char uchar;
 typedef unsigned short ushort;
 typedef unsigned int uint;
@@ -41,23 +44,9 @@ using std::min;
 using std::max;
 using boost::algorithm::clamp;
 
-
-/// Generate a random integer between 0 and x, excluding x
-///
-/// ```rnd(2) // can producd 0 and 1```
-extern int rnd(const int x);
-
-/// Generate a random float between 0 and x
-///
-/// ```rndscale(1) // min: 0, max: 0.99...```
-extern float rndscale(const double x);
-
-/// Generate a deterministic pseudo-random number
-///
-/// This means, that given the same seed and the same
-/// maximum value (`x`) this function will always return the
-/// same.
-extern int detrnd(const uint seed, const int x);
+INEXOR_FUNCTION_ALIAS(rnd, inexor::util::rnd<int>);
+INEXOR_FUNCTION_ALIAS(rndscale, inexor::util::rnd<float>);
+INEXOR_FUNCTION_ALIAS(detrnd, inexor::util::deterministic_rnd<int>);
 
 /// "for"-loop macro definitions
 /// DEPRECATED: Use c++ range based loops instead
