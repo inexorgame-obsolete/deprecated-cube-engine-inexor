@@ -5,6 +5,9 @@
 #include <unistd.h>
 #endif
 
+#include <cstdlib>
+#include <limits>
+
 ////////////////////////// strings ////////////////////////////////////////
 
 static string tmpstr[4];
@@ -56,6 +59,20 @@ uint randomMT()
     y ^= (y >> 18);
     return y;
 }
+
+int rnd(const int x) {
+    return abs((int)randomMT()) % x;
+}
+
+float rndscale(const double x) {
+    double int_max = std::numeric_limits<int>::max();
+    return abs((int)randomMT()) * x / int_max;
+}
+
+int detrnd(const uint seed, const int x) {
+    return ( (seed*1103515245 + 12345) >>16) %x;
+}
+
 
 ///////////////////////// network ///////////////////////
 
