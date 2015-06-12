@@ -43,8 +43,10 @@ namespace net {
       mcsoc *s = new mcsoc(srv);
 
       ack.accept(s->Socket(), er);
-      
+
       if (er == asio::error::basic_errors::try_again)
+        return NULL;
+      else if (er == asio::error::basic_errors::would_block) //caused by calling in mainloop
         return NULL;
       else if (er)
         throw asio::system_error(er, "Can not accept connection");
