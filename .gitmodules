@@ -10,3 +10,6 @@
 [submodule "inexor/libraries/muparser"]
 	path = inexor/libraries/muparser
 	url = https://github.com/inexor-game/muparser.git
+[submodule "node/portable"]
+	path = node/portable
+	url = https://github.com/inexor-game/node_npm_portable.git
