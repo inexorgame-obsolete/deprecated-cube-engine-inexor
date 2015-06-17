@@ -16,7 +16,7 @@ InexorService = ->
 
   msg_con = new SocketMessageConnect soco
 
-  protocol =  new MProto "../src/rpc/inexor_service.proto"
+  protocol =  new MProto "../inexor/rpc/inexor_service.proto"
   rpc_client = new MCRpcClient msg_con, protocol,
       protocol.inexor.rpc.ServiceCall
 
