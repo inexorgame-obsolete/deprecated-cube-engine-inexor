@@ -736,7 +736,13 @@ namespace game
     }
     ICOMMAND(map, "s", (char *name), changemap(name));
 
-	/// force edit mode
+    void forceintermission()
+    {
+        if(!remote && !hasnonlocalclients()) server::startintermission();
+        else addmsg(N_FORCEINTERMISSION, "r");
+    }
+
+    /// force edit mode
     void forceedit(const char *name)
     {
         changemap(name, 1);
