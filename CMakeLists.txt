@@ -95,7 +95,7 @@ if(OS_LINUX OR (OS_WINDOWS AND NOT MSVC))
     # -Wall                           = Enable all warnings
     # -Wno-switch                     = Execpt Warnings for missing switch cases
     # -fdiagnostics-show-option       = Show Warning IDs
-    set(I_COMPILER_FLAGS          "-fomit-frame-pointer -fno-strict-aliasing -fsigned-char -pipe -Wall -Wno-switch -Wno-deprecated-declarations  -fdiagnostics-show-option ")
+    set(I_COMPILER_FLAGS          "-fomit-frame-pointer -fno-strict-aliasing -fsigned-char -pipe -Wall -Wno-switch -Wno-deprecated-declarations -Wno-missing-braces -fdiagnostics-show-option ")
     # -std=c99                        = Use the C99 language standard
     set(I_C_COMPILER_FLAGS        "-std=c99")
     # -fno-threadsafe-statics         = Don't generate thread-safe statics
