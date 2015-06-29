@@ -684,8 +684,7 @@ namespace ai
 
         string mapname;
         getmapfilename(mname, NULL, mapname);
-        inexor::filesystem::appendmediadir(wptname, mapname, DIR_MAP, ".wpt");
-        path(wptname);
+        formatstring(wptname)("%s%s", mapname, ".wpt");
         return true;
     }
 
