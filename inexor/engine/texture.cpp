@@ -3130,15 +3130,15 @@ void savetga(const char *filename, ImageData &image, bool flip)
 
 enum
 {
-    IMG_BMP = 0,
+    IMG_PNG = 0,
     IMG_TGA = 1,
-    IMG_PNG = 2,
+    IMG_BMP = 2,
     NUMIMG
 };
  
 VARP(screenshotformat, 0, IMG_PNG, NUMIMG-1);
 
-const char *imageexts[NUMIMG] = { ".bmp", ".tga", ".png" };
+const char *imageexts[NUMIMG] = { ".png", ".tga", ".bmp" };
 
 int guessimageformat(const char *filename, int format = IMG_BMP)
 {
