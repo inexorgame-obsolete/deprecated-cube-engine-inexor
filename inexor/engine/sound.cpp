@@ -469,7 +469,7 @@ static bool loadsoundslot(soundslot &slot, bool msg = false)
     if(slot.sample->chunk) return true;
     if(!slot.sample->name[0]) return false;
 
-    static const char * const exts[] = { "", ".wav", ".ogg" };
+    static const char * const exts[] = { "", ".ogg", ".flac", ".wav"};
     string filename;
     loopi(sizeof(exts)/sizeof(exts[0]))
     {
@@ -480,7 +480,7 @@ static bool loadsoundslot(soundslot &slot, bool msg = false)
         if(slot.sample->chunk) return true;
     }
 
-    conoutf(CON_WARN, "failed to load sample: %s/%s", sounddir, slot.sample->name);
+    conoutf(CON_WARN, "failed to load sound: %s/%s", sounddir, slot.sample->name);
     return false;
 }
 
