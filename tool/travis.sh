@@ -10,7 +10,7 @@
 
 # ATTENTION:
 # Please USE the following naming format for any files uploaded to our distribution server (nightly.inexor.org):
-# ...-BUILDNUMBER-<PACKAGENAME>.EXTENSION 
+# ...-BUILDNUMBER-<PACKAGENAME>.EXTENSION
 # where <PACKAGENAME> is NOT CONTAINING any -
 # correct: master-oldbranch-olddirty-1043.2-linux_gcc.txt
 # correct: ...-992.2-apidoc.hip
@@ -90,19 +90,12 @@ install_linux() {
 
   install_tool
 
-  apt-get -y install zlib1g-dev libsdl2-dev         \
-    libsdl2-image-dev libsdl2-mixer-dev libenet-dev \
-    libprotobuf-dev protobuf-compiler               \
-    libboost-system1.55-dev ncftp
-  apt-get -y -t utopic install build-essential
+  apt-get -y install zlib1g-dev libsdl2-dev           \
+    libsdl2-image-dev libsdl2-mixer-dev libenet-dev
 
-  (
-    cd /tmp;
-    git clone https://github.com/chriskohlhoff/asio.git;
-    cd asio;
-    git checkout asio-1-10-4
-    cp -vr asio/include/asio* /usr/include
-  )
+  apt-get -y -t utopic install libprotobuf-dev         \
+    protobuf-compiler build-essential libboost-all-dev \
+    libasio-dev binutils
 }
 
 # We have a slightly different install routine for each target
@@ -118,11 +111,11 @@ install_win32() {
 }
 install_linux_clang() {
   install_linux
-  apt-get -y -t utopic install clang-3.5
+  apt-get -y -t utopic install clang-3.5 binutils
 }
 install_linux_gcc() {
   install_linux
-  apt-get -y -t utopic install gcc-4.9 g++-4.9
+  apt-get -y -t utopic install gcc-4.9 g++-4.9 binutils
 }
 install_apidoc() {
   install_tool

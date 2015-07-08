@@ -51,36 +51,27 @@ prepend(CLIENT_SOURCES_FPSGAME ${SOURCE_DIR}/fpsgame
     weapon.cpp)
 
 set(CLIENT_SOURCES
+  ${SHARED_MODULE_SOURCES}
   ${CLIENT_SOURCES_ENGINE}
-  ${CLIENT_SOURCES_FPSGAME}
-  ${COMMON_SOURCES} CACHE INTERNAL "")
+  ${CLIENT_SOURCES_FPSGAME} CACHE INTERNAL "")
+
+if(OS_MACOSX)
+  list(APPEND CLIENT_SOURCES engine/macutils.mm)
+endif()
 
 # Set Binary name
 set(CLIENT_BINARY inexor CACHE INTERNAL "Client binary name.")
 
 add_definitions(-DCLIENT)
 
-if(OS_LINUX)
-    set(ADDITIONAL_LIBRARIES ${ADDITIONAL_LIBRARIES} dl rt)
-elseif(OS_MACOSX)
-  set(CLIENT_SOURCES ${CLIENT_SOURCES} engine/macutils.mm)
-elseif(OS_WINDOWS)
-    set(ADDITIONAL_LIBRARIES ${ADDITIONAL_LIBRARIES} opengl32)
-
-    if(MSVC)
-        set(ADDITIONAL_LIBRARIES ${ADDITIONAL_LIBRARIES} dbghelp)
-    else()
-        add_definitions(-mwindows)
-    endif()
-endif()
-
 add_app(${CLIENT_BINARY} ${CLIENT_SOURCES})
-target_link_libs(${CLIENT_BINARY}
-  ${COMMON_LIBS}
-  ${SDL2_LIBRARIES}
-  ${OPENGL_LIBRARIES}
-  ${ADDITIONAL_LIBRARIES})
 
+config_debug(${CLIENT_BINARY})
+config_threads(${CLIENT_BINARY})
+config_cocoa(${CLIENT_BINARY}) # For rendering the initial window
+config_sdl(${CLIENT_BINARY})
+config_zlib(${CLIENT_BINARY})
+config_enet(${CLIENT_BINARY})
 config_net(${CLIENT_BINARY})
 config_rpc(${CLIENT_BINARY})
 config_util(${CLIENT_BINARY})

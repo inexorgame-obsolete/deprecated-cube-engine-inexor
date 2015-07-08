@@ -45,15 +45,20 @@ set(RPC_MODULE_SOURCES ${RPC_MODULE_SOURCES} ${protoc_out_cc}
 
 add_lib(rpc)
 config_net(module_rpc NOLINK)
+config_sdl(module_rpc NOLINK)
 
 function(config_rpc targ)
   message(STATUS "Configuring ${targ} with rpc")
+  if (";${ARGN};" MATCHES ";NOLINK;")
+    set(NOLINK "NOLINK")
+  endif()
 
   add_definitions(-DGOOGLE_PROTOBUF_NO_RTTI)
   add_dependencies(${targ} run_protoc)
   include_directories(${PROTOBUF_INCLUDE_DIRS} ${RPC_INCLUDE_DIRS})
-  target_link_libs(${targ}
+  target_link_libs(${targ} ${NOLINK}
     module_rpc module_net ${PROTOBUF_LIBRARIES} module_util)
+
   config_net(${targ})
 endfunction()
 

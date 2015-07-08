@@ -187,6 +187,10 @@ endfunction()
 #  ARGS...    - The Libraries
 #
 function(target_link_libs BINARYNAME)
+    if (";${ARGN};" MATCHES ";NOLINK;")
+      return()
+    endif()
+
     if(DEFINED HAS_FIND_LIBRARY_WRAPPER)
       set(C_LIBS "")   # No need to seperately link c-libs
       set(CPP_LIBS_DEBUG "")

@@ -84,6 +84,8 @@ add_definitions(-D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS)
 #
 # Linux configuration. Or Cross Compilation for Windows
 #
+# TODO: Unify flags and lib detection on ALL plattforms as much as possible
+# TODO: Use a more declarative style, like flags(COMPILER CXX MINGW += ... )\n flags(LINKER POSIX += ...) ...
 if(OS_LINUX OR (OS_WINDOWS AND NOT MSVC))
     set(I_LIBTYPE                 SHARED)
     # -fomit-frame-pointer            = Don't keep the frame pointer for functions that don't need one
@@ -93,7 +95,7 @@ if(OS_LINUX OR (OS_WINDOWS AND NOT MSVC))
     # -Wall                           = Enable all warnings
     # -Wno-switch                     = Execpt Warnings for missing switch cases
     # -fdiagnostics-show-option       = Show Warning IDs
-    set(I_COMPILER_FLAGS          "-fomit-frame-pointer -fno-strict-aliasing -fsigned-char -pipe -Wall -Wno-switch -fdiagnostics-show-option ")
+    set(I_COMPILER_FLAGS          "-fomit-frame-pointer -fno-strict-aliasing -fsigned-char -pipe -Wall -Wno-switch -Wno-deprecated-declarations  -fdiagnostics-show-option ")
     # -std=c99                        = Use the C99 language standard
     set(I_C_COMPILER_FLAGS        "-std=c99")
     # -fno-threadsafe-statics         = Don't generate thread-safe statics
