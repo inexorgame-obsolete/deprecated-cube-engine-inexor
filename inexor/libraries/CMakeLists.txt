@@ -36,6 +36,13 @@ set(gtest_args
       -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
       -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
       -Dgtest_disable_pthreads=true)
+
+# GCC 5.1 Introduces a new C++11 ABI; see the root CMakeLists
+# TODO: Can we implicitly add that definition?
+if (OS_WINDOWS AND NOT MSVC)
+  list(APPEND gtest_args -DCMAKE_CXX_FLAGS=-D_GLIBCXX_USE_CXX11_ABI=0 )
+endif()
+
 if (CMAKE_TOOLCHAIN_FILE)
   list(APPEND gtest_args
     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE})
