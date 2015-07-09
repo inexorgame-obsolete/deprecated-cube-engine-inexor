@@ -1,23 +1,33 @@
 /// @file geom.h
 /// mathmatics for vectors, matrices, quaterions and more
-/// 
-/// 
-/// 
-/// 
-/// 
+
+/// The cube engine uses 3 different linear coordinate systems
+/// which are oriented around each of the axis dimensions.
+///
+/// So any point within the game can be defined by four coordinates: (d, x, y, z)
+///
+/// d is the reference axis dimension
+/// x is the coordinate of the ROW dimension
+/// y is the coordinate of the COL dimension
+/// z is the coordinate of the reference dimension (DEPTH)
+///
+/// typically, if d is not used, then it is implicitly the Z dimension.
+/// ie: d=z => x=x, y=y, z=z
+
+
 
 /// declaration of 2- and 4-dimensional vectors
 struct vec4;
 struct vec2;
+struct ivec;
+
+struct ivec4;
+struct ivec2;
+struct usvec;
+struct svec;
 
 
-/// Please note: the whole vector structure could be
-/// recoded as n-dimensional vectors that share the same base class
-
-
-/// structure for vector algebra
-/// all common operations are implemented
-/// http://mathworld.wolfram.com/topics/VectorAlgebra.html
+/// vector with 3 floats and some useful methods.
 struct vec
 {
 	/// memory union which contains position, color or 3 float values
@@ -39,6 +49,7 @@ struct vec
 	/// copy from 2- and 4-dimensional vectors
     explicit vec(const vec4 &v);
     explicit vec(const vec2 &v, float z = 0);
+    explicit vec(const ivec &v);
 
 	/// vector constructor which converts yaw and pitch angles to XYZ coordinates
     vec(float yaw, float pitch) : x(-sinf(yaw)*cosf(pitch)), y(cosf(yaw)*cosf(pitch)), z(sinf(pitch)) {}
@@ -46,31 +57,12 @@ struct vec
 	/// operators for accessing XYZ vector coordinates
     float &operator[](int i)       { return v[i]; }
     float  operator[](int i) const { return v[i]; }
-    
+
     vec &set(int i, float f) { v[i] = f; return *this; }
 
 	/// operators for vector comparisn
     bool operator==(const vec &o) const { return x == o.x && y == o.y && z == o.z; }
     bool operator!=(const vec &o) const { return x != o.x || y != o.y || z != o.z; }
-
-	/// algebraic + (add) operator
-	vec operator + (vec &o) { return this->add(o); }
-	vec operator + (float o) { return this->add(o); }
-	/// algebraic - (subtraction) operator
-	vec operator - (vec &o) { return this->sub(o); }
-	vec operator - (float o) { return this->sub(o); }
-	/// algebraic * (multiplication) operator
-	vec operator * (float o) { return this->mul(o); }
-	vec operator * (vec &o) { return this->mul(o); }
-	/// algebraic / (division) operator
-	vec operator / (vec &o) { return this->div(o); }
-	vec operator / (float o) { return this->div(o); }
-
-	/// TODO: implement the following operators
-	/// *= ?
-	/// /= ?
-	/// += ?
-	/// -= ?
 
 	/// "do all cartesian coordinates (XYZ) of this vector have the value zero?"
     bool iszero() const { return x==0 && y==0 && z==0; }
@@ -80,7 +72,7 @@ struct vec
     float dot2(const vec &o) const { return x*o.x + y*o.y; }
 	/// dot product (line by line) of all 3 dimensions
     float dot(const vec &o) const  { return x*o.x + y*o.y + z*o.z; }
-	
+
 	/// scalar multiplication
     vec &mul(const vec &o)   { x *= o.x;       y *= o.y;       z *= o.z;       return *this; }
     vec &mul(float f)        { x *= f;         y *= f;         z *= f;         return *this; }
@@ -98,7 +90,7 @@ struct vec
     vec &neg2()              { x = -x;         y = -y;                         return *this; }
     /// turn all 3 (XYZ) coordinates into its negative values
 	vec &neg()               { x = -x;         y = -y;         z = -z;         return *this; }
-    
+
 	/// vector min/max-comparison and clamp methods
 	vec &min(const vec &o)   { x = ::min(x, o.x);  y = ::min(y, o.y);  z = ::min(z, o.z);  return *this; }
     vec &max(const vec &o)   { x = ::max(x, o.x);  y = ::max(y, o.y);  z = ::max(z, o.z);  return *this; }
@@ -122,24 +114,22 @@ struct vec
     float dist(const vec &e, vec &t) const { t = *this; t.sub(e); return t.magnitude(); }
     float dist2(const vec &o) const { float dx = x-o.x, dy = y-o.y; return sqrtf(dx*dx + dy*dy); }
     bool reject(const vec &o, float r) { return x>o.x+r || x<o.x-r || y>o.y+r || y<o.y-r; }
-    
+
 	/// template based vector cross product
 	template<class A, class B>
     vec &cross(const A &a, const B &b) { x = a.y*b.z-a.z*b.y; y = a.z*b.x-a.x*b.z; z = a.x*b.y-a.y*b.x; return *this; }
     vec &cross(const vec &o, const vec &a, const vec &b) { return cross(vec(a).sub(o), vec(b).sub(o)); }
-    
+
 	/// scalar triple product
 	/// can be used to calculate the volume of a 3 dimensional parallelogram
-	/// http://mathworld.wolfram.com/ScalarTripleProduct.html
 	float scalartriple(const vec &a, const vec &b) const { return x*(a.y*b.z-a.z*b.y) + y*(a.z*b.x-a.x*b.z) + z*(a.x*b.y-a.y*b.x); }
-    
-	/// vector reflection (around angle or other vectors)
-	/// http://mathworld.wolfram.com/Reflection.html
-	vec &reflectz(float rz) { z = 2*rz - z; return *this; }
+
+    /// vector reflection (around angle or other vectors)
+    vec &reflectz(float rz) { z = 2*rz - z; return *this; }
     vec &reflect(const vec &n) { float k = 2*dot(n); x -= k*n.x; y -= k*n.y; z -= k*n.z; return *this; }
-    
-	/// vector projection
-	vec &project(const vec &n) { float k = dot(n); x -= k*n.x; y -= k*n.y; z -= k*n.z; return *this; }
+
+    /// vector projection
+    vec &project(const vec &n) { float k = dot(n); x -= k*n.x; y -= k*n.y; z -= k*n.z; return *this; }
     vec &projectxydir(const vec &n) { if(n.z) z = -(x*n.x/n.z + y*n.y/n.z); return *this; }
     vec &projectxy(const vec &n)
     {
@@ -245,13 +235,7 @@ static inline uint hthash(const vec &k)
     return v + (v>>12);
 }
 
-
-/// “An attempt at visualizing the Fourth Dimension: Take a point, stretch it into a line, 
-/// curl it into a circle, twist it into a sphere, and punch through the sphere.” 
-///   -ALBERT EINSTEIN
-
-
-/// 4-dimensional vectors
+/// 4-dimensional float vector
 /// all methods stay basicly the same but with an extra dimension
 struct vec4
 {
@@ -325,9 +309,6 @@ struct vec4
 
 inline vec::vec(const vec4 &v) : x(v.x), y(v.y), z(v.z) {}
 
-/// why is there no hashtable function for 4-dimensional vectors?
-/// just asking...
-
 /// 2-dimensional vectors
 /// all methods stay basicly the same but with an extra dimension
 struct vec2
@@ -373,7 +354,7 @@ struct vec2
 inline vec::vec(const vec2 &v, float z) : x(v.x), y(v.y), z(z) {}
 
 
-/// hashtable comparism function 
+/// hashtable comparison function 
 static inline bool htcmp(const vec2 &x, const vec2 &y)
 {
     return x == y;
@@ -387,7 +368,6 @@ static inline uint hthash(const vec2 &k)
     uint v = x.i^y.i;
     return v + (v>>12);
 }
-
 
 struct matrix3x3;
 struct matrix3x4;
@@ -1081,23 +1061,6 @@ struct triangle
     bool operator==(const triangle &t) const { return a == t.a && b == t.b && c == t.c; }
 };
 
-/**
-
-The cube engine uses 3 different linear coordinate systems
-which are oriented around each of the axis dimensions.
-
-So any point within the game can be defined by four coordinates: (d, x, y, z)
-
-d is the reference axis dimension
-x is the coordinate of the ROW dimension
-y is the coordinate of the COL dimension
-z is the coordinate of the reference dimension (DEPTH)
-
-typically, if d is not used, then it is implicitly the Z dimension.
-ie: d=z => x=x, y=y, z=z
-
-**/
-
 // DIM: X=0 Y=1 Z=2.
 const int R[3]  = {1, 2, 0}; // row
 const int C[3]  = {2, 0, 1}; // col
@@ -1115,12 +1078,6 @@ struct ivec
 
     ivec() {}
     ivec(const vec &v) : x(int(v.x)), y(int(v.y)), z(int(v.z)) {}
-    explicit ivec(int i)
-    {
-        x = ((i&1)>>0);
-        y = ((i&2)>>1);
-        z = ((i&4)>>2);
-    }
     ivec(int a, int b, int c) : x(a), y(b), z(c) {}
     ivec(int d, int row, int col, int depth)
     {
@@ -1134,8 +1091,10 @@ struct ivec
         y = cy+((i&2)>>1)*size;
         z = cz+((i&4)>>2)*size;
     }
-    vec tovec() const { return vec(x, y, z); }
-    int toint() const { return (x>0?1:0) + (y>0?2:0) + (z>0?4:0); }
+    explicit ivec(const ivec4 &v);
+    explicit ivec(const ivec2 &v, int z = 0);
+    explicit ivec(const usvec &v);
+    explicit ivec(const svec &v);
 
     int &operator[](int i)       { return v[i]; }
     int  operator[](int i) const { return v[i]; }
@@ -1166,6 +1125,8 @@ struct ivec
     float dist(const plane &p) const { return x*p.x + y*p.y + z*p.z + p.offset; }
 };
 
+inline vec::vec(const ivec &v) : x(v.x), y(v.y), z(v.z) {}
+
 static inline bool htcmp(const ivec &x, const ivec &y)
 {
     return x == y;
@@ -1176,9 +1137,94 @@ static inline uint hthash(const ivec &k)
     return k.x^k.y^k.z;
 }  
 
+/// 2 dimensional integer vector.
+struct ivec2
+{
+    union
+    {
+        struct { int x, y; };
+        int v[2];
+    };
+
+    ivec2() {}
+    ivec2(int x, int y) : x(x), y(y) {}
+    explicit ivec2(const vec2 &v) : x(int(v.x)), y(int(v.y)) {}
+    explicit ivec2(const ivec &v) : x(v.x), y(v.y) {}
+
+    int &operator[](int i)       { return v[i]; }
+    int  operator[](int i) const { return v[i]; }
+
+    bool operator==(const ivec2 &o) const { return x == o.x && y == o.y; }
+    bool operator!=(const ivec2 &o) const { return x != o.x || y != o.y; }
+
+    bool iszero() const { return x==0 && y==0; }
+    ivec2 &shl(int n) { x<<= n; y<<= n; return *this; }
+    ivec2 &shr(int n) { x>>= n; y>>= n; return *this; }
+    ivec2 &mul(int n) { x *= n; y *= n; return *this; }
+    ivec2 &div(int n) { x /= n; y /= n; return *this; }
+    ivec2 &add(int n) { x += n; y += n; return *this; }
+    ivec2 &sub(int n) { x -= n; y -= n; return *this; }
+    ivec2 &mul(const ivec2 &v) { x *= v.x; y *= v.y; return *this; }
+    ivec2 &div(const ivec2 &v) { x /= v.x; y /= v.y; return *this; }
+    ivec2 &add(const ivec2 &v) { x += v.x; y += v.y; return *this; }
+    ivec2 &sub(const ivec2 &v) { x -= v.x; y -= v.y; return *this; }
+    ivec2 &mask(int n) { x &= n; y &= n; return *this; }
+    ivec2 &neg() { x = -x; y = -y; return *this; }
+    ivec2 &min(const ivec2 &o) { x = ::min(x, o.x); y = ::min(y, o.y); return *this; }
+    ivec2 &max(const ivec2 &o) { x = ::max(x, o.x); y = ::max(y, o.y); return *this; }
+    ivec2 &min(int n) { x = ::min(x, n); y = ::min(y, n); return *this; }
+    ivec2 &max(int n) { x = ::max(x, n); y = ::max(y, n); return *this; }
+    ivec2 &abs() { x = ::abs(x); y = ::abs(y); return *this; }
+    int dot(const ivec2 &o) const { return x*o.x + y*o.y; }
+    int cross(const ivec2 &o) const { return x*o.y - y*o.x; }
+};
+
+inline ivec::ivec(const ivec2 &v, int z) : x(v.x), y(v.y), z(z) {}
+
+static inline bool htcmp(const ivec2 &x, const ivec2 &y)
+{
+    return x == y;
+}
+
+static inline uint hthash(const ivec2 &k)
+{
+    return k.x^k.y;
+}
+
+/// 4 dimensional integer vector.
+struct ivec4
+{
+    union
+    {
+        struct { int x, y, z, w; };
+        struct { int r, g, b, a; };
+        int v[4];
+    };
+
+    ivec4() {}
+    explicit ivec4(const ivec &p, int w = 0) : x(p.x), y(p.y), z(p.z), w(w) {}
+    ivec4(int x, int y, int z, int w) : x(x), y(y), z(z), w(w) {}
+    explicit ivec4(const vec4 &v) : x(int(v.x)), y(int(v.y)), z(int(v.z)), w(int(v.w)) {}
+
+    bool operator==(const ivec4 &o) const { return x == o.x && y == o.y && z == o.z && w == o.w; }
+    bool operator!=(const ivec4 &o) const { return x != o.x || y != o.y || z != o.z || w != o.w; }
+};
+
+inline ivec::ivec(const ivec4 &v) : x(v.x), y(v.y), z(v.z) {}
+
+static inline bool htcmp(const ivec4 &x, const ivec4 &y)
+{
+    return x == y;
+}
+
+static inline uint hthash(const ivec4 &k)
+{
+    return k.x^k.y^k.z^k.w;
+}
+
 struct bvec4;
 
-/// 3-dimensional UNSIGNED CHAR vectors
+/// 3-dimensional UNSIGNED CHAR vector.
 struct bvec
 {
     union
@@ -1201,7 +1247,7 @@ struct bvec
 
     bool iszero() const { return x==0 && y==0 && z==0; }
 
-    vec tovec() const { return vec(x*(2.0f/255.0f)-1.0f, y*(2.0f/255.0f)-1.0f, z*(2.0f/255.0f)-1.0f); }
+    vec tonormal() const { return vec(x*(2.0f/255.0f)-1.0f, y*(2.0f/255.0f)-1.0f, z*(2.0f/255.0f)-1.0f); }
 
     bvec &normalize()
     {
@@ -1235,7 +1281,7 @@ struct bvec
     static bvec from565(ushort c) { return bvec((((c>>11)&0x1F)*527 + 15) >> 6, (((c>>5)&0x3F)*259 + 35) >> 6, ((c&0x1F)*527 + 15) >> 6); }
 };
 
-//// 4-dimensional UNSIGNED CHAR vectors
+//// 4-dimensional UNSIGNED CHAR vector.
 struct bvec4
 {
     union
@@ -1258,7 +1304,7 @@ struct bvec4
 
     bool iszero() const { return mask==0; }
 
-    vec tovec() const { return vec(x*(2.0f/255.0f)-1.0f, y*(2.0f/255.0f)-1.0f, z*(2.0f/255.0f)-1.0f); }
+    vec tonormal() const { return vec(x*(2.0f/255.0f)-1.0f, y*(2.0f/255.0f)-1.0f, z*(2.0f/255.0f)-1.0f); }
 
     void lerp(const bvec4 &a, const bvec4 &b, float t)
     {
@@ -1281,7 +1327,61 @@ struct bvec4
 
 inline bvec::bvec(const bvec4 &v) : x(v.x), y(v.y), z(v.z) {}
 
-/// 4x4 float matrix
+/// 3 dimensional vector containing unsigned shorts.
+struct usvec
+{
+    union
+    {
+        struct { ushort x, y, z; };
+        ushort v[3];
+    };
+
+    ushort &operator[](int i) { return v[i]; }
+    ushort operator[](int i) const { return v[i]; }
+};
+
+inline ivec::ivec(const usvec &v) : x(v.x), y(v.y), z(v.z) {}
+
+/// 3 dimensional vector containing shorts.
+struct svec
+{
+    union
+    {
+        struct { short x, y, z; };
+        short v[3];
+    };
+
+    svec() {}
+    svec(short x, short y, short z) : x(x), y(y), z(z) {}
+    svec(const ivec &v) : x(v.x), y(v.y), z(v.z) {}
+
+    short &operator[](int i) { return v[i]; }
+    short operator[](int i) const { return v[i]; }
+};
+
+inline ivec::ivec(const svec &v) : x(v.x), y(v.y), z(v.z) {}
+
+/// 2 dimensional vector containing shorts.
+struct svec2
+{
+    union
+    {
+        struct { short x, y; };
+        short v[2];
+    };
+
+    svec2() {}
+    svec2(short x, short y) : x(x), y(y) {}
+
+    short &operator[](int i) { return v[i]; }
+    short operator[](int i) const { return v[i]; }
+
+    bool operator==(const svec2 &o) const { return x == o.x && y == o.y; }
+    bool operator!=(const svec2 &o) const { return x != o.x || y != o.y; }
+
+    bool iszero() const { return x==0 && y==0; }
+};
+
 struct glmatrixf
 {
     float v[16];

@@ -20,7 +20,8 @@ enum
     DEFAULT_GEOM
 };
 
-// octree header structure
+/// octree header structure as its found in the ogz files.
+/// ogz files are gz-compressed as the name suggests.
 struct octaheader
 {
     char magic[4];              // "OCTA"
@@ -35,11 +36,8 @@ struct octaheader
     int numvslots;
 };
 
-// map file format header
-// all cube engine based games use the OGZ file format
-// OGZ files are zipped. see specification here:
-// http://incoherency.co.uk/interest/sauer_map.html
-struct compatheader             
+/// more intense map file header used when loading.
+struct compatheader
 {
     char magic[4];              // "OCTA"
     int version;                // any >8bit quantity is little endian
@@ -72,9 +70,9 @@ enum
 // Inexor's vertex structure
 struct vertex 
 {
-	vec pos;		// vertex position
-	bvec4 norm;		// normal vector
-	float u, v;		// UV coordinates
-	short lmu, lmv;	// light map UV coordinates
+	vec pos;        // vertex position
+	bvec4 norm;     // normal vector
+	vec2 tc;        // Texture UV coordinates
+	svec2 lm;       // light map UV coordinates
 	bvec4 tangent;	// tangents (for skinning/animation ?)
 };
