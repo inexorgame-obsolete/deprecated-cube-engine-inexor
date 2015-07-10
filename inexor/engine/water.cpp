@@ -975,8 +975,6 @@ void drawreflections()
 {
     if((editmode && showmat && !envmapping) || minimapping) return;
 
-    extern SharedVar<int> nvidia_scissor_bug;
-
     static int lastdrawn = 0;
     int refs = 0, n = lastdrawn;
     float offset = -WATER_OFFSET;
@@ -1022,9 +1020,8 @@ void drawreflections()
         if(waterreflect && ref.tex && camera1->o.z >= ref.height+offset)
         {
             if(hasFBO) glFramebufferTexture2D_(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, ref.tex, 0);
-            if(scissor && !nvidia_scissor_bug) glEnable(GL_SCISSOR_TEST);
+            if(scissor) glEnable(GL_SCISSOR_TEST);
             maskreflection(ref, offset, true);
-            if(scissor && nvidia_scissor_bug) glEnable(GL_SCISSOR_TEST);
             savevfcP();
             setvfcP(ref.height+offset, clipmin, clipmax); 
             drawreflection(ref.height+offset, false);
@@ -1040,9 +1037,8 @@ void drawreflections()
         if(waterrefract && ref.refracttex)
         {
             if(hasFBO) glFramebufferTexture2D_(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, ref.refracttex, 0);
-            if(scissor && !nvidia_scissor_bug) glEnable(GL_SCISSOR_TEST);
+            if(scissor) glEnable(GL_SCISSOR_TEST);
             maskreflection(ref, offset, false, refractclear || !wfog || (ref.depth>=10000 && camera1->o.z >= ref.height + offset));
-            if(scissor && nvidia_scissor_bug) glEnable(GL_SCISSOR_TEST);
             if(wfog || (waterfade && hasFBO))
             {
                 savevfcP();
@@ -1094,10 +1090,8 @@ void drawreflections()
         }
 
         if(hasFBO) glFramebufferTexture2D_(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, ref.refracttex, 0);
-        if(scissor && !nvidia_scissor_bug) glEnable(GL_SCISSOR_TEST);
-    
+        if(scissor) glEnable(GL_SCISSOR_TEST);
         maskreflection(ref, -0.1f, false);
-        if(scissor && nvidia_scissor_bug) glEnable(GL_SCISSOR_TEST);
         savevfcP();
         setvfcP(-1, clipmin, clipmax);
         drawreflection(-1, true); 
