@@ -600,7 +600,6 @@ struct editor
                 if(ey > maxy) { ey = maxy; pey = pixelheight - FONTH; pex = pixelwidth; }
 
                 notextureshader->set();
-                glDisable(GL_TEXTURE_2D);
                 glColor3ub(0xA0, 0x80, 0x80);
                 glBegin(GL_QUADS);
                 if(psy == pey) 
@@ -628,7 +627,6 @@ struct editor
                     glVertex2f(x+pex, y+pey);
                 }
                 glEnd();
-                glEnable(GL_TEXTURE_2D);
                 defaultshader->set();
             }
         }
@@ -644,7 +642,6 @@ struct editor
             if(linewrap && height > FONTH) // line wrap indicator
             {   
                 notextureshader->set();
-                glDisable(GL_TEXTURE_2D);
                 glColor3ub(0x80, 0xA0, 0x80);
                 glBegin(GL_TRIANGLE_STRIP);
                 glVertex2f(x,         y+h+FONTH);
@@ -652,7 +649,6 @@ struct editor
                 glVertex2f(x-FONTW/2, y+h+FONTH);
                 glVertex2f(x-FONTW/2, y+h+height);
                 glEnd();
-                glEnable(GL_TEXTURE_2D);
                 defaultshader->set();
             }
             h+=height;

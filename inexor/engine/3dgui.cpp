@@ -322,11 +322,9 @@ struct gui : g3d_gui
             float xs = size, ys = size, xi = curx, yi = cury;
             if(overlaid && hit && actionon)
             {
-                glDisable(GL_TEXTURE_2D);
                 notextureshader->set();
                 glColor4f(0, 0, 0, 0.75f);
                 rect_(xi+SHADOW, yi+SHADOW, xs, ys);
-                glEnable(GL_TEXTURE_2D);
                 defaultshader->set();
             }
             int x1 = int(floor(screenw*(xi*scale.x+origin.x))), y1 = int(floor(screenh*(1 - ((yi+ys)*scale.y+origin.y)))),
@@ -346,13 +344,11 @@ struct gui : g3d_gui
             {
                 if(hit)
                 {
-                    glDisable(GL_TEXTURE_2D);
                     notextureshader->set();
                     glBlendFunc(GL_ZERO, GL_SRC_COLOR);
                     glColor3f(1, 0.5f, 0.5f);
                     rect_(xi, yi, xs, ys);
                     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                    glEnable(GL_TEXTURE_2D);
                     defaultshader->set();
                 }
                 if(!overlaytex) {
@@ -379,11 +375,9 @@ struct gui : g3d_gui
             float xs = size, ys = size, xi = curx, yi = cury;
             if(overlaid && hit && actionon)
             {
-                glDisable(GL_TEXTURE_2D);
                 notextureshader->set();
                 glColor4f(0, 0, 0, 0.75f);
                 rect_(xi+SHADOW, yi+SHADOW, xs, ys);
-                glEnable(GL_TEXTURE_2D);
                 defaultshader->set();
             }
             int x1 = int(floor(screenw*(xi*scale.x+origin.x))), y1 = int(floor(screenh*(1 - ((yi+ys)*scale.y+origin.y)))),
@@ -415,13 +409,11 @@ struct gui : g3d_gui
             {
                 if(hit)
                 {
-                    glDisable(GL_TEXTURE_2D);
                     notextureshader->set();
                     glBlendFunc(GL_ZERO, GL_SRC_COLOR);
                     glColor3f(1, 0.5f, 0.5f);
                     rect_(xi, yi, xs, ys);
                     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                    glEnable(GL_TEXTURE_2D);
                     defaultshader->set();
                 }
                 if(!overlaytex) {
@@ -543,12 +535,10 @@ struct gui : g3d_gui
             e->draw(curx+FONTW/2, cury, color, hit && editing);
             
             notextureshader->set();
-            glDisable(GL_TEXTURE_2D);
             glDisable(GL_BLEND);
             if(editing) glColor3f(1, 0, 0);
             else glColor3ub(color>>16, (color>>8)&0xFF, color&0xFF);
             rect_(curx, cury, w, h, true);
-            glEnable(GL_TEXTURE_2D);
             glEnable(GL_BLEND);
             defaultshader->set();
         }
@@ -602,7 +592,6 @@ struct gui : g3d_gui
     void background(int color, int inheritw, int inherith)
     {
         if(layoutpass) return;
-        glDisable(GL_TEXTURE_2D);
         notextureshader->set();
         glColor4ub(color>>16, (color>>8)&0xFF, color&0xFF, 0x80);
         int w = xsize, h = ysize;
@@ -623,7 +612,6 @@ struct gui : g3d_gui
             h = p.springs > 0 && !((curdepth-parentdepth)&1) ? lists[p.parent].h : p.h;
             }
         rect_(curx, cury, w, h);
-        glEnable(GL_TEXTURE_2D);
         defaultshader->set();
     }
 
@@ -679,11 +667,9 @@ struct gui : g3d_gui
         float xt = min(1.0f, t->xs/(float)t->ys), yt = min(1.0f, t->ys/(float)t->xs), xs = size, ys = size;
         if(hit && actionon) 
         {
-            glDisable(GL_TEXTURE_2D);
             notextureshader->set();
             glColor4f(0, 0, 0, 0.75f);
             rect_(x+SHADOW, y+SHADOW, xs, ys);
-            glEnable(GL_TEXTURE_2D);
             defaultshader->set();	
         }
         SETSHADER(rgbonly);
