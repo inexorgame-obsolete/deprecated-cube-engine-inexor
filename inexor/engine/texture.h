@@ -360,12 +360,9 @@ struct VSlot
     int layer;
     float alphafront, alphaback;
     vec colorscale;
-    vec glowcolor, pulseglowcolor;
-    float pulseglowspeed;
-    vec envscale;
-    int skipped;
+    vec glowcolor;
 
-    VSlot(Slot *slot = NULL, int index = -1) : slot(slot), next(NULL), index(index), changed(0), skipped(0) 
+    VSlot(Slot *slot = NULL, int index = -1) : slot(slot), next(NULL), index(index), changed(0)
     { 
         reset();
         if(slot) addvariant(slot); 
@@ -386,9 +383,6 @@ struct VSlot
         alphaback = 0;
         colorscale = vec(1, 1, 1);
         glowcolor = vec(1, 1, 1);
-        pulseglowcolor = vec(0, 0, 0);
-        pulseglowspeed = 0;
-        envscale = vec(0, 0, 0);
     }
 
     void cleanup()
