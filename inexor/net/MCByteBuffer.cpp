@@ -45,7 +45,7 @@ namespace net {
       return xchrbuf(rSize);
   }
 
-  void MCByteBuffer::Send(bytes &dat) {
+  void MCByteBuffer::Send(const bytes &dat) {
     uint64_t size = dat.size();
     write((byte*)&size, sizeof(uint64_t));
     write(&dat[0], size);

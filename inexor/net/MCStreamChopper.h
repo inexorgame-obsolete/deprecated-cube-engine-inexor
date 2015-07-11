@@ -48,7 +48,7 @@ namespace net {
       return recv->readsome((char*)buf, max);
     }
 
-    virtual void write(byte *buf, size_t len) {
+    virtual void write(const byte *buf, size_t len) {
       if (!send) throw std::logic_error("This MCStreamChopper"
           " does not support sending/writing data.");
       send->write((char*)buf, len);

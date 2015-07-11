@@ -4,6 +4,7 @@
 #include <list>
 #include <string>
 #include <iostream>
+#include <memory>
 
 #include <cstdint>
 #include <cstdio>
@@ -13,6 +14,7 @@
 #include "inexor/net/MessageConnect.h"
 #include "inexor/net/MCServer.h"
 #include "inexor/net/MCSocket.h"
+#include "inexor/compat/make_unique.h"
 
 namespace inexor {
 namespace net {
@@ -30,7 +32,7 @@ namespace net {
     typedef asio::basic_socket_acceptor<protocol> acceptor;
     typedef typename protocol::endpoint endpoint;
     typedef asio::io_service service;
-    
+
     typedef MCSocket<protocol> mcsoc;
 
     service srv;
@@ -38,19 +40,21 @@ namespace net {
     acceptor ack;
 
   protected:
-    virtual MessageConnect* getNextStream() {
+    virtual std::unique_ptr<MessageConnect> getNextStream() {
       asio::error_code er;
-      mcsoc *s = new mcsoc(srv);
+      std::unique_ptr<mcsoc> s =
+          inexor::compat::make_unique<mcsoc>(srv);
 
       ack.accept(s->Socket(), er);
-      
+
       if (er == asio::error::basic_errors::try_again)
         return NULL;
       else if (er)
         throw asio::system_error(er, "Can not accept connection");
 
       std::cerr << "[INFO] New connection" << std::endl;
-      return s;
+      // TODO: Add casting functions for unique_ptr
+      return std::unique_ptr<MessageConnect>(s.release());
     }
 
   public:

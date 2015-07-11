@@ -81,7 +81,7 @@ namespace net {
      *         is not supported.
      * @see supportsSend
      */
-    virtual void Send(bytes &dat) = 0;
+    virtual void Send(const bytes &dat) = 0;
 
     /**
      * Send a message contained in a plain memory.
@@ -95,7 +95,7 @@ namespace net {
      *         is not supported.
      * @see supportsSend
      */
-    virtual void Send(void *dat, size_t len) {
+    virtual void Send(const void *dat, size_t len) {
       bytes d(len);
       memcpy(&d[0], dat, len); // TODO: This is shit and very inefficient
       Send(d);

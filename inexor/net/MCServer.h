@@ -4,6 +4,7 @@
 #include <list>
 #include <algorithm>
 #include <iostream>
+#include <memory>
 
 #include "inexor/net/MessageConnect.h"
 #include "inexor/net/MCHub.h"
@@ -19,14 +20,32 @@ namespace net {
    * The connections will be closed and the MessageConnects
    * attached to this will be deleted, when the server is
    * deleted.
+   *
+   * This also acts as a MCHub, which in turn acts like
+   * a MessageConnect: Calls to send are broadcast id to all
+   * connections, calls to receive try receiving from any
+   * message Connect
+   *
+   * @tparam SpecifcMC – The subclass of MessageConnect this
+   *   MCServer holds for each connection
+   *
+   * TODO: Handle closing connections.
    */
-  class MCServer {
-  protected:
-    /** List of all the connections */
-    std::list<MessageConnect*> cons;
+  class MCServer :
+      public MCHub<std::list<std::unique_ptr<MessageConnect>>> {
+  public:
 
-    /** What broadcast() returns */
-    MCHub bcast;
+    /// The full container type used to store the message
+    /// connects.
+    typedef std::list<std::unique_ptr<MessageConnect>> Container;
+
+    typedef MCHub<std::list<std::unique_ptr<MessageConnect>>> AsHub;
+
+  protected:
+
+
+    /** List of all the connections */
+    Container cons;
 
     /**
      * Accept a new connection if one is available.
@@ -40,19 +59,10 @@ namespace net {
      * @return A MessageConnect if a connection is
      *   available; otherwise NULL.
      */
-    virtual MessageConnect* getNextStream() = 0;
+    virtual std::unique_ptr<MessageConnect> getNextStream() = 0;
 
   public:
-    MCServer() : bcast(&cons) {}
-
-    /**
-     * The destructor deletes all the messages in
-     * connects()
-     */
-    virtual ~MCServer() {
-      std::for_each(cons.begin(), cons.end(),
-          util::f_delete<MessageConnect>);
-    }
+    MCServer() : AsHub(cons) {}
 
     /**
      * Accept a new connection if one is available.
@@ -64,10 +74,11 @@ namespace net {
      *   accepted; otherwise NULL.
      */
     virtual MessageConnect* accept() {
-      MessageConnect *c = getNextStream();
-      if (c != NULL)
-        cons.push_back(c);
-      return c;
+      std::unique_ptr<MessageConnect> c = getNextStream();
+      MessageConnect* ptr = c.get();
+      if (ptr != NULL)
+        cons.push_back(std::move(c));
+      return ptr;
     }
 
     /**
@@ -83,29 +94,10 @@ namespace net {
       return r;
     }
 
-    /**
-     * A message hub that has all the connections accepted
-     * by this server attached.
-     *
-     * The boradcast() can be used to get messages from all
-     * connections accepted and to send broadcasts.
-     *
-     * The broadcast exists as long as this server exists.
-     *
-     * @return A MessageHub for sending BROADCASTS
-     */
-    MCHub& broadcast() {
-      return bcast;
-    }
-
-    /**
-     * List all the connects attached
-     *
-     * TODO: Make read only!
-     *
-     * @return The lists of connections on this server
-     */
-    std::list<MessageConnect*>& connects() {
+    /// List all the connects attached
+    /// TODO: Make read only!
+    /// @return The lists of connections on this server
+    Container& connects() {
       return cons;
     }
   };

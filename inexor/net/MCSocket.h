@@ -73,7 +73,7 @@ namespace net {
       return n;
     }
 
-    virtual void write(byte *buf, size_t len) {
+    virtual void write(const byte *buf, size_t len) {
       s.write_some(asio::buffer(buf,len));
     }
   };

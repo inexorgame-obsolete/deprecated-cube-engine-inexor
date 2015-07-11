@@ -48,7 +48,7 @@ namespace net {
     // Override
     virtual bytes Receive();
     // Override
-    virtual void Send(bytes &dat);
+    virtual void Send(const bytes &dat);
 
     /// Low level function to read some bytes.
     ///
@@ -80,7 +80,7 @@ namespace net {
     ///
     /// @param buf The data to write
     /// @param len The number of bytes to write
-    virtual void write(byte *buf, size_t len) = 0;
+    virtual void write(const byte *buf, size_t len) = 0;
   };
 
 }
