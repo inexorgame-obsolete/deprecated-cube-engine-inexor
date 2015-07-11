@@ -385,10 +385,10 @@ struct iqm : skelmodel, skelloader<iqm>
         mdl.index = 0;
         mdl.pitchscale = mdl.pitchoffset = mdl.pitchmin = mdl.pitchmax = 0;
         adjustments.setsize(0);
-        const char *fname = loadname + strlen(loadname);
-        do --fname; while(fname >= loadname && *fname!='/' && *fname!='\\');
+        const char *fname = name + strlen(name);
+        do --fname; while(fname >= name && *fname!='/' && *fname!='\\');
         fname++;
-        defformatstring(meshname)("%s/%s/%s.iqm", *modeldir, loadname, fname);
+        defformatstring(meshname)("%s/%s/%s.iqm", *modeldir, name, fname);
         mdl.meshes = sharemeshes(path(meshname), NULL);
         if(!mdl.meshes) return false;
         mdl.initanimparts();
@@ -398,9 +398,8 @@ struct iqm : skelmodel, skelloader<iqm>
 
     bool load()
     {
-        if(loaded) return true;
         formatstring(dir)("%s/%s", *modeldir, loadname);
-        defformatstring(cfgname)("%s/%s/iqm.cfg", *modeldir, loadname);
+        defformatstring(cfgname)("%s/%s/iqm.cfg", *modeldir, name);
 
         loading = this;
         identflags &= ~IDF_PERSIST;
@@ -420,15 +419,8 @@ struct iqm : skelmodel, skelloader<iqm>
             }
             loading = NULL;
         }
-        scale /= 4;
-        parts[0]->translate = translate;
-        loopv(parts) 
-        {
-            skelpart *p = (skelpart *)parts[i];
-            p->endanimparts();
-            p->meshes->shared++;
-        }
-        return loaded = true;
+        loaded();
+        return true;
     }
 };
 

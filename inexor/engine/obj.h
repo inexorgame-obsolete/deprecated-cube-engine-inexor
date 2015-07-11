@@ -173,7 +173,7 @@ struct obj : vertmodel, vertloader<obj>
         mdl.model = this;
         mdl.index = 0;
         const char *pname = parentdir(loadname);
-        defformatstring(name1)("%s/%s/tris.obj", *modeldir, loadname);
+        defformatstring(name1)("%s/%s/tris.obj", *modeldir, name);
         mdl.meshes = sharemeshes(path(name1), 2.0);
         if(!mdl.meshes)
         {
@@ -182,17 +182,16 @@ struct obj : vertmodel, vertloader<obj>
             if(!mdl.meshes) return false;
         }
         Texture *tex, *masks;
-        loadskin(loadname, pname, tex, masks);
+        loadskin(name, pname, tex, masks);
         mdl.initskins(tex, masks);
         if(tex==notexture) conoutf("could not load model skin for %s", name1);
         return true;
     }
 
     bool load()
-    { 
-        if(loaded) return true;
+    {
         formatstring(dir)("%s/%s", *modeldir, loadname);
-        defformatstring(cfgname)("%s/%s/obj.cfg", *modeldir, loadname);
+        defformatstring(cfgname)("%s/%s/obj.cfg", *modeldir, name);
 
         loading = this;
         identflags &= ~IDF_PERSIST;
@@ -208,11 +207,9 @@ struct obj : vertmodel, vertloader<obj>
             loading = NULL;
             if(!loaddefaultparts()) return false;
         }
-        scale /= 4;
         translate.y = -translate.y;
-        parts[0]->translate = translate;
-        loopv(parts) parts[i]->meshes->shared++;
-        return loaded = true;
+        loaded();
+        return true;
     }
 };
 

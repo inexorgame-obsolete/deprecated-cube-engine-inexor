@@ -45,8 +45,7 @@ struct vec
     explicit vec(float a) : x(a), y(a), z(a) {} 
     vec(float a, float b, float c) : x(a), y(b), z(c) {}
     explicit vec(int v[3]) : x(v[0]), y(v[1]), z(v[2]) {}
-    explicit vec(float *v) : x(v[0]), y(v[1]), z(v[2]) {}
-	/// copy from 2- and 4-dimensional vectors
+    explicit vec(const float *v) : x(v[0]), y(v[1]), z(v[2]) {}
     explicit vec(const vec4 &v);
     explicit vec(const vec2 &v, float z = 0);
     explicit vec(const ivec &v);
