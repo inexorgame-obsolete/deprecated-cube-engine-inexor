@@ -430,7 +430,7 @@ void gl_checkextensions()
         reservevpparams = 10;
         rtsharefb = 0; // work-around for strange driver stalls involving when using many FBOs
         extern SharedVar<int> filltjoints;
-        if(!hasext(exts, "GL_EXT_gpu_shader4")) filltjoints = 0; // DX9 or less NV cards seem to not cause many sparklies
+        if(glversion < 300 && !hasext(exts, "GL_EXT_gpu_shader4")) filltjoints = 0; // DX9 or less NV cards seem to not cause many sparklies
 
         if(hasTF) fpdepthfx = 1;
     }
@@ -518,7 +518,7 @@ void gl_checkextensions()
         if(dbgexts) conoutf(CON_INIT, "Using GL_EXT_texture_filter_anisotropic extension.");
     }
 
-    if(hasext(exts, "GL_EXT_gpu_shader4"))
+    if(glversion >= 300 || hasext(exts, "GL_EXT_gpu_shader4"))
     {
         // on DX10 or above class cards (i.e. GF8 or RadeonHD) enable expensive features
         extern SharedVar<int> grass, glare, maxdynlights, depthfxsize, depthfxrect, depthfxfilter, blurdepthfx;
