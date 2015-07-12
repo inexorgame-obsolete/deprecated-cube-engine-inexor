@@ -233,13 +233,6 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
     getbackgroundres(w, h);
     gettextres(w, h);
 
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0, w, h, 0, -1, 1);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    defaultshader->set();
 
     static int lastupdate = -1, lastw = -1, lasth = -1;
     static float backgroundu = 0, backgroundv = 0, detailu = 0, detailv = 0;
@@ -268,6 +261,14 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 
     loopi(restore ? 1 : 3)
     {
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(0, w, h, 0, -1, 1);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
+        defaultshader->set();
+
         glColor3f(1, 1, 1);
 		
         settexture("media/interface/background.png", 0);
