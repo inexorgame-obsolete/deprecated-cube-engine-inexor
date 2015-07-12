@@ -1,4 +1,4 @@
-defineInxComponent 'inxExample', class extends InxComponent
+defineComponent 'inxExample', class extends Component
   @inject
     _: "lodash"
   @scope:

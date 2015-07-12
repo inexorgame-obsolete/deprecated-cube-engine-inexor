@@ -1,3 +1,5 @@
+# TODO: Browser support
+
 # Build Buffers; in case you don't know the size of the
 # buffer you want to create
 class BufferBuilder

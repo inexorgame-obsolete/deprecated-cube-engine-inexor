@@ -28,6 +28,7 @@ message ServiceCall {
   // The canonical name of the function to call
   required string function_name = 2;
   // UUID; same for call and callback
+  // TODO: Encode as 16 bytes
   required string call_uuid = 3;
 
   // Indicates whether this is a call or a call back

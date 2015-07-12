@@ -1,8 +1,13 @@
 # TODO: Simplify this code
-define ["NgInjectable", "lodash", "underscore.string", "asset-manager"], (NgInjectable, _, _s, AssetManager) ->
-  # InxComponent - Object oriented class definition
+define [
+    "Injectable",
+    "lodash",
+    "underscore.string",
+    "AssetManager"
+], (Injectable, _, _s, AssetManager) ->
+  # Component - Object oriented directive definition
   #
-  # This is based on NgInjectable.
+  # This is based on Injectable.
   #
   # # Features
   #
@@ -27,20 +32,20 @@ define ["NgInjectable", "lodash", "underscore.string", "asset-manager"], (NgInje
   #
   # # Usage
   #
-  # Declare a class that extends InxComponent; wrap it using
-  # InxComponent.wrap $name, ...
+  # Declare a class that extends Component; wrap it using
+  # Component.wrap $name, ...
   #
-  # See NgInjectable on why the wrapper is necessary.
+  # See Injectable on why the wrapper is necessary.
   #
-  # Note that InxComponent should be available globally and
-  # InxComponent.wrap should be available as
-  # defineInxComponent.
+  # Note that Component should be available globally and
+  # Component.wrap should be available as
+  # defineComponent.
   #
   # # Example
   #
   # `components/inxFnord.coffee`
   # ```
-  #   defineInxComponent 'inxFnord', class extends InxComponent
+  #   defineComponent 'inxFnord', class extends Component
   #     @inject "underscore"
   #
   #     @scope:
@@ -61,7 +66,7 @@ define ["NgInjectable", "lodash", "underscore.string", "asset-manager"], (NgInje
   #   p It will be automagically loaded as the themplate of inxFnord.
   # ```
   #
-  class InxComponent extends NgInjectable
+  class Component extends Injectable
     # TODO: Use jQuery rather than jQlite for $element
     @inject "$transclude"
     @inject
@@ -84,9 +89,9 @@ define ["NgInjectable", "lodash", "underscore.string", "asset-manager"], (NgInje
       @req_queue.push [event, name, f]
 
   # The wrapper must be called on the class that extends
-  # InxComponent. (see the class doc for examples)
+  # Component. (see the class doc for examples)
   #
-  # It does everything NgInjectable.wrap does, but also
+  # It does everything Injectable.wrap does, but also
   # handles event registration, resolves the template and
   # controller, and calls .directive() to register the
   # directive.
@@ -98,12 +103,12 @@ define ["NgInjectable", "lodash", "underscore.string", "asset-manager"], (NgInje
   # @param cb   [Function] an optional callback that is
   #        called after directive() and is passed the
   #        wrapper class.
-  InxComponent.wrap = (name, clz, cb=->) ->
-    # We register a wrapper between the NgInjectable wrapper
+  Component.wrap = (name, clz, cb=->) ->
+    # We register a wrapper between the Injectable wrapper
     # and the class; the hierarchy looks something like:
     #
     # (From top to bottom)
-    # NgInjectable's wrapper -> this wrapper -> clz -> InxComponent -> NgInjectable
+    # Injectable's wrapper -> this wrapper -> clz -> Component -> Injectable
     class __constructor_wrapper extends clz
       constructor: (a...) ->
         # Autoload the CSS
@@ -121,7 +126,7 @@ define ["NgInjectable", "lodash", "underscore.string", "asset-manager"], (NgInje
         super a...
 
     #  This is where define is called
-    NgInjectable.wrap __constructor_wrapper, (Nu) ->
+    Injectable.wrap __constructor_wrapper, (Nu) ->
       # We can not just register Nu as controller, because
       # angular does not call new
       ctrl_factory = (a...) ->
@@ -150,4 +155,4 @@ define ["NgInjectable", "lodash", "underscore.string", "asset-manager"], (NgInje
 
       cb Nu
 
-  return InxComponent
+  return Component

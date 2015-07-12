@@ -1,11 +1,11 @@
-InexorService = require 'inexor/InexorService'
+InexorService = require 'inexor/rpcapi/InexorService'
 Async = require 'async'
-F = require 'inexor/functional'
+F = require 'inexor/util/functional'
 
 # High Level interface for communicating with Inexor
 #
 # The module always exposes the singleton value
-class Inexor
+class InexorRpc
   # The singleton value;
   #
   # @see @getSingleton
@@ -42,7 +42,7 @@ class Inexor
     @messages = @service.messages
 
     # Manuall bind => the Cubescript functions generated
-    # with Inexor.C()
+    # with InexorRpc.C()
     for fn in Inexor.cbs_generated
       @[fn] = F.bind @[fn], @
 
@@ -173,4 +173,4 @@ class Inexor
           team: teams[i]
           spectating: spec[i]
 
-module.exports = Inexor.getSingleton()
+module.exports = InexorRpc.getSingleton()

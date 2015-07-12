@@ -1,7 +1,10 @@
-define ["lodash", "requireOptional"], (_, req_opt) ->
+define [
+  "lodash",
+  "util/requireOptional"
+], (_, req_opt) ->
 
-  # NgInjectable - Basic tools to declare angular staff in
-  # coffee script classes. And support for AMD.
+  # Curved Injectable - Basic tools to declare angular staff
+  # in coffee script classes. And support for AMD.
   #
   # # Features
   #
@@ -15,26 +18,26 @@ define ["lodash", "requireOptional"], (_, req_opt) ->
   # used as means to wrap angular declaration functions like
   # .controller, .factory or .directive.
   #
-  # In order to use NgInjectable, a class must be declared
-  # that extends NgInjectable. The resulting class must then
-  # be passed to NgInjectable.wrap, which calls requirejs'
+  # In order to use Injectable, a class must be declared
+  # that extends Injectable. The resulting class must then
+  # be passed to Injectable.wrap, which calls requirejs'
   # define() and wraps the constructor to provide automatic
   # dependency injection.
-  # NgInjectable.wrap also takes a callback; this callback
+  # Injectable.wrap also takes a callback; this callback
   # is given the resulting class and should be used to
   # actually call .controller or another of those functions.
   #
   # # Example
   #
-  # See InxComponent for a complex wrapper around .directive
+  # See Component for a complex wrapper around .directive
   #
   # This quickly illustrates how a very simple wrapper
   # around .controller() could be created.
   #
   # `BaseController.coffee`
   # ```
-  #   define ["NgInjectable"], (NgInjectable) ->
-  #     class BaseController extends NgInjectable
+  #   define ["Injectable"], (Injectable) ->
+  #     class BaseController extends Injectable
   #       # Will provide @$scope and @underscore while the
   #       # object is alive
   #       @inject "$scope", "underscore"
@@ -42,7 +45,7 @@ define ["lodash", "requireOptional"], (_, req_opt) ->
   #     # We need to use our own wrapper
   #     BaseController.wrap (name, clz) ->
   #       # define is called here
-  #       NgInjectable.wrap clz, (new_clz) ->
+  #       Injectable.wrap clz, (new_clz) ->
   #
   #         # new_clz needs to be instantiated with new
   #         factory = (a...) -> new new_clz a...
@@ -76,7 +79,7 @@ define ["lodash", "requireOptional"], (_, req_opt) ->
   #       @$scope.boat = "Titanic"
   # ```
   #
-  class NgInjectable
+  class Injectable
     # A list of the dependencies added with @inject
     @dependencies: []
 
@@ -114,7 +117,7 @@ define ["lodash", "requireOptional"], (_, req_opt) ->
 
     # Insert a dependency
     #
-    # Should be called during instantiation by NgInjectable
+    # Should be called during instantiation by Injectable
     # only
     #
     # First resolves whether the dependency has an alias and
@@ -159,14 +162,14 @@ define ["lodash", "requireOptional"], (_, req_opt) ->
     @$inject: null
   
   # The wrapper must be called on the class that extends
-  # NgInjectable. (see the class doc for examples)
+  # Injectable. (see the class doc for examples)
   #
   # * It calls define to make the whole class an AMD module
   # * It resolves AMD dependencies added with @inject
   # * It wraps the constructor so that angular dependencies
   #   are automatically added as fields.
   #
-  # TODO: Get rid of NgInjectable.wrap
+  # TODO: Get rid of Injectable.wrap
   #
   # @param clz [Class] The class this wraps
   # @param deps [Array<String>] Any number of AMD dependencies.
@@ -174,7 +177,7 @@ define ["lodash", "requireOptional"], (_, req_opt) ->
   # @param cb - [Function] The callback. This is passed
   #        another class created by the wrapper and any deps
   #        resolved
-  NgInjectable.wrap = (clz, deps..., cb) ->
+  Injectable.wrap = (clz, deps..., cb) ->
     define [clz.angular_module_name, deps..., "module"], \
             (angular_module, resolved_deps..., amd_module) ->
 
@@ -193,7 +196,7 @@ define ["lodash", "requireOptional"], (_, req_opt) ->
         # [[$dependency_name, $amd_resolved]]
         req_zip = _.chain(clz.dependencies).zip amd_injects
         class Wrapper extends clz
-          # disable, otherwise this will be NgInjectable.wrap
+          # disable, otherwise this will be Injectable.wrap
           @wrap = null
 
           @angular_module: angular_module
@@ -230,5 +233,5 @@ define ["lodash", "requireOptional"], (_, req_opt) ->
         # end: class Wrapper
         cb Wrapper, resolved_deps
 
-  # end NgInjectable.wrap
-  return NgInjectable
+  # end Injectable.wrap
+  return Injectable

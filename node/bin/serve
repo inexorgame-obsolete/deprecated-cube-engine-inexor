@@ -1,7 +1,18 @@
-#! /usr/bin/env node
+#! /usr/bin/env coffee
 
-require('coffee-script/register');
+Modmap = require "modmap"
+RJs = require 'requirejs'
 
-// TODO: Dynamically select a port and tell the server!
-// TODO: Use basic auth with a PSK over IPC
-require("express-server").listen(48702, "localhost");
+RJs.config Modmap.amd_node_cfg
+
+# TODO: Dynamically select a port and tell the server!
+# TODO: Use basic auth with a PSK over IPC
+
+args = process.argv[2..]
+port = args[0] || 48702
+listen  = args[1] || "localhost"
+
+listen = null if listen == "all"
+
+Server = require("the-server")
+new Server().listen port, listen
