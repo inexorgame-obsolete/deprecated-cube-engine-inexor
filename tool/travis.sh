@@ -175,6 +175,7 @@ nigthly_build() {
     .gitignore
     build
     CMakeLists.txt
+    appveyor.yml
     doxygen.conf
     .git
     .gitignore
@@ -202,6 +203,12 @@ nigthly_build() {
 
   upload / "$zipf" "$descf"
 
+  if test "$branch" = master; then (
+    ln -s "$zipf" "master-latest-$TARGET.zip"
+    ln -s "$descf" "master-latest-$TARGET.txt"
+    upload / "master-latest-$TARGET.zip" "master-latest-$TARGET.txt"
+  ) fi
+  
   return 0
 }
 
