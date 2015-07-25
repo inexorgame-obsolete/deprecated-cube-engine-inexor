@@ -97,6 +97,8 @@ define [
   # directive.
   #
   # TODO: Get rid of the wrapper
+  # TODO: Can we maybe define the wrapper constructor in
+  # some sort of queue/array with special accessors
   #
   # @param name [String] The name of the directive
   # @param clz  [Class] The directive class
@@ -112,14 +114,14 @@ define [
     class __constructor_wrapper extends clz
       constructor: (a...) ->
         # Autoload the CSS
-        cssf = "#{@clz.component_prefix}.css"
+        cssf = "#{@constructor.component_prefix}.css"
         if cssf in AssetManager.list()
           @$("head").append @$("<link/>").attr
             href: cssf
             rel: "stylesheet"
 
         # Register all events
-        for [ev, name, f] in @clz.req_queue
+        for [ev, name, f] in @constructor.req_queue
           @[name] = f
           @elem.on ev, (a...) => @[name] a...
 

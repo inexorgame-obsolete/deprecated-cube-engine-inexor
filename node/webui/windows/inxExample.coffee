@@ -5,8 +5,8 @@ defineComponent 'inxExample', class extends Component
     say: '='
 
   constructor: ->
-    console.log "Template URL", @clz.templateUrl
-    console.log "Template", @clz.template
+    console.log "Template URL", @constructor.templateUrl
+    console.log "Template", @constructor.template
     console.log "ATTRS", @attrs
     console.log "SAYING", @attrs.say
     console.log "SAYING (class scope)", @say
@@ -14,7 +14,7 @@ defineComponent 'inxExample', class extends Component
     console.log "GOT UNDERSCORE: ", @_
     console.log "GOT THE ELEMENT: ", @elem.html()
     console.log "GOT INSTANCE: ", @
-    console.log "GOT CLASS: ", @clz
+    console.log "GOT CLASS: ", @constructor
 
     if @attrs.bg
       @elem.css background: @attrs.bg

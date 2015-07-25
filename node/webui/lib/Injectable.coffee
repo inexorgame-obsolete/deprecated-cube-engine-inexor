@@ -81,12 +81,6 @@ define [
   # ```
   #
   class Injectable extends Clazz
-    # A list of the dependencies added with @inject
-    @dependencies: []
-
-    # If a dependency has an alias, it's name
-    @dependency_aliases: {}
-
     # Add a dependency to be provided by angular or requirejs
     #
     # Dependencies requested this way are accessible as
@@ -105,6 +99,8 @@ define [
     #     $: "jQuery"
     # ```
     @inject: (args...) ->
+      @dependencies ||= []
+      @dependency_aliases ||= {}
       for x in args
         if (typeof x) == 'string'
           @dependencies.push x
@@ -128,7 +124,7 @@ define [
     # @param name_ The name of the depnendency
     # @param mod   The actual module
     insert_dependency: (name_, mod) =>
-      name = @clz.dependency_aliases[name_] || name_
+      name = @constructor.dependency_aliases?[name_] || name_
       @[name] = mod
 
     # Set the angular module this is supposed to be added
@@ -140,7 +136,6 @@ define [
       @angular_module_name = mod
 
     @mod "app"
-    @inject []
 
     # The angular module instance this is supposed to be
     # added to. This is resolved by the wrapper from the
@@ -192,10 +187,10 @@ define [
       #       amd modules as fallback. (amd is async;
       #       angular is sync - we need to bridge that).
       #       use https://oclazyload.readme.io/ ?
-      req_opt clz.dependencies, (amd_injects...) ->
+      req_opt clz.dependencies || {}, (amd_injects...) ->
 
         # [[$dependency_name, $amd_resolved]]
-        req_zip = _.chain(clz.dependencies).zip amd_injects
+        req_zip = _.chain(clz.dependencies || {}).zip amd_injects
         class Wrapper extends clz
           # disable, otherwise this will be Injectable.wrap
           @wrap = null
@@ -214,24 +209,24 @@ define [
               .value()
 
           constructor: (args...) ->
-            @clz = Wrapper
+            clz = @constructor
 
             # Register all the accessors
             do @registerAccessors
 
             # Insert all the modules loaded by AMD
-            for name, mod of @clz.amd_loaded
+            for name, mod of clz.amd_loaded
               @insert_dependency name, mod
 
             # Handle all the injected arguments by storing
             # them with the correct name ass a class
             # variable
-            for dep,i in @clz.$inject
+            for dep,i in clz.$inject
               @insert_dependency dep, args[i]
 
             # Call the class constructor, removing all the
             # injected arguments
-            new_args = _.slice args, (@clz.$inject.length)
+            new_args = _.slice args, (clz.$inject.length)
             super new_args...
 
         # end: class Wrapper
