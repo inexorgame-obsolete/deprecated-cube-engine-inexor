@@ -81,11 +81,17 @@ define [
     # Register an event on the element; this automatically
     # creates a onEvent function in the class.
     #
+    #
+    # the subelement to regsiter the event on
     # @param event [String] The name of the event
     # @param f [Function] The function to call
-    @on: (event, f) ->
-      name = _s.camelize "on_#{event}"
-      @req_queue.push [event, name, f]
+    @on: (args...) ->
+      @req_queue ||= []
+      switch args.length
+        when 2 then [event, f] = args
+        when 3 then [targ, event, f] = args
+        else        throw new Error "Expected two or three args"
+      @req_queue.push [targ, event, f]
 
     # Specialized accessors
     # TODO: modularize this; use mixins; Accessors
@@ -178,9 +184,11 @@ define [
             rel: "stylesheet"
 
         # Register all events
-        for [ev, name, f] in @constructor.req_queue
-          @[name] = f
-          @elem.on ev, (a...) => @[name] a...
+        _.map @constructor.req_queue, ([targ, ev, f]) =>
+          fname = _s.camelize "on_#{targ || ""}_#{ev}"
+          targ = if targ then @elem.find targ else @elem
+          @[fname] = f
+          targ.on ev, (a...) => @[fname] a...
 
         super a...
 
