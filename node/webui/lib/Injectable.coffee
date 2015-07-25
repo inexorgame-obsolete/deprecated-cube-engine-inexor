@@ -1,6 +1,7 @@
 define [
   "lodash",
-  "util/requireOptional"
+  "util/requireOptional",
+  "util/Clazz"
 ], (_, req_opt) ->
 
   # Curved Injectable - Basic tools to declare angular staff
@@ -79,7 +80,7 @@ define [
   #       @$scope.boat = "Titanic"
   # ```
   #
-  class Injectable
+  class Injectable extends Clazz
     # A list of the dependencies added with @inject
     @dependencies: []
 
@@ -214,6 +215,9 @@ define [
 
           constructor: (args...) ->
             @clz = Wrapper
+
+            # Register all the accessors
+            do @registerAccessors
 
             # Insert all the modules loaded by AMD
             for name, mod of @clz.amd_loaded
