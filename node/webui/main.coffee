@@ -71,17 +71,6 @@ bootstrap = -> require [
   window.Component = Component
   window.defineComponent = Component.wrap
 
-  # Load angular modules (window manager)
-  # TODO: Add a generic css/js tag routine
-  # TODO: We should load those at a better place, in here
-  #       does not scale and it should not be necessary to
-  #       require the modules in bootstrap below
-  window.Angular = window.angular = Angular
-  $("head").append $("<link/>").attr
-    href: "/require/css_wmwindow"
-    rel: "stylesheet"
-  $.getScript "/require/wmwindow"
-
   # Component files to load
   components = _.filter AssetManager.list(), (f) ->
       f.match /^\/(components|windows)\/.*\.js$/
@@ -93,7 +82,12 @@ bootstrap = -> require [
     # angular modules and because Component returns
     # before the component is added, but do something
     # better
-    delay 1000, ->
-      Angular.bootstrap document, ["inexor_web_app", "ngWindowManager"]
+    delay 300, ->
+      Angular.bootstrap document, ["inexor_web_app"]
+
+      # Initialize the window manager
+      window.WM = Component.componentFor $ "wm#masterWM"
+
+      WM.open "inx-example"
 
 do main
