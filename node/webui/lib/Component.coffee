@@ -81,7 +81,7 @@ define [
     # Register an event on the element; this automatically
     # creates a onEvent function in the class.
     #
-    #
+    # @param target [String] OPTIONAL! The css selector of
     # the subelement to regsiter the event on
     # @param event [String] The name of the event
     # @param f [Function] The function to call
@@ -176,6 +176,10 @@ define [
 
         @document = @$ document
 
+        # Register this object in the scope so we can
+        # retrieve it with componentFor
+        @$scope.js_component = @
+
         # Autoload the CSS
         cssf = "#{@constructor.component_prefix}.css"
         if cssf in AssetManager.list()
@@ -221,5 +225,23 @@ define [
         _.merge {}, Nu
 
       cb Nu
+
+  # Retrieve the angular scope for a DOM element, if there
+  # is a scope
+  #
+  # @param elem – A single dom element. Can be a Plain DOM,
+  #   or a jquery element
+  Component.isolateScopeFor = (elem) ->
+    plainv = $(elem).get()
+
+    if plainv.length != 1
+      throw new Error "Component.scopeFor takes a single " +
+          "dom element; #{elem} given instead"
+
+    angular.element(plainv[0]).isolateScope()
+
+  # Retrieve the Component for a DOM element.
+  Component.componentFor = (elem) ->
+    Component.isolateScopeFor(elem)?.js_component
 
   return Component
