@@ -16,8 +16,10 @@ define [
   # * Event declaration during class definition with @on
   # * Automatic template loading
   # * Automatically provides jQuery (@$), the jquery element (@elem),
-  #   the element attributes (@$attrs) and the transclude
-  #   function (@$transclude)
+  #   the element attributes (@$attrs) the transclude
+  #   function (@$transclude), the document as a jquery
+  #   variable (@document) and the scope (@$scope)
+  # * Dependeny injection with @inject
   #
   # # Default values
   #
@@ -68,16 +70,10 @@ define [
   #
   class Component extends Injectable
     # TODO: Use jQuery rather than jQlite for $element
-    @inject "$transclude"
+    @inject "$transclude", "$element", "$scope", "$attrs", "$timeout"
     @inject
-      elem: "$element"
-      attrs: "$attrs"
       $: "jquery"
-
-    # [[$event_name, $function_name, $function], ...]
-    #
-    # List of all events, to be registered on instantiation.
-    @req_queue: []
+      _: "lodash"
 
     # Register an event on the element; this automatically
     # creates a onEvent function in the class.
@@ -113,6 +109,11 @@ define [
     # Injectable's wrapper -> this wrapper -> clz -> Component -> Injectable
     class __constructor_wrapper extends clz
       constructor: (a...) ->
+        # Make sure we're using full jQuery (not jqlite)
+        @elem = @$ @$element
+
+        @document = @$ document
+
         # Autoload the CSS
         cssf = "#{@constructor.component_prefix}.css"
         if cssf in AssetManager.list()
