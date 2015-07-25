@@ -26,6 +26,7 @@ class Modmap
   web_assets:
     "/":    @::webui_dir
     "/lib": "#{@::node_dir}/lib"
+    "/fonts": "#{@::node_modules}/bootstrap-styl/fonts"
 
   # A list of assets types that are known; The data structure
   # represents file name conversion schemes:
