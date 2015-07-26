@@ -7,6 +7,9 @@
 
 #include <boost/algorithm/clamp.hpp>
 
+#include "inexor/util/random.h"
+#include "inexor/util/util.h"
+
 typedef unsigned char uchar;
 typedef unsigned short ushort;
 typedef unsigned int uint;
@@ -41,12 +44,9 @@ using std::min;
 using std::max;
 using boost::algorithm::clamp;
 
-extern void seedMT(uint seed);
-extern uint randomMT();
-#define rnd(x) ((int)(randomMT()&0x7FFFFFFF)%(x))
-#define rndscale(x) (float((randomMT()&0x7FFFFFFF)*double(x)/double(0x7FFFFFFF)))
-#define detrnd(s, x) ((int)(((((uint)(s))*1103515245+12345)>>16)%(x)))
-
+INEXOR_FUNCTION_ALIAS(rnd, inexor::util::rnd<int>);
+INEXOR_FUNCTION_ALIAS(rndscale, inexor::util::rnd<float>);
+INEXOR_FUNCTION_ALIAS(detrnd, inexor::util::deterministic_rnd<int>);
 
 /// "for"-loop macro definitions
 /// DEPRECATED: Use c++ range based loops instead

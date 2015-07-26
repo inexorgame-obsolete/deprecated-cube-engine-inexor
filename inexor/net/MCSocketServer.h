@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <cstdio>
 
-#include <asio.hpp>
+#include <boost/asio.hpp>
 
 #include "inexor/net/MessageConnect.h"
 #include "inexor/net/MCServer.h"
@@ -29,9 +29,9 @@ namespace net {
   class MCSocketServer : public MCServer {
   protected:
 
-    typedef asio::basic_socket_acceptor<protocol> acceptor;
+    typedef boost::asio::basic_socket_acceptor<protocol> acceptor;
     typedef typename protocol::endpoint endpoint;
-    typedef asio::io_service service;
+    typedef boost::asio::io_service service;
 
     typedef MCSocket<protocol> mcsoc;
 
@@ -41,16 +41,16 @@ namespace net {
 
   protected:
     virtual std::unique_ptr<MessageConnect> getNextStream() {
-      asio::error_code er;
+      boost::system::error_code er;
       std::unique_ptr<mcsoc> s =
           inexor::compat::make_unique<mcsoc>(srv);
 
       ack.accept(s->Socket(), er);
 
-      if (er == asio::error::basic_errors::try_again)
+      if (er == boost::asio::error::basic_errors::try_again)
         return NULL;
       else if (er)
-        throw asio::system_error(er, "Can not accept connection");
+        throw boost::system::system_error(er, "Can not accept connection");
 
       std::cerr << "[INFO] New connection" << std::endl;
       // TODO: Add casting functions for unique_ptr
@@ -65,21 +65,21 @@ namespace net {
   };
 
   // TODO: This belongs somewhere else
-  extern asio::ip::tcp v4();
-  extern asio::ip::tcp v6();
+  extern boost::asio::ip::tcp v4();
+  extern boost::asio::ip::tcp v6();
 
   /**
    * MCServer that listens on TCPv4/TCPv6.
    *
    * Initialize with
-   *   MCTcpServer(asio::ip::tcp protocol, unsigned short port)
+   *   MCTcpServer(boost::asio::ip::tcp protocol, unsigned short port)
    *   where protocol is one of v4() or v6().
    *
    * TODO: Support listening on specific interface.
    * TODO: Support authentification via file permissions.
    */
   typedef
-    MCSocketServer< asio::ip::tcp >
+    MCSocketServer< boost::asio::ip::tcp >
     MCTcpServer;
 
 #if defined(unix) || defined(__unix__) || defined(__unix)
@@ -93,7 +93,7 @@ namespace net {
    * TODO: Auto delete socket file
    */
   class MCUnixServer :
-    public MCSocketServer< asio::local::stream_protocol > {
+    public MCSocketServer< boost::asio::local::stream_protocol > {
 
       std::string path;
   public:
