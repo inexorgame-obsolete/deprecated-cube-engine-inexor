@@ -93,57 +93,16 @@ define [
         else        throw new Error "Expected two or three args"
       @req_queue.push [targ, event, f]
 
-    # Specialized accessors
-    # TODO: modularize this; use mixins; Accessors
-    _parse_accessors = (targ, args...) ->
-      _.map args, (a) ->
-        if _.isArray a
-          _parse_accessors targ, a...
-        else if _.isString a
-          targ[a] = a
-        else if _.isObject a
-          _.merge targ, a
-
-    # Create a getter that proxies to a scope variable
-    # @param a – Any number of arguments: Each one being
-    #    either a list of nested elements, the name of
-    #    a variable in @$scope to proxy or a hash of
-    #    {$component_name -> $scope_name} if you want
-    #    a different name in the scope than in the Component
-    @scopeGet: (a...) ->
-      @scopeGetters ||= {}
-      _parse_accessors @scopeGetters, a...
-    # Create a setter that proxies to a scope variable
-    # @param a – Any number of arguments: Each one being
-    #    either a list of nested elements, the name of
-    #    a variable in @$scope to proxy or a hash of
-    #    {$component_name -> $scope_name} if you want
-    #    a different name in the scope than in the Component
-    @scopeSet: (a...) ->
-      @scopeSetters ||= {}
-      _parse_accessors @scopeSetters, a...
-    # Create an accessor (getter and setter) that proxies 
-    # to a scope variable.
-    # @param a – Any number of arguments: Each one being
-    #    either a list of nested elements, the name of
-    #    a variable in @$scope to proxy or a hash of
-    #    {$component_name -> $scope_name} if you want
-    #    a different name in the scope than in the Component
-    @scopeAcc: (a...) ->
-      @scopeGet a...
-      @scopeSet a...
-
-    registerAccessors: ->
-      clz = @constructor
-      _.forIn clz.scopeGetters || {}, (name, attr) =>
-        @__defineGetter__ name, => @$scope[attr]
-      _.forIn clz.scopeSetters || {}, (name, attr) =>
-        @__defineSetter__ name, (v) =>
-          @$scope[attr] = v
-          @$timeout => @$scope.$apply()
-
-
-      super()
+    # Registers @scopeGet, @scopeSet and @scopeAcc that
+    # proxy to fields in @$scope
+    @customAccessorType scope:
+      get: (name, alias)      ->
+        @$scope[alias]
+      set: (name, alias, val) ->
+        @$scope[alias] = val
+        # TODO: For some reason, this is necessary to
+        # apply the scope. WHY?!?!
+        @$timeout ->
 
 
   # The wrapper must be called on the class that extends

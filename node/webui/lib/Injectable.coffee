@@ -2,7 +2,7 @@ define [
   "lodash",
   "util/requireOptional",
   "util/Clazz"
-], (_, req_opt) ->
+], (_, req_opt, Clazz) ->
 
   # Curved Injectable - Basic tools to declare angular staff
   # in coffee script classes. And support for AMD.
