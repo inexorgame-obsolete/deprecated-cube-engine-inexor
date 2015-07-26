@@ -13,9 +13,3 @@ defineComponent 'inxExample', class extends Component
     console.log "GOT THE ELEMENT: ", @elem.html()
     console.log "GOT INSTANCE: ", @
     console.log "GOT CLASS: ", @constructor
-
-  @on "click", (ev) -> console.log "CLICK: ", ev
-
-  @on "#open-another", "click", ->
-    WM.open "inx-example"
-
