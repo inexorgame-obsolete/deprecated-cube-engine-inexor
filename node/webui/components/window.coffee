@@ -35,10 +35,8 @@ defineComponent 'window', class extends Component
       @elem.css "top", "#{v}px" if v
       @elem.position().top
 
-  # TODO: Elem accessor/component accessor?
   # UI: The Component of the UI in this window.
-  @get ui: -> Component.componentFor @elem.find ".win-content > *"
-  @set ui: (elem) -> @ui.replaceWith @$ elem
+  @componentAcc ui: ".win-content > *"
 
   # TODO: Can we use an attr accessor with a sort of filter?
   # Or with a list of states {true => null, false => ""}

@@ -104,6 +104,30 @@ define [
         # apply the scope. WHY?!?!
         @$timeout ->
 
+    # Generate accessors for element attributes
+    @customAccessorType attr:
+      get: (field, attr) -> @elem.attr attr
+      set: (field, attr, v) -> @elem.attr attr, v
+
+    # Generate accessors for boolean-type element attributes
+    # (they are either set or unset)
+    @customAccessorType boolAttr:
+      get: (field, attr) ->
+        !! @elem.attr(attr)
+      set: (field, attr, val) ->
+        @elem.attr attr, (if val then "" else null)
+
+    # Generate accessors for dom elements
+    @customAccessorType dom: (field, selector, v) ->
+      targ = @elem.find selector
+      targ.replaceWith v if v
+      targ
+
+    # Generate accessors for sub components
+    @customAccessorType component: (field, selector, v) ->
+      targ = Component.componentFor @elem.find selector
+      targ.elem.replaceWith v.elem if v
+      targ
 
   # The wrapper must be called on the class that extends
   # Component. (see the class doc for examples)
