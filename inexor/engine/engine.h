@@ -60,6 +60,7 @@ struct font
 #define MINRESH 480
 
 extern font *curfont;
+extern const matrix4x3 *textmatrix;
 
 // texture
 extern SharedVar<int> hwtexsize, hwcubetexsize, hwmaxaniso, maxtexsize;
@@ -369,7 +370,7 @@ extern void abortconnect();
 extern void clientkeepalive();
 
 // command
-extern hashset<ident> idents;
+extern hashnameset<ident> idents;
 extern int identflags;
 
 extern void clearoverrides();
