@@ -536,7 +536,7 @@ void gl_checkextensions()
     if(glversion >= 300 || hasext(exts, "GL_EXT_gpu_shader4"))
     {
         // on DX10 or above class cards (i.e. GF8 or RadeonHD) enable expensive features
-        extern SharedVar<int> grass, glare, maxdynlights, depthfxsize, blurdepthfx;
+        extern SharedVar<int> grass, glare, maxdynlights, blurdepthfx;
         grass = 1;
         waterfallrefract = 1;
         glare = 1;
@@ -1059,7 +1059,7 @@ static float findsurface(int fogmat, const vec &v, int &abovemat)
     return worldsize;
 }
 
-static void blendfog(int fogmat, float blend, float logblend, float &start, float &end, float *fogc)
+static void blendfog(int fogmat, float blend, float logblend, float &start, float &end, vec &fogc)
 {
     switch(fogmat&MATF_VOLUME)
     {
@@ -1067,7 +1067,7 @@ static void blendfog(int fogmat, float blend, float logblend, float &start, floa
         {
             const bvec &wcol = getwatercolor(fogmat);
             int wfog = getwaterfog(fogmat);
-            loopk(3) fogc[k] += blend*wcol[k]/255.0f;
+            fogc.madd(wcol.tocolor(), blend);
             end += logblend*min(fog, max(wfog*4, 32));
             break;
         }
@@ -1076,35 +1076,111 @@ static void blendfog(int fogmat, float blend, float logblend, float &start, floa
         {
             const bvec &lcol = getlavacolor(fogmat);
             int lfog = getlavafog(fogmat);
-            loopk(3) fogc[k] += blend*lcol[k]/255.0f;
+            fogc.madd(lcol.tocolor(), blend);
             end += logblend*min(fog, max(lfog*4, 32));
             break;
         }
 
         default:
-            loopk(3) fogc[k] += blend*fogcolor[k]/255.0f;
+            fogc.madd(fogcolor.tocolor(), blend);
             start += logblend*(fog+64)/8;
             end += logblend*fog;
             break;
     }
 }
 
-static void setfog(int fogmat, float below = 1, int abovemat = MAT_AIR)
+vec oldfogcolor(0, 0, 0), curfogcolor(0, 0, 0);
+float oldfogstart = 0, oldfogend = 1000000, curfogstart = 0, curfogend = 1000000;
+
+void setfogcolor(const vec &v)
 {
-    float fogc[4] = { 0, 0, 0, 1 };
-    float start = 0, end = 0;
-    float logscale = 256, logblend = log(1 + (logscale - 1)*below) / log(logscale);
-
-    blendfog(fogmat, below, logblend, start, end, fogc);
-    if(below < 1) blendfog(abovemat, 1-below, 1-logblend, start, end, fogc);
-
-    glFogf(GL_FOG_START, start);
-    glFogf(GL_FOG_END, end);
-    glFogfv(GL_FOG_COLOR, fogc);
-    glClearColor(fogc[0], fogc[1], fogc[2], 1.0f);
+    GLOBALPARAM(fogcolor, v);
 }
 
-static void blendfogoverlay(int fogmat, float blend, float *overlay)
+void zerofogcolor()
+{
+    setfogcolor(vec(0, 0, 0));
+}
+
+void resetfogcolor()
+{
+    setfogcolor(curfogcolor);
+}
+
+void pushfogcolor(const vec &v)
+{
+    oldfogcolor = curfogcolor;
+    curfogcolor = v;
+    resetfogcolor();
+}
+
+void popfogcolor()
+{
+    curfogcolor = oldfogcolor;
+    resetfogcolor();
+}
+
+void setfogdist(float start, float end)
+{
+    GLOBALPARAMF(fogparams, 1/(end - start), end/(end - start));
+}
+
+void clearfogdist()
+{
+    setfogdist(0, 1000000);
+}
+
+void resetfogdist()
+{
+    setfogdist(curfogstart, curfogend);
+}
+
+void pushfogdist(float start, float end)
+{
+    oldfogstart = curfogstart;
+    oldfogend = curfogend;
+    curfogstart = start;
+    curfogend = end;
+    resetfogdist();
+}
+
+void popfogdist()
+{
+    curfogstart = oldfogstart;
+    curfogend = oldfogend;
+    resetfogdist();
+}
+
+static void resetfog()
+{
+    resetfogcolor();
+    resetfogdist();
+
+    glClearColor(curfogcolor.r, curfogcolor.g, curfogcolor.b, 1.0f);
+}
+
+static void setfog(int fogmat, float below = 1, int abovemat = MAT_AIR)
+{
+    float logscale = 256, logblend = log(1 + (logscale - 1)*below) / log(logscale);
+
+    curfogstart = curfogend = 0;
+    curfogcolor = vec(0, 0, 0);
+    blendfog(fogmat, below, logblend, curfogstart, curfogend, curfogcolor);
+    if(below < 1) blendfog(abovemat, 1-below, 1-logblend, curfogstart, curfogend, curfogcolor);
+
+    resetfog();
+}
+
+static void setnofog(const vec &color = vec(0, 0, 0))
+{
+    curfogstart = 0;
+    curfogend = 1000000;
+    curfogcolor = color;
+
+    resetfog();
+}
+
+static void blendfogoverlay(int fogmat, float blend, vec &overlay)
 {
     float maxc;
     switch(fogmat&MATF_VOLUME)
@@ -1112,44 +1188,36 @@ static void blendfogoverlay(int fogmat, float blend, float *overlay)
         case MAT_WATER:
         {
             const bvec &wcol = getwatercolor(fogmat);
-            maxc = max(wcol[0], max(wcol[1], wcol[2]));
-            loopk(3) overlay[k] += blend*max(0.4f, wcol[k]/min(32.0f + maxc*7.0f/8.0f, 255.0f));
+            maxc = max(wcol.r, max(wcol.g, wcol.b));
+            overlay.madd(vec(wcol.r, wcol.g, wcol.b).div(min(32.0f + maxc*7.0f/8.0f, 255.0f)).max(0.4f), blend);
             break;
         }
 
         case MAT_LAVA:
         {
             const bvec &lcol = getlavacolor(fogmat);
-            maxc = max(lcol[0], max(lcol[1], lcol[2]));
-            loopk(3) overlay[k] += blend*max(0.4f, lcol[k]/min(32.0f + maxc*7.0f/8.0f, 255.0f));
+            maxc = max(lcol.r, max(lcol.g, lcol.b));
+            overlay.madd(vec(lcol.r, lcol.g, lcol.b).div(min(32.0f + maxc*7.0f/8.0f, 255.0f)).max(0.4f), blend);
             break;
         }
 
         default:
-            loopk(3) overlay[k] += blend;
+            overlay.add(blend);
             break;
     }
 }
 
 void drawfogoverlay(int fogmat, float fogblend, int abovemat)
 {
-    notextureshader->set();
+    SETSHADER(fogoverlay);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_ZERO, GL_SRC_COLOR);
-    float overlay[3] = { 0, 0, 0 };
+    vec overlay(0, 0, 0);
     blendfogoverlay(fogmat, fogblend, overlay);
     blendfogoverlay(abovemat, 1-fogblend, overlay);
 
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-
-    glColor3fv(overlay);
+    glColor3fv(overlay.v);
     glBegin(GL_TRIANGLE_STRIP);
     glVertex2f(-1, -1);
     glVertex2f(1, -1);
@@ -1157,14 +1225,6 @@ void drawfogoverlay(int fogmat, float fogblend, int abovemat)
     glVertex2f(1, 1);
     glEnd();
     glDisable(GL_BLEND);
-
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-
-    defaultshader->set();
 }
 
 bool renderedgame = false;
@@ -1182,14 +1242,7 @@ void drawglare()
     glaring = true;
     refracting = -1;
 
-    float oldfogstart, oldfogend, oldfogcolor[4], zerofog[4] = { 0, 0, 0, 1 };
-    glGetFloatv(GL_FOG_START, &oldfogstart);
-    glGetFloatv(GL_FOG_END, &oldfogend);
-    glGetFloatv(GL_FOG_COLOR, oldfogcolor);
-
-    glFogf(GL_FOG_START, (fog+64)/8);
-    glFogf(GL_FOG_END, fog);
-    glFogfv(GL_FOG_COLOR, zerofog);
+    pushfogcolor(vec(0, 0, 0));
 
     glClearColor(0, 0, 0, 1);
     glClear((skyboxglare ? 0 : GL_COLOR_BUFFER_BIT) | GL_DEPTH_BUFFER_BIT);
@@ -1207,9 +1260,7 @@ void drawglare()
     renderalphageom();
     renderparticles();
 
-    glFogf(GL_FOG_START, oldfogstart);
-    glFogf(GL_FOG_END, oldfogend);
-    glFogfv(GL_FOG_COLOR, oldfogcolor);
+    popfogcolor();
 
     refracting = 0;
     glaring = false;
@@ -1218,42 +1269,29 @@ void drawglare()
 VARP(reflectmms, 0, 1, 1);
 VARR(refractsky, 0, 0, 1);
 
-matrix4 fogmatrix, invfogmatrix;
+matrix4 noreflectmatrix;
 
 void drawreflection(float z, bool refract, int fogdepth, const bvec &col)
 {
     reflectz = z < 0 ? 1e16f : z;
     reflecting = !refract;
     refracting = refract ? (z < 0 || camera1->o.z >= z ? -1 : 1) : 0;
-    fading = waterrefract && waterfade && hasFBO && z>=0;
+    fading = waterrefract && waterfade && z>=0;
     fogging = refracting<0 && z>=0;
     refractfog = fogdepth;
-    refractcolor = fogging ? col : fogcolor;
-
-    float oldfogstart, oldfogend, oldfogcolor[4];
-    glGetFloatv(GL_FOG_START, &oldfogstart);
-    glGetFloatv(GL_FOG_END, &oldfogend);
-    glGetFloatv(GL_FOG_COLOR, oldfogcolor);
 
     if(fogging)
     {
-        glFogf(GL_FOG_START, camera1->o.z - z);
-        glFogf(GL_FOG_END, camera1->o.z - (z-max(refractfog, 1)));
-        fogmatrix.identity();
-        fogmatrix.settranslation(vec(camera1->o).neg());
-        invfogmatrix.invert(fogmatrix);
-        pushprojection();
-        glPushMatrix();
-        glLoadMatrixf(fogmatrix.a.v);
-        float fogc[4] = { col.x/255.0f, col.y/255.0f, col.z/255.0f, 1.0f };
-        glFogfv(GL_FOG_COLOR, fogc);
+        pushfogdist(camera1->o.z - z, camera1->o.z - (z - max(refractfog, 1)));
+        pushfogcolor(col.tocolor());
     }
     else
     {
-        glFogf(GL_FOG_START, (fog+64)/8);
-        glFogf(GL_FOG_END, fog);
-        float fogc[4] = { fogcolor.x/255.0f, fogcolor.y/255.0f, fogcolor.z/255.0f, 1.0f };
-        glFogfv(GL_FOG_COLOR, fogc);
+        vec color(0, 0, 0);
+        float start = 0, end = 0;
+        blendfog(MAT_AIR, 1, 1, start, end, color);
+        pushfogdist(start, end);
+        pushfogcolor(color);
     }
 
     if(fading)
@@ -1264,14 +1302,11 @@ void drawreflection(float z, bool refract, int fogdepth, const bvec &col)
 
     if(reflecting)
     {
-        glPushMatrix();
-        glTranslatef(0, 0, 2*z);
-        glScalef(1, 1, -1);
+        noreflectmatrix = cammatrix;
+        cammatrix.reflectz(z);
 
         glFrontFace(GL_CCW);
     }
-
-    setenvmatrix();
 
     if(reflectclip && z>=0)
     {
@@ -1288,30 +1323,30 @@ void drawreflection(float z, bool refract, int fogdepth, const bvec &col)
             if(reflecting) zclip = 2*z - zclip;
         }
         plane clipplane;
-        invmvmatrix.transposedtransform(plane(0, 0, refracting>0 ? 1 : -1, refracting>0 ? -zclip : zclip), clipplane);
+        invcammatrix.transposedtransform(plane(0, 0, refracting>0 ? 1 : -1, refracting>0 ? -zclip : zclip), clipplane);
         clipmatrix.clip(clipplane, projmatrix);
-        pushprojection(clipmatrix);
+        noclipmatrix = projmatrix;
+        projmatrix = clipmatrix;
     }
+
+    setcamprojmatrix(false, true);
 
     renderreflectedgeom(refracting<0 && z>=0 && caustics, fogging);
 
     if(reflecting || refracting>0 || (refracting<0 && refractsky) || z<0)
     {
         if(fading) glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-        if(reflectclip && z>=0) popprojection();
-        if(fogging) 
+        if(reflectclip && z>=0)
         {
-            popprojection();
-            glPopMatrix();
+            projmatrix = noclipmatrix;
+            setcamprojmatrix(false, true);
         }
         drawskybox(farplane, false);
-        if(fogging) 
+        if(reflectclip && z>=0)
         {
-            pushprojection();
-            glPushMatrix();
-            glLoadMatrixf(fogmatrix.a.v);
+            projmatrix = clipmatrix;
+            setcamprojmatrix(false, true);
         }
-        if(reflectclip && z>=0) pushprojection(clipmatrix);
         if(fading) glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE);
     }
     else if(fading) glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE);
@@ -1323,21 +1358,21 @@ void drawreflection(float z, bool refract, int fogdepth, const bvec &col)
 
     if(refracting && z>=0 && !isthirdperson() && fabs(camera1->o.z-z) <= 0.5f*(player->eyeheight + player->aboveeye))
     {   
-        matrix4 avatarproj;
+        matrix4 oldprojmatrix = projmatrix, avatarproj;
         avatarproj.perspective(curavatarfov, aspect, nearplane, farplane);
         if(reflectclip)
         {
-            popprojection();
             matrix4 avatarclip;
             plane clipplane;
-            invmvmatrix.transposedtransform(plane(0, 0, refracting, reflectclipavatar/4.0f - refracting*z), clipplane);
+            invcammatrix.transposedtransform(plane(0, 0, refracting, reflectclipavatar/4.0f - refracting*z), clipplane);
             avatarclip.clip(clipplane, avatarproj);
-            pushprojection(avatarclip);
+            projmatrix = avatarclip;
         }
-        else pushprojection(avatarproj);
+        else projmatrix = avatarproj;
+        setcamprojmatrix(false, true);
         game::renderavatar();
-        popprojection();
-        if(reflectclip) pushprojection(clipmatrix);
+        projmatrix = oldprojmatrix;
+        setcamprojmatrix(false, true);
     }
 
     if(refracting) rendergrass();
@@ -1347,23 +1382,17 @@ void drawreflection(float z, bool refract, int fogdepth, const bvec &col)
 
     if(fading) glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
-    if(reflectclip && z>=0) popprojection();
+    if(reflectclip && z>=0) projmatrix = noclipmatrix; 
 
     if(reflecting)
     {
-        glPopMatrix();
+        cammatrix = noreflectmatrix;
 
         glFrontFace(GL_CW);
     }
 
-    if(fogging) 
-    {
-        popprojection();
-        glPopMatrix();
-    }
-    glFogf(GL_FOG_START, oldfogstart);
-    glFogf(GL_FOG_END, oldfogend);
-    glFogfv(GL_FOG_COLOR, oldfogcolor);
+    popfogdist();
+    popfogcolor();
     
     reflectz = 1e16f;
     refracting = 0;
@@ -1434,25 +1463,19 @@ void drawcubemap(int size, const vec &o, float yaw, float pitch, const cubemapsi
 
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
-    glDisable(GL_FOG);
 
     camera1 = oldcamera;
-    envmapping = false;
+    drawtex = 0;
 }
-
-bool modelpreviewing = false;
 
 namespace modelpreview
 {
     physent *oldcamera;
-    float oldfogstart, oldfogend, oldfogcolor[4]; 
-
     physent camera;
 
     void start(bool background)
     {
-        float fovy = 90.f, aspect = 1.f;
-        envmapping = modelpreviewing = true;
+        drawtex = DRAWTEX_MODELPREVIEW;
 
         oldcamera = camera1;
         camera = *camera1;
@@ -1464,15 +1487,9 @@ namespace modelpreview
         camera.roll = 0;
         camera1 = &camera;
 
-        glGetFloatv(GL_FOG_START, &oldfogstart);
-        glGetFloatv(GL_FOG_END, &oldfogend);
-        glGetFloatv(GL_FOG_COLOR, oldfogcolor);
-
-        GLfloat fogc[4] = { 0, 0, 0, 1 };
-        glFogf(GL_FOG_START, 0);
-        glFogf(GL_FOG_END, 1000000);
-        glFogfv(GL_FOG_COLOR, fogc);
-        glClearColor(fogc[0], fogc[1], fogc[2], fogc[3]);
+        clearfogdist();
+        zerofogcolor();
+        glClearColor(0, 0, 0, 1);
 
         glClear((background ? GL_COLOR_BUFFER_BIT : 0) | GL_DEPTH_BUFFER_BIT);
 
@@ -1488,24 +1505,14 @@ namespace modelpreview
         glDisable(GL_CULL_FACE);
         glDisable(GL_DEPTH_TEST);
 
-        defaultshader->set();
-
-        glMatrixMode(GL_PROJECTION);
-        glPopMatrix();
-        glMatrixMode(GL_MODELVIEW);
-        glPopMatrix();
-
-        glFogf(GL_FOG_START, oldfogstart);
-        glFogf(GL_FOG_END, oldfogend);
-        glFogfv(GL_FOG_COLOR, oldfogcolor);
-        glClearColor(oldfogcolor[0], oldfogcolor[1], oldfogcolor[2], oldfogcolor[3]);
+        resetfogdist();
+        resetfogcolor();
+        glClearColor(curfogcolor.r, curfogcolor.g, curfogcolor.b, 1);
 
         camera1 = oldcamera;
-        envmapping = modelpreviewing = false;
+        drawtex = 0;
     }
 }
-
-bool minimapping = false;
 
 GLuint minimaptex = 0;
 vec minimapcenter(0, 0, 0), minimapradius(0, 0, 0), minimapscale(0, 0, 0);
@@ -1578,7 +1585,7 @@ void drawminimap()
     minimapradius.x = minimapradius.y = max(minimapradius.x, minimapradius.y);
     minimapscale = vec((0.5f - 1.0f/size)/minimapradius.x, (0.5f - 1.0f/size)/minimapradius.y, 1.0f);
 
-    envmapping = minimapping = true;
+    drawtex = DRAWTEX_MINIMAP;
 
     physent *oldcamera = camera1;
     static physent cmcamera;
@@ -1596,21 +1603,12 @@ void drawminimap()
     projmatrix.a.mul(-1);
     setcamprojmatrix();
 
-    transplayer();
+    setnofog(minimapcolor.tocolor());
 
-    defaultshader->set();
-
-    GLfloat fogc[4] = { minimapcolor.x/255.0f, minimapcolor.y/255.0f, minimapcolor.z/255.0f, 1.0f };
-    glFogf(GL_FOG_START, 0);
-    glFogf(GL_FOG_END, 1000000);
-    glFogfv(GL_FOG_COLOR, fogc);
-
-    glClearColor(fogc[0], fogc[1], fogc[2], fogc[3]);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     glViewport(0, 0, size, size);
 
-    glDisable(GL_FOG);
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
 
@@ -1641,12 +1639,11 @@ void drawminimap()
 
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
-    glDisable(GL_FOG);
 
     glViewport(0, 0, screenw, screenh);
 
     camera1 = oldcamera;
-    envmapping = minimapping = false;
+    drawtex = 0;
 
     glBindTexture(GL_TEXTURE_2D, minimaptex);
     glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB5, 0, 0, size, size, 0);
@@ -1684,7 +1681,7 @@ FVARP(motionblurscale, 0, 0.5f, 1);
 
 void addmotionblur()
 {
-    if(!motionblur || !hasTR || max(screenw, screenh) > hwtexsize) return;
+    if(!motionblur || max(screenw, screenh) > hwtexsize) return;
 
     if(game::ispaused()) { lastmotion = 0; return; }
 
@@ -1694,23 +1691,15 @@ void addmotionblur()
         motionw = screenw;
         motionh = screenh;
         lastmotion = 0;
-        createtexture(motiontex, motionw, motionh, NULL, 3, 0, GL_RGB, GL_TEXTURE_RECTANGLE_ARB);
+        createtexture(motiontex, motionw, motionh, NULL, 3, 0, GL_RGB, GL_TEXTURE_RECTANGLE);
     }
 
-    glBindTexture(GL_TEXTURE_RECTANGLE_ARB, motiontex);
-
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
+    glBindTexture(GL_TEXTURE_RECTANGLE, motiontex);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    rectshader->set();
+    SETSHADER(screenrect);
 
     glColor4f(1, 1, 1, lastmotion ? pow(motionblurscale, max(float(lastmillis - lastmotion)/motionblurmillis, 1.0f)) : 0);
     glBegin(GL_TRIANGLE_STRIP);
@@ -1722,17 +1711,11 @@ void addmotionblur()
 
     glDisable(GL_BLEND);
 
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
- 
     if(lastmillis - lastmotion >= motionblurmillis)
     {
         lastmotion = lastmillis - lastmillis%motionblurmillis;
 
-        glCopyTexSubImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, 0, 0, 0, 0, screenw, screenh);
+        glCopyTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, 0, 0, 0, 0, screenw, screenh);
     }
 }
 
@@ -1750,8 +1733,6 @@ int xtraverts, xtravertsva;
 void gl_drawframe()
 {
     if(deferdrawtextures) drawtextures();
-
-    defaultshader->set();
 
     updatedynlights();
 
@@ -1787,21 +1768,8 @@ void gl_drawframe()
 
     xtravertsva = xtraverts = glde = gbatches = 0;
 
-    if(!hasFBO)
-    {
-        if(dopostfx)
-        {
-            drawglaretex();
-            drawdepthfxtex();
-            drawreflections();
-        }
-        else dopostfx = true;
-    }
-
     visiblecubes();
     
-    if(shadowmap && !hasFBO) rendershadowmap();
-
     glClear(GL_DEPTH_BUFFER_BIT|(wireframe && editmode ? GL_COLOR_BUFFER_BIT : 0)|(hasstencil ? GL_STENCIL_BUFFER_BIT : 0));
 
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); 
@@ -1827,12 +1795,9 @@ void gl_drawframe()
 
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    if(hasFBO) 
-    {
-        drawglaretex();
-        drawdepthfxtex();
-        drawreflections();
-    }
+    drawglaretex();
+    drawdepthfxtex();
+    drawreflections();
 
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -1846,7 +1811,6 @@ void gl_drawframe()
 
     renderparticles(true);
 
-    glDisable(GL_FOG);
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
 

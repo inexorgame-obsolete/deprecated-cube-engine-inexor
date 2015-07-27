@@ -692,35 +692,35 @@ static void gengenericvariant(Shader &s, const char *sname, const char *vs, cons
     newshader(s.type, varname, vschanged ? vsv.getbuf() : reuse, pschanged ? psv.getbuf() : reuse, &s, row);
 }
 
-static bool genwatervariant(Shader &s, const char *sname, vector<char> &vs, vector<char> &ps, int row)
+static bool genwatervariant(Shader &s, const char *sname, const char *vs, const char *ps, int row = 2)
 {
-    char *vspragma = strstr(vs.getbuf(), "#pragma CUBE2_water");
-    if(!vspragma) return false;
-    char *pspragma = strstr(ps.getbuf(), "#pragma CUBE2_water");
-    if(!pspragma) return false;
-    vspragma += strcspn(vspragma, "\n");
-    if(*vspragma) vspragma++;
-    pspragma += strcspn(pspragma, "\n");
-    if(*pspragma) pspragma++;
-    const char *fadedef = "fadedepth = gl_Vertex.z*waterfadeparams.x + waterfadeparams.y;\n";
-    vs.insert(vspragma-vs.getbuf(), fadedef, strlen(fadedef));
-    const char *fadeuse = "gl_FragColor.a = fadedepth;\n";
-    ps.insert(pspragma-ps.getbuf(), fadeuse, strlen(fadeuse));
-    const char *fadedecl = "uniform vec4 waterfadeparams; varying float fadedepth;\n";
-    const char *vsmain = findglslmain(vs.getbuf()), *psmain = findglslmain(ps.getbuf());
-    vs.insert(vsmain ? vsmain - vs.getbuf() : 0, fadedecl, strlen(fadedecl));
-    ps.insert(psmain ? psmain - ps.getbuf() : 0, fadedecl, strlen(fadedecl));
-    defformatstring(name, "<water>%s", sname);
-    Shader *variant = newshader(s.type, name, vs.getbuf(), ps.getbuf(), &s, row);
-    return variant!=NULL;
-}
-       
-static void genwatervariant(Shader &s, const char *sname, const char *vs, const char *ps, int row = 2)
-{
+    if(!strstr(vs, "#pragma CUBE2_water") && !strstr(ps, "#pragma CUBE2_water")) return false;
+
     vector<char> vsw, psw;
-    vsw.put(vs, strlen(vs)+1);
-    psw.put(ps, strlen(ps)+1);
-    genwatervariant(s, sname, vsw, psw, row);
+
+    const char *vsmain = findglslmain(vs), *vsend = strrchr(vs, '}');
+    if(!vsmain || !vsend) return false;
+    vsw.put(vs, vsmain - vs);
+    const char *fadeparams = "\nuniform vec4 waterfadeparams;\nvarying float fadedepth;\n";
+    vsw.put(fadeparams, strlen(fadeparams));
+    vsw.put(vsmain, vsend - vsmain);
+    const char *fadedef = "\nfadedepth = gl_Vertex.z*waterfadeparams.x + waterfadeparams.y;\n";
+    vsw.put(fadedef, strlen(fadedef));
+    vsw.put(vsend, strlen(vsend)+1);
+
+    const char *psmain = findglslmain(ps), *psend = strrchr(ps, '}');
+    if(!psmain || !psend) return false;
+    psw.put(ps, psmain - ps);
+    const char *fadeinterp = "\nvarying float fadedepth;\n";
+    psw.put(fadeinterp, strlen(fadeinterp));
+    psw.put(psmain, psend - psmain);
+    const char *fade = "\ngl_FragColor.a = fadedepth;\n";
+    psw.put(fade, strlen(fade));
+    psw.put(psend, strlen(psend)+1);
+
+    defformatstring(name, "<water>%s", sname);
+    Shader *variant = newshader(s.type, name, vsw.getbuf(), psw.getbuf(), &s, row);
+    return variant!=NULL;
 }
 
 bool minimizedynlighttcusage() { return maxvaryings < 48; }
@@ -789,7 +789,7 @@ static void gendynlightvariant(Shader &s, const char *sname, const char *vs, con
         defformatstring(name, "<dynlight %d>%s", i+1, sname);
         Shader *variant = newshader(s.type, name, vsdl.getbuf(), psdl.getbuf(), &s, row); 
         if(!variant) return;
-        if(row < 4) genwatervariant(s, name, vsdl, psdl, row+2);
+        if(row < 4) genwatervariant(s, name, vsdl.getbuf(), psdl.getbuf(), row+2);
     }
 }
 
@@ -862,35 +862,32 @@ static void genfogshader(vector<char> &vsbuf, vector<char> &psbuf, const char *v
     const char *vspragma = strstr(vs, "#pragma CUBE2_fog"), *pspragma = strstr(ps, "#pragma CUBE2_fog");
     if(!vspragma && !pspragma) return;
     static const int pragmalen = strlen("#pragma CUBE2_fog");
-    const char *vsend = strrchr(vs, '}');
-    if(vsend)
-    { 
-        vsbuf.put(vs, vsend - vs);
-        const char *vsdef = "\n#define FOG_COORD ";
-        const char *vsfog = "\ngl_FogFragCoord = -dot((FOG_COORD), gl_ModelViewMatrixTranspose[2]);\n";
-        int clen = 0;
-        if(vspragma)
-        {
-            vspragma += pragmalen;
-            while(*vspragma && !iscubespace(*vspragma)) vspragma++;
-            vspragma += strspn(vspragma, " \t\v\f");
-            clen = strcspn(vspragma, "\r\n");
-        }
-        if(clen <= 0) { vspragma = "gl_Vertex"; clen = strlen(vspragma); }
-        vsbuf.put(vsdef, strlen(vsdef));
-        vsbuf.put(vspragma, clen);
+    const char *vsmain = findglslmain(vs), *vsend = strrchr(vs, '}');
+    if(vsmain && vsend)
+    {   
+        vsbuf.put(vs, vsmain - vs);
+        const char *fogparams = "\nuniform vec4 fogplane;\nvarying float fogcoord;\n";
+        vsbuf.put(fogparams, strlen(fogparams));
+        vsbuf.put(vsmain, vsend - vsmain);
+        const char *vsfog = "\nfogcoord = dot(fogplane, gl_Position);\n";
         vsbuf.put(vsfog, strlen(vsfog));
         vsbuf.put(vsend, strlen(vsend)+1);
     }
-    const char *psend = strrchr(ps, '}');
-    if(psend)
+    const char *psmain = findglslmain(ps), *psend = strrchr(ps, '}');
+    if(psmain && psend)
     {
-        psbuf.put(ps, psend - ps);
+        psbuf.put(ps, psmain - ps);
+        const char *fogparams =
+            "\nuniform vec3 fogcolor;\n"
+            "uniform vec2 fogparams;\n"
+            "varying float fogcoord;\n";
+        psbuf.put(fogparams, strlen(fogparams));
+        psbuf.put(psmain, psend - psmain);
         const char *psdef = "\n#define FOG_COLOR ";
         const char *psfog = 
             pspragma && !strncmp(pspragma+pragmalen, "rgba", 4) ? 
-                "\ngl_FragColor = mix((FOG_COLOR), gl_FragColor, clamp((gl_Fog.end - gl_FogFragCoord) * gl_Fog.scale, 0.0, 1.0));\n" :
-                "\ngl_FragColor.rgb = mix((FOG_COLOR).rgb, gl_FragColor.rgb, clamp((gl_Fog.end - gl_FogFragCoord) * gl_Fog.scale, 0.0, 1.0));\n";
+                "\ngl_FragColor = mix((FOG_COLOR), gl_FragColor, clamp(fogcoord*fogparams.x + fogparams.y, 0.0, 1.0));\n" :
+                "\ngl_FragColor.rgb = mix((FOG_COLOR).rgb, gl_FragColor.rgb, clamp(fogcoord*fogparams.x + fogparams.y, 0.0, 1.0));\n";
         int clen = 0;
         if(pspragma)
         {
@@ -900,7 +897,7 @@ static void genfogshader(vector<char> &vsbuf, vector<char> &psbuf, const char *v
             pspragma += strspn(pspragma, " \t\v\f");
             clen = strcspn(pspragma, "\r\n");
         }
-        if(clen <= 0) { pspragma = "gl_Fog.color"; clen = strlen(pspragma); }
+        if(clen <= 0) { pspragma = "fogcolor"; clen = strlen(pspragma); }
         psbuf.put(psdef, strlen(psdef));
         psbuf.put(pspragma, clen);
         psbuf.put(psfog, strlen(psfog));

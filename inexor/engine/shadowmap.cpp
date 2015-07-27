@@ -319,10 +319,7 @@ void rendershadowmap()
 {
     if(!shadowmap) return;
 
-    // Apple/ATI bug - fixed-function fog state can force software fallback even when fragment program is enabled
-    glDisable(GL_FOG); 
     shadowmaptex.render(1<<shadowmapsize, 1<<shadowmapsize, blurshadowmap, blursmsigma/100.0f);
-    glEnable(GL_FOG);
 }
 
 VAR(debugsm, 0, 0, 1);

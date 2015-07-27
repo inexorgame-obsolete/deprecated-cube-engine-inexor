@@ -192,7 +192,7 @@ VARFP(vertwater, 0, 1, 1, allchanged());
 
 static inline void renderwater(const materialsurface &m, int mat = MAT_WATER)
 {
-    if(!vertwater || minimapping) renderflatwater(m.o.x, m.o.y, m.o.z, m.rsize, m.csize, mat);
+    if(!vertwater || drawtex == DRAWTEX_MINIMAP) renderflatwater(m.o.x, m.o.y, m.o.z, m.rsize, m.csize, mat);
     else if(renderwaterlod(m.o.x, m.o.y, m.o.z, m.csize, mat) >= int(m.csize) * 2)
         rendervertwater(m.csize, m.o.x, m.o.y, m.o.z, m.csize, mat);
 }
@@ -273,10 +273,10 @@ void setprojtexmatrix(Reflection &ref)
     if(ref.init)
     {
         ref.init = false;
-        (ref.projmat = mvpmatrix).projective();
+        (ref.projmat = camprojmatrix).projective();
     }
     
-    glLoadMatrixf(ref.projmat.a.v);
+    LOCALPARAM(watermatrix, ref.projmat);
 }
 
 Reflection reflections[MAXREFLECTIONS];
@@ -309,12 +309,12 @@ void preloadwatershaders(bool force)
 
 void renderwater()
 {
-    if(editmode && showmat && !envmapping) return;
+    if(editmode && showmat && !drawtex) return;
     if(!rplanes) return;
 
     glDisable(GL_CULL_FACE);
 
-    if(!glaring && !minimapping)
+    if(!glaring && drawtex != DRAWTEX_MINIMAP)
     {
         if(waterrefract)
         {
@@ -344,7 +344,7 @@ void renderwater()
 
     Shader *aboveshader = NULL;
     if(glaring) SETWATERSHADER(above, waterglare);
-    else if(minimapping) aboveshader = notextureshader;
+    else if(drawtex == DRAWTEX_MINIMAP) aboveshader = notextureshader;
     else if(waterenvmap && !waterreflect)
     {
         if(waterrefract)
@@ -363,7 +363,7 @@ void renderwater()
     else SETWATERSHADER(above, water);
 
     Shader *belowshader = NULL;
-    if(!glaring && !minimapping)
+    if(!glaring && drawtex != DRAWTEX_MINIMAP)
     {
         if(waterrefract)
         {
@@ -371,8 +371,6 @@ void renderwater()
             else SETWATERSHADER(below, underwaterrefract);
         }
         else SETWATERSHADER(below, underwater);
-
-        if(waterreflect || waterrefract) glMatrixMode(GL_TEXTURE);
     }
 
     varray::enable();
@@ -399,7 +397,7 @@ void renderwater()
         }
         else aboveshader->set();
 
-        if(!glaring && !minimapping)
+        if(!glaring && drawtex != DRAWTEX_MINIMAP)
         {
             if(waterreflect || waterrefract)
             {
@@ -425,7 +423,7 @@ void renderwater()
         glActiveTexture_(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, mslot.sts.inrange(3) ? mslot.sts[3].t->id : notexture->id);
         glActiveTexture_(GL_TEXTURE0);
-        if(!glaring && waterenvmap && !waterreflect && !minimapping)
+        if(!glaring && waterenvmap && !waterreflect && drawtex != DRAWTEX_MINIMAP)
         {
             glBindTexture(GL_TEXTURE_CUBE_MAP, lookupenvmap(mslot));
         }
@@ -468,13 +466,8 @@ void renderwater()
 
     varray::disable();
 
-    if(!glaring && !minimapping)
+    if(!glaring && drawtex != DRAWTEX_MINIMAP)
     {
-        if(waterreflect || waterrefract)
-        {
-            glLoadIdentity();
-            glMatrixMode(GL_MODELVIEW);
-        }
         if(waterrefract)
         {
             if(waterfade) glDisable(GL_BLEND);
@@ -489,14 +482,10 @@ void renderwater()
     glEnable(GL_CULL_FACE);
 }
 
-void setupwaterfallrefract(GLenum tmu1, GLenum tmu2)
+void setupwaterfallrefract()
 {
-    glActiveTexture_(tmu1);
     glBindTexture(GL_TEXTURE_2D, waterfallrefraction.refracttex ? waterfallrefraction.refracttex : notexture->id);
-    glActiveTexture_(tmu2);
-    glMatrixMode(GL_TEXTURE);
     setprojtexmatrix(waterfallrefraction);
-    glMatrixMode(GL_MODELVIEW);
 }
 
 void cleanreflection(Reflection &ref)
@@ -654,13 +643,13 @@ void addreflection(materialsurface &m)
     ref->matsurfs.setsize(0);
     ref->matsurfs.add(&m);
     ref->depth = m.depth;
-    if(minimapping) return;
+    if(drawtex == DRAWTEX_MINIMAP) return;
 
     if(waterreflect && !ref->tex) genwatertex(ref->tex, reflectionfb, reflectiondb);
     if(waterrefract && !ref->refracttex) genwatertex(ref->refracttex, reflectionfb, reflectiondb, true);
 }
 
-static void drawmaterialquery(const materialsurface &m, float offset, float border = 0)
+static void drawmaterialquery(const materialsurface &m, float offset, float border = 0, float reflect = -1)
 {
     if(varray::data.empty())
     {
@@ -668,6 +657,7 @@ static void drawmaterialquery(const materialsurface &m, float offset, float bord
         varray::begin(GL_QUADS);
     }
     float x = m.o.x, y = m.o.y, z = m.o.z, csize = m.csize + border, rsize = m.rsize + border;
+    if(reflect >= 0) z = 2*reflect - z;
     switch(m.orient)
     {
 #define GENFACEORIENT(orient, v0, v1, v2, v3) \
@@ -761,7 +751,7 @@ void queryreflections()
         }
     }
 
-    if((editmode && showmat && !envmapping) || !oqfrags || !oqwater || minimapping) return;
+    if((editmode && showmat && !drawtex) || !oqfrags || !oqwater || drawtex == DRAWTEX_MINIMAP) return;
 
     varray::enable();
 
@@ -785,7 +775,6 @@ void queryreflections()
 
     if(refs)
     {
-        defaultshader->set();
         glDepthMask(GL_TRUE);
         glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
         glEnable(GL_CULL_FACE);
@@ -922,7 +911,7 @@ VARR(refractclear, 0, 0, 1);
 
 void drawreflections()
 {
-    if((editmode && showmat && !envmapping) || minimapping) return;
+    if((editmode && showmat && !drawtex) || drawtex == DRAWTEX_MINIMAP) return;
 
     static int lastdrawn = 0;
     int refs = 0, n = lastdrawn;

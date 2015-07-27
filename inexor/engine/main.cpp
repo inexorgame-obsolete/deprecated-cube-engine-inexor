@@ -408,7 +408,7 @@ float loadprogress = 0;
 /// render progress bar and map screenshot
 void renderprogress(float bar, const char *text, GLuint tex, bool background)
 {
-    if(!inbetweenframes || envmapping) return;
+    if(!inbetweenframes || drawtex) return;
 
     clientkeepalive();      /// make sure our connection doesn't time out while loading maps etc.
     

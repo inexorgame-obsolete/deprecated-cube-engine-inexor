@@ -195,9 +195,6 @@ void drawdepthfxtex()
 {
     if(!depthfx) return;
 
-    // Apple/ATI bug - fixed-function fog state can force software fallback even when fragment program is enabled
-    glDisable(GL_FOG);
     depthfxtex.render(1<<depthfxsize, 1<<depthfxsize, blurdepthfx, blurdepthfxsigma/100.0f);
-    glEnable(GL_FOG);
 }
 

@@ -129,12 +129,18 @@ extern bool hasTR, hasFBO, hasAFBO, hasDS, hasTF, hasTRG, hasS3TC, hasFXT1, hasA
 extern int hasstencil;
 extern SharedVar<int> glversion, glslversion;
 
+enum { DRAWTEX_NONE = 0, DRAWTEX_ENVMAP, DRAWTEX_MINIMAP, DRAWTEX_MODELPREVIEW };
+
 extern SharedVar<float> forceaspect;
 extern float curfov, fovy, aspect;
-extern bool envmapping, minimapping, renderedgame, modelpreviewing;
+extern int drawtex;
+extern bool renderedgame;
 extern const matrix4 viewmatrix;
 extern matrix4 cammatrix, projmatrix, camprojmatrix, invcammatrix, invcamprojmatrix;
 extern bvec fogcolor;
+extern vec curfogcolor;
+extern SharedVar<int> fog;
+extern float curfogstart, curfogend;
 
 extern void gl_checkextensions();
 extern void gl_init(int depth, int fsaa);
@@ -153,7 +159,12 @@ extern void calcspherescissor(const vec &center, float size, float &sx1, float &
 extern int pushscissor(float sx1, float sy1, float sx2, float sy2);
 extern void popscissor();
 extern void recomputecamera();
-extern void findorientation();
+extern void setfogcolor(const vec &v);
+extern void zerofogcolor();
+extern void resetfogcolor();
+extern void setfogdist(float start, float end);
+extern void clearfogdist();
+extern void resetfogdist();
 extern void writecrosshairs(stream *f);
 
 namespace modelpreview
@@ -301,7 +312,6 @@ extern int visiblematerial(const cube &c, int orient, int x, int y, int z, int s
 
 // water
 extern int refracting, refractfog;
-extern bvec refractcolor;
 extern bool reflecting, fading, fogging;
 extern float reflectz;
 extern SharedVar<int> reflectdist, vertwater, waterrefract, waterreflect, waterfade, caustics, waterfallrefract;
