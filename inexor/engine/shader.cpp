@@ -813,20 +813,23 @@ static void genshadowmapvariant(Shader &s, const char *sname, const char *vs, co
     if(vsmain >= vs) vssm.put(vs, vsmain - vs);
     if(psmain >= ps) pssm.put(ps, psmain - ps);
 
-    const char *tc = "varying vec3 shadowmaptc;\n";
-    vssm.put(tc, strlen(tc));
-    pssm.put(tc, strlen(tc));
-    const char *smtex = 
+    const char *vsdecl =
+        "uniform mat4 shadowmapproject;\n"
+        "varying vec3 shadowmaptc;\n";
+    vssm.put(vsdecl, strlen(vsdecl));
+
+    const char *psdecl =
         "uniform sampler2D shadowmap;\n"
-        "uniform vec4 shadowmapambient;\n";
-    pssm.put(smtex, strlen(smtex));
+        "uniform vec4 shadowmapambient;\n"
+        "varying vec3 shadowmaptc;\n";
+    pssm.put(psdecl, strlen(psdecl));
 
     vssm.put(vsmain, vspragma-vsmain);
     pssm.put(psmain, pspragma-psmain);
 
     extern SharedVar<int> smoothshadowmappeel;
     const char *tcgen =
-        "shadowmaptc = vec3(gl_TextureMatrix[2] * gl_Vertex);\n";
+        "shadowmaptc = vec3(shadowmapproject * gl_Vertex);\n";
     vssm.put(tcgen, strlen(tcgen));
     const char *sm =
         smoothshadowmappeel ? 
@@ -842,14 +845,6 @@ static void genshadowmapvariant(Shader &s, const char *sname, const char *vs, co
         "%s.rgb -= shadowed*clamp(%s.rgb - shadowmapambient.rgb, 0.0, 1.0);\n",
         pslight, pslight);
     pssm.put(smlight, strlen(smlight));
-
-    if(!hasFBO) for(char *s = pssm.getbuf();;)
-    {
-        s = strstr(s, "smvals.w");
-        if(!s) break;
-        s[7] = 'y';
-        s += 8;
-    }
 
     vssm.put(vspragma, strlen(vspragma)+1);
     pssm.put(pspragma, strlen(pspragma)+1);

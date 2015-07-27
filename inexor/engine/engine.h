@@ -98,6 +98,7 @@ extern int compactvslots();
 
 extern SharedVar<int> shadowmap, shadowmapcasters;
 extern bool shadowmapping;
+extern matrix4 shadowmatrix;
 
 extern bool isshadowmapcaster(const vec &o, float rad);
 extern bool addshadowmapcaster(const vec &o, float xyrad, float zrad);
