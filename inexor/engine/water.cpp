@@ -890,7 +890,7 @@ static bool calcscissorbox(Reflection &ref, int size, vec &clipmin, vec &clipmax
     loopi(8)
     {
         vec4 &p = v[i];
-        mvpmatrix.transform(vec(i&1 ? bbmax.x : bbmin.x, i&2 ? bbmax.y : bbmin.y, (i&4 ? bbmax.z + WATER_AMPLITUDE : bbmin.z - WATER_AMPLITUDE) - WATER_OFFSET), p);
+        camprojmatrix.transform(vec(i&1 ? bbmax.x : bbmin.x, i&2 ? bbmax.y : bbmin.y, (i&4 ? bbmax.z + WATER_AMPLITUDE : bbmin.z - WATER_AMPLITUDE) - WATER_OFFSET), p);
         if(p.z >= -p.w)
         {
             float x = p.x / p.w, y = p.y / p.w;
@@ -1008,7 +1008,7 @@ void drawreflections()
             if(hasFBO) glFramebufferTexture2D_(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, ref.refracttex, 0);
             if(scissor) glEnable(GL_SCISSOR_TEST);
             maskreflection(ref, offset, false, refractclear || !wfog || (ref.depth>=10000 && camera1->o.z >= ref.height + offset));
-            if(wfog || (waterfade && hasFBO))
+            if(wfog || waterfade)
             {
                 savevfcP();
                 setvfcP(-1, clipmin, clipmax);

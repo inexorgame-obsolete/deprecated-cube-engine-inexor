@@ -614,9 +614,7 @@ ICOMMAND(getcampos, "", (),
     result(pos);
 });
 
-vec worldpos, camdir, camright, camup;
-
-void findorientation()
+vec worldpos, camdir, camright, camup;void findorientation()
 {
     mvmatrix.transposedtransformnormal(vec(viewmatrix.b), camdir);
     mvmatrix.transposedtransformnormal(vec(viewmatrix.a).neg(), camright);
@@ -1409,14 +1407,14 @@ void drawreflection(float z, bool refract, int fogdepth, const bvec &col)
     refracting = 0;
     reflecting = fading = fogging = false;
 
-    setenvmatrix();
+    setcamprojmatrix(false, true);
 }
 
-bool envmapping = false;
+int drawtex = 0;
 
 void drawcubemap(int size, const vec &o, float yaw, float pitch, const cubemapside &side)
 {
-    envmapping = true;
+    drawtex = DRAWTEX_ENVMAP;
 
     physent *oldcamera = camera1;
     static physent cmcamera;
@@ -1430,8 +1428,6 @@ void drawcubemap(int size, const vec &o, float yaw, float pitch, const cubemapsi
     camera1 = &cmcamera;
     setviewcell(camera1->o);
    
-    defaultshader->set();
-
     int fogmat = lookupmaterial(o)&(MATF_VOLUME|MATF_INDEX);
 
     setfog(fogmat);
@@ -1440,14 +1436,17 @@ void drawcubemap(int size, const vec &o, float yaw, float pitch, const cubemapsi
 
     int farplane = worldsize*2;
 
-    project(90.0f, 1.0f, farplane, !side.flipx, !side.flipy, side.swapxy);
+    projmatrix.perspective(90.0f, 1.0f, nearplane, farplane);
+    if(!side.flipx || !side.flipy) projmatrix.scalexy(!side.flipx ? -1 : 1, !side.flipy ? -1 : 1);
+    if(side.swapxy)
+    {
+        swap(projmatrix.a.x, projmatrix.a.y);
+        swap(projmatrix.b.x, projmatrix.b.y);
+        swap(projmatrix.c.x, projmatrix.c.y);
+        swap(projmatrix.d.x, projmatrix.d.y);
+    }
+    setcamprojmatrix();
 
-    transplayer();
-    readmatrices();
-    findorientation();
-    setenvmatrix();
-
-    glEnable(GL_FOG);
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
 
@@ -1515,15 +1514,8 @@ namespace modelpreview
 
         glClear((background ? GL_COLOR_BUFFER_BIT : 0) | GL_DEPTH_BUFFER_BIT);
 
-        glMatrixMode(GL_PROJECTION);
-        glPushMatrix();
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-
-        project(fovy, aspect, 1024);
-        transplayer();
-        readmatrices();
-        setenvmatrix();
+        projmatrix.perspective(90.0f, 1.0f, nearplane, 1024);
+        setcamprojmatrix();
 
         glEnable(GL_CULL_FACE);
         glEnable(GL_DEPTH_TEST);
@@ -1638,11 +1630,9 @@ void drawminimap()
     camera1 = &cmcamera;
     setviewcell(vec(-1, -1, -1));
 
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(-minimapradius.x, minimapradius.x, -minimapradius.y, minimapradius.y, 0, camera1->o.z + 1);
-    glScalef(-1, 1, 1);
-    glMatrixMode(GL_MODELVIEW);
+    projmatrix.ortho(-minimapradius.x, minimapradius.x, -minimapradius.y, minimapradius.y, 0, camera1->o.z + 1);
+    projmatrix.a.mul(-1);
+    setcamprojmatrix();
 
     transplayer();
 
@@ -1676,7 +1666,7 @@ void drawminimap()
         {
             glClear(GL_DEPTH_BUFFER_BIT);
             camera1->o.z = minimapheight;
-            transplayer();
+            setcamprojmatrix();
         }
         rendergeom();
         rendermapmodels();
@@ -1827,13 +1817,9 @@ void gl_drawframe()
 
     farplane = worldsize*2;
 
-    project(fovy, aspect, farplane);
-    transplayer();
-    readmatrices();
-    findorientation();
-    setenvmatrix();
+    projmatrix.perspective(fovy, aspect, nearplane, farplane);
+    setcamprojmatrix();
 
-    glEnable(GL_FOG);
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
 
@@ -1875,12 +1861,7 @@ void gl_drawframe()
 
     rendermapmodels();
     rendergame(true);
-    if(!isthirdperson())
-    {
-        project(curavatarfov, aspect, farplane, false, false, false, avatardepth);
-        game::renderavatar();
-        project(fovy, aspect, farplane);
-    }
+    renderavatar();
 
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -1936,22 +1917,24 @@ VARP(damagecompassalpha, 1, 25, 100);
 VARP(damagecompassmin, 1, 25, 1000);
 VARP(damagecompassmax, 1, 200, 1000);
 
-float dcompass[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+float damagedirs[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+
 void damagecompass(int n, const vec &loc)
 {
     if(!usedamagecompass || minimized) return;
     vec delta(loc);
     delta.sub(camera1->o); 
-    float yaw, pitch;
-    if(delta.magnitude()<4) yaw = camera1->yaw;
-    else vectoyawpitch(delta, yaw, pitch);
-    yaw -= camera1->yaw;
+    float yaw = 0, pitch;
+    if(delta.magnitude() > 4)
+    {
+        vectoyawpitch(delta, yaw, pitch);
+        yaw -= camera1->yaw;
+    }
     if(yaw >= 360) yaw = fmod(yaw, 360);
     else if(yaw < 0) yaw = 360 - fmod(-yaw, 360);
     int dir = (int(yaw+22.5f)%360)/45;
-    dcompass[dir] += max(n, damagecompassmin)/float(damagecompassmax);
-    if(dcompass[dir]>1) dcompass[dir] = 1;
-
+    damagedirs[dir] += max(n, damagecompassmin)/float(damagecompassmax);
+    if(damagedirs[dir]>1) damagedirs[dir] = 1;
 }
 
 void drawdamagecompass(int w, int h)

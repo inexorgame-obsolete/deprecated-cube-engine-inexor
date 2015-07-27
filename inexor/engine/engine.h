@@ -133,7 +133,7 @@ extern SharedVar<float> forceaspect;
 extern float curfov, fovy, aspect;
 extern bool envmapping, minimapping, renderedgame, modelpreviewing;
 extern const matrix4 viewmatrix;
-extern matrix4 mvmatrix, projmatrix, mvpmatrix, invmvmatrix, invmvpmatrix, fogmatrix, invfogmatrix, envmatrix;
+extern matrix4 cammatrix, projmatrix, camprojmatrix, invcammatrix, invcamprojmatrix;
 extern bvec fogcolor;
 
 extern void gl_checkextensions();
