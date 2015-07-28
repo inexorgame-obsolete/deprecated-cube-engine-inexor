@@ -596,6 +596,11 @@ struct dualquat
         return vec().cross(real, vec().cross(real, v).add(vec(v).mul(real.w)).add(vec(dual))).add(vec(dual).mul(real.w)).sub(vec(real).mul(dual.w)).mul(2).add(v);
     }
 
+    quat transform(const quat &q) const
+    {
+        return quat().mul(real, q);
+    }
+
     vec transposedtransform(const vec &v) const
     {
         return dualquat(*this).invert().transform(v);
@@ -1817,6 +1822,29 @@ struct matrix2
     explicit matrix2(const matrix3 &m) : a(m.a), b(m.b) {}
 };
 
+struct squat
+{
+    short x, y, z, w;
+
+    squat() {}
+    squat(const vec4 &q) { convert(q); }
+
+    void convert(const vec4 &q)
+    {
+        x = short(q.x*32767.5f-0.5f);
+        y = short(q.y*32767.5f-0.5f);
+        z = short(q.z*32767.5f-0.5f);
+        w = short(q.w*32767.5f-0.5f);
+    }
+
+    void lerp(const vec4 &a, const vec4 &b, float t)
+    {
+        vec4 q;
+        q.lerp(a, b, t);
+        convert(q);
+    }
+};
+
 /// physics engine: collision (intersection) check functions
 extern bool raysphereintersect(const vec &center, float radius, const vec &o, const vec &ray, float &dist);
 extern bool rayboxintersect(const vec &b, const vec &s, const vec &o, const vec &ray, float &dist, int &orient);
@@ -1824,8 +1852,6 @@ extern bool linecylinderintersect(const vec &from, const vec &to, const vec &sta
 
 /// sine and cosine values are stored in approximated valuey
 /// because calculating them in realtime would be too slow
-/// take a look at the EULER SINE AND COSINE definition
-/// and the TAYLOR SERIES EXPANSION theorem
 extern const vec2 sincos360[];
 static inline int mod360(int angle)
 {
