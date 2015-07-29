@@ -758,7 +758,7 @@ template <class T, int MINSIZE = 8> struct vector {
 	/// reserved memory and returns vector of the reserved memory
     databuf<T> reserve(int sz)
     {
-        if(ulen+sz > alen) growbuf(ulen+sz);
+        if(alen-ulen < sz) growbuf(ulen+sz);
         return databuf<T>(&buf[ulen], sz);
     }
 
@@ -864,7 +864,7 @@ template <class T, int MINSIZE = 8> struct vector {
     }
     T *insert(int i, const T *e, int n)
     {
-        if(ulen+n>alen) growbuf(ulen+n);
+        if(alen-ulen < n) growbuf(ulen+n);
         loopj(n) add(T());
         for(int p = ulen-1; p>=i+n; p--) buf[p] = buf[p-n];
         loopj(n) buf[i+j] = e[j];
