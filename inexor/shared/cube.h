@@ -61,6 +61,11 @@
 #include "inexor/shared/command.h"
 #include "inexor/shared/json.h"
 
+#ifndef STANDALONE
+#include "inexor/engine/glexts.h"
+#include "inexor/engine/glemu.h"
+#endif
+
 /// header files for communication between the game and Cube engine
 #include "inexor/shared/iengine.h"
 #include "inexor/shared/igame.h"

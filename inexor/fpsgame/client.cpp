@@ -37,15 +37,17 @@ namespace game
         vec pos = vec(d->o).sub(minimapcenter).mul(minimapscale).add(0.5f), dir;
         vecfromyawpitch(camera1->yaw, 0, 1, 0, dir);
         float scale = calcradarscale();
-        glBegin(GL_TRIANGLE_FAN);
+        gle::defvertex(2);
+        gle::deftexcoord0();
+        gle::begin(GL_TRIANGLE_FAN);
         loopi(16)
         {
-            vec tc = vec(dir).rotate_around_z(i/16.0f*2*M_PI);
-            glTexCoord2f(pos.x + tc.x*scale*minimapscale.x, pos.y + tc.y*scale*minimapscale.y);
             vec v = vec(0, -1, 0).rotate_around_z(i/16.0f*2*M_PI);
-            glVertex2f(x + 0.5f*s*(1.0f + v.x), y + 0.5f*s*(1.0f + v.y));
+            gle::attribf(x + 0.5f*s*(1.0f + v.x), y + 0.5f*s*(1.0f + v.y));
+            vec tc = vec(dir).rotate_around_z(i/16.0f*2*M_PI);
+            gle::attribf(pos.x + tc.x*scale*minimapscale.x, pos.y + tc.y*scale*minimapscale.y);
         }
-        glEnd();
+        gle::end();
     }
 
     /// bind the minimap frame's texture
@@ -59,12 +61,14 @@ namespace game
     /// draw radar (a trangle square with matching texture coordinates to be precise) to target coordinates
     void drawradar(float x, float y, float s)
     {
-        glBegin(GL_TRIANGLE_STRIP);
-        glTexCoord2f(0.0f, 0.0f); glVertex2f(x,   y);
-        glTexCoord2f(1.0f, 0.0f); glVertex2f(x+s, y);
-        glTexCoord2f(0.0f, 1.0f); glVertex2f(x,   y+s);
-        glTexCoord2f(1.0f, 1.0f); glVertex2f(x+s, y+s);
-        glEnd();
+        gle::defvertex(2);
+        gle::deftexcoord0();
+        gle::begin(GL_TRIANGLE_STRIP);
+        gle::attribf(x,   y);   gle::attribf(0, 0);
+        gle::attribf(x+s, y);   gle::attribf(1, 0);
+        gle::attribf(x,   y+s); gle::attribf(0, 1);
+        gle::attribf(x+s, y+s); gle::attribf(1, 1);
+        gle::end();
     }
 
 	/// draw a specific teamate's icon arrow in minimap
@@ -80,10 +84,10 @@ namespace game
               by = y + s*0.5f*(1.0f + dir.y);
         vec v(-0.5f, -0.5f, 0);
         v.rotate_around_z((90+o->yaw-camera1->yaw)*RAD);
-        glTexCoord2f(0.0f, 0.0f); glVertex2f(bx + bs*v.x, by + bs*v.y);
-        glTexCoord2f(1.0f, 0.0f); glVertex2f(bx + bs*v.y, by - bs*v.x);
-        glTexCoord2f(1.0f, 1.0f); glVertex2f(bx - bs*v.x, by - bs*v.y);
-        glTexCoord2f(0.0f, 1.0f); glVertex2f(bx - bs*v.y, by + bs*v.x);
+        gle::attribf(bx + bs*v.x, by + bs*v.y); gle::attribf(0, 0);
+        gle::attribf(bx + bs*v.y, by - bs*v.x); gle::attribf(1, 0);
+        gle::attribf(bx - bs*v.x, by - bs*v.y); gle::attribf(1, 1);
+        gle::attribf(bx - bs*v.y, by + bs*v.x); gle::attribf(0, 1);
     }
 
     /// set specific textures for teammates, skulls... on the minimap
@@ -106,12 +110,14 @@ namespace game
                 if(!alive++) 
                 {
                     setbliptex(TEAM_OWN, "_alive");
-                    glBegin(GL_QUADS);
+                    gle::defvertex(2);
+                    gle::deftexcoord0();
+                    gle::begin(GL_QUADS);
                 }
                 drawteammate(d, x, y, s, o, scale);
             }
         }
-        if(alive) glEnd();
+        if(alive) gle::end();
         loopv(players) 
         {
             fpsent *o = players[i];
@@ -120,23 +126,25 @@ namespace game
                 if(!dead++) 
                 {
                     setbliptex(TEAM_OWN, "_dead");
-                    glBegin(GL_QUADS);
+                    gle::defvertex(2);
+                    gle::deftexcoord0();
+                    gle::begin(GL_QUADS);
                 }
                 drawteammate(d, x, y, s, o, scale);
             }
         }
-        if(dead) glEnd();
+        if(dead) gle::end();
     }
 
     /// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	/// game modes
 
 	/// game mode header files
-    #include "capture.h"
-    #include "ctf.h"
-    #include "collect.h"
-    #include "bomb.h"
-    #include "hideandseek.h"
+    #include "inexor/fpsgame/capture.h"
+    #include "inexor/fpsgame/ctf.h"
+    #include "inexor/fpsgame/collect.h"
+    #include "inexor/fpsgame/bomb.h"
+    #include "inexor/fpsgame/hideandseek.h"
 
 	/// gamemodes
     clientmode *cmode = NULL;
@@ -353,12 +361,10 @@ namespace game
         player1->suicided = player1->respawned = -2;
     }
 	
-	/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	/// cubescript get functions
-
-    /// please note: 'cn' means client number
+    ///// cubescript get functions
 
 	/// get nick name from cn
+    /// @param cn client number
     const char *getclientname(int cn)
     {
         fpsent *d = getclient(cn);

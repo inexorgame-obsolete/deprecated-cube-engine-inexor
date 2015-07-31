@@ -213,6 +213,19 @@ struct databuf
     template<class U>
     databuf(T *buf, U maxlen) : buf(buf), len(0), maxlen((int)maxlen), flags(0) {}
 
+    void reset()
+    {
+        len = 0;
+        flags = 0;
+    }
+
+    void reset(T *buf_, int maxlen_)
+    {
+        reset();
+        buf = buf_;
+        maxlen = maxlen_;
+    }
+
 	/// get one byte from the buffer and 
     const T &get()
     {
@@ -228,6 +241,13 @@ struct databuf
         sz = clamp(sz, 0, maxlen-len);
         len += sz;
         return databuf(&buf[len-sz], sz);
+    }
+
+    T *pad(int numvals)
+    {
+        T *vals = &buf[len];
+        len += min(numvals, maxlen-len);
+        return vals;
     }
 
 	/// put one byte at the end of a buffer
@@ -263,17 +283,20 @@ struct databuf
         maxlen -= n;
         len = max(len-n, 0);
     }
-	
-	/// is this buffer empty?
+
+    T *getbuf() const { return buf; }
+
     bool empty() const { return len==0; }
-    /// what is the length of this buffer?
+    /// receive amount of values in buffer.
 	int length() const { return len; }
-	/// how much space is left?
+	/// receive remaining space in buffer.
     int remaining() const { return maxlen-len; }
-	/// did I overread the buffer (is the overread flag set)?
+	/// did we try to read too much?
     bool overread() const { return (flags&OVERREAD)!=0; }
-	/// did I overwrite the buffer (id the overwrote flag set)?
+	/// did we try to write too much into the buffer?
     bool overwrote() const { return (flags&OVERWROTE)!=0; }
+
+    bool check(int n) { return remaining() >= n; }
 
 	/// force buffer to skip all free memory space
     void forceoverread()
@@ -283,7 +306,7 @@ struct databuf
     }
 };
 
-/// type definitions for char and unsigned char buffers 
+/// type definitions for char and unsigned char buffers
 /// based on the template architecture above
 typedef databuf<char> charbuf;
 typedef databuf<uchar> ucharbuf;

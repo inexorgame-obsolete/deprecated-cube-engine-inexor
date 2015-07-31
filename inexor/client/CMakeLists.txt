@@ -7,6 +7,7 @@ prepend(CLIENT_SOURCES_ENGINE ${SOURCE_DIR}/engine
     console.cpp
     decal.cpp
     dynlight.cpp
+    glemu.cpp
     grass.cpp
     main.cpp
     material.cpp

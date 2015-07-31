@@ -3,7 +3,6 @@
 // OpenGL 1.3
 #ifndef WIN32
 #define glActiveTexture_ glActiveTexture
-#define glClientActiveTexture_ glClientActiveTexture
 
 #define glBlendEquation_ glBlendEquation
 #define glBlendColor_ glBlendColor
@@ -23,7 +22,6 @@
 #define glDrawRangeElements_ glDrawRangeElements
 #else
 extern PFNGLACTIVETEXTUREPROC       glActiveTexture_;
-extern PFNGLCLIENTACTIVETEXTUREPROC glClientActiveTexture_;
 
 extern PFNGLBLENDEQUATIONPROC glBlendEquation_;
 extern PFNGLBLENDCOLORPROC    glBlendColor_;
@@ -163,6 +161,7 @@ typedef void (APIENTRYP PFNGLUNIFORMMATRIX4X3FVPROC) (GLint location, GLsizei co
 
 #define glDrawBuffers_ glDrawBuffers
 #else
+extern PFNGLMULTIDRAWARRAYSPROC   glMultiDrawArrays_;
 extern PFNGLMULTIDRAWELEMENTSPROC glMultiDrawElements_;
 
 extern PFNGLBLENDFUNCSEPARATEPROC glBlendFuncSeparate_;
@@ -389,7 +388,7 @@ extern PFNGLFLUSHMAPPEDBUFFERRANGEPROC glFlushMappedBufferRange_;
 
 typedef void (APIENTRYP PFNGLGETUNIFORMINDICESPROC) (GLuint program, GLsizei uniformCount, const GLchar* *uniformNames, GLuint *uniformIndices);
 typedef void (APIENTRYP PFNGLGETACTIVEUNIFORMSIVPROC) (GLuint program, GLsizei uniformCount, const GLuint *uniformIndices, GLenum pname, GLint *params);
-typedef GLuint(APIENTRYP PFNGLGETUNIFORMBLOCKINDEXPROC) (GLuint program, const GLchar *uniformBlockName);
+typedef GLuint (APIENTRYP PFNGLGETUNIFORMBLOCKINDEXPROC) (GLuint program, const GLchar *uniformBlockName);
 typedef void (APIENTRYP PFNGLGETACTIVEUNIFORMBLOCKIVPROC) (GLuint program, GLuint uniformBlockIndex, GLenum pname, GLint *params);
 typedef void (APIENTRYP PFNGLUNIFORMBLOCKBINDINGPROC) (GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding);
 #endif
@@ -424,4 +423,18 @@ extern PFNGLGETACTIVEUNIFORMBLOCKIVPROC glGetActiveUniformBlockiv_;
 extern PFNGLUNIFORMBLOCKBINDINGPROC     glUniformBlockBinding_;
 extern PFNGLBINDBUFFERBASEPROC          glBindBufferBase_;
 extern PFNGLBINDBUFFERRANGEPROC         glBindBufferRange_;
+
+// GL_ARB_vertex_array_objext
+#ifndef GL_ARB_vertex_array_object
+#define GL_ARB_vertex_array_object 1
+#define GL_VERTEX_ARRAY_BINDING           0x85B5
+typedef void (APIENTRYP PFNGLBINDVERTEXARRAYPROC) (GLuint array);
+typedef void (APIENTRYP PFNGLDELETEVERTEXARRAYSPROC) (GLsizei n, const GLuint *arrays);
+typedef void (APIENTRYP PFNGLGENVERTEXARRAYSPROC) (GLsizei n, GLuint *arrays);
+typedef GLboolean (APIENTRYP PFNGLISVERTEXARRAYPROC) (GLuint array);
+#endif
+extern PFNGLBINDVERTEXARRAYPROC    glBindVertexArray_;
+extern PFNGLDELETEVERTEXARRAYSPROC glDeleteVertexArrays_;
+extern PFNGLGENVERTEXARRAYSPROC    glGenVertexArrays_;
+extern PFNGLISVERTEXARRAYPROC      glIsVertexArray_;
 
