@@ -410,6 +410,9 @@ enum
 	N_REPLACE,				/// C2S|S2C  a player wants to replace a selection (requires editmode)
 	N_DELCUBE,				/// C2S|S2C  a player wants to delete a selection (requires editmode)
 	N_REMIP,				/// C2S|S2C  a client forcedremip (requires editmode, no administrative levels required)
+    N_EDITVSLOT,            /// C2S|S2C  a client used a v.. command (vscale, vcolor..) to modify a texture
+    N_UNDO,                 /// C2S|S2C  send undo edit message
+    N_REDO,                 /// C2S|S2C  send redo edit message
 	N_NEWMAP,				/// C2S|S2C  a client started a new map (requires editmode)
 	N_GETMAP,				/// C2S      a client downloaded the current map from server's map buffer (NOT ALWAYS UP TO DATE! MAP MUST BE SENT BEFORE DOWNLOADING!)
 	N_SENDMAP,				/// S2C      server sends map to client (requires coop mode. YOU CAN'T SEND MAPS IN INSTACTF e.g. (YET))
@@ -502,7 +505,7 @@ static const int msgsizes[] =
     N_PING, 2, N_PONG, 2, N_CLIENTPING, 2,
     N_TIMEUP, 2, N_FORCEINTERMISSION, 1,
     N_SERVMSG, 0, N_ITEMLIST, 0, N_RESUME, 0,
-    N_EDITMODE, 2, N_EDITENT, 11, N_EDITF, 16, N_EDITT, 16, N_EDITM, 16, N_FLIP, 14, N_COPY, 14, N_PASTE, 14, N_ROTATE, 15, N_REPLACE, 17, N_DELCUBE, 14, N_REMIP, 1, N_NEWMAP, 2, N_GETMAP, 1, N_SENDMAP, 0, N_EDITVAR, 0,
+    N_EDITMODE, 2, N_EDITENT, 11, N_EDITF, 16, N_EDITT, 16, N_EDITM, 16, N_FLIP, 14, N_COPY, 14, N_PASTE, 14, N_ROTATE, 15, N_REPLACE, 17, N_DELCUBE, 14, N_REMIP, 1, N_EDITVSLOT, 16, N_UNDO, 0, N_REDO, 0, N_NEWMAP, 2, N_GETMAP, 1, N_SENDMAP, 0, N_EDITVAR, 0,
     N_MASTERMODE, 2, N_KICK, 0, N_CLEARBANS, 1, N_CURRENTMASTER, 0, N_SPECTATOR, 3, N_SETMASTER, 0, N_SETTEAM, 0,
     N_BASES, 0, N_BASEINFO, 0, N_BASESCORE, 0, N_REPAMMO, 1, N_BASEREGEN, 6, N_ANNOUNCE, 2,
     N_LISTDEMOS, 1, N_SENDDEMOLIST, 0, N_GETDEMO, 2, N_SENDDEMO, 0,
@@ -1168,12 +1171,13 @@ namespace game
     // client
     extern bool connected, remote, demoplayback;
     extern string servinfo;
+    extern vector<uchar> messages;
 
     extern int parseplayer(const char *arg);
     extern void ignore(int cn);
     extern void unignore(int cn);
     extern bool isignored(int cn);
-    extern void addmsg(int type, const char *fmt = NULL, ...);
+    extern bool addmsg(int type, const char *fmt = NULL, ...);
     extern void switchname(const char *name);
     extern void switchteam(const char *name);
     extern void switchplayermodel(int playermodel);
