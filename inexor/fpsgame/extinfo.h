@@ -34,6 +34,8 @@
     B:C:default: 0 command EXT_ACK EXT_VERSION EXT_ERROR
 */
 
+    VAR(extinfoip, 0, 0, 1);
+
     void extinfoplayer(ucharbuf &p, clientinfo *ci)
     {
         ucharbuf q = p;
@@ -52,8 +54,11 @@
         putint(q, ci->state.gunselect);
         putint(q, ci->privilege);
         putint(q, ci->state.state);
-        uint ip = getclientip(ci->clientnum);
-        q.put((uchar*)&ip, 3);
+        if(extinfoip)
+        {
+            uint ip = getclientip(ci->clientnum);
+            q.put((uchar*)&ip, 3);
+        }
         sendserverinforeply(q);
     }
 
