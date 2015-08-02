@@ -2580,7 +2580,11 @@ struct texturegui : g3d_callback
                             lastthumbnail = totalmillis;
                         }
                         if(g.texture(vslot, 1.0f, true)&G3D_UP && (slot.loaded || slot.thumbnail!=notexture))
+                        {
+                            gle::disable();
                             edittex(vslot.index);
+                            hudshader->set();
+                        }
                     }
                     else
                     {
