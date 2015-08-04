@@ -599,8 +599,6 @@ void rendereditcursor()
 
     boxoutline = false;
 
-    gle::disable();
-
     glDisable(GL_BLEND);
 }
 
@@ -2581,7 +2579,6 @@ struct texturegui : g3d_callback
                         }
                         if(g.texture(vslot, 1.0f, true)&G3D_UP && (slot.loaded || slot.thumbnail!=notexture))
                         {
-                            gle::disable();
                             edittex(vslot.index);
                             hudshader->set();
                         }
@@ -2718,7 +2715,6 @@ void rendertexturepanel(int w, int h)
             y += s+gap;
         }
 
-        gle::disable();
         pophudmatrix(true, false);
         hudshader->set();
     }
