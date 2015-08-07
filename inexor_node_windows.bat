@@ -16,11 +16,11 @@ if not defined FOUND_NODE (
     :: which is in the normal bin dir
     :: + go for the shipped npm which is in the platform submodule since we ship it for developers
     set "PATH=%PATH%;%cd%\bin\windows\%INEXOR_ARCH%;%cd%\inexor\platform\bin\windows\npm"
-    set "NODE_PATH=%cd%\inexor\platform\bin\windows\npm;%cd%\node\lib"
+    set "NODE_PATH=%cd%\inexor\platform\bin\windows\npm;%cd%\node\lib;%cd%\node\webserver"
     set "NPM_EXECUTEABLE=%cd%\inexor\platform\bin\windows\npm\npm"
     echo using shipped node
 ) else (
-    set "NODE_PATH=%NODE_PATH%;%cd%\node\portable;%cd%\node\lib"
+    set "NODE_PATH=%NODE_PATH%;%cd%\node\lib;%cd%\node\webserver"
     set "NPM_EXECUTEABLE=npm"
     echo found node
 )
@@ -44,4 +44,4 @@ call %NPM_EXECUTEABLE% install
 echo [STARTING NODE WITH INEXOR BINDING]
 echo [LEAVE THIS WINDOW OPEN WHILE INEXOR IS RUNNING]
 :: when deploying we can make this a start
-node bin\serve
+node_modules\.bin\coffee.cmd bin\serve
