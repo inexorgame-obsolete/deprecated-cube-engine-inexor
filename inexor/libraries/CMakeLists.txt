@@ -123,7 +123,9 @@ function(config_sdl targ)
 
   if(OS_WINDOWS)
     target_link_libs(${targ} winmm ${NOLINK})
-    add_definitions(-mwindows) # This is GUI!
+    if(NOT MSVC) 
+      add_definitions(-mwindows) # This is GUI!
+    endif()
   elseif(OS_POSIX)
     target_link_libs(${targ} dl rt ${NOLINK})
   endif()
