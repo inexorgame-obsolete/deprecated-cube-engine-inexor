@@ -523,10 +523,10 @@ static const int msgsizes[] =
 };
 
 /// constant protocol and version definitions
-#define INEXOR_LANINFO_PORT 28784       /// not changed compared to Sauerbraten (remove this comment on change)
-#define INEXOR_SERVER_PORT 28785        /// not changed compared to Sauerbraten (remove this comment on change)
-#define INEXOR_SERVINFO_PORT 28786      /// not changed compared to Sauerbraten (remove this comment on change)
-#define INEXOR_MASTER_PORT 28787        /// not changed compared to Sauerbraten (remove this comment on change)
+#define INEXOR_SERVINFO_PORT 31413 /// will probably be merged with the server port
+#define INEXOR_LANINFO_PORT 31414
+#define INEXOR_SERVER_PORT 31415
+#define INEXOR_MASTER_PORT 31416
 
 #define PROTOCOL_VERSION 300            /// bump when protocol changes last sauerbraten protocol was 259
 #define DEMO_VERSION 1                  /// bump when demo format changes
