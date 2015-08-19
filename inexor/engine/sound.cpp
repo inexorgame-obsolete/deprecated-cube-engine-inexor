@@ -205,7 +205,7 @@ void startmusic(char *name, char *cmd)
     stopmusic();
     if(soundvol && musicvol && *name)
     {
-        defformatstring(file)("%s/%s", *musicdir, name);
+        defformatstring(file, "%s/%s", *musicdir, name);
         path(file);
         if(loadmusic(file))
         {
@@ -473,7 +473,7 @@ static bool loadsoundslot(soundslot &slot, bool msg = false)
     string filename;
     loopi(sizeof(exts)/sizeof(exts[0]))
     {
-        formatstring(filename)("%s/%s%s", *sounddir, slot.sample->name, exts[i]);
+        formatstring(filename, "%s/%s%s", *sounddir, slot.sample->name, exts[i]);
         if(msg && !i) renderprogress(0, filename);
         path(filename);
         slot.sample->chunk = loadwav(filename);
@@ -716,7 +716,7 @@ void initmumble()
             if(mumbleinfo) wcsncpy(mumbleinfo->name, L"Inexor", 256);
         }
     #elif defined(_POSIX_SHARED_MEMORY_OBJECTS)
-        defformatstring(shmname)("/MumbleLink.%d", getuid());
+        defformatstring(shmname, "/MumbleLink.%d", getuid());
         mumblelink = shm_open(shmname, O_RDWR, 0);
         if(mumblelink >= 0)
         {

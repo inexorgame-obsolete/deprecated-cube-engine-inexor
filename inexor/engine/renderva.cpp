@@ -1335,7 +1335,7 @@ void loadcaustics(bool force)
     if(caustictex[0]) return;
     loopi(NUMCAUSTICS)
     {
-        defformatstring(name)("<grey><mad:-0.6,0.6>%s/caustic%.2d.png", *causticdir, i);
+        defformatstring(name, "<grey><mad:-0.6,0.6>%s/caustic%.2d.png", *causticdir, i);
         caustictex[i] = textureload(name);
     }
 }

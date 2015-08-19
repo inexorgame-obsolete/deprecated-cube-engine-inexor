@@ -261,7 +261,7 @@ char *makerelpath(const char *dir, const char *file, const char *prefix, const c
     if(cmd) concatstring(tmp, cmd);
     if(dir)
     {
-        defformatstring(pname)("%s/%s", dir, file);
+        defformatstring(pname, "%s/%s", dir, file);
         concatstring(tmp, pname);
     }
     else concatstring(tmp, file);
@@ -388,7 +388,7 @@ size_t fixpackagedir(char *dir)
 /// Replaces "$HOME" in string src with the user platforms home-directory
 bool subhomedir(char *dst, int len, const char *src)
 {
-	const char *sub = strstr(src, "$HOME");
+    const char *sub = strstr(src, "$HOME");
     if(!sub) sub = strchr(src, '~');
     if(sub && sub-src < len)
     {
@@ -401,10 +401,10 @@ bool subhomedir(char *dst, int len, const char *src)
         if(!home || !home[0]) return false;
 #endif
         dst[sub-src] = '\0';
-        concatstring(dst, home);
-        concatstring(dst, sub+(*sub == '~' ? 1 : strlen("$HOME")));
-	  }
-	  return true;
+        concatstring(dst, home, len);
+        concatstring(dst, sub+(*sub == '~' ? 1 : strlen("$HOME")), len);
+    }
+    return true;
 }
 
 /// sets home directory
@@ -412,9 +412,9 @@ const char *sethomedir(const char *dir)
 {
     string pdir;
     copystring(pdir, dir);
-	if(!subhomedir(pdir, sizeof(pdir), dir) || !fixpackagedir(pdir)) return NULL;
+    if(!subhomedir(pdir, sizeof(pdir), dir) || !fixpackagedir(pdir)) return NULL;
     copystring(homedir, pdir);
-	return homedir;
+    return homedir;
 }
 
 /// Add an optional media directory
@@ -453,7 +453,7 @@ const char *findfile(const char *filename, const char *mode)
     static string s;
     if(homedir[0])
     {
-        formatstring(s)("%s%s", homedir, filename);
+        formatstring(s, "%s%s", homedir, filename);
         if(fileexists(s, mode)) return s;
         if(mode[0]=='w' || mode[0]=='a')
         {
@@ -475,7 +475,7 @@ const char *findfile(const char *filename, const char *mode)
     {
         packagedir &pf = packagedirs[i];
         if(pf.filter && strncmp(filename, pf.filter, pf.filterlen)) continue;
-        formatstring(s)("%s%s", pf.dir, filename);
+        formatstring(s, "%s%s", pf.dir, filename);
         if(fileexists(s, mode)) return s;
     }
     if(mode[0]=='e') return NULL;
@@ -487,8 +487,8 @@ const char *findfile(const char *filename, const char *mode)
 bool listdir(const char *dirname, bool rel, const char *ext, vector<char *> &files)
 {
     size_t extsize = ext ? strlen(ext)+1 : 0;
-    #ifdef WIN32
-    defformatstring(pathname)(rel ? ".\\%s\\*.%s" : "%s\\*.%s", dirname, ext ? ext : "*");
+#ifdef WIN32
+    defformatstring(pathname, rel ? ".\\%s\\*.%s" : "%s\\*.%s", dirname, ext ? ext : "*");
     WIN32_FIND_DATA FindFileData;
     HANDLE Find = FindFirstFile(pathname, &FindFileData);
     if(Find != INVALID_HANDLE_VALUE)
@@ -510,7 +510,7 @@ bool listdir(const char *dirname, bool rel, const char *ext, vector<char *> &fil
         return true;
     }
 #else
-    defformatstring(pathname)(rel ? "./%s" : "%s", dirname);
+    defformatstring(pathname, rel ? "./%s" : "%s", dirname);
     DIR *d = opendir(pathname);
     if(d)
     {
@@ -550,7 +550,7 @@ int listfiles(const char *dir, const char *ext, vector<char *> &files)
     string s;
     if(homedir[0])
     {
-        formatstring(s)("%s%s", homedir, dirname);
+        formatstring(s, "%s%s", homedir, dirname);
         if(listdir(s, false, ext, files)) dirs++;
     }
     loopv(packagedirs)
@@ -558,7 +558,7 @@ int listfiles(const char *dir, const char *ext, vector<char *> &files)
         packagedir &pf = packagedirs[i];
         if(pf.filter && strncmp(dirname, pf.filter, dirlen == pf.filterlen-1 ? dirlen : pf.filterlen))
             continue;
-        formatstring(s)("%s%s", pf.dir, dirname);
+        formatstring(s, "%s%s", pf.dir, dirname);
         if(listdir(s, false, ext, files)) dirs++;
     }
 #ifndef STANDALONE

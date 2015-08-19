@@ -701,7 +701,7 @@ namespace game
 
         if(m_sp)
         {
-            defformatstring(scorename)("bestscore_%s", getclientmap());
+            defformatstring(scorename, "bestscore_%s", getclientmap());
             const char *best = getalias(scorename);
             if(*best) conoutf(CON_GAMEINFO, "\f2try to beat your best score so far: %s", best);
         }
@@ -814,9 +814,6 @@ namespace game
 	/// color team names in frag notifications in game console in red/blue, depending on my team
     VARP(teamcolortext, 0, 1, 1);
 
-    static string cname[3];
-    static int cidx = 0;
-
     /// are there any duplicate names in our client list?
     /// in case this is true, their client numbers will be displayed behind both nicknames
     bool duplicatename(fpsent *d, const char *name = NULL, const char *alt = NULL)
@@ -829,6 +826,7 @@ namespace game
 
 	/// add colored client number in [] brackets behind the name 
 	/// in case another player has the same name (duplicated name)
+    /// @warning not safe.
     /// @see duplicatename
     const char *colorname(fpsent *d, const char *name, const char *prefix, const char *suffix, const char *alt)
     {
@@ -837,7 +835,7 @@ namespace game
         if(dup || prefix[0] || suffix[0])
         {
             if(dup) return tempformatstring(d->aitype == AI_NONE ? "%s%s \fs\f5(%d)\fr%s" : "%s%s \fs\f5[%d]\fr%s", prefix, name, d->clientnum, suffix);
-            return tempformatstring("%s%s%s", prefix, name, suffix);
+            else return tempformatstring("%s%s%s", prefix, name, suffix);
         }
         return name;
     }
@@ -851,6 +849,7 @@ namespace game
     }
 
 	/// color player name blue if you have the same team (\f1) otherwise red (\f3)
+    /// @warning not safe.
     const char *teamcolor(const char *name, bool sameteam, const char *alt)
     {
         if(!teamcolortext || !m_teammode) return sameteam || !alt ? name : alt;

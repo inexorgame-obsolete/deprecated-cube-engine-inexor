@@ -209,7 +209,7 @@ struct gui : g3d_gui
             {
                 list &s = lists[p.parent];
                 if(ishorizontal()) xsize = s.w; else ysize = s.h;
-            }
+            } 
             layout(w, h);
         }
     }
@@ -610,7 +610,7 @@ struct gui : g3d_gui
                 parenth = lists[parenth].parent;
             list &p = lists[parenth];
             h = p.springs > 0 && !((curdepth-parentdepth)&1) ? lists[p.parent].h : p.h;
-            }
+        }
         rect_(curx, cury, w, h);
         defaultshader->set();
     }

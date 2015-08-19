@@ -282,14 +282,9 @@ cube &blockcube(int x, int y, int z, const block3 &b, int rgrid)
     return lookupcube(s.x, s.y, s.z, rgrid);
 }
 
-
-/// @warning loop macros are deprecated
 #define loopxy(b)        loop(y,(b).s[C[dimension((b).orient)]]) loop(x,(b).s[R[dimension((b).orient)]])
-/// @warning loop macros are deprecated
 #define loopxyz(b, r, f) { loop(z,(b).s[D[dimension((b).orient)]]) loopxy((b)) { cube &c = blockcube(x,y,z,b,r); f; } }
-/// @warning loop macros are deprecated
 #define loopselxyz(f)    { if(local) makeundo(); loopxyz(sel, sel.grid, f); changed(sel); }
-/// @warning loop macros are deprecated
 #define selcube(x, y, z) blockcube(x, y, z, sel, sel.grid)
 
 /// the amount of selected child cubes
@@ -707,14 +702,6 @@ void selgridmap(selinfo &sel, int *g)                           // generates a m
     loopxyz(sel, -sel.grid, (*g++ = lusize, (void)c));
 }
 
-
-
-
-
-
-
-
-
 void freeundo(undoblock *u)
 {
     if(!u->numents) freeblock(u->block(), false);
@@ -898,13 +885,6 @@ void editredo()
     swapundo(redos, undos, "redo");
 }
 
-
-
-
-
-
-
-
 // guard against subdivision
 #define protectsel(f) { undoblock *_u = newundocube(sel); f; if(_u) { pasteundo(_u); freeundo(_u); } }
 
@@ -1083,7 +1063,7 @@ void saveprefab(char *name)
     if(b->copy) freeblock(b->copy);
     protectsel(b->copy = blockcopy(block3(sel), sel.grid));
     changed(sel);
-    defformatstring(filename)("%s/%s.obr", *prefabdir, name);
+    defformatstring(filename, "%s/%s.obr", *prefabdir, name);
     path(filename);
     stream *f = opengzfile(filename, "wb");
     if(!f) { conoutf(CON_ERROR, "could not write prefab to %s", filename); return; }
@@ -1115,7 +1095,7 @@ void pasteprefab(char *name)
     prefab *b = prefabs.access(name);
     if(!b)
     {
-        defformatstring(filename)("%s/%s.obr", *prefabdir, name);
+        defformatstring(filename, "%s/%s.obr", *prefabdir, name);
         path(filename);
         stream *f = opengzfile(filename, "rb");
         if(!f) { conoutf(CON_ERROR, "could not read prefab %s", filename); return; }
@@ -1195,11 +1175,6 @@ void compacteditvslots()
         if(!u->numents)
             compactvslots(u->block()->c(), u->block()->size());
 }
-
-
-
-
-
 
 ///////////// height maps ////////////////
 
@@ -1554,10 +1529,6 @@ void edithmap(int dir, int mode) {
     hmap::run(dir, mode);
 }
 
-
-
-
-
 ///////////// main cube edit ////////////////
 
 int bounded(int n) { return n<0 ? 0 : (n>8 ? 8 : n); }
@@ -1714,10 +1685,6 @@ void delcube()
 COMMAND(pushsel, "i");
 COMMAND(editface, "ii");
 COMMAND(delcube, "");
-
-
-
-
 
 /////////// texture editing //////////////////
 
@@ -2101,10 +2068,6 @@ void replace(bool insel)
 
 ICOMMAND(replace, "", (), replace(false));
 ICOMMAND(replacesel, "", (), replace(true));
-
-
-
-
 
 ////////// flip and rotate ///////////////
 uint dflip(uint face) { return face==F_EMPTY ? face : 0x88888888 - (((face&0xF0F0F0F0)>>4) | ((face&0x0F0F0F0F)<<4)); }

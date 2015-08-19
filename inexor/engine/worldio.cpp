@@ -60,7 +60,7 @@ bool loadents(const char *fname, vector<entity> &ents, uint *crc)
 {
     string mapname, ogzname;
     getmapfilename(fname, NULL, mapname);
-    formatstring(ogzname)("%s/%s.ogz", *mapdir, mapname);
+    formatstring(ogzname, "%s/%s.ogz", *mapdir, mapname);
     path(ogzname);
     stream *f = opengzfile(ogzname, "rb");
     if(!f) return false;
@@ -190,11 +190,11 @@ void setmapfilenames(const char *fname, const char *cname = 0)
     string mapname;
     getmapfilename(fname, cname, mapname);
 
-    formatstring(ogzname)("%s.ogz", mapname);
-    if(savebak==1) formatstring(bakname)("%s.BAK", mapname);
-    else formatstring(bakname)("%s_%d.BAK", mapname, totalmillis);
-    formatstring(cfgname)("%s.cfg", mapname);
-    formatstring(picname)("%s.jpg", mapname);
+    formatstring(ogzname, "%s.ogz", mapname);
+    if(savebak==1) formatstring(bakname, "%s.BAK", mapname);
+    else formatstring(bakname, "%s_%d.BAK", mapname, totalmillis);
+    formatstring(cfgname, "%s.cfg", mapname);
+    formatstring(picname, "%s.jpg", mapname);
 
     path(ogzname);
     path(bakname);
@@ -212,7 +212,7 @@ void mapcfgname()
 
     string mapname;
     getmapfilename(mname, NULL, mapname);
-	defformatstring(cfgname)("%s.cfg", mapname);
+	defformatstring(cfgname, "%s.cfg", mapname);
     path(cfgname);
     result(cfgname);
 }
@@ -1451,12 +1451,12 @@ bool load_world(const char *mname, const char *cname)        // still supports a
 /// @param name the .OBJ file name
 void writeobj(char *name)
 {
-    defformatstring(fname)("%s.obj", name);
+    defformatstring(fname, "%s.obj", name);
     stream *f = openfile(path(fname), "w"); 
     if(!f) return;
     /// print a small comment to file
     f->printf("# obj file of Cube 2 level\n\n");
-    defformatstring(mtlname)("%s.mtl", name);
+    defformatstring(mtlname, "%s.mtl", name);
     path(mtlname);
     /// link reference to material library
     f->printf("mtllib %s\n\n", mtlname); 

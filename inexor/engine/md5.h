@@ -407,20 +407,20 @@ struct md5 : skelmodel, skelloader<md5>
         const char *fname = name + strlen(name);
         do --fname; while(fname >= name && *fname!='/' && *fname!='\\');
         fname++;
-        defformatstring(meshname)("%s/%s/%s.md5mesh", *modeldir, name, fname);
+        defformatstring(meshname, "%s/%s/%s.md5mesh", *modeldir, name, fname);
         mdl.meshes = sharemeshes(path(meshname), NULL, 2.0);
         if(!mdl.meshes) return false;
         mdl.initanimparts();
         mdl.initskins();
-        defformatstring(animname)("%s/%s/%s.md5anim", *modeldir, name, fname);
+        defformatstring(animname, "%s/%s/%s.md5anim", *modeldir, name, fname);
         ((md5meshgroup *)mdl.meshes)->loadanim(path(animname));
         return true;
     }
 
     bool load()
     {
-        formatstring(dir)("%s/%s", *modeldir, name);
-        defformatstring(cfgname)("%s/%s/md5.cfg", *modeldir, name);
+        formatstring(dir, "%s/%s", *modeldir, name);
+        defformatstring(cfgname, "%s/%s/md5.cfg", *modeldir, name);
 
         loading = this;
         identflags &= ~IDF_PERSIST;

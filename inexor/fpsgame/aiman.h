@@ -1,9 +1,5 @@
 // aiman.h (A.I. manager)
 // server-side ai manager
-// 
-// 
-// 
-// 
 
 namespace aiman
 {
@@ -11,12 +7,12 @@ namespace aiman
 	// only used in checkai() method
     bool dorefresh = false;
 
-	// limit amount of computer controlled players on your server
+    // limit amount of computer controlled players on your server
     VARN(serverbotlimit, botlimit, 0, 8, MAXBOTS);
 
     // use (prefere) bots to balance teams
-	// not accepted my most modded servers
-	VARN(serverbotbalance, botbalance, 0, 1, 1);
+    // not accepted my most modded servers
+    VARN(serverbotbalance, botbalance, 0, 1, 1);
 
 	// quicksort teams to rank them in scoreboard
     void calcteams(vector<teamscore> &teams)
@@ -31,8 +27,8 @@ namespace aiman
 			{
 				if(!strcmp(teams[j].team, ci->team))
 				{
-					t = &teams[j]; 
-					break;
+                    t = &teams[j]; 
+                    break;
 				}
 			}
             if(t) t->score++;
@@ -185,7 +181,6 @@ namespace aiman
 	}
 
 	// remove a bot and recreate him afterwards
-	// 
 	void reinitai(clientinfo *ci)
 	{
 		if(ci->ownernum < 0) deleteai(ci);
@@ -238,7 +233,6 @@ namespace aiman
 		return false;
 	}
 
-	// 
 	void checksetup()
 	{
 	    if(m_teammode && botbalance) balanceteams();
@@ -285,7 +279,7 @@ namespace aiman
         if(ci && !ci->local && ci->privilege < PRIV_ADMIN) return;
         botlimit = clamp(limit, 0, MAXBOTS);
         dorefresh = true;
-        defformatstring(msg)("bot limit is now %d", *botlimit);
+        defformatstring(msg, "bot limit is now %d", *botlimit);
         sendservmsg(msg);
     }
 
@@ -295,7 +289,7 @@ namespace aiman
         if(ci && !ci->local && !ci->privilege) return;
         botbalance = balance ? 1 : 0;
         dorefresh = true;
-        defformatstring(msg)("bot team balancing is now %s", botbalance ? "enabled" : "disabled");
+        defformatstring(msg, "bot team balancing is now %s", botbalance ? "enabled" : "disabled");
         sendservmsg(msg);
     }
 

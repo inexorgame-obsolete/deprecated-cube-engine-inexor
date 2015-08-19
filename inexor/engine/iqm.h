@@ -388,7 +388,7 @@ struct iqm : skelmodel, skelloader<iqm>
         const char *fname = name + strlen(name);
         do --fname; while(fname >= name && *fname!='/' && *fname!='\\');
         fname++;
-        defformatstring(meshname)("%s/%s/%s.iqm", *modeldir, name, fname);
+        defformatstring(meshname, "%s/%s/%s.iqm", *modeldir, name, fname);
         mdl.meshes = sharemeshes(path(meshname), NULL);
         if(!mdl.meshes) return false;
         mdl.initanimparts();
@@ -398,8 +398,8 @@ struct iqm : skelmodel, skelloader<iqm>
 
     bool load()
     {
-        formatstring(dir)("%s/%s", *modeldir, loadname);
-        defformatstring(cfgname)("%s/%s/iqm.cfg", *modeldir, name);
+        formatstring(dir, "%s/%s", *modeldir, loadname);
+        defformatstring(cfgname, "%s/%s/iqm.cfg", *modeldir, name);
 
         loading = this;
         identflags &= ~IDF_PERSIST;

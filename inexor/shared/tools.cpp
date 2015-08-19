@@ -17,7 +17,7 @@ char *tempformatstring(const char *fmt, ...)
 
     va_list v;
     va_start(v, fmt);
-    vformatstring(buf, fmt, v);
+    vformatstring(buf, fmt, v, MAXSTRLEN);
     va_end(v);
 
     return buf;

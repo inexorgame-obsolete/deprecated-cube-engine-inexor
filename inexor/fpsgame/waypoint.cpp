@@ -684,7 +684,7 @@ namespace ai
 
         string mapname;
         getmapfilename(mname, NULL, mapname);
-        formatstring(wptname)("%s%s", mapname, ".wpt");
+        nformatstring(wptname, MAXSTRLEN, "%s%s", mapname, ".wpt");
         return true;
     }
 

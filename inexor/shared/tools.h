@@ -21,9 +21,7 @@ typedef unsigned long long int ullong;
   #define ASSERT(c) if(c) {} /// if not in debug mode, ignore assertion ("did it work? alright then do nothing {}")
 #endif
 
-/// __restrict is a keyword that can be used in pointer declarations
-/// http://stackoverflow.com/questions/745870/realistic-usage-of-the-c99-restrict-keyword
-/// http://en.wikipedia.org/wiki/Restrict
+/// __restrict is a keyword that can be used in some pointer declaration scenarios. mostly not worth it.
 #if defined(__GNUC__) || (defined(_MSC_VER) && _MSC_VER >= 1400)
   #define RESTRICT __restrict
 #else
@@ -111,63 +109,62 @@ extern uint randomMT();
 #define MAXSTRLEN 260
 typedef char string[MAXSTRLEN];
 
+inline void vformatstring(char *d, const char *fmt, va_list v, int len) { _vsnprintf(d, len, fmt, v); d[len-1] = 0; }
+template<size_t N> inline void vformatstring(char (&d)[N], const char *fmt, va_list v) { vformatstring(d, fmt, v, N); }
 
-/// format string using variable parameter lists (va_list)
-inline void vformatstring(char *d, const char *fmt, va_list v, int len = MAXSTRLEN) 
-{ 
-	_vsnprintf(d, len, fmt, v);
-	d[len-1] = 0; /// end string using binary 0 ('\0')
-}
-
-
-// Please note that some functions could be replaced with standard librarie's functions
-// but the reason why it was implemented manually is that the C++ standard library was not as 
-// finished and tested enough as it is today in these days.
-// the suffix _s means that the standard librarie's functions are memory size safe
-// because you must pass the amount of bytes you want to copy to the destination string.
-
-// copy string from source to destination
-// DEPRECATED! use  'strcpy_s'  from <string> instead!
-inline char *copystring(char *d, const char *s, size_t len = MAXSTRLEN)
+inline char *copystring(char *d, const char *s, size_t len)
 {
-    size_t slen = min(strlen(s)+1, len);
+    size_t slen = min(strlen(s), len-1);
     memcpy(d, s, slen);
-    d[slen-1] = 0; /// end string using binary 0 (\0)
+    d[slen] = 0;
     return d;
 }
+template<size_t N> inline char *copystring(char (&d)[N], const char *s) { return copystring(d, s, N); }
 
-// glue two strings together
-// DEPRECATED! use strcat_s instead
-inline char *concatstring(char *d, const char *s, size_t len = MAXSTRLEN) 
+inline char *concatstring(char *d, const char *s, size_t len) { size_t used = strlen(d); return used < len ? copystring(d+used, s, len-used) : d; }
+template<size_t N> inline char *concatstring(char (&d)[N], const char *s) { return concatstring(d, s, N); }
+
+inline char *prependstring(char *d, const char *s, size_t len)
 {
-	size_t used = strlen(d);
-	return used < len ? copystring(d+used, s, len-used) : d;
+    size_t slen = min(strlen(s), len);
+    memmove(&d[slen], d, min(len - slen, strlen(d) + 1));
+    memcpy(d, s, slen);
+    d[len-1] = 0;
+    return d;
+}
+template<size_t N> inline char *prependstring(char (&d)[N], const char *s) { return prependstring(d, s, N); }
+
+inline void nformatstring(char *d, int len, const char *fmt, ...) PRINTFARGS(3, 4);
+inline void nformatstring(char *d, int len, const char *fmt, ...)
+{
+    va_list v;
+    va_start(v, fmt);
+    vformatstring(d, fmt, v, len);
+    va_end(v);
 }
 
-/// strings in the old code are usually initialized with
-/// formatstring(hanni)("hello world"); where hello world is the constructor call for a stringformatter instance
-struct stringformatter
-{
-    char *buf;
-    stringformatter(char *buf): buf((char *)buf) {}
-    void operator()(const char *fmt, ...) PRINTFARGS(2, 3)
-    {
-        va_list v;
-        va_start(v, fmt);
-        vformatstring(buf, fmt, v);
-        va_end(v);
-    }
-};
-
-/// ?
 extern char *tempformatstring(const char *fmt, ...) PRINTFARGS(1, 2);
 
-/// Sauerbraten mostly initialises string using 
-/// 
-/// defformatstring(test_string)("hello_world");
-/// 
-#define formatstring(d) stringformatter((char *)d)
-#define defformatstring(d) string d; formatstring(d)
+template<size_t N> inline void formatstring(char (&d)[N], const char *fmt, ...) PRINTFARGS(2, 3);
+template<size_t N> inline void formatstring(char (&d)[N], const char *fmt, ...)
+{
+    va_list v;
+    va_start(v, fmt);
+    vformatstring(d, fmt, v, int(N));
+    va_end(v);
+}
+
+template<size_t N> inline void concformatstring(char (&d)[N], const char *fmt, ...) PRINTFARGS(2, 3);
+template<size_t N> inline void concformatstring(char (&d)[N], const char *fmt, ...)
+{
+    va_list v;
+    va_start(v, fmt);
+    int len = strlen(d);
+    vformatstring(d + len, fmt, v, int(N) - len);
+    va_end(v);
+}
+
+#define defformatstring(d,...) string d; formatstring(d, __VA_ARGS__)
 #define defvformatstring(d,last,fmt) string d; { va_list ap; va_start(ap, last); vformatstring(d, fmt, ap); va_end(ap); }
 
 template<size_t N> inline bool matchstring(const char *s, size_t len, const char (&d)[N])
@@ -504,12 +501,45 @@ static inline bool htcmp(const char *x, const char *y)
     return !strcmp(x, y);
 }
 
+struct stringslice
+{
+    const char *str;
+    int len;
+    stringslice() {}
+    stringslice(const char *str, int len) : str(str), len(len) {}
+    stringslice(const char *str, const char *end) : str(str), len(int(end-str)) {}
+
+    const char *end() const { return &str[len]; }
+};
+
+inline char *newstring(const stringslice &s) { return newstring(s.str, s.len); }
+inline const char *stringptr(const char *s) { return s; }
+inline const char *stringptr(const stringslice &s) { return s.str; }
+inline int stringlen(const char *s) { return int(strlen(s)); }
+inline int stringlen(const stringslice &s) { return s.len; }
+
+inline char *copystring(char *d, const stringslice &s, size_t len)
+{
+    size_t slen = min(size_t(s.len), len-1);
+    memcpy(d, s.str, slen);
+    d[slen] = 0;
+    return d;
+}
+template<size_t N> inline char *copystring(char (&d)[N], const stringslice &s) { return copystring(d, s, N); }
+
 static inline uint memhash(const void *ptr, int len)
 {
     const uchar *data = (const uchar *)ptr;
     uint h = 5381;
     loopi(len) h = ((h<<5)+h)^data[i];
     return h;
+}
+
+static inline uint hthash(const stringslice &s) { return memhash(s.str, s.len); }
+
+static inline bool htcmp(const stringslice &x, const char *y)
+{
+    return x.len == (int)strlen(y) && !memcmp(x.str, y, x.len);
 }
 
 static inline uint hthash(int key)
@@ -1321,7 +1351,7 @@ struct streambuf
     stream *s;
 
     streambuf(stream *s) : s(s) {}
-    
+
     T get() { return s->get<T>(); }
     size_t get(T *vals, size_t numvals) { return s->get(vals, numvals); }
     void put(const T &val) { s->put(&val, 1); }
@@ -1426,6 +1456,6 @@ struct ipmask
     int print(char *buf) const;
     bool check(enet_uint32 host) const { return (host & mask) == ip; }
 };
-  
+
 #endif
 

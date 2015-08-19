@@ -43,7 +43,7 @@ static const char *parse_number(JSON *item, const char *num)
 /// Internal: Render the number nicely from the given item into a string.
 static char *print_number(JSON *item)
 {
-	defformatstring(val) ("%g", item->valuefloat);
+	defformatstring(val, "%g", item->valuefloat);
 	return newstring(val);
 }
 
@@ -158,7 +158,7 @@ static char *print_string_ptr(const char *str)
                 case '\r':    *ptr2++ = 'r';    break;
                 case '\t':    *ptr2++ = 't';    break;
                 default:
-                    formatstring(ptr2) ("u%04x", token);
+                    nformatstring(ptr2, len+3, "u%04x", token);
                     ptr2 += 5;
                     break;    // escape and print
             }
@@ -287,7 +287,7 @@ static char *print_array(JSON *item, int depth, bool fmt)
     if(!numentries)// Explicitly handle numentries==0
     {
         out = new char[3];
-        formatstring(out)("[]");
+        nformatstring(out, 3, "[]");
         return out;
     }
     // Allocate an array to hold the values for each
@@ -538,7 +538,7 @@ int JSON_Fix(const char *filename)
     {
         conoutf("%s was malformatted but has been fixed automatically. \nThe original file has been overwritten, but backuped", found);
         //cutextension .. getextension
-        defformatstring(backupname)("%s_backup", found);
+        defformatstring(backupname, "%s_backup", found);
         if(!rename(found, backupname)) j->save(found);
         delete j;
         delete[] buf;
@@ -602,7 +602,7 @@ bool JSON_ResolveImport(JSON *g)
     JSON_ResolveReplacements(newg, replace);
 
     // Replace g with newg:
-    if(g->name) copystring(newg->name, g->name); // "anims"
+    if(g->name) copystring(newg->name, g->name, strlen(g->name)); // "anims"
     newg->parent = g->parent;
 
     newg->next = g->next;

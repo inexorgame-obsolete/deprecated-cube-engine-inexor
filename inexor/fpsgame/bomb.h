@@ -104,7 +104,7 @@ struct bombclientmode : clientmode
         drawradar(x - roffset, y - roffset, rsize);
 
         // show obstacles on minimap
-        defformatstring(blip)("%s/blip_block.png", *radardir);
+        defformatstring(blip, "%s/blip_block.png", *radardir);
         if(showminimapobstacles) loopv(movables)
         {
             dynent *m = (dynent *) movables[i];
@@ -125,7 +125,7 @@ struct bombclientmode : clientmode
         }
 
         // show fired bombs on minimap
-        formatstring(blip) ("%s/blip_bomb.png", *radardir);
+        formatstring(blip, "%s/blip_bomb.png", *radardir);
         loopv(bouncers)
         {
             bouncer *p = bouncers[i];
@@ -333,7 +333,7 @@ struct bombclientmode : clientmode
     			forcepaused(false);
     		}
     		else if(remaining/1000 != countdown){
-          defformatstring(msg)("- %d -", countdown--);
+          defformatstring(msg, "- %d -", countdown--);
           sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 2000, E_ZOOM_IN, msg);
     		}
     		break;
@@ -412,10 +412,10 @@ struct bombclientmode : clientmode
         for(int i=0; i<target->state.bombradius/2; i++) { pushentity(I_BOMBRADIUS, target->state.o); leftitems++; }
         for(int i=0; i<target->state.bombdelay/3; i++) { pushentity(I_BOMBDELAY, target->state.o); leftitems++; }
         if (leftitems > 0) {
-            defformatstring(msg)("%s died and left %d %s!", target->name, leftitems, leftitems > 1 ? "items" : "item");
+            defformatstring(msg, "%s died and left %d %s!", target->name, leftitems, leftitems > 1 ? "items" : "item");
             sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 1250, E_ZOOM_OUT, msg);
         } else {
-            defformatstring(msg)("%s died!", target->name);
+            defformatstring(msg, "%s died!", target->name);
             sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 1250, E_ZOOM_OUT, msg);
         }
     }

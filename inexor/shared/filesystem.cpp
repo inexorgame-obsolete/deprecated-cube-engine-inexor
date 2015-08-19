@@ -37,7 +37,7 @@ namespace inexor {
            // if(dirlen >= 2 && (dir[dirlen - 1] == '/' || dir[dirlen - 1] == '\\')) dir[dirlen - 1] = '\0';
 
             const char *dir = getmediadir(type);
-            formatstring(output)("%s/%s%s", dir ? dir : "", basename, extension ? extension : "");
+            nformatstring(output, MAXSTRLEN, "%s/%s%s", dir ? dir : "", basename, extension ? extension : "");
             return output;
         }
 
@@ -47,9 +47,9 @@ namespace inexor {
         {
             ASSERT(basename != NULL && strlen(basename)>=2);
             if(basename[0] == '/') appendmediadir(output, basename+1, type);
-            else if(j && j->currentfile) copystring(output, makerelpath(parentdir(j->currentfile), basename));
-            else if(!j) copystring(output, makerelpath(getcurexecdir(), basename));
-            else copystring(output, basename);
+            else if(j && j->currentfile) nformatstring(output, MAXSTRLEN, makerelpath(parentdir(j->currentfile), basename));
+            else if(!j) nformatstring(output, MAXSTRLEN, makerelpath(getcurexecdir(), basename));
+            else copystring(output, basename, strlen(basename));
             return output;
         }
     }

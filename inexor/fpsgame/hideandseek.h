@@ -57,7 +57,7 @@ struct hideandseekclientmode : clientmode
         setradartex();
         drawradar(x - roffset, y - roffset, rsize);
         // show obstacles on minimap
-        defformatstring(blip)("%s/blip_block.png", *radardir);
+        defformatstring(blip, "%s/blip_block.png", *radardir);
         if(showminimapobstacles) loopv(movables) {
             dynent *m = (dynent *) movables[i];
             if(!isobstaclealive((movable *) m)) continue;
@@ -202,18 +202,18 @@ struct hideandseekclientmode : clientmode
             int remaining = getremaininghiders();
             if (!actor) {
                 if (remaining > 0) {
-                    defformatstring(msg)("%s suicided! %d Hiders remaining!", target->name, remaining);
+                    defformatstring(msg, "%s suicided! %d Hiders remaining!", target->name, remaining);
                     sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 3000, E_ZOOM_OUT, msg);
                 } else {
-                    defformatstring(msg)("%s suicided! All Hiders eliminated!", target->name);
+                    defformatstring(msg, "%s suicided! All Hiders eliminated!", target->name);
                     sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 3000, E_ZOOM_OUT, msg);
                 }
             } else {
                 if (remaining > 0) {
-                    defformatstring(msg)("%s killed %s! %d Hiders remaining!", actor->name, target->name, remaining);
+                    defformatstring(msg, "%s killed %s! %d Hiders remaining!", actor->name, target->name, remaining);
                     sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 3000, E_ZOOM_OUT, msg);
                 } else {
-                    defformatstring(msg)("%s killed %s! All Hiders eliminated!", actor->name, target->name);
+                    defformatstring(msg, "%s killed %s! All Hiders eliminated!", actor->name, target->name);
                     sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 3000, E_ZOOM_OUT, msg);
                 }
             }
