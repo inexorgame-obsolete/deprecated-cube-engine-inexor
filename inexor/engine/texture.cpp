@@ -663,7 +663,7 @@ void createcompressedtexture(int tnum, int w, int h, uchar *data, int align, int
     uploadcompressedtexture(target, subtarget, format, w, h, data, align, blocksize, levels, filter > 1); 
 }
 
-hashtable<char *, Texture> textures;
+hashnameset<Texture> textures;
 
 Texture *notexture = NULL; // used as default, ensured to be loaded
 
@@ -2050,7 +2050,7 @@ void forcecubemapload(GLuint tex)
     glPushMatrix();
     glLoadIdentity();
 
-    cubemapshader->set();
+    SETSHADER(cubemap);
     GLenum depthtest = glIsEnabled(GL_DEPTH_TEST), blend = glIsEnabled(GL_BLEND);
     if(depthtest) glDisable(GL_DEPTH_TEST);
     glBindTexture(GL_TEXTURE_CUBE_MAP, tex);

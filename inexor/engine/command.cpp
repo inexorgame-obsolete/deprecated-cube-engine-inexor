@@ -4,7 +4,7 @@
 #include "inexor/engine/engine.h"
 #include "inexor/rpc/SharedVar.h"
 
-hashset<ident> idents; // contains ALL vars/commands/aliases
+hashnameset<ident> idents; // contains ALL vars/commands/aliases
 vector<ident *> identmap;
 ident *dummyident = NULL;
 

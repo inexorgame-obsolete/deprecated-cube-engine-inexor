@@ -17,8 +17,8 @@
 
 
 /// declaration of 2- and 4-dimensional vectors
+struct vec;
 struct vec4;
-struct vec2;
 struct ivec;
 
 struct ivec4;
@@ -26,6 +26,63 @@ struct ivec2;
 struct usvec;
 struct svec;
 
+/// 2-dimensional float vectors
+struct vec2
+{
+    union
+    {
+        struct { float x, y; };
+        float v[2];
+    };
+
+    vec2() {}
+    vec2(float x, float y) : x(x), y(y) {}
+    explicit vec2(const vec &v);
+    explicit vec2(const vec4 &v);
+
+    float &operator[](int i)       { return v[i]; }
+    float  operator[](int i) const { return v[i]; }
+
+    bool operator==(const vec2 &o) const { return x == o.x && y == o.y; }
+    bool operator!=(const vec2 &o) const { return x != o.x || y != o.y; }
+
+    bool iszero() const { return x==0 && y==0; }
+    float dot(const vec2 &o) const  { return x*o.x + y*o.y; }
+    float squaredlen() const { return dot(*this); }
+    float magnitude() const  { return sqrtf(squaredlen()); }
+    vec2 &normalize() { mul(1/magnitude()); return *this; }
+    float cross(const vec2 &o) const { return x*o.y - y*o.x; }
+
+    vec2 &mul(float f)       { x *= f; y *= f; return *this; }
+    vec2 &mul(const vec2 &o) { x *= o.x; y *= o.y; return *this; }
+    vec2 &div(float f)       { x /= f; y /= f; return *this; }
+    vec2 &div(const vec2 &o) { x /= o.x; y /= o.y; return *this; }
+    vec2 &add(float f)       { x += f; y += f; return *this; }
+    vec2 &add(const vec2 &o) { x += o.x; y += o.y; return *this; }
+    vec2 &sub(float f)       { x -= f; y -= f; return *this; }
+    vec2 &sub(const vec2 &o) { x -= o.x; y -= o.y; return *this; }
+    vec2 &neg()              { x = -x; y = -y; return *this; }
+    template<class B> vec2 &madd(const vec2 &a, const B &b) { return add(vec2(a).mul(b)); }
+    template<class B> vec2 &msub(const vec2 &a, const B &b) { return sub(vec2(a).mul(b)); }
+
+    vec2 &lerp(const vec2 &b, float t) { x += (b.x-x)*t; y += (b.y-y)*t; return *this; }
+    vec2 &lerp(const vec2 &a, const vec2 &b, float t) { x = a.x + (b.x-a.x)*t; y = a.y + (b.y-a.y)*t; return *this; }
+};
+
+/// hashtable comparison function 
+static inline bool htcmp(const vec2 &x, const vec2 &y)
+{
+    return x == y;
+}
+
+/// hashtable hashing function to create unique key
+static inline uint hthash(const vec2 &k)
+{
+    union { uint i; float f; } x, y;
+    x.f = k.x; y.f = k.y;
+    uint v = x.i^y.i;
+    return v + (v>>12);
+}
 
 /// vector with 3 floats and some useful methods.
 struct vec
@@ -46,8 +103,8 @@ struct vec
     vec(float a, float b, float c) : x(a), y(b), z(c) {}
     explicit vec(int v[3]) : x(v[0]), y(v[1]), z(v[2]) {}
     explicit vec(const float *v) : x(v[0]), y(v[1]), z(v[2]) {}
+    explicit vec(const vec2 &v, float z = 0) : x(v.x), y(v.y), z(z) {}
     explicit vec(const vec4 &v);
-    explicit vec(const vec2 &v, float z = 0);
     explicit vec(const ivec &v);
 
 	/// vector constructor which converts yaw and pitch angles to XYZ coordinates
@@ -59,9 +116,13 @@ struct vec
 
     vec &set(int i, float f) { v[i] = f; return *this; }
 
+
 	/// operators for vector comparisn
     bool operator==(const vec &o) const { return x == o.x && y == o.y && z == o.z; }
     bool operator!=(const vec &o) const { return x != o.x || y != o.y || z != o.z; }
+
+    /// Receive the absolute values of this vec.
+    vec &abs() { x = fabs(x); y = fabs(y); z = fabs(z); return *this; }
 
 	/// "do all cartesian coordinates (XYZ) of this vector have the value zero?"
     bool iszero() const { return x==0 && y==0 && z==0; }
@@ -98,7 +159,7 @@ struct vec
     vec &min(float f)        { x = ::min(x, f);    y = ::min(y, f);    z = ::min(z, f);    return *this; }
     vec &max(float f)        { x = ::max(x, f);    y = ::max(y, f);    z = ::max(z, f);    return *this; }
     vec &clamp(float f, float h) { x = ::clamp(x, f, h);   y = ::clamp(y, f, h);   z = ::clamp(z, f, h);   return *this; }
-   
+
 	/// vector's magnitude in XY dimension
 	float magnitude2() const { return sqrtf(dot2(*this)); }
 	/// vector's magnitude in all 3 (XYZ) dimensions
@@ -165,14 +226,15 @@ struct vec
     vec &rotate_around_z(float c, float s) { float rx = x, ry = y; x = c*rx-s*ry; y = c*ry+s*rx; return *this; }
     vec &rotate_around_x(float c, float s) { float ry = y, rz = z; y = c*ry-s*rz; z = c*rz+s*ry; return *this; }
     vec &rotate_around_y(float c, float s) { float rx = x, rz = z; x = c*rx+s*rz; z = c*rz-s*rx; return *this; }
+
     vec &rotate_around_z(float angle) { return rotate_around_z(cosf(angle), sinf(angle)); }
     vec &rotate_around_x(float angle) { return rotate_around_x(cosf(angle), sinf(angle)); }
     vec &rotate_around_y(float angle) { return rotate_around_y(cosf(angle), sinf(angle)); }
-    vec &rotate(float angle, const vec &d)
-    {
-        float c = cosf(angle), s = sinf(angle);
-        return rotate(c, s, d);
-    }
+
+    vec &rotate_around_z(const vec2 &sc) { return rotate_around_z(sc.x, sc.y); }
+    vec &rotate_around_x(const vec2 &sc) { return rotate_around_x(sc.x, sc.y); }
+    vec &rotate_around_y(const vec2 &sc) { return rotate_around_y(sc.x, sc.y); }
+
     vec &rotate(float c, float s, const vec &d)
     {
         *this = vec(x*(d.x*d.x*(1-c)+c) + y*(d.x*d.y*(1-c)-d.z*s) + z*(d.x*d.z*(1-c)+d.y*s),
@@ -180,6 +242,8 @@ struct vec
                     x*(d.x*d.z*(1-c)-d.y*s) + y*(d.y*d.z*(1-c)+d.x*s) + z*(d.z*d.z*(1-c)+c));
         return *this;
     }
+    vec &rotate(float angle, const vec &d) { return rotate(cosf(angle), sinf(angle), d); }
+    vec &rotate(const vec2 &sc, const vec &d) { return rotate(sc.x, sc.y, d); }
 
 	/// orthogonal projection
     void orthogonal(const vec &d)
@@ -222,6 +286,8 @@ struct vec
         return dist_to_bb(o, T(o).add(size));
     }
 };
+
+inline vec2::vec2(const vec &v) : x(v.x), y(v.y) {}
 
 /// hashtable comparism function 
 static inline bool htcmp(const vec &x, const vec &y)
@@ -313,68 +379,6 @@ struct vec4
 };
 
 inline vec::vec(const vec4 &v) : x(v.x), y(v.y), z(v.z) {}
-
-/// 2-dimensional vectors
-/// all methods stay basicly the same but with an extra dimension
-struct vec2
-{
-    union
-    {
-        struct { float x, y; };
-        float v[2];
-    };
-
-    vec2() {}
-    vec2(float x, float y) : x(x), y(y) {}
-    explicit vec2(const vec &v) : x(v.x), y(v.y) {}
-    explicit vec2(const vec4 &v) : x(v.x), y(v.y) {}
-
-    float &operator[](int i)       { return v[i]; }
-    float  operator[](int i) const { return v[i]; }
-
-    bool operator==(const vec2 &o) const { return x == o.x && y == o.y; }
-    bool operator!=(const vec2 &o) const { return x != o.x || y != o.y; }
-
-    bool iszero() const { return x==0 && y==0; }
-    float dot(const vec2 &o) const  { return x*o.x + y*o.y; }
-    float squaredlen() const { return dot(*this); }
-    float magnitude() const  { return sqrtf(squaredlen()); }
-    vec2 &normalize() { mul(1/magnitude()); return *this; }
-    float cross(const vec2 &o) const { return x*o.y - y*o.x; }
-
-    vec2 &mul(float f)       { x *= f; y *= f; return *this; }
-    vec2 &mul(const vec2 &o) { x *= o.x; y *= o.y; return *this; }
-    vec2 &div(float f)       { x /= f; y /= f; return *this; }
-    vec2 &div(const vec2 &o) { x /= o.x; y /= o.y; return *this; }
-    vec2 &add(float f)       { x += f; y += f; return *this; }
-    vec2 &add(const vec2 &o) { x += o.x; y += o.y; return *this; }
-    vec2 &sub(float f)       { x -= f; y -= f; return *this; }
-    vec2 &sub(const vec2 &o) { x -= o.x; y -= o.y; return *this; }
-    vec2 &neg()              { x = -x; y = -y; return *this; }
-    template<class B> vec2 &madd(const vec2 &a, const B &b) { return add(vec2(a).mul(b)); }
-    template<class B> vec2 &msub(const vec2 &a, const B &b) { return sub(vec2(a).mul(b)); }
-
-    vec2 &lerp(const vec2 &b, float t) { x += (b.x-x)*t; y += (b.y-y)*t; return *this; }
-    vec2 &lerp(const vec2 &a, const vec2 &b, float t) { x = a.x + (b.x-a.x)*t; y = a.y + (b.y-a.y)*t; return *this; }
-};
-
-inline vec::vec(const vec2 &v, float z) : x(v.x), y(v.y), z(z) {}
-
-
-/// hashtable comparison function 
-static inline bool htcmp(const vec2 &x, const vec2 &y)
-{
-    return x == y;
-}
-
-/// hashtable hashing function to create unique key
-static inline uint hthash(const vec2 &k)
-{
-    union { uint i; float f; } x, y;
-    x.f = k.x; y.f = k.y;
-    uint v = x.i^y.i;
-    return v + (v>>12);
-}
 
 struct matrix3;
 struct matrix4x3;
@@ -1745,7 +1749,7 @@ struct matrix4
     template<class T, class U> T transformnormal(const U &in) const
     {
         T v;
-        transform(in, v);
+        transformnormal(in, v);
         return v;
     }
 
@@ -1788,6 +1792,11 @@ struct matrix4
     vec4 roww() const { return vec4(a.w, b.w, c.w, d.w); }
 
     bool invert(const matrix4 &m, double mindet = 1.0e-12);
+
+    vec2 lineardepthscale() const
+    {
+        return vec2(d.w, -d.z).div(c.z*d.w - d.z*c.w);
+    }
 };
 
 inline matrix3::matrix3(const matrix4 &m)
