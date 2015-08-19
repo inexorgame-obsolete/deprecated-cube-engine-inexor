@@ -3,7 +3,7 @@
 #include "inexor/engine/engine.h"
 #include "inexor/shared/filesystem.h"
 
-bool hasTR = false, hasFBO = false, hasDS = false, hasTF = false, hasTRG = false, hasS3TC = false, hasFXT1 = false, hasAF = false, hasNVFB = false, hasFBB = false, hasUBO = false, hasMBR = false;
+bool hasTR = false, hasFBO = false, hasAFBO = false, hasDS = false, hasTF = false, hasTRG = false, hasS3TC = false, hasFXT1 = false, hasAF = false, hasNVFB = false, hasFBB = false, hasUBO = false, hasMBR = false;
 int hasstencil = 0;
 
 VAR(glversion, 1, 0, 0);
@@ -138,20 +138,20 @@ PFNGLDRAWBUFFERSPROC glDrawBuffers_ = NULL;
 #endif
 
 // GL_EXT_framebuffer_object
-PFNGLBINDRENDERBUFFEREXTPROC        glBindRenderbuffer_        = NULL;
-PFNGLDELETERENDERBUFFERSEXTPROC     glDeleteRenderbuffers_     = NULL;
-PFNGLGENFRAMEBUFFERSEXTPROC         glGenRenderbuffers_        = NULL;
-PFNGLRENDERBUFFERSTORAGEEXTPROC     glRenderbufferStorage_     = NULL;
-PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC  glCheckFramebufferStatus_  = NULL;
-PFNGLBINDFRAMEBUFFEREXTPROC         glBindFramebuffer_         = NULL;
-PFNGLDELETEFRAMEBUFFERSEXTPROC      glDeleteFramebuffers_      = NULL;
-PFNGLGENFRAMEBUFFERSEXTPROC         glGenFramebuffers_         = NULL;
-PFNGLFRAMEBUFFERTEXTURE2DEXTPROC    glFramebufferTexture2D_    = NULL;
-PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbuffer_ = NULL;
-PFNGLGENERATEMIPMAPEXTPROC          glGenerateMipmap_          = NULL;
+PFNGLBINDRENDERBUFFERPROC        glBindRenderbuffer_        = NULL;
+PFNGLDELETERENDERBUFFERSPROC     glDeleteRenderbuffers_     = NULL;
+PFNGLGENFRAMEBUFFERSPROC         glGenRenderbuffers_        = NULL;
+PFNGLRENDERBUFFERSTORAGEPROC     glRenderbufferStorage_     = NULL;
+PFNGLCHECKFRAMEBUFFERSTATUSPROC  glCheckFramebufferStatus_  = NULL;
+PFNGLBINDFRAMEBUFFERPROC         glBindFramebuffer_         = NULL;
+PFNGLDELETEFRAMEBUFFERSPROC      glDeleteFramebuffers_      = NULL;
+PFNGLGENFRAMEBUFFERSPROC         glGenFramebuffers_         = NULL;
+PFNGLFRAMEBUFFERTEXTURE2DPROC    glFramebufferTexture2D_    = NULL;
+PFNGLFRAMEBUFFERRENDERBUFFERPROC glFramebufferRenderbuffer_ = NULL;
+PFNGLGENERATEMIPMAPPROC          glGenerateMipmap_          = NULL;
 
 // GL_EXT_framebuffer_blit
-PFNGLBLITFRAMEBUFFEREXTPROC         glBlitFramebuffer_         = NULL;
+PFNGLBLITFRAMEBUFFERPROC         glBlitFramebuffer_         = NULL;
 
 // GL_ARB_uniform_buffer_object
 PFNGLGETUNIFORMINDICESPROC       glGetUniformIndices_       = NULL;
@@ -178,7 +178,6 @@ VAR(intel_immediate_bug, 0, 0, 1);
 VAR(intel_vertexarray_bug, 0, 0, 1);
 VAR(sdl_backingstore_bug, -1, 0, 1);
 VAR(minimizetcusage, 1, 0, 0);
-VAR(usetexrect, 1, 0, 0);
 VAR(useubo, 1, 0, 0);
 VAR(usetexcompress, 1, 0, 0);
 VAR(rtscissor, 0, 1, 1);
@@ -614,17 +613,29 @@ ICOMMAND(getcampos, "", (),
     result(pos);
 });
 
-vec worldpos, camdir, camright, camup;void findorientation()
-{
-    mvmatrix.transposedtransformnormal(vec(viewmatrix.b), camdir);
-    mvmatrix.transposedtransformnormal(vec(viewmatrix.a).neg(), camright);
-    mvmatrix.transposedtransformnormal(vec(viewmatrix.c), camup);
+vec worldpos, camdir, camright, camup;
 
-    if(raycubepos(camera1->o, camdir, worldpos, 0, RAY_CLIPMAT|RAY_SKIPFIRST) == -1)
-        worldpos = vec(camdir).mul(2*worldsize).add(camera1->o); //otherwise 3dgui won't work when outside of map
+void setcammatrix()
+{
+    // move from RH to Z-up LH quake style worldspace
+    cammatrix = viewmatrix;
+    cammatrix.rotate_around_y(camera1->roll*RAD);
+    cammatrix.rotate_around_x(camera1->pitch*-RAD);
+    cammatrix.rotate_around_z(camera1->yaw*-RAD);
+    cammatrix.translate(vec(camera1->o).neg());
+
+    cammatrix.transposedtransformnormal(vec(viewmatrix.b), camdir);
+    cammatrix.transposedtransformnormal(vec(viewmatrix.a).neg(), camright);
+    cammatrix.transposedtransformnormal(vec(viewmatrix.c), camup);
+
+    if(!drawtex)
+    {
+        if(raycubepos(camera1->o, camdir, worldpos, 0, RAY_CLIPMAT|RAY_SKIPFIRST) == -1)
+            worldpos = vec(camdir).mul(2*worldsize).add(camera1->o); // if nothing is hit, just far away in the view direction
+    }
 }
 
-void transplayer()
+void setcamprojmatrix(bool init = true, bool flush = false)
 {
     // move from RH to Z-up LH quake style worldspace
     glLoadMatrixf(viewmatrix.a.v);
@@ -837,35 +848,14 @@ void recomputecamera()
 }
 
 extern const matrix4 viewmatrix(vec(-1, 0, 0), vec(0, 0, 1), vec(0, -1, 0));
-matrix4 mvmatrix, projmatrix, mvpmatrix, invmvmatrix, invmvpmatrix;
-
-void readmatrices()
-{
-    glGetFloatv(GL_MODELVIEW_MATRIX, mvmatrix.a.v);
-    glGetFloatv(GL_PROJECTION_MATRIX, projmatrix.a.v);
-
-    mvpmatrix.mul(projmatrix, mvmatrix);
-    invmvmatrix.invert(mvmatrix);
-    invmvpmatrix.invert(mvpmatrix);
-}
+matrix4 cammatrix, projmatrix, camprojmatrix, invcammatrix, invcamprojmatrix;
 
 FVAR(nearplane, 0.01f, 0.54f, 2.0f);
-
-void project(float fovy, float aspect, int farplane, bool flipx = false, bool flipy = false, bool swapxy = false, float zscale = 1)
-{
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    if(swapxy) glRotatef(90, 0, 0, 1);
-    if(flipx || flipy!=swapxy || zscale!=1) glScalef(flipx ? -1 : 1, flipy!=swapxy ? -1 : 1, zscale);
-    GLdouble ydist = nearplane * tan(fovy/2*RAD), xdist = ydist * aspect;
-    glFrustum(-xdist, xdist, -ydist, ydist, nearplane, farplane);
-    glMatrixMode(GL_MODELVIEW);
-}
 
 vec calcavatarpos(const vec &pos, float dist)
 {
     vec eyepos;
-    mvmatrix.transform(pos, eyepos);
+    cammatrix.transform(pos, eyepos);
     GLdouble ydist = nearplane * tan(curavatarfov/2*RAD), xdist = ydist * aspect;
     vec4 scrpos;
     scrpos.x = eyepos.x*nearplane/xdist;
@@ -873,7 +863,7 @@ vec calcavatarpos(const vec &pos, float dist)
     scrpos.z = (eyepos.z*(farplane + nearplane) - 2*nearplane*farplane) / (farplane - nearplane);
     scrpos.w = -eyepos.z;
 
-    vec worldpos = invmvpmatrix.perspectivetransform(scrpos);
+    vec worldpos = invcamprojmatrix.perspectivetransform(scrpos);
     vec dir = vec(worldpos).sub(camera1->o).rescale(dist);
     return dir.add(camera1->o);
 }
@@ -881,44 +871,28 @@ vec calcavatarpos(const vec &pos, float dist)
 VAR(reflectclip, 0, 6, 64);
 VAR(reflectclipavatar, -64, 0, 64);
 
-matrix4 clipmatrix;
+matrix4 clipmatrix, noclipmatrix;
 
-static const matrix4 dummymatrix;
-static int projectioncount = 0;
-void pushprojection(const matrix4 &m = dummymatrix)
+void renderavatar()
 {
-    glMatrixMode(GL_PROJECTION);
-    if(projectioncount <= 0) glPushMatrix();
-    if(&m != &dummymatrix) glLoadMatrixf(m.a.v);
-    if(fogging)
-    {
-        glMultMatrixf(mvmatrix.a.v);
-        glMultMatrixf(invfogmatrix.a.v);
-    }
-    glMatrixMode(GL_MODELVIEW);
-    projectioncount++;
-}
+    if(isthirdperson()) return;
 
-void popprojection()
-{
-    --projectioncount;
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    if(projectioncount > 0)
-    {
-        glPushMatrix();
-        if(fogging)
-        {
-            glMultMatrixf(mvmatrix.a.v);
-            glMultMatrixf(invfogmatrix.a.v);
-        }
-    }
-    glMatrixMode(GL_MODELVIEW);
+    matrix4 oldprojmatrix = projmatrix;
+    projmatrix.perspective(curavatarfov, aspect, nearplane, farplane);
+    projmatrix.scalez(avatardepth);
+    setcamprojmatrix(false);
+
+    game::renderavatar();
+
+    projmatrix = oldprojmatrix;
+    setcamprojmatrix(false);
 }
 
 FVAR(polygonoffsetfactor, -1e4f, -3.0f, 1e4f);
 FVAR(polygonoffsetunits, -1e4f, -3.0f, 1e4f);
 FVAR(depthoffset, -1e4f, 0.01f, 1e4f);
+
+matrix4 nooffsetmatrix;
 
 void enablepolygonoffset(GLenum type)
 {
@@ -931,18 +905,9 @@ void enablepolygonoffset(GLenum type)
     
     bool clipped = reflectz < 1e15f && reflectclip;
 
-    matrix4 offsetmatrix = clipped ? clipmatrix : projmatrix;
-    offsetmatrix.d.z += depthoffset * projmatrix.c.z;
-
-    glMatrixMode(GL_PROJECTION);
-    if(!clipped) glPushMatrix();
-    glLoadMatrixf(offsetmatrix.a.v);
-    if(fogging)
-    {
-        glMultMatrixf(mvmatrix.a.v);
-        glMultMatrixf(invfogmatrix.a.v);
-    }
-    glMatrixMode(GL_MODELVIEW);
+    nooffsetmatrix = projmatrix;
+    projmatrix.d.z += depthoffset * (clipped ? noclipmatrix.c.z : projmatrix.c.z);
+    setcamprojmatrix(false, true);
 }
 
 void disablepolygonoffset(GLenum type)
@@ -953,27 +918,15 @@ void disablepolygonoffset(GLenum type)
         return;
     }
     
-    bool clipped = reflectz < 1e15f && reflectclip;
-
-    glMatrixMode(GL_PROJECTION);
-    if(clipped) 
-    {
-        glLoadMatrixf(clipmatrix.a.v);
-        if(fogging)
-        {
-            glMultMatrixf(mvmatrix.a.v);
-            glMultMatrixf(invfogmatrix.a.v);
-        }
-    }
-    else glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
+    projmatrix = nooffsetmatrix;
+    setcamprojmatrix(false, true);
 }
 
 void calcspherescissor(const vec &center, float size, float &sx1, float &sy1, float &sx2, float &sy2)
 {
     vec worldpos(center), e;
     if(reflecting) worldpos.z = 2*reflectz - worldpos.z; 
-    mvmatrix.transform(worldpos, e); 
+    cammatrix.transform(worldpos, e); 
     if(e.z > 2*size) { sx1 = sy1 = 1; sx2 = sy2 = -1; return; }
     float zzrr = e.z*e.z - size*size,
           dx = e.x*e.x + zzrr, dy = e.y*e.y + zzrr,
@@ -1053,15 +1006,6 @@ void popscissor()
     if(scissoring>1) glScissor(oldscissor[0], oldscissor[1], oldscissor[2], oldscissor[3]);
     else if(scissoring) glDisable(GL_SCISSOR_TEST);
     scissoring = 0;
-}
-
-matrix4 envmatrix;
-
-void setenvmatrix()
-{
-    envmatrix = fogging ? fogmatrix : mvmatrix;
-    if(reflecting) envmatrix.reflectz(reflectz);
-    envmatrix.transpose();
 }
 
 VARR(fog, 16, 4000, 1000024);
@@ -1233,12 +1177,7 @@ void drawglare()
 
     renderreflectedmapmodels();
     rendergame();
-    if(!isthirdperson())
-    {
-        project(curavatarfov, aspect, farplane, false, false, false, avatardepth);
-        game::renderavatar();
-        project(fovy, aspect, farplane);
-    }
+    renderavatar();
 
     renderwater();
     rendermaterials();
