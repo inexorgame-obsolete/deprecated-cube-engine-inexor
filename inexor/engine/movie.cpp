@@ -1003,7 +1003,7 @@ namespace recorder
     void readbuffer(videobuffer &m, uint nextframe)
     {
         bool accelyuv = movieaccelyuv && !(m.w%8),
-             usefbo = movieaccel && hasFBO && hasTR && file->videow <= (uint)screenw && file->videoh <= (uint)screenh && (accelyuv || file->videow < (uint)screenw || file->videoh < (uint)screenh);
+             usefbo = movieaccel && file->videow <= (uint)screenw && file->videoh <= (uint)screenh && (accelyuv || file->videow < (uint)screenw || file->videoh < (uint)screenh);
         uint w = screenw, h = screenh;
         if(usefbo) { w = file->videow; h = file->videoh; }
         if(w != m.w || h != m.h) m.init(w, h, 4);
@@ -1021,7 +1021,7 @@ namespace recorder
                 loopi(2)
                 {
                     if(!scaletex[i]) glGenTextures(1, &scaletex[i]);
-                    createtexture(scaletex[i], tw, th, NULL, 3, 1, GL_RGB, GL_TEXTURE_RECTANGLE_ARB);
+                    createtexture(scaletex[i], tw, th, NULL, 3, 1, GL_RGB, GL_TEXTURE_RECTANGLE);
                 }
                 scalew = tw;
                 scaleh = th;
@@ -1029,47 +1029,41 @@ namespace recorder
             if(accelyuv && (!encodefb || !encoderb))
             {
                 if(!encodefb) glGenFramebuffers_(1, &encodefb);
-                glBindFramebuffer_(GL_FRAMEBUFFER_EXT, encodefb);
+                glBindFramebuffer_(GL_FRAMEBUFFER, encodefb);
                 if(!encoderb) glGenRenderbuffers_(1, &encoderb);
-                glBindRenderbuffer_(GL_RENDERBUFFER_EXT, encoderb);
-                glRenderbufferStorage_(GL_RENDERBUFFER_EXT, GL_RGBA, (m.w*3)/8, m.h);
-                glFramebufferRenderbuffer_(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_RENDERBUFFER_EXT, encoderb);
-                glBindRenderbuffer_(GL_RENDERBUFFER_EXT, 0);
-                glBindFramebuffer_(GL_FRAMEBUFFER_EXT, 0);
+                glBindRenderbuffer_(GL_RENDERBUFFER, encoderb);
+                glRenderbufferStorage_(GL_RENDERBUFFER, GL_RGBA, (m.w*3)/8, m.h);
+                glFramebufferRenderbuffer_(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, encoderb);
+                glBindRenderbuffer_(GL_RENDERBUFFER, 0);
+                glBindFramebuffer_(GL_FRAMEBUFFER, 0);
             }
                      
             if(tw < (uint)screenw || th < (uint)screenh)
             {
-                glBindFramebuffer_(GL_READ_FRAMEBUFFER_EXT, 0);
-                glBindFramebuffer_(GL_DRAW_FRAMEBUFFER_EXT, scalefb);
-                glFramebufferTexture2D_(GL_DRAW_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_RECTANGLE_ARB, scaletex[0], 0);
+                glBindFramebuffer_(GL_READ_FRAMEBUFFER, 0);
+                glBindFramebuffer_(GL_DRAW_FRAMEBUFFER, scalefb);
+                glFramebufferTexture2D_(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_RECTANGLE, scaletex[0], 0);
                 glBlitFramebuffer_(0, 0, screenw, screenh, 0, 0, tw, th, GL_COLOR_BUFFER_BIT, GL_LINEAR);
-                glBindFramebuffer_(GL_DRAW_FRAMEBUFFER_EXT, 0);
+                glBindFramebuffer_(GL_DRAW_FRAMEBUFFER, 0);
             }
             else
             {
-                glBindTexture(GL_TEXTURE_RECTANGLE_ARB, scaletex[0]);
-                glCopyTexSubImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, 0, 0, 0, 0, screenw, screenh);
+                glBindTexture(GL_TEXTURE_RECTANGLE, scaletex[0]);
+                glCopyTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, 0, 0, 0, 0, screenw, screenh);
             }
 
             if(tw > m.w || th > m.h || (!accelyuv && tw >= m.w && th >= m.h))
             {
-                glBindFramebuffer_(GL_FRAMEBUFFER_EXT, scalefb);
-                glViewport(0, 0, tw, th);
-                glColor3f(1, 1, 1);
-                glMatrixMode(GL_PROJECTION);
-                glLoadIdentity();
-                glOrtho(0, tw, 0, th, -1, 1);
-                glMatrixMode(GL_MODELVIEW);
-                glLoadIdentity();
+                glBindFramebuffer_(GL_FRAMEBUFFER, scalefb);
                 do
                 {
-                    glFramebufferTexture2D_(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_RECTANGLE_ARB, scaletex[1], 0);
-                    glBindTexture(GL_TEXTURE_RECTANGLE_ARB, scaletex[0]);
                     uint dw = max(tw/2, m.w), dh = max(th/2, m.h);
+                    glFramebufferTexture2D_(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_RECTANGLE, scaletex[1], 0);
+                    glViewport(0, 0, dw, dh);
+                    glBindTexture(GL_TEXTURE_RECTANGLE, scaletex[0]);
                     if(dw == m.w && dh == m.h && !accelyuv) { SETSHADER(movieyuv); m.format = aviwriter::VID_YUV; }
                     else SETSHADER(moviergb);
-                    drawquad(tw, th, 0, 0, dw, dh);
+                    drawquad(tw, th);
                     tw = dw;
                     th = dh;
                     swap(scaletex[0], scaletex[1]);
@@ -1077,18 +1071,11 @@ namespace recorder
             }
             if(accelyuv)
             {
-                glBindFramebuffer_(GL_FRAMEBUFFER_EXT, encodefb); 
-                glViewport(0, 0, (m.w*3)/8, m.h);
-                glColor3f(1, 1, 1);
-                glMatrixMode(GL_PROJECTION);
-                glLoadIdentity();
-                glOrtho(0, (m.w*3)/8, m.h, 0, -1, 1);
-                glMatrixMode(GL_MODELVIEW);
-                glLoadIdentity();
-                glBindTexture(GL_TEXTURE_RECTANGLE_ARB, scaletex[0]); 
-                SETSHADER(moviey); drawquad(m.w, m.h, 0, 0, m.w/4, m.h);
-                SETSHADER(moviev); drawquad(m.w, m.h, m.w/4, 0, m.w/8, m.h/2);
-                SETSHADER(movieu); drawquad(m.w, m.h, m.w/4, m.h/2, m.w/8, m.h/2);
+                glBindFramebuffer_(GL_FRAMEBUFFER, encodefb);
+                glBindTexture(GL_TEXTURE_RECTANGLE, scaletex[0]);
+                glViewport(0, 0, m.w/4, m.h); SETSHADER(moviey); drawquad(m.w, m.h, true);
+                glViewport(m.w/4, 0, m.w/8, m.h/2); SETSHADER(movieu); drawquad(m.w, m.h, true);
+                glViewport(m.w/4, m.h/2, m.w/8, m.h/2); SETSHADER(moviev); drawquad(m.w, m.h, true);
                 const uint planesize = m.w * m.h;
                 glPixelStorei(GL_PACK_ALIGNMENT, texalign(m.video, m.w/4, 4)); 
                 glReadPixels(0, 0, m.w/4, m.h, GL_BGRA, GL_UNSIGNED_BYTE, m.video);
@@ -1100,10 +1087,10 @@ namespace recorder
             }
             else
             {
-                glBindFramebuffer_(GL_FRAMEBUFFER_EXT, scalefb);
+                glBindFramebuffer_(GL_FRAMEBUFFER, scalefb);
                 glReadPixels(0, 0, m.w, m.h, GL_BGRA, GL_UNSIGNED_BYTE, m.video);
             }
-            glBindFramebuffer_(GL_FRAMEBUFFER_EXT, 0);
+            glBindFramebuffer_(GL_FRAMEBUFFER, 0);
             glViewport(0, 0, screenw, screenh);
 
         }

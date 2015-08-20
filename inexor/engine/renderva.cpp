@@ -1450,7 +1450,7 @@ void rendergeom(float causticspass, bool fogpass)
     }
     if(!doZP) 
     {
-        if(shadowmap && hasFBO && mainpass) rendershadowmap();
+        if(shadowmap && mainpass) rendershadowmap();
         setupgeom(cur);
         if(doSM) pushshadowmap();
     }
@@ -1517,7 +1517,7 @@ void rendergeom(float causticspass, bool fogpass)
     if(doZP)
     {
 		glFlush();
-        if(shadowmap && hasFBO && mainpass)
+        if(shadowmap && mainpass)
         {
 			glDisableClientState(GL_VERTEX_ARRAY);
             glBindBuffer_(GL_ARRAY_BUFFER, 0);

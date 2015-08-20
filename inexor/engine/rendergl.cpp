@@ -389,30 +389,53 @@ void gl_checkextensions()
         if(dbgexts) conoutf(CON_INIT, "Using GL_NV_float_buffer extension.");
     }
 
-    if(hasext(exts, "GL_EXT_framebuffer_object"))
+    if(hasext(exts, "GL_ARB_framebuffer_object"))
     {
-        glBindRenderbuffer_        = (PFNGLBINDRENDERBUFFEREXTPROC)       getprocaddress("glBindRenderbufferEXT");
-        glDeleteRenderbuffers_     = (PFNGLDELETERENDERBUFFERSEXTPROC)    getprocaddress("glDeleteRenderbuffersEXT");
-        glGenRenderbuffers_        = (PFNGLGENFRAMEBUFFERSEXTPROC)        getprocaddress("glGenRenderbuffersEXT");
-        glRenderbufferStorage_     = (PFNGLRENDERBUFFERSTORAGEEXTPROC)    getprocaddress("glRenderbufferStorageEXT");
-        glCheckFramebufferStatus_  = (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC) getprocaddress("glCheckFramebufferStatusEXT");
-        glBindFramebuffer_         = (PFNGLBINDFRAMEBUFFEREXTPROC)        getprocaddress("glBindFramebufferEXT");
-        glDeleteFramebuffers_      = (PFNGLDELETEFRAMEBUFFERSEXTPROC)     getprocaddress("glDeleteFramebuffersEXT");
-        glGenFramebuffers_         = (PFNGLGENFRAMEBUFFERSEXTPROC)        getprocaddress("glGenFramebuffersEXT");
-        glFramebufferTexture2D_    = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)   getprocaddress("glFramebufferTexture2DEXT");
-        glFramebufferRenderbuffer_ = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)getprocaddress("glFramebufferRenderbufferEXT");
-        glGenerateMipmap_          = (PFNGLGENERATEMIPMAPEXTPROC)         getprocaddress("glGenerateMipmapEXT");
+        glBindRenderbuffer_        = (PFNGLBINDRENDERBUFFERPROC)       getprocaddress("glBindRenderbufferEXT");
+        glDeleteRenderbuffers_     = (PFNGLDELETERENDERBUFFERSPROC)    getprocaddress("glDeleteRenderbuffersEXT");
+        glGenRenderbuffers_        = (PFNGLGENFRAMEBUFFERSPROC)        getprocaddress("glGenRenderbuffersEXT");
+        glRenderbufferStorage_     = (PFNGLRENDERBUFFERSTORAGEPROC)    getprocaddress("glRenderbufferStorageEXT");
+        glCheckFramebufferStatus_  = (PFNGLCHECKFRAMEBUFFERSTATUSPROC) getprocaddress("glCheckFramebufferStatusEXT");
+        glBindFramebuffer_         = (PFNGLBINDFRAMEBUFFERPROC)        getprocaddress("glBindFramebufferEXT");
+        glDeleteFramebuffers_      = (PFNGLDELETEFRAMEBUFFERSPROC)     getprocaddress("glDeleteFramebuffersEXT");
+        glGenFramebuffers_         = (PFNGLGENFRAMEBUFFERSPROC)        getprocaddress("glGenFramebuffersEXT");
+        glFramebufferTexture2D_    = (PFNGLFRAMEBUFFERTEXTURE2DPROC)   getprocaddress("glFramebufferTexture2DEXT");
+        glFramebufferRenderbuffer_ = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)getprocaddress("glFramebufferRenderbufferEXT");
+        glGenerateMipmap_          = (PFNGLGENERATEMIPMAPPROC)         getprocaddress("glGenerateMipmapEXT");
+        glBlitFramebuffer_         = (PFNGLBLITFRAMEBUFFERPROC)        getprocaddress("glBlitFramebufferEXT");
+        hasAFBO = hasFBO = hasFBB = hasDS = true;
+        if(dbgexts) conoutf(CON_INIT, "Using GL_ARB_framebuffer_object extension.");
+    }
+    else if(hasext(exts, "GL_EXT_framebuffer_object"))
+    {
+        glBindRenderbuffer_        = (PFNGLBINDRENDERBUFFERPROC)       getprocaddress("glBindRenderbufferEXT");
+        glDeleteRenderbuffers_     = (PFNGLDELETERENDERBUFFERSPROC)    getprocaddress("glDeleteRenderbuffersEXT");
+        glGenRenderbuffers_        = (PFNGLGENFRAMEBUFFERSPROC)        getprocaddress("glGenRenderbuffersEXT");
+        glRenderbufferStorage_     = (PFNGLRENDERBUFFERSTORAGEPROC)    getprocaddress("glRenderbufferStorageEXT");
+        glCheckFramebufferStatus_  = (PFNGLCHECKFRAMEBUFFERSTATUSPROC) getprocaddress("glCheckFramebufferStatusEXT");
+        glBindFramebuffer_         = (PFNGLBINDFRAMEBUFFERPROC)        getprocaddress("glBindFramebufferEXT");
+        glDeleteFramebuffers_      = (PFNGLDELETEFRAMEBUFFERSPROC)     getprocaddress("glDeleteFramebuffersEXT");
+        glGenFramebuffers_         = (PFNGLGENFRAMEBUFFERSPROC)        getprocaddress("glGenFramebuffersEXT");
+        glFramebufferTexture2D_    = (PFNGLFRAMEBUFFERTEXTURE2DPROC)   getprocaddress("glFramebufferTexture2DEXT");
+        glFramebufferRenderbuffer_ = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)getprocaddress("glFramebufferRenderbufferEXT");
+        glGenerateMipmap_          = (PFNGLGENERATEMIPMAPPROC)         getprocaddress("glGenerateMipmapEXT");
         hasFBO = true;
         if(dbgexts) conoutf(CON_INIT, "Using GL_EXT_framebuffer_object extension.");
 
         if(hasext(exts, "GL_EXT_framebuffer_blit"))
         {
-            glBlitFramebuffer_     = (PFNGLBLITFRAMEBUFFEREXTPROC)        getprocaddress("glBlitFramebufferEXT");
+            glBlitFramebuffer_     = (PFNGLBLITFRAMEBUFFERPROC)        getprocaddress("glBlitFramebufferEXT");
             hasFBB = true;
             if(dbgexts) conoutf(CON_INIT, "Using GL_EXT_framebuffer_blit extension.");
         }
+
+        if(hasext(exts, "GL_EXT_packed_depth_stencil") || hasext(exts, "GL_NV_packed_depth_stencil"))
+        {
+            hasDS = true;
+            if(dbgexts) conoutf(CON_INIT, "Using GL_EXT_packed_depth_stencil extension.");
+        }
     }
-    else conoutf(CON_WARN, "WARNING: No framebuffer object support. (reflective water may be slow)");
+    else fatal("Framebuffer object support is required!");
 
     extern SharedVar<int> fpdepthfx;
     if(ati)
@@ -472,19 +495,12 @@ void gl_checkextensions()
         if(dbgexts) conoutf(CON_INIT, "Using GL_ARB_uniform_buffer_object extension.");
     }
 
-    if(hasext(exts, "GL_EXT_texture_rectangle") || hasext(exts, "GL_ARB_texture_rectangle"))
+    if(hasext(exts, "GL_ARB_texture_rectangle"))
     {
-        usetexrect = 1;
         hasTR = true;
         if(dbgexts) conoutf(CON_INIT, "Using GL_ARB_texture_rectangle extension.");
     }
-    else conoutf(CON_WARN, "WARNING: No texture rectangle support. (no full screen shaders)");
-
-    if(hasext(exts, "GL_EXT_packed_depth_stencil") || hasext(exts, "GL_NV_packed_depth_stencil"))
-    {
-        hasDS = true;
-        if(dbgexts) conoutf(CON_INIT, "Using GL_EXT_packed_depth_stencil extension.");
-    }
+    else fatal("Texture rectangle support is required!");
 
     if(hasext(exts, "GL_EXT_texture_compression_s3tc"))
     {
@@ -520,18 +536,12 @@ void gl_checkextensions()
     if(glversion >= 300 || hasext(exts, "GL_EXT_gpu_shader4"))
     {
         // on DX10 or above class cards (i.e. GF8 or RadeonHD) enable expensive features
-        extern SharedVar<int> grass, glare, maxdynlights, depthfxsize, depthfxrect, depthfxfilter, blurdepthfx;
+        extern SharedVar<int> grass, glare, maxdynlights, depthfxsize, blurdepthfx;
         grass = 1;
         waterfallrefract = 1;
         glare = 1;
         maxdynlights = MAXDYNLIGHTS;
-        if(hasTR)
-        {
-            depthfxsize = 10;
-            depthfxrect = 1;
-            depthfxfilter = 0;
-            blurdepthfx = 0;
-        }
+        blurdepthfx = 0;
     }
 }
 
@@ -554,16 +564,7 @@ void gl_init(int depth, int fsaa)
     glClearDepth(1);
     glDepthFunc(GL_LESS);
     glDisable(GL_DEPTH_TEST);
-    glShadeModel(GL_SMOOTH);
     
-    
-    glDisable(GL_FOG);
-    glFogi(GL_FOG_MODE, GL_LINEAR);
-    //glHint(GL_FOG_HINT, GL_NICEST);
-    GLfloat fogcolor[4] = { 0, 0, 0, 0 };
-    glFogfv(GL_FOG_COLOR, fogcolor);
-    
-
     glEnable(GL_LINE_SMOOTH);
     //glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
@@ -637,14 +638,36 @@ void setcammatrix()
 
 void setcamprojmatrix(bool init = true, bool flush = false)
 {
-    // move from RH to Z-up LH quake style worldspace
-    glLoadMatrixf(viewmatrix.a.v);
+    if(init)
+    {   
+        setcammatrix();
+    }
 
-    glRotatef(camera1->roll, 0, 1, 0);
-    glRotatef(camera1->pitch, -1, 0, 0);
-    glRotatef(camera1->yaw, 0, 0, -1);
+    camprojmatrix.muld(projmatrix, cammatrix);
 
-    glTranslatef(-camera1->o.x, -camera1->o.y, -camera1->o.z);   
+    if(init)
+    {
+        invcammatrix.invert(cammatrix);
+        invcamprojmatrix.invert(camprojmatrix);
+    }
+
+    GLOBALPARAM(camprojmatrix, camprojmatrix);
+
+    if(fogging)
+    {
+        vec fogplane(cammatrix.c);
+        fogplane.x /= projmatrix.a.x;
+        fogplane.y /= projmatrix.b.y;
+        fogplane.z /= projmatrix.c.w;
+        GLOBALPARAMF(fogplane, fogplane.x, fogplane.y, 0, fogplane.z);               
+    }
+    else
+    {
+        vec2 lineardepthscale = projmatrix.lineardepthscale();
+        GLOBALPARAMF(fogplane, 0, 0, lineardepthscale.x, lineardepthscale.y);
+    }
+
+    if(flush && Shader::lastshader) Shader::lastshader->flushparams();
 }
 
 matrix4 hudmatrix, hudmatrixstack[64];
