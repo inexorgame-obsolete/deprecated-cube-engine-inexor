@@ -69,15 +69,6 @@ enum
     MATSURF_EDIT_ONLY
 };
 
-// reduced vertex structure (no tangent vector)
-struct vertexff 
-{
-	vec pos;		// vertex position
-	bvec4 norm;		// normal vector of this vertex
-	float u, v;		// UV coordinates
-	float lmu, lmv; // light map UV coordinates
-};
-
 // Inexor's vertex structure
 struct vertex 
 {
@@ -87,7 +78,3 @@ struct vertex
 	short lmu, lmv;	// light map UV coordinates
 	bvec4 tangent;	// tangents (for skinning/animation ?)
 };
- 
- // 
-#define VTXSIZE (renderpath==R_FIXEDFUNCTION ? sizeof(vertexff) : sizeof(vertex))
-
