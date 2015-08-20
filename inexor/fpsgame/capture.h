@@ -487,9 +487,12 @@ struct captureclientmode : clientmode
         }
         else setbliptex(TEAM_OWN);
         glPushMatrix();
-        glTranslatef(x + 0.5f*s, y + 0.5f*s, 0);
+
         float blipsize = basenumbers ? 0.1f : 0.05f;
-        glScalef((s*blipsize)/fw, (s*blipsize)/fh, 1.0f);
+        pushhudmatrix();
+        hudmatrix.translate(x + 0.5f*s, y + 0.5f*s, 0);
+        hudmatrix.scale((s*blipsize)/fw, (s*blipsize)/fh, 1.0f);
+        flushhudmatrix();
         drawblips(d, blipsize, fw, fh, 1, showenemies);
 
         if(basenumbers) setfont("digit_grey");
@@ -500,7 +503,7 @@ struct captureclientmode : clientmode
         else setbliptex(TEAM_OPPONENT);
         drawblips(d, blipsize, fw, fh, -1, showenemies);
         if(showenemies) drawblips(d, blipsize, fw, fh, -2);
-        glPopMatrix();
+        pophudmatrix();
         if(basenumbers) popfont();
         drawteammates(d, x, y, s);
         if(d->state == CS_DEAD)
@@ -508,11 +511,12 @@ struct captureclientmode : clientmode
             int wait = respawnwait(d);
             if(wait>=0)
             {
-                glPushMatrix();
-                glScalef(2, 2, 1);
+                pushhudmatrix();
+                hudmatrix.scale(2, 2, 1);
+                flushhudmatrix();
                 bool flash = wait>0 && d==player1 && lastspawnattempt>=d->lastpain && lastmillis < lastspawnattempt+100;
                 draw_textf("%s%d", (x+s/2)/2-(wait>=10 ? 28 : 16), (y+s/2)/2-32, flash ? "\f3" : "", wait);
-                glPopMatrix();
+                pophudmatrix();
             }
         }
     }

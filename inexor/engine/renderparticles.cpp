@@ -493,7 +493,9 @@ struct textrenderer : listrenderer
         if((type&0xFF)==PT_TEXTUP) { xoff += detrnd((size_t)p, 100)-50; yoff -= detrnd((size_t)p, 101); }
         glTranslatef(xoff, yoff, 50);
 
-        draw_text(p->text, 0, 0, color[0], color[1], color[2], blend);
+        matrix4x3 m(camright, vec(camup).neg(), vec(camdir).neg(), o);
+        m.scale(scale);
+        m.translate(xoff, yoff, 50);
 
         glPopMatrix();
     } 
@@ -913,48 +915,25 @@ void removetrackedparticles(physent *owner)
 
 VARP(particleglare, 0, 2, 100);
 
-VAR(debugparticles, 0, 0, 1);
+VARN(debugparticles, dbgparts, 0, 0, 1);
+
+void debugparticles()
+{
+    if(!dbgparts) return;
+    int n = sizeof(parts)/sizeof(parts[0]);
+    pushhudmatrix();
+    hudmatrix.ortho(0, FONTH*n*2*screenw/float(screenh), FONTH*n*2, 0, -1, 1); //squeeze into top-left corner        
+    flushhudmatrix();
+    hudshader->set();
+    loopi(n) draw_text(parts[i]->info, FONTH, (i+n/2)*FONTH);
+    pophudmatrix();
+}
 
 void renderparticles(bool mainpass)
 {
     canstep = mainpass;
     //want to debug BEFORE the lastpass render (that would delete particles)
-    if(debugparticles && !glaring && !reflecting && !refracting) 
-    {
-        int n = sizeof(parts)/sizeof(parts[0]);
-        glMatrixMode(GL_PROJECTION);
-        glPushMatrix();
-        glLoadIdentity();
-        glOrtho(0, FONTH*n*2*screenw/float(screenh), FONTH*n*2, 0, -1, 1); //squeeze into top-left corner        
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-        glLoadIdentity();
-        glDisable(GL_DEPTH_TEST);
-        glEnable(GL_BLEND);
-        defaultshader->set();
-        loopi(n) 
-        {
-            int type = parts[i]->type;
-            const char *title = parts[i]->texname ? strrchr(parts[i]->texname, '/')+1 : NULL;
-            string info = "";
-            if(type&PT_GLARE) concatstring(info, "g,");
-            if(type&PT_LERP) concatstring(info, "l,");
-            if(type&PT_MOD) concatstring(info, "m,");
-            if(type&PT_RND4) concatstring(info, "r,");
-            if(type&PT_TRACK) concatstring(info, "t,");
-            if(type&PT_FLIP) concatstring(info, "f,");
-            if(parts[i]->collide) concatstring(info, "c,");
-            if(info[0]) info[strlen(info)-1] = '\0';
-            defformatstring(ds, "%d\t%s(%s) %s", parts[i]->count(), partnames[type&0xFF], info, title ? title : "");
-            draw_text(ds, FONTH, (i+n/2)*FONTH);
-        }
-        glDisable(GL_BLEND);
-        glEnable(GL_DEPTH_TEST);
-        glMatrixMode(GL_PROJECTION);
-        glPopMatrix();
-        glMatrixMode(GL_MODELVIEW);
-        glPopMatrix();
-    }
+    if(dbgparts && mainpass) loopi(sizeof(parts)/sizeof(parts[0])) parts[i]->debuginfo();
 
     if(glaring && !particleglare) return;
     

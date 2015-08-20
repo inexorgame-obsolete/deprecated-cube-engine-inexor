@@ -638,6 +638,54 @@ void transplayer()
     glTranslatef(-camera1->o.x, -camera1->o.y, -camera1->o.z);   
 }
 
+matrix4 hudmatrix, hudmatrixstack[64];
+int hudmatrixpos = 0;
+
+void resethudmatrix()
+{
+    hudmatrixpos = 0;
+    GLOBALPARAM(hudmatrix, hudmatrix);
+}
+
+void pushhudmatrix()
+{
+    if(hudmatrixpos >= 0 && hudmatrixpos < int(sizeof(hudmatrixstack)/sizeof(hudmatrixstack[0]))) hudmatrixstack[hudmatrixpos] = hudmatrix;
+    ++hudmatrixpos;
+}
+
+void flushhudmatrix(bool flushparams)
+{
+    GLOBALPARAM(hudmatrix, hudmatrix);
+    if(flushparams && Shader::lastshader) Shader::lastshader->flushparams();
+}
+
+void pophudmatrix(bool flush, bool flushparams)
+{
+    --hudmatrixpos;
+    if(hudmatrixpos >= 0 && hudmatrixpos < int(sizeof(hudmatrixstack)/sizeof(hudmatrixstack[0])))
+    {
+        hudmatrix = hudmatrixstack[hudmatrixpos];
+        if(flush) flushhudmatrix(flushparams);
+    }
+}
+
+void pushhudscale(float sx, float sy)
+{
+    if(!sy) sy = sx;
+    pushhudmatrix();
+    hudmatrix.scale(sx, sy, 1);
+    flushhudmatrix();
+}
+
+void pushhudtranslate(float tx, float ty, float sx, float sy)
+{
+    if(!sy) sy = sx;
+    pushhudmatrix();
+    hudmatrix.translate(tx, ty, 0);
+    if(sy) hudmatrix.scale(sx, sy, 1);
+    flushhudmatrix();
+}
+
 float curfov = 100, curavatarfov = 65, fovy, aspect;
 int farplane;
 VARP(zoominvel, 0, 250, 5000);
@@ -1864,11 +1912,7 @@ void gl_drawframe()
     if(isliquid(fogmat&MATF_VOLUME)) drawfogoverlay(fogmat, fogblend, abovemat);
     renderpostfx();
 
-    defaultshader->set();
     g3d_render();
-
-    notextureshader->set();
-
     gl_drawhud();
 
     renderedgame = false;
@@ -1881,16 +1925,7 @@ void gl_drawmainmenu()
     renderbackground(NULL, NULL, NULL, NULL, true, true);
     renderpostfx();
     
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    defaultshader->set();
     g3d_render();
-
-    notextureshader->set();
-
     gl_drawhud();
 }
 
@@ -1918,11 +1953,14 @@ void damagecompass(int n, const vec &loc)
     if(dcompass[dir]>1) dcompass[dir] = 1;
 
 }
+
 void drawdamagecompass(int w, int h)
 {
+    hudnotextureshader->set();
+
     int dirs = 0;
     float size = damagecompasssize/100.0f*min(h, w)/2.0f;
-    loopi(8) if(dcompass[i]>0)
+    loopi(8) if(damagedirs[i]>0)
     {
         if(!dirs)
         {
@@ -1931,24 +1969,24 @@ void drawdamagecompass(int w, int h)
         }
         dirs++;
 
-        glPushMatrix();
-        glTranslatef(w/2, h/2, 0);
-        glRotatef(i*45, 0, 0, 1);
-        glTranslatef(0, -size/2.0f-min(h, w)/4.0f, 0);
         float logscale = 32,
-              scale = log(1 + (logscale - 1)*dcompass[i]) / log(logscale);
-        glScalef(size*scale, size*scale, 0);
+              scale = log(1 + (logscale - 1)*damagedirs[i]) / log(logscale),
+              offset = -size/2.0f-min(h, w)/4.0f;
+        matrix4x3 m;
+        m.identity();
+        m.settranslation(w/2, h/2, 0);
+        m.rotate_around_z(i*45*RAD);
+        m.translate(0, offset, 0);
+        m.scale(size*scale);
 
         glBegin(GL_TRIANGLES);
-        glVertex3f(1, 1, 0);
-        glVertex3f(-1, 1, 0);
-        glVertex3f(0, 0, 0);
+        vec v[3] = { m.transform(vec2(1, 1)), m.transform(vec2(-1, 1)), m.transform(vec2(0, 0)) };
+        loopj(3) glVertex3f(v[j].x, v[j].y, v[j].z);
         glEnd();
-        glPopMatrix();
 
         // fade in log space so short blips don't disappear too quickly
         scale -= float(curtime)/damagecompassfade;
-        dcompass[i] = scale > 0 ? (pow(logscale, scale) - 1) / (logscale - 1) : 0;
+        damagedirs[i] = scale > 0 ? (pow(logscale, scale) - 1) / (logscale - 1) : 0;
     }
 }
 
@@ -1972,7 +2010,7 @@ void drawdamagescreen(int w, int h)
 {
     if(lastmillis >= damageblendmillis) return;
 
-    defaultshader->set();
+    hudshader->set();
 
     static Texture *damagetex = NULL;
     if(!damagetex) {
@@ -1994,8 +2032,6 @@ void drawdamagescreen(int w, int h)
     glTexCoord2f(0, 1); glVertex2f(0, h);
     glTexCoord2f(1, 1); glVertex2f(w, h);
     glEnd();
-
-    notextureshader->set();
 }
 
 VAR(hidestats, 0, 0, 1);
@@ -2132,11 +2168,8 @@ void gl_drawhud()
 
     gettextres(w, h);
 
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0, w, h, 0, -1, 1);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    hudmatrix.ortho(0, w, h, 0, -1, 1);
+    resethudmatrix();
     
     glColor3f(1, 1, 1);
 
@@ -2162,22 +2195,26 @@ void gl_drawhud()
     }
 
     glEnable(GL_BLEND);
-    
+   
+    extern void debugparticles();
+    debugparticles();
+ 
     if(!mainmenu)
     {
         drawdamagescreen(w, h);
         drawdamagecompass(w, h);
     }
 
-    defaultshader->set();
+    hudshader->set();
 
     int conw = int(w/conscale), conh = int(h/conscale), abovehud = conh - FONTH, limitgui = abovehud;
     if(!hidehud && !mainmenu)
     {
         if(!hidestats)
         {
-            glPushMatrix();
-            glScalef(conscale, conscale, 1);
+            pushhudmatrix();
+            hudmatrix.scale(conscale, conscale, 1);
+            flushhudmatrix();
 
             int roffset = 0;
             if(showfps)
@@ -2278,7 +2315,7 @@ void gl_drawhud()
                 }
             } 
             
-            glPopMatrix();
+            pophudmatrix();
         }
 
         if(hidestats || (!editmode && !showeditstats))
@@ -2293,12 +2330,13 @@ void gl_drawhud()
     
     g3d_limitscale((2*limitgui - conh) / float(conh));
 
-    glPushMatrix();
-    glScalef(conscale, conscale, 1);
+    pushhudmatrix();
+    hudmatrix.scale(conscale, conscale, 1);
+    flushhudmatrix();
     abovehud -= rendercommand(FONTH/2, abovehud - FONTH/2, conw-FONTH);
     extern SharedVar<int> fullconsole;
     if(!hidehud || fullconsole) renderconsole(conw, conh, abovehud - FONTH/2);
-    glPopMatrix();
+    pophudmatrix();
 
     drawcrosshair(w, h);
 

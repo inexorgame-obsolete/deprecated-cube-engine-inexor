@@ -447,10 +447,11 @@ struct collectclientmode : clientmode
         if(d->state == CS_ALIVE && d->tokens > 0)
         {
             int x = HICON_X + 3*HICON_STEP + (d->quadmillis ? HICON_SIZE + HICON_SPACE : 0);
-            glPushMatrix();
-            glScalef(2, 2, 1);
+            pushhudmatrix();
+            hudmatrix.scale(2, 2, 1);
+            flushhudmatrix();
             draw_textf("%d", (x + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, d->tokens);
-            glPopMatrix();
+            pophudmatrix();
             drawicon(HICON_TOKEN, x, HICON_Y);
         }
 
@@ -488,11 +489,12 @@ struct collectclientmode : clientmode
             int wait = respawnwait(d);
             if(wait>=0)
             {
-                glPushMatrix();
-                glScalef(2, 2, 1);
+                pushhudmatrix();
+                hudmatrix.scale(2, 2, 1);
+                flushhudmatrix();
                 bool flash = wait>0 && d==player1 && lastspawnattempt>=d->lastpain && lastmillis < lastspawnattempt+100;
                 draw_textf("%s%d", (x+s/2)/2-(wait>=10 ? 28 : 16), (y+s/2)/2-32, flash ? "\f3" : "", wait);
-                glPopMatrix();
+                pophudmatrix();
             }
         }
     }

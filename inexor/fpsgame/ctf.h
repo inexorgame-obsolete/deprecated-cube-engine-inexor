@@ -505,10 +505,11 @@ struct ctfclientmode : clientmode
                 drawicon(m_hold ? HICON_NEUTRAL_FLAG : (flags[i].team==ctfteamflag(player1->team) ? HICON_BLUE_FLAG : HICON_RED_FLAG), x, HICON_Y);
                 if(m_hold)
                 {
-                    glPushMatrix();
-                    glScalef(2, 2, 1);
+                    pushhudmatrix();
+                    hudmatrix.scale(2, 2, 1);
+                    flushhudmatrix();
                     draw_textf("%d", (x + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, max(HOLDSECS - (lastmillis - flags[i].owntime)/1000, 0));
-                    glPopMatrix();
+                    pophudmatrix();
                 }
                 break;
             }
@@ -549,11 +550,12 @@ struct ctfclientmode : clientmode
             int wait = respawnwait(d);
             if(wait>=0)
             {
-                glPushMatrix();
-                glScalef(2, 2, 1);
+                pushhudmatrix();
+                hudmatrix.scale(2, 2, 1);
+                flushhudmatrix();
                 bool flash = wait>0 && d==player1 && lastspawnattempt>=d->lastpain && lastmillis < lastspawnattempt+100;
                 draw_textf("%s%d", (x+s/2)/2-(wait>=10 ? 28 : 16), (y+s/2)/2-32, flash ? "\f3" : "", wait);
-                glPopMatrix();
+                pophudmatrix();
             }
         }
     }
@@ -1261,7 +1263,7 @@ case N_RESETFLAG:
 }
 
 case N_INVISFLAG:
-{	
+{
     int flag = getint(p), invis = getint(p);
     if(m_ctf) ctfmode.invisflag(flag, invis);
     break;

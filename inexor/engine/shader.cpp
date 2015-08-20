@@ -4,7 +4,7 @@
 
 Shader *Shader::lastshader = NULL;
 
-Shader *defaultshader = NULL, *rectshader = NULL, *cubemapshader = NULL, *notextureshader = NULL, *nocolorshader = NULL, *foggedshader = NULL, *foggednotextureshader = NULL, *stdworldshader = NULL;
+Shader *nullshader = NULL, *hudshader = NULL, *hudnotextureshader = NULL, *textureshader = NULL, *notextureshader = NULL, *nocolorshader = NULL, *foggedshader = NULL, *foggednotextureshader = NULL, *stdworldshader = NULL;
 
 static hashnameset<GlobalShaderParamState> globalparams(256);
 static hashtable<const char *, int> localparams(256);
@@ -25,21 +25,21 @@ void loadshaders()
     execfile("config/glsl.cfg");
     standardshaders = false;
 
-    defaultshader = lookupshaderbyname("default");
+    nullshader = lookupshaderbyname("null");
+    hudshader = lookupshaderbyname("hud");
+    hudnotextureshader = lookupshaderbyname("hudnotexture");
     stdworldshader = lookupshaderbyname("stdworld");
-    if(!defaultshader || !stdworldshader) fatal("cannot find shader definitions");
+    if(!nullshader || !hudshader || !hudnotextureshader || !stdworldshader) fatal("cannot find shader definitions");
 
-    extern Slot dummyslot;
     dummyslot.shader = stdworldshader;
 
-    rectshader = lookupshaderbyname("rect");
-    cubemapshader = lookupshaderbyname("cubemap");
+    textureshader = lookupshaderbyname("texture");
     notextureshader = lookupshaderbyname("notexture");
     nocolorshader = lookupshaderbyname("nocolor");
     foggedshader = lookupshaderbyname("fogged");
     foggednotextureshader = lookupshaderbyname("foggednotexture");
     
-    defaultshader->set();
+    nullshader->set();
 }
 
 Shader *lookupshaderbyname(const char *name) 
@@ -99,6 +99,8 @@ static void compileglslshader(GLenum type, GLuint &obj, const char *def, const c
         parts[numparts++] = glslversions[i].header;
         break;
     }
+
+    parts[numparts++] = "#extension GL_ARB_texture_rectangle : enable\n";
 
     parts[numparts++] = source;
 
@@ -589,27 +591,44 @@ void setupshaders()
     maxvaryings = val;
 
     standardshaders = true;
-    defaultshader = newshader(0, "<init>default",
-       "void main(void) {\n"
-        "    gl_Position = ftransform();\n"
-        "    gl_TexCoord[0] = gl_MultiTexCoord0;\n"
-        "    gl_FrontColor = gl_Color;\n"
+    nullshader = newshader(0, "<init>null",
+        "void main(void) {\n"
+        "    gl_Position = gl_Vertex;\n"
         "}\n",
+        "void main(void) {\n"
+        "    gl_FragColor = vec4(1.0, 0.0, 1.0, 0.0);\n"
+        "}\n");
+    hudshader = newshader(0, "<init>hud",
+       "uniform mat4 hudmatrix;\n"
+       "varying vec2 texcoord0;\n"
+       "varying vec4 color;\n"
+       "void main(void) {\n"
+        "    gl_Position = hudmatrix * gl_Vertex;\n"
+        "    texcoord0 = gl_MultiTexCoord0.xy;\n"
+        "    color = gl_Color;\n"
+        "}\n",
+        "varying vec2 texcoord0;\n"
+        "varying vec4 color;\n"
         "uniform sampler2D tex0;\n"
         "void main(void) {\n"
-        "    gl_FragColor = gl_Color * texture2D(tex0, gl_TexCoord[0].xy);\n"
+        "    gl_FragColor = color * texture2D(tex0, texcoord0);\n"
         "}\n");
-    notextureshader = newshader(0, "<init>notexture",
+    hudnotextureshader = newshader(0, "<init>hudnotexture",
+        "uniform mat4 hudmatrix;\n"
+        "varying vec4 color;\n"
         "void main(void) {\n"
-        "    gl_Position = ftransform();\n"
-        "    gl_FrontColor = gl_Color;\n"
+        "    gl_Position = hudmatrix * gl_Vertex;\n"
+        "    color = gl_Color;\n"
         "}\n",
+        "varying vec4 color;\n"
         "void main(void) {\n"
-        "    gl_FragColor = gl_Color;\n"
+        "    gl_FragColor = color;\n"
         "}\n");
     standardshaders = false;
 
-    if(!defaultshader || !notextureshader) fatal("failed to setup shaders");
+    if(!nullshader || !hudshader || !hudnotextureshader) fatal("failed to setup shaders");
+
+    dummyslot.shader = nullshader;
 }
 
 static const char *findglslmain(const char *s)
@@ -1394,7 +1413,7 @@ void cleanupshaders()
 {
     cleanuppostfx(true);
 
-    defaultshader = notextureshader = nocolorshader = foggedshader = foggednotextureshader = NULL;
+    nullshader = hudshader = hudnotextureshader = textureshader = notextureshader = nocolorshader = foggedshader = foggednotextureshader = stdworldshader = NULL;
     enumerate(shaders, Shader, s, s.cleanup());
     Shader::lastshader = NULL;
     glUseProgram_(0);

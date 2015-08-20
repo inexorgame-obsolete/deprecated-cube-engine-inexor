@@ -987,14 +987,16 @@ namespace recorder
         DELETEP(file);
         state = REC_OK;
     }
-  
-    void drawquad(float tw, float th, float x, float y, float w, float h)
+
+    void drawquad(float tw, float th, bool flip = false)
     {
+        float ty1 = 0, ty2 = th;
+        if(flip) swap(ty1, ty2);
         glBegin(GL_TRIANGLE_STRIP);
-        glTexCoord2f(0,  0);  glVertex2f(x,   y);
-        glTexCoord2f(tw, 0);  glVertex2f(x+w, y);
-        glTexCoord2f(0,  th); glVertex2f(x,   y+h);
-        glTexCoord2f(tw, th); glVertex2f(x+w, y+h);
+        glTexCoord2f(0,  ty1); glVertex2f(-1, -1);
+        glTexCoord2f(tw, ty1); glVertex2f( 1, -1);
+        glTexCoord2f(0,  ty2); glVertex2f(-1,  1);
+        glTexCoord2f(tw, ty2); glVertex2f( 1,  1);
         glEnd();
     }
 
@@ -1139,18 +1141,13 @@ namespace recorder
         if(forceaspect) w = int(ceil(h*forceaspect));
         gettextres(w, h);
 
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glOrtho(0, w, h, 0, -1, 1);
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
+        hudmatrix.ortho(0, w, h, 0, -1, 1);
+        hudmatrix.scale(1/3.0f, 1/3.0f, 1);
+        resethudmatrix();
+        hudshader->set();
 
         glEnable(GL_BLEND);
-        defaultshader->set();
 
-        glPushMatrix();
-        glScalef(1/3.0f, 1/3.0f, 1);
-    
         double totalsize = file->filespaceguess();
         const char *unit = "KB";
         if(totalsize >= 1e9) { totalsize /= 1e9; unit = "GB"; }
@@ -1158,8 +1155,6 @@ namespace recorder
         else totalsize /= 1e3;
 
         draw_textf("recorded %.1f%s %d%%", w*3-10*FONTH, h*3-FONTH-FONTH*3/2, totalsize, unit, int(calcquality()*100)); 
-
-        glPopMatrix();
 
         glDisable(GL_BLEND);
     }
