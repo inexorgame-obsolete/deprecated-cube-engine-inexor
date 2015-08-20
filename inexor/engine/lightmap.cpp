@@ -579,7 +579,7 @@ static float calcocclusion(const vec &o, const vec &normal, float tolerance)
 
 	//rotate the rays into the normal direction
 	//(normals have to be normalized!)
-	matrix3x3 rotationmatrix;
+	matrix3 rotationmatrix;
 	bool needsrotation = false;
 	if( normal != rays[0]) 
 	{
