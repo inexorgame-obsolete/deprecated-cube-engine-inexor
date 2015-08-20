@@ -187,7 +187,7 @@ struct md3 : vertmodel, vertloader<md3>
     bool load()
     {
         formatstring(dir, "%s/%s", *modeldir, name);
-        defformatstring(cfgname, "%s/%s/md3.cfg", *modeldir, loadname);
+        defformatstring(cfgname, "%s/%s/md3.cfg", *modeldir, name);
 
         loading = this;
         identflags &= ~IDF_PERSIST;

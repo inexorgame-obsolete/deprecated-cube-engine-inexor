@@ -435,7 +435,7 @@ struct smd : skelmodel, skelloader<smd>
 
     bool load()
     {
-        formatstring(dir, "%s/%s", *modeldir, loadname);
+        formatstring(dir, "%s/%s", *modeldir, name);
         defformatstring(cfgname, "%s/%s/smd.cfg", *modeldir, name);
 
         loading = this;

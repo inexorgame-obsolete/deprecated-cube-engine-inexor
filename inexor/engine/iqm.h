@@ -398,7 +398,7 @@ struct iqm : skelmodel, skelloader<iqm>
 
     bool load()
     {
-        formatstring(dir, "%s/%s", *modeldir, loadname);
+        formatstring(dir, "%s/%s", *modeldir, name);
         defformatstring(cfgname, "%s/%s/iqm.cfg", *modeldir, name);
 
         loading = this;
