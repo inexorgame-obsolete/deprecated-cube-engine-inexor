@@ -167,15 +167,8 @@ endfunction()
 
 #### ENET
 
-if (NOT ENET_COMPILE)
-  find_libs(ENET_LIBS enet)
-  find_path(ENET_INCLUDE_DIRS enet/enet.h)
-endif()
-
-if(NOT ENET_SYSTEM AND (NOT ENET_LIBS OR NOT ENET_INCLUDE_DIRS))
-    message(STATUS "Building local ENet")
-    add_subdirectory(libraries/enet)
-endif()
+find_libs(ENET_LIBS enet)
+find_path(ENET_INCLUDE_DIRS enet/enet.h)
 
 function(config_enet targ)
   message(STATUS "Configuring ${targ} with ENET")

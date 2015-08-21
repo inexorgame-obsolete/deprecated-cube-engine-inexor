@@ -46,6 +46,7 @@ set(RPC_MODULE_SOURCES ${RPC_MODULE_SOURCES} ${protoc_out_cc}
 add_lib(rpc)
 config_net(module_rpc NOLINK)
 config_sdl(module_rpc NOLINK)
+config_enet(module_rpc NOLINK)
 
 function(config_rpc targ)
   message(STATUS "Configuring ${targ} with rpc")
@@ -60,5 +61,6 @@ function(config_rpc targ)
     module_rpc module_net ${PROTOBUF_LIBRARIES} module_util)
 
   config_net(${targ})
+  config_enet(${targ})
 endfunction()
 
