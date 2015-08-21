@@ -39,3 +39,12 @@ build:
 
   # MSBuild verbosity level (quiet|minimal|normal|detailed)
   verbosity: normal
+
+on_success: #we atm do not use it as test_script: bc if it fails then it signals a failed build
+  - cmd: cd C:\projects\inexor-game\
+  # We (probably) need to install the solution first
+  - cmd: MSBuild build\install.vcxproj /t:build
+  # run the test executable
+  - cmd: if "%platform%"=="Win32" set "inexor_platform_name=win32"
+  - cmd: if "%platform%"=="x64"   set "inexor_platform_name=win64"
+  - cmd: bin\windows\%inexor_platform_name%\unit_tests.exe
