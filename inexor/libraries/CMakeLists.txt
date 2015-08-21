@@ -38,17 +38,13 @@ endfunction()
 
 #### Threads
 
-set(THREADS_PREFER_PTHREAD_FLAG 1)
-
 if (NOT THREADAPI)
   find_package(Threads REQUIRED)
-  message(STATUS "DETECTING ${CMAKE_USE_PTHREADS_INIT} : ${CMAKE_HP_PTHREADS_INIT} : ${CMAKE_USE_WIN32_THREADS_INIT}")
-
-  if (CMAKE_USE_PTHREADS_INIT OR CMAKE_HP_PTHREADS_INIT)
-    set(THREADAPI "pthreads" CACHE INTERN "")
-    message(STATUS "threadapi=pthreads")
-  elseif(CMAKE_USE_WIN32_THREADS_INIT)
+  
+  if(WIN32 AND CMAKE_USE_WIN32_THREADS_INIT)
     set(THREADAPI "win32" CACHE INTERN "")
+  elseif(CMAKE_USE_PTHREADS_INIT OR CMAKE_HP_PTHREADS_INIT)
+    set(THREADAPI "pthreads" CACHE INTERN "")
   endif()
 endif()
 
@@ -61,7 +57,8 @@ if (THREADAPI STREQUAL "pthreads")
 elseif(THREADAPI STREQUAL "win32")
   set(THREADAPI_WIN32 1 CACHE INTERN "")
 endif()
-message(STATUS "THREADAPI : ${THREADAPI} : ${THREADAPI_PTHREADS} : ${PTHREADS_LIBS} : ${PTHREADS_INCLUDE_DIRS} : ${THREADAPI_WIN32}")
+
+message(STATUS "THREADAPI : ${THREADAPI}")
 
 function(config_threads targ)
   message(STATUS "Configuring ${targ} with Threads (${THREADAPI})")
