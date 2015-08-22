@@ -1,4 +1,5 @@
-/// include guard protects this file from being included twice
+/// @file main header file for legacy code.
+
 #ifndef __CUBE_H__
 #define __CUBE_H__
 
@@ -8,8 +9,7 @@
   #define gamma __gamma
 #endif
 
-#ifdef WIN32
-  /// we define our own math constants (PI, ln(2)...)
+#ifdef WIN32  // we define our own math constants (PI, ln(2)...)
   #define _USE_MATH_DEFINES
 #endif
 #include <math.h>
@@ -18,7 +18,7 @@
   #undef gamma
 #endif
 
-/// essentiall C standard libraries
+// essentiall C standard libraries
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,59 +30,35 @@
 
 
 #ifdef WIN32
-  /// only include very important Win32 API core
-  #ifndef WIN32_LEAN_AND_MEAN
+  #ifndef WIN32_LEAN_AND_MEAN // only include very important win API core, not inflicting other libs.
 	#define WIN32_LEAN_AND_MEAN
   #endif
-  #ifdef _WIN32_WINNT
-    #undef _WIN32_WINNT
-  #endif
-  /// use Windows XP version of WinAPI
-  #define _WIN32_WINNT 0x0500
 
   #include "windows.h"
-  #ifndef _WINDOWS
-    #define _WINDOWS
-  #endif
 
   #ifndef __GNUC__
     #include <eh.h>
     #include <dbghelp.h>
   #endif
-
-  ///#define ZLIB_DLL
 #endif
 
 
-/// SDL (Simple DirectMedia Layer) libraries
-/// https://www.libsdl.org/
+/// SDL (Simple DirectMedia Layer) - General Rendering/sound/events/threads
 #ifndef STANDALONE
   #include <SDL.h>
   #include <SDL_opengl.h>
 #endif
 
 /// ENET: reliable UDP networking library
-/// https://github.com/lsalzman/enet
-/// http://enet.bespin.org/
 #include <enet/enet.h>
 
-/// ZLIB compression library (used for map compression)
-/// http://www.zlib.net/
+/// ZLIB compression library (used e.g. for map compression)
 #include <zlib.h>
 
-/// a set of containers (vector,hashset,buffer,stream) and tools for developing
-/// @warning Try to avoid using these containers. The C++ standard library is much more reliable!
 #include "inexor/shared/tools.h"
-
-/// geometric library: vectors, quaterions, matrices and more
 #include "inexor/shared/geom.h"
-/// OLD entity system
 #include "inexor/shared/ents.h"
-/// command line and scripting engine
 #include "inexor/shared/command.h"
-
-/// JSON (Javascript Object Notation) parser
-/// Static data storage format
 #include "inexor/shared/json.h"
 
 /// header files for communication between the game and Cube engine
@@ -90,5 +66,5 @@
 #include "inexor/shared/igame.h"
 
 
-#endif /// end include guard __CUBE_H__
+#endif // __CUBE_H__
 

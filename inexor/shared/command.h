@@ -1,4 +1,4 @@
-/// Cubescript API
+/// @file Cubescript API
 /// Deprecated.
 
 #ifndef SAUER_COMMAND_H
@@ -20,7 +20,6 @@ enum
 	VAL_IDENT
 };
 
-/// ?
 enum
 {
     CODE_START = 0,
@@ -69,7 +68,6 @@ enum
 	ID_LOCAL
 };
 
-/// ?
 enum 
 {
 	IDF_PERSIST = 1<<0,
@@ -125,8 +123,8 @@ struct identstack
 union identvalptr
 {
     SharedVar<int>   *i;   // ID_VAR
-    SharedVar<float> *f; // ID_FVAR
-    SharedVar<char*> *s; // ID_SVAR
+    SharedVar<float> *f;   // ID_FVAR
+    SharedVar<char*> *s;   // ID_SVAR
 };
 
 typedef void (__cdecl *identfun)();

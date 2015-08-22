@@ -1,3 +1,6 @@
+/// @file Set of containers (vector,hashset,buffer,stream) and tools for developing
+/// @warning Try to avoid using these containers for new code.
+
 #ifndef _TOOLS_H
 #define _TOOLS_H
 
@@ -177,7 +180,7 @@ inline char *newstring(const char *s, size_t l) { return copystring(newstring(l)
 inline char *newstring(const char *s)           { size_t l = strlen(s); char *d = newstring(l); memcpy(d, s, l+1); return d; }
 
 /// macros for looping though vectors
-/// loop macros are deprecated and should not be used anymore!
+/// loop macros are deprecated and should not be used anymore.
 #define loopv(v)    for(int i = 0; i<(v).length(); i++)
 #define loopvj(v)   for(int j = 0; j<(v).length(); j++)
 #define loopvk(v)   for(int k = 0; k<(v).length(); k++)
