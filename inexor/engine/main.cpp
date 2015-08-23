@@ -220,6 +220,11 @@ void restorebackground()
     renderbackground(backgroundcaption[0] ? backgroundcaption : NULL, backgroundmapshot, backgroundmapname[0] ? backgroundmapname : NULL, backgroundmapinfo, true);
 }
 
+static Texture *logo_texture = NULL;
+static Texture *background_texture = NULL;
+SVARFP(background, "media/interface/background.png", background_texture = NULL;);
+SVARFP(logo, "media/interface/logo.png", logo_texture = NULL;);
+
 /// Render a textured quad of the given dimensions.
 /// Difference to screenquad is the ability to change the start position (with x and y -> lower left corner of the quad)
 void bgquad(float x, float y, float w, float h)
@@ -236,9 +241,9 @@ void bgquad(float x, float y, float w, float h)
 void renderbackground(const char *caption, Texture *mapshot, const char *mapname, const char *mapinfo, bool restore, bool force)
 {
     if(!inbetweenframes && !force) return;
-
     stopsounds(); // stop sounds while loading
 
+    static Texture *mapshotframetex = NULL;
     int w = screenw, h = screenh;
     if(forceaspect) w = int(ceil(h*forceaspect));
     getbackgroundres(w, h);
@@ -281,7 +286,9 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
         gle::defvertex(2);
         gle::deftexcoord0();
 
-        settexture("media/interface/background.png", 0);
+        if(!background_texture) background_texture = textureload(background);
+        glBindTexture(GL_TEXTURE_2D, background_texture->id);
+
         bgquad(0, 0, w, h);
 
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -289,7 +296,9 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 
         float lh = 0.5f*min(w, h), lw = lh*2,
               lx = 0.5f*(w - lw), ly = 0.5f*(h*0.5f - lh);
-		settexture("media/interface/logo.png", 3);
+
+        if(!logo_texture) logo_texture = textureload(logo);
+        glBindTexture(GL_TEXTURE_2D, logo_texture->id);
         bgquad(lx, ly, lw, lh);
         if(caption)
         {
@@ -332,8 +341,15 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             }
 
-			settexture("media/interface/mapshot_frame.png", 3);
+            if(!mapshotframetex)
+            {
+                string filename;
+                inexor::filesystem::getmedianame(filename, "mapshot_frame.png", DIR_UI);
+                mapshotframetex = textureload(filename);
+            }
+            glBindTexture(GL_TEXTURE_2D, mapshotframetex->id);
             bgquad(x, y, sz, sz);
+
             if(mapname)
             {
                 int tw = text_width(mapname);
