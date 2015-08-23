@@ -977,16 +977,14 @@ namespace game
     }
 
     static const char * const projnames[3] = { "projectile/grenade", "projectile/rocket", "projectile/bomb" };
-    static const char * const gibnames[3] = { "gibs/gib01", "gibs/gib02", "gibs/gib03" };
-    static const char * const debrisnames[4] = { "debris/debris01", "debris/debris02", "debris/debris03", "debris/debris04" };
-    static const char * const barreldebrisnames[4] = { "barreldebris/debris01", "barreldebris/debris02", "barreldebris/debris03", "barreldebris/debris04" };
-         
+    static const char * const gibnames[3] = { "particle/gibs/gib01", "particle/gibs/gib02", "particle/gibs/gib03" };
+    static const char * const debrisnames[4] = { "particle/debris/debris01", "particle/debris/debris02", "particle/debris/debris03", "particle/debris/debris04" };
+
     void preloadbouncers()
     {
         loopi(sizeof(projnames)/sizeof(projnames[0])) preloadmodel(projnames[i]);
         loopi(sizeof(gibnames)/sizeof(gibnames[0])) preloadmodel(gibnames[i]);
         loopi(sizeof(debrisnames)/sizeof(debrisnames[0])) preloadmodel(debrisnames[i]);
-        loopi(sizeof(barreldebrisnames)/sizeof(barreldebrisnames[0])) preloadmodel(barreldebrisnames[i]);
     }
 
 // Static values for the bomb barrier particles
@@ -1054,8 +1052,8 @@ namespace game
                 switch(bnc.bouncetype)
                 {
                     case BNC_GIBS: mdl = gibnames[bnc.variant]; cull |= MDL_LIGHT|MDL_LIGHT_FAST|MDL_DYNSHADOW; break;
+                    case BNC_BARRELDEBRIS:
                     case BNC_DEBRIS: mdl = debrisnames[bnc.variant]; break;
-                    case BNC_BARRELDEBRIS: mdl = barreldebrisnames[bnc.variant]; break;
                     default: continue;
                 }
                 rendermodel(&bnc.light, mdl, ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, cull, NULL, NULL, 0, 0, fade);
