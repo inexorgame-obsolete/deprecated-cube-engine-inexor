@@ -40,17 +40,14 @@ bool getentboundingbox(const extentity &e, ivec &o, ivec &r)
                     vec center, radius;
                     m->boundbox(center, radius);
                     rotatebb(center, radius, e.attr1);
-                    o = e.o;
-                    o.add(center);
-                    r = radius;
-                    r.add(1);
+                    o = ivec(vec(center).add(e.o));
+                    r = ivec(vec(radius).add(1));
                     o.sub(r);
                     r.mul(2);
                 }
                 else
                 {
-                    o = e.o;
-                    o.sub(entselradius);
+                    o = ivec(e.o).sub(entselradius);
                     r.x = r.y = r.z = entselradius*2;
                 }
                 break;
