@@ -1992,6 +1992,32 @@ void damageblend(int n)
     damageblendmillis += clamp(n, damagescreenmin, damagescreenmax)*damagescreenfactor;
 }
 
+// Ugly to have 2 but needs to be refractored anyways so fuck it.
+void bind_bomb_items_texture()
+{
+    static Texture *icon_tex = NULL;
+    if(!icon_tex)
+    {
+        string icon_filename;
+        inexor::filesystem::appendmediadir(icon_filename, "hud/bomb_items.png", DIR_UI);
+        icon_tex = textureload(icon_filename, 3);
+    }
+    glBindTexture(GL_TEXTURE_2D, icon_tex->id);
+}
+
+/// Binds the specific item icon map and returns true on success.
+void bind_items_texture()
+{
+    static Texture *icon_tex = NULL;
+    if(!icon_tex)
+    {
+        string icon_filename;
+        inexor::filesystem::appendmediadir(icon_filename, "hud/items.png", DIR_UI);
+        icon_tex = textureload(icon_filename, 3);
+    }
+    glBindTexture(GL_TEXTURE_2D, icon_tex->id);
+}
+
 void drawdamagescreen(int w, int h)
 {
     if(lastmillis >= damageblendmillis) return;

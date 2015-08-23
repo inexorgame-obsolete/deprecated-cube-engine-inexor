@@ -302,6 +302,9 @@ extern void damagecompass(int n, const vec &loc);
 extern vec minimapcenter, minimapradius, minimapscale;
 extern void bindminimap();
 
+extern void bind_items_texture();
+extern void bind_bomb_items_texture();
+
 extern matrix4 hudmatrix;
 extern void resethudmatrix();
 extern void pushhudmatrix();

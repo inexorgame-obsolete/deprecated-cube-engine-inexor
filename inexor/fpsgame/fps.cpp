@@ -887,7 +887,7 @@ namespace game
 	/// hud rendering
 	
     /// checks if minimap is required for this game mode
-    bool needminimap() 
+    bool needminimap()
 	{ 
 		return m_ctf || m_protect || m_hold || m_capture || m_collect|| m_bomb; 
 	}
@@ -895,10 +895,7 @@ namespace game
 	/// draw (blit) item texture (weapon, flags, armours, quad) on screen at x,y
     void drawicon(int icon, float x, float y, float sz)
     {
-        static string itname;
-        inexor::filesystem::appendmediadir(itname, "hud/items.png", DIR_UI);
-        settexture(itname);
-
+        bind_items_texture();
         float tsz = 0.25f, tx = tsz*(icon%4), ty = tsz*(icon/4);
         gle::defvertex(2);
         gle::deftexcoord0();

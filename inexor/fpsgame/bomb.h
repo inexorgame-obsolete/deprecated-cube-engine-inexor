@@ -62,9 +62,7 @@ struct bombclientmode : clientmode
     void drawicon(int icon, float x, float y, float sz) //todo merge with other items
     {
         int bicon = icon - HICON_BOMBRADIUS;
-        static string iname;
-        inexor::filesystem::appendmediadir(iname, "hud/bomb_items.png", DIR_UI);
-		settexture(iname);
+        bind_bomb_items_texture();
         glBegin(GL_TRIANGLE_STRIP);
         float tsz = 0.25f, tx = tsz*(bicon%4), ty = tsz*(bicon/4);
         glTexCoord2f(tx,     ty);     glVertex2f(x,    y);
