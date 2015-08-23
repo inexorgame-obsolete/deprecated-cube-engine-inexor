@@ -21,10 +21,12 @@ namespace util {
 
     std::ostringstream sbuf;
 
-    StringFormatter() {}
+    StringFormatter() : sbuf(std::ios_base::out | std::ios_base::ate) {}
 
-    StringFormatter(const StringFormatter& other) :
-        sbuf(other.sbuf.str()) {}
+    StringFormatter(const StringFormatter& other) : sbuf(std::ostringstream::ate)
+    {
+        sbuf.str(other.sbuf.str()); // TODO move ?? other solution?
+    }
 
   public:
     /// @see fmt
