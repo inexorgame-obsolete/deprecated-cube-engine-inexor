@@ -193,6 +193,21 @@ void writeinitcfg()
 /// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 /// main menu background and loading screen renderer
 
+static Texture *logo_texture = NULL;
+static Texture *background_texture = NULL;
+SVARFP(background, "media/interface/background.png", background_texture = NULL;);
+SVARFP(logo, "media/interface/logo.png", logo_texture = NULL;);
+
+static Texture *mapshotframe_texture = NULL;
+static Texture *loadingbar_texture = NULL;
+static Texture *loadingframe_texture = NULL;
+
+float loadprogress = 0;
+string backgroundcaption = "";
+string backgroundmapname = "";
+char *backgroundmapinfo = NULL;
+Texture *backgroundmapshot = NULL;
+
 /// create a resolution suggestion by scaling down the larger side of the 2 screen dimensions.
 /// @warning this is a call by reference function!
 /// @warning this function uses old style C-casting
@@ -206,11 +221,6 @@ static void getbackgroundres(int &w, int &h)
     h = int(ceil(h*hk));
 }
 
-string backgroundcaption = "";
-string backgroundmapname = "";
-char *backgroundmapinfo = NULL;
-Texture *backgroundmapshot = NULL;
-
 /// this function is called to render the main menu background once
 /// so the loading progress can be rendered over it continuously
 /// @see renderbackground
@@ -220,10 +230,7 @@ void restorebackground()
     renderbackground(backgroundcaption[0] ? backgroundcaption : NULL, backgroundmapshot, backgroundmapname[0] ? backgroundmapname : NULL, backgroundmapinfo, true);
 }
 
-static Texture *logo_texture = NULL;
-static Texture *background_texture = NULL;
-SVARFP(background, "media/interface/background.png", background_texture = NULL;);
-SVARFP(logo, "media/interface/logo.png", logo_texture = NULL;);
+
 
 /// Render a textured quad of the given dimensions.
 /// Difference to screenquad is the ability to change the start position (with x and y -> lower left corner of the quad)
@@ -243,7 +250,6 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
     if(!inbetweenframes && !force) return;
     stopsounds(); // stop sounds while loading
 
-    static Texture *mapshotframetex = NULL;
     int w = screenw, h = screenh;
     if(forceaspect) w = int(ceil(h*forceaspect));
     getbackgroundres(w, h);
@@ -286,7 +292,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
         gle::defvertex(2);
         gle::deftexcoord0();
 
-        if(!background_texture) background_texture = textureload(background);
+        if(!background_texture) background_texture = textureload(background, 3, true, false);
         glBindTexture(GL_TEXTURE_2D, background_texture->id);
 
         bgquad(0, 0, w, h);
@@ -297,7 +303,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
         float lh = 0.5f*min(w, h), lw = lh*2,
               lx = 0.5f*(w - lw), ly = 0.5f*(h*0.5f - lh);
 
-        if(!logo_texture) logo_texture = textureload(logo);
+        if(!logo_texture) logo_texture = textureload(logo, 3, true, false);
         glBindTexture(GL_TEXTURE_2D, logo_texture->id);
         bgquad(lx, ly, lw, lh);
         if(caption)
@@ -341,13 +347,13 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             }
 
-            if(!mapshotframetex)
+            if(!mapshotframe_texture)
             {
                 string filename;
                 inexor::filesystem::getmedianame(filename, "mapshot_frame.png", DIR_UI);
-                mapshotframetex = textureload(filename);
+                mapshotframe_texture = textureload(filename);
             }
-            glBindTexture(GL_TEXTURE_2D, mapshotframetex->id);
+            glBindTexture(GL_TEXTURE_2D, mapshotframe_texture->id);
             bgquad(x, y, sz, sz);
 
             if(mapname)
@@ -391,7 +397,6 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
     }
 }
 
-float loadprogress = 0;
 
 /// render progress bar and map screenshot
 void renderprogress(float bar, const char *text, GLuint tex, bool background)
@@ -424,7 +429,12 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
           fx = renderedframe ? w - fw - fh/4 : 0.5f*(w - fw), 
           fy = renderedframe ? fh/4 : h - fh*1.5f;
 
-	settexture("media/interface/loading_frame.png", 3);
+    if(!loadingframe_texture)
+    {
+        defformatstring(filename, "%s/%s", *interfacedir, "loading_frame.png");
+        loadingframe_texture = textureload(filename, 3, true, false);
+    }
+    glBindTexture(GL_TEXTURE_2D, loadingframe_texture->id);
     bgquad(fx, fy, fw, fh);
 
     glEnable(GL_BLEND);
@@ -439,7 +449,12 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
           ex = bx+sw + max(mw*bar, fw*7/511.0f);
     if(bar > 0)
     {
-		settexture("media/interface/loading_bar.png", 3);
+        if(!loadingbar_texture)
+        {
+            defformatstring(filename, "%s/%s", *interfacedir, "loading_bar.png");
+            loadingbar_texture = textureload(filename, 3, true, false);
+        }
+        glBindTexture(GL_TEXTURE_2D, loadingbar_texture->id);
         gle::begin(GL_QUADS);
         gle::attribf(bx,    by);    gle::attribf(su1, bv1);
         gle::attribf(bx+sw, by);    gle::attribf(su2, bv1);
@@ -481,7 +496,12 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		settexture("media/interface/mapshot_frame.png", 3);
+        if(!mapshotframe_texture)
+        {
+            defformatstring(filename, "%s/%s", *interfacedir, "mapshot_frame.png");
+            mapshotframe_texture = textureload(filename, 3, true, false);
+        }
+        glBindTexture(GL_TEXTURE_2D, mapshotframe_texture->id);
         bgquad(x, y, sz, sz);
         glDisable(GL_BLEND);
     }
