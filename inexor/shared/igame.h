@@ -59,6 +59,7 @@ namespace game
     extern void dynentcollide(physent *d, physent *o, const vec &dir);
     extern bool weaponcollide(physent *d, const vec &dir);
     extern const char *getclientmap();
+	extern const char *getclientmode();
     extern const char *getmapinfo();
     extern void resetgamestate();
     extern void suicide(physent *d);

@@ -19,7 +19,6 @@ VARFP(maxcon, 10, 200, MAXCONLINES, { while(conlines.length() > maxcon) delete[]
 VARP(contime, 0, 1, 1);
 VARP(confading, 0, 1, 1);
 
-static time_t walltime = 0;
 void conline(int type, const char *sf)        // add a line to the console buffer
 {
     char *buf = conlines.length() >= maxcon ? conlines.remove().line : newstring("", CONSTRLEN-1);
@@ -29,18 +28,10 @@ void conline(int type, const char *sf)        // add a line to the console buffe
 	cl.time = 0;
 	if(contime)
     {
-        if(!walltime) { walltime = time(NULL); walltime -= totalmillis/1000; if(!walltime) walltime++; }
-        time_t walloffset = walltime + totalmillis/1000;
-        struct tm *localvals = localtime(&walloffset);
-        static string buf;
-        if(localvals && strftime(buf, sizeof(buf), "%H:%M:%S", localvals))
+        const char *sstime = gettimestr("%H:%M:%S");
+        if(sstime && *sstime)
         {
-            //strip leading 0 from 12 hour time
-            char *dst = buf;
-            const char *src = &buf[0];
-            while(*src) *dst++ = tolower(*src++);
-            *dst++ = '\0'; 
-			cl.time = newstring(buf, CONSTRLEN-1);
+			cl.time = newstring(sstime, CONSTRLEN-1);
         }
     }
     cl.outtime = totalmillis;                // for how long to keep line on screen

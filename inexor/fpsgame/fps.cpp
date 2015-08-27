@@ -745,6 +745,11 @@ namespace game
         /// return depends on array index
         return showmodeinfo && m_valid(gamemode) ? gamemodes[gamemode - STARTGAMEMODE].info : NULL;
     }
+	
+	const char *getclientmode()
+    {
+        return server::modename(gamemode, NULL);
+    }
 
 	/// trigger sound effects depending on the material you enter
     void physicstrigger(physent *d, bool local, int floorlevel, int waterlevel, int material)
