@@ -531,8 +531,8 @@ static const int msgsizes[] =
 #define INEXOR_SERVER_PORT 31415
 #define INEXOR_MASTER_PORT 31416
 
-#define PROTOCOL_VERSION 300            /// bump when protocol changes last sauerbraten protocol was 259
-#define DEMO_VERSION 1                  /// bump when demo format changes
+#define PROTOCOL_VERSION 301            // bump when protocol changes last sauerbraten protocol was 259
+#define DEMO_VERSION 1                  // bump when demo format changes
 #define DEMO_MAGIC "INEXOR_DEMO"
 
 /// demos contain stored network messages of a game
