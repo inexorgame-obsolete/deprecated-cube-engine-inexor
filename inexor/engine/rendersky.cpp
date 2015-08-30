@@ -10,7 +10,7 @@ void loadsky(const char *basename, Texture *texs[6])
     {
         const char *side = cubemapsides[i].name;
         string name;
-        inexor::filesystem::getmedianame(name, basename, DIR_SKYBOX);
+        inexor::filesystem::getmedianame(name, MAXSTRLEN, basename, DIR_SKYBOX);
 
         if(wildcard)
         {
@@ -22,9 +22,9 @@ void loadsky(const char *basename, Texture *texs[6])
         {
             defformatstring(ext, "_%s.jpg", side);
             concatstring(name, ext);
-        if((texs[i] = textureload(name, 3, true, false))==notexture)
-        {
-            strcpy(name+strlen(name)-3, "png");
+            if((texs[i] = textureload(name, 3, true, false))==notexture)
+            {
+                strcpy(name+strlen(name)-3, "png");
                 texs[i] = textureload(name, 3, true, false);
             }
         }
@@ -38,7 +38,7 @@ Texture *loadskyoverlay(const char *basename)
 {
     const char *ext = strrchr(basename, '.'); 
     string name;
-    inexor::filesystem::getmedianame(name, basename, DIR_SKYBOX);
+    inexor::filesystem::getmedianame(name, MAXSTRLEN, basename, DIR_SKYBOX);
 
     Texture *t = notexture;
     if(ext) t = textureload(name, 0, true, false);
@@ -47,8 +47,8 @@ Texture *loadskyoverlay(const char *basename)
         concatstring(name, ".jpg");
         if((t = textureload(name, 0, true, false)) == notexture)
         {
-    strcpy(name+strlen(name)-3, "png");
-    t = textureload(name, 0, true, false);
+            strcpy(name+strlen(name)-3, "png");
+            t = textureload(name, 0, true, false);
         }
     }
     if(t==notexture) conoutf(CON_ERROR, "could not load sky overlay texture %s", basename);

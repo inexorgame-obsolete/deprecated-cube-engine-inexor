@@ -1834,7 +1834,7 @@ void texture(char *type, char *name, int *rot, int *xoffset, int *yoffset, float
     st.type = tnum;
     st.combined = -1;
     st.t = NULL;
-    inexor::filesystem::getmedianame(st.name, name, DIR_TEXTURE);
+    inexor::filesystem::getmedianame(st.name, MAXSTRLEN, name, DIR_TEXTURE);
     path(st.name);
     if(tnum==TEX_DIFFUSE)
     {
@@ -2348,7 +2348,7 @@ Texture *cubemaploadwildcard(Texture *t, const char *name, bool mipit, bool msg,
 Texture *cubemapload(const char *name, bool mipit, bool msg, bool transient)
 {
     string pname;
-    inexor::filesystem::getmedianame(pname, name, DIR_SKYBOX);
+    inexor::filesystem::getmedianame(pname, MAXSTRLEN, name, DIR_SKYBOX);
     path(pname);
 
     Texture *t = NULL;

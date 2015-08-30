@@ -2237,7 +2237,7 @@ namespace game
                 copystring(oldname, getclientmap());
                 defformatstring(mname, "getmap_%d", lastmillis);
                 string fname;
-                inexor::filesystem::appendmediadir(fname, mname, DIR_MAP, ".ogz");
+                inexor::filesystem::appendmediadir(fname, MAXSTRLEN, mname, DIR_MAP, ".ogz");
                 stream *map = openrawfile(path(fname), "wb");
                 if(!map) return;
                 conoutf("received map");
@@ -2330,7 +2330,7 @@ namespace game
         defformatstring(mname, "sendmap_%d", lastmillis);
         save_world(mname, true);
         string fname;
-        inexor::filesystem::appendmediadir(fname, mname, DIR_MAP, ".ogz");
+        inexor::filesystem::appendmediadir(fname, MAXSTRLEN, mname, DIR_MAP, ".ogz");
         stream *map = openrawfile(path(fname), "rb");
         if(map)
         {

@@ -349,9 +349,9 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 
             if(!mapshotframe_texture)
             {
-                string filename;
-                inexor::filesystem::getmedianame(filename, "mapshot_frame.png", DIR_UI);
-                mapshotframe_texture = textureload(filename);
+                std::string filename;
+                inexor::filesystem::appendmediadir(filename, "mapshot_frame.png", DIR_UI);
+                mapshotframe_texture = textureload(filename.c_str(), 3, true, false);
             }
             glBindTexture(GL_TEXTURE_2D, mapshotframe_texture->id);
             bgquad(x, y, sz, sz);
@@ -429,10 +429,12 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
           fx = renderedframe ? w - fw - fh/4 : 0.5f*(w - fw), 
           fy = renderedframe ? fh/4 : h - fh*1.5f;
 
+    // Render the loading bar
     if(!loadingframe_texture)
     {
-        defformatstring(filename, "%s/%s", *interfacedir, "loading_frame.png");
-        loadingframe_texture = textureload(filename, 3, true, false);
+        std::string filename;
+        inexor::filesystem::appendmediadir(filename, "loading_frame.png", DIR_UI);
+        loadingframe_texture = textureload(filename.c_str(), 3, true, false);
     }
     glBindTexture(GL_TEXTURE_2D, loadingframe_texture->id);
     bgquad(fx, fy, fw, fh);
@@ -451,8 +453,9 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
     {
         if(!loadingbar_texture)
         {
-            defformatstring(filename, "%s/%s", *interfacedir, "loading_bar.png");
-            loadingbar_texture = textureload(filename, 3, true, false);
+            std::string filename;
+            inexor::filesystem::appendmediadir(filename, "loading_bar.png", DIR_UI);
+            loadingbar_texture = textureload(filename.c_str(), 3, true, false);
         }
         glBindTexture(GL_TEXTURE_2D, loadingbar_texture->id);
         gle::begin(GL_QUADS);
@@ -473,6 +476,9 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
         gle::end();
     }
 
+    // render the info stuff
+
+    // map/mode description
     if(text)
     {
         int tw = text_width(text);
@@ -488,7 +494,7 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
 
     glDisable(GL_BLEND);
 
-    if(tex)
+    if(tex) //render the map shot/lightmap
     {
         glBindTexture(GL_TEXTURE_2D, tex);
         float sz = 0.35f*min(w, h), x = 0.5f*(w-sz), y = 0.5f*min(w, h) - sz/15;
@@ -496,13 +502,16 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         if(!mapshotframe_texture)
         {
-            defformatstring(filename, "%s/%s", *interfacedir, "mapshot_frame.png");
-            mapshotframe_texture = textureload(filename, 3, true, false);
+            std::string filename;
+            inexor::filesystem::appendmediadir(filename, "mapshot_frame.png", DIR_UI);
+            mapshotframe_texture = textureload(filename.c_str(), 3, true, false);
         }
         glBindTexture(GL_TEXTURE_2D, mapshotframe_texture->id);
         bgquad(x, y, sz, sz);
+
         glDisable(GL_BLEND);
     }
 
@@ -1240,20 +1249,8 @@ ICOMMAND(cef_focus, "b", (bool *b),
     if (cef_app.get()) cef_app->setFocus(*b); );
 
 /// main program start
-///
-///
-///
 int main(int argc, char **argv)
 {
-    #ifdef WIN32
-       ///atexit((void (__cdecl *)(void))_CrtDumpMemoryLeaks);
-       #ifndef _DEBUG
-          #ifndef __GNUC__
-             __try {
-          #endif
-       #endif
-    #endif
-
     setlogfile(NULL);
 
     int dedicated = 0;
@@ -1340,15 +1337,12 @@ int main(int argc, char **argv)
         if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO|par)<0) fatal("Unable to initialize SDL: %s", SDL_GetError());
         SDL_StartTextInput();
     }
-    
-	/// initialise game components
-    /// Init ENET (UDP network packet library)
+
     logoutf("init: net");
     if(enet_initialize()<0) fatal("Unable to initialise network module");
     atexit(enet_deinitialize);
     enet_time_set(0);
 
-    /// game server
     logoutf("init: game");
     game::parseoptions(gameargs);
     initserver(dedicated>0, dedicated>1);  /// never returns if dedicated
@@ -1357,7 +1351,6 @@ int main(int argc, char **argv)
 
     logoutf("init: video");
 
-    /// https://wiki.libsdl.org/CategoryHints#Hints
     SDL_SetHint(SDL_HINT_GRAB_KEYBOARD, "0");
     #if !defined(WIN32) && !defined(__APPLE__)
        SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
@@ -1452,7 +1445,7 @@ int main(int argc, char **argv)
     SUBSYSTEM_REQUIRE(rpc);
     SUBSYSTEM_REQUIRE(cef);
 
-	  /// main game loop
+	// main game loop
     for(;;)
     {
         static int frames = 0;
@@ -1505,8 +1498,4 @@ int main(int argc, char **argv)
 
     ASSERT(0);
     return EXIT_FAILURE;
-
-    #if defined(WIN32) && !defined(_DEBUG) && !defined(__GNUC__)
-       } __except(stackdumper(0, GetExceptionInformation()), EXCEPTION_CONTINUE_SEARCH) { return 0; }
-    #endif
 }

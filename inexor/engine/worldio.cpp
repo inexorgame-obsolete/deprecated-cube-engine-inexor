@@ -19,7 +19,7 @@ void getmapfilename(const char *fname, const char *realname, char *mapname)
 {   
     if(!realname) realname = fname;
     string name;
-    inexor::filesystem::appendmediadir(name, realname, DIR_MAP);
+    inexor::filesystem::appendmediadir(name, MAXSTRLEN, realname, DIR_MAP);
     cutogz(name);
     copystring(mapname, name, 100);
 }   

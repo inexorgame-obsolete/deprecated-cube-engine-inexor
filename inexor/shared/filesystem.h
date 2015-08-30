@@ -22,8 +22,10 @@ namespace inexor
 {
     namespace filesystem {
         extern const char *getmediadir(int type);
-        extern char *appendmediadir(char *output, const char *basename, int type, const char *extension = NULL);
-        extern char *getmedianame(char *output, const char *basename, int type, JSON *j = NULL);
+        extern const char *appendmediadir(std::string &output, const char *basename, int type, const char *extension = NULL);
+        extern const char *appendmediadir(char *output, size_t outputlen, const char *basename, int type, const char *extension = NULL);
+        extern void getmedianame(std::string &output, const char *basename, int type, JSON *j = NULL);
+        extern char *getmedianame(char *output, size_t outputlen, const char *basename, int type, JSON *j = NULL);
     }
 }
 #endif // I_FILESYSTEM_H
