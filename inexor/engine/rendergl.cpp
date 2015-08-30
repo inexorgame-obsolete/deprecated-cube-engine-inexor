@@ -1983,9 +1983,9 @@ void bind_bomb_items_texture()
     static Texture *icon_tex = NULL;
     if(!icon_tex)
     {
-        string icon_filename;
+        std::string icon_filename;
         inexor::filesystem::appendmediadir(icon_filename, "hud/bomb_items.png", DIR_UI);
-        icon_tex = textureload(icon_filename, 3);
+        icon_tex = textureload(icon_filename.c_str(), 3);
     }
     glBindTexture(GL_TEXTURE_2D, icon_tex->id);
 }
@@ -1996,9 +1996,9 @@ void bind_items_texture()
     static Texture *icon_tex = NULL;
     if(!icon_tex)
     {
-        string icon_filename;
+        std::string icon_filename;
         inexor::filesystem::appendmediadir(icon_filename, "hud/items.png", DIR_UI);
-        icon_tex = textureload(icon_filename, 3);
+        icon_tex = textureload(icon_filename.c_str(), 3, true, false);
     }
     glBindTexture(GL_TEXTURE_2D, icon_tex->id);
 }
@@ -2011,9 +2011,9 @@ void drawdamagescreen(int w, int h)
 
     static Texture *damagetex = NULL;
     if(!damagetex) {
-        string damagetex_filename;
+        std::string damagetex_filename;
         inexor::filesystem::appendmediadir(damagetex_filename, "damage.png", DIR_UI);
-    	damagetex = textureload(damagetex_filename, 3);
+    	damagetex = textureload(damagetex_filename.c_str(), 3, true, false);
     }
 
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
