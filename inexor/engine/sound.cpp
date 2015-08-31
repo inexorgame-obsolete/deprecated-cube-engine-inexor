@@ -1,6 +1,7 @@
 // sound.cpp: basic positional sound using sdl_mixer
 
 #include "inexor/engine/engine.h"
+#include "inexor/shared/filesystem.h"
 
 #include "SDL_mixer.h"
 #define MAXVOL MIX_MAX_VOLUME
@@ -121,7 +122,6 @@ void stopchannels()
 void setmusicvol(int musicvol);
 VARFP(soundvol, 0, 255, 255, if(!soundvol) { stopchannels(); setmusicvol(0); });
 VARFP(musicvol, 0, 128, 255, setmusicvol(soundvol ? musicvol : 0));
-SVARP(sounddir, "media/sound");
 
 char *musicfile = NULL, *musicdonecmd = NULL;
 
@@ -198,15 +198,14 @@ Mix_Music *loadmusic(const char *name)
     return music;
 }
 
-SVARP(musicdir, "media/music");
-
 void startmusic(char *name, char *cmd)
 {
     if(nosound) return;
     stopmusic();
     if(soundvol && musicvol && *name)
     {
-        defformatstring(file, "%s/%s", *musicdir, name);
+        string file;
+        inexor::filesystem::appendmediadir(file, MAXSTRLEN, name, DIR_MUSIC);
         path(file);
         if(loadmusic(file))
         {
@@ -255,14 +254,14 @@ bool soundsample::load(bool msg)
     string filename;
     loopi(sizeof(exts)/sizeof(exts[0]))
     {
-        formatstring(filename, "%s/%s%s", *sounddir, name, exts[i]);
+        inexor::filesystem::appendmediadir(filename, MAXSTRLEN, name, DIR_SOUND, exts[i]);
         if(msg && !i) renderprogress(0, filename);
         path(filename);
         chunk = loadwav(filename);
         if(chunk) return true;
     }
 
-    conoutf(CON_ERROR, "failed to load sample: %s/%s", *sounddir, name);
+    conoutf(CON_ERROR, "failed to load sample: %s", filename);
     return false;
 }
 

@@ -11,6 +11,8 @@ SVARP(texturedir, "media/texture");
 SVARP(skyboxdir, "media/skybox");
 SVARP(interfacedir, "media/interface");
 SVARP(icondir, "media/interface/icon");
+SVARP(sounddir, "media/sound");
+SVARP(musicdir, "media/music");
 
 using namespace inexor::util;
 
@@ -22,12 +24,14 @@ namespace inexor {
         {
             switch(type)
             {
-            case DIR_MEDIA:     return mediadir;
-            case DIR_MAP:       return mapdir;
-            case DIR_TEXTURE:   return texturedir;
-            case DIR_SKYBOX:    return skyboxdir;
-            case DIR_UI:        return interfacedir;
-            case DIR_ICON:      return icondir;
+            case DIR_MEDIA:     return *mediadir;
+            case DIR_MAP:       return *mapdir;
+            case DIR_TEXTURE:   return *texturedir;
+            case DIR_SKYBOX:    return *skyboxdir;
+            case DIR_UI:        return *interfacedir;
+            case DIR_ICON:      return *icondir;
+            case DIR_SOUND:     return *sounddir;
+            case DIR_MUSIC:     return *musicdir;
             }
             return NULL;
         }
