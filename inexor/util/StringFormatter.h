@@ -23,10 +23,10 @@ namespace util {
 
     StringFormatter() : sbuf(std::ios_base::out | std::ios_base::ate) {}
 
-    StringFormatter(const StringFormatter& other) = delete;
-
-    StringFormatter(StringFormatter &&other)
-        : sbuf(std::move(other.sbuf)) {}
+    StringFormatter(const StringFormatter& other) : sbuf(std::ostringstream::ate)
+    {
+        sbuf.str(other.sbuf.str()); // TODO move ?? other solution?
+    }
 
   public:
     /// @see fmt
