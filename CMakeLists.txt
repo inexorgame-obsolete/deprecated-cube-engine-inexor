@@ -329,3 +329,8 @@ message(STATUS " - Resulting Executable goes to ${EXE_DIR}")
 add_subdirectory(inexor)
 
 install(FILES ${INSTALL_SHARED_LIBS} ${INSTALL_EXES} DESTINATION ${EXE_DIR})
+
+# shipped portable stuff on win (dirty but temporarily)
+if(OS_WINDOWS)
+  install(DIRECTORY ${INSTALL_PORTABLE_DIR} DESTINATION "${PROJECT_SOURCE_DIR}/bin/windows/all")
+endif()

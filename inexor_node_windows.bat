@@ -15,9 +15,9 @@ if not defined FOUND_NODE (
     :: no installed node found, go for the shipped portable one
     :: which is in the normal bin dir
     :: + go for the shipped npm which is in the platform submodule since we ship it for developers
-    set "PATH=%PATH%;%cd%\bin\windows\%INEXOR_ARCH%;%cd%\inexor\platform\bin\windows\npm"
-    set "NODE_PATH=%cd%\inexor\platform\bin\windows\npm;%cd%\node\lib;%cd%\node\webserver"
-    set "NPM_EXECUTEABLE=%cd%\inexor\platform\bin\windows\npm\npm"
+    set "PATH=%PATH%;%cd%\bin\windows\%INEXOR_ARCH%;%cd%\bin\windows\all\npm"
+    set "NODE_PATH=%cd%\bin\windows\all\npm;%cd%\node\lib;%cd%\node\webserver"
+    set "NPM_EXECUTEABLE=%cd%\bin\windows\all\npm\npm"
     echo using shipped node
 ) else (
     set "NODE_PATH=%NODE_PATH%;%cd%\node\lib;%cd%\node\webserver"
@@ -29,7 +29,7 @@ for %%X in (git.exe) do (set "FOUND_GIT=%%~$PATH:X")
 
 if not defined FOUND_GIT (
     :: no installed git found, go for our really shrinked portable one
-    set "PATH=%PATH%;%cd%\inexor\platform\bin\windows\npm\git\cmd"
+    set "PATH=%PATH%;%cd%\bin\windows\all\npm\git\cmd"
     echo using shipped git
 ) else (
     echo found git
