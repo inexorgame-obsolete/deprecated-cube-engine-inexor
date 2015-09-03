@@ -250,7 +250,7 @@ bool soundsample::load(bool msg)
     if(chunk) return true;
     if(!name[0]) return false;
 
-    static const char * const exts[] = { "", ".wav", ".ogg" };
+    static const char * const exts[] = { "", ".ogg", ".flac", ".wav" };
     string filename;
     loopi(sizeof(exts)/sizeof(exts[0]))
     {
@@ -261,7 +261,7 @@ bool soundsample::load(bool msg)
         if(chunk) return true;
     }
 
-    conoutf(CON_ERROR, "failed to load sample: %s", filename);
+    conoutf(CON_ERROR, "failed to load sound: %s", filename);
     return false;
 }
 

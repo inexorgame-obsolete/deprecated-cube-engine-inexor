@@ -3140,7 +3140,7 @@ VARP(screenshotformat, 0, IMG_PNG, NUMIMG-1);
 
 const char *imageexts[NUMIMG] = { ".png", ".tga", ".bmp" };
 
-int guessimageformat(const char *filename, int format = IMG_BMP)
+int guessimageformat(const char *filename, int format = IMG_PNG)
 {
     int len = strlen(filename);
     loopi(NUMIMG)
