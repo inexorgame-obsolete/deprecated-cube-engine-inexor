@@ -10,6 +10,8 @@
 
 #include <boost/algorithm/clamp.hpp>
 
+
+/// type definitions sauerbraten uses.
 typedef unsigned char uchar;
 typedef unsigned short ushort;
 typedef unsigned int uint;
@@ -17,15 +19,13 @@ typedef unsigned long ulong;
 typedef signed long long int llong;
 typedef unsigned long long int ullong;
 
-/// debug assertions
-/// assert.h is part of standard library
-#ifdef _DEBUG
+
+#ifdef _DEBUG //TODO remove
   #define ASSERT(c) assert(c)
 #else
-  #define ASSERT(c) if(c) {} /// if not in debug mode, ignore assertion ("did it work? alright then do nothing {}")
+  #define ASSERT(c) if(c) {}
 #endif
 
-/// __restrict is a keyword that can be used in some pointer declaration scenarios. mostly not worth it.
 #if defined(__GNUC__) || (defined(_MSC_VER) && _MSC_VER >= 1400)
   #define RESTRICT __restrict
 #else
@@ -33,7 +33,7 @@ typedef unsigned long long int ullong;
 #endif
 
 #ifdef __GNUC__
-  #define UNUSED __attribute__((unused))
+  #define UNUSED __attribute__((unused)) //make sure unused code won't get optimized away.
 #else
   #define UNUSED
 #endif
@@ -87,10 +87,14 @@ extern uint randomMT();
 #define loopkrev(m) looprev(k,m)
 #define looplrev(m) looprev(l,m)
 
+
+/// Delete Pointer, Wrapper around delete, sets pointer to NULL afterwards(!).
 #define DELETEP(p) if(p) { delete   p; p = 0; }
+
+/// Delete Array, Wrapper around delete[], sets pointer to NULL afterwards(!).
 #define DELETEA(p) if(p) { delete[] p; p = 0; }
 
-/// some important mathematical macro constants
+// some important mathematical constants:
 #define PI  (3.1415927f)
 #define PI2 (2*PI)
 #define SQRT2 (1.4142136f)
@@ -98,7 +102,7 @@ extern uint randomMT();
 #define RAD (PI / 180.0f)
 
 
-// more mathematical constants
+// some more (precise) mathematical constants
 #ifdef WIN32
   #ifndef M_PI
     #define M_PI 3.14159265358979323846
@@ -114,29 +118,32 @@ extern uint randomMT();
     #pragma warning (disable: 4355) // 'this' : used in base member initializer list
     #pragma warning (disable: 4996) // 'strncpy' was declared deprecated
   #endif
+  /// Compare Strings, ignore case.
   #define strcasecmp _stricmp
   #define strncasecmp _strnicmp
-  #define PATHDIV '\\' /// divide multiple paths in one string with this value
+  /// Path divide character, \ on win, otherwise /.
+  #define PATHDIV '\\'
 #else
   // adapt macros to OS specifications
-  #define __cdecl // is this Win32 specific?
+  #define __cdecl
   #define _vsnprintf vsnprintf
-  #define PATHDIV '/' /// use / as path divider in not-windows systems
+  /// Path divide character, \ on win, otherwise /.
+  #define PATHDIV '/'
 #endif
 
 
-/// ?
 #ifdef __GNUC__
   #define PRINTFARGS(fmt, args) __attribute__((format(printf, fmt, args)))
 #else
   #define PRINTFARGS(fmt, args)
 #endif
 
-
-// "easy safe strings"
+/// maximal sauer-"string" length.
 #define MAXSTRLEN 260
+/// sauer "strings" (char arrays of fixed size).
 typedef char string[MAXSTRLEN];
 
+/// Internal: format string using variable parameter lists (va_list)
 inline void vformatstring(char *d, const char *fmt, va_list v, int len) { _vsnprintf(d, len, fmt, v); d[len-1] = 0; }
 template<size_t N> inline void vformatstring(char (&d)[N], const char *fmt, va_list v) { vformatstring(d, fmt, v, N); }
 
@@ -195,6 +202,10 @@ template<size_t N> inline void concformatstring(char (&d)[N], const char *fmt, .
 #define defformatstring(d,...) string d; formatstring(d, __VA_ARGS__)
 #define defvformatstring(d,last,fmt) string d; { va_list ap; va_start(ap, last); vformatstring(d, fmt, ap); va_end(ap); }
 
+/// formatstring using some static globals, faster but less safe.
+extern char *tempformatstring(const char *fmt, ...) PRINTFARGS(1, 2);
+
+/// Compare c-strings using memcmp.
 template<size_t N> inline bool matchstring(const char *s, size_t len, const char (&d)[N])
 {
     return len == N-1 && !memcmp(s, d, N-1);
@@ -212,29 +223,27 @@ inline char *newstring(const char *s)           { size_t l = strlen(s); char *d 
 #define loopvrev(v) for(int i = (v).length()-1; i>=0; i--)
 
 
-/// template implementation of buffers (networking e.g.)
+/// template implementation of buffers (networking e.g.).
+/// work like streams: you put stuff at the end, you get stuff from the end
 template <class T>
 struct databuf
 {
-	/// state enumeration of the buffer
+	/// buffer missuse flags.
     enum
     {
         OVERREAD  = 1<<0,
         OVERWROTE = 1<<1
     };
 
-    T *buf; /// buffer template object
+    /// the pointer to the data.
+    T *buf;
     int len, maxlen;
     uchar flags;
 
-	/// all members are initialised in this constructur's constructor list
-	/// please note: some compilers throw warning if the order of initialisation
-	/// is not the same as the order of declaration!
     databuf() : buf(NULL), len(0), maxlen(0), flags(0) 
 	{
 	}
 
-	/// copy constructor
     template<class U>
     databuf(T *buf, U maxlen) : buf(buf), len(0), maxlen((int)maxlen), flags(0) {}
 
@@ -260,7 +269,7 @@ struct databuf
         return overreadval;
     }
 
-	/// create a sub buffer copy from this buffer (from the beginning)
+	/// create a sub buffer copy from this buffer (from the current position)
     databuf subbuf(int sz)
     {
         sz = clamp(sz, 0, maxlen-len);
@@ -275,14 +284,14 @@ struct databuf
         return vals;
     }
 
-	/// put one byte at the end of a buffer
+	/// put one element at the end of the buffer.
     void put(const T &val)
     {
         if(len<maxlen) buf[len++] = val;
         else flags |= OVERWROTE;
     }
 
-	/// copy [numval] bytes from memory pointer
+	/// put a given number of elements at the end of the buffer.
     void put(const T *vals, int numvals)
     {
         if(maxlen-len<numvals) flags |= OVERWROTE;
@@ -290,7 +299,7 @@ struct databuf
         len += min(maxlen-len, numvals);
     }
 
-	/// get numval bytes from memory pointer
+	/// receive the given amount of elements from the buffer to given array.
     int get(T *vals, int numvals)
     {
         int read = min(maxlen-len, numvals);
@@ -300,7 +309,7 @@ struct databuf
         return read;
     }
 
-	/// change buffer offset
+	/// skip the first n elemnts of the buffer.
     void offset(int n)
     {
         n = min(n, maxlen);
@@ -331,8 +340,6 @@ struct databuf
     }
 };
 
-/// type definitions for char and unsigned char buffers
-/// based on the template architecture above
 typedef databuf<char> charbuf;
 typedef databuf<uchar> ucharbuf;
 
@@ -343,7 +350,7 @@ struct packetbuf : ucharbuf
     int growth;
 
 	/// call constructor from inherited class in this constructor
-    packetbuf(ENetPacket *packet) : ucharbuf(packet->data, packet->dataLength), packet(packet), growth(0) 
+    packetbuf(ENetPacket *packet) : ucharbuf(packet->data, packet->dataLength), packet(packet), growth(0)
 	{
 	}
 
@@ -852,6 +859,10 @@ template <class T, int MINSIZE = 8> struct vector {
         for(int p = i+n; p<ulen; p++) buf[p-n] = buf[p];
         ulen -= n;
     }
+
+    /// remove element from given position.
+    /// @sideeffect 
+    /// @return the removed element.
     T remove(int i)
     {
         T e = buf[i];
@@ -867,7 +878,7 @@ template <class T, int MINSIZE = 8> struct vector {
         return e;
     }
 
-	/// find (first) index in vector
+	/// find (first) index in vector.
     template<class U>
     int find(const U &o)
     {
@@ -875,13 +886,13 @@ template <class T, int MINSIZE = 8> struct vector {
         return -1;
     }
 
-	/// only add new element if it is unique
+	/// only add new element if it is unique.
     void addunique(const T &o)
     {
         if(find(o) < 0) add(o);
     }
 
-	/// remove an index using a template parameter key
+	/// remove an element if equal to to given one.
     void removeobj(const T &o)
     {
         loopi(ulen) if(buf[i] == o)
@@ -1346,7 +1357,7 @@ const int islittleendian = 1;
 #endif
 
 
-/* workaround for some C platforms that have these two functions as macros - not used anywhere */
+// workaround for some C platforms that have these two functions as macros - not used anywhere
 #ifdef getchar
   #undef getchar
 #endif
@@ -1514,4 +1525,3 @@ struct ipmask
 };
 
 #endif
-

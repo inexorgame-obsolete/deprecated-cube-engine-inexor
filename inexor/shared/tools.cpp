@@ -1,4 +1,4 @@
-// implementation of generic tools
+/// @file General tools, typedefines and generic definitions.
 
 #include "inexor/shared/cube.h"
 #ifndef WIN32
