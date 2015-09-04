@@ -36,10 +36,6 @@
 
   #include "windows.h"
 
-  #ifndef __GNUC__
-    #include <eh.h>
-    #include <dbghelp.h>
-  #endif
 #endif
 
 

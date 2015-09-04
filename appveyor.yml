@@ -9,7 +9,7 @@ platform:
 # build Configuration, i.e. Debug, Release, etc.
 configuration:
   - Debug
-#  - Release
+  - Release
 
 # scripts that are called at very beginning, before repo cloning
 init:
@@ -46,14 +46,8 @@ after_build: # this is actually partly our before_deploy, but appveyor doesnt li
   # We need to install the solution first
   - cmd: MSBuild build\install.vcxproj /t:build
   # create the nightly bundle .zip
-  - cmd: tool\appveyor_create_nightly.bat
+  - cmd: if "%configuration%"=="Release" tool\appveyor_create_nightly.bat
 
-artifacts:
-  - path: firstvsnightly.zip
-    name: first
-
-before_deploy:
-  - ps: foreach($artifactName in $artifacts.keys) { $artifacts[$artifactName] }
 deploy:
     # push our nightly bundle via ftp
   - provider: FTP
