@@ -4,6 +4,8 @@
 find_libs(CEF_LIBS cef_dll_wrapper LIB cef)
 find_path(CEF_INCLUDE_DIRS include/cef_app.h)
 
+find_library(UDEV_LIBS udev)
+set(CEF_LIBS ${UDEV_LIBS} ${CEF_LIBS})
 # UI MODULE
 
 include_directories(${CEF_INCLUDE_DIRS})
