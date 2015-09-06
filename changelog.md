@@ -3,13 +3,11 @@
 ### Aquarust Alpha Edition (v0.3.0-alpha, 2015-09-06)
 
 #### Code internals & Refactoring
- * fixed CMake configuration problem
  * minor improvements in the loading of sounds and textures
- * merged new Sauerbraten commits, including multiplayer undo and vslots
- * tests are running now on Windows and on Travis
- * fixes for min/max/clamp/swap (use boost/std version)
- * fixes for Subsystem (exception safety)
- * fix for InexorException (potential use after free)
+ * multiplayer undo and vslots changes
+ * removed everything but the shader rendering pipeline.
+ * align the Sauerbraten base to tesseract
+ * tests are running now on Appveyor (Windows) and on Travis (Linux)
  * added framework for throwing events when a variable is changed
  * changed default game ports: the new server port is 31415, the new master port 31416
 
