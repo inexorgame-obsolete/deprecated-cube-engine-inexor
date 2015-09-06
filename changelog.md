@@ -23,6 +23,7 @@
 
  * added debris and gibs mdls (fixes FPS drop on explosions)
  * fixed sound errors
+ * fixed IronSnout's rifle hudgun
  * fixed F3 edit binding
  * added intro/menu song
  * added 5 new crosshairs
@@ -38,6 +39,7 @@
  * enable the HUD again
  * fixed waypoint loading
  * new default screenshot filename, including the full date
+ * display which music is getting played
 
 
 ***
