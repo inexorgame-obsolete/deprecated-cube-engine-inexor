@@ -1,5 +1,48 @@
 ## Changelog
 
+### Aquarust Alpha Edition (v0.3.0-alpha, 2015-09-06)
+
+#### Code internals & Refactoring
+ * fixed CMake configuration problem
+ * minor improvements in the loading of sounds and textures
+ * merged new Sauerbraten commits, including multiplayer undo and vslots
+ * tests are running now on Windows and on Travis
+ * fixes for min/max/clamp/swap (use boost/std version)
+ * fixes for Subsystem (exception safety)
+ * fix for InexorException (potential use after free)
+ * added framework for throwing events when a variable is changed
+ * changed default game ports: the new server port is 31415, the new master port 31416
+
+#### Node.js / CEF
+
+ * added (temporary) startscript for Windows
+ * provide an own window manager
+ * restructuring of large portions of the node code 
+
+#### Content management
+
+ * added debris and gibs mdls (fixes FPS drop on explosions)
+ * fixed sound errors
+ * fixed F3 edit binding
+ * added intro/menu song
+ * added 5 new crosshairs
+ * added 2 hardcoded test servers
+ * added new chainsaw sounds
+ * maps: new map Legacy, updated Cartel and Pandora
+ * introduction of additional data: this data provides more content for our testers and will be removed when we adding an ingame content downloader
+ * data-additional changes:
+   * maps: added Louncin, Inexor, Star and Averas
+
+#### Gameplay
+
+ * enable the HUD again
+ * fixed waypoint loading
+ * new default screenshot filename, including the full date
+
+
+***
+
+
 ### Ritalin Edition (v0.2.0-alpha, 2015-07-12)
 
 #### Code internals & Refactoring
