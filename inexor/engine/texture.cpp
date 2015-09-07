@@ -3220,7 +3220,7 @@ void screenshot(char *filename)
             concatstring(buf, mode);
         }
 
-        for(char *s = &buf[dirlen]; *s; s++) if(iscubespace(*s) || *s == '/' || *s == '\\') *s = '-';
+        for(char *s = &buf[dirlen+1]; *s; s++) if(iscubespace(*s) || *s == '/' || *s == '\\') *s = '-';
     }
     if(format < 0)
     {
