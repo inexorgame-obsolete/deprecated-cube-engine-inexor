@@ -261,7 +261,7 @@ bool soundsample::load(bool msg)
         if(chunk) return true;
     }
 
-    conoutf(CON_ERROR, "failed to load sound: %s", filename);
+    conoutf(CON_WARN, "failed to load sound: %s", filename);
     return false;
 }
 

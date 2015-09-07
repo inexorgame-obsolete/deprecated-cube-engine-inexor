@@ -797,7 +797,7 @@ struct gui : g3d_gui
                     const char *ext = strrchr(icon, '.');
                     static std::string iname;
                     inexor::filesystem::appendmediadir(iname, icon, DIR_ICON, ext ? NULL : ".jpg");
-                    icon_(textureload(iname.c_str(), 3, true, false), false, x, cury, ICON_SIZE, clickable && hit);
+                    icon_(textureload(iname.c_str(), 3), false, x, cury, ICON_SIZE, clickable && hit);
                 }
                 x += ICON_SIZE;
             }
@@ -816,7 +816,7 @@ struct gui : g3d_gui
         if(!skintex) {
             static std::string stname;
             inexor::filesystem::appendmediadir(stname, "guiskin.png", DIR_UI);
-            skintex = textureload(stname.c_str(), 3, true, false);
+            skintex = textureload(stname.c_str(), 3);
         }
         glBindTexture(GL_TEXTURE_2D, skintex->id);
         int gapx1 = INT_MAX, gapy1 = INT_MAX, gapx2 = INT_MAX, gapy2 = INT_MAX;
