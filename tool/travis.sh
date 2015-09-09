@@ -96,6 +96,9 @@ install_linux() {
   apt-get -y -t utopic install libprotobuf-dev         \
     protobuf-compiler build-essential libboost-all-dev \
     libasio-dev binutils
+
+  # Manually workaround http://askubuntu.com/questions/288821/how-do-i-resolve-a-cannot-open-shared-object-file-libudev-so-0-error
+  ln -sf /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0
 }
 
 # We have a slightly different install routine for each target
