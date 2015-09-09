@@ -95,7 +95,7 @@ install_linux() {
 
   apt-get -y -t utopic install libprotobuf-dev         \
     protobuf-compiler build-essential libboost-all-dev \
-    libasio-dev binutils
+    libasio-dev binutils libudev-dev
 }
 
 # We have a slightly different install routine for each target
