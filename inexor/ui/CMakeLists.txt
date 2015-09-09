@@ -4,7 +4,6 @@
 find_libs(CEF_LIBS cef_dll_wrapper LIB cef)
 find_path(CEF_INCLUDE_DIRS include/cef_app.h)
 
-find_library(UDEV_LIBS udev)
 # UI MODULE
 
 include_directories(${CEF_INCLUDE_DIRS})
@@ -23,7 +22,7 @@ function(config_ui targ)
   endif()
 
   include_directories(${CEF_INCLUDE_DIRS})
-  target_link_libs(${targ} module_ui ${CEF_LIBS} ${UDEV_LIBS} module_util ${NOLINK})
+  target_link_libs(${targ} module_ui ${CEF_LIBS} module_util ${NOLINK})
 
   config_enet(${targ} ${NOLINK})
   config_sdl(${targ} ${NOLINK})
