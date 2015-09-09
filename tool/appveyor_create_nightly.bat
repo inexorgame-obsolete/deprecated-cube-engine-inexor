@@ -4,11 +4,11 @@ setlocal EnableDelayedExpansion
 :: This will be the name of the nightly build.
 if "%platform%"=="Win32" set "arch=win32"
 if "%platform%"=="x64"   set "arch=win64"
+set "branch_name=%APPVEYOR_REPO_BRANCH:/=-%"
 
 if "%APPVEYOR_REPO_TAG%" == "true" (
     set "nightly_name=Inexor-%APPVEYOR_REPO_TAG_NAME%-%arch%"
 ) else (
-    set "branch_name=%APPVEYOR_REPO_BRANCH:/=-%"
     set "nightly_name=%branch_name%-%APPVEYOR_BUILD_VERSION%-vs_%arch%"
 )
 
