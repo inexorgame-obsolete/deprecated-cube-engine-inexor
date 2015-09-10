@@ -8,6 +8,7 @@ set(ALL_HEADERS "" CACHE INTERNAL "")
 set(OUTSOURCED_MODULES "" CACHE INTERNAL "")
 
 include_directories(${MAINDIR})
+include_directories(${CMAKE_INCLUDE_PATH})
 
 # TODO: Automatically detect new modules
 add_subdirectory(libraries)
