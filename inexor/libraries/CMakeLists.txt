@@ -5,23 +5,6 @@ find_package(PkgConfig)
 
 set(pwd "${CMAKE_CURRENT_SOURCE_DIR}")
 
-#### Debug
-
-function(config_debug targ)
-  message(STATUS "Configuring ${targ} with Cocoa")
-  if (";${ARGN};" MATCHES ";NOLINK;")
-    set(NOLINK "NOLINK")
-  endif()
-
-  if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-    return()
-  endif()
-
-  if (MSVC)
-    target_link_libs(${targ} dbghelp)
-  endif()
-endfunction()
-
 #### Cocoa/OSX
 
 function(config_cocoa targ)

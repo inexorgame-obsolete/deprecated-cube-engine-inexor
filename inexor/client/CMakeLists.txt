@@ -67,7 +67,6 @@ add_definitions(-DCLIENT)
 
 add_app(${CLIENT_BINARY} ${CLIENT_SOURCES})
 
-config_debug(${CLIENT_BINARY})
 config_threads(${CLIENT_BINARY})
 config_cocoa(${CLIENT_BINARY}) # For rendering the initial window
 config_sdl(${CLIENT_BINARY})
