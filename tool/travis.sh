@@ -68,7 +68,7 @@ external_pull_request() {
 #
 # Upload one or more files to nightly.inexor.org
 upload() {
-  ncftpput -R -v -u "$FTP_USER" -p "$FTP_PASSWORD" ftp.adrive.com nightly "$@"
+  ncftpput -R -v -u "$FTP_USER" -p "$FTP_PASSWORD" ftp.adrive.com "$@"
 }
 
 ## INSTALLATION ROUTINES ###################################
@@ -134,7 +134,7 @@ upload_apidoc() {
       "failed: memberdef.id_file may not be NULL'
     mv doc "$zipp"
     zip -r "${zipp}.zip" "$zipp"
-    upload / "$zipp.zip"
+    upload nightly "$zipp.zip"
   )
 }
 
@@ -203,12 +203,12 @@ nigthly_build() {
     sha512sum "$zipf"
   ) > "$descf"
 
-  upload / "$zipf" "$descf"
+  upload nightly "$zipf" "$descf"
 
   if test "$branch" = master; then (
     ln -s "$zipf" "master-latest-$TARGET.zip"
     ln -s "$descf" "master-latest-$TARGET.txt"
-    upload / "master-latest-$TARGET.zip" "master-latest-$TARGET.txt"
+    upload nightly "master-latest-$TARGET.zip" "master-latest-$TARGET.txt"
   ) fi
   
   return 0
