@@ -52,11 +52,12 @@ deploy:
     # push our nightly bundle via ftp
   - provider: FTP
     protocol: ftp
-    host: inexor.org
+    host: ftp.adrive.com
+    folder: nightly
     username:
-      secure: rpQyxcVaaqNxDvYQlGP/eA==
+      secure: S278/OjFvlsW1p7m+cQKlA==
     password:
-      secure: aBNw6S6n1MqCfw/0S2vhDA==
+      secure: uDFAZRoczcpD1+he/RY3Ow==
     # push release binaries to GitHub if tag gets created (and create a release draft)
   - provider: GitHub
     auth_token:

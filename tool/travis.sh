@@ -68,8 +68,7 @@ external_pull_request() {
 #
 # Upload one or more files to nightly.inexor.org
 upload() {
-  ncftpput -R -v -u "$FTP_USER" -p "$FTP_PASSWORD" \
-    inexor.org "$@"
+  ncftpput -R -v -u "$FTP_USER" -p "$FTP_PASSWORD" ftp.adrive.com nightly "$@"
 }
 
 ## INSTALLATION ROUTINES ###################################
