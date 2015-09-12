@@ -1461,7 +1461,6 @@ void writeobj(char *name)
     path(mtlname);
     /// link reference to material library
     f->printf("mtllib %s\n\n", mtlname); 
-    extern vector<vtxarray *> valist;
     vector<vec> verts;
     vector<vec2> texcoords;
     hashtable<vec, int> shareverts(1<<16);
