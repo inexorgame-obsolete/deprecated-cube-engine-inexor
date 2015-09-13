@@ -25,7 +25,7 @@ add_custom_command(
   COMMAND ${PROTOC_EXE}
       --proto_path=${MAINDIR}
       --cpp_out=${CMAKE_BINARY_DIR}/inexor/rpc/ ${protoc_in}
-  DEPENDS ${protoc_in})
+  MAIN_DEPENDENCY ${protoc_in})
 set_source_files_properties(${protoc_out} PROPERTIES GENERATED TRUE)
 add_custom_target(run_protoc DEPENDS ${protoc_out})
 
