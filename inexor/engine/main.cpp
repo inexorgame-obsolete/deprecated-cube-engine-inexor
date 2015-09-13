@@ -28,6 +28,18 @@ inexor::util::Metasystem metapp;
 
 /// exiting the game
 
+void cleanupSDL()
+{
+    if(SDL_WasInit(SDL_INIT_VIDEO))
+    {
+        // free SDL context
+        if(screen) SDL_SetWindowGrab(screen, SDL_FALSE);
+        SDL_SetRelativeMouseMode(SDL_FALSE);
+        SDL_ShowCursor(SDL_TRUE);
+        cleargamma();
+    }
+}
+
 /// cleans up game memory and SDL at exit
 void cleanup()
 {
@@ -38,30 +50,16 @@ void cleanup()
 
     recorder::stop();
     cleanupserver();
-    
-    /// "Use this function to set a window's input grab mode."
-    /// https://wiki.libsdl.org/SDL_SetWindowGrab
-    if(screen) SDL_SetWindowGrab(screen, SDL_FALSE);
 
-    /// "Use this function to set relative mouse mode."
-    /// https://wiki.libsdl.org/SDL_SetRelativeMouseMode
-    SDL_SetRelativeMouseMode(SDL_FALSE);
+    cleanupSDL();
 
-    /// "Use this function to toggle whether or not the cursor is shown."
-    /// https://wiki.libsdl.org/SDL_ShowCursor
-    SDL_ShowCursor(SDL_TRUE);
-    cleargamma();
-
-    /// free octree memory
     freeocta(worldroot);
     clear_command();
     clear_console();
     clear_mdls();
     clear_sound();
     closelogfile();
-    
-    /// "Use this function to clean up all initialized subsystems. You should call it upon all exit conditions."
-    /// https://wiki.libsdl.org/SDL_Quit
+
     SDL_Quit();
 }
 
@@ -83,32 +81,38 @@ void quit()
 }
 COMMAND(quit, "");
 
-/// failure crash
-void fatal(const char *s, ...)   
+/// Fatal crash: log/display crash message and clean up SDL.
+void fatal(const char *s, ...)
 {
+    cleanupSDL();
     static int errors = 0;
     errors++;
-    if(errors <= 2) /// print up to one extra recursive error
+    if(errors <= 2) // print up to one extra recursive error
     {
         defvformatstring(msg,s,s);
         logoutf("%s", msg);
 
-        if(errors <= 1) /// avoid recursion
-        {
-            if(SDL_WasInit(SDL_INIT_VIDEO))
-            {
-                /// free SDL context
-                if(screen) SDL_SetWindowGrab(screen, SDL_FALSE);
-                SDL_SetRelativeMouseMode(SDL_FALSE);
-                SDL_ShowCursor(SDL_TRUE);
-                cleargamma();
-            }
-            #ifdef WIN32
-                MessageBox(NULL, msg, "Inexor fatal error", MB_OK|MB_SYSTEMMODAL);
-            #endif
-            SDL_Quit();
-        }
+        #ifdef WIN32
+            if(errors <= 1) MessageBox(NULL, msg, "Inexor fatal error", MB_OK|MB_SYSTEMMODAL);
+        #endif
     }
+    SDL_Quit();
+    exit(EXIT_FAILURE);
+}
+
+/// Fatal crash: log/display crash message and clean up SDL.
+void fatal(std::vector<std::string> &output)
+{
+    cleanupSDL();
+    std::string completeoutput; 
+    for(auto message : output) {
+        logoutf("%s", message.c_str());
+        completeoutput = inexor::util::fmt << completeoutput << message.c_str();
+    }
+#ifdef WIN32
+    MessageBox(NULL, completeoutput.c_str(), "Inexor fatal error", MB_OK | MB_SYSTEMMODAL);
+#endif
+    SDL_Quit();
     exit(EXIT_FAILURE);
 }
 

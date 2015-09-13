@@ -66,9 +66,10 @@ static void writelogv(FILE *file, const char *fmt, va_list args)
 }
  
 #ifdef STANDALONE
-void fatal(const char *fmt, ...) 
-{ 
-    void cleanupserver();
+
+void cleanupserver();
+void fatal(const char *fmt, ...)
+{
     cleanupserver(); 
 	defvformatstring(msg,fmt,fmt);
 	if(logfile) logoutf("%s", msg);
@@ -79,6 +80,24 @@ void fatal(const char *fmt, ...)
 #endif
     closelogfile();
     exit(EXIT_FAILURE); 
+}
+
+/// Fatal crash: log/display crash message and clean up server.
+void fatal(std::vector<std::string> &output)
+{
+    cleanupserver();
+    std::string completeoutput;
+    for(auto message : output) {
+        if(logfile) logoutf("%s", message.c_str());
+        completeoutput = inexor::util::fmt << completeoutput << message.c_str();
+    }
+#ifdef WIN32
+    MessageBox(NULL, completeoutput.c_str(), "Inexor fatal error", MB_OK | MB_SYSTEMMODAL);
+#else
+    fprintf(stderr, "server error: %s\n", completeoutput.c_str());
+#endif
+    closelogfile();
+    exit(EXIT_FAILURE);
 }
 
 void conoutfv(int type, const char *fmt, va_list args)
