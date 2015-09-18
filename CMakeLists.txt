@@ -254,22 +254,9 @@ if(OS_WINDOWS)
         add_definitions(-DWIN64)
     endif()
 
-    # Configure use of the sandbox.
-    set(USE_SANDBOX OFF)
-    if(MSVC_VERSION EQUAL 1800)
-        # The I_sandbox.lib static library is currently built with VS2013. It will
-        # not link successfully with other VS versions.
-        set(USE_SANDBOX ON)
-        option(USE_SANDBOX "Enable or disable use of the sandbox. (VS 2013 or later required)" ON)
-    elseif(MSVC)
-        message(WARNING "Use Visual Studio 2013 in order to compile Inexor. (Otherwise you would need to recompile the dependencies yourself)")
-    endif()
-
-    if(USE_SANDBOX)
-        # Definition required by CEF_sandbox.lib.
-        add_definitions(-DPSAPI_VERSION=1)
-        # Definition used by apps to test if the sandbox is enabled.
-        add_definitions(-DCEF_USE_SANDBOX)
+    # Currently we only support VS 2015
+    if(MSVC AND NOT MSVC_VERSION EQUAL 1900)
+        message(WARNING "Use Visual Studio 2015 in order to compile Inexor. (Otherwise you would need to recompile the dependencies yourself)")
     endif()
 
     # Rename project_arch from x86_64 to 64 and x86 to 32 on windows:
