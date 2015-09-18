@@ -3,16 +3,14 @@
 
 namespace aiman
 {
-	// refresh 
-	// only used in checkai() method
-    bool dorefresh = false;
+    bool dorefresh = false, botbalance = true;
 
     // limit amount of computer controlled players on your server
     VARN(serverbotlimit, botlimit, 0, 8, MAXBOTS);
 
     // use (prefere) bots to balance teams
     // not accepted my most modded servers
-    VARN(serverbotbalance, botbalance, 0, 1, 1);
+    VAR(serverbotbalance, 0, 1, 1);
 
 	// quicksort teams to rank them in scoreboard
     void calcteams(vector<teamscore> &teams)
@@ -299,7 +297,7 @@ namespace aiman
     {
         dorefresh = true;
         loopv(clients) if(clients[i]->local || clients[i]->privilege) return;
-        if(!botbalance) setbotbalance(NULL, true);
+        if(botbalance != (serverbotbalance != 0)) setbotbalance(NULL, serverbotbalance != 0);
     }
 
 	// a new human player connected
