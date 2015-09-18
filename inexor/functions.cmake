@@ -259,6 +259,12 @@ function(add_app exe )
     set_property(TARGET ${exe} PROPERTY FOLDER "executables")
   endif()
 
+  # on visual studio we want to copy the seperate debug-info file
+  if(MSVC)
+    set(pdbfile "${CMAKE_CURRENT_BINARY_DIR}/\${CMAKE_INSTALL_CONFIG_NAME}/${exe}.pdb")
+    install(FILES ${pdbfile} DESTINATION ${EXE_DIR} OPTIONAL)
+  endif()
+
   install(TARGETS ${exe} DESTINATION ${EXE_DIR})
 endfunction()
 

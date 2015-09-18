@@ -97,16 +97,16 @@ if(OS_LINUX OR (OS_WINDOWS AND NOT MSVC))
     # -Wall                           = Enable all warnings
     # -Wno-switch                     = Execpt Warnings for missing switch cases
     # -fdiagnostics-show-option       = Show Warning IDs
-    set(I_COMPILER_FLAGS          "-fomit-frame-pointer -fno-strict-aliasing -fsigned-char -pipe -Wall -Wno-switch -Wno-deprecated-declarations -Wno-missing-braces -fdiagnostics-show-option ")
+    # -g                              = Generate debug information
+    set(I_COMPILER_FLAGS          "-fomit-frame-pointer -fno-strict-aliasing -fsigned-char -pipe -Wall -Wno-switch -Wno-deprecated-declarations -g -Wno-missing-braces -fdiagnostics-show-option ")
     # -std=c99                        = Use the C99 language standard
     set(I_C_COMPILER_FLAGS        "-std=c99")
     # -fno-threadsafe-statics         = Don't generate thread-safe statics
     # -std=c++11                      = Use the C++11 language standard
     set(I_CXX_COMPILER_FLAGS      "-fno-threadsafe-statics -std=c++11")
     # -O0                             = No optimization
-    # -g                              = Generate debug information
     # -D_DEBUG                        = Debug build
-    set(I_COMPILER_FLAGS_DEBUG    "-O0 -g -D_DEBUG")
+    set(I_COMPILER_FLAGS_DEBUG    "-O0 -D_DEBUG")
     # -O3                             = Optimize for maximum speed
     # -fdata-sections                 = Enable linker optimizations to improve locality of reference for data sections
     # -ffunction-sections             = Enable linker optimizations to improve locality of reference for function sections
@@ -159,7 +159,8 @@ if(OS_MACOSX)
     # -fno-strict-aliasing            = Avoid assumptions regarding non-aliasing of objects of different types
     # -funwind-tables                 = Support stack unwinding for backtrace()
     # -Wall                           = Enable all warnings
-    set(I_COMPILER_FLAGS          "-fomit-frame-pointer -fno-strict-aliasing -funwind-tables -Wall")
+    # -g                              = Generate debug information
+    set(I_COMPILER_FLAGS          "-fomit-frame-pointer -g -fno-strict-aliasing -funwind-tables -Wall")
     # -std=c99                        = Use the C99 language standard
     set(I_C_COMPILER_FLAGS        "-std=c99")
     # -fno-threadsafe-statics         = Don't generate thread-safe statics
@@ -169,9 +170,8 @@ if(OS_MACOSX)
     # -Wsign-compare                  = Warn about mixed signed/unsigned type comparisons
     set(I_CXX_COMPILER_FLAGS      "-fno-threadsafe-statics -fobjc-call-cxx-cdtors -Wno-narrowing -Wsign-compare -std=c++11")
     # -O0                             = No optimization
-    # -g                              = Generate debug information
     # -D_DEBUG                        = Debug build
-    set(I_COMPILER_FLAGS_DEBUG    "-O0 -g -D_DEBUG")
+    set(I_COMPILER_FLAGS_DEBUG    "-O0 -D_DEBUG")
     # -O3                             = Optimize for maximum speed plus a few extras
     set(I_COMPILER_FLAGS_RELEASE  "-O3")
     # -Wl,-search_paths_first         = Search for static or shared library versions in the same pass
@@ -239,13 +239,16 @@ if(OS_WINDOWS)
         # /O2                                   = Optimize for maximum speed
         # /Ob2                                  = Inline any suitable function
         # /GF                                   = Enable string pooling
-        # /D NDEBUG /D _NDEBUG                  = Not a debug build
+        # /D NDEBUG /D _NDEBUG                  = Not a debug build, skip code passages meant for debug.
         set(I_COMPILER_FLAGS_RELEASE  "-MT -O2 -Ob2 -GF -DNDEBUG -D_NDEBUG")
-        # /DEBUG                                = Generate debug information
-        set(I_LINKER_FLAGS_DEBUG      "-DEBUG")
+        # /DEBUG                                = Generate debug information (even for release builds for our stackwalker)
         # /MANIFEST:NO                          = No default manifest
         # /SAFESEH:NO                           = Do Not Create a table of safe exception handlers (binary incompatible)
-        set(I_EXE_LINKER_FLAGS        "-MANIFEST:NO -SAFESEH:NO")
+        set(I_EXE_LINKER_FLAGS        "-MANIFEST:NO -SAFESEH:NO -DEBUG ")
+        # /OPT:REF                              = Eliminate Unreferenced Data (to revert changes to the binary caused by /DEBUG)
+        # /OPT:ICF                              = Remove Redundant COMDATs (to revert changes to the binary caused by /DEBUG)
+        # /INCREMENTAL:NO                       = Linking incremental (faster) does not work anymore with the previous two optimizations
+        set(I_LINKER_FLAGS_RELEASE    "-OPT:REF -OPT:ICF -INCREMENTAL:NO")
 
         # Add the library path as well
         foreach(dir ${CMAKE_LIBRARY_PATH}) # We need to do this seperately since LIBPATH does not accept more than one dir at once
