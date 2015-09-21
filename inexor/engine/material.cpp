@@ -893,7 +893,8 @@ void rendermaterials()
     if(!depth) glDepthMask(GL_TRUE);
     if(blended) glDisable(GL_BLEND);
     if(!lastfogtype) resetfogcolor();
-    if(editmode && showmat && !drawtex)
+    extern SharedVar<int> wireframe;
+    if(editmode && showmat && !drawtex && !wireframe)
     {
         foggednotextureshader->set();
         rendermatgrid(vismats);
