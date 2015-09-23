@@ -435,11 +435,19 @@ struct packetbuf : ucharbuf
 template<class T>
 static inline float heapscore(const T &n) { return n; }
 
-/// template function to compare two values
-/// advanced data types must implement support for < operator!
-template<class T>
-static inline bool compareless(const T &x, const T &y) { return x < y; }
+struct sortless
+{
+    template<class T> bool operator()(const T &x, const T &y) const { return x < y; }
+    bool operator()(char *x, char *y) const { return strcmp(x, y) < 0; }
+    bool operator()(const char *x, const char *y) const { return strcmp(x, y) < 0; }
+};
 
+struct sortnameless
+{
+    template<class T> bool operator()(const T &x, const T &y) const { return sortless()(x.name, y.name); }
+    template<class T> bool operator()(T *x, T *y) const { return sortless()(x->name, y->name); }
+    template<class T> bool operator()(const T *x, const T *y) const { return sortless()(x->name, y->name); }
+};
 
 /// there are various sorting algorithms known
 /// please gain some knowledge about them before using these functions
@@ -470,7 +478,7 @@ static inline void insertionsort(T *buf, int n, F fun)
 template<class T>
 static inline void insertionsort(T *buf, int n)
 {
-    insertionsort(buf, buf+n, compareless<T>);
+    insertionsort(buf, buf+n, sortless());
 }
 
 
@@ -523,7 +531,7 @@ static inline void quicksort(T *buf, int n, F fun)
 template<class T>
 static inline void quicksort(T *buf, int n)
 {
-    quicksort(buf, buf+n, compareless<T>);
+    quicksort(buf, buf+n, sortless());
 }
 
 
@@ -787,8 +795,9 @@ template <class T, int MINSIZE = 8> struct vector {
     {
         quicksort(&buf[i], n < 0 ? ulen-i : n, fun);
     }
-	/// sort the vector using compareless function
-    void sort() { sort(compareless<T>); }
+
+    void sort() { sort(sortless()); }
+    void sortname() { sort(sortnameless()); }
 
 	/// mix the vector's indices randomly
     void shuffle(){
