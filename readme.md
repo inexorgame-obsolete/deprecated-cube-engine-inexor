@@ -17,7 +17,7 @@ You will find more information in our wiki.
  
 ### Engine Features
 
-* see wiki for actual list of engine features
+* See wiki for actual list of engine features
 * Cube 2 Engine Features
 
  * 6 directional heightfield in octree world structure allowing for instant easy in-game geometry editing (even in multiplayer, coop edit).
