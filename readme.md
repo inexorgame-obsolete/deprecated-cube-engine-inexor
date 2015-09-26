@@ -2,13 +2,13 @@
 
 Inexor is a fork of the quake-like FPS Cube 2: Sauerbraten.
 It adds a lot of functionality and tries to stay open for improvements and suggestions.
-The task is to be more flexible and create an environment where developement is easy and fast and creativity can prosper.
+The goal is to be more flexible and create an environment where developement is easy and fast and creativity can prosper.
 
 You will find more information in our wiki.
 
 ## Game Features
 
-* see wiki for actual list of game features
+* See wiki for actual list of game features
 * Sauerbraten Features
 
  * Old-school fast & intense gameplay (read: similar to Doom 2 / Quake 1).
