@@ -1,23 +1,23 @@
 # Inexor
 
-Inexor is a fork of the quake-like FPS Cube 2: Sauerbraten.
-It adds a lot of functionality and tries to stay open for improvements and suggestions.
-The task is to be more flexible and create an environment where developement is easy and fast and creativity can prosper.
+Inexor is a fork of the quake-like Cube-derived Cube 2: Sauerbraten
+It adds a lot of features and tries to stay open for improvements and suggestion.
+It wants to be more flexible and be the superseder of Sauerbraten.. 
+It's also a goal to create a environment where development of the game or engine is easy and fast and creativity can achieve prosperity.
 
-You will find more information in our wiki.
+More information is available on Inexor Wiki.
 
-## Game Features
+##Inexor Features
 
-* see wiki for actual list of game features
-* Sauerbraten Features
+* More information available on Wiki
+* Sauerbraten Features 
 
- * Old-school fast & intense gameplay (read: similar to Doom 2 / Quake 1).
- * 23 multiplayer gameplay modes, most in teamplay variants as well: ffa (free for all, deathmatch alike), instagib, efficiency, tactics, capture (domination/battlefield style), CTF (capture the flag), protect (one teammate have to carry the flag), hold (hold a randomly spawning flag for a specific time to score), collect (kill enemies and collect their skulls) and coop edit (create maps together!).
- * 7 weapons: double barrelled shotgun, rocket launcher, machine gun, rifle, grenade launcher, pistol and chainsaw.
+ * Old-school-type fast & intense gameplay, similar to Doom2 and/or Quake 1 to some extent
+ * 23 multiplayer gameplay modes, most in teamplay variants as well, ffa (free for all deathmatch-like), instagib, efficiency, tactics, capture (domination/battlefield style), CTF (Capture the Flag), protect (Member of one team has to carry the flag), hold (hold a randomly spawning flag for 20 seconds to score to score points), collect (kill enemies and collect their skulls and score them to collect points) and coop edit (cooperative edit, making maps together).
  
 ### Engine Features
 
-* see wiki for actual list of engine features
+* See wiki for actual list of engine features
 * Cube 2 Engine Features
 
  * 6 directional heightfield in octree world structure allowing for instant easy in-game geometry editing (even in multiplayer, coop edit).
@@ -29,7 +29,7 @@ You will find more information in our wiki.
  * Particle engine, supporting text particles, volumetric explosions, soft particles, and decals.
  * 3d menu/gui system, for in-world representation of choices.
 
-## Resources
+## Useful links.
 
 * [Website](https://inexor.org)
 * [Wiki](https://github.com/inexor-game/code/wiki)
