@@ -66,6 +66,8 @@
 #include "inexor/shared/iengine.hpp"
 #include "inexor/shared/igame.hpp"
 
+/// include flowgraph
+#include "inexor/flowgraph/flowgraph.h"
 
 #endif // __CUBE_H__
 

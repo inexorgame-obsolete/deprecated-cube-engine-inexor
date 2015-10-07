@@ -58,7 +58,7 @@ namespace geom {
     }
 
 
-    void CBezierCurve::PreComputeCache(BEZIER_ALGORITHM algorithm = ALGORITHM_BERNSTEIN_POLYNOM)
+    void CBezierCurve::PreComputeCache(BEZIER_ALGORITHM algorithm)
     {
         switch (algorithm)
         {
