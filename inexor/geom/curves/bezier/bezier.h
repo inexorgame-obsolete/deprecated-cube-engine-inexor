@@ -38,10 +38,6 @@
 /// include the base class for curves
 #include "inexor/geom/curves/curvebase.h"
 
-/// Use Sauerbraten's engine functions
-/// TODO: remove this?
-#include "inexor/shared/geom.h"
-
 
 /// inexor security namespace
 namespace inexor {
