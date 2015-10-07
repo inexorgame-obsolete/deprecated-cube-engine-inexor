@@ -67,5 +67,12 @@
 #include "inexor/shared/igame.hpp"
 
 
+/// geom module
+#include "inexor/geom/geom.h"
+/// flowgraph module
+#include "inexor/flowgraph/flowgraph.h"
+
+
+
 #endif // __CUBE_H__
 
