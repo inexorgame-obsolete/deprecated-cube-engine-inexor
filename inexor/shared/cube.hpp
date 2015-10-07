@@ -67,10 +67,5 @@
 #include "inexor/shared/igame.hpp"
 
 
-/// flowgraph module (no include of geom.h required: will be included with flowgraph.h!)
-#include "inexor/flowgraph/flowgraph.h"
-
-
-
 #endif // __CUBE_H__
 

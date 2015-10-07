@@ -616,5 +616,8 @@ IEXCEPTION(GLException, "OpenGL related functionality failed");
 
 #endif
 
+/// flowgraph module (no include of geom.h required: will be included with flowgraph.h!)
+#include "inexor/flowgraph/flowgraph.h"
+
 #endif
 
