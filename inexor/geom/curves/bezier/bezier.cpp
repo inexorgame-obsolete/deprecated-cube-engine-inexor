@@ -133,7 +133,9 @@ namespace geom {
         // if index is the first index, stop computing
         if (0 == index) return m_vInputPoints[nextindex]; // return the first parameter
         // return position
-        return calculate_de_casteljau_coordinate(index - 1, nextindex, curvepos) *(1 - curvepos) + calculate_de_casteljau_coordinate(index - 1, nextindex + 1, curvepos) * curvepos;
+        SCustomOutputPoint _a = calculate_de_casteljau_coordinate(index - 1, nextindex, curvepos);
+        SCustomOutputPoint _b = calculate_de_casteljau_coordinate(index - 1, nextindex + 1, curvepos);
+        return _a.pos * (1 - curvepos) + _b.pos * curvepos;
     }
 
 
