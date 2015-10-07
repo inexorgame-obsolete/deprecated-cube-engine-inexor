@@ -155,9 +155,13 @@ struct vec
 
     /// arithmetic operators
     vec operator+(const vec &o) { return this->add(o); }
+    vec operator+(const float f) { return this->add(f); }
     vec operator-(const vec &o) { return this->sub(o); }
+    vec operator-(const float f) { return this->sub(f); }
     vec operator*(const vec &o) { return this->mul(o); }
+    vec operator*(const float f) { return this->mul(f); }
     vec operator/(const vec &o) { return this->div(o); }
+    vec operator/(const float f) { return this->div(f); }
 
     /// turn XY coordinates into its negative values
     vec &neg2()              { x = -x;         y = -y;                         return *this; }

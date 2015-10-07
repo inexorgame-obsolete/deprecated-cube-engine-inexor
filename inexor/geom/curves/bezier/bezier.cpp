@@ -132,10 +132,11 @@ namespace geom {
     {
         // if index is the first index, stop computing
         if (0 == index) return m_vInputPoints[nextindex]; // return the first parameter
-        // return position
-        SCustomOutputPoint _a = calculate_de_casteljau_coordinate(index - 1, nextindex, curvepos);
-        SCustomOutputPoint _b = calculate_de_casteljau_coordinate(index - 1, nextindex + 1, curvepos);
-        return _a.pos * (1 - curvepos) + _b.pos * curvepos;
+        // calculate position. tangent and normal vectors will be computed separatedly later on.
+        SCustomOutputPoint ret;
+        ret.pos = calculate_de_casteljau_coordinate(index - 1, nextindex, curvepos).pos * (1 - curvepos) + calculate_de_casteljau_coordinate(index - 1, nextindex + 1, curvepos).pos * curvepos;
+        /// return position
+        return ret;
     }
 
 
