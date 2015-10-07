@@ -40,7 +40,7 @@ CVisualScriptSystem::~CVisualScriptSystem()
 void CVisualScriptSystem::add_node(char* a, char* b, char* c, char* d)
 {
     /// get the target vector
-    vec node_target_position = sel.o.tovec();
+    vec node_target_position = vec(sel.o.x,sel.o.y,sel.o.z);
     vec current_player_position = camera1->o;
 
     vec offset = vec(gridsize/2,gridsize/2,gridsize/2);
@@ -231,7 +231,7 @@ void CVisualScriptSystem::renderboxhelplines(vec p)
 void CVisualScriptSystem::render_nodes()
 {
     /// this setup is required to render lines correctly
-    lineshader->set();    
+    //lineshader->set();    
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_BLEND);
 
@@ -283,7 +283,7 @@ void CVisualScriptSystem::render_nodes()
 
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
-    defaultshader->set();
+    //defaultshader->set();
 }
 
 
@@ -291,7 +291,7 @@ void CVisualScriptSystem::render_nodes()
 void CVisualScriptSystem::render_node_relations()
 {   
     /// this setup is required to render lines correctly
-    lineshader->set();
+    //lineshader->set();
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_BLEND);
     
@@ -311,7 +311,7 @@ void CVisualScriptSystem::render_node_relations()
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     
-    defaultshader->set();
+    //defaultshader->set();
 }
 
 
@@ -320,6 +320,7 @@ void CVisualScriptSystem::render_bezier_curves()
 {
     if(!nodes.size()) return;
 
+    /*
     /// temporary curve instance
     inexor::geom::CBezierCurve tmp_curve;
 
@@ -371,6 +372,7 @@ void CVisualScriptSystem::render_bezier_curves()
         glEnable(GL_BLEND);
         defaultshader->set();
     }
+    */
 }
 
 
