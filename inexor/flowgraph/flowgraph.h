@@ -13,7 +13,6 @@
 #include <list>
 
 /// bezier curves
-#include "inexor/geom/geom.h"
 #include "inexor/engine/engine.h"
 
 /// project's namespace protection
