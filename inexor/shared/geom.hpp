@@ -153,6 +153,12 @@ struct vec
     vec &sub(const vec &o)   { x -= o.x;       y -= o.y;       z -= o.z;       return *this; }
     vec &sub(float f)        { x -= f;         y -= f;         z -= f;         return *this; }
 
+    /// arithmetic operators
+    vec operator+(const vec &o) { return this->add(o); }
+    vec operator-(const vec &o) { return this->sub(o); }
+    vec operator*(const vec &o) { return this->mul(o); }
+    vec operator/(const vec &o) { return this->div(o); }
+
     /// turn XY coordinates into its negative values
     vec &neg2()              { x = -x;         y = -y;                         return *this; }
     /// turn all 3 (XYZ) coordinates into its negative values
