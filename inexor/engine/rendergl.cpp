@@ -2,6 +2,7 @@
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/shared/filesystem.hpp"
+#include "inexor/flowgraph/flowgraph.h"
 
 bool hasVAO = false, hasFBO = false, hasAFBO = false, hasDS = false, hasTF = false, hasTRG = false, hasTSW = false, hasS3TC = false, hasFXT1 = false, hasAF = false, hasFBB = false, hasUBO = false, hasMBR = false;
 int hasstencil = 0;
@@ -1830,6 +1831,14 @@ void gl_drawhud(int w, int h);
 
 int xtraverts, xtravertsva;
 
+/// 3D visual scripting enviroment
+namespace inexor {
+    namespace vscript {
+        extern void node_render_test();
+    };
+};
+
+
 void gl_drawframe()
 {
     if(deferdrawtextures) drawtextures();
@@ -1890,6 +1899,12 @@ void gl_drawframe()
     renderdecals(true);
 
     rendermapmodels();
+
+    /// render nodes here
+    /// @bug as long as renderedgame is NOT false, no particles can be added!
+    /// move this code downwards!
+    inexor::vscript::node_render_test();
+
     rendergame(true);
     renderavatar();
 

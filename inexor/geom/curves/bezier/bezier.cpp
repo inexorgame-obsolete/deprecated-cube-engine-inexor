@@ -135,7 +135,6 @@ namespace geom {
         // calculate position. tangent and normal vectors will be computed separatedly later on.
         SCustomOutputPoint ret;
         ret.pos = calculate_de_casteljau_coordinate(index - 1, nextindex, curvepos).pos * (1 - curvepos) + calculate_de_casteljau_coordinate(index - 1, nextindex + 1, curvepos).pos * curvepos;
-        /// return position
         return ret;
     }
 
