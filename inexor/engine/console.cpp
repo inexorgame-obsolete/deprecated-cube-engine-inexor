@@ -577,7 +577,7 @@ bool consolekey(int code, bool isdown)
             case SDLK_TAB:
                 if(commandflags&CF_COMPLETE)
                 {
-                    complete(commandbuf, sizeof(commandbuf), commandflags&CF_EXECUTE ? "/" : NULL);
+                    complete(commandbuf, sizeof(commandbuf), commandflags&CF_EXECUTE ? "/" : NULL, SDL_GetModState()&KMOD_SHIFT);
                     if(commandpos>=0 && commandpos>=(int)strlen(commandbuf)) commandpos = -1;
                 }
                 break;
@@ -773,8 +773,9 @@ void addlistcomplete(char *command, char *list)
 COMMANDN(complete, addfilecomplete, "sss");
 COMMANDN(listcomplete, addlistcomplete, "ss");
 
-void complete(char *s, int maxlen, const char *cmdprefix)
+void complete(char *s, int maxlen, const char *cmdprefix, bool backwards = 0)
 {
+
     int cmdlen = 0;
     if(cmdprefix)
     {
@@ -798,9 +799,13 @@ void complete(char *s, int maxlen, const char *cmdprefix)
         f->update();
         loopv(f->files)
         {
-            if(strncmp(f->files[i], &s[commandsize], completesize+cmdlen-commandsize)==0 &&
-               (!lastcomplete || strcmp(f->files[i], lastcomplete) > 0) && (!nextcomplete || strcmp(f->files[i], nextcomplete) < 0))
-                nextcomplete = f->files[i];
+            if(strncmp(f->files[i], &s[commandsize], completesize+cmdlen-commandsize)==0)
+            {
+                if (!backwards && (!lastcomplete || strcmp(f->files[i], lastcomplete) > 0) && (!nextcomplete || strcmp(f->files[i], nextcomplete) < 0))
+                    nextcomplete = f->files[i];
+                if (backwards && (!lastcomplete || strcmp(f->files[i], lastcomplete) < 0) && (!nextcomplete || strcmp(f->files[i], nextcomplete) > 0))
+                    nextcomplete = f->files[i];
+            }
         }
         cmdprefix = s;
         cmdlen = commandsize;
@@ -808,9 +813,13 @@ void complete(char *s, int maxlen, const char *cmdprefix)
     else // complete using command names
     {
         enumerate(idents, ident, id,
-            if(strncmp(id.name, &s[cmdlen], completesize)==0 &&
-               (!lastcomplete || strcmp(id.name, lastcomplete) > 0) && (!nextcomplete || strcmp(id.name, nextcomplete) < 0))
-                nextcomplete = id.name;
+            if(strncmp(id.name, &s[cmdlen], completesize)==0)
+            {
+                if (!backwards && (!lastcomplete || strcmp(id.name, lastcomplete) > 0) && (!nextcomplete || strcmp(id.name, nextcomplete) < 0))
+                    nextcomplete = id.name;
+                if (backwards && (!lastcomplete || strcmp(id.name, lastcomplete) < 0) && (!nextcomplete || strcmp(id.name, nextcomplete) > 0))
+                    nextcomplete = id.name;
+            }
         );
     }
     DELETEA(lastcomplete);
