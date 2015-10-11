@@ -1900,11 +1900,6 @@ void gl_drawframe()
 
     rendermapmodels();
 
-    /// render nodes here
-    /// @bug as long as renderedgame is NOT false, no particles can be added!
-    /// move this code downwards!
-    inexor::vscript::node_render_test();
-
     rendergame(true);
     renderavatar();
 
@@ -1923,6 +1918,10 @@ void gl_drawframe()
     renderalphageom();
 
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    /// render Visual Scripting Envirotment's nodes here
+    /// please note: particles can only be added if renderedgame is false!
+    inexor::vscript::node_render_test();
 
     renderparticles(true);
 

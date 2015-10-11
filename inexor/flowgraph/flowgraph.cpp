@@ -9,6 +9,7 @@ extern bool editmode;
 extern int gridsize;
 
 
+/// protection namespace
 namespace inexor {
 namespace vscript {
 
@@ -76,162 +77,18 @@ void CVisualScriptSystem::add_node(char* a, char* b, char* c, char* d)
 }
 
 
-/// adjust color of the selected box side
-void CVisualScriptSystem::adjust_selection_color(int orient, int index)
-{
-    /// if this side of the box is selected, use a spicy orange color
-    /// otherwise use a light blue color
-    if(orient==index) 
-    {
-        if(selected) glColor3f(1.0f, 89/255.0f, 0.0f);
-        else glColor3f(1.0f, 182/255.0f, 0.0f);
-    }
-    else glColor3f(0, 148/255.0f, 1.0f);
-}
-
-
-/// render entity box
-void CVisualScriptSystem::renderbox(vec p, int orient)
-{
-    /// lets avoid macros here
-    const float b = boxsize;
-
-    glBegin(GL_QUADS);
-
-    /// top
-    adjust_selection_color(orient, VSCRIPT_BOX_TOP);
-    glVertex3f(p.x,p.y,p.z+b);
-    glVertex3f(p.x+b,p.y,p.z+b);
-    glVertex3f(p.x+b,p.y+b,p.z+b);
-    glVertex3f(p.x,p.y+b,p.z+b);
-
-    /// bottom
-    adjust_selection_color(orient, VSCRIPT_BOX_BOTTOM);
-    glVertex3f(p.x,p.y+b,p.z);
-    glVertex3f(p.x+b,p.y+b,p.z);
-    glVertex3f(p.x+b,p.y,p.z);
-    glVertex3f(p.x,p.y,p.z);
-
-    /// front
-    adjust_selection_color(orient, VSCRIPT_BOX_FRONT);
-    glVertex3f(p.x,p.y,p.z);
-    glVertex3f(p.x+b,p.y,p.z);
-    glVertex3f(p.x+b,p.y,p.z+b);
-    glVertex3f(p.x,p.y,p.z+b);
-
-    /// back
-    adjust_selection_color(orient, VSCRIPT_BOX_BACK);
-    glVertex3f(p.x,p.y+b,p.z+b);
-    glVertex3f(p.x+b,p.y+b,p.z+b);
-    glVertex3f(p.x+b,p.y+b,p.z);
-    glVertex3f(p.x,p.y+b,p.z);
-
-    /// left
-    adjust_selection_color(orient, VSCRIPT_BOX_LEFT);
-    glVertex3f(p.x,p.y,p.z+b);
-    glVertex3f(p.x,p.y+b,p.z+b);
-    glVertex3f(p.x,p.y+b,p.z);
-    glVertex3f(p.x,p.y,p.z);
-
-    /// right
-    adjust_selection_color(orient, VSCRIPT_BOX_RIGHT);
-    glVertex3f(p.x+b,p.y,p.z);
-    glVertex3f(p.x+b,p.y+b,p.z);
-    glVertex3f(p.x+b,p.y+b,p.z+b);
-    glVertex3f(p.x+b,p.y,p.z+b);
-    glEnd();
-}
-
-
-/// render outline
-void CVisualScriptSystem::renderboxoutline(vec p)
-{
-    const float b = boxsize;
-
-    /// render gray outline (TOP)
-    glBegin(GL_LINE_LOOP);
-    
-    /// TODO: does this work?
-    glDepthFunc(GL_LEQUAL);
-
-    glColor3f(0.0f,0.0f,0.0f);
-    glVertex3f(p.x,p.y,p.z+b);
-    glVertex3f(p.x+b,p.y,p.z+b);
-    glVertex3f(p.x+b,p.y+b,p.z+b);
-    glVertex3f(p.x,p.y+b,p.z+b);
-    glEnd();
-
-    /// render gray outline (BOTTOM)
-    glBegin(GL_LINE_LOOP);
-    glColor3f(0.0f,0.0f,0.0f);
-    glVertex3f(p.x,p.y,p.z);
-    glVertex3f(p.x+b,p.y,p.z);
-    glVertex3f(p.x+b,p.y+b,p.z);
-    glVertex3f(p.x,p.y+b,p.z);
-    glEnd();
-
-    /// render connection lines
-    glBegin(GL_LINES);
-    glVertex3f(p.x,p.y,p.z);
-    glVertex3f(p.x,p.y,p.z+b);
-    glVertex3f(p.x+b,p.y,p.z);
-    glVertex3f(p.x+b,p.y,p.z+b);
-    glVertex3f(p.x+b,p.y+b,p.z);
-    glVertex3f(p.x+b,p.y+b,p.z+b);
-    glVertex3f(p.x,p.y+b,p.z);
-    glVertex3f(p.x,p.y+b,p.z+b);
-    glEnd();
-}
-
-
-/// render box dimension lines
-/// 4 per dimension axis (-> sum 12)
-void CVisualScriptSystem::renderboxhelplines(vec p)
-{
-    glBegin(GL_LINES);
-
-    /// we can't render to infinity, so lets just use a very big value
-    const float helpline_distance = 1000.0f;
-    const float b = boxsize;
-
-    /// render help line for X AXIS
-    glVertex3f(p.x-helpline_distance,p.y,p.z);
-    glVertex3f(p.x+helpline_distance,p.y,p.z);
-    glVertex3f(p.x-helpline_distance,p.y,p.z+b);
-    glVertex3f(p.x+helpline_distance,p.y,p.z+b);
-    glVertex3f(p.x-helpline_distance,p.y+b,p.z);
-    glVertex3f(p.x+helpline_distance,p.y+b,p.z);
-    glVertex3f(p.x-helpline_distance,p.y+b,p.z+b);
-    glVertex3f(p.x+helpline_distance,p.y+b,p.z+b);
-
-    /// render help line for Y AXIS
-    glVertex3f(p.x,p.y-helpline_distance,p.z);
-    glVertex3f(p.x,p.y+helpline_distance,p.z);
-    glVertex3f(p.x+b,p.y-helpline_distance,p.z);
-    glVertex3f(p.x+b,p.y+helpline_distance,p.z);
-    glVertex3f(p.x,p.y-helpline_distance,p.z+b);
-    glVertex3f(p.x,p.y+helpline_distance,p.z+b);
-    glVertex3f(p.x+b,p.y-helpline_distance,p.z+b);
-    glVertex3f(p.x+b,p.y+helpline_distance,p.z+b);
-
-    /// render help line for Z AXIS
-    glVertex3f(p.x,p.y,p.z-helpline_distance);
-    glVertex3f(p.x,p.y,p.z+helpline_distance);
-    glVertex3f(p.x+b,p.y,p.z-helpline_distance);
-    glVertex3f(p.x+b,p.y,p.z+helpline_distance);
-    glVertex3f(p.x,p.y+b,p.z-helpline_distance);
-    glVertex3f(p.x,p.y+b,p.z+helpline_distance);
-    glVertex3f(p.x+b,p.y+b,p.z-helpline_distance);
-    glVertex3f(p.x+b,p.y+b,p.z+helpline_distance);    
-    glEnd();
-}
-
+// TODO: Create an instance of a node/ray renderer
+// and use it here!
 
 /// render debug rays (test)
 void CVisualScriptSystem::render_nodes()
 {
     /// this setup is required to render lines correctly
-    //lineshader->set();    
+    //lineshader->set();
+    /// shaders: nullshader hudshader hudnotextureshader textureshader notextureshader nocolorshader foggedshader foggednotextureshader stdworldshader
+    // TODO: does this work?
+    nocolorshader->set();
+
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_BLEND);
 
@@ -283,7 +140,8 @@ void CVisualScriptSystem::render_nodes()
 
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
-    //defaultshader->set();
+
+    stdworldshader->set();
 }
 
 
