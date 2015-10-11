@@ -2,6 +2,7 @@
 /// @author Johannes Schneider
 /// @brief Basic implementation of (visual) script nodes
 
+/// include guard
 #ifndef INEXOR_VSCRIPT_NODEBASE_HEADER
 #define INEXOR_VSCRIPT_NODEBASE_HEADER
 

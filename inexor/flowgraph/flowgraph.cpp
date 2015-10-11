@@ -1,4 +1,3 @@
-#include "inexor/engine/engine.h"
 #include "inexor/flowgraph/flowgraph.h"
 
 /// selection information
@@ -240,6 +239,7 @@ void CVisualScriptSystem::clear_nodes()
     nodes.clear();
     rays.clear();
 }
+
 
 
 

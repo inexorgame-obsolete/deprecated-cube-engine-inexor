@@ -2,16 +2,14 @@
 /// @author Johannes Schneider
 /// @brief Timers will be called every [n] miliseconds
 
-
 /// include guard
 #ifndef INEXOR_VSCRIPT_RENDERING_HEADER
 #define INEXOR_VSCRIPT_RENDERING_HEADER
 
-/// project's namespace protection
-namespace inexor {
-namespace vscript {
+/// requires vec and others
+#include "inexor/engine/engine.h"
 
-/// box side selection indices
+/// box side selection indices (defined by Cube engine)
 enum VSCRIPT_ENTITY_BOX_ORIENTATION
 {
     VSCRIPT_BOX_NO_INTERSECTION = -1,
@@ -24,10 +22,12 @@ enum VSCRIPT_ENTITY_BOX_ORIENTATION
 };
 
 
-/// 
-/// 
-/// 
-/// 
+/// project's namespace protection
+namespace inexor {
+namespace vscript {
+
+
+/// Visual Scripting Renderer
 class CVisualScriptRenderer
 {
     CVisualScriptRenderer();

@@ -2,7 +2,7 @@
 /// @author Johannes Schneider
 /// @brief Timers will be called every [n] miliseconds
 
-
+// include guard
 #ifndef INEXOR_VSCRIPT_MEMBASE_HEADER
 #define INEXOR_VSCRIPT_MEMBASE_HEADER
 
@@ -20,7 +20,8 @@ enum VSCRIPT_DATA_TYPE
     TYPE_VECTOR,
     TYPE_SYS_TIME,
     TYPE_COLOR,
-    /// to be continued
+    
+    // TODO...
 };
 
 };

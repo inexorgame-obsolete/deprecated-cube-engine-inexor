@@ -12,6 +12,7 @@
 #include <map>
 #include <list>
 
+
 /// include Inexor game engine
 #include "inexor/engine/engine.h"
 /// flowgraph basis
@@ -24,6 +25,8 @@
 #include "inexor/flowgraph/debugger/fl_dbgrays.h"
 /// renderer
 #include "inexor/flowgraph/renderer/fl_rendering.h"
+/// comments
+#include "inexor/flowgraph/comment/fl_comment.h"
 
 
 /// project's namespace protection
@@ -58,8 +61,7 @@ class CVisualScriptSystem : public CVisualScriptRenderer
     void renderboxoutline(vec);
 
     void renderboxhelplines(vec);
-
-
+    
 
     public:
 

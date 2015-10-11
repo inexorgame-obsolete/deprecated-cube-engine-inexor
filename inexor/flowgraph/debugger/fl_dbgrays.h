@@ -6,6 +6,8 @@
 #ifndef INEXOR_VSCRIPT_DEBUGRAY_HEADER
 #define INEXOR_VSCRIPT_DEBUGRAY_HEADER
 
+#include "inexor/engine/engine.h"
+
 /// project's namespace protection
 namespace inexor {
 namespace vscript {

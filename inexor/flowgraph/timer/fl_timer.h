@@ -2,7 +2,6 @@
 /// @author Johannes Schneider
 /// @brief Timers will be called every [n] miliseconds
 
-
 // include guard
 #ifndef INEXOR_VSCRIPT_TIMER_HEADER
 #define INEXOR_VSCRIPT_TIMER_HEADER
@@ -10,6 +9,7 @@
 /// project's namespace protection
 namespace inexor {
 namespace vscript {
+
 
 /// minimal time interval
 #define INEXOR_VSCRIPT_MIN_TIMER_INTERVAL 20
@@ -19,11 +19,6 @@ namespace vscript {
 #define INEXOR_VSCRIPT_MAX_TIMER_INTERVAL 1000 * 60 * 60 * 24
 
 
-/// 
-/// 
-/// 
-/// 
-/// 
 /// 
 /// 
 /// 
