@@ -2,9 +2,34 @@
 /// @author Johannes Schneider
 /// @brief Timers will be called every [n] miliseconds
 
+///  .-------------------------------------------------------------------------------------------------.
+///  | Timer                                                                                           |
+///  |_________________________________________________________________________________________________|
+///  |                                                                                                 |
+///  | A timer is a type of nodes which (beside events) can actually be the entry point of execution.  |
+///  | Timers will be called every [clock_interval] miliseconds/seconds/minutes/hours.. and run code.  |
+///  | Timers have the following members and methods will will be displayed by the node renderer       |
+///  |                                                                                                 |
+///  | inherited from script_node base class:                                                          |
+///  | type         represents the type of the node (write protected)                                  |
+///  | position     stands for the node's 3D position                                                  |
+///  | active       indicates if this node is active                                                   |
+///  | selected     indicates if this node is selected                                                 |
+///  | node_name    the name of the node                                                               |
+///  | node_comment the comment of the node                                                            |
+///  |_________________________________________________________________________________________________|
+///  |                                                                                                 |
+///  | interval     the frequency with which this node will be called                                  |
+///  | startdelay   the amount of time which has to pass until the first call will be done             |
+///  | counter      how many times has this node already been called                                   |
+///  ._________________________________________________________________________________________________.
+
+
 // include guard
 #ifndef INEXOR_VSCRIPT_TIMER_HEADER
 #define INEXOR_VSCRIPT_TIMER_HEADER
+
+#include "inexor/engine/engine.h"
 
 /// project's namespace protection
 namespace inexor {
@@ -19,10 +44,7 @@ namespace vscript {
 #define INEXOR_VSCRIPT_MAX_TIMER_INTERVAL 1000 * 60 * 60 * 24
 
 
-/// 
-/// 
-/// 
-/// 
+/// Implementation of timer nodes
 class timer_node : public script_node
 {
     public:

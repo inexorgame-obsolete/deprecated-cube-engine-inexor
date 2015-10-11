@@ -149,6 +149,8 @@ void CVisualScriptSystem::render_node_relations()
 {   
     /// this setup is required to render lines correctly
     //lineshader->set();
+    
+    /*
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_BLEND);
     
@@ -167,7 +169,8 @@ void CVisualScriptSystem::render_node_relations()
 
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
-    
+    */
+
     //defaultshader->set();
 }
 
@@ -237,7 +240,7 @@ void CVisualScriptSystem::render_bezier_curves()
 void CVisualScriptSystem::clear_nodes()
 {
     nodes.clear();
-    rays.clear();
+    //rays.clear();
 }
 
 
@@ -290,7 +293,6 @@ void deleteallnodes()
     vScript3D.clear_nodes();
 }
 COMMAND(deleteallnodes, "");
-
 
 };
 };

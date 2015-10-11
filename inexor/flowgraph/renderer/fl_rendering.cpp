@@ -5,9 +5,11 @@
 /// include header file
 #include "inexor/flowgraph/renderer/fl_rendering.h"
 
+
 /// project's namespace protection
 namespace inexor {
 namespace vscript {
+
 
 /// constructor
 CVisualScriptRenderer::CVisualScriptRenderer()
@@ -20,16 +22,15 @@ CVisualScriptRenderer::~CVisualScriptRenderer()
 }
 
 
-
-
 void CVisualScriptRenderer::adjust_selection_color(int orient, int index)
 {
     /// if this side of the box is selected, use a spicy orange color
     /// otherwise use a light blue color
     if(orient==index) 
     {
-        if(selected) glColor3f(1.0f, 89/255.0f, 0.0f);
-        else glColor3f(1.0f, 182/255.0f, 0.0f);
+        glColor3f(1.0f, 89/255.0f, 0.0f);
+        //if(selected) glColor3f(1.0f, 89/255.0f, 0.0f);
+        //else glColor3f(1.0f, 182/255.0f, 0.0f);
     }
     else glColor3f(0, 148/255.0f, 1.0f);
 }

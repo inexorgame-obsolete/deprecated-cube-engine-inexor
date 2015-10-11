@@ -24,6 +24,16 @@ enum VSCRIPT_DATA_TYPE
     // TODO...
 };
 
+
+/// TODO: Memory...
+class CMemory
+{
+    CMemory();
+    ~CMemory();
+
+};
+
+
 };
 };
 

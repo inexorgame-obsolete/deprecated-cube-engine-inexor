@@ -34,7 +34,7 @@ class comment_node : public script_node
     ~comment_node() {}
 
     /// implementation of run
-    /// there is no code a comment could run :)
+    /// there is no code a comment could run! :)
     void run() {}
 };
 

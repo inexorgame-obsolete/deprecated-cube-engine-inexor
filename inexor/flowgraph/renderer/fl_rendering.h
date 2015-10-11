@@ -9,6 +9,7 @@
 /// requires vec and others
 #include "inexor/engine/engine.h"
 
+
 /// box side selection indices (defined by Cube engine)
 enum VSCRIPT_ENTITY_BOX_ORIENTATION
 {
@@ -30,8 +31,15 @@ namespace vscript {
 /// Visual Scripting Renderer
 class CVisualScriptRenderer
 {
+    public:
+
+    /// constructor
     CVisualScriptRenderer();
+    /// destuctor
     ~CVisualScriptRenderer();
+    
+    /// buffer for debug rays
+    std::vector<debug_ray> rays;
 
     void adjust_selection_color(int orient, int index);
     void renderbox(vec p, int orient);

@@ -6,9 +6,17 @@
 #ifndef INEXOR_VSCRIPT_NODEBASE_HEADER
 #define INEXOR_VSCRIPT_NODEBASE_HEADER
 
+/// c++ standard libraries
+#include <string>
+#include <vector>
+#include <map>
+#include <list>
+
+
 /// project's namespace protection
 namespace inexor {
 namespace vscript {
+
 
 /// enumeration of node types
 enum VSCRIPT_NODE_TYPE
@@ -18,7 +26,6 @@ enum VSCRIPT_NODE_TYPE
     NODE_TYPE_COMMENT,
     NODE_TYPE_MEMORY,
     NODE_TYPE_FUNCTION,
-    // if and conditions
     NODE_TYPE_IF,
     NODE_TYPE_SWITCH,
     NODE_TYPE_CONDITION,
@@ -41,17 +48,16 @@ class script_node
         node_name = "";
         node_comment = "";        
         position = vec(0,0,0);
-        /// TODO
         position_changed = false;
     }
 
     ~script_node() {}
+      
+    bool selected = false;
 
     /// members that every node must have
     vec position;
     bool active;
-    bool selected;
-    
     bool position_changed;
 
     /// the name of this node
@@ -66,7 +72,7 @@ class script_node
     /// whatever this node does will be implemented here
     virtual void run() = 0;
 
-    // TODO: ...
+    // TODO
     /*
     virtual void enable();
     virtual void disable();
@@ -86,6 +92,10 @@ class script_node
     void input() {}
     /// decide which children will be called
     void output() {}
+};
+
+
+};
 };
 
 #endif
