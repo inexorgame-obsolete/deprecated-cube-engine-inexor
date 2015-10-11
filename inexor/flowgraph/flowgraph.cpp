@@ -112,16 +112,16 @@ void CVisualScriptSystem::render_nodes()
         nodes[i]->selected = (orient != VSCRIPT_BOX_NO_INTERSECTION);
 
         /// render entity
-        renderbox(p, orient);
+        renderer.renderbox(p, orient);
 
         /// no matter where the box is being selected, render help lines
         if(orient != VSCRIPT_BOX_NO_INTERSECTION)
         {
             glColor3f(0.5f,0.5f,0.5f);
-            renderboxhelplines(p);
+            renderer.renderboxhelplines(p);
         }
 
-        renderboxoutline(p);
+        renderer.renderboxoutline(p);
 
         /// render text above    
         p.add(vec(boxsize/2));

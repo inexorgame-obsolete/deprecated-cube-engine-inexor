@@ -1,22 +1,16 @@
-/// @file fl_timer.h (flowgraph's timer implementation)
-/// @author Johannes Schneider
-/// @brief Timers will be called every [n] miliseconds
 
-/// include header file
-#include "inexor/flowgraph/renderer/fl_rendering.h"
-
+//#include "inexor/flowgraph/renderer/fl_rendering.h"
 
 /// project's namespace protection
 namespace inexor {
 namespace vscript {
 
-
 /// constructor
 CVisualScriptRenderer::CVisualScriptRenderer()
 {
 }
-
-/// destructor
+    
+/// destuctor
 CVisualScriptRenderer::~CVisualScriptRenderer()
 {
 }
@@ -171,3 +165,4 @@ void CVisualScriptRenderer::renderboxhelplines(vec p)
 
 };
 };
+

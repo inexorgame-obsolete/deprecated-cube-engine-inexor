@@ -32,19 +32,31 @@ void node_render_test();
 void notify_flowgraph_mouse_key_change(int, bool);
 bool is_flowgraph_entity_selected();
 
-
-/// the size of the quads which will be rendered as box
-/// around the target node's position
-const float boxsize = 4.0f;
+/// box side selection indices (defined by Cube engine)
+/*
+enum VSCRIPT_ENTITY_BOX_ORIENTATION
+{
+    VSCRIPT_BOX_NO_INTERSECTION = -1,
+    VSCRIPT_BOX_LEFT,
+    VSCRIPT_BOX_RIGHT,
+    VSCRIPT_BOX_FRONT,
+    VSCRIPT_BOX_BACK,
+    VSCRIPT_BOX_BOTTOM,
+    VSCRIPT_BOX_TOP
+};
+*/
 
 
 /// @brief Visual Script System
-class CVisualScriptSystem //: public CVisualScriptRenderer
+class CVisualScriptSystem
 {
     public:
 
     CVisualScriptSystem();
     ~CVisualScriptSystem();
+
+    /// node rendering
+    CVisualScriptRenderer renderer;
 
     /// buffer for nodes
     std::vector<script_node *> nodes;
