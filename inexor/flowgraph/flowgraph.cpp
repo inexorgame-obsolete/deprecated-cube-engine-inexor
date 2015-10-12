@@ -103,8 +103,7 @@ void CVisualScriptSystem::render_nodes()
         nodes[i]->selected = (orient != VSCRIPT_BOX_NO_INTERSECTION);
 
         /// render box as node representation
-        glLineWidth(1.0f);
-        gle::color(vec::hexcolor(0xFF6A00));
+        gle::color(vec::hexcolor(nodes[i]->boxcolor));
         renderer.renderbox(p, orient);
 
         /// no matter where the box is being selected, render help lines
@@ -115,7 +114,6 @@ void CVisualScriptSystem::render_nodes()
         }
         
         /// render outline
-        glLineWidth(2.0f);
         gle::color(vec::hexcolor(0x000000));
         renderer.renderboxoutline(p);
 
@@ -142,12 +140,6 @@ void CVisualScriptSystem::render_nodes()
     /// which node is selected?
     for(unsigned int i=0; i<nodes.size(); i++)
     {
-        /// TODO: remove this..
-        if(NODE_TYPE_TIMER == nodes[i]->type) {
-            /// do something you lazy timer!
-            nodes[i]->in();
-        }
-
         if(nodes[i]->selected) selected_node = nodes[i];
     }
 }

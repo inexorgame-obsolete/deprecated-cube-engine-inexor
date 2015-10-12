@@ -30,7 +30,7 @@ namespace inexor {
 namespace vscript {
 
 /// TODO: undefine once debugging is finished
-#define INEXOR_VSCRIPT_DEBUG_TIMERS
+//#define INEXOR_VSCRIPT_DEBUG_TIMERS
 
 /// minimum time interval (in miliseconds)
 #define INEXOR_VSCRIPT_MIN_TIMER_INTERVAL 10
@@ -127,19 +127,18 @@ class timer_node : public script_node
 
         /// calculate the amount of time that passed away since last check
         unsigned int this_time = SDL_GetTicks();
-        if(this_time - last_time >= timer_interval) 
-        {
-            /// trigger event
-            out();
-            /// save the timestamp
-            last_time = SDL_GetTicks();
-            /// increment activation counter
-            timer_counter++;
-        }
 
         /// Display a yellow color effect that is 200 ms long
-        if(this_time - last_time < 200) 
-            gle::color(vec::hexcolor(0xFFBA00));
+        if(this_time - last_time < 200) boxcolor = 0xFF9400;
+        else boxcolor = 0x007FFF;
+
+        if(this_time - last_time >= timer_interval) 
+        {
+            /// execute!
+            out();
+            last_time = SDL_GetTicks();
+            timer_counter++;
+        }
     }
 
     /// notify child nodes
@@ -148,6 +147,8 @@ class timer_node : public script_node
         #ifdef INEXOR_VSCRIPT_DEBUG_TIMERS
             conoutf(CON_DEBUG, "trigger # %d", timer_counter);
         #endif
+
+        conoutf(CON_DEBUG, "out()");
 
         for(unsigned int i = 0; i < outgoing.size(); i++) 
         {

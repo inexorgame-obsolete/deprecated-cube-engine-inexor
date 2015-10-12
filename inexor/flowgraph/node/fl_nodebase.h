@@ -66,6 +66,9 @@ class script_node
     bool pos_changed;
     bool selected;
 
+    /// TODO: save color as RGBA
+    int boxcolor;
+
     /// A standard constructor
     script_node() 
     {
@@ -78,6 +81,8 @@ class script_node
         position = vec(0,0,0);
         pos_changed = false;
         selected = false;
+
+        boxcolor = 0xFFFFFF;
     }
 
     // TODO: Is a destructor required?

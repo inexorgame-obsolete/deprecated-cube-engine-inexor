@@ -55,11 +55,11 @@ class CVisualScriptRenderer
         /// otherwise use a light blue color
         if(orient==index) 
         {
-            glColor3f(1.0f, 89/255.0f, 0.0f);
-            //if(selected) glColor3f(1.0f, 89/255.0f, 0.0f);
-            //else glColor3f(1.0f, 182/255.0f, 0.0f);
+            gle::color(vec::hexcolor(0xFF5900));
+            //if(selected) gle::color(vec::hexcolor(0xFF5900));
+            //else gle::color(vec::hexcolor(0xFF9000));
         }
-        else glColor3f(0, 148/255.0f, 1.0f);
+        ///else gle::color(vec::hexcolor(0x0090FF));
     }
 
 
