@@ -82,8 +82,6 @@ void CVisualScriptSystem::add_node(char* a, char* b, char* c, char* d)
 /// render debug rays (test)
 void CVisualScriptSystem::render_nodes()
 {
-    notextureshader->set();
-
     selected_node = nullptr;
 
     /// loop through all nodes and render them
@@ -104,21 +102,28 @@ void CVisualScriptSystem::render_nodes()
         nodes[i]->selected = (orient != VSCRIPT_BOX_NO_INTERSECTION);
 
         /// render box as node representation
+        glLineWidth(1.0f);
+        gle::color(vec::hexcolor(0xFF6A00));
         renderer.renderbox(p, orient);
 
         /// no matter where the box is being selected, render help lines
-        if(orient != VSCRIPT_BOX_NO_INTERSECTION)
+        if(orient != VSCRIPT_BOX_NO_INTERSECTION) 
         {
+            gle::color(vec::hexcolor(0xAAAAAA)); // gray
             renderer.renderboxhelplines(p);
         }
         
         /// render outline
+        glLineWidth(2.0f);
+        gle::color(vec::hexcolor(0x000000));
         renderer.renderboxoutline(p);
 
         /// render text above    
         p.add(vec(boxsize/2));
         p.add(vec(0,0,4));
-        particle_text(p, nodes[i]->node_name.c_str(), PART_TEXT, 20000, 0xFF47E6, 2.0f);
+
+        // TODO: why not render particles here?
+        //particle_text(p, nodes[i]->node_name.c_str(), PART_TEXT, 20000, 0xFF47E6, 2.0f);
     }
 
     /// which node is selected?
@@ -235,11 +240,8 @@ void CVisualScriptSystem::start_rendering()
 {
     // TODO: What the fuck is this gle?
     notextureshader->set();
-
     gle::enablevertex();
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    /// TODO: use vec(r,g,b) ?
-    gle::color(vec::hexcolor(0xFF6A00));
     enablepolygonoffset(GL_POLYGON_OFFSET_LINE);
 }
 
