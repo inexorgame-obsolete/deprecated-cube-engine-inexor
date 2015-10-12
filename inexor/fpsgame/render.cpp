@@ -185,7 +185,7 @@ namespace game
     }
 
     VARP(teamskins, 0, 0, 1);
-
+       
     void rendergame(bool mainpass)
     {
         if(mainpass) ai::render();

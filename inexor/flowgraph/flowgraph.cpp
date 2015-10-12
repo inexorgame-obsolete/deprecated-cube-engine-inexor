@@ -82,16 +82,6 @@ void CVisualScriptSystem::add_node(char* a, char* b, char* c, char* d)
 /// render debug rays (test)
 void CVisualScriptSystem::render_nodes()
 {
-    /// this setup is required to render lines correctly
-    //lineshader->set();
-    /// shaders: nullshader hudshader hudnotextureshader textureshader notextureshader nocolorshader foggedshader foggednotextureshader stdworldshader
-    // TODO: does this work?
-    nocolorshader->set();
-
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_BLEND);
-
-    /// TODO: is this legal?
     selected_node = nullptr;
 
     /// loop through all nodes and render them
@@ -117,10 +107,11 @@ void CVisualScriptSystem::render_nodes()
         /// no matter where the box is being selected, render help lines
         if(orient != VSCRIPT_BOX_NO_INTERSECTION)
         {
-            glColor3f(0.5f,0.5f,0.5f);
+            //glColor3f(0.5f,0.5f,0.5f);
             renderer.renderboxhelplines(p);
         }
-
+        
+        /// render outline
         renderer.renderboxoutline(p);
 
         /// render text above    
@@ -136,11 +127,6 @@ void CVisualScriptSystem::render_nodes()
             selected_node = nodes[i];
         }
     }
-
-    glEnable(GL_TEXTURE_2D);
-    glEnable(GL_BLEND);
-
-    stdworldshader->set();
 }
 
 
@@ -244,8 +230,6 @@ void CVisualScriptSystem::clear_nodes()
 }
 
 
-
-
 /// create instance of global 3D script enviroment system
 CVisualScriptSystem vScript3D;
 
@@ -253,9 +237,8 @@ CVisualScriptSystem vScript3D;
 void node_render_test()
 {
     vScript3D.render_nodes();
-    vScript3D.render_node_relations();
-    vScript3D.render_bezier_curves();
-
+    //vScript3D.render_node_relations();
+    //vScript3D.render_bezier_curves();
     
     /// only show nodes in editmode
     if(editmode)

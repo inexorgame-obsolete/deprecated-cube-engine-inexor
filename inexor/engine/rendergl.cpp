@@ -2,7 +2,6 @@
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/shared/filesystem.hpp"
-#include "inexor/flowgraph/flowgraph.h"
 
 bool hasVAO = false, hasFBO = false, hasAFBO = false, hasDS = false, hasTF = false, hasTRG = false, hasTSW = false, hasS3TC = false, hasFXT1 = false, hasAF = false, hasFBB = false, hasUBO = false, hasMBR = false;
 int hasstencil = 0;
@@ -1831,7 +1830,8 @@ void gl_drawhud(int w, int h);
 
 int xtraverts, xtravertsva;
 
-/// 3D visual scripting enviroment
+/// 3D Visual Scripting System
+#include "inexor/flowgraph/renderer/fl_rendering.h"
 namespace inexor {
     namespace vscript {
         extern void node_render_test();
@@ -1898,9 +1898,13 @@ void gl_drawframe()
 
     renderdecals(true);
 
+    /// 3D Visual Scripting System
+    //inexor::vscript::node_render_test();
+
     rendermapmodels();
 
     rendergame(true);
+
     renderavatar();
 
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -1919,10 +1923,6 @@ void gl_drawframe()
 
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    /// render Visual Scripting Envirotment's nodes here
-    /// please note: particles can only be added if renderedgame is false!
-    inexor::vscript::node_render_test();
-
     renderparticles(true);
 
     glDisable(GL_CULL_FACE);
@@ -1930,10 +1930,12 @@ void gl_drawframe()
 
     addmotionblur();
     addglare();
+
     if(isliquid(fogmat&MATF_VOLUME)) drawfogoverlay(fogmat, fogblend, abovemat);
     renderpostfx();
 
     g3d_render();
+
     gl_drawhud();
 
     renderedgame = false;

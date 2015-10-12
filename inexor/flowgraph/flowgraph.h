@@ -33,6 +33,7 @@ void notify_flowgraph_mouse_key_change(int, bool);
 bool is_flowgraph_entity_selected();
 
 /// box side selection indices (defined by Cube engine)
+
 /*
 enum VSCRIPT_ENTITY_BOX_ORIENTATION
 {

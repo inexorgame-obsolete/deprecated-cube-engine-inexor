@@ -126,3 +126,10 @@ namespace server
     extern int scaletime(int t);
 }
 
+/// 3D visual scripting enviroment
+namespace inexor {
+    namespace vscript {
+        extern void node_render_test();
+
+    };
+};
