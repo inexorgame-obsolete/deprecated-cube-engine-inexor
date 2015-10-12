@@ -1887,6 +1887,9 @@ void gl_drawframe()
 
     rendergeom(causticspass);
 
+    /// 3D Visual Scripting System
+    inexor::vscript::node_render_test();
+
     extern SharedVar<int> outline;
     if(!wireframe && editmode && outline) renderoutline();
 
@@ -1897,9 +1900,6 @@ void gl_drawframe()
     if(!limitsky()) drawskybox(farplane, false);
 
     renderdecals(true);
-
-    /// 3D Visual Scripting System
-    //inexor::vscript::node_render_test();
 
     rendermapmodels();
 

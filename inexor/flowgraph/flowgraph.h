@@ -69,6 +69,12 @@ class CVisualScriptSystem
 
     /// add a node
     void add_node(char*,char*,char*,char*);
+
+
+    void start_rendering();
+    void end_rendering();
+
+
     /// render nodes
     void render_nodes();
     /// render relations

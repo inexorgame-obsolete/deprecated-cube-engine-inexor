@@ -82,6 +82,8 @@ void CVisualScriptSystem::add_node(char* a, char* b, char* c, char* d)
 /// render debug rays (test)
 void CVisualScriptSystem::render_nodes()
 {
+    notextureshader->set();
+
     selected_node = nullptr;
 
     /// loop through all nodes and render them
@@ -101,13 +103,12 @@ void CVisualScriptSystem::render_nodes()
         /// this node is selected
         nodes[i]->selected = (orient != VSCRIPT_BOX_NO_INTERSECTION);
 
-        /// render entity
+        /// render box as node representation
         renderer.renderbox(p, orient);
 
         /// no matter where the box is being selected, render help lines
         if(orient != VSCRIPT_BOX_NO_INTERSECTION)
         {
-            //glColor3f(0.5f,0.5f,0.5f);
             renderer.renderboxhelplines(p);
         }
         
@@ -230,17 +231,43 @@ void CVisualScriptSystem::clear_nodes()
 }
 
 
+void CVisualScriptSystem::start_rendering()
+{
+    // TODO: What the fuck is this gle?
+    notextureshader->set();
+
+    gle::enablevertex();
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    /// TODO: use vec(r,g,b) ?
+    gle::color(vec::hexcolor(0xFF6A00));
+    enablepolygonoffset(GL_POLYGON_OFFSET_LINE);
+}
+
+
+void CVisualScriptSystem::end_rendering()
+{
+    disablepolygonoffset(GL_POLYGON_OFFSET_LINE);
+    gle::clearvbo();
+    gle::clearebo();
+    gle::disablevertex();
+}
+
+
 /// create instance of global 3D script enviroment system
 CVisualScriptSystem vScript3D;
 
 /// render nodes!
 void node_render_test()
 {
+    vScript3D.start_rendering();
+
     vScript3D.render_nodes();
     //vScript3D.render_node_relations();
     //vScript3D.render_bezier_curves();
-    
-    /// only show nodes in editmode
+
+    vScript3D.end_rendering();
+
+    // TODO: only show nodes in editmode
     if(editmode)
     {
         /// move code block in here later on
