@@ -1,6 +1,6 @@
-/// @file fl_timer.h (flowgraph's timer implementation)
+/// @file fl_rendering.h
 /// @author Johannes Schneider
-/// @brief Timers will be called every [n] miliseconds
+/// @brief Node renderer using OpenGL and gle.
 
 /// include guard
 #ifndef INEXOR_VSCRIPT_RENDERING_HEADER
@@ -47,7 +47,7 @@ class CVisualScriptRenderer
     }
 
     /// buffer for debug rays
-    //std::vector<debug_ray> rays;
+    std::vector<debug_ray> rays;
 
     void CVisualScriptRenderer::adjust_selection_color(int orient, int index)
     {
@@ -196,7 +196,7 @@ class CVisualScriptRenderer
 
 };
 
-
+/// end of namespace
 };
 };
 

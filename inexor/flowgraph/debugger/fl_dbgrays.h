@@ -1,6 +1,6 @@
 /// @file fl_timer.h (flowgraph's timer implementation)
 /// @author Johannes Schneider
-/// @brief Timers will be called every [n] miliseconds
+/// @brief Debug rays help to understand the position of new placed nodes.
 
 /// include guard
 #ifndef INEXOR_VSCRIPT_DEBUGRAY_HEADER
@@ -22,7 +22,8 @@ class debug_ray
     vec target;
 };
 
-}; // end of namespace protection
+// end of namespace protection
+};
 };
 
 #endif

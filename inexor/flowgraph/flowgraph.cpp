@@ -63,7 +63,7 @@ void CVisualScriptSystem::add_node(char* a, char* b, char* c, char* d)
         /// timer: show block
         case NODE_TYPE_TIMER:
         {
-            nodes.push_back(new timer_node(node_target_position,atoi(b),atoi(c)));
+            nodes.push_back(new timer_node(node_target_position, atoi(b), atoi(c), 0, TIMER_FORMAT_MILISECONDS));
             break;
         }
         /// comment: render its text
@@ -82,6 +82,7 @@ void CVisualScriptSystem::add_node(char* a, char* b, char* c, char* d)
 /// render debug rays (test)
 void CVisualScriptSystem::render_nodes()
 {
+    /// no node is selected in the beginning
     selected_node = nullptr;
 
     /// loop through all nodes and render them
@@ -122,16 +123,32 @@ void CVisualScriptSystem::render_nodes()
         p.add(vec(boxsize/2));
         p.add(vec(0,0,4));
 
-        // TODO: why not render particles here?
-        //particle_text(p, nodes[i]->node_name.c_str(), PART_TEXT, 20000, 0xFF47E6, 2.0f);
+        /// render node's name
+        particle_text(p, nodes[i]->node_name.c_str(), PART_TEXT, 1, 0xFF47E6, 2.0f);
+
+        /// Render based on type
+        switch(nodes[i]->type)
+        {
+            case NODE_TYPE_COMMENT:
+                particle_text(p, nodes[i]->node_comment.c_str(), PART_TEXT, 1, 0xFF47E6, 3.0f);
+                break;
+
+            case NODE_TYPE_TIMER:
+                particle_text(p, nodes[i]->node_name.c_str(), PART_TEXT, 1, 0xFF47E6, 3.0f);
+                break;
+        }
     }
 
     /// which node is selected?
     for(unsigned int i=0; i<nodes.size(); i++)
     {
-        if(nodes[i]->selected) {
-            selected_node = nodes[i];
+        /// TODO: remove this..
+        if(NODE_TYPE_TIMER == nodes[i]->type) {
+            /// do something you lazy timer!
+            nodes[i]->in();
         }
+
+        if(nodes[i]->selected) selected_node = nodes[i];
     }
 }
 

@@ -1,6 +1,29 @@
-/// @file fl_timer.h (flowgraph's timer implementation)
+/// @file fl_nodebase.h
 /// @author Johannes Schneider
-/// @brief Basic implementation of (visual) script nodes
+/// @brief Basic implementation of nodes in Inexor's 3D Visual Scripting System
+/// 
+/// .-------------------------------------------------------------------------------------------------.
+/// | Basic node implementation                                                                       |
+/// |_________________________________________________________________________________________________|
+/// |                                                                                                 |
+/// | Every node inherits its basic members and methods from this base class.                         |
+/// | This base class manages the basic behaviour of nodes.                                           |
+/// |_________________________________________________________________________________________________|
+/// |                                                                                                 |
+/// | The following members and methods will be inherited from every child class:                     |
+/// |                                                                                                 |
+/// | type          the type of the node (see VSCRIPT_NODE_TYPE enumeration).                         |
+/// | selected      indicates if this node is selected by the editor. (TODO..)                        |
+/// | pos           the position of the node in 3D space.                                             |
+/// | active        indicates if this node is active for execution (TODO..)                           |
+/// | node_name     a customizable name for this node. (TODO..)                                       |
+/// | node_comment  a comment on this node. (TODO..)                                                  |
+/// |                                                                                                 |
+/// ._________________________________________________________________________________________________.
+///
+
+/// Please note: creating nodes with Sauerbraten's standard entity system is shit.
+/// Sooner or later the system will be rewritten for Hanack's new entity system. 
 
 /// include guard
 #ifndef INEXOR_VSCRIPT_NODEBASE_HEADER
@@ -12,16 +35,14 @@
 #include <map>
 #include <list>
 
-
-/// project's namespace protection
+/// Inexor namespace protection
 namespace inexor {
 namespace vscript {
-
 
 /// enumeration of node types
 enum VSCRIPT_NODE_TYPE
 {
-    NODE_TYPE_INVALID = -1,
+    NODE_TYPE_INVALID = -1, /// TODO: is this even reqired?
     NODE_TYPE_TIMER = 0,
     NODE_TYPE_COMMENT,
     NODE_TYPE_MEMORY,
@@ -32,69 +53,56 @@ enum VSCRIPT_NODE_TYPE
 };
 
 
-/// basic structure of entity
+/// @brief base class for node implementations
 class script_node
 {
     public:
 
-    /// node type
     VSCRIPT_NODE_TYPE type;
+    bool active;
+    std::string node_name;
+    std::string node_comment;
+    vec position;
+    bool pos_changed;
+    bool selected;
 
+    /// A standard constructor
     script_node() 
     {
-        /// constructor sets standard value to invalid value
+        /// Please note that nodes are invalid by default.
+        /// the constructor of the child classes needs to change this.
         type = NODE_TYPE_INVALID;
         active = true;       
         node_name = "";
         node_comment = "";        
         position = vec(0,0,0);
-        position_changed = false;
+        pos_changed = false;
+        selected = false;
     }
 
+    // TODO: Is a destructor required?
     ~script_node() {}
-      
-    bool selected = false;
 
-    /// members that every node must have
-    vec position;
-    bool active;
-    bool position_changed;
+    /// Please note: You should make use of comments in your scripts whenever its required!
 
-    /// the name of this node
-    //char node_name[256];
-    std::string node_name;
-
-    /// the comment for this node
-    /// use comments whenever possible
-    //char node_comment[1024];
-    std::string node_comment;
-
-    /// whatever this node does will be implemented here
+    /// A parent node gives me the incoming signal
+    /// Now its my time for execution
+    virtual void in() = 0;
+    /// Run my stuff
     virtual void run() = 0;
+    /// Now call outgoing 
+    virtual void out() = 0;
 
-    // TODO
-    /*
-    virtual void enable();
-    virtual void disable();
-    virtual void remove();
-    virtual void insert();
-    */
+    /// We need Hanacks entity system at this point
+    /// Relations with other nodes?
 
-    /// we need Hanacks entity system at this point
-    /// relation with other nodes?
-
-    /// all parents
+    /// All parent nodes
     std::vector<script_node*> incoming;
-    /// all children
+    /// All child nodes
     std::vector<script_node*> outgoing;
-
-    /// this will be called when the node gets activated
-    void input() {}
-    /// decide which children will be called
-    void output() {}
 };
 
-
+/// end of namespace
 };
 };
 

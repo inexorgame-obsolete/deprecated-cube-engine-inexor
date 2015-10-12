@@ -18,9 +18,8 @@ enum VSCRIPT_DATA_TYPE
     TYPE_STRING,
     TYPE_BOOLEAN,
     TYPE_VECTOR,
-    TYPE_SYS_TIME,
+    TYPE_TIMESTAMP,
     TYPE_COLOR,
-    
     // TODO...
 };
 
@@ -31,9 +30,13 @@ class CMemory
     CMemory();
     ~CMemory();
 
+    void in();
+    void run();
+    void out();
 };
 
 
+/// end of namespace
 };
 };
 

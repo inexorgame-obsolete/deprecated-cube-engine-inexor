@@ -1,6 +1,19 @@
 /// @file fl_timer.h (flowgraph's timer implementation)
 /// @author Johannes Schneider
-/// @brief Timers will be called every [n] miliseconds
+/// @brief Comments will be placed in 3D space. Use comments whenever its neccesary!
+
+/// .-------------------------------------------------------------------------------------------------.
+/// | Comments                                                                                        |
+/// |_________________________________________________________________________________________________|
+/// |                                                                                                 |
+/// | Use comments to remember decisions in your code and to explain it to others.                    |
+/// | Use comments whenever it is neccesary. Decide for yourself how to comment code!.                |
+/// |_________________________________________________________________________________________________|
+/// |                                                                                                 |
+/// | This node type has no special members or methods because it is a comment and not part of        |
+/// | the code itself.                                                                                |
+/// ._________________________________________________________________________________________________.
+/// 
 
 // include guard
 #ifndef INEXOR_VSCRIPT_COMMENT_HEADER
@@ -20,24 +33,29 @@ namespace vscript {
 class comment_node : public script_node
 {
     public:
+    /// Please note: There is no standard constructor.
 
     /// overloaded standard constructor
-    comment_node(vec pos, char* comment)
+    comment_node(vec pos, char* comment, char* name = "comment")
     {
         type = NODE_TYPE_COMMENT;
         position = pos;
-        node_comment.copy(comment, strlen(comment));
-        node_name.copy(comment, strlen(comment));
+        node_comment = comment;
+        node_name = name;
     }
 
-    /// destructor has nothing to do (yet)
+    /// TODO: Is a destructor required?
     ~comment_node() {}
 
-    /// implementation of run
-    /// there is no code a comment could run! :)
+    /// comments are not part of the code itself
+    /// so they do not run code or get notifyed or
+    /// notify other nodes!
     void run() {}
+    void in() {}
+    void out() {}
 };
 
+/// end of namespace
 };
 };
 
