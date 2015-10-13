@@ -65,9 +65,10 @@ class script_node
     vec position;
     bool pos_changed;
     bool selected;
-
-    /// TODO: save color as RGBA
     int boxcolor;
+    
+    unsigned int this_time;
+    unsigned int last_time;
 
     /// A standard constructor
     script_node() 

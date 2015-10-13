@@ -103,7 +103,6 @@ class timer_node : public script_node
     unsigned int timer_interval;
     unsigned int timer_limit;
     unsigned int timer_cooldown;
-    unsigned int last_time;
 
     /// incoming node signal
     void in()
@@ -122,6 +121,7 @@ class timer_node : public script_node
     /// Resetting the timer means to reset last_time
     void reset()
     {
+        /// TODO: do we need this?
         last_time = 0;
     }
 
@@ -135,25 +135,21 @@ class timer_node : public script_node
             conoutf(CON_DEBUG, "checking if code execution is due..");
         #endif
 
-        /// calculate the amount of time that passed away since last check
-        unsigned int this_time = SDL_GetTicks();
-
         /// Display a yellow color effect that is 200 ms long
         if(this_time - last_time < 200) boxcolor = 0xFF9400;
         else boxcolor = 0x007FFF;
+
+        conoutf(CON_DEBUG, "timer here, my time is: %d", this_time);
 
         if(this_time - last_time >= timer_interval) 
         {
             /// execute!
             out();
-            last_time = SDL_GetTicks();
+            last_time = this_time;
             timer_counter++;
         }
 
-        if(timer_counter > timer_limit)
-        {
-            /// TODO: implement cooldown!
-        }
+        /// TODO: implement cooldown!
     }
 
     /// notify child nodes
@@ -163,13 +159,11 @@ class timer_node : public script_node
             conoutf(CON_DEBUG, "trigger # %d", timer_counter);
         #endif
 
+        /// add particle effect to illustrate
         particle_text(position, "triggered", PART_TEXT, 5000, 0x32FF00, 2.0f, -10.0f);
 
-        for(unsigned int i = 0; i < outgoing.size(); i++) 
-        {
-            /// run child node's code
-            outgoing[i]->in();
-        }
+        /// run child node's code
+        for(unsigned int i = 0; i < outgoing.size(); i++) outgoing[i]->in();
     }
 };
 

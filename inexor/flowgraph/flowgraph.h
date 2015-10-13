@@ -85,8 +85,11 @@ class CVisualScriptSystem
     void connect_nodes(script_node *from, script_node *to);
     void mouse_event_notifyer(int code, bool isdown);
 
-    /// run implementation
+    /// Please note: this will prevent timers from becoming not synchronized
+    unsigned int uniqu_execution_pass_timestamp;
     void check_timers_and_events();
+
+    /// TODO: profiling and benchmarking?
 
     /// synchronise timers
     void sync_timers();

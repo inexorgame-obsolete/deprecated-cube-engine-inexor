@@ -111,6 +111,10 @@ void CVisualScriptSystem::add_node(VSCRIPT_NODE_TYPE type, int parameter_count, 
 
             /// Create a new timer
             nodes.push_back(new timer_node(target, interval, startdelay, limit, cooldown, name, comment, timer_format));
+
+            /// Synchronize them!
+            sync_timers();
+
             break;
         }
 
@@ -129,7 +133,7 @@ void CVisualScriptSystem::add_node(VSCRIPT_NODE_TYPE type, int parameter_count, 
             {
                 case FUNCTION_CONOUTF:
                     nodes.push_back(new function_conoutf_node(target, arguments[1].c_str()) );
-                    break;    
+                    break;
             }
             break;
         }
@@ -194,10 +198,23 @@ void CVisualScriptSystem::render_nodes()
 
 void CVisualScriptSystem::check_timers_and_events()
 {
+    /// Please note: every timer node will be told that no time 
+    /// has passed by executing other nodes. They all will be executed simultaneously.
+    /// This keeps them synchronized.
+
+    /// Update execution time
+    uniqu_execution_pass_timestamp = SDL_GetTicks();
+
+    conoutf(CON_DEBUG, "I would say: %d", uniqu_execution_pass_timestamp);
+
     /// If this is a node, run it!
     for(int i=0; i<nodes.size(); i++) 
     {
-        if(NODE_TYPE_TIMER == nodes[i]->type) nodes[i]->run();
+        if(NODE_TYPE_TIMER == nodes[i]->type) 
+        {
+            nodes[i]->this_time = uniqu_execution_pass_timestamp;
+            nodes[i]->run();
+        }
         /// TODO: if (NODE_TYPE_EVENT == nodes[i]->type) nodes[i]->run() ?;
     }
 }
@@ -372,7 +389,6 @@ void deleteallnodes()
 COMMAND(deleteallnodes, "");
 
 
-
 /*********************************************************************************************/
 
 /// Linking the game with the node engine
@@ -381,7 +397,7 @@ COMMAND(deleteallnodes, "");
 void addconoutf(char* message)
 {
     /// TODO: debug!
-    vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "0" /* FUNCTION_CONOUTF */, message);
+    vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "0" /*FUNCTION_CONOUTF*/, message);
 }
 COMMAND(addconoutf, "s");
 
@@ -393,8 +409,10 @@ void addtimer(char* interval, char* startdelay, char* limit, char* cooldown, cha
 }
 COMMAND(addtimer, "sssssss");
 
+
 void synctimers()
 {
+    /// workd finer (13.10.2015|23:19)
     vScript3D.sync_timers();
 }
 COMMAND(synctimers, "");
@@ -406,7 +424,6 @@ void addcomment(char* node_comment, char* node_name)
     vScript3D.add_node(NODE_TYPE_COMMENT, 2, node_comment, node_name);
 }
 COMMAND(addcomment, "ss");
-
 
 /// end of namespace
 };

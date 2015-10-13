@@ -1893,8 +1893,8 @@ void gl_drawframe()
     /// begin
     vScript3D.start_rendering();
     vScript3D.render_nodes();
-    vScript3D.render_node_relations();
-    vScript3D.render_bezier_curves();
+    //vScript3D.render_node_relations();
+    //vScript3D.render_bezier_curves();
     /// end
     vScript3D.end_rendering();
 
