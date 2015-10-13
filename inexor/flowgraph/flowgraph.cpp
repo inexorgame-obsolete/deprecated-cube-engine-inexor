@@ -167,7 +167,7 @@ void CVisualScriptSystem::render_nodes()
 
         /// render box as node representation
         gle::color(vec::hexcolor(nodes[i]->boxcolor));
-        renderer.renderbox(p, orient);
+        renderer.renderbox(p, orient, nodes[i]->boxcolor);
 
         /// no matter where the box is being selected, render help lines
         if(orient != VSCRIPT_BOX_NO_INTERSECTION) 
