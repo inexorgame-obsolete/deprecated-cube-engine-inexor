@@ -154,14 +154,17 @@ struct vec
     vec &sub(float f)        { x -= f;         y -= f;         z -= f;         return *this; }
 
     /// arithmetic operators
-    vec operator+(const vec &o) { return this->add(o); }
-    vec operator+(const float f) { return this->add(f); }
-    vec operator-(const vec &o) { return this->sub(o); }
-    vec operator-(const float f) { return this->sub(f); }
-    vec operator*(const vec &o) { return this->mul(o); }
-    vec operator*(const float f) { return this->mul(f); }
-    vec operator/(const vec &o) { return this->div(o); }
-    vec operator/(const float f) { return this->div(f); }
+    vec operator+(const vec &o)  { return vec(this->x+o.x, this->y+o.y, this->z+o.z); }
+    vec operator+(const float f) { return vec(this->x+f, this->y+f, this->z+f); }
+
+    vec operator-(const vec &o)  { return vec(this->x-o.x, this->y-o.y, this->z-o.z); }
+    vec operator-(const float f) { return vec(this->x-f, this->y-f, this->z-f); }
+
+    vec operator*(const vec &o)  { return vec(this->x*o.x, this->y*o.y, this->z*o.z); }
+    vec operator*(const float f) { return vec(this->x*f, this->y*f, this->z*f); }
+
+    vec operator/(const vec &o)  { return vec(this->x/o.x, this->y/o.y, this->z/o.z); }
+    vec operator/(const float f) { return vec(this->x/f, this->y/f, this->z/f); }
 
     /// turn XY coordinates into its negative values
     vec &neg2()              { x = -x;         y = -y;                         return *this; }
