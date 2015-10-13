@@ -203,7 +203,7 @@ void CVisualScriptSystem::check_timers_and_events()
     /// This keeps them synchronized.
 
     /// Update execution time
-    uniqu_execution_pass_timestamp = SDL_GetTicks();
+    unique_execution_pass_timestamp = SDL_GetTicks();
 
     conoutf(CON_DEBUG, "unique_execution_pass_timestamp: %d", unique_execution_pass_timestamp);
 
