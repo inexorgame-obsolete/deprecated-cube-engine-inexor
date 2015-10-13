@@ -63,16 +63,14 @@ void CVisualScriptSystem::add_node(VSCRIPT_NODE_TYPE type, int parameter_count, 
 
     /// Please note: the old command engine of Inexor will always pass every parameter as char* 
     /// so using std::string is fine.
-
     /// In this vector we will store the arguments as strings
     std::vector<std::string> arguments;
 
+    /// Store the current argument in the std::string vector
     for(unsigned int i=0; i<parameter_count; i++)
     {
-        /// Store the current argument in the std::string vector
         arguments.push_back(va_arg(parameters, char *));
     }
-    /// End parameter list
     va_end(parameters);
     
 
@@ -87,8 +85,8 @@ void CVisualScriptSystem::add_node(VSCRIPT_NODE_TYPE type, int parameter_count, 
             unsigned int startdelay = atoi(arguments[1].c_str());
             unsigned int limit      = atoi(arguments[2].c_str());
             unsigned int cooldown   = atoi(arguments[3].c_str());
-            const char* name = arguments[4].c_str();
-            const char* comment = arguments[5].c_str();
+            const char* name        = arguments[4].c_str();
+            const char* comment     = arguments[5].c_str();
 
             INEXOR_VSCRIPT_TIMER_FORMAT timer_format;
             switch(atoi(arguments[6].c_str())) 
@@ -115,6 +113,7 @@ void CVisualScriptSystem::add_node(VSCRIPT_NODE_TYPE type, int parameter_count, 
             nodes.push_back(new timer_node(target, interval, startdelay, limit, cooldown, name, comment, timer_format));
             break;
         }
+
         case NODE_TYPE_COMMENT:
         {
             /// TODO: does a comment have to have a name?
@@ -135,11 +134,8 @@ void CVisualScriptSystem::add_node(VSCRIPT_NODE_TYPE type, int parameter_count, 
             break;
         }
     }
-
-    /// TODO: garbage collection ??
-    /// dynamicly allocated memory must be released after use!
+    /// TODO: garbage collection? dynamicly allocated memory must be released after use!
 }
-
 
 // TODO: Create an instance of a node/ray renderer
 // and use it here!
@@ -187,9 +183,9 @@ void CVisualScriptSystem::render_nodes()
         p.add(vec(0,0,4));
 
         /// render node's name
-        particle_text(p + vec(0,0,2.5), nodes[i]->node_name.c_str(), PART_TEXT, 1, 0xFF47E6, 2.0f);
+        particle_text(p + vec(0,0,4.0f), nodes[i]->node_name.c_str(), PART_TEXT, 1, 0xFF009D, 1.0f);
         /// render node's comment
-        particle_text(p + vec(0,0,2), nodes[i]->node_comment.c_str(), PART_TEXT, 1, 0xFF47E6, 1.0f);
+        particle_text(p, nodes[i]->node_comment.c_str(), PART_TEXT, 1, 0xFF009D, 1.0f);
     }
 
     /// which node is selected?
@@ -369,14 +365,16 @@ COMMAND(deleteallnodes, "");
 
 /// Linking the game with the node engine
 
-void addtimer(char* )
+void addtimer(char* interval, char* startdelay, char* limit, char* cooldown, char* name, char* comment, char* timer_format)
 {
-
+    /// 
+    vScript3D.add_node(NODE_TYPE_TIMER, 7, interval, startdelay, limit, cooldown, name, comment, timer_format);
 }
-COMMAND(addtimer, "sssss");
+COMMAND(addtimer, "sssssss");
 
-void addcomment(char* node_comment, char* node_name = "comment")
+void addcomment(char* node_comment, char* node_name)
 {
+    /// works fine (13.10.2015|17:19)
     vScript3D.add_node(NODE_TYPE_COMMENT, 2, node_comment, node_name);
 }
 COMMAND(addcomment, "ss");
