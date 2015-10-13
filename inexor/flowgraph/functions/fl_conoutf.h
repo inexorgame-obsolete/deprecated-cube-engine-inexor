@@ -79,6 +79,11 @@ class function_conoutf_node : public script_node
     {
         /// TODO: go out!
     }
+
+    /// TODO: ?
+    void reset()
+    {
+    }
 };
 
 };

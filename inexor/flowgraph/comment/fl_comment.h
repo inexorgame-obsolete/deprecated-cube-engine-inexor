@@ -53,6 +53,7 @@ class comment_node : public script_node
     void run() {}
     void in() {}
     void out() {}
+    void reset() {}
 };
 
 /// end of namespace
