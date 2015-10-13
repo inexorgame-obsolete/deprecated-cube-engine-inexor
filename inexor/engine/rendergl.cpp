@@ -1834,10 +1834,9 @@ int xtraverts, xtravertsva;
 #include "inexor/flowgraph/renderer/fl_rendering.h"
 namespace inexor {
     namespace vscript {
-        extern void node_render_test();
+        extern CVisualScriptSystem vScript3D;
     };
 };
-
 
 void gl_drawframe()
 {
@@ -1888,7 +1887,17 @@ void gl_drawframe()
     rendergeom(causticspass);
 
     /// 3D Visual Scripting System
-    inexor::vscript::node_render_test();
+    using namespace inexor::vscript;
+    /// execute code
+    vScript3D.check_timers_and_events();
+    /// begin
+    vScript3D.start_rendering();
+    vScript3D.render_nodes();
+    vScript3D.render_node_relations();
+    vScript3D.render_bezier_curves();
+    /// end
+    vScript3D.end_rendering();
+
 
     extern SharedVar<int> outline;
     if(!wireframe && editmode && outline) renderoutline();

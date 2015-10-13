@@ -97,6 +97,8 @@ class script_node
     /// Now call outgoing 
     virtual void out() = 0;
 
+    virtual void reset() = 0;
+
     /// We need Hanacks entity system at this point
     /// Relations with other nodes?
 

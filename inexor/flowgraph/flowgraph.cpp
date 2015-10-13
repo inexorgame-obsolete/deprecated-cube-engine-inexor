@@ -149,11 +149,6 @@ void CVisualScriptSystem::render_nodes()
     /// loop through all nodes and render them
     for(unsigned int i=0; i<nodes.size(); i++) 
     {
-        /// If this is a node, run it!
-        if(NODE_TYPE_TIMER == nodes[i]->type) nodes[i]->run();
-
-        /// TODO: events?
-
         /// render node box!
         float dist = 0.0f;
         int orient = VSCRIPT_BOX_NO_INTERSECTION;
@@ -195,6 +190,45 @@ void CVisualScriptSystem::render_nodes()
     {
         if(nodes[i]->selected) selected_node = nodes[i];
     }
+}
+
+void CVisualScriptSystem::check_timers_and_events()
+{
+    /// If this is a node, run it!
+    for(int i=0; i<nodes.size(); i++) 
+    {
+        if(NODE_TYPE_TIMER == nodes[i]->type) nodes[i]->run();
+        /// TODO: if (NODE_TYPE_EVENT == nodes[i]->type) nodes[i]->run() ?;
+    }
+}
+
+// TODO: connect nodes!
+void CVisualScriptSystem::connect_nodes(script_node *from, script_node *to)
+{
+    /// TODO: relations?
+    to->incoming.push_back(from);
+    from->outgoing.push_back(to);
+
+    /// TODO: add relation
+    /// TODO: add bezier curve!
+}
+
+
+/// Synchronize timers
+void CVisualScriptSystem::sync_timers()
+{
+    for(unsigned int i=0; i<nodes.size(); i++)
+    {
+        if(NODE_TYPE_TIMER == nodes[i]->type) nodes[i]->reset();
+    }
+}
+
+
+// TODO: notify the node engine about mouse changes
+void CVisualScriptSystem::mouse_event_notifyer(int code, bool isdown)
+{
+    /// Attention: we need that minus
+    if(code == - SDL_BUTTON_LEFT) selected = isdown;
 }
 
 
@@ -320,30 +354,6 @@ void CVisualScriptSystem::end_rendering()
 /// create instance of global 3D script enviroment system
 CVisualScriptSystem vScript3D;
 
-/// render nodes!
-void node_render_test()
-{
-    vScript3D.start_rendering();
-
-    vScript3D.render_nodes();
-    //vScript3D.render_node_relations();
-    //vScript3D.render_bezier_curves();
-
-    vScript3D.end_rendering();
-
-    // TODO: only show nodes in editmode
-    if(editmode)
-    {
-        /// move code block in here later on
-    }
-}
-
-/// mouse button notifyer
-void notify_flowgraph_mouse_key_change(int key, bool isdown)
-{
-    /// we need that minus
-    if(key == -SDL_BUTTON_LEFT) vScript3D.selected = isdown;
-}
 
 /// describes if a flowgraph entity is selected
 bool is_flowgraph_entity_selected()
@@ -383,6 +393,12 @@ void addtimer(char* interval, char* startdelay, char* limit, char* cooldown, cha
 }
 COMMAND(addtimer, "sssssss");
 
+void synctimers()
+{
+    vScript3D.sync_timers();
+}
+COMMAND(synctimers, "");
+
 
 void addcomment(char* node_comment, char* node_name)
 {
@@ -392,5 +408,6 @@ void addcomment(char* node_comment, char* node_name)
 COMMAND(addcomment, "ss");
 
 
+/// end of namespace
 };
 };

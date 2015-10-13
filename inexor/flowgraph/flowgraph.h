@@ -36,7 +36,6 @@ namespace vscript {
 
 
 /// pre declarations
-void node_render_test();
 void notify_flowgraph_mouse_key_change(int, bool);
 bool is_flowgraph_entity_selected();
 
@@ -70,19 +69,33 @@ class CVisualScriptSystem
     /// buffer for nodes
     std::vector<script_node *> nodes;
 
+    /// TODO: do we need this for entity selection?
+    bool selected = false;
+
     /// the selected node
     script_node* selected_node;
-    /// entity selection?
-    bool selected = false;
+    script_node* hover_node;
 
     /// Please note: add_node is using variable argument lists. See stdarg.h
 
     /// add a node
     void add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...);
 
+    /// Link nodes with other nodes
+    void connect_nodes(script_node *from, script_node *to);
+    void mouse_event_notifyer(int code, bool isdown);
+
+    /// run implementation
+    void check_timers_and_events();
+
+    /// synchronise timers
+    void sync_timers();
+
+    /// Rendering
     void start_rendering();
     void end_rendering();
 
+    /// TODO: move rendering completely to fl_rendering.h and refactor!
 
     /// render nodes
     void render_nodes();

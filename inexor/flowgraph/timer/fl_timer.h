@@ -119,6 +119,11 @@ class timer_node : public script_node
         check_if_execution_is_due();
     }
     
+    /// Resetting the timer means to reset last_time
+    void reset()
+    {
+        last_time = 0;
+    }
 
     private:
 

@@ -625,8 +625,19 @@ void processtextinput(const char *str, int len)
         consoleinput(str, len);
 }
 
+/// 3D Visual Scripting Enviroment
+#include "inexor/flowgraph/flowgraph.h"
+namespace inexor {
+    namespace vscript {
+        extern CVisualScriptSystem vScript3D;
+    };
+};
+
 void processkey(int code, bool isdown)
 {
+    /// Notify 3D Visual Scripting System about mouse state changes
+    inexor::vscript::vScript3D.mouse_event_notifyer(code, isdown);
+
     keym *haskey = keyms.access(code);
     if(haskey && haskey->pressed) execbind(*haskey, isdown); // allow pressed keys to release
     else if(!g3d_key(code, isdown)) // 3D GUI mouse button intercept   
