@@ -70,7 +70,7 @@ void CVisualScriptSystem::add_node(VSCRIPT_NODE_TYPE type, int parameter_count, 
     for(unsigned int i=0; i<parameter_count; i++)
     {
         /// Store the current argument in the std::string vector
-        arguments.push_back( va_arg(i, char*) );
+        arguments.push_back(va_arg(parameters, char *));
     }
     /// End parameter list
     va_end(parameters);
