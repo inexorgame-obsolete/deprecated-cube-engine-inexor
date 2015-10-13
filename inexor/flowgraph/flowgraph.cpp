@@ -42,8 +42,11 @@ CVisualScriptSystem::~CVisualScriptSystem()
 /// problem: parameter specification requires new command line code!
 /// we must get rid of this old 5 attributes stuff
 /// this code has been debugged and tested
-void CVisualScriptSystem::add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...)
+script_node* CVisualScriptSystem::add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...)
 {
+    /// return value
+    script_node* created_node = nullptr;
+
     /// Calculate the target position of the node
     vec target = vec(sel.o.x,sel.o.y,sel.o.z);
     vec offset = vec(gridsize/2,gridsize/2,gridsize/2);
@@ -110,7 +113,8 @@ void CVisualScriptSystem::add_node(VSCRIPT_NODE_TYPE type, int parameter_count, 
             #endif
 
             /// Create a new timer
-            nodes.push_back(new timer_node(target, interval, startdelay, limit, cooldown, name, comment, timer_format));
+            created_node = new timer_node(target, interval, startdelay, limit, cooldown, name, comment, timer_format);
+            nodes.push_back(created_node);
 
             /// Synchronize them!
             sync_timers();
@@ -121,8 +125,9 @@ void CVisualScriptSystem::add_node(VSCRIPT_NODE_TYPE type, int parameter_count, 
         case NODE_TYPE_COMMENT:
         {
             /// TODO: does a comment have to have a name?
-            nodes.push_back(new comment_node(target, arguments[0].c_str(), /*comment*/ 
-                                                     arguments[1].c_str()  /*comment's name*/ ));
+            created_node = new comment_node(target, arguments[0].c_str(), /*comment*/ 
+                                                     arguments[1].c_str()  /*comment's name*/ );
+            nodes.push_back(created_node);
             break;
         }
 
@@ -132,13 +137,15 @@ void CVisualScriptSystem::add_node(VSCRIPT_NODE_TYPE type, int parameter_count, 
             switch(atoi(arguments[0].c_str()))
             {
                 case FUNCTION_CONOUTF:
-                    nodes.push_back(new function_conoutf_node(target, arguments[1].c_str()) );
+                    created_node = new function_conoutf_node(target, arguments[1].c_str());
+                    nodes.push_back(created_node);
                     break;
             }
             break;
         }
     }
     /// TODO: garbage collection? dynamicly allocated memory must be released after use!
+    return created_node;
 }
 
 // TODO: Create an instance of a node/ray renderer
@@ -205,7 +212,7 @@ void CVisualScriptSystem::check_timers_and_events()
     /// Update execution time
     unique_execution_pass_timestamp = SDL_GetTicks();
 
-    conoutf(CON_DEBUG, "unique_execution_pass_timestamp: %d", unique_execution_pass_timestamp);
+    //conoutf(CON_DEBUG, "unique_execution_pass_timestamp: %d", unique_execution_pass_timestamp);
 
     /// If this is a node, run it!
     for(int i=0; i<nodes.size(); i++) 
@@ -222,14 +229,11 @@ void CVisualScriptSystem::check_timers_and_events()
 // TODO: connect nodes!
 void CVisualScriptSystem::connect_nodes(script_node *from, script_node *to)
 {
-    /// TODO: relations?
+    /// Add relations
     to->incoming.push_back(from);
     from->outgoing.push_back(to);
-
-    /// TODO: add relation
-    /// TODO: add bezier curve!
+    /// TODO: Add bezier curve
 }
-
 
 /// Synchronize timers
 void CVisualScriptSystem::sync_timers()
@@ -279,6 +283,8 @@ void CVisualScriptSystem::render_node_relations()
     //defaultshader->set();
 }
 
+/// we need SCustomOutputPoint
+#include "inexor/geom/curves/curvebase.h"
 
 /// bezier curve as relations
 void CVisualScriptSystem::render_bezier_curves()
@@ -307,37 +313,35 @@ void CVisualScriptSystem::render_bezier_curves()
 
         /// this loop will always be abled to get access to the next node!
         /// beginning point
-        tmp_curve.AddParamPoint(t);
-        tmp_curve.AddParamPoint(interpol);
-        tmp_curve.AddParamPoint(interpol2);
-        tmp_curve.AddParamPoint(n);
+        tmp_curve.AddParameterPoint(t);
+        tmp_curve.AddParameterPoint(interpol);
+        tmp_curve.AddParameterPoint(interpol2);
+        tmp_curve.AddParameterPoint(n);
 
         /// compute curve
         tmp_curve.PreComputeCache();
 
         /// render curve
-        lineshader->set();
-        glDisable(GL_TEXTURE_2D);
-        glDisable(GL_BLEND);
+        //glDisable(GL_TEXTURE_2D);
+        //glDisable(GL_BLEND);
         glBegin(GL_LINES);
 
         /// set spicy orange color
         glColor3f(1.0f, 182/255.0f, 0.0f);
 
         /// render lines
-        for(unsigned int h=0; h<tmp_curve.m_ComputedPoints.size() -1; h++)
+        for(unsigned int h=0; h<tmp_curve.m_vOutputPoints.size() -1; h++)
         {
-            vec t = tmp_curve.m_ComputedPoints[h], z = tmp_curve.m_ComputedPoints[h   +1];
+            SCustomOutputPoint t = tmp_curve.m_vOutputPoints[h], z = tmp_curve.m_vOutputPoints[h   +1];
             glVertex3f(t.x,t.y,t.z);
             glVertex3f(z.x,z.y,z.z);
         }
         glEnd();
+        
 
-        glEnable(GL_TEXTURE_2D);
-        glEnable(GL_BLEND);
-        defaultshader->set();
-    }
-    */
+        //glEnable(GL_TEXTURE_2D);
+        //glEnable(GL_BLEND);
+    }*/
 }
 
 
@@ -402,28 +406,44 @@ void addconoutf(char* message)
 COMMAND(addconoutf, "s");
 
 
+/// Timers
+
 void addtimer(char* interval, char* startdelay, char* limit, char* cooldown, char* name, char* comment, char* timer_format)
 {
-    /// works fine (13.10.2015|18:19)
     vScript3D.add_node(NODE_TYPE_TIMER, 7, interval, startdelay, limit, cooldown, name, comment, timer_format);
 }
 COMMAND(addtimer, "sssssss");
 
-
 void synctimers()
 {
-    /// workd finer (13.10.2015|23:19)
     vScript3D.sync_timers();
 }
 COMMAND(synctimers, "");
 
+/// Comments
 
 void addcomment(char* node_comment, char* node_name)
 {
-    /// works fine (13.10.2015|17:19)
     vScript3D.add_node(NODE_TYPE_COMMENT, 2, node_comment, node_name);
 }
 COMMAND(addcomment, "ss");
+
+script_node* a;
+script_node* b;
+
+/// Testing and debugging
+void test_a()
+{
+    a = vScript3D.add_node(NODE_TYPE_TIMER, 7, "1000", "0", "1000", "0", "TimerNode1", "Hello world", "0");
+}
+COMMAND(test_a, "");
+
+void test_b()
+{
+    b = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "0" /*FUNCTION_CONOUTF*/, "Hello World to the game console. I am 3DVS!");
+    vScript3D.connect_nodes(a,b);
+}
+COMMAND(test_b, "");
 
 /// end of namespace
 };

@@ -59,6 +59,9 @@ class function_conoutf_node : public script_node
 
     void in()
     {
+        if(this_time - last_time < 200) boxcolor = 0x9000FF;
+        else boxcolor = 0x007FFF;
+        last_time = this_time;
         run();
     }
     

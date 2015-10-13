@@ -21,6 +21,9 @@
 /// functions that are linked with the game engine
 #include "inexor/flowgraph/functions/fl_functions.h"
 
+/// bezier curves
+#include "inexor/geom/geom.h"
+
 /// TODO: implement more and add more here
 
 /// renderer
@@ -79,7 +82,7 @@ class CVisualScriptSystem
     /// Please note: add_node is using variable argument lists. See stdarg.h
 
     /// add a node
-    void add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...);
+    script_node* add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...);
 
     /// Link nodes with other nodes
     void connect_nodes(script_node *from, script_node *to);

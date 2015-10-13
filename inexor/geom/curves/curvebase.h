@@ -81,12 +81,14 @@ struct SCustomOutputPoint : public SCustomInputPoint
 /// @brief the curve base class defines input, output and computation functions
 class CCurveBase 
 {
-    protected:
+    public:
 
     // the curve input data
     std::vector<SCustomInputPoint> m_vInputPoints;
     // the curve output data
     std::vector<SCustomOutputPoint> m_vOutputPoints;
+
+    protected:
 
     // the calculation precision
     float m_fComputationPrecision = INEXOR_VSCRIPT_STD_CALC_PRECISION;
