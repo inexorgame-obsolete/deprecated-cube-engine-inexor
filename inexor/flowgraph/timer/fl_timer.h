@@ -139,11 +139,11 @@ class timer_node : public script_node
         if(this_time - last_time < 200) boxcolor = 0xFF9400;
         else boxcolor = 0x007FFF;
 
-        conoutf(CON_DEBUG, "timer here, my time is: %d", this_time);
+        //conoutf(CON_DEBUG, "this_time: %d, last_time %d", this_time, last_time);
 
-        if(this_time - last_time >= timer_interval) 
+        /// TODO: greater or greater or equal?
+        if(this_time - last_time > timer_interval) 
         {
-            /// execute!
             out();
             last_time = this_time;
             timer_counter++;

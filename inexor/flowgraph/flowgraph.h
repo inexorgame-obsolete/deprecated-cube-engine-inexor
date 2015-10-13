@@ -86,7 +86,7 @@ class CVisualScriptSystem
     void mouse_event_notifyer(int code, bool isdown);
 
     /// Please note: this will prevent timers from becoming not synchronized
-    unsigned int uniqu_execution_pass_timestamp;
+    unsigned int unique_execution_pass_timestamp;
     void check_timers_and_events();
 
     /// TODO: profiling and benchmarking?

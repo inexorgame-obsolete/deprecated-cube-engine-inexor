@@ -205,14 +205,14 @@ void CVisualScriptSystem::check_timers_and_events()
     /// Update execution time
     uniqu_execution_pass_timestamp = SDL_GetTicks();
 
-    conoutf(CON_DEBUG, "I would say: %d", uniqu_execution_pass_timestamp);
+    conoutf(CON_DEBUG, "unique_execution_pass_timestamp: %d", unique_execution_pass_timestamp);
 
     /// If this is a node, run it!
     for(int i=0; i<nodes.size(); i++) 
     {
         if(NODE_TYPE_TIMER == nodes[i]->type) 
         {
-            nodes[i]->this_time = uniqu_execution_pass_timestamp;
+            nodes[i]->this_time = unique_execution_pass_timestamp;
             nodes[i]->run();
         }
         /// TODO: if (NODE_TYPE_EVENT == nodes[i]->type) nodes[i]->run() ?;
