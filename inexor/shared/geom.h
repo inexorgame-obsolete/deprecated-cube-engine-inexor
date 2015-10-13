@@ -120,6 +120,17 @@ struct vec
     bool operator==(const vec &o) const { return x == o.x && y == o.y && z == o.z; }
     bool operator!=(const vec &o) const { return x != o.x || y != o.y || z != o.z; }
 
+    /// arithmetic operators for vectors
+    /// please note: you CAN'T just call this->add in these operator methods because this would OVERRIDE its own memory!
+    vec operator+(const vec &o)  { return vec(this->x+o.x, this->y+o.y, this->z+o.z); }
+    vec operator+(const float f) { return vec(this->x+f, this->y+f, this->z+f); }
+    vec operator-(const vec &o)  { return vec(this->x-o.x, this->y-o.y, this->z-o.z); }
+    vec operator-(const float f) { return vec(this->x-f, this->y-f, this->z-f); }
+    vec operator*(const vec &o)  { return vec(this->x*o.x, this->y*o.y, this->z*o.z); }
+    vec operator*(const float f) { return vec(this->x*f, this->y*f, this->z*f); }
+    vec operator/(const vec &o)  { return vec(this->x/o.x, this->y/o.y, this->z/o.z); }
+    vec operator/(const float f) { return vec(this->x/f, this->y/f, this->z/f); }
+
     /// Receive the absolute values of this vec.
     vec &abs() { x = fabs(x); y = fabs(y); z = fabs(z); return *this; }
 
