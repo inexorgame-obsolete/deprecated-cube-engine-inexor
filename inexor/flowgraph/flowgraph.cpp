@@ -128,7 +128,7 @@ void CVisualScriptSystem::add_node(VSCRIPT_NODE_TYPE type, int parameter_count, 
             switch(atoi(arguments[0].c_str()))
             {
                 case FUNCTION_CONOUTF:
-                    nodes.push_back(new function_conoutf_node(target, arguments[0].c_str()) );
+                    nodes.push_back(new function_conoutf_node(target, arguments[1].c_str()) );
                     break;    
             }
             break;
@@ -149,8 +149,10 @@ void CVisualScriptSystem::render_nodes()
     /// loop through all nodes and render them
     for(unsigned int i=0; i<nodes.size(); i++) 
     {
-        /// run node code!
-        nodes[i]->run();
+        /// If this is a node, run it!
+        if(NODE_TYPE_TIMER == nodes[i]->type) nodes[i]->run();
+
+        /// TODO: events?
 
         /// render node box!
         float dist = 0.0f;
@@ -183,7 +185,7 @@ void CVisualScriptSystem::render_nodes()
         p.add(vec(0,0,4));
 
         /// render node's name
-        particle_text(p + vec(0,0,4.0f), nodes[i]->node_name.c_str(), PART_TEXT, 1, 0xFF009D, 1.0f);
+        particle_text(p + vec(0,0,1.0f), nodes[i]->node_name.c_str(), PART_TEXT, 1, 0xFF009D, 1.0f);
         /// render node's comment
         particle_text(p, nodes[i]->node_comment.c_str(), PART_TEXT, 1, 0xFF009D, 1.0f);
     }
@@ -365,12 +367,22 @@ COMMAND(deleteallnodes, "");
 
 /// Linking the game with the node engine
 
+/// prints a message to the screen
+void addconoutf(char* message)
+{
+    /// TODO: debug!
+    vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "0" /* FUNCTION_CONOUTF */, message);
+}
+COMMAND(addconoutf, "s");
+
+
 void addtimer(char* interval, char* startdelay, char* limit, char* cooldown, char* name, char* comment, char* timer_format)
 {
-    /// 
+    /// works fine (13.10.2015|18:19)
     vScript3D.add_node(NODE_TYPE_TIMER, 7, interval, startdelay, limit, cooldown, name, comment, timer_format);
 }
 COMMAND(addtimer, "sssssss");
+
 
 void addcomment(char* node_comment, char* node_name)
 {

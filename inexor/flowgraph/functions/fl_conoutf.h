@@ -64,6 +64,7 @@ class function_conoutf_node : public script_node
     
     void run()
     {
+        format_output();
         conoutf(CON_DEBUG, param_text_output.c_str());
     }
 
@@ -71,6 +72,7 @@ class function_conoutf_node : public script_node
     void format_output()
     {
         /// param_text_output <--- parameter list
+        param_text_output = raw_text_input;
     }
 
     void out()

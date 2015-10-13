@@ -81,8 +81,7 @@ class script_node
         position = vec(0,0,0);
         pos_changed = false;
         selected = false;
-
-        boxcolor = 0xFFFFFF;
+        boxcolor = 0xFFFF00;
     }
 
     // TODO: Is a destructor required?

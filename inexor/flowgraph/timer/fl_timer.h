@@ -158,8 +158,7 @@ class timer_node : public script_node
             conoutf(CON_DEBUG, "trigger # %d", timer_counter);
         #endif
 
-        /// TODO: remove this?
-        particle_text(position, "triggered", PART_TEXT, 5000, 0xFF47E6, 2.0f, -10.0f);
+        particle_text(position, "triggered", PART_TEXT, 5000, 0x32FF00, 2.0f, -10.0f);
 
         for(unsigned int i = 0; i < outgoing.size(); i++) 
         {
