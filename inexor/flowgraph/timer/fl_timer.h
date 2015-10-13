@@ -57,7 +57,7 @@ class timer_node : public script_node
     /// TODO: pass name as parameter
     /// TODO: pass limit, cooldown and type as parameter as well!
     /// overloaded constructor for dynamic allocation
-    timer_node(vec pos, unsigned int interval, unsigned int startdelay,   unsigned int limit = 1000*1000, unsigned int cooldown = 0, INEXOR_VSCRIPT_TIMER_FORMAT format = TIMER_FORMAT_MILISECONDS)
+    timer_node(vec pos, unsigned int interval, unsigned int startdelay, unsigned int limit = 1000*1000, unsigned int cooldown = 0, const char* name = "a timer", const char* comment = "hello world comment", INEXOR_VSCRIPT_TIMER_FORMAT format = TIMER_FORMAT_MILISECONDS)
     {
         /// convert the interval into miliseconds
         /// TODO: debug this
@@ -79,6 +79,9 @@ class timer_node : public script_node
 
         position = pos;
 
+        node_name = name;
+        node_comment = comment,
+
         // cut the timer interval
         clamp(interval, INEXOR_VSCRIPT_MIN_TIMER_INTERVAL, INEXOR_VSCRIPT_MAX_TIMER_INTERVAL);
         timer_interval = interval;
@@ -87,7 +90,6 @@ class timer_node : public script_node
         timer_cooldown = cooldown;
         last_time = SDL_GetTicks();
         timer_counter = 0;
-        node_name = "timer";
         type = NODE_TYPE_TIMER;
     }
 

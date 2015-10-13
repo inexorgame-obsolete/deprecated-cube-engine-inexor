@@ -81,9 +81,17 @@ void CVisualScriptSystem::add_node(VSCRIPT_NODE_TYPE type, int parameter_count, 
     {
         case NODE_TYPE_TIMER:
         {
-            /// frst lets find out what kind of timer this is
+            /// convert parameters form const string to unsigned int
+            /// TODO: make sure those indices are correct!
+            unsigned int interval   = atoi(arguments[0].c_str());
+            unsigned int startdelay = atoi(arguments[1].c_str());
+            unsigned int limit      = atoi(arguments[2].c_str());
+            unsigned int cooldown   = atoi(arguments[3].c_str());
+            const char* name = arguments[4].c_str();
+            const char* comment = arguments[5].c_str();
+
             INEXOR_VSCRIPT_TIMER_FORMAT timer_format;
-            switch(atoi(arguments[4].c_str()))
+            switch(atoi(arguments[6].c_str())) 
             {
                 case 0: 
                     timer_format = TIMER_FORMAT_MILISECONDS;
@@ -99,18 +107,12 @@ void CVisualScriptSystem::add_node(VSCRIPT_NODE_TYPE type, int parameter_count, 
                     break;
             }
 
-            /// convert parameters form const string to unsigned int
-            unsigned int interval   = atoi(arguments[0].c_str());
-            unsigned int startdelay = atoi(arguments[1].c_str());
-            unsigned int limit      = atoi(arguments[2].c_str());
-            unsigned int cooldown   = atoi(arguments[3].c_str());
-
             #ifdef INEXOR_VSCRIPT_ADDNODE_DEBUG
-                conoutf(CON_DEBUG, "I added the following timer node: interval: %d, startdelay: %d, limit: %d, cooldown: %d, type: %d", interval, startdelay, limit, cooldown, timer_format);
+                conoutf(CON_DEBUG, "I added the following timer node: interval: %d, startdelay: %d, limit: %d, cooldown: %d, name: %s, comment: %s, type: %d", interval, startdelay, limit, cooldown, name, comment, timer_format);
             #endif
 
             /// Create a new timer
-            nodes.push_back(new timer_node(target, interval, startdelay, limit, cooldown, timer_format));
+            nodes.push_back(new timer_node(target, interval, startdelay, limit, cooldown, name, comment, timer_format));
             break;
         }
         case NODE_TYPE_COMMENT:
@@ -366,6 +368,12 @@ COMMAND(deleteallnodes, "");
 /*********************************************************************************************/
 
 /// Linking the game with the node engine
+
+void addtimer(char* )
+{
+
+}
+COMMAND(addtimer, "sssss");
 
 void addcomment(char* node_comment, char* node_name = "comment")
 {

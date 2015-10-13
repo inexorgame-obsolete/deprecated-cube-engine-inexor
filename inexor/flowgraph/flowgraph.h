@@ -80,7 +80,6 @@ class CVisualScriptSystem
     /// add a node
     void add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...);
 
-
     void start_rendering();
     void end_rendering();
 
