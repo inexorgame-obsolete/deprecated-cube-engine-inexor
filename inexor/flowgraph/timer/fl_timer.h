@@ -55,10 +55,12 @@ class timer_node : public script_node
     // please note: there is no standard constructor!
 
     /// TODO: pass name as parameter
+    /// TODO: pass limit, cooldown and type as parameter as well!
     /// overloaded constructor for dynamic allocation
-    timer_node(vec pos, unsigned int interval, unsigned int startdelay,    unsigned int cooldown = 0, INEXOR_VSCRIPT_TIMER_FORMAT format = TIMER_FORMAT_MILISECONDS)
+    timer_node(vec pos, unsigned int interval, unsigned int startdelay,   unsigned int limit = 1000*1000, unsigned int cooldown = 0, INEXOR_VSCRIPT_TIMER_FORMAT format = TIMER_FORMAT_MILISECONDS)
     {
         /// convert the interval into miliseconds
+        /// TODO: debug this
         switch(format)
         {
             case TIMER_FORMAT_HOURS:
@@ -81,6 +83,7 @@ class timer_node : public script_node
         clamp(interval, INEXOR_VSCRIPT_MIN_TIMER_INTERVAL, INEXOR_VSCRIPT_MAX_TIMER_INTERVAL);
         timer_interval = interval;
         timer_startdelay = startdelay;
+        timer_limit = limit;
         timer_cooldown = cooldown;
         last_time = SDL_GetTicks();
         timer_counter = 0;
@@ -96,6 +99,7 @@ class timer_node : public script_node
     unsigned int timer_startdelay;
     unsigned int timer_counter;
     unsigned int timer_interval;
+    unsigned int timer_limit;
     unsigned int timer_cooldown;
     unsigned int last_time;
 
@@ -110,7 +114,6 @@ class timer_node : public script_node
     void run()
     {
         /// set color to light blue during execution
-        gle::color(vec::hexcolor(0xFFBA00));
         check_if_execution_is_due();
     }
     
@@ -139,6 +142,11 @@ class timer_node : public script_node
             last_time = SDL_GetTicks();
             timer_counter++;
         }
+
+        if(timer_counter > timer_limit)
+        {
+            /// TODO: implement cooldown!
+        }
     }
 
     /// notify child nodes
@@ -148,7 +156,8 @@ class timer_node : public script_node
             conoutf(CON_DEBUG, "trigger # %d", timer_counter);
         #endif
 
-        conoutf(CON_DEBUG, "out()");
+        /// TODO: remove this?
+        particle_text(position, "triggered", PART_TEXT, 5000, 0xFF47E6, 2.0f, -10.0f);
 
         for(unsigned int i = 0; i < outgoing.size(); i++) 
         {

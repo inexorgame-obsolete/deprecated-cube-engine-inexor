@@ -59,7 +59,6 @@ class CVisualScriptRenderer
             //if(selected) gle::color(vec::hexcolor(0xFF5900));
             //else gle::color(vec::hexcolor(0xFF9000));
         }
-        ///else gle::color(vec::hexcolor(0x0090FF));
     }
 
 

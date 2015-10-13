@@ -36,7 +36,7 @@ class comment_node : public script_node
     /// Please note: There is no standard constructor.
 
     /// overloaded standard constructor
-    comment_node(vec pos, char* comment, char* name = "comment")
+    comment_node(vec pos, const char* comment, const char* name = "comment")
     {
         type = NODE_TYPE_COMMENT;
         position = pos;

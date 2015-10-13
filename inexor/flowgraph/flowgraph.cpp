@@ -32,47 +32,110 @@ CVisualScriptSystem::~CVisualScriptSystem()
 }
 
 
+/// TODO: debug!
+#define INEXOR_VSCRIPT_ADDNODE_DEBUG
+///#define INEXOR_VSCRIPT_DEBUG_RAYS
+
+
 /// add a node to the system
 /// @param type the type of the integer
 /// problem: parameter specification requires new command line code!
 /// we must get rid of this old 5 attributes stuff
 /// this code has been debugged and tested
-void CVisualScriptSystem::add_node(char* a, char* b, char* c, char* d)
+void CVisualScriptSystem::add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...)
 {
-    /// get the target vector
-    vec node_target_position = vec(sel.o.x,sel.o.y,sel.o.z);
-    vec current_player_position = camera1->o;
-
+    /// Calculate the target position of the node
+    vec target = vec(sel.o.x,sel.o.y,sel.o.z);
     vec offset = vec(gridsize/2,gridsize/2,gridsize/2);
-    node_target_position.add(offset);
+    target.add(offset);
 
-    /// create ray
-    debug_ray dr_tmp;
-    dr_tmp.pos = current_player_position;
-    dr_tmp.target = node_target_position;
-    //rays.push_back(dr_tmp);
+    /// Add debug ray if neccesary
+    #ifdef INEXOR_VSCRIPT_DEBUG_RAYS
+        debug_ray dr_tmp;
+        dr_tmp.pos = camera1->o;
+        dr_tmp.target = target;
+        rays.push_back(dr_tmp);
+    #endif    
+
+    /// Gather parameters
+    va_list parameters;
+    va_start(parameters, parameter_count);
+
+    /// Please note: the old command engine of Inexor will always pass every parameter as char* 
+    /// so using std::string is fine.
+
+    /// In this vector we will store the arguments as strings
+    std::vector<std::string> arguments;
+
+    for(unsigned int i=0; i<parameter_count; i++)
+    {
+        /// Store the current argument in the std::string vector
+        arguments.push_back( va_arg(i, char*) );
+    }
+    /// End parameter list
+    va_end(parameters);
     
-    int type = atoi(a);
 
-    /// TODO: garbage collection ???
-    /// dynamicly allocated memory must be released after use!
-
-    /// add new content depending on the type
+    /// add new node depending on the type
     switch(type)
     {
-        /// timer: show block
         case NODE_TYPE_TIMER:
         {
-            nodes.push_back(new timer_node(node_target_position, atoi(b), atoi(c), 0, TIMER_FORMAT_MILISECONDS));
+            /// frst lets find out what kind of timer this is
+            INEXOR_VSCRIPT_TIMER_FORMAT timer_format;
+            switch(atoi(arguments[4].c_str()))
+            {
+                case 0: 
+                    timer_format = TIMER_FORMAT_MILISECONDS;
+                    break;
+                case 1: 
+                    timer_format = TIMER_FORMAT_SECONDS;
+                    break;
+                case 2: 
+                    timer_format = TIMER_FORMAT_MINUTES;
+                    break;
+                case 3: 
+                    timer_format = TIMER_FORMAT_HOURS;
+                    break;
+            }
+
+            /// convert parameters form const string to unsigned int
+            unsigned int interval   = atoi(arguments[0].c_str());
+            unsigned int startdelay = atoi(arguments[1].c_str());
+            unsigned int limit      = atoi(arguments[2].c_str());
+            unsigned int cooldown   = atoi(arguments[3].c_str());
+
+            #ifdef INEXOR_VSCRIPT_ADDNODE_DEBUG
+                conoutf(CON_DEBUG, "I added the following timer node: interval: %d, startdelay: %d, limit: %d, cooldown: %d, type: %d", interval, startdelay, limit, cooldown, timer_format);
+            #endif
+
+            /// Create a new timer
+            nodes.push_back(new timer_node(target, interval, startdelay, limit, cooldown, timer_format));
             break;
         }
-        /// comment: render its text
         case NODE_TYPE_COMMENT:
         {
-            nodes.push_back(new comment_node(node_target_position, b));
+            /// TODO: does a comment have to have a name?
+            nodes.push_back(new comment_node(target, arguments[0].c_str(), /*comment*/ 
+                                                     arguments[1].c_str()  /*comment's name*/ ));
+            break;
+        }
+
+        /// distinguish between functions
+        case NODE_TYPE_FUNCTION:
+        {
+            switch(atoi(arguments[0].c_str()))
+            {
+                case FUNCTION_CONOUTF:
+                    nodes.push_back(new function_conoutf_node(target, arguments[0].c_str()) );
+                    break;    
+            }
             break;
         }
     }
+
+    /// TODO: garbage collection ??
+    /// dynamicly allocated memory must be released after use!
 }
 
 
@@ -122,19 +185,9 @@ void CVisualScriptSystem::render_nodes()
         p.add(vec(0,0,4));
 
         /// render node's name
-        particle_text(p, nodes[i]->node_name.c_str(), PART_TEXT, 1, 0xFF47E6, 2.0f);
-
-        /// Render based on type
-        switch(nodes[i]->type)
-        {
-            case NODE_TYPE_COMMENT:
-                particle_text(p, nodes[i]->node_comment.c_str(), PART_TEXT, 1, 0xFF47E6, 3.0f);
-                break;
-
-            case NODE_TYPE_TIMER:
-                particle_text(p, nodes[i]->node_name.c_str(), PART_TEXT, 1, 0xFF47E6, 3.0f);
-                break;
-        }
+        particle_text(p + vec(0,0,2.5), nodes[i]->node_name.c_str(), PART_TEXT, 1, 0xFF47E6, 2.0f);
+        /// render node's comment
+        particle_text(p + vec(0,0,2), nodes[i]->node_comment.c_str(), PART_TEXT, 1, 0xFF47E6, 1.0f);
     }
 
     /// which node is selected?
@@ -301,19 +354,25 @@ bool is_flowgraph_entity_selected()
     return false;
 }
 
-/// add a new node
-void addnode(char* a, char* b, char* c, char* d)
-{
-    vScript3D.add_node( a,b,c,d );
-}
-COMMAND(addnode, "ssss");
-
 /// remove all nodes
 void deleteallnodes()
 {
     vScript3D.clear_nodes();
 }
 COMMAND(deleteallnodes, "");
+
+
+
+/*********************************************************************************************/
+
+/// Linking the game with the node engine
+
+void addcomment(char* node_comment, char* node_name = "comment")
+{
+    vScript3D.add_node(NODE_TYPE_COMMENT, 2, node_comment, node_name);
+}
+COMMAND(addcomment, "ss");
+
 
 };
 };

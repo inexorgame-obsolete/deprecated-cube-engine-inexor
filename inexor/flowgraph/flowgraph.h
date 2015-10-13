@@ -18,8 +18,16 @@
 #include "inexor/flowgraph/debugger/fl_dbgrays.h"
 /// comments
 #include "inexor/flowgraph/comment/fl_comment.h"
+/// functions that are linked with the game engine
+#include "inexor/flowgraph/functions/fl_functions.h"
+
+/// TODO: implement more and add more here
+
 /// renderer
 #include "inexor/flowgraph/renderer/fl_rendering.h"
+
+/// We need variable parameter lists
+#include <stdarg.h>
 
 
 /// project's namespace protection
@@ -67,8 +75,10 @@ class CVisualScriptSystem
     /// entity selection?
     bool selected = false;
 
+    /// Please note: add_node is using variable argument lists. See stdarg.h
+
     /// add a node
-    void add_node(char*,char*,char*,char*);
+    void add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...);
 
 
     void start_rendering();
@@ -87,7 +97,7 @@ class CVisualScriptSystem
     void clear_nodes();
 
     /// TODO: change entity properties
-    ///void change_property(propid ID, const char* val);
+    /// void change_property(propid ID, const char* val);
 };
 
 };
