@@ -171,8 +171,15 @@ void CVisualScriptSystem::render_nodes()
         /// this node is selected
         nodes[i]->selected = (orient != VSCRIPT_BOX_NO_INTERSECTION);
 
-        /// render box as node representation
+        /// render a 200ms long color effect once its activated
+        if(nodes[i]->this_time - nodes[i]->last_time < 200) nodes[i]->boxcolor = 0x9042FF;
+        else nodes[i]->boxcolor = 0x0097FF;
+        if(NODE_TYPE_TIMER != nodes[i]->type) nodes[i]->last_time = nodes[i]->this_time;
+        
+        /// set color
         gle::color(vec::hexcolor(nodes[i]->boxcolor));
+        
+        /// render box as node representation
         renderer.renderbox(p, orient, nodes[i]->boxcolor);
 
         /// no matter where the box is being selected, render help lines
@@ -202,6 +209,7 @@ void CVisualScriptSystem::render_nodes()
         if(nodes[i]->selected) selected_node = nodes[i];
     }
 }
+
 
 void CVisualScriptSystem::check_timers_and_events()
 {
