@@ -23,11 +23,13 @@
 #ifndef INEXOR_VSCRIPT_TIMER_HEADER
 #define INEXOR_VSCRIPT_TIMER_HEADER
 
+#include "inexor/flowgraph/node/fl_nodebase.h"
 #include "inexor/engine/engine.h"
 
 // Inexor namespace protection
 namespace inexor {
 namespace vscript {
+
 
 /// TODO: undefine once debugging is finished
 //#define INEXOR_VSCRIPT_DEBUG_TIMERS
@@ -46,7 +48,6 @@ enum INEXOR_VSCRIPT_TIMER_FORMAT
     TIMER_FORMAT_MINUTES,
     TIMER_FORMAT_HOURS
 };
-
 
 /// @brief Implementation of timer nodes.
 class timer_node : public script_node
@@ -136,8 +137,8 @@ class timer_node : public script_node
         #endif
 
         /// Display a yellow color effect that is 200 ms long
-        if(this_time - last_time < 200) boxcolor = 0xFF9400;
-        else boxcolor = 0x007FFF;
+        if(this_time - last_time < 200) box_color = VSCRIPT_COLOR_TRIGGERED;
+        else box_color = VSCRIPT_COLOR_TIMER;
 
         //conoutf(CON_DEBUG, "this_time: %d, last_time %d", this_time, last_time);
 
@@ -160,7 +161,7 @@ class timer_node : public script_node
         #endif
 
         /// add particle effect to illustrate
-        particle_text(position, "triggered", PART_TEXT, 5000, 0x32FF00, 2.0f, -10.0f);
+        particle_text(position + vec(boxsize/2, boxsize/2, 0.0f), "go!", PART_TEXT, 5000, 0x32FF00, 2.0f, -10.0f);
 
         /// run child node's code
         for(unsigned int i = 0; i < outgoing.size(); i++) outgoing[i]->in();

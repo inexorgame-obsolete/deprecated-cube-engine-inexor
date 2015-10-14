@@ -172,15 +172,14 @@ void CVisualScriptSystem::render_nodes()
         nodes[i]->selected = (orient != VSCRIPT_BOX_NO_INTERSECTION);
 
         /// render a 200ms long color effect once its activated
-        if(nodes[i]->this_time - nodes[i]->last_time < 200) nodes[i]->boxcolor = 0x9042FF;
-        else nodes[i]->boxcolor = 0x0097FF;
+        if(nodes[i]->this_time - nodes[i]->last_time < 200) nodes[i]->box_color = VSCRIPT_COLOR_TRIGGERED;
+        else nodes[i]->box_color = nodes[i]->default_box_color;
         if(NODE_TYPE_TIMER != nodes[i]->type) nodes[i]->last_time = nodes[i]->this_time;
-        
         /// set color
-        gle::color(vec::hexcolor(nodes[i]->boxcolor));
+        gle::color(vec::hexcolor(nodes[i]->box_color));
         
         /// render box as node representation
-        renderer.renderbox(p, orient, nodes[i]->boxcolor);
+        renderer.renderbox(p, orient, nodes[i]->box_color);
 
         /// no matter where the box is being selected, render help lines
         if(orient != VSCRIPT_BOX_NO_INTERSECTION) 
@@ -189,7 +188,7 @@ void CVisualScriptSystem::render_nodes()
             renderer.renderboxhelplines(p);
         }
         
-        /// render outline
+        /// render a black outline around the nodes
         gle::color(vec::hexcolor(0x000000));
         renderer.renderboxoutline(p);
 
@@ -291,26 +290,25 @@ void CVisualScriptSystem::render_node_relations()
     //defaultshader->set();
 }
 
-/// we need SCustomOutputPoint
+/// We need SCustomOutputPoint in the renderer!
 #include "inexor/geom/curves/curvebase.h"
+using namespace inexor::geom;
 
-/// bezier curve as relations
 void CVisualScriptSystem::render_bezier_curves()
 {
     if(!nodes.size()) return;
-
-    /*
-    /// temporary curve instance
-    inexor::geom::CBezierCurve tmp_curve;
+    inexor::geom::CBezierCurve curve;
 
     for(unsigned int i=0; i<nodes.size() -1; i++)
     {
-        /// clear cache
-        tmp_curve.ClearAllPoints();
+        /// Please note: we will add the beginning point,
+        /// 2 more interpolated points and the end point as
+        /// parameter points for the bezier curve
+        curve.ClearAllPoints();
 
-        /// interpolation vector
-        vec t=nodes[i]->position, n=nodes[i+1]->position;
-        vec interpol = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f - 30.0f);
+        vec t = nodes[i]->position;
+        vec n = nodes[i+1]->position;
+        vec interpol1 = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f - 30.0f);
         vec interpol2 = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f + 30.0f);
 
         t.x += boxsize/2;
@@ -319,51 +317,34 @@ void CVisualScriptSystem::render_bezier_curves()
         n.y += boxsize/2;
         n.z += boxsize;
 
-        /// this loop will always be abled to get access to the next node!
-        /// beginning point
-        tmp_curve.AddParameterPoint(t);
-        tmp_curve.AddParameterPoint(interpol);
-        tmp_curve.AddParameterPoint(interpol2);
-        tmp_curve.AddParameterPoint(n);
+        curve.AddParameterPoint(t);
+        curve.AddParameterPoint(interpol1);
+        curve.AddParameterPoint(interpol2);
+        curve.AddParameterPoint(n);
 
-        /// compute curve
-        tmp_curve.PreComputeCache();
+        /// compute!
+        curve.ComputeCache();
 
-        /// render curve
-        //glDisable(GL_TEXTURE_2D);
-        //glDisable(GL_BLEND);
+        /// render curve as list of small lines
         glBegin(GL_LINES);
+        gle::color(vec::hexcolor(VSCRIPT_COLOR_TRIGGERED));
 
-        /// set spicy orange color
-        glColor3f(1.0f, 182/255.0f, 0.0f);
-
-        /// render lines
-        for(unsigned int h=0; h<tmp_curve.m_vOutputPoints.size() -1; h++)
+        for(unsigned int h=0; h<curve.GetCachedPointsNumber() -1; h++)
         {
-            SCustomOutputPoint t = tmp_curve.m_vOutputPoints[h], z = tmp_curve.m_vOutputPoints[h   +1];
-            glVertex3f(t.x,t.y,t.z);
-            glVertex3f(z.x,z.y,z.z);
+            //inexor::geom::SCustomOutputPoint t = curve.m_vOutputPoints[h];
+            //inexor::geom::SCustomOutputPoint n = curve.m_vOutputPoints[h +1];
+            SCustomOutputPoint t = curve.GetPoint_ByIndex(i);
+            SCustomOutputPoint n = curve.GetPoint_ByIndex(i  +1);
+            glVertex3f(t.pos.x, t.pos.y, t.pos.z);
+            glVertex3f(n.pos.x, n.pos.y, n.pos.z);
         }
         glEnd();
-        
-
-        //glEnable(GL_TEXTURE_2D);
-        //glEnable(GL_BLEND);
-    }*/
-}
-
-
-/// remove all nodes from visual scripting system
-void CVisualScriptSystem::clear_nodes()
-{
-    nodes.clear();
-    //rays.clear();
+    }
 }
 
 
 void CVisualScriptSystem::start_rendering()
 {
-    // TODO: What the fuck is this gle?
     notextureshader->set();
     gle::enablevertex();
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -380,18 +361,14 @@ void CVisualScriptSystem::end_rendering()
 }
 
 
-/// create instance of global 3D script enviroment system
+void CVisualScriptSystem::clear_nodes()
+{
+    nodes.clear();
+}
+
+
 CVisualScriptSystem vScript3D;
 
-
-/// describes if a flowgraph entity is selected
-bool is_flowgraph_entity_selected()
-{
-    if(vScript3D.selected) {
-        if(nullptr != vScript3D.selected_node) return true;
-    }
-    return false;
-}
 
 /// remove all nodes
 void deleteallnodes()
@@ -399,11 +376,6 @@ void deleteallnodes()
     vScript3D.clear_nodes();
 }
 COMMAND(deleteallnodes, "");
-
-
-/*********************************************************************************************/
-
-/// Linking the game with the node engine
 
 /// prints a message to the screen
 void addconoutf(char* message)
@@ -413,9 +385,7 @@ void addconoutf(char* message)
 }
 COMMAND(addconoutf, "s");
 
-
 /// Timers
-
 void addtimer(char* interval, char* startdelay, char* limit, char* cooldown, char* name, char* comment, char* timer_format)
 {
     vScript3D.add_node(NODE_TYPE_TIMER, 7, interval, startdelay, limit, cooldown, name, comment, timer_format);
@@ -448,7 +418,7 @@ COMMAND(test_a, "");
 
 void test_b()
 {
-    b = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "0" /*FUNCTION_CONOUTF*/, "Hello World to the game console. I am 3DVS!");
+    b = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "0" /*FUNCTION_CONOUTF*/, "Hello World");
     vScript3D.connect_nodes(a,b);
 }
 COMMAND(test_b, "");

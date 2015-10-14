@@ -1,66 +1,23 @@
 #include "bezier.h"
 
 namespace inexor {
-namespace geom {
-
-    void CBezierCurve::SetParameterPointLimit(unsigned int limit)
+namespace geom 
+{
+    CBezierCurve::CBezierCurve()
     {
-        m_uiMaxParameterPoints = limit;
+        /// Use Bernstein Polynoms by default
+        SetAlgorithm(ALGORITHM_BERNSTEIN_POLYNOM);
     }
 
-
-    void CBezierCurve::AddParameterPoint(vec p)
+    
+    void CBezierCurve::SetAlgorithm(BEZIER_ALGORITHM algorithm)
     {
-        // check if parameter point limit was reached or not
-        if (m_vInputPoints.size() < m_uiMaxParameterPoints)
-        {
-            // add point
-            SCustomInputPoint t(p);
-            m_vInputPoints.push_back(p);
-        }
+        engine_algorithm = algorithm;
     }
 
-
-    void CBezierCurve::AddParameterPoint(float x, float y, float z)
+    void CBezierCurve::ComputeCache()
     {
-        // check if parameter point limit was reached or not
-        if (m_vInputPoints.size() < m_uiMaxParameterPoints)
-        {
-            // add point
-            SCustomInputPoint t(x,y,z);
-            m_vInputPoints.push_back(t);
-        }
-    }
-
-
-    void CBezierCurve::ClearAllPoints()
-    {
-        ClearParamPoints();
-        ClearCachePoints();
-    }
-
-
-    void CBezierCurve::ClearParamPoints()
-    {
-        m_vInputPoints.clear();
-    }
-
-
-    void CBezierCurve::ClearCachePoints()
-    {
-        m_vOutputPoints.clear();
-    }
-
-
-    bool CBezierCurve::IsCurveComputed()
-    {
-        return m_bCacheComputed;
-    }
-
-
-    void CBezierCurve::PreComputeCache(BEZIER_ALGORITHM algorithm)
-    {
-        switch (algorithm)
+        switch (engine_algorithm)
         {
         case ALGORITHM_BERNSTEIN_POLYNOM:
             CalculateCurveCacheWithBernsteinPolynoms();
@@ -71,27 +28,20 @@ namespace geom {
             break;
         }
     }
+    
 
-
-    SCustomOutputPoint CBezierCurve::GetPointFromCache(float curvepos)
-    {
-        if (!IsCurveComputed()) return SCustomOutputPoint(0,0,0);
-        return m_vOutputPoints[ceil((float)curvepos*m_vOutputPoints.size())];
-    }
-
-
-    SCustomOutputPoint CBezierCurve::CalcRealtimePos(float curvepos, BEZIER_ALGORITHM algorithm)
+    SCustomOutputPoint CBezierCurve::CalcRealtimePoint(float curvepos)
     {
         SCustomOutputPoint output;
-        switch (algorithm)
+        switch(engine_algorithm)
         {
-        case ALGORITHM_BERNSTEIN_POLYNOM:
-            output = calculate_bernstein_coordinates(curvepos);
-            break;
+            case ALGORITHM_BERNSTEIN_POLYNOM:
+                output = calculate_bernstein_coordinates(curvepos);
+                break;
 
-        case ALGORITHM_DECASTELJAU:
-            output = calculate_de_casteljau_coordinate(0, m_vInputPoints.size(), curvepos / m_fComputationPrecision);
-            break;
+            case ALGORITHM_DECASTELJAU:
+                output = calculate_de_casteljau_coordinate(0, m_vInputPoints.size(), curvepos / m_fComputationPrecision);
+                break;
         }
         return output;
     }

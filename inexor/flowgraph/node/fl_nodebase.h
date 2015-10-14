@@ -39,6 +39,10 @@
 namespace inexor {
 namespace vscript {
 
+/// the size of the quads which will be rendered as box
+/// around the target node's position
+const float boxsize = 4.0f;
+
 /// enumeration of node types
 enum VSCRIPT_NODE_TYPE
 {
@@ -50,6 +54,17 @@ enum VSCRIPT_NODE_TYPE
     NODE_TYPE_IF,
     NODE_TYPE_SWITCH,
     NODE_TYPE_CONDITION,
+};
+
+
+/// color enumeration
+enum VSCRIPT_NODE_COLORS
+{
+    VSCRIPT_COLOR_TIMER = 0x00B6FF,
+    VSCRIPT_COLOR_COMMENT = 0x43A63A,
+    VSCRIPT_COLOR_FUNCTION = 0xCE00CB,    
+    /// 
+    VSCRIPT_COLOR_TRIGGERED = 0xFF6D00,
 };
 
 
@@ -65,7 +80,9 @@ class script_node
     vec position;
     bool pos_changed;
     bool selected;
-    int boxcolor;
+
+    int default_box_color;
+    int box_color;
     
     unsigned int this_time;
     unsigned int last_time;
@@ -82,7 +99,8 @@ class script_node
         position = vec(0,0,0);
         pos_changed = false;
         selected = false;
-        boxcolor = 0xFFFF00;
+        default_box_color = VSCRIPT_COLOR_TIMER; /// 
+        box_color = default_box_color;
     }
 
     // TODO: Is a destructor required?

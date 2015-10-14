@@ -14,11 +14,6 @@
 namespace inexor {
 namespace vscript {
 
-
-/// the size of the quads which will be rendered as box
-/// around the target node's position
-const float boxsize = 4.0f;
-
 /// box side selection indices (defined by Cube engine)
 enum VSCRIPT_ENTITY_BOX_ORIENTATION
 {

@@ -1894,7 +1894,8 @@ void gl_drawframe()
     vScript3D.start_rendering();
     vScript3D.render_nodes();
     //vScript3D.render_node_relations();
-    //vScript3D.render_bezier_curves();
+    /// TODO: does this work?
+    vScript3D.render_bezier_curves();
     /// end
     vScript3D.end_rendering();
 

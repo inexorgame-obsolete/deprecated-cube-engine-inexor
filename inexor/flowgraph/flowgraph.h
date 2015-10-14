@@ -57,7 +57,6 @@ enum VSCRIPT_ENTITY_BOX_ORIENTATION
 };
 */
 
-
 /// @brief Visual Script System
 class CVisualScriptSystem
 {

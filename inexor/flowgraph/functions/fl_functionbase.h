@@ -15,9 +15,14 @@
 
 /// TODO: parameter list structure?
 
+/// TODO: list of linked in-engine functions
 enum INEXOR_VSCRIPT_FUNCTIONS {
     FUNCTION_CONOUTF
 };
+
+/// the size of the quads which will be rendered as box
+/// around the target node's position
+const float boxsize = 4.0f;
 
 /// Include guard
 #ifndef INEXOR_VSCRIPT_FUNCTION_BASE_HEADER

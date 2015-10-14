@@ -42,6 +42,8 @@ class comment_node : public script_node
         position = pos;
         node_comment = comment;
         node_name = name;
+        default_box_color = VSCRIPT_COLOR_COMMENT;
+        box_color = default_box_color;
     }
 
     /// TODO: Is a destructor required?

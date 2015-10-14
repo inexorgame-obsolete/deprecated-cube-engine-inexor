@@ -25,8 +25,7 @@
 /// TODO: Use generic types (templates)
 /// TODO: Create a curve chain manager (CBezierCurveManager)
 
-
-// include guard protects this file from being included twice
+/// Incluad guard
 #ifndef INEXOR_GEOM_BEZIER_CURVE_HEADER
 #define INEXOR_GEOM_BEZIER_CURVE_HEADER
 
@@ -34,11 +33,9 @@
 #include <string>
 #include <vector>
 
-/// include the base class for curves
 #include "inexor/geom/curves/curvebase.h"
 
-
-/// inexor security namespace
+/// Inexor geom namespace
 namespace inexor {
 namespace geom {
 
@@ -72,16 +69,19 @@ enum BEZIER_ALGORITHM
 class CBezierCurve : public CCurveBase
 {
     protected:
+    
+    BEZIER_ALGORITHM engine_algorithm;
 
     /// binomial coefficient (n over k)
     unsigned int BinomialCoefficient(unsigned int n, const unsigned int k);
 
     /// Calculate using Bernstein polynoms (not recursive)
     void CalculateCurveCacheWithBernsteinPolynoms();
-  
+    
     /// Calculare using recursion 
     /// @warning It is not clear in how far this produces memory leaks or overhead!
     void CalculateCurveCacheWithDeCasteljau();
+
 
     /// de Casteljau algorithm (recursive)
     /// this function has type vector because it may returns computed points
@@ -93,17 +93,21 @@ class CBezierCurve : public CCurveBase
 
     public:
 
-    // TODO: constructor
-    //CBezierCurve();
+    CBezierCurve();
 
     // TODO: destructor
     //~CCurveBase();
     
+    /// Implementation of base classe's virtual methods
+    void ComputeCache();
+    SCustomOutputPoint CalcRealtimePoint(float curvepos);
+
     /// Set algorithm
     void SetAlgorithm(BEZIER_ALGORITHM algorithm);
 };
 
-}; // Namespace "geom"
-}; // Namespace "inexor"
+/// end of namespace
+};
+};
 
 #endif // INEXOR_GEOM_BEZIER_CURVE_HEADER

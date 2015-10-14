@@ -50,6 +50,9 @@ class function_conoutf_node : public script_node
         /// copy raw text
         raw_text_input = raw_text;
 
+        default_box_color = VSCRIPT_COLOR_FUNCTION;
+        box_color = default_box_color;
+
         /// TODO: function implementation
         type = NODE_TYPE_FUNCTION;
     }
