@@ -157,6 +157,9 @@ void CVisualScriptSystem::render_nodes()
     /// no node is selected in the beginning
     selected_node = nullptr;
 
+    /// TODO: do we need this here again?
+    unique_execution_pass_timestamp = SDL_GetTicks();
+
     /// loop through all nodes and render them
     for(unsigned int i=0; i<nodes.size(); i++) 
     {
@@ -172,9 +175,17 @@ void CVisualScriptSystem::render_nodes()
         nodes[i]->selected = (orient != VSCRIPT_BOX_NO_INTERSECTION);
 
         /// render a 200ms long color effect once its activated
-        if(nodes[i]->this_time - nodes[i]->last_time < 200) nodes[i]->box_color = VSCRIPT_COLOR_TRIGGERED;
-        else nodes[i]->box_color = nodes[i]->default_box_color;
-        if(NODE_TYPE_TIMER != nodes[i]->type) nodes[i]->last_time = nodes[i]->this_time;
+        if( (nodes[i]->this_time - nodes[i]->last_time)  < 200) 
+        {
+            nodes[i]->box_color = VSCRIPT_COLOR_TRIGGERED;
+        }
+        else {
+            nodes[i]->box_color = nodes[i]->default_box_color;
+        } 
+
+        /// TODO: update time!
+        if(NODE_TYPE_TIMER != nodes[i]->type) nodes[i]->this_time = unique_execution_pass_timestamp;
+
         /// set color
         gle::color(vec::hexcolor(nodes[i]->box_color));
         
@@ -340,15 +351,9 @@ void CVisualScriptSystem::render_bezier_curves()
             {
                 SCustomOutputPoint t = curve.GetPoint_ByIndex(h);
                 SCustomOutputPoint n = curve.GetPoint_ByIndex(h  +1);
-
-                conoutf(CON_DEBUG, "index: %d from (%f,%f,%f) to (%f,%f,%f)", i, t.pos.x, t.pos.y, t.pos.z,   n.pos.x, n.pos.y, n.pos.z);
-
                 glVertex3f(t.pos.x, t.pos.y, t.pos.z);
                 glVertex3f(n.pos.x, n.pos.y, n.pos.z);
             }
-
-            conoutf(CON_DEBUG, "cache size: %d", curve.GetCachedPointsNumber());
-
             glEnd();
         }
     }
@@ -379,8 +384,8 @@ void CVisualScriptSystem::clear_nodes()
 }
 
 
-CVisualScriptSystem vScript3D;
 
+CVisualScriptSystem vScript3D;
 
 /// remove all nodes
 void deleteallnodes()

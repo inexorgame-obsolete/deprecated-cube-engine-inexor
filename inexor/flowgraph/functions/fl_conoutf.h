@@ -10,8 +10,6 @@
 /// |                                                                                                 |
 /// | Prints a text to the game console (local).                                                      |
 /// |                                                                                                 |
-/// |                                                                                                 |
-/// |                                                                                                 |
 /// ._________________________________________________________________________________________________.
 /// 
 
@@ -69,6 +67,7 @@ class function_conoutf_node : public script_node
     {
         format_output();
         conoutf(CON_DEBUG, param_text_output.c_str());
+        last_time = this_time;
     }
 
     /// TODO: format
