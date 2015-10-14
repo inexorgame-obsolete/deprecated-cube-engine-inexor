@@ -32,8 +32,8 @@ CVisualScriptSystem::~CVisualScriptSystem()
 }
 
 
-/// TODO: debug!
-#define INEXOR_VSCRIPT_ADDNODE_DEBUG
+/// conditional compiling
+//#define INEXOR_VSCRIPT_ADDNODE_DEBUG
 ///#define INEXOR_VSCRIPT_DEBUG_RAYS
 
 
@@ -175,7 +175,7 @@ void CVisualScriptSystem::render_nodes()
         nodes[i]->selected = (orient != VSCRIPT_BOX_NO_INTERSECTION);
 
         /// render a 200ms long color effect once its activated
-        if( (nodes[i]->this_time - nodes[i]->last_time)  < 200) 
+        if( (nodes[i]->this_time - nodes[i]->last_time)  < VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL) 
         {
             nodes[i]->box_color = VSCRIPT_COLOR_TRIGGERED;
         }
@@ -195,12 +195,12 @@ void CVisualScriptSystem::render_nodes()
         /// no matter where the box is being selected, render help lines
         if(orient != VSCRIPT_BOX_NO_INTERSECTION) 
         {
-            gle::color(vec::hexcolor(0xAAAAAA)); // gray
+            gle::color(vec::hexcolor(VSCRIPT_COLOR_GRAY));
             renderer.renderboxhelplines(p);
         }
         
         /// render a black outline around the nodes
-        gle::color(vec::hexcolor(0x000000));
+        gle::color(vec::hexcolor(VSCRIPT_COLOR_BLACK));
         renderer.renderboxoutline(p);
 
         /// render text above    

@@ -40,6 +40,9 @@ namespace vscript {
 /// one whole day is the maximum delay (in miliseconds)
 #define INEXOR_VSCRIPT_MAX_TIMER_INTERVAL 1000 * 60 * 60 * 24
 
+/// blink every 100 miliseconds
+#define VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL 100
+
 /// time format enumerations
 enum INEXOR_VSCRIPT_TIMER_FORMAT
 {
