@@ -10,6 +10,8 @@
 namespace inexor {
 namespace vscript {
 
+/// TODO: inform the programmer about limits!
+
 /// data type enumeration
 enum VSCRIPT_DATA_TYPE 
 {
@@ -20,11 +22,10 @@ enum VSCRIPT_DATA_TYPE
     TYPE_VECTOR,
     TYPE_TIMESTAMP,
     TYPE_COLOR,
-    // TODO...
 };
 
 
-/// TODO: Memory...
+/// TODO: Implement memory with std::any!
 class CMemory
 {
     CMemory();

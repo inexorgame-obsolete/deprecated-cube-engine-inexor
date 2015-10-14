@@ -22,8 +22,8 @@
 /// ._________________________________________________________________________________________________.
 ///
 
-/// Please note: creating nodes with Sauerbraten's standard entity system is shit.
-/// Sooner or later the system will be rewritten for Hanack's new entity system. 
+/// Please note: creating nodes with Sauerbraten's standard entity system does suck.
+/// TODO: sooner or later the system will be rewritten based on Hanack's new entity system. 
 
 /// include guard
 #ifndef INEXOR_VSCRIPT_NODEBASE_HEADER
@@ -35,21 +35,23 @@
 #include <map>
 #include <list>
 
+/// we need vec
+#include "inexor/engine/engine.h"
+
 /// Inexor namespace protection
 namespace inexor {
 namespace vscript {
 
-/// the size of the quads which will be rendered as box
-/// around the target node's position
-const float boxsize = 4.0f;
+/// The node entity's box size
+const float boxsize = 3.0f;
 
 /// enumeration of node types
 enum VSCRIPT_NODE_TYPE
 {
-    NODE_TYPE_INVALID = -1, /// TODO: is this even reqired?
+    NODE_TYPE_INVALID = -1, /// TODO: Is this type even neccesary?
     NODE_TYPE_TIMER = 0,
     NODE_TYPE_COMMENT,
-    NODE_TYPE_FUNCTION, /// TODO: ...
+    NODE_TYPE_FUNCTION,
     NODE_TYPE_MEMORY,
     NODE_TYPE_IF,
     NODE_TYPE_SWITCH,
@@ -57,15 +59,14 @@ enum VSCRIPT_NODE_TYPE
 };
 
 
-/// color enumeration
+/// Enumeration of color codes in RGB integer format
 enum VSCRIPT_NODE_COLORS
 {
+    /// Node type colors
     VSCRIPT_COLOR_TIMER = 0x00B6FF,
     VSCRIPT_COLOR_COMMENT = 0x43A63A,
-    VSCRIPT_COLOR_FUNCTION = 0xFFFFFF, ///0xCC47B1,    
-    /// 
+    VSCRIPT_COLOR_FUNCTION = 0xCC47B1,    
     VSCRIPT_COLOR_TRIGGERED = 0xFF6D00,
-    /// 
     VSCRIPT_COLOR_GRAY = 0xAAAAAA,
     VSCRIPT_COLOR_BLACK = 0x000000,
 };
@@ -75,14 +76,18 @@ enum VSCRIPT_NODE_COLORS
 class script_node
 {
     public:
-
+    
+    /// TODO: enable/disable nodes?
     VSCRIPT_NODE_TYPE type;
-    bool active;
+
     std::string node_name;
     std::string node_comment;
-    vec position;
+
+    bool active;
     bool pos_changed;
     bool selected;
+
+    vec position;
 
     int default_box_color;
     int box_color;
@@ -91,23 +96,10 @@ class script_node
     unsigned int last_time;
 
     /// A standard constructor
-    script_node() 
-    {
-        /// Please note that nodes are invalid by default.
-        /// the constructor of the child classes needs to change this.
-        type = NODE_TYPE_INVALID;
-        active = true;       
-        node_name = "";
-        node_comment = "";        
-        position = vec(0,0,0);
-        pos_changed = false;
-        selected = false;
-        default_box_color = VSCRIPT_COLOR_TIMER; /// 
-        box_color = default_box_color;
-    }
+    script_node();
 
     // TODO: Is a destructor required?
-    ~script_node() {}
+    ~script_node();
 
     /// Please note: You should make use of comments in your scripts whenever its required!
 
@@ -118,7 +110,7 @@ class script_node
     virtual void run() = 0;
     /// Now call outgoing 
     virtual void out() = 0;
-
+    /// Reset this node
     virtual void reset() = 0;
 
     /// All parent nodes

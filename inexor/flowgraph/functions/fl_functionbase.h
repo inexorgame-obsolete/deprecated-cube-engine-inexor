@@ -13,20 +13,18 @@
 /// ._________________________________________________________________________________________________.
 /// 
 
-/// TODO: parameter list structure?
-
-/// TODO: list of linked in-engine functions
-enum INEXOR_VSCRIPT_FUNCTIONS {
-    FUNCTION_CONOUTF
-};
-
-/// the size of the quads which will be rendered as box
-/// around the target node's position
-const float boxsize = 4.0f;
-
 /// Include guard
 #ifndef INEXOR_VSCRIPT_FUNCTION_BASE_HEADER
 #define INEXOR_VSCRIPT_FUNCTION_BASE_HEADER
+
+/// TODO: list more in-engine functions
+enum INEXOR_VSCRIPT_FUNCTIONS
+{
+    FUNCTION_CONOUTF,
+    FUNCTION_PLAYSOUND,
+};
+
+#include "inexor/flowgraph/node/fl_nodebase.h"
 
 /// Inexor namespace protection
 namespace inexor {
@@ -39,8 +37,8 @@ class function_base_node
     function_base_node();
     ~function_base_node();
 
-    /// TODO: parameters ?
-    /// TODO: return value
+    /// TODO: parameter manager
+    /// TODO: return value(s)
 };
 
 };

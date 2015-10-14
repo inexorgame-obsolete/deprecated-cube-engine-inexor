@@ -20,6 +20,7 @@
 /// Include base class
 #include "inexor/flowgraph/node/fl_nodebase.h"
 #include "inexor/flowgraph/functions/fl_functionbase.h"
+
 /// conoutf implementation
 #include "inexor/engine/engine.h"
 
@@ -30,62 +31,30 @@ namespace vscript {
 /// Function
 class function_conoutf_node : public script_node
 {
-    public:
-
-    /// please note: there is no standard constructor
-
+    protected:
+    
     /// output
     std::string param_text_output;
     std::string raw_text_input;
 
+    public:
+
     /// constructor
-    function_conoutf_node(vec pos, const char* raw_text)
-    {
-        position = pos;
-        node_name = "conoutf";
-        node_comment = "this is a test";
-        
-        /// copy raw text
-        raw_text_input = raw_text;
+    function_conoutf_node(vec pos, const char* raw_text);
 
-        default_box_color = VSCRIPT_COLOR_FUNCTION;
-        box_color = default_box_color;
-
-        /// TODO: function implementation
-        type = NODE_TYPE_FUNCTION;
-    }
-    
     /// destructor
     ~function_conoutf_node();
 
-    void in()
-    {
-        run();
-    }
-    
-    void run()
-    {
-        format_output();
-        conoutf(CON_DEBUG, param_text_output.c_str());
-        last_time = this_time;
-    }
+    void in();
+    void run();
 
     /// TODO: format
-    void format_output()
-    {
-        /// param_text_output <--- parameter list
-        param_text_output = raw_text_input;
-    }
+    void format_output();
 
-    void out()
-    {
-        /// TODO: go out!
-    }
-
+    void out();
     /// TODO: ?
-    void reset()
-    {
-    }
+    void reset();
+
 };
 
 };

@@ -43,6 +43,7 @@ namespace vscript {
 /// blink every 100 miliseconds
 #define VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL 100
 
+
 /// time format enumerations
 enum INEXOR_VSCRIPT_TIMER_FORMAT
 {
@@ -56,119 +57,39 @@ enum INEXOR_VSCRIPT_TIMER_FORMAT
 class timer_node : public script_node
 {
     public:
-    // please note: there is no standard constructor!
+    
+    // Please note: there is no standard constructor!
 
-    /// TODO: pass name as parameter
-    /// TODO: pass limit, cooldown and type as parameter as well!
-    /// overloaded constructor for dynamic allocation
-    timer_node(vec pos, unsigned int interval, unsigned int startdelay, unsigned int limit = 1000*1000, unsigned int cooldown = 0, const char* name = "a timer", const char* comment = "hello world comment", INEXOR_VSCRIPT_TIMER_FORMAT format = TIMER_FORMAT_MILISECONDS)
-    {
-        /// convert the interval into miliseconds
-        /// TODO: debug this
-        switch(format)
-        {
-            case TIMER_FORMAT_HOURS:
-                interval *= 1000 * 60 *60;
-                break;
-            case TIMER_FORMAT_MINUTES:
-                interval *= 1000 * 60;
-                break;
-            case TIMER_FORMAT_SECONDS:
-                interval *= 1000;
-                break;
-            case TIMER_FORMAT_MILISECONDS: 
-                /// this is the format we want: convert nothing!
-                break;
-        }
+    /// Overloaded constructor for dynamic allocation
+    timer_node(vec pos, unsigned int interval, unsigned int startdelay, unsigned int limit = 1000*1000, unsigned int cooldown = 0, const char* name = "a timer", const char* comment = "hello world comment", INEXOR_VSCRIPT_TIMER_FORMAT format = TIMER_FORMAT_MILISECONDS);
 
-        position = pos;
+    ~timer_node();
 
-        node_name = name;
-        node_comment = comment,
-
-        // cut the timer interval
-        clamp(interval, INEXOR_VSCRIPT_MIN_TIMER_INTERVAL, INEXOR_VSCRIPT_MAX_TIMER_INTERVAL);
-        timer_interval = interval;
-        timer_startdelay = startdelay;
-        timer_limit = limit;
-        timer_cooldown = cooldown;
-        last_time = SDL_GetTicks();
-        timer_counter = 0;
-        type = NODE_TYPE_TIMER;
-    }
-
-    /// TODO: is a destructor required?
-    ~timer_node() {}
-
-    /// timer related data
-    /// time data in miliseconds
+    /// Timer related data
+    /// Time data in miliseconds
     unsigned int timer_startdelay;
     unsigned int timer_counter;
     unsigned int timer_interval;
     unsigned int timer_limit;
     unsigned int timer_cooldown;
 
-    /// incoming node signal
-    void in()
-    {
-        run();
-    }
+    /// Incoming node signal
+    void in();
 
-    /// implementation of the run method
-    /// which was declared as virtual in script_node
-    void run()
-    {
-        /// set color to light blue during execution
-        check_if_execution_is_due();
-    }
-    
+    /// Implementation of the run method
+    void run();
+        
     /// Resetting the timer means to reset last_time
-    void reset()
-    {
-        /// TODO: do we need this?
-        last_time = 0;
-    }
+    void reset();
 
     private:
 
     /// check the timer status
     /// do we need to call the trigger?
-    void check_if_execution_is_due() 
-    {
-        #ifdef INEXOR_VSCRIPT_DEBUG_TIMERS
-            conoutf(CON_DEBUG, "checking if code execution is due..");
-        #endif
-
-        /// Display a yellow color effect that is 200 ms long
-        if(this_time - last_time < 200) box_color = VSCRIPT_COLOR_TRIGGERED;
-        else box_color = VSCRIPT_COLOR_TIMER;
-
-        //conoutf(CON_DEBUG, "this_time: %d, last_time %d", this_time, last_time);
-
-        /// TODO: greater or greater or equal?
-        if(this_time - last_time > timer_interval) 
-        {
-            out();
-            last_time = this_time;
-            timer_counter++;
-        }
-
-        /// TODO: implement cooldown!
-    }
+    void check_if_execution_is_due();
 
     /// notify child nodes
-    void out()
-    {
-        #ifdef INEXOR_VSCRIPT_DEBUG_TIMERS
-            conoutf(CON_DEBUG, "trigger # %d", timer_counter);
-        #endif
-
-        /// add particle effect to illustrate
-        particle_text(position + vec(boxsize/2, boxsize/2, 0.0f), "go!", PART_TEXT, 5000, 0x32FF00, 2.0f, -10.0f);
-
-        /// run child node's code
-        for(unsigned int i = 0; i < outgoing.size(); i++) outgoing[i]->in();
-    }
+    void out();
 };
 
 // end of namespace

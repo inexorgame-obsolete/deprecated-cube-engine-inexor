@@ -36,18 +36,9 @@ class comment_node : public script_node
     /// Please note: There is no standard constructor.
 
     /// overloaded standard constructor
-    comment_node(vec pos, const char* comment, const char* name = "CommentName1")
-    {
-        type = NODE_TYPE_COMMENT;
-        position = pos;
-        node_comment = comment;
-        node_name = name;
-        default_box_color = VSCRIPT_COLOR_COMMENT;
-        box_color = default_box_color;
-    }
-
+    comment_node(vec pos, const char* comment, const char* name = "CommentName1");
     /// TODO: Is a destructor required?
-    ~comment_node() {}
+    ~comment_node();
 
     /// comments are not part of the code itself
     /// so they do not run code or get notifyed or
