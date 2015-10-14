@@ -175,7 +175,7 @@ void CVisualScriptSystem::render_nodes()
         nodes[i]->selected = (orient != VSCRIPT_BOX_NO_INTERSECTION);
 
         /// render a 200ms long color effect once its activated
-        if( (nodes[i]->this_time - nodes[i]->last_time)  < VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL) 
+        if( (nodes[i]->this_time - nodes[i]->last_time)  < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL) 
         {
             nodes[i]->box_color = VSCRIPT_COLOR_TRIGGERED;
         }

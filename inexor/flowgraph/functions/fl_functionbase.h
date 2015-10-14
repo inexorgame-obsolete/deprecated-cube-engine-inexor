@@ -24,7 +24,6 @@ enum INEXOR_VSCRIPT_FUNCTIONS
     FUNCTION_PLAYSOUND,
 };
 
-#include "inexor/flowgraph/node/fl_nodebase.h"
 
 /// Inexor namespace protection
 namespace inexor {
@@ -41,6 +40,7 @@ class function_base_node
     /// TODO: return value(s)
 };
 
+/// end of namespace
 };
 };
 

@@ -6,7 +6,7 @@
 #ifndef INEXOR_VSCRIPT_MEMBASE_HEADER
 #define INEXOR_VSCRIPT_MEMBASE_HEADER
 
-/// project's namespace protection
+/// Inexor namespace protection
 namespace inexor {
 namespace vscript {
 

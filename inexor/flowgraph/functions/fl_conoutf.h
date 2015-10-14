@@ -17,12 +17,12 @@
 #ifndef INEXOR_VSCRIPT_CONOUTF_HEADER
 #define INEXOR_VSCRIPT_CONOUTF_HEADER
 
+/// conoutf implementation
+#include "inexor/engine/engine.h"
+
 /// Include base class
 #include "inexor/flowgraph/node/fl_nodebase.h"
 #include "inexor/flowgraph/functions/fl_functionbase.h"
-
-/// conoutf implementation
-#include "inexor/engine/engine.h"
 
 /// Inexor 
 namespace inexor {
@@ -57,6 +57,7 @@ class function_conoutf_node : public script_node
 
 };
 
+/// end of namespace
 };
 };
 

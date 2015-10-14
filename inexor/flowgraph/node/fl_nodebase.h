@@ -29,14 +29,13 @@
 #ifndef INEXOR_VSCRIPT_NODEBASE_HEADER
 #define INEXOR_VSCRIPT_NODEBASE_HEADER
 
+#include "inexor/engine/engine.h"
+
 /// c++ standard libraries
 #include <string>
 #include <vector>
 #include <map>
 #include <list>
-
-/// we need vec
-#include "inexor/engine/engine.h"
 
 /// Inexor namespace protection
 namespace inexor {
@@ -77,7 +76,7 @@ class script_node
 {
     public:
     
-    /// TODO: enable/disable nodes?
+    /// @see VSCRIPT_NODE_COLORS
     VSCRIPT_NODE_TYPE type;
 
     std::string node_name;
@@ -89,9 +88,11 @@ class script_node
 
     vec position;
 
+    /// Rendering 
     int default_box_color;
     int box_color;
-    
+
+    /// Timing management
     unsigned int this_time;
     unsigned int last_time;
 
@@ -113,10 +114,11 @@ class script_node
     /// Reset this node
     virtual void reset() = 0;
 
-    /// All parent nodes
-    std::vector<script_node*> incoming;
-    /// All child nodes
-    std::vector<script_node*> outgoing;
+    /// A vector of pointers to parent nodes
+    std::vector<script_node *> incoming;
+
+    /// A vector of pointers to child nodes
+    std::vector<script_node *> outgoing;
 };
 
 /// end of namespace

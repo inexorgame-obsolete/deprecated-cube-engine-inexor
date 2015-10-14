@@ -6,9 +6,9 @@
 #ifndef INEXOR_VSCRIPT_RENDERING_HEADER
 #define INEXOR_VSCRIPT_RENDERING_HEADER
 
-//#include "inexor/flowgraph/debugger/fl_dbgrays.h"
-#include "inexor/flowgraph/node/fl_nodebase.h"
 #include "inexor/engine/engine.h"
+
+#include "inexor/flowgraph/node/fl_nodebase.h"
 #include <vector>
 
 /// project's namespace protection

@@ -6,10 +6,6 @@
 #ifndef INEXOR_VSCRIPT_HEADER
 #define INEXOR_VSCRIPT_HEADER
 
-/// include Inexor game engine
-#include "inexor/engine/engine.h"
-
-
 /// basic script node
 #include "inexor/flowgraph/node/fl_nodebase.h"
 /// timer implementation
@@ -39,23 +35,10 @@ namespace vscript {
 
 
 /// pre declarations
-void notify_flowgraph_mouse_key_change(int, bool);
-bool is_flowgraph_entity_selected();
+//void notify_flowgraph_mouse_key_change(int, bool);
+//bool is_flowgraph_entity_selected();
 
-/// box side selection indices (defined by Cube engine)
 
-/*
-enum VSCRIPT_ENTITY_BOX_ORIENTATION
-{
-    VSCRIPT_BOX_NO_INTERSECTION = -1,
-    VSCRIPT_BOX_LEFT,
-    VSCRIPT_BOX_RIGHT,
-    VSCRIPT_BOX_FRONT,
-    VSCRIPT_BOX_BACK,
-    VSCRIPT_BOX_BOTTOM,
-    VSCRIPT_BOX_TOP
-};
-*/
 
 /// @brief Visual Script System
 class CVisualScriptSystem

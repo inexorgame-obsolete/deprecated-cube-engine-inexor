@@ -24,27 +24,25 @@
 #define INEXOR_VSCRIPT_TIMER_HEADER
 
 #include "inexor/flowgraph/node/fl_nodebase.h"
-#include "inexor/engine/engine.h"
 
 // Inexor namespace protection
 namespace inexor {
 namespace vscript {
 
-
-/// TODO: undefine once debugging is finished
-//#define INEXOR_VSCRIPT_DEBUG_TIMERS
-
-/// minimum time interval (in miliseconds)
+/// Minimum time interval (in miliseconds)
 #define INEXOR_VSCRIPT_MIN_TIMER_INTERVAL 10
 
-/// one whole day is the maximum delay (in miliseconds)
+/// One whole day is the maximum delay (in miliseconds)
 #define INEXOR_VSCRIPT_MAX_TIMER_INTERVAL 1000 * 60 * 60 * 24
 
-/// blink every 100 miliseconds
-#define VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL 100
+/// Blink every 100 miliseconds
+#define INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL 100
+
+/// Default timer execution limit
+#define INEXOR_VSCRIPT_DEFAULT_TIMER_EXECUTION_LIMIT 1000*1000
 
 
-/// time format enumerations
+/// Time format enumerations
 enum INEXOR_VSCRIPT_TIMER_FORMAT
 {
     TIMER_FORMAT_MILISECONDS,
@@ -61,12 +59,18 @@ class timer_node : public script_node
     // Please note: there is no standard constructor!
 
     /// Overloaded constructor for dynamic allocation
-    timer_node(vec pos, unsigned int interval, unsigned int startdelay, unsigned int limit = 1000*1000, unsigned int cooldown = 0, const char* name = "a timer", const char* comment = "hello world comment", INEXOR_VSCRIPT_TIMER_FORMAT format = TIMER_FORMAT_MILISECONDS);
+    timer_node(vec pos, 
+                unsigned int interval, 
+                unsigned int startdelay, 
+                unsigned int limit = INEXOR_VSCRIPT_DEFAULT_TIMER_EXECUTION_LIMIT, 
+                unsigned int cooldown = 0, 
+                const char* name = "NewTimer1", 
+                const char* comment = "Hello World Comment", 
+                INEXOR_VSCRIPT_TIMER_FORMAT format = TIMER_FORMAT_MILISECONDS);
+
 
     ~timer_node();
 
-    /// Timer related data
-    /// Time data in miliseconds
     unsigned int timer_startdelay;
     unsigned int timer_counter;
     unsigned int timer_interval;
