@@ -20,10 +20,9 @@
 /// https://www.clear.rice.edu/comp360/lectures/BezSubd.pdf
 
 
-/// TODO: Is DeCasteljau dangerous because it is recursive?
-/// TODO: Better access for control/parameter points
+/// TODO: Is DeCasteljau too dangerous because it is recursive?
 /// TODO: Generate a random curve?
-/// TODO: use generic types (templates)
+/// TODO: Use generic types (templates)
 /// TODO: Create a curve chain manager (CBezierCurveManager)
 
 
@@ -88,74 +87,20 @@ class CBezierCurve : public CCurveBase
     /// this function has type vector because it may returns computed points
     /// and parameter points as well!
     SCustomOutputPoint calculate_de_casteljau_coordinate(int index, int nextindex, float t);
+
     /// bernstein-bezier algorithm (not recursive)
     SCustomOutputPoint calculate_bernstein_coordinates(float position);
 
     public:
 
-    // constructor
+    // TODO: constructor
     //CBezierCurve();
-    // destructor
+
+    // TODO: destructor
     //~CCurveBase();
-
-
-    /// set the maximum of parameter points
-    void SetParameterPointLimit(unsigned int limit);
-
-    /// Add a parameter point I
-    /// @brief adds a parameter point to the curve pool which is used to compute points either in realtime or cached!
-    /// @param p paramter point's vector
-    void AddParameterPoint(vec p);
-
-    /// Add a parameter point II
-    /// @brief adds a parameter point to the curve pool which is used to compute points either in realtime or cached!
-    /// @param x x-position of the paramter point
-    /// @param y x-position of the paramter point
-    /// @param z x-position of the paramter point
-    void AddParameterPoint(float x, float y, float z);
-
-
-    /// @brief set the computation precision
-    void SetCurvePrecision(float precision);
-    /// @brief set the computation precision for the cached curve
-    void SetCachedCurvePrecision(float precision);
     
-    // realtime computation
-
-    /// @brief Compute a point in realtime
-    /// @warning depending on the calculation precision this may take longer than caching points!
-    /// the amount of curves which will be computed in realtime also increases calculation time!
-    /// curve points which will be computed in realtime do NOT depend on curve precision because they depent on the value you pass to them!
-    SCustomOutputPoint CalcRealtimePos(float curvepos, BEZIER_ALGORITHM algorithm);
-
-    /// cached computation
-
-    /// @brief Has the input data changed?
-    bool IsCurveComputed();
-
-    /// @brief Compute the input data to output data
-    void ComputeCache();
-
-    /// @brief Get a point from the computed curve cache
-    SCustomOutputPoint GetPointFromCache(float curvepos);
-
-    /// @warning make sure not to flood m_vInputPoints 
-    /// by adding parameter points in a game loop e.g.
-
-
-    /// @brief delete both parameter points and cached points
-    void ClearAllPoints();
-    /// @brief delete only parameter points
-    void ClearParamPoints();
-    /// @brief delete only computed points
-    void ClearCachePoints();
-
-    /// Precompute curve to cache
-    /// Precomputes curve with the precision mentioned above and writes computed points to m_ComputedPoints
-    /// @param algo the algorithm which will be used to precompute the curve (standard value: ALGORITHM_BERNSTEIN_POLYNOM)
-    /// @see m_ComputedPoints
-    void PreComputeCache(BEZIER_ALGORITHM algorithm = ALGORITHM_BERNSTEIN_POLYNOM);
-
+    /// Set algorithm
+    void SetAlgorithm(BEZIER_ALGORITHM algorithm);
 };
 
 }; // Namespace "geom"
