@@ -85,11 +85,23 @@ struct SCustomOutputPoint : public SCustomInputPoint
         tangent = _tangent;
         normal = _normal;
     }
+
+    /// Operators
+    /*
+    SCustomOutputPoint operator + (const SCustomOutputPoint b) {
+    }
+    SCustomOutputPoint operator - (const SCustomOutputPoint b) {
+    }
+    SCustomOutputPoint operator * (const SCustomOutputPoint b) {
+    }
+    SCustomOutputPoint operator / (const SCustomOutputPoint b) {
+    }
+    */
 };
 
 
 /// @brief the standard amount of intepolation steps for curve calculation
-#define INEXOR_VSCRIPT_STD_CALC_PRECISION 30
+#define INEXOR_VSCRIPT_STD_CALC_PRECISION 50
 
 /// @brief the maximum number of parameter points which can be passed to the engine
 #define INEXOR_VSCRIPT_STD_MAX_PARAM_POINTS 30
@@ -153,7 +165,10 @@ class CCurveBase
     }
 
     /// @brief Set the computation precision
-    void SetCurvePrecision(float precision);
+    void SetCurvePrecision(float precision)
+    {
+        m_fComputationPrecision = precision;
+    }
     
     /// @brief Set the computation precision for the cached curve
     void SetCachedCurvePrecision(float precision);
@@ -216,7 +231,6 @@ class CCurveBase
         assert(index < m_vOutputPoints.size());
         return m_vOutputPoints[index];
     }
-    
 
     /// @brief delete both parameter points and cached points
     void ClearAllPoints()

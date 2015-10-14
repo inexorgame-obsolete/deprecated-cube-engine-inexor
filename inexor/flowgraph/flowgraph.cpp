@@ -302,7 +302,7 @@ void CVisualScriptSystem::render_bezier_curves()
     for(unsigned int i=0; i<nodes.size(); i++)
     {   
         /// Render all outgoing relations
-        for(unsigned int e = nodes[i]->outgoing.size(); e<nodes[i]->outgoing.size(); e++)
+        for(unsigned int e = 0; e < nodes[i]->outgoing.size(); e++)
         {
             /// Please note: we will add the beginning point,
             /// 2 more interpolated points and the end point as
@@ -310,17 +310,20 @@ void CVisualScriptSystem::render_bezier_curves()
             inexor::geom::CBezierCurve curve;
             curve.ClearAllPoints();
             
+            /// create additional interpolation data
             vec t = nodes[i]->position;
             vec n = nodes[i]->outgoing[e]->position;
             vec interpol1 = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f - 30.0f);
             vec interpol2 = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f + 30.0f);
             
+            /// correct offset
             t.x += boxsize/2;
             t.y += boxsize/2;
             n.x += boxsize/2;
             n.y += boxsize/2;
             n.z += boxsize;
 
+            /// add points
             curve.AddParameterPoint(t);
             curve.AddParameterPoint(interpol1);
             curve.AddParameterPoint(interpol2);
@@ -335,11 +338,17 @@ void CVisualScriptSystem::render_bezier_curves()
 
             for(unsigned int h=0; h<curve.GetCachedPointsNumber() -1; h++)
             {
-                SCustomOutputPoint t = curve.GetPoint_ByIndex(i);
-                SCustomOutputPoint n = curve.GetPoint_ByIndex(i  +1);
+                SCustomOutputPoint t = curve.GetPoint_ByIndex(h);
+                SCustomOutputPoint n = curve.GetPoint_ByIndex(h  +1);
+
+                conoutf(CON_DEBUG, "index: %d from (%f,%f,%f) to (%f,%f,%f)", i, t.pos.x, t.pos.y, t.pos.z,   n.pos.x, n.pos.y, n.pos.z);
+
                 glVertex3f(t.pos.x, t.pos.y, t.pos.z);
                 glVertex3f(n.pos.x, n.pos.y, n.pos.z);
             }
+
+            conoutf(CON_DEBUG, "cache size: %d", curve.GetCachedPointsNumber());
+
             glEnd();
         }
     }
