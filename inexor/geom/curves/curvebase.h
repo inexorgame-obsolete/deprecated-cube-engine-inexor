@@ -89,7 +89,7 @@ struct SCustomOutputPoint : public SCustomInputPoint
 
 
 /// @brief the standard amount of intepolation steps for curve calculation
-#define INEXOR_VSCRIPT_STD_CALC_PRECISION 40
+#define INEXOR_VSCRIPT_STD_CALC_PRECISION 30
 
 /// @brief the maximum number of parameter points which can be passed to the engine
 #define INEXOR_VSCRIPT_STD_MAX_PARAM_POINTS 30
@@ -213,7 +213,7 @@ class CCurveBase
     {
         /// TODO: does all this make sense?
         assert(IsCurveComputed());
-        assert(m_vOutputPoints.size() < index);
+        assert(index < m_vOutputPoints.size());
         return m_vOutputPoints[index];
     }
     

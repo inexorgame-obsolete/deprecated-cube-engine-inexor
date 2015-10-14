@@ -118,9 +118,6 @@ class script_node
 
     virtual void reset() = 0;
 
-    /// We need Hanacks entity system at this point
-    /// Relations with other nodes?
-
     /// All parent nodes
     std::vector<script_node*> incoming;
     /// All child nodes

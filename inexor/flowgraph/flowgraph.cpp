@@ -195,11 +195,13 @@ void CVisualScriptSystem::render_nodes()
         /// render text above    
         p.add(vec(boxsize/2));
         p.add(vec(0,0,4));
+        
+        /// render labels in white
 
         /// render node's name
-        particle_text(p + vec(0,0,1.0f), nodes[i]->node_name.c_str(), PART_TEXT, 1, 0xFF009D, 1.0f);
+        particle_text(p + vec(0,0,1.0f), nodes[i]->node_name.c_str(), PART_TEXT, 1, 0xFFFFFF, 1.0f);
         /// render node's comment
-        particle_text(p, nodes[i]->node_comment.c_str(), PART_TEXT, 1, 0xFF009D, 1.0f);
+        particle_text(p, nodes[i]->node_comment.c_str(), PART_TEXT, 1, 0xFFFFFF, 1.0f);
     }
 
     /// which node is selected?
@@ -239,7 +241,6 @@ void CVisualScriptSystem::connect_nodes(script_node *from, script_node *to)
     /// Add relations
     to->incoming.push_back(from);
     from->outgoing.push_back(to);
-    /// TODO: Add bezier curve
 }
 
 /// Synchronize timers
@@ -297,48 +298,50 @@ using namespace inexor::geom;
 void CVisualScriptSystem::render_bezier_curves()
 {
     if(!nodes.size()) return;
-    inexor::geom::CBezierCurve curve;
 
-    for(unsigned int i=0; i<nodes.size() -1; i++)
-    {
-        /// Please note: we will add the beginning point,
-        /// 2 more interpolated points and the end point as
-        /// parameter points for the bezier curve
-        curve.ClearAllPoints();
-
-        vec t = nodes[i]->position;
-        vec n = nodes[i+1]->position;
-        vec interpol1 = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f - 30.0f);
-        vec interpol2 = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f + 30.0f);
-
-        t.x += boxsize/2;
-        t.y += boxsize/2;
-        n.x += boxsize/2;
-        n.y += boxsize/2;
-        n.z += boxsize;
-
-        curve.AddParameterPoint(t);
-        curve.AddParameterPoint(interpol1);
-        curve.AddParameterPoint(interpol2);
-        curve.AddParameterPoint(n);
-
-        /// compute!
-        curve.ComputeCache();
-
-        /// render curve as list of small lines
-        glBegin(GL_LINES);
-        gle::color(vec::hexcolor(VSCRIPT_COLOR_TRIGGERED));
-
-        for(unsigned int h=0; h<curve.GetCachedPointsNumber() -1; h++)
+    for(unsigned int i=0; i<nodes.size(); i++)
+    {   
+        /// Render all outgoing relations
+        for(unsigned int e = nodes[i]->outgoing.size(); e<nodes[i]->outgoing.size(); e++)
         {
-            //inexor::geom::SCustomOutputPoint t = curve.m_vOutputPoints[h];
-            //inexor::geom::SCustomOutputPoint n = curve.m_vOutputPoints[h +1];
-            SCustomOutputPoint t = curve.GetPoint_ByIndex(i);
-            SCustomOutputPoint n = curve.GetPoint_ByIndex(i  +1);
-            glVertex3f(t.pos.x, t.pos.y, t.pos.z);
-            glVertex3f(n.pos.x, n.pos.y, n.pos.z);
+            /// Please note: we will add the beginning point,
+            /// 2 more interpolated points and the end point as
+            /// parameter points for the bezier curve
+            inexor::geom::CBezierCurve curve;
+            curve.ClearAllPoints();
+            
+            vec t = nodes[i]->position;
+            vec n = nodes[i]->outgoing[e]->position;
+            vec interpol1 = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f - 30.0f);
+            vec interpol2 = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f + 30.0f);
+            
+            t.x += boxsize/2;
+            t.y += boxsize/2;
+            n.x += boxsize/2;
+            n.y += boxsize/2;
+            n.z += boxsize;
+
+            curve.AddParameterPoint(t);
+            curve.AddParameterPoint(interpol1);
+            curve.AddParameterPoint(interpol2);
+            curve.AddParameterPoint(n);
+
+            /// compute!
+            curve.ComputeCache();
+
+            /// render curve as list of small lines
+            glBegin(GL_LINES);
+            gle::color(vec::hexcolor(VSCRIPT_COLOR_TRIGGERED));
+
+            for(unsigned int h=0; h<curve.GetCachedPointsNumber() -1; h++)
+            {
+                SCustomOutputPoint t = curve.GetPoint_ByIndex(i);
+                SCustomOutputPoint n = curve.GetPoint_ByIndex(i  +1);
+                glVertex3f(t.pos.x, t.pos.y, t.pos.z);
+                glVertex3f(n.pos.x, n.pos.y, n.pos.z);
+            }
+            glEnd();
         }
-        glEnd();
     }
 }
 
