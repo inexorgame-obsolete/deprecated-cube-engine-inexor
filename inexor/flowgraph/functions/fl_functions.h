@@ -20,3 +20,5 @@
 
 /// @brief conoutf prints output to the game console (local player)
 #include "inexor/flowgraph/functions/fl_conoutf.h"
+
+#include "inexor/flowgraph/functions/fl_playsound.h"

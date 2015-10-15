@@ -55,6 +55,7 @@ void function_conoutf_node::format_output()
 /// TODO
 void function_conoutf_node::out()
 {
+    for(unsigned int i = 0; i < outgoing.size(); i++) outgoing[i]->in();
 }
 
 
