@@ -6,7 +6,7 @@
 #ifndef INEXOR_VSCRIPT_DEBUGRAY_HEADER
 #define INEXOR_VSCRIPT_DEBUGRAY_HEADER
 
-#include "inexor/engine/engine.h"
+#include "inexor/flowgraph/node/fl_nodebase.h"
 
 /// project's namespace protection
 namespace inexor {

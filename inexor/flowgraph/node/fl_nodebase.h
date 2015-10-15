@@ -62,19 +62,21 @@ enum VSCRIPT_NODE_TYPE
 enum VSCRIPT_NODE_COLORS
 {
     /// Node type colors
-    VSCRIPT_COLOR_TIMER = 0x00B6FF,
-    VSCRIPT_COLOR_COMMENT = 0x43A63A,
-    VSCRIPT_COLOR_FUNCTION = 0xCC47B1,    
+    VSCRIPT_COLOR_TIMER     = 0x00B6FF,
+    VSCRIPT_COLOR_COMMENT   = 0x43A63A,
+    VSCRIPT_COLOR_FUNCTION  = 0xCC47B1,    
     VSCRIPT_COLOR_TRIGGERED = 0xFF6D00,
-    VSCRIPT_COLOR_GRAY = 0xAAAAAA,
-    VSCRIPT_COLOR_BLACK = 0x000000,
+    VSCRIPT_COLOR_GRAY      = 0xAAAAAA,
+    VSCRIPT_COLOR_BLACK     = 0x000000,
 };
-
 
 /// @brief base class for node implementations
 class script_node
 {
     public:
+
+    script_node();
+    ~script_node();
     
     /// @see VSCRIPT_NODE_COLORS
     VSCRIPT_NODE_TYPE type;
@@ -95,12 +97,6 @@ class script_node
     /// Timing management
     unsigned int this_time;
     unsigned int last_time;
-
-    /// A standard constructor
-    script_node();
-
-    // TODO: Is a destructor required?
-    ~script_node();
 
     /// Please note: You should make use of comments in your scripts whenever its required!
 

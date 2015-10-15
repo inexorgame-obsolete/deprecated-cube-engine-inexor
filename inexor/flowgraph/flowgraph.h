@@ -6,38 +6,21 @@
 #ifndef INEXOR_VSCRIPT_HEADER
 #define INEXOR_VSCRIPT_HEADER
 
-/// basic script node
 #include "inexor/flowgraph/node/fl_nodebase.h"
-/// timer implementation
 #include "inexor/flowgraph/timer/fl_timer.h"
-/// debug rays
-#include "inexor/flowgraph/debugger/fl_dbgrays.h"
-/// comments
+//#include "inexor/flowgraph/debugger/fl_dbgrays.h"
 #include "inexor/flowgraph/comment/fl_comment.h"
-/// functions that are linked with the game engine
 #include "inexor/flowgraph/functions/fl_functions.h"
 
-/// bezier curves
 #include "inexor/geom/geom.h"
-
-/// TODO: implement more and add more here
-
-/// renderer
 #include "inexor/flowgraph/renderer/fl_rendering.h"
 
 /// We need variable parameter lists
 #include <stdarg.h>
 
-
 /// project's namespace protection
 namespace inexor {
 namespace vscript {
-
-
-/// pre declarations
-//void notify_flowgraph_mouse_key_change(int, bool);
-//bool is_flowgraph_entity_selected();
-
 
 
 /// @brief Visual Script System

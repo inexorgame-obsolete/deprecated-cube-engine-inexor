@@ -7,8 +7,6 @@
 #define INEXOR_VSCRIPT_RENDERING_HEADER
 
 #include "inexor/engine/engine.h"
-
-#include "inexor/flowgraph/node/fl_nodebase.h"
 #include <vector>
 
 /// project's namespace protection
@@ -35,7 +33,7 @@ class CVisualScriptRenderer
     protected:
         
     /// buffer for debug rays
-    std::vector<debug_ray> rays;
+    //std::vector<debug_ray> rays;
         
     public:
 
