@@ -1,4 +1,3 @@
-#include "inexor/flowgraph/node/fl_nodebase.h"
 #include "inexor/flowgraph/timer/fl_timer.h"
 
 namespace inexor {
@@ -96,5 +95,6 @@ void timer_node::out()
     for(unsigned int i = 0; i < outgoing.size(); i++) outgoing[i]->in();
 }
 
+/// end of namespace
 };
 };

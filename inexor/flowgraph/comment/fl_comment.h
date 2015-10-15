@@ -20,7 +20,8 @@
 #define INEXOR_VSCRIPT_COMMENT_HEADER
 
 /// include basic node implementation and rendering engine
-#include "inexor/flowgraph/node/fl_nodebase.cpp"
+#include "inexor/engine/engine.h"
+#include "inexor/flowgraph/node/fl_nodebase.h"
 
 /// project's namespace protection
 namespace inexor {

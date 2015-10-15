@@ -1,4 +1,4 @@
-#include "inexor/flowgraph/node/fl_nodebase.h"
+/*#include "inexor/flowgraph/node/fl_nodebase.h"
 
 /// Inexor namespace protection
 namespace inexor {
@@ -28,3 +28,4 @@ script_node::~script_node()
 /// end of namespace
 };
 };
+*/

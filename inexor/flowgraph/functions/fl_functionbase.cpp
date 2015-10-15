@@ -1,4 +1,4 @@
-//#include "inexor/flowgraph/functions/fl_functionbase.h"
+#include "inexor/flowgraph/functions/fl_functionbase.h"
 
 /// Inexor namespace protection
 namespace inexor {

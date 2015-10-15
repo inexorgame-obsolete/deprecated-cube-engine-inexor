@@ -1,5 +1,4 @@
-#include "inexor/flowgraph/node/fl_nodebase.h"
-#include "inexor/flowgraph/renderer/fl_rendering.h"
+/*#include "inexor/flowgraph/renderer/fl_rendering.h"
 
 namespace inexor {
 namespace vscript {
@@ -161,3 +160,4 @@ void renderboxhelplines(vec p)
 
 };
 };
+*/

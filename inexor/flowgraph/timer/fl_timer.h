@@ -23,7 +23,8 @@
 #ifndef INEXOR_VSCRIPT_TIMER_HEADER
 #define INEXOR_VSCRIPT_TIMER_HEADER
 
-#include "inexor/flowgraph/node/fl_nodebase.cpp"
+#include "inexor/engine/engine.h"
+#include "inexor/flowgraph/node/fl_nodebase.h"
 
 // Inexor namespace protection
 namespace inexor {

@@ -6,9 +6,11 @@
 #ifndef INEXOR_VSCRIPT_HEADER
 #define INEXOR_VSCRIPT_HEADER
 
+#include "inexor/engine/engine.h"
 #include "inexor/flowgraph/node/fl_nodebase.h"
+
 #include "inexor/flowgraph/timer/fl_timer.h"
-//#include "inexor/flowgraph/debugger/fl_dbgrays.h"
+#include "inexor/flowgraph/debugger/fl_dbgrays.h"
 #include "inexor/flowgraph/comment/fl_comment.h"
 #include "inexor/flowgraph/functions/fl_functions.h"
 
