@@ -30,9 +30,12 @@ enum VSCRIPT_ENTITY_BOX_ORIENTATION
 /// Visual Scripting Renderer
 class CVisualScriptRenderer
 {
-    //protected:
+    protected:
+    
     //std::vector<debug_ray> rays;
-        
+    
+    void adjust_selection_color(int orient, int index, int std_color_of_this_node);
+
     public:
 
     CVisualScriptRenderer();
@@ -40,13 +43,16 @@ class CVisualScriptRenderer
     ~CVisualScriptRenderer();
 
 
-    void adjust_selection_color(int orient, int index, int std_color_of_this_node);
+    void start_rendering();
 
     void renderbox(vec p, int orient, int std_color_of_this_node);
-
     void renderboxoutline(vec p);
-
     void renderboxhelplines(vec p);
+
+    virtual void render_nodes() = 0;
+    virtual void render_node_relations() = 0;
+
+    void end_rendering();
 };
 
 /// end of namespace

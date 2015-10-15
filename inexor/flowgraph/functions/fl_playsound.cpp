@@ -4,22 +4,35 @@
 namespace inexor {
 namespace vscript {
 
-    function_playsound_node::function_playsound_node(vec pos, int sound_id)
+    function_playsound_node::function_playsound_node(vec pos, const char* id)
     {
+        position = pos;
+        sound_id = atoi(id);
+        //int sound_id;
+        //int flags;
+        //int loops;
+        //int fade;
+        //int chanid;
+        //int radius;
+        //int expire;
+        //vec location;
+        //extentity *ent;
     }
 
     function_playsound_node::~function_playsound_node()
     {
     }
 
+
     void function_playsound_node::in()
     {
+        run();
     }
 
     void function_playsound_node::run()
     {
-        /// TODO: playsound
-        playsound(S_V_BASECAP);
+        /// TODO: Implement playsound correctly!
+        playsound(sound_id);
     }
     
     void function_playsound_node::out()

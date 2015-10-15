@@ -1831,7 +1831,6 @@ void gl_drawhud(int w, int h);
 int xtraverts, xtravertsva;
 
 /// 3D Visual Scripting System
-#include "inexor/flowgraph/renderer/fl_rendering.h"
 namespace inexor {
     namespace vscript {
         extern CVisualScriptSystem vScript3D;
@@ -1888,16 +1887,12 @@ void gl_drawframe()
 
     /// 3D Visual Scripting System
     using namespace inexor::vscript;
-    /// execute code
-    vScript3D.check_timers_and_events();
-    /// begin
+    vScript3D.update_timers_and_events();
     vScript3D.start_rendering();
     vScript3D.render_nodes();
-    //vScript3D.render_node_relations();
-    /// TODO: does this work?
-    vScript3D.render_bezier_curves();
-    /// end
+    vScript3D.render_node_relations();
     vScript3D.end_rendering();
+
 
 
     extern SharedVar<int> outline;

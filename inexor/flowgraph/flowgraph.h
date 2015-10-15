@@ -14,75 +14,58 @@
 #include "inexor/flowgraph/comment/fl_comment.h"
 #include "inexor/flowgraph/functions/fl_functions.h"
 #include "inexor/flowgraph/renderer/fl_rendering.h"
+#include "inexor/flowgraph/editor/fl_enteditor.h"
 
 /// We need variable parameter lists
 #include <stdarg.h>
 
-/// project's namespace protection
+/// Inexor namespace protection
 namespace inexor {
 namespace vscript {
 
-/// TODO: remove forward???
-class CVisualScriptRenderer;
-
 /// @brief Visual Script System
-class CVisualScriptSystem
+class CVisualScriptSystem : public CVisualScriptRenderer
 {
     public:
 
     CVisualScriptSystem();
     ~CVisualScriptSystem();
 
-    /// node rendering
-    CVisualScriptRenderer renderer;
-
-    /// buffer for nodes
-    std::vector<script_node *> nodes;
-
-    /// TODO: do we need this for entity selection?
-    bool selected = false;
-
-    /// the selected node
     script_node* selected_node;
     script_node* hover_node;
 
-    /// Please note: add_node is using variable argument lists. See stdarg.h
+    std::vector<script_node *> nodes;
 
-    /// add a node
+    /// Please note: add_node is using variable argument lists. See stdarg.h
+    /// add a node to the system
+    /// @param type the type of the integer
+    /// problem: parameter specification requires new command line code!
+    /// we must get rid of this old 5 attributes stuff
+    /// this code has been debugged and tested
     script_node* add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...);
+
+    /// implementation of inherited virtual functions
+    void render_node_relations();
+    void render_nodes();
+
+    void mouse_event_notifyer(int code, bool isdown);
+    /// TODO: do we need this for entity selection?
+    bool selected = false;
 
     /// Link nodes with other nodes
     void connect_nodes(script_node *from, script_node *to);
-    void mouse_event_notifyer(int code, bool isdown);
 
-    /// Please note: this will prevent timers from becoming not synchronized
+    /// Please note: this will prevent timers from being desynchronized
     unsigned int unique_execution_pass_timestamp;
-    void check_timers_and_events();
+    void update_timers_and_events();
+    void sync_all_timers();
 
     /// TODO: profiling and benchmarking?
 
-    /// synchronise timers
-    void sync_timers();
+    /// TODO: add and remove nodes
+    void clear_all_nodes();
 
-    /// Rendering
-    void start_rendering();
-    void end_rendering();
-
-    /// TODO: move rendering completely to fl_rendering.h and refactor!
-
-    /// render nodes
-    void render_nodes();
-    /// render relations
-    void render_node_relations();
-    /// render curves
-    void render_bezier_curves();
-
-    /// remove all nodes
-    /// and relations
-    void clear_nodes();
-
-    /// TODO: change entity properties
-    /// void change_property(propid ID, const char* val);
+    /// TODO: change entity properties (We really need Hanack's new entity system here)
 };
 
 };

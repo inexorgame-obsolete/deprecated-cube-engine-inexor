@@ -14,8 +14,8 @@
 /// 
 
 
-#ifndef INEXOR_VSCRIPT_CONOUTF_HEADER
-#define INEXOR_VSCRIPT_CONOUTF_HEADER
+#ifndef INEXOR_VSCRIPT_PLAYSOUND_HEADER
+#define INEXOR_VSCRIPT_PLAYSOUND_HEADER
 
 /// conoutf implementation
 #include "inexor/engine/engine.h"
@@ -34,7 +34,6 @@ class function_playsound_node : public script_node
     protected:
 
     //int playsound(int n, const vec *loc, extentity *ent, int flags, int loops, int fade, int chanid, int radius, int expire)
-    
     int sound_id;
     int flags;
     int loops;
@@ -49,7 +48,7 @@ class function_playsound_node : public script_node
     public:
 
     /// Lets start with a simple version here
-    function_playsound_node(vec pos, int sound_id);
+    function_playsound_node(vec, const char*);
 
     ~function_playsound_node();
 
