@@ -636,7 +636,7 @@ namespace inexor {
 void processkey(int code, bool isdown)
 {
     /// Notify 3D Visual Scripting System about mouse state changes
-    inexor::vscript::vScript3D.mouse_event_notifyer(code, isdown);
+    inexor::vscript::vScript3D.update_mouse(code, isdown);
 
     keym *haskey = keyms.access(code);
     if(haskey && haskey->pressed) execbind(*haskey, isdown); // allow pressed keys to release

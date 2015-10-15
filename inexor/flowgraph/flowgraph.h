@@ -2,7 +2,6 @@
 /// @author Johannes Schneider
 /// @brief 3D visual scripting system
 
-/// include guard
 #ifndef INEXOR_VSCRIPT_HEADER
 #define INEXOR_VSCRIPT_HEADER
 
@@ -16,23 +15,21 @@
 #include "inexor/flowgraph/renderer/fl_rendering.h"
 #include "inexor/flowgraph/editor/fl_enteditor.h"
 
-/// We need variable parameter lists
+
+/// variable parameter lists
 #include <stdarg.h>
 
-/// Inexor namespace protection
 namespace inexor {
 namespace vscript {
 
+
 /// @brief Visual Script System
-class CVisualScriptSystem : public CVisualScriptRenderer
+class CVisualScriptSystem : public CVisualScriptRenderer, public CEntityManager
 {
     public:
 
     CVisualScriptSystem();
     ~CVisualScriptSystem();
-
-    script_node* selected_node;
-    script_node* hover_node;
 
     std::vector<script_node *> nodes;
 
@@ -47,10 +44,6 @@ class CVisualScriptSystem : public CVisualScriptRenderer
     /// implementation of inherited virtual functions
     void render_node_relations();
     void render_nodes();
-
-    void mouse_event_notifyer(int code, bool isdown);
-    /// TODO: do we need this for entity selection?
-    bool selected = false;
 
     /// Link nodes with other nodes
     void connect_nodes(script_node *from, script_node *to);

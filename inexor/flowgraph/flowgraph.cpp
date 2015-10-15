@@ -298,14 +298,7 @@ namespace vscript {
             if(NODE_TYPE_TIMER == nodes[i]->type) nodes[i]->reset();
         }
     }
-
-
-    void CVisualScriptSystem::mouse_event_notifyer(int code, bool isdown)
-    {
-        /// Attention: we need that minus
-        if(code == - SDL_BUTTON_LEFT) selected = isdown;
-    }
-
+    
 
     void CVisualScriptSystem::clear_all_nodes()
     {

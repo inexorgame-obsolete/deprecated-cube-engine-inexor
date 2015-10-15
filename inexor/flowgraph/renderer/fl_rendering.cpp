@@ -5,6 +5,7 @@
 namespace inexor {
 namespace vscript {
 
+
     CVisualScriptRenderer::CVisualScriptRenderer()
     {
     }
@@ -13,6 +14,7 @@ namespace vscript {
     CVisualScriptRenderer::~CVisualScriptRenderer()
     {
     }
+
 
 
     void CVisualScriptRenderer::start_rendering()

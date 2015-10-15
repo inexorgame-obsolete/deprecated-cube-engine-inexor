@@ -2,7 +2,6 @@
 /// @author Johannes Schneider
 /// @brief Node renderer using OpenGL and gle.
 
-/// include guard
 #ifndef INEXOR_VSCRIPT_RENDERING_HEADER
 #define INEXOR_VSCRIPT_RENDERING_HEADER
 
@@ -39,10 +38,8 @@ class CVisualScriptRenderer
     public:
 
     CVisualScriptRenderer();
-
     ~CVisualScriptRenderer();
-
-
+    
     void start_rendering();
 
     void renderbox(vec p, int orient, int std_color_of_this_node);

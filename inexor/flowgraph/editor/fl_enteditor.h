@@ -7,17 +7,64 @@
 #define INEXOR_VSCRIPT_ENTITYMANAGER_HEADER
 
 #include "inexor/engine/engine.h"
+#include "inexor/flowgraph/node/fl_nodebase.h"
 
 namespace inexor {
 namespace vscript {
+
+/// TOOD: move existing nodes!
+/// TODO: create nodes
 
 class CEntityManager
 {
     public:
 
     CEntityManager();
+    
     ~CEntityManager();
 
+    /// the node which is currently selected
+    script_node* selected_node;
+
+    /// the node which is currently hovered
+    script_node* hovered_node;
+
+    void update_mouse(int, bool);
+
+    //void update_camera_pos(vec);
+    //void update_camera_angle(/*?*/);
+
+    //void update_hovered_node();
+
+    void render();
+
+
+    protected:
+
+    /// TODO: drag only in XY, YZ, ZX axis
+
+    /// TODO: drag only along 1 dimension (X,Y,Z)
+
+    /// this vector describes the line from the camera
+    /// to the entity in the moment of selection. it changes
+    /// either with the position of the camera (new target pos += delta(campos));
+    /// or the camera angles (yaw, pitch, but NOT roll!)
+    /// TODO: math...
+    vec dragging_target_pos_offset;
+
+    vec old_camera_position;
+    bool old_isdown;
+
+    bool dragging_new_relation;
+    bool dragging_node;
+
+    //void set_selected_node(script_node*);
+    //void set_hovered_node(script_node*);
+
+    void process_change(bool isdown);
+
+    //void drag();
+    //void drop();
 };
 
 /// end of namespace
