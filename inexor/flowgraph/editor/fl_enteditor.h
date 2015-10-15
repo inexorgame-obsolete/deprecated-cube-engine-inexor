@@ -36,8 +36,8 @@ class CEntityManager
 
     //void update_hovered_node();
 
-    void render();
-
+    void render_temp_connection();
+    
 
     protected:
 
@@ -61,7 +61,8 @@ class CEntityManager
     //void set_selected_node(script_node*);
     //void set_hovered_node(script_node*);
 
-    void process_change(bool isdown);
+    /// Please note: we need to implement this later
+    virtual void process_change(int, bool) = 0;
 
     //void drag();
     //void drop();

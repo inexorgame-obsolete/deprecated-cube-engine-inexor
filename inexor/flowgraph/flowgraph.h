@@ -44,6 +44,7 @@ class CVisualScriptSystem : public CVisualScriptRenderer, public CEntityManager
     /// implementation of inherited virtual functions
     void render_node_relations();
     void render_nodes();
+    void process_change(int, bool);
 
     /// Link nodes with other nodes
     void connect_nodes(script_node *from, script_node *to);

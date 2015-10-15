@@ -291,6 +291,52 @@ namespace vscript {
     }
 
 
+    void CVisualScriptSystem::process_change(int key, bool isdown)
+    {
+        switch( - key)
+        {
+            case SDL_BUTTON_LEFT:
+
+                /// stopping to drag
+                if(dragging_new_relation && !isdown)
+                {
+                    /*
+                    /// TODO: end dragging!
+                    if(camera_ray_node_box_intersection(all_nodes, dragging_target_pos_offset))
+                    {
+                        /// TODO: add relation to target
+                        add_relation();
+                        /// save dragging_target_pos_offset
+                    }
+                    */
+                    dragging_new_relation = false;
+                }
+
+                /// starting to drag
+                if(!dragging_new_relation && isdown)
+                {
+                    for(unsigned int i=0; i<nodes.size(); i++)
+                    {
+                        /// check ray-box intersection
+                        float dist = 0.0f;
+                        int orient = VSCRIPT_BOX_NO_INTERSECTION;
+                        vec p = nodes[i]->position;
+                        if(rayboxintersect(p, vec(boxsize), camera1->o, camdir, dist, orient))
+                        {
+                            conoutf(CON_DEBUG, "you clicked on a node!");
+                            dragging_new_relation = true;
+                        }
+                    }
+                }
+                
+                break;
+
+            case SDL_BUTTON_RIGHT:
+                break;
+        }
+    }
+
+
     void CVisualScriptSystem::sync_all_timers()
     {
         for(unsigned int i=0; i<nodes.size(); i++)

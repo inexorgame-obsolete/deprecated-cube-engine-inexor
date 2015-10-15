@@ -26,7 +26,7 @@ namespace vscript {
             if(old_isdown != isdown) 
             {
                 conoutf(CON_DEBUG, "left mouse changed");
-                process_change(isdown);
+                process_change(key, isdown);
                 old_isdown = isdown;
             }
         }
@@ -36,39 +36,19 @@ namespace vscript {
             if(old_isdown != isdown) 
             {
                 conoutf(CON_DEBUG, "right mouse changed");
-                process_change(isdown);
+                process_change(key, isdown);
                 old_isdown = isdown;
             }
         }
     }
 
 
-    void CEntityManager::render(void)
+    void CEntityManager::render_temp_connection()
     {
         if(dragging_node)
         {
+            /// TODO: render a temporary dragging node
         }
-        
-        /// TODO:
-        if(dragging_new_relation)
-        {
-        }
-    }
-
-
-    void CEntityManager::process_change(bool isdown)
-    {
-        /*
-        if(!isdown)
-        {            
-        }
-        else 
-        if(camera_ray_node_box_intersection)
-        {
-            set_selected_node();
-            dragging = true;
-        }
-        */
     }
 
 };
