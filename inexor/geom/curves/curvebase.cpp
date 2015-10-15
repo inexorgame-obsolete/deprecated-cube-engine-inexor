@@ -1,9 +1,23 @@
-#include "inexor/geom/curves/curvebase.h"
+/// (math) vector dependency
 #include "inexor/engine/engine.h"
+/// C++ standard library for dynamic arrays
 #include <vector>
 
+#include "inexor/geom/curves/curvebase.h"
+
+/// Inexor geom namespace
 namespace inexor {
 namespace geom {
+
+    CCurveBase::CCurveBase()
+    {
+    }
+
+
+    CCurveBase::~CCurveBase()
+    {
+    }
+
 
     void CCurveBase::SetParameterPointLimit(unsigned int limit)
     {
@@ -20,8 +34,6 @@ namespace geom {
             m_vInputPoints.push_back(p);
         }
     }
-
-
     void CCurveBase::AddParameterPoint(float x, float y, float z)
     {
         AddParameterPoint(vec(x,y,z));

@@ -22,6 +22,7 @@
 namespace inexor {
 namespace geom {
 
+
 /// @brief A structure for the input data
 struct SCustomInputPoint 
 {
@@ -40,6 +41,7 @@ struct SCustomInputPoint
         pos = vec(x,y,z);
     }
 };
+
 
 /// TODO: add derivates which inherit from SCustomInputPoint
 
@@ -118,6 +120,7 @@ class CCurveBase
     // the curve output data
     std::vector<SCustomOutputPoint> m_vOutputPoints;
 
+
     // the calculation precision
     float m_fComputationPrecision = INEXOR_VSCRIPT_STD_CALC_PRECISION;
 
@@ -127,7 +130,7 @@ class CCurveBase
     // is the curve already computed?
     bool m_bCacheComputed = false;
 
-    /// TODO: additional base members
+    /// TODO: additional protected base members
 
     public:
 
@@ -135,21 +138,24 @@ class CCurveBase
 
     ~CCurveBase();
 
+
     /// @brief Set the maximum amount of parameter points
-    void SetParameterPointLimit(unsigned int limit);
+    void SetParameterPointLimit(unsigned int);
+
+    /// @brief Set the computation precision
+    void SetCurvePrecision(float);
+
 
     /// @brief Adds a parameter point to the curve pool which is used to compute points either in realtime or cached.
     /// @param p paramter point's vector
-    void AddParameterPoint(vec p);
+    void AddParameterPoint(vec);
 
     /// @brief Adds a parameter point to the curve pool which is used to compute points either in realtime or cached.
     /// @param x x-position of the paramter point
     /// @param y x-position of the paramter point
     /// @param z x-position of the paramter point
-    void AddParameterPoint(float x, float y, float z);
+    void AddParameterPoint(float, float, float);
 
-    /// @brief Set the computation precision
-    void SetCurvePrecision(float precision);
 
     /// ------------------------------------------------------------------------------------------------------------------------
     // REALTIME COMPUTATION
@@ -158,7 +164,7 @@ class CCurveBase
     /// @warning depending on the calculation precision this may take longer than caching points!
     /// the amount of curves which will be computed in realtime also increases calculation time!
     /// curve points which will be computed in realtime do NOT depend on curve precision because they depent on the value you pass to them!
-    virtual SCustomOutputPoint CalcRealtimePos(float curvepos) = 0;
+    virtual SCustomOutputPoint CalcRealtimePoint(float) = 0;
 
     /// ------------------------------------------------------------------------------------------------------------------------
     /// CACHED COMPUTATION
@@ -171,22 +177,19 @@ class CCurveBase
     virtual void ComputeCache() = 0;
 
     /// @brief Has the input data changed?
-    bool IsCurveComputed(void);
+    bool IsCurveComputed();
 
     /// @brief Get size of the computed points vector
     unsigned int GetCachedPointsNumber();
-
-    /// @brief Calculate a point in realtime
-    virtual SCustomOutputPoint CalcRealtimePoint(float curvepos) = 0;
-
+    
     /// @warning May returns wrong index!
-    unsigned int GetIndex_ByInterpolationPos(float curvepos);
+    unsigned int GetIndex_ByInterpolationPos(float);
 
     /// @brief Get a point from the computed curve cache
-    SCustomOutputPoint GetPoint_ByInterpolationPos(float curvepos);
+    SCustomOutputPoint GetPoint_ByInterpolationPos(float);
 
     /// @brief Get a point from the computed curve cache BY INDEX
-    SCustomOutputPoint GetPoint_ByIndex(unsigned int index);
+    SCustomOutputPoint GetPoint_ByIndex(unsigned int);
 
     /// @brief delete both parameter points and cached points
     void ClearAllPoints();

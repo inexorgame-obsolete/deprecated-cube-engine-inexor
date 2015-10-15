@@ -97,6 +97,7 @@ class CBezierCurve : public CCurveBase
 
     ~CBezierCurve();
     
+
     /// Implementation of base classe's virtual methods
     void ComputeCache();
     SCustomOutputPoint CalcRealtimePoint(float curvepos);

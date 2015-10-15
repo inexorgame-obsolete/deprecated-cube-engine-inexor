@@ -7,6 +7,10 @@ extern bool editmode;
 /// size of the grid selection
 extern int gridsize;
 
+/// We need SCustomOutputPoint in the renderer!
+#include "inexor/geom/curves/bezier/bezier.h"
+using namespace inexor::geom;
+
 
 /// protection namespace
 namespace inexor {
@@ -301,11 +305,6 @@ void CVisualScriptSystem::render_node_relations()
 
     //defaultshader->set();
 }
-
-/// We need SCustomOutputPoint in the renderer!
-#include "inexor/geom/curves/curvebase.h"
-#include "inexor/geom/curves/bezier/bezier.h"
-using namespace inexor::geom;
 
 void CVisualScriptSystem::render_bezier_curves()
 {
