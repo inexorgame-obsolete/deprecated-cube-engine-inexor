@@ -1,5 +1,6 @@
 #include "inexor/flowgraph/comment/fl_comment.h"
 
+/// project's namespace protection
 namespace inexor {
 namespace vscript {
 
