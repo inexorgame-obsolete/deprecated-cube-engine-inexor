@@ -1,8 +1,9 @@
-/*#include "inexor/flowgraph/renderer/fl_rendering.h"
+#include "inexor/engine/engine.h"
+#include <vector>
+#include "inexor/flowgraph/renderer/fl_rendering.h"
 
 namespace inexor {
 namespace vscript {
-
 
 CVisualScriptRenderer::CVisualScriptRenderer()
 {
@@ -118,7 +119,7 @@ void CVisualScriptRenderer::renderboxoutline(vec p)
 }
 
 
-void renderboxhelplines(vec p)
+void CVisualScriptRenderer::renderboxhelplines(vec p)
 {
     glBegin(GL_LINES);
 
@@ -160,4 +161,3 @@ void renderboxhelplines(vec p)
 
 };
 };
-*/

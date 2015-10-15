@@ -95,8 +95,7 @@ class CBezierCurve : public CCurveBase
 
     CBezierCurve();
 
-    // TODO: destructor
-    //~CCurveBase();
+    ~CBezierCurve();
     
     /// Implementation of base classe's virtual methods
     void ComputeCache();

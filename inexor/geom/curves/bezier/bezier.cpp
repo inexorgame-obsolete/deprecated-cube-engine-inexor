@@ -9,6 +9,9 @@ namespace geom
         SetAlgorithm(ALGORITHM_BERNSTEIN_POLYNOM);
     }
 
+    CBezierCurve::~CBezierCurve()
+    {
+    }
     
     void CBezierCurve::SetAlgorithm(BEZIER_ALGORITHM algorithm)
     {

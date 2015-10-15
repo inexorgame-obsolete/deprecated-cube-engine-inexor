@@ -131,47 +131,25 @@ class CCurveBase
 
     public:
 
-    // TODO: constructor
-    //CCurveBase();
+    CCurveBase();
 
-    // TODO: destructor
-    //~CCurveBase();
+    ~CCurveBase();
 
     /// @brief Set the maximum amount of parameter points
-    void SetParameterPointLimit(unsigned int limit)
-    {
-        m_uiMaxParameterPoints = limit;
-    }
+    void SetParameterPointLimit(unsigned int limit);
 
     /// @brief Adds a parameter point to the curve pool which is used to compute points either in realtime or cached.
     /// @param p paramter point's vector
-    void AddParameterPoint(vec p)
-    {
-        // check if parameter point limit was reached or not
-        if(m_vInputPoints.size() < m_uiMaxParameterPoints)
-        {
-            SCustomInputPoint t(p);
-            m_vInputPoints.push_back(p);
-        }
-    }
+    void AddParameterPoint(vec p);
 
     /// @brief Adds a parameter point to the curve pool which is used to compute points either in realtime or cached.
     /// @param x x-position of the paramter point
     /// @param y x-position of the paramter point
     /// @param z x-position of the paramter point
-    void AddParameterPoint(float x, float y, float z)
-    {
-        AddParameterPoint(vec(x,y,z));
-    }
+    void AddParameterPoint(float x, float y, float z);
 
     /// @brief Set the computation precision
-    void SetCurvePrecision(float precision)
-    {
-        m_fComputationPrecision = precision;
-    }
-    
-    /// @brief Set the computation precision for the cached curve
-    void SetCachedCurvePrecision(float precision);
+    void SetCurvePrecision(float precision);
 
     /// ------------------------------------------------------------------------------------------------------------------------
     // REALTIME COMPUTATION
@@ -180,7 +158,7 @@ class CCurveBase
     /// @warning depending on the calculation precision this may take longer than caching points!
     /// the amount of curves which will be computed in realtime also increases calculation time!
     /// curve points which will be computed in realtime do NOT depend on curve precision because they depent on the value you pass to them!
-    SCustomOutputPoint CalcRealtimePos(float curvepos);
+    virtual SCustomOutputPoint CalcRealtimePos(float curvepos) = 0;
 
     /// ------------------------------------------------------------------------------------------------------------------------
     /// CACHED COMPUTATION
@@ -193,64 +171,31 @@ class CCurveBase
     virtual void ComputeCache() = 0;
 
     /// @brief Has the input data changed?
-    bool IsCurveComputed(void)
-    {
-        return m_bCacheComputed;
-    }
+    bool IsCurveComputed(void);
 
     /// @brief Get size of the computed points vector
-    unsigned int GetCachedPointsNumber()
-    {
-        return m_vOutputPoints.size();
-    }
+    unsigned int GetCachedPointsNumber();
 
     /// @brief Calculate a point in realtime
     virtual SCustomOutputPoint CalcRealtimePoint(float curvepos) = 0;
 
     /// @warning May returns wrong index!
-    unsigned int GetIndex_ByInterpolationPos(float curvepos)
-    {
-        /// Please note: the size of the output vector directly depends on the computation precision!
-        return ceil((float)curvepos * m_vOutputPoints.size());
-    }
+    unsigned int GetIndex_ByInterpolationPos(float curvepos);
 
     /// @brief Get a point from the computed curve cache
-    SCustomOutputPoint GetPoint_ByInterpolationPos(float curvepos)
-    {
-        assert(IsCurveComputed());
-        /// TODO: Does this work on Linux?        
-        return m_vOutputPoints[GetIndex_ByInterpolationPos(curvepos)];
-    }
+    SCustomOutputPoint GetPoint_ByInterpolationPos(float curvepos);
 
     /// @brief Get a point from the computed curve cache BY INDEX
-    /// TODO: asserts?
-    SCustomOutputPoint GetPoint_ByIndex(unsigned int index)
-    {
-        /// TODO: does all this make sense?
-        assert(IsCurveComputed());
-        assert(index < m_vOutputPoints.size());
-        return m_vOutputPoints[index];
-    }
+    SCustomOutputPoint GetPoint_ByIndex(unsigned int index);
 
     /// @brief delete both parameter points and cached points
-    void ClearAllPoints()
-    {
-        ClearParamPoints();
-        ClearCachePoints();
-    }
+    void ClearAllPoints();
 
     /// @brief delete only parameter points
-    void ClearParamPoints()
-    {
-        m_vInputPoints.clear();
-    }
+    void ClearParamPoints();
     
     /// @brief delete only computed points
-    void ClearCachePoints()
-    {
-        m_vOutputPoints.clear();
-        m_bCacheComputed = false;
-    }
+    void ClearCachePoints();
 };
 
 /// end of namespace
