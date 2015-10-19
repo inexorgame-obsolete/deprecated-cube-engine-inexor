@@ -57,7 +57,7 @@ Contains headers that include EVERYTHING, varous data
 structures RNG and a tiny crypto lib. Note that this is
 heavily intertwined with the other legacy modules engine/
 and fpsgame/.  
-**LEGALCY CODE: Use the standard library please; Patch, but
+**LEGACY CODE: Use the standard library please; Patch, but
 do not add new features here.**
 
 **engine** – Various physics, graphics, cubescript, cube UI,
@@ -65,13 +65,13 @@ some engine related networking. Also contains the main
 functions for the server and client. Note that this is
 heavily intertwined with the other legacy modules shared/
 and fpsgame/.  
-**LEGALCY CODE: Use the standard library please; Patch, but
+**LEGACY CODE: Use the standard library please; Patch, but
 do not add new features here.**
 
 **fpsgame** – Sauerbraten game logic plus a few extensions.
 Note that this is heavily intertwined with the other legacy
 modules shared/ and fpsgame/.  
-**LEGALCY CODE: Use the standard library please; Patch, but
+**LEGACY CODE: Use the standard library please; Patch, but
 do not add new features here.**
 
 **platform_windows** – Submodule that contains libraries and
