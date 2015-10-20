@@ -74,8 +74,8 @@ upload() {
 
 ## INSTALLATION ROUTINES ###################################
 
-install_utopic_repo() {
-  echo -e "\ndeb http://archive.ubuntu.com/ubuntu utopic "{main,multiverse,universe,restricted} >> /etc/apt/sources.list
+install_vivid_repo() {
+  echo -e "\ndeb http://archive.ubuntu.com/ubuntu vivid "{main,multiverse,universe,restricted} >> /etc/apt/sources.list
 }
 
 install_tool() {
@@ -83,17 +83,21 @@ install_tool() {
 }
 
 install_linux() {
-  install_utopic_repo
-  add-apt-repository -y "deb http://ppa.launchpad.net/zoogie/sdl2-snapshots/ubuntu precise main"
+  apt-key adv --keyserver keyserver.ubuntu.com --recv-keys FB1BF5BF09FA0AB7
+  
+  add-apt-repository -y "deb http://ppa.launchpad.net/zoogie/sdl2-snapshots/ubuntu trusty main"
+  install_vivid_repo
 
   apt-get update
+  
+  apt-get -y --only-upgrade install libfontconfig1
 
   install_tool
 
   apt-get -y install zlib1g-dev libsdl2-dev           \
     libsdl2-image-dev libsdl2-mixer-dev libenet-dev
 
-  apt-get -y -t utopic install libprotobuf-dev         \
+  apt-get -y -t vivid install libprotobuf-dev         \
     protobuf-compiler build-essential libboost-all-dev \
     libasio-dev binutils libudev-dev
 
@@ -104,23 +108,24 @@ install_linux() {
 # We have a slightly different install routine for each target
 
 install_win64() {
-  install_utopic_repo
-  sudo apt-get update
+  install_vivid_repo
+  apt-get update
   install_tool
-  apt-get -y -t utopic install mingw-w64
+  apt-get -y -t vivid install mingw-w64
 }
 install_win32() {
   install_win64
 }
 install_linux_clang() {
   install_linux
-  apt-get -y -t utopic install clang-3.5 binutils
+  apt-get -y -t vivid install clang-3.5 binutils
 }
 install_linux_gcc() {
   install_linux
-  apt-get -y -t utopic install gcc-4.9 g++-4.9 binutils
+  apt-get -y -t vivid install gcc-4.9 g++-4.9 binutils
 }
 install_apidoc() {
+  apt-get update
   install_tool
   apt-get install -y doxygen
 }
