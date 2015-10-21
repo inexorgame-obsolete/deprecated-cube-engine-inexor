@@ -1,19 +1,41 @@
-sudo: required
+sudo: required # check if this is working with OS X, if not change to true and add require to each linux matrix 
 dist: trusty
-language: cpp
+language: c++
 
 env:
   global:
-  - secure: QRryDQOY/A0kVUq+6/05LiBwfyiVh9kYtenAquUfOOZfITpOTBG81AZKfwHAKxn6QcT2UQ3cAR9lp7AoFqewfx7y5Ts/wHB/657QIA5VlL6UvdtfTSDx8t34MZ1hxi6PO6V6r2foNQna1WFuRJSrE7bVhCZIgpesO5Z0L83szaE=
-  - secure: O0dISDIRWhlYu8CN/r0GJdM3CWxZWXNGXz6gAJnXC0Rum5HOeTWXIBa91bdcMbbAALmtV+5RkixNyWjJ33eeVy+IcRftD7eg+Q5hYNKvXdrxx/fka3LAhr1x/bG2EkCpgpRCEnWqFQubzXtclVEbbiaFY8B1Yutv2ZgA3VN+Bas=
+    - secure: QRryDQOY/A0kVUq+6/05LiBwfyiVh9kYtenAquUfOOZfITpOTBG81AZKfwHAKxn6QcT2UQ3cAR9lp7AoFqewfx7y5Ts/wHB/657QIA5VlL6UvdtfTSDx8t34MZ1hxi6PO6V6r2foNQna1WFuRJSrE7bVhCZIgpesO5Z0L83szaE=
+    - secure: O0dISDIRWhlYu8CN/r0GJdM3CWxZWXNGXz6gAJnXC0Rum5HOeTWXIBa91bdcMbbAALmtV+5RkixNyWjJ33eeVy+IcRftD7eg+Q5hYNKvXdrxx/fka3LAhr1x/bG2EkCpgpRCEnWqFQubzXtclVEbbiaFY8B1Yutv2ZgA3VN+Bas=
 
-  matrix:
-    #- TARGET=linux_gcc CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=g++-4.9 -DCMAKE_C_COMPILER=gcc-4.9"
-    - TARGET=linux_clang CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=clang++-3.5 -DCMAKE_C_COMPILER=clang-3.5"
-    #- TARGET=win32 CMAKE_FLAGS="-DMINGW=1 -DMINGW_TYPE=i686"
-    #- TARGET=win64 CMAKE_FLAGS="-DMINGW=1 -DMINGW_TYPE=x86_64"
-    - TARGET=apidoc
+matrix:
+  include:
+    - os: linux
+      sudo: required
+      dist: trusty
+      language: c++
+      env: TARGET=linux_clang CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=clang++-3.5 -DCMAKE_C_COMPILER=clang-3.5"
+    - os: linux
+      sudo: required
+      dist: trusty
+      language: c++
+      env: TARGET=linux_gcc CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=g++-4.9 -DCMAKE_C_COMPILER=gcc-4.9"
+      #- TARGET=win32 CMAKE_FLAGS="-DMINGW=1 -DMINGW_TYPE=i686"
+      #- TARGET=win64 CMAKE_FLAGS="-DMINGW=1 -DMINGW_TYPE=x86_64"
+    - os: linux
+      sudo: required
+      dist: trusty
+      env: TARGET=apidoc
+      git:
+        submodules: false
+    - os: osx
+      language: c++
+      env: TARGET=osx
 
+  allow_failures:
+    # work on it! :)
+    - env: TARGET=osx
+
+  fast_finish: true # don't wait for allow_failures (OSX) to fail, gives faster response
 
 before_install:
   - bash tool/travis.sh target_before_install

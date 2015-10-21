@@ -5,7 +5,7 @@
 # * Installation target implementations
 # * Nightly build/APIDOC uploading
 # * Compiling and testing
-# * Targets as called by .travis.conf
+# * Targets as called by .travis.yml
 # * Main routine
 
 # ATTENTION:
@@ -94,11 +94,11 @@ install_linux() {
 
   install_tool
 
-  apt-get -y install zlib1g-dev libsdl2-dev           \
-    libsdl2-image-dev libsdl2-mixer-dev libenet-dev
+  apt-get -y install zlib1g-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev 
 
-  apt-get -y -t vivid install libprotobuf-dev         \
-    protobuf-compiler build-essential libboost-all-dev \
+  apt-get -y -t trusty install libenet-dev libprotobuf-dev protobuf-compiler libgconf2-dev
+
+  apt-get -y -t vivid install build-essential libboost-all-dev \
     libasio-dev binutils libudev-dev
 
   # Manually workaround http://askubuntu.com/questions/288821/how-do-i-resolve-a-cannot-open-shared-object-file-libudev-so-0-error
@@ -128,6 +128,9 @@ install_apidoc() {
   apt-get update
   install_tool
   apt-get install -y doxygen
+}
+install_osx() {
+  exit 0
 }
 
 ## UPLOADING NIGHTLY BUILDS AND THE APIDOC #################
