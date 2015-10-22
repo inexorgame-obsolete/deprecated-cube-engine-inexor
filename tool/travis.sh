@@ -179,10 +179,10 @@ nigthly_build() {
   if test "$media" = true; then (
     cd "$gitroot"
     curl -LOk https://github.com/inexor-game/data/archive/master.zip
-	unzip "master.zip" -d "$outd"
-	rm "master.zip"
-	cd "$outd"
-	mv "data-master" "data"
+    unzip "master.zip" -d "$outd"
+    rm "master.zip"
+    cd "$outd"
+    mv "data-master" "data"
   ) fi
 
   local ignore="$(<<< '
