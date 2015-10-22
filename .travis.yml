@@ -1,6 +1,6 @@
-sudo: required # check if this is working with OS X, if not change to true and add require to each linux matrix 
-dist: trusty
 language: c++
+sudo: required
+dist: trusty
 
 env:
   global:
@@ -12,12 +12,12 @@ matrix:
     - os: linux
       sudo: required
       dist: trusty
-      language: c++
+      language: cpp
       env: TARGET=linux_clang CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=clang++-3.5 -DCMAKE_C_COMPILER=clang-3.5"
     - os: linux
       sudo: required
       dist: trusty
-      language: c++
+      language: cpp
       env: TARGET=linux_gcc CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=g++-4.9 -DCMAKE_C_COMPILER=gcc-4.9"
       #- TARGET=win32 CMAKE_FLAGS="-DMINGW=1 -DMINGW_TYPE=i686"
       #- TARGET=win64 CMAKE_FLAGS="-DMINGW=1 -DMINGW_TYPE=x86_64"
@@ -28,7 +28,8 @@ matrix:
       git:
         submodules: false
     - os: osx
-      language: c++
+      sudo: false
+      language: cpp
       env: TARGET=osx
 
   allow_failures:

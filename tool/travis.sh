@@ -105,7 +105,7 @@ install_linux() {
   ln -sf /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0
 }
 
-# We have a slightly different install routine for each target
+# Install routines for each target
 
 install_win64() {
   install_vivid_repo
@@ -130,6 +130,8 @@ install_apidoc() {
   apt-get install -y doxygen
 }
 install_osx() {
+  # if you need sudo for some stuff here, you need to adjust travis.yml and target_before_install()
+  #brew install sdl2
   exit 0
 }
 
@@ -175,9 +177,12 @@ nigthly_build() {
   mkdir "$outd"
 
   if test "$media" = true; then (
-    cd "$outd"
-    git clone --depth 1 https://github.com/inexor-game/data.git data
-    rm -rf data/.git/
+    cd "$gitroot"
+    curl -LOk https://github.com/inexor-game/data/archive/master.zip
+	unzip "master.zip" -d "$outd"
+	rm "master.zip"
+	cd "$outd"
+	mv "data-master" "data"
   ) fi
 
   local ignore="$(<<< '
@@ -207,7 +212,7 @@ nigthly_build() {
   )
 
   (
-    echo "Commit: ${comitt}"
+    echo "Commit: ${commit}"
     echo -n "SHA 512: "
     sha512sum "$zipf"
   ) > "$descf"
@@ -248,7 +253,11 @@ run_tests() {
 ## TARGETS CALLED BY TRAVIS ################################
 
 target_before_install() {
-  sudo "$script" install_"$TARGET"
+  if test "$TARGET" = osx; then
+    "$script" install_"$TARGET"
+  else
+    sudo "$script" install_"$TARGET"
+  fi
 }
 
 target_script() {
@@ -279,7 +288,7 @@ bin="${code}/bin"
 export main_repo="inexor-game/code"
 export branch="$TRAVIS_BRANCH" # The branch we're on
 export jobno="$TRAVIS_JOB_NUMBER" # The job number
-export comitt="${TRAVIS_COMMIT}"
+export commit="${TRAVIS_COMMIT}"
 # Name of this build
 export build="$(echo "${branch}-${jobno}" | sed 's#/#-#g')-${TARGET}"
 export gitroot="$TRAVIS_BUILD_DIR"
