@@ -1393,6 +1393,71 @@ void compacteditvslots()
             compactvslots(u->block()->c(), u->block()->size());
 }
 
+/////////// version control //////////////
+
+cube *reference_cube = newcubes(F_SOLID);
+
+// alternative cubes used for diff between
+// the current version and a reference
+struct altcubes
+{
+    cube *cur;
+    cube *ref;
+};
+
+std::vector<altcubes> cube_diff(cube &cur, cube &ref) {
+
+    std::vector<altcubes> diff, self;
+    self.push_back({&cur, &ref});
+
+    if (cur.material != ref.material) return self;
+
+    loopi(6)
+        if (cur.texture[i] != ref.texture[i]) return self;
+
+    loopi(12)
+        if (cur.edges[i] != ref.edges[i]) return self;
+
+    if (cur.children && ref.children)
+    {
+        loopi(8)
+        {
+            std::vector<altcubes> child_diff = cube_diff(cur.children[i], ref.children[i]);
+            diff.insert(diff.end(), child_diff.begin(), child_diff.end());
+        }
+    }
+    else if (cur.children || ref.children) return self;
+
+    return diff;
+}
+
+void vc_commit() {
+    loopi(8)
+        copycube(worldroot[i], reference_cube[i]);
+}
+
+void vc_diff()
+{
+    std::vector<altcubes> diffs;
+    loopi(8)
+    {
+        std::vector<altcubes> d = cube_diff(worldroot[i], reference_cube[i]);
+        diffs.insert(diffs.end(), d.begin(), d.end());
+    }
+    
+    conoutf(CON_INFO, "Number of diff cubes: %lu", diffs.size());
+
+    loopi(diffs.size())
+    {
+        discardchildren(*(diffs[i].cur));
+        freecubeext(*(diffs[i].cur));
+        solidfaces(*(diffs[i].cur));
+        loopj(6) diffs[i].cur->texture[j] = 1;
+    }
+
+    allchanged();
+}
+
 ///////////// height maps ////////////////
 
 #define MAXBRUSH    64

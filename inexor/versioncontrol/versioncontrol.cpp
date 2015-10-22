@@ -2,47 +2,73 @@
 
 #include "inexor/versioncontrol/versioncontrol.h"
 
-#define NUM_VC_CMDS 4
+#define VERSION_CONTROL_COMMANDS_ARE "Version control commands are: \fs\f2help commit diff pull push log\fr"
 
-const char * vc_commands[NUM_VC_CMDS] = { "snap", "commit", "pull", "push" };
-
-void vc_snap(tagval *args, int numargs)
+void help(tagval *args, int numargs)
 {
-	conoutf(CON_INFO, "vc_snap");
+	if (numargs == 0)
+	{
+		conoutf(CON_INFO, VERSION_CONTROL_COMMANDS_ARE);
+		conoutf(CON_INFO, "Type \fs\f2/vc help <command>\fr to find out more about a specific command.");
+	}
+	else
+	{
+		if (!strcmp(args[1].getstr(), "help"))
+			conoutf(CON_INFO, "Type \fs\f2/vc help <command>\fr to find out more about a specific command.");
+		else if (!strcmp(args[1].getstr(), "commit"))
+			conoutf(CON_INFO, "Info about the commit command");
+		else if (!strcmp(args[1].getstr(), "diff"))
+			conoutf(CON_INFO, "Info about the diff command");
+		else if (!strcmp(args[1].getstr(), "pull"))
+			conoutf(CON_INFO, "Info about the pull command");
+		else if (!strcmp(args[1].getstr(), "push"))
+			conoutf(CON_INFO, "Info about the push command");
+		else if (!strcmp(args[1].getstr(), "log"))
+			conoutf(CON_INFO, "Info about the log command");
+		else
+			conoutf(CON_INFO, VERSION_CONTROL_COMMANDS_ARE);
+	}
 }
 
-void vc_commit(tagval *args, int numargs)
+void commit(tagval *args, int numargs)
 {
-	conoutf(CON_INFO, "vc_commit");
+	conoutf(CON_INFO, "vc commit");
+	vc_commit();
 }
 
-void vc_pull(tagval *args, int numargs)
+void diff(tagval *args, int numargs)
 {
-	conoutf(CON_INFO, "vc_pull");
+	conoutf(CON_INFO, "vc commit");
+	vc_diff();
 }
 
-void vc_push(tagval *args, int numargs)
+void pull(tagval *args, int numargs)
 {
-	conoutf(CON_INFO, "vc_push");
+	conoutf(CON_INFO, "vc pull");
+}
+
+void push(tagval *args, int numargs)
+{
+	conoutf(CON_INFO, "vc push");
+}
+
+void log(tagval *args, int numargs)
+{
+	conoutf(CON_INFO, "vc log");
 }
 
 ICOMMAND(vc, "V", (tagval *args, int numargs),
 {
-	if (editmode)
+	if (!editmode) conoutf(CON_INFO, "You need to be in edit mode to use version control.");
+	else
 	{
-		if (numargs == 0)
-		{
-			const char *str = "";
-			loopi(NUM_VC_CMDS)
-				str = tempformatstring((i == NUM_VC_CMDS -1) ? "%s\fs\f3%s\fr" : "%s\fs\f3%s\fr, ", str, vc_commands[i]);
-
-			conoutf(CON_INFO, "Version control commands are: %s", str);
-		}
-		else if (!strcmp(args[0].getstr(), "snap")) vc_snap(args, numargs);
-		else if (!strcmp(args[0].getstr(), "commit")) vc_commit(args, numargs);
-		else if (!strcmp(args[0].getstr(), "pull")) vc_pull(args, numargs);
-		else if (!strcmp(args[0].getstr(), "push")) vc_push(args, numargs);
+		if (numargs == 0) conoutf(CON_INFO, VERSION_CONTROL_COMMANDS_ARE);
+		else if (!strcmp(args[0].getstr(), "help")) help(args++, numargs);
+		else if (!strcmp(args[0].getstr(), "commit")) commit(args++, numargs);
+		else if (!strcmp(args[0].getstr(), "diff")) diff(args++, numargs);
+		else if (!strcmp(args[0].getstr(), "pull")) pull(args++, numargs);
+		else if (!strcmp(args[0].getstr(), "push")) push(args++, numargs);
+		else if (!strcmp(args[0].getstr(), "log")) log(args++, numargs);
 		else conoutf(CON_INFO, "Version control command \fs\f3%s\fr not found.", args[0].getstr());
 	}
-	else conoutf(CON_INFO, "You need to be in edit mode to use version control.");
 });
