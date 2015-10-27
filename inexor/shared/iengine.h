@@ -114,6 +114,8 @@ extern bool mpreplacetex(int oldtex, int newtex, bool insel, selinfo &sel, uchar
 extern void mpdelcube(selinfo &sel, bool local);
 extern bool mpeditvslot(int delta, int allfaces, selinfo &sel, ucharbuf &buf);
 extern void mpremip(bool local);
+
+// version control
 extern void vc_commit();
 extern void vc_diff();
 

@@ -2,7 +2,7 @@
 
 #include "inexor/versioncontrol/versioncontrol.h"
 
-#define VERSION_CONTROL_COMMANDS_ARE "Version control commands are: \fs\f2help commit diff pull push log\fr"
+#define VERSION_CONTROL_COMMANDS_ARE "Version control commands are: \fs\f2help commit diff merge pull push log\fr"
 
 void help(tagval *args, int numargs)
 {
@@ -13,17 +13,19 @@ void help(tagval *args, int numargs)
 	}
 	else
 	{
-		if (!strcmp(args[1].getstr(), "help"))
+		if (!strcmp(args[0].getstr(), "help"))
 			conoutf(CON_INFO, "Type \fs\f2/vc help <command>\fr to find out more about a specific command.");
-		else if (!strcmp(args[1].getstr(), "commit"))
+		else if (!strcmp(args[0].getstr(), "commit"))
 			conoutf(CON_INFO, "Info about the commit command");
-		else if (!strcmp(args[1].getstr(), "diff"))
+		else if (!strcmp(args[0].getstr(), "diff"))
 			conoutf(CON_INFO, "Info about the diff command");
-		else if (!strcmp(args[1].getstr(), "pull"))
+		else if (!strcmp(args[0].getstr(), "merge"))
+			conoutf(CON_INFO, "Info about the diff command");
+		else if (!strcmp(args[0].getstr(), "pull"))
 			conoutf(CON_INFO, "Info about the pull command");
-		else if (!strcmp(args[1].getstr(), "push"))
+		else if (!strcmp(args[0].getstr(), "push"))
 			conoutf(CON_INFO, "Info about the push command");
-		else if (!strcmp(args[1].getstr(), "log"))
+		else if (!strcmp(args[0].getstr(), "log"))
 			conoutf(CON_INFO, "Info about the log command");
 		else
 			conoutf(CON_INFO, VERSION_CONTROL_COMMANDS_ARE);
@@ -38,8 +40,13 @@ void commit(tagval *args, int numargs)
 
 void diff(tagval *args, int numargs)
 {
-	conoutf(CON_INFO, "vc commit");
+	conoutf(CON_INFO, "vc diff");
 	vc_diff();
+}
+
+void merge(tagval *args, int numargs)
+{
+	conoutf(CON_INFO, "vc merge");
 }
 
 void pull(tagval *args, int numargs)
@@ -63,12 +70,13 @@ ICOMMAND(vc, "V", (tagval *args, int numargs),
 	else
 	{
 		if (numargs == 0) conoutf(CON_INFO, VERSION_CONTROL_COMMANDS_ARE);
-		else if (!strcmp(args[0].getstr(), "help")) help(args++, numargs);
-		else if (!strcmp(args[0].getstr(), "commit")) commit(args++, numargs);
-		else if (!strcmp(args[0].getstr(), "diff")) diff(args++, numargs);
-		else if (!strcmp(args[0].getstr(), "pull")) pull(args++, numargs);
-		else if (!strcmp(args[0].getstr(), "push")) push(args++, numargs);
-		else if (!strcmp(args[0].getstr(), "log")) log(args++, numargs);
+		else if (!strcmp(args[0].getstr(), "help"))   help(args++, numargs--);
+		else if (!strcmp(args[0].getstr(), "commit")) commit(args++, numargs--);
+		else if (!strcmp(args[0].getstr(), "diff"))   diff(args++, numargs--);
+		else if (!strcmp(args[0].getstr(), "merge"))  merge(args++, numargs--);
+		else if (!strcmp(args[0].getstr(), "pull"))   pull(args++, numargs--);
+		else if (!strcmp(args[0].getstr(), "push"))   push(args++, numargs--);
+		else if (!strcmp(args[0].getstr(), "log"))    log(args++, numargs--);
 		else conoutf(CON_INFO, "Version control command \fs\f3%s\fr not found.", args[0].getstr());
 	}
 });

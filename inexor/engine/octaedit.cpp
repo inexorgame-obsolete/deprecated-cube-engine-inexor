@@ -201,6 +201,9 @@ void cancelsel()
     entcancel();
 }
 
+// when in diff mode changes are not commitable, player cannot edit
+VARP(diffmode, 0, 0, 1);
+
 /// change editing status
 /// also cancel selection, blendmaps and more
 /// @param force represents if the user was forced by administrators
@@ -235,12 +238,20 @@ void toggleedit(bool force)
         lightents();
     }
     if(!force) game::edittoggled(editmode);
+
+    // exit diff mode when exiting edit mode
+    if (!editmode && diffmode) vc_diff();
+    // cannot already be in diffmode when entering editmode
+    // (this state is possible when leaving the game with diffmode ON)
+    if (editmode && diffmode) diffmode = 0;
+
 }
 
 /// check if user is allowed to edit
 /// concerns may be a scene selection which is not in view or disbaled editing status
 bool noedit(bool view, bool msg)
 {
+    if(diffmode) return true;
     if(!editmode) { if(msg) conoutf(CON_ERROR, "operation only allowed in edit mode"); return true; }
     if(view || haveselent()) return false;
     float r = 1.0f;
@@ -1391,71 +1402,6 @@ void compacteditvslots()
     for(undoblock *u = redos.first; u; u = u->next)
         if(!u->numents)
             compactvslots(u->block()->c(), u->block()->size());
-}
-
-/////////// version control //////////////
-
-cube *reference_cube = newcubes(F_SOLID);
-
-// alternative cubes used for diff between
-// the current version and a reference
-struct altcubes
-{
-    cube *cur;
-    cube *ref;
-};
-
-std::vector<altcubes> cube_diff(cube &cur, cube &ref) {
-
-    std::vector<altcubes> diff, self;
-    self.push_back({&cur, &ref});
-
-    if (cur.material != ref.material) return self;
-
-    loopi(6)
-        if (cur.texture[i] != ref.texture[i]) return self;
-
-    loopi(12)
-        if (cur.edges[i] != ref.edges[i]) return self;
-
-    if (cur.children && ref.children)
-    {
-        loopi(8)
-        {
-            std::vector<altcubes> child_diff = cube_diff(cur.children[i], ref.children[i]);
-            diff.insert(diff.end(), child_diff.begin(), child_diff.end());
-        }
-    }
-    else if (cur.children || ref.children) return self;
-
-    return diff;
-}
-
-void vc_commit() {
-    loopi(8)
-        copycube(worldroot[i], reference_cube[i]);
-}
-
-void vc_diff()
-{
-    std::vector<altcubes> diffs;
-    loopi(8)
-    {
-        std::vector<altcubes> d = cube_diff(worldroot[i], reference_cube[i]);
-        diffs.insert(diffs.end(), d.begin(), d.end());
-    }
-    
-    conoutf(CON_INFO, "Number of diff cubes: %lu", diffs.size());
-
-    loopi(diffs.size())
-    {
-        discardchildren(*(diffs[i].cur));
-        freecubeext(*(diffs[i].cur));
-        solidfaces(*(diffs[i].cur));
-        loopj(6) diffs[i].cur->texture[j] = 1;
-    }
-
-    allchanged();
 }
 
 ///////////// height maps ////////////////
@@ -2784,3 +2730,200 @@ void rendertexturepanel(int w, int h)
         hudshader->set();
     }
 }
+
+/////////// version control //////////////
+
+cube *refcubes = newcubes(F_SOLID);
+cube *curcubes = newcubes(F_SOLID);
+
+// alternative cubes used for diff between
+// work cube is the one referencing the actual map we're working with.
+// the current version and a reference are used to toggle between different options
+struct altcubes
+{
+    cube *work;
+    cube *cur;
+    cube *ref;
+    uint r;      // r is the resolved indicator: 0 for unresolved, 1 for *cur, 2 for *ref;
+};
+
+std::vector<altcubes> diffs;
+
+bool cube_equal(cube &a, cube &b) {
+    if (!a.children != !b.children) return false;
+    if (a.material != b.material) return false;
+    loopi(6) if (a.texture[i] != b.texture[i]) return false;
+    loopi(12) if (a.edges[i] != b.edges[i]) return false;
+    return true;
+}
+
+std::vector<altcubes> cube_diff(cube &work, cube &cur, cube &ref) {
+
+    std::vector<altcubes> diff, self;
+    self.push_back({&work, &cur, &ref, 0});
+
+    if (!cube_equal(cur, ref)) return self;
+    if (cur.children && ref.children)
+    {
+        loopi(8)
+        {
+            std::vector<altcubes> child_diff = cube_diff(work.children[i], cur.children[i], ref.children[i]);
+            diff.insert(diff.end(), child_diff.begin(), child_diff.end());
+        }
+    }
+    return diff;
+}
+
+void vc_commit() {
+    if (!diffmode) {
+        loopi(8) copycube(worldroot[i], refcubes[i]);
+        diffs.clear();
+    }
+    else
+        conoutf(CON_INFO, "Cannot commit in diff mode. You need to either exit diff mode or resolve merge conflicts.");
+}
+
+int curconflict = -1;
+
+void colordiffs() {
+
+    VSlot red, blue;
+    red.changed = 1<<VSLOT_COLOR;
+    red.colorscale = vec(1.0f, 0.0f, 0.0f);
+    blue.changed = 1<<VSLOT_COLOR;
+    blue.colorscale = vec(0.0f, 0.0f, 1.0f);
+
+    VSlot *editred = remapvslot(1, 1, red);
+    remappedvslots.setsize(0);
+    VSlot *editblue = remapvslot(1, 1, blue);
+    remappedvslots.setsize(0);
+    
+    loopi(diffs.size()) {
+        if (diffs[i].r == 0) {
+            loopj(6)
+                diffs[i].work->texture[j] = (i == curconflict)? editred->index : editblue->index;
+        }
+    }
+}
+
+// get the difference between the reference and the current state of the map
+void vc_diff()
+{
+    if (!diffmode)
+    {
+        diffmode = 1;
+
+        // making a copy of the working tree to keep track of the "current" tree before diff
+        loopi(8)
+            copycube(worldroot[i], curcubes[i]);
+        
+        // TODO take into account already resolved diffs (could be an option)
+        // reset diffs before getting the new ones
+        diffs.clear();
+
+        loopi(8)
+        {
+            std::vector<altcubes> d = cube_diff(worldroot[i], curcubes[i], refcubes[i]);
+            diffs.insert(diffs.end(), d.begin(), d.end());
+        }
+    }
+    else diffmode = 0;
+    
+    if (diffmode) conoutf(CON_INFO, "Number of diff cubes: %lu", diffs.size());
+
+    if (diffmode)
+    {
+        conoutf(CON_INFO, "diff mode \fs\f1ON\fr");
+        // show the smallest cubes that differ by reseting them to plain solid cubes
+        loopi(diffs.size())
+        {
+            discardchildren(*diffs[i].work);
+            freecubeext(*diffs[i].work);
+            solidfaces(*diffs[i].work);
+            loopj(6) diffs[i].work->texture[j] = 1;
+        }
+        
+        colordiffs();
+    }
+    else
+    {
+        conoutf(CON_INFO, "diff mode \fs\f1OFF\fr");
+
+        // reset work to cur
+        loopi(diffs.size()) {
+            if (diffs[i].r == 2)
+                pastecube(*diffs[i].ref, *diffs[i].work);
+            else    
+                pastecube(*diffs[i].cur, *diffs[i].work);
+        }
+    }
+
+    // need to change to commitchanges once selection is figured out.
+    allchanged();
+}
+
+void nextconflict() {
+    if (!diffmode) return;
+    if (diffs.size() == 0)
+    {
+        curconflict = -1;
+        conoutf(CON_INFO, "No more conflicts to resolve");
+        return;
+    }
+
+    // rotate through conflicts
+    curconflict++;
+
+    bool allresolved = true;
+
+    // find the first unresolved conflict
+    loopi(diffs.size()) {
+        int j = (curconflict + i) % diffs.size();
+        if (diffs[j].r == 0) {
+            curconflict = j;
+            allresolved = false;
+            break;
+        }
+    }
+
+    if (allresolved) {
+        curconflict = -1;
+        conoutf(CON_INFO, "No more conflicts to resolve");
+        return;
+    }
+
+    colordiffs();
+    cancelsel();
+    // TODO select curconflict
+    
+    // TODO need to change to commitchanges once selection is figured out.
+    allchanged();
+}
+COMMAND(nextconflict, "");
+
+void resolve() {
+    if (!diffmode || curconflict < 0) return;
+
+    altcubes ac = diffs[curconflict];
+
+    switch (ac.r) {
+        case 0:
+        case 2:
+            conoutf(CON_INFO, "cur");
+            diffs[curconflict].r = 1;
+            pastecube(*ac.cur, *ac.work);
+            break;
+        case 1:
+            conoutf(CON_INFO, "ref");
+            diffs[curconflict].r = 2;
+            pastecube(*ac.ref, *ac.work);
+            break;   
+    }
+
+    cancelsel();
+    // TODO select curconflict
+    
+    // TODO need to change to commitchanges once selection is figured out.
+    allchanged();
+}
+COMMAND(resolve, "");
