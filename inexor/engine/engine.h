@@ -189,6 +189,7 @@ extern void setcubeext(cube &c, cubeext *ext);
 extern cubeext *newcubeext(cube &c, int maxverts = 0, bool init = true);
 extern void freecubeext(cube &c);
 extern void getcubevector(cube &c, int d, int x, int y, int z, ivec &p);
+extern inline void getcubevector(cube &c, int i, ivec &p);
 extern void setcubevector(cube &c, int d, int x, int y, int z, const ivec &p);
 extern int familysize(const cube &c);
 extern void freeocta(cube *c);

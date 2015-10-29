@@ -1367,8 +1367,15 @@ void pastehilite()
     havesel = true;
 }
 
+void diffpaste();
+
 void paste()
 {
+    if(diffmode)
+    {
+        diffpaste();
+        return;
+    }
     if(noedit()) return;
     mppaste(localedit, sel, true);
 }
@@ -2744,12 +2751,14 @@ struct altcubes
     cube *work;
     cube *cur;
     cube *ref;
-    uint r;      // r is the resolved indicator: 0 for unresolved, 1 for *cur, 2 for *ref;
+    int r, size;      // r is the resolved indicator: 0 for unresolved, 1 for *cur, 2 for *ref;
+    ivec pos;
 };
 
 std::vector<altcubes> diffs;
 
-bool cube_equal(cube &a, cube &b) {
+bool cube_equal(cube &a, cube &b)
+{
     if (!a.children != !b.children) return false;
     if (a.material != b.material) return false;
     loopi(6) if (a.texture[i] != b.texture[i]) return false;
@@ -2757,25 +2766,27 @@ bool cube_equal(cube &a, cube &b) {
     return true;
 }
 
-std::vector<altcubes> cube_diff(cube &work, cube &cur, cube &ref) {
-
+std::vector<altcubes> cube_diff(cube &work, cube &cur, cube &ref, int size, ivec pos)
+{
     std::vector<altcubes> diff, self;
-    self.push_back({&work, &cur, &ref, 0});
+    self.push_back({&work, &cur, &ref, 0, size, pos});
 
     if (!cube_equal(cur, ref)) return self;
     if (cur.children && ref.children)
     {
         loopi(8)
         {
-            std::vector<altcubes> child_diff = cube_diff(work.children[i], cur.children[i], ref.children[i]);
+            std::vector<altcubes> child_diff = cube_diff(work.children[i], cur.children[i], ref.children[i], size>>1, ivec(i, pos, size>>1));
             diff.insert(diff.end(), child_diff.begin(), child_diff.end());
         }
     }
     return diff;
 }
 
-void vc_commit() {
-    if (!diffmode) {
+void vc_commit()
+{
+    if (!diffmode)
+    {
         loopi(8) copycube(worldroot[i], refcubes[i]);
         diffs.clear();
     }
@@ -2785,7 +2796,8 @@ void vc_commit() {
 
 int curconflict = -1;
 
-void colordiffs() {
+void colordiffs()
+{
 
     VSlot red, blue;
     red.changed = 1<<VSLOT_COLOR;
@@ -2798,12 +2810,23 @@ void colordiffs() {
     VSlot *editblue = remapvslot(1, 1, blue);
     remappedvslots.setsize(0);
     
-    loopi(diffs.size()) {
-        if (diffs[i].r == 0) {
+    loopi(diffs.size())
+    {
+        if (diffs[i].r == 0)
+        {
             loopj(6)
-                diffs[i].work->texture[j] = (i == curconflict)? editred->index : editblue->index;
+                diffs[i].work->texture[j] = (i == curconflict) ? editred->index : editblue->index;
         }
     }
+}
+
+void changeddiff(int i)
+{
+    block3 b = block3();
+    b.o = diffs[i].pos;
+    b.s = ivec(1,1,1);
+    b.grid = diffs[i].size;
+    changed(b, false);
 }
 
 // get the difference between the reference and the current state of the map
@@ -2823,7 +2846,7 @@ void vc_diff()
 
         loopi(8)
         {
-            std::vector<altcubes> d = cube_diff(worldroot[i], curcubes[i], refcubes[i]);
+            std::vector<altcubes> d = cube_diff(worldroot[i], curcubes[i], refcubes[i], worldsize>>1, ivec(i, ivec(0,0,0), worldsize>>1));
             diffs.insert(diffs.end(), d.begin(), d.end());
         }
     }
@@ -2842,27 +2865,29 @@ void vc_diff()
             solidfaces(*diffs[i].work);
             loopj(6) diffs[i].work->texture[j] = 1;
         }
-        
         colordiffs();
+        loopi(diffs.size()) changeddiff(i);
     }
     else
     {
         conoutf(CON_INFO, "diff mode \fs\f1OFF\fr");
 
         // reset work to cur
-        loopi(diffs.size()) {
+        loopi(diffs.size())
+        {
             if (diffs[i].r == 2)
                 pastecube(*diffs[i].ref, *diffs[i].work);
             else    
                 pastecube(*diffs[i].cur, *diffs[i].work);
+            changeddiff(i);
         }
     }
 
-    // need to change to commitchanges once selection is figured out.
-    allchanged();
+    commitchanges();
 }
 
-void nextconflict() {
+void nextconflict()
+{
     if (!diffmode) return;
     if (diffs.size() == 0)
     {
@@ -2877,7 +2902,8 @@ void nextconflict() {
     bool allresolved = true;
 
     // find the first unresolved conflict
-    loopi(diffs.size()) {
+    loopi(diffs.size())
+    {
         int j = (curconflict + i) % diffs.size();
         if (diffs[j].r == 0) {
             curconflict = j;
@@ -2886,27 +2912,35 @@ void nextconflict() {
         }
     }
 
-    if (allresolved) {
+    if (allresolved)
+    {
         curconflict = -1;
         conoutf(CON_INFO, "No more conflicts to resolve");
         return;
     }
+    else
+    {
+        colordiffs();
+        loopi(diffs.size()) changeddiff(i);
 
-    colordiffs();
-    cancelsel();
-    // TODO select curconflict
-    
-    // TODO need to change to commitchanges once selection is figured out.
-    allchanged();
+        sel = selinfo();
+        sel.o = diffs[curconflict].pos;
+        sel.s = ivec(1,1,1);
+        sel.grid = diffs[curconflict].size;
+
+        commitchanges();
+    }
 }
 COMMAND(nextconflict, "");
 
-void resolve() {
+void resolve()
+{
     if (!diffmode || curconflict < 0) return;
 
     altcubes ac = diffs[curconflict];
 
-    switch (ac.r) {
+    switch (ac.r)
+    {
         case 0:
         case 2:
             conoutf(CON_INFO, "cur");
@@ -2920,10 +2954,24 @@ void resolve() {
             break;   
     }
 
-    cancelsel();
-    // TODO select curconflict
-    
-    // TODO need to change to commitchanges once selection is figured out.
-    allchanged();
+    sel = selinfo();
+    sel.o = diffs[curconflict].pos;
+    sel.s = ivec(1,1,1);
+    sel.grid = diffs[curconflict].size;
+
+    changed(sel, true);
 }
 COMMAND(resolve, "");
+
+void diffpaste() {
+    if (curconflict < 0) return;
+    if (diffs[curconflict].r == 0) return;
+
+    block3 b;
+    b.o = diffs[curconflict].pos;
+    b.s = ivec(1,1,1);
+    b.grid = diffs[curconflict].size;
+
+    pasteblock(b, sel, true);
+}
+
