@@ -242,7 +242,12 @@ if(OS_WINDOWS)
         set(I_LINKER_FLAGS_DEBUG      "-DEBUG")
         # /MANIFEST:NO                          = No default manifest
         # /SAFESEH:NO                           = Do Not Create a table of safe exception handlers (binary incompatible)
-        set(I_EXE_LINKER_FLAGS        "-MANIFEST:NO -SAFESEH:NO ")
+        set(I_EXE_LINKER_FLAGS        "-MANIFEST:NO -SAFESEH:NO")
+
+        # Add the library path as well
+        foreach(dir ${CMAKE_LIBRARY_PATH}) # We need to do this seperately since LIBPATH does not accept more than one dir at once
+            set(I_EXE_LINKER_FLAGS "${I_EXE_LINKER_FLAGS} -LIBPATH:${dir}")
+        endforeach()
     endif()
 
     # Standard definitions
