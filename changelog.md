@@ -1,21 +1,30 @@
 ## Changelog
 
+### Pyrimethamine Alpha Edition (v0.4.0-alpha, 2015-11-01)
+
+#### Content management
+  * various license and readme updates and clarifications
+  * improve chainsaw sounds further
+  * data-additional changes:
+    * added map Haze
+
+#### UI
+  * console autocomplete SHIFT-TAB to cycle backwards
+  * added prefab UI for easy pasting + autocomplete for prefabs
+  * sounds: don't interrupt song on map change, return again to intro song on disconnect, don't output that a song is getting played when it's muted
+  
+#### Code internals, refactoring & bug fixes
+  * replace Sauerbratens's own RNG with the C++11 libs
+  * linux: Work around libudev naming issues
+  * fixed: screenshotdir gets ignored if you don't specify screenshot name
+  * updating our Travis CI environment from Ubuntu 12.04 to Ubuntu 14.04 as well as speeding up the whole process
+  * adding support for Microsoft Visual Studio 2015, dropping support for 2013 (only affects prebuilt dependencies)
+
+
+***
+
+
 ### Aquarust Alpha Edition (v0.3.0-alpha, 2015-09-06)
-
-#### Code internals & Refactoring
- * minor improvements in the loading of sounds and textures
- * multiplayer undo and vslots changes
- * removed everything but the shader rendering pipeline.
- * align the Sauerbraten base to tesseract
- * tests are running now on Appveyor (Windows) and on Travis (Linux)
- * added framework for throwing events when a variable is changed
- * changed default game ports: the new server port is 31415, the new master port 31416
-
-#### Node.js / CEF
-
- * added (temporary) startscript for Windows
- * provide an own window manager
- * restructuring of large portions of the node code 
 
 #### Content management
 
@@ -30,7 +39,7 @@
  * maps: new map Legacy, updated Cartel and Pandora
  * introduction of additional data: this data provides more content for our testers and will be removed when we adding an ingame content downloader
  * data-additional changes:
-   * maps: added Louncin, Inexor, Star and Averas
+   * maps: added Laucin, Inexor, Star and Averas
 
 #### Gameplay
 
@@ -38,6 +47,21 @@
  * fixed waypoint loading
  * new default screenshot filename, including the full date
  * display which music is getting played
+ 
+#### Node.js / CEF
+
+ * added (temporary) startscript for Windows
+ * provide an own window manager
+ * restructuring of large portions of the node code 
+
+#### Code internals & refactoring
+ * minor improvements in the loading of sounds and textures
+ * multiplayer undo and vslots changes
+ * removed everything but the shader rendering pipeline.
+ * align the Sauerbraten base to tesseract
+ * tests are running now on Appveyor (Windows) and on Travis (Linux)
+ * added framework for throwing events when a variable is changed
+ * changed default game ports: the new server port is 31415, the new master port 31416
 
 
 ***
@@ -45,15 +69,15 @@
 
 ### Ritalin Edition (v0.2.0-alpha, 2015-07-12)
 
-#### Code internals & Refactoring
+#### Content management
 
-* Fully modular and dependency based build system
-* Progressing modularization of the source code (defined concept of subsystems which can be turned on and off again)
-* Rename `src/` to `inexor/` to avoid collisions with system libraries, also namespaces and includes fit better together
-* Use AppVeyor for continuous testing on Windows
-* Fixed a use-after-free in the exception management code (InexorException)
-* Fixed a rare memory leak in the RPC code
-* Fixed a frequent memory leak in MessageConnect
+* Added more open source textures and sounds
+* Improvements on existing maps
+
+#### Gameplay
+
+* Allow zoomfov up to 150
+* Spectators can fly around in intermission
 
 #### CEF
 * Integration of CEF (not yet enabled via default)
@@ -72,15 +96,15 @@
    * Create angular directives as CoffeeScript classes, with automatically loaded CSS (Stylus) and HTML (Jade) files
    * Window management
 
-#### Content management
+#### Code internals & refactoring
 
-* Added more open source textures and sounds
-* Improvements on existing maps
-
-#### Gameplay
-
-* Allow zoomfov up to 150
-* Spectators can fly around in intermission
+* Fully modular and dependency based build system
+* Progressing modularization of the source code (defined concept of subsystems which can be turned on and off again)
+* Rename `src/` to `inexor/` to avoid collisions with system libraries, also namespaces and includes fit better together
+* Use AppVeyor for continuous testing on Windows
+* Fixed a use-after-free in the exception management code (InexorException)
+* Fixed a rare memory leak in the RPC code
+* Fixed a frequent memory leak in MessageConnect
 
 
 ***
@@ -89,6 +113,24 @@
 ### Caffeine Edition (v0.1.0-alpha, 2015-05-01)
 
 * Choosed the name of the game
+
+#### Licensing and content management
+
+* Choose legitimate licenses to use for content ("License Policy")
+* Provide some freely licensed basic textures and maps
+
+#### Gameplay
+
+* Renamed /kill to /suicide
+* Console improvements
+ * Warnings won't spam the console anymore
+ * Lines are fading out, instead of simple disappear
+ * Timestamps
+ * History, reuse commands easily from your last game session
+ 
+#### Graphics
+
+* Implemented ambient occlusion during the calclight process (zero cost ingame, calculated during calclight)
 
 #### Develoment environment
 
@@ -129,25 +171,7 @@
 * Documentation guidelines
 * Integrated Doxygen
 
-#### Licensing and content management
-
-* Choose legitimate licenses to use for content ("License Policy")
-* Provide some freely licensed basic textures and maps
-
-#### Gameplay
-
-* Renamed /kill to /suicide
-* Console improvements
- * Warnings won't spam the console anymore
- * Lines are fading out, instead of simple disappear
- * Timestamps
- * History, reuse commands easily from your last game session
-
 #### Inter Process Communication
 
 * Communication with the Inexor process
 * External NodeJS integration
-
-#### Graphics
-
-* Implemented ambient occlusion during the calclight process (zero cost ingame, calculated during calclight)

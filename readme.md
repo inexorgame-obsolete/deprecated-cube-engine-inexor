@@ -17,7 +17,8 @@ You will find more information in our wiki.
  
 ### Engine Features
 
-* see wiki for actual list of engine features
+* Ambient Occlusion
+* see wiki for a full list of engine features
 * Cube 2 Engine Features
 
  * 6 directional heightfield in octree world structure allowing for instant easy in-game geometry editing (even in multiplayer, coop edit).
@@ -36,5 +37,6 @@ You will find more information in our wiki.
 * [Issue Tracker](https://github.com/inexor-game/code/issues)
 * [Source Repository](https://github.com/inexor-game/code)
 * [Data Repository](https://github.com/inexor-game/data)
+* Kanboards for [Code](https://waffle.io/inexor-game/code) & [Services](https://waffle.io/inexor-game/services) 
 * [Chat (irc.gamesurge.net #inexor)](irc://irc.gamesurge.net/#inexor)
  * [Webchat](https://webchat.gamesurge.net/?channels=inexor)

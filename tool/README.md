@@ -22,7 +22,7 @@ to:
 * Git
 * A compile (e.g. GCC)
 * A linker (e.g. GCC)
-* Cmake
+* CMake
 * OpenGL
 * SDL2
 * SDL2_Image
@@ -38,4 +38,4 @@ Depending on your environment you also need some of those:
 * CodeBlocks (if you want to use CodeBlocks)
 * Xcode (on Mac OS X)
 * CMake GUI (optional)
-* Github for Mac/Windows (optional)
+* GitHub Desktop (for a Git GUI on Mac/Windows) (optional)
