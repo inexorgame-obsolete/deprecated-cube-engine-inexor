@@ -133,7 +133,7 @@ TEST(PseudoRandom, NumbersDifferAmongThreads) {
     for (int i=0; i<threadno; i++) {
         threads[i] = thread([i, &first_numbers](){
             first_numbers[i] =
-                (*inexor::util::random::generator)();
+                (inexor::util::random::generator)();
         });
     }
 

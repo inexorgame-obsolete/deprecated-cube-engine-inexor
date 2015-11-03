@@ -9,8 +9,6 @@
 #include <boost/random/uniform_int_distribution.hpp>
 #include <boost/random/uniform_real_distribution.hpp>
 
-#include "inexor/util/thread_local.h"
-
 namespace inexor {
 namespace util {
 
@@ -32,11 +30,11 @@ namespace random {
 
     /// The default rng, seeded with a time stamp from the
     /// best clock availabl (std::chrono::high_resolution_clock)
-    extern thread_local_ptr<auto_seeded<rng_engine>> generator;
+    extern thread_local auto_seeded<rng_engine> generator;
 
     /// The default rng for the deterministic_rng functions;
     /// this will be reseeded every time they're called.
-    extern thread_local_ptr<rng_engine> deterministic_generator;
+    extern thread_local rng_engine deterministic_generator;
 
     /// The type of the seed the deterministic_generator expects
     typedef rng_engine::result_type seed_t;
@@ -95,7 +93,7 @@ namespace random {
     T rnd(const T Rmin, const T Rmax) {
         // TODO. This could be expensive
         uniform_generic_distribution<T> dist(Rmin, Rmax);
-        return dist(*generator);
+        return dist(generator);
     }
 
     /// Generate a random number between 0 and Rmax
@@ -132,8 +130,8 @@ namespace random {
           const T Rmin, const T Rmax) {
         // TODO: Use a lookup table/cache?
         uniform_generic_distribution<T> dist(Rmin, Rmax);
-        deterministic_generator->seed(seed);
-        return dist(*deterministic_generator);
+        deterministic_generator.seed(seed);
+        return dist(deterministic_generator);
     }
 
     /// Generate a deterministic random number between 0
