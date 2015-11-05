@@ -39,24 +39,21 @@ namespace random {
     /// The type of the seed the deterministic_generator expects
     typedef rng_engine::result_type seed_t;
 
-    /// Uniform real distribution with a closed range.
-    ///
     /// It is like the boost uniform distribution, but while
-    /// that uses an half open distribution [min..max), this
-    /// class uses a closed distribution [min..max].
+    /// that uses an closed distribution [min; max], this
+    /// class uses a half opened one [min; max).
     ///
-    /// This means that the boost one can't return 1.0 if
-    /// max=1.0, but this one can.
+    /// This means that the boost one can return 1000 if
+    /// max=1000, but this one can.
     template<typename T>
-    class uniform_closed_range_real_distribution
-        : public boost::random::uniform_real_distribution<T> {
+    class uniform_open_range_int_distribution
+        : public boost::random::uniform_int_distribution<T> {
     public:
-        explicit uniform_closed_range_real_distribution(T min=0.0, T max=1.0)
-          : boost::random::uniform_real_distribution<T>(
-              min,
-              std::nextafter(
-                  max,
-                  std::numeric_limits<T>::infinity()) ) {}
+        explicit uniform_open_range_int_distribution(
+            T min = 0
+          , T max = std::numeric_limits<T>::max)
+          : boost::random::uniform_int_distribution<T>(
+              min, max - 1) {}
     };
 
     /// A generic uniform random number distribution that
@@ -67,10 +64,10 @@ namespace random {
     /// std::uniform_real_distribution, otherwise
     /// std::uniform_int_distribution.
     template<typename T>
-    using uniform_generic_distribution = typename
+    using uniform_generic_open_range_distribution = typename
         std::conditional< std::is_floating_point<T>::value,
-            uniform_closed_range_real_distribution<T>,
-            boost::random::uniform_int_distribution<T>
+            boost::random::uniform_real_distribution<T>,
+            uniform_open_range_int_distribution<T>
         >::type;
 
     /// Generate a random number between Rmin and Rmax
@@ -92,7 +89,7 @@ namespace random {
     template<typename T>
     T rnd(const T Rmin, const T Rmax) {
         // TODO. This could be expensive
-        uniform_generic_distribution<T> dist(Rmin, Rmax);
+        uniform_generic_open_range_distribution<T> dist(Rmin, Rmax);
         return dist(generator);
     }
 
@@ -129,7 +126,7 @@ namespace random {
     T deterministic_rnd(const seed_t seed,
           const T Rmin, const T Rmax) {
         // TODO: Use a lookup table/cache?
-        uniform_generic_distribution<T> dist(Rmin, Rmax);
+        uniform_generic_open_range_distribution<T> dist(Rmin, Rmax);
         deterministic_generator.seed(seed);
         return dist(deterministic_generator);
     }

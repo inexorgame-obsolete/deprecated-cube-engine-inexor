@@ -40,7 +40,7 @@ array<range, 5> ranges {
     range({-10, 10, 100, 2}),
     range({-30000, -29900, 100, 1}),
     range({5000, 7000, 100, 1}),
-    range({300,301, 4, 20})
+    range({300,302, 4, 20})
 };
 
 TEST(DeterministicRandom, XToYRange) {
@@ -98,9 +98,9 @@ TEST(PseudoRandom, XToYRange) {
             EXPECT_GE(r0, r.a) << "Expected "
               "rnd(" << r.a << ", " << r.z << ") "
               "to produce values x >= " << r.a << ".";
-            EXPECT_LE(r0, r.z) << "Expected "
+            EXPECT_LT(r0, r.z) << "Expected "
               "rnd(" << r.a << ", " << r.z << ") "
-              "to produce values x <= " << r.z << ".";
+              "to produce values x < " << r.z << ".";
         }
 
     }
@@ -114,7 +114,7 @@ TEST(PseudoRandom, TypeFullRange) {
     for (int i=0; i<200000; i++)
         dist.insert(rnd_raw<uchar>());
 
-    EXPECT_EQ((unsigned int)256, dist.size()) << "Expected "
+    EXPECT_EQ((unsigned int)255, dist.size()) << "Expected "
         "20000 random  unsigned chars to contain every "
         "possible uchar but could find only "
         << dist.size() << " values";
