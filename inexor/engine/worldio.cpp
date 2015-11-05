@@ -12,16 +12,17 @@ void cutogz(char *s)
 
 
 /// get the map name from a path/file
-/// @param fname folder name
-/// @param realname file name
+/// @param fname actual map file name
+/// @param realname map display name
 /// @param mapname a pointer to where the final map name will be copied (call by reference)
 void getmapfilename(const char *fname, const char *realname, char *mapname)
 {   
     if(!realname) realname = fname;
     string name;
-    inexor::filesystem::appendmediadir(name, MAXSTRLEN, realname, DIR_MAP);
+    copystring(name, realname, 100);
     cutogz(name);
-    copystring(mapname, name, 100);
+    inexor::filesystem::appendmediadir(mapname, MAXSTRLEN, fname, DIR_MAP);
+    cutogz(mapname);
 }   
 
 
