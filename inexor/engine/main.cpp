@@ -810,10 +810,7 @@ void resetgl()
     inbetweenframes = false;
     if(!reloadtexture(*notexture) || //todo
        !reloadtexture("media/interface/logo.png") ||
-       !reloadtexture("media/interface/logo_1024.png") || 
        !reloadtexture("media/interface/background.png") ||
-       !reloadtexture("media/interface/background_detail.png") ||
-       !reloadtexture("media/interface/background_decal.png") ||
        !reloadtexture("media/interface/mapshot_frame.png") ||
        !reloadtexture("media/interface/loading_frame.png") ||
        !reloadtexture("media/interface/loading_bar.png"))
