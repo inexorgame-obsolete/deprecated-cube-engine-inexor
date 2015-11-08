@@ -9,7 +9,7 @@ os="`uname | tolower`"
 bin="${dir}/bin/${os}/${arch}"
 exe="${bin}/inexor"
 
-ln -sf /lib/$(arch)-linux-gnu/libudev.so.1 ${bin}/libudev.so.0
+ln -sf /lib/${arch}-linux-gnu/libudev.so.1 ${bin}/libudev.so.0
 export LD_LIBRARY_PATH="$bin:$LD_LIBRARY_PATH"
 
 echo >&2 "CALLING: ${exe}"
