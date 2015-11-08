@@ -1,8 +1,9 @@
 {
   "name": "Inexor_IPC_Client",
-  "description": "Scripting in node.js for inexor",
+  "description": "Scripting in node.js for Inexor",
   "repository": "git@github.com:inexor-game/code.git",
   "version": "0.0.1",
+  "license": "Zlib",
   "dependencies": {
     "async": "^0.9.0",
     "bootstrap-styl": "^4.0.4",
