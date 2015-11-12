@@ -197,7 +197,7 @@ struct animmodel : model
 
         void preloadBIH()
         {
-            if(tex->type&Texture::ALPHA && !tex->alphamask) loadalphamask(tex);
+            loadalphamask(tex);
         }
  
         void preloadshader(bool force)
