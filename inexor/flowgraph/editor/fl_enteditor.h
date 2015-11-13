@@ -31,18 +31,13 @@ class CEntityManager
 
     void update_mouse(int, bool);
 
-    //void update_camera_pos(vec);
-    //void update_camera_angle(/*?*/);
-
-    //void update_hovered_node();
+    //void update_camera_angle();
 
     void render_temp_connection();
     
-
     protected:
 
     /// TODO: drag only in XY, YZ, ZX axis
-
     /// TODO: drag only along 1 dimension (X,Y,Z)
 
     /// this vector describes the line from the camera
@@ -52,7 +47,13 @@ class CEntityManager
     /// TODO: math...
     vec dragging_target_pos_offset;
 
-    vec old_camera_position;
+    vec drag_pos_start;
+    vec drag_pos_current;
+
+    vec camera_pos_start;
+    vec camera_offset_start;
+    vec camera_last_pos;
+    
     bool old_isdown;
 
     bool dragging_new_relation;

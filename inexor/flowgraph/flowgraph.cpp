@@ -323,7 +323,13 @@ namespace vscript {
                         vec p = nodes[i]->position;
                         if(rayboxintersect(p, vec(boxsize), camera1->o, camdir, dist, orient))
                         {
-                            conoutf(CON_DEBUG, "you clicked on a node!");
+                            /// save dragging information
+                            drag_pos_start = p;
+                            camera_offset_start = camera1->o;
+                            camera_last_pos = camera1->o;
+
+                            /// this is where we start
+                            drag_pos_current = p;
                             dragging_new_relation = true;
                         }
                     }
