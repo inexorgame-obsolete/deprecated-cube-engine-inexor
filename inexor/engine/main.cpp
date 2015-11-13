@@ -1219,6 +1219,8 @@ int main(int argc, char **argv)
     }
 
     /// require subsystems BEFORE configurations are done
+    //Initialize the metasystem
+    metapp = new inexor::util::Metasystem();
     SUBSYSTEM_REQUIRE(rpc);
     SUBSYSTEM_REQUIRE(cef);
 
@@ -1390,9 +1392,6 @@ int main(int argc, char **argv)
 
     inputgrab(grabinput = true);
     ignoremousemotion();
-
-    //Initialize the metasystem
-    metapp = new inexor::util::Metasystem();
 
 	// main game loop
     for(;;)
