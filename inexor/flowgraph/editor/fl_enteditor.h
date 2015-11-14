@@ -2,7 +2,6 @@
 /// @author Johannes Schneider
 /// @brief 3D Visual Scripting System's entity editor
 
-
 #ifndef INEXOR_VSCRIPT_ENTITYMANAGER_HEADER
 #define INEXOR_VSCRIPT_ENTITYMANAGER_HEADER
 
@@ -74,4 +73,3 @@ class CEntityManager
 };
 
 #endif
-

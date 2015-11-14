@@ -293,9 +293,12 @@ namespace vscript {
 
     void CVisualScriptSystem::process_change(int key, bool isdown)
     {
-        switch( - key)
+        switch( - key) /// TODO: why the minus?
         {
             case SDL_BUTTON_LEFT:
+                
+                if(isdown) conoutf(CON_DEBUG, "left click: making a new relation.");
+                else conoutf(CON_DEBUG, "left click: operation finished.");
 
                 /// stopping to drag
                 if(dragging_new_relation && !isdown)
@@ -321,6 +324,7 @@ namespace vscript {
                         float dist = 0.0f;
                         int orient = VSCRIPT_BOX_NO_INTERSECTION;
                         vec p = nodes[i]->position;
+
                         if(rayboxintersect(p, vec(boxsize), camera1->o, camdir, dist, orient))
                         {
                             /// save dragging information
@@ -333,11 +337,14 @@ namespace vscript {
                             dragging_new_relation = true;
                         }
                     }
-                }
-                
+                }                
                 break;
 
+
             case SDL_BUTTON_RIGHT:
+
+                if(isdown) conoutf(CON_DEBUG, "right click: dragging entity around.");
+                else conoutf(CON_DEBUG, "right click: dragging finished.");
                 break;
         }
     }

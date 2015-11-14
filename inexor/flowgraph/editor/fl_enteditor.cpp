@@ -22,7 +22,6 @@ namespace vscript {
     }
 
 
-
     void CEntityManager::update_mouse(int key, bool isdown)
     {
         /// check if LEFT mouse button is down for dragging a new connection out of the node
