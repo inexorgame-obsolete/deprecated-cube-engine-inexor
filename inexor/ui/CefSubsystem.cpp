@@ -13,7 +13,16 @@ namespace ui {
 
 CefSubsystem::CefSubsystem() {
     ::cef_app = new InexorCefApp(scr_w, scr_h);
-    const CefMainArgs args;
+}
+
+CefSubsystem::~CefSubsystem() {
+    ::cef_app->Destroy();
+    ::cef_app = NULL;
+}
+
+int CefSubsystem::main(int argc, char** argv)
+{
+    const CefMainArgs args(argc, argv);
     int exit_code = CefExecuteProcess(args, cef_app, NULL);
     if (exit_code >= 0) {
         std::string msg = fmt << "Forking the CEF process "
@@ -26,11 +35,7 @@ CefSubsystem::CefSubsystem() {
     CefInitialize(args, settings, cef_app.get(), NULL);
 
     tick();
-}
-
-CefSubsystem::~CefSubsystem() {
-    ::cef_app->Destroy();
-    ::cef_app = NULL;
+    return 0;
 }
 
 void CefSubsystem::tick() {

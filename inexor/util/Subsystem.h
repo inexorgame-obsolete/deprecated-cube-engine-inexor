@@ -44,6 +44,10 @@ public:
     /// inexor is quit
     virtual ~Subsystem() {};
 
+    /// Called to pass an configuration for an subsystem
+    /// which is already started.
+    virtual int main(int argc, char** argv) { return 0; };
+
     /// Called once per frame, or what ever our event loop
     /// is
     virtual void tick() {};
@@ -188,6 +192,20 @@ public:
     virtual void paint() {
         for (auto &e : this->subsystems) e.second->paint();
     }
+
+
+    /// Pass command line arguments to a subsystem
+    int main(std::string &sub, int argc, char** argv) {
+        Subsystem::Register::EnsureExist(sub);
+        auto &subsystem = this->subsystems[sub];
+        return subsystem->main(argc, argv);
+    }
+
+    int main(const char *sub, int argc, char** argv) {
+        std::string s(sub);
+        return main(s, argc, argv);
+    }
+
 };
 
 #define __SUBSYSTEM_DUMMY(name) \
