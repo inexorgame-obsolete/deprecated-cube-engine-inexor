@@ -24,7 +24,7 @@ int screenw = 0, screenh = 0, desktopw = 0, desktoph = 0;
 int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1;
 int initing = NOT_INITING;
 
-inexor::util::Metasystem *metapp;
+inexor::util::Metasystem *metapp = NULL;
 
 /// exiting the game
 
@@ -1180,8 +1180,8 @@ static bool findarg(int argc, char **argv, const char *str)
    #define main SDL_main
 #endif
 
-ICOMMANDERR(subsystem_start, "s", (char *s), metapp->start(s));
-ICOMMANDERR(subsystem_stop, "s", (char *s), metapp->stop(s));
+ICOMMANDERR(subsystem_start, "s", (char *s), if(metapp) metapp->start(s));
+ICOMMANDERR(subsystem_stop, "s", (char *s), if(metapp) metapp->stop(s));
 
 ICOMMAND(cef_load, "s", (char *cv),
     std::string u(cv);
@@ -1441,7 +1441,7 @@ int main(int argc, char **argv)
 
         renderedframe = inbetweenframes = true;
     }
-    delete metapp;
+    DELETEP(metapp);
 
     ASSERT(0);
     return EXIT_FAILURE;
