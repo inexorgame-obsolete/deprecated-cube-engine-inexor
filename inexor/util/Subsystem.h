@@ -3,10 +3,6 @@
 
 #include <string>
 #include <unordered_map>
-#include <utility>
-#include <functional>
-#include <map>
-#include <initializer_list>
 
 #include "inexor/util/util.h"
 #include "inexor/util/InexorException.h"
@@ -132,7 +128,7 @@ public:
 /// this contains.
 class Metasystem : public Subsystem  {
 public:
-    std::map<std::string, Subsystem*> subsystems;
+    std::unordered_map<std::string, Subsystem*> subsystems;
 
     /// Start this Metasystem with no subsystems
     Metasystem() {}
