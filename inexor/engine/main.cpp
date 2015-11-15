@@ -1180,8 +1180,9 @@ static bool findarg(int argc, char **argv, const char *str)
    #define main SDL_main
 #endif
 
-int subsystem_argc;
-char** subsystem_argv;
+// These are placeholders to pass argc and argv to sub-proccesses
+int subsystem_argc = NULL;
+char** subsystem_argv = nullptr;
 
 ICOMMANDERR(subsystem_start, "s", (char *s), metapp->start(s));
 ICOMMANDERR(subsystem_init, "s", (char *s), metapp->init(s, subsystem_argc, subsystem_argv));
@@ -1289,6 +1290,18 @@ int main(int argc, char **argv)
 
     numcpus = clamp(SDL_GetCPUCount(), 1, 16);
 
+    if(dedicated <= 1)
+    {
+        logoutf("init: sdl");
+
+        int par = 0;
+        #ifdef _DEBUG
+           par = SDL_INIT_NOPARACHUTE;
+        #endif
+        if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO|par)<0) fatal("Unable to initialize SDL: %s", SDL_GetError());
+        SDL_StartTextInput();
+    }
+
     /* This is a unique parameter that only CEF calls
      * We encapsulate an own main loop for the CEF child proccess
      * This behavoir prohibits double initialisation.
@@ -1305,18 +1318,6 @@ int main(int argc, char **argv)
         metapp->init("cef", argc, argv);
         conoutf("[[main]] zygote end");
         return EXIT_SUCCESS;
-    }
-
-    if(dedicated <= 1)
-    {
-        logoutf("init: sdl");
-
-        int par = 0;
-        #ifdef _DEBUG
-           par = SDL_INIT_NOPARACHUTE;
-        #endif
-        if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO|par)<0) fatal("Unable to initialize SDL: %s", SDL_GetError());
-        SDL_StartTextInput();
     }
 
     logoutf("init: net");
