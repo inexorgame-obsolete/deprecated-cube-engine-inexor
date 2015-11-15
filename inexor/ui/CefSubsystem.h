@@ -18,9 +18,11 @@ class CefSubsystem : public inexor::util::Subsystem {
 public:
     CefSubsystem();
     virtual ~CefSubsystem();
-    int main(int argc, char** argv);
+    int init(int argc, char** argv);
     virtual void tick();
     virtual void paint();
+private:
+    bool initialized;
 };
 
 }

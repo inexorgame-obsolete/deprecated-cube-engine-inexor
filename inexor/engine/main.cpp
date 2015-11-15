@@ -1180,7 +1180,11 @@ static bool findarg(int argc, char **argv, const char *str)
    #define main SDL_main
 #endif
 
+int subsystem_argc;
+char** subsystem_argv;
+
 ICOMMANDERR(subsystem_start, "s", (char *s), metapp->start(s));
+ICOMMANDERR(subsystem_init, "s", (char *s), metapp->init(s, subsystem_argc, subsystem_argv));
 ICOMMANDERR(subsystem_stop, "s", (char *s), metapp->stop(s));
 
 ICOMMAND(cef_load, "s", (char *cv),
@@ -1198,6 +1202,12 @@ ICOMMAND(cef_focus, "b", (bool *b),
 /// main program start
 int main(int argc, char **argv)
 {
+    conoutf("Got %d command line arguments", argc);
+    for (int i = 0; i < argc; i++) conoutf("  arg %d: %s", i, argv[i]);
+
+    subsystem_argc = argc;
+    subsystem_argv = argv;
+
     setlogfile(NULL);
 
     int dedicated = 0;
@@ -1218,8 +1228,8 @@ int main(int argc, char **argv)
         }
     }
 
-    /// require subsystems BEFORE configurations are done
-    //Initialize the metasystem
+    /// initialize the metasystem and require subsystems
+    /// BEFORE configurations are done
     metapp = new inexor::util::Metasystem();
     SUBSYSTEM_REQUIRE(rpc);
     SUBSYSTEM_REQUIRE(cef);
@@ -1278,6 +1288,24 @@ int main(int argc, char **argv)
     initing = NOT_INITING;
 
     numcpus = clamp(SDL_GetCPUCount(), 1, 16);
+
+    /* This is a unique parameter that only CEF calls
+     * We encapsulate an own main loop for the CEF child proccess
+     * This behavoir prohibits double initialisation.
+     * - Previously the CEF subsystem would start a child proccess
+     * - This forks the entire proccess
+     * - Intended behavoir would re-initilize the entire game
+     * - Screw it. that's a hard bug for 4 lines of code
+     */
+    if (strcmp(argv[1], "--type=zygote") == 0) {
+        // now we know, we are in the forked CEF browser
+        // process and are able to avoid double initialization
+        conoutf("[[main]] zygote detected, forcing cef submodule");
+        metapp->start("cef");
+        metapp->init("cef", argc, argv);
+        conoutf("[[main]] zygote end");
+        return EXIT_SUCCESS;
+    }
 
     if(dedicated <= 1)
     {
