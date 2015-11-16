@@ -6,6 +6,7 @@
 
 #include "inexor/util/util.h"
 #include "inexor/util/InexorException.h"
+#include "inexor/compat/make_unique.h"
 
 namespace inexor {
 namespace util {
@@ -54,7 +55,7 @@ public:
     /// at run time, so we instead store these functions as
     /// proxies to the Constructors.
     /// We create these as lambdas in the SUBSYSTEM_REGISTER macro;
-    typedef Subsystem*(*Starter)();
+    typedef std::function<std::unique_ptr<Subsystem>()> Starter;
 
     // A map of all registered Starters and their names.
     //
@@ -128,15 +129,12 @@ public:
 /// this contains.
 class Metasystem : public Subsystem  {
 public:
-    std::unordered_map<std::string, Subsystem*> subsystems;
+    std::unordered_map<
+        std::string, std::unique_ptr<Subsystem>> subsystems;
 
     /// Start this Metasystem with no subsystems
     Metasystem() {}
 
-    /// Shutdown/Destroy all subsystems
-    virtual ~Metasystem() {
-        for (auto &e : this->subsystems) delete e.second;
-    }
 
     /// Start a subsystem by name
     void start(std::string &sub) {
@@ -148,8 +146,7 @@ public:
             throw SubsystemAlreadyRunning(s);
         }
 
-        auto &starter = Subsystem::Register::Get(sub);
-        subsystems[sub] = starter();
+        subsystems[sub] = Subsystem::Register::Get(sub)();
     }
 
     void start(const char *sub) {
@@ -167,7 +164,6 @@ public:
             throw SubsystemNotRunning(s);
         }
 
-        delete subsystems[sub];
         subsystems.erase(sub);
     }
     void stop(const char *sub) {
@@ -211,8 +207,8 @@ public:
 #define SUBSYSTEM_REGISTER(name, clazz)               \
     int __SUBSYSTEM_DUMMY(name) INEXOR_ATTR_UNUSED = \
       ::inexor::util::Subsystem::Register::Set( #name, \
-          []() -> ::inexor::util::Subsystem* {        \
-              return new clazz ; });
+        [](){ return ::inexor::util::dynamic_pointer_cast<Subsystem>( \
+          ::inexor::compat::make_unique<clazz>()); });
 
 /// Make sure that a specific subsystem is included
 ///
