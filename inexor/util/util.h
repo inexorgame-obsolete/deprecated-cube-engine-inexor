@@ -8,16 +8,6 @@
 namespace inexor {
 namespace util {
 
-  /// The delete operator as a function.
-  ///
-  /// Calls delete on any pointer given.
-  ///
-  /// @tparam T The type of pointer to delete
-  /// @param x The pointer to delete
-  template <typename T> inline void f_delete(T* x) {
-    delete x;
-  }
-
   /// Convert stuff to a string.
   ///
   /// This works for anything that has the ostream <<
