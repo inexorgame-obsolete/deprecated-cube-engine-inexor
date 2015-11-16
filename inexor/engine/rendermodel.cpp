@@ -406,6 +406,8 @@ void preloadusedmapmodels(bool msg, bool bih)
     loadprogress = 0;
 }
 
+vector<std::string> missingmodels; // models that fail to load once, we will never try to load again
+
 model *loadmodel(const char *name, int i, bool msg)
 {
     if(!name)
@@ -421,6 +423,7 @@ model *loadmodel(const char *name, int i, bool msg)
     else
     { 
         if(!name[0] || loadingmodel || lightmapping > 1) return NULL;
+        if(missingmodels.find(name) > 0) return NULL;
         if(msg)
         {
             defformatstring(filename, "%s/%s", *modeldir, name);
@@ -435,7 +438,10 @@ model *loadmodel(const char *name, int i, bool msg)
             DELETEP(m);
         }
         loadingmodel = NULL;
-        if(!m) return NULL;
+        if(!m) {
+            missingmodels.add(name);
+            return NULL;
+        }
         models.access(m->name, m);
         m->preloadshaders();
     }
