@@ -83,7 +83,7 @@ public:
         }
 
         /// Check if the given subsystem exists
-        static bool Exist(std::string k) {
+        static bool Exist(const std::string &k) {
             auto &m = GetInstance();
             return m.find(k) != m.end();
         }
@@ -91,34 +91,20 @@ public:
 
         /// Ensure that the given subsystem exists. If it does
         /// not, throws an exception.
-        static void EnsureExist(std::string k) {
-            if (!Exist(k)) {
-                std::string s = inexor::util::fmt
-                  << "The subsystem '" << k
-                  << "' does not exist.";
-                throw NoSuchSubsystem(s);
-            }
+        static void EnsureExist(const std::string &k) {
+            if (!Exist(k)) throw NoSuchSubsystem();
         }
 
-        static Starter& Get(std::string k) {
+        static Starter& Get(const std::string &k) {
             return GetInstance()[k];
-        }
-        static Starter& Get(const char *k) {
-            std::string s(k);
-            return Get(s);
         }
 
         /// Thats an alias for setting a k/v pair in the map
         ///
         /// @return Always 0. (In order so we can use that in
         ///     SUBSYSTEM_REGISTER with a dummy variable).
-        static int Set(std::string &k, Starter v) {
+        static void Set(const std::string &k, Starter v) {
             GetInstance()[k] = v;
-            return 0;
-        }
-        static int Set(const char *k, Starter v) {
-            std::string s(k);
-            return Set(s,v);
         }
     };
 };
@@ -141,38 +127,25 @@ public:
     }
 
     /// Start a subsystem by name
-    void start(std::string &sub) {
+    ///
+    /// @throws SubsystemAlreadyRunning
+    /// @throws NoSuchSubsystem
+    void start(const std::string &sub) {
         Subsystem::Register::EnsureExist(sub);
-        if (subsystems.find(sub) != subsystems.end()){
-            std::string s = inexor::util::fmt
-              << "Trying to start subsystem '" << sub
-              << "', but it is already running.";
-            throw SubsystemAlreadyRunning(s);
-        }
+        if (is_running(sub)) throw SubsystemAlreadyRunning();
 
         subsystems[sub] = Subsystem::Register::Get(sub)();
     }
 
-    void start(const char *sub) {
-        std::string s(sub);
-        start(s);
-    }
-
     /// Stop a subsystem by name
-    void stop(std::string &sub) {
+    ///
+    /// @throws SubsystemAlreadyRunning
+    /// @throws NoSuchSubsystem
+    void stop(const std::string &sub) {
         Subsystem::Register::EnsureExist(sub);
-        if (subsystems.find(sub) == subsystems.end()){
-            std::string s = inexor::util::fmt << "Trying to "
-              << "stop subsystem '" << sub << "', but it is "
-              << "not running.";
-            throw SubsystemNotRunning(s);
-        }
+        if (!is_running(sub)) throw SubsystemNotRunning();
 
         subsystems.erase(sub);
-    }
-    void stop(const char *sub) {
-        std::string s(sub);
-        stop(s);
     }
 
     /// Forwarded to all subsystems
@@ -208,11 +181,12 @@ public:
 ///
 /// @param name The name to register the subsystem as
 /// @param clazz The class of the subsystem
-#define SUBSYSTEM_REGISTER(name, clazz)               \
-    int __SUBSYSTEM_DUMMY(name) INEXOR_ATTR_UNUSED = \
+#define SUBSYSTEM_REGISTER(name, clazz)                \
+    int __SUBSYSTEM_DUMMY(name) INEXOR_ATTR_UNUSED = ( \
       ::inexor::util::Subsystem::Register::Set( #name, \
         [](){ return ::inexor::util::dynamic_pointer_cast<Subsystem>( \
-          ::inexor::compat::make_unique<clazz>()); });
+          ::inexor::compat::make_unique<clazz>()); })  \
+      , 0);
 
 /// Make sure that a specific subsystem is included
 ///

@@ -1180,8 +1180,8 @@ static bool findarg(int argc, char **argv, const char *str)
    #define main SDL_main
 #endif
 
-ICOMMANDERR(subsystem_start, "s", (char *s), if(metapp) metapp->start(s));
-ICOMMANDERR(subsystem_stop, "s", (char *s), if(metapp) metapp->stop(s));
+ICOMMANDERR(subsystem_start, "s", (char *s), std::string ccs{s}; metapp->start(ccs));
+ICOMMANDERR(subsystem_stop, "s", (char *s), std::string ccs{s}; metapp->stop(ccs));
 
 ICOMMAND(cef_load, "s", (char *cv),
     std::string u(cv);
