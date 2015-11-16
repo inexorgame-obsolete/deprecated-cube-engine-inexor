@@ -135,6 +135,10 @@ public:
     /// Start this Metasystem with no subsystems
     Metasystem() {}
 
+    /// Check whether the given subsystem is running or not
+    bool is_running(const std::string &sub) noexcept {
+      return subsystems.count(sub) > 0;
+    }
 
     /// Start a subsystem by name
     void start(std::string &sub) {
