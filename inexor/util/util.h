@@ -2,10 +2,12 @@
 #define INEXOR_UTIL_UTIL_HEADER
 
 #include <string>
+#include <memory>
 #include "inexor/util/StringFormatter.h"
 
 namespace inexor {
 namespace util {
+
   /// The delete operator as a function.
   ///
   /// Calls delete on any pointer given.
@@ -24,6 +26,20 @@ namespace util {
   /// This internally simply uses the StringFormatter
   template<typename T> std::string to_string(T x) {
     return fmt << x;
+  }
+
+  /// Moving dynamic cast for unique_ptr
+  ///
+  /// If successful, the given pointer will be released and
+  /// moved into the returned pointer with the new type.
+  ///
+  /// If the cast fails, the returned pointer will contain
+  /// nullptr and the input pointer will be unmodified.
+  template<typename To, typename From>
+  std::unique_ptr<To> dynamic_pointer_cast(std::unique_ptr<From> &&f) noexcept {
+    To *tp = dynamic_cast<To*>(f.get());
+    if (tp != nullptr) f.release();
+    return std::unique_ptr<To>{ tp };
   }
 
   /// Split a string and get the last component.
