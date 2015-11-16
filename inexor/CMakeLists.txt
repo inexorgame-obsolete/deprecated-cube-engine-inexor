@@ -20,6 +20,10 @@ add_subdirectory(rpc) # rpc module, protobuf lib
 add_subdirectory(ui)
 add_subdirectory(crashreporter)
 
+#Hanni
+add_subdirectory(flowgraph)
+add_subdirectory(geom)
+
 # Actual targets
 opt_subdir(client on)
 opt_subdir(server on)
