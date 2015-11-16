@@ -24,7 +24,7 @@ int screenw = 0, screenh = 0, desktopw = 0, desktoph = 0;
 int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1;
 int initing = NOT_INITING;
 
-inexor::util::Metasystem *metapp = NULL;
+inexor::util::Metasystem metapp;
 
 /// exiting the game
 
@@ -70,7 +70,6 @@ void cleanup()
 /// @see cleanup
 void quit()
 {
-    delete metapp;
     // CefShutdown();
     writeinitcfg();
     writeservercfg();
@@ -1180,8 +1179,8 @@ static bool findarg(int argc, char **argv, const char *str)
    #define main SDL_main
 #endif
 
-ICOMMANDERR(subsystem_start, "s", (char *s), std::string ccs{s}; metapp->start(ccs));
-ICOMMANDERR(subsystem_stop, "s", (char *s), std::string ccs{s}; metapp->stop(ccs));
+ICOMMANDERR(subsystem_start, "s", (char *s), std::string ccs{s}; metapp.start(ccs));
+ICOMMANDERR(subsystem_stop, "s", (char *s), std::string ccs{s}; metapp.stop(ccs));
 
 ICOMMAND(cef_load, "s", (char *cv),
     std::string u(cv);
@@ -1217,6 +1216,11 @@ int main(int argc, char **argv)
 			}
         }
     }
+
+    /// require subsystems BEFORE configurations are done
+    //Initialize the metasystem
+    SUBSYSTEM_REQUIRE(rpc);
+    SUBSYSTEM_REQUIRE(cef);
 
 	/// parse command line arguments
     execfile("init.cfg", false);
@@ -1388,7 +1392,6 @@ int main(int argc, char **argv)
     ignoremousemotion();
 
     //Initialize the metasystem
-    metapp = new inexor::util::Metasystem();
     SUBSYSTEM_REQUIRE(rpc);
     SUBSYSTEM_REQUIRE(cef);
 
@@ -1409,7 +1412,7 @@ int main(int argc, char **argv)
         totalmillis = millis;
         updatetime();
 
-        metapp->tick();
+        metapp.tick();
 
         checkinput();
         menuprocess();
@@ -1435,13 +1438,12 @@ int main(int argc, char **argv)
         if(mainmenu) gl_drawmainmenu();
         else gl_drawframe();
 
-        metapp->paint();
+        metapp.paint();
 
         swapbuffers();
 
         renderedframe = inbetweenframes = true;
     }
-    DELETEP(metapp);
 
     ASSERT(0);
     return EXIT_FAILURE;
