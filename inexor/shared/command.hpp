@@ -4,7 +4,7 @@
 #ifndef SAUER_COMMAND_H
 #define SAUER_COMMAND_H
 
-#include "inexor/rpc/SharedVar.hpp"
+#include "inexor/rpc/SharedTree.hpp"
 
 /// contains all kind of different script objects
 /// such as commands, variables, macros or idents
@@ -308,7 +308,7 @@ inline void ident::getval(tagval &v) const
 #define COMMANDN(name, fun, nargs) UNUSED static bool __dummy_##fun = addcommand(#name, (identfun)fun, nargs)
 #define COMMAND(name, nargs) COMMANDN(name, name, nargs)
 
-#define _VAR(name, global, min, cur, max, persist)  SharedVar<int> global((int)cur); UNUSED int dummy_register_##global = variable(#name, min, cur, max, &global, NULL, persist)
+#define _VAR(name, global, min, cur, max, persist) SharedVar<int> global((int)cur); UNUSED int dummy_register_##global = variable(#name, min, cur, max, &global, NULL, persist)
 #define VARN(name, global, min, cur, max) _VAR(name, global, min, cur, max, 0)
 #define VARNP(name, global, min, cur, max) _VAR(name, global, min, cur, max, IDF_PERSIST)
 #define VARNR(name, global, min, cur, max) _VAR(name, global, min, cur, max, IDF_OVERRIDE)
