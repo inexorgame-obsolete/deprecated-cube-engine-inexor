@@ -26,8 +26,8 @@ class InexorCefSettings : public CefSettings {
 	        remote_debugging_port = 13012;
 	        char base_path[FILENAME_MAX];
 	        GetCurrentDir(base_path, sizeof(base_path));
-	        CefString(&resources_dir_path).FromString(std::string(base_path) + "/inexor/platform/resources/all");
-	        CefString(&locales_dir_path).FromString(std::string(base_path) + "/inexor/platform/resources/all/locales");
+	        CefString(&resources_dir_path).FromString(std::string(base_path) + "/bin/all");
+	        CefString(&locales_dir_path).FromString(std::string(base_path) + "/bin/all/locales");
 	        CefString(&log_file).FromString(std::string(base_path) + "/inexorcef.log");
         };
 };

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.7)
+cmake_minimum_required(VERSION 2.8.12)
 
 include(inexor/functions.cmake)
 
@@ -12,9 +12,11 @@ if(NOT DEFINED CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE INTERN "")
 endif()
 
-# Set a default toolchain file
+
+message(STATUS "CMAKE_VERSION = ${CMAKE_VERSION}")
 message(STATUS "CMAKE_GENERATOR = ${CMAKE_GENERATOR}")
 
+# Set a default toolchain file
 string(TOLOWER "${CMAKE_GENERATOR}" GEN)
 if(GEN MATCHES ".*visual studio.*")
   set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/inexor/platform/vs.cmake)
@@ -313,7 +315,7 @@ message(STATUS "EXE_LINKER_FLAGS_RELEASE:       ${CMAKE_EXE_LINKER_FLAGS_RELEASE
 # Set output path for the compiled executable
 set(EXE_DIR "${PROJECT_SOURCE_DIR}/${EXE_SUB_DIR}")
 
-set(INSTALL_RESOURCES_DIR   ${BUILD_INSTALL_DIR}/resources  CACHE INTERNAL "")
+set(INSTALL_RESOURCES_DIR "${PROJECT_SOURCE_DIR}/bin/all")
 
 message(STATUS "Generating Project-Files to ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS " - Resulting Executable goes to ${EXE_DIR}")
@@ -321,6 +323,8 @@ message(STATUS " - Resulting Executable goes to ${EXE_DIR}")
 add_subdirectory(inexor)
 
 install(FILES ${INSTALL_SHARED_LIBS} ${INSTALL_EXES} DESTINATION ${EXE_DIR})
+message(STATUS "INSTALL_RESOURCES       = ${INSTALL_RESOURCES}")
+install(FILES ${INSTALL_RESOURCES} DESTINATION ${INSTALL_RESOURCES_DIR})
 
 # shipped portable stuff on win (dirty but temporarily)
 if(OS_WINDOWS)
