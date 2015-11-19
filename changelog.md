@@ -19,6 +19,15 @@
   * fixed: screenshotdir gets ignored if you don't specify screenshot name
   * updating our Travis CI environment from Ubuntu 12.04 to Ubuntu 14.04 as well as speeding up the whole process
   * adding support for Microsoft Visual Studio 2015, dropping support for 2013 (only affects prebuilt dependencies)
+  
+#### Updates
+##### 0.4.1 - 2015-11-19
+  * improved: don't try to load missing map models on each frame
+  * fixed: crash on explosions 
+  * fixed: crash when starting subsystems in startup scripts
+  * fixed: /getmap tries to load non-existing local map
+  * fixed: /resetgl tries to load non-existing files
+  * fixed: loading CEF resources + installing the CEF locales
 
 
 ***
