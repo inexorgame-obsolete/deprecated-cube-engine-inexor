@@ -8,6 +8,7 @@
 namespace inexor {
 namespace vscript {
 
+
     CEntityManager::CEntityManager()
     {
         dragging_new_relation = false;

@@ -6,35 +6,36 @@
 #ifndef INEXOR_VSCRIPT_MEMBASE_HEADER
 #define INEXOR_VSCRIPT_MEMBASE_HEADER
 
+/// TODO: inform the programmer about value limits?
+
 /// Inexor namespace protection
 namespace inexor {
 namespace vscript {
 
-/// TODO: inform the programmer about limits!
-
-/// data type enumeration
-enum VSCRIPT_DATA_TYPE 
-{
-    TYPE_INTEGER_VALUE,  /// always signed
-    TYPE_FLOATING_POINT, /// always double
-    TYPE_STRING,
-    TYPE_BOOLEAN,
-    TYPE_VECTOR,
-    TYPE_TIMESTAMP,
-    TYPE_COLOR,
-};
+    /// data type enumeration
+    enum VSCRIPT_DATA_TYPE 
+    {
+        TYPE_INTEGER_VALUE,  /// always signed
+        TYPE_FLOATING_POINT, /// always double
+        TYPE_STRING,
+        TYPE_BOOLEAN,
+        TYPE_VECTOR,
+        TYPE_TIMESTAMP,
+        TYPE_COLOR,
+    };
 
 
-/// TODO: Implement memory with std::any!
-class CMemory
-{
-    CMemory();
-    ~CMemory();
+    /// TODO: Implement memory with std::any or unions!
+    class CMemory
+    {
+        CMemory();
 
-    void in();
-    void run();
-    void out();
-};
+        ~CMemory();
+
+        void in();
+        void run();
+        void out();
+    };
 
 
 /// end of namespace

@@ -16,7 +16,6 @@ namespace vscript {
     }
 
 
-
     void CVisualScriptRenderer::start_rendering()
     {
         notextureshader->set();

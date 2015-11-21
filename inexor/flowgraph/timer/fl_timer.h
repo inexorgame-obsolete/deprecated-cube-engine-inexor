@@ -26,10 +26,6 @@
 #include "inexor/engine/engine.h"
 #include "inexor/flowgraph/node/fl_nodebase.h"
 
-// Inexor namespace protection
-namespace inexor {
-namespace vscript {
-
 /// Minimum time interval (in miliseconds)
 #define INEXOR_VSCRIPT_MIN_TIMER_INTERVAL 10
 
@@ -42,50 +38,58 @@ namespace vscript {
 /// Default timer execution limit
 #define INEXOR_VSCRIPT_DEFAULT_TIMER_EXECUTION_LIMIT 1000*1000
 
-/// @brief Implementation of timer nodes.
-class timer_node : public script_node
-{
-    public:
-    
-    // Please note: there is no standard constructor!
 
-    /// Overloaded constructor for dynamic allocation
-    timer_node(vec pos, 
-                unsigned int interval, 
-                unsigned int startdelay, 
-                unsigned int limit = INEXOR_VSCRIPT_DEFAULT_TIMER_EXECUTION_LIMIT, 
-                unsigned int cooldown = 0, 
-                const char* name = "NewTimer1", 
-                const char* comment = "Hello World Comment", 
-                INEXOR_VSCRIPT_TIME_FORMAT format = TIME_FORMAT_MILISECONDS);
+// Inexor namespace protection
+namespace inexor {
+namespace vscript {
+
+    /// Time format enumerations
+    enum INEXOR_VSCRIPT_TIME_FORMAT
+    {
+        TIME_FORMAT_MILISECONDS,
+        TIME_FORMAT_SECONDS,
+        TIME_FORMAT_MINUTES,
+        TIME_FORMAT_HOURS
+    };
 
 
-    ~timer_node();
+    /// @brief Implementation of timer nodes.
+    class timer_node : public script_node
+    {
+        public:
 
-    unsigned int timer_startdelay;
-    unsigned int timer_counter;
-    unsigned int timer_interval;
-    unsigned int timer_limit;
-    unsigned int timer_cooldown;
+        timer_node(vec pos, 
+                    unsigned int interval, 
+                    unsigned int startdelay, 
+                    unsigned int limit = INEXOR_VSCRIPT_DEFAULT_TIMER_EXECUTION_LIMIT, 
+                    unsigned int cooldown = 0, 
+                    const char* name = "NewTimer1", 
+                    const char* comment = "Hello World Comment", 
+                    INEXOR_VSCRIPT_TIME_FORMAT format = TIME_FORMAT_MILISECONDS);
 
-    /// Incoming node signal
-    void in();
 
-    /// Implementation of the run method
-    void run();
-        
-    /// Resetting the timer means to reset last_time
-    void reset();
+        ~timer_node();
 
-    private:
+        unsigned int timer_startdelay;
+        unsigned int timer_counter;
+        unsigned int timer_interval;
+        unsigned int timer_limit;
+        unsigned int timer_cooldown;
 
-    /// check the timer status
-    /// do we need to call the trigger?
-    void check_if_execution_is_due();
+        void in();
+        void run();
+        void reset();
 
-    /// notify child nodes
-    void out();
-};
+
+        private:
+
+        /// check the timer status
+        /// do we need to call the trigger?
+        void check_if_execution_is_due();
+
+        void out();
+    };
+
 
 // end of namespace
 };

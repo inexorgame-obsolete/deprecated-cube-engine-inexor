@@ -23,51 +23,43 @@
 #include "inexor/engine/engine.h"
 #include "inexor/flowgraph/node/fl_nodebase.h"
 
-
-// Inexor namespace protection
-namespace inexor {
-namespace vscript {
-
 /// At least 10 ms of sleep
 #define INEXOR_VSCRIPT_MIN_SLEEP_INTERVAL 10
 
 /// One whole day is the maximum delay (in miliseconds)
 #define INEXOR_VSCRIPT_MAX_SLEEP_INTERVAL 1000 * 60 * 60 * 24
 
-/// @brief Implementation of timer nodes.
-class sleep_node : public script_node
-{
-    public:
-    
-    // Please note: there is no standard constructor!
+// Inexor namespace protection
+namespace inexor {
+namespace vscript {
 
-    /// Overloaded constructor for dynamic allocation
-    sleep_node(vec pos, 
-                unsigned int sleeptime, 
-                const char* name = "NewTimer1", 
-                const char* comment = "Hello World Comment", 
-                INEXOR_VSCRIPT_TIME_FORMAT format = TIME_FORMAT_MILISECONDS);
+    /// @brief Implementation of timer nodes.
+    class sleep_node : public script_node
+    {
+        public:
+    
+        unsigned int sleep_start;
+        unsigned int sleep_end;
+        unsigned int sleep_interval;
+
+        sleep_node(vec pos, 
+                   unsigned int sleeptime, 
+                   const char* name = "NewTimer1", 
+                   const char* comment = "Hello World Comment");
                 
-    ~sleep_node();
+        ~sleep_node();
 
-    unsigned int sleep_start;
-    unsigned int sleep_end;
-    unsigned int sleep_interval;
 
-    /// Incoming node signal
-    void in();
+        void in();
+        void run();
+        void reset();
 
-    /// Implementation of the run method
-    void run();
-        
-    /// Resetting the timer means to reset last_time
-    void reset();
 
-    private:
+        private:
     
-    /// notify child nodes
-    void out();
-};
+        void out();
+    };
+
 
 // end of namespace
 };

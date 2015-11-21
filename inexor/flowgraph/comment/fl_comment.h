@@ -27,27 +27,25 @@
 namespace inexor {
 namespace vscript {
 
+    /// this class represents comment in 3D space
+    /// a comment can not run code at all
+    class comment_node : public script_node
+    {
+        public:
 
-/// this class represents comment in 3D space
-/// a comment can not run code at all
-class comment_node : public script_node
-{
-    public:
-    /// Please note: There is no standard constructor.
+        comment_node(vec pos, const char* comment, const char* name = "CommentName1");
 
-    /// overloaded standard constructor
-    comment_node(vec pos, const char* comment, const char* name = "CommentName1");
-    /// TODO: Is a destructor required?
-    ~comment_node();
+        ~comment_node();
 
-    /// comments are not part of the code itself
-    /// so they do not run code or get notifyed or
-    /// notify other nodes!
-    void run() {}
-    void in() {}
-    void out() {}
-    void reset() {}
-};
+        /// comments are not part of the code itself
+        /// so they do not run code or get notifyed or
+        /// notify other nodes!
+        void run() {}
+        void in() {}
+        void out() {}
+        void reset() {}
+    };
+
 
 /// end of namespace
 };

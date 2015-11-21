@@ -28,34 +28,33 @@
 namespace inexor {
 namespace vscript {
 
-/// Function
-class function_conoutf_node : public script_node
-{
-    protected:
+
+    /// Function
+    class function_conoutf_node : public script_node
+    {
+        protected:
     
-    /// output
-    std::string param_text_output;
-    std::string raw_text_input;
+        /// output
+        std::string param_text_output;
+        std::string raw_text_input;
 
-    public:
+        public:
 
-    /// constructor
-    function_conoutf_node(vec pos, const char* raw_text);
+        function_conoutf_node(vec pos, const char* raw_text);
 
-    /// destructor
-    ~function_conoutf_node();
+        ~function_conoutf_node();
 
-    void in();
-    void run();
+        void in();
+        void run();
 
-    /// TODO: format
-    void format_output();
+        /// TODO: format
+        void format_output();
 
-    void out();
-    /// TODO: ?
-    void reset();
+        void out();
+        /// TODO: ?
+        void reset();
 
-};
+    };
 
 /// end of namespace
 };

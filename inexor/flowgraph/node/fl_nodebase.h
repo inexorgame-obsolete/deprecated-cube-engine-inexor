@@ -31,10 +31,6 @@
 
 #include "inexor/engine/engine.h"
 
-/// time conversion tools
-#include "inexor/flowgraph/time/fl_time.h"
-
-
 /// c++ standard libraries
 #include <string>
 #include <vector>
@@ -46,83 +42,85 @@
 namespace inexor {
 namespace vscript {
 
-/// The node entity's box size
-const float boxsize = 3.0f;
-
-/// enumeration of node types
-enum VSCRIPT_NODE_TYPE
-{
-    NODE_TYPE_INVALID = -1, /// TODO: Is this type even neccesary?
-    NODE_TYPE_TIMER = 0,
-    NODE_TYPE_COMMENT,
-    NODE_TYPE_FUNCTION,
-    NODE_TYPE_MEMORY,
-    NODE_TYPE_IF,
-    NODE_TYPE_SWITCH,
-    NODE_TYPE_CONDITION,
-    NODE_TYPE_SLEEP,
-};
+    /// The node entity's box size
+    const float boxsize = 3.0f;
 
 
-/// Enumeration of color codes in RGB integer format
-enum VSCRIPT_NODE_COLORS
-{
-    /// Node type colors
-    VSCRIPT_COLOR_TIMER     = 0x00B6FF,
-    VSCRIPT_COLOR_COMMENT   = 0x43A63A,
-    VSCRIPT_COLOR_FUNCTION  = 0xCC47B1,    
-    VSCRIPT_COLOR_TRIGGERED = 0xFF6D00,
-    VSCRIPT_COLOR_GRAY      = 0xAAAAAA,
-    VSCRIPT_COLOR_BLACK     = 0x000000,
-};
+    /// enumeration of node types
+    enum VSCRIPT_NODE_TYPE
+    {
+        NODE_TYPE_INVALID = -1,
+        NODE_TYPE_TIMER = 0,
+        NODE_TYPE_COMMENT,
+        NODE_TYPE_FUNCTION,
+        NODE_TYPE_MEMORY,
+        NODE_TYPE_IF,
+        NODE_TYPE_SWITCH,
+        NODE_TYPE_CONDITION,
+        NODE_TYPE_SLEEP,
+    };
 
-/// @brief base class for node implementations
-class script_node
-{
-    public:
 
-    script_node();
+    /// Enumeration of color codes in RGB integer format
+    enum VSCRIPT_NODE_COLORS
+    {
+        VSCRIPT_COLOR_TIMER     = 0x00B6FF,
+        VSCRIPT_COLOR_COMMENT   = 0x43A63A,
+        VSCRIPT_COLOR_FUNCTION  = 0xCC47B1,    
+        VSCRIPT_COLOR_TRIGGERED = 0xFF6D00,
+        VSCRIPT_COLOR_GRAY      = 0xAAAAAA,
+        VSCRIPT_COLOR_BLACK     = 0x000000,
+    };
 
-    ~script_node();
+
+    /// @brief base class for node implementations
+    class script_node
+    {
+        public:
+
+        script_node();
+
+        ~script_node();
     
-    /// @see VSCRIPT_NODE_COLORS
-    VSCRIPT_NODE_TYPE type;
+        /// @see VSCRIPT_NODE_COLORS
+        VSCRIPT_NODE_TYPE type;
 
-    std::string node_name;
-    std::string node_comment;
+        std::string node_name;
+        std::string node_comment;
 
-    bool active;
-    bool pos_changed;
-    bool selected;
+        bool active;
+        bool pos_changed;
+        bool selected;
 
-    vec position;
+        vec position;
 
-    /// Rendering 
-    int default_box_color;
-    int box_color;
+        /// Rendering 
+        int default_box_color;
+        int box_color;
 
-    /// Timing management
-    unsigned int this_time;
-    unsigned int last_time;
+        /// Timing management
+        unsigned int this_time;
+        unsigned int last_time;
 
-    /// Please note: You should make use of comments in your scripts whenever its required!
+        /// Please note: You should make use of comments in your scripts whenever its required!
 
-    /// A parent node gives me the incoming signal
-    /// Now its my time for execution
-    virtual void in() = 0;
-    /// Run my stuff
-    virtual void run() = 0;
-    /// Now call outgoing 
-    virtual void out() = 0;
-    /// Reset this node
-    virtual void reset() = 0;
+        /// A parent node gives me the incoming signal
+        /// Now its my time for execution
+        virtual void in() = 0;
+        /// Run my stuff
+        virtual void run() = 0;
+        /// Now call outgoing 
+        virtual void out() = 0;
+        /// Reset this node
+        virtual void reset() = 0;
 
-    /// A vector of pointers to parent nodes
-    std::vector<script_node *> incoming;
+        /// A vector of pointers to parent nodes
+        std::vector<script_node *> incoming;
 
-    /// A vector of pointers to child nodes
-    std::vector<script_node *> outgoing;
-};
+        /// A vector of pointers to child nodes
+        std::vector<script_node *> outgoing;
+    };
+
 
 /// end of namespace
 };
