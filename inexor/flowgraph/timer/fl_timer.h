@@ -42,16 +42,6 @@ namespace vscript {
 /// Default timer execution limit
 #define INEXOR_VSCRIPT_DEFAULT_TIMER_EXECUTION_LIMIT 1000*1000
 
-
-/// Time format enumerations
-enum INEXOR_VSCRIPT_TIMER_FORMAT
-{
-    TIMER_FORMAT_MILISECONDS,
-    TIMER_FORMAT_SECONDS,
-    TIMER_FORMAT_MINUTES,
-    TIMER_FORMAT_HOURS
-};
-
 /// @brief Implementation of timer nodes.
 class timer_node : public script_node
 {
@@ -67,7 +57,7 @@ class timer_node : public script_node
                 unsigned int cooldown = 0, 
                 const char* name = "NewTimer1", 
                 const char* comment = "Hello World Comment", 
-                INEXOR_VSCRIPT_TIMER_FORMAT format = TIMER_FORMAT_MILISECONDS);
+                INEXOR_VSCRIPT_TIME_FORMAT format = TIME_FORMAT_MILISECONDS);
 
 
     ~timer_node();

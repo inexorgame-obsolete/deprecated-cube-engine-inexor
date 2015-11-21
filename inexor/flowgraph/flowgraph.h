@@ -14,6 +14,7 @@
 #include "inexor/flowgraph/functions/fl_functions.h"
 #include "inexor/flowgraph/renderer/fl_rendering.h"
 #include "inexor/flowgraph/editor/fl_enteditor.h"
+#include "inexor/flowgraph/sleep/fl_sleep.h"
 
 
 /// variable parameter lists

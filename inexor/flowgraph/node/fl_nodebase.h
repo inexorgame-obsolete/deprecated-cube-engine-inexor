@@ -31,11 +31,16 @@
 
 #include "inexor/engine/engine.h"
 
+/// time conversion tools
+#include "inexor/flowgraph/time/fl_time.h"
+
+
 /// c++ standard libraries
 #include <string>
 #include <vector>
 #include <map>
 #include <list>
+
 
 /// Inexor namespace protection
 namespace inexor {
@@ -55,6 +60,7 @@ enum VSCRIPT_NODE_TYPE
     NODE_TYPE_IF,
     NODE_TYPE_SWITCH,
     NODE_TYPE_CONDITION,
+    NODE_TYPE_SLEEP,
 };
 
 

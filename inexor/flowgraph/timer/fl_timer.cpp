@@ -4,34 +4,19 @@ namespace inexor {
 namespace vscript {
 
 
-timer_node::timer_node(vec pos, unsigned int interval, unsigned int startdelay, unsigned int limit, unsigned int cooldown, const char* name, const char* comment, INEXOR_VSCRIPT_TIMER_FORMAT format)
+timer_node::timer_node(vec pos, unsigned int interval, unsigned int startdelay, unsigned int limit, unsigned int cooldown, const char* name, const char* comment, INEXOR_VSCRIPT_TIME_FORMAT format)
 {
-    /// convert the interval into miliseconds
-    /// TODO: debug this
-    switch(format)
-    {
-        case TIMER_FORMAT_HOURS:
-            interval *= 1000 * 60 *60;
-            break;
-        case TIMER_FORMAT_MINUTES:
-            interval *= 1000 * 60;
-            break;
-        case TIMER_FORMAT_SECONDS:
-            interval *= 1000;
-            break;
-        case TIMER_FORMAT_MILISECONDS: 
-            /// this is the format we want: convert nothing!
-            break;
-    }
-
     position = pos;
 
     node_name = name;
-    node_comment = comment,
+    node_comment = comment;
+
+    /// Convert the time format
+    unsigned int time_format_in_ms = ConvertTimeToMiliseconds(interval, format);
 
     // cut the timer interval
     clamp(interval, INEXOR_VSCRIPT_MIN_TIMER_INTERVAL, INEXOR_VSCRIPT_MAX_TIMER_INTERVAL);
-    timer_interval = interval;
+    timer_interval = time_format_in_ms;
     timer_startdelay = startdelay;
     timer_limit = limit;
     timer_cooldown = cooldown;

@@ -77,22 +77,9 @@ namespace vscript {
                 const char* name        = arguments[4].c_str();
                 const char* comment     = arguments[5].c_str();
 
-                INEXOR_VSCRIPT_TIMER_FORMAT timer_format;
-                switch(atoi(arguments[6].c_str())) 
-                {
-                    case 0: 
-                        timer_format = TIMER_FORMAT_MILISECONDS;
-                        break;
-                    case 1: 
-                        timer_format = TIMER_FORMAT_SECONDS;
-                        break;
-                    case 2: 
-                        timer_format = TIMER_FORMAT_MINUTES;
-                        break;
-                    case 3: 
-                        timer_format = TIMER_FORMAT_HOURS;
-                        break;
-                }
+                /// TODO: which timer format?
+                INEXOR_VSCRIPT_TIME_FORMAT timer_format = TIME_FORMAT_MILISECONDS;
+
 
                 #ifdef INEXOR_VSCRIPT_ADDNODE_DEBUG
                     conoutf(CON_DEBUG, "I added the following timer node: interval: %d, startdelay: %d, limit: %d, cooldown: %d, name: %s, comment: %s, type: %d", interval, startdelay, limit, cooldown, name, comment, timer_format);
@@ -126,6 +113,13 @@ namespace vscript {
                         created_node = new function_playsound_node(target, arguments[1].c_str());
                         break;
                 }
+                break;
+            }
+
+            /// script execution pause
+            case NODE_TYPE_SLEEP:
+            {
+                created_node = new sleep_node(target, atoi(arguments[1].c_str()) ); 
                 break;
             }
         }
