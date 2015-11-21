@@ -3,8 +3,8 @@
 /// @brief Time format conversion tools
 
 
-#ifndef INEXOR_VSCRIPT_TIME_TOOLS_HEADER
-#define INEXOR_VSCRIPT_TIME_TOOLS_HEADER
+#ifndef INEXOR_VSCRIPT_TIME_TOOL_HEADER
+#define INEXOR_VSCRIPT_TIME_TOOL_HEADER
 
 namespace inexor {
 namespace vscript {
@@ -17,7 +17,6 @@ namespace vscript {
         TIME_FORMAT_MINUTES,
         TIME_FORMAT_HOURS
     };
-
 
     unsigned int ConvertTimeToMiliseconds(unsigned int interval, INEXOR_VSCRIPT_TIME_FORMAT format)
     {

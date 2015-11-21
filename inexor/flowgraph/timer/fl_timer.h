@@ -26,6 +26,9 @@
 #include "inexor/engine/engine.h"
 #include "inexor/flowgraph/node/fl_nodebase.h"
 
+/// time conversion
+#include "inexor/flowgraph/time/fl_timetools.h"
+
 /// Minimum time interval (in miliseconds)
 #define INEXOR_VSCRIPT_MIN_TIMER_INTERVAL 10
 
@@ -42,16 +45,6 @@
 // Inexor namespace protection
 namespace inexor {
 namespace vscript {
-
-    /// Time format enumerations
-    enum INEXOR_VSCRIPT_TIME_FORMAT
-    {
-        TIME_FORMAT_MILISECONDS,
-        TIME_FORMAT_SECONDS,
-        TIME_FORMAT_MINUTES,
-        TIME_FORMAT_HOURS
-    };
-
 
     /// @brief Implementation of timer nodes.
     class timer_node : public script_node
