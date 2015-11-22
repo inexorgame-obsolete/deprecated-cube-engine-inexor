@@ -31,7 +31,7 @@ namespace vscript {
         CVisualScriptSystem();
         ~CVisualScriptSystem();
 
-        std::vector<script_node *> nodes;
+        std::vector<CScriptNode *> nodes;
 
         /// Please note: add_node is using variable argument lists. See stdarg.h
         /// add a node to the system
@@ -39,7 +39,7 @@ namespace vscript {
         /// problem: parameter specification requires new command line code!
         /// we must get rid of this old 5 attributes stuff
         /// this code has been debugged and tested
-        script_node* add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...);
+        CScriptNode* add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...);
 
         /// implementation of inherited virtual functions
         void render_node_relations();
@@ -47,7 +47,7 @@ namespace vscript {
         void process_change(int, bool);
 
         /// Link nodes with other nodes
-        void connect_nodes(script_node *from, script_node *to);
+        void connect_nodes(CScriptNode *from, CScriptNode *to);
 
         /// Please note: this will prevent timers from being desynchronized
         unsigned int unique_execution_pass_timestamp;

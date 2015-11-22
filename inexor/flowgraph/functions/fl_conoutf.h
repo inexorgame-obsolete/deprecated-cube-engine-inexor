@@ -1,11 +1,11 @@
 /// @file fl_conoutf.h
 /// @author Johannes Schneider
-/// @brief This game engine function prints a text to the game console (local)
+/// @brief This game engine function prints a text to the game console (locally)
 /// 
-/// TODO: We need a good interface for function parameters here (CEF!)
+/// TODO: We need a good interface for function parameters here!
 /// 
 /// .-------------------------------------------------------------------------------------------------.
-/// | conoutf(CON_DEBUG, [text], [...] );                                                             |
+/// | conoutf(CON_DEBUG, [text with symbols], [...] );                                                |
 /// |_________________________________________________________________________________________________|
 /// |                                                                                                 |
 /// | Prints a text to the game console (local).                                                      |
@@ -17,20 +17,14 @@
 #ifndef INEXOR_VSCRIPT_CONOUTF_HEADER
 #define INEXOR_VSCRIPT_CONOUTF_HEADER
 
-/// conoutf implementation
 #include "inexor/engine/engine.h"
-
-/// Include base class
 #include "inexor/flowgraph/node/fl_nodebase.h"
 #include "inexor/flowgraph/functions/fl_functionbase.h"
 
-/// Inexor 
 namespace inexor {
 namespace vscript {
 
-
-    /// Function
-    class function_conoutf_node : public script_node
+    class CFunctionConoutfNode : public CScriptNode
     {
         protected:
     
@@ -40,23 +34,19 @@ namespace vscript {
 
         public:
 
-        function_conoutf_node(vec pos, const char* raw_text);
-
-        ~function_conoutf_node();
-
-        void in();
-        void run();
+        CFunctionConoutfNode(vec pos, const char* raw_text);
+        ~CFunctionConoutfNode();
 
         /// TODO: format
         void format_output();
 
+        void in();
+        void run();
         void out();
-        /// TODO: ?
         void reset();
-
     };
 
-/// end of namespace
+/// end of namespaces
 };
 };
 

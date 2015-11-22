@@ -1,10 +1,10 @@
 #include "inexor/flowgraph/functions/fl_conoutf.h"
 
-/// Inexor namespace protection
+
 namespace inexor {
 namespace vscript {
 
-    function_conoutf_node::function_conoutf_node(vec pos, const char* raw_text)
+    CFunctionConoutfNode::CFunctionConoutfNode(vec pos, const char* raw_text)
     {
         position = pos;
         node_name = "Function - conoutf";
@@ -19,19 +19,19 @@ namespace vscript {
     }
 
 
-    function_conoutf_node::~function_conoutf_node()
+    CFunctionConoutfNode::~CFunctionConoutfNode()
     {
     }
 
 
-    void function_conoutf_node::in()
+    void CFunctionConoutfNode::in()
     {
         /// call conoutf() directly on input!
         run();
     }
 
 
-    void function_conoutf_node::run()
+    void CFunctionConoutfNode::run()
     {
         format_output();
         conoutf(CON_DEBUG, param_text_output.c_str());
@@ -41,25 +41,25 @@ namespace vscript {
 
 
     /// TODO:
-    void function_conoutf_node::format_output()
+    void CFunctionConoutfNode::format_output()
     {
         param_text_output = raw_text_input;
     }
 
 
     /// TODO
-    void function_conoutf_node::out()
+    void CFunctionConoutfNode::out()
     {
         for(unsigned int i = 0; i < outgoing.size(); i++) outgoing[i]->in();
     }
 
 
     /// TODO
-    void function_conoutf_node::reset()
+    void CFunctionConoutfNode::reset()
     {
     }
 
 
-/// end of namespace
+/// end of namespaces
 };
 };

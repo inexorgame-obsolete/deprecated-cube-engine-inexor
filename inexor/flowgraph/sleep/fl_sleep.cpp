@@ -3,7 +3,7 @@
 namespace inexor {
 namespace vscript {
 
-    sleep_node::sleep_node(vec pos, 
+    CSleepNode::CSleepNode(vec pos, 
                            unsigned int sleeptime, 
                            const char* name, 
                            const char* comment)
@@ -12,12 +12,12 @@ namespace vscript {
     }
 
 
-    sleep_node::~sleep_node()
+    CSleepNode::~CSleepNode()
     {
     }
 
 
-    void sleep_node::in()
+    void CSleepNode::in()
     {
         /// save the current time
         sleep_start = SDL_GetTicks();
@@ -26,7 +26,7 @@ namespace vscript {
     }
 
 
-    void sleep_node::run()
+    void CSleepNode::run()
     {
         /// call outgoing method once waiting has finished
         /// TODO: multithreading?
@@ -37,7 +37,7 @@ namespace vscript {
     }
 
 
-    void sleep_node::out()
+    void CSleepNode::out()
     {
         particle_text(position + vec(boxsize/2, boxsize/2, 0.0f), "go!", PART_TEXT, 5000, 0x32FF00, 2.0f, -10.0f);
         /// run child node's code
@@ -45,11 +45,11 @@ namespace vscript {
     }
 
 
-    void sleep_node::reset()
+    void CSleepNode::reset()
     {
     }
 
 
-/// end of namespace
+/// end of namespaces
 };
 };

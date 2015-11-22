@@ -25,7 +25,7 @@
 /// Please note: creating nodes with Sauerbraten's standard entity system does suck.
 /// TODO: sooner or later the system will be rewritten based on Hanack's new entity system. 
 
-/// include guard
+
 #ifndef INEXOR_VSCRIPT_NODEBASE_HEADER
 #define INEXOR_VSCRIPT_NODEBASE_HEADER
 
@@ -38,13 +38,11 @@
 #include <list>
 
 
-/// Inexor namespace protection
 namespace inexor {
 namespace vscript {
 
     /// The node entity's box size
     const float boxsize = 3.0f;
-
 
     /// enumeration of node types
     enum VSCRIPT_NODE_TYPE
@@ -74,13 +72,12 @@ namespace vscript {
 
 
     /// @brief base class for node implementations
-    class script_node
+    class CScriptNode
     {
         public:
 
-        script_node();
-
-        ~script_node();
+        CScriptNode();
+        ~CScriptNode();
     
         /// @see VSCRIPT_NODE_COLORS
         VSCRIPT_NODE_TYPE type;
@@ -115,14 +112,13 @@ namespace vscript {
         virtual void reset() = 0;
 
         /// A vector of pointers to parent nodes
-        std::vector<script_node *> incoming;
-
+        std::vector<CScriptNode *> incoming;
         /// A vector of pointers to child nodes
-        std::vector<script_node *> outgoing;
+        std::vector<CScriptNode *> outgoing;
     };
 
 
-/// end of namespace
+/// end of namespaces
 };
 };
 

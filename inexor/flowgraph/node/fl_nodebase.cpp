@@ -7,11 +7,11 @@
 
 #include "inexor/flowgraph/node/fl_nodebase.h"
 
-/// Inexor namespace protection
+
 namespace inexor {
 namespace vscript {
 
-    script_node::script_node()
+    CScriptNode::CScriptNode()
     {
         active = true;       
         node_name = "";
@@ -28,11 +28,11 @@ namespace vscript {
     }
 
 
-    script_node::~script_node()
+    CScriptNode::~CScriptNode()
     {
     }
 
 
-/// end of namespace
+/// end of namespaces
 };
 };

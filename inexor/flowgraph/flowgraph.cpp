@@ -28,10 +28,10 @@ namespace vscript {
     }
 
 
-    script_node* CVisualScriptSystem::add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...)
+    CScriptNode* CVisualScriptSystem::add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...)
     {
         /// return value
-        script_node* created_node = nullptr;
+        CScriptNode* created_node = nullptr;
 
         /// Calculate the target position of the node
         vec target = vec(sel.o.x,sel.o.y,sel.o.z);
@@ -62,7 +62,6 @@ namespace vscript {
         }
         va_end(parameters);
     
-
         /// add new node depending on the type
         switch(type)
         {
@@ -85,10 +84,8 @@ namespace vscript {
                     conoutf(CON_DEBUG, "I added the following timer node: interval: %d, startdelay: %d, limit: %d, cooldown: %d, name: %s, comment: %s, type: %d", interval, startdelay, limit, cooldown, name, comment, timer_format);
                 #endif
 
-                /// Create a new timer
-                created_node = new timer_node(target, interval, startdelay, limit, cooldown, name, comment, timer_format);
-
-                /// Synchronize them!
+                /// Create a new timer and synchronise them!
+                created_node = new CTimerNode(target, interval, startdelay, limit, cooldown, name, comment, timer_format);
                 sync_all_timers();
                 break;
             }
@@ -96,30 +93,27 @@ namespace vscript {
             case NODE_TYPE_COMMENT:
             {
                 /// TODO: does a comment have to have a name?
-                created_node = new comment_node(target, arguments[0].c_str(), /*comment*/ 
-                                                         arguments[1].c_str() /*comment's name*/ );
+                created_node = new CCommentNode(target, arguments[0].c_str(), arguments[1].c_str());
                 break;
             }
 
-            /// distinguish between functions
             case NODE_TYPE_FUNCTION:
             {
                 switch(atoi(arguments[0].c_str()))
                 {
                     case FUNCTION_CONOUTF:
-                        created_node = new function_conoutf_node(target, arguments[1].c_str());
+                        created_node = new CFunctionConoutfNode(target, arguments[1].c_str());
                         break;
                     case FUNCTION_PLAYSOUND:
-                        created_node = new function_playsound_node(target, arguments[1].c_str());
+                        created_node = new CFunctionPlaysoundNode(target, arguments[1].c_str());
                         break;
                 }
                 break;
             }
 
-            /// script execution pause
             case NODE_TYPE_SLEEP:
             {
-                created_node = new sleep_node(target, atoi(arguments[1].c_str()) ); 
+                created_node = new CSleepNode(target, atoi(arguments[1].c_str()) ); 
                 break;
             }
         }
@@ -277,7 +271,7 @@ namespace vscript {
     }
 
 
-    void CVisualScriptSystem::connect_nodes(script_node *from, script_node *to)
+    void CVisualScriptSystem::connect_nodes(CScriptNode *from, CScriptNode *to)
     {
         /// Add relations
         to->incoming.push_back(from);
@@ -396,8 +390,8 @@ namespace vscript {
     }
     COMMAND(addcomment, "ss");
     
-    script_node* a;
-    script_node* b;
+    CScriptNode* a;
+    CScriptNode* b;
 
     /// Testing and debugging
     void test_a()

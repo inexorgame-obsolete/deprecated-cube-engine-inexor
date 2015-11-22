@@ -4,7 +4,7 @@
 namespace inexor {
 namespace vscript {
 
-    function_playsound_node::function_playsound_node(vec pos, const char* id)
+    CFunctionPlaysoundNode::CFunctionPlaysoundNode(vec pos, const char* id)
     {
         position = pos;
         sound_id = atoi(id);
@@ -19,31 +19,31 @@ namespace vscript {
         //extentity *ent;
     }
 
-    function_playsound_node::~function_playsound_node()
+    CFunctionPlaysoundNode::~CFunctionPlaysoundNode()
     {
     }
 
 
-    void function_playsound_node::in()
+    void CFunctionPlaysoundNode::in()
     {
         run();
     }
 
-    void function_playsound_node::run()
+    void CFunctionPlaysoundNode::run()
     {
         /// TODO: Implement playsound correctly!
         playsound(sound_id);
     }
     
-    void function_playsound_node::out()
+    void CFunctionPlaysoundNode::out()
     {
         for(unsigned int i = 0; i < outgoing.size(); i++) outgoing[i]->in();
     }
     
-    void function_playsound_node::reset()
+    void CFunctionPlaysoundNode::reset()
     {
     }
 
-/// end of namespace
+/// end of namespaces
 };
 };

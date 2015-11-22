@@ -1,10 +1,10 @@
 #include "inexor/flowgraph/comment/fl_comment.h"
 
-/// project's namespace protection
+
 namespace inexor {
 namespace vscript {
 
-    comment_node::comment_node(vec pos, const char* comment, const char* name)
+    CCommentNode::CCommentNode(vec pos, const char* comment, const char* name)
     {
         type = NODE_TYPE_COMMENT;
         position = pos;
@@ -15,10 +15,11 @@ namespace vscript {
     }
 
 
-    comment_node::~comment_node()
+    CCommentNode::~CCommentNode()
     {
     }
 
-/// end of namespace
+
+/// end of namespaces
 };
 };

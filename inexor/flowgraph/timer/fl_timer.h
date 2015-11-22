@@ -77,11 +77,11 @@ namespace vscript {
     }
     */
     /// @brief Implementation of timer nodes.
-    class timer_node : public script_node
+    class CTimerNode : public CScriptNode
     {
         public:
 
-        timer_node(vec pos, 
+        CTimerNode(vec pos, 
                     unsigned int interval, 
                     unsigned int startdelay, 
                     unsigned int limit = INEXOR_VSCRIPT_DEFAULT_TIMER_EXECUTION_LIMIT, 
@@ -90,8 +90,7 @@ namespace vscript {
                     const char* comment = "Hello World Comment", 
                     INEXOR_VSCRIPT_TIME_FORMAT format = TIME_FORMAT_MILISECONDS);
 
-
-        ~timer_node();
+        ~CTimerNode();
 
         unsigned int timer_startdelay;
         unsigned int timer_counter;

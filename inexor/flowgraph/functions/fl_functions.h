@@ -16,7 +16,7 @@
 /// ._________________________________________________________________________________________________.
 /// 
 
-/// Please note: every function inherits from fl_functionbase.h
+/// Please note: every function inherits from CFunctionBase (fl_functionbase.h)
 
 /// @brief conoutf prints output to the game console (local player)
 #include "inexor/flowgraph/functions/fl_conoutf.h"

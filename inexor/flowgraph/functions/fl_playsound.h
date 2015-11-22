@@ -28,7 +28,7 @@
 namespace inexor {
 namespace vscript {
 
-    class function_playsound_node : public script_node
+    class CFunctionPlaysoundNode : public CScriptNode
     {
         protected:
 
@@ -47,9 +47,8 @@ namespace vscript {
         public:
 
         /// Lets start with a simple version here
-        function_playsound_node(vec, const char*);
-
-        ~function_playsound_node();
+        CFunctionPlaysoundNode(vec, const char*);
+        ~CFunctionPlaysoundNode();
 
         /// TODO: implement more methods!
         void in();

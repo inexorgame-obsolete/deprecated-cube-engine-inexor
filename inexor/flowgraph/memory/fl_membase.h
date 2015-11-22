@@ -26,11 +26,11 @@ namespace vscript {
 
 
     /// TODO: Implement memory with std::any or unions!
-    class CMemory
+    class CMemoryNode
     {
-        CMemory();
+        CMemoryNode();
 
-        ~CMemory();
+        ~CMemoryNode();
 
         void in();
         void run();

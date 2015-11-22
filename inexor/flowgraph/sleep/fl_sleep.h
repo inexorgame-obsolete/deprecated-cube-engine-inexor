@@ -34,7 +34,7 @@ namespace inexor {
 namespace vscript {
 
     /// @brief Implementation of timer nodes.
-    class sleep_node : public script_node
+    class CSleepNode : public CScriptNode
     {
         public:
     
@@ -42,12 +42,12 @@ namespace vscript {
         unsigned int sleep_end;
         unsigned int sleep_interval;
 
-        sleep_node(vec pos, 
+        CSleepNode(vec pos, 
                    unsigned int sleeptime, 
-                   const char* name = "NewTimer1", 
-                   const char* comment = "Hello World Comment");
+                   const char* name = "NewSleep1", 
+                   const char* comment = "Hello World Sleep");
                 
-        ~sleep_node();
+        ~CSleepNode();
 
 
         void in();

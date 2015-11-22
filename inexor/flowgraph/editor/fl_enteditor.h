@@ -1,4 +1,4 @@
-/// @file enteditor.h
+/// @file fl_enteditor.h
 /// @author Johannes Schneider
 /// @brief 3D Visual Scripting System's entity editor
 
@@ -12,27 +12,20 @@ namespace inexor {
 namespace vscript {
 
     /// TOOD: move existing nodes!
-    /// TODO: create nodes
 
     class CEntityManager
     {
         public:
 
         CEntityManager();
-    
         ~CEntityManager();
 
-
         /// the node which is currently selected
-        script_node* selected_node;
-
+        CScriptNode* selected_node;
         /// the node which is currently hovered
-        script_node* hovered_node;
+        CScriptNode* hovered_node;
 
         void update_mouse(int, bool);
-
-        //void update_camera_angle();
-
         void render_temp_connection();
     
         protected:
@@ -59,8 +52,8 @@ namespace vscript {
         bool dragging_new_relation;
         bool dragging_node;
 
-        //void set_selected_node(script_node*);
-        //void set_hovered_node(script_node*);
+        //void set_selected_node(CScriptNode*);
+        //void set_hovered_node(CScriptNode*);
 
         /// Please note: we need to implement this later
         virtual void process_change(int, bool) = 0;
@@ -69,7 +62,7 @@ namespace vscript {
         //void drop();
     };
 
-/// end of namespace
+/// end of namespaces
 };
 };
 

@@ -1,9 +1,9 @@
 /// @file fl_functionbase.h
 /// @author Johannes Schneider
-/// @brief Every function of the game engine will inherit from this base class
+/// @brief Every function that is linked with the game engine will inherit from this base class.
 /// 
 /// .-------------------------------------------------------------------------------------------------.
-/// | Base class for linked game engine functions                                                     |
+/// | Base class for linked game engine functions (conoutf, playsound,                                |
 /// |_________________________________________________________________________________________________|
 /// |                                                                                                 |
 /// | Many game engine functions should be accessible through the 3D Visual Scripting Enviroment.     |
@@ -13,7 +13,7 @@
 /// ._________________________________________________________________________________________________.
 /// 
 
-/// Include guard
+
 #ifndef INEXOR_VSCRIPT_FUNCTION_BASE_HEADER
 #define INEXOR_VSCRIPT_FUNCTION_BASE_HEADER
 
@@ -25,25 +25,23 @@ enum INEXOR_VSCRIPT_FUNCTIONS
 };
 
 
-/// Inexor namespace protection
 namespace inexor {
 namespace vscript {
 
     /// A basic function node
-    class function_base_node
+    class CFunctionBase
     {
         public:
 
-        function_base_node();
-        
-        ~function_base_node();
+        CFunctionBase();        
+        ~CFunctionBase();
 
-        /// TODO: implement parameter manager!
-        /// TODO: implement return value(s)!
+        /// TODO: implement parameters!
+        /// TODO: implement return value!
     };
 
 
-/// end of namespace
+/// end of namespaces
 };
 };
 

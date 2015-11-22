@@ -4,7 +4,7 @@ namespace inexor {
 namespace vscript {
 
 
-    timer_node::timer_node(vec pos, unsigned int interval, unsigned int startdelay, unsigned int limit, unsigned int cooldown, const char* name, const char* comment, INEXOR_VSCRIPT_TIME_FORMAT format)
+    CTimerNode::CTimerNode(vec pos, unsigned int interval, unsigned int startdelay, unsigned int limit, unsigned int cooldown, const char* name, const char* comment, INEXOR_VSCRIPT_TIME_FORMAT format)
     {
         position = pos;
         node_name = name;
@@ -25,25 +25,25 @@ namespace vscript {
     }
 
 
-    timer_node::~timer_node()
+    CTimerNode::~CTimerNode()
     {
     }
 
     
-    void timer_node::in()
+    void CTimerNode::in()
     {
         run();
     }
 
 
-    void timer_node::run()
+    void CTimerNode::run()
     {
         check_if_execution_is_due();
     }
 
 
-    /// Resetting the timer means to reset last_time
-    void timer_node::reset()
+    /// resetting the timer means to reset last_time
+    void CTimerNode::reset()
     {
         /// TODO: do we need this?
         last_time = 0;
@@ -51,7 +51,7 @@ namespace vscript {
 
 
     /// decide if we need to run the code
-    void timer_node::check_if_execution_is_due() 
+    void CTimerNode::check_if_execution_is_due() 
     {
         /// render color effects
         if(this_time - last_time < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL) box_color = VSCRIPT_COLOR_TRIGGERED;
@@ -68,7 +68,7 @@ namespace vscript {
     }
 
 
-    void timer_node::out()
+    void CTimerNode::out()
     {
         particle_text(position + vec(boxsize/2, boxsize/2, 0.0f), "go!", PART_TEXT, 5000, 0x32FF00, 2.0f, -10.0f);
         /// run child node's code
