@@ -11,7 +11,7 @@ namespace vscript {
         node_comment = comment;
         
         /// convert the time format
-        unsigned int time_format_in_ms = ConvertTimeToMiliseconds(interval, format);
+        unsigned int time_format_in_ms = interval; //ConvertTime2Miliseconds(interval, format);
 
         /// cut the timer interval
         clamp(interval, INEXOR_VSCRIPT_MIN_TIMER_INTERVAL, INEXOR_VSCRIPT_MAX_TIMER_INTERVAL);
