@@ -1339,6 +1339,7 @@ static bool markingvslots = false;
 
 void clearslots()
 {
+    resetinvalidtextslots();
     resetslotshader();
     slots.deletecontents();
     vslots.deletecontents();

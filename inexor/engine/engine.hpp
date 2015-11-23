@@ -289,6 +289,9 @@ extern void renderreflectedmapmodels();
 extern void renderoutline();
 extern bool rendersky(bool explicitonly = false);
 
+/// Resets the set of slots that an error has been reported for.
+extern void resetinvalidtextslots();
+
 extern bool isfoggedsphere(float rad, const vec &cv);
 extern int isvisiblesphere(float rad, const vec &cv);
 extern bool bboccluded(const ivec &bo, const ivec &br);
