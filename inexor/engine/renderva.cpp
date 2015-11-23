@@ -1,5 +1,6 @@
 // renderva.cpp: handles the occlusion and rendering of vertex arrays
 
+#include <unordered_set>
 #include "inexor/engine/engine.hpp"
 
 static inline void drawtris(GLsizei numindices, const GLvoid *indices, ushort minvert, ushort maxvert)
@@ -1048,6 +1049,39 @@ static void changevbuf(renderstate &cur, int pass, vtxarray *va)
     }
 }
 
+/// The slots that an error message has been shown for.
+/// This is used to prevent repeating the same error over and over.
+static std::unordered_set<int> reportedinvalidtextsloterrs;
+
+void resetinvalidtextslots() {
+    reportedinvalidtextsloterrs.clear();
+}
+
+/// Reports a slot with an invalid texture definition.
+/// Keeps track of what slots already have been reported in order to show an error only once.
+static void reportinvalidtextslot(Slot* slot)
+{
+    if (reportedinvalidtextsloterrs.find(slot->index) == reportedinvalidtextsloterrs.end())
+    {
+        conoutf(CON_ERROR, "\fs\f3Error:\fr Invalid texture definition (Invalid SHADER_NORMALSLMS), dumping slot textures:");
+        loopv(slot->sts)
+        {
+            Slot::Tex &t = slot->sts[i];
+            switch(t.type)
+            {
+                case TEX_DIFFUSE:   conoutf(CON_ERROR, "TEX_DIFFUSE %s",  t.name); break;
+                case TEX_NORMAL:    conoutf(CON_ERROR, "TEX_NORMALMAP %s",t.name); break;
+                case TEX_GLOW:      conoutf(CON_ERROR, "TEX_GLOWMAP %s",  t.name); break;
+                case TEX_DECAL:     conoutf(CON_ERROR, "TEX_DECAL %s",    t.name); break;
+                case TEX_SPEC:      conoutf(CON_ERROR, "TEX_SPEC %s",     t.name); break;
+                case TEX_DEPTH:     conoutf(CON_ERROR, "TEX_DEPTH %s",    t.name); break;
+                case TEX_UNKNOWN:   conoutf(CON_ERROR, "TEX_UNKOWN %s",   t.name); break;
+            }
+        }
+        reportedinvalidtextsloterrs.insert(slot->index);
+    }
+}
+
 static void changebatchtmus(renderstate &cur, int pass, geombatch &b)
 {
     bool changed = false;
@@ -1063,7 +1097,11 @@ static void changebatchtmus(renderstate &cur, int pass, geombatch &b)
     int tmu = 2;
     if(b.vslot.slot->shader->type&SHADER_NORMALSLMS)
     {
-        if(cur.textures[tmu]!=lightmaptexs[lmid+1].id)
+        if(lightmaptexs.length() <= lmid + 1)
+        {
+            reportinvalidtextslot(b.vslot.slot);
+        }
+        else if(cur.textures[tmu]!=lightmaptexs[lmid+1].id)
         {
             glActiveTexture_(GL_TEXTURE0+tmu);
             glBindTexture(GL_TEXTURE_2D, cur.textures[tmu] = lightmaptexs[lmid+1].id);
