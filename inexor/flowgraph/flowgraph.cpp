@@ -90,6 +90,9 @@ namespace vscript {
 
                 /// Create a new timer and synchronise them!
                 created_node = new CTimerNode(target, interval, startdelay, limit, cooldown, name, comment, timer_format);
+                /// Add timer node to worker
+                vWorker.add_job(created_node);
+                /// TODO: synchronise all timers?
                 sync_all_timers();
                 break;
             }
@@ -280,14 +283,18 @@ namespace vscript {
     }
 
 
+    //#define INEXOR_VSCRIPT_MOUSE_DEBUGGING 1
+
     void CVisualScriptSystem::process_change(int key, bool isdown)
     {
         switch( - key) /// TODO: why the minus?
         {
             case SDL_BUTTON_LEFT:
                 
-                if(isdown) conoutf(CON_DEBUG, "left click: making a new relation.");
-                else conoutf(CON_DEBUG, "left click: operation finished.");
+                #ifdef INEXOR_VSCRIPT_MOUSE_DEBUGGING
+                    if(isdown) conoutf(CON_DEBUG, "left click: making a new relation.");
+                    else conoutf(CON_DEBUG, "left click: operation finished.");
+                #endif
 
                 /// stopping to drag
                 if(dragging_new_relation && !isdown)
@@ -367,29 +374,35 @@ namespace vscript {
 
     void CVisualScriptWorker::add_job(CScriptNode* node)
     {
+        conoutf(CON_DEBUG, "Looks like we got a new job to do!");
         CJob j;
         j.node = node;
         j.started = false;
         j.done = false;
-        /// add job
         jobs.push_back(j);
     }
 
 
     void CVisualScriptWorker::run_jobs()
     {
+        /// TODO: remove this debug message
+        if(SDL_GetTicks() % 1000 < 10)
+        {
+            conoutf(CON_DEBUG, "Hurry up we got %d jobs to do!", jobs.size());
+        }
+        
         /// remember where we started in time
         const unsigned long execution_start_time = SDL_GetTicks();
 
         for(unsigned int i=0; i<jobs.size(); i++)
         {
-            jobs.at(i).started = true;
-
-            jobs.at(i).node->done_pointer = &jobs.at(i).done;
-            jobs.at(i).node->exec_time_pointer = &execution_start_time;
-
-            /// GO GO GO!
-            jobs.at(i).node->run();
+            if(!jobs.at(i).done)
+            {
+                jobs.at(i).started = true;
+                jobs.at(i).node->done_pointer = & jobs.at(i).done;
+                jobs.at(i).node->exec_time_pointer = & execution_start_time;
+                jobs.at(i).node->run();
+            }
         }
     }
 
