@@ -1,6 +1,6 @@
 // versioncontrol.cpp: control the management of map versioning, merging and branching
 
-#include "inexor/versioncontrol/versioncontrol.h"
+#include "inexor/engine/engine.h"
 
 #define VERSION_CONTROL_COMMANDS_ARE "Version control commands are: \fs\f2help commit diff merge pull push log\fr"
 

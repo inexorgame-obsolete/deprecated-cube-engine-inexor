@@ -2943,12 +2943,12 @@ void resolve()
     {
         case 0:
         case 2:
-            conoutf(CON_INFO, "cur");
+            conoutf(CON_INFO, "current");
             diffs[curconflict].r = 1;
             pastecube(*ac.cur, *ac.work);
             break;
         case 1:
-            conoutf(CON_INFO, "ref");
+            conoutf(CON_INFO, "reference");
             diffs[curconflict].r = 2;
             pastecube(*ac.ref, *ac.work);
             break;   

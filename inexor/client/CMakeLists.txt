@@ -16,6 +16,7 @@ prepend(CLIENT_SOURCES_ENGINE ${SOURCE_DIR}/engine
     normal.cpp
     octa.cpp
     octaedit.cpp
+    versioncontrol.cpp
     octarender.cpp
     physics.cpp
     pvs.cpp
@@ -50,9 +51,6 @@ prepend(CLIENT_SOURCES_FPSGAME ${SOURCE_DIR}/fpsgame
     server.cpp
     waypoint.cpp
     weapon.cpp)
-
-prepend(CLIENT_SOURCES_VERSIONCONTROL ${SOURCE_DIR}/versioncontrol
-    versioncontrol.cpp)
 
 set(CLIENT_SOURCES
   ${SHARED_MODULE_SOURCES}
