@@ -38,6 +38,7 @@ namespace vscript {
 
             void format_output();
             void run();
+            void reset();
     };
 
 /// end of namespaces

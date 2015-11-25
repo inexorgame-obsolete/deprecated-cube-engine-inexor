@@ -31,6 +31,10 @@ namespace vscript {
         playsound(sound_id);
     }
     
+    void CFunctionPlaysoundNode::reset()
+    {
+    }
+    
 
 /// end of namespaces
 };

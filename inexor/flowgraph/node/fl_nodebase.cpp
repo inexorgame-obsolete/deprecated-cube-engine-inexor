@@ -41,17 +41,12 @@ namespace vscript {
         if(current_time - *exec_time_pointer)
         {
             done_pointer = false;
-            /// TODO: where did we stop?
+            WhereDidWeStop = this;
         }
         else
         {
             run();
         }
-    }
-
-    
-    void CScriptNode::run()
-    {
     }
 
 
@@ -60,8 +55,10 @@ namespace vscript {
         if(children.size() == 0)
         {
             /// this is a dead end in code!
-            *done_pointer = true;
-            WhereDidWeStop = this;
+            if(type != NODE_TYPE_TIMER)
+            {
+                *done_pointer = true;
+            }
         }
         else
         {
@@ -73,11 +70,6 @@ namespace vscript {
                 children[i]->in();
             }    
         }
-    }
-
-
-    void CScriptNode::reset()
-    {
     }
 
 

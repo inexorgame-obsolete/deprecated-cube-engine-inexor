@@ -30,6 +30,11 @@ namespace vscript {
         }
     }
 
+    
+    void CSleepNode::reset()
+    {
+    }
+
 
 /// end of namespaces
 };

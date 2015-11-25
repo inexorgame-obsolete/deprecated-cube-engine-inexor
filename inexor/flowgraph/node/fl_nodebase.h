@@ -107,9 +107,9 @@ namespace vscript {
             ~CScriptNode();
 
             void in();
-            void run();
+            virtual void run() = 0; /// every child class implements this!
             void out();
-            void reset();
+            virtual void reset() = 0;
     };
 
 

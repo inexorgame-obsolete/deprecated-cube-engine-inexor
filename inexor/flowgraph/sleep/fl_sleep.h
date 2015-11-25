@@ -50,6 +50,7 @@ namespace vscript {
             ~CSleepNode();
 
             void run();
+            void reset();
     };
 
 

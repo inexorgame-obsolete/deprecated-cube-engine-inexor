@@ -51,9 +51,7 @@ namespace vscript {
             ~CFunctionPlaysoundNode();
 
             /// TODO: implement more methods!
-            void in();
             void run();
-            void out();
             void reset();
     };
 

@@ -270,7 +270,7 @@ namespace vscript {
             if(NODE_TYPE_TIMER == nodes[i]->type)
             {
                 nodes[i]->this_time = unique_execution_pass_timestamp;
-                vWorker.add_job( nodes[i]);
+                vWorker.run_jobs();
             }
         }
     }
@@ -383,16 +383,13 @@ namespace vscript {
     }
 
 
+
     void CVisualScriptWorker::run_jobs()
     {
-        /// TODO: remove this debug message
-        if(SDL_GetTicks() % 1000 < 10)
-        {
-            conoutf(CON_DEBUG, "Hurry up we got %d jobs to do!", jobs.size());
-        }
-        
         /// remember where we started in time
         const unsigned long execution_start_time = SDL_GetTicks();
+
+        conoutf(CON_DEBUG, "There are %d jobs to do!", jobs.size());
 
         for(unsigned int i=0; i<jobs.size(); i++)
         {
@@ -401,10 +398,12 @@ namespace vscript {
                 jobs.at(i).started = true;
                 jobs.at(i).node->done_pointer = & jobs.at(i).done;
                 jobs.at(i).node->exec_time_pointer = & execution_start_time;
-                jobs.at(i).node->run();
+                jobs.at(i).node->in();
             }
         }
     }
+
+
 
     void deleteallnodes()
     {
