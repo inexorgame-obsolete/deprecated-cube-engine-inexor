@@ -278,8 +278,8 @@ namespace vscript {
 
     void CVisualScriptSystem::connect_nodes(CScriptNode *from, CScriptNode *to)
     {
-        to->children.push_back(from);
-        from->parents.push_back(to);
+        to->parents.push_back(from);
+        from->children.push_back(to);
     }
 
 
