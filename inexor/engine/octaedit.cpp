@@ -2820,22 +2820,38 @@ void colordiffs()
     }
 }
 
-void changeddiff(int i)
+void selectdiff(int i)
 {
-    block3 b = block3();
+    sel = selinfo();
+    sel.o = diffs[i].pos;
+    sel.s = ivec(1,1,1);
+    sel.grid = sel.cxs = sel.cys = diffs[i].size;
+}
+
+void selectdiff(int i, block3 &b)
+{
+    b = block3();
     b.o = diffs[i].pos;
     b.s = ivec(1,1,1);
     b.grid = diffs[i].size;
+}
+
+void changeddiff(int i)
+{
+    block3 b;
+    selectdiff(i, b);
     changed(b, false);
 }
 
 // get the difference between the reference and the current state of the map
 void vc_diff()
 {
-    if (!diffmode)
-    {
-        diffmode = 1;
+    // toggle diffmode
+    diffmode = !diffmode;
 
+    // going into diffmode
+    if (diffmode)
+    {
         // making a copy of the working tree to keep track of the "current" tree before diff
         loopi(8)
             copycube(worldroot[i], curcubes[i]);
@@ -2849,14 +2865,10 @@ void vc_diff()
             std::vector<altcubes> d = cube_diff(worldroot[i], curcubes[i], refcubes[i], worldsize>>1, ivec(i, ivec(0,0,0), worldsize>>1));
             diffs.insert(diffs.end(), d.begin(), d.end());
         }
-    }
-    else diffmode = 0;
-    
-    if (diffmode) conoutf(CON_INFO, "Number of diff cubes: %lu", diffs.size());
 
-    if (diffmode)
-    {
-        conoutf(CON_INFO, "diff mode \fs\f1ON\fr");
+        conoutf(CON_INFO, "Number of diff cubes: %lu", diffs.size());
+
+        conoutf(CON_INFO, "diffmode \fs\f1ON\fr");
         // show the smallest cubes that differ by reseting them to plain solid cubes
         loopi(diffs.size())
         {
@@ -2870,7 +2882,7 @@ void vc_diff()
     }
     else
     {
-        conoutf(CON_INFO, "diff mode \fs\f1OFF\fr");
+        conoutf(CON_INFO, "diffmode \fs\f1OFF\fr");
 
         // reset work to cur
         loopi(diffs.size())
@@ -2922,12 +2934,7 @@ void nextconflict()
     {
         colordiffs();
         loopi(diffs.size()) changeddiff(i);
-
-        sel = selinfo();
-        sel.o = diffs[curconflict].pos;
-        sel.s = ivec(1,1,1);
-        sel.grid = diffs[curconflict].size;
-
+        selectdiff(curconflict);
         commitchanges();
     }
 }
@@ -2954,24 +2961,21 @@ void resolve()
             break;   
     }
 
-    sel = selinfo();
-    sel.o = diffs[curconflict].pos;
-    sel.s = ivec(1,1,1);
-    sel.grid = diffs[curconflict].size;
-
+    selectdiff(curconflict);
     changed(sel, true);
 }
 COMMAND(resolve, "");
 
-void diffpaste() {
-    if (curconflict < 0) return;
-    if (diffs[curconflict].r == 0) return;
+void diffpaste() {}
+// Not working at the moment
+// void diffpaste() {
+//     if (curconflict < 0) return; 
+//     if (diffs[curconflict].r == 0) return;
 
-    block3 b;
-    b.o = diffs[curconflict].pos;
-    b.s = ivec(1,1,1);
-    b.grid = diffs[curconflict].size;
-
-    pasteblock(b, sel, true);
-}
+//     conoutf(CON_INFO, "pasting the current conflict");
+    
+//     block3 b;
+//     selectdiff(curconflict, b);
+//     pasteblock(b, sel, true);
+// }
 
