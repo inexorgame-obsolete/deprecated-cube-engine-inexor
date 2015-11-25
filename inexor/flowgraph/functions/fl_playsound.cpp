@@ -19,15 +19,11 @@ namespace vscript {
         //extentity *ent;
     }
 
+
     CFunctionPlaysoundNode::~CFunctionPlaysoundNode()
     {
     }
 
-
-    void CFunctionPlaysoundNode::in()
-    {
-        run();
-    }
 
     void CFunctionPlaysoundNode::run()
     {
@@ -35,14 +31,6 @@ namespace vscript {
         playsound(sound_id);
     }
     
-    void CFunctionPlaysoundNode::out()
-    {
-        for(unsigned int i = 0; i < outgoing.size(); i++) outgoing[i]->in();
-    }
-    
-    void CFunctionPlaysoundNode::reset()
-    {
-    }
 
 /// end of namespaces
 };

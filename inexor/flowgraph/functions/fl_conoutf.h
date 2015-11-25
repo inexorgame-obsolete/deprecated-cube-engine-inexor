@@ -28,22 +28,16 @@ namespace vscript {
     {
         protected:
     
-        /// output
-        std::string param_text_output;
-        std::string raw_text_input;
+            std::string param_text_output;
+            std::string raw_text_input;
 
         public:
 
-        CFunctionConoutfNode(vec pos, const char* raw_text);
-        ~CFunctionConoutfNode();
+            CFunctionConoutfNode(vec pos, const char* raw_text);
+            ~CFunctionConoutfNode();
 
-        /// TODO: format
-        void format_output();
-
-        void in();
-        void run();
-        void out();
-        void reset();
+            void format_output();
+            void run();
     };
 
 /// end of namespaces

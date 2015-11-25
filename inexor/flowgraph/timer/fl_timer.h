@@ -79,37 +79,34 @@ namespace vscript {
     /// @brief Implementation of timer nodes.
     class CTimerNode : public CScriptNode
     {
-        public:
-
-        CTimerNode(vec pos, 
-                    unsigned int interval, 
-                    unsigned int startdelay, 
-                    unsigned int limit = INEXOR_VSCRIPT_DEFAULT_TIMER_EXECUTION_LIMIT, 
-                    unsigned int cooldown = 0, 
-                    const char* name = "NewTimer1", 
-                    const char* comment = "Hello World Comment", 
-                    INEXOR_VSCRIPT_TIME_FORMAT format = TIME_FORMAT_MILISECONDS);
-
-        ~CTimerNode();
-
-        unsigned int timer_startdelay;
-        unsigned int timer_counter;
-        unsigned int timer_interval;
-        unsigned int timer_limit;
-        unsigned int timer_cooldown;
-
-        void in();
-        void run();
-        void reset();
-
-
         private:
 
-        /// check the timer status
-        /// do we need to call the trigger?
-        void check_if_execution_is_due();
+            /// check the timer status
+            /// do we need to call the trigger?
+            void check_if_execution_is_due();
+            void out();
 
-        void out();
+        public:
+
+            CTimerNode(vec pos, 
+                        unsigned int interval, 
+                        unsigned int startdelay, 
+                        unsigned int limit = INEXOR_VSCRIPT_DEFAULT_TIMER_EXECUTION_LIMIT, 
+                        unsigned int cooldown = 0, 
+                        const char* name = "NewTimer1", 
+                        const char* comment = "Hello World Comment", 
+                        INEXOR_VSCRIPT_TIME_FORMAT format = TIME_FORMAT_MILISECONDS);
+
+            ~CTimerNode();
+
+            unsigned int timer_startdelay;
+            unsigned int timer_counter;
+            unsigned int timer_interval;
+            unsigned int timer_limit;
+            unsigned int timer_cooldown;
+
+            void run();
+            void reset();
     };
 
 

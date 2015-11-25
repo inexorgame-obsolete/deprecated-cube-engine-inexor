@@ -32,29 +32,29 @@ namespace vscript {
     {
         protected:
 
-        //int playsound(int n, const vec *loc, extentity *ent, int flags, int loops, int fade, int chanid, int radius, int expire)
-        int sound_id;
-        int flags;
-        int loops;
-        int fade;
-        int chanid;
-        int radius;
-        int expire;
+            //int playsound(int n, const vec *loc, extentity *ent, int flags, int loops, int fade, int chanid, int radius, int expire)
+            int sound_id;
+            int flags;
+            int loops;
+            int fade;
+            int chanid;
+            int radius;
+            int expire;
 
-        vec location;
-        extentity *ent;
+            vec location;
+            extentity *ent;
 
         public:
 
-        /// Lets start with a simple version here
-        CFunctionPlaysoundNode(vec, const char*);
-        ~CFunctionPlaysoundNode();
+            /// Lets start with a simple version here
+            CFunctionPlaysoundNode(vec, const char*);
+            ~CFunctionPlaysoundNode();
 
-        /// TODO: implement more methods!
-        void in();
-        void run();
-        void out();
-        void reset();
+            /// TODO: implement more methods!
+            void in();
+            void run();
+            void out();
+            void reset();
     };
 
 /// end of namespace

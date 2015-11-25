@@ -11,6 +11,10 @@ extern int gridsize;
 namespace inexor {
 namespace vscript {
 
+    /// Create a global instance of the 3DVS system
+    CVisualScriptSystem vScript3D;
+    CVisualScriptWorker vWorker;
+
     CVisualScriptSystem::CVisualScriptSystem() 
     {
     }
@@ -196,7 +200,7 @@ namespace vscript {
         for(unsigned int i=0; i<nodes.size(); i++)
         {   
             /// Render all outgoing relations
-            for(unsigned int e = 0; e < nodes[i]->outgoing.size(); e++)
+            for(unsigned int e = 0; e < nodes[i]->children.size(); e++)
             {
                 /// Please note: we will add the beginning point,
                 /// 2 more interpolated points and the end point as
@@ -206,7 +210,7 @@ namespace vscript {
             
                 /// create additional interpolation data
                 vec t = nodes[i]->position;
-                vec n = nodes[i]->outgoing[e]->position;
+                vec n = nodes[i]->children[e]->position;
                 vec interpol1 = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f - 30.0f);
                 vec interpol2 = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f + 30.0f);
             
@@ -255,27 +259,24 @@ namespace vscript {
 
         /// Update execution time
         unique_execution_pass_timestamp = SDL_GetTicks();
-
         //conoutf(CON_DEBUG, "unique_execution_pass_timestamp: %d", unique_execution_pass_timestamp);
 
         /// If this is a node, run it!
         for(int i=0; i<nodes.size(); i++) 
         {
-            if(NODE_TYPE_TIMER == nodes[i]->type) 
+            if(NODE_TYPE_TIMER == nodes[i]->type)
             {
                 nodes[i]->this_time = unique_execution_pass_timestamp;
-                nodes[i]->run();
+                vWorker.add_job( nodes[i]);
             }
-            /// TODO: if (NODE_TYPE_EVENT == nodes[i]->type) nodes[i]->run() ?;
         }
     }
 
 
     void CVisualScriptSystem::connect_nodes(CScriptNode *from, CScriptNode *to)
     {
-        /// Add relations
-        to->incoming.push_back(from);
-        from->outgoing.push_back(to);
+        to->children.push_back(from);
+        from->parents.push_back(to);
     }
 
 
@@ -353,8 +354,44 @@ namespace vscript {
     }
 
 
-    /// Create a global instance of the 3DVS system
-    CVisualScriptSystem vScript3D;
+
+
+    /// Workers and jobs
+    CVisualScriptWorker::CVisualScriptWorker()
+    {
+    }
+
+    CVisualScriptWorker::~CVisualScriptWorker()
+    {
+    }
+
+    void CVisualScriptWorker::add_job(CScriptNode* node)
+    {
+        CJob j;
+        j.node = node;
+        j.started = false;
+        j.done = false;
+        /// add job
+        jobs.push_back(j);
+    }
+
+
+    void CVisualScriptWorker::run_jobs()
+    {
+        /// remember where we started in time
+        const unsigned long execution_start_time = SDL_GetTicks();
+
+        for(unsigned int i=0; i<jobs.size(); i++)
+        {
+            jobs.at(i).started = true;
+
+            jobs.at(i).node->done_pointer = &jobs.at(i).done;
+            jobs.at(i).node->exec_time_pointer = &execution_start_time;
+
+            /// GO GO GO!
+            jobs.at(i).node->run();
+        }
+    }
 
     void deleteallnodes()
     {

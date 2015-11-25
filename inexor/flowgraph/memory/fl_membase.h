@@ -29,7 +29,6 @@ namespace vscript {
     class CMemoryNode
     {
         CMemoryNode();
-
         ~CMemoryNode();
 
         void in();

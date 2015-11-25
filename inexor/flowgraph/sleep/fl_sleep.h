@@ -38,26 +38,18 @@ namespace vscript {
     {
         public:
     
-        unsigned int sleep_start;
-        unsigned int sleep_end;
-        unsigned int sleep_interval;
+            unsigned int sleep_start;
+            unsigned int sleep_end;
+            unsigned int sleep_interval;
 
-        CSleepNode(vec pos, 
-                   unsigned int sleeptime, 
-                   const char* name = "NewSleep1", 
-                   const char* comment = "Hello World Sleep");
+            CSleepNode(vec pos, 
+                       unsigned int sleeptime, 
+                       const char* name = "NewSleep1", 
+                       const char* comment = "Hello World Sleep");
                 
-        ~CSleepNode();
+            ~CSleepNode();
 
-
-        void in();
-        void run();
-        void reset();
-
-
-        private:
-    
-        void out();
+            void run();
     };
 
 

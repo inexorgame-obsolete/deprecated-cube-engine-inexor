@@ -76,45 +76,40 @@ namespace vscript {
     {
         public:
 
-        CScriptNode();
-        ~CScriptNode();
-    
-        /// @see VSCRIPT_NODE_COLORS
-        VSCRIPT_NODE_TYPE type;
+            VSCRIPT_NODE_TYPE type;
 
-        std::string node_name;
-        std::string node_comment;
+            /// TODO: What must be public and what can be private?
+            std::vector<CScriptNode *> parents;
+            std::vector<CScriptNode *> children;
+        
+            bool active;
+            bool pos_changed;
 
-        bool active;
-        bool pos_changed;
-        bool selected;
+            bool *done_pointer;
+            const unsigned long* exec_time_pointer;
+            CScriptNode* WhereDidWeStop;
 
-        vec position;
+            vec position;
 
-        /// Rendering 
-        int default_box_color;
-        int box_color;
+            std::string node_name;
+            std::string node_comment;
 
-        /// Timing management
-        unsigned int this_time;
-        unsigned int last_time;
+            bool selected;
 
-        /// Please note: You should make use of comments in your scripts whenever its required!
+            unsigned int this_time;
+            unsigned int last_time;
 
-        /// A parent node gives me the incoming signal
-        /// Now its my time for execution
-        virtual void in() = 0;
-        /// Run my stuff
-        virtual void run() = 0;
-        /// Now call outgoing 
-        virtual void out() = 0;
-        /// Reset this node
-        virtual void reset() = 0;
+            /// TODO: do we need this?
+            int default_box_color;
+            int box_color;
 
-        /// A vector of pointers to parent nodes
-        std::vector<CScriptNode *> incoming;
-        /// A vector of pointers to child nodes
-        std::vector<CScriptNode *> outgoing;
+            CScriptNode();
+            ~CScriptNode();
+
+            void in();
+            void run();
+            void out();
+            void reset();
     };
 
 

@@ -38,9 +38,9 @@ namespace vscript {
         /// still we have to implement these methods to make this class a valid
         /// child class of CScriptNode!
 
-        void run() {}
-        void in() {}
-        void out() {}
+        void run()   {}
+        void in()    {}
+        void out()   {}
         void reset() {}
     };
 

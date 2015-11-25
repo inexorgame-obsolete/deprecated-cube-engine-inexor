@@ -29,12 +29,6 @@ namespace vscript {
     {
     }
 
-    
-    void CTimerNode::in()
-    {
-        run();
-    }
-
 
     void CTimerNode::run()
     {
@@ -67,13 +61,6 @@ namespace vscript {
         /// TODO: implement cooldown!
     }
 
-
-    void CTimerNode::out()
-    {
-        particle_text(position + vec(boxsize/2, boxsize/2, 0.0f), "go!", PART_TEXT, 5000, 0x32FF00, 2.0f, -10.0f);
-        /// run child node's code
-        for(unsigned int i = 0; i < outgoing.size(); i++) outgoing[i]->in();
-    }
 
 /// end of namespace
 };

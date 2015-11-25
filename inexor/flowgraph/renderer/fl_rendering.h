@@ -31,26 +31,24 @@ namespace vscript {
     class CVisualScriptRenderer
     {
         protected:
-    
-        //std::vector<debug_ray> rays;
-    
-        void adjust_selection_color(int orient, int index, int std_color_of_this_node);
+
+            void adjust_selection_color(int orient, int index, int std_color_of_this_node);
 
         public:
 
-        CVisualScriptRenderer();
-        ~CVisualScriptRenderer();
+            CVisualScriptRenderer();
+            ~CVisualScriptRenderer();
     
-        void start_rendering();
+            void start_rendering();
 
-        void renderbox(vec p, int orient, int std_color_of_this_node);
-        void renderboxoutline(vec p);
-        void renderboxhelplines(vec p);
+            void renderbox(vec p, int orient, int std_color_of_this_node);
+            void renderboxoutline(vec p);
+            void renderboxhelplines(vec p);
 
-        virtual void render_nodes() = 0;
-        virtual void render_node_relations() = 0;
+            virtual void render_nodes() = 0;
+            virtual void render_node_relations() = 0;
 
-        void end_rendering();
+            void end_rendering();
     };
 
 /// end of namespace
