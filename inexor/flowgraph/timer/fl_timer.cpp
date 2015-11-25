@@ -43,7 +43,6 @@ namespace vscript {
         last_time = 0;
     }
 
-
     /// decide if we need to run the code
     void CTimerNode::check_if_execution_is_due() 
     {
@@ -53,7 +52,7 @@ namespace vscript {
 
         if(this_time - last_time >= timer_interval) 
         {
-            out();
+            CScriptNode::out();
             last_time = this_time;
             timer_counter++;
         }
