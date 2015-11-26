@@ -26,6 +26,7 @@ namespace vscript {
         pos_changed = false;
         selected = false;
         done_pointer = nullptr;
+        script_execution_start = 0;
     }
 
 
@@ -38,7 +39,7 @@ namespace vscript {
     {
         /// Calculate the time difference
         unsigned long current_time = SDL_GetTicks();
-        if(current_time - *exec_time_pointer)
+        if(current_time - script_execution_start)
         {
             done_pointer = false;
             WhereDidWeStop = this;
@@ -66,7 +67,7 @@ namespace vscript {
             /// TODO: implement return value buffer!
             for(unsigned int i=0; i<children.size(); i++)
             {
-                /// notify child nodes!
+                children[i]->script_execution_start = script_execution_start;
                 children[i]->in();
             }    
         }

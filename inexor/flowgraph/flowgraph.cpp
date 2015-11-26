@@ -120,7 +120,8 @@ namespace vscript {
 
             case NODE_TYPE_SLEEP:
             {
-                created_node = new CSleepNode(target, atoi(arguments[1].c_str()) ); 
+                unsigned int wait_time   = atoi(arguments[0].c_str());
+                created_node = new CSleepNode(target, wait_time); 
                 break;
             }
         }
@@ -339,8 +340,10 @@ namespace vscript {
 
             case SDL_BUTTON_RIGHT:
 
-                if(isdown) conoutf(CON_DEBUG, "right click: dragging entity around.");
-                else conoutf(CON_DEBUG, "right click: dragging finished.");
+                #ifdef INEXOR_VSCRIPT_MOUSE_DEBUGGING
+                    if(isdown) conoutf(CON_DEBUG, "right click: dragging entity around.");
+                    else conoutf(CON_DEBUG, "right click: dragging finished.");
+                #endif
                 break;
         }
     }
@@ -386,10 +389,7 @@ namespace vscript {
 
     void CVisualScriptWorker::run_jobs()
     {
-        /// remember where we started in time
-        const unsigned long execution_start_time = SDL_GetTicks();
-
-        conoutf(CON_DEBUG, "There are %d jobs to do!", jobs.size());
+        unsigned long start_time = SDL_GetTicks();
 
         for(unsigned int i=0; i<jobs.size(); i++)
         {
@@ -397,7 +397,7 @@ namespace vscript {
             {
                 jobs.at(i).started = true;
                 jobs.at(i).node->done_pointer = & jobs.at(i).done;
-                jobs.at(i).node->exec_time_pointer = & execution_start_time;
+                jobs.at(i).node->script_execution_start = start_time;
                 jobs.at(i).node->in();
             }
         }
@@ -441,21 +441,30 @@ namespace vscript {
     
     CScriptNode* a;
     CScriptNode* b;
+    CScriptNode* c;
 
     /// Testing and debugging
     void test_a()
     {
-        a = vScript3D.add_node(NODE_TYPE_TIMER, 7, "1000", "0", "1000", "0", "TimerNode1", "Hello world", "0");
+        a = vScript3D.add_node(NODE_TYPE_TIMER, 7, "5000", "0", "1000", "0", "TimerNode1", "Hello world", "0");
     }
     COMMAND(test_a, "");
 
     void test_b()
     {
         //b = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "0" /*FUNCTION_CONOUTF*/, "Hello World");
-        b = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "1" /*FUNCTION_PLAYSOUND*/, "52" /*S_V_BASECAP*/);
+        b = vScript3D.add_node(NODE_TYPE_SLEEP, 1, "1337");
         vScript3D.connect_nodes(a,b);
     }
     COMMAND(test_b, "");
+
+    void test_c()
+    {
+        //b = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "0" /*FUNCTION_CONOUTF*/, "Hello World");
+        c = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "1" /*FUNCTION_PLAYSOUND*/, "52" /*S_V_BASECAP*/);
+        vScript3D.connect_nodes(b,c);
+    }
+    COMMAND(test_c, "");
 
 /// end of namespace
 };

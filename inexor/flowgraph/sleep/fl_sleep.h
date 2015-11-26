@@ -41,6 +41,7 @@ namespace vscript {
             unsigned int sleep_start;
             unsigned int sleep_end;
             unsigned int sleep_interval;
+            bool         sleep_active;
 
             CSleepNode(vec pos, 
                        unsigned int sleeptime, 

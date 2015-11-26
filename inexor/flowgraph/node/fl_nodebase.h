@@ -70,7 +70,6 @@ namespace vscript {
         VSCRIPT_COLOR_BLACK     = 0x000000,
     };
 
-
     /// @brief base class for node implementations
     class CScriptNode
     {
@@ -86,7 +85,6 @@ namespace vscript {
             bool pos_changed;
 
             bool *done_pointer;
-            const unsigned long* exec_time_pointer;
             CScriptNode* WhereDidWeStop;
 
             vec position;
@@ -102,6 +100,8 @@ namespace vscript {
             /// TODO: do we need this?
             int default_box_color;
             int box_color;
+
+            unsigned long script_execution_start;
 
             CScriptNode();
             ~CScriptNode();

@@ -9,6 +9,7 @@ namespace vscript {
                            const char* comment)
     {
         sleep_interval = sleeptime;
+        position = pos;
     }
 
 
@@ -19,14 +20,17 @@ namespace vscript {
 
     void CSleepNode::run()
     {
-        /// save the current time
-        sleep_start = SDL_GetTicks();
+        /// TODO: Implement multithreading?
+        if(!sleep_active)
+        {
+            sleep_start = SDL_GetTicks();
+            sleep_active = true;
+        }
         sleep_end = sleep_start + sleep_interval;
-        /// call outgoing method once waiting has finished
-        /// TODO: multithreading?
         if(SDL_GetTicks() >= sleep_end)
         {
-            out();
+            CScriptNode::out();
+            sleep_active = false;
         }
     }
 
