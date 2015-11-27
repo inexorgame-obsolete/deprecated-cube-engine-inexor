@@ -347,7 +347,7 @@ namespace game
         loopi(len) if(projs[i].owner==owner) { projs.remove(i--); len--; }
     }
 
-    INEXOR_SHARED_TREE(/settings/blood) VARP(blood, 0, 1, 1);
+    VARP(blood, 0, 1, 1);
 
     void damageeffect(int damage, fpsent *d, bool thirdperson)
     {
