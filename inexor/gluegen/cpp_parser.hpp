@@ -111,7 +111,7 @@ void find_shared_decls(
     public:
         bool VisitDecl(clang::Decl *x) {
           auto *xv = dynamic_cast<clang::VarDecl*>(x);
-          if (!xv) return true;
+          if (!xv || xv->hasExternalStorage()) return true;
           const auto *bt = xv->getType().getTypePtrOrNull();
           if (!bt) return true;
           auto *tt = bt->getAs<clang::TemplateSpecializationType>();
