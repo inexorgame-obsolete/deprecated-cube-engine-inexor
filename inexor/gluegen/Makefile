@@ -1,8 +1,16 @@
 inexor_basedir = ../..
 
 CXX=clang++
-CXXFLAGS=-std=c++11 -O2 -Wall -Wextra -Wpedantic -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS -pthread -I"$(inexor_basedir)"
+CXXFLAGS=-std=c++11 -Wall -Wextra -Wpedantic -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS -pthread -I"$(inexor_basedir)"
 LDFLAGS=-std=c++11 -pthread
+
+ifdef DEBUG
+  CFLAGS += -O0 -g
+  CXXFLAGS += -O0 -g
+else
+  CFLAGS += -O2 -march=native -mtune=native
+  CXXFLAGS += -O2 -march=native -mtune=native
+endif
 
 libs = -lclangRewrite -lclangTooling -llldb
 
