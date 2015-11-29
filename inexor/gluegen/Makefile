@@ -12,7 +12,12 @@ else
   CXXFLAGS += -O2 -march=native -mtune=native
 endif
 
-libs = -lclangRewrite -lclangTooling -llldb
+libs = \
+	-Wl,-Bstatic \
+		-lclangRewrite \
+		-lclangTooling \
+	-Wl,-Bdynamic \
+		-llldb # TODO: Link statically
 
 objs = gluegen.o
 exe = gluegen
