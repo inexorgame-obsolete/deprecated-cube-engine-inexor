@@ -47,7 +47,9 @@ void update_protoc_file(const std::string &path, std::vector<ShTreeNode> &tree) 
 
     // tuple(string type, mangled_name, index)
     auto var_gen =
-      t1 << "optional " << string << " " << string << " = " << long_long << ";";
+        t1 << "optional " << string << " " << string 
+          << " = " << long_long << ";"
+          << "  // " << string;
 
     // range[tuple]
     auto protoc_gen =
@@ -64,7 +66,7 @@ void update_protoc_file(const std::string &path, std::vector<ShTreeNode> &tree) 
     using std::tuple;
     
     // TODO: seriously, this syntax is terrible
-    typedef tuple<std::string&, std::string&, int64_t> ptup;
+    typedef tuple<std::string&, std::string&, int64_t, std::string&> ptup;
     function<bool(ShTreeNode&)> missing_paths = [](const ShTreeNode &n) {
         if (n.mangled_path.empty()) {
             std::cerr << "[WARNING] Missing path for " << n.cpp_var << "\n";
@@ -76,7 +78,8 @@ void update_protoc_file(const std::string &path, std::vector<ShTreeNode> &tree) 
         return ptup{
             n.protoc_lit
           , n.mangled_path
-          , n.protoc_idx}; };
+          , n.protoc_idx
+          , n.cpp_var }; };
     auto data_gen = tree | filtered(missing_paths) | transformed(mktup);
 
     // TODO: Needed because format invokes size() on the
