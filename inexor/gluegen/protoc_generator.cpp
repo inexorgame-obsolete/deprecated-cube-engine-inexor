@@ -15,7 +15,10 @@ namespace inexor {
 namespace rpc {
 namespace gluegen {
 
-void update_protoc_file(const std::string &path, std::vector<ShTreeNode> &tree) {
+void update_protoc_file(
+      const std::string &path
+    , std::vector<ShTreeNode> &tree
+    , const std::string &package) {
 
     /// Assign numbers to each of the fields
 
@@ -38,6 +41,7 @@ void update_protoc_file(const std::string &path, std::vector<ShTreeNode> &tree) 
 
     using boost::spirit::eol;
     using boost::spirit::ascii::string;
+    using boost::spirit::lit;
     using boost::spirit::long_long;
 
     // Indentation helpers (replace with special eol,
@@ -47,13 +51,13 @@ void update_protoc_file(const std::string &path, std::vector<ShTreeNode> &tree) 
 
     // tuple(string type, mangled_name, index)
     auto var_gen =
-        t1 << "optional " << string << " " << string 
+        t1 << "optional " << string << " " << string
           << " = " << long_long << ";"
           << "  // " << string;
 
     // range[tuple]
     auto protoc_gen =
-               "package inexor.tree;"
+               "package " << lit(package) << ";"
       << t0
       << t0 << "message Global {"
           << *var_gen
