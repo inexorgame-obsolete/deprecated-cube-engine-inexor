@@ -22,7 +22,7 @@ void usage(const std::string &ex, const po::options_description &params) {
         << "\n inexor gluegen – Generate the glue code for the tree API."
         << "\n\nSYNPOSIS"
         << "\n  (1) " << ex << " -h|--help"
-        << "\n  (2) " << ex << " --protoc|-P FILE -- CLANG_OPTIONS... -- SOURCE_FILES..."
+        << "\n  (2) " << ex << " --protoc|-P FILE -protoc-package|-N -- CLANG_OPTIONS... -- SOURCE_FILES..."
         << "\n\nDESCRIPTION"
         << "\n  (1) Show this help page"
         << "\n  (2) Generate the glue code. If no options are passed to clang, you must still specify two double dashes: -- --"
@@ -44,7 +44,9 @@ int main(int argc, const char **argv) {
     params.add_options()
         ("help,h", "Print this help message")
         ("protoc,P", po::value<string>(), "The .protoc file "
-            "to write the protocol description to.");
+            "to write the protocol description to.")
+        ("protoc-package,N", po::value<string>(), "The package "
+            "to use in the .proto file. E.g. 'inexor.fnord'");
 
     std::string exec{argv[0]};
 
@@ -90,10 +92,17 @@ int main(int argc, const char **argv) {
       return 1;
     }
 
-    if ( cli_config.count("help") || !cli_config.count("protoc") ) {
+    auto c = [&cli_config](const std::string &s) {
+        return cli_config.count(s);
+    };
+
+    if ( c("help") || !c("protoc") || !c("protoc-package") ) {
       usage(exec, params);
       return 0;
     }
+
+    const std::string &protoc_file = cli_config["protoc"].as<std::string>();
+    const std::string &protoc_pkg = cli_config["protoc-package"].as<std::string>();
 
     // Read the list of variables
 
@@ -110,7 +119,7 @@ int main(int argc, const char **argv) {
 
     // Write the protoc file
 
-    update_protoc_file(cli_config["protoc"].as<std::string>(), tree);
+    update_protoc_file(protoc_file, tree, protoc_pkg);
 
     return 0;
 }

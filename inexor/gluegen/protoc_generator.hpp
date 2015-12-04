@@ -19,7 +19,13 @@ namespace gluegen {
 /// in here
 ///
 /// TODO: Use a range instead of the fixed ShTree
-extern void update_protoc_file(const std::string &path, std::vector<ShTreeNode> &tree);
+/// @param path The file to output into
+/// @param tree The list of declarations to output
+/// @param package The protocol buffers package to use; e.g. "inexor.tree"
+extern void update_protoc_file(
+      const std::string &path
+    , std::vector<ShTreeNode> &tree
+    , const std::string &package);
 
 }
 }
