@@ -7,7 +7,7 @@
 //   avidemux - ok - 3Apr09-RockKeyman:had to swap UV channels as it showed up blue
 //   kino - ok
 
-#include "inexor/engine/engine.h"
+#include "inexor/engine/engine.hpp"
 #include "SDL_mixer.h"
 
 VAR(dbgmovie, 0, 0, 1);

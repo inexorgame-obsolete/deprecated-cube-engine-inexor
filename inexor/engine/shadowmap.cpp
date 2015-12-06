@@ -1,5 +1,5 @@
-#include "inexor/engine/engine.h"
-#include "inexor/engine/rendertarget.h"
+#include "inexor/engine/engine.hpp"
+#include "inexor/engine/rendertarget.hpp"
 
 VARP(shadowmap, 0, 0, 1);
 

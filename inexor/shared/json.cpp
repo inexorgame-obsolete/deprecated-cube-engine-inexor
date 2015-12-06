@@ -2,7 +2,7 @@
 ///  Rewrite of cJSON 1.0r58 in Inexor-optimized object-orientated C-ish C++
 ///  cJSON (Copyright (c) 2009 by Dave Gamble) is licensed under the MIT-license
 
-#include "inexor/engine/engine.h"
+#include "inexor/engine/engine.hpp"
 
 // Debugging
 

@@ -1,5 +1,5 @@
 // movable.cpp: implements physics for inanimate models
-#include "inexor/fpsgame/game.h"
+#include "inexor/fpsgame/game.hpp"
 
 extern int physsteps;
 

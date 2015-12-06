@@ -1,4 +1,4 @@
-#include "inexor/ui/ceflayermanager.h"
+#include "inexor/ui/ceflayermanager.hpp"
 
 InexorCefLayerManager::InexorCefLayerManager(int width, int height)
 {

@@ -5,7 +5,7 @@ The stackwalker appears as soon as an signal from the OS arrives to terminate th
 It should work on Windows, Linux and OS/X with the exception of MINGW (since our debug information are not compatible there
 and we do not actually need a stackwalker on mingw currently since we use visual studio for our deployed packages).
 
-To use this module, just include the CrashReporter.h somewhere in your code, make sure you got a ´fatal(std::string &output)´ function declared,
+To use this module, just include the CrashReporter.hpp somewhere in your code, make sure you got a ´fatal(std::string &output)´ function declared,
 and then initialise this crashreporter-class somewhere (e.g. in your main). It does not need to be called just needs to be there.
 
 The other files are just there to implement printstacktrace() on the different platforms.

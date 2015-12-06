@@ -1,5 +1,5 @@
 // monster.h: implements AI for single player monsters, currently client only
-#include "inexor/fpsgame/game.h"
+#include "inexor/fpsgame/game.hpp"
 
 extern int physsteps;
 

@@ -1,12 +1,12 @@
 #include "gtest/gtest.h"
 
-#include "inexor/test/helpers.h"
-#include "inexor/test/net/helpers.h"
+#include "inexor/test/helpers.hpp"
+#include "inexor/test/net/helpers.hpp"
 
-#include "inexor/test/net/SimplexMCTest.h"
-#include "inexor/test/net/DuplexMCTest.h"
+#include "inexor/test/net/SimplexMCTest.hpp"
+#include "inexor/test/net/DuplexMCTest.hpp"
 
-#include "inexor/net.h"
+#include "inexor/net.hpp"
 
 #include <utility>
 #include <sstream>

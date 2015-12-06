@@ -1,8 +1,8 @@
 // server.cpp: little more than enhanced multicaster
 // runs dedicated or as client coroutine
 
-#include "inexor/engine/engine.h"
-#include "inexor/crashreporter/CrashReporter.h"
+#include "inexor/engine/engine.hpp"
+#include "inexor/crashreporter/CrashReporter.hpp"
 
 #define LOGSTRLEN 512
 

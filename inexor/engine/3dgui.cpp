@@ -3,9 +3,9 @@
 // special feature is that its mostly *modeless*: you can use this menu while playing, without turning menus on or off
 // implementationwise, it is *stateless*: it keeps no internal gui structure, hit tests are instant, usage & implementation is greatly simplified
 
-#include "inexor/engine/engine.h"
-#include "inexor/engine/textedit.h"
-#include "inexor/shared/filesystem.h"
+#include "inexor/engine/engine.hpp"
+#include "inexor/engine/textedit.hpp"
+#include "inexor/shared/filesystem.hpp"
 
 static struct gui *windowhit = NULL;
 static bool layoutpass, actionon = false;

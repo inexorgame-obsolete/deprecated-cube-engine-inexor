@@ -1,4 +1,4 @@
-#include "inexor/util/random.h"
+#include "inexor/util/random.hpp"
 
 #include <chrono>
 

@@ -1,4 +1,4 @@
-#include "inexor/ui/cefframe.h"
+#include "inexor/ui/cefframe.hpp"
 
 void InexorCefFrame::InitializeContext()
 {

@@ -1,4 +1,4 @@
-#include "inexor/engine/engine.h"
+#include "inexor/engine/engine.hpp"
 
 VARP(grass, 0, 0, 1);
 VAR(dbggrass, 0, 0, 1);

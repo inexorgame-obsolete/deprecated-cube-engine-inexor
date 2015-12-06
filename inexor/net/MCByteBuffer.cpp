@@ -1,8 +1,8 @@
 #include <istream>
 #include <iostream>
 
-#include "inexor/net/MessageConnect.h"
-#include "inexor/net/MCByteBuffer.h"
+#include "inexor/net/MessageConnect.hpp"
+#include "inexor/net/MCByteBuffer.hpp"
 
 using namespace std;
 

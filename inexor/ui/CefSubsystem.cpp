@@ -1,5 +1,5 @@
-#include "inexor/ui/CefSubsystem.h"
-#include "inexor/ui/cefsettings.h"
+#include "inexor/ui/CefSubsystem.hpp"
+#include "inexor/ui/cefsettings.hpp"
 
 using namespace inexor::util;
 

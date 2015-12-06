@@ -1,6 +1,6 @@
 // console.cpp: the console buffer, its display, and command line control
 
-#include "inexor/engine/engine.h"
+#include "inexor/engine/engine.hpp"
 #include <set>
 
 #define MAXCONLINES 1000

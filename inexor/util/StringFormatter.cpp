@@ -1,4 +1,4 @@
-#include "StringFormatter.h"
+#include "inexor/util/StringFormatter.hpp"
 
 namespace inexor {
 namespace util {

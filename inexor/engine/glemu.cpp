@@ -1,4 +1,4 @@
-#include "inexor/shared/cube.h"
+#include "inexor/shared/cube.hpp"
 
 extern SharedVar<int> glversion;
 extern SharedVar<int> intel_mapbufferrange_bug;

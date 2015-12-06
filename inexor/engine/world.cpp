@@ -1,6 +1,6 @@
 // world.cpp: core map management stuff
 
-#include "inexor/engine/engine.h"
+#include "inexor/engine/engine.hpp"
 
 VARR(mapversion, 1, MAPVERSION, 0);
 VARNR(mapscale, worldscale, 1, 0, 0);

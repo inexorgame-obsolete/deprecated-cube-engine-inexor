@@ -1,4 +1,4 @@
-#include "inexor/ui/cefmenu.h"
+#include "inexor/ui/cefmenu.hpp"
 
 void InexorCefMenu::InitializeContext()
 {

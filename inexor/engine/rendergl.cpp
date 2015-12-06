@@ -1,7 +1,7 @@
 // rendergl.cpp: core opengl rendering stuff
 
-#include "inexor/engine/engine.h"
-#include "inexor/shared/filesystem.h"
+#include "inexor/engine/engine.hpp"
+#include "inexor/shared/filesystem.hpp"
 
 bool hasVAO = false,  hasFBO = false, hasAFBO = false, hasDS = false, hasTF = false, hasTRG = false, hasS3TC = false, hasFXT1 = false, hasAF = false, hasFBB = false, hasUBO = false, hasMBR = false;
 int hasstencil = 0;

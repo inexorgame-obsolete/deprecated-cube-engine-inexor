@@ -1,4 +1,4 @@
-#include "inexor/ui/cefcontextprovider.h"
+#include "inexor/ui/cefcontextprovider.hpp"
 
 CefRefPtr<CefV8Value> InexorCefContextProvider::GetContext()
 {

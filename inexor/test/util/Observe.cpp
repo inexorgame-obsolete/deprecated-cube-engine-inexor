@@ -6,8 +6,8 @@
 
 #include "gtest/gtest.h"
 
-#include "inexor/util/Observe.h"
-#include "inexor/test/helpers.h"
+#include "inexor/util/Observe.hpp"
+#include "inexor/test/helpers.hpp"
 
 using namespace std;
 using namespace inexor::util;

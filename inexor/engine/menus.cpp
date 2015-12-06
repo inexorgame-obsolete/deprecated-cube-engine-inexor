@@ -1,6 +1,6 @@
 // menus.cpp: ingame menu system (also used for scores and serverlist)
 
-#include "inexor/engine/engine.h"
+#include "inexor/engine/engine.hpp"
 
 #define GUI_TITLE_COLOR  0xFFDD88
 #define GUI_BUTTON_COLOR 0xFFFFFF

@@ -3,7 +3,7 @@
 // implementation of connect and disconnect
 // implementation of enet network parser
 
-#include "inexor/engine/engine.h"
+#include "inexor/engine/engine.hpp"
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // mostly network related stuff

@@ -1,4 +1,4 @@
-#include "inexor/net/MCSocketServer.h"
+#include "inexor/net/MCSocketServer.hpp"
 
 boost::asio::ip::tcp inexor::net::v4() {
   return boost::asio::ip::tcp::v4();

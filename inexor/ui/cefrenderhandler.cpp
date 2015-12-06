@@ -1,4 +1,4 @@
-#include "inexor/ui/cefrenderhandler.h"
+#include "inexor/ui/cefrenderhandler.hpp"
 
 // DCHECK on gl errors.
 #ifndef NDEBUG

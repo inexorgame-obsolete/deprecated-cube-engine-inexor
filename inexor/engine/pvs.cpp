@@ -1,4 +1,4 @@
-#include "inexor/engine/engine.h"
+#include "inexor/engine/engine.hpp"
 
 enum
 {

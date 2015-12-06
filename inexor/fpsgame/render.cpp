@@ -1,4 +1,4 @@
-#include "inexor/fpsgame/game.h"
+#include "inexor/fpsgame/game.hpp"
 
 namespace game
 {      

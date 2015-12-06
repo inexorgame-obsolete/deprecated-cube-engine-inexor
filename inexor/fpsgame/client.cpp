@@ -3,8 +3,8 @@
 /// minimap, hud, administration, auth, connect, network message parser and more
 /// implementation of many cube script get functions
 
-#include "inexor/fpsgame/game.h"
-#include "inexor/shared/filesystem.h"
+#include "inexor/fpsgame/game.hpp"
+#include "inexor/shared/filesystem.hpp"
 
 namespace game
 {
@@ -140,11 +140,11 @@ namespace game
 	/// game modes
 
 	/// game mode header files
-    #include "inexor/fpsgame/capture.h"
-    #include "inexor/fpsgame/ctf.h"
-    #include "inexor/fpsgame/collect.h"
-    #include "inexor/fpsgame/bomb.h"
-    #include "inexor/fpsgame/hideandseek.h"
+    #include "inexor/fpsgame/capture.hpp"
+    #include "inexor/fpsgame/ctf.hpp"
+    #include "inexor/fpsgame/collect.hpp"
+    #include "inexor/fpsgame/bomb.hpp"
+    #include "inexor/fpsgame/hideandseek.hpp"
 
 	/// gamemodes
     clientmode *cmode = NULL;
@@ -2130,11 +2130,11 @@ namespace game
             }
 
             #define PARSEMESSAGES 1
-            #include "capture.h"
-            #include "ctf.h"
-            #include "collect.h"
-            #include "bomb.h"
-            #include "hideandseek.h"
+            #include "inexor/fpsgame/capture.hpp"
+            #include "inexor/fpsgame/ctf.hpp"
+            #include "inexor/fpsgame/collect.hpp"
+            #include "inexor/fpsgame/bomb.hpp"
+            #include "inexor/fpsgame/hideandseek.hpp"
             #undef PARSEMESSAGES
 
             case N_ANNOUNCE:

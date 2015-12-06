@@ -1,10 +1,10 @@
 /// game initialisation & main loop
-
-#include "inexor/engine/engine.h"
-#include "inexor/shared/filesystem.h"
-#include "inexor/ui.h"
-#include "inexor/util/Subsystem.h"
-#include "inexor/crashreporter/CrashReporter.h"
+///
+#include "inexor/engine/engine.hpp"
+#include "inexor/shared/filesystem.hpp"
+#include "inexor/ui.hpp"
+#include "inexor/util/Subsystem.hpp"
+#include "inexor/crashreporter/CrashReporter.hpp"
 
 /// extern functions and data here
 extern void cleargamma();

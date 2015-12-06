@@ -1,7 +1,7 @@
 // worldio.cpp: loading & saving of maps and savegames
 
-#include "inexor/engine/engine.h"
-#include "inexor/shared/filesystem.h"
+#include "inexor/engine/engine.hpp"
+#include "inexor/shared/filesystem.hpp"
 
 /// remove map postfix (.ogz) from file path/name to get map name
 void cutogz(char *s) 

@@ -1,7 +1,7 @@
 // renderparticles.cpp
 
-#include "inexor/engine/engine.h"
-#include "inexor/engine/rendertarget.h"
+#include "inexor/engine/engine.hpp"
+#include "inexor/engine/rendertarget.hpp"
 
 Shader *particleshader = NULL, *particlenotextureshader = NULL;
 
@@ -818,10 +818,10 @@ typedef varenderer<PT_PART> quadrenderer;
 typedef varenderer<PT_TAPE> taperenderer;
 typedef varenderer<PT_TRAIL> trailrenderer;
 
-#include "depthfx.h"
-#include "explosion.h"
-#include "lensflare.h"
-#include "lightning.h"
+#include "inexor/engine/depthfx.hpp"
+#include "inexor/engine/explosion.hpp"
+#include "inexor/engine/lensflare.hpp"
+#include "inexor/engine/lightning.hpp"
 
 struct softquadrenderer : quadrenderer
 {

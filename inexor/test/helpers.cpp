@@ -1,4 +1,4 @@
-#include "inexor/test/helpers.h"
+#include "inexor/test/helpers.hpp"
 
 #include <cstring>
 

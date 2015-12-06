@@ -6,7 +6,7 @@
 #define __FD_SETSIZE 4096
 #endif
 
-#include "inexor/shared/cube.h"
+#include "inexor/shared/cube.hpp"
 #include <signal.h>
 #include <enet/time.h>
 

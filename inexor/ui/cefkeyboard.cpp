@@ -1,4 +1,4 @@
-#include "inexor/ui/cefkeyboard.h"
+#include "inexor/ui/cefkeyboard.hpp"
 
 InexorCefKeyboardManager::InexorCefKeyboardManager(CefRefPtr<InexorCefLayerManager> layer_manager) : layer_manager(layer_manager)
 {

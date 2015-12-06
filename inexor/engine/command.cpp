@@ -1,8 +1,8 @@
 // command.cpp: implements the parsing and execution of a tiny script language which
 // is largely backwards compatible with the quake console language.
 
-#include "inexor/engine/engine.h"
-#include "inexor/rpc/SharedVar.h"
+#include "inexor/engine/engine.hpp"
+#include "inexor/rpc/SharedVar.hpp"
 
 hashnameset<ident> idents; // contains ALL vars/commands/aliases
 vector<ident *> identmap;

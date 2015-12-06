@@ -1,4 +1,4 @@
-#include "inexor/engine/engine.h"
+#include "inexor/engine/engine.hpp"
 
 #define MAXLIGHTMAPTASKS 4096
 #define LIGHTMAPBUFSIZE (2*1024*1024)

@@ -1,5 +1,5 @@
-#include "inexor/engine/engine.h"
-#include "inexor/shared/filesystem.h"
+#include "inexor/engine/engine.hpp"
+#include "inexor/shared/filesystem.hpp"
 
 Texture *sky[6] = { 0, 0, 0, 0, 0, 0 }, *clouds[6] = { 0, 0, 0, 0, 0, 0 };
 

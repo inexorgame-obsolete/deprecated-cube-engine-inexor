@@ -1,4 +1,4 @@
-#include "inexor/ui/cefcontextmanager.h"
+#include "inexor/ui/cefcontextmanager.hpp"
 
 void InexorCefContextManager::InitializeContext()
 {

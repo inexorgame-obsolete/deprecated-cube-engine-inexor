@@ -1,4 +1,4 @@
-#include "inexor/ui/cefmouse.h"
+#include "inexor/ui/cefmouse.hpp"
 
 void InexorCefMouseManager::InitializeContext()
 {

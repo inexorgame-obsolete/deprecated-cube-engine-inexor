@@ -2,12 +2,12 @@
 
 
 #ifndef __MINGW32__ // we do not allow MinGW stackwalking atm.
-#include "inexor/crashreporter/CrashReporter.h"
-#include "inexor/util/StringFormatter.h"
+#include "inexor/crashreporter/CrashReporter.hpp"
+#include "inexor/util/StringFormatter.hpp"
 #ifdef WIN32
-#include "inexor/crashreporter/StackWalker_windows.h"
+#include "inexor/crashreporter/StackWalker_windows.hpp"
 #else
-#include "inexor/crashreporter/StackWalker_posix.h"
+#include "inexor/crashreporter/StackWalker_posix.hpp"
 #endif
 
 extern void fatal(std::vector<std::string> &output);

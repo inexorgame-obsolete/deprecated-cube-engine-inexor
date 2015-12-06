@@ -1,32 +1,32 @@
 // texture.cpp: texture slot management
 
-#include "inexor/engine/engine.h"
+#include "inexor/engine/engine.hpp"
 #include "SDL_image.h"
-#include "inexor/shared/filesystem.h"
+#include "inexor/shared/filesystem.hpp"
 
 #define FUNCNAME(name) name##1
 #define DEFPIXEL uint OP(r, 0);
 #define PIXELOP OP(r, 0);
 #define BPP 1
-#include "inexor/engine/scale.h"
+#include "inexor/engine/scale.hpp"
 
 #define FUNCNAME(name) name##2
 #define DEFPIXEL uint OP(r, 0), OP(g, 1);
 #define PIXELOP OP(r, 0); OP(g, 1);
 #define BPP 2
-#include "inexor/engine/scale.h"
+#include "inexor/engine/scale.hpp"
 
 #define FUNCNAME(name) name##3
 #define DEFPIXEL uint OP(r, 0), OP(g, 1), OP(b, 2);
 #define PIXELOP OP(r, 0); OP(g, 1); OP(b, 2);
 #define BPP 3
-#include "inexor/engine/scale.h"
+#include "inexor/engine/scale.hpp"
 
 #define FUNCNAME(name) name##4
 #define DEFPIXEL uint OP(r, 0), OP(g, 1), OP(b, 2), OP(a, 3);
 #define PIXELOP OP(r, 0); OP(g, 1); OP(b, 2); OP(a, 3);
 #define BPP 4
-#include "inexor/engine/scale.h"
+#include "inexor/engine/scale.hpp"
 
 static void scaletexture(uchar *src, uint sw, uint sh, uint bpp, uint pitch, uchar *dst, uint dw, uint dh)
 {

@@ -1,4 +1,4 @@
-#include "inexor/shared/cube.h"
+#include "inexor/shared/cube.hpp"
 
 static inline double det2x2(double a, double b, double c, double d) { return a*d - b*c; }
 static inline double det3x3(double a1, double a2, double a3,

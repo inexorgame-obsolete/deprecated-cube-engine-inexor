@@ -1,9 +1,9 @@
 #include <string>
 #include <iostream>
 
-#include "inexor/rpc/RpcSubsystem.h"
+#include "inexor/rpc/RpcSubsystem.hpp"
 
-#include "inexor/net/MCSocketServer.h"
+#include "inexor/net/MCSocketServer.hpp"
 
 using namespace std;
 using namespace inexor::net;

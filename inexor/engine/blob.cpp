@@ -1,4 +1,4 @@
-#include "inexor/engine/engine.h"
+#include "inexor/engine/engine.hpp"
 
 extern SharedVar<int> intel_mapbufferrange_bug;
 

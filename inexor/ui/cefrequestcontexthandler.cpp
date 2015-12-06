@@ -1,4 +1,4 @@
-#include "inexor/ui/cefrequestcontexthandler.h"
+#include "inexor/ui/cefrequestcontexthandler.hpp"
 
 InexorCefRequestContextHandler::InexorCefRequestContextHandler()
 {

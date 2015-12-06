@@ -1,6 +1,6 @@
-#include "inexor/fpsgame/game.h"
+#include "inexor/fpsgame/game.hpp"
 
-#include "inexor/util/random.h"
+#include "inexor/util/random.hpp"
 
 namespace game
 {
@@ -861,11 +861,11 @@ namespace server
     };
 
     #define SERVMODE 1
-    #include "capture.h"
-    #include "ctf.h"
-    #include "collect.h"
-    #include "bomb.h"
-    #include "hideandseek.h"
+    #include "inexor/fpsgame/capture.hpp"
+    #include "inexor/fpsgame/ctf.hpp"
+    #include "inexor/fpsgame/collect.hpp"
+    #include "inexor/fpsgame/bomb.hpp"
+    #include "inexor/fpsgame/hideandseek.hpp"
 
     captureservmode capturemode;
     ctfservmode ctfmode;
@@ -3734,11 +3734,11 @@ namespace server
                 break;
                      
             #define PARSEMESSAGES 1
-            #include "capture.h"
-            #include "ctf.h"
-            #include "collect.h"
-            #include "bomb.h"
-            #include "hideandseek.h"
+            #include "inexor/fpsgame/capture.hpp"
+            #include "inexor/fpsgame/ctf.hpp"
+            #include "inexor/fpsgame/collect.hpp"
+            #include "inexor/fpsgame/bomb.hpp"
+            #include "inexor/fpsgame/hideandseek.hpp"
             #undef PARSEMESSAGES
 
             case -1:
@@ -3771,7 +3771,7 @@ namespace server
     int masterport() { return INEXOR_MASTER_PORT; }
     int numchannels() { return 3; }
 
-    #include "extinfo.h"
+    #include "inexor/fpsgame/extinfo.hpp"
 
     void serverinforeply(ucharbuf &req, ucharbuf &p)
     {
@@ -3803,6 +3803,6 @@ namespace server
         return attr.length() && attr[0]==PROTOCOL_VERSION;
     }
 
-    #include "aiman.h"
+    #include "inexor/fpsgame/aiman.hpp"
 }
 

@@ -1,6 +1,6 @@
 /// @file General tools, typedefines and generic definitions.
 
-#include "inexor/shared/cube.h"
+#include "inexor/shared/cube.hpp"
 #ifndef WIN32
 #include <unistd.h>
 #endif

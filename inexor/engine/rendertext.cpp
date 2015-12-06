@@ -1,4 +1,4 @@
-#include "inexor/engine/engine.h"
+#include "inexor/engine/engine.hpp"
 
 static hashnameset<font> fonts;
 static font *fontdef = NULL;

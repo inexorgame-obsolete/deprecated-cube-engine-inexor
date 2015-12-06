@@ -6,12 +6,12 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "inexor/util.h"
-#include "inexor/util/random.h"
+#include "inexor/util.hpp"
+#include "inexor/util/random.hpp"
 
 #include "gtest/gtest.h"
 
-#include "inexor/test/helpers.h"
+#include "inexor/test/helpers.hpp"
 
 using namespace std;
 using namespace boost;

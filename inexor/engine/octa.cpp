@@ -1,6 +1,6 @@
 // core world management routines
 
-#include "inexor/engine/engine.h"
+#include "inexor/engine/engine.hpp"
 
 cube *worldroot = newcubes(F_SOLID);
 int allocnodes = 0;

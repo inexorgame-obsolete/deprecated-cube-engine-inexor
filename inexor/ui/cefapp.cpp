@@ -1,4 +1,4 @@
-#include "inexor/ui/cefapp.h"
+#include "inexor/ui/cefapp.hpp"
 
 InexorCefApp::InexorCefApp(int width, int height)
 {

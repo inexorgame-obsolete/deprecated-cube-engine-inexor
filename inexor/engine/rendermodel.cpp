@@ -1,4 +1,4 @@
-#include "inexor/engine/engine.h"
+#include "inexor/engine/engine.hpp"
 
 SVARP(modeldir, "media/model");
 
@@ -7,10 +7,10 @@ VAR(animationinterpolationtime, 0, 150, 1000);
 
 model *loadingmodel = NULL;
 
-#include "inexor/engine/ragdoll.h"
-#include "inexor/engine/animmodel.h"
-#include "inexor/engine/vertmodel.h"
-#include "inexor/engine/skelmodel.h"
+#include "inexor/engine/ragdoll.hpp"
+#include "inexor/engine/animmodel.hpp"
+#include "inexor/engine/vertmodel.hpp"
+#include "inexor/engine/skelmodel.hpp"
 
 static model *(__cdecl *modeltypes[NUMMODELTYPES])(const char *);
 
@@ -27,12 +27,12 @@ static model *__loadmodel__##modelclass(const char *filename) \
 } \
 UNUSED static int __dummy__##modelclass = addmodeltype((modeltype), __loadmodel__##modelclass);
  
-#include "md2.h"
-#include "md3.h"
-#include "md5.h"
-#include "obj.h"
-#include "smd.h"
-#include "iqm.h"
+#include "inexor/engine/md2.hpp"
+#include "inexor/engine/md3.hpp"
+#include "inexor/engine/md5.hpp"
+#include "inexor/engine/obj.hpp"
+#include "inexor/engine/smd.hpp"
+#include "inexor/engine/iqm.hpp"
 
 MODELTYPE(MDL_MD2, md2);
 MODELTYPE(MDL_MD3, md3);

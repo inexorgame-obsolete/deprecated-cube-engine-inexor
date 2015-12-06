@@ -1,4 +1,4 @@
-#include "inexor/shared/cube.h"
+#include "inexor/shared/cube.hpp"
 
 ///////////////////////// character conversion ///////////////
 

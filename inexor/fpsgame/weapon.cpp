@@ -1,6 +1,6 @@
 // weapon.cpp: all shooting and effects code, projectile management
-#include "inexor/fpsgame/game.h"
-#include "inexor/engine/engine.h"
+#include "inexor/fpsgame/game.hpp"
+#include "inexor/engine/engine.hpp"
 
 namespace game
 {
