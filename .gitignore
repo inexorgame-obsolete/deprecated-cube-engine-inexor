@@ -3,6 +3,7 @@
 /.idea
 /.project
 /.cproject
+.*.sw*
 
 packages
 data
