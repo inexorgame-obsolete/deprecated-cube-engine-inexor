@@ -1,5 +1,5 @@
 [submodule "inexor/platform"]
-	path = inexor/platform
+	path = platform
 	url = https://github.com/inexor-game/platform_windows.git
 [submodule "inexor/libraries/googletest"]
 	path = vendor/googletest
