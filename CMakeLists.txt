@@ -326,6 +326,7 @@ set(INSTALL_RESOURCES_DIR "${PROJECT_SOURCE_DIR}/bin/all")
 message(STATUS "Generating Project-Files to ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS " - Resulting Executable goes to ${EXE_DIR}")
 
+add_subdirectory(vendor)
 add_subdirectory(inexor)
 
 install(FILES ${INSTALL_SHARED_LIBS} ${INSTALL_EXES} DESTINATION ${EXE_DIR})

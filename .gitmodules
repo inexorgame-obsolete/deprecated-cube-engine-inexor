@@ -2,8 +2,8 @@
 	path = inexor/platform
 	url = https://github.com/inexor-game/platform_windows.git
 [submodule "inexor/libraries/googletest"]
-	path = inexor/libraries/googletest
+	path = vendor/googletest
 	url = https://github.com/inexor-game/googletest.git
 [submodule "inexor/libraries/muparser"]
-	path = inexor/libraries/muparser
+	path = vendor/muparser
 	url = https://github.com/beltoforion/muparser.git

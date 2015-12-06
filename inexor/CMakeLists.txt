@@ -11,7 +11,6 @@ include_directories(${MAINDIR})
 include_directories(${CMAKE_INCLUDE_PATH})
 
 # TODO: Automatically detect new modules
-add_subdirectory(libraries)
 declare_module(shared ./shared)
 declare_module(engine ./engine)
 declare_module(fpsgame ./fpsgame)
