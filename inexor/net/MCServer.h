@@ -8,7 +8,7 @@
 
 #include "inexor/net/MessageConnect.h"
 #include "inexor/net/MCHub.h"
-#include "inexor/util/util.h"
+#include "inexor/util.h"
 
 namespace inexor {
 namespace net {

@@ -1,7 +1,7 @@
 #include "inexor/rpc/MCRpcServer.h"
 #include "inexor/rpc/inexor_service.pb.h"
 
-#include "inexor/util/util.h"
+#include "inexor/util.h"
 
 #include <iostream>
 

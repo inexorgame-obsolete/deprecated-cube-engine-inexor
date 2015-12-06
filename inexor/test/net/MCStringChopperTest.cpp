@@ -6,7 +6,7 @@
 #include "inexor/test/net/SimplexMCTest.h"
 #include "inexor/test/net/DuplexMCTest.h"
 
-#include "inexor/net/net.h"
+#include "inexor/net.h"
 
 #include <utility>
 #include <sstream>

@@ -2,7 +2,7 @@
 #define INEXOR_TEST_NET_HELPERS_HEADER
 
 #include "inexor/test/helpers.h"
-#include "inexor/net/net.h"
+#include "inexor/net.h"
 
 // Easy access of byte, bytes
 // TODO: Is there a better way to do this?

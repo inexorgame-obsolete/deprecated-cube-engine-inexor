@@ -1,7 +1,7 @@
 /// string operations on filenames (INCOMPLETE! see e.g. stream.cpp).
 
 #include "inexor/shared/filesystem.h"
-#include "inexor/util/util.h"
+#include "inexor/util.h"
 
 /// Media paths ///
 

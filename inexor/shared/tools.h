@@ -11,7 +11,7 @@
 #include <boost/algorithm/clamp.hpp>
 
 #include "inexor/util/random.h"
-#include "inexor/util/util.h"
+#include "inexor/util.h"
 
 typedef unsigned char uchar;
 typedef unsigned short ushort;

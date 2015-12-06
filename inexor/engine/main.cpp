@@ -2,7 +2,7 @@
 
 #include "inexor/engine/engine.h"
 #include "inexor/shared/filesystem.h"
-#include "inexor/ui/ui.h"
+#include "inexor/ui.h"
 #include "inexor/util/Subsystem.h"
 #include "inexor/crashreporter/CrashReporter.h"
 

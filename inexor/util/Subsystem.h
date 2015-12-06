@@ -4,7 +4,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "inexor/util/util.h"
+#include "inexor/util.h"
 #include "inexor/util/InexorException.h"
 #include "inexor/compat/make_unique.h"
 

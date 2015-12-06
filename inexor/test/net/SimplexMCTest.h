@@ -6,7 +6,7 @@
 #include "inexor/test/helpers.h"
 #include "inexor/test/net/helpers.h"
 
-#include "inexor/net/net.h"
+#include "inexor/net.h"
 
 #include <utility>
 #include <list>

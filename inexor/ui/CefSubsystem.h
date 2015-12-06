@@ -1,7 +1,7 @@
 #ifndef INEXOR_UI_CEF_SUBSYSTEM_HEADER
 #define INEXOR_UI_CEF_SUBSYSTEM_HEADER
 
-#include "inexor/ui/ui.h"
+#include "inexor/ui.h"
 #include "inexor/ui/cefcontextbindings.h"
 
 #include "inexor/util/InexorException.h"
