@@ -164,34 +164,6 @@ function(config_enet targ)
   endif()
 endfunction()
 
-#### MUPARSER
-
-set(muparser_dir "${pwd}/muparser")
-
-file(GLOB_RECURSE headers ${muparser_dir}/include/*.h)
-set(MUPARSER_HEADERS ${headers} CACHE INTERNAL "")
-
-prepend(sources ${muparser_dir}/src/ muParser muParserBase
-  muParserBytecode muParserCallback muParserError
-  muParserInt muParserTokenReader)
-set(MUPARSER_SOURCES ${sources} CACHE INTERNAL "")
-
-source_group(muparser FILES ${headers} ${sources})
-set(MUPARSER_INCLUDE_DIRS "${muparser_dir}/include" CACHE INTERNAL "")
-
-include_directories(${MUPARSER_INCLUDE_DIRS})
-add_library(module_muparser STATIC ${MUPARSER_SOURCES} ${headers})
-
-function(config_muparser targ)
-  message(STATUS "Configuring ${targ} with muparser")
-  if (";${ARGN};" MATCHES ";NOLINK;")
-    set(NOLINK "NOLINK")
-  endif()
-
-  include_directories(${MUPARSER_INCLUDE_DIRS})
-  target_link_libs(${targ} module_muparser ${NOLINK})
-endfunction()
-
 #### Googletest
 
 set(GTEST_DIR "${pwd}/googletest" CACHE INTERNAL "")

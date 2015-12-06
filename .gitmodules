@@ -4,6 +4,3 @@
 [submodule "inexor/libraries/googletest"]
 	path = vendor/googletest
 	url = https://github.com/inexor-game/googletest.git
-[submodule "inexor/libraries/muparser"]
-	path = vendor/muparser
-	url = https://github.com/beltoforion/muparser.git

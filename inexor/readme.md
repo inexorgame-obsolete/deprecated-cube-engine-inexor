@@ -75,5 +75,5 @@ do not add new features here.**
 **platform** – Submodule that contains libraries and
 build configs for Windows/Linux/OS X/VS/MinGW.
 
-**libraries** – Build config and submodules for several
-libraries: muparser, ENet, Google Test.
+**vendor** – Build config and submodules for several
+libraries: ENet, Google Test.
