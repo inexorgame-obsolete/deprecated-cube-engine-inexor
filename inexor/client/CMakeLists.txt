@@ -69,6 +69,7 @@ add_app(${CLIENT_BINARY} ${CLIENT_SOURCES})
 
 config_threads(${CLIENT_BINARY})
 config_cocoa(${CLIENT_BINARY}) # For rendering the initial window
+config_crashreporter(${CLIENT_BINARY})
 config_sdl(${CLIENT_BINARY})
 config_zlib(${CLIENT_BINARY})
 config_enet(${CLIENT_BINARY})

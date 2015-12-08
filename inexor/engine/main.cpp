@@ -4,6 +4,7 @@
 #include "inexor/shared/filesystem.h"
 #include "inexor/ui/ui.h"
 #include "inexor/util/Subsystem.h"
+#include "inexor/crashreporter/CrashReporter.h"
 
 /// extern functions and data here
 extern void cleargamma();
@@ -1202,6 +1203,7 @@ ICOMMAND(cef_focus, "b", (bool *b),
 int main(int argc, char **argv)
 {
     setlogfile(NULL);
+    UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // We only need to initialse it, not use it.
 
     int dedicated = 0;
     char *load = NULL, *initscript = NULL;
