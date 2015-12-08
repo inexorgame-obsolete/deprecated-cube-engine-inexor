@@ -240,15 +240,17 @@ if(OS_WINDOWS)
         # /Ob2                                  = Inline any suitable function
         # /GF                                   = Enable string pooling
         # /D NDEBUG /D _NDEBUG                  = Not a debug build, skip code passages meant for debug.
-        set(I_COMPILER_FLAGS_RELEASE  "-MT -O2 -Ob2 -GF -DNDEBUG -D_NDEBUG")
+        # /GL                                   = Whole Program Optimization: further optimize the program in linker stage (but calling the compiler).
+        set(I_COMPILER_FLAGS_RELEASE  "-MT -O2 -Ob2 -GF -DNDEBUG -D_NDEBUG -GL")
         # /DEBUG                                = Generate debug information (even for release builds for our stackwalker)
         # /MANIFEST:NO                          = No default manifest
         # /SAFESEH:NO                           = Do Not Create a table of safe exception handlers (binary incompatible)
-        set(I_EXE_LINKER_FLAGS        "-MANIFEST:NO -SAFESEH:NO -DEBUG ")
+        set(I_LINKER_FLAGS            "-MANIFEST:NO -SAFESEH:NO -DEBUG ")
         # /OPT:REF                              = Eliminate Unreferenced Data (to revert changes to the binary caused by /DEBUG)
         # /OPT:ICF                              = Remove Redundant COMDATs (to revert changes to the binary caused by /DEBUG)
         # /INCREMENTAL:NO                       = Linking incremental (faster) does not work anymore with the previous two optimizations
-        set(I_LINKER_FLAGS_RELEASE    "-OPT:REF -OPT:ICF -INCREMENTAL:NO")
+        # /LTCG                                 = Link-time Code Generation: further optimisations in the linker stage.
+        set(I_LINKER_FLAGS_RELEASE    "-LTCG -OPT:REF -OPT:ICF -INCREMENTAL:NO")
 
         # Add the library path as well
         foreach(dir ${CMAKE_LIBRARY_PATH}) # We need to do this seperately since LIBPATH does not accept more than one dir at once
