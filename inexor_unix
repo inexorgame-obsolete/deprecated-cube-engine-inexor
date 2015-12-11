@@ -15,4 +15,4 @@ export LD_LIBRARY_PATH="$bin:$LD_LIBRARY_PATH"
 echo >&2 "CALLING: ${exe}"
 find "$dir"/media/ -maxdepth 1 -print0                      \
   | sed 's/^/-k/' -z                                       \
-  | xargs --null "${exe}" -q"~/.inexor" -glog.txt
+  | xargs --null "${exe}" -kdata -q"~/.inexor" -glog.txt

@@ -252,6 +252,21 @@ extern void addundo(undoblock *u);
 extern void commitchanges(bool force = false);
 extern void rendereditcursor();
 extern void tryedit();
+extern void copycube(const cube &src, cube &dst);
+extern void pastecube(const cube &src, cube &dst);
+extern void changed(const block3 &sel, bool commit);
+extern VSlot *remapvslot(int index, bool delta, const VSlot &ds);
+
+struct vslotmap
+{   
+    int index;
+    VSlot *vslot;
+
+    vslotmap() {}
+    vslotmap(int index, VSlot *vslot) : index(index), vslot(vslot) {}
+};
+extern vector<vslotmap> remappedvslots;
+extern selinfo sel;
 
 // octarender
 extern vector<tjoint> tjoints;
@@ -269,6 +284,7 @@ extern void updatevabb(vtxarray *va, bool force = false);
 extern void updatevabbs(bool force = false);
 
 // version control
+// when in diff mode changes are not commitable, player cannot edit
 extern void vc_diff();
 extern void vc_commit();
 
