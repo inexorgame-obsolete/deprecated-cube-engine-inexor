@@ -7,11 +7,9 @@ extern bool editmode;
 extern int gridsize;
 
 
-/// Inexor protection namespace
 namespace inexor {
 namespace vscript {
 
-    /// Create a global instance of the 3DVS system
     CVisualScriptSystem vScript3D;
     CVisualScriptWorker vWorker;
 
@@ -22,9 +20,7 @@ namespace vscript {
 
     CVisualScriptSystem::~CVisualScriptSystem() 
     {
-        /// clear nodes dynamic memory in destructor
         /// @bug does that even work?
-        /// @warning this garbage collection may causes touble?
         for(unsigned int i=0; i<nodes.size(); i++) {
             delete (nodes[i]);
         }
@@ -34,15 +30,11 @@ namespace vscript {
 
     CScriptNode* CVisualScriptSystem::add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...)
     {
-        /// return value
         CScriptNode* created_node = nullptr;
-
-        /// Calculate the target position of the node
         vec target = vec(sel.o.x,sel.o.y,sel.o.z);
         vec offset = vec(gridsize/2,gridsize/2,gridsize/2);
         target.add(offset);
 
-        /// Add debug ray if neccesary
         #ifdef INEXOR_VSCRIPT_DEBUG_RAYS
             debug_ray dr_tmp;
             dr_tmp.pos = camera1->o;
@@ -50,7 +42,6 @@ namespace vscript {
             rays.push_back(dr_tmp);
         #endif    
 
-        /// Gather parameters
         va_list parameters;
         va_start(parameters, parameter_count);
 
@@ -77,12 +68,11 @@ namespace vscript {
                 unsigned int startdelay = atoi(arguments[1].c_str());
                 unsigned int limit      = atoi(arguments[2].c_str());
                 unsigned int cooldown   = atoi(arguments[3].c_str());
-                const char* name        =      arguments[4].c_str();
-                const char* comment     =      arguments[5].c_str();
+                const char* name        = arguments[4].c_str();
+                const char* comment     = arguments[5].c_str();
 
                 /// TODO: which timer format?
                 INEXOR_VSCRIPT_TIME_FORMAT timer_format = TIME_FORMAT_MILISECONDS;
-
 
                 #ifdef INEXOR_VSCRIPT_ADDNODE_DEBUG
                     conoutf(CON_DEBUG, "I added the following timer node: interval: %d, startdelay: %d, limit: %d, cooldown: %d, name: %s, comment: %s, type: %d", interval, startdelay, limit, cooldown, name, comment, timer_format);
@@ -90,16 +80,13 @@ namespace vscript {
 
                 /// Create a new timer and synchronise them!
                 created_node = new CTimerNode(target, interval, startdelay, limit, cooldown, name, comment, timer_format);
-                /// Add timer node to worker
                 vWorker.add_job(created_node);
-                /// TODO: synchronise all timers?
                 sync_all_timers();
                 break;
             }
 
             case NODE_TYPE_COMMENT:
             {
-                /// TODO: does a comment have to have a name?
                 created_node = new CCommentNode(target, arguments[0].c_str(), arguments[1].c_str());
                 break;
             }
@@ -127,8 +114,6 @@ namespace vscript {
         }
 
         if(nullptr != created_node)  nodes.push_back(created_node);
-
-        /// TODO: garbage collection? dynamicly allocated memory must be released after use!
         return created_node;
     }
 

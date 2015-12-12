@@ -30,7 +30,7 @@ namespace vscript {
     {
         public:
 
-        CCommentNode(vec pos, const char* comment, const char* name = "CommentNode1");
+        CCommentNode(vec pos, const char* comment = "Hello Comment 1", const char* name = "CommentNode1");
         ~CCommentNode();
 
         /// comments are not part of the code itself
