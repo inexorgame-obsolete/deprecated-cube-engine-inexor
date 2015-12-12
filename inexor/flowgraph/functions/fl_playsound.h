@@ -1,18 +1,6 @@
-/// @file fl_playsound.h
-/// @author Johannes Schneider
-/// @brief This game engine function plays a sound by its sound id
-/// 
-/// TODO: We need a good interface for function parameters here (CEF!)
-/// 
-/// .-------------------------------------------------------------------------------------------------.
-/// | playsound([sound_id]);                                                                          |
-/// |_________________________________________________________________________________________________|
-/// |                                                                                                 |
-/// | Plays a game sound by its id.                                                                   |
-/// |                                                                                                 |
-/// ._________________________________________________________________________________________________.
-/// 
-
+// @file fl_playsound.h
+// @author Johannes Schneider
+// @brief This game engine function plays a sound by its sound id
 
 #ifndef INEXOR_VSCRIPT_PLAYSOUND_HEADER
 #define INEXOR_VSCRIPT_PLAYSOUND_HEADER
@@ -46,7 +34,7 @@ namespace vscript {
             CFunctionPlaysoundNode(vec, const char*);
             ~CFunctionPlaysoundNode();
 
-            /// TODO: implement more methods!
+            // TODO: implement more methods!
             void run();
             void reset();
     };

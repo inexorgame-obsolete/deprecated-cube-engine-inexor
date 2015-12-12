@@ -1,36 +1,15 @@
-/// @file fl_nodebase.h
-/// @author Johannes Schneider
-/// @brief Basic implementation of nodes in Inexor's 3D Visual Scripting System
-/// 
-/// .-------------------------------------------------------------------------------------------------.
-/// | Basic node implementation                                                                       |
-/// |_________________________________________________________________________________________________|
-/// |                                                                                                 |
-/// | Every node inherits its basic members and methods from this base class.                         |
-/// | This base class manages the basic behaviour of nodes.                                           |
-/// |_________________________________________________________________________________________________|
-/// |                                                                                                 |
-/// | The following members and methods will be inherited from every child class:                     |
-/// |                                                                                                 |
-/// | type          the type of the node (see VSCRIPT_NODE_TYPE enumeration).                         |
-/// | selected      indicates if this node is selected by the editor. (TODO..)                        |
-/// | pos           the position of the node in 3D space.                                             |
-/// | active        indicates if this node is active for execution (TODO..)                           |
-/// | node_name     a customizable name for this node. (TODO..)                                       |
-/// | node_comment  a comment on this node. (TODO..)                                                  |
-/// |                                                                                                 |
-/// ._________________________________________________________________________________________________.
-///
+// @file fl_nodebase.h
+// @author Johannes Schneider
+// @brief Basic implementation of nodes in Inexor's 3D Visual Scripting System
 
-/// TODO: Move on to Hanack's new entity system. 
-
+// TODO: Move on to Hanack's new entity system. 
 
 #ifndef INEXOR_VSCRIPT_NODEBASE_HEADER
 #define INEXOR_VSCRIPT_NODEBASE_HEADER
 
 #include "inexor/engine/engine.h"
 
-/// c++ standard libraries
+// c++ standard libraries
 #include <string>
 #include <vector>
 #include <map>
@@ -41,7 +20,6 @@ namespace inexor {
 namespace vscript {
 
     const float boxsize = 3.0f;
-
 
     enum VSCRIPT_NODE_TYPE
     {
@@ -67,7 +45,7 @@ namespace vscript {
         VSCRIPT_COLOR_BLACK     = 0x000000,
     };
 
-    /// @brief base class for node implementations
+    // @brief base class for node implementations
     class CScriptNode
     {
         public:
@@ -102,7 +80,7 @@ namespace vscript {
             ~CScriptNode();
 
             void in();
-            virtual void run() = 0; /// every child class implements this!
+            virtual void run() = 0; // every child class implements this!
             void out();
             virtual void reset() = 0;
     };

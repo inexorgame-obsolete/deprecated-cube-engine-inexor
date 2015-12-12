@@ -1,18 +1,6 @@
-/// @file fl_conoutf.h
-/// @author Johannes Schneider
-/// @brief This game engine function prints a text to the game console (locally)
-/// 
-/// TODO: We need a good interface for function parameters here!
-/// 
-/// .-------------------------------------------------------------------------------------------------.
-/// | conoutf(CON_DEBUG, [text with symbols], [...] );                                                |
-/// |_________________________________________________________________________________________________|
-/// |                                                                                                 |
-/// | Prints a text to the game console (local).                                                      |
-/// |                                                                                                 |
-/// ._________________________________________________________________________________________________.
-/// 
-
+// @file fl_conoutf.h
+// @author Johannes Schneider
+// @brief This game engine function prints a text to the game console (locally)
 
 #ifndef INEXOR_VSCRIPT_CONOUTF_HEADER
 #define INEXOR_VSCRIPT_CONOUTF_HEADER

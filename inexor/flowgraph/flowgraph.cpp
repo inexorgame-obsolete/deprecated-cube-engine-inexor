@@ -28,6 +28,8 @@ namespace vscript {
     }
 
 
+    //INEXOR_VSCRIPT_DEBUG_RAYS
+
     CScriptNode* CVisualScriptSystem::add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...)
     {
         CScriptNode* created_node = nullptr;
@@ -248,12 +250,11 @@ namespace vscript {
         from->children.push_back(to);
     }
 
-
     // #define INEXOR_VSCRIPT_MOUSE_DEBUGGING 1
 
     void CVisualScriptSystem::process_change(int key, bool isdown)
     {
-        switch( - key) /// TODO: why the minus?
+        switch( - key)
         {
             case SDL_BUTTON_LEFT:
                 
@@ -404,7 +405,6 @@ namespace vscript {
     COMMAND(addcomment, "ss");
     
     */
-
 
 
     CScriptNode* a;

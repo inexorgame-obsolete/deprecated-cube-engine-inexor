@@ -1,23 +1,6 @@
-/// @file fl_timer.h
-/// @author Johannes Schneider
-/// @brief Timers will execute code in a very certain interval of {n} miliseconds/seconds/minutes/hours.
-/// 
-/// .-------------------------------------------------------------------------------------------------.
-/// | Timer                                                                                           |
-/// |_________________________________________________________________________________________________|
-/// |                                                                                                 |
-/// | A timer is a type of nodes which (beside events) can actually be the entry point of execution.  |
-/// | Timers will be called every [clock_interval] miliseconds/seconds/minutes/hours and run code.    |
-/// | Timers have the following members and methods will will be displayed by the node renderer:      |
-/// |                                                                                                 |
-/// | interval     the frequency with which this node will execute code                               |
-/// | startdelay   the amount of time which has to pass until the first call will be done.            |
-/// |              the start delay begins with the end of the script's loading process.               |
-/// | counter      how many times has this node already been called (write protected).                |
-/// | limiter      the maximum amount of executions until the cooldown lock will be activated.        |
-/// | cooldown     the amount of time which has to pass when counter exceeds the limiter.             |
-/// ._________________________________________________________________________________________________.
-/// 
+// @file fl_timer.h
+// @author Johannes Schneider
+// @brief Timers will execute code in a very certain interval of {n} miliseconds/seconds/minutes/hours.
 
 #ifndef INEXOR_VSCRIPT_TIMER_HEADER
 #define INEXOR_VSCRIPT_TIMER_HEADER

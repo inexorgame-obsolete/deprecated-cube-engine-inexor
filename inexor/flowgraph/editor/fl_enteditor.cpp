@@ -25,7 +25,7 @@ namespace vscript {
 
     void CEntityManager::update_mouse(int key, bool isdown)
     {
-        /// check if LEFT mouse button is down for dragging a new connection out of the node
+        // check if LEFT mouse button is down for dragging a new connection out of the node
         if(key == - SDL_BUTTON_LEFT)
         {
             if(old_isdown != isdown) 
@@ -35,7 +35,7 @@ namespace vscript {
                 old_isdown = isdown;
             }
         }
-        /// check if RIGHT mouse button is down for moving the entity
+        // check if RIGHT mouse button is down for moving the entity
         if(key == - SDL_BUTTON_RIGHT)
         {
             if(old_isdown != isdown) 
@@ -52,7 +52,6 @@ namespace vscript {
     {
         if(dragging_new_relation)
         {
-            /// has the camera position changed?
             if(camera_last_pos != camera1->o) 
             {
                 vec tmp = drag_pos_start;
@@ -63,26 +62,26 @@ namespace vscript {
                 camera_last_pos = camera1->o;
             }
 
-            /// TODO
-            ///conoutf(CON_DEBUG, "%f %f %f", drag_pos_current.x, drag_pos_current.y, drag_pos_current.z);
+            // TODO
+            //conoutf(CON_DEBUG, "%f %f %f", drag_pos_current.x, drag_pos_current.y, drag_pos_current.z);
 
-            /// TODO: render a temporary dragging node
+            // TODO: render a temporary dragging node
             inexor::geom::CBezierCurve curve;
 
-            /// create additional interpolation data
+            // create additional interpolation data
             vec t = drag_pos_start;
             vec n = drag_pos_current;
             vec interpol1 = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f - 30.0f);
             vec interpol2 = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f + 30.0f);
             
-            /// correct offset
+            // correct offset
             t.x += boxsize/2;
             t.y += boxsize/2;
             n.x += boxsize/2;
             n.y += boxsize/2;
             n.z += boxsize;
 
-            /// add points
+            // add points
             curve.AddParameterPoint(t);
             curve.AddParameterPoint(interpol1);
             curve.AddParameterPoint(interpol2);

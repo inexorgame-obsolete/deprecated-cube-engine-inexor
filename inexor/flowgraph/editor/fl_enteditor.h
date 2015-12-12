@@ -35,7 +35,6 @@ namespace vscript {
             bool dragging_new_relation;
             bool dragging_node;
 
-            /// TODO
             virtual void process_change(int, bool) = 0;
 
         public:
