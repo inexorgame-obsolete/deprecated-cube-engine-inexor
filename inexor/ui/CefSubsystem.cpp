@@ -12,7 +12,8 @@ namespace inexor {
 namespace ui {
 
 CefSubsystem::CefSubsystem() {
-    ::cef_app = new InexorCefApp(scr_w, scr_h);
+    ::cef_app = new InexorCefApp(1024, 1024);
+
     const CefMainArgs args;
     int exit_code = CefExecuteProcess(args, cef_app, NULL);
     if (exit_code >= 0) {
@@ -30,7 +31,17 @@ CefSubsystem::CefSubsystem() {
 
 CefSubsystem::~CefSubsystem() {
     ::cef_app->Destroy();
-    ::cef_app = NULL;
+
+    // Make sure any outstanding IPC messages are processed
+    tick();
+
+    // Stop any forked processes
+    CefShutdown();
+
+    // TODO: Refactor this to use proper RAII/scope lifetimes
+    // (since this is a smart pointer, this should suffice
+    // to destroy)
+    ::cef_app = nullptr;
 }
 
 void CefSubsystem::tick() {
