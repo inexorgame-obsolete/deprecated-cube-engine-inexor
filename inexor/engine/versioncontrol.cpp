@@ -26,7 +26,6 @@ std::vector<altcubes> diffs;
 
 bool cube_equal(cube &a, cube &b)
 {
-    if (!a.children != !b.children) return false;
     if (a.material != b.material) return false;
     loopi(6) if (a.texture[i] != b.texture[i]) return false;
     loopi(12) if (a.edges[i] != b.edges[i]) return false;
@@ -38,7 +37,34 @@ std::vector<altcubes> cube_diff(cube &work, cube &cur, cube &ref, int size, ivec
     std::vector<altcubes> diff, self;
     self.push_back({&work, &cur, &ref, 0, size, pos});
 
-    if (!cube_equal(cur, ref)) return self;
+    if (!cur.children && ref.children)
+    {
+        if (isempty(cur)) cur.children = newcubes(F_EMPTY);
+        else if (isentirelysolid(cur)) cur.children = newcubes(F_SOLID);
+        else return self;
+
+        loopi(8)
+        {
+            cur.children[i].material = cur.material;
+            loopj(6) cur.children[i].texture[j] = cur.texture[j];
+            loopj(12) cur.children[i].edges[j] = cur.edges[j];
+        }
+    }
+    else if (cur.children && !ref.children)
+    {
+        if (isempty(ref)) ref.children = newcubes(F_EMPTY);
+        else if (isentirelysolid(ref)) ref.children = newcubes(F_SOLID);
+        else return self;
+
+        loopi(8)
+        {
+            ref.children[i].material = ref.material;
+            loopj(6) ref.children[i].texture[j] = ref.texture[j];
+            loopj(12) ref.children[i].edges[j] = ref.edges[j];
+        }
+    }
+    else if (!cube_equal(cur, ref)) return self;
+ 
     if (cur.children && ref.children)
     {
         loopi(8)
@@ -275,7 +301,7 @@ struct commit
     commit_metadata* cm;
     
     // content of the commit: either a snapshot (the whole octree) or a vector of diffs
-    cube* snapshot;
+    cube* snapshot = nullptr;
     std::vector<cubepossize> diffs;
 
     commit(commit_metadata* cm, cube* c) : cm(cm)
