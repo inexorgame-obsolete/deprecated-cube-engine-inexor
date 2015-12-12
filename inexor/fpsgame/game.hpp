@@ -463,19 +463,22 @@ enum
 	N_AUTHCHAL,				/// C2S      authentification challenge
 	N_AUTHANS,				/// S2C      authentification response
 	N_REQAUTH,				/// S2C      this nick name requires authentification
-    N_PAUSEGAME,			/// S2C      server paused game. stop player movement and actions
-	N_GAMESPEED,			/// S2C      change game speed
+
+    N_PAUSEGAME,			/// C2S|S2C  server paused game. stop player movement and actions.
+    N_GAMESPEED,			/// C2S|S2C  change game speed (and broadcast that change)
+    N_PERSISTTEAMS,         /// C2S|S2C  do not shuffle teams when enabled.
+
     N_ADDBOT,				/// -S-      add a bot to the current game
-	N_DELBOT,				/// -S-      remove a bot from the current game
-	N_INITAI,				/// S2C      commit AI settings to server. bots are still server side
-	N_FROMAI,				/// C2S      take client number from bot x?
-	N_BOTLIMIT,				/// -S-      set the bot limit
-	N_BOTBALANCE,			/// -S-      set bot balance
+    N_DELBOT,				/// -S-      remove a bot from the current game
+    N_INITAI,				/// S2C      commit AI settings to server. bots are still server side
+    N_FROMAI,				/// C2S      take client number from bot x?
+    N_BOTLIMIT,				/// -S-      set the bot limit
+    N_BOTBALANCE,			/// -S-      set bot balance
     N_MAPCRC,				/// C2S      send map CRC32 hash value
-	N_CHECKMAPS,			/// C2S      force server to check client maps manually (requires permissions)
+    N_CHECKMAPS,			/// C2S      force server to check client maps manually (requires permissions)
     N_SWITCHNAME,			/// C2S|S2C  a player has changed his name
-	N_SWITCHMODEL,			/// C2S|S2C  a player has changed his player model
-	N_SWITCHTEAM,			/// C2S|S2C  a player has switched his team (some game modes have more than 2 teams!)
+    N_SWITCHMODEL,			/// C2S|S2C  a player has changed his player model
+    N_SWITCHTEAM,			/// C2S|S2C  a player has switched his team (some game modes have more than 2 teams!)
 
     /// collect mode messages
     N_INITTOKENS,			/// ?
@@ -514,7 +517,7 @@ static const int msgsizes[] =
     N_SAYTEAM, 0, N_HUDANNOUNCE, 0,
     N_CLIENT, 0,
     N_AUTHTRY, 0, N_AUTHKICK, 0, N_AUTHCHAL, 0, N_AUTHANS, 0, N_REQAUTH, 0,
-    N_PAUSEGAME, 0, N_GAMESPEED, 0,
+	N_PAUSEGAME, 0, N_GAMESPEED, 0, N_PERSISTTEAMS, 0,
     N_ADDBOT, 2, N_DELBOT, 1, N_INITAI, 0, N_FROMAI, 2, N_BOTLIMIT, 2, N_BOTBALANCE, 2,
     N_MAPCRC, 0, N_CHECKMAPS, 1,
     N_SWITCHNAME, 0, N_SWITCHMODEL, 2, N_SWITCHTEAM, 0,
@@ -1341,6 +1344,7 @@ namespace server
     extern void forcemap(const char *map, int mode);
     extern void forcepaused(bool paused);
     extern void forcegamespeed(int speed);
+    extern void forcepersist(bool persist);
     extern void hashpassword(int cn, int sessionid, const char *pwd, char *result, int maxlen = MAXSTRLEN);
     extern int msgsizelookup(int msg);
     extern bool serveroption(const char *arg);
