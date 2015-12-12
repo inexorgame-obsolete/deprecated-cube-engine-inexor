@@ -17,7 +17,7 @@
 #ifndef INEXOR_VSCRIPT_FUNCTION_BASE_HEADER
 #define INEXOR_VSCRIPT_FUNCTION_BASE_HEADER
 
-/// TODO: link more in-engine functions
+/// TODO: 
 enum INEXOR_VSCRIPT_FUNCTIONS
 {
     FUNCTION_CONOUTF,
@@ -28,7 +28,6 @@ enum INEXOR_VSCRIPT_FUNCTIONS
 namespace inexor {
 namespace vscript {
 
-    /// A basic function node
     class CFunctionBase
     {
         public:
@@ -36,12 +35,9 @@ namespace vscript {
         CFunctionBase();        
         ~CFunctionBase();
 
-        /// TODO: implement parameters!
-        /// TODO: implement return value!
+        /// TODO: implement parameters and return value!
     };
 
-
-/// end of namespaces
 };
 };
 

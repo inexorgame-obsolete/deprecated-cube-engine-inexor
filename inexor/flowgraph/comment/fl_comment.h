@@ -1,6 +1,6 @@
 /// @file fl_comment.h
 /// @author Johannes Schneider
-/// @brief Comments will be placed in 3D space. Use comments whenever its neccesary and useful!
+/// @brief Comments will be rendered as text in 3D space. Use comments whenever its neccesary and useful!
 
 /// .-------------------------------------------------------------------------------------------------.
 /// | Comments                                                                                        |
@@ -24,8 +24,6 @@
 namespace inexor {
 namespace vscript {
 
-    /// this class represents comment in 3D space
-    /// a comment can not run code at all
     class CCommentNode : public CScriptNode
     {
         public:
@@ -37,15 +35,12 @@ namespace vscript {
         /// so they do not run code or get notifyed or notify other nodes!
         /// still we have to implement these methods to make this class a valid
         /// child class of CScriptNode!
-
         void run()   {}
         void in()    {}
         void out()   {}
         void reset() {}
     };
 
-
-/// end of namespaces
 };
 };
 

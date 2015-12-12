@@ -21,7 +21,6 @@ namespace vscript {
             /// to the entity in the moment of selection. it changes
             /// either with the position of the camera (new target pos += delta(campos));
             /// or the camera angles (yaw, pitch, but NOT roll!)
-            /// TODO: math...
             vec dragging_target_pos_offset;
 
             vec drag_pos_start;
@@ -36,7 +35,7 @@ namespace vscript {
             bool dragging_new_relation;
             bool dragging_node;
 
-            /// TODO: ?
+            /// TODO
             virtual void process_change(int, bool) = 0;
 
         public:
@@ -52,7 +51,6 @@ namespace vscript {
     
     };
 
-/// end of namespaces
 };
 };
 

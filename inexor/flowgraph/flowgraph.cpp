@@ -120,16 +120,13 @@ namespace vscript {
 
     void CVisualScriptSystem::render_nodes()
     {
-        /// no node is selected in the beginning
         selected_node = nullptr;
 
         /// TODO: do we need this here again?
         unique_execution_pass_timestamp = SDL_GetTicks();
 
-        /// loop through all nodes and render them
         for(unsigned int i=0; i<nodes.size(); i++) 
         {
-            /// render node box!
             float dist = 0.0f;
             int orient = VSCRIPT_BOX_NO_INTERSECTION;
             vec p = nodes[i]->position;
@@ -147,10 +144,7 @@ namespace vscript {
             /// TODO: update time!
             if(NODE_TYPE_TIMER != nodes[i]->type) nodes[i]->this_time = unique_execution_pass_timestamp;
 
-            /// set color
             gle::color(vec::hexcolor(nodes[i]->box_color));
-        
-            /// render box as node representation
             renderbox(p, orient, nodes[i]->box_color);
 
             /// no matter where the box is being selected, render help lines
@@ -160,19 +154,13 @@ namespace vscript {
                 renderboxhelplines(p);
             }
         
-            /// render a black outline around the nodes
             gle::color(vec::hexcolor(VSCRIPT_COLOR_BLACK));
             renderboxoutline(p);
 
-            /// render text above    
+            /// render white text above
             p.add(vec(boxsize/2));
             p.add(vec(0,0,4));
-        
-            /// render labels in white
-
-            /// render node's name
             particle_text(p + vec(0,0,1.0f), nodes[i]->node_name.c_str(), PART_TEXT, 1, 0xFFFFFF, 1.0f);
-            /// render node's comment
             particle_text(p, nodes[i]->node_comment.c_str(), PART_TEXT, 1, 0xFFFFFF, 1.0f);
         }
 

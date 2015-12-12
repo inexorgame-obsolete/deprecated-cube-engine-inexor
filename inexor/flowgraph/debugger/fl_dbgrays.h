@@ -17,7 +17,6 @@ namespace vscript {
         vec target;
     };
 
-// end of namespaces
 };
 };
 

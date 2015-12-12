@@ -1,8 +1,6 @@
 /// @file fl_functions.h
 /// @author Johannes Schneider
-/// @brief Game engine functions such as conoutf(); will be linked to the Script System in this file
-/// 
-/// TODO: We need a good interface for function parameters here (CEF!)
+/// @brief Link script system functions with in-engine game functions
 /// 
 /// .-------------------------------------------------------------------------------------------------.
 /// | Functions                                                                                       |
@@ -15,8 +13,6 @@
 /// |                                                                                                 |
 /// ._________________________________________________________________________________________________.
 /// 
-
-/// Please note: every function inherits from CFunctionBase (fl_functionbase.h)
 
 /// @brief conoutf prints output to the game console (local player)
 #include "inexor/flowgraph/functions/fl_conoutf.h"

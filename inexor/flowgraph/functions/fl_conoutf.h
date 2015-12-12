@@ -41,7 +41,6 @@ namespace vscript {
             void reset();
     };
 
-/// end of namespaces
 };
 };
 
