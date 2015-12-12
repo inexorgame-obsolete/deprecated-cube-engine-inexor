@@ -144,8 +144,7 @@ namespace vscript {
 
             if(NODE_TYPE_TIMER != nodes[i]->type) nodes[i]->this_time = unique_execution_pass_timestamp;
 
-            gle::color(vec::hexcolor(nodes[i]->box_color));
-            renderbox(p, orient, nodes[i]->box_color);
+            renderbox(nodes[i], orient);
 
             /// no matter where the box is being selected, render help lines
             if(orient != VSCRIPT_BOX_NO_INTERSECTION) 

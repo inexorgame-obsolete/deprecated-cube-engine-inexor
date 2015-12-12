@@ -8,6 +8,8 @@
 #include "inexor/engine/engine.h"
 #include <vector>
 
+#include "inexor/flowgraph/node/fl_nodebase.h"
+
 namespace inexor {
 namespace vscript {
 
@@ -30,7 +32,7 @@ namespace vscript {
     {
         protected:
 
-            void adjust_selection_color(int orient, int index, int std_color_of_this_node);
+            void adjust_selection_color(int orient, int index, CScriptNode *node);
 
         public:
 
@@ -39,7 +41,7 @@ namespace vscript {
     
             void start_rendering();
 
-            void renderbox(vec p, int orient, int std_color_of_this_node);
+            void renderbox(CScriptNode *node, int orient);
             void renderboxoutline(vec p);
             void renderboxhelplines(vec p);
 

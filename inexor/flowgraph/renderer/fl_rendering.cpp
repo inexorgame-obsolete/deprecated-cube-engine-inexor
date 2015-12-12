@@ -35,7 +35,7 @@ namespace vscript {
     }
 
 
-    void CVisualScriptRenderer::adjust_selection_color(int orient, int index, int std_color_of_this_node)
+    void CVisualScriptRenderer::adjust_selection_color(int orient, int index, CScriptNode* node)
     {
         /// if this side of the box is selected, use a spicy orange color
         /// otherwise use a light blue color
@@ -45,53 +45,54 @@ namespace vscript {
             //if(selected) gle::color(vec::hexcolor(0xFF5900));
             //else gle::color(vec::hexcolor(0xFF9000));
         }
-        else gle::color(vec::hexcolor(std_color_of_this_node));
+        else gle::color(vec::hexcolor(node->box_color));
     }
 
 
-    void CVisualScriptRenderer::renderbox(vec p, int orient, int std_color_of_this_node)
+    void CVisualScriptRenderer::renderbox(CScriptNode* node, int orient)
     {
         const float b = boxsize;
+        vec p = node->position;
 
         glBegin(GL_QUADS);
 
         /// top
-        adjust_selection_color(orient, VSCRIPT_BOX_TOP, std_color_of_this_node);
+        adjust_selection_color(orient, VSCRIPT_BOX_TOP, node);
         glVertex3f(p.x,p.y,p.z+b);
         glVertex3f(p.x+b,p.y,p.z+b);
         glVertex3f(p.x+b,p.y+b,p.z+b);
         glVertex3f(p.x,p.y+b,p.z+b);
 
         /// bottom
-        adjust_selection_color(orient, VSCRIPT_BOX_BOTTOM, std_color_of_this_node);
+        adjust_selection_color(orient, VSCRIPT_BOX_BOTTOM, node);
         glVertex3f(p.x,p.y+b,p.z);
         glVertex3f(p.x+b,p.y+b,p.z);
         glVertex3f(p.x+b,p.y,p.z);
         glVertex3f(p.x,p.y,p.z);
 
         /// front
-        adjust_selection_color(orient, VSCRIPT_BOX_FRONT, std_color_of_this_node);
+        adjust_selection_color(orient, VSCRIPT_BOX_FRONT, node);
         glVertex3f(p.x,p.y,p.z);
         glVertex3f(p.x+b,p.y,p.z);
         glVertex3f(p.x+b,p.y,p.z+b);
         glVertex3f(p.x,p.y,p.z+b);
 
         /// back
-        adjust_selection_color(orient, VSCRIPT_BOX_BACK, std_color_of_this_node);
+        adjust_selection_color(orient, VSCRIPT_BOX_BACK, node);
         glVertex3f(p.x,p.y+b,p.z+b);
         glVertex3f(p.x+b,p.y+b,p.z+b);
         glVertex3f(p.x+b,p.y+b,p.z);
         glVertex3f(p.x,p.y+b,p.z);
 
         /// left
-        adjust_selection_color(orient, VSCRIPT_BOX_LEFT, std_color_of_this_node);
+        adjust_selection_color(orient, VSCRIPT_BOX_LEFT, node);
         glVertex3f(p.x,p.y,p.z+b);
         glVertex3f(p.x,p.y+b,p.z+b);
         glVertex3f(p.x,p.y+b,p.z);
         glVertex3f(p.x,p.y,p.z);
 
         /// right
-        adjust_selection_color(orient, VSCRIPT_BOX_RIGHT, std_color_of_this_node);
+        adjust_selection_color(orient, VSCRIPT_BOX_RIGHT, node);
         glVertex3f(p.x+b,p.y,p.z);
         glVertex3f(p.x+b,p.y+b,p.z);
         glVertex3f(p.x+b,p.y+b,p.z+b);
