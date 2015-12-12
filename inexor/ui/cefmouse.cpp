@@ -81,7 +81,8 @@ void InexorCefMouseManager::Render()
     glEnable(GL_BLEND);
     glEnable(GL_TEXTURE_2D);
 
-    settexture(texture.c_str(), 3);
+    // TODO: Read a texture
+    // settexture(texture.c_str(), 3);
 
     glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
 

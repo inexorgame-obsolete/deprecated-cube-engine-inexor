@@ -53,7 +53,6 @@ void InexorCefKeyboardManager::SendKeyEvent(SDL_Event event)
 
     if (event.type == SDL_TEXTINPUT) {
         spdlog::get("global")->debug() << "text: " << event.text.text << " char[0]: " << (int) event.text.text[0];
-
         is_char = true;
         if (event.text.text[0] >= 32 && event.text.text[0] <= SDLK_z)
             char_code = event.text.text[0];
