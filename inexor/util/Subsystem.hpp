@@ -3,6 +3,8 @@
 
 #include <string>
 #include <unordered_map>
+#include <functional>
+#include <queue>
 
 #include "inexor/util.hpp"
 #include "inexor/util/InexorException.hpp"
@@ -115,11 +117,30 @@ public:
 /// this contains.
 class Metasystem : public Subsystem  {
 public:
+    typedef std::function<void()> tick_cb;
+
+private:
+    /// The list of functions to be called on the next tick
+    struct : std::queue<tick_cb> {
+        void tick() {
+            while (!empty()) {
+                front()();
+                pop();
+            }
+        }
+    } next_tick_queue;
+
+
+public:
     std::unordered_map<
         std::string, std::unique_ptr<Subsystem>> subsystems;
 
     /// Start this Metasystem with no subsystems
     Metasystem() {}
+
+    ~Metasystem() {
+        next_tick_queue.tick();
+    }
 
     /// Check whether the given subsystem is running or not
     bool is_running(const std::string &sub) noexcept {
@@ -128,34 +149,62 @@ public:
 
     /// Start a subsystem by name
     ///
-    /// @throws SubsystemAlreadyRunning
+    /// If the subsystem is already running, no change will
+    /// be done.
+    ///
+    /// The subsystem will be started during the next tick.
+    /// This means there might be some delay.
+    ///
     /// @throws NoSuchSubsystem
     void start(const std::string &sub) {
         Subsystem::Register::EnsureExist(sub);
-        if (is_running(sub)) throw SubsystemAlreadyRunning();
 
-        subsystems[sub] = Subsystem::Register::Get(sub)();
+        next_tick([&, sub]() {
+            if (!is_running(sub))
+                subsystems[sub] = Subsystem::Register::Get(sub)();
+        });
     }
 
     /// Stop a subsystem by name
     ///
-    /// @throws SubsystemAlreadyRunning
+    /// If the subsystem is not running, no change will be
+    /// applied.
+    ///
+    /// The subsystem will be started during the next tick.
+    /// This means there might be some delay.
+    ///
     /// @throws NoSuchSubsystem
     void stop(const std::string &sub) {
         Subsystem::Register::EnsureExist(sub);
-        if (!is_running(sub)) throw SubsystemNotRunning();
 
-        subsystems.erase(sub);
+        next_tick([&, sub]() {
+            if (is_running(sub))
+                subsystems.erase(sub);
+        });
     }
 
     /// Forwarded to all subsystems
     virtual void tick() {
+        next_tick_queue.tick();
         for (auto &e : this->subsystems) e.second->tick();
     }
 
     /// Forwarded to all subsystems
     virtual void paint() {
         for (auto &e : this->subsystems) e.second->paint();
+    }
+
+    /// Execute code on the next tick.
+    ///
+    /// This will take a function and execute once on the
+    /// next tick. If you want to execute something multiple
+    /// times, use a submodule.
+    ///
+    /// The function will definitely be called. Even if the
+    /// Metasystem is destructed, the functions will be
+    /// invoked in the destructor.
+    void next_tick(tick_cb f) {
+      next_tick_queue.push(f);
     }
 };
 
