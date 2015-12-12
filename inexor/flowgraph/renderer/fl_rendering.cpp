@@ -16,6 +16,7 @@ namespace vscript {
     }
 
 
+
     void CVisualScriptRenderer::start_rendering()
     {
         notextureshader->set();
@@ -50,7 +51,6 @@ namespace vscript {
 
     void CVisualScriptRenderer::renderbox(vec p, int orient, int std_color_of_this_node)
     {
-        /// lets avoid macros here
         const float b = boxsize;
 
         glBegin(GL_QUADS);

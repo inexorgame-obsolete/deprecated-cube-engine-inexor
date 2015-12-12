@@ -4,7 +4,8 @@
 namespace inexor {
 namespace vscript {
 
-    CFunctionConoutfNode::CFunctionConoutfNode(vec pos, const char* raw_text)
+    CFunctionConoutfNode::CFunctionConoutfNode(vec pos,
+                                               const char* raw_text)
     {
         type = NODE_TYPE_FUNCTION;
         node_name = "Function - conoutf";
@@ -38,6 +39,5 @@ namespace vscript {
     {
     }
 
-/// end of namespaces
 };
 };

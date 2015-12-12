@@ -4,19 +4,12 @@
 namespace inexor {
 namespace vscript {
 
+    /// TODO: implement playsound correctly
+
     CFunctionPlaysoundNode::CFunctionPlaysoundNode(vec pos, const char* id)
     {
         position = pos;
         sound_id = atoi(id);
-        //int sound_id;
-        //int flags;
-        //int loops;
-        //int fade;
-        //int chanid;
-        //int radius;
-        //int expire;
-        //vec location;
-        //extentity *ent;
     }
 
 
@@ -27,7 +20,6 @@ namespace vscript {
 
     void CFunctionPlaysoundNode::run()
     {
-        /// TODO: Implement playsound correctly!
         playsound(sound_id);
     }
     
@@ -35,7 +27,5 @@ namespace vscript {
     {
     }
     
-
-/// end of namespaces
 };
 };

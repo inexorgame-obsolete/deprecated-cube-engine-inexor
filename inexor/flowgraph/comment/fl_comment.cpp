@@ -4,7 +4,9 @@
 namespace inexor {
 namespace vscript {
 
-    CCommentNode::CCommentNode(vec pos, const char* comment, const char* name)
+    CCommentNode::CCommentNode(vec pos,
+                               const char* comment, 
+                               const char* name)
     {
         type = NODE_TYPE_COMMENT;
         node_comment = comment;

@@ -88,10 +88,8 @@ namespace vscript {
             curve.AddParameterPoint(interpol2);
             curve.AddParameterPoint(n);
 
-            /// compute!
             curve.ComputeCache();
 
-            /// render curve as list of small lines
             glBegin(GL_LINES);
 
             gle::color(vec::hexcolor(VSCRIPT_COLOR_TRIGGERED));
@@ -104,7 +102,6 @@ namespace vscript {
                 glVertex3f(t.pos.x, t.pos.y, t.pos.z);
                 glVertex3f(n.pos.x, n.pos.y, n.pos.z);
             }
-            /// reset line width
             glLineWidth(1.0f);
             glEnd();
         }

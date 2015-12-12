@@ -411,9 +411,17 @@ namespace vscript {
     }
     COMMAND(addcomment, "ss");
     
+
+
+
+
     CScriptNode* a;
     CScriptNode* b;
     CScriptNode* c;
+
+
+
+
 
     /// Testing and debugging
     void test_a()
@@ -424,7 +432,6 @@ namespace vscript {
 
     void test_b()
     {
-        //b = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "0" /*FUNCTION_CONOUTF*/, "Hello World");
         b = vScript3D.add_node(NODE_TYPE_SLEEP, 1, "1337");
         vScript3D.connect_nodes(a,b);
     }
@@ -432,12 +439,11 @@ namespace vscript {
 
     void test_c()
     {
-        //b = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "0" /*FUNCTION_CONOUTF*/, "Hello World");
         c = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "1" /*FUNCTION_PLAYSOUND*/, "52" /*S_V_BASECAP*/);
         vScript3D.connect_nodes(b,c);
     }
     COMMAND(test_c, "");
 
-/// end of namespace
+
 };
 };

@@ -12,6 +12,5 @@ namespace vscript {
     {
     }
 
-/// end of namespaces
 };
 };

@@ -4,13 +4,20 @@ namespace inexor {
 namespace vscript {
 
 
-    CTimerNode::CTimerNode(vec pos, unsigned int interval, unsigned int startdelay, unsigned int limit, unsigned int cooldown, const char* name, const char* comment, INEXOR_VSCRIPT_TIME_FORMAT format)
+    CTimerNode::CTimerNode(vec pos, 
+                           unsigned int interval, 
+                           unsigned int startdelay, 
+                           unsigned int limit, 
+                           unsigned int cooldown, 
+                           const char* name, 
+                           const char* comment, 
+                           INEXOR_VSCRIPT_TIME_FORMAT format)
     {
         position = pos;
         node_name = name;
         node_comment = comment;
         
-        /// convert the time format
+        /// TODO: convert the time format
         unsigned int time_format_in_ms = interval; //ConvertTime2Miliseconds(interval, format);
 
         /// cut the timer interval
@@ -34,7 +41,6 @@ namespace vscript {
     {
         check_if_execution_is_due();
     }
-
 
     /// resetting the timer means to reset last_time
     void CTimerNode::reset()
@@ -60,7 +66,5 @@ namespace vscript {
         /// TODO: implement cooldown!
     }
 
-
-/// end of namespace
 };
 };
