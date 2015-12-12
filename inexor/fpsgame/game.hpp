@@ -352,6 +352,7 @@ enum
 /// network messages codes, c2s, c2c, s2c
 
 /// server message list
+/// @warning you will need to edit the msgsizes array as well.
 /// @warning you might get kicked from server because you modified the protocol!
 enum
 {
@@ -377,6 +378,7 @@ enum
     N_FORCEDEATH,           /// S2C      force a client to die
     N_GUNSELECT,            /// C2S      a client selects a weapon
     N_TAUNT,                /// C2S|S2C (?)  a client sent "Im gonna kill you" animation
+    N_FOV,                  /// C2S|S2C  a client has changed its field of view.
     N_MAPCHANGE,            /// S2C      server changed map
     N_MAPVOTE,              /// C2S      client suggests a map/mode
     N_TEAMINFO,             /// S2C      send information about teams and their frags
@@ -493,15 +495,14 @@ enum
     NUMMSG
 };
 
-/// size inclusive message token, 0 for variable or not-checked sizes
-/// TODO: replace this hardcoded stuff and move on to JSON!
+/// size incuding message token, 0 for variable or not-checked sizes
 static const int msgsizes[] =               
 {
     N_CONNECT, 0, N_SERVINFO, 0, N_WELCOME, 1, N_INITCLIENT, 0, N_POS, 0, N_TEXT, 0, N_SOUND, 2, N_CDIS, 2,
     N_SHOOT, 0, N_EXPLODE, 0, N_SUICIDE, 1,
     N_DIED, 5, N_DAMAGE, 6, N_HITPUSH, 7, N_SHOTFX, 10, N_EXPLODEFX, 4,
     N_TRYSPAWN, 1, N_SPAWNSTATE, 14, N_SPAWN, 3, N_FORCEDEATH, 2,
-    N_GUNSELECT, 2, N_TAUNT, 1,
+    N_GUNSELECT, 2, N_TAUNT, 1, N_FOV, 2,
     N_MAPCHANGE, 0, N_MAPVOTE, 0, N_TEAMINFO, 0, 
 	N_ITEMSPAWN, 2, N_ITEMPICKUP, 2, N_ITEMACC, 3, N_ITEMPUSH, 6,
     N_PING, 2, N_PONG, 2, N_CLIENTPING, 2,
@@ -938,12 +939,15 @@ struct fpsent : dynent, fpsstate
 
     string name, tag, team, info;
     int playermodel;
+    int fov;                            // field of view
+
     ai::aiinfo *ai;
     int ownernum, lastnode;
 
     vec muzzle;
 
-    fpsent() : weight(100), clientnum(-1), privilege(PRIV_NONE), lastupdate(0), plag(0), ping(0), lifesequence(0), respawned(-1), suicided(-1), lastpain(0), attacksound(-1), attackchan(-1), idlesound(-1), idlechan(-1), frags(0), flags(0), deaths(0), teamkills(0), totaldamage(0), totalshots(0), edit(NULL), smoothmillis(-1), playermodel(-1), ai(NULL), ownernum(-1), muzzle(-1, -1, -1)
+    fpsent() : weight(100), clientnum(-1), privilege(PRIV_NONE), lastupdate(0), plag(0), ping(0), lifesequence(0), respawned(-1), suicided(-1), lastpain(0), attacksound(-1), attackchan(-1), idlesound(-1), idlechan(-1),
+                frags(0), flags(0), deaths(0), teamkills(0), totaldamage(0), totalshots(0), edit(NULL), smoothmillis(-1), playermodel(-1), fov(100), ai(NULL), ownernum(-1), muzzle(-1, -1, -1)
     {
         name[0] = team[0] = tag[0] = info[0] = 0;
         respawn();

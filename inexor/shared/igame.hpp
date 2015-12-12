@@ -41,6 +41,9 @@ namespace game
     extern bool ispaused();
     extern int scaletime(int t);
     extern bool allowmouselook();
+    // view
+    extern void broadcastfov(int fov);
+    extern int getfollowingfov();
 
     extern const char *gameident();
     extern const char *savedconfig();

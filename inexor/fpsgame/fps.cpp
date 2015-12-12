@@ -168,6 +168,14 @@ namespace game
         return NULL;
     }
 
+    /// Receive the fov the currently followed player got or -1 on failure.
+    int getfollowingfov()
+    {
+        fpsent *d = followingplayer();
+        return d ? d->fov : -1;
+    }
+    ICOMMAND(getfollowingfov, "", (), intret(getfollowingfov()));
+
     /// Give me the fpsent instance of the player whose coordinates will be used to calculate my camera's position
     /// @see followingplayer
     fpsent *hudplayer()
