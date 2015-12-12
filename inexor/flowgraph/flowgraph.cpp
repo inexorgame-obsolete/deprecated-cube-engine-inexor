@@ -411,7 +411,6 @@ namespace vscript {
     CScriptNode* c;
     CScriptNode* d;
     
-
     void test_a()
     {
         a = vScript3D.add_node(NODE_TYPE_TIMER, 7, "500", "0", "1000", "0", "TimerNode1", "Hello world", "0");
@@ -428,19 +427,10 @@ namespace vscript {
 
     void test_c()
     {
-        c = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "1" , "52");
+        c = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "1" , "51");
         vScript3D.connect_nodes(b,c);
     }
     COMMAND(test_c, "");
-
-
-    void test_d()
-    {
-        d = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "1", "52");
-        vScript3D.connect_nodes(a,d);
-    }
-    COMMAND(test_d, "");
-
 
 };
 };

@@ -10,6 +10,7 @@ namespace vscript {
     {
         sleep_interval = sleeptime;
         position = pos;
+        sleep_active = false;
     }
 
 
@@ -23,13 +24,14 @@ namespace vscript {
         /// TODO: Implement multithreading?
         if(!sleep_active)
         {
-            sleep_start = SDL_GetTicks();
             sleep_active = true;
+            sleep_start = SDL_GetTicks();
             sleep_end = sleep_start + sleep_interval;
         }
         if(SDL_GetTicks() >= sleep_end)
         {
-            CScriptNode::out();
+            box_color = VSCRIPT_COLOR_TRIGGERED;
+            out();
             sleep_active = false;
         }
     }

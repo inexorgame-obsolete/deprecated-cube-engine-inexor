@@ -39,7 +39,7 @@ namespace vscript {
     {
         VSCRIPT_COLOR_TIMER     = 0x00B6FF,
         VSCRIPT_COLOR_COMMENT   = 0x43A63A,
-        VSCRIPT_COLOR_FUNCTION  = 0xCC47B1,    
+        VSCRIPT_COLOR_FUNCTION  = 0xCC47B1,
         VSCRIPT_COLOR_TRIGGERED = 0xFF6D00,
         VSCRIPT_COLOR_GRAY      = 0xAAAAAA,
         VSCRIPT_COLOR_BLACK     = 0x000000,
@@ -80,7 +80,7 @@ namespace vscript {
             ~CScriptNode();
 
             void in();
-            virtual void run() = 0; // every child class implements this!
+            virtual void run() = 0;
             void out();
             virtual void reset() = 0;
     };

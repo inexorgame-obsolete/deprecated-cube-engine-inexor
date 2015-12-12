@@ -50,10 +50,10 @@ namespace vscript {
         if(children.size() == 0)
         {
             // this is a dead end in code!
-            if(type != NODE_TYPE_TIMER)
+            /*if(type != NODE_TYPE_TIMER)
             {
                 *done_pointer = true;
-            }
+            }*/
         }
         else
         {
