@@ -10,8 +10,8 @@ If you have some general question on the usage or configuration of the game plea
 With your contribution you agree with our [Code of Conduct](https://github.com/inexor-game/code/wiki/Code-of-Conduct). 
 
 If you consider contributing
- * *code:* you have to agree to license it under the terms of the [ZLIB license](https://github.com/inexor-game/code/blob/master/license.md).
- * *content:* your contribution has to match the [License Policy](https://github.com/inexor-game/code/wiki/License-Policy).  
+ * **code:** you have to agree to license it under the terms of the [ZLIB license](https://github.com/inexor-game/code/blob/master/license.md).
+ * **content:** your contribution has to match the [License Policy](https://github.com/inexor-game/code/wiki/License-Policy).  
 
 ## Submitting issues
 
