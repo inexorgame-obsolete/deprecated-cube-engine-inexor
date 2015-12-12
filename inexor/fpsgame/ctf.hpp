@@ -27,7 +27,8 @@ struct ctfclientmode : clientmode
         vec droploc, spawnloc;
         int team, droptime, owntime;
 #ifdef SERVMODE
-        int owner, dropcount, dropper, invistime;
+        int owner, dropcount, dropper, invistime,
+            runstart; //time when the flagrun was initiated
 #else
         fpsent *owner;
         float dropangle, spawnangle;
@@ -47,7 +48,7 @@ struct ctfclientmode : clientmode
 #ifdef SERVMODE
             dropcount = 0;
             owner = dropper = -1;
-            invistime = owntime = 0;
+            invistime = owntime = runstart = 0;
 #else
             if(id >= 0) loopv(players) players[i]->flagpickup &= ~(1<<id);
             owner = NULL;
@@ -177,6 +178,7 @@ struct ctfclientmode : clientmode
         f.dropcount = 0;
         f.owner = f.dropper = -1;
         f.invistime = invistime;
+        f.runstart = 0;
 #else
         loopv(players) players[i]->flagpickup &= ~(1<<f.id);
         f.vistime = vistime;
@@ -340,11 +342,12 @@ struct ctfclientmode : clientmode
 
     void scoreflag(clientinfo *ci, int goal, int relay = -1)
     {
+        int flagruntime = m_ctf && flags.inrange(relay) && flags[relay].runstart > 0 ? clamp(lastmillis-flags[relay].runstart, 0, 600000)/100 : 0;
         returnflag(relay >= 0 ? relay : goal, m_protect ? lastmillis : 0);
         ci->state.flags++;
         int team = ctfteamflag(ci->team), score = addscore(team, 1);
         if(m_hold) spawnflag(goal);
-        sendf(-1, 1, "rii9", N_SCOREFLAG, ci->clientnum, relay, relay >= 0 ? ++flags[relay].version : -1, goal, ++flags[goal].version, flags[goal].spawnindex, team, score, ci->state.flags);
+        sendf(-1, 1, "rii9i", N_SCOREFLAG, ci->clientnum, relay, relay >= 0 ? ++flags[relay].version : -1, goal, ++flags[goal].version, flags[goal].spawnindex, team, score, ci->state.flags, flagruntime);
         if(score >= FLAGLIMIT) startintermission();
     }
 
@@ -357,6 +360,7 @@ struct ctfclientmode : clientmode
         if(m_hold || m_protect == (f.team==team))
         {
             loopvj(flags) if(flags[j].owner==ci->clientnum) return;
+            if(!f.droptime) f.runstart = lastmillis;
             ownflag(i, ci->clientnum, lastmillis);
             sendf(-1, 1, "ri4", N_TAKEFLAG, ci->clientnum, i, ++f.version);
         }
@@ -836,7 +840,7 @@ struct ctfclientmode : clientmode
         }
     }
 
-    void scoreflag(fpsent *d, int relay, int relayversion, int goal, int goalversion, int goalspawn, int team, int score, int dflags)
+    void scoreflag(fpsent *d, int relay, int relayversion, int goal, int goalversion, int goalspawn, int team, int score, int dflags, int time)
     {
         setscore(team, score);
         if(flags.inrange(goal))
@@ -862,7 +866,8 @@ struct ctfclientmode : clientmode
             particle_textcopy(d->abovehead(), ds, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
         }
         d->flags = dflags;
-        conoutf(CON_GAMEINFO, "%s scored for %s", teamcolorname(d), teamcolor("your team", ctfflagteam(team), "the enemy team"));
+        if(time) conoutf(CON_GAMEINFO, "%s scored for %s (in %.1f s)", teamcolorname(d), teamcolor("your team", ctfflagteam(team), "the enemy team"),  float(time)/10.0f);
+        else conoutf(CON_GAMEINFO, "%s scored for %s", teamcolorname(d), teamcolor("your team", ctfflagteam(team), "the enemy team"));
         playsound(team==ctfteamflag(player1->team) ? S_FLAGSCORE : S_FLAGFAIL);
 
         if(score >= FLAGLIMIT) conoutf(CON_GAMEINFO, "%s captured %d flags", teamcolor("your team", ctfflagteam(team), "the enemy team"), score);
@@ -877,7 +882,9 @@ struct ctfclientmode : clientmode
         f.interptime = lastmillis;
         if(m_hold) conoutf(CON_GAMEINFO, "%s picked up the flag for %s", teamcolorname(d), teamcolor("your team", d->team, "the enemy team"));
         else if(m_protect || f.droptime) conoutf(CON_GAMEINFO, "%s picked up %s", teamcolorname(d), teamcolorflag(f));
-        else conoutf(CON_GAMEINFO, "%s stole %s", teamcolorname(d), teamcolorflag(f));
+        else  {
+            conoutf(CON_GAMEINFO, "%s stole %s", teamcolorname(d), teamcolorflag(f));
+        }
         ownflag(i, d, lastmillis);
         playsound(S_FLAGPICKUP);
     }
@@ -1233,9 +1240,9 @@ case N_DROPFLAG:
 
 case N_SCOREFLAG:
 {
-    int ocn = getint(p), relayflag = getint(p), relayversion = getint(p), goalflag = getint(p), goalversion = getint(p), goalspawn = getint(p), team = getint(p), score = getint(p), oflags = getint(p);
+    int ocn = getint(p), relayflag = getint(p), relayversion = getint(p), goalflag = getint(p), goalversion = getint(p), goalspawn = getint(p), team = getint(p), score = getint(p), oflags = getint(p), flagruntime = getint(p);
     fpsent *o = ocn==player1->clientnum ? player1 : newclient(ocn);
-    if(o && m_ctf) ctfmode.scoreflag(o, relayflag, relayversion, goalflag, goalversion, goalspawn, team, score, oflags);
+    if(o && m_ctf) ctfmode.scoreflag(o, relayflag, relayversion, goalflag, goalversion, goalspawn, team, score, oflags, flagruntime);
     break;
 }
 
