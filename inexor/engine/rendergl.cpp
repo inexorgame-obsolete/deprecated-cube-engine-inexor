@@ -711,27 +711,48 @@ void pushhudtranslate(float tx, float ty, float sx, float sy)
 
 float curfov = 100, curavatarfov = 65, fovy, aspect;
 int farplane;
+void broadcastfov();
+
 VARP(zoominvel, 0, 250, 5000);
 VARP(zoomoutvel, 0, 100, 5000);
 VARP(zoomfov, 10, 35, 150);
-VARP(fov, 10, 100, 150);
+VARFP(fov, 10, 100, 150, broadcastfov());
+VARP(followfov, 0, 1, 1); /// whether we adapt fov to the player we are currently spectating
 VAR(avatarzoomfov, 10, 25, 60);
 VAR(avatarfov, 10, 65, 150);
 FVAR(avatardepth, 0, 0.5f, 1);
 FVARNP(aspect, forceaspect, 0, 0, 1e3f);
 
 static float zoomprogress = 0;
-VAR(zoom, -1, 0, 1);
+VARF(zoom, -1, 0, 1, broadcastfov());
 
 void disablezoom()
 {
     zoom = 0;
     zoomprogress = 0;
+    broadcastfov();
+}
+
+/// Send your field of view to all other clients.
+void broadcastfov()
+{
+    game::broadcastfov(zoom > 0 ? zoomfov : fov);
 }
 
 void computezoom()
 {
+    if(followfov)
+    {
+        int remotefov = game::getfollowingfov();
+        if(remotefov >= 10)
+        {
+            curfov = remotefov;
+            curavatarfov = avatarfov;
+            return;
+        }
+    }
     if(!zoom) { zoomprogress = 0; curfov = fov; curavatarfov = avatarfov; return; }
+
     if(zoom > 0) zoomprogress = zoominvel ? min(zoomprogress + float(elapsedtime) / zoominvel, 1.0f) : 1;
     else
     {
