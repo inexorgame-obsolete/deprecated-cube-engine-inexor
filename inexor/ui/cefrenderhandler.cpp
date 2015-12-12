@@ -1,4 +1,6 @@
 #include "inexor/ui/cefrenderhandler.hpp"
+#include "inexor/util/InexorException.hpp"
+
 
 // DCHECK on gl errors.
 #ifndef NDEBUG
@@ -37,9 +39,15 @@ void InexorCefRenderHandler::Initialize() {
 
     // Create the texture.
     glGenTextures(1, &texture_id); VERIFY_NO_ERROR;
-    DCHECK_NE(texture_id, 0U); VERIFY_NO_ERROR;
 
-    glBindTexture(GL_TEXTURE_2D, texture_id); VERIFY_NO_ERROR;
+    if (0u == texture_id)
+    {
+      throw ::inexor::util::GLException("Error: texture id is 0");
+    }
+    else
+    {
+      glBindTexture(GL_TEXTURE_2D, texture_id); VERIFY_NO_ERROR;
+    }
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); VERIFY_NO_ERROR;
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); VERIFY_NO_ERROR;
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); VERIFY_NO_ERROR;
@@ -83,8 +91,14 @@ void InexorCefRenderHandler::Render() {
     glEnable(GL_TEXTURE_2D); VERIFY_NO_ERROR;
 
     // Draw the facets with the texture.
-    DCHECK_NE(texture_id, 0U); VERIFY_NO_ERROR;
-    glBindTexture(GL_TEXTURE_2D, texture_id); VERIFY_NO_ERROR;
+    if (0u == texture_id)
+    {
+      throw ::inexor::util::GLException("Error: texture id is 0");
+    }
+    else
+    {
+      glBindTexture(GL_TEXTURE_2D, texture_id); VERIFY_NO_ERROR;
+    }
     glInterleavedArrays(GL_T2F_V3F, 0, vertices); VERIFY_NO_ERROR;
     glDrawArrays(GL_QUADS, 0, 4); VERIFY_NO_ERROR;
 
@@ -163,8 +177,14 @@ void InexorCefRenderHandler::OnPaint(
     // Enable 2D textures.
     glEnable(GL_TEXTURE_2D); VERIFY_NO_ERROR;
 
-    DCHECK_NE(texture_id, 0U);
-    glBindTexture(GL_TEXTURE_2D, texture_id); VERIFY_NO_ERROR;
+    if (0u == texture_id)
+    {
+      throw ::inexor::util::GLException("Error: texture id is 0");
+    }
+    else
+    {
+      glBindTexture(GL_TEXTURE_2D, texture_id); VERIFY_NO_ERROR;
+    }
 
     if (type == PET_VIEW) {
         int old_width = view_width;

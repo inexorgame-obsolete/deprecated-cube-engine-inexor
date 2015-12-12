@@ -102,6 +102,13 @@ public:
 #define IEXCEPTION(name, __what) \
     EXCEPTION(name, ::inexor::util::InexorException, __what)
 
+// ============================================================================
+// === Exception definitions                                                ===
+// ============================================================================
+
+/// Exception that should be thrown if GL related functionality failed.
+IEXCEPTION(GLException, "Error: GL failed");
+
 }
 }
 
