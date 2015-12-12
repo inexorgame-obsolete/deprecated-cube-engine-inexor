@@ -14,8 +14,6 @@
 #include "inexor/ui/cefrenderhandler.hpp"
 #include "inexor/ui/cefwindowinfo.hpp"
 
-extern void logoutf(const char *fmt, ...);
-
 class InexorCefLayer : public CefClient,
                        public CefLifeSpanHandler,
                        public CefLoadHandler,

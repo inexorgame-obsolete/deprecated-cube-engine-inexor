@@ -52,8 +52,6 @@ void InexorCefKeyboardManager::SendKeyEvent(SDL_Event event)
     bool is_char = false;
 
     if (event.type == SDL_TEXTINPUT) {
-        // logoutf("text: %s char[0]: %d", event.text.text, (int) event.text.text[0]);
-
         is_char = true;
         if (event.text.text[0] >= 32 && event.text.text[0] <= SDLK_z)
             char_code = event.text.text[0];
@@ -119,7 +117,6 @@ void InexorCefKeyboardManager::SendKeyEvent(SDL_Event event)
                     break;
             }
     } else if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
-        // logoutf("type: %d mod: %d sym: %d (%s) scan: %d (%s)", event.key.state, event.key.keysym.mod, event.key.keysym.sym, SDL_GetKeyName(event.key.keysym.sym), event.key.keysym.scancode, SDL_GetScancodeName(event.key.keysym.scancode));
 
         /** Function Keys **/
         if (event.key.keysym.sym >= _SDLK_F1 && event.key.keysym.sym <= _SDLK_F12) {
@@ -306,12 +303,10 @@ void InexorCefKeyboardManager::SendKeyEvent(SDL_Event event)
 
 bool InexorCefKeyboardManager::OnPreKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event, bool* is_keyboard_shortcut) {
     CEF_REQUIRE_UI_THREAD();
-    logoutf("InexorCefClientHandler::OnPreKeyEvent: key_event.type: %d native_key_code: %d windows_key_code: %d is_system_key: %d", key_event.type, key_event.native_key_code, key_event.windows_key_code, key_event.is_system_key);
     return false;
 }
 
 bool InexorCefKeyboardManager::OnKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event) {
     CEF_REQUIRE_UI_THREAD();
-    logoutf("InexorCefClientHandler::OnKeyEvent: key_event.type: %d native_key_code: %d windows_key_code: %d is_system_key: %d", key_event.type, key_event.native_key_code, key_event.windows_key_code, key_event.is_system_key);
     return false;
 }

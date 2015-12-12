@@ -6,8 +6,6 @@
 #include "include/cef_app.h"
 #include "include/wrapper/cef_helpers.h"
 
-extern void logoutf(const char *fmt, ...);
-
 class InexorCefContextProvider : public CefV8Handler,
                                  public CefV8Accessor
 {

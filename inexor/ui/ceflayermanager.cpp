@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "inexor/ui/ceflayermanager.hpp"
 
 InexorCefLayerManager::InexorCefLayerManager(int width, int height)
@@ -20,7 +22,7 @@ void InexorCefLayerManager::InitializeLayers()
 
 void InexorCefLayerManager::DestroyLayers()
 {
-    logoutf("InexorCefLayerManager::DestroyLayers()");
+    std::cerr << "InexorCefLayerManager::DestroyLayers()";
     for(std::list<CefRefPtr<InexorCefLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
     {
         (*it)->Destroy();
@@ -214,7 +216,7 @@ std::list<std::string> InexorCefLayerManager::GetLayers()
 
 void InexorCefLayerManager::ShowLayer(std::string name)
 {
-    logoutf("show layer %s", name.c_str());
+    std::cerr << "show layer " << name << "\n";
     CefRefPtr<InexorCefLayer> layer = GetLayer(name);
     if (layer.get())
         layer->SetVisibility(true);

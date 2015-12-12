@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "inexor/ui/cefcontextprovider.hpp"
 
 CefRefPtr<CefV8Value> InexorCefContextProvider::GetContext()
@@ -5,7 +7,7 @@ CefRefPtr<CefV8Value> InexorCefContextProvider::GetContext()
     if (!context.get())
     {
         // This has to be happen when the context is initialized
-        logoutf("init: cef: context \"%s\"", GetContextName().c_str());
+        std::cerr << "init: cef: context " << GetContextName() << "\n";
         context = CefV8Value::CreateObject(this);
         InitializeSubContexts();
         InitializeContext();
