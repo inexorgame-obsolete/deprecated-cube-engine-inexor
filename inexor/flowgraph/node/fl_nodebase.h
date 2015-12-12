@@ -41,8 +41,10 @@ namespace vscript {
         VSCRIPT_COLOR_COMMENT   = 0x43A63A,
         VSCRIPT_COLOR_FUNCTION  = 0xCC47B1,
         VSCRIPT_COLOR_TRIGGERED = 0xFF6D00,
+        VSCRIPT_COLOR_SLEEP     = 0xFF00CD,
         VSCRIPT_COLOR_GRAY      = 0xAAAAAA,
         VSCRIPT_COLOR_BLACK     = 0x000000,
+        VSCRIPT_COLOR_WHITE     = 0xFFFFFF,
     };
 
     // @brief base class for node implementations
