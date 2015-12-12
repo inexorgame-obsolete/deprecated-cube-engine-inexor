@@ -141,7 +141,6 @@ namespace vscript {
             if( (nodes[i]->this_time - nodes[i]->last_time)  < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL) nodes[i]->box_color = VSCRIPT_COLOR_TRIGGERED;
             else nodes[i]->box_color = nodes[i]->default_box_color;
 
-            /// TODO: update time!
             if(NODE_TYPE_TIMER != nodes[i]->type) nodes[i]->this_time = unique_execution_pass_timestamp;
 
             gle::color(vec::hexcolor(nodes[i]->box_color));
@@ -257,7 +256,7 @@ namespace vscript {
     }
 
 
-    //#define INEXOR_VSCRIPT_MOUSE_DEBUGGING 1
+    // #define INEXOR_VSCRIPT_MOUSE_DEBUGGING 1
 
     void CVisualScriptSystem::process_change(int key, bool isdown)
     {
@@ -348,6 +347,7 @@ namespace vscript {
     {
     }
 
+
     void CVisualScriptWorker::add_job(CScriptNode* node)
     {
         CJob j;
@@ -356,7 +356,6 @@ namespace vscript {
         j.done = false;
         jobs.push_back(j);
     }
-
 
 
     void CVisualScriptWorker::run_jobs()
@@ -376,6 +375,8 @@ namespace vscript {
     }
 
 
+    /// TODO: implemen node relation manager
+    /*
 
     void deleteallnodes()
     {
@@ -386,7 +387,7 @@ namespace vscript {
 
     void addconoutf(char* message)
     {
-        vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "0" /*FUNCTION_CONOUTF*/, message);
+        vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "0", message);
     }
     COMMAND(addconoutf, "s");
 
@@ -411,22 +412,23 @@ namespace vscript {
     }
     COMMAND(addcomment, "ss");
     
-
+    */
 
 
 
     CScriptNode* a;
     CScriptNode* b;
     CScriptNode* c;
+    CScriptNode* d;
+    
 
 
+    /// Automatic testing
 
 
-
-    /// Testing and debugging
     void test_a()
     {
-        a = vScript3D.add_node(NODE_TYPE_TIMER, 7, "5000", "0", "1000", "0", "TimerNode1", "Hello world", "0");
+        a = vScript3D.add_node(NODE_TYPE_TIMER, 7, "500", "0", "1000", "0", "TimerNode1", "Hello world", "0");
     }
     COMMAND(test_a, "");
 
@@ -437,12 +439,21 @@ namespace vscript {
     }
     COMMAND(test_b, "");
 
+
     void test_c()
     {
         c = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "1" /*FUNCTION_PLAYSOUND*/, "52" /*S_V_BASECAP*/);
         vScript3D.connect_nodes(b,c);
     }
     COMMAND(test_c, "");
+
+
+    void test_d()
+    {
+        d = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "1" /*FUNCTION_PLAYSOUND*/, "52" /*S_V_BASECAP*/);
+        vScript3D.connect_nodes(a,d);
+    }
+    COMMAND(test_d, "");
 
 
 };

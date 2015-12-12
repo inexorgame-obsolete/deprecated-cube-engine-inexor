@@ -21,6 +21,7 @@ namespace vscript {
     void CFunctionPlaysoundNode::run()
     {
         playsound(sound_id);
+        *done_pointer = true;
     }
     
     void CFunctionPlaysoundNode::reset()
