@@ -404,7 +404,7 @@ namespace server
 
     bool notgotitems = true;        // true when map has changed and waiting for clients to send item
     int gamemillis = 0, gamelimit = 0, nextexceeded = 0, gamespeed = 100;
-    bool gamepaused = false, shouldstep = true;
+    bool gamepaused = false, teamspersisted = false, shouldstep = true;
 
     string smapname = "";
     int interm = 0;
@@ -625,8 +625,9 @@ namespace server
     VAR(maxdemosize, 0, 16, 31);
     VAR(restrictdemos, 0, 1, 1);
 
-    VAR(restrictpausegame, 0, 1, 1);
+    VAR(restrictpausegame, 0, 0, 1);
     VAR(restrictgamespeed, 0, 1, 1);
+    VAR(restrictpersistteams, 0, 0, 1);
 
     SVAR(serverdesc, "");
     SVAR(serverpass, "");
@@ -1294,7 +1295,7 @@ namespace server
         if(!gamepaused) return;
         int admins = 0;
         loopv(clients) if(clients[i]->privilege >= (restrictpausegame ? PRIV_ADMIN : PRIV_MASTER) || clients[i]->local) admins++;
-        if(!admins) pausegame(false);
+        if(!admins) pausegame(false); //if no admins on the server, resume game
     }
 
     void forcepaused(bool paused)
@@ -1319,6 +1320,26 @@ namespace server
 
     int scaletime(int t) { return t*gamespeed; }
 
+    void persistteams(bool val)
+    {
+        if(teamspersisted==val) return;
+        teamspersisted = val;
+        sendf(-1, 1, "rii", N_PERSISTTEAMS, teamspersisted ? 1 : 0);
+    }
+
+    void checkpersistteams()
+    {
+        if(!teamspersisted) return;
+        int admins = 0;
+        loopv(clients) if(clients[i]->privilege >= (restrictpersistteams ? PRIV_ADMIN : PRIV_MASTER) || clients[i]->local) admins++;
+        if(!admins) persistteams(false); //if no admins or (or masters) around, reshuffle teams again
+    }
+
+    void forcepersist(bool persist)
+    {
+        persistteams(persist);
+    }
+    
     SVAR(serverauth, "");
 
     struct userkey
@@ -1525,6 +1546,9 @@ namespace server
         if(sc) sc->save(ci->state);
     }
 
+    /// MSG filter works as a firewall
+    /// it allowes only certain messages for certain things, see checktype
+    /// -1 will become 1 in the switchcase below, its a hack to not misinterpretate the different cases as messages 
     static struct msgfilter
     {
         uchar msgmask[NUMMSG];
@@ -1543,7 +1567,10 @@ namespace server
         }
 
         uchar operator[](int msg) const { return msg >= 0 && msg < NUMMSG ? msgmask[msg] : 0; }
-    } msgfilter(-1, N_CONNECT, N_SERVINFO, N_INITCLIENT, N_WELCOME, N_MAPCHANGE, N_SERVMSG, N_DAMAGE, N_HITPUSH, N_SHOTFX, N_EXPLODEFX, N_DIED, N_SPAWNSTATE, N_FORCEDEATH, N_TEAMINFO, N_ITEMACC, N_ITEMSPAWN, N_TIMEUP, N_CDIS, N_CURRENTMASTER, N_PONG, N_RESUME, N_BASESCORE, N_BASEINFO, N_BASEREGEN, N_ANNOUNCE, N_SENDDEMOLIST, N_SENDDEMO, N_DEMOPLAYBACK, N_SENDMAP, N_DROPFLAG, N_SCOREFLAG, N_RETURNFLAG, N_RESETFLAG, N_INVISFLAG, N_CLIENT, N_AUTHCHAL, N_INITAI, N_EXPIRETOKENS, N_DROPTOKENS, N_STEALTOKENS, N_DEMOPACKET, -2, N_REMIP, N_NEWMAP, N_GETMAP, N_SENDMAP, N_CLIPBOARD, -3, N_EDITENT, N_EDITF, N_EDITT, N_EDITM, N_FLIP, N_COPY, N_PASTE, N_ROTATE, N_REPLACE, N_DELCUBE, N_EDITVAR, N_EDITVSLOT, N_UNDO, N_REDO, -4, N_POS, NUMMSG),
+    } msgfilter(-1, N_CONNECT, N_SERVINFO, N_INITCLIENT, N_WELCOME, N_MAPCHANGE, N_SERVMSG, N_DAMAGE, N_HITPUSH, N_SHOTFX, N_EXPLODEFX, N_DIED, N_SPAWNSTATE, N_FORCEDEATH, N_TEAMINFO, N_ITEMACC, N_ITEMSPAWN, N_TIMEUP, N_CDIS, N_CURRENTMASTER, N_PONG, N_RESUME, N_BASESCORE, N_BASEINFO, N_BASEREGEN, N_ANNOUNCE, N_SENDDEMOLIST, N_SENDDEMO, N_DEMOPLAYBACK, N_SENDMAP, N_DROPFLAG, N_SCOREFLAG, N_RETURNFLAG, N_RESETFLAG, N_INVISFLAG, N_CLIENT, N_AUTHCHAL, N_INITAI, N_EXPIRETOKENS, N_DROPTOKENS, N_STEALTOKENS, N_DEMOPACKET,
+                -2, N_REMIP, N_NEWMAP, N_GETMAP, N_SENDMAP, N_CLIPBOARD,
+                -3, N_EDITENT, N_EDITF, N_EDITT, N_EDITM, N_FLIP, N_COPY, N_PASTE, N_ROTATE, N_REPLACE, N_DELCUBE, N_EDITVAR, N_EDITVSLOT, N_UNDO, N_REDO,
+                -4, N_POS, NUMMSG),
       connectfilter(-1, N_CONNECT, -2, N_AUTHANS, -3, N_PING, NUMMSG);
 
     int checktype(int type, clientinfo *ci)
@@ -2013,7 +2040,7 @@ namespace server
         sendf(-1, 1, "risii", N_MAPCHANGE, smapname, gamemode, 1);
 
         clearteaminfo();
-        if(m_teammode) autoteam();
+        if(m_teammode && !teamspersisted) autoteam();
 
         if(m_capture) smode = &capturemode;
         else if(m_ctf) smode = &ctfmode;
@@ -3670,12 +3697,18 @@ namespace server
                 pausegame(val > 0, ci);
                 break;
             }
-
             case N_GAMESPEED:
             {
                 int val = getint(p);
                 if(ci->privilege < (restrictgamespeed ? PRIV_ADMIN : PRIV_MASTER) && !ci->local) break;
                 changegamespeed(val, ci);
+                break;
+            }
+            case N_PERSISTTEAMS:
+            {
+                int val = getint(p);
+                if(ci->privilege < (restrictpersistteams ? PRIV_ADMIN : PRIV_MASTER) && !ci->local) break;
+                persistteams(val > 0);
                 break;
             }
 

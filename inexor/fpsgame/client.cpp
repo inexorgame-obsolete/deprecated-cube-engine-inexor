@@ -171,7 +171,8 @@ namespace game
     /// after a map change, since server doesn't have map data
     bool senditemstoserver = false, sendcrc = false; 
     int lastping = 0;
-    bool connected = false, remote = false, demoplayback = false, gamepaused = false;
+
+    bool connected = false, remote = false, demoplayback = false, gamepaused = false, teamspersisted = false;
     int sessionid = 0, mastermode = MM_OPEN, gamespeed = 100;
     string servinfo = "", servauth = "", connectpass = "";
 
@@ -975,10 +976,18 @@ namespace game
     });
 
     /// check if game is paused
-	bool ispaused() 
-	{ 
-		return gamepaused; 
-	}
+    bool ispaused() { return gamepaused; }
+
+    /// Set reshuffeling behaviour on mapchange according to bool val (true activates persistent teams) 
+    void persistteams(bool val)
+    {
+        if(!connected) return;
+        if(!remote) server::forcepersist(val); //do it on direct way, when playing locally
+        else addmsg(N_PERSISTTEAMS, "ri", val ? 1 : 0);
+    }
+    ICOMMAND(persistteams, "i", (int *val), persistteams(*val > 0));
+
+    bool ispersisted() { return teamspersisted; }
 
 	/// check if mouse looking is allowed
     bool allowmouselook() 
@@ -1519,7 +1528,6 @@ namespace game
                 else conoutf("game is %s", val ? "paused" : "resumed");
                 break;
             }
-
             case N_GAMESPEED:
             {
                 int val = clamp(getint(p), 10, 1000), cn = getint(p);
@@ -1531,7 +1539,17 @@ namespace game
                 else conoutf("gamespeed is %d", val);
                 break;
             }
-                
+            case N_PERSISTTEAMS:
+            {
+                bool val = getint(p) > 0;
+                if(!demopacket)
+                {
+                    teamspersisted = true;
+                }
+                conoutf("teams will be %s next game", val ? "persistent" : "reshuffled");
+                break;
+            }
+
             case N_CLIENT:
             {
                 int cn = getint(p), len = getuint(p);
