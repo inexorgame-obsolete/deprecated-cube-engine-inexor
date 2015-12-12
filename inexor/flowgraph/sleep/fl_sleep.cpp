@@ -10,6 +10,7 @@ namespace vscript {
     {
         sleep_interval = sleeptime;
         position = pos;
+
     }
 
 
@@ -25,8 +26,8 @@ namespace vscript {
         {
             sleep_start = SDL_GetTicks();
             sleep_active = true;
+            sleep_end = sleep_start + sleep_interval;
         }
-        sleep_end = sleep_start + sleep_interval;
         if(SDL_GetTicks() >= sleep_end)
         {
             CScriptNode::out();

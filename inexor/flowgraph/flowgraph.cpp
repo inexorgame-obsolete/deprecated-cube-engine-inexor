@@ -77,8 +77,8 @@ namespace vscript {
                 unsigned int startdelay = atoi(arguments[1].c_str());
                 unsigned int limit      = atoi(arguments[2].c_str());
                 unsigned int cooldown   = atoi(arguments[3].c_str());
-                const char* name        = arguments[4].c_str();
-                const char* comment     = arguments[5].c_str();
+                const char* name        =      arguments[4].c_str();
+                const char* comment     =      arguments[5].c_str();
 
                 /// TODO: which timer format?
                 INEXOR_VSCRIPT_TIME_FORMAT timer_format = TIME_FORMAT_MILISECONDS;
@@ -377,7 +377,6 @@ namespace vscript {
 
     void CVisualScriptWorker::add_job(CScriptNode* node)
     {
-        conoutf(CON_DEBUG, "Looks like we got a new job to do!");
         CJob j;
         j.node = node;
         j.started = false;
