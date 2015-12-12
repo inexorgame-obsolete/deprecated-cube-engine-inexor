@@ -1,6 +1,5 @@
 #include "inexor/flowgraph/functions/fl_functionbase.h"
 
-
 namespace inexor {
 namespace vscript {
 

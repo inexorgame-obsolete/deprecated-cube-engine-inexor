@@ -1,10 +1,4 @@
 #include "inexor/engine/engine.h"
-
-#include <string>
-#include <vector>
-#include <map>
-#include <list>
-
 #include "inexor/flowgraph/node/fl_nodebase.h"
 
 

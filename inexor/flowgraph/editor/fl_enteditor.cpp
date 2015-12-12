@@ -1,6 +1,5 @@
 #include "inexor/engine/engine.h"
 #include "inexor/flowgraph/editor/fl_enteditor.h"
-
 #include "inexor/geom/curves/bezier/bezier.h"
 #include "inexor/geom/curves/curvebase.h"
 

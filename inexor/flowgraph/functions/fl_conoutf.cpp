@@ -33,8 +33,7 @@ namespace vscript {
     {
         param_text_output = raw_text_input;
     }
-
-
+    
     void CFunctionConoutfNode::reset()
     {
     }
