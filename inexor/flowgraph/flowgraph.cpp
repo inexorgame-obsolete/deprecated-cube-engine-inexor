@@ -20,10 +20,7 @@ namespace vscript {
 
     CVisualScriptSystem::~CVisualScriptSystem() 
     {
-        /// @bug does that even work?
-        for(unsigned int i=0; i<nodes.size(); i++) {
-            delete (nodes[i]);
-        }
+        for(unsigned int i=0; i<nodes.size(); i++) delete (nodes[i]);
         nodes.clear();
     }
 
@@ -37,6 +34,7 @@ namespace vscript {
         vec offset = vec(gridsize/2,gridsize/2,gridsize/2);
         target.add(offset);
 
+        
         #ifdef INEXOR_VSCRIPT_DEBUG_RAYS
             debug_ray dr_tmp;
             dr_tmp.pos = camera1->o;
@@ -44,15 +42,10 @@ namespace vscript {
             rays.push_back(dr_tmp);
         #endif    
 
+
         va_list parameters;
-        va_start(parameters, parameter_count);
-
-        /// Please note: the old command engine of Inexor will always pass every parameter as char* 
-        /// so using std::string is fine.
-        /// In this vector we will store the arguments as strings
         std::vector<std::string> arguments;
-
-        /// Store the current argument in the std::string vector
+        va_start(parameters, parameter_count);
         for(unsigned int i=0; i<parameter_count; i++)
         {
             arguments.push_back(va_arg(parameters, char *));
@@ -405,11 +398,11 @@ namespace vscript {
     
     */
 
-
     CScriptNode* a;
     CScriptNode* b;
     CScriptNode* c;
     CScriptNode* d;
+
     
     void test_a()
     {
@@ -419,18 +412,20 @@ namespace vscript {
 
     void test_b()
     {
-        b = vScript3D.add_node(NODE_TYPE_SLEEP, 1, "1337");
+        b = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "0" , "Hallo Welt");
         vScript3D.connect_nodes(a,b);
     }
     COMMAND(test_b, "");
 
 
+    /*
     void test_c()
     {
-        c = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "1" , "51");
+        c = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "1" , "52");
         vScript3D.connect_nodes(b,c);
     }
     COMMAND(test_c, "");
+    */
 
 };
 };

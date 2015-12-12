@@ -53,8 +53,8 @@ namespace vscript {
     void CTimerNode::check_if_execution_is_due() 
     {
         /// render color effects
-        if(this_time - last_time < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL) box_color = VSCRIPT_COLOR_TRIGGERED;
-        else box_color = VSCRIPT_COLOR_TIMER;
+        //if(this_time - last_time < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL) box_color = VSCRIPT_COLOR_TRIGGERED;
+        //else box_color = VSCRIPT_COLOR_TIMER;
 
         if(this_time - last_time >= timer_interval) 
         {

@@ -11,6 +11,7 @@ namespace vscript {
         sleep_interval = sleeptime;
         position = pos;
         sleep_active = false;
+        default_box_color = VSCRIPT_COLOR_GRAY;
     }
 
 
@@ -27,12 +28,14 @@ namespace vscript {
             sleep_active = true;
             sleep_start = SDL_GetTicks();
             sleep_end = sleep_start + sleep_interval;
+            box_color = default_box_color;
         }
         if(SDL_GetTicks() >= sleep_end)
         {
-            box_color = VSCRIPT_COLOR_TRIGGERED;
-            out();
+            box_color = VSCRIPT_COLOR_BLACK;
+            last_time = SDL_GetTicks();
             sleep_active = false;
+            out();
         }
     }
 

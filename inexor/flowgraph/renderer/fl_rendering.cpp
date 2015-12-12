@@ -45,7 +45,12 @@ namespace vscript {
             //if(selected) gle::color(vec::hexcolor(0xFF5900));
             //else gle::color(vec::hexcolor(0xFF9000));
         }
-        else gle::color(vec::hexcolor(node->box_color));
+        else
+        {
+            if(SDL_GetTicks() - node->last_time < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL) node->box_color = VSCRIPT_COLOR_TRIGGERED;
+            else node->box_color = node->default_box_color;
+            gle::color(vec::hexcolor(node->box_color));
+        }
     }
 
 
