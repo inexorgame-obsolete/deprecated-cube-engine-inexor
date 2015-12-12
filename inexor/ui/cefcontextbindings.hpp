@@ -13,7 +13,7 @@ extern SharedVar<int> fullscreen, scr_w, scr_h, vsync;
 
 namespace game {
     extern fpsent *player1;
-    extern void switchname(const char *name);
+    extern void switchname(const char *name, const char *tag);
 }
 
 #endif  // _CEF_CONTEXT_BINDINGS_H

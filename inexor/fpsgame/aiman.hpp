@@ -141,17 +141,18 @@ namespace aiman
 		ci->ownernum = owner ? owner->clientnum : -1;
         if(owner) owner->bots.add(ci);
     	ci->state.skill = skill <= 0 ? rnd(50) + 51 : clamp(skill, 1, 101);
-	    clients.add(ci);
-		ci->state.lasttimeplayed = lastmillis;
-		copystring(ci->name, "bot", MAXNAMELEN+1);
-		ci->state.state = CS_DEAD;
+        clients.add(ci);
+        ci->state.lasttimeplayed = lastmillis;
+        copystring(ci->name, "bot", MAXNAMELEN+1);
+        ci->state.state = CS_DEAD;
         copystring(ci->team, team, MAXTEAMLEN+1);
-    	ci->playermodel = rnd(128);
-		ci->aireinit = 2;
-		ci->connected = true;
-    	dorefresh = true;
-		return true;
-	}
+        copystring(ci->tag, BOTTAG, MAXTAGLEN+1);
+        ci->playermodel = rnd(128);
+        ci->aireinit = 2;
+        ci->connected = true;
+        dorefresh = true;
+        return true;
+    }
 
 	// delete AI from game
 	void deleteai(clientinfo *ci)
@@ -184,8 +185,8 @@ namespace aiman
 		if(ci->ownernum < 0) deleteai(ci);
 		else if(ci->aireinit >= 1)
 		{
-			sendf(-1, 1, "ri6ss", N_INITAI, ci->clientnum, ci->ownernum, ci->state.aitype, ci->state.skill, ci->playermodel, ci->name, ci->team);
-			if(ci->aireinit == 2)
+            sendf(-1, 1, "ri6sss", N_INITAI, ci->clientnum, ci->ownernum, ci->state.aitype, ci->state.skill, ci->playermodel, ci->name, ci->team, BOTTAG);
+            if(ci->aireinit == 2)
             {
                 ci->reassign();
                 if(ci->state.state==CS_ALIVE) sendspawn(ci);
