@@ -32,6 +32,9 @@ if "%master%"=="true" (
 
     rd /s /q %nightly_name%\.git
     del %nightly_name%\.gitignore
+    
+    :: Now we want to include our node files as well:
+    tool\node_windows_update_npm.bat
 )
 
 set ignored=(additional %nightly_name% .gitignore build CMakeLists.txt appveyor.yml doxygen.conf .git .gitignore .gitmodules tool inexor .travis.yml)
