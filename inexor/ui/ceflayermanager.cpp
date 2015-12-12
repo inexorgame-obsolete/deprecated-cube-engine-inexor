@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "inexor/ui/ceflayermanager.hpp"
 
 InexorCefLayerManager::InexorCefLayerManager(int width, int height)
