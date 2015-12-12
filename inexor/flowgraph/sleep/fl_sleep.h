@@ -16,7 +16,6 @@
 /// ._________________________________________________________________________________________________.
 /// 
 
-// Include guard
 #ifndef INEXOR_VSCRIPT_SLEEP_HEADER
 #define INEXOR_VSCRIPT_SLEEP_HEADER
 
@@ -29,7 +28,7 @@
 /// One whole day is the maximum delay (in miliseconds)
 #define INEXOR_VSCRIPT_MAX_SLEEP_INTERVAL 1000 * 60 * 60 * 24
 
-// Inexor namespace protection
+
 namespace inexor {
 namespace vscript {
 
@@ -54,8 +53,6 @@ namespace vscript {
             void reset();
     };
 
-
-// end of namespace
 };
 };
 

@@ -19,34 +19,22 @@
 /// ._________________________________________________________________________________________________.
 /// 
 
-// Include guard
 #ifndef INEXOR_VSCRIPT_TIMER_HEADER
 #define INEXOR_VSCRIPT_TIMER_HEADER
 
 #include "inexor/engine/engine.h"
 #include "inexor/flowgraph/node/fl_nodebase.h"
-
-/// time conversion
 #include "inexor/flowgraph/time/fl_timetools.h"
 
-/// Minimum time interval (in miliseconds)
 #define INEXOR_VSCRIPT_MIN_TIMER_INTERVAL 10
-
-/// One whole day is the maximum delay (in miliseconds)
 #define INEXOR_VSCRIPT_MAX_TIMER_INTERVAL 1000 * 60 * 60 * 24
-
-/// Blink every 100 miliseconds
 #define INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL 100
-
-/// Default timer execution limit
 #define INEXOR_VSCRIPT_DEFAULT_TIMER_EXECUTION_LIMIT 1000*1000
 
 
-// Inexor namespace protection
 namespace inexor {
 namespace vscript {
 
-    /// Inexor's VScript Engine supports various time formats
     enum INEXOR_VSCRIPT_TIME_FORMAT
     {
         TIME_FORMAT_MILISECONDS,
@@ -76,13 +64,11 @@ namespace vscript {
         return interval;
     }
     */
-    /// @brief Implementation of timer nodes.
+
     class CTimerNode : public CScriptNode
     {
         private:
 
-            /// check the timer status
-            /// do we need to call the trigger?
             void check_if_execution_is_due();
             void out();
 
@@ -109,8 +95,6 @@ namespace vscript {
             void reset();
     };
 
-
-// end of namespace
 };
 };
 

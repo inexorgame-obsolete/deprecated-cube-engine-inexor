@@ -2,13 +2,9 @@
 /// @author Johannes Schneider
 /// @brief Timers will be called every [n] miliseconds
 
-// include guard
 #ifndef INEXOR_VSCRIPT_MEMBASE_HEADER
 #define INEXOR_VSCRIPT_MEMBASE_HEADER
 
-/// TODO: inform the programmer about value limits?
-
-/// Inexor namespace protection
 namespace inexor {
 namespace vscript {
 
@@ -25,7 +21,7 @@ namespace vscript {
     };
 
 
-    /// TODO: Implement memory with std::any or unions!
+    /// TODO: use std::any
     class CMemoryNode
     {
         CMemoryNode();
@@ -36,8 +32,6 @@ namespace vscript {
         void out();
     };
 
-
-/// end of namespace
 };
 };
 

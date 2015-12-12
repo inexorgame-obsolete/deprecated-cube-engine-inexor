@@ -22,8 +22,7 @@
 /// ._________________________________________________________________________________________________.
 ///
 
-/// Please note: creating nodes with Sauerbraten's standard entity system does suck.
-/// TODO: sooner or later the system will be rewritten based on Hanack's new entity system. 
+/// TODO: Move on to Hanack's new entity system. 
 
 
 #ifndef INEXOR_VSCRIPT_NODEBASE_HEADER
@@ -41,10 +40,9 @@
 namespace inexor {
 namespace vscript {
 
-    /// The node entity's box size
     const float boxsize = 3.0f;
 
-    /// enumeration of node types
+
     enum VSCRIPT_NODE_TYPE
     {
         NODE_TYPE_INVALID = -1,
@@ -59,7 +57,6 @@ namespace vscript {
     };
 
 
-    /// Enumeration of color codes in RGB integer format
     enum VSCRIPT_NODE_COLORS
     {
         VSCRIPT_COLOR_TIMER     = 0x00B6FF,
@@ -77,7 +74,6 @@ namespace vscript {
 
             VSCRIPT_NODE_TYPE type;
 
-            /// TODO: What must be public and what can be private?
             std::vector<CScriptNode *> parents;
             std::vector<CScriptNode *> children;
         
@@ -97,7 +93,6 @@ namespace vscript {
             unsigned int this_time;
             unsigned int last_time;
 
-            /// TODO: do we need this?
             int default_box_color;
             int box_color;
 
@@ -113,7 +108,6 @@ namespace vscript {
     };
 
 
-/// end of namespaces
 };
 };
 

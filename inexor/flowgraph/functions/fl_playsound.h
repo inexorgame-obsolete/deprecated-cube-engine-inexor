@@ -17,14 +17,11 @@
 #ifndef INEXOR_VSCRIPT_PLAYSOUND_HEADER
 #define INEXOR_VSCRIPT_PLAYSOUND_HEADER
 
-/// conoutf implementation
 #include "inexor/engine/engine.h"
 
-/// Include base class
 #include "inexor/flowgraph/node/fl_nodebase.h"
 #include "inexor/flowgraph/functions/fl_functionbase.h"
 
-/// Inexor 
 namespace inexor {
 namespace vscript {
 
@@ -46,7 +43,6 @@ namespace vscript {
 
         public:
 
-            /// Lets start with a simple version here
             CFunctionPlaysoundNode(vec, const char*);
             ~CFunctionPlaysoundNode();
 
@@ -55,7 +51,6 @@ namespace vscript {
             void reset();
     };
 
-/// end of namespace
 };
 };
 

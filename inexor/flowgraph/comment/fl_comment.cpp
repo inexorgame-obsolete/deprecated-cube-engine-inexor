@@ -7,9 +7,9 @@ namespace vscript {
     CCommentNode::CCommentNode(vec pos, const char* comment, const char* name)
     {
         type = NODE_TYPE_COMMENT;
-        position = pos;
         node_comment = comment;
         node_name = name;
+        position = pos;
         default_box_color = VSCRIPT_COLOR_COMMENT;
         box_color = default_box_color;
     }
@@ -19,7 +19,5 @@ namespace vscript {
     {
     }
 
-
-/// end of namespaces
 };
 };

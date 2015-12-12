@@ -51,7 +51,6 @@ namespace vscript {
             void end_rendering();
     };
 
-/// end of namespace
 };
 };
 
