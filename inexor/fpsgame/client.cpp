@@ -1132,15 +1132,23 @@ namespace game
         }
     }
 
-	/// send chat messages to server
+    /// send chat messages to server
     void toserver(char *text) { conoutf(CON_CHAT, "%s:\f0 %s", colorname(player1), text); addmsg(N_TEXT, "rcs", player1, text); }
     COMMANDN(say, toserver, "C");
 
-	/// send team messages to server
+    /// send team messages to server
     void sayteam(char *text) { conoutf(CON_TEAMCHAT, "%s:\f1 %s", colorname(player1), text); addmsg(N_SAYTEAM, "rcs", player1, text); }
     COMMAND(sayteam, "C");
 
-	/// send custom server messages to servers 
+    void sayprivate(int i, char *text)
+    {
+        if(!clients.inrange(i) || !clients[i]) { conoutf(CON_WARN, "no such player"); return; }
+        conoutf(CON_TEAMCHAT, "\f4pm to %s:\f6 %s", colorname(clients[i]), text); 
+        addmsg(N_PRIVMSG, "rcis", player1, i, text);
+    }
+    ICOMMAND(pm, "is", (int *i, char *text), sayprivate(*i, text));
+
+    /// send custom server messages to servers 
     /// this feature is not used on most servers (?)
     ICOMMAND(servcmd, "C", (char *cmd), addmsg(N_SERVCMD, "rs", cmd));
 
@@ -1580,7 +1588,7 @@ namespace game
                 break;
             }
 
-            case N_HUDANNOUNCE:
+            case N_HUDANNOUNCE: //osd-text
             {
                 int duration = getint(p);
                 int effect = getint(p);
@@ -1603,6 +1611,19 @@ namespace game
                 if(t->state!=CS_DEAD && t->state!=CS_SPECTATOR)
                     particle_textcopy(t->abovehead(), text, PART_TEXT, 2000, 0x6496FF, 4.0f, -8);
                 conoutf(CON_TEAMCHAT, "%s:\f1 %s", colorname(t), text);
+                break;
+            }
+
+            case N_PRIVMSG: //private message
+            {
+                int tcn = getint(p);
+                fpsent *t = getclient(tcn); //sender
+                getstring(text, p);
+                filtertext(text, text);
+                if(!t || isignored(t->clientnum)) break;
+                if(t->state!=CS_DEAD && t->state!=CS_SPECTATOR)
+                    particle_textcopy(t->abovehead(), text, PART_TEXT, 2000, 0x6496FF, 4.0f, -8);
+                conoutf(CON_TEAMCHAT, "\f4pm from %s:\f6 %s", colorname(t), text);
                 break;
             }
 

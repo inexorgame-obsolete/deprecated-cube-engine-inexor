@@ -456,7 +456,8 @@ enum
 
 	/// text, auth, bots, options, gamespeed
     N_SAYTEAM,				/// C2S|S2C  team chat
-	N_HUDANNOUNCE,			/// S2C      BOMBERMAN Announcement
+    N_PRIVMSG,              /// C2S|S2C  private/personal message
+    N_HUDANNOUNCE,			/// S2C      BOMBERMAN Announcement
     N_CLIENT,				/// S2C      client synchronisation
     N_AUTHTRY,				/// C2S      try to authentificate using auth key(s)
 	N_AUTHKICK,				/// C2S      try to authentificate using my auth key(s), kick a specific person [hacker] and then relinquish master again
@@ -514,7 +515,7 @@ static const int msgsizes[] =
     N_LISTDEMOS, 1, N_SENDDEMOLIST, 0, N_GETDEMO, 2, N_SENDDEMO, 0,
     N_DEMOPLAYBACK, 3, N_RECORDDEMO, 2, N_STOPDEMO, 1, N_CLEARDEMOS, 2,
     N_TAKEFLAG, 3, N_RETURNFLAG, 4, N_RESETFLAG, 6, N_INVISFLAG, 3, N_TRYDROPFLAG, 1, N_DROPFLAG, 7, N_SCOREFLAG, 11, N_INITFLAGS, 0,
-    N_SAYTEAM, 0, N_HUDANNOUNCE, 0,
+    N_SAYTEAM, 0, N_PRIVMSG, 0, N_HUDANNOUNCE, 0,
     N_CLIENT, 0,
     N_AUTHTRY, 0, N_AUTHKICK, 0, N_AUTHCHAL, 0, N_AUTHANS, 0, N_REQAUTH, 0,
 	N_PAUSEGAME, 0, N_GAMESPEED, 0, N_PERSISTTEAMS, 0,

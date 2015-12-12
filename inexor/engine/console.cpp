@@ -30,10 +30,7 @@ void conline(int type, const char *sf)        // add a line to the console buffe
 	if(contime)
     {
         const char *sstime = gettimestr("%H:%M:%S");
-        if(sstime && *sstime)
-        {
-			cl.time = newstring(sstime, CONSTRLEN-1);
-        }
+        if(sstime && *sstime) cl.time = newstring(sstime, CONSTRLEN-1);
     }
     cl.outtime = totalmillis;                // for how long to keep line on screen
     copystring(cl.line, sf, CONSTRLEN);
