@@ -221,7 +221,7 @@ endfunction()
 # in ${EXE_DIR}.
 #
 # see: add_executable
-function(add_app exe )
+function(add_app exe)
   message(STATUS "Adding Application: ${exe}")
 
   # Remove "CONSOLE_APP" if specified

@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "inexor/ui/cefframe.hpp"
 
 void InexorCefFrame::InitializeContext()

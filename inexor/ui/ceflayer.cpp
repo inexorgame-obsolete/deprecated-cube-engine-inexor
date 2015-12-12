@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "inexor/ui/ceflayer.hpp"
 
 InexorCefLayer::InexorCefLayer(std::string name, int x, int y, int width, int height, std::string url)
