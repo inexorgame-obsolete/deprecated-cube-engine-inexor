@@ -139,7 +139,7 @@ namespace ai
         if(d->ai) DELETEP(d->ai);
     }
 
-    void init(fpsent *d, int at, int ocn, int sk, int bn, int pm, const char *name, const char *team)
+    void init(fpsent *d, int at, int ocn, int sk, int bn, int pm, const char *name, const char *team, const char *tag)
     {
         loadwaypoints();
 
@@ -166,6 +166,7 @@ namespace ai
 
         copystring(d->name, name, MAXNAMELEN+1);
         copystring(d->team, team, MAXTEAMLEN+1);
+        copystring(d->tag, tag, MAXTAGLEN+1);
         d->ownernum = ocn;
         d->plag = 0;
         d->skill = sk;

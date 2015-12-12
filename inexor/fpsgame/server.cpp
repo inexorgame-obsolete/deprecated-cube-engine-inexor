@@ -229,7 +229,7 @@ namespace server
     struct clientinfo
     {
         int clientnum, ownernum, connectmillis, sessionid, overflow;
-        string name, team, mapvote;
+        string name, tag, team, mapvote;
         int playermodel;
         int modevote;
         int privilege;
@@ -349,7 +349,7 @@ namespace server
 
         void reset()
         {
-            name[0] = team[0] = 0;
+            name[0] = team[0] = tag[0] = 0;
             playermodel = -1;
             privilege = PRIV_NONE;
             connected = local = false;
@@ -1792,6 +1792,7 @@ namespace server
             putint(p, ci->playermodel);
             sendstring(ci->name, p);
             sendstring(ci->team, p);
+            sendstring(BOTTAG, p);
         }
         else
         {
@@ -1799,6 +1800,7 @@ namespace server
             putint(p, ci->clientnum);
             sendstring(ci->name, p);
             sendstring(ci->team, p);
+            sendstring(ci->tag, p);
             putint(p, ci->playermodel);
         }
     }
@@ -3316,10 +3318,13 @@ namespace server
             case N_SWITCHNAME:
             {
                 QUEUE_MSG;
-                getstring(text, p);
+                getstring(text, p); //name
                 filtertext(ci->name, text, false, false, MAXNAMELEN);
                 if(!ci->name[0]) copystring(ci->name, "unnamed");
                 QUEUE_STR(ci->name);
+                getstring(text, p); //tag
+                filtertext( ci->tag, text, false, MAXTAGLEN);
+                QUEUE_STR(ci->tag);
                 break;
             }
 

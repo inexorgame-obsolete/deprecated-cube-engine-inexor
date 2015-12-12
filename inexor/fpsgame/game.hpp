@@ -547,8 +547,10 @@ struct demoheader
 #define MAXTEAMS 128
 #define MAXNAMELEN 15  /// max player name length
 #define MAXTEAMLEN 4   /// max team name length
+#define MAXTAGLEN 8    /// max player tag length
+#define BOTTAG "Bot"   /// all bots share this tag
 
-enum 
+enum
 {
     TEAM_NONE,
     TEAM_OWN,
@@ -932,7 +934,7 @@ struct fpsent : dynent, fpsstate
     float deltayaw, deltapitch, deltaroll, newyaw, newpitch, newroll;
     int smoothmillis;
 
-    string name, team, info;
+    string name, tag, team, info;
     int playermodel;
     ai::aiinfo *ai;
     int ownernum, lastnode;
@@ -941,7 +943,7 @@ struct fpsent : dynent, fpsstate
 
     fpsent() : weight(100), clientnum(-1), privilege(PRIV_NONE), lastupdate(0), plag(0), ping(0), lifesequence(0), respawned(-1), suicided(-1), lastpain(0), attacksound(-1), attackchan(-1), idlesound(-1), idlechan(-1), frags(0), flags(0), deaths(0), totaldamage(0), totalshots(0), edit(NULL), smoothmillis(-1), playermodel(-1), ai(NULL), ownernum(-1), muzzle(-1, -1, -1)
     {
-        name[0] = team[0] = info[0] = 0;
+        name[0] = team[0] = tag[0] = info[0] = 0;
         respawn();
     }
     ~fpsent()
@@ -1091,6 +1093,19 @@ namespace game
     struct scoregroup : teamscore
     {
         vector<fpsent *> players;
+
+        char *sametag() //returns whether this scoregroup is a clan/playing-group, whatever. it returns null if players in this group have different tags and the tag if they all share the same one
+        {
+            fpsent *prev = NULL;
+            loopv(players)
+            {
+                fpsent *p = players[i];
+                if(!p->tag[0]) return NULL; 
+                if(!prev) { prev = p; continue; }
+                if(strcmp(p->tag, prev->tag)) return NULL; //two tags are not matching
+            }
+            return prev ? prev->tag : NULL;
+        }
     };
 
     struct clientmode
@@ -1138,6 +1153,7 @@ namespace game
     extern int following;
     extern SharedVar<int> smoothmove, smoothdist;
 
+    // osd
     extern int hudannounce_begin;
     extern int hudannounce_timeout;
     extern int hudannounce_effect;
@@ -1178,7 +1194,7 @@ namespace game
     extern void unignore(int cn);
     extern bool isignored(int cn);
     extern bool addmsg(int type, const char *fmt = NULL, ...);
-    extern void switchname(const char *name);
+    extern void switchname(const char *name, const char *tag);
     extern void switchteam(const char *name);
     extern void switchplayermodel(int playermodel);
     extern void sendmapinfo();

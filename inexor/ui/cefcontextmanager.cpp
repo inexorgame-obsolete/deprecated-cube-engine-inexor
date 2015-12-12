@@ -89,7 +89,7 @@ bool InexorCefContextManager::Set(const CefString& name, const CefRefPtr<CefV8Va
         else if (name == "vsync")
             vsync = value->GetIntValue();
         else if (name == "name")
-            game::switchname(value->GetStringValue().ToString().c_str());
+            game::switchname(value->GetStringValue().ToString().c_str(), NULL);
         else
             return false;
         return true;
