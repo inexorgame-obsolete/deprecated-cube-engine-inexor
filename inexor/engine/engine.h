@@ -267,6 +267,7 @@ struct vslotmap
 };
 extern vector<vslotmap> remappedvslots;
 extern selinfo sel;
+extern int gridsize;
 
 // octarender
 extern vector<tjoint> tjoints;

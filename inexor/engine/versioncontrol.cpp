@@ -118,7 +118,8 @@ void selectdiff(int i)
     sel = selinfo();
     sel.o = diffs[i].pos;
     sel.s = ivec(1,1,1);
-    sel.grid = sel.cxs = sel.cys = diffs[i].size;
+    sel.cxs = sel.cys = 2;
+    sel.grid = gridsize = diffs[i].size;
 }
 
 void selectdiff(int i, block3 &b)
