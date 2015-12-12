@@ -9,6 +9,9 @@ namespace game
     VARP(showpj, 0, 0, 1);
     VARP(showping, 0, 1, 1);
     VARP(showspectators, 0, 1, 1);
+    VARP(showflags, 0, 0, 1);
+    VARP(showfrags, 0, 1, 1);
+    VARP(showaccuracy, 0, 1, 1);
     VARP(highlightscore, 0, 1, 1);
     VARP(showconnecting, 0, 0, 1);
 
@@ -222,12 +225,30 @@ namespace game
                 g.pushlist(); // horizontal
             }
 
-            if(!cmode || !cmode->hidefrags())
+            if(showflags && m_ctf)
+            {
+                g.pushlist();
+                g.strut(5);
+                g.text("flags",fgcolor);
+                loopscoregroup(o, g.textf("%d", 0xFFFFDD, NULL, o->flags));
+                g.poplist();
+            }
+
+            if(showfrags || !cmode || !cmode->hidefrags())
             { 
                 g.pushlist();
                 g.strut(6);
                 g.text("frags", fgcolor);
                 loopscoregroup(o, g.textf("%d", 0xFFFFDD, NULL, o->frags));
+                g.poplist();
+            }
+
+            if(showaccuracy)
+            { 
+                g.pushlist();
+                g.strut(6);
+                g.text("acc", fgcolor);
+                loopscoregroup(o, g.textf("%d%%", 0xFFFFDD, NULL, (o->totaldamage*100)/max(o->totalshots, 1)));
                 g.poplist();
             }
 
