@@ -21,6 +21,8 @@ namespace vscript {
 
     void CSleepNode::run()
     {
+        box_color = VSCRIPT_COLOR_COMMENT;
+
         /// TODO: Implement multithreading?
         if(!sleep_active)
         {

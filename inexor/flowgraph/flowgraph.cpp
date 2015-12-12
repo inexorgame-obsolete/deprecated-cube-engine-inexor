@@ -57,7 +57,7 @@ namespace vscript {
         }
         va_end(parameters);
     
-        /// add new node depending on the type
+
         switch(type)
         {
             case NODE_TYPE_TIMER:
@@ -122,7 +122,6 @@ namespace vscript {
     {
         selected_node = nullptr;
 
-        /// TODO: do we need this here again?
         unique_execution_pass_timestamp = SDL_GetTicks();
 
         for(unsigned int i=0; i<nodes.size(); i++) 
@@ -175,7 +174,6 @@ namespace vscript {
 
         for(unsigned int i=0; i<nodes.size(); i++)
         {   
-            /// Render all outgoing relations
             for(unsigned int e = 0; e < nodes[i]->children.size(); e++)
             {
                 /// Please note: we will add the beginning point,
@@ -197,18 +195,14 @@ namespace vscript {
                 n.y += boxsize/2;
                 n.z += boxsize;
 
-                /// add points
                 curve.AddParameterPoint(t);
                 curve.AddParameterPoint(interpol1);
                 curve.AddParameterPoint(interpol2);
                 curve.AddParameterPoint(n);
 
-                /// compute!
                 curve.ComputeCache();
 
-                /// render curve as list of small lines
                 glBegin(GL_LINES);
-
                 gle::color(vec::hexcolor(VSCRIPT_COLOR_TRIGGERED));
                 glLineWidth(10.0f);
 
@@ -219,7 +213,6 @@ namespace vscript {
                     glVertex3f(t.pos.x, t.pos.y, t.pos.z);
                     glVertex3f(n.pos.x, n.pos.y, n.pos.z);
                 }
-                /// reset line width
                 glLineWidth(1.0f);
                 glEnd();
             }
@@ -337,8 +330,6 @@ namespace vscript {
 
 
 
-
-    /// Workers and jobs
     CVisualScriptWorker::CVisualScriptWorker()
     {
     }
@@ -422,10 +413,6 @@ namespace vscript {
     CScriptNode* d;
     
 
-
-    /// Automatic testing
-
-
     void test_a()
     {
         a = vScript3D.add_node(NODE_TYPE_TIMER, 7, "500", "0", "1000", "0", "TimerNode1", "Hello world", "0");
@@ -442,7 +429,7 @@ namespace vscript {
 
     void test_c()
     {
-        c = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "1" /*FUNCTION_PLAYSOUND*/, "52" /*S_V_BASECAP*/);
+        c = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "1" , "52");
         vScript3D.connect_nodes(b,c);
     }
     COMMAND(test_c, "");
@@ -450,7 +437,7 @@ namespace vscript {
 
     void test_d()
     {
-        d = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "1" /*FUNCTION_PLAYSOUND*/, "52" /*S_V_BASECAP*/);
+        d = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "1", "52");
         vScript3D.connect_nodes(a,d);
     }
     COMMAND(test_d, "");
