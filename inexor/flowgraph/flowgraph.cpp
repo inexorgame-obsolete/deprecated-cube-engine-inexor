@@ -97,7 +97,7 @@ namespace vscript {
 
         if(nullptr != created_node)  nodes.push_back(created_node);
         return created_node;
-    }    
+    }
 
 
     void CVisualScriptSystem::update()
@@ -111,26 +111,20 @@ namespace vscript {
                 nodes[i]->in();
             }
         }
-        
+
         if(nullptr != selected_node)
         {
-            // apply position changes
-            selected_node->position = node_pos_start - (move_pos_start - camera1->o);
-
-            float dist = selected_node->position.dist(camera1->o);
-            conoutf(CON_DEBUG, "%f", dist);
-            vec richtungs_vektor = game::player1->o + camdir;
-            richtungs_vektor.rescale(dist);
-
-            // apply rotations
-            float yaw = 0.0f, pitch = 0.0f;
-            vectoyawpitch(camera1->o + camdir, yaw, pitch);
-            selected_node->position.rotate_around_z(yaw);
-
-            CDebugRay dr_tmp;
-            dr_tmp.pos = camera1->o;
-            dr_tmp.target = camera1->o + camdir;
-            rays.push_back(dr_tmp);
+            static float selected_dist = 0.0f;
+            static bool notCalculated = true;
+            if(notCalculated)
+            {
+                selected_dist = selected_node->position.dist(game::player1->o);
+                notCalculated = false;
+            }
+            
+            vec camdir_normalized = camdir;
+            camdir_normalized.normalize();
+            selected_node->position = game::player1->o + camdir_normalized.mul(selected_dist);
         }
     }
 

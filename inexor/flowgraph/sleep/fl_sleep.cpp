@@ -3,6 +3,7 @@
 namespace inexor {
 namespace vscript {
 
+
     CSleepNode::CSleepNode(vec pos,
                            unsigned int sleeptime, 
                            const char* name, 

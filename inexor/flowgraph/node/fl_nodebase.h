@@ -19,7 +19,7 @@
 namespace inexor {
 namespace vscript {
 
-    const float boxsize = 3.0f;
+    const float boxsize = 4.0f;
 
     enum VSCRIPT_NODE_TYPE
     {
