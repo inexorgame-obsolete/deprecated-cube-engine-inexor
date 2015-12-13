@@ -49,6 +49,14 @@ namespace vscript {
         last_time = 0;
     }
 
+
+    static int LetsGo(void *ptr)
+    {
+        CScriptNode *node = static_cast<CScriptNode*>(ptr);
+        node->in();
+        return 0;
+    }
+
     /// decide if we need to run the code
     void CTimerNode::check_if_execution_is_due() 
     {
@@ -58,7 +66,12 @@ namespace vscript {
 
         if(this_time - last_time >= timer_interval) 
         {
-            CScriptNode::out();
+            //CScriptNode::out();
+            for(unsigned int i=0; i<children.size(); i++)
+            {
+                children[i]->script_execution_start = script_execution_start;
+                SDL_Thread *thread = SDL_CreateThread(LetsGo, "LetsGo", (void *)children[i]);
+            }   
             last_time = this_time;
             timer_counter++;
         }

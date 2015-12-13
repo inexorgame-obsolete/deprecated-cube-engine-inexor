@@ -11,7 +11,6 @@ namespace inexor {
 namespace vscript {
 
     CVisualScriptSystem vScript3D;
-    CVisualScriptWorker vWorker;
 
     CVisualScriptSystem::CVisualScriptSystem() 
     {
@@ -76,7 +75,6 @@ namespace vscript {
 
                 /// Create a new timer and synchronise them!
                 created_node = new CTimerNode(target, interval, startdelay, limit, cooldown, name, comment, timer_format);
-                vWorker.add_job(created_node);
                 sync_all_timers();
                 break;
             }
@@ -215,7 +213,7 @@ namespace vscript {
             }
         }
     }
-
+    
 
     void CVisualScriptSystem::update_timers_and_events()
     {
@@ -223,7 +221,6 @@ namespace vscript {
         /// has passed by executing other nodes. They all will be executed simultaneously.
         /// This keeps them synchronized.
 
-        /// Update execution time
         unique_execution_pass_timestamp = SDL_GetTicks();
         //conoutf(CON_DEBUG, "unique_execution_pass_timestamp: %d", unique_execution_pass_timestamp);
 
@@ -233,7 +230,7 @@ namespace vscript {
             if(NODE_TYPE_TIMER == nodes[i]->type)
             {
                 nodes[i]->this_time = unique_execution_pass_timestamp;
-                vWorker.run_jobs();
+                nodes[i]->in();
             }
         }
     }
@@ -371,13 +368,13 @@ namespace vscript {
     
     void test_a()
     {
-        a = vScript3D.add_node(NODE_TYPE_TIMER, 7, "500", "0", "1000", "0", "TimerNode1", "Hello world", "0");
+        a = vScript3D.add_node(NODE_TYPE_TIMER, 7, "5000", "0", "1000", "0", "TimerNode1", "Hello world", "0");
     }
     COMMAND(test_a, "");
 
     void test_b()
     {
-        b = vScript3D.add_node(NODE_TYPE_SLEEP, 1, "5000");
+        b = vScript3D.add_node(NODE_TYPE_SLEEP, 1, "1500");
         vScript3D.connect_nodes(a,b);
     }
     COMMAND(test_b, "");

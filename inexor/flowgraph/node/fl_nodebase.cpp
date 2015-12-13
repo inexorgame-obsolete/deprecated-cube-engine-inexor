@@ -31,17 +31,7 @@ namespace vscript {
 
     void CScriptNode::in()
     {
-        // Calculate the time difference
-        unsigned long current_time = SDL_GetTicks();
-        if(current_time - script_execution_start)
-        {
-            done_pointer = false;
-            WhereDidWeStop = this;
-        }
-        else
-        {
-            run();
-        }
+        run();
     }
 
 

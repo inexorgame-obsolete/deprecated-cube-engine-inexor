@@ -24,28 +24,24 @@ namespace vscript {
 
     void CSleepNode::run()
     {
-        char tmp[64];
-        unsigned int time_left2sleep = sleep_end - SDL_GetTicks();
-        sprintf(tmp, "waiting %dms", time_left2sleep);
-        node_name = tmp;
-
-        if(!sleep_active)
+        sleep_active = true;
+        sleep_start = SDL_GetTicks();
+        sleep_end = sleep_start + sleep_interval;
+        box_color = default_box_color;
+        
+        while(sleep_end >= SDL_GetTicks())
         {
-            sleep_active = true;
-            sleep_start = SDL_GetTicks();
-            sleep_end = sleep_start + sleep_interval;
-            box_color = default_box_color;
+            char tmp[64];
+            int time_left2sleep = sleep_end - SDL_GetTicks();
+            if(time_left2sleep < 0) time_left2sleep =0;
+            sprintf(tmp, "waiting %dms", time_left2sleep);
+            node_comment = tmp;
         }
-        else 
-        {   
-            if(SDL_GetTicks() >= sleep_end)
-            {
-                box_color = VSCRIPT_COLOR_TRIGGERED;
-                last_time = SDL_GetTicks();
-                sleep_active = false;
-                out();
-            }
-        }
+        
+        box_color = VSCRIPT_COLOR_TRIGGERED;
+        last_time = SDL_GetTicks();
+        sleep_active = false;
+        out();
     }
 
     
