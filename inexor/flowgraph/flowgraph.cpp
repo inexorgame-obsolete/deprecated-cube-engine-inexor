@@ -1,5 +1,6 @@
 #include "inexor/flowgraph/flowgraph.h"
 #include "inexor/geom/curves/bezier/bezier.h"
+#include "inexor/fpsgame/game.h"
 using namespace inexor::geom;
 
 extern selinfo sel, lastsel, savedsel;
@@ -10,7 +11,9 @@ extern int gridsize;
 namespace inexor {
 namespace vscript {
 
+
     CVisualScriptSystem vScript3D;
+
 
     CVisualScriptSystem::CVisualScriptSystem() 
     {
@@ -25,22 +28,12 @@ namespace vscript {
     }
 
 
-
     CScriptNode* CVisualScriptSystem::add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...)
     {
         CScriptNode* created_node = nullptr;
         vec target = vec(sel.o.x,sel.o.y,sel.o.z);
         vec offset = vec(gridsize/2,gridsize/2,gridsize/2);
         target.add(offset);
-
-        
-        #ifdef INEXOR_VSCRIPT_DEBUG_RAYS
-            debug_ray dr_tmp;
-            dr_tmp.pos = camera1->o;
-            dr_tmp.target = target;
-            rays.push_back(dr_tmp);
-        #endif    
-
 
         va_list parameters;
         std::vector<std::string> arguments;
@@ -67,11 +60,7 @@ namespace vscript {
 
                 /// TODO: which timer format?
                 INEXOR_VSCRIPT_TIME_FORMAT timer_format = TIME_FORMAT_MILISECONDS;
-
-                #ifdef INEXOR_VSCRIPT_ADDNODE_DEBUG
-                    conoutf(CON_DEBUG, "I added the following timer node: interval: %d, startdelay: %d, limit: %d, cooldown: %d, name: %s, comment: %s, type: %d", interval, startdelay, limit, cooldown, name, comment, timer_format);
-                #endif
-
+                
                 /// Create a new timer and synchronise them!
                 created_node = new CTimerNode(target, interval, startdelay, limit, cooldown, name, comment, timer_format);
                 sync_all_timers();
@@ -108,122 +97,12 @@ namespace vscript {
 
         if(nullptr != created_node)  nodes.push_back(created_node);
         return created_node;
-    }
+    }    
 
 
-    void CVisualScriptSystem::render_nodes()
+    void CVisualScriptSystem::update()
     {
-        hovered_node = nullptr;
-
         unique_execution_pass_timestamp = SDL_GetTicks();
-
-        for(unsigned int i=0; i<nodes.size(); i++) 
-        {
-            float dist = 0.0f;
-            int orient = VSCRIPT_BOX_NO_INTERSECTION;
-            vec p = nodes[i]->position;
-
-            /// check ray/box intersection
-            rayboxintersect(p, vec(boxsize), camera1->o, camdir, dist, orient);
-
-            /// this node is selected
-            nodes[i]->selected = (orient != VSCRIPT_BOX_NO_INTERSECTION);
-
-            /// render a 200ms long color effect once its activated
-            if( (nodes[i]->this_time - nodes[i]->last_time)  < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL) nodes[i]->box_color = VSCRIPT_COLOR_TRIGGERED;
-            else nodes[i]->box_color = nodes[i]->default_box_color;
-
-            if(NODE_TYPE_TIMER != nodes[i]->type) nodes[i]->this_time = unique_execution_pass_timestamp;
-
-            renderbox(nodes[i], orient);
-
-            if(!selection_blocked_by_geometry)
-            {
-                /// no matter where the box is being selected, render help lines
-                if(orient != VSCRIPT_BOX_NO_INTERSECTION) 
-                {
-                    gle::color(vec::hexcolor(VSCRIPT_COLOR_GRAY));
-                    renderboxhelplines(p);
-                }
-            }
-            gle::color(vec::hexcolor(VSCRIPT_COLOR_BLACK));
-            renderboxoutline(p);
-
-            /// render white text above
-            p.add(vec(boxsize/2));
-            p.add(vec(0,0,4));
-            particle_text(p + vec(0,0,1.0f), nodes[i]->node_name.c_str(), PART_TEXT, 1, 0xFFFFFF, 1.0f);
-            particle_text(p, nodes[i]->node_comment.c_str(), PART_TEXT, 1, 0xFFFFFF, 1.0f);
-        }
-
-        /// which node is selected?
-        for(unsigned int i=0; i<nodes.size(); i++)
-            if(nodes[i]->selected && nullptr != nodes[i]) hovered_node = nodes[i];
-    }
-
-
-    void CVisualScriptSystem::render_node_relations()
-    {
-        if(!nodes.size()) return;
-
-        for(unsigned int i=0; i<nodes.size(); i++)
-        {   
-            for(unsigned int e = 0; e < nodes[i]->children.size(); e++)
-            {
-                /// Please note: we will add the beginning point,
-                /// 2 more interpolated points and the end point as
-                /// parameter points for the bezier curve
-                inexor::geom::CBezierCurve curve;
-                curve.ClearAllPoints();
-            
-                /// create additional interpolation data
-                vec t = nodes[i]->position;
-                vec n = nodes[i]->children[e]->position;
-                vec interpol1 = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f - 30.0f);
-                vec interpol2 = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f + 30.0f);
-            
-                /// correct offset
-                t.x += boxsize/2;
-                t.y += boxsize/2;
-                n.x += boxsize/2;
-                n.y += boxsize/2;
-                n.z += boxsize;
-
-                curve.AddParameterPoint(t);
-                curve.AddParameterPoint(interpol1);
-                curve.AddParameterPoint(interpol2);
-                curve.AddParameterPoint(n);
-
-                curve.ComputeCache();
-
-                glBegin(GL_LINES);
-                gle::color(vec::hexcolor(VSCRIPT_COLOR_TRIGGERED));
-                glLineWidth(10.0f);
-
-                for(unsigned int h=0; h<curve.GetCachedPointsNumber() -1; h++)
-                {
-                    SCustomOutputPoint t = curve.GetPoint_ByIndex(h);
-                    SCustomOutputPoint n = curve.GetPoint_ByIndex(h  +1);
-                    glVertex3f(t.pos.x, t.pos.y, t.pos.z);
-                    glVertex3f(n.pos.x, n.pos.y, n.pos.z);
-                }
-                glLineWidth(1.0f);
-                glEnd();
-            }
-        }
-    }
-    
-
-    void CVisualScriptSystem::update_timers_and_events()
-    {
-        /// Please note: every timer node will be told that no time 
-        /// has passed by executing other nodes. They all will be executed simultaneously.
-        /// This keeps them synchronized.
-
-        unique_execution_pass_timestamp = SDL_GetTicks();
-        //conoutf(CON_DEBUG, "unique_execution_pass_timestamp: %d", unique_execution_pass_timestamp);
-
-        /// If this is a node, run it!
         for(int i=0; i<nodes.size(); i++) 
         {
             if(NODE_TYPE_TIMER == nodes[i]->type)
@@ -232,20 +111,26 @@ namespace vscript {
                 nodes[i]->in();
             }
         }
-    }
-
-
-
-    void CVisualScriptSystem::update_entity_positions()
-    {
+        
         if(nullptr != selected_node)
         {
-            vec current_position;
-            current_position = node_pos_start;
-            vec deltap = move_pos_start;
-            deltap.sub(camera1->o);
-            current_position.sub(deltap);
-            selected_node->position = current_position;
+            // apply position changes
+            selected_node->position = node_pos_start - (move_pos_start - camera1->o);
+
+            float dist = selected_node->position.dist(camera1->o);
+            conoutf(CON_DEBUG, "%f", dist);
+            vec richtungs_vektor = game::player1->o + camdir;
+            richtungs_vektor.rescale(dist);
+
+            // apply rotations
+            float yaw = 0.0f, pitch = 0.0f;
+            vectoyawpitch(camera1->o + camdir, yaw, pitch);
+            selected_node->position.rotate_around_z(yaw);
+
+            CDebugRay dr_tmp;
+            dr_tmp.pos = camera1->o;
+            dr_tmp.target = camera1->o + camdir;
+            rays.push_back(dr_tmp);
         }
     }
 
@@ -255,9 +140,6 @@ namespace vscript {
         to->parents.push_back(from);
         from->children.push_back(to);
     }
-
-    
-    #define INEXOR_VSCRIPT_MOUSE_DEBUGGING 1
 
 
     void CVisualScriptSystem::process_change(int key, bool isdown)
@@ -312,7 +194,6 @@ namespace vscript {
                 else 
                 {
                     /// key released
-                    selected_node->position = node_pos_start.sub(move_pos_start.sub(camera1->o));
                     moving_entity = false;
                     selected_node = nullptr;
                 }
@@ -335,7 +216,6 @@ namespace vscript {
         nodes.clear();
     }
 
-    /// TODO: implemen node relation manager
     /*
 
     void deleteallnodes()
