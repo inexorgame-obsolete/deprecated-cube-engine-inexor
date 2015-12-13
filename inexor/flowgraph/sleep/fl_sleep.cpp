@@ -13,7 +13,7 @@ namespace vscript {
         sleep_active = false;
         default_box_color = VSCRIPT_COLOR_GRAY;
         node_name = name;
-        //node_comment = comment;
+        node_comment = "[-]";
     }
 
 
@@ -24,6 +24,7 @@ namespace vscript {
 
     void CSleepNode::run()
     {
+        char tmp[64];
         sleep_active = true;
         sleep_start = SDL_GetTicks();
         sleep_end = sleep_start + sleep_interval;
@@ -31,13 +32,16 @@ namespace vscript {
         
         while(sleep_end >= SDL_GetTicks())
         {
-            char tmp[64];
             int time_left2sleep = sleep_end - SDL_GetTicks();
             if(time_left2sleep < 0) time_left2sleep =0;
-            sprintf(tmp, "waiting %dms", time_left2sleep);
+            sprintf(tmp, "[waiting %dms]", time_left2sleep);
             node_comment = tmp;
+
+            SDL_Delay(5);
         }
         
+        sprintf(tmp, "[-]");
+        node_comment = tmp;
         box_color = VSCRIPT_COLOR_TRIGGERED;
         last_time = SDL_GetTicks();
         sleep_active = false;

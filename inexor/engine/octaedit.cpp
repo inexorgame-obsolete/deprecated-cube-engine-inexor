@@ -425,11 +425,11 @@ void rendereditcursor()
     bool hidecursor = g3d_windowhit(true, false) || blendpaintmode, hovering = false;
     hmapsel = false;
 
-    inexor::vscript::vScript3D.geometrie_vor_der_nase = false;
+    inexor::vscript::vScript3D.selection_blocked_by_geometry = false;
 
     if(moving) // selection grid plane movement
     {
-        inexor::vscript::vScript3D.geometrie_vor_der_nase = true;
+        inexor::vscript::vScript3D.selection_blocked_by_geometry = true;
         
         static vec dest, handle;
         if(editmoveplane(vec(sel.o), camdir, od, sel.o[D[od]]+odc*sel.grid*sel.s[D[od]], handle, dest, moving==1))
@@ -446,20 +446,19 @@ void rendereditcursor()
             sel.o[C[od]] = o[C[od]];
         }
     }
-    else if(nullptr != inexor::vscript::vScript3D.selected_node)
+    else if(nullptr != inexor::vscript::vScript3D.hovered_node)
     {
         entmoving = 2;
         /// lets not select geometry here
-        conoutf(CON_DEBUG, "test");
     }
-    else if(entmoving)
+    else if(entmoving) // old Cube2 entity system
     {
-        inexor::vscript::vScript3D.geometrie_vor_der_nase = true;
+        inexor::vscript::vScript3D.selection_blocked_by_geometry = true;
         entdrag(camdir);
     }
     else
     {
-        inexor::vscript::vScript3D.geometrie_vor_der_nase = false;
+        inexor::vscript::vScript3D.selection_blocked_by_geometry = false;
 
         ivec w;
         float sdist = 0, wdist = 0, t;

@@ -27,26 +27,24 @@ namespace vscript {
         // check if LEFT mouse button is down for dragging a new connection out of the node
         if(key == - SDL_BUTTON_LEFT)
         {
-            if(old_isdown != isdown) 
+            if(last_mouse_key_state != isdown) 
             {
-                //conoutf(CON_DEBUG, "%d left mouse changed", SDL_GetTicks());
                 process_change(key, isdown);
-                old_isdown = isdown;
+                last_mouse_key_state = isdown;
             }
         }
         // check if RIGHT mouse button is down for moving the entity
         if(key == - SDL_BUTTON_RIGHT)
         {
-            if(old_isdown != isdown) 
+            if(last_mouse_key_state != isdown) 
             {
-                //conoutf(CON_DEBUG, "%d right mouse changed", SDL_GetTicks());
                 process_change(key, isdown);
-                old_isdown = isdown;
+                last_mouse_key_state = isdown;
             }
         }
     }
 
-
+    /*
     void CEntityManager::render_temp_connection()
     {
         if(dragging_new_relation)
@@ -104,6 +102,7 @@ namespace vscript {
             glEnd();
         }
     }
+    */
 
 };
 };

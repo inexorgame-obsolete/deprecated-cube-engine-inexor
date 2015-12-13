@@ -53,20 +53,16 @@ namespace vscript {
     static int LetsGo(void *ptr)
     {
         CScriptNode *node = static_cast<CScriptNode*>(ptr);
-        node->in();
+        if(nullptr != node) node->in();
         return 0;
     }
+
 
     /// decide if we need to run the code
     void CTimerNode::check_if_execution_is_due() 
     {
-        /// render color effects
-        //if(this_time - last_time < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL) box_color = VSCRIPT_COLOR_TRIGGERED;
-        //else box_color = VSCRIPT_COLOR_TIMER;
-
         if(this_time - last_time >= timer_interval) 
         {
-            //CScriptNode::out();
             for(unsigned int i=0; i<children.size(); i++)
             {
                 children[i]->script_execution_start = script_execution_start;
@@ -75,8 +71,6 @@ namespace vscript {
             last_time = this_time;
             timer_counter++;
         }
-
-        /// TODO: implement cooldown!
     }
 
 };

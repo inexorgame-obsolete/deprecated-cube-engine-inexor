@@ -35,7 +35,7 @@ namespace vscript {
     {
         public:
 
-            bool geometrie_vor_der_nase;
+            bool selection_blocked_by_geometry;
 
             CVisualScriptSystem();
             ~CVisualScriptSystem();
@@ -61,6 +61,7 @@ namespace vscript {
             // Please note: this will prevent timers from being desynchronized
             unsigned int unique_execution_pass_timestamp;
             void update_timers_and_events();
+            void update_entity_positions();
             void sync_all_timers();
             void clear_all_nodes();
     };
