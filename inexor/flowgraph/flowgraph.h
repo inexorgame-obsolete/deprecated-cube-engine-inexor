@@ -20,6 +20,7 @@
 #include "inexor/flowgraph/editor/fl_enteditor.h"
 #include "inexor/flowgraph/timer/fl_timer.h"
 #include "inexor/flowgraph/sleep/fl_sleep.h"
+#include "inexor/flowgraph/worker/fl_threadworker.h"
 
 
 // TODO: profiling and benchmarking?
@@ -63,36 +64,6 @@ namespace vscript {
             void sync_all_timers();
             void clear_all_nodes();
     };
-
-
-    // Maybe we can let run every worker in its own thread?
-    // Problem: Thread safety in Sauerbraten? Oh boy...
-    
-    // Do -NOT- limit nodes per time, limit time per nodes!
-    // This will keep the integrity of time itself!
-    // So the speed of the machine will determine the speed of the script...
-    #define INEXOR_VSCRIPT_MAX_INTERVAL_PER_CODE_EXECUTIONS = 20; /// 0.02 seconds for every work step
-
-    struct CJob
-    {
-        CScriptNode* node;
-        bool started;
-        bool done;
-    };
-
-    class CVisualScriptWorker 
-    {
-        public:
-
-            std::deque<CJob> jobs;
-
-            CVisualScriptWorker();
-            ~CVisualScriptWorker();
-
-            void add_job(CScriptNode* job);
-            void run_jobs();
-    };
-
 
 };
 };

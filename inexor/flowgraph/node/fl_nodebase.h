@@ -61,7 +61,6 @@ namespace vscript {
             bool pos_changed;
 
             bool *done_pointer;
-            CScriptNode* WhereDidWeStop;
 
             vec position;
 
