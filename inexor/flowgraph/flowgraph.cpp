@@ -235,11 +235,17 @@ namespace vscript {
     }
 
 
+
     void CVisualScriptSystem::update_entity_positions()
     {
         if(nullptr != selected_node)
         {
-            //selected_node->position = newpos;
+            vec current_position;
+            current_position = node_pos_start;
+            vec deltap = move_pos_start;
+            deltap.sub(camera1->o);
+            current_position.sub(deltap);
+            selected_node->position = current_position;
         }
     }
 
