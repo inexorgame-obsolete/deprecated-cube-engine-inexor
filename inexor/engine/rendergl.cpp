@@ -1887,13 +1887,12 @@ void gl_drawframe()
 
     /// 3D Visual Scripting System
     using namespace inexor::vscript;
-    vScript3D.update_timers_and_events();
-    vScript3D.update_entity_positions();
+    vScript3D.update();
     vScript3D.start_rendering();
     vScript3D.render_nodes();
+    vScript3D.render_debug_rays();
     vScript3D.render_node_relations();
     vScript3D.end_rendering();
-
 
 
     extern SharedVar<int> outline;
