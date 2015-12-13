@@ -2102,23 +2102,19 @@ SVARP(crosshairdir, "interface/crosshair");
 #define MAXCROSSHAIRS 4
 static Texture *crosshairs[MAXCROSSHAIRS] = { NULL, NULL, NULL, NULL };
 
-void loadcrosshair(const char *name, int i)
+void loadcrosshair(const char *name, const int *i)
 {
-    if(i < 0 || i >= MAXCROSSHAIRS) return;
-    crosshairs[i] = name ? textureload(tempformatstring("%s/%s", *crosshairdir, name), 3, true) : notexture;
-    if(!crosshairs[i] || crosshairs[i] == notexture) 
+    int a = *i;
+    if(a < 0 || a >= MAXCROSSHAIRS) return;
+    crosshairs[a] = name ? textureload(tempformatstring("%s/%s", *crosshairdir, name), 3, true) : notexture;
+    if(!crosshairs[a] || crosshairs[a] == notexture) 
     {
-        name = game::defaultcrosshair(i);
-        crosshairs[i] = textureload(tempformatstring("%s/%s", *crosshairdir, name), 3, true);
+        name = game::defaultcrosshair(a);
+        crosshairs[a] = textureload(tempformatstring("%s/%s", *crosshairdir, name), 3, true);
     }
 }
 
-void loadcrosshair_(const char *name, int *i)
-{
-	loadcrosshair(name, *i);
-}
-
-COMMANDN(loadcrosshair, loadcrosshair_, "si");
+COMMANDN(loadcrosshair, loadcrosshair, "si");
 
 ICOMMAND(getcrosshair, "i", (int *i), 
 {
@@ -2171,7 +2167,7 @@ void drawcrosshair(int w, int h)
         crosshair = crosshairs[index];
         if(!crosshair) 
         {
-            loadcrosshair(NULL, index);
+            loadcrosshair(NULL, &index);
             crosshair = crosshairs[index];
         }
         chsize = crosshairsize*w/900.0f;
