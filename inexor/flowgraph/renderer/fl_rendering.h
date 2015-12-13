@@ -10,6 +10,7 @@
 
 #include "inexor/flowgraph/node/fl_nodebase.h"
 
+
 namespace inexor {
 namespace vscript {
 
@@ -44,6 +45,7 @@ namespace vscript {
             void renderbox(CScriptNode *node, int orient);
             void renderboxoutline(vec p);
             void renderboxhelplines(vec p);
+            void render_debug_rays();
 
             virtual void render_nodes() = 0;
             virtual void render_node_relations() = 0;

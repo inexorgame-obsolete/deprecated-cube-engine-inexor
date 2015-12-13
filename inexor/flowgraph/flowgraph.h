@@ -40,7 +40,11 @@ namespace vscript {
             CVisualScriptSystem();
             ~CVisualScriptSystem();
 
+            std::vector<CDebugRay> rays;
+
             std::vector<CScriptNode *> nodes;
+
+            unsigned int unique_execution_pass_timestamp;
 
             // Please note: add_node is using variable argument lists. See stdarg.h
             // add a node to the system
@@ -53,15 +57,14 @@ namespace vscript {
             // implementation of inherited virtual functions
             void render_node_relations();
             void render_nodes();
+            void render_debug_rays();
             void process_change(int, bool);
 
             // Link nodes with other nodes
             void connect_nodes(CScriptNode *from, CScriptNode *to);
 
             // Please note: this will prevent timers from being desynchronized
-            unsigned int unique_execution_pass_timestamp;
-            void update_timers_and_events();
-            void update_entity_positions();
+            void update();
             void sync_all_timers();
             void clear_all_nodes();
     };
