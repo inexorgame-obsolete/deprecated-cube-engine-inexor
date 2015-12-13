@@ -23,7 +23,8 @@ namespace vscript {
             vec drag_pos_current;
             vec drag_pos_start;
 
-            vec old_cam_pos;
+            vec move_pos_start;
+            vec node_pos_start;
 
             virtual void process_change(int, bool) = 0;
 

@@ -239,10 +239,7 @@ namespace vscript {
     {
         if(nullptr != selected_node)
         {
-            /// apply change of position
-            vec newpos = selected_node->position;
-            newpos.sub(player->deltapos*2);
-            selected_node->position = newpos;
+            //selected_node->position = newpos;
         }
     }
 
@@ -263,25 +260,17 @@ namespace vscript {
         {
             case SDL_BUTTON_LEFT:
                 
-                #ifdef INEXOR_VSCRIPT_MOUSE_DEBUGGING
-                    if(isdown) conoutf(CON_DEBUG, "left click: making a new relation.");
-                    else conoutf(CON_DEBUG, "left click: operation finished.");
-                #endif
-
-
                 if(!dragging_new_relation && isdown && !selection_blocked_by_geometry) // start dragging
                 {
                     for(unsigned int i=0; i<nodes.size(); i++)
                     {
-                        /// check ray-box intersection
                         float dist = 0.0f;
                         int orient = VSCRIPT_BOX_NO_INTERSECTION;
                         vec p = nodes[i]->position;
 
                         if(rayboxintersect(p, vec(boxsize), camera1->o, camdir, dist, orient))
                         {
-                            dragging_new_relation = true;
- 
+                            dragging_new_relation = true; 
                             drag_pos_start = p;
                             drag_pos_current = p;
                         }
@@ -291,7 +280,6 @@ namespace vscript {
                 if(dragging_new_relation && !isdown) // stop dragging
                 {
                     /*
-                    /// TODO: end dragging!
                     if(camera_ray_node_box_intersection(all_nodes, dragging_target_pos_offset))
                     {
                         /// TODO: add relation to target
@@ -311,20 +299,17 @@ namespace vscript {
                 {
                     /// key pressed
                     selected_node = hovered_node;
+                    move_pos_start = camera1->o;
+                    node_pos_start = selected_node->position;
                     moving_entity = true;
                 }
                 else 
                 {
                     /// key released
+                    selected_node->position = node_pos_start.sub(move_pos_start.sub(camera1->o));
                     moving_entity = false;
                     selected_node = nullptr;
                 }
-
-                #ifdef INEXOR_VSCRIPT_MOUSE_DEBUGGING
-                    if(isdown) conoutf(CON_DEBUG, "right click: dragging entity around.");
-                    else conoutf(CON_DEBUG, "right click: dragging finished.");
-                #endif
-
                 break;
         }
     }
