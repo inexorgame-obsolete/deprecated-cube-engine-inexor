@@ -182,7 +182,7 @@ namespace vscript {
         glVertex3f(p.x,p.y+b,p.z-helpline_distance);
         glVertex3f(p.x,p.y+b,p.z+helpline_distance);
         glVertex3f(p.x+b,p.y+b,p.z-helpline_distance);
-        glVertex3f(p.x+b,p.y+b,p.z+helpline_distance);    
+        glVertex3f(p.x+b,p.y+b,p.z+helpline_distance);
         glEnd();
     }
 

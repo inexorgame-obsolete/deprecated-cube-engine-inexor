@@ -15,6 +15,7 @@ namespace vscript {
 
     CVisualScriptSystem::CVisualScriptSystem() 
     {
+        geometrie_vor_der_nase = false;
     }
 
 
@@ -139,13 +140,15 @@ namespace vscript {
 
             renderbox(nodes[i], orient);
 
-            /// no matter where the box is being selected, render help lines
-            if(orient != VSCRIPT_BOX_NO_INTERSECTION) 
+            if(!geometrie_vor_der_nase)
             {
-                gle::color(vec::hexcolor(VSCRIPT_COLOR_GRAY));
-                renderboxhelplines(p);
+                /// no matter where the box is being selected, render help lines
+                if(orient != VSCRIPT_BOX_NO_INTERSECTION) 
+                {
+                    gle::color(vec::hexcolor(VSCRIPT_COLOR_GRAY));
+                    renderboxhelplines(p);
+                }
             }
-        
             gle::color(vec::hexcolor(VSCRIPT_COLOR_BLACK));
             renderboxoutline(p);
 
@@ -271,7 +274,7 @@ namespace vscript {
                 }
 
                 /// starting to drag
-                if(!dragging_new_relation && isdown)
+                if(!dragging_new_relation && isdown && !geometrie_vor_der_nase)
                 {
                     for(unsigned int i=0; i<nodes.size(); i++)
                     {
@@ -412,20 +415,18 @@ namespace vscript {
 
     void test_b()
     {
-        b = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "0" , "Hallo Welt");
+        b = vScript3D.add_node(NODE_TYPE_SLEEP, 1, "5000");
         vScript3D.connect_nodes(a,b);
     }
     COMMAND(test_b, "");
 
 
-    /*
     void test_c()
     {
-        c = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "1" , "52");
+        c = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "0" , "Hallo Welt");
         vScript3D.connect_nodes(b,c);
     }
     COMMAND(test_c, "");
-    */
 
 };
 };

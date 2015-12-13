@@ -406,6 +406,14 @@ VAR(gridlookup, 0, 0, 1);
 /// ignore the first cube when view ray intersects it and select the second ("select through cubes")
 VAR(passthroughcube, 0, 1, 1);
 
+
+#include "inexor/flowgraph/flowgraph.cpp"
+namespace inexor {
+    namespace vscript {
+        extern inexor::vscript::CVisualScriptSystem vScript3D;
+    };
+};
+
 /// render selection box to the cursor target
 /// also moves entities!
 void rendereditcursor()
@@ -417,8 +425,12 @@ void rendereditcursor()
     bool hidecursor = g3d_windowhit(true, false) || blendpaintmode, hovering = false;
     hmapsel = false;
 
-    if(moving)
+    inexor::vscript::vScript3D.geometrie_vor_der_nase = false;
+
+    if(moving) // selection grid plane movement
     {
+        inexor::vscript::vScript3D.geometrie_vor_der_nase = true;
+        
         static vec dest, handle;
         if(editmoveplane(vec(sel.o), camdir, od, sel.o[D[od]]+odc*sel.grid*sel.s[D[od]], handle, dest, moving==1))
         {
@@ -434,13 +446,21 @@ void rendereditcursor()
             sel.o[C[od]] = o[C[od]];
         }
     }
-    else
-    if(entmoving)
+    else if(nullptr != inexor::vscript::vScript3D.selected_node)
     {
+        entmoving = 2;
+        /// lets not select geometry here
+        conoutf(CON_DEBUG, "test");
+    }
+    else if(entmoving)
+    {
+        inexor::vscript::vScript3D.geometrie_vor_der_nase = true;
         entdrag(camdir);
     }
     else
     {
+        inexor::vscript::vScript3D.geometrie_vor_der_nase = false;
+
         ivec w;
         float sdist = 0, wdist = 0, t;
         int entorient = 0, ent = -1;
@@ -572,7 +592,6 @@ void rendereditcursor()
         boxs(orient, vec(lu), vec(lusize));
     }
 
-    // selections
     if(havesel || moving)
     {
         d = dimension(sel.orient);

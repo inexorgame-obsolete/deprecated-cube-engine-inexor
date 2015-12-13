@@ -12,6 +12,8 @@ namespace vscript {
         position = pos;
         sleep_active = false;
         default_box_color = VSCRIPT_COLOR_GRAY;
+        node_name = name;
+        //node_comment = comment;
     }
 
 
@@ -22,7 +24,11 @@ namespace vscript {
 
     void CSleepNode::run()
     {
-        /// TODO: Implement multithreading?
+        char tmp[64];
+        unsigned int time_left2sleep = sleep_end - SDL_GetTicks();
+        sprintf(tmp, "waiting %dms", time_left2sleep);
+        node_name = tmp;
+
         if(!sleep_active)
         {
             sleep_active = true;
@@ -30,12 +36,15 @@ namespace vscript {
             sleep_end = sleep_start + sleep_interval;
             box_color = default_box_color;
         }
-        if(SDL_GetTicks() >= sleep_end)
-        {
-            box_color = VSCRIPT_COLOR_BLACK;
-            last_time = SDL_GetTicks();
-            sleep_active = false;
-            out();
+        else 
+        {   
+            if(SDL_GetTicks() >= sleep_end)
+            {
+                box_color = VSCRIPT_COLOR_TRIGGERED;
+                last_time = SDL_GetTicks();
+                sleep_active = false;
+                out();
+            }
         }
     }
 

@@ -34,6 +34,8 @@ namespace vscript {
     {
         public:
 
+            bool geometrie_vor_der_nase;
+
             CVisualScriptSystem();
             ~CVisualScriptSystem();
 
