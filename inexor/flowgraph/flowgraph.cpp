@@ -136,6 +136,11 @@ namespace vscript {
     }
 
 
+    void CVisualScriptSystem::disconnect_nodes(CScriptNode* from, CScriptNode* to)
+    {
+    }
+
+
     void CVisualScriptSystem::process_change(int key, bool isdown)
     {
         switch( - key)
@@ -205,12 +210,11 @@ namespace vscript {
     }
     
 
-    void CVisualScriptSystem::clear_all_nodes()
+    void CVisualScriptSystem::delete_all_nodes()
     {
         nodes.clear();
     }
 
-    /*
 
     void deleteallnodes()
     {
@@ -218,7 +222,7 @@ namespace vscript {
     }
     COMMAND(deleteallnodes, "");
 
-
+    /*
     void addconoutf(char* message)
     {
         vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "0", message);

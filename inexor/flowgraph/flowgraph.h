@@ -5,9 +5,7 @@
 #ifndef INEXOR_VSCRIPT_HEADER
 #define INEXOR_VSCRIPT_HEADER
 
-// variable parameter lists
 #include <stdarg.h>
-
 #include <deque>
 
 #include "inexor/engine/engine.h"
@@ -23,20 +21,13 @@
 #include "inexor/flowgraph/worker/fl_threadworker.h"
 
 
-// TODO: profiling and benchmarking?
-// TODO: change entity properties (We really need Hanack's new entity system here)
-// TODO: add and remove nodes
-
-
 namespace inexor {
 namespace vscript {
 
     class CVisualScriptSystem : public CVisualScriptRenderer, public CEntityManager
     {
         public:
-
-            bool selection_blocked_by_geometry;
-
+        
             CVisualScriptSystem();
             ~CVisualScriptSystem();
 
@@ -62,11 +53,12 @@ namespace vscript {
 
             // Link nodes with other nodes
             void connect_nodes(CScriptNode *from, CScriptNode *to);
+            void disconnect_nodes(CScriptNode *from, CScriptNode *to);
 
             // Please note: this will prevent timers from being desynchronized
-            void update();
+            void update_input();
             void sync_all_timers();
-            void clear_all_nodes();
+            void delete_all_nodes();
     };
 
 };
