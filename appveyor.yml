@@ -13,6 +13,9 @@ configuration:
 
 # scripts that are called at very beginning, before repo cloning
 init:
+  - if defined APPVEYOR_PULL_REQUEST_NUMBER set "IS_PR=True"
+  - if "%APPVEYOR_REPO_NAME%"=="inexor-game/code" set "IS_MAIN_REPO=True"
+  - if "%IS_MAIN_REPO%"=="True" if "%IS_PR%"=="True" set "SKIP_BUILD=1"
   - cmd: cmake --version
   - cmd: msbuild /version
 
@@ -32,21 +35,17 @@ before_build:
   - cmd: cmake -G "%CMAKE_GENERATOR_NAME%" -DCMAKE_BUILD_TYPE=%configuration% ..
 
 build:
-  project: C:\projects\inexor-game\build\inexor.sln
-
+# cmakes placeholder project to silence appveyor complaining about us using the cli
+  project: C:\projects\inexor-game\build\ZERO_CHECK.vcxproj
   # enable MSBuild parallel builds
-  parallel: true
-
-  # MSBuild verbosity level (quiet|minimal|normal|detailed)
-  verbosity: normal
+# parallel: true
 
 after_build: # this is actually partly our before_deploy, but appveyor doesnt like that with dynamic artifacts
-  
   - cmd: cd C:\projects\inexor-game\
-  # We need to install the solution first
-  - cmd: MSBuild build\install.vcxproj /t:build
+  # Start the build here instead of in build to be able to finetune it:
+  - cmd: if not defined SKIP_BUILD  msbuild C:\projects\inexor-game\build\install.vcxproj /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /m
   # create the nightly bundle .zip
-  - cmd: if "%configuration%"=="Release" tool\appveyor_create_nightly.bat
+  - cmd: if not defined SKIP_BUILD if "%configuration%"=="Release" tool\appveyor_create_nightly.bat
 
 deploy:
     # push our nightly bundle via ftp
