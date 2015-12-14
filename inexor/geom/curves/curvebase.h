@@ -27,7 +27,6 @@ namespace geom {
 struct SCustomInputPoint 
 {
     vec pos;
-    /// TODO: ...
 
     /// Please note: there is no standard constructor for this structure
 
@@ -180,7 +179,7 @@ class CCurveBase
     bool IsCurveComputed();
 
     /// @brief Get size of the computed points vector
-    unsigned int GetCachedPointsNumber();
+    unsigned int GetCachedPointsSize();
     
     /// @warning May returns wrong index!
     unsigned int GetIndex_ByInterpolationPos(float);
