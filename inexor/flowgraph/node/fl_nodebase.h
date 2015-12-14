@@ -5,18 +5,17 @@
 #ifndef INEXOR_VSCRIPT_NODEBASE_HEADER
 #define INEXOR_VSCRIPT_NODEBASE_HEADER
 
-#include "inexor/engine/engine.h"
-
 #include <string>
 #include <vector>
 #include <map>
 #include <list>
 
-#include "inexor/geom/geom.h"
 
 
 namespace inexor {
 namespace vscript {
+
+    #include "inexor/geom/geom.h"
 
     const float boxsize = 4.0f;
 
@@ -47,23 +46,25 @@ namespace vscript {
         VSCRIPT_COLOR_SELECTION = 0xFF5900,
     };
 
-    
+
     class CScriptNode
     {
         public:
 
+            CScriptNode();
+            ~CScriptNode();
+
+            vec pos;
             VSCRIPT_NODE_TYPE type;
 
             std::vector<CScriptNode *> parents;
             std::vector<CScriptNode *> children;
 
-            std::vector<geom::CBezierCurve> relation_curves;
-        
+            std::vector<CBezierCurve> relation_curves;
+
             bool active;
             bool pos_changed;
             bool *done_pointer;
-
-            vec pos;
 
             std::string node_name;
             std::string node_comment;
@@ -77,9 +78,6 @@ namespace vscript {
             int box_color;
 
             unsigned long script_execution_start;
-
-            CScriptNode();
-            ~CScriptNode();
 
             void in();
             virtual void run() = 0;

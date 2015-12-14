@@ -5,7 +5,6 @@
 
 #include "inexor/geom/curves/curvebase.h"
 
-/// Inexor geom namespace
 namespace inexor {
 namespace geom {
 
@@ -58,7 +57,7 @@ namespace geom {
     }
 
 
-    unsigned int CCurveBase::GetIndex_ByInterpolationPos(float curvepos)
+    const unsigned int CCurveBase::GetIndex_ByInterpolationPos(float curvepos)
     {
         return ceil((float)curvepos * m_vOutputPoints.size());
     }

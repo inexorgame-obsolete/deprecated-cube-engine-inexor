@@ -188,7 +188,7 @@ namespace vscript {
             {
                 if(nodes[i]->pos_changed || nodes[i]->children[e]->pos_changed)
                 {
-                    inexor::geom::CBezierCurve tmp_curve;
+                    CBezierCurve tmp_curve;
                     tmp_curve.ClearAllPoints();
             
                     vec t = nodes[i]->pos;
@@ -217,9 +217,9 @@ namespace vscript {
 
                 for(unsigned int h=0; h<nodes[i]->children[e]->relation_curves[h].GetCachedPointsSize() -1; h++)
                 {
-                    inexor::geom::CBezierCurve curve = nodes[i]->children[e]->relation_curves[h];
-                    inexor::geom::SCustomOutputPoint t = curve.GetPoint_ByIndex(h);
-                    inexor::geom::SCustomOutputPoint n = curve.GetPoint_ByIndex(h   +1);
+                    CBezierCurve curve = nodes[i]->children[e]->relation_curves[h];
+                    SCustomOutputPoint t = curve.GetPoint_ByIndex(h);
+                    SCustomOutputPoint n = curve.GetPoint_ByIndex(h   +1);
                     glVertex3f(t.pos.x, t.pos.y, t.pos.z);
                     glVertex3f(n.pos.x, n.pos.y, n.pos.z);
                 }

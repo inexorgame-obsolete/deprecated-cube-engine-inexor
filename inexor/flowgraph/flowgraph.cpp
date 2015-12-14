@@ -1,7 +1,7 @@
 #include "inexor/flowgraph/flowgraph.h"
 #include "inexor/geom/curves/bezier/bezier.h"
 #include "inexor/fpsgame/game.h"
-using namespace inexor::geom;
+
 
 extern selinfo sel, lastsel, savedsel;
 extern bool editmode;

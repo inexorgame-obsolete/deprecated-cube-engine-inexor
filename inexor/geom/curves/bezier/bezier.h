@@ -35,10 +35,8 @@
 
 #include "inexor/geom/curves/curvebase.h"
 
-/// Inexor geom namespace
 namespace inexor {
 namespace geom {
-
 
 /// @brief algorithm type enumeration
 /// There are two ways to generate a bezier curves from a group of [n] points. Both ways will be implemented in this engine.
@@ -70,40 +68,40 @@ class CBezierCurve : public CCurveBase
 {
     protected:
     
-    BEZIER_ALGORITHM engine_algorithm;
+        BEZIER_ALGORITHM engine_algorithm;
 
-    /// binomial coefficient (n over k)
-    unsigned int BinomialCoefficient(unsigned int n, const unsigned int k);
+        /// binomial coefficient (n over k)
+        unsigned int BinomialCoefficient(unsigned int n, const unsigned int k);
 
-    /// Calculate using Bernstein polynoms (not recursive)
-    void CalculateCurveCacheWithBernsteinPolynoms();
+        /// Calculate using Bernstein polynoms (not recursive)
+        void CalculateCurveCacheWithBernsteinPolynoms();
     
-    /// Calculare using recursion 
-    /// @warning It is not clear in how far this produces memory leaks or overhead!
-    void CalculateCurveCacheWithDeCasteljau();
+        /// Calculare using recursion 
+        /// @warning It is not clear in how far this produces memory leaks or overhead!
+        void CalculateCurveCacheWithDeCasteljau();
 
 
-    /// de Casteljau algorithm (recursive)
-    /// this function has type vector because it may returns computed points
-    /// and parameter points as well!
-    SCustomOutputPoint calculate_de_casteljau_coordinate(int index, int nextindex, float t);
+        /// de Casteljau algorithm (recursive)
+        /// this function has type vector because it may returns computed points
+        /// and parameter points as well!
+        SCustomOutputPoint calculate_de_casteljau_coordinate(int index, int nextindex, float t);
 
-    /// bernstein-bezier algorithm (not recursive)
-    SCustomOutputPoint calculate_bernstein_coordinates(float position);
+        /// bernstein-bezier algorithm (not recursive)
+        SCustomOutputPoint calculate_bernstein_coordinates(float position);
 
     public:
 
-    CBezierCurve();
+        CBezierCurve();
 
-    ~CBezierCurve();
+        ~CBezierCurve();
     
 
-    /// Implementation of base classe's virtual methods
-    void ComputeCache();
-    SCustomOutputPoint CalcRealtimePoint(float curvepos);
+        /// Implementation of base classe's virtual methods
+        void ComputeCache();
+        SCustomOutputPoint CalcRealtimePoint(float curvepos);
 
-    /// Set algorithm
-    void SetAlgorithm(BEZIER_ALGORITHM algorithm);
+        /// Set algorithm
+        void SetAlgorithm(BEZIER_ALGORITHM algorithm);
 };
 
 /// end of namespace
