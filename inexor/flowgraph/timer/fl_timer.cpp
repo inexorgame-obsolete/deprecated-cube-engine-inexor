@@ -4,7 +4,7 @@ namespace inexor {
 namespace vscript {
 
 
-    CTimerNode::CTimerNode(vec pos, 
+    CTimerNode::CTimerNode(vec position, 
                            unsigned int interval, 
                            unsigned int startdelay, 
                            unsigned int limit, 
@@ -13,7 +13,7 @@ namespace vscript {
                            const char* comment, 
                            INEXOR_VSCRIPT_TIME_FORMAT format)
     {
-        position = pos;
+        pos = position;
         node_name = name;
         node_comment = comment;
         

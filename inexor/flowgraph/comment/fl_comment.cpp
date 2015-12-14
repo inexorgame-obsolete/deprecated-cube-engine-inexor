@@ -3,11 +3,11 @@
 namespace inexor {
 namespace vscript {
 
-    CCommentNode::CCommentNode(vec pos,
+    CCommentNode::CCommentNode(vec position,
                                const char* comment, 
                                const char* name)
     {
-        position = pos;
+        pos = position;
         type = NODE_TYPE_COMMENT;
         node_name = name;
         node_comment = comment;

@@ -108,13 +108,13 @@ namespace vscript {
             static bool notCalculated = true;
             if(notCalculated)
             {
-                selected_dist = selected_node->position.dist(game::player1->o);
+                selected_dist = selected_node->pos.dist(game::player1->o);
                 notCalculated = false;
             }
             
             vec camdir_normalized = camdir;
             camdir_normalized.normalize();
-            selected_node->position = game::player1->o + camdir_normalized.mul(selected_dist);
+            selected_node->pos = game::player1->o + camdir_normalized.mul(selected_dist);
             selected_node->pos_changed = true;
         }
     }
@@ -145,7 +145,7 @@ namespace vscript {
                     {
                         float dist = 0.0f;
                         int orient = VSCRIPT_BOX_NO_INTERSECTION;
-                        vec p = nodes[i]->position;
+                        vec p = nodes[i]->pos;
 
                         if(rayboxintersect(p, vec(boxsize), camera1->o, camdir, dist, orient))
                         {
@@ -179,7 +179,7 @@ namespace vscript {
                     /// key pressed
                     selected_node = hovered_node;
                     move_pos_start = camera1->o;
-                    node_pos_start = selected_node->position;
+                    node_pos_start = selected_node->pos;
                     moving_entity = true;
                 }
                 else 

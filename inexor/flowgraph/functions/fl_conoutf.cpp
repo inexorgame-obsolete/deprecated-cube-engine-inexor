@@ -3,13 +3,13 @@
 namespace inexor {
 namespace vscript {
 
-    CFunctionConoutfNode::CFunctionConoutfNode(vec pos,
+    CFunctionConoutfNode::CFunctionConoutfNode(vec position,
                                                const char* raw_text)
     {
         type = NODE_TYPE_FUNCTION;
         node_name = "Function - conoutf";
         node_comment = "Outputs a text to the local game console";
-        position = pos;
+        pos = position;
         raw_text_input = raw_text;
         default_box_color = VSCRIPT_COLOR_FUNCTION;
         box_color = default_box_color;

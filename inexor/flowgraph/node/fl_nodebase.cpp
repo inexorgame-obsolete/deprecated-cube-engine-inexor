@@ -6,7 +6,7 @@ namespace vscript {
 
     CScriptNode::CScriptNode()
     {
-        position = vec(0,0,0);
+        pos = vec(0,0,0);
         type = NODE_TYPE_INVALID;
         active = true;       
         node_name = "";

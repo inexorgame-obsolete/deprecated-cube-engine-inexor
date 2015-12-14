@@ -12,6 +12,8 @@
 #include <map>
 #include <list>
 
+#include "inexor/geom/geom.h"
+
 
 namespace inexor {
 namespace vscript {
@@ -54,13 +56,14 @@ namespace vscript {
 
             std::vector<CScriptNode *> parents;
             std::vector<CScriptNode *> children;
+
+            std::vector<inexor::geom::CBezierCurve> relation_curves;
         
             bool active;
             bool pos_changed;
-
             bool *done_pointer;
 
-            vec position;
+            vec pos;
 
             std::string node_name;
             std::string node_comment;
@@ -80,8 +83,8 @@ namespace vscript {
 
             void in();
             virtual void run() = 0;
-            void out();
             virtual void reset() = 0;
+            void out();
     };
 
 };

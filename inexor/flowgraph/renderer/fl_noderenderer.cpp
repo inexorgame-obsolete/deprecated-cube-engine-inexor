@@ -18,7 +18,6 @@ namespace vscript {
     }
 
 
-
     void CVisualScriptRenderer::start_rendering()
     {
         notextureshader->set();
@@ -62,46 +61,40 @@ namespace vscript {
         /// the box using iterations is way more complicated to understand.
 
         const float b = boxsize;
-        vec p = node->position;
+        vec p = node->pos;
 
         glBegin(GL_QUADS);
 
-        /// top
         adjust_selection_color(orient, VSCRIPT_BOX_TOP, node);
         glVertex3f(p.x,p.y,p.z+b);
         glVertex3f(p.x+b,p.y,p.z+b);
         glVertex3f(p.x+b,p.y+b,p.z+b);
         glVertex3f(p.x,p.y+b,p.z+b);
 
-        /// bottom
         adjust_selection_color(orient, VSCRIPT_BOX_BOTTOM, node);
         glVertex3f(p.x,p.y+b,p.z);
         glVertex3f(p.x+b,p.y+b,p.z);
         glVertex3f(p.x+b,p.y,p.z);
         glVertex3f(p.x,p.y,p.z);
 
-        /// front
         adjust_selection_color(orient, VSCRIPT_BOX_FRONT, node);
         glVertex3f(p.x,p.y,p.z);
         glVertex3f(p.x+b,p.y,p.z);
         glVertex3f(p.x+b,p.y,p.z+b);
         glVertex3f(p.x,p.y,p.z+b);
 
-        /// back
         adjust_selection_color(orient, VSCRIPT_BOX_BACK, node);
         glVertex3f(p.x,p.y+b,p.z+b);
         glVertex3f(p.x+b,p.y+b,p.z+b);
         glVertex3f(p.x+b,p.y+b,p.z);
         glVertex3f(p.x,p.y+b,p.z);
 
-        /// left
         adjust_selection_color(orient, VSCRIPT_BOX_LEFT, node);
         glVertex3f(p.x,p.y,p.z+b);
         glVertex3f(p.x,p.y+b,p.z+b);
         glVertex3f(p.x,p.y+b,p.z);
         glVertex3f(p.x,p.y,p.z);
 
-        /// right
         adjust_selection_color(orient, VSCRIPT_BOX_RIGHT, node);
         glVertex3f(p.x+b,p.y,p.z);
         glVertex3f(p.x+b,p.y+b,p.z);
@@ -193,40 +186,40 @@ namespace vscript {
         {   
             for(unsigned int e = 0; e < nodes[i]->children.size(); e++)
             {
-                /// Please note: we will add the beginning point,
-                /// 2 more interpolated points and the end point as
-                /// parameter points for the bezier curve
-                inexor::geom::CBezierCurve curve;
-                curve.ClearAllPoints();
+                if(nodes[i]->pos_changed || nodes[i]->children[e]->pos_changed)
+                {
+                    inexor::geom::CBezierCurve tmp_curve;
+                    tmp_curve.ClearAllPoints();
             
-                /// create additional interpolation data
-                vec t = nodes[i]->position;
-                vec n = nodes[i]->children[e]->position;
-                vec interpol1 = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f - 30.0f);
-                vec interpol2 = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f + 30.0f);
+                    vec t = nodes[i]->pos;
+                    vec n = nodes[i]->children[e]->pos;
+                    vec interpol1 = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f - 30.0f);
+                    vec interpol2 = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f + 30.0f);
             
-                /// correct offset
-                t.x += boxsize/2;
-                t.y += boxsize/2;
-                n.x += boxsize/2;
-                n.y += boxsize/2;
-                n.z += boxsize;
+                    t.x += boxsize/2;
+                    t.y += boxsize/2;
+                    n.x += boxsize/2;
+                    n.y += boxsize/2;
+                    n.z += boxsize;
 
-                curve.AddParameterPoint(t);
-                curve.AddParameterPoint(interpol1);
-                curve.AddParameterPoint(interpol2);
-                curve.AddParameterPoint(n);
-
-                curve.ComputeCache();
+                    tmp_curve.AddParameterPoint(t);
+                    tmp_curve.AddParameterPoint(interpol1);
+                    tmp_curve.AddParameterPoint(interpol2);
+                    tmp_curve.AddParameterPoint(n);
+                    
+                    /// recompute cache
+                    tmp_curve.ComputeCache();
+                }
 
                 glBegin(GL_LINES);
                 gle::color(vec::hexcolor(VSCRIPT_COLOR_TRIGGERED));
                 glLineWidth(10.0f);
 
-                for(unsigned int h=0; h<curve.GetCachedPointsNumber() -1; h++)
+                for(unsigned int h=0; h<nodes[i]->children[e]->relation_curves[h].GetCachedPointsSize() -1; h++)
                 {
+                    inexor::geom::CBezierCurve curve = nodes[i]->children[e]->relation_curves[h];
                     inexor::geom::SCustomOutputPoint t = curve.GetPoint_ByIndex(h);
-                    inexor::geom::SCustomOutputPoint n = curve.GetPoint_ByIndex(h  +1);
+                    inexor::geom::SCustomOutputPoint n = curve.GetPoint_ByIndex(h   +1);
                     glVertex3f(t.pos.x, t.pos.y, t.pos.z);
                     glVertex3f(n.pos.x, n.pos.y, n.pos.z);
                 }
@@ -247,15 +240,14 @@ namespace vscript {
         {
             float dist = 0.0f;
             int orient = VSCRIPT_BOX_NO_INTERSECTION;
-            vec p = nodes[i]->position;
+            vec p = nodes[i]->pos;
 
-            /// check ray/box intersection
+            // check ray/box intersection
             rayboxintersect(p, vec(boxsize), camera1->o, camdir, dist, orient);
 
-            /// this node is selected
             nodes[i]->selected = (orient != VSCRIPT_BOX_NO_INTERSECTION);
 
-            /// render a 200ms long color effect once its activated
+            // render a 200ms long color effect once its activated
             if( (nodes[i]->this_time - nodes[i]->last_time)  < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL) nodes[i]->box_color = VSCRIPT_COLOR_TRIGGERED;
             else nodes[i]->box_color = nodes[i]->default_box_color;
 
@@ -265,7 +257,6 @@ namespace vscript {
 
             if(!selection_blocked_by_geometry)
             {
-                /// no matter where the box is being selected, render help lines
                 if(orient != VSCRIPT_BOX_NO_INTERSECTION) 
                 {
                     gle::color(vec::hexcolor(VSCRIPT_COLOR_GRAY));
@@ -275,14 +266,14 @@ namespace vscript {
             gle::color(vec::hexcolor(VSCRIPT_COLOR_BLACK));
             renderboxoutline(p);
 
-            /// render white text above
+            // render white text above
             p.add(vec(boxsize/2));
             p.add(vec(0,0,4));
             particle_text(p + vec(0,0,1.0f), nodes[i]->node_name.c_str(), PART_TEXT, 1, 0xFFFFFF, 1.0f);
             particle_text(p, nodes[i]->node_comment.c_str(), PART_TEXT, 1, 0xFFFFFF, 1.0f);
         }
 
-        /// which node is selected?
+        // which node is selected?
         for(unsigned int i=0; i<nodes.size(); i++)
             if(nodes[i]->selected && nullptr != nodes[i]) hovered_node = nodes[i];
     }

@@ -6,9 +6,9 @@ namespace vscript {
 
     /// TODO: implement playsound correctly
 
-    CFunctionPlaysoundNode::CFunctionPlaysoundNode(vec pos, const char* id)
+    CFunctionPlaysoundNode::CFunctionPlaysoundNode(vec position, const char* id)
     {
-        position = pos;
+        pos = position;
         sound_id = atoi(id);
     }
 

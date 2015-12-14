@@ -4,13 +4,13 @@ namespace inexor {
 namespace vscript {
 
 
-    CSleepNode::CSleepNode(vec pos,
+    CSleepNode::CSleepNode(vec position,
                            unsigned int sleeptime, 
                            const char* name, 
                            const char* comment)
     {
         sleep_interval = sleeptime;
-        position = pos;
+        pos = position;
         sleep_active = false;
         default_box_color = VSCRIPT_COLOR_GRAY;
         node_name = name;
