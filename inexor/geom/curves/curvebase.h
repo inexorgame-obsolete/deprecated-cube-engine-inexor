@@ -179,10 +179,10 @@ class CCurveBase
     bool IsCurveComputed();
 
     /// @brief Get size of the computed points vector
-    unsigned int GetCachedPointsSize();
+    const unsigned int GetCachedPointsSize();
     
     /// @warning May returns wrong index!
-    unsigned int GetIndex_ByInterpolationPos(float);
+    const unsigned int GetIndex_ByInterpolationPos(float);
 
     /// @brief Get a point from the computed curve cache
     SCustomOutputPoint GetPoint_ByInterpolationPos(float);

@@ -52,7 +52,7 @@ namespace geom {
     }
 
 
-    unsigned int CCurveBase::GetCachedPointsNumber()
+    const unsigned int CCurveBase::GetCachedPointsSize()
     {
         return m_vOutputPoints.size();
     }

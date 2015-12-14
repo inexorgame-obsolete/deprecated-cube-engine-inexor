@@ -57,7 +57,7 @@ namespace vscript {
             std::vector<CScriptNode *> parents;
             std::vector<CScriptNode *> children;
 
-            std::vector<inexor::geom::CBezierCurve> relation_curves;
+            std::vector<geom::CBezierCurve> relation_curves;
         
             bool active;
             bool pos_changed;
