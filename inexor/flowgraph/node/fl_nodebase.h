@@ -10,12 +10,10 @@
 #include <map>
 #include <list>
 
-
+#include "inexor/geom/geom.h"
 
 namespace inexor {
 namespace vscript {
-
-    #include "inexor/geom/geom.h"
 
     const float boxsize = 4.0f;
 

@@ -25,11 +25,9 @@
 /// TODO: Use generic types (templates)
 /// TODO: Create a curve chain manager (CBezierCurveManager)
 
-/// Incluad guard
 #ifndef INEXOR_GEOM_BEZIER_CURVE_HEADER
 #define INEXOR_GEOM_BEZIER_CURVE_HEADER
 
-/// C++ standard libraries
 #include <string>
 #include <vector>
 
@@ -38,74 +36,61 @@
 namespace inexor {
 namespace geom {
 
-/// @brief algorithm type enumeration
-/// There are two ways to generate a bezier curves from a group of [n] points. Both ways will be implemented in this engine.
-/// 
-/// ALGORITHM_BERNSTEIN_POLYNOM (Bernstein Polynomials)
-/// -not recursive
-/// -will automaticly compute and norm the tangent and normal vectors for every computed point
-/// 
-/// ALGORITHM_DECASTELJAU (De-Casteljau-Algorithm)
-/// -recursive! use with caution!
-/// -possibly needs a lot more memory for every sub-call (?)
-/// -proven to be a little faster than the other algorithm
-enum BEZIER_ALGORITHM
-{
-	ALGORITHM_BERNSTEIN_POLYNOM,
-	ALGORITHM_DECASTELJAU
-};
+    /// @brief algorithm type enumeration
+    /// There are two ways to generate a bezier curves from a group of [n] points. Both ways will be implemented in this engine.
+    /// 
+    /// ALGORITHM_BERNSTEIN_POLYNOM (Bernstein Polynomials)
+    /// -not recursive
+    /// -will automaticly compute and norm the tangent and normal vectors for every computed point
+    /// 
+    /// ALGORITHM_DECASTELJAU (De-Casteljau-Algorithm)
+    /// -recursive! use with caution!
+    /// -possibly needs a lot more memory for every sub-call (?)
+    /// -proven to be a little faster than the other algorithm
+    enum BEZIER_ALGORITHM
+    {
+	    ALGORITHM_BERNSTEIN_POLYNOM,
+	    ALGORITHM_DECASTELJAU
+    };
 
 
-/// A bezier curve (named after french mathematician PIERRE ETIENNE BEZIER) is a parametric curve
-/// whose only purpose is to look soft and smooth. Bezier curves are all about their elegance.
-/// Those curves can be used to represent everything you can imagine: particles, cameras, mapmodels and much more.
-/// Bezier curves are fast, flexible, beautiful and easy to compute. You just pass a bunch of parameter points to
-/// this engine and the final curve will be computed. Because every complex curve can be represented with a 
-/// chain of smaller curves, it is recommended to create a chain of curves. See CBezierCurveManager.
-/// Bezier curves are ESSENTIAL AND FUNDAMENTAL in the field of computer graphics and data/image processing.
-/// They can also be used for approximation, interpolation and more.
-class CBezierCurve : public CCurveBase
-{
-    protected:
+    /// A bezier curve (named after french mathematician PIERRE ETIENNE BEZIER) is a parametric curve
+    /// whose only purpose is to look soft and smooth. Bezier curves are all about their elegance.
+    /// Those curves can be used to represent everything you can imagine: particles, cameras, mapmodels and much more.
+    /// Bezier curves are fast, flexible, beautiful and easy to compute. You just pass a bunch of parameter points to
+    /// this engine and the final curve will be computed. Because every complex curve can be represented with a 
+    /// chain of smaller curves, it is recommended to create a chain of curves. See CBezierCurveManager.
+    /// Bezier curves are ESSENTIAL AND FUNDAMENTAL in the field of computer graphics and data/image processing.
+    /// They can also be used for approximation, interpolation and more.
+    class CBezierCurve : public CCurveBase
+    {
+        protected:
     
-        BEZIER_ALGORITHM engine_algorithm;
+            BEZIER_ALGORITHM engine_algorithm;
 
-        /// binomial coefficient (n over k)
-        unsigned int BinomialCoefficient(unsigned int n, const unsigned int k);
+            unsigned int BinomialCoefficient(unsigned int n, const unsigned int k);
 
-        /// Calculate using Bernstein polynoms (not recursive)
-        void CalculateCurveCacheWithBernsteinPolynoms();
+            void CalculateCurveCacheWithBernsteinPolynoms();
     
-        /// Calculare using recursion 
-        /// @warning It is not clear in how far this produces memory leaks or overhead!
-        void CalculateCurveCacheWithDeCasteljau();
+            void CalculateCurveCacheWithDeCasteljau();
 
+            SCustomOutputPoint calculate_de_casteljau_coordinate(int index, int nextindex, float t);
 
-        /// de Casteljau algorithm (recursive)
-        /// this function has type vector because it may returns computed points
-        /// and parameter points as well!
-        SCustomOutputPoint calculate_de_casteljau_coordinate(int index, int nextindex, float t);
+            SCustomOutputPoint calculate_bernstein_coordinates(float position);
 
-        /// bernstein-bezier algorithm (not recursive)
-        SCustomOutputPoint calculate_bernstein_coordinates(float position);
+        public:
 
-    public:
+            CBezierCurve();
 
-        CBezierCurve();
-
-        ~CBezierCurve();
+            ~CBezierCurve();
     
+            void ComputeCache();
+            SCustomOutputPoint CalcRealtimePoint(float curvepos);
 
-        /// Implementation of base classe's virtual methods
-        void ComputeCache();
-        SCustomOutputPoint CalcRealtimePoint(float curvepos);
+            void SetAlgorithm(BEZIER_ALGORITHM algorithm);
+    };
 
-        /// Set algorithm
-        void SetAlgorithm(BEZIER_ALGORITHM algorithm);
-};
-
-/// end of namespace
 };
 };
 
-#endif // INEXOR_GEOM_BEZIER_CURVE_HEADER
+#endif
