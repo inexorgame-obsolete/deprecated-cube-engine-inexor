@@ -115,6 +115,7 @@ namespace vscript {
             vec camdir_normalized = camdir;
             camdir_normalized.normalize();
             selected_node->position = game::player1->o + camdir_normalized.mul(selected_dist);
+            selected_node->pos_changed = true;
         }
     }
 
@@ -128,6 +129,7 @@ namespace vscript {
 
     void CVisualScriptSystem::disconnect_nodes(CScriptNode* from, CScriptNode* to)
     {
+        /// TODO:...
     }
 
 
@@ -211,6 +213,7 @@ namespace vscript {
         vScript3D.delete_all_nodes();
     }
     COMMAND(deleteallnodes, "");
+
 
     /*
     void addconoutf(char* message)

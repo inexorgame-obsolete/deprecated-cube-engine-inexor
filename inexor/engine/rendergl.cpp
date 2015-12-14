@@ -1887,7 +1887,7 @@ void gl_drawframe()
 
     /// 3D Visual Scripting System
     using namespace inexor::vscript;
-    vScript3D.update();
+    vScript3D.update_drag_n_drop();
     vScript3D.start_rendering();
     vScript3D.render_nodes();
     vScript3D.render_debug_rays();

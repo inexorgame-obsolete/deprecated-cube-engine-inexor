@@ -4,7 +4,7 @@
 namespace inexor {
 namespace vscript {
 
-    // TODO: implement playsound correctly
+    /// TODO: implement playsound correctly
 
     CFunctionPlaysoundNode::CFunctionPlaysoundNode(vec pos, const char* id)
     {

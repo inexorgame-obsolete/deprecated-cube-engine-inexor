@@ -37,7 +37,6 @@ namespace vscript {
 
             CScriptNode* add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...);
 
-            // implementation of the inherited virtual functions
             void render_node_relations();
             void render_nodes();
             void render_debug_rays();

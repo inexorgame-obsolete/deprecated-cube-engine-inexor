@@ -42,6 +42,7 @@ namespace vscript {
         VSCRIPT_COLOR_GRAY      = 0xAAAAAA,
         VSCRIPT_COLOR_BLACK     = 0x000000,
         VSCRIPT_COLOR_WHITE     = 0xFFFFFF,
+        VSCRIPT_COLOR_SELECTION = 0xFF5900,
     };
 
     

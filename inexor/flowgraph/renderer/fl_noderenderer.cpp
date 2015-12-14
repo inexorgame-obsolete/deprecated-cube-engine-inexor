@@ -39,14 +39,14 @@ namespace vscript {
 
     void CVisualScriptRenderer::adjust_selection_color(int orient, int index, CScriptNode* node)
     {
-        /// if this side of the box is selected, use a spicy orange color
-        /// otherwise use a light blue color
         if(orient==index) 
         {
-            gle::color(vec::hexcolor(0xFF5900));
+            // if this side of the box is selected, render the side in another color
+            gle::color(vec::hexcolor(VSCRIPT_COLOR_SELECTION));
         }
         else
         {
+            // hightlight node during execution
             if(SDL_GetTicks() - node->last_time < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL) node->box_color = VSCRIPT_COLOR_TRIGGERED;
             else node->box_color = node->default_box_color;
             gle::color(vec::hexcolor(node->box_color));
@@ -56,6 +56,11 @@ namespace vscript {
 
     void CVisualScriptRenderer::renderbox(CScriptNode* node, int orient)
     {
+        /// I believe there is no better way to render a box using quads.
+        /// You either write the box generator code directly or you let it generate.
+        /// If you take a look at the original Sauer code you will see that generating
+        /// the box using iterations is way more complicated to understand.
+
         const float b = boxsize;
         vec p = node->position;
 
@@ -109,13 +114,8 @@ namespace vscript {
     void CVisualScriptRenderer::renderboxoutline(vec p)
     {
         const float b = boxsize;
-
-        /// render gray outline (TOP)
         glBegin(GL_LINE_LOOP);
     
-        /// TODO: does this work?
-        glDepthFunc(GL_LESS);
-
         glColor3f(0.0f,0.0f,0.0f);
         glVertex3f(p.x,p.y,p.z+b);
         glVertex3f(p.x+b,p.y,p.z+b);
@@ -123,7 +123,6 @@ namespace vscript {
         glVertex3f(p.x,p.y+b,p.z+b);
         glEnd();
 
-        /// render gray outline (BOTTOM)
         glBegin(GL_LINE_LOOP);
         glColor3f(0.0f,0.0f,0.0f);
         glVertex3f(p.x,p.y,p.z);
@@ -132,7 +131,6 @@ namespace vscript {
         glVertex3f(p.x,p.y+b,p.z);
         glEnd();
 
-        /// render connection lines
         glBegin(GL_LINES);
         glVertex3f(p.x,p.y,p.z);
         glVertex3f(p.x,p.y,p.z+b);
