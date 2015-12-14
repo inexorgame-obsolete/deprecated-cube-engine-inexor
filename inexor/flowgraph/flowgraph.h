@@ -1,6 +1,6 @@
-// @file flowgraph.h
-// @author Johannes Schneider
-// @brief 3D visual scripting system
+/// @file flowgraph.h
+/// @author Johannes Schneider
+/// @brief 3D visual scripting system
 
 #ifndef INEXOR_VSCRIPT_HEADER
 #define INEXOR_VSCRIPT_HEADER
@@ -14,7 +14,7 @@
 #include "inexor/flowgraph/debugger/fl_dbgrays.h"
 #include "inexor/flowgraph/comment/fl_comment.h"
 #include "inexor/flowgraph/functions/fl_functions.h"
-#include "inexor/flowgraph/renderer/fl_rendering.h"
+#include "inexor/flowgraph/renderer/fl_noderenderer.h"
 #include "inexor/flowgraph/editor/fl_enteditor.h"
 #include "inexor/flowgraph/timer/fl_timer.h"
 #include "inexor/flowgraph/sleep/fl_sleep.h"
@@ -31,32 +31,22 @@ namespace vscript {
             CVisualScriptSystem();
             ~CVisualScriptSystem();
 
-            std::vector<CDebugRay> rays;
-
             std::vector<CScriptNode *> nodes;
 
             unsigned int unique_execution_pass_timestamp;
 
-            // Please note: add_node is using variable argument lists. See stdarg.h
-            // add a node to the system
-            // @param type the type of the integer
-            // problem: parameter specification requires new command line code!
-            // we must get rid of this old 5 attributes stuff
-            // this code has been debugged and tested
             CScriptNode* add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...);
 
-            // implementation of inherited virtual functions
+            // implementation of the inherited virtual functions
             void render_node_relations();
             void render_nodes();
             void render_debug_rays();
             void process_change(int, bool);
 
-            // Link nodes with other nodes
             void connect_nodes(CScriptNode *from, CScriptNode *to);
             void disconnect_nodes(CScriptNode *from, CScriptNode *to);
 
-            // Please note: this will prevent timers from being desynchronized
-            void update_input();
+            void update_drag_n_drop();
             void sync_all_timers();
             void delete_all_nodes();
     };

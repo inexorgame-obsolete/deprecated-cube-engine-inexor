@@ -28,6 +28,7 @@ namespace vscript {
             vec node_pos_start;
 
             bool selection_blocked_by_geometry;
+            bool moving_entity;
 
             virtual void process_change(int, bool) = 0;
 
@@ -38,7 +39,6 @@ namespace vscript {
 
             CScriptNode* selected_node;
             CScriptNode* hovered_node;
-            bool moving_entity;
 
             void update_mouse(int, bool);
     };

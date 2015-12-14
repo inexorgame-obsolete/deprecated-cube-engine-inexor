@@ -1,15 +1,12 @@
-// @file fl_nodebase.h
-// @author Johannes Schneider
-// @brief Basic implementation of nodes in Inexor's 3D Visual Scripting System
-
-// TODO: Move on to Hanack's new entity system. 
+/// @file fl_nodebase.h
+/// @author Johannes Schneider
+/// @brief Basic implementation of nodes in Inexor's 3D Visual Scripting System
 
 #ifndef INEXOR_VSCRIPT_NODEBASE_HEADER
 #define INEXOR_VSCRIPT_NODEBASE_HEADER
 
 #include "inexor/engine/engine.h"
 
-// c++ standard libraries
 #include <string>
 #include <vector>
 #include <map>
@@ -47,7 +44,7 @@ namespace vscript {
         VSCRIPT_COLOR_WHITE     = 0xFFFFFF,
     };
 
-    // @brief base class for node implementations
+    
     class CScriptNode
     {
         public:
@@ -85,7 +82,6 @@ namespace vscript {
             void out();
             virtual void reset() = 0;
     };
-
 
 };
 };

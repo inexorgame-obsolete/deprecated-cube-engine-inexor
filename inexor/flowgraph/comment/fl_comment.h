@@ -16,11 +16,10 @@ namespace vscript {
     {
         public:
 
-        CCommentNode(vec pos, const char* comment = "Hello Comment 1", const char* name = "CommentNode1");
+        CCommentNode(vec pos, const char* comment = "An example text for a comment.", const char* name = "CommentNode1");
         ~CCommentNode();
 
-        /// comments are not part of the code itself
-        /// so they do not run code or get notifyed or notify other nodes!
+        // comments do nothing at all
         void run()   {}
         void in()    {}
         void out()   {}

@@ -1,6 +1,6 @@
-// @file fl_timer.h (flowgraph's timer implementation)
-// @author Johannes Schneider
-// @brief Timers will be called every [n] miliseconds
+/// @file fl_timer.h (flowgraph's timer implementation)
+/// @author Johannes Schneider
+/// @brief Timers will be called every [n] miliseconds
 
 #ifndef INEXOR_VSCRIPT_MEMBASE_HEADER
 #define INEXOR_VSCRIPT_MEMBASE_HEADER
@@ -10,7 +10,7 @@ namespace vscript {
 
     enum VSCRIPT_DATA_TYPE 
     {
-        TYPE_INTEGER_VALUE,  // always signed
+        TYPE_INTEGER_VALUE,
         TYPE_FLOATING_POINT, // always double
         TYPE_STRING,
         TYPE_BOOLEAN,
@@ -20,7 +20,7 @@ namespace vscript {
     };
 
 
-    // TODO: use std::any
+    /// TODO: use std::any
     class CMemoryNode
     {
         CMemoryNode();

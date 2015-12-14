@@ -100,18 +100,8 @@ namespace vscript {
     }
 
 
-    void CVisualScriptSystem::update()
+    void CVisualScriptSystem::update_drag_n_drop()
     {
-        unique_execution_pass_timestamp = SDL_GetTicks();
-        for(int i=0; i<nodes.size(); i++) 
-        {
-            if(NODE_TYPE_TIMER == nodes[i]->type)
-            {
-                nodes[i]->this_time = unique_execution_pass_timestamp;
-                nodes[i]->in();
-            }
-        }
-
         if(nullptr != selected_node)
         {
             static float selected_dist = 0.0f;
@@ -218,7 +208,7 @@ namespace vscript {
 
     void deleteallnodes()
     {
-        vScript3D.clear_all_nodes();
+        vScript3D.delete_all_nodes();
     }
     COMMAND(deleteallnodes, "");
 
@@ -251,6 +241,7 @@ namespace vscript {
     COMMAND(addcomment, "ss");
     
     */
+
 
     CScriptNode* a;
     CScriptNode* b;

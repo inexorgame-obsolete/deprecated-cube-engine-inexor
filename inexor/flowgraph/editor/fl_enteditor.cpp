@@ -3,7 +3,6 @@
 #include "inexor/geom/curves/bezier/bezier.h"
 #include "inexor/geom/curves/curvebase.h"
 
-
 namespace inexor {
 namespace vscript {
 

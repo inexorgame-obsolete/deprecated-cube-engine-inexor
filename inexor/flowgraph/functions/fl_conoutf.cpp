@@ -1,6 +1,5 @@
 #include "inexor/flowgraph/functions/fl_conoutf.h"
 
-
 namespace inexor {
 namespace vscript {
 

@@ -1,22 +1,18 @@
 #include "inexor/engine/engine.h"
 #include "inexor/flowgraph/node/fl_nodebase.h"
 
-
 namespace inexor {
 namespace vscript {
 
-
     CScriptNode::CScriptNode()
     {
-        // Please note that nodes are invalid by default.
-        // The constructor of the child classes needs to change this.
+        position = vec(0,0,0);
         type = NODE_TYPE_INVALID;
-        default_box_color = VSCRIPT_COLOR_TIMER; 
-        box_color = default_box_color;
         active = true;       
         node_name = "";
         node_comment = "";        
-        position = vec(0,0,0);
+        default_box_color = VSCRIPT_COLOR_TIMER; 
+        box_color = default_box_color;
         pos_changed = false;
         selected = false;
         done_pointer = nullptr;
@@ -47,8 +43,7 @@ namespace vscript {
         }
         else
         {
-            // TODO: really run ALL child nodes?
-            // TODO: implement return value buffer!
+            /// TODO: implement return value buffer!
             for(unsigned int i=0; i<children.size(); i++)
             {
                 children[i]->script_execution_start = script_execution_start;

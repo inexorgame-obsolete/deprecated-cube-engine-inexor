@@ -10,9 +10,9 @@
 #include "inexor/flowgraph/time/fl_timetools.h"
 
 
-#define INEXOR_VSCRIPT_MIN_TIMER_INTERVAL 10
-#define INEXOR_VSCRIPT_MAX_TIMER_INTERVAL 1000 * 60 * 60 * 24
-#define INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL 100
+#define INEXOR_VSCRIPT_MIN_TIMER_INTERVAL 5
+#define INEXOR_VSCRIPT_MAX_TIMER_INTERVAL 1000 * 60 * 60 * 24 // 1 day
+#define INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL 200 // render a color effect after a timer has been triggered
 #define INEXOR_VSCRIPT_DEFAULT_TIMER_EXECUTION_LIMIT 1000*1000
 
 
@@ -27,7 +27,8 @@ namespace vscript {
         TIME_FORMAT_HOURS
     };
 
-    /*unsigned int ConvertTime2Miliseconds(unsigned int interval, INEXOR_VSCRIPT_TIME_FORMAT format)
+    /*
+    unsigned int ConvertTime2Miliseconds(unsigned int interval, INEXOR_VSCRIPT_TIME_FORMAT format)
     {
         /// convert the interval into miliseconds
         switch(format)

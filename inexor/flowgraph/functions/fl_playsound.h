@@ -1,6 +1,6 @@
-// @file fl_playsound.h
-// @author Johannes Schneider
-// @brief This game engine function plays a sound by its sound id
+/// @file fl_playsound.h
+/// @author Johannes Schneider
+/// @brief This game engine function plays a sound by its sound id
 
 #ifndef INEXOR_VSCRIPT_PLAYSOUND_HEADER
 #define INEXOR_VSCRIPT_PLAYSOUND_HEADER
@@ -35,7 +35,6 @@ namespace vscript {
             CFunctionPlaysoundNode(vec, const char*);
             ~CFunctionPlaysoundNode();
 
-            // TODO: implement more methods!
             void run();
             void reset();
     };

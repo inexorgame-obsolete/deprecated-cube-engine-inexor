@@ -1,5 +1,6 @@
-// @file fl_sleep.h
-// @author Johannes Schneider
+/// @file fl_sleep.h
+/// @author Johannes Schneider
+/// @brief Sleeps wait a certain amount of miliseconds until their code execution continues.
 
 #ifndef INEXOR_VSCRIPT_SLEEP_HEADER
 #define INEXOR_VSCRIPT_SLEEP_HEADER
@@ -7,9 +8,8 @@
 #include "inexor/engine/engine.h"
 #include "inexor/flowgraph/node/fl_nodebase.h"
 
-
-#define INEXOR_VSCRIPT_MIN_SLEEP_INTERVAL 10
-#define INEXOR_VSCRIPT_MAX_SLEEP_INTERVAL 1000 * 60 * 60 * 24
+#define INEXOR_VSCRIPT_MIN_SLEEP_INTERVAL 5 // 10ms
+#define INEXOR_VSCRIPT_MAX_SLEEP_INTERVAL 1000 * 60 * 60 * 24 // 1 day
 
 namespace inexor {
 namespace vscript {
@@ -26,7 +26,7 @@ namespace vscript {
             CSleepNode(vec pos, 
                        unsigned int sleeptime, 
                        const char* name = "NewSleep1", 
-                       const char* comment = "Hello World Sleep");
+                       const char* comment = "Hello World Comment for a Sleep");
                 
             ~CSleepNode();
 

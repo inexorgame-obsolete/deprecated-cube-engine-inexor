@@ -2,7 +2,7 @@
 #include <vector>
 #include "inexor/geom/curves/curvebase.h"
 #include "inexor/geom/geom.h"
-#include "inexor/flowgraph/renderer/fl_rendering.h"
+#include "inexor/flowgraph/renderer/fl_noderenderer.h"
 
 namespace inexor {
 namespace vscript {
