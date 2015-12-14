@@ -2075,7 +2075,7 @@ VARP(crosshairfx, 0, 1, 1);
 VARP(crosshaircolors, 0, 1, 1);
 
 // Directory where crosshairs are stored.
-SVARP(crosshairdir, "media/interface/crosshair");
+SVARP(crosshairdir, "interface/crosshair");
 
 #define MAXCROSSHAIRS 4
 static Texture *crosshairs[MAXCROSSHAIRS] = { NULL, NULL, NULL, NULL };
@@ -2123,7 +2123,7 @@ void writecrosshairs(stream *f)
 }
 
 static Texture *cursortex = NULL;
-SVARFP(cursor, "media/interface/cursor/default.png", cursortex = NULL);
+SVARFP(cursor, "interface/cursor/default.png", cursortex = NULL);
 
 void drawcrosshair(int w, int h)
 {

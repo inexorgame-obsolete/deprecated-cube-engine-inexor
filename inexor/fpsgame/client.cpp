@@ -16,7 +16,7 @@ namespace game
     VARP(maxradarscale, 1, 1024, 10000);
     VARP(radarteammates, 0, 1, 1);
     FVARP(minimapalpha, 0, 1, 1);
-    SVARP(radardir, "media/interface/radar");
+    SVARP(radardir, "interface/radar");
 
 	/// Bomberman HUD
     int hudannounce_begin = 0;

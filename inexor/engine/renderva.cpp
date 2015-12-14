@@ -1414,7 +1414,7 @@ void renderva(renderstate &cur, vtxarray *va, int pass = RENDERPASS_LIGHTMAP, bo
 
 static Texture *caustictex[NUMCAUSTICS] = { NULL };
 
-SVARP(causticdir, "media/texture/inexor/material/water/caustic");
+SVARP(causticdir, "texture/inexor/material/water/caustic");
 
 void loadcaustics(bool force)
 {

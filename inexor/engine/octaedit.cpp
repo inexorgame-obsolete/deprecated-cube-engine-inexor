@@ -1236,7 +1236,7 @@ bool packundo(int op, int &inlen, uchar *&outbuf, int &outlen)
     }
 }
 
-SVARP(prefabdir, "media/prefab");
+SVARP(prefabdir, "prefab");
 struct prefabheader
 {
     char magic[4];

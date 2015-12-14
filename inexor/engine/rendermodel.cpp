@@ -1,6 +1,6 @@
 #include "inexor/engine/engine.hpp"
 
-SVARP(modeldir, "media/model");
+SVARP(modeldir, "model");
 
 VAR(oqdynent, 0, 1, 1);
 VAR(animationinterpolationtime, 0, 150, 1000);

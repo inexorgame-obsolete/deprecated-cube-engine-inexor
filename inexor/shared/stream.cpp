@@ -240,9 +240,7 @@ struct packagedir
 };
 vector<packagedir> packagedirs;
 
-/// Create a relative path
-/// @Return (const char*) file relative to (const char*) dir
-/// @Eg file=/home/user/Inexor/media/textures/notexture.jpg and dir=/home/user/Inexor/media/ returns textures/notexture.jpg
+/// Append a string together but add the prefix in the field.
 char *makerelpath(const char *dir, const char *file, const char *prefix, const char *cmd)
 {
     static string tmp;
@@ -327,7 +325,7 @@ char *path(const char *s, bool copy)
 }
 
 /// @return the parent directory of a file path
-/// @warning Removes last slash: media/texture/lastly.dg becomes media/texture
+/// @warning Removes last slash: texture/lastly.dg becomes texture
 const char *parentdir(const char *filename)
 {
     const char *p = filename + strlen(filename);
@@ -417,9 +415,8 @@ const char *sethomedir(const char *dir)
     return homedir;
 }
 
-/// Add an optional media directory
-/// Inexor can have multiple source-directories for its content
-/// @Example "media" and "media-other-old-stuff" both can be used simoultaneously
+/// Add an optional media directory.
+/// Inexor can have multiple directories for its content it will treat like the games root-folder.
 const char *addpackagedir(const char *dir)
 {
     string pdir;

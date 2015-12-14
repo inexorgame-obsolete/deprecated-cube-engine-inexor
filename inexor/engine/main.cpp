@@ -199,8 +199,8 @@ void writeinitcfg()
 
 static Texture *logo_texture = NULL;
 static Texture *background_texture = NULL;
-SVARFP(background, "media/interface/background.png", background_texture = NULL;);
-SVARFP(logo, "media/interface/logo.png", logo_texture = NULL;);
+SVARFP(background, "interface/background.png", background_texture = NULL;);
+SVARFP(logo, "interface/logo.png", logo_texture = NULL;);
 
 static Texture *mapshotframe_texture = NULL;
 static Texture *loadingbar_texture = NULL;
@@ -815,11 +815,11 @@ void resetgl()
     gl_init(useddepthbits, usedfsaa);
     inbetweenframes = false;
     if(!reloadtexture(*notexture) || //todo
-       !reloadtexture("media/interface/logo.png") ||
-       !reloadtexture("media/interface/background.png") ||
-       !reloadtexture("media/interface/mapshot_frame.png") ||
-       !reloadtexture("media/interface/loading_frame.png") ||
-       !reloadtexture("media/interface/loading_bar.png"))
+       !reloadtexture("interface/logo.png") ||
+       !reloadtexture("interface/background.png") ||
+       !reloadtexture("interface/mapshot_frame.png") ||
+       !reloadtexture("interface/loading_frame.png") ||
+       !reloadtexture("interface/loading_bar.png"))
         fatal("failed to reload core texture");
     reloadfonts();
     inbetweenframes = true;
@@ -1270,7 +1270,7 @@ int main(int argc, char **argv)
             case 'l': 
             {
                 /// TODO: ?
-                char pkgdir[] = "media/";
+                char pkgdir[] = "";
                 load = strstr(path(&argv[i][2]), path(pkgdir)); 
                 if(load) load += sizeof(pkgdir)-1; 
                 else load = &argv[i][2]; 
@@ -1324,7 +1324,7 @@ int main(int argc, char **argv)
     logoutf("init: gl");
     gl_checkextensions();
     gl_init(useddepthbits, usedfsaa);
-    notexture = textureload("media/texture/inexor/notexture.png");
+    notexture = textureload("texture/inexor/notexture.png");
     if(!notexture) fatal("could not find core textures");
 
     logoutf("init: console");

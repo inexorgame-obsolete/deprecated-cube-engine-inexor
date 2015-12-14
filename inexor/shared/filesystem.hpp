@@ -6,7 +6,6 @@
 #include "inexor/shared/cube.hpp"
 
 enum {
-    DIR_MEDIA,
     DIR_MAP,
     DIR_TEXTURE,
     DIR_SKYBOX,
