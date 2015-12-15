@@ -28,11 +28,13 @@ namespace vscript {
         last_time = this_time;
     }
 
+
     void CFunctionConoutfNode::format_output()
     {
         param_text_output = raw_text_input;
     }
     
+
     void CFunctionConoutfNode::reset()
     {
     }
