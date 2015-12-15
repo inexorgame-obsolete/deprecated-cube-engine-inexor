@@ -12,6 +12,7 @@ extern selinfo sel, lastsel, savedsel;
 extern bool editmode;
 extern int gridsize;
 
+
 enum VSCRIPT_ENTITY_BOX_ORIENTATION
 {
     VSCRIPT_BOX_NO_INTERSECTION = -1,
@@ -29,6 +30,7 @@ namespace vscript {
 
     // create an instance
     CVisualScriptSystem vScript3D;
+
 
     CVisualScriptSystem::CVisualScriptSystem() 
     {
@@ -227,18 +229,18 @@ namespace vscript {
 
             if(NODE_TYPE_TIMER != nodes[i]->type) nodes[i]->this_time = SDL_GetTicks();
 
-            //renderbox(nodes[i], orient);
+            renderbox(nodes[i], orient);
 
             if(!selection_blocked_by_geometry)
             {
                 if(orient != VSCRIPT_BOX_NO_INTERSECTION) 
                 {
                     gle::color(vec::hexcolor(VSCRIPT_COLOR_GRAY));
-                    //renderboxhelplines(p);
+                    renderboxhelplines(p);
                 }
             }
             gle::color(vec::hexcolor(VSCRIPT_COLOR_BLACK));
-            //renderboxoutline(p);
+            renderboxoutline(p);
 
             // render white text above
             p.add(vec(boxsize/2));
