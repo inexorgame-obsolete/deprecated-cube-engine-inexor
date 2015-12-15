@@ -22,7 +22,7 @@ function(declare_module NAME PATH)
   message(STATUS "DECLARE MODULE(${NAME}, ${PATH}) -> ${mod} inside ${abs}")
 
   # Search headers
-  file(GLOB_RECURSE headers ${abs}/**.h)
+  file(GLOB_RECURSE headers ${abs}/**.hpp)
   set(${mod}_MODULE_HEADERS ${headers}
     CACHE INTERNAL "Headers of the ${NAME} module")
 
