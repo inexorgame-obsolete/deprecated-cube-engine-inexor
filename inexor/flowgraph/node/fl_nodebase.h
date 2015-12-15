@@ -12,6 +12,7 @@
 
 #include "inexor/geom/geom.h"
 
+
 namespace inexor {
 namespace vscript {
 
@@ -30,18 +31,18 @@ namespace vscript {
         NODE_TYPE_SLEEP,
     };
 
-
     enum VSCRIPT_NODE_COLORS
     {
-        VSCRIPT_COLOR_TIMER     = 0x00B6FF,
-        VSCRIPT_COLOR_COMMENT   = 0x43A63A,
-        VSCRIPT_COLOR_FUNCTION  = 0xCC47B1,
-        VSCRIPT_COLOR_TRIGGERED = 0xFF6D00,
-        VSCRIPT_COLOR_SLEEP     = 0xFF00CD,
-        VSCRIPT_COLOR_GRAY      = 0xAAAAAA,
-        VSCRIPT_COLOR_BLACK     = 0x000000,
-        VSCRIPT_COLOR_WHITE     = 0xFFFFFF,
-        VSCRIPT_COLOR_SELECTION = 0xFF5900,
+        VSCRIPT_COLOR_TIMER     = 0x00B6FF,  // light blue
+        VSCRIPT_COLOR_COMMENT   = 0x43A63A,  // comment green
+        VSCRIPT_COLOR_FUNCTION  = 0xCC47B1,  // darker purple
+        VSCRIPT_COLOR_TRIGGERED = 0xFF6D00,  // spicy orange
+        VSCRIPT_COLOR_SLEEP     = 0xFF00CD,  // bright purple
+        VSCRIPT_COLOR_GRAY      = 0xAAAAAA,  // 
+        VSCRIPT_COLOR_BLACK     = 0x000000,  // 
+        VSCRIPT_COLOR_WHITE     = 0xFFFFFF,  // 
+        VSCRIPT_COLOR_SELECTION = 0xFF0000,  // red 
+        VSCRIPT_COLOR_DEBUG_RAY = VSCRIPT_COLOR_GRAY,
     };
 
 
@@ -49,33 +50,26 @@ namespace vscript {
     {
         public:
 
+            std::vector<CScriptNode *> parents;
+            std::vector<CScriptNode *> children;
+            //std::vector<geom::CBezierCurve> relation_curves;
+
             CScriptNode();
             ~CScriptNode();
 
             vec pos;
-            VSCRIPT_NODE_TYPE type;
-
-            std::vector<CScriptNode *> parents;
-            std::vector<CScriptNode *> children;
-
-            std::vector<CBezierCurve> relation_curves;
-
-            bool active;
             bool pos_changed;
-            bool *done_pointer;
+            bool selected;
+            VSCRIPT_NODE_TYPE type;
 
             std::string node_name;
             std::string node_comment;
-
-            bool selected;
-
+            
             unsigned int this_time;
             unsigned int last_time;
 
-            int default_box_color;
-            int box_color;
-
-            unsigned long script_execution_start;
+            VSCRIPT_NODE_COLORS default_box_color;
+            VSCRIPT_NODE_COLORS box_color;
 
             void in();
             virtual void run() = 0;

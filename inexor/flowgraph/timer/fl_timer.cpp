@@ -65,7 +65,6 @@ namespace vscript {
         {
             for(unsigned int i=0; i<children.size(); i++)
             {
-                children[i]->script_execution_start = script_execution_start;
                 SDL_Thread *thread = SDL_CreateThread(LetsGo, "LetsGo", (void *)children[i]);
             }   
             last_time = this_time;

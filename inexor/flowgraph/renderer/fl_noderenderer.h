@@ -10,12 +10,13 @@
 #include "inexor/engine/engine.h"
 #include "inexor/flowgraph/node/fl_nodebase.h"
 
+#include "inexor/geom/curves/curvebase.h"
+#include "inexor/geom/geom.h"
 
 namespace inexor {
 namespace vscript {
 
     extern const float boxsize;
-
 
     enum VSCRIPT_ENTITY_BOX_ORIENTATION
     {
@@ -41,8 +42,6 @@ namespace vscript {
             void renderboxoutline(vec p);
             void renderboxhelplines(vec p);
 
-            void render_debug_rays();
-
         public:
 
             CVisualScriptRenderer();
@@ -50,8 +49,7 @@ namespace vscript {
     
             void start_rendering();
 
-            virtual void render_nodes() = 0;
-            virtual void render_node_relations() = 0;
+            void render_debug_rays();
 
             void end_rendering();
     };

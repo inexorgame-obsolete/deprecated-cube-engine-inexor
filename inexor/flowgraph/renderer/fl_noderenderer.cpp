@@ -1,7 +1,3 @@
-#include "inexor/engine/engine.h"
-#include <vector>
-#include "inexor/geom/curves/curvebase.h"
-#include "inexor/geom/geom.h"
 #include "inexor/flowgraph/renderer/fl_noderenderer.h"
 
 namespace inexor {
@@ -16,6 +12,7 @@ namespace vscript {
     CVisualScriptRenderer::~CVisualScriptRenderer()
     {
     }
+
 
 
     void CVisualScriptRenderer::start_rendering()
@@ -38,18 +35,15 @@ namespace vscript {
 
     void CVisualScriptRenderer::adjust_selection_color(int orient, int index, CScriptNode* node)
     {
+        // hightlight node during execution
+        if(SDL_GetTicks() - node->last_time < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL) node->box_color = VSCRIPT_COLOR_TRIGGERED;
+        else node->box_color = node->default_box_color;
         if(orient==index) 
         {
             // if this side of the box is selected, render the side in another color
-            gle::color(vec::hexcolor(VSCRIPT_COLOR_SELECTION));
+            node->box_color = VSCRIPT_COLOR_SELECTION;
         }
-        else
-        {
-            // hightlight node during execution
-            if(SDL_GetTicks() - node->last_time < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL) node->box_color = VSCRIPT_COLOR_TRIGGERED;
-            else node->box_color = node->default_box_color;
-            gle::color(vec::hexcolor(node->box_color));
-        }
+        gle::color(vec::hexcolor(node->box_color));
     }
 
 
@@ -107,8 +101,8 @@ namespace vscript {
     void CVisualScriptRenderer::renderboxoutline(vec p)
     {
         const float b = boxsize;
+
         glBegin(GL_LINE_LOOP);
-    
         glColor3f(0.0f,0.0f,0.0f);
         glVertex3f(p.x,p.y,p.z+b);
         glVertex3f(p.x+b,p.y,p.z+b);
@@ -178,111 +172,10 @@ namespace vscript {
     }
 
 
-    void CVisualScriptSystem::render_node_relations()
-    {
-        if(!nodes.size()) return;
-
-        for(unsigned int i=0; i<nodes.size(); i++)
-        {   
-            for(unsigned int e = 0; e < nodes[i]->children.size(); e++)
-            {
-                if(nodes[i]->pos_changed || nodes[i]->children[e]->pos_changed)
-                {
-                    CBezierCurve tmp_curve;
-                    tmp_curve.ClearAllPoints();
-            
-                    vec t = nodes[i]->pos;
-                    vec n = nodes[i]->children[e]->pos;
-                    vec interpol1 = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f - 30.0f);
-                    vec interpol2 = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f + 30.0f);
-            
-                    t.x += boxsize/2;
-                    t.y += boxsize/2;
-                    n.x += boxsize/2;
-                    n.y += boxsize/2;
-                    n.z += boxsize;
-
-                    tmp_curve.AddParameterPoint(t);
-                    tmp_curve.AddParameterPoint(interpol1);
-                    tmp_curve.AddParameterPoint(interpol2);
-                    tmp_curve.AddParameterPoint(n);
-                    
-                    /// recompute cache
-                    tmp_curve.ComputeCache();
-                }
-
-                glBegin(GL_LINES);
-                gle::color(vec::hexcolor(VSCRIPT_COLOR_TRIGGERED));
-                glLineWidth(10.0f);
-
-                for(unsigned int h=0; h<nodes[i]->children[e]->relation_curves[h].GetCachedPointsSize() -1; h++)
-                {
-                    CBezierCurve curve = nodes[i]->children[e]->relation_curves[h];
-                    SCustomOutputPoint t = curve.GetPoint_ByIndex(h);
-                    SCustomOutputPoint n = curve.GetPoint_ByIndex(h   +1);
-                    glVertex3f(t.pos.x, t.pos.y, t.pos.z);
-                    glVertex3f(n.pos.x, n.pos.y, n.pos.z);
-                }
-                glLineWidth(1.0f);
-                glEnd();
-            }
-        }
-    }
-
-
-    void CVisualScriptSystem::render_nodes()
-    {
-        hovered_node = nullptr;
-
-        unique_execution_pass_timestamp = SDL_GetTicks();
-
-        for(unsigned int i=0; i<nodes.size(); i++) 
-        {
-            float dist = 0.0f;
-            int orient = VSCRIPT_BOX_NO_INTERSECTION;
-            vec p = nodes[i]->pos;
-
-            // check ray/box intersection
-            rayboxintersect(p, vec(boxsize), camera1->o, camdir, dist, orient);
-
-            nodes[i]->selected = (orient != VSCRIPT_BOX_NO_INTERSECTION);
-
-            // render a 200ms long color effect once its activated
-            if( (nodes[i]->this_time - nodes[i]->last_time)  < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL) nodes[i]->box_color = VSCRIPT_COLOR_TRIGGERED;
-            else nodes[i]->box_color = nodes[i]->default_box_color;
-
-            if(NODE_TYPE_TIMER != nodes[i]->type) nodes[i]->this_time = unique_execution_pass_timestamp;
-
-            renderbox(nodes[i], orient);
-
-            if(!selection_blocked_by_geometry)
-            {
-                if(orient != VSCRIPT_BOX_NO_INTERSECTION) 
-                {
-                    gle::color(vec::hexcolor(VSCRIPT_COLOR_GRAY));
-                    renderboxhelplines(p);
-                }
-            }
-            gle::color(vec::hexcolor(VSCRIPT_COLOR_BLACK));
-            renderboxoutline(p);
-
-            // render white text above
-            p.add(vec(boxsize/2));
-            p.add(vec(0,0,4));
-            particle_text(p + vec(0,0,1.0f), nodes[i]->node_name.c_str(), PART_TEXT, 1, 0xFFFFFF, 1.0f);
-            particle_text(p, nodes[i]->node_comment.c_str(), PART_TEXT, 1, 0xFFFFFF, 1.0f);
-        }
-
-        // which node is selected?
-        for(unsigned int i=0; i<nodes.size(); i++)
-            if(nodes[i]->selected && nullptr != nodes[i]) hovered_node = nodes[i];
-    }
-
-
-    void CVisualScriptSystem::render_debug_rays()
+    void CVisualScriptRenderer::render_debug_rays()
     {
         glBegin(GL_LINES);
-        gle::color(vec::hexcolor(VSCRIPT_COLOR_TRIGGERED));
+        gle::color(vec::hexcolor(VSCRIPT_COLOR_DEBUG_RAY));
         glLineWidth(10.0f);
 
         for(unsigned int h=0; h<rays.size(); h++)

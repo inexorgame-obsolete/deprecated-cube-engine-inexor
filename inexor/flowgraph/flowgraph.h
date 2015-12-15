@@ -24,7 +24,7 @@
 namespace inexor {
 namespace vscript {
 
-    class CVisualScriptSystem : public CVisualScriptRenderer, public CEntityManager
+    class CVisualScriptSystem : /*public CVisualScriptRenderer, */public CEntityManager
     {
         public:
         
@@ -48,9 +48,7 @@ namespace vscript {
             void update_drag_n_drop();
             void sync_all_timers();
             void delete_all_nodes();
-    }
-    // create an instance
-    vScript3D;
+    };
 
 };
 };

@@ -5,7 +5,6 @@ namespace geom
 {
     CBezierCurve::CBezierCurve()
     {
-        /// Use Bernstein Polynoms by default
         SetAlgorithm(ALGORITHM_BERNSTEIN_POLYNOM);
     }
 
