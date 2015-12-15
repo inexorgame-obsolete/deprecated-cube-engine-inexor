@@ -13,7 +13,7 @@ namespace vscript {
     {
     }
 
-
+    /*
 
     void CVisualScriptRenderer::start_rendering()
     {
@@ -187,6 +187,8 @@ namespace vscript {
         glLineWidth(1.0f);
         glEnd();
     }
+
+    */
 
 };
 };

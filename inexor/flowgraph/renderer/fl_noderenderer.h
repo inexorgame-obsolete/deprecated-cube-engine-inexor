@@ -13,6 +13,7 @@
 #include "inexor/geom/curves/curvebase.h"
 #include "inexor/geom/geom.h"
 
+
 namespace inexor {
 namespace vscript {
 
@@ -34,6 +35,7 @@ namespace vscript {
     {
         protected:
 
+            /*
             std::vector<CDebugRay> rays;
 
             void adjust_selection_color(int orient, int index, CScriptNode *node);
@@ -41,17 +43,20 @@ namespace vscript {
             void renderbox(CScriptNode *node, int orient);
             void renderboxoutline(vec p);
             void renderboxhelplines(vec p);
+            */
 
         public:
 
             CVisualScriptRenderer();
             ~CVisualScriptRenderer();
-    
+        
+            /*
             void start_rendering();
 
             void render_debug_rays();
 
             void end_rendering();
+            */
     };
 
 };

@@ -199,9 +199,7 @@ namespace vscript {
     void CVisualScriptSystem::render_nodes()
     {
         hovered_node = nullptr;
-
-        unique_execution_pass_timestamp = SDL_GetTicks();
-
+        
         for(unsigned int i=0; i<nodes.size(); i++) 
         {
             float dist = 0.0f;
@@ -217,7 +215,7 @@ namespace vscript {
             if( (nodes[i]->this_time - nodes[i]->last_time)  < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL) nodes[i]->box_color = VSCRIPT_COLOR_TRIGGERED;
             else nodes[i]->box_color = nodes[i]->default_box_color;
 
-            if(NODE_TYPE_TIMER != nodes[i]->type) nodes[i]->this_time = unique_execution_pass_timestamp;
+            if(NODE_TYPE_TIMER != nodes[i]->type) nodes[i]->this_time = SDL_GetTicks();
 
             //renderbox(nodes[i], orient);
 

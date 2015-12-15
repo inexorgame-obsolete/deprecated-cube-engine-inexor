@@ -18,22 +18,21 @@
 #include "inexor/flowgraph/editor/fl_enteditor.h"
 #include "inexor/flowgraph/timer/fl_timer.h"
 #include "inexor/flowgraph/sleep/fl_sleep.h"
-#include "inexor/flowgraph/worker/fl_threadworker.h"
 
 
 namespace inexor {
 namespace vscript {
 
-    class CVisualScriptSystem : /*public CVisualScriptRenderer, */public CEntityManager
+    class CVisualScriptSystem : public CVisualScriptRenderer, public CEntityManager
     {
+        protected:
+
+            std::vector<CScriptNode *> nodes;
+
         public:
         
             CVisualScriptSystem();
             ~CVisualScriptSystem();
-
-            std::vector<CScriptNode *> nodes;
-
-            unsigned int unique_execution_pass_timestamp;
 
             CScriptNode* add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...);
 
