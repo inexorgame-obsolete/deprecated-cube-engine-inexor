@@ -12,9 +12,6 @@ namespace inexor {
 namespace vscript {
 
 
-    CVisualScriptSystem vScript3D;
-
-
     CVisualScriptSystem::CVisualScriptSystem() 
     {
         selection_blocked_by_geometry = false;
@@ -149,23 +146,12 @@ namespace vscript {
 
                         if(rayboxintersect(p, vec(boxsize), camera1->o, camdir, dist, orient))
                         {
-                            dragging_new_relation = true; 
-                            drag_pos_start = p;
-                            drag_pos_current = p;
+                            dragging_new_relation = true;
                         }
                     }
-                }                
-
+                }
                 if(dragging_new_relation && !isdown) // stop dragging
                 {
-                    /*
-                    if(camera_ray_node_box_intersection(all_nodes, dragging_target_pos_offset))
-                    {
-                        /// TODO: add relation to target
-                        add_relation();
-                        /// save dragging_target_pos_offset
-                    }
-                    */
                     dragging_new_relation = false;
                 }
 
@@ -207,43 +193,119 @@ namespace vscript {
         nodes.clear();
     }
 
+    
+    void CVisualScriptSystem::render_nodes()
+    {
+        hovered_node = nullptr;
+
+        unique_execution_pass_timestamp = SDL_GetTicks();
+
+        for(unsigned int i=0; i<nodes.size(); i++) 
+        {
+            float dist = 0.0f;
+            int orient = VSCRIPT_BOX_NO_INTERSECTION;
+            vec p = nodes[i]->pos;
+
+            // check ray/box intersection
+            rayboxintersect(p, vec(boxsize), camera1->o, camdir, dist, orient);
+
+            nodes[i]->selected = (orient != VSCRIPT_BOX_NO_INTERSECTION);
+
+            // render a 200ms long color effect once its activated
+            if( (nodes[i]->this_time - nodes[i]->last_time)  < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL) nodes[i]->box_color = VSCRIPT_COLOR_TRIGGERED;
+            else nodes[i]->box_color = nodes[i]->default_box_color;
+
+            if(NODE_TYPE_TIMER != nodes[i]->type) nodes[i]->this_time = unique_execution_pass_timestamp;
+
+            renderbox(nodes[i], orient);
+
+            if(!selection_blocked_by_geometry)
+            {
+                if(orient != VSCRIPT_BOX_NO_INTERSECTION) 
+                {
+                    gle::color(vec::hexcolor(VSCRIPT_COLOR_GRAY));
+                    renderboxhelplines(p);
+                }
+            }
+            gle::color(vec::hexcolor(VSCRIPT_COLOR_BLACK));
+            renderboxoutline(p);
+
+            // render white text above
+            p.add(vec(boxsize/2));
+            p.add(vec(0,0,4));
+            particle_text(p + vec(0,0,1.0f), nodes[i]->node_name.c_str(), PART_TEXT, 1, 0xFFFFFF, 1.0f);
+            particle_text(p, nodes[i]->node_comment.c_str(), PART_TEXT, 1, 0xFFFFFF, 1.0f);
+        }
+
+        // which node is selected?
+        for(unsigned int i=0; i<nodes.size(); i++)
+        {
+            if(nodes[i]->selected && nullptr != nodes[i]) hovered_node = nodes[i];
+        }
+    }
+
+    
+    void CVisualScriptSystem::render_node_relations()
+    {
+        if(!nodes.size()) return;
+
+        for(unsigned int i=0; i<nodes.size(); i++)
+        {   
+            for(unsigned int e = 0; e < nodes[i]->children.size(); e++)
+            {
+                if(nodes[i]->pos_changed || nodes[i]->children[e]->pos_changed)
+                {
+                    inexor::geom::CBezierCurve tmp_curve;
+                    tmp_curve.ClearAllPoints();
+            
+                    vec t = nodes[i]->pos;
+                    vec n = nodes[i]->children[e]->pos;
+                    vec interpol1 = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f - 30.0f);
+                    vec interpol2 = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f + 30.0f);
+            
+                    t.x += boxsize/2;
+                    t.y += boxsize/2;
+                    n.x += boxsize/2;
+                    n.y += boxsize/2;
+                    n.z += boxsize;
+
+                    tmp_curve.AddParameterPoint(t);
+                    tmp_curve.AddParameterPoint(interpol1);
+                    tmp_curve.AddParameterPoint(interpol2);
+                    tmp_curve.AddParameterPoint(n);
+                    
+                    /// recompute cache
+                    tmp_curve.ComputeCache();
+                }
+
+                glBegin(GL_LINES);
+                gle::color(vec::hexcolor(VSCRIPT_COLOR_TRIGGERED));
+                glLineWidth(10.0f);
+
+                /*
+                for(unsigned int h=0; h<nodes[i]->children[e]->relation_curves[h].GetCachedPointsSize() -1; h++)
+                {
+                    CBezierCurve curve = nodes[i]->children[e]->relation_curves[h];
+                    SCustomOutputPoint t = curve.GetPoint_ByIndex(h);
+                    SCustomOutputPoint n = curve.GetPoint_ByIndex(h   +1);
+                    glVertex3f(t.pos.x, t.pos.y, t.pos.z);
+                    glVertex3f(n.pos.x, n.pos.y, n.pos.z);
+                }
+                */
+
+                glLineWidth(1.0f);
+                glEnd();
+            }
+        }
+    }
+
+
 
     void deleteallnodes()
     {
         vScript3D.delete_all_nodes();
     }
     COMMAND(deleteallnodes, "");
-
-
-    /*
-    void addconoutf(char* message)
-    {
-        vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "0", message);
-    }
-    COMMAND(addconoutf, "s");
-
-
-    void addtimer(char* interval, char* startdelay, char* limit, char* cooldown, char* name, char* comment, char* timer_format)
-    {
-        vScript3D.add_node(NODE_TYPE_TIMER, 7, interval, startdelay, limit, cooldown, name, comment, timer_format);
-    }
-    COMMAND(addtimer, "sssssss");
-
-
-    void synctimers()
-    {
-        vScript3D.sync_all_timers();
-    }
-    COMMAND(synctimers, "");
-
-
-    void addcomment(char* node_comment, char* node_name)
-    {
-        vScript3D.add_node(NODE_TYPE_COMMENT, 2, node_comment, node_name);
-    }
-    COMMAND(addcomment, "ss");
-    
-    */
 
 
     CScriptNode* a;
@@ -257,6 +319,7 @@ namespace vscript {
         a = vScript3D.add_node(NODE_TYPE_TIMER, 7, "5000", "0", "1000", "0", "TimerNode1", "Hello world", "0");
     }
     COMMAND(test_a, "");
+
 
     void test_b()
     {
