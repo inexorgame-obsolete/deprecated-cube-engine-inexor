@@ -19,24 +19,20 @@ namespace vscript {
             bool dragging_node;
             bool dragging_new_relation;
 
+            bool moving_entity;
             bool last_mouse_key_state;
-
-            //vec drag_pos_current;
-            //vec drag_pos_start;
 
             vec move_pos_start;
             vec node_pos_start;
-
-            bool moving_entity;
 
             virtual void process_change(int, bool) = 0;
 
         public:
 
-            bool selection_blocked_by_geometry;
-
             CEntityManager();
             ~CEntityManager();
+
+            bool selection_blocked_by_geometry;
 
             CScriptNode* selected_node;
             CScriptNode* hovered_node;
