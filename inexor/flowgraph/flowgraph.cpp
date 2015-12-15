@@ -24,7 +24,7 @@ namespace vscript {
 
     CVisualScriptSystem::CVisualScriptSystem() 
     {
-        selection_blocked_by_geometry = false;
+        //selection_blocked_by_geometry = false;
     }
 
 
