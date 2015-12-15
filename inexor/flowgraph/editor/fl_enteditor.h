@@ -26,7 +26,7 @@ namespace vscript {
             vec move_pos_start;
             vec node_pos_start;
 
-            virtual void process_change(int, bool) = 0;
+            virtual void update_input(int, bool) = 0;
 
             bool selection_blocked_by_geometry;
 

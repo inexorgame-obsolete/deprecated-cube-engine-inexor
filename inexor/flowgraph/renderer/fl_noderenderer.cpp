@@ -56,7 +56,7 @@ namespace vscript {
         vec p = node->pos;
 
         glBegin(GL_QUADS);
-
+        
         adjust_selection_color(orient, VSCRIPT_BOX_TOP, node);
         glVertex3f(p.x,p.y,p.z+b);
         glVertex3f(p.x+b,p.y,p.z+b);

@@ -35,11 +35,11 @@ namespace vscript {
 
     enum VSCRIPT_NODE_COLORS
     {
-        VSCRIPT_COLOR_TIMER     = 0x00B6FF,  // light blue
-        VSCRIPT_COLOR_COMMENT   = 0x43A63A,  // comment green
-        VSCRIPT_COLOR_FUNCTION  = 0xCC47B1,  // darker purple
-        VSCRIPT_COLOR_TRIGGERED = 0xFF6D00,  // spicy orange
-        VSCRIPT_COLOR_SLEEP     = 0xFF00CD,  // bright purple
+        VSCRIPT_COLOR_TIMER     = 0x51ABCC,  // light blue
+        VSCRIPT_COLOR_COMMENT   = 0x5BCC51,  // comment green
+        VSCRIPT_COLOR_FUNCTION  = 0xCC51B3,  // darker purple
+        VSCRIPT_COLOR_TRIGGERED = 0xFF8800,  // spicy orange
+        VSCRIPT_COLOR_SLEEP     = 0xCCCC51,  // bright purple
         VSCRIPT_COLOR_GRAY      = 0xAAAAAA,  // 
         VSCRIPT_COLOR_BLACK     = 0x000000,  // 
         VSCRIPT_COLOR_WHITE     = 0xFFFFFF,  // 

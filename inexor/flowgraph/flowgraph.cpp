@@ -146,10 +146,11 @@ namespace vscript {
         // add a connection curve
         geom::CBezierCurve newcurve;
         from->relations.push_back(newcurve);
+        from->pos_changed = true;
     }
 
 
-    void CVisualScriptSystem::process_change(int key, bool isdown)
+    void CVisualScriptSystem::update_input(int key, bool isdown)
     {
         switch( - key)
         {
@@ -190,8 +191,12 @@ namespace vscript {
                 else 
                 {
                     /// key released
-                    moving_entity = false;
-                    selected_node = nullptr;
+                    if(nullptr != selected_node)
+                    {
+                        moving_entity = false;
+                        selected_node->pos_changed = false;
+                        selected_node = nullptr;
+                    }
                 }
                 break;
         }
@@ -294,7 +299,6 @@ namespace vscript {
                     
                     /// recompute cache
                     tmp->ComputeCache();
-                    conoutf(CON_DEBUG, "recomputed cache!");
                 }
 
                 glBegin(GL_LINES);

@@ -32,7 +32,7 @@ namespace vscript {
             void render_nodes();
             void render_node_relations();
 
-            void process_change(int, bool);
+            void update_input(int, bool);
 
             void connect_nodes(CScriptNode *from, CScriptNode *to);
 

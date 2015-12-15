@@ -25,7 +25,7 @@ namespace vscript {
         {
             if(last_mouse_key_state != isdown) 
             {
-                process_change(key, isdown);
+                update_input(key, isdown);
                 last_mouse_key_state = isdown;
             }
         }
@@ -33,7 +33,7 @@ namespace vscript {
         {
             if(last_mouse_key_state != isdown) 
             {
-                process_change(key, isdown);
+                update_input(key, isdown);
                 last_mouse_key_state = isdown;
             }
         }
