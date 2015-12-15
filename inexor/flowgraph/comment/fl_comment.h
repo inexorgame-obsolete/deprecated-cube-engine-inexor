@@ -1,6 +1,6 @@
-// @file fl_comment.h
-// @author Johannes Schneider
-// @brief Comments will be rendered as text in 3D space. Use comments whenever its neccesary and useful!
+/// @file fl_comment.h
+/// @author Johannes Schneider
+/// @brief Comments will be rendered as text in 3D space. Use comments whenever its neccesary and useful!
 
 #ifndef INEXOR_VSCRIPT_COMMENT_HEADER
 #define INEXOR_VSCRIPT_COMMENT_HEADER
@@ -16,7 +16,7 @@ namespace vscript {
     {
         public:
 
-        CCommentNode(vec pos, const char* comment = "An example text for a comment.", const char* name = "CommentNode1");
+        CCommentNode(vec pos, const char* comment = "This is a comment", const char* name = "CommentNode1");
         ~CCommentNode();
 
         // comments do nothing at all
