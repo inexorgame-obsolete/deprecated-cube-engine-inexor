@@ -123,11 +123,11 @@ namespace vscript {
         if(nullptr != selected_node)
         {
             static float selected_dist = 0.0f;
-            static bool notCalculated = true;
-            if(notCalculated)
+            static bool calculated = false;
+            if(!calculated)
             {
                 selected_dist = selected_node->pos.dist(game::player1->o);
-                notCalculated = false;
+                calculated = true;
             }
             
             vec camdir_normalized = camdir;
@@ -281,11 +281,12 @@ namespace vscript {
                 {
                     tmp->ClearAllPoints();
             
+                    // generate a nice and smooth curve between two nodes
                     vec t = nodes[i]->pos;
                     vec n = nodes[i]->children[e]->pos;
-                    vec interpol1 = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f - 30.0f);
-                    vec interpol2 = vec( (t.x+n.x)/2.0f, (t.y+n.y)/2.0f, (t.z+n.z)/2.0f + 30.0f);
-            
+                    vec interpol1 = vec(t.x, t.y, t.z - 40.0f);
+                    vec interpol2 = vec(n.x, n.y, n.z + 40.0f);
+
                     t.x += boxsize/2;
                     t.y += boxsize/2;
                     n.x += boxsize/2;
