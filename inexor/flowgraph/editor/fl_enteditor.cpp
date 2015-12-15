@@ -12,9 +12,6 @@ namespace vscript {
         dragging_node = false;
         dragging_new_relation = false;
         last_mouse_key_state = false;
-
-        drag_pos_current = vec(0,0,0);
-        drag_pos_start = vec(0,0,0);
         move_pos_start = vec(0,0,0);
         node_pos_start = vec(0,0,0);
     }
