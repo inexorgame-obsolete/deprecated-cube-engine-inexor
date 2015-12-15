@@ -8,11 +8,12 @@
 #include <vector>
 
 #include "inexor/engine/engine.h"
-#include "inexor/flowgraph/debugger/fl_dbgrays.h"
-#include "inexor/flowgraph/node/fl_nodebase.h"
 
 #include "inexor/geom/curves/curvebase.h"
 #include "inexor/geom/geom.h"
+
+#include "inexor/flowgraph/debugger/fl_dbgrays.h"
+#include "inexor/flowgraph/node/fl_nodebase.h"
 
 
 namespace inexor {

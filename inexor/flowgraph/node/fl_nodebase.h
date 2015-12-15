@@ -50,12 +50,11 @@ namespace vscript {
     {
         public:
 
-            std::vector<CScriptNode *> parents;
-            std::vector<CScriptNode *> children;
-            //std::vector<geom::CBezierCurve> relation_curves;
-
             CScriptNode();
             ~CScriptNode();
+
+            std::vector<CScriptNode *> parents;
+            std::vector<CScriptNode *> children;
 
             vec pos;
             bool pos_changed;

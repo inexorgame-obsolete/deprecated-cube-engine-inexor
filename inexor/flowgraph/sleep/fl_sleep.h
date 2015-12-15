@@ -11,6 +11,7 @@
 #define INEXOR_VSCRIPT_MIN_SLEEP_INTERVAL 5 // 10ms
 #define INEXOR_VSCRIPT_MAX_SLEEP_INTERVAL 1000 * 60 * 60 * 24 // 1 day
 
+
 namespace inexor {
 namespace vscript {
 
@@ -23,9 +24,10 @@ namespace vscript {
             unsigned int sleep_interval;
             bool         sleep_active;
 
-            CSleepNode(vec pos, 
-                       unsigned int sleeptime, 
-                       const char* name = "NewSleep1", 
+            
+            CSleepNode(vec pos,
+                       unsigned int sleeptime,
+                       const char* name = "NewSleep1",
                        const char* comment = "Hello World Comment for a Sleep");
                 
             ~CSleepNode();
