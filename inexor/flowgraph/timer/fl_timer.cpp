@@ -36,16 +36,21 @@ namespace vscript {
     {
     }
 
+    
+    void CTimerNode::in()
+    {
+        run();
+    }
+
 
     void CTimerNode::run()
     {
         check_if_execution_is_due();
     }
 
-    /// resetting the timer means to reset last_time
+
     void CTimerNode::reset()
     {
-        /// TODO: do we need this?
         last_time = 0;
     }
 
@@ -58,15 +63,16 @@ namespace vscript {
     }
 
 
-    /// decide if we need to run the code
+    // decide if we need to run the code
     void CTimerNode::check_if_execution_is_due() 
     {
         if(this_time - last_time >= timer_interval) 
         {
             for(unsigned int i=0; i<children.size(); i++)
             {
+                conoutf(CON_DEBUG, "thread started!");
                 SDL_Thread *thread = SDL_CreateThread(LetsGo, "LetsGo", (void *)children[i]);
-            }   
+            }
             last_time = this_time;
             timer_counter++;
         }

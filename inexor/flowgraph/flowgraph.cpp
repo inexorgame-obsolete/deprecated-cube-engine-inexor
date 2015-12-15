@@ -221,9 +221,13 @@ namespace vscript {
     void CVisualScriptSystem::update_timers()
     {
         for(unsigned int i=0; i<nodes.size(); i++)
-        if(NODE_TYPE_TIMER != nodes[i]->type) nodes[i]->this_time = SDL_GetTicks();
+        {
+            nodes[i]->this_time = SDL_GetTicks();
+            if(NODE_TYPE_TIMER == nodes[i]->type) nodes[i]->run();
+        }
     }
-    
+
+
     void CVisualScriptSystem::render_nodes()
     {
         hovered_node = nullptr;
@@ -323,6 +327,7 @@ namespace vscript {
             }
         }
     }
+
 
 
 
