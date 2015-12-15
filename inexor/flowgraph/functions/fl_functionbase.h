@@ -20,7 +20,7 @@ namespace vscript {
     {
         public:
 
-        CFunctionBase();        
+        CFunctionBase();
         ~CFunctionBase();
 
         // TODO: implement parameters and return value!
