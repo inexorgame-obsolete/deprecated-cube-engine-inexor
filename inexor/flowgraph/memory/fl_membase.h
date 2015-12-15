@@ -1,6 +1,6 @@
 /// @file fl_timer.h
 /// @author Johannes Schneider
-/// @brief Timers will be called every [n] miliseconds
+/// @brief Timers will trigger code execution in a certain interval
 
 #ifndef INEXOR_VSCRIPT_MEMBASE_HEADER
 #define INEXOR_VSCRIPT_MEMBASE_HEADER

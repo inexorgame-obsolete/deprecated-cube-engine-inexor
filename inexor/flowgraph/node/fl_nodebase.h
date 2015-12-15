@@ -10,7 +10,7 @@
 #include <map>
 #include <list>
 
-#include "inexor/geom/geom.h"
+#include "inexor/engine/engine.h"
 
 
 namespace inexor {

@@ -1,19 +1,19 @@
-/*#include "inexor/flowgraph/renderer/fl_noderenderer.h"
+#include "inexor/flowgraph/renderer/fl_noderenderer.h"
 
 namespace inexor {
 namespace vscript {
 
-    CVisualScriptRenderer::CVisualScriptRenderer()
+    CNodeRenderer::CNodeRenderer()
+    {
+    }
+
+    CNodeRenderer::~CNodeRenderer()
     {
     }
 
 
-    CVisualScriptRenderer::~CVisualScriptRenderer()
-    {
-    }
 
-
-    void CVisualScriptRenderer::start_rendering()
+    void CNodeRenderer::start_rendering()
     {
         notextureshader->set();
         gle::enablevertex();
@@ -22,7 +22,7 @@ namespace vscript {
     }
 
 
-    void CVisualScriptRenderer::end_rendering()
+    void CNodeRenderer::end_rendering()
     {
         disablepolygonoffset(GL_POLYGON_OFFSET_LINE);
         gle::clearvbo();
@@ -31,7 +31,7 @@ namespace vscript {
     }
 
 
-    void CVisualScriptRenderer::adjust_selection_color(int orient, int index, CScriptNode* node)
+    void CNodeRenderer::adjust_selection_color(int orient, int index, CScriptNode* node)
     {
         // hightlight node during execution
         if(SDL_GetTicks() - node->last_time < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL) node->box_color = VSCRIPT_COLOR_TRIGGERED;
@@ -45,7 +45,7 @@ namespace vscript {
     }
 
 
-    void CVisualScriptRenderer::renderbox(CScriptNode* node, int orient)
+    void CNodeRenderer::renderbox(CScriptNode* node, int orient)
     {
         /// I believe there is no better way to render a box using quads.
         /// You either write the box generator code directly or you let it generate.
@@ -96,7 +96,7 @@ namespace vscript {
     }
 
 
-    void CVisualScriptRenderer::renderboxoutline(vec p)
+    void CNodeRenderer::renderboxoutline(vec p)
     {
         const float b = boxsize;
 
@@ -129,7 +129,7 @@ namespace vscript {
     }
 
 
-    void CVisualScriptRenderer::renderboxhelplines(vec p)
+    void CNodeRenderer::renderboxhelplines(vec p)
     {
         glBegin(GL_LINES);
 
@@ -170,23 +170,19 @@ namespace vscript {
     }
 
 
-    void CVisualScriptRenderer::render_debug_rays()
+    void CNodeRenderer::render_debug_rays()
     {
         glBegin(GL_LINES);
         gle::color(vec::hexcolor(VSCRIPT_COLOR_DEBUG_RAY));
         glLineWidth(10.0f);
-
         for(unsigned int h=0; h<rays.size(); h++)
         {
             glVertex3f(rays[h].pos.x,rays[h].pos.y,rays[h].pos.z);
             glVertex3f(rays[h].target.x,rays[h].target.y,rays[h].target.z);
         }
-
         glLineWidth(1.0f);
         glEnd();
     }
 
 };
 };
-
-*/

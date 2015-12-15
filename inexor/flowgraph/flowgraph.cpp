@@ -1,4 +1,12 @@
 #include "inexor/flowgraph/flowgraph.h"
+#include "inexor/fpsgame/game.h"
+#include "inexor/flowgraph/sleep/fl_sleep.h"
+#include "inexor/flowgraph/timer/fl_timer.h"
+#include "inexor/flowgraph/comment/fl_comment.h"
+#include "inexor/flowgraph/functions/fl_functionbase.h"
+#include "inexor/flowgraph/functions/fl_functions.h"
+#include "inexor/geom/geom.h"
+
 
 extern selinfo sel, lastsel, savedsel;
 extern bool editmode;
@@ -131,12 +139,6 @@ namespace vscript {
     {
         to->parents.push_back(from);
         from->children.push_back(to);
-    }
-
-
-    void CVisualScriptSystem::disconnect_nodes(CScriptNode* from, CScriptNode* to)
-    {
-        /// TODO:...
     }
 
 
