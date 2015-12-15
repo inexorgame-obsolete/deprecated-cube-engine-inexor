@@ -56,21 +56,19 @@ namespace geom {
             const unsigned int BinomialCoefficient(unsigned int n, const unsigned int k);
 
             void CalculateCurveCacheWithBernsteinPolynoms();
-    
             void CalculateCurveCacheWithDeCasteljau();
 
             SCustomOutputPoint calculate_de_casteljau_coordinate(int index, int nextindex, float t);
-
             SCustomOutputPoint calculate_bernstein_coordinates(float position);
 
         public:
 
             CBezierCurve();
-
             ~CBezierCurve();
 
             void SetAlgorithm(BEZIER_ALGORITHM algorithm);
     
+            /// every curve class needs to implement this virtual function
             void ComputeCache();
 
             SCustomOutputPoint CalcRealtimePoint(float curvepos);

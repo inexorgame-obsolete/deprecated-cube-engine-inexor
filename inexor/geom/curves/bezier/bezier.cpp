@@ -11,23 +11,25 @@ namespace geom
     CBezierCurve::~CBezierCurve()
     {
     }
+
     
     void CBezierCurve::SetAlgorithm(BEZIER_ALGORITHM algorithm)
     {
         engine_algorithm = algorithm;
     }
 
+
     void CBezierCurve::ComputeCache()
     {
         switch (engine_algorithm)
         {
-        case ALGORITHM_BERNSTEIN_POLYNOM:
-            CalculateCurveCacheWithBernsteinPolynoms();
-            break;
+            case ALGORITHM_BERNSTEIN_POLYNOM:
+                CalculateCurveCacheWithBernsteinPolynoms();
+                break;
 
-        case ALGORITHM_DECASTELJAU:
-            CalculateCurveCacheWithDeCasteljau();
-            break;
+            case ALGORITHM_DECASTELJAU:
+                CalculateCurveCacheWithDeCasteljau();
+                break;
         }
     }
     
@@ -47,6 +49,7 @@ namespace geom
         }
         return output;
     }
+
     
     const unsigned int CBezierCurve::BinomialCoefficient(unsigned int n, const unsigned int k)
     {
@@ -57,23 +60,6 @@ namespace geom
             r /= d;
         }
         return r;
-    }
-
-
-    void CBezierCurve::CalculateCurveCacheWithDeCasteljau(void)
-    {
-        if(m_vInputPoints.size() < 2) return;
-
-        for(float curvepos = 0.0f; curvepos <= 1.0f; curvepos += 1.0f / m_fComputationPrecision)
-        {
-            /// where to begin
-            int end_number = 0;
-            int begin_number = m_vInputPoints.size() - 1;
-
-            /// Calculate and add point
-            SCustomOutputPoint out(calculate_de_casteljau_coordinate(begin_number, end_number, curvepos));
-            m_vOutputPoints.push_back(out);
-        }
     }
 
 
@@ -88,21 +74,17 @@ namespace geom
     }
 
 
-    void CBezierCurve::CalculateCurveCacheWithBernsteinPolynoms(void)
+    void CBezierCurve::CalculateCurveCacheWithDeCasteljau(void)
     {
         if(m_vInputPoints.size() < 2) return;
 
-        /// calculate step value using curve precision coefficient
-        float fStep = 1.0f / m_fComputationPrecision;
-
-        // go along our curve in fPos steps
-        for (float fPos = 0.0f; fPos <= 1.0f; fPos += fStep)
+        for(float curvepos = 0.0f; curvepos <= 1.0f; curvepos += 1.0f / m_fComputationPrecision)
         {
-            /// compute and add the cached point to the curve
-            SCustomOutputPoint ComputedPoint(calculate_bernstein_coordinates(fPos));
-            m_vOutputPoints.push_back(ComputedPoint);
+            int end_number = 0;
+            int begin_number = m_vInputPoints.size() - 1;
+            SCustomOutputPoint out(calculate_de_casteljau_coordinate(begin_number, end_number, curvepos));
+            m_vOutputPoints.push_back(out);
         }
-        m_bCacheComputed = true;
     }
 
 
@@ -164,6 +146,22 @@ namespace geom
 
         // return finished point for interpolation value t
         return p;
+    }
+
+    void CBezierCurve::CalculateCurveCacheWithBernsteinPolynoms(void)
+    {
+        if(m_vInputPoints.size() < 2) return;
+
+        /// calculate step value using curve precision coefficient
+        float fStep = 1.0f / m_fComputationPrecision;
+
+        // go along our curve in fPos steps
+        for (float fPos = 0.0f; fPos <= 1.0f; fPos += fStep)
+        {
+            SCustomOutputPoint ComputedPoint(calculate_bernstein_coordinates(fPos));
+            m_vOutputPoints.push_back(ComputedPoint);
+        }
+        m_bCacheComputed = true;
     }
 
 };
