@@ -142,6 +142,10 @@ namespace vscript {
     {
         to->parents.push_back(from);
         from->children.push_back(to);
+
+        // add a connection curve
+        geom::CBezierCurve newcurve;
+        from->relations.push_back(newcurve);
     }
 
 
