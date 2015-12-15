@@ -48,11 +48,8 @@ namespace geom
         }
         return output;
     }
-
-
-    /// PROTECTED FUNCTIONS
-
-    unsigned int CBezierCurve::BinomialCoefficient(unsigned int n, const unsigned int k)
+    
+    const unsigned int CBezierCurve::BinomialCoefficient(unsigned int n, const unsigned int k)
     {
         unsigned int r = 1;
         if(k > n) return 0;
