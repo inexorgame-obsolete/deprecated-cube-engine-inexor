@@ -1891,6 +1891,7 @@ void gl_drawframe()
     using namespace inexor::vscript;
     vScript3D.update_drag_n_drop();
     vScript3D.start_rendering();
+    vScript3D.update_timers();
     vScript3D.render_nodes();
     vScript3D.render_debug_rays();
     vScript3D.render_node_relations();

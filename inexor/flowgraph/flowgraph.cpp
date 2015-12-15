@@ -217,6 +217,12 @@ namespace vscript {
         nodes.clear();
     }
 
+
+    void CVisualScriptSystem::update_timers()
+    {
+        for(unsigned int i=0; i<nodes.size(); i++)
+        if(NODE_TYPE_TIMER != nodes[i]->type) nodes[i]->this_time = SDL_GetTicks();
+    }
     
     void CVisualScriptSystem::render_nodes()
     {
@@ -236,8 +242,6 @@ namespace vscript {
             // render a 200ms long color effect once its activated
             if( (nodes[i]->this_time - nodes[i]->last_time)  < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL) nodes[i]->box_color = VSCRIPT_COLOR_TRIGGERED;
             else nodes[i]->box_color = nodes[i]->default_box_color;
-
-            if(NODE_TYPE_TIMER != nodes[i]->type) nodes[i]->this_time = SDL_GetTicks();
 
             renderbox(nodes[i], orient);
 
