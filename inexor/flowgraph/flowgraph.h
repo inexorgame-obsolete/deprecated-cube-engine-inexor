@@ -13,6 +13,7 @@
 #include "inexor/flowgraph/renderer/fl_noderenderer.h"
 #include "inexor/flowgraph/editor/fl_enteditor.h"
 
+
 namespace inexor {
 namespace vscript {
 
@@ -21,6 +22,7 @@ namespace vscript {
         public:
         
             std::vector<CScriptNode *> nodes;
+
 
             CVisualScriptSystem();
             ~CVisualScriptSystem();

@@ -5,8 +5,9 @@
 #include "inexor/flowgraph/comment/fl_comment.h"
 #include "inexor/flowgraph/functions/fl_functionbase.h"
 #include "inexor/flowgraph/functions/fl_functions.h"
-#include "inexor/geom/geom.h"
 
+#include "inexor/geom/geom.h"
+#include "inexor/geom/curves/bezier/bezier.h"
 
 extern selinfo sel, lastsel, savedsel;
 extern bool editmode;
@@ -265,10 +266,11 @@ namespace vscript {
         {   
             for(unsigned int e = 0; e < nodes[i]->children.size(); e++)
             {
+                geom::CBezierCurve *tmp = &nodes[i]->relations[e];
+
                 if(nodes[i]->pos_changed || nodes[i]->children[e]->pos_changed)
                 {
-                    inexor::geom::CBezierCurve tmp_curve;
-                    tmp_curve.ClearAllPoints();
+                    tmp->ClearAllPoints();
             
                     vec t = nodes[i]->pos;
                     vec n = nodes[i]->children[e]->pos;
@@ -281,30 +283,28 @@ namespace vscript {
                     n.y += boxsize/2;
                     n.z += boxsize;
 
-                    tmp_curve.AddParameterPoint(t);
-                    tmp_curve.AddParameterPoint(interpol1);
-                    tmp_curve.AddParameterPoint(interpol2);
-                    tmp_curve.AddParameterPoint(n);
+                    tmp->AddParameterPoint(t);
+                    tmp->AddParameterPoint(interpol1);
+                    tmp->AddParameterPoint(interpol2);
+                    tmp->AddParameterPoint(n);
                     
                     /// recompute cache
-                    tmp_curve.ComputeCache();
+                    tmp->ComputeCache();
+                    conoutf(CON_DEBUG, "recomputed cache!");
                 }
 
                 glBegin(GL_LINES);
                 gle::color(vec::hexcolor(VSCRIPT_COLOR_TRIGGERED));
                 glLineWidth(10.0f);
 
-                /*
-                for(unsigned int h=0; h<nodes[i]->children[e]->relation_curves[h].GetCachedPointsSize() -1; h++)
+                for(unsigned int h=0; h<tmp->GetCachedPointsSize() -1; h++)
                 {
-                    CBezierCurve curve = nodes[i]->children[e]->relation_curves[h];
-                    SCustomOutputPoint t = curve.GetPoint_ByIndex(h);
-                    SCustomOutputPoint n = curve.GetPoint_ByIndex(h   +1);
+                    geom::SCustomOutputPoint t = tmp->GetPoint_ByIndex(h);
+                    geom::SCustomOutputPoint n = tmp->GetPoint_ByIndex(h   +1);
                     glVertex3f(t.pos.x, t.pos.y, t.pos.z);
                     glVertex3f(n.pos.x, n.pos.y, n.pos.z);
                 }
-                */
-
+                
                 glLineWidth(1.0f);
                 glEnd();
             }

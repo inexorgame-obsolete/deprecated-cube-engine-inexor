@@ -12,6 +12,8 @@
 
 #include "inexor/engine/engine.h"
 
+#include "inexor/geom/curves/bezier/bezier.h"
+
 
 namespace inexor {
 namespace vscript {
@@ -55,6 +57,8 @@ namespace vscript {
 
             std::vector<CScriptNode *> parents;
             std::vector<CScriptNode *> children;
+            
+            std::vector<inexor::geom::CBezierCurve> relations;
 
             vec pos;
             bool pos_changed;
