@@ -21,8 +21,8 @@ namespace vscript {
 
             bool last_mouse_key_state;
 
-            vec drag_pos_current;
-            vec drag_pos_start;
+            //vec drag_pos_current;
+            //vec drag_pos_start;
 
             vec move_pos_start;
             vec node_pos_start;
