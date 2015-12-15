@@ -5,8 +5,7 @@
 #ifndef INEXOR_VSCRIPT_DEBUGRAY_HEADER
 #define INEXOR_VSCRIPT_DEBUGRAY_HEADER
 
-#include "inexor/flowgraph/node/fl_nodebase.h"
-
+#include "inexor/engine/engine.h"
 
 namespace inexor {
 namespace vscript {

@@ -2,15 +2,15 @@
 /// @author Johannes Schneider
 /// @brief Renderer for nodes and node relations
 
-#ifndef INEXOR_VSCRIPT_RENDERING_HEADER
-#define INEXOR_VSCRIPT_RENDERING_HEADER
+#ifndef INEXOR_VSCRIPT_NODE_RENDERER_HEADER
+#define INEXOR_VSCRIPT_NODE_RENDERER_HEADER
 
 #include <vector>
 
-#include "inexor/engine/engine.h"
+//#include "inexor/engine/engine.h"
 
-#include "inexor/geom/curves/curvebase.h"
-#include "inexor/geom/geom.h"
+//#include "inexor/geom/curves/curvebase.h"
+//#include "inexor/geom/geom.h"
 
 #include "inexor/flowgraph/debugger/fl_dbgrays.h"
 #include "inexor/flowgraph/node/fl_nodebase.h"
@@ -54,6 +54,7 @@ namespace vscript {
             void render_debug_rays();
             void end_rendering();
     };
+
 };
 };
 

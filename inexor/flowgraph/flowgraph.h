@@ -2,8 +2,8 @@
 /// @author Johannes Schneider
 /// @brief 3D visual scripting system
 
-#ifndef INEXOR_VSCRIPT_HEADER
-#define INEXOR_VSCRIPT_HEADER
+#ifndef INEXOR_VSCRIPT_FLOWGRAPH_HEADER
+#define INEXOR_VSCRIPT_FLOWGRAPH_HEADER
 
 #include <stdarg.h>
 #include <deque>
@@ -18,16 +18,12 @@
 #include "inexor/flowgraph/comment/fl_comment.h"
 #include "inexor/flowgraph/sleep/fl_sleep.h"
 
-#include "inexor/flowgraph/renderer/fl_noderenderer.h"
-
-/*
-#include "inexor/flowgraph/debugger/fl_dbgrays.h"
-*/
+//#include "inexor/flowgraph/renderer/fl_noderenderer.h"
 
 namespace inexor {
 namespace vscript {
 
-    class CVisualScriptSystem : public CVisualScriptRenderer, public CEntityManager
+    class CVisualScriptSystem : public CEntityManager, public CVisualScriptRenderer
     {
         public:
         
