@@ -68,7 +68,7 @@ namespace geom {
     
             BEZIER_ALGORITHM engine_algorithm;
 
-            unsigned int BinomialCoefficient(unsigned int n, const unsigned int k);
+            const unsigned int BinomialCoefficient(unsigned int n, const unsigned int k);
 
             void CalculateCurveCacheWithBernsteinPolynoms();
     
@@ -83,11 +83,13 @@ namespace geom {
             CBezierCurve();
 
             ~CBezierCurve();
-    
-            void ComputeCache();
-            SCustomOutputPoint CalcRealtimePoint(float curvepos);
 
             void SetAlgorithm(BEZIER_ALGORITHM algorithm);
+    
+            void ComputeCache();
+
+            SCustomOutputPoint CalcRealtimePoint(float curvepos);
+
     };
 
 };
