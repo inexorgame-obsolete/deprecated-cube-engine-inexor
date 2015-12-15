@@ -6,8 +6,6 @@
 #define INEXOR_VSCRIPT_COMMENT_HEADER
 
 #include "inexor/engine/engine.h"
-#include "inexor/flowgraph/node/fl_nodebase.h"
-
 
 namespace inexor {
 namespace vscript {

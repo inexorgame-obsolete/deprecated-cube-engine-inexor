@@ -7,10 +7,7 @@
 
 #include <vector>
 
-#include "inexor/flowgraph/debugger/fl_dbgrays.h"
-#include "inexor/flowgraph/node/fl_nodebase.h"
 #include "inexor/flowgraph/timer/fl_timer.h"
-
 
 namespace inexor {
 namespace vscript {
@@ -29,23 +26,21 @@ namespace vscript {
     };
 
 
-    class CVisualScriptRenderer
+    class CNodeRenderer
     {
 
         public:
 
-            std::vector<CDebugRay> rays;
-
-
-            CVisualScriptRenderer()
+            CNodeRenderer()
             {
             }
 
-
-            ~CVisualScriptRenderer()
+            ~CNodeRenderer()
             {
             }
 
+            //std::vector<CDebugRay> rays;
+            
 
             void start_rendering()
             {
@@ -206,19 +201,18 @@ namespace vscript {
 
             void render_debug_rays()
             {
+                /*
                 glBegin(GL_LINES);
                 gle::color(vec::hexcolor(VSCRIPT_COLOR_DEBUG_RAY));
                 glLineWidth(10.0f);
-
-                /*
                 for(unsigned int h=0; h<rays.size(); h++)
                 {
                     glVertex3f(rays[h].pos.x,rays[h].pos.y,rays[h].pos.z);
                     glVertex3f(rays[h].target.x,rays[h].target.y,rays[h].target.z);
                 }
-                */
                 glLineWidth(1.0f);
                 glEnd();
+                */
             }
     };
 

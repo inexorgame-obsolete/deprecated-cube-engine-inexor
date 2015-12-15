@@ -1,5 +1,4 @@
 #include "inexor/flowgraph/functions/fl_playsound.h"
-#include "inexor/fpsgame/game.h"
 
 namespace inexor {
 namespace vscript {

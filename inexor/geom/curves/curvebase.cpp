@@ -24,6 +24,7 @@ namespace geom {
 
     void CCurveBase::AddParameterPoint(vec p)
     {
+        // check if parameter point limit was reached or not
         if(m_vInputPoints.size() < m_uiMaxParameterPoints)
         {
             SCustomInputPoint t(p);

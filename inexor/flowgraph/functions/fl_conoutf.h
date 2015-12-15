@@ -6,8 +6,6 @@
 #define INEXOR_VSCRIPT_CONOUTF_HEADER
 
 #include "inexor/engine/engine.h"
-#include "inexor/flowgraph/node/fl_nodebase.h"
-#include "inexor/flowgraph/functions/fl_functionbase.h"
 
 
 namespace inexor {
