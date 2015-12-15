@@ -37,9 +37,9 @@ namespace vscript {
 
             CScriptNode* add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...);
 
-            void render_node_relations();
             void render_nodes();
-            void render_debug_rays();
+            void render_node_relations();
+
             void process_change(int, bool);
 
             void connect_nodes(CScriptNode *from, CScriptNode *to);
@@ -48,7 +48,9 @@ namespace vscript {
             void update_drag_n_drop();
             void sync_all_timers();
             void delete_all_nodes();
-    };
+    }
+    // create an instance
+    vScript3D;
 
 };
 };
