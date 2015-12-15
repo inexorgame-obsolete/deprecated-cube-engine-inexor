@@ -1,9 +1,9 @@
-#include "inexor/flowgraph/renderer/fl_noderenderer.h"
+//#include "inexor/flowgraph/renderer/fl_noderenderer.h"
 
 namespace inexor {
 namespace vscript {
 
-
+    /*
     CVisualScriptRenderer::CVisualScriptRenderer()
     {
     }
@@ -13,7 +13,6 @@ namespace vscript {
     {
     }
 
-    /*
 
     void CVisualScriptRenderer::start_rendering()
     {
@@ -187,7 +186,6 @@ namespace vscript {
         glLineWidth(1.0f);
         glEnd();
     }
-
     */
 
 };

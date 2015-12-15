@@ -1,11 +1,10 @@
-#include "inexor/engine/engine.h"
-#include "inexor/flowgraph/editor/fl_enteditor.h"
-#include "inexor/geom/curves/curvebase.h"
+//#include "inexor/flowgraph/editor/fl_enteditor.h"
 
 namespace inexor {
 namespace vscript {
 
-
+    
+    /*
     CEntityManager::CEntityManager()
     {
         dragging_node = false;
@@ -40,6 +39,7 @@ namespace vscript {
             }
         }
     }
+    */
 
 };
 };

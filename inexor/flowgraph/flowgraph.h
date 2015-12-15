@@ -8,22 +8,22 @@
 #include <stdarg.h>
 #include <deque>
 
+#include "inexor/fpsgame/game.h"
 #include "inexor/engine/engine.h"
 
 #include "inexor/flowgraph/node/fl_nodebase.h"
-#include "inexor/flowgraph/editor/fl_enteditor.h"
+#include "inexor/flowgraph/renderer/fl_noderenderer.h"
+#include "inexor/flowgraph/editor/fl_enteditor.h
 #include "inexor/flowgraph/timer/fl_timer.h"
-
-#include "inexor/flowgraph/functions/fl_functions.h"
 #include "inexor/flowgraph/comment/fl_comment.h"
+#include "inexor/flowgraph/functions/fl_conoutf.h"
+#include "inexor/flowgraph/functions/fl_playsound.h"
 #include "inexor/flowgraph/sleep/fl_sleep.h"
-
-//#include "inexor/flowgraph/renderer/fl_noderenderer.h"
 
 namespace inexor {
 namespace vscript {
 
-    class CVisualScriptSystem : public CEntityManager, public CVisualScriptRenderer
+    class CVisualScriptSystem : public CVisualScriptRenderer, public CEntityManager
     {
         public:
         
