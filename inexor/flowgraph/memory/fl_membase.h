@@ -1,4 +1,4 @@
-/// @file fl_timer.h (flowgraph's timer implementation)
+/// @file fl_timer.h
 /// @author Johannes Schneider
 /// @brief Timers will be called every [n] miliseconds
 
