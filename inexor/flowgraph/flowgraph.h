@@ -14,7 +14,7 @@
 #include "inexor/flowgraph/debugger/fl_dbgrays.h"
 #include "inexor/flowgraph/comment/fl_comment.h"
 #include "inexor/flowgraph/functions/fl_functions.h"
-#include "inexor/flowgraph/renderer/fl_noderenderer.h"
+//#include "inexor/flowgraph/renderer/fl_noderenderer.h"
 #include "inexor/flowgraph/editor/fl_enteditor.h"
 #include "inexor/flowgraph/timer/fl_timer.h"
 #include "inexor/flowgraph/sleep/fl_sleep.h"
@@ -22,6 +22,34 @@
 
 namespace inexor {
 namespace vscript {
+
+    class CVisualScriptRenderer
+    {
+        protected:
+
+            /*
+            std::vector<CDebugRay> rays;
+
+            void adjust_selection_color(int orient, int index, CScriptNode *node);
+
+            void renderbox(CScriptNode *node, int orient);
+            void renderboxoutline(vec p);
+            void renderboxhelplines(vec p);
+            */
+
+        public:
+
+            CVisualScriptRenderer();
+            ~CVisualScriptRenderer();
+        
+            /*
+            void start_rendering();
+
+            void render_debug_rays();
+
+            void end_rendering();
+            */
+    };
 
     class CVisualScriptSystem : public CVisualScriptRenderer, public CEntityManager
     {

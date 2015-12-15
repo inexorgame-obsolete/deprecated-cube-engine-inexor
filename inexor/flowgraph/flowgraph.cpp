@@ -7,6 +7,17 @@ extern selinfo sel, lastsel, savedsel;
 extern bool editmode;
 extern int gridsize;
 
+enum VSCRIPT_ENTITY_BOX_ORIENTATION
+{
+    VSCRIPT_BOX_NO_INTERSECTION = -1,
+    VSCRIPT_BOX_LEFT,
+    VSCRIPT_BOX_RIGHT,
+    VSCRIPT_BOX_FRONT,
+    VSCRIPT_BOX_BACK,
+    VSCRIPT_BOX_BOTTOM,
+    VSCRIPT_BOX_TOP
+};
+
 
 namespace inexor {
 namespace vscript {
