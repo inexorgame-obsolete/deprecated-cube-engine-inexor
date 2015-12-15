@@ -8,12 +8,13 @@
 #include <vector>
 
 #include "inexor/engine/engine.h"
+#include "inexor/flowgraph/debugger/fl_dbgrays.h"
 #include "inexor/flowgraph/node/fl_nodebase.h"
 
 #include "inexor/geom/curves/curvebase.h"
 #include "inexor/geom/geom.h"
 
-/*
+
 namespace inexor {
 namespace vscript {
 
@@ -35,7 +36,7 @@ namespace vscript {
     {
         protected:
 
-                    std::vector<CDebugRay> rays;
+            std::vector<CDebugRay> rays;
 
             void adjust_selection_color(int orient, int index, CScriptNode *node);
 
@@ -47,15 +48,13 @@ namespace vscript {
 
             CVisualScriptRenderer();
             ~CVisualScriptRenderer();
-        
+
             void start_rendering();
-
             void render_debug_rays();
-
             void end_rendering();
     };
 };
 };
-*/
+
 
 #endif
