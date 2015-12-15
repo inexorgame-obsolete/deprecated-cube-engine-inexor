@@ -346,14 +346,14 @@ namespace vscript {
     
     void test_a()
     {
-        a = vScript3D.add_node(NODE_TYPE_TIMER, 7, "5000", "0", "1000", "0", "TimerNode1", "Hello world", "0");
+        a = vScript3D.add_node(NODE_TYPE_TIMER, 7, "1000", "0", "1000", "0", "TimerNode1", "Hello world", "0");
     }
     COMMAND(test_a, "");
 
 
     void test_b()
     {
-        b = vScript3D.add_node(NODE_TYPE_SLEEP, 1, "1500");
+        b = vScript3D.add_node(NODE_TYPE_SLEEP, 1, "150");
         vScript3D.connect_nodes(a,b);
     }
     COMMAND(test_b, "");
