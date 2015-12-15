@@ -1,8 +1,6 @@
-/// (math) vector dependency
-#include "inexor/engine/engine.h"
-/// C++ standard library for dynamic arrays
 #include <vector>
 
+#include "inexor/engine/engine.h"
 #include "inexor/geom/curves/curvebase.h"
 
 namespace inexor {
@@ -26,7 +24,6 @@ namespace geom {
 
     void CCurveBase::AddParameterPoint(vec p)
     {
-        // check if parameter point limit was reached or not
         if(m_vInputPoints.size() < m_uiMaxParameterPoints)
         {
             SCustomInputPoint t(p);
@@ -66,14 +63,14 @@ namespace geom {
     SCustomOutputPoint CCurveBase::GetPoint_ByInterpolationPos(float curvepos)
     {
         assert(IsCurveComputed());
-        /// TODO: Does this work on Linux?
+
+        /// @warning This is NOT tested on any other platform than MS Windows
         return m_vOutputPoints[GetIndex_ByInterpolationPos(curvepos)];
     }
 
 
     SCustomOutputPoint CCurveBase::GetPoint_ByIndex(unsigned int index)
     {
-        /// TODO: does all this make sense?
         assert(IsCurveComputed());
         assert(index < m_vOutputPoints.size());
         return m_vOutputPoints[index];

@@ -1,12 +1,11 @@
 /// @file curvebase.h
 /// @author Johannes "Hanni" Schneider
 /// @date 30.08.2015
-/// @review #5: 14.10.2015
 /// @brief This header file defines the base class for all curve computing classes.
 
 /// TODO: Keep parameter points up to date without clearing and reinitialising all parameter points?
-///       must implement some kind of pass_param_point_vector and bool haschanged = false; method..
-/// TODO: Calculate the length of the curve? (auto precision)
+/// TODO: Calculate the length of the curve
+/// TODO: Get point's distance from curve
 
 
 #ifndef INEXOR_GEOM_CURVE_BASE_HEADER
@@ -16,7 +15,7 @@
 #include "inexor/engine/engine.h"
 
 #define INEXOR_VSCRIPT_STD_CALC_PRECISION 50
-#define INEXOR_VSCRIPT_STD_MAX_PARAM_POINTS 30
+#define INEXOR_VSCRIPT_STD_MAX_PARAM_POINTS 10
 
 
 namespace inexor {
@@ -26,7 +25,6 @@ namespace geom {
     {
         vec pos;
 
-        /// Please note: there is no standard constructor for this structure
         SCustomInputPoint(vec p = vec(0,0,0)) {
             pos = p;
         }
@@ -36,17 +34,16 @@ namespace geom {
     };
 
 
+    /// @brief Output points have normal and tangent vectors.
     struct SCustomOutputPoint : public SCustomInputPoint 
     {
         vec tangent;
+        /// A normal vector can be rotated around the curve in any angle!
         vec normal;
 
-        /// Please note: a normal vector can be rotated around the curve in any angle
-        /// Please note: there is no stanard constructor for this structure
-
-        SCustomOutputPoint(vec _point = vec(0,0,0))
+        SCustomOutputPoint(vec p = vec(0,0,0))
         {
-            pos = _point;
+            pos = p;
             tangent = vec(0,0,0);
             normal = vec(0,0,0);
         }
@@ -56,17 +53,17 @@ namespace geom {
             tangent = vec(0,0,0);
             normal = vec(0,0,0);
         }
-        SCustomOutputPoint(SCustomInputPoint _point) 
+        SCustomOutputPoint(SCustomInputPoint p) 
         {
-            pos = _point.pos;
+            pos = p.pos;
             tangent = vec(0,0,0);
             normal = vec(0,0,0);
         }
-        SCustomOutputPoint(SCustomInputPoint t, vec _tangent, vec _normal) 
+        SCustomOutputPoint(SCustomInputPoint o, vec t, vec n) 
         {
-            pos = t.pos;
-            tangent = _tangent;
-            normal = _normal;
+            pos = o.pos;
+            tangent = t;
+            normal = n;
         }
 
         // TODO: overload +-*/ operators
@@ -77,8 +74,7 @@ namespace geom {
     {
         protected:
 
-            std::vector<SCustomInputPoint> m_vInputPoints;
-
+            std::vector<SCustomInputPoint>  m_vInputPoints;
             std::vector<SCustomOutputPoint> m_vOutputPoints;
 
             float m_fComputationPrecision = INEXOR_VSCRIPT_STD_CALC_PRECISION;
@@ -94,21 +90,18 @@ namespace geom {
 
             void SetParameterPointLimit(unsigned int);
             void SetCurvePrecision(float);
-
-
+            
             void AddParameterPoint(vec);
             void AddParameterPoint(float, float, float);
 
-
+            /// realtime computation
             virtual SCustomOutputPoint CalcRealtimePoint(float) = 0;
 
+            /// cached computation
             virtual void ComputeCache() = 0;
-
             bool IsCurveComputed();
-
             const unsigned int GetCachedPointsSize();
             const unsigned int GetIndex_ByInterpolationPos(float);
-
             SCustomOutputPoint GetPoint_ByInterpolationPos(float);
             SCustomOutputPoint GetPoint_ByIndex(unsigned int);
 
