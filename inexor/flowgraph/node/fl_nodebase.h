@@ -7,11 +7,9 @@
 
 #include <string>
 #include <vector>
-#include <map>
-#include <list>
 
-#include "inexor/geom/geom.h"
 #include "inexor/flowgraph/renderer/fl_noderenderer.h"
+#include "inexor/geom/curves/bezier/bezier.h"
 
 
 namespace inexor {

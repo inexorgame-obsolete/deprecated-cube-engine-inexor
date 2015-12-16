@@ -5,10 +5,7 @@
 #ifndef INEXOR_VSCRIPT_NODE_RENDERER_HEADER
 #define INEXOR_VSCRIPT_NODE_RENDERER_HEADER
 
- #include <vector>
- #include "inexor/flowgraph/node/fl_nodebase.h"
- #include "inexor/engine/engine.h"
-
+#include "inexor/engine/engine.h"
 
 namespace inexor {
 namespace vscript {
