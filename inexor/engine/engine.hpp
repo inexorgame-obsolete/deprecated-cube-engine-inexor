@@ -14,6 +14,9 @@
 #include "inexor/engine/texture.hpp"
 #include "inexor/engine/model.hpp"
 
+#include "inexor/util/InexorException.hpp"
+
+
 extern dynent *player;
 extern physent *camera1;                // special ent that acts as camera, same object as player1 in FPS mode
 
@@ -600,6 +603,9 @@ namespace recorder
     extern void capture(bool overlay = true);
     extern void cleanup();
 }
+
+/// Exception that should be thrown if GL related functionality failed.
+IEXCEPTION(GLException, "OpenGL related functionality failed");
 
 #endif
 

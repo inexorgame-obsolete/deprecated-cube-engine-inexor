@@ -1,5 +1,5 @@
 #include "inexor/ui/cefrenderhandler.hpp"
-#include "inexor/util/InexorException.hpp"
+#include "inexor/engine/engine.hpp"
 
 
 // DCHECK on gl errors.
@@ -42,7 +42,7 @@ void InexorCefRenderHandler::Initialize() {
 
     if (0u == texture_id)
     {
-      throw ::inexor::util::GLException("Error: texture id is 0");
+      throw GLException("texture id is 0");
     }
     else
     {
@@ -93,7 +93,7 @@ void InexorCefRenderHandler::Render() {
     // Draw the facets with the texture.
     if (0u == texture_id)
     {
-      throw ::inexor::util::GLException("Error: texture id is 0");
+      throw GLException("texture id is 0");
     }
     else
     {
@@ -179,7 +179,7 @@ void InexorCefRenderHandler::OnPaint(
 
     if (0u == texture_id)
     {
-      throw ::inexor::util::GLException("Error: texture id is 0");
+      throw GLException("texture id is 0");
     }
     else
     {
