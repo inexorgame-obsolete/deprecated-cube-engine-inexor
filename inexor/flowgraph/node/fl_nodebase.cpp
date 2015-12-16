@@ -1,5 +1,5 @@
 #include "inexor/flowgraph/node/fl_nodebase.h"
-#include "inexor/engine/engine.h"
+#include "inexor/flowgraph/timer/fl_timer.h"
 
 
 namespace inexor {
@@ -26,7 +26,6 @@ namespace vscript {
 
     void CScriptNode::in()
     {
-        run();
     }
 
 
@@ -48,8 +47,12 @@ namespace vscript {
 
     void CScriptNode::render(int orient, bool sel_blocked)
     {
-        render_box(this, orient);
+        // hightlight node during execution
+        if(SDL_GetTicks() - last_time < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL) box_color = VSCRIPT_COLOR_TRIGGERED;
+        else box_color = default_box_color;
+
         vec p = this->pos;
+        render_box(p, orient);
 
         if(!sel_blocked)
         {

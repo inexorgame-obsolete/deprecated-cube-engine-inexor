@@ -7,12 +7,15 @@
 
  #include <vector>
  #include "inexor/flowgraph/node/fl_nodebase.h"
+ #include "inexor/engine/engine.h"
 
 
 namespace inexor {
 namespace vscript {
 
-    extern const float boxsize;
+
+    const float boxsize = 4.0f;
+
 
     enum VSCRIPT_ENTITY_BOX_ORIENTATION
     {
@@ -25,6 +28,21 @@ namespace vscript {
         VSCRIPT_BOX_TOP
     };
 
+    enum VSCRIPT_NODE_COLORS
+    {
+        VSCRIPT_COLOR_TIMER     = 0x51ABCC,  // light blue
+        VSCRIPT_COLOR_COMMENT   = 0x5BCC51,  // comment green
+        VSCRIPT_COLOR_FUNCTION  = 0x51ABCC,  // darker purple
+        VSCRIPT_COLOR_TRIGGERED = 0xFF8800,  // spicy orange
+        VSCRIPT_COLOR_SLEEP     = 0x51ABCC,  
+        VSCRIPT_COLOR_GRAY      = 0xAAAAAA,  // 
+        VSCRIPT_COLOR_BLACK     = 0x000000,  // 
+        VSCRIPT_COLOR_WHITE     = 0xFFFFFF,  // 
+        VSCRIPT_COLOR_SELECTION = 0xFFFF4C,  // red 
+        VSCRIPT_COLOR_DEBUG_RAY = 0x51ABCC,
+    };
+
+
     class CNodeRenderer
     {
 
@@ -33,9 +51,13 @@ namespace vscript {
             CNodeRenderer();
             ~CNodeRenderer();
 
-            void adjust_selection_color(int orient, int index, CScriptNode* node);
+            VSCRIPT_NODE_COLORS box_color;
+            VSCRIPT_NODE_COLORS default_box_color;
 
-            void render_box(CScriptNode* node, int orient);
+
+            void adjust_selection_color(int orient, int index);
+
+            void render_box(vec p, int orient);
 
             void render_box_outline(vec p);
 

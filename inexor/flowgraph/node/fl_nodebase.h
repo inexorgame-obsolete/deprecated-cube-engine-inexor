@@ -10,17 +10,12 @@
 #include <map>
 #include <list>
 
-#include "inexor/engine/engine.h"
-
-#include "inexor/geom/curves/bezier/bezier.h"
-
+#include "inexor/geom/geom.h"
 #include "inexor/flowgraph/renderer/fl_noderenderer.h"
 
 
 namespace inexor {
 namespace vscript {
-
-    const float boxsize = 4.0f;
 
     enum VSCRIPT_NODE_TYPE
     {
@@ -35,24 +30,12 @@ namespace vscript {
         NODE_TYPE_SLEEP,
     };
 
-    enum VSCRIPT_NODE_COLORS
-    {
-        VSCRIPT_COLOR_TIMER     = 0x51ABCC,  // light blue
-        VSCRIPT_COLOR_COMMENT   = 0x5BCC51,  // comment green
-        VSCRIPT_COLOR_FUNCTION  = 0x51ABCC,  // darker purple
-        VSCRIPT_COLOR_TRIGGERED = 0xFF8800,  // spicy orange
-        VSCRIPT_COLOR_SLEEP     = 0x51ABCC,  
-        VSCRIPT_COLOR_GRAY      = 0xAAAAAA,  // 
-        VSCRIPT_COLOR_BLACK     = 0x000000,  // 
-        VSCRIPT_COLOR_WHITE     = 0xFFFFFF,  // 
-        VSCRIPT_COLOR_SELECTION = 0xFFFF4C,  // red 
-        VSCRIPT_COLOR_DEBUG_RAY = 0x51ABCC,
-    };
-
 
     class CScriptNode : public CNodeRenderer
     {
         public:
+
+            VSCRIPT_NODE_TYPE type;
 
             CScriptNode();
             ~CScriptNode();
@@ -65,7 +48,6 @@ namespace vscript {
             vec pos;
             bool pos_changed;
             bool selected;
-            VSCRIPT_NODE_TYPE type;
 
             std::string node_name;
             std::string node_comment;
@@ -73,15 +55,10 @@ namespace vscript {
             unsigned int this_time;
             unsigned int last_time;
 
-            VSCRIPT_NODE_COLORS default_box_color;
-            VSCRIPT_NODE_COLORS box_color;
-
             void in();
-            virtual void run() = 0;
+            //virtual void run() = 0;
             virtual void reset() = 0;
-
             void render(int, bool);
-
             void out();
     };
 

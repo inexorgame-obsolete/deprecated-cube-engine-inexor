@@ -1,4 +1,5 @@
 #include "inexor/flowgraph/renderer/fl_noderenderer.h"
+#include "inexor/flowgraph/timer/fl_timer.h"
 
 namespace inexor {
 namespace vscript {
@@ -13,68 +14,61 @@ namespace vscript {
     }
 
 
-
-    void CNodeRenderer::adjust_selection_color(int orient, int index, CScriptNode* node)
+    void CNodeRenderer::adjust_selection_color(int orient, int index)
     {
-        // hightlight node during execution
-        if(SDL_GetTicks() - node->last_time < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL) node->box_color = VSCRIPT_COLOR_TRIGGERED;
-        else node->box_color = node->default_box_color;
         if(orient==index) 
         {
             // if this side of the box is selected, render the side in another color
-            node->box_color = VSCRIPT_COLOR_SELECTION;
+            box_color = VSCRIPT_COLOR_SELECTION;
         }
-        gle::color(vec::hexcolor(node->box_color));
+        gle::color(vec::hexcolor(box_color));
     }
 
 
-    void CNodeRenderer::render_box(CScriptNode* node, int orient)
+    void CNodeRenderer::render_box(vec p, int orient)
     {
         /// I believe there is no better way to render a box using quads.
         /// You either write the box generator code directly or you let it generate.
         /// If you take a look at the original Sauer code you will see that generating
         /// the box using iterations is way more complicated to understand.
 
-        const float b = boxsize;
-        vec p = node->pos;
-
         glBegin(GL_QUADS);
         
-        adjust_selection_color(orient, VSCRIPT_BOX_TOP, node);
-        glVertex3f(p.x,p.y,p.z+b);
-        glVertex3f(p.x+b,p.y,p.z+b);
-        glVertex3f(p.x+b,p.y+b,p.z+b);
-        glVertex3f(p.x,p.y+b,p.z+b);
+        adjust_selection_color(orient, VSCRIPT_BOX_TOP);
+        glVertex3f(p.x,p.y,p.z+boxsize);
+        glVertex3f(p.x+boxsize,p.y,p.z+boxsize);
+        glVertex3f(p.x+boxsize,p.y+boxsize,p.z+boxsize);
+        glVertex3f(p.x,p.y+boxsize,p.z+boxsize);
 
-        adjust_selection_color(orient, VSCRIPT_BOX_BOTTOM, node);
-        glVertex3f(p.x,p.y+b,p.z);
-        glVertex3f(p.x+b,p.y+b,p.z);
-        glVertex3f(p.x+b,p.y,p.z);
+        adjust_selection_color(orient, VSCRIPT_BOX_BOTTOM);
+        glVertex3f(p.x,p.y+boxsize,p.z);
+        glVertex3f(p.x+boxsize,p.y+boxsize,p.z);
+        glVertex3f(p.x+boxsize,p.y,p.z);
         glVertex3f(p.x,p.y,p.z);
 
-        adjust_selection_color(orient, VSCRIPT_BOX_FRONT, node);
+        adjust_selection_color(orient, VSCRIPT_BOX_FRONT);
         glVertex3f(p.x,p.y,p.z);
-        glVertex3f(p.x+b,p.y,p.z);
-        glVertex3f(p.x+b,p.y,p.z+b);
-        glVertex3f(p.x,p.y,p.z+b);
+        glVertex3f(p.x+boxsize,p.y,p.z);
+        glVertex3f(p.x+boxsize,p.y,p.z+boxsize);
+        glVertex3f(p.x,p.y,p.z+boxsize);
 
-        adjust_selection_color(orient, VSCRIPT_BOX_BACK, node);
-        glVertex3f(p.x,p.y+b,p.z+b);
-        glVertex3f(p.x+b,p.y+b,p.z+b);
-        glVertex3f(p.x+b,p.y+b,p.z);
-        glVertex3f(p.x,p.y+b,p.z);
+        adjust_selection_color(orient, VSCRIPT_BOX_BACK);
+        glVertex3f(p.x,p.y+boxsize,p.z+boxsize);
+        glVertex3f(p.x+boxsize,p.y+boxsize,p.z+boxsize);
+        glVertex3f(p.x+boxsize,p.y+boxsize,p.z);
+        glVertex3f(p.x,p.y+boxsize,p.z);
 
-        adjust_selection_color(orient, VSCRIPT_BOX_LEFT, node);
-        glVertex3f(p.x,p.y,p.z+b);
-        glVertex3f(p.x,p.y+b,p.z+b);
-        glVertex3f(p.x,p.y+b,p.z);
+        adjust_selection_color(orient, VSCRIPT_BOX_LEFT);
+        glVertex3f(p.x,p.y,p.z+boxsize);
+        glVertex3f(p.x,p.y+boxsize,p.z+boxsize);
+        glVertex3f(p.x,p.y+boxsize,p.z);
         glVertex3f(p.x,p.y,p.z);
 
-        adjust_selection_color(orient, VSCRIPT_BOX_RIGHT, node);
-        glVertex3f(p.x+b,p.y,p.z);
-        glVertex3f(p.x+b,p.y+b,p.z);
-        glVertex3f(p.x+b,p.y+b,p.z+b);
-        glVertex3f(p.x+b,p.y,p.z+b);
+        adjust_selection_color(orient, VSCRIPT_BOX_RIGHT);
+        glVertex3f(p.x+boxsize,p.y,p.z);
+        glVertex3f(p.x+boxsize,p.y+boxsize,p.z);
+        glVertex3f(p.x+boxsize,p.y+boxsize,p.z+boxsize);
+        glVertex3f(p.x+boxsize,p.y,p.z+boxsize);
         glEnd();
     }
 

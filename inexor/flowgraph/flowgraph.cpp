@@ -210,7 +210,6 @@ namespace vscript {
             if(NODE_TYPE_TIMER == nodes[i]->type) nodes[i]->reset();
         }
     }
-    
 
     void CVisualScriptSystem::delete_all_nodes()
     {
@@ -223,7 +222,7 @@ namespace vscript {
         for(unsigned int i=0; i<nodes.size(); i++)
         {
             nodes[i]->this_time = SDL_GetTicks();
-            if(NODE_TYPE_TIMER == nodes[i]->type) nodes[i]->run();
+            if(NODE_TYPE_TIMER == nodes[i]->type) nodes[i]->in();
         }
     }
 

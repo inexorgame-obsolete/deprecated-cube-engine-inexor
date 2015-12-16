@@ -36,19 +36,12 @@ namespace vscript {
     {
     }
 
-    
+
     void CTimerNode::in()
-    {
-        run();
-    }
-
-
-    void CTimerNode::run()
     {
         check_if_execution_is_due();
     }
-
-
+    
     void CTimerNode::reset()
     {
         last_time = 0;
