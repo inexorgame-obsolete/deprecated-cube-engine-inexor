@@ -14,6 +14,8 @@
 
 #include "inexor/geom/curves/bezier/bezier.h"
 
+#include "inexor/flowgraph/renderer/fl_noderenderer.h"
+
 
 namespace inexor {
 namespace vscript {
@@ -48,7 +50,7 @@ namespace vscript {
     };
 
 
-    class CScriptNode
+    class CScriptNode : public CNodeRenderer
     {
         public:
 
@@ -77,6 +79,9 @@ namespace vscript {
             void in();
             virtual void run() = 0;
             virtual void reset() = 0;
+
+            void render(int, bool);
+
             void out();
     };
 

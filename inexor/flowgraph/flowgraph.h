@@ -12,25 +12,31 @@
 #include "inexor/flowgraph/node/fl_nodebase.h"
 #include "inexor/flowgraph/renderer/fl_noderenderer.h"
 #include "inexor/flowgraph/editor/fl_enteditor.h"
+ #include "inexor/flowgraph/debugger/fl_dbgrays.h"
 
 
 namespace inexor {
 namespace vscript {
 
-    class CVisualScriptSystem : public CEntityManager, public CNodeRenderer
+    class CVisualScriptSystem : public CEntityManager
     {
         public:
         
             std::vector<CScriptNode *> nodes;
-
+            std::vector<CDebugRay> rays;
 
             CVisualScriptSystem();
             ~CVisualScriptSystem();
 
             CScriptNode* add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...);
 
+            
+            void start_rendering();
+            void end_rendering();
+
             void render_nodes();
             void render_node_relations();
+            void render_debug_rays();
 
             void update_input(int, bool);
             void update_timers();

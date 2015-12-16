@@ -1,6 +1,7 @@
 #include "inexor/flowgraph/node/fl_nodebase.h"
 #include "inexor/engine/engine.h"
 
+
 namespace inexor {
 namespace vscript {
 
@@ -17,10 +18,10 @@ namespace vscript {
         selected = false;
     }
 
-
     CScriptNode::~CScriptNode()
     {
     }
+
 
 
     void CScriptNode::in()
@@ -42,6 +43,30 @@ namespace vscript {
                 children[i]->in();
             }
         }
+    }
+
+
+    void CScriptNode::render(int orient, bool sel_blocked)
+    {
+        render_box(this, orient);
+        vec p = this->pos;
+
+        if(!sel_blocked)
+        {
+            if(orient != VSCRIPT_BOX_NO_INTERSECTION)
+            {
+                gle::color(vec::hexcolor(VSCRIPT_COLOR_GRAY));
+                render_box_helplines(p);
+            }
+        }
+        gle::color(vec::hexcolor(VSCRIPT_COLOR_BLACK));
+        render_box_outline(p);
+
+        // render white text above
+        p.add(vec(boxsize/2));
+        p.add(vec(0,0,4));
+        particle_text(p + vec(0,0,1.0f), this->node_name.c_str(), PART_TEXT, 1, 0xFFFFFF, 1.0f);
+        particle_text(p, this->node_comment.c_str(), PART_TEXT, 1, 0xFFFFFF, 1.0f);
     }
 
 };

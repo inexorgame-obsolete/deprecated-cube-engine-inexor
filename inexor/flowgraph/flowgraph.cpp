@@ -2,7 +2,7 @@
 #include "inexor/fpsgame/game.h"
 #include "inexor/flowgraph/sleep/fl_sleep.h"
 #include "inexor/flowgraph/timer/fl_timer.h"
-#include "inexor/flowgraph/comment/fl_comment.h"
+#include "inexor/flowgraph/comments/fl_comment.h"
 #include "inexor/flowgraph/functions/fl_functionbase.h"
 #include "inexor/flowgraph/functions/fl_functions.h"
 
@@ -228,6 +228,24 @@ namespace vscript {
     }
 
 
+    void CVisualScriptSystem::start_rendering()
+    {
+        notextureshader->set();
+        gle::enablevertex();
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        enablepolygonoffset(GL_POLYGON_OFFSET_LINE);
+    }
+
+
+    void CVisualScriptSystem::end_rendering()
+    {
+        disablepolygonoffset(GL_POLYGON_OFFSET_LINE);
+        gle::clearvbo();
+        gle::clearebo();
+        gle::disablevertex();
+    }
+
+
     void CVisualScriptSystem::render_nodes()
     {
         hovered_node = nullptr;
@@ -238,7 +256,7 @@ namespace vscript {
             int orient = VSCRIPT_BOX_NO_INTERSECTION;
             vec p = nodes[i]->pos;
 
-            // check ray/box intersection
+            // check for camera intersection
             rayboxintersect(p, vec(boxsize), camera1->o, camdir, dist, orient);
 
             nodes[i]->selected = (orient != VSCRIPT_BOX_NO_INTERSECTION);
@@ -247,24 +265,8 @@ namespace vscript {
             if( (nodes[i]->this_time - nodes[i]->last_time)  < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL) nodes[i]->box_color = VSCRIPT_COLOR_TRIGGERED;
             else nodes[i]->box_color = nodes[i]->default_box_color;
 
-            renderbox(nodes[i], orient);
-
-            if(!selection_blocked_by_geometry)
-            {
-                if(orient != VSCRIPT_BOX_NO_INTERSECTION) 
-                {
-                    gle::color(vec::hexcolor(VSCRIPT_COLOR_GRAY));
-                    renderboxhelplines(p);
-                }
-            }
-            gle::color(vec::hexcolor(VSCRIPT_COLOR_BLACK));
-            renderboxoutline(p);
-
-            // render white text above
-            p.add(vec(boxsize/2));
-            p.add(vec(0,0,4));
-            particle_text(p + vec(0,0,1.0f), nodes[i]->node_name.c_str(), PART_TEXT, 1, 0xFFFFFF, 1.0f);
-            particle_text(p, nodes[i]->node_comment.c_str(), PART_TEXT, 1, 0xFFFFFF, 1.0f);
+            // render!
+            nodes[i]->render(orient, selection_blocked_by_geometry);
         }
 
         // which node is selected?
@@ -274,7 +276,22 @@ namespace vscript {
         }
     }
 
-    
+
+    void CVisualScriptSystem::render_debug_rays()
+    {
+        glBegin(GL_LINES);
+        gle::color(vec::hexcolor(VSCRIPT_COLOR_DEBUG_RAY));
+        glLineWidth(10.0f);
+        for(unsigned int h=0; h<rays.size(); h++)
+        {
+            glVertex3f(rays[h].pos.x,rays[h].pos.y,rays[h].pos.z);
+            glVertex3f(rays[h].target.x,rays[h].target.y,rays[h].target.z);
+        }
+        glLineWidth(1.0f);
+        glEnd();
+    }
+
+
     void CVisualScriptSystem::render_node_relations()
     {
         if(!nodes.size()) return;

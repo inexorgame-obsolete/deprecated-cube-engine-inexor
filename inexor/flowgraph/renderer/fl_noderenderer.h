@@ -6,11 +6,7 @@
 #define INEXOR_VSCRIPT_NODE_RENDERER_HEADER
 
  #include <vector>
- 
  #include "inexor/flowgraph/node/fl_nodebase.h"
- #include "inexor/flowgraph/debugger/fl_dbgrays.h"
- #include "inexor/flowgraph/timer/fl_timer.h"
- #include "inexor/engine/engine.h"
 
 
 namespace inexor {
@@ -34,25 +30,17 @@ namespace vscript {
 
         public:
         
-            std::vector<CDebugRay> rays;
-
             CNodeRenderer();
-
             ~CNodeRenderer();
-
-            void start_rendering();
-
-            void end_rendering();
 
             void adjust_selection_color(int orient, int index, CScriptNode* node);
 
-            void renderbox(CScriptNode* node, int orient);
+            void render_box(CScriptNode* node, int orient);
 
-            void renderboxoutline(vec p);
+            void render_box_outline(vec p);
 
-            void renderboxhelplines(vec p);
+            void render_box_helplines(vec p);
 
-            void render_debug_rays();
     };
 
 };

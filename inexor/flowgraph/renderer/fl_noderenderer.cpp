@@ -3,6 +3,7 @@
 namespace inexor {
 namespace vscript {
 
+
     CNodeRenderer::CNodeRenderer()
     {
     }
@@ -11,24 +12,6 @@ namespace vscript {
     {
     }
 
-
-
-    void CNodeRenderer::start_rendering()
-    {
-        notextureshader->set();
-        gle::enablevertex();
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        enablepolygonoffset(GL_POLYGON_OFFSET_LINE);
-    }
-
-
-    void CNodeRenderer::end_rendering()
-    {
-        disablepolygonoffset(GL_POLYGON_OFFSET_LINE);
-        gle::clearvbo();
-        gle::clearebo();
-        gle::disablevertex();
-    }
 
 
     void CNodeRenderer::adjust_selection_color(int orient, int index, CScriptNode* node)
@@ -45,7 +28,7 @@ namespace vscript {
     }
 
 
-    void CNodeRenderer::renderbox(CScriptNode* node, int orient)
+    void CNodeRenderer::render_box(CScriptNode* node, int orient)
     {
         /// I believe there is no better way to render a box using quads.
         /// You either write the box generator code directly or you let it generate.
@@ -96,7 +79,7 @@ namespace vscript {
     }
 
 
-    void CNodeRenderer::renderboxoutline(vec p)
+    void CNodeRenderer::render_box_outline(vec p)
     {
         const float b = boxsize;
 
@@ -129,7 +112,7 @@ namespace vscript {
     }
 
 
-    void CNodeRenderer::renderboxhelplines(vec p)
+    void CNodeRenderer::render_box_helplines(vec p)
     {
         glBegin(GL_LINES);
 
@@ -168,21 +151,5 @@ namespace vscript {
         glVertex3f(p.x+b,p.y+b,p.z+helpline_distance);
         glEnd();
     }
-
-
-    void CNodeRenderer::render_debug_rays()
-    {
-        glBegin(GL_LINES);
-        gle::color(vec::hexcolor(VSCRIPT_COLOR_DEBUG_RAY));
-        glLineWidth(10.0f);
-        for(unsigned int h=0; h<rays.size(); h++)
-        {
-            glVertex3f(rays[h].pos.x,rays[h].pos.y,rays[h].pos.z);
-            glVertex3f(rays[h].target.x,rays[h].target.y,rays[h].target.z);
-        }
-        glLineWidth(1.0f);
-        glEnd();
-    }
-
 };
 };
