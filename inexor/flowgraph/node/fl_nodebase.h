@@ -22,10 +22,20 @@ namespace vscript {
         NODE_TYPE_COMMENT,
         NODE_TYPE_FUNCTION,
         NODE_TYPE_MEMORY,
+        
         NODE_TYPE_IF,
         NODE_TYPE_SWITCH,
         NODE_TYPE_CONDITION,
+        
         NODE_TYPE_SLEEP,
+
+        NODE_TYPE_EVENT,
+
+        // areas
+        NODE_TYPE_AREA_BLOCK,
+        NODE_TYPE_AREA_SPHERE,
+        NODE_TYPE_AREA_CONE,
+        NODE_TYPE_AREA_ZYLINDER,
     };
 
 
