@@ -789,18 +789,19 @@ Texture *Slot::loadthumbnail()
     return t;
 }
 
+void Slot::loadlayermask()
+{
+    if(loaded && layermaskname && !layermask)
+    {
+        layermask = new ImageData;
+        texturedata(*layermask, layermaskname);
+        if(!layermask->data) DELETEP(layermask);
+    }
+}
+
 void loadlayermasks()
 {
-    loopv(slots)
-    {
-        Slot &slot = *slots[i];
-        if(slot.loaded && slot.layermaskname && !slot.layermask)
-        {
-            slot.layermask = new ImageData;
-            texturedata(*slot.layermask, slot.layermaskname);
-            if(!slot.layermask->data) DELETEP(slot.layermask);
-        }
-    }
+    loopv(slots) slots[i]->loadlayermask();
 }
 
 void cleanupslots()
