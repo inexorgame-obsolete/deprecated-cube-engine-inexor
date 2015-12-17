@@ -707,32 +707,32 @@ Slot &Slot::load(bool msg, bool forceload)
 }
 
 /// Generate a preview image of specific slot for the texture browser.
-Texture *loadthumbnail(Slot &slot)
+Texture *Slot::loadthumbnail()
 {
-    if(slot.thumbnail) return slot.thumbnail;
-    if(!slot.variants)
+    if(thumbnail) return thumbnail;
+    if(!variants)
     {
-        slot.thumbnail = notexture;
-        return slot.thumbnail;
+        thumbnail = notexture;
+        return thumbnail;
     }
-    VSlot &vslot = *slot.variants;
-    linkslotshader(slot, false);
+    VSlot &vslot = *variants;
+    linkslotshader(*this, false);
     linkvslotshader(vslot, false);
     vector<char> name;
-    if(vslot.colorscale == vec(1, 1, 1)) addname(name, slot, slot.sts[0], false, "<thumbnail>");
+    if(vslot.colorscale == vec(1, 1, 1)) addname(name, *this, sts[0], false, "<thumbnail>");
     else
     {
         defformatstring(prefix, "<thumbnail:%.2f/%.2f/%.2f>", vslot.colorscale.x, vslot.colorscale.y, vslot.colorscale.z);
-        addname(name, slot, slot.sts[0], false, prefix);
+        addname(name, *this, sts[0], false, prefix);
     }
     int glow = -1;
-    if(slot.texmask&(1 << TEX_GLOW))
+    if(texmask&(1 << TEX_GLOW))
     {
-        loopvj(slot.sts) if(slot.sts[j].type == TEX_GLOW) { glow = j; break; }
+        loopvj(sts) if(sts[j].type == TEX_GLOW) { glow = j; break; }
         if(glow >= 0)
         {
             defformatstring(prefix, "<glow:%.2f/%.2f/%.2f>", vslot.glowcolor.x, vslot.glowcolor.y, vslot.glowcolor.z);
-            addname(name, slot, slot.sts[glow], true, prefix);
+            addname(name, *this, sts[glow], true, prefix);
         }
     }
     VSlot *layer = vslot.layer ? &lookupvslot(vslot.layer, false) : NULL;
@@ -747,14 +747,14 @@ Texture *loadthumbnail(Slot &slot)
     }
     name.add('\0');
     Texture *t = gettexture(name.getbuf());
-    if(t) slot.thumbnail = t;
+    if(t) thumbnail = t;
     else
     {
         ImageData s, g, l;
-        texturedata(s, NULL, &slot.sts[0], false);
-        if(glow >= 0) texturedata(g, NULL, &slot.sts[glow], false);
+        texturedata(s, NULL, &sts[0], false);
+        if(glow >= 0) texturedata(g, NULL, &sts[glow], false);
         if(layer) texturedata(l, NULL, &layer->slot->sts[0], false);
-        if(!s.data) t = slot.thumbnail = notexture;
+        if(!s.data) t = thumbnail = notexture;
         else
         {
             if(vslot.colorscale != vec(1, 1, 1)) texmad(s, vslot.colorscale, vec(0, 0, 0));
@@ -783,7 +783,7 @@ Texture *loadthumbnail(Slot &slot)
             t = newtexture(NULL, name.getbuf(), s, 0, false, false, true);
             t->xs = xs;
             t->ys = ys;
-            slot.thumbnail = t;
+            thumbnail = t;
         }
     }
     return t;

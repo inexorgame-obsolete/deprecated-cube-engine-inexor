@@ -2813,7 +2813,7 @@ struct texturegui : g3d_callback
                                 g.texture(dummyvslot, 1.0, false); //create an empty space
                                 continue;
                             }
-                            loadthumbnail(slot);
+                            slot.loadthumbnail();
                             lastthumbnail = totalmillis;
                         }
                         if(g.texture(vslot, 1.0f, true)&G3D_UP && (slot.loaded || slot.thumbnail!=notexture))

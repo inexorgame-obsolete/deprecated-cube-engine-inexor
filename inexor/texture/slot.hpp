@@ -121,6 +121,7 @@ struct Slot
     }
 
     Slot &load(bool msg, bool forceload);
+    Texture *loadthumbnail();
 };
 
 inline void VSlot::addvariant(Slot *slot)
