@@ -4,3 +4,6 @@
 [submodule "inexor/libraries/googletest"]
 	path = vendor/googletest
 	url = https://github.com/inexor-game/googletest.git
+[submodule "vendor/template_switch"]
+	path = vendor/template_switch
+	url = https://github.com/koraa/template_switch.git
