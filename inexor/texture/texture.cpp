@@ -11,6 +11,9 @@
 #include "inexor/texture/slot.hpp"
 #include "inexor/texture/texsettings.hpp"
 #include "inexor/texture/compressedtex.hpp"
+#include <unordered_map>
+#include <map>
+#include <iterator>
 
 void setuptexcompress()
 {
@@ -208,15 +211,17 @@ void createcompressedtexture(int tnum, int w, int h, uchar *data, int align, int
     uploadcompressedtexture(target, subtarget, format, w, h, data, align, blocksize, levels, filter > 1);
 }
 
-hashtable<char *, Texture> textures;
+std::unordered_map<std::string, Texture> textures;
 
 /// Registers a texture to the texture registry, so it wont be loaded twice (but looked up the other time).
 Texture *registertexture(const char *name)
 {
-    char *key = newstring(name);
-    path(key);
+    string tname;
+    copystring(tname, name);
+
+    std::string key = path(tname);
     Texture *t = &textures[key];
-    t->name = key;
+    t->name = newstring(key.c_str());
     return t;
 }
 
@@ -226,7 +231,8 @@ Texture *gettexture(const char *name)
 {
     string tname;
     copystring(tname, name);
-    return textures.access(path(tname));
+    auto it = textures.find(path(tname));
+    return it != textures.end() ? &it->second : NULL;
 }
 
 Texture *notexture = NULL; // used as default, ensured to be loaded
@@ -495,11 +501,12 @@ bool settexture(const char *name, int clamp)
     return t != notexture;
 }
 
+/// Clean up texture t: delete texture from gpu, only remove from registry if transient.
 void cleanuptexture(Texture *t)
 {
     DELETEA(t->alphamask);
     if(t->id) { glDeleteTextures(1, &t->id); t->id = 0; }
-    if(t->type&Texture::TRANSIENT) textures.remove(t->name); 
+    if(t->type&Texture::TRANSIENT) textures.erase(t->name);
 }
 
 void cleanuptextures()
@@ -509,7 +516,13 @@ void cleanuptextures()
     cleanupvslots();
     cleanupmaterialslots();
 
-    enumerate(textures, Texture, tex, cleanuptexture(&tex));
+    std::map<std::string, Texture *> reloadqueue; //needed so we dont need to pass iterators, but can edit the registry.
+    for(auto it = textures.begin(); it != textures.end(); ++it) reloadqueue.insert(std::make_pair(it->first, &it->second));
+
+    for(auto it = reloadqueue.begin(); it != reloadqueue.end(); ++it)
+    {
+        cleanuptexture(it->second);
+    }
 }
 
 bool reloadtexture(const char *name)
@@ -560,11 +573,17 @@ COMMAND(reloadtex, "s");
 void reloadtextures()
 {
     int reloaded = 0;
-    enumerate(textures, Texture, tex, 
+    int total = textures.size();
+
+    std::map<std::string, Texture *> reloadqueue; //needed so we dont need to pass iterators, but can edit the registry.
+    for(auto it = textures.begin(); it != textures.end(); ++it) reloadqueue.insert(std::make_pair(it->first, &it->second));
+
+    for(auto it = reloadqueue.begin(); it != reloadqueue.end(); ++it)
     {
-        loadprogress = float(++reloaded)/textures.numelems;
-        reloadtexture(tex);
-    });
+        loadprogress = float(++reloaded)/total;
+        reloadtexture(*it->second);
+    }
+
     loadprogress = 0;
 }
 
