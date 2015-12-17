@@ -210,6 +210,25 @@ void createcompressedtexture(int tnum, int w, int h, uchar *data, int align, int
 
 hashtable<char *, Texture> textures;
 
+/// Registers a texture to the texture registry, so it wont be loaded twice (but looked up the other time).
+Texture *registertexture(const char *name)
+{
+    char *key = newstring(name);
+    path(key);
+    Texture *t = &textures[key];
+    t->name = key;
+    return t;
+}
+
+/// Receives a texture from the hashtable of all loaded textures if name is equal.
+/// @warning not threadsafe.
+Texture *gettexture(const char *name)
+{
+    string tname;
+    copystring(tname, name);
+    return textures.access(path(tname));
+}
+
 Texture *notexture = NULL; // used as default, ensured to be loaded
 
 int texalign(void *data, int w, int bpp)
@@ -223,12 +242,7 @@ int texalign(void *data, int w, int bpp)
 
 Texture *newtexture(Texture *t, const char *rname, ImageData &s, int clamp, bool mipit, bool canreduce, bool transient, int compress)
 {
-    if(!t)
-    {
-        char *key = newstring(rname);
-        t = &textures[key];
-        t->name = key;
-    }
+    if(!t) t = registertexture(rname);
 
     t->clamp = clamp;
     t->mipmap = mipit;
@@ -449,25 +463,6 @@ uchar *loadalphamask(Texture *t)
     return t->alphamask;
 }
 
-/// Registers a texture to the texture registry, so it wont be loaded twice (but looked up the other time).
-Texture *registertexture(const char *name)
-{
-    char *key = newstring(name);
-    path(key);
-    Texture *t = &textures[key];
-    t->name = key;
-    return t;
-}
-
-/// Receives a texture from the hashtable of all loaded textures if name is equal.
-/// @warning not threadsafe.
-Texture *gettexture(const char *name)
-{
-    string tname;
-    copystring(tname, name);
-    return textures.access(path(tname));
-}
-
 /// @param clamp
 /// @param mipit specifies whether mipmap (lower quality versions; usually used when far away or small) textures should be created.
 /// @param msg specifies whether a renderprogress bar should be displayed while loading. Always off if threadsafe = true.
@@ -519,7 +514,7 @@ void cleanuptextures()
 
 bool reloadtexture(const char *name)
 {
-    Texture *t = textures.access(path(name, true));
+    Texture *t = gettexture(name);
     if(t) return reloadtexture(*t);
     return true;
 }
@@ -546,7 +541,7 @@ bool reloadtexture(Texture &tex)
 
 void reloadtex(char *name)
 {
-    Texture *t = textures.access(path(name, true));
+    Texture *t = gettexture(name);
     if(!t) { conoutf(CON_ERROR, "texture %s is not loaded", name); return; }
     if(t->type&Texture::TRANSIENT) { conoutf(CON_ERROR, "can't reload transient texture %s", name); return; }
     DELETEA(t->alphamask);
@@ -572,8 +567,6 @@ void reloadtextures()
     });
     loadprogress = 0;
 }
-
-// formathandling.cpp
 
 bool loadimage(const char *filename, ImageData &image)
 {
