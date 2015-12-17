@@ -7,16 +7,20 @@
 namespace inexor {
 namespace vscript {
 
-    class CCubeArea : public CScriptNode
+    class CCubeAreaNode : public CScriptNode
     {
         public:
         
             vec edge_start;
             vec edge_end;
 
-            CCubeArea();
-            ~CCubeArea();
+            CCubeAreaNode(vec,vec,const char*,const char*);
+            ~CCubeAreaNode();
 
+            void reset();
+            
+            void render(int,bool);
+            
             bool collide(vec p);
     };
 
