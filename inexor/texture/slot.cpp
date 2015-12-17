@@ -438,9 +438,9 @@ bool unpackvslot(ucharbuf &buf, VSlot &dst, bool delta)
     return true;
 }
 
-VSlot *findvslot(Slot &slot, const VSlot &src, const VSlot &delta)
+VSlot *Slot::findvariant(const VSlot &src, const VSlot &delta)
 {
-    for(VSlot *dst = slot.variants; dst; dst = dst->next)
+    for(VSlot *dst = variants; dst; dst = dst->next)
     {
         if((!dst->changed || dst->changed == (src.changed | delta.changed)) &&
             comparevslot(*dst, src, src.changed & ~delta.changed) &&
@@ -483,7 +483,7 @@ VARP(autocompactvslots, 0, 256, 0x10000);
 
 VSlot *editvslot(const VSlot &src, const VSlot &delta)
 {
-    VSlot *exists = findvslot(*src.slot, src, delta);
+    VSlot *exists = src.slot->findvariant(src, delta);
     if(exists) return exists;
     if(vslots.length() >= 0x10000)
     {

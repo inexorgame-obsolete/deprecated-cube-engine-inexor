@@ -2389,7 +2389,7 @@ static int unpacktex(int &tex, ucharbuf &buf, bool insert = true)
     if(!unpackvslot(buf, ds, false)) return false;
     VSlot &vs = *lookupslot(tex & 0xFFFF, false).variants;
     if(vs.index < 0 || vs.index == DEFAULT_SKY) return false;
-    VSlot *edit = insert ? editvslot(vs, ds) : findvslot(*vs.slot, vs, ds);
+    VSlot *edit = insert ? editvslot(vs, ds) : vs.slot->findvariant(vs, ds);
     if(!edit) return false;
     tex = edit->index;
     return true;
