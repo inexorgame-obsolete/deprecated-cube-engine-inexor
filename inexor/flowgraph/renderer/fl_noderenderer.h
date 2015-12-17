@@ -7,9 +7,9 @@
 
 #include "inexor/engine/engine.h"
 
+
 namespace inexor {
 namespace vscript {
-
 
     const float boxsize = 4.0f;
 
@@ -24,6 +24,7 @@ namespace vscript {
         VSCRIPT_BOX_BOTTOM,
         VSCRIPT_BOX_TOP
     };
+
 
     enum VSCRIPT_NODE_COLORS
     {

@@ -6,6 +6,8 @@
 #include "inexor/flowgraph/functions/fl_functionbase.h"
 #include "inexor/flowgraph/functions/fl_functions.h"
 
+#include "inexor/flowgraph/areas/block/fl_area_block.h"
+
 #include "inexor/geom/geom.h"
 #include "inexor/geom/curves/bezier/bezier.h"
 
@@ -109,6 +111,14 @@ namespace vscript {
             {
                 unsigned int wait_time   = atoi(arguments[0].c_str());
                 created_node = new CSleepNode(target, wait_time); 
+                break;
+            }
+
+            case NODE_TYPE_AREA_BLOCK:
+            {
+                vec end = target;
+                end.add(vec(20,20,20));
+                created_node = new CCubeAreaNode(target,end,arguments[0].c_str(),arguments[1].c_str());
                 break;
             }
         }
@@ -381,6 +391,12 @@ namespace vscript {
         vScript3D.connect_nodes(b,c);
     }
     COMMAND(test_c, "");
+
+    void test_d()
+    {
+        d = vScript3D.add_node(NODE_TYPE_AREA_BLOCK, 10, "Hallo Welt Bereich");
+    }
+    COMMAND(test_d, "");
 
 };
 };
