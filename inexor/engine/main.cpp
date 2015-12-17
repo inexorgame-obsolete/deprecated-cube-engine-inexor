@@ -147,9 +147,7 @@ bool initwarning(const char *desc, int level, int type)
     return false;
 }
 
-
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/// screen setup and window settings
+/////////// screen setup and window settings ///////////////
 
 
 /// hardcoded macros for minimal/maximal screen settings
