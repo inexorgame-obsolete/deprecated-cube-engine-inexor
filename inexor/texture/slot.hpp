@@ -119,6 +119,7 @@ struct Slot
             t.combined = -1;
         }
     }
+    VSlot *findvariant(const VSlot &src, const VSlot &delta);
 
     Slot &load(bool msg, bool forceload);
     Texture *loadthumbnail();
