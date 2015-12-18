@@ -13,7 +13,13 @@
 #else
     #define INEXOR_NOEXCEPT
 #endif
-namespace inexor { namespace util { /// Basic exception type for use in inexor /// /// This type (1) provides an exception type that excludes
+
+namespace inexor {
+namespace util {
+
+/// Basic exception type for use in inexor
+///
+/// This type (1) provides an exception type that excludes
 /// all exceptions from outside inexor and (2) provides
 /// the ability to set the reason (`what`) when throwing
 /// the exception.
@@ -95,6 +101,7 @@ public:
 /// need to specify one manually
 #define IEXCEPTION(name, __what) \
     EXCEPTION(name, ::inexor::util::InexorException, __what)
+
 }
 }
 
