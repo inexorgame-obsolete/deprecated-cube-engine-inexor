@@ -206,12 +206,6 @@ function(require_boost_thread targ)
   target_include_directories(${targ} PUBLIC ${BOOST_THREAD_INCLUDE_DIRS})
 endfunction()
 
-#### Template Switch
-
-function(config_template_switch targ)
-  include_directories(${pwd}/template_switch/include/)
-endfunction()
-
 #### BOOST (Random)
 
 find_libs(BOOST_RANDOM_LIBS boost_random)

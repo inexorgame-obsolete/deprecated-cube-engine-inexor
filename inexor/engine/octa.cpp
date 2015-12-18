@@ -1221,7 +1221,7 @@ void genclipplanes(const cube &c, const ivec &co, int size, clipplanes &p, bool 
         calcvert(c, co, size, p.v[i], i);
         mx.max(p.v[i]);
         mn.min(p.v[i]);
-    }
+        }
 
     p.r = mx.sub(mn).mul(0.5f);
     p.o = mn.add(p.r);

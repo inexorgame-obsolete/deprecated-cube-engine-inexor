@@ -1,14 +1,10 @@
 #ifndef INEXOR_UTIL_SERVICE_HEADER
 #define INEXOR_UTIL_SERVICE_HEADER
 
-#include <cstdint>
-
 #include <string>
 #include <unordered_map>
 #include <functional>
 #include <queue>
-
-#include <boost/signals2>
 
 #include "inexor/util.hpp"
 #include "inexor/util/InexorException.hpp"
@@ -37,10 +33,7 @@ EXCEPTION(SubsystemNotRunning, SubsystemException,
 /// SUBSYSTEM_REGISTERto enable starting it by name (as
 /// a string, during runtime).
 class Subsystem {
-private:
-    using boost::signals2::signal;
-
-public: // Start, stop, computation //
+public:
 
     /// Called to startup of the subsystem; usually when
     /// inexor is started
@@ -54,60 +47,9 @@ public: // Start, stop, computation //
     /// is
     virtual void tick() {};
 
-public: // Painting //
-
     /// Called to paint stuff; after everything inexor and
     /// possibly other modules have been called.
     virtual void paint() {};
-
-
-protected: // Input //
-
-    bool focused_ = false;
-
-public:
-
-    /// Flags for the input
-    // TODO: Use a special type for flags, not plain old
-    // integers
-    enum UIMode : int_fast8_min_t {
-        hide_cursor = 0x1, /// Hide the system cursor
-        show_cursor = 0x0, /// Show the system cursor
-
-        /// Enables infinite mouse movement; mostly for 3d
-        /// navigation: moving the mouse left never hits an
-        /// edge, so you can infinitely move it around.
-        /// Mouse events will just contains the relative
-        /// movement information.
-        relative_mouse = 0x2,
-        /// Normal mouse behaviour: Mouse moves inside the
-        /// desktop and can exit inexor's screen
-        absolute_mouse = 0x0
-    };
-
-    /// The input mode to apply when this subsystem is in
-    /// focus; default: show_cursor | absolute_mouse.
-    virtual UIMode ui_mode() {
-        return UIMode::show_cursor | UIMode::absolute_mouse;
-    }
-      
-    /// Called every time some sort of user interaction
-    /// event happens.
-    ///
-    /// The function is called regardless of whether the
-    /// subsystem is in focus or not, but whether it's in
-    /// focus will be provided as a flag. The default
-    /// behaviour for focused=false is to ignore the event.
-    virtual receive_interaction(UserInteraction ev, bool focused) {}
-
-public:
-    /// Each subsystem can both receive and send user
-    /// interactions; this slot signal is where the
-    /// subsystem sends all of it's own generated
-    /// interactions.
-    signal<void(UserInteraction)> generated_interactions;
-
-public: // Registration //
 
     /// A function that starts a subsystem and returns
     /// a pointer to the instance
