@@ -12,6 +12,7 @@
 
 #include "inexor/util/random.hpp"
 #include "inexor/util.hpp"
+#include "inexor/compat/minmax.hpp"
 
 typedef unsigned char uchar;
 typedef unsigned short ushort;
@@ -40,8 +41,13 @@ typedef unsigned long long int ullong;
 #endif
 
 using std::swap;
-using std::min;
-using std::max;
+
+// Cannot use a `using ...` declaration here, since we're trying to override
+// std::min/max; with using we get a name collision because min/max() resolves
+// both in inexor::compat:: and std::
+INEXOR_FUNCTION_ALIAS(min, inexor::compat::min);
+INEXOR_FUNCTION_ALIAS(max, inexor::compat::max);
+
 using boost::algorithm::clamp;
 
 #ifdef __GNUC__

@@ -103,7 +103,7 @@ if(OS_LINUX OR (OS_WINDOWS AND NOT MSVC))
     set(I_C_COMPILER_FLAGS        "-std=c99")
     # -fno-threadsafe-statics         = Don't generate thread-safe statics
     # -std=c++11                      = Use the C++11 language standard
-    set(I_CXX_COMPILER_FLAGS      "-fno-threadsafe-statics -std=c++11")
+    set(I_CXX_COMPILER_FLAGS      "-fno-threadsafe-statics -std=c++14")
     # -O0                             = No optimization
     # -D_DEBUG                        = Debug build
     set(I_COMPILER_FLAGS_DEBUG    "-O0 -D_DEBUG")
@@ -168,7 +168,7 @@ if(OS_MACOSX)
     # -std=c++11                    = Use the C++11 language standard including
     # -Wno-narrowing                  = Don't warn about type narrowing
     # -Wsign-compare                  = Warn about mixed signed/unsigned type comparisons
-    set(I_CXX_COMPILER_FLAGS      "-fno-threadsafe-statics -fobjc-call-cxx-cdtors -Wno-narrowing -Wsign-compare -std=c++11")
+    set(I_CXX_COMPILER_FLAGS      "-fno-threadsafe-statics -fobjc-call-cxx-cdtors -Wno-narrowing -Wsign-compare -std=c++14")
     # -O0                             = No optimization
     # -D_DEBUG                        = Debug build
     set(I_COMPILER_FLAGS_DEBUG    "-O0 -D_DEBUG")
@@ -330,4 +330,10 @@ add_subdirectory(vendor)
 add_subdirectory(inexor)
 
 install(FILES ${INSTALL_SHARED_LIBS} ${INSTALL_EXES} DESTINATION ${EXE_DIR})
+message(STATUS "INSTALL_RESOURCES       = ${INSTALL_RESOURCES}")
 install(FILES ${INSTALL_RESOURCES} DESTINATION ${INSTALL_RESOURCES_DIR})
+
+# shipped portable stuff on win (dirty but temporarily)
+if(OS_WINDOWS)
+  install(DIRECTORY ${INSTALL_PORTABLE_DIR} DESTINATION "${PROJECT_SOURCE_DIR}/bin/windows/all")
+endif()
