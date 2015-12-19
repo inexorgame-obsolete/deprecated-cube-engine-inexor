@@ -1,0 +1,6 @@
+{
+	"name": "Inexor",
+	"version": "0.1.0",
+	"level": "debug",
+	"logFile": "server.log"
+}
