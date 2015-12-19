@@ -11,7 +11,6 @@
     "angular": "^1.4.0",
     "coffee-script": "^1.9.2",
     "connect-assets": "^4.7.0",
-    "express": "^4.12.3",
     "browserify": "^10.2.0",
     "requirejs": "^2.1.17",
     "requirejs-browser": "^2.1.9",
@@ -25,7 +24,10 @@
     "stylus": "^0.51.1",
     "underscore.string": "^3.0.3",
     "uuid": "^2.0.1",
-    "node-dir": "^0.1.8"
+    "node-dir": "^0.1.8",
+    "promise": "^7.0.4",
+    "restify": "^4.0.3",
+	"bunyan": "^1.5.1"
   },
   "engines": {
     "node": ">=0.10.0"
