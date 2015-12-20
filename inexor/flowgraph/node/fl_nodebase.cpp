@@ -23,11 +23,11 @@ namespace vscript {
     }
 
 
-
+    /*
     void CScriptNode::in()
     {
     }
-
+    */
 
     void CScriptNode::out()
     {

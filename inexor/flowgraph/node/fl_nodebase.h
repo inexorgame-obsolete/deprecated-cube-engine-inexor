@@ -18,8 +18,13 @@ namespace vscript {
     enum VSCRIPT_NODE_TYPE
     {
         NODE_TYPE_INVALID = -1,
-        NODE_TYPE_TIMER = 0,
-        NODE_TYPE_COMMENT,
+        NODE_TYPE_COMMENT = 0,
+
+        // code executors
+        NODE_TYPE_TIMER,
+        NODE_TYPE_EVENT,
+
+        // functions and memory
         NODE_TYPE_FUNCTION,
         NODE_TYPE_MEMORY,
         
@@ -29,14 +34,13 @@ namespace vscript {
         
         NODE_TYPE_SLEEP,
 
-        NODE_TYPE_EVENT,
-
         // areas
         NODE_TYPE_AREA_BLOCK,
         NODE_TYPE_AREA_SPHERE,
         NODE_TYPE_AREA_CONE,
         NODE_TYPE_AREA_ZYLINDER,
     };
+
 
 
     class CScriptNode : public CNodeRenderer
@@ -63,9 +67,9 @@ namespace vscript {
             unsigned int this_time;
             unsigned int last_time;
 
-            void in();
-            //virtual void run() = 0;
+            virtual void in() = 0;
             virtual void reset() = 0;
+            //virtual void run() = 0;
             void render(int, bool);
             void out();
     };

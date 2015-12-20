@@ -20,6 +20,8 @@ namespace vscript {
             
             void render(int,bool);
             
+            void in() {}
+
             bool collide(vec p);
     };
 

@@ -24,7 +24,7 @@ namespace vscript {
             ~CFunctionConoutfNode();
 
             void format_output();
-            void run();
+            void in();
             void reset();
     };
 

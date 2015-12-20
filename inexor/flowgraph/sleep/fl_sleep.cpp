@@ -24,7 +24,7 @@ namespace vscript {
 
 
 
-    void CSleepNode::run()
+    void CSleepNode::in()
     {
         char tmp[64];
         sleep_active = true;

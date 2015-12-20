@@ -21,7 +21,7 @@ namespace vscript {
     }
 
 
-    void CFunctionConoutfNode::run()
+    void CFunctionConoutfNode::in()
     {
         format_output();
         conoutf(CON_DEBUG, param_text_output.c_str());

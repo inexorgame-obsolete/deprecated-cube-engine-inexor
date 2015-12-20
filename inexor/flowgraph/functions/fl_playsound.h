@@ -31,7 +31,7 @@ namespace vscript {
             CFunctionPlaysoundNode(vec, const char*);
             ~CFunctionPlaysoundNode();
 
-            void run();
+            void in();
             void reset();
     };
 

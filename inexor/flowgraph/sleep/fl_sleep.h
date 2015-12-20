@@ -31,7 +31,7 @@ namespace vscript {
                 
             ~CSleepNode();
 
-            void run();
+            void in();
             void reset();
     };
 
