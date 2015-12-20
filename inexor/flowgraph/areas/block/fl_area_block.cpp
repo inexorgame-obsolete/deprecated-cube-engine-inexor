@@ -4,11 +4,11 @@ namespace inexor {
 namespace vscript {
 
 
-    CCubeAreaNode::CCubeAreaNode(vec start, vec end, const char* name, const char* comment)
+    CCubeAreaNode::CCubeAreaNode(vec position, vec edge_vector, const char* name, const char* comment)
     {
         type = NODE_TYPE_AREA_BLOCK;
-        edge_start = start;
-        edge_end = end;
+        pos = position;
+        edge = edge_vector;
     }
 
     
@@ -26,8 +26,6 @@ namespace vscript {
     {
         // render box
         glBegin(GL_QUADS);
-
-
         glEnd();
     }
 

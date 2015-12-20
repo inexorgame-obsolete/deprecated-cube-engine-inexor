@@ -11,8 +11,7 @@ namespace vscript {
     {
         public:
         
-            vec edge_start;
-            vec edge_end;
+            vec edge;
 
             CCubeAreaNode(vec,vec,const char*,const char*);
             ~CCubeAreaNode();
