@@ -9,15 +9,6 @@
 /// Charles HERMITE             (December 24, 1822 - January 14, 1901)   French mathematician
 /// Leonardo FIBONACCI          (~1170, ~1240)                           Italian mathematician
 ///
-/// A collection of useful links and documentations:
-/// http://pomax.github.io/bezierinfo/
-/// http://en.wikipedia.org/wiki/B%C3%A9zier_curve
-/// http://mathworld.wolfram.com/BezierCurve.html
-/// http://theagsc.com/community/tutorials/so-whats-the-big-deal-with-horizontal-vertical-bezier-handles-anyway#comment-1351842776
-/// http://learn.scannerlicker.net/2014/04/16/bezier-curves-and-type-design-a-tutorial/
-/// https://geom.ivd.kit.edu/downloads/pubs/pub-boehm-prautzsch_2002_preview.pdf
-/// https://www.clear.rice.edu/comp360/lectures/BezSubd.pdf
-
 /// TODO: Is DeCasteljau too dangerous because it is recursive?
 /// TODO: Maybe generate a random curve?
 /// TODO: Use generic types (templates)
@@ -47,6 +38,14 @@ namespace geom {
     /// Those curves can be used to represent the position of anything you want.
     /// Bezier curves are fast, flexible, beautiful and easy to compute.
     /// Bezier curves are essential in the field of computer graphics and data/image processing.
+    /// A collection of useful links and documentations:
+    /// http://pomax.github.io/bezierinfo/
+    /// http://en.wikipedia.org/wiki/B%C3%A9zier_curve
+    /// http://mathworld.wolfram.com/BezierCurve.html
+    /// http://theagsc.com/community/tutorials/so-whats-the-big-deal-with-horizontal-vertical-bezier-handles-anyway#comment-1351842776
+    /// http://learn.scannerlicker.net/2014/04/16/bezier-curves-and-type-design-a-tutorial/
+    /// https://geom.ivd.kit.edu/downloads/pubs/pub-boehm-prautzsch_2002_preview.pdf
+    /// https://www.clear.rice.edu/comp360/lectures/BezSubd.pdf
     class CBezierCurve : public CCurveBase
     {
         protected:
