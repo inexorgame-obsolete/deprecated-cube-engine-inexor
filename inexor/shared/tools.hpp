@@ -11,6 +11,7 @@
 #include <boost/algorithm/clamp.hpp>
 
 #include "inexor/util/random.hpp"
+#include "inexor/util/Observe.hpp"
 #include "inexor/util.hpp"
 #include "inexor/compat/minmax.hpp"
 
