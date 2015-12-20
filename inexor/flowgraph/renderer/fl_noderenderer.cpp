@@ -16,7 +16,6 @@ namespace vscript {
 
     void CNodeRenderer::adjust_selection_color(int orient, int index)
     {
-        box_color = default_box_color;
         if(orient==index) 
         {
             // if this side of the box is selected, render the side in another color

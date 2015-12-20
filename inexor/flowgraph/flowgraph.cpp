@@ -273,18 +273,13 @@ namespace vscript {
         {
             float dist = 0.0f;
             int orient = VSCRIPT_BOX_NO_INTERSECTION;
-            vec p = nodes[i]->pos;
 
-            // check for camera intersection
-            rayboxintersect(p, vec(boxsize), camera1->o, camdir, dist, orient);
-
+            rayboxintersect(nodes[i]->pos, vec(boxsize), camera1->o, camdir, dist, orient);
             nodes[i]->selected = (orient != VSCRIPT_BOX_NO_INTERSECTION);
 
             // render a 200ms long color effect once its activated
             if( (nodes[i]->this_time - nodes[i]->last_time)  < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL) nodes[i]->box_color = VSCRIPT_COLOR_TRIGGERED;
             else nodes[i]->box_color = nodes[i]->default_box_color;
-
-            // render!
             nodes[i]->render(orient, selection_blocked_by_geometry);
         }
 
