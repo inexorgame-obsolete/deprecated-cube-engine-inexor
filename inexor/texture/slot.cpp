@@ -8,6 +8,7 @@
 #include "inexor/texture/image.hpp"
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/texture/slot.hpp"
+#include "inexor/shared/filesystem.hpp"
 
 vector<VSlot *> vslots;
 vector<Slot *> slots;
@@ -440,6 +441,18 @@ bool unpackvslot(ucharbuf &buf, VSlot &dst, bool delta)
     return true;
 }
 
+
+inline void Slot::addvariant(VSlot *vs)
+{
+    if(!variants) variants = vs;
+    else
+    {
+        VSlot *prev = variants;
+        while(prev->next) prev = prev->next;
+        prev->next = vs;
+    }
+}
+
 VSlot *Slot::findvariant(const VSlot &src, const VSlot &delta)
 {
     for(VSlot *dst = variants; dst; dst = dst->next)
@@ -452,17 +465,6 @@ VSlot *Slot::findvariant(const VSlot &src, const VSlot &delta)
     return NULL;
 }
 
-
-void addvariant(VSlot *vs)
-{
-    if(!variants) variants = vs;
-    else
-    {
-        VSlot *prev = variants;
-        while(prev->next) prev = prev->next;
-        prev->next = vs;
-    }
-}
 
 /// Sets a chain of VSlot variants for the owner slot.
 VSlot *Slot::setvariantchain(VSlot *vs)
@@ -629,6 +631,16 @@ void gencombinedname(vector<char> &name, int &texmask, Slot &s, Slot::Tex &t, in
     }
     name.add('\0');
 }
+
+void Slot::addtexture(int type, const char *filename)
+{
+    Slot::Tex &st = sts.add();
+    st.type = type;
+    inexor::filesystem::getmedianame(st.name, MAXSTRLEN, filename, DIR_TEXTURE);
+    path(st.name);
+    loaded = false;
+}
+
 
 /// Combine and load texture data to be ready for sending it to the gpu.
 /// Combination is used to merge the diffuse and the specularity map into one texture (spec as alpha)
