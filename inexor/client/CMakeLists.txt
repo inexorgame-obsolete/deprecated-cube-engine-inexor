@@ -56,10 +56,6 @@ set(CLIENT_SOURCES
   ${CLIENT_SOURCES_ENGINE}
   ${CLIENT_SOURCES_FPSGAME} CACHE INTERNAL "")
 
-if(OS_MACOSX)
-  list(APPEND CLIENT_SOURCES engine/macutils.mm)
-endif()
-
 # Set Binary name
 set(CLIENT_BINARY inexor CACHE INTERNAL "Client binary name.")
 
@@ -68,7 +64,6 @@ add_definitions(-DCLIENT)
 add_app(${CLIENT_BINARY} ${CLIENT_SOURCES})
 
 config_threads(${CLIENT_BINARY})
-config_cocoa(${CLIENT_BINARY}) # For rendering the initial window
 config_crashreporter(${CLIENT_BINARY})
 config_sdl(${CLIENT_BINARY})
 config_zlib(${CLIENT_BINARY})

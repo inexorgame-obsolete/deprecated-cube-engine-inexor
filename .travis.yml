@@ -27,16 +27,6 @@ matrix:
       env: TARGET=apidoc
       git:
         submodules: false
-    - os: osx
-      sudo: false
-      language: cpp
-      env: TARGET=osx
-
-  allow_failures:
-    # work on it! :)
-    - env: TARGET=osx
-
-  fast_finish: true # don't wait for allow_failures (OSX) to fail, gives faster response
 
 before_install:
   - bash tool/travis.sh target_before_install

@@ -5,20 +5,6 @@ find_package(PkgConfig)
 
 set(pwd "${CMAKE_CURRENT_SOURCE_DIR}")
 
-#### Cocoa/OSX
-
-function(config_cocoa targ)
-  message(STATUS "Configuring ${targ} with Cocoa")
-  if (";${ARGN};" MATCHES ";NOLINK;")
-    set(NOLINK "NOLINK")
-  endif()
-
-
-  if (OS_MACOSX)
-    target_link_libs(${targ} CoreServices Cocoa ${NOLINK})
-  endif()
-endfunction()
-
 #### Threads
 
 if (NOT THREADAPI)
@@ -110,7 +96,6 @@ function(config_sdl targ)
     target_link_libs(${targ} dl rt ${NOLINK})
   endif()
 
-  config_cocoa(${targ} ${NOLINK})
   config_opengl(${targ} ${NOLINK})
 endfunction()
 
