@@ -49,17 +49,19 @@ set(SOURCE_DIR ${MAINDIR}/inexor)
 
 # Determine the project architecture.
 if(NOT DEFINED PROJECT_ARCH)
-  if(CMAKE_SIZEOF_VOID_P MATCHES 8)
-    set(PROJECT_ARCH "x86_64")
-    set(X64 1)
-  else()
+  if(CMAKE_SIZEOF_VOID_P MATCHES 4)
     set(PROJECT_ARCH "x86")
+  else()
+    set(PROJECT_ARCH "x86_64")
   endif()
 
-  if(OS_MACOSX)
-    # PROJECT_ARCH should be specified on Mac OS X.
-    message(WARNING "No PROJECT_ARCH value specified, using ${PROJECT_ARCH}")
-  endif()
+  message(STATUS "No PROJECT_ARCH value specified, using ${PROJECT_ARCH}")
+endif()
+
+if (PROJECT_ARCH STREQUAL "x86_64")
+  set(X64 1)
+else()
+  set(X32 1)
 endif()
 
 # Determine the platform.
