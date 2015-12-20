@@ -253,11 +253,7 @@ run_tests() {
 ## TARGETS CALLED BY TRAVIS ################################
 
 target_before_install() {
-  if test "$TARGET" = osx; then
-    "$script" install_"$TARGET"
-  else
-    sudo "$script" install_"$TARGET"
-  fi
+  sudo "$script" install_"$TARGET"
 }
 
 target_script() {
