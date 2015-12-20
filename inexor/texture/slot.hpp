@@ -120,6 +120,8 @@ struct Slot
 
     VSlot *findvariant(const VSlot &src, const VSlot &delta);
 
+    void combinetextures(int index, Slot::Tex &t, bool msg = true, bool forceload = false);
+
     Slot &load(bool msg, bool forceload);
     Texture *loadthumbnail();
     void loadlayermask();
