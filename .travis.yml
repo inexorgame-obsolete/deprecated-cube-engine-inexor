@@ -13,14 +13,19 @@ matrix:
       sudo: required
       dist: trusty
       language: cpp
-      env: TARGET=linux_clang CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=clang++-3.5 -DCMAKE_C_COMPILER=clang-3.5"
+      compiler: clang
+      env: TARGET=linux_clang CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=clang++-3.7 -DCMAKE_C_COMPILER=clang-3.7"
+
     - os: linux
       sudo: required
       dist: trusty
       language: cpp
-      env: TARGET=linux_gcc CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=g++-4.9 -DCMAKE_C_COMPILER=gcc-4.9"
+      compiler: gcc
+      env: TARGET=linux_gcc CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=g++-5 -DCMAKE_C_COMPILER=gcc-5"
+
       #- TARGET=win32 CMAKE_FLAGS="-DMINGW=1 -DMINGW_TYPE=i686"
       #- TARGET=win64 CMAKE_FLAGS="-DMINGW=1 -DMINGW_TYPE=x86_64"
+
     - os: linux
       sudo: required
       dist: trusty

@@ -8,12 +8,6 @@ using namespace inexor;
 
 // Tests for the 4 different overloads of min and max.
 
-// We need to relax the tests to at least support clang 3.5 and gcc4.9
-// as soon as we updated our travis infrastructure this codesnippet can be entirely removed
-#if defined (__cpp_constexpr) && (__cpp_constexpr > 201304L)
-#define HAS_C14_CONSTEXPR
-#endif
-
 template <class T>
 void PassTestMin(const T& a, const T& b, const T& x)
 {
@@ -42,14 +36,12 @@ TEST(InexorCompatMin, Pass)
         PassTestMin(y, x, y);
     }
 
-#ifdef HAS_C14_CONSTEXPR
     {
         constexpr int x = 1;
         constexpr int y = 0;
         static_assert(compat::min(x, y) == y, "");
         static_assert(compat::min(y, x) == y, "");
     }
-#endif
 }
 
 template <class T, class C>
@@ -80,14 +72,12 @@ TEST(InexorCompatMin, PassCompare)
         CompareTestMin(y, x, std::greater<int>(), x);
     }
 
-#ifdef HAS_C14_CONSTEXPR
     {
         constexpr int x = 1;
         constexpr int y = 0;
         static_assert(compat::min(x, y, std::greater<int>()) == x, "");
         static_assert(compat::min(y, x, std::greater<int>()) == x, "");
     }
-#endif
 }
 
 TEST(InexorCompatMin, InitList)
@@ -137,14 +127,12 @@ TEST(InexorCompatMax, Pass)
         PassTestMax(y, x, x);
     }
 
-#ifdef HAS_C14_CONSTEXPR
     {
         constexpr int x = 1;
         constexpr int y = 0;
         static_assert(compat::max(x, y) == x, "");
         static_assert(compat::max(y, x) == x, "");
     }
-#endif
 }
 
 template <class T, class C>
@@ -174,14 +162,12 @@ TEST(InexorCompatMax, PassCompare)
         CompareTestMax(y, x, std::greater<int>(), y);
     }
 
-#ifdef HAS_C14_CONSTEXPR
     {
         constexpr int x = 1;
         constexpr int y = 0;
         static_assert(compat::max(x, y, std::greater<int>()) == y, "");
         static_assert(compat::max(y, x, std::greater<int>()) == y, "");
     }
-#endif
 }
 
 TEST(InexorCompatMax, InitList)
