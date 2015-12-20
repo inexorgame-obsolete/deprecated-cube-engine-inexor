@@ -74,32 +74,33 @@ upload() {
 
 ## INSTALLATION ROUTINES ###################################
 
-install_vivid_repo() {
-  echo -e "\ndeb http://archive.ubuntu.com/ubuntu vivid "{main,multiverse,universe,restricted} >> /etc/apt/sources.list
+install_wily_repo() {
+  echo -e "\ndeb http://archive.ubuntu.com/ubuntu wily "{main,multiverse,universe,restricted} >> /etc/apt/sources.list
 }
 
 install_tool() {
-  apt-get -y install ncftp
+  apt-get -y -t trusty install ncftp
 }
 
 install_linux() {
   apt-key adv --keyserver keyserver.ubuntu.com --recv-keys FB1BF5BF09FA0AB7
   
   add-apt-repository -y "deb http://ppa.launchpad.net/zoogie/sdl2-snapshots/ubuntu trusty main"
-  install_vivid_repo
-
+  install_wily_repo
   apt-get update
   
-  apt-get -y --only-upgrade install libfontconfig1
 
   install_tool
 
-  apt-get -y install zlib1g-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev 
-
-  apt-get -y -t trusty install libenet-dev libprotobuf-dev protobuf-compiler libgconf2-dev
-
-  apt-get -y -t vivid install build-essential libboost-all-dev \
-    libasio-dev binutils libudev-dev
+  apt-get -y -t wily install --only-upgrade libfontconfig1
+  # Not using the more recent ones because https://llvm.org/bugs/show_bug.cgi?id=23529
+  # (failure in clang)
+  apt-get -y -t trusty install \
+      zlib1g-dev libsdl2-dev libsdl2-image-dev \
+      libsdl2-mixer-dev libenet-dev libprotobuf-dev \
+      protobuf-compiler libgconf2-dev libboost-all-dev \
+      libudev-dev
+  apt-get -y -t wily install build-essential binutils
 
   # Manually workaround http://askubuntu.com/questions/288821/how-do-i-resolve-a-cannot-open-shared-object-file-libudev-so-0-error
   ln -sf /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0
@@ -108,26 +109,26 @@ install_linux() {
 # Install routines for each target
 
 install_win64() {
-  install_vivid_repo
+  install_wily_repo
   apt-get update
   install_tool
-  apt-get -y -t vivid install mingw-w64
+  apt-get -y -t wily install mingw-w64
 }
 install_win32() {
   install_win64
 }
 install_linux_clang() {
   install_linux
-  apt-get -y -t vivid install clang-3.5 binutils
+  apt-get -y -t wily install clang-3.7 binutils
 }
 install_linux_gcc() {
   install_linux
-  apt-get -y -t vivid install gcc-4.9 g++-4.9 binutils
+  apt-get -y -t wily install gcc-5 g++-5
 }
 install_apidoc() {
   apt-get update
   install_tool
-  apt-get install -y doxygen
+  apt-get install -y -t trusty doxygen
 }
 install_osx() {
   # if you need sudo for some stuff here, you need to adjust travis.yml and target_before_install()
