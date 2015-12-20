@@ -7,6 +7,7 @@
 #include "inexor/flowgraph/functions/fl_functions.h"
 
 #include "inexor/flowgraph/areas/block/fl_area_block.h"
+#include "inexor/flowgraph/areas/sphere/fl_area_sphere.h"
 
 #include "inexor/geom/geom.h"
 #include "inexor/geom/curves/bezier/bezier.h"
@@ -121,6 +122,14 @@ namespace vscript {
                 created_node = new CCubeAreaNode(target,end,arguments[0].c_str(),arguments[1].c_str());
                 break;
             }
+
+            case NODE_TYPE_AREA_SPHERE:
+            {
+                vec rad = target;
+                rad.add(vec(20,20,20));
+                created_node = new CSphereAreaNode(target,rad,arguments[0].c_str(),arguments[1].c_str());
+                break;
+            }
         }
 
         if(nullptr != created_node)  nodes.push_back(created_node);
@@ -220,6 +229,7 @@ namespace vscript {
             if(NODE_TYPE_TIMER == nodes[i]->type) nodes[i]->reset();
         }
     }
+
 
     void CVisualScriptSystem::delete_all_nodes()
     {

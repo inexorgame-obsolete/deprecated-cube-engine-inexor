@@ -20,6 +20,9 @@ namespace vscript {
 
     class CVisualScriptSystem : public CEntityManager
     {
+        protected:
+            void update_input(int, bool);
+
         public:
         
             std::vector<CScriptNode *> nodes;
@@ -38,7 +41,6 @@ namespace vscript {
             void render_node_relations();
             void render_debug_rays();
 
-            void update_input(int, bool);
             void update_timers();
 
             void connect_nodes(CScriptNode *from, CScriptNode *to);
