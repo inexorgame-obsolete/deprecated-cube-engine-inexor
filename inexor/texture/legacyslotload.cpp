@@ -40,16 +40,12 @@ void texture(char *type, char *name, int *rot, int *xoffset, int *yoffset, float
     else if(lastmatslot >= 0) matslot = lastmatslot;
     else if(slots.empty()) return;
     Slot &s = matslot >= 0 ? lookupmaterialslot(matslot, false) : *(tnum != TEX_DIFFUSE ? slots.last() : slots.add(new Slot(slots.length())));
-    s.loaded = false;
+    s.loaded = 0;
     s.texmask |= 1 << tnum;
     if(s.sts.length() >= 8) conoutf(CON_WARN, "warning: too many textures in slot %d", slots.length() - 1);
-    Slot::Tex &st = s.sts.add();
-    st.type = tnum;
-    st.combined = -1;
-    st.t = NULL;
-    inexor::filesystem::getmedianame(st.name, MAXSTRLEN, name, DIR_TEXTURE);
 
-    path(st.name);
+    s.addtexture(tnum, name);
+
     if(tnum == TEX_DIFFUSE)
     {
         setslotshader(s);

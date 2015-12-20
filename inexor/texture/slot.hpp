@@ -75,9 +75,9 @@ class Slot
     struct Tex
     {
         int type;
-        Texture *t;
+        Texture *t = NULL;
         string name;
-        int combined;
+        int combined = -1;
     };
 
     int index;
@@ -127,6 +127,7 @@ class Slot
         }
     }
 
+    void addtexture(int type, const char *filename);
 
     void addvariant(VSlot *vs);
     VSlot *setvariantchain(VSlot *vs);
