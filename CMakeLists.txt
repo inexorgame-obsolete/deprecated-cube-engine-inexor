@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.12) 
-include(inexor/functions.cmake)
+include(cmake/functions.cmake)
 include(cmake/glibc_cxx11_abi_detection.cmake)
 
 ### Different Configuration Types (Debug release)
