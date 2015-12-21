@@ -118,7 +118,7 @@ namespace vscript {
             case NODE_TYPE_AREA_BLOCK:
             {
                 vec end = target;
-                end.add(vec(20,20,20));
+                end.add(vec(50,50,50));
                 created_node = new CCubeAreaNode(target,end,arguments[0].c_str(),arguments[1].c_str());
                 break;
             }
@@ -130,8 +130,8 @@ namespace vscript {
                 created_node = new CSphereAreaNode(target,rad,arguments[0].c_str(),arguments[1].c_str());
                 break;
             }
-        }
 
+        }
         if(nullptr != created_node)  nodes.push_back(created_node);
         return created_node;
     }
