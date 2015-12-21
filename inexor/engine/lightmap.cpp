@@ -566,8 +566,7 @@ static float calcocclusion(const vec &o, const vec &normal, float tolerance)
        //degrees around z     21  43  66  88  111 133 156 178 201 223 246 268 291 313 336 358         (building the circle)
        //degrees around xandy 50  60  70  80   50  60  70  80  50  60  70  80  50  60  70  80         (making it an upwardly open cone)					  
     }; */
-    #define AO_NUM_RAYS 5
-	static const vec rays[AO_NUM_RAYS] =
+	static const vec rays[] =
     {
 			vec(0, 0, 1),
             vec(cosf(66*RAD)*cosf(65*RAD), sinf(66*RAD)*cosf(65*RAD), sinf(65*RAD)),
@@ -575,7 +574,9 @@ static float calcocclusion(const vec &o, const vec &normal, float tolerance)
             vec(cosf(246*RAD)*cosf(65*RAD), sinf(246*RAD)*cosf(65*RAD), sinf(65*RAD)),
             vec(cosf(336*RAD)*cosf(65*RAD), sinf(336*RAD)*cosf(65*RAD), sinf(65*RAD))        
     };
+    const int num_rays = sizeof(rays) / sizeof(vec);
 
+    ASSERT(!normal.iszero());
 
 	//rotate the rays into the normal direction
 	//(normals have to be normalized!)
@@ -583,8 +584,7 @@ static float calcocclusion(const vec &o, const vec &normal, float tolerance)
 	bool needsrotation = false;
 	if( normal != rays[0]) 
 	{
-	    vec axis; 
-		axis.cross(rays[0], normal);
+	    vec axis = vec().cross(rays[0], normal);
 		if(axis.magnitude() == 0)  axis = vec(1, 0, 0);// special case angle == 180 (cross product == 0)
 		float angle = acos(rays[0].dot(normal));
 		rotationmatrix.rotate(angle, axis); //create a matrix
@@ -592,21 +592,23 @@ static float calcocclusion(const vec &o, const vec &normal, float tolerance)
 	}
 
 	int occluedrays = 0;
-	loopi(AO_NUM_RAYS) 
+	loopi(num_rays)
     {	
 		vec ray(needsrotation ? rotationmatrix.transform(rays[i]) : rays[i]);
 		if(shadowray(vec(ray).mul(tolerance).add(o), ray, ambientocclusionradius, RAY_ALPHAPOLY|RAY_SHADOW, NULL) <= (ambientocclusionradius-1.0f)) occluedrays++; 
 				//check whether there's a wall in the field around the sample
     }
 
-	return float(occluedrays)/float(AO_NUM_RAYS);
+	return float(occluedrays)/float(num_rays);
 }
 
+/// Generate Lumels (Pixel) of a specific sample, calculating its color.
 static uint generatelumel(lightmapworker *w, const float tolerance, uint lightmask, const vector<const extentity *> &lights, const vec &target, const vec &normal, vec &sample, uchar &occlusionsample, int x, int y)
 {
     vec avgray(0, 0, 0);
     float r = 0, g = 0, b = 0;
     uint lightused = 0;
+	float occlusion = 0; //occlusion to apply ao
     loopv(lights)
     {
         if(lightmask&(1<<i)) continue;
@@ -675,7 +677,7 @@ static uint generatelumel(lightmapworker *w, const float tolerance, uint lightma
             b += intensity * (sunlightcolor.z*sunlightscale);
         }
     }
-	float occlusion = 0;
+
 	if(ambientocclusion && lmao) occlusion = calcocclusion(target, normal, tolerance);
 
 	switch(w->type&LM_TYPE)
@@ -693,7 +695,6 @@ static uint generatelumel(lightmapworker *w, const float tolerance, uint lightma
             break;
     }
 
-
     occlusionsample = 0;
 	
     if(debugao) {
@@ -710,7 +711,7 @@ static uint generatelumel(lightmapworker *w, const float tolerance, uint lightma
     return lightused;
 }
 
-/// Returns whether sample does need to be saved.
+/// Returns whether sample does need to be saved (whether lumels/pixels need to be generated).
 /// true if sample colour is not darker than the ambient light (hence saveworthy).
 static bool lumelsample(const vec &sample, int aasample, int stride)
 {
@@ -987,32 +988,44 @@ static int finishlightmap(lightmapworker *w)
         loop(x, w->w)
         {
             vec l(0, 0, 0);
+            uchar ul = 0;
             const vec &center = *sample++;
             const uchar &centerocc = *occlusion++;
             loopi(aasample - 1) {
                 l.add(*sample++);
-                *occlusion++;
+                ul += *occlusion++;
             }
             if(aasample > 1)
             {
                 l.add(sample[1]);
-                if(aasample > 2) l.add(sample[3]);
-            }
-            vec *next = sample + stride - aasample;
-            if(aasample > 1)
-            {
+                ul += occlusion[1];
+                if(aasample > 2)
+                {
+                    l.add(sample[3]);
+                    ul += occlusion[3];
+                }
+
+                vec *next = sample + stride - aasample;
+                uchar *nextocc = occlusion + stride - aasample;
                 l.add(next[1]);
-                if(aasample > 2) l.add(next[2]);
-                l.add(next[aasample+1]);
+                ul += nextocc[1];
+                if(aasample > 2)
+                {
+                    l.add(next[2]);
+                    ul += nextocc[1];
+                }
+                l.add(next[aasample + 1]);
+                ul += nextocc[aasample + 1];
             }
 
             int r = int(center.x*cweight + l.x*weight),
                 g = int(center.y*cweight + l.y*weight),
                 b = int(center.z*cweight + l.z*weight),
                 ar = skylight[0], ag = skylight[1], ab = skylight[2];
-            dstcolor[0] = max(0, max(ar, r) - centerocc);
-            dstcolor[1] = max(0, max(ag, g) - centerocc);
-            dstcolor[2] = max(0, max(ab, b) - centerocc);
+            int curocc = centerocc*cweight + ul*weight; //current occlusion adapted by the weights for the antialising
+            dstcolor[0] = max(0, max(ar, r) - curocc);
+            dstcolor[1] = max(0, max(ag, g) - curocc);
+            dstcolor[2] = max(0, max(ab, b) - curocc);
             loopk(3)
             {
                 mincolor[k] = min(mincolor[k], dstcolor[k]);
