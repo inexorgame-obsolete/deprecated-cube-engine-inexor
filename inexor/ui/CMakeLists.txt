@@ -14,6 +14,7 @@ add_lib(ui)
 # Pulled in by including cube.h
 config_enet(module_ui NOLINK)
 config_sdl(module_ui NOLINK)
+config_cxx11_abi(module_ui NOLINK)
 
 function(config_ui targ)
   message(STATUS "Configuring ${targ} with ui")
@@ -26,4 +27,5 @@ function(config_ui targ)
 
   config_enet(${targ} ${NOLINK})
   config_sdl(${targ} ${NOLINK})
+  config_cxx11_abi(${targ} ${NOLINK})
 endfunction()

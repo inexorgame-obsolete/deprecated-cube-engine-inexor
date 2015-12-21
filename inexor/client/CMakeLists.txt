@@ -63,6 +63,7 @@ add_definitions(-DCLIENT)
 
 add_app(${CLIENT_BINARY} ${CLIENT_SOURCES})
 
+config_cxx11_abi(${CLIENT_BINARY})
 config_threads(${CLIENT_BINARY})
 config_crashreporter(${CLIENT_BINARY})
 config_sdl(${CLIENT_BINARY})

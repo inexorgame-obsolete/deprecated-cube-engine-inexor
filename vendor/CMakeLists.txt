@@ -1,5 +1,9 @@
 # TODO: Write a lib detector that does the following: Search for cmake definitions; search for pkg-cfg's; search for libs and headers; everyting may be specified multiple times
 
+# NOTE: Locally built dependencies need to go to the bottom
+# so all the others are available and the GLIBC C++11 ABI detection
+# works (it needs a list of libraries to check whether they use the new ABI)
+
 include(ExternalProject)
 find_package(PkgConfig)
 
@@ -26,6 +30,7 @@ if (THREADAPI STREQUAL "pthreads")
 elseif(THREADAPI STREQUAL "win32")
   set(THREADAPI_WIN32 1 CACHE INTERN "")
 endif()
+register_possible_dependency(${PTHREADS_LIBS})
 
 message(STATUS "THREADAPI : ${THREADAPI}")
 
@@ -45,13 +50,13 @@ function(config_threads targ)
   endif()
 
 endfunction()
-
 #### OpenGL
 
 find_package(OpenGL)
 
 set(OPENGL_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR} CACHE INTERN "")
 set(OPENGL_LIBS ${OPENGL_gl_LIBRARY} CACHE INTERN "")
+register_possible_dependency(${OPENGL_LIBs})
 
 function(config_opengl targ)
   message(STATUS "Configuring ${targ} with OpenGL (${OPENGL_LIBS})")
@@ -69,6 +74,7 @@ endfunction()
 #### SDL
 
 find_libs(SDL2_LIBS SDL2 LIB SDL2_image LIB SDL2_mixer)
+register_possible_dependency(${SDL2_LIBS})
 
 find_path(SDL2_BASE_INCLUDE_DIRS  SDL.h       PATH_SUFFIXES SDL2)
 find_path(SDL2_IMAGE_INCLUDE_DIRS SDL_image.h PATH_SUFFIXES SDL2)
@@ -89,7 +95,7 @@ function(config_sdl targ)
 
   if(OS_WINDOWS)
     target_link_libs(${targ} winmm ${NOLINK})
-    if(NOT MSVC) 
+    if(NOT MSVC)
       add_definitions(-mwindows) # This is GUI!
     endif()
   elseif(OS_POSIX)
@@ -120,6 +126,8 @@ else()
   endif()
 endif()
 
+register_possible_dependency(${ZLIB_LIBS})
+
 function(config_zlib targ)
   message(STATUS "Configuring ${targ} with ZLIB")
   if (";${ARGN};" MATCHES ";NOLINK;")
@@ -135,6 +143,8 @@ endfunction()
 find_libs(ENET_LIBS enet)
 find_path(ENET_INCLUDE_DIRS enet/enet.h)
 
+register_possible_dependency(${ENET_LIBS})
+
 function(config_enet targ)
   message(STATUS "Configuring ${targ} with ENET")
   if (";${ARGN};" MATCHES ";NOLINK;")
@@ -149,55 +159,12 @@ function(config_enet targ)
   endif()
 endfunction()
 
-#### Googletest
-
-set(GTEST_DIR "${pwd}/googletest" CACHE INTERNAL "")
-set(GTEST_INCLUDE_DIRS "${GTEST_DIR}/include"
-  CACHE INTERNAL "")
-
-# NOTE: For some reason compiling with pthreads fails for win32;
-# can we fix this?
-set(gtest_args
-      -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-      -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-      -Dgtest_disable_pthreads=true)
-
-# GCC 5.1 Introduces a new C++11 ABI; see the root CMakeLists
-# TODO: Can we implicitly add that definition?
-if (OS_WINDOWS AND NOT MSVC)
-  list(APPEND gtest_args -DCMAKE_CXX_FLAGS=-D_GLIBCXX_USE_CXX11_ABI=0 )
-endif()
-
-if (CMAKE_TOOLCHAIN_FILE)
-  list(APPEND gtest_args
-    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE})
-endif()
-
-ExternalProject_Add(build_gtest
-  SOURCE_DIR "${GTEST_DIR}"
-  INSTALL_COMMAND ""
-  CMAKE_ARGS ${gtest_args})
-
-# This is a it of a hack to find the actual location of the
-# built library
-ExternalProject_Get_Property(build_gtest BINARY_DIR)
-set(GTEST_LIB_DIR ${BINARY_DIR} CACHE INTERN "")
-
-function(config_gtest targ)
-  message(STATUS "Configuring ${targ} with google test")
-  if (";${ARGN};" MATCHES ";NOLINK;")
-    set(NOLINK "NOLINK")
-  endif()
-
-  add_dependencies(${targ} build_gtest)
-  include_directories(${GTEST_INCLUDE_DIRS})
-  target_link_libs(${targ} gtest ${NOLINK})
-endfunction()
-
 #### BOOST (System)
 
 find_libs(BOOST_SYSTEM_LIBS boost_system)
 find_path(BOOST_SYSTEM_INCLUDE_DIRS boost/system/config.hpp)
+
+register_possible_dependency(${BOOST_SYSTEM_LIBS})
 
 function(config_boost_system targ)
   message(STATUS "Configuring ${targ} with Boost System")
@@ -215,6 +182,8 @@ if (THREADAPI_WIN32)
 else()
   find_libs(BOOST_THREAD_LIBS boost_thread)
 endif()
+
+register_possible_dependency(${BOOST_THREAD_LIBS})
 
 function(config_boost_thread targ)
   message(STATUS "Configuring ${targ} with Boost Thread")
@@ -241,6 +210,8 @@ endfunction()
 
 find_libs(BOOST_RANDOM_LIBS boost_random)
 find_path(BOOST_RANDOM_INCLUDE_DIRS boost/random.hpp)
+
+register_possible_dependency(${BOOST_RANDOM_LIBS})
 
 function(config_boost_random targ)
   message(STATUS "Configuring ${targ} with Boost Random")
@@ -275,4 +246,73 @@ endfunction()
 
 function(config_boost_asio)
   config_asio(${ARGN})
+endfunction()
+
+#### Protobuf
+
+find_libs(PROTOBUF_LIBRARIES protobuf)
+find_path(PROTOBUF_INCLUDE_DIRS google/protobuf/service.h)
+
+register_possible_dependency(${PROTOBUF_LIBRARIES})
+
+if (NOT DEFINED PROTOC_EXE)
+  find_program(PROTOC_EXE protoc)
+endif()
+
+function(config_protobuf)
+  message(STATUS "Configuring ${targ} with protobuf")
+  if (";${ARGN};" MATCHES ";NOLINK;")
+    set(NOLINK "NOLINK")
+  endif()
+
+  add_definitions(-DGOOGLE_PROTOBUF_NO_RTTI)
+  include_directories(${PROTOBUF_INCLUDE_DIRS} ${RPC_INCLUDE_DIRS})
+  target_link_libs(${targ} ${NOLINK} ${PROTOBUF_LIBRARIES})
+endfunction()
+#### Googletest
+
+set(GTEST_DIR "${pwd}/googletest" CACHE INTERNAL "")
+set(GTEST_INCLUDE_DIRS "${GTEST_DIR}/include"
+  CACHE INTERNAL "")
+
+check_GLIBC_CXX11_AB1()
+
+set(gtest_cxx_flags "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=${_GLIBCXX_USE_CXX11_ABI}")
+
+# NOTE: For some reason compiling with pthreads fails for win32;
+# can we fix this?
+set(gtest_args
+      -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+      -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+      -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
+      -DCMAKE_CXX_FLAGS=${gtest_cxx_flags}
+      -Dgtest_disable_pthreads=true)
+
+if (CMAKE_TOOLCHAIN_FILE)
+  list(APPEND gtest_args
+    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE})
+endif()
+
+ExternalProject_Add( build_gtest
+  SOURCE_DIR "${GTEST_DIR}"
+  INSTALL_COMMAND ""
+  CMAKE_ARGS ${gtest_args})
+
+# This is a bit of a hack to find the actual location of the
+# built library
+ExternalProject_Get_Property(build_gtest BINARY_DIR)
+set(GTEST_LIB_DIR ${BINARY_DIR} CACHE INTERN "")
+
+function(config_gtest targ)
+  message(STATUS "Configuring ${targ} with google test")
+  if (";${ARGN};" MATCHES ";NOLINK;")
+    set(NOLINK "NOLINK")
+  endif()
+
+  config_cxx11_abi(${targ} ${NOLINK})
+
+  add_dependencies(${targ} build_gtest)
+
+  include_directories(${GTEST_INCLUDE_DIRS})
+  target_link_libs(${targ} gtest ${NOLINK})
 endfunction()

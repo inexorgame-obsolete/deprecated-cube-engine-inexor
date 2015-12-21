@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 2.8.12)
-
+cmake_minimum_required(VERSION 2.8.12) 
 include(inexor/functions.cmake)
+include(cmake/glibc_cxx11_abi_detection.cmake)
 
 ### Different Configuration Types (Debug release)
 
@@ -96,7 +96,7 @@ if(OS_LINUX OR (OS_WINDOWS AND NOT MSVC))
     # -Wno-switch                     = Execpt Warnings for missing switch cases
     # -fdiagnostics-show-option       = Show Warning IDs
     # -g                              = Generate debug information
-    set(I_COMPILER_FLAGS          "-fomit-frame-pointer -fno-strict-aliasing -fsigned-char -pipe -Wall -Wno-switch -Wno-deprecated-declarations -g -Wno-missing-braces -fdiagnostics-show-option ")
+    set(I_COMPILER_FLAGS          "-fomit-frame-pointer -fno-strict-aliasing -fsigned-char -pipe -Wall -Wno-switch -Wno-deprecated-declarations -g -Wno-missing-braces -fdiagnostics-show-option")
     # -std=c99                        = Use the C99 language standard
     set(I_C_COMPILER_FLAGS        "-std=c99")
     # -fno-threadsafe-statics         = Don't generate thread-safe statics
@@ -119,14 +119,6 @@ if(OS_LINUX OR (OS_WINDOWS AND NOT MSVC))
     # -Wl,--as-needed                 = Only link libraries that export symbols used by the binary
     # -Wl,--gc-sections               = Remove unused code resulting from -fdata-sections and -function-sections
     set(I_LINKER_FLAGS_RELEASE    "-Wl,-O1 -Wl,--as-needed -Wl,--gc-sections")
-
-    if (OS_WINDOWS)
-      # GCC 5.1 Introduces a new C++11 ABI; make sure we use
-      # the old one for compatibility with older compilers and
-      # for compatibility with our precompiled libs
-      # TODO: Make configurable
-      set(I_CXX_COMPILER_FLAGS "${I_CXX_COMPILER_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
-    endif()
 
     if(X64)
         # 64-bit architecture.

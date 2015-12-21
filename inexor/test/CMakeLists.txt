@@ -10,6 +10,7 @@ add_app(${TEST_BINARY} ${TEST_MODULE_SOURCES} CONSOLE_APP)
 config_net(${TEST_BINARY})
 config_util(${TEST_BINARY})
 config_gtest(${TEST_BINARY})
+config_cxx11_abi(${TEST_BINARY})
 
 target_link_libs(${TEST_BINARY} ${ADDITIONAL_LIBRARIES})
 

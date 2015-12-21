@@ -1,14 +1,5 @@
 message(STATUS "Detecting Protobuf...")
 
-find_libs(PROTOBUF_LIBRARIES protobuf)
-find_path(PROTOBUF_INCLUDE_DIRS google/protobuf/service.h)
-
-# PROTOBUF COMPILER #######
-
-if (NOT DEFINED PROTOC_EXE)
-  find_program(PROTOC_EXE protoc)
-endif()
-
 # RPC PROTOCOL FILE TARGET
 
 set(RPC_FILE_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "")
@@ -37,9 +28,6 @@ set_source_files_properties(
 
 # MODULE ###############
 
-add_definitions(-DGOOGLE_PROTOBUF_NO_RTTI)
-include_directories(${PROTOBUF_INCLUDE_DIRS} ${RPC_INCLUDE_DIRS})
-
 declare_module(rpc .)
 set(RPC_MODULE_SOURCES ${RPC_MODULE_SOURCES} ${protoc_out_cc}
   CACHE INTERNAL "")
@@ -48,6 +36,8 @@ add_lib(rpc)
 config_net(module_rpc NOLINK)
 config_sdl(module_rpc NOLINK)
 config_enet(module_rpc NOLINK)
+config_protobuf(module_rpc NOLINK)
+config_cxx11_abi(module_rpc NOLINK)
 
 function(config_rpc targ)
   message(STATUS "Configuring ${targ} with rpc")
@@ -55,13 +45,12 @@ function(config_rpc targ)
     set(NOLINK "NOLINK")
   endif()
 
-  add_definitions(-DGOOGLE_PROTOBUF_NO_RTTI)
   add_dependencies(${targ} run_protoc)
-  include_directories(${PROTOBUF_INCLUDE_DIRS} ${RPC_INCLUDE_DIRS})
-  target_link_libs(${targ} ${NOLINK}
-    module_rpc module_net ${PROTOBUF_LIBRARIES} module_util)
+  target_link_libs(${targ} ${NOLINK} module_rpc module_net module_util)
 
+  config_protobuf(${targ})
   config_net(${targ})
   config_enet(${targ})
+  config_cxx11_abi(${targ} NOLINK)
 endfunction()
 
