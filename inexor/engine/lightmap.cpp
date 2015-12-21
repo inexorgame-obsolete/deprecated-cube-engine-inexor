@@ -524,7 +524,7 @@ static void updatelightmap(const layoutinfo &surface)
  
     glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 }
- 
+
 //ambient occlusion (darkening of corners) works as follows:
 //you check for every point how much light possible comes onto it when the light comes from the whole sky (no lights/spotlights, whatever)
 //this will darken cracks and sharp edges and hence give a more realistic rendering output.
@@ -584,10 +584,8 @@ static float calcocclusion(const vec &o, const vec &normal, float tolerance)
     bool needsrotation = false;
     if( normal != rays[0]) 
     {
-        vec axis = vec().cross(rays[0], normal);
-        if(axis.magnitude() == 0)  axis = vec(1, 0, 0);// special case angle == 180 (cross product == 0)
-        float angle = acos(rays[0].dot(normal));
-        rotationmatrix.rotate(angle, axis); //create a matrix
+        ASSERT(normal.isnormalized());
+        rotationmatrix.rotationAlign(rays[0], normal);
         needsrotation = true;
     }
 
@@ -906,7 +904,7 @@ static bool generatelightmap(lightmapworker *w, float lpu, const lerpvert *lv, i
         {
             vec &center = *sample++;
             uchar &curocc = *occlusion++;
-            if(adaptivesample && x > 0 && x+1 < w->w && y > 0 && y+1 < w->h && !curocc && !lumelsample(center, aasample, stride) )
+            if(adaptivesample && x > 0 && x+1 < w->w && y > 0 && y+1 < w->h && !lumelsample(center, aasample, stride) )
                 loopi(aasample - 1) {
                     *sample++ = center;
                     *occlusion++ = curocc;
@@ -927,8 +925,10 @@ static bool generatelightmap(lightmapworker *w, float lpu, const lerpvert *lv, i
                         uchar dummy;
                         generatelumel(w, AA_EDGE_TOLERANCE(x, y, i+4) * tolerance, lightmask, w->lights, vec(u).add(offsets[i+4]), n, s, dummy, x, y);
                         center.add(s);
+                        curocc += dummy;
                     }
                     center.div(5);
+                    curocc /= 5;
                 }
             }
         }
