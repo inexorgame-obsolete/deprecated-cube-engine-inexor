@@ -5,7 +5,7 @@
 #ifndef INEXOR_VSCRIPT_SLEEP_HEADER
 #define INEXOR_VSCRIPT_SLEEP_HEADER
 
-#include "inexor/flowgraph/node/fl_nodebase.h"
+#include "inexor/flowgraph/nodebase/fl_base.h"
 
 #define INEXOR_VSCRIPT_MIN_SLEEP_INTERVAL 5 // 10ms
 #define INEXOR_VSCRIPT_MAX_SLEEP_INTERVAL 1000 * 60 * 60 * 24 // 1 day

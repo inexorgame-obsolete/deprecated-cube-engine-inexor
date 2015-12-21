@@ -5,7 +5,7 @@
 #ifndef INEXOR_VSCRIPT_COMMENT_HEADER
 #define INEXOR_VSCRIPT_COMMENT_HEADER
 
-#include "inexor/flowgraph/node/fl_nodebase.h"
+#include "inexor/flowgraph/nodebase/fl_base.h"
 
 namespace inexor {
 namespace vscript {

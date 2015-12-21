@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "inexor/flowgraph/renderer/fl_noderenderer.h"
+#include "inexor/flowgraph/render/fl_render.h"
 #include "inexor/geom/curves/bezier/bezier.h"
 
 

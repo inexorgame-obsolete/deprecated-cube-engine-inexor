@@ -399,7 +399,7 @@ namespace vscript {
 
     void test_d()
     {
-        d = vScript3D.add_node(NODE_TYPE_AREA_BLOCK, 10, "Hallo Welt Bereich");
+        d = vScript3D.add_node(NODE_TYPE_AREA_BLOCK, 2, "Kommentar", "Hallo Welt Bereich");
     }
     COMMAND(test_d, "");
 

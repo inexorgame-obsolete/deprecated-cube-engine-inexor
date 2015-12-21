@@ -1,4 +1,4 @@
-#include "inexor/flowgraph/node/fl_nodebase.h"
+#include "inexor/flowgraph/nodebase/fl_base.h"
 #include "inexor/flowgraph/timer/fl_timer.h"
 
 

@@ -1,4 +1,4 @@
-#include "inexor/flowgraph/renderer/fl_noderenderer.h"
+#include "inexor/flowgraph/render/fl_render.h"
 #include "inexor/flowgraph/timer/fl_timer.h"
 
 namespace inexor {

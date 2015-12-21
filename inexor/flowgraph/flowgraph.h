@@ -9,8 +9,8 @@
 #include <vector>
 #include <stdarg.h>
 
-#include "inexor/flowgraph/node/fl_nodebase.h"
-#include "inexor/flowgraph/renderer/fl_noderenderer.h"
+#include "inexor/flowgraph/nodebase/fl_base.h"
+#include "inexor/flowgraph/render/fl_render.h"
 #include "inexor/flowgraph/editor/fl_enteditor.h"
  #include "inexor/flowgraph/debugger/fl_dbgrays.h"
 
