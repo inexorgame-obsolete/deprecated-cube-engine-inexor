@@ -2,6 +2,7 @@ declare_module(net .)
 add_lib(net)
 
 config_asio(module_net NOLINK)
+config_cxx11_abi(module_net NOLINK)
 
 function(config_net targ)
   message(STATUS "Configuring ${targ} with net")
@@ -11,5 +12,6 @@ function(config_net targ)
 
   target_link_libs(${targ} module_net ${NOLINK})
 
+  config_cxx11_abi(module_net ${NOLINK})
   config_asio(${targ} ${NOLINK})
 endfunction()
