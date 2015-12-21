@@ -18,16 +18,11 @@ namespace vscript {
         selected = false;
     }
 
+
     CScriptNode::~CScriptNode()
     {
     }
 
-
-    /*
-    void CScriptNode::in()
-    {
-    }
-    */
 
     void CScriptNode::out()
     {

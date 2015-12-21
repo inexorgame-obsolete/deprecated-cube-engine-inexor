@@ -14,7 +14,7 @@ namespace vscript {
     class CFunctionConoutfNode : public CScriptNode
     {
         protected:
-    
+
             std::string param_text_output;
             std::string raw_text_input;
 

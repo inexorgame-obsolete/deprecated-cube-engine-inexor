@@ -17,13 +17,12 @@ namespace vscript {
     class CSleepNode : public CScriptNode
     {
         public:
-    
+
             unsigned int sleep_start;
             unsigned int sleep_end;
             unsigned int sleep_interval;
             bool         sleep_active;
 
-            
             CSleepNode(vec pos,
                        unsigned int sleeptime,
                        const char* name = "NewSleep1",

@@ -50,7 +50,7 @@ namespace vscript {
             unsigned int timer_interval;
             unsigned int timer_limit;
             unsigned int timer_cooldown;
-            
+
             void in();
             void run();
             void reset();

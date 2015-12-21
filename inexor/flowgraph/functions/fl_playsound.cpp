@@ -23,10 +23,11 @@ namespace vscript {
         last_time = SDL_GetTicks();
         out();
     }
-    
+
+
     void CFunctionPlaysoundNode::reset()
     {
     }
-    
+
 };
 };

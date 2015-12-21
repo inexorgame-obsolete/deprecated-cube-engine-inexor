@@ -63,7 +63,7 @@ namespace vscript {
 
             std::string node_name;
             std::string node_comment;
-            
+
             unsigned int this_time;
             unsigned int last_time;
 

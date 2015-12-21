@@ -45,7 +45,7 @@ namespace vscript {
     {
 
         public:
-        
+
             CNodeRenderer();
             ~CNodeRenderer();
 

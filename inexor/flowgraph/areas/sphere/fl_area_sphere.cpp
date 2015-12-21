@@ -11,12 +11,12 @@ namespace vscript {
         radius = rad;
     }
 
-    
+
     CSphereAreaNode::~CSphereAreaNode()
     {
     }
 
-    
+
     void CSphereAreaNode::reset()
     {
     }

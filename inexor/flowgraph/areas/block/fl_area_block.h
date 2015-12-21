@@ -10,16 +10,16 @@ namespace vscript {
     class CCubeAreaNode : public CScriptNode
     {
         public:
-        
+
             vec edge;
 
             CCubeAreaNode(vec,vec,const char*,const char*);
             ~CCubeAreaNode();
 
             void reset();
-            
+
             void render(int,bool);
-            
+
             void in() {}
 
             bool collide(vec p);
