@@ -16,14 +16,12 @@ class Directory extends Node
 	# When throwing a non-directory it will set the promise to failed
 	# @return string
 	resolve: (path) ->
-		# check if a path is a valid directory
-		# additionally resolve a relative path, if needed
-		
-		return Promise.denodeify(fs.realpath)(path)
-			.then (value) ->
-				Promise.denodeify(fs.lstat)(path)
-					.then (stat) ->
-						if stat.isDirectory()
-							return value
+		# check if a path is valid and it's content is a directory
+		@resolve(path, __dirname)
+			.then(absolutePath) ->
+				Promise.denodeify(fs.lstat)(absolutePath)
+					.then(stat)
+			      			if stat.isDirectory()
+			       				return absolutePath 
 
 module.exports = Directory
