@@ -1,3 +1,4 @@
+fs = require 'fs'
 Promise = require 'promise'
 
 # Define an abstract base class Node
