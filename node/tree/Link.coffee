@@ -1,6 +1,8 @@
 
-# A base class which can keep the reference of a 
-class Link extends Proxy
-	# Mirror access to the object using ECMA proxies 
-	constructur: (target, handler) ->
-		super
+# A base function which returns an ECMA6/Proxy
+# This mirrors an instance of a given object as a non-op proxy
+
+link = (obj) ->
+	return new Proxy(obj, {})
+
+module.exports = link
