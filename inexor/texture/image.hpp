@@ -106,8 +106,8 @@ extern void resizetexture(int w, int h, bool mipmap, bool canreduce, GLenum targ
 extern void scaleimage(ImageData &s, int w, int h);
 
 extern void texoffset(ImageData &s, int xoffset, int yoffset);
-extern void texrotate(ImageData &s, int numrots, int type = TEX_DIFFUSE);
-extern void texreorient(ImageData &s, bool flipx, bool flipy, bool swapxy, int type = TEX_DIFFUSE);
+extern void texrotate(ImageData &s, int numrots, bool isnormalmap = false);
+extern void texreorient(ImageData &s, bool flipx, bool flipy, bool swapxy, bool isnormalmap = false);
 extern void texflip(ImageData &s);
 
 extern void texmad(ImageData &s, const vec &mul, const vec &add);

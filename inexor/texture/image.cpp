@@ -205,7 +205,8 @@ static void reorients3tc(GLenum format, int blocksize, int w, int h, uchar *src,
     }
 }
 
-void texreorient(ImageData &s, bool flipx, bool flipy, bool swapxy, int type)
+/// @param isnormalmap specifies whether you pass in a normal map and hence need to shift the blue/red channels accordingly.
+void texreorient(ImageData &s, bool flipx, bool flipy, bool swapxy, bool isnormalmap)
 {
     ImageData d(swapxy ? s.h : s.w, swapxy ? s.w : s.h, s.bpp, s.levels, s.align, s.compressed);
     switch(s.compressed)
@@ -218,20 +219,22 @@ void texreorient(ImageData &s, bool flipx, bool flipy, bool swapxy, int type)
         uchar *dst = d.data, *src = s.data;
         loopi(s.levels)
         {
-            reorients3tc(s.compressed, s.bpp, max(s.w >> i, 1), max(s.h >> i, 1), src, dst, flipx, flipy, swapxy, type == TEX_NORMAL);
+            reorients3tc(s.compressed, s.bpp, max(s.w >> i, 1), max(s.h >> i, 1), src, dst, flipx, flipy, swapxy, isnormalmap);
             src += s.calclevelsize(i);
             dst += d.calclevelsize(i);
         }
         break;
     }
     default:
-        reorienttexture(s.data, s.w, s.h, s.bpp, s.pitch, d.data, flipx, flipy, swapxy, type == TEX_NORMAL);
+        reorienttexture(s.data, s.w, s.h, s.bpp, s.pitch, d.data, flipx, flipy, swapxy, isnormalmap);
         break;
     }
     s.replace(d);
 }
 
-void texrotate(ImageData &s, int numrots, int type)
+
+/// @param isnormalmap specifies whether you pass in a normal map and hence need to shift the blue/red channels accordingly.
+void texrotate(ImageData &s, int numrots, bool isnormalmap)
 {
     // 1..3 rotate through 90..270 degrees, 4 flips X, 5 flips Y
     if(numrots >= 1 && numrots <= 5)
@@ -239,7 +242,7 @@ void texrotate(ImageData &s, int numrots, int type)
         numrots >= 2 && numrots <= 4, // flip X on 180/270 degrees
         numrots <= 2 || numrots == 5, // flip Y on 90/180 degrees
         (numrots & 5) == 1,           // swap X/Y on 90/270 degrees
-        type);
+        isnormalmap);
 }
 
 void texoffset(ImageData &s, int xoffset, int yoffset)
