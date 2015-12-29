@@ -450,23 +450,42 @@ VSlot *Slot::findvariant(const VSlot &src, const VSlot &delta)
     return NULL;
 }
 
-VSlot *reassignvslot(Slot &owner, VSlot *vs)
+
+void addvariant(VSlot *vs)
 {
-    owner.variants = vs;
+    if(!variants) variants = vs;
+    else
+    {
+        VSlot *prev = variants;
+        while(prev->next) prev = prev->next;
+        prev->next = vs;
+    }
+}
+
+/// Sets a chain of VSlot variants for the owner slot.
+VSlot *Slot::setvariantchain(VSlot *vs)
+{
+    variants = vs;
     while(vs)
     {
-        vs->slot = &owner;
+        vs->slot = this;
         vs->linked = false;
         vs = vs->next;
     }
-    return owner.variants;
+    return variants;
+}
+
+VSlot::VSlot(Slot *slot, int index) : slot(slot), next(NULL), index(index), changed(0)
+{
+    reset();
+    if(slot) slot->addvariant(this);
 }
 
 VSlot *emptyvslot(Slot &owner)
 {
     int offset = 0;
     loopvrev(slots) if(slots[i]->variants) { offset = slots[i]->variants->index + 1; break; }
-    for(int i = offset; i < vslots.length(); i++) if(!vslots[i]->changed) return reassignvslot(owner, vslots[i]);
+    for(int i = offset; i < vslots.length(); i++) if(!vslots[i]->changed) return owner.setvariantchain(vslots[i]);
     return vslots.add(new VSlot(&owner, vslots.length()));
 }
 
@@ -481,6 +500,7 @@ static VSlot *clonevslot(const VSlot &src, const VSlot &delta)
 
 VARP(autocompactvslots, 0, 256, 0x10000);
 
+/// Select a VSlot beeing src but having modifications based on delta (??)
 VSlot *editvslot(const VSlot &src, const VSlot &delta)
 {
     VSlot *exists = src.slot->findvariant(src, delta);

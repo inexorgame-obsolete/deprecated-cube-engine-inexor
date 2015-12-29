@@ -36,13 +36,7 @@ struct VSlot
     vec colorscale;
     vec glowcolor;
 
-    VSlot(Slot *slot = NULL, int index = -1) : slot(slot), next(NULL), index(index), changed(0)
-    {
-        reset();
-        if(slot) addvariant(slot);
-    }
-
-    void addvariant(Slot *slot);
+    VSlot(Slot *slot = NULL, int index = -1);
 
     void reset()
     {
@@ -119,23 +113,17 @@ struct Slot
             t.combined = -1;
         }
     }
+
+
+    void addvariant(VSlot *vs);
+    VSlot *setvariantchain(VSlot *vs);
+
     VSlot *findvariant(const VSlot &src, const VSlot &delta);
 
     Slot &load(bool msg, bool forceload);
     Texture *loadthumbnail();
     void loadlayermask();
 };
-
-inline void VSlot::addvariant(Slot *slot)
-{
-    if(!slot->variants) slot->variants = this;
-    else
-    {
-        VSlot *prev = slot->variants;
-        while(prev->next) prev = prev->next;
-        prev->next = this;
-    }
-}
 
 struct MSlot : Slot, VSlot
 {
