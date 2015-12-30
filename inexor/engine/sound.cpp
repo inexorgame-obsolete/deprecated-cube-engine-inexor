@@ -4,6 +4,8 @@
 #include "inexor/shared/filesystem.hpp"
 
 #include "SDL_mixer.h"
+#include <string>
+
 #define MAXVOL MIX_MAX_VOLUME
 
 bool nosound = true;
@@ -162,7 +164,7 @@ void initsound()
         conoutf(CON_ERROR, "sound init failed (SDL_mixer): %s", Mix_GetError());
         return;
     }
-	Mix_AllocateChannels(soundchans);	
+	Mix_AllocateChannels(soundchans);
     maxchannels = soundchans;
     nosound = false;
 }
@@ -204,14 +206,13 @@ void startmusic(char *name, char *cmd)
     stopmusic();
     if(soundvol && musicvol && *name)
     {
-        string file;
-        inexor::filesystem::appendmediadir(file, MAXSTRLEN, name, DIR_MUSIC);
-        path(file);
-        if(loadmusic(file))
+        std::string file;
+        inexor::filesystem::appendmediadir(file, name, DIR_MUSIC);
+        if(loadmusic(file.c_str()))
         {
             DELETEA(musicfile);
             DELETEA(musicdonecmd);
-            musicfile = newstring(file);
+            musicfile = newstring(file.c_str());
             if(cmd[0]) musicdonecmd = newstring(cmd);
             Mix_PlayMusic(music, cmd[0] ? 0 : -1);
             Mix_VolumeMusic((musicvol*MAXVOL)/255);
@@ -219,8 +220,8 @@ void startmusic(char *name, char *cmd)
         }
         else
         {
-            conoutf(CON_ERROR, "could not play music: %s", file);
-            intret(0); 
+            conoutf(CON_ERROR, "could not play music: %s", file.c_str());
+            intret(0);
         }
     }
 }
@@ -251,17 +252,16 @@ bool soundsample::load(bool msg)
     if(!name[0]) return false;
 
     static const char * const exts[] = { "", ".ogg", ".flac", ".wav" };
-    string filename;
+    std::string filename;
     loopi(sizeof(exts)/sizeof(exts[0]))
     {
-        inexor::filesystem::appendmediadir(filename, MAXSTRLEN, name, DIR_SOUND, exts[i]);
-        if(msg && !i) renderprogress(0, filename);
-        path(filename);
-        chunk = loadwav(filename);
+        inexor::filesystem::appendmediadir(filename, name, DIR_SOUND, exts[i]);
+        if(msg && !i) renderprogress(0, filename.c_str());
+        chunk = loadwav(filename.c_str());
         if(chunk) return true;
     }
 
-    conoutf(CON_WARN, "failed to load sound: %s", filename);
+    conoutf(CON_WARN, "failed to load sound: %s", filename.c_str());
     return false;
 }
 
