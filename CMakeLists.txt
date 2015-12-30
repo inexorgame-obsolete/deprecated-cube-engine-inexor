@@ -150,11 +150,13 @@ if(OS_WINDOWS)
         # /fp:fast                              = Calculate with less precise floating point values
         # /EHsc                                 = assume extern C stuff never throws exceptions
         # /W2                                   = Warning level 2
-        # /wd"4305"                             = Ignore "truncation from 'double' to 'float'" warning
-        # /wd"4251"                             = Ignore "class 'type' needs to have dll-interface .." warning
         # /wd"4091"                             = Ignore "typedef .. where no variable gets declared ingored" warning
+        # /wd"4244"                             = Ignore "conversion from 'int' to 'float', possible loss of data" warning
+        # /wd"4251"                             = Ignore "class 'type' needs to have dll-interface .." warning
+        # /wd"4267"                             = Ignore "conversion from 'size_t' to 'int', possible loss of data" warning
+        # /wd"4305"                             = Ignore "truncation from 'double' to 'float'" warning
         # /wd"4996"                             = Ignore "Function call with parameters that may be unsafe" warning
-        set(I_COMPILER_FLAGS          "-MP -Gy -Zi -fp:fast -EHsc -W2 -wd\"4305\" -wd\"4251\" -wd\"4996\" -wd\"4091\"")
+        set(I_COMPILER_FLAGS          "-MP -Gy -Zi -fp:fast -EHsc -W2 -wd\"4091\"  -wd\"4244\" -wd\"4251\" -wd\"4267\" -wd\"4305\" -wd\"4996\"")
         # /MTd                                  = Multithreaded debug runtime
         # /Od                                   = Disable optimizations
         # /RTC1                                 = Enable basic run-time checks
