@@ -115,14 +115,6 @@ INEXOR_FUNCTION_ALIAS(detrnd, inexor::util::deterministic_rnd<int>);
   #ifndef M_LN2
     #define M_LN2 0.693147180559945309417
   #endif
-  // disable unuseful Visual Studio compiler warnings
-  #ifndef __GNUC__
-    #pragma warning (3: 4189)       // local variable is initialized but not referenced
-    #pragma warning (disable: 4244) // conversion from 'int' to 'float', possible loss of data
-    #pragma warning (disable: 4267) // conversion from 'size_t' to 'int', possible loss of data
-    #pragma warning (disable: 4355) // 'this' : used in base member initializer list
-    #pragma warning (disable: 4996) // 'strncpy' was declared deprecated
-  #endif
   /// Compare Strings, ignore case.
   #define strcasecmp _stricmp
   #define strncasecmp _strnicmp
