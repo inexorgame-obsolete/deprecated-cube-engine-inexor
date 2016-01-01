@@ -8,6 +8,10 @@
 #ifndef INEXOR_TEX_SLOT_H
 #define INEXOR_TEX_SLOT_H
 
+#include "inexor/texture/image.hpp"
+
+#include <rapidjson/Document.h>
+
 class Slot;
 
 enum
@@ -67,6 +71,10 @@ class VSlot
     {
         linked = false;
     }
+
+    /// Add all size/rotation/offset/scroll modifiers from a JSON file.
+    /// Note: we dont parse shaderparams atm.
+    void parsejson(const rapidjson::Document &j);
 };
 
 class Slot

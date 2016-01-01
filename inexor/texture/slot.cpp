@@ -10,6 +10,8 @@
 #include "inexor/texture/slot.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 
+using namespace rapidjson;
+
 vector<VSlot *> vslots;
 vector<Slot *> slots;
 MSlot materialslots[(MATF_VOLUME | MATF_INDEX) + 1];
@@ -441,7 +443,6 @@ bool unpackvslot(ucharbuf &buf, VSlot &dst, bool delta)
     return true;
 }
 
-
 inline void Slot::addvariant(VSlot *vs)
 {
     if(!variants) variants = vs;
@@ -483,6 +484,44 @@ VSlot::VSlot(Slot *slot, int index) : slot(slot), next(NULL), index(index), chan
 {
     reset();
     if(slot) slot->addvariant(this);
+}
+
+void VSlot::parsejson(const Document &j)
+{
+    if(j.HasMember("rotation") && j["rotation"].IsNumber()) rotation = clamp(j["rotation"].GetInt(), 0, 5);
+    // TODO: seperate flipping and rotation
+
+    if(j.HasMember("scale") && j["scale"].IsNumber()) scale = j["scale"].GetDouble();
+
+    if(j.HasMember("offset") && j["offset"].IsObject())
+    {
+        const Value &offs = j["offset"];
+        if(offs.HasMember("x") && offs["x"].IsNumber()) offset.x = offs["x"].GetInt();
+        if(offs.HasMember("y") && offs["y"].IsNumber()) offset.y = offs["y"].GetInt();
+        offset.max(0); // TODO: isnt this behaviour a bit unintuative?
+    }
+
+    if(j.HasMember("scroll") && j["scroll"].IsObject())
+    {
+        const Value &scrl = j["scroll"];
+        if(scrl.HasMember("x") && scrl["x"].IsNumber()) scroll.x = scrl["x"].GetDouble() / 1000.0f;
+        if(scrl.HasMember("y") && scrl["y"].IsNumber()) scroll.y = scrl["y"].GetDouble() / 1000.0f;
+    }
+
+    if(j.HasMember("alpha") && j["alpha"].IsObject())
+    {
+        const Value &alp = j["alpha"];
+        if(alp.HasMember("front") && alp["front"].IsNumber()) alphafront = clamp(alp["front"].GetDouble(), 0.0f, 1.0f);
+        if(alp.HasMember("back") && alp["back"].IsNumber())   alphaback = clamp(alp["back"].GetDouble(), 0.0f, 1.0f);
+    }
+
+    if(j.HasMember("color") && j["color"].IsObject())
+    {
+        const Value &col = j["color"];
+        if(col.HasMember("red") && col["red"].IsNumber())     colorscale.r = clamp(col["red"].GetDouble(), 0.0f, 1.0f);
+        if(col.HasMember("green") && col["green"].IsNumber()) colorscale.g = clamp(col["green"].GetDouble(), 0.0f, 1.0f);
+        if(col.HasMember("blue") && col["blue"].IsNumber())   colorscale.b = clamp(col["blue"].GetDouble(), 0.0f, 1.0f);
+    }
 }
 
 /// Wrapper around new VSlot to reuse unused dead vslots.
