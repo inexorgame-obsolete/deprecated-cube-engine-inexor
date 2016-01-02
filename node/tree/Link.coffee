@@ -2,7 +2,7 @@
 # A base function which returns an ECMA6/Proxy
 # This mirrors an instance of a given object as a non-op proxy
 
-link = (obj) ->
+Link = (obj) ->
 	return new Proxy(obj, {})
 
-module.exports = link
+module.exports = Link

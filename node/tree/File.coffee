@@ -15,11 +15,11 @@ class File extends Node
 
 	resolve: (path) ->
 		# check if a path is valid and it's content is a directory
-		@resolve(path, __dirname)
+		super(path, __dirname)
 			.then(absolutePath) ->
 				Promise.denodeify(fs.lstat)(absolutePath)
 					.then(stat)
-			      			if stat.isFile()
-			       				return absolutePath 
+					if stat.isFile() is true
+			       		return absolutePath 
 	
 module.exports = File		

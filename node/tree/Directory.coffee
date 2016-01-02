@@ -17,11 +17,11 @@ class Directory extends Node
 	# @return string
 	resolve: (path) ->
 		# check if a path is valid and it's content is a directory
-		@resolve(path, __dirname)
+		super(path, __dirname)
 			.then(absolutePath) ->
 				Promise.denodeify(fs.lstat)(absolutePath)
 					.then(stat)
-			      			if stat.isDirectory()
-			       				return absolutePath 
+					if stat.isDirectory() is true
+			       		return absolutePath 
 
 module.exports = Directory
