@@ -129,6 +129,9 @@ class Slot
 
     void addtexture(int type, const char *filename);
 
+    /// Find a texture in the sts array, depending on type (beeing one of TEX_DIFFUSE to TEX_NUM).
+    Tex *findtexture(int type);
+
     void addvariant(VSlot *vs);
     VSlot *setvariantchain(VSlot *vs);
 
