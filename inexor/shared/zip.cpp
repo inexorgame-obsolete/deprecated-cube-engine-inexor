@@ -1,4 +1,5 @@
-#include "inexor/shared/filesystem.hpp"
+#include "inexor/shared/cube.hpp"
+#include "inexor/filesystem/mediadirs.hpp"
 
 enum
 {

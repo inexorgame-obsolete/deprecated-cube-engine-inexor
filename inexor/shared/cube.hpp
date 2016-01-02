@@ -55,7 +55,6 @@
 #include "inexor/shared/geom.hpp"
 #include "inexor/shared/ents.hpp"
 #include "inexor/shared/command.hpp"
-#include "inexor/shared/json.hpp"
 
 #ifndef STANDALONE
 #include "inexor/engine/glexts.hpp"

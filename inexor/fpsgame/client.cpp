@@ -4,7 +4,7 @@
 /// implementation of many cube script get functions
 
 #include "inexor/fpsgame/game.hpp"
-#include "inexor/shared/filesystem.hpp"
+#include "inexor/filesystem/mediadirs.hpp"
 
 namespace game
 {

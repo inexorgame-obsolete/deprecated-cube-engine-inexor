@@ -3,7 +3,7 @@
 #ifndef I_FILESYSTEM_H
 #define I_FILESYSTEM_H
 
-#include "inexor/shared/cube.hpp"
+#include "inexor/rpc/SharedVar.hpp"
 
 enum {
     DIR_MAP,
@@ -25,8 +25,8 @@ namespace inexor
         extern const char *getmediadir(int type);
         extern const char *appendmediadir(std::string &output, const char *basename, int type, const char *extension = NULL);
         extern const char *appendmediadir(char *output, size_t outputlen, const char *basename, int type, const char *extension = NULL);
-        extern void getmedianame(std::string &output, const char *basename, int type, JSON *j = NULL);
-        extern char *getmedianame(char *output, size_t outputlen, const char *basename, int type, JSON *j = NULL);
+        extern void getmedianame(std::string &output, const char *basename, int type);
+        extern char *getmedianame(char *output, size_t outputlen, const char *basename, int type);
     }
 }
 #endif // I_FILESYSTEM_H

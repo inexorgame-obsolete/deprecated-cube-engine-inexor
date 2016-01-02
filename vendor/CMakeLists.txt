@@ -248,6 +248,16 @@ function(config_boost_asio)
   config_asio(${ARGN})
 endfunction()
 
+#### Rapidjson
+
+find_path(RAPIDJSON_INCLUDE_DIRS rapidjson/rapidjson.h)
+function(config_rapidjson)
+  message(STATUS "Configuring ${targ} with protobuf")
+
+  add_definitions(-DRAPIDJSON_SSE2)
+  include_directories(${RAPIDJSON_INCLUDE_DIRS})
+endfunction()
+
 #### Protobuf
 
 find_libs(PROTOBUF_LIBRARIES protobuf)
@@ -259,7 +269,7 @@ if (NOT DEFINED PROTOC_EXE)
   find_program(PROTOC_EXE protoc)
 endif()
 
-function(config_protobuf)
+function(config_protobuf targ)
   message(STATUS "Configuring ${targ} with protobuf")
   if (";${ARGN};" MATCHES ";NOLINK;")
     set(NOLINK "NOLINK")

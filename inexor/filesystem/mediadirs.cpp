@@ -1,6 +1,7 @@
 /// string operations on filenames (INCOMPLETE! see e.g. stream.cpp).
 
-#include "inexor/shared/filesystem.hpp"
+#include "inexor/shared/cube.hpp"
+#include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/util.hpp"
 
 /// Media paths ///
@@ -57,25 +58,24 @@ namespace inexor {
 
         /// Get a media name either relative to the current file or the specific media folder according to type.
         /// @warning not threadsafe! (since makerelpath, parentdir and getcurexecdir are not)
-        void getmedianame(std::string &output, const char *basename, int type, JSON *j)
+        void getmedianame(std::string &output, const char *basename, int type)
         {
             ASSERT(basename != NULL && strlen(basename)>=2);
 
             if(basename[0] == '/') appendmediadir(output, basename+1, type);
-            else if(j && j->currentfile) output = fmt << parentdir(j->currentfile) << "/" << basename;
             else
             {
                 const char *execdir = getcurexecdir();
-                if(!j && execdir) output = fmt << execdir << "/" << basename;
+                if(execdir) output = fmt << execdir << "/" << basename;
                 else output = fmt << basename;
             }
         }
 
-        char *getmedianame(char *output, size_t outputlen, const char *basename, int type, JSON *j)
+        char *getmedianame(char *output, size_t outputlen, const char *basename, int type)
         {
             ASSERT(output != NULL);
             std::string s;
-            getmedianame(s, basename, type, j);
+            getmedianame(s, basename, type);
             copystring(output, s.c_str(), outputlen);
             return output;
         }

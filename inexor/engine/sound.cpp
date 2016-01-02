@@ -1,7 +1,7 @@
 // sound.cpp: basic positional sound using sdl_mixer
 
 #include "inexor/engine/engine.hpp"
-#include "inexor/shared/filesystem.hpp"
+#include "inexor/filesystem/mediadirs.hpp"
 
 #include "SDL_mixer.h"
 #include <string>

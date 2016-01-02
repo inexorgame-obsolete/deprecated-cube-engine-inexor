@@ -3,7 +3,7 @@
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/texture/image.hpp"
 #include "inexor/texture/format.hpp"
-#include "inexor/shared/filesystem.hpp"
+#include "inexor/filesystem/mediadirs.hpp"
 
 void forcecubemapload(GLuint tex)
 {

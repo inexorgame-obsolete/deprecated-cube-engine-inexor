@@ -8,7 +8,7 @@
 #include "inexor/texture/image.hpp"
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/texture/slot.hpp"
-#include "inexor/shared/filesystem.hpp"
+#include "inexor/filesystem/mediadirs.hpp"
 
 vector<VSlot *> vslots;
 vector<Slot *> slots;
