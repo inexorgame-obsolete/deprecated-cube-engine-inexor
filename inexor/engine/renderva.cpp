@@ -2,6 +2,7 @@
 
 #include <unordered_set>
 #include "inexor/engine/engine.hpp"
+#include "inexor/texture/cubemap.hpp"
 
 static inline void drawtris(GLsizei numindices, const GLvoid *indices, ushort minvert, ushort maxvert)
 {

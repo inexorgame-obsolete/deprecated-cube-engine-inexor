@@ -11,7 +11,8 @@
 #include "inexor/engine/octa.hpp"
 #include "inexor/engine/lightmap.hpp"
 #include "inexor/engine/bih.hpp"
-#include "inexor/engine/texture.hpp"
+#include "inexor/engine/shader.hpp"
+#include "inexor/texture/texture.hpp"
 #include "inexor/engine/model.hpp"
 
 #include "inexor/util/InexorException.hpp"
@@ -63,38 +64,16 @@ struct font
 extern font *curfont;
 extern const matrix4x3 *textmatrix;
 
-// texture
-extern SharedVar<int> hwtexsize, hwcubetexsize, hwmaxaniso, maxtexsize;
 
-extern Texture *textureload(const char *name, int clamp = 0, bool mipit = true, bool msg = true);
-extern int texalign(void *data, int w, int bpp);
-extern void cleanuptexture(Texture *t);
-extern uchar *loadalphamask(Texture *t);
-extern void loadlayermasks();
-extern Texture *cubemapload(const char *name, bool mipit = true, bool msg = true, bool transient = false);
-extern void drawcubemap(int size, const vec &o, float yaw, float pitch, const cubemapside &side);
+// shader
+
 extern void loadshaders();
-extern void setuptexparameters(int tnum, void *pixels, int clamp, int filter, GLenum format = GL_RGB, GLenum target = GL_TEXTURE_2D);
-extern void createtexture(int tnum, int w, int h, void *pixels, int clamp, int filter, GLenum component = GL_RGB, GLenum target = GL_TEXTURE_2D, int pw = 0, int ph = 0, int pitch = 0, bool resize = true, GLenum format = GL_FALSE);
-extern void blurtexture(int n, int bpp, int w, int h, uchar *dst, const uchar *src, int margin = 0);
-extern void blurnormals(int n, int w, int h, bvec *dst, const bvec *src, int margin = 0);
 extern void renderpostfx();
-extern void initenvmaps();
-extern void genenvmaps();
-extern ushort closestenvmap(const vec &o);
-extern ushort closestenvmap(int orient, const ivec &co, int size);
-extern GLuint lookupenvmap(ushort emid);
-extern GLuint lookupenvmap(Slot &slot);
-extern bool reloadtexture(Texture &tex);
-extern bool reloadtexture(const char *name);
-extern void setuptexcompress();
-extern void clearslots();
+
+// octaedit + slots TODO: merge into slots.cpp
+
 extern void compacteditvslots();
 extern void compactmruvslots();
-extern void compactvslots(cube *c, int n = 8);
-extern void compactvslot(int &index);
-extern void compactvslot(VSlot &vs);
-extern int compactvslots();
 
 // shadowmap
 

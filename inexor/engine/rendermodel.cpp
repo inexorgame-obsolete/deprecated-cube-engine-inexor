@@ -1,4 +1,5 @@
 #include "inexor/engine/engine.hpp"
+#include "inexor/texture/cubemap.hpp"
 
 SVARP(modeldir, "model");
 

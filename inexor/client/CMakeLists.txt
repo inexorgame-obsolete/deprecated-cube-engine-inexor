@@ -28,7 +28,6 @@ prepend(CLIENT_SOURCES_ENGINE ${SOURCE_DIR}/engine
     server.cpp
     shader.cpp
     sound.cpp
-    texture.cpp
     water.cpp
     world.cpp
     worldio.cpp
@@ -73,3 +72,4 @@ config_net(${CLIENT_BINARY})
 config_rpc(${CLIENT_BINARY})
 config_util(${CLIENT_BINARY})
 config_ui(${CLIENT_BINARY})
+config_texture(${CLIENT_BINARY})

@@ -85,10 +85,10 @@ struct SlotShaderParamState : LocalShaderParamState
     }
 };
 
-enum 
-{ 
-    SHADER_DEFAULT    = 0, 
-    SHADER_NORMALSLMS = 1<<0, 
+enum
+{
+    SHADER_DEFAULT    = 0,
+    SHADER_NORMALSLMS = 1<<0,
     SHADER_ENVMAP     = 1<<1,
     SHADER_OPTION     = 1<<3,
 
@@ -254,7 +254,7 @@ struct Shader
     {
         if(lastshader!=detailshader) detailshader->bindprograms();
     }
- 
+
     void set()
     {
         if(isnull() || !loaded()) return;
@@ -272,7 +272,7 @@ struct Shader
 
     bool compile();
     void cleanup(bool invalid = false);
-    
+
     static int uniformlocversion();
 };
 
@@ -333,7 +333,7 @@ struct GlobalShaderParam
 
     template<class T>
     T *reserve(int n = 1) { return (T *)resolve()->buf; }
-};  
+};
 
 struct LocalShaderParam
 {
@@ -341,7 +341,7 @@ struct LocalShaderParam
     int loc;
 
     LocalShaderParam(const char *name) : name(name), loc(-1) {}
-    
+
     LocalShaderParamState *resolve()
     {
         Shader *s = Shader::lastshader;
@@ -443,294 +443,12 @@ struct LocalShaderParam
         name##shader->setvariant(__VA_ARGS__); \
     } while(0)
 
-struct ImageData
-{
-    int w, h, bpp, levels, align, pitch;
-    GLenum compressed;
-    uchar *data;
-    void *owner;
-    void (*freefunc)(void *);
-
-    ImageData()
-        : data(NULL), owner(NULL), freefunc(NULL)
-    {}
-
-    
-    ImageData(int nw, int nh, int nbpp, int nlevels = 1, int nalign = 0, GLenum ncompressed = GL_FALSE) 
-    { 
-        setdata(NULL, nw, nh, nbpp, nlevels, nalign, ncompressed); 
-    }
-
-    ImageData(int nw, int nh, int nbpp, uchar *data)
-        : owner(NULL), freefunc(NULL)
-    { 
-        setdata(data, nw, nh, nbpp); 
-    }
-
-    ImageData(SDL_Surface *s) { wrap(s); }
-    ~ImageData() { cleanup(); }
-
-    void setdata(uchar *ndata, int nw, int nh, int nbpp, int nlevels = 1, int nalign = 0, GLenum ncompressed = GL_FALSE)
-    {
-        w = nw;
-        h = nh;
-        bpp = nbpp;
-        levels = nlevels;
-        align = nalign;
-        pitch = align ? 0 : w*bpp;
-        compressed = ncompressed;
-        data = ndata ? ndata : new uchar[calcsize()];
-        if(!ndata) { owner = this; freefunc = NULL; }
-    }
-  
-    int calclevelsize(int level) const { return ((max(w>>level, 1)+align-1)/align)*((max(h>>level, 1)+align-1)/align)*bpp; }
- 
-    int calcsize() const
-    {
-        if(!align) return w*h*bpp;
-        int lw = w, lh = h,
-            size = 0;
-        loopi(levels)
-        {
-            if(lw<=0) lw = 1;
-            if(lh<=0) lh = 1;
-            size += ((lw+align-1)/align)*((lh+align-1)/align)*bpp;
-            if(lw*lh==1) break;
-            lw >>= 1;
-            lh >>= 1;
-        }
-        return size;
-    }
-
-    void disown()
-    {
-        data = NULL;
-        owner = NULL;
-        freefunc = NULL;
-    }
-
-    void cleanup()
-    {
-        if(owner==this) delete[] data;
-        else if(freefunc) (*freefunc)(owner);
-        disown();
-    }
-
-    void replace(ImageData &d)
-    {
-        cleanup();
-        *this = d;
-        if(owner == &d) owner = this;
-        d.disown();
-    }
-
-    void wrap(SDL_Surface *s)
-    {
-        setdata((uchar *)s->pixels, s->w, s->h, s->format->BytesPerPixel);
-        pitch = s->pitch;
-        owner = s;
-        freefunc = (void (*)(void *))SDL_FreeSurface;
-    }
-};
-
-// management of texture slots
-// each texture slot can have multiple texture frames, of which currently only the first is used
-// additional frames can be used for various shaders
-
-struct Texture
-{
-    enum
-    {
-        IMAGE      = 0,
-        CUBEMAP    = 1,
-        TYPE       = 0xFF,
-        
-        STUB       = 1<<8,
-        TRANSIENT  = 1<<9,
-        COMPRESSED = 1<<10, 
-        ALPHA      = 1<<11,
-        FLAGS      = 0xFF00
-    };
-
-    char *name;
-    int type, w, h, xs, ys, bpp, clamp;
-    bool mipmap, canreduce;
-    GLuint id;
-    uchar *alphamask;
-
-    Texture() : alphamask(NULL) {}
-};
-
-enum
-{
-    TEX_DIFFUSE = 0,
-    TEX_UNKNOWN,
-    TEX_DECAL,
-    TEX_NORMAL,
-    TEX_GLOW,
-    TEX_SPEC,
-    TEX_DEPTH,
-    TEX_ENVMAP
-};
-
-enum 
-{ 
-    VSLOT_SHPARAM = 0, 
-    VSLOT_SCALE, 
-    VSLOT_ROTATION, 
-    VSLOT_OFFSET, 
-    VSLOT_SCROLL, 
-    VSLOT_LAYER, 
-    VSLOT_ALPHA,
-    VSLOT_COLOR,
-    VSLOT_NUM 
-};
-   
-struct VSlot
-{
-    Slot *slot;
-    VSlot *next;
-    int index, changed;
-    vector<SlotShaderParam> params;
-    bool linked;
-    float scale;
-    int rotation;
-    ivec2 offset;
-    vec2 scroll;
-    int layer;
-    float alphafront, alphaback;
-    vec colorscale;
-    vec glowcolor;
-
-    VSlot(Slot *slot = NULL, int index = -1) : slot(slot), next(NULL), index(index), changed(0)
-    { 
-        reset();
-        if(slot) addvariant(slot); 
-    }
-
-    void addvariant(Slot *slot);
-
-    void reset()
-    {
-        params.shrink(0);
-        linked = false;
-        scale = 1;
-        rotation = 0;
-        offset = ivec2(0, 0);
-        scroll = vec2(0, 0);
-        layer = 0;
-        alphafront = 0.5f;
-        alphaback = 0;
-        colorscale = vec(1, 1, 1);
-        glowcolor = vec(1, 1, 1);
-    }
-
-    void cleanup()
-    {
-        linked = false;
-    }
-};
-
-struct Slot
-{
-    struct Tex
-    {
-        int type;
-        Texture *t;
-        string name;
-        int combined;
-    };
-
-    int index;
-    vector<Tex> sts;
-    Shader *shader;
-    vector<SlotShaderParam> params;
-    VSlot *variants;
-    bool loaded;
-    uint texmask;
-    char *autograss;
-    Texture *grasstex, *thumbnail;
-    char *layermaskname;
-    int layermaskmode;
-    float layermaskscale;
-    ImageData *layermask;
-
-    Slot(int index = -1) : index(index), variants(NULL), autograss(NULL), layermaskname(NULL), layermask(NULL) { reset(); }
-    
-    void reset()
-    {
-        sts.shrink(0);
-        shader = NULL;
-        params.shrink(0);
-        loaded = false;
-        texmask = 0;
-        DELETEA(autograss);
-        grasstex = NULL;
-        thumbnail = NULL;
-        DELETEA(layermaskname);
-        layermaskmode = 0;
-        layermaskscale = 1;
-        if(layermask) DELETEP(layermask);
-    }
-
-    void cleanup()
-    {
-        loaded = false;
-        grasstex = NULL;
-        thumbnail = NULL;
-        loopv(sts) 
-        {
-            Tex &t = sts[i];
-            t.t = NULL;
-            t.combined = -1;
-        }
-    }
-};
-
-inline void VSlot::addvariant(Slot *slot)
-{
-    if(!slot->variants) slot->variants = this;
-    else
-    {
-        VSlot *prev = slot->variants;
-        while(prev->next) prev = prev->next;
-        prev->next = this;
-    }
-}
-
-struct MSlot : Slot, VSlot
-{
-    MSlot() : VSlot(this) {}
-
-    void reset()
-    {
-        Slot::reset();
-        VSlot::reset();
-    }
-
-    void cleanup()
-    {
-        Slot::cleanup();
-        VSlot::cleanup();
-    }
-};
-
-struct cubemapside
-{
-    GLenum target;
-    const char *name;
-    bool flipx, flipy, swapxy;
-};
-
-extern cubemapside cubemapsides[6];
-extern Texture *notexture;
 extern Shader *nullshader, *hudshader, *hudnotextureshader, *textureshader, *notextureshader, *nocolorshader, *foggedshader, *foggednotextureshader, *stdworldshader;
 extern SharedVar<int> reservevpparams, maxvsuniforms, maxfsuniforms;
 
 extern Shader *lookupshaderbyname(const char *name);
 extern Shader *useshaderbyname(const char *name);
 extern Shader *generateshader(const char *name, const char *cmd, ...);
-extern Texture *loadthumbnail(Slot &slot);
 extern void resetslotshader();
 extern void setslotshader(Slot &s);
 extern void linkslotshader(Slot &s, bool load = true);
@@ -747,22 +465,6 @@ extern const char *getshaderparamname(const char *name, bool insert = true);
 extern void setupblurkernel(int radius, float sigma, float *weights, float *offsets);
 extern void setblurshader(int pass, int size, int radius, float *weights, float *offsets);
 
-extern void savepng(const char *filename, ImageData &image, bool flip = false);
-extern void savetga(const char *filename, ImageData &image, bool flip = false);
-extern bool loaddds(const char *filename, ImageData &image, int force = 0);
-extern bool loadimage(const char *filename, ImageData &image);
-
-extern MSlot &lookupmaterialslot(int slot, bool load = true);
-extern Slot &lookupslot(int slot, bool load = true);
-extern VSlot &lookupvslot(int slot, bool load = true);
-extern VSlot *findvslot(Slot &slot, const VSlot &src, const VSlot &delta);
-extern VSlot *editvslot(const VSlot &src, const VSlot &delta);
-extern void mergevslot(VSlot &dst, const VSlot &src, const VSlot &delta);
-extern void packvslot(vector<uchar> &buf, const VSlot &src);
-extern bool unpackvslot(ucharbuf &buf, VSlot &dst, bool delta);
-
+// TODO
 extern Slot dummyslot;
 extern VSlot dummyvslot;
-extern vector<Slot *> slots;
-extern vector<VSlot *> vslots;
-

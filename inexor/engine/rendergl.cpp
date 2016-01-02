@@ -2,6 +2,7 @@
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/shared/filesystem.hpp"
+#include "inexor/texture/cubemap.hpp"
 
 bool hasVAO = false, hasFBO = false, hasAFBO = false, hasDS = false, hasTF = false, hasTRG = false, hasTSW = false, hasS3TC = false, hasFXT1 = false, hasAF = false, hasFBB = false, hasUBO = false, hasMBR = false;
 int hasstencil = 0;
