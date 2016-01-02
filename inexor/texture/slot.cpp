@@ -544,12 +544,6 @@ ICOMMAND(fixinsidefaces, "i", (int *tex),
     allchanged();
 });
 
-static int findtextype(Slot &s, int type, int last = -1)
-{
-    for(int i = last + 1; i<s.sts.length(); i++) if((type&(1 << s.sts[i].type)) && s.sts[i].combined<0) return i;
-    return -1;
-}
-
 static void addglow(ImageData &c, ImageData &g, const vec &glowcolor)
 {
     if(g.bpp < 3)
@@ -621,11 +615,12 @@ void gencombinedname(vector<char> &name, int &texmask, Slot &s, Slot::Tex &t, in
         case TEX_DIFFUSE:
         case TEX_NORMAL:
         {
-            int i = findtextype(s, t.type == TEX_DIFFUSE ? (1 << TEX_SPEC) : (1 << TEX_DEPTH));
-            if(i<0) break;
-            texmask |= 1 << s.sts[i].type;
-            s.sts[i].combined = index;
-            addname(name, s, s.sts[i], true);
+            int lookuptype = t.type == TEX_DIFFUSE ? TEX_SPEC : TEX_DEPTH;
+            Slot::Tex *t = s.findtexture(lookuptype);
+            if(!t || t->combined >= 0) break; //no specific texture found or its already combined.
+            texmask |= 1 << t->type;
+            t->combined = index;
+            addname(name, s, *t, true);
             break;
         }
     }
@@ -641,6 +636,11 @@ void Slot::addtexture(int type, const char *filename)
     loaded = false;
 }
 
+Slot::Tex *Slot::findtexture(int type)
+{
+    loopv(sts) if((1 << sts[i].type)&(1 << type)) return &sts[i];
+    return NULL;
+}
 
 /// Combine and load texture data to be ready for sending it to the gpu.
 /// Combination is used to merge the diffuse and the specularity map into one texture (spec as alpha)
