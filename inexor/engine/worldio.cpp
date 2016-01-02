@@ -1138,7 +1138,6 @@ void savecurrentmap()
 }
 COMMAND(savecurrentmap, "");
 
-
 /// save map data to a map file
 /// @param mname map name
 void savemap(char *mname)
@@ -1147,14 +1146,8 @@ void savemap(char *mname)
 }
 COMMAND(savemap, "s");
 
-
-
-
-
 /// CRC32 is a checksum (and error detection) algorithm to generate map checksums
-/// so servers can detect modified maps (mostly cheaters)
-/// http://reveng.sourceforge.net/crc-catalogue/all.htm
-/// http://en.wikipedia.org/wiki/Cyclic_redundancy_check#cite_note-cook-catalogue-8
+/// so servers can detect modified maps
 
 /// @warning use getmapcrc() and clearmapcrc() to access/clear the checksum do NOT directly access it!
 static uint mapcrc = 0;
@@ -1170,7 +1163,6 @@ void clearmapcrc()
 {
     mapcrc = 0;
 }
-
 
 bool load_world(const char *mname, const char *cname)        // still supports all map formats that have existed since the earliest cube betas!
 {
@@ -1419,8 +1411,9 @@ bool load_world(const char *mname, const char *cname)        // still supports a
     identflags |= IDF_OVERRIDDEN;
     execfile("config/default_map_settings.cfg", false);
     execfile(cfgname, false);
+
     identflags &= ~IDF_OVERRIDDEN;
-   
+
     extern void fixlightmapnormals();
     if(hdr.version <= 25) fixlightmapnormals();
     extern void fixrotatedlightmaps();

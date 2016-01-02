@@ -1,4 +1,6 @@
 #include "inexor/engine/engine.hpp"
+#include "inexor/shared/filesystem.hpp"
+#include "inexor/texture/slot.hpp"
 
 extern SharedVar<int> outline;
 
@@ -173,7 +175,7 @@ VARF(hmapedit, 0, 0, 1, horient = sel.orient);
 
 /// reset orientation of the last selection
 /// this is called every time the user changes grid size or editing status
-void forcenextundo() 
+void forcenextundo()
 {
     lastsel.orient = -1;
 }
@@ -229,7 +231,7 @@ void toggleedit(bool force)
     keyrepeat(editmode, KR_EDITMODE);
     editing = entediting = editmode;
     extern SharedVar<int> fullbright;
-    if(fullbright) 
+    if(fullbright)
     {
         initlights();
         lightents();
@@ -303,7 +305,7 @@ ICOMMAND(selrestore, "", (), { if(noedit(true)) return; sel = savedsel; });
 ICOMMAND(selswap,    "", (), { if(noedit(true)) return; swap(sel, savedsel); });
 
 /// looks up a world cube, based on coordinates mapped by the block
-cube &blockcube(int x, int y, int z, const block3 &b, int rgrid) 
+cube &blockcube(int x, int y, int z, const block3 &b, int rgrid)
 {
     int dim = dimension(b.orient), dc = dimcoord(b.orient);
     ivec s(dim, x*b.grid, y*b.grid, dc*(b.s[dim]-1)*b.grid);
@@ -336,7 +338,7 @@ void countselchild(cube *c, const ivec &cor, int size)
     {
         ivec o(i, cor, size);
         if(c[i].children) countselchild(c[i].children, o, size/2);
-        else 
+        else
         {
             selchildcount++;
             if(c[i].material != MAT_AIR && selchildmat != MAT_AIR)
@@ -542,7 +544,7 @@ void rendereditcursor()
             selchildcount = 0;
             selchildmat = -1;
             countselchild(worldroot, ivec(0, 0, 0), worldsize/2);
-            if(mag>=1 && selchildcount==1) 
+            if(mag>=1 && selchildcount==1)
             {
                 selchildmat = c->material;
                 if(mag>1) selchildcount = -mag;
@@ -923,9 +925,9 @@ void swapundo(undolist &a, undolist &b, int op)
     forcenextundo();
 }
 
-void editundo() 
+void editundo()
 {
-    swapundo(undos, redos, EDIT_UNDO); 
+    swapundo(undos, redos, EDIT_UNDO);
 }
 
 void editredo()
@@ -2526,8 +2528,15 @@ void replacetexcube(cube &c, int oldtex, int newtex)
     loopi(6) if(c.texture[i] == oldtex) c.texture[i] = newtex;
     if(c.children) loopi(8) replacetexcube(c.children[i], oldtex, newtex);
 }
+//lookup whether a cube has a face with texture tex
+bool hastexcube(cube &c, int tex)
+{
+    loopi(6) if(c.texture[i] == tex) return true;
+    if(c.children) loopi(8) if(hastexcube(c.children[i], tex)) return true;
+	return false;
+}
 
-void mpreplacetex(int oldtex, int newtex, bool insel, selinfo &sel, bool local)
+void mpreplacetex(int oldtex, int newtex, bool insel, selinfo &sel, bool local, bool update)
 {
     if(local) game::edittrigger(sel, EDIT_REPLACE, oldtex, newtex, insel ? 1 : 0);
     if(insel)
@@ -2538,7 +2547,7 @@ void mpreplacetex(int oldtex, int newtex, bool insel, selinfo &sel, bool local)
     {
         loopi(8) replacetexcube(worldroot[i], oldtex, newtex);
     }
-    allchanged();
+    if(update) allchanged();
 }
 
 bool mpreplacetex(int oldtex, int newtex, bool insel, selinfo &sel, ucharbuf &buf)
@@ -2612,8 +2621,8 @@ void rotatecube(cube &c, int d)   // rotates cube clockwise. see pics in cvs for
 
 void mpflip(selinfo &sel, bool local)
 {
-    if(local) 
-    { 
+    if(local)
+    {
         game::edittrigger(sel, EDIT_FLIP);
         makeundo();
     }
@@ -2668,7 +2677,7 @@ void rotate(int *cw)
 COMMAND(flip, "");
 COMMAND(rotate, "i");
 
-enum 
+enum
 {
     EDITMATF_EMPTY = 0x10000,
     EDITMATF_NOTEMPTY = 0x20000,
@@ -2676,8 +2685,8 @@ enum
     EDITMATF_NOTSOLID = 0x40000
 };
 
-static const struct { const char *name; int filter; } editmatfilters[] = 
-{ 
+static const struct { const char *name; int filter; } editmatfilters[] =
+{
     { "empty", EDITMATF_EMPTY },
     { "notempty", EDITMATF_NOTEMPTY },
     { "solid", EDITMATF_SOLID },
@@ -2744,8 +2753,8 @@ void editmat(char *name, char *filtername)
         if(filter < 0) filter = findmaterial(filtername);
         if(filter < 0)
         {
-            conoutf(CON_ERROR, "unknown material \"%s\"", filtername); 
-            return; 
+            conoutf(CON_ERROR, "unknown material \"%s\"", filtername);
+            return;
         }
     }
     int id = -1;
@@ -2850,7 +2859,7 @@ void g3d_texturemenu()
     gui.show();
 }
 
-/// show texture 
+/// show texture
 void showtexgui(int *n)
 {
     if(!editmode) { conoutf(CON_ERROR, "operation only allowed in edit mode"); return; }

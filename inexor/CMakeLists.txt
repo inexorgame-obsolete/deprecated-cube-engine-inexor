@@ -14,11 +14,13 @@ include_directories(${CMAKE_INCLUDE_PATH})
 declare_module(shared ./shared)
 declare_module(engine ./engine)
 declare_module(fpsgame ./fpsgame)
+
 add_subdirectory(util)
 add_subdirectory(net) # net module, asio lib
 add_subdirectory(rpc) # rpc module, protobuf lib
 add_subdirectory(ui)
 add_subdirectory(crashreporter)
+add_subdirectory(texture)
 
 # Actual targets
 opt_subdir(client on)
