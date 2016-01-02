@@ -11,6 +11,7 @@
 #include "inexor/filesystem/mediadirs.hpp"
 
 using namespace rapidjson;
+using namespace inexor::filesystem;
 
 vector<VSlot *> vslots;
 vector<Slot *> slots;
@@ -718,6 +719,43 @@ void Slot::combinetextures(int index, Slot::Tex &t, bool msg, bool forceload)
     }
     t.t = newtexture( t.t, key.getbuf(), ts, 0, true, true, true, compress);
 }
+
+struct jsontextype
+{
+    const char *name;
+    int type;
+} jsontextypes[TEX_NUM] = {
+    {"diffuse", TEX_DIFFUSE},
+    {"other", TEX_UNKNOWN},
+    {"decal", TEX_DECAL},
+    {"normal", TEX_NORMAL},
+    {"glow", TEX_GLOW},
+    {"spec", TEX_SPEC},
+    {"depth", TEX_DEPTH},
+    {"envmap", TEX_ENVMAP}
+};
+
+void Slot::parsejson(const Document &j)
+{
+    ASSERT(j.IsObject());
+    loopi(TEX_NUM) //check for all 8 kind of textures
+    {
+        if(!j.HasMember(jsontextypes[i].name) || !j[jsontextypes[i].name].IsString()) continue;
+
+        const Value &name = j[jsontextypes[i].name];
+        if(!name.IsString()) continue;
+        texmask |= 1 << i;
+        addtexture(i, name.GetString());
+    }
+
+    if(j.HasMember("grass") && j["grass"].IsString())    // seperate entry, not in sts, TODO
+    {
+        autograss = new string;
+        getmediapath(autograss, MAXSTRLEN, j["grass"].GetString(), DIR_TEXTURE);
+        nformatstring(autograss, MAXSTRLEN, "<premul>%s", autograss); // prefix
+    }
+}
+
 
 MSlot &lookupmaterialslot(int index, bool load)
 {

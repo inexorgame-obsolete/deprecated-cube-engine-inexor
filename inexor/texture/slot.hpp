@@ -150,6 +150,9 @@ class Slot
     Slot &load(bool msg, bool forceload);
     Texture *loadthumbnail();
     void loadlayermask();
+
+    /// Parse all textures from given json document.
+    void parsejson(const rapidjson::Document &j);
 };
 
 struct MSlot : Slot, VSlot
@@ -201,4 +204,7 @@ extern vector<VSlot *> vslots;
 #endif //INEXOR_TEX_SLOT_H
 
 /// TODO
-/// make emptyvslot obsolete by providing a better cleaning algorithm
+// make emptyvslot obsolete by providing a better cleaning algorithm
+// remove grass thingy
+// remove weird clonevslot stuff
+// make vslots a list in slot
