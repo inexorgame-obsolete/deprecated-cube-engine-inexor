@@ -9,9 +9,6 @@
   #define gamma __gamma
 #endif
 
-#ifdef WIN32  // we define our own math constants (PI, ln(2)...)
-  #define _USE_MATH_DEFINES
-#endif
 #include <math.h>
 
 #ifdef __GNUC__

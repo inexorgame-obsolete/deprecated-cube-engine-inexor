@@ -189,7 +189,8 @@ if(OS_WINDOWS)
     # -DWIN32 -D_WIN32 -D_WINDOWS           = Windows platform
     # -DNOMINMAX                            = Use the standard's templated min/max
     # -D_WIN32_WINNT=0x0501                 = Target is Windows XP
-    add_definitions(-DWIN32 -D_WIN32 -D_WINDOWS -DWINDOWS -DNOMINMAX -D_WIN32_WINNT=0x0501)
+    # -D_MATH_DEFINES_DEFINED               = We define our own math constants (PI, ln(2)...) this fixes warnings when including math.h
+    add_definitions(-DWIN32 -D_WIN32 -D_WINDOWS -DWINDOWS -DNOMINMAX -D_WIN32_WINNT=0x0501 -D_MATH_DEFINES_DEFINED)
     if(X64)
         add_definitions(-DWIN64)
     endif()
