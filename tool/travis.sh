@@ -183,7 +183,7 @@ nigthly_build() {
     unzip "master.zip" -d "$outd"
     rm "master.zip"
     cd "$outd"
-    mv "data-master" "data"
+    mv "data-master" "media/data"
   ) fi
 
   local ignore="$(<<< '
@@ -191,6 +191,7 @@ nigthly_build() {
     ..
     .gitignore
     build
+    cmake
     CMakeLists.txt
     appveyor.yml
     doxygen.conf
@@ -198,7 +199,9 @@ nigthly_build() {
     .gitignore
     .gitmodules
     inexor
+    platform
     tool
+    vendor
     .travis.yml
   ' tr -d " " | grep -v '^\s*$')"
 
