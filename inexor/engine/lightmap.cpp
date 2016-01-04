@@ -594,7 +594,7 @@ static float calcocclusion(const vec &o, const vec &normal, float tolerance)
     {
         // check whether there's a wall in the field around the sample:
         vec ray(needsrotation ? rotationmatrix.transform(it) : it);
-        if(shadowray(vec(ray).mul(tolerance).add(o), ray, ambientocclusionradius, RAY_ALPHAPOLY|RAY_SHADOW, NULL) <= (ambientocclusionradius-1.0f)) occluedrays++; 
+        if(shadowray(vec(ray).mul(tolerance).add(o), ray, ambientocclusionradius, RAY_ALPHAPOLY|RAY_SHADOW|(skytexturelight ? RAY_SKIPSKY : 0), NULL) <= (ambientocclusionradius-1.0f)) occluedrays++;
     }
 
     return float(occluedrays)/float(rays.size());
