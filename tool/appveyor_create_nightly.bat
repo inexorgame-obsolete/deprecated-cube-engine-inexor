@@ -29,7 +29,7 @@ mkdir %nightly_name%
 :: Now we want to include our node files as well:
 tool\node_windows_update_npm.bat
 
-set ignored=(%nightly_name% .gitignore build CMakeLists.txt appveyor.yml doxygen.conf .git .gitignore .gitmodules tool inexor .travis.yml)
+set ignored=(%nightly_name% .gitignore build cmake CMakeLists.txt appveyor.yml doxygen.conf .git .gitignore .gitmodules tool inexor platform vendor .travis.yml)
 for /f "tokens=*" %%G in ('dir /b "%cd%"') do (
     set "isignored=false"
     for %%i in %ignored% do (
