@@ -21,23 +21,15 @@ if DEFINED APPVEYOR_PULL_REQUEST_NUMBER (
     if NOT "%APPVEYOR_PULL_REQUEST_NUMBER%"=="" set master=false
 )
 
-:: always put stuff into this folder, but only bundle the data repo files in masterbranch
+echo master is %master%
+
+:: put stuff into this folder
 mkdir %nightly_name%
-if "%master%"=="true" (
-    git clone --depth 1 https://github.com/inexor-game/data.git %nightly_name%
-:: We temporarily use another repo for additional game files we (currently) bundle
-    mkdir additional
-    git clone --depth 1 https://github.com/inexor-game/data-additional.git additional
-    robocopy additional/ %nightly_name% *.* /E /MOV > Nul
 
-    rd /s /q %nightly_name%\.git
-    del %nightly_name%\.gitignore
-    
-    :: Now we want to include our node files as well:
-    tool\node_windows_update_npm.bat
-)
+:: Now we want to include our node files as well:
+tool\node_windows_update_npm.bat
 
-set ignored=(additional %nightly_name% .gitignore build CMakeLists.txt appveyor.yml doxygen.conf .git .gitignore .gitmodules tool inexor .travis.yml)
+set ignored=(%nightly_name% .gitignore build CMakeLists.txt appveyor.yml doxygen.conf .git .gitignore .gitmodules tool inexor .travis.yml)
 for /f "tokens=*" %%G in ('dir /b "%cd%"') do (
     set "isignored=false"
     for %%i in %ignored% do (
@@ -53,6 +45,25 @@ for /f "tokens=*" %%G in ('dir /b "%cd%"') do (
             robocopy "%cd%" "%cd%\%nightly_name%" %%G /MOV > Nul 
         )
     )
+)
+
+:: only bundle the data repo files in masterbranch
+if "%master%"=="true" (
+    cd %nightly_name%
+    mkdir media
+    cd media
+    git clone --depth 1 https://github.com/inexor-game/data.git core
+
+    rd /s /q core\.git
+    del core\.gitignore
+
+:: We temporarily use another repo for additional game files we (currently) bundle
+    git clone --depth 1 https://github.com/inexor-game/data-additional.git additional
+
+    rd /s /q additional\.git
+    del additional\.gitignore
+
+    cd ..\..
 )
 
 :: zip this thing
