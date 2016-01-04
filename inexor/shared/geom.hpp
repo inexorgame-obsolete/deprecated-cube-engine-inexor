@@ -728,6 +728,21 @@ struct matrix3
         c = vec(axis.x*axis.z*(1-ck)+axis.y*sk, axis.y*axis.z*(1-ck)-axis.x*sk, axis.z*axis.z*(1-ck)+ck);
     }
 
+    /// Cheap (and mathematically advanced) rotation method.
+    /// Makes this matrix to a rotation matrix.
+    /// @warning only give normalized vectors in.
+    void rotationalign(const vec &d, const vec &z)
+    {
+        vec  v;
+        v.cross(z, d);
+        const float s = z.dot(d);
+        const float k = 1.0f / (1.0f + s);
+
+        a = vec(v.x*v.x*k + s, v.y*v.x*k - v.z, v.z*v.x*k + v.y);
+        b = vec(v.x*v.y*k + v.z, v.y*v.y*k + s, v.z*v.y*k - v.x);
+        c = vec(v.x*v.z*k - v.y, v.y*v.z*k + v.x, v.z*v.z*k + s);
+    }
+
     void setyaw(float ck, float sk)
     {
         a = vec(ck, sk, 0);
