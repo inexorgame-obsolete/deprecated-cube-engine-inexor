@@ -538,7 +538,7 @@ FVARR(ambientocclusionradius, 1.0, 2.0, 200.0);
 VAR(debugao, 0, 0, 1);
 /// Calculates a value between 0 and 1 representing the occulation of a pixel
 /// @attention crashes if a normal vector of length zero occurs
-static float calcocclusion(const vec &o, const vec &normal, float tolerance)
+static float calcocclusion(ShadowRayCache *cache, const vec &o, const vec &normal, float tolerance)
 {
     //  more precise but slower:
     /*static const std::array<vec, 17> rays =
@@ -594,7 +594,7 @@ static float calcocclusion(const vec &o, const vec &normal, float tolerance)
     {
         // check whether there's a wall in the field around the sample:
         vec ray(needsrotation ? rotationmatrix.transform(it) : it);
-        if(shadowray(vec(ray).mul(tolerance).add(o), ray, ambientocclusionradius, RAY_ALPHAPOLY|RAY_SHADOW|(skytexturelight ? RAY_SKIPSKY : 0), NULL) <= (ambientocclusionradius-1.0f)) occluedrays++;
+        if(shadowray(cache, vec(ray).mul(tolerance).add(o), ray, ambientocclusionradius, RAY_ALPHAPOLY|RAY_SHADOW|(skytexturelight ? RAY_SKIPSKY : 0), NULL) <= (ambientocclusionradius-1.0f)) occluedrays++;
     }
 
     return float(occluedrays)/float(rays.size());
@@ -676,7 +676,7 @@ static uint generatelumel(lightmapworker *w, const float tolerance, uint lightma
         }
     }
 
-    if(ambientocclusion && lmao) occlusion = calcocclusion(target, normal, tolerance);
+    if(ambientocclusion && lmao) occlusion = calcocclusion(w->shadowraycache, target, normal, tolerance);
 
     switch(w->type&LM_TYPE)
     {
