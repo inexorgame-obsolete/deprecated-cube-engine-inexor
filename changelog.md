@@ -1,5 +1,28 @@
 ## Changelog
 
+### Tilidine Alpha Edition (v0.5.0-alpha, 2016-01-04)
+
+#### Content management
+  * auto detection of multiple data repositories
+  * directory restructuring
+
+#### UI
+  * fixed bot inserting via menu, always display bot menu
+
+#### Code internals, refactoring & bug fixes
+  * added support for GCC 5.3
+  * changed the source code directory structure
+  * added contributing.md guidelines
+  * the subsystem implementation is now memory safe 
+  * reintroduced a stackwalker for release binaries
+  * merged all Sauerbraten improvements till SVN r5238
+  * fixed: pressing the button to open the chat console also prints the key in the chat console
+  * fixed: double console input while running CEF
+
+
+***
+
+
 ### Pyrimethamine Alpha Edition (v0.4.0-alpha, 2015-11-01)
 
 #### Content management
