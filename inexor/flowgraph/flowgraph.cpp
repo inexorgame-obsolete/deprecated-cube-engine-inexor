@@ -1,5 +1,5 @@
 #include "inexor/flowgraph/flowgraph.h"
-#include "inexor/fpsgame/game.h"
+#include "inexor/fpsgame/game.hpp"
 #include "inexor/flowgraph/sleep/fl_sleep.h"
 #include "inexor/flowgraph/timer/fl_timer.h"
 #include "inexor/flowgraph/comments/fl_comment.h"

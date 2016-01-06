@@ -5,7 +5,7 @@
 #ifndef INEXOR_VSCRIPT_DEBUGRAY_HEADER
 #define INEXOR_VSCRIPT_DEBUGRAY_HEADER
 
-#include "inexor/engine/engine.h"
+#include "inexor/engine/engine.hpp"
 
 
 namespace inexor {

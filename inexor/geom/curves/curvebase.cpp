@@ -1,6 +1,6 @@
 #include <vector>
 
-#include "inexor/engine/engine.h"
+#include "inexor/engine/engine.hpp"
 #include "inexor/geom/curves/curvebase.h"
 
 namespace inexor {

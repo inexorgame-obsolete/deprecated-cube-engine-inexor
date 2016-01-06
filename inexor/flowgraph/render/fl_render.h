@@ -5,7 +5,7 @@
 #ifndef INEXOR_VSCRIPT_NODE_RENDERER_HEADER
 #define INEXOR_VSCRIPT_NODE_RENDERER_HEADER
 
-#include "inexor/engine/engine.h"
+#include "inexor/engine/engine.hpp"
 
 
 namespace inexor {
