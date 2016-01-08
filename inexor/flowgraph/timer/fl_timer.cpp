@@ -1,4 +1,4 @@
-#include "inexor/flowgraph/timer/fl_timer.h"
+#include "inexor/flowgraph/timer/fl_timer.hpp"
 
 namespace inexor {
 namespace vscript {

@@ -626,7 +626,7 @@ void processtextinput(const char *str, int len)
 }
 
 /// 3D Visual Scripting Enviroment
-#include "inexor/flowgraph/flowgraph.h"
+#include "inexor/flowgraph/flowgraph.hpp"
 namespace inexor {
     namespace vscript {
         extern CVisualScriptSystem vScript3D;

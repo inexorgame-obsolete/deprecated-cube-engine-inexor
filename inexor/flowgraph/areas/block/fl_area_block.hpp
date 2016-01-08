@@ -2,7 +2,7 @@
 /// @author Johannes Schneider
 /// @brief defines cube areas
 
-#include "inexor/flowgraph/nodebase/fl_base.h"
+#include "inexor/flowgraph/nodebase/fl_base.hpp"
 
 namespace inexor {
 namespace vscript {

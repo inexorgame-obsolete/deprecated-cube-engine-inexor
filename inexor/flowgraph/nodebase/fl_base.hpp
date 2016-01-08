@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "inexor/flowgraph/render/fl_render.h"
-#include "inexor/geom/curves/bezier/bezier.h"
+#include "inexor/flowgraph/render/fl_render.hpp"
+#include "inexor/geom/curves/bezier/bezier.hpp"
 
 
 namespace inexor {

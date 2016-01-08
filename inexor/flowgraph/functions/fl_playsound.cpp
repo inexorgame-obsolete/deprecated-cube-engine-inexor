@@ -1,4 +1,4 @@
-#include "inexor/flowgraph/functions/fl_playsound.h"
+#include "inexor/flowgraph/functions/fl_playsound.hpp"
 
 namespace inexor {
 namespace vscript {

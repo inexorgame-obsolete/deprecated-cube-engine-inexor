@@ -1,5 +1,5 @@
-#include "inexor/flowgraph/render/fl_render.h"
-#include "inexor/flowgraph/timer/fl_timer.h"
+#include "inexor/flowgraph/render/fl_render.hpp"
+#include "inexor/flowgraph/timer/fl_timer.hpp"
 
 namespace inexor {
 namespace vscript {

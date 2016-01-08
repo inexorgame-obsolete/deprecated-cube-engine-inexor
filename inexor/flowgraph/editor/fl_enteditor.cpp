@@ -1,4 +1,4 @@
-#include "inexor/flowgraph/editor/fl_enteditor.h"
+#include "inexor/flowgraph/editor/fl_enteditor.hpp"
 
 namespace inexor {
 namespace vscript {

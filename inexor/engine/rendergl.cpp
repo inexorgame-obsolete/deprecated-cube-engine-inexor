@@ -1830,7 +1830,7 @@ void gl_drawhud(int w, int h);
 
 int xtraverts, xtravertsva;
 
-#include "inexor/flowgraph/flowgraph.h"
+#include "inexor/flowgraph/flowgraph.hpp"
 
 /// 3D Visual Scripting System
 namespace inexor {

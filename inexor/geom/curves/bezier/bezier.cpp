@@ -1,4 +1,4 @@
-#include "bezier.h"
+#include "bezier.hpp"
 
 namespace inexor {
 namespace geom 

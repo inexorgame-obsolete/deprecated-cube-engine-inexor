@@ -1,5 +1,5 @@
-#include "inexor/flowgraph/nodebase/fl_base.h"
-#include "inexor/flowgraph/timer/fl_timer.h"
+#include "inexor/flowgraph/nodebase/fl_base.hpp"
+#include "inexor/flowgraph/timer/fl_timer.hpp"
 
 
 namespace inexor {

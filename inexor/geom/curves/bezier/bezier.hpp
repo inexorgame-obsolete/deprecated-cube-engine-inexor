@@ -20,7 +20,7 @@
 #include <string>
 #include <vector>
 
-#include "inexor/geom/curves/curvebase.h"
+#include "inexor/geom/curves/curvebase.hpp"
 
 namespace inexor {
 namespace geom {

@@ -1,4 +1,4 @@
-#include "inexor/flowgraph/sleep/fl_sleep.h"
+#include "inexor/flowgraph/sleep/fl_sleep.hpp"
 
 namespace inexor {
 namespace vscript {

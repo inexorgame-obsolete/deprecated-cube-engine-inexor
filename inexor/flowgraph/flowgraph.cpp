@@ -1,16 +1,16 @@
-#include "inexor/flowgraph/flowgraph.h"
+#include "inexor/flowgraph/flowgraph.hpp"
 #include "inexor/fpsgame/game.hpp"
-#include "inexor/flowgraph/sleep/fl_sleep.h"
-#include "inexor/flowgraph/timer/fl_timer.h"
-#include "inexor/flowgraph/comments/fl_comment.h"
-#include "inexor/flowgraph/functions/fl_functionbase.h"
-#include "inexor/flowgraph/functions/fl_functions.h"
+#include "inexor/flowgraph/sleep/fl_sleep.hpp"
+#include "inexor/flowgraph/timer/fl_timer.hpp"
+#include "inexor/flowgraph/comments/fl_comment.hpp"
+#include "inexor/flowgraph/functions/fl_functionbase.hpp"
+#include "inexor/flowgraph/functions/fl_functions.hpp"
 
-#include "inexor/flowgraph/areas/block/fl_area_block.h"
-#include "inexor/flowgraph/areas/sphere/fl_area_sphere.h"
+#include "inexor/flowgraph/areas/block/fl_area_block.hpp"
+#include "inexor/flowgraph/areas/sphere/fl_area_sphere.hpp"
 
-#include "inexor/geom/geom.h"
-#include "inexor/geom/curves/bezier/bezier.h"
+#include "inexor/geom/geom.hpp"
+#include "inexor/geom/curves/bezier/bezier.hpp"
 
 extern selinfo sel, lastsel, savedsel;
 extern bool editmode;

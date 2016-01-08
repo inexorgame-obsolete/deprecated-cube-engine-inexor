@@ -9,10 +9,10 @@
 #include <vector>
 #include <stdarg.h>
 
-#include "inexor/flowgraph/nodebase/fl_base.h"
-#include "inexor/flowgraph/render/fl_render.h"
-#include "inexor/flowgraph/editor/fl_enteditor.h"
- #include "inexor/flowgraph/debugger/fl_dbgrays.h"
+#include "inexor/flowgraph/nodebase/fl_base.hpp"
+#include "inexor/flowgraph/render/fl_render.hpp"
+#include "inexor/flowgraph/editor/fl_enteditor.hpp"
+ #include "inexor/flowgraph/debugger/fl_dbgrays.hpp"
 
 
 namespace inexor {

@@ -1,4 +1,4 @@
-#include "inexor/flowgraph/areas/sphere/fl_area_sphere.h"
+#include "inexor/flowgraph/areas/sphere/fl_area_sphere.hpp"
 
 namespace inexor {
 namespace vscript {

@@ -1,4 +1,4 @@
-#include "inexor/flowgraph/functions/fl_conoutf.h"
+#include "inexor/flowgraph/functions/fl_conoutf.hpp"
 
 namespace inexor {
 namespace vscript {

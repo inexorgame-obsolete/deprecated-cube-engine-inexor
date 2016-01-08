@@ -1,4 +1,4 @@
-#include "inexor/flowgraph/areas/block/fl_area_block.h"
+#include "inexor/flowgraph/areas/block/fl_area_block.hpp"
 
 namespace inexor {
 namespace vscript {

@@ -5,7 +5,7 @@
 #ifndef INEXOR_VSCRIPT_TIMER_HEADER
 #define INEXOR_VSCRIPT_TIMER_HEADER
 
-#include "inexor/flowgraph/nodebase/fl_base.h"
+#include "inexor/flowgraph/nodebase/fl_base.hpp"
 
 
 #define INEXOR_VSCRIPT_MIN_TIMER_INTERVAL 5

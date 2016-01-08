@@ -1,7 +1,7 @@
 #include <vector>
 
 #include "inexor/engine/engine.hpp"
-#include "inexor/geom/curves/curvebase.h"
+#include "inexor/geom/curves/curvebase.hpp"
 
 namespace inexor {
 namespace geom {

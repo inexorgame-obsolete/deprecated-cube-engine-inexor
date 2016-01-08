@@ -1,4 +1,4 @@
-#include "inexor/flowgraph/comments/fl_comment.h"
+#include "inexor/flowgraph/comments/fl_comment.hpp"
 
 namespace inexor {
 namespace vscript {
