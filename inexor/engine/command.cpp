@@ -2,7 +2,7 @@
 // is largely backwards compatible with the quake console language.
 
 #include "inexor/engine/engine.hpp"
-#include "inexor/rpc/SharedVar.hpp"
+#include "inexor/rpc/SharedTree.hpp"
 
 hashnameset<ident> idents; // contains ALL vars/commands/aliases
 vector<ident *> identmap;

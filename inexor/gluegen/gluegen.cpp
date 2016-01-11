@@ -8,9 +8,10 @@
 
 #include <boost/program_options.hpp>
 
-#include "inexor/gluegen/cpp_parser.hpp"
+#include "inexor/gluegen/cpp_shared_var_parser.hpp"
 #include "inexor/gluegen/tree.hpp"
 #include "inexor/gluegen/protoc_generator.hpp"
+#include "inexor/gluegen/cpp_tree_adapter_gen.cpp"
 
 using namespace inexor::rpc::gluegen;
 namespace po = boost::program_options;
@@ -22,7 +23,7 @@ void usage(const std::string &ex, const po::options_description &params) {
         << "\n inexor gluegen – Generate the glue code for the tree API."
         << "\n\nSYNPOSIS"
         << "\n  (1) " << ex << " -h|--help"
-        << "\n  (2) " << ex << " --protoc|-P FILE -protoc-package|-N -- CLANG_OPTIONS... -- SOURCE_FILES..."
+        << "\n  (2) " << ex << " --protoc|-P FILE --namespace|-N -- CLANG_OPTIONS... -- SOURCE_FILES..."
         << "\n\nDESCRIPTION"
         << "\n  (1) Show this help page"
         << "\n  (2) Generate the glue code. If no options are passed to clang, you must still specify two double dashes: -- --"
@@ -111,7 +112,16 @@ int main(int argc, const char **argv) {
     struct {
         ShTree &tree;
         void shared_var(string cpp_type, string cpp_var, string tree_path) {
-            tree.emplace_back(cpp_type, std::move(cpp_var), std::move(tree_path));
+            if (tree_path.empty()) {
+                std::cerr
+                  << "[WARNING] Missing path for "
+                  << n.cpp_var << "\n";
+                return;
+            }
+            tree.emplace_back(
+                cpp_type
+              , std::move(cpp_var)
+              , std::move(tree_path));
         }
     } visitor{tree};
 
@@ -120,6 +130,10 @@ int main(int argc, const char **argv) {
     // Write the protoc file
 
     update_protoc_file(protoc_file, tree, protoc_pkg);
+
+    // Write the cpp tree api providersA
+    
+    update_cpp_tree_adapter(header_file, source_file, tree, adapter_ns);
 
     return 0;
 }

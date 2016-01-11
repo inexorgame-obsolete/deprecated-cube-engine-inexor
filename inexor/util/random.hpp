@@ -5,6 +5,7 @@
 #include <limits>
 
 #include <boost/uuid/seed_rng.hpp>
+#include <boost/uuid/random_generator.hpp>
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
 #include <boost/random/uniform_real_distribution.hpp>
@@ -28,13 +29,20 @@ namespace random {
         }
     };
 
-    /// The default rng, seeded with a time stamp from the
-    /// best clock availabl (std::chrono::high_resolution_clock)
+    /// The default rng, seeded with a time stamp seeded with
+    /// using the boost uuid seeder
     extern thread_local auto_seeded<rng_engine> generator;
 
     /// The default rng for the deterministic_rng functions;
     /// this will be reseeded every time they're called.
     extern thread_local rng_engine deterministic_generator;
+
+    /// A boost::uuids generator using our default RNG engine
+    typedef boost::uuids::basic_random_generator<rng_engine> uuid_generator;
+
+    /// A uuid generator that uses the thread local
+    /// non-deterministic random generator above
+    extern thread_local uuid_generator make_uuid;
 
     /// The type of the seed the deterministic_generator expects
     typedef rng_engine::result_type seed_t;

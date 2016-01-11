@@ -9,7 +9,7 @@
 #include <boost/range/algorithm.hpp>
 #include <boost/algorithm/string/replace.hpp>
 
-#include "inexor/util/InexorException.h"
+#include "inexor/util/InexorException.hpp"
 
 namespace std {
 
@@ -61,6 +61,9 @@ public:
     /// C++ type of the variable
     cpp_type_t type;
 
+    /// C++ type literal of the variable
+    std::string type_lit;
+
     /// The protocol buffers type for this node
     std::string protoc_lit;
 
@@ -94,6 +97,7 @@ private:
     }
 
     void _init_type(const std::string &type_decl) {
+        type_lit = type_decl;
         type = type_parsers.at(type_decl);
         protoc_lit = protoc_types.at(type);
     }

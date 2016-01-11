@@ -66,29 +66,17 @@ void update_protoc_file(
     // Format the data properly
     
     using boost::adaptors::filtered;
-    using std::make_tuple;
     using std::tuple;
-    
-    // TODO: seriously, this syntax is terrible
+  
+  // TODO: seriously, this syntax is terrible
     typedef tuple<std::string&, std::string&, int64_t, std::string&> ptup;
-    function<bool(ShTreeNode&)> missing_paths = [](const ShTreeNode &n) {
-        if (n.mangled_path.empty()) {
-            std::cerr << "[WARNING] Missing path for " << n.cpp_var << "\n";
-            return false;
-        }
-        return true;
-    };
-    function<ptup(ShTreeNode&)> mktup = [](ShTreeNode &n) {
+    auto mktup = [](ShTreeNode &n) {
         return ptup{
             n.protoc_lit
           , n.mangled_path
           , n.protoc_idx
           , n.cpp_var }; };
-    auto data_gen = tree | filtered(missing_paths) | transformed(mktup);
-
-    // TODO: Needed because format invokes size() on the
-    // range; can we avoid this?
-    std::vector<ptup> data(data_gen.begin(), data_gen.end());
+    auto data = tree | transformed(mktup);
 
     /// Generate and write the code
     
