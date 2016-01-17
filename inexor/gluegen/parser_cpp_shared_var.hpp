@@ -1,5 +1,4 @@
-#ifndef INEXOR_RPC_GLUEGEN_CPP_PARSER_HEADER
-#define INEXOR_RPC_GLUEGEN_CPP_PARSER_HEADER
+#pragma once
 
 #include <functional>
 #include <string>
@@ -14,7 +13,7 @@
 
 #include <boost/range/algorithm.hpp>
 
-#include "inexor/util/util.h"
+#include "inexor/util.hpp"
 
 namespace inexor {
 namespace rpc {
@@ -174,5 +173,3 @@ void find_shared_decls(
 }
 }
 }
-
-#endif

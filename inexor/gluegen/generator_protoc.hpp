@@ -1,5 +1,4 @@
-#ifndef INEXOR_RPC_GLUGEN_PROTOC_GENERATOR_HEADER
-#define INEXOR_RPC_GLUGEN_PROTOC_GENERATOR_HEADER
+#pragma once
 
 #include <string>
 
@@ -30,5 +29,3 @@ extern void update_protoc_file(
 }
 }
 }
-
-#endif

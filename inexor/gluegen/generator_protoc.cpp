@@ -9,7 +9,7 @@
 #include <boost/range/algorithm.hpp>
 #include <boost/fusion/include/std_tuple.hpp>
 
-#include "inexor/gluegen/protoc_generator.hpp"
+#include "inexor/gluegen/generator_protoc.hpp"
 
 namespace inexor {
 namespace rpc {

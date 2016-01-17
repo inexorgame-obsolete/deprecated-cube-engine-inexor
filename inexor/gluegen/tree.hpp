@@ -1,5 +1,4 @@
-#ifndef INEXOR_RPC_GLUEGEN_TREE_INDEX_HEADER
-#define INEXOR_RPC_GLUEGEN_TREE_INDEX_HEADER
+#pragma once
 
 #include <string>
 #include <regex>
@@ -9,7 +8,7 @@
 #include <boost/range/algorithm.hpp>
 #include <boost/algorithm/string/replace.hpp>
 
-#include "inexor/util/InexorException.h"
+#include "inexor/util/InexorException.hpp"
 
 namespace std {
 
@@ -58,6 +57,9 @@ public:
     /// Path but not containing any slashes
     std::string mangled_path;
 
+    /// The type literal of the c++ type
+    std::string type_lit;
+
     /// C++ type of the variable
     cpp_type_t type;
 
@@ -95,6 +97,7 @@ private:
 
     void _init_type(const std::string &type_decl) {
         type = type_parsers.at(type_decl);
+        type_lit = type_decl;
         protoc_lit = protoc_types.at(type);
     }
 };
@@ -104,5 +107,3 @@ typedef std::vector<ShTreeNode> ShTree;
 }
 }
 }
-
-#endif
