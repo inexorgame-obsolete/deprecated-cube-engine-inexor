@@ -680,7 +680,7 @@ struct pvsworker
         {
             int hide = children[7].flags&PVS_HIDE_BB;
             loopi(7) if((children[i].flags&PVS_HIDE_BB)!=hide) canreduce = false;
-            if(canreduce) 
+            if(canreduce)
             {
                 p.flags = (p.flags & ~PVS_HIDE_BB) | hide;
                 p.children = 0;
@@ -694,7 +694,7 @@ struct pvsworker
         }
         return false;
     }
-    
+
     vector<uchar> outbuf;
 
     bool serializepvs(pvsnode &p, int storage = -1)
@@ -712,7 +712,7 @@ struct pvsworker
         if(storage>=0)
         {
             for(; i < 8; i++)
-            {   
+            {
                 pvsnode &child = children[i];
                 if(child.flags&PVS_HIDE_BB) leafvalues |= 1<<i;
                 else if(child.children) break;
@@ -916,7 +916,7 @@ static inline bool isallclip(cube *c)
     }
     return true;
 }
-   
+
 static int countviewcells(cube *c, const ivec &co, int size, int threshold)
 {
     int count = 0;
@@ -1021,7 +1021,7 @@ VARN(waterpvs, usewaterpvs, 0, 1, 1);
 void setviewcell(const vec &p)
 {
     if(!usepvs) curpvs = nullptr;
-    else if(lockedpvs) 
+    else if(lockedpvs)
     {
         curpvs = lockedpvs;
         curwaterpvs = lockedwaterpvs;
@@ -1158,7 +1158,7 @@ void genpvs(int *viewcellsize)
     SDL_TimerID timer = 0;
     extern SharedVar<int> numcpus;
     int numthreads = pvsthreads > 0 ? pvsthreads : numcpus;
-    if(numthreads<=1) 
+    if(numthreads<=1)
     {
         pvsworkers.add(new pvsworker);
         timer = SDL_AddTimer(500, genpvs_timer, nullptr);
@@ -1188,7 +1188,7 @@ void genpvs(int *viewcellsize)
             SDL_UnlockMutex(viewcellmutex);
             show_genpvs_progress(unique, processed);
             if(!remaining) break;
-        }        
+        }
         SDL_LockMutex(viewcellmutex);
         viewcellrequests.setsize(0);
         SDL_UnlockMutex(viewcellmutex);
@@ -1200,7 +1200,7 @@ void genpvs(int *viewcellsize)
     pvscompress.clear();
 
     Uint32 end = SDL_GetTicks();
-    if(genpvs_canceled) 
+    if(genpvs_canceled)
     {
         clearpvs();
         Log.edit->info("genpvs aborted");
@@ -1344,4 +1344,3 @@ void loadpvs(stream *f, int numpvs)
 }
 
 int getnumviewcells() { return pvs.length(); }
-
