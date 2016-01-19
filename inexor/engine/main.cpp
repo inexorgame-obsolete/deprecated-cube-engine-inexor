@@ -131,7 +131,6 @@ namespace screen {
     /// @see initwarning
     VAR(colorbits, 0, 0, 32);
     VARF(depthbits, 0, 0, 32, initwarning("depth-buffer precision"));
-    VARF(stencilbits, 0, 0, 32, initwarning("stencil-buffer precision"));
 
     /// VSYNC settings
     VARFP(vsync, 0, 0, 1, screen_manager.restorevsync());
@@ -171,7 +170,6 @@ void writeinitcfg()
     f->printf("screenres %d %d\n", *scr_w, *scr_h);
     f->printf("colorbits %d\n", *colorbits);
     f->printf("depthbits %d\n", *depthbits);
-    f->printf("stencilbits %d\n", *stencilbits);
     f->printf("fsaa %d\n", *fsaa);
     f->printf("vsync %d\n", *vsync);
     f->printf("vsynctear %d\n", *vsynctear);

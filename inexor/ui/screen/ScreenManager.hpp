@@ -86,7 +86,7 @@ extern ScreenManager screen_manager;
 // TODO: for now: not part of the ScreenManager
 extern SharedVar<int> scr_w, scr_h;
 extern SharedVar<int> fullscreen, vsync, vsynctear;
-extern SharedVar<int> colorbits, depthbits, stencilbits;
+extern SharedVar<int> colorbits, depthbits;
 extern SharedVar<int> fsaa;
 
 extern int screenw, screenh;

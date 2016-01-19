@@ -122,7 +122,7 @@ VERTWN(vertln, {
 }
 
 void rendervertwater(int subdiv, int xo, int yo, int z, int size, int mat)
-{   
+{
     wx1 = xo;
     wy1 = yo;
     wx2 = wx1 + size,
@@ -197,7 +197,7 @@ int renderwaterlod(int x, int y, int z, int size, int mat)
                 if(subdiv2 >= size) rendervertwater(childsize, x + childsize, y, z, childsize, mat);
                 if(subdiv3 >= size) rendervertwater(childsize, x + childsize, y + childsize, z, childsize, mat);
                 if(subdiv4 >= size) rendervertwater(childsize, x, y + childsize, z, childsize, mat);
-            } 
+            }
         }
         return minsubdiv;
     }
@@ -239,7 +239,7 @@ static inline void renderwater(const materialsurface &m, int mat = MAT_WATER)
 void renderlava(const materialsurface &m, Texture *tex, float scale)
 {
     lavaxk = 8.0f/(tex->xs*scale);
-    lavayk = 8.0f/(tex->ys*scale); 
+    lavayk = 8.0f/(tex->ys*scale);
     lavascroll = lastmillis/1000.0f;
     renderwater(m, MAT_LAVA);
 }
@@ -314,7 +314,7 @@ void setprojtexmatrix(Reflection &ref)
         ref.init = false;
         (ref.projmat = camprojmatrix).projective();
     }
-    
+
     LOCALPARAM(watermatrix, ref.projmat);
 }
 
@@ -393,7 +393,7 @@ void renderwater()
         }
         else SETWATERSHADER(above, waterenv);
     }
-    else if(waterrefract) 
+    else if(waterrefract)
     {
         if(waterfade) SETWATERSHADER(above, waterfade);
         else SETWATERSHADER(above, waterrefract);
@@ -427,7 +427,7 @@ void renderwater()
         }
 
         bool below = camera1->o.z < ref.height+offset;
-        if(below) 
+        if(below)
         {
             if(!belowshader) continue;
             belowshader->set();
@@ -446,7 +446,7 @@ void renderwater()
             {
                 glActiveTexture_(GL_TEXTURE3);
                 glBindTexture(GL_TEXTURE_2D, ref.refracttex);
-                if(waterfade) 
+                if(waterfade)
                 {
                     float fadeheight = ref.height+offset+(below ? -2 : 2);
                     LOCALPARAMF(waterheight, fadeheight);
@@ -563,9 +563,8 @@ VARFP(reflectsize, 6, 8, 10, cleanreflections());
 void genwatertex(GLuint &tex, GLuint &fb, GLuint &db, bool refract = false)
 {
     static const GLenum colorfmts[] = { GL_RGBA, GL_RGBA8, GL_RGB, GL_RGB8, GL_FALSE },
-                        depthfmts[] = { GL_DEPTH_STENCIL, GL_DEPTH24_STENCIL8, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT32, GL_FALSE };
-    const int stencilfmts = 2;
-    static GLenum reflectfmt = GL_FALSE, refractfmt = GL_FALSE, depthfmt = GL_FALSE, stencilfmt = GL_FALSE;
+                        depthfmts[] = { GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT32, GL_FALSE };
+    static GLenum reflectfmt = GL_FALSE, refractfmt = GL_FALSE, depthfmt = GL_FALSE;
     static bool usingalpha = false;
     bool needsalpha = refract && waterrefract && waterfade;
     if(refract && usingalpha!=needsalpha)
@@ -603,14 +602,13 @@ void genwatertex(GLuint &tex, GLuint &fb, GLuint &db, bool refract = false)
 
     delete[] buf;
 
-    if(!db) { glGenRenderbuffers_(1, &db); depthfmt = stencilfmt = GL_FALSE; }
+    if(!db) { glGenRenderbuffers_(1, &db); depthfmt = GL_FALSE; }
     if(!depthfmt) glBindRenderbuffer_(GL_RENDERBUFFER, db);
-    find = hasstencil && hasDS ? 0 : stencilfmts;
+    find = 0;
     do
     {
         if(!depthfmt) glRenderbufferStorage_(GL_RENDERBUFFER, depthfmts[find], size, size);
         glFramebufferRenderbuffer_(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, db);
-        if(depthfmt ? stencilfmt : find<stencilfmts) glFramebufferRenderbuffer_(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, db);
         if(glCheckFramebufferStatus_(GL_FRAMEBUFFER)==GL_FRAMEBUFFER_COMPLETE) break;
     }
     while(!depthfmt && depthfmts[++find]);
@@ -618,7 +616,6 @@ void genwatertex(GLuint &tex, GLuint &fb, GLuint &db, bool refract = false)
     {
         glBindRenderbuffer_(GL_RENDERBUFFER, 0);
         depthfmt = depthfmts[find];
-        stencilfmt = find<stencilfmts ? depthfmt : GL_FALSE;
     }
 
     glBindFramebuffer_(GL_FRAMEBUFFER, 0);
@@ -651,7 +648,7 @@ void addreflection(materialsurface &m)
         {
             if(!ref) ref = &r;
         }
-        else if(r.height==height && r.material==mat) 
+        else if(r.height==height && r.material==mat)
         {
             r.matsurfs.add(&m);
             r.depth = max(r.depth, int(m.depth));
@@ -666,7 +663,7 @@ void addreflection(materialsurface &m)
         if(!oldest || oldest->age<0) return;
         ref = oldest;
     }
-    if(ref->height!=height || ref->material!=mat) 
+    if(ref->height!=height || ref->material!=mat)
     {
         ref->material = mat;
         ref->height = height;
@@ -698,7 +695,7 @@ static void drawmaterialquery(const materialsurface &m, float offset, float bord
 #define GENFACEORIENT(orient, v0, v1, v2, v3) \
         case orient: v0 v1 v2 v3 break;
 #define GENFACEVERT(orient, vert, mx,my,mz, sx,sy,sz) \
-            gle::attribf(mx sx, my sy, mz sz); 
+            gle::attribf(mx sx, my sy, mz sz);
         GENFACEVERTS(x, x, y, y, z, z, - border, + csize, - border, + rsize, + offset, - offset)
 #undef GENFACEORIENT
 #undef GENFACEVERT
@@ -765,7 +762,7 @@ void queryreflections()
             else addwaterfallrefraction(m);
         }
     }
-  
+
     loopi(MAXREFLECTIONS)
     {
         Reflection &ref = reflections[i];
@@ -829,11 +826,11 @@ void maskreflection(Reflection &ref, float offset, bool reflect, bool clear = fa
     if(!maskreflect)
     {
         if(clear) glClearColor(color.r, color.g, color.b, 1);
-        glClear(GL_DEPTH_BUFFER_BIT | (clear ? GL_COLOR_BUFFER_BIT : 0) | (hasstencil && hasDS ? GL_STENCIL_BUFFER_BIT : 0));
+        glClear(GL_DEPTH_BUFFER_BIT | (clear ? GL_COLOR_BUFFER_BIT : 0));
         return;
     }
     glClearDepth(0);
-    glClear(GL_DEPTH_BUFFER_BIT | (hasstencil && hasDS ? GL_STENCIL_BUFFER_BIT : 0));
+    glClear(GL_DEPTH_BUFFER_BIT);
     glClearDepth(1);
     glDepthRange(1, 1);
     glDepthFunc(GL_ALWAYS);
@@ -901,9 +898,9 @@ static bool calcscissorbox(Reflection &ref, int size, vec &clipmin, vec &clipmax
     loopi(8)
     {
         const vec4 &p = v[i];
-        if(p.z >= -p.w) continue;    
+        if(p.z >= -p.w) continue;
         loopj(3)
-        { 
+        {
             const vec4 &o = v[i^(1<<j)];
             if(o.z <= -o.w) continue;
             float t = (p.z + p.w)/(p.z + p.w - o.z - o.w),
@@ -952,14 +949,14 @@ void drawreflections()
         Reflection &ref = reflections[++n%MAXREFLECTIONS];
         if(ref.height<0 || ref.age || ref.matsurfs.empty()) continue;
         if(oqfrags && oqwater && ref.query && ref.query->owner==&ref)
-        { 
+        {
             if(!ref.prevquery || ref.prevquery->owner!=&ref || checkquery(ref.prevquery))
             {
                 if(checkquery(ref.query)) continue;
             }
         }
 
-        if(!refs) 
+        if(!refs)
         {
             glViewport(0, 0, size, size);
             glBindFramebuffer_(GL_FRAMEBUFFER, reflectionfb);
@@ -987,7 +984,7 @@ void drawreflections()
             if(scissor) glEnable(GL_SCISSOR_TEST);
             maskreflection(ref, offset, true);
             savevfcP();
-            setvfcP(ref.height+offset, clipmin, clipmax); 
+            setvfcP(ref.height+offset, clipmin, clipmax);
             drawreflection(ref.height+offset, false);
             restorevfcP();
             if(scissor) glDisable(GL_SCISSOR_TEST);
@@ -1006,7 +1003,7 @@ void drawreflections()
                 restorevfcP();
             }
             if(scissor) glDisable(GL_SCISSOR_TEST);
-        }    
+        }
 
         if(refs>=maxreflect) break;
     }
@@ -1047,7 +1044,7 @@ void drawreflections()
         maskreflection(ref, -0.1f, false);
         savevfcP();
         setvfcP(-1, clipmin, clipmax);
-        drawreflection(-1, true); 
+        drawreflection(-1, true);
         restorevfcP();
         if(scissor) glDisable(GL_SCISSOR_TEST);
     }
@@ -1057,4 +1054,3 @@ nowaterfall:
     glViewport(0, 0, screen_manager.screenw, screen_manager.screenh);
     glBindFramebuffer_(GL_FRAMEBUFFER, 0);
 }
-

@@ -16,7 +16,6 @@ using boost::algorithm::clamp;
 extern void cef_resize(int width, int height);
 extern void gl_resize();
 extern void fatal(const char *s, ...);
-extern int hasstencil;
 namespace gle {
     extern int enabled;
     extern void forcedisable();
@@ -119,13 +118,11 @@ void ScreenManager::setupscreen(int &useddepthbits, int &usedfsaa)
 
     static int configs[] =
     {
-        0x7, /* try everything */
-        0x6, 0x5, 0x3, /* try disabling one at a time */
-        0x4, 0x2, 0x1, /* try disabling two at a time */
+        0x3, /* try everything */
+        0x2, 0x1, /* try disabling one at a time */
         0 /* try disabling everything */
     };
     int config = 0;
-    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
     if (!depthbits) SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
     if (!fsaa)
     {
@@ -136,19 +133,12 @@ void ScreenManager::setupscreen(int &useddepthbits, int &usedfsaa)
     {
         config = configs[i];
         if (!depthbits && (config&1)) continue;
-        if (!stencilbits && (config&2)) continue;
-        if (fsaa<=0 && (config&4)) continue;
+        if (fsaa<=0 && (config&2)) continue;
         if (depthbits) SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, config&1 ? depthbits : 16);
-        if (stencilbits)
-        {
-            hasstencil = config&2 ? stencilbits : 0;
-            SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, hasstencil);
-        }
-        else hasstencil = 0;
         if (fsaa>0)
         {
-            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, config&4 ? 1 : 0);
-            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, config&4 ? fsaa : 0);
+            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, config&2 ? 1 : 0);
+            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, config&2 ? fsaa : 0);
         }
         sdl_window = SDL_CreateWindow("Inexor", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, winw, winh, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | flags);
         if (sdl_window) break;
@@ -157,8 +147,7 @@ void ScreenManager::setupscreen(int &useddepthbits, int &usedfsaa)
     else
     {
         if (depthbits && (config&1)==0) Log.std->warn("{} bit z-buffer not supported - disabling", *depthbits);
-        if (stencilbits && (config&2)==0) Log.std->warn("Stencil buffer not supported - disabling");
-        if (fsaa>0 && (config&4)==0) Log.std->warn("{} anti-aliasing not supported - disabling", *fsaa);
+        if (fsaa>0 && (config&2)==0) Log.std->warn("{} anti-aliasing not supported - disabling", *fsaa);
     }
 
     SDL_SetWindowMinimumSize(sdl_window, SCR_MINW, SCR_MINH);
