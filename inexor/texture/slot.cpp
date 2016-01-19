@@ -1,4 +1,4 @@
-/// @file slot.cpp 
+/// @file slot.cpp
 /// @file management of texture slots as visible ingame.
 /// each texture slot can have multiple textures.
 /// additional textures can be used for various shaders.
@@ -226,7 +226,9 @@ static void clampvslotoffset(VSlot &dst, Slot *slot = nullptr)
     if(slot && slot->sts.inrange(0))
     {
         if(!slot->loaded) slot->load(false, false);
-        int xs = slot->sts[0].t->xs, ys = slot->sts[0].t->ys;
+        Texture *t = slot->sts[0].t;
+        int xs = t->xs, ys = t->ys;
+        if(t->type & Texture::MIRROR) { xs *= 2; ys *= 2; }
         if((dst.rotation & 5) == 1) swap(xs, ys);
         dst.offset.x %= xs; if(dst.offset.x < 0) dst.offset.x += xs;
         dst.offset.y %= ys; if(dst.offset.y < 0) dst.offset.y += ys;
@@ -583,27 +585,12 @@ static void addglow(ImageData &c, ImageData &g, const vec &glowcolor)
     }
 }
 
-static void mergespec(ImageData &c, ImageData &s, bool envmap = false)
+static void mergespec(ImageData &c, ImageData &s)
 {
     if(s.bpp < 3)
     {
-        if(envmap)
-        {
-            readwritergbatex(c, s,
-                dst[3] = int(dst[3])*int(src[0]) / 255;
-            );
-        }
-        else
-        {
-            readwritergbatex(c, s,
-                dst[3] = src[0];
-            );
-        }
-    }
-    else if(envmap)
-    {
         readwritergbatex(c, s,
-            dst[3] = int(dst[3])*(int(src[0]) + int(src[1]) + int(src[2])) / (3 * 255);
+             dst[3] = src[0];
         );
     }
     else
@@ -672,16 +659,16 @@ void Slot::combinetextures(int index, Slot::Tex &t, bool msg, bool forceload)
 
     gencombinedname(key, texmask, *this, t, index, forceload);
 
-    t.t = gettexture(key.getbuf()); //todo check if working
+    t.t = gettexture(key.getbuf()); // todo check if working
     if(t.t) return;
-    int compress = 0;
+    int compress = 0, wrap = 0;
     ImageData ts;
-    if(!texturedata(ts, nullptr, &t, msg, &compress)) { t.t = notexture; return; }
-    switch(t.type)
+    if(!texturedata(ts, nullptr, &t, msg, &compress, &wrap)) { t.t = notexture; return; }
+    if(!ts.compressed) switch(t.type)
     {
         case TEX_DIFFUSE:
         case TEX_NORMAL:
-            if(!ts.compressed) loopv(sts)
+            loopv(sts)
             {
                 Slot::Tex &a = sts[i];
                 if(a.combined != index) continue;
@@ -697,7 +684,7 @@ void Slot::combinetextures(int index, Slot::Tex &t, bool msg, bool forceload)
             }
             break;
     }
-    t.t = newtexture( t.t, key.getbuf(), ts, 0, true, true, true, compress);
+    t.t = newtexture( t.t, key.getbuf(), ts, wrap, 0, true, true, true, compress);
 }
 
 MSlot &lookupmaterialslot(int index, bool load)
@@ -837,6 +824,7 @@ Texture *Slot::loadthumbnail()
                     srcrow += l.pitch;
                 }
             }
+            if(s.bpp < 3) forcergbimage(s);
             t = newtexture(nullptr, name.getbuf(), s, 0, false, false, true);
             t->xs = xs;
             t->ys = ys;
@@ -1040,4 +1028,3 @@ void texcolor(float *r, float *g, float *b)
     propagatevslot(s.variants, 1 << VSLOT_COLOR);
 }
 COMMAND(texcolor, "fff");
-

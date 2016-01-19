@@ -224,6 +224,7 @@ void resetgl()
     recorder::cleanup();
     cleanupva();
     cleanupparticles();
+    cleanupdecals();
     cleanupblobs();
     cleanupsky();
     cleanupmodels();

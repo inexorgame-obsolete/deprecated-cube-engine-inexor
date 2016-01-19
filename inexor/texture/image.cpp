@@ -274,6 +274,41 @@ static void reorients3tc(GLenum format, int blocksize, int w, int h, uchar *src,
     }
 }
 
+static void reorientrgtc(GLenum format, int blocksize, int w, int h, uchar *src, uchar *dst, bool flipx, bool flipy, bool swapxy)
+{
+    int bx1 = 0, by1 = 0, bx2 = min(w, 4), by2 = min(h, 4), bw = (w+3)/4, bh = (h+3)/4, stridex = blocksize, stridey = blocksize;
+    if(swapxy) stridex *= bw; else stridey *= bh;
+    if(flipx) { dst += (bw-1)*stridex; stridex = -stridex; bx1 += 4-bx2; bx2 = 4; }
+    if(flipy) { dst += (bh-1)*stridey; stridey = -stridey; by1 += 4-by2; by2 = 4; }
+    stridex -= blocksize;
+    loopi(bh)
+    {
+        for(uchar *curdst = dst, *end = &src[bw*blocksize]; src < end; curdst += stridex)
+        {
+            loopj(blocksize/8)
+            {
+                uchar val1 = src[0], val2 = src[1];
+                ullong sval = lilswap(*(const ushort *)&src[2]) + ((ullong)lilswap(*(const uint *)&src[4] )<< 16), dval = 0;
+                uint xmask = flipx ? 7 : 0, ymask = flipy ? 7 : 0, xshift = 0, yshift = 2;
+                if(swapxy) swap(xshift, yshift);
+                for(int y = by1; y < by2; y++) for(int x = bx1; x < bx2; x++)
+                {
+                    dval |= ((sval&7) << (3*((xmask^x)<<xshift) + ((ymask^y)<<yshift)));
+                    sval >>= 3;
+                }
+                curdst[0] = val1;
+                curdst[1] = val2;
+                *(ushort *)&curdst[2] = lilswap(ushort(dval));
+                *(ushort *)&curdst[4] = lilswap(ushort(dval>>16));
+                *(ushort *)&curdst[6] = lilswap(ushort(dval>>32));
+                src += 8;
+                curdst += 8;
+            }
+        }
+        dst += stridey;
+    }
+}
+
 void texreorient(ImageData &s, bool flipx, bool flipy, bool swapxy, bool isnormalmap)
 {
     ImageData d(swapxy ? s.h : s.w, swapxy ? s.w : s.h, s.bpp, s.levels, s.align, s.compressed);
@@ -288,6 +323,20 @@ void texreorient(ImageData &s, bool flipx, bool flipy, bool swapxy, bool isnorma
         loopi(s.levels)
         {
             reorients3tc(s.compressed, s.bpp, max(s.w >> i, 1), max(s.h >> i, 1), src, dst, flipx, flipy, swapxy, isnormalmap);
+            src += s.calclevelsize(i);
+            dst += d.calclevelsize(i);
+        }
+        break;
+    }
+    case GL_COMPRESSED_RED_RGTC1:
+    case GL_COMPRESSED_RG_RGTC2:
+    case GL_COMPRESSED_LUMINANCE_LATC1_EXT:
+    case GL_COMPRESSED_LUMINANCE_ALPHA_LATC2_EXT:
+    {
+        uchar *dst = d.data, *src = s.data;
+        loopi(s.levels)
+        {
+            reorientrgtc(s.compressed, s.bpp, max(s.w>>i, 1), max(s.h>>i, 1), src, dst, flipx, flipy, swapxy);
             src += s.calclevelsize(i);
             dst += d.calclevelsize(i);
         }
@@ -333,6 +382,8 @@ void texoffset(ImageData &s, int xoffset, int yoffset)
 
 void texmad(ImageData &s, const vec &mul, const vec &add)
 {
+    if(s.bpp < 3 && (mul.x != mul.y || mul.y != mul.z || add.x != add.y || add.y != add.z))
+        swizzleimage(s);
     int maxk = min(int(s.bpp), 3);
     writetex(s,
         loopk(maxk) dst[k] = uchar(clamp(dst[k] * mul[k] + 255 * add[k], 0.0f, 255.0f));
@@ -597,14 +648,33 @@ void forcergbimage(ImageData &s)
 {
     if(s.bpp >= 3) return;
     ImageData d(s.w, s.h, 3);
-    readwritetex(d, s,
-        switch(s.bpp)
-    {
-        case 1: dst[0] = src[0]; dst[1] = src[0]; dst[2] = src[0]; break;
-        case 2: dst[0] = src[0]; dst[1] = src[1]; dst[2] = src[1]; break;
-    }
-    );
+    readwritetex(d, s, { dst[0] = dst[1] = dst[2] = src[0]; });
     s.replace(d);
+}
+
+void forcergbaimage(ImageData &s)
+{
+    if(s.bpp >= 4) return;
+    ImageData d(s.w, s.h, 4);
+    if(s.bpp==3) readwritetex(d, s, { dst[0] = src[0]; dst[1] = src[1]; dst[2] = src[2]; });
+    else readwritetex(d, s, { dst[0] = dst[1] = dst[2] = src[0]; });
+    s.replace(d);
+}
+
+void swizzleimage(ImageData &s)
+{
+    if(s.bpp==2)
+    {
+        ImageData d(s.w, s.h, 4);
+        readwritetex(d, s, { dst[0] = dst[1] = dst[2] = src[0]; dst[3] = src[1]; });
+        s.replace(d);
+    }
+    else if(s.bpp==1)
+    {
+        ImageData d(s.w, s.h, 3);
+        readwritetex(d, s, { dst[0] = dst[1] = dst[2] = src[0]; });
+        s.replace(d);
+    }
 }
 
 void scaleimage(ImageData &s, int w, int h)

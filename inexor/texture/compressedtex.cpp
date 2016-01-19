@@ -119,22 +119,47 @@ static inline void decodealpha(uchar alpha0, uchar alpha1, uchar alpha[8])
 
 DECODEDDS(decodedxt5, 4,
     uchar alpha[8];
-decodealpha(src[0], src[1], alpha);
-ullong alphabits = lilswap(*(const ushort *)&src[2]) + ((ullong)lilswap(*(const uint *)&src[4]) << 16);
-ushort color0 = lilswap(*(const ushort *)&src[8]);
-ushort color1 = lilswap(*(const ushort *)&src[10]);
-uint bits = lilswap(*(const uint *)&src[12]);
-bvec rgb[4];
-rgb[0] = bvec::from565(color0);
-rgb[1] = bvec::from565(color1);
-rgb[2].lerp(rgb[0], rgb[1], 2, 1, 3);
-rgb[3].lerp(rgb[0], rgb[1], 1, 2, 3);
+    decodealpha(src[0], src[1], alpha);
+    ullong alphabits = lilswap(*(const ushort *)&src[2]) + ((ullong)lilswap(*(const uint *)&src[4]) << 16);
+    ushort color0 = lilswap(*(const ushort *)&src[8]);
+    ushort color1 = lilswap(*(const ushort *)&src[10]);
+    uint bits = lilswap(*(const uint *)&src[12]);
+    bvec rgb[4];
+    rgb[0] = bvec::from565(color0);
+    rgb[1] = bvec::from565(color1);
+    rgb[2].lerp(rgb[0], rgb[1], 2, 1, 3);
+    rgb[3].lerp(rgb[0], rgb[1], 1, 2, 3);
 ,
-memcpy(dst, rgb[bits & 3].v, 3);
-dst[3] = alpha[alphabits & 7];
+    memcpy(dst, rgb[bits & 3].v, 3);
+    dst[3] = alpha[alphabits & 7];
 ,
-bits >>= 2;
-alphabits >>= 3;
+    bits >>= 2;
+    alphabits >>= 3;
+);
+
+DECODEDDS(decodergtc1, 1,
+    uchar red[8];
+    decodealpha(src[0], src[1], red);
+    ullong redbits = lilswap(*(const ushort *)&src[2]) + ((ullong)lilswap(*(const uint *)&src[4]) << 16);
+,
+    dst[0] = red[redbits&7];
+,
+    redbits >>= 3;
+);
+
+DECODEDDS(decodergtc2, 2,
+    uchar red[8];
+    decodealpha(src[0], src[1], red);
+    ullong redbits = lilswap(*(const ushort *)&src[2]) + ((ullong)lilswap(*(const uint *)&src[4]) << 16);
+    uchar green[8];
+    decodealpha(src[8], src[9], green);
+    ullong greenbits = lilswap(*(const ushort *)&src[10]) + ((ullong)lilswap(*(const uint *)&src[12]) << 16);
+,
+    dst[0] = red[redbits&7];
+    dst[1] = green[greenbits&7];
+,
+    redbits >>= 3;
+    greenbits >>= 3;
 );
 
 bool loaddds(const char *filename, ImageData &image, int force)
@@ -164,6 +189,14 @@ bool loaddds(const char *filename, ImageData &image, int force)
         case FOURCC_DXT5:
             if((supported = hasS3TC) || force) format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
             break;
+        case FOURCC_ATI1:
+            if((supported = hasRGTC) || force) format = GL_COMPRESSED_RED_RGTC1;
+            else if((supported = hasLATC)) format = GL_COMPRESSED_LUMINANCE_LATC1_EXT;
+            break;
+        case FOURCC_ATI2:
+            if((supported = hasRGTC) || force) format = GL_COMPRESSED_RG_RGTC2;
+            else if((supported = hasLATC)) format = GL_COMPRESSED_LUMINANCE_ALPHA_LATC2_EXT;
+            break;
         }
     }
     if(!format || (!supported && !force)) { delete f; return false; }
@@ -175,6 +208,10 @@ bool loaddds(const char *filename, ImageData &image, int force)
     case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT: bpp = 8; break;
     case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
     case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT: bpp = 16; break;
+    case GL_COMPRESSED_LUMINANCE_LATC1_EXT:
+    case GL_COMPRESSED_RED_RGTC1: bpp = 8; break;
+    case GL_COMPRESSED_LUMINANCE_ALPHA_LATC2_EXT:
+    case GL_COMPRESSED_RG_RGTC2: bpp = 16; break;
     }
     image.setdata(nullptr, d.dwWidth, d.dwHeight, bpp, !supported || force > 0 ? 1 : d.dwMipMapCount, 4, format);
     size_t size = image.calcsize();
@@ -191,6 +228,14 @@ bool loaddds(const char *filename, ImageData &image, int force)
         break;
     case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
         decodedxt5(image);
+        break;
+    case GL_COMPRESSED_LUMINANCE_LATC1_EXT:
+    case GL_COMPRESSED_RED_RGTC1:
+        decodergtc1(image);
+        break;
+    case GL_COMPRESSED_LUMINANCE_ALPHA_LATC2_EXT:
+    case GL_COMPRESSED_RG_RGTC2:
+        decodergtc2(image);
         break;
     }
     return true;

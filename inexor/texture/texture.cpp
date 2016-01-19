@@ -120,11 +120,11 @@ void uploadcompressedtexture(GLenum target, GLenum subtarget, GLenum format, int
     }
 }
 
-void setuptexparameters(int tnum, void *pixels, int clamp, int filter, GLenum format, GLenum target)
+void setuptexparameters(int tnum, void *pixels, int clamp, int filter, GLenum format, GLenum target, bool swizzle)
 {
     glBindTexture(target, tnum);
-    glTexParameteri(target, GL_TEXTURE_WRAP_S, clamp&1 ? GL_CLAMP_TO_EDGE : GL_REPEAT);
-    if(target!=GL_TEXTURE_1D) glTexParameteri(target, GL_TEXTURE_WRAP_T, clamp&2 ? GL_CLAMP_TO_EDGE : GL_REPEAT);
+    glTexParameteri(target, GL_TEXTURE_WRAP_S, clamp&1 ? GL_CLAMP_TO_EDGE : (clamp&0x100 ? GL_MIRRORED_REPEAT : GL_REPEAT));
+    if(target!=GL_TEXTURE_1D) glTexParameteri(target, GL_TEXTURE_WRAP_T, clamp&2 ? GL_CLAMP_TO_EDGE : (clamp&0x200 ? GL_MIRRORED_REPEAT : GL_REPEAT));
     if(target==GL_TEXTURE_2D && hasAF && min(aniso, hwmaxaniso) > 0 && filter > 1) glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, min(aniso, hwmaxaniso));
     glTexParameteri(target, GL_TEXTURE_MAG_FILTER, filter && bilinear ? GL_LINEAR : GL_NEAREST);
     glTexParameteri(target, GL_TEXTURE_MIN_FILTER,
@@ -133,11 +133,16 @@ void setuptexparameters(int tnum, void *pixels, int clamp, int filter, GLenum fo
                 (bilinear ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_LINEAR) :
                 (bilinear ? GL_LINEAR_MIPMAP_NEAREST : GL_NEAREST_MIPMAP_NEAREST)) :
             (filter && bilinear ? GL_LINEAR : GL_NEAREST));
+    if(swizzle && hasTRG && hasTSW)
+    {
+        const GLint *mask = swizzlemask(format);
+        if(mask) glTexParameteriv(target, GL_TEXTURE_SWIZZLE_RGBA, mask);
+    }
 }
 
-void createtexture(int tnum, int w, int h, void *pixels, int clamp, int filter, GLenum component, GLenum subtarget, int pw, int ph, int pitch, bool resize, GLenum format)
+static GLenum textype(GLenum &component, GLenum &format)
 {
-    GLenum target = textarget(subtarget), type = GL_UNSIGNED_BYTE;
+    GLenum type = GL_UNSIGNED_BYTE;
     switch(component)
     {
     case GL_R16F:
@@ -179,6 +184,7 @@ void createtexture(int tnum, int w, int h, void *pixels, int clamp, int filter, 
         if(!format) format = GL_RGB;
         break;
 
+    case GL_RGB5_A1:
     case GL_RGBA8:
     case GL_RGBA16:
     case GL_COMPRESSED_RGBA:
@@ -196,30 +202,45 @@ void createtexture(int tnum, int w, int h, void *pixels, int clamp, int filter, 
 
     case GL_R8:
     case GL_R16:
+    case GL_COMPRESSED_RED:
+    case GL_COMPRESSED_RED_RGTC1:
         if(!format) format = GL_RED;
         break;
 
     case GL_RG8:
     case GL_RG16:
+    case GL_COMPRESSED_RG:
+    case GL_COMPRESSED_RG_RGTC2:
         if(!format) format = GL_RG;
         break;
 
     case GL_LUMINANCE8:
     case GL_LUMINANCE16:
+    case GL_COMPRESSED_LUMINANCE:
+    case GL_COMPRESSED_LUMINANCE_LATC1_EXT:
         if(!format) format = GL_LUMINANCE;
         break;
 
     case GL_LUMINANCE8_ALPHA8:
     case GL_LUMINANCE16_ALPHA16:
+    case GL_COMPRESSED_LUMINANCE_ALPHA:
+    case GL_COMPRESSED_LUMINANCE_ALPHA_LATC2_EXT:
         if(!format) format = GL_LUMINANCE_ALPHA;
         break;
 
     case GL_ALPHA8:
+    case GL_COMPRESSED_ALPHA:
         if(!format) format = GL_ALPHA;
         break;
     }
     if(!format) format = component;
-    if(tnum) setuptexparameters(tnum, pixels, clamp, filter, format, target);
+    return type;
+}
+
+void createtexture(int tnum, int w, int h, void *pixels, int clamp, int filter, GLenum component, GLenum subtarget, int pw, int ph, int pitch, bool resize, GLenum format, bool swizzle)
+{
+    GLenum target = textarget(subtarget), type = textype(component, format);
+    if(tnum) setuptexparameters(tnum, pixels, clamp, filter, format, target, swizzle);
     if(!pw) pw = w;
     if(!ph) ph = h;
     int tw = w, th = h;
@@ -232,7 +253,7 @@ void createtexture(int tnum, int w, int h, void *pixels, int clamp, int filter, 
     uploadtexture(subtarget, component, tw, th, format, type, pixels, pw, ph, pitch, mipmap);
 }
 
-void createcompressedtexture(int tnum, int w, int h, uchar *data, int align, int blocksize, int levels, int clamp, int filter, GLenum format, GLenum subtarget)
+void createcompressedtexture(int tnum, int w, int h, uchar *data, int align, int blocksize, int levels, int clamp, int filter, GLenum format, GLenum subtarget, bool swizzle = false)
 {
     GLenum target = textarget(subtarget);
     if(tnum) setuptexparameters(tnum, data, clamp, filter, format, target);
@@ -274,7 +295,7 @@ int texalign(void *data, int w, int bpp)
     return 8;
 }
 
-Texture *newtexture(Texture *t, const char *rname, ImageData &s, int clamp, bool mipit, bool canreduce, bool transient, int compress)
+Texture *newtexture(Texture *t, const char *rname, ImageData &s, int clamp, bool mipit, bool canreduce, bool transient, int compress = 0)
 {
     if(!t) t = registertexture(rname);
 
@@ -282,12 +303,15 @@ Texture *newtexture(Texture *t, const char *rname, ImageData &s, int clamp, bool
     t->mipmap = mipit;
     t->type = Texture::IMAGE;
     if(transient) t->type |= Texture::TRANSIENT;
+    if(clamp&0x300) t->type |= Texture::MIRROR;
     if(!s.data)
     {
         t->type |= Texture::STUB;
         t->w = t->h = t->xs = t->ys = t->bpp = 0;
         return t;
     }
+
+    bool swizzle = !(clamp&0x10000);
     GLenum format;
     if(s.compressed)
     {
@@ -299,6 +323,12 @@ Texture *newtexture(Texture *t, const char *rname, ImageData &s, int clamp, bool
     {
         format = texformat(s.bpp);
         t->bpp = s.bpp;
+        if(swizzle && hasTRG && !hasTSW && swizzlemask(format))
+        {
+            swizzleimage(s);
+            format = texformat(s.bpp);
+            t->bpp = s.bpp;
+        }
     }
     if(alphaformat(format)) t->type |= Texture::ALPHA;
     t->w = t->xs = s.w;
@@ -325,13 +355,13 @@ Texture *newtexture(Texture *t, const char *rname, ImageData &s, int clamp, bool
             if(t->w > 1) t->w /= 2;
             if(t->h > 1) t->h /= 2;
         }
-        createcompressedtexture(t->id, t->w, t->h, data, s.align, s.bpp, levels, clamp, filter, s.compressed, GL_TEXTURE_2D);
+        createcompressedtexture(t->id, t->w, t->h, data, s.align, s.bpp, levels, clamp, filter, s.compressed, GL_TEXTURE_2D, swizzle);
     }
     else
     {
         resizetexture(t->w, t->h, mipit, canreduce, GL_TEXTURE_2D, compress, t->w, t->h);
         GLenum component = compressedformat(format, t->w, t->h, compress);
-        createtexture(t->id, t->w, t->h, s.data, clamp, filter, component, GL_TEXTURE_2D, t->xs, t->ys, s.pitch, false, format);
+        createtexture(t->id, t->w, t->h, s.data, clamp, filter, component, GL_TEXTURE_2D, t->xs, t->ys, s.pitch, false, format, swizzle);
     }
     return t;
 }
@@ -352,7 +382,7 @@ static vec parsevec(const char *arg)
 VAR(usedds, 0, 1, 1);
 VAR(scaledds, 0, 2, 4);
 
-bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex, bool msg, int *compress)
+bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex, bool msg, int *compress = NULL, int *wrap = NULL)
 {
     const char *cmds = nullptr, *file = tname;
 
@@ -428,46 +458,58 @@ bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex, bool msg, int 
         d.wrap(s);
     }
 
-    if(!d.compressed) while(cmds)
+    while(cmds)
     {
         PARSETEXCOMMANDS(cmds);
-        if(matchstring(cmd, len, "mad")) texmad(d, parsevec(arg[0]), parsevec(arg[1]));
-        else if(matchstring(cmd, len, "colorify")) texcolorify(d, parsevec(arg[0]), parsevec(arg[1]));
-        else if(matchstring(cmd, len, "colormask")) texcolormask(d, parsevec(arg[0]), *arg[1] ? parsevec(arg[1]) : vec(1, 1, 1));
-        else if(matchstring(cmd, len, "normal"))
+        if(!d.compressed)
         {
-            int emphasis = atoi(arg[0]);
-            texnormal(d, emphasis > 0 ? emphasis : 3);
+            if(matchstring(cmd, len, "mad")) texmad(d, parsevec(arg[0]), parsevec(arg[1]));
+            else if(matchstring(cmd, len, "colorify")) texcolorify(d, parsevec(arg[0]), parsevec(arg[1]));
+            else if(matchstring(cmd, len, "colormask")) texcolormask(d, parsevec(arg[0]), *arg[1] ? parsevec(arg[1]) : vec(1, 1, 1));
+            else if(matchstring(cmd, len, "normal"))
+            {
+                int emphasis = atoi(arg[0]);
+                texnormal(d, emphasis > 0 ? emphasis : 3);
+            }
+            else if(matchstring(cmd, len, "dup")) texdup(d, atoi(arg[0]), atoi(arg[1]));
+            else if(matchstring(cmd, len, "offset")) texoffset(d, atoi(arg[0]), atoi(arg[1]));
+            else if(matchstring(cmd, len, "rotate")) texrotate(d, atoi(arg[0]), tex ? tex->type==TEX_NORMAL : false);
+            else if(matchstring(cmd, len, "reorient")) texreorient(d, atoi(arg[0])>0, atoi(arg[1])>0, atoi(arg[2])>0, tex ? tex->type==TEX_NORMAL : false);
+            else if(matchstring(cmd, len, "mix")) texmix(d, *arg[0] ? atoi(arg[0]) : -1, *arg[1] ? atoi(arg[1]) : -1, *arg[2] ? atoi(arg[2]) : -1, *arg[3] ? atoi(arg[3]) : -1);
+            else if(matchstring(cmd, len, "grey")) texgrey(d);
+            else if(matchstring(cmd, len, "blur"))
+            {
+                int emphasis = atoi(arg[0]), repeat = atoi(arg[1]);
+                texblur(d, emphasis > 0 ? clamp(emphasis, 1, 2) : 1, repeat > 0 ? repeat : 1);
+            }
+            else if(matchstring(cmd, len, "premul")) texpremul(d);
+            else if(matchstring(cmd, len, "agrad")) texagrad(d, atof(arg[0]), atof(arg[1]), atof(arg[2]), atof(arg[3]));
+            else if(matchstring(cmd, len, "compress") || matchstring(cmd, len, "dds"))
+            {
+                int scale = atoi(arg[0]);
+                if(scale <= 0) scale = scaledds;
+                if(compress) *compress = scale;
+            }
+            else if(matchstring(cmd, len, "nocompress"))
+            {
+                if(compress) *compress = -1;
+            }
+            else if(matchstring(cmd, len, "thumbnail"))
+            {
+                int w = atoi(arg[0]), h = atoi(arg[1]);
+                if(w <= 0 || w > (1<<12)) w = 64;
+                if(h <= 0 || h > (1<<12)) h = w;
+                if(d.w > w || d.h > h) scaleimage(d, w, h);
+            }
         }
-        else if(matchstring(cmd, len, "dup")) texdup(d, atoi(arg[0]), atoi(arg[1]));
-        else if(matchstring(cmd, len, "offset")) texoffset(d, atoi(arg[0]), atoi(arg[1]));
-        else if(matchstring(cmd, len, "rotate")) texrotate(d, atoi(arg[0]), tex ? tex->type==TEX_NORMAL : false);
-        else if(matchstring(cmd, len, "reorient")) texreorient(d, atoi(arg[0])>0, atoi(arg[1])>0, atoi(arg[2])>0, tex ? tex->type==TEX_NORMAL : false);
-        else if(matchstring(cmd, len, "mix")) texmix(d, *arg[0] ? atoi(arg[0]) : -1, *arg[1] ? atoi(arg[1]) : -1, *arg[2] ? atoi(arg[2]) : -1, *arg[3] ? atoi(arg[3]) : -1);
-        else if(matchstring(cmd, len, "grey")) texgrey(d);
-        else if(matchstring(cmd, len, "blur"))
+
+        if(matchstring(cmd, len, "mirror"))
         {
-            int emphasis = atoi(arg[0]), repeat = atoi(arg[1]);
-            texblur(d, emphasis > 0 ? clamp(emphasis, 1, 2) : 1, repeat > 0 ? repeat : 1);
+            if(wrap) *wrap |= 0x300;
         }
-        else if(matchstring(cmd, len, "premul")) texpremul(d);
-        else if(matchstring(cmd, len, "agrad")) texagrad(d, atof(arg[0]), atof(arg[1]), atof(arg[2]), atof(arg[3]));
-        else if(matchstring(cmd, len, "compress") || matchstring(cmd, len, "dds"))
+        else if(matchstring(cmd, len, "noswizzle"))
         {
-            int scale = atoi(arg[0]);
-            if(scale <= 0) scale = scaledds;
-            if(compress) *compress = scale;
-        }
-        else if(matchstring(cmd, len, "nocompress"))
-        {
-            if(compress) *compress = -1;
-        }
-        else if(matchstring(cmd, len, "thumbnail"))
-        {
-            int w = atoi(arg[0]), h = atoi(arg[1]);
-            if(w <= 0 || w > (1<<12)) w = 64;
-            if(h <= 0 || h > (1<<12)) h = w;
-            if(d.w > w || d.h > h) scaleimage(d, w, h);
+            if(wrap) *wrap |= 0x10000;
         }
     }
 
@@ -513,7 +555,7 @@ Texture *textureload(const char *name, int clamp, bool mipit, bool msg, bool thr
     copystring(tname, name);
     int compress = 0;
     ImageData s;
-    if(texturedata(s, tname, nullptr, msg && !threadsafe, &compress)) return newtexture(threadsafe ? t : nullptr, tname, s, clamp, mipit, false, false, compress);
+    if(texturedata(s, tname, nullptr, msg && !threadsafe, &compress, &clamp)) return newtexture(threadsafe ? t : nullptr, tname, s, clamp, mipit, false, false, compress);
     return notexture;
 }
 

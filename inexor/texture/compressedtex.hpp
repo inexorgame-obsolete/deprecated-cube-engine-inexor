@@ -41,7 +41,9 @@ enum
     FOURCC_DXT2 = 0x32545844,
     FOURCC_DXT3 = 0x33545844,
     FOURCC_DXT4 = 0x34545844,
-    FOURCC_DXT5 = 0x35545844
+    FOURCC_DXT5 = 0x35545844,
+    FOURCC_ATI1 = 0x31495441,
+    FOURCC_ATI2 = 0x32495441
 };
 
 struct DDCOLORKEY { uint dwColorSpaceLowValue, dwColorSpaceHighValue; };
@@ -69,4 +71,3 @@ struct DDSURFACEDESC2
     DDSCAPS2 ddsCaps;
     uint dwTextureStage;
 };
-
