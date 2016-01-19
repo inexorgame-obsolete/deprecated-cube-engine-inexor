@@ -30,7 +30,7 @@
 using namespace inexor::filesystem;
 using namespace inexor::rendering::screen;
 
-// #define MAXVOL MIX_MAX_VOLUME  // TODO Sound refractoring
+// #define MAXVOL MIX_MAX_VOLUME  // TODO Sound refactoring
 #define MAXVOL 100
 
 namespace inexor {
@@ -41,12 +41,12 @@ bool nosound = true;
 struct soundsample
 {
     char *name;
-    //Mix_Chunk *chunk;  // TODO Sound refractoring
+    //Mix_Chunk *chunk;  // TODO Sound refactoring
 
-    soundsample() : name(nullptr)/*, chunk(NULL)*/ {}  // TODO Sound refractoring
+    soundsample() : name(nullptr)/*, chunk(NULL)*/ {}  // TODO Sound refactoring
     ~soundsample() { DELETEA(name); }
 
-    void cleanup() { /*if(chunk) { Mix_FreeChunk(chunk); chunk = NULL; } */}  // TODO Sound refractoring
+    void cleanup() { /*if(chunk) { Mix_FreeChunk(chunk); chunk = NULL; } */}  // TODO Sound refactoring
     bool load(bool msg = false);
 };
 
@@ -63,7 +63,7 @@ struct soundconfig
 
     bool hasslot(const soundslot *p, const vector<soundslot> &v) const
     {
-        return p >= v.getbuf() + slots && p < v.getbuf() + slots+numslots && slots+numslots < v.length(); 
+        return p >= v.getbuf() + slots && p < v.getbuf() + slots+numslots && slots+numslots < v.length();
     }
 
     int chooseslot() const
@@ -134,7 +134,7 @@ void syncchannel(soundchannel &chan)
 {
     if(!chan.dirty) return;
     //if(!Mix_FadingChannel(chan.id)) Mix_Volume(chan.id, chan.volume);
-    //Mix_SetPanning(chan.id, 255-chan.pan, chan.pan);  // TODO Sound refractoring
+    //Mix_SetPanning(chan.id, 255-chan.pan, chan.pan);  // TODO Sound refactoring
     chan.dirty = false;
 }
 
@@ -144,7 +144,7 @@ void stopchannels()
     {
         soundchannel &chan = channels[i];
         if(!chan.inuse) continue;
-        //Mix_HaltChannel(i);  // TODO Sound refractoring
+        //Mix_HaltChannel(i);  // TODO Sound refactoring
         freechannel(i);
     }
 }
@@ -156,28 +156,28 @@ VARF(soundbufferlen, 128, 1024, 4096, initwarning("sound configuration", INIT_RE
 
 void initsound()
 {
-    // TODO Sound refractoring
-    //if(Mix_OpenAudio(soundfreq, MIX_DEFAULT_FORMAT, 2, soundbufferlen)<0)
-    //{
-    //    nosound = true;
-    //    Log.std->error("sound init failed (SDL_mixer): {}", Mix_GetError());
-    //    return;
-    //}
-    //Mix_AllocateChannels(soundchans);
+   // TODO Sound refactoring
+    // if(Mix_OpenAudio(soundfreq, MIX_DEFAULT_FORMAT, 2, soundbufferlen)<0)
+    // {
+    //     nosound = true;
+    //     Log.std->error("sound init failed (SDL_mixer): {}", Mix_GetError());
+    //     return;
+    // }
+	// Mix_AllocateChannels(soundchans);
     maxchannels = soundchans;
     nosound = false;
 }
 
-// TODO Sound refractoring
-//static Mix_Chunk *loadwav(const char *name)
-//{
+// TODO Sound refactoring
+// static Mix_Chunk *loadwav(const char *name)
+// {
 //    Mix_Chunk *c = Mix_LoadWAV(findfile(name, "rb"));
 //    return c;
-//}
+// }
 
 bool soundsample::load(bool msg)
 {
-    //if(chunk) return true;  // TODO Sound refractoring
+    // if(chunk) return true;  // TODO Sound refactoring
     if(!name[0]) return false;
 
     static const char * const exts[] = {"", ".ogg", ".flac", ".wav"};
@@ -187,8 +187,8 @@ bool soundsample::load(bool msg)
         getmediapath(filename, name, DIR_SOUND);
         filename += exts[i]; //append the extension
         if(msg && !i) renderprogress(0, filename.c_str());
-        //chunk = loadwav(filename.c_str());  // TODO Sound refractoring
-        //if(chunk) return true; // TODO Sound refractoring
+        // chunk = loadwav(filename.c_str());  // TODO Sound refactoring
+        // if(chunk) return true; // TODO Sound refactoring
     }
 
     Log.std->warn("failed to load sound: {}", filename); // TODO: LOG_N_TIMES(1)
@@ -229,7 +229,7 @@ static struct soundtype
             char *n = newstring(name);
             s = &samples[n];
             s->name = n;
-            //s->chunk = NULL; // TODO Sound refractoring
+            // s->chunk = NULL; // TODO Sound refactoring
         }
         soundslot *oldslots = slots.getbuf();
         int oldlen = slots.length();
@@ -275,7 +275,7 @@ static struct soundtype
             soundchannel &chan = channels[i];
             if(chan.inuse && slots.inbuf(chan.slot))
             {
-                //Mix_HaltChannel(i); // TODO Sound refractoring
+                // Mix_HaltChannel(i); // TODO Sound refactoring
                 freechannel(i);
             }
         }
@@ -329,13 +329,13 @@ void clear_sound()
 {
     closemumble();
     if(nosound) return;
-    //stopmusic();  // TODO VARP shouldplaymusic
+    // stopmusic();  // TODO VARP shouldplaymusic
 
     cleanupsamples();
     gamesounds.clear();
     mapsounds.clear();
     samples.clear();
-    //Mix_CloseAudio();  // TODO Sound refractoring
+    // Mix_CloseAudio();  // TODO Sound refactoring
     resetchannels();
 }
 
@@ -343,7 +343,7 @@ void stopmapsounds()
 {
     loopv(channels) if(channels[i].inuse && channels[i].ent)
     {
-     //   Mix_HaltChannel(i);  // TODO Sound refractoring
+        // Mix_HaltChannel(i);  // TODO Sound refactoring
         freechannel(i);
     }
 }
@@ -361,7 +361,7 @@ void stopmapsound(extentity *e)
         soundchannel &chan = channels[i];
         if(chan.inuse && chan.ent == e)
         {
-     //       Mix_HaltChannel(i);  // TODO Sound refractoring
+            // Mix_HaltChannel(i);  // TODO Sound refactoring
             freechannel(i);
         }
     }
@@ -426,7 +426,7 @@ void reclaimchannels()
     loopv(channels)
     {
         soundchannel &chan = channels[i];
-        //if(chan.inuse && !Mix_Playing(i)) freechannel(i); // TODO Sound refractoring
+        // if(chan.inuse && !Mix_Playing(i)) freechannel(i);  // TODO Sound refactoring
     }
 }
 
@@ -451,11 +451,11 @@ void updatesounds()
         else checkmapsounds();
         syncchannels();
     }
-    //if(music)
-    //{
+    // if(music)
+    // {
     //    if(!Mix_PlayingMusic()) musicdone(); // TODO sound VARP isplayingmusic? Or handle it completely on nodejs?
     //    else if(Mix_PausedMusic()) Mix_ResumeMusic();
-    //}
+    // }
 }
 
 VARP(maxsoundsatonce, 0, 7, 100);
@@ -498,7 +498,7 @@ int playsound(int n, const vec *loc, extentity *ent, int flags, int loops, int f
         {
             if(channels.inrange(chanid) && sounds.playing(channels[chanid], config))
             {
-                //Mix_HaltChannel(chanid); // TODO Sound refractoring
+                // Mix_HaltChannel(chanid); // TODO Sound refactoring
                 freechannel(chanid);
             }
             return -1;
@@ -533,7 +533,7 @@ int playsound(int n, const vec *loc, extentity *ent, int flags, int loops, int f
     if(fade < 0) return -1;
 
     soundslot &slot = sounds.slots[config.chooseslot()];
-    // if(!slot.sample->chunk && !slot.sample->load())  // TODO Sound refractoring
+    // if(!slot.sample->chunk && !slot.sample->load())  // TODO Sound refactoring
     {
         return -1;
     }
@@ -543,18 +543,18 @@ int playsound(int n, const vec *loc, extentity *ent, int flags, int loops, int f
     chanid = -1;
     loopv(channels) if(!channels[i].inuse) { chanid = i; break; }
     if(chanid < 0 && channels.length() < maxchannels) chanid = channels.length();
-    if(chanid < 0) loopv(channels) if(!channels[i].volume) {/* Mix_HaltChannel(i); */freechannel(i); chanid = i; break; } // TODO Sound refractoring
+    if(chanid < 0) loopv(channels) if(!channels[i].volume) { /* Mix_HaltChannel(i); */ freechannel(i); chanid = i; break; } // TODO Sound refactoring
     if(chanid < 0) return -1;
 
     soundchannel &chan = newchannel(chanid, &slot, loc, ent, flags, radius);
     updatechannel(chan);
     int playing = -1;
-    //if(fade)  // TODO Sound refractoring
-    //{
+    // if(fade)  // TODO Sound refactoring
+    // {
     //    Mix_Volume(chanid, chan.volume);
     //    playing = expire >= 0 ? Mix_FadeInChannelTimed(chanid, slot.sample->chunk, loops, fade, expire) : Mix_FadeInChannel(chanid, slot.sample->chunk, loops, fade);
-    //}
-    //else playing = expire >= 0 ? Mix_PlayChannelTimed(chanid, slot.sample->chunk, loops, expire) : Mix_PlayChannel(chanid, slot.sample->chunk, loops);
+    // }
+    // else playing = expire >= 0 ? Mix_PlayChannelTimed(chanid, slot.sample->chunk, loops, expire) : Mix_PlayChannel(chanid, slot.sample->chunk, loops);
     if(playing >= 0) syncchannel(chan);
     else freechannel(chanid);
     return playing;
@@ -564,7 +564,7 @@ void stopsounds()
 {
     loopv(channels) if(channels[i].inuse)
     {
-        //Mix_HaltChannel(i);
+        // Mix_HaltChannel(i);
         freechannel(i);
     }
 }
@@ -573,9 +573,9 @@ bool stopsound(int n, int chanid, int fade)
 {
     if(!gamesounds.configs.inrange(n) || !channels.inrange(chanid) || !channels[chanid].inuse || !gamesounds.playing(channels[chanid], gamesounds.configs[n])) return false;
     if(dbgsound) Log.std->debug("stopsound: {}", channels[chanid].slot->sample->name);
-    //if(!fade || !Mix_FadeOutChannel(chanid, fade)) // TODO Sound refractoring
+    // if(!fade || !Mix_FadeOutChannel(chanid, fade)) // TODO Sound refactoring
     {
-        //Mix_HaltChannel(chanid); // TODO Sound refractoring
+        // Mix_HaltChannel(chanid); // TODO Sound refactoring
         freechannel(chanid);
     }
     return true;
