@@ -126,7 +126,7 @@ extern void texrotate(ImageData &s, int numrots, bool isnormalmap = false);
 /// @param s The texture/image which you want to orientate
 /// @param flipx Flip from x axis
 /// @param flipy Flip from y axis
-/// @param swapxy Swap on both x and y 
+/// @param swapxy Swap on both x and y
 /// @param isnormalmap specifies whether you pass in a normal map and hence need to shift the blue/red channels accordingly.
 extern void texreorient(ImageData &s, bool flipx, bool flipy, bool swapxy, bool isnormalmap = false);
 
@@ -144,8 +144,8 @@ extern void texnormal(ImageData &s, int emphasis);
 extern void texblur(ImageData &s, int n, int r);
 
 extern void forcergbimage(ImageData &s);
+extern void forcergbaimage(ImageData &s);
+extern void swizzleimage(ImageData &s);
 
 extern void blurtexture(int n, int bpp, int w, int h, uchar *dst, const uchar *src, int margin = 0);
 extern void blurnormals(int n, int w, int h, bvec *dst, const bvec *src, int margin = 0);
-
-

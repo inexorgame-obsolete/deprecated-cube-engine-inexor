@@ -35,7 +35,7 @@ extern void pophudmatrix(bool flush = true, bool flushparams = true);
 extern void pushhudscale(float sx, float sy = 0);
 extern void pushhudtranslate(float tx, float ty, float sx = 0, float sy = 0);
 
-extern bool hasVAO, hasFBO, hasAFBO, hasDS, hasTF, hasTRG, hasTSW, hasS3TC, hasFXT1, hasAF, hasFBB, hasUBO, hasMBR;
+extern bool hasVAO, hasFBO, hasAFBO, hasDS, hasTF, hasTRG, hasTSW, hasTSW, hasS3TC, hasFXT1, hasLATC, hasRGTC, hasAF, hasFBB, hasUBO, hasMBR;
 extern SharedVar<int> glversion, glslversion;
 
 enum { DRAWTEX_NONE = 0, DRAWTEX_ENVMAP, DRAWTEX_MINIMAP, DRAWTEX_MODELPREVIEW };

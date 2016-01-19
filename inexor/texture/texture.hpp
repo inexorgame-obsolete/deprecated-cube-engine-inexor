@@ -1,4 +1,4 @@
-/// @file texture.hpp 
+/// @file texture.hpp
 /// internal texture loading and organizing routines + main texture structures.
 
 #pragma once
@@ -36,6 +36,7 @@ struct Texture
         TRANSIENT = 1 << 9,
         COMPRESSED = 1 << 10,
         ALPHA = 1 << 11,
+        MIRROR= 1 << 12,
         FLAGS = 0xFF00
     };
 
@@ -54,9 +55,9 @@ extern Texture *notexture;
 extern int texalign(void *data, int w, int bpp);
 extern void cleanuptexture(Texture *t);
 extern uchar *loadalphamask(Texture *t);
-extern void setuptexparameters(int tnum, void *pixels, int clamp, int filter, GLenum format = GL_RGB, GLenum target = GL_TEXTURE_2D);
-extern void createtexture(int tnum, int w, int h, void *pixels, int clamp, int filter, GLenum component = GL_RGB, GLenum target = GL_TEXTURE_2D, int pw = 0, int ph = 0, int pitch = 0, bool resize = true, GLenum format = GL_FALSE);
-extern void createcompressedtexture(int tnum, int w, int h, uchar *data, int align, int blocksize, int levels, int clamp, int filter, GLenum format, GLenum subtarget);
+extern void setuptexparameters(int tnum, void *pixels, int clamp, int filter, GLenum format = GL_RGB, GLenum target = GL_TEXTURE_2D, bool swizzle = false);
+extern void createtexture(int tnum, int w, int h, void *pixels, int clamp, int filter, GLenum component = GL_RGB, GLenum target = GL_TEXTURE_2D, int pw = 0, int ph = 0, int pitch = 0, bool resize = true, GLenum format = GL_FALSE, bool swizzle = false);
+extern void createcompressedtexture(int tnum, int w, int h, uchar *data, int align, int blocksize, int levels, int clamp, int filter, GLenum format, GLenum subtarget, bool swizzle);
 extern bool reloadtexture(Texture &tex);
 extern bool reloadtexture(const char *name);
 extern void setuptexcompress();
@@ -77,4 +78,3 @@ extern bool loadimage(const char *filename, ImageData &image);
 // Texture Registry:
 extern Texture *registertexture(const char *name);
 extern Texture *gettexture(const char *name);
-

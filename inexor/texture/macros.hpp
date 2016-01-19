@@ -1,5 +1,5 @@
 
-#define writetex(t, body) \
+#define writetex(t, body) do \
         { \
         uchar *dstrow = t.data; \
         loop(y, t.h) \
@@ -10,9 +10,9 @@
                         } \
             dstrow += t.pitch; \
                 } \
-        }
+        } while(0)
 
-#define readwritetex(t, s, body) \
+#define readwritetex(t, s, body) do \
         { \
         uchar *dstrow = t.data, *srcrow = s.data; \
         loop(y, t.h) \
@@ -24,9 +24,9 @@
             dstrow += t.pitch; \
             srcrow += s.pitch; \
                 } \
-        }
+        } while(0)
 
-#define read2writetex(t, s1, src1, s2, src2, body) \
+#define read2writetex(t, s1, src1, s2, src2, body) do \
                 { \
         uchar *dstrow = t.data, *src1row = s1.data, *src2row = s2.data; \
         loop(y, t.h) \
@@ -39,44 +39,28 @@
             src1row += s1.pitch; \
             src2row += s2.pitch; \
                                 } \
-                }
+                } while(0)
 
 
 #define readwritergbtex(t, s, body) \
+    { \
+        if(t.bpp >= 3) readwritetex(t, s, body); \
+        else \
         { \
-        if(t.bpp >= 3) { readwritetex(t, s, body); } \
-                else \
-                { \
             ImageData rgb(t.w, t.h, 3); \
-            read2writetex(rgb, t, orig, s, src, \
-                        { \
-                switch(t.bpp) \
-                                { \
-                    case 1: dst[0] = orig[0]; dst[1] = orig[0]; dst[2] = orig[0]; break; \
-                    case 2: dst[0] = orig[0]; dst[1] = orig[1]; dst[2] = orig[1]; break; \
-                                } \
-                body; \
-                        }); \
+            read2writetex(rgb, t, orig, s, src, { dst[0] = dst[1] = dst[2] = orig[0]; body; }); \
             t.replace(rgb); \
-                } \
-        }
+        } \
+    }
 
 #define readwritergbatex(t, s, body) \
-        { \
+    { \
         if(t.bpp >= 4) { readwritetex(t, s, body); } \
-                else \
-                { \
+        else \
+        { \
             ImageData rgba(t.w, t.h, 4); \
-            read2writetex(rgba, t, orig, s, src, \
-                        { \
-                switch(t.bpp) \
-                                { \
-                    case 1: dst[0] = orig[0]; dst[1] = orig[0]; dst[2] = orig[0]; break; \
-                    case 2: dst[0] = orig[0]; dst[1] = orig[1]; dst[2] = orig[1]; break; \
-                    case 3: dst[0] = orig[0]; dst[1] = orig[1]; dst[2] = orig[2]; break; \
-                                } \
-                body; \
-                        }); \
+            if(t.bpp==3) read2writetex(rgba, t, orig, s, src, { dst[0] = orig[0]; dst[1] = orig[1]; dst[2] = orig[2]; body; }); \
+            else read2writetex(rgba, t, orig, s, src, { dst[0] = dst[1] = dst[2] = orig[0]; body; }); \
             t.replace(rgba); \
-                } \
-        }
+        } \
+    }

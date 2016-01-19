@@ -13,6 +13,7 @@
 #include "inexor/engine/material.hpp"                 // for setupmaterials
 #include "inexor/engine/octree.hpp"                   // for ::EMID_RESERVED
 #include "inexor/engine/renderbackground.hpp"         // for renderprogress
+#include "inexor/engine/rendergl.hpp"                 // for hasTRG, hasTSW
 #include "inexor/engine/shader.hpp"                   // for SETSHADER, Shader
 #include "inexor/fpsgame/entities.hpp"                // for getents
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
@@ -27,7 +28,7 @@
 #include "inexor/shared/geom.hpp"                     // for vec, C, R, ivec...
 #include "inexor/shared/tools.hpp"                    // for clamp, min, max
 #include "inexor/texture/cubemap.hpp"
-#include "inexor/texture/format.hpp"                  // for alphaformat
+#include "inexor/texture/format.hpp"                  // for alphaformat, swizzle..
 #include "inexor/texture/image.hpp"                   // for ImageData, blur...
 #include "inexor/texture/slot.hpp"                    // for Slot::Tex, Slot
 #include "inexor/texture/texsettings.hpp"             // for maxtexsize, hwc...
@@ -132,6 +133,12 @@ Texture *cubemaploadwildcard(Texture *t, const char *name, bool mipit, bool msg,
     {
         format = texformat(surface[0].bpp);
         t->bpp = surface[0].bpp;
+        if(hasTRG && !hasTSW && swizzlemask(format))
+        {
+            loopi(6) swizzleimage(surface[i]);
+            format = texformat(surface[0].bpp);
+            t->bpp = surface[0].bpp;
+        }
     }
     if(alphaformat(format)) t->type |= Texture::ALPHA;
     t->mipmap = mipit;
@@ -165,11 +172,11 @@ Texture *cubemaploadwildcard(Texture *t, const char *name, bool mipit, bool msg,
                 if(w > 1) w /= 2;
                 if(h > 1) h /= 2;
             }
-            createcompressedtexture(!i ? t->id : 0, w, h, data, s.align, s.bpp, levels, 3, mipit ? 2 : 1, s.compressed, side.target);
+            createcompressedtexture(!i ? t->id : 0, w, h, data, s.align, s.bpp, levels, 3, mipit ? 2 : 1, s.compressed, side.target, true);
         }
         else
         {
-            createtexture(!i ? t->id : 0, t->w, t->h, s.data, 3, mipit ? 2 : 1, component, side.target, s.w, s.h, s.pitch, false, format);
+            createtexture(!i ? t->id : 0, t->w, t->h, s.data, 3, mipit ? 2 : 1, component, side.target, s.w, s.h, s.pitch, false, format, true);
         }
     }
     forcecubemapload(t->id);

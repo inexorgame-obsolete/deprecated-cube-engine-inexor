@@ -174,7 +174,7 @@ extern VSlot *emptyvslot(Slot &owner);
 extern VSlot *editvslot(const VSlot &src, const VSlot &delta);
 extern void mergevslot(VSlot &dst, const VSlot &src, const VSlot &delta);
 
-extern bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex = nullptr, bool msg = true, int *compress = nullptr); // TODO move to texture.hpp
+extern bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex = nullptr, bool msg = true, int *compress = nullptr, int *wrap = NULL); // TODO move to texture.hpp
 
 extern void compactvslots(cube *c, int n = 8);
 extern void compactvslot(int &index);

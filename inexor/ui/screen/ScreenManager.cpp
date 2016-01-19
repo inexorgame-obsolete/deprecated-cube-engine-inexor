@@ -123,24 +123,32 @@ void ScreenManager::setupscreen(int &useddepthbits, int &usedfsaa)
         0 /* try disabling everything */
     };
     int config = 0;
-    if (!depthbits) SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+    if (!depthbits) SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     if (!fsaa)
     {
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
     }
-    for (int i = 0; i < (sizeof(configs)/sizeof(configs[0])); i++)
+    static const struct { int major, minor; } glversions[] = { { 3, 3 }, { 3, 2 }, { 3, 1 }, { 3, 0 }, { 2, 1 } };
+    for (int j = 0; j < (sizeof(glversions)/sizeof(glversions[0])); j++)
     {
-        config = configs[i];
-        if (!depthbits && (config&1)) continue;
-        if (fsaa<=0 && (config&2)) continue;
-        if (depthbits) SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, config&1 ? depthbits : 16);
-        if (fsaa>0)
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, glversions[j].major);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, glversions[j].minor);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, glversions[j].major >= 3 ? SDL_GL_CONTEXT_PROFILE_CORE : 0);
+        for (int i = 0; i < (sizeof(configs)/sizeof(configs[0])); i++)
         {
-            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, config&2 ? 1 : 0);
-            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, config&2 ? fsaa : 0);
+            config = configs[i];
+            if (!depthbits && (config&1)) continue;
+            if (fsaa<=0 && (config&2)) continue;
+            if (depthbits) SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, config&1 ? depthbits : 24);
+            if (fsaa>0)
+            {
+                SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, config&2 ? 1 : 0);
+                SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, config&2 ? fsaa : 0);
+            }
+            sdl_window = SDL_CreateWindow("Inexor", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, winw, winh, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | flags);
+            if (sdl_window) break;
         }
-        sdl_window = SDL_CreateWindow("Inexor", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, winw, winh, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | flags);
         if (sdl_window) break;
     }
     if (!sdl_window) fatal("failed to create OpenGL window: %s", SDL_GetError());

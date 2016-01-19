@@ -1,4 +1,4 @@
-/// @file format.hpp 
+/// @file format.hpp
 /// Small helper functions to organize which OpenGL formats to use.
 
 #pragma once
@@ -11,5 +11,4 @@ extern GLenum uncompressedformat(GLenum format);
 extern GLenum compressedformat(GLenum format, int w, int h, int force = 0);
 extern GLenum textarget(GLenum subtarget);
 extern int formatsize(GLenum format);
-
-
+extern const GLint *swizzlemask(GLenum format);

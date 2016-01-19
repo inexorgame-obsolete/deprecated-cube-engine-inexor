@@ -4,6 +4,7 @@
 #include <SDL_opengl.h>                    // for GL_COMPRESSED_RGBA_S3TC_DX...
 #include <algorithm>                       // for max
 
+#include "inexor/engine/rendergl.hpp"      // for hasTRG, hasTSW
 #include "inexor/network/SharedVar.hpp"    // for SharedVar
 #include "inexor/shared/tools.hpp"         // for max
 #include "inexor/texture/format.hpp"
@@ -13,8 +14,8 @@ GLenum texformat(int bpp)
 {
     switch(bpp)
     {
-    case 1: return GL_LUMINANCE;
-    case 2: return GL_LUMINANCE_ALPHA;
+    case 1: return hasTRG ? GL_RED : GL_LUMINANCE;
+    case 2: return hasTRG ? GL_RG : GL_LUMINANCE_ALPHA;
     case 3: return GL_RGB;
     case 4: return GL_RGBA;
     default: return 0;
@@ -27,6 +28,7 @@ bool alphaformat(GLenum format)
     {
     case GL_ALPHA:
     case GL_LUMINANCE_ALPHA:
+    case GL_RG:
     case GL_RGBA:
         return true;
     default:
@@ -38,6 +40,20 @@ GLenum uncompressedformat(GLenum format)
 {
     switch(format)
     {
+    case GL_COMPRESSED_ALPHA:
+        return GL_ALPHA;
+    case GL_COMPRESSED_LUMINANCE:
+    case GL_COMPRESSED_LUMINANCE_LATC1_EXT:
+        return GL_LUMINANCE;
+    case GL_COMPRESSED_LUMINANCE_ALPHA:
+    case GL_COMPRESSED_LUMINANCE_ALPHA_LATC2_EXT:
+        return GL_LUMINANCE_ALPHA;
+    case GL_COMPRESSED_RED:
+    case GL_COMPRESSED_RED_RGTC1:
+        return GL_RED;
+    case GL_COMPRESSED_RG:
+    case GL_COMPRESSED_RG_RGTC2:
+        return GL_RG;
     case GL_COMPRESSED_RGB:
     case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
         return GL_RGB;
@@ -56,14 +72,31 @@ GLenum compressedformat(GLenum format, int w, int h, int force)
     {
     case GL_RGB5:
     case GL_RGB8:
-    case GL_LUMINANCE:
-    case GL_LUMINANCE8:
     case GL_RGB: return usetexcompress > 1 ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_COMPRESSED_RGB;
-    case GL_LUMINANCE_ALPHA:
-    case GL_LUMINANCE8_ALPHA8:
+    case GL_RGB5_A1: return usetexcompress > 1 ? GL_COMPRESSED_RGBA_S3TC_DXT1_EXT : GL_COMPRESSED_RGBA;
     case GL_RGBA: return usetexcompress > 1 ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_COMPRESSED_RGBA;
+    case GL_RED:
+    case GL_R8: return hasRGTC ? (usetexcompress > 1 ? GL_COMPRESSED_RED_RGTC1 : GL_COMPRESSED_RED) : (usetexcompress > 1 ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_COMPRESSED_RGB);
+    case GL_RG:
+    case GL_RG8: return hasRGTC ? (usetexcompress > 1 ? GL_COMPRESSED_RG_RGTC2 : GL_COMPRESSED_RG) : (usetexcompress > 1 ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_COMPRESSED_RGBA);
+    case GL_LUMINANCE:
+    case GL_LUMINANCE8: return hasLATC ? (usetexcompress > 1 ? GL_COMPRESSED_LUMINANCE_LATC1_EXT : GL_COMPRESSED_LUMINANCE) : (usetexcompress > 1 ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_COMPRESSED_RGB);
+    case GL_LUMINANCE_ALPHA:
+    case GL_LUMINANCE8_ALPHA8: return hasLATC ? (usetexcompress > 1 ? GL_COMPRESSED_LUMINANCE_ALPHA_LATC2_EXT : GL_COMPRESSED_LUMINANCE_ALPHA) : (usetexcompress > 1 ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_COMPRESSED_RGBA);
     }
     return format;
+}
+
+const GLint *swizzlemask(GLenum format)
+{
+    static const GLint luminance[4] = { GL_RED, GL_RED, GL_RED, GL_ONE };
+    static const GLint luminancealpha[4] = { GL_RED, GL_RED, GL_RED, GL_GREEN };
+    switch(format)
+    {
+        case GL_RED: return luminance;
+        case GL_RG: return luminancealpha;
+    }
+    return NULL;
 }
 
 GLenum textarget(GLenum subtarget)
@@ -85,8 +118,10 @@ int formatsize(GLenum format)
 {
     switch(format)
     {
+    case GL_RED:
     case GL_LUMINANCE:
     case GL_ALPHA: return 1;
+    case GL_RG:
     case GL_LUMINANCE_ALPHA: return 2;
     case GL_RGB: return 3;
     case GL_RGBA: return 4;
