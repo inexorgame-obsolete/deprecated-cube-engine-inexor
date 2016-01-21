@@ -321,12 +321,12 @@ Texture *newtexture(Texture *t, const char *rname, ImageData &s, int clamp, bool
     }
     else
     {
-        format = texformat(s.bpp);
+        format = texformat(s.bpp, swizzle);
         t->bpp = s.bpp;
         if(swizzle && hasTRG && !hasTSW && swizzlemask(format))
         {
             swizzleimage(s);
-            format = texformat(s.bpp);
+            format = texformat(s.bpp, swizzle);
             t->bpp = s.bpp;
         }
     }

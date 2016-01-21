@@ -10,12 +10,12 @@
 #include "inexor/texture/format.hpp"
 #include "inexor/texture/texsettings.hpp"  // for usetexcompress, texcompress
 
-GLenum texformat(int bpp)
+GLenum texformat(int bpp, bool swizzle)
 {
     switch(bpp)
     {
-    case 1: return hasTRG ? GL_RED : GL_LUMINANCE;
-    case 2: return hasTRG ? GL_RG : GL_LUMINANCE_ALPHA;
+    case 1: return hasTRG && (hasTSW || !glcompat || !swizzle) ? GL_RED : GL_LUMINANCE;
+    case 2: return hasTRG && (hasTSW || !glcompat || !swizzle) ? GL_RG : GL_LUMINANCE_ALPHA;
     case 3: return GL_RGB;
     case 4: return GL_RGBA;
     default: return 0;

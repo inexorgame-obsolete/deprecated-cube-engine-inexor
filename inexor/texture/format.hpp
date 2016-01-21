@@ -5,7 +5,7 @@
 
 #include "SDL_opengl.h"  // for GLenum
 
-extern GLenum texformat(int bpp);
+extern GLenum texformat(int bpp, bool swizzle = false);
 extern bool alphaformat(GLenum format);
 extern GLenum uncompressedformat(GLenum format);
 extern GLenum compressedformat(GLenum format, int w, int h, int force = 0);

@@ -6,6 +6,7 @@
 #include "SDL_mouse.h"                                // for SDL_SetRelative...
 #include "SDL_stdinc.h"                               // for ::SDL_FALSE
 #include "inexor/engine/movie.hpp"                    // for capture
+#include "inexor/engine/rendergl.hpp"                 // for glcompat
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/ui/legacy/menus.hpp"                 // for initwarning
 #include "inexor/ui/screen/ScreenManager.hpp"
@@ -132,9 +133,10 @@ void ScreenManager::setupscreen(int &useddepthbits, int &usedfsaa)
     static const struct { int major, minor; } glversions[] = { { 3, 3 }, { 3, 2 }, { 3, 1 }, { 3, 0 }, { 2, 1 } };
     for (int j = 0; j < (sizeof(glversions)/sizeof(glversions[0])); j++)
     {
+        glcompat = glversions[j].major < 3 ? 1 : 0;
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, glversions[j].major);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, glversions[j].minor);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, glversions[j].major >= 3 ? SDL_GL_CONTEXT_PROFILE_CORE : 0);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, glcompat ? 0 : SDL_GL_CONTEXT_PROFILE_CORE);
         for (int i = 0; i < (sizeof(configs)/sizeof(configs[0])); i++)
         {
             config = configs[i];

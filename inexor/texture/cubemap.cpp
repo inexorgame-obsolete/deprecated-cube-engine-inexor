@@ -131,12 +131,12 @@ Texture *cubemaploadwildcard(Texture *t, const char *name, bool mipit, bool msg,
     }
     else
     {
-        format = texformat(surface[0].bpp);
+        format = texformat(surface[0].bpp, true);
         t->bpp = surface[0].bpp;
         if(hasTRG && !hasTSW && swizzlemask(format))
         {
             loopi(6) swizzleimage(surface[i]);
-            format = texformat(surface[0].bpp);
+            format = texformat(surface[0].bpp, true);
             t->bpp = surface[0].bpp;
         }
     }

@@ -9,7 +9,7 @@
 #include "inexor/shared/cube_vector.hpp"  // for vector
 #include "inexor/shared/tools.hpp"        // for min
 
-extern SharedVar<int> glversion;
+extern SharedVar<int> glversion, glcompat;
 extern SharedVar<int> intel_mapbufferrange_bug;
 
 namespace gle
@@ -57,7 +57,7 @@ namespace gle
     {
         quadsenabled = true;
 
-        if(glversion < 300) return;
+        if(glcompat) return;
 
         if(quadindexes)
         {
@@ -84,8 +84,8 @@ namespace gle
     void disablequads()
     {
         quadsenabled = false;
-    
-        if(glversion < 300) return;
+
+        if(glcompat) return;
 
         glBindBuffer_(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
@@ -93,7 +93,7 @@ namespace gle
     void drawquads(int offset, int count)
     {
         if(count <= 0) return;
-        if(glversion < 300)
+        if(glcompat)
         {
             glDrawArrays(GL_QUADS, offset*4, count*4);
             return;
@@ -353,4 +353,3 @@ namespace gle
         if(defaultvao) { glDeleteVertexArrays_(1, &defaultvao); defaultvao = 0; }
     }
 }
-
