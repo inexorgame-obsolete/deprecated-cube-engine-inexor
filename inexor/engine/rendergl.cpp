@@ -311,11 +311,6 @@ void gl_checkextensions()
     Log.std->info("Renderer: {0} ({1})", renderer, vendor);
     Log.std->info("Driver: {0}", version);
 
-#ifdef __APPLE__
-    extern int mac_osversion();
-    int osversion = mac_osversion();  /* 0x0A0500 = 10.5 (Leopard) */
-#endif
-
     bool mesa = false, intel = false, ati = false, nvidia = false;
     if(strstr(renderer, "Mesa") || strstr(version, "Mesa"))
     {
