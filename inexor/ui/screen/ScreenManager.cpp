@@ -96,6 +96,7 @@ void ScreenManager::setupscreen(int &useddepthbits, int &usedfsaa)
         sdl_window = nullptr;
     }
 
+    curvsync = -1;
     SDL_DisplayMode desktop;
     if (SDL_GetDesktopDisplayMode(0, &desktop) < 0) fatal("failed querying desktop display mode: %s", SDL_GetError());
     desktopw = desktop.w;
@@ -187,10 +188,15 @@ void ScreenManager::cleargamma()
     }
 }
 
+int curvsync = -1;
 void ScreenManager::restorevsync()
 {
     /// https://wiki.libsdl.org/SDL_GL_SetSwapInterval
-    if (glcontext) SDL_GL_SetSwapInterval(vsync ? (vsynctear ? -1 : 1) : 0);
+    if (glcontext)
+    {
+        if(!SDL_GL_SetSwapInterval(vsync ? (vsynctear ? -1 : 1) : 0))
+            curvsync = vsync;
+    }
 }
 
 void ScreenManager::cleanupSDL()

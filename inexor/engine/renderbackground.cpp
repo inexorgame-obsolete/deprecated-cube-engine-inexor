@@ -245,7 +245,8 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
     interceptkey(SDLK_UNKNOWN); /// keep the event queue awake to avoid 'beachball' cursor
 #endif
 
-    if(background) restorebackground();
+    int mesa_vsync_bug, curvsync;
+    if(background || (mesa_vsync_bug && curvsync)) restorebackground();
 
     int w = screen_manager.screenw, h = screen_manager.screenh;
     if(forceaspect) w = int(ceil(h*forceaspect));

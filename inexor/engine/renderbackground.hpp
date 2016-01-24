@@ -5,6 +5,7 @@
 struct Texture;
 
 extern float loadprogress;
+extern int mesa_vsync_bug, curvsync;
 
 /// render background texture for the mainmenu and the loading screen.
 extern void renderbackground(const char *caption = nullptr, Texture *mapshot = nullptr,
@@ -12,4 +13,3 @@ extern void renderbackground(const char *caption = nullptr, Texture *mapshot = n
 
 /// render progress bar and map screenshot
 extern void renderprogress(float bar, const char *text, GLuint tex = 0, bool background = false);
-
