@@ -581,21 +581,22 @@ static float calcocclusion(ShadowRayCache *cache, const vec &o, const vec &norma
     //rotate the rays into the normal direction
     //(normals have to be normalized!)
     matrix3 rotationmatrix;
-    bool needsrotation = false;
-    if(normal != rays[0]) 
-    {
-        ASSERT(normal.isnormalized());
-        rotationmatrix.rotationalign(rays[0], normal);
-        needsrotation = true;
-    }
+    ASSERT(normal.isnormalized());
+    rotationmatrix.rotationalign(rays[0], normal);
+
+    // TODO: decken werden nicht beleuchtet
+    // if(normal == vec(0, 0, -1)) ...
 
     int occluedrays = 0;
     for(auto it : rays)
     {
         // check whether there's a wall in the field around the sample:
-        vec ray(needsrotation ? rotationmatrix.transform(it) : it);
+        vec ray(rotationmatrix.transform(it));
         if(shadowray(cache, vec(ray).mul(tolerance).add(o), ray, ambientocclusionradius, RAY_ALPHAPOLY|RAY_SHADOW|(skytexturelight ? RAY_SKIPSKY : 0), NULL) <= (ambientocclusionradius-1.0f)) occluedrays++;
-    }
+    } // TODO ambientocclusionradius - tolerance
+    // TODO: more rays to the side?
+    // TODO: make ao part of calcskylight,
+    // but this entire (lightmap packaging) system is fucked, ao should be treated on diffuse only, but we clmap diffuse..
 
     return float(occluedrays)/float(rays.size());
 }
@@ -696,9 +697,9 @@ static uint generatelumel(lightmapworker *w, const float tolerance, uint lightma
     occlusionsample = 0;
 
     if(debugao) {
-        sample.r = min(255.0f, 96 + ambientocclusion * occlusion); //colorize every occlued part red
-        sample.g = 0;
-        sample.b = 0;
+        sample.r = clamp(255.0f * occlusion, 0.0f, 255.0f); //colorize every occlued part red
+        sample.g = ambientcolor.g;
+        sample.b = ambientcolor.b;
     }
     else { //save color (sample) + how much it is occluded
         sample.x = clamp(r, float(ambientcolor[0]), 255.0f);
