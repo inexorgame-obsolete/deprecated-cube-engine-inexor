@@ -640,6 +640,7 @@ namespace server
 		}
 	});
     SVAR(servermotd, "");
+    VAR(spectatemodifiedmap, 0, 1, 1);
 
     struct teamkillkick
     {
@@ -2595,6 +2596,17 @@ namespace server
             formatstring(msg, "%s has modified map \"%s\"", colorname(ci), smapname);
             sendf(req, 1, "ris", N_SERVMSG, msg);
             if(req < 0) ci->warned = true;
+
+            // When a modified map is found, move the player to spectator
+            if(spectatemodifiedmap && ci->state.state!=CS_SPECTATOR)
+            {
+                if(ci->state.state==CS_ALIVE) suicide(ci);
+                if(smode) smode->leavegame(ci);
+                ci->state.state = CS_SPECTATOR;
+                ci->state.timeplayed += lastmillis - ci->state.lasttimeplayed;
+                if(!ci->local && !ci->privilege) aiman::removeai(ci);
+                sendf(-1, 1, "ri3", N_SPECTATOR, ci->clientnum, 1);
+            }
         }
         if(crcs.length() >= 2) loopv(crcs)
         {
