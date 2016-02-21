@@ -2,8 +2,7 @@
 
 void InexorCefContextManager::InitializeContext()
 {
-// TODO: Remove?
-//    // Global Methods
+    // Global Methods
 //    CreateFunction("quit", this);
 //    CreateFunction("stealFocus", this);
 //    CreateFunction("releaseFocus", this);
@@ -28,12 +27,16 @@ bool InexorCefContextManager::Execute(const CefString& name, CefRefPtr<CefV8Valu
     CEF_REQUIRE_RENDERER_THREAD();
 //    if (name == "quit")
 //    	//quit();
-//    else if (name == "stealFocus")
-//      cef_focus = true;
-//    else if (name == "releaseFocus")
-//      cef_focus = false;
-//     else
-//      return false;
+//    else
+//    if (name == "stealFocus") {
+//        std::cerr << "(c++) stealFocus()\n";
+//        cef_focus = true;
+//    } else if (name == "releaseFocus") {
+//        std::cerr << "(c++) releaseFocus()\n";
+//        cef_focus = false;
+//    } else {
+//        return false;
+//    }
     return true;
 }
 

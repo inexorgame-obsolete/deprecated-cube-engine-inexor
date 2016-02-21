@@ -998,17 +998,18 @@ void checkinput()
     {
         if(events.length()) event = events.remove(0);
 
+        if (event.type == SDL_QUIT) {
+            quit();
+            return;
+        }
+
         if (cef_app.get() && cef_app->hasFocus()) {
-          bool handled = cef_app->handle_sdl_event(event);
-          if (handled) continue;
+            bool handled = cef_app->handle_sdl_event(event);
+            if (handled) continue;
         }
 
         switch(event.type)
         {
-            case SDL_QUIT:
-                quit();
-                return;
-
             case SDL_TEXTINPUT:
             {
                 static uchar buf[SDL_TEXTINPUTEVENT_TEXT_SIZE+1];
