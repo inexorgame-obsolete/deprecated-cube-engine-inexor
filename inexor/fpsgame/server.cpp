@@ -2061,6 +2061,9 @@ namespace server
             }
         }
     }
+#ifdef STANDALONE
+    ICOMMAND(mapmode, "si", (char *name, int *mode), changemap(name, *mode));
+#endif
 
     void rotatemap(bool next)
     {
