@@ -1110,7 +1110,7 @@ void initserver(bool listen, bool dedicated)
 #endif
     }
     
-    if(initscript) execute(initscript);
+    if(initscript) execfile(initscript);
     else execfile("server-init.cfg", false);
 
     if(listen) setuplistenserver(dedicated);
