@@ -2,11 +2,10 @@
 
 void InexorCefContextManager::InitializeContext()
 {
-// TODO: Remove?
-//    // Global Methods
+    // Global Methods
 //    CreateFunction("quit", this);
-//    CreateFunction("stealFocus", this);
-//    CreateFunction("releaseFocus", this);
+    CreateFunction("stealFocus", this);
+    CreateFunction("releaseFocus", this);
 //
 //    // Variables
 //    CreateVariable("curtime", true);
