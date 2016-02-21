@@ -28,12 +28,13 @@ bool InexorCefContextManager::Execute(const CefString& name, CefRefPtr<CefV8Valu
     CEF_REQUIRE_RENDERER_THREAD();
 //    if (name == "quit")
 //    	//quit();
-//    else if (name == "stealFocus")
-//      cef_focus = true;
-//    else if (name == "releaseFocus")
-//      cef_focus = false;
-//     else
-//      return false;
+//    else
+    if (name == "stealFocus")
+        cef_focus = true;
+    else if (name == "releaseFocus")
+        cef_focus = false;
+    else
+        return false;
     return true;
 }
 
