@@ -499,7 +499,7 @@ void reqauth(client &c, uint id, char *name)
     authreq &a = c.authreqs.add();
     a.reqtime = servtime;
     a.id = id;
-    uint seed[3] = { uint(starttime), servtime, randomMT() };
+    uint seed[3] = { uint(starttime), servtime, inexor::util::rnd_raw<uint>() };
     static vector<char> buf;
     buf.setsize(0);
     a.answer = genchallenge(u->pubkey, seed, sizeof(seed), buf);
@@ -697,7 +697,7 @@ int main(int argc, char **argv)
     atexit(enet_deinitialize);
 
     const char *dir = "", *ip = NULL;
-    int port = 28787;
+    int port = 31416;
     if(argc>=2) dir = argv[1];
     if(argc>=3) port = atoi(argv[2]);
     if(argc>=4) ip = argv[3];
