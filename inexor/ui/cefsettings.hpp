@@ -17,13 +17,13 @@ class InexorCefSettings : public CefSettings {
     public:
 	    InexorCefSettings() {
 	    	no_sandbox = true;
-	    	ignore_certificate_errors = true;
+	    	ignore_certificate_errors = false;
 	        multi_threaded_message_loop = false;
 	        windowless_rendering_enabled = true;
 	        command_line_args_disabled = true;
 	        log_severity = LOGSEVERITY_INFO;
-	        single_process = true;
-	        remote_debugging_port = 13012;
+	        single_process = false;
+	        remote_debugging_port = 9222;
 	        char base_path[FILENAME_MAX];
 	        GetCurrentDir(base_path, sizeof(base_path));
 	        CefString(&resources_dir_path).FromString(std::string(base_path) + "/bin/all");
