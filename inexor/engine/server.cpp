@@ -1110,12 +1110,12 @@ void initserver(bool listen, bool dedicated)
 #endif
     }
     
+    server::serverinit();
+
     if(initscript) execfile(initscript);
     else execfile("server-init.cfg", false);
 
     if(listen) setuplistenserver(dedicated);
-
-    server::serverinit();
 
     if(listen)
     {
