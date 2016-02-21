@@ -23,4 +23,5 @@ add_subdirectory(crashreporter)
 # Actual targets
 opt_subdir(client on)
 opt_subdir(server on)
+opt_subdir(master on)
 opt_subdir(test   on)
