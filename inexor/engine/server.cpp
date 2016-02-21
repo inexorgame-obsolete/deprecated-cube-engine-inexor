@@ -8,6 +8,8 @@
 
 static FILE *logfile = NULL;
 
+char *initscript = NULL;
+
 void closelogfile()
 {
     if(logfile)
@@ -1108,7 +1110,8 @@ void initserver(bool listen, bool dedicated)
 #endif
     }
     
-    execfile("server-init.cfg", false);
+    if(initscript) execute(initscript);
+    else execfile("server-init.cfg", false);
 
     if(listen) setuplistenserver(dedicated);
 
@@ -1166,6 +1169,7 @@ bool serveroption(char *opt)
         case 'q': logoutf("Using home directory: %s", opt); sethomedir(opt+2); return true;
         case 'k': logoutf("Adding package directory: %s", opt); addpackagedir(opt+2); return true;
         case 'g': logoutf("Setting log file: %s", opt); setlogfile(opt+2); return true;
+        case 'x': logoutf("Setting server init script: %s", opt); initscript = opt+2; return true;
 #endif
         default: return false;
     }
