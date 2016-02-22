@@ -15,7 +15,7 @@ set(MASTER_BINARY master CACHE INTERNAL "Master binary name.")
 
 add_definitions(-DSERVER -DSTANDALONE)
 
-add_app(${MASTER_BINARY} ${MASTER_SOURCES})
+add_app(${MASTER_BINARY} ${MASTER_SOURCES} CONSOLE_APP)
 
 config_cxx11_abi(${MASTER_BINARY})
 config_threads(${MASTER_BINARY})
