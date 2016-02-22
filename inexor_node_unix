@@ -1,7 +1,7 @@
 #!/bin/sh
 
-mydir="`dirname $0`"
-inexor_dir="`readlink -f "$mydir"`"
+link="`readlink -f $0`"
+inexor_dir="`dirname "${link}"`"
 node_dir="${inexor_dir}/node/"
 
 cd "$node_dir"
