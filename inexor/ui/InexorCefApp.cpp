@@ -30,7 +30,7 @@ void InexorCefApp::Destroy()
 void InexorCefApp::Render()
 {
     layer_manager->Render();
-    if (hasFocus())
+    if (HasFocus())
       mouse_manager->Render();
 }
 
@@ -51,25 +51,25 @@ void InexorCefApp::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<Cef
     browser_context->GetGlobal()->SetValue(context_manager->GetContextName(), context_manager->GetContext(), V8_PROPERTY_ATTRIBUTE_NONE);
 }
 
-bool InexorCefApp::handle_sdl_event(SDL_Event ev) {
-    switch(ev.type) {
+bool InexorCefApp::HandleSdlEvent(SDL_Event event) {
+    switch(event.type) {
       case SDL_TEXTINPUT:
       case SDL_KEYDOWN:
       case SDL_KEYUP:
-        GetKeyboardManager()->SendKeyEvent(ev);
+        GetKeyboardManager()->SendKeyEvent(event);
         return true;
 
       case SDL_MOUSEMOTION:
-        GetMouseManager()->SendMouseMoveEvent(ev);
+        GetMouseManager()->SendMouseMoveEvent(event);
         return true;
 
       case SDL_MOUSEBUTTONDOWN:
       case SDL_MOUSEBUTTONUP:
-        GetMouseManager()->SendMouseClickEvent(ev);
+        GetMouseManager()->SendMouseClickEvent(event);
         return true;
 
       case SDL_MOUSEWHEEL:
-        GetMouseManager()->SendMouseWheelEvent(ev);
+        GetMouseManager()->SendMouseWheelEvent(event);
         return true;
 
       default:
