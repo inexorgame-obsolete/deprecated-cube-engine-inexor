@@ -1,6 +1,6 @@
-#include "inexor/ui/cefcontextmanager.hpp"
+#include "inexor/ui/InexorContextManager.hpp"
 
-void InexorCefContextManager::InitializeContext()
+void InexorContextManager::InitializeContext()
 {
     // Global Methods
 //    CreateFunction("quit", this);
@@ -22,7 +22,7 @@ void InexorCefContextManager::InitializeContext()
 //    CreateVariable("cef_focus", cef_focus);
 }
 
-bool InexorCefContextManager::Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception)
+bool InexorContextManager::Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception)
 {
     CEF_REQUIRE_RENDERER_THREAD();
 //    if (name == "quit")
@@ -40,7 +40,7 @@ bool InexorCefContextManager::Execute(const CefString& name, CefRefPtr<CefV8Valu
     return true;
 }
 
-bool InexorCefContextManager::Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& return_value, CefString& exception)
+bool InexorContextManager::Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& return_value, CefString& exception)
 {
     CEF_REQUIRE_RENDERER_THREAD();
 //    if (name == "curtime")
@@ -78,7 +78,7 @@ bool InexorCefContextManager::Get(const CefString& name, const CefRefPtr<CefV8Va
 }
 
 
-bool InexorCefContextManager::Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception)
+bool InexorContextManager::Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception)
 {
     CEF_REQUIRE_RENDERER_THREAD();
 //    if (value->IsInt()) {

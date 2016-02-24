@@ -1,5 +1,5 @@
-#ifndef _CEF_CONEXT_H
-#define _CEF_CONEXT_H
+#ifndef INEXOR_UI_INEXOR_CONTEXT_MANAGER_HEADER
+#define INEXOR_UI_INEXOR_CONTEXT_MANAGER_HEADER
 
 #include <list>
 
@@ -7,8 +7,7 @@
 #include "include/cef_render_process_handler.h"
 #include "include/wrapper/cef_helpers.h"
 
-#include "inexor/ui/cefcontextbindings.hpp"
-#include "inexor/ui/cefcontextprovider.hpp"
+#include "inexor/ui/InexorContextProvider.hpp"
 
 namespace inexor {
 namespace rendering {
@@ -24,7 +23,7 @@ class InexorCefContextManager : public InexorCefContextProvider
     public:
         bool cef_focus = true;
         
-        InexorCefContextManager() {};
+        InexorContextManager() {};
 
         // InexorCefContextProvider
         void InitializeContext();
@@ -36,8 +35,8 @@ class InexorCefContextManager : public InexorCefContextProvider
 	private:
 
         // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(InexorCefContextManager);
+        IMPLEMENT_REFCOUNTING(InexorContextManager);
 
 };
 
-#endif  // _CEF_CONEXT_H
+#endif

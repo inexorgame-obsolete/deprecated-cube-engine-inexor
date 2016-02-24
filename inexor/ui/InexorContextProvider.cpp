@@ -1,8 +1,8 @@
 #include <iostream>
 
-#include "inexor/ui/cefcontextprovider.hpp"
+#include "inexor/ui/InexorContextProvider.hpp"
 
-CefRefPtr<CefV8Value> InexorCefContextProvider::GetContext()
+CefRefPtr<CefV8Value> InexorContextProvider::GetContext()
 {
     if (!context.get())
     {
@@ -14,30 +14,30 @@ CefRefPtr<CefV8Value> InexorCefContextProvider::GetContext()
     return context;
 }
 
-void InexorCefContextProvider::InitializeSubContexts()
+void InexorContextProvider::InitializeSubContexts()
 {
-    for(std::list<InexorCefContextProvider*>::iterator it = sub_contexts.begin(); it != sub_contexts.end(); ++it)
+    for(std::list<InexorContextProvider*>::iterator it = sub_contexts.begin(); it != sub_contexts.end(); ++it)
     {
         CreateSubContext(*it);
     }
 }
 
-void InexorCefContextProvider::AddSubContext(InexorCefContextProvider* sub_context)
+void InexorContextProvider::AddSubContext(InexorContextProvider* sub_context)
 {
     sub_contexts.push_back(sub_context);
 }
 
-void InexorCefContextProvider::CreateFunction(const CefString& name)
+void InexorContextProvider::CreateFunction(const CefString& name)
 {
     context->SetValue(name, CefV8Value::CreateFunction(name, this), V8_PROPERTY_ATTRIBUTE_READONLY);
 }
 
-void InexorCefContextProvider::CreateFunction(const CefString& name, CefRefPtr<CefV8Handler> handler)
+void InexorContextProvider::CreateFunction(const CefString& name, CefRefPtr<CefV8Handler> handler)
 {
     context->SetValue(name, CefV8Value::CreateFunction(name, handler), V8_PROPERTY_ATTRIBUTE_READONLY);
 }
 
-void InexorCefContextProvider::CreateVariable(const CefString& name, bool readonly)
+void InexorContextProvider::CreateVariable(const CefString& name, bool readonly)
 {
     if (readonly)
         context->SetValue(name, V8_ACCESS_CONTROL_ALL_CAN_READ, V8_PROPERTY_ATTRIBUTE_READONLY);
@@ -45,7 +45,7 @@ void InexorCefContextProvider::CreateVariable(const CefString& name, bool readon
         context->SetValue(name, V8_ACCESS_CONTROL_DEFAULT, V8_PROPERTY_ATTRIBUTE_NONE);
 }
 
-void InexorCefContextProvider::CreateSubContext(CefRefPtr<InexorCefContextProvider> sub_context)
+void InexorContextProvider::CreateSubContext(CefRefPtr<InexorContextProvider> sub_context)
 {
     context->SetValue(sub_context->GetContextName(), sub_context->GetContext(), V8_PROPERTY_ATTRIBUTE_NONE);
 }
