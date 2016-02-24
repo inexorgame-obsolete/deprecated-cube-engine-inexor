@@ -6,11 +6,15 @@ namespace vscript {
 
     CEntityManager::CEntityManager()
     {
-        dragging_node = false;
         dragging_new_relation = false;
         last_mouse_key_state = false;
+        moving_entity = false;
+
         move_pos_start = vec(0,0,0);
         node_pos_start = vec(0,0,0);
+        
+        relation_drag_start = vec(0,0,0);
+        relation_drag_end = vec(0,0,0);
     }
 
 

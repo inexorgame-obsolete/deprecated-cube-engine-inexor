@@ -17,21 +17,23 @@ namespace vscript {
             CEntityManager();
             ~CEntityManager();
 
-            bool dragging_node;
-            bool dragging_new_relation;
+            CScriptNode* selected_node;
+            CScriptNode* hovered_node;
 
-            bool moving_entity;
             bool last_mouse_key_state;
+            bool selection_blocked_by_geometry;
 
+            // moving entities
+            bool moving_entity;
             vec move_pos_start;
             vec node_pos_start;
 
+            // dragging new relations between entities
+            bool dragging_new_relation;
+            vec relation_drag_start;
+            vec relation_drag_end;
+
             virtual void update_input(int, bool) = 0;
-
-            bool selection_blocked_by_geometry;
-
-            CScriptNode* selected_node;
-            CScriptNode* hovered_node;
 
             void update_mouse(int key, bool isdown);
     };

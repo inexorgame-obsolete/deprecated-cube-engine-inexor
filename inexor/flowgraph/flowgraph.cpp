@@ -176,6 +176,8 @@ namespace vscript {
                 
                 if(!dragging_new_relation && isdown && !selection_blocked_by_geometry) // start dragging
                 {
+                    conoutf(CON_DEBUG, "looks like we're dragging a new relation.");
+
                     for(unsigned int i=0; i<nodes.size(); i++)
                     {
                         float dist = 0.0f;
@@ -184,12 +186,17 @@ namespace vscript {
 
                         if(rayboxintersect(p, vec(boxsize), camera1->o, camdir, dist, orient))
                         {
-                            dragging_new_relation = true;
+                            conoutf(CON_DEBUG,"ah I got one! -lets drag!");
+                            moving_entity= true;
+                            
+                            relation_drag_start = p;
+
                         }
                     }
                 }
                 if(dragging_new_relation && !isdown) // stop dragging
                 {
+                    conoutf(CON_DEBUG,"dragging stopped.");
                     dragging_new_relation = false;
                 }
 
