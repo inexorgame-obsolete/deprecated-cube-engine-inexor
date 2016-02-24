@@ -48,20 +48,20 @@ class InexorCefApp : public CefApp,
 
         /// Whether the keyboard/mouse events should go to
         /// CEF rather than the 3D renderer.
-        bool hasFocus() {
+        bool HasFocus() {
             return context_manager->cef_focus;
         }
 
         /// Tell CEF that it should receive input events
         /// rather than inexor
-        void setFocus() {
-          setFocus(true);
+        void SetFocus() {
+          SetFocus(true);
         }
 
         /// Set, whether CEF should receive input events
         /// rather than inexor
-        void setFocus(bool b) {
-            context_manager->cef_focus = b;
+        void SetFocus(bool cef_focus) {
+            context_manager->cef_focus = cef_focus;
         }
 
         /// Handle SDL events for CEF
@@ -69,7 +69,7 @@ class InexorCefApp : public CefApp,
         /// @return Whether this event was handled by CEF;
         ///     if false the event should be handled by
         ///     inexor
-        bool handle_sdl_event(SDL_Event ev);
+        bool HandleSdlEvent(SDL_Event event);
 
 	private:
         CefRefPtr<InexorContextManager> context_manager;
