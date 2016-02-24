@@ -1,12 +1,12 @@
-#ifndef _CEF_CONTEXT_PROVIDER_H
-#define _CEF_CONTEXT_PROVIDER_H
+#ifndef INEXOR_UI_INEXOR_CONTEXT_PROVIDER_HEADER
+#define INEXOR_UI_INEXOR_CONTEXT_PROVIDER_HEADER
 
 #include <list>
 
 #include "include/cef_app.h"
 #include "include/wrapper/cef_helpers.h"
 
-class InexorCefContextProvider : public CefV8Handler,
+class InexorContextProvider : public CefV8Handler,
                                  public CefV8Accessor
 {
     public:
@@ -21,10 +21,10 @@ class InexorCefContextProvider : public CefV8Handler,
 
         // Hierarchical sub contexts are automatically initialized
         void InitializeSubContexts();
-        void AddSubContext(InexorCefContextProvider* sub_context);
+        void AddSubContext(InexorContextProvider* sub_context);
 
     protected:
-        std::list<InexorCefContextProvider*> sub_contexts;
+        std::list<InexorContextProvider*> sub_contexts;
 
         CefRefPtr<CefV8Value> context;
 
@@ -32,8 +32,8 @@ class InexorCefContextProvider : public CefV8Handler,
         void CreateFunction(const CefString& name);
         void CreateFunction(const CefString& name, CefRefPtr<CefV8Handler> handler);
         void CreateVariable(const CefString& name, bool readonly = false);
-        void CreateSubContext(CefRefPtr<InexorCefContextProvider> sub_context);
+        void CreateSubContext(CefRefPtr<InexorContextProvider> sub_context);
 
 };
 
-#endif  // _CEF_CONTEXT_PROVIDER_H
+#endif

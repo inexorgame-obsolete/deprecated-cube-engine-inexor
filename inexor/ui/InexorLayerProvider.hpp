@@ -1,5 +1,5 @@
-#ifndef _CEF_LAYER_PROVIDER_H
-#define _CEF_LAYER_PROVIDER_H
+#ifndef INEXOR_UI_INEXOR_LAYER_PROVIDER_HEADER
+#define INEXOR_UI_INEXOR_LAYER_PROVIDER_HEADER
 
 #include "include/cef_app.h"
 #include "include/wrapper/cef_helpers.h"
@@ -15,16 +15,16 @@
 #define GetCurrentDir getcwd
 #endif
 
-#include "inexor/ui/ceflayer.hpp"
+#include "inexor/ui/InexorLayer.hpp"
 
-class InexorCefLayerProvider
+class InexorLayerProvider
 {
 
     public:
-        InexorCefLayerProvider() {};
-        virtual ~InexorCefLayerProvider() {};
+        InexorLayerProvider() {};
+        virtual ~InexorLayerProvider() {};
 
-        void SetLayer(CefRefPtr<InexorCefLayer> layer) { this->layer = layer; }
+        void SetLayer(CefRefPtr<InexorLayer> layer) { this->layer = layer; }
         virtual std::string GetContextName() = 0;
         virtual std::string GetUrl() = 0;
         virtual bool GetVisibility() = 0;
@@ -32,7 +32,7 @@ class InexorCefLayerProvider
         virtual bool GetFocus() = 0;
 
     protected:
-        CefRefPtr<InexorCefLayer> layer;
+        CefRefPtr<InexorLayer> layer;
 
         std::string GetLocalUrl(std::string relpath) {
             char base_path[FILENAME_MAX];
@@ -40,14 +40,14 @@ class InexorCefLayerProvider
             return "file://" + std::string(base_path) + relpath;
         };
 
-        IMPLEMENT_REFCOUNTING(InexorCefLayerProvider);
+        IMPLEMENT_REFCOUNTING(InexorLayerProvider);
 };
 
-class AbstractInexorCefLayerProvider : public InexorCefLayerProvider
+class AbstractInexorLayerProvider : public InexorLayerProvider
 {
     public:
-        AbstractInexorCefLayerProvider() : is_visible(false) {};
-        virtual ~AbstractInexorCefLayerProvider() {};
+        AbstractInexorLayerProvider() : is_visible(false) {};
+        virtual ~AbstractInexorLayerProvider() {};
 
         void Show() { SetVisibility(true); };
         void Hide() { SetVisibility(false); };
@@ -69,4 +69,4 @@ class AbstractInexorCefLayerProvider : public InexorCefLayerProvider
 
 };
 
-#endif  // _CEF_LAYER_PROVIDER_H
+#endif

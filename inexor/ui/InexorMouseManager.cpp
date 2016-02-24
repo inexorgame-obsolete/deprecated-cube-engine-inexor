@@ -1,6 +1,6 @@
-#include "inexor/ui/cefmouse.hpp"
+#include "inexor/ui/InexorMouseManager.hpp"
 
-void InexorCefMouseManager::InitializeContext()
+void InexorMouseManager::InitializeContext()
 {
     CreateFunction("show", this);
     CreateFunction("hide", this);
@@ -10,7 +10,7 @@ void InexorCefMouseManager::InitializeContext()
     CreateVariable("y", true);
 }
 
-bool InexorCefMouseManager::Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception)
+bool InexorMouseManager::Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception)
 {
     CEF_REQUIRE_RENDERER_THREAD();
     if (name == "show") {
@@ -28,7 +28,7 @@ bool InexorCefMouseManager::Execute(const CefString& name, CefRefPtr<CefV8Value>
     return false;
 }
 
-bool InexorCefMouseManager::Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& return_value, CefString& exception)
+bool InexorMouseManager::Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& return_value, CefString& exception)
 {
     CEF_REQUIRE_RENDERER_THREAD();
     if (name == "visible") {
@@ -44,29 +44,29 @@ bool InexorCefMouseManager::Get(const CefString& name, const CefRefPtr<CefV8Valu
     return false;
 }
 
-bool InexorCefMouseManager::Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception)
+bool InexorMouseManager::Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception)
 {
     CEF_REQUIRE_RENDERER_THREAD();
     return false;
 }
 
-void InexorCefMouseManager::Update(const CefMouseEvent& event) {
+void InexorMouseManager::Update(const CefMouseEvent& event) {
     x = event.x;
     y = event.y;
 }
 
-void InexorCefMouseManager::SetMax(int width, int height) {
+void InexorMouseManager::SetMax(int width, int height) {
     max_x = width;
     max_y = height;
 };
 
-void InexorCefMouseManager::SetTexture(std::string texture, int blendFunction)
+void InexorMouseManager::SetTexture(std::string texture, int blendFunction)
 {
     this->texture = texture;
     this->blendFunction = blendFunction;
 }
 
-void InexorCefMouseManager::Render()
+void InexorMouseManager::Render()
 {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -101,7 +101,7 @@ void InexorCefMouseManager::Render()
     glDisable(GL_BLEND);
 }
 
-void InexorCefMouseManager::SendMouseMoveEvent(SDL_Event event)
+void InexorMouseManager::SendMouseMoveEvent(SDL_Event event)
 {
     CefMouseEvent mouse_move_event;
     mouse_move_event.x = event.motion.x;
@@ -110,7 +110,7 @@ void InexorCefMouseManager::SendMouseMoveEvent(SDL_Event event)
     layer_manager->SendMouseMoveEvent(mouse_move_event, false);
 }
 
-void InexorCefMouseManager::SendMouseClickEvent(SDL_Event event)
+void InexorMouseManager::SendMouseClickEvent(SDL_Event event)
 {
     CefMouseEvent mouse_click_event;
     mouse_click_event.x = event.motion.x;
@@ -125,7 +125,7 @@ void InexorCefMouseManager::SendMouseClickEvent(SDL_Event event)
     );
 }
 
-void InexorCefMouseManager::SendMouseWheelEvent(SDL_Event event)
+void InexorMouseManager::SendMouseWheelEvent(SDL_Event event)
 {
     CefMouseEvent mouse_wheel_event;
     mouse_wheel_event.x = event.motion.x;

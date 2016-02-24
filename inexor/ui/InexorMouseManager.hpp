@@ -1,12 +1,12 @@
-#ifndef _CEF_MOUSE_H
-#define _CEF_MOUSE_H
+#ifndef INEXOR_UI_INEXOR_MOUSE_MANAGER_HEADER
+#define INEXOR_UI_INEXOR_MOUSE_MANAGER_HEADER
 
 #include "inexor/engine/engine.hpp"
 
 #include "include/cef_app.h"
 
-#include "inexor/ui/cefcontextprovider.hpp"
-#include "inexor/ui/ceflayermanager.hpp"
+#include "inexor/ui/InexorContextProvider.hpp"
+#include "inexor/ui/InexorLayerManager.hpp"
 
 #ifndef GL_ONE
 #define GL_ONE 0x1
@@ -14,15 +14,15 @@
 
 extern bool settexture(const char *name, int clamp);
 
-class InexorCefMouseManager : public InexorCefContextProvider
+class InexorMouseManager : public InexorContextProvider
 {
 
     public:
-        InexorCefMouseManager(CefRefPtr<InexorCefLayerManager> layer_manager) : x(0), y(0), max_x(0), max_y(0), size(0.03f), visible(false) {
+        InexorMouseManager(CefRefPtr<InexorLayerManager> layer_manager) : x(0), y(0), max_x(0), max_y(0), size(0.03f), visible(false) {
             this->layer_manager = layer_manager;
             SetTexture("interface/cursor/default.png", GL_ONE);
         };
-        InexorCefMouseManager(CefRefPtr<InexorCefLayerManager> layer_manager, int width, int height) : x(0), y(0), size(0.03f), visible(true) {
+        InexorMouseManager(CefRefPtr<InexorLayerManager> layer_manager, int width, int height) : x(0), y(0), size(0.03f), visible(true) {
             this->layer_manager = layer_manager;
             SetTexture("interface/cursor/default.png", GL_ONE);
             SetMax(width, height);
@@ -47,7 +47,7 @@ class InexorCefMouseManager : public InexorCefContextProvider
         void SendMouseClickEvent(SDL_Event event);
         void SendMouseWheelEvent(SDL_Event event);
 
-        // InexorCefContextProvider
+        // InexorContextProvider
         void InitializeContext();
         bool Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception);
         bool Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& retval, CefString& exception);
@@ -65,11 +65,11 @@ class InexorCefMouseManager : public InexorCefContextProvider
         std::string texture;
 
         // Layer Manager
-        CefRefPtr<InexorCefLayerManager> layer_manager;
+        CefRefPtr<InexorLayerManager> layer_manager;
 
         // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(InexorCefMouseManager);
+        IMPLEMENT_REFCOUNTING(InexorMouseManager);
 
 };
 
-#endif  // _CEF_MOUSE_H
+#endif

@@ -1,5 +1,5 @@
 #include "inexor/ui/CefSubsystem.hpp"
-#include "inexor/ui/cefsettings.hpp"
+#include "inexor/ui/InexorSettings.hpp"
 
 using namespace inexor::util;
 
@@ -13,10 +13,10 @@ namespace inexor {
 namespace ui {
 
 CefSubsystem::CefSubsystem() {
-    ::cef_app = new InexorCefApp(1024,1024);
+    ::cef_app = new InexorCefApp(1920, 1080);
 
     const CefMainArgs args;
-    InexorCefSettings settings;
+    InexorSettings settings;
     CefInitialize(args, settings, ::cef_app.get(), NULL);
 
     tick();
