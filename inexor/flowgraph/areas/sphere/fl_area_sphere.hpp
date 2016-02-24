@@ -1,6 +1,6 @@
 /// @file fl_area_sphere.h
 /// @author Johannes Schneider
-/// @brief defines sphere areas
+/// @brief 
 
 #include "inexor/flowgraph/nodebase/fl_base.hpp"
 
@@ -11,7 +11,7 @@ namespace vscript {
     {
         public:
 
-            // the distance from this vector to the position defines the radius of the sphere
+            // the distance from this vector to the position defines the radius of the sphere.
             vec radius;
 
             CSphereAreaNode(vec,vec,const char*,const char*);

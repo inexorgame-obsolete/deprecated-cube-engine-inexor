@@ -1,6 +1,6 @@
 // @file fl_timer.h
 // @author Johannes Schneider
-// @brief Timers will execute code in a very certain interval of {n} miliseconds/seconds/minutes/hours.
+// @brief Timers will start to execute code in a very certain interval of {n} miliseconds/seconds/minutes/hours
 
 #ifndef INEXOR_VSCRIPT_TIMER_HEADER
 #define INEXOR_VSCRIPT_TIMER_HEADER
@@ -8,10 +8,10 @@
 #include "inexor/flowgraph/nodebase/fl_base.hpp"
 
 
-#define INEXOR_VSCRIPT_MIN_TIMER_INTERVAL 5
-#define INEXOR_VSCRIPT_MAX_TIMER_INTERVAL 1000 * 60 * 60 * 24 // 1 day
-#define INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL 200 // render a color effect after a timer has been triggered
-#define INEXOR_VSCRIPT_DEFAULT_TIMER_EXECUTION_LIMIT 1000*1000
+#define INEXOR_VSCRIPT_MIN_TIMER_INTERVAL              5
+#define INEXOR_VSCRIPT_MAX_TIMER_INTERVAL              1000 * 60 * 60 * 24 // 1 day
+#define INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL      200 // render a color effect after a timer has been triggered
+#define INEXOR_VSCRIPT_DEFAULT_TIMER_EXECUTION_LIMIT   1000*1000
 
 
 namespace inexor {

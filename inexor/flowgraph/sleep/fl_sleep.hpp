@@ -1,6 +1,6 @@
 /// @file fl_sleep.h
 /// @author Johannes Schneider
-/// @brief Sleeps wait a certain amount of miliseconds until their code execution continues.
+/// @brief Sleeps wait a certain amount of miliseconds until the code execution continues.
 
 #ifndef INEXOR_VSCRIPT_SLEEP_HEADER
 #define INEXOR_VSCRIPT_SLEEP_HEADER

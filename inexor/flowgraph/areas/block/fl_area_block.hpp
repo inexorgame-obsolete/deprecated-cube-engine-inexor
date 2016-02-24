@@ -1,6 +1,6 @@
-/// @file fl_area_cube.h
+/// @file fl_area_block.h
 /// @author Johannes Schneider
-/// @brief defines cube areas
+/// @brief 
 
 #include "inexor/flowgraph/nodebase/fl_base.hpp"
 

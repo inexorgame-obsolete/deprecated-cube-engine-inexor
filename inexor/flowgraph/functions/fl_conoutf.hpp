@@ -1,6 +1,6 @@
 /// @file fl_conoutf.h
 /// @author Johannes Schneider
-/// @brief This game engine function prints a text to the game console (locally)
+/// @brief Print a text message to the local game console
 
 #ifndef INEXOR_VSCRIPT_CONOUTF_HEADER
 #define INEXOR_VSCRIPT_CONOUTF_HEADER

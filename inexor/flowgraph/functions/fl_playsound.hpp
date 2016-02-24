@@ -1,6 +1,6 @@
 /// @file fl_playsound.h
 /// @author Johannes Schneider
-/// @brief This game engine function plays a sound by its sound id
+/// @brief
 
 #ifndef INEXOR_VSCRIPT_PLAYSOUND_HEADER
 #define INEXOR_VSCRIPT_PLAYSOUND_HEADER

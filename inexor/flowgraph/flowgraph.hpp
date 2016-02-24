@@ -1,6 +1,6 @@
 /// @file flowgraph.h
 /// @author Johannes Schneider
-/// @brief 3D visual scripting system
+/// @brief 3D Visual Scripting System
 
 #ifndef INEXOR_VSCRIPT_FLOWGRAPH_HEADER
 #define INEXOR_VSCRIPT_FLOWGRAPH_HEADER

@@ -25,7 +25,9 @@ namespace vscript {
     void CSphereAreaNode::render(int orient, bool sel_blocked)
     {
         glBegin(GL_QUADS);
-        // How to render a sphere correctly?
+
+        // TODO: How to render a sphere correctly?
+        
         glEnd();
     }
 

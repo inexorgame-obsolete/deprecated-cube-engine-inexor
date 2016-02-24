@@ -1,6 +1,6 @@
 /// @file fl_timer.h
 /// @author Johannes Schneider
-/// @brief Timers will trigger code execution in a certain interval
+/// @brief implementation of dynamic script memory
 
 #ifndef INEXOR_VSCRIPT_MEMBASE_HEADER
 #define INEXOR_VSCRIPT_MEMBASE_HEADER

@@ -17,10 +17,10 @@ namespace vscript {
         node_name = name;
         node_comment = comment;
         
-        /// TODO: convert the time format
+        // TODO: convert the time format
         unsigned int time_format_in_ms = interval; //ConvertTime2Miliseconds(interval, format);
 
-        /// cut the timer interval
+        // validate the time interval
         clamp(interval, INEXOR_VSCRIPT_MIN_TIMER_INTERVAL, INEXOR_VSCRIPT_MAX_TIMER_INTERVAL);
         timer_interval = time_format_in_ms;
         timer_startdelay = startdelay;
@@ -56,7 +56,6 @@ namespace vscript {
     }
 
 
-    // decide if we need to run the code
     void CTimerNode::check_if_execution_is_due() 
     {
         if(this_time - last_time >= timer_interval) 

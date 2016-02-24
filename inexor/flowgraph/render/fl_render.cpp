@@ -27,11 +27,10 @@ namespace vscript {
 
     void CNodeRenderer::render_box(vec p, int orient)
     {
-        /// I believe there is no better way to render a box using quads.
+        /// There is probably no better way to render a box than to use quads.
         /// You either write the box generator code directly or you let it generate.
         /// If you take a look at the original Sauer code you will see that generating
         /// the box using iterations is way more complicated to understand.
-
         glBegin(GL_QUADS);
         
         adjust_selection_color(orient, VSCRIPT_BOX_TOP);

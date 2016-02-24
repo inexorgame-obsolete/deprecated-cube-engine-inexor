@@ -3,6 +3,7 @@
 namespace inexor {
 namespace vscript {
 
+
     CFunctionConoutfNode::CFunctionConoutfNode(vec position,
                                                const char* raw_text)
     {
