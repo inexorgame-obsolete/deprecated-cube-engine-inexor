@@ -52,6 +52,8 @@ namespace vscript {
     {
         CScriptNode *node = static_cast<CScriptNode*>(ptr);
         if(nullptr != node) node->in();
+
+        conoutf(CON_DEBUG,"thread finished.");
         return 0;
     }
 

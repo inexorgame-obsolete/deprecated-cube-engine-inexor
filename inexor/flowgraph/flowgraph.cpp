@@ -360,7 +360,6 @@ namespace vscript {
 
 
 
-
     void deleteallnodes()
     {
         vScript3D.delete_all_nodes();
@@ -370,6 +369,7 @@ namespace vscript {
 
     CScriptNode* a;
     CScriptNode* b;
+    CScriptNode* b2;
     CScriptNode* c;
     CScriptNode* d;
 
@@ -381,14 +381,26 @@ namespace vscript {
     COMMAND(test_a, "");
 
 
+    /*
     void test_b()
     {
-        b = vScript3D.add_node(NODE_TYPE_SLEEP, 1, "150");
+        b=vScript3D.add_node(NODE_TYPE_SLEEP,1,"150");
         vScript3D.connect_nodes(a,b);
     }
-    COMMAND(test_b, "");
+    COMMAND(test_b,"");
+    */
+
+    void test_b2()
+    {
+        b2 = vScript3D.add_node(NODE_TYPE_FUNCTION,2,"0","Hallo Welt");
+        // do not link automaticly! 
+        // TODO: implement drag n drop!
+        //vScript3D.connect_nodes(a, b2);
+    }
+    COMMAND(test_b2,"");
 
 
+    /*
     void test_c()
     {
         c = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "0" , "Hallo Welt");
@@ -401,6 +413,7 @@ namespace vscript {
         d = vScript3D.add_node(NODE_TYPE_AREA_BLOCK, 2, "Kommentar", "Hallo Welt Bereich");
     }
     COMMAND(test_d, "");
+    */
 
 };
 };
