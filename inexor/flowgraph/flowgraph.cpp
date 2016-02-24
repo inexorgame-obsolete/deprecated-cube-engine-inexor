@@ -71,7 +71,6 @@ namespace vscript {
             case NODE_TYPE_TIMER:
             {
                 /// convert parameters form const string to unsigned int
-                /// TODO: make sure those indices are correct!
                 unsigned int interval   = atoi(arguments[0].c_str());
                 unsigned int startdelay = atoi(arguments[1].c_str());
                 unsigned int limit      = atoi(arguments[2].c_str());
