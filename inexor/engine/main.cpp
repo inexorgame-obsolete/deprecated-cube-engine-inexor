@@ -1003,8 +1003,8 @@ void checkinput()
             return;
         }
 
-        if (cef_app.get() && cef_app->hasFocus()) {
-            bool handled = cef_app->handle_sdl_event(event);
+        if (cef_app.get() && cef_app->HasFocus()) {
+            bool handled = cef_app->HandleSdlEvent(event);
             if (handled) continue;
         }
 
@@ -1233,7 +1233,7 @@ ICOMMAND(cef_reload, "", (),
     }
 );
 ICOMMAND(cef_focus, "b", (bool *b),
-    if (cef_app.get()) cef_app->setFocus(*b); );
+    if (cef_app.get()) cef_app->SetFocus(*b); );
 
 inexor::util::Logging logging;
 
