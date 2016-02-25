@@ -7,6 +7,8 @@
 #include "inexor/engine/textedit.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 
+using namespace inexor::filesystem;
+
 static struct gui *windowhit = NULL;
 static bool layoutpass, actionon = false;
 static float firstx, firsty;
@@ -349,7 +351,7 @@ struct gui : g3d_gui
                 }
                 if(!overlaytex) {
                     std::string otname;
-                    inexor::filesystem::appendmediadir(otname, "guioverlay.png", DIR_UI);
+                    getmediapath(otname, "guioverlay.png", DIR_UI);
                     overlaytex = textureload(otname.c_str(), 3);
                 }
                 gle::color(light);
@@ -409,7 +411,7 @@ struct gui : g3d_gui
                 }
                 if(!overlaytex) {
                     std::string otname;
-                    inexor::filesystem::appendmediadir(otname, "guioverlay.png", DIR_UI);
+                    getmediapath(otname, "guioverlay.png", DIR_UI);
                     overlaytex = textureload(otname.c_str(), 3);
                 }
                 gle::color(light);
@@ -672,7 +674,7 @@ struct gui : g3d_gui
         {
             if(!overlaytex) {
                 std::string otname;
-                inexor::filesystem::appendmediadir(otname, "guioverlay.png", DIR_UI);
+                getmediapath(otname, "guioverlay.png", DIR_UI);
                 overlaytex = textureload(otname.c_str(), 3);
             }
             glBindTexture(GL_TEXTURE_2D, overlaytex->id);
@@ -762,7 +764,7 @@ struct gui : g3d_gui
         {
             if(!overlaytex) {
                 std::string otname;
-                inexor::filesystem::appendmediadir(otname, "guioverlay.png", DIR_UI);
+                getmediapath(otname, "guioverlay.png", DIR_UI);
                 overlaytex = textureload(otname.c_str(), 3);
             }
             glBindTexture(GL_TEXTURE_2D, overlaytex->id);
@@ -772,12 +774,12 @@ struct gui : g3d_gui
     }
 
     void line_(int size, float percent = 1.0f)
-    {		
+    {
         if(visible())
         {
             if(!slidertex) {
                 std::string otname;
-                inexor::filesystem::appendmediadir(otname, "guislider.png", DIR_UI);
+                getmediapath(otname, "guislider.png", DIR_UI);
                 slidertex = textureload(otname.c_str(), 3);
             }
             glBindTexture(GL_TEXTURE_2D, slidertex->id);
@@ -816,22 +818,21 @@ struct gui : g3d_gui
         if(icon) w += ICON_SIZE;
         if(icon && text) w += padding;
         if(text) w += text_width(text);
-    
+
         if(visible())
         {
             bool hit = ishit(w, FONTH);
             if(hit && clickable) color = 0xFF0000;	
             int x = curx;	
             if(isvertical() && center) x += (xsize-w)/2;
-        
+
             if(icon)
             {
                 if(icon[0] != ' ')
                 {
-                    const char *ext = strrchr(icon, '.');
-                    static std::string iname;
-                    inexor::filesystem::appendmediadir(iname, icon, DIR_ICON, ext ? NULL : ".jpg");
-                    icon_(textureload(iname.c_str(), 3), false, x, cury, ICON_SIZE, clickable && hit);
+                    Path iname = getmediapath(icon, DIR_ICON);
+                    iname.replace_extension(".jpg");
+                    icon_(textureload(iname.string().c_str(), 3), false, x, cury, ICON_SIZE, clickable && hit);
                 }
                 x += ICON_SIZE;
             }
@@ -849,15 +850,15 @@ struct gui : g3d_gui
     {
         if(!skintex) {
             static std::string stname;
-            inexor::filesystem::appendmediadir(stname, "guiskin.png", DIR_UI);
+            getmediapath(stname, "guiskin.png", DIR_UI);
             skintex = textureload(stname.c_str(), 3);
         }
         glBindTexture(GL_TEXTURE_2D, skintex->id);
         int gapx1 = INT_MAX, gapy1 = INT_MAX, gapx2 = INT_MAX, gapy2 = INT_MAX;
         float wscale = 1.0f/(SKIN_W*SKIN_SCALE), hscale = 1.0f/(SKIN_H*SKIN_SCALE);
-        
+
         loopj(passes)
-        {	
+        {
             bool quads = false;
             if(passes>1) glDepthFunc(j ? GL_LEQUAL : GL_GREATER);
             gle::color(j ? light : vec(1, 1, 1), passes<=1 || j ? alpha : alpha/2); //ghost when its behind something in depth
@@ -888,7 +889,7 @@ struct gui : g3d_gui
                     top += gaph - (gapy2-gapy1);
                     bottom += gaph - (gapy2-gapy1);
                 }
-               
+
                 //multiple tiled quads if necessary rather than a single stretched one
                 int ystep = bottom-top;
                 int yo = y+top;
@@ -932,7 +933,7 @@ struct gui : g3d_gui
             else break; //if it didn't happen on the first pass, it won't happen on the second..
         }
         if(passes>1) glDepthFunc(GL_ALWAYS);
-    } 
+    }
 
     vec origin, scale, *savedorigin;
     float dist;
@@ -958,7 +959,7 @@ struct gui : g3d_gui
     }
 
     void start(int starttime, float initscale, int *tab, bool allowinput)
-    {	
+    {
         if(gui2d) 
         {
             initscale *= 0.025f; 

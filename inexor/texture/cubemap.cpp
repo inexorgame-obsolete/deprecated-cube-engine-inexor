@@ -148,8 +148,7 @@ Texture *cubemaploadwildcard(Texture *t, const char *name, bool mipit, bool msg,
 Texture *cubemapload(const char *name, bool mipit, bool msg, bool transient)
 {
     string pname;
-    inexor::filesystem::getmedianame(pname, MAXSTRLEN, name, DIR_SKYBOX);
-    path(pname);
+    inexor::filesystem::getmediapath(pname, MAXSTRLEN, name, DIR_SKYBOX);
 
     Texture *t = NULL;
     if(!strchr(pname, '*'))
