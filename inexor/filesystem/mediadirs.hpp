@@ -4,6 +4,8 @@
 #define I_FILESYSTEM_H
 
 #include "inexor/rpc/SharedVar.hpp"
+#include <boost/filesystem.hpp>
+#include <string>
 
 enum {
     DIR_MAP,
@@ -16,17 +18,25 @@ enum {
     DIR_NUM
 }; /// media path types.
 
-extern SharedVar<char*> mediadir, mapdir, texturedir,
-                        skyboxdir, interfacedir, icondir;
+extern SharedVar<char*> mapdir, texturedir, skyboxdir, interfacedir, icondir, sounddir, musicdir;
 
-namespace inexor
-{
-    namespace filesystem {
-        extern const char *getmediadir(int type);
-        extern const char *appendmediadir(std::string &output, const char *basename, int type, const char *extension = NULL);
-        extern const char *appendmediadir(char *output, size_t outputlen, const char *basename, int type, const char *extension = NULL);
-        extern void getmedianame(std::string &output, const char *basename, int type);
-        extern char *getmedianame(char *output, size_t outputlen, const char *basename, int type);
-    }
-}
+namespace inexor {
+namespace filesystem {
+
+/// @see boost::filesystem::path
+/// We need to rename this class bc otherwise we get clashes with legacy code.
+using Path = boost::filesystem::path;
+
+/// Returns the media-dir string of specific type.
+extern const char *getmediadir(int type);
+
+/// Append the media directory specified by type to the basename.
+/// Slashes get corrected as well and will be in the platforms prefered form.
+extern Path getmediapath(const std::string &basename, int type);
+extern const char *getmediapath(char *output, int outputlen, const std::string &basename, int type);
+extern std::string &getmediapath(std::string &output, const std::string basename, int type);
+
+
+} // namespace filesystem
+} // namespace inexor
 #endif // I_FILESYSTEM_H

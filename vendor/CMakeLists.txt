@@ -248,6 +248,23 @@ function(config_boost_asio)
   config_asio(${ARGN})
 endfunction()
 
+#### BOOST (Filesystem)
+
+find_libs(BOOST_FILESYSTEM_LIBS boost_filesystem)
+find_path(BOOST_FILESYSTEM_INCLUDE_DIRS boost/filesystem.hpp)
+
+register_possible_dependency(${BOOST_FILESYSTEM_LIBS})
+
+function(config_boost_filesystem targ)
+  message(STATUS "Configuring ${targ} with Boost Filesystem")
+
+  add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED)
+  target_link_libs(${targ} ${BOOST_FILESYSTEM_LIBS})
+  target_include_directories(${targ} PUBLIC ${BOOST_FILESYSTEM_INCLUDE_DIRS})
+
+  config_boost_system(${targ})
+endfunction()
+
 #### Rapidjson
 
 find_path(RAPIDJSON_INCLUDE_DIRS rapidjson/rapidjson.h)

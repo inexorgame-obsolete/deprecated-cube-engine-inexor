@@ -598,17 +598,17 @@ static void mergedepth(ImageData &c, ImageData &z)
     );
 }
 
-static void addname(vector<char> &key, Slot &slot, Slot::Tex &t, bool combined = false, const char *prefix = NULL)
+static void addname(vector<char> &key, Slot::Tex &t, bool combined = false, const char *prefix = NULL)
 {
     if(combined) key.add('&');
     if(prefix) { while(*prefix) key.add(*prefix++); }
-    for(const char *s = path(t.name); *s; key.add(*s++));
+    for(const char *s = t.name; *s; key.add(*s++));
 }
 
 /// Generate a keyname to find a combined texture in the texture registry.
 void gencombinedname(vector<char> &name, int &texmask, Slot &s, Slot::Tex &t, int index, bool forceload)
 {
-    addname(name, s, t);
+    addname(name, t);
 
     if(!forceload) switch(t.type)
     {
@@ -620,7 +620,7 @@ void gencombinedname(vector<char> &name, int &texmask, Slot &s, Slot::Tex &t, in
             if(!t || t->combined >= 0) break; //no specific texture found or its already combined.
             texmask |= 1 << t->type;
             t->combined = index;
-            addname(name, s, *t, true);
+            addname(name, *t, true);
             break;
         }
     }
@@ -631,8 +631,7 @@ void Slot::addtexture(int type, const char *filename)
 {
     Slot::Tex &st = sts.add();
     st.type = type;
-    inexor::filesystem::getmedianame(st.name, MAXSTRLEN, filename, DIR_TEXTURE);
-    path(st.name);
+    getmediapath(st.name, MAXSTRLEN, filename, DIR_TEXTURE);
     loaded = false;
 }
 
@@ -757,11 +756,11 @@ Texture *Slot::loadthumbnail()
     linkslotshader(*this, false);
     linkvslotshader(vslot, false);
     vector<char> name;
-    if(vslot.colorscale == vec(1, 1, 1)) addname(name, *this, sts[0], false, "<thumbnail>");
+    if(vslot.colorscale == vec(1, 1, 1)) addname(name, sts[0], false, "<thumbnail>");
     else
     {
         defformatstring(prefix, "<thumbnail:%.2f/%.2f/%.2f>", vslot.colorscale.x, vslot.colorscale.y, vslot.colorscale.z);
-        addname(name, *this, sts[0], false, prefix);
+        addname(name, sts[0], false, prefix);
     }
     int glow = -1;
     if(texmask&(1 << TEX_GLOW))
@@ -770,17 +769,17 @@ Texture *Slot::loadthumbnail()
         if(glow >= 0)
         {
             defformatstring(prefix, "<glow:%.2f/%.2f/%.2f>", vslot.glowcolor.x, vslot.glowcolor.y, vslot.glowcolor.z);
-            addname(name, *this, sts[glow], true, prefix);
+            addname(name, sts[glow], true, prefix);
         }
     }
     VSlot *layer = vslot.layer ? &lookupvslot(vslot.layer, false) : NULL;
     if(layer)
     {
-        if(layer->colorscale == vec(1, 1, 1)) addname(name, *layer->slot, layer->slot->sts[0], true, "<layer>");
+        if(layer->colorscale == vec(1, 1, 1)) addname(name, layer->slot->sts[0], true, "<layer>");
         else
         {
             defformatstring(prefix, "<layer:%.2f/%.2f/%.2f>", vslot.colorscale.x, vslot.colorscale.y, vslot.colorscale.z);
-            addname(name, *layer->slot, layer->slot->sts[0], true, prefix);
+            addname(name, layer->slot->sts[0], true, prefix);
         }
     }
     name.add('\0');

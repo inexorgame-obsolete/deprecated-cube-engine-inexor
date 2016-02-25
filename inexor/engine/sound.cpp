@@ -6,6 +6,8 @@
 #include "SDL_mixer.h"
 #include <string>
 
+using namespace inexor::filesystem;
+
 #define MAXVOL MIX_MAX_VOLUME
 
 bool nosound = true;
@@ -207,7 +209,7 @@ void startmusic(char *name, char *cmd)
     if(soundvol && musicvol && *name)
     {
         std::string file;
-        inexor::filesystem::appendmediadir(file, name, DIR_MUSIC);
+        getmediapath(file, name, DIR_MUSIC);
         if(loadmusic(file.c_str()))
         {
             DELETEA(musicfile);
@@ -255,7 +257,8 @@ bool soundsample::load(bool msg)
     std::string filename;
     loopi(sizeof(exts)/sizeof(exts[0]))
     {
-        inexor::filesystem::appendmediadir(filename, name, DIR_SOUND, exts[i]);
+        getmediapath(filename, name, DIR_SOUND);
+        filename += exts[i]; //append the extension
         if(msg && !i) renderprogress(0, filename.c_str());
         chunk = loadwav(filename.c_str());
         if(chunk) return true;
