@@ -965,9 +965,16 @@ void checkinput()
             return;
         }
 
-        if (cef_app.get() && cef_app->HasFocus()) {
+        /*
+        if (cef_app.get() && cef_app->GetUserInterface()->GetAcceptingInput()) {
+            logoutf("checkinput() -> to CEF");
             bool handled = cef_app->HandleSdlEvent(event);
             if (handled) continue;
+        }
+        */
+
+        if (cef_app.get()) {
+            cef_app->HandleSdlEvent(event);
         }
 
         switch(event.type)
@@ -1190,17 +1197,32 @@ static bool findarg(int argc, char **argv, const char *str)
 ICOMMANDERR(subsystem_start, "s", (char *s), std::string ccs{s}; metapp.start(ccs));
 ICOMMANDERR(subsystem_stop, "s", (char *s), std::string ccs{s}; metapp.stop(ccs));
 
-ICOMMAND(cef_load, "s", (char *cv),
-    std::string u(cv);
-    if (cef_app.get()) cef_app->GetFrame()->SetUrl(u); );
-ICOMMAND(cef_reload, "", (),
+ICOMMAND(uiurl, "s", (char *_url),
+    std::string url(_url);
     if (cef_app.get()) {
-      std::string url = cef_app->GetFrame()->GetUrl();
-      cef_app->GetFrame()->SetUrl(url);
+    	cef_app->GetUserInterface()->SetUrl(url);
     }
 );
-ICOMMAND(cef_focus, "b", (bool *b),
-    if (cef_app.get()) cef_app->SetFocus(*b); );
+ICOMMAND(uireload, "", (),
+    if (cef_app.get()) {
+        cef_app->GetUserInterface()->Reload();
+    }
+);
+ICOMMAND(uishow, "", (),
+    if (cef_app.get()) {
+        cef_app->GetUserInterface()->Show();
+    }
+);
+ICOMMAND(uihide, "", (),
+    if (cef_app.get()) {
+        cef_app->GetUserInterface()->Hide();
+    }
+);
+ICOMMAND(uifocus, "b", (bool *b),
+    if (cef_app.get()) {
+        cef_app->GetUserInterface()->SetAcceptingInput(*b);
+    }
+);
 
 /// main program start
 int main(int argc, char **argv)
@@ -1404,8 +1426,8 @@ int main(int argc, char **argv)
     ignoremousemotion();
 
     //Initialize the metasystem
-    // SUBSYSTEM_REQUIRE(rpc);
-    // SUBSYSTEM_REQUIRE(cef);
+    metapp.start("rpc");
+    metapp.start("cef");
 
 	// main game loop
     for(;;)
@@ -1447,10 +1469,9 @@ int main(int argc, char **argv)
         if(minimized) continue;
 
         inbetweenframes = false;
+
         if(mainmenu) gl_drawmainmenu();
         else gl_drawframe();
-
-        metapp.paint();
 
         swapbuffers();
 

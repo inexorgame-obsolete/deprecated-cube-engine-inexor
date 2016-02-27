@@ -7,12 +7,11 @@ InexorLayer::InexorLayer(std::string name, int x, int y, int width, int height, 
       url(url),
       is_visible(false),
       is_accepting_input(false),
-      has_focus(false),
       browser_id(-1),
       browser_count(0),
       is_closing(false)
 {
-
+    std::cerr << "init: cef: creating layer\n  name: " << name << "\n  url: " << url << "\n  x: " << x << "\n  y " << y << "\n  width: " << width << "\n  height " << height << ")\n";
     window_info.x = x;
     window_info.y = y;
     window_info.width = width;
@@ -21,8 +20,8 @@ InexorLayer::InexorLayer(std::string name, int x, int y, int width, int height, 
     render_handler = new InexorRenderHandler(true, x, y, width, height);
     browser = CefBrowserHost::CreateBrowserSync(window_info, this, url, browser_settings, NULL);
     if (browser.get()) {
-        std::cerr << "init: cef: created layer " << name << "\n";
-        browser->GetHost()->SendFocusEvent(has_focus);
+        std::cerr << "init: cef: successfully created layer " << name << "\n";
+        browser->GetHost()->SendFocusEvent(is_accepting_input);
     }
 }
 
@@ -30,20 +29,17 @@ InexorLayer::~InexorLayer() { }
 
 void InexorLayer::SetVisibility(bool is_visible)
 {
+    std::cerr << "InexorLayer::SetVisibility()\n";
 	this->is_visible = is_visible;
 	browser->GetHost()->SetWindowVisibility(is_visible);
 	browser->GetHost()->WasHidden(!is_visible);
 }
 
-void InexorLayer::SetFocus(bool has_focus)
-{
-	this->has_focus = has_focus;
-	browser->GetHost()->SendFocusEvent(has_focus);
-}
-
 void InexorLayer::SetIsAcceptingInput(bool is_accepting_input)
 {
+    std::cerr << "InexorLayer::SetIsAcceptingInput()\n";
 	this->is_accepting_input = is_accepting_input;
+    browser->GetHost()->SendFocusEvent(is_accepting_input);
 }
 
 void InexorLayer::Destroy()

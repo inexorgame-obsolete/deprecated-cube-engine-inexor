@@ -26,7 +26,8 @@ CefSubsystem::~CefSubsystem() {
     ::cef_app->Destroy();
 
     // Make sure any outstanding IPC messages are processed
-    tick();
+    for(int i = 0; i < 100; i++)
+        tick();
 
     // Stop any forked processes
     CefShutdown();
@@ -39,7 +40,7 @@ void CefSubsystem::tick() {
     CefDoMessageLoopWork();
 }
 
-void CefSubsystem::paint() {
+void CefSubsystem::Render() {
     ::cef_app->Render();
 }
 

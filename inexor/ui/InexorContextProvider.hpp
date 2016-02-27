@@ -7,7 +7,7 @@
 #include "include/wrapper/cef_helpers.h"
 
 class InexorContextProvider : public CefV8Handler,
-                                 public CefV8Accessor
+                              public CefV8Accessor
 {
     public:
         // Initializes the context (or subcontext of a context) as a V8 object

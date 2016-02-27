@@ -3,6 +3,9 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/texture/cubemap.hpp"
+#include "inexor/util/Subsystem.hpp"
+
+extern inexor::util::Metasystem metapp;
 
 bool hasVAO = false, hasFBO = false, hasAFBO = false, hasDS = false, hasTF = false, hasTRG = false, hasTSW = false, hasS3TC = false, hasFXT1 = false, hasAF = false, hasFBB = false, hasUBO = false, hasMBR = false;
 int hasstencil = 0;
@@ -1920,8 +1923,30 @@ void gl_drawframe()
     if(isliquid(fogmat&MATF_VOLUME)) drawfogoverlay(fogmat, fogblend, abovemat);
     renderpostfx();
 
+    hudshader->set();
+
+    glDisable(GL_TEXTURE_2D);
+
+    //renderbackground(NULL, NULL, NULL, NULL, true, true);
+    // renderpostfx();
+
+    // hudmatrix.ortho(0, w, h, 0, -1, 1);
+    // resethudmatrix();
+    // hudshader->set();
+
+    metapp.Render();
+
+    // renderpostfx();
+    // hudshader->set();
+    // metapp.Render();
+
+    // hudshader->set();
+    // metapp.Render();
+    // nullshader->set();
+
     g3d_render();
     gl_drawhud();
+
 
     renderedgame = false;
 }
@@ -1932,9 +1957,15 @@ void gl_drawmainmenu()
 
     renderbackground(NULL, NULL, NULL, NULL, true, true);
     renderpostfx();
-    
+
+    hudshader->set();
+    metapp.Render();
+    // nullshader->set();
+
     g3d_render();
     gl_drawhud();
+
+
 }
 
 VARNP(damagecompass, usedamagecompass, 0, 1, 1);
