@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "inexor/ui/InexorRenderHandler.hpp"
 #include "inexor/engine/engine.hpp"
 
@@ -32,6 +34,7 @@ void InexorRenderHandler::Initialize() {
         return;
 
     glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST); VERIFY_NO_ERROR;
+
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f); VERIFY_NO_ERROR;
 
     // Necessary for non-power-of-2 textures to render correctly.
@@ -40,14 +43,11 @@ void InexorRenderHandler::Initialize() {
     // Create the texture.
     glGenTextures(1, &texture_id); VERIFY_NO_ERROR;
 
-    if (0u == texture_id)
-    {
-      throw GLException("texture id is 0");
+    if (0u == texture_id) {
+        throw GLException("texture id is 0");
     }
-    else
-    {
-      glBindTexture(GL_TEXTURE_2D, texture_id); VERIFY_NO_ERROR;
-    }
+
+    glBindTexture(GL_TEXTURE_2D, texture_id); VERIFY_NO_ERROR;
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); VERIFY_NO_ERROR;
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); VERIFY_NO_ERROR;
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); VERIFY_NO_ERROR;
@@ -56,8 +56,9 @@ void InexorRenderHandler::Initialize() {
 }
 
 void InexorRenderHandler::Cleanup() {
-    if (texture_id != 0)
+    if (texture_id != 0) {
         glDeleteTextures(1, &texture_id);
+    }
 }
 
 void InexorRenderHandler::Render() {
@@ -76,10 +77,17 @@ void InexorRenderHandler::Render() {
         {0.0f, 0.0f, -1.0f,  1.0f, 0.0f}
     };
 
+    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); VERIFY_NO_ERROR;
+    glMatrixMode(GL_MODELVIEW); VERIFY_NO_ERROR;
+    glLoadIdentity(); VERIFY_NO_ERROR;
+    glViewport(0, 0, view_width*2, view_height*2); VERIFY_NO_ERROR;
+
     // Match GL units to screen coordinates.
     // glViewport(0, 0, view_width_, view_height_); VERIFY_NO_ERROR;
     glMatrixMode(GL_PROJECTION); VERIFY_NO_ERROR;
     glLoadIdentity(); VERIFY_NO_ERROR;
+    // glOrtho(0, 0, view_width, view_height, 0.0, 1.0); VERIFY_NO_ERROR;
+
 
     // Alpha blending style. Texture values have premultiplied alpha.
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA); VERIFY_NO_ERROR;
@@ -91,16 +99,32 @@ void InexorRenderHandler::Render() {
     glEnable(GL_TEXTURE_2D); VERIFY_NO_ERROR;
 
     // Draw the facets with the texture.
-    if (0u == texture_id)
-    {
+    if (0u == texture_id) {
+        std::cerr << "texture id is 0\n";
         throw GLException("texture id is 0");
     }
-    else
-    {
-        glBindTexture(GL_TEXTURE_2D, texture_id); VERIFY_NO_ERROR;
+    glBindTexture(GL_TEXTURE_2D, texture_id); VERIFY_NO_ERROR;
+
+    /*
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex3f(-1.0f, -1.0f, 0.0f);
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex3f(1.0f, -1.0f, 0.0f);
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex3f(1.0f, 1.0f, 0.0f);
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex3f(-1.0f, 1.0f, 0.0f);
+    glEnd();
+    */
+
+    glInterleavedArrays(GL_T2F_V3F, 0, vertices);
+    GLenum _gl_error = glGetError();
+    if (_gl_error == GL_NO_ERROR) {
+        glDrawArrays(GL_QUADS, 0, 4);
+    } else {
+        std::cerr << "glGetError returned " << _gl_error << "\n";
     }
-    glInterleavedArrays(GL_T2F_V3F, 0, vertices); VERIFY_NO_ERROR;
-    glDrawArrays(GL_QUADS, 0, 4); VERIFY_NO_ERROR;
 
     // Disable 2D textures.
     glDisable(GL_TEXTURE_2D); VERIFY_NO_ERROR;
@@ -165,10 +189,11 @@ void InexorRenderHandler::OnPaint(
     const void* buffer, int width, int height
 ) {
     if (!initialized) {
-    	if (CefCurrentlyOn(TID_UI))
+    	if (CefCurrentlyOn(TID_UI)) {
             Initialize();
-    	else
+    	} else {
     	    return;
+    	}
     }
 
    	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA); VERIFY_NO_ERROR;
@@ -177,13 +202,10 @@ void InexorRenderHandler::OnPaint(
     // Enable 2D textures.
     glEnable(GL_TEXTURE_2D); VERIFY_NO_ERROR;
 
-    if (0u == texture_id)
-    {
-      throw GLException("texture id is 0");
-    }
-    else
-    {
-      glBindTexture(GL_TEXTURE_2D, texture_id); VERIFY_NO_ERROR;
+    if (0u == texture_id) {
+        throw GLException("texture id is 0");
+    } else {
+        glBindTexture(GL_TEXTURE_2D, texture_id); VERIFY_NO_ERROR;
     }
 
     if (type == PET_VIEW) {

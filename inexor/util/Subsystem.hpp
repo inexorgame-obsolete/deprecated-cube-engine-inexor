@@ -48,7 +48,7 @@ public:
 
     /// Called to paint stuff; after everything inexor and
     /// possibly other modules have been called.
-    virtual void paint() {};
+    virtual void Render() {};
 
     /// A function that starts a subsystem and returns
     /// a pointer to the instance
@@ -189,8 +189,8 @@ public:
     }
 
     /// Forwarded to all subsystems
-    virtual void paint() {
-        for (auto &e : this->subsystems) e.second->paint();
+    virtual void Render() {
+        for (auto &e : this->subsystems) e.second->Render();
     }
 
     /// Execute code on the next tick.
