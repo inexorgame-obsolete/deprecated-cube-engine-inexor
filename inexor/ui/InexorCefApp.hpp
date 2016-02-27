@@ -10,11 +10,11 @@
 #include "include/cef_render_process_handler.h"
 
 #include "inexor/ui/InexorBrowserSettings.hpp"
-#include "inexor/ui/InexorFrame.hpp"
 #include "inexor/ui/InexorContextManager.hpp"
 #include "inexor/ui/InexorKeyboardManager.hpp"
 #include "inexor/ui/InexorLayerManager.hpp"
 #include "inexor/ui/InexorMouseManager.hpp"
+#include "inexor/ui/InexorUserInterface.hpp"
 #include "inexor/ui/InexorWindowInfo.hpp"
 
 class InexorCefApp : public CefApp,
@@ -34,7 +34,7 @@ class InexorCefApp : public CefApp,
         CefRefPtr<InexorLayerManager> GetLayerManager() { return layer_manager; }
         CefRefPtr<InexorMouseManager> GetMouseManager() { return mouse_manager; }
         CefRefPtr<InexorKeyboardManager> GetKeyboardManager() { return keyboard_manager; }
-        CefRefPtr<InexorFrame> GetFrame() { return frame; }
+        CefRefPtr<InexorUserInterface> GetUserInterface() { return user_interface; }
 
         // Rendering / Window Management
         void Render();
@@ -45,24 +45,6 @@ class InexorCefApp : public CefApp,
 
         // CefRenderProcessHandler
         void OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context);
-
-        /// Whether the keyboard/mouse events should go to
-        /// CEF rather than the 3D renderer.
-        bool HasFocus() {
-            return context_manager->cef_focus;
-        }
-
-        /// Tell CEF that it should receive input events
-        /// rather than inexor
-        void SetFocus() {
-          SetFocus(true);
-        }
-
-        /// Set, whether CEF should receive input events
-        /// rather than inexor
-        void SetFocus(bool cef_focus) {
-            context_manager->cef_focus = cef_focus;
-        }
 
         /// Handle SDL events for CEF
         ///
@@ -76,7 +58,7 @@ class InexorCefApp : public CefApp,
         CefRefPtr<InexorLayerManager> layer_manager;
         CefRefPtr<InexorMouseManager> mouse_manager;
         CefRefPtr<InexorKeyboardManager> keyboard_manager;
-        CefRefPtr<InexorFrame> frame;
+        CefRefPtr<InexorUserInterface> user_interface;
 
         IMPLEMENT_REFCOUNTING(InexorCefApp);
 };

@@ -23,6 +23,7 @@ class InexorLayerManager : public InexorContextProvider
 
         // Layers
         void InitializeLayers();
+        void InitializeLayer(CefRefPtr<InexorLayerProvider> layer_provider);
         void DestroyLayers();
         void AddLayerProvider(CefRefPtr<InexorLayerProvider> layer_provider);
 

@@ -1,7 +1,11 @@
+#include <iostream>
+
 #include "inexor/ui/InexorCefApp.hpp"
 
 InexorCefApp::InexorCefApp(int width, int height)
 {
+    std::cerr << "init: cef: construct InexorCefApp (width: " << width << " height " << height << ")\n";
+
     context_manager = new InexorContextManager();
 
     layer_manager = new InexorLayerManager(width, height);
@@ -13,11 +17,15 @@ InexorCefApp::InexorCefApp(int width, int height)
     keyboard_manager = new InexorKeyboardManager(layer_manager);
     context_manager->AddSubContext(keyboard_manager);
 
-    frame = new InexorFrame();
-    context_manager->AddSubContext(frame);
-    layer_manager->AddLayerProvider(frame);
-
     SetScreenSize(width, height);
+
+    std::string layer_name("userinterface");
+    std::string layer_url("http://localhost:48702/");
+    user_interface = new InexorUserInterface(layer_name, layer_url);
+    user_interface->Show();
+
+    context_manager->AddSubContext(user_interface);
+    layer_manager->AddLayerProvider(user_interface);
 
     mouse_manager->Show();
 }
@@ -30,8 +38,7 @@ void InexorCefApp::Destroy()
 void InexorCefApp::Render()
 {
     layer_manager->Render();
-    if (HasFocus())
-      mouse_manager->Render();
+    // mouse_manager->Render();
 }
 
 void InexorCefApp::SetScreenSize(int width, int height) {
@@ -52,27 +59,28 @@ void InexorCefApp::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<Cef
 }
 
 bool InexorCefApp::HandleSdlEvent(SDL_Event event) {
+    // std::cerr << "InexorCefApp::HandleSdlEvent()\n";
     switch(event.type) {
-      case SDL_TEXTINPUT:
-      case SDL_KEYDOWN:
-      case SDL_KEYUP:
-        GetKeyboardManager()->SendKeyEvent(event);
-        return true;
+        case SDL_TEXTINPUT:
+        case SDL_KEYDOWN:
+        case SDL_KEYUP:
+            GetKeyboardManager()->SendKeyEvent(event);
+            return true;
 
-      case SDL_MOUSEMOTION:
-        GetMouseManager()->SendMouseMoveEvent(event);
-        return true;
+        case SDL_MOUSEMOTION:
+            GetMouseManager()->SendMouseMoveEvent(event);
+            return true;
 
-      case SDL_MOUSEBUTTONDOWN:
-      case SDL_MOUSEBUTTONUP:
-        GetMouseManager()->SendMouseClickEvent(event);
-        return true;
+        case SDL_MOUSEBUTTONDOWN:
+        case SDL_MOUSEBUTTONUP:
+            GetMouseManager()->SendMouseClickEvent(event);
+            return true;
 
-      case SDL_MOUSEWHEEL:
-        GetMouseManager()->SendMouseWheelEvent(event);
-        return true;
+        case SDL_MOUSEWHEEL:
+            GetMouseManager()->SendMouseWheelEvent(event);
+            return true;
 
-      default:
-        return false;
+        default:
+            return false;
     }
 }
