@@ -67,27 +67,24 @@ void InexorRenderHandler::Render() {
 
     DCHECK(initialized);
 
-    struct {
-        float tu, tv;
-        float x, y, z;
-    } static vertices[] = {
-        {0.0f, 1.0f, -1.0f, -1.0f, 0.0f},
-        {1.0f, 1.0f,  1.0f, -1.0f, 0.0f},
-        {1.0f, 0.0f,  1.0f,  1.0f, 0.0f},
-        {0.0f, 0.0f, -1.0f,  1.0f, 0.0f}
-    };
+    hudmatrix.ortho(0, view_width, view_height, 0, -1, 1);
+    resethudmatrix();
+
+    hudshader->set();
+    gle::colorf(1, 1, 1);
+
+    gle::defvertex(2);
+    gle::deftexcoord0();
 
     // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); VERIFY_NO_ERROR;
-    glMatrixMode(GL_MODELVIEW); VERIFY_NO_ERROR;
-    glLoadIdentity(); VERIFY_NO_ERROR;
-    glViewport(0, 0, view_width*2, view_height*2); VERIFY_NO_ERROR;
+    // glMatrixMode(GL_MODELVIEW); VERIFY_NO_ERROR;
+    // glLoadIdentity(); VERIFY_NO_ERROR;
+    // glViewport(0, 0, view_width*2, view_height*2); VERIFY_NO_ERROR;
 
     // Match GL units to screen coordinates.
     // glViewport(0, 0, view_width_, view_height_); VERIFY_NO_ERROR;
-    glMatrixMode(GL_PROJECTION); VERIFY_NO_ERROR;
-    glLoadIdentity(); VERIFY_NO_ERROR;
-    // glOrtho(0, 0, view_width, view_height, 0.0, 1.0); VERIFY_NO_ERROR;
-
+    //glMatrixMode(GL_PROJECTION); VERIFY_NO_ERROR;
+    //glLoadIdentity(); VERIFY_NO_ERROR;
 
     // Alpha blending style. Texture values have premultiplied alpha.
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA); VERIFY_NO_ERROR;
@@ -95,39 +92,15 @@ void InexorRenderHandler::Render() {
     // Enable alpha blending.
     glEnable(GL_BLEND); VERIFY_NO_ERROR;
 
-    // Enable 2D textures.
-    glEnable(GL_TEXTURE_2D); VERIFY_NO_ERROR;
-
     // Draw the facets with the texture.
-    if (0u == texture_id) {
-        std::cerr << "texture id is 0\n";
-        throw GLException("texture id is 0");
-    }
+    if (0u == texture_id) throw GLException("texture id is 0");
+
     glBindTexture(GL_TEXTURE_2D, texture_id); VERIFY_NO_ERROR;
 
-    /*
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(-1.0f, -1.0f, 0.0f);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(1.0f, -1.0f, 0.0f);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(1.0f, 1.0f, 0.0f);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(-1.0f, 1.0f, 0.0f);
-    glEnd();
-    */
+    // Render Texture on the whole screen. TODO: Function initialization not threadsafe.
+    screenquad(); VERIFY_NO_ERROR;
 
-    glInterleavedArrays(GL_T2F_V3F, 0, vertices);
-    GLenum _gl_error = glGetError();
-    if (_gl_error == GL_NO_ERROR) {
-        glDrawArrays(GL_QUADS, 0, 4);
-    } else {
-        std::cerr << "glGetError returned " << _gl_error << "\n";
-    }
-
-    // Disable 2D textures.
-    glDisable(GL_TEXTURE_2D); VERIFY_NO_ERROR;
+    // evtl flushhudmatrix here..
 
     // Disable alpha blending.
     glDisable(GL_BLEND); VERIFY_NO_ERROR;
