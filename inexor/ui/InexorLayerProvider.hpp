@@ -25,11 +25,18 @@ class InexorLayerProvider
         virtual ~InexorLayerProvider() {};
 
         void SetLayer(CefRefPtr<InexorLayer> layer) { this->layer = layer; }
-        virtual std::string GetContextName() = 0;
+
+        virtual std::string GetLayerName() = 0;
+        virtual void SetLayerName(std::string &_name) = 0;
+
         virtual std::string GetUrl() = 0;
+        virtual void SetUrl(std::string &_url) = 0;
+
         virtual bool GetVisibility() = 0;
+        virtual void SetVisibility(bool _is_visible) = 0;
+
         virtual bool GetAcceptingInput() = 0;
-        virtual bool GetFocus() = 0;
+        virtual void SetAcceptingInput(bool _is_accepting_input) = 0;
 
     protected:
         CefRefPtr<InexorLayer> layer;
@@ -47,25 +54,49 @@ class AbstractInexorLayerProvider : public InexorLayerProvider
 {
     public:
         AbstractInexorLayerProvider() : is_visible(false) {};
+        AbstractInexorLayerProvider(std::string &name) : is_visible(false), name(name) {}
+        AbstractInexorLayerProvider(std::string &name, std::string &url) : is_visible(false), name(name), url(url) {};
         virtual ~AbstractInexorLayerProvider() {};
 
-        void Show() { SetVisibility(true); };
-        void Hide() { SetVisibility(false); };
-        void Toggle() { SetVisibility(!is_visible); };
+        std::string GetLayerName() { return name; };
+        void SetLayerName(std::string &_name) {
+            name = _name;
+        };
+
+        std::string GetUrl() { return url; };
+        void SetUrl(std::string &_url) {
+            url = _url;
+        };
 
         bool GetVisibility() { return is_visible; };
-        bool GetAcceptingInput() { return is_visible; };
-        bool GetFocus() { return is_visible; };
+        void SetVisibility(bool _is_visible) {
+            this->is_visible = _is_visible;
+            if (layer.get()) layer->SetVisibility(_is_visible);
+        };
 
-        void SetVisibility(bool visible) {
-            this->is_visible = visible;
-            layer->SetVisibility(visible);
-            layer->SetIsAcceptingInput(visible);
-            layer->SetFocus(visible);
+        bool GetAcceptingInput() { return is_visible; };
+        void SetAcceptingInput(bool _is_accepting_input) {
+            this->is_accepting_input = _is_accepting_input;
+            if (layer.get()) layer->SetIsAcceptingInput(_is_accepting_input);
+        };
+
+        void Show() {
+            SetVisibility(true);
+            SetAcceptingInput(true);
+        };
+        void Hide() {
+            SetVisibility(false);
+            SetAcceptingInput(false);
+        };
+        void ToggleVisibility() {
+            SetVisibility(!is_visible);
         };
 
     protected:
         bool is_visible;
+        bool is_accepting_input;
+        std::string name;
+        std::string url;
 
 };
 

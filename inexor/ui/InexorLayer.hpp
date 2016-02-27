@@ -45,8 +45,8 @@ class InexorLayer : public CefClient,
         bool IsVisible() { return is_visible && browser.get(); };
         void SetVisibility(bool is_visible);
 
-        bool HasFocus() { return has_focus && browser.get(); };
-        void SetFocus(bool has_focus);
+        // bool HasFocus() { return has_focus && browser.get(); };
+        // void SetFocus(bool has_focus);
 
         bool IsAcceptingInput() { return is_accepting_input && browser.get(); };
         void SetIsAcceptingInput(bool is_accepting_input);
@@ -88,8 +88,8 @@ class InexorLayer : public CefClient,
 
 	    bool is_visible;
 	    bool is_accepting_input;
-	    bool has_focus;
-        int browser_id;
+
+	    int browser_id;
         int browser_count;
         bool is_closing;
 

@@ -12,12 +12,17 @@ void InexorLayerManager::InitializeLayers()
     for(std::list<CefRefPtr<InexorLayerProvider> >::iterator it = layer_providers.begin(); it != layer_providers.end(); ++it)
     {
         CefRefPtr<InexorLayerProvider> layer_provider = (*it);
-        CefRefPtr<InexorLayer> layer = CreateLayer(layer_provider->GetContextName(), layer_provider->GetUrl());
-        layer->SetVisibility(layer_provider->GetVisibility());
-        layer->SetIsAcceptingInput(layer_provider->GetAcceptingInput());
-        layer->SetFocus(layer_provider->GetFocus());
-        layer_provider->SetLayer(layer);
+        InitializeLayer(layer_provider);
     }
+}
+
+void InexorLayerManager::InitializeLayer(CefRefPtr<InexorLayerProvider> layer_provider)
+{
+    std::cerr << "InexorLayerManager::InitializeLayer()\n  name: " << layer_provider->GetLayerName() << "\n  url: " << layer_provider->GetUrl() << "\n";
+    CefRefPtr<InexorLayer> layer = CreateLayer(layer_provider->GetLayerName(), layer_provider->GetUrl());
+    layer->SetVisibility(layer_provider->GetVisibility());
+    layer->SetIsAcceptingInput(layer_provider->GetAcceptingInput());
+    layer_provider->SetLayer(layer);
 }
 
 void InexorLayerManager::DestroyLayers()
@@ -152,7 +157,6 @@ void InexorLayerManager::_CreateLayer(std::string name, std::string url)
     } else {
         CEF_REQUIRE_UI_THREAD();
         CefRefPtr<InexorLayer> layer = InexorLayerManager::CreateLayer(name, 0, 0, width, height, url);
-        layer->SetFocus(true);
         layer->SetVisibility(true);
         layer->SetIsAcceptingInput(true);
     }
@@ -289,10 +293,12 @@ void InexorLayerManager::Render()
 
 void InexorLayerManager::SendKeyEvent(CefKeyEvent event)
 {
+    // std::cerr << "InexorLayerManager::SendKeyEvent()\n";
     for(std::list<CefRefPtr<InexorLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
     {
         CefRefPtr<InexorLayer> layer = (*it);
-        if (layer.get() && layer->IsVisible() && layer->IsAcceptingInput()) {
+        if (layer.get() && /* layer->IsVisible() && */ layer->IsAcceptingInput()) {
+            std::cerr << "layer->GetBrowser()->GetHost()->SendKeyEvent() -> " << layer->GetName() << "\n";
             layer->GetBrowser()->GetHost()->SendKeyEvent(event);
         }
     }
@@ -303,7 +309,8 @@ void InexorLayerManager::SendMouseClickEvent(const CefMouseEvent& event, CefBrow
     for(std::list<CefRefPtr<InexorLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
     {
         CefRefPtr<InexorLayer> layer = (*it);
-        if (layer.get() && layer->IsVisible() && layer->IsAcceptingInput()) {
+        if (layer.get() && /* layer->IsVisible() && */ layer->IsAcceptingInput()) {
+            std::cerr << "layer->GetBrowser()->GetHost()->SendMouseClickEvent() -> " << layer->GetName() << "\n";
             layer->GetBrowser()->GetHost()->SendMouseClickEvent(event, type, mouseUp, clickCount);
         }
     }
@@ -314,7 +321,8 @@ void InexorLayerManager::SendMouseMoveEvent(const CefMouseEvent& event, bool mou
     for(std::list<CefRefPtr<InexorLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
     {
         CefRefPtr<InexorLayer> layer = (*it);
-        if (layer.get() && layer->IsVisible() && layer->IsAcceptingInput()) {
+        if (layer.get() && /* layer->IsVisible() && */ layer->IsAcceptingInput()) {
+            std::cerr << "layer->GetBrowser()->GetHost()->SendMouseMoveEvent() -> " << layer->GetName() << "\n";
             layer->GetBrowser()->GetHost()->SendMouseMoveEvent(event, mouseLeave);
         }
     }
@@ -325,7 +333,8 @@ void InexorLayerManager::SendMouseWheelEvent(const CefMouseEvent& event, int del
     for(std::list<CefRefPtr<InexorLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
     {
         CefRefPtr<InexorLayer> layer = (*it);
-        if (layer.get() && layer->IsVisible() && layer->IsAcceptingInput()) {
+        if (layer.get() && /* layer->IsVisible() && */ layer->IsAcceptingInput()) {
+            std::cerr << "layer->GetBrowser()->GetHost()->SendMouseWheelEvent() -> " << layer->GetName() << "\n";
             layer->GetBrowser()->GetHost()->SendMouseWheelEvent(event, deltaX, deltaY);
         }
     }

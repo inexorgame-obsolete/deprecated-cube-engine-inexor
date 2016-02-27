@@ -58,7 +58,7 @@ void InexorMouseManager::Update(const CefMouseEvent& event) {
 void InexorMouseManager::SetMax(int width, int height) {
     max_x = width;
     max_y = height;
-};
+}
 
 void InexorMouseManager::SetTexture(std::string texture, int blendFunction)
 {
@@ -79,7 +79,7 @@ void InexorMouseManager::Render()
 
     glBlendFunc(GL_ONE, blendFunction);
     glEnable(GL_BLEND);
-    glEnable(GL_TEXTURE_2D);
+    // glEnable(GL_TEXTURE_2D);
 
     // TODO: Read a texture
     // settexture(texture.c_str(), 3);
@@ -97,7 +97,7 @@ void InexorMouseManager::Render()
     glVertex3f(fx, fy - gy, 1.0f);
     glEnd();
 
-    glDisable(GL_TEXTURE_2D);
+    // glDisable(GL_TEXTURE_2D);
     glDisable(GL_BLEND);
 }
 

@@ -21,8 +21,6 @@ class InexorCefContextManager : public InexorCefContextProvider
 {
 
     public:
-        bool cef_focus = true;
-        
         InexorContextManager() {};
 
         // InexorCefContextProvider
