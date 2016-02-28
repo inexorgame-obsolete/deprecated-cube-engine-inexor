@@ -4,8 +4,7 @@
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/util/Subsystem.hpp"
-
-extern inexor::util::Metasystem metapp;
+#include "inexor/ui.hpp"
 
 #include "inexor/util/Logging.hpp"
 
@@ -1859,6 +1858,69 @@ void gl_drawhud(int w, int h);
 
 int xtraverts, xtravertsva;
 
+void gl_rendercef()
+{
+    CefRefPtr<InexorLayerManager> layer_manager = cef_app->GetLayerManager();
+    std::list<CefRefPtr<InexorLayer> > layers = layer_manager->GetLayerList();
+    for(std::list<CefRefPtr<InexorLayer> >::reverse_iterator it = layers.rbegin(); it != layers.rend(); ++it)
+    {
+        CefRefPtr<InexorLayer> layer = (*it);
+        if (layer.get() && layer->IsVisible()) {
+            CefRefPtr<InexorRenderHandler> render_handler = layer->GetInexorRenderHandler();
+            int view_x = render_handler->GetViewX();
+            int view_y = render_handler->GetViewY();
+            int view_width = render_handler->GetViewWidth();
+            int view_height = render_handler->GetViewHeight();
+            bool initialized = render_handler->IsInitialized();
+            unsigned int texture_id = render_handler->GetTextureId();
+
+            if (!initialized) {
+                spdlog::get("global")->debug("err_initialized");
+                continue;
+            }
+            if (view_width == 0 || view_height == 0) {
+                spdlog::get("global")->debug("err_view");
+                continue;
+            }
+            if (texture_id == 0u) {
+                spdlog::get("global")->debug("err_tex");
+                continue;
+            }
+
+            conoutf("initialized: %d view: %d x %d texture: %d", initialized, view_width, view_height, texture_id);
+
+            hudmatrix.ortho(0, view_width, view_height, 0, -1, 1);
+            resethudmatrix();
+
+            hudshader->set();
+            gle::colorf(1, 1, 1);
+
+            gle::defvertex(2);
+            gle::deftexcoord0();
+
+            // Alpha blending style. Texture values have premultiplied alpha.
+            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
+            // Enable alpha blending.
+            glEnable(GL_BLEND);
+
+            // Draw the facets with the texture.
+            if (0u == texture_id) throw GLException("texture id is 0");
+
+            glBindTexture(GL_TEXTURE_2D, texture_id);
+
+            // Render Texture on the whole screen. TODO: Function initialization not threadsafe.
+            screenquad();
+
+            // evtl flushhudmatrix here..
+
+            // Disable alpha blending.
+            glDisable(GL_BLEND);
+        }
+    }
+
+}
+
 void gl_drawframe()
 {
     if(deferdrawtextures) drawtextures();
@@ -1952,14 +2014,18 @@ void gl_drawframe()
 
     glDisable(GL_TEXTURE_2D);
 
+    // ----------------------------------
+    gl_rendercef();
+    // ----------------------------------
+    // metapp.Render();
+    // ----------------------------------
+
     //renderbackground(NULL, NULL, NULL, NULL, true, true);
     // renderpostfx();
 
     // hudmatrix.ortho(0, w, h, 0, -1, 1);
     // resethudmatrix();
     // hudshader->set();
-
-    metapp.Render();
 
     // renderpostfx();
     // hudshader->set();
@@ -1983,8 +2049,12 @@ void gl_drawmainmenu()
     renderbackground(NULL, NULL, NULL, NULL, true, true);
     renderpostfx();
 
-    hudshader->set();
-    metapp.Render();
+    // ----------------------------------
+    gl_rendercef();
+    // ----------------------------------
+
+    // hudshader->set();
+    // metapp.Render();
     // nullshader->set();
 
     g3d_render();
