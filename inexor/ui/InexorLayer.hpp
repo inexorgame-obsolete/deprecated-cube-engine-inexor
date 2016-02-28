@@ -54,6 +54,7 @@ class InexorLayer : public CefClient,
         // Getters for handlers
         virtual CefRefPtr<InexorLayer> GetClientHandler() { return this; };
         virtual CefRefPtr<CefRenderHandler> GetRenderHandler() { return render_handler; }
+        virtual CefRefPtr<InexorRenderHandler> GetInexorRenderHandler() { return render_handler; }
         virtual CefRefPtr<CefBrowser> GetBrowser() { return browser; };
         virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() { return this; }
         virtual CefRefPtr<CefLoadHandler> GetLoadHandler() { return this; }
