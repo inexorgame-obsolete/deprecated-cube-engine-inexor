@@ -14,7 +14,9 @@ BuildRequires:  pkgconfig(SDL2_image)
 BuildRequires:  pkgconfig(SDL2_mixer)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  pkgconfig(protobuf-c)
-BuildRequires:  pkgconfig(cmake)
+BuildRequires:  cmake
+BuildRequires:  boost-devel
+
 %description
 Inexor is a fork of the open-source First-Person-Shooter Cube 2: Sauerbraten, a fast-paced shooting game featuring an ingame map editor.
 In contrast to Sauerbraten, Inexor adds a lot of functionality and strives to stay open to improvements and suggestions.
