@@ -4,3 +4,6 @@
 [submodule "inexor/libraries/googletest"]
 	path = vendor/googletest
 	url = https://github.com/inexor-game/googletest.git
+[submodule "node/assets/jq-console"]
+	path = node/assets/jq-console
+	url = https://github.com/replit/jq-console.git

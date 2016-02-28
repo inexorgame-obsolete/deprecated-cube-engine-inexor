@@ -1,0 +1,33 @@
+{
+  "name": "Inexor_IPC_Client",
+  "version": "0.0.2",
+  "description": "Scripting in node.js for Inexor",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:inexor-game/code.git"
+  },
+  "author": "",
+  "license": "zlib",
+  "bugs": {
+    "url": "https://github.com/inexor-game/code/issues"
+  },
+  "dependencies": {
+    "async": "^1.5.2",
+    "body-parser": "^1.15.0",
+    "bunyan": "^1.7.0",
+    "coffee-script": "^1.10.0",
+    "express": "^4.13.4",
+    "lodash": "^4.5.1",
+    "long": "^3.0.3",
+    "promise": "^7.1.1",
+    "protobufjs": "^5.0.1",
+    "requirejs": "^2.1.22",
+    "serve-static": "^1.10.2",
+    "uuid": "^2.0.1",
+    "yargs": "^4.1.0"
+  }
+}
