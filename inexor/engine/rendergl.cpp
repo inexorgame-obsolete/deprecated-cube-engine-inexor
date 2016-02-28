@@ -1887,32 +1887,30 @@ void gl_rendercef()
                 continue;
             }
 
-            conoutf("initialized: %d view: %d x %d texture: %d", initialized, view_width, view_height, texture_id);
+            // conoutf("initialized: %d view: %d x %d texture: %d", initialized, view_width, view_height, texture_id);
 
             hudmatrix.ortho(0, view_width, view_height, 0, -1, 1);
             resethudmatrix();
 
             hudshader->set();
-            gle::colorf(1, 1, 1);
-
-            gle::defvertex(2);
-            gle::deftexcoord0();
+            gle::colorf(1.0f, 1.0f, 1.0f, 1.0f);
 
             // Alpha blending style. Texture values have premultiplied alpha.
             glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
+            glEnable(GL_TEXTURE_2D);
             // Enable alpha blending.
             glEnable(GL_BLEND);
-
-            // Draw the facets with the texture.
-            if (0u == texture_id) throw GLException("texture id is 0");
 
             glBindTexture(GL_TEXTURE_2D, texture_id);
 
             // Render Texture on the whole screen. TODO: Function initialization not threadsafe.
-            screenquad();
+            hudquad(view_x, view_y, view_width, view_height);
 
             // evtl flushhudmatrix here..
+
+            // Disable 2D textures.
+            glDisable(GL_TEXTURE_2D);
 
             // Disable alpha blending.
             glDisable(GL_BLEND);
@@ -2014,30 +2012,9 @@ void gl_drawframe()
 
     glDisable(GL_TEXTURE_2D);
 
-    // ----------------------------------
     gl_rendercef();
-    // ----------------------------------
-    // metapp.Render();
-    // ----------------------------------
-
-    //renderbackground(NULL, NULL, NULL, NULL, true, true);
-    // renderpostfx();
-
-    // hudmatrix.ortho(0, w, h, 0, -1, 1);
-    // resethudmatrix();
-    // hudshader->set();
-
-    // renderpostfx();
-    // hudshader->set();
-    // metapp.Render();
-
-    // hudshader->set();
-    // metapp.Render();
-    // nullshader->set();
-
     g3d_render();
     gl_drawhud();
-
 
     renderedgame = false;
 }
@@ -2049,18 +2026,9 @@ void gl_drawmainmenu()
     renderbackground(NULL, NULL, NULL, NULL, true, true);
     renderpostfx();
 
-    // ----------------------------------
     gl_rendercef();
-    // ----------------------------------
-
-    // hudshader->set();
-    // metapp.Render();
-    // nullshader->set();
-
     g3d_render();
     gl_drawhud();
-
-
 }
 
 VARNP(damagecompass, usedamagecompass, 0, 1, 1);
