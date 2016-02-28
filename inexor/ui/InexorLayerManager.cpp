@@ -293,11 +293,10 @@ void InexorLayerManager::Render()
 
 void InexorLayerManager::SendKeyEvent(CefKeyEvent event)
 {
-    // std::cerr << "InexorLayerManager::SendKeyEvent()\n";
     for(std::list<CefRefPtr<InexorLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
     {
         CefRefPtr<InexorLayer> layer = (*it);
-        if (layer.get() && /* layer->IsVisible() && */ layer->IsAcceptingInput()) {
+        if (layer.get() && layer->IsAcceptingInput()) {
             std::cerr << "layer->GetBrowser()->GetHost()->SendKeyEvent() -> " << layer->GetName() << "\n";
             layer->GetBrowser()->GetHost()->SendKeyEvent(event);
         }
@@ -309,7 +308,7 @@ void InexorLayerManager::SendMouseClickEvent(const CefMouseEvent& event, CefBrow
     for(std::list<CefRefPtr<InexorLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
     {
         CefRefPtr<InexorLayer> layer = (*it);
-        if (layer.get() && /* layer->IsVisible() && */ layer->IsAcceptingInput()) {
+        if (layer.get() && layer->IsAcceptingInput()) {
             std::cerr << "layer->GetBrowser()->GetHost()->SendMouseClickEvent() -> " << layer->GetName() << "\n";
             layer->GetBrowser()->GetHost()->SendMouseClickEvent(event, type, mouseUp, clickCount);
         }
@@ -321,7 +320,7 @@ void InexorLayerManager::SendMouseMoveEvent(const CefMouseEvent& event, bool mou
     for(std::list<CefRefPtr<InexorLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
     {
         CefRefPtr<InexorLayer> layer = (*it);
-        if (layer.get() && /* layer->IsVisible() && */ layer->IsAcceptingInput()) {
+        if (layer.get() && layer->IsAcceptingInput()) {
             std::cerr << "layer->GetBrowser()->GetHost()->SendMouseMoveEvent() -> " << layer->GetName() << "\n";
             layer->GetBrowser()->GetHost()->SendMouseMoveEvent(event, mouseLeave);
         }
@@ -333,7 +332,7 @@ void InexorLayerManager::SendMouseWheelEvent(const CefMouseEvent& event, int del
     for(std::list<CefRefPtr<InexorLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
     {
         CefRefPtr<InexorLayer> layer = (*it);
-        if (layer.get() && /* layer->IsVisible() && */ layer->IsAcceptingInput()) {
+        if (layer.get() && layer->IsAcceptingInput()) {
             std::cerr << "layer->GetBrowser()->GetHost()->SendMouseWheelEvent() -> " << layer->GetName() << "\n";
             layer->GetBrowser()->GetHost()->SendMouseWheelEvent(event, deltaX, deltaY);
         }
