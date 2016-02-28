@@ -1,6 +1,4 @@
-#include <include/cef_base.h>
-
-#include "inexor/ui/InexorCefApp.hpp"
+#include "inexor/cef_subprocess/main.hpp"
 
 int main(int argc, char **argv) {
     CefMainArgs ma{argc, argv};
