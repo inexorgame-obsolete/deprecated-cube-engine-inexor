@@ -1,4 +1,4 @@
-set(mod inexor_cef_subprocess)
+set(mod cef_subprocess)
 string(TOUPPER ${mod} MOD)
 
 # We are including cube.h TODO: Get rid of this
