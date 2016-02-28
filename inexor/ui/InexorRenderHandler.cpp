@@ -62,6 +62,7 @@ void InexorRenderHandler::Cleanup() {
 }
 
 void InexorRenderHandler::Render() {
+    /*
     if (view_width == 0 || view_height == 0 || !initialized)
         return;
 
@@ -75,16 +76,6 @@ void InexorRenderHandler::Render() {
 
     gle::defvertex(2);
     gle::deftexcoord0();
-
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); VERIFY_NO_ERROR;
-    // glMatrixMode(GL_MODELVIEW); VERIFY_NO_ERROR;
-    // glLoadIdentity(); VERIFY_NO_ERROR;
-    // glViewport(0, 0, view_width*2, view_height*2); VERIFY_NO_ERROR;
-
-    // Match GL units to screen coordinates.
-    // glViewport(0, 0, view_width_, view_height_); VERIFY_NO_ERROR;
-    //glMatrixMode(GL_PROJECTION); VERIFY_NO_ERROR;
-    //glLoadIdentity(); VERIFY_NO_ERROR;
 
     // Alpha blending style. Texture values have premultiplied alpha.
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA); VERIFY_NO_ERROR;
@@ -104,6 +95,7 @@ void InexorRenderHandler::Render() {
 
     // Disable alpha blending.
     glDisable(GL_BLEND); VERIFY_NO_ERROR;
+    */
 }
 
 void InexorRenderHandler::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show)

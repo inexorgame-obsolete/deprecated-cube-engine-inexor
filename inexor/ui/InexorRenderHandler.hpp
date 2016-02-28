@@ -46,6 +46,9 @@ class InexorRenderHandler : public CefRenderHandler {
         CefRect GetPopupRectInWebView(const CefRect& original_rect);
         void ClearPopupRects();
 
+        bool IsInitialized() { return initialized; };
+        unsigned int GetTextureId() { return texture_id; };
+
     private:
         const bool transparent;
         bool initialized;

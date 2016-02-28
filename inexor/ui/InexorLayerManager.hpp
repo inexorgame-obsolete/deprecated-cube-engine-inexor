@@ -20,6 +20,8 @@ class InexorLayerManager : public InexorContextProvider
         void Render();
         void RenderLayer(std::string name);
         void SetScreenSize(int width, int height);
+        int GetScreenWidth() { return width; };
+        int GetScreenHeight() { return height; };
 
         // Layers
         void InitializeLayers();
@@ -31,6 +33,7 @@ class InexorLayerManager : public InexorContextProvider
         CefRefPtr<InexorLayer> CreateLayer(std::string name, int x, int y, int width, int height, std::string url);
         CefRefPtr<InexorLayer> GetLayer(std::string name);
         std::list<std::string> GetLayers();
+        std::list<CefRefPtr<InexorLayer> > GetLayerList() { return layers; };
         bool LayerExists(std::string name);
         void ShowLayer(std::string name);
         void HideLayer(std::string name);
