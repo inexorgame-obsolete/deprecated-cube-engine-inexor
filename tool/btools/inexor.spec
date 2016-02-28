@@ -6,6 +6,13 @@ Copyright: zlib
 Group: Amusements/Games
 Source: https://github.com/inexor-game/code/archive/0.5.0-alpha.tar.gz
 BuildRoot: /tmp/%{name}-buildroot
+BuildRequires:  Mesa-devel
+BuildRequires:  fdupes
+BuildRequires:  gcc-c++
+BuildRequires:  pkg-config
+BuildRequires:  pkgconfig(SDL2_image)
+BuildRequires:  pkgconfig(SDL2_mixer)
+BuildRequires:  pkgconfig(zlib)
 %description
 Inexor is a fork of the open-source First-Person-Shooter Cube 2: Sauerbraten, a fast-paced shooting game featuring an ingame map editor.
 In contrast to Sauerbraten, Inexor adds a lot of functionality and strives to stay open to improvements and suggestions.
