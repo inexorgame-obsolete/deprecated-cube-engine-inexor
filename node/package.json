@@ -23,6 +23,7 @@
     "express": "^4.13.4",
     "lodash": "^4.5.1",
     "long": "^3.0.3",
+    "net-socket": "^1.0.0",
     "promise": "^7.1.1",
     "protobufjs": "^5.0.1",
     "requirejs": "^2.1.22",
