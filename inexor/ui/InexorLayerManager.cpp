@@ -297,7 +297,7 @@ void InexorLayerManager::SendKeyEvent(CefKeyEvent event)
     {
         CefRefPtr<InexorLayer> layer = (*it);
         if (layer.get() && layer->IsAcceptingInput()) {
-            std::cerr << "layer->GetBrowser()->GetHost()->SendKeyEvent() -> " << layer->GetName() << "\n";
+            // std::cerr << "layer->GetBrowser()->GetHost()->SendKeyEvent() -> " << layer->GetName() << "\n";
             layer->GetBrowser()->GetHost()->SendKeyEvent(event);
         }
     }
@@ -309,7 +309,7 @@ void InexorLayerManager::SendMouseClickEvent(const CefMouseEvent& event, CefBrow
     {
         CefRefPtr<InexorLayer> layer = (*it);
         if (layer.get() && layer->IsAcceptingInput()) {
-            std::cerr << "layer->GetBrowser()->GetHost()->SendMouseClickEvent() -> " << layer->GetName() << "\n";
+            // std::cerr << "layer->GetBrowser()->GetHost()->SendMouseClickEvent() -> " << layer->GetName() << "\n";
             layer->GetBrowser()->GetHost()->SendMouseClickEvent(event, type, mouseUp, clickCount);
         }
     }
@@ -321,7 +321,7 @@ void InexorLayerManager::SendMouseMoveEvent(const CefMouseEvent& event, bool mou
     {
         CefRefPtr<InexorLayer> layer = (*it);
         if (layer.get() && layer->IsAcceptingInput()) {
-            std::cerr << "layer->GetBrowser()->GetHost()->SendMouseMoveEvent() -> " << layer->GetName() << "\n";
+            // std::cerr << "layer->GetBrowser()->GetHost()->SendMouseMoveEvent() -> " << layer->GetName() << "\n";
             layer->GetBrowser()->GetHost()->SendMouseMoveEvent(event, mouseLeave);
         }
     }
@@ -333,7 +333,7 @@ void InexorLayerManager::SendMouseWheelEvent(const CefMouseEvent& event, int del
     {
         CefRefPtr<InexorLayer> layer = (*it);
         if (layer.get() && layer->IsAcceptingInput()) {
-            std::cerr << "layer->GetBrowser()->GetHost()->SendMouseWheelEvent() -> " << layer->GetName() << "\n";
+            // std::cerr << "layer->GetBrowser()->GetHost()->SendMouseWheelEvent() -> " << layer->GetName() << "\n";
             layer->GetBrowser()->GetHost()->SendMouseWheelEvent(event, deltaX, deltaY);
         }
     }
