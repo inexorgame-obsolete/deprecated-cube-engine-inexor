@@ -61,40 +61,7 @@ void InexorRenderHandler::Cleanup() {
 }
 
 void InexorRenderHandler::Render() {
-    /*
-    if (view_width == 0 || view_height == 0 || !initialized)
-        return;
-
-    DCHECK(initialized);
-
-    hudmatrix.ortho(0, view_width, view_height, 0, -1, 1);
-    resethudmatrix();
-
-    hudshader->set();
-    gle::colorf(1, 1, 1);
-
-    gle::defvertex(2);
-    gle::deftexcoord0();
-
-    // Alpha blending style. Texture values have premultiplied alpha.
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA); VERIFY_NO_ERROR;
-
-    // Enable alpha blending.
-    glEnable(GL_BLEND); VERIFY_NO_ERROR;
-
-    // Draw the facets with the texture.
-    if (0u == texture_id) throw GLException("texture id is 0");
-
-    glBindTexture(GL_TEXTURE_2D, texture_id); VERIFY_NO_ERROR;
-
-    // Render Texture on the whole screen. TODO: Function initialization not threadsafe.
-    screenquad(); VERIFY_NO_ERROR;
-
-    // evtl flushhudmatrix here..
-
-    // Disable alpha blending.
-    glDisable(GL_BLEND); VERIFY_NO_ERROR;
-    */
+    // Rendering happens in rendergl.cpp
 }
 
 void InexorRenderHandler::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show)
