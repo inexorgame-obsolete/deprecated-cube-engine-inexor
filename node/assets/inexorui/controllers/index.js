@@ -7,5 +7,6 @@
  **/
 define([
   './MainMenuController',
-  './ConsoleController'
+  './ConsoleController',
+  './KeyboardTestController'
 ], function () {});
