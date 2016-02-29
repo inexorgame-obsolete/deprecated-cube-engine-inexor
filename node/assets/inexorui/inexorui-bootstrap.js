@@ -5,9 +5,10 @@
 define([
   'require',
   'angular',
+  'jquery',
   'inexorui',
   'inexorui-routes'
-], function (require, angular) {
+], function (require, angular, jquery) {
   'use strict';
 
   /*
