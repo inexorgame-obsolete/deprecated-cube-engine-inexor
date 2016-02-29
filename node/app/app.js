@@ -88,7 +88,7 @@ app.post('/execute', function(req, res, next) {
 });
 
 // Serve static files from the assets folder
-app.use(serveStatic('assets', {'index': ['index.html', 'index.htm']}));
+app.use(serveStatic('assets', {'index': ['inexorui/index.html']}));
 
 // Handle errors
 app.use(function(err, req, res, next) {
