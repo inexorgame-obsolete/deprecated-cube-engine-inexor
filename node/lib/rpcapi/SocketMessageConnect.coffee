@@ -1,6 +1,6 @@
 Long = require "../util/Long"
 BufferBuilder = require "../util/BufferBuilder"
-net = require 'net'
+net = require 'net-socket'
 
 # Pendant of C++ MessageConnect, more specifically
 # inexor::net::MCSocket.
