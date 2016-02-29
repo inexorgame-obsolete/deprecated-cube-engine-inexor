@@ -77,13 +77,10 @@ app.use(bodyParser.json()); // for parsing application/json
 
 //Send POST-only requests to /execute
 //TODO: Sanitize data and restrict access to localhost-only!
-//TODO: Resolve promises and send single-request / talk with Hanack about this
 app.post('/execute', function(req, res, next) {
-    stack = []
-    for (var key in req.body) {
-        stack.push(EvalCubescript(req.body[key]));
-    }
-    res.json(stack);
+    EvalCubescript(req.body.code).then(function(data) {
+        res.json(data); 
+    });
     next();
 });
 
