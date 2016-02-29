@@ -1887,8 +1887,6 @@ void gl_rendercef()
                 continue;
             }
 
-            // conoutf("initialized: %d view: %d x %d texture: %d", initialized, view_width, view_height, texture_id);
-
             hudmatrix.ortho(0, view_width, view_height, 0, -1, 1);
             resethudmatrix();
 
@@ -1906,8 +1904,6 @@ void gl_rendercef()
 
             // Render Texture on the whole screen. TODO: Function initialization not threadsafe.
             hudquad(view_x, view_y, view_width, view_height);
-
-            // evtl flushhudmatrix here..
 
             // Disable 2D textures.
             glDisable(GL_TEXTURE_2D);
