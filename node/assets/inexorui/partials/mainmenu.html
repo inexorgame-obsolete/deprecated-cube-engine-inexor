@@ -1,8 +1,31 @@
 <h2>Main Menu</h2>
 
-<input type="text" ng-model="data"></div>
+<div class="container">
+  Message: <input type="text" ng-model="message" />
 
-<div class="btn-group" role="group" aria-label="...">
-  <button type="button" class="btn btn-default" ng-click="openConsole()"><i class="fa fa-terminal"></i> Open Console</button>
-  <button type="button" class="btn btn-default" ng-click="changeText()"><i class="fa fa-pencil"></i> Change Text</button>
+  <div class="btn-group" role="group">
+    <button type="button" class="btn btn-default" ng-click="changeText()"><i class="fa fa-pencil"></i> Change Text</button>
+    <button type="button" class="btn btn-default" ng-click="openConsole()"><i class="fa fa-terminal"></i> Open Console</button>
+  </div>
+</div>
+
+<br />
+
+<div class="container">
+  <div class="form-group">
+    <div class="input-group">
+      <span class="input-group-addon"><i class="fa fa-desktop"></i> </span>
+      <input type="text" class="form-control" placeholder="Hostname" ng-model="host" />
+    </div>
+    <div class="input-group">
+      <span class="input-group-addon"><i class="fa fa-circle-thin"></i> </span>
+      <input type="text" class="form-control" placeholder="Port" ng-model="port" />
+    </div>
+  </div>
+  <div>
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-success" ng-if="!connected" ng-click="connect()"><i class="fa fa-arrow-circle-o-right"></i> Connect to {{host}} {{port}}</button>
+      <button type="button" class="btn btn-danger" ng-if="connected" ng-click="disconnect()"><i class="fa fa-arrow-circle-left"></i> Disconnect</button>
+    </div>
+  </div>
 </div>
