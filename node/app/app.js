@@ -76,12 +76,12 @@ app.use(function(req, res, next) {
 app.use(bodyParser.json()); // for parsing application/json
 
 //Send POST-only requests to /execute
+// NOTE: The /api namespace is reserved for the future tree API, this is temporary
 //TODO: Sanitize data and restrict access to localhost-only!
-app.post('/execute', function(req, res, next) {
+app.post('/api/execute', function(req, res) {
     EvalCubescript(req.body.code).then(function(data) {
-        res.json(data); 
+        res.json(data);
     });
-    next();
 });
 
 // Serve static files from the assets folder
