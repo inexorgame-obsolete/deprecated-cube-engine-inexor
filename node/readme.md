@@ -1,69 +1,38 @@
-# Inexor: Javascript components
+#Inexor node application server
 
-```
-../inexor_node_unix [port] [ip]
-```
+This is the Inexor node application server, delivered with Inexor to serve RPC requests.
+##About
+The following server is a simple re-write of the previous node webserver. It's aims are
+ - simplicity
+ - usability
+ - fully functional.
 
-This starts the main node application, which provides the
-web application and the HTTP API.
+##How to use it
+You can start the server with the following syntax
+ 1. Make sure Inexor runs and listens for IPC-connections, use `subsystem_start rpc` if it doesn't.
+ 2. The following applies under linux
+  - install all requirements with `npm install`
+  - run the server with `node app/app.js`
+  - you can specify optional commands and a configuration file, have a look at `node app/app.js -h`
 
-* port – The port to listen to; DEFAULT: 48702
-* ip – The IP address to bind to. Set to all in order to
-  bind to all available IPs;  DEFAULT: "localhost"
+##Organizational things for web/node-developers
+The server does the following at the moment
 
-```
-subsystem_start rpc
-subsystem_start cef
-```
+ - Serve all static files from `node/assets`
+ - Handle a static post route at `localhost:48702/execute`
+  - You can fire an event using `Content-type: application/json`
+  - Basically every valid JSON keypair will be executed, eg: `json { "code": "echo\"test\"" }`
 
-Start the RPC interface and the web GUI in inexor.
-The node server (above) must be started before this and it
-only works if we're listening to the default interface.
+I have specifically created this server to be lightweight (very few dependencies) and easy to understand.
 
-## What is this?
-
-This folder contains all of inexors components written in
-javascript (coffeescript actually, but it compiles to JS).
-
-This contains the web application that is the interface of
-inexor; it is both used as the (future) default ingame
-interface for inexor and as a web interface which can be
-used to remote-control inexor or a game server.
-
-The web application's server is written in node; this node
-application will in future also implement various features
-(e.g. master server, ingame chat, plugins directory,
-automatic map detection, ...) and a scripting interface for
-inexor.
-
-Then, we also provide a few generic utilities and javascript
-bindings for the inexor RPC (google protobuf) API and the
-node.js applications http API. (The protobuf API is a direct
-connection to inexor with a much better performance, but is
-much more low level. The HTTP API is easier to use and
-provides more features, but with a lot less performance).
-
-## webserver/
-
-This essentially contains the node.js application, which at
-the moment provides the server for the web UI and the server
-for the inexor HTTP API.
-
-JS/Coffee files under lib/ and webserver/ can be required.
-
-It  is started via the bin/serve command, but in order to
-get the NODE_PATHS right, you should start it via 
-
-## webui/
-
-This contains the Angular based web app we show as UI.
-The JS/coffeescript files from lib/ and webui/lib can be
-used.
-
-* `webui/main` Contains the main HTML site and the bootsrtap
-  code we're always on.
-* `webui/lib` contains all the JS code specific to the web
-  app.
-* `webui/components` contains reusable directives
-* `webui/windows` contains all the windows/guis we have.
+We ship [jq-console](https://github.com/replit/jq-console), which shall the replacement for the existing CubeScript command-line.
+##Roadmap and TODO
+Of course this is provisional and a lot of things are likely to differ, but I'll list the important changes here
+  - Fix the `inexor_node_unix` script
+  - Fix: the server should either exit or reboot once `/tmp/inexor.socket` has been touched
+  - Fix: use a single response model for the RPC client
+  - Enhance: send and receive commands via jq-console
+  - Optionally: implement [browserify](http://browserify.org/) to deliver our dependencies
+  - Future: implement a [node-tree API](https://github.com/inexor-game/code/wiki/Inexor-Tree-API#nodejs-implenentation) which will replace RPC/ICP
+  - Release: design a GUI, replace that CubeScript stuff
 
