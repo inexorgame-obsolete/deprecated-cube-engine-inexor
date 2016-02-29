@@ -1862,16 +1862,11 @@ void gl_rendercef()
                 continue;
             }
 
-            // conoutf("initialized: %d view: %d x %d texture: %d", initialized, view_width, view_height, texture_id);
-
             hudmatrix.ortho(0, view_width, view_height, 0, -1, 1);
             resethudmatrix();
 
             hudshader->set();
-            gle::colorf(1.0f, 1.0f, 1.0f, 0.5f);
-
-            // gle::defvertex(2);
-            // gle::deftexcoord0();
+            gle::colorf(1.0f, 1.0f, 1.0f, 0.8f);
 
             // Alpha blending style. Texture values have premultiplied alpha.
             glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
@@ -1883,8 +1878,6 @@ void gl_rendercef()
 
             // Render Texture on the whole screen. TODO: Function initialization not threadsafe.
             hudquad(view_x, view_y, view_width, view_height);
-
-            // evtl flushhudmatrix here..
 
             // Disable 2D textures.
             glDisable(GL_TEXTURE_2D);
