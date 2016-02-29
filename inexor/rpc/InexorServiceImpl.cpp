@@ -35,9 +35,10 @@ namespace rpc {
       Closure* done) {
 
 #ifndef STANDALONE
-    tagval v;
-    ::executeret(req->code().c_str(), v);
-
+    //tagval *commandret;
+    ::executeret(req->code().c_str(), *commandret);
+    tagval &v = *commandret;
+    
     switch (v.type) {
       case VAL_STR:   res->set_s(v.getstr()); break;
       case VAL_INT:   res->set_i(v.getint()); break;
