@@ -5,7 +5,7 @@
  * below, you can see we bring in our services and constants modules
  * which avails each controller of, for example, the `config` constants object.
  **/
-define([
-  './KeyboardTestController',
-  './UiTestController'
-], function () {});
+define(['angular'], function (angular) {
+  'use strict';
+  return angular.module('inexorui.controllers.hud', []);
+});

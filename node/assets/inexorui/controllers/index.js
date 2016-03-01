@@ -6,8 +6,8 @@
  * which avails each controller of, for example, the `config` constants object.
  **/
 define([
+  './hud/index',
   './menu/index',
   './test/index',
-  './TabbedNavigationController',
-  './ConsoleController'
+  './TabbedNavigationController'
 ], function () {});

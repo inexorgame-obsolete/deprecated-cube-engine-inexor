@@ -1,7 +1,7 @@
 define(['./module'], function(controllers) {
   'use strict';
-  controllers.controller('MainMenuController', ['$scope', '$state', '$http', 'MenuService',
-    function ($scope, $state, $http, MenuService) {
+  controllers.controller('MainMenuController', ['$scope', '$state', '$http', 'MenuService', 'HudService',
+    function ($scope, $state, $http, MenuService, HudService) {
 
       $scope.message = "The main menu";
       $scope.clientIcon = "";
@@ -10,8 +10,12 @@ define(['./module'], function(controllers) {
       	MenuService.func();
       };
 
-      $scope.openConsole = function() {
-        $state.go('/console');
+      $scope.showConsole = function() {
+        HudService.showHud('console');
+      };
+
+      $scope.hideConsole = function() {
+        HudService.hideHud('console');
       };
 
       $scope.getClientIcon = function() {
