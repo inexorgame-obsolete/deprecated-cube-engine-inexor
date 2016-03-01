@@ -1,6 +1,9 @@
 #include <iostream>
 
+#include "inexor/util/Logging.hpp"
 #include "inexor/ui/InexorLayer.hpp"
+
+using namespace inexor::util;
 
 InexorLayer::InexorLayer(std::string name, int x, int y, int width, int height, std::string url)
     : name(name),
@@ -20,8 +23,8 @@ InexorLayer::InexorLayer(std::string name, int x, int y, int width, int height, 
     render_handler = new InexorRenderHandler(true, x, y, width, height);
     browser = CefBrowserHost::CreateBrowserSync(window_info, this, url, browser_settings, NULL);
     if (browser.get()) {
-        spdlog::get("global")->debug() << "init: cef: created layer \"" << name << "\"";
-        browser->GetHost()->SendFocusEvent(has_focus);
+        spdlog::get("global")->debug() << "init: cef: created layer " << quoted(name.c_str());
+        browser->GetHost()->SendFocusEvent(is_accepting_input);
     }
 }
 
@@ -45,7 +48,8 @@ void InexorLayer::SetIsAcceptingInput(bool is_accepting_input)
 void InexorLayer::Destroy()
 {
     spdlog::get("global")->debug() << "InexorCefLayer::Destroy()";
-    browser->GetHost()->CloseBrowser(true);
+    if(browser.get())
+        browser->GetHost()->CloseBrowser(true);
     // DoClose(browser);
 }
 
