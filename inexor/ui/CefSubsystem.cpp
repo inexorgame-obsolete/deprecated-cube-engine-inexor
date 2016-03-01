@@ -14,6 +14,7 @@ namespace ui {
 
 CefSubsystem::CefSubsystem() {
     ::cef_app = new InexorCefApp(1920, 1080);
+<<<<<<< e71c8ab8cdc200260473c71c56fd303d797eee30
 
     const CefMainArgs args;
 <<<<<<< e0fea76875d8e631b78ed20d65018e3d4e894567
@@ -33,6 +34,9 @@ CefSubsystem::CefSubsystem() {
 >>>>>>> Refactoring
 
     tick();
+=======
+    // const CefMainArgs args;
+>>>>>>> Subsystem initialization with main args; Never render cef if cef_app not
 }
 
 CefSubsystem::~CefSubsystem() {
@@ -53,8 +57,10 @@ void CefSubsystem::tick() {
     CefDoMessageLoopWork();
 }
 
-void CefSubsystem::Render() {
-    ::cef_app->Render();
+void CefSubsystem::initialize(int argc, char **argv) {
+    const CefMainArgs args(argc, argv);
+    InexorSettings settings;
+    CefInitialize(args, settings, ::cef_app.get(), NULL);
 }
 
 

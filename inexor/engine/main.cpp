@@ -1295,12 +1295,18 @@ int main(int argc, char **argv)
         }
     }
 
+<<<<<<< e71c8ab8cdc200260473c71c56fd303d797eee30
     // require subsystems BEFORE configurations are done
     //Initialize the metasystem
     SUBSYSTEM_REQUIRE(rpc); // remote process control: communication with the scripting engine
     SUBSYSTEM_REQUIRE(cef); // (embedded chromium): ingame html5+js browser for the ui.
 
     metapp.start("rpc");
+=======
+    /// require subsystems BEFORE configurations are done
+    SUBSYSTEM_REQUIRE(rpc);
+    SUBSYSTEM_REQUIRE(cef);
+>>>>>>> Subsystem initialization with main args; Never render cef if cef_app not
 
     execfile("init.cfg", false);
 
@@ -1474,11 +1480,10 @@ int main(int argc, char **argv)
     inputgrab(grabinput = true);
     ignoremousemotion();
 
-    //Initialize the metasystem
-    //SUBSYSTEM_REQUIRE(rpc);
-    //SUBSYSTEM_REQUIRE(cef);
-    metapp.start("rpc");
-    metapp.start("cef");
+    // Initialize the subsystems
+	//SUBSYSTEM_REQUIRE(rpc);
+	//SUBSYSTEM_REQUIRE(cef);
+    metapp.initialize(argc, argv);
 
 	// main game loop
     for(;;)

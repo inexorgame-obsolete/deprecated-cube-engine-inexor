@@ -17,7 +17,7 @@ public:
     CefSubsystem();
     virtual ~CefSubsystem();
     virtual void tick();
-    virtual void Render();
+    virtual void initialize(int argc, char **argv);
 };
 
 }
