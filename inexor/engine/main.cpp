@@ -1249,7 +1249,6 @@ int main(int argc, char **argv)
     }
 
     /// require subsystems BEFORE configurations are done
-    //Initialize the metasystem
     SUBSYSTEM_REQUIRE(rpc);
     SUBSYSTEM_REQUIRE(cef);
 
@@ -1425,9 +1424,11 @@ int main(int argc, char **argv)
     inputgrab(grabinput = true);
     ignoremousemotion();
 
-    //Initialize the metasystem
+    // Initialize the subsystems
+    logoutf("init: subsystems");
     metapp.start("rpc");
     metapp.start("cef");
+    metapp.initialize(argc, argv);
 
 	// main game loop
     for(;;)
