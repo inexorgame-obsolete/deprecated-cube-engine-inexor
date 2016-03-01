@@ -4,11 +4,12 @@
  */
 define([
   'require',
+  'jquery-migrate',
   'angular',
-  'jquery',
   'inexorui',
-  'inexorui-routes'
-], function (require, angular, jquery) {
+  'inexorui-routes',
+  'jqconsole'
+], function (require, jquery, angular) {
   'use strict';
 
   /*

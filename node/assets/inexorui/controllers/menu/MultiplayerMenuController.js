@@ -1,30 +1,11 @@
 define(['./module'], function(controllers) {
   'use strict';
-  controllers.controller('MainMenuController', ['$scope', '$state', '$http', 'MenuService',
+  controllers.controller('MultiplayerMenuController', ['$scope', '$state', '$http', 'MenuService',
     function ($scope, $state, $http, MenuService) {
 
-      $scope.message = "The main menu";
       $scope.connected = false;
       $scope.host = "inexor.nooblounge.net";
       $scope.port = "31415";
-      $scope.clientIcon = "";
-
-      $scope.func = function() {
-      	MenuService.func();
-      };
-
-      $scope.openConsole = function() {
-        $state.go('/console');
-      };
-
-      $scope.getClientIcon = function() {
-        $http.post("/execute", {
-          code: "getclienticon"
-        }).then(function(response) {
-  	      console.log(response);
-  	      $scope.clientIcon = response.data;
-  	    });  
-      };
 
       $scope.connect = function() {
         $http.post("/api/execute", {
@@ -44,11 +25,9 @@ define(['./module'], function(controllers) {
         });  
       };
 
-      $scope.changeText = function() {
-    	  $scope.message = "Text changed!";
-      };
+      // TODO: getHost, getPort
 
-      console.log("MainMenuController initialized!");
+      console.log("MultiplayerMenuController initialized!");
     }
   ]);
 });
