@@ -9,6 +9,8 @@ define([
   'use strict';
   return angular.module('inexorui', [
     'inexorui.controllers',
+    'inexorui.controllers.menu',
+    'inexorui.controllers.test',
     'inexorui.directives',
     'inexorui.filters',
     'inexorui.services',
