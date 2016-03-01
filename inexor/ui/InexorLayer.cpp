@@ -45,7 +45,9 @@ void InexorLayer::SetIsAcceptingInput(bool is_accepting_input)
 void InexorLayer::Destroy()
 {
     std::cerr << "InexorLayer::Destroy()\n";
-    browser->GetHost()->CloseBrowser(true);
+    if (browser.get()) {
+        browser->GetHost()->CloseBrowser(true);
+    }
     // DoClose(browser);
 }
 
