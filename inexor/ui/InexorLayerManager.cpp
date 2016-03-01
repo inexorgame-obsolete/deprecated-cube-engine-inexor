@@ -30,7 +30,10 @@ void InexorLayerManager::DestroyLayers()
     spdlog::get("global")->debug() << "InexorCefLayerManager::DestroyLayers()";
     for(std::list<CefRefPtr<InexorLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
     {
-        (*it)->Destroy();
+        CefRefPtr<InexorLayer> layer = (*it);
+        if (layer.get()) {
+            layer->Destroy();
+        }
     }
 }
 

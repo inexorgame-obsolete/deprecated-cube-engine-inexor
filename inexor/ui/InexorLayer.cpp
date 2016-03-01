@@ -46,6 +46,9 @@ void InexorLayer::Destroy()
 {
     spdlog::get("global")->debug() << "InexorCefLayer::Destroy()";
     browser->GetHost()->CloseBrowser(true);
+    if (browser.get()) {
+        browser->GetHost()->CloseBrowser(true);
+    }
     // DoClose(browser);
 }
 
