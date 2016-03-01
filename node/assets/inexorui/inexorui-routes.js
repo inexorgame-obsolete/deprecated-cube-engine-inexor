@@ -3,6 +3,7 @@ define(['./inexorui'], function (inexorui) {
   return inexorui.config(function ($stateProvider, $urlRouterProvider) {
     // The default route
     $urlRouterProvider.otherwise("/menu/main");
+    // Definition of the routes: state name, state url, partial template url, controller name
     $stateProvider
       .state('/menu/main', {
         url: '/menu/main',
@@ -14,15 +15,15 @@ define(['./inexorui'], function (inexorui) {
         templateUrl: 'inexorui/partials/menu/multiplayer.html',
         controller: 'MultiplayerMenuController'
       })
-      .state('/console', {
-        url: '/console',
-        templateUrl: 'inexorui/partials/console.html',
-        controller: 'ConsoleController'
-      })
       .state('/test/keyboard', {
         url: '/test/keyboard',
         templateUrl: 'inexorui/partials/test/keyboard.html',
         controller: 'KeyboardTestController'
+      })
+      .state('/test/ui', {
+        url: '/test/ui',
+        templateUrl: 'inexorui/partials/test/ui.html',
+        controller: 'UiTestController'
       });
   });
 });

@@ -6,5 +6,6 @@
  * which avails each controller of, for example, the `config` constants object.
  **/
 define([
-  './MenuService'
+  './MenuService',
+  './HudService'
 ], function () {});

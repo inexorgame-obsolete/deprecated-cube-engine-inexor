@@ -1,13 +1,15 @@
 define(['./module'], function(controllers) {
   'use strict';
-  controllers.controller('ConsoleController', ['$scope', '$http',
-    function ($scope, $http) {
+  controllers.controller('ConsoleHudController', ['$scope', '$http', 'hotkeys',
+    function ($scope, $http, hotkeys) {
 
 	  // TODO: F11 fullscreen console
 	  // TODO: F12 quake-like console ()
 	  // TODO: move console to service (component should live even when the controller is not active)
 
-	  $scope.jqconsole = angular.element('#console').jqconsole('Inexor CubeScript Console\n', '>>> ');
+	  $scope.registerHud('console', false, '0px', '0px', '100%', '250px', 'F12');
+
+	  $scope.jqconsole = angular.element('#hud-console-widget').jqconsole('Inexor CubeScript Console\n', '>>> ');
 
       $scope.execute = function(input) {
         $http.post('/api/execute', {
@@ -38,7 +40,15 @@ define(['./module'], function(controllers) {
       };
       $scope.startPrompt();
 
-      console.log('ConsoleController initialized!');
+      hotkeys.add({
+        combo: 'ctrl+f12',
+        callback: function() {
+          console.log('Toggle console');
+          $scope.toggleHud('console');
+        }
+      });
+
+      console.log('ConsoleHudController initialized!');
 
     }
   ]);

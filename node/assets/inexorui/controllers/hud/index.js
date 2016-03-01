@@ -6,6 +6,7 @@
  * which avails each controller of, for example, the `config` constants object.
  **/
 define([
-  './KeyboardTestController',
-  './UiTestController'
+  './ParentHudController',
+  './TestHudController',
+  './ConsoleHudController'
 ], function () {});
