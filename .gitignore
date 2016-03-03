@@ -41,6 +41,8 @@ pids
 
 # Dependency directories
 node/node_modules
+node/assets/bower_packages
+node/assets/build
 node/jspm_packages
 
 # Optional npm cache directory

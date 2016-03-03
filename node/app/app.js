@@ -37,13 +37,10 @@ var argv = require('yargs')
     .epilog('copyright 2015')
     .argv;
 
-var express = require('express');
-var serveStatic = require('serve-static');
-var bodyParser = require('body-parser');
+var restify = require('restify');
 var bunyan = require('bunyan');
 
 // Application level dependencies
-var app = express();
 var EvalCubescript = require('./rpc.js');
 
 streams = [
@@ -65,34 +62,36 @@ var log = bunyan.createLogger({
    streams: streams
 });
 
-
-// This logs all requests with bunyan
-// Use nginx-alike logging style: address, method, url, user-agent
-app.use(function(req, res, next) {
-   log.info('%s -- %s %s %s', req.ip, req.method, req.originalUrl, req.headers['user-agent']);
-   next();
+var server = restify.createServer({
+    name: 'Inexor',
+    log: log,
+    version: '0.0.1'
 });
 
-app.use(bodyParser.json()); // for parsing application/json
+
+server.use(restify.bodyParser()); // for parsing application/json
 
 //Send POST-only requests to /execute
 // NOTE: The /api namespace is reserved for the future tree API, this is temporary
 //TODO: Sanitize data and restrict access to localhost-only!
-app.post('/api/execute', function(req, res) {
+server.post('/api/execute', function(req, res) {
     EvalCubescript(req.body.code).then(function(data) {
         res.json(data);
     });
 });
 
-// Serve static files from the assets folder
-app.use(serveStatic('assets', {'index': ['inexorui/index.html']}));
+//Serve static files from the assets folder
+server.get(/.*/, restify.serveStatic({
+    directory: 'assets',
+    default: 'index.html'
+ }));
 
-// Handle errors
+/* Handle errors
 app.use(function(err, req, res, next) {
     log.error('%s %s %s', req.method, req.originalUrl, err.stack);
     next();
-});
+});*/
 
-app.listen(argv.port, argv.host, function () {
-  log.info('Inexor-Node-RPC listening on %s:%s', argv.host, argv.port);
+server.listen(argv.port, argv.host, function () {
+    server.log.info('Inexor-Node-RPC listening on %s:%s', argv.host, argv.port);
 });
