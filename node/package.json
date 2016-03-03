@@ -4,6 +4,8 @@
   "description": "Scripting in node.js for Inexor",
   "main": "index.js",
   "scripts": {
+    "install": "node node_modules/.bin/bower install",
+    "postinstall": "node node_modules/.bin/bowcat assets/ -o assets/build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,17 +19,17 @@
   },
   "dependencies": {
     "async": "^1.5.2",
-    "body-parser": "^1.15.0",
+    "bowcat": "0.0.5",
+    "bower": "^1.7.7",
     "bunyan": "^1.7.0",
     "coffee-script": "^1.10.0",
-    "express": "^4.13.4",
     "lodash": "^4.5.1",
     "long": "^3.0.3",
     "net-socket": "^1.0.0",
     "promise": "^7.1.1",
     "protobufjs": "^5.0.1",
     "requirejs": "^2.1.22",
-    "serve-static": "^1.10.2",
+    "restify": "^4.0.4",
     "uuid": "^2.0.1",
     "yargs": "^4.1.0"
   }

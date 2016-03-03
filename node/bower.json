@@ -1,0 +1,26 @@
+{
+  "name": "Inexor_IPC_Client",
+  "description": "Scripting in node.js for Inexor",
+  "main": "index.js",
+  "authors": [
+    "Fohlen <lennard@berger.work>"
+  ],
+  "license": "zlib",
+  "homepage": "https://github.com/inexor-game/code",
+  "moduleType": [],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "assets/js",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^2.2.1",
+    "bootstrap": "^3.3.6",
+    "AngularJS": "angular-latest#^1.5.0",
+    "jq-console": "replit/jq-console#^2.13.2"
+  }
+}
