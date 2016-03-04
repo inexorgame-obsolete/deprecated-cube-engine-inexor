@@ -65,32 +65,33 @@ var log = bunyan.createLogger({
 var server = restify.createServer({
     name: 'Inexor',
     log: log,
-    version: '0.0.1'
+    version: '0.0.6'
 });
 
+//Extend logger using the plugin.
+server.use(restify.requestLogger());
+
+// Use nginx-alike logging style: address, method, url, user-agent
+server.use(function(req, res, next) {
+    req.log.info('%s -- %s %s %s', req.connection.remoteAddress, req.method, req.url, req.headers['user-agent']);
+    next();
+});
 
 server.use(restify.bodyParser()); // for parsing application/json
 
-//Send POST-only requests to /execute
-// NOTE: The /api namespace is reserved for the future tree API, this is temporary
-//TODO: Sanitize data and restrict access to localhost-only!
-server.post('/api/execute', function(req, res) {
+// TODO: Sanitize data and restrict access to localhost-only!
+// This can be done using restify plugins
+server.post({path: '/api/execute', version: '0.0.6'}, function(req, res) {
     EvalCubescript(req.body.code).then(function(data) {
         res.json(data);
     });
 });
 
-//Serve static files from the assets folder
+// Serve static files from the assets folder
 server.get(/.*/, restify.serveStatic({
     directory: 'assets',
     default: 'index.html'
  }));
-
-/* Handle errors
-app.use(function(err, req, res, next) {
-    log.error('%s %s %s', req.method, req.originalUrl, err.stack);
-    next();
-});*/
 
 server.listen(argv.port, argv.host, function () {
     server.log.info('Inexor-Node-RPC listening on %s:%s', argv.host, argv.port);
