@@ -69,7 +69,6 @@ void cleanup()
 /// @see cleanup
 void quit()
 {
-    // CefShutdown();
     writeinitcfg();
     writeservercfg();
 	writehistory();
@@ -78,6 +77,8 @@ void quit()
     localdisconnect();
     writecfg();
     cleanup();
+    metapp.stop("cef");
+    metapp.stop("rpc");
     exit(EXIT_SUCCESS);
 }
 COMMAND(quit, "");
@@ -1228,7 +1229,18 @@ ICOMMAND(uifocus, "b", (bool *b),
 int main(int argc, char **argv)
 {
     setlogfile(NULL);
-    UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // We only need to initialse it, not use it.
+
+    /// require subsystems BEFORE configurations are done
+    SUBSYSTEM_REQUIRE(rpc);
+    SUBSYSTEM_REQUIRE(cef);
+
+    // Initialize the subsystems
+    logoutf("init: subsystems");
+    metapp.start("rpc");
+    metapp.start("cef");
+
+    // We only need to initialize it, not use it.
+    UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker;
 
     int dedicated = 0;
     char *load = NULL, *initscript = NULL;
@@ -1247,10 +1259,6 @@ int main(int argc, char **argv)
 			}
         }
     }
-
-    /// require subsystems BEFORE configurations are done
-    SUBSYSTEM_REQUIRE(rpc);
-    SUBSYSTEM_REQUIRE(cef);
 
 	/// parse command line arguments
     execfile("init.cfg", false);
@@ -1305,6 +1313,9 @@ int main(int argc, char **argv)
     }
     initing = NOT_INITING;
 
+    // Initialize the submodules
+    metapp.initialize(argc, argv);
+
     numcpus = clamp(SDL_GetCPUCount(), 1, 16);
 
     if(dedicated <= 1)
@@ -1317,13 +1328,13 @@ int main(int argc, char **argv)
         #endif
         if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO|par)<0) fatal("Unable to initialize SDL: %s", SDL_GetError());
 
-	// Disable SDL_TEXTINPUT events at startup. They are only
-	// needed if text is about to be entered in chat.
+        // Disable SDL_TEXTINPUT events at startup. They are only
+        // needed if text is about to be entered in chat.
         SDL_StopTextInput();
     }
 
     logoutf("init: net");
-    if(enet_initialize()<0) fatal("Unable to initialise network module");
+    if(enet_initialize() < 0) fatal("Unable to initialize network module");
     atexit(enet_deinitialize);
     enet_time_set(0);
 
@@ -1345,7 +1356,7 @@ int main(int argc, char **argv)
     SDL_ShowCursor(SDL_FALSE);
     // SDL_StopTextInput(); // workaround for spurious text-input events getting sent on first text input toggle?
 
-    /// Initialise OpenGL
+    /// Initialize OpenGL
     logoutf("init: gl");
     gl_checkextensions();
     gl_init(useddepthbits, usedfsaa);
@@ -1423,12 +1434,6 @@ int main(int argc, char **argv)
 
     inputgrab(grabinput = true);
     ignoremousemotion();
-
-    // Initialize the subsystems
-    logoutf("init: subsystems");
-    metapp.start("rpc");
-    metapp.start("cef");
-    metapp.initialize(argc, argv);
 
 	// main game loop
     for(;;)
