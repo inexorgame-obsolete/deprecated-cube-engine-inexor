@@ -19,7 +19,7 @@ You can start the server with the following syntax
 The server does the following at the moment
 
  - Serve all static files from `node/assets`
- - Handle a static post route at `localhost:48702/execute`
+ - Handle a static post route at `localhost:48702/api/execute`
   - You can fire an event using `Content-type: application/json`
   - Basically every valid JSON keypair will be executed, eg: `json { "code": "echo\"test\"" }`
 
@@ -29,10 +29,10 @@ We ship [jq-console](https://github.com/replit/jq-console), which shall the repl
 ##Roadmap and TODO
 Of course this is provisional and a lot of things are likely to differ, but I'll list the important changes here
   - Fix the `inexor_node_unix` script
-  - Fix: the server should either exit or reboot once `/tmp/inexor.socket` has been touched
-  - Fix: use a single response model for the RPC client
-  - Enhance: send and receive commands via jq-console
-  - Optionally: implement [browserify](http://browserify.org/) to deliver our dependencies
+  - ~~Fix: the server should either exit or reboot once `/tmp/inexor.socket` has been touched~~
+  - ~~Fix: use a single response model for the RPC client~~
+  - ~~Enhance: send and receive commands via jq-console~~
+  - ~~Optionally: implement [browserify](http://browserify.org/) to deliver our dependencies~~
   - Future: implement a [node-tree API](https://github.com/inexor-game/code/wiki/Inexor-Tree-API#nodejs-implenentation) which will replace RPC/ICP
   - Release: design a GUI, replace that CubeScript stuff
 
