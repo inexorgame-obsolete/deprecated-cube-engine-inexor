@@ -1,13 +1,15 @@
 define([
   'angular',
+  'angular-animate',
+  'angular-hotkeys',
+  'angular-resource',
+  'angular-ui-bootstrap',
+  'angular-ui-router',
+  'jq-console',
   './controllers/index',
   './directives/index',
   './filters/index',
   './services/index',
-  'uiRouter',
-  'uiBootstrap',
-  'jqconsole',
-  'hotkeys'
 ], function (angular) {
   'use strict';
   return angular.module('inexorui', [
