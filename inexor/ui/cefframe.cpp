@@ -10,7 +10,7 @@ bool InexorCefFrame::Execute(const CefString& name, CefRefPtr<CefV8Value> object
     CEF_REQUIRE_RENDERER_THREAD();
     if (name == "log") {
         if (arguments.size() == 1 && arguments[0]->IsString()) {
-            logoutf("[%d] %s", lastmillis, arguments[0]->GetStringValue().ToString().c_str());
+            LOG(INFO) << arguments[0]->GetStringValue().ToString();
             return true;
         }
     }

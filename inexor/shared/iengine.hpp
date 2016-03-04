@@ -196,12 +196,6 @@ extern void conoutf(const char *s, ...) PRINTFARGS(1, 2);
 extern void conoutf(int type, const char *s, ...) PRINTFARGS(2, 3);
 extern void conoutfv(int type, const char *fmt, va_list args);
 
-extern FILE *getlogfile();
-extern void setlogfile(const char *fname);
-extern void closelogfile();
-extern void logoutfv(const char *fmt, va_list args);
-extern void logoutf(const char *fmt, ...) PRINTFARGS(1, 2);
-
 // menus
 extern vec menuinfrontofplayer();
 extern void newgui(char *name, char *contents, char *header = NULL, char *init = NULL);

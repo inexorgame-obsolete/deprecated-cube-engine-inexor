@@ -19,7 +19,7 @@ InexorCefLayer::InexorCefLayer(std::string name, int x, int y, int width, int he
     render_handler = new InexorCefRenderHandler(true, x, y, width, height);
     browser = CefBrowserHost::CreateBrowserSync(window_info, this, url, browser_settings, NULL);
     if (browser.get()) {
-        logoutf("init: cef: created layer \"%s\"", name.c_str());
+        LOG(DEBUG) << "init: cef: created layer \"" << name << "\"";
         browser->GetHost()->SendFocusEvent(has_focus);
     }
 }
@@ -46,7 +46,7 @@ void InexorCefLayer::SetIsAcceptingInput(bool is_accepting_input)
 
 void InexorCefLayer::Destroy()
 {
-    logoutf("InexorCefLayer::Destroy()");
+    LOG(DEBUG) << "InexorCefLayer::Destroy()";
     browser->GetHost()->CloseBrowser(true);
     // DoClose(browser);
 }
@@ -113,7 +113,7 @@ void InexorCefLayer::OnBeforeClose(CefRefPtr<CefBrowser> browser)
     if (--browser_count == 0) {
         // All browser windows have closed. Quit the application message loop.
         // CefQuitMessageLoop();
-        logoutf("InexorCefLayer::OnBeforeClose");
+        LOG(DEBUG) << "InexorCefLayer::OnBeforeClose()";
     }
 }
 
@@ -122,7 +122,7 @@ void InexorCefLayer::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFra
     // Don't display an error for downloaded files.
     if (errorCode == ERR_ABORTED)
         return;
-    logoutf("Failed to load URL %s: %s", failedUrl.ToString().c_str(), errorText.ToString().c_str());
+    LOG(ERROR) << "Failed to load URL " << failedUrl.ToString() << ": " << errorText.ToString();
     // Display a load error message.
     std::stringstream error_message;
     error_message << "<html><body><h2>Failed to load URL " << std::string(failedUrl)
@@ -133,31 +133,31 @@ void InexorCefLayer::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFra
 
 bool InexorCefLayer::OnPreKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event, bool* is_keyboard_shortcut) {
     CEF_REQUIRE_UI_THREAD();
-    // logoutf("InexorCefLayer::OnPreKeyEvent: key_event.type: %d native_key_code: %d windows_key_code: %d is_system_key: %d", key_event.type, key_event.native_key_code, key_event.windows_key_code, key_event.is_system_key);
+    LOG(DEBUG) << "InexorCefLayer::OnPreKeyEvent: key_event.type: " << key_event.type << " native_key_code: " << key_event.native_key_code << " windows_key_code: " << key_event.windows_key_code << " is_system_key: " << key_event.is_system_key;
     return false;
 }
 
 bool InexorCefLayer::OnKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event) {
     CEF_REQUIRE_UI_THREAD();
-    // logoutf("InexorCefLayer::OnKeyEvent: key_event.type: %d native_key_code: %d windows_key_code: %d is_system_key: %d", key_event.type, key_event.native_key_code, key_event.windows_key_code, key_event.is_system_key);
+    LOG(DEBUG) << "InexorCefLayer::OnKeyEvent: key_event.type: " << key_event.type << " native_key_code: " << key_event.native_key_code << " windows_key_code: " << key_event.windows_key_code << " is_system_key: " << key_event.is_system_key;
     return false;
 }
 
 void InexorCefLayer::OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& url)
 {
     CEF_REQUIRE_UI_THREAD();
-    logoutf("address change: %s", url.ToString().c_str());
+    LOG(DEBUG) << "address change: " << url.ToString();
 }
 
 void InexorCefLayer::OnStatusMessage(CefRefPtr<CefBrowser> browser, const CefString& value)
 {
     CEF_REQUIRE_UI_THREAD();
-    logoutf("status: %s", value.ToString().c_str());
+    LOG(DEBUG) << "status: " << value.ToString();
 }
 
 bool InexorCefLayer::OnConsoleMessage(CefRefPtr<CefBrowser> browser, const CefString& message, const CefString& source, int line)
 {
     CEF_REQUIRE_UI_THREAD();
-    logoutf("jsconsole [%s (%d)]: %s", source.ToString().c_str(), line, message.ToString().c_str());
+    LOG(DEBUG) << "status: " << source.ToString() << " (" << line << "): " << message.ToString();
     return true;
 }

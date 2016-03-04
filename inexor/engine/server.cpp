@@ -3,71 +3,12 @@
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/crashreporter/CrashReporter.hpp"
+#include "inexor/util/Logging.hpp"
 
 #define LOGSTRLEN 512
 
-static FILE *logfile = NULL;
-
 char *initscript = NULL;
 
-void closelogfile()
-{
-    if(logfile)
-    {
-        fclose(logfile);
-        logfile = NULL;
-    }
-}
-
-FILE *getlogfile()
-{
-#ifdef WIN32
-    return logfile;
-#else
-    return logfile ? logfile : stdout;
-#endif
-}
-
-void setlogfile(const char *fname)
-{
-    closelogfile();
-    if(fname && fname[0])
-    {
-        fname = findfile(fname, "w");
-        if(fname) logfile = fopen(fname, "w");
-    }
-    FILE *f = getlogfile();
-    if(f) setvbuf(f, NULL, _IOLBF, BUFSIZ);
-}
-
-void logoutf(const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    logoutfv(fmt, args);
-    va_end(args);
-}
-
-
-static void writelog(FILE *file, const char *buf)
-{
-    static uchar ubuf[512];
-    size_t len = strlen(buf), carry = 0;
-    while(carry < len)
-    {
-        size_t numu = encodeutf8(ubuf, sizeof(ubuf)-1, &((const uchar *)buf)[carry], len - carry, &carry);
-        if(carry >= len) ubuf[numu++] = '\n';
-        fwrite(ubuf, 1, numu, file);
-    }
-}
-
-static void writelogv(FILE *file, const char *fmt, va_list args)
-{
-    static char buf[LOGSTRLEN];
-    vformatstring(buf, fmt, args, sizeof(buf));
-    writelog(file, buf);
-}
- 
 #ifdef STANDALONE
 
 void cleanupserver();
@@ -75,13 +16,12 @@ void fatal(const char *fmt, ...)
 {
     cleanupserver(); 
 	defvformatstring(msg,fmt,fmt);
-	if(logfile) logoutf("%s", msg);
+	LOG(FATAL) << msg;
 #ifdef WIN32
 	MessageBox(NULL, msg, "Inexor fatal error", MB_OK|MB_SYSTEMMODAL);
 #else
     fprintf(stderr, "server error: %s\n", msg);
 #endif
-    closelogfile();
     exit(EXIT_FAILURE); 
 }
 
@@ -91,7 +31,7 @@ void fatal(std::vector<std::string> &output)
     cleanupserver();
     std::string completeoutput;
     for(auto message : output) {
-        if(logfile) logoutf("%s", message.c_str());
+        LOG(FATAL) << message;
         completeoutput = inexor::util::fmt << completeoutput << message.c_str();
     }
 #ifdef WIN32
@@ -99,13 +39,31 @@ void fatal(std::vector<std::string> &output)
 #else
     fprintf(stderr, "server error: %s\n", completeoutput.c_str());
 #endif
-    closelogfile();
     exit(EXIT_FAILURE);
 }
 
 void conoutfv(int type, const char *fmt, va_list args)
 {
-    logoutfv(fmt, args);
+    static char buf[LOGSTRLEN];
+    vformatstring(buf, fmt, args, sizeof(buf));
+    switch (type) {
+        case CON_DEBUG:
+            LOG(DEBUG) << buf;
+            break;
+        case CON_INFO:
+            LOG(INFO) << buf;
+            break;
+        case CON_WARN:
+            LOG(WARNING) << buf;
+            break;
+        case CON_ERROR:
+            LOG(ERROR) << buf;
+            break;
+        default:
+            LOG(INFO) << buf;
+            break;
+    }
+
 }
 
 void conoutf(const char *fmt, ...)
@@ -353,7 +311,7 @@ void disconnect_client(int n, int reason)
     string s;
     if(msg) formatstring(s, "client (%s) disconnected because: %s", clients[n]->hostname, msg);
     else formatstring(s, "client (%s) disconnected", clients[n]->hostname);
-    logoutf("%s", s);
+    LOG(INFO) << s;
     server::sendservmsg(s);
 }
 
@@ -422,14 +380,14 @@ ENetSocket connectmaster(bool wait)
     if(!mastername[0]) return ENET_SOCKET_NULL;
     if(masteraddress.host == ENET_HOST_ANY)
     {
-        if(isdedicatedserver()) logoutf("looking up %s...", *mastername);
+        if(isdedicatedserver()) LOG(INFO) << "looking up " << *mastername << "...";
         masteraddress.port = masterport;
         if(!resolverwait(mastername, &masteraddress)) return ENET_SOCKET_NULL;
     }
     ENetSocket sock = enet_socket_create(ENET_SOCKET_TYPE_STREAM);
     if(sock == ENET_SOCKET_NULL)
     {
-        if(isdedicatedserver()) logoutf("could not open master server socket");
+        if(isdedicatedserver()) LOG(WARNING) << "could not open master server socket";
         return ENET_SOCKET_NULL;
     }
     if(wait || serveraddress.host == ENET_HOST_ANY || !enet_socket_bind(sock, &serveraddress))
@@ -442,7 +400,7 @@ ENetSocket connectmaster(bool wait)
         else if(!enet_socket_connect(sock, &masteraddress)) return sock;
     }
     enet_socket_destroy(sock);
-    if(isdedicatedserver()) logoutf("could not connect to master server");
+    if(isdedicatedserver()) LOG(WARNING) << "could not connect to master server";
     return ENET_SOCKET_NULL;
 }
 
@@ -503,7 +461,7 @@ void flushmasteroutput()
 {
     if(masterconnecting && totalmillis - masterconnecting >= 60000)
     {
-        logoutf("could not connect to master server");
+        LOG(WARNING) << "could not connect to master server";
         disconnectmaster();
     }
     if(masterout.empty() || !masterconnected) return;
@@ -598,7 +556,7 @@ void checkserversockets()        // reply all server info requests
                 int error = 0;
                 if(enet_socket_get_option(mastersock, ENET_SOCKOPT_ERROR, &error) < 0 || error)
                 {
-                    logoutf("could not connect to master server");
+                    LOG(WARNING) << "could not connect to master server";
                     disconnectmaster();
                 }
                 else
@@ -676,7 +634,8 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
     if(totalmillis-laststatus>60*1000)   // display bandwidth stats, useful for server ops
     {
         laststatus = totalmillis;     
-        if(nonlocalclients || serverhost->totalSentData || serverhost->totalReceivedData) logoutf("status: %d remote clients, %.1f send, %.1f rec (K/sec)", nonlocalclients, serverhost->totalSentData/60.0f/1024, serverhost->totalReceivedData/60.0f/1024);
+        if(nonlocalclients || serverhost->totalSentData || serverhost->totalReceivedData)
+            VLOG(1) << "status: " << nonlocalclients << "remote clients, " << (serverhost->totalSentData/60.0f/1024) << "send," << (serverhost->totalReceivedData/60.0f/1024) << "rec (K/sec)";
         serverhost->totalSentData = serverhost->totalReceivedData = 0;
     }
 
@@ -698,7 +657,7 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
                 c.peer->data = &c;
                 string hn;
                 copystring(c.hostname, (enet_address_get_host_ip(&c.peer->address, hn, sizeof(hn))==0) ? hn : "unknown");
-                logoutf("client connected (%s)", c.hostname);
+                LOG(INFO) << "client connected (" << c.hostname << ")";
                 int reason = server::clientconnect(c.num, c.peer->address.host);
                 if(reason) disconnect_client(c.num, reason);
                 break;
@@ -714,7 +673,7 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
             {
                 client *c = (client *)event.peer->data;
                 if(!c) break;
-                logoutf("disconnected client (%s)", c->hostname);
+                LOG(INFO) << "disconnected client (" << c->hostname << ")";
                 server::clientdisconnect(c->num);
                 delclient(c);
                 break;
@@ -1003,29 +962,6 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw)
     return 0;
 }
 
-void logoutfv(const char *fmt, va_list args)
-{
-    if(appwindow)
-    {
-        logline &line = loglines.add();
-        vformatstring(line.buf, fmt, args, sizeof(line.buf));
-        if(logfile) writelog(logfile, line.buf);
-        line.len = min(strlen(line.buf), sizeof(line.buf)-2);
-        line.buf[line.len++] = '\n';
-        line.buf[line.len] = '\0';
-        if(outhandle) writeline(line);
-    }
-    else if(logfile) writelogv(logfile, fmt, args);
-}
-
-#else
-
-void logoutfv(const char *fmt, va_list args)
-{
-    FILE *f = getlogfile();
-    if(f) writelogv(f, fmt, args);
-}
-
 #endif
 
 static bool dedicatedserver = false;
@@ -1035,7 +971,7 @@ bool isdedicatedserver() { return dedicatedserver; }
 void rundedicatedserver()
 {
     dedicatedserver = true;
-    logoutf("dedicated server started, waiting for clients...");
+    LOG(INFO) << "dedicated server started, waiting for clients...";
 #ifdef WIN32
     SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
 	for(;;)
@@ -1166,10 +1102,9 @@ bool serveroption(char *opt)
         case 'j': setvar("serverport", atoi(opt+2)); return true; 
         case 'm': setsvar("mastername", opt+2); setvar("updatemaster", mastername[0] ? 1 : 0); return true;
 #ifdef STANDALONE
-        case 'q': logoutf("Using home directory: %s", opt); sethomedir(opt+2); return true;
-        case 'k': logoutf("Adding package directory: %s", opt); addpackagedir(opt+2); return true;
-        case 'g': logoutf("Setting log file: %s", opt); setlogfile(opt+2); return true;
-        case 'x': logoutf("Setting server init script: %s", opt); initscript = opt+2; return true;
+        case 'q': VLOG(1) << "Using home directory: " << opt; sethomedir(opt+2); return true;
+        case 'k': VLOG(1) << "Adding package directory: " << opt; addpackagedir(opt+2); return true;
+        case 'x': VLOG(1) << "Setting server init script: " << opt; initscript = opt+2; return true;
 #endif
         default: return false;
     }
@@ -1178,9 +1113,20 @@ bool serveroption(char *opt)
 vector<const char *> gameargs;
 
 #ifdef STANDALONE
+
+// Singleton needed for our logger.
+INITIALIZE_EASYLOGGINGPP
+
 int main(int argc, char **argv)
 {
-    setlogfile(NULL);
+
+    // Load logging configuration from file
+    el::Configurations logging_conf("inexor-logging.conf");
+    el::Loggers::reconfigureAllLoggers(logging_conf);
+
+    LOG(INFO) << "Hello, server";
+
+    // setlogfile(NULL);
     UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // We only need to initialse it, not use it.
     if(enet_initialize()<0) fatal("Unable to initialise network module");
     atexit(enet_deinitialize);

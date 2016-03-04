@@ -5,6 +5,7 @@
 #include "inexor/ui.hpp"
 #include "inexor/util/Subsystem.hpp"
 #include "inexor/crashreporter/CrashReporter.hpp"
+#include "inexor/util/Logging.hpp"
 
 /// extern functions and data here
 extern void cleargamma();
@@ -59,7 +60,7 @@ void cleanup()
     clear_console();
     clear_mdls();
     clear_sound();
-    closelogfile();
+    // closelogfile();
 
     SDL_Quit();
 }
@@ -91,7 +92,8 @@ void fatal(const char *s, ...)
     if(errors <= 2) // print up to one extra recursive error
     {
         defvformatstring(msg,s,s);
-        logoutf("%s", msg);
+        // Temporarly disabled crash handler output (easylogging)
+        // LOG(FATAL) << msg;
 
         #ifdef WIN32
             if(errors <= 1) MessageBox(NULL, msg, "Inexor fatal error", MB_OK|MB_SYSTEMMODAL);
@@ -107,7 +109,8 @@ void fatal(std::vector<std::string> &output)
     cleanupSDL();
     std::string completeoutput; 
     for(auto message : output) {
-        logoutf("%s", message.c_str());
+        // Temporarly disabled crash handler output (easylogging)
+        // LOG(FATAL) << message.c_str();
         completeoutput = inexor::util::fmt << completeoutput << message.c_str();
     }
 #ifdef WIN32
@@ -646,7 +649,8 @@ VARFP(gamma, 30, 100, 300,
 {
     if(gamma == curgamma) return;
     curgamma = gamma;
-    if(SDL_SetWindowBrightness(screen, gamma/100.0f)==-1) conoutf(CON_ERROR, "Could not set gamma: %s", SDL_GetError());
+    if(SDL_SetWindowBrightness(screen, gamma/100.0f)==-1)
+        LOG(ERROR) << "Could not set gamma: " << SDL_GetError();
 });
 
 
@@ -745,9 +749,9 @@ void setupscreen(int &useddepthbits, int &usedfsaa)
     if(!screen) fatal("failed to create OpenGL window: %s", SDL_GetError());
     else
     {
-        if(depthbits && (config&1)==0) conoutf(CON_WARN, "%d bit z-buffer not supported - disabling", *depthbits);
-        if(stencilbits && (config&2)==0) conoutf(CON_WARN, "Stencil buffer not supported - disabling");
-        if(fsaa>0 && (config&4)==0) conoutf(CON_WARN, "%dx anti-aliasing not supported - disabling", *fsaa);
+        if(depthbits && (config&1)==0) LOG(WARNING) << *depthbits << " bit z-buffer not supported - disabling";
+        if(stencilbits && (config&2)==0) LOG(WARNING) << "Stencil buffer not supported - disabling";
+        if(fsaa>0 && (config&4)==0) LOG(WARNING) << *fsaa << " anti-aliasing not supported - disabling";
     }
 
     SDL_SetWindowMinimumSize(screen, SCR_MINW, SCR_MINH);
@@ -1201,10 +1205,22 @@ ICOMMAND(cef_reload, "", (),
 ICOMMAND(cef_focus, "b", (bool *b),
     if (cef_app.get()) cef_app->setFocus(*b); );
 
+// Singleton needed for our logger.
+INITIALIZE_EASYLOGGINGPP
+
 /// main program start
 int main(int argc, char **argv)
 {
-    setlogfile(NULL);
+
+    // Load logging configuration from file
+    START_EASYLOGGINGPP(argc, argv);
+    el::Configurations logging_conf("inexor-logging.conf");
+    el::Loggers::reconfigureAllLoggers(logging_conf);
+    el::Helpers::installLogDispatchCallback<inexor::util::InexorConsoleHandler>("InexorConsoleHandler");
+
+    LOG(INFO) << "Hello, client";
+
+    // setlogfile(NULL);
     UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // We only need to initialse it, not use it.
 
     int dedicated = 0;
@@ -1219,7 +1235,7 @@ int main(int argc, char **argv)
             case 'q': 
 			{
 				const char *dir = sethomedir(&argv[i][2]);
-				if(dir) logoutf("Using home directory: %s", dir);
+				if(dir) VLOG(1) << "Using home directory: " << dir;
 				break;
 			}
         }
@@ -1241,17 +1257,17 @@ int main(int argc, char **argv)
             case 'k':
             {
                 const char *dir = addpackagedir(&argv[i][2]);
-                if(dir) logoutf("Adding package directory: %s", dir);
+                if(dir) VLOG(1) << "Adding package directory: " << dir;
                 break;
             }
-            case 'g': logoutf("Setting log file: %s", &argv[i][2]); setlogfile(&argv[i][2]); break;
+            // case 'g': VLOG(1) << "Setting log file: " << &argv[i][2]; setlogfile(&argv[i][2]); break;
             case 'd': dedicated = atoi(&argv[i][2]); if(dedicated<=0) dedicated = 2; break;
             case 'w': scr_w = clamp(atoi(&argv[i][2]), SCR_MINW, SCR_MAXW); if(!findarg(argc, argv, "-h")) scr_h = -1; break;
             case 'h': scr_h = clamp(atoi(&argv[i][2]), SCR_MINH, SCR_MAXH); if(!findarg(argc, argv, "-w")) scr_w = -1; break;
             case 'z': depthbits = atoi(&argv[i][2]); break;
             case 'b': /* compat, ignore */ break;
             case 'a': fsaa = atoi(&argv[i][2]); break;
-            case 'v': vsync = atoi(&argv[i][2]); restorevsync(); break;
+            case 'v': vsync = atoi(&argv[i][2]); restorevsync(); break; // conflicts with easylogging!
             case 't': fullscreen = atoi(&argv[i][2]); break;
             case 's': stencilbits = atoi(&argv[i][2]); break;
             case 'f': 
@@ -1287,7 +1303,7 @@ int main(int argc, char **argv)
 
     if(dedicated <= 1)
     {
-        logoutf("init: sdl");
+        LOG(DEBUG) << "init: sdl";
 
         int par = 0;
         #ifdef _DEBUG
@@ -1300,18 +1316,18 @@ int main(int argc, char **argv)
         SDL_StopTextInput();
     }
 
-    logoutf("init: net");
+    LOG(DEBUG) << "init: net";
     if(enet_initialize()<0) fatal("Unable to initialise network module");
     atexit(enet_deinitialize);
     enet_time_set(0);
 
-    logoutf("init: game");
+    LOG(DEBUG) << "init: game";
     game::parseoptions(gameargs);
     initserver(dedicated>0, dedicated>1);  /// never returns if dedicated
     ASSERT(dedicated <= 1);
     game::initclient();
 
-    logoutf("init: video");
+    LOG(DEBUG) << "init: video";
 
     SDL_SetHint(SDL_HINT_GRAB_KEYBOARD, "0");
     #if !defined(WIN32) && !defined(__APPLE__)
@@ -1324,13 +1340,13 @@ int main(int argc, char **argv)
     // SDL_StopTextInput(); // workaround for spurious text-input events getting sent on first text input toggle?
 
     /// Initialise OpenGL
-    logoutf("init: gl");
+    LOG(DEBUG) << "init: gl";
     gl_checkextensions();
     gl_init(useddepthbits, usedfsaa);
     notexture = textureload("texture/inexor/notexture.png");
     if(!notexture) fatal("could not find core textures");
 
-    logoutf("init: console");
+    LOG(DEBUG) << "init: console";
     if(!execfile("config/stdlib.cfg", false)) fatal("cannot find config files (you are running from the wrong folder, try .bat file in the main folder)");   // this is the first file we load.
     if(!execfile("config/font.cfg", false)) fatal("cannot find font definitions");
     if(!setfont("default")) fatal("no default font specified");
@@ -1338,19 +1354,19 @@ int main(int argc, char **argv)
     inbetweenframes = true;
     renderbackground("initializing...");
 
-    logoutf("init: effects");
+    LOG(DEBUG) << "init: effects";
     loadshaders();
     particleinit();
     initdecals();
 
-    logoutf("init: world");
+    LOG(DEBUG) << "init: world";
     camera1 = player = game::iterdynents(0);
     emptymap(0, true, NULL, false);
 
-    logoutf("init: sound");
+    LOG(DEBUG) << "init: sound";
     initsound();
 
-    logoutf("init: cfg");
+    LOG(DEBUG) << "init: cfg";
     execfile("config/keymap.cfg");
     execfile("config/stdedit.cfg");
     execfile("config/menus.cfg");
@@ -1386,7 +1402,7 @@ int main(int argc, char **argv)
 
     if(load)
     {
-        logoutf("init: localconnect");
+        LOG(DEBUG) << "init: localconnect";
         //localconnect();
         game::changemap(load);
     }
@@ -1394,7 +1410,7 @@ int main(int argc, char **argv)
 	loadhistory();
     if(initscript) execute(initscript);
 
-    logoutf("init: mainloop");
+    LOG(DEBUG) << "init: mainloop";
 
     initmumble();
     resetfpshistory();

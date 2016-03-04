@@ -68,12 +68,14 @@ Shader *generateshader(const char *name, const char *fmt, ...)
 
 static void showglslinfo(GLenum type, GLuint obj, const char *name, const char **parts = NULL, int numparts = 0)
 {
+/* TODO: refactor to new logging system
     GLint length = 0;
     if(type) glGetShaderiv_(obj, GL_INFO_LOG_LENGTH, &length);
     else glGetProgramiv_(obj, GL_INFO_LOG_LENGTH, &length);
     if(length > 1)
     {
         conoutf(CON_ERROR, "GLSL ERROR (%s:%s)", type == GL_VERTEX_SHADER ? "VS" : (type == GL_FRAGMENT_SHADER ? "FS" : "PROG"), name);
+        // TODO: remove getlogfile();
         FILE *l = getlogfile();
         if(l)
         {
@@ -101,6 +103,7 @@ static void showglslinfo(GLenum type, GLuint obj, const char *name, const char *
             delete[] log;
         }
     }
+*/
 }
 
 static void compileglslshader(GLenum type, GLuint &obj, const char *def, const char *name, bool msg = true) 

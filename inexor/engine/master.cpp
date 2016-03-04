@@ -7,6 +7,7 @@
 #endif
 
 #include "inexor/shared/cube.hpp"
+#include "inexor/util/Logging.hpp"
 #include <signal.h>
 #include <enet/time.h>
 
@@ -690,6 +691,9 @@ void reloadsignal(int signum)
     reloadcfg = 1;
 }
 #endif
+
+// Singleton needed for our logger.
+INITIALIZE_EASYLOGGINGPP
 
 int main(int argc, char **argv)
 {
