@@ -21,6 +21,7 @@
     "jquery": "^2.2.1",
     "bootstrap": "^3.3.6",
     "AngularJS": "angular-latest#^1.5.0",
-    "jq-console": "replit/jq-console#^2.13.2"
+    "jq-console": "replit/jq-console#^2.13.2",
+    "font-awesome": "fontawesome#^4.5.0"
   }
 }
