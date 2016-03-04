@@ -85,7 +85,6 @@ void cleanup()
 /// @see cleanup
 void quit()
 {
-    // CefShutdown();
     writeinitcfg();
     writeservercfg();
 	writehistory();
@@ -94,6 +93,8 @@ void quit()
     localdisconnect();
     writecfg();
     cleanup();
+    metapp.stop("cef");
+    metapp.stop("rpc");
     exit(EXIT_SUCCESS);
 }
 COMMAND(quit, "");
@@ -1274,9 +1275,25 @@ namespace rpc {
 
 int main(int argc, char **argv)
 {
+<<<<<<< 8b4df2324f7091af3ffc091b9cd51bbbb3e76a2c
     logging.initDefaultLoggers();
 
     UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // catches all msgs from the OS, that it wants to terminate us. 
+=======
+    setlogfile(NULL);
+
+    /// require subsystems BEFORE configurations are done
+    SUBSYSTEM_REQUIRE(rpc);
+    SUBSYSTEM_REQUIRE(cef);
+
+    // Initialize the subsystems
+    logoutf("init: subsystems");
+    metapp.start("rpc");
+    metapp.start("cef");
+
+    // We only need to initialize it, not use it.
+    UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker;
+>>>>>>> Bugfixes
 
     int dedicated = 0;
     char *load = NULL, *initscript = NULL;
@@ -1295,6 +1312,7 @@ int main(int argc, char **argv)
         }
     }
 
+<<<<<<< 8b4df2324f7091af3ffc091b9cd51bbbb3e76a2c
 <<<<<<< e71c8ab8cdc200260473c71c56fd303d797eee30
     // require subsystems BEFORE configurations are done
     //Initialize the metasystem
@@ -1308,6 +1326,9 @@ int main(int argc, char **argv)
     SUBSYSTEM_REQUIRE(cef);
 >>>>>>> Subsystem initialization with main args; Never render cef if cef_app not
 
+=======
+	/// parse command line arguments
+>>>>>>> Bugfixes
     execfile("init.cfg", false);
 
     // parse command line arguments
@@ -1362,6 +1383,9 @@ int main(int argc, char **argv)
     }
     initing = NOT_INITING;
 
+    // Initialize the submodules
+    metapp.initialize(argc, argv);
+
     numcpus = clamp(SDL_GetCPUCount(), 1, 16);
 
     if(dedicated <= 1)
@@ -1374,6 +1398,7 @@ int main(int argc, char **argv)
         #endif
         if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO|par)<0) fatal("Unable to initialize SDL: %s", SDL_GetError());
 
+<<<<<<< 8b4df2324f7091af3ffc091b9cd51bbbb3e76a2c
     // Disable SDL_TEXTINPUT events at startup. They are only
     // needed if text is about to be entered in chat.
         SDL_StopTextInput();
@@ -1381,6 +1406,15 @@ int main(int argc, char **argv)
 
     spdlog::get("global")->debug() << "init: net";
     if(enet_initialize()<0) fatal("Unable to initialise network module");
+=======
+        // Disable SDL_TEXTINPUT events at startup. They are only
+        // needed if text is about to be entered in chat.
+        SDL_StopTextInput();
+    }
+
+    logoutf("init: net");
+    if(enet_initialize() < 0) fatal("Unable to initialize network module");
+>>>>>>> Bugfixes
     atexit(enet_deinitialize);
     enet_time_set(0);
 
@@ -1401,8 +1435,13 @@ int main(int argc, char **argv)
     setupscreen(useddepthbits, usedfsaa);
     SDL_ShowCursor(SDL_FALSE);
 
+<<<<<<< 8b4df2324f7091af3ffc091b9cd51bbbb3e76a2c
     /// Initialise OpenGL
     spdlog::get("global")->debug() << "init: gl";
+=======
+    /// Initialize OpenGL
+    logoutf("init: gl");
+>>>>>>> Bugfixes
     gl_checkextensions();
     gl_init(useddepthbits, usedfsaa);
     notexture = textureload("texture/inexor/notexture.png");
