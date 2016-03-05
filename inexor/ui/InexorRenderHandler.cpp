@@ -52,6 +52,10 @@ void InexorRenderHandler::Initialize() {
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); VERIFY_NO_ERROR;
 
     setlocale(LC_ALL, "en_US.utf8");
+
+    // TODO: easylogging debug
+    std::cerr << "InexorRenderHandler initialized!\n";
+
     initialized = true;
 }
 
@@ -124,6 +128,8 @@ void InexorRenderHandler::OnPaint(
     	if (CefCurrentlyOn(TID_UI)) {
             Initialize();
     	} else {
+    	    // TODO: easylogging debug
+    	    std::cerr << "InexorRenderHandler::OnPaint() Wrong thread!\n";
     	    return;
     	}
     }

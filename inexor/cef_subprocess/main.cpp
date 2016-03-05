@@ -2,6 +2,7 @@
 
 int main(int argc, char **argv) {
     setlocale(LC_ALL, "en_US.utf8");
+    std::cerr << "init: cef: cef_subprocess\n";
 #ifdef WIN32
     CefMainArgs main_args(GetModuleHandle(NULL));
 #else

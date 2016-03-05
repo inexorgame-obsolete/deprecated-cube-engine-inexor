@@ -17,7 +17,7 @@
 
 #include "inexor/ui/InexorLayer.hpp"
 
-class InexorLayerProvider
+class InexorLayerProvider : public CefBase
 {
 
     public:
@@ -47,6 +47,7 @@ class InexorLayerProvider
             return "file://" + std::string(base_path) + relpath;
         };
 
+    private:
         IMPLEMENT_REFCOUNTING(InexorLayerProvider);
 };
 
