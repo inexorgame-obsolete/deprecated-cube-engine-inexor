@@ -1228,6 +1228,8 @@ ICOMMAND(uifocus, "b", (bool *b),
 /// main program start
 int main(int argc, char **argv)
 {
+    setlocale(LC_ALL, "en_US.utf8");
+
     setlogfile(NULL);
 
     /// require subsystems BEFORE configurations are done
@@ -1315,6 +1317,7 @@ int main(int argc, char **argv)
 
     // Initialize the submodules
     metapp.initialize(argc, argv);
+    setlocale(LC_ALL, "en_US.utf8"); // important!
 
     numcpus = clamp(SDL_GetCPUCount(), 1, 16);
 
