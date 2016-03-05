@@ -1275,11 +1275,10 @@ namespace rpc {
 
 int main(int argc, char **argv)
 {
-<<<<<<< 8b4df2324f7091af3ffc091b9cd51bbbb3e76a2c
     logging.initDefaultLoggers();
-
     UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // catches all msgs from the OS, that it wants to terminate us. 
-=======
+    setlocale(LC_ALL, "en_US.utf8");
+
     setlogfile(NULL);
 
     /// require subsystems BEFORE configurations are done
@@ -1385,6 +1384,7 @@ int main(int argc, char **argv)
 
     // Initialize the submodules
     metapp.initialize(argc, argv);
+    setlocale(LC_ALL, "en_US.utf8"); // important!
 
     numcpus = clamp(SDL_GetCPUCount(), 1, 16);
 
