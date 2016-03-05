@@ -1,6 +1,6 @@
 Uuid = require 'uuid'
 Protobuf = require 'protobufjs'
-Long = require 'inexor/util/Long'
+Long = require "../util/Long"
 
 # Load a protobuf protocol description from a file
 #
@@ -8,7 +8,6 @@ Long = require 'inexor/util/Long'
 #       instance can be found in InexorService.MessageProtocol
 module.exports = (file) ->
   builder = Protobuf.loadProtoFile file
-
   MessageProto = builder.build()
   MessageProto.file = file
   MessageProto.reflect = builder.lookup()

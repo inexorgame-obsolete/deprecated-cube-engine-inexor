@@ -4,11 +4,12 @@ mydir="`dirname $0`"
 inexor_dir="`readlink -f "$mydir"`"
 node_dir="${inexor_dir}/node/"
 
-cd "$node_dir"
+#cd "$node_dir"
 
 node="node"
-coffee="${node_dir}/node_modules/.bin/coffee"
-script="${node_dir}/bin/serve"
+#coffee="${node_dir}/node_modules/.bin/coffee"
+#script="${node_dir}/bin/serve"
+script="${node_dir}/app/app.js"
 
-export NODE_PATH="${inexor_dir}/node/lib:${inexor_dir}/node/webserver"
-"$node" "$coffee" "$script" "$@"
+#export NODE_PATH="${inexor_dir}/node/lib:${inexor_dir}/node/webserver"
+"$node" "$script" "$@"
