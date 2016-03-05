@@ -173,6 +173,20 @@ function(require_boost_system targ)
   target_include_directories(${targ} PUBLIC ${BOOST_SYSTEM_INCLUDE_DIRS})
 endfunction()
 
+#### BOOST (Filesystem)
+
+find_libs(BOOST_FILESYSTEM_LIBS boost_filesystem)
+find_path(BOOST_FILESYSTEM_INCLUDE_DIRS boost/filesystem/config.hpp)
+
+register_possible_dependency(${BOOST_FILESYSTEM_LIBS})
+
+function(config_boost_filesystem targ)
+  message(STATUS "Configuring ${targ} with Boost Filesystem")
+
+  target_link_libs(${targ} ${BOOST_FILESYSTEM_LIBS})
+  target_include_directories(${targ} PUBLIC ${BOOST_FILESYSTEM_INCLUDE_DIRS})
+endfunction()
+
 #### BOOST (Thread)
 
 find_path(BOOST_THREAD_INCLUDE_DIRS boost/thread.hpp)

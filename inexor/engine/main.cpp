@@ -1277,22 +1277,13 @@ int main(int argc, char **argv)
 {
     logging.initDefaultLoggers();
     UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // catches all msgs from the OS, that it wants to terminate us. 
+    // Ensure the correct locale
     setlocale(LC_ALL, "en_US.utf8");
-
     setlogfile(NULL);
 
     /// require subsystems BEFORE configurations are done
     SUBSYSTEM_REQUIRE(rpc);
     SUBSYSTEM_REQUIRE(cef);
-
-    // Initialize the subsystems
-    logoutf("init: subsystems");
-    metapp.start("rpc");
-    metapp.start("cef");
-
-    // We only need to initialize it, not use it.
-    UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker;
->>>>>>> Bugfixes
 
     int dedicated = 0;
     char *load = NULL, *initscript = NULL;
@@ -1384,7 +1375,9 @@ int main(int argc, char **argv)
 
     // Initialize the submodules
     metapp.initialize(argc, argv);
-    setlocale(LC_ALL, "en_US.utf8"); // important!
+
+    // After submodule initialization force the correct locale
+    setlocale(LC_ALL, "en_US.utf8");
 
     numcpus = clamp(SDL_GetCPUCount(), 1, 16);
 
