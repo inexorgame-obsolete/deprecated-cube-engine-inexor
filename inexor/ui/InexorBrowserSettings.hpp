@@ -11,7 +11,6 @@ class InexorBrowserSettings : public CefBrowserSettings {
             file_access_from_file_urls = STATE_DISABLED;
             plugins = STATE_DISABLED;
             webgl = STATE_DISABLED;
-            java = STATE_DISABLED;
             caret_browsing = STATE_DISABLED;
             javascript = STATE_ENABLED;
             javascript_access_clipboard = STATE_ENABLED;

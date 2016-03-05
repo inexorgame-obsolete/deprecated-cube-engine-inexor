@@ -34,13 +34,21 @@ CefSubsystem::~CefSubsystem() {
 }
 
 void CefSubsystem::tick() {
+    // std::cerr << "CefSubsystem::tick() --> CefDoMessageLoopWork()\n";
     CefDoMessageLoopWork();
 }
 
 void CefSubsystem::initialize(int argc, char **argv) {
+    std::cerr << "CefSubsystem::initialize() --> CefInitialize()\n";
     const CefMainArgs args(argc, argv);
-    InexorSettings settings(ExecutablePathWithoutBinary(argv[0]));
-    CefInitialize(args, settings, ::cef_app.get(), NULL);
+    std::string executable_path = inexor::util::ExecutablePathWithoutBinary(argv[0]);
+    // TODO: easylogging debug
+    std::cerr << "Detected executable path: " << executable_path << "\n";
+    InexorSettings settings(executable_path);
+    if (!CefInitialize(args, settings, ::cef_app.get(), NULL)) {
+        // TODO: easylogging
+        std::cerr << "FATAL: Initialization of CEF subprocess failed!\n";
+    }
 }
 
 
