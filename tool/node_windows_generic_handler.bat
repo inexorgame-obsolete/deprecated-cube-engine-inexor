@@ -3,6 +3,8 @@
 :: This is a wrapper over the node stuff, we set our node environment settings here and
 :: just pass the specific tasks as arguments (when calling this bat)
 
+Setlocal EnableDelayedExpansion
+
 :: %~dp0 is the place of the current script, since %cd% wont work then.
 set "MAINDIR=%~dp0.."
 set INEXOR_ARCH=win32
@@ -42,7 +44,10 @@ if not defined FOUND_GIT (
 
 cd "%MAINDIR%\node"
 
+echo %cd%
 :: Execute the passed arguments:
 %*
 
-cd "%MAINDIR%"
+call cd "%MAINDIR%"
+
+echo %cd%

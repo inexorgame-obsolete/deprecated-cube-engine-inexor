@@ -1,5 +1,4 @@
 @echo off
-setlocal EnableDelayedExpansion
 
 :: This will be the name of the nightly build.
 if "%platform%"=="Win32" set "arch=win32"
@@ -27,7 +26,11 @@ echo master is %master%
 mkdir %nightly_name%
 
 :: Now we want to include our node files as well:
-tool\node_windows_update_npm.bat
+call tool\node_windows_update_npm.bat
+
+:: simplifies variable expansion (batch is stack based), needs to be behind our node_windows_update_npm, bc we need to disable it there.
+setlocal EnableDelayedExpansion
+
 
 set ignored=(%nightly_name% .gitignore build cmake CMakeLists.txt appveyor.yml doxygen.conf .git .gitignore .gitmodules tool inexor platform vendor .travis.yml)
 for /f "tokens=*" %%G in ('dir /b "%cd%"') do (
