@@ -29,4 +29,25 @@ bin*
 
 Debug
 
-node/node_modules/
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# Dependency directories
+node/node_modules
+node/assets/bower_components
+node/assets/build
+node/jspm_packages
+
+# Optional npm cache directory
+node/.npm
+
+# Optional REPL history
+.node_repl_history
+

@@ -17,3 +17,6 @@ echo >&2 "CALLING: ${exe}"
 find "$dir"/media/ -maxdepth 1 -print0                      \
   | sed 's/^/-k/' -z                                       \
   | xargs --null "${exe}" -q"~/.inexor"
+
+# Kill all remaining jobs in the very end
+kill $!

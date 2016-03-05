@@ -1,33 +1,35 @@
 {
   "name": "Inexor_IPC_Client",
+  "version": "0.0.2",
   "description": "Scripting in node.js for Inexor",
-  "repository": "git@github.com:inexor-game/code.git",
-  "version": "0.0.1",
-  "license": "Zlib",
-  "dependencies": {
-    "async": "^0.9.0",
-    "bootstrap-styl": "^4.0.4",
-    "bootstrap-stylus": "^0.2.2",
-    "angular": "^1.4.0",
-    "coffee-script": "^1.9.2",
-    "connect-assets": "^4.7.0",
-    "express": "^4.12.3",
-    "browserify": "^10.2.0",
-    "requirejs": "^2.1.17",
-    "requirejs-browser": "^2.1.9",
-    "amdefine": "^0.1.0",
-    "jade": "^1.9.2",
-    "jquery": "^2.1.4",
-    "lodash": "^3.8.0",
-    "long": "^2.2.3",
-    "protobufjs": "^4.0.0-b2",
-    "serve-static": "^1.9.2",
-    "stylus": "^0.51.1",
-    "underscore.string": "^3.0.3",
-    "uuid": "^2.0.1",
-    "node-dir": "^0.1.8"
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "node node_modules/.bin/bower install",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "engines": {
-    "node": ">=0.10.0"
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:inexor-game/code.git"
+  },
+  "author": "",
+  "license": "zlib",
+  "bugs": {
+    "url": "https://github.com/inexor-game/code/issues"
+  },
+  "dependencies": {
+    "async": "^1.5.2",
+    "bower": "^1.7.7",
+    "bower-requirejs": "^1.2.0",
+    "bunyan": "^1.7.0",
+    "coffee-script": "^1.10.0",
+    "lodash": "^4.5.1",
+    "long": "^3.0.3",
+    "net-socket": "^1.0.0",
+    "promise": "^7.1.1",
+    "protobufjs": "^5.0.1",
+    "requirejs": "^2.1.22",
+    "restify": "^4.0.4",
+    "uuid": "^2.0.1",
+    "yargs": "^4.1.0"
   }
 }
