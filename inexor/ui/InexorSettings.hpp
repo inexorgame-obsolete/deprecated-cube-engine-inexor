@@ -16,7 +16,7 @@
 class InexorSettings : public CefSettings {
     public:
 	    InexorSettings(std::string executable_path) {
-	        no_sandbox = true;
+	        no_sandbox = false;
 	    	ignore_certificate_errors = false;
 	        multi_threaded_message_loop = false;
 	        windowless_rendering_enabled = true;
@@ -30,7 +30,7 @@ class InexorSettings : public CefSettings {
 	        CefString(&locales_dir_path).FromString(std::string(base_path) + "/bin/all/locales");
 	        CefString(&log_file).FromString(std::string(base_path) + "/inexorcef.log");
 	        // TODO: (easylogging) log to debug/verbose
-            // std::cerr << "executable_path: " << executable_path << "\n";
+            std::cerr << "init: cef: setting subprocess executable_path: " << executable_path << "\n";
 	        CefString(&browser_subprocess_path).FromString(std::string(executable_path) + "/cef_subprocess");
         };
 };
