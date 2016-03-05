@@ -2,8 +2,9 @@
 
 #include "inexor/ui/CefSubsystem.hpp"
 #include "inexor/ui/InexorSettings.hpp"
+#include "inexor/filesystem/ExecutablePath.hpp"
 
-using namespace inexor::util;
+using namespace inexor::filesystem;
 
 CefRefPtr<InexorCefApp> cef_app;
 
@@ -16,7 +17,6 @@ namespace ui {
 
 CefSubsystem::CefSubsystem() {
     ::cef_app = new InexorCefApp(1920, 1080);
-    // const CefMainArgs args;
 }
 
 CefSubsystem::~CefSubsystem() {
@@ -39,7 +39,7 @@ void CefSubsystem::tick() {
 
 void CefSubsystem::initialize(int argc, char **argv) {
     const CefMainArgs args(argc, argv);
-    InexorSettings settings;
+    InexorSettings settings(ExecutablePathWithoutBinary(argv[0]));
     CefInitialize(args, settings, ::cef_app.get(), NULL);
 }
 

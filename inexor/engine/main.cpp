@@ -1275,6 +1275,7 @@ ICOMMANDERR(logformat, "ss", (char *logger_name, char *pattern),
 
 int main(int argc, char **argv)
 {
+    // Ensure the correct locale
     setlocale(LC_ALL, "en_US.utf8");
 
     logging.initDefaultLoggers();
@@ -1364,7 +1365,9 @@ int main(int argc, char **argv)
 
     // Initialize the submodules
     metapp.initialize(argc, argv);
-    setlocale(LC_ALL, "en_US.utf8"); // important!
+
+    // After submodule initialization force the correct locale
+    setlocale(LC_ALL, "en_US.utf8");
 
     numcpus = clamp(SDL_GetCPUCount(), 1, 16);
 
