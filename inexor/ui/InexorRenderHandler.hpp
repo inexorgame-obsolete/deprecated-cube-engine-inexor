@@ -21,7 +21,7 @@ class InexorRenderHandler : public CefRenderHandler {
         void Cleanup();
 
         // Render to the screen.
-        void Render();
+        // void Render();
 
         // Forwarded from CefRenderHandler callbacks.
         void OnPopupShow(CefRefPtr<CefBrowser> browser, bool show);
