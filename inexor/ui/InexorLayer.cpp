@@ -9,7 +9,8 @@ InexorLayer::InexorLayer(std::string name, int x, int y, int width, int height, 
     : name(name),
       url(url),
       is_visible(false),
-      is_accepting_input(false),
+      is_accepting_key_input(false),
+      is_accepting_mouse_input(false),
       browser_id(-1),
       browser_count(0),
       is_closing(false)
@@ -24,7 +25,7 @@ InexorLayer::InexorLayer(std::string name, int x, int y, int width, int height, 
     browser = CefBrowserHost::CreateBrowserSync(window_info, this, url, browser_settings, NULL);
     if (browser.get()) {
         spdlog::get("global")->debug() << "init: cef: created layer " << quoted(name.c_str());
-        browser->GetHost()->SendFocusEvent(is_accepting_input);
+        UpdateFocus();
     }
 }
 
@@ -38,42 +39,57 @@ void InexorLayer::SetVisibility(bool is_visible)
 	browser->GetHost()->WasHidden(!is_visible);
 }
 
-void InexorLayer::SetIsAcceptingInput(bool is_accepting_input)
+void InexorLayer::UpdateFocus()
 {
-    std::cerr << "InexorLayer::SetIsAcceptingInput()\n";
-	this->is_accepting_input = is_accepting_input;
-    browser->GetHost()->SendFocusEvent(is_accepting_input);
+    browser->GetHost()->SendFocusEvent(is_accepting_key_input || is_accepting_mouse_input);
+}
+
+void InexorLayer::SetIsAcceptingKeyInput(bool is_accepting_key_input)
+{
+    std::cerr << "InexorLayer::SetIsAcceptingKeyInput()\n";
+	this->is_accepting_key_input = is_accepting_key_input;
+	UpdateFocus();
+}
+
+void InexorLayer::SetIsAcceptingMouseInput(bool is_accepting_mouse_input)
+{
+    std::cerr << "InexorLayer::SetIsAcceptingMouseInput()\n";
+    this->is_accepting_mouse_input = is_accepting_mouse_input;
+    UpdateFocus();
 }
 
 void InexorLayer::Destroy()
 {
-    spdlog::get("global")->debug() << "InexorCefLayer::Destroy()";
     if(browser.get())
         browser->GetHost()->CloseBrowser(true);
-    // DoClose(browser);
 }
 
 void InexorLayer::Copy()
 {
-    browser->GetFocusedFrame()->Copy();
+    if (browser.get()) {
+        browser->GetFocusedFrame()->Copy();
+    }
 }
 
 void InexorLayer::Paste()
 {
-    // SDL_SetClipboardText()
-    // SDL_GetClipboardText()
-    // browser->GetMainFrame()
-    browser->GetFocusedFrame()->Paste();
+    if (browser.get()) {
+        browser->GetFocusedFrame()->Paste();
+    }
 }
 
 void InexorLayer::Cut()
 {
-    browser->GetFocusedFrame()->Cut();
+    if (browser.get()) {
+        browser->GetFocusedFrame()->Cut();
+    }
 }
 
 void InexorLayer::ShowDevTools()
 {
-    browser->GetHost()->ShowDevTools(window_info, this, browser_settings, CefPoint());
+    if (browser.get()) {
+        browser->GetHost()->ShowDevTools(window_info, this, browser_settings, CefPoint());
+    }
 }
 
 void InexorLayer::OnAfterCreated(CefRefPtr<CefBrowser> browser)
@@ -114,8 +130,8 @@ void InexorLayer::OnBeforeClose(CefRefPtr<CefBrowser> browser)
     }
     if (--browser_count == 0) {
         // All browser windows have closed. Quit the application message loop.
-        // CefQuitMessageLoop();
-        spdlog::get("global")->debug() << "InexorCefLayer::OnBeforeClose()";
+        //CefQuitMessageLoop();
+        //spdlog::get("global")->debug() << "InexorCefLayer::OnBeforeClose()";
     }
 }
 

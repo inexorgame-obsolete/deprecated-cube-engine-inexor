@@ -1933,7 +1933,7 @@ void gl_rendercef()
             // Disable alpha blending.
             glDisable(GL_BLEND);
 
-            if (layer->IsAcceptingInput()) {
+            if (layer->IsAcceptingMouseInput()) {
                 gl_rendercefmouse(view_x, view_y, view_width, view_height);
             }
         }

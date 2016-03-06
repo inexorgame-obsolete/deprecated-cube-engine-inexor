@@ -65,9 +65,11 @@ void InexorRenderHandler::Cleanup() {
     }
 }
 
+/*
 void InexorRenderHandler::Render() {
     // Rendering happens in rendergl.cpp
 }
+*/
 
 void InexorRenderHandler::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show)
 {

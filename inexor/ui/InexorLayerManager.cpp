@@ -21,7 +21,8 @@ void InexorLayerManager::InitializeLayer(CefRefPtr<InexorLayerProvider> layer_pr
     std::cerr << "InexorLayerManager::InitializeLayer()\n  name: " << layer_provider->GetLayerName() << "\n  url: " << layer_provider->GetUrl() << "\n";
     CefRefPtr<InexorLayer> layer = CreateLayer(layer_provider->GetLayerName(), layer_provider->GetUrl());
     layer->SetVisibility(layer_provider->GetVisibility());
-    layer->SetIsAcceptingInput(layer_provider->GetAcceptingInput());
+    layer->SetIsAcceptingKeyInput(layer_provider->GetAcceptingKeyInput());
+    layer->SetIsAcceptingMouseInput(layer_provider->GetAcceptingMouseInput());
     layer_provider->SetLayer(layer);
 }
 
@@ -43,95 +44,11 @@ void InexorLayerManager::AddLayerProvider(CefRefPtr<InexorLayerProvider> layer_p
 
 void InexorLayerManager::InitializeContext()
 {
-    CreateFunction("create", this);
-    CreateFunction("show", this);
-    CreateFunction("hide", this);
-    CreateFunction("bringToFront", this);
-    CreateFunction("sendToBack", this);
-    CreateFunction("bringForward", this);
-    CreateFunction("sendBackward", this);
-    CreateFunction("getLayerNames", this);
-    CreateFunction("copy", this);
-    CreateFunction("paste", this);
-    CreateFunction("cut", this);
-    CreateFunction("showDevTools", this);
 }
 
 bool InexorLayerManager::Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception)
 {
     CEF_REQUIRE_RENDERER_THREAD();
-    if (name == "create") {
-        if (arguments.size() == 2 && arguments[0]->IsString() && arguments[1]->IsString()) {
-            _CreateLayer(arguments[0]->GetStringValue().ToString(), arguments[1]->GetStringValue().ToString());
-            return true;
-        }
-    } else if (name == "show") {
-        if (arguments.size() == 1 && arguments[0]->IsString()) {
-            ShowLayer(arguments[0]->GetStringValue().ToString());
-            return true;
-        }
-    } else if (name == "hide") {
-        if (arguments.size() == 1 && arguments[0]->IsString()) {
-            HideLayer(arguments[0]->GetStringValue().ToString());
-            return true;
-        }
-    } else if (name == "bringToFront") {
-        if (arguments.size() == 1 && arguments[0]->IsString()) {
-            BringToFront(arguments[0]->GetStringValue().ToString());
-            return true;
-        }
-    } else if (name == "sendToBack") {
-        if (arguments.size() == 1 && arguments[0]->IsString()) {
-            SendToBack(arguments[0]->GetStringValue().ToString());
-            return true;
-        }
-    } else if (name == "bringForward") {
-        if (arguments.size() == 1 && arguments[0]->IsString()) {
-            BringForward(arguments[0]->GetStringValue().ToString());
-            return true;
-        }
-    } else if (name == "sendBackward") {
-        if (arguments.size() == 1 && arguments[0]->IsString()) {
-            SendBackward(arguments[0]->GetStringValue().ToString());
-            return true;
-        }
-    } else if (name == "getLayerNames") {
-        std::list<std::string> layer_names = GetLayers();
-        retval = CefV8Value::CreateArray(layer_names.size());
-        int i = 0;
-        for(std::list<std::string>::iterator it = layer_names.begin(); it != layer_names.end(); ++it)
-        {
-            std::string layer_name = (*it);
-            retval->SetValue(i, CefV8Value::CreateString(layer_name));
-            i++;
-        }
-        return true;
-    } else if (name == "copy") {
-        if (arguments.size() == 1 && arguments[0]->IsString()) {
-            if (LayerExists(name))
-                GetLayer(name)->Copy();
-            return true;
-        }
-    } else if (name == "paste") {
-        if (arguments.size() == 1 && arguments[0]->IsString()) {
-            if (LayerExists(name))
-                GetLayer(name)->Paste();
-            return true;
-        }
-    } else if (name == "cut") {
-        if (arguments.size() == 1 && arguments[0]->IsString()) {
-            if (LayerExists(name))
-                GetLayer(name)->Cut();
-            return true;
-        }
-    } else if (name == "showDevTools") {
-        if (arguments.size() == 1 && arguments[0]->IsString()) {
-            std::string name = arguments[0]->GetStringValue().ToString();
-            if (LayerExists(name))
-                GetLayer(name)->ShowDevTools();
-            return true;
-        }
-    }
     return false;
 }
 
@@ -161,7 +78,8 @@ void InexorLayerManager::_CreateLayer(std::string name, std::string url)
         CEF_REQUIRE_UI_THREAD();
         CefRefPtr<InexorLayer> layer = InexorLayerManager::CreateLayer(name, 0, 0, width, height, url);
         layer->SetVisibility(true);
-        layer->SetIsAcceptingInput(true);
+        layer->SetIsAcceptingKeyInput(true);
+        layer->SetIsAcceptingMouseInput(true);
     }
 }
 
@@ -274,6 +192,7 @@ void InexorLayerManager::SendBackward(std::string name)
     }
 }
 
+/*
 void InexorLayerManager::RenderLayer(std::string name)
 {
     CefRefPtr<InexorLayer> layer = GetLayer(name);
@@ -293,13 +212,14 @@ void InexorLayerManager::Render()
         }
     }
 }
+*/
 
 void InexorLayerManager::SendKeyEvent(CefKeyEvent event)
 {
     for(std::list<CefRefPtr<InexorLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
     {
         CefRefPtr<InexorLayer> layer = (*it);
-        if (layer.get() && layer->IsAcceptingInput()) {
+        if (layer.get() && layer->IsAcceptingKeyInput()) {
             // std::cerr << "layer->GetBrowser()->GetHost()->SendKeyEvent() -> " << layer->GetName() << "\n";
             layer->GetBrowser()->GetHost()->SendKeyEvent(event);
         }
@@ -311,7 +231,7 @@ void InexorLayerManager::SendMouseClickEvent(const CefMouseEvent& event, CefBrow
     for(std::list<CefRefPtr<InexorLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
     {
         CefRefPtr<InexorLayer> layer = (*it);
-        if (layer.get() && layer->IsAcceptingInput()) {
+        if (layer.get() && layer->IsAcceptingMouseInput()) {
             // std::cerr << "layer->GetBrowser()->GetHost()->SendMouseClickEvent() -> " << layer->GetName() << "\n";
             layer->GetBrowser()->GetHost()->SendMouseClickEvent(event, type, mouseUp, clickCount);
         }
@@ -323,7 +243,7 @@ void InexorLayerManager::SendMouseMoveEvent(const CefMouseEvent& event, bool mou
     for(std::list<CefRefPtr<InexorLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
     {
         CefRefPtr<InexorLayer> layer = (*it);
-        if (layer.get() && layer->IsAcceptingInput()) {
+        if (layer.get() && layer->IsAcceptingMouseInput()) {
             // std::cerr << "layer->GetBrowser()->GetHost()->SendMouseMoveEvent() -> " << layer->GetName() << "\n";
             layer->GetBrowser()->GetHost()->SendMouseMoveEvent(event, mouseLeave);
         }
@@ -335,7 +255,7 @@ void InexorLayerManager::SendMouseWheelEvent(const CefMouseEvent& event, int del
     for(std::list<CefRefPtr<InexorLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
     {
         CefRefPtr<InexorLayer> layer = (*it);
-        if (layer.get() && layer->IsAcceptingInput()) {
+        if (layer.get() && layer->IsAcceptingMouseInput()) {
             // std::cerr << "layer->GetBrowser()->GetHost()->SendMouseWheelEvent() -> " << layer->GetName() << "\n";
             layer->GetBrowser()->GetHost()->SendMouseWheelEvent(event, deltaX, deltaY);
         }

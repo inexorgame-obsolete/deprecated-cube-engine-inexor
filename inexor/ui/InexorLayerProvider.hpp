@@ -35,8 +35,11 @@ class InexorLayerProvider : public CefBase
         virtual bool GetVisibility() = 0;
         virtual void SetVisibility(bool _is_visible) = 0;
 
-        virtual bool GetAcceptingInput() = 0;
-        virtual void SetAcceptingInput(bool _is_accepting_input) = 0;
+        virtual bool GetAcceptingKeyInput() = 0;
+        virtual void SetAcceptingKeyInput(bool _is_accepting_key_input) = 0;
+
+        virtual bool GetAcceptingMouseInput() = 0;
+        virtual void SetAcceptingMouseInput(bool _is_accepting_mouse_input) = 0;
 
     protected:
         CefRefPtr<InexorLayer> layer;
@@ -75,19 +78,27 @@ class AbstractInexorLayerProvider : public InexorLayerProvider
             if (layer.get()) layer->SetVisibility(_is_visible);
         };
 
-        bool GetAcceptingInput() { return is_visible; };
-        void SetAcceptingInput(bool _is_accepting_input) {
-            this->is_accepting_input = _is_accepting_input;
-            if (layer.get()) layer->SetIsAcceptingInput(_is_accepting_input);
+        bool GetAcceptingKeyInput() { return is_accepting_key_input; };
+        void SetAcceptingKeyInput(bool _is_accepting_key_input) {
+            this->is_accepting_key_input = _is_accepting_key_input;
+            if (layer.get()) layer->SetIsAcceptingKeyInput(_is_accepting_key_input);
+        };
+
+        bool GetAcceptingMouseInput() { return is_accepting_mouse_input; };
+        void SetAcceptingMouseInput(bool _is_accepting_mouse_input) {
+            this->is_accepting_mouse_input = _is_accepting_mouse_input;
+            if (layer.get()) layer->SetIsAcceptingKeyInput(_is_accepting_mouse_input);
         };
 
         void Show() {
             SetVisibility(true);
-            SetAcceptingInput(true);
+            SetAcceptingKeyInput(true);
+            SetAcceptingMouseInput(true);
         };
         void Hide() {
             SetVisibility(false);
-            SetAcceptingInput(false);
+            SetAcceptingKeyInput(false);
+            SetAcceptingMouseInput(false);
         };
         void ToggleVisibility() {
             SetVisibility(!is_visible);
@@ -95,7 +106,8 @@ class AbstractInexorLayerProvider : public InexorLayerProvider
 
     protected:
         bool is_visible;
-        bool is_accepting_input;
+        bool is_accepting_key_input;
+        bool is_accepting_mouse_input;
         std::string name;
         std::string url;
 
