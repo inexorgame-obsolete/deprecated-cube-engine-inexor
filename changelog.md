@@ -1,5 +1,29 @@
 ## Changelog
 
+### Doxylamine Alpha Edition (v0.6.0-alpha, 2016-03-06)
+
+#### Graphics
+  * ambient occlusion shadows are now antialiased
+  * ambient occlusion is now opt-in for new maps
+  * further minor ambient occlusions improvements and fixes
+  
+#### Server
+  * readded the old master server with small adjustments as a temporary solution
+  * added command `mapmode <map> <mode>` (standalone servers only)
+  * added command line option `-x` to use another config file as `server-init.cfg`
+  * spectate players with modified map (you can disable this with `spectatemodifiedmap 0`)
+
+#### Node.js / CEF
+  * Node.js is getting started automatically with Inexor now
+  * started to add a new implementation of a web server + UI
+  
+#### Code internals, refactoring & bug fixes
+  * fixed a crash when a vslot has an invalid texture definition
+
+
+***
+
+
 ### Tilidine Alpha Edition (v0.5.0-alpha, 2016-01-04)
 
 #### Content management
