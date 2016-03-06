@@ -21,6 +21,9 @@ namespace vscript {
             // if this side of the box is selected, render the side in another color
             box_color = VSCRIPT_COLOR_SELECTION;
         }
+        else {
+            box_color = default_box_color;
+        }
         gle::color(vec::hexcolor(box_color));
     }
 
@@ -32,7 +35,7 @@ namespace vscript {
         /// If you take a look at the original Sauer code you will see that generating
         /// the box using iterations is way more complicated to understand.
         glBegin(GL_QUADS);
-        
+                
         adjust_selection_color(orient, VSCRIPT_BOX_TOP);
         glVertex3f(p.x,p.y,p.z+boxsize);
         glVertex3f(p.x+boxsize,p.y,p.z+boxsize);
@@ -108,40 +111,75 @@ namespace vscript {
     void CNodeRenderer::render_box_helplines(vec p)
     {
         glBegin(GL_LINES);
-
+        
         /// we can't render to infinity, so lets just use a very big value
         const float helpline_distance = 1000.0f;
-        const float b = boxsize;
 
         /// render help line for X AXIS
+        glVertex3f(p.x,p.y,p.z);
         glVertex3f(p.x-helpline_distance,p.y,p.z);
-        glVertex3f(p.x+helpline_distance,p.y,p.z);
-        glVertex3f(p.x-helpline_distance,p.y,p.z+b);
-        glVertex3f(p.x+helpline_distance,p.y,p.z+b);
-        glVertex3f(p.x-helpline_distance,p.y+b,p.z);
-        glVertex3f(p.x+helpline_distance,p.y+b,p.z);
-        glVertex3f(p.x-helpline_distance,p.y+b,p.z+b);
-        glVertex3f(p.x+helpline_distance,p.y+b,p.z+b);
+        glVertex3f(p.x+boxsize,p.y,p.z);
+        glVertex3f(p.x+boxsize+helpline_distance,p.y,p.z);
+
+        glVertex3f(p.x,p.y+boxsize,p.z);
+        glVertex3f(p.x-helpline_distance,p.y+boxsize,p.z);
+        glVertex3f(p.x+boxsize,p.y+boxsize,p.z);
+        glVertex3f(p.x+boxsize+helpline_distance,p.y+boxsize,p.z);
+
+        glVertex3f(p.x,p.y,p.z+boxsize);
+        glVertex3f(p.x-helpline_distance,p.y,p.z+boxsize);
+        glVertex3f(p.x+boxsize,p.y,p.z+boxsize);
+        glVertex3f(p.x+boxsize+helpline_distance,p.y,p.z+boxsize);
+
+        glVertex3f(p.x,p.y+boxsize,p.z+boxsize);
+        glVertex3f(p.x-helpline_distance,p.y+boxsize,p.z+boxsize);
+        glVertex3f(p.x+boxsize,p.y+boxsize,p.z+boxsize);
+        glVertex3f(p.x+boxsize+helpline_distance,p.y+boxsize,p.z+boxsize);
+
 
         /// render help line for Y AXIS
+        glVertex3f(p.x,p.y,p.z);
         glVertex3f(p.x,p.y-helpline_distance,p.z);
-        glVertex3f(p.x,p.y+helpline_distance,p.z);
-        glVertex3f(p.x+b,p.y-helpline_distance,p.z);
-        glVertex3f(p.x+b,p.y+helpline_distance,p.z);
-        glVertex3f(p.x,p.y-helpline_distance,p.z+b);
-        glVertex3f(p.x,p.y+helpline_distance,p.z+b);
-        glVertex3f(p.x+b,p.y-helpline_distance,p.z+b);
-        glVertex3f(p.x+b,p.y+helpline_distance,p.z+b);
+        glVertex3f(p.x,p.y+boxsize,p.z);
+        glVertex3f(p.x,p.y+boxsize+helpline_distance,p.z);
 
-        /// render help line for Z AXIS
+        glVertex3f(p.x+boxsize,p.y,p.z);
+        glVertex3f(p.x+boxsize,p.y-helpline_distance,p.z);
+        glVertex3f(p.x+boxsize,p.y+boxsize,p.z);
+        glVertex3f(p.x+boxsize,p.y+boxsize+helpline_distance,p.z);
+
+        glVertex3f(p.x,p.y,p.z+boxsize);
+        glVertex3f(p.x,p.y-helpline_distance,p.z+boxsize);
+        glVertex3f(p.x,p.y+boxsize,p.z+boxsize);
+        glVertex3f(p.x,p.y+boxsize+helpline_distance,p.z+boxsize);
+
+        glVertex3f(p.x+boxsize,p.y,p.z+boxsize);
+        glVertex3f(p.x+boxsize,p.y-helpline_distance,p.z+boxsize);
+        glVertex3f(p.x+boxsize,p.y+boxsize,p.z+boxsize);
+        glVertex3f(p.x+boxsize,p.y+boxsize+helpline_distance,p.z+boxsize);
+
+
+        /// render help line for Y AXIS
+        glVertex3f(p.x,p.y,p.z);
         glVertex3f(p.x,p.y,p.z-helpline_distance);
-        glVertex3f(p.x,p.y,p.z+helpline_distance);
-        glVertex3f(p.x+b,p.y,p.z-helpline_distance);
-        glVertex3f(p.x+b,p.y,p.z+helpline_distance);
-        glVertex3f(p.x,p.y+b,p.z-helpline_distance);
-        glVertex3f(p.x,p.y+b,p.z+helpline_distance);
-        glVertex3f(p.x+b,p.y+b,p.z-helpline_distance);
-        glVertex3f(p.x+b,p.y+b,p.z+helpline_distance);
+        glVertex3f(p.x,p.y,p.z+boxsize);
+        glVertex3f(p.x,p.y,p.z+boxsize+helpline_distance);
+
+        glVertex3f(p.x,p.y+boxsize,p.z);
+        glVertex3f(p.x,p.y+boxsize,p.z-helpline_distance);
+        glVertex3f(p.x,p.y+boxsize,p.z+boxsize);
+        glVertex3f(p.x,p.y+boxsize,p.z+boxsize+helpline_distance);
+
+        glVertex3f(p.x+boxsize,p.y,p.z);
+        glVertex3f(p.x+boxsize,p.y,p.z-helpline_distance);
+        glVertex3f(p.x+boxsize,p.y,p.z+boxsize);
+        glVertex3f(p.x+boxsize,p.y,p.z+boxsize+helpline_distance);
+
+        glVertex3f(p.x+boxsize,p.y+boxsize,p.z);
+        glVertex3f(p.x+boxsize,p.y+boxsize,p.z-helpline_distance);
+        glVertex3f(p.x+boxsize,p.y+boxsize,p.z+boxsize);
+        glVertex3f(p.x+boxsize,p.y+boxsize,p.z+boxsize+helpline_distance);
+        
         glEnd();
     }
 

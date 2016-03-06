@@ -156,6 +156,58 @@ namespace vscript {
     }
 
 
+    void CVisualScriptSystem::update_relation_linker()
+    {
+        if(nullptr != relation_start_node)
+        {
+            static float selected_dist = 0.0f;
+            static bool calculated = false;
+            if(!calculated)
+            {
+                selected_dist = relation_drag_start.dist(game::player1->o);
+                calculated=true;
+            }
+
+            vec camdir_normalized = camdir;
+            camdir_normalized.normalize();
+            vec drag_target_pos = game::player1->o+camdir_normalized.mul(selected_dist);
+            
+            conoutf(CON_DEBUG, "from %f %f %f to %f %f %f ",drag_target_pos.x,drag_target_pos.y,drag_target_pos.z,
+                    relation_drag_start.x,relation_drag_start.y,relation_drag_start.z);
+
+            
+            start_rendering();
+            glBegin(GL_LINES);
+
+            gle::color(vec::hexcolor(VSCRIPT_COLOR_DEBUG_RAY));
+
+            glVertex3f(drag_target_pos.x,drag_target_pos.y,drag_target_pos.z);
+            glVertex3f(relation_drag_start.x,relation_drag_start.y,relation_drag_start.z);
+            glEnd();
+            end_rendering();
+
+
+            /*
+            /// calc bezier curve
+            tmp_relation_linker_curve.AddParameterPoint(relation_start_node->pos);
+            tmp_relation_linker_curve.AddParameterPoint(drag_target_pos);
+            tmp_relation_linker_curve.ComputeCache();
+
+            /// render curve
+            glBegin(GL_LINES);
+            for(unsigned int i=0; i<tmp_relation_linker_curve.GetCachedPointsSize(); i++)
+            {
+                geom::SCustomOutputPoint p = tmp_relation_linker_curve.GetPoint_ByIndex(i);
+                glVertex3f(p.pos.x,p.pos.y,p.pos.z);
+            }
+            glEnd();
+            */
+
+            // TODO: check if we can make a new relation!
+        }
+    }
+
+
     void CVisualScriptSystem::connect_nodes(CScriptNode *from, CScriptNode *to)
     {
         to->parents.push_back(from);
@@ -170,14 +222,13 @@ namespace vscript {
 
     void CVisualScriptSystem::update_input(int key, bool isdown)
     {
-        switch( - key)
+        switch( - key) // why the minus?
         {
+            // left mouse button for dragging relations
             case SDL_BUTTON_LEFT:
-                
-                if(!dragging_new_relation && isdown && !selection_blocked_by_geometry) // start dragging
+            {
+                if(!dragging_new_relation && isdown && !selection_blocked_by_geometry)
                 {
-                    conoutf(CON_DEBUG, "looks like we're dragging a new relation.");
-
                     for(unsigned int i=0; i<nodes.size(); i++)
                     {
                         float dist = 0.0f;
@@ -185,32 +236,39 @@ namespace vscript {
                         vec p = nodes[i]->pos;
 
                         if(rayboxintersect(p, vec(boxsize), camera1->o, camdir, dist, orient))
-                        {
-                            conoutf(CON_DEBUG,"ah I got one! -lets drag!");
-                            moving_entity= true;
-                            
+                        {                        
                             relation_drag_start = p;
-
+                            relation_start_node = nodes[i];
+                            dragging_new_relation=true;
                         }
                     }
                 }
                 if(dragging_new_relation && !isdown) // stop dragging
                 {
-                    conoutf(CON_DEBUG,"dragging stopped.");
+                    if(nullptr !=hovered_node)
+                    {
+                        // do not link nodes to itself!
+                        if(hovered_node != relation_start_node)
+                        {
+                            // link nodes together!
+                            conoutf(CON_DEBUG, "Added new relation!");
+                            connect_nodes(relation_start_node,hovered_node);
+                        }
+                    }
+
+                    relation_start_node = nullptr;
                     dragging_new_relation = false;
                 }
-
                 break;
+            }
 
-
+            /// right mouse button for moving
             case SDL_BUTTON_RIGHT:
-
+            {
                 if(isdown && nullptr != hovered_node)
                 {
                     /// key pressed
                     selected_node = hovered_node;
-                    move_pos_start = camera1->o;
-                    node_pos_start = selected_node->pos;
                     moving_entity = true;
                 }
                 else 
@@ -224,6 +282,7 @@ namespace vscript {
                     }
                 }
                 break;
+            }
         }
     }
 
@@ -376,9 +435,7 @@ namespace vscript {
 
     CScriptNode* a;
     CScriptNode* b;
-    CScriptNode* b2;
     CScriptNode* c;
-    CScriptNode* d;
 
     
     void test_a()
@@ -388,39 +445,21 @@ namespace vscript {
     COMMAND(test_a, "");
 
 
-    /*
+
     void test_b()
     {
-        b=vScript3D.add_node(NODE_TYPE_SLEEP,1,"150");
-        vScript3D.connect_nodes(a,b);
+        b = vScript3D.add_node(NODE_TYPE_FUNCTION,2,"0","Hallo Welt");
     }
     COMMAND(test_b,"");
-    */
-
-    void test_b2()
-    {
-        b2 = vScript3D.add_node(NODE_TYPE_FUNCTION,2,"0","Hallo Welt");
-        // do not link automaticly! 
-        // TODO: implement drag n drop!
-        //vScript3D.connect_nodes(a, b2);
-    }
-    COMMAND(test_b2,"");
 
 
-    /*
+
     void test_c()
     {
-        c = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "0" , "Hallo Welt");
-        vScript3D.connect_nodes(b,c);
+        c = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "1", "14");
     }
     COMMAND(test_c, "");
 
-    void test_d()
-    {
-        d = vScript3D.add_node(NODE_TYPE_AREA_BLOCK, 2, "Kommentar", "Hallo Welt Bereich");
-    }
-    COMMAND(test_d, "");
-    */
 
 };
 };
