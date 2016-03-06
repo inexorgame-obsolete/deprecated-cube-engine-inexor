@@ -22,6 +22,19 @@
       <button type="button" class="btn btn-default" ng-click="hideConsole()"><i class="fa fa-terminal"></i> Hide Console</button>
     </div>
 
+    <hr />
+
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-default" ng-click="startBotMatch()"><i class="fa fa-arrow-right"></i> Start Bot Match</button>
+      <button type="button" class="btn btn-default" ng-click="startCoopEditing()"><i class="fa fa-arrow-right"></i> Start Coop Editing</button>
+      <button type="button" class="btn btn-default" ng-click="quit()"><i class="fa fa-arrow-right"></i> Quit</button>
+    </div>
+
+    <div class="btn-group">
+      <label class="btn btn-primary" ng-model="fullscreen" uib-btn-radio="'1'" ng-click="toggleFullscreen()">Fullscreen On</label>
+      <label class="btn btn-primary" ng-model="fullscreen" uib-btn-radio="'0'" ng-click="toggleFullscreen()">Fullscreen Off</label>
+    </div>
+
   </div>
 
 </div>
