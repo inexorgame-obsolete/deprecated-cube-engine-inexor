@@ -13,7 +13,9 @@
 /// typically, if d is not used, then it is implicitly the Z dimension.
 /// ie: d=z => x=x, y=y, z=z
 
+#pragma once
 
+#include <iostream>
 
 /// declaration of 2- and 4-dimensional vectors
 struct vec;
@@ -44,6 +46,14 @@ struct vec2
 
     bool operator==(const vec2 &o) const { return x == o.x && y == o.y; }
     bool operator!=(const vec2 &o) const { return x != o.x || y != o.y; }
+
+    /// Output operator, used for simple << vec2 << functionality: "(x, y)"
+    /// You may want to set the precision beforehand with std::setprecision()
+    friend std::ostream &operator<<(std::ostream &os, const vec2 &v)
+    {
+        os << '(' << v.x << " ," << v.y << ')';
+        return os;
+    }
 
     bool iszero() const { return x==0 && y==0; }
     float dot(const vec2 &o) const  { return x*o.x + y*o.y; }
@@ -121,6 +131,13 @@ struct vec
 
     vec &set(int i, float f) { v[i] = f; return *this; }
 
+    /// Output operator, used for simple << vec << functionality: output of form"(x, y, z)"
+    /// You may want to set the precision beforehand with std::setprecision()
+    friend std::ostream &operator<<(std::ostream &os, const vec &v)
+    {
+        os << '(' << v.x << " ," << v.y << " ," << v.z << ')';
+        return os;
+    }
 
     /// operators for vector comparisn
     bool operator==(const vec &o) const { return x == o.x && y == o.y && z == o.z; }
@@ -334,6 +351,14 @@ struct vec4
 	/// operators for XYZ coordinate access
     float &operator[](int i)       { return v[i]; }
     float  operator[](int i) const { return v[i]; }
+    
+    /// Output operator, used for simple << vec4 << functionality: output of form "(x, y, z, w)"
+    /// You may want to set the precision beforehand with std::setprecision()
+    friend std::ostream &operator<<(std::ostream &os, const vec4 &v)
+    {
+        os << '(' << v.x << " ," << v.y << " ," << v.z << " ," << v.w << ')';
+        return os;
+    }
 
 	/// dot products
     template<class T> float dot3(const T &o) const { return x*o.x + y*o.y + z*o.z; }
@@ -1221,6 +1246,14 @@ struct ivec
     //int idx(int i) { return v[i]; }
     bool operator==(const ivec &v) const { return x==v.x && y==v.y && z==v.z; }
     bool operator!=(const ivec &v) const { return x!=v.x || y!=v.y || z!=v.z; }
+
+    /// Output operator, used for simple << ivec << functionality: output of form "(x, y, z)"
+    friend std::ostream &operator<<(std::ostream &os, const ivec &v)
+    {
+        os << '(' << v.x << " ," << v.y << " ," << v.z << ')';
+        return os;
+    }
+
     bool iszero() const { return x==0 && y==0 && z==0; }
     ivec &shl(int n) { x<<= n; y<<= n; z<<= n; return *this; }
     ivec &shr(int n) { x>>= n; y>>= n; z>>= n; return *this; }
@@ -1279,6 +1312,13 @@ struct ivec2
 
     bool operator==(const ivec2 &o) const { return x == o.x && y == o.y; }
     bool operator!=(const ivec2 &o) const { return x != o.x || y != o.y; }
+
+    /// Output operator, used for simple << ivec2 << functionality: output of form "(x, y)"
+    friend std::ostream &operator<<(std::ostream &os, const ivec2 &v)
+    {
+        os << '(' << v.x << " ," << v.y << ')';
+        return os;
+    }
 
     bool iszero() const { return x==0 && y==0; }
     ivec2 &shl(int n) { x<<= n; y<<= n; return *this; }
