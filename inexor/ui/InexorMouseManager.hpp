@@ -26,7 +26,8 @@ class InexorMouseManager : public InexorContextProvider
               screen_height(screen_height),
               x(screen_width / 2),
               y(screen_height / 2),
-              scale(0.03f),
+              scale_x(0.015f),
+              scale_y(0.025f),
               visible(true),
               texture("interface/cursor/default.png") {};
 
@@ -41,8 +42,8 @@ class InexorMouseManager : public InexorContextProvider
         int GetScreenHeight() { return screen_height; };
         float GetScaledX() { return (float) x / (float) screen_width; };
         float GetScaledY() { return (float) y / (float) screen_height; };
-        int GetWidth() { return screen_width * scale; };
-        int GetHeight() { return screen_height * scale; };
+        int GetWidth() { return screen_width * scale_x; };
+        int GetHeight() { return screen_height * scale_y; };
         std::string GetTexture() { return texture; };
         void SetTexture(std::string texture) { this->texture = texture; };
 
@@ -70,8 +71,10 @@ class InexorMouseManager : public InexorContextProvider
         int x;
         int y;
 
-        // The width/height of the mouse in percent (0.03 = mouse width 3% of the screen width)
-        float scale;
+        // The width/height of the mouse in percent
+        // scale_x = 0.03 => mouse width 3% of the screen width
+        float scale_x;
+        float scale_y;
 
         // If true, the mouse is visible
         bool visible;

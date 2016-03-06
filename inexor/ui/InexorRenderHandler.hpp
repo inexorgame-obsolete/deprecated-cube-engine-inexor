@@ -30,6 +30,14 @@ class InexorRenderHandler : public CefRenderHandler {
 
         bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect);
 
+        void SetViewRect(int view_x, int view_y, int view_width, int view_height)
+        {
+            this->view_x = view_x;
+            this->view_y = view_y;
+            this->view_width = view_width;
+            this->view_height = view_height;
+        }
+
         void OnPaint(CefRefPtr<CefBrowser> browser,
             CefRenderHandler::PaintElementType type,
             const CefRenderHandler::RectList& dirtyRects,
