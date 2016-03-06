@@ -33,7 +33,7 @@ class InexorLayer : public CefClient,
         InexorWindowInfo GetWindowInfo() { return window_info; }
         CefBrowserSettings GetBrowserSettings() { return browser_settings; };
 
-        void Render() { render_handler->Render(); };
+        // void Render() { render_handler->Render(); };
         void Destroy();
 
         void Copy();
@@ -45,11 +45,10 @@ class InexorLayer : public CefClient,
         bool IsVisible() { return is_visible && browser.get(); };
         void SetVisibility(bool is_visible);
 
-        // bool HasFocus() { return has_focus && browser.get(); };
-        // void SetFocus(bool has_focus);
-
-        bool IsAcceptingInput() { return is_accepting_input && browser.get(); };
-        void SetIsAcceptingInput(bool is_accepting_input);
+        bool IsAcceptingKeyInput() { return is_accepting_key_input && browser.get(); };
+        bool IsAcceptingMouseInput() { return is_accepting_mouse_input && browser.get(); };
+        void SetIsAcceptingKeyInput(bool is_accepting_key_input);
+        void SetIsAcceptingMouseInput(bool is_accepting_mouse_input);
 
         bool IsClosing() { return is_closing; }
 
@@ -84,11 +83,15 @@ class InexorLayer : public CefClient,
         bool OnConsoleMessage(CefRefPtr<CefBrowser> browser, const CefString& message, const CefString& source, int line);
 
 	private:
+
+        void UpdateFocus();
+
 	    std::string name;
         std::string url;
 
 	    bool is_visible;
-	    bool is_accepting_input;
+	    bool is_accepting_key_input;
+        bool is_accepting_mouse_input;
 
 	    int browser_id;
         int browser_count;

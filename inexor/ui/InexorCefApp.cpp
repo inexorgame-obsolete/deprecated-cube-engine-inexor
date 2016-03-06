@@ -19,7 +19,7 @@ InexorCefApp::InexorCefApp(int width, int height)
 
     SetScreenSize(width, height);
 
-    std::string layer_name("userinterface");
+    std::string layer_name("inexorui");
     std::string layer_url("http://localhost:48702/");
     user_interface = new InexorUserInterface(layer_name, layer_url);
     user_interface->Show();
