@@ -1,6 +1,8 @@
 #ifndef INEXOR_UI_INEXOR_MOUSE_MANAGER_HEADER
 #define INEXOR_UI_INEXOR_MOUSE_MANAGER_HEADER
 
+#include <iostream>
+
 #include "inexor/engine/engine.hpp"
 
 #include "include/cef_app.h"
@@ -18,29 +20,31 @@ class InexorMouseManager : public InexorContextProvider
 {
 
     public:
-        InexorMouseManager(CefRefPtr<InexorLayerManager> layer_manager) : x(0), y(0), max_x(0), max_y(0), size(0.03f), visible(false) {
-            this->layer_manager = layer_manager;
-            SetTexture("interface/cursor/default.png", GL_ONE);
-        };
-        InexorMouseManager(CefRefPtr<InexorLayerManager> layer_manager, int width, int height) : x(0), y(0), size(0.03f), visible(true) {
-            this->layer_manager = layer_manager;
-            SetTexture("interface/cursor/default.png", GL_ONE);
-            SetMax(width, height);
-        };
+        InexorMouseManager(CefRefPtr<InexorLayerManager> layer_manager, int screen_width, int screen_height)
+            : layer_manager(layer_manager),
+              screen_width(screen_width),
+              screen_height(screen_height),
+              x(screen_width / 2),
+              y(screen_height / 2),
+              scale(0.03f),
+              visible(true),
+              texture("interface/cursor/default.png") {};
 
-        void Update(const CefMouseEvent& event);
-
-        void SetMax(int width, int height);
-
-        void SetTexture(std::string filename, int blendFunction);
 
         bool IsVisible() { return visible; };
-
         void Hide() { visible = false; };
-
         void Show() { visible = true; };
-
-        void Render();
+        void SetScreenSize(int screen_width, int screen_height) { this->screen_width = screen_width; this->screen_height = screen_height; };
+        int GetAbsoluteX() { return x; };
+        int GetAbsoluteY() { return y; };
+        int GetScreenWidth() { return screen_width; };
+        int GetScreenHeight() { return screen_height; };
+        float GetScaledX() { return (float) x / (float) screen_width; };
+        float GetScaledY() { return (float) y / (float) screen_height; };
+        int GetWidth() { return screen_width * scale; };
+        int GetHeight() { return screen_height * scale; };
+        std::string GetTexture() { return texture; };
+        void SetTexture(std::string texture) { this->texture = texture; };
 
         // SDL Events
         void SendMouseMoveEvent(SDL_Event event);
@@ -55,17 +59,25 @@ class InexorMouseManager : public InexorContextProvider
         std::string GetContextName() { return "mouse"; };
 
 	private:
-        int x;
-        int y;
-        int max_x;
-        int max_y;
-        float size;
-        bool visible;
-        int blendFunction;
-        std::string texture;
-
         // Layer Manager
         CefRefPtr<InexorLayerManager> layer_manager;
+
+        // The width and height of the screen
+        int screen_width;
+        int screen_height;
+
+        // The position of the mouse on the screen
+        int x;
+        int y;
+
+        // The width/height of the mouse in percent (0.03 = mouse width 3% of the screen width)
+        float scale;
+
+        // If true, the mouse is visible
+        bool visible;
+
+        // The texture of the mouse
+        std::string texture;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(InexorMouseManager);
