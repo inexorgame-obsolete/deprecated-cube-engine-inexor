@@ -17,8 +17,8 @@ class InexorLayerManager : public InexorContextProvider
         InexorLayerManager(int width, int height);
 
         // Rendering
-        void Render();
-        void RenderLayer(std::string name);
+        // void Render();
+        // void RenderLayer(std::string name);
         void SetScreenSize(int width, int height);
         int GetScreenWidth() { return width; };
         int GetScreenHeight() { return height; };

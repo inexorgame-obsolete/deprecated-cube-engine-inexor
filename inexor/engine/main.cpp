@@ -1242,19 +1242,11 @@ ICOMMAND(uireload, "", (),
         cef_app->GetUserInterface()->Reload();
     }
 );
-ICOMMAND(uishow, "", (),
+ICOMMAND(uiinput, "bbb", (bool *_is_visible, bool *_is_accepting_key_input, bool *_is_accepting_mouse_input),
     if (cef_app.get()) {
-        cef_app->GetUserInterface()->Show();
-    }
-);
-ICOMMAND(uihide, "", (),
-    if (cef_app.get()) {
-        cef_app->GetUserInterface()->Hide();
-    }
-);
-ICOMMAND(uifocus, "b", (bool *b),
-    if (cef_app.get()) {
-        cef_app->GetUserInterface()->SetAcceptingInput(*b);
+        cef_app->GetUserInterface()->SetVisibility(*_is_visible);
+        cef_app->GetUserInterface()->SetAcceptingKeyInput(*_is_accepting_key_input);
+        cef_app->GetUserInterface()->SetAcceptingMouseInput(*_is_accepting_mouse_input);
     }
 );
 
