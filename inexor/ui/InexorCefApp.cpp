@@ -11,7 +11,7 @@ InexorCefApp::InexorCefApp(int width, int height)
     layer_manager = new InexorLayerManager(width, height);
     context_manager->AddSubContext(layer_manager);
 
-    mouse_manager = new InexorMouseManager(layer_manager);
+    mouse_manager = new InexorMouseManager(layer_manager, width, height);
     context_manager->AddSubContext(mouse_manager);
 
     keyboard_manager = new InexorKeyboardManager(layer_manager);
@@ -26,8 +26,6 @@ InexorCefApp::InexorCefApp(int width, int height)
 
     context_manager->AddSubContext(user_interface);
     layer_manager->AddLayerProvider(user_interface);
-
-    mouse_manager->Show();
 }
 
 void InexorCefApp::Destroy()
@@ -35,14 +33,8 @@ void InexorCefApp::Destroy()
     layer_manager->DestroyLayers();
 }
 
-void InexorCefApp::Render()
-{
-    layer_manager->Render();
-    // mouse_manager->Render();
-}
-
 void InexorCefApp::SetScreenSize(int width, int height) {
-    mouse_manager->SetMax(width, height);
+    mouse_manager->SetScreenSize(width, height);
     layer_manager->SetScreenSize(width, height);
 }
 

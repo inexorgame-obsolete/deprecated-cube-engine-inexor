@@ -1858,6 +1858,23 @@ void gl_drawhud(int w, int h);
 
 int xtraverts, xtravertsva;
 
+void gl_rendercefmouse(int view_x, int view_y, int view_width, int view_height)
+{
+    hudshader->set();
+    gle::colorf(1.0f, 1.0f, 1.0f, 1.0f);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    settexture(cef_app->GetMouseManager()->GetTexture().c_str(), 3);
+    hudquad(
+        (view_width - view_x) * cef_app->GetMouseManager()->GetScaledX(),
+        (view_height - view_y) * cef_app->GetMouseManager()->GetScaledY(),
+        cef_app->GetMouseManager()->GetWidth(),
+        cef_app->GetMouseManager()->GetHeight()
+    );
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_BLEND);
+}
+
 void gl_rendercef()
 {
     if (!cef_app.get()) {
@@ -1915,6 +1932,10 @@ void gl_rendercef()
 
             // Disable alpha blending.
             glDisable(GL_BLEND);
+
+            if (layer->IsAcceptingInput()) {
+                gl_rendercefmouse(view_x, view_y, view_width, view_height);
+            }
         }
     }
 
@@ -2028,7 +2049,7 @@ void gl_drawmainmenu()
     renderpostfx();
 
     gl_rendercef();
-    g3d_render();
+    // g3d_render();
     gl_drawhud();
 }
 
@@ -2166,7 +2187,7 @@ VAR(hidestats, 0, 0, 1);
 VAR(hidehud, 0, 0, 1);
 
 VARP(crosshairsize, 0, 15, 50);
-VARP(cursorsize, 0, 30, 50);
+// VARP(cursorsize, 0, 30, 50);
 VARP(crosshairfx, 0, 1, 1);
 VARP(crosshaircolors, 0, 1, 1);
 
@@ -2218,8 +2239,8 @@ void writecrosshairs(stream *f)
     f->printf("\n");
 }
 
-static Texture *cursortex = NULL;
-SVARFP(cursor, "interface/cursor/default.png", cursortex = NULL);
+// static Texture *cursortex = NULL;
+// SVARFP(cursor, "interface/cursor/default.png", cursortex = NULL);
 
 void drawcrosshair(int w, int h)
 {
@@ -2231,10 +2252,12 @@ void drawcrosshair(int w, int h)
     Texture *crosshair;
     if(windowhit)
     {
-		if(!cursortex) cursortex = textureload(cursor, 3, true);
+		/*
+        if(!cursortex) cursortex = textureload(cursor, 3, true);
         crosshair = cursortex;
         chsize = cursorsize*w/900.0f;
         g3d_cursorpos(cx, cy);
+        */
     }
     else
     { 
