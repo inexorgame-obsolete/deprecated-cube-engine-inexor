@@ -37,7 +37,6 @@ class InexorCefApp : public CefApp,
         CefRefPtr<InexorUserInterface> GetUserInterface() { return user_interface; }
 
         // Rendering / Window Management
-        void Render();
         void SetScreenSize(int width, int height);
 
         // CefBrowserProcessHandler
