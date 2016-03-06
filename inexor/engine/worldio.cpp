@@ -2,6 +2,8 @@
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
+#include "inexor/shared/filesystem.hpp"
+#include "inexor/util/Logging.hpp"
 
 /// remove map postfix (.ogz) from file path/name to get map name
 void cutogz(char *s) 
@@ -120,7 +122,7 @@ bool loadents(const char *fname, vector<entity> &ents, uint *crc)
     if(strcmp(gametype, game::gameident()))
     {
         samegame = false;
-        conoutf(CON_WARN, "WARNING: loading map from %s game, ignoring entities except for lights/mapmodels", gametype);
+        LOG(WARNING) << "WARNING: loading map from " << gametype << " game, ignoring entities except for lights/mapmodels";
     }
     if(hdr.version>=16)
     {
@@ -1000,7 +1002,7 @@ bool save_world(const char *mname, bool nolms)
     stream *f = opengzfile(ogzname, "wb");
     if(!f) 
     {
-        conoutf(CON_WARN, "could not write map to %s", ogzname); 
+        LOG(WARNING) << "could not write map to " << ogzname; 
         return false;
     }
     /// get light map data
@@ -1291,7 +1293,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
     if(strcmp(gametype, game::gameident())!=0)
     {
         samegame = false;
-        conoutf(CON_WARN, "WARNING: loading map from %s game, ignoring entities except for lights/mapmodels", gametype);
+        LOG(WARNING) << "WARNING: loading map from " << gametype << " game, ignoring entities except for lights/mapmodels";
     }
     if(hdr.version>=16)
     {
@@ -1346,13 +1348,13 @@ bool load_world(const char *mname, const char *cname)        // still supports a
         {
             if(e.type != ET_LIGHT && e.type != ET_SPOTLIGHT)
             {
-                conoutf(CON_WARN, "warning: ent outside of world: enttype[%s] index %d (%f, %f, %f)", entities::entname(e.type), i, e.o.x, e.o.y, e.o.z);
+                LOG(WARNING) << "warning: ent outside of world: enttype[" << entities::entname(e.type) <<"] index " << i << " " << e.o;
             }
         }
         if(hdr.version <= 14 && e.type == ET_MAPMODEL)
         {
             e.o.z += e.attr3;
-            if(e.attr4) conoutf(CON_WARN, "warning: mapmodel ent (index %d) uses texture slot %d", i, e.attr4);
+            if(e.attr4) LOG(WARNING) << "warning: mapmodel ent (index " << i << ") uses texture slot " << e.attr4;
             e.attr3 = e.attr4 = 0;
         }
     }
@@ -1360,7 +1362,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
 
     if(hdr.numents > MAXENTS) 
     {
-        conoutf(CON_WARN, "warning: map has %d entities", hdr.numents);
+        LOG(WARNING) << "warning: map has " << hdr.numents << " entities";
         f->seek((hdr.numents-MAXENTS)*(samegame ? sizeof(entity) + einfosize : eif), SEEK_CUR);
     }
 

@@ -1,5 +1,6 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/texture/cubemap.hpp"
+#include "inexor/util/Logging.hpp"
 
 SVARP(modeldir, "model");
 
@@ -42,7 +43,7 @@ MODELTYPE(MDL_OBJ, obj);
 MODELTYPE(MDL_SMD, smd);
 MODELTYPE(MDL_IQM, iqm);
 
-#define checkmdl if(!loadingmodel) { conoutf(CON_ERROR, "not loading a model"); return; }
+#define checkmdl if(!loadingmodel) { LOG(ERROR) << "not loading a model"; return; }
 
 void mdlcullface(int *cullface)
 {
@@ -244,7 +245,7 @@ void mdlname()
 COMMAND(mdlname, "");
 
 #define checkragdoll \
-    if(!loadingmodel->skeletal()) { conoutf(CON_ERROR, "not loading a skeletal model"); return; } \
+    if(!loadingmodel->skeletal()) { LOG(ERROR) << "not loading a skeletal model"; return; } \
     skelmodel *m = (skelmodel *)loadingmodel; \
     if(m->parts.empty()) return; \
     skelmodel::skelmeshgroup *meshes = (skelmodel::skelmeshgroup *)m->parts.last()->meshes; \
@@ -371,7 +372,7 @@ void flushpreloadedmodels(bool msg)
     {
         loadprogress = float(i+1)/preloadmodels.length();
         model *m = loadmodel(preloadmodels[i], -1, msg);
-        if(!m) { if(msg) conoutf(CON_WARN, "could not load model: %s", preloadmodels[i]); }
+        if(!m) { if(msg) LOG_N_TIMES(1, WARNING) << "could not load model: " << preloadmodels[i]; }
         else
         {
             m->preloadmeshes();
@@ -396,8 +397,8 @@ void preloadusedmapmodels(bool msg, bool bih)
         loadprogress = float(i+1)/mapmodels.length();
         int mmindex = mapmodels[i];
         mapmodelinfo *mmi = getmminfo(mmindex);
-        if(!mmi) { if(msg) conoutf(CON_WARN, "could not find map model: %d", mmindex); }
-        else if(mmi->name[0] && !loadmodel(NULL, mmindex, msg)) { if(msg) conoutf(CON_WARN, "could not load model: %s", mmi->name); }
+        if(!mmi) { if(msg) LOG_N_TIMES(1, WARNING) << "could not find map model: " << mmindex; }
+        else if(mmi->name[0] && !loadmodel(NULL, mmindex, msg)) { if(msg) LOG_N_TIMES(1, WARNING) << "could not load model: " << mmi->name; }
         else if(mmi->m)
         {
             if(bih) mmi->m->preloadBIH();

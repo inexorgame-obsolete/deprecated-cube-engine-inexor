@@ -1,5 +1,6 @@
 // monster.h: implements AI for single player monsters, currently client only
 #include "inexor/fpsgame/game.hpp"
+#include "inexor/util/Logging.hpp"
 
 extern int physsteps;
 
@@ -58,7 +59,7 @@ namespace game
             respawn();
             if(_type>=NUMMONSTERTYPES || _type < 0)
             {
-                conoutf(CON_WARN, "warning: unknown monster in spawn: %d", _type);
+                LOG_N_TIMES(1, WARNING) << "warning: unknown monster in spawn: " << _type;
                 _type = 0;
             }
             mtype = _type;

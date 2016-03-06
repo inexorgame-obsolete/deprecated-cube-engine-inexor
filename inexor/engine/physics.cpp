@@ -5,6 +5,9 @@
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/engine/mpr.hpp"
+#include "inexor/util/Logging.hpp"
+
+#include <iomanip> // std::setprecision
 
 const int MAXCLIPPLANES = 1024;
 static clipplanes clipcache[MAXCLIPPLANES];
@@ -2022,7 +2025,7 @@ bool entinmap(dynent *d, bool avoidplayers)        // brute force but effective 
     // leave ent at original pos, possibly stuck
     d->o = orig;
     d->resetinterp();
-    conoutf(CON_WARN, "can't find entity spawn spot! (%.1f, %.1f, %.1f)", d->o.x, d->o.y, d->o.z);
+    LOG_N_TIMES(1, WARNING) << "can't find entity spawn spot! " << std::setprecision(2) << d->o;
     return false;
 }
 

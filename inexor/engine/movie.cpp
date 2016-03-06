@@ -8,6 +8,8 @@
 //   kino - ok
 
 #include "inexor/engine/engine.hpp"
+#include "inexor/util/Logging.hpp"
+
 #include "SDL_mixer.h"
 
 VAR(dbgmovie, 0, 0, 1);
@@ -908,7 +910,7 @@ namespace recorder
  
         int fps, bestdiff, worstdiff;
         getfps(fps, bestdiff, worstdiff);
-        if(videofps > fps) conoutf(CON_WARN, "frame rate may be too low to capture at %d fps", videofps);
+        if(videofps > fps) LOG(WARNING) << "frame rate may be too low to capture at " << videofps << " fps";
         
         if(videow%2) videow += 1;
         if(videoh%2) videoh += 1;

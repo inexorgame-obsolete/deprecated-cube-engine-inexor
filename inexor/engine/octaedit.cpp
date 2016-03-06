@@ -1,6 +1,7 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/texture/slot.hpp"
+#include "inexor/util/Logging.hpp"
 
 extern SharedVar<int> outline;
 
@@ -874,7 +875,7 @@ static int countblock(block3 *b) { return countblock(b->c(), b->size()); }
 void swapundo(undolist &a, undolist &b, int op)
 {
     if(noedit()) return;
-    if(a.empty()) { conoutf(CON_WARN, "nothing more to %s", op == EDIT_REDO ? "redo" : "undo"); return; }
+    if(a.empty()) { LOG(WARNING) << "nothing more to " << (op == EDIT_REDO ? "redo" : "undo"); return; }
     int ts = a.last->timestamp;
     if(multiplayer(false))
     {

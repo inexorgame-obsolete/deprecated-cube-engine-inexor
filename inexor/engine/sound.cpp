@@ -2,6 +2,8 @@
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
+#include "inexor/shared/filesystem.hpp"
+#include "inexor/util/Logging.hpp"
 
 #include "SDL_mixer.h"
 #include <string>
@@ -264,7 +266,7 @@ bool soundsample::load(bool msg)
         if(chunk) return true;
     }
 
-    conoutf(CON_WARN, "failed to load sound: %s", filename.c_str());
+    LOG_N_TIMES(1, WARNING) << "failed to load sound: " << filename.c_str();
     return false;
 }
 
@@ -560,7 +562,7 @@ int playsound(int n, const vec *loc, extentity *ent, int flags, int loops, int f
     if(nosound || !soundvol || minimized) return -1;
 
     soundtype &sounds = ent || flags&SND_MAP ? mapsounds : gamesounds;
-    if(!sounds.configs.inrange(n)) { conoutf(CON_WARN, "unregistered sound: %d", n); return -1; }
+    if(!sounds.configs.inrange(n)) { LOG_N_TIMES(1, WARNING) << "unregistered sound: " << n; return -1; }
     soundconfig &config = sounds.configs[n];
 
     if(loc && (maxsoundradius || radius > 0))
