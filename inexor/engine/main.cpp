@@ -167,6 +167,10 @@ namespace rendering {
 namespace screen {
 
 void screenres(int w, int h);
+<<<<<<< 4d26f78562a1c694ca0a63518dd6e5777bc95c18
+=======
+ICOMMAND(screenres, "ii", (int *w, int *h), screenres(*w, *h)); // TODO: CEF userinterface
+>>>>>>> Automatically update CEF screen size
 
     ICOMMAND(screenres, "ii", (int *w, int *h), screenres(*w, *h));
 
@@ -1236,11 +1240,16 @@ ICOMMAND(uireload, "", (),
         cef_app->GetUserInterface()->Reload();
     }
 );
-ICOMMAND(uiinput, "bbb", (bool *_is_visible, bool *_is_accepting_key_input, bool *_is_accepting_mouse_input),
+ICOMMAND(uistate, "bbb", (bool *_is_visible, bool *_is_accepting_key_input, bool *_is_accepting_mouse_input),
     if (cef_app.get()) {
         cef_app->GetUserInterface()->SetVisibility(*_is_visible);
         cef_app->GetUserInterface()->SetAcceptingKeyInput(*_is_accepting_key_input);
         cef_app->GetUserInterface()->SetAcceptingMouseInput(*_is_accepting_mouse_input);
+    }
+);
+ICOMMAND(uiresize, "ii", (int *width, int *height),
+    if (cef_app.get()) {
+        cef_app->GetUserInterface()->Resize(0, 0, *width, *height);
     }
 );
 
@@ -1294,23 +1303,13 @@ int main(int argc, char **argv)
         }
     }
 
-<<<<<<< 8b4df2324f7091af3ffc091b9cd51bbbb3e76a2c
-<<<<<<< e71c8ab8cdc200260473c71c56fd303d797eee30
+
     // require subsystems BEFORE configurations are done
+    // Subsystem initialization with main args; Never render cef if cef_app not
     //Initialize the metasystem
     SUBSYSTEM_REQUIRE(rpc); // remote process control: communication with the scripting engine
     SUBSYSTEM_REQUIRE(cef); // (embedded chromium): ingame html5+js browser for the ui.
 
-    metapp.start("rpc");
-=======
-    /// require subsystems BEFORE configurations are done
-    SUBSYSTEM_REQUIRE(rpc);
-    SUBSYSTEM_REQUIRE(cef);
->>>>>>> Subsystem initialization with main args; Never render cef if cef_app not
-
-=======
-	/// parse command line arguments
->>>>>>> Bugfixes
     execfile("init.cfg", false);
 
     // parse command line arguments

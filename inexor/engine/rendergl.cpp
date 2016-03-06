@@ -575,6 +575,9 @@ COMMAND(glext, "s");
 void gl_resize()
 {
     glViewport(0, 0, screenw, screenh);
+    if (cef_app) {
+        cef_app->GetUserInterface()->Resize(0, 0, screenw, screenh);
+    }
 }
  
 void gl_init(int depth, int fsaa)

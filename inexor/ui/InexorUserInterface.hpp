@@ -6,6 +6,9 @@
 #include "inexor/ui/InexorContextProvider.hpp"
 #include "inexor/ui/InexorLayerProvider.hpp"
 
+/**
+ * The main user interface of inexor.
+ */
 class InexorUserInterface : public InexorContextProvider,
                             public AbstractInexorLayerProvider
 {
@@ -24,6 +27,21 @@ class InexorUserInterface : public InexorContextProvider,
             std::string url = GetUrl();
             SetUrl(url);
         };
+
+        void Resize(int x, int y, int width, int height) {
+            if (layer.get()) {
+                layer->GetInexorRenderHandler()->SetViewRect(x, y, width, height);
+                layer->GetBrowser()->GetHost()->WasResized();
+            }
+        };
+
+        void AutoResize(int width, int height) {
+            if (layer.get()) {
+                if (width != layer->GetInexorRenderHandler()->GetViewWidth() || height != layer->GetInexorRenderHandler()->GetViewHeight()) {
+                    Resize(0, 0, width, height);
+                }
+            }
+        }
 
     private:
         std::string _name;

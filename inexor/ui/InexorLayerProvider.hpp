@@ -87,7 +87,7 @@ class AbstractInexorLayerProvider : public InexorLayerProvider
         bool GetAcceptingMouseInput() { return is_accepting_mouse_input; };
         void SetAcceptingMouseInput(bool _is_accepting_mouse_input) {
             this->is_accepting_mouse_input = _is_accepting_mouse_input;
-            if (layer.get()) layer->SetIsAcceptingKeyInput(_is_accepting_mouse_input);
+            if (layer.get()) layer->SetIsAcceptingMouseInput(_is_accepting_mouse_input);
         };
 
         void Show() {
