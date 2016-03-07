@@ -9,9 +9,6 @@
   #define gamma __gamma
 #endif
 
-#ifdef WIN32  // we define our own math constants (PI, ln(2)...)
-  #define _USE_MATH_DEFINES
-#endif
 #include <math.h>
 
 #ifdef __GNUC__
@@ -55,7 +52,6 @@
 #include "inexor/shared/geom.hpp"
 #include "inexor/shared/ents.hpp"
 #include "inexor/shared/command.hpp"
-#include "inexor/shared/json.hpp"
 
 #ifndef STANDALONE
 #include "inexor/engine/glexts.hpp"

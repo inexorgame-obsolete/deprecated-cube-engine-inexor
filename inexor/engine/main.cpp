@@ -1,7 +1,7 @@
 /// game initialisation & main loop
 ///
 #include "inexor/engine/engine.hpp"
-#include "inexor/shared/filesystem.hpp"
+#include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/ui.hpp"
 #include "inexor/util/Subsystem.hpp"
 #include "inexor/crashreporter/CrashReporter.hpp"
@@ -354,7 +354,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
             if(!mapshotframe_texture)
             {
                 std::string filename;
-                inexor::filesystem::appendmediadir(filename, "mapshot_frame.png", DIR_UI);
+                inexor::filesystem::getmediapath(filename, "mapshot_frame.png", DIR_UI);
                 mapshotframe_texture = textureload(filename.c_str(), 3, true, false);
             }
             glBindTexture(GL_TEXTURE_2D, mapshotframe_texture->id);
@@ -437,7 +437,7 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
     if(!loadingframe_texture)
     {
         std::string filename;
-        inexor::filesystem::appendmediadir(filename, "loading_frame.png", DIR_UI);
+        inexor::filesystem::getmediapath(filename, "loading_frame.png", DIR_UI);
         loadingframe_texture = textureload(filename.c_str(), 3, true, false);
     }
     glBindTexture(GL_TEXTURE_2D, loadingframe_texture->id);
@@ -458,7 +458,7 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
         if(!loadingbar_texture)
         {
             std::string filename;
-            inexor::filesystem::appendmediadir(filename, "loading_bar.png", DIR_UI);
+            inexor::filesystem::getmediapath(filename, "loading_bar.png", DIR_UI);
             loadingbar_texture = textureload(filename.c_str(), 3, true, false);
         }
         glBindTexture(GL_TEXTURE_2D, loadingbar_texture->id);
@@ -510,7 +510,7 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
         if(!mapshotframe_texture)
         {
             std::string filename;
-            inexor::filesystem::appendmediadir(filename, "mapshot_frame.png", DIR_UI);
+            inexor::filesystem::getmediapath(filename, "mapshot_frame.png", DIR_UI);
             mapshotframe_texture = textureload(filename.c_str(), 3, true, false);
         }
         glBindTexture(GL_TEXTURE_2D, mapshotframe_texture->id);

@@ -1,4 +1,5 @@
 #include "inexor/engine/engine.hpp"
+#include "inexor/texture/cubemap.hpp"
 
 struct QuadNode
 {
@@ -8,11 +9,11 @@ struct QuadNode
 
     QuadNode(int x, int y, int size) : x(x), y(y), size(size), filled(0) { loopi(4) child[i] = 0; }
 
-    void clear() 
+    void clear()
     {
         loopi(4) DELETEP(child[i]);
     }
-    
+
     ~QuadNode()
     {
         clear();
@@ -106,9 +107,9 @@ static void renderwaterfall(const materialsurface &m, float offset, const vec *n
                 gle::attribf(wfxscale*v.x, wfyscale*(v.z+wfscroll)); \
             }
 #define GENFACENORMAL gle::attrib(n);
-    if(normal) 
+    if(normal)
     {
-        vec n = *normal; 
+        vec n = *normal;
         switch(m.orient) { GENFACEVERTSXY(x, x, y, y, zmin, zmax, /**/, + csize, /**/, + rsize, + offset, - offset) }
     }
 #undef GENFACENORMAL
@@ -135,7 +136,7 @@ static void drawmaterial(const materialsurface &m, float offset)
 #define GENFACEORIENT(orient, v0, v1, v2, v3) \
         case orient: v0 v1 v2 v3 break;
 #define GENFACEVERT(orient, vert, mx,my,mz, sx,sy,sz) \
-            gle::attribf(mx sx, my sy, mz sz); 
+            gle::attribf(mx sx, my sy, mz sz);
         GENFACEVERTS(x, x, y, y, z, z, /**/, + csize, /**/, + rsize, + offset, - offset)
 #undef GENFACEORIENT
 #undef GENFACEVERT
@@ -146,7 +147,7 @@ const struct material
 {
     const char *name;
     ushort id;
-} materials[] = 
+} materials[] =
 {
     {"air", MAT_AIR},
     {"water", MAT_WATER}, {"water1", MAT_WATER}, {"water2", MAT_WATER+1}, {"water3", MAT_WATER+2}, {"water4", MAT_WATER+3},
@@ -164,16 +165,16 @@ int findmaterial(const char *name)
     loopi(sizeof(materials)/sizeof(material))
     {
         if(!strcmp(materials[i].name, name)) return materials[i].id;
-    } 
+    }
     return -1;
-}  
+}
 
 const char *findmaterialname(int mat)
 {
     loopi(sizeof(materials)/sizeof(materials[0])) if(materials[i].id == mat) return materials[i].name;
     return NULL;
 }
-   
+
 const char *getmaterialdesc(int mat, const char *prefix)
 {
     static const ushort matmasks[] = { MATF_VOLUME|MATF_INDEX, MATF_CLIP, MAT_DEATH, MAT_ALPHA };
@@ -182,7 +183,7 @@ const char *getmaterialdesc(int mat, const char *prefix)
     loopi(sizeof(matmasks)/sizeof(matmasks[0])) if(mat&matmasks[i])
     {
         const char *matname = findmaterialname(mat&matmasks[i]);
-        if(matname)    
+        if(matname)
         {
             concatstring(desc, desc[0] ? ", " : prefix);
             concatstring(desc, matname);
@@ -190,9 +191,9 @@ const char *getmaterialdesc(int mat, const char *prefix)
     }
     return desc;
 }
- 
+
 int visiblematerial(const cube &c, int orient, const ivec &co, int size, ushort matmask)
-{   
+{
     ushort mat = c.material&matmask;
     switch(mat)
     {
@@ -227,7 +228,7 @@ void genmatsurfs(const cube &c, const ivec &co, int size, vector<materialsurface
         {
             int matmask = matmasks[j];
             int vis = visiblematerial(c, i, co, size, matmask&~MATF_INDEX);
-            if(vis != MATSURF_NOT_VISIBLE) 
+            if(vis != MATSURF_NOT_VISIBLE)
             {
                 materialsurface m;
                 m.material = c.material&matmask;
@@ -329,7 +330,7 @@ int optimizematsurfs(materialsurface *matbuf, int matsurfs)
          while(cur < end &&
                cur->material == start->material &&
                cur->orient == start->orient &&
-               cur->visible == start->visible && 
+               cur->visible == start->visible &&
                cur->o[dim] == start->o[dim])
             ++cur;
          if(!isliquid(start->material&MATF_VOLUME) || start->orient != O_TOP || !vertwater)
@@ -364,7 +365,7 @@ void setupmaterials(int start, int len)
     vector<waterinfo> water;
     unionfind uf;
     if(!len) len = valist.length();
-    for(int i = start; i < len; i++) 
+    for(int i = start; i < len; i++)
     {
         vtxarray *va = valist[i];
         materialsurface *skip = NULL;
@@ -394,7 +395,7 @@ void setupmaterials(int start, int len)
                 m.light = brightestlight(center, vec(0, 0, 1));
                 float depth = raycube(center, vec(0, 0, -1), 10000);
                 wi.depth = double(depth)*m.rsize*m.csize;
-                wi.area = m.rsize*m.csize; 
+                wi.area = m.rsize*m.csize;
             }
             else if(isliquid(matvol) && m.orient!=O_BOTTOM && m.orient!=O_TOP)
             {
@@ -434,7 +435,7 @@ void setupmaterials(int start, int len)
             m.skip = 0;
             if(skip && m.material == skip->material && m.orient == skip->orient && skip->skip < 0xFFFF)
                 skip->skip++;
-            else 
+            else
                 skip = &m;
         }
     }
@@ -459,7 +460,7 @@ void setupmaterials(int start, int len)
         preloadwatershaders(true);
         loopi(4) if(hasmat&(1<<(MAT_WATER+i))) lookupmaterialslot(MAT_WATER+i);
     }
-    if(hasmat&(0xF<<MAT_LAVA)) 
+    if(hasmat&(0xF<<MAT_LAVA))
     {
         useshaderbyname("lava");
         useshaderbyname("lavaglare");
@@ -618,7 +619,7 @@ static void drawglass(const materialsurface &m, float offset, const vec *normal 
     if(normal)
     {
         vec n = *normal;
-        switch(m.orient) { GENFACEVERTS(x, x, y, y, z, z, /**/, + csize, /**/, + rsize, + offset, - offset) }     
+        switch(m.orient) { GENFACEVERTS(x, x, y, y, z, z, /**/, + csize, /**/, + rsize, + offset, - offset) }
     }
     #undef GENFACENORMAL
     #define GENFACENORMAL
@@ -704,7 +705,7 @@ void rendermaterials()
                     {
                         xtraverts += gle::end();
                         glBindTexture(GL_TEXTURE_2D, mslot->sts[1].t->id);
-                        float angle = fmod(float(lastmillis/600.0f/(2*M_PI)), 1.0f), 
+                        float angle = fmod(float(lastmillis/600.0f/(2*M_PI)), 1.0f),
                               s = angle - int(angle) - 0.5f;
                         s *= 8 - fabs(s)*16;
                         wfwave = vertwater ? WATER_AMPLITUDE*s-WATER_OFFSET : -WATER_OFFSET;
@@ -739,12 +740,12 @@ void rendermaterials()
 
                             if(waterfallrefract && wfog && !reflecting && !refracting)
                             {
-                                if(waterfallenv) SETSHADER(waterfallenvrefract);    
+                                if(waterfallenv) SETSHADER(waterfallenvrefract);
                                 else SETSHADER(waterfallrefract);
                                 if(blended) { glDisable(GL_BLEND); blended = false; }
                                 if(!depth) { glDepthMask(GL_TRUE); depth = true; }
                             }
-                            else 
+                            else
                             {
                                 SETSHADER(waterfallenv);
                                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -838,7 +839,7 @@ void rendermaterials()
                     {
                         if(!blended) { glEnable(GL_BLEND); blended = true; }
                         if(depth) { glDepthMask(GL_FALSE); depth = false; }
-                        const bvec &gcol = getglasscolor(m.material);         
+                        const bvec &gcol = getglasscolor(m.material);
                         if(m.envmap!=EMID_NONE && glassenv)
                         {
                             glBlendFunc(GL_ONE, GL_SRC_ALPHA);
@@ -854,7 +855,7 @@ void rendermaterials()
                         }
                     }
                     break;
-                
+
                 default: continue;
             }
             lastmat = m.material;

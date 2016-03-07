@@ -1,7 +1,7 @@
 // worldio.cpp: loading & saving of maps and savegames
 
 #include "inexor/engine/engine.hpp"
-#include "inexor/shared/filesystem.hpp"
+#include "inexor/filesystem/mediadirs.hpp"
 
 /// remove map postfix (.ogz) from file path/name to get map name
 void cutogz(char *s) 
@@ -16,14 +16,14 @@ void cutogz(char *s)
 /// @param realname map display name
 /// @param mapname a pointer to where the final map name will be copied (call by reference)
 void getmapfilename(const char *fname, const char *realname, char *mapname)
-{   
+{
     if(!realname) realname = fname;
     string name;
     copystring(name, realname, 100);
     cutogz(name);
-    inexor::filesystem::appendmediadir(mapname, MAXSTRLEN, fname, DIR_MAP);
+    inexor::filesystem::getmediapath(mapname, MAXSTRLEN, fname, DIR_MAP);
     cutogz(mapname);
-}   
+}
 
 
 /// fix entity attributes according to the program version
@@ -1138,7 +1138,6 @@ void savecurrentmap()
 }
 COMMAND(savecurrentmap, "");
 
-
 /// save map data to a map file
 /// @param mname map name
 void savemap(char *mname)
@@ -1147,14 +1146,8 @@ void savemap(char *mname)
 }
 COMMAND(savemap, "s");
 
-
-
-
-
 /// CRC32 is a checksum (and error detection) algorithm to generate map checksums
-/// so servers can detect modified maps (mostly cheaters)
-/// http://reveng.sourceforge.net/crc-catalogue/all.htm
-/// http://en.wikipedia.org/wiki/Cyclic_redundancy_check#cite_note-cook-catalogue-8
+/// so servers can detect modified maps
 
 /// @warning use getmapcrc() and clearmapcrc() to access/clear the checksum do NOT directly access it!
 static uint mapcrc = 0;
@@ -1170,7 +1163,6 @@ void clearmapcrc()
 {
     mapcrc = 0;
 }
-
 
 bool load_world(const char *mname, const char *cname)        // still supports all map formats that have existed since the earliest cube betas!
 {
@@ -1419,8 +1411,9 @@ bool load_world(const char *mname, const char *cname)        // still supports a
     identflags |= IDF_OVERRIDDEN;
     execfile("config/default_map_settings.cfg", false);
     execfile(cfgname, false);
+
     identflags &= ~IDF_OVERRIDDEN;
-   
+
     extern void fixlightmapnormals();
     if(hdr.version <= 25) fixlightmapnormals();
     extern void fixrotatedlightmaps();

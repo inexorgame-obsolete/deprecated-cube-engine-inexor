@@ -109,7 +109,7 @@ extern void mpflip(selinfo &sel, bool local);
 extern void mpcopy(editinfo *&e, selinfo &sel, bool local);
 extern void mppaste(editinfo *&e, selinfo &sel, bool local);
 extern void mprotate(int cw, selinfo &sel, bool local);
-extern void mpreplacetex(int oldtex, int newtex, bool insel, selinfo &sel, bool local);
+extern void mpreplacetex(int oldtex, int newtex, bool insel, selinfo &sel, bool local, bool update = true);
 extern bool mpreplacetex(int oldtex, int newtex, bool insel, selinfo &sel, ucharbuf &buf);
 extern void mpdelcube(selinfo &sel, bool local);
 extern bool mpeditvslot(int delta, int allfaces, selinfo &sel, ucharbuf &buf);
@@ -117,7 +117,7 @@ extern void mpremip(bool local);
 
 // texture
 
-struct VSlot;
+class VSlot;
 
 extern void packvslot(vector<uchar> &buf, int index);
 extern void packvslot(vector<uchar> &buf, const VSlot *vs);
@@ -493,7 +493,7 @@ extern bool checkchallenge(const char *answerstr, void *correct);
 
 // 3dgui
 struct Texture;
-struct VSlot;
+class VSlot;
 
 enum { G3D_DOWN = 1, G3D_UP = 2, G3D_PRESSED = 4, G3D_ROLLOVER = 8, G3D_DRAGGED = 16 };
 

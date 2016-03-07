@@ -4,7 +4,9 @@
 /// implementation of many cube script get functions
 
 #include "inexor/fpsgame/game.hpp"
-#include "inexor/shared/filesystem.hpp"
+#include "inexor/filesystem/mediadirs.hpp"
+
+using namespace inexor::filesystem;
 
 namespace game
 {
@@ -2236,9 +2238,9 @@ namespace game
                 string oldname;
                 copystring(oldname, getclientmap());
                 defformatstring(mname, "getmap_%d", lastmillis);
-                string fname;
-                inexor::filesystem::appendmediadir(fname, MAXSTRLEN, mname, DIR_MAP, ".ogz");
-                stream *map = openrawfile(path(fname), "wb");
+                Path fname = getmediapath(mname, DIR_MAP);
+                fname.replace_extension(".ogz");
+                stream *map = openrawfile(fname.string().c_str(), "wb");
                 if(!map) return;
                 conoutf("received map");
                 ucharbuf b = p.subbuf(p.remaining());
@@ -2246,7 +2248,7 @@ namespace game
                 delete map;
                 if(load_world(mname, oldname[0] ? oldname : NULL))
                     entities::spawnitems(true);
-                remove(findfile(fname, "rb"));
+                remove(findfile(fname.string().c_str(), "rb"));
                 break;
             }
         }
@@ -2329,9 +2331,9 @@ namespace game
         conoutf("sending map...");
         defformatstring(mname, "sendmap_%d", lastmillis);
         save_world(mname, true);
-        string fname;
-        inexor::filesystem::appendmediadir(fname, MAXSTRLEN, mname, DIR_MAP, ".ogz");
-        stream *map = openrawfile(path(fname), "rb");
+        Path fname = getmediapath(mname, DIR_MAP);
+        fname.replace_extension(".ogz");
+        stream *map = openrawfile(fname.string().c_str(), "rb");
         if(map)
         {
             stream::offset len = map->size();
@@ -2345,7 +2347,7 @@ namespace game
             delete map;
         }
         else conoutf(CON_ERROR, "could not read map");
-        remove(findfile(fname, "rb"));
+        remove(findfile(fname.string().c_str(), "rb"));
     }
     COMMAND(sendmap, "");
 

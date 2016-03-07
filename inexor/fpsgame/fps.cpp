@@ -1,7 +1,7 @@
 /// implementation of basic game functionsand cubescript bindings
 
 #include "inexor/fpsgame/game.hpp"
-#include "inexor/shared/filesystem.hpp"
+#include "inexor/filesystem/mediadirs.hpp"
 
 namespace game
 {

@@ -1,5 +1,8 @@
 #include "inexor/engine/engine.hpp"
-#include "inexor/shared/filesystem.hpp"
+#include "inexor/filesystem/mediadirs.hpp"
+#include "inexor/texture/cubemap.hpp"
+
+using namespace inexor::filesystem;
 
 Texture *sky[6] = { 0, 0, 0, 0, 0, 0 }, *clouds[6] = { 0, 0, 0, 0, 0, 0 };
 
@@ -10,7 +13,7 @@ void loadsky(const char *basename, Texture *texs[6])
     {
         const char *side = cubemapsides[i].name;
         string name;
-        inexor::filesystem::getmedianame(name, MAXSTRLEN, basename, DIR_SKYBOX);
+        getmediapath(name, MAXSTRLEN, basename, DIR_SKYBOX);
 
         if(wildcard)
         {
@@ -38,7 +41,7 @@ Texture *loadskyoverlay(const char *basename)
 {
     const char *ext = strrchr(basename, '.'); 
     string name;
-    inexor::filesystem::getmedianame(name, MAXSTRLEN, basename, DIR_SKYBOX);
+    getmediapath(name, MAXSTRLEN, basename, DIR_SKYBOX);
 
     Texture *t = notexture;
     if(ext) t = textureload(name, 0, true, false);

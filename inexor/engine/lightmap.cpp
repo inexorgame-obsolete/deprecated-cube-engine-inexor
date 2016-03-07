@@ -1,4 +1,7 @@
 #include "inexor/engine/engine.hpp"
+#include "inexor/texture/savetexture.hpp"
+#include "inexor/texture/image.hpp"
+
 #include <array>
 
 #define MAXLIGHTMAPTASKS 4096
