@@ -7,5 +7,6 @@
  **/
 define([
   './MenuService',
-  './HudService'
+  './HudService',
+  './InexorUserInterfaceService'
 ], function () {});
