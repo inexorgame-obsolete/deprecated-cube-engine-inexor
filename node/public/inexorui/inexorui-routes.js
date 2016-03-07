@@ -15,6 +15,11 @@ define(['./inexorui'], function (inexorui) {
         templateUrl: 'inexorui/partials/menu/multiplayer.html',
         controller: 'MultiplayerMenuController'
       })
+      .state('/menu/options', {
+        url: '/menu/options',
+        templateUrl: 'inexorui/partials/menu/options.html',
+        controller: 'OptionsMenuController'
+      })
       .state('/test/keyboard', {
         url: '/test/keyboard',
         templateUrl: 'inexorui/partials/test/keyboard.html',

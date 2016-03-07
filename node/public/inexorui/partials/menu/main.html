@@ -1,18 +1,19 @@
-<div class="container">
-  <h2>Inexor</h2>
+<div class="container inexor-menu-container-centered">
+  <ul class="inexor-menu-list nav nav-tabs">
+      <li class="inexor-menu-item"><a data-ui-sref="/menu/multiplayer"><span class="inexor-menu-item-text">Multiplayer</span></a></li>
+      <li class="inexor-menu-item"><a data-ui-sref="/menu/botmatch"><span class="inexor-menu-item-text">Bot Match</span></a></li>
+      <li class="inexor-menu-item"><a data-ui-sref="/menu/edit"><span class="inexor-menu-item-text">Coop Edit</span></a></li>
+      <li class="inexor-menu-item"><a data-ui-sref="/menu/options"><span class="inexor-menu-item-text">Options</span></a></li>
+      <li class="inexor-menu-item"><a data-ui-sref="/menu/about"><span class="inexor-menu-item-text">About</span></a></li>
+      <li class="inexor-menu-item"><a data-ng-click="quit()"><span class="inexor-menu-item-text">Quit</span></a></li>
+  </ul>
+</div>
 
-  <div class="container">
-
+<!--
     <div class="well">
       Message: <input type="text" ng-model="message" />
-    </div>
-
-    <hr />
-
-    <div class="btn-group" role="group">
+      <br />
       <button type="button" class="btn btn-default" ng-click="changeText()"><i class="fa fa-pencil"></i> Change Text</button>
-      <button type="button" class="btn btn-default" ng-click="hideNavigation()" ng-if="navigationVisible"><i class="fa fa-bars"></i> Hide Navigation</button>
-      <button type="button" class="btn btn-default" ng-click="showNavigation()" ng-if="!navigationVisible"><i class="fa fa-bars"></i> Show Navigation</button>
     </div>
 
     <hr />
@@ -34,7 +35,4 @@
       <label class="btn btn-primary" ng-model="fullscreen" uib-btn-radio="'1'" ng-click="toggleFullscreen()">Fullscreen On</label>
       <label class="btn btn-primary" ng-model="fullscreen" uib-btn-radio="'0'" ng-click="toggleFullscreen()">Fullscreen Off</label>
     </div>
-
-  </div>
-
-</div>
+-->

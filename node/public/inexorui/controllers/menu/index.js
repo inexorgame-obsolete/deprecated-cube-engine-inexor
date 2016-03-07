@@ -7,5 +7,6 @@
  **/
 define([
   './MainMenuController',
-  './MultiplayerMenuController'
+  './MultiplayerMenuController',
+  './OptionsMenuController'
 ], function () {});
