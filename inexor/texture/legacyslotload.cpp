@@ -1,7 +1,7 @@
 /// @file Legacy texture slot loading.
 
 #include "inexor/engine/engine.hpp"
-#include "inexor/shared/filesystem.hpp"
+#include "inexor/filesystem/mediadirs.hpp"
 
 const struct slottex
 {

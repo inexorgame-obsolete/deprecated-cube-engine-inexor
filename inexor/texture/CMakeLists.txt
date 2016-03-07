@@ -2,6 +2,7 @@ declare_module(texture .)
 add_lib(texture)
 
 config_sdl(module_texture NOLINK)
+config_filesystem(module_texture NOLINK)
 
 function(config_texture targ)
   message(STATUS "Configuring ${targ} with texture")
@@ -12,4 +13,5 @@ function(config_texture targ)
   target_link_libs(${targ} module_texture ${NOLINK})
 
   config_sdl(${targ} ${NOLINK})
+  config_filesystem(${targ} ${NOLINK})
 endfunction()

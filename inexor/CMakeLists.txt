@@ -16,6 +16,7 @@ declare_module(engine ./engine)
 declare_module(fpsgame ./fpsgame)
 
 add_subdirectory(util)
+add_subdirectory(filesystem)
 add_subdirectory(net) # net module, asio lib
 add_subdirectory(rpc) # rpc module, protobuf lib
 add_subdirectory(ui)

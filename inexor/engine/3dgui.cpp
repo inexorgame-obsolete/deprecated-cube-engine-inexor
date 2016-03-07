@@ -5,7 +5,7 @@
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/engine/textedit.hpp"
-#include "inexor/shared/filesystem.hpp"
+#include "inexor/filesystem/mediadirs.hpp"
 
 static struct gui *windowhit = NULL;
 static bool layoutpass, actionon = false;
