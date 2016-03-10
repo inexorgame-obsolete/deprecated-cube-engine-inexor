@@ -636,10 +636,16 @@ namespace screen {
     /// switch fullscreen mode
     void setfullscreen(bool enable)
     {
+<<<<<<< fe95f2dc6d521f854ee0dd0a492e50203d43854b
         if(!sdl_window) return;
         //initwarning(enable ? "fullscreen" : "windowed");
         SDL_SetWindowFullscreen(sdl_window, enable ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
         if(!enable)
+=======
+        SDL_SetWindowSize(screen, scr_w, scr_h);
+        cef_resize(scr_w, scr_h);
+        if(initwindowpos)
+>>>>>>> Screen resolution changes are propagated to CEF
         {
             SDL_SetWindowSize(sdl_window, scr_w, scr_h);
             if(initwindowpos)
@@ -661,6 +667,7 @@ namespace screen {
     /// @warning forward must be declared above in the code because of the dependencies
     void screenres(int w, int h)
     {
+<<<<<<< fe95f2dc6d521f854ee0dd0a492e50203d43854b
         scr_w = w!=-1 ? clamp(w, SCR_MINW, SCR_MAXW) : scr_w;
         scr_h = h!=-1 ? clamp(h, SCR_MINH, SCR_MAXH) : scr_h;
         if(sdl_window)
@@ -673,6 +680,15 @@ namespace screen {
         else
         {
             initwarning("screen resolution");
+=======
+        scr_w = min(scr_w, desktopw);
+        scr_h = min(scr_h, desktoph);
+        if(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN) {
+            gl_resize();
+        } else {
+            SDL_SetWindowSize(screen, scr_w, scr_h);
+            cef_resize(scr_w, scr_h);
+>>>>>>> Screen resolution changes are propagated to CEF
         }
     }
 
@@ -1396,7 +1412,6 @@ int main(int argc, char **argv)
         #endif
         if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO|par)<0) fatal("Unable to initialize SDL: %s", SDL_GetError());
 
-<<<<<<< 8b4df2324f7091af3ffc091b9cd51bbbb3e76a2c
     // Disable SDL_TEXTINPUT events at startup. They are only
     // needed if text is about to be entered in chat.
         SDL_StopTextInput();
@@ -1404,15 +1419,7 @@ int main(int argc, char **argv)
 
     spdlog::get("global")->debug() << "init: net";
     if(enet_initialize()<0) fatal("Unable to initialise network module");
-=======
-        // Disable SDL_TEXTINPUT events at startup. They are only
-        // needed if text is about to be entered in chat.
-        SDL_StopTextInput();
-    }
 
-    logoutf("init: net");
-    if(enet_initialize() < 0) fatal("Unable to initialize network module");
->>>>>>> Bugfixes
     atexit(enet_deinitialize);
     enet_time_set(0);
 

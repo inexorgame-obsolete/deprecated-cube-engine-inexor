@@ -39,9 +39,11 @@ class InexorUserInterface : public InexorContextProvider,
         };
 
         void Resize(int x, int y, int width, int height) {
-            if (layer.get()) {
-                layer->GetInexorRenderHandler()->SetViewRect(x, y, width, height);
-                layer->GetBrowser()->GetHost()->WasResized();
+            if (is_visible && layer.get()) {
+                std::cerr << "Resize inexor user interface: (" << x << ", " << y << ", " << width << ", " << height << ")\n";
+                if (layer->GetInexorRenderHandler()->SetViewRect(x, y, width, height)) {
+                    layer->GetBrowser()->GetHost()->WasResized();
+                }
             }
         };
 
