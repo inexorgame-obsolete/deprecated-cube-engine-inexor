@@ -8,5 +8,8 @@
 define([
   './MainMenuController',
   './MultiplayerMenuController',
+  './ServerBrowserMenuController',
+  './BotMatchMenuController',
+  './AboutMenuController',
   './OptionsMenuController'
 ], function () {});

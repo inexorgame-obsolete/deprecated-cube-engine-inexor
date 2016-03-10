@@ -21,6 +21,14 @@ body.mainmenu {
   padding: 40px;
 }
 
+.inexor-menu-container-centered h2 {
+  margin: auto;
+  font-size: 5vh;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.1);
+  
+}
+
 .inexor-menu-list {
   display: flex;
   flex-direction: column;
@@ -42,8 +50,8 @@ body.mainmenu {
 }
 
 .nav li.inexor-menu-item a {
+  display: block;
   width: 100%;
-  height: 100%;
   margin: auto;
   font-size: 5vh;
   text-align: center;
