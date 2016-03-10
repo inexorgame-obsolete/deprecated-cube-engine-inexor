@@ -572,15 +572,20 @@ void glext(char *ext)
 }
 COMMAND(glext, "s");
 
-void gl_resize()
+void cef_resize(int width, int height)
 {
-    glViewport(0, 0, screenw, screenh);
     if (cef_app) {
         // TODO: not fully working
         spdlog::get("global")->debug("Update Inexor User Interface Screen Size: {0} {1}", screenw, screenh);
-        cef_app->GetUserInterface()->Resize(0, 0, screenw, screenh);
-        cef_app->GetMouseManager()->SetScreenSize(screenw, screenh);
+        cef_app->GetUserInterface()->Resize(0, 0, width, screenh);
+        cef_app->GetMouseManager()->SetScreenSize(width, height);
     }
+}
+
+void gl_resize()
+{
+    glViewport(0, 0, screenw, screenh);
+    cef_resize(screenw, screenh);
 }
  
 void gl_init(int depth, int fsaa)

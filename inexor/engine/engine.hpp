@@ -134,6 +134,7 @@ extern float curfogstart, curfogend;
 extern void gl_checkextensions();
 extern void gl_init(int depth, int fsaa);
 extern void gl_resize();
+extern void cef_resize(int width, int height);
 extern void cleangl();
 extern void rendergame(bool mainpass = false);
 extern void invalidatepostfx();

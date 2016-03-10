@@ -20,9 +20,6 @@ class InexorRenderHandler : public CefRenderHandler {
         // Clean up the OpenGL environment.
         void Cleanup();
 
-        // Render to the screen.
-        // void Render();
-
         // Forwarded from CefRenderHandler callbacks.
         void OnPopupShow(CefRefPtr<CefBrowser> browser, bool show);
 
@@ -30,13 +27,7 @@ class InexorRenderHandler : public CefRenderHandler {
 
         bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect);
 
-        void SetViewRect(int view_x, int view_y, int view_width, int view_height)
-        {
-            this->view_x = view_x;
-            this->view_y = view_y;
-            this->view_width = view_width;
-            this->view_height = view_height;
-        }
+        bool SetViewRect(int view_x, int view_y, int view_width, int view_height);
 
         void OnPaint(CefRefPtr<CefBrowser> browser,
             CefRenderHandler::PaintElementType type,
@@ -62,11 +53,17 @@ class InexorRenderHandler : public CefRenderHandler {
     private:
         const bool transparent;
         bool initialized;
+        bool texture_initialized;
         unsigned int texture_id;
         int view_x;
         int view_y;
         int view_width;
         int view_height;
+        bool _view_change_defered;
+        int _view_x;
+        int _view_y;
+        int _view_width;
+        int _view_height;
         CefRect popup_rect;
         CefRect original_popup_rect;
 

@@ -644,6 +644,7 @@ namespace screen {
         if(!enable)
         {
             SDL_SetWindowSize(sdl_window, scr_w, scr_h);
+            cef_resize(scr_w, scr_h);
             if(initwindowpos)
             {
                 SDL_SetWindowPosition(sdl_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
@@ -670,7 +671,10 @@ namespace screen {
             scr_w = min(scr_w, desktopw);
             scr_h = min(scr_h, desktoph);
             if(SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_FULLSCREEN) gl_resize();
-            else SDL_SetWindowSize(sdl_window, scr_w, scr_h);
+            else {
+                 SDL_SetWindowSize(sdl_window, scr_w, scr_h);
+                 cef_resize(scr_w, scr_h);
+            }
         }
         else
         {
