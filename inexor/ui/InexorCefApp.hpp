@@ -17,6 +17,7 @@
 #include "inexor/ui/InexorUserInterface.hpp"
 #include "inexor/ui/InexorWindowInfo.hpp"
 
+// TODO: Remove CefRenderProcessHandler
 class InexorCefApp : public CefApp,
                      public CefBrowserProcessHandler,
                      public CefRenderProcessHandler
@@ -41,9 +42,24 @@ class InexorCefApp : public CefApp,
 
         // CefBrowserProcessHandler
         void OnContextInitialized();
+        // void OnBeforeChildProcessLaunch(CefRefPtr app, CefRefPtr command_line) {}
+        // void OnRenderProcessThreadCreated(CefRefPtr app, CefRefPtr extra_info) {}
 
+        // TODO: remove (only available in the subprocess!)
         // CefRenderProcessHandler
         void OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context);
+        // void OnRenderThreadCreated(CefRefPtr<CefApp> app, CefRefPtr extra_info) {
+        //      std::cerr << "OnRenderThreadCreated()\n";
+        // }
+        // void OnWebKitInitialized(CefRefPtr app) {
+        //     std::cerr << "OnRenderThreadCreated()\n";
+        // }
+        // void OnBrowserCreated(CefRefPtr app, CefRefPtr browser) {}
+        // void OnBrowserDestroyed(CefRefPtr app, CefRefPtr browser) {}
+        // bool OnBeforeNavigation(CefRefPtr app, CefRefPtr browser, CefRefPtr frame, CefRefPtr request, cef_navigation_type_t navigation_type, bool is_redirect) { return false; }
+        // void OnContextReleased(CefRefPtr app, CefRefPtr browser, CefRefPtr frame, CefRefPtr context) {}
+        // void OnUncaughtException(CefRefPtr app, CefRefPtr browser, CefRefPtr frame, CefRefPtr context, CefRefPtr exception, CefRefPtr stackTrace) {}
+        // void OnFocusedNodeChanged(CefRefPtr app, CefRefPtr browser, CefRefPtr frame, CefRefPtr node) {}
 
         /// Handle SDL events for CEF
         ///

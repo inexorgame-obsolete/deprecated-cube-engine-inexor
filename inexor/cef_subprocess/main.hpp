@@ -5,8 +5,6 @@
 
 #include <include/cef_base.h>
 
-#include "inexor/ui/InexorCefApp.hpp"
-
-#include "inexor/engine/engine.hpp"
+#include "inexor/ui/InexorCefSubprocessApp.hpp"
 
 #endif

@@ -44,10 +44,11 @@ void InexorCefApp::OnContextInitialized()
     layer_manager->InitializeLayers();
 }
 
-void InexorCefApp::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> browser_context)
+void InexorCefApp::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context)
 {
-    // cefdebug("InexorCefApp::OnContextCreated", "Injecting inexor object into javascript context");
-    browser_context->GetGlobal()->SetValue(context_manager->GetContextName(), context_manager->GetContext(), V8_PROPERTY_ATTRIBUTE_NONE);
+    std::cerr << " ====================== InexorCefApp::OnContextCreated() Injecting inexor object into javascript context\n";
+    CefRefPtr<CefV8Value> window_object = context->GetGlobal();
+    context->GetGlobal()->SetValue(context_manager->GetContextName(), context_manager->GetContext(), V8_PROPERTY_ATTRIBUTE_NONE);
 }
 
 bool InexorCefApp::HandleSdlEvent(SDL_Event event) {

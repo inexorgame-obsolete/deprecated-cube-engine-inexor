@@ -22,7 +22,7 @@ class InexorUserInterface : public InexorContextProvider,
             : AbstractInexorLayerProvider(name, url),
 			  _name(name),
 			  _url(url),
-			  menu_visible(true),
+			  is_menu_visible(true),
 			  menu_state("/menu/main"),
 			  menu_parent_state("") {};
 
@@ -33,59 +33,56 @@ class InexorUserInterface : public InexorContextProvider,
         bool Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception);
         std::string GetContextName() { return _name; };
 
-        void Reload() {
-            std::string url = GetUrl();
-            SetUrl(url);
-        };
-
-        void Resize(int x, int y, int width, int height) {
-            if (is_visible && layer.get()) {
-                std::cerr << "Resize inexor user interface: (" << x << ", " << y << ", " << width << ", " << height << ")\n";
-                if (layer->GetInexorRenderHandler()->SetViewRect(x, y, width, height)) {
-                    layer->GetBrowser()->GetHost()->WasResized();
-                }
-            }
-        };
-
-        void AutoResize(int width, int height) {
-            if (layer.get()) {
-                if (width != layer->GetInexorRenderHandler()->GetViewWidth() || height != layer->GetInexorRenderHandler()->GetViewHeight()) {
-                    Resize(0, 0, width, height);
-                }
-            }
-        };
+        // User interface resize handling
+        void Reload();
+        void Resize(int x, int y, int width, int height);
+        void AutoResize(int width, int height);
 
         /// Bind to key ESC
         void Menu() {
             if (is_visible) {
                 if (menu_parent_state == "") {
                     if (!mainmenu) {
-                        menu_visible = false;
+                        SetMenuVisibility(false);
             	    }
                 } else {
-                    this->menu_state = menu_state;
+                    SetMenuState(menu_parent_state);
                 }
             } else {
-                this->menu_state = "/menu/main";
+                SetMenuState("/menu/main");
+                SetMenuVisibility(true);
             }
         };
 
-        bool IsMenuVisible() { return menu_visible; };
+        // Intercept setters for event handling
+        void SetVisibility(bool _is_visible);
+        void SetAcceptingKeyInput(bool _is_accepting_key_input);
+        void SetAcceptingMouseInput(bool _is_accepting_mouse_input);
+
+        // User interface state handling
+        bool GetMenuVisibility() { return is_menu_visible; };
         std::string GetMenuState() { return menu_state; };
         std::string GetMenuParentState() { return menu_parent_state; };
+        void SetMenuVisibility(bool _is_menu_visible);
+        void SetMenuState(std::string _menu_state);
+        void SetMenuParentState(std::string _menu_parent_state);
+
+        // Event handling
+        void FireUiEvent(std::string name, bool value);
+        void FireUiEvent(std::string name, std::string value);
 
         /// Updates the menu states
-        void SetMenuStates(std::string menu_state, std::string menu_parent_state, bool menu_visible) {
-            this->menu_state = menu_state;
-            this->menu_parent_state = menu_parent_state;
-            this->menu_visible = menu_visible;
+        void SetMenuStates(std::string _menu_state, std::string _menu_parent_state, bool _is_menu_visible) {
+            SetMenuState(_menu_state);
+            SetMenuParentState(_menu_parent_state);
+            SetMenuVisibility(_is_menu_visible);
         };
 
     private:
         std::string _name;
         std::string _url;
 
-        bool menu_visible;
+        bool is_menu_visible;
         std::string menu_state;
         std::string menu_parent_state;
 
