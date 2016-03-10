@@ -10,5 +10,7 @@ int main(int argc, char **argv) {
 #endif
     // TODO: do we really need the cef_app initialized again in the subprocess?
     // if not, we are able to decouple the rendering code again!
-    return CefExecuteProcess(main_args, NULL, NULL);
+    // return CefExecuteProcess(main_args, NULL, NULL);
+    CefRefPtr<InexorCefSubprocessApp> cef_app = new InexorCefSubprocessApp();
+    return CefExecuteProcess(main_args, cef_app.get(), NULL);
 }
