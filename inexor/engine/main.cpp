@@ -607,6 +607,7 @@ void setfullscreen(bool enable)
     if(!enable)
     {
         SDL_SetWindowSize(screen, scr_w, scr_h);
+        cef_resize(scr_w, scr_h);
         if(initwindowpos)
         {
             SDL_SetWindowPosition(screen, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
@@ -632,8 +633,12 @@ void screenres(int w, int h)
     {
         scr_w = min(scr_w, desktopw);
         scr_h = min(scr_h, desktoph);
-        if(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN) gl_resize();
-        else SDL_SetWindowSize(screen, scr_w, scr_h);
+        if(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN) {
+            gl_resize();
+        } else {
+            SDL_SetWindowSize(screen, scr_w, scr_h);
+            cef_resize(scr_w, scr_h);
+        }
     }
     else 
     {
