@@ -9,6 +9,7 @@ define([
   './MainMenuController',
   './MultiplayerMenuController',
   './ServerBrowserMenuController',
+  './EditMenuController',
   './BotMatchMenuController',
   './AboutMenuController',
   './OptionsMenuController'

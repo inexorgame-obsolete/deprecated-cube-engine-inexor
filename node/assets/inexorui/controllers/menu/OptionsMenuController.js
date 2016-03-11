@@ -3,29 +3,15 @@ define(['./module'], function(controllers) {
   controllers.controller('OptionsMenuController', ['$scope', '$state', '$http', 'MenuService',
     function ($scope, $state, $http, MenuService) {
 
-      $scope.connected = false;
-      $scope.host = "inexor.nooblounge.net";
-      $scope.port = "31415";
+	  $scope.fullscreen = false;
 
-      $scope.connect = function() {
+      $scope.toggleFullscreen = function() {
+        $scope.fullscreen = !$scope.fullscreen;
         $http.post("/api/execute", {
-          code: "connect " + $scope.host + " " + $scope.port
+          code: "fullscreen " + ($scope.fullscreen ? "1" : "0")
         }).then(function(response) {
-  	      console.log(response);
-          $scope.connected = true;
         });  
       };
-
-      $scope.disconnect = function() {
-        $http.post("/api/execute", {
-          code: "disconnect"
-        }).then(function(response) {
-          console.log(response);
-          $scope.connected = false;
-        });  
-      };
-
-      // TODO: getHost, getPort
 
       console.log("OptionsMenuController initialized!");
     }

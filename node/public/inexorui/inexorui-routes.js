@@ -20,6 +20,11 @@ define(['./inexorui'], function (inexorui) {
         templateUrl: 'inexorui/partials/menu/serverbrowser.html',
         controller: 'ServerBrowserMenuController'
       })
+      .state('/menu/edit', {
+        url: '/menu/edit',
+        templateUrl: 'inexorui/partials/menu/edit.html',
+        controller: 'EditMenuController'
+      })
       .state('/menu/botmatch', {
         url: '/menu/botmatch',
         templateUrl: 'inexorui/partials/menu/botmatch.html',

@@ -42,8 +42,8 @@ define(['./module'], function(controllers) {
           inexor.ui.menuState = menuState;
         }
         for (var tab in $scope.tabs) {
-          if (tab['state'] == menuState) {
-            var parentState = tab['parentState'];
+          if (tab['menuState'] == menuState) {
+            var parentState = tab['menuParentState'];
             $scope.menuParentState = parentState;
             if (typeof inexor !== 'undefined' && inexor.ui) {
               inexor.ui.menuParentState = parentState;
