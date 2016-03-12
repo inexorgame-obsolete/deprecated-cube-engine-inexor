@@ -11,9 +11,16 @@
 #include "inexor/texture/slot.hpp"
 #include "inexor/texture/texsettings.hpp"
 #include "inexor/texture/compressedtex.hpp"
+
 #include <unordered_map>
 #include <map>
 #include <iterator>
+
+// We need to specify the commands here, bc. completely "unused" (and cubescript only functions are) source files get ignored in modules.. (BUG)
+
+COMMAND(gendds, "ss");
+COMMAND(flipnormalmapy, "ss");
+COMMAND(mergenormalmaps, "ss");
 
 void setuptexcompress()
 {

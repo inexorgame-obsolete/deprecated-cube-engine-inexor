@@ -6,6 +6,7 @@
 #include "inexor/texture/savetexture.hpp"
 #include "inexor/texture/compressedtex.hpp"
 
+
 void flipnormalmapy(char *destfile, char *normalfile) // jpg/png /tga-> tga
 {
     ImageData ns;
@@ -29,9 +30,6 @@ void mergenormalmaps(char *heightfile, char *normalfile) // jpg/png/tga + tga ->
     );
     saveimage(normalfile, guessimageformat(normalfile, IMG_TGA), d);
 }
-
-COMMAND(flipnormalmapy, "ss");
-COMMAND(mergenormalmaps, "ss");
 
 void gendds(char *infile, char *outfile)
 {
@@ -127,4 +125,3 @@ void gendds(char *infile, char *outfile)
 
     setuptexcompress();
 }
-COMMAND(gendds, "ss");

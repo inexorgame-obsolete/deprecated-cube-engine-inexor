@@ -7,6 +7,7 @@
 #include "inexor/texture/image.hpp"
 #include "inexor/engine/engine.hpp"
 #include "inexor/texture/slot.hpp"
+#include "inexor/texture/additionaltools.hpp" //this one is only to avoid the compiler behaviour that it doesnt build cubescript only files, so we keep a dummy "extern" to it.
 
 /// Different Texture Types.
 enum
