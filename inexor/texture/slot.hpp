@@ -10,7 +10,7 @@
 
 #include "inexor/texture/image.hpp"
 
-#include <rapidjson/Document.h>
+#include <rapidjson/document.h>
 
 class Slot;
 
