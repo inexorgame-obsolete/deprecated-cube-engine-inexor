@@ -1,6 +1,7 @@
 // core world management routines
 
 #include "inexor/engine/engine.hpp"
+#include "inexor/util/Logging.hpp"
 
 cube *worldroot = newcubes(F_SOLID);
 int allocnodes = 0;
@@ -161,10 +162,10 @@ void optiface(uchar *p, cube &c)
 void printcube()
 {
     cube &c = lookupcube(lu); // assume this is cube being pointed at
-    conoutf(CON_DEBUG, "= %p = (%d, %d, %d) @ %d", (void *)&c, lu.x, lu.y, lu.z, lusize);
-    conoutf(CON_DEBUG, " x  %.8x", c.faces[0]);
-    conoutf(CON_DEBUG, " y  %.8x", c.faces[1]);
-    conoutf(CON_DEBUG, " z  %.8x", c.faces[2]);
+    LOG(DEBUG) << lu << " @" << lusize;
+    LOG(DEBUG) << " x  " << std::hex << std::setprecision(8) << c.faces[0];
+    LOG(DEBUG) << " y  " << std::hex << std::setprecision(8) << c.faces[1];
+    LOG(DEBUG) << " z  " << std::hex << std::setprecision(8) << c.faces[2];
 }
 
 COMMAND(printcube, "");

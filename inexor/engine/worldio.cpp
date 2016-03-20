@@ -4,6 +4,8 @@
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/util/Logging.hpp"
 
+using namespace inexor::util;
+
 /// remove map postfix (.ogz) from file path/name to get map name
 void cutogz(char *s) 
 {   
@@ -1049,24 +1051,24 @@ bool save_world(const char *mname, bool nolms)
         switch(id.type)
         {
             case ID_VAR:
-                if(dbgvars) conoutf(CON_DEBUG, "wrote var %s: %d", id.name, **id.storage.i);
+                if(dbgvars) LOG(DEBUG) << "wrote var " << quoted(id.name) << ": " << **id.storage.i;
                 f->putlil<int>(*id.storage.i);
                 break;
 
             case ID_FVAR:
-                if(dbgvars) conoutf(CON_DEBUG, "wrote fvar %s: %f", id.name, **id.storage.f);
+                if(dbgvars) LOG(DEBUG) << "wrote fvar " << quoted(id.name) << ": " << **id.storage.f;
                 f->putlil<float>(*id.storage.f);
                 break;
 
             case ID_SVAR:
-                if(dbgvars) conoutf(CON_DEBUG, "wrote svar %s: %s", id.name, **id.storage.s);
+                if(dbgvars) LOG(DEBUG) << "wrote svar " << quoted(id.name) << ": " << quoted(**id.storage.s);
                 f->putlil<ushort>(strlen(*id.storage.s));
                 f->write(*id.storage.s, strlen(*id.storage.s));
                 break;
         }
     });
 
-    if(dbgvars) conoutf(CON_DEBUG, "wrote %d vars", hdr.numvars);
+    if(dbgvars) LOG(DEBUG) << "wrote " << hdr.numvars << " vars";
 
     f->putchar((int)strlen(game::gameident()));
     f->write(game::gameident(), (int)strlen(game::gameident())+1);
@@ -1253,7 +1255,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
             {
                 int val = f->getlil<int>();
                 if(exists && id->minval <= id->maxval) setvar(name, val);
-                if(dbgvars) conoutf(CON_DEBUG, "read var %s: %d", name, val);
+                if(dbgvars) LOG(DEBUG) << "read var " << quoted(name) << ": " << val;
                 break;
             }
  
@@ -1261,7 +1263,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
             {
                 float val = f->getlil<float>();
                 if(exists && id->minvalf <= id->maxvalf) setfvar(name, val);
-                if(dbgvars) conoutf(CON_DEBUG, "read fvar %s: %f", name, val);
+                if(dbgvars) LOG(DEBUG) << "read fvar " << quoted(name) << ": " << val;
                 break;
             }
     
@@ -1273,12 +1275,12 @@ bool load_world(const char *mname, const char *cname)        // still supports a
                 val[min(slen, MAXSTRLEN-1)] = '\0';
                 if(slen >= MAXSTRLEN) f->seek(slen - (MAXSTRLEN-1), SEEK_CUR);
                 if(exists) setsvar(name, val);
-                if(dbgvars) conoutf(CON_DEBUG, "read svar %s: %s", name, val);
+                if(dbgvars) LOG(DEBUG) << "read svar " << quoted(name) << ": " << val;
                 break;
             }
         }
     }
-    if(dbgvars) conoutf(CON_DEBUG, "read %d vars", hdr.numvars);
+    if(dbgvars) LOG(DEBUG) << "read " << hdr.numvars << " vars";
 
     string gametype;
     copystring(gametype, "fps");

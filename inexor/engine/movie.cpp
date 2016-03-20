@@ -128,7 +128,7 @@ struct aviwriter
             videoframes += seg.videoframes;
             indexframes += seg.indexframes;
         }
-        if(dbgmovie) conoutf(CON_DEBUG, "fileframes: sound=%d, video=%d+%d(dups)\n", soundframes, videoframes, indexframes-videoframes);
+        if(dbgmovie) LOG(DEBUG) << "fileframes: sound=" << soundframes << ", video=" << videoframes << '+' << (indexframes-videoframes) << "(dups)";
         f->seek(fileframesoffset, SEEK_SET);
         f->putlil<uint>(segments[0].indexframes);
         f->seek(filevideooffset, SEEK_SET);
@@ -195,7 +195,7 @@ struct aviwriter
                 case AUDIO_S16MSB: desc = "s16b"; break;
                 default:           desc = "unkn";
             }
-            if(dbgmovie) conoutf(CON_DEBUG, "soundspec: %dhz %s x %d", soundfrequency, desc, soundchannels);
+            if(dbgmovie) LOG(DEBUG) << "soundspec: "<< soundfrequency << "hz " << desc << " x " << soundchannels;
         }
     }
     
@@ -922,13 +922,13 @@ namespace recorder
             DELETEP(file);
             return;
         }
-        conoutf("movie recording to: %s %dx%d @ %dfps%s", file->filename, file->videow, file->videoh, file->videofps, (file->soundfrequency>0)?" + sound":"");
-        
+        LOG(INFO) << "movie recording to: " << file->filename << " " << file->videow << 'x' << file->videoh << " @" << file->videofps << "fps" << ((file->soundfrequency>0)?" + sound":"");
+
         starttime = gettime();
         loopi(file->videofps) stats[i] = 0;
         statsindex = 0;
         dps = 0;
-        
+
         lastframe = ~0U;
         videobuffers.clear();
         loopi(MAXVIDEOBUFFERS)
@@ -937,9 +937,9 @@ namespace recorder
             videobuffers.data[i].init(w, h, 4);
             videobuffers.data[i].frame = ~0U;
         }
-        
+
         soundbuffers.clear();
-        
+
         soundlock = SDL_CreateMutex();
         videolock = SDL_CreateMutex();
         shouldencode = SDL_CreateCond();
@@ -947,7 +947,7 @@ namespace recorder
         thread = SDL_CreateThread(videoencoder, "video encoder", NULL); 
         if(file->soundfrequency > 0) Mix_SetPostMix(soundencoder, NULL);
     }
-    
+
     void cleanup()
     {
         if(scalefb) { glDeleteFramebuffers_(1, &scalefb); scalefb = 0; }
@@ -962,11 +962,11 @@ namespace recorder
         if(!file) return;
         if(state == REC_OK) state = REC_USERHALT;
         if(file->soundfrequency > 0) Mix_SetPostMix(NULL, NULL);
-        
+
         SDL_LockMutex(videolock); // wakeup thread enough to kill it
         SDL_CondSignal(shouldencode);
         SDL_UnlockMutex(videolock);
-        
+
         SDL_WaitThread(thread, NULL); // block until thread is finished
 
         cleanup();
@@ -982,14 +982,14 @@ namespace recorder
         soundlock = videolock = NULL;
         shouldencode = shouldread = NULL;
         thread = NULL;
- 
+
         static const char * const mesgs[] = { "ok", "stopped", "computer too slow", "file error"};
-        conoutf("movie recording halted: %s, %d frames", mesgs[state], file->videoframes);
-        
+        LOG(INFO) << "movie recording halted: " << mesgs[state] << " (" << file->videoframes << " frames)";
+
         DELETEP(file);
         state = REC_OK;
     }
- 
+
     void readbuffer(videobuffer &m, uint nextframe)
     {
         bool accelyuv = movieaccelyuv && !(m.w%8),

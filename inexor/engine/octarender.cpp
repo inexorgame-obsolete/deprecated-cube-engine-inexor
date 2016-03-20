@@ -2,6 +2,7 @@
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/texture/cubemap.hpp"
+#include "inexor/util/Logging.hpp"
 
 struct vboinfo
 {
@@ -10,7 +11,7 @@ struct vboinfo
 
 hashtable<GLuint, vboinfo> vbos;
 
-VAR(printvbo, 0, 0, 1);
+VAR(debugvbo, 0, 0, 1);
 VARFN(vbosize, maxvbosize, 0, 1<<14, 1<<16, allchanged());
 
 enum
@@ -53,7 +54,7 @@ void genvbo(int type, void *buf, int len, vtxarray **vas, int numva)
     vboinfo &vbi = vbos[vbo]; 
     vbi.uses = numva;
  
-    if(printvbo) conoutf(CON_DEBUG, "vbo %d: type %d, size %d, %d uses", vbo, type, len, numva);
+    if(debugvbo) LOG(DEBUG) << "vbo " << vbo << ": type " << type << " size " << len << ", " << numva << " uses";
 
     loopi(numva)
     {

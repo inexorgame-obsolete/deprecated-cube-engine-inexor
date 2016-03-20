@@ -2,6 +2,7 @@
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/engine/rendertarget.hpp"
+#include "inexor/util/Logging.hpp"
 
 Shader *particleshader = NULL, *particlenotextureshader = NULL;
 
@@ -45,7 +46,7 @@ struct particleemitter
         radius = bbmin.dist(bbmax)/2;
         cullmin = ivec(int(floor(bbmin.x)), int(floor(bbmin.y)), int(floor(bbmin.z)));
         cullmax = ivec(int(ceil(bbmax.x)), int(ceil(bbmax.y)), int(ceil(bbmax.z)));
-        if(dbgpseed) conoutf(CON_DEBUG, "radius: %f, maxfade: %d", radius, maxfade);
+        if(dbgpseed) LOG(DEBUG) << "radius: " << radius << ", maxfade: " << maxfade;
     }
     
     void extendbb(const vec &o, float size = 0)
@@ -1480,7 +1481,7 @@ void updateparticles()
             } 
             pe.lastemit = lastmillis;
         }
-        if(dbgpcull && (canemit || replayed) && addedparticles) conoutf(CON_DEBUG, "%d emitters, %d particles", emitted, addedparticles);
+        if(dbgpcull && (canemit || replayed) && addedparticles) LOG(DEBUG) << emitted << " emitters, " << addedparticles << " particles";
     }
     if(editmode) // show sparkly thingies for map entities in edit mode
     {

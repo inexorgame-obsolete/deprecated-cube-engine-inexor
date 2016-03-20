@@ -1,4 +1,5 @@
 #include "inexor/shared/cube.hpp"
+#include "inexor/util/Logging.hpp"
 
 ///////////////////////// character conversion ///////////////
 
@@ -866,9 +867,9 @@ struct gzstream : stream
             loopi(4) checkcrc |= uint(readbyte()) << (i*8);
             loopi(4) checksize |= uint(readbyte()) << (i*8);
             if(checkcrc != crc)
-                conoutf(CON_DEBUG, "gzip crc check failed: read %X, calculated %X", checkcrc, crc);
+                LOG(DEBUG) << "gzip crc check failed: read " << checkcrc << ", calculated " << crc;
             if(checksize != zfile.total_out)
-                conoutf(CON_DEBUG, "gzip size check failed: read %u, calculated %u", checksize, uint(zfile.total_out));
+                LOG(DEBUG) << "gzip size check failed: read " << checksize << ", calculated " << uint(zfile.total_out);
         }
 #endif
     }

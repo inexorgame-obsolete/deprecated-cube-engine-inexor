@@ -1,4 +1,5 @@
 #include "inexor/engine/engine.hpp"
+#include "inexor/util/Logging.hpp"
 
 struct decalvert
 {
@@ -339,7 +340,9 @@ struct decalrenderer
         if(dbgdec)
         {
             int nverts = endvert < lastvert ? endvert + maxverts - lastvert : endvert - lastvert;
-            conoutf(CON_DEBUG, "tris = %d, verts = %d, total tris = %d", nverts/3, nverts, (maxverts - 3 - availverts)/3);
+            LOG(DEBUG) << "tris = " << nverts/3
+                       << ", verts = " << nverts
+                       << ", total tris = " << ((maxverts - 3 - availverts)/3);
         }
         if(endvert==lastvert) return;
 

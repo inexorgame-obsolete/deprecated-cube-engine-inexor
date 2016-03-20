@@ -399,7 +399,11 @@ struct zipstream : stream
     {
         if(reading == ~0U) return;
 #ifndef STANDALONE
-        if(dbgzip) conoutf(CON_DEBUG, info->compressedsize ? "%s: zfile.total_out %u, info->size %u" : "%s: reading %u, info->size %u", info->name, info->compressedsize ? uint(zfile.total_out) : reading - info->offset, info->size);
+        if(dbgzip)
+        {
+            if(info->compressedsize) LOG(DEBUG) << info->name << "zfile.total_out " << uint(zfile.total_out) << ", info->size " << info->size;
+            else LOG(DEBUG) << info->name << "reading :" << (reading - info->offset) << ", info->size " << info->size;
+        }
 #endif
         if(info->compressedsize) inflateEnd(&zfile);
         reading = ~0U;

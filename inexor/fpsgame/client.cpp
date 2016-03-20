@@ -8,6 +8,7 @@
 #include "inexor/util/Logging.hpp"
 
 using namespace inexor::filesystem;
+using namespace inexor::util;
 
 namespace game
 {
@@ -200,7 +201,7 @@ namespace game
 	/// print my own nick name to the game console
     void printname()
     {
-        conoutf("your name is: %s", colorname(player1));
+        LOG(INFO) << "your name is: " << colorname(player1);
     }
     ICOMMAND(name, "sN", (char *s, int *numargs),
     {
@@ -229,7 +230,7 @@ namespace game
     /// print own team name to the game console
     void printteam()
     {
-        conoutf("your team is: %s", player1->team);
+        LOG(INFO) << "your team is: " << player1->team;
     }
 
 	/// switch team or print team name 
@@ -311,8 +312,8 @@ namespace game
         if(!secret[0]) { LOG(ERROR) << "you must specify a secret password"; return; }
         vector<char> privkey, pubkey;
         genprivkey(secret, privkey, pubkey); // generate public and private key
-        conoutf("private key: %s", privkey.getbuf());
-        conoutf("public key: %s", pubkey.getbuf());
+        LOG(INFO) << "private key: " << privkey.getbuf();
+        LOG(INFO) << "public key: " << pubkey.getbuf();
     }
     COMMAND(genauthkey, "s");
 
@@ -327,7 +328,7 @@ namespace game
             authkey *a = authkeys[i];
             f->printf("authkey %s %s %s\n", escapestring(a->name), escapestring(a->key), escapestring(a->desc));
         }
-        conoutf("saved authkeys to auth.cfg");
+        LOG(INFO) << "saved authkeys to auth.cfg";
         delete f;
     }
     COMMAND(saveauthkeys, "");
@@ -574,32 +575,29 @@ namespace game
     {
         fpsent *d = getclient(cn);
         if(!d || d == player1) return;
-        conoutf("ignoring %s", d->name);
+        CLOG(INFO, "gameplay") << "ignoring " << d->name;
         if(ignores.find(cn) < 0) ignores.add(cn);
     }
 
-	/// stop ignoring all chat messages from a certain client number
+    /// stop ignoring all chat messages from a certain client number
     void unignore(int cn)
     {
         if(ignores.find(cn) < 0) return;
         fpsent *d = getclient(cn);
-        if(d) conoutf("stopped ignoring %s", d->name);
+        if(d) CLOG(INFO, "gameplay") << "stopped ignoring " << d->name;
         ignores.removeobj(cn);
     }
 
-	/// cubescript: check if this person is ingored by you
+    /// cubescript: check if this person is ignored by you
     bool isignored(int cn) { return ignores.find(cn) >= 0; }
 
     ICOMMAND(ignore, "s", (char *arg), ignore(parseplayer(arg)));
     ICOMMAND(unignore, "s", (char *arg), unignore(parseplayer(arg))); 
     ICOMMAND(isignored, "s", (char *arg), intret(isignored(parseplayer(arg)) ? 1 : 0));
-	
-	/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	/// multiplayer functionality
 
-	/// hash setmaster password
-	/// unfortunately, cn and sessionid are used to hash which means that servers will not be abled to store the hash value!
-    /// therefore, we have an authentification system: auth!
+    /// hash setmaster password
+    /// cn and sessionid are used to hash: servers do to store the hash value.
+    /// therefore, we have an authentification system
     /// @see hashpassword
     void hashpwd(const char *pwd)
     {
@@ -667,7 +665,7 @@ namespace game
     {
         if(multiplayer(false) && !m_mp(mode))
         {
-            LOG(ERROR) << "mode " << server::modename(gamemode) << " (" << gamemode << ") not supported in multiplayer";
+            LOG(ERROR) << "mode " << server::modename(mode) << " (" << mode << ") not supported in multiplayer";
             loopi(NUMGAMEMODES) if(m_mp(STARTGAMEMODE + i)) { mode = STARTGAMEMODE + i; break; }
         }
 
@@ -688,7 +686,7 @@ namespace game
     {
         if(multiplayer(false) && !m_mp(mode))
         {
-            LOG(ERROR) << "mode " << server::modename(gamemode) << " (" << gamemode << ") not supported in multiplayer";
+            LOG(ERROR) << "mode " << server::modename(mode) << " (" << mode << ") not supported in multiplayer";
             intret(0);
             return;
         }
@@ -922,14 +920,14 @@ namespace game
                     formatstring(str, "0x%.6X (%d, %d, %d)", val, (val>>16)&0xFF, (val>>8)&0xFF, val&0xFF);
                 else
                     formatstring(str, id->flags&IDF_HEX ? "0x%X" : "%d", val);
-                conoutf("%s set map var \"%s\" to %s", colorname(d), id->name, str);
+                LOG(INFO) << colorname(d) << " set map var " << quoted(id->name) <<" to " << quoted(str);
                 break;
             }
             case ID_FVAR:
-                conoutf("%s set map var \"%s\" to %s", colorname(d), id->name, floatstr(*id->storage.f));
+                LOG(INFO) << colorname(d) << " set map var " << quoted(id->name) << " to " << *id->storage.f;
                 break;
             case ID_SVAR:
-                conoutf("%s set map var \"%s\" to \"%s\"", colorname(d), id->name, **id->storage.s);
+                LOG(INFO) << colorname(d) << " set map var " << quoted(id->name) << " to " << quoted(**id->storage.s);
                 break;
         }
     }
@@ -1518,7 +1516,7 @@ namespace game
                 }
                 sessionid = getint(p);
                 player1->clientnum = mycn;      // we are now connected
-                if(getint(p) > 0) conoutf("this server is password protected");
+                if(getint(p) > 0) LOG(INFO) << "this server is password protected";
                 getstring(servinfo, p, sizeof(servinfo));
                 getstring(servauth, p, sizeof(servauth));
                 sendintro();
@@ -2257,7 +2255,7 @@ namespace game
                 {
                     vector<char> buf;
                     answerchallenge(a->key, text, buf);
-                    //conoutf(CON_DEBUG, "answering %u, challenge %s with %s", id, text, buf.getbuf());
+                    //LOG(DEBUG) << "answering %u, challenge %s with %s", id, text, buf.getbuf());
                     packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
                     putint(p, N_AUTHANS);
                     sendstring(a->desc, p);
