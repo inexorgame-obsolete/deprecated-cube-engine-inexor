@@ -1214,9 +1214,9 @@ int main(int argc, char **argv)
 
     // Load logging configuration from file
     START_EASYLOGGINGPP(argc, argv);
-    el::Configurations logging_conf("inexor_logging.conf");
-    el::Loggers::reconfigureAllLoggers(logging_conf);
+    el::Loggers::configureFromGlobal("inexor_logging.conf");
     el::Helpers::installLogDispatchCallback<inexor::util::InexorConsoleHandler>("InexorConsoleHandler");
+    el::Loggers::addFlag(el::LoggingFlag::ColoredTerminalOutput);
 
     LOG(INFO) << "Hello, client";
     CLOG(INFO, "gameplay") << "yoyo other client";
