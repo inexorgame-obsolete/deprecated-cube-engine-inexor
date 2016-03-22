@@ -34,27 +34,37 @@ namespace util {
             void handle(const el::LogDispatchData* handlePtr);
     };
 
-
-    /// A simple helper class to allow you writing inexor::util::quoted(string) which automatically adds quotation marks.
-    /// When either constructing an std::string from it or << it into a stream (e.g. LOG()).
-    struct quoted
+    /// Helper class to allow the writing of std::cout << embraced("I should be inside curly brackets", "{", "}");
+    struct embraced
     {
-        const char * _text;
-        quoted(const char * text) : _text(text) {}
+        const char *_text,
+                   *_leading,  // e.g. "{"
+                   *_trailing; // e.g. "}"
 
+        embraced(const char *text, const char *leading, const char *trailing) : _text(text), _leading(leading), _trailing(trailing) {}
+
+        /// Construct a std::string from this class.
         operator std::string() const
         {
-            std::string quotedStr = "\"";
+            std::string quotedStr = _leading;
             quotedStr += _text;
-            quotedStr += "\"";
+            quotedStr += _trailing;
             return quotedStr;
         }
 
-        friend std::ostream &operator<< (std::ostream & ostr, const quoted & q)
+        /// Pass this class directly into a stream.
+        friend std::ostream &operator<< (std::ostream & ostr, const embraced & q)
         {
-            ostr << "\"" << q._text << "\"";
+            ostr << q._leading << q._text << q._trailing;
             return ostr;
         }
+    };
+
+    /// A simple helper class to allow you writing inexor::util::quoted(string) which automatically adds quotation marks.
+    /// When either constructing an std::string from it or << it into a stream (e.g. LOG()).
+    struct quoted : embraced
+    {
+        quoted(const char *text) : embraced(text, "\"", "\"") {}
     };
 }
 }
