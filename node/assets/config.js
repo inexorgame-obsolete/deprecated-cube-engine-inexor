@@ -5,7 +5,7 @@ require.config({
 
   // The base url of dependencies if not remote
   baseUrl: '/inexorui',
-  urlArgs: 'bust=' + (new Date()).getTime(),
+  urlArgs: 'ts=' + (new Date()).getTime(),
 
   paths: {
     'angular': '../bower_components/angular/angular',
