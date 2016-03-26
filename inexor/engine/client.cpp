@@ -4,6 +4,7 @@
 // implementation of enet network parser
 
 #include "inexor/engine/engine.hpp"
+#include "inexor/ui.hpp"
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // mostly network related stuff
@@ -173,6 +174,7 @@ void disconnect(bool async, bool cleanup)
         conoutf("disconnected");
         game::gamedisconnect(cleanup);
         mainmenu = 1;
+        cef_app->GetUserInterface()->SetMainMenu(true);
     }
     if(!connpeer && clienthost)
     {

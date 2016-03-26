@@ -32,6 +32,30 @@ define(['./module'], function(controllers) {
       $scope.isMenuVisible = true;
       $scope.menuState = '/menu/main';
       $scope.menuParentState = '';
+      $scope.mainMenu = true;
+
+      // The background image url
+      $scope.backgroundImageUrl = '/inexorui/gfx/background.png';
+
+      // The logo image url
+      $scope.logoImageUrl = '/inexorui/gfx/main_banner_without_text.svg';
+
+      // Updates the background
+      $scope.updateMainMenuBackground = function() {
+        if ($scope.mainMenu) {
+        	document.body.style.backgroundImage = 'url(' + $scope.backgroundImageUrl + ')';
+        	document.getElementById('inexorui-logo').style.backgroundImage = 'url(' + $scope.logoImageUrl + ')';
+        } else {
+        	document.body.style.backgroundImage = 'none';
+        	document.getElementById('inexorui-logo').style.backgroundImage = 'none';
+        }
+      };
+
+      $scope.closeMenu = function() {
+        $scope.isMenuVisible = false;
+        $scope.menuState = '/menu/main';
+        $scope.menuParentState = '';
+      }
 
       /**
        * Sets the parent state for the given state.
@@ -64,19 +88,38 @@ define(['./module'], function(controllers) {
         }
       };
 
-      $scope.closeMenu = function() {
-        $scope.isMenuVisible = false;
-        $scope.menuState = '/menu/main';
-        $scope.menuParentState = '';
-      }
+      $scope.onVisibilityChange = function(isVisible) {
+        $scope.isVisible = isVisible;
+      };
 
-      $scope.onVisibilityChange = function(isVisible) { $scope.isVisible = isVisible; };
-      $scope.onAcceptingKeyInputChange = function(isAcceptingKeyInput) { $scope.isAcceptingKeyInput = isAcceptingKeyInput; };
-      $scope.onAcceptingMouseInputChange = function(isAcceptingMouseInput) { $scope.isAcceptingMouseInput = isAcceptingMouseInput; };
-      $scope.onMenuVisibilityChange = function(isMenuVisible) { $scope.isMenuVisible = isMenuVisible; };
-      $scope.onMenuStateChange = function(menuState) { $scope.setMenuState(menuState, false); };
-      $scope.onMenuParentStateChange = function(menuParentState) { $scope.parentState = parentState; };
+      $scope.onAcceptingKeyInputChange = function(isAcceptingKeyInput) {
+        $scope.isAcceptingKeyInput = isAcceptingKeyInput;
+      };
 
+      $scope.onAcceptingMouseInputChange = function(isAcceptingMouseInput) {
+        $scope.isAcceptingMouseInput = isAcceptingMouseInput;
+      };
+
+      $scope.onMenuVisibilityChange = function(isMenuVisible) {
+        $scope.isMenuVisible = isMenuVisible;
+      };
+
+      $scope.onMenuStateChange = function(menuState) {
+        $scope.setMenuState(menuState, false);
+      };
+
+      $scope.onMenuParentStateChange = function(menuParentState) {
+        $scope.parentState = parentState;
+      };
+
+      $scope.onMainMenuChange = function(mainMenu) {
+        $scope.mainMenu = mainMenu;
+        $scope.updateMainMenuBackground();
+      };
+
+      /**
+       * Routes the user interface event (coming from CPP side).
+       */
       $scope.uiEventHandler = function(event_name, value) {
         console.log(event_name);
         console.log(value);
@@ -99,12 +142,23 @@ define(['./module'], function(controllers) {
           case 'menuParentState':
             $scope.onMenuParentStateChange(value);
             break;
+          case 'mainMenu':
+            $scope.onMainMenuChange(value);
+            break;
+          default:
+            break;
         }
       };
 
+      // Register the inexor user interface event handler
       try {
         $timeout(function() {
-          window.registerEventHandler($scope.uiEventHandler); // 'uiVisible', 
+          $scope.updateMainMenuBackground();
+          if (typeof window.registerEventHandler === 'undefined') {
+            console.log('Inexor user interface event handler missing!');
+          } else {
+            window.registerEventHandler($scope.uiEventHandler);
+          }
         }, 1000);
       } catch (e) {
         console.log(e);
