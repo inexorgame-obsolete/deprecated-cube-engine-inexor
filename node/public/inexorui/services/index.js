@@ -8,5 +8,7 @@
 define([
   './MenuService',
   './HudService',
+  './ServerManager',
+  './ConnectionManager',
   './InexorUserInterfaceService'
 ], function () {});
