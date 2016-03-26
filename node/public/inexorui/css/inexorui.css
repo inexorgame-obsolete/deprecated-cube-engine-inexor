@@ -1,11 +1,28 @@
 body {
-  background: url('http://sauerbraten.sourceforge.net/newerer/screenshot_2073037.jpg') no-repeat center center fixed;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
   background-size: cover;
 }
 
-body.mainmenu {
-  background: transparent;
+#inexorui-logo {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: 50% center;
+  background-attachment: fixed;
+  background-size: 100% 100%;
 }
+
+/* body.mainmenu {
+  background: transparent;
+} */
 
 .inexor-menu-container-centered {
   margin: auto;
@@ -14,16 +31,20 @@ body.mainmenu {
   left: 0px;
   bottom: 0px;
   right: 0px;
-  height: 80%;
-  border: 1px solid rgba(0, 255, 255, 0.3);
-  border-radius: 8px;
-  background-color: rgba(0, 0, 0, 0.5);
-  padding: 40px;
+  /* height: 60%; */
+  /* height: auto; */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1%;
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 0px;
 }
 
 .inexor-menu-container-centered .page-header {
   margin: 0px;
+  margin-top: 10px;
+  margin-bottom: 10px;
   border-bottom: 0px;
+  padding-bottom: 0px;
 }
 
 .inexor-menu-container-centered h1 {
@@ -44,8 +65,9 @@ body.mainmenu {
   align-content: center;
   justify-content: center;
   width: 100%;
-  height: 90%;
-  overflow-y: scroll;
+  height: 100%;
+  /* height: auto; */
+  /* overflow-y: scroll; */
 }
 
 .inexor-serverbrowser-table {
@@ -62,27 +84,52 @@ body.mainmenu {
   border-bottom: 0px;
 }
 
-.inexor-menu-item {
+.nav-tabs li.inexor-menu-item {
+  margin-bottom: 0px;
+}
+
+.inexor-menu-item, .inexor-menu-header {
   width: 100%;
   height: 100%;
   margin: auto;
 }
 
-.nav li.inexor-menu-item a {
+.nav li.inexor-menu-item a,
+.nav li.inexor-menu-header a {
   display: block;
   width: 100%;
-  margin: auto;
+  padding: 0px;
+  margin-top: 2.5vh;
   font-size: 5vh;
   text-align: center;
-  background-color: rgba(0, 0, 0, 0.1);
+  border: 0px;
 }
 
-.nav li.inexor-menu-item a:hover {
-  margin-top: 6px;
-  margin-bottom: 4px;
-  color: white;
+.nav li.inexor-menu-header {
+  background-color: rgba(255, 255, 255, 1.0);
+  color: black;
+}
+
+.nav li.inexor-menu-header a {
+  background-color: rgba(255, 255, 255, 1.0);
+  color: black;
+}
+
+.nav li.inexor-menu-item a:hover,
+.nav li.inexor-menu-header a:hover {
+  background-color: transparent;
+  color: #337ab7;
+}
+
+.nav li.inexor-menu-item:hover {
   background-color: rgba(128, 128, 128, 0.2);
+  color: white;
   border: 0px;
+}
+
+.nav li.inexor-menu-header a:hover {
+  background-color: rgba(255, 255, 255, 1.0);
+  color: black;
 }
 
 /* The console container element */
