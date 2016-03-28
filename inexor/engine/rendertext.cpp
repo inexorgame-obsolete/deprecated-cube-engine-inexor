@@ -215,33 +215,21 @@ static float draw_char(Texture *&tex, int c, float x, float y, float scale)
     return scale*info.advance;
 }
 
-//stack[sp] is current color index
-static void text_color(char c, char *stack, int size, int &sp, bvec color, int a) 
+static void text_color(const char *curstring, int a, int &skipamount)
 {
-    if(c=='s') // save color
-    {   
-        c = stack[sp];
-        if(sp<size-1) stack[++sp] = c;
-    }
-    else
+    bvec color;
+    // [38;2;64;255;128m
+    if(curstring && sscanf(curstring, "[38;2;%hhu;%hhu;%hhum", &color.r, &color.g, &color.b) == 3)
     {
+        for(int i = 12; i < 18; i++)
+            if(curstring[i] == 'm')
+            {
+                skipamount = i;
+                break;
+            }
         xtraverts += gle::end();
-        if(c=='r') { if(sp > 0) --sp; c = stack[sp]; } // restore color
-        else stack[sp] = c;
-        switch(c)
-        {
-            case '0': color = bvec( 64, 255, 128); break;   // green: player talk
-            case '1': color = bvec( 96, 160, 255); break;   // blue: "echo" command
-            case '2': color = bvec(255, 192,  64); break;   // yellow: gameplay messages 
-            case '3': color = bvec(255,  64,  64); break;   // red: important errors
-            case '4': color = bvec(128, 128, 128); break;   // gray
-            case '5': color = bvec(192,  64, 192); break;   // magenta
-            case '6': color = bvec(255, 128,   0); break;   // orange
-            case '7': color = bvec(255, 255, 255); break;   // white
-            // provided color: everything else
-        }
         gle::color(color, a);
-    } 
+    }
 }
 
 #define TEXTSKELETON \
@@ -254,7 +242,7 @@ static void text_color(char c, char *stack, int size, int &sp, bvec color, int a
         if(c=='\t')      { x = TEXTTAB(x); TEXTWHITE(i) }\
         else if(c==' ')  { x += scale*curfont->defaultw; TEXTWHITE(i) }\
         else if(c=='\n') { TEXTLINE(i) x = 0; y += FONTH; }\
-        else if(c=='\f') { if(str[i+1]) { i++; TEXTCOLOR(i) }}\
+        else if(c=='\x1b') { if(str[i+1]) { i++; TEXTCOLOR(i) }}\
         else if(curfont->chars.inrange(c-curfont->charoffset))\
         {\
             float cw = scale*curfont->chars[c-curfont->charoffset].advance;\
@@ -287,7 +275,7 @@ static void text_color(char c, char *stack, int size, int &sp, bvec color, int a
                 {\
                     TEXTINDEX(j)\
                     int c = uchar(str[j]);\
-                    if(c=='\f') { if(str[j+1]) { j++; TEXTCOLOR(j) }}\
+                    if(c=='\x1b') { if(str[j+1]) { j++; TEXTCOLOR(j) }}\
                     else { float cw = scale*curfont->chars[c-curfont->charoffset].advance; TEXTCHAR(j) }\
                 }
 
@@ -356,11 +344,10 @@ void draw_text(const char *str, int left, int top, int r, int g, int b, int a, i
     #define TEXTINDEX(idx) if(idx == cursor) { cx = x; cy = y; }
     #define TEXTWHITE(idx)
     #define TEXTLINE(idx) 
-    #define TEXTCOLOR(idx) if(usecolor) text_color(str[idx], colorstack, sizeof(colorstack), colorpos, color, a);
+    #define TEXTCOLOR(idx) if(usecolor) { int nextpos = 0; text_color(&str[idx], a, nextpos); idx += nextpos;}// colorstack, sizeof(colorstack), colorpos, color, a);
     #define TEXTCHAR(idx) draw_char(tex, c, left+x, top+y, scale); x += cw;
     #define TEXTWORD TEXTWORDSKELETON
-    char colorstack[10];
-    colorstack[0] = 'c'; //indicate user color
+
     bvec color(r, g, b);
     int colorpos = 0;
     float cx = -FONTW, cy = 0;
