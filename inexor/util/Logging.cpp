@@ -3,11 +3,6 @@
 namespace inexor {
 namespace util {
 
-InexorConsoleHandler::InexorConsoleHandler()
-{
-    el::Loggers::getLogger("console");
-}
-
 void InexorConsoleHandler::handle(const el::LogDispatchData* handlePtr)
 {
     // NEVER LOG ANYTHING HERE!

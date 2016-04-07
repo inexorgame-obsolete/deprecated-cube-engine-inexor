@@ -1,5 +1,6 @@
-#ifndef INEXOR_UTIL_LOGGING
-#define INEXOR_UTIL_LOGGING
+/// @file Logging stuff including the ingame console logging functionality.
+
+#pragma once
 
 #define ELPP_THREAD_SAFE
 // #define ELPP_UNICODE
@@ -26,13 +27,6 @@ namespace util {
     #define COL_MAGENTA "\x1b[38;2;192;64;192m"
     #define COL_ORANGE  "\x1b[38;2;255;128;0m"
     #define COL_WHITE   "\x1b[38;2;255;255;255m"
-
-    /// Wrapper for easylogger for telling it to call our callback every time something gets logged (so we can display it ingame).
-    class InexorConsoleHandler : public el::LogDispatchCallback {
-        public:
-            InexorConsoleHandler();
-            void handle(const el::LogDispatchData* handlePtr);
-    };
 
     /// Helper class to allow the writing of std::cout << embraced("I should be inside curly brackets", "{", "}");
     struct embraced
@@ -66,7 +60,16 @@ namespace util {
     {
         quoted(const char *text) : embraced(text, "\"", "\"") {}
     };
-}
-}
 
-#endif
+
+    /// Wrapper for easylogger for telling it to call our callback every time something gets logged (so we can display it ingame).
+    /// Needs to be installed on startup with el::Helpers::installLogDispatchCallback<InexorConsoleHandler>("InexorConsoleHandler");
+    class InexorConsoleHandler : public el::LogDispatchCallback
+    {
+    public:
+        InexorConsoleHandler() : el::LogDispatchCallback() {}
+        void handle(const el::LogDispatchData* handlePtr);
+    };
+
+}
+}
