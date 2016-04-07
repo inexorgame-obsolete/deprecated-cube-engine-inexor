@@ -43,12 +43,12 @@ void InexorRenderHandler::Initialize()
 
     std::cerr << "InexorRenderHandler initializing...\n";
 
-    glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST); VERIFY_NO_ERROR;
+    // glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST); VERIFY_NO_ERROR;
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f); VERIFY_NO_ERROR;
+    // glClearColor(0.0f, 0.0f, 0.0f, 1.0f); VERIFY_NO_ERROR;
 
     // Necessary for non-power-of-2 textures to render correctly.
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1); VERIFY_NO_ERROR;
+    // glPixelStorei(GL_UNPACK_ALIGNMENT, 1); VERIFY_NO_ERROR;
 
     // Create the texture.
     glGenTextures(1, &texture_id); VERIFY_NO_ERROR;
@@ -213,6 +213,8 @@ void InexorRenderHandler::OnPaint(
                 glPixelStorei(GL_UNPACK_SKIP_ROWS, rect.y); VERIFY_NO_ERROR;
                 glTexSubImage2D(GL_TEXTURE_2D, 0, rect.x, rect.y, rect.width, rect.height, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, buffer); VERIFY_NO_ERROR;
             }
+            glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0); VERIFY_NO_ERROR;
+            glPixelStorei(GL_UNPACK_SKIP_ROWS, 0); VERIFY_NO_ERROR;
         }
         glPixelStorei(GL_UNPACK_ROW_LENGTH, 0); VERIFY_NO_ERROR;
     } else if (type == PET_POPUP && popup_rect.width > 0 && popup_rect.height > 0) {
