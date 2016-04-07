@@ -69,7 +69,6 @@ void cleanup()
 /// @see cleanup
 void quit()
 {
-    // CefShutdown();
     writeinitcfg();
     writeservercfg();
 	writehistory();
@@ -78,6 +77,8 @@ void quit()
     localdisconnect();
     writecfg();
     cleanup();
+    metapp.stop("cef");
+    metapp.stop("rpc");
     exit(EXIT_SUCCESS);
 }
 COMMAND(quit, "");
@@ -144,7 +145,7 @@ bool initwarning(const char *desc, int level, int type)
 
 /// function forward to change screen resolution
 void screenres(int w, int h);
-ICOMMAND(screenres, "ii", (int *w, int *h), screenres(*w, *h));
+ICOMMAND(screenres, "ii", (int *w, int *h), screenres(*w, *h)); // TODO: CEF userinterface
 
 /// change screen width and height
 VARF(scr_w, SCR_MINW, -1, SCR_MAXW, screenres(scr_w, -1));
@@ -606,6 +607,7 @@ void setfullscreen(bool enable)
     if(!enable)
     {
         SDL_SetWindowSize(screen, scr_w, scr_h);
+        cef_resize(scr_w, scr_h);
         if(initwindowpos)
         {
             SDL_SetWindowPosition(screen, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
@@ -631,8 +633,12 @@ void screenres(int w, int h)
     {
         scr_w = min(scr_w, desktopw);
         scr_h = min(scr_h, desktoph);
-        if(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN) gl_resize();
-        else SDL_SetWindowSize(screen, scr_w, scr_h);
+        if(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN) {
+            gl_resize();
+        } else {
+            SDL_SetWindowSize(screen, scr_w, scr_h);
+            cef_resize(scr_w, scr_h);
+        }
     }
     else 
     {
@@ -960,17 +966,25 @@ void checkinput()
     {
         if(events.length()) event = events.remove(0);
 
-        if (cef_app.get() && cef_app->hasFocus()) {
-          bool handled = cef_app->handle_sdl_event(event);
-          if (handled) continue;
+        if (event.type == SDL_QUIT) {
+            quit();
+            return;
+        }
+
+        /*
+        if (cef_app.get() && cef_app->GetUserInterface()->GetAcceptingInput()) {
+            logoutf("checkinput() -> to CEF");
+            bool handled = cef_app->HandleSdlEvent(event);
+            if (handled) continue;
+        }
+        */
+
+        if (cef_app.get()) {
+            cef_app->HandleSdlEvent(event);
         }
 
         switch(event.type)
         {
-            case SDL_QUIT:
-                quit();
-                return;
-
             case SDL_TEXTINPUT:
             {
                 static uchar buf[SDL_TEXTINPUTEVENT_TEXT_SIZE+1];
@@ -1189,23 +1203,63 @@ static bool findarg(int argc, char **argv, const char *str)
 ICOMMANDERR(subsystem_start, "s", (char *s), std::string ccs{s}; metapp.start(ccs));
 ICOMMANDERR(subsystem_stop, "s", (char *s), std::string ccs{s}; metapp.stop(ccs));
 
-ICOMMAND(cef_load, "s", (char *cv),
-    std::string u(cv);
-    if (cef_app.get()) cef_app->GetFrame()->SetUrl(u); );
-ICOMMAND(cef_reload, "", (),
+ICOMMAND(uiurl, "s", (char *_url),
+    std::string url(_url);
     if (cef_app.get()) {
-      std::string url = cef_app->GetFrame()->GetUrl();
-      cef_app->GetFrame()->SetUrl(url);
+    	cef_app->GetUserInterface()->SetUrl(url);
     }
 );
-ICOMMAND(cef_focus, "b", (bool *b),
-    if (cef_app.get()) cef_app->setFocus(*b); );
+ICOMMAND(uireload, "", (),
+    if (cef_app.get()) {
+        cef_app->GetUserInterface()->Reload();
+    }
+);
+ICOMMAND(uilayerstate, "bbb", (bool *_is_visible, bool *_is_accepting_key_input, bool *_is_accepting_mouse_input),
+    if (cef_app.get()) {
+        cef_app->GetUserInterface()->SetVisibility(*_is_visible);
+        cef_app->GetUserInterface()->SetAcceptingKeyInput(*_is_accepting_key_input);
+        cef_app->GetUserInterface()->SetAcceptingMouseInput(*_is_accepting_mouse_input);
+    }
+);
+ICOMMAND(uiresize, "ii", (int *width, int *height),
+    if (cef_app.get()) {
+        cef_app->GetUserInterface()->Resize(0, 0, *width, *height);
+    }
+);
+/// Bind to key ESC
+ICOMMAND(uimenu, "", (),
+    if (cef_app.get()) {
+        cef_app->GetUserInterface()->Menu();
+    }
+);
+
+ICOMMAND(uimenustate, "ssb", (char *_menu_state, char *_menu_parent_state, bool *_menu_visible),
+    if (cef_app.get()) {
+        std::string menu_state(_menu_state);
+        std::string menu_parent_state(_menu_parent_state);
+    	cef_app->GetUserInterface()->SetMenuStates(menu_state, menu_parent_state, *_menu_visible);
+    }
+);
 
 /// main program start
 int main(int argc, char **argv)
 {
+    // Ensure the correct locale
+    setlocale(LC_ALL, "en_US.utf8");
+
     setlogfile(NULL);
-    UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // We only need to initialse it, not use it.
+
+    /// require subsystems BEFORE configurations are done
+    SUBSYSTEM_REQUIRE(rpc);
+    SUBSYSTEM_REQUIRE(cef);
+
+    // Initialize the subsystems
+    logoutf("init: subsystems");
+    metapp.start("rpc");
+    metapp.start("cef");
+
+    // We only need to initialize it, not use it.
+    UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker;
 
     int dedicated = 0;
     char *load = NULL, *initscript = NULL;
@@ -1224,11 +1278,6 @@ int main(int argc, char **argv)
 			}
         }
     }
-
-    /// require subsystems BEFORE configurations are done
-    //Initialize the metasystem
-    SUBSYSTEM_REQUIRE(rpc);
-    SUBSYSTEM_REQUIRE(cef);
 
 	/// parse command line arguments
     execfile("init.cfg", false);
@@ -1283,6 +1332,12 @@ int main(int argc, char **argv)
     }
     initing = NOT_INITING;
 
+    // Initialize the submodules
+    metapp.initialize(argc, argv);
+
+    // After submodule initialization force the correct locale
+    setlocale(LC_ALL, "en_US.utf8");
+
     numcpus = clamp(SDL_GetCPUCount(), 1, 16);
 
     if(dedicated <= 1)
@@ -1295,13 +1350,13 @@ int main(int argc, char **argv)
         #endif
         if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO|par)<0) fatal("Unable to initialize SDL: %s", SDL_GetError());
 
-	// Disable SDL_TEXTINPUT events at startup. They are only
-	// needed if text is about to be entered in chat.
+        // Disable SDL_TEXTINPUT events at startup. They are only
+        // needed if text is about to be entered in chat.
         SDL_StopTextInput();
     }
 
     logoutf("init: net");
-    if(enet_initialize()<0) fatal("Unable to initialise network module");
+    if(enet_initialize() < 0) fatal("Unable to initialize network module");
     atexit(enet_deinitialize);
     enet_time_set(0);
 
@@ -1323,7 +1378,7 @@ int main(int argc, char **argv)
     SDL_ShowCursor(SDL_FALSE);
     // SDL_StopTextInput(); // workaround for spurious text-input events getting sent on first text input toggle?
 
-    /// Initialise OpenGL
+    /// Initialize OpenGL
     logoutf("init: gl");
     gl_checkextensions();
     gl_init(useddepthbits, usedfsaa);
@@ -1402,10 +1457,6 @@ int main(int argc, char **argv)
     inputgrab(grabinput = true);
     ignoremousemotion();
 
-    //Initialize the metasystem
-    SUBSYSTEM_REQUIRE(rpc);
-    SUBSYSTEM_REQUIRE(cef);
-
 	// main game loop
     for(;;)
     {
@@ -1446,10 +1497,9 @@ int main(int argc, char **argv)
         if(minimized) continue;
 
         inbetweenframes = false;
+
         if(mainmenu) gl_drawmainmenu();
         else gl_drawframe();
-
-        metapp.paint();
 
         swapbuffers();
 

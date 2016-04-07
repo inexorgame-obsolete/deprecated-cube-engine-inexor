@@ -201,7 +201,7 @@ struct md5 : skelmodel, skelloader<md5>
                         } 
                         *curname = '\0'; 
                         if(sscanf(curbuf, " %d ( %f %f %f ) ( %f %f %f )",
-                            &parent, &j.pos.x, &j.pos.y, &j.pos.z,
+                            &parent, &(j.pos.x), &(j.pos.y), &(j.pos.z),
                             &j.orient.x, &j.orient.y, &j.orient.z)==7)
                         {
                             j.pos.y = -j.pos.y;
