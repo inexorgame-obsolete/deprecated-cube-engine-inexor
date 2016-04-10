@@ -1454,6 +1454,10 @@ namespace game
             d->flags = getint(p);
             if(d==player1) getint(p);
             else d->quadmillis = getint(p);
+            d->deaths = getint(p);
+            d->teamkills = getint(p);
+            d->totaldamage = getint(p);
+            d->totalshots = getint(p);
         }
         d->lifesequence = getint(p);
         d->health = getint(p);
@@ -1761,6 +1765,7 @@ namespace game
                 int prevaction = s->lastaction;
                 s->lastaction = lastmillis;
                 s->lastattackgun = s->gunselect;
+                s->totalshots += guns[s->gunselect].damage*(s->quadmillis ? 4 : 1)*guns[s->gunselect].rays;
                 shoteffects(s->gunselect, from, to, s, false, id, prevaction);
                 break;
             }
@@ -1786,6 +1791,7 @@ namespace game
                 target->armour = armour;
                 target->health = health;
                 if(target->state == CS_ALIVE && actor != player1) target->lastpain = lastmillis;
+                if(actor != player1 && !isteam(actor->team, target->team)) actor->totaldamage += damage;
                 damaged(damage, target, actor, false);
                 break;
             }

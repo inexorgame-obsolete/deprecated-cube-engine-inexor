@@ -124,7 +124,9 @@ namespace server
         int lastdeath, deadflush, lastspawn, lifesequence;
         int lastshot;
         projectilestate<8> rockets, grenades, bombs;
-        int frags, flags, deaths, teamkills, shotdamage, damage, tokens;
+        int frags, flags, deaths, teamkills, 
+            shotdamage, //all damage your shots could have made
+            damage, tokens;
         int lasttimeplayed, timeplayed;
         float effectiveness;
 
@@ -1955,6 +1957,10 @@ namespace server
                 putint(p, oi->state.frags);
                 putint(p, oi->state.flags);
                 putint(p, oi->state.quadmillis);
+                putint(p, oi->state.deaths);
+                putint(p, oi->state.teamkills);
+                putint(p, oi->state.damage);
+                putint(p, oi->state.shotdamage);
                 sendstate(oi->state, p);
             }
             putint(p, -1);
@@ -1979,8 +1985,9 @@ namespace server
     void sendresume(clientinfo *ci)
     {
         gamestate &gs = ci->state;
-        sendf(-1, 1, "ri3i9vi", N_RESUME, ci->clientnum,
+        sendf(-1, 1, "ri7i9vi", N_RESUME, ci->clientnum,
             gs.state, gs.frags, gs.flags, gs.quadmillis,
+            gs.deaths, gs.teamkills, gs.damage, gs.shotdamage,
             gs.lifesequence,
             gs.health, gs.maxhealth,
             gs.armour, gs.armourtype,

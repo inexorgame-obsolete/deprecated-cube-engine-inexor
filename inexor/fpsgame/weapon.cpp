@@ -950,8 +950,8 @@ namespace game
                    hits.length(), hits.length()*sizeof(hitmsg)/sizeof(int), hits.getbuf());
         }
 
-		d->gunwait = guns[d->gunselect].attackdelay;
-		if(d->gunselect == GUN_PISTOL && d->ai) d->gunwait += int(d->gunwait*(((101-d->skill)+rnd(111-d->skill))/100.f));
+        d->gunwait = guns[d->gunselect].attackdelay;
+        if(d->gunselect == GUN_PISTOL && d->ai) d->gunwait += int(d->gunwait*(((101 - d->skill) + rnd(111 - d->skill)) / 100.f));
         d->totalshots += guns[d->gunselect].damage*(d->quadmillis ? 4 : 1)*guns[d->gunselect].rays;
     }
 

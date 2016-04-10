@@ -349,12 +349,12 @@ namespace game
                 else if(cmode) cmode->checkitems(player1);
             }
         }
-        /// well why not pack this into an own thread?
-        if(player1->clientnum>=0) c2sinfo();   /// do this last, to reduce the effective frame lag
+
+        if(player1->clientnum>=0) c2sinfo();   // do this last, to reduce the effective frame lag
     }
 
     /// spawn yourself im the game world, also called for monsters/AI in singleplayer
-	/// of course not used for other players in multiplayer because everyone determins his spawn point for himself.
+    /// of course not used for other players in multiplayer because everyone determins his spawn point for himself.
     /// @see spawnstate
     void spawnplayer(fpsent *d)   
     {
@@ -535,6 +535,7 @@ namespace game
         else if(isteam(d->team, actor->team))
         {
             contype |= CON_TEAMKILL;
+            actor->teamkills++;
             if(actor==player1) conoutf(contype, "\f6%s fragged a teammate (%s)", aname, dname);
             else if(d==player1) conoutf(contype, "\f6%s got fragged by a teammate (%s)", dname, aname);
             else conoutf(contype, "\f2%s fragged a teammate (%s)", aname, dname);
@@ -582,6 +583,7 @@ namespace game
     ICOMMAND(getfrags, "", (), intret(player1->frags));
     ICOMMAND(getflags, "", (), intret(player1->flags));
     ICOMMAND(getdeaths, "", (), intret(player1->deaths));
+    ICOMMAND(getteamkills, "", (), intret(player1->teamkills));
     ICOMMAND(getaccuracy, "", (), intret((player1->totaldamage*100)/max(player1->totalshots, 1)));
     ICOMMAND(gettotaldamage, "", (), intret(player1->totaldamage));
     ICOMMAND(gettotalshots, "", (), intret(player1->totalshots));
