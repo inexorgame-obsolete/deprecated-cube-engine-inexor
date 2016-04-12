@@ -717,11 +717,6 @@ namespace game
             const char *best = getalias(scorename);
             if(*best) CLOG(INFO, "gameplay") << "try to beat your best score so far: " << best;
         }
-        else
-        {
-            const char *info = m_valid(gamemode) ? gamemodes[gamemode - STARTGAMEMODE].info : NULL;
-            if(showmodeinfo && info) CLOG(INFO, "gameplay") << COL_GREEN << info;
-        }
 
         if(player1->playermodel != playermodel) switchplayermodel(playermodel);
 
@@ -751,19 +746,12 @@ namespace game
         sendmapinfo();
     }
 
-    /// return game mode info text depending on game mode
-    const char *getmapinfo()
-    {
-        /// return depends on array index
-        return showmodeinfo && m_valid(gamemode) ? gamemodes[gamemode - STARTGAMEMODE].info : NULL;
-    }
-	
-	const char *getclientmode()
+    const char *getclientmode()
     {
         return server::modename(gamemode, NULL);
     }
 
-	/// trigger sound effects depending on the material you enter
+    /// trigger sound effects depending on the material you enter
     void physicstrigger(physent *d, bool local, int floorlevel, int waterlevel, int material)
     {
         if(d->type==ENT_INANIMATE) return;
@@ -778,7 +766,7 @@ namespace game
         else if(floorlevel<0) { if(d==player1 || d->type!=ENT_PLAYER || ((fpsent *)d)->ai) msgsound(S_LAND, d); }
     }
 
-	/// push monsters (or objects) together when they hit walls or other objects
+    /// push monsters (or objects) together when they hit walls or other objects
     void dynentcollide(physent *d, physent *o, const vec &dir)
     {
         switch(d->type)
@@ -788,7 +776,7 @@ namespace game
         }
     }
 
-	/// play sound and send sound notification to server
+    /// play sound and send sound notification to server
     /// @see playsound
     void msgsound(int n, physent *d)
     {
@@ -805,14 +793,11 @@ namespace game
         }
     }
 
-	/// return the sum of dynamic entities currently in scene
-    int numdynents()
-	{
-		return players.length()+monsters.length()+movables.length();
-	}
+    /// return the sum of dynamic entities currently in scene
+    int numdynents() { return players.length() + monsters.length() + movables.length(); }
 
     /// iterate through all dynamic entities and return entity with index [i]
-	/// @returned a player, monster or movable (all dynamic entities)
+    /// @returned a player, monster or movable (all dynamic entities)
     dynent *iterdynents(int i)
     {
         if(i<players.length()) return players[i];
@@ -1273,7 +1258,7 @@ namespace game
             case 1:
                 if(attr.length()>=4)
                 {
-                    if(g->buttonf("%s%d/%d ", np >= attr[3] ? COL_RED : "", 0xFFFFDD, NULL, np, attr[3])&G3D_UP) return true;
+                    if(g->buttonf("%s%d/%d ", 0xFFFFDD, NULL, (np >= attr[3] ? COL_RED : ""), np, attr[3])&G3D_UP) return true;
                 }
                 else if(g->buttonf("%d ", 0xFFFFDD, NULL, np)&G3D_UP) return true;
                 break;

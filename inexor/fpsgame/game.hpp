@@ -177,43 +177,37 @@ static struct gamemodeinfo
 {
     const char *name; /// game mode's name
     int flags;        /// a bitmask container (see flags above)
-    const char *info; /// a description text which will be displayed during map load
-}
-
-
-/// create a static hard coded array of gamemodeinfo-instances
-/// TODO: replace this hardcoded stuff and move on to JSON!
-gamemodes[] =
+} gamemodes[] =
 {
-    { "SP", M_LOCAL | M_CLASSICSP, NULL },
-    { "DMSP", M_LOCAL | M_DMSP, NULL },
-    { "demo", M_DEMO | M_LOCAL, NULL},
-    { "ffa", M_LOBBY, "Free For All: Collect items for ammo. Frag everyone to score points." },
-    { "coop edit", M_EDIT, "Cooperative Editing: Edit maps with multiple players simultaneously." },
-    { "teamplay", M_TEAM, "Teamplay: Collect items for ammo. Frag \fs\f3the enemy team\fr to score points for \fs\f1your team\fr." },
-    { "instagib", M_NOITEMS | M_INSTA, "Instagib: You spawn with full rifle ammo and die instantly from one shot. There are no items. Frag everyone to score points." },
-    { "insta team", M_NOITEMS | M_INSTA | M_TEAM, "Instagib Team: You spawn with full rifle ammo and die instantly from one shot. There are no items. Frag \fs\f3the enemy team\fr to score points for \fs\f1your team\fr." },
-    { "efficiency", M_NOITEMS | M_EFFICIENCY, "Efficiency: You spawn with all weapons and armour. There are no items. Frag everyone to score points." },
-    { "effic team", M_NOITEMS | M_EFFICIENCY | M_TEAM, "Efficiency Team: You spawn with all weapons and armour. There are no items. Frag \fs\f3the enemy team\fr to score points for \fs\f1your team\fr." },
-    { "tactics", M_NOITEMS | M_TACTICS, "Tactics: You spawn with two random weapons and armour. There are no items. Frag everyone to score points." },
-    { "tac team", M_NOITEMS | M_TACTICS | M_TEAM, "Tactics Team: You spawn with two random weapons and armour. There are no items. Frag \fs\f3the enemy team\fr to score points for \fs\f1your team\fr." },
-    { "capture", M_NOAMMO | M_TACTICS | M_CAPTURE | M_TEAM, "Capture: Capture neutral bases or steal \fs\f3enemy bases\fr by standing next to them.  \fs\f1Your team\fr scores points for every 10 seconds it holds a base. You spawn with two random weapons and armour. Collect extra ammo that spawns at \fs\f1your bases\fr. There are no ammo items." },
-    { "regen capture", M_NOITEMS | M_CAPTURE | M_REGEN | M_TEAM, "Regen Capture: Capture neutral bases or steal \fs\f3enemy bases\fr by standing next to them. \fs\f1Your team\fr scores points for every 10 seconds it holds a base. Regenerate health and ammo by standing next to \fs\f1your bases\fr. There are no items." },
-    { "ctf", M_CTF | M_TEAM, "Capture The Flag: Capture \fs\f3the enemy flag\fr and bring it back to \fs\f1your flag\fr to score points for \fs\f1your team\fr. Collect items for ammo." },
-    { "insta ctf", M_NOITEMS | M_INSTA | M_CTF | M_TEAM, "Instagib Capture The Flag: Capture \fs\f3the enemy flag\fr and bring it back to \fs\f1your flag\fr to score points for \fs\f1your team\fr. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
-    { "protect", M_CTF | M_PROTECT | M_TEAM, "Protect The Flag: Touch \fs\f3the enemy flag\fr to score points for \fs\f1your team\fr. Pick up \fs\f1your flag\fr to protect it. \fs\f1Your team\fr loses points if a dropped flag resets. Collect items for ammo." },
-    { "insta protect", M_NOITEMS | M_INSTA | M_CTF | M_PROTECT | M_TEAM, "Instagib Protect The Flag: Touch \fs\f3the enemy flag\fr to score points for \fs\f1your team\fr. Pick up \fs\f1your flag\fr to protect it. \fs\f1Your team\fr loses points if a dropped flag resets. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
-    { "hold", M_CTF | M_HOLD | M_TEAM, "Hold The Flag: Hold \fs\f7the flag\fr for 20 seconds to score points for \fs\f1your team\fr. Collect items for ammo." },
-    { "insta hold", M_NOITEMS | M_INSTA | M_CTF | M_HOLD | M_TEAM, "Instagib Hold The Flag: Hold \fs\f7the flag\fr for 20 seconds to score points for \fs\f1your team\fr. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
-    { "effic ctf", M_NOITEMS | M_EFFICIENCY | M_CTF | M_TEAM, "Efficiency Capture The Flag: Capture \fs\f3the enemy flag\fr and bring it back to \fs\f1your flag\fr to score points for \fs\f1your team\fr. You spawn with all weapons and armour. There are no items." },
-    { "effic protect", M_NOITEMS | M_EFFICIENCY | M_CTF | M_PROTECT | M_TEAM, "Efficiency Protect The Flag: Touch \fs\f3the enemy flag\fr to score points for \fs\f1your team\fr. Pick up \fs\f1your flag\fr to protect it. \fs\f1Your team\fr loses points if a dropped flag resets. You spawn with all weapons and armour. There are no items." },
-    { "effic hold", M_NOITEMS | M_EFFICIENCY | M_CTF | M_HOLD | M_TEAM, "Efficiency Hold The Flag: Hold \fs\f7the flag\fr for 20 seconds to score points for \fs\f1your team\fr. You spawn with all weapons and armour. There are no items." },
-    { "collect", M_COLLECT | M_TEAM, "Skull Collector: Frag \fs\f3the enemy team\fr to drop \fs\f3skulls\fr. Collect them and bring them to \fs\f3the enemy base\fr to score points for \fs\f1your team\fr or steal back \fs\f1your skulls\fr. Collect items for ammo." },
-    { "insta collect", M_NOITEMS | M_INSTA | M_COLLECT | M_TEAM, "Instagib Skull Collector: Frag \fs\f3the enemy team\fr to drop \fs\f3skulls\fr. Collect them and bring them to \fs\f3the enemy base\fr to score points for \fs\f1your team\fr or steal back \fs\f1your skulls\fr. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
-    { "effic collect", M_NOITEMS | M_EFFICIENCY | M_COLLECT | M_TEAM, "Efficiency Skull Collector: Frag \fs\f3the enemy team\fr to drop \fs\f3skulls\fr. Collect them and bring them to \fs\f3the enemy base\fr to score points for \fs\f1your team\fr or steal back \fs\f1your skulls\fr. You spawn with all weapons and armour. There are no items." },
-    { "bomberman", M_LMS | M_BOMB | M_OBSTACLES, "Bomberman: Place bombs to kill enemies. Collect items to increase amount of bombs or damage radius. Survive to win." },
-    { "bomberman team", M_LMS | M_BOMB | M_TEAM | M_OBSTACLES, "Bomberman Team: Place bombs to kill \fs\f3enemies\fr. Collect items to increase amount of bombs or damage radius. Your team wins if one player survives." },
-    { "hideandseek", M_HIDEANDSEEK | M_TEAM | M_OBSTACLES, "Hide and Seek: Hiders hides, seekers seeks. No teamkills." },
+    { "SP", M_LOCAL | M_CLASSICSP},
+    { "DMSP", M_LOCAL | M_DMSP},
+    { "demo", M_DEMO | M_LOCAL},
+    { "ffa", M_LOBBY},
+    { "coop edit", M_EDIT},
+    { "teamplay", M_TEAM},
+    { "instagib", M_NOITEMS | M_INSTA},
+    { "insta team", M_NOITEMS | M_INSTA | M_TEAM},
+    { "efficiency", M_NOITEMS | M_EFFICIENCY},
+    { "effic team", M_NOITEMS | M_EFFICIENCY | M_TEAM},
+    { "tactics", M_NOITEMS | M_TACTICS},
+    { "tac team", M_NOITEMS | M_TACTICS | M_TEAM},
+    { "capture", M_NOAMMO | M_TACTICS | M_CAPTURE | M_TEAM},
+    { "regen capture", M_NOITEMS | M_CAPTURE | M_REGEN | M_TEAM},
+    { "ctf", M_CTF | M_TEAM},
+    { "insta ctf", M_NOITEMS | M_INSTA | M_CTF | M_TEAM},
+    { "protect", M_CTF | M_PROTECT | M_TEAM},
+    { "insta protect", M_NOITEMS | M_INSTA | M_CTF | M_PROTECT | M_TEAM},
+    { "hold", M_CTF | M_HOLD | M_TEAM},
+    { "insta hold", M_NOITEMS | M_INSTA | M_CTF | M_HOLD | M_TEAM},
+    { "effic ctf", M_NOITEMS | M_EFFICIENCY | M_CTF | M_TEAM},
+    { "effic protect", M_NOITEMS | M_EFFICIENCY | M_CTF | M_PROTECT | M_TEAM},
+    { "effic hold", M_NOITEMS | M_EFFICIENCY | M_CTF | M_HOLD | M_TEAM},
+    { "collect", M_COLLECT | M_TEAM},
+    { "insta collect", M_NOITEMS | M_INSTA | M_COLLECT | M_TEAM},
+    { "effic collect", M_NOITEMS | M_EFFICIENCY | M_COLLECT | M_TEAM},
+    { "bomberman", M_LMS | M_BOMB | M_OBSTACLES},
+    { "bomberman team", M_LMS | M_BOMB | M_TEAM | M_OBSTACLES},
+    { "hideandseek"},
 };
 
 
@@ -300,7 +294,6 @@ static const char * const mastermodeicons[] =  { "server", "server", "serverlock
 /// sound list and description of administrative levels
 
 /// hardcoded sounds, defined in sounds.cfg
-/// TODO: replace this hardcoded stuff and move on to JSON!
 enum
 {
     S_JUMP = 0, S_LAND, S_RIFLE, S_PUNCH1, S_SG, S_CG,
@@ -338,19 +331,11 @@ enum
     S_FLAGFAIL
 };
 
-/// permission levels
-/// TODO: replace this hardcoded stuff and move on to JSON!
-enum
-{ 
-	PRIV_NONE = 0, // white
-	PRIV_MASTER,   // green
-	PRIV_AUTH,     // also green, (should be violet!)
-	PRIV_ADMIN     // orange 
-};
+/// priviledge levels
+enum {PRIV_NONE = 0, PRIV_MASTER, PRIV_AUTH, PRIV_ADMIN };
 
 
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/// network messages codes, c2s, c2c, s2c
+// network messages codes, c2s, c2c, s2c:
 
 /// server message list
 /// @warning you will need to edit the msgsizes array as well.
