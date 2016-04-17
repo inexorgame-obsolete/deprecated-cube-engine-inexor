@@ -515,7 +515,7 @@ struct captureclientmode : clientmode
                 hudmatrix.scale(2, 2, 1);
                 flushhudmatrix();
                 bool flash = wait>0 && d==player1 && lastspawnattempt>=d->lastpain && lastmillis < lastspawnattempt+100;
-                draw_textf("%s%d", (x+s/2)/2-(wait>=10 ? 28 : 16), (y+s/2)/2-32, flash ? "\f3" : "", wait);
+                draw_textf("%s%d", (x+s/2)/2-(wait>=10 ? 28 : 16), (y+s/2)/2-32, flash ? COL_RED : "", wait);
                 pophudmatrix();
             }
         }

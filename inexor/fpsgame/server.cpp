@@ -829,7 +829,7 @@ namespace server
         static string cname[3];
         static int cidx = 0;
         cidx = (cidx+1)%3;
-        formatstring(cname[cidx], ci->state.aitype == AI_NONE ? "%s \fs\f5(%d)\fr" : "%s \fs\f5[%d]\fr", name, ci->clientnum);
+        formatstring(cname[cidx], ci->state.aitype == AI_NONE ? "%s %s(%d)%s" : "%s %s[%d]%s", name, COL_MAGENTA, ci->clientnum, COL_WHITE);
         return cname[cidx];
     }
 
@@ -1462,8 +1462,8 @@ namespace server
         string msg;
         if(val && authname) 
         {
-            if(authdesc && authdesc[0]) formatstring(msg, "%s claimed %s as '\fs\f5%s\fr' [\fs\f0%s\fr]", colorname(ci), name, authname, authdesc);
-            else formatstring(msg, "%s claimed %s as '\fs\f5%s\fr'", colorname(ci), name, authname);
+            if(authdesc && authdesc[0]) formatstring(msg, "%s claimed %s as '%s%s%s' [%s%s%s]", colorname(ci), name, COL_MAGENTA, authname, COL_WHITE, COL_MAGENTA, authdesc, COL_WHITE);
+            else formatstring(msg, "%s claimed %s as '%s%s%s'", colorname(ci), name, COL_MAGENTA, authname, COL_WHITE);
         } 
         else formatstring(msg, "%s %s %s", colorname(ci), val ? "claimed" : "relinquished", name);
         packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
@@ -1499,8 +1499,8 @@ namespace server
                 string kicker;
                 if(authname)
                 {
-                    if(authdesc && authdesc[0]) formatstring(kicker, "%s as '\fs\f5%s\fr' [\fs\f0%s\fr]", colorname(ci), authname, authdesc);
-                    else formatstring(kicker, "%s as '\fs\f5%s\fr'", colorname(ci), authname);
+                    if(authdesc && authdesc[0]) formatstring(kicker, "%s as '%s%s%s' [%s%s%s]", colorname(ci), COL_MAGENTA, authname, COL_WHITE, COL_MAGENTA, authdesc, COL_WHITE);
+                    else formatstring(kicker, "%s as '%s%s%s'", colorname(ci), COL_MAGENTA, authname, COL_WHITE);
                 }
                 else copystring(kicker, colorname(ci));
                 if(reason && reason[0]) sendservmsgf("%s kicked %s because: %s", kicker, colorname(vinfo), reason);

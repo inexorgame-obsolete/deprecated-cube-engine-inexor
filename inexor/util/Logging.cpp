@@ -7,6 +7,8 @@ void InexorConsoleHandler::handle(const el::LogDispatchData* handlePtr)
 {
     // NEVER LOG ANYTHING HERE!
     int type = 0;
+
+    // Convert loggers and levels to legacy conline types:
     switch (handlePtr->logMessage()->level())
     {
         default:
@@ -24,6 +26,7 @@ void InexorConsoleHandler::handle(const el::LogDispatchData* handlePtr)
             break;
     }
     conline(type, handlePtr->logMessage()->message().c_str());
+    // For the new UI logging system we will probably need to pass loggerid as well.
 }
 
 }

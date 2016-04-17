@@ -1688,7 +1688,7 @@ namespace game
                 }
                 else                    // new client
                 {
-                    conoutf("\f0join:\f7 %s", colorname(d, text));
+                    CLOG(INFO, "gameplay") << COL_GREEN << "join: " << colorname(d, text, COL_WHITE);
                     if(needclipboard >= 0) needclipboard++;
                 }
                 copystring(d->name, text, MAXNAMELEN+1);
@@ -2218,8 +2218,8 @@ namespace game
             case N_ANNOUNCE:
             {
                 int t = getint(p);
-                if     (t==I_QUAD)  { playsound(S_V_QUAD10, NULL, NULL, 0, 0, 0, -1, 0, 3000);  conoutf(CON_GAMEINFO, "\f2quad damage will spawn in 10 seconds!"); }
-                else if(t==I_BOOST) { playsound(S_V_BOOST10, NULL, NULL, 0, 0, 0, -1, 0, 3000); conoutf(CON_GAMEINFO, "\f2+10 health will spawn in 10 seconds!"); }
+                if     (t==I_QUAD)  { playsound(S_V_QUAD10, NULL, NULL, 0, 0, 0, -1, 0, 3000);  CLOG(INFO, "gameplay") << "quad damage will spawn in 10 seconds!"; }
+                else if(t==I_BOOST) { playsound(S_V_BOOST10, NULL, NULL, 0, 0, 0, -1, 0, 3000); CLOG(INFO, "gameplay") << "+10 health will spawn in 10 seconds!"; }
                 break;
             }
 

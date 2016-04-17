@@ -534,8 +534,8 @@ namespace game
         }
         else
         {
-            dname = colorname(d, NULL, "", "", "you");
-            aname = colorname(actor, NULL, "", "", "you");
+            dname = colorname(d, NULL, "", "you");
+            aname = colorname(actor, NULL, "", "you");
         }
         if(actor->type==ENT_AI)
             conoutf(contype, "\f2%s got killed by %s!", dname, aname);
@@ -645,7 +645,7 @@ namespace game
 
         fpsent *d = clients[cn];
         if(!d) return;
-        if(notify && d->name[0]) conoutf("\f4leave:\f7 %s", colorname(d));
+        if(notify && d->name[0]) CLOG(INFO, "gameplay") << COL_GREY << "leave: " << COL_WHITE << colorname(d);
         removeweapons(d);
         removetrackedparticles(d);
         removetrackeddynlights(d);
@@ -841,18 +841,20 @@ namespace game
         return false;
     }
 
-	/// add colored client number in [] brackets behind the name 
-	/// in case another player has the same name (duplicated name)
+    /// add colored client number in [] brackets behind the name 
+    /// in case another player has the same name (duplicated name)
     /// @warning not safe.
+    /// @warning resets color to white afterwards!
     /// @see duplicatename
-    const char *colorname(fpsent *d, const char *name, const char *prefix, const char *suffix, const char *alt)
+    const char *colorname(fpsent *d, const char *name, const char *prefix, const char *alt)
     {
         if(!name) name = alt && d == player1 ? alt : d->name; 
         bool dup = !name[0] || duplicatename(d, name, alt) || d->aitype != AI_NONE;
-        if(dup || prefix[0] || suffix[0])
+        if(dup || prefix[0])
         {
-            if(dup) return tempformatstring(d->aitype == AI_NONE ? "%s%s \fs\f5(%d)\fr%s" : "%s%s \fs\f5[%d]\fr%s", prefix, name, d->clientnum, suffix);
-            else return tempformatstring("%s%s%s", prefix, name, suffix);
+            // ugly workaround to be removed
+            if(dup) return tempformatstring(d->aitype == AI_NONE ? "%s%s %s(%d)%s" : "%s%s %s[%d]%s", prefix, name, COL_MAGENTA, d->clientnum, COL_WHITE);
+            else return tempformatstring("%s%s%s", prefix, name, COL_WHITE);
         }
         return name;
     }
@@ -860,9 +862,8 @@ namespace game
     /// color name depending on my team in red or blue
     const char *teamcolorname(fpsent *d, const char *alt)
     {
-        /// do not color names if no team mode or color mode is disabled
-        if(!teamcolortext || !m_teammode) return colorname(d, NULL, "", "", alt);
-        return colorname(d, NULL, isteam(d->team, player1->team) ? "\fs\f1" : "\fs\f3", "\fr", alt); 
+        if(!teamcolortext || !m_teammode) return colorname(d, NULL, "", alt);
+        return colorname(d, NULL, isteam(d->team, player1->team) ? COL_BLUE : COL_RED, alt);
     }
 
 	/// color player name blue if you have the same team (\f1) otherwise red (\f3)
@@ -1272,7 +1273,7 @@ namespace game
             case 1:
                 if(attr.length()>=4)
                 {
-                    if(g->buttonf(np >= attr[3] ? "\f3%d/%d " : "%d/%d ", 0xFFFFDD, NULL, np, attr[3])&G3D_UP) return true;
+                    if(g->buttonf("%s%d/%d ", np >= attr[3] ? COL_RED : "", 0xFFFFDD, NULL, np, attr[3])&G3D_UP) return true;
                 }
                 else if(g->buttonf("%d ", 0xFFFFDD, NULL, np)&G3D_UP) return true;
                 break;
