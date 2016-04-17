@@ -1136,17 +1136,17 @@ namespace game
     }
 
     /// send chat messages to server
-    void toserver(char *text) { conoutf(CON_CHAT, "%s:\f0 %s", colorname(player1), text); addmsg(N_TEXT, "rcs", player1, text); }
+    void toserver(char *text) { CLOG(INFO, "chat") << colorname(player1) << ": " << COL_GREEN << text; addmsg(N_TEXT, "rcs", player1, text); }
     COMMANDN(say, toserver, "C");
 
     /// send team messages to server
-    void sayteam(char *text) { conoutf(CON_TEAMCHAT, "%s:\f1 %s", colorname(player1), text); addmsg(N_SAYTEAM, "rcs", player1, text); }
+    void sayteam(char *text) { CLOG(INFO, "chat") << colorname(player1) << ": " << COL_BLUE << text; addmsg(N_SAYTEAM, "rcs", player1, text); }
     COMMAND(sayteam, "C");
 
     void sayprivate(int i, char *text)
     {
         if(!clients.inrange(i) || !clients[i]) { conoutf(CON_WARN, "no such player"); return; }
-        conoutf(CON_TEAMCHAT, "\f4pm to %s:\f6 %s", colorname(clients[i]), text); 
+        CLOG(INFO, "chat") << COL_GREY << "pm to " << colorname(clients[i]) << COL_GREY << ": " << COL_BLUE << text; 
         addmsg(N_PRIVMSG, "rcis", player1, i, text);
     }
     ICOMMAND(pm, "is", (int *i, char *text), sayprivate(*i, text));
@@ -1155,8 +1155,7 @@ namespace game
     /// this feature is not used on most servers (?)
     ICOMMAND(servcmd, "C", (char *cmd), addmsg(N_SERVCMD, "rs", cmd));
 
-	/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	/// network message parser
+    /// network message parser
 
 	/// format position in network packet
 	static void sendposition(fpsent *d, packetbuf &q)
@@ -1588,7 +1587,7 @@ namespace game
                 if(isignored(d->clientnum)) break;
                 if(d->state!=CS_DEAD && d->state!=CS_SPECTATOR)
                     particle_textcopy(d->abovehead(), text, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
-                conoutf(CON_CHAT, "%s:\f0 %s", colorname(d), text);
+                CLOG(INFO, "chat") << colorname(d) << ": " << COL_GREEN << text;
                 break;
             }
 
@@ -1614,7 +1613,7 @@ namespace game
                 if(!t || isignored(t->clientnum)) break;
                 if(t->state!=CS_DEAD && t->state!=CS_SPECTATOR)
                     particle_textcopy(t->abovehead(), text, PART_TEXT, 2000, 0x6496FF, 4.0f, -8);
-                conoutf(CON_TEAMCHAT, "%s:\f1 %s", colorname(t), text);
+                CLOG(INFO, "chat") << colorname(t) << ": " << COL_BLUE << text;
                 break;
             }
 
