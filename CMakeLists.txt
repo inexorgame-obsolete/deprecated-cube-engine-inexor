@@ -28,16 +28,10 @@ endif()
 
 message(STATUS "Using Toolchain File ${CMAKE_TOOLCHAIN_FILE}")
 
-# Project Name
-project(Inexor)
-
-# Use folders in the resulting project files.
-set_property(GLOBAL PROPERTY OS_FOLDERS ON)
 
 # Warning if paths aren't set well
 get_filename_component(MAINDIR "${CMAKE_SOURCE_DIR}" REALPATH)  # Main inexor folder
 get_filename_component(BINDIR "${CMAKE_BINARY_DIR}" REALPATH)   # Where it generates the projects into
-
 if(${MAINDIR} STREQUAL ${BINDIR})
     message(FATAL_ERROR "Keep your directories clean, don't generate the project-files in the main directory! ${MAINDIR} ${BINDIR}")
 endif()
@@ -45,6 +39,12 @@ endif()
 # Set the path to inexor/ explicitly to simplify some following definitions
 set(SOURCE_DIR ${MAINDIR}/inexor)
 
+
+# Project Name and start working in project scope (some things just work until now, some just work after this command)
+project(Inexor)
+
+# Use folders in the resulting project files.
+set_property(GLOBAL PROPERTY OS_FOLDERS ON)
 
 
 #### Platform Detection ####
@@ -252,18 +252,23 @@ message(STATUS "EXE_LINKER_FLAGS_RELEASE:       ${CMAKE_EXE_LINKER_FLAGS_RELEASE
 
 ### Install paths
 
-# Define where to move the binary by install
-if(OS_LINUX)
-  set(EXE_SUB_DIR "bin/linux/${PROJECT_ARCH}")
-elseif(OS_MACOSX)
-  set(EXE_SUB_DIR "bin/mac/${PROJECT_ARCH}")
-elseif(OS_WINDOWS)
-  set(EXE_SUB_DIR "bin/windows/win${PROJECT_ARCH}")
+option(INSTALL_LOCALLY "Install everything relative to this folder (${MAIN_DIR}), to not polute your global configuration." ON)
+
+if(INSTALL_LOCALLY)
+  set(CMAKE_INSTALL_PREFIX ${MAINDIR} CACHE PATH "" FORCE)
+  message(STATUS "Local installation chosen. No files will move outside this folder (${MAINDIR}). .. ${CMAKE_INSTALL_PREFIX}")
 endif()
 
-set(EXE_DIR "${PROJECT_SOURCE_DIR}/${EXE_SUB_DIR}")
+# Define where to move the binary by target 'install'
+if(OS_LINUX)
+  set(EXE_DIR "bin/linux/${PROJECT_ARCH}")
+elseif(OS_MACOSX)
+  set(EXE_DIR "bin/mac/${PROJECT_ARCH}")
+elseif(OS_WINDOWS)
+  set(EXE_DIR "bin/windows/win${PROJECT_ARCH}")
+endif()
 
-set(INSTALL_RESOURCES_DIR "${PROJECT_SOURCE_DIR}/bin/all")
+set(INSTALL_RESOURCES_DIR "bin/all")
 
 message(STATUS "Generating Project-Files to ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS "Resulting Executable goes to ${EXE_DIR}")
@@ -272,11 +277,10 @@ message(STATUS "Resulting Executable goes to ${EXE_DIR}")
 add_subdirectory(vendor)
 add_subdirectory(inexor)
 
-
 install(FILES ${INSTALL_SHARED_LIBS} ${INSTALL_EXES} DESTINATION ${EXE_DIR})
 install(FILES ${INSTALL_RESOURCES} DESTINATION ${INSTALL_RESOURCES_DIR})
 
 # shipped portable stuff on win (dirty but temporarily)
 if(OS_WINDOWS)
-  install(DIRECTORY ${INSTALL_PORTABLE_DIR} DESTINATION "${PROJECT_SOURCE_DIR}/bin/windows/all")
+  install(DIRECTORY ${INSTALL_PORTABLE_DIR} DESTINATION "bin/windows/all")
 endif()
