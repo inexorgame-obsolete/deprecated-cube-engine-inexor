@@ -563,17 +563,17 @@ struct captureclientmode : clientmode
         {
             if(strcmp(b.owner, owner))
             {
-                if(!b.name[0]) conoutf(CON_GAMEINFO, "%s captured base %d", teamcolor(owner, owner), i+1);
-                else if(basenumbers) conoutf(CON_GAMEINFO, "%s captured %s (%d)", teamcolor(owner, owner), b.name, i+1);
-                else conoutf(CON_GAMEINFO, "%s captured %s", teamcolor(owner, owner), b.name);
+                if(!b.name[0]) CLOG(INFO, "gameplay") << teamcolor(owner, owner) << " captured base " << (i+1);
+                else if(basenumbers) CLOG(INFO, "gameplay") << teamcolor(owner, owner) << " captured " << b.name << '(' << (i+1) << ')';
+                else CLOG(INFO, "gameplay") << teamcolor(owner, owner) << " captured " << b.name;
                 if(!strcmp(owner, player1->team)) playsound(S_V_BASECAP);
             }
         }
         else if(b.owner[0])
         {
-            if(!b.name[0]) conoutf(CON_GAMEINFO, "%s lost base %d", teamcolor(b.owner, b.owner), i+1);
-            else if(basenumbers) conoutf(CON_GAMEINFO, "%s lost %s (%d)", teamcolor(b.owner, b.owner), b.name, i+1);
-            else conoutf(CON_GAMEINFO, "%s lost %s", teamcolor(b.owner, b.owner), b.name);
+            if(!b.name[0]) CLOG(INFO, "gameplay") << teamcolor(b.owner, b.owner) << " lost base " << (i+1);
+            else if(basenumbers) CLOG(INFO, "gameplay") << teamcolor(b.owner, b.owner) << " lost " << b.name << '(' << (i+1) << ')';
+            else CLOG(INFO, "gameplay") << teamcolor(b.owner, b.owner) << " lost " << b.name;
             if(!strcmp(b.owner, player1->team)) playsound(S_V_BASELOST);
         }
         if(strcmp(b.owner, owner)) particle_splash(PART_SPARK, 200, 250, b.ammopos, owner[0] ? (strcmp(owner, player1->team) ? 0x802020 : 0x2020FF) : 0x208020, 0.24f);
@@ -592,7 +592,7 @@ struct captureclientmode : clientmode
     void setscore(int base, const char *team, int total)
     {
         findscore(team).total = total;
-        if(total>=10000) conoutf(CON_GAMEINFO, "%s captured all bases", teamcolor(team, team));
+        if(total>=10000) CLOG(INFO, "gameplay") << teamcolor(team, team) << " captured all bases";
         else if(bases.inrange(base))
         {
             baseinfo &b = bases[base];

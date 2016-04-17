@@ -175,6 +175,8 @@ namespace entities
 
     void pickupeffects(int n, fpsent *d)
     {
+        using inexor::util::embraced;
+
         if(!ents.inrange(n)) return;
         int type = ents[n]->type;
         if(type<I_SHELLS || type>I_QUAD) return;
@@ -192,22 +194,22 @@ namespace entities
         if(d==player1) switch(type)
         {
             case I_BOOST:
-                conoutf(CON_GAMEINFO, "\f2you have a permanent +10 health bonus! (%d)", d->maxhealth);
+                CLOG(INFO, "gameplay") << "you have a permanent +10 health bonus! " << embraced(d->maxhealth, "(", ")");
                 playsound(S_V_BOOST, NULL, NULL, 0, 0, 0, -1, 0, 3000);
                 break;
 
             case I_QUAD:
-                conoutf(CON_GAMEINFO, "\f2you got the quad!");
+                CLOG(INFO, "gameplay") << "you got the quad!";
                 playsound(S_V_QUAD, NULL, NULL, 0, 0, 0, -1, 0, 3000);
                 break;
 
             case I_BOMBRADIUS:
-                conoutf(CON_GAMEINFO, "\f2you have a permanent +1 damage radius bonus!");
+                CLOG(INFO, "gameplay") << "you have a permanent +1 damage radius bonus!";
                 playsound(S_V_QUAD, NULL, NULL, 0, 0, -1, 0, 3000); // TODO: other sound
                 break;
 
             case I_BOMBDELAY:
-                conoutf(CON_GAMEINFO, "\f2your bombs explode faster!");
+                CLOG(INFO, "gameplay") << "your bombs explode faster!";
                 playsound(S_ITEMHEALTH, NULL, NULL, 0, 0, -1, 0, 3000);
                 break;
         }
@@ -330,7 +332,7 @@ namespace entities
                 if(d!=player1) break;
                 if(n==respawnent) break;
                 respawnent = n;
-                conoutf(CON_GAMEINFO, "\f2respawn point set!");
+                CLOG(INFO, "gameplay") << "respawn point set!";
                 playsound(S_V_RESPAWNPOINT);
                 break;
 
@@ -371,7 +373,7 @@ namespace entities
         {
             d->quadmillis = 0;
             playsound(S_PUPOUT, d==player1 ? NULL : &d->o);
-            if(d==player1) conoutf(CON_GAMEINFO, "\f2quad damage is over");
+            if(d==player1) CLOG(INFO, "gameplay") << "quad damage is over";
         }
     }
 

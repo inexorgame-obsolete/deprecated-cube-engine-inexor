@@ -2,6 +2,7 @@
 
 #include "inexor/fpsgame/game.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
+#include "inexor/util/Logging.hpp"
 
 namespace game
 {
@@ -392,7 +393,7 @@ namespace game
             if(wait>0)
             {
                 lastspawnattempt = lastmillis;
-                //conoutf(CON_GAMEINFO, "\f2you must wait %d second%s before respawn!", wait, wait!=1 ? "s" : "");
+                //CLOG(INFO, "gameplay") << "you must wait %d second%s before respawn!", wait, wait!=1 ? "s" : "");
                 return;
             }
             if(lastmillis < player1->lastpain + spawnwait) return;
@@ -405,7 +406,7 @@ namespace game
             respawnself();
             if(m_classicsp)
             {
-                conoutf(CON_GAMEINFO, "\f2You wasted another life! The monsters stole your armour and some ammo...");
+                CLOG(INFO, "gameplay") << "You wasted another life! The monsters stole your armour and some ammo...";
                 loopi(NUMGUNS) if(i!=GUN_PISTOL && (player1->ammo[i] = savedammo[i]) > 5) player1->ammo[i] = max(player1->ammo[i]/3, 5);
             }
         }
@@ -571,13 +572,14 @@ namespace game
             intermission = true;
             player1->attacking = false;
             if(cmode) cmode->gameover();
-            conoutf(CON_GAMEINFO, "\f2intermission:");
-            conoutf(CON_GAMEINFO, "\f2game has ended!");
-            if(m_ctf) conoutf(CON_GAMEINFO, "\f2player frags: %d, flags: %d, deaths: %d", player1->frags, player1->flags, player1->deaths);
-            else if(m_collect) conoutf(CON_GAMEINFO, "\f2player frags: %d, skulls: %d, deaths: %d", player1->frags, player1->flags, player1->deaths);
-            else conoutf(CON_GAMEINFO, "\f2player frags: %d, deaths: %d", player1->frags, player1->deaths);
+            CLOG(INFO, "gameplay") << "intermission:";
+            CLOG(INFO, "gameplay") << "game has ended!";
+            if(m_ctf) CLOG(INFO, "gameplay") << "player frags: " << player1->frags << ", flags: " << player1->flags << ", deaths: " << player1->deaths;
+            else if(m_collect) CLOG(INFO, "gameplay") << "player frags: " << player1->frags << ", skulls: " << player1->flags << ", deaths: " << player1->deaths;
+            else CLOG(INFO, "gameplay") << "player frags: " << player1->frags << ", deaths: " << player1->deaths;
+
             int accuracy = (player1->totaldamage*100)/max(player1->totalshots, 1);
-            conoutf(CON_GAMEINFO, "\f2player total damage dealt: %d, damage wasted: %d, accuracy(%%): %d", player1->totaldamage, player1->totalshots-player1->totaldamage, accuracy);
+            CLOG(INFO, "gameplay") << "player total damage dealt: " << player1->totaldamage << ", damage wasted: " << (player1->totalshots-player1->totaldamage) << ", accuracy: " << accuracy << "%";
             if(m_sp) spsummary(accuracy);
 
             showscores(true);
@@ -707,18 +709,18 @@ namespace game
             cmode->setup();
         }
 
-        conoutf(CON_GAMEINFO, "\f2game mode is %s", server::modename(gamemode));
+        CLOG(INFO, "gameplay") << "game mode is " << server::modename(gamemode);
 
         if(m_sp)
         {
             defformatstring(scorename, "bestscore_%s", getclientmap());
             const char *best = getalias(scorename);
-            if(*best) conoutf(CON_GAMEINFO, "\f2try to beat your best score so far: %s", best);
+            if(*best) CLOG(INFO, "gameplay") << "try to beat your best score so far: " << best;
         }
         else
         {
             const char *info = m_valid(gamemode) ? gamemodes[gamemode - STARTGAMEMODE].info : NULL;
-            if(showmodeinfo && info) conoutf(CON_GAMEINFO, "\f0%s", info);
+            if(showmodeinfo && info) CLOG(INFO, "gameplay") << COL_GREEN << info;
         }
 
         if(player1->playermodel != playermodel) switchplayermodel(playermodel);

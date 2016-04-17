@@ -1213,15 +1213,11 @@ int main(int argc, char **argv)
 {
 
     // Load logging configuration from file
-    START_EASYLOGGINGPP(argc, argv);
+   // START_EASYLOGGINGPP(argc, argv);
     el::Loggers::configureFromGlobal("inexor_logging.conf");
     el::Helpers::installLogDispatchCallback<inexor::util::InexorConsoleHandler>("InexorConsoleHandler");
     el::Loggers::addFlag(el::LoggingFlag::ColoredTerminalOutput);
 
-    LOG(INFO) << "Hello, client";
-    CLOG(INFO, "gameplay") << "yoyo other client";
-
-    // setlogfile(NULL);
     UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // We only need to initialse it, not use it.
 
     int dedicated = 0;

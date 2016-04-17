@@ -5,7 +5,7 @@
 #define ELPP_THREAD_SAFE
 // #define ELPP_UNICODE
 #define ELPP_FORCE_USE_STD_THREAD
-// #define ELPP_DEFAULT_LOG_FILE
+//#define ELPP_NO_DEFAULT_LOG_FILE
 #define ELPP_DISABLE_DEFAULT_CRASH_HANDLING
 #define ELPP_WINSOCK2
 
@@ -29,13 +29,18 @@ namespace util {
     #define COL_WHITE   "\x1b[38;2;255;255;255m"
 
     /// Helper class to allow the writing of std::cout << embraced("I should be inside curly brackets", "{", "}");
+    /// Same works for numbers, but it may destroy std::setprecision.
     struct embraced
     {
-        const char *_text,
-                   *_leading,  // e.g. "{"
+        const std::string _text;
+        const char *_leading,  // e.g. "{"
                    *_trailing; // e.g. "}"
 
         embraced(const char *text, const char *leading, const char *trailing) : _text(text), _leading(leading), _trailing(trailing) {}
+
+        /// Also allow all kind of number formats beeing embraced:
+        template<typename T>
+        embraced(T number, const char *leading, const char *trailing) : _text(std::to_string(number)), _leading(leading), _trailing(trailing) {}
 
         /// Construct a std::string from this class.
         operator std::string() const
