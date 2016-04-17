@@ -45,7 +45,23 @@ endif()
 # Set the path to inexor/ explicitly to simplify some following definitions
 set(SOURCE_DIR ${MAINDIR}/inexor)
 
-### Platform Detection:
+
+
+#### Platform Detection ####
+
+# Determine the platform.
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
+  set(OS_MACOSX 1)
+  set(OS_POSIX 1)
+  message(STATUS "Platform: OSX")
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+  set(OS_LINUX 1)
+  set(OS_POSIX 1)
+  message(STATUS "Platform: Linux")
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+  set(OS_WINDOWS 1)
+  message(STATUS "Platform: Windows")
+endif()
 
 # Determine the project architecture.
 if(NOT DEFINED PROJECT_ARCH)
@@ -54,39 +70,45 @@ if(NOT DEFINED PROJECT_ARCH)
   else()
     set(PROJECT_ARCH "x86")
   endif()
-
   message(STATUS "No PROJECT_ARCH value specified, using ${PROJECT_ARCH}")
 endif()
 
-if (PROJECT_ARCH STREQUAL "x86_64")
+if(PROJECT_ARCH STREQUAL "x86_64")
   set(X64 1)
 else()
   set(X32 1)
 endif()
 
-# Determine the platform.
-if("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
-  set(OS_MACOSX 1)
-  set(OS_POSIX 1)
-  message(STATUS "Platform: OSX ${PROJECT_ARCH}")
-elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
-  set(OS_LINUX 1)
-  set(OS_POSIX 1)
-  message(STATUS "Platform: Linux ${PROJECT_ARCH}")
-elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
-  set(OS_WINDOWS 1)
-  message(STATUS "Platform: Windows ${PROJECT_ARCH}")
+  # Rename project_arch from x86_64 to 64 and x86 to 32 on windows:
+if(OS_WINDOWS)
+  if(X64)
+    set(PROJECT_ARCH "64")
+  else()
+    set(PROJECT_ARCH "32")
+  endif()
 endif()
 
-# Allow C++ programs to use stdint.h macros specified in the C99 standard that
-# aren't in the C++ standard (e.g. UINT8_MAX, INT64_MIN, etc).
-add_definitions(-D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS)
+message(STATUS "PROJECT_ARCH: ${PROJECT_ARCH}")
 
-#### GCC, Clang ####
+# Determine the compiler.
+if(CMAKE_CXX_COMPILER_ID     MATCHES "GNU")
+  set(COMPILER_GNU 1)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  set(COMPILER_CLANG 1)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+  set(COMPILER_MSVC 1)
+  # Currently we only support VS 2015 natively
+  if(NOT MSVC_VERSION EQUAL 1900)
+      message(WARNING "Use Visual Studio 2015 in order to compile Inexor. (Otherwise you would need to recompile the dependencies yourself)")
+  endif()
+else()
+  message(FATAL_ERROR "Could not detect compiler, please get in contact with the devs.")
+endif()
 
-# TODO: Unify flags and lib detection on ALL plattforms as much as possible
-# TODO: Use a more declarative style, like flags(COMPILER CXX MINGW += ... )\n flags(LINKER POSIX += ...) ...
-if(OS_LINUX OR (OS_WINDOWS AND NOT MSVC))
+
+#### Compiler and Linker flags for the different compilers ####
+
+if(COMPILER_CLANG OR COMPILER_GNU)
     set(I_LIBTYPE                 SHARED)
     # -fomit-frame-pointer            = Don't keep the frame pointer for functions that don't need one
     # -fno-strict-aliasing            = Avoid assumptions regarding non-aliasing of objects of different types
@@ -130,89 +152,7 @@ if(OS_LINUX OR (OS_WINDOWS AND NOT MSVC))
         set(I_LINKER_FLAGS          "${I_LINKER_FLAGS} -m32")
     endif()
 
-    # Allow the Large File Support (LFS) interface to replace the old interface.
-    add_definitions(-D_FILE_OFFSET_BITS=64)
-
-    # Define where to move the binary by install
-    set(EXE_SUB_DIR "bin/linux/${PROJECT_ARCH}")
-endif()
-
-#### Visual Studio. ####
-
-if(OS_WINDOWS)
-
-    ## Cross compilation flags already set
-    if(MSVC)
-        set(I_LIBTYPE                 STATIC)
-        # /MP                                   = Multiprocess compilation
-        # /Gy                                   = Enable function-level linking
-        # /Zi                                   = Enable program database
-        # /fp:fast                              = Calculate with less precise floating point values
-        # /EHsc                                 = assume extern C stuff never throws exceptions
-        # /W2                                   = Warning level 2
-        # /wd"4091"                             = Ignore "typedef .. where no variable gets declared ingored" warning
-        # /wd"4244"                             = Ignore "conversion from 'int' to 'float', possible loss of data" warning
-        # /wd"4251"                             = Ignore "class 'type' needs to have dll-interface .." warning
-        # /wd"4267"                             = Ignore "conversion from 'size_t' to 'int', possible loss of data" warning
-        # /wd"4305"                             = Ignore "truncation from 'double' to 'float'" warning
-        # /wd"4996"                             = Ignore "Function call with parameters that may be unsafe" warning
-        set(I_COMPILER_FLAGS          "-MP -Gy -Zi -fp:fast -EHsc -W2 -wd\"4091\"  -wd\"4244\" -wd\"4251\" -wd\"4267\" -wd\"4305\" -wd\"4996\"")
-        # /MTd                                  = Multithreaded debug runtime
-        # /Od                                   = Disable optimizations
-        # /RTC1                                 = Enable basic run-time checks
-        # -D_DEBUG                              = Debug build
-        set(I_COMPILER_FLAGS_DEBUG    "-MTd -RTC1 -Od -D_DEBUG")
-        # /MT                                   = Multithreaded release runtime
-        # /O2                                   = Optimize for maximum speed
-        # /Ob2                                  = Inline any suitable function
-        # /GF                                   = Enable string pooling
-        # /D NDEBUG /D _NDEBUG                  = Not a debug build, skip code passages meant for debug.
-        # /GL                                   = Whole Program Optimization: further optimize the program in linker stage (but calling the compiler).
-        set(I_COMPILER_FLAGS_RELEASE  "-MT -O2 -Ob2 -GF -DNDEBUG -D_NDEBUG -GL")
-        # /DEBUG                                = Generate debug information (even for release builds for our stackwalker)
-        # /MANIFEST:NO                          = No default manifest
-        # /SAFESEH:NO                           = Do Not Create a table of safe exception handlers (binary incompatible)
-        set(I_LINKER_FLAGS            "-MANIFEST:NO -SAFESEH:NO -DEBUG ")
-        # /OPT:REF                              = Eliminate Unreferenced Data (to revert changes to the binary caused by /DEBUG)
-        # /OPT:ICF                              = Remove Redundant COMDATs (to revert changes to the binary caused by /DEBUG)
-        # /INCREMENTAL:NO                       = Linking incremental (faster) does not work anymore with the previous two optimizations
-        # /LTCG                                 = Link-time Code Generation: further optimisations in the linker stage.
-        set(I_LINKER_FLAGS_RELEASE    "-LTCG -OPT:REF -OPT:ICF -INCREMENTAL:NO")
-
-        # Add the library path as well
-        foreach(dir ${CMAKE_LIBRARY_PATH}) # We need to do this seperately since LIBPATH does not accept more than one dir at once
-            set(I_EXE_LINKER_FLAGS "${I_EXE_LINKER_FLAGS} -LIBPATH:${dir}")
-        endforeach()
-    endif()
-
-    # Standard definitions
-    # -DWIN32 -D_WIN32 -D_WINDOWS           = Windows platform
-    # -DNOMINMAX                            = Use the standard's templated min/max
-    # -D_WIN32_WINNT=0x0501                 = Target is Windows XP
-    # -D_MATH_DEFINES_DEFINED               = We define our own math constants (PI, ln(2)...) this fixes warnings when including math.h
-    add_definitions(-DWIN32 -D_WIN32 -D_WINDOWS -DWINDOWS -DNOMINMAX -D_WIN32_WINNT=0x0501 -D_MATH_DEFINES_DEFINED)
-    if(X64)
-        add_definitions(-DWIN64)
-    endif()
-
-    # Currently we only support VS 2015
-    if(MSVC AND NOT MSVC_VERSION EQUAL 1900)
-        message(WARNING "Use Visual Studio 2015 in order to compile Inexor. (Otherwise you would need to recompile the dependencies yourself)")
-    endif()
-
-    # Rename project_arch from x86_64 to 64 and x86 to 32 on windows:
-    if(X64)
-        set(PROJECT_ARCH "64")
-    else()
-        set(PROJECT_ARCH "32")
-    endif()
-
-    # Define where to move the binary by install
-    set(EXE_SUB_DIR "bin/windows/win${PROJECT_ARCH}")
-endif()
-
-# Ability to use your environment own cflags/ldflags.. as well
-if(NOT MSVC)
+	# Ability to use your environment own cflags/ldflags.. as well
     option( USE_ENVFLAGS "Enable or Disable Use of environment own Compiler/Linker-Flags" ON)
 
     if(USE_ENVFLAGS)
@@ -221,6 +161,72 @@ if(NOT MSVC)
         set(I_LINKER_FLAGS          "${I_LINKER_FLAGS} $ENV{LDFLAGS}")
     endif()
 endif()
+
+
+if(COMPILER_MSVC)
+    # /MP                                   = Multiprocess compilation
+    # /Gy                                   = Enable function-level linking
+    # /Zi                                   = Enable program database
+    # /fp:fast                              = Calculate with less precise floating point values
+    # /EHsc                                 = assume extern C stuff never throws exceptions
+    # /W2                                   = Warning level 2
+    # /wd"4091"                             = Ignore "typedef .. where no variable gets declared ingored" warning
+    # /wd"4244"                             = Ignore "conversion from 'int' to 'float', possible loss of data" warning
+    # /wd"4251"                             = Ignore "class 'type' needs to have dll-interface .." warning
+    # /wd"4267"                             = Ignore "conversion from 'size_t' to 'int', possible loss of data" warning
+    # /wd"4305"                             = Ignore "truncation from 'double' to 'float'" warning
+    # /wd"4996"                             = Ignore "Function call with parameters that may be unsafe" warning
+  set(I_COMPILER_FLAGS          "-MP -Gy -Zi -fp:fast -EHsc -W2 -wd\"4091\"  -wd\"4244\" -wd\"4251\" -wd\"4267\" -wd\"4305\" -wd\"4996\"")
+    # /MTd                                  = Multithreaded debug runtime
+    # /Od                                   = Disable optimizations
+    # /RTC1                                 = Enable basic run-time checks
+    # -D_DEBUG                              = Debug build
+  set(I_COMPILER_FLAGS_DEBUG    "-MTd -RTC1 -Od -D_DEBUG")
+    # /MT                                   = Multithreaded release runtime
+    # /O2                                   = Optimize for maximum speed
+    # /Ob2                                  = Inline any suitable function
+    # /GF                                   = Enable string pooling
+    # /D NDEBUG /D _NDEBUG                  = Not a debug build, skip code passages meant for debug.
+    # /GL                                   = Whole Program Optimization: further optimize the program in linker stage (but calling the compiler).
+  set(I_COMPILER_FLAGS_RELEASE  "-MT -O2 -Ob2 -GF -DNDEBUG -D_NDEBUG -GL")
+    # /DEBUG                                = Generate debug information (even for release builds for our stackwalker)
+    # /MANIFEST:NO                          = No default manifest
+    # /SAFESEH:NO                           = Do Not Create a table of safe exception handlers (binary incompatible)
+  set(I_LINKER_FLAGS            "-MANIFEST:NO -SAFESEH:NO -DEBUG ")
+    # /OPT:REF                              = Eliminate Unreferenced Data (to revert changes to the binary caused by /DEBUG)
+    # /OPT:ICF                              = Remove Redundant COMDATs (to revert changes to the binary caused by /DEBUG)
+    # /INCREMENTAL:NO                       = Linking incremental (faster) does not work anymore with the previous two optimizations
+    # /LTCG                                 = Link-time Code Generation: further optimisations in the linker stage.
+  set(I_LINKER_FLAGS_RELEASE    "-LTCG -OPT:REF -OPT:ICF -INCREMENTAL:NO")
+
+  # Add the library path as well
+  foreach(dir ${CMAKE_LIBRARY_PATH}) # We need to do this seperately since LIBPATH does not accept more than one dir at once
+    set(I_EXE_LINKER_FLAGS "${I_EXE_LINKER_FLAGS} -LIBPATH:${dir}")
+  endforeach()
+endif()
+
+#### Platform specific definitions ####
+
+# Allow C++ programs to use stdint.h macros specified in the C99 standard that
+# aren't in the C++ standard (e.g. UINT8_MAX, INT64_MIN, etc).
+add_definitions(-D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS)
+
+if(OS_POSIX)
+  # Allow the Large File Support (LFS) interface to replace the old interface.
+  add_definitions(-D_FILE_OFFSET_BITS=64)
+endif()
+
+if(OS_WINDOWS)
+  # -DWIN32 -D_WIN32 -D_WINDOWS           = Windows platform
+  # -DNOMINMAX                            = Use the standard's templated min/max
+  # -D_WIN32_WINNT=0x0501                 = Target is Windows XP
+  # -D_MATH_DEFINES_DEFINED               = We define our own math constants (PI, ln(2)...) this fixes warnings when including math.h
+  add_definitions(-DWIN32 -D_WIN32 -D_WINDOWS -DWINDOWS -DNOMINMAX -D_WIN32_WINNT=0x0501 -D_MATH_DEFINES_DEFINED)
+  if(X64)
+    add_definitions(-DWIN64)
+  endif()	
+endif()
+
 
 # Merge compiler/linker flags.
 set(CMAKE_C_FLAGS                     "${I_COMPILER_FLAGS} ${I_C_COMPILER_FLAGS}")
@@ -233,7 +239,7 @@ set(CMAKE_EXE_LINKER_FLAGS_RELEASE    "${I_LINKER_FLAGS_RELEASE} ${I_EXE_LINKER_
 
 message(STATUS "Current mode:                   ${CMAKE_BUILD_TYPE}")
 message(STATUS "Compiler:                       ${CMAKE_CXX_COMPILER_ID}")
-
+get_directory_property(DEFINITIONS              COMPILE_DEFINITIONS)
 message(STATUS "Compiler definitions:           ${DEFINITIONS}")
 
 message(STATUS "C_FLAGS:                        ${CMAKE_C_FLAGS}")
@@ -246,16 +252,26 @@ message(STATUS "EXE_LINKER_FLAGS_RELEASE:       ${CMAKE_EXE_LINKER_FLAGS_RELEASE
 
 ### Install paths
 
-# Set output path for the compiled executable
+# Define where to move the binary by install
+if(OS_LINUX)
+  set(EXE_SUB_DIR "bin/linux/${PROJECT_ARCH}")
+elseif(OS_MACOSX)
+  set(EXE_SUB_DIR "bin/mac/${PROJECT_ARCH}")
+elseif(OS_WINDOWS)
+  set(EXE_SUB_DIR "bin/windows/win${PROJECT_ARCH}")
+endif()
+
 set(EXE_DIR "${PROJECT_SOURCE_DIR}/${EXE_SUB_DIR}")
 
 set(INSTALL_RESOURCES_DIR "${PROJECT_SOURCE_DIR}/bin/all")
 
 message(STATUS "Generating Project-Files to ${CMAKE_CURRENT_BINARY_DIR}")
-message(STATUS " - Resulting Executable goes to ${EXE_DIR}")
+message(STATUS "Resulting Executable goes to ${EXE_DIR}")
 
+### Go for the subfolders.
 add_subdirectory(vendor)
 add_subdirectory(inexor)
+
 
 install(FILES ${INSTALL_SHARED_LIBS} ${INSTALL_EXES} DESTINATION ${EXE_DIR})
 install(FILES ${INSTALL_RESOURCES} DESTINATION ${INSTALL_RESOURCES_DIR})
