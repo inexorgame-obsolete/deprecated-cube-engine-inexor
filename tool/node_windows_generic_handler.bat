@@ -3,7 +3,6 @@
 :: This is a wrapper over the node stuff, we set our node environment settings here and
 :: just pass the specific tasks as arguments (when calling this bat)
 
-Setlocal EnableDelayedExpansion
 
 :: %~dp0 is the place of the current script, since %cd% wont work then.
 set "MAINDIR=%~dp0.."
@@ -23,11 +22,11 @@ if not defined FOUND_NODE (
     :: which is in the normal bin dir
     :: + go for the shipped npm which is in the platform submodule since we ship it for developers
     set "PATH=%PATH%;%MAINDIR%\bin\windows\%INEXOR_ARCH%;%MAINDIR%\platform\bin\windows\all\npm"
-    set "NODE_PATH=%MAINDIR%\platform\bin\windows\all\npm;%MAINDIR%\node;%MAINDIR%\node\lib;%MAINDIR%\node\webserver"
+    set "NODE_PATH=%MAINDIR%\platform\bin\windows\all\npm;%MAINDIR%\node;%MAINDIR%\node\lib;"
     set "NPM_EXECUTEABLE=%MAINDIR%\platform\bin\windows\all\npm\npm"
     echo using shipped node
 ) else (
-    set "NODE_PATH=%MAINDIR%\node;%MAINDIR%\node\lib;%MAINDIR%\node\webserver"
+    set "NODE_PATH=%MAINDIR%\node;%MAINDIR%\node\lib;"
     set "NPM_EXECUTEABLE=npm"
     echo found node
 )
@@ -44,10 +43,9 @@ if not defined FOUND_GIT (
 
 cd "%MAINDIR%\node"
 
-echo %cd%
 :: Execute the passed arguments:
+Setlocal EnableDelayedExpansion
 %*
+Setlocal DisableDelayedExpansion
 
 call cd "%MAINDIR%"
-
-echo %cd%

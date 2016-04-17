@@ -28,6 +28,8 @@ mkdir %nightly_name%
 :: Now we want to include our node files as well:
 call tool\node_windows_update_npm.bat
 
+cd %MAIN_FOLDER%
+
 :: simplifies variable expansion (batch is stack based), needs to be behind our node_windows_update_npm, bc we need to disable it there.
 setlocal EnableDelayedExpansion
 

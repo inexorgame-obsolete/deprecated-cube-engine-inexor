@@ -21,7 +21,8 @@ init:
 
 # scripts that run after cloning repository
 install:
-  - cmd: cd C:\projects\inexor-game
+  - cmd: set "MAIN_FOLDER=C:\projects\inexor-game"
+  - cmd: cd %MAIN_FOLDER%
   - cmd: git submodule update --init
 
 # scripts to run before build
