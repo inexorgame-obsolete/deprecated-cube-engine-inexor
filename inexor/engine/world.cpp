@@ -313,7 +313,7 @@ bool undonext = true;
 
 bool noentedit()
 {
-    if(!editmode) { LOG(ERROR) << "operation only allowed in edit mode"; return true; }
+    if(!editmode) { spdlog::get("global")->error() << "operation only allowed in edit mode"; return true; }
     return !entediting;
 }
 
@@ -892,7 +892,7 @@ void delent()
 int findtype(char *what)
 {
     for(int i = 0; *entities::entname(i); i++) if(strcmp(what, entities::entname(i))==0) return i;
-    LOG(ERROR) << "unknown entity type " << quoted(what);
+    spdlog::get("global")->error() << "unknown entity type " << quoted(what);
     return ET_EMPTY;
 }
 
@@ -1260,7 +1260,7 @@ bool emptymap(int scale, bool force, const char *mname, bool usecfg)    // main 
 {
     if(!force && !editmode) 
     {
-        LOG(ERROR) << "newmap only allowed in edit mode";
+        spdlog::get("global")->error() << "newmap only allowed in edit mode";
         return false;
     }
 
@@ -1297,7 +1297,7 @@ bool enlargemap(bool force)
 {
     if(!force && !editmode)
     {
-        LOG(ERROR) << "mapenlarge only allowed in edit mode";
+        spdlog::get("global")->error() << "mapenlarge only allowed in edit mode";
         return false;
     }
     if(worldsize >= 1<<16) return false;

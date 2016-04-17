@@ -32,7 +32,7 @@ void loadsky(const char *basename, Texture *texs[6])
                 texs[i] = textureload(name, 3, true, false);
             }
         }
-        if(texs[i]==notexture) LOG(ERROR) << "could not load side " << side << " of sky texture " << basename;
+        if(texs[i]==notexture) spdlog::get("global")->error() << "could not load side " << side << " of sky texture " << basename;
     }
 }
 
@@ -55,7 +55,7 @@ Texture *loadskyoverlay(const char *basename)
             t = textureload(name, 0, true, false);
         }
     }
-    if(t==notexture) LOG(ERROR) << "could not load sky overlay texture " << basename;
+    if(t==notexture) spdlog::get("global")->error() << "could not load sky overlay texture " << basename;
     return t;
 }
 

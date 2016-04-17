@@ -54,7 +54,7 @@ void genvbo(int type, void *buf, int len, vtxarray **vas, int numva)
     vboinfo &vbi = vbos[vbo]; 
     vbi.uses = numva;
  
-    if(debugvbo) LOG(DEBUG) << "vbo " << vbo << ": type " << type << " size " << len << ", " << numva << " uses";
+    if(debugvbo) spdlog::get("global")->debug() << "vbo " << vbo << ": type " << type << " size " << len << ", " << numva << " uses";
 
     loopi(numva)
     {

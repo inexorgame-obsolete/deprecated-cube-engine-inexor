@@ -162,10 +162,13 @@ void optiface(uchar *p, cube &c)
 void printcube()
 {
     cube &c = lookupcube(lu); // assume this is cube being pointed at
-    LOG(DEBUG) << lu << " @" << lusize;
-    LOG(DEBUG) << " x  " << std::hex << std::setprecision(8) << c.faces[0];
-    LOG(DEBUG) << " y  " << std::hex << std::setprecision(8) << c.faces[1];
-    LOG(DEBUG) << " z  " << std::hex << std::setprecision(8) << c.faces[2];
+    spdlog::get("global")->debug() << lu << " @" << lusize;
+    spdlog::get("global")->debug(" x  {0:8x}", c.faces[0]);
+    spdlog::get("global")->debug(" y  {0:8x}", c.faces[1]);
+    spdlog::get("global")->debug(" z  {0:8x}", c.faces[2]);
+    //spdlog::get("global")->debug() << " x  " << std::hex << std::setprecision(8) << c.faces[0];
+    //spdlog::get("global")->debug() << " y  " << std::hex << std::setprecision(8) << c.faces[1];
+    //spdlog::get("global")->debug() << " z  " << std::hex << std::setprecision(8) << c.faces[2];
 }
 
 COMMAND(printcube, "");

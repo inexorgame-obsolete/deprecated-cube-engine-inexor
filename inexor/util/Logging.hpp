@@ -8,6 +8,7 @@
 #define ELPP_DISABLE_DEFAULT_CRASH_HANDLING
 #define ELPP_WINSOCK2
 
+#include "spdlog/spdlog.h"
 #include <easylogging++.h>
 #include <iomanip>
 
@@ -74,6 +75,8 @@ namespace util {
         InexorConsoleHandler() : el::LogDispatchCallback() {}
         void handle(const el::LogDispatchData* handlePtr);
     };
+
+    void initLoggers();
 
 }
 }

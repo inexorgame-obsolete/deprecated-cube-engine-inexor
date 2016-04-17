@@ -17,9 +17,12 @@ CefSubsystem::CefSubsystem() {
     const CefMainArgs args;
     int exit_code = CefExecuteProcess(args, cef_app, NULL);
     if (exit_code >= 0) {
+        /*
         std::string msg = fmt << "Forking the CEF process "
             << "yielded a non zero exit code: "
             << exit_code << ".";
+        */
+        std::string msg = "Forking the CEF process yielded a non zero exit code";
         throw CefProcessException(msg);
     }
 

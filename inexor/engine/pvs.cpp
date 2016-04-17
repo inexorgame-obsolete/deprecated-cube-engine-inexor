@@ -1098,7 +1098,7 @@ void genpvs(int *viewcellsize)
 {
     if(worldsize > 1<<15)
     {
-        LOG(ERROR) << "map is too large for PVS";
+        spdlog::get("global")->error() << "map is too large for PVS";
         return;
     }
 

@@ -128,7 +128,7 @@ struct aviwriter
             videoframes += seg.videoframes;
             indexframes += seg.indexframes;
         }
-        if(dbgmovie) LOG(DEBUG) << "fileframes: sound=" << soundframes << ", video=" << videoframes << '+' << (indexframes-videoframes) << "(dups)";
+        if(dbgmovie) spdlog::get("global")->debug() << "fileframes: sound=" << soundframes << ", video=" << videoframes << '+' << (indexframes-videoframes) << "(dups)";
         f->seek(fileframesoffset, SEEK_SET);
         f->putlil<uint>(segments[0].indexframes);
         f->seek(filevideooffset, SEEK_SET);
@@ -195,7 +195,7 @@ struct aviwriter
                 case AUDIO_S16MSB: desc = "s16b"; break;
                 default:           desc = "unkn";
             }
-            if(dbgmovie) LOG(DEBUG) << "soundspec: "<< soundfrequency << "hz " << desc << " x " << soundchannels;
+            if(dbgmovie) spdlog::get("global")->debug() << "soundspec: "<< soundfrequency << "hz " << desc << " x " << soundchannels;
         }
     }
     
@@ -910,7 +910,7 @@ namespace recorder
  
         int fps, bestdiff, worstdiff;
         getfps(fps, bestdiff, worstdiff);
-        if(videofps > fps) LOG(WARNING) << "frame rate may be too low to capture at " << videofps << " fps";
+        if(videofps > fps) spdlog::get("global")->warn() << "frame rate may be too low to capture at " << videofps << " fps";
         
         if(videow%2) videow += 1;
         if(videoh%2) videoh += 1;
@@ -918,11 +918,11 @@ namespace recorder
         file = new aviwriter(filename, videow, videoh, videofps, sound);
         if(!file->open()) 
         { 
-            LOG(ERROR) << "unable to create file " << filename;
+            spdlog::get("global")->error() << "unable to create file " << filename;
             DELETEP(file);
             return;
         }
-        LOG(INFO) << "movie recording to: " << file->filename << " " << file->videow << 'x' << file->videoh << " @" << file->videofps << "fps" << ((file->soundfrequency>0)?" + sound":"");
+        spdlog::get("global")->info() << "movie recording to: " << file->filename << " " << file->videow << 'x' << file->videoh << " @" << file->videofps << "fps" << ((file->soundfrequency>0)?" + sound":"");
 
         starttime = gettime();
         loopi(file->videofps) stats[i] = 0;
@@ -984,7 +984,7 @@ namespace recorder
         thread = NULL;
 
         static const char * const mesgs[] = { "ok", "stopped", "computer too slow", "file error"};
-        LOG(INFO) << "movie recording halted: " << mesgs[state] << " (" << file->videoframes << " frames)";
+        spdlog::get("global")->info() << "movie recording halted: " << mesgs[state] << " (" << file->videoframes << " frames)";
 
         DELETEP(file);
         state = REC_OK;

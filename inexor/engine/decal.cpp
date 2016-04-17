@@ -340,7 +340,7 @@ struct decalrenderer
         if(dbgdec)
         {
             int nverts = endvert < lastvert ? endvert + maxverts - lastvert : endvert - lastvert;
-            LOG(DEBUG) << "tris = " << nverts/3
+            spdlog::get("global")->debug() << "tris = " << nverts/3
                        << ", verts = " << nverts
                        << ", total tris = " << ((maxverts - 3 - availverts)/3);
         }

@@ -20,7 +20,7 @@ void InexorCefLayerManager::InitializeLayers()
 
 void InexorCefLayerManager::DestroyLayers()
 {
-    LOG(DEBUG) << "InexorCefLayerManager::DestroyLayers()";
+    spdlog::get("global")->debug() << "InexorCefLayerManager::DestroyLayers()";
     for(std::list<CefRefPtr<InexorCefLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
     {
         (*it)->Destroy();
@@ -214,7 +214,7 @@ std::list<std::string> InexorCefLayerManager::GetLayers()
 
 void InexorCefLayerManager::ShowLayer(std::string name)
 {
-    LOG(DEBUG) << "show layer " << name;
+    spdlog::get("global")->debug() << "show layer " << name;
     CefRefPtr<InexorCefLayer> layer = GetLayer(name);
     if (layer.get())
         layer->SetVisibility(true);
@@ -222,7 +222,7 @@ void InexorCefLayerManager::ShowLayer(std::string name)
 
 void InexorCefLayerManager::HideLayer(std::string name)
 {
-    LOG(DEBUG) << "hide layer " << name;
+    spdlog::get("global")->debug() << "hide layer " << name;
     CefRefPtr<InexorCefLayer> layer = GetLayer(name);
     if (layer.get())
         layer->SetVisibility(false);

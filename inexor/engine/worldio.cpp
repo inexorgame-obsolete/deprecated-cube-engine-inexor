@@ -69,20 +69,20 @@ bool loadents(const char *fname, vector<entity> &ents, uint *crc)
     stream *f = opengzfile(ogzname, "rb");
     if(!f) return false;
     octaheader hdr;
-    if(f->read(&hdr, 7*sizeof(int)) != 7*sizeof(int)) { LOG(ERROR) << "map " << ogzname << " has malformatted header"; delete f; return false; }
+    if(f->read(&hdr, 7*sizeof(int)) != 7*sizeof(int)) { spdlog::get("global")->error() << "map " << ogzname << " has malformatted header"; delete f; return false; }
     lilswap(&hdr.version, 6);
-    if(memcmp(hdr.magic, "OCTA", 4) || hdr.worldsize <= 0|| hdr.numents < 0) { LOG(ERROR) << "map " << ogzname << " has malformatted header"; delete f; return false; }
-    if(hdr.version>MAPVERSION) { LOG(ERROR) << "map " << ogzname << " requires a newer version of Inexor"; delete f; return false; }
+    if(memcmp(hdr.magic, "OCTA", 4) || hdr.worldsize <= 0|| hdr.numents < 0) { spdlog::get("global")->error() << "map " << ogzname << " has malformatted header"; delete f; return false; }
+    if(hdr.version>MAPVERSION) { spdlog::get("global")->error() << "map " << ogzname << " requires a newer version of Inexor"; delete f; return false; }
     compatheader chdr;
     if(hdr.version <= 28)
     {
-        if(f->read(&chdr.lightprecision, sizeof(chdr) - 7*sizeof(int)) != sizeof(chdr) - 7*sizeof(int)) { LOG(ERROR) << "map " << ogzname << " has malformatted header"; delete f; return false; }
+        if(f->read(&chdr.lightprecision, sizeof(chdr) - 7*sizeof(int)) != sizeof(chdr) - 7*sizeof(int)) { spdlog::get("global")->error() << "map " << ogzname << " has malformatted header"; delete f; return false; }
     }
     else
     {
         int extra = 0;
         if(hdr.version <= 29) extra++;
-        if(f->read(&hdr.blendmap, sizeof(hdr) - (7+extra)*sizeof(int)) != sizeof(hdr) - (7+extra)*sizeof(int)) { LOG(ERROR) << "map " << ogzname << " has malformatted header"; delete f; return false; }
+        if(f->read(&hdr.blendmap, sizeof(hdr) - (7+extra)*sizeof(int)) != sizeof(hdr) - (7+extra)*sizeof(int)) { spdlog::get("global")->error() << "map " << ogzname << " has malformatted header"; delete f; return false; }
     }
 
     if(hdr.version <= 28)
@@ -123,7 +123,7 @@ bool loadents(const char *fname, vector<entity> &ents, uint *crc)
     if(strcmp(gametype, game::gameident()))
     {
         samegame = false;
-        LOG(WARNING) << "WARNING: loading map from " << gametype << " game, ignoring entities except for lights/mapmodels";
+        spdlog::get("global")->warn() << "WARNING: loading map from " << gametype << " game, ignoring entities except for lights/mapmodels";
     }
     if(hdr.version>=16)
     {
@@ -1003,7 +1003,7 @@ bool save_world(const char *mname, bool nolms)
     stream *f = opengzfile(ogzname, "wb");
     if(!f) 
     {
-        LOG(WARNING) << "could not write map to " << ogzname; 
+        spdlog::get("global")->warn() << "could not write map to " << ogzname;
         return false;
     }
     /// get light map data
@@ -1051,24 +1051,24 @@ bool save_world(const char *mname, bool nolms)
         switch(id.type)
         {
             case ID_VAR:
-                if(dbgvars) LOG(DEBUG) << "wrote var " << quoted(id.name) << ": " << **id.storage.i;
+                if(dbgvars) spdlog::get("global")->debug() << "wrote var " << quoted(id.name) << ": " << **id.storage.i;
                 f->putlil<int>(*id.storage.i);
                 break;
 
             case ID_FVAR:
-                if(dbgvars) LOG(DEBUG) << "wrote fvar " << quoted(id.name) << ": " << **id.storage.f;
+                if(dbgvars) spdlog::get("global")->debug() << "wrote fvar " << quoted(id.name) << ": " << **id.storage.f;
                 f->putlil<float>(*id.storage.f);
                 break;
 
             case ID_SVAR:
-                if(dbgvars) LOG(DEBUG) << "wrote svar " << quoted(id.name) << ": " << quoted(**id.storage.s);
+                if(dbgvars) spdlog::get("global")->debug() << "wrote svar " << quoted(id.name) << ": " << quoted(**id.storage.s);
                 f->putlil<ushort>(strlen(*id.storage.s));
                 f->write(*id.storage.s, strlen(*id.storage.s));
                 break;
         }
     });
 
-    if(dbgvars) LOG(DEBUG) << "wrote " << hdr.numvars << " vars";
+    if(dbgvars) spdlog::get("global")->debug() << "wrote " << hdr.numvars << " vars";
 
     f->putchar((int)strlen(game::gameident()));
     f->write(game::gameident(), (int)strlen(game::gameident())+1);
@@ -1172,22 +1172,22 @@ bool load_world(const char *mname, const char *cname)        // still supports a
     int loadingstart = SDL_GetTicks();
     setmapfilenames(mname, cname);
     stream *f = opengzfile(ogzname, "rb");
-    if(!f) { LOG(ERROR) << "could not read map " << ogzname; return false; }
+    if(!f) { spdlog::get("global")->error() << "could not read map " << ogzname; return false; }
     octaheader hdr;
-    if(f->read(&hdr, 7*sizeof(int)) != 7*sizeof(int)) { LOG(ERROR) << "map " << ogzname << " has malformatted header"; delete f; return false; }
+    if(f->read(&hdr, 7*sizeof(int)) != 7*sizeof(int)) { spdlog::get("global")->error() << "map " << ogzname << " has malformatted header"; delete f; return false; }
     lilswap(&hdr.version, 6);
-    if(memcmp(hdr.magic, "OCTA", 4) || hdr.worldsize <= 0|| hdr.numents < 0) { LOG(ERROR) << "map " << ogzname << " has malformatted header"; delete f; return false; }
-    if(hdr.version>MAPVERSION) { LOG(ERROR) << "map " << ogzname << " requires a newer version of Inexor"; delete f; return false; }
+    if(memcmp(hdr.magic, "OCTA", 4) || hdr.worldsize <= 0|| hdr.numents < 0) { spdlog::get("global")->error() << "map " << ogzname << " has malformatted header"; delete f; return false; }
+    if(hdr.version>MAPVERSION) { spdlog::get("global")->error() << "map " << ogzname << " requires a newer version of Inexor"; delete f; return false; }
     compatheader chdr;
     if(hdr.version <= 28)
     {
-        if(f->read(&chdr.lightprecision, sizeof(chdr) - 7*sizeof(int)) != sizeof(chdr) - 7*sizeof(int)) { LOG(ERROR) << "map " << ogzname << " has malformatted header"; delete f; return false; }
+        if(f->read(&chdr.lightprecision, sizeof(chdr) - 7*sizeof(int)) != sizeof(chdr) - 7*sizeof(int)) { spdlog::get("global")->error() << "map " << ogzname << " has malformatted header"; delete f; return false; }
     }
     else 
     {
         int extra = 0;
         if(hdr.version <= 29) extra++; 
-        if(f->read(&hdr.blendmap, sizeof(hdr) - (7+extra)*sizeof(int)) != sizeof(hdr) - (7+extra)*sizeof(int)) { LOG(ERROR) << "map " << ogzname << " has malformatted header"; delete f; return false; }
+        if(f->read(&hdr.blendmap, sizeof(hdr) - (7+extra)*sizeof(int)) != sizeof(hdr) - (7+extra)*sizeof(int)) { spdlog::get("global")->error() << "map " << ogzname << " has malformatted header"; delete f; return false; }
     }
 
     resetmap();
@@ -1255,7 +1255,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
             {
                 int val = f->getlil<int>();
                 if(exists && id->minval <= id->maxval) setvar(name, val);
-                if(dbgvars) LOG(DEBUG) << "read var " << quoted(name) << ": " << val;
+                if(dbgvars) spdlog::get("global")->debug() << "read var " << quoted(name) << ": " << val;
                 break;
             }
  
@@ -1263,7 +1263,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
             {
                 float val = f->getlil<float>();
                 if(exists && id->minvalf <= id->maxvalf) setfvar(name, val);
-                if(dbgvars) LOG(DEBUG) << "read fvar " << quoted(name) << ": " << val;
+                if(dbgvars) spdlog::get("global")->debug() << "read fvar " << quoted(name) << ": " << val;
                 break;
             }
     
@@ -1275,12 +1275,12 @@ bool load_world(const char *mname, const char *cname)        // still supports a
                 val[min(slen, MAXSTRLEN-1)] = '\0';
                 if(slen >= MAXSTRLEN) f->seek(slen - (MAXSTRLEN-1), SEEK_CUR);
                 if(exists) setsvar(name, val);
-                if(dbgvars) LOG(DEBUG) << "read svar " << quoted(name) << ": " << val;
+                if(dbgvars) spdlog::get("global")->debug() << "read svar " << quoted(name) << ": " << val;
                 break;
             }
         }
     }
-    if(dbgvars) LOG(DEBUG) << "read " << hdr.numvars << " vars";
+    if(dbgvars) spdlog::get("global")->debug() << "read " << hdr.numvars << " vars";
 
     string gametype;
     copystring(gametype, "fps");
@@ -1294,7 +1294,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
     if(strcmp(gametype, game::gameident())!=0)
     {
         samegame = false;
-        LOG(WARNING) << "WARNING: loading map from " << gametype << " game, ignoring entities except for lights/mapmodels";
+        spdlog::get("global")->warn() << "WARNING: loading map from " << gametype << " game, ignoring entities except for lights/mapmodels";
     }
     if(hdr.version>=16)
     {
@@ -1349,13 +1349,13 @@ bool load_world(const char *mname, const char *cname)        // still supports a
         {
             if(e.type != ET_LIGHT && e.type != ET_SPOTLIGHT)
             {
-                LOG(WARNING) << "warning: ent outside of world: enttype[" << entities::entname(e.type) <<"] index " << i << " " << e.o;
+                spdlog::get("global")->warn() << "warning: ent outside of world: enttype[" << entities::entname(e.type) <<"] index " << i << " " << e.o;
             }
         }
         if(hdr.version <= 14 && e.type == ET_MAPMODEL)
         {
             e.o.z += e.attr3;
-            if(e.attr4) LOG(WARNING) << "warning: mapmodel ent (index " << i << ") uses texture slot " << e.attr4;
+            if(e.attr4) spdlog::get("global")->warn() << "warning: mapmodel ent (index " << i << ") uses texture slot " << e.attr4;
             e.attr3 = e.attr4 = 0;
         }
     }
@@ -1363,7 +1363,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
 
     if(hdr.numents > MAXENTS) 
     {
-        LOG(WARNING) << "warning: map has " << hdr.numents << " entities";
+        spdlog::get("global")->warn() << "warning: map has " << hdr.numents << " entities";
         f->seek((hdr.numents-MAXENTS)*(samegame ? sizeof(entity) + einfosize : eif), SEEK_CUR);
     }
 
@@ -1373,7 +1373,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
     renderprogress(0, "loading octree...");
     bool failed = false;
     worldroot = loadchildren(f, ivec(0, 0, 0), hdr.worldsize>>1, failed);
-    if(failed) LOG(ERROR) << "garbage in map";
+    if(failed) spdlog::get("global")->error() << "garbage in map";
 
     renderprogress(0, "validating...");
     validatec(worldroot, hdr.worldsize>>1);

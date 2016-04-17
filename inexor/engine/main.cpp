@@ -93,7 +93,7 @@ void fatal(const char *s, ...)
     {
         defvformatstring(msg,s,s);
         // Temporarly disabled crash handler output (easylogging)
-        // LOG(FATAL) << msg;
+        // spdlog::get("global")->critical() << msg;
 
         #ifdef WIN32
             if(errors <= 1) MessageBox(NULL, msg, "Inexor fatal error", MB_OK|MB_SYSTEMMODAL);
@@ -110,7 +110,7 @@ void fatal(std::vector<std::string> &output)
     std::string completeoutput; 
     for(auto message : output) {
         // Temporarly disabled crash handler output (easylogging)
-        // LOG(FATAL) << message.c_str();
+        // spdlog::get("global")->critical() << message.c_str();
         completeoutput = inexor::util::fmt << completeoutput << message.c_str();
     }
 #ifdef WIN32
@@ -650,7 +650,7 @@ VARFP(gamma, 30, 100, 300,
     if(gamma == curgamma) return;
     curgamma = gamma;
     if(SDL_SetWindowBrightness(screen, gamma/100.0f)==-1)
-        LOG(ERROR) << "Could not set gamma: " << SDL_GetError();
+        spdlog::get("global")->error() << "Could not set gamma: " << SDL_GetError();
 });
 
 
@@ -749,9 +749,9 @@ void setupscreen(int &useddepthbits, int &usedfsaa)
     if(!screen) fatal("failed to create OpenGL window: %s", SDL_GetError());
     else
     {
-        if(depthbits && (config&1)==0) LOG(WARNING) << *depthbits << " bit z-buffer not supported - disabling";
-        if(stencilbits && (config&2)==0) LOG(WARNING) << "Stencil buffer not supported - disabling";
-        if(fsaa>0 && (config&4)==0) LOG(WARNING) << *fsaa << " anti-aliasing not supported - disabling";
+        if(depthbits && (config&1)==0) spdlog::get("global")->warn() << *depthbits << " bit z-buffer not supported - disabling";
+        if(stencilbits && (config&2)==0) spdlog::get("global")->warn() << "Stencil buffer not supported - disabling";
+        if(fsaa>0 && (config&4)==0) spdlog::get("global")->warn() << *fsaa << " anti-aliasing not supported - disabling";
     }
 
     SDL_SetWindowMinimumSize(screen, SCR_MINW, SCR_MINH);
@@ -1212,6 +1212,9 @@ INITIALIZE_EASYLOGGINGPP
 int main(int argc, char **argv)
 {
 
+    inexor::util::initLoggers();
+    spdlog::get("global")->info() << "Logger funktioniert";
+
     // Load logging configuration from file
    // START_EASYLOGGINGPP(argc, argv);
     el::Loggers::configureFromGlobal("inexor_logging.conf");
@@ -1232,7 +1235,7 @@ int main(int argc, char **argv)
             case 'q': 
 			{
 				const char *dir = sethomedir(&argv[i][2]);
-				if(dir) VLOG(1) << "Using home directory: " << dir;
+				if(dir) spdlog::get("global")->debug() << "Using home directory: " << dir;
 				break;
 			}
         }
@@ -1254,10 +1257,10 @@ int main(int argc, char **argv)
             case 'k':
             {
                 const char *dir = addpackagedir(&argv[i][2]);
-                if(dir) VLOG(1) << "Adding package directory: " << dir;
+                if(dir) spdlog::get("global")->debug() << "Adding package directory: " << dir;
                 break;
             }
-            // case 'g': VLOG(1) << "Setting log file: " << &argv[i][2]; setlogfile(&argv[i][2]); break;
+            // case 'g': spdlog::get("global")->debug() << "Setting log file: " << &argv[i][2]; setlogfile(&argv[i][2]); break;
             case 'd': dedicated = atoi(&argv[i][2]); if(dedicated<=0) dedicated = 2; break;
             case 'w': scr_w = clamp(atoi(&argv[i][2]), SCR_MINW, SCR_MAXW); if(!findarg(argc, argv, "-h")) scr_h = -1; break;
             case 'h': scr_h = clamp(atoi(&argv[i][2]), SCR_MINH, SCR_MAXH); if(!findarg(argc, argv, "-w")) scr_w = -1; break;
@@ -1300,7 +1303,7 @@ int main(int argc, char **argv)
 
     if(dedicated <= 1)
     {
-        LOG(DEBUG) << "init: sdl";
+        spdlog::get("global")->debug() << "init: sdl";
 
         int par = 0;
         #ifdef _DEBUG
@@ -1313,18 +1316,18 @@ int main(int argc, char **argv)
         SDL_StopTextInput();
     }
 
-    LOG(DEBUG) << "init: net";
+    spdlog::get("global")->debug() << "init: net";
     if(enet_initialize()<0) fatal("Unable to initialise network module");
     atexit(enet_deinitialize);
     enet_time_set(0);
 
-    LOG(DEBUG) << "init: game";
+    spdlog::get("global")->debug() << "init: game";
     game::parseoptions(gameargs);
     initserver(dedicated>0, dedicated>1);  /// never returns if dedicated
     ASSERT(dedicated <= 1);
     game::initclient();
 
-    LOG(DEBUG) << "init: video";
+    spdlog::get("global")->debug() << "init: video";
 
     SDL_SetHint(SDL_HINT_GRAB_KEYBOARD, "0");
     #if !defined(WIN32) && !defined(__APPLE__)
@@ -1337,13 +1340,13 @@ int main(int argc, char **argv)
     // SDL_StopTextInput(); // workaround for spurious text-input events getting sent on first text input toggle?
 
     /// Initialise OpenGL
-    LOG(DEBUG) << "init: gl";
+    spdlog::get("global")->debug() << "init: gl";
     gl_checkextensions();
     gl_init(useddepthbits, usedfsaa);
     notexture = textureload("texture/inexor/notexture.png");
     if(!notexture) fatal("could not find core textures");
 
-    LOG(DEBUG) << "init: console";
+    spdlog::get("global")->debug() << "init: console";
     if(!execfile("config/stdlib.cfg", false)) fatal("cannot find config files (you are running from the wrong folder, try .bat file in the main folder)");   // this is the first file we load.
     if(!execfile("config/font.cfg", false)) fatal("cannot find font definitions");
     if(!setfont("default")) fatal("no default font specified");
@@ -1351,19 +1354,19 @@ int main(int argc, char **argv)
     inbetweenframes = true;
     renderbackground("initializing...");
 
-    LOG(DEBUG) << "init: effects";
+    spdlog::get("global")->debug() << "init: effects";
     loadshaders();
     particleinit();
     initdecals();
 
-    LOG(DEBUG) << "init: world";
+    spdlog::get("global")->debug() << "init: world";
     camera1 = player = game::iterdynents(0);
     emptymap(0, true, NULL, false);
 
-    LOG(DEBUG) << "init: sound";
+    spdlog::get("global")->debug() << "init: sound";
     initsound();
 
-    LOG(DEBUG) << "init: cfg";
+    spdlog::get("global")->debug() << "init: cfg";
     execfile("config/keymap.cfg");
     execfile("config/stdedit.cfg");
     execfile("config/menus.cfg");
@@ -1399,7 +1402,7 @@ int main(int argc, char **argv)
 
     if(load)
     {
-        LOG(DEBUG) << "init: localconnect";
+        spdlog::get("global")->debug() << "init: localconnect";
         //localconnect();
         game::changemap(load);
     }
@@ -1407,7 +1410,7 @@ int main(int argc, char **argv)
 	loadhistory();
     if(initscript) execute(initscript);
 
-    LOG(DEBUG) << "init: mainloop";
+    spdlog::get("global")->debug() << "init: mainloop";
 
     initmumble();
     resetfpshistory();

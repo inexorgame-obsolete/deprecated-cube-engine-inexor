@@ -59,19 +59,19 @@ void conoutfv(int type, const char *fmt, va_list args)
     // conline(type, buf);
     switch (type) {
         case CON_DEBUG:
-            LOG(DEBUG) << buf;
+            spdlog::get("global")->debug() << buf;
             break;
         case CON_INFO:
-            LOG(INFO) << buf;
+            spdlog::get("global")->info() << buf;
             break;
         case CON_WARN:
-            LOG(WARNING) << buf;
+            spdlog::get("global")->warn() << buf;
             break;
         case CON_ERROR:
-            LOG(ERROR) << buf;
+            spdlog::get("global")->error() << buf;
             break;
         default:
-            LOG(INFO) << buf;
+            spdlog::get("global")->info() << buf;
             break;
     }
 }
@@ -238,7 +238,7 @@ hashtable<int, keym> keyms(128);
 
 void keymap(int *code, char *key)
 {
-    if(identflags&IDF_OVERRIDDEN) { LOG(ERROR) << "cannot override keymap " << *code; return; }
+    if(identflags&IDF_OVERRIDDEN) { spdlog::get("global")->error() << "cannot override keymap " << *code; return; }
     keym &km = keyms[*code];
     km.code = *code;
     DELETEA(km.name);
@@ -288,9 +288,9 @@ void getbind(char *key, int type)
 
 void bindkey(char *key, char *action, int state, const char *cmd)
 {
-    if(identflags&IDF_OVERRIDDEN) { LOG(ERROR) << "cannot override " << cmd << " " << quoted(key); return; }
+    if(identflags&IDF_OVERRIDDEN) { spdlog::get("global")->error() << "cannot override " << cmd << " " << quoted(key); return; }
     keym *km = findbind(key);
-    if(!km) { LOG(ERROR) << "unknown key " << quoted(key); return; }
+    if(!km) { spdlog::get("global")->error() << "unknown key " << quoted(key); return; }
     char *&binding = km->actions[state];
     if(!keypressed || keyaction!=binding) delete[] binding;
     // trim white-space to make searchbinds more reliable
@@ -735,7 +735,7 @@ void addcomplete(char *command, int type, char *dir, char *ext)
 {
     if(identflags&IDF_OVERRIDDEN)
     {
-        LOG(ERROR) << "cannot override complete " << command;
+        spdlog::get("global")->error() << "cannot override complete " << command;
         return;
     }
     if(!dir[0])

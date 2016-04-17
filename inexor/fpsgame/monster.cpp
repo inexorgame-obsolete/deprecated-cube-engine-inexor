@@ -342,7 +342,7 @@ namespace game
 
     void endsp(bool allkilled)
     {
-        CLOG(INFO, "gameplay") << (allkilled ? "you have cleared the map!" : "you reached the exit!");
+        spdlog::get("gameplay")->info() << (allkilled ? "you have cleared the map!" : "you reached the exit!");
         monstertotal = 0;
         forceintermission();
     }
@@ -354,14 +354,14 @@ namespace game
         numkilled++;
         player1->frags = numkilled;
         remain = monstertotal-numkilled;
-        if(remain>0 && remain<=5) CLOG(INFO, "gameplay") << "only " << remain << " monster(s) remaining";
+        if(remain>0 && remain<=5) spdlog::get("gameplay")->info() << "only " << remain << " monster(s) remaining";
     }
 
     void updatemonsters(int curtime)
     {
         if(m_dmsp && spawnremain && lastmillis>nextmonster)
         {
-            if(spawnremain--==monstertotal) { CLOG(INFO, "gameplay") << "The invasion has begun!"; playsound(S_V_FIGHT); }
+            if(spawnremain--==monstertotal) { spdlog::get("gameplay")->info() << "The invasion has begun!"; playsound(S_V_FIGHT); }
             nextmonster = lastmillis+1000;
             spawnmonster();
         }
@@ -415,20 +415,20 @@ namespace game
 
     void spsummary(int accuracy)
     {
-        CLOG(INFO, "gameplay") << "--- single player time score: ---";
+        spdlog::get("gameplay")->info() << "--- single player time score: ---";
         int pen, score = 0;
-        pen = ((lastmillis-maptime)*100)/game::scaletime(1000); score += pen; if(pen) CLOG(INFO, "gameplay") << "time taken: " << pen << " seconds (" << ((lastmillis-maptime)/1000) << " simulated seconds)";
-        pen = player1->deaths*60; score += pen; if(pen) CLOG(INFO, "gameplay") << "time penalty for " << player1->deaths << " deaths (1 minute each): " << pen << " seconds";
-        pen = remain*10;          score += pen; if(pen) CLOG(INFO, "gameplay") << "time penalty for " << remain << " monsters remaining (10 seconds each): " << pen << " seconds";
-        pen = (10-skill)*20;      score += pen; if(pen) CLOG(INFO, "gameplay") << "time penalty for lower skill level (20 seconds each): " << pen << " seconds";
-        pen = 100-accuracy;       score += pen; if(pen) CLOG(INFO, "gameplay") << "time penalty for missed shots (1 second each %): " << pen << " seconds";
+        pen = ((lastmillis-maptime)*100)/game::scaletime(1000); score += pen; if(pen) spdlog::get("gameplay")->info() << "time taken: " << pen << " seconds (" << ((lastmillis-maptime)/1000) << " simulated seconds)";
+        pen = player1->deaths*60; score += pen; if(pen) spdlog::get("gameplay")->info() << "time penalty for " << player1->deaths << " deaths (1 minute each): " << pen << " seconds";
+        pen = remain*10;          score += pen; if(pen) spdlog::get("gameplay")->info() << "time penalty for " << remain << " monsters remaining (10 seconds each): " << pen << " seconds";
+        pen = (10-skill)*20;      score += pen; if(pen) spdlog::get("gameplay")->info() << "time penalty for lower skill level (20 seconds each): " << pen << " seconds";
+        pen = 100-accuracy;       score += pen; if(pen) spdlog::get("gameplay")->info() << "time penalty for missed shots (1 second each %): " << pen << " seconds";
         defformatstring(aname, "bestscore_%s", getclientmap());
         const char *bestsc = getalias(aname);
         int bestscore = *bestsc ? parseint(bestsc) : score;
         if(score<bestscore) bestscore = score;
         defformatstring(nscore, "%d", bestscore);
         alias(aname, nscore);
-        CLOG(INFO, "gameplay") << "TOTAL SCORE (time + time penalties): " << score << " seconds (best so far: " << bestscore << " seconds)";
+        spdlog::get("gameplay")->info() << "TOTAL SCORE (time + time penalties): " << score << " seconds (best so far: " << bestscore << " seconds)";
     }
 }
 

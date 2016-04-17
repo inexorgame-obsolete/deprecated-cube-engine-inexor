@@ -166,7 +166,7 @@ static bool readzipdirectory(const char *archname, FILE *f, int entries, int off
         f.size = hdr.uncompressedsize;
         f.compressedsize = hdr.compression ? hdr.compressedsize : 0;
 #ifndef STANDALONE
-        if(dbgzip) LOG(DEBUG) << archname << ": file " << name << ", size " << hdr.uncompressedsize << ", compress " << hdr.compression << ", flags " << hdr.flags;
+        if(dbgzip) spdlog::get("global")->debug() << archname << ": file " << name << ", size " << hdr.uncompressedsize << ", compress " << hdr.compression << ", flags " << hdr.flags;
 #endif
 
         src += hdr.namelength + hdr.extralength + hdr.commentlength;
@@ -277,21 +277,21 @@ bool addzip(const char *name, const char *mount = NULL, const char *strip = NULL
     ziparchive *exists = findzip(pname);
     if(exists) 
     {
-        LOG(ERROR) << "already added zip " << pname;
+        spdlog::get("global")->error() << "already added zip " << pname;
         return true;
     }
  
     FILE *f = fopen(findfile(pname, "rb"), "rb");
     if(!f) 
     {
-        LOG(ERROR) << "could not open file " << pname;
+        spdlog::get("global")->error() << "could not open file " << pname;
         return false;
     }
     zipdirectoryheader h;
     vector<zipfile> files;
     if(!findzipdirectory(f, h) || !readzipdirectory(pname, f, h.entries, h.offset, h.size, files))
     {
-        LOG(ERROR) << "could not read directory in zip " << pname;
+        spdlog::get("global")->error() << "could not read directory in zip " << pname;
         fclose(f);
         return false;
     }
@@ -302,7 +302,7 @@ bool addzip(const char *name, const char *mount = NULL, const char *strip = NULL
     mountzip(*arch, files, mount, strip);
     archives.add(arch);
 
-    LOG(INFO) << "added zip " << pname;
+    spdlog::get("global")->info() << "added zip " << pname;
     return true;
 } 
      
@@ -316,15 +316,15 @@ bool removezip(const char *name)
     ziparchive *exists = findzip(pname);
     if(!exists)
     {
-        LOG(ERROR) << "zip " << pname << " is not loaded";
+        spdlog::get("global")->error() << "zip " << pname << " is not loaded";
         return false;
     }
     if(exists->openfiles)
     {
-        LOG(ERROR) << "zip " << pname << "has open files";
+        spdlog::get("global")->error() << "zip " << pname << "has open files";
         return false;
     }
-    LOG(INFO) << "removed zip " << exists->name;
+    spdlog::get("global")->info() << "removed zip " << exists->name;
     archives.removeobj(exists); 
     delete exists;
     return true;
@@ -401,8 +401,8 @@ struct zipstream : stream
 #ifndef STANDALONE
         if(dbgzip)
         {
-            if(info->compressedsize) LOG(DEBUG) << info->name << "zfile.total_out " << uint(zfile.total_out) << ", info->size " << info->size;
-            else LOG(DEBUG) << info->name << "reading :" << (reading - info->offset) << ", info->size " << info->size;
+            if(info->compressedsize) spdlog::get("global")->debug() << info->name << "zfile.total_out " << uint(zfile.total_out) << ", info->size " << info->size;
+            else spdlog::get("global")->debug() << info->name << "reading :" << (reading - info->offset) << ", info->size " << info->size;
         }
 #endif
         if(info->compressedsize) inflateEnd(&zfile);
@@ -521,7 +521,7 @@ struct zipstream : stream
                 else
                 {
 #ifndef STANDALONE
-                    if(dbgzip) LOG(DEBUG) << "inflate error: " << zError(err);
+                    if(dbgzip) spdlog::get("global")->debug() << "inflate error: " << zError(err);
 #endif
                     stopreading(); 
                 }

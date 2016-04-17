@@ -164,7 +164,7 @@ void initsound()
     if(Mix_OpenAudio(soundfreq, MIX_DEFAULT_FORMAT, 2, soundbufferlen)<0)
     {
         nosound = true;
-        LOG(ERROR) << "sound init failed (SDL_mixer): " << Mix_GetError();
+        spdlog::get("global")->error() << "sound init failed (SDL_mixer): " << Mix_GetError();
         return;
     }
     Mix_AllocateChannels(soundchans);
@@ -223,7 +223,7 @@ void startmusic(char *name, char *cmd)
         }
         else
         {
-            LOG(ERROR) << "could not play music: " << file;
+            spdlog::get("global")->error() << "could not play music: " << file;
             intret(0);
         }
     }
@@ -609,7 +609,7 @@ int playsound(int n, const vec *loc, extentity *ent, int flags, int loops, int f
     soundslot &slot = sounds.slots[config.chooseslot()];
     if(!slot.sample->chunk && !slot.sample->load()) return -1;
 
-    if(dbgsound) LOG(DEBUG) << "sound: " << slot.sample->name;
+    if(dbgsound) spdlog::get("global")->debug() << "sound: " << slot.sample->name;
 
     chanid = -1;
     loopv(channels) if(!channels[i].inuse) { chanid = i; break; }
@@ -643,7 +643,7 @@ void stopsounds()
 bool stopsound(int n, int chanid, int fade)
 {
     if(!gamesounds.configs.inrange(n) || !channels.inrange(chanid) || !channels[chanid].inuse || !gamesounds.playing(channels[chanid], gamesounds.configs[n])) return false;
-    if(dbgsound) LOG(DEBUG) << "stopsound: " << channels[chanid].slot->sample->name;
+    if(dbgsound) spdlog::get("global")->debug() << "stopsound: " << channels[chanid].slot->sample->name;
     if(!fade || !Mix_FadeOutChannel(chanid, fade))
     {
         Mix_HaltChannel(chanid);
@@ -768,7 +768,7 @@ void initmumble()
     #endif
     if(!VALID_MUMBLELINK) closemumble();
 #else
-    LOG(ERROR) << "Mumble positional audio is not available on this platform.";
+    spdlog::get("global")->error() << "Mumble positional audio is not available on this platform.";
 #endif
 }
 

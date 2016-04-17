@@ -2274,7 +2274,7 @@ void calclight(int *quality)
 {
     if(!setlightmapquality(*quality))
     {
-        LOG(ERROR) << "valid range for calclight quality is -1..1"; 
+        spdlog::get("global")->error() << "valid range for calclight quality is -1..1";
         return;
     }
     renderbackground("computing lightmaps... (esc to abort)");
@@ -2333,7 +2333,7 @@ void patchlight(int *quality)
     if(noedit(true)) return;
     if(!setlightmapquality(*quality))
     {
-        LOG(ERROR) << "valid range for patchlight quality is -1..1"; 
+        spdlog::get("global")->error() << "valid range for patchlight quality is -1..1";
         return;
     }
     renderbackground("patching lightmaps... (esc to abort)");

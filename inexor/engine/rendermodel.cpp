@@ -43,7 +43,7 @@ MODELTYPE(MDL_OBJ, obj);
 MODELTYPE(MDL_SMD, smd);
 MODELTYPE(MDL_IQM, iqm);
 
-#define checkmdl if(!loadingmodel) { LOG(ERROR) << "not loading a model"; return; }
+#define checkmdl if(!loadingmodel) { spdlog::get("global")->error() << "not loading a model"; return; }
 
 void mdlcullface(int *cullface)
 {
@@ -245,7 +245,7 @@ void mdlname()
 COMMAND(mdlname, "");
 
 #define checkragdoll \
-    if(!loadingmodel->skeletal()) { LOG(ERROR) << "not loading a skeletal model"; return; } \
+    if(!loadingmodel->skeletal()) { spdlog::get("global")->error() << "not loading a skeletal model"; return; } \
     skelmodel *m = (skelmodel *)loadingmodel; \
     if(m->parts.empty()) return; \
     skelmodel::skelmeshgroup *meshes = (skelmodel::skelmeshgroup *)m->parts.last()->meshes; \

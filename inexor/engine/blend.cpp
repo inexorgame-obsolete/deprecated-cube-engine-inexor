@@ -583,10 +583,10 @@ void addblendbrush(const char *name, const char *imgname)
     delblendbrush(name);
 
     ImageData s;
-    if(!loadimage(imgname, s)) { LOG(ERROR) << "could not load blend brush image " << imgname; return; }
+    if(!loadimage(imgname, s)) { spdlog::get("global")->error() << "could not load blend brush image " << imgname; return; }
     if(max(s.w, s.h) > (1<<12))
     {
-        LOG(ERROR) << "blend brush image size exceeded " << (1<<12) << "x" << (1<<12) << " pixels: " << imgname;
+        spdlog::get("global")->error() << "blend brush image size exceeded " << (1<<12) << "x" << (1<<12) << " pixels: " << imgname;
         return;
     }
     
@@ -643,12 +643,12 @@ bool canpaintblendmap(bool brush = true, bool sel = false, bool msg = true)
     if(noedit(!sel, msg) || (nompedit && multiplayer())) return false;
     if(!blendpaintmode)
     {
-        if(msg) LOG(ERROR) << "operation only allowed in blend paint mode";
+        if(msg) spdlog::get("global")->error() << "operation only allowed in blend paint mode";
         return false;
     }
     if(brush && !brushes.inrange(curbrush))
     {
-        if(msg) LOG(ERROR) << "no blend brush selected";
+        if(msg) spdlog::get("global")->error() << "no blend brush selected";
         return false;
     }
     return true;
@@ -767,7 +767,7 @@ ICOMMAND(moveblendmap, "ii", (int *dx, int *dy),
     if(noedit(true) || (nompedit && multiplayer())) return;
     if(*dx%(BM_IMAGE_SIZE<<BM_SCALE) || *dy%(BM_IMAGE_SIZE<<BM_SCALE)) 
     {
-        LOG(ERROR) << "blendmap movement must be in multiples of " << (BM_IMAGE_SIZE<<BM_SCALE);
+        spdlog::get("global")->error() << "blendmap movement must be in multiples of " << (BM_IMAGE_SIZE<<BM_SCALE);
         return;
     }
     if(*dx <= -worldsize || *dx >= worldsize || *dy <= -worldsize || *dy >= worldsize)

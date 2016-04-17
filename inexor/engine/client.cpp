@@ -19,7 +19,7 @@ int connmillis = 0, connattempts = 0, discmillis = 0;
 bool multiplayer(bool msg)
 {
     bool val = curpeer || hasnonlocalclients(); 
-    if(val && msg) LOG(ERROR) << "operation not available in multiplayer";
+    if(val && msg) spdlog::get("global")->error() << "operation not available in multiplayer";
     return val;
 }
 
@@ -111,7 +111,7 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
         conoutf("attempting to connect to %s:%d", servername, serverport);
         if(!resolverwait(servername, &address))
         {
-            LOG(ERROR) << "could not resolve server " << servername;
+            spdlog::get("global")->error() << "could not resolve server " << servername;
             return;
         }
     }
@@ -128,7 +128,7 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
         clienthost = enet_host_create(NULL, 2, server::numchannels(), rate*1024, rate*1024);
         if(!clienthost)
         {
-            LOG(ERROR) << "could not connect to server";
+            spdlog::get("global")->error() << "could not connect to server";
             return;
         }
         clienthost->duplicatePeers = 0;
@@ -147,7 +147,7 @@ void reconnect(const char *serverpassword)
 {
     if(!connectname[0] || connectport <= 0)
     {
-        LOG(ERROR) << "no previous connection";
+        spdlog::get("global")->error() << "no previous connection";
         return;
     }
     connectserv(connectname, connectport, serverpassword);
@@ -226,7 +226,7 @@ void flushclient()
 // print illegal network message to console (wrong protocol?)
 void neterr(const char *s, bool disc)
 {
-    LOG(ERROR) << "illegal network message " << quoted(s);
+    spdlog::get("global")->error() << "illegal network message " << quoted(s);
     if(disc) disconnect();
 }
 
@@ -255,7 +255,7 @@ void gets2c()
         ++connattempts; 
         if(connattempts > 3)
         {
-            LOG(ERROR) << "could not connect to server";
+            spdlog::get("global")->error() << "could not connect to server";
             abortconnect();
             return;
         }
@@ -284,7 +284,7 @@ void gets2c()
             if(event.data>=DISC_NUM) event.data = DISC_NONE;
             if(event.peer==connpeer)
             {
-                LOG(ERROR) << "could not connect to server";
+                spdlog::get("global")->error() << "could not connect to server";
                 abortconnect();
             }
             else
@@ -292,8 +292,8 @@ void gets2c()
                 if(!discmillis || event.data)
                 {
                     const char *msg = disconnectreason(event.data);
-                    if(msg) LOG(ERROR) << "server network error, disconnecting (" << msg << ") ...";
-                    else LOG(ERROR) << "server network error, disconnecting...";
+                    if(msg) spdlog::get("global")->error() << "server network error, disconnecting (" << msg << ") ...";
+                    else spdlog::get("global")->error() << "server network error, disconnecting...";
                 }
                 disconnect();
             }

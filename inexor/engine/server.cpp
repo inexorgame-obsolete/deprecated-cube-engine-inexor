@@ -16,7 +16,7 @@ void fatal(const char *fmt, ...)
 {
     cleanupserver(); 
 	defvformatstring(msg,fmt,fmt);
-	LOG(FATAL) << msg;
+	spdlog::get("global")->critical() << msg;
 #ifdef WIN32
 	MessageBox(NULL, msg, "Inexor fatal error", MB_OK|MB_SYSTEMMODAL);
 #else
@@ -31,7 +31,7 @@ void fatal(std::vector<std::string> &output)
     cleanupserver();
     std::string completeoutput;
     for(auto message : output) {
-        LOG(FATAL) << message;
+        spdlog::get("global")->critical() << message;
         completeoutput = inexor::util::fmt << completeoutput << message.c_str();
     }
 #ifdef WIN32
@@ -48,19 +48,19 @@ void conoutfv(int type, const char *fmt, va_list args)
     vformatstring(buf, fmt, args, sizeof(buf));
     switch (type) {
         case CON_DEBUG:
-            LOG(DEBUG) << buf;
+            spdlog::get("global")->debug() << buf;
             break;
         case CON_INFO:
-            LOG(INFO) << buf;
+            spdlog::get("global")->info() << buf;
             break;
         case CON_WARN:
-            LOG(WARNING) << buf;
+            spdlog::get("global")->warn() << buf;
             break;
         case CON_ERROR:
-            LOG(ERROR) << buf;
+            spdlog::get("global")->error() << buf;
             break;
         default:
-            LOG(INFO) << buf;
+            spdlog::get("global")->info() << buf;
             break;
     }
 
@@ -311,7 +311,7 @@ void disconnect_client(int n, int reason)
     string s;
     if(msg) formatstring(s, "client (%s) disconnected because: %s", clients[n]->hostname, msg);
     else formatstring(s, "client (%s) disconnected", clients[n]->hostname);
-    LOG(INFO) << s;
+    spdlog::get("global")->info() << s;
     server::sendservmsg(s);
 }
 
@@ -380,14 +380,14 @@ ENetSocket connectmaster(bool wait)
     if(!mastername[0]) return ENET_SOCKET_NULL;
     if(masteraddress.host == ENET_HOST_ANY)
     {
-        if(isdedicatedserver()) LOG(INFO) << "looking up " << *mastername << "...";
+        if(isdedicatedserver()) spdlog::get("global")->info() << "looking up " << *mastername << "...";
         masteraddress.port = masterport;
         if(!resolverwait(mastername, &masteraddress)) return ENET_SOCKET_NULL;
     }
     ENetSocket sock = enet_socket_create(ENET_SOCKET_TYPE_STREAM);
     if(sock == ENET_SOCKET_NULL)
     {
-        if(isdedicatedserver()) LOG(WARNING) << "could not open master server socket";
+        if(isdedicatedserver()) spdlog::get("global")->warn() << "could not open master server socket";
         return ENET_SOCKET_NULL;
     }
     if(wait || serveraddress.host == ENET_HOST_ANY || !enet_socket_bind(sock, &serveraddress))
@@ -400,7 +400,7 @@ ENetSocket connectmaster(bool wait)
         else if(!enet_socket_connect(sock, &masteraddress)) return sock;
     }
     enet_socket_destroy(sock);
-    if(isdedicatedserver()) LOG(WARNING) << "could not connect to master server";
+    if(isdedicatedserver()) spdlog::get("global")->warn() << "could not connect to master server";
     return ENET_SOCKET_NULL;
 }
 
@@ -440,7 +440,7 @@ void processmasterinput()
         while(args < end && iscubespace(*args)) args++;
 
         if(matchstring(input, cmdlen, "failreg"))
-            LOG(ERROR) << "master server registration failed: " << args;
+            spdlog::get("global")->error() << "master server registration failed: " << args;
         else if(matchstring(input, cmdlen, "succreg"))
             conoutf("master server registration succeeded");
         else server::processmasterinput(input, cmdlen, args);
@@ -461,7 +461,7 @@ void flushmasteroutput()
 {
     if(masterconnecting && totalmillis - masterconnecting >= 60000)
     {
-        LOG(WARNING) << "could not connect to master server";
+        spdlog::get("global")->warn() << "could not connect to master server";
         disconnectmaster();
     }
     if(masterout.empty() || !masterconnected) return;
@@ -556,7 +556,7 @@ void checkserversockets()        // reply all server info requests
                 int error = 0;
                 if(enet_socket_get_option(mastersock, ENET_SOCKOPT_ERROR, &error) < 0 || error)
                 {
-                    LOG(WARNING) << "could not connect to master server";
+                    spdlog::get("global")->warn() << "could not connect to master server";
                     disconnectmaster();
                 }
                 else
@@ -635,7 +635,7 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
     {
         laststatus = totalmillis;     
         if(nonlocalclients || serverhost->totalSentData || serverhost->totalReceivedData)
-            VLOG(1) << "status: " << nonlocalclients << "remote clients, " << (serverhost->totalSentData/60.0f/1024) << "send," << (serverhost->totalReceivedData/60.0f/1024) << "rec (K/sec)";
+            spdlog::get("global")->debug() << "status: " << nonlocalclients << "remote clients, " << (serverhost->totalSentData/60.0f/1024) << "send," << (serverhost->totalReceivedData/60.0f/1024) << "rec (K/sec)";
         serverhost->totalSentData = serverhost->totalReceivedData = 0;
     }
 
@@ -657,7 +657,7 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
                 c.peer->data = &c;
                 string hn;
                 copystring(c.hostname, (enet_address_get_host_ip(&c.peer->address, hn, sizeof(hn))==0) ? hn : "unknown");
-                LOG(INFO) << "client connected (" << c.hostname << ")";
+                spdlog::get("global")->info() << "client connected (" << c.hostname << ")";
                 int reason = server::clientconnect(c.num, c.peer->address.host);
                 if(reason) disconnect_client(c.num, reason);
                 break;
@@ -673,7 +673,7 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
             {
                 client *c = (client *)event.peer->data;
                 if(!c) break;
-                LOG(INFO) << "disconnected client (" << c->hostname << ")";
+                spdlog::get("global")->info() << "disconnected client (" << c->hostname << ")";
                 server::clientdisconnect(c->num);
                 delclient(c);
                 break;
@@ -892,7 +892,7 @@ static void setupwindow(const char *title)
 	//appinstance = GetModuleHandle(NULL);
 	if(!appinstance) fatal("failed getting application instance");
 	appicon = LoadIcon(appinstance, MAKEINTRESOURCE(IDI_ICON1));//(HICON)LoadImage(appinstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE);
-	if(!appicon) LOG(ERROR) << "failed loading icon";
+	if(!appicon) spdlog::get("global")->error() << "failed loading icon";
 
 	appmenu = CreatePopupMenu();
 	if(!appmenu) fatal("failed creating popup menu");
@@ -971,7 +971,7 @@ bool isdedicatedserver() { return dedicatedserver; }
 void rundedicatedserver()
 {
     dedicatedserver = true;
-    LOG(INFO) << "dedicated server started, waiting for clients...";
+    spdlog::get("global")->info() << "dedicated server started, waiting for clients...";
 #ifdef WIN32
     SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
 	for(;;)
@@ -996,7 +996,7 @@ bool servererror(bool dedicated, const char *desc)
 #ifndef STANDALONE
     if(!dedicated)
     {
-        LOG(ERROR) << desc;
+        spdlog::get("global")->error() << desc;
         cleanupserver();
     }
     else
@@ -1010,7 +1010,7 @@ bool setuplistenserver(bool dedicated)
     ENetAddress address = { ENET_HOST_ANY, enet_uint16(serverport <= 0 ? server::serverport() : serverport) };
     if(*serverip)
     {
-        if(enet_address_set_host(&address, serverip)<0) LOG(WARNING) << "WARNING: server ip not resolved";
+        if(enet_address_set_host(&address, serverip)<0) spdlog::get("global")->warn() << "WARNING: server ip not resolved";
         else serveraddress.host = address.host;
     }
     serverhost = enet_host_create(&address, min(maxclients + server::reserveclients(), MAXCLIENTS), server::numchannels(), 0, serveruprate);
@@ -1032,7 +1032,7 @@ bool setuplistenserver(bool dedicated)
         enet_socket_destroy(lansock);
         lansock = ENET_SOCKET_NULL;
     }
-    if(lansock == ENET_SOCKET_NULL) LOG(WARNING) << "WARNING: could not create LAN server info socket";
+    if(lansock == ENET_SOCKET_NULL) spdlog::get("global")->warn() << "WARNING: could not create LAN server info socket";
     else enet_socket_set_option(lansock, ENET_SOCKOPT_NONBLOCK, 1);
     return true;
 }
@@ -1067,7 +1067,7 @@ void initserver(bool listen, bool dedicated)
 #ifndef STANDALONE
 void startlistenserver(int *usemaster)
 {
-    if(serverhost) { LOG(ERROR) << "listen server is already running"; return; }
+    if(serverhost) { spdlog::get("global")->error() << "listen server is already running"; return; }
 
     allowupdatemaster = *usemaster>0 ? 1 : 0;
 
@@ -1081,7 +1081,7 @@ COMMAND(startlistenserver, "i");
 
 void stoplistenserver()
 {
-    if(!serverhost) { LOG(ERROR) << "listen server is not running"; return; }
+    if(!serverhost) { spdlog::get("global")->error() << "listen server is not running"; return; }
 
     kicknonlocalclients();
     enet_host_flush(serverhost);
@@ -1102,9 +1102,9 @@ bool serveroption(char *opt)
         case 'j': setvar("serverport", atoi(opt+2)); return true; 
         case 'm': setsvar("mastername", opt+2); setvar("updatemaster", mastername[0] ? 1 : 0); return true;
 #ifdef STANDALONE
-        case 'q': VLOG(1) << "Using home directory: " << opt; sethomedir(opt+2); return true;
-        case 'k': VLOG(1) << "Adding package directory: " << opt; addpackagedir(opt+2); return true;
-        case 'x': VLOG(1) << "Setting server init script: " << opt; initscript = opt+2; return true;
+        case 'q': spdlog::get("global")->debug() << "Using home directory: " << opt; sethomedir(opt+2); return true;
+        case 'k': spdlog::get("global")->debug() << "Adding package directory: " << opt; addpackagedir(opt+2); return true;
+        case 'x': spdlog::get("global")->debug() << "Setting server init script: " << opt; initscript = opt+2; return true;
 #endif
         default: return false;
     }
@@ -1124,7 +1124,7 @@ int main(int argc, char **argv)
     el::Configurations logging_conf("inexor-logging.conf");
     el::Loggers::reconfigureAllLoggers(logging_conf);
 
-    LOG(INFO) << "Hello, server";
+    spdlog::get("global")->info() << "Hello, server";
 
     // setlogfile(NULL);
     UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // We only need to initialse it, not use it.

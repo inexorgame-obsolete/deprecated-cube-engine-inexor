@@ -393,7 +393,7 @@ namespace game
             if(wait>0)
             {
                 lastspawnattempt = lastmillis;
-                //CLOG(INFO, "gameplay") << "you must wait %d second%s before respawn!", wait, wait!=1 ? "s" : "");
+                //spdlog::get("gameplay")->info() << "you must wait %d second%s before respawn!", wait, wait!=1 ? "s" : "");
                 return;
             }
             if(lastmillis < player1->lastpain + spawnwait) return;
@@ -406,7 +406,7 @@ namespace game
             respawnself();
             if(m_classicsp)
             {
-                CLOG(INFO, "gameplay") << "You wasted another life! The monsters stole your armour and some ammo...";
+                spdlog::get("gameplay")->info() << "You wasted another life! The monsters stole your armour and some ammo...";
                 loopi(NUMGUNS) if(i!=GUN_PISTOL && (player1->ammo[i] = savedammo[i]) > 5) player1->ammo[i] = max(player1->ammo[i]/3, 5);
             }
         }
@@ -572,14 +572,14 @@ namespace game
             intermission = true;
             player1->attacking = false;
             if(cmode) cmode->gameover();
-            CLOG(INFO, "gameplay") << "intermission:";
-            CLOG(INFO, "gameplay") << "game has ended!";
-            if(m_ctf) CLOG(INFO, "gameplay") << "player frags: " << player1->frags << ", flags: " << player1->flags << ", deaths: " << player1->deaths;
-            else if(m_collect) CLOG(INFO, "gameplay") << "player frags: " << player1->frags << ", skulls: " << player1->flags << ", deaths: " << player1->deaths;
-            else CLOG(INFO, "gameplay") << "player frags: " << player1->frags << ", deaths: " << player1->deaths;
+            spdlog::get("gameplay")->info() << "intermission:";
+            spdlog::get("gameplay")->info() << "game has ended!";
+            if(m_ctf) spdlog::get("gameplay")->info() << "player frags: " << player1->frags << ", flags: " << player1->flags << ", deaths: " << player1->deaths;
+            else if(m_collect) spdlog::get("gameplay")->info() << "player frags: " << player1->frags << ", skulls: " << player1->flags << ", deaths: " << player1->deaths;
+            else spdlog::get("gameplay")->info() << "player frags: " << player1->frags << ", deaths: " << player1->deaths;
 
             int accuracy = (player1->totaldamage*100)/max(player1->totalshots, 1);
-            CLOG(INFO, "gameplay") << "player total damage dealt: " << player1->totaldamage << ", damage wasted: " << (player1->totalshots-player1->totaldamage) << ", accuracy: " << accuracy << "%";
+            spdlog::get("gameplay")->info() << "player total damage dealt: " << player1->totaldamage << ", damage wasted: " << (player1->totalshots-player1->totaldamage) << ", accuracy: " << accuracy << "%";
             if(m_sp) spsummary(accuracy);
 
             showscores(true);
@@ -645,7 +645,7 @@ namespace game
 
         fpsent *d = clients[cn];
         if(!d) return;
-        if(notify && d->name[0]) CLOG(INFO, "gameplay") << COL_GREY << "leave: " << COL_WHITE << colorname(d);
+        if(notify && d->name[0]) spdlog::get("gameplay")->info() << COL_GREY << "leave: " << COL_WHITE << colorname(d);
         removeweapons(d);
         removetrackedparticles(d);
         removetrackeddynlights(d);
@@ -709,13 +709,13 @@ namespace game
             cmode->setup();
         }
 
-        CLOG(INFO, "gameplay") << "game mode is " << server::modename(gamemode);
+        spdlog::get("gameplay")->info() << "game mode is " << server::modename(gamemode);
 
         if(m_sp)
         {
             defformatstring(scorename, "bestscore_%s", getclientmap());
             const char *best = getalias(scorename);
-            if(*best) CLOG(INFO, "gameplay") << "try to beat your best score so far: " << best;
+            if(*best) spdlog::get("gameplay")->info() << "try to beat your best score so far: " << best;
         }
 
         if(player1->playermodel != playermodel) switchplayermodel(playermodel);

@@ -5,7 +5,7 @@ CefRefPtr<CefV8Value> InexorCefContextProvider::GetContext()
     if (!context.get())
     {
         // This has to be happen when the context is initialized
-        LOG(DEBUG) << "init: cef: context \"" << GetContextName() << "\"";
+        spdlog::get("global")->debug() << "init: cef: context \"" << GetContextName() << "\"";
         context = CefV8Value::CreateObject(this);
         InitializeSubContexts();
         InitializeContext();

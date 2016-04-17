@@ -273,8 +273,8 @@ static void debugalias()
     {
         ident *id = l->id;
         ++depth;
-        if(depth < dbgalias) LOG(ERROR) << "  " << (total-depth+1) << ") " << id->name;
-        else if(l->next == &noalias) LOG(ERROR) << (depth == dbgalias ? "  " : "  ..") << (total - depth + 1) << ") " << id->name;
+        if(depth < dbgalias) spdlog::get("global")->error() << "  " << (total-depth+1) << ") " << id->name;
+        else if(l->next == &noalias) spdlog::get("global")->error() << (depth == dbgalias ? "  " : "  ..") << (total - depth + 1) << ") " << id->name;
     }
 }
 
@@ -2201,7 +2201,7 @@ bool execfile(const char *cfgfile, bool msg)
         buf = loadfile(makerelpath(getcurexecdir(), path(s)), NULL);
         if(!buf) 
         {
-            if(msg) LOG(ERROR) << "could not read " << quoted(cfgfile);
+            if(msg) spdlog::get("global")->error() << "could not read " << quoted(cfgfile);
             return false;
         }
     }
@@ -3085,8 +3085,8 @@ ICOMMAND(<s, "ss", (char *a, char *b), intret(strcmp(a,b)<0));
 ICOMMAND(>s, "ss", (char *a, char *b), intret(strcmp(a,b)>0));
 ICOMMAND(<=s, "ss", (char *a, char *b), intret(strcmp(a,b)<=0));
 ICOMMAND(>=s, "ss", (char *a, char *b), intret(strcmp(a,b)>=0));
-ICOMMAND(echo, "C", (char *s), LOG(INFO) << COL_GREEN << s;);
-ICOMMAND(error, "C", (char *s), LOG(ERROR) <<  s);
+ICOMMAND(echo, "C", (char *s), spdlog::get("global")->info() << COL_GREEN << s;);
+ICOMMAND(error, "C", (char *s), spdlog::get("global")->error() <<  s);
 ICOMMAND(strstr, "ss", (char *a, char *b), { char *s = strstr(a, b); intret(s ? s-a : -1); });
 ICOMMAND(strlen, "s", (char *s), intret(strlen(s)));
 ICOMMAND(strcode, "si", (char *s, int *i), intret(*i > 0 ? (memchr(s, 0, *i) ? 0 : uchar(s[*i])) : uchar(s[0])));

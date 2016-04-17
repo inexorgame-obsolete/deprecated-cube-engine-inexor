@@ -29,5 +29,12 @@ void InexorConsoleHandler::handle(const el::LogDispatchData* handlePtr)
     // For the new UI logging system we will probably need to pass loggerid as well.
 }
 
+void initLoggers()
+{
+    auto global = spdlog::stdout_logger_st("global");
+    auto chat = spdlog::stdout_logger_st("chat");
+    auto gameplay = spdlog::stdout_logger_st("gameplay");
+}
+
 }
 }

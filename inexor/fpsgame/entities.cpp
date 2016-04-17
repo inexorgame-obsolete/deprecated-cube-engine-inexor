@@ -194,22 +194,22 @@ namespace entities
         if(d==player1) switch(type)
         {
             case I_BOOST:
-                CLOG(INFO, "gameplay") << "you have a permanent +10 health bonus! " << embraced(d->maxhealth, "(", ")");
+                spdlog::get("gameplay")->info() << "you have a permanent +10 health bonus! " << embraced(d->maxhealth, "(", ")");
                 playsound(S_V_BOOST, NULL, NULL, 0, 0, 0, -1, 0, 3000);
                 break;
 
             case I_QUAD:
-                CLOG(INFO, "gameplay") << "you got the quad!";
+                spdlog::get("gameplay")->info() << "you got the quad!";
                 playsound(S_V_QUAD, NULL, NULL, 0, 0, 0, -1, 0, 3000);
                 break;
 
             case I_BOMBRADIUS:
-                CLOG(INFO, "gameplay") << "you have a permanent +1 damage radius bonus!";
+                spdlog::get("gameplay")->info() << "you have a permanent +1 damage radius bonus!";
                 playsound(S_V_QUAD, NULL, NULL, 0, 0, -1, 0, 3000); // TODO: other sound
                 break;
 
             case I_BOMBDELAY:
-                CLOG(INFO, "gameplay") << "your bombs explode faster!";
+                spdlog::get("gameplay")->info() << "your bombs explode faster!";
                 playsound(S_ITEMHEALTH, NULL, NULL, 0, 0, -1, 0, 3000);
                 break;
         }
@@ -332,7 +332,7 @@ namespace entities
                 if(d!=player1) break;
                 if(n==respawnent) break;
                 respawnent = n;
-                CLOG(INFO, "gameplay") << "respawn point set!";
+                spdlog::get("gameplay")->info() << "respawn point set!";
                 playsound(S_V_RESPAWNPOINT);
                 break;
 
@@ -373,7 +373,7 @@ namespace entities
         {
             d->quadmillis = 0;
             playsound(S_PUPOUT, d==player1 ? NULL : &d->o);
-            if(d==player1) CLOG(INFO, "gameplay") << "quad damage is over";
+            if(d==player1) spdlog::get("gameplay")->info() << "quad damage is over";
         }
     }
 
