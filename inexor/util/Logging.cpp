@@ -5,6 +5,10 @@ namespace util {
 
 void initLoggers()
 {
+    // Set async mode
+    size_t q_size = 4096; //queue size must be power of 2
+    spdlog::set_async_mode(q_size);
+
     // Create sinks
     std::vector<spdlog::sink_ptr> sinks;
     sinks.push_back(std::make_shared<spdlog::sinks::stdout_sink_st>());
