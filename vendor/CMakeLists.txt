@@ -15,20 +15,20 @@ if (NOT THREADAPI)
   find_package(Threads REQUIRED)
   
   if(WIN32 AND CMAKE_USE_WIN32_THREADS_INIT)
-    set(THREADAPI "win32" CACHE INTERN "")
+    set(THREADAPI "win32" CACHE INTERNAL "")
   elseif(CMAKE_USE_PTHREADS_INIT OR CMAKE_HP_PTHREADS_INIT)
-    set(THREADAPI "pthreads" CACHE INTERN "")
+    set(THREADAPI "pthreads" CACHE INTERNAL "")
   endif()
 endif()
 
 if (THREADAPI STREQUAL "pthreads")
-  set(THREADAPI_PTHREADS 1 CACHE INTERN "")
+  set(THREADAPI_PTHREADS 1 CACHE INTERNAL "")
 
   find_libs(PTHREADS_LIBS pthread pthreadGC2 winpthread)
   find_path(PTHREADS_INCLUDE_DIRS pthread.h)
 
 elseif(THREADAPI STREQUAL "win32")
-  set(THREADAPI_WIN32 1 CACHE INTERN "")
+  set(THREADAPI_WIN32 1 CACHE INTERNAL "")
 endif()
 register_possible_dependency(${PTHREADS_LIBS})
 
@@ -54,8 +54,8 @@ endfunction()
 
 find_package(OpenGL)
 
-set(OPENGL_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR} CACHE INTERN "")
-set(OPENGL_LIBS ${OPENGL_gl_LIBRARY} CACHE INTERN "")
+set(OPENGL_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR} CACHE INTERNAL "")
+set(OPENGL_LIBS ${OPENGL_gl_LIBRARY} CACHE INTERNAL "")
 register_possible_dependency(${OPENGL_LIBs})
 
 function(config_opengl targ)
@@ -82,7 +82,7 @@ find_path(SDL2_MIXER_INCLUDE_DIRS SDL_mixer.h PATH_SUFFIXES SDL2)
 set(SDL2_INCLUDE_DIRS
   ${SDL2_BASE_INCLUDE_DIRS}
   ${SDL2_IMAGE_INCLUDE_DIRS}
-  ${SDL2_MIXER_INCLUDE_DIRS} CACHE INTERN "")
+  ${SDL2_MIXER_INCLUDE_DIRS} CACHE INTERNAL "")
 
 function(config_sdl targ)
   message(STATUS "Configuring ${targ} with SDL")
@@ -110,8 +110,8 @@ endfunction()
 find_package(ZLIB)
 
 if (${ZLIB_FOUND})
-  set(ZLIB_LIBS ${ZLIB_LIBRARY} CACHE INTERN "")
-  set(ZLIB_INCLUDE_DIRS ${ZLIB_INCLUDE_DIR} CACHE INTERN "")
+  set(ZLIB_LIBS ${ZLIB_LIBRARY} CACHE INTERNAL "")
+  set(ZLIB_INCLUDE_DIRS ${ZLIB_INCLUDE_DIR} CACHE INTERNAL "")
 else()
   find_libs(ZLIB_LIBS z zlib1)
   find_path(ZLIB_INCLUDE_DIRS zlib.h)
@@ -328,7 +328,7 @@ ExternalProject_Add( build_gtest
 # This is a bit of a hack to find the actual location of the
 # built library
 ExternalProject_Get_Property(build_gtest BINARY_DIR)
-set(GTEST_LIB_DIR ${BINARY_DIR} CACHE INTERN "")
+set(GTEST_LIB_DIR ${BINARY_DIR} CACHE INTERNAL "")
 
 function(config_gtest targ)
   message(STATUS "Configuring ${targ} with google test")

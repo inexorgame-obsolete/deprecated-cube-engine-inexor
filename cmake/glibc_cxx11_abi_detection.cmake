@@ -14,7 +14,7 @@ function(register_possible_dependency)
     endif()
   endforeach()
 
-  set(DEPENDENCY_REGISTRY "${tmp}" CACHE INTERN "List of all libraries inexor may depend on.")
+  set(DEPENDENCY_REGISTRY "${tmp}" CACHE INTERNAL "List of all libraries inexor may depend on.")
 endfunction()
 
 # USAGE: lib_requires_GLIBC_CXX11_ABI(LIBRARY_PATH, OUTPUT_VARIABLE)
