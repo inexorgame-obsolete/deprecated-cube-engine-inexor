@@ -1,10 +1,10 @@
 declare_module(texture .)
 add_lib(texture)
 
-config_sdl(module_texture NOLINK)
-config_filesystem(module_texture NOLINK)
+require_sdl(module_texture NOLINK)
+require_filesystem(module_texture NOLINK)
 
-function(config_texture targ)
+function(require_texture targ)
   message(STATUS "Configuring ${targ} with texture")
   if (";${ARGN};" MATCHES ";NOLINK;")
     set(NOLINK "NOLINK")
@@ -12,6 +12,6 @@ function(config_texture targ)
 
   target_link_libs(${targ} module_texture ${NOLINK})
 
-  config_sdl(${targ} ${NOLINK})
-  config_filesystem(${targ} ${NOLINK})
+  require_sdl(${targ} ${NOLINK})
+  require_filesystem(${targ} ${NOLINK})
 endfunction()

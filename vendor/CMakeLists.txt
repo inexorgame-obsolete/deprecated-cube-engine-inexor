@@ -34,7 +34,7 @@ register_possible_dependency(${PTHREADS_LIBS})
 
 message(STATUS "THREADAPI : ${THREADAPI}")
 
-function(config_threads targ)
+function(require_threads targ)
   message(STATUS "Configuring ${targ} with Threads (${THREADAPI})")
   if (";${ARGN};" MATCHES ";NOLINK;")
     set(NOLINK "NOLINK")
@@ -58,7 +58,7 @@ set(OPENGL_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR} CACHE INTERNAL "")
 set(OPENGL_LIBS ${OPENGL_gl_LIBRARY} CACHE INTERNAL "")
 register_possible_dependency(${OPENGL_LIBs})
 
-function(config_opengl targ)
+function(require_opengl targ)
   message(STATUS "Configuring ${targ} with OpenGL (${OPENGL_LIBS})")
   if (";${ARGN};" MATCHES ";NOLINK;")
     set(NOLINK "NOLINK")
@@ -84,7 +84,7 @@ set(SDL2_INCLUDE_DIRS
   ${SDL2_IMAGE_INCLUDE_DIRS}
   ${SDL2_MIXER_INCLUDE_DIRS} CACHE INTERNAL "")
 
-function(config_sdl targ)
+function(require_sdl targ)
   message(STATUS "Configuring ${targ} with SDL")
   if (";${ARGN};" MATCHES ";NOLINK;")
     set(NOLINK "NOLINK")
@@ -102,7 +102,7 @@ function(config_sdl targ)
     target_link_libs(${targ} dl rt ${NOLINK})
   endif()
 
-  config_opengl(${targ} ${NOLINK})
+  require_opengl(${targ} ${NOLINK})
 endfunction()
 
 #### ZLIB
@@ -128,7 +128,7 @@ endif()
 
 register_possible_dependency(${ZLIB_LIBS})
 
-function(config_zlib targ)
+function(require_zlib targ)
   message(STATUS "Configuring ${targ} with ZLIB")
   if (";${ARGN};" MATCHES ";NOLINK;")
     set(NOLINK "NOLINK")
@@ -145,7 +145,7 @@ find_path(ENET_INCLUDE_DIRS enet/enet.h)
 
 register_possible_dependency(${ENET_LIBS})
 
-function(config_enet targ)
+function(require_enet targ)
   message(STATUS "Configuring ${targ} with ENET")
   if (";${ARGN};" MATCHES ";NOLINK;")
     set(NOLINK "NOLINK")
@@ -166,7 +166,7 @@ find_path(BOOST_SYSTEM_INCLUDE_DIRS boost/system/config.hpp)
 
 register_possible_dependency(${BOOST_SYSTEM_LIBS})
 
-function(config_boost_system targ)
+function(require_boost_system targ)
   message(STATUS "Configuring ${targ} with Boost System")
 
   target_link_libs(${targ} ${BOOST_SYSTEM_LIBS})
@@ -185,14 +185,14 @@ endif()
 
 register_possible_dependency(${BOOST_THREAD_LIBS})
 
-function(config_boost_thread targ)
+function(require_boost_thread targ)
   message(STATUS "Configuring ${targ} with Boost Thread")
   if (";${ARGN};" MATCHES ";NOLINK;")
     set(NOLINK "NOLINK")
   endif()
 
-  config_boost_system(${targ} ${NOLINK})
-  config_threads(${targ} ${NOLINK})
+  require_boost_system(${targ} ${NOLINK})
+  require_threads(${targ} ${NOLINK})
 
   add_definitions(-DBOOST_THREAD_LIB)
 
@@ -213,13 +213,13 @@ find_path(BOOST_RANDOM_INCLUDE_DIRS boost/random.hpp)
 
 register_possible_dependency(${BOOST_RANDOM_LIBS})
 
-function(config_boost_random targ)
+function(require_boost_random targ)
   message(STATUS "Configuring ${targ} with Boost Random")
   if (";${ARGN};" MATCHES ";NOLINK;")
     set(NOLINK "NOLINK")
   endif()
 
-  config_boost_system(${targ} ${NOLINK})
+  require_boost_system(${targ} ${NOLINK})
 
   include_directories(${BOOST_RANDOM_INCLUDE_DIRS})
   target_link_libs(${targ} ${BOOST_RANDOM_LIBS} ${NOLINK})
@@ -229,7 +229,7 @@ endfunction()
 
 find_path(ASIO_INCLUDE_DIRS boost/asio.hpp)
 
-function(config_asio targ)
+function(require_asio targ)
   message(STATUS "Configuring ${targ} with Boost Asio")
   if (";${ARGN};" MATCHES ";NOLINK;")
     set(NOLINK "NOLINK")
@@ -241,11 +241,11 @@ function(config_asio targ)
     target_link_libs(${targ} ws2_32 ${NOLINK})
   endif()
 
-  config_boost_system(${targ})
+  require_boost_system(${targ})
 endfunction()
 
-function(config_boost_asio)
-  config_asio(${ARGN})
+function(require_boost_asio)
+  require_asio(${ARGN})
 endfunction()
 
 #### BOOST (Filesystem)
@@ -255,20 +255,20 @@ find_path(BOOST_FILESYSTEM_INCLUDE_DIRS boost/filesystem.hpp)
 
 register_possible_dependency(${BOOST_FILESYSTEM_LIBS})
 
-function(config_boost_filesystem targ)
+function(require_boost_filesystem targ)
   message(STATUS "Configuring ${targ} with Boost Filesystem")
 
   add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED)
   target_link_libs(${targ} ${BOOST_FILESYSTEM_LIBS})
   target_include_directories(${targ} PUBLIC ${BOOST_FILESYSTEM_INCLUDE_DIRS})
 
-  config_boost_system(${targ})
+  require_boost_system(${targ})
 endfunction()
 
 #### Rapidjson
 
 find_path(RAPIDJSON_INCLUDE_DIRS rapidjson/rapidjson.h)
-function(config_rapidjson)
+function(require_rapidjson)
   message(STATUS "Configuring ${targ} with protobuf")
 
   add_definitions(-DRAPIDJSON_SSE2)
@@ -286,7 +286,7 @@ if (NOT DEFINED PROTOC_EXE)
   find_program(PROTOC_EXE protoc)
 endif()
 
-function(config_protobuf targ)
+function(require_protobuf targ)
   message(STATUS "Configuring ${targ} with protobuf")
   if (";${ARGN};" MATCHES ";NOLINK;")
     set(NOLINK "NOLINK")
@@ -330,13 +330,13 @@ ExternalProject_Add( build_gtest
 ExternalProject_Get_Property(build_gtest BINARY_DIR)
 set(GTEST_LIB_DIR ${BINARY_DIR} CACHE INTERNAL "")
 
-function(config_gtest targ)
+function(require_gtest targ)
   message(STATUS "Configuring ${targ} with google test")
   if (";${ARGN};" MATCHES ";NOLINK;")
     set(NOLINK "NOLINK")
   endif()
 
-  config_cxx11_abi(${targ} ${NOLINK})
+  require_cxx11_abi(${targ} ${NOLINK})
 
   add_dependencies(${targ} build_gtest)
 

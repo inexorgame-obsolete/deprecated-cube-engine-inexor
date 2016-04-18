@@ -301,3 +301,23 @@ function(opt_subdir subdir initial)
       message(STATUS "not building ${subdir}")
   endif()
 endfunction()
+
+# USAGE: pragma_once(net_module server_target)
+# Servers as include guard alternative, since its sets the variable ALREADY_INCLUDED 
+# in its parents scope.
+function(pragma_once VAR1 VAR2)
+
+  # GET_PROPERTY and SET_PROPERTY is a workaround for having global variables in cmake.
+  # Cached strings would not work, since they'd stay for the next configuring as well..
+  GET_PROPERTY(LOCAL_REGISTRY GLOBAL PROPERTY GLOBAL_PRAGMA_REGISTRY)
+
+  if(";${LOCAL_REGISTRY};" MATCHES "Pragma_${VAR1}_${VAR2}")
+    set(ALREADY_INCLUDED 1 PARENT_SCOPE)
+    return()
+  endif()
+  set(LOCAL_REGISTRY "${LOCAL_REGISTRY} Pragma_${VAR1}_${VAR2}")
+  SET_PROPERTY(GLOBAL PROPERTY GLOBAL_PRAGMA_REGISTRY ${LOCAL_REGISTRY})
+
+  set(ALREADY_INCLUDED 0 PARENT_SCOPE)
+endfunction()
+

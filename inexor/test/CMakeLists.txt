@@ -7,10 +7,10 @@ link_directories(${GTEST_LIB_DIR})
 
 add_app(${TEST_BINARY} ${TEST_MODULE_SOURCES} CONSOLE_APP)
 
-config_net(${TEST_BINARY})
-config_util(${TEST_BINARY})
-config_gtest(${TEST_BINARY})
-config_cxx11_abi(${TEST_BINARY})
+require_net(${TEST_BINARY})
+require_util(${TEST_BINARY})
+require_gtest(${TEST_BINARY})
+require_cxx11_abi(${TEST_BINARY})
 
 target_link_libs(${TEST_BINARY} ${ADDITIONAL_LIBRARIES})
 

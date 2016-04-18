@@ -70,12 +70,12 @@ endfunction()
 #
 # This should be used by any module compiling c++ code.
 #
-# This is using config_ style because we need to defer this
+# This is using require_ style because we need to defer this
 # until all dependencies are found.
 #
 # TODO: Detect pure C libraries as requiring no specific ABI. At the moment those are detected to use the old abi.
 # TODO: Add support for GNU LD scripts
-function(config_cxx11_abi targ)
+function(require_cxx11_abi targ)
   check_GLIBC_CXX11_AB1()
   add_definitions(-D_GLIBCXX_USE_CXX11_ABI=${_GLIBCXX_USE_CXX11_ABI})
 endfunction()
