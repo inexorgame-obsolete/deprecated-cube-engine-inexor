@@ -3,37 +3,25 @@
 namespace inexor {
 namespace util {
 
-void InexorConsoleHandler::handle(const el::LogDispatchData* handlePtr)
-{
-    // NEVER LOG ANYTHING HERE!
-    int type = 0;
-
-    // Convert loggers and levels to legacy conline types:
-    switch (handlePtr->logMessage()->level())
-    {
-        default:
-        case el::Level::Info:
-            type = 1<<0;
-            break;
-        case el::Level::Warning:
-            type = 1<<1;
-            break;
-        case el::Level::Error:
-            type = 1<<2;
-            break;
-        case el::Level::Debug:
-            type = 1<<3;
-            break;
-    }
-    conline(type, handlePtr->logMessage()->message().c_str());
-    // For the new UI logging system we will probably need to pass loggerid as well.
-}
-
 void initLoggers()
 {
-    auto global = spdlog::stdout_logger_st("global");
-    auto chat = spdlog::stdout_logger_st("chat");
-    auto gameplay = spdlog::stdout_logger_st("gameplay");
+    // Create sinks
+    std::vector<spdlog::sink_ptr> sinks;
+    sinks.push_back(std::make_shared<spdlog::sinks::stdout_sink_st>());
+    sinks.push_back(std::make_shared<inexor::util::InexorConsoleSink>());
+    // sinks.push_back(std::make_shared<spdlog::sinks::ansicolor_sink>(std::make_shared<spdlog::sinks::stdout_sink_st>()));
+    // sinks.push_back(std::make_shared<spdlog::sinks::ansicolor_sink>(std::make_shared<inexor::util::InexorConsoleSink>()));
+    // sinks.push_back(std::make_shared<spdlog::sinks::daily_file_sink_st>("logfile", "txt", 23, 59));
+
+    // Create loggers
+    auto global = std::make_shared<spdlog::logger>("global", begin(sinks), end(sinks));
+    auto chat = std::make_shared<spdlog::logger>("chat", begin(sinks), end(sinks));
+    auto gameplay = std::make_shared<spdlog::logger>("gameplay", begin(sinks), end(sinks));
+
+    // Register loggers to make them accessible globally
+    spdlog::register_logger(global);
+    spdlog::register_logger(chat);
+    spdlog::register_logger(gameplay);
 }
 
 }

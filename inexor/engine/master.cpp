@@ -693,7 +693,7 @@ void reloadsignal(int signum)
 #endif
 
 // Singleton needed for our logger.
-INITIALIZE_EASYLOGGINGPP
+// INITIALIZE_EASYLOGGINGPP
 
 int main(int argc, char **argv)
 {

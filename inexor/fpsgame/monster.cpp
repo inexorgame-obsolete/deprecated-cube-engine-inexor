@@ -59,7 +59,7 @@ namespace game
             respawn();
             if(_type>=NUMMONSTERTYPES || _type < 0)
             {
-                LOG_N_TIMES(1, WARNING) << "warning: unknown monster in spawn: " << _type;
+                spdlog::get("global")->warn() << "warning: unknown monster in spawn: " << _type; // TODO: LOG_N_TIMES(1)
                 _type = 0;
             }
             mtype = _type;

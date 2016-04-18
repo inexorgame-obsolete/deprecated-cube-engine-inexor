@@ -11,6 +11,8 @@ char *initscript = NULL;
 
 #ifdef STANDALONE
 
+void conline(int type, const char *sf) {};
+
 void cleanupserver();
 void fatal(const char *fmt, ...)
 {
@@ -1114,17 +1116,16 @@ vector<const char *> gameargs;
 
 #ifdef STANDALONE
 
-// Singleton needed for our logger.
-INITIALIZE_EASYLOGGINGPP
-
 int main(int argc, char **argv)
 {
 
-    // Load logging configuration from file
-    el::Configurations logging_conf("inexor-logging.conf");
-    el::Loggers::reconfigureAllLoggers(logging_conf);
+    inexor::util::initLoggers();
 
-    spdlog::get("global")->info() << "Hello, server";
+    // Load logging configuration from file
+    // el::Configurations logging_conf("inexor-logging.conf");
+    // el::Loggers::reconfigureAllLoggers(logging_conf);
+
+    spdlog::get("global")->info() << "Logger funktioniert";
 
     // setlogfile(NULL);
     UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // We only need to initialse it, not use it.

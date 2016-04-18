@@ -265,7 +265,7 @@ bool soundsample::load(bool msg)
         if(chunk) return true;
     }
 
-    LOG_N_TIMES(1, WARNING) << "failed to load sound: " << filename;
+    spdlog::get("global")->warn() << "failed to load sound: " << filename; // TODO: LOG_N_TIMES(1)
     return false;
 }
 
@@ -561,7 +561,7 @@ int playsound(int n, const vec *loc, extentity *ent, int flags, int loops, int f
     if(nosound || !soundvol || minimized) return -1;
 
     soundtype &sounds = ent || flags&SND_MAP ? mapsounds : gamesounds;
-    if(!sounds.configs.inrange(n)) { LOG_N_TIMES(1, WARNING) << "unregistered sound: " << n; return -1; }
+    if(!sounds.configs.inrange(n)) { spdlog::get("global")->warn() << "unregistered sound: " << n; return -1; } // TODO: LOG_N_TIMES(1)
     soundconfig &config = sounds.configs[n];
 
     if(loc && (maxsoundradius || radius > 0))

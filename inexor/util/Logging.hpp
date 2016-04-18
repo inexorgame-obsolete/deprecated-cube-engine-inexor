@@ -2,18 +2,11 @@
 
 #pragma once
 
-#define ELPP_THREAD_SAFE
-#define ELPP_FORCE_USE_STD_THREAD
-//#define ELPP_NO_DEFAULT_LOG_FILE
-#define ELPP_DISABLE_DEFAULT_CRASH_HANDLING
-#define ELPP_WINSOCK2
-
 #include "spdlog/spdlog.h"
-#include <easylogging++.h>
+#undef LOG_INFO
+#undef LOG_WARNING
+#include "inexor/util/InexorConsoleSink.hpp"
 #include <iomanip>
-
-/// Function which displayes console text ingame.
-extern void conline(int type, const char *sf);
 
 namespace inexor {
 namespace util {
@@ -64,16 +57,6 @@ namespace util {
     struct quoted : embraced
     {
         quoted(const char *text) : embraced(text, "\"", "\"") {}
-    };
-
-
-    /// Wrapper for easylogger for telling it to call our callback every time something gets logged (so we can display it ingame).
-    /// Needs to be installed on startup with el::Helpers::installLogDispatchCallback<InexorConsoleHandler>("InexorConsoleHandler");
-    class InexorConsoleHandler : public el::LogDispatchCallback
-    {
-    public:
-        InexorConsoleHandler() : el::LogDispatchCallback() {}
-        void handle(const el::LogDispatchData* handlePtr);
     };
 
     void initLoggers();

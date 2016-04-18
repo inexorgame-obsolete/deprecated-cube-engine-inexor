@@ -93,7 +93,7 @@ void fatal(const char *s, ...)
     {
         defvformatstring(msg,s,s);
         // Temporarly disabled crash handler output (easylogging)
-        // spdlog::get("global")->critical() << msg;
+        spdlog::get("global")->critical() << msg;
 
         #ifdef WIN32
             if(errors <= 1) MessageBox(NULL, msg, "Inexor fatal error", MB_OK|MB_SYSTEMMODAL);
@@ -110,7 +110,7 @@ void fatal(std::vector<std::string> &output)
     std::string completeoutput; 
     for(auto message : output) {
         // Temporarly disabled crash handler output (easylogging)
-        // spdlog::get("global")->critical() << message.c_str();
+        spdlog::get("global")->critical() << message;
         completeoutput = inexor::util::fmt << completeoutput << message.c_str();
     }
 #ifdef WIN32
@@ -1205,9 +1205,6 @@ ICOMMAND(cef_reload, "", (),
 ICOMMAND(cef_focus, "b", (bool *b),
     if (cef_app.get()) cef_app->setFocus(*b); );
 
-// Singleton needed for our logger.
-INITIALIZE_EASYLOGGINGPP
-
 /// main program start
 int main(int argc, char **argv)
 {
@@ -1215,13 +1212,9 @@ int main(int argc, char **argv)
     inexor::util::initLoggers();
     spdlog::get("global")->info() << "Logger funktioniert";
 
-    // Load logging configuration from file
-   // START_EASYLOGGINGPP(argc, argv);
-    el::Loggers::configureFromGlobal("inexor_logging.conf");
-    el::Helpers::installLogDispatchCallback<inexor::util::InexorConsoleHandler>("InexorConsoleHandler");
-    el::Loggers::addFlag(el::LoggingFlag::ColoredTerminalOutput);
+    // TODO: Load logging configuration from file
 
-    UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // We only need to initialse it, not use it.
+    UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // We only need to initialize it, not use it.
 
     int dedicated = 0;
     char *load = NULL, *initscript = NULL;
@@ -1267,7 +1260,7 @@ int main(int argc, char **argv)
             case 'z': depthbits = atoi(&argv[i][2]); break;
             case 'b': /* compat, ignore */ break;
             case 'a': fsaa = atoi(&argv[i][2]); break;
-            case 'v': vsync = atoi(&argv[i][2]); restorevsync(); break; // conflicts with easylogging!
+            case 'v': vsync = atoi(&argv[i][2]); restorevsync(); break;
             case 't': fullscreen = atoi(&argv[i][2]); break;
             case 's': stencilbits = atoi(&argv[i][2]); break;
             case 'f': 

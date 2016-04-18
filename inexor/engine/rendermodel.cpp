@@ -372,7 +372,8 @@ void flushpreloadedmodels(bool msg)
     {
         loadprogress = float(i+1)/preloadmodels.length();
         model *m = loadmodel(preloadmodels[i], -1, msg);
-        if(!m) { if(msg) LOG_N_TIMES(1, WARNING) << "could not load model: " << preloadmodels[i]; }
+
+        if(!m) { if(msg) spdlog::get("global")->warn() << "could not load model: " << preloadmodels[i]; } // TODO: LOG_N_TIMES(1)
         else
         {
             m->preloadmeshes();
@@ -397,8 +398,8 @@ void preloadusedmapmodels(bool msg, bool bih)
         loadprogress = float(i+1)/mapmodels.length();
         int mmindex = mapmodels[i];
         mapmodelinfo *mmi = getmminfo(mmindex);
-        if(!mmi) { if(msg) LOG_N_TIMES(1, WARNING) << "could not find map model: " << mmindex; }
-        else if(mmi->name[0] && !loadmodel(NULL, mmindex, msg)) { if(msg) LOG_N_TIMES(1, WARNING) << "could not load model: " << mmi->name; }
+        if(!mmi) { if(msg) spdlog::get("global")->warn() << "could not find map model: " << mmindex; } // TODO: LOG_N_TIMES(1)
+        else if(mmi->name[0] && !loadmodel(NULL, mmindex, msg)) { if(msg) spdlog::get("global")->warn() << "could not load model: " << mmi->name; } // TODO: LOG_N_TIMES(1)
         else if(mmi->m)
         {
             if(bih) mmi->m->preloadBIH();
