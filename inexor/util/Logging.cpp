@@ -11,7 +11,7 @@ void initLoggers()
     sinks.push_back(std::make_shared<inexor::util::InexorConsoleSink>());
     // sinks.push_back(std::make_shared<spdlog::sinks::ansicolor_sink>(std::make_shared<spdlog::sinks::stdout_sink_st>()));
     // sinks.push_back(std::make_shared<spdlog::sinks::ansicolor_sink>(std::make_shared<inexor::util::InexorConsoleSink>()));
-    // sinks.push_back(std::make_shared<spdlog::sinks::daily_file_sink_st>("logfile", "txt", 23, 59));
+    sinks.push_back(std::make_shared<spdlog::sinks::daily_file_sink_st>("inexor", "log", 23, 59));
 
     // Create loggers
     auto global = std::make_shared<spdlog::logger>("global", begin(sinks), end(sinks));
