@@ -20,11 +20,17 @@ void initLoggers()
     auto global = std::make_shared<spdlog::logger>("global", begin(sinks), end(sinks));
     auto chat = std::make_shared<spdlog::logger>("chat", begin(sinks), end(sinks));
     auto gameplay = std::make_shared<spdlog::logger>("gameplay", begin(sinks), end(sinks));
+    auto edit = std::make_shared<spdlog::logger>("edit", begin(sinks), end(sinks));
+    auto frag_involved = std::make_shared<spdlog::logger>("frag_involved", begin(sinks), end(sinks));
+    auto frag_not_involved = std::make_shared<spdlog::logger>("frag_not_involved", begin(sinks), end(sinks));
 
     // Register loggers to make them accessible globally
     spdlog::register_logger(global);
     spdlog::register_logger(chat);
     spdlog::register_logger(gameplay);
+    spdlog::register_logger(edit);
+    spdlog::register_logger(frag_involved);
+    spdlog::register_logger(frag_not_involved);
 }
 
 }

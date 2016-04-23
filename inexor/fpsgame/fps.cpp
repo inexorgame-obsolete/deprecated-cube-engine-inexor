@@ -525,7 +525,7 @@ namespace game
 
         fpsent *h = followingplayer();
         if(!h) h = player1;
-        int contype = d==h || actor==h ? CON_FRAG_SELF : CON_FRAG_OTHER;
+        auto frag_logger = d==h || actor==h ? spdlog::get("frag_involved") : spdlog::get("frag_not_involved");
         const char *dname = "", *aname = "";
         if(m_teammode && teamcolorfrags)
         {
@@ -538,21 +538,20 @@ namespace game
             aname = colorname(actor, NULL, "", "you");
         }
         if(actor->type==ENT_AI)
-            conoutf(contype, "\f2%s got killed by %s!", dname, aname);
+            frag_logger->info() << dname << " got killed by " << aname;
         else if(d==actor || actor->type==ENT_INANIMATE)
-            conoutf(contype, "\f2%s suicided%s", dname, d==player1 ? "!" : "");
+            frag_logger->info() << dname << " suicided" << (d==player1 ? "!" : "");
         else if(isteam(d->team, actor->team))
         {
-            contype |= CON_TEAMKILL;
             actor->teamkills++;
-            if(actor==player1) conoutf(contype, "\f6%s fragged a teammate (%s)", aname, dname);
-            else if(d==player1) conoutf(contype, "\f6%s got fragged by a teammate (%s)", dname, aname);
-            else conoutf(contype, "\f2%s fragged a teammate (%s)", aname, dname);
+            if(actor==player1) frag_logger->info() << aname << " fragged a teammate (" << dname << ")";
+            else if(d==player1) frag_logger->info() << dname << " got fragged by a teammate (" << aname << ")";
+            else frag_logger->info() << aname << " fragged a teammate (" << dname << ")";
         }
         else
         {
-            if(d==player1) conoutf(contype, "\f2%s got fragged by %s", dname, aname);
-            else conoutf(contype, "\f2%s fragged %s", aname, dname);
+            if(d==player1) frag_logger->info() << dname << " got fragged by " << aname;
+            else frag_logger->info() << aname << " fragged " << dname;
         }
         deathstate(d);
         ai::killed(d, actor);
