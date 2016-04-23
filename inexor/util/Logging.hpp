@@ -6,6 +6,7 @@
 #undef LOG_INFO
 #undef LOG_WARNING
 #include "inexor/util/InexorConsoleSink.hpp"
+#include "inexor/util/InexorCutAnsiCodesSink.hpp"
 #include <iomanip>
 
 namespace inexor {
