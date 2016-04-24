@@ -27,6 +27,28 @@ namespace util {
             void handle(const el::LogDispatchData* handlePtr);
     };
 
+
+    /// A simple helper class to allow you writing inexor::util::quoted(string) which automatically adds quotation marks.
+    /// When either constructing an std::string from it or << it into a stream (e.g. LOG()).
+    struct quoted
+    {
+        const char * _text;
+        quoted(const char * text) : _text(text) {}
+
+        operator std::string() const
+        {
+            std::string quotedStr = "\"";
+            quotedStr += _text;
+            quotedStr += "\"";
+            return quotedStr;
+        }
+
+        friend std::ostream &operator<< (std::ostream & ostr, const quoted & q)
+        {
+            ostr << "\"" << q._text << "\"";
+            return ostr;
+        }
+    };
 }
 }
 

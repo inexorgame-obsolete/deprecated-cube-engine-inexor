@@ -3,6 +3,8 @@
 #include "inexor/texture/slot.hpp"
 #include "inexor/util/Logging.hpp"
 
+using namespace inexor::util;
+
 extern SharedVar<int> outline;
 
 bool boxoutline = false;
@@ -244,7 +246,7 @@ void toggleedit(bool force)
 /// concerns may be a scene selection which is not in view or disbaled editing status
 bool noedit(bool view, bool msg)
 {
-    if(!editmode) { if(msg) conoutf(CON_ERROR, "operation only allowed in edit mode"); return true; }
+    if(!editmode) { if(msg) LOG(ERROR) << "operation only allowed in edit mode"; return true; }
     if(view || haveselent()) return false;
     float r = 1.0f;
     vec o(sel.o), s(sel.s);
@@ -252,7 +254,7 @@ bool noedit(bool view, bool msg)
     o.add(s);
     r = float(max(s.x, max(s.y, s.z)));
     bool viewable = (isvisiblesphere(r, o) != VFC_NOT_VISIBLE);
-    if(!viewable && msg) conoutf(CON_ERROR, "selection not in view");
+    if(!viewable && msg) LOG(ERROR) << "selection not in view";
     return !viewable;
 }
 
@@ -1297,14 +1299,14 @@ void saveprefab(char *name)
     defformatstring(filename, "%s/%s.obr", *prefabdir, name);
     path(filename);
     stream *f = opengzfile(filename, "wb");
-    if(!f) { conoutf(CON_ERROR, "could not write prefab to %s", filename); return; }
+    if(!f) { LOG(ERROR) << "could not write prefab to " << filename; return; }
     prefabheader hdr;
     memcpy(hdr.magic, "OEBR", 4);
     hdr.version = 0;
     lilswap(&hdr.version, 1);
     f->write(&hdr, sizeof(hdr));
     streambuf<uchar> s(f);
-    if(!packblock(*b->copy, s)) { delete f; conoutf(CON_ERROR, "could not pack prefab %s", filename); return; }
+    if(!packblock(*b->copy, s)) { delete f; LOG(ERROR) << "could not pack prefab " << filename; return; }
     delete f;
     conoutf("wrote prefab file %s", filename);
 }
@@ -1328,14 +1330,14 @@ prefab *loadprefab(const char *name, bool msg = true)
    defformatstring(filename, strpbrk(name, "/\\") ? "packages/%s.obr" : "packages/prefab/%s.obr", name);
    path(filename);
    stream *f = opengzfile(filename, "rb");
-   if(!f) { if(msg) conoutf(CON_ERROR, "could not read prefab %s", filename); return NULL; }
+   if(!f) { if(msg) LOG(ERROR) << "could not read prefab " << filename; return NULL; }
    prefabheader hdr;
-   if(f->read(&hdr, sizeof(hdr)) != sizeof(prefabheader) || memcmp(hdr.magic, "OEBR", 4)) { delete f; if(msg) conoutf(CON_ERROR, "prefab %s has malformatted header", filename); return NULL; }
+   if(f->read(&hdr, sizeof(hdr)) != sizeof(prefabheader) || memcmp(hdr.magic, "OEBR", 4)) { delete f; if(msg) LOG(ERROR) << "prefab " << filename << " has malformatted header"; return NULL; }
    lilswap(&hdr.version, 1);
-   if(hdr.version != 0) { delete f; if(msg) conoutf(CON_ERROR, "prefab %s uses unsupported version", filename); return NULL; }
+   if(hdr.version != 0) { delete f; if(msg) LOG(ERROR) << "prefab " << filename << " uses unsupported version"; return NULL; }
    streambuf<uchar> s(f);
    block3 *copy = NULL;
-   if(!unpackblock(copy, s)) { delete f; if(msg) conoutf(CON_ERROR, "could not unpack prefab %s", filename); return NULL; }
+   if(!unpackblock(copy, s)) { delete f; if(msg) LOG(ERROR) << "could not unpack prefab " << filename; return NULL; }
    delete f;
 
    b = &prefabs[name];
@@ -2563,7 +2565,7 @@ bool mpreplacetex(int oldtex, int newtex, bool insel, selinfo &sel, ucharbuf &bu
 void replace(bool insel)
 {
     if(noedit()) return;
-    if(reptex < 0) { conoutf(CON_ERROR, "can only replace after a texture edit"); return; }
+    if(reptex < 0) { LOG(ERROR) << "can only replace after a texture edit"; return; }
     mpreplacetex(reptex, lasttex, insel, sel, true);
 }
 
@@ -2754,7 +2756,7 @@ void editmat(char *name, char *filtername)
         if(filter < 0) filter = findmaterial(filtername);
         if(filter < 0)
         {
-            conoutf(CON_ERROR, "unknown material \"%s\"", filtername);
+            LOG(ERROR) << "unknown material "<< quoted(filtername);
             return;
         }
     }
@@ -2762,7 +2764,7 @@ void editmat(char *name, char *filtername)
     if(name[0] || filter < 0)
     {
         id = findmaterial(name);
-        if(id<0) { conoutf(CON_ERROR, "unknown material \"%s\"", name); return; }
+        if(id<0) { LOG(ERROR) << "unknown material " << quoted(name); return; }
     }
     mpeditmat(id, filter, sel, true);
 }
@@ -2863,7 +2865,7 @@ void g3d_texturemenu()
 /// show texture
 void showtexgui(int *n)
 {
-    if(!editmode) { conoutf(CON_ERROR, "operation only allowed in edit mode"); return; }
+    if(!editmode) { LOG(ERROR) << "operation only allowed in edit mode"; return; }
     gui.showtextures(*n==0 ? !gui.menuon : *n==1);
 }
 

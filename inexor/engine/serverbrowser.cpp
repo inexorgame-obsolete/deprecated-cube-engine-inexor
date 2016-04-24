@@ -1,4 +1,5 @@
 #include "inexor/engine/engine.hpp"
+#include "inexor/util/Logging.hpp"
 
 struct resolverthread
 {

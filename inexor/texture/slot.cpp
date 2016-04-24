@@ -9,6 +9,7 @@
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/texture/slot.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
+#include "inexor/util/Logging.hpp"
 
 using namespace rapidjson;
 using namespace inexor::filesystem;
@@ -975,7 +976,7 @@ void texture(char *type, char *name, int *rot, int *xoffset, int *yoffset, float
     Slot &s = matslot >= 0 ? lookupmaterialslot(matslot, false) : *(tnum != TEX_DIFFUSE ? slots.last() : slots.add(new Slot(slots.length())));
     s.loaded = 0;
     s.texmask |= 1 << tnum;
-    if(s.sts.length() >= 8) conoutf(CON_WARN, "warning: too many textures in slot %d", slots.length() - 1);
+    if(s.sts.length() >= 8) LOG(WARNING) << "warning: too many textures in slot " << (slots.length() - 1);
 
     s.addtexture(tnum, name);
 
@@ -989,7 +990,7 @@ void texture(char *type, char *name, int *rot, int *xoffset, int *yoffset, float
         vs.scale = *scale <= 0 ? 1 : *scale;
         propagatevslot(&vs, (1 << VSLOT_NUM) - 1);
     }
-    //conoutf(CON_WARN, "old texture loaded, should it be converted?")
+    //LOG(WARNING) << "old texture loaded, should it be converted?";
 }
 COMMAND(texture, "ssiiif");
 

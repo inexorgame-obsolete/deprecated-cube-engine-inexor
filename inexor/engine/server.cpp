@@ -440,7 +440,7 @@ void processmasterinput()
         while(args < end && iscubespace(*args)) args++;
 
         if(matchstring(input, cmdlen, "failreg"))
-            conoutf(CON_ERROR, "master server registration failed: %s", args);
+            LOG(ERROR) << "master server registration failed: " << args;
         else if(matchstring(input, cmdlen, "succreg"))
             conoutf("master server registration succeeded");
         else server::processmasterinput(input, cmdlen, args);
@@ -892,7 +892,7 @@ static void setupwindow(const char *title)
 	//appinstance = GetModuleHandle(NULL);
 	if(!appinstance) fatal("failed getting application instance");
 	appicon = LoadIcon(appinstance, MAKEINTRESOURCE(IDI_ICON1));//(HICON)LoadImage(appinstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE);
-	if(!appicon) conoutf(CON_ERROR, "failed loading icon");
+	if(!appicon) LOG(ERROR) << "failed loading icon";
 
 	appmenu = CreatePopupMenu();
 	if(!appmenu) fatal("failed creating popup menu");
@@ -996,7 +996,7 @@ bool servererror(bool dedicated, const char *desc)
 #ifndef STANDALONE
     if(!dedicated)
     {
-        conoutf(CON_ERROR, "%s", desc);
+        LOG(ERROR) << desc;
         cleanupserver();
     }
     else
@@ -1067,7 +1067,7 @@ void initserver(bool listen, bool dedicated)
 #ifndef STANDALONE
 void startlistenserver(int *usemaster)
 {
-    if(serverhost) { conoutf(CON_ERROR, "listen server is already running"); return; }
+    if(serverhost) { LOG(ERROR) << "listen server is already running"; return; }
 
     allowupdatemaster = *usemaster>0 ? 1 : 0;
 
@@ -1081,7 +1081,7 @@ COMMAND(startlistenserver, "i");
 
 void stoplistenserver()
 {
-    if(!serverhost) { conoutf(CON_ERROR, "listen server is not running"); return; }
+    if(!serverhost) { LOG(ERROR) << "listen server is not running"; return; }
 
     kicknonlocalclients();
     enet_host_flush(serverhost);

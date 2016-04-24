@@ -4,6 +4,7 @@
 #include "inexor/texture/image.hpp"
 #include "inexor/texture/format.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
+#include "inexor/util/Logging.hpp"
 
 void forcecubemapload(GLuint tex)
 {
@@ -74,12 +75,12 @@ Texture *cubemaploadwildcard(Texture *t, const char *name, bool mipit, bool msg,
         if(!s.data) return NULL;
         if(s.w != s.h)
         {
-            if(msg) conoutf(CON_ERROR, "cubemap texture %s does not have square size", sname);
+            if(msg) LOG(ERROR) << "cubemap texture " << sname << " does not have square size";
             return NULL;
         }
         if(s.compressed ? s.compressed != surface[0].compressed || s.w != surface[0].w || s.h != surface[0].h || s.levels != surface[0].levels : surface[0].compressed || s.bpp != surface[0].bpp)
         {
-            if(msg) conoutf(CON_ERROR, "cubemap texture %s doesn't match other sides' format", sname);
+            if(msg) LOG(ERROR) << "cubemap texture " << sname << " doesn't match other sides' format";
             return NULL;
         }
         tsize = max(tsize, max(s.w, s.h));
@@ -159,7 +160,7 @@ Texture *cubemapload(const char *name, bool mipit, bool msg, bool transient)
         {
             defformatstring(pngname, "%s_*.png", pname);
             t = cubemaploadwildcard(NULL, pngname, mipit, false, transient);
-            if(!t && msg) conoutf(CON_ERROR, "could not load envmap %s", name);
+            if(!t && msg) LOG(ERROR) << "could not load envmap " << name;
         }
     }
     else t = cubemaploadwildcard(NULL, pname, mipit, msg, transient);

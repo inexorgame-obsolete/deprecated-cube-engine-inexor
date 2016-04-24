@@ -1,4 +1,5 @@
 #include "inexor/engine/engine.hpp"
+#include "inexor/util/Logging.hpp"
 
 enum
 {
@@ -1097,7 +1098,7 @@ void genpvs(int *viewcellsize)
 {
     if(worldsize > 1<<15)
     {
-        conoutf(CON_ERROR, "map is too large for PVS");
+        LOG(ERROR) << "map is too large for PVS";
         return;
     }
 

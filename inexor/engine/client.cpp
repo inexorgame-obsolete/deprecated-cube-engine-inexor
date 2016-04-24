@@ -4,11 +4,12 @@
 // implementation of enet network parser
 
 #include "inexor/engine/engine.hpp"
+#include "inexor/util/Logging.hpp"
 
-// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// mostly network related stuff
+using namespace inexor::util; //needed for quoted()
 
-// host and peer
+// (mostly) network related stuff
+
 ENetHost *clienthost = NULL;
 ENetPeer *curpeer = NULL, *connpeer = NULL;
 int connmillis = 0, connattempts = 0, discmillis = 0;
@@ -18,7 +19,7 @@ int connmillis = 0, connattempts = 0, discmillis = 0;
 bool multiplayer(bool msg)
 {
     bool val = curpeer || hasnonlocalclients(); 
-    if(val && msg) conoutf(CON_ERROR, "operation not available in multiplayer");
+    if(val && msg) LOG(ERROR) << "operation not available in multiplayer";
     return val;
 }
 
@@ -146,7 +147,7 @@ void reconnect(const char *serverpassword)
 {
     if(!connectname[0] || connectport <= 0)
     {
-        conoutf(CON_ERROR, "no previous connection");
+        LOG(ERROR) << "no previous connection";
         return;
     }
     connectserv(connectname, connectport, serverpassword);
@@ -225,7 +226,7 @@ void flushclient()
 // print illegal network message to console (wrong protocol?)
 void neterr(const char *s, bool disc)
 {
-    conoutf(CON_ERROR, "\f3illegal network message (%s)", s);
+    LOG(ERROR) << "illegal network message " << quoted(s);
     if(disc) disconnect();
 }
 

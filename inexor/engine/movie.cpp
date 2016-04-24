@@ -918,7 +918,7 @@ namespace recorder
         file = new aviwriter(filename, videow, videoh, videofps, sound);
         if(!file->open()) 
         { 
-            conoutf(CON_ERROR, "unable to create file %s", filename);
+            LOG(ERROR) << "unable to create file " << filename;
             DELETEP(file);
             return;
         }

@@ -11,7 +11,7 @@ namespace game
             if(!game::clientoption(args[i]))
 #endif
             if(!server::serveroption(args[i]))
-                conoutf(CON_ERROR, "unknown command-line option: %s", args[i]);
+                LOG(ERROR) << "unknown command-line option: " << args[i];
     }
 
     const char *gameident() { return "fps"; }

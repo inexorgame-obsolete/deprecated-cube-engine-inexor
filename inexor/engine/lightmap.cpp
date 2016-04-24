@@ -1,6 +1,7 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/texture/savetexture.hpp"
 #include "inexor/texture/image.hpp"
+#include "inexor/util/Logging.hpp"
 
 #include <array>
 
@@ -2273,7 +2274,7 @@ void calclight(int *quality)
 {
     if(!setlightmapquality(*quality))
     {
-        conoutf(CON_ERROR, "valid range for calclight quality is -1..1"); 
+        LOG(ERROR) << "valid range for calclight quality is -1..1"; 
         return;
     }
     renderbackground("computing lightmaps... (esc to abort)");
@@ -2332,7 +2333,7 @@ void patchlight(int *quality)
     if(noedit(true)) return;
     if(!setlightmapquality(*quality))
     {
-        conoutf(CON_ERROR, "valid range for patchlight quality is -1..1"); 
+        LOG(ERROR) << "valid range for patchlight quality is -1..1"; 
         return;
     }
     renderbackground("patching lightmaps... (esc to abort)");

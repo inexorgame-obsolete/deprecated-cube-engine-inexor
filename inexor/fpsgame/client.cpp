@@ -5,6 +5,7 @@
 
 #include "inexor/fpsgame/game.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
+#include "inexor/util/Logging.hpp"
 
 using namespace inexor::filesystem;
 
@@ -307,7 +308,7 @@ namespace game
 	/// generate new public/private auth key pair using TIGER3 hashing algorithm
     void genauthkey(const char *secret)
     {
-        if(!secret[0]) { conoutf(CON_ERROR, "you must specify a secret password"); return; }
+        if(!secret[0]) { LOG(ERROR) << "you must specify a secret password"; return; }
         vector<char> privkey, pubkey;
         genprivkey(secret, privkey, pubkey); // generate public and private key
         conoutf("private key: %s", privkey.getbuf());
@@ -320,7 +321,7 @@ namespace game
     void saveauthkeys()
     {
         stream *f = openfile("auth.cfg", "w");
-        if(!f) { conoutf(CON_ERROR, "failed to open auth.cfg for writing"); return; }
+        if(!f) { LOG(ERROR) << "failed to open auth.cfg for writing"; return; }
         loopv(authkeys)
         {
             authkey *a = authkeys[i];
@@ -355,7 +356,7 @@ namespace game
         if(editmode) return true;
         if(isconnected() && multiplayer(false) && !m_edit)
         {
-            conoutf(CON_ERROR, "editing in multiplayer requires coop edit mode (1)");
+            LOG(ERROR) << "editing in multiplayer requires coop edit mode (1)";
             return false;
         }
         if(identexists("allowedittoggle") && !execute("allowedittoggle"))
@@ -666,7 +667,7 @@ namespace game
     {
         if(multiplayer(false) && !m_mp(mode))
         {
-            conoutf(CON_ERROR, "mode %s (%d) not supported in multiplayer", server::modename(gamemode), gamemode);
+            LOG(ERROR) << "mode " << server::modename(gamemode) << " (" << gamemode << ") not supported in multiplayer";
             loopi(NUMGAMEMODES) if(m_mp(STARTGAMEMODE + i)) { mode = STARTGAMEMODE + i; break; }
         }
 
@@ -687,7 +688,7 @@ namespace game
     {
         if(multiplayer(false) && !m_mp(mode))
         {
-            conoutf(CON_ERROR, "mode %s (%d) not supported in multiplayer",  server::modename(mode), mode);
+            LOG(ERROR) << "mode " << server::modename(gamemode) << " (" << gamemode << ") not supported in multiplayer";
             intret(0);
             return;
         }
@@ -1511,7 +1512,7 @@ namespace game
                 int mycn = getint(p), prot = getint(p);
                 if(prot!=PROTOCOL_VERSION)
                 {
-                    conoutf(CON_ERROR, "you are using a different game protocol (you: %d, server: %d)", PROTOCOL_VERSION, prot);
+                    LOG(ERROR) << "you are using a different game protocol (you: " << PROTOCOL_VERSION << ", server: " << prot <<")";
                     disconnect();
                     return;
                 }
@@ -2360,7 +2361,7 @@ namespace game
 
     void getmap()
     {
-        if(!m_edit) { conoutf(CON_ERROR, "\"getmap\" only works in coop edit mode"); return; }
+        if(!m_edit) { LOG(ERROR) << "\"getmap\" only works in coop edit mode"; return; }
         conoutf("getting map...");
         addmsg(N_GETMAP, "r");
     }
@@ -2408,7 +2409,7 @@ namespace game
 
     void sendmap()
     {
-        if(!m_edit || (player1->state==CS_SPECTATOR && remote && !player1->privilege)) { conoutf(CON_ERROR, "\"sendmap\" only works in coop edit mode"); return; }
+        if(!m_edit || (player1->state==CS_SPECTATOR && remote && !player1->privilege)) { LOG(ERROR) << "\"sendmap\" only works in coop edit mode"; return; }
         conoutf("sending map...");
         defformatstring(mname, "sendmap_%d", lastmillis);
         save_world(mname, true);
@@ -2418,8 +2419,8 @@ namespace game
         if(map)
         {
             stream::offset len = map->size();
-            if(len > 4*1024*1024) conoutf(CON_ERROR, "map is too large");
-            else if(len <= 0) conoutf(CON_ERROR, "could not read map");
+            if(len > 4*1024*1024) LOG(ERROR) << "map is too large";
+            else if(len <= 0) LOG(ERROR) << "could not read map";
             else
             {
                 sendfile(-1, 2, map);
@@ -2427,7 +2428,7 @@ namespace game
             }
             delete map;
         }
-        else conoutf(CON_ERROR, "could not read map");
+        else LOG(ERROR) << "could not read map";
         remove(findfile(fname.string().c_str(), "rb"));
     }
     COMMAND(sendmap, "");

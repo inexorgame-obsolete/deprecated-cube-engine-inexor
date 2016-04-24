@@ -1,6 +1,7 @@
 // shader.cpp: OpenGL GLSL shader management
 
 #include "inexor/engine/engine.hpp"
+#include "inexor/util/Logging.hpp"
 
 Shader *Shader::lastshader = NULL;
 
@@ -68,42 +69,26 @@ Shader *generateshader(const char *name, const char *fmt, ...)
 
 static void showglslinfo(GLenum type, GLuint obj, const char *name, const char **parts = NULL, int numparts = 0)
 {
-/* TODO: refactor to new logging system
     GLint length = 0;
     if(type) glGetShaderiv_(obj, GL_INFO_LOG_LENGTH, &length);
     else glGetProgramiv_(obj, GL_INFO_LOG_LENGTH, &length);
+
     if(length > 1)
     {
-        conoutf(CON_ERROR, "GLSL ERROR (%s:%s)", type == GL_VERTEX_SHADER ? "VS" : (type == GL_FRAGMENT_SHADER ? "FS" : "PROG"), name);
-        // TODO: remove getlogfile();
-        FILE *l = getlogfile();
-        if(l)
+        LOG(ERROR) << "GLSL ERROR in " << (type == GL_VERTEX_SHADER ? "VS" : (type == GL_FRAGMENT_SHADER ? "FS" : "PROG")) << ": " << name;
+
+        GLchar *log = new GLchar[length];
+        if(type) glGetShaderInfoLog_(obj, length, &length, log);
+        else glGetProgramInfoLog_(obj, length, &length, log);
+
+        LOG(ERROR) << log;
+
+        for(int i = 0; i < numparts && parts[i]; i++)
         {
-            GLchar *log = new GLchar[length];
-            if(type) glGetShaderInfoLog_(obj, length, &length, log);
-            else glGetProgramInfoLog_(obj, length, &length, log);
-            fprintf(l, "%s\n", log);
-            bool partlines = log[0] != '0';
-            int line = 0;
-            loopi(numparts)
-            {
-                const char *part = parts[i];
-                int startline = line;
-                while(*part)
-                {
-                    const char *next = strchr(part, '\n');
-                    if(++line > 1000) goto done;
-                    if(partlines) fprintf(l, "%d(%d): ", i, line - startline); else fprintf(l, "%d: ", line);
-                    fwrite(part, 1, next ? next - part + 1 : strlen(part), l);
-                    if(!next) { fputc('\n', l); break; }
-                    part = next + 1;
-                }
-            }
-        done:
-            delete[] log;
+            LOG(ERROR) << parts[i]; // TODO: insert line numbers at beginning & mark error position. maybe max number of lines.
         }
+        delete[] log;
     }
-*/
 }
 
 static void compileglslshader(GLenum type, GLuint &obj, const char *def, const char *name, bool msg = true) 
@@ -1108,7 +1093,7 @@ void setshader(char *name)
     Shader *s = shaders.access(name);
     if(!s)
     {
-        conoutf(CON_ERROR, "no such shader: %s", name);
+        LOG(ERROR) << "no such shader: " << name;
     }
     else slotshader = s;
 }
@@ -1372,7 +1357,7 @@ static bool addpostfx(const char *name, int outputbind, int outputscale, uint in
     Shader *s = useshaderbyname(name);
     if(!s)
     {
-        conoutf(CON_ERROR, "no such postfx shader: %s", name);
+        LOG(ERROR) << "no such postfx shader: " << name;
         return false;
     }
     postfxpass &p = postfxpasses.add();

@@ -1,6 +1,7 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/texture/cubemap.hpp"
+#include "inexor/util/Logging.hpp"
 
 using namespace inexor::filesystem;
 
@@ -31,7 +32,7 @@ void loadsky(const char *basename, Texture *texs[6])
                 texs[i] = textureload(name, 3, true, false);
             }
         }
-        if(texs[i]==notexture) conoutf(CON_ERROR, "could not load side %s of sky texture %s", side, basename);
+        if(texs[i]==notexture) LOG(ERROR) << "could not load side " << side << " of sky texture " << basename;
     }
 }
 
@@ -54,7 +55,7 @@ Texture *loadskyoverlay(const char *basename)
             t = textureload(name, 0, true, false);
         }
     }
-    if(t==notexture) conoutf(CON_ERROR, "could not load sky overlay texture %s", basename);
+    if(t==notexture) LOG(ERROR) << "could not load sky overlay texture " << basename;
     return t;
 }
 

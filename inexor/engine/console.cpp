@@ -4,6 +4,8 @@
 #include <set>
 #include "inexor/util/Logging.hpp"
 
+using namespace inexor::util;
+
 #define MAXCONLINES 1000
 struct cline { char *line, *time; int type, outtime; };
 reversequeue<cline, MAXCONLINES> conlines;
@@ -236,7 +238,7 @@ hashtable<int, keym> keyms(128);
 
 void keymap(int *code, char *key)
 {
-    if(identflags&IDF_OVERRIDDEN) { conoutf(CON_ERROR, "cannot override keymap %d", *code); return; }
+    if(identflags&IDF_OVERRIDDEN) { LOG(ERROR) << "cannot override keymap " << *code; return; }
     keym &km = keyms[*code];
     km.code = *code;
     DELETEA(km.name);
@@ -286,9 +288,9 @@ void getbind(char *key, int type)
 
 void bindkey(char *key, char *action, int state, const char *cmd)
 {
-    if(identflags&IDF_OVERRIDDEN) { conoutf(CON_ERROR, "cannot override %s \"%s\"", cmd, key); return; }
+    if(identflags&IDF_OVERRIDDEN) { LOG(ERROR) << "cannot override " << cmd << " " << quoted(key); return; }
     keym *km = findbind(key);
-    if(!km) { conoutf(CON_ERROR, "unknown key \"%s\"", key); return; }
+    if(!km) { LOG(ERROR) << "unknown key " << quoted(key); return; }
     char *&binding = km->actions[state];
     if(!keypressed || keyaction!=binding) delete[] binding;
     // trim white-space to make searchbinds more reliable
@@ -733,7 +735,7 @@ void addcomplete(char *command, int type, char *dir, char *ext)
 {
     if(identflags&IDF_OVERRIDDEN)
     {
-        conoutf(CON_ERROR, "cannot override complete %s", command);
+        LOG(ERROR) << "cannot override complete " << command;
         return;
     }
     if(!dir[0])

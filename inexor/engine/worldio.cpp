@@ -2,7 +2,6 @@
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
-#include "inexor/shared/filesystem.hpp"
 #include "inexor/util/Logging.hpp"
 
 /// remove map postfix (.ogz) from file path/name to get map name
@@ -68,20 +67,20 @@ bool loadents(const char *fname, vector<entity> &ents, uint *crc)
     stream *f = opengzfile(ogzname, "rb");
     if(!f) return false;
     octaheader hdr;
-    if(f->read(&hdr, 7*sizeof(int)) != 7*sizeof(int)) { conoutf(CON_ERROR, "map %s has malformatted header", ogzname); delete f; return false; }
+    if(f->read(&hdr, 7*sizeof(int)) != 7*sizeof(int)) { LOG(ERROR) << "map " << ogzname << " has malformatted header"; delete f; return false; }
     lilswap(&hdr.version, 6);
-    if(memcmp(hdr.magic, "OCTA", 4) || hdr.worldsize <= 0|| hdr.numents < 0) { conoutf(CON_ERROR, "map %s has malformatted header", ogzname); delete f; return false; }
-    if(hdr.version>MAPVERSION) { conoutf(CON_ERROR, "map %s requires a newer version of Inexor", ogzname); delete f; return false; }
+    if(memcmp(hdr.magic, "OCTA", 4) || hdr.worldsize <= 0|| hdr.numents < 0) { LOG(ERROR) << "map " << ogzname << " has malformatted header"; delete f; return false; }
+    if(hdr.version>MAPVERSION) { LOG(ERROR) << "map " << ogzname << " requires a newer version of Inexor"; delete f; return false; }
     compatheader chdr;
     if(hdr.version <= 28)
     {
-        if(f->read(&chdr.lightprecision, sizeof(chdr) - 7*sizeof(int)) != sizeof(chdr) - 7*sizeof(int)) { conoutf(CON_ERROR, "map %s has malformatted header", ogzname); delete f; return false; }
+        if(f->read(&chdr.lightprecision, sizeof(chdr) - 7*sizeof(int)) != sizeof(chdr) - 7*sizeof(int)) { LOG(ERROR) << "map " << ogzname << " has malformatted header"; delete f; return false; }
     }
     else
     {
         int extra = 0;
         if(hdr.version <= 29) extra++;
-        if(f->read(&hdr.blendmap, sizeof(hdr) - (7+extra)*sizeof(int)) != sizeof(hdr) - (7+extra)*sizeof(int)) { conoutf(CON_ERROR, "map %s has malformatted header", ogzname); delete f; return false; }
+        if(f->read(&hdr.blendmap, sizeof(hdr) - (7+extra)*sizeof(int)) != sizeof(hdr) - (7+extra)*sizeof(int)) { LOG(ERROR) << "map " << ogzname << " has malformatted header"; delete f; return false; }
     }
 
     if(hdr.version <= 28)
@@ -1171,22 +1170,22 @@ bool load_world(const char *mname, const char *cname)        // still supports a
     int loadingstart = SDL_GetTicks();
     setmapfilenames(mname, cname);
     stream *f = opengzfile(ogzname, "rb");
-    if(!f) { conoutf(CON_ERROR, "could not read map %s", ogzname); return false; }
+    if(!f) { LOG(ERROR) << "could not read map " << ogzname; return false; }
     octaheader hdr;
-    if(f->read(&hdr, 7*sizeof(int)) != 7*sizeof(int)) { conoutf(CON_ERROR, "map %s has malformatted header", ogzname); delete f; return false; }
+    if(f->read(&hdr, 7*sizeof(int)) != 7*sizeof(int)) { LOG(ERROR) << "map " << ogzname << " has malformatted header"; delete f; return false; }
     lilswap(&hdr.version, 6);
-    if(memcmp(hdr.magic, "OCTA", 4) || hdr.worldsize <= 0|| hdr.numents < 0) { conoutf(CON_ERROR, "map %s has malformatted header", ogzname); delete f; return false; }
-    if(hdr.version>MAPVERSION) { conoutf(CON_ERROR, "map %s requires a newer version of Inexor", ogzname); delete f; return false; }
+    if(memcmp(hdr.magic, "OCTA", 4) || hdr.worldsize <= 0|| hdr.numents < 0) { LOG(ERROR) << "map " << ogzname << " has malformatted header"; delete f; return false; }
+    if(hdr.version>MAPVERSION) { LOG(ERROR) << "map " << ogzname << " requires a newer version of Inexor"; delete f; return false; }
     compatheader chdr;
     if(hdr.version <= 28)
     {
-        if(f->read(&chdr.lightprecision, sizeof(chdr) - 7*sizeof(int)) != sizeof(chdr) - 7*sizeof(int)) { conoutf(CON_ERROR, "map %s has malformatted header", ogzname); delete f; return false; }
+        if(f->read(&chdr.lightprecision, sizeof(chdr) - 7*sizeof(int)) != sizeof(chdr) - 7*sizeof(int)) { LOG(ERROR) << "map " << ogzname << " has malformatted header"; delete f; return false; }
     }
     else 
     {
         int extra = 0;
         if(hdr.version <= 29) extra++; 
-        if(f->read(&hdr.blendmap, sizeof(hdr) - (7+extra)*sizeof(int)) != sizeof(hdr) - (7+extra)*sizeof(int)) { conoutf(CON_ERROR, "map %s has malformatted header", ogzname); delete f; return false; }
+        if(f->read(&hdr.blendmap, sizeof(hdr) - (7+extra)*sizeof(int)) != sizeof(hdr) - (7+extra)*sizeof(int)) { LOG(ERROR) << "map " << ogzname << " has malformatted header"; delete f; return false; }
     }
 
     resetmap();
@@ -1372,7 +1371,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
     renderprogress(0, "loading octree...");
     bool failed = false;
     worldroot = loadchildren(f, ivec(0, 0, 0), hdr.worldsize>>1, failed);
-    if(failed) conoutf(CON_ERROR, "garbage in map");
+    if(failed) LOG(ERROR) << "garbage in map";
 
     renderprogress(0, "validating...");
     validatec(worldroot, hdr.worldsize>>1);

@@ -3,6 +3,7 @@
 #include <unordered_set>
 #include "inexor/engine/engine.hpp"
 #include "inexor/texture/cubemap.hpp"
+#include "inexor/util/Logging.hpp"
 
 static inline void drawtris(GLsizei numindices, const GLvoid *indices, ushort minvert, ushort maxvert)
 {
@@ -1064,20 +1065,11 @@ static void reportinvalidtextslot(Slot* slot)
 {
     if (reportedinvalidtextsloterrs.find(slot->index) == reportedinvalidtextsloterrs.end())
     {
-        conoutf(CON_ERROR, "\fs\f3Error:\fr Invalid texture definition (Invalid SHADER_NORMALSLMS), dumping slot textures:");
+        LOG(ERROR) << "Invalid texture definition (Invalid SHADER_NORMALSLMS) on index " << slot->index;
         loopv(slot->sts)
         {
             Slot::Tex &t = slot->sts[i];
-            switch(t.type)
-            {
-                case TEX_DIFFUSE:   conoutf(CON_ERROR, "TEX_DIFFUSE %s",  t.name); break;
-                case TEX_NORMAL:    conoutf(CON_ERROR, "TEX_NORMALMAP %s",t.name); break;
-                case TEX_GLOW:      conoutf(CON_ERROR, "TEX_GLOWMAP %s",  t.name); break;
-                case TEX_DECAL:     conoutf(CON_ERROR, "TEX_DECAL %s",    t.name); break;
-                case TEX_SPEC:      conoutf(CON_ERROR, "TEX_SPEC %s",     t.name); break;
-                case TEX_DEPTH:     conoutf(CON_ERROR, "TEX_DEPTH %s",    t.name); break;
-                case TEX_UNKNOWN:   conoutf(CON_ERROR, "TEX_UNKOWN %s",   t.name); break;
-            }
+            if(t.type==TEX_DIFFUSE) LOG(ERROR) << "TEX_DIFFUSE: "<< t.name; break;
         }
         reportedinvalidtextsloterrs.insert(slot->index);
     }

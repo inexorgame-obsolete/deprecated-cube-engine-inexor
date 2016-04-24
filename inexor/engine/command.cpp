@@ -3,6 +3,9 @@
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/rpc/SharedVar.hpp"
+#include "inexor/util/Logging.hpp"
+
+using namespace inexor::util;
 
 hashnameset<ident> idents; // contains ALL vars/commands/aliases
 vector<ident *> identmap;
@@ -270,8 +273,8 @@ static void debugalias()
     {
         ident *id = l->id;
         ++depth;
-        if(depth < dbgalias) conoutf(CON_ERROR, "  %d) %s", total-depth+1, id->name);
-        else if(l->next == &noalias) conoutf(CON_ERROR, depth == dbgalias ? "  %d) %s" : "  ..%d) %s", total-depth+1, id->name);
+        if(depth < dbgalias) LOG(ERROR) << "  " << (total-depth+1) << ") " << id->name;
+        else if(l->next == &noalias) LOG(ERROR) << (depth == dbgalias ? "  " : "  ..") << (total - depth + 1) << ") " << id->name;
     }
 }
 
@@ -2198,7 +2201,7 @@ bool execfile(const char *cfgfile, bool msg)
         buf = loadfile(makerelpath(getcurexecdir(), path(s)), NULL);
         if(!buf) 
         {
-            if(msg) conoutf(CON_ERROR, "could not read \"%s\"", cfgfile);
+            if(msg) LOG(ERROR) << "could not read " << quoted(cfgfile);
             return false;
         }
     }
@@ -3083,7 +3086,7 @@ ICOMMAND(>s, "ss", (char *a, char *b), intret(strcmp(a,b)>0));
 ICOMMAND(<=s, "ss", (char *a, char *b), intret(strcmp(a,b)<=0));
 ICOMMAND(>=s, "ss", (char *a, char *b), intret(strcmp(a,b)>=0));
 ICOMMAND(echo, "C", (char *s), conoutf("\f1%s", s));
-ICOMMAND(error, "C", (char *s), conoutf(CON_ERROR, "%s", s));
+ICOMMAND(error, "C", (char *s), LOG(ERROR) <<  s);
 ICOMMAND(strstr, "ss", (char *a, char *b), { char *s = strstr(a, b); intret(s ? s-a : -1); });
 ICOMMAND(strlen, "s", (char *s), intret(strlen(s)));
 ICOMMAND(strcode, "si", (char *s, int *i), intret(*i > 0 ? (memchr(s, 0, *i) ? 0 : uchar(s[*i])) : uchar(s[0])));

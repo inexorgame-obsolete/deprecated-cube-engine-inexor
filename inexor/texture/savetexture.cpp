@@ -3,6 +3,7 @@
 #include "inexor/texture/savetexture.hpp"
 #include "inexor/texture/SDL_loading.hpp"
 #include "inexor/texture/image.hpp"
+#include "inexor/util/Logging.hpp"
 
 void writepngchunk(stream *f, const char *type, uchar *data = NULL, uint len = 0)
 {
@@ -27,10 +28,10 @@ void savepng(const char *filename, ImageData &image, bool flip)
     case 2: ctype = 4; break;
     case 3: ctype = 2; break;
     case 4: ctype = 6; break;
-    default: conoutf(CON_ERROR, "failed saving png to %s", filename); return;
+    default: LOG(ERROR) << "failed saving png to " << filename; return;
     }
     stream *f = openfile(filename, "wb");
-    if(!f) { conoutf(CON_ERROR, "could not write to %s", filename); return; }
+    if(!f) { LOG(ERROR) << "could not write to " << filename; return; }
 
     uchar signature[] = { 137, 80, 78, 71, 13, 10, 26, 10 };
     f->write(signature, sizeof(signature));
@@ -109,7 +110,7 @@ cleanuperror:
 error:
     delete f;
 
-    conoutf(CON_ERROR, "failed saving png to %s", filename);
+    LOG(ERROR) << "failed saving png to " << filename;
 }
 
 struct tgaheader
@@ -135,11 +136,11 @@ void savetga(const char *filename, ImageData &image, bool flip)
     switch(image.bpp)
     {
     case 3: case 4: break;
-    default: conoutf(CON_ERROR, "failed saving tga to %s", filename); return;
+    default: LOG(ERROR) << "failed saving tga to " << filename; return;
     }
 
     stream *f = openfile(filename, "wb");
-    if(!f) { conoutf(CON_ERROR, "could not write to %s", filename); return; }
+    if(!f) { LOG(ERROR) << "could not write to " << filename; return; }
 
     tgaheader hdr;
     memset(&hdr, 0, sizeof(hdr));

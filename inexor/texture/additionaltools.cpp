@@ -5,7 +5,7 @@
 #include "inexor/texture/macros.hpp"
 #include "inexor/texture/savetexture.hpp"
 #include "inexor/texture/compressedtex.hpp"
-
+#include "inexor/util/Logging.hpp"
 
 void flipnormalmapy(char *destfile, char *normalfile) // jpg/png /tga-> tga
 {
@@ -13,7 +13,7 @@ void flipnormalmapy(char *destfile, char *normalfile) // jpg/png /tga-> tga
     if(!loadimage(normalfile, ns)) return;
     ImageData d(ns.w, ns.h, 3);
     readwritetex(d, ns,
-        dst[0] = src[0];
+                 dst[0] = src[0];
     dst[1] = 255 - src[1];
     dst[2] = src[2];
     );
@@ -26,14 +26,14 @@ void mergenormalmaps(char *heightfile, char *normalfile) // jpg/png/tga + tga ->
     if(!loadimage(heightfile, hs) || !loadimage(normalfile, ns) || hs.w != ns.w || hs.h != ns.h) return;
     ImageData d(ns.w, ns.h, 3);
     read2writetex(d, hs, srch, ns, srcn,
-        *(bvec *)dst = bvec(((bvec *)srcn)->tonormal().mul(2).add(((bvec *)srch)->tonormal()).normalize());
+                  *(bvec *)dst = bvec(((bvec *)srcn)->tonormal().mul(2).add(((bvec *)srch)->tonormal()).normalize());
     );
     saveimage(normalfile, guessimageformat(normalfile, IMG_TGA), d);
 }
 
 void gendds(char *infile, char *outfile)
 {
-    if(!hasS3TC || usetexcompress <= 1) { conoutf(CON_ERROR, "OpenGL driver does not support S3TC texture compression"); return; }
+    if(!hasS3TC || usetexcompress <= 1) { LOG(ERROR) << "OpenGL driver does not support S3TC texture compression"; return; }
 
     glHint(GL_TEXTURE_COMPRESSION_HINT, GL_NICEST);
 
@@ -42,7 +42,7 @@ void gendds(char *infile, char *outfile)
     Texture *t = gettexture(cfile);
     if(t) reloadtex(cfile);
     t = textureload(cfile);
-    if(t == notexture) { conoutf(CON_ERROR, "failed loading %s", infile); return; }
+    if(t == notexture) { LOG(ERROR) << "failed loading " << infile; return; }
 
     glBindTexture(GL_TEXTURE_2D, t->id);
     GLint compressed = 0, format = 0, width = 0, height = 0;
@@ -51,7 +51,7 @@ void gendds(char *infile, char *outfile)
     glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
     glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
 
-    if(!compressed) { conoutf(CON_ERROR, "failed compressing %s", infile); return; }
+    if(!compressed) { LOG(ERROR) << "failed compressing " << infile; return; }
     int fourcc = 0;
     switch(format)
     {
@@ -60,7 +60,7 @@ void gendds(char *infile, char *outfile)
     case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT: fourcc = FOURCC_DXT3; conoutf("compressed as DXT3"); break;
     case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT: fourcc = FOURCC_DXT5; conoutf("compressed as DXT5"); break;
     default:
-        conoutf(CON_ERROR, "failed compressing %s: unknown format: 0x%X", infile, format); break;
+        LOG(ERROR) << "failed compressing " << infile << ": unknown format: 0x" << std::hex << format; break;
         return;
     }
 
@@ -75,7 +75,7 @@ void gendds(char *infile, char *outfile)
     }
 
     stream *f = openfile(path(outfile, true), "wb");
-    if(!f) { conoutf(CON_ERROR, "failed writing to %s", outfile); return; }
+    if(!f) { LOG(ERROR) << "failed writing to " << outfile; return; }
 
     int csize = 0;
     for(int lw = width, lh = height, level = 0;;)
