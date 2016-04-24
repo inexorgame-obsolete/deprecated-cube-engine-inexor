@@ -31,16 +31,20 @@ void Logging::createAndRegisterLogger(std::string logger_name)
     spdlog::register_logger(logger);
 }
 
+// TODO: Here we should configure which sinks are used in which logger using a configuration file
 std::vector<spdlog::sink_ptr> Logging::getSinksForLogger(std::string logger_name)
 {
-    // Here we should configure which sinks are used in which logger
     std::vector<spdlog::sink_ptr> sinks;
     sinks.push_back(std::make_shared<spdlog::sinks::stdout_sink_st>());
     sinks.push_back(std::make_shared<inexor::util::InexorConsoleSink>());
     sinks.push_back(std::make_shared<inexor::util::InexorCutAnsiCodesSink>(std::make_shared<spdlog::sinks::daily_file_sink_st>("inexor", "log", 23, 59)));
+#if defined(_MSC_VER) && !defined(NDEBUG)
+    sinks.push_back(std::make_shared<spdlog::sinks::msvc_sink_st>());
+#endif
     return sinks;
 }
 
+// TODO: note that we cannot set the log level for a specific sink at the moment
 void Logging::setLogLevel(std::string logger_name, std::string log_level)
 {
     try {
@@ -50,6 +54,7 @@ void Logging::setLogLevel(std::string logger_name, std::string log_level)
     }
 }
 
+// TODO: note that we cannot set the log format for a specific sink at the moment
 void Logging::setLogFormat(std::string logger_name, std::string pattern)
 {
     try {
