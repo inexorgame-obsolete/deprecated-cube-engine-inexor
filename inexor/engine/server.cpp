@@ -1077,18 +1077,11 @@ vector<const char *> gameargs;
 
 #ifdef STANDALONE
 
+inexor::util::Logging logging;
+
 int main(int argc, char **argv)
 {
-
-    inexor::util::initLoggers();
-
-    // Load logging configuration from file
-    // el::Configurations logging_conf("inexor-logging.conf");
-    // el::Loggers::reconfigureAllLoggers(logging_conf);
-
-    spdlog::get("global")->info() << "Logger funktioniert";
-
-    // setlogfile(NULL);
+    logging.initDefaultLoggers();
     UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // We only need to initialse it, not use it.
     if(enet_initialize()<0) fatal("Unable to initialise network module");
     atexit(enet_deinitialize);

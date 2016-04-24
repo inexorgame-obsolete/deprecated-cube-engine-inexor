@@ -8,6 +8,7 @@
 #include "inexor/util/InexorConsoleSink.hpp"
 #include "inexor/util/InexorCutAnsiCodesSink.hpp"
 #include <iomanip>
+#include <map>
 
 namespace inexor {
 namespace util {
@@ -60,7 +61,43 @@ namespace util {
         quoted(const char *text) : embraced(text, "\"", "\"") {}
     };
 
-    void initLoggers();
+    /// The default logger names which are used in inexor
+    static const std::array<std::string, 7> default_logger_names = {
+        "global",
+        "chat",
+        "gameplay",
+        "edit",
+        "server",
+        "frag_involved",
+        "frag_not_involved"
+    };
+
+    /// Map to lookup for log level names
+    static const std::map<std::string, spdlog::level::level_enum> log_levels = {
+        {"trace", spdlog::level::trace},
+        {"debug", spdlog::level::debug},
+        {"info", spdlog::level::info},
+        {"notice", spdlog::level::notice},
+        {"warning", spdlog::level::warn},
+        {"error", spdlog::level::err},
+        {"critical", spdlog::level::critical},
+        {"alert", spdlog::level::alert},
+        {"emerg", spdlog::level::emerg},
+        {"off", spdlog::level::off}
+    };
+
+    /// The global inexor logging API
+    class Logging
+    {
+        public:
+            Logging();
+            ~Logging();
+            void initDefaultLoggers();
+            void createAndRegisterLogger(std::string logger_name);
+            std::vector<spdlog::sink_ptr> getSinksForLogger(std::string logger_name);
+            void setLogLevel(std::string logger_name, std::string log_level);
+            void setLogFormat(std::string logger_name, std::string pattern);
+    };
 
 }
 }

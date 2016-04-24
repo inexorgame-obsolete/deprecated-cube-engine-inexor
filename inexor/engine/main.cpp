@@ -1205,14 +1205,24 @@ ICOMMAND(cef_reload, "", (),
 ICOMMAND(cef_focus, "b", (bool *b),
     if (cef_app.get()) cef_app->setFocus(*b); );
 
+inexor::util::Logging logging;
+
+ICOMMANDERR(loglevel, "ss", (char *logger_name, char *log_level),
+    std::string logger_name_s{logger_name};
+    std::string log_level_s{log_level};
+    logging.setLogLevel(logger_name_s, log_level_s)
+);
+
+ICOMMANDERR(logformat, "ss", (char *logger_name, char *pattern),
+    std::string logger_name_s{logger_name};
+    std::string pattern_s{pattern};
+    logging.setLogFormat(logger_name_s, pattern_s)
+);
+
 /// main program start
 int main(int argc, char **argv)
 {
-
-    inexor::util::initLoggers();
-    spdlog::get("global")->info() << "Logger funktioniert";
-
-    // TODO: Load logging configuration from file
+    logging.initDefaultLoggers();
 
     UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // We only need to initialize it, not use it.
 
