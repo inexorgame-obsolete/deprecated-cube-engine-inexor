@@ -34,7 +34,7 @@ cd %MAIN_FOLDER%
 setlocal EnableDelayedExpansion
 
 
-set ignored=(%nightly_name% .gitignore build cmake CMakeLists.txt appveyor.yml doxygen.conf .git .gitignore .gitmodules tool inexor platform vendor .travis.yml)
+set ignored=(%nightly_name% build cmake CMakeLists.txt appveyor.yml doxygen.conf .git .gitignore .gitmodules inexor_node_unix inexor_unix tool inexor platform vendor .travis.yml)
 for /f "tokens=*" %%G in ('dir /b "%cd%"') do (
     set "isignored=false"
     for %%i in %ignored% do (
