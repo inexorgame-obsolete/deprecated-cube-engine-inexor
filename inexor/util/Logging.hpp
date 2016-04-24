@@ -2,13 +2,15 @@
 
 #pragma once
 
-#include "spdlog/spdlog.h"
-#undef LOG_INFO
+#include <spdlog/spdlog.h>
+#undef LOG_INFO  //conflicting between spdlog and cef
 #undef LOG_WARNING
 #include "inexor/util/InexorConsoleSink.hpp"
 #include "inexor/util/InexorCutAnsiCodesSink.hpp"
 #include <iomanip>
 #include <map>
+#include <array>
+#include <string>
 
 namespace inexor {
 namespace util {
@@ -82,7 +84,7 @@ namespace util {
         {"error", spdlog::level::err},
         {"critical", spdlog::level::critical},
         {"alert", spdlog::level::alert},
-        {"emerg", spdlog::level::emerg},
+        {"emergency", spdlog::level::emerg},
         {"off", spdlog::level::off}
     };
 

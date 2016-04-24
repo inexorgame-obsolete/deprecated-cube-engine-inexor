@@ -1,5 +1,11 @@
 #include "inexor/util/Logging.hpp"
 
+#include <spdlog/sinks/msvc_sink.h>
+
+#include <vector>
+#include <string>
+#include <memory>
+
 namespace inexor {
 namespace util {
 
@@ -37,7 +43,7 @@ std::vector<spdlog::sink_ptr> Logging::getSinksForLogger(std::string logger_name
     std::vector<spdlog::sink_ptr> sinks;
     sinks.push_back(std::make_shared<spdlog::sinks::stdout_sink_st>());
     sinks.push_back(std::make_shared<inexor::util::InexorConsoleSink>());
-    sinks.push_back(std::make_shared<inexor::util::InexorCutAnsiCodesSink>(std::make_shared<spdlog::sinks::daily_file_sink_st>("inexor", "log", 23, 59)));
+    sinks.push_back(std::make_shared<inexor::util::InexorCutAnsiCodesSink>(std::make_shared<spdlog::sinks::rotating_file_sink_st>("inexor", "log", 5242880, 3)));
 #if defined(_MSC_VER) && !defined(NDEBUG)
     sinks.push_back(std::make_shared<spdlog::sinks::msvc_sink_st>());
 #endif
