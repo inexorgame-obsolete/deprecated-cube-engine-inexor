@@ -34,6 +34,7 @@ void Logging::createAndRegisterLogger(std::string logger_name)
 {
     std::vector<spdlog::sink_ptr> sinks = getSinksForLogger(logger_name);
     auto logger = std::make_shared<spdlog::logger>(logger_name, begin(sinks), end(sinks));
+    logger->set_pattern("%H:%M:%S [%n] [%l] %v");
     spdlog::register_logger(logger);
 }
 

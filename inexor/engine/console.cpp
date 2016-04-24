@@ -7,7 +7,7 @@
 using namespace inexor::util;
 
 #define MAXCONLINES 1000
-struct cline { char *line, *time; int type, outtime; };
+struct cline { char *line; int type, outtime; };
 reversequeue<cline, MAXCONLINES> conlines;
 
 int commandmillis = -1;
@@ -20,7 +20,6 @@ VARFP(maxcon, 10, 200, MAXCONLINES, { while(conlines.length() > maxcon) delete[]
 
 #define CONSTRLEN 512
 
-VARP(contime, 0, 1, 1);
 VARP(confading, 0, 1, 1);
 
 void conline(int type, const char *sf)        // add a line to the console buffer
@@ -29,12 +28,6 @@ void conline(int type, const char *sf)        // add a line to the console buffe
     cline &cl = conlines.add();
     cl.line = buf;
     cl.type = type;
-	cl.time = 0;
-	if(contime)
-    {
-        const char *sstime = gettimestr("%H:%M:%S");
-        if(sstime && *sstime) cl.time = newstring(sstime, CONSTRLEN-1);
-    }
     cl.outtime = totalmillis;                // for how long to keep line on screen
     copystring(cl.line, sf, CONSTRLEN);
 }
@@ -112,8 +105,7 @@ int drawconlines(int conskip, int confade, int conwidth, int conheight, int cono
         if(!(conlines[idx].type&filter)) continue;
         
 		string line;
-		if(contime && fullconsole && conlines[idx].time && conlines[idx].time[0]) formatstring(line, "%s[%s] %s%s", COL_GREY, conlines[idx].time, COL_WHITE, conlines[idx].line);
-		else formatstring(line, "%s", conlines[idx].line); 
+		formatstring(line, "%s", conlines[idx].line);
 
         int width, height;
         text_bounds(line, width, height, conwidth);
@@ -127,8 +119,7 @@ int drawconlines(int conskip, int confade, int conwidth, int conheight, int cono
         if(!(conlines[idx].type&filter)) continue;
         
 		string line;
-		if(contime && fullconsole && conlines[idx].time && conlines[idx].time[0]) formatstring(line, "%s[%s] %s%s", COL_GREY, conlines[idx].time, COL_WHITE, conlines[idx].line);
-		else formatstring(line, "%s", conlines[idx].line); 
+		formatstring(line, "%s", conlines[idx].line);
 
         int width, height;
         text_bounds(line, width, height, conwidth);
