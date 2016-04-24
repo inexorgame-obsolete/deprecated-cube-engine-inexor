@@ -5,7 +5,7 @@ require_asio(module_net NOLINK)
 require_cxx11_abi(module_net NOLINK)
 
 function(require_net targ)
-  message(STATUS "Configuring ${targ} with net")
+  message(STATUS "Configuring ${targ} with module_net")
   if (";${ARGN};" MATCHES ";NOLINK;")
     set(NOLINK "NOLINK")
   endif()

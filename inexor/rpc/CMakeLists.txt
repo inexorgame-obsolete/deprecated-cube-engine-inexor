@@ -40,7 +40,7 @@ require_protobuf(module_rpc NOLINK)
 require_cxx11_abi(module_rpc NOLINK)
 
 function(require_rpc targ)
-  message(STATUS "Configuring ${targ} with rpc")
+  message(STATUS "Configuring ${targ} with module_rpc")
   if (";${ARGN};" MATCHES ";NOLINK;")
     set(NOLINK "NOLINK")
   endif()

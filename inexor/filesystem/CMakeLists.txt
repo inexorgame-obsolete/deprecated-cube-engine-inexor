@@ -17,7 +17,7 @@ require_util(module_filesystem             NOLINK)
 
 # This function is used to bind this module into another module/application
 function(require_filesystem targ)
-  message(STATUS "Configuring ${targ} with filesystem")
+  message(STATUS "Configuring ${targ} with module_filesystem")
 
   if (";${ARGN};" MATCHES ";NOLINK;") # Some argument passing, just copy that.
     set(NOLINK "NOLINK")

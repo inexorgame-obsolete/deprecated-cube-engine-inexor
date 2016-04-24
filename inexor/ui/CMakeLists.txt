@@ -17,7 +17,7 @@ require_sdl(module_ui NOLINK)
 require_cxx11_abi(module_ui NOLINK)
 
 function(require_ui targ)
-  message(STATUS "Configuring ${targ} with ui")
+  message(STATUS "Configuring ${targ} with module_ui")
   if (";${ARGN};" MATCHES ";NOLINK;")
     set(NOLINK "NOLINK")
   endif()

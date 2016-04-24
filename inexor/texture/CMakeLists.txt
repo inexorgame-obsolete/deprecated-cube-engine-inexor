@@ -5,7 +5,7 @@ require_sdl(module_texture NOLINK)
 require_filesystem(module_texture NOLINK)
 
 function(require_texture targ)
-  message(STATUS "Configuring ${targ} with texture")
+  message(STATUS "Configuring ${targ} with module_texture")
   if (";${ARGN};" MATCHES ";NOLINK;")
     set(NOLINK "NOLINK")
   endif()

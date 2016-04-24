@@ -8,7 +8,7 @@ require_boost_random(module_util NOLINK)
 require_cxx11_abi(module_util NOLINK)
 
 function(require_util targ)
-  message(STATUS "Configuring ${targ} with util")
+  message(STATUS "Configuring ${targ} with module_util")
   if (";${ARGN};" MATCHES ";NOLINK;")
     set(NOLINK "NOLINK")
   endif()

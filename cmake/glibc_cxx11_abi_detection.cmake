@@ -9,7 +9,7 @@ function(register_possible_dependency)
 
   foreach(dep "${ARGN}")
     if (NOT "${dep}" STREQUAL "")
-      message(STATUS "Registrig lib dependency: ${dep}")
+      message(STATUS "glibc ABI workaround: Registering lib dependency: ${dep}")
       list(APPEND tmp "${dep}")
     endif()
   endforeach()

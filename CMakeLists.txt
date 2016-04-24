@@ -54,7 +54,7 @@ endif()
 set(SOURCE_DIR ${MAINDIR}/inexor)
 
 # INSTALL_LOCALLY will surpress the installation into CMAKE_INSTALL_PREFIX which is by default some global system path.
-option(INSTALL_LOCALLY "Install everything relative to this folder (${MAIN_DIR}), to not polute your global configuration." ON)
+option(INSTALL_LOCALLY "Install everything relative to this folder (${MAINDIR}). Not into some global system directories." ON)
 
 if(INSTALL_LOCALLY)
   set(CMAKE_INSTALL_PREFIX ${MAINDIR} CACHE PATH "" FORCE)
