@@ -35,7 +35,9 @@ namespace util {
                     type = 1<<3;
                     break;
             }
-            conline(type, msg.formatted.str().c_str());
+            std::string str = msg.formatted.str();
+            str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
+            conline(type, str.c_str());
         }
         void flush() override {};
     };
