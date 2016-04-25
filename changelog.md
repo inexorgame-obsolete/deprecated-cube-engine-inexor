@@ -1,5 +1,24 @@
 ## Changelog
 
+### Sultiame Alpha Edition (v0.7.0-alpha, 2016-04-25)
+
+#### Server
+  * added support for persistent teams (toggleable)
+  * added personal messages via the command `pm <cn> <text>`
+  * added followfov setting: allows you to automatically adapt to the fov of the player you are spectating
+  * added possibility to set a tag (for e.g. a clan): if the whole team shares the same tag, the tag will be shown instead of the default team name
+
+#### UI
+  * extended scoreboard: show flags (`/showflags 1`), frags (`/showfrags 1`) and accuracy (`/showaccuracy 1`)
+  
+#### Code internals, refactoring & bug fixes
+  * many improvements concering textures and CMake
+  * added new logging library
+
+
+***
+
+
 ### Doxylamine Alpha Edition (v0.6.0-alpha, 2016-03-06)
 
 #### Graphics

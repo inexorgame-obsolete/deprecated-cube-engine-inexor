@@ -12,7 +12,7 @@ For this organisation to work properly we rely on good communication. We are on 
 To contribute to the project and merge your changes into the master branch you need to convince enough members that the changes are an improvement.
 If you keep communicating what you are doing, take into account feedback and tips from others as well as giving insights into your decision making process, it won't be an issue.
 
-(Btw: We're open for new people!)
+We are open for new people!
 
 ## Where are we headed?
 
@@ -84,8 +84,8 @@ Good tutorials on the whole process needed to build Inexor can be found in its [
 
 * [Website](https://inexor.org)
 * [Wiki](https://github.com/inexor-game/code/wiki)
-* [Data-Wiki](https://github.com/inexor-game/data/wiki)
 * [Issue Tracker](https://github.com/inexor-game/code/issues)
+* [Kanboard](https://waffle.io/inexor-game/code)
 * [Source Repository](https://github.com/inexor-game/code)
 * [Data Repository](https://github.com/inexor-game/data)
 * [Chat (irc.gamesurge.net #inexor)](irc://irc.gamesurge.net/#inexor)
