@@ -151,7 +151,7 @@ bool loaddds(const char *filename, ImageData &image, int force)
         }
     }
     if(!format || (!supported && !force)) { delete f; return false; }
-    if(dbgdds) conoutf(CON_DEBUG, "%s: format 0x%X, %d x %d, %d mipmaps", filename, format, d.dwWidth, d.dwHeight, d.dwMipMapCount);
+    if(dbgdds) spdlog::get("global")->debug() << filename << ": format " << format << ", " << d.dwWidth << " x " << d.dwHeight << ", " << d.dwMipMapCount << " mipmaps";
     int bpp = 0;
     switch(format)
     {

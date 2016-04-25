@@ -55,10 +55,10 @@ void gendds(char *infile, char *outfile)
     int fourcc = 0;
     switch(format)
     {
-    case GL_COMPRESSED_RGB_S3TC_DXT1_EXT: fourcc = FOURCC_DXT1; conoutf("compressed as DXT1"); break;
-    case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT: fourcc = FOURCC_DXT1; conoutf("compressed as DXT1a"); break;
-    case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT: fourcc = FOURCC_DXT3; conoutf("compressed as DXT3"); break;
-    case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT: fourcc = FOURCC_DXT5; conoutf("compressed as DXT5"); break;
+    case GL_COMPRESSED_RGB_S3TC_DXT1_EXT: fourcc = FOURCC_DXT1; spdlog::get("global")->info() << "compressed as DXT1"; break;
+    case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT: fourcc = FOURCC_DXT1; spdlog::get("global")->info() << "compressed as DXT1a"; break;
+    case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT: fourcc = FOURCC_DXT3; spdlog::get("global")->info() << "compressed as DXT3"; break;
+    case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT: fourcc = FOURCC_DXT5; spdlog::get("global")->info() << "compressed as DXT5"; break;
     default:
         spdlog::get("global")->error("failed compressing {0}: unknown format: {1:#x}", infile, format); break;
         return;
@@ -121,7 +121,7 @@ void gendds(char *infile, char *outfile)
 
     delete[] data;
 
-    conoutf("wrote DDS file %s", outfile);
+    spdlog::get("global")->info() << "wrote DDS file " << outfile;
 
     setuptexcompress();
 }

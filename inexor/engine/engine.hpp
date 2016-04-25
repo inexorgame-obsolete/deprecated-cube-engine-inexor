@@ -397,8 +397,6 @@ extern void processkey(int code, bool isdown);
 extern void processtextinput(const char *str, int len);
 extern int rendercommand(int x, int y, int w);
 extern int renderconsole(int w, int h, int abovehud);
-extern void conoutf(const char *s, ...) PRINTFARGS(1, 2);
-extern void conoutf(int type, const char *s, ...) PRINTFARGS(2, 3);
 extern void resetcomplete();
 extern void complete(char *s, int maxlen, const char *cmdprefix, bool backwards);
 const char *getkeyname(int code);

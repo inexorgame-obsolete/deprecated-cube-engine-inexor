@@ -813,7 +813,7 @@ void pruneundos(int maxremain)                          // bound memory
         totalundos -= u->size;
         freeundo(u);
     }
-    //conoutf(CON_DEBUG, "undo: %d of %d(%%%d)", totalundos, undomegs<<20, totalundos*100/(undomegs<<20));
+    //spdlog::get("global")->debug() << "undo: " << totalundos << " of " << (undomegs<<20) << "(%%" << (totalundos*100 / (undomegs<<20)) << ")";
     while(!redos.empty())
     {
         undoblock *u = redos.popfirst();
@@ -1279,7 +1279,7 @@ void delprefab(char *name)
     {
         p->cleanup();
         prefabs.remove(name);
-        conoutf("deleted prefab %s", name);
+        spdlog::get("edit")->info() << "deleted prefab " << name;
     }
 }
 COMMAND(delprefab, "s");
@@ -1308,7 +1308,7 @@ void saveprefab(char *name)
     streambuf<uchar> s(f);
     if(!packblock(*b->copy, s)) { delete f; spdlog::get("global")->error() << "could not pack prefab " << filename; return; }
     delete f;
-    conoutf("wrote prefab file %s", filename);
+    spdlog::get("edit")->info() << "wrote prefab file " << filename;
 }
 COMMAND(saveprefab, "s");
 

@@ -192,7 +192,6 @@ struct hideandseekclientmode : clientmode
         // if(!m_freeze && isteam(actor->team, target->team) || ishider(actor)) return false;
         if (!actor || !target || actor==target) return false;
         if (isteam(actor->team, target->team) || ishider(actor)) return false;
-        conoutf("d");
         return true;
     }
 

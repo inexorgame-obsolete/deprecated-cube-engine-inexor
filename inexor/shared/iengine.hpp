@@ -180,22 +180,6 @@ static inline void loopiter(ident *id, identstack &stack, int i) { tagval v; v.s
 static inline void loopiter(ident *id, identstack &stack, float f) { tagval v; v.setfloat(f); loopiter(id, stack, v); }
 static inline void loopiter(ident *id, identstack &stack, const char *s) { tagval v; v.setstr(newstring(s)); loopiter(id, stack, v); }
 
-// console
-
-enum
-{
-    CON_INFO  = 1<<0,
-    CON_WARN  = 1<<1,
-    CON_ERROR = 1<<2,
-    CON_DEBUG = 1<<3,
-    CON_INIT  = 1<<4,
-    CON_ECHO  = 1<<5
-};
-
-extern void conoutf(const char *s, ...) PRINTFARGS(1, 2);
-extern void conoutf(int type, const char *s, ...) PRINTFARGS(2, 3);
-extern void conoutfv(int type, const char *fmt, va_list args);
-
 // menus
 extern vec menuinfrontofplayer();
 extern void newgui(char *name, char *contents, char *header = NULL, char *init = NULL);

@@ -2313,13 +2313,9 @@ void calclight(int *quality)
     renderbackground("lighting done...");
     allchanged();
     if(calclight_canceled)
-        conoutf("calclight aborted");
+        spdlog::get("edit")->info() << "calclight aborted";
     else
-        conoutf("generated %d lightmaps using %d%% of %d textures (%.1f seconds)",
-            total,
-            lightmaps.length() ? lumels * 100 / (lightmaps.length() * LM_PACKW * LM_PACKH) : 0,
-            lightmaps.length(),
-            (end - start) / 1000.0f);
+        spdlog::get("edit")->info() << "generated " << total << " lightmaps using " << (lightmaps.length() ? lumels * 100 / (lightmaps.length() * LM_PACKW * LM_PACKH) : 0) << "% of " << lightmaps.length() << " textures (" << ((end - start) / 1000.0f) << "  seconds)";
 }
 
 COMMAND(calclight, "i");
@@ -2373,13 +2369,9 @@ void patchlight(int *quality)
     renderbackground("lighting done...");
     allchanged();
     if(calclight_canceled)
-        conoutf("patchlight aborted");
+        spdlog::get("edit")->info() << "patchlight aborted";
     else
-        conoutf("patched %d lightmaps using %d%% of %d textures (%.1f seconds)",
-            total,
-            lightmaps.length() ? lumels * 100 / (lightmaps.length() * LM_PACKW * LM_PACKH) : 0,
-            lightmaps.length(),
-            (end - start) / 1000.0f); 
+        spdlog::get("edit")->info() << "patched " << total << " lightmaps using " << (lightmaps.length() ? lumels * 100 / (lightmaps.length() * LM_PACKW * LM_PACKH) : 0) << "% of " << lightmaps.length() << " textures (" << ((end - start) / 1000.0f) << " seconds)";
 }
 
 COMMAND(patchlight, "i");
@@ -2800,9 +2792,9 @@ void lightreaching(const vec &target, vec &color, vec &dir, bool fast, extentity
 
         //if(target==player->o)
         //{
-        //    conoutf(CON_DEBUG, "%d - %f %f", i, intensity, mag);
+        //    spdlog::get("global")->debug() << i << " - " << intensity << " " << mag;
         //}
- 
+
         vec lightcol = vec(e.attr2, e.attr3, e.attr4).mul(1.0f/255);
         color.add(vec(lightcol).mul(intensity));
         dir.add(vec(ray).mul(-intensity*lightcol.x*lightcol.y*lightcol.z));

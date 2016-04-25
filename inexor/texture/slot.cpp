@@ -194,7 +194,7 @@ ICOMMAND(compactvslots, "", (),
     if(nompedit && multiplayer()) return;
     int oldamount = vslots.length();
     compactvslots();
-    conoutf("compacted virtual Slots (before: %d, now: %d)", oldamount, vslots.length());
+    spdlog::get("global")->info() << "compacted virtual Slots (before: " << oldamount << ", now: " << vslots.length() << ")";
     allchanged();
 });
 

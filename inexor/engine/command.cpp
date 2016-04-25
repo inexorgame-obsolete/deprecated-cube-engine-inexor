@@ -286,10 +286,12 @@ static void debugcode(const char *fmt, ...)
 {
     if(nodebug) return;
 
-    va_list args;
-    va_start(args, fmt);
-    conoutfv(CON_ERROR, fmt, args);
-    va_end(args);
+    // va_list args;
+    // va_start(args, fmt);
+    // conoutfv(CON_ERROR, fmt, args);
+    // va_end(args);
+    defvformatstring(msg, fmt, fmt);
+    spdlog::get("global")->error() << msg;
 
     debugalias();
 }
@@ -300,10 +302,12 @@ static void debugcodeline(const char *p, const char *fmt, ...)
 {
     if(nodebug) return;
 
-    va_list args;
-    va_start(args, fmt);
-    conoutfv(CON_ERROR, debugline(p, fmt), args);
-    va_end(args);
+    // va_list args;
+    // va_start(args, fmt);
+    // conoutfv(CON_ERROR, debugline(p, fmt), args);
+    // va_end(args);
+    defvformatstring(msg, fmt, fmt);
+    spdlog::get("global")->error() << msg;
 
     debugalias();
 }
@@ -1518,21 +1522,23 @@ void freecode(uint *code)
 
 void printvar(ident *id, int i)
 {
-    if(i < 0) conoutf("%s = %d", id->name, i);
+    if(i < 0) spdlog::get("global")->info() << id->name << " = " << i;
     else if(id->flags&IDF_HEX && id->maxval==0xFFFFFF)
-        conoutf("%s = 0x%.6X (%d, %d, %d)", id->name, i, (i>>16)&0xFF, (i>>8)&0xFF, i&0xFF);
+        // conoutf("%s = 0x%.6X (%d, %d, %d)", id->name, i, (i>>16)&0xFF, (i>>8)&0xFF, i&0xFF);
+        spdlog::get("global")->info() << id->name << " = 0X" << i << "(" << ((i>>16)&0xFF) << ", " << ((i>>8)&0xFF) << ", " << (i&0xFF) << ")";
     else
-        conoutf(id->flags&IDF_HEX ? "%s = 0x%X" : "%s = %d", id->name, i);
+        // TODO: ächz  conoutf(id->flags&IDF_HEX ? "%s = 0x%X" : "%s = %d", id->name, i);
+        spdlog::get("global")->info() << id->name << " = " << i;
 }
 
 void printfvar(ident *id, float f)
 {
-    conoutf("%s = %s", id->name, floatstr(f));
+    spdlog::get("global")->info() << id->name << " = " << floatstr(f);
 }
 
 void printsvar(ident *id, const char *s)
 {
-    conoutf(strchr(s, '"') ? "%s = [%s]" : "%s = \"%s\"", id->name, s);
+    spdlog::get("global")->info() << id->name << " = " << (strchr(s, '"') ? "[" : "\"") << s << (strchr(s, '"') ? "]" : "\"");
 }
 
 void printvar(ident *id)

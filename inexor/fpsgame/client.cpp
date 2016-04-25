@@ -214,7 +214,7 @@ namespace game
     ICOMMAND(tag, "sN", (char *s, int *numargs),
     {
         if(*numargs > 0) switchname("", s);
-        else if(!*numargs) conoutf("your tag is: %s", player1->tag);
+        else if(!*numargs) spdlog::get("global")->info() << "your tag is: " << player1->tag;
         else result(player1->tag);
     });
     ICOMMAND(gettag, "", (), result(player1->tag));
@@ -1145,7 +1145,7 @@ namespace game
 
     void sayprivate(int i, char *text)
     {
-        if(!clients.inrange(i) || !clients[i]) { conoutf(CON_WARN, "no such player"); return; }
+        if(!clients.inrange(i) || !clients[i]) { spdlog::get("global")->warn() << "no such player"; return; }
         spdlog::get("chat")->info() << COL_GREY << "pm to " << colorname(clients[i]) << COL_GREY << ": " << COL_BLUE << text;
         addmsg(N_PRIVMSG, "rcis", player1, i, text);
     }
@@ -1539,8 +1539,8 @@ namespace game
                     gamepaused = val;
                     player1->attacking = false;
                 }
-                if(a) conoutf("%s %s the game", colorname(a), val ? "paused" : "resumed"); 
-                else conoutf("game is %s", val ? "paused" : "resumed");
+                if(a) spdlog::get("global")->info() << colorname(a) << " " << (val ? "paused" : "resumed") << " the game";
+                else spdlog::get("global")->info() << "game is " << (val ? "paused" : "resumed");
                 break;
             }
             case N_GAMESPEED:
@@ -1550,8 +1550,8 @@ namespace game
                 if(!demopacket) gamespeed = val;
                 extern SharedVar<int> slowmosp;
                 if(m_sp && slowmosp) break;
-                if(a) conoutf("%s set gamespeed to %d", colorname(a), val);
-                else conoutf("gamespeed is %d", val);
+                if(a) spdlog::get("global")->info() << colorname(a) << " set gamespeed to " << val;
+                else spdlog::get("global")->info() << "gamespeed is " << val;
                 break;
             }
             case N_PERSISTTEAMS:
@@ -1561,7 +1561,7 @@ namespace game
                 {
                     teamspersisted = true;
                 }
-                conoutf("teams will be %s next game", val ? "persistent" : "reshuffled");
+                spdlog::get("global")->info() << "teams will be " << (val ? "persistent" : "reshuffled") << " next game";
                 break;
             }
 
@@ -1626,7 +1626,7 @@ namespace game
                 if(!t || isignored(t->clientnum)) break;
                 if(t->state!=CS_DEAD && t->state!=CS_SPECTATOR)
                     particle_textcopy(t->abovehead(), text, PART_TEXT, 2000, 0x6496FF, 4.0f, -8);
-                conoutf(CON_TEAMCHAT, "\f4pm from %s:\f6 %s", colorname(t), text);
+                spdlog::get("chat")->info() << COL_GREY << "PM from " << colorname(t) << COL_WHITE << ": " << text;
                 break;
             }
 
@@ -1684,7 +1684,7 @@ namespace game
                 if(d->name[0])          // already connected
                 {
                     if(strcmp(d->name, text) && !isignored(d->clientnum))
-                        conoutf("%s is now known as %s", colorname(d), colorname(d, text));
+                        spdlog::get("global")->info() << colorname(d) << " is now known as " << colorname(d, text);
                 }
                 else                    // new client
                 {
@@ -1712,7 +1712,9 @@ namespace game
                     if(!text[0]) copystring(text, "unnamed");
                     if(strcmp(text, d->name))
                     {
-                        if(!isignored(d->clientnum)) conoutf("%s is now known as %s", colorname(d), colorname(d, text));
+
+                        if(!isignored(d->clientnum))
+                            spdlog::get("global")->info() << colorname(d) << " is now known as " << colorname(d, text);
                         copystring(d->name, text, MAXNAMELEN+1);
                     }
                 }
@@ -2026,7 +2028,7 @@ namespace game
             case N_REMIP:
             {
                 if(!d) return;
-                conoutf("%s remipped", colorname(d));
+                spdlog::get("global")->info() << colorname(d) << " remipped";
                 mpremip(false);
                 break;
             }
@@ -2093,18 +2095,18 @@ namespace game
 
             case N_SERVMSG:
                 getstring(text, p);
-                conoutf("%s", text);
+                spdlog::get("server")->info() << text;
                 break;
 
             case N_SENDDEMOLIST:
             {
                 int demos = getint(p);
-                if(demos <= 0) conoutf("no demos available");
+                if(demos <= 0) spdlog::get("global")->warn() << "no demos available";
                 else loopi(demos)
                 {
                     getstring(text, p);
                     if(p.overread()) break;
-                    conoutf("%d. %s", i+1, text);
+                    spdlog::get("global")->info() << (i + 1) << ". " << text;
                 }
                 break;
             }
@@ -2135,7 +2137,7 @@ namespace game
                 if(mm != mastermode)
                 {
                     mastermode = mm;
-                    conoutf("mastermode is %s (%d)", server::mastermodename(mastermode), mastermode);
+                    spdlog::get("global")->info() << "mastermode is " << server::mastermodename(mastermode) << " (" << mastermode << ")";
                 }
                 break;
             }
@@ -2143,7 +2145,7 @@ namespace game
             case N_MASTERMODE:
             {
                 mastermode = getint(p);
-                conoutf("mastermode is %s (%d)", server::mastermodename(mastermode), mastermode);
+                spdlog::get("global")->info() << "mastermode is " << server::mastermodename(mastermode) << " (" << mastermode << ")";
                 break;
             }
 
@@ -2201,9 +2203,8 @@ namespace game
                 fpsent *w = getclient(wn);
                 if(!w) return;
                 filtertext(w->team, text, false, false, MAXTEAMLEN);
-                static const char * const fmt[2] = { "%s switched to team %s", "%s forced to team %s"};
-                if(reason >= 0 && size_t(reason) < sizeof(fmt)/sizeof(fmt[0]))
-                    conoutf(fmt[reason], colorname(w), w->team);
+                if(reason == 0 || reason == 1)
+                    spdlog::get("global")->info() << colorname(w) << (reason ? " forced to team " : " switched to team ") << w->team;
                 break;
             }
 
@@ -2232,7 +2233,7 @@ namespace game
                 {
                     int newsize = 0;
                     while(1<<newsize < getworldsize()) newsize++;
-                    conoutf(size>=0 ? "%s started a new map of size %d" : "%s enlarged the map to size %d", colorname(d), newsize);
+                    spdlog::get("global")->info() << colorname(d) << (size >= 0 ? " started a new map of size " : " enlarged the map to size ") << newsize;
                 }
                 break;
             }
@@ -2240,7 +2241,7 @@ namespace game
             case N_REQAUTH:
             {
                 getstring(text, p);
-                if(autoauth && text[0] && tryauth(text)) conoutf("server requested authkey \"%s\"", text);
+                if(autoauth && text[0] && tryauth(text)) spdlog::get("global")->info() << "server requested authkey \"" << text << "\"";
                 break;
             }
 
@@ -2304,7 +2305,7 @@ namespace game
                 defformatstring(fname, "%d.dmo", lastmillis);
                 stream *demo = openrawfile(fname, "wb");
                 if(!demo) return;
-                conoutf("received demo \"%s\"", fname);
+                spdlog::get("global")->info() << "received demo \"" << fname << "\"";
                 ucharbuf b = p.subbuf(p.remaining());
                 demo->write(b.buf, b.maxlen);
                 delete demo;
@@ -2321,7 +2322,7 @@ namespace game
                 fname.replace_extension(".ogz");
                 stream *map = openrawfile(fname.string().c_str(), "wb");
                 if(!map) return;
-                conoutf("received map");
+                spdlog::get("global")->info() << "received map";
                 ucharbuf b = p.subbuf(p.remaining());
                 map->write(b.buf, b.maxlen);
                 delete map;
@@ -2358,8 +2359,8 @@ namespace game
 
     void getmap()
     {
-        if(!m_edit) { spdlog::get("global")->error() << "\"getmap\" only works in coop edit mode"; return; }
-        conoutf("getting map...");
+        if(!m_edit) { spdlog::get("edit")->error() << "\"getmap\" only works in coop edit mode"; return; }
+        spdlog::get("edit")->info() << "getting map...";
         addmsg(N_GETMAP, "r");
     }
     COMMAND(getmap, "");
@@ -2391,15 +2392,15 @@ namespace game
 
     void getdemo(int i)
     {
-        if(i<=0) conoutf("getting demo...");
-        else conoutf("getting demo %d...", i);
+        if(i<=0) spdlog::get("global")->info() << "getting demo...";
+        else spdlog::get("global")->info() << "getting demo " << i << "...";
         addmsg(N_GETDEMO, "ri", i);
     }
     ICOMMAND(getdemo, "i", (int *val), getdemo(*val));
 
     void listdemos()
     {
-        conoutf("listing demos...");
+        spdlog::get("global")->info() << "listing demos...";
         addmsg(N_LISTDEMOS, "r");
     }
     COMMAND(listdemos, "");
@@ -2407,7 +2408,7 @@ namespace game
     void sendmap()
     {
         if(!m_edit || (player1->state==CS_SPECTATOR && remote && !player1->privilege)) { spdlog::get("global")->error() << "\"sendmap\" only works in coop edit mode"; return; }
-        conoutf("sending map...");
+        spdlog::get("global")->info() << "sending map...";
         defformatstring(mname, "sendmap_%d", lastmillis);
         save_world(mname, true);
         Path fname = getmediapath(mname, DIR_MAP);

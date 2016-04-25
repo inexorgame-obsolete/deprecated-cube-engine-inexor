@@ -967,7 +967,7 @@ extentity *newentity(bool local, const vec &o, int type, int v1, int v2, int v3,
     {
         idx = -1;
         for(int i = keepents; i < ents.length(); i++) if(ents[i]->type == ET_EMPTY) { idx = i; break; }
-        if(idx < 0 && ents.length() >= MAXENTS) { conoutf("too many entities"); return NULL; }
+        if(idx < 0 && ents.length() >= MAXENTS) { spdlog::get("global")->info() << "too many entities"; return NULL; }
     }
     else while(ents.length() < idx) ents.add(entities::newentity())->type = ET_EMPTY;
     extentity &e = *entities::newentity();
@@ -1359,7 +1359,7 @@ void shrinkmap()
  
     allchanged();
 
-    conoutf("shrunk map to size %d", *worldscale);
+    spdlog::get("global")->info() << "shrunk map to size " << *worldscale;
 }
 
 void newmap(int *i) { bool force = !isconnected(); if(force) game::forceedit(""); if(emptymap(*i, force, NULL)) game::newmap(max(*i, 0)); }

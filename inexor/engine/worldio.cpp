@@ -1128,7 +1128,7 @@ bool save_world(const char *mname, bool nolms)
 
     delete f;
     /// done
-    conoutf("wrote map file %s", ogzname);
+    spdlog::get("edit")->info() << "wrote map file " << ogzname;
     return true;
 }
 
@@ -1407,7 +1407,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
     mapcrc = f->getcrc();
     delete f;
 
-    conoutf("read map %s (%.1f seconds)", ogzname, (SDL_GetTicks()-loadingstart)/1000.0f);
+    spdlog::get("global")->info() << "read map " << ogzname << " (" << ((SDL_GetTicks()-loadingstart)/1000.0f) << " seconds)";
 
     clearmainmenu();
 
@@ -1436,7 +1436,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
 
     renderbackground("loading...", mapshot, mname);
 
-    if(maptitle[0] && strcmp(maptitle, "Untitled Map by Unknown")) conoutf(CON_ECHO, "%s", *maptitle);
+    if(maptitle[0] && strcmp(maptitle, "Untitled Map by Unknown")) spdlog::get("global")->info() << *maptitle;
 
     startmap(cname ? cname : mname);
     

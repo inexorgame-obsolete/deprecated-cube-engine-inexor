@@ -157,28 +157,6 @@ void fatal(const char *fmt, ...)
     exit(EXIT_FAILURE);
 }
 
-void conoutfv(int type, const char *fmt, va_list args)
-{
-    vfprintf(logfile, fmt, args);
-    fputc('\n', logfile);
-}
-
-void conoutf(const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    conoutfv(CON_INFO, fmt, args);
-    va_end(args);
-}
-
-void conoutf(int type, const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    conoutfv(type, fmt, args);
-    va_end(args);
-}
-
 void purgeclient(int n)
 {
     client &c = *clients[n];
@@ -244,7 +222,7 @@ void setupserver(int port, const char *ip = NULL)
     starttime = time(NULL);
     char *ct = ctime(&starttime);
     if(strchr(ct, '\n')) *strchr(ct, '\n') = '\0';
-    conoutf("*** Starting master server on %s %d at %s ***", ip ? ip : "localhost", port, ct);
+    spdlog::get("global")->info() << "*** Starting master server on " << (ip ? ip : "localhost") << " " << port << " at " << ct << " ***";
 }
 
 void genserverlist()
@@ -481,7 +459,7 @@ void reqauth(client &c, uint id, char *name)
     }
     string ip;
     if(enet_address_get_host_ip(&c.address, ip, sizeof(ip)) < 0) copystring(ip, "-");
-    conoutf("%s: attempting \"%s\" as %u from %s", ct ? ct : "-", name, id, ip);
+    spdlog::get("global")->info() << (ct ? ct : "-") << ": attempting \"" << name << "\" as " << id << " from " << ip;
 
     userinfo *u = users.access(name);
     if(!u)
@@ -519,12 +497,12 @@ void confauth(client &c, uint id, const char *val)
         if(checkchallenge(val, c.authreqs[i].answer))
         {
             outputf(c, "succauth %u\n", id);
-            conoutf("succeeded %u from %s", id, ip);
+            spdlog::get("global")->info() << "succeeded " << id << " from " << ip;
         }
         else
         {
             outputf(c, "failauth %u\n", id);
-            conoutf("failed %u from %s", id, ip);
+            spdlog::get("global")->info() << "failed " << id << " from " << ip;
         }
         freechallenge(c.authreqs[i].answer);
         c.authreqs.remove(i--);
@@ -720,7 +698,7 @@ int main(int argc, char **argv)
     {
         if(reloadcfg)
         {
-            conoutf("reloading master.cfg");
+            spdlog::get("global")->info() << "reloading master.cfg";
             execfile(cfgname);
             bangameservers();
             banclients();

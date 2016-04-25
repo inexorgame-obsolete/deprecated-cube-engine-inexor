@@ -1644,13 +1644,13 @@ template<class MDL> struct skelcommands : modelcommands<MDL, struct MDL::skelmes
 
     static void loadpart(char *meshfile, char *skelname, float *smooth)
     {
-        if(!MDL::loading) { conoutf("not loading an %s", MDL::formatname()); return; }
+        if(!MDL::loading) { spdlog::get("global")->error() << "not loading an " << MDL::formatname(); return; }
         defformatstring(filename, "%s/%s", MDL::dir, meshfile);
         part &mdl = MDL::loading->addpart();
         mdl.pitchscale = mdl.pitchoffset = mdl.pitchmin = mdl.pitchmax = 0;
         MDL::adjustments.setsize(0);
         mdl.meshes = MDL::loading->sharemeshes(path(filename), skelname[0] ? skelname : NULL, double(*smooth > 0 ? cos(clamp(*smooth, 0.0f, 180.0f)*RAD) : 2));
-        if(!mdl.meshes) conoutf("could not load %s", filename);
+        if(!mdl.meshes) spdlog::get("global")->error() << "could not load " << filename;
         else
         {
             mdl.initanimparts();
@@ -1660,7 +1660,7 @@ template<class MDL> struct skelcommands : modelcommands<MDL, struct MDL::skelmes
    
     static void settag(char *name, char *tagname, float *tx, float *ty, float *tz, float *rx, float *ry, float *rz)
     {
-        if(!MDL::loading || MDL::loading->parts.empty()) { conoutf("not loading an %s", MDL::formatname()); return; }
+        if(!MDL::loading || MDL::loading->parts.empty()) { spdlog::get("global")->error() << "not loading an " << MDL::formatname(); return; }
         part &mdl = *(part *)MDL::loading->parts.last();
         int i = mdl.meshes ? ((meshgroup *)mdl.meshes)->skel->findbone(name) : -1;
         if(i >= 0)
@@ -1673,12 +1673,12 @@ template<class MDL> struct skelcommands : modelcommands<MDL, struct MDL::skelmes
             ((meshgroup *)mdl.meshes)->skel->addtag(tagname, i, m);
             return;
         }
-        conoutf("could not find bone %s for tag %s", name, tagname);
+        spdlog::get("global")->error() << "could not find bone " << name << " for tag " << tagname;
     }
 
     static void setpitch(char *name, float *pitchscale, float *pitchoffset, float *pitchmin, float *pitchmax)
     {
-        if(!MDL::loading || MDL::loading->parts.empty()) { conoutf("not loading an %s", MDL::formatname()); return; }
+        if(!MDL::loading || MDL::loading->parts.empty()) { spdlog::get("global")->error() << "not loading an " << MDL::formatname(); return; }
         part &mdl = *(part *)MDL::loading->parts.last();
     
         if(name[0])
@@ -1701,7 +1701,7 @@ template<class MDL> struct skelcommands : modelcommands<MDL, struct MDL::skelmes
                 }
                 return;
             }
-            conoutf("could not find bone %s to pitch", name);
+            spdlog::get("global")->error() << "could not find bone " << name << " to pitch";
             return;
         }
     
@@ -1721,17 +1721,17 @@ template<class MDL> struct skelcommands : modelcommands<MDL, struct MDL::skelmes
 
     static void setpitchtarget(char *name, char *animfile, int *frameoffset, float *pitchmin, float *pitchmax)
     {
-        if(!MDL::loading || MDL::loading->parts.empty()) { conoutf("\frnot loading an %s", MDL::formatname()); return; }
+        if(!MDL::loading || MDL::loading->parts.empty()) { spdlog::get("global")->error() << "not loading an " << MDL::formatname(); return; }
         part &mdl = *(part *)MDL::loading->parts.last();
         if(!mdl.meshes) return;
         defformatstring(filename, "%s/%s", MDL::dir, animfile);
         animspec *sa = ((meshgroup *)mdl.meshes)->loadanim(path(filename));
-        if(!sa) { conoutf("\frcould not load %s anim file %s", MDL::formatname(), filename); return; }
+        if(!sa) { spdlog::get("global")->error() << "could not load " << MDL::formatname() << " anim file " << filename; return; }
         skeleton *skel = ((meshgroup *)mdl.meshes)->skel;
         int bone = skel ? skel->findbone(name) : -1;
         if(bone < 0)
         {
-            conoutf("\frcould not find bone %s to pitch target", name);
+            spdlog::get("global")->error() << "could not find bone " << name << " to pitch target";
             return;
         }
         loopv(skel->pitchtargets) if(skel->pitchtargets[i].bone == bone) return;
@@ -1744,14 +1744,14 @@ template<class MDL> struct skelcommands : modelcommands<MDL, struct MDL::skelmes
 
     static void setpitchcorrect(char *name, char *targetname, float *scale, float *pitchmin, float *pitchmax)
     {
-        if(!MDL::loading || MDL::loading->parts.empty()) { conoutf("\frnot loading an %s", MDL::formatname()); return; }
+        if(!MDL::loading || MDL::loading->parts.empty()) { spdlog::get("global")->error() << "not loading an " << MDL::formatname(); return; }
         part &mdl = *(part *)MDL::loading->parts.last();
         if(!mdl.meshes) return;
         skeleton *skel = ((meshgroup *)mdl.meshes)->skel;
         int bone = skel ? skel->findbone(name) : -1;
         if(bone < 0)
         {
-            conoutf("\frcould not find bone %s to pitch correct", name);
+            spdlog::get("global")->error() << "could not find bone " << name << " to pitch correct";
             return;
         }
         if(skel->findpitchcorrect(bone) >= 0) return;
@@ -1759,7 +1759,7 @@ template<class MDL> struct skelcommands : modelcommands<MDL, struct MDL::skelmes
         if(targetbone >= 0) loopv(skel->pitchtargets) if(skel->pitchtargets[i].bone == targetbone) { target = i; break; }
         if(target < 0)
         {
-            conoutf("\frcould not find pitch target %s to pitch correct %s", targetname, name);
+            spdlog::get("global")->error() << "could not find pitch target " << targetname << " to pitch correct " << name;
             return;
         }
         pitchcorrect c;
@@ -1775,18 +1775,18 @@ template<class MDL> struct skelcommands : modelcommands<MDL, struct MDL::skelmes
 
     static void setanim(char *anim, char *animfile, float *speed, int *priority, int *startoffset, int *endoffset)
     {
-        if(!MDL::loading || MDL::loading->parts.empty()) { conoutf("not loading an %s", MDL::formatname()); return; }
+        if(!MDL::loading || MDL::loading->parts.empty()) { spdlog::get("global")->error() << "not loading an " << MDL::formatname(); return; }
     
         vector<int> anims;
         findanims(anim, anims);
-        if(anims.empty()) conoutf("could not find animation %s", anim);
+        if(anims.empty()) spdlog::get("global")->error() << "could not find animation " << anim;
         else
         {
             part *p = (part *)MDL::loading->parts.last();
             if(!p->meshes) return;
             defformatstring(filename, "%s/%s", MDL::dir, animfile);
             animspec *sa = ((meshgroup *)p->meshes)->loadanim(path(filename));
-            if(!sa) conoutf("could not load %s anim file %s", MDL::formatname(), filename);
+            if(!sa) spdlog::get("global")->error() << "could not load " << MDL::formatname() << " anim file " << filename;
             else loopv(anims)
             {
                 int start = sa->frame, end = sa->range;
@@ -1802,7 +1802,7 @@ template<class MDL> struct skelcommands : modelcommands<MDL, struct MDL::skelmes
     
     static void setanimpart(char *maskstr)
     {
-        if(!MDL::loading || MDL::loading->parts.empty()) { conoutf("not loading an %s", MDL::formatname()); return; }
+        if(!MDL::loading || MDL::loading->parts.empty()) { spdlog::get("global")->error() << "not loading an " << MDL::formatname(); return; }
     
         part *p = (part *)MDL::loading->parts.last();
     
@@ -1813,24 +1813,24 @@ template<class MDL> struct skelcommands : modelcommands<MDL, struct MDL::skelmes
         {
             char *bonestr = bonestrs[i];
             int bone = p->meshes ? ((meshgroup *)p->meshes)->skel->findbone(bonestr[0]=='!' ? bonestr+1 : bonestr) : -1;
-            if(bone<0) { conoutf("could not find bone %s for anim part mask [%s]", bonestr, maskstr); bonestrs.deletearrays(); return; }
+            if(bone<0) { spdlog::get("global")->error() << "could not find bone " << bonestr << " for anim part mask [" << maskstr << "]"; bonestrs.deletearrays(); return; }
             bonemask.add(bone | (bonestr[0]=='!' ? BONEMASK_NOT : 0));
         }
         bonestrs.deletearrays();
         bonemask.sort();
         if(bonemask.length()) bonemask.add(BONEMASK_END);
     
-        if(!p->addanimpart(bonemask.getbuf())) conoutf("too many animation parts");
+        if(!p->addanimpart(bonemask.getbuf())) spdlog::get("global")->error() << "too many animation parts";
     }
 
     static void setadjust(char *name, float *yaw, float *pitch, float *roll, float *tx, float *ty, float *tz)
     {
-        if(!MDL::loading || MDL::loading->parts.empty()) { conoutf("not loading an %s", MDL::formatname()); return; }
+        if(!MDL::loading || MDL::loading->parts.empty()) { spdlog::get("global")->error() << "not loading an " << MDL::formatname(); return; }
         part &mdl = *(part *)MDL::loading->parts.last();
 
         if(!name[0]) return;
         int i = mdl.meshes ? ((meshgroup *)mdl.meshes)->skel->findbone(name) : -1;
-        if(i < 0) {  conoutf("could not find bone %s to adjust", name); return; }
+        if(i < 0) {  spdlog::get("global")->error() << "could not find bone " << name << " to adjust"; return; }
         while(!MDL::adjustments.inrange(i)) MDL::adjustments.add(skeladjustment(0, 0, 0, vec(0, 0, 0)));
         MDL::adjustments[i] = skeladjustment(*yaw, *pitch, *roll, vec(*tx/4, *ty/4, *tz/4));
     }

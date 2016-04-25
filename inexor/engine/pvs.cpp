@@ -977,7 +977,7 @@ static void lockpvs_(bool lock)
     lockedwaterpvs = 0;
     loopi(wbytes) lockedwaterpvs |= pvsbuf[d->offset + i] << (i*8);
     loopi(MAXWATERPVS) lockedwaterplanes[i] = waterplanes[i].height;
-    conoutf("locked view cell at %.1f, %.1f, %.1f", camera1->o.x, camera1->o.y, camera1->o.z);
+    spdlog::get("global")->info() << "locked view cell at " << camera1->o.x << ", " << camera1->o.y << ", " << camera1->o.z;
 }
 
 VARF(lockpvs, 0, 0, 1, lockpvs_(lockpvs!=0));
@@ -1085,7 +1085,7 @@ void testpvs(int *vcsize)
     lockedpvs = w.testviewcell(o, size, &lockedwaterpvs, &len);
     loopi(MAXWATERPVS) lockedwaterplanes[i] = waterplanes[i].height;
     lockpvs = 1;
-    conoutf("generated test view cell of size %d at %.1f, %.1f, %.1f (%d B)", size, camera1->o.x, camera1->o.y, camera1->o.z, len);
+    spdlog::get("global")->info() << "generated test view cell of size " << size << " at " << camera1->o.x << ", " << camera1->o.y << ", " << camera1->o.z << " (" << len << " B)";
 
     origpvsnodes.setsize(0);
     numwaterplanes = oldnumwaterplanes;
@@ -1169,18 +1169,16 @@ void genpvs(int *viewcellsize)
     if(genpvs_canceled) 
     {
         clearpvs();
-        conoutf("genpvs aborted");
+        spdlog::get("global")->info() << "genpvs aborted";
     }
-    else conoutf("generated %d unique view cells totaling %.1f kB and averaging %d B (%.1f seconds)", 
-            pvs.length(), pvsbuf.length()/1024.0f, pvsbuf.length()/max(pvs.length(), 1), (end - start) / 1000.0f);
+    else spdlog::get("global")->info() << "generated " << pvs.length() << " unique view cells totaling " << (pvsbuf.length()/1024.0f) << " kB and averaging " << (pvsbuf.length() / max(pvs.length(), 1)) << " B (" << ((end - start) / 1000.0f) << " seconds)";
 }
 
 COMMAND(genpvs, "i");
 
 void pvsstats()
 {
-    conoutf("%d unique view cells totaling %.1f kB and averaging %d B",          
-        pvs.length(), pvsbuf.length()/1024.0f, pvsbuf.length()/max(pvs.length(), 1));
+    spdlog::get("global")->info() << pvs.length() << " unique view cells totaling " << (pvsbuf.length() / 1024.0f) << " kB and averaging " << (pvsbuf.length()/max(pvs.length(), 1)) << " B";
 }
 
 COMMAND(pvsstats, "");

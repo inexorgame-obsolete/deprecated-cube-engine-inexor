@@ -471,12 +471,12 @@ void cleanupmodels()
 void clearmodel(char *name)
 {
     model **m = models.access(name);
-    if(!m) { conoutf("model %s is not loaded", name); return; }
+    if(!m) { spdlog::get("global")->error() << "model " << name << " is not loaded"; return; }
     loopv(mapmodels) if(mapmodels[i].m==*m) mapmodels[i].m = NULL;
     models.remove(name);
     (*m)->cleanup();
     delete *m;
-    conoutf("cleared model %s", name);
+    spdlog::get("global")->error() << "cleared model " << name;
 }
 
 COMMAND(clearmodel, "s");

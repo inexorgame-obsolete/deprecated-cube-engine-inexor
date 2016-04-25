@@ -58,7 +58,7 @@ namespace game
             following = arg[0] ? parseplayer(arg) : -1;
             if(following==player1->clientnum) following = -1;
             followdir = 0;
-            conoutf("follow %s", following>=0 ? "on" : "off");
+            spdlog::get("global")->info() << "follow " << (following >= 0 ? "on" : "off");
         }
 	}
     COMMAND(follow, "s");
@@ -79,7 +79,7 @@ namespace game
             cur = (cur + dir + clients.length()) % clients.length();
             if(clients[cur] && clients[cur]->state!=CS_SPECTATOR)
             {
-                if(following<0) conoutf("follow on");
+                if(following<0) spdlog::get("global")->info() << "follow on";
                 following = cur;
                 followdir = dir;
                 return;
@@ -157,7 +157,7 @@ namespace game
         if(following<0) return;
         following = -1;
         followdir = 0;
-        conoutf("follow off");
+        spdlog::get("global")->info() << "follow off";
     }
 
     /// Give me the fpsent instance of the player you are currently spectating
@@ -1052,7 +1052,6 @@ namespace game
                 break;
 
         }
-        // conoutf("drawhudannounce zoom:%1.2f remaining:%d effect:%d text:%s", zoom, hudannounce_timeout - totalmillis, hudannounce_effect, hudannounce_text);
         glPushMatrix();
         glScalef(h/scale, h/scale, 1);
         // glTranslatef(0, 0, +0.9f);

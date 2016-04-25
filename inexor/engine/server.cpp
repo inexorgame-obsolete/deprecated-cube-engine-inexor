@@ -44,45 +44,6 @@ void fatal(std::vector<std::string> &output)
     exit(EXIT_FAILURE);
 }
 
-void conoutfv(int type, const char *fmt, va_list args)
-{
-    static char buf[LOGSTRLEN];
-    vformatstring(buf, fmt, args, sizeof(buf));
-    switch (type) {
-        case CON_DEBUG:
-            spdlog::get("global")->debug() << buf;
-            break;
-        case CON_INFO:
-            spdlog::get("global")->info() << buf;
-            break;
-        case CON_WARN:
-            spdlog::get("global")->warn() << buf;
-            break;
-        case CON_ERROR:
-            spdlog::get("global")->error() << buf;
-            break;
-        default:
-            spdlog::get("global")->info() << buf;
-            break;
-    }
-
-}
-
-void conoutf(const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    conoutfv(CON_INFO, fmt, args);
-    va_end(args);
-}
-
-void conoutf(int type, const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    conoutfv(type, fmt, args);
-    va_end(args);
-}
 #endif
 
 #define DEFAULTCLIENTS 8
@@ -444,7 +405,7 @@ void processmasterinput()
         if(matchstring(input, cmdlen, "failreg"))
             spdlog::get("global")->error() << "master server registration failed: " << args;
         else if(matchstring(input, cmdlen, "succreg"))
-            conoutf("master server registration succeeded");
+            spdlog::get("global")->info() << "master server registration succeeded";
         else server::processmasterinput(input, cmdlen, args);
 
         masterinpos = end - masterin.getbuf();
@@ -1061,7 +1022,7 @@ void initserver(bool listen, bool dedicated)
         updatemasterserver();
         if(dedicated) rundedicatedserver(); // never returns
 #ifndef STANDALONE
-        else conoutf("listen server started");
+        else spdlog::get("global")->info() << "listen server started";
 #endif
     }
 }
@@ -1077,7 +1038,7 @@ void startlistenserver(int *usemaster)
     
     updatemasterserver();
 
-    conoutf("listen server started for %d clients%s", *maxclients, allowupdatemaster ? " and listed with master server" : "");
+    spdlog::get("global")->info() << "listen server started for " << *maxclients << " clients" << (allowupdatemaster ? " and listed with master server" : "");
 }
 COMMAND(startlistenserver, "i");
 
@@ -1089,7 +1050,7 @@ void stoplistenserver()
     enet_host_flush(serverhost);
     cleanupserver();
 
-    conoutf("listen server stopped");
+    spdlog::get("global")->info() << "listen server stopped";
 }
 COMMAND(stoplistenserver, "");
 #endif

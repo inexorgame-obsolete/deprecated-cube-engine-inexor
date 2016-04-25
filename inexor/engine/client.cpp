@@ -94,7 +94,7 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
 {   
     if(connpeer)
     {
-        conoutf("aborting connection attempt");
+        spdlog::get("global")->info() << "aborting connection attempt";
         abortconnect();
     }
 
@@ -108,7 +108,7 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
         if(strcmp(servername, connectname)) setsvar("connectname", servername);
         if(serverport != connectport) setvar("connectport", serverport);
         addserver(servername, serverport, serverpassword && serverpassword[0] ? serverpassword : NULL);
-        conoutf("attempting to connect to %s:%d", servername, serverport);
+        spdlog::get("global")->info() << "attempting to connect to " << servername << ":" << serverport;
         if(!resolverwait(servername, &address))
         {
             spdlog::get("global")->error() << "could not resolve server " << servername;
@@ -119,7 +119,7 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
     {
         setsvar("connectname", "");
         setvar("connectport", 0);
-        conoutf("attempting to connect over LAN");
+        spdlog::get("global")->info() << "attempting to connect over LAN";
         address.host = ENET_HOST_BROADCAST;
     }
 
@@ -171,7 +171,7 @@ void disconnect(bool async, bool cleanup)
         }
         curpeer = NULL;
         discmillis = 0;
-        conoutf("disconnected");
+        spdlog::get("global")->info() << "disconnected";
         game::gamedisconnect(cleanup);
         mainmenu = 1;
     }
@@ -187,17 +187,17 @@ void trydisconnect(bool local)
 {
     if(connpeer)
     {
-        conoutf("aborting connection attempt");
+        spdlog::get("global")->info() << "aborting connection attempt";
         abortconnect();
     }
     else if(curpeer)
     {
-        conoutf("attempting to disconnect...");
+        spdlog::get("global")->info() << "attempting to disconnect...";
 		// try to disconnect synchronously for a while then disconnect asynchronously
         disconnect(!discmillis);
     }
     else if(local && haslocalclients()) localdisconnect();
-    else conoutf("not connected");
+    else spdlog::get("global")->info() << "not connected";
 }
 
 // commands to establish and destroy network connections
@@ -250,7 +250,7 @@ void gets2c()
     if(!clienthost) return;
     if(connpeer && totalmillis/3000 > connmillis/3000)
     {
-        conoutf("attempting to connect...");
+        spdlog::get("global")->info() << "attempting to connect...";
         connmillis = totalmillis;
         ++connattempts; 
         if(connattempts > 3)
@@ -268,14 +268,14 @@ void gets2c()
             localdisconnect(false);
             curpeer = connpeer;
             connpeer = NULL;
-            conoutf("connected to server");
+            spdlog::get("global")->info() << "connected to server";
             throttle();
             if(rate) setrate(rate);
             game::gameconnect(true);
             break;
          
         case ENET_EVENT_TYPE_RECEIVE:
-            if(discmillis) conoutf("attempting to disconnect...");
+            if(discmillis) spdlog::get("global")->info() << "attempting to disconnect...";
             else localservertoclient(event.channelID, event.packet);
             enet_packet_destroy(event.packet);
             break;

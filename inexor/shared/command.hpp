@@ -374,13 +374,13 @@ inline void ident::getval(tagval &v) const
 
 /// Version of the ICOMMAND macro that automatically catches
 /// errors and prints them to the console.
-#define ICOMMANDERR(name, nargs, proto, b)                 \
-  ICOMMAND(name, nargs, proto,                             \
-      try {                                                \
-        b ;                                                \
-      } catch (inexor::util::InexorException &e) {         \
-        conoutf("EXCEPTION in " #name ": %s", e.message().c_str());\
-      }                                                    \
+#define ICOMMANDERR(name, nargs, proto, b)                                                   \
+  ICOMMAND(name, nargs, proto,                                                               \
+      try {                                                                                  \
+          b;                                                                                 \
+      } catch (inexor::util::InexorException &e) {                                           \
+          spdlog::get("global")->error() << "EXCEPTION in " << #name << ": " << e.message(); \
+      }                                                                                      \
   )
 
 #endif // SAUER_COMMAND_H

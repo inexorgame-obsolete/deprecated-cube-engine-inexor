@@ -2263,7 +2263,6 @@ namespace server
             }
             for(int t=0; t<teams.length(); t++)
             {
-                // conoutf("team %s - %i players alive", teams[t].team, teams[t].score);
                 if(teams[t].score > 0) teamsalive++;
             }
             if(teamsalive < 2) startintermission();

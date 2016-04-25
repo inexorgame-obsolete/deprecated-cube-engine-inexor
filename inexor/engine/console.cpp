@@ -42,56 +42,6 @@ void conline(int type, const char *sf)        // add a line to the console buffe
 /// List of already displayed warnings, we only want to display them once.
 std::set<std::string> warningsDisplayed;
 
-void conoutfv(int type, const char *fmt, va_list args)
-{
-    static char buf[CONSTRLEN];
-    vformatstring(buf, fmt, args, sizeof(buf));
-
-    if(type == CON_WARN)
-    {
-        if(warningsDisplayed.find(buf) == warningsDisplayed.end())
-        {
-            warningsDisplayed.insert(buf);
-        }
-        else return; 
-    }
-
-    // conline(type, buf);
-    switch (type) {
-        case CON_DEBUG:
-            spdlog::get("global")->debug() << buf;
-            break;
-        case CON_INFO:
-            spdlog::get("global")->info() << buf;
-            break;
-        case CON_WARN:
-            spdlog::get("global")->warn() << buf;
-            break;
-        case CON_ERROR:
-            spdlog::get("global")->error() << buf;
-            break;
-        default:
-            spdlog::get("global")->info() << buf;
-            break;
-    }
-}
-
-void conoutf(const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    conoutfv(CON_INFO, fmt, args);
-    va_end(args); 
-}
-
-void conoutf(int type, const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    conoutfv(type, fmt, args);
-    va_end(args);
-}
-
 VAR(fullconsole, 0, 0, 1);
 ICOMMAND(toggleconsole, "", (), { fullconsole ^= 1; });
 

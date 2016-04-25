@@ -239,7 +239,7 @@ struct iqm : skelmodel, skelloader<iqm>
                 }
                 if(!m->numtris || !m->numverts)
                 {
-                    conoutf("empty mesh in %s", filename);
+                    spdlog::get("global")->error() << "empty mesh in " << filename;
                     meshes.removeobj(m);
                     delete m;
                 }
