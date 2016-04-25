@@ -5,8 +5,10 @@
 #include <spdlog/spdlog.h>
 #undef LOG_INFO  //conflicting between spdlog and cef
 #undef LOG_WARNING
+
 #include "inexor/util/InexorConsoleSink.hpp"
 #include "inexor/util/InexorCutAnsiCodesSink.hpp"
+
 #include <iomanip>
 #include <map>
 #include <array>
@@ -16,14 +18,15 @@ namespace inexor {
 namespace util {
 
     // ANSI Console colors: everything behind it will be in that particular color.
-    #define COL_GREEN   "\x1b[38;2;64;255;128m" // \x1b[38;2; is the ANSI escape sequence for 24bit foreground color, then the RGB values follow (+ closing 'm').
-    #define COL_BLUE    "\x1b[38;2;96;160;255m"
-    #define COL_YELLOW  "\x1b[38;2;255;192;64m"
-    #define COL_RED     "\x1b[38;2;255;64;64m"
-    #define COL_GREY    "\x1b[38;2;128;128;128m"
-    #define COL_MAGENTA "\x1b[38;2;192;64;192m"
-    #define COL_ORANGE  "\x1b[38;2;255;128;0m"
-    #define COL_WHITE   "\x1b[38;2;255;255;255m"
+    // \x1b[38;2; is the ANSI escape sequence for 24bit foreground color, then the RGB values follow (+ closing 'm').
+    #define COL_GREEN   "\x1b[38;2;64;255;128m"     // == legacy \f0
+    #define COL_BLUE    "\x1b[38;2;96;160;255m"     // == legacy \f1
+    #define COL_YELLOW  "\x1b[38;2;255;192;64m"     // == legacy \f2
+    #define COL_RED     "\x1b[38;2;255;64;64m"      // == legacy \f3
+    #define COL_GREY    "\x1b[38;2;128;128;128m"    // == legacy \f4
+    #define COL_MAGENTA "\x1b[38;2;192;64;192m"     // == legacy \f5
+    #define COL_ORANGE  "\x1b[38;2;255;128;0m"      // == legacy \f6
+    #define COL_WHITE   "\x1b[38;2;255;255;255m"    // == legacy \f7
 
     /// Helper class to allow the writing of std::cout << embraced("I should be inside curly brackets", "{", "}");
     /// Same works for numbers, but it may destroy std::setprecision.

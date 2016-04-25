@@ -643,12 +643,12 @@ bool canpaintblendmap(bool brush = true, bool sel = false, bool msg = true)
     if(noedit(!sel, msg) || (nompedit && multiplayer())) return false;
     if(!blendpaintmode)
     {
-        if(msg) spdlog::get("global")->error() << "operation only allowed in blend paint mode";
+        if(msg) spdlog::get("edit")->error() << "operation only allowed in blend paint mode";
         return false;
     }
     if(brush && !brushes.inrange(curbrush))
     {
-        if(msg) spdlog::get("global")->error() << "no blend brush selected";
+        if(msg) spdlog::get("edit")->error() << "no blend brush selected";
         return false;
     }
     return true;

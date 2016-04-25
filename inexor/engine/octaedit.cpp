@@ -246,7 +246,7 @@ void toggleedit(bool force)
 /// concerns may be a scene selection which is not in view or disbaled editing status
 bool noedit(bool view, bool msg)
 {
-    if(!editmode) { if(msg) spdlog::get("global")->error() << "operation only allowed in edit mode"; return true; }
+    if(!editmode) { if(msg) spdlog::get("edit")->error() << "operation only allowed in edit mode"; return true; }
     if(view || haveselent()) return false;
     float r = 1.0f;
     vec o(sel.o), s(sel.s);
@@ -254,7 +254,7 @@ bool noedit(bool view, bool msg)
     o.add(s);
     r = float(max(s.x, max(s.y, s.z)));
     bool viewable = (isvisiblesphere(r, o) != VFC_NOT_VISIBLE);
-    if(!viewable && msg) spdlog::get("global")->error() << "selection not in view";
+    if(!viewable && msg) spdlog::get("edit")->error() << "selection not in view";
     return !viewable;
 }
 
@@ -2865,7 +2865,7 @@ void g3d_texturemenu()
 /// show texture
 void showtexgui(int *n)
 {
-    if(!editmode) { spdlog::get("global")->error() << "operation only allowed in edit mode"; return; }
+    if(!editmode) { spdlog::get("edit")->error() << "operation only allowed in edit mode"; return; }
     gui.showtextures(*n==0 ? !gui.menuon : *n==1);
 }
 

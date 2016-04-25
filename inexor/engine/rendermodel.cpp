@@ -476,7 +476,7 @@ void clearmodel(char *name)
     models.remove(name);
     (*m)->cleanup();
     delete *m;
-    spdlog::get("global")->error() << "cleared model " << name;
+    spdlog::get("global")->info() << "cleared model " << name;
 }
 
 COMMAND(clearmodel, "s");

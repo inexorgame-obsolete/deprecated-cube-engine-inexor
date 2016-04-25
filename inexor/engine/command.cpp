@@ -1522,13 +1522,13 @@ void freecode(uint *code)
 
 void printvar(ident *id, int i)
 {
-    if(i < 0) spdlog::get("global")->info() << id->name << " = " << i;
-    else if(id->flags&IDF_HEX && id->maxval==0xFFFFFF)
-        // conoutf("%s = 0x%.6X (%d, %d, %d)", id->name, i, (i>>16)&0xFF, (i>>8)&0xFF, i&0xFF);
-        spdlog::get("global")->info() << id->name << " = 0X" << i << "(" << ((i>>16)&0xFF) << ", " << ((i>>8)&0xFF) << ", " << (i&0xFF) << ")";
+    if (i < 0) spdlog::get("global")->info() << id->name << " = " << i;
+    else if (id->flags&IDF_HEX && id->maxval == 0xFFFFFF)
+        spdlog::get("global")->info("{0} = 0x{1:.6X} {2}", id->name, i, ivec((i >> 16) & 0xFF, (i >> 8) & 0xFF, i & 0xFF));
+    else if (id->flags&IDF_HEX)
+        spdlog::get("global")->info("{0} = 0x{1:X}", id->name, i);
     else
-        // TODO: ächz  conoutf(id->flags&IDF_HEX ? "%s = 0x%X" : "%s = %d", id->name, i);
-        spdlog::get("global")->info() << id->name << " = " << i;
+        spdlog::get("global")->info("{0} = {1:d}", id->name, i);
 }
 
 void printfvar(ident *id, float f)

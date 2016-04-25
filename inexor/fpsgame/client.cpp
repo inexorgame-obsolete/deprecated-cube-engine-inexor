@@ -12,17 +12,16 @@ using namespace inexor::util;
 
 namespace game
 {
-    /// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     /// minimap and radar
 
-	/// radar and minimap settings
+    /// radar and minimap settings
     VARP(minradarscale, 0, 384, 10000);
     VARP(maxradarscale, 1, 1024, 10000);
     VARP(radarteammates, 0, 1, 1);
     FVARP(minimapalpha, 0, 1, 1);
     SVARP(radardir, "interface/radar");
 
-	/// Bomberman HUD
+    /// Bomberman HUD
     int hudannounce_begin = 0;
     int hudannounce_timeout = 0;
     int hudannounce_effect = 0;
@@ -357,7 +356,7 @@ namespace game
         if(editmode) return true;
         if(isconnected() && multiplayer(false) && !m_edit)
         {
-            spdlog::get("global")->error() << "editing in multiplayer requires coop edit mode (1)";
+            spdlog::get("edit")->error() << "editing in multiplayer requires coop edit mode (1)";
             return false;
         }
         if(identexists("allowedittoggle") && !execute("allowedittoggle"))
@@ -516,10 +515,9 @@ namespace game
     }
     ICOMMAND(listclients, "bb", (int *local, int *bots), listclients(*local>0, *bots!=0));
 
-    /// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	/// server administration
+    /// server administration
 
-	/// many server commands require administrative permissions!
+    /// many server commands require administrative permissions
 
     /// clears server ban lists
     /// @see addmsg
@@ -665,7 +663,7 @@ namespace game
     {
         if(multiplayer(false) && !m_mp(mode))
         {
-            spdlog::get("global")->error() << "mode " << server::modename(mode) << " (" << mode << ") not supported in multiplayer";
+            spdlog::get("gameplay")->error() << "mode " << server::modename(mode) << " (" << mode << ") not supported in multiplayer";
             loopi(NUMGAMEMODES) if(m_mp(STARTGAMEMODE + i)) { mode = STARTGAMEMODE + i; break; }
         }
 
@@ -686,7 +684,7 @@ namespace game
     {
         if(multiplayer(false) && !m_mp(mode))
         {
-            spdlog::get("global")->error() << "mode " << server::modename(mode) << " (" << mode << ") not supported in multiplayer";
+            spdlog::get("gameplay")->error() << "mode " << server::modename(mode) << " (" << mode << ") not supported in multiplayer";
             intret(0);
             return;
         }
@@ -905,7 +903,7 @@ namespace game
         }
     }
 
-	/// print map var change commited by other players in edit mode
+    /// print map var change commited by other players in edit mode
     void printvar(fpsent *d, ident *id)
     {
         if(id) switch(id->type)
@@ -920,14 +918,14 @@ namespace game
                     formatstring(str, "0x%.6X (%d, %d, %d)", val, (val>>16)&0xFF, (val>>8)&0xFF, val&0xFF);
                 else
                     formatstring(str, id->flags&IDF_HEX ? "0x%X" : "%d", val);
-                spdlog::get("global")->info() << colorname(d) << " set map var " << quoted(id->name) <<" to " << quoted(str);
+                spdlog::get("edit")->info() << colorname(d) << " set map var " << quoted(id->name) <<" to " << quoted(str);
                 break;
             }
             case ID_FVAR:
-                spdlog::get("global")->info() << colorname(d) << " set map var " << quoted(id->name) << " to " << *id->storage.f;
+                spdlog::get("edit")->info() << colorname(d) << " set map var " << quoted(id->name) << " to " << *id->storage.f;
                 break;
             case ID_SVAR:
-                spdlog::get("global")->info() << colorname(d) << " set map var " << quoted(id->name) << " to " << quoted(**id->storage.s);
+                spdlog::get("edit")->info() << colorname(d) << " set map var " << quoted(id->name) << " to " << quoted(**id->storage.s);
                 break;
         }
     }
@@ -1145,7 +1143,7 @@ namespace game
 
     void sayprivate(int i, char *text)
     {
-        if(!clients.inrange(i) || !clients[i]) { spdlog::get("global")->warn() << "no such player"; return; }
+        if(!clients.inrange(i) || !clients[i]) { spdlog::get("gameplay")->warn() << "no such player"; return; }
         spdlog::get("chat")->info() << COL_GREY << "pm to " << colorname(clients[i]) << COL_GREY << ": " << COL_BLUE << text;
         addmsg(N_PRIVMSG, "rcis", player1, i, text);
     }
@@ -1539,8 +1537,8 @@ namespace game
                     gamepaused = val;
                     player1->attacking = false;
                 }
-                if(a) spdlog::get("global")->info() << colorname(a) << " " << (val ? "paused" : "resumed") << " the game";
-                else spdlog::get("global")->info() << "game is " << (val ? "paused" : "resumed");
+                if(a) spdlog::get("gameplay")->info() << colorname(a) << " " << (val ? "paused" : "resumed") << " the game";
+                else spdlog::get("gameplay")->info() << "game is " << (val ? "paused" : "resumed");
                 break;
             }
             case N_GAMESPEED:
@@ -1550,8 +1548,8 @@ namespace game
                 if(!demopacket) gamespeed = val;
                 extern SharedVar<int> slowmosp;
                 if(m_sp && slowmosp) break;
-                if(a) spdlog::get("global")->info() << colorname(a) << " set gamespeed to " << val;
-                else spdlog::get("global")->info() << "gamespeed is " << val;
+                if(a) spdlog::get("gameplay")->info() << colorname(a) << " set gamespeed to " << val;
+                else spdlog::get("gameplay")->info() << "gamespeed is " << val;
                 break;
             }
             case N_PERSISTTEAMS:
@@ -1561,7 +1559,7 @@ namespace game
                 {
                     teamspersisted = true;
                 }
-                spdlog::get("global")->info() << "teams will be " << (val ? "persistent" : "reshuffled") << " next game";
+                spdlog::get("gameplay")->info() << "teams will be " << (val ? "persistent" : "reshuffled") << " next game";
                 break;
             }
 
@@ -1626,7 +1624,7 @@ namespace game
                 if(!t || isignored(t->clientnum)) break;
                 if(t->state!=CS_DEAD && t->state!=CS_SPECTATOR)
                     particle_textcopy(t->abovehead(), text, PART_TEXT, 2000, 0x6496FF, 4.0f, -8);
-                spdlog::get("chat")->info() << COL_GREY << "PM from " << colorname(t) << COL_WHITE << ": " << text;
+                spdlog::get("chat")->info() << COL_GREY << "PM from " << colorname(t) << COL_GREY << ": " << COL_WHITE << text;
                 break;
             }
 
@@ -1684,7 +1682,7 @@ namespace game
                 if(d->name[0])          // already connected
                 {
                     if(strcmp(d->name, text) && !isignored(d->clientnum))
-                        spdlog::get("global")->info() << colorname(d) << " is now known as " << colorname(d, text);
+                        spdlog::get("gameplay")->info() << colorname(d) << " is now known as " << colorname(d, text);
                 }
                 else                    // new client
                 {
@@ -1714,7 +1712,7 @@ namespace game
                     {
 
                         if(!isignored(d->clientnum))
-                            spdlog::get("global")->info() << colorname(d) << " is now known as " << colorname(d, text);
+                            spdlog::get("gameplay")->info() << colorname(d) << " is now known as " << colorname(d, text);
                         copystring(d->name, text, MAXNAMELEN+1);
                     }
                 }
@@ -1774,7 +1772,7 @@ namespace game
                     lasthit = 0;
                 }
                 if(cmode) cmode->respawned(s);
-				ai::spawned(s);
+                ai::spawned(s);
                 addmsg(N_SPAWN, "rcii", s, s->lifesequence, s->gunselect);
                 break;
             }
@@ -2028,7 +2026,7 @@ namespace game
             case N_REMIP:
             {
                 if(!d) return;
-                spdlog::get("global")->info() << colorname(d) << " remipped";
+                spdlog::get("edit")->info() << colorname(d) << " remipped";
                 mpremip(false);
                 break;
             }
@@ -2095,7 +2093,7 @@ namespace game
 
             case N_SERVMSG:
                 getstring(text, p);
-                spdlog::get("server")->info() << text;
+                spdlog::get("gameplay")->info() << text;
                 break;
 
             case N_SENDDEMOLIST:
@@ -2137,7 +2135,7 @@ namespace game
                 if(mm != mastermode)
                 {
                     mastermode = mm;
-                    spdlog::get("global")->info() << "mastermode is " << server::mastermodename(mastermode) << " (" << mastermode << ")";
+                    spdlog::get("gameplay")->info() << "mastermode is " << server::mastermodename(mastermode) << " (" << mastermode << ")";
                 }
                 break;
             }
@@ -2145,7 +2143,7 @@ namespace game
             case N_MASTERMODE:
             {
                 mastermode = getint(p);
-                spdlog::get("global")->info() << "mastermode is " << server::mastermodename(mastermode) << " (" << mastermode << ")";
+                spdlog::get("gameplay")->info() << "mastermode is " << server::mastermodename(mastermode) << " (" << mastermode << ")";
                 break;
             }
 
@@ -2204,7 +2202,7 @@ namespace game
                 if(!w) return;
                 filtertext(w->team, text, false, false, MAXTEAMLEN);
                 if(reason == 0 || reason == 1)
-                    spdlog::get("global")->info() << colorname(w) << (reason ? " forced to team " : " switched to team ") << w->team;
+                    spdlog::get("gameplay")->info() << colorname(w) << (reason ? " forced to team " : " switched to team ") << w->team;
                 break;
             }
 
@@ -2233,7 +2231,7 @@ namespace game
                 {
                     int newsize = 0;
                     while(1<<newsize < getworldsize()) newsize++;
-                    spdlog::get("global")->info() << colorname(d) << (size >= 0 ? " started a new map of size " : " enlarged the map to size ") << newsize;
+                    spdlog::get("edit")->info() << colorname(d) << (size >= 0 ? " started a new map of size " : " enlarged the map to size ") << newsize;
                 }
                 break;
             }
@@ -2241,7 +2239,7 @@ namespace game
             case N_REQAUTH:
             {
                 getstring(text, p);
-                if(autoauth && text[0] && tryauth(text)) spdlog::get("global")->info() << "server requested authkey \"" << text << "\"";
+                if(autoauth && text[0] && tryauth(text)) spdlog::get("global")->info() << "server requested authkey " << quoted(text);
                 break;
             }
 
@@ -2305,7 +2303,7 @@ namespace game
                 defformatstring(fname, "%d.dmo", lastmillis);
                 stream *demo = openrawfile(fname, "wb");
                 if(!demo) return;
-                spdlog::get("global")->info() << "received demo \"" << fname << "\"";
+                spdlog::get("global")->info() << "received demo " << quoted(fname);
                 ucharbuf b = p.subbuf(p.remaining());
                 demo->write(b.buf, b.maxlen);
                 delete demo;
@@ -2322,7 +2320,7 @@ namespace game
                 fname.replace_extension(".ogz");
                 stream *map = openrawfile(fname.string().c_str(), "wb");
                 if(!map) return;
-                spdlog::get("global")->info() << "received map";
+                spdlog::get("edit")->info() << "received map";
                 ucharbuf b = p.subbuf(p.remaining());
                 map->write(b.buf, b.maxlen);
                 delete map;
@@ -2407,8 +2405,8 @@ namespace game
 
     void sendmap()
     {
-        if(!m_edit || (player1->state==CS_SPECTATOR && remote && !player1->privilege)) { spdlog::get("global")->error() << "\"sendmap\" only works in coop edit mode"; return; }
-        spdlog::get("global")->info() << "sending map...";
+        if(!m_edit || (player1->state==CS_SPECTATOR && remote && !player1->privilege)) { spdlog::get("edit")->error() << "\"sendmap\" only works in coop edit mode"; return; }
+        spdlog::get("edit")->info() << "sending map...";
         defformatstring(mname, "sendmap_%d", lastmillis);
         save_world(mname, true);
         Path fname = getmediapath(mname, DIR_MAP);
@@ -2417,8 +2415,8 @@ namespace game
         if(map)
         {
             stream::offset len = map->size();
-            if(len > 4*1024*1024) spdlog::get("global")->error() << "map is too large";
-            else if(len <= 0) spdlog::get("global")->error() << "could not read map";
+            if(len > 4*1024*1024) spdlog::get("edit")->error() << "map is too large";
+            else if(len <= 0) spdlog::get("edit")->error() << "could not read map";
             else
             {
                 sendfile(-1, 2, map);
@@ -2426,7 +2424,7 @@ namespace game
             }
             delete map;
         }
-        else spdlog::get("global")->error() << "could not read map";
+        else spdlog::get("edit")->error() << "could not read map";
         remove(findfile(fname.string().c_str(), "rb"));
     }
     COMMAND(sendmap, "");

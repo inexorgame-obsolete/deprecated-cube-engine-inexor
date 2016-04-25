@@ -977,7 +977,7 @@ static void lockpvs_(bool lock)
     lockedwaterpvs = 0;
     loopi(wbytes) lockedwaterpvs |= pvsbuf[d->offset + i] << (i*8);
     loopi(MAXWATERPVS) lockedwaterplanes[i] = waterplanes[i].height;
-    spdlog::get("global")->info() << "locked view cell at " << camera1->o.x << ", " << camera1->o.y << ", " << camera1->o.z;
+    spdlog::get("global")->info() << "locked view cell at " << camera1->o;
 }
 
 VARF(lockpvs, 0, 0, 1, lockpvs_(lockpvs!=0));
@@ -1085,7 +1085,7 @@ void testpvs(int *vcsize)
     lockedpvs = w.testviewcell(o, size, &lockedwaterpvs, &len);
     loopi(MAXWATERPVS) lockedwaterplanes[i] = waterplanes[i].height;
     lockpvs = 1;
-    spdlog::get("global")->info() << "generated test view cell of size " << size << " at " << camera1->o.x << ", " << camera1->o.y << ", " << camera1->o.z << " (" << len << " B)";
+    spdlog::get("edit")->debug() << "generated test view cell of size " << size << " at " << camera1->o << " (" << len << " B)";
 
     origpvsnodes.setsize(0);
     numwaterplanes = oldnumwaterplanes;
@@ -1098,7 +1098,7 @@ void genpvs(int *viewcellsize)
 {
     if(worldsize > 1<<15)
     {
-        spdlog::get("global")->error() << "map is too large for PVS";
+        spdlog::get("edit")->error() << "map is too large for PVS";
         return;
     }
 
@@ -1169,16 +1169,16 @@ void genpvs(int *viewcellsize)
     if(genpvs_canceled) 
     {
         clearpvs();
-        spdlog::get("global")->info() << "genpvs aborted";
+        spdlog::get("edit")->info() << "genpvs aborted";
     }
-    else spdlog::get("global")->info() << "generated " << pvs.length() << " unique view cells totaling " << (pvsbuf.length()/1024.0f) << " kB and averaging " << (pvsbuf.length() / max(pvs.length(), 1)) << " B (" << ((end - start) / 1000.0f) << " seconds)";
+    else spdlog::get("edit")->info() << "generated " << pvs.length() << " unique view cells totaling " << (pvsbuf.length()/1024.0f) << " kB and averaging " << (pvsbuf.length() / max(pvs.length(), 1)) << " B (" << ((end - start) / 1000.0f) << " seconds)";
 }
 
 COMMAND(genpvs, "i");
 
 void pvsstats()
 {
-    spdlog::get("global")->info() << pvs.length() << " unique view cells totaling " << (pvsbuf.length() / 1024.0f) << " kB and averaging " << (pvsbuf.length()/max(pvs.length(), 1)) << " B";
+    spdlog::get("edit")->debug() << pvs.length() << " unique view cells totaling " << (pvsbuf.length() / 1024.0f) << " kB and averaging " << (pvsbuf.length()/max(pvs.length(), 1)) << " B";
 }
 
 COMMAND(pvsstats, "");
