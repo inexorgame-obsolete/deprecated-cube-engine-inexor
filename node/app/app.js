@@ -15,7 +15,7 @@ var argv = require('yargs')
     .option('l', {
         alias: 'logfile',
         describe: 'Server`s log file',
-        default: '/tmp/server.log'
+        default: 'server.log'
     })
     .option('level', {
         describe: 'The standard log level',
