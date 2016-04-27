@@ -1,3 +1,4 @@
+syntax = "proto2"; // This is explicitely needed for proto3 processing
 package inexor.rpc;
 
 option cc_generic_services = true;
