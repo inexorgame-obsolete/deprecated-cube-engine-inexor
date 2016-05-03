@@ -192,28 +192,15 @@ function(target_link_libs BINARYNAME)
     endif()
 
     if(DEFINED HAS_FIND_LIBRARY_WRAPPER)
-      set(C_LIBS "")   # No need to seperately link c-libs
-      set(CPP_LIBS_DEBUG "")
-      set(CPP_LIBS_RELEASE "")
-
       foreach(CURLIB ${ARGN})
         if(${CURLIB} MATCHES "(.*)_release(.*)")
-          set(CPP_LIBS_RELEASE ${CURLIB})
+          target_link_libraries(${BINARYNAME} optimized ${CURLIB})
         elseif(${CURLIB} MATCHES "(.*)_debug(.*)")
-          set(CPP_LIBS_DEBUG ${CURLIB})
+          target_link_libraries(${BINARYNAME} debug ${CURLIB})
         else()
-          set(C_LIBS ${C_LIBS} ${CURLIB})
+          target_link_libraries(${BINARYNAME} ${CURLIB})
         endif()
       endforeach()
-
-      target_link_libraries(${BINARYNAME} ${C_LIBS})
-      if(NOT ${CPP_LIBS_DEBUG} STREQUAL "")
-        target_link_libraries(${BINARYNAME} debug ${CPP_LIBS_DEBUG})
-      endif()
-      if(NOT ${CPP_LIBS_RELEASE} STREQUAL "")
-        target_link_libraries(${BINARYNAME} optimized ${CPP_LIBS_RELEASE})
-      endif()
-
     else()
       # No need on Unix systems, because of binary compatibility between different configurations
       target_link_libraries(${BINARYNAME} ${ARGN})
