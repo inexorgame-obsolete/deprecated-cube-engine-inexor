@@ -11,7 +11,7 @@ namespace rpc {
    * Default implementation of the InexorService.
    *
    * @see inexor_service.proto
-   */
+   
   class InexorServiceImpl : public InexorService_Stub {
     typedef google::protobuf::RpcController RpcController;
     typedef google::protobuf::Closure Closure;
@@ -23,7 +23,7 @@ namespace rpc {
         const Cubescript* req, CubescriptResult* res,
         Closure* done);
   };
-
+*/
 }
 }
 

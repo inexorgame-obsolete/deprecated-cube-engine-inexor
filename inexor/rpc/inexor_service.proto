@@ -1,7 +1,7 @@
 syntax = "proto2"; // This is explicitely needed for proto3 processing
 package inexor.rpc;
 
-option cc_generic_services = true;
+//option cc_generic_services = true;
 
 // For sending cubescript code, just a string
 message Cubescript {
@@ -39,7 +39,7 @@ message ServiceCall {
   required bytes payload = 8;
 }
 
-service InexorService {
+//service InexorService {
   // Call some cubescript on the server
-  rpc EvalCubescript (Cubescript) returns (CubescriptResult);
-}
+//  rpc EvalCubescript (Cubescript) returns (CubescriptResult);
+//}
