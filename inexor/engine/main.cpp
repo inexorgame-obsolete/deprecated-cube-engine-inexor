@@ -1185,11 +1185,6 @@ static bool findarg(int argc, char **argv, const char *str)
     return false;
 }
 
-// FIXME: WTF? - main is in macutils.mm?
-#ifdef __APPLE__
-   #define main SDL_main
-#endif
-
 ICOMMANDERR(subsystem_start, "s", (char *s), std::string ccs{s}; metapp.start(ccs));
 ICOMMANDERR(subsystem_stop, "s", (char *s), std::string ccs{s}; metapp.stop(ccs));
 
@@ -1219,38 +1214,39 @@ ICOMMANDERR(logformat, "ss", (char *logger_name, char *pattern),
     logging.setLogFormat(logger_name_s, pattern_s)
 );
 
-/// main program start
+
 int main(int argc, char **argv)
 {
     logging.initDefaultLoggers();
 
-    UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // We only need to initialize it, not use it.
+    UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // catches all msgs from the OS, that it wants to terminate us. 
 
     int dedicated = 0;
     char *load = NULL, *initscript = NULL;
 
-	/// set home directory
+
     initing = INIT_RESET;
     for(int i = 1; i<argc; i++)
     {
         if(argv[i][0]=='-') switch(argv[i][1])
         {
             case 'q': 
-			{
-				const char *dir = sethomedir(&argv[i][2]);
-				if(dir) spdlog::get("global")->debug() << "Using home directory: " << dir;
-				break;
-			}
+            {
+                const char *dir = sethomedir(&argv[i][2]);
+                if(dir) spdlog::get("global")->debug() << "Using home directory: " << dir;
+                break;
+            }
         }
     }
 
-    /// require subsystems BEFORE configurations are done
+    // require subsystems BEFORE configurations are done
     //Initialize the metasystem
-    SUBSYSTEM_REQUIRE(rpc);
-    SUBSYSTEM_REQUIRE(cef);
+    SUBSYSTEM_REQUIRE(rpc); // remote process control: communication with the scripting engine
+    SUBSYSTEM_REQUIRE(cef); // (embedded chromium): ingame html5+js browser for the ui.
 
-	/// parse command line arguments
     execfile("init.cfg", false);
+
+    // parse command line arguments
     for(int i = 1; i<argc; i++)
     {
         if(argv[i][0]=='-') switch(argv[i][1])
@@ -1314,8 +1310,8 @@ int main(int argc, char **argv)
         #endif
         if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO|par)<0) fatal("Unable to initialize SDL: %s", SDL_GetError());
 
-	// Disable SDL_TEXTINPUT events at startup. They are only
-	// needed if text is about to be entered in chat.
+    // Disable SDL_TEXTINPUT events at startup. They are only
+    // needed if text is about to be entered in chat.
         SDL_StopTextInput();
     }
 
@@ -1340,7 +1336,6 @@ int main(int argc, char **argv)
     int useddepthbits = 0, usedfsaa = 0;
     setupscreen(useddepthbits, usedfsaa);
     SDL_ShowCursor(SDL_FALSE);
-    // SDL_StopTextInput(); // workaround for spurious text-input events getting sent on first text input toggle?
 
     /// Initialise OpenGL
     spdlog::get("global")->debug() << "init: gl";
@@ -1350,7 +1345,7 @@ int main(int argc, char **argv)
     if(!notexture) fatal("could not find core textures");
 
     spdlog::get("global")->debug() << "init: console";
-    if(!execfile("config/stdlib.cfg", false)) fatal("cannot find config files (you are running from the wrong folder, try .bat file in the main folder)");   // this is the first file we load.
+    if(!execfile("config/stdlib.cfg", false)) fatal("cannot find config files");
     if(!execfile("config/font.cfg", false)) fatal("cannot find font definitions");
     if(!setfont("default")) fatal("no default font specified");
 
