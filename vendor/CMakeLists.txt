@@ -293,9 +293,36 @@ function(require_protobuf targ)
   endif()
 
   add_definitions(-DGOOGLE_PROTOBUF_NO_RTTI)
-  include_directories(${PROTOBUF_INCLUDE_DIRS} ${RPC_INCLUDE_DIRS})
+  include_directories(${PROTOBUF_INCLUDE_DIRS})
   target_link_libs(${targ} ${NOLINK} ${PROTOBUF_LIBRARIES})
 endfunction()
+
+#### gRPC
+
+find_libs(GRPC_LIBRARIES gpr LIB grpc_unsecure LIB grpc++_unsecure)
+find_path(GRPC_INCLUDE_DIRS grpc/grpc.h)
+find_path(GRPCPP_INCLUDE_DIRS grpc++/grpc++.h)
+
+
+register_possible_dependency(${GRPC_LIBRARIES})
+
+if (NOT DEFINED GRPC_EXE)
+  find_program(GRPC_EXE grpc_cpp_plugin)
+endif()
+
+function(require_grpc targ)
+  message(STATUS "Configuring ${targ} with gRPC")
+  if (";${ARGN};" MATCHES ";NOLINK;")
+    set(NOLINK "NOLINK")
+  endif()
+
+  include_directories(${GRPC_INCLUDE_DIRS} ${GRPCPP_INCLUDE_DIRS})
+  target_link_libs(${targ} ${NOLINK} ${GRPC_LIBRARIES})
+
+  require_protobuf(${targ} ${NOLINK})
+endfunction()
+
+
 #### Googletest
 
 set(GTEST_DIR "${pwd}/googletest" CACHE INTERNAL "")
