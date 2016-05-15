@@ -21,6 +21,8 @@
 
 #include "inexor/rpc/inexor_service.grpc.pb.h"
 
+#include <moodycamel/concurrentqueue.h>
+
 using grpc::Channel;
 using grpc::ClientContext;
 using grpc::ClientReader;
@@ -30,42 +32,66 @@ using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::ServerReader;
-using grpc::ServerReaderWriter;
+using grpc::ServerAsyncReaderWriter;
 using grpc::ServerWriter;
 using grpc::Status;
+using grpc::CompletionQueue;
+using grpc::ServerCompletionQueue;
 using routeguide::Point;
 using routeguide::RouteNote;
 using routeguide::RouteGuide;
 using std::chrono::system_clock;
 
-class RouteGuideImpl final : public RouteGuide::Service {
+moodycamel::ConcurrentQueue<std::string> writerqueue; // Something gets pushed on this when we changed value. Gets handled by serverthread.
+moodycamel::ConcurrentQueue<std::string> readerqueue; // Something gets pushed on this when a value has arrived. Gets handled by Subsystem::tick();
+
+/// Holding state, getting returned from completionqueue. Either reads or writes something in the stream.
+class CallFunctor
+{
+    enum TYPE { TYPE_READER, TYPE_WRITER};
+    TYPE type;
+
 public:
-    explicit RouteGuideImpl() { }
 
-    Status RouteChat(ServerContext* context, ServerReaderWriter<RouteNote, RouteNote>* stream) override
+
+
+    /// Creates a new instance of CallFunctor
+    void setbusy()
     {
-        std::vector<RouteNote> received_notes;
-        RouteNote note;
-        while (stream->Read(&note))
-        {
-            stream->Write(note);
-            received_notes.push_back(note);
-        }
 
-        return Status::OK;
+    }
+
+    void sendmessage()
+    {
+        type = TYPE_WRITER;
+    }
+
+    void readmessage()
+    {
+        type = TYPE_READER;
+    }
+
+    void proceed()
+    {
+        if()
     }
 };
 
+
 void RunServer()
 {
+
     std::thread t([]
     {
         std::string server_address("0.0.0.0:50051");
-        RouteGuideImpl service;
+
+        RouteGuide::AsyncService service;
 
         ServerBuilder builder;
         builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
         builder.RegisterService(&service);
+
+        std::unique_ptr<ServerCompletionQueue> scq = builder.AddCompletionQueue();
 
         std::unique_ptr<Server> server(builder.BuildAndStart());
         spdlog::get("global")->info() << "Server listening on " << server_address;
