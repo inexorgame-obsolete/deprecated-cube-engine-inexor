@@ -22,6 +22,7 @@
 #include "inexor/rpc/inexor_service.grpc.pb.h"
 
 #include <moodycamel/concurrentqueue.h>
+#include <moodycamel/blockingconcurrentqueue.h>
 
 using grpc::Channel;
 using grpc::ClientContext;
@@ -37,46 +38,65 @@ using grpc::ServerWriter;
 using grpc::Status;
 using grpc::CompletionQueue;
 using grpc::ServerCompletionQueue;
-using routeguide::Point;
-using routeguide::RouteNote;
-using routeguide::RouteGuide;
-using std::chrono::system_clock;
+using inexor::tree::ChangedValue;
+using inexor::tree::TreeService;
 
-moodycamel::ConcurrentQueue<std::string> writerqueue; // Something gets pushed on this when we changed value. Gets handled by serverthread.
-moodycamel::ConcurrentQueue<std::string> readerqueue; // Something gets pushed on this when a value has arrived. Gets handled by Subsystem::tick();
 
-/// Holding state, getting returned from completionqueue. Either reads or writes something in the stream.
-class CallFunctor
+struct changedvar
 {
-    enum TYPE { TYPE_READER, TYPE_WRITER};
-    TYPE type;
+    ///// Points to the var which needs to be updated.
+    //void *pointer;
+    ///// one of t
+    //int datatype;
+    //bool hasfunctionattached;
+    //void *cb_function; // function which gets executed
 
-public:
+    //union {
+    //    const char *str;
+    //    int 
+    //};
 
-
-
-    /// Creates a new instance of CallFunctor
-    void setbusy()
-    {
-
-    }
-
-    void sendmessage()
-    {
-        type = TYPE_WRITER;
-    }
-
-    void readmessage()
-    {
-        type = TYPE_READER;
-    }
-
-    void proceed()
-    {
-        if()
-    }
 };
 
+struct writereq
+{
+    std::string path;
+    union {
+        const char *str;
+        int intval;
+        float floatval;
+    };
+    enum {VALUE_STR, VALUE_INT, VALUE_FLOAT} valuetype;
+};
+moodycamel::BlockingConcurrentQueue<std::string> writerrequestqueue; // Something gets pushed on this when we changed value. Gets handled by serverthread.
+moodycamel::ConcurrentQueue<std::string> readerrequestqueue; // Something gets pushed on this when a value has arrived. Gets handled by Subsystem::tick();
+
+void testserverwriter()
+{
+    writereq req;
+    req.path = "inexor/tree/fullscreen";
+    req.intval = 1;
+    req.valuetype = writereq::VALUE_INT;
+    writerrequestqueue.enqueue("inexor/tree/fullscreen");
+}
+
+ChangedValue MakeChangedValue(const char *path)
+{
+    ChangedValue c;
+    c.set_path(path);
+    return c;
+}
+
+/// Either a reading or writing request
+struct CallInstance
+{
+    enum TYPES {READER, WRITER} type;
+
+    bool isbusy = false;         // only filled when request was write: workaround for grpc behavior to only allow one write at a time. 
+    ChangedValue receivedchange; // only filled when request was to read
+
+    CallInstance(TYPES type_) : type(type_) {}
+};
 
 void RunServer()
 {
@@ -85,17 +105,51 @@ void RunServer()
     {
         std::string server_address("0.0.0.0:50051");
 
-        RouteGuide::AsyncService service;
+        TreeService::AsyncService service;
+        ServerContext context;
+        ServerAsyncReaderWriter<ChangedValue, ChangedValue> stream(&context);
 
         ServerBuilder builder;
         builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
         builder.RegisterService(&service);
 
-        std::unique_ptr<ServerCompletionQueue> scq = builder.AddCompletionQueue();
+        // The completion queue (where notifications of the succcess of a network commands get retrieved).
+        std::unique_ptr<ServerCompletionQueue> cq = builder.AddCompletionQueue();
 
         std::unique_ptr<Server> server(builder.BuildAndStart());
         spdlog::get("global")->info() << "Server listening on " << server_address;
-        server->Wait();
+
+        service.RequestSynchronize(&context, &stream, cq.get(), cq.get(), (void *)1);
+
+
+        CallInstance *write = new CallInstance(CallInstance::WRITER);
+        CallInstance *read = new CallInstance(CallInstance::READER);
+
+        stream.Read(&read->receivedchange, (void *)read);
+
+        while(true)
+        {
+            std::string itemtosend;
+            if(!write->isbusy && writerrequestqueue.try_dequeue(itemtosend))
+            {
+                write->isbusy = true;
+                stream.Write(MakeChangedValue(itemtosend.c_str()), (void *)write);
+            }
+
+            void *tag;
+            bool succeed=false;
+            cq->Next(&tag, &succeed);
+            GPR_ASSERT(succeed);
+
+            CallInstance *completed = static_cast<CallInstance*>(tag);
+
+            if(completed->type == CallInstance::WRITER) completed->isbusy = false;
+            else
+            {
+                writerrequestqueue.enqueue(completed->receivedchange.path());
+                stream.Read(&read->receivedchange, (void *)read); // request new read
+            }
+        }
     }
     );
     t.detach();
@@ -103,55 +157,42 @@ void RunServer()
 
 //////// Client
 
-Point MakePoint(long latitude, long longitude)
-{
-    Point p;
-    p.set_latitude(latitude);
-    p.set_longitude(longitude);
-    return p;
-}
 
-RouteNote MakeRouteNote(const std::string& message, long latitude, long longitude)
-{
-    RouteNote n;
-    n.set_msg(message);
-    n.mutable_location()->CopyFrom(MakePoint(latitude, longitude));
-    return n;
-}
 
 class RouteGuideClient
 {
 private:
 
-    std::unique_ptr<RouteGuide::Stub> stub_;
+    std::unique_ptr<TreeService::Stub> stub_;
 
 public:
     RouteGuideClient(std::shared_ptr<Channel> channel)
-        : stub_(RouteGuide::NewStub(channel)) { }
+        : stub_(TreeService::NewStub(channel)) { }
 
     void RouteChat()
     {
         ClientContext context;
 
-        std::shared_ptr<ClientReaderWriter<RouteNote, RouteNote> > stream(stub_->RouteChat(&context));
+        std::shared_ptr<ClientReaderWriter<ChangedValue, ChangedValue> > stream(stub_->Synchronize(&context));
 
         std::thread writer([stream]()
         {
-            std::vector<RouteNote> notes{
-                MakeRouteNote("First message", 0, 0),
-                MakeRouteNote("Second message", 0, 1),
-                MakeRouteNote("Third message", 1, 0),
-                MakeRouteNote("Fourth message", 0, 0) };
-            for (const RouteNote& note : notes) {
-                spdlog::get("global")->info() << "Sending message " << note.msg() << " at " << note.location().latitude() << ", " << note.location().longitude();
+            std::vector<ChangedValue> notes{
+                MakeChangedValue("First message"),
+                MakeChangedValue("Second message"),
+                MakeChangedValue("Third message"),
+                MakeChangedValue("Fourth message") };
+            for (const ChangedValue& note : notes) {
+                spdlog::get("global")->info() << "Sending message " << note.path();
                 stream->Write(note);
             }
             stream->WritesDone();
         });
 
-        RouteNote server_note;
-        while (stream->Read(&server_note)) {
-            spdlog::get("global")->info() << "Got message " << server_note.msg() << " at " << server_note.location().latitude() << ", " << server_note.location().longitude();
+        ChangedValue new_value;
+        while (stream->Read(&new_value))
+        {
+            spdlog::get("global")->info() << "Got message " << new_value.path();
         }
         writer.join();
         Status status = stream->Finish();
@@ -169,40 +210,5 @@ void clientrpc()
 }
 
 
-//struct changedvar
-//{
-//    /// Points to the var which needs to be updated.
-//    void *pointer;
-//    /// one of t
-//    int datatype;
-//    bool hasfunctionattached;
-//    void *cb_function; // function which gets executed
-//
-//    union {
-//        const char *str;
-//        int 
-//    };
-//
-//};
-//void receivemessage()
-//{
-//    const char *inputpath; // /inputname
-//    lookuptree("")
-//}
-//
-//void otherthread()
-//{
-//
-//}
-//
-//void onchangelistener()
-//{
-//    enque(variablename, value);
-//}
-//
-//void mainthread
-//{
-//
-//
-//}
+
 

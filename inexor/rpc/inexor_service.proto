@@ -1,31 +1,35 @@
 syntax = "proto3";
 
-package routeguide;
+package inexor.tree;
 
-// Interface exported by the server.
-service RouteGuide {
-  // A Bidirectional streaming RPC.
-  //
-  // Accepts a stream of RouteNotes sent while a route is being traversed,
-  // while receiving other RouteNotes (e.g. from other users).
-  rpc RouteChat(stream RouteNote) returns (stream RouteNote) {}
+service TreeService
+{
+  // Bidirectional Streaming
+  // 
+  // Accepts and reads a stream of changed values from clientside, while responding with an (independent) stream of changed value messages itself.
+  // The first messages will be the metadata.
+  rpc Synchronize(stream ChangedValue) returns (stream ChangedValue) {}
 }
 
-// Points are represented as latitude-longitude pairs in the E7 representation
-// (degrees multiplied by 10**7 and rounded to the nearest integer).
-// Latitudes should be in the range +/- 90 degrees and longitude should be in
-// the range +/- 180 degrees (inclusive).
-message Point {
-  int32 latitude = 1;
-  int32 longitude = 2;
+// This message will get generated.
+/*
+message Value
+{
+  oneof test
+  {
+     string mainpath = 1;
+     int32 fullscreen = 2;
+  }
+} */
+
+// message metadata
+
+message ChangedValue
+{
+  // The path to the item in the tree. TODO: replace path with int64 containing bitshifted index values.
+  string path = 1;
+//  Value newvalue = 2;
 }
 
-// A RouteNote is a message sent while at a given point.
-message RouteNote {
-  // The location from which the message is sent.
-  Point location = 1;
 
-  // The message to be sent.
-  string msg = 2;
-}
 
