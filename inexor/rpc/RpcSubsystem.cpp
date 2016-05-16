@@ -92,10 +92,30 @@ struct CallInstance
 {
     enum TYPES {READER, WRITER} type;
 
-    bool isbusy = false;         // only filled when request was write: workaround for grpc behavior to only allow one write at a time. 
-    ChangedValue receivedchange; // only filled when request was to read
+    bool isbusy = false;                    // only filled when request was write: workaround for grpc behavior to only allow one write at a time. 
+    ChangedValue *receivedchange = nullptr; // only filled when request was to read
 
-    CallInstance(TYPES type_) : type(type_) {}
+    ServerAsyncReaderWriter<ChangedValue, ChangedValue> *stream;
+
+    CallInstance(TYPES type_, ServerAsyncReaderWriter<ChangedValue, ChangedValue> *stream_) : type(type_), stream(stream_)
+    {
+        if(type_ == READER) receivedchange = new ChangedValue();
+    }
+
+    ~CallInstance()
+    {
+        delete receivedchange;
+    }
+
+    void startreading()
+    {
+        stream->Read(receivedchange, (void *)this);
+    }
+
+    void startwrite(std::string &str) // todo const
+    {
+        stream->Write(MakeChangedValue(str.c_str()), (void *)this);
+    }
 };
 
 void RunServer()
@@ -105,27 +125,32 @@ void RunServer()
     {
         std::string server_address("0.0.0.0:50051");
 
+        ServerBuilder builder;
         TreeService::AsyncService service;
         ServerContext context;
         ServerAsyncReaderWriter<ChangedValue, ChangedValue> stream(&context);
 
-        ServerBuilder builder;
         builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
         builder.RegisterService(&service);
 
         // The completion queue (where notifications of the succcess of a network commands get retrieved).
         std::unique_ptr<ServerCompletionQueue> cq = builder.AddCompletionQueue();
 
-        std::unique_ptr<Server> server(builder.BuildAndStart());
+        std::unique_ptr<Server> server = builder.BuildAndStart();
         spdlog::get("global")->info() << "Server listening on " << server_address;
 
+
+        CallInstance *write = new CallInstance(CallInstance::WRITER, &stream);
+        CallInstance *read  = new CallInstance(CallInstance::READER, &stream);
+
+        /// Wait for the client to connect
         service.RequestSynchronize(&context, &stream, cq.get(), cq.get(), (void *)1);
+        void *tag;
+        bool succeed=false;
+        cq->Next(&tag, &succeed);
+        /// 
 
-
-        CallInstance *write = new CallInstance(CallInstance::WRITER);
-        CallInstance *read = new CallInstance(CallInstance::READER);
-
-        stream.Read(&read->receivedchange, (void *)read);
+        read->startreading();
 
         while(true)
         {
@@ -133,21 +158,21 @@ void RunServer()
             if(!write->isbusy && writerrequestqueue.try_dequeue(itemtosend))
             {
                 write->isbusy = true;
-                stream.Write(MakeChangedValue(itemtosend.c_str()), (void *)write);
+                write->startwrite(itemtosend);
             }
 
             void *tag;
             bool succeed=false;
             cq->Next(&tag, &succeed);
-            GPR_ASSERT(succeed);
+        //    GPR_ASSERT(succeed); TODO: Some writes and reads are unsucessful but returning (old?) tags..
 
             CallInstance *completed = static_cast<CallInstance*>(tag);
 
             if(completed->type == CallInstance::WRITER) completed->isbusy = false;
             else
             {
-                writerrequestqueue.enqueue(completed->receivedchange.path());
-                stream.Read(&read->receivedchange, (void *)read); // request new read
+                writerrequestqueue.enqueue(completed->receivedchange->path());
+                read->startreading(); // request new read
             }
         }
     }
@@ -181,7 +206,8 @@ public:
                 MakeChangedValue("First message"),
                 MakeChangedValue("Second message"),
                 MakeChangedValue("Third message"),
-                MakeChangedValue("Fourth message") };
+                MakeChangedValue("Fourth message")
+            };
             for (const ChangedValue& note : notes) {
                 spdlog::get("global")->info() << "Sending message " << note.path();
                 stream->Write(note);
