@@ -12,7 +12,7 @@ service TreeService
 }
 
 // This message will get generated.
-/*
+
 message Value
 {
   oneof test
@@ -20,7 +20,7 @@ message Value
      string mainpath = 1;
      int32 fullscreen = 2;
   }
-} */
+}
 
 // message metadata
 

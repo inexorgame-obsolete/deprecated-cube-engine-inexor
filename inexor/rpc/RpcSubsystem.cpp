@@ -45,7 +45,7 @@ using inexor::tree::TreeService;
 struct changedvar
 {
     ///// Points to the var which needs to be updated.
-    //void *pointer;
+    //SharedVar *pointer;
     ///// one of t
     //int datatype;
     //bool hasfunctionattached;
@@ -58,27 +58,36 @@ struct changedvar
 
 };
 
-struct writereq
-{
-    std::string path;
-    union {
-        const char *str;
-        int intval;
-        float floatval;
-    };
-    enum {VALUE_STR, VALUE_INT, VALUE_FLOAT} valuetype;
-};
-moodycamel::BlockingConcurrentQueue<std::string> writerrequestqueue; // Something gets pushed on this when we changed value. Gets handled by serverthread.
+//void findoneoffield(inexor::tree::Value val)
+//{
+//    const std::string path = val.GetTypeName();
+//    val.GetDescriptor()->FindFieldByName(path);
+//}
+
+
+
+//struct writereq
+//{
+//    std::string path;
+//    union {
+//        const char *str;
+//        int intval;
+//        float floatval;
+//    };
+//    enum {VALUE_STR, VALUE_INT, VALUE_FLOAT} valuetype;
+//};
+moodycamel::ConcurrentQueue<std::string> writerrequestqueue; // Something gets pushed on this when we changed value. Gets handled by serverthread.
 moodycamel::ConcurrentQueue<std::string> readerrequestqueue; // Something gets pushed on this when a value has arrived. Gets handled by Subsystem::tick();
 
 void testserverwriter()
 {
-    writereq req;
-    req.path = "inexor/tree/fullscreen";
-    req.intval = 1;
-    req.valuetype = writereq::VALUE_INT;
+    //writereq req;
+    //req.path = "inexor/tree/fullscreen";
+    //req.intval = 1;
+    //req.valuetype = writereq::VALUE_INT;
     writerrequestqueue.enqueue("inexor/tree/fullscreen");
 }
+
 
 ChangedValue MakeChangedValue(const char *path)
 {
@@ -93,28 +102,21 @@ struct CallInstance
     enum TYPES {READER, WRITER} type;
 
     bool isbusy = false;                    // only filled when request was write: workaround for grpc behavior to only allow one write at a time. 
-    ChangedValue *receivedchange = nullptr; // only filled when request was to read
+    ChangedValue change;                    // the read will fill this on completion, the write filled it for reference when requesting the async write.
 
     ServerAsyncReaderWriter<ChangedValue, ChangedValue> *stream;
 
-    CallInstance(TYPES type_, ServerAsyncReaderWriter<ChangedValue, ChangedValue> *stream_) : type(type_), stream(stream_)
-    {
-        if(type_ == READER) receivedchange = new ChangedValue();
-    }
-
-    ~CallInstance()
-    {
-        delete receivedchange;
-    }
+    CallInstance(TYPES type_, ServerAsyncReaderWriter<ChangedValue, ChangedValue> *stream_) : type(type_), stream(stream_) { }
 
     void startreading()
     {
-        stream->Read(receivedchange, (void *)this);
+        stream->Read(&change, (void *)this);
     }
 
     void startwrite(std::string &str) // todo const
     {
-        stream->Write(MakeChangedValue(str.c_str()), (void *)this);
+        change = MakeChangedValue(str.c_str());
+        stream->Write(change, (void *)this);
     }
 };
 
@@ -151,29 +153,58 @@ void RunServer()
         /// 
 
         read->startreading();
-
+        std::vector<std::string> servnotes{
+            "First servermsg",
+            "Second servermsg",
+            "Third servermsg",
+            "Fourth servermsg"
+        };
+        int i = 0, j = 0;
         while(true)
         {
             std::string itemtosend;
-            if(!write->isbusy && writerrequestqueue.try_dequeue(itemtosend))
+            if(!write->isbusy && 
+                i < 4) 
+             //   writerrequestqueue.try_dequeue(itemtosend))
             {
+
                 write->isbusy = true;
-                write->startwrite(itemtosend);
+                write->startwrite(
+                    servnotes[i]);
+                    //itemtosend);
+                i++;
             }
 
             void *tag;
             bool succeed=false;
-            cq->Next(&tag, &succeed);
-        //    GPR_ASSERT(succeed); TODO: Some writes and reads are unsucessful but returning (old?) tags..
-
-            CallInstance *completed = static_cast<CallInstance*>(tag);
-
-            if(completed->type == CallInstance::WRITER) completed->isbusy = false;
-            else
+            if(!cq->Next(&tag, &succeed))
             {
-                writerrequestqueue.enqueue(completed->receivedchange->path());
-                read->startreading(); // request new read
+                spdlog::get("global")->debug() << "SSHIIT";
             }
+            else
+            if(tag != (void *)2)
+            {
+                CallInstance *completed = static_cast<CallInstance*>(tag);
+
+                if(completed->type == CallInstance::WRITER) {
+                    completed->isbusy = false;
+                    j++;
+                    if(j >= 4)
+                    {
+                        Status status;
+                        //stream.Finish(status, (void *)2);
+                    }
+                }
+                else
+                {
+                    readerrequestqueue.enqueue(completed->change.path());
+                    // void *pointertosharedvar = Lookupinthetree(path);
+                    // 
+                    read->startreading(); // request new read
+                }
+            }
+            else break;
+
         }
     }
     );
@@ -189,18 +220,18 @@ class RouteGuideClient
 private:
 
     std::unique_ptr<TreeService::Stub> stub_;
+    ClientContext context;
 
 public:
+    std::shared_ptr<ClientReaderWriter<ChangedValue, ChangedValue> > stream;
     RouteGuideClient(std::shared_ptr<Channel> channel)
-        : stub_(TreeService::NewStub(channel)) { }
+        : stub_(TreeService::NewStub(channel)), stream(stub_->Synchronize(&context))
+    {
+    }
 
     void RouteChat()
     {
-        ClientContext context;
-
-        std::shared_ptr<ClientReaderWriter<ChangedValue, ChangedValue> > stream(stub_->Synchronize(&context));
-
-        std::thread writer([stream]()
+        std::thread writer([this]()
         {
             std::vector<ChangedValue> notes{
                 MakeChangedValue("First message"),
@@ -212,27 +243,27 @@ public:
                 spdlog::get("global")->info() << "Sending message " << note.path();
                 stream->Write(note);
             }
+
             stream->WritesDone();
         });
-
         ChangedValue new_value;
         while (stream->Read(&new_value))
         {
             spdlog::get("global")->info() << "Got message " << new_value.path();
         }
         writer.join();
-        Status status = stream->Finish();
-        if (!status.ok()) {
-            spdlog::get("global")->info() << "RouteChat rpc failed.";
-        }
+        //Status status = stream->Finish();
+        //if (!status.ok()) {
+        //    spdlog::get("global")->info() << "RouteChat rpc failed.";
+        //}
     }
 };
 
 void clientrpc()
 {
-    RouteGuideClient guide(grpc::CreateChannel("localhost:50051", grpc::InsecureChannelCredentials()));
+    RouteGuideClient *guide = new RouteGuideClient(grpc::CreateChannel("localhost:50051", grpc::InsecureChannelCredentials()));
 
-    guide.RouteChat();
+    guide->RouteChat();
 }
 
 
