@@ -44,9 +44,11 @@ namespace util {
 ///     return i+k;
 /// }
 ///
-/// void onChange(int &old, int &new) {
-///     cout << "oi changed: " << old << " -> " << new << endl;
-/// }
+/// oi.onChange.connect([] (const int &a, const int &b)
+///     {
+///         spdlog::get("global")->info("hey we changed! (old: {} new: {}", a, b);
+///     }
+/// );
 ///
 /// void main() {
 ///     oi = 33;
@@ -114,6 +116,9 @@ public:
     // TODO: Put all the operator macro invocations into
     // own file so we reuse them in the test.
 
+    // TODO: Component assignment operators (+= -= ..)
+    // TODO: Performance: return by reference for operators
+
 #define UNR(op)                  \
     T operator op (int) {        \
         T old = value;           \
@@ -162,7 +167,6 @@ public:
     ASGN(>>);
 
 #undef ASGN
-
 };
 
 // Output Operator
