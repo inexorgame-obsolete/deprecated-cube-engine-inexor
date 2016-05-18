@@ -7,7 +7,6 @@
 
 #include "inexor/flowgraph/nodebase/fl_base.hpp"
 
-
 #define INEXOR_VSCRIPT_MIN_TIMER_INTERVAL              5
 #define INEXOR_VSCRIPT_MAX_TIMER_INTERVAL              1000 * 60 * 60 * 24 // 1 day
 #define INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL      200 // render a color effect after a timer has been triggered
@@ -30,7 +29,6 @@ namespace vscript {
         private:
 
             void check_if_execution_is_due();
-            void out();
 
         public:
 
@@ -39,10 +37,10 @@ namespace vscript {
                         unsigned int startdelay,
                         unsigned int limit = INEXOR_VSCRIPT_DEFAULT_TIMER_EXECUTION_LIMIT,
                         unsigned int cooldown = 0,
-                        const char* name = "NewTimer1",
-                        const char* comment = "This is a timer comment",
+                        const char*  name = "new timer",
+                        const char*  comment = "look at this timer comment!",
                         INEXOR_VSCRIPT_TIME_FORMAT format = TIME_FORMAT_MILISECONDS);
-
+            
             ~CTimerNode();
 
             unsigned int timer_startdelay;
@@ -51,9 +49,16 @@ namespace vscript {
             unsigned int timer_limit;
             unsigned int timer_cooldown;
 
+            // every node can start threads
+            std::vector<SDL_Thread *> threads;
+
             void in();
-            void run();
             void reset();
+
+            void render_additional(vec);
+
+            bool OnLinkAsChildNodeAttempt(CScriptNode*);
+            bool OnLinkAsParentNodeAttempt(CScriptNode*);
     };
 
 };

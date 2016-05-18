@@ -17,17 +17,10 @@ namespace vscript {
     }
 
 
-    void CSphereAreaNode::reset()
-    {
-    }
-
-
     void CSphereAreaNode::render(int orient, bool sel_blocked)
     {
         glBegin(GL_QUADS);
-
         // TODO: How to render a sphere correctly?
-        
         glEnd();
     }
 

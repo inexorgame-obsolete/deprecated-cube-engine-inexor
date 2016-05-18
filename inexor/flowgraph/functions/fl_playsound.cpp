@@ -29,5 +29,13 @@ namespace vscript {
     {
     }
 
+    void CFunctionPlaysoundNode::out()
+    {
+    }
+
+    void CFunctionPlaysoundNode::run()
+    {
+    }
+
 };
 };

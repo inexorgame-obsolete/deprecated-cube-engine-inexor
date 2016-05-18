@@ -1,6 +1,6 @@
 /// @file flowgraph.h
 /// @author Johannes Schneider
-/// @brief 3D Visual Scripting System
+/// @brief Embedded Visual Scripting System
 
 #ifndef INEXOR_VSCRIPT_FLOWGRAPH_HEADER
 #define INEXOR_VSCRIPT_FLOWGRAPH_HEADER
@@ -15,12 +15,18 @@
 #include "inexor/flowgraph/debugger/fl_dbgrays.hpp"
 
 
+// conditional compiling
+#define INEXOR_VSCRIPT_TIMER_DEBUGGING 1
+
+
 namespace inexor {
 namespace vscript {
+
 
     class CVisualScriptSystem : public CEntityManager
     {
         protected:
+
             void update_input(int, bool);
 
         public:        
@@ -45,6 +51,8 @@ namespace vscript {
 
             void update_timers();
 
+            // node relations
+            void validate_new_relation(CScriptNode *from, CScriptNode *to);
             void connect_nodes(CScriptNode *from, CScriptNode *to);
 
             void update_drag_n_drop();
@@ -53,6 +61,7 @@ namespace vscript {
             void sync_all_timers();
             void delete_all_nodes();
     };
+
 
 };
 };

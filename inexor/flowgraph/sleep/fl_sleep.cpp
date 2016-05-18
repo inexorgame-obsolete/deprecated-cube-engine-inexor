@@ -36,23 +36,31 @@ namespace vscript {
         {
             int time_left2sleep = sleep_end - SDL_GetTicks();
             if(time_left2sleep < 0) time_left2sleep =0;
-            sprintf(tmp, "[waiting %dms]", time_left2sleep);
+            sprintf(tmp, "%d/%d ms", time_left2sleep, sleep_interval);
             node_comment = tmp;
 
-            SDL_Delay(5);
+            // wait in 10 ms intervals
+            SDL_Delay(10);
         }
         
-        sprintf(tmp, "[-]");
+        sprintf(tmp, "0/%d ms", sleep_interval);
         node_comment = tmp;
         box_color = VSCRIPT_COLOR_TRIGGERED;
         last_time = SDL_GetTicks();
         sleep_active = false;
+
         out();
     }
 
     
-    void CSleepNode::reset()
+    bool CSleepNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
+        return true;
+    }
+
+    bool CSleepNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
+    {
+        return true;
     }
 
 };

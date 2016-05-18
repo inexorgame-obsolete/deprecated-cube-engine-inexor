@@ -24,8 +24,11 @@ namespace vscript {
             ~CFunctionConoutfNode();
 
             void format_output();
+
             void in();
-            void reset();
+
+            bool OnLinkAsChildNodeAttempt(CScriptNode* parent);
+            bool OnLinkAsParentNodeAttempt(CScriptNode* child);
     };
 
 };

@@ -32,7 +32,19 @@ namespace vscript {
             ~CFunctionPlaysoundNode();
 
             void in();
+            void run();
+            void out();
             void reset();
+
+
+            bool OnLinkAsChildNodeAttempt(CScriptNode* parent)
+            {
+                return false;
+            }
+            bool OnLinkAsParentNodeAttempt(CScriptNode* child)
+            {
+                return false;
+            }
     };
 
 };

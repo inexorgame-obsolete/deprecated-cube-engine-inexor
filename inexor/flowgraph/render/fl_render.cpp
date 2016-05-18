@@ -16,15 +16,13 @@ namespace vscript {
 
     void CNodeRenderer::adjust_selection_color(int orient, int index)
     {
-        if(orient==index) 
+        VSCRIPT_NODE_COLORS temp_color = box_color;
+
+        if(orient == index) 
         {
-            // if this side of the box is selected, render the side in another color
-            box_color = VSCRIPT_COLOR_SELECTION;
+            temp_color = VSCRIPT_COLOR_SELECTION;
         }
-        else {
-            box_color = default_box_color;
-        }
-        gle::color(vec::hexcolor(box_color));
+        gle::color(vec::hexcolor(temp_color));
     }
 
 
@@ -71,6 +69,7 @@ namespace vscript {
         glVertex3f(p.x+boxsize,p.y+boxsize,p.z);
         glVertex3f(p.x+boxsize,p.y+boxsize,p.z+boxsize);
         glVertex3f(p.x+boxsize,p.y,p.z+boxsize);
+
         glEnd();
     }
 

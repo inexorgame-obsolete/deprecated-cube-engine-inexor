@@ -14,7 +14,7 @@
 #include <vector>
 #include "inexor/engine/engine.hpp"
 
-#define INEXOR_VSCRIPT_STD_CALC_PRECISION 50
+#define INEXOR_VSCRIPT_STD_CALC_PRECISION 100
 #define INEXOR_VSCRIPT_STD_MAX_PARAM_POINTS 10
 
 

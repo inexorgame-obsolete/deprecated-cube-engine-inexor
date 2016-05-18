@@ -15,6 +15,7 @@
 namespace inexor {
 namespace vscript {
 
+
     enum VSCRIPT_NODE_TYPE
     {
         NODE_TYPE_INVALID = -1,
@@ -42,6 +43,24 @@ namespace vscript {
     };
 
 
+    struct SNodeRelation
+    {
+        inexor::geom::CBezierCurve curve;
+        bool triggered;
+
+        SNodeRelation()
+        {
+            triggered = false;
+        }
+
+        ~SNodeRelation()
+        {
+
+        }
+
+        // additional members here...
+    };
+
 
     class CScriptNode : public CNodeRenderer
     {
@@ -55,11 +74,12 @@ namespace vscript {
             std::vector<CScriptNode *> parents;
             std::vector<CScriptNode *> children;
             
-            std::vector<inexor::geom::CBezierCurve> relations;
+            std::vector<SNodeRelation> relations;
 
             vec pos;
             bool pos_changed;
             bool selected;
+            bool triggered;
 
             std::string node_name;
             std::string node_comment;
@@ -67,11 +87,24 @@ namespace vscript {
             unsigned int this_time;
             unsigned int last_time;
 
-            virtual void in() = 0;
-            virtual void reset() = 0;
-            //virtual void run() = 0;
-            void render(int, bool);
-            void out();
+
+            // The editor is trying to link/unlink it as child of another node
+            virtual bool OnLinkAsChildNodeAttempt(CScriptNode* parent);
+            virtual bool OnUnLinkAsChildNodeAttempt(CScriptNode* parent);
+
+            // The editor is trying to link/unlink it as parent of another node
+            virtual bool OnLinkAsParentNodeAttempt(CScriptNode* child);
+            virtual bool OnUnLinkAsParentNodeAttempt(CScriptNode* child);
+    
+
+            virtual void in();
+            virtual void out();
+            virtual void reset();
+            virtual void render(int, bool);
+            virtual void render_additional(vec);
+
+            virtual void trigger();
+            virtual void untrigger();
     };
 
 };

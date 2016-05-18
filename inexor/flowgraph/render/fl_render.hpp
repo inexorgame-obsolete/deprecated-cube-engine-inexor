@@ -11,8 +11,7 @@
 namespace inexor {
 namespace vscript {
 
-    const float boxsize = 4.0f;
-
+    const float boxsize = 5.0f;
 
     enum VSCRIPT_ENTITY_BOX_ORIENTATION
     {
@@ -38,6 +37,7 @@ namespace vscript {
         VSCRIPT_COLOR_WHITE     = 0xFFFFFF,  // 
         VSCRIPT_COLOR_SELECTION = 0xFFFF4C,  // red 
         VSCRIPT_COLOR_DEBUG_RAY = 0x51ABCC,
+        VSCRIPT_COLOR_MEMORY    = 0xFF005D,
     };
 
 
@@ -51,7 +51,6 @@ namespace vscript {
 
             VSCRIPT_NODE_COLORS box_color;
             VSCRIPT_NODE_COLORS default_box_color;
-
 
             void adjust_selection_color(int orient, int index);
 

@@ -2,7 +2,7 @@
 
 namespace inexor {
 namespace vscript {
-
+    
 
     CCubeAreaNode::CCubeAreaNode(vec position, vec edge_vector, const char* name, const char* comment)
     {
@@ -11,23 +11,16 @@ namespace vscript {
         edge = edge_vector;
     }
 
-
     CCubeAreaNode::~CCubeAreaNode()
     {
     }
 
 
-    void CCubeAreaNode::reset()
-    {
-    }
-
-
+    // render cube by position and its edge
     void CCubeAreaNode::render(int orient, bool sel_blocked)
     {
-        // render cube
         vec p = pos;
         vec e = edge;
-
         glBegin(GL_QUADS);
 
         glVertex3f(p.x,p.y,p.z+e.z);

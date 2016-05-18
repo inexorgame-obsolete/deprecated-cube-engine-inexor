@@ -4,22 +4,21 @@ namespace inexor {
 namespace vscript {
 
 
-    CFunctionConoutfNode::CFunctionConoutfNode(vec position,
-                                               const char* raw_text)
+    CFunctionConoutfNode::CFunctionConoutfNode(vec position, const char* raw_text)
     {
         type = NODE_TYPE_FUNCTION;
-        node_name = "Function - conoutf";
-        node_comment = "Outputs a text to the local game console";
+        node_name = "conoutf";
+        node_comment = raw_text;
         pos = position;
         raw_text_input = raw_text;
         default_box_color = VSCRIPT_COLOR_FUNCTION;
         box_color = default_box_color;
     }
 
-
     CFunctionConoutfNode::~CFunctionConoutfNode()
     {
     }
+
 
 
     void CFunctionConoutfNode::in()
@@ -36,9 +35,14 @@ namespace vscript {
     }
 
 
-    void CFunctionConoutfNode::reset()
-    {
-    }
 
+    bool CFunctionConoutfNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
+    {
+        return true;
+    }
+    bool CFunctionConoutfNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
+    {
+        return false;
+    }
 };
 };

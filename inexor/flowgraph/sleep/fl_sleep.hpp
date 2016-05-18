@@ -29,9 +29,12 @@ namespace vscript {
                        const char* comment = "Hello World Comment for a Sleep");
                 
             ~CSleepNode();
+            
 
             void in();
-            void reset();
+
+            bool OnLinkAsChildNodeAttempt(CScriptNode* parent);
+            bool OnLinkAsParentNodeAttempt(CScriptNode* child);
     };
 
 };

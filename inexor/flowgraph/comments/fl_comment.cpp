@@ -20,5 +20,17 @@ namespace vscript {
     {
     }
 
+    bool CCommentNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
+    {
+        conoutf(CON_DEBUG, "You cannot link a comment as child node!");
+        return false;
+    }
+
+    bool CCommentNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
+    {
+        conoutf(CON_DEBUG, "You cannot link a comment as parent node!");
+        return false;
+    }
+
 };
 };

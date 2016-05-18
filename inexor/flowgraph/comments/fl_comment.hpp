@@ -16,12 +16,9 @@ namespace vscript {
 
         CCommentNode(vec pos, const char* comment = "This is a comment", const char* name = "CommentNode1");
         ~CCommentNode();
-
-        // comments do nothing at all
-        void run()   {}
-        void in()    {}
-        void out()   {}
-        void reset() {}
+        
+        bool OnLinkAsChildNodeAttempt(CScriptNode* parent);
+        bool OnLinkAsParentNodeAttempt(CScriptNode* child);
     };
 
 };

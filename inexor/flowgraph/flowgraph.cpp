@@ -3,14 +3,19 @@
 #include "inexor/flowgraph/sleep/fl_sleep.hpp"
 #include "inexor/flowgraph/timer/fl_timer.hpp"
 #include "inexor/flowgraph/comments/fl_comment.hpp"
+
+// experimental
+#include "inexor/flowgraph/memory/fl_membase.hpp"
+
 #include "inexor/flowgraph/functions/fl_functionbase.hpp"
 #include "inexor/flowgraph/functions/fl_functions.hpp"
 
+
 #include "inexor/flowgraph/areas/block/fl_area_block.hpp"
 #include "inexor/flowgraph/areas/sphere/fl_area_sphere.hpp"
-
 #include "inexor/geom/geom.hpp"
 #include "inexor/geom/curves/bezier/bezier.hpp"
+
 
 extern selinfo sel, lastsel, savedsel;
 extern bool editmode;
@@ -29,10 +34,11 @@ enum VSCRIPT_ENTITY_BOX_ORIENTATION
 };
 
 
+
 namespace inexor {
 namespace vscript {
 
-    // create an instance
+
     CVisualScriptSystem vScript3D;
 
 
@@ -77,6 +83,8 @@ namespace vscript {
                 unsigned int cooldown   = atoi(arguments[3].c_str());
                 const char* name        = arguments[4].c_str();
                 const char* comment     = arguments[5].c_str();
+                
+                if(0 == interval) interval = 1000;
 
                 /// TODO: which timer format?
                 INEXOR_VSCRIPT_TIME_FORMAT timer_format = TIME_FORMAT_MILISECONDS;
@@ -89,7 +97,7 @@ namespace vscript {
 
             case NODE_TYPE_COMMENT:
             {
-                created_node = new CCommentNode(target, arguments[0].c_str(), arguments[1].c_str());
+                created_node = new CCommentNode(target, arguments[0].c_str(), "Comment");
                 break;
             }
 
@@ -98,10 +106,10 @@ namespace vscript {
                 switch(atoi(arguments[0].c_str()))
                 {
                     case FUNCTION_CONOUTF:
-                        created_node = new CFunctionConoutfNode(target, arguments[1].c_str());
+                        created_node = new CFunctionConoutfNode(target, arguments[1].c_str() );
                         break;
                     case FUNCTION_PLAYSOUND:
-                        created_node = new CFunctionPlaysoundNode(target, arguments[1].c_str());
+                        created_node = new CFunctionPlaysoundNode(target, arguments[1].c_str() );
                         break;
                 }
                 break;
@@ -110,6 +118,7 @@ namespace vscript {
             case NODE_TYPE_SLEEP:
             {
                 unsigned int wait_time   = atoi(arguments[0].c_str());
+                if(0 == wait_time) wait_time = 500;
                 created_node = new CSleepNode(target, wait_time); 
                 break;
             }
@@ -118,24 +127,32 @@ namespace vscript {
             {
                 vec end = target;
                 end.add(vec(50,50,50));
-                created_node = new CCubeAreaNode(target,end,arguments[0].c_str(),arguments[1].c_str());
+                created_node = new CCubeAreaNode(target, end, arguments[0].c_str(), arguments[1].c_str() );
                 break;
             }
 
+            case NODE_TYPE_MEMORY:
+            {
+                created_node = new CMemoryNode(target, VS_DATA_TYPE_INTEGER, arguments[0].c_str(), "memory-block", "I can remember things!");
+                break;
+            }
+
+            /*
             case NODE_TYPE_AREA_SPHERE:
             {
                 vec rad = target;
                 rad.add(vec(20,20,20));
-                created_node = new CSphereAreaNode(target,rad,arguments[0].c_str(),arguments[1].c_str());
+                created_node = new CSphereAreaNode(target, rad, arguments[0].c_str(), arguments[1].c_str() );
                 break;
             }
+            */
 
         }
         if(nullptr != created_node)  nodes.push_back(created_node);
         return created_node;
     }
-
-
+    
+    
     void CVisualScriptSystem::update_drag_n_drop()
     {
         if(nullptr != selected_node)
@@ -171,52 +188,61 @@ namespace vscript {
             vec camdir_normalized = camdir;
             camdir_normalized.normalize();
             vec drag_target_pos = game::player1->o+camdir_normalized.mul(selected_dist);
-            
-            conoutf(CON_DEBUG, "from %f %f %f to %f %f %f ",drag_target_pos.x,drag_target_pos.y,drag_target_pos.z,
-                    relation_drag_start.x,relation_drag_start.y,relation_drag_start.z);
 
-            
+            // render line            
             start_rendering();
             glBegin(GL_LINES);
-
-            gle::color(vec::hexcolor(VSCRIPT_COLOR_DEBUG_RAY));
-
+            glLineWidth(5.0f);
+            gle::color(vec::hexcolor(VSCRIPT_COLOR_TIMER));
+            
+            float box_center_offset = boxsize/2;
             glVertex3f(drag_target_pos.x,drag_target_pos.y,drag_target_pos.z);
-            glVertex3f(relation_drag_start.x,relation_drag_start.y,relation_drag_start.z);
+            glVertex3f(relation_drag_start.x+box_center_offset ,relation_drag_start.y+box_center_offset ,relation_drag_start.z+box_center_offset );
+
+            glLineWidth(1.0f);
             glEnd();
             end_rendering();
-
-
-            /*
-            /// calc bezier curve
-            tmp_relation_linker_curve.AddParameterPoint(relation_start_node->pos);
-            tmp_relation_linker_curve.AddParameterPoint(drag_target_pos);
-            tmp_relation_linker_curve.ComputeCache();
-
-            /// render curve
-            glBegin(GL_LINES);
-            for(unsigned int i=0; i<tmp_relation_linker_curve.GetCachedPointsSize(); i++)
-            {
-                geom::SCustomOutputPoint p = tmp_relation_linker_curve.GetPoint_ByIndex(i);
-                glVertex3f(p.pos.x,p.pos.y,p.pos.z);
-            }
-            glEnd();
-            */
-
-            // TODO: check if we can make a new relation!
         }
     }
 
 
     void CVisualScriptSystem::connect_nodes(CScriptNode *from, CScriptNode *to)
     {
+        // store parent and chil in each other's vectors
         to->parents.push_back(from);
         from->children.push_back(to);
 
-        // add a connection curve
-        geom::CBezierCurve newcurve;
+        SNodeRelation newcurve;
+        newcurve.triggered = &from->triggered;
         from->relations.push_back(newcurve);
         from->pos_changed = true;
+
+        conoutf(CON_DEBUG, "[node linker] Linked parent %s with child %s.", from->node_name.c_str(), to->node_name.c_str());
+    }
+
+
+    void CVisualScriptSystem::validate_new_relation(CScriptNode *from, CScriptNode *to)
+    {
+        if(nullptr != hovered_node)
+        {
+            // do not link nodes to itself!
+            if(hovered_node != relation_start_node)
+            {
+                // check if nodes allow to be linked
+                if(from->OnLinkAsParentNodeAttempt(to) && to->OnLinkAsChildNodeAttempt(from))
+                {
+                    connect_nodes(from, to);
+                }
+                else
+                {
+                    conoutf(CON_DEBUG, "[node linker] Could not link parent %s with child %s.", from->node_name.c_str(), to->node_name.c_str());
+                }
+            }
+            else
+            {
+                conoutf(CON_DEBUG,"[node linker] A node can't be linked to itself!");
+            }
+        }
     }
 
 
@@ -245,17 +271,8 @@ namespace vscript {
                 }
                 if(dragging_new_relation && !isdown) // stop dragging
                 {
-                    if(nullptr !=hovered_node)
-                    {
-                        // do not link nodes to itself!
-                        if(hovered_node != relation_start_node)
-                        {
-                            // link nodes together!
-                            conoutf(CON_DEBUG, "Added new relation!");
-                            connect_nodes(relation_start_node,hovered_node);
-                        }
-                    }
-
+                    // check if new relation should be formed
+                    validate_new_relation(relation_start_node, hovered_node);
                     relation_start_node = nullptr;
                     dragging_new_relation = false;
                 }
@@ -343,8 +360,16 @@ namespace vscript {
             nodes[i]->selected = (orient != VSCRIPT_BOX_NO_INTERSECTION);
 
             // render a 200ms long color effect once its activated
-            if( (nodes[i]->this_time - nodes[i]->last_time)  < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL) nodes[i]->box_color = VSCRIPT_COLOR_TRIGGERED;
-            else nodes[i]->box_color = nodes[i]->default_box_color;
+            if((nodes[i]->this_time - nodes[i]->last_time) < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL)
+            {
+                nodes[i]->trigger();
+                nodes[i]->box_color = VSCRIPT_COLOR_TRIGGERED;
+            }
+            else 
+            {
+                nodes[i]->untrigger();
+                nodes[i]->box_color = nodes[i]->default_box_color;
+            }
             nodes[i]->render(orient, selection_blocked_by_geometry);
         }
 
@@ -379,11 +404,11 @@ namespace vscript {
         {   
             for(unsigned int e = 0; e < nodes[i]->children.size(); e++)
             {
-                geom::CBezierCurve *tmp = &nodes[i]->relations[e];
+                SNodeRelation *tmp = &nodes[i]->relations[e];
 
                 if(nodes[i]->pos_changed || nodes[i]->children[e]->pos_changed)
                 {
-                    tmp->ClearAllPoints();
+                    tmp->curve.ClearAllPoints();
             
                     // generate a nice and smooth curve between two nodes
                     vec t = nodes[i]->pos;
@@ -397,33 +422,34 @@ namespace vscript {
                     n.y += boxsize/2;
                     n.z += boxsize;
 
-                    tmp->AddParameterPoint(t);
-                    tmp->AddParameterPoint(interpol1);
-                    tmp->AddParameterPoint(interpol2);
-                    tmp->AddParameterPoint(n);
+                    tmp->curve.AddParameterPoint(t);
+                    tmp->curve.AddParameterPoint(interpol1);
+                    tmp->curve.AddParameterPoint(interpol2);
+                    tmp->curve.AddParameterPoint(n);
                     
                     /// recompute cache
-                    tmp->ComputeCache();
+                    tmp->curve.ComputeCache();
                 }
 
-                glBegin(GL_LINES);
-                gle::color(vec::hexcolor(VSCRIPT_COLOR_TRIGGERED));
-                glLineWidth(10.0f);
+                glLineWidth(2.0f);
+                if(tmp->triggered) gle::color(vec::hexcolor(VSCRIPT_COLOR_TIMER));
+                else gle::color(vec::hexcolor(VSCRIPT_COLOR_TIMER));
 
-                for(unsigned int h=0; h<tmp->GetCachedPointsSize() -1; h++)
+                glBegin(GL_LINES);
+                
+                for(unsigned int h=0; h<tmp->curve.GetCachedPointsSize() -1; h++)
                 {
-                    geom::SCustomOutputPoint t = tmp->GetPoint_ByIndex(h);
-                    geom::SCustomOutputPoint n = tmp->GetPoint_ByIndex(h   +1);
+                    geom::SCustomOutputPoint t = tmp->curve.GetPoint_ByIndex(h);
+                    geom::SCustomOutputPoint n = tmp->curve.GetPoint_ByIndex(h+1);
                     glVertex3f(t.pos.x, t.pos.y, t.pos.z);
                     glVertex3f(n.pos.x, n.pos.y, n.pos.z);
                 }
-                
-                glLineWidth(1.0f);
                 glEnd();
+                glLineWidth(1.0f);
             }
         }
     }
-
+    
 
 
     void deleteallnodes()
@@ -431,35 +457,37 @@ namespace vscript {
         vScript3D.delete_all_nodes();
     }
     COMMAND(deleteallnodes, "");
-
-
-    CScriptNode* a;
-    CScriptNode* b;
-    CScriptNode* c;
-
     
-    void test_a()
+    void vs_add_timer(const char* interval)
     {
-        a = vScript3D.add_node(NODE_TYPE_TIMER, 7, "1000", "0", "1000", "0", "TimerNode1", "Hello world", "0");
+        vScript3D.add_node(NODE_TYPE_TIMER, 7, interval, "0", interval, "0", "New Timer", "comment...", "0");
     }
-    COMMAND(test_a, "");
+    COMMAND(vs_add_timer, "s");
 
-
-
-    void test_b()
+    void vs_add_conoutf(const char* text)
     {
-        b = vScript3D.add_node(NODE_TYPE_FUNCTION,2,"0","Hallo Welt");
+        vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "0", text);
     }
-    COMMAND(test_b,"");
+    COMMAND(vs_add_conoutf,"s");
 
-
-
-    void test_c()
+    void vs_add_sleep(const char *interval)
     {
-        c = vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "1", "14");
+        vScript3D.add_node(NODE_TYPE_SLEEP, 1, interval);
     }
-    COMMAND(test_c, "");
+    COMMAND(vs_add_sleep, "s");
 
+    void vs_add_comment(const char *comment)
+    {
+        vScript3D.add_node(NODE_TYPE_COMMENT, 1, comment);
+    }
+    COMMAND(vs_add_comment, "s");
+
+    void vs_add_memory(const char *value)
+    {
+        vScript3D.add_node(NODE_TYPE_MEMORY, 1, value);
+    }
+    COMMAND(vs_add_memory, "s");
+    
 
 };
 };

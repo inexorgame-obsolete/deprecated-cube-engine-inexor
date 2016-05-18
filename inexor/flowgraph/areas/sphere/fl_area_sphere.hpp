@@ -2,7 +2,11 @@
 /// @author Johannes Schneider
 /// @brief 
 
+#ifndef INEXOR_VSCRIPT_AREA_SPHERE_HEADER
+#define INEXOR_VSCRIPT_AREA_SPHERE_HEADER
+
 #include "inexor/flowgraph/nodebase/fl_base.hpp"
+
 
 namespace inexor {
 namespace vscript {
@@ -16,15 +20,12 @@ namespace vscript {
 
             CSphereAreaNode(vec,vec,const char*,const char*);
             ~CSphereAreaNode();
-
-            void reset();
-
+            
             void render(int,bool);
-
-            void in() {}
-
             bool collide(vec p);
     };
 
 };
 };
+
+#endif
