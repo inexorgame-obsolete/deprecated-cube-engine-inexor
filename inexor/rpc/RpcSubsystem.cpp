@@ -41,53 +41,44 @@ using grpc::ServerCompletionQueue;
 using inexor::tree::ChangedValue;
 using inexor::tree::TreeService;
 
-
-struct changedvar
+/*
+// Helper (Maybe): Can we get sth like this maybe?
+void findsetfield(inexor::tree::Value val)
 {
-    ///// Points to the var which needs to be updated.
-    //SharedVar *pointer;
-    ///// one of t
-    //int datatype;
-    //bool hasfunctionattached;
-    //void *cb_function; // function which gets executed
+    const std::string path = val.GetTypeName();
+    val.GetDescriptor()->FindFieldByName(path);
+    val.innerqueue().innerthing();
+}
 
-    //union {
-    //    const char *str;
-    //    int 
-    //};
+// This one gets generated
+void connectall()
+{
+    auto lambdaj = [](const T &oldvalue, const T &newvalue)
+    {
+        inexor::tree::Value val;
+        inexor::tree::innerqueue q;
+        val.mainpath().
+        q.set_innerthing();
+        val.set_innerqueue(q);
+        main2net_interthread_queue.enqueue(val);
+    };
+    SharedVar j;
+    j.onchange.connect(lambdaj);
+}
 
-};
-
-//void findoneoffield(inexor::tree::Value val)
-//{
-//    const std::string path = val.GetTypeName();
-//    val.GetDescriptor()->FindFieldByName(path);
-//}
-
-
-
-//struct writereq
-//{
-//    std::string path;
-//    union {
-//        const char *str;
-//        int intval;
-//        float floatval;
-//    };
-//    enum {VALUE_STR, VALUE_INT, VALUE_FLOAT} valuetype;
-//};
+// This one too:
+void connectnet2main(inexor::tree::Value receivedval)
+{
+option1:
+    loop over all values; / or findsetfield() somehow
+    switchcase for all values;
+    security layer in switch case (generated).
+    return net2main_interthread_queue.enque(SharedVar *pointer)
+}
+*/
 
 moodycamel::ConcurrentQueue<std::string> main2net_interthread_queue; // Something gets pushed on this (lockless threadsafe queue) when we changed value. Gets handled by serverthread.
 moodycamel::ConcurrentQueue<std::string> net2main_interthread_queue; // Something gets pushed on this (lockless threadsafe queue) when a value has arrived. Gets handled by Subsystem::tick();
-
-void testserverwriter()
-{
-    //writereq req;
-    //req.path = "inexor/tree/fullscreen";
-    //req.intval = 1;
-    //req.valuetype = writereq::VALUE_INT;
-    main2net_interthread_queue.enqueue("inexor/tree/fullscreen");
-}
 
 
 ChangedValue MakeChangedValue(const char *path)
