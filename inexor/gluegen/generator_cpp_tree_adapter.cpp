@@ -20,6 +20,9 @@ using boost::regex;
 using boost::split_regex;
 using boost::adaptors::sliced;
 
+using std::string;
+using std::vector;
+
 namespace {
 
 template<typename OStream, typename NSRange>
@@ -29,17 +32,17 @@ void enter_ns(OStream &s, const NSRange &ns) {
 
 template<typename OStream, typename NSRange>
 void leave_ns(OStream &s, const NSRange &ns) {
-    for (size_t i=0; i<size(ns); i++) s << "\n}";
+    for (size_t i=0; i<boost::size(ns); i++) s << "\n}";
 }
 
 template<typename Range>
-auto initial(const Range &s) -> decltype(s | sliced(0, size(s) - 1)) {
-    return s | sliced(0, size(s) - 1);
+auto initial(const Range &s) -> decltype(s | sliced(0, boost::size(s) - 1)) {
+    return s | sliced(0, boost::size(s) - 1);
 }
 
 template<typename Range>
 typename Range::value_type last(Range &s) {
-    return *(s.begin() + (size(s) - 1));
+    return *(s.begin() + (boost::size(s) - 1));
 }
 
 }
@@ -48,26 +51,23 @@ namespace inexor {
 namespace rpc {
 namespace gluegen {
 
-void update_cpp_tree_server_impl(
-      const std::string &header_path
-    , const std::string &source_path
-    , std::vector<ShTreeNode> &tree
-    , const std::vector<std::string> &ns) {
-
+void update_cpp_tree_server_impl(const string &header_path, const string &source_path, vector<ShTreeNode> &tree, const vector<string> &ns)
+{
     std::ofstream h{header_path, std::ofstream::trunc};
 
     h << "#pragma once";
 
     enter_ns(h, ns);
 
-    h << "\nextern void dump(Global &);"
-      << "\n\n";
+    h << std::endl << "extern void dump(Global &);"
+      << std::endl << std::endl;
 
-    h << "\ninline Global dump() {"
-      << "\n  Global r;"
-      << "\n  dump(r);"
-      << "\n  return r;"
-      << "\n}\n";
+    h << std::endl << "inline Global dump()"
+      << std::endl << "{"
+      << std::endl << "    Global r;"
+      << std::endl << "    dump(r);"
+      << std::endl << "    return r;"
+      << std::endl << "}" << std::endl;
 
     leave_ns(h, ns);
 

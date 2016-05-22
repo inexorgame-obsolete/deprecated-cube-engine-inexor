@@ -39,36 +39,38 @@ void update_protoc_file(
 
     /// Declare the generator
 
-    using boost::spirit::eol;
+    using boost::spirit::eol;           // end of line
     using boost::spirit::ascii::string;
     using boost::spirit::lit;
     using boost::spirit::long_long;
 
     // Indentation helpers (replace with special eol,
     // indend_, outdend_ and indend[...] directives)
-    auto t0 = eol;
-    auto t1 = eol << "    ";
+    auto indent = "    ";
 
     // tuple(string type, mangled_name, index)
-    auto var_gen =
-        t1 << "optional " << string << " " << string
-          << " = " << long_long << ";"
-          << "  // " << string;
+    auto var_gen = 
+          indent 
+          << string << " " << string       // type and name/submsg
+          << " = " << long_long << ";"     // index
+          << "  // " << string             // mangled name
+          << eol;
 
     // range[tuple]
     auto protoc_gen =
-               "package " << lit(package) << ";"
-      << t0
-      << t0 << "message Global {"
+               "package " << lit(package) << ";" << eol
+          << eol
+          << eol
+          << "message Value {"
           << *var_gen
-      << t0 << "}";
+          << "}";
 
     // Format the data properly
-    
+
     using boost::adaptors::filtered;
     using std::make_tuple;
     using std::tuple;
-    
+
     // TODO: seriously, this syntax is terrible
     typedef tuple<std::string&, std::string&, int64_t, std::string&> ptup;
     function<bool(ShTreeNode&)> missing_paths = [](const ShTreeNode &n) {
@@ -90,10 +92,9 @@ void update_protoc_file(
     // range; can we avoid this?
     std::vector<ptup> data(data_gen.begin(), data_gen.end());
 
-    /// Generate and write the code
-    
+    // Generate and write the code
     using boost::spirit::karma::format;
-    
+
     std::ofstream sink{path, std::ofstream::trunc};
     sink << format(protoc_gen, data);
 }
