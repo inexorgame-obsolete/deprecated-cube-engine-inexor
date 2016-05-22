@@ -10,21 +10,6 @@
 
 #include "inexor/util/InexorException.hpp"
 
-namespace std {
-
-/// Hashes for enum types.
-/// TODO: Move this somewhere more appropriate
-/// https://stackoverflow.com/questions/9646297/c11-hash-function-for-any-enum-type#21029900
-template<class E>
-struct hash {
-    using sfinale = typename std::enable_if<std::is_enum<E>::value, E>::type;
-    size_t operator()(const E&e) const {
-        return std::hash<typename std::underlying_type<E>::type>()(e);
-    }
-};
-
-}
-
 namespace inexor {
 namespace rpc {
 namespace gluegen {
@@ -39,13 +24,15 @@ public:
         t_int
     };
 
+    static const std::string protoc_types[3];
+
     /// Maps C++ string type declarations to the numeric,
     /// unambiguity types above
     static const std::unordered_map<std::string, cpp_type_t> type_parsers;
 
     /// The numeric types above to their protocol buffers
     /// equivalents
-    static const std::unordered_map<cpp_type_t, std::string> protoc_types;
+    //static const std::unordered_map<cpp_type_t, std::string> protoc_types;
 
     /// The canonical name (including ::) of the inexor c++
     /// variable
@@ -98,7 +85,7 @@ private:
     void _init_type(const std::string &type_decl) {
         type = type_parsers.at(type_decl);
         type_lit = type_decl;
-        protoc_lit = protoc_types.at(type);
+        protoc_lit = protoc_types[type];
     }
 };
 
