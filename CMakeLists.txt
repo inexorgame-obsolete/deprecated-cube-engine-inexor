@@ -81,6 +81,7 @@ add_subdirectory(inexor)
 
 install(FILES ${INSTALL_SHARED_LIBS} ${INSTALL_EXES} DESTINATION ${EXE_DIR})
 install(FILES ${INSTALL_RESOURCES} DESTINATION ${INSTALL_RESOURCES_DIR})
+install(DIRECTORY ${INSTALL_RESOURCES_FOLDERS} DESTINATION ${INSTALL_RESOURCES_DIR})
 
 # shipped portable stuff on win (dirty but temporarily)
 if(OS_WINDOWS)
