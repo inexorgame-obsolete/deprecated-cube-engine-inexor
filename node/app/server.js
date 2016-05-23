@@ -34,14 +34,11 @@ var argv = require('yargs')
     .alias('c', 'config')
     .help('h')
     .alias('h', 'help')
-    .epilog('copyright 2015')
+    .epilog('copyright 2016')
     .argv;
 
 var restify = require('restify');
 var bunyan = require('bunyan');
-
-// Application level dependencies
-var EvalCubescript = require('./rpc.js');
 
 streams = [
     {
@@ -79,17 +76,9 @@ server.use(function(req, res, next) {
 
 server.use(restify.bodyParser()); // for parsing application/json
 
-// TODO: Sanitize data and restrict access to localhost-only!
-// This can be done using restify plugins
-server.post({path: '/api/execute', version: '0.0.6'}, function(req, res) {
-    EvalCubescript(req.body.code).then(function(data) {
-        res.json(data);
-    });
-});
-
 // Serve static files from the assets folder
 server.get(/.*/, restify.serveStatic({
-    directory: 'assets',
+    directory: 'public',
     default: 'index.html'
  }));
 
