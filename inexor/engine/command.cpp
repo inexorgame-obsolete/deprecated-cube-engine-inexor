@@ -2,7 +2,7 @@
 // is largely backwards compatible with the quake console language.
 
 #include "inexor/engine/engine.hpp"
-#include "inexor/rpc/SharedVar.hpp"
+#include "inexor/rpc/SharedTree.hpp"
 #include "inexor/util/Logging.hpp"
 
 using namespace inexor::util;

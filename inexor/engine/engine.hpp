@@ -4,7 +4,7 @@
 #include "inexor/shared/cube.hpp"
 #include "inexor/engine/world.hpp"
 
-#include "inexor/rpc/SharedVar.hpp"
+#include "inexor/rpc/SharedTree.hpp"
 
 #ifndef STANDALONE
 

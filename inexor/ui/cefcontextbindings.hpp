@@ -4,7 +4,7 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/fpsgame/game.hpp"
 
-#include "inexor/rpc/SharedVar.hpp"
+#include "inexor/rpc/SharedTree.hpp"
 
 extern void quit();
 extern void getfps(int &fps, int &bestdiff, int &worstdiff);

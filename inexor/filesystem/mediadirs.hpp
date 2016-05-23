@@ -3,7 +3,7 @@
 #ifndef I_FILESYSTEM_H
 #define I_FILESYSTEM_H
 
-#include "inexor/rpc/SharedVar.hpp"
+#include "inexor/rpc/SharedTree.hpp"
 #include <boost/filesystem.hpp>
 #include <string>
 
