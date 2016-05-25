@@ -15,10 +15,8 @@ namespace inexor {
 namespace rpc {
 namespace gluegen {
 
-void update_protoc_file(
-      const std::string &path
-    , std::vector<ShTreeNode> &tree
-    , const std::string &package) {
+void update_protoc_file(const std::string &path, std::vector<ShTreeNode> &tree, const std::string &package)
+{
 
     /// Assign numbers to each of the fields
 
@@ -61,8 +59,9 @@ void update_protoc_file(
                "package " << lit(package) << ";" << eol
           << eol
           << eol
-          << "message Value {"
-          << *var_gen
+          << "message Value {" << eol
+          << indent << "oneof onlyone {" << eol
+          << *(indent << var_gen)
           << "}";
 
     // Format the data properly

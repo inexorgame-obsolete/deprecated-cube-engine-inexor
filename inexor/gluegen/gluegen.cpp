@@ -8,6 +8,8 @@
 #include <boost/range.hpp>
 #include <boost/algorithm/string/regex.hpp>
 
+#include <clang/Tooling/CommonOptionsParser.h>
+
 #include "inexor/gluegen/tree.hpp"
 #include "inexor/gluegen/parser_cpp_shared_var.hpp"
 #include "inexor/gluegen/generator_protoc.hpp"
@@ -16,6 +18,7 @@
 using namespace inexor::rpc::gluegen;
 namespace po = boost::program_options;
 using std::string;
+using std::vector;
 
 template<typename SinglePassRange, typename Delim>
 std::string join(SinglePassRange r, Delim d) {
@@ -33,14 +36,19 @@ std::string join(SinglePassRange r, Delim d) {
 
 void usage(const std::string &ex, const po::options_description &params) {
     std::cerr
-        << "NAME"
-        << "\n inexor gluegen – Generate the glue code for the tree API."
-        << "\n\nSYNPOSIS"
-        << "\n  (1) " << ex << " -h|--help"
-        << "\n  (2) " << ex << " --protoc|-P FILE --tree-adapter-source|-S FILE --tree-adapter-header|-H FILE -N|--namespace NAMESPACE -- CLANG_OPTIONS... -- SOURCE_FILES..."
+        << "Inexor gluegen       Generates the glue code for the tree API."
+        << "\n\nEXAMPLES"
+        << "\n  (1) " << ex << " --help"
+        << "\n  (2) " << ex << " --out-proto FILE --out-source FILE --out-header FILE --namespace NAMESPACE \"CLANG_OPTIONS\" --parse-file FILE"
+        << "\n  (3) " << ex << " --out-proto FILE --out-source FILE --out-header FILE --namespace NAMESPACE \"CLANG_OPTIONS\" --parse-file FILE1 --parse-file FILE2 --parse-file FILE3"
+        << "\n  (4) " << ex << " --out-proto FILE --out-source FILE --out-header FILE --namespace NAMESPACE \"CLANG_OPTIONS\" --parse-file FILE1 FILE2 FILE3"
         << "\n\nDESCRIPTION"
         << "\n  (1) Show this help page"
-        << "\n  (2) Generate the glue code. If no options are passed to clang, you must still specify two double dashes: -- --"
+        << "\n  (2) Generate the glue code. Note the quotes around the compile-options list."
+        << "\n      CLANG_OPTIONS are the clang compile flags and definitions we need to parse/\"compile\" the given input files with, add them as usual."
+        << "\n      Note: Options are order independent, so the position of the arguments do not matter (not even for the clang compile flags and definitions)."
+        << "\n  (3) Generate the glue code, but specify multiple input files"
+        << "\n  (4) Same as example 3 but different syntax."
         << "\n\n" << params << "\n";
 }
 
@@ -57,76 +65,55 @@ int main(int argc, const char **argv) {
     po::variables_map cli_config;
     po::options_description params("PARAMETERS");
     params.add_options()
-        ("help,h", "Print this help message")
-        ("protoc,P", po::value<string>(), "The .proto file to write the protocol description to.")
-        ("tree-adapter-header,H", po::value<string>(), "The header `.hpp` file the c++ tree adapter code should be generated in")
-        ("tree-adapter-source,S", po::value<string>(), "The source `.cpp` file the c++ tree adapter code should be generated in")
-        ("namespace,N", po::value<string>(), "The namespace to use in the generated protocol file and c++ source files. (use C++ :: notation)");
+        ("help", "Print this help message")
+        ("namespace", po::value<string>(), "The namespace to use in the generated protocol file and c++ source files. (use C++ :: notation)")
+        ("out-proto", po::value<string>(), "The .proto file to write the protocol description to.")
+        ("out-header", po::value<string>(), "The header `.hpp` file the c++ tree adapter code should be generated in")
+        ("out-source", po::value<string>(), "The source `.cpp` file the c++ tree adapter code should be generated in")
+        ("parse-file", po::value<std::vector<string>>(), "The source file to scan for Inexor shared variables");
 
     std::string exec{argv[0]};
 
-    // Split the parameters into three basic -- delimited
-    // blocks
+    vector<string> args(argv+1, argv+argc);
 
-    typedef std::vector<string> args_t;
-    typedef typename args_t::iterator args_itr;
+    vector<string> further_compile_options; // we pass through everything unrecognized to libclang.
 
-    // TODO: Use a generalized variant of tokenized for this?
-    // Argc = number of relevant args + 1, hence
-    // (argv+1)+(argc-1) = argv+argv
-    args_t args(argv+1, argv+argc-1);
-    auto div1 = find(args, "--");
-    auto div2 = find(div1+1, args.end(), "--");
-
-    if (div1 == args.end() || div2 == args.end()) {
+    try {
+        po::parsed_options parsed = po::command_line_parser(args).options(params).allow_unregistered().run();
+        further_compile_options = po::collect_unrecognized(parsed.options, po::include_positional);
+        po::store(parsed, cli_config);
+        po::notify(cli_config);
+    } 
+    catch(po::error &e) {
+        std::cerr << "Failed to parse the options: " << e.what() << "\n\n";
         usage(exec, params);
         return 1;
     }
 
-    typedef boost::iterator_range<args_itr> argsub_t;
-    auto our_opts       = argsub_t{ args.begin(), div1 };
-    auto compiler_opts  = argsub_t{ div1 + 1, div2 };
-    auto compiler_files = argsub_t{ div2 + 1, args.end() };
-
-    // Parse our own parameters
-
-    try {
-      po::store(
-          // Note: Using the original char** here because
-          // program options won't take iterators or ranges.
-          // Those would be better though
-          po::command_line_parser(our_opts.size()+1, argv)
-            .options(params)
-            .run()
-        , cli_config);
-      po::notify(cli_config);
-    } catch(po::error &e) {
-      std::cerr << "Failed to parse the options: "
-        << e.what() << "\n\n";
-      usage(exec, params);
-      return 1;
-    }
-
-    auto c = [&cli_config](const std::string &s) {
+    auto c = [&cli_config](const std::string &s)
+    {
         return cli_config.count(s);
     };
 
-    if ( c("help") || !c("protoc") || !c("namespace") || !c("tree-adapter-header") || !c("tree-adapter-source")) {
-      usage(exec, params);
-      return 0;
+    if(c("help") || !c("namespace") || !c("out-proto") || !c("out-header") || !c("out-source") || !c("parse-file"))
+    {
+        usage(exec, params);
+        return 0;
     }
 
     using boost::regex;
     using boost::split_regex;
 
-    const auto &protoc_file = cli_config["protoc"].as<std::string>();
-    const auto &hpp_file = cli_config["tree-adapter-header"].as<std::string>();
-    const auto &cpp_file = cli_config["tree-adapter-source"].as<std::string>();
-    const auto &ns_str = cli_config["namespace"].as<std::string>();
+    const string &ns_str = cli_config["namespace"].as<string>();
+    const string &proto_file = cli_config["out-proto"].as<string>();
+    const string &hpp_file = cli_config["out-header"].as<string>();
+    const string &cpp_file = cli_config["out-source"].as<string>();
+    const vector<string> &input_files = cli_config["parse-file"].as<vector<string>>();
 
+    // namespace string -> protobuf syntax: replace :: with .
     std::vector<string> ns;
     split_regex(ns, ns_str, regex("::"));
-    const std::string &protoc_pkg = join(ns, '.');
+    const std::string &proto_pkg = join(ns, '.');
 
     // Read the list of variables
 
@@ -139,10 +126,10 @@ int main(int argc, const char **argv) {
         }
     } visitor{tree};
 
-    find_shared_decls(compiler_opts, compiler_files, visitor);
+    find_shared_decls(further_compile_options, input_files, visitor);
 
     // Write the protoc file
-    update_protoc_file(protoc_file, tree, protoc_pkg);
+    update_protoc_file(proto_file, tree, proto_pkg);
 
     // Write cpp files
     update_cpp_tree_server_impl(hpp_file, cpp_file, tree, ns);

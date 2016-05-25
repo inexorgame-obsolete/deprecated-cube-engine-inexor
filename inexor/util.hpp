@@ -82,9 +82,6 @@ namespace util {
 /// assignment right side or in the
 /// constructors/destructors.
 ///
-/// Stolen from google test: see GTEST_ATTRIBUTE_UNUSED_
-///
-/// TODO: There probably is a boost version; use that!
 #if defined(__GNUC__) && !defined(COMPILER_ICC)
     #define INEXOR_ATTR_UNUSED __attribute__ ((unused))
 #else

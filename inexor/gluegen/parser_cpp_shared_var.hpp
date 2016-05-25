@@ -88,17 +88,13 @@ struct SharedDeclVisitor {
 ///
 /// At the moment this is any SharedVar declaration.
 ///
-/// @param opt The list of options to pass to clang++
-/// @param src The list of source files to search in
+/// @param options The list of options to pass to clang++
+/// @param sources The list of source files to search in
 /// @param cb  Callback; the visitor to invoke when something is found
-/// @tparam OptRange any Range (must define begin and end)
-/// @tparam SourceRange any RangeA
 /// @tparam Visitor Must implement the same interface as SharedDeclVisitor
-template<typename OptRange, typename SourceRange, typename Visitor>
-void find_shared_decls(
-        const OptRange &opt
-      , const SourceRange &src
-      , Visitor &cb__) {
+template<typename Visitor>
+void find_shared_decls(const std::vector<std::string> &options, const std::vector<std::string> &sources, Visitor &cb__)
+{
 
     // TODO: This is terrible; hack so we can pass this to the
     // InxVisitor; we should find something where we could
@@ -106,38 +102,40 @@ void find_shared_decls(
     thread_local Visitor &cb = cb__;
 
     // TODO: This is all very
-    struct InxVisitor : clang::RecursiveASTVisitor<InxVisitor> {
+    struct InxVisitor : clang::RecursiveASTVisitor<InxVisitor>
+    {
     public:
-        bool VisitDecl(clang::Decl *x) {
-          auto *xv = dynamic_cast<clang::VarDecl*>(x);
-          if (!xv || xv->hasExternalStorage()) return true;
-          const auto *bt = xv->getType().getTypePtrOrNull();
-          if (!bt) return true;
-          auto *tt = bt->getAs<clang::TemplateSpecializationType>();
-          if (!tt) return true;
-          auto *tmpl = tt->getTemplateName().getAsTemplateDecl();
-          std::string tmpl_name = intern::canonical_decl(tmpl);
-          if (tmpl_name != "::SharedVar") return true;
+        bool VisitDecl(clang::Decl *x)
+        {
+            auto *xv = dynamic_cast<clang::VarDecl*>(x);
+            if (!xv || xv->hasExternalStorage()) return true;
+            const auto *bt = xv->getType().getTypePtrOrNull();
+            if (!bt) return true;
+            auto *tt = bt->getAs<clang::TemplateSpecializationType>();
+            if (!tt) return true;
+            auto *tmpl = tt->getTemplateName().getAsTemplateDecl();
+            std::string tmpl_name = intern::canonical_decl(tmpl);
+            if (tmpl_name != "::SharedVar") return true;
 
-          std::string tree_path="";
-          intern::extract_named_annotations(
+            std::string tree_path="";
+            intern::extract_named_annotations(
                 x->getAttrs()
-              , [&tree_path](std::string key, std::string val) {
+                , [&tree_path](std::string key, std::string val) {
 
                 if (key == "SharedTree") {
                     tree_path = val;
                     return false;
                 }
                 return true;
-          });
+            });
 
-          cb.shared_var(
+            cb.shared_var(
                 tt->getArg(0).getAsType().getAsString() // cpp type
-              , intern::canonical_decl(xv) // cpp canonical name
-              , tree_path
-          );
+                , intern::canonical_decl(xv) // cpp canonical name
+                , tree_path
+            );
 
-          return true;
+            return true;
         }
     };
 
@@ -157,15 +155,9 @@ void find_shared_decls(
         }
     };
 
-    // TODO: Damn llvm for their Array Ref requiring contiguous memory
-    // (use an optimization for contiguous memory when we have the iterators)
-    std::vector<std::string>
-          opt_buf{ opt.begin(), opt.end() }
-        , src_buf{ src.begin(), src.end() };
-
     llvm::cl::OptionCategory clang_category("inexor-tree-api-generator");
-    clang::tooling::FixedCompilationDatabase cdb{ ".", opt_buf };
-    clang::tooling::ClangTool tool{ cdb, src_buf };
+    clang::tooling::FixedCompilationDatabase cdb{ ".", options };
+    clang::tooling::ClangTool tool{ cdb, sources };
 
     tool.run(clang::tooling::newFrontendActionFactory<InxFrontendAction>().get());
 }
