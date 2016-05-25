@@ -26,9 +26,7 @@
 
 using grpc::Channel;
 using grpc::ClientContext;
-using grpc::ClientReader;
-using grpc::ClientReaderWriter;
-using grpc::ClientWriter;
+using grpc::ClientAsyncReaderWriter;
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
@@ -150,6 +148,8 @@ public:
     {
         grpc_server->Shutdown();
         cq->Shutdown();                       // Always shutdown the completion queue after the server.
+        delete reader;
+        delete writer;
     }
 
     /// Wait for a client to connect on this address.
@@ -170,10 +170,10 @@ public:
         GPR_ASSERT(writer != nullptr && reader != nullptr);
 
         std::vector<std::string> testservermsgs{
-            "First servermsg",
-            "Second servermsg",
-            "Third servermsg",
-            "Fourth servermsg"
+            "1. server2client message",
+            "2. server2client message",
+            "3. server2client message",
+            "4. server2client message"
         };
 
         reader->startreading();
@@ -201,12 +201,12 @@ public:
 
                 if(completed->type == CallInstance::WRITER)
                 {
-                    spdlog::get("global")->info() << "[Server] Sent " << completed->change.path();
+                    spdlog::get("global")->info() << "[Server] Sent: " << completed->change.path();
                     completed->isbusy = false;
                 }
                 else
                 {
-                    spdlog::get("global")->info() << "[Server] Received " << completed->change.path();
+                    spdlog::get("global")->info() << "[Server] Received: " << completed->change.path();
                     net2main_interthread_queue.enqueue(completed->change.path());
                     reader->startreading(); // request new read
                 }
@@ -258,51 +258,81 @@ class RouteGuideClient
 {
 private:
 
-    std::unique_ptr<TreeService::Stub> stub_;
-    ClientContext context;
+
 
 public:
-    std::shared_ptr<ClientReaderWriter<ChangedValue, ChangedValue> > stream;
-    RouteGuideClient(std::shared_ptr<Channel> channel)
-        : stub_(TreeService::NewStub(channel)), stream(stub_->Synchronize(&context))
-    {
-    }
 
     void RouteChat()
     {
-        std::thread writer([this]()
-        {
-            std::vector<ChangedValue> notes{
-                MakeChangedValue("First message"),
-                MakeChangedValue("Second message"),
-                MakeChangedValue("Third message"),
-                MakeChangedValue("Fourth message")
-            };
-            for (const ChangedValue& note : notes) {
-                spdlog::get("global")->info() << "[Client] Sending message " << note.path();
-                stream->Write(note);
-            }
+        std::shared_ptr<Channel> channel(grpc::CreateChannel("localhost:50051", grpc::InsecureChannelCredentials()));
+        std::unique_ptr<TreeService::Stub> stub_(TreeService::NewStub(channel));
+        ClientContext context;
+        CompletionQueue cq;
 
-            stream->WritesDone();
-        });
-        ChangedValue new_value;
-        while (stream->Read(&new_value))
+        std::unique_ptr<ClientAsyncReaderWriter<ChangedValue, ChangedValue> > stream(stub_->AsyncSynchronize(&context, &cq, (void *) 2));
+
+        /// Wait for connection
+        void *tag;
+        bool ok = false;
+        cq.Next(&tag, &ok);
+        // ASSERT(ok && tag == (void *)2)
+        ///
+
         {
-            spdlog::get("global")->info() << "[Client] Received message " << new_value.path();
+            const int writetag = 4;
+            const int readtag =  3;
+
+            const std::vector<ChangedValue> testclientmsgs{
+                MakeChangedValue("1. client2server message"),
+                MakeChangedValue("2. client2server message"),
+                MakeChangedValue("3. client2server message"),
+                MakeChangedValue("4. client2server message")
+            };
+            auto msgiterator = testclientmsgs.begin();
+            ChangedValue receivedvalue;
+
+            stream->Write(*msgiterator, (void *)writetag);
+            stream->Read(&receivedvalue, (void *)readtag);
+
+            void *tag;
+            bool ok = false;
+            while(true)
+            {
+                cq.Next(&tag, &ok);
+                if(!ok)
+                {
+                    spdlog::get("global")->info() << "[Client] Not okay: tag = " << (int)tag;
+                    return;
+                }
+                if(tag == (void *)writetag)
+                {
+                    spdlog::get("global")->info() << "[Client] Sent: " << msgiterator->path();
+                    msgiterator++;
+                    if(msgiterator != testclientmsgs.end())
+                    {
+                        stream->Write(*msgiterator, (void *)writetag);
+                    }
+                }
+                else if(tag == (void *)readtag)
+                {
+                    spdlog::get("global")->info() << "[Client] Received: " << receivedvalue.path();
+                    stream->Read(&receivedvalue, (void *)readtag);
+                }
+              //  stream->WritesDone();
+            }
         }
-        writer.join();
-        //Status status = stream->Finish();
-        //if (!status.ok()) {
-        //    spdlog::get("global")->info() << "RouteChat rpc failed.";
-        //}
     }
 };
 
 void clientrpc()
 {
-    RouteGuideClient *guide = new RouteGuideClient(grpc::CreateChannel("localhost:50051", grpc::InsecureChannelCredentials()));
+    std::thread t([]
+    {
+        RouteGuideClient *guide = new RouteGuideClient();
 
-    guide->RouteChat();
+        guide->RouteChat();
+    });
+    t.detach();
 }
 
 
