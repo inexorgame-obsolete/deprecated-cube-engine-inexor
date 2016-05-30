@@ -77,7 +77,7 @@ option1:
 
 moodycamel::ConcurrentQueue<std::string> main2net_interthread_queue; // Something gets pushed on this (lockless threadsafe queue) when we changed value. Gets handled by serverthread.
 moodycamel::ConcurrentQueue<std::string> net2main_interthread_queue; // Something gets pushed on this (lockless threadsafe queue) when a value has arrived. Gets handled by Subsystem::tick();
-
+std::atomic_bool serverstarted = false;
 
 ChangedValue MakeChangedValue(const char *path)
 {
@@ -142,6 +142,7 @@ public:
         cq = builder.AddCompletionQueue();
 
         grpc_server = builder.BuildAndStart();
+        serverstarted = true;
     }
 
     ~BiDiServer()
@@ -179,23 +180,30 @@ public:
         reader->startreading();
 
         int i = 0;
-        while(true)
+        while(serverstarted)
         {
+            std::string queueout;
             if(!writer->isbusy && i < 4)
             {
                 writer->isbusy = true;
                 writer->startwrite(testservermsgs[i]);
                 i++;
             }
+            else if(!writer->isbusy && main2net_interthread_queue.try_dequeue(queueout))
+            {
+                writer->startwrite(queueout);
+            }
 
             void *tag;
             bool succeed=false;
-            if(!cq->Next(&tag, &succeed))
+            
+            CompletionQueue::NextStatus stat = cq->AsyncNext(&tag, &succeed, gpr_inf_past(GPR_CLOCK_REALTIME));
+            if(stat == CompletionQueue::NextStatus::SHUTDOWN)
             {
-                spdlog::get("global")->info() << "RPC state syncing failed: Client did shutdown(?)";
+                spdlog::get("global")->info() << "RPC state syncing failed: Client did shutdown";
                 break;
             }
-            else if(succeed)
+            else if(stat == CompletionQueue::NextStatus::GOT_EVENT && succeed)
             {
                 CallInstance *completed = static_cast<CallInstance*>(tag);
 
@@ -211,7 +219,7 @@ public:
                     reader->startreading(); // request new read
                 }
             }
-            else // we do not always succeed.. WHY? probably timeout.. change to cq-AsyncNext() to finetune.
+            else if(stat != CompletionQueue::NextStatus::TIMEOUT)
             {
                 CallInstance *call = static_cast<CallInstance*>(tag);
                 spdlog::get("global")->info() << "[Server] received msg  was incomplete for " << (call->type == CallInstance::WRITER ? "writer" : "reader") << " .. Shutting down";
@@ -232,6 +240,10 @@ public:
     }
 };
 
+void StopServer()
+{
+    serverstarted = false;
+}
 void RunServer()
 {
 
@@ -248,6 +260,14 @@ void RunServer()
     }
     );
     t.detach();
+}
+
+void sendtestmessage(const char *message)
+{
+    std::string gotback;
+    if(net2main_interthread_queue.try_dequeue(gotback))
+        spdlog::get("global")->info() << "Mainthread: " << gotback;
+    main2net_interthread_queue.enqueue(message);
 }
 
 //////// Client
@@ -301,7 +321,7 @@ public:
                 cq.Next(&tag, &ok);
                 if(!ok)
                 {
-                    spdlog::get("global")->info() << "[Client] Not okay: tag = " << (int)tag;
+                    spdlog::get("global")->info() << "[Client] Not okay: for = " << ((tag == (void *)writetag) ? "writer" : "reader");
                     return;
                 }
                 if(tag == (void *)writetag)

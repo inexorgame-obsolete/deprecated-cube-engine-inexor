@@ -64,12 +64,13 @@ void cleanup()
 
     SDL_Quit();
 }
-
+extern void StopServer();
 /// normal game quit
 /// @see fatal
 /// @see cleanup
 void quit()
 {
+    StopServer();
     // CefShutdown();
     writeinitcfg();
     writeservercfg();
@@ -1214,7 +1215,8 @@ ICOMMANDERR(logformat, "ss", (char *logger_name, char *pattern),
     logging.setLogFormat(logger_name_s, pattern_s)
 );
 
-
+extern void sendtestmessage(const char *message);
+COMMAND(sendtestmessage, "s");
 extern void RunServer();
 COMMAND(RunServer, "");
 extern void clientrpc();
