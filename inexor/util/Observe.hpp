@@ -40,10 +40,6 @@ namespace util {
 /// ```
 /// Observe<int> oi = 22;
 ///
-/// int sum(int &i, int &k) {
-///     return i+k;
-/// }
-///
 /// oi.onChange.connect([] (const int &a, const int &b)
 ///     {
 ///         spdlog::get("global")->info("hey we changed! (old: {} new: {}", a, b);
