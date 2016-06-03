@@ -59,8 +59,11 @@ message Global
 message ChangedValue
 {
   // The path to the item in the tree.
-  string path = 1;
-//  Value newvalue = 2;
+  oneof oneofdata {
+
+  string prefabdir = 1;
+  int32 fullscreen = 2;
+  }
 }
 
 

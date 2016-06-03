@@ -1215,8 +1215,8 @@ ICOMMANDERR(logformat, "ss", (char *logger_name, char *pattern),
     logging.setLogFormat(logger_name_s, pattern_s)
 );
 
-extern void sendtestmessage(const char *message);
-COMMAND(sendtestmessage, "s");
+extern void main_handle_message();
+COMMAND(main_handle_message, "");
 extern void RunServer();
 COMMAND(RunServer, "");
 extern void clientrpc();
@@ -1232,6 +1232,8 @@ int main(int argc, char **argv)
     int dedicated = 0;
     char *load = NULL, *initscript = NULL;
 
+    extern void connectall();
+    connectall();
 
     initing = INIT_RESET;
     for(int i = 1; i<argc; i++)

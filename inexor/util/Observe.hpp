@@ -163,6 +163,22 @@ public:
     ASGN(>>);
 
 #undef ASGN
+
+    // Test usage only, to not get caught in endless loop
+    void setnosync(const char *c)
+    {
+        value = c;
+    }
+
+    void setnosync(const T &otr)
+    {
+        value = otr;
+    }
+
+    void setnosync(T &&otr)
+    {
+        value = std::move(otr);
+    }
 };
 
 // Output Operator
