@@ -41,7 +41,7 @@ using grpc::ServerWriter;
 using grpc::Status;
 using grpc::CompletionQueue;
 using grpc::ServerCompletionQueue;
-using inexor::tree::ChangedValue;
+using inexor::tree::TreeNodeChanged;
 using inexor::tree::TreeService;
 
 using std::string;
@@ -67,7 +67,7 @@ struct net2maintupel
     }
 };
 
-moodycamel::ConcurrentQueue<ChangedValue>  main2net_interthread_queue; // Something gets pushed on this (lockless threadsafe queue) when we changed values. Gets handled by serverthread.
+moodycamel::ConcurrentQueue<TreeNodeChanged>  main2net_interthread_queue; // Something gets pushed on this (lockless threadsafe queue) when we changed values. Gets handled by serverthread.
 moodycamel::ConcurrentQueue<net2maintupel> net2main_interthread_queue; // Something gets pushed on this (lockless threadsafe queue) when a value has arrived. Gets handled by Subsystem::tick();
 std::atomic_bool serverstarted = false;
 
@@ -80,7 +80,7 @@ void connectall()
 {
     auto lambdaprefabdir = [](const char *oldvalue, const char *newvalue)
     {
-        ChangedValue val;
+        TreeNodeChanged val;
         val.set_prefabdir(newvalue);
         main2net_interthread_queue.enqueue(std::move(val));
     };
@@ -102,7 +102,7 @@ const std::unordered_map<int64, FldDesc::CppType> index_to_type_map
 };
 
 // This one too:
-void connectnet2main(ChangedValue &receivedval)
+void connectnet2main(TreeNodeChanged &receivedval)
 {
 
     int64 index = receivedval.oneofdata_case();
@@ -127,7 +127,7 @@ void connectnet2main(ChangedValue &receivedval)
     //DATA_TYPES type = receivedtype_itr->second;
 
     //security layer in switch case (generated).
-    // bool allow_update = checkaccesslevels(ChangedValue &val);
+    // bool allow_update = checkaccesslevels(TreeNodeChanged &val);
 
     auto type = expected_type_itr->second;
     auto field = receivedval.GetDescriptor()->FindFieldByNumber(index);
@@ -172,7 +172,7 @@ class BiDiServer
     std::unique_ptr<ServerCompletionQueue> cq;
 
     /// The stream we write into / receive data from (asynchronously).
-    ServerAsyncReaderWriter<ChangedValue, ChangedValue> stream;
+    ServerAsyncReaderWriter<TreeNodeChanged, TreeNodeChanged> stream;
 
     /// Either a reading or writing request
     struct CallInstance
@@ -180,18 +180,18 @@ class BiDiServer
         enum TYPES { READER, WRITER } type;
 
         bool isbusy = false;                    // only filled when request was write: workaround for grpc behavior to only allow one write at a time. 
-        ChangedValue change;                    // the read will fill this on completion, the write filled it for later reference when requesting the async write.
+        TreeNodeChanged change;                    // the read will fill this on completion, the write filled it for later reference when requesting the async write.
 
-        ServerAsyncReaderWriter<ChangedValue, ChangedValue> *stream;
+        ServerAsyncReaderWriter<TreeNodeChanged, TreeNodeChanged> *stream;
 
-        CallInstance(TYPES type_, ServerAsyncReaderWriter<ChangedValue, ChangedValue> *stream_) : type(type_), stream(stream_) {}
+        CallInstance(TYPES type_, ServerAsyncReaderWriter<TreeNodeChanged, TreeNodeChanged> *stream_) : type(type_), stream(stream_) {}
 
         void startreading()
         {
             stream->Read(&change, (void *)this); // we pass the address of this class as the callback tag we retrieve on completion from cq.Next()
         }
 
-        void startwrite(ChangedValue &&newval)
+        void startwrite(TreeNodeChanged &&newval)
         {
             change = std::move(newval);
             stream->Write(change, (void *)this);
@@ -251,7 +251,7 @@ public:
 
             if(!writer->isbusy)
             {
-                ChangedValue nextsenditem;
+                TreeNodeChanged nextsenditem;
                 if(main2net_interthread_queue.try_dequeue(nextsenditem))
                 {
                     writer->startwrite(std::move(nextsenditem));
@@ -355,7 +355,7 @@ void main_handle_message()
         }
         }
     }
-    //ChangedValue c;
+    //TreeNodeChanged c;
     //c.set_otherpath("heyho!");
     //int ind =  c.oneofdata_case();
     //spdlog::get("global")->info() << "index no2?: " << ind;
@@ -369,9 +369,9 @@ void main_handle_message()
 class RouteGuideClient
 {
 private:
-    ChangedValue maketestmsg_prefabdir()
+    TreeNodeChanged maketestmsg_prefabdir()
     {
-        ChangedValue t;
+        TreeNodeChanged t;
         t.set_prefabdir("prefabtestmessage");
         return t;
     }
@@ -386,7 +386,7 @@ public:
         ClientContext context;
         CompletionQueue cq;
 
-        std::unique_ptr<ClientAsyncReaderWriter<ChangedValue, ChangedValue> > stream(stub_->AsyncSynchronize(&context, &cq, (void *) 2));
+        std::unique_ptr<ClientAsyncReaderWriter<TreeNodeChanged, TreeNodeChanged> > stream(stub_->AsyncSynchronize(&context, &cq, (void *) 2));
 
         /// Wait for connection
         void *tag;
@@ -399,7 +399,7 @@ public:
             const int writetag = 4;
             const int readtag =  3;
 
-            ChangedValue receivedvalue;
+            TreeNodeChanged receivedvalue;
 
             stream->Write(maketestmsg_prefabdir(), (void *)writetag);
             stream->Read(&receivedvalue, (void *)readtag);

@@ -1,4 +1,5 @@
 syntax = "proto3";
+import "google/protobuf/descriptor.proto";
 
 package inexor.tree;
 
@@ -8,63 +9,22 @@ service TreeService
   // 
   // Accepts and reads a stream of changed values from clientside, while responding with an (independent) stream of changed value messages itself.
   // The first messages will be the metadata.
-  rpc Synchronize(stream ChangedValue) returns (stream ChangedValue) {}
+  rpc Synchronize(stream TreeNodeChanged) returns (stream TreeNodeChanged) {}
 }
 
-/*
-// Example for generated messages:
-// Option A:
-
-message game {
-  oneof game {
-    string otherthing = 1;
-    string innerthing = 2;
-  }
-}
-message Value
-{
-  oneof cubescript
-  {
-     game game = 1;
-     string mainpath = 2;
-     int32 fullscreen = 3;
-  }
-}
-// advantages: compile time info about the tree (you could write your scripts offline and still now every member you got).
-// disadvantages: maybe speed? (messages could be deeply nested, destroys purpose of oneofs doesnt it?
-//                still needs a wrapper as well, since access is terrible: Value.cubescript.game.game.otherthing = "hello";
-//                (but i assume we need one anyways)
-
-
-// Option B (everything in one giant oneof):
-message Global
-{
-  oneof cubescript
-  {
-    string otherthing = 1;      // or maybe sth like 'game_otherthing' (to also know the tree structure at compile time)
-    string innerthing = 2;      // or maybe some other way to distinct the tree structure <-> variable connection?
-    string mainpath = 3;        // like e.g. another message with the info, or some kind of generic but compile-time descriptor in protobuf?
-    int32 fullscreen = 3;
-  }
-  // eventually here another message like:
-  // int64 field_xy_is_set (to not iterate over whole message if grpc/protobuf doesnt support it (or maybe they have the kind of descriptor we need)
-}
-
-// advantages: maybe speed? needs measurements probably
-// disadvantages: maybe needs metainformation send initially by the server to build the tree structure which would be stupid, although grpc supports that well.
-//                (would be stupid: wouldnt be available for offline scripting)
-*/
-
-
-message ChangedValue
+message TreeNodeChanged
 {
   // The path to the item in the tree.
-  oneof oneofdata {
-
-  string prefabdir = 1;
-  int32 fullscreen = 2;
+  oneof key {
+    string prefabdir = 1 [(path) = "/cubescript/prefabdir"];
+    int32 fullscreen = 2 [(path) = "/cubescript/fullscreen"];
   }
 }
 
-
+/// We use extended options for saving metadata along the protocol.
+extend google.protobuf.FieldOptions
+{
+  /// The path to the item in the tree.
+  string path = 50000;
+}
 
