@@ -1,0 +1,30 @@
+{{file_comment}} {{!
+  This is the input mustache-template for our state syncing machines protocol (.proto) file.
+  Instead of modifying the generated .proto you should modify this file.
+  Generation takes place on each build of Inexor.
+  For more info about how to use this template engine, read the manual of mustache (its easy).
+}}
+
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+
+{{#shared_vars}} {{cpp_name}} {{proto_type}}
+{{/shared_vars}}
+
+package {{package}};
+
+message TreeNodeChanged
+{
+  oneof key {
+{{#shared_vars}}    {{proto_type}} {{unique_name}} = {{index}}    [(path) = "{{path}}"];
+{{/shared_vars}}
+  }
+}
+
+/// We use extended options for saving metadata along the protocol.
+extend google.protobuf.FieldOptions
+{
+  /// The path to the item in the tree.
+  string path = 50000;
+}

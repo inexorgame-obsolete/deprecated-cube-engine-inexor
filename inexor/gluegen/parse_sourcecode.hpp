@@ -105,6 +105,7 @@ void find_shared_decls(const std::vector<std::string> &options, const std::vecto
     struct InxVisitor : clang::RecursiveASTVisitor<InxVisitor>
     {
     public:
+
         bool VisitDecl(clang::Decl *x)
         {
             auto *xv = dynamic_cast<clang::VarDecl*>(x);
@@ -118,11 +119,11 @@ void find_shared_decls(const std::vector<std::string> &options, const std::vecto
             if (tmpl_name != "::SharedVar") return true;
 
             std::string tree_path="";
-            intern::extract_named_annotations(
-                x->getAttrs()
-                , [&tree_path](std::string key, std::string val) {
 
-                if (key == "SharedTree") {
+            intern::extract_named_annotations(x->getAttrs(), [&tree_path] (std::string key, std::string val)
+            {
+                if (key == "SharedTree")
+                {
                     tree_path = val;
                     return false;
                 }
@@ -130,9 +131,9 @@ void find_shared_decls(const std::vector<std::string> &options, const std::vecto
             });
 
             cb.shared_var(
-                tt->getArg(0).getAsType().getAsString() // cpp type
-                , intern::canonical_decl(xv) // cpp canonical name
-                , tree_path
+                tt->getArg(0).getAsType().getAsString(), // cpp type
+                intern::canonical_decl(xv), // cpp canonical name
+                tree_path
             );
 
             return true;
@@ -142,15 +143,16 @@ void find_shared_decls(const std::vector<std::string> &options, const std::vecto
     struct InxASTConsumer : clang::ASTConsumer {
         InxVisitor ast_visitor;
 
-        virtual void HandleTranslationUnit(clang::ASTContext &context) {
+        virtual void HandleTranslationUnit(clang::ASTContext &context) override
+        {
             ast_visitor.TraverseDecl(context.getTranslationUnitDecl());
         }
     };
 
-    struct InxFrontendAction : clang::ASTFrontendAction {
-        std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(
-                clang::CompilerInstance &CI INEXOR_ATTR_UNUSED
-              , clang::StringRef file INEXOR_ATTR_UNUSED) {
+    struct InxFrontendAction : clang::ASTFrontendAction 
+    {
+        std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(clang::CompilerInstance &CI, clang::StringRef file)
+        {
             return std::unique_ptr<clang::ASTConsumer>{ new InxASTConsumer{} };
         }
     };

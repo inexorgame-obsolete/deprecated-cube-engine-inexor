@@ -234,7 +234,8 @@ function(require_asio targ)
   if (";${ARGN};" MATCHES ";NOLINK;")
     set(NOLINK "NOLINK")
   endif()
-
+  
+  add_definitions(-DBOOST_ASIO_HAS_STD_CHRONO)
   include_directories(${ASIO_INCLUDE_DIRS})
 
   if (WIN32)

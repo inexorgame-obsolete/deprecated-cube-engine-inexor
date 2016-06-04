@@ -34,15 +34,14 @@ public:
     /// equivalents
     //static const std::unordered_map<cpp_type_t, std::string> protoc_types;
 
-    /// The canonical name (including ::) of the inexor c++
-    /// variable
+    /// The canonical name (including ::) of the inexor c++ variable
     std::string cpp_var;
 
     /// Path of the variable inside the tree
     std::string path;
 
-    /// Path but not containing any slashes
-    std::string mangled_path;
+    /// name with prepended namespace, connected with underspaces.
+    std::string unique_name;
 
     /// The type literal of the c++ type
     std::string type_lit;
@@ -79,7 +78,7 @@ public:
 private:
     void _init_mangled_path() {
         using boost::algorithm::replace_all_copy;
-        mangled_path = replace_all_copy(path, "/", "_");
+        unique_name = replace_all_copy(path, "/", "_");
     }
 
     void _init_type(const std::string &type_decl) {

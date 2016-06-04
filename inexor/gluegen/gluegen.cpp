@@ -11,52 +11,34 @@
 #include <clang/Tooling/CommonOptionsParser.h>
 
 #include "inexor/gluegen/tree.hpp"
-#include "inexor/gluegen/parser_cpp_shared_var.hpp"
-#include "inexor/gluegen/generator_protoc.hpp"
-#include "inexor/gluegen/generator_cpp_tree_adapter.hpp"
+#include "inexor/gluegen/parse_sourcecode.hpp"
+#include "inexor/gluegen/generate_files.hpp"
+#include "inexor/gluegen/fill_templatedata.hpp"
+
 
 using namespace inexor::rpc::gluegen;
 namespace po = boost::program_options;
 using std::string;
 using std::vector;
 
-template<typename SinglePassRange, typename Delim>
-std::string join(SinglePassRange r, Delim d) {
-    std::stringstream s;
-    bool first = true;
-    for (auto &e : r) {
-        if (first)
-            first = false;
-        else
-            s << d;
-        s << e;
-    }
-    return s.str();
-}
-
 void usage(const std::string &ex, const po::options_description &params) {
     std::cerr
         << "Inexor gluegen       Generates the glue code for the tree API."
         << "\n\nEXAMPLES"
-        << "\n  (1) " << ex << " --help"
-        << "\n  (2) " << ex << " --out-proto FILE --out-source FILE --out-header FILE --namespace NAMESPACE \"CLANG_OPTIONS\" --parse-file FILE"
-        << "\n  (3) " << ex << " --out-proto FILE --out-source FILE --out-header FILE --namespace NAMESPACE \"CLANG_OPTIONS\" --parse-file FILE1 --parse-file FILE2 --parse-file FILE3"
-        << "\n  (4) " << ex << " --out-proto FILE --out-source FILE --out-header FILE --namespace NAMESPACE \"CLANG_OPTIONS\" --parse-file FILE1 FILE2 FILE3"
-        << "\n\nDESCRIPTION"
+        << "\n\n  (1) " << ex << " --help"
+        << "\n\n  (2) " << ex << " --out-proto FILE --out-header FILE --template-proto FILE --template-header FILE --namespace NAMESPACE \"CLANG_OPTIONS\" --parse-file FILE"
+        << "\n\n  (3) " << ex << " --out-proto FILE --out-header FILE --template-proto FILE --template-header FILE --namespace NAMESPACE \"CLANG_OPTIONS\" --parse-file FILE1 --parse-file FILE2 --parse-file FILE3"
+        << "\n\n  (4) " << ex << " --out-proto FILE --out-header FILE --template-proto FILE --template-header FILE --namespace NAMESPACE \"CLANG_OPTIONS\" --parse-file FILE1 FILE2 FILE3"
+        << "\n\n\nDESCRIPTION"
         << "\n  (1) Show this help page"
         << "\n  (2) Generate the glue code. Note the quotes around the compile-options list."
-        << "\n      CLANG_OPTIONS are the clang compile flags and definitions we need to parse/\"compile\" the given input files with, add them as usual."
+        << "\n      CLANG_OPTIONS are the clang compile flags and definitions we need to parse/\"compile\" the given input files with. Add them as usual."
         << "\n      Note: Options are order independent, so the position of the arguments do not matter (not even for the clang compile flags and definitions)."
         << "\n  (3) Generate the glue code, but specify multiple input files"
-        << "\n  (4) Same as example 3 but different syntax."
-        << "\n\n" << params << "\n";
+        << "\n  (4) Same as example 3 but different input syntax for --parse-file."
+        << "\n\n\n" << params << "\n";
 }
 
-// TODO: Boost::find should also provide the std::find
-// interface
-// TODO: Move this to our own algorithm library?
-using std::find;
-using boost::find;
 
 int main(int argc, const char **argv) {
 
@@ -69,7 +51,8 @@ int main(int argc, const char **argv) {
         ("namespace", po::value<string>(), "The namespace to use in the generated protocol file and c++ source files. (use C++ :: notation)")
         ("out-proto", po::value<string>(), "The .proto file to write the protocol description to.")
         ("out-header", po::value<string>(), "The header `.hpp` file the c++ tree adapter code should be generated in")
-        ("out-source", po::value<string>(), "The source `.cpp` file the c++ tree adapter code should be generated in")
+        ("template-proto", po::value<string>(), "The mustache template which gets used to render(generate) the .proto file")
+        ("template-header", po::value<string>(), "The mustache template which gets used to render(generate) the '.hpp' header file")
         ("parse-file", po::value<std::vector<string>>(), "The source file to scan for Inexor shared variables");
 
     std::string exec{argv[0]};
@@ -95,25 +78,19 @@ int main(int argc, const char **argv) {
         return cli_config.count(s);
     };
 
-    if(c("help") || !c("namespace") || !c("out-proto") || !c("out-header") || !c("out-source") || !c("parse-file"))
+    if(c("help") || !c("namespace") || !c("out-proto") || !c("out-header") || !c("parse-file") 
+                 || !c("template-proto") || !c("template-header"))
     {
         usage(exec, params);
         return 0;
     }
 
-    using boost::regex;
-    using boost::split_regex;
-
     const string &ns_str = cli_config["namespace"].as<string>();
     const string &proto_file = cli_config["out-proto"].as<string>();
     const string &hpp_file = cli_config["out-header"].as<string>();
-    const string &cpp_file = cli_config["out-source"].as<string>();
+    const string &hpp_template = cli_config["template-header"].as<string>();
+    const string &proto_template = cli_config["template-proto"].as<string>();
     const vector<string> &input_files = cli_config["parse-file"].as<vector<string>>();
-
-    // namespace string -> protobuf syntax: replace :: with .
-    std::vector<string> ns;
-    split_regex(ns, ns_str, regex("::"));
-    const std::string &proto_pkg = join(ns, '.');
 
     // Read the list of variables
 
@@ -128,11 +105,13 @@ int main(int argc, const char **argv) {
 
     find_shared_decls(further_compile_options, input_files, visitor);
 
+    TemplateData templdata = fill_templatedata(tree, ns_str);
+
     // Write the protoc file
-    update_protoc_file(proto_file, tree, proto_pkg);
+    render_proto_file(proto_file, proto_template, tree, templdata);
 
     // Write cpp files
-    update_cpp_tree_server_impl(hpp_file, cpp_file, tree, ns);
+    render_cpp_tree_header(hpp_file, hpp_template, tree, templdata);
 
     return 0;
 }
