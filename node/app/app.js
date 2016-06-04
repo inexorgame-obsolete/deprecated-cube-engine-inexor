@@ -39,6 +39,16 @@ var argv = require('yargs')
 
 var restify = require('restify');
 var bunyan = require('bunyan');
+var grpc = require('grpc');
+var Tree = require('./tree.js');
+var EditorSettings = require('./EditorSettings.js');
+var TreeTest = require('./treetest.js');
+
+// Create the inexor tree
+inexor = {};
+inexor.tree = new Tree(server, grpc);
+inexor.editorSettings = new EditorSettings();
+inexor.treeTest = new TreeTest(inexor.tree);
 
 streams = [
     {
@@ -65,8 +75,11 @@ var server = restify.createServer({
     version: '0.0.6'
 });
 
-//Extend logger using the plugin.
+// Extend logger using the plugin.
 server.use(restify.requestLogger());
+
+// Sanitize path
+server.pre(restify.pre.sanitizePath());
 
 // Use nginx-alike logging style: address, method, url, user-agent
 server.use(function(req, res, next) {
@@ -76,12 +89,21 @@ server.use(function(req, res, next) {
 
 server.use(restify.bodyParser()); // for parsing application/json
 
+// REST API for the inexor tree
+server.get("/tree/dump", inexor.tree.rest.dump);
+server.get(/^\/tree\/(.*)/, inexor.tree.rest.get);
+server.post(/^\/tree\/(.*)/, inexor.tree.rest.post);
+
 // Serve static files from the assets folder
 server.get(/.*/, restify.serveStatic({
     directory: 'public',
     default: 'index.html'
  }));
 
-server.listen(argv.port, argv.host, function () {
-    server.log.info('Inexor-Node-RPC listening on %s:%s', argv.host, argv.port);
+//Listen on server
+server.listen(argv.port, function () {
+	server.log.info('Inexor-Node-RPC listening on %s:%s', argv.host, argv.port);
 });
+//server.listen(argv.port, argv.host, function () {
+// server.log.info('Inexor-Node-RPC listening on %s:%s', argv.host, argv.port);
+//});
