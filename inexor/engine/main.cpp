@@ -64,13 +64,12 @@ void cleanup()
 
     SDL_Quit();
 }
-extern void StopServer();
+
 /// normal game quit
 /// @see fatal
 /// @see cleanup
 void quit()
 {
-    StopServer();
     // CefShutdown();
     writeinitcfg();
     writeservercfg();
@@ -1215,13 +1214,12 @@ ICOMMANDERR(logformat, "ss", (char *logger_name, char *pattern),
     logging.setLogFormat(logger_name_s, pattern_s)
 );
 
-extern void main_handle_message();
-COMMAND(main_handle_message, "");
-extern void RunServer();
-COMMAND(RunServer, "");
-extern void clientrpc();
-COMMAND(clientrpc, "");
-
+namespace inexor {
+namespace rpc {
+    extern void clientrpc();
+    COMMAND(clientrpc, "");
+}
+}
 
 int main(int argc, char **argv)
 {
@@ -1231,9 +1229,6 @@ int main(int argc, char **argv)
 
     int dedicated = 0;
     char *load = NULL, *initscript = NULL;
-
-    extern void connectall();
-    connectall();
 
     initing = INIT_RESET;
     for(int i = 1; i<argc; i++)
@@ -1251,7 +1246,7 @@ int main(int argc, char **argv)
 
     // require subsystems BEFORE configurations are done
     //Initialize the metasystem
-  //  SUBSYSTEM_REQUIRE(rpc); // remote process control: communication with the scripting engine
+    SUBSYSTEM_REQUIRE(rpc); // remote process control: communication with the scripting engine
     SUBSYSTEM_REQUIRE(cef); // (embedded chromium): ingame html5+js browser for the ui.
 
     execfile("init.cfg", false);
@@ -1427,8 +1422,8 @@ int main(int argc, char **argv)
     ignoremousemotion();
 
     //Initialize the metasystem
- //   SUBSYSTEM_REQUIRE(rpc);
-    SUBSYSTEM_REQUIRE(cef);
+    //SUBSYSTEM_REQUIRE(rpc);
+    //SUBSYSTEM_REQUIRE(cef);
 
 	// main game loop
     for(;;)

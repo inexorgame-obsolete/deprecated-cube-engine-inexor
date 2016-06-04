@@ -1,8 +1,4 @@
 
-
-#include <grpc++/grpc++.h>
-
-
 #include <chrono>
 #include <iostream>
 #include <memory>
@@ -14,10 +10,7 @@
 #include <string.h>
 
 #include <grpc/grpc.h>
-#include <grpc++/channel.h>
-#include <grpc++/client_context.h>
-#include <grpc++/create_channel.h>
-#include <grpc++/security/credentials.h>
+#include <grpc++/grpc++.h>
 
 #include <moodycamel/concurrentqueue.h>
 #include <moodycamel/blockingconcurrentqueue.h>
@@ -29,16 +22,19 @@
 #include "inexor/rpc/inexor_service.grpc.pb.h"
 
 
+extern SharedVar<char *> prefabdir; // no leading ::
+extern SharedVar<int> fullscreen;
+
+
+using namespace inexor::util;
+
 using grpc::Channel;
 using grpc::ClientContext;
 using grpc::ClientAsyncReaderWriter;
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
-using grpc::ServerReader;
 using grpc::ServerAsyncReaderWriter;
-using grpc::ServerWriter;
-using grpc::Status;
 using grpc::CompletionQueue;
 using grpc::ServerCompletionQueue;
 using inexor::tree::TreeNodeChanged;
@@ -49,42 +45,36 @@ typedef int64_t int64; // size is important for us, proto explicitly specifies i
 
 using FldDesc = google::protobuf::FieldDescriptor;
 
-struct net2maintupel
-{
-    // we pass a pointer to the variable instead of the variablename to the main thread (thats faster, and no mainthread function need to be generated).
-    // Note that the pointer is valid as long as we deal with static data only (sidenote for vectors).
-    void *ptr2var;
-    int type;
 
-    union {
-        std::string *valuestr;
-        int64 valueint;
-        float valuefloat;
-    };
-    ~net2maintupel()
-    {
-        //delete valuestr;
-    }
-};
+SUBSYSTEM_REGISTER(rpc, inexor::rpc::RpcSubsystem); // needs to be in no namespace!
+
+
+namespace inexor {
+namespace rpc {
+
+std::atomic_bool serverstarted = false;
 
 moodycamel::ConcurrentQueue<TreeNodeChanged>  main2net_interthread_queue; // Something gets pushed on this (lockless threadsafe queue) when we changed values. Gets handled by serverthread.
 moodycamel::ConcurrentQueue<net2maintupel> net2main_interthread_queue; // Something gets pushed on this (lockless threadsafe queue) when a value has arrived. Gets handled by Subsystem::tick();
-std::atomic_bool serverstarted = false;
 
 // This one gets generated
-extern SharedVar<char *> prefabdir; // no leading ::
-extern SharedVar<int> fullscreen;
-
-// this one too:
+class sharedvardata
+{
+public:
 void connectall()
 {
-    auto lambdaprefabdir = [](const char *oldvalue, const char *newvalue)
+    ::fullscreen.onChange.connect([](const int oldvalue, const int newvalue)
+    {
+        TreeNodeChanged val;
+        val.set_fullscreen(newvalue);
+        main2net_interthread_queue.enqueue(std::move(val));
+    });
+    ::prefabdir.onChange.connect([](const char *oldvalue, const char *newvalue)
     {
         TreeNodeChanged val;
         val.set_prefabdir(newvalue);
         main2net_interthread_queue.enqueue(std::move(val));
-    };
-    ::prefabdir.onChange.connect(lambdaprefabdir);
+    });
 }
 /// (proto)index -> pointer to the to-be-updated-variable.
 const std::unordered_map<int64, void *> cppvar_pointer_map 
@@ -100,18 +90,18 @@ const std::unordered_map<int64, FldDesc::CppType> index_to_type_map
     {1, FldDesc::CppType::CPPTYPE_STRING}, // prefabdir
     {2, FldDesc::CppType::CPPTYPE_INT64}   // fullscreen
 };
+} client_treedata;
 
-// This one too:
 void connectnet2main(TreeNodeChanged &receivedval)
 {
 
-    int64 index = receivedval.oneofdata_case();
+    int64 index = receivedval.key_case();
     assert(index > 0); // actually we'd need sth else than assert
 
-    auto ptr2variable_itr = cppvar_pointer_map.find(index);
-    auto expected_type_itr = index_to_type_map.find(index);
+    auto ptr2variable_itr = client_treedata.cppvar_pointer_map.find(index);
+    auto expected_type_itr = client_treedata.index_to_type_map.find(index);
 
-    if(ptr2variable_itr == cppvar_pointer_map.end() || expected_type_itr == index_to_type_map.end())
+    if(ptr2variable_itr == client_treedata.cppvar_pointer_map.end() || expected_type_itr == client_treedata.index_to_type_map.end())
     {
         spdlog::get("global")->info() << "network: received non-supported index: " << index; // -> to debug
         return;
@@ -138,22 +128,22 @@ void connectnet2main(TreeNodeChanged &receivedval)
 
     switch(type)
     { // TODO: renew this passage to generated shit for every variable to get rid of (runtime?) reflection (only in case its runtime reflection ofc)
-        case FldDesc::CppType::CPPTYPE_STRING:
-        { 
-            queuetupel.valuestr = new std::string(receivedval.GetReflection()->GetString(receivedval, field));; //TODO: THIS MEMORY MANAGMENT SUCKS!
-            break;
-        }
-        case FldDesc::CppType::CPPTYPE_INT64:
-        case FldDesc::CppType::CPPTYPE_INT32:
-        {
-            queuetupel.valueint = receivedval.GetReflection()->GetInt64(receivedval, field);
-            break;
-        }
-        case FldDesc::CppType::CPPTYPE_FLOAT:
-        {
-            queuetupel.valuefloat = receivedval.GetReflection()->GetFloat(receivedval, field);
-            break;
-        }
+    case FldDesc::CppType::CPPTYPE_STRING:
+    {
+        queuetupel.valuestr = new std::string(receivedval.GetReflection()->GetString(receivedval, field));; //TODO: THIS MEMORY MANAGMENT SUCKS!
+        break;
+    }
+    case FldDesc::CppType::CPPTYPE_INT64:
+    case FldDesc::CppType::CPPTYPE_INT32:
+    {
+        queuetupel.valueint = receivedval.GetReflection()->GetInt64(receivedval, field);
+        break;
+    }
+    case FldDesc::CppType::CPPTYPE_FLOAT:
+    {
+        queuetupel.valuefloat = receivedval.GetReflection()->GetFloat(receivedval, field);
+        break;
+    }
     }
     net2main_interthread_queue.enqueue(std::move(queuetupel));
 }
@@ -295,7 +285,7 @@ public:
 
     void finish()
     {
-        Status status;
+        grpc::Status status;
         stream.Finish(status, (void *)1);
         void *tag;
         bool succeed=false;
@@ -305,13 +295,9 @@ public:
     }
 };
 
-void StopServer()
-{
-    serverstarted = false;
-}
-void RunServer()
-{
 
+RpcSubsystem::RpcSubsystem()
+{
     std::thread t([]
     {
         BiDiServer server("0.0.0.0:50051");
@@ -325,9 +311,15 @@ void RunServer()
     }
     );
     t.detach();
+    client_treedata.connectall();
 }
 
-void main_handle_message()
+RpcSubsystem::~RpcSubsystem()
+{
+    serverstarted = false;
+}
+
+void RpcSubsystem::tick()
 {
     net2maintupel queuetupel;
     if(net2main_interthread_queue.try_dequeue(queuetupel)) // spdlog::get("global")->info() << "Mainthread: " << gotback;
@@ -355,11 +347,6 @@ void main_handle_message()
         }
         }
     }
-    //TreeNodeChanged c;
-    //c.set_otherpath("heyho!");
-    //int ind =  c.oneofdata_case();
-    //spdlog::get("global")->info() << "index no2?: " << ind;
-    //main2net_interthread_queue.enqueue(message);
 }
 
 //////// Client
@@ -414,7 +401,7 @@ public:
                 }
                 if(tag == (void *)writetag)
                 {
-                    spdlog::get("global")->info() << "[Client] Sent: "; // << msgiterator->path();
+                    spdlog::get("global")->info() << "[Client] Sent "; // << msgiterator->path();
                   //  msgiterator++;
                   //  if(msgiterator != testclientmsgs.end())
                     {
@@ -423,7 +410,7 @@ public:
                 }
                 else if(tag == (void *)readtag)
                 {
-                    spdlog::get("global")->info() << "[Client] Received: " << receivedvalue.prefabdir();
+                    spdlog::get("global")->info() << "[Client] Received ";
                     stream->Read(&receivedvalue, (void *)readtag);
                 }
               //  stream->WritesDone();
@@ -443,6 +430,6 @@ void clientrpc()
     t.detach();
 }
 
-
-
+} // namespace inexor
+} // namespace rpc
 
