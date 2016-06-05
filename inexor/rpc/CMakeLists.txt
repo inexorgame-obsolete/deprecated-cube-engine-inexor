@@ -1,35 +1,7 @@
 
-# Generate RPC PROTOCOL API Headers/Sources
+# Generate Tree API Glue code
 
-# Before building Inexor we generate our serialization headers from
-# language independent .proto files
-
-set(RPC_FILE_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "")
-
-set(protoc_in ${RPC_FILE_DIR}/inexor_service.proto)
-
-set(protoc_out_dir_should "${CMAKE_BINARY_DIR}/inexor/rpc/") # this should be the outdir
-set(protoc_out_dir "${CMAKE_BINARY_DIR}/inexor/rpc/inexor/rpc/") # But this actually is 
-                                                             # (since we want to include with full namespace paths)
-
-set(protoc_out_cc ${protoc_out_dir}/inexor_service.pb.cc ${protoc_out_dir}/inexor_service.grpc.pb.cc)
-set(protoc_out_h ${protoc_out_dir}/inexor_service.pb.h ${protoc_out_dir}/inexor_service.grpc.pb.h)
-set(protoc_out ${protoc_out_cc} ${protoc_out_h})
-
-
-add_custom_command(
-  OUTPUT ${protoc_out}
-  COMMAND ${PROTOC_EXE}
-      --proto_path=${MAINDIR}
-      --cpp_out=${protoc_out_dir_should} ${protoc_in}
-  COMMAND ${PROTOC_EXE}
-      --plugin=protoc-gen-grpc=${GRPC_EXE}
-      --proto_path=${MAINDIR}
-      --grpc_out=${protoc_out_dir_should} ${protoc_in}
-  DEPENDS ${protoc_in}
-  MAIN_DEPENDENCY ${protoc_in})
-set_source_files_properties(${protoc_out} PROPERTIES GENERATED TRUE)
-add_custom_target(run_protoc DEPENDS ${protoc_out})
+# Before building Inexor we generate our serialization glue.
 
 set(gluegen_out_dir ${CMAKE_CURRENT_SOURCE_DIR})
 set(gluegen_out_h ${gluegen_out_dir}/treedata.gen.hpp)
@@ -49,10 +21,14 @@ set(CLANG_FLAGS_AND_DEFS
 
 # Search sources
 file(GLOB_RECURSE PARSED_FILES ${SOURCE_DIR}/**.cpp)
-#set(PARSED_FILES "E:/weitere-Dokumente/Git/code2/inexor/engine/main.cpp")
+set(PARSED_FILES "E:/weitere-Dokumente/Git/code2/inexor/fpsgame/ai.cpp")
 set(ALL_PARSED_FILES "")
 
+set(FLAGS_AND_DEFS "-pipe -fsyntax-only -fno-strict-aliasing -fsigned-char -w -fdiagnostics-show-option -fno-threadsafe-statics -std=c++14  -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -I\"E:/weitere-Dokumente/Git/code2/\" -I\"E:/weitere-Dokumente/Git/code2/platform/include/all/\" -I\"E:/weitere-Dokumente/Git/code2/platform/include/windows/\" -I\"E:/weitere-Dokumente/Git/code2/platform/include/windows/SDL2/\" -frtti -fexceptions -DWIN32 -D_WIN32 -D_WINDOWS -DWINDOWS -DNOMINMAX -D_WIN32_WINNT=0x0600 -D_MATH_DEFINES_DEFINED -DWIN64 -DBOOST_OS_WINDOWS -DBOOST_ASIO_HAS_STD_CHRONO -D__REFLECTION_PASS__ -fno-ms-compatibility")
+
+
 set(FLAGS_AND_DEFS "-pipe -fno-strict-aliasing -fsigned-char -Wall -Wno-switch -Wno-deprecated-declarations -Wno-missing-braces -fdiagnostics-show-option -fno-threadsafe-statics -std=c++14  -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -I\"E:/weitere-Dokumente/Git/code2/\" -I\"E:/weitere-Dokumente/Git/code2/platform/include/all/\" -I\"E:/weitere-Dokumente/Git/code2/platform/include/windows/\" -I\"E:/weitere-Dokumente/Git/code2/platform/include/windows/SDL2/\" -frtti -fexceptions -DWIN32 -D_WIN32 -D_WINDOWS -DWINDOWS -DNOMINMAX -D_WIN32_WINNT=0x0600 -D_MATH_DEFINES_DEFINED -DWIN64 -DBOOST_OS_WINDOWS -DBOOST_ASIO_HAS_STD_CHRONO -D__REFLECTION_PASS__ -fno-ms-compatibility")
+
 
 foreach(curfile ${PARSED_FILES})
   set(ALL_PARSED_FILES "${ALL_PARSED_FILES} --parse-file ${curfile}")
@@ -73,6 +49,39 @@ add_custom_command(
       ${ALL_PARSED_FILES}")
 set_source_files_properties(${gluegen_out} PROPERTIES GENERATED TRUE)
 add_custom_target(run_gluegen DEPENDS ${gluegen_out})
+
+# Generate RPC PROTOCOL API Headers/Sources
+
+# Before building Inexor we generate our serialization headers from
+# language independent .proto files
+
+set(RPC_FILE_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "")
+
+set(protoc_in ${RPC_FILE_DIR}/inexor_service.proto ${RPC_FILE_DIR}/treedata.gen.proto)
+
+set(protoc_out_dir_should "${CMAKE_BINARY_DIR}/inexor/rpc/") # this should be the outdir
+set(protoc_out_dir "${CMAKE_BINARY_DIR}/inexor/rpc/inexor/rpc/") # But this actually is 
+                                                             # (since we want to include with full namespace paths)
+
+set(protoc_out_cc ${protoc_out_dir}/inexor_service.pb.cc ${protoc_out_dir}/treedata.gen.pb.cc ${protoc_out_dir}/inexor_service.grpc.pb.cc)
+set(protoc_out_h ${protoc_out_dir}/inexor_service.pb.h ${protoc_out_dir}/treedata.gen.pb.h ${protoc_out_dir}/inexor_service.grpc.pb.h)
+set(protoc_out ${protoc_out_cc} ${protoc_out_h})
+
+
+add_custom_command(
+  OUTPUT ${protoc_out}
+  COMMAND ${PROTOC_EXE}
+      --proto_path=${MAINDIR}
+      --cpp_out=${protoc_out_dir_should} ${protoc_in}
+  COMMAND ${PROTOC_EXE}
+      --plugin=protoc-gen-grpc=${GRPC_EXE}
+      --proto_path=${MAINDIR}
+      --grpc_out=${protoc_out_dir_should} ${protoc_in}
+  DEPENDS ${protoc_in}
+  MAIN_DEPENDENCY ${protoc_in})
+set_source_files_properties(${protoc_out} PROPERTIES GENERATED TRUE)
+add_custom_target(run_protoc DEPENDS ${protoc_out})
+
 
 
 # Folder where generated files land: somewhere in the build/ dir.

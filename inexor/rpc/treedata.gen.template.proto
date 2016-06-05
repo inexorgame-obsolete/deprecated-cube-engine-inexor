@@ -9,9 +9,6 @@ syntax = "proto3";
 
 import "google/protobuf/descriptor.proto";
 
-{{#shared_vars}} {{cpp_name}} {{proto_type}}
-{{/shared_vars}}
-
 package {{package}};
 
 message TreeNodeChanged

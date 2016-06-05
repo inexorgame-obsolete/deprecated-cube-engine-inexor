@@ -164,7 +164,9 @@ public:
 
 #undef ASGN
 
-    // Test usage only, to not get caught in endless loop
+
+    // This is for seriliazation usage only, to not get caught in endless loop when receiving new values
+    // TODO find another way (since other watchers wont be notified as well anymore)
     void setnosync(const char *c)
     {
         value = c;
@@ -178,6 +180,11 @@ public:
     void setnosync(T &&otr)
     {
         value = std::move(otr);
+    }
+
+    void sync()
+    {
+        onChange(value, value);
     }
 };
 
