@@ -59,11 +59,15 @@ moodycamel::ConcurrentQueue<TreeNodeChanged>  main2net_interthread_queue; // Som
 moodycamel::ConcurrentQueue<net2maintupel> net2main_interthread_queue; // Something gets pushed on this (lockless threadsafe queue) when a value has arrived. Gets handled by Subsystem::tick();
 
 
-void connectnet2main(TreeNodeChanged &receivedval)
+bool connectnet2main(TreeNodeChanged &receivedval)
 {
 
     int64 index = receivedval.key_case();
-    assert(index > 0); // actually we'd need sth else than assert
+    if(index <= 0)
+    {
+        spdlog::get("global")->info() << "[Server] Received illegal message index (none was set)";
+        return false;
+    }
 
     auto ptr2variable_itr = client_treedata.cppvar_pointer_map.find(index);
     auto expected_type_itr = client_treedata.index_to_type_map.find(index);
@@ -71,7 +75,7 @@ void connectnet2main(TreeNodeChanged &receivedval)
     if(ptr2variable_itr == client_treedata.cppvar_pointer_map.end() || expected_type_itr == client_treedata.index_to_type_map.end())
     {
         spdlog::get("global")->info() << "network: received non-supported index: " << index; // -> to debug
-        return;
+        return false;
     }
     //receivedval.GetDescriptor()->oneof_decl.
     //receivedval.GetDescriptor()->containing_type.enum_type;
@@ -113,6 +117,8 @@ void connectnet2main(TreeNodeChanged &receivedval)
     }
     }
     net2main_interthread_queue.enqueue(std::move(queuetupel));
+
+    return true;
 }
 // TODO: create INEXOR_ASSERT in utils, writing to logger
 
@@ -237,7 +243,10 @@ public:
                 else
                 {
                     //spdlog::get("global")->info() << "[Server] Received: " << completed->change.prefabdir();
-                    connectnet2main(completed->change);
+                    if(!connectnet2main(completed->change)) 
+                    {
+                        //break;
+                    }
                     reader->startreading(); // request new read
                 }
             }
