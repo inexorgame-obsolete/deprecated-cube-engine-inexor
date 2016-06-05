@@ -22,20 +22,38 @@
 {{namespace_sep_close}}
 {{/shared_vars}}
 
+namespace inexor { namespace rpc {
+
+/// Known C++ SharedVar types
+enum cpp_type_t
+{
+    t_cstring = 0,
+    t_float,
+    t_int
+};
+
 class treedata {
   public:
 
     void connectall()
     {
-    {{#shared_vars}}    {{cpp_name}}.onChange.connect([](const {{cpp_type}} oldvalue, const {{cpp_type}} newvalue)
-            // TODO: Dont call by type but by reference if not a ptr: *or& -> {cpp_observer_type}
+        // TODO: Dont call by type but by reference if not a ptr: *or& -> {cpp_observer_type}
+{{#shared_vars}}        {{cpp_name}}.onChange.connect([](const {{cpp_type}} oldvalue, const {{cpp_type}} newvalue)
             {
                 {{namespace}}::TreeNodeChanged val;
                 val.set_{{unique_name}}(newvalue);
                 main2net_interthread_queue.enqueue(std::move(val));
-            };
+            }
         );
-{{/shared_vars}}    }
+{{/shared_vars}}
+    }
+
+    void syncall()
+    {
+        // TODO: Dont call by type but by reference if not a ptr: *or& -> {cpp_observer_type}
+{{#shared_vars}}        {{cpp_name}}.sync();
+{{/shared_vars}}
+    }
 
     /// (proto)index -> pointer to the to-be-updated-variable.
     const std::unordered_map<int64, void *> cppvar_pointer_map 
@@ -45,12 +63,14 @@ class treedata {
     {{/shared_vars}}
     };
 
-    /// (proto)index -> Data type
-    const std::unordered_map<int64, cpp_type_t> index_to_type_map
+    /// (proto)index -> Data type (cpp_type_t)
+    const std::unordered_map<int64, int> index_to_type_map
     {
         // { index, enum_type(string=0,float=1,int=2) }
     {{#shared_vars}}    { {{index}}, {{type}} },  // {{path}}, {{cpp_type}}
     {{/shared_vars}}
-    } client_treedata;
+    };
 
-};
+} client_treedata;
+
+} } // namespace inexor::rpc

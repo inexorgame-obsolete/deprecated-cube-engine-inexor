@@ -1,5 +1,4 @@
 syntax = "proto3";
-import "google/protobuf/descriptor.proto";
 
 package inexor.tree;
 
@@ -12,19 +11,5 @@ service TreeService
   rpc Synchronize(stream TreeNodeChanged) returns (stream TreeNodeChanged) {}
 }
 
-message TreeNodeChanged
-{
-  // The path to the item in the tree.
-  oneof key {
-    string prefabdir = 1 [(path) = "/cubescript/prefabdir"];
-    int32 fullscreen = 2 [(path) = "/cubescript/fullscreen"];
-  }
-}
-
-/// We use extended options for saving metadata along the protocol.
-extend google.protobuf.FieldOptions
-{
-  /// The path to the item in the tree.
-  string path = 50000;
-}
+import "inexor/rpc/treedata.gen.proto";
 

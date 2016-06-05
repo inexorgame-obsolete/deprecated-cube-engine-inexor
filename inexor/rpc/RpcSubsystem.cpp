@@ -17,7 +17,8 @@
 
 #include "inexor/rpc/RpcSubsystem.hpp"
 #include "inexor/util/Logging.hpp"
-#include "inexor/rpc/SharedVar.hpp"
+#include "inexor/rpc/SharedTree.hpp"
+#include "inexor/rpc/treedata.gen.hpp"
 
 #include "inexor/rpc/inexor_service.grpc.pb.h"
 
@@ -43,7 +44,7 @@ using inexor::tree::TreeService;
 using std::string;
 typedef int64_t int64; // size is important for us, proto explicitly specifies int64
 
-using FldDesc = google::protobuf::FieldDescriptor;
+//using FldDesc = google::protobuf::FieldDescriptor;
 
 
 SUBSYSTEM_REGISTER(rpc, inexor::rpc::RpcSubsystem); // needs to be in no namespace!
@@ -57,40 +58,6 @@ std::atomic_bool serverstarted(false);
 moodycamel::ConcurrentQueue<TreeNodeChanged>  main2net_interthread_queue; // Something gets pushed on this (lockless threadsafe queue) when we changed values. Gets handled by serverthread.
 moodycamel::ConcurrentQueue<net2maintupel> net2main_interthread_queue; // Something gets pushed on this (lockless threadsafe queue) when a value has arrived. Gets handled by Subsystem::tick();
 
-// This one gets generated
-class sharedvardata
-{
-public:
-void connectall()
-{
-    ::fullscreen.onChange.connect([](const int oldvalue, const int newvalue)
-    {
-        TreeNodeChanged val;
-        val.set_fullscreen(newvalue);
-        main2net_interthread_queue.enqueue(std::move(val));
-    });
-    ::prefabdir.onChange.connect([](const char *oldvalue, const char *newvalue)
-    {
-        TreeNodeChanged val;
-        val.set_prefabdir(newvalue);
-        main2net_interthread_queue.enqueue(std::move(val));
-    });
-}
-/// (proto)index -> pointer to the to-be-updated-variable.
-const std::unordered_map<int64, void *> cppvar_pointer_map 
-{
-    // { index, pointer_to_the_changed_var (see net2maintupel::ptr2var) }
-    {1, (void *) &::prefabdir},
-    {2, (void *) &::fullscreen}
-};
-
-/// (proto)index -> Data type
-const std::unordered_map<int64, FldDesc::CppType> index_to_type_map
-{
-    {1, FldDesc::CppType::CPPTYPE_STRING}, // prefabdir
-    {2, FldDesc::CppType::CPPTYPE_INT64}   // fullscreen
-};
-} client_treedata;
 
 void connectnet2main(TreeNodeChanged &receivedval)
 {
@@ -128,18 +95,18 @@ void connectnet2main(TreeNodeChanged &receivedval)
 
     switch(type)
     { // TODO: renew this passage to generated shit for every variable to get rid of (runtime?) reflection (only in case its runtime reflection ofc)
-    case FldDesc::CppType::CPPTYPE_STRING:
+    case cpp_type_t::t_cstring:
     {
         queuetupel.valuestr = new std::string(receivedval.GetReflection()->GetString(receivedval, field));; //TODO: THIS MEMORY MANAGMENT SUCKS!
         break;
     }
-    case FldDesc::CppType::CPPTYPE_INT64:
-    case FldDesc::CppType::CPPTYPE_INT32:
+  //  case FldDesc::CppType::CPPTYPE_INT64:
+    case cpp_type_t::t_int:
     {
         queuetupel.valueint = receivedval.GetReflection()->GetInt64(receivedval, field);
         break;
     }
-    case FldDesc::CppType::CPPTYPE_FLOAT:
+    case cpp_type_t::t_float:
     {
         queuetupel.valuefloat = receivedval.GetReflection()->GetFloat(receivedval, field);
         break;
@@ -326,20 +293,20 @@ void RpcSubsystem::tick()
     {
         switch(queuetupel.type)
         {
-        case FldDesc::CppType::CPPTYPE_STRING:
+        case cpp_type_t::t_cstring:
         {
             SharedVar<char *> *changed = static_cast<SharedVar<char *>*> (queuetupel.ptr2var);
             changed->setnosync(strdup(queuetupel.valuestr->c_str()));
             break;
         }
-        case FldDesc::CppType::CPPTYPE_INT64:
-        case FldDesc::CppType::CPPTYPE_INT32:
+       // case FldDesc::CppType::CPPTYPE_INT64:
+        case cpp_type_t::t_int:
         {
             SharedVar<int> *changed = static_cast<SharedVar<int>*> (queuetupel.ptr2var);
             changed->setnosync(queuetupel.valueint);
             break;
         }
-        case FldDesc::CppType::CPPTYPE_FLOAT:
+        case cpp_type_t::t_float:
         {
             SharedVar<float> *changed = static_cast<SharedVar<float>*> (queuetupel.ptr2var);
             changed->setnosync(queuetupel.valuefloat);
@@ -359,7 +326,7 @@ private:
     TreeNodeChanged maketestmsg_prefabdir()
     {
         TreeNodeChanged t;
-        t.set_prefabdir("prefabtestmessage");
+        //t.set_prefabdir("prefabtestmessage");
         return t;
     }
 
