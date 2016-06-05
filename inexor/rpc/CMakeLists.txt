@@ -31,6 +31,50 @@ add_custom_command(
 set_source_files_properties(${protoc_out} PROPERTIES GENERATED TRUE)
 add_custom_target(run_protoc DEPENDS ${protoc_out})
 
+set(gluegen_out_dir ${CMAKE_CURRENT_SOURCE_DIR})
+set(gluegen_out_h ${gluegen_out_dir}/treedata.gen.hpp)
+set(gluegen_out_proto ${gluegen_out_dir}/treedata.gen.proto)
+set(gluegen_out ${gluegen_out_h} ${gluegen_out_proto})
+
+set(gluegen_template_h ${gluegen_out_dir}/treedata.gen.template.hpp)
+set(gluegen_template_proto ${gluegen_out_dir}/treedata.gen.template.proto)
+
+if (NOT DEFINED GLUEGEN_EXE)
+  find_program(GLUEGEN_EXE gluecodegenerator)
+endif()
+
+set(CLANG_FLAGS_AND_DEFS
+  "${GNU_OR_CLANG_COMPILER_FLAGS} ${GCC_OR_CLANG_CXX_COMPILER_FLAGS} -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS" #TODO
+)
+
+# Search sources
+file(GLOB_RECURSE PARSED_FILES ${SOURCE_DIR}/**.cpp)
+#set(PARSED_FILES "E:/weitere-Dokumente/Git/code2/inexor/engine/main.cpp")
+set(ALL_PARSED_FILES "")
+
+set(FLAGS_AND_DEFS "-pipe -fno-strict-aliasing -fsigned-char -Wall -Wno-switch -Wno-deprecated-declarations -Wno-missing-braces -fdiagnostics-show-option -fno-threadsafe-statics -std=c++14  -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -I\"E:/weitere-Dokumente/Git/code2/\" -I\"E:/weitere-Dokumente/Git/code2/platform/include/all/\" -I\"E:/weitere-Dokumente/Git/code2/platform/include/windows/\" -I\"E:/weitere-Dokumente/Git/code2/platform/include/windows/SDL2/\" -frtti -fexceptions -DWIN32 -D_WIN32 -D_WINDOWS -DWINDOWS -DNOMINMAX -D_WIN32_WINNT=0x0600 -D_MATH_DEFINES_DEFINED -DWIN64 -DBOOST_OS_WINDOWS -DBOOST_ASIO_HAS_STD_CHRONO -D__REFLECTION_PASS__ -fno-ms-compatibility")
+
+foreach(curfile ${PARSED_FILES})
+  set(ALL_PARSED_FILES "${ALL_PARSED_FILES} --parse-file ${curfile}")
+endforeach()
+
+message(STATUS "ALL_PARSED_FILES: ${ALL_PARSED_FILES}")
+message(STATUS "CLANG_FLAGS_AND_DEFS: ${CLANG_FLAGS_AND_DEFS}")
+message(STATUS "gluegen_out: ${gluegen_out}")
+add_custom_command(
+  OUTPUT ${gluegen_out}
+  COMMAND ${GLUEGEN_EXE}
+      "--template-proto ${gluegen_template_proto} \
+      --template-header  ${gluegen_template_h}    \
+      --out-proto ${gluegen_out_proto}            \
+      --out-header ${gluegen_out_h}               \
+      --namespace inexor::tree                    \
+      ${FLAGS_AND_DEFS}                           \
+      ${ALL_PARSED_FILES}")
+set_source_files_properties(${gluegen_out} PROPERTIES GENERATED TRUE)
+add_custom_target(run_gluegen DEPENDS ${gluegen_out})
+
+
 # Folder where generated files land: somewhere in the build/ dir.
 set(RPC_INCLUDE_DIRS "${protoc_out_dir_should}" CACHE INTERNAL "")
 
