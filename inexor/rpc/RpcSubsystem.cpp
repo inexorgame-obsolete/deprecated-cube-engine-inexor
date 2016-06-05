@@ -52,7 +52,7 @@ SUBSYSTEM_REGISTER(rpc, inexor::rpc::RpcSubsystem); // needs to be in no namespa
 namespace inexor {
 namespace rpc {
 
-std::atomic_bool serverstarted = false;
+std::atomic_bool serverstarted(false);
 
 moodycamel::ConcurrentQueue<TreeNodeChanged>  main2net_interthread_queue; // Something gets pushed on this (lockless threadsafe queue) when we changed values. Gets handled by serverthread.
 moodycamel::ConcurrentQueue<net2maintupel> net2main_interthread_queue; // Something gets pushed on this (lockless threadsafe queue) when a value has arrived. Gets handled by Subsystem::tick();
