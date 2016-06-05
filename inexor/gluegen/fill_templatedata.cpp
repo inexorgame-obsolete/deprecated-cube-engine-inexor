@@ -1,6 +1,7 @@
 
 #include <vector>
 #include <string>
+#include <sstream>
 
 #include <boost/algorithm/string/regex.hpp>
 
