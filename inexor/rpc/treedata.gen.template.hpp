@@ -10,6 +10,7 @@
 
 #include <unordered_map>
 
+#include <boost/variant.hpp>
 #include "inexor/rpc/inexor_service.grpc.pb.h"
 
 #include "inexor/rpc/SharedTree.hpp"
@@ -56,10 +57,10 @@ class treedata {
     }
 
     /// (proto)index -> pointer to the to-be-updated-variable.
-    const std::unordered_map<int64, void *> cppvar_pointer_map 
+    const std::unordered_map<int64, boost::variant<SharedVar<char *>*, SharedVar<int>*, SharedVar<float>*>> cppvar_pointer_map
     {
         // { index, pointer_to_the_changed_var (see net2maintupel::ptr2var) }
-    {{#shared_vars}}    { {{index}}, (void *) &{{cpp_name}} },
+    {{#shared_vars}}    { {{index}}, &{{cpp_name}} },
     {{/shared_vars}}
     };
 

@@ -1,11 +1,16 @@
 #pragma once
 
+#include <memory>
+
 #include <moodycamel/concurrentqueue.h>
 #include <moodycamel/blockingconcurrentqueue.h>
+
+#include <boost/variant.hpp>
 
 #include "inexor/rpc/inexor_service.grpc.pb.h"
 
 #include "inexor/util/Subsystem.hpp"
+#include "inexor/rpc/SharedTree.hpp"
 
 typedef int64_t int64; // size is important for us, proto explicitly specifies int64
 
@@ -24,19 +29,10 @@ struct net2maintupel
 {
     // we pass a pointer to the variable instead of the variablename to the main thread (thats faster, and no mainthread function need to be generated).
     // Note that the pointer is valid as long as we deal with static data only (sidenote for vectors).
-    void *ptr2var;
+    boost::variant<SharedVar<char *>*, SharedVar<int>*, SharedVar<float>*> ptr2var;
     int type;
 
-    union
-    {
-        std::string *valuestr;
-        int64 valueint;
-        float valuefloat;
-    };
-    ~net2maintupel()
-    {
-        //delete valuestr;
-    }
+    boost::variant<std::string, int64, float> value;
 };
 
 extern moodycamel::ConcurrentQueue<inexor::tree::TreeNodeChanged>  main2net_interthread_queue; // Something gets pushed on this (lockless threadsafe queue) when we changed values. Gets handled by serverthread.
