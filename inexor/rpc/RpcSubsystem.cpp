@@ -101,18 +101,18 @@ bool connectnet2main(TreeNodeChanged &receivedval)
     { // TODO: renew this passage to generated shit for every variable to get rid of (runtime?) reflection (only in case its runtime reflection ofc)
     case cpp_type_t::t_cstring:
     {
-        queuetupel.valuestr = new std::string(receivedval.GetReflection()->GetString(receivedval, field));; //TODO: THIS MEMORY MANAGMENT SUCKS!
+        queuetupel.value = std::string(receivedval.GetReflection()->GetString(receivedval, field));
         break;
     }
   //  case FldDesc::CppType::CPPTYPE_INT64:
     case cpp_type_t::t_int:
     {
-        queuetupel.valueint = receivedval.GetReflection()->GetInt64(receivedval, field);
+        queuetupel.value = receivedval.GetReflection()->GetInt64(receivedval, field);
         break;
     }
     case cpp_type_t::t_float:
     {
-        queuetupel.valuefloat = receivedval.GetReflection()->GetFloat(receivedval, field);
+        queuetupel.value = receivedval.GetReflection()->GetFloat(receivedval, field);
         break;
     }
     }
@@ -205,7 +205,7 @@ public:
 
     void run()
     {
-        GPR_ASSERT(writer != nullptr && reader != nullptr);
+        GPR_ASSERT(writer != nullptr && reader != nullptr); // TODO INEXOR_ASSERT
 
         reader->startreading();
 
@@ -304,21 +304,21 @@ void RpcSubsystem::tick()
         {
         case cpp_type_t::t_cstring:
         {
-            SharedVar<char *> *changed = static_cast<SharedVar<char *>*> (queuetupel.ptr2var);
-            changed->setnosync(strdup(queuetupel.valuestr->c_str()));
+            SharedVar<char *> *changed = boost::get<SharedVar<char *>*> (queuetupel.ptr2var);
+            changed->setnosync(strdup(boost::get<std::string>(queuetupel.value).c_str()));
             break;
         }
        // case FldDesc::CppType::CPPTYPE_INT64:
         case cpp_type_t::t_int:
         {
-            SharedVar<int> *changed = static_cast<SharedVar<int>*> (queuetupel.ptr2var);
-            changed->setnosync(queuetupel.valueint);
+            SharedVar<int> *changed = boost::get<SharedVar<int>*> (queuetupel.ptr2var);
+            changed->setnosync(boost::get<int64>(queuetupel.value));
             break;
         }
         case cpp_type_t::t_float:
         {
-            SharedVar<float> *changed = static_cast<SharedVar<float>*> (queuetupel.ptr2var);
-            changed->setnosync(queuetupel.valuefloat);
+            SharedVar<float> *changed = boost::get<SharedVar<float>*> (queuetupel.ptr2var);
+            changed->setnosync(boost::get<float>(queuetupel.value));
             break;
         }
         }
