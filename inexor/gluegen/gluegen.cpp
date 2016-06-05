@@ -58,6 +58,8 @@ int main(int argc, const char **argv) {
     std::string exec{argv[0]};
 
     vector<string> args(argv+1, argv+argc);
+    std::cout << "Used command line options: \n";
+    for(auto arg : args) std::cout << arg << "\n";
 
     vector<string> further_compile_options; // we pass through everything unrecognized to libclang.
 
