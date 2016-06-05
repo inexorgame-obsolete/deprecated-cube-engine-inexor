@@ -78,6 +78,7 @@ public:
 private:
     void _init_mangled_path() {
         using boost::algorithm::replace_all_copy;
+        if(path.empty()) path = replace_all_copy(cpp_var, "::", "/");
         unique_name = replace_all_copy(path, "/", "_");
     }
 

@@ -56,7 +56,7 @@ void extract_named_annotations(AnnotRange r
 
         bool abort;
         if (div == cref.end())
-            abort = !cb("", std::string{cref.begin(), cref.end()});
+            abort = !cb(std::string{cref.begin(), cref.end()}, "");
         else
             abort = !cb(
                 std::string{cref.begin(), div}
