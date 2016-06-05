@@ -1,5 +1,5 @@
 #include <iostream>
-#include <sstream>
+#include <fstream>
 #include <string>
 #include <algorithm>
 #include <vector>
@@ -92,6 +92,15 @@ int main(int argc, const char **argv) {
     const string &proto_template = cli_config["template-proto"].as<string>();
     const vector<string> &input_files = cli_config["parse-file"].as<vector<string>>();
 
+    // Filter out any sourcefiles having no *VAR*( inside.
+    std::vector<string> sources;
+    for(const string file_name : input_files)
+    {
+        const std::string file_contents(filecontents(file_name));
+
+        if(boost::regex_search(file_contents, boost::regex("[A-Z]?VAR[A-Z]?[A-Z]?\\("))) sources.push_back(file_name);
+    }
+
     // Read the list of variables
 
     ShTree tree;
@@ -103,7 +112,7 @@ int main(int argc, const char **argv) {
         }
     } visitor{tree};
 
-    find_shared_decls(further_compile_options, input_files, visitor);
+    find_shared_decls(further_compile_options, sources, visitor);
 
     TemplateData templdata = fill_templatedata(tree, ns_str);
 
