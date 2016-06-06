@@ -323,7 +323,10 @@ find_path(PROTOBUF_INCLUDE_DIRS google/protobuf/service.h)
 register_possible_dependency(${PROTOBUF_LIBRARIES})
 
 if (NOT DEFINED PROTOC_EXE)
-  find_program(PROTOC_EXE protoc)
+  find_program(PROTOC_EXE protoc NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH )
+  # grpc and protoc make problems if versions arent matching.
+  # and since grpc is beta its not shipped for most linux distros
+  # and we pack it prebuilt into the platform repo
 endif()
 
 function(require_protobuf targ)
@@ -347,7 +350,10 @@ find_path(GRPCPP_INCLUDE_DIRS grpc++/grpc++.h)
 register_possible_dependency(${GRPC_LIBRARIES})
 
 if (NOT DEFINED GRPC_EXE)
-  find_program(GRPC_EXE grpc_cpp_plugin)
+  find_program(GRPC_EXE grpc_cpp_plugin NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH )
+  # grpc and protoc make problems if versions arent matching.
+  # and since grpc is beta its not shipped for most linux distros
+  # and we pack it prebuilt into the platform repo
 endif()
 
 function(require_grpc targ)
