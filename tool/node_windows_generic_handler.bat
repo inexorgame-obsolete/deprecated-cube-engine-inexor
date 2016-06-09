@@ -15,31 +15,16 @@ if /I "%PROCESSOR_ARCHITEW6432%" == "amd64" (
     set INEXOR_ARCH=win64
 )
 
-for %%X in (node.exe) do (set "FOUND_NODE=%%~$PATH:X")
 
-if not defined FOUND_NODE (
-    :: no installed node found, go for the shipped portable one
-    :: which is in the normal bin dir
-    :: + go for the shipped npm which is in the platform submodule since we ship it for developers
-    set "PATH=%PATH%;%MAINDIR%\bin\windows\%INEXOR_ARCH%;%MAINDIR%\platform\bin\windows\all\npm"
-    set "NODE_PATH=%MAINDIR%\platform\bin\windows\all\npm;%MAINDIR%\node;%MAINDIR%\node\lib;"
-    set "NPM_EXECUTEABLE=%MAINDIR%\platform\bin\windows\all\npm\npm"
-    echo using shipped node
-) else (
-    set "NODE_PATH=%MAINDIR%\node;%MAINDIR%\node\lib;"
-    set "NPM_EXECUTEABLE=npm"
-    echo found node
-)
+:: go for the shipped node+npm which is in the platform submodule since we ship it for developers
+:: + use a really shrinked portable git version
+set "INEXOR_ARCH_DIR=%MAINDIR%\bin\windows\%INEXOR_ARCH%"
+set "PATH=%INEXOR_ARCH_DIR%;%MAINDIR%\platform\bin\windows\all\npm;%MAINDIR%\platform\bin\windows\all\npm\git\cmd"
+set "NODE_PATH=%MAINDIR%\platform\bin\windows\all\npm;%MAINDIR%\node;%MAINDIR%\node\lib"
+set "NPM_EXECUTEABLE=%MAINDIR%\platform\bin\windows\all\npm\npm.cmd"
+set "NODE_EXE=%INEXOR_ARCH_DIR%\node.exe"
+echo using shipped node+npm+git
 
-for %%X in (git.exe) do (set "FOUND_GIT=%%~$PATH:X")
-
-if not defined FOUND_GIT (
-    :: no installed git found, go for our really shrinked portable one
-    set "PATH=%PATH%;%MAINDIR%\platform\bin\windows\all\npm\git\cmd"
-    echo using shipped git
-) else (
-    echo found git
-)
 
 cd "%MAINDIR%\node"
 
