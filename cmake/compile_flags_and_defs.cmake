@@ -154,6 +154,78 @@ if(OS_WINDOWS)
   endif()	
 endif()
 
+#
+# Mac OS X configuration.
+#
+
+if(OS_MACOSX)
+    # See also SET_XCODE_TARGET_PROPERTIES in macros.cmake.
+    set(I_LIBTYPE                 SHARED)
+    # -fomit-frame-pointer            = Don't keep the frame pointer for functions that don't need one
+    # -fno-strict-aliasing            = Avoid assumptions regarding non-aliasing of objects of different types
+    # -funwind-tables                 = Support stack unwinding for backtrace()
+    # -Wall                           = Enable all warnings
+    # -g                              = Generate debug information
+    set(I_COMPILER_FLAGS          "-fomit-frame-pointer -g -fno-strict-aliasing -funwind-tables -Wall")
+    # -std=c99                        = Use the C99 language standard
+    set(I_C_COMPILER_FLAGS        "-std=c99")
+    # -fno-threadsafe-statics         = Don't generate thread-safe statics
+    # -fobjc-call-cxx-cdtors          = Call the constructor/destructor of C++ instance variables in ObjC objects
+    # -std=c++11                    = Use the C++11 language standard including
+    # -Wno-narrowing                  = Don't warn about type narrowing
+    # -Wsign-compare                  = Warn about mixed signed/unsigned type comparisons
+    set(I_CXX_COMPILER_FLAGS      "-fno-threadsafe-statics -fobjc-call-cxx-cdtors -Wno-narrowing -Wsign-compare -std=c++14") #-stdlib=libc++
+    # -O0                             = No optimization
+    # -D_DEBUG                        = Debug build
+    set(I_COMPILER_FLAGS_DEBUG    "-O0 -D_DEBUG")
+    # -O3                             = Optimize for maximum speed plus a few extras
+    set(I_COMPILER_FLAGS_RELEASE  "-O3")
+    # -Wl,-search_paths_first         = Search for static or shared library versions in the same pass
+    # -Wl,-ObjC                       = Support creation of creation of ObjC static libraries
+    # -Wl,-pie                        = Generate position-independent code suitable for executables only
+    set(I_LINKER_FLAGS            "-Wl,-search_paths_first -Wl,-ObjC -Wl,-pie -v")
+    # -Wl,-dead_strip                 = Strip dead code
+    set(I_LINKER_FLAGS_RELEASE    "-Wl,-dead_strip -v")
+
+    # Standard libraries.
+    set(I_STANDARD_LIBS "-framework Cocoa" "-framework AppKit")
+
+    # Find the newest available base SDK.
+    execute_process(COMMAND xcode-select --print-path OUTPUT_VARIABLE XCODE_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
+    foreach(OS_VERSION 10.10 10.9 10.8 10.7)
+        set(SDK "${XCODE_PATH}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${OS_VERSION}.sdk")
+        if(NOT "${CMAKE_OSX_SYSROOT}" AND EXISTS "${SDK}" AND IS_DIRECTORY "${SDK}")
+            set(CMAKE_OSX_SYSROOT ${SDK})
+        endif()
+    endforeach()
+
+    # Target SDK.
+    set(I_TARGET_SDK               "10.7")
+    set(I_COMPILER_FLAGS           "${I_COMPILER_FLAGS} -mmacosx-version-min=${I_TARGET_SDK}")
+    set(CMAKE_OSX_DEPLOYMENT_TARGET  ${I_TARGET_SDK})
+
+    # Target architecture.
+    if(X64)
+        set(CMAKE_OSX_ARCHITECTURES "x86_64")
+    else()
+        set(CMAKE_OSX_ARCHITECTURES "i386")
+    endif()
+
+    # Define where to move the binary by install
+    set(EXE_SUB_DIR "bin/mac/${CMAKE_OSX_ARCHITECTURES}")
+endif()
+
+# Merge compiler/linker flags.
+set(CMAKE_C_FLAGS                     "${I_COMPILER_FLAGS} ${I_C_COMPILER_FLAGS}")
+set(CMAKE_CXX_FLAGS                   "${I_COMPILER_FLAGS} ${I_CXX_COMPILER_FLAGS}")
+set(CMAKE_CXX_FLAGS_DEBUG             "${I_COMPILER_FLAGS_DEBUG} ${I_CXX_COMPILER_FLAGS_DEBUG}")
+set(CMAKE_CXX_FLAGS_RELEASE           "${I_COMPILER_FLAGS_RELEASE} ${I_CXX_COMPILER_FLAGS_RELEASE}")
+set(CMAKE_EXE_LINKER_FLAGS            "${I_LINKER_FLAGS} ${I_EXE_LINKER_FLAGS}")
+set(CMAKE_EXE_LINKER_FLAGS_DEBUG      "${I_LINKER_FLAGS_DEBUG} ${I_EXE_LINKER_FLAGS_DEBUG}")
+set(CMAKE_EXE_LINKER_FLAGS_RELEASE    "${I_LINKER_FLAGS_RELEASE} ${I_EXE_LINKER_FLAGS_RELEASE}")
+
+message(STATUS "Current mode:                   ${CMAKE_BUILD_TYPE}")
+message(STATUS "Compiler:                       ${CMAKE_CXX_COMPILER_ID}")
 get_directory_property(DEFINITIONS              COMPILE_DEFINITIONS)
 message(STATUS "Platform definitions:           ${DEFINITIONS}")
 

@@ -12,26 +12,44 @@ matrix:
     - os: linux
       sudo: required
       dist: trusty
-      language: cpp
       compiler: clang
       env: TARGET=linux_clang CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=clang++-3.7 -DCMAKE_C_COMPILER=clang-3.7 -DBUILD_ALL=1"
-
     - os: linux
       sudo: required
       dist: trusty
-      language: cpp
       compiler: gcc
-      env: TARGET=linux_gcc CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=g++-5 -DCMAKE_C_COMPILER=gcc-5 -DBUILD_ALL=1"
-
-      #- TARGET=win32 CMAKE_FLAGS="-DMINGW=1 -DMINGW_TYPE=i686"
-      #- TARGET=win64 CMAKE_FLAGS="-DMINGW=1 -DMINGW_TYPE=x86_64"
-
+      env: TARGET="linux_gcc" CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=g++-5 -DCMAKE_C_COMPILER=gcc-5"
     - os: linux
       sudo: required
       dist: trusty
-      env: TARGET=apidoc
+      env: TARGET="apidoc"
       git:
         submodules: false
+    - os: linux
+      sudo: required
+      dist: trusty
+      compiler: mingw
+      env: TARGET="win32" CMAKE_FLAGS="-DMINGW=1 -DMINGW_TYPE=i686"
+    - os: linux
+      sudo: required
+      dist: trusty
+      compiler: mingw
+      env: TARGET="win64" CMAKE_FLAGS="-DMINGW=1 -DMINGW_TYPE=x86_64"
+    - os: osx
+      sudo: false
+      osx_image: xcode7.2
+      compiler: clang
+      env: TARGET="osx" CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=clang++-3.5 -DCMAKE_C_COMPILER=clang-3.5"
+
+  allow_failures:
+    # work on it! :)
+    - env: TARGET="osx" CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=clang++-3.5 -DCMAKE_C_COMPILER=clang-3.5"
+    - env: TARGET="win32" CMAKE_FLAGS="-DMINGW=1 -DMINGW_TYPE=i686" VERBOSE=1
+    - env: TARGET="win64" CMAKE_FLAGS="-DMINGW=1 -DMINGW_TYPE=x86_64" VERBOSE=1
+  # TODO: use Protobuf 3 (currently there is just a beta) to be able to compile with GCC  >=5.1 -std=c++11; if -D_GLIBCXX_USE_CXX11_ABI=0 is getting used, our tests don't compile anymore
+    - env: TARGET="linux_gcc" CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=g++-5 -DCMAKE_C_COMPILER=gcc-5"
+
+  fast_finish: true # don't wait for allow_failures (OSX) to fail, gives faster response
 
 before_install:
   - bash tool/travis.sh target_before_install

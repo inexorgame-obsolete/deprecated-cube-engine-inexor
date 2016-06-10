@@ -74,8 +74,10 @@ upload() {
 
 ## INSTALLATION ROUTINES ###################################
 
-install_wily_repo() {
-  echo -e "\ndeb http://archive.ubuntu.com/ubuntu wily "{main,multiverse,universe,restricted} >> /etc/apt/sources.list
+install_additional_repos() {
+  echo -e "\ndeb http://archive.ubuntu.com/ubuntu vivid "{main,universe} >> /etc/apt/sources.list
+  echo -e "\ndeb http://archive.ubuntu.com/ubuntu wily "{main,universe} >> /etc/apt/sources.list
+  echo -e "\ndeb http://archive.ubuntu.com/ubuntu xenial "{main,universe} >> /etc/apt/sources.list
 }
 
 install_tool() {
@@ -86,22 +88,24 @@ install_linux() {
   apt-key adv --keyserver keyserver.ubuntu.com --recv-keys FB1BF5BF09FA0AB7
   
   add-apt-repository -y "deb http://ppa.launchpad.net/zoogie/sdl2-snapshots/ubuntu trusty main"
-  install_wily_repo
+  install_additional_repos
   apt-get update
   
-
+  
   install_tool
 
   apt-get -y -t wily install --only-upgrade libfontconfig1
   # Not using the more recent ones because https://llvm.org/bugs/show_bug.cgi?id=23529
   # (failure in clang)
-  apt-get -y -t trusty install \
-      zlib1g-dev libsdl2-dev libsdl2-image-dev \
-      libsdl2-mixer-dev libenet-dev libprotobuf-dev \
-      protobuf-compiler libgconf2-dev libboost-all-dev \
-      libudev-dev
-  apt-get -y -t wily install build-essential binutils
 
+  apt-get -y install zlib1g-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev 
+
+  apt-get -y -t trusty install libenet-dev libprotobuf-dev protobuf-compiler libgconf2-dev
+
+  apt-get -y -t vivid install libudev-dev
+  
+  apt-get -y -t wily install libboost-all-dev build-essential
+  
   # Manually workaround http://askubuntu.com/questions/288821/how-do-i-resolve-a-cannot-open-shared-object-file-libudev-so-0-error
   ln -sf /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0
 }
@@ -109,31 +113,50 @@ install_linux() {
 # Install routines for each target
 
 install_win64() {
-  install_wily_repo
-  apt-get update
-  install_tool
+  #install_additional_repos
+  #apt-get update
+  #install_tool
+  install_linux
   apt-get -y -t wily install mingw-w64
 }
+
 install_win32() {
   install_win64
 }
+
 install_linux_clang() {
   install_linux
   apt-get -y -t wily install clang-3.7 binutils
 }
+
 install_linux_gcc() {
   install_linux
+  apt-get update
   apt-get -y -t wily install gcc-5 g++-5
+  apt-get -y -t vivid install binutils
 }
+
 install_apidoc() {
   apt-get update
   install_tool
   apt-get install -y -t trusty doxygen
 }
+
 install_osx() {
   # if you need sudo for some stuff here, you need to adjust travis.yml and target_before_install()
-  #brew install sdl2
-  exit 0
+  # homebrew packages see http://braumeister.org
+  brew update > /dev/null
+  # don't upgrade everything, it's time expensive and unnecessary
+  # check first if it's outdated to prevent a missleading error message
+  brew outdated lzlib || brew upgrade lzlib
+  brew outdated boost || brew upgrade boost
+  brew outdated cmake || brew upgrade cmake
+  brew install cmake llvm35 sdl2 sdl2_image sdl2_mixer asio enet protobuf
+  # brew ls -v sdl2
+  # brew ls -v sdl2_mixer
+  # brew ls -v sdl2_image
+  # ls /usr/local/lib/
+  # ls /usr/lib/
 }
 
 ## UPLOADING NIGHTLY BUILDS AND THE APIDOC #################
