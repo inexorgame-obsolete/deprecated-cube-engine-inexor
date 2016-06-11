@@ -80,8 +80,9 @@ server.use(restify.requestLogger());
 server.pre(restify.pre.sanitizePath());
 
 // Use nginx-alike logging style: address, method, url, user-agent
-server.use(function(req, res, next) {
-    req.log.info('%s -- %s %s %s', req.connection.remoteAddress, req.method, req.url, req.headers['user-agent']);
+server.use(function(request, response, next) {
+	request.log.info('%s -- %s %s %s', request.connection.remoteAddress, request.method, request.url, request.headers['user-agent']);
+	console.log('%s -- %s %s %s', request.connection.remoteAddress, request.method, request.url, request.headers['user-agent'])
     next();
 });
 
@@ -93,10 +94,10 @@ server.get(/^\/tree\/(.*)/, inexor.tree.rest.get);
 server.post(/^\/tree\/(.*)/, inexor.tree.rest.post);
 
 // Serve static files from the assets folder
-server.get(/.*/, restify.serveStatic({
-    directory: 'public',
+server.get(/^\/?.*/, restify.serveStatic({
+    directory: __dirname + './public',
     default: 'index.html'
- }));
+}));
 
 //Listen on server
 server.listen(argv.port, function () {
