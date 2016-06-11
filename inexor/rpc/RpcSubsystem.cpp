@@ -287,6 +287,7 @@ RpcSubsystem::RpcSubsystem()
     );
     t.detach();
     client_treedata.connectall();
+    client_treedata.syncall();
 }
 
 RpcSubsystem::~RpcSubsystem()
