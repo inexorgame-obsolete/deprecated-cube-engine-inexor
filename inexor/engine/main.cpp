@@ -9,11 +9,10 @@
 
 /// extern functions and data here
 namespace inexor { namespace rendering {
-extern SharedVar<int> fullscreen;
-extern void cleargamma();
+    extern SharedVar<int> fullscreen, vsync, vsynctear;
+    extern void cleargamma();
 } }
 extern void writeinitcfg();
-extern SharedVar<int> vsync, vsynctear;
 
 /// local player
 dynent *player = NULL;
@@ -167,16 +166,22 @@ VARF(depthbits, 0, 0, 32, initwarning("depth-buffer precision"));
 VARF(stencilbits, 0, 0, 32, initwarning("stencil-buffer precision"));
 VARF(fsaa, -1, -1, 16, initwarning("anti-aliasing"));
 
-/// "use this function to set the swap interval for the current OpenGL context" (VSYNC)
-void restorevsync()
-{
-    /// https://wiki.libsdl.org/SDL_GL_SetSwapInterval
-    if(glcontext) SDL_GL_SetSwapInterval(vsync ? (vsynctear ? -1 : 1) : 0);
-}
+namespace inexor {
+namespace rendering {
 
-/// VSYNC settings
-VARFP(vsync, 0, 0, 1, restorevsync());
-VARFP(vsynctear, 0, 0, 1, { if(vsync) restorevsync(); });
+    /// "use this function to set the swap interval for the current OpenGL context" (VSYNC)
+    void restorevsync()
+    {
+        /// https://wiki.libsdl.org/SDL_GL_SetSwapInterval
+        if(glcontext) SDL_GL_SetSwapInterval(vsync ? (vsynctear ? -1 : 1) : 0);
+    }
+
+    /// VSYNC settings
+    VARFP(vsync, 0, 0, 1, restorevsync());
+    VARFP(vsynctear, 0, 0, 1, { if(vsync) restorevsync(); });
+
+}
+}
 
 /// write most important settings to init.cfg using an UTF-8 stream
 /// @see openutf8file
@@ -192,8 +197,8 @@ void writeinitcfg()
     f->printf("depthbits %d\n", *depthbits);
     f->printf("stencilbits %d\n", *stencilbits);
     f->printf("fsaa %d\n", *fsaa);
-    f->printf("vsync %d\n", *vsync);
-    f->printf("vsynctear %d\n", *vsynctear);
+    f->printf("vsync %d\n", *inexor::rendering::vsync);
+    f->printf("vsynctear %d\n", *inexor::rendering::vsynctear);
     extern SharedVar<int> shaderprecision;
     f->printf("shaderprecision %d\n", *shaderprecision);
     extern SharedVar<int> soundchans, soundfreq, soundbufferlen;
@@ -770,7 +775,7 @@ namespace rendering {
 
         useddepthbits = config&1 ? depthbits : 0;
         usedfsaa = config&4 ? fsaa : 0;
-        restorevsync();
+        inexor::rendering::restorevsync();
     }
 
 }
@@ -1282,7 +1287,7 @@ int main(int argc, char **argv)
             case 'z': depthbits = atoi(&argv[i][2]); break;
             case 'b': /* compat, ignore */ break;
             case 'a': fsaa = atoi(&argv[i][2]); break;
-            case 'v': vsync = atoi(&argv[i][2]); restorevsync(); break;
+            case 'v': inexor::rendering::vsync = atoi(&argv[i][2]); inexor::rendering::restorevsync(); break;
             case 't': inexor::rendering::fullscreen = atoi(&argv[i][2]); break;
             case 's': stencilbits = atoi(&argv[i][2]); break;
             case 'f': 

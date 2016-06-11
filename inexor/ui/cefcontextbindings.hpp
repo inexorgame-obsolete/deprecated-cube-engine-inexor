@@ -10,10 +10,8 @@ extern void quit();
 extern void getfps(int &fps, int &bestdiff, int &worstdiff);
 
 namespace inexor { namespace rendering {
-extern SharedVar<int> fullscreen, scr_w, scr_h;
+    extern SharedVar<int> fullscreen, scr_w, scr_h, vsync;
 } }
-
-extern SharedVar<int> vsync;
 
 namespace game {
     extern fpsent *player1;

@@ -58,7 +58,7 @@ bool InexorCefContextManager::Get(const CefString& name, const CefRefPtr<CefV8Va
     else if (name == "scr_h")
         return_value = CefV8Value::CreateInt(inexor::rendering::scr_h);
     else if (name == "vsync")
-        return_value = CefV8Value::CreateInt(vsync);
+        return_value = CefV8Value::CreateInt(inexor::rendering::vsync);
     else if (name == "fps") {
         int fps, bestdiff, worstdiff;
         getfps(fps, bestdiff, worstdiff);
@@ -87,7 +87,7 @@ bool InexorCefContextManager::Set(const CefString& name, const CefRefPtr<CefV8Va
         else if (name == "scr_h")
             inexor::rendering::scr_h = value->GetIntValue();
         else if (name == "vsync")
-            vsync = value->GetIntValue();
+            inexor::rendering::vsync = value->GetIntValue();
         else if (name == "name")
             game::switchname(value->GetStringValue().ToString().c_str(), NULL);
         else
