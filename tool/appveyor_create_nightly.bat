@@ -26,7 +26,7 @@ echo master is %master%
 mkdir %nightly_name%
 
 :: Now we want to include our node files as well:
-call tool\node_windows_update_npm.bat
+call %~dp0node_windows_update_npm.bat
 
 cd %MAIN_FOLDER%
 

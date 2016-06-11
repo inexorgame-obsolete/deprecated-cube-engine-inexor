@@ -19,7 +19,7 @@ if /I "%PROCESSOR_ARCHITEW6432%" == "amd64" (
 :: go for the shipped node+npm which is in the platform submodule since we ship it for developers
 :: + use a really shrinked portable git version
 set "INEXOR_ARCH_DIR=%MAINDIR%\bin\windows\%INEXOR_ARCH%"
-set "PATH=%INEXOR_ARCH_DIR%;%MAINDIR%\platform\bin\windows\all\npm;%MAINDIR%\platform\bin\windows\all\npm\git\cmd"
+set "PATH=%PATH%;%INEXOR_ARCH_DIR%;%MAINDIR%\platform\bin\windows\all\npm;%MAINDIR%\platform\bin\windows\all\npm\git\cmd"
 set "NODE_PATH=%MAINDIR%\platform\bin\windows\all\npm;%MAINDIR%\node;%MAINDIR%\node\lib"
 set "NPM_EXECUTEABLE=%MAINDIR%\platform\bin\windows\all\npm\npm.cmd"
 
@@ -30,7 +30,9 @@ cd "%MAINDIR%\node"
 
 :: Execute the passed arguments:
 Setlocal EnableDelayedExpansion
+
 %*
+
 Setlocal DisableDelayedExpansion
 
 call cd "%MAINDIR%"
