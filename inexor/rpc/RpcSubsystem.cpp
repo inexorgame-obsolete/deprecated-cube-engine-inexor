@@ -24,7 +24,6 @@
 
 
 extern SharedVar<char *> prefabdir; // no leading ::
-extern SharedVar<int> fullscreen;
 
 
 using namespace inexor::util;

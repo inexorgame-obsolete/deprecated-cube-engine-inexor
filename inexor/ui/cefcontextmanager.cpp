@@ -52,7 +52,7 @@ bool InexorCefContextManager::Get(const CefString& name, const CefRefPtr<CefV8Va
     else if (name == "thirdperson")
         return_value = CefV8Value::CreateInt(thirdperson);
     else if (name == "fullscreen")
-        return_value = CefV8Value::CreateInt(fullscreen);
+        return_value = CefV8Value::CreateInt(inexor::rendering::fullscreen);
     else if (name == "scr_w")
         return_value = CefV8Value::CreateInt(scr_w);
     else if (name == "scr_h")
@@ -81,7 +81,7 @@ bool InexorCefContextManager::Set(const CefString& name, const CefRefPtr<CefV8Va
         if (name == "thirdperson")
             thirdperson = value->GetIntValue();
         else if (name == "fullscreen")
-            fullscreen = value->GetIntValue();
+            inexor::rendering::fullscreen = value->GetIntValue();
         else if (name == "scr_w")
             scr_w = value->GetIntValue();
         else if (name == "scr_h")
