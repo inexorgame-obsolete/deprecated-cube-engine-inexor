@@ -38,7 +38,7 @@ var EditorSettings = function() {
 			node.set(0);
 		}
 		console.log("Setting outline = " + node.get() + " (was: " + oldValue + ")");
-	}, 3 * 1000);
+	}, 30 * 1000);
 
 	setInterval(function() {
 		var node = inexor.tree.getChild("wireframe");
@@ -49,7 +49,7 @@ var EditorSettings = function() {
 			node.set(0);
 		}
 		console.log("Setting wireframe = " + node.get() + " (was: " + oldValue + ")");
-	}, 4 * 1000);
+	}, 45 * 1000);
 
 	return editorSettings;
 
