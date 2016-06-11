@@ -54,9 +54,9 @@ bool InexorCefContextManager::Get(const CefString& name, const CefRefPtr<CefV8Va
     else if (name == "fullscreen")
         return_value = CefV8Value::CreateInt(inexor::rendering::fullscreen);
     else if (name == "scr_w")
-        return_value = CefV8Value::CreateInt(scr_w);
+        return_value = CefV8Value::CreateInt(inexor::rendering::scr_w);
     else if (name == "scr_h")
-        return_value = CefV8Value::CreateInt(scr_h);
+        return_value = CefV8Value::CreateInt(inexor::rendering::scr_h);
     else if (name == "vsync")
         return_value = CefV8Value::CreateInt(vsync);
     else if (name == "fps") {
@@ -83,9 +83,9 @@ bool InexorCefContextManager::Set(const CefString& name, const CefRefPtr<CefV8Va
         else if (name == "fullscreen")
             inexor::rendering::fullscreen = value->GetIntValue();
         else if (name == "scr_w")
-            scr_w = value->GetIntValue();
+            inexor::rendering::scr_w = value->GetIntValue();
         else if (name == "scr_h")
-            scr_h = value->GetIntValue();
+            inexor::rendering::scr_h = value->GetIntValue();
         else if (name == "vsync")
             vsync = value->GetIntValue();
         else if (name == "name")
