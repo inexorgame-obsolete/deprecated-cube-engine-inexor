@@ -307,7 +307,11 @@ inline void ident::getval(tagval &v) const
 #define COMMAND(name, nargs) COMMANDN(name, name, nargs)
 
 #define _VAR(name, global, min, cur, max, persist) INEXOR_SHARED_TREE(/cubescript/name) SharedVar<int> global((int)cur); UNUSED int dummy_register_##global = variable(#name, min, cur, max, &global, NULL, persist)
+/// Version of VAR which doesnt sync with the tree api.
+#define _VAR_NOSYNC(name, global, min, cur, max, persist) SharedVar<int> global((int)cur); UNUSED int dummy_register_##global = variable(#name, min, cur, max, &global, NULL, persist)
+
 #define VARN(name, global, min, cur, max) _VAR(name, global, min, cur, max, 0)
+#define VARN_NOSYNC(name, global, min, cur, max) _VAR_NOSYNC(name, global, min, cur, max, 0)
 #define VARNP(name, global, min, cur, max) _VAR(name, global, min, cur, max, IDF_PERSIST)
 #define VARNR(name, global, min, cur, max) _VAR(name, global, min, cur, max, IDF_OVERRIDE)
 #define VAR(name, min, cur, max) _VAR(name, name, min, cur, max, 0)
