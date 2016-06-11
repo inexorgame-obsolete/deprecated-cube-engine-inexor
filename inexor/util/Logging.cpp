@@ -24,6 +24,7 @@ Logging::~Logging()
 
 void Logging::initDefaultLoggers()
 {
+    createSinks();
     for(const auto& default_logger_name : default_logger_names) {
         createAndRegisterLogger(default_logger_name.c_str());
     }
@@ -41,14 +42,18 @@ void Logging::createAndRegisterLogger(std::string logger_name)
 // TODO: Here we should configure which sinks are used in which logger using a configuration file
 std::vector<spdlog::sink_ptr> Logging::getSinksForLogger(std::string logger_name)
 {
-    std::vector<spdlog::sink_ptr> sinks;
-    sinks.push_back(std::make_shared<spdlog::sinks::stdout_sink_st>());
-    sinks.push_back(std::make_shared<inexor::util::InexorConsoleSink>());
-    sinks.push_back(std::make_shared<inexor::util::InexorCutAnsiCodesSink>(std::make_shared<spdlog::sinks::rotating_file_sink_st>("inexor", "log", 5242880, 3)));
+    return allsinks;
+}
+
+// TODO: Here we should configure which sinks are used in which logger using a configuration file
+void Logging::createSinks()
+{
+    allsinks.push_back(std::make_shared<spdlog::sinks::stdout_sink_st>());
+    allsinks.push_back(std::make_shared<inexor::util::InexorConsoleSink>());
+    allsinks.push_back(std::make_shared<inexor::util::InexorCutAnsiCodesSink>(std::make_shared<spdlog::sinks::rotating_file_sink_st>("inexor", "log", 5242880, 3)));
 #if defined(_MSC_VER) && !defined(NDEBUG)
-    sinks.push_back(std::make_shared<spdlog::sinks::msvc_sink_st>());
+    allsinks.push_back(std::make_shared<spdlog::sinks::msvc_sink_st>());
 #endif
-    return sinks;
 }
 
 // TODO: note that we cannot set the log level for a specific sink at the moment
