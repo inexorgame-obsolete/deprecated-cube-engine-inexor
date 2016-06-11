@@ -22,8 +22,8 @@ set "INEXOR_ARCH_DIR=%MAINDIR%\bin\windows\%INEXOR_ARCH%"
 set "PATH=%INEXOR_ARCH_DIR%;%MAINDIR%\platform\bin\windows\all\npm;%MAINDIR%\platform\bin\windows\all\npm\git\cmd"
 set "NODE_PATH=%MAINDIR%\platform\bin\windows\all\npm;%MAINDIR%\node;%MAINDIR%\node\lib"
 set "NPM_EXECUTEABLE=%MAINDIR%\platform\bin\windows\all\npm\npm.cmd"
-set "NODE_EXE=%INEXOR_ARCH_DIR%\node.exe"
-echo using shipped node+npm+git
+
+echo Using shipped node.js (v6.2.1), npm (v3.9.1) and git (git needed as npm backend)
 
 
 cd "%MAINDIR%\node"
