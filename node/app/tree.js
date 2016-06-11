@@ -463,7 +463,8 @@ var Tree = function(server, grpc) {
 			var value = message[protoKey];
 			var path = root.grpc.getPath(protoKey);
 			var node = root.findNode(path);
-			// console.log(protoKey + " (" + path + ") = " + value);
+			console.log("protoKey = " + protoKey + " path = \"" + path + "\" value = " + value);
+			// Use setter and prevent sync!
 			node.set(value, true);
 		});
 
@@ -471,6 +472,7 @@ var Tree = function(server, grpc) {
 			// The server has finished sending
 			console.log("inexor.tree.grpc.synchronize.end");
 			// TODO: here we could stop the Inexor Flex because Inexor Core is gone!
+			process.exit();
 		});
 
 		root.grpc.synchronize.on("status", function(status) {
