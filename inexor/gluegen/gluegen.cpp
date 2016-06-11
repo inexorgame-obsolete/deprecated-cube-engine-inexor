@@ -15,6 +15,9 @@
 #include "inexor/gluegen/generate_files.hpp"
 #include "inexor/gluegen/fill_templatedata.hpp"
 
+#if (defined _DEBUG && defined _MSC_VER) // we dont ship prebuilt dependencies for debug gluegen (useless: always needed in a fast state) (in vs)
+#error You (seriously) do not want to build gluegen in debug mode. If you know what you do, uncomment this line (otherwise build gluegen in release mode).
+#endif
 
 using namespace inexor::rpc::gluegen;
 namespace po = boost::program_options;
