@@ -8,7 +8,9 @@
 #include "inexor/util/Logging.hpp"
 
 /// extern functions and data here
+namespace inexor { namespace rendering {
 extern void cleargamma();
+} }
 extern void writeinitcfg();
 extern SharedVar<int> vsync, vsynctear;
 
@@ -38,7 +40,7 @@ void cleanupSDL()
         if(screen) SDL_SetWindowGrab(screen, SDL_FALSE);
         SDL_SetRelativeMouseMode(SDL_FALSE);
         SDL_ShowCursor(SDL_TRUE);
-        cleargamma();
+        inexor::rendering::cleargamma();
     }
 }
 
@@ -644,32 +646,39 @@ void screenres(int w, int h)
 }
 
 /// screen gamma as float value
-static int curgamma = 100;
-VARFP(gamma, 30, 100, 300,
-{
-    if(gamma == curgamma) return;
-    curgamma = gamma;
-    if(SDL_SetWindowBrightness(screen, gamma/100.0f)==-1)
-        spdlog::get("global")->error() << "Could not set gamma: " << SDL_GetError();
-});
+namespace inexor {
+namespace rendering {
 
+    static int curgamma = 100;
+    VARFP(gamma, 30, 100, 300,
+    {
+        if(gamma == curgamma) return;
+        curgamma = gamma;
+        if(SDL_SetWindowBrightness(screen, gamma/100.0f)==-1)
+            spdlog::get("global")->error() << "Could not set gamma: " << SDL_GetError();
+    });
 
-/// set screen brightness using float value
-/// @see curgamma
-void restoregamma()
-{
-    if(curgamma == 100) return;
-    SDL_SetWindowBrightness(screen, curgamma/100.0f);
-}
-
-/// set screen to normal brightness
-void cleargamma()
-{
-    if(curgamma != 100 && screen) {
-        /// "Use this function to set the brightness (gamma multiplier) for the display that owns a given window."
-        SDL_SetWindowBrightness(screen, 1.0f);
+    /// set screen brightness using float value
+    /// @see curgamma
+    void restoregamma()
+    {
+        if(curgamma == 100) return;
+        SDL_SetWindowBrightness(screen, curgamma/100.0f);
     }
+
+    /// set screen to normal brightness
+    void cleargamma()
+    {
+        if(curgamma != 100 && screen) {
+            /// "Use this function to set the brightness (gamma multiplier) for the display that owns a given window."
+            SDL_SetWindowBrightness(screen, 1.0f);
+        }
+    }
+
 }
+}
+
+
 
 // TODO: this has no reference at all!
 VAR(dbgmodes, 0, 0, 1);
@@ -828,7 +837,7 @@ void resetgl()
     reloadfonts();
     inbetweenframes = true;
     renderbackground("initializing...");
-	restoregamma();
+    inexor::rendering::restoregamma();
     reloadshaders();
     reloadtextures();
     initlights();

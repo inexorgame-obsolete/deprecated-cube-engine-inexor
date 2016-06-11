@@ -5,15 +5,7 @@
 
 #define _FILE_OFFSET_BITS 64
 
-#ifdef __GNUC__
-  #define gamma __gamma
-#endif
-
 #include <math.h>
-
-#ifdef __GNUC__
-  #undef gamma
-#endif
 
 // essentiall C standard libraries
 #include <string.h>
