@@ -9,6 +9,7 @@
 
 /// extern functions and data here
 namespace inexor { namespace rendering {
+extern SharedVar<int> fullscreen;
 extern void cleargamma();
 } }
 extern void writeinitcfg();
@@ -180,8 +181,8 @@ void writeinitcfg()
     stream *f = openutf8file("init.cfg", "w");
     if(!f) return;
     f->printf("// automatically written on exit, DO NOT MODIFY\n// modify settings in game\n");
-    extern SharedVar<int> fullscreen;
-    f->printf("fullscreen %d\n", *fullscreen);
+
+    f->printf("fullscreen %d\n", *inexor::rendering::fullscreen);
     f->printf("screenres %d %d\n", *scr_w, *scr_h);
     f->printf("colorbits %d\n", *colorbits);
     f->printf("depthbits %d\n", *depthbits);
@@ -602,29 +603,35 @@ void inputgrab(bool on)
 
 bool initwindowpos = false;
 
-/// switch fullscreen mode
-void setfullscreen(bool enable)
-{
-    if(!screen) return;
-    //initwarning(enable ? "fullscreen" : "windowed");
-    SDL_SetWindowFullscreen(screen, enable ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
-    if(!enable)
+namespace inexor {
+namespace rendering {
+
+    /// switch fullscreen mode
+    void setfullscreen(bool enable)
     {
-        SDL_SetWindowSize(screen, scr_w, scr_h);
-        if(initwindowpos)
+        if(!screen) return;
+        //initwarning(enable ? "fullscreen" : "windowed");
+        SDL_SetWindowFullscreen(screen, enable ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+        if(!enable)
         {
-            SDL_SetWindowPosition(screen, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-            initwindowpos = false;
+            SDL_SetWindowSize(screen, scr_w, scr_h);
+            if(initwindowpos)
+            {
+                SDL_SetWindowPosition(screen, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+                initwindowpos = false;
+            }
         }
     }
-}
 
-/// @warning do not go full screen in debug mode (doesn't work with MSVC)
-#ifdef _DEBUG
-   VARF(fullscreen, 0, 0, 1, setfullscreen(fullscreen!=0));
-#else
-   VARF(fullscreen, 0, 1, 1, setfullscreen(fullscreen!=0));
-#endif
+    /// @warning do not go full screen in debug mode (doesn't work with MSVC)
+    #ifdef _DEBUG
+       VARF(fullscreen, 0, 0, 1, setfullscreen(fullscreen!=0));
+    #else
+       VARF(fullscreen, 0, 1, 1, setfullscreen(fullscreen!=0));
+    #endif
+
+}
+}
 
 /// implementation of screen resolution changer
 /// @warning forward must be declared above in the code because of the dependencies
@@ -709,7 +716,7 @@ void setupscreen(int &useddepthbits, int &usedfsaa)
     scr_h = min(scr_h, desktoph);
 
     int winw = scr_w, winh = scr_h, flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
-    if(fullscreen)
+    if(inexor::rendering::fullscreen)
     {
         winw = desktopw;
         winh = desktoph;
@@ -1283,7 +1290,7 @@ int main(int argc, char **argv)
             case 'b': /* compat, ignore */ break;
             case 'a': fsaa = atoi(&argv[i][2]); break;
             case 'v': vsync = atoi(&argv[i][2]); restorevsync(); break;
-            case 't': fullscreen = atoi(&argv[i][2]); break;
+            case 't': inexor::rendering::fullscreen = atoi(&argv[i][2]); break;
             case 's': stencilbits = atoi(&argv[i][2]); break;
             case 'f': 
             {

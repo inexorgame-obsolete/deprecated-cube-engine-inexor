@@ -10,6 +10,10 @@
 #include "inexor/ui/cefcontextbindings.hpp"
 #include "inexor/ui/cefcontextprovider.hpp"
 
+namespace inexor { namespace rendering {
+extern SharedVar<int> fullscreen;
+} }
+
 class InexorCefContextManager : public InexorCefContextProvider
 {
 
