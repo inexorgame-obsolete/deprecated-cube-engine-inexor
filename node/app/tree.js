@@ -463,7 +463,9 @@ var Tree = function(server, grpc) {
 			var value = message[protoKey];
 			var path = root.grpc.getPath(protoKey);
 			var node = root.findNode(path);
-			console.log("protoKey = " + protoKey + " path = \"" + path + "\" value = " + value);
+			if (protoKey != "__numargs") {
+				console.log("protoKey = " + protoKey + " path = \"" + path + "\" value = " + value);
+			}
 			// Use setter and prevent sync!
 			node.set(value, true);
 		});

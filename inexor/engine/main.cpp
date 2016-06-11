@@ -149,12 +149,16 @@ bool initwarning(const char *desc, int level, int type)
 #define SCR_DEFAULTH 768
 
 /// function forward to change screen resolution
+namespace inexor { namespace rendering {
 void screenres(int w, int h);
-ICOMMAND(screenres, "ii", (int *w, int *h), screenres(*w, *h));
+
+ICOMMAND(screenres, "ii", (int *w, int *h), inexor::rendering::screenres(*w, *h));
 
 /// change screen width and height
-VARF(scr_w, SCR_MINW, -1, SCR_MAXW, screenres(scr_w, -1));
-VARF(scr_h, SCR_MINH, -1, SCR_MAXH, screenres(-1, scr_h));
+VARF(scr_w, SCR_MINW, -1, SCR_MAXW, inexor::rendering::screenres(scr_w, -1));
+VARF(scr_h, SCR_MINH, -1, SCR_MAXH, inexor::rendering::screenres(-1, scr_h));
+
+} }
 
 /// various buffer precisions and anti aliasing
 /// @see initwarning
@@ -183,7 +187,7 @@ void writeinitcfg()
     f->printf("// automatically written on exit, DO NOT MODIFY\n// modify settings in game\n");
 
     f->printf("fullscreen %d\n", *inexor::rendering::fullscreen);
-    f->printf("screenres %d %d\n", *scr_w, *scr_h);
+    f->printf("screenres %d %d\n", *inexor::rendering::scr_w, *inexor::rendering::scr_h);
     f->printf("colorbits %d\n", *colorbits);
     f->printf("depthbits %d\n", *depthbits);
     f->printf("stencilbits %d\n", *stencilbits);
@@ -630,32 +634,26 @@ namespace rendering {
        VARF(fullscreen, 0, 1, 1, setfullscreen(fullscreen!=0));
     #endif
 
-}
-}
-
-/// implementation of screen resolution changer
-/// @warning forward must be declared above in the code because of the dependencies
-void screenres(int w, int h)
-{
-    scr_w = w!=-1 ? clamp(w, SCR_MINW, SCR_MAXW) : scr_w;
-    scr_h = h!=-1 ? clamp(h, SCR_MINH, SCR_MAXH) : scr_h;
-    if(screen)
+    /// implementation of screen resolution changer
+    /// @warning forward must be declared above in the code because of the dependencies
+    void screenres(int w, int h)
     {
-        scr_w = min(scr_w, desktopw);
-        scr_h = min(scr_h, desktoph);
-        if(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN) gl_resize();
-        else SDL_SetWindowSize(screen, scr_w, scr_h);
+        scr_w = w!=-1 ? clamp(w, SCR_MINW, SCR_MAXW) : scr_w;
+        scr_h = h!=-1 ? clamp(h, SCR_MINH, SCR_MAXH) : scr_h;
+        if(screen)
+        {
+            scr_w = min(scr_w, desktopw);
+            scr_h = min(scr_h, desktoph);
+            if(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN) gl_resize();
+            else SDL_SetWindowSize(screen, scr_w, scr_h);
+        }
+        else
+        {
+            initwarning("screen resolution");
+        }
     }
-    else 
-    {
-        initwarning("screen resolution");
-    }
-}
 
-/// screen gamma as float value
-namespace inexor {
-namespace rendering {
-
+    /// screen gamma as float value
     static int curgamma = 100;
     VARFP(gamma, 30, 100, 300,
     {
@@ -682,105 +680,100 @@ namespace rendering {
         }
     }
 
-}
-}
-
-
-
-// TODO: this has no reference at all!
-VAR(dbgmodes, 0, 0, 1);
-
-/// setting up screen using various attempts with different options
-/// @see SDL_GL_SetAttribute
-void setupscreen(int &useddepthbits, int &usedfsaa)
-{
-    if(glcontext)
+    /// setting up screen using various attempts with different options
+    /// @see SDL_GL_SetAttribute
+    void setupscreen(int &useddepthbits, int &usedfsaa)
     {
-        SDL_GL_DeleteContext(glcontext);
-        glcontext = NULL;
-    }
-    if(screen)
-	{
-        SDL_DestroyWindow(screen);
-        screen = NULL;
-    }
-
-    SDL_DisplayMode desktop;
-    if(SDL_GetDesktopDisplayMode(0, &desktop) < 0) fatal("failed querying desktop display mode: %s", SDL_GetError());
-    desktopw = desktop.w;
-    desktoph = desktop.h;
-
-    if(scr_h < 0) scr_h = SCR_DEFAULTH;
-    if(scr_w < 0) scr_w = (scr_h*desktopw)/desktoph;
-    scr_w = min(scr_w, desktopw);
-    scr_h = min(scr_h, desktoph);
-
-    int winw = scr_w, winh = scr_h, flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
-    if(inexor::rendering::fullscreen)
-    {
-        winw = desktopw;
-        winh = desktoph;
-        flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-        initwindowpos = true;
-    }
-
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-
-    static int configs[] =
-    {
-        0x7, /* try everything */
-        0x6, 0x5, 0x3, /* try disabling one at a time */
-        0x4, 0x2, 0x1, /* try disabling two at a time */
-        0 /* try disabling everything */
-    };
-    int config = 0;
-    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
-    if(!depthbits) SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-    if(!fsaa)
-    {
-        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
-        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
-    }
-    loopi(sizeof(configs)/sizeof(configs[0]))
-    {
-        config = configs[i];
-        if(!depthbits && config&1) continue;
-        if(!stencilbits && config&2) continue;
-        if(fsaa<=0 && config&4) continue;
-        if(depthbits) SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, config&1 ? depthbits : 16);
-        if(stencilbits)
+        if(glcontext)
         {
-            hasstencil = config&2 ? stencilbits : 0;
-            SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, hasstencil);
+            SDL_GL_DeleteContext(glcontext);
+            glcontext = NULL;
         }
-        else hasstencil = 0;
-        if(fsaa>0)
+        if(screen)
         {
-            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, config&4 ? 1 : 0);
-            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, config&4 ? fsaa : 0);
+            SDL_DestroyWindow(screen);
+            screen = NULL;
         }
-        screen = SDL_CreateWindow("Inexor", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, winw, winh, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | flags);
-        if(screen) break;
+
+        SDL_DisplayMode desktop;
+        if(SDL_GetDesktopDisplayMode(0, &desktop) < 0) fatal("failed querying desktop display mode: %s", SDL_GetError());
+        desktopw = desktop.w;
+        desktoph = desktop.h;
+
+        if(scr_h < 0) scr_h = SCR_DEFAULTH;
+        if(scr_w < 0) scr_w = (scr_h*desktopw)/desktoph;
+        scr_w = min(scr_w, desktopw);
+        scr_h = min(scr_h, desktoph);
+
+        int winw = scr_w, winh = scr_h, flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
+        if(fullscreen)
+        {
+            winw = desktopw;
+            winh = desktoph;
+            flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+            initwindowpos = true;
+        }
+
+        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+        static int configs[] =
+        {
+            0x7, /* try everything */
+            0x6, 0x5, 0x3, /* try disabling one at a time */
+            0x4, 0x2, 0x1, /* try disabling two at a time */
+            0 /* try disabling everything */
+        };
+        int config = 0;
+        SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
+        if(!depthbits) SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+        if(!fsaa)
+        {
+            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
+            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
+        }
+        loopi(sizeof(configs)/sizeof(configs[0]))
+        {
+            config = configs[i];
+            if(!depthbits && config&1) continue;
+            if(!stencilbits && config&2) continue;
+            if(fsaa<=0 && config&4) continue;
+            if(depthbits) SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, config&1 ? depthbits : 16);
+            if(stencilbits)
+            {
+                hasstencil = config&2 ? stencilbits : 0;
+                SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, hasstencil);
+            }
+            else hasstencil = 0;
+            if(fsaa>0)
+            {
+                SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, config&4 ? 1 : 0);
+                SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, config&4 ? fsaa : 0);
+            }
+            screen = SDL_CreateWindow("Inexor", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, winw, winh, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | flags);
+            if(screen) break;
+        }
+        if(!screen) fatal("failed to create OpenGL window: %s", SDL_GetError());
+        else
+        {
+            if(depthbits && (config&1)==0) spdlog::get("global")->warn() << *depthbits << " bit z-buffer not supported - disabling";
+            if(stencilbits && (config&2)==0) spdlog::get("global")->warn() << "Stencil buffer not supported - disabling";
+            if(fsaa>0 && (config&4)==0) spdlog::get("global")->warn() << *fsaa << " anti-aliasing not supported - disabling";
+        }
+
+        SDL_SetWindowMinimumSize(screen, SCR_MINW, SCR_MINH);
+        SDL_SetWindowMaximumSize(screen, SCR_MAXW, SCR_MAXH);
+
+        glcontext = SDL_GL_CreateContext(screen);
+        if(!glcontext) fatal("failed to create OpenGL context: %s", SDL_GetError());
+
+        SDL_GetWindowSize(screen, &screenw, &screenh);
+
+        useddepthbits = config&1 ? depthbits : 0;
+        usedfsaa = config&4 ? fsaa : 0;
+        restorevsync();
     }
-    if(!screen) fatal("failed to create OpenGL window: %s", SDL_GetError());
-    else
-    {
-        if(depthbits && (config&1)==0) spdlog::get("global")->warn() << *depthbits << " bit z-buffer not supported - disabling";
-        if(stencilbits && (config&2)==0) spdlog::get("global")->warn() << "Stencil buffer not supported - disabling";
-        if(fsaa>0 && (config&4)==0) spdlog::get("global")->warn() << *fsaa << " anti-aliasing not supported - disabling";
-    }
 
-    SDL_SetWindowMinimumSize(screen, SCR_MINW, SCR_MINH);
-    SDL_SetWindowMaximumSize(screen, SCR_MAXW, SCR_MAXH);
-
-    glcontext = SDL_GL_CreateContext(screen);
-    if(!glcontext) fatal("failed to create OpenGL context: %s", SDL_GetError());
-
-    SDL_GetWindowSize(screen, &screenw, &screenh);
-
-    useddepthbits = config&1 ? depthbits : 0;
-    usedfsaa = config&4 ? fsaa : 0;
-    restorevsync();
+}
 }
 
 /// reset OpenGL manually (/resetgl command)
@@ -828,7 +821,7 @@ void resetgl()
     cleanupgl();
     
     int useddepthbits = 0, usedfsaa = 0;
-    setupscreen(useddepthbits, usedfsaa);
+    inexor::rendering::setupscreen(useddepthbits, usedfsaa);
 
     inputgrab(grabinput);
 
@@ -1041,8 +1034,8 @@ void checkinput()
                         SDL_GetWindowSize(screen, &screenw, &screenh);
                         if(!(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN))
                         {
-                            scr_w = clamp(screenw, SCR_MINW, SCR_MAXW);
-                            scr_h = clamp(screenh, SCR_MINH, SCR_MAXH);
+                            inexor::rendering::scr_w = clamp(screenw, SCR_MINW, SCR_MAXW);
+                            inexor::rendering::scr_h = clamp(screenh, SCR_MINH, SCR_MAXH);
                         }
                         gl_resize();
                     }
@@ -1284,8 +1277,8 @@ int main(int argc, char **argv)
             }
             // case 'g': spdlog::get("global")->debug() << "Setting log file: " << &argv[i][2]; setlogfile(&argv[i][2]); break;
             case 'd': dedicated = atoi(&argv[i][2]); if(dedicated<=0) dedicated = 2; break;
-            case 'w': scr_w = clamp(atoi(&argv[i][2]), SCR_MINW, SCR_MAXW); if(!findarg(argc, argv, "-h")) scr_h = -1; break;
-            case 'h': scr_h = clamp(atoi(&argv[i][2]), SCR_MINH, SCR_MAXH); if(!findarg(argc, argv, "-w")) scr_w = -1; break;
+            case 'w': inexor::rendering::scr_w = clamp(atoi(&argv[i][2]), SCR_MINW, SCR_MAXW); if(!findarg(argc, argv, "-h")) inexor::rendering::scr_h = -1; break;
+            case 'h': inexor::rendering::scr_h = clamp(atoi(&argv[i][2]), SCR_MINH, SCR_MAXH); if(!findarg(argc, argv, "-w")) inexor::rendering::scr_w = -1; break;
             case 'z': depthbits = atoi(&argv[i][2]); break;
             case 'b': /* compat, ignore */ break;
             case 'a': fsaa = atoi(&argv[i][2]); break;
@@ -1357,7 +1350,7 @@ int main(int argc, char **argv)
     #endif
 
     int useddepthbits = 0, usedfsaa = 0;
-    setupscreen(useddepthbits, usedfsaa);
+    inexor::rendering::setupscreen(useddepthbits, usedfsaa);
     SDL_ShowCursor(SDL_FALSE);
 
     /// Initialise OpenGL

@@ -12,6 +12,8 @@
 
 namespace inexor { namespace rendering {
 extern SharedVar<int> fullscreen;
+extern SharedVar<int> scr_w;
+extern SharedVar<int> scr_h;
 } }
 
 class InexorCefContextManager : public InexorCefContextProvider
