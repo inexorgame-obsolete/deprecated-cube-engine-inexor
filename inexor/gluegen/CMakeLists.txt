@@ -10,11 +10,15 @@
 
 # Windows-note: Make sure all slashes are unix style! / instead of \ 
 
-set(LLVM_DIR "E:/weitere-Dokumente/Software/llvm-3.8.0.src")
-# set(LLVM_DIR "/usr/lib/llvm-3.8")
+if(COMPILER_MSVC)
+  set(LLVM_DIR "E:/weitere-Dokumente/Software/llvm-3.8.0.src")
+  set(LLVM_LIB_DIR "E:/weitere-Dokumente/Software/llvm-3.8.0.src/build/MinSizeRel/lib")
+endif()
 
-set(LLVM_LIB_DIR "E:/weitere-Dokumente/Software/llvm-3.8.0.src/build/MinSizeRel/lib")
-# set(LLVM_LIB_DIR "/usr/lib/llvm-3.8/lib")
+if(COMPILER_GCC OR COMPILER_CLANG)
+  set(LLVM_DIR "/usr/lib/llvm-3.8")
+  set(LLVM_LIB_DIR "/usr/lib/llvm-3.8/lib")
+endif()
 
 # If you followed the clang build tutorial step by step and also named your llvm build folder
 # "build", then the lines below need no further adaption, but just LLVM_DIR above.
@@ -82,4 +86,5 @@ include_directories(
   ${LLVM_GENERAL_INCLUDE_DIR}
   ${CLANG_BUILD_INCLUDE_DIR}
   ${CLANG_GENERAL_INCLUDE_DIR}
+#  "$(which clang)../lib/clang/3.8/include"
 )
