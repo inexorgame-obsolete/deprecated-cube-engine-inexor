@@ -383,8 +383,12 @@ var Tree = function(server, grpc) {
 	root.rest = {
 
 		"get": function(request, response, next) {
-			
-			response.send(200, root.findNode("/" + request.params[0]).get());
+			var node = root.findNode("/" + request.params[0]);
+			if (node.isContainer) {
+				response.send(200, node.toJson());
+			} else {
+				response.send(200, node.get());
+			}
 			return next();
 		},
 
@@ -459,6 +463,7 @@ var Tree = function(server, grpc) {
 		root.grpc.synchronize = root.grpc.treeServiceClient.synchronize();
 
 		root.grpc.synchronize.on("data", function(message) {
+			console.log(message.key);
 			var protoKey = message.key;
 			var value = message[protoKey];
 			var path = root.grpc.getPath(protoKey);
