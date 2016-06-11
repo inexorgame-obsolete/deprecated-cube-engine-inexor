@@ -3,7 +3,7 @@
 var separator = "/";
 
 var isValidDatatype = function(datatype) {
-	return datatype == "node" || datatype == "string" || datatype == "int64" || datatype == "float" || datatype == "bool" || datatype == "timestamp";
+	return datatype == "node" || datatype == "int64" || datatype == "string" || datatype == "float" || datatype == "bool" || datatype == "timestamp";
 };
 
 var isValidName = /^[\w ]+$/;
