@@ -60,11 +60,6 @@ TemplateData fill_templatedata(vector<ShTreeNode> &tree, const string &ns)
     int index = 1;
     for(auto node : tree)
     {
-        if(node.unique_name.empty())
-        {
-            std::cerr << "[WARNING] Missing path for " << node.cpp_var << "\n";
-        }
-
         TemplateData curvariable{TemplateData::Type::Object};
         curvariable["proto_type"] = node.protoc_lit;
         curvariable["cpp_type"] = node.type_lit;
