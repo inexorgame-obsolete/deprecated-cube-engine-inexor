@@ -33,8 +33,16 @@ extern const uchar fvmasks[64];
 extern const uchar faceedgesidx[6][4];
 extern bool inbetweenframes, renderedframe;
 
-extern SDL_Window *screen;
-extern int screenw, screenh;
+extern SDL_Window *sdl_window;
+
+namespace inexor {
+namespace rendering {
+namespace screen {
+    extern int screenw, screenh;
+}
+}
+}
+
 extern SharedVar<int> zpass, glowpass;
 
 extern vector<int> entgroup;

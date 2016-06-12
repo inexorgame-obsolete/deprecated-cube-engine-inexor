@@ -1,3 +1,5 @@
+using namespace inexor::rendering::screen;
+
 extern SharedVar<int> rtsharefb, rtscissor, blurtile;
 
 struct rendertarget
