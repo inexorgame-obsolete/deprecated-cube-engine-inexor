@@ -3,28 +3,26 @@
 :: This is a wrapper over the node stuff, we set our node environment settings here and
 :: just pass the specific tasks as arguments (when calling this bat)
 
+:: We work on env vars in here, but want to restore them lateron:
+Setlocal
 
 :: %~dp0 is the place of the current script, since %cd% wont work then.
 set "MAINDIR=%~dp0.."
-set INEXOR_ARCH=win32
-
-if /I "%PROCESSOR_ARCHITECTURE%" == "amd64" (
-    set INEXOR_ARCH=win64
-)
-if /I "%PROCESSOR_ARCHITEW6432%" == "amd64" (
-    set INEXOR_ARCH=win64
-)
-
 
 :: go for the shipped node+npm which is in the platform submodule since we ship it for developers
 :: + use a really shrinked portable git version
-set "INEXOR_ARCH_DIR=%MAINDIR%\bin\windows\%INEXOR_ARCH%"
-set "PATH=%PATH%;%INEXOR_ARCH_DIR%;%MAINDIR%\platform\bin\windows\all\npm;%MAINDIR%\platform\bin\windows\all\npm\git\cmd"
+set "INEXOR_BIN_DIRS=%MAINDIR%\bin\windows\win32;%MAINDIR%\bin\windows\win64"
+set "PATH=%INEXOR_BIN_DIRS%;%MAINDIR%\platform\bin\windows\all\npm;%MAINDIR%\platform\bin\windows\all\npm\git\cmd"
 set "NODE_PATH=%MAINDIR%\platform\bin\windows\all\npm;%MAINDIR%\node;%MAINDIR%\node\lib"
 set "NPM_EXECUTEABLE=%MAINDIR%\platform\bin\windows\all\npm\npm.cmd"
 
-echo Using shipped node.js (v6.2.1), npm (v3.9.1) and git (git needed as npm backend)
+echo Using shipped node.js, npm and git (git needed as npm backend)
 
+
+echo node version:
+call node -v
+echo npm version:
+call %NPM_EXECUTEABLE% -v
 
 cd "%MAINDIR%\node"
 
@@ -36,3 +34,6 @@ Setlocal EnableDelayedExpansion
 Setlocal DisableDelayedExpansion
 
 call cd "%MAINDIR%"
+
+:: restore envvars
+Endlocal
