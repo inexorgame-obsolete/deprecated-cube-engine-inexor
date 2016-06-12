@@ -1,45 +1,19 @@
-syntax = "proto2"; // This is explicitely needed for proto3 processing
-package inexor.rpc;
+syntax = "proto3";
 
-//option cc_generic_services = true;
+package helloworld;
 
-// For sending cubescript code, just a string
-message Cubescript {
-  required string code = 1;
+// The greeting service definition.
+service Greeter {
+  // Sends a greeting
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
 }
 
-// The result of cubescript code, encoding the cubescript
-// return value
-message CubescriptResult {
-  optional string s = 4; // string
-  optional int64  i = 5; // integer
-  optional double f = 6;
-  optional bool   null = 7;
+// The request message containing the user's name.
+message HelloRequest {
+  string name = 1;
 }
 
-// Used by our RPC Server/Client implementation
-//
-// Encodes a method call or a method return callback
-message ServiceCall {
-  enum CallType {
-    CALL = 0;
-    RESPONSE = 1;
-  }
-
-  // The canonical name of the function to call
-  required string function_name = 2;
-  // UUID; same for call and callback
-  // TODO: Encode as 16 bytes
-  required string call_uuid = 3;
-
-  // Indicates whether this is a call or a call back
-  required CallType type = 6;
-
-  // The serialized message this carries
-  required bytes payload = 8;
+// The response message containing the greetings
+message HelloReply {
+  string message = 1;
 }
-
-//service InexorService {
-  // Call some cubescript on the server
-//  rpc EvalCubescript (Cubescript) returns (CubescriptResult);
-//}
