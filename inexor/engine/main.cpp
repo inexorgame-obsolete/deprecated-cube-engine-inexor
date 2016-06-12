@@ -15,6 +15,10 @@ namespace screen {
 
     extern SharedVar<int> fullscreen, vsync, vsynctear;
     extern void cleargamma();
+
+    /// screen resolution management
+    int screenw = 0, screenh = 0, desktopw = 0, desktoph = 0;
+
 }
 }
 namespace sound {
@@ -22,6 +26,7 @@ namespace sound {
 }
 }
 
+using namespace inexor::rendering::screen;
 using namespace inexor::sound;
 
 extern void writeinitcfg();
@@ -32,9 +37,6 @@ dynent *player = NULL;
 /// Simple DirectMedia Window and Layer
 SDL_Window *sdl_window = NULL;
 SDL_GLContext glcontext = NULL;
-
-/// screen resolution management
-int screenw = 0, screenh = 0, desktopw = 0, desktoph = 0;
 
 /// microtiming management integers
 int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1;
@@ -52,7 +54,7 @@ void cleanupSDL()
         if(sdl_window) SDL_SetWindowGrab(sdl_window, SDL_FALSE);
         SDL_SetRelativeMouseMode(SDL_FALSE);
         SDL_ShowCursor(SDL_TRUE);
-        inexor::rendering::screen::cleargamma();
+        cleargamma();
     }
 }
 
@@ -202,14 +204,14 @@ void writeinitcfg()
     if(!f) return;
     f->printf("// automatically written on exit, DO NOT MODIFY\n// modify settings in game\n");
 
-    f->printf("fullscreen %d\n", *inexor::rendering::screen::fullscreen);
-    f->printf("screenres %d %d\n", *inexor::rendering::screen::scr_w, *inexor::rendering::screen::scr_h);
-    f->printf("colorbits %d\n", *inexor::rendering::screen::colorbits);
-    f->printf("depthbits %d\n", *inexor::rendering::screen::depthbits);
-    f->printf("stencilbits %d\n", *inexor::rendering::screen::stencilbits);
+    f->printf("fullscreen %d\n", *fullscreen);
+    f->printf("screenres %d %d\n", *scr_w, *scr_h);
+    f->printf("colorbits %d\n", *colorbits);
+    f->printf("depthbits %d\n", *depthbits);
+    f->printf("stencilbits %d\n", *stencilbits);
     f->printf("fsaa %d\n", *fsaa);
-    f->printf("vsync %d\n", *inexor::rendering::screen::vsync);
-    f->printf("vsynctear %d\n", *inexor::rendering::screen::vsynctear);
+    f->printf("vsync %d\n", *vsync);
+    f->printf("vsynctear %d\n", *vsynctear);
     extern SharedVar<int> shaderprecision;
     f->printf("shaderprecision %d\n", *shaderprecision);
     f->printf("soundchans %d\n", *inexor::sound::soundchans);
@@ -838,7 +840,7 @@ void resetgl()
     cleanupgl();
     
     int useddepthbits = 0, usedfsaa = 0;
-    inexor::rendering::screen::setupscreen(useddepthbits, usedfsaa);
+    setupscreen(useddepthbits, usedfsaa);
 
     inputgrab(grabinput);
 
@@ -854,7 +856,7 @@ void resetgl()
     reloadfonts();
     inbetweenframes = true;
     renderbackground("initializing...");
-    inexor::rendering::screen::restoregamma();
+    restoregamma();
     reloadshaders();
     reloadtextures();
     initlights();
@@ -1051,8 +1053,8 @@ void checkinput()
                         SDL_GetWindowSize(sdl_window, &screenw, &screenh);
                         if(!(SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_FULLSCREEN))
                         {
-                            inexor::rendering::screen::scr_w = clamp(screenw, SCR_MINW, SCR_MAXW);
-                            inexor::rendering::screen::scr_h = clamp(screenh, SCR_MINH, SCR_MAXH);
+                            scr_w = clamp(screenw, SCR_MINW, SCR_MAXW);
+                            scr_h = clamp(screenh, SCR_MINH, SCR_MAXH);
                         }
                         gl_resize();
                     }
@@ -1294,14 +1296,14 @@ int main(int argc, char **argv)
             }
             // case 'g': spdlog::get("global")->debug() << "Setting log file: " << &argv[i][2]; setlogfile(&argv[i][2]); break;
             case 'd': dedicated = atoi(&argv[i][2]); if(dedicated<=0) dedicated = 2; break;
-            case 'w': inexor::rendering::screen::scr_w = clamp(atoi(&argv[i][2]), SCR_MINW, SCR_MAXW); if(!findarg(argc, argv, "-h")) inexor::rendering::screen::scr_h = -1; break;
-            case 'h': inexor::rendering::screen::scr_h = clamp(atoi(&argv[i][2]), SCR_MINH, SCR_MAXH); if(!findarg(argc, argv, "-w")) inexor::rendering::screen::scr_w = -1; break;
-            case 'z': inexor::rendering::screen::depthbits = atoi(&argv[i][2]); break;
+            case 'w': scr_w = clamp(atoi(&argv[i][2]), SCR_MINW, SCR_MAXW); if(!findarg(argc, argv, "-h")) scr_h = -1; break;
+            case 'h': scr_h = clamp(atoi(&argv[i][2]), SCR_MINH, SCR_MAXH); if(!findarg(argc, argv, "-w")) scr_w = -1; break;
+            case 'z': depthbits = atoi(&argv[i][2]); break;
             case 'b': /* compat, ignore */ break;
             case 'a': fsaa = atoi(&argv[i][2]); break;
-            case 'v': inexor::rendering::screen::vsync = atoi(&argv[i][2]); inexor::rendering::screen::restorevsync(); break;
-            case 't': inexor::rendering::screen::fullscreen = atoi(&argv[i][2]); break;
-            case 's': inexor::rendering::screen::stencilbits = atoi(&argv[i][2]); break;
+            case 'v': vsync = atoi(&argv[i][2]); restorevsync(); break;
+            case 't': fullscreen = atoi(&argv[i][2]); break;
+            case 's': stencilbits = atoi(&argv[i][2]); break;
             case 'f': 
             {
                 extern SharedVar<int>shaderprecision;
@@ -1367,7 +1369,7 @@ int main(int argc, char **argv)
     #endif
 
     int useddepthbits = 0, usedfsaa = 0;
-    inexor::rendering::screen::setupscreen(useddepthbits, usedfsaa);
+    setupscreen(useddepthbits, usedfsaa);
     SDL_ShowCursor(SDL_FALSE);
 
     /// Initialise OpenGL

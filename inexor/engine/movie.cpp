@@ -18,6 +18,8 @@ namespace sound {
 }
 }
 
+using namespace inexor::rendering::screen;
+
 VAR(dbgmovie, 0, 0, 1);
 
 struct aviindexentry

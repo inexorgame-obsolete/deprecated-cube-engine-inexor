@@ -194,7 +194,7 @@ VAR(aaenvmap, 0, 2, 4);
 
 GLuint genenvmap(const vec &o, int envmapsize, int blur)
 {
-    int rendersize = 1 << (envmapsize + aaenvmap), sizelimit = min(hwcubetexsize, min(screenw, screenh));
+    int rendersize = 1 << (envmapsize + aaenvmap), sizelimit = min(hwcubetexsize, min(inexor::rendering::screen::screenw, inexor::rendering::screen::screenh));
     if(maxtexsize) sizelimit = min(sizelimit, maxtexsize);
     while(rendersize > sizelimit) rendersize /= 2;
     int texsize = min(rendersize, 1 << envmapsize);
@@ -240,7 +240,7 @@ GLuint genenvmap(const vec &o, int envmapsize, int blur)
         createtexture(tex, texsize, texsize, src, 3, 2, GL_RGB5, side.target);
     }
     glFrontFace(GL_CW);
-    glViewport(0, 0, screenw, screenh);
+    glViewport(0, 0, inexor::rendering::screen::screenw, inexor::rendering::screen::screenh);
     delete[] pixels;
     clientkeepalive(); // todo threadsafe
     forcecubemapload(tex);
