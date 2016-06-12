@@ -280,9 +280,12 @@ endfunction()
 # includes the named subdir if that option is ON.
 function(opt_subdir subdir initial)
   string(TOUPPER "BUILD_${subdir}" option_name)
-  option(${option_name} "Build ${subdir}" ${initial})
+  
+  if(NOT DEFINED BUILD_ALL)
+    option(${option_name} "Build ${subdir}" ${initial})
+  endif()
 
-  if(${${option_name}})
+  if(DEFINED BUILD_ALL OR ${${option_name}})
       add_subdirectory(${subdir})
   else()
       message(STATUS "not building ${subdir}")
