@@ -24,6 +24,7 @@ add_subdirectory(texture)
 
 # Actual targets
 opt_subdir(client on)
-opt_subdir(server on)
-opt_subdir(master on)
+opt_subdir(server off)
+opt_subdir(master off)
 opt_subdir(test   on)
+opt_subdir(gluegen off)

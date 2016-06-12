@@ -258,12 +258,51 @@ register_possible_dependency(${BOOST_FILESYSTEM_LIBS})
 
 function(require_boost_filesystem targ)
   message(STATUS "Configuring ${targ} with Boost Filesystem")
+  if (";${ARGN};" MATCHES ";NOLINK;")
+    set(NOLINK "NOLINK")
+  endif()
 
   add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED)
-  target_link_libs(${targ} ${BOOST_FILESYSTEM_LIBS})
+  target_link_libs(${targ} ${BOOST_FILESYSTEM_LIBS} ${NOLINK})
   target_include_directories(${targ} PUBLIC ${BOOST_FILESYSTEM_INCLUDE_DIRS})
 
-  require_boost_system(${targ})
+  require_boost_system(${targ} ${NOLINK})
+endfunction()
+
+#### BOOST (Regex)
+
+find_libs(BOOST_REGEX_LIBS boost_regex)
+find_path(BOOST_REGEX_INCLUDE_DIRS boost/regex.hpp)
+
+register_possible_dependency(${BOOST_REGEX_LIBS})
+
+function(require_boost_regex targ)
+  message(STATUS "Configuring ${targ} with Boost Regex")
+  if (";${ARGN};" MATCHES ";NOLINK;")
+    set(NOLINK "NOLINK")
+  endif()
+
+  target_link_libs(${targ} ${BOOST_REGEX_LIBS} ${NOLINK})
+  target_include_directories(${targ} PUBLIC ${BOOST_REGEX_INCLUDE_DIRS})
+
+endfunction()
+
+#### BOOST (program options)
+
+find_libs(BOOST_PROGRAM_OPTS_LIBS boost_program_options)
+find_path(BOOST_PROGRAM_OPTS_INCLUDE_DIRS boost/program_options.hpp)
+
+register_possible_dependency(${BOOST_PROGRAM_OPTS_LIBS})
+
+function(require_boost_program_options targ)
+  message(STATUS "Configuring ${targ} with Boost program options")
+  if (";${ARGN};" MATCHES ";NOLINK;")
+    set(NOLINK "NOLINK")
+  endif()
+
+  target_link_libs(${targ} ${BOOST_PROGRAM_OPTS_LIBS} ${NOLINK})
+  target_include_directories(${targ} PUBLIC ${BOOST_PROGRAM_OPTS_INCLUDE_DIRS})
+
 endfunction()
 
 #### Rapidjson

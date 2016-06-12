@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.12) 
+cmake_minimum_required(VERSION 3.0.0) 
 include(cmake/functions.cmake)
 include(cmake/glibc_cxx11_abi_detection.cmake)
 include(cmake/silence_find_pathprogram.cmake)

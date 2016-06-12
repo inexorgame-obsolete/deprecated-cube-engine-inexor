@@ -116,10 +116,9 @@ void find_shared_decls(const std::vector<std::string> &options, const std::vecto
             if (!tt) return true;
             auto *tmpl = tt->getTemplateName().getAsTemplateDecl();
             std::string tmpl_name = intern::canonical_decl(tmpl);
-            if (tmpl_name != "::SharedVar") return true;
+            if (tmpl_name != "::SharedVar" || !x->hasAttrs()) return true;
 
             std::string tree_path="";
-
             intern::extract_named_annotations(x->getAttrs(), [&tree_path] (std::string key, std::string val)
             {
                 if (key == "SharedTree")
