@@ -5,39 +5,30 @@
 ## you need to edit the LLVM_DIR and the other marked stuff below.
 
 # clang is a subproject of llvm
-####################################### EDIT_HERE
-####################################### EDIT_HERE
 
-# Windows-note: Make sure all slashes are unix style! / instead of \ 
 
-if(COMPILER_MSVC)
-  set(LLVM_DIR "E:/weitere-Dokumente/Software/llvm-3.8.0.src")
-  set(LLVM_LIB_DIR "E:/weitere-Dokumente/Software/llvm-3.8.0.src/build/MinSizeRel/lib")
-endif()
-
-if(COMPILER_GCC OR COMPILER_CLANG)
-  set(LLVM_DIR "/usr/lib/llvm-3.8")
-  set(LLVM_LIB_DIR "/usr/lib/llvm-3.8/lib")
-endif()
-
+#### old manual style:
 # If you followed the clang build tutorial step by step and also named your llvm build folder
 # "build", then the lines below need no further adaption, but just LLVM_DIR above.
-set(LLVM_GENERAL_INCLUDE_DIR  "${LLVM_DIR}/include")
-set(CLANG_GENERAL_INCLUDE_DIR "${LLVM_DIR}/tools/clang/include")
+
+#  set(LLVM_DIR "/usr/lib/llvm-3.8")
+#  set(LLVM_LIB_DIR "/usr/lib/llvm-3.8/lib")
+
+# set(LLVM_GENERAL_INCLUDE_DIR  "${LLVM_DIR}/include")
+# set(CLANG_GENERAL_INCLUDE_DIR "${LLVM_DIR}/tools/clang/include")
 
 # Path where your generated project files lay for the llvm suite.
-set(LLVM_BUILD_INCLUDE_DIR  "${LLVM_DIR}/build/include")
+# set(LLVM_BUILD_INCLUDE_DIR  "${LLVM_DIR}/build/include")
 
 # Path where your generated project files lay for the downloaded clang project.
-set(CLANG_BUILD_INCLUDE_DIR "${LLVM_DIR}/build/tools/clang/include")
+#set(CLANG_BUILD_INCLUDE_DIR "${LLVM_DIR}/build/tools/clang/include")
 
-######################################## /EDIT_HERE
-######################################## /EDIT_HERE
+# list(INSERT CMAKE_LIBRARY_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR} ${LLVM_LIB_DIR})
 
 
-list(INSERT CMAKE_LIBRARY_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR} ${LLVM_LIB_DIR})
-
-declare_module(gluegen .)
+find_path(LLVM_INCLUDE_DIR llvm/AsmParser/Parser.h)
+find_path(CLANG_INCLUDE_DIR clang/Tooling/Tooling.h)
+find_path(MUSTACHE_INCLUDE_DIR kainjow/mustache.hpp)
 
 find_libs(LLVM_LIBS
      clangFrontend
@@ -63,28 +54,24 @@ find_libs(LLVM_LIBS
  LIB LLVMSupport
 )
 
+declare_module(gluegen .)
 add_app(gluecodegenerator ${GLUEGEN_MODULE_SOURCES} CONSOLE_APP)
+
+target_link_libs(gluecodegenerator ${LLVM_LIBS})
 
 require_cxx11_abi(gluecodegenerator)
 require_boost_program_options(gluecodegenerator)
 require_boost_regex(gluecodegenerator)
-
-target_link_libs(gluecodegenerator ${LLVM_LIBS})
-
-require_threads(gluecodegenerator)
+require_threads(gluecodegenerator) # Need to be required after the llvm libs!
 require_zlib(gluecodegenerator)
 
 if(COMPILER_GCC OR COMPILER_CLANG)
   target_link_libs(gluecodegenerator dl tinfo)
 endif()
 
-find_path(MUSTACHE_INCLUDE_DIRS kainjow/mustache.hpp)
 
 include_directories(
-  ${MUSTACHE_INCLUDE_DIRS}
-  ${LLVM_BUILD_INCLUDE_DIR}
-  ${LLVM_GENERAL_INCLUDE_DIR}
-  ${CLANG_BUILD_INCLUDE_DIR}
-  ${CLANG_GENERAL_INCLUDE_DIR}
-#  "$(which clang)../lib/clang/3.8/include"
+  ${MUSTACHE_INCLUDE_DIR}
+  ${LLVM_INCLUDE_DIR}
+  ${CLANG_INCLUDE_DIR}
 )
