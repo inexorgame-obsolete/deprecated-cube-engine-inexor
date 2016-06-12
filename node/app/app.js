@@ -95,7 +95,7 @@ server.post(/^\/tree\/(.*)/, inexor.tree.rest.post);
 
 // Serve static files from the assets folder
 server.get(/^\/?.*/, restify.serveStatic({
-    directory: __dirname + './public',
+    directory: __dirname + './../public',
     default: 'index.html'
 }));
 
