@@ -11,8 +11,11 @@
 
 namespace inexor {
 namespace rendering {
+namespace screen {
+
     extern SharedVar<int> fullscreen, vsync, vsynctear;
     extern void cleargamma();
+}
 }
 namespace sound {
     extern SharedVar<int> soundchans, soundfreq, soundbufferlen;
@@ -27,7 +30,7 @@ extern void writeinitcfg();
 dynent *player = NULL;
 
 /// Simple DirectMedia Window and Layer
-SDL_Window *screen = NULL;
+SDL_Window *sdl_window = NULL;
 SDL_GLContext glcontext = NULL;
 
 /// screen resolution management
@@ -46,10 +49,10 @@ void cleanupSDL()
     if(SDL_WasInit(SDL_INIT_VIDEO))
     {
         // free SDL context
-        if(screen) SDL_SetWindowGrab(screen, SDL_FALSE);
+        if(sdl_window) SDL_SetWindowGrab(sdl_window, SDL_FALSE);
         SDL_SetRelativeMouseMode(SDL_FALSE);
         SDL_ShowCursor(SDL_TRUE);
-        inexor::rendering::cleargamma();
+        inexor::rendering::screen::cleargamma();
     }
 }
 
@@ -158,27 +161,21 @@ bool initwarning(const char *desc, int level, int type)
 /// function forward to change screen resolution
 namespace inexor {
 namespace rendering {
+namespace screen {
 
 void screenres(int w, int h);
 
-ICOMMAND(screenres, "ii", (int *w, int *h), screenres(*w, *h));
+    ICOMMAND(screenres, "ii", (int *w, int *h), screenres(*w, *h));
 
-/// change screen width and height
-VARF(scr_w, SCR_MINW, -1, SCR_MAXW, screenres(scr_w, -1));
-VARF(scr_h, SCR_MINH, -1, SCR_MAXH, screenres(-1, scr_h));
+    /// change screen width and height
+    VARF(scr_w, SCR_MINW, -1, SCR_MAXW, screenres(scr_w, -1));
+    VARF(scr_h, SCR_MINH, -1, SCR_MAXH, screenres(-1, scr_h));
 
-}
-}
-
-/// various buffer precisions and anti aliasing
-/// @see initwarning
-VAR(colorbits, 0, 0, 32);
-VARF(depthbits, 0, 0, 32, initwarning("depth-buffer precision"));
-VARF(stencilbits, 0, 0, 32, initwarning("stencil-buffer precision"));
-VARF(fsaa, -1, -1, 16, initwarning("anti-aliasing"));
-
-namespace inexor {
-namespace rendering {
+    /// various buffer precisions and anti aliasing
+    /// @see initwarning
+    VAR(colorbits, 0, 0, 32);
+    VARF(depthbits, 0, 0, 32, initwarning("depth-buffer precision"));
+    VARF(stencilbits, 0, 0, 32, initwarning("stencil-buffer precision"));
 
     /// "use this function to set the swap interval for the current OpenGL context" (VSYNC)
     void restorevsync()
@@ -193,6 +190,9 @@ namespace rendering {
 
 }
 }
+}
+
+VARF(fsaa, -1, -1, 16, initwarning("anti-aliasing"));
 
 /// write most important settings to init.cfg using an UTF-8 stream
 /// @see openutf8file
@@ -202,14 +202,14 @@ void writeinitcfg()
     if(!f) return;
     f->printf("// automatically written on exit, DO NOT MODIFY\n// modify settings in game\n");
 
-    f->printf("fullscreen %d\n", *inexor::rendering::fullscreen);
-    f->printf("screenres %d %d\n", *inexor::rendering::scr_w, *inexor::rendering::scr_h);
-    f->printf("colorbits %d\n", *colorbits);
-    f->printf("depthbits %d\n", *depthbits);
-    f->printf("stencilbits %d\n", *stencilbits);
+    f->printf("fullscreen %d\n", *inexor::rendering::screen::fullscreen);
+    f->printf("screenres %d %d\n", *inexor::rendering::screen::scr_w, *inexor::rendering::screen::scr_h);
+    f->printf("colorbits %d\n", *inexor::rendering::screen::colorbits);
+    f->printf("depthbits %d\n", *inexor::rendering::screen::depthbits);
+    f->printf("stencilbits %d\n", *inexor::rendering::screen::stencilbits);
     f->printf("fsaa %d\n", *fsaa);
-    f->printf("vsync %d\n", *inexor::rendering::vsync);
-    f->printf("vsynctear %d\n", *inexor::rendering::vsynctear);
+    f->printf("vsync %d\n", *inexor::rendering::screen::vsync);
+    f->printf("vsynctear %d\n", *inexor::rendering::screen::vsynctear);
     extern SharedVar<int> shaderprecision;
     f->printf("shaderprecision %d\n", *shaderprecision);
     f->printf("soundchans %d\n", *inexor::sound::soundchans);
@@ -596,12 +596,12 @@ void inputgrab(bool on)
         {
             if(SDL_SetRelativeMouseMode(SDL_TRUE) >= 0) 
             {
-                SDL_SetWindowGrab(screen, SDL_TRUE);
+                SDL_SetWindowGrab(sdl_window, SDL_TRUE);
                 relativemouse = true;
             }
             else 
             {
-                SDL_SetWindowGrab(screen, SDL_FALSE);
+                SDL_SetWindowGrab(sdl_window, SDL_FALSE);
                 canrelativemouse = false;
                 relativemouse = false;
             }
@@ -612,7 +612,7 @@ void inputgrab(bool on)
         SDL_ShowCursor(SDL_TRUE); // show OS cursor
         if(relativemouse)
         {
-            SDL_SetWindowGrab(screen, SDL_FALSE);
+            SDL_SetWindowGrab(sdl_window, SDL_FALSE);
             SDL_SetRelativeMouseMode(SDL_FALSE);
             relativemouse = false;
         }
@@ -624,19 +624,20 @@ bool initwindowpos = false;
 
 namespace inexor {
 namespace rendering {
+namespace screen {
 
     /// switch fullscreen mode
     void setfullscreen(bool enable)
     {
-        if(!screen) return;
+        if(!sdl_window) return;
         //initwarning(enable ? "fullscreen" : "windowed");
-        SDL_SetWindowFullscreen(screen, enable ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+        SDL_SetWindowFullscreen(sdl_window, enable ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
         if(!enable)
         {
-            SDL_SetWindowSize(screen, scr_w, scr_h);
+            SDL_SetWindowSize(sdl_window, scr_w, scr_h);
             if(initwindowpos)
             {
-                SDL_SetWindowPosition(screen, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+                SDL_SetWindowPosition(sdl_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
                 initwindowpos = false;
             }
         }
@@ -655,12 +656,12 @@ namespace rendering {
     {
         scr_w = w!=-1 ? clamp(w, SCR_MINW, SCR_MAXW) : scr_w;
         scr_h = h!=-1 ? clamp(h, SCR_MINH, SCR_MAXH) : scr_h;
-        if(screen)
+        if(sdl_window)
         {
             scr_w = min(scr_w, desktopw);
             scr_h = min(scr_h, desktoph);
-            if(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN) gl_resize();
-            else SDL_SetWindowSize(screen, scr_w, scr_h);
+            if(SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_FULLSCREEN) gl_resize();
+            else SDL_SetWindowSize(sdl_window, scr_w, scr_h);
         }
         else
         {
@@ -674,7 +675,7 @@ namespace rendering {
     {
         if(gamma == curgamma) return;
         curgamma = gamma;
-        if(SDL_SetWindowBrightness(screen, gamma/100.0f)==-1)
+        if(SDL_SetWindowBrightness(sdl_window, gamma/100.0f)==-1)
             spdlog::get("global")->error() << "Could not set gamma: " << SDL_GetError();
     });
 
@@ -683,15 +684,15 @@ namespace rendering {
     void restoregamma()
     {
         if(curgamma == 100) return;
-        SDL_SetWindowBrightness(screen, curgamma/100.0f);
+        SDL_SetWindowBrightness(sdl_window, curgamma/100.0f);
     }
 
     /// set screen to normal brightness
     void cleargamma()
     {
-        if(curgamma != 100 && screen) {
+        if(curgamma != 100 && sdl_window) {
             /// "Use this function to set the brightness (gamma multiplier) for the display that owns a given window."
-            SDL_SetWindowBrightness(screen, 1.0f);
+            SDL_SetWindowBrightness(sdl_window, 1.0f);
         }
     }
 
@@ -704,10 +705,10 @@ namespace rendering {
             SDL_GL_DeleteContext(glcontext);
             glcontext = NULL;
         }
-        if(screen)
+        if(sdl_window)
         {
-            SDL_DestroyWindow(screen);
-            screen = NULL;
+            SDL_DestroyWindow(sdl_window);
+            sdl_window = NULL;
         }
 
         SDL_DisplayMode desktop;
@@ -764,10 +765,10 @@ namespace rendering {
                 SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, config&4 ? 1 : 0);
                 SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, config&4 ? fsaa : 0);
             }
-            screen = SDL_CreateWindow("Inexor", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, winw, winh, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | flags);
-            if(screen) break;
+            sdl_window = SDL_CreateWindow("Inexor", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, winw, winh, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | flags);
+            if(sdl_window) break;
         }
-        if(!screen) fatal("failed to create OpenGL window: %s", SDL_GetError());
+        if(!sdl_window) fatal("failed to create OpenGL window: %s", SDL_GetError());
         else
         {
             if(depthbits && (config&1)==0) spdlog::get("global")->warn() << *depthbits << " bit z-buffer not supported - disabling";
@@ -775,19 +776,20 @@ namespace rendering {
             if(fsaa>0 && (config&4)==0) spdlog::get("global")->warn() << *fsaa << " anti-aliasing not supported - disabling";
         }
 
-        SDL_SetWindowMinimumSize(screen, SCR_MINW, SCR_MINH);
-        SDL_SetWindowMaximumSize(screen, SCR_MAXW, SCR_MAXH);
+        SDL_SetWindowMinimumSize(sdl_window, SCR_MINW, SCR_MINH);
+        SDL_SetWindowMaximumSize(sdl_window, SCR_MAXW, SCR_MAXH);
 
-        glcontext = SDL_GL_CreateContext(screen);
+        glcontext = SDL_GL_CreateContext(sdl_window);
         if(!glcontext) fatal("failed to create OpenGL context: %s", SDL_GetError());
 
-        SDL_GetWindowSize(screen, &screenw, &screenh);
+        SDL_GetWindowSize(sdl_window, &screenw, &screenh);
 
         useddepthbits = config&1 ? depthbits : 0;
         usedfsaa = config&4 ? fsaa : 0;
         restorevsync();
     }
 
+}
 }
 }
 
@@ -836,7 +838,7 @@ void resetgl()
     cleanupgl();
     
     int useddepthbits = 0, usedfsaa = 0;
-    inexor::rendering::setupscreen(useddepthbits, usedfsaa);
+    inexor::rendering::screen::setupscreen(useddepthbits, usedfsaa);
 
     inputgrab(grabinput);
 
@@ -852,7 +854,7 @@ void resetgl()
     reloadfonts();
     inbetweenframes = true;
     renderbackground("initializing...");
-    inexor::rendering::restoregamma();
+    inexor::rendering::screen::restoregamma();
     reloadshaders();
     reloadtextures();
     initlights();
@@ -878,7 +880,7 @@ static bool filterevent(const SDL_Event &event)
     switch(event.type)
     {
         case SDL_MOUSEMOTION:
-            if(grabinput && !relativemouse && !(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN))
+            if(grabinput && !relativemouse && !(SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_FULLSCREEN))
             {
                 if(event.motion.x == screenw / 2 && event.motion.y == screenh / 2) 
                     return false;  // ignore any motion events generated by SDL_WarpMouse
@@ -943,9 +945,9 @@ static void ignoremousemotion()
 /// @see SDL_WarpMouseInWindow
 static void resetmousemotion()
 {
-    if(grabinput && !relativemouse && !(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN))
+    if(grabinput && !relativemouse && !(SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_FULLSCREEN))
     {
-        SDL_WarpMouseInWindow(screen, screenw / 2, screenh / 2);
+        SDL_WarpMouseInWindow(sdl_window, screenw / 2, screenh / 2);
     }
 }
 
@@ -1046,11 +1048,11 @@ void checkinput()
 
                     case SDL_WINDOWEVENT_SIZE_CHANGED:
                     {
-                        SDL_GetWindowSize(screen, &screenw, &screenh);
-                        if(!(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN))
+                        SDL_GetWindowSize(sdl_window, &screenw, &screenh);
+                        if(!(SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_FULLSCREEN))
                         {
-                            inexor::rendering::scr_w = clamp(screenw, SCR_MINW, SCR_MAXW);
-                            inexor::rendering::scr_h = clamp(screenh, SCR_MINH, SCR_MAXH);
+                            inexor::rendering::screen::scr_w = clamp(screenw, SCR_MINW, SCR_MAXW);
+                            inexor::rendering::screen::scr_h = clamp(screenh, SCR_MINH, SCR_MAXH);
                         }
                         gl_resize();
                     }
@@ -1097,7 +1099,7 @@ void swapbuffers(bool overlay)
 {
     recorder::capture(overlay);
     gle::disable();
-    SDL_GL_SwapWindow(screen);
+    SDL_GL_SwapWindow(sdl_window);
 }
 
 /// frames per seconds and timing
@@ -1292,14 +1294,14 @@ int main(int argc, char **argv)
             }
             // case 'g': spdlog::get("global")->debug() << "Setting log file: " << &argv[i][2]; setlogfile(&argv[i][2]); break;
             case 'd': dedicated = atoi(&argv[i][2]); if(dedicated<=0) dedicated = 2; break;
-            case 'w': inexor::rendering::scr_w = clamp(atoi(&argv[i][2]), SCR_MINW, SCR_MAXW); if(!findarg(argc, argv, "-h")) inexor::rendering::scr_h = -1; break;
-            case 'h': inexor::rendering::scr_h = clamp(atoi(&argv[i][2]), SCR_MINH, SCR_MAXH); if(!findarg(argc, argv, "-w")) inexor::rendering::scr_w = -1; break;
-            case 'z': depthbits = atoi(&argv[i][2]); break;
+            case 'w': inexor::rendering::screen::scr_w = clamp(atoi(&argv[i][2]), SCR_MINW, SCR_MAXW); if(!findarg(argc, argv, "-h")) inexor::rendering::screen::scr_h = -1; break;
+            case 'h': inexor::rendering::screen::scr_h = clamp(atoi(&argv[i][2]), SCR_MINH, SCR_MAXH); if(!findarg(argc, argv, "-w")) inexor::rendering::screen::scr_w = -1; break;
+            case 'z': inexor::rendering::screen::depthbits = atoi(&argv[i][2]); break;
             case 'b': /* compat, ignore */ break;
             case 'a': fsaa = atoi(&argv[i][2]); break;
-            case 'v': inexor::rendering::vsync = atoi(&argv[i][2]); inexor::rendering::restorevsync(); break;
-            case 't': inexor::rendering::fullscreen = atoi(&argv[i][2]); break;
-            case 's': stencilbits = atoi(&argv[i][2]); break;
+            case 'v': inexor::rendering::screen::vsync = atoi(&argv[i][2]); inexor::rendering::screen::restorevsync(); break;
+            case 't': inexor::rendering::screen::fullscreen = atoi(&argv[i][2]); break;
+            case 's': inexor::rendering::screen::stencilbits = atoi(&argv[i][2]); break;
             case 'f': 
             {
                 extern SharedVar<int>shaderprecision;
@@ -1365,7 +1367,7 @@ int main(int argc, char **argv)
     #endif
 
     int useddepthbits = 0, usedfsaa = 0;
-    inexor::rendering::setupscreen(useddepthbits, usedfsaa);
+    inexor::rendering::screen::setupscreen(useddepthbits, usedfsaa);
     SDL_ShowCursor(SDL_FALSE);
 
     /// Initialise OpenGL

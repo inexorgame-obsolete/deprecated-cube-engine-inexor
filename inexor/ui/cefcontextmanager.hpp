@@ -12,7 +12,9 @@
 
 namespace inexor {
 namespace rendering {
+namespace screen {
     extern SharedVar<int> fullscreen, scr_w, scr_h, vsync;
+}
 }
 }
 
