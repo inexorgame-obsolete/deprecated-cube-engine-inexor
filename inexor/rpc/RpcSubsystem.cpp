@@ -76,8 +76,9 @@ struct changedvar
 //    };
 //    enum {VALUE_STR, VALUE_INT, VALUE_FLOAT} valuetype;
 //};
-moodycamel::ConcurrentQueue<std::string> writerrequestqueue; // Something gets pushed on this when we changed value. Gets handled by serverthread.
-moodycamel::ConcurrentQueue<std::string> readerrequestqueue; // Something gets pushed on this when a value has arrived. Gets handled by Subsystem::tick();
+
+moodycamel::ConcurrentQueue<std::string> main2net_interthread_queue; // Something gets pushed on this (lockless threadsafe queue) when we changed value. Gets handled by serverthread.
+moodycamel::ConcurrentQueue<std::string> net2main_interthread_queue; // Something gets pushed on this (lockless threadsafe queue) when a value has arrived. Gets handled by Subsystem::tick();
 
 void testserverwriter()
 {
@@ -85,7 +86,7 @@ void testserverwriter()
     //req.path = "inexor/tree/fullscreen";
     //req.intval = 1;
     //req.valuetype = writereq::VALUE_INT;
-    writerrequestqueue.enqueue("inexor/tree/fullscreen");
+    main2net_interthread_queue.enqueue("inexor/tree/fullscreen");
 }
 
 
@@ -96,27 +97,147 @@ ChangedValue MakeChangedValue(const char *path)
     return c;
 }
 
-/// Either a reading or writing request
-struct CallInstance
+/// Bidirectional Server (able to read and write) which receives changes from our sendchangequeue/the network 
+/// and put it into the network/readchangequeue (respectively)
+class BiDiServer
 {
-    enum TYPES {READER, WRITER} type;
+    std::unique_ptr<Server> grpc_server;       // instanciated only
+    ServerContext grpc_context;
+    TreeService::AsyncService service;
 
-    bool isbusy = false;                    // only filled when request was write: workaround for grpc behavior to only allow one write at a time. 
-    ChangedValue change;                    // the read will fill this on completion, the write filled it for reference when requesting the async write.
+    /// The completion queue (where notifications of the succcess of a network commands get retrieved).
+    std::unique_ptr<ServerCompletionQueue> cq;
 
-    ServerAsyncReaderWriter<ChangedValue, ChangedValue> *stream;
+    /// The stream we write into / receive data from (asynchronously).
+    ServerAsyncReaderWriter<ChangedValue, ChangedValue> stream;
 
-    CallInstance(TYPES type_, ServerAsyncReaderWriter<ChangedValue, ChangedValue> *stream_) : type(type_), stream(stream_) { }
-
-    void startreading()
+    /// Either a reading or writing request
+    struct CallInstance
     {
-        stream->Read(&change, (void *)this);
+        enum TYPES { READER, WRITER } type;
+
+        bool isbusy = false;                    // only filled when request was write: workaround for grpc behavior to only allow one write at a time. 
+        ChangedValue change;                    // the read will fill this on completion, the write filled it for later reference when requesting the async write.
+
+        ServerAsyncReaderWriter<ChangedValue, ChangedValue> *stream;
+
+        CallInstance(TYPES type_, ServerAsyncReaderWriter<ChangedValue, ChangedValue> *stream_) : type(type_), stream(stream_) {}
+
+        void startreading()
+        {
+            stream->Read(&change, (void *)this); // we pass the address of this class as the callback tag we retrieve on completion from cq.Next()
+        }
+
+        void startwrite(const std::string &str)
+        {
+            change = MakeChangedValue(str.c_str());
+            stream->Write(change, (void *)this);
+        }
+    };
+
+    CallInstance *reader = nullptr;
+    CallInstance *writer = nullptr;
+
+public:
+
+    std::string server_address;
+
+    BiDiServer(const char *address)
+        : server_address(address), stream(&grpc_context)
+    {
+        ServerBuilder builder;
+
+        builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+        builder.RegisterService(&service);
+
+        cq = builder.AddCompletionQueue();
+
+        grpc_server = builder.BuildAndStart();
     }
 
-    void startwrite(std::string &str) // todo const
+    ~BiDiServer()
     {
-        change = MakeChangedValue(str.c_str());
-        stream->Write(change, (void *)this);
+        grpc_server->Shutdown();
+        cq->Shutdown();                       // Always shutdown the completion queue after the server.
+    }
+
+    /// Wait for a client to connect on this address.
+    /// @note blocks until someone arrived.
+    void waitforconnection()
+    {
+        service.RequestSynchronize(&grpc_context, &stream, cq.get(), cq.get(), (void *)1);
+        void *tag;
+        bool succeed=false;
+        cq->Next(&tag, &succeed);
+
+        writer = new CallInstance(CallInstance::WRITER, &stream);
+        reader = new CallInstance(CallInstance::READER, &stream);
+    }
+
+    void run()
+    {
+        GPR_ASSERT(writer != nullptr && reader != nullptr);
+
+        std::vector<std::string> testservermsgs{
+            "First servermsg",
+            "Second servermsg",
+            "Third servermsg",
+            "Fourth servermsg"
+        };
+
+        reader->startreading();
+
+        int i = 0;
+        while(true)
+        {
+            if(!writer->isbusy && i < 4)
+            {
+                writer->isbusy = true;
+                writer->startwrite(testservermsgs[i]);
+                i++;
+            }
+
+            void *tag;
+            bool succeed=false;
+            if(!cq->Next(&tag, &succeed))
+            {
+                spdlog::get("global")->info() << "RPC state syncing failed: Client did shutdown(?)";
+                break;
+            }
+            else if(succeed)
+            {
+                CallInstance *completed = static_cast<CallInstance*>(tag);
+
+                if(completed->type == CallInstance::WRITER)
+                {
+                    spdlog::get("global")->info() << "[Server] Sent " << completed->change.path();
+                    completed->isbusy = false;
+                }
+                else
+                {
+                    spdlog::get("global")->info() << "[Server] Received " << completed->change.path();
+                    net2main_interthread_queue.enqueue(completed->change.path());
+                    reader->startreading(); // request new read
+                }
+            }
+            else // we do not always succeed.. WHY? probably timeout.. change to cq-AsyncNext() to finetune.
+            {
+                CallInstance *call = static_cast<CallInstance*>(tag);
+                spdlog::get("global")->info() << "[Server] received msg  was incomplete for " << (call->type == CallInstance::WRITER ? "writer" : "reader") << " .. Shutting down";
+                break; // we break on purpose (atm) to escape our blocking client (which is for testing only) so this line would need to go for a all-the-time syncing server..
+            }
+        }
+    }
+
+    void finish()
+    {
+        Status status;
+        stream.Finish(status, (void *)1);
+        void *tag;
+        bool succeed=false;
+
+        do { cq->Next(&tag, &succeed); } //wait for the finish tag to come back.
+        while(tag != (void *)1);
     }
 };
 
@@ -125,87 +246,14 @@ void RunServer()
 
     std::thread t([]
     {
-        std::string server_address("0.0.0.0:50051");
-
-        ServerBuilder builder;
-        TreeService::AsyncService service;
-        ServerContext context;
-        ServerAsyncReaderWriter<ChangedValue, ChangedValue> stream(&context);
-
-        builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
-        builder.RegisterService(&service);
-
-        // The completion queue (where notifications of the succcess of a network commands get retrieved).
-        std::unique_ptr<ServerCompletionQueue> cq = builder.AddCompletionQueue();
-
-        std::unique_ptr<Server> server = builder.BuildAndStart();
-        spdlog::get("global")->info() << "Server listening on " << server_address;
+        BiDiServer server("0.0.0.0:50051");
 
 
-        CallInstance *write = new CallInstance(CallInstance::WRITER, &stream);
-        CallInstance *read  = new CallInstance(CallInstance::READER, &stream);
+        spdlog::get("global")->info() << "RPC server listening on " << server.server_address;
 
-        /// Wait for the client to connect
-        service.RequestSynchronize(&context, &stream, cq.get(), cq.get(), (void *)1);
-        void *tag;
-        bool succeed=false;
-        cq->Next(&tag, &succeed);
-        /// 
-
-        read->startreading();
-        std::vector<std::string> servnotes{
-            "First servermsg",
-            "Second servermsg",
-            "Third servermsg",
-            "Fourth servermsg"
-        };
-        int i = 0, j = 0;
-        while(true)
-        {
-            std::string itemtosend;
-            if(!write->isbusy && 
-                i < 4) 
-             //   writerrequestqueue.try_dequeue(itemtosend))
-            {
-
-                write->isbusy = true;
-                write->startwrite(
-                    servnotes[i]);
-                    //itemtosend);
-                i++;
-            }
-
-            void *tag;
-            bool succeed=false;
-            if(!cq->Next(&tag, &succeed))
-            {
-                spdlog::get("global")->debug() << "SSHIIT";
-            }
-            else
-            if(tag != (void *)2)
-            {
-                CallInstance *completed = static_cast<CallInstance*>(tag);
-
-                if(completed->type == CallInstance::WRITER) {
-                    completed->isbusy = false;
-                    j++;
-                    if(j >= 4)
-                    {
-                        Status status;
-                        //stream.Finish(status, (void *)2);
-                    }
-                }
-                else
-                {
-                    readerrequestqueue.enqueue(completed->change.path());
-                    // void *pointertosharedvar = Lookupinthetree(path);
-                    // 
-                    read->startreading(); // request new read
-                }
-            }
-            else break;
-
-        }
+        server.waitforconnection();
+        server.run(); // this should run forever
+        server.finish();
     }
     );
     t.detach();
@@ -240,7 +288,7 @@ public:
                 MakeChangedValue("Fourth message")
             };
             for (const ChangedValue& note : notes) {
-                spdlog::get("global")->info() << "Sending message " << note.path();
+                spdlog::get("global")->info() << "[Client] Sending message " << note.path();
                 stream->Write(note);
             }
 
@@ -249,7 +297,7 @@ public:
         ChangedValue new_value;
         while (stream->Read(&new_value))
         {
-            spdlog::get("global")->info() << "Got message " << new_value.path();
+            spdlog::get("global")->info() << "[Client] Received message " << new_value.path();
         }
         writer.join();
         //Status status = stream->Finish();
