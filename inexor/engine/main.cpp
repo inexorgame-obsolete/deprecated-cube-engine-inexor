@@ -8,10 +8,19 @@
 #include "inexor/util/Logging.hpp"
 
 /// extern functions and data here
-namespace inexor { namespace rendering {
+
+namespace inexor {
+namespace rendering {
     extern SharedVar<int> fullscreen, vsync, vsynctear;
     extern void cleargamma();
-} }
+}
+namespace sound {
+    extern SharedVar<int> soundchans, soundfreq, soundbufferlen;
+}
+}
+
+using namespace inexor::sound;
+
 extern void writeinitcfg();
 
 /// local player
@@ -50,7 +59,6 @@ void cleanup()
     extern void clear_command();
     extern void clear_console();
     extern void clear_mdls();
-    extern void clear_sound();
 
     recorder::stop();
     cleanupserver();
@@ -61,7 +69,7 @@ void cleanup()
     clear_command();
     clear_console();
     clear_mdls();
-    clear_sound();
+    inexor::sound::clear_sound();
     // closelogfile();
 
     SDL_Quit();
@@ -148,16 +156,19 @@ bool initwarning(const char *desc, int level, int type)
 #define SCR_DEFAULTH 768
 
 /// function forward to change screen resolution
-namespace inexor { namespace rendering {
+namespace inexor {
+namespace rendering {
+
 void screenres(int w, int h);
 
-ICOMMAND(screenres, "ii", (int *w, int *h), inexor::rendering::screenres(*w, *h));
+ICOMMAND(screenres, "ii", (int *w, int *h), screenres(*w, *h));
 
 /// change screen width and height
-VARF(scr_w, SCR_MINW, -1, SCR_MAXW, inexor::rendering::screenres(scr_w, -1));
-VARF(scr_h, SCR_MINH, -1, SCR_MAXH, inexor::rendering::screenres(-1, scr_h));
+VARF(scr_w, SCR_MINW, -1, SCR_MAXW, screenres(scr_w, -1));
+VARF(scr_h, SCR_MINH, -1, SCR_MAXH, screenres(-1, scr_h));
 
-} }
+}
+}
 
 /// various buffer precisions and anti aliasing
 /// @see initwarning
@@ -201,10 +212,9 @@ void writeinitcfg()
     f->printf("vsynctear %d\n", *inexor::rendering::vsynctear);
     extern SharedVar<int> shaderprecision;
     f->printf("shaderprecision %d\n", *shaderprecision);
-    extern SharedVar<int> soundchans, soundfreq, soundbufferlen;
-    f->printf("soundchans %d\n", *soundchans);
-    f->printf("soundfreq %d\n", *soundfreq);
-    f->printf("soundbufferlen %d\n", *soundbufferlen);
+    f->printf("soundchans %d\n", *inexor::sound::soundchans);
+    f->printf("soundfreq %d\n", *inexor::sound::soundfreq);
+    f->printf("soundbufferlen %d\n", *inexor::sound::soundbufferlen);
     delete f;
 }
 
@@ -775,7 +785,7 @@ namespace rendering {
 
         useddepthbits = config&1 ? depthbits : 0;
         usedfsaa = config&4 ? fsaa : 0;
-        inexor::rendering::restorevsync();
+        restorevsync();
     }
 
 }

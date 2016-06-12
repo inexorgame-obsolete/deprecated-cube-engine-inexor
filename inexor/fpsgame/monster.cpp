@@ -2,6 +2,8 @@
 #include "inexor/fpsgame/game.hpp"
 #include "inexor/util/Logging.hpp"
 
+using namespace inexor::sound;
+
 extern int physsteps;
 
 namespace game

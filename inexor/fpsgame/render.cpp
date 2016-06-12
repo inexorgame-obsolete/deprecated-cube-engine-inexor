@@ -1,5 +1,7 @@
 #include "inexor/fpsgame/game.hpp"
 
+using namespace inexor::sound;
+
 namespace game
 {      
     vector<fpsent *> bestplayers;
