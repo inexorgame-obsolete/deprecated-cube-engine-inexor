@@ -1215,6 +1215,12 @@ ICOMMANDERR(logformat, "ss", (char *logger_name, char *pattern),
 );
 
 
+extern void RunServer();
+COMMAND(RunServer, "");
+extern void clientrpc();
+COMMAND(clientrpc, "");
+
+
 int main(int argc, char **argv)
 {
     logging.initDefaultLoggers();
@@ -1241,7 +1247,7 @@ int main(int argc, char **argv)
 
     // require subsystems BEFORE configurations are done
     //Initialize the metasystem
-    SUBSYSTEM_REQUIRE(rpc); // remote process control: communication with the scripting engine
+  //  SUBSYSTEM_REQUIRE(rpc); // remote process control: communication with the scripting engine
     SUBSYSTEM_REQUIRE(cef); // (embedded chromium): ingame html5+js browser for the ui.
 
     execfile("init.cfg", false);
@@ -1417,7 +1423,7 @@ int main(int argc, char **argv)
     ignoremousemotion();
 
     //Initialize the metasystem
-    SUBSYSTEM_REQUIRE(rpc);
+ //   SUBSYSTEM_REQUIRE(rpc);
     SUBSYSTEM_REQUIRE(cef);
 
 	// main game loop
