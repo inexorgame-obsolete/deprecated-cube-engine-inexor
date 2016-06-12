@@ -37,12 +37,11 @@ endforeach()
 message(STATUS "ALL_PARSED_FILES: ${ALL_PARSED_FILES}")
 message(STATUS "FLAGS_AND_DEFS: ${FLAGS_AND_DEFS}")
 message(STATUS "gluegen_out: ${gluegen_out}")
-add_custom_command(
-  OUTPUT ${gluegen_out}
+add_custom_target(
+  run_gluegen
   COMMAND ${GLUEGEN_EXE}
   "--template-proto" "${gluegen_template_proto}" "--template-header" "${gluegen_template_h}" "--out-proto" "${gluegen_out_proto}" "--out-header" "${gluegen_out_h}" "--namespace" "inexor::tree" ${FLAGS_AND_DEFS} ${ALL_PARSED_FILES})
 set_source_files_properties(${gluegen_out} PROPERTIES GENERATED TRUE)
-add_custom_target(run_gluegen DEPENDS ${gluegen_out})
 
 # Generate RPC PROTOCOL API Headers/Sources
 
@@ -87,8 +86,7 @@ set_source_files_properties(
 # MODULE ###############
 
 declare_module(rpc .)
-set(RPC_MODULE_SOURCES ${RPC_MODULE_SOURCES} ${protoc_out}
-  CACHE INTERNAL "")
+set(RPC_MODULE_SOURCES ${RPC_MODULE_SOURCES} ${protoc_out} ${gluegen_out} CACHE INTERNAL "")
 
 add_lib(rpc)
 
