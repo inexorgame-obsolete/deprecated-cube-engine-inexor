@@ -3,6 +3,7 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/util/Logging.hpp"
 
+using namespace inexor::sound;
 using namespace inexor::util;
 
 VARR(mapversion, 1, MAPVERSION, 0);

@@ -547,14 +547,18 @@ extern void clearmainmenu();
 extern void g3d_mainmenu();
 
 // sound
-extern void clearmapsounds();
-extern void checkmapsounds();
-extern void updatesounds();
-extern void preloadmapsounds();
-
-extern void initmumble();
-extern void closemumble();
-extern void updatemumble();
+namespace inexor {
+namespace sound {
+    extern void clear_sound();
+    extern void clearmapsounds();
+    extern void checkmapsounds();
+    extern void updatesounds();
+    extern void preloadmapsounds();
+    extern void initmumble();
+    extern void closemumble();
+    extern void updatemumble();
+}
+}
 
 // grass
 extern void generategrass();

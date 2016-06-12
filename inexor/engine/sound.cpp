@@ -11,6 +11,9 @@ using namespace inexor::filesystem;
 
 #define MAXVOL MIX_MAX_VOLUME
 
+namespace inexor {
+namespace sound {
+
 bool nosound = true;
 
 struct soundsample
@@ -806,4 +809,7 @@ void updatemumble()
     mumbleinfo->front = mumblevec(vec(RAD*player->yaw, RAD*player->pitch));
     mumbleinfo->top = mumblevec(vec(RAD*player->yaw, RAD*(player->pitch+90)));
 #endif
+}
+
+}
 }
