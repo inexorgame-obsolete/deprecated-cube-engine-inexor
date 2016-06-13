@@ -1,7 +1,7 @@
 /**
  * The HUDManager manages all HUDs.
  */
-var HUDManager = function() {
+function HUDManager() {
 
 	// Creates "inexor.tree.huds"
 	var hudsNode = inexor.tree.addChild("huds", "node");
@@ -11,7 +11,7 @@ var HUDManager = function() {
 		/**
 		 * Creates a new HUD with the given name.
 		 */
-		create = function(name) {
+		create: function(name) {
 
 			// Creates "inexor.tree.huds.[name]"
 			var hudNode = hudsNode.addChild(name, "node");
@@ -30,7 +30,7 @@ var HUDManager = function() {
 		 * Shows the HUD with the given name.
 		 * @param name The name of the HUD.
 		 */
-		show = function(name) {
+		show: function(name) {
 			var hudNode = hudsNode.getChild(name);
 			hudNode.visible = true;
 		},
@@ -39,7 +39,7 @@ var HUDManager = function() {
 		 * Hides the HUD with the given name.
 		 * @param name The name of the HUD.
 		 */
-		hide = function(name) {
+		hide: function(name) {
 			var hudNode = hudsNode.getChild(name);
 			hudNode.visible = true;
 		},
@@ -49,7 +49,7 @@ var HUDManager = function() {
 		 * @param name The name of the HUD.
 		 * @param position The new position of HUD.
 		 */
-		setPosition = function(name, position) {
+		setPosition: function(name, position) {
 			var hudNode = hudsNode.getChild(name);
 			hudNode.position = position;
 		},
@@ -60,7 +60,7 @@ var HUDManager = function() {
 		 * @param key The key.
 		 * @param initialValue The initial value.
 		 */
-		addValue = function(name, key, datatype, initialValue) {
+		addValue: function(name, key, datatype, initialValue) {
 			var hudNode = hudsNode.getChild(name);
 			hudNode.values.addChild(key, datatype, initialValue);
 		},
