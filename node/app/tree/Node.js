@@ -334,7 +334,6 @@ class Node extends EventEmitter {
             for (var [name, childNode] of this._value.entries()) {
                 entries[name] = childNode.toString();
             }
-            // return JSON.stringify(entries);
             return entries;
         } else {
             return this._value;
