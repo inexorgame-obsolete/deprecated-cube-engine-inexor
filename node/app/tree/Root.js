@@ -58,10 +58,9 @@ class Root extends Node {
      */
     findNode(path) {
         let splittedPath = path.split(util.seperator);
-        let node = {};
+        let node = this;
         for (let i = 1; i < splittedPath.length; i++) {
-            node = this.getChild(splittedPath[i]);
-            //console.log(path);
+            node = node.getChild(splittedPath[i]);
         }
         
         return node;
@@ -179,7 +178,6 @@ function createTree(server, grpc) {
             let value = message[protoKey];
             let path = root.grpc.getPath(protoKey);
             let node = root.findNode(path);
-            console.log(root.grpc.getPath(protoKey));
             if (protoKey != "__numargs") {
                 //console.log("protoKey = " + protoKey + " path = \"" + path + "\" value = " + value);
             }
