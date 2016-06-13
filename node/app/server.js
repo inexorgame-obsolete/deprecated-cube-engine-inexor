@@ -90,6 +90,41 @@ server.use(function(request, response, next) {
 
 server.use(restify.bodyParser()); // for parsing application/json
 
+/**
+ * Generic REST API for the inexor tree.
+ * @TODO: OUTSOURCE? DOCUMENTATION?
+ */
+inexor.tree.rest = {
+        "get": function(request, response, next) {
+            let node = inexor.tree.findNode("/" + request.params[0]);
+            if (node.isContainer) {
+                response.send(200, node.toString());
+            } else {
+                response.send(200, node.get());
+            }
+            return next();
+        },
+
+        "post": function(request, response, next) {
+            let node = inexor.tree.findNode("/" + request.context[0]);
+            node.set(request.params);
+            response.send(200);
+            return next();
+        },
+
+        "delete": function(request, response, next) {
+            let node = inexor.tree.findNode("/" + request.context[0]);
+            let parentNode = node.getParent();
+            parentNode.removeChild(node._name);
+            response.send(200);
+            return next();
+        },
+
+        "dump": function(request, response, next) {
+            response.send(inexor.tree.toString());
+        }
+};
+
 // REST API for the inexor tree
 server.get("/tree/dump", inexor.tree.rest.dump);
 server.get(/^\/tree\/(.*)/, inexor.tree.rest.get);
