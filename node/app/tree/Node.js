@@ -19,7 +19,7 @@ class Node extends EventEmitter {
      * @param {bool} readOnly
      * @param {int} protoKey
      */
-    constructor(parent, name, datatype, initValue = null, sync = false, readOnly = false, protoKey = null) {
+    constructor(parent, name, datatype, initialValue = null, sync = false, readOnly = false, protoKey = null) {
         // parent constructor
         super();
         
@@ -253,7 +253,7 @@ class Node extends EventEmitter {
     addChild(name, datatype, initialValue = null, sync = false, readOnly = false, protoKey = null) {
         if (this.hasChild(name)) {
             return this.getChild(name);
-        } else if (this.isContainer && util.validName.test(name) && util.isValidDataType(datatype)) {
+        } else if (this.isContainer && util.validName.test.bind(name) && util.isValidDataType(datatype)) {
             // Create the child tree node
             let childNode = new Node(this, name, datatype, initialValue, sync, readOnly, protoKey);
             // Add the child tree node to the children map
