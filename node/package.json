@@ -1,11 +1,12 @@
 {
   "name": "Inexor_IPC_Client",
-  "version": "0.0.2",
+  "version": "0.0.8",
   "description": "Scripting in node.js for Inexor",
   "main": "index.js",
   "scripts": {
     "test": "mocha",
     "install": "bower install",
+    "uninstall": "bower uninstall",
     "preversion": "jsdoc -c jsdoc.conf",
     "start": "node app/server.js"
   },
@@ -13,7 +14,7 @@
     "type": "git",
     "url": "git@github.com:inexor-game/code.git"
   },
-  "author": "",
+  "maintainer": "Lennard Berger <lennard@berger.work>",
   "license": "zlib",
   "bugs": {
     "url": "https://github.com/inexor-game/code/issues"
@@ -28,7 +29,10 @@
     "yargs": "^4.1.0"
   },
   "devDependencies": {
-    "jsdoc": "^3.4.0"
+    "chai": "^3.5.0",
+    "jsdoc": "^3.4.0",
+    "minami": "^1.1.1",
+    "mocha": "^2.5.3"
   },
   "engines": {
     "node": ">= 4.4.4"
