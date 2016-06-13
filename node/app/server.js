@@ -96,32 +96,49 @@ server.use(restify.bodyParser()); // for parsing application/json
  */
 inexor.tree.rest = {
         "get": function(request, response, next) {
-            let node = inexor.tree.findNode("/" + request.params[0]);
-            if (node.isContainer) {
-                response.send(200, node.toString());
-            } else {
-                response.send(200, node.get());
-            }
+        	try {
+                let node = inexor.tree.findNode("/" + request.params[0]);
+                if (node.isContainer) {
+                    response.send(200, node.toString());
+                } else {
+                    response.send(200, node.get());
+                }
+        	} catch (e) {
+        		server.log.error(e);
+        	}
             return next();
         },
 
         "post": function(request, response, next) {
-            let node = inexor.tree.findNode("/" + request.context[0]);
-            node.set(request.params);
-            response.send(200);
+           	try {
+                let node = inexor.tree.findNode("/" + request.context[0]);
+                node.set(request.params);
+                response.send(200);
+        	} catch (e) {
+        		server.log.error(e);
+        	}
             return next();
         },
 
         "delete": function(request, response, next) {
-            let node = inexor.tree.findNode("/" + request.context[0]);
-            let parentNode = node.getParent();
-            parentNode.removeChild(node._name);
-            response.send(200);
+           	try {
+                let node = inexor.tree.findNode("/" + request.context[0]);
+                let parentNode = node.getParent();
+                parentNode.removeChild(node._name);
+                response.send(200);
+        	} catch (e) {
+        		server.log.error(e);
+        	}
             return next();
         },
 
         "dump": function(request, response, next) {
-            response.send(inexor.tree.toString());
+           	try {
+                response.send(inexor.tree.toString());
+        	} catch (e) {
+        		server.log.error(e);
+        	}
+            return next();
         }
 };
 
