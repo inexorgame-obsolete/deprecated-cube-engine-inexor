@@ -149,15 +149,19 @@ function createTree(server, grpc) {
         root.grpc.synchronize = root.grpc.treeServiceClient.synchronize();
 
         root.grpc.synchronize.on("data", function(message) {
-            let protoKey = message.key;
-            let value = message[protoKey];
-            let path = root.grpc.getPath(protoKey);
-            let node = root.findNode(path);
-            if (protoKey != "__numargs") {
-                server.log.debug("protoKey = " + protoKey + " path = \"" + path + "\" value = " + value);
-            }
-            // Use setter and prevent sync!
-            node.set(value, true);
+        	try {
+                let protoKey = message.key;
+                let value = message[protoKey];
+                let path = root.grpc.getPath(protoKey);
+                let node = root.findNode(path);
+                if (protoKey != "__numargs") {
+                    server.log.debug("protoKey = " + protoKey + " path = \"" + path + "\" value = " + value);
+                }
+                // Use setter and prevent sync!
+                node.set(value, true);
+        	} catch (err) {
+        		server.log.error(err);
+        	}
         });
 
         root.grpc.synchronize.on("end", function() {
