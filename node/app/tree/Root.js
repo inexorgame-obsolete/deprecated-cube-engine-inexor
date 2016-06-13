@@ -16,7 +16,7 @@ class Root extends Node {
         
         /**
          * Generic REST API for the inexor tree.
-         * @TODO: Such functionality should be outsourced?
+         * @TODO: OUTSOURCE? DOCUMENTATION?
          */
         this.rest = {
                 "get": function(request, response, next) {
@@ -65,7 +65,6 @@ class Root extends Node {
         
         return node;
         // TODO: Use a binary-tree-search-approach?
-        // TODO: DAFUQ, IS THIS TESTED? :D
     }
     
     /**
@@ -95,6 +94,44 @@ class Root extends Node {
         }
         return node;
     }
+    
+    /**
+     * Returns the path of the field by proto key.
+     * @function
+     * @name Root.grpc.getPath
+     * @param {string} protoKey
+     * @return {string}
+     */
+
+    /**
+     * Returns the datatype of the field by proto key.
+     * @function
+     * @name Root.grpc.getDataType
+     * @param {string} protoKey
+     * @return {datatype}
+     */
+
+    /**
+     * Returns the id of the field by proto key.
+     * @function
+     * @name Root.grpc.getId
+     * @param {string} protoKey
+     * @return {int}
+     */
+
+    /**
+     * Loads the field names from .proto and initializes the tree recursively.
+     * @function
+     * @name Root.grpc.initializeTree
+     */
+
+    /**
+     * Connects the the server and initializes the tree.
+     * @function
+     * @name Root.grpc.connect
+     */
+
+
 }
 
 /**
@@ -112,46 +149,24 @@ function createTree(server, grpc) {
     
     // Load the proto definition
     root.grpc.protoDescriptor = grpc.load(__dirname + "/../../../inexor/rpc/treedata.gen.proto");
-    // console.log(root.grpc.protoDescriptor.inexor.tree.TreeService.service.children[0].resolvedRequestType._fieldsByName["fullscreen"].options["(path)"]);
+    server.log.debug(root.grpc.protoDescriptor.inexor.tree.TreeService.service.children[0].resolvedRequestType._fieldsByName["fullscreen"].options["(path)"]);
 
-    /**
-     * Returns the path of the field by proto key.
-     * @function
-     * @name Root.grpc.getPath
-     * @param {string} protoKey
-     * @return {string}
-     */
+    // Returns the path of the field by proto key.
     root.grpc.getPath = function(protoKey) {
         return root.grpc.protoDescriptor.inexor.tree.TreeService.service.children[0].resolvedRequestType._fieldsByName[protoKey].options["(path)"];
     };
 
-    /**
-     * Returns the datatype of the field by proto key.
-     * @function
-     * @name Root.grpc.getDataType
-     * @param {string} protoKey
-     * @return {datatype}
-     */
+    // Returns the datatype of the field by proto key.
     root.grpc.getDataType = function(protoKey) {
         return root.grpc.protoDescriptor.inexor.tree.TreeService.service.children[0].resolvedRequestType._fieldsByName[protoKey].type.name;
     };
 
-    /**
-     * Returns the id of the field by proto key.
-     * @function
-     * @name Root.grpc.getId
-     * @param {string} protoKey
-     * @return {int}
-     */
+    // Returns the id of the field by proto key.
     root.grpc.getId = function(protoKey) {
         return root.grpc.protoDescriptor.inexor.tree.TreeService.service.children[0].resolvedRequestType._fieldsByName[protoKey].id;
     };
 
-    /**
-     * Loads the field names from .proto and initializes the tree recursively.
-     * @function
-     * @name Root.grpc.initializeTree
-     */
+    // Loads the field names from .proto and initializes the tree recursively.
     root.grpc.initializeTree = function() {
         for (var protoKey in root.grpc.protoDescriptor.inexor.tree.TreeService.service.children[0].resolvedRequestType._fieldsByName) {
             try {
@@ -162,11 +177,7 @@ function createTree(server, grpc) {
         }
     };
 
-    /**
-     * Connects the the server and initializes the tree.
-     * @function
-     * @name Root.grpc.connect
-     */
+    // Connects the the server and initializes the tree.
     root.grpc.connect = function() {
         // Connect to the gRPC client
         root.grpc.treeServiceClient = new root.grpc.protoDescriptor.inexor.tree.TreeService("localhost:50051", grpc.credentials.createInsecure());
@@ -179,7 +190,7 @@ function createTree(server, grpc) {
             let path = root.grpc.getPath(protoKey);
             let node = root.findNode(path);
             if (protoKey != "__numargs") {
-                //console.log("protoKey = " + protoKey + " path = \"" + path + "\" value = " + value);
+                server.log.debug("protoKey = " + protoKey + " path = \"" + path + "\" value = " + value);
             }
             // Use setter and prevent sync!
             node.set(value, true);
@@ -187,14 +198,14 @@ function createTree(server, grpc) {
 
         root.grpc.synchronize.on("end", function() {
             // The server has finished sending
-            console.log("inexor.tree.grpc.synchronize.end");
+            server.log.debug("inexor.tree.grpc.synchronize.end");
             // TODO: here we could stop the Inexor Flex because Inexor Core is gone!
             process.exit();
         });
 
         root.grpc.synchronize.on("status", function(status) {
             // process status
-            console.log("inexor.tree.grpc.synchronize.status: " + status);
+            server.log.debug("inexor.tree.grpc.synchronize.status: " + status);
         });
         
         root.grpc.initializeTree();

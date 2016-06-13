@@ -196,7 +196,7 @@ class Node extends EventEmitter {
                 try {
                     let message = [];
                     message[this._protoKey] = value;
-                    inexor.tree.grpc.synchronize.write(message); // GLOBAL OBJECT????
+                    this.getRoot().grpc.synchronize.write(message);
                     this.emit("postSync", {oldValue: oldValue, newValue: value});
                 } catch(err) {
                     // TODO: Add error handling
@@ -214,6 +214,21 @@ class Node extends EventEmitter {
      */
     hasChild(name) {
         return this.isContainer && this._value.has(name);
+    }
+    
+    /**
+     * Returns the root node (from parent)
+     * @function
+     * @name Node.getRoot
+     * @return {Root}
+     */
+    getRoot() {
+        let root = this._parent;
+        while (root._path != util.seperator) {
+            node = node._parent;
+        }
+        
+        return root;
     }
     
     /**

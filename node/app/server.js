@@ -73,8 +73,8 @@ var server = restify.createServer({
 inexor = {};
 inexor.tree = createTree(server, grpc)
 
-// var EditorSettings = require('./controllers').EditorSettings;
-// inexor.editorSettings = new EditorSettings();
+var EditorSettings = require('./controllers').EditorSettings;
+inexor.editorSettings = new EditorSettings(inexor.tree, server);
 
 //Extend logger using the plugin.
 server.use(restify.requestLogger());
