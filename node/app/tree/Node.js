@@ -233,7 +233,7 @@ class Node extends EventEmitter {
      * @return {string[]}
      */
     getChildNames() {
-        let keys = (this.isContainer) ? Array.from(this._value.keys()) : [];
+        let keys = (this.isContainer) ? new Array().from(this._value.keys()) : [];
         return keys;
     }
     
@@ -314,11 +314,11 @@ class Node extends EventEmitter {
      */
     toString() {
         if (this.isContainer) {
-            let entries = [];
-            // These algorithms are probably faster?
-            entries = Array.fill(this._value.entries());
-            entries = Array.map(this.toString());
-            return entries;
+            let entries = {};
+            for (var [name, childNode] of this._value.entries()) {
+                entries[name] = childNode.toString();
+            }
+            return JSON.stringify(entries);
         } else {
             return this._value;
         }
