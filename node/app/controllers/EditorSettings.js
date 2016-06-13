@@ -27,7 +27,7 @@ function EditorSettings() {
 
 	};
 
-	inexor.tree.getChild("outline").addPostSyncListener("editorSettings", editorSettings.onOutline);
+	inexor.tree.getChild("outline").addEventListener("postSync", editorSettings.onOutline);
 
 	setInterval(function() {
 		var node = inexor.tree.getChild("outline");

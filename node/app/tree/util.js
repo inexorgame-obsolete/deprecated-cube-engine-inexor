@@ -3,10 +3,11 @@ const validName = /^[\w ]+$/;
 
 /**
  * Defines a possible node data type
- * @typedef {(treeChildNode||string|float|bool|Date)} datatype
+ * Can be either: node, int64, string, float, bool or timestamp
+ * @typedef {string} datatype
  */
 
-// Why doesn't this work?
+// Why doesn't this work? {datatype}
 
 /**
  * Checks whether type has a correct {datatype}

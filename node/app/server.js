@@ -43,7 +43,6 @@ var bunyan = require('bunyan');
 
 // Self-framework
 var createTree = require('./tree').Root.createTree;
-var EditorSettings = require('./controllers').EditorSettings;
 
 streams = [{
     level: argv.level,
@@ -73,7 +72,9 @@ var server = restify.createServer({
 //Create the inexor tree
 inexor = {};
 inexor.tree = createTree(server, grpc)
-inexor.editorSettings = new EditorSettings();
+
+// var EditorSettings = require('./controllers').EditorSettings;
+// inexor.editorSettings = new EditorSettings();
 
 //Extend logger using the plugin.
 server.use(restify.requestLogger());

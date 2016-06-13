@@ -17,9 +17,9 @@ class Node extends EventEmitter {
      * @param {mixed} initValue
      * @param {bool} sync
      * @param {bool} readOnly
-     * @param {int} protoKey
+     * @param {string} protoKey
      */
-    constructor(parent, name, datatype, initValue = null, sync = false, readOnly = false, protoKey = null) {
+    constructor(parent, name, datatype, initialValue = null, sync = false, readOnly = false, protoKey = null) {
         // parent constructor
         super();
         
@@ -54,15 +54,16 @@ class Node extends EventEmitter {
          * @type {string}
          * @private
          */
+
         // The path of the tree (unique)
         if (parent != null) {
-            if (parent._path != util.separator) {
-                this._path = parent._path + separator + name;
+            if (parent._path != util.seperator) {
+                this._path = parent._path + util.seperator + name;
             } else {
-                this._path = util.separator + name;
+                this._path = util.seperator + name;
             }
         } else {
-            this._path = util.separator;
+            this._path = util.seperator;
         }
         
         /**
@@ -246,14 +247,14 @@ class Node extends EventEmitter {
      * @param {mixed} initialValue
      * @param {bool} sync
      * @param {bool} readOnly
-     * @param {int} protoKey
+     * @param {string} protoKey
      * @return {Node}
      * @see Node.constructor
      */
     addChild(name, datatype, initialValue = null, sync = false, readOnly = false, protoKey = null) {
         if (this.hasChild(name)) {
             return this.getChild(name);
-        } else if (this.isContainer && util.validName.test(name) && util.isValidDataType(datatype)) {
+        } else if (this.isContainer && util.validName.test.bind(name) && util.isValidDataType(datatype)) {
             // Create the child tree node
             let childNode = new Node(this, name, datatype, initialValue, sync, readOnly, protoKey);
             // Add the child tree node to the children map
