@@ -57,13 +57,13 @@ class Node extends EventEmitter {
 
         // The path of the tree (unique)
         if (parent != null) {
-            if (parent._path != util.seperator) {
-                this._path = parent._path + util.seperator + name;
+            if (parent._path != util.separator) {
+                this._path = parent._path + util.separator + name;
             } else {
-                this._path = util.seperator + name;
+                this._path = util.separator + name;
             }
         } else {
-            this._path = util.seperator;
+            this._path = util.separator;
         }
         
         /**
@@ -224,7 +224,7 @@ class Node extends EventEmitter {
      */
     getRoot() {
         let root = this._parent;
-        while (root._path != util.seperator) {
+        while (root._path != util.separator) {
             node = node._parent;
         }
         
@@ -319,7 +319,7 @@ class Node extends EventEmitter {
      * @return {Node|null}
      */
     getParent() {
-        return (this._path != util.seperator) ? this._parent : null;
+        return (this._path != util.separator) ? this._parent : null;
     }
     
     /**
@@ -334,7 +334,8 @@ class Node extends EventEmitter {
             for (var [name, childNode] of this._value.entries()) {
                 entries[name] = childNode.toString();
             }
-            return JSON.stringify(entries);
+            // return JSON.stringify(entries);
+            return entries;
         } else {
             return this._value;
         }

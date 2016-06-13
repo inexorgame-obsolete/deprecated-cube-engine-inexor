@@ -22,7 +22,7 @@ class Root extends Node {
      * @return {Node}
      */
     findNode(path) {
-        let splittedPath = path.split(util.seperator);
+        let splittedPath = path.split(util.separator);
         let node = this;
         for (let i = 1; i < splittedPath.length; i++) {
             node = node.getChild(splittedPath[i]);
@@ -43,7 +43,7 @@ class Root extends Node {
      * @param {string} protoKey
      */
     createRecursive(path, datatype, initialValue = null, sync = false, readOnly = false, protoKey = null) {
-        let splittedPath = path.split(util.seperator);
+        let splittedPath = path.split(util.separator);
         var node = this;
         for (let i = 1; i < splittedPath.length - 1; i++) {
             if (!node.hasChild(splittedPath[i])) {
