@@ -100,7 +100,7 @@ class Root extends Node {
 /**
  * Created an Inexor Root Tree
  * @function
- * @name 
+ * @name createServer
  * @param server
  * @param grpc
  * @returns {Root}

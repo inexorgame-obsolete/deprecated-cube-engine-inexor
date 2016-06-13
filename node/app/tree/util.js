@@ -2,10 +2,11 @@ const seperator = "/";
 const validName = /^[\w ]+$/;
 
 /**
- * @typedef
- * @name datatype
- * @type {treeChildNode|int64|string|float|bool|Date}
+ * Defines a possible node data type
+ * @typedef {(treeChildNode||string|float|bool|Date)} datatype
  */
+
+// Why doesn't this work?
 
 /**
  * Checks whether type has a correct {datatype}
