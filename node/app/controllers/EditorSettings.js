@@ -1,7 +1,7 @@
 /**
  * Settings for the editor.
  */
-var EditorSettings = function() {
+function EditorSettings() {
 
 	var editorSettings = {
 		
@@ -52,7 +52,6 @@ var EditorSettings = function() {
 	}, 45 * 1000);
 
 	return editorSettings;
-
 };
 
 module.exports = EditorSettings;

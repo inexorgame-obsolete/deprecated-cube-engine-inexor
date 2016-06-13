@@ -37,45 +37,45 @@ var argv = require('yargs')
     .epilog('copyright 2016')
     .argv;
 
-// PLEASE BE CONSISTENT ABOUT USING "" OR '' !!!!
-// @ascheaffer???
+const grpc = require('grpc');
 var restify = require('restify');
 var bunyan = require('bunyan');
-var grpc = require('grpc');
-var createTree = require('./tree').Root.createTree;
-var EditorSettings = require('./EditorSettings.js');
 
-// Create the inexor tree
+// Self-framework
+var createTree = require('./tree').Root.createTree;
+var EditorSettings = require('./controllers').EditorSettings;
+
+streams = [{
+    level: argv.level,
+    path: argv.logfile
+}]
+
+// Additionally push a command-line stream log with level debug when verbosity is enabled
+if (argv.verbose) {
+     streams.push({
+         level: 'debug',
+         stream: process.stdout
+     });
+}
+
+var log = bunyan.createLogger({
+    name: 'Inexor',
+    streams: streams
+});
+
+// Create a server
+var server = restify.createServer({
+    name: 'Inexor',
+    log: log,
+    version: '0.0.8'
+});
+
+//Create the inexor tree
 inexor = {};
 inexor.tree = createTree(server, grpc)
 inexor.editorSettings = new EditorSettings();
 
-streams = [
-    {
-        level: argv.level,
-        path: argv.logfile
-    }
-]
-// Additionally push a command-line stream log with level debug when verbosity is enabled
-if (argv.verbose) {
-    streams.push({
-        level: 'debug',
-        stream: process.stdout
-    });
-}
-
-var log = bunyan.createLogger({
-   name: 'Inexor',
-   streams: streams
-});
-
-var server = restify.createServer({
-    name: 'Inexor',
-    log: log,
-    version: '0.0.6'
-});
-
-// Extend logger using the plugin.
+//Extend logger using the plugin.
 server.use(restify.requestLogger());
 
 // Sanitize path
@@ -83,8 +83,7 @@ server.pre(restify.pre.sanitizePath());
 
 // Use nginx-alike logging style: address, method, url, user-agent
 server.use(function(request, response, next) {
-	request.log.info('%s -- %s %s %s', request.connection.remoteAddress, request.method, request.url, request.headers['user-agent']);
-	console.log('%s -- %s %s %s', request.connection.remoteAddress, request.method, request.url, request.headers['user-agent'])
+    request.log.info('%s -- %s %s %s', request.connection.remoteAddress, request.method, request.url, request.headers['user-agent']);
     next();
 });
 
@@ -102,9 +101,6 @@ server.get(/^\/?.*/, restify.serveStatic({
 }));
 
 //Listen on server
-server.listen(argv.port, function () {
-	server.log.info('Inexor-Node-RPC listening on %s:%s', argv.host, argv.port);
+server.listen(argv.port, argv.host, function () {
+    server.log.info('Inexor-Node-RPC listening on %s:%s', argv.host, argv.port);
 });
-//server.listen(argv.port, argv.host, function () {
-// server.log.info('Inexor-Node-RPC listening on %s:%s', argv.host, argv.port);
-//});
