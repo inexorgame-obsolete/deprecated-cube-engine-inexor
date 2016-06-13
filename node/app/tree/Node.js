@@ -17,7 +17,7 @@ class Node extends EventEmitter {
      * @param {mixed} initValue
      * @param {bool} sync
      * @param {bool} readOnly
-     * @param {int} protoKey
+     * @param {string} protoKey
      */
     constructor(parent, name, datatype, initialValue = null, sync = false, readOnly = false, protoKey = null) {
         // parent constructor
@@ -54,15 +54,16 @@ class Node extends EventEmitter {
          * @type {string}
          * @private
          */
+
         // The path of the tree (unique)
         if (parent != null) {
-            if (parent._path != util.separator) {
-                this._path = parent._path + separator + name;
+            if (parent._path != util.seperator) {
+                this._path = parent._path + util.seperator + name;
             } else {
-                this._path = util.separator + name;
+                this._path = util.seperator + name;
             }
         } else {
-            this._path = util.separator;
+            this._path = util.seperator;
         }
         
         /**
@@ -246,7 +247,7 @@ class Node extends EventEmitter {
      * @param {mixed} initialValue
      * @param {bool} sync
      * @param {bool} readOnly
-     * @param {int} protoKey
+     * @param {string} protoKey
      * @return {Node}
      * @see Node.constructor
      */

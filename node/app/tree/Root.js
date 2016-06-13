@@ -77,11 +77,11 @@ class Root extends Node {
      * @param {mixed} initialValue
      * @param {bool} sync
      * @param {bool} readOnly
-     * @param {int} protoKey
+     * @param {string} protoKey
      */
     createRecursive(path, datatype, initialValue = null, sync = false, readOnly = false, protoKey = null) {
-        let splittedPath = path.split(util.separator);
-        let node = this;
+        let splittedPath = path.split(util.seperator);
+        var node = this;
         for (let i = 1; i < splittedPath.length - 1; i++) {
             if (!node.hasChild(splittedPath[i])) {
                 node = node.addChild(splittedPath[i], "node");
@@ -119,7 +119,7 @@ function createTree(server, grpc) {
      * Returns the path of the field by proto key.
      * @function
      * @name Root.grpc.getPath
-     * @param {int} protoKey
+     * @param {string} protoKey
      * @return {string}
      */
     root.grpc.getPath = function(protoKey) {
@@ -130,7 +130,7 @@ function createTree(server, grpc) {
      * Returns the datatype of the field by proto key.
      * @function
      * @name Root.grpc.getDataType
-     * @param {int} protoKey
+     * @param {string} protoKey
      * @return {datatype}
      */
     root.grpc.getDataType = function(protoKey) {
@@ -141,7 +141,7 @@ function createTree(server, grpc) {
      * Returns the id of the field by proto key.
      * @function
      * @name Root.grpc.getId
-     * @param {int} protoKey
+     * @param {string} protoKey
      * @return {int}
      */
     root.grpc.getId = function(protoKey) {
@@ -179,9 +179,9 @@ function createTree(server, grpc) {
             let value = message[protoKey];
             let path = root.grpc.getPath(protoKey);
             let node = root.findNode(path);
-            console.log(node);
+            console.log(root.grpc.getPath(protoKey));
             if (protoKey != "__numargs") {
-                console.log("protoKey = " + protoKey + " path = \"" + path + "\" value = " + value);
+                //console.log("protoKey = " + protoKey + " path = \"" + path + "\" value = " + value);
             }
             // Use setter and prevent sync!
             node.set(value, true);
