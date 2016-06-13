@@ -5,26 +5,11 @@
 ## you need to edit the LLVM_DIR and the other marked stuff below.
 
 # clang is a subproject of llvm
-
-
-#### old manual style:
-# If you followed the clang build tutorial step by step and also named your llvm build folder
-# "build", then the lines below need no further adaption, but just LLVM_DIR above.
-
-#  set(LLVM_DIR "/usr/lib/llvm-3.8")
-#  set(LLVM_LIB_DIR "/usr/lib/llvm-3.8/lib")
-
-# set(LLVM_GENERAL_INCLUDE_DIR  "${LLVM_DIR}/include")
-# set(CLANG_GENERAL_INCLUDE_DIR "${LLVM_DIR}/tools/clang/include")
-
-# Path where your generated project files lay for the llvm suite.
-# set(LLVM_BUILD_INCLUDE_DIR  "${LLVM_DIR}/build/include")
-
-# Path where your generated project files lay for the downloaded clang project.
-#set(CLANG_BUILD_INCLUDE_DIR "${LLVM_DIR}/build/tools/clang/include")
-
-# list(INSERT CMAKE_LIBRARY_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR} ${LLVM_LIB_DIR})
-
+ 
+if(COMPILER_GCC OR COMPILER_CLANG)
+  list(INSERT CMAKE_LIBRARY_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR} /usr/lib/llvm-3.8/lib)
+  list(INSERT CMAKE_INCLUDE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR} /usr/lib/llvm-3.8/include)
+endif()
 
 find_path(LLVM_INCLUDE_DIR llvm/AsmParser/Parser.h)
 find_path(CLANG_INCLUDE_DIR clang/Tooling/Tooling.h)
