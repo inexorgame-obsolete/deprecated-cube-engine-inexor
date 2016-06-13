@@ -37,15 +37,17 @@ var argv = require('yargs')
     .epilog('copyright 2016')
     .argv;
 
+// PLEASE BE CONSISTENT ABOUT USING "" OR '' !!!!
+// @ascheaffer???
 var restify = require('restify');
 var bunyan = require('bunyan');
 var grpc = require('grpc');
-var Tree = require('./tree.js');
+var createTree = require('./tree').Root.createTree;
 var EditorSettings = require('./EditorSettings.js');
 
 // Create the inexor tree
 inexor = {};
-inexor.tree = new Tree(server, grpc);
+inexor.tree = createTree(server, grpc)
 inexor.editorSettings = new EditorSettings();
 
 streams = [
