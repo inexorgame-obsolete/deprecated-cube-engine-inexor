@@ -194,12 +194,14 @@ class Node extends EventEmitter {
             // Do synchronization
             if (this._sync && !preventSync) {
                 try {
-                    let message = [];
+                    let message = {};
                     message[this._protoKey] = value;
+                    // console.log(this._protoKey + " = " + value);
                     this.getRoot().grpc.synchronize.write(message);
                     this.emit("postSync", {oldValue: oldValue, newValue: value});
                 } catch(err) {
                     // TODO: Add error handling
+                	console.log(err);
                 }
             }
         }

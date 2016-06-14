@@ -112,7 +112,7 @@ inexor.tree.rest = {
         "post": function(request, response, next) {
            	try {
                 let node = inexor.tree.findNode("/" + request.context[0]);
-                node.set(request.params);
+                node.set(request.body);
                 response.send(200);
         	} catch (e) {
         		server.log.error(e);
