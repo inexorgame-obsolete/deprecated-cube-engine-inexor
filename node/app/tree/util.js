@@ -1,4 +1,4 @@
-const seperator = "/";
+const separator = "/";
 const validName = /^[\w ]+$/;
 
 /**
@@ -20,7 +20,7 @@ function isValidDataType(datatype) {
 }
 
 module.exports = {
-    seperator: seperator,
+    separator: separator,
     validName: validName,
     isValidDataType: isValidDataType
 }
