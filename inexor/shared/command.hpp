@@ -315,6 +315,7 @@ inline void ident::getval(tagval &v) const
 #define VARNP(name, global, min, cur, max) _VAR(name, global, min, cur, max, IDF_PERSIST)
 #define VARNR(name, global, min, cur, max) _VAR(name, global, min, cur, max, IDF_OVERRIDE)
 #define VAR(name, min, cur, max) _VAR(name, name, min, cur, max, 0)
+#define VAR_NOSYNC(name, min, cur, max) _VAR_NOSYNC(name, name, min, cur, max, 0)
 #define VARP(name, min, cur, max) _VAR(name, name, min, cur, max, IDF_PERSIST)
 #define VARR(name, min, cur, max) _VAR(name, name, min, cur, max, IDF_OVERRIDE)
 #define _VARF(name, global, min, cur, max, body, persist)  void var_##name(); INEXOR_SHARED_TREE(/cubescript/name) SharedVar<int> global((int)cur); UNUSED int dummy_register_##global = variable(#name, min, cur, max, &global, var_##name, persist); void var_##name() { body; }

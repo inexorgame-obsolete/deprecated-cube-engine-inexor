@@ -1229,9 +1229,6 @@ namespace inexor { namespace rendering { namespace screen {
     extern SharedVar<int> blursmsigma;
 
 
-    extern SharedVar<int> shadowmapcasters;
-
-
     extern SharedVar<int> shadowmapangle;
 
 
@@ -4633,13 +4630,6 @@ class treedata {
                 main2net_interthread_queue.enqueue(std::move(val));
             }
         );
-        ::shadowmapcasters.onChange.connect([](const int oldvalue, const int newvalue)
-            {
-                inexor::tree::TreeNodeChanged val;
-                val.set__shadowmapcasters(newvalue);
-                main2net_interthread_queue.enqueue(std::move(val));
-            }
-        );
         ::shadowmapangle.onChange.connect([](const int oldvalue, const int newvalue)
             {
                 inexor::tree::TreeNodeChanged val;
@@ -6332,7 +6322,6 @@ class treedata {
         ::shadowmapintensity.sync();
         ::blurshadowmap.sync();
         ::blursmsigma.sync();
-        ::shadowmapcasters.sync();
         ::shadowmapangle.sync();
         ::shadowmapbias.sync();
         ::shadowmappeelbias.sync();
@@ -6928,190 +6917,189 @@ class treedata {
         { 403, &::shadowmapintensity },
         { 404, &::blurshadowmap },
         { 405, &::blursmsigma },
-        { 406, &::shadowmapcasters },
-        { 407, &::shadowmapangle },
-        { 408, &::shadowmapbias },
-        { 409, &::shadowmappeelbias },
-        { 410, &::smdepthpeel },
-        { 411, &::smoothshadowmappeel },
-        { 412, &::debugsm },
-        { 413, &::inexor::sound::soundvol },
-        { 414, &::inexor::sound::musicvol },
-        { 415, &::inexor::sound::soundchans },
-        { 416, &::inexor::sound::soundfreq },
-        { 417, &::inexor::sound::soundbufferlen },
-        { 418, &::inexor::sound::stereo },
-        { 419, &::inexor::sound::maxsoundradius },
-        { 420, &::inexor::sound::maxsoundsatonce },
-        { 421, &::inexor::sound::dbgsound },
-        { 422, &::inexor::sound::mumble },
-        { 423, &::waterreflect },
-        { 424, &::waterrefract },
-        { 425, &::waterenvmap },
-        { 426, &::waterfallrefract },
-        { 427, &::watersubdiv },
-        { 428, &::waterlod },
-        { 429, &::vertwater },
-        { 430, &::reflectdist },
-        { 431, &::waterfog },
-        { 432, &::waterspec },
-        { 433, &::water2fog },
-        { 434, &::water2spec },
-        { 435, &::water3fog },
-        { 436, &::water3spec },
-        { 437, &::water4fog },
-        { 438, &::water4spec },
-        { 439, &::lavafog },
-        { 440, &::lava2fog },
-        { 441, &::lava3fog },
-        { 442, &::lava4fog },
-        { 443, &::oqwater },
-        { 444, &::waterfade },
-        { 445, &::reflectsize },
-        { 446, &::maxreflect },
-        { 447, &::maskreflect },
-        { 448, &::reflectscissor },
-        { 449, &::reflectvfc },
-        { 450, &::refractclear },
-        { 451, &::mapversion },
-        { 452, &::worldscale },
-        { 453, &::worldsize },
-        { 454, &::maptitle },
-        { 455, &::octaentsize },
-        { 456, &::entselradius },
-        { 457, &::entediting },
-        { 458, &::attachradius },
-        { 459, &::entselsnap },
-        { 460, &::entmovingshadow },
-        { 461, &::showentradius },
-        { 462, &::entitysurf },
-        { 463, &::entautoviewdist },
-        { 464, &::entdrop },
-        { 465, &::savebak },
-        { 466, &::dbgvars },
-        { 467, &::mapdir },
-        { 468, &::texturedir },
-        { 469, &::skyboxdir },
-        { 470, &::interfacedir },
-        { 471, &::icondir },
-        { 472, &::sounddir },
-        { 473, &::musicdir },
-        { 474, &::ai::aidebug },
-        { 475, &::ai::aiforcegun },
-        { 476, &::ai::showwaypoints },
-        { 477, &::ai::showwaypointsradius },
-        { 478, &::game::minradarscale },
-        { 479, &::game::maxradarscale },
-        { 480, &::game::radarteammates },
-        { 481, &::game::minimapalpha },
-        { 482, &::game::radardir },
-        { 483, &::game::capturetether },
-        { 484, &::game::autorepammo },
-        { 485, &::game::basenumbers },
-        { 486, &::game::showbombs },
-        { 487, &::game::showbombradius },
-        { 488, &::game::showbombdelay },
-        { 489, &::game::showminimapobstacles },
-        { 490, &::game::deadpush },
-        { 491, &::game::autoauth },
-        { 492, &::entities::triggerstate },
-        { 493, &::game::smoothmove },
-        { 494, &::game::smoothdist },
-        { 495, &::game::slowmosp },
-        { 496, &::game::spawnwait },
-        { 497, &::game::hitsound },
-        { 498, &::game::deathscore },
-        { 499, &::game::teamcolorfrags },
-        { 500, &::game::showmodeinfo },
-        { 501, &::game::teamcolortext },
-        { 502, &::game::ammohud },
-        { 503, &::game::teamcrosshair },
-        { 504, &::game::hitcrosshair },
-        { 505, &::game::skill },
-        { 506, &::game::killsendsp },
-        { 507, &::game::ragdoll },
-        { 508, &::game::ragdollmillis },
-        { 509, &::game::ragdollfade },
-        { 510, &::game::playermodel },
-        { 511, &::game::forceplayermodels },
-        { 512, &::game::hidedead },
-        { 513, &::game::testquad },
-        { 514, &::game::testarmour },
-        { 515, &::game::testteam },
-        { 516, &::game::teamskins },
-        { 517, &::game::hudgun },
-        { 518, &::game::hudgunsway },
-        { 519, &::game::teamhudguns },
-        { 520, &::game::chainsawhudgun },
-        { 521, &::game::testhudgun },
-        { 522, &::game::swaystep },
-        { 523, &::game::swayside },
-        { 524, &::game::swayup },
-        { 525, &::game::hudgunsdir },
-        { 526, &::game::scoreboard2d },
-        { 527, &::game::showservinfo },
-        { 528, &::game::showclientnum },
-        { 529, &::game::showpj },
-        { 530, &::game::showping },
-        { 531, &::game::showspectators },
-        { 532, &::game::showflags },
-        { 533, &::game::showfrags },
-        { 534, &::game::showaccuracy },
-        { 535, &::game::highlightscore },
-        { 536, &::game::showconnecting },
-        { 537, &::game::showscoreboard },
-        { 538, &::server::lockmaprotation },
-        { 539, &::server::maxdemos },
-        { 540, &::server::maxdemosize },
-        { 541, &::server::restrictdemos },
-        { 542, &::server::restrictpausegame },
-        { 543, &::server::restrictgamespeed },
-        { 544, &::server::restrictpersistteams },
-        { 545, &::server::serverdesc },
-        { 546, &::server::serverpass },
-        { 547, &::server::adminpass },
-        { 548, &::server::publicserver },
-        { 549, &::server::servermotd },
-        { 550, &::server::spectatemodifiedmap },
-        { 551, &::server::ctftkpenalty },
-        { 552, &::server::serverauth },
-        { 553, &::server::modifiedmapspectator },
-        { 554, &::server::extinfoip },
-        { 555, &::server::aiman::botlimit },
-        { 556, &::server::aiman::serverbotbalance },
-        { 557, &::ai::dropwaypoints },
-        { 558, &::game::maxdebris },
-        { 559, &::game::maxbarreldebris },
-        { 560, &::game::blood },
-        { 561, &::game::muzzleflash },
-        { 562, &::game::muzzlelight },
-        { 563, &::game::bombcolliderad },
-        { 564, &::game::bombbarrier },
-        { 565, &::dbggz },
-        { 566, &::dbgzip },
-        { 567, &::dbgdds },
-        { 568, &::envmapsize },
-        { 569, &::envmapradius },
-        { 570, &::aaenvmap },
-        { 571, &::compresspng },
-        { 572, &::compresstga },
-        { 573, &::screenshotformat },
-        { 574, &::screenshotdir },
-        { 575, &::autocompactvslots },
-        { 576, &::hwtexsize },
-        { 577, &::hwcubetexsize },
-        { 578, &::hwmaxaniso },
-        { 579, &::maxtexsize },
-        { 580, &::reducefilter },
-        { 581, &::texreduce },
-        { 582, &::trilinear },
-        { 583, &::bilinear },
-        { 584, &::aniso },
-        { 585, &::texcompress },
-        { 586, &::texcompressquality },
-        { 587, &::usenp2 },
-        { 588, &::usedds },
-        { 589, &::scaledds },
+        { 406, &::shadowmapangle },
+        { 407, &::shadowmapbias },
+        { 408, &::shadowmappeelbias },
+        { 409, &::smdepthpeel },
+        { 410, &::smoothshadowmappeel },
+        { 411, &::debugsm },
+        { 412, &::inexor::sound::soundvol },
+        { 413, &::inexor::sound::musicvol },
+        { 414, &::inexor::sound::soundchans },
+        { 415, &::inexor::sound::soundfreq },
+        { 416, &::inexor::sound::soundbufferlen },
+        { 417, &::inexor::sound::stereo },
+        { 418, &::inexor::sound::maxsoundradius },
+        { 419, &::inexor::sound::maxsoundsatonce },
+        { 420, &::inexor::sound::dbgsound },
+        { 421, &::inexor::sound::mumble },
+        { 422, &::waterreflect },
+        { 423, &::waterrefract },
+        { 424, &::waterenvmap },
+        { 425, &::waterfallrefract },
+        { 426, &::watersubdiv },
+        { 427, &::waterlod },
+        { 428, &::vertwater },
+        { 429, &::reflectdist },
+        { 430, &::waterfog },
+        { 431, &::waterspec },
+        { 432, &::water2fog },
+        { 433, &::water2spec },
+        { 434, &::water3fog },
+        { 435, &::water3spec },
+        { 436, &::water4fog },
+        { 437, &::water4spec },
+        { 438, &::lavafog },
+        { 439, &::lava2fog },
+        { 440, &::lava3fog },
+        { 441, &::lava4fog },
+        { 442, &::oqwater },
+        { 443, &::waterfade },
+        { 444, &::reflectsize },
+        { 445, &::maxreflect },
+        { 446, &::maskreflect },
+        { 447, &::reflectscissor },
+        { 448, &::reflectvfc },
+        { 449, &::refractclear },
+        { 450, &::mapversion },
+        { 451, &::worldscale },
+        { 452, &::worldsize },
+        { 453, &::maptitle },
+        { 454, &::octaentsize },
+        { 455, &::entselradius },
+        { 456, &::entediting },
+        { 457, &::attachradius },
+        { 458, &::entselsnap },
+        { 459, &::entmovingshadow },
+        { 460, &::showentradius },
+        { 461, &::entitysurf },
+        { 462, &::entautoviewdist },
+        { 463, &::entdrop },
+        { 464, &::savebak },
+        { 465, &::dbgvars },
+        { 466, &::mapdir },
+        { 467, &::texturedir },
+        { 468, &::skyboxdir },
+        { 469, &::interfacedir },
+        { 470, &::icondir },
+        { 471, &::sounddir },
+        { 472, &::musicdir },
+        { 473, &::ai::aidebug },
+        { 474, &::ai::aiforcegun },
+        { 475, &::ai::showwaypoints },
+        { 476, &::ai::showwaypointsradius },
+        { 477, &::game::minradarscale },
+        { 478, &::game::maxradarscale },
+        { 479, &::game::radarteammates },
+        { 480, &::game::minimapalpha },
+        { 481, &::game::radardir },
+        { 482, &::game::capturetether },
+        { 483, &::game::autorepammo },
+        { 484, &::game::basenumbers },
+        { 485, &::game::showbombs },
+        { 486, &::game::showbombradius },
+        { 487, &::game::showbombdelay },
+        { 488, &::game::showminimapobstacles },
+        { 489, &::game::deadpush },
+        { 490, &::game::autoauth },
+        { 491, &::entities::triggerstate },
+        { 492, &::game::smoothmove },
+        { 493, &::game::smoothdist },
+        { 494, &::game::slowmosp },
+        { 495, &::game::spawnwait },
+        { 496, &::game::hitsound },
+        { 497, &::game::deathscore },
+        { 498, &::game::teamcolorfrags },
+        { 499, &::game::showmodeinfo },
+        { 500, &::game::teamcolortext },
+        { 501, &::game::ammohud },
+        { 502, &::game::teamcrosshair },
+        { 503, &::game::hitcrosshair },
+        { 504, &::game::skill },
+        { 505, &::game::killsendsp },
+        { 506, &::game::ragdoll },
+        { 507, &::game::ragdollmillis },
+        { 508, &::game::ragdollfade },
+        { 509, &::game::playermodel },
+        { 510, &::game::forceplayermodels },
+        { 511, &::game::hidedead },
+        { 512, &::game::testquad },
+        { 513, &::game::testarmour },
+        { 514, &::game::testteam },
+        { 515, &::game::teamskins },
+        { 516, &::game::hudgun },
+        { 517, &::game::hudgunsway },
+        { 518, &::game::teamhudguns },
+        { 519, &::game::chainsawhudgun },
+        { 520, &::game::testhudgun },
+        { 521, &::game::swaystep },
+        { 522, &::game::swayside },
+        { 523, &::game::swayup },
+        { 524, &::game::hudgunsdir },
+        { 525, &::game::scoreboard2d },
+        { 526, &::game::showservinfo },
+        { 527, &::game::showclientnum },
+        { 528, &::game::showpj },
+        { 529, &::game::showping },
+        { 530, &::game::showspectators },
+        { 531, &::game::showflags },
+        { 532, &::game::showfrags },
+        { 533, &::game::showaccuracy },
+        { 534, &::game::highlightscore },
+        { 535, &::game::showconnecting },
+        { 536, &::game::showscoreboard },
+        { 537, &::server::lockmaprotation },
+        { 538, &::server::maxdemos },
+        { 539, &::server::maxdemosize },
+        { 540, &::server::restrictdemos },
+        { 541, &::server::restrictpausegame },
+        { 542, &::server::restrictgamespeed },
+        { 543, &::server::restrictpersistteams },
+        { 544, &::server::serverdesc },
+        { 545, &::server::serverpass },
+        { 546, &::server::adminpass },
+        { 547, &::server::publicserver },
+        { 548, &::server::servermotd },
+        { 549, &::server::spectatemodifiedmap },
+        { 550, &::server::ctftkpenalty },
+        { 551, &::server::serverauth },
+        { 552, &::server::modifiedmapspectator },
+        { 553, &::server::extinfoip },
+        { 554, &::server::aiman::botlimit },
+        { 555, &::server::aiman::serverbotbalance },
+        { 556, &::ai::dropwaypoints },
+        { 557, &::game::maxdebris },
+        { 558, &::game::maxbarreldebris },
+        { 559, &::game::blood },
+        { 560, &::game::muzzleflash },
+        { 561, &::game::muzzlelight },
+        { 562, &::game::bombcolliderad },
+        { 563, &::game::bombbarrier },
+        { 564, &::dbggz },
+        { 565, &::dbgzip },
+        { 566, &::dbgdds },
+        { 567, &::envmapsize },
+        { 568, &::envmapradius },
+        { 569, &::aaenvmap },
+        { 570, &::compresspng },
+        { 571, &::compresstga },
+        { 572, &::screenshotformat },
+        { 573, &::screenshotdir },
+        { 574, &::autocompactvslots },
+        { 575, &::hwtexsize },
+        { 576, &::hwcubetexsize },
+        { 577, &::hwmaxaniso },
+        { 578, &::maxtexsize },
+        { 579, &::reducefilter },
+        { 580, &::texreduce },
+        { 581, &::trilinear },
+        { 582, &::bilinear },
+        { 583, &::aniso },
+        { 584, &::texcompress },
+        { 585, &::texcompressquality },
+        { 586, &::usenp2 },
+        { 587, &::usedds },
+        { 588, &::scaledds },
     
     };
 
@@ -7524,190 +7512,189 @@ class treedata {
         { 403, 2 },  // /shadowmapintensity, int
         { 404, 2 },  // /blurshadowmap, int
         { 405, 2 },  // /blursmsigma, int
-        { 406, 2 },  // /shadowmapcasters, int
-        { 407, 2 },  // /shadowmapangle, int
-        { 408, 2 },  // /shadowmapbias, int
-        { 409, 2 },  // /shadowmappeelbias, int
-        { 410, 2 },  // /smdepthpeel, int
-        { 411, 2 },  // /smoothshadowmappeel, int
-        { 412, 2 },  // /debugsm, int
-        { 413, 2 },  // /sound/soundvol, int
-        { 414, 2 },  // /sound/musicvol, int
-        { 415, 2 },  // /sound/soundchans, int
-        { 416, 2 },  // /sound/soundfreq, int
-        { 417, 2 },  // /sound/soundbufferlen, int
-        { 418, 2 },  // /sound/stereo, int
-        { 419, 2 },  // /sound/maxsoundradius, int
-        { 420, 2 },  // /sound/maxsoundsatonce, int
-        { 421, 2 },  // /sound/dbgsound, int
-        { 422, 2 },  // /sound/mumble, int
-        { 423, 2 },  // /waterreflect, int
-        { 424, 2 },  // /waterrefract, int
-        { 425, 2 },  // /waterenvmap, int
-        { 426, 2 },  // /waterfallrefract, int
-        { 427, 2 },  // /watersubdiv, int
-        { 428, 2 },  // /waterlod, int
-        { 429, 2 },  // /vertwater, int
-        { 430, 2 },  // /reflectdist, int
-        { 431, 2 },  // /waterfog, int
-        { 432, 2 },  // /waterspec, int
-        { 433, 2 },  // /water2fog, int
-        { 434, 2 },  // /water2spec, int
-        { 435, 2 },  // /water3fog, int
-        { 436, 2 },  // /water3spec, int
-        { 437, 2 },  // /water4fog, int
-        { 438, 2 },  // /water4spec, int
-        { 439, 2 },  // /lavafog, int
-        { 440, 2 },  // /lava2fog, int
-        { 441, 2 },  // /lava3fog, int
-        { 442, 2 },  // /lava4fog, int
-        { 443, 2 },  // /oqwater, int
-        { 444, 2 },  // /waterfade, int
-        { 445, 2 },  // /reflectsize, int
-        { 446, 2 },  // /maxreflect, int
-        { 447, 2 },  // /maskreflect, int
-        { 448, 2 },  // /reflectscissor, int
-        { 449, 2 },  // /reflectvfc, int
-        { 450, 2 },  // /refractclear, int
-        { 451, 2 },  // /mapversion, int
-        { 452, 2 },  // /worldscale, int
-        { 453, 2 },  // /worldsize, int
-        { 454, 0 },  // /maptitle, char *
-        { 455, 2 },  // /octaentsize, int
-        { 456, 2 },  // /entselradius, int
-        { 457, 2 },  // /entediting, int
-        { 458, 2 },  // /attachradius, int
-        { 459, 2 },  // /entselsnap, int
-        { 460, 2 },  // /entmovingshadow, int
-        { 461, 2 },  // /showentradius, int
-        { 462, 2 },  // /entitysurf, int
-        { 463, 2 },  // /entautoviewdist, int
-        { 464, 2 },  // /entdrop, int
-        { 465, 2 },  // /savebak, int
-        { 466, 2 },  // /dbgvars, int
-        { 467, 0 },  // /mapdir, char *
-        { 468, 0 },  // /texturedir, char *
-        { 469, 0 },  // /skyboxdir, char *
-        { 470, 0 },  // /interfacedir, char *
-        { 471, 0 },  // /icondir, char *
-        { 472, 0 },  // /sounddir, char *
-        { 473, 0 },  // /musicdir, char *
-        { 474, 2 },  // /ai/aidebug, int
-        { 475, 2 },  // /ai/aiforcegun, int
-        { 476, 2 },  // /ai/showwaypoints, int
-        { 477, 2 },  // /ai/showwaypointsradius, int
-        { 478, 2 },  // /game/minradarscale, int
-        { 479, 2 },  // /game/maxradarscale, int
-        { 480, 2 },  // /game/radarteammates, int
-        { 481, 1 },  // /game/minimapalpha, float
-        { 482, 0 },  // /game/radardir, char *
-        { 483, 2 },  // /game/capturetether, int
-        { 484, 2 },  // /game/autorepammo, int
-        { 485, 2 },  // /game/basenumbers, int
-        { 486, 2 },  // /game/showbombs, int
-        { 487, 2 },  // /game/showbombradius, int
-        { 488, 2 },  // /game/showbombdelay, int
-        { 489, 2 },  // /game/showminimapobstacles, int
-        { 490, 2 },  // /game/deadpush, int
-        { 491, 2 },  // /game/autoauth, int
-        { 492, 2 },  // /entities/triggerstate, int
-        { 493, 2 },  // /game/smoothmove, int
-        { 494, 2 },  // /game/smoothdist, int
-        { 495, 2 },  // /game/slowmosp, int
-        { 496, 2 },  // /game/spawnwait, int
-        { 497, 2 },  // /game/hitsound, int
-        { 498, 2 },  // /game/deathscore, int
-        { 499, 2 },  // /game/teamcolorfrags, int
-        { 500, 2 },  // /game/showmodeinfo, int
-        { 501, 2 },  // /game/teamcolortext, int
-        { 502, 2 },  // /game/ammohud, int
-        { 503, 2 },  // /game/teamcrosshair, int
-        { 504, 2 },  // /game/hitcrosshair, int
-        { 505, 2 },  // /game/skill, int
-        { 506, 2 },  // /game/killsendsp, int
-        { 507, 2 },  // /game/ragdoll, int
-        { 508, 2 },  // /game/ragdollmillis, int
-        { 509, 2 },  // /game/ragdollfade, int
-        { 510, 2 },  // /game/playermodel, int
-        { 511, 2 },  // /game/forceplayermodels, int
-        { 512, 2 },  // /game/hidedead, int
-        { 513, 2 },  // /game/testquad, int
-        { 514, 2 },  // /game/testarmour, int
-        { 515, 2 },  // /game/testteam, int
-        { 516, 2 },  // /game/teamskins, int
-        { 517, 2 },  // /game/hudgun, int
-        { 518, 2 },  // /game/hudgunsway, int
-        { 519, 2 },  // /game/teamhudguns, int
-        { 520, 2 },  // /game/chainsawhudgun, int
-        { 521, 2 },  // /game/testhudgun, int
-        { 522, 1 },  // /game/swaystep, float
-        { 523, 1 },  // /game/swayside, float
-        { 524, 1 },  // /game/swayup, float
-        { 525, 0 },  // /game/hudgunsdir, char *
-        { 526, 2 },  // /game/scoreboard2d, int
-        { 527, 2 },  // /game/showservinfo, int
-        { 528, 2 },  // /game/showclientnum, int
-        { 529, 2 },  // /game/showpj, int
-        { 530, 2 },  // /game/showping, int
-        { 531, 2 },  // /game/showspectators, int
-        { 532, 2 },  // /game/showflags, int
-        { 533, 2 },  // /game/showfrags, int
-        { 534, 2 },  // /game/showaccuracy, int
-        { 535, 2 },  // /game/highlightscore, int
-        { 536, 2 },  // /game/showconnecting, int
-        { 537, 2 },  // /game/showscoreboard, int
-        { 538, 2 },  // /server/lockmaprotation, int
-        { 539, 2 },  // /server/maxdemos, int
-        { 540, 2 },  // /server/maxdemosize, int
-        { 541, 2 },  // /server/restrictdemos, int
-        { 542, 2 },  // /server/restrictpausegame, int
-        { 543, 2 },  // /server/restrictgamespeed, int
-        { 544, 2 },  // /server/restrictpersistteams, int
-        { 545, 0 },  // /server/serverdesc, char *
-        { 546, 0 },  // /server/serverpass, char *
-        { 547, 0 },  // /server/adminpass, char *
-        { 548, 2 },  // /server/publicserver, int
-        { 549, 0 },  // /server/servermotd, char *
-        { 550, 2 },  // /server/spectatemodifiedmap, int
-        { 551, 2 },  // /server/ctftkpenalty, int
-        { 552, 0 },  // /server/serverauth, char *
-        { 553, 2 },  // /server/modifiedmapspectator, int
-        { 554, 2 },  // /server/extinfoip, int
-        { 555, 2 },  // /server/aiman/botlimit, int
-        { 556, 2 },  // /server/aiman/serverbotbalance, int
-        { 557, 2 },  // /ai/dropwaypoints, int
-        { 558, 2 },  // /game/maxdebris, int
-        { 559, 2 },  // /game/maxbarreldebris, int
-        { 560, 2 },  // /game/blood, int
-        { 561, 2 },  // /game/muzzleflash, int
-        { 562, 2 },  // /game/muzzlelight, int
-        { 563, 2 },  // /game/bombcolliderad, int
-        { 564, 2 },  // /game/bombbarrier, int
-        { 565, 2 },  // /dbggz, int
-        { 566, 2 },  // /dbgzip, int
-        { 567, 2 },  // /dbgdds, int
-        { 568, 2 },  // /envmapsize, int
-        { 569, 2 },  // /envmapradius, int
-        { 570, 2 },  // /aaenvmap, int
-        { 571, 2 },  // /compresspng, int
-        { 572, 2 },  // /compresstga, int
-        { 573, 2 },  // /screenshotformat, int
-        { 574, 0 },  // /screenshotdir, char *
-        { 575, 2 },  // /autocompactvslots, int
-        { 576, 2 },  // /hwtexsize, int
-        { 577, 2 },  // /hwcubetexsize, int
-        { 578, 2 },  // /hwmaxaniso, int
-        { 579, 2 },  // /maxtexsize, int
-        { 580, 2 },  // /reducefilter, int
-        { 581, 2 },  // /texreduce, int
-        { 582, 2 },  // /trilinear, int
-        { 583, 2 },  // /bilinear, int
-        { 584, 2 },  // /aniso, int
-        { 585, 2 },  // /texcompress, int
-        { 586, 2 },  // /texcompressquality, int
-        { 587, 2 },  // /usenp2, int
-        { 588, 2 },  // /usedds, int
-        { 589, 2 },  // /scaledds, int
+        { 406, 2 },  // /shadowmapangle, int
+        { 407, 2 },  // /shadowmapbias, int
+        { 408, 2 },  // /shadowmappeelbias, int
+        { 409, 2 },  // /smdepthpeel, int
+        { 410, 2 },  // /smoothshadowmappeel, int
+        { 411, 2 },  // /debugsm, int
+        { 412, 2 },  // /sound/soundvol, int
+        { 413, 2 },  // /sound/musicvol, int
+        { 414, 2 },  // /sound/soundchans, int
+        { 415, 2 },  // /sound/soundfreq, int
+        { 416, 2 },  // /sound/soundbufferlen, int
+        { 417, 2 },  // /sound/stereo, int
+        { 418, 2 },  // /sound/maxsoundradius, int
+        { 419, 2 },  // /sound/maxsoundsatonce, int
+        { 420, 2 },  // /sound/dbgsound, int
+        { 421, 2 },  // /sound/mumble, int
+        { 422, 2 },  // /waterreflect, int
+        { 423, 2 },  // /waterrefract, int
+        { 424, 2 },  // /waterenvmap, int
+        { 425, 2 },  // /waterfallrefract, int
+        { 426, 2 },  // /watersubdiv, int
+        { 427, 2 },  // /waterlod, int
+        { 428, 2 },  // /vertwater, int
+        { 429, 2 },  // /reflectdist, int
+        { 430, 2 },  // /waterfog, int
+        { 431, 2 },  // /waterspec, int
+        { 432, 2 },  // /water2fog, int
+        { 433, 2 },  // /water2spec, int
+        { 434, 2 },  // /water3fog, int
+        { 435, 2 },  // /water3spec, int
+        { 436, 2 },  // /water4fog, int
+        { 437, 2 },  // /water4spec, int
+        { 438, 2 },  // /lavafog, int
+        { 439, 2 },  // /lava2fog, int
+        { 440, 2 },  // /lava3fog, int
+        { 441, 2 },  // /lava4fog, int
+        { 442, 2 },  // /oqwater, int
+        { 443, 2 },  // /waterfade, int
+        { 444, 2 },  // /reflectsize, int
+        { 445, 2 },  // /maxreflect, int
+        { 446, 2 },  // /maskreflect, int
+        { 447, 2 },  // /reflectscissor, int
+        { 448, 2 },  // /reflectvfc, int
+        { 449, 2 },  // /refractclear, int
+        { 450, 2 },  // /mapversion, int
+        { 451, 2 },  // /worldscale, int
+        { 452, 2 },  // /worldsize, int
+        { 453, 0 },  // /maptitle, char *
+        { 454, 2 },  // /octaentsize, int
+        { 455, 2 },  // /entselradius, int
+        { 456, 2 },  // /entediting, int
+        { 457, 2 },  // /attachradius, int
+        { 458, 2 },  // /entselsnap, int
+        { 459, 2 },  // /entmovingshadow, int
+        { 460, 2 },  // /showentradius, int
+        { 461, 2 },  // /entitysurf, int
+        { 462, 2 },  // /entautoviewdist, int
+        { 463, 2 },  // /entdrop, int
+        { 464, 2 },  // /savebak, int
+        { 465, 2 },  // /dbgvars, int
+        { 466, 0 },  // /mapdir, char *
+        { 467, 0 },  // /texturedir, char *
+        { 468, 0 },  // /skyboxdir, char *
+        { 469, 0 },  // /interfacedir, char *
+        { 470, 0 },  // /icondir, char *
+        { 471, 0 },  // /sounddir, char *
+        { 472, 0 },  // /musicdir, char *
+        { 473, 2 },  // /ai/aidebug, int
+        { 474, 2 },  // /ai/aiforcegun, int
+        { 475, 2 },  // /ai/showwaypoints, int
+        { 476, 2 },  // /ai/showwaypointsradius, int
+        { 477, 2 },  // /game/minradarscale, int
+        { 478, 2 },  // /game/maxradarscale, int
+        { 479, 2 },  // /game/radarteammates, int
+        { 480, 1 },  // /game/minimapalpha, float
+        { 481, 0 },  // /game/radardir, char *
+        { 482, 2 },  // /game/capturetether, int
+        { 483, 2 },  // /game/autorepammo, int
+        { 484, 2 },  // /game/basenumbers, int
+        { 485, 2 },  // /game/showbombs, int
+        { 486, 2 },  // /game/showbombradius, int
+        { 487, 2 },  // /game/showbombdelay, int
+        { 488, 2 },  // /game/showminimapobstacles, int
+        { 489, 2 },  // /game/deadpush, int
+        { 490, 2 },  // /game/autoauth, int
+        { 491, 2 },  // /entities/triggerstate, int
+        { 492, 2 },  // /game/smoothmove, int
+        { 493, 2 },  // /game/smoothdist, int
+        { 494, 2 },  // /game/slowmosp, int
+        { 495, 2 },  // /game/spawnwait, int
+        { 496, 2 },  // /game/hitsound, int
+        { 497, 2 },  // /game/deathscore, int
+        { 498, 2 },  // /game/teamcolorfrags, int
+        { 499, 2 },  // /game/showmodeinfo, int
+        { 500, 2 },  // /game/teamcolortext, int
+        { 501, 2 },  // /game/ammohud, int
+        { 502, 2 },  // /game/teamcrosshair, int
+        { 503, 2 },  // /game/hitcrosshair, int
+        { 504, 2 },  // /game/skill, int
+        { 505, 2 },  // /game/killsendsp, int
+        { 506, 2 },  // /game/ragdoll, int
+        { 507, 2 },  // /game/ragdollmillis, int
+        { 508, 2 },  // /game/ragdollfade, int
+        { 509, 2 },  // /game/playermodel, int
+        { 510, 2 },  // /game/forceplayermodels, int
+        { 511, 2 },  // /game/hidedead, int
+        { 512, 2 },  // /game/testquad, int
+        { 513, 2 },  // /game/testarmour, int
+        { 514, 2 },  // /game/testteam, int
+        { 515, 2 },  // /game/teamskins, int
+        { 516, 2 },  // /game/hudgun, int
+        { 517, 2 },  // /game/hudgunsway, int
+        { 518, 2 },  // /game/teamhudguns, int
+        { 519, 2 },  // /game/chainsawhudgun, int
+        { 520, 2 },  // /game/testhudgun, int
+        { 521, 1 },  // /game/swaystep, float
+        { 522, 1 },  // /game/swayside, float
+        { 523, 1 },  // /game/swayup, float
+        { 524, 0 },  // /game/hudgunsdir, char *
+        { 525, 2 },  // /game/scoreboard2d, int
+        { 526, 2 },  // /game/showservinfo, int
+        { 527, 2 },  // /game/showclientnum, int
+        { 528, 2 },  // /game/showpj, int
+        { 529, 2 },  // /game/showping, int
+        { 530, 2 },  // /game/showspectators, int
+        { 531, 2 },  // /game/showflags, int
+        { 532, 2 },  // /game/showfrags, int
+        { 533, 2 },  // /game/showaccuracy, int
+        { 534, 2 },  // /game/highlightscore, int
+        { 535, 2 },  // /game/showconnecting, int
+        { 536, 2 },  // /game/showscoreboard, int
+        { 537, 2 },  // /server/lockmaprotation, int
+        { 538, 2 },  // /server/maxdemos, int
+        { 539, 2 },  // /server/maxdemosize, int
+        { 540, 2 },  // /server/restrictdemos, int
+        { 541, 2 },  // /server/restrictpausegame, int
+        { 542, 2 },  // /server/restrictgamespeed, int
+        { 543, 2 },  // /server/restrictpersistteams, int
+        { 544, 0 },  // /server/serverdesc, char *
+        { 545, 0 },  // /server/serverpass, char *
+        { 546, 0 },  // /server/adminpass, char *
+        { 547, 2 },  // /server/publicserver, int
+        { 548, 0 },  // /server/servermotd, char *
+        { 549, 2 },  // /server/spectatemodifiedmap, int
+        { 550, 2 },  // /server/ctftkpenalty, int
+        { 551, 0 },  // /server/serverauth, char *
+        { 552, 2 },  // /server/modifiedmapspectator, int
+        { 553, 2 },  // /server/extinfoip, int
+        { 554, 2 },  // /server/aiman/botlimit, int
+        { 555, 2 },  // /server/aiman/serverbotbalance, int
+        { 556, 2 },  // /ai/dropwaypoints, int
+        { 557, 2 },  // /game/maxdebris, int
+        { 558, 2 },  // /game/maxbarreldebris, int
+        { 559, 2 },  // /game/blood, int
+        { 560, 2 },  // /game/muzzleflash, int
+        { 561, 2 },  // /game/muzzlelight, int
+        { 562, 2 },  // /game/bombcolliderad, int
+        { 563, 2 },  // /game/bombbarrier, int
+        { 564, 2 },  // /dbggz, int
+        { 565, 2 },  // /dbgzip, int
+        { 566, 2 },  // /dbgdds, int
+        { 567, 2 },  // /envmapsize, int
+        { 568, 2 },  // /envmapradius, int
+        { 569, 2 },  // /aaenvmap, int
+        { 570, 2 },  // /compresspng, int
+        { 571, 2 },  // /compresstga, int
+        { 572, 2 },  // /screenshotformat, int
+        { 573, 0 },  // /screenshotdir, char *
+        { 574, 2 },  // /autocompactvslots, int
+        { 575, 2 },  // /hwtexsize, int
+        { 576, 2 },  // /hwcubetexsize, int
+        { 577, 2 },  // /hwmaxaniso, int
+        { 578, 2 },  // /maxtexsize, int
+        { 579, 2 },  // /reducefilter, int
+        { 580, 2 },  // /texreduce, int
+        { 581, 2 },  // /trilinear, int
+        { 582, 2 },  // /bilinear, int
+        { 583, 2 },  // /aniso, int
+        { 584, 2 },  // /texcompress, int
+        { 585, 2 },  // /texcompressquality, int
+        { 586, 2 },  // /usenp2, int
+        { 587, 2 },  // /usedds, int
+        { 588, 2 },  // /scaledds, int
     
     };
 
