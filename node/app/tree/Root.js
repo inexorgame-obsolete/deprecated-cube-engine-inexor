@@ -13,41 +13,6 @@ class Root extends Node {
     constructor() {
         // Initialise this as the root node
         super(null, "", "node");
-        
-        /**
-         * Generic REST API for the inexor tree.
-         * @TODO: OUTSOURCE? DOCUMENTATION?
-         */
-        this.rest = {
-                "get": function(request, response, next) {
-                    let node = this.findNode("/" + request.params[0]);
-                    if (node.isContainer) {
-                        response.send(200, node.toString());
-                    } else {
-                        response.send(200, node.get());
-                    }
-                    return next();
-                },
-
-                "post": function(request, response, next) {
-                    let node = root.findNode("/" + request.context[0]);
-                    node.set(request.params);
-                    response.send(200);
-                    return next();
-                },
-
-                "delete": function(request, response, next) {
-                    let node = this.findNode("/" + request.context[0]);
-                    let parentNode = node.getParent();
-                    parentNode.removeChild(node._name);
-                    response.send(200);
-                    return next();
-                },
-
-                "dump": function(request, response, next) {
-                    response.send(this.toString());
-                }
-        };
     }
     
     /**
@@ -212,6 +177,41 @@ function createTree(server, grpc) {
     };
     
     root.grpc.connect();
+    
+    /**
+     * Generic REST API for the inexor tree.
+     * @TODO: OUTSOURCE? DOCUMENTATION?
+     */
+    root.rest = {
+            "get": function(request, response, next) {
+                let node = root.findNode("/" + request.params[0]);
+                if (node.isContainer) {
+                    response.send(200, node.toString());
+                } else {
+                    response.send(200, node.get());
+                }
+                return next();
+            },
+
+            "post": function(request, response, next) {
+                let node = root.findNode("/" + request.context[0]);
+                node.set(request.params);
+                response.send(200);
+                return next();
+            },
+
+            "delete": function(request, response, next) {
+                let node = root.findNode("/" + request.context[0]);
+                let parentNode = node.getParent();
+                parentNode.removeChild(node._name);
+                response.send(200);
+                return next();
+            },
+
+            "dump": function(request, response, next) {
+                response.send(this.toString());
+            }
+    };
     
     return root;
 }

@@ -4,5 +4,5 @@ mydir="`dirname $0`"
 inexor_dir="`readlink -f "$mydir"`"
 node_dir="${inexor_dir}/node/"
 
-cd ${node_dir}
-npm start
+cd "$node_dir"
+"npm start"
