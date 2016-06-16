@@ -20,7 +20,7 @@
 #include "inexor/rpc/SharedTree.hpp"
 #include "inexor/rpc/treedata.gen.hpp"
 
-#include "inexor/rpc/inexor_service.grpc.pb.h"
+#include "inexor/rpc/treedata.gen.grpc.pb.h"
 
 
 extern SharedVar<char *> prefabdir; // no leading ::
@@ -107,7 +107,7 @@ bool connectnet2main(TreeNodeChanged &receivedval)
   //  case FldDesc::CppType::CPPTYPE_INT64:
     case cpp_type_t::t_int:
     {
-        queuetupel.value = receivedval.GetReflection()->GetInt64(receivedval, field);
+        queuetupel.value = (int64) receivedval.GetReflection()->GetInt64(receivedval, field);
         break;
     }
     case cpp_type_t::t_float:

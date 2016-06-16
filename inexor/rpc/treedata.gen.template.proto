@@ -11,6 +11,15 @@ import "google/protobuf/descriptor.proto";
 
 package {{package}};
 
+service TreeService
+{
+  // Bidirectional Streaming
+  // 
+  // Accepts and reads a stream of changed values from clientside, while responding with an (independent) stream of changed value messages itself.
+  // The first messages will be the metadata.
+  rpc Synchronize(stream TreeNodeChanged) returns (stream TreeNodeChanged) {}
+}
+
 message TreeNodeChanged
 {
   oneof key {

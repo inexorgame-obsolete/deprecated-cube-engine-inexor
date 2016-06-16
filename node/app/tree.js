@@ -3,14 +3,12 @@
 var separator = "/";
 
 var isValidDatatype = function(datatype) {
-	// var valid = datatype == "node" || datatype == "string" || datatype == "integer" || datatype == "float" || datatype == "bool" || datatype == "timestamp";
-	// console.log("Datatype: " + datatype + ": " + valid);
-	return datatype == "node" || datatype == "string" || datatype == "integer" || datatype == "float" || datatype == "bool" || datatype == "timestamp";
+	return datatype == "node" || datatype == "string" || datatype == "int64" || datatype == "float" || datatype == "bool" || datatype == "timestamp";
 };
 
 var isValidName = /^[\w ]+$/;
 
-var TreeNode = function(parent, name, datatype, initialValue = null, sync = false, readOnly = false) {
+var TreeNode = function(parent, name, datatype, initialValue = null, sync = false, readOnly = false, protoKey = null) {
 
 	/**
 	 * The parent node or null if the node is the root node.
@@ -22,6 +20,11 @@ var TreeNode = function(parent, name, datatype, initialValue = null, sync = fals
 	 * Not unique!
 	 */
 	this._name = name;
+
+	/**
+	 * The key to be used in the proto messages.
+	 */
+	this._protoKey = protoKey;
 
 	/**
 	 * The path of the tree node.
@@ -150,8 +153,7 @@ var TreeNode = function(parent, name, datatype, initialValue = null, sync = fals
 				try {
 					// Do synchronization
 					var message = {};
-					// TODO: this._name is wrong
-					message[this._name] = newValue;
+					message[this._protoKey] = newValue;
 					console.log(message);
 					inexor.tree.grpc.synchronize.write(message);
 
@@ -201,15 +203,15 @@ var TreeNode = function(parent, name, datatype, initialValue = null, sync = fals
 	/**
 	 * Adds a child.
 	 * @param name Must not contain whitespace or dots
-	 * @param datatype One of "string", "integer"
+	 * @param datatype One of "string", "int64"
 	 */
-	this.addChild = function(name, datatype, initialValue = null, sync = false, readOnly = false) {
+	this.addChild = function(name, datatype, initialValue = null, sync = false, readOnly = false, protoKey = null) {
 		if (this.hasChild(name)) {
 			return this.getChild(name);
 		} else if (this.isContainer && isValidName.test(name) && isValidDatatype(datatype)) {
 			
 			// Create the child tree node
-			var childTreeNode = new TreeNode(this, name, datatype, initialValue, sync, readOnly);
+			var childTreeNode = new TreeNode(this, name, datatype, initialValue, sync, readOnly, protoKey);
 			
 			// Add the child tree node to the children map
 			this._value.set(name, childTreeNode);
@@ -357,7 +359,7 @@ var Tree = function(server, grpc) {
 		return node;
 	};
 
-	root.createRecursive = function(path, datatype, initialValue = null, sync = false, readOnly = false) {
+	root.createRecursive = function(path, datatype, initialValue = null, sync = false, readOnly = false, protoKey = null) {
 		var splittedPath = path.split(separator);
 		var node = root;
 		for (var i = 1; i < splittedPath.length - 1; i++) {
@@ -368,7 +370,7 @@ var Tree = function(server, grpc) {
 			}
 		}
 		if (!node.hasChild(splittedPath[splittedPath.length - 1])) {
-			node = node.addChild(splittedPath[splittedPath.length - 1], datatype, initialValue, sync, readOnly);
+			node = node.addChild(splittedPath[splittedPath.length - 1], datatype, initialValue, sync, readOnly, protoKey);
 		} else {
 			node = node.getChild(splittedPath[splittedPath.length - 1]);
 		}
@@ -410,38 +412,40 @@ var Tree = function(server, grpc) {
 	root.grpc = {};
 	
 	// Load the proto definition
-	root.grpc.protoDescriptor = grpc.load(__dirname + "/../../inexor/rpc/inexor_service.proto");
+	root.grpc.protoDescriptor = grpc.load(__dirname + "/../../inexor/rpc/treedata.gen.proto");
 	// console.log(root.grpc.protoDescriptor.inexor.tree.TreeService.service.children[0].resolvedRequestType._fieldsByName["fullscreen"].options["(path)"]);
 
 	/**
-	 * Returns the path of the field key.
+	 * Returns the path of the field by proto key.
 	 */
-	root.grpc.getPath = function(key) {
-		return root.grpc.protoDescriptor.inexor.tree.TreeService.service.children[0].resolvedRequestType._fieldsByName[key].options["(path)"];
+	root.grpc.getPath = function(protoKey) {
+		return root.grpc.protoDescriptor.inexor.tree.TreeService.service.children[0].resolvedRequestType._fieldsByName[protoKey].options["(path)"];
 	};
 
 	/**
-	 * Returns the datatype of the field key.
+	 * Returns the datatype of the field by proto key.
 	 */
-	root.grpc.getDatatype = function(key) {
-		return root.grpc.protoDescriptor.inexor.tree.TreeService.service.children[0].resolvedRequestType._fieldsByName[key].type.name;
+	root.grpc.getDatatype = function(protoKey) {
+		return root.grpc.protoDescriptor.inexor.tree.TreeService.service.children[0].resolvedRequestType._fieldsByName[protoKey].type.name;
 	};
 
 	/**
-	 * Returns the id of the field key.
+	 * Returns the id of the field by proto key.
 	 */
-	root.grpc.getId = function(key) {
-		return root.grpc.protoDescriptor.inexor.tree.TreeService.service.children[0].resolvedRequestType._fieldsByName[key].id;
+	root.grpc.getId = function(protoKey) {
+		return root.grpc.protoDescriptor.inexor.tree.TreeService.service.children[0].resolvedRequestType._fieldsByName[protoKey].id;
 	};
 
 	/**
 	 * Loads the field names from .proto and initializes the tree recursively.
 	 */
 	root.grpc.initializeTree = function() {
-		for (var key in root.grpc.protoDescriptor.inexor.tree.TreeService.service.children[0].resolvedRequestType._fieldsByName) {
+		for (var protoKey in root.grpc.protoDescriptor.inexor.tree.TreeService.service.children[0].resolvedRequestType._fieldsByName) {
 			try {
-				root.createRecursive(root.grpc.getPath(key), root.grpc.getDatatype(key), false, true, false);
-			} catch (err) {}
+				root.createRecursive(root.grpc.getPath(protoKey), root.grpc.getDatatype(protoKey), false, true, false, protoKey);
+			} catch (err) {
+				console.log(err);
+			}
 		}
 	};
 
@@ -455,12 +459,11 @@ var Tree = function(server, grpc) {
 		root.grpc.synchronize = root.grpc.treeServiceClient.synchronize();
 
 		root.grpc.synchronize.on("data", function(message) {
-			// console.log(message);
-			var key = message.key;
-			var value = message[key];
-			var path = root.grpc.getPath(key);
+			var protoKey = message.key;
+			var value = message[protoKey];
+			var path = root.grpc.getPath(protoKey);
 			var node = root.findNode(path);
-			console.log(key + " (" + path + ") = " + value);
+			// console.log(protoKey + " (" + path + ") = " + value);
 			node.set(value, true);
 		});
 

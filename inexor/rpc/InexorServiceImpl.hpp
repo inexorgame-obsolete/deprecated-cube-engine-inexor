@@ -2,7 +2,7 @@
 #define INEXOR_RPC_INEXOR_SERVICE_IMPL_HEADER
 
 #include <google/protobuf/service.h>
-#include "inexor/rpc/inexor_service.pb.h"
+#include "inexor/rpc/treedata.gen.pb.h"
 
 namespace inexor {
 namespace rpc {
@@ -10,7 +10,7 @@ namespace rpc {
   /**
    * Default implementation of the InexorService.
    *
-   * @see inexor_service.proto
+   * @see treedata.gen.proto
    
   class InexorServiceImpl : public InexorService_Stub {
     typedef google::protobuf::RpcController RpcController;
