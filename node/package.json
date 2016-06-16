@@ -1,8 +1,8 @@
 {
   "name": "Inexor_IPC_Client",
-  "version": "0.0.8",
+  "version": "0.8.0",
   "description": "Scripting in node.js for Inexor",
-  "main": "index.js",
+  "main": "src/tree/index.js",
   "scripts": {
     "test": "mocha",
     "install": "bower install",
