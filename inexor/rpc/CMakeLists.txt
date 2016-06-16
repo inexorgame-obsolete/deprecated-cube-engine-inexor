@@ -51,14 +51,14 @@ add_custom_target(run_gluegen DEPENDS ${gluegen_out})
 
 set(RPC_FILE_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "")
 
-set(protoc_in ${RPC_FILE_DIR}/inexor_service.proto ${RPC_FILE_DIR}/treedata.gen.proto)
+set(protoc_in ${RPC_FILE_DIR}/treedata.gen.proto)
 
 set(protoc_out_dir_should "${CMAKE_BINARY_DIR}/inexor/rpc/") # this should be the outdir
 set(protoc_out_dir "${CMAKE_BINARY_DIR}/inexor/rpc/inexor/rpc/") # But this actually is 
                                                              # (since we want to include with full namespace paths)
 
-set(protoc_out_cc ${protoc_out_dir}/inexor_service.pb.cc ${protoc_out_dir}/treedata.gen.pb.cc ${protoc_out_dir}/inexor_service.grpc.pb.cc)
-set(protoc_out_h ${protoc_out_dir}/inexor_service.pb.h ${protoc_out_dir}/treedata.gen.pb.h ${protoc_out_dir}/inexor_service.grpc.pb.h)
+set(protoc_out_cc ${protoc_out_dir}/treedata.gen.pb.cc ${protoc_out_dir}/treedata.gen.grpc.pb.cc)
+set(protoc_out_h ${protoc_out_dir}/treedata.gen.pb.h ${protoc_out_dir}/treedata.gen.grpc.pb.h)
 set(protoc_out ${protoc_out_cc} ${protoc_out_h})
 
 

@@ -11,7 +11,7 @@
 #include <unordered_map>
 
 #include <boost/variant.hpp>
-#include "inexor/rpc/inexor_service.grpc.pb.h"
+#include "inexor/rpc/treedata.gen.grpc.pb.h"
 
 #include "inexor/rpc/SharedTree.hpp"
 #include "inexor/rpc/RpcSubsystem.hpp"

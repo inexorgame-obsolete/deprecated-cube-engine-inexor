@@ -42,13 +42,11 @@ var bunyan = require('bunyan');
 var grpc = require('grpc');
 var Tree = require('./tree.js');
 var EditorSettings = require('./EditorSettings.js');
-var TreeTest = require('./treetest.js');
 
 // Create the inexor tree
 inexor = {};
 inexor.tree = new Tree(server, grpc);
 inexor.editorSettings = new EditorSettings();
-inexor.treeTest = new TreeTest(inexor.tree);
 
 streams = [
     {

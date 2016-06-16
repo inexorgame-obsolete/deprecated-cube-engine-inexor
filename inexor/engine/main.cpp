@@ -1249,6 +1249,8 @@ int main(int argc, char **argv)
     SUBSYSTEM_REQUIRE(rpc); // remote process control: communication with the scripting engine
     SUBSYSTEM_REQUIRE(cef); // (embedded chromium): ingame html5+js browser for the ui.
 
+    metapp.start("rpc");
+
     execfile("init.cfg", false);
 
     // parse command line arguments
