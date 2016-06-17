@@ -86,11 +86,16 @@ set_source_files_properties(
 # MODULE ###############
 
 declare_module(rpc .)
-set(RPC_MODULE_SOURCES ${RPC_MODULE_SOURCES} ${protoc_out} ${gluegen_out} CACHE INTERNAL "")
+set(RPC_MODULE_SOURCES ${RPC_MODULE_SOURCES} ${protoc_out} ${gluegen_out} CACHE INTERNAL "") # Attach to generated source module list
 
 add_lib(rpc)
 
 target_include_directories(module_rpc PUBLIC ${RPC_INCLUDE_DIRS})
+
+if(COMPILER_MSVC)
+  set_target_properties(module_rpc PROPERTIES COMPILE_FLAGS "/bigobj")
+  #needed since our generated header is rich in templates and big in general, which makes it super big.
+endif()
 
 require_sdl(module_rpc NOLINK)
 #require_enet(module_rpc NOLINK)
