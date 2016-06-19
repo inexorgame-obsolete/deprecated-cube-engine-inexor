@@ -174,6 +174,7 @@ namespace screen {
 
     void screenres(int w, int h);
 
+    // TODO: CEF userinterface
     ICOMMAND(screenres, "ii", (int *w, int *h), screenres(*w, *h));
 
     /// change screen width and height
@@ -1290,22 +1291,13 @@ ICOMMANDERR(logformat, "ss", (char *logger_name, char *pattern),
 
 int main(int argc, char **argv)
 {
-    // Ensure the correct locale
-    setlocale(LC_ALL, "en_US.utf8");
-
     logging.initDefaultLoggers();
-
-    /// require subsystems BEFORE configurations are done
-    SUBSYSTEM_REQUIRE(rpc);
-    SUBSYSTEM_REQUIRE(cef);
-
-    // Initialize the subsystems
-    logoutf("init: subsystems");
-    metapp.start("rpc");
-    metapp.start("cef");
 
     // We only need to initialize it, not use it.
     UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // catches all msgs from the OS, that it wants to terminate us. 
+
+    // Ensure the correct locale
+    setlocale(LC_ALL, "en_US.utf8");
 
     int dedicated = 0;
     char *load = NULL, *initscript = NULL;
@@ -1323,6 +1315,15 @@ int main(int argc, char **argv)
             }
         }
     }
+
+    // require subsystems BEFORE configurations are done
+    // Subsystem initialization with main args; Never render cef if cef_app not
+    // Initialize the metasystem
+    SUBSYSTEM_REQUIRE(rpc); // remote process control: communication with the scripting engine
+    SUBSYSTEM_REQUIRE(cef); // (embedded chromium): ingame html5+js browser for the ui.
+
+    metapp.start("rpc");
+    metapp.start("cef");
 
     execfile("init.cfg", false);
 

@@ -19,14 +19,14 @@ class InexorFrame : public InexorContextProvider,
         InexorFrame(std::string &name, std::string &url)
           : url(url), name(name) {}
 
-        // InexorCefContextProvider
+        // InexorContextProvider
         void InitializeContext();
         bool Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception);
         bool Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& retval, CefString& exception);
         bool Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception);
         std::string GetContextName() { return name; };
 
-        // InexorCefLayerProvider
+        // InexorLayerProvider
         std::string GetLayerName() { return name; };
         std::string GetUrl() { return url; };
         bool GetVisibility() { return true; };
