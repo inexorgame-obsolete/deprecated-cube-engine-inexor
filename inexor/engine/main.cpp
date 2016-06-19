@@ -1316,20 +1316,14 @@ int main(int argc, char **argv)
         }
     }
 
-    spdlog::get("global")->info() << "1";
-
     // require subsystems BEFORE configurations are done
     // Subsystem initialization with main args; Never render cef if cef_app not
     // Initialize the metasystem
     SUBSYSTEM_REQUIRE(rpc); // remote process control: communication with the scripting engine
     SUBSYSTEM_REQUIRE(cef); // (embedded chromium): ingame html5+js browser for the ui.
 
-    spdlog::get("global")->info() << "1";
-
     metapp.start("rpc");
     metapp.start("cef");
-
-    spdlog::get("global")->info() << "1";
 
     execfile("init.cfg", false);
 
