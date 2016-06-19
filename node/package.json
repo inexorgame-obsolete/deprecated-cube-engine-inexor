@@ -14,8 +14,8 @@
     "type": "git",
     "url": "git@github.com:inexor-game/code.git"
   },
-  "maintainer": "Lennard Berger <lennard@berger.work>",
-  "license": "zlib",
+  "maintainer": "Lennard Berger <fohlen@darkkeepers.dk>",
+  "license": "Zlib",
   "bugs": {
     "url": "https://github.com/inexor-game/code/issues"
   },

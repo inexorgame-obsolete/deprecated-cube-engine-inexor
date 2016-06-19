@@ -1,9 +1,12 @@
 {
   "name": "Inexor_IPC_Client",
   "description": "Scripting in node.js for Inexor",
+  "authors": [
+	"Andreas Schaeffer",
+	"Lennard Berger <fohlen@darkkeepers.dk"
+  ],
   "main": "index.js",
-  "maintainer": "Andreas Schaeffer",
-  "license": "zlib",
+  "license": "Zlib",
   "homepage": "https://github.com/inexor-game/code",
   "moduleType": [],
   "private": true,
