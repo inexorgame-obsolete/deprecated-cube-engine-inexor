@@ -576,7 +576,7 @@ void cef_resize(int width, int height)
 {
     if (cef_app) {
         // TODO: not fully working
-        conoutf("Update Inexor User Interface Screen Size: %d %d", width, height);
+        spdlog::get("global")->debug() << "Update Inexor User Interface Screen Size: " << width << "x" << height << "\n";
         cef_app->GetUserInterface()->Resize(0, 0, width, screenh);
         cef_app->GetMouseManager()->SetScreenSize(width, height);
     }
@@ -1889,7 +1889,7 @@ void gl_rendercefmouse(int view_x, int view_y, int view_width, int view_height)
 void gl_rendercef()
 {
     if (!cef_app.get()) {
-        conoutf("err_cef");
+        spdlog::get("global")->debug() << "err_cef\n";
         return;
     }
 
@@ -1908,15 +1908,15 @@ void gl_rendercef()
             unsigned int texture_id = render_handler->GetTextureId();
 
             if (!initialized) {
-                conoutf("err_initialized");
+                spdlog::get("global")->debug() << "err_initialized\n";
                 continue;
             }
             if (view_width == 0 || view_height == 0) {
-                conoutf("err_view");
+                spdlog::get("global")->debug() << "err_view\n";
                 continue;
             }
             if (texture_id == 0u) {
-                conoutf("err_tex");
+                spdlog::get("global")->debug() << "err_tex\n";
                 continue;
             }
 

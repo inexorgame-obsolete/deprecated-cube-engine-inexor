@@ -7,6 +7,7 @@
 #include "include/cef_render_process_handler.h"
 #include "include/wrapper/cef_helpers.h"
 
+#include "inexor/rpc/SharedTree.hpp"
 #include "inexor/ui/InexorContextProvider.hpp"
 
 namespace inexor {
@@ -17,7 +18,7 @@ namespace screen {
 }
 }
 
-class InexorCefContextManager : public InexorCefContextProvider
+class InexorContextManager : public InexorContextProvider
 {
 
     public:

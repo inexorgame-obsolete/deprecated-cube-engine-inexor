@@ -17,12 +17,11 @@ InexorLayer::InexorLayer(std::string name, int x, int y, int width, int height, 
     window_info.y = y;
     window_info.width = width;
     window_info.height = height;
-    cookie_manager = CefCookieManager::CreateManager("/tmp/inexorc", false, NULL);
+    cookie_manager = CefCookieManager::CreateManager("/tmp/inexorc", false);
     render_handler = new InexorRenderHandler(true, x, y, width, height);
     browser = CefBrowserHost::CreateBrowserSync(window_info, this, url, browser_settings, NULL);
     if (browser.get()) {
         spdlog::get("global")->debug() << "init: cef: created layer \"" << name << "\"";
-        browser->GetHost()->SendFocusEvent(has_focus);
         UpdateFocus();
     }
 }
@@ -59,7 +58,6 @@ void InexorLayer::SetIsAcceptingMouseInput(bool is_accepting_mouse_input)
 void InexorLayer::Destroy()
 {
     spdlog::get("global")->debug() << "InexorCefLayer::Destroy()";
-    browser->GetHost()->CloseBrowser(true);
     if (browser.get()) {
         browser->GetHost()->CloseBrowser(true);
     }

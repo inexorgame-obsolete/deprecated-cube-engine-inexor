@@ -8,4 +8,4 @@ declare_module(${mod} .)
 message(STATUS "SOURCES: ${mod} –– ${MOD}_MODULE_SOURCES ${${MOD}_MODULE_SOURCES}")
 add_app(${mod} ${${MOD}_MODULE_SOURCES} CONSOLE_APP)
 
-config_ui(${mod})
+require_ui(${mod})
