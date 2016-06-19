@@ -234,7 +234,8 @@ function(require_asio targ)
   if (";${ARGN};" MATCHES ";NOLINK;")
     set(NOLINK "NOLINK")
   endif()
-
+  
+  add_definitions(-DBOOST_ASIO_HAS_STD_CHRONO)
   include_directories(${ASIO_INCLUDE_DIRS})
 
   if (WIN32)
@@ -257,12 +258,51 @@ register_possible_dependency(${BOOST_FILESYSTEM_LIBS})
 
 function(require_boost_filesystem targ)
   message(STATUS "Configuring ${targ} with Boost Filesystem")
+  if (";${ARGN};" MATCHES ";NOLINK;")
+    set(NOLINK "NOLINK")
+  endif()
 
   add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED)
-  target_link_libs(${targ} ${BOOST_FILESYSTEM_LIBS})
+  target_link_libs(${targ} ${BOOST_FILESYSTEM_LIBS} ${NOLINK})
   target_include_directories(${targ} PUBLIC ${BOOST_FILESYSTEM_INCLUDE_DIRS})
 
-  require_boost_system(${targ})
+  require_boost_system(${targ} ${NOLINK})
+endfunction()
+
+#### BOOST (Regex)
+
+find_libs(BOOST_REGEX_LIBS boost_regex)
+find_path(BOOST_REGEX_INCLUDE_DIRS boost/regex.hpp)
+
+register_possible_dependency(${BOOST_REGEX_LIBS})
+
+function(require_boost_regex targ)
+  message(STATUS "Configuring ${targ} with Boost Regex")
+  if (";${ARGN};" MATCHES ";NOLINK;")
+    set(NOLINK "NOLINK")
+  endif()
+
+  target_link_libs(${targ} ${BOOST_REGEX_LIBS} ${NOLINK})
+  target_include_directories(${targ} PUBLIC ${BOOST_REGEX_INCLUDE_DIRS})
+
+endfunction()
+
+#### BOOST (program options)
+
+find_libs(BOOST_PROGRAM_OPTS_LIBS boost_program_options)
+find_path(BOOST_PROGRAM_OPTS_INCLUDE_DIRS boost/program_options.hpp)
+
+register_possible_dependency(${BOOST_PROGRAM_OPTS_LIBS})
+
+function(require_boost_program_options targ)
+  message(STATUS "Configuring ${targ} with Boost program options")
+  if (";${ARGN};" MATCHES ";NOLINK;")
+    set(NOLINK "NOLINK")
+  endif()
+
+  target_link_libs(${targ} ${BOOST_PROGRAM_OPTS_LIBS} ${NOLINK})
+  target_include_directories(${targ} PUBLIC ${BOOST_PROGRAM_OPTS_INCLUDE_DIRS})
+
 endfunction()
 
 #### Rapidjson
@@ -283,7 +323,10 @@ find_path(PROTOBUF_INCLUDE_DIRS google/protobuf/service.h)
 register_possible_dependency(${PROTOBUF_LIBRARIES})
 
 if (NOT DEFINED PROTOC_EXE)
-  find_program(PROTOC_EXE protoc)
+  find_program(PROTOC_EXE protoc NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH )
+  # grpc and protoc make problems if versions arent matching.
+  # and since grpc is beta its not shipped for most linux distros
+  # and we pack it prebuilt into the platform repo
 endif()
 
 function(require_protobuf targ)
@@ -293,9 +336,39 @@ function(require_protobuf targ)
   endif()
 
   add_definitions(-DGOOGLE_PROTOBUF_NO_RTTI)
-  include_directories(${PROTOBUF_INCLUDE_DIRS} ${RPC_INCLUDE_DIRS})
+  include_directories(${PROTOBUF_INCLUDE_DIRS})
   target_link_libs(${targ} ${NOLINK} ${PROTOBUF_LIBRARIES})
 endfunction()
+
+#### gRPC
+
+find_libs(GRPC_LIBRARIES gpr LIB grpc_unsecure LIB grpc++_unsecure)
+find_path(GRPC_INCLUDE_DIRS grpc/grpc.h)
+find_path(GRPCPP_INCLUDE_DIRS grpc++/grpc++.h)
+
+
+register_possible_dependency(${GRPC_LIBRARIES})
+
+if (NOT DEFINED GRPC_EXE)
+  find_program(GRPC_EXE grpc_cpp_plugin NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH )
+  # grpc and protoc make problems if versions arent matching.
+  # and since grpc is beta its not shipped for most linux distros
+  # and we pack it prebuilt into the platform repo
+endif()
+
+function(require_grpc targ)
+  message(STATUS "Configuring ${targ} with gRPC")
+  if (";${ARGN};" MATCHES ";NOLINK;")
+    set(NOLINK "NOLINK")
+  endif()
+
+  include_directories(${GRPC_INCLUDE_DIRS} ${GRPCPP_INCLUDE_DIRS})
+  target_link_libs(${targ} ${NOLINK} ${GRPC_LIBRARIES})
+
+  require_protobuf(${targ} ${NOLINK})
+endfunction()
+
+
 #### Googletest
 
 set(GTEST_DIR "${pwd}/googletest" CACHE INTERNAL "")

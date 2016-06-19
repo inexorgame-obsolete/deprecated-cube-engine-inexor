@@ -8,6 +8,7 @@
 #include "inexor/util/Logging.hpp"
 
 using namespace inexor::filesystem;
+using namespace inexor::sound;
 using namespace inexor::util;
 
 namespace game

@@ -8,6 +8,7 @@
 #include "inexor/filesystem/mediadirs.hpp"
 
 using namespace inexor::filesystem;
+using namespace inexor::rendering::screen;
 
 static struct gui *windowhit = NULL;
 static bool layoutpass, actionon = false;

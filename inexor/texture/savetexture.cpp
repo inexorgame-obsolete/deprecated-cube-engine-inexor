@@ -1,5 +1,5 @@
 /// @file everything to save images of various formats.
-
+#include "inexor/rpc/SharedTree.hpp"
 #include "inexor/texture/savetexture.hpp"
 #include "inexor/texture/SDL_loading.hpp"
 #include "inexor/texture/image.hpp"
@@ -286,9 +286,9 @@ void screenshot(char *filename)
         concatstring(buf, imageexts[format]);
     }
 
-    ImageData image(screenw, screenh, 3);
-    glPixelStorei(GL_PACK_ALIGNMENT, texalign(image.data, screenw, 3));
-    glReadPixels(0, 0, screenw, screenh, GL_RGB, GL_UNSIGNED_BYTE, image.data);
+    ImageData image(inexor::rendering::screen::screenw, inexor::rendering::screen::screenh, 3);
+    glPixelStorei(GL_PACK_ALIGNMENT, texalign(image.data, inexor::rendering::screen::screenw, 3));
+    glReadPixels(0, 0, inexor::rendering::screen::screenw, inexor::rendering::screen::screenh, GL_RGB, GL_UNSIGNED_BYTE, image.data);
     saveimage(path(buf), format, image, true);
 }
 

@@ -24,7 +24,7 @@ VARP(blursmsigma, 1, 100, 200);
 #define SHADOWSKEW 0.7071068f
 
 vec shadowoffset(0, 0, 0), shadowfocus(0, 0, 0), shadowdir(0, SHADOWSKEW, 1);
-VAR(shadowmapcasters, 1, 0, 0);
+VAR_NOSYNC(shadowmapcasters, 1, 0, 0);
 float shadowmapmaxz = 0;
 
 void setshadowdir(int angle)

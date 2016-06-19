@@ -3,6 +3,8 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/util/Logging.hpp"
 
+using namespace inexor::rendering::screen;
+
 Shader *Shader::lastshader = NULL;
 
 Shader *nullshader = NULL, *hudshader = NULL, *hudnotextureshader = NULL, *textureshader = NULL, *notextureshader = NULL, *nocolorshader = NULL, *foggedshader = NULL, *foggednotextureshader = NULL, *stdworldshader = NULL;

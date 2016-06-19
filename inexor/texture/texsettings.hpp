@@ -3,7 +3,7 @@
 #ifndef INEXOR_TEX_SETTINGS_H
 #define INEXOR_TEX_SETTINGS_H
 
-#include "inexor/rpc/SharedVar.hpp"
+#include "inexor/rpc/SharedTree.hpp"
 
 extern SharedVar<int> usetexcompress; // from rendergl
 

@@ -12,6 +12,14 @@
 
 #include "SDL_mixer.h"
 
+namespace inexor {
+namespace sound {
+    extern bool nosound; // sound.cpp
+}
+}
+
+using namespace inexor::rendering::screen;
+
 VAR(dbgmovie, 0, 0, 1);
 
 struct aviindexentry
@@ -180,8 +188,7 @@ struct aviwriter
         path(filename);
         if(!strrchr(filename, '.')) concatstring(filename, ".avi");
         
-        extern bool nosound; // sound.cpp
-        if(sound && !nosound) 
+        if(sound && !inexor::sound::nosound)
         {
             Mix_QuerySpec(&soundfrequency, &soundformat, &soundchannels);
             const char *desc;

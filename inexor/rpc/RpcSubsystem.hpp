@@ -1,41 +1,42 @@
-#ifndef INEXOR_RPC_RPC_SUBSYSTEM_HEADER
-#define INEXOR_RPC_RPC_SUBSYSTEM_HEADER
-
-// Convenience Header
+#pragma once
 
 #include <memory>
 
-#include "inexor/net/MCServer.hpp"
+#include <moodycamel/concurrentqueue.h>
+#include <moodycamel/blockingconcurrentqueue.h>
 
-#include "inexor/rpc/inexor_service.pb.h"
-#include "inexor/rpc/InexorServiceImpl.hpp"
-#include "inexor/rpc/MCRpcServer.hpp"
+#include <boost/variant.hpp>
+
+#include "inexor/rpc/treedata.gen.grpc.pb.h"
 
 #include "inexor/util/Subsystem.hpp"
+#include "inexor/rpc/SharedTree.hpp"
 
-#include "inexor/compat/make_unique.hpp"
+typedef int64_t int64; // size is important for us, proto explicitly specifies int64
 
 namespace inexor {
 namespace rpc {
 
-class RpcSubsystem : public inexor::util::Subsystem {
+class RpcSubsystem : public inexor::util::Subsystem
+{
 public:
-
-    /// The connection we maintain
-    std::unique_ptr<inexor::net::MCServer> socket;
-    /// RPC Call Negotiation
-    std::unique_ptr<MCRpcServer> server;
-    /// RPC Function Implementation
-    std::unique_ptr<InexorService> rpc_service =
-        inexor::compat::make_unique<InexorServiceImpl>();
-
     RpcSubsystem();
-
-    void tick();
+    virtual ~RpcSubsystem();
+    virtual void tick();
 };
 
+struct net2maintupel
+{
+    // we pass a pointer to the variable instead of the variablename to the main thread (thats faster, and no mainthread function need to be generated).
+    // Note that the pointer is valid as long as we deal with static data only (sidenote for vectors).
+    boost::variant<SharedVar<char *>*, SharedVar<int>*, SharedVar<float>*> ptr2var;
+    int type;
 
-}
-}
+    boost::variant<std::string, int64, float> value;
+};
 
-#endif
+extern moodycamel::ConcurrentQueue<inexor::tree::TreeNodeChanged>  main2net_interthread_queue; // Something gets pushed on this (lockless threadsafe queue) when we changed values. Gets handled by serverthread.
+extern moodycamel::ConcurrentQueue<net2maintupel> net2main_interthread_queue; // Something gets pushed on this (lockless threadsafe queue) when a value has arrived. Gets handled by Subsystem::tick();
+
+} // namespace inexor
+} // namespace rpc

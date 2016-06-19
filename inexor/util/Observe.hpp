@@ -40,13 +40,11 @@ namespace util {
 /// ```
 /// Observe<int> oi = 22;
 ///
-/// int sum(int &i, int &k) {
-///     return i+k;
-/// }
-///
-/// void onChange(int &old, int &new) {
-///     cout << "oi changed: " << old << " -> " << new << endl;
-/// }
+/// oi.onChange.connect([] (const int &a, const int &b)
+///     {
+///         spdlog::get("global")->info("hey we changed! (old: {} new: {}", a, b);
+///     }
+/// );
 ///
 /// void main() {
 ///     oi = 33;
@@ -114,6 +112,9 @@ public:
     // TODO: Put all the operator macro invocations into
     // own file so we reuse them in the test.
 
+    // TODO: Component assignment operators (+= -= ..)
+    // TODO: Performance: return by reference for operators
+
 #define UNR(op)                  \
     T operator op (int) {        \
         T old = value;           \
@@ -163,6 +164,28 @@ public:
 
 #undef ASGN
 
+
+    // This is for seriliazation usage only, to not get caught in endless loop when receiving new values
+    // TODO find another way (since other watchers wont be notified as well anymore)
+    void setnosync(const char *c)
+    {
+        value = c;
+    }
+
+    void setnosync(const T &otr)
+    {
+        value = otr;
+    }
+
+    void setnosync(T &&otr)
+    {
+        value = std::move(otr);
+    }
+
+    void sync()
+    {
+        onChange(value, value);
+    }
 };
 
 // Output Operator

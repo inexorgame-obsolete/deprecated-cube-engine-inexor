@@ -949,7 +949,7 @@ void debugparticles()
     if(!dbgparts) return;
     int n = sizeof(parts)/sizeof(parts[0]);
     pushhudmatrix();
-    hudmatrix.ortho(0, FONTH*n*2*screenw/float(screenh), FONTH*n*2, 0, -1, 1); //squeeze into top-left corner        
+    hudmatrix.ortho(0, FONTH*n*2*inexor::rendering::screen::screenw/float(inexor::rendering::screen::screenh), FONTH*n*2, 0, -1, 1); //squeeze into top-left corner
     flushhudmatrix();
     hudshader->set();
     loopi(n) draw_text(parts[i]->info, FONTH, (i+n/2)*FONTH);

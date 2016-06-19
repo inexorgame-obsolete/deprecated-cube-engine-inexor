@@ -4,7 +4,7 @@
 #include "inexor/shared/cube.hpp"
 #include "inexor/engine/world.hpp"
 
-#include "inexor/rpc/SharedVar.hpp"
+#include "inexor/rpc/SharedTree.hpp"
 
 #ifndef STANDALONE
 
@@ -33,8 +33,16 @@ extern const uchar fvmasks[64];
 extern const uchar faceedgesidx[6][4];
 extern bool inbetweenframes, renderedframe;
 
-extern SDL_Window *screen;
-extern int screenw, screenh;
+extern SDL_Window *sdl_window;
+
+namespace inexor {
+namespace rendering {
+namespace screen {
+    extern int screenw, screenh;
+}
+}
+}
+
 extern SharedVar<int> zpass, glowpass;
 
 extern vector<int> entgroup;
@@ -547,14 +555,18 @@ extern void clearmainmenu();
 extern void g3d_mainmenu();
 
 // sound
-extern void clearmapsounds();
-extern void checkmapsounds();
-extern void updatesounds();
-extern void preloadmapsounds();
-
-extern void initmumble();
-extern void closemumble();
-extern void updatemumble();
+namespace inexor {
+namespace sound {
+    extern void clear_sound();
+    extern void clearmapsounds();
+    extern void checkmapsounds();
+    extern void updatesounds();
+    extern void preloadmapsounds();
+    extern void initmumble();
+    extern void closemumble();
+    extern void updatemumble();
+}
+}
 
 // grass
 extern void generategrass();

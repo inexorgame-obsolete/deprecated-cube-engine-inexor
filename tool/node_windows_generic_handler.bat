@@ -21,17 +21,15 @@ echo Using shipped node.js, npm and git (git needed as npm backend)
 
 echo node version:
 call node -v
-echo npm version:
-call %NPM_EXECUTEABLE% -v
+:: echo npm version:
+:: call %NPM_EXECUTEABLE% -v
+
 
 cd "%MAINDIR%\node"
 
-:: Execute the passed arguments:
-Setlocal EnableDelayedExpansion
+if "%inexor_update_npm%"=="true" call %NPM_EXECUTEABLE% update
+if "%inexor_start_nodeapp%"=="true" call %NPM_EXECUTEABLE% start
 
-%*
-
-Setlocal DisableDelayedExpansion
 
 call cd "%MAINDIR%"
 

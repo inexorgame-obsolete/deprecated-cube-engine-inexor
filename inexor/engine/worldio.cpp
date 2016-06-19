@@ -4,6 +4,7 @@
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/util/Logging.hpp"
 
+using namespace inexor::sound;
 using namespace inexor::util;
 
 /// remove map postfix (.ogz) from file path/name to get map name

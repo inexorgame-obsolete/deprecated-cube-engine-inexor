@@ -52,13 +52,13 @@ bool InexorCefContextManager::Get(const CefString& name, const CefRefPtr<CefV8Va
     else if (name == "thirdperson")
         return_value = CefV8Value::CreateInt(thirdperson);
     else if (name == "fullscreen")
-        return_value = CefV8Value::CreateInt(fullscreen);
+        return_value = CefV8Value::CreateInt(inexor::rendering::screen::fullscreen);
     else if (name == "scr_w")
-        return_value = CefV8Value::CreateInt(scr_w);
+        return_value = CefV8Value::CreateInt(inexor::rendering::screen::scr_w);
     else if (name == "scr_h")
-        return_value = CefV8Value::CreateInt(scr_h);
+        return_value = CefV8Value::CreateInt(inexor::rendering::screen::scr_h);
     else if (name == "vsync")
-        return_value = CefV8Value::CreateInt(vsync);
+        return_value = CefV8Value::CreateInt(inexor::rendering::screen::vsync);
     else if (name == "fps") {
         int fps, bestdiff, worstdiff;
         getfps(fps, bestdiff, worstdiff);
@@ -81,13 +81,13 @@ bool InexorCefContextManager::Set(const CefString& name, const CefRefPtr<CefV8Va
         if (name == "thirdperson")
             thirdperson = value->GetIntValue();
         else if (name == "fullscreen")
-            fullscreen = value->GetIntValue();
+            inexor::rendering::screen::fullscreen = value->GetIntValue();
         else if (name == "scr_w")
-            scr_w = value->GetIntValue();
+            inexor::rendering::screen::scr_w = value->GetIntValue();
         else if (name == "scr_h")
-            scr_h = value->GetIntValue();
+            inexor::rendering::screen::scr_h = value->GetIntValue();
         else if (name == "vsync")
-            vsync = value->GetIntValue();
+            inexor::rendering::screen::vsync = value->GetIntValue();
         else if (name == "name")
             game::switchname(value->GetStringValue().ToString().c_str(), NULL);
         else

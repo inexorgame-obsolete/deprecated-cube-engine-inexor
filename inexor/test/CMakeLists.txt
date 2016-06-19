@@ -7,7 +7,6 @@ link_directories(${GTEST_LIB_DIR})
 
 add_app(${TEST_BINARY} ${TEST_MODULE_SOURCES} CONSOLE_APP)
 
-require_net(${TEST_BINARY})
 require_util(${TEST_BINARY})
 require_gtest(${TEST_BINARY})
 require_cxx11_abi(${TEST_BINARY})

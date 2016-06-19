@@ -2,6 +2,8 @@
 #include "inexor/fpsgame/game.hpp"
 #include "inexor/engine/engine.hpp"
 
+using namespace inexor::sound;
+
 namespace game
 {
     static const int MONSTERDAMAGEFACTOR = 4;
