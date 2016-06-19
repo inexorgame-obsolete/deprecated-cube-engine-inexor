@@ -27,7 +27,7 @@ call node -v
 
 cd "%MAINDIR%\node"
 
-if "%inexor_update_npm%"=="true" call %NPM_EXECUTEABLE% update
+if "%inexor_update_npm%"=="true" call %NPM_EXECUTEABLE% install
 if "%inexor_start_nodeapp%"=="true" call %NPM_EXECUTEABLE% start
 
 
