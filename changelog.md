@@ -1,5 +1,17 @@
 ## Changelog
 
+### Steroids Alpha Edition (v0.8.0-alpha, 2016-06-21)
+
+#### Code internals, refactoring & bug fixes
+  * Windows: Update to Node.js v6.2.1 + npm v3.9.3 (#301)
+    * this fixes the path too long problem (#297)
+  * Windows: Enforce usage of our shipped versions of Node.js, npm and git (no system installed versions) (#301)
+  * new RPC; syncing Node.js tree (#311)
+
+
+***
+
+
 ### Sultiame Alpha Edition (v0.7.0-alpha, 2016-04-25)
 
 #### Server
