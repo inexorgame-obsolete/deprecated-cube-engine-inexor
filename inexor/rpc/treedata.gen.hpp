@@ -4018,49 +4018,49 @@ class treedata {
         ::inexor::rendering::screen::scr_w.onChange.connect([](const int oldvalue, const int newvalue)
             {
                 inexor::tree::TreeNodeChanged val;
-                val.set__rendering_screen_scr_w(newvalue);
+                val.set__inexor_rendering_screen_scr_w(newvalue);
                 main2net_interthread_queue.enqueue(std::move(val));
             }
         );
         ::inexor::rendering::screen::scr_h.onChange.connect([](const int oldvalue, const int newvalue)
             {
                 inexor::tree::TreeNodeChanged val;
-                val.set__rendering_screen_scr_h(newvalue);
+                val.set__inexor_rendering_screen_scr_h(newvalue);
                 main2net_interthread_queue.enqueue(std::move(val));
             }
         );
         ::inexor::rendering::screen::colorbits.onChange.connect([](const int oldvalue, const int newvalue)
             {
                 inexor::tree::TreeNodeChanged val;
-                val.set__rendering_screen_colorbits(newvalue);
+                val.set__inexor_rendering_screen_colorbits(newvalue);
                 main2net_interthread_queue.enqueue(std::move(val));
             }
         );
         ::inexor::rendering::screen::depthbits.onChange.connect([](const int oldvalue, const int newvalue)
             {
                 inexor::tree::TreeNodeChanged val;
-                val.set__rendering_screen_depthbits(newvalue);
+                val.set__inexor_rendering_screen_depthbits(newvalue);
                 main2net_interthread_queue.enqueue(std::move(val));
             }
         );
         ::inexor::rendering::screen::stencilbits.onChange.connect([](const int oldvalue, const int newvalue)
             {
                 inexor::tree::TreeNodeChanged val;
-                val.set__rendering_screen_stencilbits(newvalue);
+                val.set__inexor_rendering_screen_stencilbits(newvalue);
                 main2net_interthread_queue.enqueue(std::move(val));
             }
         );
         ::inexor::rendering::screen::vsync.onChange.connect([](const int oldvalue, const int newvalue)
             {
                 inexor::tree::TreeNodeChanged val;
-                val.set__rendering_screen_vsync(newvalue);
+                val.set__inexor_rendering_screen_vsync(newvalue);
                 main2net_interthread_queue.enqueue(std::move(val));
             }
         );
         ::inexor::rendering::screen::vsynctear.onChange.connect([](const int oldvalue, const int newvalue)
             {
                 inexor::tree::TreeNodeChanged val;
-                val.set__rendering_screen_vsynctear(newvalue);
+                val.set__inexor_rendering_screen_vsynctear(newvalue);
                 main2net_interthread_queue.enqueue(std::move(val));
             }
         );
@@ -4095,14 +4095,14 @@ class treedata {
         ::inexor::rendering::screen::fullscreen.onChange.connect([](const int oldvalue, const int newvalue)
             {
                 inexor::tree::TreeNodeChanged val;
-                val.set__rendering_screen_fullscreen(newvalue);
+                val.set__inexor_rendering_screen_fullscreen(newvalue);
                 main2net_interthread_queue.enqueue(std::move(val));
             }
         );
         ::inexor::rendering::screen::gamma.onChange.connect([](const int oldvalue, const int newvalue)
             {
                 inexor::tree::TreeNodeChanged val;
-                val.set__rendering_screen_gamma(newvalue);
+                val.set__inexor_rendering_screen_gamma(newvalue);
                 main2net_interthread_queue.enqueue(std::move(val));
             }
         );
@@ -5229,70 +5229,70 @@ class treedata {
         ::inexor::sound::soundvol.onChange.connect([](const int oldvalue, const int newvalue)
             {
                 inexor::tree::TreeNodeChanged val;
-                val.set__sound_soundvol(newvalue);
+                val.set__inexor_sound_soundvol(newvalue);
                 main2net_interthread_queue.enqueue(std::move(val));
             }
         );
         ::inexor::sound::musicvol.onChange.connect([](const int oldvalue, const int newvalue)
             {
                 inexor::tree::TreeNodeChanged val;
-                val.set__sound_musicvol(newvalue);
+                val.set__inexor_sound_musicvol(newvalue);
                 main2net_interthread_queue.enqueue(std::move(val));
             }
         );
         ::inexor::sound::soundchans.onChange.connect([](const int oldvalue, const int newvalue)
             {
                 inexor::tree::TreeNodeChanged val;
-                val.set__sound_soundchans(newvalue);
+                val.set__inexor_sound_soundchans(newvalue);
                 main2net_interthread_queue.enqueue(std::move(val));
             }
         );
         ::inexor::sound::soundfreq.onChange.connect([](const int oldvalue, const int newvalue)
             {
                 inexor::tree::TreeNodeChanged val;
-                val.set__sound_soundfreq(newvalue);
+                val.set__inexor_sound_soundfreq(newvalue);
                 main2net_interthread_queue.enqueue(std::move(val));
             }
         );
         ::inexor::sound::soundbufferlen.onChange.connect([](const int oldvalue, const int newvalue)
             {
                 inexor::tree::TreeNodeChanged val;
-                val.set__sound_soundbufferlen(newvalue);
+                val.set__inexor_sound_soundbufferlen(newvalue);
                 main2net_interthread_queue.enqueue(std::move(val));
             }
         );
         ::inexor::sound::stereo.onChange.connect([](const int oldvalue, const int newvalue)
             {
                 inexor::tree::TreeNodeChanged val;
-                val.set__sound_stereo(newvalue);
+                val.set__inexor_sound_stereo(newvalue);
                 main2net_interthread_queue.enqueue(std::move(val));
             }
         );
         ::inexor::sound::maxsoundradius.onChange.connect([](const int oldvalue, const int newvalue)
             {
                 inexor::tree::TreeNodeChanged val;
-                val.set__sound_maxsoundradius(newvalue);
+                val.set__inexor_sound_maxsoundradius(newvalue);
                 main2net_interthread_queue.enqueue(std::move(val));
             }
         );
         ::inexor::sound::maxsoundsatonce.onChange.connect([](const int oldvalue, const int newvalue)
             {
                 inexor::tree::TreeNodeChanged val;
-                val.set__sound_maxsoundsatonce(newvalue);
+                val.set__inexor_sound_maxsoundsatonce(newvalue);
                 main2net_interthread_queue.enqueue(std::move(val));
             }
         );
         ::inexor::sound::dbgsound.onChange.connect([](const int oldvalue, const int newvalue)
             {
                 inexor::tree::TreeNodeChanged val;
-                val.set__sound_dbgsound(newvalue);
+                val.set__inexor_sound_dbgsound(newvalue);
                 main2net_interthread_queue.enqueue(std::move(val));
             }
         );
         ::inexor::sound::mumble.onChange.connect([](const int oldvalue, const int newvalue)
             {
                 inexor::tree::TreeNodeChanged val;
-                val.set__sound_mumble(newvalue);
+                val.set__inexor_sound_mumble(newvalue);
                 main2net_interthread_queue.enqueue(std::move(val));
             }
         );
@@ -7401,19 +7401,19 @@ class treedata {
         { 316, 2 },  // /smdepthpeel, int
         { 317, 2 },  // /smoothshadowmappeel, int
         { 318, 2 },  // /debugsm, int
-        { 319, 2 },  // /rendering/screen/scr_w, int
-        { 320, 2 },  // /rendering/screen/scr_h, int
-        { 321, 2 },  // /rendering/screen/colorbits, int
-        { 322, 2 },  // /rendering/screen/depthbits, int
-        { 323, 2 },  // /rendering/screen/stencilbits, int
-        { 324, 2 },  // /rendering/screen/vsync, int
-        { 325, 2 },  // /rendering/screen/vsynctear, int
+        { 319, 2 },  // /inexor/rendering/screen/scr_w, int
+        { 320, 2 },  // /inexor/rendering/screen/scr_h, int
+        { 321, 2 },  // /inexor/rendering/screen/colorbits, int
+        { 322, 2 },  // /inexor/rendering/screen/depthbits, int
+        { 323, 2 },  // /inexor/rendering/screen/stencilbits, int
+        { 324, 2 },  // /inexor/rendering/screen/vsync, int
+        { 325, 2 },  // /inexor/rendering/screen/vsynctear, int
         { 326, 2 },  // /fsaa, int
         { 327, 0 },  // /background, char *
         { 328, 0 },  // /logo, char *
         { 329, 2 },  // /userelativemouse, int
-        { 330, 2 },  // /rendering/screen/fullscreen, int
-        { 331, 2 },  // /rendering/screen/gamma, int
+        { 330, 2 },  // /inexor/rendering/screen/fullscreen, int
+        { 331, 2 },  // /inexor/rendering/screen/gamma, int
         { 332, 2 },  // /menufps, int
         { 333, 2 },  // /maxfps, int
         { 334, 2 },  // /clockerror, int
@@ -7574,16 +7574,16 @@ class treedata {
         { 489, 2 },  // /maxservpings, int
         { 490, 2 },  // /autosortservers, int
         { 491, 2 },  // /autoupdateservers, int
-        { 492, 2 },  // /sound/soundvol, int
-        { 493, 2 },  // /sound/musicvol, int
-        { 494, 2 },  // /sound/soundchans, int
-        { 495, 2 },  // /sound/soundfreq, int
-        { 496, 2 },  // /sound/soundbufferlen, int
-        { 497, 2 },  // /sound/stereo, int
-        { 498, 2 },  // /sound/maxsoundradius, int
-        { 499, 2 },  // /sound/maxsoundsatonce, int
-        { 500, 2 },  // /sound/dbgsound, int
-        { 501, 2 },  // /sound/mumble, int
+        { 492, 2 },  // /inexor/sound/soundvol, int
+        { 493, 2 },  // /inexor/sound/musicvol, int
+        { 494, 2 },  // /inexor/sound/soundchans, int
+        { 495, 2 },  // /inexor/sound/soundfreq, int
+        { 496, 2 },  // /inexor/sound/soundbufferlen, int
+        { 497, 2 },  // /inexor/sound/stereo, int
+        { 498, 2 },  // /inexor/sound/maxsoundradius, int
+        { 499, 2 },  // /inexor/sound/maxsoundsatonce, int
+        { 500, 2 },  // /inexor/sound/dbgsound, int
+        { 501, 2 },  // /inexor/sound/mumble, int
         { 502, 2 },  // /debugvbo, int
         { 503, 2 },  // /maxvbosize, int
         { 504, 2 },  // /filltjoints, int
