@@ -11,6 +11,11 @@
 #include "include/cef_render_process_handler.h"
 #include "include/wrapper/cef_helpers.h"
 
+#include "inexor/util/Logging.hpp"
+
+namespace inexor {
+namespace ui {
+
 class InexorCefSubprocessApp : public CefApp,
                                public CefRenderProcessHandler,
                                public CefV8Handler,
@@ -59,5 +64,8 @@ class InexorCefSubprocessApp : public CefApp,
 
         IMPLEMENT_REFCOUNTING(InexorCefSubprocessApp);
 };
+
+}
+}
 
 #endif

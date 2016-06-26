@@ -1,4 +1,8 @@
-#include "inexor/ui/InexorMouseManager.hpp"
+#include "inexor/ui/input/InexorMouseManager.hpp"
+
+namespace inexor {
+namespace ui {
+namespace input {
 
 void InexorMouseManager::InitializeContext()
 {
@@ -58,4 +62,8 @@ void InexorMouseManager::SendMouseWheelEvent(SDL_Event event)
         event.wheel.x > 0 ? 20 : (event.wheel.x < 0 ? -20 : 0),
         event.wheel.y > 0 ? 20 : (event.wheel.y < 0 ? -20 : 0)
     );
+}
+
+}
+}
 }

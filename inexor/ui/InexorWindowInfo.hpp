@@ -4,6 +4,9 @@
 
 #include "include/cef_app.h"
 
+namespace inexor {
+namespace ui {
+
 class InexorWindowInfo : public CefWindowInfo {
 
     public:
@@ -26,5 +29,8 @@ class InexorWindowInfo : public CefWindowInfo {
         };
 
 };
+
+}
+}
 
 #endif

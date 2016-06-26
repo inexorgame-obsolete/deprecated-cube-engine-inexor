@@ -8,7 +8,7 @@
 #include "include/wrapper/cef_helpers.h"
 
 #include "inexor/rpc/SharedTree.hpp"
-#include "inexor/ui/InexorContextProvider.hpp"
+#include "inexor/ui/context/InexorContextProvider.hpp"
 
 namespace inexor {
 namespace rendering {
@@ -17,6 +17,10 @@ namespace screen {
 }
 }
 }
+
+namespace inexor {
+namespace ui {
+namespace context {
 
 class InexorContextManager : public InexorContextProvider
 {
@@ -37,5 +41,9 @@ class InexorContextManager : public InexorContextProvider
         IMPLEMENT_REFCOUNTING(InexorContextManager);
 
 };
+
+}
+}
+}
 
 #endif

@@ -574,11 +574,12 @@ COMMAND(glext, "s");
 
 void cef_resize(int width, int height)
 {
-    if (cef_app) {
+    if (inexor::ui::cef_app) {
         // TODO: not fully working
         spdlog::get("global")->debug() << "Update Inexor User Interface Screen Size: " << width << "x" << height << "\n";
-        cef_app->GetUserInterface()->Resize(0, 0, width, screenh);
-        cef_app->GetMouseManager()->SetScreenSize(width, height);
+        inexor::ui::cef_app->GetHudLayer()->Resize(0, 0, width, screenh);
+        inexor::ui::cef_app->GetAppLayer()->Resize(0, 0, width, screenh);
+        inexor::ui::cef_app->GetMouseManager()->SetScreenSize(width, height);
     }
 }
 
@@ -1875,12 +1876,12 @@ void gl_rendercefmouse(int view_x, int view_y, int view_width, int view_height)
     gle::colorf(1.0f, 1.0f, 1.0f, 1.0f);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
-    settexture(cef_app->GetMouseManager()->GetTexture().c_str(), 3);
+    settexture(inexor::ui::cef_app->GetMouseManager()->GetTexture().c_str(), 3);
     hudquad(
-        (view_width - view_x) * cef_app->GetMouseManager()->GetScaledX(),
-        (view_height - view_y) * cef_app->GetMouseManager()->GetScaledY(),
-        cef_app->GetMouseManager()->GetWidth(),
-        cef_app->GetMouseManager()->GetHeight()
+        (view_width - view_x) * inexor::ui::cef_app->GetMouseManager()->GetScaledX(),
+        (view_height - view_y) * inexor::ui::cef_app->GetMouseManager()->GetScaledY(),
+        inexor::ui::cef_app->GetMouseManager()->GetWidth(),
+        inexor::ui::cef_app->GetMouseManager()->GetHeight()
     );
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_BLEND);
@@ -1888,18 +1889,18 @@ void gl_rendercefmouse(int view_x, int view_y, int view_width, int view_height)
 
 void gl_rendercef()
 {
-    if (!cef_app.get()) {
+    if (!inexor::ui::cef_app.get()) {
         spdlog::get("global")->debug() << "err_cef\n";
         return;
     }
 
-    CefRefPtr<InexorLayerManager> layer_manager = cef_app->GetLayerManager();
-    std::list<CefRefPtr<InexorLayer> > layers = layer_manager->GetLayerList();
-    for(std::list<CefRefPtr<InexorLayer> >::reverse_iterator it = layers.rbegin(); it != layers.rend(); ++it)
+    CefRefPtr<inexor::ui::layer::InexorLayerManager> layer_manager = inexor::ui::cef_app->GetLayerManager();
+    std::list<CefRefPtr<inexor::ui::layer::InexorLayer> > layers = layer_manager->GetLayerList();
+    for(std::list<CefRefPtr<inexor::ui::layer::InexorLayer> >::reverse_iterator it = layers.rbegin(); it != layers.rend(); ++it)
     {
-        CefRefPtr<InexorLayer> layer = (*it);
+        CefRefPtr<inexor::ui::layer::InexorLayer> layer = (*it);
         if (layer.get() && layer->IsVisible()) {
-            CefRefPtr<InexorRenderHandler> render_handler = layer->GetInexorRenderHandler();
+            CefRefPtr<inexor::ui::InexorRenderHandler> render_handler = layer->GetInexorRenderHandler();
             int view_x = render_handler->GetViewX();
             int view_y = render_handler->GetViewY();
             int view_width = render_handler->GetViewWidth();

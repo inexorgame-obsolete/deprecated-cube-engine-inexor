@@ -4,16 +4,20 @@
 #include "include/cef_app.h"
 #include "include/cef_client.h"
 
-#include "inexor/ui/SDL2Keyboard.hpp"
-#include "inexor/ui/InexorContextProvider.hpp"
-#include "inexor/ui/InexorLayerManager.hpp"
+#include "inexor/ui/context/InexorContextProvider.hpp"
+#include "inexor/ui/input/SDL2Keyboard.hpp"
+#include "inexor/ui/layer/InexorLayerManager.hpp"
 
-class InexorKeyboardManager : public InexorContextProvider,
+namespace inexor {
+namespace ui {
+namespace input {
+
+class InexorKeyboardManager : public inexor::ui::context::InexorContextProvider,
                               public CefKeyboardHandler
 {
 
     public:
-        InexorKeyboardManager(CefRefPtr<InexorLayerManager> layer_manager);
+        InexorKeyboardManager(CefRefPtr<inexor::ui::layer::InexorLayerManager> layer_manager);
 
         void SendKeyEvent(SDL_Event event);
 
@@ -31,11 +35,15 @@ class InexorKeyboardManager : public InexorContextProvider,
     private:
 
         // Layer Manager
-        CefRefPtr<InexorLayerManager> layer_manager;
+        CefRefPtr<inexor::ui::layer::InexorLayerManager> layer_manager;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(InexorKeyboardManager);
 
 };
+
+}
+}
+}
 
 #endif

@@ -1,6 +1,10 @@
 #include <iostream>
 
-#include "inexor/ui/InexorLayerManager.hpp"
+#include "inexor/ui/layer/InexorLayerManager.hpp"
+
+namespace inexor {
+namespace ui {
+namespace layer {
 
 InexorLayerManager::InexorLayerManager(int width, int height)
 {
@@ -260,4 +264,8 @@ void InexorLayerManager::SendMouseWheelEvent(const CefMouseEvent& event, int del
             layer->GetBrowser()->GetHost()->SendMouseWheelEvent(event, deltaX, deltaY);
         }
     }
+}
+
+}
+}
 }

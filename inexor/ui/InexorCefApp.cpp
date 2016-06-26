@@ -2,30 +2,50 @@
 
 #include "inexor/ui/InexorCefApp.hpp"
 
+namespace inexor {
+namespace ui {
+
 InexorCefApp::InexorCefApp(int width, int height)
 {
-    std::cerr << "init: cef: construct InexorCefApp (width: " << width << " height " << height << ")\n";
+    spdlog::get("global")->info() << "init: cef: construct InexorCefApp (width: " << width << " height " << height << ")\n";
 
-    context_manager = new InexorContextManager();
+    context_manager = new context::InexorContextManager();
 
-    layer_manager = new InexorLayerManager(width, height);
+    layer_manager = new layer::InexorLayerManager(width, height);
     context_manager->AddSubContext(layer_manager);
 
-    mouse_manager = new InexorMouseManager(layer_manager, width, height);
+    mouse_manager = new input::InexorMouseManager(layer_manager, width, height);
     context_manager->AddSubContext(mouse_manager);
 
-    keyboard_manager = new InexorKeyboardManager(layer_manager);
+    keyboard_manager = new input::InexorKeyboardManager(layer_manager);
     context_manager->AddSubContext(keyboard_manager);
 
     SetScreenSize(width, height);
 
-    std::string layer_name("ui");
-    std::string layer_url("http://localhost:48702/treeui/");
-    user_interface = new InexorUserInterface(layer_name, layer_url);
-    user_interface->Show();
+    InitHudLayer();
+    InitAppLayer();
+}
 
-    context_manager->AddSubContext(user_interface);
-    layer_manager->AddLayerProvider(user_interface);
+void InexorCefApp::InitHudLayer()
+{
+    std::string layer_name("hud");
+    std::string layer_url("http://localhost:48702/hud/");
+    hud_layer = new layer::InexorHudLayer(layer_name, layer_url);
+    hud_layer->Show();
+    context_manager->AddSubContext(hud_layer);
+    layer_manager->AddLayerProvider(hud_layer);
+    spdlog::get("global")->debug() << "init: cef: hud layer\n";
+}
+
+void InexorCefApp::InitAppLayer()
+{
+    std::string layer_name("app");
+    std::string layer_url("http://localhost:48702/treeui/");
+    app_layer = new layer::InexorAppLayer(layer_name, layer_url);
+    app_layer->Show();
+    context_manager->AddSubContext(app_layer);
+    layer_manager->AddLayerProvider(app_layer);
+    spdlog::get("global")->debug() << "init: cef: app layer\n";
 }
 
 void InexorCefApp::Destroy()
@@ -46,7 +66,7 @@ void InexorCefApp::OnContextInitialized()
 
 void InexorCefApp::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context)
 {
-    std::cerr << " ====================== InexorCefApp::OnContextCreated() Injecting inexor object into javascript context\n";
+    spdlog::get("global")->debug() << " ====================== InexorCefApp::OnContextCreated() Injecting inexor object into javascript context\n";
     CefRefPtr<CefV8Value> window_object = context->GetGlobal();
     context->GetGlobal()->SetValue(context_manager->GetContextName(), context_manager->GetContext(), V8_PROPERTY_ATTRIBUTE_NONE);
 }
@@ -76,4 +96,7 @@ bool InexorCefApp::HandleSdlEvent(SDL_Event event) {
         default:
             return false;
     }
+}
+
+}
 }

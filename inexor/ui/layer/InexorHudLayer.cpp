@@ -1,24 +1,29 @@
 #include <iostream>
 
-#include "inexor/ui/InexorUserInterface.hpp"
+#include "inexor/ui/layer/InexorHudLayer.hpp"
+#include "inexor/util/Logging.hpp"
 
-void InexorUserInterface::Reload()
+namespace inexor {
+namespace ui {
+namespace layer {
+
+void InexorHudLayer::Reload()
 {
     std::string url = GetUrl();
     SetUrl(url);
 }
 
-void InexorUserInterface::Resize(int x, int y, int width, int height)
+void InexorHudLayer::Resize(int x, int y, int width, int height)
 {
     if (is_visible && layer.get()) {
-        std::cerr << "Resize inexor user interface: (" << x << ", " << y << ", " << width << ", " << height << ")\n";
+        spdlog::get("global")->info() << "Resize HUD layer: (" << x << ", " << y << ", " << width << ", " << height << ")\n";
         if (layer->GetInexorRenderHandler()->SetViewRect(x, y, width, height)) {
             layer->GetBrowser()->GetHost()->WasResized();
         }
     }
 }
 
-void InexorUserInterface::AutoResize(int width, int height)
+void InexorHudLayer::AutoResize(int width, int height)
 {
     if (layer.get()) {
         if (width != layer->GetInexorRenderHandler()->GetViewWidth() || height != layer->GetInexorRenderHandler()->GetViewHeight()) {
@@ -27,7 +32,7 @@ void InexorUserInterface::AutoResize(int width, int height)
     }
 }
 
-void InexorUserInterface::SetVisibility(bool _is_visible)
+void InexorHudLayer::SetVisibility(bool _is_visible)
 {
     if (_is_visible != GetVisibility()) {
         AbstractInexorLayerProvider::SetVisibility(_is_visible);
@@ -35,7 +40,7 @@ void InexorUserInterface::SetVisibility(bool _is_visible)
     }
 }
 
-void InexorUserInterface::SetAcceptingKeyInput(bool _is_accepting_key_input)
+void InexorHudLayer::SetAcceptingKeyInput(bool _is_accepting_key_input)
 {
     if (_is_accepting_key_input != GetAcceptingKeyInput()) {
         AbstractInexorLayerProvider::SetAcceptingKeyInput(_is_accepting_key_input);
@@ -43,7 +48,7 @@ void InexorUserInterface::SetAcceptingKeyInput(bool _is_accepting_key_input)
     }
 }
 
-void InexorUserInterface::SetAcceptingMouseInput(bool _is_accepting_mouse_input)
+void InexorHudLayer::SetAcceptingMouseInput(bool _is_accepting_mouse_input)
 {
     if (_is_accepting_mouse_input != GetAcceptingMouseInput()) {
         AbstractInexorLayerProvider::SetAcceptingMouseInput(_is_accepting_mouse_input);
@@ -51,7 +56,7 @@ void InexorUserInterface::SetAcceptingMouseInput(bool _is_accepting_mouse_input)
     }
 }
 
-void InexorUserInterface::SetMenuVisibility(bool _is_menu_visible)
+void InexorHudLayer::SetMenuVisibility(bool _is_menu_visible)
 {
     if (_is_menu_visible != GetMenuVisibility()) {
         this->is_menu_visible = _is_menu_visible;
@@ -59,7 +64,7 @@ void InexorUserInterface::SetMenuVisibility(bool _is_menu_visible)
     }
 }
 
-void InexorUserInterface::SetMenuState(std::string _menu_state)
+void InexorHudLayer::SetMenuState(std::string _menu_state)
 {
     if (_menu_state != GetMenuState()) {
         this->menu_state = _menu_state;
@@ -67,7 +72,7 @@ void InexorUserInterface::SetMenuState(std::string _menu_state)
     }
 }
 
-void InexorUserInterface::SetMenuParentState(std::string _menu_parent_state)
+void InexorHudLayer::SetMenuParentState(std::string _menu_parent_state)
 {
     if (_menu_parent_state != GetMenuParentState()) {
         this->menu_parent_state = _menu_parent_state;
@@ -75,7 +80,7 @@ void InexorUserInterface::SetMenuParentState(std::string _menu_parent_state)
     }
 }
 
-void InexorUserInterface::SetMainMenu(bool _main_menu)
+void InexorHudLayer::SetMainMenu(bool _main_menu)
 {
     if (_main_menu != GetMainMenu()) {
         this->main_menu = _main_menu;
@@ -84,7 +89,7 @@ void InexorUserInterface::SetMainMenu(bool _main_menu)
     }
 }
 
-void InexorUserInterface::FireUiEvent(std::string name, bool value)
+void InexorHudLayer::FireUiEvent(std::string name, bool value)
 {
     CefRefPtr<CefProcessMessage> ui_event = CefProcessMessage::Create("user_interface");
     CefRefPtr<CefListValue> arguments = ui_event->GetArgumentList();
@@ -97,7 +102,7 @@ void InexorUserInterface::FireUiEvent(std::string name, bool value)
     }
 }
 
-void InexorUserInterface::FireUiEvent(std::string name, std::string value)
+void InexorHudLayer::FireUiEvent(std::string name, std::string value)
 {
     CefRefPtr<CefProcessMessage> ui_event = CefProcessMessage::Create("user_interface");
     CefRefPtr<CefListValue> arguments = ui_event->GetArgumentList();
@@ -110,24 +115,28 @@ void InexorUserInterface::FireUiEvent(std::string name, std::string value)
     }
 }
 
-void InexorUserInterface::InitializeContext()
+void InexorHudLayer::InitializeContext()
 {
 }
 
-bool InexorUserInterface::Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception)
+bool InexorHudLayer::Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception)
 {
     CEF_REQUIRE_RENDERER_THREAD();
     return false;
 }
 
-bool InexorUserInterface::Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& return_value, CefString& exception)
+bool InexorHudLayer::Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& return_value, CefString& exception)
 {
     CEF_REQUIRE_RENDERER_THREAD();
     return false;
 }
 
-bool InexorUserInterface::Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception)
+bool InexorHudLayer::Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception)
 {
     CEF_REQUIRE_RENDERER_THREAD();
     return false;
+}
+
+}
+}
 }

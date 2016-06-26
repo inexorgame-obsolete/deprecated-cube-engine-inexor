@@ -2,6 +2,9 @@
 
 #include "inexor/ui/InexorCefSubprocessApp.hpp"
 
+namespace inexor {
+namespace ui {
+
 InexorCefSubprocessApp::InexorCefSubprocessApp()
     : _blah("Blah!")
 {
@@ -89,4 +92,7 @@ bool InexorCefSubprocessApp::OnProcessMessageReceived(CefRefPtr<CefBrowser> brow
         return true;
     }
     return false;
+}
+
+}
 }

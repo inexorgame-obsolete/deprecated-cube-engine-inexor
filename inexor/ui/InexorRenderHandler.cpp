@@ -14,6 +14,9 @@
 #define VERIFY_NO_ERROR
 #endif
 
+namespace inexor {
+namespace ui {
+
 InexorRenderHandler::InexorRenderHandler(bool transparent, int x, int y, int width, int height)
     : transparent(transparent),
       initialized(false),
@@ -41,7 +44,7 @@ void InexorRenderHandler::Initialize()
     if (initialized)
         return;
 
-    std::cerr << "InexorRenderHandler initializing...\n";
+    spdlog::get("global")->debug() << "InexorRenderHandler initializing...\n";
 
     // glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST); VERIFY_NO_ERROR;
 
@@ -64,8 +67,7 @@ void InexorRenderHandler::Initialize()
 
     setlocale(LC_ALL, "en_US.utf8");
 
-    // TODO: easylogging debug
-    std::cerr << "InexorRenderHandler initialized!\n";
+    spdlog::get("global")->debug() << "InexorRenderHandler initialized!\n";
 
     initialized = true;
 }
@@ -123,14 +125,14 @@ void InexorRenderHandler::ClearPopupRects()
 bool InexorRenderHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect)
 {
     rect = CefRect(view_x, view_y, view_width, view_height);
-    std::cerr << "GetViewRect: (" << view_x << ", " << view_y << ", " << view_width << ", " << view_height << ")\n";
+    spdlog::get("global")->debug() << "GetViewRect: (" << view_x << ", " << view_y << ", " << view_width << ", " << view_height << ")\n";
     return true;
 }
 
 bool InexorRenderHandler::SetViewRect(int view_x, int view_y, int view_width, int view_height)
 {
     if (initialized) {
-        std::cerr << "SetViewRect: (" << view_x << ", " << view_y << ", " << view_width << ", " << view_height << ")\n";
+        spdlog::get("global")->debug() << "SetViewRect: (" << view_x << ", " << view_y << ", " << view_width << ", " << view_height << ")\n";
         bool success = this->view_x != view_x || this->view_y != view_y || this->view_width != view_width || this->view_height != view_height;
         this->view_x = view_x;
         this->view_y = view_y;
@@ -139,7 +141,7 @@ bool InexorRenderHandler::SetViewRect(int view_x, int view_y, int view_width, in
         this->texture_initialized = false;
         return success;
     } else {
-        std::cerr << "SetViewRect DEFERED: (" << view_x << ", " << view_y << ", " << view_width << ", " << view_height << ")\n";
+        spdlog::get("global")->debug() << "SetViewRect DEFERED: (" << view_x << ", " << view_y << ", " << view_width << ", " << view_height << ")\n";
         this->_view_x = view_x;
         this->_view_y = view_y;
         this->_view_width = view_width;
@@ -157,15 +159,14 @@ void InexorRenderHandler::OnPaint(
 ) {
     if (!initialized) {
     	if (CefCurrentlyOn(TID_UI)) {
-    	    std::cerr << "OnPaint:Initialize (" << width << ", " << height << ")\n";
-    	    std::cerr << "OnPaint:BeforeInitialization (" << view_x << ", " << view_y << ", " << view_width << ", " << view_height << ")\n";
+    	    spdlog::get("global")->debug() << "OnPaint:Initialize (" << width << ", " << height << ")\n";
+    	    spdlog::get("global")->debug() << "OnPaint:BeforeInitialization (" << view_x << ", " << view_y << ", " << view_width << ", " << view_height << ")\n";
     	    Initialize();
     	    browser->GetHost()->WasResized();
-    	    std::cerr << "OnPaint:AfterInitialization (" << view_x << ", " << view_y << ", " << view_width << ", " << view_height << ")\n";
+    	    spdlog::get("global")->debug() << "OnPaint:AfterInitialization (" << view_x << ", " << view_y << ", " << view_width << ", " << view_height << ")\n";
     	    return;
     	} else {
-    	    // TODO: easylogging debug
-    	    std::cerr << "InexorRenderHandler::OnPaint() Wrong thread!\n";
+    	    spdlog::get("global")->debug() << "InexorRenderHandler::OnPaint() Wrong thread!\n";
     	    return;
     	}
     }
@@ -194,12 +195,12 @@ void InexorRenderHandler::OnPaint(
         int old_height = view_height;
         // view_width = width;
         // view_height = height;
-        std::cerr << "OnPaint:X (" << width << ", " << height << ")\n";
+        spdlog::get("global")->debug() << "OnPaint:X (" << width << ", " << height << ")\n";
         glPixelStorei(GL_UNPACK_ROW_LENGTH, view_width); VERIFY_NO_ERROR;
         // if (!texture_initialized || old_width != view_width || old_height != view_height || (dirtyRects.size() == 1 && dirtyRects[0] == CefRect(0, 0, view_width, view_height))) {
         if (!texture_initialized || old_width != view_width || old_height != view_height) {
             // Update/resize the whole texture.
-            std::cerr << "OnPaint: Full Resize (" << width << ", " << height << ")\n";
+            spdlog::get("global")->debug() << "OnPaint: Full Resize (" << width << ", " << height << ")\n";
         	glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0); VERIFY_NO_ERROR;
         	glPixelStorei(GL_UNPACK_SKIP_ROWS, 0); VERIFY_NO_ERROR;
         	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, view_width, view_height, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, buffer); VERIFY_NO_ERROR;
@@ -222,7 +223,7 @@ void InexorRenderHandler::OnPaint(
         int skip_rows = 0, y = popup_rect.y;
         int w = width;
         int h = height;
-        std::cerr << "OnPaint:Y (" << width << ", " << height << ")\n";
+        spdlog::get("global")->debug() << "OnPaint:Y (" << width << ", " << height << ")\n";
 
         // Adjust the popup to fit inside the view.
         if (x < 0) {
@@ -251,4 +252,7 @@ void InexorRenderHandler::OnPaint(
 
     // Disable alpha blending.
     glDisable(GL_BLEND); VERIFY_NO_ERROR;
+}
+
+}
 }

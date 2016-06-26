@@ -1,6 +1,10 @@
-#include "inexor/ui/InexorKeyboardManager.hpp"
+#include "inexor/ui/input/InexorKeyboardManager.hpp"
 
-InexorKeyboardManager::InexorKeyboardManager(CefRefPtr<InexorLayerManager> layer_manager) : layer_manager(layer_manager)
+namespace inexor {
+namespace ui {
+namespace input {
+
+InexorKeyboardManager::InexorKeyboardManager(CefRefPtr<inexor::ui::layer::InexorLayerManager> layer_manager) : layer_manager(layer_manager)
 {
 }
 
@@ -313,4 +317,8 @@ bool InexorKeyboardManager::OnKeyEvent(CefRefPtr<CefBrowser> browser, const CefK
     CEF_REQUIRE_UI_THREAD();
     spdlog::get("global")->debug() << "InexorCefKeyboardManager::OnKeyEvent: key_event.type: " << key_event.type << " native_key_code: " << key_event.native_key_code << " windows_key_code: " << key_event.windows_key_code << " is_system_key: " << key_event.is_system_key;
     return false;
+}
+
+}
+}
 }

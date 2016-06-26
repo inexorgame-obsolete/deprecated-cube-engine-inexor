@@ -4,6 +4,9 @@
 
 #include "include/cef_app.h"
 
+namespace inexor {
+namespace ui {
+
 class InexorBrowserSettings : public CefBrowserSettings {
     public:
         InexorBrowserSettings() {
@@ -17,5 +20,8 @@ class InexorBrowserSettings : public CefBrowserSettings {
             javascript_dom_paste = STATE_ENABLED;
         };
 };
+
+}
+}
 
 #endif

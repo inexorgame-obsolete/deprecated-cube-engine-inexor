@@ -1,16 +1,20 @@
-#ifndef INEXOR_UI_INEXOR_LAYER_MANAGER_HEADER
-#define INEXOR_UI_INEXOR_LAYER_MANAGER_HEADER
+#ifndef INEXOR_UI_LAYER_LAYER_MANAGER_HEADER
+#define INEXOR_UI_LAYER_LAYER_MANAGER_HEADER
 
 #include <list>
 
 #include "include/cef_app.h"
 #include "include/cef_runnable.h"
+#include "inexor/ui/context/InexorContextProvider.hpp"
+#include "inexor/ui/layer/InexorLayer.hpp"
+#include "inexor/ui/layer/InexorLayerProvider.hpp"
 #include "inexor/util/Logging.hpp"
-#include "inexor/ui/InexorContextProvider.hpp"
-#include "inexor/ui/InexorLayer.hpp"
-#include "inexor/ui/InexorLayerProvider.hpp"
 
-class InexorLayerManager : public InexorContextProvider
+namespace inexor {
+namespace ui {
+namespace layer {
+
+class InexorLayerManager : public inexor::ui::context::InexorContextProvider
 {
 
     public:
@@ -69,5 +73,9 @@ class InexorLayerManager : public InexorContextProvider
         IMPLEMENT_REFCOUNTING(InexorLayerManager);
 
 };
+
+}
+}
+}
 
 #endif

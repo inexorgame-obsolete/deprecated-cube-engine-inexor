@@ -5,7 +5,12 @@
 
 #include "include/cef_app.h"
 #include "include/wrapper/cef_helpers.h"
+
 #include "inexor/util/Logging.hpp"
+
+namespace inexor {
+namespace ui {
+namespace context {
 
 class InexorContextProvider : public CefV8Handler,
                               public CefV8Accessor
@@ -36,5 +41,9 @@ class InexorContextProvider : public CefV8Handler,
         void CreateSubContext(CefRefPtr<InexorContextProvider> sub_context);
 
 };
+
+}
+}
+}
 
 #endif

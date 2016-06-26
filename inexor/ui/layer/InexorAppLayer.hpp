@@ -1,24 +1,28 @@
-#ifndef INEXOR_UI_INEXOR_FRAME_HEADER
-#define INEXOR_UI_INEXOR_FRAME_HEADER
+#ifndef INEXOR_UI_LAYER_APP_HEADER
+#define INEXOR_UI_LAYER_APP_HEADER
 
 #include "include/cef_app.h"
 
-#include "inexor/ui/InexorContextProvider.hpp"
-#include "inexor/ui/InexorLayerProvider.hpp"
+#include "inexor/ui/context/InexorContextProvider.hpp"
+#include "inexor/ui/layer/InexorLayerProvider.hpp"
 
 extern int uimenuvisible;
 extern char* uimenustate;
 extern char* uimenuparentstate;
 
+namespace inexor {
+namespace ui {
+namespace layer {
+
 /**
- * The main user interface of inexor.
+ * The application layer of the inexor user interface.
  */
-class InexorUserInterface : public InexorContextProvider,
-                            public AbstractInexorLayerProvider
+class InexorAppLayer : public inexor::ui::context::InexorContextProvider,
+                       public AbstractInexorLayerProvider
 {
 
     public:
-        InexorUserInterface(std::string &name, std::string &url)
+        InexorAppLayer(std::string &name, std::string &url)
             : AbstractInexorLayerProvider(name, url),
 			  _name(name),
 			  _url(url),
@@ -91,7 +95,11 @@ class InexorUserInterface : public InexorContextProvider,
         bool main_menu;
 
         // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(InexorUserInterface);
+        IMPLEMENT_REFCOUNTING(InexorAppLayer);
 };
+
+}
+}
+}
 
 #endif
