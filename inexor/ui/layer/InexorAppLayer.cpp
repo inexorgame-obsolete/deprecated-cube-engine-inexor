@@ -16,7 +16,7 @@ void InexorAppLayer::Reload()
 void InexorAppLayer::Resize(int x, int y, int width, int height)
 {
     if (is_visible && layer.get()) {
-        spdlog::get("global")->info() << "Resize inexor user interface: (" << x << ", " << y << ", " << width << ", " << height << ")\n";
+        spdlog::get("global")->info() << "Resize APP layer: (" << x << ", " << y << ", " << width << ", " << height << ")\n";
         if (layer->GetInexorRenderHandler()->SetViewRect(x, y, width, height)) {
             layer->GetBrowser()->GetHost()->WasResized();
         }

@@ -10,7 +10,6 @@
 #include "include/cef_load_handler.h"
 #include "include/wrapper/cef_helpers.h"
 
-
 #include "inexor/util/Logging.hpp"
 #include "inexor/ui/InexorBrowserSettings.hpp"
 #include "inexor/ui/InexorRenderHandler.hpp"
