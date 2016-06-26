@@ -1,6 +1,10 @@
 #include <iostream>
 
-#include "inexor/ui/InexorContextProvider.hpp"
+#include "inexor/ui/context/InexorContextProvider.hpp"
+
+namespace inexor {
+namespace ui {
+namespace context {
 
 CefRefPtr<CefV8Value> InexorContextProvider::GetContext()
 {
@@ -48,4 +52,8 @@ void InexorContextProvider::CreateVariable(const CefString& name, bool readonly)
 void InexorContextProvider::CreateSubContext(CefRefPtr<InexorContextProvider> sub_context)
 {
     context->SetValue(sub_context->GetContextName(), sub_context->GetContext(), V8_PROPERTY_ATTRIBUTE_NONE);
+}
+
+}
+}
 }

@@ -2,12 +2,16 @@
 #define INEXOR_UI_INEXOR_RENDER_HANDLER_HEADER
 #pragma once
 
-#include "inexor/shared/cube.hpp"
-#include "inexor/engine/engine.hpp"
-
 #include "include/cef_browser.h"
 #include "include/cef_render_handler.h"
 #include "include/wrapper/cef_helpers.h"
+
+#include "inexor/shared/cube.hpp"
+#include "inexor/engine/engine.hpp"
+#include "inexor/util/Logging.hpp"
+
+namespace inexor {
+namespace ui {
 
 class InexorRenderHandler : public CefRenderHandler {
     public:
@@ -71,5 +75,8 @@ class InexorRenderHandler : public CefRenderHandler {
         IMPLEMENT_REFCOUNTING(InexorRenderHandler);
 
 };
+
+}
+}
 
 #endif

@@ -1010,15 +1010,15 @@ void checkinput()
         }
 
         /*
-        if (cef_app.get() && cef_app->GetUserInterface()->GetAcceptingInput()) {
+        if (cef_app.get() && cef_app->GetAppLayer()->GetAcceptingInput()) {
             logoutf("checkinput() -> to CEF");
             bool handled = cef_app->HandleSdlEvent(event);
             if (handled) continue;
         }
         */
 
-        if (cef_app.get()) {
-            cef_app->HandleSdlEvent(event);
+        if (inexor::ui::cef_app.get()) {
+            inexor::ui::cef_app->HandleSdlEvent(event);
         }
 
         switch(event.type)
@@ -1238,39 +1238,39 @@ ICOMMANDERR(subsystem_stop, "s", (char *s), std::string ccs{s}; metapp.stop(ccs)
 
 ICOMMAND(uiurl, "s", (char *_url),
     std::string url(_url);
-    if (cef_app.get()) {
-    	cef_app->GetUserInterface()->SetUrl(url);
+    if (inexor::ui::cef_app.get()) {
+    	inexor::ui::cef_app->GetAppLayer()->SetUrl(url);
     }
 );
 ICOMMAND(uireload, "", (),
-    if (cef_app.get()) {
-        cef_app->GetUserInterface()->Reload();
+    if (inexor::ui::cef_app.get()) {
+        inexor::ui::cef_app->GetAppLayer()->Reload();
     }
 );
 ICOMMAND(uilayerstate, "bbb", (bool *_is_visible, bool *_is_accepting_key_input, bool *_is_accepting_mouse_input),
-    if (cef_app.get()) {
-        cef_app->GetUserInterface()->SetVisibility(*_is_visible);
-        cef_app->GetUserInterface()->SetAcceptingKeyInput(*_is_accepting_key_input);
-        cef_app->GetUserInterface()->SetAcceptingMouseInput(*_is_accepting_mouse_input);
+    if (inexor::ui::cef_app.get()) {
+        inexor::ui::cef_app->GetAppLayer()->SetVisibility(*_is_visible);
+        inexor::ui::cef_app->GetAppLayer()->SetAcceptingKeyInput(*_is_accepting_key_input);
+        inexor::ui::cef_app->GetAppLayer()->SetAcceptingMouseInput(*_is_accepting_mouse_input);
     }
 );
 ICOMMAND(uiresize, "ii", (int *width, int *height),
-    if (cef_app.get()) {
-        cef_app->GetUserInterface()->Resize(0, 0, *width, *height);
+    if (inexor::ui::cef_app.get()) {
+        inexor::ui::cef_app->GetAppLayer()->Resize(0, 0, *width, *height);
     }
 );
 /// Bind to key ESC
 ICOMMAND(uimenu, "", (),
-    if (cef_app.get()) {
-        cef_app->GetUserInterface()->Menu();
+    if (inexor::ui::cef_app.get()) {
+        inexor::ui::cef_app->GetAppLayer()->Menu();
     }
 );
 
 ICOMMAND(uimenustate, "ssb", (char *_menu_state, char *_menu_parent_state, bool *_menu_visible),
-    if (cef_app.get()) {
+    if (inexor::ui::cef_app.get()) {
         std::string menu_state(_menu_state);
         std::string menu_parent_state(_menu_parent_state);
-    	cef_app->GetUserInterface()->SetMenuStates(menu_state, menu_parent_state, *_menu_visible);
+    	inexor::ui::cef_app->GetAppLayer()->SetMenuStates(menu_state, menu_parent_state, *_menu_visible);
     }
 );
 

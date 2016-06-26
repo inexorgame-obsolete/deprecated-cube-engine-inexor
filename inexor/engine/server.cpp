@@ -668,7 +668,7 @@ void localdisconnect(bool cleanup)
     if(!disconnected) return;
     game::gamedisconnect(cleanup);
     mainmenu = 1;
-    cef_app->GetUserInterface()->SetMainMenu(true);
+    // inexor::ui::cef_app->GetUserInterface()->SetMainMenu(true);
 }
 
 void localconnect()

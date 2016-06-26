@@ -7,8 +7,8 @@
 
 #include "include/cef_app.h"
 
-#include "inexor/ui/InexorContextProvider.hpp"
-#include "inexor/ui/InexorLayerManager.hpp"
+#include "inexor/ui/context/InexorContextProvider.hpp"
+#include "inexor/ui/layer/InexorLayerManager.hpp"
 
 #ifndef GL_ONE
 #define GL_ONE 0x1
@@ -16,11 +16,15 @@
 
 extern bool settexture(const char *name, int clamp);
 
-class InexorMouseManager : public InexorContextProvider
+namespace inexor {
+namespace ui {
+namespace input {
+
+class InexorMouseManager : public inexor::ui::context::InexorContextProvider
 {
 
     public:
-        InexorMouseManager(CefRefPtr<InexorLayerManager> layer_manager, int screen_width, int screen_height)
+        InexorMouseManager(CefRefPtr<inexor::ui::layer::InexorLayerManager> layer_manager, int screen_width, int screen_height)
             : layer_manager(layer_manager),
               screen_width(screen_width),
               screen_height(screen_height),
@@ -61,7 +65,7 @@ class InexorMouseManager : public InexorContextProvider
 
 	private:
         // Layer Manager
-        CefRefPtr<InexorLayerManager> layer_manager;
+        CefRefPtr<inexor::ui::layer::InexorLayerManager> layer_manager;
 
         // The width and height of the screen
         int screen_width;
@@ -86,5 +90,9 @@ class InexorMouseManager : public InexorContextProvider
         IMPLEMENT_REFCOUNTING(InexorMouseManager);
 
 };
+
+}
+}
+}
 
 #endif

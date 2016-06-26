@@ -175,7 +175,7 @@ void disconnect(bool async, bool cleanup)
         spdlog::get("global")->info() << "disconnected";
         game::gamedisconnect(cleanup);
         mainmenu = 1;
-        cef_app->GetUserInterface()->SetMainMenu(true);
+        // inexor::ui::cef_app->GetUserInterface()->SetMainMenu(true);
     }
     if(!connpeer && clienthost)
     {

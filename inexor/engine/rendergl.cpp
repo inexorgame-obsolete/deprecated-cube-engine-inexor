@@ -9,6 +9,8 @@
 #include "inexor/util/Logging.hpp"
 
 using namespace inexor::rendering::screen;
+using namespace inexor::ui;
+using namespace inexor::ui::layer;
 
 bool hasVAO = false, hasFBO = false, hasAFBO = false, hasDS = false, hasTF = false, hasTRG = false, hasTSW = false, hasS3TC = false, hasFXT1 = false, hasAF = false, hasFBB = false, hasUBO = false, hasMBR = false;
 int hasstencil = 0;
