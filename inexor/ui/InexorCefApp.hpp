@@ -10,17 +10,20 @@
 #include "include/cef_render_process_handler.h"
 
 #include "inexor/ui/InexorBrowserSettings.hpp"
-#include "inexor/ui/InexorContextManager.hpp"
-#include "inexor/ui/InexorKeyboardManager.hpp"
-#include "inexor/ui/InexorLayerManager.hpp"
-#include "inexor/ui/InexorMouseManager.hpp"
-#include "inexor/ui/InexorUserInterface.hpp"
 #include "inexor/ui/InexorWindowInfo.hpp"
+#include "inexor/ui/context/InexorContextManager.hpp"
+#include "inexor/ui/input/InexorKeyboardManager.hpp"
+#include "inexor/ui/input/InexorMouseManager.hpp"
+#include "inexor/ui/layer/InexorLayerManager.hpp"
+#include "inexor/ui/layer/InexorAppLayer.hpp"
+#include "inexor/ui/layer/InexorHudLayer.hpp"
+#include "inexor/util/Logging.hpp"
 
-// TODO: Remove CefRenderProcessHandler
+namespace inexor {
+namespace ui {
+
 class InexorCefApp : public CefApp,
-                     public CefBrowserProcessHandler,
-                     public CefRenderProcessHandler
+                     public CefBrowserProcessHandler
 {
 
     public:
@@ -30,12 +33,12 @@ class InexorCefApp : public CefApp,
 
         // Getters for handlers
         CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() { return this; }
-        CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() { return this; }
-        CefRefPtr<InexorContextManager> GetContextManager() { return context_manager; }
-        CefRefPtr<InexorLayerManager> GetLayerManager() { return layer_manager; }
-        CefRefPtr<InexorMouseManager> GetMouseManager() { return mouse_manager; }
-        CefRefPtr<InexorKeyboardManager> GetKeyboardManager() { return keyboard_manager; }
-        CefRefPtr<InexorUserInterface> GetUserInterface() { return user_interface; }
+        CefRefPtr<context::InexorContextManager> GetContextManager() { return context_manager; }
+        CefRefPtr<input::InexorMouseManager> GetMouseManager() { return mouse_manager; }
+        CefRefPtr<input::InexorKeyboardManager> GetKeyboardManager() { return keyboard_manager; }
+        CefRefPtr<layer::InexorLayerManager> GetLayerManager() { return layer_manager; }
+        CefRefPtr<layer::InexorHudLayer> GetHudLayer() { return hud_layer; }
+        CefRefPtr<layer::InexorAppLayer> GetAppLayer() { return app_layer; }
 
         // Rendering / Window Management
         void SetScreenSize(int width, int height);
@@ -45,21 +48,8 @@ class InexorCefApp : public CefApp,
         // void OnBeforeChildProcessLaunch(CefRefPtr app, CefRefPtr command_line) {}
         // void OnRenderProcessThreadCreated(CefRefPtr app, CefRefPtr extra_info) {}
 
-        // TODO: remove (only available in the subprocess!)
         // CefRenderProcessHandler
         void OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context);
-        // void OnRenderThreadCreated(CefRefPtr<CefApp> app, CefRefPtr extra_info) {
-        //      std::cerr << "OnRenderThreadCreated()\n";
-        // }
-        // void OnWebKitInitialized(CefRefPtr app) {
-        //     std::cerr << "OnRenderThreadCreated()\n";
-        // }
-        // void OnBrowserCreated(CefRefPtr app, CefRefPtr browser) {}
-        // void OnBrowserDestroyed(CefRefPtr app, CefRefPtr browser) {}
-        // bool OnBeforeNavigation(CefRefPtr app, CefRefPtr browser, CefRefPtr frame, CefRefPtr request, cef_navigation_type_t navigation_type, bool is_redirect) { return false; }
-        // void OnContextReleased(CefRefPtr app, CefRefPtr browser, CefRefPtr frame, CefRefPtr context) {}
-        // void OnUncaughtException(CefRefPtr app, CefRefPtr browser, CefRefPtr frame, CefRefPtr context, CefRefPtr exception, CefRefPtr stackTrace) {}
-        // void OnFocusedNodeChanged(CefRefPtr app, CefRefPtr browser, CefRefPtr frame, CefRefPtr node) {}
 
         /// Handle SDL events for CEF
         ///
@@ -69,13 +59,20 @@ class InexorCefApp : public CefApp,
         bool HandleSdlEvent(SDL_Event event);
 
 	private:
-        CefRefPtr<InexorContextManager> context_manager;
-        CefRefPtr<InexorLayerManager> layer_manager;
-        CefRefPtr<InexorMouseManager> mouse_manager;
-        CefRefPtr<InexorKeyboardManager> keyboard_manager;
-        CefRefPtr<InexorUserInterface> user_interface;
+        CefRefPtr<context::InexorContextManager> context_manager;
+        CefRefPtr<input::InexorMouseManager> mouse_manager;
+        CefRefPtr<input::InexorKeyboardManager> keyboard_manager;
+        CefRefPtr<layer::InexorLayerManager> layer_manager;
+        CefRefPtr<layer::InexorHudLayer> hud_layer;
+        CefRefPtr<layer::InexorAppLayer> app_layer;
+
+        void InitHudLayer();
+        void InitAppLayer();
 
         IMPLEMENT_REFCOUNTING(InexorCefApp);
 };
+
+}
+}
 
 #endif

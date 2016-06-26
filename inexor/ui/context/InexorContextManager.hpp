@@ -7,7 +7,20 @@
 #include "include/cef_render_process_handler.h"
 #include "include/wrapper/cef_helpers.h"
 
-#include "inexor/ui/InexorContextProvider.hpp"
+#include "inexor/rpc/SharedTree.hpp"
+#include "inexor/ui/context/InexorContextProvider.hpp"
+
+namespace inexor {
+namespace rendering {
+namespace screen {
+    extern SharedVar<int> fullscreen, scr_w, scr_h, vsync;
+}
+}
+}
+
+namespace inexor {
+namespace ui {
+namespace context {
 
 class InexorContextManager : public InexorContextProvider
 {
@@ -28,5 +41,9 @@ class InexorContextManager : public InexorContextProvider
         IMPLEMENT_REFCOUNTING(InexorContextManager);
 
 };
+
+}
+}
+}
 
 #endif

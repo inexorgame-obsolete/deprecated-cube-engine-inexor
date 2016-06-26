@@ -1,5 +1,5 @@
-#ifndef INEXOR_UI_INEXOR_LAYER_HEADER
-#define INEXOR_UI_INEXOR_LAYER_HEADER
+#ifndef INEXOR_UI_LAYER_LAYER_HEADER
+#define INEXOR_UI_LAYER_LAYER_HEADER
 
 #include <list>
 #include <string>
@@ -13,6 +13,10 @@
 #include "inexor/ui/InexorBrowserSettings.hpp"
 #include "inexor/ui/InexorRenderHandler.hpp"
 #include "inexor/ui/InexorWindowInfo.hpp"
+
+namespace inexor {
+namespace ui {
+namespace layer {
 
 class InexorLayer : public CefClient,
                     public CefLifeSpanHandler,
@@ -105,5 +109,9 @@ class InexorLayer : public CefClient,
         IMPLEMENT_REFCOUNTING(InexorLayer);
 
 };
+
+}
+}
+}
 
 #endif

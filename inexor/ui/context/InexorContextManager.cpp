@@ -1,4 +1,8 @@
-#include "inexor/ui/InexorContextManager.hpp"
+#include "inexor/ui/context/InexorContextManager.hpp"
+
+namespace inexor {
+namespace ui {
+namespace context {
 
 void InexorContextManager::InitializeContext()
 {
@@ -21,4 +25,8 @@ bool InexorContextManager::Set(const CefString& name, const CefRefPtr<CefV8Value
 {
     CEF_REQUIRE_RENDERER_THREAD();
    	return false;
+}
+
+}
+}
 }

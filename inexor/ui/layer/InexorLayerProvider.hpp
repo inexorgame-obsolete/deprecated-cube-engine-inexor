@@ -1,5 +1,5 @@
-#ifndef INEXOR_UI_INEXOR_LAYER_PROVIDER_HEADER
-#define INEXOR_UI_INEXOR_LAYER_PROVIDER_HEADER
+#ifndef INEXOR_UI_LAYER_PROVIDER_HEADER
+#define INEXOR_UI_LAYER_PROVIDER_HEADER
 
 #include "include/cef_app.h"
 #include "include/wrapper/cef_helpers.h"
@@ -15,7 +15,11 @@
 #define GetCurrentDir getcwd
 #endif
 
-#include "inexor/ui/InexorLayer.hpp"
+#include "inexor/ui/layer/InexorLayer.hpp"
+
+namespace inexor {
+namespace ui {
+namespace layer {
 
 class InexorLayerProvider : public CefBase
 {
@@ -112,5 +116,9 @@ class AbstractInexorLayerProvider : public InexorLayerProvider
         std::string url;
 
 };
+
+}
+}
+}
 
 #endif

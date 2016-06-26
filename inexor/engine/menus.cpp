@@ -755,7 +755,7 @@ void clearmainmenu()
     if(mainmenu && isconnected())
     {
         mainmenu = 0;
-        cef_app->GetUserInterface()->SetMainMenu(false);
+        // inexor::ui::cef_app->GetUserInterface()->SetMainMenu(false);
         if(!processingmenu) cleargui();
     }
 }
