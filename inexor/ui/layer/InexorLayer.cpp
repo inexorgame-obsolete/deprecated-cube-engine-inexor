@@ -19,7 +19,7 @@ InexorLayer::InexorLayer(std::string name, int x, int y, int width, int height, 
       browser_count(0),
       is_closing(false)
 {
-    std::cerr << "init: cef: creating layer\n  name: " << name << "\n  url: " << url << "\n  x: " << x << "\n  y: " << y << "\n  width: " << width << "\n  height " << height << ")\n";
+    spdlog::get("global")->info() << "init: cef: creating layer\n  name: " << name << "\n  url: " << url << "\n  x: " << x << "\n  y: " << y << "\n  width: " << width << "\n  height " << height << ")\n";
     window_info.x = x;
     window_info.y = y;
     window_info.width = width;
@@ -37,7 +37,7 @@ InexorLayer::~InexorLayer() { }
 
 void InexorLayer::SetVisibility(bool is_visible)
 {
-    std::cerr << "InexorLayer::SetVisibility()\n";
+    spdlog::get("global")->info() << "InexorLayer::SetVisibility()\n";
 	this->is_visible = is_visible;
 	browser->GetHost()->SetWindowVisibility(is_visible);
 	browser->GetHost()->WasHidden(!is_visible);
@@ -50,14 +50,14 @@ void InexorLayer::UpdateFocus()
 
 void InexorLayer::SetIsAcceptingKeyInput(bool is_accepting_key_input)
 {
-    std::cerr << "InexorLayer::SetIsAcceptingKeyInput()\n";
+    spdlog::get("global")->info() << "InexorLayer::SetIsAcceptingKeyInput()\n";
 	this->is_accepting_key_input = is_accepting_key_input;
 	UpdateFocus();
 }
 
 void InexorLayer::SetIsAcceptingMouseInput(bool is_accepting_mouse_input)
 {
-    std::cerr << "InexorLayer::SetIsAcceptingMouseInput()\n";
+    spdlog::get("global")->info() << "InexorLayer::SetIsAcceptingMouseInput()\n";
     this->is_accepting_mouse_input = is_accepting_mouse_input;
     UpdateFocus();
 }
