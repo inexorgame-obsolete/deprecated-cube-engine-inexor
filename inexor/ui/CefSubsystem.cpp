@@ -15,7 +15,7 @@ SUBSYSTEM_REGISTER(cef, inexor::ui::CefSubsystem);
 namespace inexor {
 namespace ui {
 
-CefRefPtr<inexor::ui::InexorCefApp> cef_app;
+CefRefPtr<InexorCefApp> cef_app;
 
 CefSubsystem::CefSubsystem() {
     cef_app = new InexorCefApp(1920, 1080);
