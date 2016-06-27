@@ -576,7 +576,7 @@ void cef_resize(int width, int height)
 {
     if (inexor::ui::cef_app) {
         // TODO: not fully working
-        spdlog::get("global")->debug() << "Update Inexor User Interface Screen Size: " << width << "x" << height << "\n";
+        spdlog::get("global")->info() << "Update Inexor User Interface Screen Size: " << width << "x" << height;
         inexor::ui::cef_app->GetHudLayer()->Resize(0, 0, width, screenh);
         inexor::ui::cef_app->GetAppLayer()->Resize(0, 0, width, screenh);
         inexor::ui::cef_app->GetMouseManager()->SetScreenSize(width, height);

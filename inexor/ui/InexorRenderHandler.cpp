@@ -132,12 +132,16 @@ bool InexorRenderHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &re
 bool InexorRenderHandler::SetViewRect(int view_x, int view_y, int view_width, int view_height)
 {
     if (initialized) {
-        spdlog::get("global")->debug() << "SetViewRect: (" << view_x << ", " << view_y << ", " << view_width << ", " << view_height << ")\n";
-        bool success = this->view_x != view_x || this->view_y != view_y || this->view_width != view_width || this->view_height != view_height;
+        // spdlog::get("global")->info() << "SetViewRect: (" << view_x << ", " << view_y << ", " << view_width << ", " << view_height << ")\n";
+        int view_width2 = (view_width / 32) * 32;
+        int view_height2 = (view_height / 32) * 32;
+        spdlog::get("global")->info() << "SetViewRect: (" << view_x << ", " << view_y << ", " << view_width2 << ", " << view_height2 << ")\n";
+
+        bool success = this->view_x != view_x || this->view_y != view_y || this->view_width != view_width2 || this->view_height != view_height2;
         this->view_x = view_x;
         this->view_y = view_y;
-        this->view_width = view_width;
-        this->view_height = view_height;
+        this->view_width = view_width2;
+        this->view_height = view_height2;
         this->texture_initialized = false;
         return success;
     } else {
