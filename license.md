@@ -19,7 +19,7 @@ individual readmes).
 
 Inexor game source code, any release.
 
-Copyright (C) 2014-2015 **TODO**
+Copyright (C) 2014-2016 **TODO**
 
 This software is provided 'as-is', without any express or implied
 warranty.  In no event will the authors be held liable for any damages
@@ -41,7 +41,7 @@ freely, subject to the following restrictions:
 
 Sauerbraten game engine source code, any release.
 
-Copyright (C) 2001-2015 Wouter van Oortmerssen, Lee Salzman, Mike Dysart, Robert Pointon, and Quinton Reeves
+Copyright (C) 2001-2016 Wouter van Oortmerssen, Lee Salzman, Mike Dysart, Robert Pointon, and Quinton Reeves
 
 This software is provided 'as-is', without any express or implied
 warranty.  In no event will the authors be held liable for any damages
@@ -73,7 +73,7 @@ freely, subject to the following restrictions:
 * Lee "[eihrul](http://sauerbraten.org/lee/)" Salzman: ENet networking library, nix ports, and a lot of the general code, especially rendering/lightmaps/physics related. 
 * Mike "Gilt" Dysart: General programming, especially editing/physics related.
 * Robert "[baby-rabbit](http://www.fernlightning.com/)" Pointon: GUI, particle rendering, and movie recording code, MacOSX porting. 
-* Quinton "[quin](http://www.redeclipse.net/)" Reeves: Bots/AI code. Asissts with community management, documentation/wiki, and development. 
+* Quinton "[quin](http://www.redeclipse.net/)" Reeves: Bots/AI code. Assists with community management, documentation/wiki, and development. 
 
 with contributions from:
 
