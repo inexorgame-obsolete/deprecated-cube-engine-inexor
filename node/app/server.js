@@ -37,12 +37,8 @@ var argv = require('yargs')
     .epilog('copyright 2016')
     .argv;
 
-const grpc = require('grpc');
 var restify = require('restify');
 var bunyan = require('bunyan');
-
-// Self-framework
-var createTree = require('./tree').Root.createTree;
 
 streams = [{
     level: argv.level,
@@ -71,7 +67,7 @@ var server = restify.createServer({
 
 //Create the inexor tree
 inexor = {};
-inexor.tree = createTree(server, grpc)
+inexor.tree = require('inexor-tree')(server);
 
 var EditorSettings = require('./controllers').EditorSettings;
 inexor.editorSettings = new EditorSettings(inexor.tree, server);
