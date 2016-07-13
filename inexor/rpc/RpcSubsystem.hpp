@@ -29,7 +29,7 @@ struct net2maintupel
 {
     // we pass a pointer to the variable instead of the variablename to the main thread (thats faster, and no mainthread function need to be generated).
     // Note that the pointer is valid as long as we deal with static data only (sidenote for vectors).
-    boost::variant<SharedVar<char *>*, SharedVar<int>*, SharedVar<float>*> ptr2var;
+    void* ptr2var;
     int type;
 
     boost::variant<std::string, int64, float> value;

@@ -223,7 +223,7 @@ public:
 
             void *tag;
             bool succeed=false;
-            
+
             CompletionQueue::NextStatus stat = cq->AsyncNext(&tag, &succeed, gpr_inf_past(GPR_CLOCK_REALTIME));
             if(stat == CompletionQueue::NextStatus::SHUTDOWN)
             {
@@ -304,20 +304,20 @@ void RpcSubsystem::tick()
         {
         case cpp_type_t::t_cstring:
         {
-            SharedVar<char *> *changed = boost::get<SharedVar<char *>*> (queuetupel.ptr2var);
+            SharedVar<char *> *changed = static_cast<SharedVar<char *>*>(queuetupel.ptr2var);
             changed->setnosync(strdup(boost::get<std::string>(queuetupel.value).c_str()));
             break;
         }
        // case FldDesc::CppType::CPPTYPE_INT64:
         case cpp_type_t::t_int:
         {
-            SharedVar<int> *changed = boost::get<SharedVar<int>*> (queuetupel.ptr2var);
+            SharedVar<int> *changed = static_cast<SharedVar<int>*>(queuetupel.ptr2var);
             changed->setnosync(boost::get<int64>(queuetupel.value));
             break;
         }
         case cpp_type_t::t_float:
         {
-            SharedVar<float> *changed = boost::get<SharedVar<float>*> (queuetupel.ptr2var);
+            SharedVar<float> *changed = static_cast<SharedVar<float>*>(queuetupel.ptr2var);
             changed->setnosync(boost::get<float>(queuetupel.value));
             break;
         }
