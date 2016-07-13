@@ -1,6 +1,6 @@
 {
   "name": "Inexor_IPC_Client",
-  "version": "0.8.0",
+  "version": "0.9.1",
   "description": "Scripting in node.js for Inexor",
   "scripts": {
     "test": "mocha",
@@ -21,7 +21,7 @@
   "dependencies": {
     "bower": "^1.7.7",
     "bunyan": "^1.7.0",
-    "inexor-tree": "^0.9.0",
+    "inexor-tree": "git+https://github.com/inexor-game/inexor-tree-npm.git",
     "restify": "^4.0.4",
     "yargs": "^4.1.0"
   },
