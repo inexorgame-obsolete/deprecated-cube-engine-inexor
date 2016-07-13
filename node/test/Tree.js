@@ -1,4 +1,4 @@
-var Tree = require('../app/tree'); // Core library
+var Tree = require('inexor-tree'); // Core library
 var expect = require('chai').expect;
 
 describe('Tree', function() {
