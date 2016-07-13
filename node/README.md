@@ -10,7 +10,7 @@ A deep introduction into the topic and the technology behind can be found [at fo
 Normally you ain't touch this any more since the server is started automagically for you, and everything should be ready-to-go..
 If you ever occur to manually start the IPC client, please follow the routine below
 
-1. Run an Inexor Client that is (either compiled against gRPC)[https://github.com/inexor-game/code/wiki/gluegen-gluecode-setup-(on-Linux-at-least)], or runs on at least Steroids Edition..
+1. Run an Inexor Client that is [either compiled against gRPC](https://github.com/inexor-game/code/wiki/gluegen-gluecode-setup-(on-Linux-at-least)), or runs on at least Steroids Edition..
 2. Start the IPC server with the respective `inexor_node_unix` or `inexor_node_windows.bat` script
 
 ## Interacting directly with the Inexor REST API
@@ -38,7 +38,7 @@ This feature is not-yet implemented, as it is highly under discussion.
 The following short introduction should give an introduction covers how-to write plugins for Inexor IPC server.
 
 #### Read through Node.js modules sections carefully
-Inexor's IPC server builds on top of (Node.js modules)[https://nodejs.org/api/modules.html] and (NPM)[https://docs.npmjs.com/getting-started/creating-node-modules], therefore it is good to know what you're doing.
+Inexor's IPC server builds on top of [Node.js modules](https://nodejs.org/api/modules.html) and [NPM](https://docs.npmjs.com/getting-started/creating-node-modules), therefore it is good to know what you're doing.
 
 #### Creating a boilerpalette `index.js`
 Following is a boilerpalette code for your plugin, which I'll explain briefly
