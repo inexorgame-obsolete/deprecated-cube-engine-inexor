@@ -10,7 +10,7 @@
  * - send a `POST` request with `text/plain` in `BODY` to `tree/member` to synchronize specified member (returns either `200` or a failure excerpt)
  */
 
-module.exports = function(tree) {
+module.exports = function(opt) {
     return {
         "get": function(request, response, next) {
             try {

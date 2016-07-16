@@ -84,6 +84,9 @@ server.use(function(request, response, next) {
     next();
 });
 
+//TODO: This is just a draft, introduce a way to register GET/SETTERS for the REST interface
+server.use(restify.bodyParser()); // for parsing application/json
+
 //Normally the App/Middleware object of Express/Restify
 //We manually assign the Tree which is ALWAYS needed
 inexor = {};
@@ -92,27 +95,50 @@ inexor.tree = tree.Root.createTree(server);
 //Load plugins.json -> require every plugin and assign a namespace
 var plugins = JSON.parse(fs.readFileSync(argv.plugins));
 
+const PLUGIN_FOLDER = 'plugins';
+const RESERVED_PLUGINS = ['rest']; // These can only be registered from app/plugins/ folder
+
 //Depending wether plugins-xy or inexor-plugins-xy is used, it is loaded from either app/plugins or NPM
 
-// TODO: This could surely be more elegant
-for (let index in plugins) {
-    let names = plugins[index].split('-');
-    let name = names[names.length - 1]; // The last element
+plugins.forEach(function(pluginName) {
+    let names = pluginName.split('-');
+    let name = names[names.length -1]; // The last element
+    let path = '';
     
     if (names[0] == 'inexor') {
-        inexor[name] = require(plugins[index])(tree);
+        if (RESERVED_PLUGINS.includes(name)) return; // This should jump directly to the next forEach element?
+        path = pluginName;
     } else {
-        inexor[name] = require('./plugins/' + name)(tree);
+        path = './plugins/' + name;
     }
-}
-
-// TODO: This is just a draft, introduce a way to register GET/SETTERS for the REST interface
-server.use(restify.bodyParser()); // for parsing application/json
-
-//REST API for the inexor tree
-server.get('/tree/dump', inexor.rest.dump);
-server.get(/^\/tree\/(.*)/, inexor.rest.get);
-server.post(/^\/tree\/(.*)/, inexor.rest.post);
+    
+    // Read the meta data from package
+    let pluginMeta = require(path + '/package.json');
+    let plugin = require(path)(tree);
+    // let sync = (typeof(pluginMeta.plugin.sync) === 'boolean') ? pluginMeta.plugin.sync : false; // Set default to false
+    
+    // inexor.tree.addChild(name, 'node', plugin, sync, false);
+    inexor.tree[name] = plugin;
+        
+    if (pluginMeta.plugin.hasOwnProperty('routes')) {
+        for (routeType in pluginMeta.plugin.routes) {
+            for (route in pluginMeta.plugin.routes[routeType]) {
+                // TODO: This is not generic and needs improvement..
+                
+                let func = pluginMeta.plugin.routes[routeType][route]; // Function name
+                
+                switch (routeType) {
+                case 'get':
+                    server.get(route, inexor.tree[name][func]);
+                    break;
+                case 'set':
+                    server.post(route, inexor.tree[name][func]);
+                    break;
+                }
+            }
+        }
+    }
+});
 
 // Load controllers
 // TODO: Add a standardized way to load Controllers

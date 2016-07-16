@@ -16,5 +16,17 @@
   "engines": {
     "node": ">= 4.4.4"
   },
-  "private": true
+  "private": true,
+  "plugin": {
+      "routes": {      
+          "get": {
+              "/tree/dump": "dump",
+              "/^\/tree\/(.*)/": "get"
+          },
+          "post": {
+              "/^\/tree\/(.*)/": "post"
+          }
+      },
+      "sync": false
+  }
 }
