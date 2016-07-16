@@ -85,7 +85,6 @@ void cleanup()
 /// @see cleanup
 void quit()
 {
-    // CefShutdown();
     writeinitcfg();
     writeservercfg();
 	writehistory();
@@ -94,6 +93,8 @@ void quit()
     localdisconnect();
     writecfg();
     cleanup();
+    metapp.stop("cef");
+    metapp.stop("rpc");
     exit(EXIT_SUCCESS);
 }
 COMMAND(quit, "");
@@ -167,6 +168,7 @@ namespace screen {
 
 void screenres(int w, int h);
 
+    // TODO: CEF userinterface
     ICOMMAND(screenres, "ii", (int *w, int *h), screenres(*w, *h));
 
     /// change screen width and height
@@ -637,6 +639,7 @@ namespace screen {
         if(!enable)
         {
             SDL_SetWindowSize(sdl_window, scr_w, scr_h);
+            cef_resize(scr_w, scr_h);
             if(initwindowpos)
             {
                 SDL_SetWindowPosition(sdl_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
@@ -662,8 +665,12 @@ namespace screen {
         {
             scr_w = min(scr_w, desktopw);
             scr_h = min(scr_h, desktoph);
-            if(SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_FULLSCREEN) gl_resize();
-            else SDL_SetWindowSize(sdl_window, scr_w, scr_h);
+            if(SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_FULLSCREEN) {
+                gl_resize();
+            } else {
+                SDL_SetWindowSize(sdl_window, scr_w, scr_h);
+                cef_resize(scr_w, scr_h);
+            }
         }
         else
         {
@@ -992,17 +999,25 @@ void checkinput()
     {
         if(events.length()) event = events.remove(0);
 
-        if (cef_app.get() && cef_app->hasFocus()) {
-          bool handled = cef_app->handle_sdl_event(event);
-          if (handled) continue;
+        if (event.type == SDL_QUIT) {
+            quit();
+            return;
+        }
+
+        /*
+        if (cef_app.get() && cef_app->GetAppLayer()->GetAcceptingInput()) {
+            logoutf("checkinput() -> to CEF");
+            bool handled = cef_app->HandleSdlEvent(event);
+            if (handled) continue;
+        }
+        */
+
+        if (inexor::ui::cef_app.get()) {
+            inexor::ui::cef_app->HandleSdlEvent(event);
         }
 
         switch(event.type)
         {
-            case SDL_QUIT:
-                quit();
-                return;
-
             case SDL_TEXTINPUT:
             {
                 static uchar buf[SDL_TEXTINPUTEVENT_TEXT_SIZE+1];
@@ -1216,17 +1231,43 @@ static bool findarg(int argc, char **argv, const char *str)
 ICOMMANDERR(subsystem_start, "s", (char *s), std::string ccs{s}; metapp.start(ccs));
 ICOMMANDERR(subsystem_stop, "s", (char *s), std::string ccs{s}; metapp.stop(ccs));
 
-ICOMMAND(cef_load, "s", (char *cv),
-    std::string u(cv);
-    if (cef_app.get()) cef_app->GetFrame()->SetUrl(u); );
-ICOMMAND(cef_reload, "", (),
-    if (cef_app.get()) {
-      std::string url = cef_app->GetFrame()->GetUrl();
-      cef_app->GetFrame()->SetUrl(url);
+ICOMMAND(uiurl, "s", (char *_url),
+    std::string url(_url);
+    if (inexor::ui::cef_app.get()) {
+    	inexor::ui::cef_app->GetAppLayer()->SetUrl(url);
     }
 );
-ICOMMAND(cef_focus, "b", (bool *b),
-    if (cef_app.get()) cef_app->setFocus(*b); );
+ICOMMAND(uireload, "", (),
+    if (inexor::ui::cef_app.get()) {
+        inexor::ui::cef_app->GetAppLayer()->Reload();
+    }
+);
+ICOMMAND(uilayerstate, "bbb", (bool *_is_visible, bool *_is_accepting_key_input, bool *_is_accepting_mouse_input),
+    if (inexor::ui::cef_app.get()) {
+        inexor::ui::cef_app->GetAppLayer()->SetVisibility(*_is_visible);
+        inexor::ui::cef_app->GetAppLayer()->SetAcceptingKeyInput(*_is_accepting_key_input);
+        inexor::ui::cef_app->GetAppLayer()->SetAcceptingMouseInput(*_is_accepting_mouse_input);
+    }
+);
+ICOMMAND(uiresize, "ii", (int *width, int *height),
+    if (inexor::ui::cef_app.get()) {
+        inexor::ui::cef_app->GetAppLayer()->Resize(0, 0, *width, *height);
+    }
+);
+/// Bind to key ESC
+ICOMMAND(uimenu, "", (),
+    if (inexor::ui::cef_app.get()) {
+        inexor::ui::cef_app->GetAppLayer()->Menu();
+    }
+);
+
+ICOMMAND(uimenustate, "ssb", (char *_menu_state, char *_menu_parent_state, bool *_menu_visible),
+    if (inexor::ui::cef_app.get()) {
+        std::string menu_state(_menu_state);
+        std::string menu_parent_state(_menu_parent_state);
+    	inexor::ui::cef_app->GetAppLayer()->SetMenuStates(menu_state, menu_parent_state, *_menu_visible);
+    }
+);
 
 inexor::util::Logging logging;
 
@@ -1255,6 +1296,9 @@ int main(int argc, char **argv)
 
     UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // catches all msgs from the OS, that it wants to terminate us. 
 
+    // Ensure the correct locale
+    setlocale(LC_ALL, "en_US.utf8");
+
     int dedicated = 0;
     char *load = NULL, *initscript = NULL;
 
@@ -1273,11 +1317,13 @@ int main(int argc, char **argv)
     }
 
     // require subsystems BEFORE configurations are done
-    //Initialize the metasystem
+    // Subsystem initialization with main args; Never render cef if cef_app not
+    // Initialize the metasystem
     SUBSYSTEM_REQUIRE(rpc); // remote process control: communication with the scripting engine
     SUBSYSTEM_REQUIRE(cef); // (embedded chromium): ingame html5+js browser for the ui.
 
     metapp.start("rpc");
+    metapp.start("cef");
 
     execfile("init.cfg", false);
 
@@ -1332,6 +1378,12 @@ int main(int argc, char **argv)
         else gameargs.add(argv[i]);
     }
     initing = NOT_INITING;
+
+    // Initialize the submodules
+    metapp.initialize(argc, argv);
+
+    // After submodule initialization force the correct locale
+    setlocale(LC_ALL, "en_US.utf8");
 
     numcpus = clamp(SDL_GetCPUCount(), 1, 16);
 
@@ -1451,10 +1503,6 @@ int main(int argc, char **argv)
     inputgrab(grabinput = true);
     ignoremousemotion();
 
-    //Initialize the metasystem
-    //SUBSYSTEM_REQUIRE(rpc);
-    //SUBSYSTEM_REQUIRE(cef);
-
 	// main game loop
     for(;;)
     {
@@ -1495,10 +1543,9 @@ int main(int argc, char **argv)
         if(minimized) continue;
 
         inbetweenframes = false;
+
         if(mainmenu) gl_drawmainmenu();
         else gl_drawframe();
-
-        metapp.paint();
 
         swapbuffers();
 

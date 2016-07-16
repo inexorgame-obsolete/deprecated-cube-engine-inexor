@@ -9,10 +9,14 @@
 
   <!-- TODO: provide libraries locally, else the client will not work without internet connection! -->
   <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="/bower_components/bootstrap/font-awesome/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.min.css" />
   <link rel="stylesheet" href="/inexorui/css/inexorui.css" />
 </head>
 <body>
+
+  <div id="inexorui-logo">
+  </div>
+
   <!-- The HUD section                                        -->
   <!--                                                        -->
   <!-- Each HUD needs a controller and a template             -->
@@ -20,7 +24,7 @@
     <div ng-include="'inexorui/partials/hud/console.html'"></div>
   </div>
 
-  <div ng-controller="TabbedNavigationController">
+  <div ng-controller="RootNavigationController">
     <!-- The navigation section                               -->
     <ul class="nav nav-tabs" ng-if="navigationVisible">
       <li ng-repeat="tab in tabs"><a href="#" ui-sref="{{tab.state}}">{{tab.label}}</a></li>

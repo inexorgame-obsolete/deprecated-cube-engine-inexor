@@ -3,6 +3,8 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/texture/cubemap.hpp"
+#include "inexor/util/Subsystem.hpp"
+#include "inexor/ui.hpp"
 
 #include "inexor/util/Logging.hpp"
 
@@ -570,9 +572,21 @@ void glext(char *ext)
 }
 COMMAND(glext, "s");
 
+void cef_resize(int width, int height)
+{
+    if (inexor::ui::cef_app) {
+        // TODO: not fully working
+        spdlog::get("global")->info() << "Update Inexor User Interface Screen Size: " << width << "x" << height;
+        inexor::ui::cef_app->GetHudLayer()->Resize(0, 0, width, screenh);
+        inexor::ui::cef_app->GetAppLayer()->Resize(0, 0, width, screenh);
+        inexor::ui::cef_app->GetMouseManager()->SetScreenSize(width, height);
+    }
+}
+
 void gl_resize()
 {
     glViewport(0, 0, screenw, screenh);
+    cef_resize(screenw, screenh);
 }
  
 void gl_init(int depth, int fsaa)
@@ -1856,6 +1870,88 @@ void gl_drawhud(int w, int h);
 
 int xtraverts, xtravertsva;
 
+void gl_rendercefmouse(int view_x, int view_y, int view_width, int view_height)
+{
+    hudshader->set();
+    gle::colorf(1.0f, 1.0f, 1.0f, 1.0f);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    settexture(inexor::ui::cef_app->GetMouseManager()->GetTexture().c_str(), 3);
+    hudquad(
+        (view_width - view_x) * inexor::ui::cef_app->GetMouseManager()->GetScaledX(),
+        (view_height - view_y) * inexor::ui::cef_app->GetMouseManager()->GetScaledY(),
+        inexor::ui::cef_app->GetMouseManager()->GetWidth(),
+        inexor::ui::cef_app->GetMouseManager()->GetHeight()
+    );
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_BLEND);
+}
+
+void gl_rendercef()
+{
+    if (!inexor::ui::cef_app.get()) {
+        spdlog::get("global")->debug() << "err_cef\n";
+        return;
+    }
+
+    CefRefPtr<inexor::ui::layer::InexorLayerManager> layer_manager = inexor::ui::cef_app->GetLayerManager();
+    std::list<CefRefPtr<inexor::ui::layer::InexorLayer> > layers = layer_manager->GetLayerList();
+    for(std::list<CefRefPtr<inexor::ui::layer::InexorLayer> >::reverse_iterator it = layers.rbegin(); it != layers.rend(); ++it)
+    {
+        CefRefPtr<inexor::ui::layer::InexorLayer> layer = (*it);
+        if (layer.get() && layer->IsVisible()) {
+            CefRefPtr<inexor::ui::InexorRenderHandler> render_handler = layer->GetInexorRenderHandler();
+            int view_x = render_handler->GetViewX();
+            int view_y = render_handler->GetViewY();
+            int view_width = render_handler->GetViewWidth();
+            int view_height = render_handler->GetViewHeight();
+            bool initialized = render_handler->IsInitialized();
+            unsigned int texture_id = render_handler->GetTextureId();
+
+            if (!initialized) {
+                spdlog::get("global")->debug() << "err_initialized\n";
+                continue;
+            }
+            if (view_width == 0 || view_height == 0) {
+                spdlog::get("global")->debug() << "err_view\n";
+                continue;
+            }
+            if (texture_id == 0u) {
+                spdlog::get("global")->debug() << "err_tex\n";
+                continue;
+            }
+
+            hudmatrix.ortho(0, view_width, view_height, 0, -1, 1);
+            resethudmatrix();
+
+            hudshader->set();
+            gle::colorf(1.0f, 1.0f, 1.0f, 0.8f);
+
+            // Alpha blending style. Texture values have premultiplied alpha.
+            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
+            // Enable alpha blending.
+            glEnable(GL_BLEND);
+
+            glBindTexture(GL_TEXTURE_2D, texture_id);
+
+            // Render Texture on the whole screen. TODO: Function initialization not threadsafe.
+            hudquad(view_x, view_y, view_width, view_height);
+
+            // Disable 2D textures.
+            glDisable(GL_TEXTURE_2D);
+
+            // Disable alpha blending.
+            glDisable(GL_BLEND);
+
+            if (layer->IsAcceptingMouseInput()) {
+                gl_rendercefmouse(view_x, view_y, view_width, view_height);
+            }
+        }
+    }
+
+}
+
 void gl_drawframe()
 {
     if(deferdrawtextures) drawtextures();
@@ -1945,6 +2041,11 @@ void gl_drawframe()
     if(isliquid(fogmat&MATF_VOLUME)) drawfogoverlay(fogmat, fogblend, abovemat);
     renderpostfx();
 
+    hudshader->set();
+
+    glDisable(GL_TEXTURE_2D);
+
+    gl_rendercef();
     g3d_render();
     gl_drawhud();
 
@@ -1955,10 +2056,13 @@ void gl_drawmainmenu()
 {
     xtravertsva = xtraverts = glde = gbatches = 0;
 
-    renderbackground(NULL, NULL, NULL, NULL, true, true);
-    renderpostfx();
-    
-    g3d_render();
+    // TODO: move main menu background to HTML
+    // renderbackground(NULL, NULL, NULL, NULL, true, true);
+    // renderpostfx();
+
+    gl_rendercef();
+    // g3d_render();
+    // TODO: move HUD to HTML
     gl_drawhud();
 }
 
@@ -2096,7 +2200,7 @@ VAR(hidestats, 0, 0, 1);
 VAR(hidehud, 0, 0, 1);
 
 VARP(crosshairsize, 0, 15, 50);
-VARP(cursorsize, 0, 30, 50);
+// VARP(cursorsize, 0, 30, 50);
 VARP(crosshairfx, 0, 1, 1);
 VARP(crosshaircolors, 0, 1, 1);
 
@@ -2148,8 +2252,8 @@ void writecrosshairs(stream *f)
     f->printf("\n");
 }
 
-static Texture *cursortex = NULL;
-SVARFP(cursor, "interface/cursor/default.png", cursortex = NULL);
+// static Texture *cursortex = NULL;
+// SVARFP(cursor, "interface/cursor/default.png", cursortex = NULL);
 
 void drawcrosshair(int w, int h)
 {
@@ -2161,10 +2265,12 @@ void drawcrosshair(int w, int h)
     Texture *crosshair;
     if(windowhit)
     {
-		if(!cursortex) cursortex = textureload(cursor, 3, true);
+		/*
+        if(!cursortex) cursortex = textureload(cursor, 3, true);
         crosshair = cursortex;
         chsize = cursorsize*w/900.0f;
         g3d_cursorpos(cx, cy);
+        */
     }
     else
     { 

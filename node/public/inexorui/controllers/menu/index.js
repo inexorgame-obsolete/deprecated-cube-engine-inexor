@@ -7,5 +7,10 @@
  **/
 define([
   './MainMenuController',
-  './MultiplayerMenuController'
+  './MultiplayerMenuController',
+  './ServerBrowserMenuController',
+  './EditMenuController',
+  './BotMatchMenuController',
+  './AboutMenuController',
+  './OptionsMenuController'
 ], function () {});
