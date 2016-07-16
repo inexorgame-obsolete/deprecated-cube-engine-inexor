@@ -1,6 +1,6 @@
 [submodule "inexor/platform"]
 	path = platform
 	url = https://github.com/inexor-game/platform.git
-[submodule "inexor/libraries/googletest"]
+[submodule "vendor/googletest"]
 	path = vendor/googletest
-	url = https://github.com/inexor-game/googletest.git
+	url = https://github.com/google/googletest.git
