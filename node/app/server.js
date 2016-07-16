@@ -26,6 +26,10 @@ var argv = require('yargs')
         describe: 'Should the server log verbose',
         default: false
     })
+    .option('plugins', {
+        describe: 'The path for plugins.json',
+        default: 'app/plugins.json'
+    })
     .config('config', function (configPath) {
         // This can (exceptionally) be synchronous since we don't really want to anything
         // before the configuration has been passed
@@ -37,6 +41,8 @@ var argv = require('yargs')
     .epilog('copyright 2016')
     .argv;
 
+// These packages always need to be initialized
+const fs = require('fs');
 const restify = require('restify');
 const bunyan = require('bunyan');
 const tree = require('inexor-tree');
@@ -59,19 +65,12 @@ var log = bunyan.createLogger({
     streams: streams
 });
 
-// Create a server
+//Create a server
 var server = restify.createServer({
     name: 'Inexor',
     log: log,
-    version: '0.0.8'
+    version: '0.0.9'
 });
-
-//Create the inexor tree
-inexor = {};
-inexor.tree = tree.Root.createTree(server);
-
-var EditorSettings = require('./controllers').EditorSettings;
-inexor.editorSettings = new EditorSettings(inexor.tree, server);
 
 //Extend logger using the plugin.
 server.use(restify.requestLogger());
@@ -85,71 +84,40 @@ server.use(function(request, response, next) {
     next();
 });
 
+//Normally the App/Middleware object of Express/Restify
+//We manually assign the Tree which is ALWAYS needed
+inexor = {};
+inexor.tree = tree.Root.createTree(server);
+
+//Load plugins.json -> require every plugin and assign a namespace
+var plugins = JSON.parse(fs.readFileSync(argv.plugins));
+
+//Depending wether plugins-xy or inexor-plugins-xy is used, it is loaded from either app/plugins or NPM
+
+// TODO: This could surely be more elegant
+for (let index in plugins) {
+    let names = plugins[index].split('-');
+    let name = names[names.length - 1]; // The last element
+    
+    if (names[0] == 'inexor') {
+        inexor[name] = require(plugins[index])(tree);
+    } else {
+        inexor[name] = require('./plugins/' + name)(tree);
+    }
+}
+
+// TODO: This is just a draft, introduce a way to register GET/SETTERS for the REST interface
 server.use(restify.bodyParser()); // for parsing application/json
 
-/**
- * @tutorial REST-tutorial
- * The IPC Server offers a RESTfull approach to talk to it's C++ backend
- * To communicate with the server use `GET` and `POST` requests respectively.
- * Currently the server uses `text/plain` requests for interaction, which might change in the future.
- * Following methods are currently offered by the API
- * 
- * - `tree/dump` will dump the hierarchical structure of the tree
- * - send a `GET` request to `tree/member` to get a `text/plain` representation of the object
- * - send a `POST` request with `text/plain` in `BODY` to `tree/member` to synchronize specified member (returns either `200` or a failure excerpt)
- */
-inexor.tree.rest = {
-        "get": function(request, response, next) {
-        	try {
-                let node = inexor.tree.findNode("/" + request.params[0]);
-                if (node.isContainer) {
-                    response.send(200, node.toString());
-                } else {
-                    response.send(200, node.get());
-                }
-        	} catch (e) {
-        		server.log.error(e);
-        	}
-            return next();
-        },
+//REST API for the inexor tree
+server.get('/tree/dump', inexor.rest.dump);
+server.get(/^\/tree\/(.*)/, inexor.rest.get);
+server.post(/^\/tree\/(.*)/, inexor.rest.post);
 
-        "post": function(request, response, next) {
-           	try {
-                let node = inexor.tree.findNode("/" + request.context[0]);
-                node.set(request.body);
-                response.send(200);
-        	} catch (e) {
-        		server.log.error(e);
-        	}
-            return next();
-        },
-
-        "delete": function(request, response, next) {
-           	try {
-                let node = inexor.tree.findNode("/" + request.context[0]);
-                let parentNode = node.getParent();
-                parentNode.removeChild(node._name);
-                response.send(200);
-        	} catch (e) {
-        		server.log.error(e);
-        	}
-            return next();
-        },
-
-        "dump": function(request, response, next) {
-           	try {
-                response.send(inexor.tree.toString());
-        	} catch (e) {
-        		server.log.error(e);
-        	}
-            return next();
-        }
-};
-
-// REST API for the inexor tree
-server.get("/tree/dump", inexor.tree.rest.dump);
-server.get(/^\/tree\/(.*)/, inexor.tree.rest.get);
-server.post(/^\/tree\/(.*)/, inexor.tree.rest.post);
+// Load controllers
+// TODO: Add a standardized way to load Controllers
+// var EditorSettings = require('./controllers').EditorSettings;
+// inexor.editorSettings = new EditorSettings(inexor.tree, server);
 
 // Serve static files from the assets folder
 server.get(/^\/?.*/, restify.serveStatic({
@@ -159,5 +127,6 @@ server.get(/^\/?.*/, restify.serveStatic({
 
 //Listen on server
 server.listen(argv.port, argv.host, function () {
+    // inexor.status = 'ready'; // TODO: THIS IS FOR CEF_INITIALIZATION AND CURRENTLY NOT USED
     server.log.info('Inexor-Node-RPC listening on %s:%s', argv.host, argv.port);
 });

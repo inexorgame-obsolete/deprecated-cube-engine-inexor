@@ -1,0 +1,7 @@
+{
+	"name": "Inexor",
+	"version": "0.9.0",
+	"level": "debug",
+	"logFile": "server.log",
+	"plugins": "app/plugins.json"
+}
