@@ -114,7 +114,7 @@ plugins.forEach(function(pluginName) {
     
     // Read the meta data from package
     let pluginMeta = require(path + '/package.json');
-    let plugin = require(path)(tree);
+    let plugin = require(path)(tree, server);
     // let sync = (typeof(pluginMeta.plugin.sync) === 'boolean') ? pluginMeta.plugin.sync : false; // Set default to false
     
     // inexor.tree.addChild(name, 'node', plugin, sync, false);
@@ -139,6 +139,11 @@ plugins.forEach(function(pluginName) {
         }
     }
 });
+
+//REST API for the inexor tree
+server.get('/tree/dump', inexor.tree.rest.dump);
+server.get(/^\/tree\/(.*)/, inexor.tree.rest.get);
+server.post(/^\/tree\/(.*)/, inexor.tree.rest.post);
 
 // Load controllers
 // TODO: Add a standardized way to load Controllers

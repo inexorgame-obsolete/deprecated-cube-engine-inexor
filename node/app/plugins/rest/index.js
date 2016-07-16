@@ -10,50 +10,50 @@
  * - send a `POST` request with `text/plain` in `BODY` to `tree/member` to synchronize specified member (returns either `200` or a failure excerpt)
  */
 
-module.exports = function(opt) {
+module.exports = function(...opts) {
     return {
         "get": function(request, response, next) {
             try {
-                let node = tree.findNode("/" + request.params[0]);
+                let node = opts[0].findNode("/" + request.params[0]);
                 if (node.isContainer) {
                     response.send(200, node.toString());
                 } else {
                     response.send(200, node.get());
                 }
             } catch (e) {
-                server.log.error(e);
+                opts[1].log.error(e);
             }
             return next();
         },
 
         "post": function(request, response, next) {
             try {
-                let node = tree.findNode("/" + request.context[0]);
+                let node = opts[0].findNode("/" + request.context[0]);
                 node.set(request.body);
                 response.send(200);
             } catch (e) {
-                server.log.error(e);
+                opts[1].log.error(e);
             }
             return next();
         },
 
         "delete": function(request, response, next) {
             try {
-                let node = tree.findNode("/" + request.context[0]);
+                let node = opts[0].findNode("/" + request.context[0]);
                 let parentNode = node.getParent();
                 parentNode.removeChild(node._name);
                 response.send(200);
             } catch (e) {
-                server.log.error(e);
+                opts[1].log.error(e);
             }
             return next();
         },
 
         "dump": function(request, response, next) {
             try {
-                response.send(tree.toString());
+                response.send(opts[0].toString());
             } catch (e) {
-                server.log.error(e);
+                opts[1].log.error(e);
             }
             return next();
         }
