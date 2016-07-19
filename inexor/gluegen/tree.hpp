@@ -91,8 +91,6 @@ private:
     }
 };
 
-typedef std::vector<ShTreeNode> ShTree;
-
 }
 }
 }

@@ -5,19 +5,12 @@
 #include <vector>
 
 #include <boost/program_options.hpp>
-#include <boost/range.hpp>
-#include <boost/algorithm/string/regex.hpp>
-
-#include <clang/Tooling/CommonOptionsParser.h>
 
 #include "inexor/gluegen/tree.hpp"
 #include "inexor/gluegen/parse_sourcecode.hpp"
 #include "inexor/gluegen/generate_files.hpp"
 #include "inexor/gluegen/fill_templatedata.hpp"
 
-#if (defined _DEBUG && defined _MSC_VER) // we dont ship prebuilt dependencies for debug gluegen (useless: always needed in a fast state) (in vs)
-#error You (seriously) do not want to build gluegen in debug mode. If you know what you do, uncomment this line (otherwise build gluegen in release mode).
-#endif
 
 using namespace inexor::rpc::gluegen;
 namespace po = boost::program_options;
@@ -29,23 +22,23 @@ void usage(const std::string &ex, const po::options_description &params) {
         << "Inexor gluegen       Generates the glue code for the tree API."
         << "\n\nEXAMPLES"
         << "\n\n  (1) " << ex << " --help"
-        << "\n\n  (2) " << ex << " --out-proto FILE --out-header FILE --template-proto FILE --template-header FILE --namespace NAMESPACE \"CLANG_OPTIONS\" --parse-file FILE"
-        << "\n\n  (3) " << ex << " --out-proto FILE --out-header FILE --template-proto FILE --template-header FILE --namespace NAMESPACE \"CLANG_OPTIONS\" --parse-file FILE1 --parse-file FILE2 --parse-file FILE3"
-        << "\n\n  (4) " << ex << " --out-proto FILE --out-header FILE --template-proto FILE --template-header FILE --namespace NAMESPACE \"CLANG_OPTIONS\" --parse-file FILE1 FILE2 FILE3"
+        << "\n\n  (2) " << ex << " --out-proto FILE --out-header FILE --template-proto FILE --template-header FILE --namespace NAMESPACE --XML-AST-input FILE"
         << "\n\n\nDESCRIPTION"
         << "\n  (1) Show this help page"
         << "\n  (2) Generate the glue code. Note the quotes around the compile-options list."
         << "\n      CLANG_OPTIONS are the clang compile flags and definitions we need to parse/\"compile\" the given input files with. Add them as usual."
-        << "\n      Note: Options are order independent, so the position of the arguments do not matter (not even for the clang compile flags and definitions)."
-        << "\n  (3) Generate the glue code, but specify multiple input files"
-        << "\n  (4) Same as example 3 but different input syntax for --parse-file."
+        << "\n      Note: Options are order independent, so the position of the arguments do not matter."
         << "\n\n\n" << params << "\n";
 }
 
 
-int main(int argc, const char **argv) {
-
-    // Declare our variables
+/// Our generation of glue code works in 3 steps:
+///   1) use doxygen to parse the source and spit out the AST in a XML
+///   2) use find any Shared Declarations in this AST (parsing the XML)
+///   3) use the gathered data to render the templates
+int main(int argc, const char **argv)
+{
+    // Parse and handle command line arguments
 
     po::variables_map cli_config;
     po::options_description params("PARAMETERS");
@@ -56,7 +49,7 @@ int main(int argc, const char **argv) {
         ("out-header", po::value<string>(), "The header `.hpp` file the c++ tree adapter code should be generated in")
         ("template-proto", po::value<string>(), "The mustache template which gets used to render(generate) the .proto file")
         ("template-header", po::value<string>(), "The mustache template which gets used to render(generate) the '.hpp' header file")
-        ("parse-file", po::value<std::vector<string>>(), "The source file to scan for Inexor shared variables");
+        ("XML-AST-input", po::value<string>(), "The XML file containing the AST to scan for Shared Declarations (spit out by doxygen)");
 
     std::string exec{argv[0]};
 
@@ -64,11 +57,8 @@ int main(int argc, const char **argv) {
     std::cout << "Used command line options: \n";
     for(auto arg : args) std::cout << arg << "\n";
 
-    vector<string> further_compile_options; // we pass through everything unrecognized to libclang.
-
     try {
-        po::parsed_options parsed = po::command_line_parser(args).options(params).allow_unregistered().run();
-        further_compile_options = po::collect_unrecognized(parsed.options, po::include_positional);
+        po::parsed_options parsed = po::command_line_parser(args).options(params).run();
         po::store(parsed, cli_config);
         po::notify(cli_config);
     } 
@@ -83,7 +73,7 @@ int main(int argc, const char **argv) {
         return cli_config.count(s);
     };
 
-    if(c("help") || !c("namespace") || !c("out-proto") || !c("out-header") || !c("parse-file") 
+    if(c("help") || !c("namespace") || !c("out-proto") || !c("out-header") || !c("XML-AST-input") 
                  || !c("template-proto") || !c("template-header"))
     {
         usage(exec, params);
@@ -95,29 +85,13 @@ int main(int argc, const char **argv) {
     const string &hpp_file = cli_config["out-header"].as<string>();
     const string &hpp_template = cli_config["template-header"].as<string>();
     const string &proto_template = cli_config["template-proto"].as<string>();
-    const vector<string> &input_files = cli_config["parse-file"].as<vector<string>>();
-
-    // Filter out any sourcefiles having no *VAR*( inside.
-    std::vector<string> sources;
-    for(const string file_name : input_files)
-    {
-        const std::string file_contents(filecontents(file_name));
-
-        if(boost::regex_search(file_contents, boost::regex("[A-Z]?VAR[A-Z]?[A-Z]?\\("))) sources.push_back(file_name);
-    }
+    const string &xml_AST_file = cli_config["XML-AST-input"].as<string>();
 
     // Read the list of variables
 
-    ShTree tree;
+    std::vector<ShTreeNode> tree;
 
-    struct {
-        ShTree &tree;
-        void shared_var(string cpp_type, string cpp_var, string tree_path) {
-            tree.emplace_back(cpp_type, std::move(cpp_var), std::move(tree_path));
-        }
-    } visitor{tree};
-
-    find_shared_decls(further_compile_options, sources, visitor);
+    find_shared_decls(xml_AST_file, tree); // fill the tree vector
 
     TemplateData templdata = fill_templatedata(tree, ns_str);
 
