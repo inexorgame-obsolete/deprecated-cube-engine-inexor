@@ -204,8 +204,6 @@ public:
 
     void run()
     {
-        GPR_ASSERT(writer != nullptr && reader != nullptr); // TODO INEXOR_ASSERT
-
         reader->startreading();
 
         while(serverstarted)
