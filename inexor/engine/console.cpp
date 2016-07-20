@@ -229,7 +229,7 @@ void getbind(char *key, int type)
 
 void bindkey(char *key, char *action, int state, const char *cmd)
 {
-    if(identflags&IDF_OVERRIDDEN) { spdlog::get("global")->error() << "cannot override " << cmd << " " << quoted(key); return; }
+    if(identflags&IDF_OVERRIDDEN) { spdlog::get("global")->error("cannot override {0} {1}", cmd, quoted(key)); return; }
     keym *km = findbind(key);
     if(!km) { spdlog::get("global")->error() << "unknown key " << quoted(key); return; }
     char *&binding = km->actions[state];

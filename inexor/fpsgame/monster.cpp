@@ -419,18 +419,34 @@ namespace game
     {
         spdlog::get("gameplay")->info() << "--- single player time score: ---";
         int pen, score = 0;
-        pen = ((lastmillis-maptime)*100)/game::scaletime(1000); score += pen; if(pen) spdlog::get("gameplay")->info() << "time taken: " << pen << " seconds (" << ((lastmillis-maptime)/1000) << " simulated seconds)";
-        pen = player1->deaths*60; score += pen; if(pen) spdlog::get("gameplay")->info() << "time penalty for " << player1->deaths << " deaths (1 minute each): " << pen << " seconds";
-        pen = remain*10;          score += pen; if(pen) spdlog::get("gameplay")->info() << "time penalty for " << remain << " monsters remaining (10 seconds each): " << pen << " seconds";
-        pen = (10-skill)*20;      score += pen; if(pen) spdlog::get("gameplay")->info() << "time penalty for lower skill level (20 seconds each): " << pen << " seconds";
-        pen = 100-accuracy;       score += pen; if(pen) spdlog::get("gameplay")->info() << "time penalty for missed shots (1 second each %): " << pen << " seconds";
+
+        pen = ((lastmillis-maptime)*100)/game::scaletime(1000); score += pen;
+        if(pen)
+            spdlog::get("gameplay")->info("time taken: {0} seconds ({1} simulated seconds)", pen, ((lastmillis-maptime)/1000));
+
+        pen = player1->deaths*60; score += pen;
+        if(pen)
+            spdlog::get("gameplay")->info("time penalty for {0} deaths (1 minute each): {1} seconds", player1->deaths, pen);
+
+        pen = remain*10;          score += pen;
+        if(pen)
+            spdlog::get("gameplay")->info("time penalty for {0} monsters remaining (10 seconds each): {1} seconds", remain, pen);
+
+        pen = (10-skill)*20;      score += pen;
+        if(pen)
+            spdlog::get("gameplay")->info("time penalty for lower skill level (20 seconds each): {0} seconds", pen);
+
+        pen = 100-accuracy;       score += pen;
+        if(pen)
+            spdlog::get("gameplay")->info("time penalty for missed shots (1 second each %): {0} seconds", pen);
+
         defformatstring(aname, "bestscore_%s", getclientmap());
         const char *bestsc = getalias(aname);
         int bestscore = *bestsc ? parseint(bestsc) : score;
         if(score<bestscore) bestscore = score;
         defformatstring(nscore, "%d", bestscore);
         alias(aname, nscore);
-        spdlog::get("gameplay")->info() << "TOTAL SCORE (time + time penalties): " << score << " seconds (best so far: " << bestscore << " seconds)";
+        spdlog::get("gameplay")->info("TOTAL SCORE (time + time penalties): {0} seconds (best so far: {1} seconds)", score, bestscore);
     }
 }
 

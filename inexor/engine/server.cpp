@@ -598,7 +598,8 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
     {
         laststatus = totalmillis;     
         if(nonlocalclients || serverhost->totalSentData || serverhost->totalReceivedData)
-            spdlog::get("global")->debug() << "status: " << nonlocalclients << "remote clients, " << (serverhost->totalSentData/60.0f/1024) << "send," << (serverhost->totalReceivedData/60.0f/1024) << "rec (K/sec)";
+            spdlog::get("global")->debug("status: {0} remote clients, {1} send, {2} rec (K/sec)",
+                                         nonlocalclients, (serverhost->totalSentData/60.0f/1024), (serverhost->totalReceivedData/60.0f/1024));
         serverhost->totalSentData = serverhost->totalReceivedData = 0;
     }
 

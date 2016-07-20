@@ -405,7 +405,7 @@ bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex, bool msg, int 
         if(!s) { if(msg) spdlog::get("global")->warn() << "could not load texture " << file; return false; }
         int bpp = s->format->BitsPerPixel;
         if(bpp%8 || !texformat(bpp/8)) { SDL_FreeSurface(s); spdlog::get("global")->warn() << "texture must be 8, 16, 24, or 32 bpp: " << file; return false; }
-        if(max(s->w, s->h) > (1<<12)) { SDL_FreeSurface(s); spdlog::get("global")->warn() << "texture size exceeded " << (1<<12) << "x" << (1<<12) << " pixels: " << file; return false; }
+        if(max(s->w, s->h) > (1<<12)) { SDL_FreeSurface(s); spdlog::get("global")->warn("texture size exceeded {0}x{1} pixels: {2}", (1<<12), (1<<12), file); return false; }
         d.wrap(s);
     }
 

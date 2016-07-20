@@ -133,13 +133,15 @@ void InexorCefLayer::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFra
 
 bool InexorCefLayer::OnPreKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event, bool* is_keyboard_shortcut) {
     CEF_REQUIRE_UI_THREAD();
-    spdlog::get("global")->debug() << "InexorCefLayer::OnPreKeyEvent: key_event.type: " << key_event.type << " native_key_code: " << key_event.native_key_code << " windows_key_code: " << key_event.windows_key_code << " is_system_key: " << key_event.is_system_key;
+    spdlog::get("global")->debug("InexorCefLayer::OnPreKeyEvent: key_event.type: {0} native_key_code: {1} windows_key_code: {2} is_system_key: {3}",
+                                 key_event.type, key_event.native_key_code, key_event.windows_key_code, key_event.is_system_key);
     return false;
 }
 
 bool InexorCefLayer::OnKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event) {
     CEF_REQUIRE_UI_THREAD();
-    spdlog::get("global")->debug() << "InexorCefLayer::OnKeyEvent: key_event.type: " << key_event.type << " native_key_code: " << key_event.native_key_code << " windows_key_code: " << key_event.windows_key_code << " is_system_key: " << key_event.is_system_key;
+    spdlog::get("global")->debug("InexorCefLayer::OnKeyEvent: key_event.type: {0} native_key_code: {1} windows_key_code: {2} is_system_key: {3}",
+                                     key_event.type, key_event.native_key_code, key_event.windows_key_code, key_event.is_system_key);
     return false;
 }
 
@@ -158,6 +160,6 @@ void InexorCefLayer::OnStatusMessage(CefRefPtr<CefBrowser> browser, const CefStr
 bool InexorCefLayer::OnConsoleMessage(CefRefPtr<CefBrowser> browser, const CefString& message, const CefString& source, int line)
 {
     CEF_REQUIRE_UI_THREAD();
-    spdlog::get("global")->debug() << "status: " << source.ToString() << " (" << line << "): " << message.ToString();
+    spdlog::get("global")->debug("status: {0} ({1}): {2}", source.ToString(), line, message.ToString());
     return true;
 }

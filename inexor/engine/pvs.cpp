@@ -1085,7 +1085,7 @@ void testpvs(int *vcsize)
     lockedpvs = w.testviewcell(o, size, &lockedwaterpvs, &len);
     loopi(MAXWATERPVS) lockedwaterplanes[i] = waterplanes[i].height;
     lockpvs = 1;
-    spdlog::get("edit")->debug() << "generated test view cell of size " << size << " at " << camera1->o << " (" << len << " B)";
+    spdlog::get("edit")->debug("generated test view cell of size {0} at {1} ({2} B)", size, camera1->o, len);
 
     origpvsnodes.setsize(0);
     numwaterplanes = oldnumwaterplanes;
@@ -1171,14 +1171,16 @@ void genpvs(int *viewcellsize)
         clearpvs();
         spdlog::get("edit")->info() << "genpvs aborted";
     }
-    else spdlog::get("edit")->info() << "generated " << pvs.length() << " unique view cells totaling " << (pvsbuf.length()/1024.0f) << " kB and averaging " << (pvsbuf.length() / max(pvs.length(), 1)) << " B (" << ((end - start) / 1000.0f) << " seconds)";
+    else spdlog::get("edit")->info("generated {0} unique view cells totaling {1} kB and averaging {2} B ({3} seconds)",
+                                   pvs.length(), (pvsbuf.length()/1024.0f), (pvsbuf.length() / max(pvs.length(), 1)), ((end - start) / 1000.0f));
 }
 
 COMMAND(genpvs, "i");
 
 void pvsstats()
 {
-    spdlog::get("edit")->debug() << pvs.length() << " unique view cells totaling " << (pvsbuf.length() / 1024.0f) << " kB and averaging " << (pvsbuf.length()/max(pvs.length(), 1)) << " B";
+    spdlog::get("edit")->debug("{0} unique view cells totaling {1} kB and averaging {2} B",
+                               pvs.length(), (pvsbuf.length() / 1024.0f), (pvsbuf.length()/max(pvs.length(), 1)));
 }
 
 COMMAND(pvsstats, "");

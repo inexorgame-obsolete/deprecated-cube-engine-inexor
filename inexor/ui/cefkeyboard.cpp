@@ -119,7 +119,10 @@ void InexorCefKeyboardManager::SendKeyEvent(SDL_Event event)
                     break;
             }
     } else if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
-        spdlog::get("global")->debug() << "type: " << event.key.state << " mod: " << event.key.keysym.mod << " sym: " << event.key.keysym.sym << " (" << SDL_GetKeyName(event.key.keysym.sym) << ") scan: " << event.key.keysym.scancode << " (" << SDL_GetScancodeName(event.key.keysym.scancode) << ")";
+        spdlog::get("global")->debug("type: {0} mod: {1} sym: {2} ({3}) scan: {4} ({5})",
+                                     event.key.state, event.key.keysym.mod, event.key.keysym.sym,
+                                     SDL_GetKeyName(event.key.keysym.sym), event.key.keysym.scancode,
+                                     SDL_GetScancodeName(event.key.keysym.scancode));
 
         /** Function Keys **/
         if (event.key.keysym.sym >= _SDLK_F1 && event.key.keysym.sym <= _SDLK_F12) {
@@ -306,12 +309,14 @@ void InexorCefKeyboardManager::SendKeyEvent(SDL_Event event)
 
 bool InexorCefKeyboardManager::OnPreKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event, bool* is_keyboard_shortcut) {
     CEF_REQUIRE_UI_THREAD();
-    spdlog::get("global")->debug() << "InexorCefKeyboardManager::OnPreKeyEvent: key_event.type: " << key_event.type << " native_key_code: " << key_event.native_key_code << " windows_key_code: " << key_event.windows_key_code << " is_system_key: " << key_event.is_system_key;
+    spdlog::get("global")->debug("InexorCefKeyboardManager::OnPreKeyEvent: key_event.type: {0} native_key_code: {1} windows_key_code: {2} is_system_key: {3}",
+                                 key_event.type, key_event.native_key_code, key_event.windows_key_code, key_event.is_system_key);
     return false;
 }
 
 bool InexorCefKeyboardManager::OnKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event) {
     CEF_REQUIRE_UI_THREAD();
-    spdlog::get("global")->debug() << "InexorCefKeyboardManager::OnKeyEvent: key_event.type: " << key_event.type << " native_key_code: " << key_event.native_key_code << " windows_key_code: " << key_event.windows_key_code << " is_system_key: " << key_event.is_system_key;
+    spdlog::get("global")->debug("InexorCefKeyboardManager::OnKeyEvent: key_event.type: {0} native_key_code: {1} windows_key_code: {2} is_system_key: {3}",
+                                 key_event.type, key_event.native_key_code, key_event.windows_key_code, key_event.is_system_key);
     return false;
 }

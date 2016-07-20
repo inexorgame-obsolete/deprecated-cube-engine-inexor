@@ -575,12 +575,13 @@ namespace game
             if(cmode) cmode->gameover();
             spdlog::get("gameplay")->info() << "intermission:";
             spdlog::get("gameplay")->info() << "game has ended!";
-            if(m_ctf) spdlog::get("gameplay")->info() << "player frags: " << player1->frags << ", flags: " << player1->flags << ", deaths: " << player1->deaths;
-            else if(m_collect) spdlog::get("gameplay")->info() << "player frags: " << player1->frags << ", skulls: " << player1->flags << ", deaths: " << player1->deaths;
-            else spdlog::get("gameplay")->info() << "player frags: " << player1->frags << ", deaths: " << player1->deaths;
+            if(m_ctf) spdlog::get("gameplay")->info("player frags: {0}, flags: {1}, deaths: {2}", player1->frags, player1->flags, player1->deaths);
+            else if(m_collect) spdlog::get("gameplay")->info("player frags: {0}, skulls: {1}, deaths: {2}", player1->frags, player1->flags, player1->deaths);
+            else spdlog::get("gameplay")->info("player frags: {0}, deaths: {1}", player1->frags, player1->deaths);
 
             int accuracy = (player1->totaldamage*100)/max(player1->totalshots, 1);
-            spdlog::get("gameplay")->info() << "player total damage dealt: " << player1->totaldamage << ", damage wasted: " << (player1->totalshots-player1->totaldamage) << ", accuracy: " << accuracy << "%";
+            spdlog::get("gameplay")->info("player total damage dealt: {0}, damage wasted: {1}, accuracy: {2}%",
+                                          player1->totaldamage, (player1->totalshots-player1->totaldamage), accuracy);
             if(m_sp) spsummary(accuracy);
 
             showscores(true);
