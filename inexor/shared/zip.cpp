@@ -166,7 +166,7 @@ static bool readzipdirectory(const char *archname, FILE *f, int entries, int off
         f.size = hdr.uncompressedsize;
         f.compressedsize = hdr.compression ? hdr.compressedsize : 0;
 #ifndef STANDALONE
-        if(dbgzip) spdlog::get("global")->debug() << archname << ": file " << name << ", size " << hdr.uncompressedsize << ", compress " << hdr.compression << ", flags " << hdr.flags;
+        if(dbgzip) spdlog::get("global")->debug("{0}: file {1}, size {2}, compress {3}, flags {4}", archname, name, hdr.uncompressedsize, hdr.compression, hdr.flags);
 #endif
 
         src += hdr.namelength + hdr.extralength + hdr.commentlength;
@@ -401,8 +401,10 @@ struct zipstream : stream
 #ifndef STANDALONE
         if(dbgzip)
         {
-            if(info->compressedsize) spdlog::get("global")->debug() << info->name << "zfile.total_out " << uint(zfile.total_out) << ", info->size " << info->size;
-            else spdlog::get("global")->debug() << info->name << "reading :" << (reading - info->offset) << ", info->size " << info->size;
+            if(info->compressedsize)
+                spdlog::get("global")->debug("{0}zfile.total_out {1}, info->size {2}", info->name, uint(zfile.total_out), info->size);
+            else
+                spdlog::get("global")->debug("{0}reading :{1}, info->size {2}", info->name, (reading - info->offset), info->size);
         }
 #endif
         if(info->compressedsize) inflateEnd(&zfile);

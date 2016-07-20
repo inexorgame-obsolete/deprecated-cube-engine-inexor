@@ -108,7 +108,7 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
         if(strcmp(servername, connectname)) setsvar("connectname", servername);
         if(serverport != connectport) setvar("connectport", serverport);
         addserver(servername, serverport, serverpassword && serverpassword[0] ? serverpassword : NULL);
-        spdlog::get("global")->info() << "attempting to connect to " << servername << ":" << serverport;
+        spdlog::get("global")->info("attempting to connect to {0}:{1}", servername, serverport);
         if(!resolverwait(servername, &address))
         {
             spdlog::get("global")->error() << "could not resolve server " << servername;

@@ -664,7 +664,7 @@ namespace game
     {
         if(multiplayer(false) && !m_mp(mode))
         {
-            spdlog::get("gameplay")->error() << "mode " << server::modename(mode) << " (" << mode << ") not supported in multiplayer";
+            spdlog::get("gameplay")->error("mode {0} ({1}) not supported in multiplayer", server::modename(mode), mode);
             loopi(NUMGAMEMODES) if(m_mp(STARTGAMEMODE + i)) { mode = STARTGAMEMODE + i; break; }
         }
 
@@ -685,7 +685,7 @@ namespace game
     {
         if(multiplayer(false) && !m_mp(mode))
         {
-            spdlog::get("gameplay")->error() << "mode " << server::modename(mode) << " (" << mode << ") not supported in multiplayer";
+            spdlog::get("gameplay")->error("mode {0} ({1}) not supported in multiplayer", server::modename(mode), mode);
             intret(0);
             return;
         }
@@ -919,14 +919,14 @@ namespace game
                     formatstring(str, "0x%.6X (%d, %d, %d)", val, (val>>16)&0xFF, (val>>8)&0xFF, val&0xFF);
                 else
                     formatstring(str, id->flags&IDF_HEX ? "0x%X" : "%d", val);
-                spdlog::get("edit")->info() << colorname(d) << " set map var " << quoted(id->name) <<" to " << quoted(str);
+                spdlog::get("edit")->info("{0} set map var {1} to {2}", colorname(d), quoted(id->name), quoted(str));
                 break;
             }
             case ID_FVAR:
-                spdlog::get("edit")->info() << colorname(d) << " set map var " << quoted(id->name) << " to " << *id->storage.f;
+                spdlog::get("edit")->info("{0} set map var {1} to {2}", colorname(d), quoted(id->name), *id->storage.f);
                 break;
             case ID_SVAR:
-                spdlog::get("edit")->info() << colorname(d) << " set map var " << quoted(id->name) << " to " << quoted(**id->storage.s);
+                spdlog::get("edit")->info("{0} set map var {1} to {2}", colorname(d), quoted(id->name), quoted(**id->storage.s));
                 break;
         }
     }
@@ -1364,7 +1364,7 @@ namespace game
 					if(flags&(1<<k)) 
 					{ 
 						n |= p.get()<<16; 
-						if(n&0x800000) n |= -1<<24; 
+                        if(n&0x800000) n |= -1<<24;
 					}
                     o[k] = n/DMF;
                 }
@@ -2136,7 +2136,7 @@ namespace game
                 if(mm != mastermode)
                 {
                     mastermode = mm;
-                    spdlog::get("gameplay")->info() << "mastermode is " << server::mastermodename(mastermode) << " (" << mastermode << ")";
+                    spdlog::get("gameplay")->info("mastermode is {0} ({1})", server::mastermodename(mastermode), mastermode);
                 }
                 break;
             }
@@ -2144,7 +2144,7 @@ namespace game
             case N_MASTERMODE:
             {
                 mastermode = getint(p);
-                spdlog::get("gameplay")->info() << "mastermode is " << server::mastermodename(mastermode) << " (" << mastermode << ")";
+                spdlog::get("gameplay")->info("mastermode is {0} ({1})", server::mastermodename(mastermode), mastermode);
                 break;
             }
 

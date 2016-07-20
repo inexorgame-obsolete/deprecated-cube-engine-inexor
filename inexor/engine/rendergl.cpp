@@ -211,7 +211,7 @@ void gl_checkextensions()
     const char *exts = (const char *)glGetString(GL_EXTENSIONS);
     const char *renderer = (const char *)glGetString(GL_RENDERER);
     const char *version = (const char *)glGetString(GL_VERSION);
-    spdlog::get("global")->info() << "Renderer: " << renderer << " (" << vendor << ")";
+    spdlog::get("global")->info("Renderer: {0} ({1})", renderer, vendor);
     spdlog::get("global")->info() << "Driver: " << version;
 
 #ifdef __APPLE__

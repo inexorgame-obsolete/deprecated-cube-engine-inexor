@@ -2315,7 +2315,11 @@ void calclight(int *quality)
     if(calclight_canceled)
         spdlog::get("edit")->info() << "calclight aborted";
     else
-        spdlog::get("edit")->info() << "generated " << total << " lightmaps using " << (lightmaps.length() ? lumels * 100 / (lightmaps.length() * LM_PACKW * LM_PACKH) : 0) << "% of " << lightmaps.length() << " textures (" << ((end - start) / 1000.0f) << "  seconds)";
+        spdlog::get("edit")->info("generated {0} lightmaps using {1}% of {2} textures ({3} seconds)",
+                                  total,
+                                  (lightmaps.length() ? lumels * 100 / (lightmaps.length() * LM_PACKW * LM_PACKH) : 0),
+                                  lightmaps.length(),
+                                  ((end - start) / 1000.0f));
 }
 
 COMMAND(calclight, "i");
@@ -2371,7 +2375,11 @@ void patchlight(int *quality)
     if(calclight_canceled)
         spdlog::get("edit")->info() << "patchlight aborted";
     else
-        spdlog::get("edit")->info() << "patched " << total << " lightmaps using " << (lightmaps.length() ? lumels * 100 / (lightmaps.length() * LM_PACKW * LM_PACKH) : 0) << "% of " << lightmaps.length() << " textures (" << ((end - start) / 1000.0f) << " seconds)";
+        spdlog::get("edit")->info("patched {0} lightmaps using {1}% of {2} textures ({3} seconds)",
+                                  total,
+                                  (lightmaps.length() ? lumels * 100 / (lightmaps.length() * LM_PACKW * LM_PACKH) : 0),
+                                  lightmaps.length(),
+                                  ((end - start) / 1000.0f));
 }
 
 COMMAND(patchlight, "i");

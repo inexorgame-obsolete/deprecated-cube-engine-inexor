@@ -586,7 +586,7 @@ void addblendbrush(const char *name, const char *imgname)
     if(!loadimage(imgname, s)) { spdlog::get("global")->error() << "could not load blend brush image " << imgname; return; }
     if(max(s.w, s.h) > (1<<12))
     {
-        spdlog::get("global")->error() << "blend brush image size exceeded " << (1<<12) << "x" << (1<<12) << " pixels: " << imgname;
+        spdlog::get("global")->error("blend brush image size exceeded {0}x{1} pixels: {2}", (1<<12), (1<<12), imgname);
         return;
     }
     
