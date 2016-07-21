@@ -1,5 +1,7 @@
 #include <iostream>
-#include <vector>
+#include <set>
+
+#include <boost/algorithm/string.hpp>
 
 #include "inexor/gluegen/pugixml.hpp" // TODO make this global
 
@@ -8,6 +10,8 @@
 #include "inexor/gluegen/tree.hpp"
 
 using namespace pugi;
+using namespace boost;
+
 using namespace inexor::filesystem;
 
 
@@ -16,24 +20,39 @@ namespace inexor { namespace rpc { namespace gluegen {
 Sharedwo x(DefaultValue()|DefaultValue());
 bool find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tree)
 {
-    std::vector<Path> all_files;
-    list_files(xml_folder, all_files, ".xml");
-    for(auto it : all_files)
+    std::vector<Path> all_xmls;
+    std::vector<Path> cpp_xmls;
+    std::vector<Path> class_xmls;
+
+    list_files(xml_folder, all_xmls, ".xml");
+    for(auto file : all_xmls)
     {
-        std::cout << "file: " << it.filename() << std::endl;
-      //  if(it.filename().string().find_last_of("8)
+        std::cout << "file: " << file.filename() << std::endl;
+        if(contains(file.filename().string(), "_8cpp.xml")) cpp_xmls.push_back(file);
+        if(contains(file.stem().string(), "class") || contains(file.stem().string(), "struct")) class_xmls.push_back(file);
+    }
+    for(auto file : cpp_xmls)
+    {
+        std::cout << "cpp xmls: " << file.stem() << std::endl;
+    }
+    for(auto file : class_xmls)
+    {
+        std::cout << "class xmls: " << file.stem() << std::endl;
     }
 
-    //xml_document xml;
-    //x.zwei = 2;
-    //if(!xml.load_file(xml_folder.c_str()))
-    //{
-    //    std::cout << "XML file representing the AST couldn't be parsed: " << xml_folder << std::endl;
-    //    return false;
-    //}
+    xml_document xml;
+    if(!xml.load_file(cpp_xmls.begin()->c_str()))
+    {
+        std::cout << "XML file representing the AST couldn't be parsed: " << cpp_xmls.begin()->c_str() << std::endl;
+        return false;
+    }
 
 
-    //pugi::xpath_node_set file_xmls = xml.select_nodes("/doxygen/compounddef[@kind='file' and @language='C++']");
+    xml_node compound_xml = xml.child("doxygen").child("compounddef"); //.select_nodes("/doxygen/compounddef[@kind='file' and @language='C++']");
+    // if compound_xml.attrib(kind) != file.. continue
+        for(auto child : compound_xml.children())
+            std::cout << "name: " << child.name() << std::endl;
+
     //std::vector<xpath_node> all_variables;
     //for(auto file : file_xmls)
     //{
