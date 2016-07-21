@@ -22,11 +22,10 @@ void usage(const std::string &ex, const po::options_description &params) {
         << "Inexor gluegen       Generates the glue code for the tree API."
         << "\n\nEXAMPLES"
         << "\n\n  (1) " << ex << " --help"
-        << "\n\n  (2) " << ex << " --out-proto FILE --out-header FILE --template-proto FILE --template-header FILE --namespace NAMESPACE --XML-AST-input FILE"
+        << "\n\n  (2) " << ex << " --out-proto FILE --out-header FILE --template-proto FILE --template-header FILE --namespace NAMESPACE --XML-AST-folder PATH"
         << "\n\n\nDESCRIPTION"
         << "\n  (1) Show this help page"
-        << "\n  (2) Generate the glue code. Note the quotes around the compile-options list."
-        << "\n      CLANG_OPTIONS are the clang compile flags and definitions we need to parse/\"compile\" the given input files with. Add them as usual."
+        << "\n  (2) Generate the glue code."
         << "\n      Note: Options are order independent, so the position of the arguments do not matter."
         << "\n\n\n" << params << "\n";
 }
@@ -49,7 +48,7 @@ int main(int argc, const char **argv)
         ("out-header", po::value<string>(), "The header `.hpp` file the c++ tree adapter code should be generated in")
         ("template-proto", po::value<string>(), "The mustache template which gets used to render(generate) the .proto file")
         ("template-header", po::value<string>(), "The mustache template which gets used to render(generate) the '.hpp' header file")
-        ("XML-AST-input", po::value<string>(), "The XML file containing the AST to scan for Shared Declarations (spit out by doxygen)");
+        ("XML-AST-folder", po::value<string>(), "The folder containing the doxygen xml (AST) output. We scan those for Shared Declarations");
 
     std::string exec{argv[0]};
 
@@ -73,7 +72,7 @@ int main(int argc, const char **argv)
         return cli_config.count(s);
     };
 
-    if(c("help") || !c("namespace") || !c("out-proto") || !c("out-header") || !c("XML-AST-input") 
+    if(c("help") || !c("namespace") || !c("out-proto") || !c("out-header") || !c("XML-AST-folder") 
                  || !c("template-proto") || !c("template-header"))
     {
         usage(exec, params);
@@ -85,7 +84,7 @@ int main(int argc, const char **argv)
     const string &hpp_file = cli_config["out-header"].as<string>();
     const string &hpp_template = cli_config["template-header"].as<string>();
     const string &proto_template = cli_config["template-proto"].as<string>();
-    const string &xml_AST_file = cli_config["XML-AST-input"].as<string>();
+    const string &xml_AST_file = cli_config["XML-AST-folder"].as<string>();
 
     // Read the list of variables
 
