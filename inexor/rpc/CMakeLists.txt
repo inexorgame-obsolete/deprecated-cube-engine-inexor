@@ -15,32 +15,26 @@ if (NOT DEFINED GLUEGEN_EXE)
   find_program(GLUEGEN_EXE gluecodegenerator)
 endif()
 
-# Search sources
-file(GLOB_RECURSE PARSED_FILES ${SOURCE_DIR}/**.cpp)
-#set(PARSED_FILES "E:/weitere-Dokumente/Git/code2/inexor/fpsgame/ai.cpp")
-set(ALL_PARSED_FILES "")
+set(DOXYGEN_XML_FOLDER ${MAINDIR}/doc/xml)
 
-set(FLAGS_AND_DEFS -pipe -w -std=c++14 -frtti -fexceptions -D__REFLECTION_PASS__ -D_DEBUG -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -I\"${MAINDIR}\" -I\"${MAINDIR}/platform/include/all/\")
+message(STATUS "Gluegen runs with command: "
+              " --template-proto " "${gluegen_template_proto}"
+              " --template-header " "${gluegen_template_h}"
+              " --out-proto " "${gluegen_out_proto}"
+              " --out-header " "${gluegen_out_h}"
+              " --namespace " "inexor::tree"
+              " --XML-AST-folder " "${DOXYGEN_XML_FOLDER}")
 
-if(COMPILER_GCC OR COMPILER_CLANG)
-  set(FLAGS_AND_DEFS  ${FLAGS_AND_DEFS} -I\"/usr/lib/clang/3.8.0/include/\" -I\"/usr/include/SDL2\")
-endif()
-
-if(COMPILER_MSVC)
-  set(FLAGS_AND_DEFS ${FLAGS_AND_DEFS} -\"I${MAINDIR}/platform/include/windows/\" -I\"${MAINDIR}/platform/include/windows/SDL2/\" -fno-ms-compatibility -DWIN32 -D_WIN32 -D_WINDOWS -DWINDOWS -DNOMINMAX -D_WIN32_WINNT=0x0600 -D_MATH_DEFINES_DEFINED -DWIN64 -DBOOST_OS_WINDOWS -DBOOST_ASIO_HAS_STD_CHRONO)
-endif()
-
-foreach(curfile ${PARSED_FILES})
-  set(ALL_PARSED_FILES ${ALL_PARSED_FILES} --parse-file ${curfile})
-endforeach()
-
-message(STATUS "ALL_PARSED_FILES: ${ALL_PARSED_FILES}")
-message(STATUS "FLAGS_AND_DEFS: ${FLAGS_AND_DEFS}")
-message(STATUS "gluegen_out: ${gluegen_out}")
 add_custom_target(
   run_gluegen
   COMMAND ${GLUEGEN_EXE}
-  "--template-proto" "${gluegen_template_proto}" "--template-header" "${gluegen_template_h}" "--out-proto" "${gluegen_out_proto}" "--out-header" "${gluegen_out_h}" "--namespace" "inexor::tree" ${FLAGS_AND_DEFS} ${ALL_PARSED_FILES})
+  "--template-proto" "${gluegen_template_proto}"
+  "--template-header" "${gluegen_template_h}"
+  "--out-proto" "${gluegen_out_proto}"
+  "--out-header" "${gluegen_out_h}"
+  "--namespace" "inexor::tree"
+  "--XML-AST-folder" "${DOXYGEN_XML_FOLDER}")
+
 set_source_files_properties(${gluegen_out} PROPERTIES GENERATED TRUE)
 
 # Generate RPC PROTOCOL API Headers/Sources
