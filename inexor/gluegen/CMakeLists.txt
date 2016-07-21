@@ -14,8 +14,10 @@ target_link_libs(gluecodegenerator ${LLVM_LIBS})
 require_cxx11_abi(gluecodegenerator)
 require_boost_program_options(gluecodegenerator)
 require_boost_regex(gluecodegenerator)
-require_threads(gluecodegenerator) # Need to be required after the llvm libs!
+require_threads(gluecodegenerator)
 require_zlib(gluecodegenerator)
+
+require_filesystem(gluecodegenerator)
 
 if(COMPILER_GCC OR COMPILER_CLANG)
   target_link_libs(gluecodegenerator dl tinfo)
