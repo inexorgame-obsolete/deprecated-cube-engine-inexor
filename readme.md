@@ -1,5 +1,7 @@
 # Inexor
 
+[![Build Status](https://ci.inexor.org/job/code/badge/icon)](https://ci.inexor.org/job/code/) [![Build Status](https://travis-ci.org/inexor-game/code.svg?branch=master)](https://travis-ci.org/inexor-game/code)
+
 Inexor is a fork of the open-source First-Person-Shooter Cube 2: Sauerbraten, a fast-paced shooting game featuring an ingame map editor.  
 In contrast to Sauerbraten, Inexor adds a lot of functionality and strives to stay open to improvements and suggestions.  
 The goal of this project is to be more flexible and create an environment where development is easy, fast and where creativity can prosper.
