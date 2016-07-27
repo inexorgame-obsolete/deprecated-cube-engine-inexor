@@ -16,14 +16,13 @@ init:
   - if defined APPVEYOR_PULL_REQUEST_NUMBER set "IS_PR=True"
   - if "%APPVEYOR_REPO_NAME%"=="inexor-game/code" set "IS_MAIN_REPO=True"
   - if "%IS_MAIN_REPO%"=="True" if "%IS_PR%"=="True" set "SKIP_BUILD=1"
-  - cmd: cmake --version
   - cmd: msbuild /version
 
 # scripts that run after cloning repository
 install:
   - cmd: set "MAIN_FOLDER=C:\projects\inexor-game"
   - cmd: cd %MAIN_FOLDER%
-  - cmd: git submodule update --init
+  - cmd: git submodule update --init --depth 1
 
 # scripts to run before build
 before_build:
