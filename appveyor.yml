@@ -1,5 +1,5 @@
 version: 0.{build}
-clone_depth: 1
+shallow_clone: true
 clone_folder: C:\projects\inexor-game
 
 platform: 
@@ -22,7 +22,7 @@ init:
 install:
   - cmd: set "MAIN_FOLDER=C:\projects\inexor-game"
   - cmd: cd %MAIN_FOLDER%
-  - cmd: git submodule update --init --depth 1
+  - cmd: git submodule update --init
 
 # scripts to run before build
 before_build:
