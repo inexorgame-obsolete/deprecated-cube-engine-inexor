@@ -17,9 +17,9 @@ for /f "tokens=2 delims=." %%n in ('git config --file .gitmodules --get-regexp p
     :: get the specific commit we want to download of each submodule
     for /f "tokens=3" %%c in ('git ls-tree %CURRENT_COMMIT% %SUBMODULE_PATH%') do ( 
        echo %%c 
-       set SUBMODULE_WEB=%SUBMODULE_URL:.git=%
+       set "SUBMODULE_WEB=%SUBMODULE_URL:.git=%"
        set "SUBMODULE_DOWNLOAD=%SUBMODULE_WEB%/archive/%%c.zip"
-       echo %SUBMODULE_DOWNLOAD% 
+       echo %SUBMODULE_DOWNLOAD%
        powershell -Command "Invoke-WebRequest %SUBMODULE_DOWNLOAD% -OutFile build/%%c.zip"
        7z e build/%%c.zip -o %SUBMODULE_PATH%
     )
