@@ -1,3 +1,5 @@
+@echo on
+
 :: This entire file is a workaround. No joke.
 :: AppVeyor doesn't seem to allow to modify the initalite git clone of the repository
 :: and therefore doesn't allow to shallow clone the submodules in a sophisticated way.
