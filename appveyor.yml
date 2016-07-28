@@ -1,5 +1,5 @@
 version: 0.{build}
-shallow_clone: true
+clone_depth: 1
 clone_folder: C:\projects\inexor-game
 
 platform: 
@@ -22,7 +22,7 @@ init:
 install:
   - cmd: set "MAIN_FOLDER=C:\projects\inexor-game"
   - cmd: cd %MAIN_FOLDER%
-  - cmd: git submodule update --init
+  - cmd: call tool/appveyor_submodules.bat
 
 # scripts to run before build
 before_build:
