@@ -2,7 +2,6 @@
 
 namespace inexor {
 namespace vscript {
-    
 
     CConeAreaNode::CConeAreaNode(vec position, float radius, float height, const char* name, const char* comment = "")
     {
@@ -15,17 +14,14 @@ namespace vscript {
         cone_radius = radius;
     }
 
-
     CConeAreaNode::~CConeAreaNode()
     {
     }
-
 
     bool CConeAreaNode::collide(vec p)
     {
         return true;
     }
-
 
     void CConeAreaNode::render_additional()
     {
@@ -74,7 +70,6 @@ namespace vscript {
         gle::end();
 
     }
-
 
     bool CConeAreaNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {

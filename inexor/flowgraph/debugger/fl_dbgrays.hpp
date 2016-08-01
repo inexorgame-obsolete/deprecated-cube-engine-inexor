@@ -1,12 +1,11 @@
-/// @file fl_dbgrays.h
+/// @file fl_dbgrays.hpp
 /// @author Johannes Schneider
-/// @brief Debug rays help to understand the position and view vector of new placed nodes
+/// @brief debug rays help to improve the debugging of drag and drop and many other features
 
 #ifndef INEXOR_VSCRIPT_DEBUGRAY_HEADER
 #define INEXOR_VSCRIPT_DEBUGRAY_HEADER
 
 #include "inexor/engine/engine.hpp"
-
 
 namespace inexor {
 namespace vscript {

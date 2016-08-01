@@ -3,7 +3,6 @@
 namespace inexor {
 namespace vscript {
 
-
     CFunctionBase::CFunctionBase()
     {
     }

@@ -3,7 +3,6 @@
 namespace inexor {
 namespace vscript {
 
-
     CEntityManager::CEntityManager()
     {
         dragging_new_relation = false;
@@ -14,11 +13,9 @@ namespace vscript {
         relation_drag_end = vec(0,0,0);
     }
 
-
     CEntityManager::~CEntityManager()
     {
     }
-
 
     void CEntityManager::update_mouse(int key, bool isdown)
     {

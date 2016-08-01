@@ -33,12 +33,9 @@ namespace vscript {
         type = NODE_TYPE_TIMER;
     }
 
-
     CTimerNode::~CTimerNode()
     {
     }
-
-
 
     void CTimerNode::reset()
     {
@@ -87,14 +84,12 @@ namespace vscript {
     {
         particle_text(p + vec(0.0f, 0.0f, -(2.0f+boxsize) ), "attributes here! :)", PART_TEXT, 1, 0xFFFFFF, 1.0f);
     }
-
-
+    
     // Timers can be parent nodes but NOT child nodes!
     bool CTimerNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
         return false;
     }
-
 
     bool CTimerNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
     {

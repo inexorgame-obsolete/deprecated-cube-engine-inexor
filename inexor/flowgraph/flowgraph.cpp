@@ -7,6 +7,7 @@
 // experimental
 #include "inexor/flowgraph/memory/fl_membase.hpp"
 
+// functions
 #include "inexor/flowgraph/functions/fl_functionbase.hpp"
 #include "inexor/flowgraph/functions/fl_functions.hpp"
 
@@ -15,14 +16,14 @@
 #include "inexor/flowgraph/areas/sphere/fl_area_sphere.hpp"
 #include "inexor/flowgraph/areas/cone/fl_area_cone.hpp"
 
+// geometry
 #include "inexor/geom/geom.hpp"
 #include "inexor/geom/curves/bezier/bezier.hpp"
 
-
+// use the engine's selection model
 extern selinfo sel, lastsel, savedsel;
 extern bool editmode;
 extern int gridsize;
-
 
 enum VSCRIPT_ENTITY_BOX_ORIENTATION
 {
@@ -36,10 +37,10 @@ enum VSCRIPT_ENTITY_BOX_ORIENTATION
 };
 
 
-
 namespace inexor {
 namespace vscript {
 
+    // TODO: make CVisualScriptSystem a singleton class (optional?)
 
     // create an instance of the visual scripting system
     CVisualScriptSystem vScript3D;
@@ -50,14 +51,12 @@ namespace vscript {
         selection_blocked_by_geometry = false;
     }
 
-
     CVisualScriptSystem::~CVisualScriptSystem() 
     {
         // TODO: we have to clear the dynamicly allocated memory!
         for(unsigned int i=0; i<nodes.size(); i++) delete(nodes[i]);
         nodes.clear();
     }
-
 
     // creates a node and allocates memory for it
     CScriptNode* CVisualScriptSystem::add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...)
@@ -189,14 +188,13 @@ namespace vscript {
 
         if(nullptr != created_node) nodes.push_back(created_node);
         return created_node;
+        // remember to delete created_node at program exit!
     }
-    
     
     void CVisualScriptSystem::remove_node(CScriptNode* node)
     {
-        // TODO: implement remove node!
+        // TODO: implement "remove node"!
     }
-
 
     // calculates the distance from editor to entity
     void CVisualScriptSystem::update_drag_n_drop()
@@ -216,7 +214,6 @@ namespace vscript {
             selected_node->pos_changed = true;
         }
     }
-
 
     // updates positions of relation curves and renders them
     void CVisualScriptSystem::update_relation_linker()
@@ -251,7 +248,6 @@ namespace vscript {
         }
     }
 
-
     // adds a new relation between the nodes and a new curve for the relation
     void CVisualScriptSystem::connect_nodes(CScriptNode *from, CScriptNode *to)
     {
@@ -268,12 +264,10 @@ namespace vscript {
         conoutf(CON_DEBUG, "[node linker] linked parent %s with child %s.", from->node_name.c_str(), to->node_name.c_str());
     }
 
-
     void CVisualScriptSystem::disconnect_nodes(CScriptNode *from, CScriptNode *to)
     {
         // TODO: implement disconnect nodes!
     }
-
 
     // makes sure all the node's rules for linking are followed
     void CVisualScriptSystem::validate_new_relation(CScriptNode *from, CScriptNode *to)
@@ -299,7 +293,6 @@ namespace vscript {
             }
         }
     }
-
 
     void CVisualScriptSystem::update_input(int key, bool isdown)
     {
@@ -366,7 +359,6 @@ namespace vscript {
         }
     }
 
-
     void CVisualScriptSystem::sync_all_timers()
     {
         for(unsigned int i=0; i<nodes.size(); i++)
@@ -375,12 +367,10 @@ namespace vscript {
         }
     }
 
-
     void CVisualScriptSystem::delete_all_nodes()
     {
         nodes.clear();
     }
-
 
     void CVisualScriptSystem::update_timers()
     {
@@ -391,7 +381,6 @@ namespace vscript {
         }
     }
 
-
     void CVisualScriptSystem::start_rendering()
     {
         notextureshader->set();
@@ -400,7 +389,6 @@ namespace vscript {
         enablepolygonoffset(GL_POLYGON_OFFSET_LINE);
     }
 
-
     void CVisualScriptSystem::end_rendering()
     {
         disablepolygonoffset(GL_POLYGON_OFFSET_LINE);
@@ -408,7 +396,6 @@ namespace vscript {
         gle::clearebo();
         gle::disablevertex();
     }
-
 
     void CVisualScriptSystem::render_nodes()
     {
@@ -441,7 +428,6 @@ namespace vscript {
         }
     }
 
-
     void CVisualScriptSystem::render_debug_rays()
     {
         glBegin(GL_LINES);
@@ -455,7 +441,6 @@ namespace vscript {
         glLineWidth(1.0f);
         glEnd();
     }
-
 
     void CVisualScriptSystem::render_node_relations()
     {
@@ -513,8 +498,6 @@ namespace vscript {
         }
     }
     
-
-
     void deleteallnodes()
     {
         vScript3D.delete_all_nodes();
@@ -568,7 +551,6 @@ namespace vscript {
         vScript3D.add_node(NODE_TYPE_AREA_CONE, 2, height, radius);
     }
     COMMAND(vs_add_cone, "ss");
-
 
 };
 };

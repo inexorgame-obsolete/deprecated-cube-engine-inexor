@@ -15,12 +15,9 @@ namespace vscript {
         box_color = default_box_color;
     }
 
-
     CCommentNode::~CCommentNode()
     {
     }
-
-
 
     bool CCommentNode::OnRelationDragStart()
     {

@@ -3,7 +3,6 @@
 namespace inexor {
 namespace vscript {
 
-
     CMemoryNode::CMemoryNode(vec position,
                              VSCRIPT_DATA_TYPE type,
                              const char* value,

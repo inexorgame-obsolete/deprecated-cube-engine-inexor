@@ -1,4 +1,4 @@
-/// @file fl_rendering.h
+/// @file fl_rendering.hpp
 /// @author Johannes Schneider
 /// @brief Renderer for nodes and node relations
 
@@ -38,8 +38,7 @@ namespace vscript {
         VSCRIPT_COLOR_SELECTION = 0xFFFF4C,  // red 
         VSCRIPT_COLOR_DEBUG_RAY = 0x51ABCC,
         VSCRIPT_COLOR_MEMORY    = 0xFF005D,
-
-        VSCRIPT_AREA            = 0xFFFFFF, //= 0x1900FF,
+        VSCRIPT_AREA            = 0xFFFFFF,  // = 0x1900FF,
     };
 
 
@@ -55,11 +54,8 @@ namespace vscript {
             VSCRIPT_NODE_COLORS default_box_color;
 
             void adjust_selection_color(int orient, int index);
-
             void render_box(vec p, int orient);
-
             void render_box_outline(vec p);
-
             void render_box_helplines(vec p);
 
     };

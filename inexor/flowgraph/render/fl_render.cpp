@@ -4,7 +4,6 @@
 namespace inexor {
 namespace vscript {
 
-
     CNodeRenderer::CNodeRenderer()
     {
     }
@@ -12,7 +11,6 @@ namespace vscript {
     CNodeRenderer::~CNodeRenderer()
     {
     }
-
 
     void CNodeRenderer::adjust_selection_color(int orient, int index)
     {
@@ -24,7 +22,6 @@ namespace vscript {
         }
         gle::color(vec::hexcolor(temp_color));
     }
-
 
     void CNodeRenderer::render_box(vec p, int orient)
     {
@@ -73,7 +70,6 @@ namespace vscript {
         glEnd();
     }
 
-
     void CNodeRenderer::render_box_outline(vec p)
     {
         const float b = boxsize;
@@ -105,7 +101,6 @@ namespace vscript {
         glVertex3f(p.x,p.y+b,p.z+b);
         glEnd();
     }
-
 
     void CNodeRenderer::render_box_helplines(vec p)
     {

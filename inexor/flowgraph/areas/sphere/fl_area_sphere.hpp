@@ -1,12 +1,11 @@
-/// @file fl_area_sphere.h
+/// @file fl_area_sphere.hpp
 /// @author Johannes Schneider
-/// @brief 
+/// @brief spheres are defined by position and radius
 
 #ifndef INEXOR_VSCRIPT_AREA_SPHERE_HEADER
 #define INEXOR_VSCRIPT_AREA_SPHERE_HEADER
 
 #include "inexor/flowgraph/nodebase/fl_base.hpp"
-
 
 namespace inexor {
 namespace vscript {
@@ -20,7 +19,7 @@ namespace vscript {
 
         public:
 
-            CSphereAreaNode(vec,float,const char*,const char*);
+            CSphereAreaNode(vec, float, const char*, const char*);
             ~CSphereAreaNode();
             
             bool collide(vec p);

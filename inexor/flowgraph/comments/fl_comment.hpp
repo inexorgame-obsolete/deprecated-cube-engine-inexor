@@ -1,6 +1,6 @@
-/// @file fl_comment.h
+/// @file fl_comment.hpp
 /// @author Johannes Schneider
-/// @brief Comments will be rendered as text in 3D space
+/// @brief make use of comments whenever it is neccesary or useful
 
 #ifndef INEXOR_VSCRIPT_COMMENT_HEADER
 #define INEXOR_VSCRIPT_COMMENT_HEADER

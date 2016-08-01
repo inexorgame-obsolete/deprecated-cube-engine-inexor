@@ -1,6 +1,6 @@
 /// @file fl_base.hpp
 /// @author Johannes Schneider
-/// @brief A basic implementation of nodes for Inexor's Visual Scripting System
+/// @brief a basic implementation of nodes in Inexor's Visual Scripting System
 
 #ifndef INEXOR_VSCRIPT_NODEBASE_HEADER
 #define INEXOR_VSCRIPT_NODEBASE_HEADER
@@ -10,7 +10,6 @@
 
 #include "inexor/flowgraph/render/fl_render.hpp"
 #include "inexor/geom/curves/bezier/bezier.hpp"
-
 
 namespace inexor {
 namespace vscript {

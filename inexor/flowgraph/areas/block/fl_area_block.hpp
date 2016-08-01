@@ -1,12 +1,13 @@
-/// @file fl_area_block.h
+/// @file fl_area_block.hpp
 /// @author Johannes Schneider
-/// @brief 
+/// @brief a block area is defined by position, width, height, and depth
+
+// TODO: make block areas rotatable in at least one dimension
 
 #ifndef INEXOR_VSCRIPT_AREA_BLOCK_HEADER
 #define INEXOR_VSCRIPT_AREA_BLOCK_HEADER
 
 #include "inexor/flowgraph/nodebase/fl_base.hpp"
-
 
 namespace inexor {
 namespace vscript {
@@ -21,7 +22,7 @@ namespace vscript {
 
         public:
 
-            CCubeAreaNode(vec,float,float,float,const char*,const char*);
+            CCubeAreaNode(vec, float, float, float, const char*, const char*);
             ~CCubeAreaNode();
             
             bool collide(vec p);
@@ -35,4 +36,3 @@ namespace vscript {
 };
 
 #endif
-

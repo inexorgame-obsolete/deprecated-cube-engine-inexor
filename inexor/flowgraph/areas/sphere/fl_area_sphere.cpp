@@ -3,7 +3,6 @@
 namespace inexor {
 namespace vscript {
 
-
     CSphereAreaNode::CSphereAreaNode(vec position, float rad, const char* name, const char* comment)
     {
         type = NODE_TYPE_AREA_SPHERE;
@@ -14,17 +13,14 @@ namespace vscript {
         radius = rad;
     }
 
-
     CSphereAreaNode::~CSphereAreaNode()
     {
     }
-
 
     bool CSphereAreaNode::collide(vec p)
     {
         return true;
     }
-
 
     void CSphereAreaNode::render_additional()
     {
@@ -69,7 +65,6 @@ namespace vscript {
         }
         gle::end();
     }
-
 
     bool CSphereAreaNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {

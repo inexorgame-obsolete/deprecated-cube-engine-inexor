@@ -1,6 +1,8 @@
-/// @file fl_functionbase.h
+/// @file fl_functionbase.hpp
 /// @author Johannes Schneider
-/// @brief Every function that is linked with the game engine will inherit from this base class
+/// @brief every function that is linked with the game engine will inherit from this base class
+
+// TODO: make use of the new tree interface to link functions automaticly
 
 #ifndef INEXOR_VSCRIPT_FUNCTION_BASE_HEADER
 #define INEXOR_VSCRIPT_FUNCTION_BASE_HEADER
@@ -23,7 +25,7 @@ namespace vscript {
         CFunctionBase();
         ~CFunctionBase();
 
-        // TODO: implement parameters and return value!
+        // TODO: implement parameters and a return value!
     };
 
 };

@@ -11,11 +11,9 @@ namespace vscript {
         sound_id = atoi(id);
     }
 
-
     CFunctionPlaysoundNode::~CFunctionPlaysoundNode()
     {
     }
-
 
     void CFunctionPlaysoundNode::in()
     {
@@ -24,6 +22,16 @@ namespace vscript {
         out();
     }
 
+    bool CFunctionPlaysoundNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
+    {
+        return false;
+    }
+
+    // a function itself can not start any code at all!
+    bool CFunctionPlaysoundNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
+    {
+        return false;
+    }
 
     void CFunctionPlaysoundNode::reset()
     {

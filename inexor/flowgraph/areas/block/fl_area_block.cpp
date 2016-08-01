@@ -3,7 +3,6 @@
 namespace inexor {
 namespace vscript {
     
-
     CCubeAreaNode::CCubeAreaNode(vec position, float width, float height, float depth, const char* name, const char* comment = "")
     {
         type = NODE_TYPE_AREA_BOX;
@@ -15,18 +14,15 @@ namespace vscript {
         box_height = height;
         box_depth = depth;
     }
-
-
+    
     CCubeAreaNode::~CCubeAreaNode()
     {
     }
-
 
     bool CCubeAreaNode::collide(vec p)
     {
         return true;
     }
-
 
     void CCubeAreaNode::render_additional()
     {
@@ -81,8 +77,6 @@ namespace vscript {
 
         glEnd();
     }
-
-
 
     bool CCubeAreaNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {

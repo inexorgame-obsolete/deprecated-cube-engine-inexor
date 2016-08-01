@@ -1,10 +1,8 @@
 #include "inexor/flowgraph/nodebase/fl_base.hpp"
 #include "inexor/flowgraph/timer/fl_timer.hpp"
 
-
 namespace inexor {
 namespace vscript {
-
 
     CScriptNode::CScriptNode()
     {
@@ -34,7 +32,6 @@ namespace vscript {
 
     }
 
-
     bool CScriptNode::OnRelationDragStart()
     {
         conoutf(CON_DEBUG, "[node] hey there! looks like you're dragging a new relation for me! :)");
@@ -51,7 +48,6 @@ namespace vscript {
         return true;
     }
 
-
     // The editor is trying to link/unlink it as parent of another node
     bool CScriptNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
     {
@@ -61,7 +57,6 @@ namespace vscript {
     {
         return true;
     }
-
 
     void CScriptNode::in()
     {
@@ -86,12 +81,10 @@ namespace vscript {
         }
     }
 
-
     void CScriptNode::render_additional()
     {
         // TODO: implement additional render stuff depending on the node type
     }
-
 
     void CScriptNode::render(int orient, bool sel_blocked)
     {

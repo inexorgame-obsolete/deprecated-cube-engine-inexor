@@ -1,12 +1,11 @@
-/// @file fl_conoutf.h
+/// @file fl_conoutf.hpp
 /// @author Johannes Schneider
-/// @brief Print a text message to the local game console
+/// @brief links the game engine's conoutf function to Visual Scripting Enviroment
 
 #ifndef INEXOR_VSCRIPT_CONOUTF_HEADER
 #define INEXOR_VSCRIPT_CONOUTF_HEADER
 
 #include "inexor/flowgraph/nodebase/fl_base.hpp"
-
 
 namespace inexor {
 namespace vscript {
@@ -15,16 +14,13 @@ namespace vscript {
     {
         protected:
 
-            std::string param_text_output;
-            std::string raw_text_input;
+            std::string console_text;
 
         public:
 
-            CFunctionConoutfNode(vec pos, const char* raw_text);
+            CFunctionConoutfNode(vec pos, const char* text);
             ~CFunctionConoutfNode();
-
-            void format_output();
-
+            
             void in();
 
             bool OnLinkAsChildNodeAttempt(CScriptNode* parent);

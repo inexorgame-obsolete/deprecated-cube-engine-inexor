@@ -1,4 +1,4 @@
-/// @file fl_playsound.h
+/// @file fl_playsound.hpp
 /// @author Johannes Schneider
 /// @brief
 
@@ -37,14 +37,8 @@ namespace vscript {
             void reset();
 
 
-            bool OnLinkAsChildNodeAttempt(CScriptNode* parent)
-            {
-                return false;
-            }
-            bool OnLinkAsParentNodeAttempt(CScriptNode* child)
-            {
-                return false;
-            }
+            bool OnLinkAsChildNodeAttempt(CScriptNode* parent);
+            bool OnLinkAsParentNodeAttempt(CScriptNode* child);
     };
 
 };

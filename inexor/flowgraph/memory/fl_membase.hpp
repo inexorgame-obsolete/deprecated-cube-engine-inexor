@@ -1,4 +1,4 @@
-/// @file fl_timer.h
+/// @file fl_timer.hpp
 /// @author Johannes Schneider
 /// @brief implementation of dynamic script memory
 
@@ -14,7 +14,7 @@ namespace vscript {
     enum VSCRIPT_DATA_TYPE 
     {
         VS_DATA_TYPE_INTEGER,
-        VS_DATA_TYPE_FLOATING_POINT, // always double
+        VS_DATA_TYPE_FLOATING_POINT, // floating points are always double in this system
         VS_DATA_TYPE_STRING,
         VS_DATA_TYPE_BOOLEAN,
         VS_DATA_TYPE_VECTOR,
@@ -37,6 +37,7 @@ namespace vscript {
         SMemoryBlock()
         {
         }
+
         ~SMemoryBlock()
         {
         }

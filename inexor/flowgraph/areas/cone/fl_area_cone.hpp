@@ -1,12 +1,13 @@
-/// @file fl_area_block.h
+/// @file fl_area_block.hpp
 /// @author Johannes Schneider
-/// @brief 
+/// @brief cones are defined by position, width, and height
+
+// TODO: make cones rotatable in 3 dimensions
 
 #ifndef INEXOR_VSCRIPT_AREA_CONE_HEADER
 #define INEXOR_VSCRIPT_AREA_CONE_HEADER
 
 #include "inexor/flowgraph/nodebase/fl_base.hpp"
-
 
 namespace inexor {
 namespace vscript {
@@ -21,7 +22,7 @@ namespace vscript {
 
         public:
 
-            CConeAreaNode(vec,float,float,const char*,const char*);
+            CConeAreaNode(vec, float, float, const char*, const char*);
             ~CConeAreaNode();
             
             bool collide(vec p);
@@ -35,4 +36,3 @@ namespace vscript {
 };
 
 #endif
-

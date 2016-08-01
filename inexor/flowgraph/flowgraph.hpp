@@ -1,6 +1,6 @@
-/// @file flowgraph.h
+/// @file flowgraph.hpp
 /// @author Johannes Schneider
-/// @brief Embedded Visual Scripting System
+/// @brief Inexor's Visual Scripting System
 
 #ifndef INEXOR_VSCRIPT_FLOWGRAPH_HEADER
 #define INEXOR_VSCRIPT_FLOWGRAPH_HEADER
@@ -14,13 +14,10 @@
 #include "inexor/flowgraph/editor/fl_enteditor.hpp"
 #include "inexor/flowgraph/debugger/fl_dbgrays.hpp"
 
-
 #define INEXOR_VSCRIPT_TIMER_DEBUGGING 1
-
 
 namespace inexor {
 namespace vscript {
-
 
     class CVisualScriptSystem : public CEntityManager
     {
@@ -50,8 +47,7 @@ namespace vscript {
             void render_debug_rays();
 
             void update_timers();
-
-
+            
             void validate_new_relation(CScriptNode *from, CScriptNode *to);
             void connect_nodes(CScriptNode *from, CScriptNode *to);
             void disconnect_nodes(CScriptNode *from, CScriptNode *to);

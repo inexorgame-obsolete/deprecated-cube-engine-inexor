@@ -3,7 +3,6 @@
 namespace inexor {
 namespace vscript {
 
-
     CSleepNode::CSleepNode(vec position,
                            unsigned int sleeptime, 
                            const char* name, 
@@ -17,12 +16,9 @@ namespace vscript {
         node_comment = "[-]";
     }
 
-
     CSleepNode::~CSleepNode()
     {
     }
-
-
 
     void CSleepNode::in()
     {
@@ -51,7 +47,6 @@ namespace vscript {
 
         out();
     }
-
     
     bool CSleepNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
