@@ -7,22 +7,57 @@
 
 namespace inexor { namespace rpc { namespace gluegen {
 
-class DefaultValue
+class SharedOption
 {
-    const DefaultValue *next;
+    const SharedOption *next;
 public:
-    friend DefaultValue& operator|(DefaultValue& first, const DefaultValue& second)
+    friend SharedOption& operator|(SharedOption& first, const SharedOption& second)
     {
         first.next = &second;
         return first;
     }
 };
 
+class Range : public SharedOption
+{
+public:
+    /// Parse Template Data: Constructor arguments are data names, values get assigned in the place the constructor gets accessed.
+    /// we need it for every possible 
+    Range(int min, int max) { }
+    Range(float min, float max) { }
+
+    const char *proto_template = "da";
+    const char *cpp_receive_template = "da";
+    const char *cpp_send_template = "da";
+};
+
+// TODO skip last letter and first one
+class CustomPath : public SharedOption
+{
+public:
+    CustomPath(const char *path) { }
+
+    const char *proto_template = "da";
+    const char *cpp_receive_template = "da";
+    const char *cpp_send_template = "da";
+};
+
+/// TODO respect default initializer ispersistent = false
+class Persistent : public SharedOption
+{
+public:
+    Persistent(bool ispersistent) { }
+
+    const char *proto_template = "da";
+    const char *cpp_receive_template = "da";
+    const char *cpp_send_template = "da";
+};
+
 
 class Sharedwo
 {
 public:
-    Sharedwo(DefaultValue x) {}
+    Sharedwo(SharedOption x) {}
     int zwei;
 };
 

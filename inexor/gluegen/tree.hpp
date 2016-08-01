@@ -30,8 +30,7 @@ public:
     /// unambiguity types above
     static const std::unordered_map<std::string, cpp_type_t> type_parsers;
 
-    /// The numeric types above to their protocol buffers
-    /// equivalents
+    /// The numeric types above to their protocol buffers equivalents
     //static const std::unordered_map<cpp_type_t, std::string> protoc_types;
 
     /// The canonical name (including ::) of the inexor c++ variable

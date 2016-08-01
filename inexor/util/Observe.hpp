@@ -28,7 +28,7 @@ namespace util {
 /// the old and the new value.
 /// Only afterwards the new value is assigned.
 ///
-/// The value of the variable inside observe is undefended
+/// The value of the variable inside observe is undefined
 /// while the listeners are called;
 ///
 /// During the event, do not change the value of the

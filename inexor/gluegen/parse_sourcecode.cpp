@@ -16,7 +16,10 @@ using namespace inexor::filesystem;
 
 namespace inexor { namespace rpc { namespace gluegen {
 
-Sharedwo x(DefaultValue()|DefaultValue());
+Sharedwo x(Range(0, 2)|CustomPath("inexor/rendering/screen/"));
+
+
+
 bool find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tree)
 {
     try {
@@ -53,23 +56,22 @@ bool find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tr
     //{
     //    std::cout << "comp: " << it.name() << " = " << it.as_string() << std::endl;
     //}
-    xml_node *functions_section = nullptr;
     for(auto section : compound_xml.children("sectiondef"))
     {
         std::string attrvalue = section.attribute("kind").value();
         if(!attrvalue.compare("func"))
         {
-            functions_section = &section;
-            break; // TODO this is required atm since range balbal
+            for(auto member : section.children("memberdef"))
+            {
+                std::cout << "type: " << member.child("type").text().as_string() << std::endl;
+                std::cout << "name: " << member.child("name").text().as_string() << std::endl;
+                std::cout << "argsstring: " << member.child("argsstring").text().as_string() << std::endl;
+                ShTreeNode *var = new ShTreeNode();
+            }
         }
     }
 
-    for(auto member : functions_section->children("memberdef"))
-    {
-        std::cout << "type: " << member.child("type").text().as_string() << std::endl;
-        std::cout << "name: " << member.child("name").text().as_string() << std::endl;
-        std::cout << "argsstring: " << member.child("argsstring").text().as_string() << std::endl;
-    }
+
 
     //std::vector<xpath_node> all_variables;
     //for(auto file : file_xmls)
