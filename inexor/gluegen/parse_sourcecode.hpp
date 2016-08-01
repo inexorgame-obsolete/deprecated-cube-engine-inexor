@@ -32,17 +32,30 @@ public:
 };
 
 // TODO skip last letter and first one
+// CustomXY are the hardest atm, since we need to override the build-tools behaviour (or we need to set the build tools defaults when customxy is missing)
+// both ugly non-generic hacks.
 class CustomPath : public SharedOption
 {
 public:
     CustomPath(const char *path) { }
 
-    const char *proto_template = "da";
+    const char *proto_template = "(path)=\"{{path}}\"";
+    const char *cpp_init_check_template = "send(path";
     const char *cpp_receive_template = "da";
     const char *cpp_send_template = "da";
 };
 
-/// TODO respect default initializer ispersistent = false
+// TODO skip last letter and first one
+class NoSync : public SharedOption
+{
+public:
+    NoSync() {}
+
+    const char *cpp_receive_template = "return;";
+    const char *cpp_send_template = "return;";
+};
+
+// TODO respect default initializer ispersistent = false
 class Persistent : public SharedOption
 {
 public:
