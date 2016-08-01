@@ -1,14 +1,7 @@
 #pragma once
 
 #include <string>
-#include <regex>
-#include <utility>
 #include <unordered_map>
-
-#include <boost/range/algorithm.hpp>
-#include <boost/algorithm/string/replace.hpp>
-
-#include "inexor/util/InexorException.hpp"
 
 namespace inexor {
 namespace rpc {
@@ -16,78 +9,73 @@ namespace gluegen {
 
 class ShTreeNode {
 public:
+    /// The canonical name (including ::) of the c++ variable.
+    /// e.g. "::inexor::rendering::screen::width"
+    std::string get_name_cpp_full();
 
-    /// Known C++ SharedVar types
-    enum cpp_type_t {
+    /// Name with prepended namespace, connected with underspaces.
+    /// e.g. "_inexor_rendering_screen_width"
+    std::string get_name_unique();
+
+    /// Path of the variable inside the tree.
+    /// Atm we use only the namespace, e.g. inexor/rendering/screen/.
+    std::string get_path();
+
+    /// The full type literal of the c++ type including SharedVar.
+    /// e.g. "SharedVar<char*>"
+    const char *get_type_cpp_full();
+
+    /// The c++ type literal of wrapped c++ primitive type ("char*"/"int"/"float").
+    const char *get_type_cpp_primitive();
+
+    /// The protocol buffers type for this node
+    const char *get_type_protobuf();
+
+    /// The protocol buffers variable index; 0 if unset
+    uint64_t protoc_idx = 0;
+
+    /// @param full_cpp_type_dcl The literal type declaration (e.g. "SharedVar<int>") from which the type_numeric will be deduced.
+    ShTreeNode(const std::string &full_cpp_type_dcl, const std::string &full_cpp_name);
+
+    /// Known SharedVar types
+    enum type_t
+    {
         t_cstring = 0,
         t_float,
         t_int
     };
 
-    static const std::string protoc_types[3];
-
-    /// Maps C++ string type declarations to the numeric,
-    /// unambiguity types above
-    static const std::unordered_map<std::string, cpp_type_t> type_parsers;
-
-    /// The numeric types above to their protocol buffers equivalents
-    //static const std::unordered_map<cpp_type_t, std::string> protoc_types;
-
-    /// The canonical name (including ::) of the inexor c++ variable
-    std::string cpp_var;
-
-    /// Path of the variable inside the tree
-    std::string path;
-
-    /// name with prepended namespace, connected with underspaces.
-    std::string unique_name;
-
-    /// The type literal of the c++ type
-    std::string type_lit;
-
-    /// C++ type of the variable
-    cpp_type_t type;
-
-    /// The protocol buffers type for this node
-    std::string protoc_lit;
-
-    /// The protocol buffers variable index; 0 if unset
-    uint64_t protoc_idx = 0;
-
-    /// @param type_decl The literal type declaration (e.g.
-    ///     "int" or "char *") from which the correct index
-    ///     for type will be deduced
-    ShTreeNode(const std::string &type_decl
-        , const std::string &cpp_var, const std::string &path)
-        : cpp_var{cpp_var}, path{path} {
-        _init_mangled_path();
-        _init_type(type_decl);
-    }
-
-    /// @param type_decl The literal type declaration (e.g.
-    ///     "int" or "char *") from which the correct index
-    ///     for type will be deduced
-    ShTreeNode(const std::string &type_decl
-        , std::string &&cpp_var, std::string &&path)
-        : cpp_var{ std::move(cpp_var) }, path{ std::move(path) } {
-        _init_mangled_path();
-        _init_type(type_decl);
-    }
-
 private:
-    void _init_mangled_path() {
-        using boost::algorithm::replace_all_copy;
-        using boost::algorithm::replace_all;
-        if(path.empty()) path = replace_all_copy(cpp_var, "::", "/");
-        replace_all(path, "/inexor/", "/");
-        unique_name = replace_all_copy(path, "/", "_");
-    }
 
-    void _init_type(const std::string &type_decl) {
-        type = type_parsers.at(type_decl);
-        type_lit = type_decl;
-        protoc_lit = protoc_types[type];
-    }
+    /// The ambigous(protobuf, c++,fullc++wrapped) numeric type.
+    type_t type_numeric;
+
+    /// Internal use, so we just store type_numeric and lookup the rest in here.
+    /// Static helper class to provide language dependend strings for the different types.
+    const struct
+    {
+        /// The full type literal of the c++ type including SharedVar.
+        /// e.g. "SharedVar<char*>"
+        const char *type_cpp_full;
+
+        /// The c++ type literal of wrapped c++ primitive type ("char*"/"int"/"float").
+        const char *type_cpp_primitive;
+
+        /// The protocol buffers type for this node
+        const char *type_protobuf;
+    } type_lookup[t_int+1] = {
+        {"SharedVar<char*>", "char*", "string"},
+        {"SharedVar<float>", "float", "float"},
+        {"SharedVar<int>",   "int",   "int32"},
+    };
+
+    /// We use this function in the descriptor since we save type_numeric but the constructor takes the full cpp type.
+    static const std::unordered_map<std::string, ShTreeNode::type_t> type_cpp_template_to_numeric;
+
+
+    // internal cached of the corresponding retrival function get_xy().
+    std::string name_cpp_full;
+    std::string path;
 };
 
 }

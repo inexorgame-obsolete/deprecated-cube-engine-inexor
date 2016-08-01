@@ -18,7 +18,7 @@
 
 // List of extern SharedVar declarations
 {{#shared_vars}}{{namespace_sep_open}}
-    extern SharedVar<{{cpp_type}}> {{cpp_raw_name}};
+    extern SharedVar<{{type_cpp_primitive}}> {{cpp_raw_name}};
 {{namespace_sep_close}}
 {{/shared_vars}}
 
@@ -38,10 +38,10 @@ class treedata {
     void connectall()
     {
         // TODO: Dont call by type but by reference if not a ptr: *or& -> {cpp_observer_type}
-{{#shared_vars}}        {{cpp_name}}.onChange.connect([](const {{cpp_type}} oldvalue, const {{cpp_type}} newvalue)
+{{#shared_vars}}        {{cpp_name}}.onChange.connect([](const {{type_cpp_primitive}} oldvalue, const {{type_cpp_primitive}} newvalue)
             {
                 {{namespace}}::TreeNodeChanged val;
-                val.set_{{unique_name}}(newvalue);
+                val.set_{{name_unique}}(newvalue);
                 main2net_interthread_queue.enqueue(std::move(val));
             }
         );
@@ -67,7 +67,7 @@ class treedata {
     const std::unordered_map<int64, int> index_to_type_map
     {
         // { index, enum_type(string=0,float=1,int=2) }
-    {{#shared_vars}}    { {{index}}, {{type}} },  // {{path}}, {{cpp_type}}
+    {{#shared_vars}}    { {{index}}, {{type}} },  // {{path}}, {{type_cpp_primitive}}
     {{/shared_vars}}
     };
 

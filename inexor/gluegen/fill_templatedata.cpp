@@ -61,15 +61,14 @@ TemplateData fill_templatedata(vector<ShTreeNode> &tree, const string &ns)
     for(auto node : tree)
     {
         TemplateData curvariable{TemplateData::Type::Object};
-        curvariable["proto_type"] = node.protoc_lit;
-        curvariable["cpp_type"] = node.type_lit;
-        curvariable["type"] = std::to_string(node.type);
+        curvariable["type_protobuf"] = node.get_type_protobuf();
+        curvariable["type_cpp_primitive"] = node.get_type_cpp_primitive();
         curvariable["index"] = std::to_string(index++);
-        curvariable["unique_name"] = node.unique_name;
-        curvariable["path"] = node.path;
-        curvariable["cpp_name"] = node.cpp_var;
+        curvariable["name_unique"] = node.get_name_unique();
+        curvariable["path"] = node.get_path();
+        curvariable["cpp_name"] = node.get_name_cpp_full();
 
-        vector<string> ns(split_by_delimter(node.cpp_var, "::"));
+        vector<string> ns(split_by_delimter(node.get_name_cpp_full(), "::"));
         curvariable["cpp_raw_name"] = ns.back();
 
         ns.pop_back(); // remove the raw function name

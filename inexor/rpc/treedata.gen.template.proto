@@ -23,7 +23,7 @@ service TreeService
 message TreeNodeChanged
 {
   oneof key {
-{{#shared_vars}}    {{proto_type}} {{unique_name}} = {{index}}    [(path) = "{{path}}"];
+{{#shared_vars}}    {{type_protobuf}} {{name_unique}} = {{index}}    [(path) = "{{path}}"];
 {{/shared_vars}}
   }
 }
