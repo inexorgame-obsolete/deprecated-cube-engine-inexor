@@ -20,15 +20,23 @@ namespace vscript {
     {
     }
 
+
+
+    bool CCommentNode::OnRelationDragStart()
+    {
+        conoutf(CON_DEBUG, "[node linker] Comments can't be linked as child or parent nodes!");
+        return false;
+    }
+
     bool CCommentNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
-        conoutf(CON_DEBUG, "You cannot link a comment as child node!");
+        conoutf(CON_DEBUG, "[node linker] Comments can't be linked as child or parent nodes!");
         return false;
     }
 
     bool CCommentNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
     {
-        conoutf(CON_DEBUG, "You cannot link a comment as parent node!");
+        conoutf(CON_DEBUG, "[node linker] Comments can't be linked as child or parent nodes!");
         return false;
     }
 

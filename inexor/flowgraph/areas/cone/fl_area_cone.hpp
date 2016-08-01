@@ -2,8 +2,8 @@
 /// @author Johannes Schneider
 /// @brief 
 
-#ifndef INEXOR_VSCRIPT_AREA_BLOCK_HEADER
-#define INEXOR_VSCRIPT_AREA_BLOCK_HEADER
+#ifndef INEXOR_VSCRIPT_AREA_CONE_HEADER
+#define INEXOR_VSCRIPT_AREA_CONE_HEADER
 
 #include "inexor/flowgraph/nodebase/fl_base.hpp"
 
@@ -11,18 +11,18 @@
 namespace inexor {
 namespace vscript {
 
-    class CCubeAreaNode : public CScriptNode
+    class CConeAreaNode : public CScriptNode
     {
         protected:
             
-            float box_width;
-            float box_height;
-            float box_depth;
+            float cone_height;
+            float cone_radius;
+            const int circle_detail_level = 60;
 
         public:
 
-            CCubeAreaNode(vec,float,float,float,const char*,const char*);
-            ~CCubeAreaNode();
+            CConeAreaNode(vec,float,float,const char*,const char*);
+            ~CConeAreaNode();
             
             bool collide(vec p);
             void render_additional();

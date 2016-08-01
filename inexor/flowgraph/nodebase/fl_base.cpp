@@ -23,6 +23,23 @@ namespace vscript {
     {
     }
 
+    
+    SNodeRelation::SNodeRelation()
+    {
+        triggered = false;
+    }
+
+    SNodeRelation::~SNodeRelation()
+    {
+
+    }
+
+
+    bool CScriptNode::OnRelationDragStart()
+    {
+        conoutf(CON_DEBUG, "[node] hey there! looks like you're dragging a new relation for me! :)");
+        return true;
+    }
 
     // The editor is trying to link/unlink it as child of another node
     bool CScriptNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
@@ -70,15 +87,15 @@ namespace vscript {
     }
 
 
-    void CScriptNode::render_additional(vec p)
+    void CScriptNode::render_additional()
     {
-        // TODO...
+        // TODO: implement additional render stuff depending on the node type
     }
 
 
     void CScriptNode::render(int orient, bool sel_blocked)
     {
-        vec p = this->pos;
+        vec p = pos;
         render_box(p, orient);
 
         if(! sel_blocked)
@@ -99,21 +116,7 @@ namespace vscript {
         particle_text(p, this->node_comment.c_str(), PART_TEXT, 1, 0xFFFFFF, 1.0f);
 
         // some nodes require additional rendering stuff
-        render_additional(p);
-    }
-
-
-    void CScriptNode::trigger()
-    {
-        for(int i = 0; i < relations.size(); i++)
-            relations[i].triggered = true;
-    }
-
-
-    void CScriptNode::untrigger()
-    {
-        for(int i = 0; i < relations.size(); i++)
-            relations[i].triggered = false;
+        render_additional();
     }
 
 };

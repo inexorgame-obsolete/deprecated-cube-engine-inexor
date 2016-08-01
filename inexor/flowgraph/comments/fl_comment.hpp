@@ -14,9 +14,10 @@ namespace vscript {
     {
         public:
 
-        CCommentNode(vec pos, const char* comment = "This is a comment", const char* name = "CommentNode1");
+        CCommentNode(vec pos, const char* comment = "This is a comment", const char* name = "");
         ~CCommentNode();
         
+        bool OnRelationDragStart();
         bool OnLinkAsChildNodeAttempt(CScriptNode* parent);
         bool OnLinkAsParentNodeAttempt(CScriptNode* child);
     };

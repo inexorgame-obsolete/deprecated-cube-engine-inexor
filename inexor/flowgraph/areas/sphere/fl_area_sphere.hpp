@@ -13,16 +13,21 @@ namespace vscript {
 
     class CSphereAreaNode : public CScriptNode
     {
+        protected:
+
+            float radius;
+            const int circle_detail_level = 60;
+
         public:
 
-            // the distance from this vector to the position defines the radius of the sphere.
-            vec radius;
-
-            CSphereAreaNode(vec,vec,const char*,const char*);
+            CSphereAreaNode(vec,float,const char*,const char*);
             ~CSphereAreaNode();
             
-            void render(int,bool);
             bool collide(vec p);
+            void render_additional();
+
+            bool OnLinkAsChildNodeAttempt(CScriptNode* parent);
+            bool OnLinkAsParentNodeAttempt(CScriptNode* child);
     };
 
 };

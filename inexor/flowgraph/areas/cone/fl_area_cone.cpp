@@ -1,43 +1,44 @@
-#include "inexor/flowgraph/areas/sphere/fl_area_sphere.hpp"
+#include "inexor/flowgraph/areas/cone/fl_area_cone.hpp"
 
 namespace inexor {
 namespace vscript {
+    
 
-
-    CSphereAreaNode::CSphereAreaNode(vec position, float rad, const char* name, const char* comment)
+    CConeAreaNode::CConeAreaNode(vec position, float radius, float height, const char* name, const char* comment = "")
     {
-        type = NODE_TYPE_AREA_SPHERE;
+        type = NODE_TYPE_AREA_BOX;
         pos = position;
         node_name = name;
         node_comment = comment;
 
-        radius = rad;
+        cone_height = height;
+        cone_radius = radius;
     }
 
 
-    CSphereAreaNode::~CSphereAreaNode()
+    CConeAreaNode::~CConeAreaNode()
     {
     }
 
 
-    bool CSphereAreaNode::collide(vec p)
+    bool CConeAreaNode::collide(vec p)
     {
         return true;
     }
 
 
-    void CSphereAreaNode::render_additional()
+    void CConeAreaNode::render_additional()
     {
         gle::color(vec::hexcolor(VSCRIPT_AREA));
-
         gle::begin(GL_LINE_LOOP);
+        
         for (int i = 0; i<circle_detail_level; i++)
         {
             vec p(pos);
             p.add(boxsize / 2);
             const vec2 &sc = sincos360[i*(360 / circle_detail_level)];
-            p[0] += radius * sc.x;
-            p[1] += radius * sc.y;
+            p[0] += cone_radius * sc.x;
+            p[1] += cone_radius * sc.y;
 
             glVertex3f(p.x, p.y, p.z);
         }
@@ -49,39 +50,43 @@ namespace vscript {
             vec p(pos);
             p.add(boxsize / 2);
             const vec2 &sc = sincos360[i*(360 / circle_detail_level)];
-            p[1] += radius * sc.x;
-            p[2] += radius * sc.y;
-
+            p[0] += cone_radius * sc.x;
+            p[1] += cone_radius * sc.y;
+            p[2] += cone_height;
             glVertex3f(p.x, p.y, p.z);
         }
         gle::end();
 
-        gle::begin(GL_LINE_LOOP);
+        // connection lines
+        gle::begin(GL_LINES);
         for (int i = 0; i<circle_detail_level; i++)
         {
             vec p(pos);
             p.add(boxsize / 2);
             const vec2 &sc = sincos360[i*(360 / circle_detail_level)];
-            p[0] += radius * sc.x;
-            p[2] += radius * sc.y;
+            p[0] += cone_radius * sc.x;
+            p[1] += cone_radius * sc.y;
+            glVertex3f(p.x, p.y, p.z);
 
+            p[2] += cone_height;
             glVertex3f(p.x, p.y, p.z);
         }
         gle::end();
+
     }
 
 
-    bool CSphereAreaNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
+    bool CConeAreaNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
-        conoutf(CON_DEBUG, "[box-area] a sphere area can't run any code so it can't be linked as child!");
+        conoutf(CON_DEBUG, "[box-area] a cone area can't run any code so it can't be linked as child!");
         return false;
     }
 
-    bool CSphereAreaNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
+    bool CConeAreaNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
     {
         if(child->type != NODE_TYPE_EVENT)
         {
-            conoutf(CON_DEBUG, "[box-area] a sphere can only be linked as parent of an event node!");
+            conoutf(CON_DEBUG, "[box-area] a cone can only be linked as parent of an event node!");
         }
         return true;
     }

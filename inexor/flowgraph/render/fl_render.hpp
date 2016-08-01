@@ -38,6 +38,8 @@ namespace vscript {
         VSCRIPT_COLOR_SELECTION = 0xFFFF4C,  // red 
         VSCRIPT_COLOR_DEBUG_RAY = 0x51ABCC,
         VSCRIPT_COLOR_MEMORY    = 0xFF005D,
+
+        VSCRIPT_AREA            = 0xFFFFFF, //= 0x1900FF,
     };
 
 

@@ -15,7 +15,6 @@
 #include "inexor/flowgraph/debugger/fl_dbgrays.hpp"
 
 
-// conditional compiling
 #define INEXOR_VSCRIPT_TIMER_DEBUGGING 1
 
 
@@ -28,19 +27,20 @@ namespace vscript {
         protected:
 
             void update_input(int, bool);
+            bool distance_calculated;
 
         public:        
-
-            std::vector<CScriptNode *> nodes;
-            std::vector<CDebugRay> rays;
 
             CVisualScriptSystem();
             ~CVisualScriptSystem();
 
-            CScriptNode* add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...);
+            std::vector<CScriptNode *> nodes;
+            std::vector<CDebugRay> rays;
 
             geom::CBezierCurve tmp_relation_linker_curve;
 
+            CScriptNode* add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...);
+            void remove_node(CScriptNode* node);
 
             void start_rendering();
             void end_rendering();
@@ -51,9 +51,10 @@ namespace vscript {
 
             void update_timers();
 
-            // node relations
+
             void validate_new_relation(CScriptNode *from, CScriptNode *to);
             void connect_nodes(CScriptNode *from, CScriptNode *to);
+            void disconnect_nodes(CScriptNode *from, CScriptNode *to);
 
             void update_drag_n_drop();
             void update_relation_linker();
