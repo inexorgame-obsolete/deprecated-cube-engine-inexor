@@ -8,7 +8,6 @@ namespace vscript {
         dragging_new_relation = false;
         last_mouse_key_state = false;
         moving_entity = false;
-                
         relation_drag_start = vec(0,0,0);
         relation_drag_end = vec(0,0,0);
     }

@@ -33,7 +33,6 @@ namespace vscript {
         float offsety = - (box_depth/2) + (boxsize/2);
         float offsetz = - (box_height/2) + (boxsize/2);
 
-
         // horizontal x lines
         glVertex3f(offsetx + pos.x,             offsety + pos.y,             offsetz + pos.z);
         glVertex3f(offsetx + pos.x + box_width, offsety + pos.y,             offsetz + pos.z);
@@ -80,7 +79,7 @@ namespace vscript {
 
     bool CCubeAreaNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
-        conoutf(CON_DEBUG, "[box-area] a box area can't run any code so it can't be linked as child!");
+        conoutf(CON_DEBUG, "[3DVS-boxarea] a box area can't run any code so it can't be linked as child!");
         return false;
     }
 
@@ -88,7 +87,7 @@ namespace vscript {
     {
         if(child->type != NODE_TYPE_EVENT)
         {
-            conoutf(CON_DEBUG, "[box-area] a box can only be linked as parent of an event node!");
+            conoutf(CON_DEBUG, "[3DVS-boxarea] a box can only be linked as parent of an event node!");
         }
         return true;
     }
