@@ -15,10 +15,15 @@
 #include "inexor/flowgraph/areas/block/fl_area_block.hpp"
 #include "inexor/flowgraph/areas/sphere/fl_area_sphere.hpp"
 #include "inexor/flowgraph/areas/cone/fl_area_cone.hpp"
+#include "inexor/flowgraph/areas/cylinder/fl_area_cylinder.hpp"
+
+// operators
+#include "inexor/flowgraph/operators/increment/fl_increment.h"
 
 // geometry
 #include "inexor/geom/geom.hpp"
 #include "inexor/geom/curves/bezier/bezier.hpp"
+
 
 // use the engine's selection model
 extern selinfo sel, lastsel, savedsel;
@@ -36,15 +41,12 @@ enum VSCRIPT_ENTITY_BOX_ORIENTATION
     VSCRIPT_BOX_TOP
 };
 
-
 namespace inexor {
 namespace vscript {
 
     // TODO: make CVisualScriptSystem a singleton class (optional?)
-
     // create an instance of the visual scripting system
     CVisualScriptSystem vScript3D;
-
 
     CVisualScriptSystem::CVisualScriptSystem() 
     {
@@ -104,7 +106,7 @@ namespace vscript {
             {
                 if(!strlen(arguments[0].c_str()))
                 {
-                    conoutf(CON_DEBUG, "[comments] error: empty string as comment!");
+                    conoutf(CON_DEBUG, "[3DVS-comments] error: empty string as comment!");
                     break;
                 }
                 created_node = new CCommentNode(target, arguments[0].c_str());
@@ -115,7 +117,7 @@ namespace vscript {
             {
                 if (!strlen(arguments[0].c_str()))
                 {
-                    conoutf(CON_DEBUG, "[functions] error: no function name speficied!");
+                    conoutf(CON_DEBUG, "[3DVS-functions] error: no function name speficied!");
                     break;
                 }
 
@@ -125,7 +127,7 @@ namespace vscript {
                     {
                         if (!strlen(arguments[1].c_str()))
                         {
-                            conoutf(CON_DEBUG, "[conoutf function] error: no output text specified!");
+                            conoutf(CON_DEBUG, "[3DVS-functions-conoutf] error: no output text specified!");
                             break;
                         }
                         // add a console text output function
@@ -136,7 +138,7 @@ namespace vscript {
                     {
                         if (!strlen(arguments[1].c_str()))
                         {
-                            conoutf(CON_DEBUG, "[playsound function] error: sound to play specified!");
+                            conoutf(CON_DEBUG, "[3DVS-functions-playsound] error: sound to play specified!");
                             break;
                         }
                         // add a sound player function
@@ -179,6 +181,14 @@ namespace vscript {
                 break;
             }
 
+            case NODE_TYPE_AREA_CYLINDER:
+            {
+                float height = atof(arguments[0].c_str());
+                float radius = atof(arguments[1].c_str());
+                created_node = new CCylinderAreaNode(target, height, radius, "cylinder", "");
+                break;
+            }
+
             case NODE_TYPE_MEMORY:
             {
                 created_node = new CMemoryNode(target, VS_DATA_TYPE_INTEGER, arguments[0].c_str(), "memory-block", "I can remember things!");
@@ -188,7 +198,7 @@ namespace vscript {
 
         if(nullptr != created_node) nodes.push_back(created_node);
         return created_node;
-        // remember to delete created_node at program exit!
+        // TODO: delete created_node at program exit!
     }
     
     void CVisualScriptSystem::remove_node(CScriptNode* node)
@@ -257,11 +267,13 @@ namespace vscript {
 
         // create a new relation curve
         SNodeRelation newcurve;
-        newcurve.triggered = &from->triggered;
+        newcurve.from = from;
+        newcurve.to = to;
+
         from->relations.push_back(newcurve);
         from->pos_changed = true;
 
-        conoutf(CON_DEBUG, "[node linker] linked parent %s with child %s.", from->node_name.c_str(), to->node_name.c_str());
+        conoutf(CON_DEBUG, "[3DVS-node-linker] linked parent %s with child %s.", from->node_name.c_str(), to->node_name.c_str());
     }
 
     void CVisualScriptSystem::disconnect_nodes(CScriptNode *from, CScriptNode *to)
@@ -284,12 +296,12 @@ namespace vscript {
                 }
                 else
                 {
-                    conoutf(CON_DEBUG, "[node linker] could not link parent %s with child %s.", from->node_name.c_str(), to->node_name.c_str());
+                    conoutf(CON_DEBUG, "[3DVS-node-linker] could not link parent %s with child %s.", from->node_name.c_str(), to->node_name.c_str());
                 }
             }
             else
             {
-                conoutf(CON_DEBUG,"[node linker] a node can't be linked to itself!");
+                conoutf(CON_DEBUG,"[3DVS-node-linker] a node can't be linked to itself!");
             }
         }
     }
@@ -372,8 +384,10 @@ namespace vscript {
         nodes.clear();
     }
 
-    void CVisualScriptSystem::update_timers()
+    void CVisualScriptSystem::run()
     {
+        for(unsigned int i = 0; i < nodes.size(); i++) nodes[i]->recursion_counter = 0;
+
         for(unsigned int i=0; i<nodes.size(); i++)
         {
             nodes[i]->this_time = SDL_GetTicks();
@@ -410,7 +424,7 @@ namespace vscript {
             nodes[i]->selected = (orient != VSCRIPT_BOX_NO_INTERSECTION);
 
             // render a 200ms long color effect once its activated
-            if((nodes[i]->this_time - nodes[i]->last_time) < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL)
+            if( (nodes[i]->this_time - nodes[i]->last_time) < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL)
             {
                 nodes[i]->box_color = VSCRIPT_COLOR_TRIGGERED;
             }
@@ -418,6 +432,7 @@ namespace vscript {
             {
                 nodes[i]->box_color = nodes[i]->default_box_color;
             }
+
             nodes[i]->render(orient, selection_blocked_by_geometry);
         }
 
@@ -479,12 +494,18 @@ namespace vscript {
                 }
 
                 glLineWidth(2.0f);
-
-                if(tmp->triggered) gle::color(vec::hexcolor(VSCRIPT_COLOR_TIMER));
-                else gle::color(vec::hexcolor(VSCRIPT_COLOR_TIMER));
-
                 glBegin(GL_LINES);
-                
+
+                // render a 200ms long color effect once its activated
+                if((nodes[i]->this_time - nodes[i]->last_time) < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL)
+                {
+                    gle::color(vec::hexcolor(VSCRIPT_COLOR_TRIGGERED));
+                }
+                else
+                {
+                    gle::color(vec::hexcolor(VSCRIPT_COLOR_TIMER));
+                }
+
                 for(unsigned int h=0; h<tmp->curve.GetCachedPointsSize() -1; h++)
                 {
                     geom::SCustomOutputPoint t = tmp->curve.GetPoint_ByIndex(h);
@@ -492,6 +513,7 @@ namespace vscript {
                     glVertex3f(t.pos.x, t.pos.y, t.pos.z);
                     glVertex3f(n.pos.x, n.pos.y, n.pos.z);
                 }
+
                 glEnd();
                 glLineWidth(1.0f);
             }
@@ -504,53 +526,60 @@ namespace vscript {
     }
     COMMAND(deleteallnodes, "");
     
-    void vs_add_timer(const char* interval)
+    void vs_timer(const char* interval)
     {
-        vScript3D.add_node(NODE_TYPE_TIMER, 7, interval, "0", interval, "0", "New Timer", "comment...", "0");
+        vScript3D.add_node(NODE_TYPE_TIMER, 7, interval, "0", interval, "0", "timer1", "this is a comment", "0");
     }
-    COMMAND(vs_add_timer, "s");
+    COMMAND(vs_timer, "s");
 
-    void vs_add_conoutf(const char* text)
+    void vs_conoutf(const char* text)
     {
         vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "0", text);
     }
-    COMMAND(vs_add_conoutf,"s");
+    COMMAND(vs_conoutf,"s");
 
-    void vs_add_sleep(const char *interval)
+    void vs_sleep(const char *interval)
     {
         vScript3D.add_node(NODE_TYPE_SLEEP, 1, interval);
     }
-    COMMAND(vs_add_sleep, "s");
+    COMMAND(vs_sleep, "s");
 
-    void vs_add_comment(const char *comment)
+    void vs_comment(const char *comment)
     {
         vScript3D.add_node(NODE_TYPE_COMMENT, 1, comment);
     }
-    COMMAND(vs_add_comment, "s");
+    COMMAND(vs_comment, "s");
 
-    void vs_add_memory(const char *value)
+    void vs_memory(const char *value)
     {
         vScript3D.add_node(NODE_TYPE_MEMORY, 1, value);
     }
-    COMMAND(vs_add_memory, "s");
+    COMMAND(vs_memory, "s");
     
-    void vs_add_box(const char* w, const char* h, const char* d)
+    void vs_box(const char* w, const char* h, const char* d)
     {
         vScript3D.add_node(NODE_TYPE_AREA_BOX, 3, w, h, d);
     }
-    COMMAND(vs_add_box, "ssss");
+    COMMAND(vs_box, "ssss");
 
-    void vs_add_sphere(const char* radius)
+    void vs_sphere(const char* radius)
     {
         vScript3D.add_node(NODE_TYPE_AREA_SPHERE, 1, radius);
     }
-    COMMAND(vs_add_sphere, "s");
+    COMMAND(vs_sphere, "s");
 
-    void vs_add_cone(const char* height, const char* radius)
+    void vs_cone(const char* height, const char* radius)
     {
         vScript3D.add_node(NODE_TYPE_AREA_CONE, 2, height, radius);
     }
-    COMMAND(vs_add_cone, "ss");
+    COMMAND(vs_cone, "ss");
+
+
+    void vs_cylinder(const char* height, const char* radius)
+    {
+        vScript3D.add_node(NODE_TYPE_AREA_CYLINDER, 2, height, radius);
+    }
+    COMMAND(vs_cylinder, "ss");
 
 };
 };

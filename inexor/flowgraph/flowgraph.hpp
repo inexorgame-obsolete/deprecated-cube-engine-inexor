@@ -31,7 +31,7 @@ namespace vscript {
             CVisualScriptSystem();
             ~CVisualScriptSystem();
 
-            std::vector<CScriptNode *> nodes;
+            std::vector<CScriptNode*> nodes;
             std::vector<CDebugRay> rays;
 
             geom::CBezierCurve tmp_relation_linker_curve;
@@ -46,7 +46,7 @@ namespace vscript {
             void render_node_relations();
             void render_debug_rays();
 
-            void update_timers();
+            void run();
             
             void validate_new_relation(CScriptNode *from, CScriptNode *to);
             void connect_nodes(CScriptNode *from, CScriptNode *to);
