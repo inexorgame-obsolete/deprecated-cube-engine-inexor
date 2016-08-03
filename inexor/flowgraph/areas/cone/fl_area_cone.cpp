@@ -9,7 +9,6 @@ namespace vscript {
         pos = position;
         node_name = name;
         node_comment = comment;
-
         cone_height = height;
         cone_radius = radius;
     }
@@ -25,55 +24,38 @@ namespace vscript {
 
     void CConeAreaNode::render_additional()
     {
+        // TODO: buggy
+        if (cone_radius <= 0) return;
+        vec dir = vec(pos).sub(vec(0,0,+1)).normalize();
+        float angle = 1.0f;
+        vec spot = vec(dir).mul(cone_radius*cosf(angle*RAD)).add(pos), spoke;
+        spoke.orthogonal(dir);
+        spoke.normalize();
+        spoke.mul(cone_radius*sinf(angle*RAD));
+
         gle::color(vec::hexcolor(VSCRIPT_AREA));
-        gle::begin(GL_LINE_LOOP);
-        
-        for (int i = 0; i<circle_detail_level; i++)
+
+        glBegin(GL_LINES);
+        loopi(render_detail_level)
         {
-            vec p(pos);
-            p.add(boxsize / 2);
-            const vec2 &sc = sincos360[i*(360 / circle_detail_level)];
-            p[0] += cone_radius * sc.x;
-            p[1] += cone_radius * sc.y;
-
-            glVertex3f(p.x, p.y, p.z);
+            glVertex3f(pos.x, pos.y, pos.z);
+            vec end_point = vec(spoke).rotate(2 * M_PI*i / render_detail_level, dir).add(spot);
+            glVertex3f(end_point.x, end_point.y, end_point.z);
         }
-        gle::end();
+        glEnd();
 
-        gle::begin(GL_LINE_LOOP);
-        for (int i = 0; i<circle_detail_level; i++)
+        glBegin(GL_LINE_LOOP);
+        loopi(render_detail_level)
         {
-            vec p(pos);
-            p.add(boxsize / 2);
-            const vec2 &sc = sincos360[i*(360 / circle_detail_level)];
-            p[0] += cone_radius * sc.x;
-            p[1] += cone_radius * sc.y;
-            p[2] += cone_height;
-            glVertex3f(p.x, p.y, p.z);
+            vec tmp = vec(spoke).rotate(2 * M_PI*i / render_detail_level, dir).add(spot);
+            glVertex3f(tmp.x, tmp.y, tmp.z);
         }
-        gle::end();
-
-        // connection lines
-        gle::begin(GL_LINES);
-        for (int i = 0; i<circle_detail_level; i++)
-        {
-            vec p(pos);
-            p.add(boxsize / 2);
-            const vec2 &sc = sincos360[i*(360 / circle_detail_level)];
-            p[0] += cone_radius * sc.x;
-            p[1] += cone_radius * sc.y;
-            glVertex3f(p.x, p.y, p.z);
-
-            p[2] += cone_height;
-            glVertex3f(p.x, p.y, p.z);
-        }
-        gle::end();
-
+        glEnd();
     }
 
     bool CConeAreaNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
-        conoutf(CON_DEBUG, "[box-area] a cone area can't run any code so it can't be linked as child!");
+        conoutf(CON_DEBUG, "[3DVS-boxarea] a cone area can't run any code so it can't be linked as child!");
         return false;
     }
 
@@ -81,7 +63,7 @@ namespace vscript {
     {
         if(child->type != NODE_TYPE_EVENT)
         {
-            conoutf(CON_DEBUG, "[box-area] a cone can only be linked as parent of an event node!");
+            conoutf(CON_DEBUG, "[3DVS-boxarea] a cone can only be linked as parent of an event node!");
         }
         return true;
     }

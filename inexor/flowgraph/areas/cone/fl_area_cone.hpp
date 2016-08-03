@@ -18,7 +18,7 @@ namespace vscript {
             
             float cone_height;
             float cone_radius;
-            const int circle_detail_level = 60;
+            const int render_detail_level = 40;
 
         public:
 
