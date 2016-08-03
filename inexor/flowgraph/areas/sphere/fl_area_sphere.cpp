@@ -9,7 +9,6 @@ namespace vscript {
         pos = position;
         node_name = name;
         node_comment = comment;
-
         radius = rad;
     }
 
@@ -24,51 +23,50 @@ namespace vscript {
 
     void CSphereAreaNode::render_additional()
     {
+        //XY
+        glBegin(GL_LINE_LOOP);
         gle::color(vec::hexcolor(VSCRIPT_AREA));
-
-        gle::begin(GL_LINE_LOOP);
-        for (int i = 0; i<circle_detail_level; i++)
+        for (int i = 0; i<render_detail_level; i++)
         {
             vec p(pos);
             p.add(boxsize / 2);
-            const vec2 &sc = sincos360[i*(360 / circle_detail_level)];
+            const vec2 &sc = sincos360[i*(360 / render_detail_level)];
             p[0] += radius * sc.x;
             p[1] += radius * sc.y;
-
             glVertex3f(p.x, p.y, p.z);
         }
-        gle::end();
+        glEnd();
 
-        gle::begin(GL_LINE_LOOP);
-        for (int i = 0; i<circle_detail_level; i++)
+        // YZ
+        glBegin(GL_LINE_LOOP);
+        for (int i = 0; i<render_detail_level; i++)
         {
             vec p(pos);
             p.add(boxsize / 2);
-            const vec2 &sc = sincos360[i*(360 / circle_detail_level)];
+            const vec2 &sc = sincos360[i*(360 / render_detail_level)];
             p[1] += radius * sc.x;
             p[2] += radius * sc.y;
-
             glVertex3f(p.x, p.y, p.z);
         }
-        gle::end();
+        glEnd();
 
-        gle::begin(GL_LINE_LOOP);
-        for (int i = 0; i<circle_detail_level; i++)
+        //XZ
+        glBegin(GL_LINE_LOOP);
+        for (int i = 0; i<render_detail_level; i++)
         {
             vec p(pos);
             p.add(boxsize / 2);
-            const vec2 &sc = sincos360[i*(360 / circle_detail_level)];
+            const vec2 &sc = sincos360[i*(360 / render_detail_level)];
             p[0] += radius * sc.x;
             p[2] += radius * sc.y;
-
             glVertex3f(p.x, p.y, p.z);
         }
-        gle::end();
+        glEnd();
     }
 
     bool CSphereAreaNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
-        conoutf(CON_DEBUG, "[box-area] a sphere area can't run any code so it can't be linked as child!");
+        conoutf(CON_DEBUG, "[3DVS-boxarea] a sphere area can't run any code so it can't be linked as child!");
         return false;
     }
 
@@ -76,7 +74,7 @@ namespace vscript {
     {
         if(child->type != NODE_TYPE_EVENT)
         {
-            conoutf(CON_DEBUG, "[box-area] a sphere can only be linked as parent of an event node!");
+            conoutf(CON_DEBUG, "[3DVS-boxarea] a sphere can only be linked as parent of an event node!");
         }
         return true;
     }

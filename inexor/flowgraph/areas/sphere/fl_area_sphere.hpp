@@ -15,7 +15,7 @@ namespace vscript {
         protected:
 
             float radius;
-            const int circle_detail_level = 60;
+            const int render_detail_level = 40;
 
         public:
 
