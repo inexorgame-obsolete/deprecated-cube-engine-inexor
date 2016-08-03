@@ -1,7 +1,7 @@
 #include "inexor/flowgraph/timer/fl_timer.hpp"
 
 #include <SDL.h>
-#include <SDL_thread.h>
+#include <thread>
 
 namespace inexor {
 namespace vscript {
@@ -50,8 +50,11 @@ namespace vscript {
 
     static int LetsGo(void *ptr)
     {
-        CScriptNode* node = static_cast<CScriptNode* >(ptr);
+        // TODO: debug this on any operating system!
+        CScriptNode* node = static_cast<CScriptNode*>(ptr);
+        conoutf(CON_DEBUG, "[3DVS-threads] thread \f6%s\f7 started!", node->node_name.c_str());
         if(nullptr != node) node->in();
+        conoutf(CON_DEBUG, "[3DVS-threads] thread \f6%s\f7 finished!", node->node_name.c_str());
         return 0;
     }
 
@@ -60,20 +63,17 @@ namespace vscript {
         // checks if timer interval has exceeded
         if(this_time - last_time >= timer_interval) 
         {
-            #ifdef INEXOR_VSCRIPT_TIMER_DEBUGGING
-                conoutf(CON_DEBUG, "%s: Its time to see if I should run some code", node_name.c_str() );
-            #endif 
-
+            unsigned int thread_count = 0;
             for(unsigned int i=0; i<children.size(); i++)
             {
-                #ifdef INEXOR_VSCRIPT_TIMER_DEBUGGING
-                    conoutf(CON_DEBUG, "%s: thread started!", node_name.c_str() );
-                #endif
-
-                // start a new thread
-                SDL_Thread* thread = SDL_CreateThread(LetsGo, "LetsGo", (void *)children[i]);
-                threads.push_back(thread);
+                // create a new thread!
+                std::thread new_thread(LetsGo, (void *)children[i]);
+                // do NOT wait until thread has come to an end!
+                new_thread.detach();
+                thread_count++;
             }
+
+            //conoutf(CON_DEBUG, "[3DVS-threads] timer \f0%s\f7: started %d threads.", node_name.c_str(), thread_count);
             last_time = this_time;
             timer_counter++;
         }
@@ -82,10 +82,11 @@ namespace vscript {
     // render additional timer data
     void CTimerNode::render_additional(vec p)
     {
+        // TODO: 1 ms display time??
         particle_text(p + vec(0.0f, 0.0f, -(2.0f+boxsize) ), "attributes here! :)", PART_TEXT, 1, 0xFFFFFF, 1.0f);
     }
     
-    // Timers can be parent nodes but NOT child nodes!
+    // timers can be parent nodes but NOT child nodes!
     bool CTimerNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
         return false;
