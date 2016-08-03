@@ -5,7 +5,7 @@ namespace vscript {
 
     CSphereAreaNode::CSphereAreaNode(vec position, float rad, const char* name, const char* comment)
     {
-        type = NODE_TYPE_AREA_SPHERE;
+        type = INEXOR_VSCRIPT_NODE_TYPE_AREA_SPHERE;
         pos = position;
         node_name = name;
         node_comment = comment;
@@ -25,7 +25,7 @@ namespace vscript {
     {
         //XY
         glBegin(GL_LINE_LOOP);
-        gle::color(vec::hexcolor(VSCRIPT_AREA));
+        gle::color(vec::hexcolor(INEXOR_VSCRIPT_COLOR_AREA));
         for (int i = 0; i<render_detail_level; i++)
         {
             vec p(pos);
@@ -72,7 +72,7 @@ namespace vscript {
 
     bool CSphereAreaNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
     {
-        if(child->type != NODE_TYPE_EVENT)
+        if(child->type != INEXOR_VSCRIPT_NODE_TYPE_EVENT)
         {
             conoutf(CON_DEBUG, "[3DVS-boxarea] a sphere can only be linked as parent of an event node!");
         }

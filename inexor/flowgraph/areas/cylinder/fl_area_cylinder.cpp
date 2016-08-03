@@ -5,7 +5,7 @@ namespace vscript {
 
     CCylinderAreaNode::CCylinderAreaNode(vec position, float radius, float height, const char* name, const char* comment = "")
     {
-        type = NODE_TYPE_AREA_BOX;
+        type = INEXOR_VSCRIPT_NODE_TYPE_AREA_BOX;
         pos = position;
         node_name = name;
         node_comment = comment;
@@ -24,7 +24,7 @@ namespace vscript {
 
     void CCylinderAreaNode::render_additional()
     {
-        gle::color(vec::hexcolor(VSCRIPT_AREA));
+        gle::color(vec::hexcolor(INEXOR_VSCRIPT_COLOR_AREA));
 
         glBegin(GL_LINE_LOOP);
         loopi(render_detail_level)
@@ -43,7 +43,7 @@ namespace vscript {
 
     bool CCylinderAreaNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
     {
-        if(child->type != NODE_TYPE_EVENT)
+        if(child->type != INEXOR_VSCRIPT_NODE_TYPE_EVENT)
         {
             conoutf(CON_DEBUG, "[3DVS-cylinderarea] a cone can only be linked as parent of an event node!");
         }

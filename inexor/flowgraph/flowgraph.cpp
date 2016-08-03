@@ -18,7 +18,10 @@
 #include "inexor/flowgraph/areas/cylinder/fl_area_cylinder.hpp"
 
 // operators
-#include "inexor/flowgraph/operators/increment/fl_increment.h"
+#include "inexor/flowgraph/operators/increment/fl_increment.hpp"
+
+// data types
+#include "inexor/flowgraph/memory/integer/fl_mem_integer.hpp"
 
 // geometry
 #include "inexor/geom/geom.hpp"
@@ -32,13 +35,13 @@ extern int gridsize;
 
 enum VSCRIPT_ENTITY_BOX_ORIENTATION
 {
-    VSCRIPT_BOX_NO_INTERSECTION = -1,
-    VSCRIPT_BOX_LEFT,
-    VSCRIPT_BOX_RIGHT,
-    VSCRIPT_BOX_FRONT,
-    VSCRIPT_BOX_BACK,
-    VSCRIPT_BOX_BOTTOM,
-    VSCRIPT_BOX_TOP
+    INEXOR_VSCRIPT_BOX_NO_INTERSECTION = -1,
+    INEXOR_VSCRIPT_BOX_LEFT,
+    INEXOR_VSCRIPT_BOX_RIGHT,
+    INEXOR_VSCRIPT_BOX_FRONT,
+    INEXOR_VSCRIPT_BOX_BACK,
+    INEXOR_VSCRIPT_BOX_BOTTOM,
+    INEXOR_VSCRIPT_BOX_TOP
 };
 
 namespace inexor {
@@ -61,7 +64,7 @@ namespace vscript {
     }
 
     // creates a node and allocates memory for it
-    CScriptNode* CVisualScriptSystem::add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...)
+    CScriptNode* CVisualScriptSystem::add_node(INEXOR_VSCRIPT_NODE_TYPE type, int parameter_count, ...)
     {
         // this memory must be deleted afterwards!
         CScriptNode* created_node = nullptr;
@@ -82,7 +85,7 @@ namespace vscript {
 
         switch(type)
         {
-            case NODE_TYPE_TIMER:
+            case INEXOR_VSCRIPT_NODE_TYPE_TIMER:
             {
                 /// convert parameters form const string to unsigned int
                 unsigned int interval   = atoi(arguments[0].c_str());
@@ -95,14 +98,14 @@ namespace vscript {
                 if(0 == interval) interval = 1000;
 
                 /// TODO...
-                INEXOR_VSCRIPT_TIME_FORMAT timer_format = TIME_FORMAT_MILISECONDS;
+                INEXOR_VSCRIPT_TIME_FORMAT timer_format = INEXOR_VSCRIPT_TIME_FORMAT_MILISECONDS;
                 
                 created_node = new CTimerNode(target, interval, startdelay, limit, cooldown, name, comment, timer_format);
                 sync_all_timers();
                 break;
             }
 
-            case NODE_TYPE_COMMENT:
+            case INEXOR_VSCRIPT_NODE_TYPE_COMMENT:
             {
                 if(!strlen(arguments[0].c_str()))
                 {
@@ -113,7 +116,7 @@ namespace vscript {
                 break;
             }
 
-            case NODE_TYPE_FUNCTION:
+            case INEXOR_VSCRIPT_NODE_TYPE_FUNCTION:
             {
                 if (!strlen(arguments[0].c_str()))
                 {
@@ -123,7 +126,7 @@ namespace vscript {
 
                 switch(atoi(arguments[0].c_str()))
                 {
-                    case FUNCTION_CONOUTF:
+                    case INEXOR_VSCRIPT_FUNCTION_CONOUTF:
                     {
                         if (!strlen(arguments[1].c_str()))
                         {
@@ -134,7 +137,7 @@ namespace vscript {
                         created_node = new CFunctionConoutfNode(target, arguments[1].c_str() );
                         break;
                     }
-                    case FUNCTION_PLAYSOUND:
+                    case INEXOR_VSCRIPT_FUNCTION_PLAYSOUND:
                     {
                         if (!strlen(arguments[1].c_str()))
                         {
@@ -149,7 +152,7 @@ namespace vscript {
                 break;
             }
 
-            case NODE_TYPE_SLEEP:
+            case INEXOR_VSCRIPT_NODE_TYPE_SLEEP:
             {
                 unsigned int wait_time   = atoi(arguments[0].c_str());
                 if(0 == wait_time) wait_time = 500;
@@ -157,7 +160,7 @@ namespace vscript {
                 break;
             }
 
-            case NODE_TYPE_AREA_BOX:
+            case INEXOR_VSCRIPT_NODE_TYPE_AREA_BOX:
             {
                 float area_width  = atof(arguments[0].c_str());
                 float area_height = atof(arguments[1].c_str());
@@ -166,14 +169,14 @@ namespace vscript {
                 break;
             }
 
-            case NODE_TYPE_AREA_SPHERE:
+            case INEXOR_VSCRIPT_NODE_TYPE_AREA_SPHERE:
             {
                 float radius = atof(arguments[0].c_str());
                 created_node = new CSphereAreaNode(target, radius, "sphere", "");
                 break;
             }
 
-            case NODE_TYPE_AREA_CONE:
+            case INEXOR_VSCRIPT_NODE_TYPE_AREA_CONE:
             {
                 float height = atof(arguments[0].c_str());
                 float radius = atof(arguments[1].c_str());
@@ -181,7 +184,7 @@ namespace vscript {
                 break;
             }
 
-            case NODE_TYPE_AREA_CYLINDER:
+            case INEXOR_VSCRIPT_NODE_TYPE_AREA_CYLINDER:
             {
                 float height = atof(arguments[0].c_str());
                 float radius = atof(arguments[1].c_str());
@@ -189,9 +192,9 @@ namespace vscript {
                 break;
             }
 
-            case NODE_TYPE_MEMORY:
+            case INEXOR_VSCRIPT_NODE_TYPE_MEMORY_INTEGER:
             {
-                created_node = new CMemoryNode(target, VS_DATA_TYPE_INTEGER, arguments[0].c_str(), "memory-block", "I can remember things!");
+                created_node = new CMemIntegerNode(target, true, true, atoi(arguments[0].c_str()), "integer", "can have positive values (also null and negative)");
                 break;
             }
         }
@@ -246,7 +249,7 @@ namespace vscript {
             start_rendering();
             glBegin(GL_LINES);
             glLineWidth(5.0f);
-            gle::color(vec::hexcolor(VSCRIPT_COLOR_TIMER));
+            gle::color(vec::hexcolor(INEXOR_VSCRIPT_COLOR_TIMER));
             
             float box_center_offset = boxsize/2;
             glVertex3f(drag_target_pos.x,drag_target_pos.y,drag_target_pos.z);
@@ -321,7 +324,7 @@ namespace vscript {
                     for(unsigned int i=0; i<nodes.size(); i++)
                     {
                         float dist = 0.0f;
-                        int orient = VSCRIPT_BOX_NO_INTERSECTION;
+                        int orient = INEXOR_VSCRIPT_BOX_NO_INTERSECTION;
                         vec p = nodes[i]->pos;
 
                         if(rayboxintersect(p, vec(boxsize), camera1->o, camdir, dist, orient))
@@ -375,7 +378,7 @@ namespace vscript {
     {
         for(unsigned int i=0; i<nodes.size(); i++)
         {
-            if(NODE_TYPE_TIMER == nodes[i]->type) nodes[i]->reset();
+            if(INEXOR_VSCRIPT_NODE_TYPE_TIMER == nodes[i]->type) nodes[i]->reset();
         }
     }
 
@@ -391,7 +394,7 @@ namespace vscript {
         for(unsigned int i=0; i<nodes.size(); i++)
         {
             nodes[i]->this_time = SDL_GetTicks();
-            if(NODE_TYPE_TIMER == nodes[i]->type) nodes[i]->in();
+            if(INEXOR_VSCRIPT_NODE_TYPE_TIMER == nodes[i]->type) nodes[i]->in();
         }
     }
 
@@ -418,15 +421,15 @@ namespace vscript {
         for(unsigned int i=0; i<nodes.size(); i++) 
         {
             float dist = 0.0f;
-            int orient = VSCRIPT_BOX_NO_INTERSECTION;
+            int orient = INEXOR_VSCRIPT_BOX_NO_INTERSECTION;
 
             rayboxintersect(nodes[i]->pos, vec(boxsize), camera1->o, camdir, dist, orient);
-            nodes[i]->selected = (orient != VSCRIPT_BOX_NO_INTERSECTION);
+            nodes[i]->selected = (orient != INEXOR_VSCRIPT_BOX_NO_INTERSECTION);
 
             // render a 200ms long color effect once its activated
             if( (nodes[i]->this_time - nodes[i]->last_time) < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL)
             {
-                nodes[i]->box_color = VSCRIPT_COLOR_TRIGGERED;
+                nodes[i]->box_color = INEXOR_VSCRIPT_COLOR_TRIGGERED;
             }
             else 
             {
@@ -446,7 +449,7 @@ namespace vscript {
     void CVisualScriptSystem::render_debug_rays()
     {
         glBegin(GL_LINES);
-        gle::color(vec::hexcolor(VSCRIPT_COLOR_DEBUG_RAY));
+        gle::color(vec::hexcolor(INEXOR_VSCRIPT_COLOR_DEBUG_RAY));
         glLineWidth(10.0f);
         for(unsigned int h=0; h<rays.size(); h++)
         {
@@ -499,11 +502,11 @@ namespace vscript {
                 // render a 200ms long color effect once its activated
                 if((nodes[i]->this_time - nodes[i]->last_time) < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL)
                 {
-                    gle::color(vec::hexcolor(VSCRIPT_COLOR_TRIGGERED));
+                    gle::color(vec::hexcolor(INEXOR_VSCRIPT_COLOR_TRIGGERED));
                 }
                 else
                 {
-                    gle::color(vec::hexcolor(VSCRIPT_COLOR_TIMER));
+                    gle::color(vec::hexcolor(INEXOR_VSCRIPT_COLOR_TIMER));
                 }
 
                 for(unsigned int h=0; h<tmp->curve.GetCachedPointsSize() -1; h++)
@@ -528,56 +531,56 @@ namespace vscript {
     
     void vs_timer(const char* interval)
     {
-        vScript3D.add_node(NODE_TYPE_TIMER, 7, interval, "0", interval, "0", "timer1", "this is a comment", "0");
+        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_TIMER, 7, interval, "0", interval, "0", "timer1", "this is a comment", "0");
     }
     COMMAND(vs_timer, "s");
 
     void vs_conoutf(const char* text)
     {
-        vScript3D.add_node(NODE_TYPE_FUNCTION, 2, "0", text);
+        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_FUNCTION, 2, "0", text);
     }
     COMMAND(vs_conoutf,"s");
 
     void vs_sleep(const char *interval)
     {
-        vScript3D.add_node(NODE_TYPE_SLEEP, 1, interval);
+        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_SLEEP, 1, interval);
     }
     COMMAND(vs_sleep, "s");
 
     void vs_comment(const char *comment)
     {
-        vScript3D.add_node(NODE_TYPE_COMMENT, 1, comment);
+        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_COMMENT, 1, comment);
     }
     COMMAND(vs_comment, "s");
 
     void vs_memory(const char *value)
     {
-        vScript3D.add_node(NODE_TYPE_MEMORY, 1, value);
+        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_MEMORY_INTEGER, 1, value);
     }
     COMMAND(vs_memory, "s");
     
     void vs_box(const char* w, const char* h, const char* d)
     {
-        vScript3D.add_node(NODE_TYPE_AREA_BOX, 3, w, h, d);
+        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_AREA_BOX, 3, w, h, d);
     }
     COMMAND(vs_box, "ssss");
 
     void vs_sphere(const char* radius)
     {
-        vScript3D.add_node(NODE_TYPE_AREA_SPHERE, 1, radius);
+        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_AREA_SPHERE, 1, radius);
     }
     COMMAND(vs_sphere, "s");
 
     void vs_cone(const char* height, const char* radius)
     {
-        vScript3D.add_node(NODE_TYPE_AREA_CONE, 2, height, radius);
+        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_AREA_CONE, 2, height, radius);
     }
     COMMAND(vs_cone, "ss");
 
 
     void vs_cylinder(const char* height, const char* radius)
     {
-        vScript3D.add_node(NODE_TYPE_AREA_CYLINDER, 2, height, radius);
+        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_AREA_CYLINDER, 2, height, radius);
     }
     COMMAND(vs_cylinder, "ss");
 

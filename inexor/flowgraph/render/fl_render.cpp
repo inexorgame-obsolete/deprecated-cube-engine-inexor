@@ -14,11 +14,10 @@ namespace vscript {
 
     void CNodeRenderer::adjust_selection_color(int orient, int index)
     {
-        VSCRIPT_NODE_COLORS temp_color = box_color;
-
+        INEXOR_VSCRIPT_NODE_COLORS temp_color = box_color;
         if(orient == index) 
         {
-            temp_color = VSCRIPT_COLOR_SELECTION;
+            temp_color = INEXOR_VSCRIPT_COLOR_SELECTION;
         }
         gle::color(vec::hexcolor(temp_color));
     }
@@ -30,38 +29,38 @@ namespace vscript {
         /// If you take a look at the original Sauer code you will see that generating
         /// the box using iterations is way more complicated to understand.
         glBegin(GL_QUADS);
-                
-        adjust_selection_color(orient, VSCRIPT_BOX_TOP);
+                        
+        adjust_selection_color(orient, INEXOR_VSCRIPT_BOX_TOP);
         glVertex3f(p.x,p.y,p.z+boxsize);
         glVertex3f(p.x+boxsize,p.y,p.z+boxsize);
         glVertex3f(p.x+boxsize,p.y+boxsize,p.z+boxsize);
         glVertex3f(p.x,p.y+boxsize,p.z+boxsize);
 
-        adjust_selection_color(orient, VSCRIPT_BOX_BOTTOM);
+        adjust_selection_color(orient, INEXOR_VSCRIPT_BOX_BOTTOM);
         glVertex3f(p.x,p.y+boxsize,p.z);
         glVertex3f(p.x+boxsize,p.y+boxsize,p.z);
         glVertex3f(p.x+boxsize,p.y,p.z);
         glVertex3f(p.x,p.y,p.z);
 
-        adjust_selection_color(orient, VSCRIPT_BOX_FRONT);
+        adjust_selection_color(orient, INEXOR_VSCRIPT_BOX_FRONT);
         glVertex3f(p.x,p.y,p.z);
         glVertex3f(p.x+boxsize,p.y,p.z);
         glVertex3f(p.x+boxsize,p.y,p.z+boxsize);
         glVertex3f(p.x,p.y,p.z+boxsize);
 
-        adjust_selection_color(orient, VSCRIPT_BOX_BACK);
+        adjust_selection_color(orient, INEXOR_VSCRIPT_BOX_BACK);
         glVertex3f(p.x,p.y+boxsize,p.z+boxsize);
         glVertex3f(p.x+boxsize,p.y+boxsize,p.z+boxsize);
         glVertex3f(p.x+boxsize,p.y+boxsize,p.z);
         glVertex3f(p.x,p.y+boxsize,p.z);
 
-        adjust_selection_color(orient, VSCRIPT_BOX_LEFT);
+        adjust_selection_color(orient, INEXOR_VSCRIPT_BOX_LEFT);
         glVertex3f(p.x,p.y,p.z+boxsize);
         glVertex3f(p.x,p.y+boxsize,p.z+boxsize);
         glVertex3f(p.x,p.y+boxsize,p.z);
         glVertex3f(p.x,p.y,p.z);
 
-        adjust_selection_color(orient, VSCRIPT_BOX_RIGHT);
+        adjust_selection_color(orient, INEXOR_VSCRIPT_BOX_RIGHT);
         glVertex3f(p.x+boxsize,p.y,p.z);
         glVertex3f(p.x+boxsize,p.y+boxsize,p.z);
         glVertex3f(p.x+boxsize,p.y+boxsize,p.z+boxsize);

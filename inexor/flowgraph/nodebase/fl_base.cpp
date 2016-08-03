@@ -7,10 +7,10 @@ namespace vscript {
     CScriptNode::CScriptNode()
     {
         pos = vec(0,0,0);
-        type = NODE_TYPE_INVALID;
+        type = INEXOR_VSCRIPT_NODE_TYPE_INVALID;
         node_name = "";
         node_comment = "";
-        default_box_color = VSCRIPT_COLOR_TIMER; 
+        default_box_color = INEXOR_VSCRIPT_COLOR_TIMER; 
         box_color = default_box_color;
         pos_changed = false;
         selected = false;
@@ -98,14 +98,15 @@ namespace vscript {
 
         if(! sel_blocked)
         {
-            if(orient != VSCRIPT_BOX_NO_INTERSECTION)
+            if(orient != INEXOR_VSCRIPT_BOX_NO_INTERSECTION)
             {
-                gle::color(vec::hexcolor(VSCRIPT_COLOR_GRAY));
+                gle::color(vec::hexcolor(INEXOR_VSCRIPT_COLOR_GRAY));
+
                 // TODO: decide about displaying help lines or not
                 //render_box_helplines(p);
             }
         }
-        gle::color(vec::hexcolor(VSCRIPT_COLOR_BLACK));
+        gle::color(vec::hexcolor(INEXOR_VSCRIPT_COLOR_BLACK));
         render_box_outline(p);
 
         // render white text above

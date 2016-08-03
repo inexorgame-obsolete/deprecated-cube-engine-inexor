@@ -20,9 +20,9 @@ namespace vscript {
 
         for(unsigned int i = 0; i < children.size(); i++)
         {
-            if(NODE_TYPE_MEMORY == children[i]->type)
+            if(INEXOR_VSCRIPT_NODE_TYPE_MEMORY_INTEGER == children[i]->type)
             {
-                children[i]->mem_increment_value();
+                //children[i]->increment();
             }
         }
     }

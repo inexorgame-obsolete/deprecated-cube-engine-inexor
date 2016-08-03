@@ -36,7 +36,7 @@ namespace vscript {
 
             geom::CBezierCurve tmp_relation_linker_curve;
 
-            CScriptNode* add_node(VSCRIPT_NODE_TYPE type, int parameter_count, ...);
+            CScriptNode* add_node(INEXOR_VSCRIPT_NODE_TYPE type, int parameter_count, ...);
             void remove_node(CScriptNode* node);
 
             void start_rendering();

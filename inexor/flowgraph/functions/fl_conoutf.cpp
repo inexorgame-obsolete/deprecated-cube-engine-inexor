@@ -6,11 +6,11 @@ namespace vscript {
     CFunctionConoutfNode::CFunctionConoutfNode(vec position, const char* raw_text)
     {
         pos = position;
-        type = NODE_TYPE_FUNCTION;
+        type = INEXOR_VSCRIPT_NODE_TYPE_FUNCTION;
         node_name = "conoutf";
         node_comment = raw_text;
         console_text = raw_text;
-        default_box_color = VSCRIPT_COLOR_FUNCTION;
+        default_box_color = INEXOR_VSCRIPT_COLOR_FUNCTION;
         box_color = default_box_color;
     }
 

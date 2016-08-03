@@ -10,27 +10,25 @@
 namespace inexor {
 namespace vscript {
 
-
-    enum VSCRIPT_DATA_TYPE 
+    // Please note: only integers and floating points can be incremented!
+    enum INEXOR_VSCRIPT_DATA_TYPE 
     {
-        VS_DATA_TYPE_INTEGER,
-        VS_DATA_TYPE_FLOATING_POINT, // floating points are always double in this system
-        VS_DATA_TYPE_STRING,
-        VS_DATA_TYPE_BOOLEAN,
-        VS_DATA_TYPE_VECTOR,
-        VS_DATA_TYPE_TIMESTAMP,
-        VS_DATA_TYPE_COLOR,
+        INEXOR_VSCRIPT_DATA_TYPE_INTEGER,
+        INEXOR_VSCRIPT_DATA_TYPE_FLOATING_POINT, // floating points are always double in this system
+        INEXOR_VSCRIPT_DATA_TYPE_STRING,
+        INEXOR_VSCRIPT_DATA_TYPE_BOOLEAN,
+        INEXOR_VSCRIPT_DATA_TYPE_VECTOR,
+        INEXOR_VSCRIPT_DATA_TYPE_TIMESTAMP,
+        INEXOR_VSCRIPT_DATA_TYPE_COLOR,
     };
 
-
-    union VSCRIPT_MEMORY
+    union INEXOR_VSCRIPT_MEMORY
     {
         int    int_val;
         bool   bool_value;
         double double_value;
         char   str_value[1024];
     };
-
 
     struct SMemoryBlock
     {
@@ -42,37 +40,23 @@ namespace vscript {
         {
         }
 
-        VSCRIPT_MEMORY data;
-        VSCRIPT_DATA_TYPE type;
+        INEXOR_VSCRIPT_DATA_TYPE type;
+        INEXOR_VSCRIPT_MEMORY data;
     };
 
-    
-    /// TODO: use std::any
+    // TODO: use std::any
     class CMemoryNode : public CScriptNode
     {
         public:
 
-            CMemoryNode(vec position,
-                        VSCRIPT_DATA_TYPE type,
-                        const char* value,
-                        const char* name,
-                        const char* comment);
-
+            CMemoryNode();
             ~CMemoryNode();
 
             SMemoryBlock block;
 
-            /*
-            void set(const char* raw_data, VSCRIPT_DATA_TYPE);
+            // Please note: I think you can't define virtual "get" methods or "set" methods in here because
+            // this would require an explicit type such as   int get();
 
-            void set_int(int value);
-            void set_double(double value);
-            void set_bool(bool value);
-
-            int get_int();
-            double get_double();
-            bool get_bool();
-            */
     };
 
 };

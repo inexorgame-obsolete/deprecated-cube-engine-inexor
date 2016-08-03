@@ -15,27 +15,33 @@ namespace inexor {
 namespace vscript {
 
 
-    enum VSCRIPT_NODE_TYPE
+    enum INEXOR_VSCRIPT_NODE_TYPE
     {
-        NODE_TYPE_INVALID = -1,
-        NODE_TYPE_COMMENT = 0,
-        // these nodes can start a code execution
-        NODE_TYPE_TIMER,
-        NODE_TYPE_EVENT,
-                
-        NODE_TYPE_FUNCTION,        
-        NODE_TYPE_MEMORY,
+        INEXOR_VSCRIPT_NODE_TYPE_INVALID = -1,
+        INEXOR_VSCRIPT_NODE_TYPE_COMMENT = 0,
         
-        NODE_TYPE_IF,
-        NODE_TYPE_SWITCH,
-        NODE_TYPE_CONDITION,
-        NODE_TYPE_SLEEP,
+        // these nodes can start a code execution
+        INEXOR_VSCRIPT_NODE_TYPE_TIMER,
+        INEXOR_VSCRIPT_NODE_TYPE_EVENT,
+                
+        INEXOR_VSCRIPT_NODE_TYPE_FUNCTION,        
+        
+        //INEXOR_VSCRIPT_NODE_TYPE_MEMORY,
+        INEXOR_VSCRIPT_NODE_TYPE_MEMORY_INTEGER,
+        INEXOR_VSCRIPT_NODE_TYPE_MEMORY_BOOL,
+
+        // TODO: list and implement more data types
+
+        INEXOR_VSCRIPT_NODE_TYPE_IF,
+        INEXOR_VSCRIPT_NODE_TYPE_SWITCH,
+        INEXOR_VSCRIPT_NODE_TYPE_CONDITION,
+        INEXOR_VSCRIPT_NODE_TYPE_SLEEP,
 
         // area definitions
-        NODE_TYPE_AREA_BOX,
-        NODE_TYPE_AREA_SPHERE,
-        NODE_TYPE_AREA_CONE,
-        NODE_TYPE_AREA_CYLINDER,
+        INEXOR_VSCRIPT_NODE_TYPE_AREA_BOX,
+        INEXOR_VSCRIPT_NODE_TYPE_AREA_SPHERE,
+        INEXOR_VSCRIPT_NODE_TYPE_AREA_CONE,
+        INEXOR_VSCRIPT_NODE_TYPE_AREA_CYLINDER,
         //NODE_TYPE_PYRAMID,
         //NODE_TYPE_POLYGON,
         //NODE_TYPE_TUBE,
@@ -65,7 +71,7 @@ namespace vscript {
             ~CScriptNode();
 
             vec pos;
-            VSCRIPT_NODE_TYPE type;
+            INEXOR_VSCRIPT_NODE_TYPE type;
 
             bool pos_changed;
             bool selected;

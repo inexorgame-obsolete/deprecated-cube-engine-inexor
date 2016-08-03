@@ -5,7 +5,7 @@ namespace vscript {
 
     CConeAreaNode::CConeAreaNode(vec position, float radius, float height, const char* name, const char* comment = "")
     {
-        type = NODE_TYPE_AREA_BOX;
+        type = INEXOR_VSCRIPT_NODE_TYPE_AREA_BOX;
         pos = position;
         node_name = name;
         node_comment = comment;
@@ -33,7 +33,7 @@ namespace vscript {
         spoke.normalize();
         spoke.mul(cone_radius*sinf(angle*RAD));
 
-        gle::color(vec::hexcolor(VSCRIPT_AREA));
+        gle::color(vec::hexcolor(INEXOR_VSCRIPT_COLOR_AREA));
 
         glBegin(GL_LINES);
         loopi(render_detail_level)
@@ -61,7 +61,7 @@ namespace vscript {
 
     bool CConeAreaNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
     {
-        if(child->type != NODE_TYPE_EVENT)
+        if(child->type != INEXOR_VSCRIPT_NODE_TYPE_EVENT)
         {
             conoutf(CON_DEBUG, "[3DVS-boxarea] a cone can only be linked as parent of an event node!");
         }

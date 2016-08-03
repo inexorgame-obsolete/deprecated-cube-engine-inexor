@@ -36,7 +36,6 @@ namespace vscript {
             void out();
             void reset();
 
-
             bool OnLinkAsChildNodeAttempt(CScriptNode* parent);
             bool OnLinkAsParentNodeAttempt(CScriptNode* child);
     };

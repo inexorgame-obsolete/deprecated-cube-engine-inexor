@@ -30,7 +30,7 @@ namespace vscript {
         timer_cooldown = cooldown;
         last_time = SDL_GetTicks();
         timer_counter = 0;
-        type = NODE_TYPE_TIMER;
+        type = INEXOR_VSCRIPT_NODE_TYPE_TIMER;
     }
 
     CTimerNode::~CTimerNode()

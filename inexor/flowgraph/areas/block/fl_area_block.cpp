@@ -5,11 +5,10 @@ namespace vscript {
     
     CCubeAreaNode::CCubeAreaNode(vec position, float width, float height, float depth, const char* name, const char* comment = "")
     {
-        type = NODE_TYPE_AREA_BOX;
+        type = INEXOR_VSCRIPT_NODE_TYPE_AREA_BOX;
         pos = position;
         node_name = name;
         node_comment = comment;
-
         box_width = width;
         box_height = height;
         box_depth = depth;
@@ -26,7 +25,7 @@ namespace vscript {
 
     void CCubeAreaNode::render_additional()
     {
-        gle::color(vec::hexcolor(VSCRIPT_AREA));
+        gle::color(vec::hexcolor(INEXOR_VSCRIPT_COLOR_AREA));
         glBegin(GL_LINES);
 
         float offsetx = - (box_width/2) + (boxsize/2);
@@ -85,7 +84,7 @@ namespace vscript {
 
     bool CCubeAreaNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
     {
-        if(child->type != NODE_TYPE_EVENT)
+        if(child->type != INEXOR_VSCRIPT_NODE_TYPE_EVENT)
         {
             conoutf(CON_DEBUG, "[3DVS-boxarea] a box can only be linked as parent of an event node!");
         }

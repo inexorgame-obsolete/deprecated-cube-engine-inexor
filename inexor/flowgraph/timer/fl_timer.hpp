@@ -19,10 +19,10 @@ namespace vscript {
 
     enum INEXOR_VSCRIPT_TIME_FORMAT
     {
-        TIME_FORMAT_MILISECONDS,
-        TIME_FORMAT_SECONDS,
-        TIME_FORMAT_MINUTES,
-        TIME_FORMAT_HOURS
+        INEXOR_VSCRIPT_TIME_FORMAT_MILISECONDS,
+        INEXOR_VSCRIPT_TIME_FORMAT_SECONDS,
+        INEXOR_VSCRIPT_TIME_FORMAT_MINUTES,
+        INEXOR_VSCRIPT_TIME_FORMAT_HOURS
     };
 
     class CTimerNode : public CScriptNode
@@ -40,7 +40,7 @@ namespace vscript {
                        unsigned int cooldown = 0,
                        const char*  name = "new timer",
                        const char*  comment = "look at this timer comment!",
-                       INEXOR_VSCRIPT_TIME_FORMAT format = TIME_FORMAT_MILISECONDS);
+                       INEXOR_VSCRIPT_TIME_FORMAT format = INEXOR_VSCRIPT_TIME_FORMAT_MILISECONDS);
             
             ~CTimerNode();
 

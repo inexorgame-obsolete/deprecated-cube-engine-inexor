@@ -8,10 +8,10 @@ namespace vscript {
                                const char* name)
     {
         pos = position;
-        type = NODE_TYPE_COMMENT;
+        type = INEXOR_VSCRIPT_NODE_TYPE_COMMENT;
         node_name = name;
         node_comment = comment;
-        default_box_color = VSCRIPT_COLOR_COMMENT;
+        default_box_color = INEXOR_VSCRIPT_COLOR_COMMENT;
         box_color = default_box_color;
     }
 
