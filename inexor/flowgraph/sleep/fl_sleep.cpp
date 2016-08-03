@@ -8,12 +8,15 @@ namespace vscript {
                            const char* name, 
                            const char* comment)
     {
-        sleep_interval = sleeptime;
+        sleep_interval = clamp(sleeptime, INEXOR_VSCRIPT_MIN_SLEEP_INTERVAL, INEXOR_VSCRIPT_MAX_SLEEP_INTERVAL);
         pos = position;
         sleep_active = false;
-        default_box_color = VSCRIPT_COLOR_GRAY;
+        default_box_color = VSCRIPT_COLOR_FUNCTION;
+        box_color = default_box_color;
         node_name = name;
-        node_comment = "[-]";
+        char tmp[64];
+        sprintf_s(tmp, 64, "0/%d ms", sleep_interval);
+        node_comment =  tmp;
     }
 
     CSleepNode::~CSleepNode()
@@ -26,19 +29,22 @@ namespace vscript {
         sleep_active = true;
         sleep_start = SDL_GetTicks();
         sleep_end = sleep_start + sleep_interval;
-        box_color = default_box_color;
-        
+
+        // the default color must be changed so color effects can be rendered
+        // correctly by render_nodes()
+        default_box_color = VSCRIPT_COLOR_PENDING;
+
         while(sleep_end >= SDL_GetTicks())
         {
             int time_left2sleep = sleep_end - SDL_GetTicks();
-            if(time_left2sleep < 0) time_left2sleep =0;
+            if(time_left2sleep < 0) time_left2sleep = 0;
             sprintf(tmp, "%d/%d ms", time_left2sleep, sleep_interval);
             node_comment = tmp;
-
-            // wait in 10 ms intervals
             SDL_Delay(10);
         }
         
+        default_box_color = VSCRIPT_COLOR_FUNCTION;
+
         sprintf(tmp, "0/%d ms", sleep_interval);
         node_comment = tmp;
         box_color = VSCRIPT_COLOR_TRIGGERED;
