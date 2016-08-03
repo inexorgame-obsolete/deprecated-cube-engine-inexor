@@ -15,26 +15,32 @@ namespace vscript {
         pos_changed = false;
         selected = false;
         triggered = false;
+        this_time = 0;
+        last_time = 0;
+        recursion_counter = 0;
     }
     
     CScriptNode::~CScriptNode()
     {
     }
 
-    
     SNodeRelation::SNodeRelation()
     {
-        triggered = false;
     }
 
     SNodeRelation::~SNodeRelation()
     {
-
     }
 
     bool CScriptNode::OnRelationDragStart()
     {
-        conoutf(CON_DEBUG, "[node] hey there! looks like you're dragging a new relation for me! :)");
+        conoutf(CON_DEBUG, "[3DVS-nodes] dragging started.");
+        return true;
+    }
+
+    bool CScriptNode::OnRelationDragEnd()
+    {
+        conoutf(CON_DEBUG, "[3DVS-nodes] dragging stopped.");
         return true;
     }
 
@@ -70,7 +76,6 @@ namespace vscript {
     {
         if(children.size() == 0)
         {
-            conoutf(CON_DEBUG, "thread finished.");
         }
         else
         {
@@ -96,7 +101,8 @@ namespace vscript {
             if(orient != VSCRIPT_BOX_NO_INTERSECTION)
             {
                 gle::color(vec::hexcolor(VSCRIPT_COLOR_GRAY));
-                render_box_helplines(p);
+                // TODO: decide about displaying help lines or not
+                //render_box_helplines(p);
             }
         }
         gle::color(vec::hexcolor(VSCRIPT_COLOR_BLACK));

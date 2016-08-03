@@ -22,19 +22,20 @@ namespace vscript {
         // these nodes can start a code execution
         NODE_TYPE_TIMER,
         NODE_TYPE_EVENT,
-        // functions and memory
-        NODE_TYPE_FUNCTION,
+                
+        NODE_TYPE_FUNCTION,        
         NODE_TYPE_MEMORY,
         
         NODE_TYPE_IF,
         NODE_TYPE_SWITCH,
         NODE_TYPE_CONDITION,
         NODE_TYPE_SLEEP,
+
         // area definitions
         NODE_TYPE_AREA_BOX,
         NODE_TYPE_AREA_SPHERE,
         NODE_TYPE_AREA_CONE,
-        NODE_TYPE_AREA_ZYLINDER,
+        NODE_TYPE_AREA_CYLINDER,
         //NODE_TYPE_PYRAMID,
         //NODE_TYPE_POLYGON,
         //NODE_TYPE_TUBE,
@@ -42,13 +43,17 @@ namespace vscript {
 
     // TODO: implement areas that can be rotated in 3 dimensions
 
+    class CScriptNode;
+
     struct SNodeRelation
     {
         SNodeRelation();
         ~SNodeRelation();
 
+        CScriptNode* from;
+        CScriptNode* to;
+
         inexor::geom::CBezierCurve curve;
-        bool triggered;
     };
 
 
@@ -69,6 +74,8 @@ namespace vscript {
             unsigned int this_time;
             unsigned int last_time;
 
+            unsigned int recursion_counter;
+
             std::string node_name;
             std::string node_comment;
 
@@ -81,6 +88,7 @@ namespace vscript {
             // "comment" nodes e.g. can't have any node relation with other nodes.
 
             virtual bool OnRelationDragStart();
+            virtual bool OnRelationDragEnd();
             // the user is trying to link/unlink the node as CHILD of another node
             virtual bool OnLinkAsChildNodeAttempt(CScriptNode* parent);
             virtual bool OnUnLinkAsChildNodeAttempt(CScriptNode* parent);
