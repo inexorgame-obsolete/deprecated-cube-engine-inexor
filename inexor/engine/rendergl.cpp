@@ -1830,14 +1830,17 @@ void gl_drawhud(int w, int h);
 
 int xtraverts, xtravertsva;
 
-#include "inexor/flowgraph/flowgraph.hpp"
 
 /// 3D Visual Scripting System
+#include "inexor/flowgraph/flowgraph.hpp"
 namespace inexor {
     namespace vscript {
         extern CVisualScriptSystem vScript3D;
     };
 };
+
+// show Inexor's Visual Scripting System outside of edit mode as well
+VARP(vs_debugging, 0, 1, 1);
 
 void gl_drawframe()
 {
@@ -1891,13 +1894,16 @@ void gl_drawframe()
     using namespace inexor::vscript;
     vScript3D.update_drag_n_drop();
     vScript3D.update_relation_linker();
-    vScript3D.start_rendering();
-    vScript3D.update_timers();
-    vScript3D.render_nodes();
-    vScript3D.render_debug_rays();
-    vScript3D.render_node_relations();
-    vScript3D.end_rendering();
+    vScript3D.run();
 
+    if(editmode || vs_debugging)
+    {
+        vScript3D.start_rendering();
+        vScript3D.render_nodes();
+        vScript3D.render_debug_rays();
+        vScript3D.render_node_relations();
+        vScript3D.end_rendering();
+    }
 
     extern SharedVar<int> outline;
     if(!wireframe && editmode && outline) renderoutline();
