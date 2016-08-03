@@ -30,15 +30,16 @@ namespace vscript {
         VSCRIPT_COLOR_TIMER     = 0x51ABCC,  // light blue
         VSCRIPT_COLOR_COMMENT   = 0x5BCC51,  // comment green
         VSCRIPT_COLOR_FUNCTION  = 0x51ABCC,  // darker purple
-        VSCRIPT_COLOR_TRIGGERED = 0xFF8800,  // spicy orange
-        VSCRIPT_COLOR_SLEEP     = 0x51ABCC,  
-        VSCRIPT_COLOR_GRAY      = 0xAAAAAA,  // 
-        VSCRIPT_COLOR_BLACK     = 0x000000,  // 
-        VSCRIPT_COLOR_WHITE     = 0xFFFFFF,  // 
-        VSCRIPT_COLOR_SELECTION = 0xFFFF4C,  // red 
-        VSCRIPT_COLOR_DEBUG_RAY = 0x51ABCC,
-        VSCRIPT_COLOR_MEMORY    = 0xFF005D,
+        VSCRIPT_COLOR_TRIGGERED = 0x00D137,  // 0xFF8800,  // spicy orange
+        VSCRIPT_COLOR_SLEEP     = 0x51ABCC,  // spicy blue
+        VSCRIPT_COLOR_GRAY      = 0xAAAAAA,  // gray
+        VSCRIPT_COLOR_BLACK     = 0x000000,  // black
+        VSCRIPT_COLOR_WHITE     = 0xFFFFFF,  // white
+        VSCRIPT_COLOR_SELECTION = 0xFFFF4C,  // white yellow 
+        VSCRIPT_COLOR_DEBUG_RAY = 0x51ABCC,  // spicy blue
+        VSCRIPT_COLOR_MEMORY    = 0xFF3D91,  // purple
         VSCRIPT_AREA            = 0xFFFFFF,  // = 0x1900FF,
+        VSCRIPT_COLOR_PENDING   = 0xFF263F,  // light red
     };
 
 
