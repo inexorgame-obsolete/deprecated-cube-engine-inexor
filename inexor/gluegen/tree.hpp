@@ -1,11 +1,37 @@
 #pragma once
 
 #include <string>
+#include <vector>
+#include <list>
 #include <unordered_map>
 
 namespace inexor {
 namespace rpc {
 namespace gluegen {
+
+/// To make our glue generation more flexible we invented Shared Option classes,
+/// which contain info about how to render stuff and which are used in the C++ Tree API.
+struct optionclass
+{
+    std::string name;
+    bool hasdefaultvals = false;
+
+    /// All constructor arguments: name first, defaultvalue second.
+    // we dont have type deduction!
+    struct arg
+    {
+        std::string name;
+        std::string default_value;
+    };
+    std::vector<arg> constructor_args;
+
+    /// "const char *" members are template data for our shared declarations,
+    /// but also they get rendered with the previously available info about that shared declaration.
+    std::vector<arg> template_hybrids;
+
+    optionclass(std::string &&class_name) : name(class_name) {}
+};
+extern std::vector<optionclass> optionclasses;
 
 class ShTreeNode {
 public:

@@ -13,6 +13,10 @@ using std::string;
 using boost::algorithm::replace_all_copy;
 using boost::algorithm::replace_all;
 
+
+std::vector<optionclass> optionclasses;
+
+
 /// Maps C++ string type declarations to the numeric type.
 /// SharedVar<float> -> float
 const std::unordered_map<std::string, ShTreeNode::type_t> ShTreeNode::type_cpp_template_to_numeric ={
