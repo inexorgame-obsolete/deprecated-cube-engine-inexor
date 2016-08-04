@@ -85,7 +85,8 @@ void remove_quotes(std::string &str)
     }
 }
 
-string get_all_child_text(const xml_node parent, bool recursive = true)
+/// Text can have subfields with more text + siblings text, usually you want all of them concatenated.
+string get_complete_xml_text(const xml_node parent, bool recursive = true)
 {
     string text;
     for(pugi::xml_node child : parent.children())
@@ -93,7 +94,7 @@ string get_all_child_text(const xml_node parent, bool recursive = true)
         if(child.type() == pugi::node_pcdata)
             text += child.value();
         else if(recursive && child.children().begin() != child.children().end()) // our child has children
-            text += get_all_child_text(child, true);
+            text += get_complete_xml_text(child, true);
     }
     return text;
 }
@@ -139,7 +140,7 @@ void handle_so_constructors(optionclass &opt, const xml_node &compound_xml)
     {
         optionclass::arg arg;
         arg.name = param.child("declname").text().as_string();
-        arg.default_value = get_all_child_text(param.child("defval"));
+        arg.default_value = get_complete_xml_text(param.child("defval"));
         opt.constructor_args.push_back(arg);
         if(!arg.default_value.empty()) opt.hasdefaultvals = true;
         std::cout << "arg.name: " << arg.name;
@@ -193,7 +194,7 @@ void handle_so_template_hybrids(optionclass &opt, const xml_node &compound_xml)
     {
         optionclass::arg templ_hy;
         templ_hy.name = var_xml.child("name").text().as_string();
-        templ_hy.default_value = get_all_child_text(var_xml.child("initializer"));
+        templ_hy.default_value = get_complete_xml_text(var_xml.child("initializer"));
         opt.template_hybrids.push_back(templ_hy);
         std::cout << "arg.name: " << templ_hy.name << " default_value: " << templ_hy.default_value << std::endl;
         remove_leading_assign_sign(templ_hy.default_value);
@@ -255,6 +256,7 @@ void find_options_classes(const std::vector<Path> class_xml_files)
         }
     }
 }
+
 bool find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tree)
 {
     //sorting input files:
@@ -268,7 +270,7 @@ bool find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tr
         if(contains(file.filename().string(), "_8cpp.xml")) cpp_xmls.push_back(file);
         if(contains(file.stem().string(), "class") || contains(file.stem().string(), "struct")) class_xmls.push_back(file);
     }
-    find_options_classes(class_xmls);
+    //find_options_classes(class_xmls);
 
     // parsing cpp-file xmls for shared declarations.
     //
@@ -282,7 +284,7 @@ bool find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tr
     //     section("define")..
     for(auto file : cpp_xmls)
     {
-    //    std::cout << "processing file: " << file.make_preferred() << std::endl;
+        //std::cout << "processing file: " << file.make_preferred() << std::endl;
 
         xml_document xml;
         if(!xml.load_file(file.make_preferred().c_str(), parse_default|parse_trim_pcdata))
@@ -307,11 +309,11 @@ bool find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tr
         std::vector<xml_node> sharedvar_nodes;
         for(auto section : compound_xml.children("sectiondef"))
         {
-            if(!strncmp(section.attribute("kind").value(), "func", 4))
+            if(!strncmp(section.attribute("kind").value(), "var", 3))
             {
                 for(auto member : section.children("memberdef"))
                 {
-                    if(strstr(member.child("type").text().as_string(), "SharedVar"))
+                    if(strstr(member.child("definition").text().as_string(), "SharedVar"))
                         sharedvar_nodes.push_back(member);
                 }
             }
@@ -320,8 +322,8 @@ bool find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tr
         // handle shared variable declarations.
         for(auto var : sharedvar_nodes)
         {
-            const char *type = var.child("type").text().as_string();
-            const char *name = var.child("name").text().as_string();
+            const string type = get_complete_xml_text(var.child("type"));
+            const string name = get_complete_xml_text(var.child("name"));
             std::cout << "type: " << type << " name: " << name << " argsstring: " << var.child("argsstring").text().as_string() << std::endl;
             tree.push_back(ShTreeNode(type, name));
         }
