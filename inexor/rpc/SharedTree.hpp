@@ -1,6 +1,7 @@
 #pragma once
 
-#include "inexor/util/Observe.hpp"
+#include "inexor/rpc/SharedOptions.hpp"
+#include "inexor/rpc/SharedVar.hpp"
 
-template<typename T> using SharedVar = inexor::util::Observe<T>;
+using inexor::rpc::SharedVar;
 

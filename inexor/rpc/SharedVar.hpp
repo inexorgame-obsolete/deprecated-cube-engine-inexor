@@ -1,14 +1,14 @@
-#ifndef INEXOR_UTIL_OBSERVE_HEADER
-#define INEXOR_UTIL_OBSERVE_HEADER
+#pragma once
 
 #include <algorithm>
 
 #include <boost/signals2.hpp>
 
+#include "inexor/rpc/SharedOptions.hpp"
 namespace inexor {
-namespace util {
+namespace rpc {
 
-/// Observe wrapper for primitive/immutable objects
+/// SharedVar wrapper for primitive/immutable objects
 ///
 /// This first and foremost is a wrapper around stuff.
 /// We provide * and -> operators to work with the value and
@@ -23,12 +23,12 @@ namespace util {
 /// In these cases, try using the value itself
 /// (`*observ_instance`) or using an explicit cast.
 ///
-/// Observe provides a special assignment operator: If
+/// SharedVar provides a special assignment operator: If
 /// that is called, it first calls the onChange event with
 /// the old and the new value.
 /// Only afterwards the new value is assigned.
 ///
-/// The value of the variable inside observe is undefined
+/// The value of the variable inside SharedVar is undefined
 /// while the listeners are called;
 ///
 /// During the event, do not change the value of the
@@ -38,7 +38,7 @@ namespace util {
 /// ## Example
 ///
 /// ```
-/// Observe<int> oi = 22;
+/// SharedVar<int> oi = 22;
 ///
 /// oi.onChange.connect([] (const int &a, const int &b)
 ///     {
@@ -52,9 +52,9 @@ namespace util {
 /// }
 /// ```
 template<typename T>
-class Observe {
+class SharedVar {
 private:
-    typedef Observe<T> TMe;
+    typedef SharedVar<T> TMe;
 
     template<typename... A>
     using signal = boost::signals2::signal<A...>;
@@ -80,15 +80,19 @@ public:
     operator T&() { return value; }
 
     // Proxies
-    
-    explicit Observe() : value() {}
 
-    template<typename... Args>
-    explicit Observe(Args&&... args)
-        : value(std::forward<Args>(args)...) {}
+ //   explicit SharedVar() : value() {}
 
-    explicit Observe(T &otr) : value(otr) {}
-    explicit Observe(T &&otr) : value(otr) {}
+    //template<typename... Args>
+    //explicit SharedVar(Args&&... args)
+    //    : value(std::forward<Args>(args)...) {}
+
+    explicit SharedVar(T otr) : value(otr) {}
+    explicit SharedVar(T &otr) : value(otr) {}
+  //  explicit SharedVar(T &&otr) : value(otr) {} // Shuu TODO we need to reenable this!
+    explicit SharedVar(T otr, SharedOption) : value(otr) {}
+    explicit SharedVar(T &otr, SharedOption) : value(otr) {}
+ //   explicit SharedVar(T &&otr, SharedOption) : value(otr) {}
 
     // Avoid ambiguity when observing a string
     T operator= (const char *c) {
@@ -191,7 +195,7 @@ public:
 // Output Operator
 
 template<typename T>
-std::ostream& operator<<(std::ostream& os, const Observe<T> &x) {
+std::ostream& operator<<(std::ostream& os, const SharedVar<T> &x) {
     os << *x;
     return os;
 }
@@ -202,33 +206,33 @@ std::ostream& operator<<(std::ostream& os, const Observe<T> &x) {
 // TODO: Get rid of ::min, ::max; define these for std::*
 
 template<typename T>
-const T& min(const inexor::util::Observe<T> &a,const T &b) {
+const T& min(const inexor::rpc::SharedVar<T> &a, const T &b) {
     return std::min(*a, b);
 }
 template<typename T>
-const T& min(const T &a, const inexor::util::Observe<T> &b) {
+const T& min(const T &a, const inexor::rpc::SharedVar<T> &b) {
     return std::min(a, *b);
 }
 template<typename T>
-const T& min(const inexor::util::Observe<T> &a,
-      const inexor::util::Observe<T> &b) {
+const T& min(const inexor::rpc::SharedVar<T> &a, const inexor::rpc::SharedVar<T> &b)
+{
     return std::min(*a, *b);
 }
 
 template<typename T>
-const T& max(const inexor::util::Observe<T> &a, const T &b) {
+const T& max(const inexor::rpc::SharedVar<T> &a, const T &b) {
     return std::max(*a, b);
 }
 template<typename T>
-const T& max(const T &a, const inexor::util::Observe<T> &b) {
+const T& max(const T &a, const inexor::rpc::SharedVar<T> &b) {
     return std::max(a, *b);
 }
 template<typename T>
-const T& max(const inexor::util::Observe<T> &a,
-       const inexor::util::Observe<T> &b) {
+const T& max(const inexor::rpc::SharedVar<T> &a, const inexor::rpc::SharedVar<T> &b)
+{
     return std::max(*a, *b);
 }
 
-} // ns inexor::util
+} // ns inexor::rpc
 } // ns inexor
-#endif
+

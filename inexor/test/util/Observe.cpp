@@ -6,11 +6,11 @@
 
 #include "gtest/gtest.h"
 
-#include "inexor/util/Observe.hpp"
+#include "inexor/rpc/SharedVar.hpp"
 #include "inexor/test/helpers.hpp"
 
 using namespace std;
-using namespace inexor::util;
+using namespace inexor::rpc;
 
 namespace {
 
@@ -18,29 +18,21 @@ template<typename T>
 void test_primitive(T seed, T overw) {
     T m1 = seed, m2 = seed, m3 = seed, m4 = seed;
 
-    expectNothrow( Observe<T> X(seed); ) << "Observe should"
-        "be initializable via copy constructor";
-    expectNothrow( Observe<T> Y; Y =seed; ) << "Observe should"
-        "be initializable via copy assignment";
-    expectNothrow( Observe<T> Z(std::move(m1)); ) <<
-        "Observe should be initializable via move constructor";
-    expectNothrow( Observe<T> A; A = std::move(m2); ) <<
-        "Observe should be initializable via move assignment";
+    expectNothrow( SharedVar<T> X(seed); ) << "SharedVar should be initializable via copy constructor";
+    expectNothrow( SharedVar<T> Y; Y =seed; ) << "SharedVar should be initializable via copy assignment";
+    expectNothrow( SharedVar<T> Z(std::move(m1)); ) << "SharedVar should be initializable via move constructor";
+    expectNothrow( SharedVar<T> A; A = std::move(m2); ) << "SharedVar should be initializable via move assignment";
 
     // Redo, just so the variables are available
-    Observe<T> X(seed);
-    Observe<T> Y; Y = seed;
-    Observe<T> Z(std::move(m3));
-    Observe<T> A; A = std::move(m4);
+    SharedVar<T> X(seed);
+    SharedVar<T> Y; Y = seed;
+    SharedVar<T> Z(std::move(m3));
+    SharedVar<T> A; A = std::move(m4);
 
-    expectEq((T)X, seed) << "Assignment via copy "
-        "constructor should set the right value";
-    expectEq((T)Y, seed) << "Assignment via copy "
-        "assignment should set the right value";
-    expectEq((T)Z, seed) << "Assignment via move "
-        "constructor should set the right value";
-    expect(A == seed) << "Assignment via move "
-        "assignment should set the right value";
+    expectEq((T)X, seed) << "Assignment via copy constructor should set the right value";
+    expectEq((T)Y, seed) << "Assignment via copy assignment should set the right value";
+    expectEq((T)Z, seed) << "Assignment via move constructor should set the right value";
+    expect(A == seed) << "Assignment via move assignment should set the right value";
 
     expectEq((T)X, (T)Y);
     expect(Z == A);
@@ -68,7 +60,7 @@ void test_primitive(T seed, T overw) {
 #define act(action, _new, _ret, description)               \
     {                                                      \
         called = false;                                    \
-        Observe<T> X(seed);                                \
+        SharedVar<T> X(seed);                                \
         X.onChange.connect(listener);                      \
         desc = description;                                \
         exold = seed;                                      \
@@ -122,14 +114,14 @@ void test_primitive(T seed, T overw) {
 }
 
 #define ptest(name, type)                                  \
-    test(Observe, name ## 0) {                             \
+    test(SharedVar, name ## 0) {                             \
       test_primitive<type>(0, 32); }                       \
-    test(Observe, name ## 5) {                             \
+    test(SharedVar, name ## 5) {                             \
       test_primitive<type>(5, 42); }                       \
-    test(Observe, name ## Min) {                           \
+    test(SharedVar, name ## Min) {                           \
       test_primitive<type>(                                \
           std::numeric_limits<type>::min(), 4); }          \
-    test(Observe, name ## Max) {                           \
+    test(SharedVar, name ## Max) {                           \
       test_primitive<type>(                                \
           std::numeric_limits<type>::max(), 23); }
 
@@ -144,37 +136,35 @@ ptest(SizeT, size_t);
 
 #undef ptest
 
-test(Observe, Boolean) {
-    Observe<bool> a;
-    Observe<bool> b(true);
+test(SharedVar, Boolean) {
+    SharedVar<bool> a;
+    SharedVar<bool> b(true);
 
     bool called = false;
     if (b) called = true;
-    expect(called) << "if (Observe<bool>(true)) should be executed.";
+    expect(called) << "if (SharedVar<bool>(true)) should be executed.";
 
     b = false;
 
     called = false;
     if (b) called = true;
-    expectNot(called) << "if (Observe<bool>(false)) "
-        "should not be executed.";
+    expectNot(called) << "if (SharedVar<bool>(false)) should not be executed.";
 
-    Observe<int> ib(1);
+    SharedVar<int> ib(1);
 
     called = false;
     if (ib) called = true;
-    expect(called) << "if (Observe<int>(1)) should be executed.";
+    expect(called) << "if (SharedVar<int>(1)) should be executed.";
 
     ib = 0;
 
     called = false;
     if (ib) called = true;
-    expectNot(called) << "if (Observe<int>(0)) "
-        "should not be executed.";
+    expectNot(called) << "if (SharedVar<int>(0)) should not be executed.";
 }
 
-test(Observe, String) {
-  Observe<string> s("Hello World");
+test(SharedVar, String) {
+  SharedVar<string> s("Hello World");
   s = "foo";
   expectEq(s->size(), (size_t)3);
   expectEq(*s, string("foo"));

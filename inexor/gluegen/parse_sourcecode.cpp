@@ -18,8 +18,6 @@ using namespace std;
 
 namespace inexor { namespace rpc { namespace gluegen {
 
-Sharedwo x(Range(0, 2)|CustomPath("inexor/rendering/screen/"));
-
 // TODO remove duplication
 // Move to utils
 // add fast hash table algorithms to utils
