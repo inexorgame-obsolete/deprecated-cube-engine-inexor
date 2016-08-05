@@ -7,6 +7,7 @@
 
 #include "inexor/flowgraph/nodebase/fl_base.hpp"
 #include "inexor/flowgraph/memory/integer/fl_mem_integer.hpp"
+#include "inexor/flowgraph/memory/float/fl_mem_float.hpp"
 
 namespace inexor {
 namespace vscript {
@@ -28,7 +29,7 @@ namespace vscript {
             INEXOR_VSCRIPT_OPERATOR_TYPE operator_type;
 
             void apply_operator_on_integer(CMemIntegerNode*);
-            //void apply_operator_on_float(CMemFloatNode*);
+            void apply_operator_on_float(CMemFloatNode*);
     };
 
 };

@@ -199,6 +199,12 @@ namespace vscript {
                 break;
             }
 
+            case INEXOR_VSCRIPT_NODE_TYPE_MEMORY_FLOAT:
+            {
+                created_node = new CMemFloatNode(target, true, true, atof(arguments[0].c_str()), "float", "can have decimal values (also null and negative)");
+                break;
+            }
+
             case INEXOR_VSCRIPT_NODE_TYPE_OPERATOR:
             {
                 switch(atoi(arguments[0].c_str()))
@@ -627,6 +633,11 @@ namespace vscript {
         vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_MEMORY_INTEGER, 1, value);
     }
     COMMAND(vs_int, "s");
-    
+    void vs_float(const char *value)
+    {
+        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_MEMORY_FLOAT, 1, value);
+    }
+    COMMAND(vs_float, "s");
+
 };
 };
