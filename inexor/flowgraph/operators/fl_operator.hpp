@@ -28,6 +28,7 @@ namespace vscript {
 
             INEXOR_VSCRIPT_OPERATOR_TYPE operator_type;
 
+            // TODO: overload these methods?
             void apply_operator_on_integer(CMemIntegerNode*);
             void apply_operator_on_float(CMemFloatNode*);
     };

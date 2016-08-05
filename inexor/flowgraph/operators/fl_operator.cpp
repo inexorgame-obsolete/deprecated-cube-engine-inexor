@@ -32,6 +32,33 @@ namespace vscript {
                 node->decrement();
                 break;
             }
+            case INEXOR_VSCRIPT_OPERATOR_TYPE_SETNULL:
+            {
+                node->set_value(0);
+                break;
+            }
+        }
+    }
+
+    void COperatorNode::apply_operator_on_float(CMemFloatNode* node)
+    {
+        switch(operator_type)
+        {
+            case INEXOR_VSCRIPT_OPERATOR_TYPE_INCREMENT:
+            {
+                node->increment();
+                break;
+            }
+            case INEXOR_VSCRIPT_OPERATOR_TYPE_DECREMENT:
+            {
+                node->decrement();
+                break;
+            }
+            case INEXOR_VSCRIPT_OPERATOR_TYPE_SETNULL:
+            {
+                node->set_value(0.0);
+                break;
+            }
         }
     }
 
@@ -50,6 +77,11 @@ namespace vscript {
                 case INEXOR_VSCRIPT_NODE_TYPE_MEMORY_INTEGER:
                 {
                     apply_operator_on_integer(static_cast<CMemIntegerNode*>(children[i]));
+                    break;
+                }
+                case INEXOR_VSCRIPT_NODE_TYPE_MEMORY_FLOAT:
+                {
+                    apply_operator_on_float(static_cast<CMemFloatNode*>(children[i]));
                     break;
                 }
             }

@@ -211,14 +211,22 @@ namespace vscript {
                 {
                     case INEXOR_VSCRIPT_OPERATOR_TYPE_INCREMENT:
                     {
-                        created_node = new COperatorNode(target, INEXOR_VSCRIPT_OPERATOR_TYPE_INCREMENT, "operator ++", "can increment integer and float values");
+                        created_node = new COperatorNode(target, INEXOR_VSCRIPT_OPERATOR_TYPE_INCREMENT, "operator ++", "increments integer and float values");
                         break;
                     }
                     case INEXOR_VSCRIPT_OPERATOR_TYPE_DECREMENT:
                     {
-                        created_node = new COperatorNode(target, INEXOR_VSCRIPT_OPERATOR_TYPE_DECREMENT, "operator --", "can decrement integer and float values");
+                        created_node = new COperatorNode(target, INEXOR_VSCRIPT_OPERATOR_TYPE_DECREMENT, "operator --", "decrements integers and float values");
                         break;
                     }
+                    case INEXOR_VSCRIPT_OPERATOR_TYPE_SETNULL:
+                    {
+                        created_node = new COperatorNode(target, INEXOR_VSCRIPT_OPERATOR_TYPE_SETNULL, "operator = 0", "sets integers and float values to zero");
+                        break;
+                    }
+
+                    // TODO: operator set <any value>
+
                     default:
                     {
                         conoutf(CON_DEBUG, "[3DVS-operator] error: unknown operator type!");
@@ -619,13 +627,19 @@ namespace vscript {
         vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_OPERATOR, 2, "0", value);
     }
     COMMAND(vs_increment, "s");
-
     void vs_decrement(const char *value)
     {
         // decrement is 1
         vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_OPERATOR, 2, "1", value);
     }
     COMMAND(vs_decrement, "s");
+    void vs_setnull(const char *value)
+    {
+        // set null is 2
+        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_OPERATOR, 2, "2", value);
+    }
+    COMMAND(vs_setnull, "s");
+
 
     // memory
     void vs_int(const char *value)

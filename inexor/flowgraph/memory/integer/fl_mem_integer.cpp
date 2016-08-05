@@ -45,6 +45,7 @@ namespace vscript {
 
     void CMemIntegerNode::set_value(int set_value)
     {
+        block.data.int_val = set_value;
     }
 
     int CMemIntegerNode::get_value()

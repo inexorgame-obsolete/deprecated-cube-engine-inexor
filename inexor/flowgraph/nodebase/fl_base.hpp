@@ -50,6 +50,7 @@ namespace vscript {
     {
         INEXOR_VSCRIPT_OPERATOR_TYPE_INCREMENT = 0,
         INEXOR_VSCRIPT_OPERATOR_TYPE_DECREMENT,
+        INEXOR_VSCRIPT_OPERATOR_TYPE_SETNULL,
     };
 
     // TODO: implement areas that can be rotated in 3 dimensions
