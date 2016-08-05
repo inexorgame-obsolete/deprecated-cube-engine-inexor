@@ -40,6 +40,7 @@ namespace vscript {
         INEXOR_VSCRIPT_COLOR_MEMORY    = 0xFF3D91,  // purple
         INEXOR_VSCRIPT_COLOR_AREA      = 0xFFFFFF,  // = 0x1900FF,
         INEXOR_VSCRIPT_COLOR_PENDING   = 0xFF263F,  // light red
+        INEXOR_VSCRIPT_COLOR_OPERATOR  = 0x9451CC,  // purple
     };
 
 

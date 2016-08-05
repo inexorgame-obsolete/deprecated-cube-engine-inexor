@@ -46,8 +46,9 @@ enum VSCRIPT_ENTITY_BOX_ORIENTATION
 
 namespace inexor {
 namespace vscript {
-
-    // TODO: make CVisualScriptSystem a singleton class (optional?)
+    
+    // TODO: make CVisualScriptSystem a singleton class (optional ?)
+    
     // create an instance of the visual scripting system
     CVisualScriptSystem vScript3D;
 

@@ -27,6 +27,7 @@ namespace vscript {
         
         //INEXOR_VSCRIPT_NODE_TYPE_MEMORY,
         INEXOR_VSCRIPT_NODE_TYPE_MEMORY_INTEGER,
+        INEXOR_VSCRIPT_NODE_TYPE_MEMORY_FLOAT,
         INEXOR_VSCRIPT_NODE_TYPE_MEMORY_BOOL,
 
         // TODO: list and implement more data types

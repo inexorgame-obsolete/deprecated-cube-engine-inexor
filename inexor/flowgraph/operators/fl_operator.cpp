@@ -10,6 +10,8 @@ namespace vscript {
         pos = position;
         node_name = name;
         node_comment = comment;
+        default_box_color = INEXOR_VSCRIPT_COLOR_OPERATOR;
+        box_color = default_box_color;
     }
 
     COperatorNode::~COperatorNode()
@@ -57,12 +59,25 @@ namespace vscript {
     
     bool COperatorNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
-        return true;
+        switch(parent->type)
+        {
+            case INEXOR_VSCRIPT_NODE_TYPE_SLEEP:
+            case INEXOR_VSCRIPT_NODE_TYPE_TIMER:
+                return true;
+        }
+        return false;
     }
 
     bool COperatorNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
     {
-        return true;
+        switch(child->type)
+        {
+            case INEXOR_VSCRIPT_NODE_TYPE_MEMORY_INTEGER:
+            case INEXOR_VSCRIPT_NODE_TYPE_MEMORY_FLOAT:
+                return true;
+                break;
+        }
+        return false;
     }
 
 };

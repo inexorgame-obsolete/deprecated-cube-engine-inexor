@@ -8,6 +8,7 @@ namespace vscript {
                            const char* name, 
                            const char* comment)
     {
+        type = INEXOR_VSCRIPT_NODE_TYPE_SLEEP;
         sleep_interval = clamp(sleeptime, INEXOR_VSCRIPT_MIN_SLEEP_INTERVAL, INEXOR_VSCRIPT_MAX_SLEEP_INTERVAL);
         pos = position;
         sleep_active = false;
