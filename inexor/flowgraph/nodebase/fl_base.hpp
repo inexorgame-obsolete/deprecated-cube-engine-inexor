@@ -22,7 +22,6 @@ namespace vscript {
         // these nodes can start a code execution
         INEXOR_VSCRIPT_NODE_TYPE_TIMER,
         INEXOR_VSCRIPT_NODE_TYPE_EVENT,
-                
         INEXOR_VSCRIPT_NODE_TYPE_FUNCTION,        
         
         //INEXOR_VSCRIPT_NODE_TYPE_MEMORY,
@@ -41,10 +40,6 @@ namespace vscript {
         INEXOR_VSCRIPT_NODE_TYPE_AREA_SPHERE,
         INEXOR_VSCRIPT_NODE_TYPE_AREA_CONE,
         INEXOR_VSCRIPT_NODE_TYPE_AREA_CYLINDER,
-
-        //NODE_TYPE_PYRAMID,
-        //NODE_TYPE_POLYGON,
-        //NODE_TYPE_TUBE,
 
         // operators
         INEXOR_VSCRIPT_NODE_TYPE_OPERATOR,
