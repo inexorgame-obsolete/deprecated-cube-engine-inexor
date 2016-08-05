@@ -546,6 +546,7 @@ namespace vscript {
         }
     }
     
+
     void deleteallnodes()
     {
         vScript3D.delete_all_nodes();

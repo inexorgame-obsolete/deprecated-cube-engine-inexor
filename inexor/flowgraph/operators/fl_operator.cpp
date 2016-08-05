@@ -37,11 +37,11 @@ namespace vscript {
 
     void COperatorNode::in()
     {
+        last_time = this_time;
         if(0 == children.size())
         {
             conoutf(CON_DEBUG, "[3DVS-operator-increment] no child nodes to increment");
         }
-        conoutf(CON_DEBUG, "[3DVS-operator-increment] increment.");
 
         for(unsigned int i = 0; i < children.size(); i++)
         {
@@ -54,7 +54,6 @@ namespace vscript {
                 }
             }
         }
-        triggered = true;
     }
     
     bool COperatorNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
