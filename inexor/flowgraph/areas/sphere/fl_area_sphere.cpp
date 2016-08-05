@@ -3,12 +3,10 @@
 namespace inexor {
 namespace vscript {
 
-    CSphereAreaNode::CSphereAreaNode(vec position, float rad, const char* name, const char* comment)
+    CSphereAreaNode::CSphereAreaNode(vec position, float rad)
     {
         type = INEXOR_VSCRIPT_NODE_TYPE_AREA_SPHERE;
         pos = position;
-        node_name = name;
-        node_comment = comment;
         radius = rad;
     }
 

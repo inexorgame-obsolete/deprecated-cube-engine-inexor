@@ -3,13 +3,10 @@
 namespace inexor {
 namespace vscript {
 
-    CMemFloatNode::CMemFloatNode(vec position, bool null_allowed, bool negative_allowed, 
-                                 int value, const char* name, const char* comment = "")
+    CMemFloatNode::CMemFloatNode(vec position, bool null_allowed, bool negative_allowed, int value)
     {
         type = INEXOR_VSCRIPT_NODE_TYPE_MEMORY_FLOAT;
-        pos = position;
-        node_name = name;
-        node_comment = comment;        
+        pos = position;   
         block.type = INEXOR_VSCRIPT_DATA_TYPE_FLOATING_POINT;
         block.data.double_value = value;
     }

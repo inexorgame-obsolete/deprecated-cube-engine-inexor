@@ -3,12 +3,9 @@
 namespace inexor {
 namespace vscript {
 
-    CCylinderAreaNode::CCylinderAreaNode(vec position, float radius, float height, const char* name, const char* comment = "")
+    CCylinderAreaNode::CCylinderAreaNode(vec position, float radius, float height)
     {
         type = INEXOR_VSCRIPT_NODE_TYPE_AREA_BOX;
-        pos = position;
-        node_name = name;
-        node_comment = comment;
         cylinder_height = height;
         cylinder_radius = radius;
     }

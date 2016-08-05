@@ -33,15 +33,9 @@ namespace vscript {
 
         public:
 
-            CTimerNode(vec pos,
-                       unsigned int interval,
-                       unsigned int startdelay,
+            CTimerNode(vec pos, unsigned int interval, unsigned int startdelay,
                        unsigned int limit = INEXOR_VSCRIPT_DEFAULT_TIMER_EXECUTION_LIMIT,
-                       unsigned int cooldown = 0,
-                       const char*  name = "new timer",
-                       const char*  comment = "look at this timer comment!",
-                       INEXOR_VSCRIPT_TIME_FORMAT format = INEXOR_VSCRIPT_TIME_FORMAT_MILISECONDS);
-            
+                       unsigned int cooldown = 0, INEXOR_VSCRIPT_TIME_FORMAT format = INEXOR_VSCRIPT_TIME_FORMAT_MILISECONDS);
             ~CTimerNode();
 
             unsigned int timer_startdelay;

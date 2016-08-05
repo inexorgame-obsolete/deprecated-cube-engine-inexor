@@ -19,17 +19,13 @@ namespace vscript {
 
             CScriptNode* selected_node;
             CScriptNode* hovered_node;
-
             CScriptNode* relation_start_node;
 
             bool last_mouse_key_state;
             bool selection_blocked_by_geometry;
-
-            // moving entities
             bool moving_entity;
-
-            // dragging new relations between entities
             bool dragging_new_relation;
+
             vec relation_drag_start;
             vec relation_drag_end;
 

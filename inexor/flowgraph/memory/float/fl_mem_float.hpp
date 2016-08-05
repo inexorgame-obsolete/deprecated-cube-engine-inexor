@@ -17,7 +17,7 @@ namespace vscript {
     {
         public:
     
-            CMemFloatNode(vec, bool, bool, int, const char*, const char*);
+            CMemFloatNode(vec, bool, bool, int);
             ~CMemFloatNode();
 
             void increment();

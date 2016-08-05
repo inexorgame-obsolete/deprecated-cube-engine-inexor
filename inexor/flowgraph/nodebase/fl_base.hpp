@@ -45,12 +45,12 @@ namespace vscript {
         INEXOR_VSCRIPT_NODE_TYPE_OPERATOR,
     };
 
-
     enum INEXOR_VSCRIPT_OPERATOR_TYPE
     {
         INEXOR_VSCRIPT_OPERATOR_TYPE_INCREMENT = 0,
         INEXOR_VSCRIPT_OPERATOR_TYPE_DECREMENT,
         INEXOR_VSCRIPT_OPERATOR_TYPE_SETNULL,
+        INEXOR_VSCRIPT_OPERATOR_TYPE_SETVAL,
     };
 
     // TODO: implement areas that can be rotated in 3 dimensions
@@ -68,13 +68,15 @@ namespace vscript {
         inexor::geom::CBezierCurve curve;
     };
 
-
     class CScriptNode : public CNodeRenderer
     {
         public:
 
             CScriptNode();
             ~CScriptNode();
+
+            void set_name(const char*);
+            void set_comment(const char*);
 
             vec pos;
             INEXOR_VSCRIPT_NODE_TYPE type;
@@ -98,12 +100,13 @@ namespace vscript {
             // events will always be triggered, but event handling depends on the node type.
             // some node types will not allow certain events.
             // "comment" nodes e.g. can't have any node relation with other nodes.
-
             virtual bool OnRelationDragStart();
             virtual bool OnRelationDragEnd();
+
             // the user is trying to link/unlink the node as CHILD of another node
             virtual bool OnLinkAsChildNodeAttempt(CScriptNode* parent);
             virtual bool OnUnLinkAsChildNodeAttempt(CScriptNode* parent);
+
             // the editor is trying to link/unlink it as PARENT of another node
             virtual bool OnLinkAsParentNodeAttempt(CScriptNode* child);
             virtual bool OnUnLinkAsParentNodeAttempt(CScriptNode* child);

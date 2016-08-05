@@ -3,12 +3,10 @@
 namespace inexor {
 namespace vscript {
     
-    CCubeAreaNode::CCubeAreaNode(vec position, float width, float height, float depth, const char* name, const char* comment = "")
+    CCubeAreaNode::CCubeAreaNode(vec position, float width, float height, float depth)
     {
         type = INEXOR_VSCRIPT_NODE_TYPE_AREA_BOX;
         pos = position;
-        node_name = name;
-        node_comment = comment;
         box_width = width;
         box_height = height;
         box_depth = depth;

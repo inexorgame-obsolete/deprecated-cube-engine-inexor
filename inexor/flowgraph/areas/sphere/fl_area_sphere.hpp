@@ -19,7 +19,7 @@ namespace vscript {
 
         public:
 
-            CSphereAreaNode(vec, float, const char*, const char*);
+            CSphereAreaNode(vec, float);
             ~CSphereAreaNode();
             
             bool collide(vec p);

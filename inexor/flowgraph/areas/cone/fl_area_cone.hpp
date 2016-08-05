@@ -22,7 +22,7 @@ namespace vscript {
 
         public:
 
-            CConeAreaNode(vec, float, float, const char*, const char*);
+            CConeAreaNode(vec, float, float);
             ~CConeAreaNode();
             
             bool collide(vec p);

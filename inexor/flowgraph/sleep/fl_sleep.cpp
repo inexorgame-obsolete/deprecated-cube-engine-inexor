@@ -3,10 +3,7 @@
 namespace inexor {
 namespace vscript {
 
-    CSleepNode::CSleepNode(vec position,
-                           unsigned int sleeptime, 
-                           const char* name, 
-                           const char* comment)
+    CSleepNode::CSleepNode(vec position, unsigned int sleeptime)
     {
         type = INEXOR_VSCRIPT_NODE_TYPE_SLEEP;
         sleep_interval = clamp(sleeptime, INEXOR_VSCRIPT_MIN_SLEEP_INTERVAL, INEXOR_VSCRIPT_MAX_SLEEP_INTERVAL);
@@ -14,10 +11,8 @@ namespace vscript {
         sleep_active = false;
         default_box_color = INEXOR_VSCRIPT_COLOR_FUNCTION;
         box_color = default_box_color;
-        node_name = name;
         char tmp[64];
         sprintf_s(tmp, 64, "0/%d ms", sleep_interval);
-        node_comment =  tmp;
     }
 
     CSleepNode::~CSleepNode()

@@ -16,7 +16,7 @@ namespace vscript {
     {
         public:
 
-            COperatorNode(vec, INEXOR_VSCRIPT_OPERATOR_TYPE, const char*, const char*);
+            COperatorNode(vec, INEXOR_VSCRIPT_OPERATOR_TYPE);
             ~COperatorNode();
 
             void in();

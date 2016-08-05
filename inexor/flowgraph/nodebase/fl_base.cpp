@@ -8,8 +8,6 @@ namespace vscript {
     {
         pos = vec(0,0,0);
         type = INEXOR_VSCRIPT_NODE_TYPE_INVALID;
-        node_name = "";
-        node_comment = "";
         default_box_color = INEXOR_VSCRIPT_COLOR_TIMER; 
         box_color = default_box_color;
         pos_changed = false;
@@ -18,10 +16,23 @@ namespace vscript {
         this_time = 0;
         last_time = 0;
         recursion_counter = 0;
+        node_comment = "";
+        node_name = "";
     }
     
     CScriptNode::~CScriptNode()
     {
+    }
+
+
+    void CScriptNode::set_name(const char* name)
+    {
+        node_name = name;
+    }
+
+    void CScriptNode::set_comment(const char* comment)
+    {
+        node_comment = comment;
     }
 
     SNodeRelation::SNodeRelation()

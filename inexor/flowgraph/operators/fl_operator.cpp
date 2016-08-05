@@ -3,13 +3,11 @@
 namespace inexor {
 namespace vscript {
 
-    COperatorNode::COperatorNode(vec position, INEXOR_VSCRIPT_OPERATOR_TYPE op_type, const char* name, const char* comment = "")
+    COperatorNode::COperatorNode(vec position, INEXOR_VSCRIPT_OPERATOR_TYPE op_type)
     {
         type = INEXOR_VSCRIPT_NODE_TYPE_OPERATOR;
         operator_type = op_type;
         pos = position;
-        node_name = name;
-        node_comment = comment;
         default_box_color = INEXOR_VSCRIPT_COLOR_OPERATOR;
         box_color = default_box_color;
     }

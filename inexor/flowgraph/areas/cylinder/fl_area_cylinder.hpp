@@ -22,7 +22,7 @@ namespace vscript {
 
         public:
 
-            CCylinderAreaNode(vec, float, float, const char*, const char*);
+            CCylinderAreaNode(vec, float, float);
             ~CCylinderAreaNode();
             
             bool collide(vec p);

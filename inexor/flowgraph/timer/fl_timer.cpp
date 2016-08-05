@@ -7,14 +7,11 @@ namespace inexor {
 namespace vscript {
 
     CTimerNode::CTimerNode(vec position,  unsigned int interval, unsigned int startdelay, 
-                           unsigned int limit, unsigned int cooldown, const char* name, 
-                           const char* comment, INEXOR_VSCRIPT_TIME_FORMAT format)
+                           unsigned int limit, unsigned int cooldown, INEXOR_VSCRIPT_TIME_FORMAT format)
     {
         type = INEXOR_VSCRIPT_NODE_TYPE_TIMER;
         pos = position;
-        node_name = name;
-        node_comment = comment;
-        
+
         unsigned int time_format_in_ms = interval;
 
         // validate the time interval

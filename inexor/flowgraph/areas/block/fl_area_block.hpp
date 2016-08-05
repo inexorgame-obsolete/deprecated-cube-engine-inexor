@@ -22,7 +22,7 @@ namespace vscript {
 
         public:
 
-            CCubeAreaNode(vec, float, float, float, const char*, const char*);
+            CCubeAreaNode(vec, float, float, float);
             ~CCubeAreaNode();
             
             bool collide(vec p);

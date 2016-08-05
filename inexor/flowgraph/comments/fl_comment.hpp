@@ -14,7 +14,7 @@ namespace vscript {
     {
         public:
 
-        CCommentNode(vec pos, const char* comment = "This is a comment", const char* name = "");
+        CCommentNode(vec pos);
         ~CCommentNode();
         
         bool OnRelationDragStart();

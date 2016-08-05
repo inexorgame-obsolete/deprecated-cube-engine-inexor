@@ -3,12 +3,10 @@
 namespace inexor {
 namespace vscript {
 
-    CConeAreaNode::CConeAreaNode(vec position, float radius, float height, const char* name, const char* comment = "")
+    CConeAreaNode::CConeAreaNode(vec position, float radius, float height)
     {
         type = INEXOR_VSCRIPT_NODE_TYPE_AREA_BOX;
         pos = position;
-        node_name = name;
-        node_comment = comment;
         cone_height = height;
         cone_radius = radius;
     }

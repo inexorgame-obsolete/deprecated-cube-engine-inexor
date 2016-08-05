@@ -17,7 +17,7 @@ namespace vscript {
     {
         public:
     
-            CMemIntegerNode(vec, bool, bool, int, const char*, const char*);
+            CMemIntegerNode(vec, bool, bool, int);
             ~CMemIntegerNode();
 
             void increment();

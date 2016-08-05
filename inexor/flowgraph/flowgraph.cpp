@@ -97,11 +97,12 @@ namespace vscript {
                 const char* comment     = arguments[5].c_str();
                 
                 if(0 == interval) interval = 1000;
-
-                /// TODO...
+                /// TODO: implement many other time formats
                 INEXOR_VSCRIPT_TIME_FORMAT timer_format = INEXOR_VSCRIPT_TIME_FORMAT_MILISECONDS;
                 
-                created_node = new CTimerNode(target, interval, startdelay, limit, cooldown, name, comment, timer_format);
+                created_node = new CTimerNode(target, interval, startdelay, limit, cooldown, timer_format);
+                created_node->set_name(name);
+                created_node->set_comment(comment);
                 sync_all_timers();
                 break;
             }
@@ -113,7 +114,8 @@ namespace vscript {
                     conoutf(CON_DEBUG, "[3DVS-comments] error: empty string as comment!");
                     break;
                 }
-                created_node = new CCommentNode(target, arguments[0].c_str());
+                created_node = new CCommentNode(target);
+                created_node->set_comment(arguments[0].c_str());
                 break;
             }
 
@@ -135,7 +137,7 @@ namespace vscript {
                             break;
                         }
                         // add a console text output function
-                        created_node = new CFunctionConoutfNode(target, arguments[1].c_str() );
+                        created_node = new CFunctionConoutfNode(target, arguments[1].c_str());
                         break;
                     }
                     case INEXOR_VSCRIPT_FUNCTION_PLAYSOUND:
@@ -146,7 +148,7 @@ namespace vscript {
                             break;
                         }
                         // add a sound player function
-                        created_node = new CFunctionPlaysoundNode(target, arguments[1].c_str() );
+                        created_node = new CFunctionPlaysoundNode(target, arguments[1].c_str());
                         break;
                     }
                 }
@@ -166,14 +168,18 @@ namespace vscript {
                 float area_width  = atof(arguments[0].c_str());
                 float area_height = atof(arguments[1].c_str());
                 float area_depth  = atof(arguments[2].c_str());
-                created_node = new CCubeAreaNode(target, area_width, area_height, area_depth, "box", "");
+                created_node = new CCubeAreaNode(target, area_width, area_height, area_depth);
+                created_node->set_name("box");
+                created_node->set_comment("");
                 break;
             }
 
             case INEXOR_VSCRIPT_NODE_TYPE_AREA_SPHERE:
             {
                 float radius = atof(arguments[0].c_str());
-                created_node = new CSphereAreaNode(target, radius, "sphere", "");
+                created_node = new CSphereAreaNode(target, radius);
+                created_node->set_name("sphere");
+                created_node->set_comment("");
                 break;
             }
 
@@ -181,7 +187,9 @@ namespace vscript {
             {
                 float height = atof(arguments[0].c_str());
                 float radius = atof(arguments[1].c_str());
-                created_node = new CConeAreaNode(target, height, radius, "cone", "");
+                created_node = new CConeAreaNode(target, height, radius);
+                created_node->set_name("cone");
+                created_node->set_comment("");
                 break;
             }
 
@@ -189,19 +197,25 @@ namespace vscript {
             {
                 float height = atof(arguments[0].c_str());
                 float radius = atof(arguments[1].c_str());
-                created_node = new CCylinderAreaNode(target, height, radius, "cylinder", "");
+                created_node = new CCylinderAreaNode(target, height, radius);
+                created_node->set_name("cylinder");
+                created_node->set_comment("");
                 break;
             }
 
             case INEXOR_VSCRIPT_NODE_TYPE_MEMORY_INTEGER:
             {
-                created_node = new CMemIntegerNode(target, true, true, atoi(arguments[0].c_str()), "integer", "can have positive values (also null and negative)");
+                created_node = new CMemIntegerNode(target, true, true, atoi(arguments[0].c_str()));
+                created_node->set_name("integer");
+                created_node->set_comment("can have positive values (also null and negative)");
                 break;
             }
 
             case INEXOR_VSCRIPT_NODE_TYPE_MEMORY_FLOAT:
             {
-                created_node = new CMemFloatNode(target, true, true, atof(arguments[0].c_str()), "float", "can have decimal values (also null and negative)");
+                created_node = new CMemFloatNode(target, true, true, atof(arguments[0].c_str()));
+                created_node->set_name("float");
+                created_node->set_comment("can have decimal values (also null and negative)");
                 break;
             }
 
@@ -211,22 +225,32 @@ namespace vscript {
                 {
                     case INEXOR_VSCRIPT_OPERATOR_TYPE_INCREMENT:
                     {
-                        created_node = new COperatorNode(target, INEXOR_VSCRIPT_OPERATOR_TYPE_INCREMENT, "operator ++", "increments integer and float values");
+                        created_node = new COperatorNode(target, INEXOR_VSCRIPT_OPERATOR_TYPE_INCREMENT);
+                        created_node->set_name("operator ++");
+                        created_node->set_comment("increments integer and float values");
                         break;
                     }
                     case INEXOR_VSCRIPT_OPERATOR_TYPE_DECREMENT:
                     {
-                        created_node = new COperatorNode(target, INEXOR_VSCRIPT_OPERATOR_TYPE_DECREMENT, "operator --", "decrements integers and float values");
+                        created_node = new COperatorNode(target, INEXOR_VSCRIPT_OPERATOR_TYPE_DECREMENT);
+                        created_node->set_name("operator --");
+                        created_node->set_comment("decrements integers and float values");
                         break;
                     }
                     case INEXOR_VSCRIPT_OPERATOR_TYPE_SETNULL:
                     {
-                        created_node = new COperatorNode(target, INEXOR_VSCRIPT_OPERATOR_TYPE_SETNULL, "operator = 0", "sets integers and float values to zero");
+                        created_node = new COperatorNode(target, INEXOR_VSCRIPT_OPERATOR_TYPE_SETNULL);
+                        created_node->set_name("operator = 0");
+                        created_node->set_comment("sets integers and float values to zero");
                         break;
                     }
-
-                    // TODO: operator set <any value>
-
+                    case INEXOR_VSCRIPT_OPERATOR_TYPE_SETVAL:
+                    {
+                        created_node = new COperatorNode(target, INEXOR_VSCRIPT_OPERATOR_TYPE_SETVAL);
+                        created_node->set_name("operator = [value]");
+                        created_node->set_comment("sets integers and float values to [value]");
+                        break;
+                    }
                     default:
                     {
                         conoutf(CON_DEBUG, "[3DVS-operator] error: unknown operator type!");

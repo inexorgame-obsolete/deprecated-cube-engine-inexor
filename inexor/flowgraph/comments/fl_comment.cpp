@@ -3,14 +3,10 @@
 namespace inexor {
 namespace vscript {
 
-    CCommentNode::CCommentNode(vec position,
-                               const char* comment, 
-                               const char* name)
+    CCommentNode::CCommentNode(vec position)
     {
         type = INEXOR_VSCRIPT_NODE_TYPE_COMMENT;
         pos = position;
-        node_name = name;
-        node_comment = comment;
         default_box_color = INEXOR_VSCRIPT_COLOR_COMMENT;
         box_color = default_box_color;
     }

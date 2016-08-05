@@ -23,14 +23,9 @@ namespace vscript {
             unsigned int sleep_interval;
             bool         sleep_active;
 
-            CSleepNode(vec pos,
-                       unsigned int sleeptime,
-                       const char* name = "NewSleep1",
-                       const char* comment = "Hello World Comment for a Sleep");
-                
+            CSleepNode(vec pos, unsigned int sleeptime);
             ~CSleepNode();
             
-
             void in();
 
             bool OnLinkAsChildNodeAttempt(CScriptNode* parent);
