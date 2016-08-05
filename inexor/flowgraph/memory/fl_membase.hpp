@@ -27,7 +27,7 @@ namespace vscript {
         int    int_val;
         bool   bool_value;
         double double_value;
-        char   str_value[1024];
+        char   str_value[8192];
     };
 
     struct SMemoryBlock
