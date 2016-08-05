@@ -14,7 +14,6 @@
 namespace inexor {
 namespace vscript {
 
-
     enum INEXOR_VSCRIPT_NODE_TYPE
     {
         INEXOR_VSCRIPT_NODE_TYPE_INVALID = -1,
@@ -31,7 +30,6 @@ namespace vscript {
         INEXOR_VSCRIPT_NODE_TYPE_MEMORY_BOOL,
 
         // TODO: list and implement more data types
-
         INEXOR_VSCRIPT_NODE_TYPE_IF,
         INEXOR_VSCRIPT_NODE_TYPE_SWITCH,
         INEXOR_VSCRIPT_NODE_TYPE_CONDITION,
@@ -42,9 +40,20 @@ namespace vscript {
         INEXOR_VSCRIPT_NODE_TYPE_AREA_SPHERE,
         INEXOR_VSCRIPT_NODE_TYPE_AREA_CONE,
         INEXOR_VSCRIPT_NODE_TYPE_AREA_CYLINDER,
+
         //NODE_TYPE_PYRAMID,
         //NODE_TYPE_POLYGON,
         //NODE_TYPE_TUBE,
+
+        // operators
+        INEXOR_VSCRIPT_NODE_TYPE_OPERATOR,
+    };
+
+
+    enum INEXOR_VSCRIPT_OPERATOR_TYPE
+    {
+        INEXOR_VSCRIPT_OPERATOR_TYPE_INCREMENT = 0,
+        INEXOR_VSCRIPT_OPERATOR_TYPE_DECREMENT,
     };
 
     // TODO: implement areas that can be rotated in 3 dimensions

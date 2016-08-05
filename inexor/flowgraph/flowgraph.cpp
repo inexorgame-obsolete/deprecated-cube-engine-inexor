@@ -18,7 +18,7 @@
 #include "inexor/flowgraph/areas/cylinder/fl_area_cylinder.hpp"
 
 // operators
-#include "inexor/flowgraph/operators/increment/fl_increment.hpp"
+#include "inexor/flowgraph/operators/fl_operator.hpp"
 
 // data types
 #include "inexor/flowgraph/memory/integer/fl_mem_integer.hpp"
@@ -196,6 +196,28 @@ namespace vscript {
             {
                 created_node = new CMemIntegerNode(target, true, true, atoi(arguments[0].c_str()), "integer", "can have positive values (also null and negative)");
                 break;
+            }
+
+            case INEXOR_VSCRIPT_NODE_TYPE_OPERATOR:
+            {
+                switch(atoi(arguments[0].c_str()))
+                {
+                    case INEXOR_VSCRIPT_OPERATOR_TYPE_INCREMENT:
+                    {
+                        created_node = new COperatorNode(target, INEXOR_VSCRIPT_OPERATOR_TYPE_INCREMENT, "operator ++", "can increment integer and float values");
+                        break;
+                    }
+                    case INEXOR_VSCRIPT_OPERATOR_TYPE_DECREMENT:
+                    {
+                        created_node = new COperatorNode(target, INEXOR_VSCRIPT_OPERATOR_TYPE_DECREMENT, "operator --", "can decrement integer and float values");
+                        break;
+                    }
+                    default:
+                    {
+                        conoutf(CON_DEBUG, "[3DVS-operator] error: unknown operator type!");
+                        break;
+                    }
+                }
             }
         }
 
@@ -529,36 +551,35 @@ namespace vscript {
     }
     COMMAND(deleteallnodes, "");
     
+    // timers
     void vs_timer(const char* interval)
     {
         vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_TIMER, 7, interval, "0", interval, "0", "timer1", "this is a comment", "0");
     }
     COMMAND(vs_timer, "s");
 
+    // functions
     void vs_conoutf(const char* text)
     {
         vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_FUNCTION, 2, "0", text);
     }
     COMMAND(vs_conoutf,"s");
 
+    // sleep
     void vs_sleep(const char *interval)
     {
         vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_SLEEP, 1, interval);
     }
     COMMAND(vs_sleep, "s");
 
+    // comments
     void vs_comment(const char *comment)
     {
         vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_COMMENT, 1, comment);
     }
     COMMAND(vs_comment, "s");
-
-    void vs_memory(const char *value)
-    {
-        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_MEMORY_INTEGER, 1, value);
-    }
-    COMMAND(vs_memory, "s");
     
+    // areas
     void vs_box(const char* w, const char* h, const char* d)
     {
         vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_AREA_BOX, 3, w, h, d);
@@ -576,13 +597,34 @@ namespace vscript {
         vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_AREA_CONE, 2, height, radius);
     }
     COMMAND(vs_cone, "ss");
-
-
+    
     void vs_cylinder(const char* height, const char* radius)
     {
         vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_AREA_CYLINDER, 2, height, radius);
     }
     COMMAND(vs_cylinder, "ss");
 
+    // operators
+    void vs_increment(const char *value)
+    {
+        // increment is 0
+        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_OPERATOR, 2, "0", value);
+    }
+    COMMAND(vs_increment, "s");
+
+    void vs_decrement(const char *value)
+    {
+        // decrement is 1
+        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_OPERATOR, 2, "1", value);
+    }
+    COMMAND(vs_decrement, "s");
+
+    // memory
+    void vs_int(const char *value)
+    {
+        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_MEMORY_INTEGER, 1, value);
+    }
+    COMMAND(vs_int, "s");
+    
 };
 };

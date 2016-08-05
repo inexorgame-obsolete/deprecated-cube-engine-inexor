@@ -24,13 +24,14 @@ namespace vscript {
             void decrement();
 
             void set_value(int);
-            int get_value();
+            int  get_value();
+            
+            void render_additional();
 
             //virtual bool OnLinkAsChildNodeAttempt(CScriptNode* parent);
             //virtual bool OnUnLinkAsChildNodeAttempt(CScriptNode* parent);
             //virtual bool OnLinkAsParentNodeAttempt(CScriptNode* child);
             //virtual bool OnUnLinkAsParentNodeAttempt(CScriptNode* child);
-
 
         protected:
 
@@ -41,6 +42,8 @@ namespace vscript {
             /// boundaries for integer values
             int minimal_value = - INEXOR_VSCRIPT_MEMORY_MAX_VALUE;
             int maximal_value = + INEXOR_VSCRIPT_MEMORY_MAX_VALUE;
+
+            std::string additional_particle_text;
     };
 
 };
