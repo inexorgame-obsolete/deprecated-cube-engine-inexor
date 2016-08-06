@@ -24,14 +24,17 @@ namespace inexor { namespace rpc { namespace gluegen {
 // TODO add fast std::string replacement to utils
 // TODO add useful string formatter to utils
 // merge log stuff into one file in utils
-vector<string> split_by_delimter(string input, string delimiter)
+vector<string> split_by_delimiter(string input, string delimiter)
 {
-    using boost::regex;
-    using boost::split_regex;
-
-    vector<string> ns;
-    split_regex(ns, input, regex(delimiter));
-    return std::move(ns);
+    vector<string> out;
+    size_t last = 0; size_t next = 0;
+    while((next = input.find(delimiter, last)) != string::npos)
+    {
+        out.push_back(input.substr(last, next-last));
+        last = next + delimiter.size();
+    }
+    out.push_back(input.substr(last));
+    return std::move(out);
 }
 
 /// in place removes the leading cast from the argument string.
@@ -73,14 +76,27 @@ void remove_leading_whitespace(string &input)
         }
 }
 
-/// @warning requires data has no whitespace before or after the quotes.
-void remove_quotes(std::string &str)
+/// If first char of string is matching, remove the first and the last one of the string (no matter what the last one is).
+/// @warning does not do leading/trailing whitespace skimming.
+void remove_surrounding_char(std::string &str, const char first_cha)
 {
-    if(str.front() == '"')
+    if(str.front() == first_cha)
     {
         str.erase(0, 1);
         str.erase(str.size() - 1);
     }
+}
+
+/// @warning requires data has no whitespace before or after the quotes.
+void remove_quotes(std::string &str)
+{
+    remove_surrounding_char(str, '"');
+}
+
+/// @warning requires data has no whitespace before or after the brackets, see remove_surrounding_char.
+void remove_surrounding_brackets(std::string &str)
+{
+    remove_surrounding_char(str, '(');
 }
 
 /// Text can have subfields with more text + siblings text, usually you want all of them concatenated.
@@ -102,7 +118,7 @@ vector<xml_node> find_class_constructors(const xml_node &class_compound_xml)
 {
     vector<xml_node> constructors;
 
-    vector<string> ns(split_by_delimter(class_compound_xml.child("compoundname").text().as_string(), "::"));
+    vector<string> ns(split_by_delimiter(class_compound_xml.child("compoundname").text().as_string(), "::"));
     std::string raw_func_name = ns.back(); // constructor got same name as class
 
     for(const xml_node section : class_compound_xml.children("sectiondef"))
@@ -255,6 +271,108 @@ void find_options_classes(const std::vector<Path> class_xml_files)
     }
 }
 
+/// Splits a "something(totally(but pretty much ) stupid)great" into "something" "totally(but pretty much ) stupid" and "great".
+// Yes we could do this with boost::spirit or with some recursive grammar but oh well we dont need that atm.
+string parse_bracket(string input, string &before_bracket, string &after_bracket)
+{
+    string content(input);
+    int brackets_counter = 0;
+    size_t first_bracket_pos = 0;
+    size_t closing_bracket_pos = (input.size()-1);
+
+    for(size_t i = 0; i < input.size()-1; i++)
+    {
+        if(input[i] == '"') while(i < input.size() && input[i] != '"') i++; //skip brackets inside "". TODO handle bad escaping! "\""
+        if(input[i] == '(')
+        {
+            if(!brackets_counter) first_bracket_pos = i;
+            brackets_counter++;
+        }
+        else if(input[i] == ')')
+        {
+            brackets_counter--;
+            if(brackets_counter <= 0)
+            {
+                closing_bracket_pos = i;
+                break;
+            }
+        }
+    }
+    before_bracket = input.substr(0, first_bracket_pos);
+    content = input.substr(first_bracket_pos+1, closing_bracket_pos-first_bracket_pos-1);
+    after_bracket = input.substr(closing_bracket_pos);
+    return content;
+}
+
+/// Splits e.g. 'something, some(dadadalu,da), "ich,,,skwo"' into 3 strings "something", "some(dadadalu,da)" and ""ich,,,skwo""
+// Yes we could do this with boost::spirit or with some recursive grammar but oh well we dont need that atm.
+vector<string> tokenize_arg_list(string input)
+{
+    vector<string> tokens;
+
+    int brackets_counter = 0;
+    size_t last_token_end_pos = 0;
+
+    size_t len = input.size();
+
+    for(size_t i = 0; i < len; i++)
+    {
+        if(input[i] == '"') while(i < len && input[i] != '"') i++; //skip stuff inside "".
+        if(!brackets_counter && input[i] == ',')
+        {
+            tokens.push_back(input.substr(last_token_end_pos, i-last_token_end_pos));
+            last_token_end_pos = min(i+1, len); // +1 skipping the char itself
+        }
+        else if(input[i] == '(') brackets_counter++;
+        else if(input[i] == ')') brackets_counter--;
+    }
+    tokens.push_back(input.substr(last_token_end_pos));
+
+    return std::move(tokens);
+}
+
+/// Takes xml variable nodes and outputs ShTreeNode sharedvar declarations.
+void handle_shared_var(const xml_node var_xml, std::vector<ShTreeNode> &tree)
+{
+    //was tue ich: "(" << +char_-')' << ',' << char_-'|'oder'('+klammer-')'
+    // return content parse_bracket(string)
+    const string type = get_complete_xml_text(var_xml.child("type"));
+    const string name = get_complete_xml_text(var_xml.child("name"));
+    string argsstring = get_complete_xml_text(var_xml.child("argsstring"));
+    if(argsstring.empty()) return; // it is just an "extern" declaration
+
+    remove_surrounding_brackets(argsstring);
+
+    const vector<string> args(tokenize_arg_list(argsstring)); // argsstring = ("map", NoSync()|Persistent())          (defaultval, sharedoption|sharedoption|..)
+
+
+    std::cout << "type: " << type << " name: " << name << " argsstring: " << argsstring << " (num: " << args.size() << ")" << std::endl;
+    if(args.size() < 2) // no sharedoptions given (its not allowed to have only shared options as constructor args)
+    {
+        tree.push_back(ShTreeNode(type, name, vector<ShTreeNode::shared_option_arg>()));
+        return;
+    }
+
+    const vector<string> shared_option_strings(split_by_delimiter(boost::erase_all_copy(args.back(), " "), "|"));// remove "any" whitespace and tokenize
+
+    vector<ShTreeNode::shared_option_arg> shared_options;
+    for(string raw_str : shared_option_strings) // e.g. NoSync() or Range(0, 3) or Persistent(true)
+    {
+        ShTreeNode::shared_option_arg option;
+
+        string constructor_argsstr = parse_bracket(raw_str, option.class_name, string());
+        option.constructor_args = tokenize_arg_list(constructor_argsstr);
+
+
+        std::cout << "string: " << raw_str << std::endl;
+        std::cout << "opt name: " << option.class_name << std::endl << "args:";
+        for(auto i : option.constructor_args)
+            std::cout << " " << i;
+        std::cout << std::endl;
+    }
+    tree.push_back(ShTreeNode(type, name, shared_options));
+}
+
 bool find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tree)
 {
     //sorting input files:
@@ -268,7 +386,7 @@ bool find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tr
         if(contains(file.filename().string(), "_8cpp.xml")) cpp_xmls.push_back(file);
         if(contains(file.stem().string(), "class") || contains(file.stem().string(), "struct")) class_xmls.push_back(file);
     }
-    //find_options_classes(class_xmls);
+    find_options_classes(class_xmls);
 
     // parsing cpp-file xmls for shared declarations.
     //
@@ -317,14 +435,7 @@ bool find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tr
             }
         }
 
-        // handle shared variable declarations.
-        for(auto var : sharedvar_nodes)
-        {
-            const string type = get_complete_xml_text(var.child("type"));
-            const string name = get_complete_xml_text(var.child("name"));
-            std::cout << "type: " << type << " name: " << name << " argsstring: " << var.child("argsstring").text().as_string() << std::endl;
-            tree.push_back(ShTreeNode(type, name));
-        }
+        for(auto var : sharedvar_nodes) handle_shared_var(var, tree);
     }
     return true;
 }

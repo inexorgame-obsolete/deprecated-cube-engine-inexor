@@ -60,8 +60,20 @@ public:
     /// The protocol buffers variable index; 0 if unset
     uint64_t protoc_idx = 0;
 
+    /// A SharedOption used when declaring this variable inside the constructor.
+    struct shared_option_arg
+    {
+        /// The sharedoptions name.
+        std::string class_name;
+        /// The constructor args for the sharedoption instance.
+        std::vector<std::string> constructor_args;
+    };
+
+    /// We use this list to handle shared options.
+    const std::vector<shared_option_arg> shared_options;
+
     /// @param full_cpp_type_dcl The literal type declaration (e.g. "SharedVar<int>") from which the type_numeric will be deduced.
-    ShTreeNode(const std::string &full_cpp_type_dcl, const std::string &full_cpp_name);
+    ShTreeNode(const std::string &full_cpp_type_dcl, const std::string &full_cpp_name, const std::vector<shared_option_arg> &so_constructor_arguments);
 
     /// Known SharedVar types
     enum type_t

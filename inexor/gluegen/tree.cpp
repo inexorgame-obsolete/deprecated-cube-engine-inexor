@@ -25,7 +25,8 @@ const std::unordered_map<std::string, ShTreeNode::type_t> ShTreeNode::type_cpp_t
     {"SharedVar<int>", ShTreeNode::t_int}
 };
 
-ShTreeNode::ShTreeNode(const std::string &full_cpp_type_dcl, const std::string &full_cpp_name) : name_cpp_full(full_cpp_name)
+ShTreeNode::ShTreeNode(const std::string &full_cpp_type_dcl, const std::string &full_cpp_name, const std::vector<shared_option_arg> &so_constructor_arguments)
+                          : name_cpp_full(full_cpp_name), shared_options(so_constructor_arguments)
 {
     std::string type_templ_short(full_cpp_type_dcl);
     replace_all(type_templ_short, " ", "");
