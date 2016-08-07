@@ -25,7 +25,7 @@ public:
     Range(int min = 0, int max = (int)"{{index}}") {}
     Range(float min = 0.0f, float max = 1.0f) {}
 
-    const char *proto_template = "da";
+    const char *proto_template = "min= {{min}} max= {{max}}";
     const char *cpp_receive_template = "da";
     const char *cpp_send_template = "da";
 };

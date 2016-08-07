@@ -29,9 +29,11 @@ struct optionclass
     /// but also they get rendered with the previously available info about that shared declaration.
     std::vector<arg> template_hybrids;
 
+    optionclass() {}
     optionclass(std::string &&class_name) : name(class_name) {}
 };
-extern std::vector<optionclass> optionclasses;
+/// name, optionclass instance
+extern std::unordered_map<std::string, optionclass> optionclasses;
 
 class ShTreeNode {
 public:

@@ -14,7 +14,7 @@ using boost::algorithm::replace_all_copy;
 using boost::algorithm::replace_all;
 
 
-std::vector<optionclass> optionclasses;
+unordered_map<string, optionclass> optionclasses;
 
 
 /// Maps C++ string type declarations to the numeric type.
