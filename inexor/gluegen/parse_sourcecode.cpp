@@ -1,8 +1,10 @@
 #include <iostream>
 #include <set>
+#include <sstream>
+#include <vector>
+#include <string>
 
 #include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/regex.hpp>
 
 #include "inexor/gluegen/pugixml.hpp" // TODO make this global
 
@@ -18,7 +20,6 @@ using namespace std;
 
 namespace inexor { namespace rpc { namespace gluegen {
 
-// TODO remove duplication
 // Move to utils
 // TODO add fast hash table algorithms to utils
 // TODO add fast std::string replacement to utils
