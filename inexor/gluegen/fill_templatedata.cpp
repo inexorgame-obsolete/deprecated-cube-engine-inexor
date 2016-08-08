@@ -134,12 +134,11 @@ TemplateData fill_templatedata(vector<ShTreeNode> &tree, const string &ns)
         curvariable["index"] = std::to_string(index++);
         curvariable["name_unique"] = node.get_name_unique();
         curvariable["path"] = node.get_path();
-        curvariable["cpp_name"] = node.get_name_cpp_full();
+        curvariable["name_cpp_full"] = node.get_name_cpp_full();
+        curvariable["name_cpp_short"] = node.get_name_cpp_short();
 
-        vector<string> ns(split_by_delimiter(node.get_name_cpp_full(), "::"));
-        curvariable["cpp_raw_name"] = ns.back();
+        vector<string> ns(split_by_delimiter(node.get_namespace(), "::"));
 
-        ns.pop_back(); // remove the raw function name
         TemplateData namespace_sep_open{TemplateData::LambdaType{
             [ns](const string&)
         {

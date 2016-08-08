@@ -185,11 +185,11 @@ vector<xml_node> find_class_constructors(const xml_node &class_compound_xml)
 
     for(const xml_node section : class_compound_xml.children("sectiondef"))
     {
-        if(!strncmp(section.attribute("kind").value(), "public-func", 12))
+        if(string(section.attribute("kind").value()) == "public-func")
         {
             for(const xml_node member : section.children("memberdef"))
             {
-                if(!strncmp(member.attribute("kind").value(), "function", 9))
+                if(string(member.attribute("kind").value()) == "function")
                 {
                     if(raw_func_name == member.child("name").text().as_string())
                         constructors.push_back(member);
@@ -218,14 +218,13 @@ void handle_so_constructors(optionclass &opt, const xml_node &compound_xml)
         arg.name = param.child("declname").text().as_string();
         arg.default_value = get_complete_xml_text(param.child("defval"));
         if(!arg.default_value.empty()) opt.hasdefaultvals = true;
-        std::cout << "arg.name: " << arg.name;
+        std::cout << "arg.name: " << arg.name << std::endl;
         if(opt.hasdefaultvals)
         {
             remove_cast(arg.default_value);
             remove_quotes(arg.default_value);
             // TODO need escaping!
         }
-        else std::cout << std::endl;
         opt.constructor_args.push_back(arg);
     }
 
@@ -254,9 +253,9 @@ vector<xml_node> find_class_member_vars(const xml_node &class_compound_xml)
 {
     vector<xml_node> vars;
     for(const xml_node section : class_compound_xml.children("sectiondef"))
-        if(!strncmp(section.attribute("kind").value(), "public-attrib", 14))
+        if(string(section.attribute("kind").value()) == "public-attrib")
             for(const xml_node member : section.children("memberdef"))
-                if(!strncmp(member.attribute("kind").value(), "variable", 9))
+                if(string(member.attribute("kind").value()) == "variable")
                     vars.push_back(member);
     return vars;
 }
@@ -275,7 +274,6 @@ void handle_so_template_hybrids(optionclass &opt, const xml_node &compound_xml)
     }
     optionclasses[opt.name] = opt;
 
-    std::cout << "OptionClass found: " << opt.name << std::endl;
     for(auto templ_hy : opt.template_hybrids)
 
         std::cout << "[Template Hybrids inside " << opt.name << "] " << templ_hy.name << " = " << templ_hy.default_value << std::endl;
@@ -291,6 +289,8 @@ void handle_so_template_hybrids(optionclass &opt, const xml_node &compound_xml)
 void handle_shared_option(const xml_node &compound_xml)
 {
     optionclass opt(compound_xml.child("compoundname").text().as_string());
+    std::cout << "OptionClass found: " << opt.name << std::endl;
+
     handle_so_constructors(opt, compound_xml);
     handle_so_template_hybrids(opt, compound_xml);
 }
@@ -325,17 +325,14 @@ void find_options_classes(const std::vector<Path> class_xml_files)
 
         for(xml_node base_class : compound_xml.children("basecompoundref"))
         {
-            if(!strcmp(base_class.text().as_string(), "SharedOption"))
-            {
-                std::cout << "Found class derived from SharedOption: " << compound_xml.child("compoundname").text().as_string() << std::endl;
+            if(string(base_class.text().as_string()) == "SharedOption")
                 handle_shared_option(compound_xml);
-            }
         }
     }
 }
 
 /// Takes xml variable nodes and outputs ShTreeNode sharedvar declarations.
-void handle_shared_var(const xml_node var_xml, std::vector<ShTreeNode> &tree)
+void handle_shared_var(const xml_node var_xml, std::vector<ShTreeNode> &tree, std::string var_namespace)
 {
     //was tue ich: "(" << +char_-')' << ',' << char_-'|'oder'('+klammer-')'
     // return content parse_bracket(string)
@@ -352,7 +349,7 @@ void handle_shared_var(const xml_node var_xml, std::vector<ShTreeNode> &tree)
     std::cout << "type: " << type << " name: " << name << " argsstring: " << argsstring << " (num: " << args.size() << ")" << std::endl;
     if(args.size() < 2) // no sharedoptions given (its not allowed to have only shared options as constructor args)
     {
-        tree.push_back(ShTreeNode(type, name, vector<ShTreeNode::shared_option_arg>()));
+        tree.push_back(ShTreeNode(type, name, var_namespace, vector<ShTreeNode::shared_option_arg>()));
         return;
     }
 
@@ -374,20 +371,22 @@ void handle_shared_var(const xml_node var_xml, std::vector<ShTreeNode> &tree)
         std::cout << std::endl;
         shared_options.push_back(option);
     }
-    tree.push_back(ShTreeNode(type, name, shared_options));
+    tree.push_back(ShTreeNode(type, name, var_namespace, shared_options));
 }
 
 bool find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tree)
 {
     //sorting input files:
     std::vector<Path> all_xmls;
-    std::vector<Path> cpp_xmls;
+    std::vector<Path> code_xmls;
     std::vector<Path> class_xmls;
 
     list_files(xml_folder, all_xmls, ".xml");
     for(auto file : all_xmls)
     {
-        if(contains(file.filename().string(), "_8cpp.xml")) cpp_xmls.push_back(file);
+        if(contains(file.filename().string(), "_8cpp.xml") // cpp files for non-namespace declarations
+            || contains(file.filename().string(), "namespace")) //
+            code_xmls.push_back(file);
         if(contains(file.stem().string(), "class") || contains(file.stem().string(), "struct")) class_xmls.push_back(file);
     }
     find_options_classes(class_xmls);
@@ -402,7 +401,7 @@ bool find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tr
     //       member..
     //     section("var")
     //     section("define")..
-    for(auto file : cpp_xmls)
+    for(auto file : code_xmls)
     {
         //std::cout << "processing file: " << file.make_preferred() << std::endl;
 
@@ -415,31 +414,20 @@ bool find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tr
 
         xml_node compound_xml = xml.child("doxygen").child("compounddef"); //[@kind='file' and @language='C++']");
 
-
-        // skip files not including our API definition header.
-        bool file_includes_treehpp = false;
-        for(xml_node header : compound_xml.children("includes"))
-            if(!strcmp(header.text().as_string(), "inexor/rpc/SharedTree.hpp")) file_includes_treehpp = true;
-        //if(!file_includes_treehpp)
-        //{
-        //    std::cout << "skipping xml file: " << file.make_preferred() << " (no sharedtree.hpp include found)" << std::endl;
-        //    continue;
-        //}
-
-        std::vector<xml_node> sharedvar_nodes;
+        bool isnamespacefile = string(compound_xml.attribute("kind").value()) == "namespace";
+        std::string ns = isnamespacefile ? compound_xml.child("compoundname").text().as_string() : "";
         for(auto section : compound_xml.children("sectiondef"))
         {
-            if(!strncmp(section.attribute("kind").value(), "var", 3))
+            if(string(section.attribute("kind").value()) == "var"
+               || string(section.attribute("kind").value()) == "func") // sometimes accessing constructors gets mistakenly recognized as function
             {
                 for(auto member : section.children("memberdef"))
                 {
-                    if(strstr(member.child("definition").text().as_string(), "SharedVar"))
-                        sharedvar_nodes.push_back(member);
+                    if(contains(get_complete_xml_text(member.child("definition")), "SharedVar"))
+                        handle_shared_var(member, tree, ns);
                 }
             }
         }
-
-        for(auto var : sharedvar_nodes) handle_shared_var(var, tree);
     }
     return true;
 }

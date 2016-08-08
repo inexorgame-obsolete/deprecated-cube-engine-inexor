@@ -18,7 +18,7 @@
 
 // List of extern SharedVar declarations
 {{#shared_vars}}{{namespace_sep_open}}
-    extern SharedVar<{{type_cpp_primitive}}> {{cpp_raw_name}};
+    extern SharedVar<{{type_cpp_primitive}}> {{name_cpp_short}};
 {{namespace_sep_close}}
 {{/shared_vars}}
 
@@ -38,7 +38,7 @@ class treedata {
     void connectall()
     {
         // TODO: Dont call by type but by reference if not a ptr: *or& -> {cpp_observer_type}
-{{#shared_vars}}        {{cpp_name}}.onChange.connect([](const {{type_cpp_primitive}} oldvalue, const {{type_cpp_primitive}} newvalue)
+{{#shared_vars}}        {{name_cpp_full}}.onChange.connect([](const {{type_cpp_primitive}} oldvalue, const {{type_cpp_primitive}} newvalue)
             {
                 {{namespace}}::TreeNodeChanged val;
                 val.set_{{name_unique}}(newvalue);
@@ -51,7 +51,7 @@ class treedata {
     void syncall()
     {
         // TODO: Dont call by type but by reference if not a ptr: *or& -> {cpp_observer_type}
-{{#shared_vars}}        {{cpp_name}}.sync();
+{{#shared_vars}}        {{name_cpp_full}}.sync();
 {{/shared_vars}}
     }
 
@@ -59,7 +59,7 @@ class treedata {
     const std::unordered_map<int64, void *> cppvar_pointer_map
     {
         // { index, pointer_to_the_changed_var (see net2maintupel::ptr2var) }
-    {{#shared_vars}}    { {{index}}, (void *) &{{cpp_name}} },
+    {{#shared_vars}}    { {{index}}, (void *) &{{name_cpp_full}} },
     {{/shared_vars}}
     };
 

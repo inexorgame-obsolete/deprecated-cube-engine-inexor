@@ -41,9 +41,17 @@ public:
     /// e.g. "::inexor::rendering::screen::width"
     std::string get_name_cpp_full();
 
+    /// The c++ variable name excluding any namespaces.
+    /// e.g. "width"
+    std::string get_name_cpp_short();
+
     /// Name with prepended namespace, connected with underspaces.
     /// e.g. "_inexor_rendering_screen_width"
     std::string get_name_unique();
+
+    /// The C++ namespace of the variable.
+    /// e.g. inexor::rendering::screen.
+    std::string get_namespace();
 
     /// Path of the variable inside the tree.
     /// Atm we use only the namespace, e.g. inexor/rendering/screen/.
@@ -75,7 +83,8 @@ public:
     const std::vector<shared_option_arg> shared_options;
 
     /// @param full_cpp_type_dcl The literal type declaration (e.g. "SharedVar<int>") from which the type_numeric will be deduced.
-    ShTreeNode(const std::string &full_cpp_type_dcl, const std::string &full_cpp_name, const std::vector<shared_option_arg> &so_constructor_arguments);
+    ShTreeNode(const std::string &full_cpp_type_dcl, const std::string &full_cpp_name, const std::string &var_namespace_,
+               const std::vector<shared_option_arg> &so_constructor_arguments);
 
     /// Known SharedVar types
     enum type_t
@@ -114,7 +123,8 @@ private:
 
 
     // internal cached of the corresponding retrival function get_xy().
-    std::string name_cpp_full;
+    std::string name_cpp_short;
+    std::string var_namespace;
     std::string path;
 };
 

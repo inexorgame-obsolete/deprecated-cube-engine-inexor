@@ -3,6 +3,7 @@
 #include <boost/algorithm/string/replace.hpp>
 
 #include "inexor/gluegen/tree.hpp"
+#include "tree.hpp"
 
 namespace inexor {
 namespace rpc {
@@ -25,8 +26,9 @@ const std::unordered_map<std::string, ShTreeNode::type_t> ShTreeNode::type_cpp_t
     {"SharedVar<int>", ShTreeNode::t_int}
 };
 
-ShTreeNode::ShTreeNode(const std::string &full_cpp_type_dcl, const std::string &full_cpp_name, const std::vector<shared_option_arg> &so_constructor_arguments)
-                          : name_cpp_full(full_cpp_name), shared_options(so_constructor_arguments)
+ShTreeNode::ShTreeNode(const std::string &full_cpp_type_dcl, const std::string &cpp_name, const std::string &cpp_namespace, 
+                       const std::vector<shared_option_arg> &so_constructor_arguments)
+                          : name_cpp_short(cpp_name), var_namespace(cpp_namespace), shared_options(so_constructor_arguments)
 {
     std::string type_templ_short(full_cpp_type_dcl);
     replace_all(type_templ_short, " ", "");
@@ -52,7 +54,12 @@ const char * ShTreeNode::get_type_protobuf()
 
 std::string ShTreeNode::get_name_cpp_full()
 {
-    return name_cpp_full;
+    return var_namespace + (var_namespace.empty() ? "" : "::") + name_cpp_short;
+}
+
+std::string ShTreeNode::get_name_cpp_short()
+{
+    return name_cpp_short;
 }
 
 std::string ShTreeNode::get_name_unique()
@@ -60,11 +67,16 @@ std::string ShTreeNode::get_name_unique()
     return replace_all_copy(get_path(), "/", "_");
 }
 
+std::string ShTreeNode::get_namespace()
+{
+    return var_namespace;
+}
+
 std::string ShTreeNode::get_path()
 {
     if(path.empty())
     {
-        path = replace_all_copy(name_cpp_full, "::", "/");
+        path = replace_all_copy(get_name_cpp_full(), "::", "/");
         replace_all(path, "/inexor/", "/");
     }
     return path;
