@@ -1,6 +1,6 @@
 #include "inexor/engine/engine.hpp"
 
-VARP(maxdynlights, 0, min(3, MAXDYNLIGHTS), MAXDYNLIGHTS);
+VARP(maxdynlights, 0, 3, MAXDYNLIGHTS);
 VARP(dynlightdist, 0, 1024, 10000);
 
 struct dynlight
