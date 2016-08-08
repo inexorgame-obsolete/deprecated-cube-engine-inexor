@@ -131,6 +131,7 @@ TemplateData fill_templatedata(vector<ShTreeNode> &tree, const string &ns)
         TemplateData curvariable{TemplateData::Type::Object};
         curvariable["type_protobuf"] = node.get_type_protobuf();
         curvariable["type_cpp_primitive"] = node.get_type_cpp_primitive();
+        curvariable["type_numeric"] = std::to_string(node.get_type_numeric());
         curvariable["index"] = std::to_string(index++);
         curvariable["name_unique"] = node.get_name_unique();
         curvariable["path"] = node.get_path();

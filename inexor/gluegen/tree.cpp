@@ -51,6 +51,11 @@ const char * ShTreeNode::get_type_protobuf()
     return type_lookup[type_numeric].type_protobuf;
 }
 
+int ShTreeNode::get_type_numeric()
+{
+    return type_numeric;
+}
+
 
 std::string ShTreeNode::get_name_cpp_full()
 {

@@ -67,7 +67,7 @@ class treedata {
     const std::unordered_map<int64, int> index_to_type_map
     {
         // { index, enum_type(string=0,float=1,int=2) }
-    {{#shared_vars}}    { {{index}}, {{type}} },  // {{path}}, {{type_cpp_primitive}}
+    {{#shared_vars}}    { {{index}}, {{type_numeric}} },  // {{path}}, {{type_cpp_primitive}}
     {{/shared_vars}}
     };
 

@@ -67,6 +67,9 @@ public:
     /// The protocol buffers type for this node
     const char *get_type_protobuf();
 
+    /// The ambigous(protobuf, c++,fullc++wrapped) numeric type.
+    int get_type_numeric();
+
     /// The protocol buffers variable index; 0 if unset
     uint64_t protoc_idx = 0;
 
