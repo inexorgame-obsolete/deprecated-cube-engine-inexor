@@ -358,7 +358,7 @@ inline void ident::getval(tagval &v) const
 #define SVAR(name, cur) _SVAR(name, name, cur, 0)
 #define SVARP(name, cur) _SVAR(name, name, cur, IDF_PERSIST)
 #define SVARR(name, cur) _SVAR(name, name, cur, IDF_OVERRIDE)
-#define _SVARF(name, global, cur, body, persist) void var_##name(); SharedVar<char*> global; UNUSED char* dummy_register_##global = *global = (char*)svariable(#name, cur, &global, var_##name, persist); void var_##name() { body; }
+#define _SVARF(name, global, cur, body, persist) void var_##name(); SharedVar<char*> global((char*)cur); UNUSED char* dummy_register_##global = *global = (char*)svariable(#name, cur, &global, var_##name, persist); void var_##name() { body; }
 #define SVARFN(name, global, cur, body) _SVARF(name, global, cur, body, 0)
 #define SVARF(name, cur, body) _SVARF(name, name, cur, body, 0)
 #define SVARFP(name, cur, body) _SVARF(name, name, cur, body, IDF_PERSIST)
