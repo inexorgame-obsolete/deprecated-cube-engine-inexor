@@ -87,7 +87,6 @@ namespace vscript {
 
             unsigned int this_time;
             unsigned int last_time;
-
             unsigned int recursion_counter;
 
             std::string node_name;

@@ -7,9 +7,6 @@
 
 #include "inexor/flowgraph/memory/fl_membase.hpp"
 
-// TODO: ensure this memory size is available on all platforms!
-#define INEXOR_VSCRIPT_MEMORY_MAX_VALUE 1000 * 1000 * 1000
-
 namespace inexor {
 namespace vscript {
 
@@ -17,7 +14,7 @@ namespace vscript {
     {
         public:
     
-            CMemFloatNode(vec, bool, bool, int);
+            CMemFloatNode(vec, bool, bool, int, bool);
             ~CMemFloatNode();
 
             void increment();

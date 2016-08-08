@@ -13,7 +13,8 @@ namespace vscript {
     // Please note: only integers and floating points can be incremented!
     enum INEXOR_VSCRIPT_DATA_TYPE 
     {
-        INEXOR_VSCRIPT_DATA_TYPE_INTEGER,
+        INEXOR_VSCRIPT_DATA_TYPE_UNDEFINED = -1,
+        INEXOR_VSCRIPT_DATA_TYPE_INTEGER = 0,
         INEXOR_VSCRIPT_DATA_TYPE_FLOATING_POINT, // floating points are always double in this system
         INEXOR_VSCRIPT_DATA_TYPE_STRING,
         INEXOR_VSCRIPT_DATA_TYPE_BOOLEAN,
@@ -21,6 +22,9 @@ namespace vscript {
         INEXOR_VSCRIPT_DATA_TYPE_TIMESTAMP,
         INEXOR_VSCRIPT_DATA_TYPE_COLOR,
     };
+    
+    // TODO: ensure this memory size is available on all platforms!
+    #define INEXOR_VSCRIPT_MEMORY_MAX_VALUE 1000 * 1000 * 1000
 
     union INEXOR_VSCRIPT_MEMORY
     {
@@ -32,16 +36,19 @@ namespace vscript {
 
     struct SMemoryBlock
     {
+        bool constant_value;
+        INEXOR_VSCRIPT_DATA_TYPE type;
+        INEXOR_VSCRIPT_MEMORY data;
+
         SMemoryBlock()
         {
+            constant_value = false;
+            type = INEXOR_VSCRIPT_DATA_TYPE_UNDEFINED;
         }
 
         ~SMemoryBlock()
         {
         }
-
-        INEXOR_VSCRIPT_DATA_TYPE type;
-        INEXOR_VSCRIPT_MEMORY data;
     };
 
     // TODO: use std::any

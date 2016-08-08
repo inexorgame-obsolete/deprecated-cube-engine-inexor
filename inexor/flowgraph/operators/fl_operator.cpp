@@ -93,6 +93,7 @@ namespace vscript {
             case INEXOR_VSCRIPT_NODE_TYPE_SLEEP:
             case INEXOR_VSCRIPT_NODE_TYPE_TIMER:
                 return true;
+                break;
         }
         return false;
     }

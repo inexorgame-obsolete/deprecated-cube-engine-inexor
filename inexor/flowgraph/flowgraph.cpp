@@ -21,7 +21,8 @@
 #include "inexor/flowgraph/operators/fl_operator.hpp"
 
 // data types
-#include "inexor/flowgraph/memory/integer/fl_mem_integer.hpp"
+//#include "inexor/flowgraph/memory/integer/fl_mem_integer.hpp"
+//#include "inexor/flowgraph/memory/float/fl_mem_float.hpp"
 
 // geometry
 #include "inexor/geom/geom.hpp"
@@ -80,7 +81,7 @@ namespace vscript {
         va_start(parameters, parameter_count);
         for(unsigned int i=0; i<parameter_count; i++)
         {
-            arguments.push_back(va_arg(parameters, char *));
+            arguments.push_back(va_arg(parameters, char*));
         }
         va_end(parameters);
 
@@ -97,6 +98,7 @@ namespace vscript {
                 const char* comment     = arguments[5].c_str();
                 
                 if(0 == interval) interval = 1000;
+
                 /// TODO: implement many other time formats
                 INEXOR_VSCRIPT_TIME_FORMAT timer_format = INEXOR_VSCRIPT_TIME_FORMAT_MILISECONDS;
                 
@@ -170,7 +172,7 @@ namespace vscript {
                 float area_depth  = atof(arguments[2].c_str());
                 created_node = new CCubeAreaNode(target, area_width, area_height, area_depth);
                 created_node->set_name("box");
-                created_node->set_comment("");
+                created_node->set_comment("box area");
                 break;
             }
 
@@ -179,7 +181,7 @@ namespace vscript {
                 float radius = atof(arguments[0].c_str());
                 created_node = new CSphereAreaNode(target, radius);
                 created_node->set_name("sphere");
-                created_node->set_comment("");
+                created_node->set_comment("spheric area");
                 break;
             }
 
@@ -189,7 +191,7 @@ namespace vscript {
                 float radius = atof(arguments[1].c_str());
                 created_node = new CConeAreaNode(target, height, radius);
                 created_node->set_name("cone");
-                created_node->set_comment("");
+                created_node->set_comment("cone area");
                 break;
             }
 
@@ -199,23 +201,27 @@ namespace vscript {
                 float radius = atof(arguments[1].c_str());
                 created_node = new CCylinderAreaNode(target, height, radius);
                 created_node->set_name("cylinder");
-                created_node->set_comment("");
+                created_node->set_comment("cylinder area");
                 break;
             }
 
             case INEXOR_VSCRIPT_NODE_TYPE_MEMORY_INTEGER:
             {
-                created_node = new CMemIntegerNode(target, true, true, atoi(arguments[0].c_str()));
+                bool constant_value = false;
+                if(1 == atoi(arguments[1].c_str())) constant_value = true;
+                created_node = new CMemIntegerNode(target, true, true, atoi(arguments[0].c_str()), constant_value);
                 created_node->set_name("integer");
-                created_node->set_comment("can have positive values (also null and negative)");
+                created_node->set_comment("memory block for whole numbers");
                 break;
             }
 
             case INEXOR_VSCRIPT_NODE_TYPE_MEMORY_FLOAT:
             {
-                created_node = new CMemFloatNode(target, true, true, atof(arguments[0].c_str()));
+                bool constant_value = false;
+                if(1 == atoi(arguments[1].c_str())) constant_value = true;
+                created_node = new CMemFloatNode(target, true, true, atof(arguments[0].c_str()), constant_value);
                 created_node->set_name("float");
-                created_node->set_comment("can have decimal values (also null and negative)");
+                created_node->set_comment("memory block for float numbers");
                 break;
             }
 
@@ -227,7 +233,7 @@ namespace vscript {
                     {
                         created_node = new COperatorNode(target, INEXOR_VSCRIPT_OPERATOR_TYPE_INCREMENT);
                         created_node->set_name("operator ++");
-                        created_node->set_comment("increments integer and float values");
+                        created_node->set_comment("increments integers and float values");
                         break;
                     }
                     case INEXOR_VSCRIPT_OPERATOR_TYPE_DECREMENT:
@@ -490,7 +496,7 @@ namespace vscript {
             // render a 200ms long color effect once its activated
             if( (nodes[i]->this_time - nodes[i]->last_time) < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL)
             {
-                nodes[i]->box_color = INEXOR_VSCRIPT_COLOR_TRIGGERED;
+                nodes[i]->box_color = nodes[i]->triggered_color;
             }
             else 
             {
@@ -584,19 +590,21 @@ namespace vscript {
         }
     }
     
-
     void deleteallnodes()
     {
         vScript3D.delete_all_nodes();
     }
     COMMAND(deleteallnodes, "");
     
+    // TODO: implement some sort of parameter security!
+
     // timers
     void vs_timer(const char* interval)
     {
         vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_TIMER, 7, interval, "0", interval, "0", "timer1", "this is a comment", "0");
     }
     COMMAND(vs_timer, "s");
+
 
     // functions
     void vs_conoutf(const char* text)
@@ -605,12 +613,14 @@ namespace vscript {
     }
     COMMAND(vs_conoutf,"s");
 
+
     // sleep
     void vs_sleep(const char *interval)
     {
         vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_SLEEP, 1, interval);
     }
     COMMAND(vs_sleep, "s");
+
 
     // comments
     void vs_comment(const char *comment)
@@ -619,6 +629,7 @@ namespace vscript {
     }
     COMMAND(vs_comment, "s");
     
+
     // areas
     void vs_box(const char* w, const char* h, const char* d)
     {
@@ -644,6 +655,7 @@ namespace vscript {
     }
     COMMAND(vs_cylinder, "ss");
 
+
     // operators
     void vs_increment(const char *value)
     {
@@ -664,18 +676,30 @@ namespace vscript {
     }
     COMMAND(vs_setnull, "s");
 
-
     // memory
+
+    // integer values
     void vs_int(const char *value)
     {
-        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_MEMORY_INTEGER, 1, value);
+        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_MEMORY_INTEGER, 2, value, "0");
     }
     COMMAND(vs_int, "s");
+    void vs_intconst(const char *value)
+    {
+        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_MEMORY_INTEGER, 2, value, "1");
+    }
+    COMMAND(vs_intconst, "s");
+
+    // float values
     void vs_float(const char *value)
     {
-        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_MEMORY_FLOAT, 1, value);
+        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_MEMORY_FLOAT, 2, value, "0");
     }
     COMMAND(vs_float, "s");
-
+    void vs_floatconst(const char *value)
+    {
+        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_MEMORY_FLOAT, 2, value, "1");
+    }
+    COMMAND(vs_floatconst, "s");
 };
 };

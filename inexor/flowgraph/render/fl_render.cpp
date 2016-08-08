@@ -6,6 +6,7 @@ namespace vscript {
 
     CNodeRenderer::CNodeRenderer()
     {
+        triggered_color = INEXOR_VSCRIPT_COLOR_TRIGGERED;
     }
 
     CNodeRenderer::~CNodeRenderer()

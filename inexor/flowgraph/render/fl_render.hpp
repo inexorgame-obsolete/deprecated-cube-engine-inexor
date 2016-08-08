@@ -53,6 +53,7 @@ namespace vscript {
             ~CNodeRenderer();
 
             INEXOR_VSCRIPT_NODE_COLORS box_color;
+            INEXOR_VSCRIPT_NODE_COLORS triggered_color;
             INEXOR_VSCRIPT_NODE_COLORS default_box_color;
 
             void adjust_selection_color(int orient, int index);
