@@ -384,7 +384,7 @@ bool find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tr
     list_files(xml_folder, all_xmls, ".xml");
     for(auto file : all_xmls)
     {
-        if(contains(file.filename().string(), "_8cpp.xml") // cpp files for non-namespace declarations
+        if(contains(file.filename().string(), "_8cpp.xml") || contains(file.filename().string(), "_8hpp.xml") // cpp files for non-namespace declarations
             || contains(file.filename().string(), "namespace")) //
             code_xmls.push_back(file);
         if(contains(file.stem().string(), "class") || contains(file.stem().string(), "struct")) class_xmls.push_back(file);

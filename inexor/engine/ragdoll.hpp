@@ -1,3 +1,7 @@
+#pragma once
+
+#include "inexor/shared/command.hpp"
+
 struct ragdollskel
 {
     struct vert

@@ -1,3 +1,6 @@
+#pragma once
+#include "inexor/shared/command.hpp"
+
 static struct flaretype
 {
     int type;             /* flaretex index, 0..5, -1 for 6+random shine */

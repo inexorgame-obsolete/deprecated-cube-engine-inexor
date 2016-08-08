@@ -1,3 +1,7 @@
+#pragma once
+
+#include "inexor/shared/command.hpp"
+
 VARFP(envmapmodels, 0, 1, 1, preloadmodelshaders(true));
 VARFP(bumpmodels, 0, 1, 1, preloadmodelshaders(true));
 VARP(fullbrightmodels, 0, 0, 200);

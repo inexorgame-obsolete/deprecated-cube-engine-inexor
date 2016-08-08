@@ -1,3 +1,7 @@
+#pragma once
+
+#include "inexor/shared/command.hpp"
+
 // eye space depth texture for soft particles, done at low res then blurred to prevent ugly jaggies
 VARP(depthfxfpscale, 1, 1<<12, 1<<16);
 VARP(depthfxscale, 1, 1<<6, 1<<8);

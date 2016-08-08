@@ -1,3 +1,6 @@
+#pragma once
+
+#include "inexor/shared/command.hpp"
 VARP(gpuskel, 0, 1, 1);
 
 VAR(maxskelanimdata, 1, 192, 0);
