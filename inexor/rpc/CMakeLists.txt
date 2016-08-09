@@ -2,6 +2,23 @@
 # Generate Tree API Glue code
 
 # Before building Inexor we generate our serialization glue.
+# Therefore we use Doxygen to output the AST in .xml files and parse those, looking for Shared Declarations.
+
+# Run Doxygen
+# add a target to generate API documentation with Doxygen
+find_package(Doxygen)
+
+if(NOT DOXYGEN_FOUND)
+    message(FATAL_ERROR "Doxygen is needed to genarete our glue code.")
+endif()
+
+set(doxyfile ${MAINDIR}/doxygen-parser.conf)
+
+add_custom_target(run_doxygen
+    COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
+    COMMENT "Parsing sourcecode for Shared Declarations using doxygen for gluecode generation."
+    WORKING_DIRECTORY ${MAINDIR}
+    VERBATIM)
 
 set(gluegen_out_dir ${CMAKE_CURRENT_SOURCE_DIR})
 set(gluegen_out_h ${gluegen_out_dir}/treedata.gen.hpp)
