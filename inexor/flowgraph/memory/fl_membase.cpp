@@ -11,5 +11,22 @@ namespace vscript {
     {
     }
 
+
+    bool CMemoryNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
+    {
+        switch(parent->type)
+        {
+            case INEXOR_VSCRIPT_NODE_TYPE_OPERATOR:
+            return true;
+            break;
+        }
+        return false;
+    }
+
+    bool CMemoryNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
+    {
+        return false;
+    }
+
 };
 };

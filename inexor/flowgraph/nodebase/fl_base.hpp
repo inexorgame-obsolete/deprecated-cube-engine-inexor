@@ -11,6 +11,8 @@
 #include "inexor/flowgraph/render/fl_render.hpp"
 #include "inexor/geom/curves/bezier/bezier.hpp"
 
+#define INEXOR_VSCRIPT_NODE_ACTIVE_COLOR_EFFECT_INTERVAL 200 
+
 namespace inexor {
 namespace vscript {
 

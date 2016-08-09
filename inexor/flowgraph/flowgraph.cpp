@@ -20,13 +20,12 @@
 // operators
 #include "inexor/flowgraph/operators/fl_operator.hpp"
 
-// data types
-//#include "inexor/flowgraph/memory/integer/fl_mem_integer.hpp"
-//#include "inexor/flowgraph/memory/float/fl_mem_float.hpp"
-
 // geometry
 #include "inexor/geom/geom.hpp"
 #include "inexor/geom/curves/bezier/bezier.hpp"
+
+// events
+#include "inexor/flowgraph/events/fl_events.hpp"
 
 
 // use the engine's selection model
@@ -44,6 +43,7 @@ enum VSCRIPT_ENTITY_BOX_ORIENTATION
     INEXOR_VSCRIPT_BOX_BOTTOM,
     INEXOR_VSCRIPT_BOX_TOP
 };
+
 
 namespace inexor {
 namespace vscript {
@@ -493,8 +493,22 @@ namespace vscript {
             rayboxintersect(nodes[i]->pos, vec(boxsize), camera1->o, camdir, dist, orient);
             nodes[i]->selected = (orient != INEXOR_VSCRIPT_BOX_NO_INTERSECTION);
 
-            // render a 200ms long color effect once its activated
-            if( (nodes[i]->this_time - nodes[i]->last_time) < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL)
+            // make nodes blink when they have been triggered
+            unsigned int color_effect_interval = 0;
+            switch (nodes[i]->type)
+            {
+                case INEXOR_VSCRIPT_NODE_TYPE_TIMER:
+                    // Because timers can have very low intervals we use a third of the timer's interval
+                    // as the length of the color effect
+                    color_effect_interval = static_cast<CTimerNode*>(nodes[i])->timer_interval / 3;
+                    break;
+                default:
+                    color_effect_interval = INEXOR_VSCRIPT_NODE_ACTIVE_COLOR_EFFECT_INTERVAL;
+                    break;
+            }
+
+            // render color effect
+            if( (nodes[i]->this_time - nodes[i]->last_time) < color_effect_interval)
             {
                 nodes[i]->box_color = nodes[i]->triggered_color;
             }
@@ -566,8 +580,22 @@ namespace vscript {
                 glLineWidth(2.0f);
                 glBegin(GL_LINES);
 
-                // render a 200ms long color effect once its activated
-                if((nodes[i]->this_time - nodes[i]->last_time) < INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL)
+                // make nodes blink when they have been triggered
+                unsigned int color_effect_interval = 0;
+                switch (nodes[i]->type)
+                {
+                    case INEXOR_VSCRIPT_NODE_TYPE_TIMER:
+                        // Because timers can have very low intervals we use a third of the timer's interval
+                        // as the length of the color effect
+                        color_effect_interval = static_cast<CTimerNode*>(nodes[i])->timer_interval / 3;
+                        break;
+                    default:
+                        color_effect_interval = INEXOR_VSCRIPT_NODE_ACTIVE_COLOR_EFFECT_INTERVAL;
+                        break;
+                }
+
+                // render color effect
+                if((nodes[i]->this_time - nodes[i]->last_time) < color_effect_interval)
                 {
                     gle::color(vec::hexcolor(INEXOR_VSCRIPT_COLOR_TRIGGERED));
                 }

@@ -13,8 +13,9 @@ namespace vscript {
     class CDebugRay
     {
         public:
-        vec pos;
-        vec target;
+
+            vec pos;
+            vec target;
     };
 
 };

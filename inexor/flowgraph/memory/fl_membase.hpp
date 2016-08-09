@@ -61,6 +61,9 @@ namespace vscript {
 
             SMemoryBlock block;
 
+            bool CMemoryNode::OnLinkAsChildNodeAttempt(CScriptNode* parent);
+            bool CMemoryNode::OnLinkAsParentNodeAttempt(CScriptNode* child);
+
             // Please note: I think you can't define virtual "get" methods or "set" methods in here because
             // this would require an explicit type such as   int get();
 

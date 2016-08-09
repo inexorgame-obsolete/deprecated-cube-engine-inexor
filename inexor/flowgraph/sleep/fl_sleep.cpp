@@ -39,14 +39,13 @@ namespace vscript {
             SDL_Delay(10);
         }
         
-        default_box_color = INEXOR_VSCRIPT_COLOR_FUNCTION;
-
         sprintf(tmp, "0/%d ms", sleep_interval);
         node_comment = tmp;
+
+        default_box_color = INEXOR_VSCRIPT_COLOR_FUNCTION;
         box_color = INEXOR_VSCRIPT_COLOR_TRIGGERED;
         last_time = SDL_GetTicks();
         sleep_active = false;
-
         out();
     }
     

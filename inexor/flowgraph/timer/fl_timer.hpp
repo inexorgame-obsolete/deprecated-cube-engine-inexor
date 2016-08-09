@@ -9,9 +9,7 @@
 
 #define INEXOR_VSCRIPT_MIN_TIMER_INTERVAL              5
 #define INEXOR_VSCRIPT_MAX_TIMER_INTERVAL              1000 * 60 * 60 * 24 // 1 day
-#define INEXOR_VSCRIPT_ACTIVE_NODE_TIMER_INTERVAL      200 // render a color effect after a timer has been triggered
 #define INEXOR_VSCRIPT_DEFAULT_TIMER_EXECUTION_LIMIT   1000*1000
-
 #define INEXOR_VSCRIPT_TIMER_DEBUGGING 1
 
 namespace inexor {

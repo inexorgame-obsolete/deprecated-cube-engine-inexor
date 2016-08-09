@@ -6,6 +6,8 @@
 #define INEXOR_VSCRIPT_OPERATOR_HEADER
 
 #include "inexor/flowgraph/nodebase/fl_base.hpp"
+
+// memory
 #include "inexor/flowgraph/memory/integer/fl_mem_integer.hpp"
 #include "inexor/flowgraph/memory/float/fl_mem_float.hpp"
 
