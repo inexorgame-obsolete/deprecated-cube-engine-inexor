@@ -40,9 +40,15 @@ void CefSubsystem::tick() {
     CefDoMessageLoopWork();
 }
 
-void CefSubsystem::initialize(int argc, char **argv) {
-    spdlog::get("global")->debug() << "CefSubsystem::initialize() --> CefInitialize()\n";
+void CefSubsystem::initialize(int argc, char **argv)
+{
+    spdlog::get("global")->info("CefSubsystem::initialize() --> CefInitialize()");
+
+#ifdef WIN32
+    const CefMainArgs args(GetModuleHandle(NULL));
+#else
     const CefMainArgs args(argc, argv);
+#endif
     std::string executable_path = ExecutablePathWithoutBinary(argv[0]);
     spdlog::get("global")->info() << "Detected executable path: " << executable_path << "\n";
     InexorSettings settings(executable_path);
