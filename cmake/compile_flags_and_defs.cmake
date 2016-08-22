@@ -169,7 +169,8 @@ if(OS_WINDOWS)
   # -DNOMINMAX                            = Use the standard's templated min/max
   # -D_WIN32_WINNT=0x0600                 = Target is Windows Vista
   # -D_MATH_DEFINES_DEFINED               = We define our own math constants (PI, ln(2)...) this fixes warnings when including math.h
-  add_definitions(-DWIN32 -D_WIN32 -D_WINDOWS -DWINDOWS -DNOMINMAX -D_WIN32_WINNT=0x0600 -D_MATH_DEFINES_DEFINED)
+  # -DWIN32_LEAN_AND_MEAN               = Skip deprecated windows.h parts (which will for sure cause troubles)
+  add_definitions(-DWIN32 -D_WIN32 -D_WINDOWS -DWINDOWS -DNOMINMAX -D_WIN32_WINNT=0x0600 -D_MATH_DEFINES_DEFINED -DWIN32_LEAN_AND_MEAN )
   if(X64)
     add_definitions(-DWIN64)
   endif()	
