@@ -196,18 +196,13 @@ std::ostream& operator<<(std::ostream& os, const Observe<T> &x) {
     return os;
 }
 
-} // ns inexor::util
-} // ns inexor
-
-namespace inexor {
-namespace compat {
 
 // Specializations for min/max (otherwise they are causing
 // frequent problems)
 // TODO: Get rid of ::min, ::max; define these for std::*
 
 template<typename T>
-const T& min(const inexor::util::Observe<T> &a, const T &b) {
+const T& min(const inexor::util::Observe<T> &a,const T &b) {
     return std::min(*a, b);
 }
 template<typename T>
@@ -234,8 +229,6 @@ const T& max(const inexor::util::Observe<T> &a,
     return std::max(*a, *b);
 }
 
-
-} // ns inexor::compat
+} // ns inexor::util
 } // ns inexor
-
 #endif
