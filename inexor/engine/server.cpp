@@ -4,7 +4,6 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/crashreporter/CrashReporter.hpp"
 #include "inexor/util/Logging.hpp"
-#include "inexor/ui.hpp"
 
 #define LOGSTRLEN 512
 

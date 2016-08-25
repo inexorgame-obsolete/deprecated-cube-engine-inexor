@@ -1,6 +1,12 @@
 #include <iostream>
 
+#include "include/base/cef_bind.h"
+//#include "include/cef_task.h"
+#include "include/wrapper/cef_closure_task.h"
+
+#include "inexor/util/Logging.hpp"
 #include "inexor/ui/layer/InexorLayerManager.hpp"
+
 
 namespace inexor {
 namespace ui {
@@ -76,8 +82,8 @@ void InexorLayerManager::SetScreenSize(int width, int height)
 
 void InexorLayerManager::_CreateLayer(std::string name, std::string url)
 {
-    if (!CefCurrentlyOn(TID_UI)) {
-        CefPostTask(TID_UI, NewCefRunnableMethod(this, &InexorLayerManager::_CreateLayer, name, url));
+    if (!CefCurrentlyOn(TID_UI)) { // we are in the wrong thread, post it for execution on the right one.
+        CefPostTask(TID_UI, CefCreateClosureTask(base::Bind(&InexorLayerManager::_CreateLayer, this, name, url)));
     } else {
         CEF_REQUIRE_UI_THREAD();
         CefRefPtr<InexorLayer> layer = InexorLayerManager::CreateLayer(name, 0, 0, width, height, url);
