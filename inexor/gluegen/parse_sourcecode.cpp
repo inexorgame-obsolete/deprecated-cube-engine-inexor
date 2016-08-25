@@ -6,7 +6,8 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include "inexor/gluegen/pugixml.hpp" // TODO make this global
+#include <pugixml/pugiconfig.hpp>
+#include <pugixml/pugixml.hpp>
 
 #include "inexor/filesystem/path.hpp"
 #include "inexor/gluegen/parse_sourcecode.hpp"

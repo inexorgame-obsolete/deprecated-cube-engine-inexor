@@ -5,6 +5,7 @@
 ## It does need Doxygen for parsing the source and providing us with an AST (which inform us about Shared Declarations).
 
 find_path(MUSTACHE_INCLUDE_DIR kainjow/mustache.hpp)
+find_path(PUGIXML_INCLUDE_DIR pugixml/pugiconfig.hpp)
 
 declare_module(gluegen .)
 add_app(gluecodegenerator ${GLUEGEN_MODULE_SOURCES} CONSOLE_APP)
@@ -19,4 +20,4 @@ require_threads(gluecodegenerator)
 require_filesystem(gluecodegenerator)
 
 
-include_directories(${MUSTACHE_INCLUDE_DIR})
+include_directories(${MUSTACHE_INCLUDE_DIR} ${PUGIXML_INCLUDE_DIR})
