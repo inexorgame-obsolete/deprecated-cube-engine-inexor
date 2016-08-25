@@ -45,6 +45,7 @@ class InexorLayer : public CefClient,
 
         void ShowDevTools();
 
+        /// A layer can be visible or hidden.
         bool IsVisible() { return is_visible && browser.get(); };
         void SetVisibility(bool is_visible);
 
