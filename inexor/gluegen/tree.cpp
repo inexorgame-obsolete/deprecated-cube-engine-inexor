@@ -81,7 +81,7 @@ std::string ShTreeNode::get_path()
 {
     if(path.empty())
     {
-        path = replace_all_copy(get_name_cpp_full(), "::", "/");
+        path = "/" + replace_all_copy(get_name_cpp_full(), "::", "/");
         replace_all(path, "/inexor/", "/");
     }
     return path;
