@@ -43,12 +43,12 @@ int main(int argc, const char **argv)
     po::options_description params("PARAMETERS");
     params.add_options()
         ("help", "Print this help message")
-        ("namespace", po::value<string>(), "The namespace to use in the generated protocol file and c++ source files. (use C++ :: notation)")
-        ("out-proto", po::value<string>(), "The .proto file to write the protocol description to.")
-        ("out-header", po::value<string>(), "The header `.hpp` file the c++ tree adapter code should be generated in")
-        ("template-proto", po::value<string>(), "The mustache template which gets used to render(generate) the .proto file")
-        ("template-header", po::value<string>(), "The mustache template which gets used to render(generate) the '.hpp' header file")
-        ("XML-AST-folder", po::value<string>(), "The folder containing the doxygen xml (AST) output. We scan those for Shared Declarations");
+        ("namespace", po::value<string>()->required(), "The namespace to use in the generated protocol file and c++ source files. (use C++ :: notation)")
+        ("out-proto", po::value<string>()->required(), "The .proto file to write the protocol description to.")
+        ("out-header", po::value<string>()->required(), "The header `.hpp` file the c++ tree adapter code should be generated in")
+        ("template-proto", po::value<string>()->required(), "The mustache template which gets used to render(generate) the .proto file")
+        ("template-header", po::value<string>()->required(), "The mustache template which gets used to render(generate) the '.hpp' header file")
+        ("XML-AST-folder", po::value<string>()->required(), "The folder containing the doxygen xml (AST) output. We scan those for Shared Declarations");
 
     std::string exec{argv[0]};
 
@@ -59,24 +59,19 @@ int main(int argc, const char **argv)
     try {
         po::parsed_options parsed = po::command_line_parser(args).options(params).run();
         po::store(parsed, cli_config);
+
+        if(cli_config.count("help"))
+        {
+            usage(exec, params);
+            return 0;
+        }
+
         po::notify(cli_config);
     } 
     catch(po::error &e) {
-        std::cerr << "Failed to parse the options: " << e.what() << "\n\n";
+        std::cerr << "Failed to parse the main args: " << e.what() << "\n\n";
         usage(exec, params);
         return 1;
-    }
-
-    auto c = [&cli_config](const std::string &s)
-    {
-        return cli_config.count(s);
-    };
-
-    if(c("help") || !c("namespace") || !c("out-proto") || !c("out-header") || !c("XML-AST-folder") 
-                 || !c("template-proto") || !c("template-header"))
-    {
-        usage(exec, params);
-        return 0;
     }
 
     const string &ns_str = cli_config["namespace"].as<string>();
