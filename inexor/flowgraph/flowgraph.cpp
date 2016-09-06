@@ -266,7 +266,10 @@ namespace vscript {
             }
         }
 
-        if(nullptr != created_node) nodes.push_back(created_node);
+        if(nullptr != created_node)
+        {
+            nodes.push_back(created_node);
+        }
         return created_node;
         // TODO: delete created_node at program exit!
     }

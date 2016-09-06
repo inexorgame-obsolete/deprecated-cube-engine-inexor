@@ -18,7 +18,7 @@ namespace vscript {
             
             float cylinder_height;
             float cylinder_radius;
-            const int render_detail_level = 20;
+            const int render_detail_level = 30;
 
         public:
 

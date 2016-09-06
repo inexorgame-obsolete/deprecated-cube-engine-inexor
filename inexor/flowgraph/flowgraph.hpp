@@ -16,6 +16,7 @@
 
 #define INEXOR_VSCRIPT_TIMER_DEBUGGING 1
 
+
 namespace inexor {
 namespace vscript {
 

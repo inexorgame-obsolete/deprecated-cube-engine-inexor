@@ -5,7 +5,8 @@ namespace vscript {
 
     CCylinderAreaNode::CCylinderAreaNode(vec position, float radius, float height)
     {
-        type = INEXOR_VSCRIPT_NODE_TYPE_AREA_BOX;
+        type = INEXOR_VSCRIPT_NODE_TYPE_AREA_CYLINDER;
+        pos = position;
         cylinder_height = height;
         cylinder_radius = radius;
     }
@@ -21,13 +22,47 @@ namespace vscript {
 
     void CCylinderAreaNode::render_additional()
     {
+        // 2 loops in XY plane
+        glBegin(GL_LINE_LOOP);
         gle::color(vec::hexcolor(INEXOR_VSCRIPT_COLOR_AREA));
+        for(int i = 0; i<render_detail_level; i++)
+        {
+            vec p(pos);
+            p.add(boxsize / 2);
+            const vec2 &sc = sincos360[i*(360 / render_detail_level)];
+            p[0] += cylinder_radius * sc.x;
+            p[1] += cylinder_radius * sc.y;
+            p[2] += cylinder_height;
+            glVertex3f(p.x, p.y, p.z);
+        }
+        glEnd();
 
         glBegin(GL_LINE_LOOP);
-        loopi(render_detail_level)
+        for(int i = 0; i<render_detail_level; i++)
         {
-            vec tmp = vec(pos).rotate(2 * M_PI*i / render_detail_level, vec(0,1,0));
-            glVertex3f(tmp.x, tmp.y, tmp.z);
+            vec p(pos);
+            p.add(boxsize / 2);
+            const vec2 &sc = sincos360[i*(360 / render_detail_level)];
+            p[0] += cylinder_radius * sc.x;
+            p[1] += cylinder_radius * sc.y;
+            p[2] -= cylinder_height;
+            glVertex3f(p.x, p.y, p.z);
+        }
+        glEnd();
+
+        // vertical lines
+        glBegin(GL_LINES);
+        for(int i = 0; i<render_detail_level; i++)
+        {
+            vec p(pos);
+            p.add(boxsize / 2);
+            const vec2 &sc = sincos360[i*(360 / render_detail_level)];
+            p[0] += cylinder_radius * sc.x;
+            p[1] += cylinder_radius * sc.y;
+            p[2] += cylinder_height;
+            glVertex3f(p.x, p.y, p.z);
+            p[2] -= 2*cylinder_height;
+            glVertex3f(p.x, p.y, p.z);
         }
         glEnd();
     }
