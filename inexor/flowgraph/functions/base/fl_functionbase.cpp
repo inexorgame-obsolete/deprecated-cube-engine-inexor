@@ -1,4 +1,4 @@
-#include "inexor/flowgraph/functions/fl_functionbase.hpp"
+#include "inexor/flowgraph/functions/base/fl_functionbase.hpp"
 
 namespace inexor {
 namespace vscript {

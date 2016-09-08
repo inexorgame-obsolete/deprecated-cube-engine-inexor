@@ -9,8 +9,8 @@
 
 enum INEXOR_VSCRIPT_EVENT_TYPE
 {
-    INEXOR_VSCRIPT_PLAYER_ENTERS_AREA,
-    INEXOR_VSCRIPT_PLAYER_LEAVES_AREA,
+    INEXOR_VSCRIPT_PLAYER_ENTER_AREA,
+    INEXOR_VSCRIPT_PLAYER_LEAVE_AREA,
     INEXOR_VSCRIPT_PLAYER_DEATH,
     INEXOR_VSCRIPT_PLAYER_SPAWN,
     INEXOR_VSCRIPT_PLAYER_SHOT,
@@ -27,7 +27,7 @@ namespace vscript {
             ~CEventNodeBase();
 
             void in();
-            void check_for_event_triggered();
+            void check_trigger();
             void out();
 
             bool OnLinkAsChildNodeAttempt(CScriptNode* parent);

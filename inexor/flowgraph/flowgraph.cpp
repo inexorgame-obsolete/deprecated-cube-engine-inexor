@@ -9,7 +9,7 @@
 #include "inexor/flowgraph/memory/bool/fl_mem_bool.hpp"
 
 // functions
-#include "inexor/flowgraph/functions/fl_functionbase.hpp"
+#include "inexor/flowgraph/functions/base/fl_functionbase.hpp"
 #include "inexor/flowgraph/functions/fl_functions.hpp"
 
 // areas
@@ -26,7 +26,7 @@
 #include "inexor/geom/curves/bezier/bezier.hpp"
 
 // events
-#include "inexor/flowgraph/events/fl_events.hpp"
+#include "inexor/flowgraph/events/base/fl_event_base.hpp"
 
 // if conditions
 #include "inexor/flowgraph/if/fl_if_condition.hpp"
