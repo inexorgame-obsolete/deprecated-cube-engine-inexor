@@ -22,33 +22,35 @@ namespace vscript {
 
     void CConeAreaNode::render_additional()
     {
-        // TODO: buggy
-        if (cone_radius <= 0) return;
-        vec dir = vec(pos).sub(vec(0,0,+1)).normalize();
-        float angle = 1.0f;
-        vec spot = vec(dir).mul(cone_radius*cosf(angle*RAD)).add(pos), spoke;
-        spoke.orthogonal(dir);
-        spoke.normalize();
-        spoke.mul(cone_radius*sinf(angle*RAD));
-
+        // 2 loops in XY plane
+        glBegin(GL_LINE_LOOP);
         gle::color(vec::hexcolor(INEXOR_VSCRIPT_COLOR_AREA));
+        for(int i = 0; i<render_detail_level; i++)
+        {
+            vec p(pos);
+            p.add(boxsize / 2);
+            const vec2 &sc = sincos360[i*(360 / render_detail_level)];
+            p[0] += cone_radius * sc.x;
+            p[1] += cone_radius * sc.y;
+            glVertex3f(p.x, p.y, p.z);
+        }
+        glEnd();
 
         glBegin(GL_LINES);
-        loopi(render_detail_level)
+        gle::color(vec::hexcolor(INEXOR_VSCRIPT_COLOR_AREA));
+        for(int i = 0; i<render_detail_level; i++)
         {
-            glVertex3f(pos.x, pos.y, pos.z);
-            vec end_point = vec(spoke).rotate(2 * M_PI*i / render_detail_level, dir).add(spot);
-            glVertex3f(end_point.x, end_point.y, end_point.z);
+            vec p(pos);
+            p.add(boxsize / 2);
+            const vec2 &sc = sincos360[i*(360 / render_detail_level)];
+            p[0] += cone_radius * sc.x;
+            p[1] += cone_radius * sc.y;
+            glVertex3f(p.x, p.y, p.z);
+            glVertex3f(pos.x, pos.y, pos.z + cone_height);
         }
         glEnd();
 
-        glBegin(GL_LINE_LOOP);
-        loopi(render_detail_level)
-        {
-            vec tmp = vec(spoke).rotate(2 * M_PI*i / render_detail_level, dir).add(spot);
-            glVertex3f(tmp.x, tmp.y, tmp.z);
-        }
-        glEnd();
+
     }
 
     bool CConeAreaNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)

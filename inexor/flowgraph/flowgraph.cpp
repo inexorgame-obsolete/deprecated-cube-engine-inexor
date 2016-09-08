@@ -6,6 +6,7 @@
 
 // experimental
 #include "inexor/flowgraph/memory/fl_membase.hpp"
+#include "inexor/flowgraph/memory/bool/fl_mem_bool.hpp"
 
 // functions
 #include "inexor/flowgraph/functions/fl_functionbase.hpp"
@@ -222,6 +223,17 @@ namespace vscript {
                 created_node = new CMemFloatNode(target, true, true, atof(arguments[0].c_str()), constant_value);
                 created_node->set_name("float");
                 created_node->set_comment("memory block for float numbers");
+                break;
+            }
+
+            // TODO!
+            case INEXOR_VSCRIPT_NODE_TYPE_MEMORY_BOOL:
+            {
+                bool constant_value = false;
+                if(1 == atoi(arguments[1].c_str())) constant_value = true;
+                created_node = new CMemBoolNode(target, atof(arguments[0].c_str()), constant_value);
+                created_node->set_name("bool");
+                created_node->set_comment("memory block for boolean expressions");
                 break;
             }
 
@@ -732,5 +744,17 @@ namespace vscript {
         vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_MEMORY_FLOAT, 2, value, "1");
     }
     COMMAND(vs_floatconst, "s");
+    
+    // boolean values
+    void vs_bool(const char *value)
+    {
+        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_MEMORY_BOOL, 2, value, "0");
+    }
+    COMMAND(vs_bool, "s");
+    void vs_boolconst(const char *value)
+    {
+        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_MEMORY_BOOL, 2, value, "1");
+    }
+    COMMAND(vs_boolconst, "s");
 };
 };
