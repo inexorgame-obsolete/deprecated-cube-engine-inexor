@@ -24,6 +24,10 @@ namespace vscript {
         // these nodes can start a code execution
         INEXOR_VSCRIPT_NODE_TYPE_TIMER,
         INEXOR_VSCRIPT_NODE_TYPE_EVENT,
+        
+        INEXOR_VSCRIPT_NODE_TYPE_EVENT_PLAYER_ENTER_AREA,
+        INEXOR_VSCRIPT_NODE_TYPE_EVENT_PLAYER_EXIT_AREA,
+
         INEXOR_VSCRIPT_NODE_TYPE_FUNCTION,        
         
         //INEXOR_VSCRIPT_NODE_TYPE_MEMORY,

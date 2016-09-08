@@ -3,12 +3,34 @@
 namespace inexor {
 namespace vscript {
 
-    CEventNodeBase::CEventNodeBase()
+    CEventBaseNode::CEventBaseNode()
     {
     }
 
-    CEventNodeBase::~CEventNodeBase()
+    CEventBaseNode::~CEventBaseNode()
     {
+    }
+
+    void CEventBaseNode::in()
+    {
+    }
+
+    void CEventBaseNode::check_trigger()
+    {
+    }
+
+    void CEventBaseNode::out()
+    {
+
+    }
+
+    bool CEventBaseNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
+    {
+        return false;
+    }
+    bool CEventBaseNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
+    {
+        return false;
     }
 
 };

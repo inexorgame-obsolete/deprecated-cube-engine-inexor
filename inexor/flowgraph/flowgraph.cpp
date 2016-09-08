@@ -27,6 +27,7 @@
 
 // events
 #include "inexor/flowgraph/events/base/fl_event_base.hpp"
+#include "inexor/flowgraph/events/enter_area/fl_event_player_enter_area.hpp"
 
 // if conditions
 #include "inexor/flowgraph/if/fl_if_condition.hpp"
@@ -229,7 +230,6 @@ namespace vscript {
                 break;
             }
 
-            // TODO!
             case INEXOR_VSCRIPT_NODE_TYPE_MEMORY_BOOL:
             {
                 bool constant_value = false;
@@ -245,6 +245,15 @@ namespace vscript {
                 created_node = new CIfNode(target);
                 created_node->set_name("if-query");
                 created_node->set_comment("what if..?");
+                break;
+            }
+
+            // TODO: implement!
+            case INEXOR_VSCRIPT_NODE_TYPE_EVENT_PLAYER_ENTER_AREA:
+            {
+                created_node = new CPlayerEnterAreaEventNode(target);
+                created_node->set_name("player-enter-area-event");
+                created_node->set_comment("Just enter that damn spot man!");
                 break;
             }
 
@@ -372,6 +381,7 @@ namespace vscript {
         conoutf(CON_DEBUG, "[3DVS-node-linker] linked parent %s with child %s.", from->node_name.c_str(), to->node_name.c_str());
     }
 
+    // 
     void CVisualScriptSystem::disconnect_nodes(CScriptNode *from, CScriptNode *to)
     {
         // TODO: implement disconnect nodes!
@@ -487,7 +497,15 @@ namespace vscript {
         for(unsigned int i=0; i<nodes.size(); i++)
         {
             nodes[i]->this_time = SDL_GetTicks();
-            if(INEXOR_VSCRIPT_NODE_TYPE_TIMER == nodes[i]->type) nodes[i]->in();
+            switch(nodes[i]->type)
+            {
+                case INEXOR_VSCRIPT_NODE_TYPE_TIMER:
+                case INEXOR_VSCRIPT_NODE_TYPE_EVENT_PLAYER_ENTER_AREA:
+                {
+                    nodes[i]->in();
+                    break;
+                }
+            }
         }
     }
 
@@ -775,6 +793,13 @@ namespace vscript {
         vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_IF, 2, value, "1");
     }
     COMMAND(vs_if, "s");
+
+    // area events
+    void vs_area_event(const char *value)
+    {
+        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_EVENT_PLAYER_ENTER_AREA, 2, value, "0");
+    }
+    COMMAND(vs_area_event, "s");
 
 };
 };

@@ -19,12 +19,12 @@ enum INEXOR_VSCRIPT_EVENT_TYPE
 namespace inexor {
 namespace vscript {
 
-    class CEventNodeBase : public CScriptNode
+    class CEventBaseNode : public CScriptNode
     {
         public:
 
-            CEventNodeBase();
-            ~CEventNodeBase();
+            CEventBaseNode();
+            ~CEventBaseNode();
 
             void in();
             void check_trigger();
@@ -35,6 +35,7 @@ namespace vscript {
 
         protected:
 
+            INEXOR_VSCRIPT_EVENT_TYPE event_type;
 
     };
 
