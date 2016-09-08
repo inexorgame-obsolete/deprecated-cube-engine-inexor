@@ -7,7 +7,7 @@ namespace vscript {
     {
         type = INEXOR_VSCRIPT_NODE_TYPE_AREA_SPHERE;
         pos = position;
-        radius = rad;
+        sphere_radius = rad;
     }
 
     CSphereAreaNode::~CSphereAreaNode()
@@ -17,6 +17,11 @@ namespace vscript {
     bool CSphereAreaNode::collide(vec p)
     {
         return true;
+    }
+
+    float CSphereAreaNode::get_radius()
+    {
+        return sphere_radius;
     }
 
     void CSphereAreaNode::render_additional()
@@ -29,8 +34,8 @@ namespace vscript {
             vec p(pos);
             p.add(boxsize / 2);
             const vec2 &sc = sincos360[i*(360 / render_detail_level)];
-            p[0] += radius * sc.x;
-            p[1] += radius * sc.y;
+            p[0] += sphere_radius * sc.x;
+            p[1] += sphere_radius * sc.y;
             glVertex3f(p.x, p.y, p.z);
         }
         glEnd();
@@ -42,8 +47,8 @@ namespace vscript {
             vec p(pos);
             p.add(boxsize / 2);
             const vec2 &sc = sincos360[i*(360 / render_detail_level)];
-            p[1] += radius * sc.x;
-            p[2] += radius * sc.y;
+            p[1] += sphere_radius * sc.x;
+            p[2] += sphere_radius * sc.y;
             glVertex3f(p.x, p.y, p.z);
         }
         glEnd();
@@ -55,8 +60,8 @@ namespace vscript {
             vec p(pos);
             p.add(boxsize / 2);
             const vec2 &sc = sincos360[i*(360 / render_detail_level)];
-            p[0] += radius * sc.x;
-            p[2] += radius * sc.y;
+            p[0] += sphere_radius * sc.x;
+            p[2] += sphere_radius * sc.y;
             glVertex3f(p.x, p.y, p.z);
         }
         glEnd();

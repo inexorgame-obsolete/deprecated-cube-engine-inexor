@@ -14,7 +14,7 @@ namespace vscript {
     {
         protected:
 
-            float radius;
+            float sphere_radius;
             const int render_detail_level = 40;
 
         public:
@@ -24,6 +24,8 @@ namespace vscript {
             
             bool collide(vec p);
             void render_additional();
+
+            float get_radius();
 
             bool OnLinkAsChildNodeAttempt(CScriptNode* parent);
             bool OnLinkAsParentNodeAttempt(CScriptNode* child);

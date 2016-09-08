@@ -27,7 +27,8 @@
 
 // events
 #include "inexor/flowgraph/events/base/fl_event_base.hpp"
-#include "inexor/flowgraph/events/enter_area/fl_event_player_enter_area.hpp"
+#include "inexor/flowgraph/events/areas/base/fl_area_event_base.hpp"
+#include "inexor/flowgraph/events/areas/player_enter_area/fl_event_player_enter_area.hpp"
 
 // if conditions
 #include "inexor/flowgraph/if/fl_if_condition.hpp"
@@ -375,9 +376,10 @@ namespace vscript {
         newcurve.from = from;
         newcurve.to = to;
 
+        // store relation!
+        relations.push_back(newcurve);
         from->relations.push_back(newcurve);
         from->pos_changed = true;
-
         conoutf(CON_DEBUG, "[3DVS-node-linker] linked parent %s with child %s.", from->node_name.c_str(), to->node_name.c_str());
     }
 
@@ -665,7 +667,9 @@ namespace vscript {
 
     void deleteallnodes()
     {
+        // TODO: test this more frequently!
         vScript3D.delete_all_nodes();
+        conoutf(CON_DEBUG, "[3DVS-nodes] removed all nodes and all node relations.");
     }
     COMMAND(deleteallnodes, "");
     
@@ -795,11 +799,11 @@ namespace vscript {
     COMMAND(vs_if, "s");
 
     // area events
-    void vs_area_event(const char *value)
+    void vs_area_enter_event(const char *value)
     {
         vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_EVENT_PLAYER_ENTER_AREA, 2, value, "0");
     }
-    COMMAND(vs_area_event, "s");
+    COMMAND(vs_area_enter_event, "s");
 
 };
 };

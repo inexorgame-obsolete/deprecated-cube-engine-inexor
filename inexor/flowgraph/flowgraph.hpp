@@ -33,6 +33,7 @@ namespace vscript {
             ~CVisualScriptSystem();
 
             std::vector<CScriptNode*> nodes;
+            std::vector<SNodeRelation> relations;
             std::vector<CDebugRay> rays;
 
             geom::CBezierCurve tmp_relation_linker_curve;
