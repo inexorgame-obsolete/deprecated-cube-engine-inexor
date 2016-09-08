@@ -28,6 +28,9 @@
 // events
 #include "inexor/flowgraph/events/fl_events.hpp"
 
+// if conditions
+#include "inexor/flowgraph/if/fl_if_condition.hpp"
+
 
 // use the engine's selection model
 extern selinfo sel, lastsel, savedsel;
@@ -234,6 +237,14 @@ namespace vscript {
                 created_node = new CMemBoolNode(target, atof(arguments[0].c_str()), constant_value);
                 created_node->set_name("bool");
                 created_node->set_comment("memory block for boolean expressions");
+                break;
+            }
+
+            case INEXOR_VSCRIPT_NODE_TYPE_IF:
+            {
+                created_node = new CIfNode(target);
+                created_node->set_name("if-query");
+                created_node->set_comment("what if..?");
                 break;
             }
 
@@ -633,6 +644,7 @@ namespace vscript {
         }
     }
     
+
     void deleteallnodes()
     {
         vScript3D.delete_all_nodes();
@@ -756,5 +768,13 @@ namespace vscript {
         vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_MEMORY_BOOL, 2, value, "1");
     }
     COMMAND(vs_boolconst, "s");
+
+    // conditional
+    void vs_if(const char *value)
+    {
+        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_IF, 2, value, "1");
+    }
+    COMMAND(vs_if, "s");
+
 };
 };
