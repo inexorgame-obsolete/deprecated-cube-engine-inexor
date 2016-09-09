@@ -26,9 +26,7 @@ namespace vscript {
             CEventBaseNode();
             ~CEventBaseNode();
 
-            void in();
             void check_trigger();
-            void out();
 
             bool OnLinkAsChildNodeAttempt(CScriptNode* parent);
             bool OnLinkAsParentNodeAttempt(CScriptNode* child);

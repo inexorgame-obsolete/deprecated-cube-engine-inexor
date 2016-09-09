@@ -29,9 +29,11 @@ namespace vscript {
     
     void CPlayerAreaInteractionEventNode::check_trigger()
     {
+        if(nullptr == area || INEXOR_VSCRIPT_NODE_TYPE_INVALID == area_type) return;
         bool b_IsPlayerInsideArea = false;
         switch(area_type)
         {
+            // TODO: support more area types!
             case INEXOR_VSCRIPT_NODE_TYPE_AREA_BOX:
             {
                 break;
@@ -55,14 +57,14 @@ namespace vscript {
 
     void CPlayerAreaInteractionEventNode::update_interaction_status(bool is_player_in_sphere)
     {
-        if(is_player_in_sphere)
+        if(true == is_player_in_sphere)
         {
             if(INEXOR_VSCRIPT_PLAYER_AREA_INTERACTION_I_AM_OUTSIDE == area_player_interaction_status)
             {
                 // player was outside but now is inside
                 // change status and trigger (if neccesary)
                 area_player_interaction_status = INEXOR_VSCRIPT_PLAYER_AREA_INTERACTION_I_AM_INSIDE;
-                conoutf(CON_DEBUG, "[3DVS-area-player-interaction-event] player1 was outside and now is inside the area!");
+                //conoutf(CON_DEBUG, "[3DVS-area-player-interaction-event] player1 was outside and now is inside the area!");
                 // this is an event which triggers when a players enters an area -> trigger!
                 if(INEXOR_VSCRIPT_EVENT_TYPE_PLAYER_ENTER_AREA == event_type) trigger();
             }
@@ -74,7 +76,7 @@ namespace vscript {
                 // player was inside but now is outside
                 // change status and trigger (if neccesary)
                 area_player_interaction_status = INEXOR_VSCRIPT_PLAYER_AREA_INTERACTION_I_AM_OUTSIDE;
-                conoutf(CON_DEBUG, "[3DVS-area-player-interaction-event] player1 was inside and now is outside the area!");
+                //conoutf(CON_DEBUG, "[3DVS-area-player-interaction-event] player1 was inside and now is outside the area!");
                 // this is an event which triggers when a players leaves an area -> trigger!
                 if(INEXOR_VSCRIPT_EVENT_TYPE_PLAYER_LEAVE_AREA == event_type) trigger();
             }
@@ -83,18 +85,8 @@ namespace vscript {
 
     void CPlayerAreaInteractionEventNode::trigger()
     {
-        conoutf(CON_DEBUG, "[3DVS-area-player-interaction-event] I was told to trigger something?");
+        //conoutf(CON_DEBUG, "[3DVS-area-player-interaction-event] I was told to trigger something?");
         out();
-    }
-
-    bool CPlayerAreaInteractionEventNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
-    {
-        return true;
-    }
-
-    bool CPlayerAreaInteractionEventNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
-    {
-        return true;
     }
 
 };

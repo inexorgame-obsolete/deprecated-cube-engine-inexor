@@ -11,27 +11,17 @@ namespace vscript {
     {
     }
 
-
-    void CEventBaseNode::in()
-    {
-    }
-
     void CEventBaseNode::check_trigger()
-    {
-    }
-
-    void CEventBaseNode::out()
     {
     }
 
     bool CEventBaseNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
-        return true;
+        return false;
     }
     bool CEventBaseNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
     {
-        // TODO: specify rules!
-        return true;
+        return false;
     }
 
 };

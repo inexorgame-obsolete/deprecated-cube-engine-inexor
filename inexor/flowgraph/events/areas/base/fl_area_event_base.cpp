@@ -25,7 +25,7 @@ namespace vscript {
             {
                 area = parent;
                 area_type = parent->type;
-                conoutf(CON_DEBUG, "[3DVS-player-enter-area-event] linked '%s' as event trigger area.", parent->node_name.c_str());
+                conoutf(CON_DEBUG, "[3DVS-area-event-node] linked '%s' as event trigger area.", parent->node_name.c_str());
                 return true;
                 break;
             }
@@ -35,6 +35,20 @@ namespace vscript {
 
     bool CAreaEventNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
     {
+        switch(child->type)
+        {
+            case INEXOR_VSCRIPT_NODE_TYPE_FUNCTION:
+            case INEXOR_VSCRIPT_NODE_TYPE_SLEEP:
+            {
+                return true;
+                break;
+            }
+            default:
+            {
+                return false;
+                break;
+            }
+        }
         return false;
     }
 

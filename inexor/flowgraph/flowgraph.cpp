@@ -399,7 +399,7 @@ namespace vscript {
         relations.push_back(newcurve);
         from->relations.push_back(newcurve);
         from->pos_changed = true;
-        conoutf(CON_DEBUG, "[3DVS-node-linker] linked parent %s with child %s.", from->node_name.c_str(), to->node_name.c_str());
+        //conoutf(CON_DEBUG, "[3DVS-node-linker] linked parent %s with child %s.", from->node_name.c_str(), to->node_name.c_str());
     }
 
     // 

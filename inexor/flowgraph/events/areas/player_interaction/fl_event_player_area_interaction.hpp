@@ -26,11 +26,7 @@ namespace vscript {
             void in();
             void check_trigger();
             void update_interaction_status(bool);
-
             void trigger();
-
-            bool OnLinkAsChildNodeAttempt(CScriptNode* parent);
-            bool OnLinkAsParentNodeAttempt(CScriptNode* child);
             
         protected:
 
