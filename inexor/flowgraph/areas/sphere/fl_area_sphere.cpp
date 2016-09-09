@@ -22,6 +22,7 @@ namespace vscript {
 
     bool CSphereAreaNode::is_point_inside_sphere(vec point_pos)
     {
+        // TODO: speed this up by using the squared method (see David Scherfgen's book)
         return pos.dist(point_pos) < sphere_radius;
     }
 

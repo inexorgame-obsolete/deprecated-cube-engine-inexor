@@ -28,7 +28,7 @@
 // events
 #include "inexor/flowgraph/events/base/fl_event_base.hpp"
 #include "inexor/flowgraph/events/areas/base/fl_area_event_base.hpp"
-#include "inexor/flowgraph/events/areas/player_enter_area/fl_event_player_enter_area.hpp"
+#include "inexor/flowgraph/events/areas/player_interaction/fl_event_player_area_interaction.hpp"
 
 // if conditions
 #include "inexor/flowgraph/if/fl_if_condition.hpp"
@@ -250,11 +250,30 @@ namespace vscript {
             }
 
             // TODO: implement!
-            case INEXOR_VSCRIPT_NODE_TYPE_EVENT_PLAYER_ENTER_AREA:
+            case INEXOR_VSCRIPT_NODE_TYPE_EVENT:
             {
-                created_node = new CPlayerEnterAreaEventNode(target);
-                created_node->set_name("player-enter-area-event");
-                created_node->set_comment("Just enter that damn spot man!");
+                switch(atoi(arguments[0].c_str()))
+                {
+                    case INEXOR_VSCRIPT_EVENT_TYPE_PLAYER_ENTER_AREA:
+                    {
+                        created_node = new CPlayerAreaInteractionEventNode(target, INEXOR_VSCRIPT_EVENT_TYPE_PLAYER_ENTER_AREA);
+                        created_node->set_name("player-enter-area-event");
+                        created_node->set_comment("Just enter that damn area!");
+                        break;
+                    }
+                    case INEXOR_VSCRIPT_EVENT_TYPE_PLAYER_LEAVE_AREA:
+                    {
+                        created_node = new CPlayerAreaInteractionEventNode(target, INEXOR_VSCRIPT_EVENT_TYPE_PLAYER_LEAVE_AREA);
+                        created_node->set_name("player-leave-area-event");
+                        created_node->set_comment("Just leave that damn area!");
+                        break;
+                    }
+                    default:
+                    {
+                        conoutf(CON_DEBUG, "[3DVS-area-player-interaction-event] unknown event type!");
+                        break;
+                    }
+                }
                 break;
             }
 
@@ -502,7 +521,7 @@ namespace vscript {
             switch(nodes[i]->type)
             {
                 case INEXOR_VSCRIPT_NODE_TYPE_TIMER:
-                case INEXOR_VSCRIPT_NODE_TYPE_EVENT_PLAYER_ENTER_AREA:
+                case INEXOR_VSCRIPT_NODE_TYPE_EVENT:
                 {
                     nodes[i]->in();
                     break;
@@ -799,11 +818,11 @@ namespace vscript {
     COMMAND(vs_if, "s");
 
     // area events
-    void vs_area_enter_event(const char *value)
+    void vs_area_player_enter_event(const char *value)
     {
-        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_EVENT_PLAYER_ENTER_AREA, 2, value, "0");
+        vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_EVENT, 1, value);
     }
-    COMMAND(vs_area_enter_event, "s");
+    COMMAND(vs_area_player_enter_event, "s");
 
 };
 };
