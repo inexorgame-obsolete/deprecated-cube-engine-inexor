@@ -25,7 +25,6 @@ namespace vscript {
             CConeAreaNode(vec, float, float);
             ~CConeAreaNode();
             
-            bool collide(vec p);
             void render_additional();
 
             bool OnLinkAsChildNodeAttempt(CScriptNode* parent);

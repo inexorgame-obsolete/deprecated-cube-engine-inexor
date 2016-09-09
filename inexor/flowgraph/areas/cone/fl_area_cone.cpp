@@ -15,10 +15,6 @@ namespace vscript {
     {
     }
 
-    bool CConeAreaNode::collide(vec p)
-    {
-        return true;
-    }
 
     void CConeAreaNode::render_additional()
     {
@@ -55,7 +51,7 @@ namespace vscript {
 
     bool CConeAreaNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
-        conoutf(CON_DEBUG, "[3DVS-boxarea] a cone area can't run any code so it can't be linked as child!");
+        conoutf(CON_DEBUG, "[3DVS-area-cone] a cone area can't run any code so it can't be linked as child!");
         return false;
     }
 
@@ -63,7 +59,7 @@ namespace vscript {
     {
         if(child->type != INEXOR_VSCRIPT_NODE_TYPE_EVENT)
         {
-            conoutf(CON_DEBUG, "[3DVS-boxarea] a cone can only be linked as parent of an event node!");
+            conoutf(CON_DEBUG, "[3DVS-area-cone] a cone can only be linked as parent of an event node!");
         }
         return true;
     }

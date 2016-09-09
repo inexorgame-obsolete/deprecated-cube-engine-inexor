@@ -25,7 +25,6 @@ namespace vscript {
             CCubeAreaNode(vec, float, float, float);
             ~CCubeAreaNode();
             
-            bool collide(vec p);
             void render_additional();
 
             bool OnLinkAsChildNodeAttempt(CScriptNode* parent);

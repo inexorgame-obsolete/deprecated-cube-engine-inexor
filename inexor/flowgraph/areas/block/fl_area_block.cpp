@@ -16,10 +16,6 @@ namespace vscript {
     {
     }
 
-    bool CCubeAreaNode::collide(vec p)
-    {
-        return true;
-    }
 
     void CCubeAreaNode::render_additional()
     {
@@ -76,7 +72,7 @@ namespace vscript {
 
     bool CCubeAreaNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
-        conoutf(CON_DEBUG, "[3DVS-boxarea] a box area can't run any code so it can't be linked as child!");
+        conoutf(CON_DEBUG, "[3DVS-area-box] a box area can't run any code so it can't be linked as child!");
         return false;
     }
 
@@ -84,7 +80,7 @@ namespace vscript {
     {
         if(child->type != INEXOR_VSCRIPT_NODE_TYPE_EVENT)
         {
-            conoutf(CON_DEBUG, "[3DVS-boxarea] a box can only be linked as parent of an event node!");
+            conoutf(CON_DEBUG, "[3DVS-area-box] a box can only be linked as parent of an event node!");
         }
         return true;
     }

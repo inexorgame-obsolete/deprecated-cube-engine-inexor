@@ -17,6 +17,7 @@ namespace vscript {
     {
     }
 
+
     void CPlayerEnterAreaEventNode::in()
     {
         check_trigger();
@@ -24,7 +25,6 @@ namespace vscript {
     
     void CPlayerEnterAreaEventNode::check_trigger()
     {
-        //conoutf(CON_DEBUG, "[3DVS-player-enter-area-event] checking... aha!");
         switch(area_type)
         {
             case INEXOR_VSCRIPT_NODE_TYPE_AREA_BOX:
@@ -33,14 +33,14 @@ namespace vscript {
             }
             case INEXOR_VSCRIPT_NODE_TYPE_AREA_SPHERE:
             {
-                float sphere_radius = static_cast<CSphereAreaNode*>(area)->get_radius();
-                if(area->pos.dist(game::player1->o) < sphere_radius)
+                // TODO: change state
+                if(static_cast<CSphereAreaNode*>(area)->is_point_inside_sphere(game::player1->o))
                 {
-                    // TODO: change state...
                     conoutf(CON_DEBUG, "[3DVS-player-enter-area-event] I'm IN!!!");
                     out();
                 }
-                else {
+                else 
+                {
                     conoutf(CON_DEBUG, "[3DVS-player-enter-area-event] I'm OUT!!!");
                 }
                 break;

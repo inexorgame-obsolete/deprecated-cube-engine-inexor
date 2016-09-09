@@ -15,17 +15,18 @@ namespace vscript {
         protected:
 
             float sphere_radius;
-            const int render_detail_level = 40;
+            // TODO: make the render detail level dynamic
+            const int render_detail_level = 50;
 
         public:
 
             CSphereAreaNode(vec, float);
             ~CSphereAreaNode();
             
-            bool collide(vec p);
-            void render_additional();
-
             float get_radius();
+            // render sphere around node box
+            void render_additional();
+            bool is_point_inside_sphere(vec);
 
             bool OnLinkAsChildNodeAttempt(CScriptNode* parent);
             bool OnLinkAsParentNodeAttempt(CScriptNode* child);

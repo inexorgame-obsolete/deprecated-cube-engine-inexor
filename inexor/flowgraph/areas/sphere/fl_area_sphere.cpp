@@ -14,14 +14,15 @@ namespace vscript {
     {
     }
 
-    bool CSphereAreaNode::collide(vec p)
-    {
-        return true;
-    }
 
     float CSphereAreaNode::get_radius()
     {
         return sphere_radius;
+    }
+
+    bool CSphereAreaNode::is_point_inside_sphere(vec point_pos)
+    {
+        return pos.dist(point_pos) < sphere_radius;
     }
 
     void CSphereAreaNode::render_additional()
@@ -69,7 +70,7 @@ namespace vscript {
 
     bool CSphereAreaNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
-        conoutf(CON_DEBUG, "[3DVS-boxarea] a sphere area can't run any code so it can't be linked as child!");
+        conoutf(CON_DEBUG, "[3DVS-area-sphere] a sphere area can't run any code so it can't be linked as child node!");
         return false;
     }
 
@@ -77,7 +78,7 @@ namespace vscript {
     {
         if(child->type != INEXOR_VSCRIPT_NODE_TYPE_EVENT)
         {
-            conoutf(CON_DEBUG, "[3DVS-boxarea] a sphere can only be linked as parent of an event node!");
+            conoutf(CON_DEBUG, "[3DVS-area-sphere] a sphere can only be linked as parent of an event node!");
         }
         return true;
     }
