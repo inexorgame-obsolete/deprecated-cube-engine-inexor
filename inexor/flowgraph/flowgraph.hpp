@@ -13,9 +13,7 @@
 #include "inexor/flowgraph/render/fl_render.hpp"
 #include "inexor/flowgraph/editor/fl_enteditor.hpp"
 #include "inexor/flowgraph/debugger/fl_dbgrays.hpp"
-
-#define INEXOR_VSCRIPT_TIMER_DEBUGGING 1
-
+#include "inexor/flowgraph/events/base/fl_event_base.hpp"
 
 namespace inexor {
 namespace vscript {
@@ -33,13 +31,14 @@ namespace vscript {
             ~CVisualScriptSystem();
 
             std::vector<CScriptNode*> nodes;
+            // TODO: implement disconnect nodes using this vector
             std::vector<SNodeRelation> relations;
             std::vector<CDebugRay> rays;
 
             geom::CBezierCurve tmp_relation_linker_curve;
 
-            CScriptNode* add_node(INEXOR_VSCRIPT_NODE_TYPE type, int parameter_count, ...);
-            void remove_node(CScriptNode* node);
+            CScriptNode* add_node(INEXOR_VSCRIPT_NODE_TYPE, int, ...);
+            void remove_node(CScriptNode*);
 
             void start_rendering();
             void end_rendering();
@@ -50,9 +49,12 @@ namespace vscript {
 
             void run();
             
-            void validate_new_relation(CScriptNode *from, CScriptNode *to);
-            void connect_nodes(CScriptNode *from, CScriptNode *to);
-            void disconnect_nodes(CScriptNode *from, CScriptNode *to);
+            void validate_new_relation(CScriptNode *, CScriptNode *);
+
+            void connect_nodes(CScriptNode *, CScriptNode *);
+            void disconnect_nodes(CScriptNode *, CScriptNode *);
+
+            void announce_event(INEXOR_VSCRIPT_EVENT_TYPE);
 
             void update_drag_n_drop();
             void update_relation_linker();
@@ -60,7 +62,6 @@ namespace vscript {
             void sync_all_timers();
             void delete_all_nodes();
     };
-
 
 };
 };

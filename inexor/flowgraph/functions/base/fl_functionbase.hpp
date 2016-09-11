@@ -22,10 +22,10 @@ namespace vscript {
     {
         public:
 
-        CFunctionBase();
-        ~CFunctionBase();
+            CFunctionBase();
+            ~CFunctionBase();
 
-        // TODO: implement parameters and a return value!
+            // TODO: implement parameters and a return value!
     };
 
 };

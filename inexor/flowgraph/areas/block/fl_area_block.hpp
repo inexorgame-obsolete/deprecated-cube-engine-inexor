@@ -25,10 +25,12 @@ namespace vscript {
             CCubeAreaNode(vec, float, float, float);
             ~CCubeAreaNode();
             
+            bool is_point_inside_box(vec);
+
             void render_additional();
 
-            bool OnLinkAsChildNodeAttempt(CScriptNode* parent);
-            bool OnLinkAsParentNodeAttempt(CScriptNode* child);
+            bool OnLinkAsChildNodeAttempt(CScriptNode*);
+            bool OnLinkAsParentNodeAttempt(CScriptNode*);
     };
 
 };

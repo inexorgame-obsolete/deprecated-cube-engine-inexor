@@ -500,7 +500,7 @@ namespace game
 
     /// highlight frags in team colors
     VARP(teamcolorfrags, 0, 1, 1);
-
+        
     /// this callback is called when player actor kills d
     /// prints death messages to all kind of consoles
     void killed(fpsent *d, fpsent *actor)
@@ -530,8 +530,10 @@ namespace game
         }
         if(actor->type==ENT_AI)
             conoutf(contype, "\f2%s got killed by %s!", dname, aname);
-        else if(d==actor || actor->type==ENT_INANIMATE)
+        else if(d == actor || actor->type == ENT_INANIMATE)
+        {
             conoutf(contype, "\f2%s suicided%s", dname, d==player1 ? "!" : "");
+        }
         else if(isteam(d->team, actor->team))
         {
             contype |= CON_TEAMKILL;

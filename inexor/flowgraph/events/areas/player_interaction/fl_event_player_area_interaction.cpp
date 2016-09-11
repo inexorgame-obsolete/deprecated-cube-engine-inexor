@@ -36,6 +36,8 @@ namespace vscript {
             // TODO: support more area types!
             case INEXOR_VSCRIPT_NODE_TYPE_AREA_BOX:
             {
+                //b_IsPlayerInsideArea = static_cast<CCubeAreaNode*>(area)->is_point_inside_box(game::player1->o);
+                b_IsPlayerInsideArea = static_cast<CCubeAreaNode*>(area)->is_point_inside_box(game::player1->o);
                 break;
             }
             case INEXOR_VSCRIPT_NODE_TYPE_AREA_SPHERE:

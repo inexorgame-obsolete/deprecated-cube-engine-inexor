@@ -28,8 +28,8 @@ namespace vscript {
             bool collide(vec p);
             void render_additional();
 
-            bool OnLinkAsChildNodeAttempt(CScriptNode* parent);
-            bool OnLinkAsParentNodeAttempt(CScriptNode* child);
+            bool OnLinkAsChildNodeAttempt(CScriptNode*);
+            bool OnLinkAsParentNodeAttempt(CScriptNode*);
     };
 
 };

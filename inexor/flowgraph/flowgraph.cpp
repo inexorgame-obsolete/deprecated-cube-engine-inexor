@@ -50,13 +50,10 @@ enum VSCRIPT_ENTITY_BOX_ORIENTATION
     INEXOR_VSCRIPT_BOX_TOP
 };
 
-
 namespace inexor {
 namespace vscript {
-    
-    // TODO: make CVisualScriptSystem a singleton class (optional ?)
-    
-    // create an instance of the visual scripting system
+
+    // TODO: make CVisualScriptSystem a singleton class!
     CVisualScriptSystem vScript3D;
 
     CVisualScriptSystem::CVisualScriptSystem() 
@@ -95,19 +92,16 @@ namespace vscript {
         {
             case INEXOR_VSCRIPT_NODE_TYPE_TIMER:
             {
-                /// convert parameters form const string to unsigned int
                 unsigned int interval   = atoi(arguments[0].c_str());
                 unsigned int startdelay = atoi(arguments[1].c_str());
                 unsigned int limit      = atoi(arguments[2].c_str());
                 unsigned int cooldown   = atoi(arguments[3].c_str());
                 const char* name        = arguments[4].c_str();
                 const char* comment     = arguments[5].c_str();
-                
                 if(0 == interval) interval = 1000;
 
-                /// TODO: implement many other time formats
+                /// TODO: implement other time formats
                 INEXOR_VSCRIPT_TIME_FORMAT timer_format = INEXOR_VSCRIPT_TIME_FORMAT_MILISECONDS;
-                
                 created_node = new CTimerNode(target, interval, startdelay, limit, cooldown, timer_format);
                 created_node->set_name(name);
                 created_node->set_comment(comment);
@@ -144,7 +138,6 @@ namespace vscript {
                             conoutf(CON_DEBUG, "[3DVS-functions-conoutf] error: no output text specified!");
                             break;
                         }
-                        // add a console text output function
                         created_node = new CFunctionConoutfNode(target, arguments[1].c_str());
                         break;
                     }
@@ -249,7 +242,6 @@ namespace vscript {
                 break;
             }
 
-            // TODO: implement!
             case INEXOR_VSCRIPT_NODE_TYPE_EVENT:
             {
                 switch(atoi(arguments[0].c_str()))
@@ -266,6 +258,13 @@ namespace vscript {
                         created_node = new CPlayerAreaInteractionEventNode(target, INEXOR_VSCRIPT_EVENT_TYPE_PLAYER_LEAVE_AREA);
                         created_node->set_name("player-leave-area-event");
                         created_node->set_comment("Just leave that damn area!");
+                        break;
+                    }
+                    case INEXOR_VSCRIPT_EVENT_TYPE_PLAYER_SUICIDE:
+                    {
+                        created_node = new CPlayerAreaInteractionEventNode(target, INEXOR_VSCRIPT_EVENT_TYPE_PLAYER_SUICIDE);
+                        created_node->set_name("player-suicide-event");
+                        created_node->set_comment("Don't kill yourself, idiot!");
                         break;
                     }
                     default:
@@ -514,7 +513,6 @@ namespace vscript {
     void CVisualScriptSystem::run()
     {
         for(unsigned int i = 0; i < nodes.size(); i++) nodes[i]->recursion_counter = 0;
-
         for(unsigned int i=0; i<nodes.size(); i++)
         {
             nodes[i]->this_time = SDL_GetTicks();
@@ -659,6 +657,8 @@ namespace vscript {
                         break;
                 }
 
+                // TODO: render all outgoing nodes in triggered colors
+
                 // render color effect
                 if((nodes[i]->this_time - nodes[i]->last_time) < color_effect_interval)
                 {
@@ -666,11 +666,13 @@ namespace vscript {
                 }
                 else
                 {
-                    gle::color(vec::hexcolor(INEXOR_VSCRIPT_COLOR_TIMER));
+                    gle::color(vec::hexcolor(INEXOR_VSCRIPT_COLOR_WHITE));
                 }
 
                 for(unsigned int h=0; h<tmp->curve.GetCachedPointsSize() -1; h++)
                 {
+                    // render node relation curves "dotted"
+                    if(h % 2 == 0) continue;
                     geom::SCustomOutputPoint t = tmp->curve.GetPoint_ByIndex(h);
                     geom::SCustomOutputPoint n = tmp->curve.GetPoint_ByIndex(h+1);
                     glVertex3f(t.pos.x, t.pos.y, t.pos.z);
@@ -682,17 +684,35 @@ namespace vscript {
             }
         }
     }
+
+    // TODO: declare new strategy for highlighting activated/triggered nodes!
     
+    // TODO: force this stuff to work !!
+    void CVisualScriptSystem::announce_event(INEXOR_VSCRIPT_EVENT_TYPE ev_type)
+    {
+        for(unsigned int i = 0; i < nodes.size(); i++)  nodes[i]->recursion_counter = 0;
+        for(unsigned int i=0; i<nodes.size(); i++)
+        {
+            if(INEXOR_VSCRIPT_NODE_TYPE_EVENT == nodes[i]->type)
+            {
+                if(ev_type == static_cast<CEventBaseNode*>(nodes[i])->get_event_type())
+                {
+                    nodes[i]->this_time = SDL_GetTicks();
+                    nodes[i]->in();
+                }
+            }
+        }
+    }
+
 
     void deleteallnodes()
     {
-        // TODO: test this more frequently!
         vScript3D.delete_all_nodes();
         conoutf(CON_DEBUG, "[3DVS-nodes] removed all nodes and all node relations.");
     }
     COMMAND(deleteallnodes, "");
     
-    // TODO: implement some sort of parameter security!
+    // TODO: implement parameter validation!
 
     // timers
     void vs_timer(const char* interval)
@@ -772,8 +792,8 @@ namespace vscript {
     }
     COMMAND(vs_setnull, "s");
 
-    // memory
 
+    // memory
     // integer values
     void vs_int(const char *value)
     {
@@ -817,12 +837,13 @@ namespace vscript {
     }
     COMMAND(vs_if, "s");
 
+
     // area events
-    void vs_area_player_enter_event(const char *value)
+    void vs_event(const char *value)
     {
         vScript3D.add_node(INEXOR_VSCRIPT_NODE_TYPE_EVENT, 1, value);
     }
-    COMMAND(vs_area_player_enter_event, "s");
+    COMMAND(vs_event, "s");
 
 };
 };

@@ -11,10 +11,11 @@ enum INEXOR_VSCRIPT_EVENT_TYPE
 {
     INEXOR_VSCRIPT_EVENT_TYPE_PLAYER_ENTER_AREA = 0,
     INEXOR_VSCRIPT_EVENT_TYPE_PLAYER_LEAVE_AREA,
-    INEXOR_VSCRIPT_EVENT_TYPE_PLAYER_DEATH,
+    INEXOR_VSCRIPT_EVENT_TYPE_PLAYER_SUICIDE,
     INEXOR_VSCRIPT_EVENT_TYPE_PLAYER_SPAWN,
     INEXOR_VSCRIPT_EVENT_TYPE_PLAYER_SHOT,
 };
+
 
 namespace inexor {
 namespace vscript {
@@ -30,6 +31,8 @@ namespace vscript {
 
             bool OnLinkAsChildNodeAttempt(CScriptNode* parent);
             bool OnLinkAsParentNodeAttempt(CScriptNode* child);
+            
+            INEXOR_VSCRIPT_EVENT_TYPE get_event_type();
 
         protected:
 

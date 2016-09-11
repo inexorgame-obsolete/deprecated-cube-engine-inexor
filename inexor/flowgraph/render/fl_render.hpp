@@ -30,7 +30,8 @@ namespace vscript {
         INEXOR_VSCRIPT_COLOR_TIMER     = 0x51ABCC,  // light blue
         INEXOR_VSCRIPT_COLOR_COMMENT   = 0x5BCC51,  // comment green
         INEXOR_VSCRIPT_COLOR_FUNCTION  = 0x51ABCC,  // darker purple
-        INEXOR_VSCRIPT_COLOR_TRIGGERED = 0x00D137,  // 0xFF8800,  // spicy orange
+        INEXOR_VSCRIPT_COLOR_TRIGGERED = 0xFF8800,  // spicy orange
+                                                    //0x00D137
         INEXOR_VSCRIPT_COLOR_SLEEP     = 0x51ABCC,  // spicy blue
         INEXOR_VSCRIPT_COLOR_GRAY      = 0xAAAAAA,  // gray
         INEXOR_VSCRIPT_COLOR_BLACK     = 0x000000,  // black

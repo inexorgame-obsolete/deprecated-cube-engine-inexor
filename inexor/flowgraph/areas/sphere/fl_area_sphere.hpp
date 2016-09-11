@@ -28,8 +28,8 @@ namespace vscript {
             void render_additional();
             bool is_point_inside_sphere(vec);
 
-            bool OnLinkAsChildNodeAttempt(CScriptNode* parent);
-            bool OnLinkAsParentNodeAttempt(CScriptNode* child);
+            bool OnLinkAsChildNodeAttempt(CScriptNode*);
+            bool OnLinkAsParentNodeAttempt(CScriptNode*);
     };
 
 };
