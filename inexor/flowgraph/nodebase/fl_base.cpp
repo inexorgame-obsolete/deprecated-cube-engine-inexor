@@ -24,6 +24,13 @@ namespace vscript {
     {
     }
 
+    SNodeRelation::SNodeRelation()
+    {
+    }
+
+    SNodeRelation::~SNodeRelation()
+    {
+    }
 
     void CScriptNode::set_name(const char* name)
     {
@@ -35,27 +42,16 @@ namespace vscript {
         node_comment = comment;
     }
 
-    SNodeRelation::SNodeRelation()
-    {
-    }
-
-    SNodeRelation::~SNodeRelation()
-    {
-    }
-
     bool CScriptNode::OnRelationDragStart()
     {
-        conoutf(CON_DEBUG, "[3DVS-nodes] dragging started.");
         return true;
     }
 
     bool CScriptNode::OnRelationDragEnd()
     {
-        conoutf(CON_DEBUG, "[3DVS-nodes] dragging stopped.");
         return true;
     }
 
-    // The editor is trying to link/unlink it as child of another node
     bool CScriptNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
         return true;
@@ -65,7 +61,6 @@ namespace vscript {
         return true;
     }
 
-    // The editor is trying to link/unlink it as parent of another node
     bool CScriptNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
     {
         return true;
@@ -99,7 +94,6 @@ namespace vscript {
 
     void CScriptNode::render_additional()
     {
-        // TODO: implement additional render stuff depending on the node type
     }
 
     void CScriptNode::render(int orient, bool sel_blocked)
@@ -112,7 +106,6 @@ namespace vscript {
             if(orient != INEXOR_VSCRIPT_BOX_NO_INTERSECTION)
             {
                 gle::color(vec::hexcolor(INEXOR_VSCRIPT_COLOR_GRAY));
-
                 // TODO: decide about displaying help lines or not
                 //render_box_helplines(p);
             }
@@ -126,7 +119,6 @@ namespace vscript {
         particle_text(p + vec(0,0,1.0f), this->node_name.c_str(), PART_TEXT, 1, 0xFFFFFF, 1.0f);
         particle_text(p, this->node_comment.c_str(), PART_TEXT, 1, 0xFFFFFF, 1.0f);
 
-        // some nodes require additional rendering stuff
         render_additional();
     }
 

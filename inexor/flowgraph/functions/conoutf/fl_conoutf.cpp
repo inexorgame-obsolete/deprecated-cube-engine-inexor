@@ -18,9 +18,10 @@ namespace vscript {
     {
     }
 
+
     void CFunctionConoutfNode::in()
     {
-        // TODO: format output (but how??)
+        // TODO: format output!
         conoutf(CON_DEBUG, console_text.c_str());
         last_time = this_time;
     }
@@ -30,7 +31,6 @@ namespace vscript {
         return true;
     }
 
-    // a function itself can not start any code at all!
     bool CFunctionConoutfNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
     {
         return false;

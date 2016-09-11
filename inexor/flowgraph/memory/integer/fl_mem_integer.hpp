@@ -23,19 +23,18 @@ namespace vscript {
             void set_value(int);
             int  get_value();
             
+            // render the current integer value
             void render_additional();
             
         protected:
-
-            /// some useful native options for integer values            
+         
             bool can_be_null = true;
-            /// signed or not?
             bool can_be_negative = true;
+
             /// boundaries for integer values
             int minimal_value = - INEXOR_VSCRIPT_MEMORY_MAX_VALUE;
             int maximal_value = + INEXOR_VSCRIPT_MEMORY_MAX_VALUE;
 
-            std::string additional_particle_text;
     };
 
 };

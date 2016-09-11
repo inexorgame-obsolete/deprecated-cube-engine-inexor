@@ -16,6 +16,7 @@ namespace vscript {
     {
     }
 
+
     void CIfNode::in()
     {
         check_condition();
@@ -23,7 +24,7 @@ namespace vscript {
 
     void CIfNode::check_condition()
     {
-        // TODO: decide about node box coloring...
+        // TODO: decide about node box coloring.
         if(nullptr != statement)
         {
             default_box_color = INEXOR_VSCRIPT_COLOR_OPERATOR;

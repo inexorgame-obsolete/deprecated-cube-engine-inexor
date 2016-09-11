@@ -18,8 +18,9 @@ namespace vscript {
         ~CCommentNode();
         
         bool OnRelationDragStart();
-        bool OnLinkAsChildNodeAttempt(CScriptNode* parent);
-        bool OnLinkAsParentNodeAttempt(CScriptNode* child);
+
+        bool OnLinkAsChildNodeAttempt(CScriptNode*);
+        bool OnLinkAsParentNodeAttempt(CScriptNode*);
     };
 
 };

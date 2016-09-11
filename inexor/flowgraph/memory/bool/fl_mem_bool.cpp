@@ -16,14 +16,12 @@ namespace vscript {
     {
     }
 
+
     void CMemBoolNode::render_additional()
     {
-        // render the current integer value
         vec p = pos;
         p.add(vec(boxsize/2));
         p.add(vec(0,0,4));
-
-        // this is a great C++11 feature!
         if (block.data.bool_value) additional_particle_text = "true";
         else additional_particle_text = "false";
         particle_text(p + vec(0,0,2.0f), additional_particle_text.c_str(), PART_TEXT, 1, INEXOR_VSCRIPT_COLOR_TRIGGERED, 1.0f);

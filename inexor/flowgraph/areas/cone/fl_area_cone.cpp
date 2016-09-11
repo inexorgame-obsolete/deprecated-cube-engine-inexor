@@ -46,18 +46,18 @@ namespace vscript {
         }
         glEnd();
 
-
+        // TODO: render connection lines!
     }
 
     bool CConeAreaNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
-        conoutf(CON_DEBUG, "[3DVS-area-cone] a cone area can't run any code so it can't be linked as child!");
+        conoutf(CON_DEBUG, "[3DVS-area-cone] a cone area can't run any code so it can't be linked as child node!");
         return false;
     }
 
     bool CConeAreaNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
     {
-        if(child->type != INEXOR_VSCRIPT_NODE_TYPE_EVENT)
+        if(INEXOR_VSCRIPT_NODE_TYPE_EVENT != child->type)
         {
             conoutf(CON_DEBUG, "[3DVS-area-cone] a cone can only be linked as parent of an event node!");
         }

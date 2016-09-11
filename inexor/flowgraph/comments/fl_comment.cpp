@@ -15,6 +15,7 @@ namespace vscript {
     {
     }
 
+
     bool CCommentNode::OnRelationDragStart()
     {
         conoutf(CON_DEBUG, "[3DVS-node-linker] comments can't be linked as child or parent nodes!");

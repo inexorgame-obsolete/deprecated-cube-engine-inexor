@@ -14,17 +14,17 @@ namespace vscript {
     {
         protected:
 
-            //int playsound(int n, const vec *loc, extentity *ent, int flags, int loops, int fade, int chanid, int radius, int expire)
             int sound_id;
+            /*
             int flags;
             int loops;
             int fade;
             int chanid;
             int radius;
             int expire;
-
             vec location;
             extentity *ent;
+            */
 
         public:
 
@@ -32,12 +32,9 @@ namespace vscript {
             ~CFunctionPlaysoundNode();
 
             void in();
-            void run();
-            void out();
-            void reset();
 
-            bool OnLinkAsChildNodeAttempt(CScriptNode* parent);
-            bool OnLinkAsParentNodeAttempt(CScriptNode* child);
+            bool OnLinkAsChildNodeAttempt(CScriptNode*);
+            bool OnLinkAsParentNodeAttempt(CScriptNode*);
     };
 
 };

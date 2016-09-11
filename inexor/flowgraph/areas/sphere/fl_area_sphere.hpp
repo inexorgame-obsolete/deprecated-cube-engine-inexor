@@ -1,6 +1,6 @@
 /// @file fl_area_sphere.hpp
 /// @author Johannes Schneider
-/// @brief spheres are defined by position and radius
+/// @brief areas are used for events based on the interactions with them.
 
 #ifndef INEXOR_VSCRIPT_AREA_SPHERE_HEADER
 #define INEXOR_VSCRIPT_AREA_SPHERE_HEADER
@@ -15,18 +15,16 @@ namespace vscript {
         protected:
 
             float sphere_radius;
-            // TODO: make the render detail level dynamic
-            const int render_detail_level = 50;
+            const int render_detail_level = INEXOR_VSCRIPT_DEFAULT_RENDER_DETAIL_LEVEL;
 
         public:
 
             CSphereAreaNode(vec, float);
             ~CSphereAreaNode();
             
-            float get_radius();
-            // render sphere around node box
             void render_additional();
             bool is_point_inside_sphere(vec);
+            float get_radius();
 
             bool OnLinkAsChildNodeAttempt(CScriptNode*);
             bool OnLinkAsParentNodeAttempt(CScriptNode*);

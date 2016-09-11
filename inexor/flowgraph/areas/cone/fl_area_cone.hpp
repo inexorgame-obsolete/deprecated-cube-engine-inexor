@@ -1,8 +1,6 @@
 /// @file fl_area_block.hpp
 /// @author Johannes Schneider
-/// @brief cones are defined by position, width, and height
-
-// TODO: make cones rotatable in 3 dimensions
+/// @brief areas are used for events based on the interactions with them.
 
 #ifndef INEXOR_VSCRIPT_AREA_CONE_HEADER
 #define INEXOR_VSCRIPT_AREA_CONE_HEADER
@@ -18,7 +16,7 @@ namespace vscript {
             
             float cone_height;
             float cone_radius;
-            const int render_detail_level = 40;
+            const int render_detail_level = INEXOR_VSCRIPT_DEFAULT_RENDER_DETAIL_LEVEL;
 
         public:
 

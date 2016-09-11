@@ -29,6 +29,12 @@ namespace vscript {
     {
     }
 
+
+    unsigned int CTimerNode::get_timer_interval()
+    {
+        return timer_interval;
+    }
+
     void CTimerNode::reset()
     {
         this_time = 0;
@@ -52,7 +58,6 @@ namespace vscript {
 
     void CTimerNode::check_if_execution_is_due() 
     {
-        // checks if timer interval has exceeded
         if(this_time - last_time >= timer_interval) 
         {
             unsigned int thread_count = 0;
@@ -64,21 +69,15 @@ namespace vscript {
                 new_thread.detach();
                 thread_count++;
             }
-
-            //conoutf(CON_DEBUG, "[3DVS-threads] timer \f0%s\f7: started %d threads.", node_name.c_str(), thread_count);
             last_time = this_time;
             timer_counter++;
         }
     }
 
-    // render additional timer data
     void CTimerNode::render_additional(vec p)
     {
-        // TODO: 1 ms display time??
-        particle_text(p + vec(0.0f, 0.0f, -(2.0f+boxsize) ), "attributes here! :)", PART_TEXT, 1, 0xFFFFFF, 1.0f);
     }
     
-    // timers can be parent nodes but NOT child nodes!
     bool CTimerNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
         return false;

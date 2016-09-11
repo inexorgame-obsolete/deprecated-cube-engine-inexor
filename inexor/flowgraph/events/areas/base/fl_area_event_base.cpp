@@ -5,7 +5,7 @@ namespace vscript {
 
     CAreaEventNode::CAreaEventNode()
     {
-        type = INEXOR_VSCRIPT_NODE_TYPE_EVENT; // TODO: will this be overwritten when inherited??
+        type = INEXOR_VSCRIPT_NODE_TYPE_EVENT;
     }
 
     CAreaEventNode::~CAreaEventNode()

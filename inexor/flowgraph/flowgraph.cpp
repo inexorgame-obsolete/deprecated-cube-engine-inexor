@@ -13,7 +13,7 @@
 #include "inexor/flowgraph/functions/fl_functions.hpp"
 
 // areas
-#include "inexor/flowgraph/areas/block/fl_area_block.hpp"
+#include "inexor/flowgraph/areas/box/fl_area_box.hpp"
 #include "inexor/flowgraph/areas/sphere/fl_area_sphere.hpp"
 #include "inexor/flowgraph/areas/cone/fl_area_cone.hpp"
 #include "inexor/flowgraph/areas/cylinder/fl_area_cylinder.hpp"
@@ -169,7 +169,7 @@ namespace vscript {
                 float area_width  = atof(arguments[0].c_str());
                 float area_height = atof(arguments[1].c_str());
                 float area_depth  = atof(arguments[2].c_str());
-                created_node = new CCubeAreaNode(target, area_width, area_height, area_depth);
+                created_node = new CBoxAreaNode(target, area_width, area_height, area_depth);
                 created_node->set_name("box");
                 created_node->set_comment("box area");
                 break;
@@ -563,7 +563,7 @@ namespace vscript {
                 case INEXOR_VSCRIPT_NODE_TYPE_TIMER:
                     // Because timers can have very low intervals we use a third of the timer's interval
                     // as the length of the color effect
-                    color_effect_interval = static_cast<CTimerNode*>(nodes[i])->timer_interval / 3;
+                    color_effect_interval = static_cast<CTimerNode*>(nodes[i])->get_timer_interval() / 3;
                     break;
                 default:
                     color_effect_interval = INEXOR_VSCRIPT_NODE_ACTIVE_COLOR_EFFECT_INTERVAL;
@@ -650,7 +650,7 @@ namespace vscript {
                     case INEXOR_VSCRIPT_NODE_TYPE_TIMER:
                         // Because timers can have very low intervals we use a third of the timer's interval
                         // as the length of the color effect
-                        color_effect_interval = static_cast<CTimerNode*>(nodes[i])->timer_interval / 3;
+                        color_effect_interval = static_cast<CTimerNode*>(nodes[i])->get_timer_interval() / 3;
                         break;
                     default:
                         color_effect_interval = INEXOR_VSCRIPT_NODE_ACTIVE_COLOR_EFFECT_INTERVAL;
@@ -846,4 +846,4 @@ namespace vscript {
     COMMAND(vs_event, "s");
 
 };
-};
+}

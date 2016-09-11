@@ -8,6 +8,7 @@
 #include "inexor/flowgraph/nodebase/fl_base.hpp"
 #include "inexor/flowgraph/memory/bool/fl_mem_bool.hpp"
 
+
 namespace inexor {
 namespace vscript {
 
@@ -24,7 +25,6 @@ namespace vscript {
             CScriptNode* condition_true_node;
             CScriptNode* condition_false_node;
 
-            // TODO ?
             void in();
             void check_condition();
             void condition_true_out();

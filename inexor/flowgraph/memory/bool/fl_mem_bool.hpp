@@ -20,11 +20,9 @@ namespace vscript {
             void set_value(bool);
             bool get_value();
             
+            // render the current integer value
             void render_additional();
             
-        protected:
-
-            std::string additional_particle_text;
     };
 
 };

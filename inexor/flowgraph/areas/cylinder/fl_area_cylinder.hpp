@@ -1,8 +1,6 @@
 /// @file fl_area_cylinder.hpp
 /// @author Johannes Schneider
-/// @brief cylinders are defined by position, radius, and height
-
-// TODO: make cylinders rotatable in 3 dimensions
+/// @brief areas are used for events based on the interactions with them.
 
 #ifndef INEXOR_VSCRIPT_AREA_CYLINDER_HEADER
 #define INEXOR_VSCRIPT_AREA_CYLINDER_HEADER
@@ -25,7 +23,6 @@ namespace vscript {
             CCylinderAreaNode(vec, float, float);
             ~CCylinderAreaNode();
             
-            bool collide(vec p);
             void render_additional();
 
             bool OnLinkAsChildNodeAttempt(CScriptNode*);

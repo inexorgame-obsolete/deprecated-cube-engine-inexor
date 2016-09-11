@@ -1,6 +1,6 @@
 /// @file fl_conoutf.hpp
 /// @author Johannes Schneider
-/// @brief links the game engine's conoutf function to Visual Scripting Enviroment
+/// @brief links the game engine's conoutf function to the 3D Visual Scripting Enviroment.
 
 #ifndef INEXOR_VSCRIPT_CONOUTF_HEADER
 #define INEXOR_VSCRIPT_CONOUTF_HEADER
@@ -18,13 +18,14 @@ namespace vscript {
 
         public:
 
-            CFunctionConoutfNode(vec pos, const char* text);
+            CFunctionConoutfNode(vec, const char*);
             ~CFunctionConoutfNode();
             
             void in();
+            void set_text(const char* text);
 
-            bool OnLinkAsChildNodeAttempt(CScriptNode* parent);
-            bool OnLinkAsParentNodeAttempt(CScriptNode* child);
+            bool OnLinkAsChildNodeAttempt(CScriptNode*);
+            bool OnLinkAsParentNodeAttempt(CScriptNode*);
     };
 
 };

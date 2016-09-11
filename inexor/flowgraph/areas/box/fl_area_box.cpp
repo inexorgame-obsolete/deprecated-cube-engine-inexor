@@ -1,9 +1,9 @@
-#include "inexor/flowgraph/areas/block/fl_area_block.hpp"
+#include "inexor/flowgraph/areas/box/fl_area_box.hpp"
 
 namespace inexor {
 namespace vscript {
     
-    CCubeAreaNode::CCubeAreaNode(vec position, float width, float height, float depth)
+    CBoxAreaNode::CBoxAreaNode(vec position, float width, float height, float depth)
     {
         type = INEXOR_VSCRIPT_NODE_TYPE_AREA_BOX;
         pos = position;
@@ -12,11 +12,12 @@ namespace vscript {
         box_depth = depth;
     }
     
-    CCubeAreaNode::~CCubeAreaNode()
+    CBoxAreaNode::~CBoxAreaNode()
     {
     }
 
-    bool CCubeAreaNode::is_point_inside_box(vec point_pos)
+
+    bool CBoxAreaNode::is_point_inside_box(vec point_pos)
     {
         vec p = point_pos;
         vec c = pos;
@@ -25,7 +26,7 @@ namespace vscript {
                p.z>(c.z - (box_depth/2))  && p.z<(c.z + (box_depth/2));
     }
 
-    void CCubeAreaNode::render_additional()
+    void CBoxAreaNode::render_additional()
     {
         gle::color(vec::hexcolor(INEXOR_VSCRIPT_COLOR_AREA));
         glBegin(GL_LINES);
@@ -78,15 +79,15 @@ namespace vscript {
         glEnd();
     }
 
-    bool CCubeAreaNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
+    bool CBoxAreaNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
-        conoutf(CON_DEBUG, "[3DVS-area-box] a box area can't run any code so it can't be linked as child!");
+        conoutf(CON_DEBUG, "[3DVS-area-box] a box area can't run any code so it can't be linked as child node!");
         return false;
     }
 
-    bool CCubeAreaNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
+    bool CBoxAreaNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
     {
-        if(child->type != INEXOR_VSCRIPT_NODE_TYPE_EVENT)
+        if(INEXOR_VSCRIPT_NODE_TYPE_EVENT != child->type)
         {
             conoutf(CON_DEBUG, "[3DVS-area-box] a box can only be linked as parent of an event node!");
         }
