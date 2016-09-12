@@ -10,6 +10,9 @@
 namespace inexor {
 namespace vscript {
 
+    #define INEXOR_VSCRIPT_BOX_AREA_MIN_BOX_SIZE 16
+    #define INEXOR_VSCRIPT_BOX_AREA_MAX_BOX_SIZE 8192
+
     class CBoxAreaNode : public CScriptNode
     {
         protected:

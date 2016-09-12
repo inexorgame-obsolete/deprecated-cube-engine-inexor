@@ -7,9 +7,9 @@ namespace vscript {
     {
         type = INEXOR_VSCRIPT_NODE_TYPE_AREA_BOX;
         pos = position;
-        box_width = width;
-        box_height = height;
-        box_depth = depth;
+        box_width = clamp(width, INEXOR_VSCRIPT_BOX_AREA_MIN_BOX_SIZE, INEXOR_VSCRIPT_BOX_AREA_MAX_BOX_SIZE);
+        box_height = clamp(height, INEXOR_VSCRIPT_BOX_AREA_MIN_BOX_SIZE, INEXOR_VSCRIPT_BOX_AREA_MAX_BOX_SIZE);
+        box_depth = clamp(depth, INEXOR_VSCRIPT_BOX_AREA_MIN_BOX_SIZE, INEXOR_VSCRIPT_BOX_AREA_MAX_BOX_SIZE);
     }
     
     CBoxAreaNode::~CBoxAreaNode()
