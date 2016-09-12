@@ -1,5 +1,4 @@
 #include "inexor/flowgraph/render/fl_render.hpp"
-#include "inexor/flowgraph/timer/fl_timer.hpp"
 
 namespace inexor {
 namespace vscript {
@@ -12,6 +11,7 @@ namespace vscript {
     CNodeRenderer::~CNodeRenderer()
     {
     }
+
 
     void CNodeRenderer::adjust_selection_color(int orient, int index)
     {
@@ -30,7 +30,7 @@ namespace vscript {
         /// If you take a look at the original Sauer code you will see that generating
         /// the box using iterations is way more complicated to understand.
         glBegin(GL_QUADS);
-                        
+
         adjust_selection_color(orient, INEXOR_VSCRIPT_BOX_TOP);
         glVertex3f(p.x,p.y,p.z+boxsize);
         glVertex3f(p.x+boxsize,p.y,p.z+boxsize);
