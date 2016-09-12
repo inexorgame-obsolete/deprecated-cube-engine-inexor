@@ -20,7 +20,7 @@ namespace vscript {
             void set_value(bool);
             bool get_value();
             
-            // render the current integer value
+            // render the current status (true or false)
             void render_additional();
             
     };

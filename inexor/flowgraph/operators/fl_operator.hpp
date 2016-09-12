@@ -32,17 +32,22 @@ namespace vscript {
 
             void in();
 
-            bool OnLinkAsChildNodeAttempt(CScriptNode* parent);
-            bool OnLinkAsParentNodeAttempt(CScriptNode* child);
+            bool OnLinkAsChildNodeAttempt(CScriptNode*);
+            bool OnLinkAsParentNodeAttempt(CScriptNode*);
 
         protected:
 
             INEXOR_VSCRIPT_OPERATOR_TYPE operator_type;
 
-            // TODO: overload these methods?
-            // maybe we could use void apply_operator(CScriptNode*); ??
-            void apply_operator_on_integer(CMemIntegerNode*);
-            void apply_operator_on_float(CMemFloatNode*);
+            void apply_operator(CScriptNode*);
+
+        private:
+
+            void increment(CScriptNode* node);
+            void decrement(CScriptNode* node);
+            void setnull(CScriptNode* node);
+
+            // TODO: implement more operators
     };
 
 };

@@ -16,45 +16,68 @@ namespace vscript {
     {
     }
 
-    void COperatorNode::apply_operator_on_integer(CMemIntegerNode* node)
+    // We could create another base class
+    // which implements increment/decrement... for all
+    // memory blocks, but it would have to be differenz
+    // base class for e.g. boolean expressions because
+    // those operators do not apply on these data types!
+
+    void COperatorNode::increment(CScriptNode* node)
     {
-        switch(operator_type)
+        switch (node->type)
         {
-            case INEXOR_VSCRIPT_OPERATOR_TYPE_INCREMENT:
-            {
-                node->increment();
+            case INEXOR_VSCRIPT_NODE_TYPE_MEMORY_INTEGER:
+                static_cast<CMemIntegerNode*>(node)->increment();
                 break;
-            }
-            case INEXOR_VSCRIPT_OPERATOR_TYPE_DECREMENT:
-            {
-                node->decrement();
+            case INEXOR_VSCRIPT_NODE_TYPE_MEMORY_FLOAT:
+                static_cast<CMemFloatNode*>(node)->increment();
                 break;
-            }
-            case INEXOR_VSCRIPT_OPERATOR_TYPE_SETNULL:
-            {
-                node->set_value(0);
-                break;
-            }
         }
     }
 
-    void COperatorNode::apply_operator_on_float(CMemFloatNode* node)
+    void COperatorNode::decrement(CScriptNode* node)
+    {
+        switch (node->type)
+        {
+            case INEXOR_VSCRIPT_NODE_TYPE_MEMORY_INTEGER:
+                static_cast<CMemIntegerNode*>(node)->decrement();
+                break;
+            case INEXOR_VSCRIPT_NODE_TYPE_MEMORY_FLOAT:
+                static_cast<CMemFloatNode*>(node)->decrement();
+                break;
+        }
+    }
+
+    void COperatorNode::setnull(CScriptNode* node)
+    {
+        switch (node->type)
+        {
+            case INEXOR_VSCRIPT_NODE_TYPE_MEMORY_INTEGER:
+                static_cast<CMemIntegerNode*>(node)->set_value(0);
+                break;
+            case INEXOR_VSCRIPT_NODE_TYPE_MEMORY_FLOAT:
+                static_cast<CMemFloatNode*>(node)->set_value(0.0f);
+                break;
+        }
+    }
+
+    void COperatorNode::apply_operator(CScriptNode* node)
     {
         switch(operator_type)
         {
             case INEXOR_VSCRIPT_OPERATOR_TYPE_INCREMENT:
             {
-                node->increment();
+                increment(node);
                 break;
             }
             case INEXOR_VSCRIPT_OPERATOR_TYPE_DECREMENT:
             {
-                node->decrement();
+                decrement(node);
                 break;
             }
             case INEXOR_VSCRIPT_OPERATOR_TYPE_SETNULL:
             {
-                node->set_value(0.0);
+                setnull(node);
                 break;
             }
         }
@@ -68,21 +91,10 @@ namespace vscript {
             conoutf(CON_DEBUG, "[3DVS-operator-increment] no child nodes to increment");
         }
 
+        // TODO: declare code execution priority strategy!
         for(unsigned int i = 0; i < children.size(); i++)
         {
-            switch(children[i]->type)
-            {
-                case INEXOR_VSCRIPT_NODE_TYPE_MEMORY_INTEGER:
-                {
-                    apply_operator_on_integer(static_cast<CMemIntegerNode*>(children[i]));
-                    break;
-                }
-                case INEXOR_VSCRIPT_NODE_TYPE_MEMORY_FLOAT:
-                {
-                    apply_operator_on_float(static_cast<CMemFloatNode*>(children[i]));
-                    break;
-                }
-            }
+            apply_operator(children[i]);
         }
     }
     
