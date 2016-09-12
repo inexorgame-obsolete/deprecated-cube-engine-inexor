@@ -3,7 +3,7 @@
 namespace inexor {
 namespace vscript {
 
-    CMemBoolNode::CMemBoolNode(vec position, bool start_value, bool constant_memory)
+    CMemBoolNode::CMemBoolNode(const vec position, const bool start_value, const bool constant_memory)
     {
         type = INEXOR_VSCRIPT_NODE_TYPE_MEMORY_BOOL;
         pos = position;   
@@ -31,7 +31,7 @@ namespace vscript {
         }
     }
 
-    void CMemBoolNode::set_value(bool set_value)
+    void CMemBoolNode::set_value(const bool set_value)
     {
         last_time = this_time;
         if(block.constant_value)

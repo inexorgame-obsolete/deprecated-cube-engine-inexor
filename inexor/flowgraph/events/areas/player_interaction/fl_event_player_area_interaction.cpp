@@ -4,7 +4,7 @@
 namespace inexor {
 namespace vscript {
     
-    CPlayerAreaInteractionEventNode::CPlayerAreaInteractionEventNode(vec position, INEXOR_VSCRIPT_EVENT_TYPE ev_type)
+    CPlayerAreaInteractionEventNode::CPlayerAreaInteractionEventNode(const vec position, const INEXOR_VSCRIPT_EVENT_TYPE ev_type)
     {
         type = INEXOR_VSCRIPT_NODE_TYPE_EVENT;
         pos = position;
@@ -57,7 +57,7 @@ namespace vscript {
         update_interaction_status(b_IsPlayerInsideArea);
     }
 
-    void CPlayerAreaInteractionEventNode::update_interaction_status(bool is_player_in_sphere)
+    void CPlayerAreaInteractionEventNode::update_interaction_status(const bool is_player_in_sphere)
     {
         if(true == is_player_in_sphere)
         {

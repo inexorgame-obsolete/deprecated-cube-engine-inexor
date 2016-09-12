@@ -14,10 +14,10 @@ namespace vscript {
     {
         public:
     
-            CMemBoolNode(vec, bool, bool);
+            CMemBoolNode(const vec, const bool, const bool);
             ~CMemBoolNode();
 
-            void set_value(bool);
+            void set_value(const bool);
             bool get_value();
             
             // render the current status (true or false)

@@ -31,8 +31,8 @@ namespace vscript {
 
             void check_trigger();
 
-            bool OnLinkAsChildNodeAttempt(CScriptNode*);
-            bool OnLinkAsParentNodeAttempt(CScriptNode*);
+            bool OnLinkAsChildNodeAttempt(const CScriptNode*);
+            bool OnLinkAsParentNodeAttempt(const CScriptNode*);
             
             INEXOR_VSCRIPT_EVENT_TYPE get_event_type();
 

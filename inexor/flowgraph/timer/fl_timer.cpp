@@ -74,16 +74,16 @@ namespace vscript {
         }
     }
 
-    void CTimerNode::render_additional(vec p)
+    void CTimerNode::render_additional(const vec p)
     {
     }
     
-    bool CTimerNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
+    bool CTimerNode::OnLinkAsChildNodeAttempt(const CScriptNode* parent)
     {
         return false;
     }
 
-    bool CTimerNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
+    bool CTimerNode::OnLinkAsParentNodeAttempt(const CScriptNode* child)
     {
         return true;
     }

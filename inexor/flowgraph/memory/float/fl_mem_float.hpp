@@ -14,13 +14,13 @@ namespace vscript {
     {
         public:
     
-            CMemFloatNode(vec, bool, bool, int, bool);
+            CMemFloatNode(const vec, const bool, const bool, const int, const bool);
             ~CMemFloatNode();
 
             void increment();
             void decrement();
 
-            void set_value(double);
+            void set_value(const double);
             double get_value();
 
             // render the current integer value

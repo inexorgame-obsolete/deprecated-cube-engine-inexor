@@ -3,7 +3,7 @@
 namespace inexor {
 namespace vscript {
 
-    CFunctionConoutfNode::CFunctionConoutfNode(vec position, const char* raw_text)
+    CFunctionConoutfNode::CFunctionConoutfNode(const vec position, const char* raw_text)
     {
         pos = position;
         type = INEXOR_VSCRIPT_NODE_TYPE_FUNCTION;
@@ -26,12 +26,12 @@ namespace vscript {
         last_time = this_time;
     }
 
-    bool CFunctionConoutfNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
+    bool CFunctionConoutfNode::OnLinkAsChildNodeAttempt(const CScriptNode* parent)
     {
         return true;
     }
 
-    bool CFunctionConoutfNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
+    bool CFunctionConoutfNode::OnLinkAsParentNodeAttempt(const CScriptNode* child)
     {
         return false;
     }

@@ -18,13 +18,13 @@ namespace vscript {
     {
         public:
 
-            CSleepNode(vec, unsigned int);
+            CSleepNode(const vec, const unsigned int);
             ~CSleepNode();
             
             void in();
 
-            bool OnLinkAsChildNodeAttempt(CScriptNode*);
-            bool OnLinkAsParentNodeAttempt(CScriptNode*);
+            bool OnLinkAsChildNodeAttempt(const CScriptNode*);
+            bool OnLinkAsParentNodeAttempt(const CScriptNode*);
         
         protected:
 

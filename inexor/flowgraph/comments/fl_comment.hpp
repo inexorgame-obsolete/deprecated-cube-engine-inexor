@@ -14,13 +14,13 @@ namespace vscript {
     {
         public:
 
-        CCommentNode(vec pos);
+        CCommentNode(const vec pos);
         ~CCommentNode();
         
         bool OnRelationDragStart();
 
-        bool OnLinkAsChildNodeAttempt(CScriptNode*);
-        bool OnLinkAsParentNodeAttempt(CScriptNode*);
+        bool OnLinkAsChildNodeAttempt(const CScriptNode*);
+        bool OnLinkAsParentNodeAttempt(const CScriptNode*);
     };
 
 };

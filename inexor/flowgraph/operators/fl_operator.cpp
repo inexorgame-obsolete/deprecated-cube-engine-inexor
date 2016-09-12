@@ -98,7 +98,7 @@ namespace vscript {
         }
     }
     
-    bool COperatorNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
+    bool COperatorNode::OnLinkAsChildNodeAttempt(const CScriptNode* parent)
     {
         switch(parent->type)
         {
@@ -110,7 +110,7 @@ namespace vscript {
         return false;
     }
 
-    bool COperatorNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
+    bool COperatorNode::OnLinkAsParentNodeAttempt(const CScriptNode* child)
     {
         switch(child->type)
         {

@@ -3,7 +3,7 @@
 namespace inexor {
 namespace vscript {
 
-    CIfNode::CIfNode(vec position)
+    CIfNode::CIfNode(const vec position)
     {
         type = INEXOR_VSCRIPT_NODE_TYPE_IF;
         pos = position;

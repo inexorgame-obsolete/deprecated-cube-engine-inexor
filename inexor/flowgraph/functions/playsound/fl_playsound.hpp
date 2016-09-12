@@ -28,13 +28,13 @@ namespace vscript {
 
         public:
 
-            CFunctionPlaysoundNode(vec, const char*);
+            CFunctionPlaysoundNode(const vec, const char*);
             ~CFunctionPlaysoundNode();
 
             void in();
 
-            bool OnLinkAsChildNodeAttempt(CScriptNode*);
-            bool OnLinkAsParentNodeAttempt(CScriptNode*);
+            bool OnLinkAsChildNodeAttempt(const CScriptNode*);
+            bool OnLinkAsParentNodeAttempt(const CScriptNode*);
     };
 
 };

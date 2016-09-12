@@ -4,7 +4,7 @@ namespace inexor {
 namespace vscript {
 
     // TODO: implement playsound correctly
-    CFunctionPlaysoundNode::CFunctionPlaysoundNode(vec position, const char* id)
+    CFunctionPlaysoundNode::CFunctionPlaysoundNode(const vec position, const const char* id)
     {
         pos = position;
         sound_id = atoi(id);
@@ -22,12 +22,12 @@ namespace vscript {
         out();
     }
 
-    bool CFunctionPlaysoundNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
+    bool CFunctionPlaysoundNode::OnLinkAsChildNodeAttempt(const CScriptNode* parent)
     {
         return false;
     }
 
-    bool CFunctionPlaysoundNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
+    bool CFunctionPlaysoundNode::OnLinkAsParentNodeAttempt(const CScriptNode* child)
     {
         return false;
     }

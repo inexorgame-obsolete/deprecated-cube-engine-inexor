@@ -21,12 +21,12 @@ namespace vscript {
     {
         public:
 
-            CPlayerAreaInteractionEventNode(vec, INEXOR_VSCRIPT_EVENT_TYPE);
+            CPlayerAreaInteractionEventNode(const vec, const INEXOR_VSCRIPT_EVENT_TYPE);
             ~CPlayerAreaInteractionEventNode();
     
             void in();
             void check_trigger();
-            void update_interaction_status(bool);
+            void update_interaction_status(const bool);
             void trigger();
             
         protected:

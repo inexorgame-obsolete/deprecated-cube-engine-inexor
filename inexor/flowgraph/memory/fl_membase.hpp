@@ -59,12 +59,12 @@ namespace vscript {
             CMemoryNode();
             ~CMemoryNode();
 
-            SMemoryBlock block;
-
-            bool CMemoryNode::OnLinkAsChildNodeAttempt(CScriptNode* parent);
-            bool CMemoryNode::OnLinkAsParentNodeAttempt(CScriptNode* child);
+            bool CMemoryNode::OnLinkAsChildNodeAttempt(const CScriptNode* parent);
+            bool CMemoryNode::OnLinkAsParentNodeAttempt(const CScriptNode* child);
 
         protected:
+
+            SMemoryBlock block;
 
             std::string additional_particle_text;
 

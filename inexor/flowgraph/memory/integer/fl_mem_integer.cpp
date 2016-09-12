@@ -3,7 +3,11 @@
 namespace inexor {
 namespace vscript {
 
-    CMemIntegerNode::CMemIntegerNode(vec position, bool null_allowed, bool negative_allowed, int value, bool const_value)
+    CMemIntegerNode::CMemIntegerNode(const vec position, 
+                                     const bool null_allowed,
+                                     const bool negative_allowed,
+                                     const int value,
+                                     const bool const_value)
     {
         type = INEXOR_VSCRIPT_NODE_TYPE_MEMORY_INTEGER;
         pos = position;
@@ -52,7 +56,7 @@ namespace vscript {
         else block.data.int_val --;
     }
 
-    void CMemIntegerNode::set_value(int set_value)
+    void CMemIntegerNode::set_value(const int set_value)
     {
         last_time = this_time;
         if(block.constant_value)

@@ -50,12 +50,12 @@ namespace vscript {
         out();
     }
     
-    bool CSleepNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
+    bool CSleepNode::OnLinkAsChildNodeAttempt(const CScriptNode* parent)
     {
         return true;
     }
 
-    bool CSleepNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
+    bool CSleepNode::OnLinkAsParentNodeAttempt(const CScriptNode* child)
     {
         return true;
     }

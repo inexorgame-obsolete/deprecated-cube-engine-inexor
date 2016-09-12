@@ -3,7 +3,7 @@
 namespace inexor {
 namespace vscript {
 
-    CMemFloatNode::CMemFloatNode(vec position, bool null_allowed, bool negative_allowed, int value, bool const_value)
+    CMemFloatNode::CMemFloatNode(const vec position, const bool null_allowed, const bool negative_allowed, const int value, const bool const_value)
     {
         type = INEXOR_VSCRIPT_NODE_TYPE_MEMORY_FLOAT;
         pos = position;   
@@ -53,7 +53,7 @@ namespace vscript {
         else block.data.double_value -= 1.0;
     }
 
-    void CMemFloatNode::set_value(double set_value)
+    void CMemFloatNode::set_value(const double set_value)
     {
         last_time = this_time;
         if(block.constant_value)

@@ -18,14 +18,14 @@ namespace vscript {
 
         public:
 
-            CFunctionConoutfNode(vec, const char*);
+            CFunctionConoutfNode(const vec, const const char*);
             ~CFunctionConoutfNode();
             
             void in();
             void set_text(const char* text);
 
-            bool OnLinkAsChildNodeAttempt(CScriptNode*);
-            bool OnLinkAsParentNodeAttempt(CScriptNode*);
+            bool OnLinkAsChildNodeAttempt(const CScriptNode*);
+            bool OnLinkAsParentNodeAttempt(const CScriptNode*);
     };
 
 };

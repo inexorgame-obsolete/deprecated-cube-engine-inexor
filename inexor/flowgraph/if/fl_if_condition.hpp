@@ -16,12 +16,11 @@ namespace vscript {
     {
         public:
         
-            CIfNode(vec);
+            CIfNode(const vec);
             ~CIfNode();
 
             // the condition to check
-            CMemBoolNode *statement;
-            
+            CMemBoolNode *statement;            
             CScriptNode* condition_true_node;
             CScriptNode* condition_false_node;
 
@@ -30,7 +29,7 @@ namespace vscript {
             void condition_true_out();
             void condition_false_out();
 
-            void render_additional(vec p);
+            void render_additional(const vec p);
 
             bool OnLinkAsChildNodeAttempt(CScriptNode*);
             bool OnLinkAsParentNodeAttempt(CScriptNode*);
