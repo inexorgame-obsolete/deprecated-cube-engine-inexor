@@ -42,8 +42,8 @@ namespace vscript {
             void render_additional(const vec);
             unsigned int get_timer_interval();
 
-            bool OnLinkAsChildNodeAttempt(const CScriptNode*);
-            bool OnLinkAsParentNodeAttempt(const CScriptNode*);
+            bool OnLinkAsChildNodeAttempt(CScriptNode*);
+            bool OnLinkAsParentNodeAttempt(CScriptNode*);
 
         protected:
 

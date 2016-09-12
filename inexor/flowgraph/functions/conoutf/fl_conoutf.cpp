@@ -26,12 +26,12 @@ namespace vscript {
         last_time = this_time;
     }
 
-    bool CFunctionConoutfNode::OnLinkAsChildNodeAttempt(const CScriptNode* parent)
+    bool CFunctionConoutfNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
         return true;
     }
 
-    bool CFunctionConoutfNode::OnLinkAsParentNodeAttempt(const CScriptNode* child)
+    bool CFunctionConoutfNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
     {
         return false;
     }

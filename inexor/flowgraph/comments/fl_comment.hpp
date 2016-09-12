@@ -19,8 +19,8 @@ namespace vscript {
         
         bool OnRelationDragStart();
 
-        bool OnLinkAsChildNodeAttempt(const CScriptNode*);
-        bool OnLinkAsParentNodeAttempt(const CScriptNode*);
+        bool OnLinkAsChildNodeAttempt(CScriptNode*);
+        bool OnLinkAsParentNodeAttempt(CScriptNode*);
     };
 
 };

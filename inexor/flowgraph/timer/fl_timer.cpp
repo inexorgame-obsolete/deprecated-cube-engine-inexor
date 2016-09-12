@@ -78,12 +78,12 @@ namespace vscript {
     {
     }
     
-    bool CTimerNode::OnLinkAsChildNodeAttempt(const CScriptNode* parent)
+    bool CTimerNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
         return false;
     }
 
-    bool CTimerNode::OnLinkAsParentNodeAttempt(const CScriptNode* child)
+    bool CTimerNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
     {
         return true;
     }

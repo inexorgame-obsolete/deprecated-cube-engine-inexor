@@ -22,13 +22,13 @@ namespace vscript {
         return false;
     }
 
-    bool CCommentNode::OnLinkAsChildNodeAttempt(const CScriptNode* parent)
+    bool CCommentNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
         conoutf(CON_DEBUG, "[3DVS-node-linker] comments can't be linked as child or parent nodes!");
         return false;
     }
 
-    bool CCommentNode::OnLinkAsParentNodeAttempt(const CScriptNode* child)
+    bool CCommentNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
     {
         conoutf(CON_DEBUG, "[3DVS-node-linker] comments can't be linked as child or parent nodes!");
         return false;

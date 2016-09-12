@@ -24,8 +24,8 @@ namespace vscript {
             void in();
             void set_text(const char* text);
 
-            bool OnLinkAsChildNodeAttempt(const CScriptNode*);
-            bool OnLinkAsParentNodeAttempt(const CScriptNode*);
+            bool OnLinkAsChildNodeAttempt(CScriptNode*);
+            bool OnLinkAsParentNodeAttempt(CScriptNode*);
     };
 
 };

@@ -20,7 +20,8 @@ namespace vscript {
             ~CIfNode();
 
             // the condition to check
-            CMemBoolNode *statement;            
+            CMemBoolNode *statement;
+
             CScriptNode* condition_true_node;
             CScriptNode* condition_false_node;
 

@@ -59,8 +59,8 @@ namespace vscript {
             CMemoryNode();
             ~CMemoryNode();
 
-            bool CMemoryNode::OnLinkAsChildNodeAttempt(const CScriptNode* parent);
-            bool CMemoryNode::OnLinkAsParentNodeAttempt(const CScriptNode* child);
+            bool OnLinkAsChildNodeAttempt(CScriptNode*);
+            bool OnLinkAsParentNodeAttempt(CScriptNode*);
 
         protected:
 

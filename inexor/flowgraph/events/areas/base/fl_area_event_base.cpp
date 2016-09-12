@@ -13,10 +13,9 @@ namespace vscript {
     }
 
 
-    // only allow areas to be linked
     bool CAreaEventNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
-        switch (parent->type)
+        switch(parent->type)
         {
             case INEXOR_VSCRIPT_NODE_TYPE_AREA_BOX:
             case INEXOR_VSCRIPT_NODE_TYPE_AREA_CONE:
@@ -35,21 +34,7 @@ namespace vscript {
 
     bool CAreaEventNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
     {
-        switch(child->type)
-        {
-            case INEXOR_VSCRIPT_NODE_TYPE_FUNCTION:
-            case INEXOR_VSCRIPT_NODE_TYPE_SLEEP:
-            {
-                return true;
-                break;
-            }
-            default:
-            {
-                return false;
-                break;
-            }
-        }
-        return false;
+        return true;
     }
 
 };

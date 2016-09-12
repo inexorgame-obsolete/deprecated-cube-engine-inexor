@@ -49,13 +49,13 @@ namespace vscript {
         // TODO: render connection lines!
     }
 
-    bool CConeAreaNode::OnLinkAsChildNodeAttempt(const CScriptNode* parent)
+    bool CConeAreaNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
         conoutf(CON_DEBUG, "[3DVS-area-cone] a cone area can't run any code so it can't be linked as child node!");
         return false;
     }
 
-    bool CConeAreaNode::OnLinkAsParentNodeAttempt(const CScriptNode* child)
+    bool CConeAreaNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
     {
         if(INEXOR_VSCRIPT_NODE_TYPE_EVENT != child->type)
         {

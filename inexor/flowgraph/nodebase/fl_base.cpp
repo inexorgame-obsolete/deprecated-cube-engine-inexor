@@ -1,5 +1,4 @@
 #include "inexor/flowgraph/nodebase/fl_base.hpp"
-#include "inexor/flowgraph/timer/fl_timer.hpp"
 
 namespace inexor {
 namespace vscript {
@@ -23,6 +22,7 @@ namespace vscript {
     CScriptNode::~CScriptNode()
     {
     }
+
 
     SNodeRelation::SNodeRelation()
     {
@@ -52,22 +52,22 @@ namespace vscript {
         return true;
     }
 
-    bool CScriptNode::OnLinkAsChildNodeAttempt(const CScriptNode* parent)
+    bool CScriptNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
-        return true;
+        return false;
     }
-    bool CScriptNode::OnUnLinkAsChildNodeAttempt(const CScriptNode* parent)
+    bool CScriptNode::OnUnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
-        return true;
+        return false;
     }
 
-    bool CScriptNode::OnLinkAsParentNodeAttempt(const CScriptNode* child)
+    bool CScriptNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
     {
-        return true;
+        return false;
     }
-    bool CScriptNode::OnUnLinkAsParentNodeAttempt(const CScriptNode* child)
+    bool CScriptNode::OnUnLinkAsParentNodeAttempt(CScriptNode* child)
     {
-        return true;
+        return false;
     }
 
     void CScriptNode::in()

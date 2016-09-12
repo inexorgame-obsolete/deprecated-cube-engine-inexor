@@ -12,7 +12,7 @@ namespace vscript {
     }
 
 
-    bool CMemoryNode::OnLinkAsChildNodeAttempt(const CScriptNode* parent)
+    bool CMemoryNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
         switch(parent->type)
         {
@@ -25,7 +25,7 @@ namespace vscript {
         return false;
     }
 
-    bool CMemoryNode::OnLinkAsParentNodeAttempt(const CScriptNode* child)
+    bool CMemoryNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
     {
         switch(child->type)
         {

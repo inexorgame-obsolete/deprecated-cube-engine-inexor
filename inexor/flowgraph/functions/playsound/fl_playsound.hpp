@@ -33,8 +33,8 @@ namespace vscript {
 
             void in();
 
-            bool OnLinkAsChildNodeAttempt(const CScriptNode*);
-            bool OnLinkAsParentNodeAttempt(const CScriptNode*);
+            bool OnLinkAsChildNodeAttempt(CScriptNode*);
+            bool OnLinkAsParentNodeAttempt(CScriptNode*);
     };
 
 };

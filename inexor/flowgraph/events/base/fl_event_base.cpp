@@ -20,15 +20,6 @@ namespace vscript {
     {
         return event_type;
     }
-    
-    bool CEventBaseNode::OnLinkAsChildNodeAttempt(const CScriptNode* parent)
-    {
-        return true;
-    }
-    bool CEventBaseNode::OnLinkAsParentNodeAttempt(const CScriptNode* child)
-    {
-        return true;
-    }
 
 };
 };

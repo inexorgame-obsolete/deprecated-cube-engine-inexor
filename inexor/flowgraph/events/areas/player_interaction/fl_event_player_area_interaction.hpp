@@ -6,6 +6,7 @@
 #define INEXOR_VSCRIPT_AREA_EVENT_PLAYER_INTERACTION_HEADER
 
 #include "inexor/flowgraph/events/areas/base/fl_area_event_base.hpp"
+#include "inexor/fpsgame/game.hpp"
 
 namespace inexor {
 namespace vscript {

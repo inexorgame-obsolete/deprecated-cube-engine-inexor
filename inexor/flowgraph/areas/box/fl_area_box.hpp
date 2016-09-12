@@ -32,8 +32,8 @@ namespace vscript {
             void render_additional();
             bool is_point_inside_box(const vec);
 
-            bool OnLinkAsChildNodeAttempt(const CScriptNode*);
-            bool OnLinkAsParentNodeAttempt(const CScriptNode*);
+            bool OnLinkAsChildNodeAttempt(CScriptNode*);
+            bool OnLinkAsParentNodeAttempt(CScriptNode*);
     };
 
 };

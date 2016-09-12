@@ -88,10 +88,10 @@ namespace vscript {
 
             virtual bool OnRelationDragStart();
             virtual bool OnRelationDragEnd();
-            virtual bool OnLinkAsChildNodeAttempt(const CScriptNode*);
-            virtual bool OnUnLinkAsChildNodeAttempt(const CScriptNode*);
-            virtual bool OnLinkAsParentNodeAttempt(const CScriptNode*);
-            virtual bool OnUnLinkAsParentNodeAttempt(const CScriptNode*);
+            virtual bool OnLinkAsChildNodeAttempt(CScriptNode*);
+            virtual bool OnUnLinkAsChildNodeAttempt(CScriptNode*);
+            virtual bool OnLinkAsParentNodeAttempt(CScriptNode*);
+            virtual bool OnUnLinkAsParentNodeAttempt(CScriptNode*);
             
             virtual void in();
             virtual void out();

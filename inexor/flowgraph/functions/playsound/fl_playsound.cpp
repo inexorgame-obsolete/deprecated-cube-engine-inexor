@@ -22,12 +22,12 @@ namespace vscript {
         out();
     }
 
-    bool CFunctionPlaysoundNode::OnLinkAsChildNodeAttempt(const CScriptNode* parent)
+    bool CFunctionPlaysoundNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
         return false;
     }
 
-    bool CFunctionPlaysoundNode::OnLinkAsParentNodeAttempt(const CScriptNode* child)
+    bool CFunctionPlaysoundNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
     {
         return false;
     }

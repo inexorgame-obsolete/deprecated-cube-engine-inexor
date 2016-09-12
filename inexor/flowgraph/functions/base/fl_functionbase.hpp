@@ -27,6 +27,10 @@ namespace vscript {
             ~CFunctionBase();
 
             // TODO: implement parameters and a return value!
+
+        protected:
+
+            
     };
 
 };

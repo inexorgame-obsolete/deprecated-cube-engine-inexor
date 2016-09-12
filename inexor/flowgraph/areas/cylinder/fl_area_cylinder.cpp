@@ -63,13 +63,13 @@ namespace vscript {
         glEnd();
     }
 
-    bool CCylinderAreaNode::OnLinkAsChildNodeAttempt(const CScriptNode* parent)
+    bool CCylinderAreaNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
         conoutf(CON_DEBUG, "[3DVS-area-cylinder] a cone area can't run any code so it can't be linked as child node!");
         return false;
     }
 
-    bool CCylinderAreaNode::OnLinkAsParentNodeAttempt(const CScriptNode* child)
+    bool CCylinderAreaNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
     {
         if(INEXOR_VSCRIPT_NODE_TYPE_EVENT != child->type)
         {

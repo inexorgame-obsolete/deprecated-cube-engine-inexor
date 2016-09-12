@@ -1,5 +1,4 @@
 #include "inexor/flowgraph/events/areas/player_interaction/fl_event_player_area_interaction.hpp"
-#include "inexor/fpsgame/game.hpp"
 
 namespace inexor {
 namespace vscript {
