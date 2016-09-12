@@ -31,6 +31,8 @@ namespace vscript {
         //XY
         glBegin(GL_LINE_LOOP);
         gle::color(vec::hexcolor(INEXOR_VSCRIPT_COLOR_AREA));
+        if(is_point_inside_sphere(game::player1->o)) gle::color(vec::hexcolor(INEXOR_VSCRIPT_COLOR_TRIGGERED));
+        
         for (int i = 0; i<render_detail_level; i++)
         {
             vec p(pos);

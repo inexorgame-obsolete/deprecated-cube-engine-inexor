@@ -6,6 +6,7 @@
 #define INEXOR_VSCRIPT_AREA_BLOCK_HEADER
 
 #include "inexor/flowgraph/nodebase/fl_base.hpp"
+#include "inexor/fpsgame/game.hpp"
 
 namespace inexor {
 namespace vscript {

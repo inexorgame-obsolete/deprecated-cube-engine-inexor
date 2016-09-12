@@ -29,6 +29,8 @@ namespace vscript {
     void CBoxAreaNode::render_additional()
     {
         gle::color(vec::hexcolor(INEXOR_VSCRIPT_COLOR_AREA));
+        if(is_point_inside_box(game::player1->o)) gle::color(vec::hexcolor(INEXOR_VSCRIPT_COLOR_TRIGGERED));
+
         glBegin(GL_LINES);
 
         float offsetx = - (box_width/2) + (boxsize/2);
