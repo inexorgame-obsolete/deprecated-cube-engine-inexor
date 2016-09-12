@@ -3,7 +3,7 @@
 namespace inexor {
 namespace vscript {
 
-    CSphereAreaNode::CSphereAreaNode(vec position, float rad)
+    CSphereAreaNode::CSphereAreaNode(const vec position, const float rad)
     {
         type = INEXOR_VSCRIPT_NODE_TYPE_AREA_SPHERE;
         pos = position;
@@ -20,7 +20,7 @@ namespace vscript {
         return sphere_radius;
     }
 
-    bool CSphereAreaNode::is_point_inside_sphere(vec point_pos)
+    bool CSphereAreaNode::is_point_inside_sphere(const vec point_pos)
     {
         // TODO: speed this up by using the squared method (see David Scherfgen's book)
         return pos.dist(point_pos) < sphere_radius;
@@ -69,13 +69,13 @@ namespace vscript {
         glEnd();
     }
 
-    bool CSphereAreaNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
+    bool CSphereAreaNode::OnLinkAsChildNodeAttempt(const CScriptNode* parent)
     {
         conoutf(CON_DEBUG, "[3DVS-area-sphere] a sphere area can't run any code so it can't be linked as child node!");
         return false;
     }
 
-    bool CSphereAreaNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
+    bool CSphereAreaNode::OnLinkAsParentNodeAttempt(const CScriptNode* child)
     {
         if(INEXOR_VSCRIPT_NODE_TYPE_EVENT != child->type)
         {

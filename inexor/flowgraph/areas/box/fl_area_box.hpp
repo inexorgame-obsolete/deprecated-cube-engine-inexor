@@ -22,14 +22,14 @@ namespace vscript {
 
         public:
 
-            CBoxAreaNode(vec, float, float, float);
+            CBoxAreaNode(const vec, const float, const float, const float);
             ~CBoxAreaNode();
             
             void render_additional();
-            bool is_point_inside_box(vec);
+            bool is_point_inside_box(const vec);
 
-            bool OnLinkAsChildNodeAttempt(CScriptNode*);
-            bool OnLinkAsParentNodeAttempt(CScriptNode*);
+            bool OnLinkAsChildNodeAttempt(const CScriptNode*);
+            bool OnLinkAsParentNodeAttempt(const CScriptNode*);
     };
 
 };

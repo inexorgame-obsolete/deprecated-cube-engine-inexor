@@ -20,13 +20,13 @@ namespace vscript {
 
         public:
 
-            CCylinderAreaNode(vec, float, float);
+            CCylinderAreaNode(const vec, const float, const float);
             ~CCylinderAreaNode();
             
             void render_additional();
 
-            bool OnLinkAsChildNodeAttempt(CScriptNode*);
-            bool OnLinkAsParentNodeAttempt(CScriptNode*);
+            bool OnLinkAsChildNodeAttempt(const CScriptNode*);
+            bool OnLinkAsParentNodeAttempt(const CScriptNode*);
     };
 
 };

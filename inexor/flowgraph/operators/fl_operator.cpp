@@ -3,7 +3,7 @@
 namespace inexor {
 namespace vscript {
 
-    COperatorNode::COperatorNode(vec position, INEXOR_VSCRIPT_OPERATOR_TYPE op_type)
+    COperatorNode::COperatorNode(const vec position, const INEXOR_VSCRIPT_OPERATOR_TYPE op_type)
     {
         type = INEXOR_VSCRIPT_NODE_TYPE_OPERATOR;
         operator_type = op_type;

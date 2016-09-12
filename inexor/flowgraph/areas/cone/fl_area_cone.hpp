@@ -20,13 +20,13 @@ namespace vscript {
 
         public:
 
-            CConeAreaNode(vec, float, float);
+            CConeAreaNode(const vec, const float, const float);
             ~CConeAreaNode();
             
             void render_additional();
 
-            bool OnLinkAsChildNodeAttempt(CScriptNode*);
-            bool OnLinkAsParentNodeAttempt(CScriptNode*);
+            bool OnLinkAsChildNodeAttempt(const CScriptNode*);
+            bool OnLinkAsParentNodeAttempt(const CScriptNode*);
     };
 
 };

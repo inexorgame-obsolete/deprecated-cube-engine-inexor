@@ -3,7 +3,7 @@
 namespace inexor {
 namespace vscript {
 
-    CCylinderAreaNode::CCylinderAreaNode(vec position, float radius, float height)
+    CCylinderAreaNode::CCylinderAreaNode(const vec position, const float radius, const float height)
     {
         type = INEXOR_VSCRIPT_NODE_TYPE_AREA_CYLINDER;
         pos = position;
@@ -63,13 +63,13 @@ namespace vscript {
         glEnd();
     }
 
-    bool CCylinderAreaNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
+    bool CCylinderAreaNode::OnLinkAsChildNodeAttempt(const CScriptNode* parent)
     {
         conoutf(CON_DEBUG, "[3DVS-area-cylinder] a cone area can't run any code so it can't be linked as child node!");
         return false;
     }
 
-    bool CCylinderAreaNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
+    bool CCylinderAreaNode::OnLinkAsParentNodeAttempt(const CScriptNode* child)
     {
         if(INEXOR_VSCRIPT_NODE_TYPE_EVENT != child->type)
         {

@@ -27,7 +27,7 @@ namespace vscript {
     {
         public:
 
-            COperatorNode(vec, INEXOR_VSCRIPT_OPERATOR_TYPE);
+            COperatorNode(const vec, const INEXOR_VSCRIPT_OPERATOR_TYPE);
             ~COperatorNode();
 
             void in();
@@ -38,7 +38,6 @@ namespace vscript {
         protected:
 
             INEXOR_VSCRIPT_OPERATOR_TYPE operator_type;
-
             void apply_operator(CScriptNode*);
 
         private:

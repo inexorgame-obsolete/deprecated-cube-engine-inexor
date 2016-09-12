@@ -52,20 +52,20 @@ namespace vscript {
         return true;
     }
 
-    bool CScriptNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
+    bool CScriptNode::OnLinkAsChildNodeAttempt(const CScriptNode* parent)
     {
         return true;
     }
-    bool CScriptNode::OnUnLinkAsChildNodeAttempt(CScriptNode* parent)
+    bool CScriptNode::OnUnLinkAsChildNodeAttempt(const CScriptNode* parent)
     {
         return true;
     }
 
-    bool CScriptNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
+    bool CScriptNode::OnLinkAsParentNodeAttempt(const CScriptNode* child)
     {
         return true;
     }
-    bool CScriptNode::OnUnLinkAsParentNodeAttempt(CScriptNode* child)
+    bool CScriptNode::OnUnLinkAsParentNodeAttempt(const CScriptNode* child)
     {
         return true;
     }

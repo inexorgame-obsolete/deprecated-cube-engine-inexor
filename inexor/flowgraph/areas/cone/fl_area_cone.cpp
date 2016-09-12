@@ -3,7 +3,7 @@
 namespace inexor {
 namespace vscript {
 
-    CConeAreaNode::CConeAreaNode(vec position, float radius, float height)
+    CConeAreaNode::CConeAreaNode(const vec position, const float radius, const float height)
     {
         type = INEXOR_VSCRIPT_NODE_TYPE_AREA_BOX;
         pos = position;
@@ -49,13 +49,13 @@ namespace vscript {
         // TODO: render connection lines!
     }
 
-    bool CConeAreaNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
+    bool CConeAreaNode::OnLinkAsChildNodeAttempt(const CScriptNode* parent)
     {
         conoutf(CON_DEBUG, "[3DVS-area-cone] a cone area can't run any code so it can't be linked as child node!");
         return false;
     }
 
-    bool CConeAreaNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
+    bool CConeAreaNode::OnLinkAsParentNodeAttempt(const CScriptNode* child)
     {
         if(INEXOR_VSCRIPT_NODE_TYPE_EVENT != child->type)
         {

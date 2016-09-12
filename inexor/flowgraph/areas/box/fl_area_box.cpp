@@ -3,7 +3,7 @@
 namespace inexor {
 namespace vscript {
     
-    CBoxAreaNode::CBoxAreaNode(vec position, float width, float height, float depth)
+    CBoxAreaNode::CBoxAreaNode(const vec position, const float width, const float height, const float depth)
     {
         type = INEXOR_VSCRIPT_NODE_TYPE_AREA_BOX;
         pos = position;
@@ -17,7 +17,7 @@ namespace vscript {
     }
 
 
-    bool CBoxAreaNode::is_point_inside_box(vec point_pos)
+    bool CBoxAreaNode::is_point_inside_box(const vec point_pos)
     {
         vec p = point_pos;
         vec c = pos;
@@ -79,13 +79,13 @@ namespace vscript {
         glEnd();
     }
 
-    bool CBoxAreaNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
+    bool CBoxAreaNode::OnLinkAsChildNodeAttempt(const CScriptNode* parent)
     {
         conoutf(CON_DEBUG, "[3DVS-area-box] a box area can't run any code so it can't be linked as child node!");
         return false;
     }
 
-    bool CBoxAreaNode::OnLinkAsParentNodeAttempt(CScriptNode* child)
+    bool CBoxAreaNode::OnLinkAsParentNodeAttempt(const CScriptNode* child)
     {
         if(INEXOR_VSCRIPT_NODE_TYPE_EVENT != child->type)
         {

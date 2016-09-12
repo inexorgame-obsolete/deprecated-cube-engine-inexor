@@ -19,15 +19,15 @@ namespace vscript {
 
         public:
 
-            CSphereAreaNode(vec, float);
+            CSphereAreaNode(const vec, const float);
             ~CSphereAreaNode();
             
             void render_additional();
-            bool is_point_inside_sphere(vec);
+            bool is_point_inside_sphere(const vec);
             float get_radius();
 
-            bool OnLinkAsChildNodeAttempt(CScriptNode*);
-            bool OnLinkAsParentNodeAttempt(CScriptNode*);
+            bool OnLinkAsChildNodeAttempt(const CScriptNode*);
+            bool OnLinkAsParentNodeAttempt(const CScriptNode*);
     };
 
 };
