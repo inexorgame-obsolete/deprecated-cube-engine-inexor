@@ -18,7 +18,7 @@ namespace vscript {
 
         public:
 
-            CFunctionConoutfNode(const vec, const const char*);
+            CFunctionConoutfNode(const vec, const char*);
             ~CFunctionConoutfNode();
             
             void in();
