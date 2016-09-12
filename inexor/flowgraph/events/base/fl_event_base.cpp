@@ -23,11 +23,11 @@ namespace vscript {
     
     bool CEventBaseNode::OnLinkAsChildNodeAttempt(const CScriptNode* parent)
     {
-        return false;
+        return true;
     }
     bool CEventBaseNode::OnLinkAsParentNodeAttempt(const CScriptNode* child)
     {
-        return false;
+        return true;
     }
 
 };

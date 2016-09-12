@@ -82,6 +82,7 @@ namespace vscript {
         if(INEXOR_VSCRIPT_NODE_TYPE_EVENT != child->type)
         {
             conoutf(CON_DEBUG, "[3DVS-area-sphere] a sphere can only be linked as parent of an event node!");
+            return false;
         }
         return true;
     }
