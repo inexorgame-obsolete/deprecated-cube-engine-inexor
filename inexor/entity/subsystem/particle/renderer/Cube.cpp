@@ -1,46 +1,47 @@
 /*
- * Box.cpp
+ * Cube.cpp
  *
  *  Created on: 08.02.2015
  *      Author: aschaeffer
  */
 
-#include "Box.h"
-#include "inexor/fpsgame/game.hpp"
-#include "inexor/engine/engine.hpp"
+#include "Cube.h"
+#include "fpsgame/game.h"
+#include "engine.h"
 
 namespace inexor {
 namespace entity {
+namespace particle {
 
-Box::Box() : EntityFunction(FUNC_BOX_HANDLE_RENDERER)
+Cube::Cube() : EntityFunction(RENDERER_CUBE_FUNCTION)
 {
 }
 
-Box::~Box()
+Cube::~Cube()
 {
 }
 
-void Box::Before(TimeStep time_step, EntityInstance* handle_renderer)
+void Cube::Before(TimeStep time_step, EntityInstance* renderer_inst)
 {
     glPushMatrix();
-    //lineshader->set();
+    rectshader->set();
     glDisable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_FALSE);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glColor4f(0.1f, 1.0f, 0.9f, 0.2f);
     glBegin(GL_QUADS);
 }
 
-void Box::Execute(TimeStep time_step, RelationshipInstance* renders_handle_inst)
+void Cube::Execute(TimeStep time_step, EntityInstance* renderer_inst, EntityInstance* particle_inst)
 {
-    vec pmin(renders_handle_inst->endNode[POS]->vec3Val);
+    vec pmin((*particle_inst)[POS]->vec3Val);
     vec pmax(pmin);
-    vec dim(renders_handle_inst->endNode[DIM]->vec3Val);
-    pmin.sub(dim);
-    pmax.add(dim);
+    float size = (*renderer_inst)[SIZE]->floatVal * (*particle_inst)[DENSITY]->floatVal / 2.0f;
+    pmin.sub(size);
+    pmax.add(size);
     // FRONT
     glVertex3d(pmin.x, pmin.y, pmin.z);
     glVertex3d(pmax.x, pmin.y, pmin.z);
@@ -73,7 +74,7 @@ void Box::Execute(TimeStep time_step, RelationshipInstance* renders_handle_inst)
     glVertex3d(pmax.x, pmin.y, pmin.z);
 }
 
-void Box::After(TimeStep time_step, EntityInstance* handle_renderer)
+void Cube::After(TimeStep time_step, EntityInstance* renderer_inst)
 {
     glEnd();
     glDepthMask(GL_TRUE);
@@ -83,5 +84,6 @@ void Box::After(TimeStep time_step, EntityInstance* handle_renderer)
     glPopMatrix();
 }
 
+}
 }
 }

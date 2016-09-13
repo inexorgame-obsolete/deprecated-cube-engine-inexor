@@ -7,7 +7,7 @@
 
 #include "EntitySystem.h"
 #include <time.h>
-#include "inexor/shared/cube.hpp"
+#include <cube.h>
 
 using namespace inexor::entity::particle;
 

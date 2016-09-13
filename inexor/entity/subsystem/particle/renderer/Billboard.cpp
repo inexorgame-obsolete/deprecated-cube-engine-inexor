@@ -6,7 +6,7 @@
  */
 
 #include "Billboard.h"
-#include "inexor/fpsgame/game.hpp"
+#include "fpsgame/game.h"
 
 namespace inexor {
 namespace entity {

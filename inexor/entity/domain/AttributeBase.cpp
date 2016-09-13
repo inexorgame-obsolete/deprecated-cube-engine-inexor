@@ -8,7 +8,7 @@
 #include "AttributeBase.h"
 #include "AttributeRefPtr.h"
 #include "FunctionRefPtr.h"
-#include "inexor/engine/engine.hpp"
+#include "engine.h"
 
 namespace inexor {
 namespace entity {

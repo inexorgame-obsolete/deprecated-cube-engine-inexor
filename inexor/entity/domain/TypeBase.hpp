@@ -8,7 +8,7 @@
 #ifndef SRC_ENGINE_ENTITY_DOMAIN_TYPEBASE_H_
 #define SRC_ENGINE_ENTITY_DOMAIN_TYPEBASE_H_
 
-#include "inexor/shared/uuid.hpp"
+#include "shared/uuid.h"
 
 #include "../EntitySystemBase.h"
 #include "AttributeBase.h"
