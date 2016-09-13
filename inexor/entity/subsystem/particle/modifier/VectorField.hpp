@@ -8,11 +8,11 @@
 #ifndef SRC_ENGINE_ENTITY_SUBSYSTEM_PARTICLE_MODIFIER_VECTORFIELD_H_
 #define SRC_ENGINE_ENTITY_SUBSYSTEM_PARTICLE_MODIFIER_VECTORFIELD_H_
 
-#include "../../../EntitySystemBase.h"
-#include "../../../domain/graph/EntityFunction.h"
-#include "../../../domain/graph/EntityInstance.h"
-#include "../ParticleModel.h"
-#include "muParser.h"
+#include "../../../EntitySystemBase.hpp"
+#include "../../../domain/graph/EntityFunction.hpp"
+#include "../../../domain/graph/EntityInstance.hpp"
+#include "../ParticleModel.hpp"
+#include "inexor/muparser/include/muParser.h"
 
 namespace inexor {
 namespace entity {

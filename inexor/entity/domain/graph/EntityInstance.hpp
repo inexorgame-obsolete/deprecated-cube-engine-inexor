@@ -8,11 +8,11 @@
 #ifndef SRC_ENGINE_ENTITY_ENTITYINSTANCE_H_
 #define SRC_ENGINE_ENTITY_ENTITYINSTANCE_H_
 
-#include "../../EntitySystemBase.h"
-#include "../InstanceBase.h"
-#include "../TypeRefPtr.h"
-#include "../InstanceRefPtr.h"
-#include "EntityType.h"
+#include "../../EntitySystemBase.hpp"
+#include "../InstanceBase.hpp"
+#include "../TypeRefPtr.hpp"
+#include "../InstanceRefPtr.hpp"
+#include "EntityType.hpp"
 
 namespace inexor {
 namespace entity {
@@ -46,7 +46,8 @@ class EntityInstance : public InstanceBase
         /**
          * Returns all relationships of the given relationship type.
          */
-        std::list<InstanceRefPtr<RelationshipInstance> > GetRelationshipsOfType(TypeRefPtr<RelationshipType> relationship_type);
+        // TODO: uncomment and implement
+        //std::list<InstanceRefPtr<RelationshipInstance> > GetRelationshipsOfType(TypeRefPtr<RelationshipType> relationship_type);
 
         /**
          * Returns all outgoing relationships of the given relationship type.

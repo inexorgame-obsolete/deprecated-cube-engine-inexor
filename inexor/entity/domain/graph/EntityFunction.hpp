@@ -8,8 +8,8 @@
 #ifndef SRC_ENGINE_ENTITY_ENTITYFUNCTION_H_
 #define SRC_ENGINE_ENTITY_ENTITYFUNCTION_H_
 
-#include "../../EntitySystemBase.h"
-#include "../TimeStep.h"
+#include "../../EntitySystemBase.hpp"
+#include "../TimeStep.hpp"
 
 namespace inexor {
 namespace entity {

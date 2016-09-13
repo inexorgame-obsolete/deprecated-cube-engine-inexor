@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "TypeBase.h"
+#include "TypeBase.hpp"
 
 namespace inexor {
 namespace entity {

@@ -8,14 +8,14 @@
 #ifndef SRC_ENGINE_ENTITY_FACTORY_PARTICLETYPEFACTORY_H_
 #define SRC_ENGINE_ENTITY_FACTORY_PARTICLETYPEFACTORY_H_
 
-#include "EntityTypeFactory.h"
-#include "../subsystem/particle/ParticleModel.h"
-#include "../domain/TypeRefPtr.h"
-#include "../domain/graph/EntityFunction.h"
-#include "../domain/graph/EntityType.h"
-#include "../domain/graph/RelationshipType.h"
-#include "../manager/EntityTypeManager.h"
-#include "../manager/RelationshipTypeManager.h"
+#include "EntityTypeFactory.hpp"
+#include "../subsystem/particle/ParticleModel.hpp"
+#include "../domain/TypeRefPtr.hpp"
+#include "../domain/graph/EntityFunction.hpp"
+#include "../domain/graph/EntityType.hpp"
+#include "../domain/graph/RelationshipType.hpp"
+#include "../manager/EntityTypeManager.hpp"
+#include "../manager/RelationshipTypeManager.hpp"
 
 namespace inexor {
 namespace entity {

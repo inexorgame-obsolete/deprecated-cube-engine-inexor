@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "MathFunction.h"
+#include "MathFunction.hpp"
 
 namespace inexor {
 namespace entity {

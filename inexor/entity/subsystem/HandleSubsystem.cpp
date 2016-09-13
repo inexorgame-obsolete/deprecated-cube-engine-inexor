@@ -5,8 +5,8 @@
  *      Author: aschaeffer
  */
 
-#include "HandleSubsystem.h"
-#include "handle/renderer/Box.h"
+#include "HandleSubsystem.hpp"
+#include "handle/renderer/Box.hpp"
 
 namespace inexor {
 namespace entity {

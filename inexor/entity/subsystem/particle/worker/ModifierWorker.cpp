@@ -5,9 +5,9 @@
  *      Author: aschaeffer
  */
 
-#include "ModifierWorker.h"
-#include "../ParticleSubsystem.h"
-#include "../../../EntitySystem.h"
+#include "ModifierWorker.hpp"
+#include "../ParticleSubsystem.hpp"
+#include "../../../EntitySystem.hpp"
 
 namespace inexor {
 namespace entity {

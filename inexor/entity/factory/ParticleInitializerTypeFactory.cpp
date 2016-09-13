@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "ParticleInitializerTypeFactory.h"
+#include "ParticleInitializerTypeFactory.hpp"
 
 namespace inexor {
 namespace entity {

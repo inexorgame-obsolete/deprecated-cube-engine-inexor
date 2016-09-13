@@ -5,8 +5,8 @@
  *      Author: aschaeffer
  */
 
-#include "RelationshipTypeProvider.h"
-#include "../manager/RelationshipTypeManager.h"
+#include "RelationshipTypeProvider.hpp"
+#include "../manager/RelationshipTypeManager.hpp"
 
 namespace inexor {
 namespace entity {

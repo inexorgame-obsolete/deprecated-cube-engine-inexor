@@ -5,9 +5,9 @@
  *      Author: aschaeffer
  */
 
-#include "AttributeRefPtr.h"
-#include "FunctionRefPtr.h"
-#include "engine.h"
+#include "AttributeRefPtr.hpp"
+#include "FunctionRefPtr.hpp"
+#include "inexor/engine/engine.hpp"
 
 namespace inexor {
 namespace entity {

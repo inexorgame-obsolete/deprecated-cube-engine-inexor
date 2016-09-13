@@ -5,10 +5,10 @@
  *      Author: aschaeffer
  */
 
-#include "AttributeBase.h"
-#include "AttributeRefPtr.h"
-#include "FunctionRefPtr.h"
-#include "engine.h"
+#include "AttributeBase.hpp"
+#include "AttributeRefPtr.hpp"
+#include "FunctionRefPtr.hpp"
+#include "inexor/engine/engine.hpp"
 
 namespace inexor {
 namespace entity {

@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "VelocityDamper.h"
+#include "VelocityDamper.hpp"
 
 namespace inexor {
 namespace entity {

@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "DensityFadeout.h"
+#include "DensityFadeout.hpp"
 
 namespace inexor {
 namespace entity {

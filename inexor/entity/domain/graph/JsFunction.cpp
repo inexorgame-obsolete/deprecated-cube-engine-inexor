@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "JsFunction.h"
+#include "JsFunction.hpp"
 
 namespace inexor {
 namespace entity {

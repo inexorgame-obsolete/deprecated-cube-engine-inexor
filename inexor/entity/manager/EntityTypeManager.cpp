@@ -5,9 +5,9 @@
  *      Author: aschaeffer
  */
 
-#include "EntityTypeManager.h"
-#include "../provider/EntityTypeProvider.h"
-#include "../factory/EntityTypeFactory.h"
+#include "EntityTypeManager.hpp"
+#include "../provider/EntityTypeProvider.hpp"
+#include "../factory/EntityTypeFactory.hpp"
 
 namespace inexor {
 namespace entity {

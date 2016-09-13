@@ -8,9 +8,9 @@
 #ifndef SRC_ENGINE_ENTITY_DOMAIN_FUNCTIONREFPTR_H_
 #define SRC_ENGINE_ENTITY_DOMAIN_FUNCTIONREFPTR_H_
 
-#include "../EntitySystemBase.h"
-#include "TimeStep.h"
-#include "graph/EntityFunction.h"
+#include "../EntitySystemBase.hpp"
+#include "TimeStep.hpp"
+#include "graph/EntityFunction.hpp"
 
 namespace inexor {
 namespace entity {

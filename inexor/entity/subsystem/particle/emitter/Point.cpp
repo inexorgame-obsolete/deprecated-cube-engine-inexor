@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "Point.h"
+#include "Point.hpp"
 
 namespace inexor {
 namespace entity {

@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "Rolling.h"
+#include "Rolling.hpp"
 
 namespace inexor {
 namespace entity {

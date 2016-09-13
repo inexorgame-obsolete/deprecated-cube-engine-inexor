@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "InstanceBase.h"
+#include "InstanceBase.hpp"
 
 namespace inexor {
 namespace entity {

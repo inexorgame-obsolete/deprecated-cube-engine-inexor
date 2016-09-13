@@ -8,8 +8,8 @@
 #ifndef SRC_ENGINE_ENTITY_ENTITYTEST_H_
 #define SRC_ENGINE_ENTITY_ENTITYTEST_H_
 
-#include "EntitySystemBase.h"
-#include "EntitySystem.h"
+#include "EntitySystemBase.hpp"
+#include "EntitySystem.hpp"
 
 namespace inexor {
 namespace entity {

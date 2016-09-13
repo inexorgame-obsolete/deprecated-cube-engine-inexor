@@ -8,12 +8,12 @@
 #ifndef SRC_ENGINE_ENTITY_SUBSYSTEM_SUBSYSTEMBASE_H_
 #define SRC_ENGINE_ENTITY_SUBSYSTEM_SUBSYSTEMBASE_H_
 
-#include "../EntitySystemBase.h"
-#include "../domain/TimeStep.h"
-#include "../manager/EntityTypeManager.h"
-#include "../manager/EntityInstanceManager.h"
-#include "../manager/RelationshipTypeManager.h"
-#include "../manager/RelationshipInstanceManager.h"
+#include "../EntitySystemBase.hpp"
+#include "../domain/TimeStep.hpp"
+#include "../manager/EntityTypeManager.hpp"
+#include "../manager/EntityInstanceManager.hpp"
+#include "../manager/RelationshipTypeManager.hpp"
+#include "../manager/RelationshipInstanceManager.hpp"
 
 namespace inexor {
 namespace entity {

@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "ParticleWorker.h"
+#include "ParticleWorker.hpp"
 
 namespace inexor {
 namespace entity {

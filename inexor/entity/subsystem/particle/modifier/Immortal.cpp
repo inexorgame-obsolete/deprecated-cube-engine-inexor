@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "Immortal.h"
+#include "Immortal.hpp"
 
 namespace inexor {
 namespace entity {

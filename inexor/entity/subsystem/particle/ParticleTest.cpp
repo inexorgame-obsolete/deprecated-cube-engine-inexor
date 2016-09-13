@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "ParticleTest.h"
+#include "ParticleTest.hpp"
 
 namespace inexor {
 namespace entity {

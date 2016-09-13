@@ -8,9 +8,9 @@
 #ifndef SRC_ENGINE_ENTITY_SUBSYSTEM_TELEPORTSUBSYSTEM_H_
 #define SRC_ENGINE_ENTITY_SUBSYSTEM_TELEPORTSUBSYSTEM_H_
 
-#include "../EntitySystemBase.h"
-#include "../provider/TeleportEntityTypeProvider.h"
-#include "SubsystemBase.h"
+#include "../EntitySystemBase.hpp"
+#include "../provider/TeleportEntityTypeProvider.hpp"
+#include "SubsystemBase.hpp"
 
 #define TELEPORT_SUBSYSTEM "teleport"
 

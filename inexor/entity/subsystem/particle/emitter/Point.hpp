@@ -8,10 +8,10 @@
 #ifndef SRC_ENGINE_ENTITY_SUBSYSTEM_PARTICLE_EMITTER_POINT_H_
 #define SRC_ENGINE_ENTITY_SUBSYSTEM_PARTICLE_EMITTER_POINT_H_
 
-#include "../../../EntitySystemBase.h"
-#include "../ParticleSubsystem.h"
-#include "../../../EntitySystem.h"
-#include "../../../domain/graph/EntityFunction.h"
+#include "../../../EntitySystemBase.hpp"
+#include "../ParticleSubsystem.hpp"
+#include "../../../EntitySystem.hpp"
+#include "../../../domain/graph/EntityFunction.hpp"
 
 namespace inexor {
 namespace entity {

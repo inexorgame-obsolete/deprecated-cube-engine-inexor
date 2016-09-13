@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "EntityTest.h"
+#include "EntityTest.hpp"
 
 namespace inexor {
 namespace entity {

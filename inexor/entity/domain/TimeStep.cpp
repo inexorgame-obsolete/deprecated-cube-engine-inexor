@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "TimeStep.h"
+#include "TimeStep.hpp"
 
 namespace inexor {
 namespace entity {

@@ -8,8 +8,8 @@
 #ifndef SRC_ENGINE_ENTITY_DOMAIN_TYPEREFPTR_H_
 #define SRC_ENGINE_ENTITY_DOMAIN_TYPEREFPTR_H_
 
-#include "../EntitySystemBase.h"
-#include "AttributeRefPtr.h"
+#include "../EntitySystemBase.hpp"
+#include "AttributeRefPtr.hpp"
 
 namespace inexor {
 namespace entity {

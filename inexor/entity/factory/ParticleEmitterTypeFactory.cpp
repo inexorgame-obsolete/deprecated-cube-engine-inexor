@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "ParticleEmitterTypeFactory.h"
+#include "ParticleEmitterTypeFactory.hpp"
 
 namespace inexor {
 namespace entity {

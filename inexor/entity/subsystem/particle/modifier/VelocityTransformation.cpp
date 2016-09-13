@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "VelocityTransformation.h"
+#include "VelocityTransformation.hpp"
 
 namespace inexor {
 namespace entity {

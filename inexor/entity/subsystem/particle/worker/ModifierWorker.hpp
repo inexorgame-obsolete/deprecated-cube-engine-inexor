@@ -8,9 +8,9 @@
 #ifndef SRC_ENGINE_ENTITY_SUBSYSTEM_PARTICLE_WORKER_MODIFIERWORKER_H_
 #define SRC_ENGINE_ENTITY_SUBSYSTEM_PARTICLE_WORKER_MODIFIERWORKER_H_
 
-#include "ParticleWorker.h"
-#include "../../../manager/EntityInstanceManager.h"
-#include "../../../manager/RelationshipInstanceManager.h"
+#include "ParticleWorker.hpp"
+#include "../../../manager/EntityInstanceManager.hpp"
+#include "../../../manager/RelationshipInstanceManager.hpp"
 
 namespace inexor {
 namespace entity {

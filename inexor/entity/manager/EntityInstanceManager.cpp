@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "EntityInstanceManager.h"
+#include "EntityInstanceManager.hpp"
 
 namespace inexor {
 namespace entity {
@@ -40,17 +40,21 @@ InstanceRefPtr<EntityInstance> EntityInstanceManager::Get(std::string uuid)
     return entity_instances[uuid];
 }
 
+/*
 std::list<InstanceRefPtr<EntityInstance> > EntityInstanceManager::GetAll(TypeRefPtr<EntityType> entity_type)
 {
     // TODO: implement
     // Iterate through all instances and check type (costly)
 }
+*/
 
+/*
 std::list<InstanceRefPtr<EntityInstance> > EntityInstanceManager::GetAll(std::string entity_type_name)
 {
     TypeRefPtr<EntityType> entity_type = entity_type_manager->Get(entity_type_name);
     return GetAll(entity_type);
 }
+*/
 
 void EntityInstanceManager::DeleteInstance(InstanceRefPtr<EntityInstance> instance)
 {

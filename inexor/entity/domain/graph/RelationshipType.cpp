@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "RelationshipType.h"
+#include "RelationshipType.hpp"
 
 namespace inexor {
 namespace entity {

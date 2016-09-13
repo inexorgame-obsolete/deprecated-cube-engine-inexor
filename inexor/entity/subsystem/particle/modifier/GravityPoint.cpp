@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "GravityPoint.h"
+#include "GravityPoint.hpp"
 
 namespace inexor {
 namespace entity {

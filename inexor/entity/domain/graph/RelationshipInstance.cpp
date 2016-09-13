@@ -5,8 +5,8 @@
  *      Author: aschaeffer
  */
 
-#include "RelationshipInstance.h"
-#include "EntityInstance.h"
+#include "RelationshipInstance.hpp"
+#include "EntityInstance.hpp"
 
 namespace inexor {
 namespace entity {

@@ -8,10 +8,10 @@
 #ifndef SRC_ENGINE_ENTITY_SUBSYSTEM_PARTICLE_MODIFIER_VELOCITYTRANSFORMATION_H_
 #define SRC_ENGINE_ENTITY_SUBSYSTEM_PARTICLE_MODIFIER_VELOCITYTRANSFORMATION_H_
 
-#include "../../../EntitySystemBase.h"
-#include "../../../domain/graph/EntityFunction.h"
-#include "../../../domain/graph/EntityInstance.h"
-#include "../ParticleModel.h"
+#include "../../../EntitySystemBase.hpp"
+#include "../../../domain/graph/EntityFunction.hpp"
+#include "../../../domain/graph/EntityInstance.hpp"
+#include "../ParticleModel.hpp"
 
 namespace inexor {
 namespace entity {

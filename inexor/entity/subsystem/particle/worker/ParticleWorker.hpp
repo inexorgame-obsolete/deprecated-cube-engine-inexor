@@ -8,12 +8,12 @@
 #ifndef SRC_ENGINE_ENTITY_SUBSYSTEM_PARTICLE_PARTICLEWORKER_H_
 #define SRC_ENGINE_ENTITY_SUBSYSTEM_PARTICLE_PARTICLEWORKER_H_
 
-#include "engine.h"
-#include "../../../EntitySystemBase.h"
-#include "../../../domain/TimeStep.h"
-#include "../../../domain/InstanceRefPtr.h"
-#include "../../../domain/FunctionRefPtr.h"
-#include "../../../domain/graph/EntityInstance.h"
+#include "inexor/engine/engine.hpp"
+#include "../../../EntitySystemBase.hpp"
+#include "../../../domain/TimeStep.hpp"
+#include "../../../domain/InstanceRefPtr.hpp"
+#include "../../../domain/FunctionRefPtr.hpp"
+#include "../../../domain/graph/EntityInstance.hpp"
 
 namespace inexor {
 namespace entity {

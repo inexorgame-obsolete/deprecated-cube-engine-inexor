@@ -5,11 +5,11 @@
  *      Author: aschaeffer
  */
 
-#include "EntityFunction.h"
-#include "EntityType.h"
-#include "RelationshipType.h"
-#include "EntityInstance.h"
-#include "RelationshipInstance.h"
+#include "EntityFunction.hpp"
+#include "EntityType.hpp"
+#include "RelationshipType.hpp"
+#include "EntityInstance.hpp"
+#include "RelationshipInstance.hpp"
 
 namespace inexor {
 namespace entity {

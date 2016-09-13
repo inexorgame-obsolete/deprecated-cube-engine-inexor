@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "RandomPosition.h"
+#include "RandomPosition.hpp"
 
 namespace inexor {
 namespace entity {

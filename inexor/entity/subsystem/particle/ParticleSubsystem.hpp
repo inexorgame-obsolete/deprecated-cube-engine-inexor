@@ -8,17 +8,17 @@
 #ifndef SRC_ENGINE_ENTITY_SUBSYSTEM_PARTICLESUBSYSTEM_H_
 #define SRC_ENGINE_ENTITY_SUBSYSTEM_PARTICLESUBSYSTEM_H_
 
-#include "ParticleModel.h"
-#include "../SubsystemBase.h"
-#include "../HandleSubsystem.h"
-#include "worker/ParticleWorker.h"
-#include "worker/EmitterWorker.h"
-#include "worker/ModifierWorker.h"
-#include "../../factory/ParticleTypeFactory.h"
-#include "../../factory/ParticleEmitterTypeFactory.h"
-#include "../../factory/ParticleInitializerTypeFactory.h"
-#include "../../factory/ParticleModifierTypeFactory.h"
-#include "../../factory/ParticleRendererTypeFactory.h"
+#include "ParticleModel.hpp"
+#include "../SubsystemBase.hpp"
+#include "../HandleSubsystem.hpp"
+#include "worker/ParticleWorker.hpp"
+#include "worker/EmitterWorker.hpp"
+#include "worker/ModifierWorker.hpp"
+#include "../../factory/ParticleTypeFactory.hpp"
+#include "../../factory/ParticleEmitterTypeFactory.hpp"
+#include "../../factory/ParticleInitializerTypeFactory.hpp"
+#include "../../factory/ParticleModifierTypeFactory.hpp"
+#include "../../factory/ParticleRendererTypeFactory.hpp"
 
 using namespace inexor::entity;
 

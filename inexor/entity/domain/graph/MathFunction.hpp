@@ -8,8 +8,8 @@
 #ifndef SRC_ENGINE_ENTITY_DOMAIN_GRAPH_MATHFUNCTION_H_
 #define SRC_ENGINE_ENTITY_DOMAIN_GRAPH_MATHFUNCTION_H_
 
-#include "../../EntitySystemBase.h"
-#include "EntityFunction.h"
+#include "../../EntitySystemBase.hpp"
+#include "EntityFunction.hpp"
 
 namespace inexor {
 namespace entity {

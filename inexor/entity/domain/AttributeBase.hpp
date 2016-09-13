@@ -8,8 +8,8 @@
 #ifndef SRC_ENGINE_ENTITY_DOMAIN_ATTRIBUTEBASE_H_
 #define SRC_ENGINE_ENTITY_DOMAIN_ATTRIBUTEBASE_H_
 
-#include "../EntitySystemBase.h"
-#include "AttributeRefPtr.h"
+#include "../EntitySystemBase.hpp"
+#include "AttributeRefPtr.hpp"
 
 class vec;
 class vec4;

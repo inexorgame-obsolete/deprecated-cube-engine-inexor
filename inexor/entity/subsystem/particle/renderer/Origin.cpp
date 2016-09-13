@@ -5,9 +5,9 @@
  *      Author: aschaeffer
  */
 
-#include "Origin.h"
-#include "fpsgame/game.h"
-#include "engine.h"
+#include "Origin.hpp"
+#include "inexor/fpsgame/game.hpp"
+#include "inexor/engine/engine.hpp"
 
 namespace inexor {
 namespace entity {
@@ -26,7 +26,7 @@ void Origin::Before(TimeStep time_step, EntityInstance* renderer_inst)
 {
     glPushMatrix();
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    lineshader->set();
+    //lineshader->set();
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);

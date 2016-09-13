@@ -5,8 +5,8 @@
  *      Author: aschaeffer
  */
 
-#include "EmitterWorker.h"
-#include "../ParticleSubsystem.h"
+#include "EmitterWorker.hpp"
+#include "../ParticleSubsystem.hpp"
 
 namespace inexor {
 namespace entity {

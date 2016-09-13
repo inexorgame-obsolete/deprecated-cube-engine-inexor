@@ -8,11 +8,11 @@
 #ifndef SRC_ENGINE_ENTITY_ENTITYTYPEMANAGER_H_
 #define SRC_ENGINE_ENTITY_ENTITYTYPEMANAGER_H_
 
-#include "../EntitySystemBase.h"
-#include "../domain/TypeRefPtr.h"
-#include "../domain/graph/EntityType.h"
-#include "../provider/EntityTypeProvider.h"
-#include "../factory/EntityTypeFactory.h"
+#include "../EntitySystemBase.hpp"
+#include "../domain/TypeRefPtr.hpp"
+#include "../domain/graph/EntityType.hpp"
+#include "../provider/EntityTypeProvider.hpp"
+#include "../factory/EntityTypeFactory.hpp"
 
 namespace inexor {
 namespace entity {

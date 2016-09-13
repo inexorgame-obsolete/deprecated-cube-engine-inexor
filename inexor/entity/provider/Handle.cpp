@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "Handle.h"
+#include "Handle.hpp"
 
 namespace inexor {
 namespace entity {

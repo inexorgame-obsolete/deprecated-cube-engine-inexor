@@ -10,12 +10,12 @@
 
 #include <mutex>
 
-#include "RelationshipTypeManager.h"
-#include "../domain/InstanceRefPtr.h"
-#include "../domain/TypeRefPtr.h"
-#include "../EntitySystemBase.h"
-#include "../domain/graph/RelationshipInstance.h"
-#include "../domain/graph/RelationshipType.h"
+#include "RelationshipTypeManager.hpp"
+#include "../domain/InstanceRefPtr.hpp"
+#include "../domain/TypeRefPtr.hpp"
+#include "../EntitySystemBase.hpp"
+#include "../domain/graph/RelationshipInstance.hpp"
+#include "../domain/graph/RelationshipType.hpp"
 
 namespace inexor {
 namespace entity {

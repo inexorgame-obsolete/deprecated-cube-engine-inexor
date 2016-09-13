@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "SimpleGravity.h"
+#include "SimpleGravity.hpp"
 
 namespace inexor {
 namespace entity {

@@ -5,8 +5,8 @@
  *      Author: aschaeffer
  */
 
-#include "EntityInstance.h"
-#include "RelationshipInstance.h"
+#include "EntityInstance.hpp"
+#include "RelationshipInstance.hpp"
 
 namespace inexor {
 namespace entity {
@@ -42,10 +42,12 @@ void EntityInstance::AddIncomingRelationship(TypeRefPtr<RelationshipType> relati
     this->incoming[relationship_type->uuid].push_back(relationship_instance);
 }
 
+/*
 std::list<InstanceRefPtr<RelationshipInstance> > EntityInstance::GetRelationshipsOfType(TypeRefPtr<RelationshipType> relationship_type)
 {
     // TODO: implement
 }
+*/
 
 std::list<InstanceRefPtr<RelationshipInstance> > EntityInstance::GetAllOutgoingRelationshipsOfType(TypeRefPtr<RelationshipType> relationship_type)
 {

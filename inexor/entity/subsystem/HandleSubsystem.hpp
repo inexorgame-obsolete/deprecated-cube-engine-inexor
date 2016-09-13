@@ -8,9 +8,9 @@
 #ifndef SRC_ENGINE_ENTITY_SUBSYSTEM_HANDLE_H_
 #define SRC_ENGINE_ENTITY_SUBSYSTEM_HANDLE_H_
 
-#include "../EntitySystemBase.h"
-#include "../provider/Handle.h"
-#include "SubsystemBase.h"
+#include "../EntitySystemBase.hpp"
+#include "../provider/Handle.hpp"
+#include "SubsystemBase.hpp"
 
 namespace inexor {
 namespace entity {

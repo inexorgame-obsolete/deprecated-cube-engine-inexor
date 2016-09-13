@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "RandomVelocity.h"
+#include "RandomVelocity.hpp"
 
 namespace inexor {
 namespace entity {

@@ -5,9 +5,9 @@
  *      Author: aschaeffer
  */
 
-#include "EntitySystem.h"
+#include "EntitySystem.hpp"
 #include <time.h>
-#include <cube.h>
+#include "inexor/shared/cube.hpp"
 
 using namespace inexor::entity::particle;
 

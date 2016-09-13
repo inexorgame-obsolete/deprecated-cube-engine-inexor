@@ -19,7 +19,7 @@
 #include "include/cef_base.h"
 #include "include/internal/cef_ptr.h"
 
-#include "EntityModel.h"
+#include "EntityModel.hpp"
 
 extern void logoutf(const char *fmt, ...);
 

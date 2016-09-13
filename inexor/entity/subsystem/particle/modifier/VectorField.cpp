@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "VectorField.h"
+#include "VectorField.hpp"
 
 namespace inexor {
 namespace entity {

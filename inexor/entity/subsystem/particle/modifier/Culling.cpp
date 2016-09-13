@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "Culling.h"
+#include "Culling.hpp"
 
 namespace inexor {
 namespace entity {

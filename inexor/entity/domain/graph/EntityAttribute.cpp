@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "EntityAttribute.h"
+#include "EntityAttribute.hpp"
 
 namespace inexor {
 namespace entity {

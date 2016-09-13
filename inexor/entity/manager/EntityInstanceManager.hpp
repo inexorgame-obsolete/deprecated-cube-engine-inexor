@@ -8,11 +8,11 @@
 #ifndef SRC_ENGINE_ENTITY_ENTITYINSTANCEMANAGER_H_
 #define SRC_ENGINE_ENTITY_ENTITYINSTANCEMANAGER_H_
 
-#include "../EntitySystemBase.h"
-#include "EntityTypeManager.h"
-#include "../domain/InstanceRefPtr.h"
-#include "../domain/TypeRefPtr.h"
-#include "../domain/graph/EntityInstance.h"
+#include "../EntitySystemBase.hpp"
+#include "EntityTypeManager.hpp"
+#include "../domain/InstanceRefPtr.hpp"
+#include "../domain/TypeRefPtr.hpp"
+#include "../domain/graph/EntityInstance.hpp"
 
 namespace inexor {
 namespace entity {
@@ -32,7 +32,8 @@ class EntityInstanceManager
 
         bool Exists(std::string uuid);
         InstanceRefPtr<EntityInstance> Get(std::string uuid);
-        std::list<InstanceRefPtr<EntityInstance> > GetAll(TypeRefPtr<EntityType> entity_type);
+        // TODO: uncomment and implement
+        //std::list<InstanceRefPtr<EntityInstance> > GetAll(TypeRefPtr<EntityType> entity_type);
         std::list<InstanceRefPtr<EntityInstance> > GetAll(std::string entity_type_name);
 
         void DeleteInstance(InstanceRefPtr<EntityInstance> instance);

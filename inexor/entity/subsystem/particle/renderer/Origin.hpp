@@ -8,10 +8,10 @@
 #ifndef ENTITY_SUBSYSTEM_PARTICLE_RENDERER_ORIGIN_H_
 #define ENTITY_SUBSYSTEM_PARTICLE_RENDERER_ORIGIN_H_
 
-#include "../../../EntitySystemBase.h"
-#include "../ParticleSubsystem.h"
-#include "../../../EntitySystem.h"
-#include "../../../domain/graph/EntityFunction.h"
+#include "../../../EntitySystemBase.hpp"
+#include "../ParticleSubsystem.hpp"
+#include "../../../EntitySystem.hpp"
+#include "../../../domain/graph/EntityFunction.hpp"
 
 extern void enablepolygonoffset(GLenum type);
 extern void disablepolygonoffset(GLenum type);

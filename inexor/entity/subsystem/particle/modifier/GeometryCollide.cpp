@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "GeometryCollide.h"
+#include "GeometryCollide.hpp"
 
 namespace inexor {
 namespace entity {

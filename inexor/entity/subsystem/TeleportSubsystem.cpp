@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "TeleportSubsystem.h"
+#include "TeleportSubsystem.hpp"
 
 namespace inexor {
 namespace entity {

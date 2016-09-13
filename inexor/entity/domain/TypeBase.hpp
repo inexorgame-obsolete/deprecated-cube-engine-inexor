@@ -8,10 +8,10 @@
 #ifndef SRC_ENGINE_ENTITY_DOMAIN_TYPEBASE_H_
 #define SRC_ENGINE_ENTITY_DOMAIN_TYPEBASE_H_
 
-#include "shared/uuid.h"
+#include "inexor/shared/uuid.hpp"
 
-#include "../EntitySystemBase.h"
-#include "AttributeBase.h"
+#include "../EntitySystemBase.hpp"
+#include "AttributeBase.hpp"
 
 namespace inexor {
 namespace entity {

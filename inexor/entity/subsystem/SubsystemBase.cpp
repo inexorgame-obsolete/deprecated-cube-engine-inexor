@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "SubsystemBase.h"
+#include "SubsystemBase.hpp"
 
 namespace inexor {
 namespace entity {

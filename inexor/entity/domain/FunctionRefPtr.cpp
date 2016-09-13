@@ -5,15 +5,15 @@
  *      Author: aschaeffer
  */
 
-#include "FunctionRefPtr.h"
-#include "TypeBase.h"
-#include "graph/EntityType.h"
-#include "graph/RelationshipType.h"
-#include "graph/EntityInstance.h"
-#include "graph/EntityAttribute.h"
-#include "graph/RelationshipInstance.h"
-#include "graph/EntityAttribute.h"
-#include "graph/EntityFunction.h"
+#include "FunctionRefPtr.hpp"
+#include "TypeBase.hpp"
+#include "graph/EntityType.hpp"
+#include "graph/RelationshipType.hpp"
+#include "graph/EntityInstance.hpp"
+#include "graph/EntityAttribute.hpp"
+#include "graph/RelationshipInstance.hpp"
+#include "graph/EntityAttribute.hpp"
+#include "graph/EntityFunction.hpp"
 
 namespace inexor {
 namespace entity {

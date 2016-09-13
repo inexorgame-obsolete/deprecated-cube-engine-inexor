@@ -8,12 +8,12 @@
 #ifndef SRC_ENGINE_ENTITY_DOMAIN_ATTRIBUTEREFPTR_H_
 #define SRC_ENGINE_ENTITY_DOMAIN_ATTRIBUTEREFPTR_H_
 
-#include "../EntitySystemBase.h"
-#include "TimeStep.h"
-#include "graph/EntityAttribute.h"
+#include "../EntitySystemBase.hpp"
+#include "TimeStep.hpp"
+#include "graph/EntityAttribute.hpp"
 
-class vec;
-class vec4;
+struct vec;
+struct vec4;
 
 namespace inexor {
 namespace entity {

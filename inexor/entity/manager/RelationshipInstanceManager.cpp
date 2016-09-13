@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "RelationshipInstanceManager.h"
+#include "RelationshipInstanceManager.hpp"
 
 namespace inexor {
 namespace entity {

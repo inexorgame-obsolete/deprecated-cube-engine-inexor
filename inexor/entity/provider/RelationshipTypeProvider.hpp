@@ -8,9 +8,9 @@
 #ifndef SRC_ENGINE_ENTITY_PROVIDER_RELATIONSHIPTYPEPROVIDER_H_
 #define SRC_ENGINE_ENTITY_PROVIDER_RELATIONSHIPTYPEPROVIDER_H_
 
-#include "../domain/TypeBase.h"
-#include "../domain/graph/EntityType.h"
-#include "../manager/EntityTypeManager.h"
+#include "../domain/TypeBase.hpp"
+#include "../domain/graph/EntityType.hpp"
+#include "../manager/EntityTypeManager.hpp"
 
 namespace inexor {
 namespace entity {

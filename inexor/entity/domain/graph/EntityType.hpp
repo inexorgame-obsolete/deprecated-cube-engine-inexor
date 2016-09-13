@@ -8,8 +8,8 @@
 #ifndef SRC_ENGINE_ENTITY_ENTITYTYPE_H_
 #define SRC_ENGINE_ENTITY_ENTITYTYPE_H_
 
-#include "../TypeBase.h"
-#include "../TypeRefPtr.h"
+#include "../TypeBase.hpp"
+#include "../TypeRefPtr.hpp"
 
 namespace inexor {
 namespace entity {

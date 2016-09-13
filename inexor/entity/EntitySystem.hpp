@@ -10,21 +10,21 @@
 
 #include <typeinfo>
 
-#include "EntitySystemBase.h"
-#include "domain/InstanceBase.h"
-#include "domain/TimeStep.h"
-#include "domain/TypeBase.h"
-#include "domain/graph/EntityInstance.h"
-#include "domain/graph/EntityType.h"
-#include "domain/graph/RelationshipType.h"
-#include "domain/graph/RelationshipInstance.h"
-#include "manager/EntityInstanceManager.h"
-#include "manager/EntityTypeManager.h"
-#include "manager/RelationshipInstanceManager.h"
-#include "manager/RelationshipTypeManager.h"
-#include "subsystem/HandleSubsystem.h"
-#include "subsystem/TeleportSubsystem.h"
-#include "subsystem/particle/ParticleSubsystem.h"
+#include "EntitySystemBase.hpp"
+#include "domain/InstanceBase.hpp"
+#include "domain/TimeStep.hpp"
+#include "domain/TypeBase.hpp"
+#include "domain/graph/EntityInstance.hpp"
+#include "domain/graph/EntityType.hpp"
+#include "domain/graph/RelationshipType.hpp"
+#include "domain/graph/RelationshipInstance.hpp"
+#include "manager/EntityInstanceManager.hpp"
+#include "manager/EntityTypeManager.hpp"
+#include "manager/RelationshipInstanceManager.hpp"
+#include "manager/RelationshipTypeManager.hpp"
+#include "subsystem/HandleSubsystem.hpp"
+#include "subsystem/TeleportSubsystem.hpp"
+#include "subsystem/particle/ParticleSubsystem.hpp"
 
 namespace inexor {
 namespace entity {

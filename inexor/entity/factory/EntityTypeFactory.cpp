@@ -5,8 +5,8 @@
  *      Author: aschaeffer
  */
 
-#include "EntityTypeFactory.h"
-#include "../manager/EntityTypeManager.h"
+#include "EntityTypeFactory.hpp"
+#include "../manager/EntityTypeManager.hpp"
 
 namespace inexor {
 namespace entity {

@@ -8,11 +8,11 @@
 #ifndef SRC_ENGINE_ENTITY_RELATIONSHIPINSTANCE_H_
 #define SRC_ENGINE_ENTITY_RELATIONSHIPINSTANCE_H_
 
-#include "../../EntitySystemBase.h"
-#include "../InstanceBase.h"
-#include "EntityInstance.h"
-#include "EntityAttribute.h"
-#include "RelationshipType.h"
+#include "../../EntitySystemBase.hpp"
+#include "../InstanceBase.hpp"
+#include "EntityInstance.hpp"
+#include "EntityAttribute.hpp"
+#include "RelationshipType.hpp"
 
 namespace inexor {
 namespace entity {

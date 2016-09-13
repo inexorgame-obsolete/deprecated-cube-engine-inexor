@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "BrownianMotion.h"
+#include "BrownianMotion.hpp"
 
 namespace inexor {
 namespace entity {

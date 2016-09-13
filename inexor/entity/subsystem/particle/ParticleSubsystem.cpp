@@ -5,7 +5,7 @@
  *      Author: aschaeffer
  */
 
-#include "ParticleSubsystem.h"
+#include "ParticleSubsystem.hpp"
 
 extern CefRefPtr<inexor::entity::HandleSubsystem> handle_subsystem;
 
