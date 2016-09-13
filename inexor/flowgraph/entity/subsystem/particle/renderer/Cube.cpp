@@ -6,8 +6,8 @@
  */
 
 #include "Cube.h"
-#include "fpsgame/game.h"
-#include "engine.h"
+#include "inexor/fpsgame/game.hpp"
+#include "inexor/engine/engine.hpp"
 
 namespace inexor {
 namespace entity {
@@ -24,7 +24,7 @@ Cube::~Cube()
 void Cube::Before(TimeStep time_step, EntityInstance* renderer_inst)
 {
     glPushMatrix();
-    rectshader->set();
+    //rectshader->set();
     glDisable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

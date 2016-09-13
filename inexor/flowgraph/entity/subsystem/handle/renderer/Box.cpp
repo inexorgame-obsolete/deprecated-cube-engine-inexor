@@ -6,8 +6,8 @@
  */
 
 #include "Box.h"
-#include "fpsgame/game.h"
-#include "engine.h"
+#include "inexor/fpsgame/game.hpp"
+#include "inexor/engine/engine.hpp"
 
 namespace inexor {
 namespace entity {
@@ -23,7 +23,7 @@ Box::~Box()
 void Box::Before(TimeStep time_step, EntityInstance* handle_renderer)
 {
     glPushMatrix();
-    lineshader->set();
+    //lineshader->set();
     glDisable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

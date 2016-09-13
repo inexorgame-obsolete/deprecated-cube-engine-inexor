@@ -8,8 +8,8 @@
 #ifndef SRC_ENGINE_ENTITY_ENTITYATTRIBUTE_H_
 #define SRC_ENGINE_ENTITY_ENTITYATTRIBUTE_H_
 
-#include "engine.h"
-// #include "geom.h"
+#include "inexor/engine/engine.hpp"
+ // #include "geom.h"
 #include "../../EntitySystemBase.h"
 #include "../TimeStep.h"
 #include "../FunctionRefPtr.h"

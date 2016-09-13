@@ -6,8 +6,8 @@
  */
 
 #include "Model.h"
-#include "fpsgame/game.h"
-#include "engine.h"
+#include "inexor/fpsgame/game.hpp"
+#include "inexor/engine/engine.hpp"
 
 namespace inexor {
 namespace entity {
@@ -33,7 +33,7 @@ void Model::Before(TimeStep time_step, EntityInstance* renderer_inst)
         m = loadmodel(model_name.c_str());
     }*/
     glPushMatrix();
-    defaultshader->set();
+    //defaultshader->set();
     glDepthMask(false);
 }
 

@@ -8,7 +8,7 @@
 #ifndef SRC_ENGINE_ENTITY_SUBSYSTEM_PARTICLE_PARTICLEWORKER_H_
 #define SRC_ENGINE_ENTITY_SUBSYSTEM_PARTICLE_PARTICLEWORKER_H_
 
-#include "engine.h"
+#include "inexor/engine/engine.hpp"
 #include "../../../EntitySystemBase.h"
 #include "../../../domain/TimeStep.h"
 #include "../../../domain/InstanceRefPtr.h"
