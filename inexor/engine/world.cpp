@@ -1,5 +1,3 @@
-// world.cpp: core map management stuff
-
 #include "inexor/engine/engine.hpp"
 
 VARR(mapversion, 1, MAPVERSION, 0);
@@ -13,12 +11,14 @@ VAR(entselradius, 0, 2, 10);
 int efocus = -1, enthover = -1, entorient = -1, oldhover = -1;
 VARF(entediting, 0, 0, 1, { if(!entediting) { entcancel(); efocus = enthover = -1; } });
 
+/// map model bounding box
 static inline void mmboundbox(const entity &e, model *m, vec &center, vec &radius)
 {
     m->boundbox(center, radius);
     rotatebb(center, radius, e.attr1);
 }
 
+/// map model collision box
 static inline void mmcollisionbox(const entity &e, model *m, vec &center, vec &radius)
 {
     m->collisionbox(center, radius);
@@ -331,7 +331,6 @@ bool haveselent()
     return entgroup.length() > 0;
 }
 
-/// cancel (remove) entity selection
 void entcancel()
 {
     entgroup.shrink(0);
@@ -549,6 +548,20 @@ extern bool editmoveplane(const vec &o, const vec &ray, int d, float off, vec &h
 
 int entmoving = 0;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void entdrag(const vec &ray)
 {
     if(noentedit() || !haveselent()) return;
@@ -581,15 +594,30 @@ void entdrag(const vec &ray)
 
 VAR(showentradius, 0, 1, 1);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void renderentring(const extentity &e, float radius, int axis)
 {
     if(radius <= 0) return;
     gle::defvertex();
     gle::begin(GL_LINE_LOOP);
-    loopi(15)
+    loopi(50)
     {
         vec p(e.o);
-        const vec2 &sc = sincos360[i*(360/15)];
+        const vec2 &sc = sincos360[i*(360/50)];
         p[axis>=2 ? 1 : 0] += radius*sc.x;
         p[axis>=1 ? 2 : 1] += radius*sc.y;
         gle::attrib(p);
@@ -597,12 +625,30 @@ void renderentring(const extentity &e, float radius, int axis)
     xtraverts += gle::end();
 }
 
+
+
+
+
+
+
+
+
 void renderentsphere(const extentity &e, float radius)
 {
     if(radius <= 0) return;
     loopk(3) renderentring(e, radius, k);
 }
 
+
+
+
+
+
+
+
+
+
+/// render e.g. lines from teleport to teledest
 void renderentattachment(const extentity &e)
 {
     if(!e.attached) return;
@@ -613,6 +659,15 @@ void renderentattachment(const extentity &e)
     xtraverts += gle::end();
 }
 
+
+
+
+
+
+
+
+
+/// render an arrow attached to an entity (e.g. playerstart)
 void renderentarrow(const extentity &e, const vec &dir, float radius)
 {
     if(radius <= 0) return;
@@ -634,6 +689,8 @@ void renderentarrow(const extentity &e, const vec &dir, float radius)
     loopi(5) gle::attrib(vec(spoke).rotate(2*M_PI*i/4.0f, dir).add(arrowbase));
     xtraverts += gle::end();
 }
+
+
 
 void renderentcone(const extentity &e, const vec &dir, float radius, float angle)
 {
@@ -657,6 +714,9 @@ void renderentcone(const extentity &e, const vec &dir, float radius, float angle
     loopi(8) gle::attrib(vec(spoke).rotate(2*M_PI*i/8.0f, dir).add(spot));
     xtraverts += gle::end();
 }
+
+
+
 
 void renderentradius(extentity &e, bool color)
 {
@@ -714,6 +774,9 @@ void renderentradius(extentity &e, bool color)
     }
 }
 
+
+
+
 static void renderentbox(const vec &eo, vec es)
 {
     es.add(eo);
@@ -736,6 +799,10 @@ static void renderentbox(const vec &eo, vec es)
     gle::attrib(es.x, es.y, eo.z); gle::attrib(es.x, es.y, es.z);
     gle::attrib(eo.x, es.y, eo.z); gle::attrib(eo.x, es.y, es.z);
 }
+
+
+
+
 
 void renderentselection(const vec &o, const vec &ray, bool entmoving)
 {   
@@ -784,6 +851,10 @@ void renderentselection(const vec &o, const vec &ray, bool entmoving)
     }
 }
 
+
+
+
+
 bool enttoggle(int id)
 {
     undonext = true;
@@ -794,6 +865,10 @@ bool enttoggle(int id)
         entgroup.remove(i);
     return i < 0;
 }
+
+
+
+
 
 bool hoveringonent(int ent, int orient)
 {
@@ -896,6 +971,9 @@ int findtype(char *what)
 
 VAR(entdrop, 0, 2, 3);
 
+
+
+
 bool dropentity(entity &e, int drop = -1)
 {
     vec radius(4.0f, 4.0f, 4.0f);
@@ -942,11 +1020,18 @@ bool dropentity(entity &e, int drop = -1)
     return true;
 }
 
+
+
+
+
 void dropent()
 {
     if(noentedit()) return;
     groupedit(dropentity(e));
 }
+
+
+
 
 void attachent()
 {
@@ -958,6 +1043,10 @@ COMMAND(attachent, "");
 
 static int keepents = 0;
 
+
+
+
+// 
 extentity *newentity(bool local, const vec &o, int type, int v1, int v2, int v3, int v4, int v5, int &idx)
 {
     vector<extentity *> &ents = entities::getents();
@@ -999,6 +1088,10 @@ extentity *newentity(bool local, const vec &o, int type, int v1, int v2, int v3,
     return &e;
 }
 
+
+
+
+
 /// @brief creates a new entity of validated type with 5 constant attributes
 void newentity(int type, int a1, int a2, int a3, int a4, int a5)
 {
@@ -1012,6 +1105,10 @@ void newentity(int type, int a1, int a2, int a3, int a4, int a5)
     entedit(idx, e.type = type);
 }
 
+
+
+
+
 /// @brief creates a new entity of type "what" with 5 constant attributes
 void newent(char *what, int *a1, int *a2, int *a3, int *a4, int *a5)
 {
@@ -1022,8 +1119,16 @@ void newent(char *what, int *a1, int *a2, int *a3, int *a4, int *a5)
         newentity(type, *a1, *a2, *a3, *a4, *a5);
 }
 
+
+
+
+
 int entcopygrid;
 vector<entity> entcopybuf;
+
+
+
+
 
 void entcopy()
 {
@@ -1033,6 +1138,10 @@ void entcopy()
     loopv(entgroup) 
         entfocus(entgroup[i], entcopybuf.add(e).o.sub(vec(sel.o)));
 }
+
+
+
+
 
 void entpaste()
 {
@@ -1056,11 +1165,18 @@ void entpaste()
     groupeditundo(e.type = entcopybuf[j++].type;);
 }
 
+
+
+
 COMMAND(newent, "siiiii");
 COMMAND(delent, "");
 COMMAND(dropent, "");
 COMMAND(entcopy, "");
 COMMAND(entpaste, "");
+
+
+
+
 
 void entset(char *what, int *a1, int *a2, int *a3, int *a4, int *a5)
 {
@@ -1074,6 +1190,10 @@ void entset(char *what, int *a1, int *a2, int *a3, int *a4, int *a5)
               e.attr4=*a4;
               e.attr5=*a5);
 }
+
+
+
+
 
 void printent(extentity &e, char *buf, int len)
 {
@@ -1089,6 +1209,10 @@ void printent(extentity &e, char *buf, int len)
     }
     nformatstring(buf, len, "%s %d %d %d %d %d", entities::entname(e.type), e.attr1, e.attr2, e.attr3, e.attr4, e.attr5);
 }
+
+
+
+
 
 void nearestent()
 {
@@ -1119,6 +1243,10 @@ ICOMMAND(entindex,  "",  (), intret(efocus));
 COMMAND(entset, "siiiii");
 COMMAND(nearestent, "");
 
+
+
+
+
 void enttype(char *type, int *numargs)
 {
     if(*numargs >= 1)
@@ -1131,6 +1259,10 @@ void enttype(char *type, int *numargs)
         result(entities::entname(e.type));
     })
 }
+
+
+
+
 
 void entattr(int *attr, int *val, int *numargs)
 {
@@ -1164,6 +1296,10 @@ void entattr(int *attr, int *val, int *numargs)
 COMMAND(enttype, "sN");
 COMMAND(entattr, "iiN");
 
+
+
+
+
 int findentity(int type, int index, int attr1, int attr2)
 {
     const vector<extentity *> &ents = entities::getents();
@@ -1185,7 +1321,11 @@ int findentity(int type, int index, int attr1, int attr2)
 
 int spawncycle = -1;
 
-void findplayerspawn(dynent *d, int forceent, int tag)   // place at random spawn. also used by monsters!
+
+
+
+
+void findplayerspawn(dynent *d, int forceent, int tag)
 {
     int pick = forceent;
     if(pick<0)
@@ -1222,6 +1362,8 @@ void findplayerspawn(dynent *d, int forceent, int tag)   // place at random spaw
     }
 }
 
+
+
 void splitocta(cube *c, int size)
 {
     if(size <= 0x1000) return;
@@ -1231,6 +1373,9 @@ void splitocta(cube *c, int size)
         splitocta(c[i].children, size>>1);
     }
 }
+
+
+
 
 void resetmap()
 {
@@ -1252,12 +1397,18 @@ void resetmap()
     outsideents.setsize(0);
 }
 
+
+
+// ok
 void startmap(const char *name)
 {
     game::startmap(name);
 }
 
-bool emptymap(int scale, bool force, const char *mname, bool usecfg)    // main empty world creation routine
+
+
+// main empty world creation routine
+bool emptymap(int scale, bool force, const char *mname, bool usecfg)
 {
     if(!force && !editmode) 
     {
@@ -1294,6 +1445,9 @@ bool emptymap(int scale, bool force, const char *mname, bool usecfg)    // main 
     return true;
 }
 
+
+
+
 bool enlargemap(bool force)
 {
     if(!force && !editmode)
@@ -1321,12 +1475,18 @@ bool enlargemap(bool force)
     return true;
 }
 
+
+
+
 static bool isallempty(cube &c)
 {
     if(!c.children) return isempty(c);
     loopi(8) if(!isallempty(c.children[i])) return false;
     return true;
 }
+
+
+
 
 void shrinkmap()
 {
@@ -1363,18 +1523,36 @@ void shrinkmap()
     conoutf("shrunk map to size %d", *worldscale);
 }
 
-void newmap(int *i) { bool force = !isconnected(); if(force) game::forceedit(""); if(emptymap(*i, force, NULL)) game::newmap(max(*i, 0)); }
-void mapenlarge() { if(enlargemap(false)) game::newmap(-1); }
+
+
+// ok
+void newmap(int *i)
+{
+    bool force = !isconnected();
+    if(force) game::forceedit("");
+    if(emptymap(*i, force, NULL))
+        game::newmap(max(*i, 0));
+}
+
+// ok
+void mapenlarge()
+{
+    if(enlargemap(false))
+        game::newmap(-1);
+}
+
 COMMAND(newmap, "i");
 COMMAND(mapenlarge, "");
 COMMAND(shrinkmap, "");
 
+// ok
 void mapname()
 {
     result(game::getclientmap());
 }
 
 COMMAND(mapname, "");
+
 
 void mpeditent(int i, const vec &o, int type, int attr1, int attr2, int attr3, int attr4, int attr5, bool local)
 {
@@ -1402,6 +1580,15 @@ void mpeditent(int i, const vec &o, int type, int attr1, int attr2, int attr3, i
     entities::editent(i, local);
 }
 
-int getworldsize() { return worldsize; }
-int getmapversion() { return mapversion; }
+// ok
+int getworldsize()
+{
+    return worldsize;
+}
+
+// ok
+int getmapversion()
+{
+    return mapversion;
+}
 

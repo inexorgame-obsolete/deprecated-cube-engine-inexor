@@ -68,7 +68,7 @@ namespace vscript {
         nodes.clear();
     }
 
-    // creates a node and allocates memory for it
+
     CScriptNode* CVisualScriptSystem::add_node(INEXOR_VSCRIPT_NODE_TYPE type, int parameter_count, ...)
     {
         // this memory must be deleted afterwards!
@@ -547,43 +547,21 @@ namespace vscript {
     void CVisualScriptSystem::render_nodes()
     {
         hovered_node = nullptr;
-        
         for(unsigned int i=0; i<nodes.size(); i++) 
         {
             float dist = 0.0f;
             int orient = INEXOR_VSCRIPT_BOX_NO_INTERSECTION;
-
             rayboxintersect(nodes[i]->pos, vec(boxsize), camera1->o, camdir, dist, orient);
             nodes[i]->selected = (orient != INEXOR_VSCRIPT_BOX_NO_INTERSECTION);
 
-            // make nodes blink when they have been triggered
-            unsigned int color_effect_interval = 0;
-            switch (nodes[i]->type)
-            {
-                case INEXOR_VSCRIPT_NODE_TYPE_TIMER:
-                    // Because timers can have very low intervals we use a third of the timer's interval
-                    // as the length of the color effect
-                    color_effect_interval = static_cast<CTimerNode*>(nodes[i])->get_timer_interval() / 3;
-                    break;
-                default:
-                    color_effect_interval = INEXOR_VSCRIPT_NODE_ACTIVE_COLOR_EFFECT_INTERVAL;
-                    break;
-            }
-
             // render color effect
-            if( (nodes[i]->this_time - nodes[i]->last_time) < color_effect_interval)
+            if((nodes[i]->this_time - nodes[i]->last_time) < INEXOR_VSCRIPT_NODE_ACTIVE_COLOR_EFFECT_INTERVAL)
             {
                 nodes[i]->box_color = nodes[i]->triggered_color;
             }
-            else 
-            {
-                nodes[i]->box_color = nodes[i]->default_box_color;
-            }
-
+            else nodes[i]->box_color = nodes[i]->default_box_color;
             nodes[i]->render(orient, selection_blocked_by_geometry);
         }
-
-        // which node is selected?
         for(unsigned int i=0; i<nodes.size(); i++)
         {
             if(nodes[i]->selected && nullptr != nodes[i]) hovered_node = nodes[i];
@@ -685,9 +663,6 @@ namespace vscript {
         }
     }
 
-    // TODO: declare new strategy for highlighting activated/triggered nodes!
-    
-    // TODO: force this stuff to work !!
     void CVisualScriptSystem::announce_event(INEXOR_VSCRIPT_EVENT_TYPE ev_type)
     {
         for(unsigned int i = 0; i < nodes.size(); i++)  nodes[i]->recursion_counter = 0;
