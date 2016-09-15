@@ -15,27 +15,30 @@
 namespace inexor {
 namespace entity {
 
-class RelationshipTypeProvider
-{
-    public:
-        RelationshipTypeProvider(
-            std::string relationship_name,
-            CefRefPtr<EntityTypeManager> entity_type_manager
-        );
-        virtual ~RelationshipTypeProvider() {};
+    class RelationshipTypeProvider
+    {
+        public:
 
-        std::string GetRelationshipName() { return relationship_name; };
-        TypeRefPtr<RelationshipType> GetRelationshipType() { return relationship_type; };
+            RelationshipTypeProvider(
+                std::string relationship_name,
+                CefRefPtr<EntityTypeManager> entity_type_manager
+            );
+            virtual ~RelationshipTypeProvider() {};
 
-    protected:
-        std::string relationship_name;
-        CefRefPtr<EntityTypeManager> entity_type_manager;
-        TypeRefPtr<RelationshipType> relationship_type;
+            std::string GetRelationshipName() { return relationship_name; };
+            TypeRefPtr<RelationshipType> GetRelationshipType() { return relationship_type; };
 
-    private:
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(RelationshipTypeProvider);
-};
+        protected:
+
+            std::string relationship_name;
+            CefRefPtr<EntityTypeManager> entity_type_manager;
+            TypeRefPtr<RelationshipType> relationship_type;
+
+        private:
+            
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(RelationshipTypeProvider);
+    };
 
 }
 }

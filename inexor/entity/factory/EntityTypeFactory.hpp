@@ -14,41 +14,44 @@
 namespace inexor {
 namespace entity {
 
-class EntityTypeManager;
+    class EntityTypeManager;
 
-class EntityTypeFactory
-{
-    public:
-        EntityTypeFactory(std::string factory_name, std::string function_attribute_name, std::string entity_name_prefix, CefRefPtr<EntityTypeManager> entity_type_manager);
-        virtual ~EntityTypeFactory();
+    class EntityTypeFactory
+    {
+        public:
 
-        /**
-         * Returns the name of the factory.
-         */
-        std::string GetFactoryName();
+            EntityTypeFactory(std::string factory_name, std::string function_attribute_name, std::string entity_name_prefix, CefRefPtr<EntityTypeManager> entity_type_manager);
+            virtual ~EntityTypeFactory();
 
-        /**
-         * Returns the attribute name for the function.
-         */
-        std::string GetFunctionAttributeName();
+            /**
+             * Returns the name of the factory.
+             */
+            std::string GetFactoryName();
 
-        /**
-         * Returns the entity type name prefix.
-         */
-        std::string GetEntityTypeNamePrefix();
+            /**
+             * Returns the attribute name for the function.
+             */
+            std::string GetFunctionAttributeName();
 
-        TypeRefPtr<EntityType> Create(std::string name_suffix);
+            /**
+             * Returns the entity type name prefix.
+             */
+            std::string GetEntityTypeNamePrefix();
 
-    protected:
-        std::string factory_name;
-        std::string function_attribute_name;
-        std::string entity_type_name_prefix;
-        CefRefPtr<EntityTypeManager> entity_type_manager;
+            TypeRefPtr<EntityType> Create(std::string name_suffix);
 
-    private:
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(EntityTypeFactory);
-};
+        protected:
+
+            std::string factory_name;
+            std::string function_attribute_name;
+            std::string entity_type_name_prefix;
+            CefRefPtr<EntityTypeManager> entity_type_manager;
+
+        private:
+
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(EntityTypeFactory);
+    };
 
 }
 }

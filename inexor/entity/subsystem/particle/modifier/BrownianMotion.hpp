@@ -20,22 +20,24 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-class BrownianMotion : public EntityFunction
-{
-    public:
-        BrownianMotion();
-        virtual ~BrownianMotion();
+    class BrownianMotion : public EntityFunction
+    {
+        public:
 
-        void Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle);
+            BrownianMotion();
+            virtual ~BrownianMotion();
 
-    private:
-        std::random_device rd;
-        std::mt19937 gen;
-        std::normal_distribution<float> distribution;
+            void Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle);
 
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(BrownianMotion);
-};
+        private:
+
+            std::random_device rd;
+            std::mt19937 gen;
+            std::normal_distribution<float> distribution;
+
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(BrownianMotion);
+    };
 
 }
 }

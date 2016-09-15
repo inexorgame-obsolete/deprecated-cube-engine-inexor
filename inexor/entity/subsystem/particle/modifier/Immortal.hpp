@@ -17,18 +17,20 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-class Immortal : public EntityFunction
-{
-    public:
-        Immortal();
-        virtual ~Immortal();
+    class Immortal : public EntityFunction
+    {
+        public:
 
-        void Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle);
+            Immortal();
+            virtual ~Immortal();
 
-    private:
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(Immortal);
-};
+            void Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle);
+
+        private:
+
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(Immortal);
+    };
 
 }
 }

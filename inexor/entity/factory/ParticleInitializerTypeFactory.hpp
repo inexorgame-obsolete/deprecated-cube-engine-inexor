@@ -21,19 +21,21 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-class ParticleInitializerTypeFactory : public EntityTypeFactory
-{
-    public:
-        ParticleInitializerTypeFactory(CefRefPtr<EntityTypeManager> entity_type_manager);
-        virtual ~ParticleInitializerTypeFactory();
+    class ParticleInitializerTypeFactory : public EntityTypeFactory
+    {
+        public:
 
-        TypeRefPtr<EntityType> Create(std::string name_suffix);
-        TypeRefPtr<EntityType> Create(std::string name_suffix, FunctionRefPtr function);
+            ParticleInitializerTypeFactory(CefRefPtr<EntityTypeManager> entity_type_manager);
+            virtual ~ParticleInitializerTypeFactory();
 
-    private:
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(ParticleInitializerTypeFactory);
-};
+            TypeRefPtr<EntityType> Create(std::string name_suffix);
+            TypeRefPtr<EntityType> Create(std::string name_suffix, FunctionRefPtr function);
+
+        private:
+
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(ParticleInitializerTypeFactory);
+    };
 
 }
 }

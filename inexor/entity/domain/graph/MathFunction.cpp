@@ -10,23 +10,23 @@
 namespace inexor {
 namespace entity {
 
-MathFunction::MathFunction(std::string name, std::string expression) : EntityFunction(name), expression(expression)
-{
-}
+    MathFunction::MathFunction(std::string name, std::string expression) : EntityFunction(name), expression(expression)
+    {
+    }
 
-MathFunction::~MathFunction()
-{
-}
+    MathFunction::~MathFunction()
+    {
+    }
 
-std::string MathFunction::GetExpression()
-{
-    return expression;
-}
+    std::string MathFunction::GetExpression()
+    {
+        return expression;
+    }
 
-void MathFunction::SetExpression(std::string expression)
-{
-    this->expression = expression;
-}
+    void MathFunction::SetExpression(std::string expression)
+    {
+        this->expression = expression;
+    }
 
 }
 }

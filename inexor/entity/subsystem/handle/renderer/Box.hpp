@@ -15,40 +15,41 @@
 namespace inexor {
 namespace entity {
 
-class Box : public EntityFunction
-{
-    public:
-        Box();
-        virtual ~Box();
+    class Box : public EntityFunction
+    {
+        public:
 
-        /**
-         * Executed before handles are rendered.
-         * @param time_step The time step.
-         * @param handle_renderer The handle renderer instance.
-         */
-        void Before(TimeStep time_step, EntityInstance* handle_renderer);
+            Box();
+            virtual ~Box();
 
-        /**
-         * Executed for each handle.
-         * @param time_step The time step.
-         * @param handle_renderer The handle renderer instance.
-         * @param handle The handle instance.
-         */
-        void Execute(TimeStep time_step, RelationshipInstance* renders_handle_inst);
+            /**
+             * Executed before handles are rendered.
+             * @param time_step The time step.
+             * @param handle_renderer The handle renderer instance.
+             */
+            void Before(TimeStep time_step, EntityInstance* handle_renderer);
 
-        /**
-         * Executed after handles are rendered.
-         * @param time_step The time step.
-         * @param handle_renderer The handle renderer instance.
-         */
-        void After(TimeStep time_step, EntityInstance* handle_renderer);
+            /**
+             * Executed for each handle.
+             * @param time_step The time step.
+             * @param handle_renderer The handle renderer instance.
+             * @param handle The handle instance.
+             */
+            void Execute(TimeStep time_step, RelationshipInstance* renders_handle_inst);
 
-    private:
+            /**
+             * Executed after handles are rendered.
+             * @param time_step The time step.
+             * @param handle_renderer The handle renderer instance.
+             */
+            void After(TimeStep time_step, EntityInstance* handle_renderer);
 
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(Box);
+        private:
 
-};
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(Box);
+
+    };
 
 }
 }

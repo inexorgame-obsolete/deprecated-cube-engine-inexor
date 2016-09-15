@@ -17,18 +17,20 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-class VelocityDamper : public EntityFunction
-{
-    public:
-        VelocityDamper();
-        virtual ~VelocityDamper();
+    class VelocityDamper : public EntityFunction
+    {
+        public:
 
-        void Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle);
+            VelocityDamper();
+            virtual ~VelocityDamper();
 
-    private:
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(VelocityDamper);
-};
+            void Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle);
+
+        private:
+
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(VelocityDamper);
+    };
 
 }
 }

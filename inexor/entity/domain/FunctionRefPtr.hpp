@@ -15,39 +15,41 @@
 namespace inexor {
 namespace entity {
 
-class TypeBase;
-class EntityType;
-class RelationshipType;
-class EntityInstance;
-class RelationshipInstance;
+    class TypeBase;
+    class EntityType;
+    class RelationshipType;
+    class EntityInstance;
+    class RelationshipInstance;
 
-class FunctionRefPtr : public CefRefPtr<EntityFunction> {
-    public:
-        typedef CefRefPtr<EntityFunction> parent;
+    class FunctionRefPtr : public CefRefPtr<EntityFunction> 
+    {
+        public:
 
-        FunctionRefPtr();
-        FunctionRefPtr(EntityFunction* p);
-        FunctionRefPtr(const CefRefPtr<EntityFunction>& r);
+            typedef CefRefPtr<EntityFunction> parent;
 
-        template <typename U>
-        FunctionRefPtr(const CefRefPtr<U>& r) : parent(r) {
-        }
+            FunctionRefPtr();
+            FunctionRefPtr(EntityFunction* p);
+            FunctionRefPtr(const CefRefPtr<EntityFunction>& r);
 
-        void operator()(TimeStep time_step);
-        void operator()(TimeStep time_step, EntityType* type);
-        void operator()(TimeStep time_step, EntityType* type, EntityInstance* inst);
-        void operator()(TimeStep time_step, EntityInstance* inst);
-        void operator()(TimeStep time_step, EntityInstance* inst, RelationshipType* rel_type);
-        void operator()(TimeStep time_step, EntityInstance* inst, RelationshipInstance* rel_inst);
-        void operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2);
-        void operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, EntityInstance* inst_3);
-        void operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipType* rel_type);
-        void operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipInstance* rel_inst);
-        void operator()(TimeStep time_step, RelationshipType* type);
-        void operator()(TimeStep time_step, RelationshipType* type, RelationshipInstance* inst);
-        void operator()(TimeStep time_step, RelationshipInstance* inst);
+            template <typename U>
+            FunctionRefPtr(const CefRefPtr<U>& r) : parent(r) {
+            }
 
-};
+            void operator()(TimeStep time_step);
+            void operator()(TimeStep time_step, EntityType* type);
+            void operator()(TimeStep time_step, EntityType* type, EntityInstance* inst);
+            void operator()(TimeStep time_step, EntityInstance* inst);
+            void operator()(TimeStep time_step, EntityInstance* inst, RelationshipType* rel_type);
+            void operator()(TimeStep time_step, EntityInstance* inst, RelationshipInstance* rel_inst);
+            void operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2);
+            void operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, EntityInstance* inst_3);
+            void operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipType* rel_type);
+            void operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipInstance* rel_inst);
+            void operator()(TimeStep time_step, RelationshipType* type);
+            void operator()(TimeStep time_step, RelationshipType* type, RelationshipInstance* inst);
+            void operator()(TimeStep time_step, RelationshipInstance* inst);
+
+    };
 
 }
 }

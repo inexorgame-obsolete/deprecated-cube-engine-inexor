@@ -16,25 +16,27 @@
 namespace inexor {
 namespace entity {
 
-class InstanceBase : public AttributeBase
-{
+    class InstanceBase : public AttributeBase
+    {
+        public:
+        
+            InstanceBase();
+            InstanceBase(std::string uuid);
+            virtual ~InstanceBase();
 
-    public:
-        InstanceBase();
-        InstanceBase(std::string uuid);
-        virtual ~InstanceBase();
+            std::string GetUuid();
+            void SetUuid(std::string uuid);
 
-        std::string GetUuid();
-        void SetUuid(std::string uuid);
+        // protected:
 
-    // protected:
-        std::string uuid;
+            std::string uuid;
 
-    private:
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(InstanceBase);
+        private:
 
-};
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(InstanceBase);
+
+    };
 
 }
 }

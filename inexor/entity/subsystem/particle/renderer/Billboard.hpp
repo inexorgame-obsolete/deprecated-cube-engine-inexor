@@ -17,43 +17,44 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-class Billboard : public EntityFunction
-{
-    public:
-        Billboard();
-        virtual ~Billboard();
+    class Billboard : public EntityFunction
+    {
+        public:
 
-        /**
-         * Executed before particles are rendered.
-         * @param time_step The time step.
-         * @param renderer_inst The renderer instance.
-         */
-        void Before(TimeStep time_step, EntityInstance* renderer_inst);
+            Billboard();
+            virtual ~Billboard();
 
-        /**
-         * Executed for each particle.
-         * @param time_step The time step.
-         * @param renderer_inst The renderer instance.
-         * @param particle_inst The particle instance.
-         */
-        void Execute(TimeStep time_step, EntityInstance* renderer_inst, EntityInstance* particle_inst);
+            /**
+             * Executed before particles are rendered.
+             * @param time_step The time step.
+             * @param renderer_inst The renderer instance.
+             */
+            void Before(TimeStep time_step, EntityInstance* renderer_inst);
 
-        /**
-         * Executed after particles are rendered.
-         * @param time_step The time step.
-         * @param renderer_inst The renderer instance.
-         */
-        void After(TimeStep time_step, EntityInstance* renderer_inst);
+            /**
+             * Executed for each particle.
+             * @param time_step The time step.
+             * @param renderer_inst The renderer instance.
+             * @param particle_inst The particle instance.
+             */
+            void Execute(TimeStep time_step, EntityInstance* renderer_inst, EntityInstance* particle_inst);
 
-    private:
+            /**
+             * Executed after particles are rendered.
+             * @param time_step The time step.
+             * @param renderer_inst The renderer instance.
+             */
+            void After(TimeStep time_step, EntityInstance* renderer_inst);
 
-        Shader *shader;
-        Texture *tex;
+        private:
 
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(Billboard);
+            Shader *shader;
+            Texture *tex;
 
-};
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(Billboard);
+
+    };
 
 }
 }

@@ -17,24 +17,25 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-class SimpleGravity : public EntityFunction
-{
-    public:
-        SimpleGravity();
-        virtual ~SimpleGravity();
+    class SimpleGravity : public EntityFunction
+    {
+        public:
 
-        void Before(TimeStep time_step, EntityInstance* modifier);
-        void Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle);
+            SimpleGravity();
+            virtual ~SimpleGravity();
 
-    private:
+            void Before(TimeStep time_step, EntityInstance* modifier);
+            void Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle);
 
-        float mass;
-        float gravity;
-        float dz;
+        private:
 
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(SimpleGravity);
-};
+            float mass;
+            float gravity;
+            float dz;
+
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(SimpleGravity);
+    };
 
 }
 }

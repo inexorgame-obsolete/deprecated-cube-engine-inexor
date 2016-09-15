@@ -17,53 +17,52 @@
 namespace inexor {
 namespace entity {
 
+    class EntityTypeManager;
 
-class EntityTypeManager;
+    /**
+     * Defines the teleport source entity type.
+     */
+    class TeleportEntityTypeProvider : public EntityTypeProvider
+    {
+        public:
+            TeleportEntityTypeProvider();
+            virtual ~TeleportEntityTypeProvider();
 
-/**
- * Defines the teleport source entity type.
- */
-class TeleportEntityTypeProvider : public EntityTypeProvider
-{
-    public:
-        TeleportEntityTypeProvider();
-        virtual ~TeleportEntityTypeProvider();
+        private:
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(TeleportEntityTypeProvider);
 
-    private:
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(TeleportEntityTypeProvider);
+    };
 
-};
+    /**
+     * Defines the teleport destination entity type.
+     */
+    class TeledestEntityTypeProvider : public EntityTypeProvider
+    {
+        public:
+            TeledestEntityTypeProvider();
+            virtual ~TeledestEntityTypeProvider();
 
-/**
- * Defines the teleport destination entity type.
- */
-class TeledestEntityTypeProvider : public EntityTypeProvider
-{
-    public:
-        TeledestEntityTypeProvider();
-        virtual ~TeledestEntityTypeProvider();
+        private:
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(TeledestEntityTypeProvider);
 
-    private:
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(TeledestEntityTypeProvider);
+    };
 
-};
+    /**
+     * Defines the teleporting relationship type.
+     */
+    class TeleportingRelationshipTypeProvider : public RelationshipTypeProvider
+    {
+        public:
+            TeleportingRelationshipTypeProvider(CefRefPtr<EntityTypeManager> entity_type_manager);
+            virtual ~TeleportingRelationshipTypeProvider();
 
-/**
- * Defines the teleporting relationship type.
- */
-class TeleportingRelationshipTypeProvider : public RelationshipTypeProvider
-{
-    public:
-        TeleportingRelationshipTypeProvider(CefRefPtr<EntityTypeManager> entity_type_manager);
-        virtual ~TeleportingRelationshipTypeProvider();
+        private:
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(TeleportingRelationshipTypeProvider);
 
-    private:
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(TeleportingRelationshipTypeProvider);
-
-};
+    };
 
 }
 }

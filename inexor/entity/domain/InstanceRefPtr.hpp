@@ -14,29 +14,31 @@
 namespace inexor {
 namespace entity {
 
-template <class T>
-class InstanceRefPtr : public CefRefPtr<T> {
-    public:
-        typedef CefRefPtr<T> parent;
+    template <class T>
+    class InstanceRefPtr : public CefRefPtr<T> 
+    {
+        public:
 
-        InstanceRefPtr() : parent() {}
-        InstanceRefPtr(T* p) : parent(p) {}
-        InstanceRefPtr(const CefRefPtr<T>& r) : parent(r) {}
+            typedef CefRefPtr<T> parent;
 
-        template <typename U>
-        InstanceRefPtr(const CefRefPtr<U>& r) : parent(r) {}
+            InstanceRefPtr() : parent() {}
+            InstanceRefPtr(T* p) : parent(p) {}
+            InstanceRefPtr(const CefRefPtr<T>& r) : parent(r) {}
 
-        AttributeRefPtr operator[](std::string key) const
-        {
-            AttributeRefPtr attribute = this->get()->GetAttribute(key);
-            if (!attribute->initialized) {
-                attribute->name = key;
-                attribute->initialized = true;
-            }
-            return attribute;
-        };
+            template <typename U>
+            InstanceRefPtr(const CefRefPtr<U>& r) : parent(r) {}
 
-};
+            AttributeRefPtr operator[](std::string key) const
+            {
+                AttributeRefPtr attribute = this->get()->GetAttribute(key);
+                if (!attribute->initialized) {
+                    attribute->name = key;
+                    attribute->initialized = true;
+                }
+                return attribute;
+            };
+
+    };
 
 }
 }

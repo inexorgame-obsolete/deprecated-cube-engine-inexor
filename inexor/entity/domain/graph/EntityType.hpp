@@ -14,25 +14,27 @@
 namespace inexor {
 namespace entity {
 
-class EntityType : public TypeBase
-{
-    public:
-        EntityType(std::string name, bool persist, bool synchronize);
-        EntityType(std::string name, bool persist, bool synchronize, TypeRefPtr<EntityType> parent);
-        virtual ~EntityType() {};
+    class EntityType : public TypeBase
+    {
+        public:
 
-        bool IsA(TypeRefPtr<EntityType> type);
-        bool IsA(std::string uuid);
-        bool IsExactlyA(TypeRefPtr<EntityType> type);
-        bool IsExactlyA(std::string uuid);
+            EntityType(std::string name, bool persist, bool synchronize);
+            EntityType(std::string name, bool persist, bool synchronize, TypeRefPtr<EntityType> parent);
+            virtual ~EntityType() {};
 
-    private:
-        TypeRefPtr<EntityType> parent;
+            bool IsA(TypeRefPtr<EntityType> type);
+            bool IsA(std::string uuid);
+            bool IsExactlyA(TypeRefPtr<EntityType> type);
+            bool IsExactlyA(std::string uuid);
 
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(EntityType);
+        private:
 
-};
+            TypeRefPtr<EntityType> parent;
+
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(EntityType);
+
+    };
 
 }
 }

@@ -17,18 +17,20 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-class RandomVelocity : public EntityFunction
-{
-    public:
-        RandomVelocity();
-        virtual ~RandomVelocity();
+    class RandomVelocity : public EntityFunction
+    {
+        public:
 
-        void Execute(TimeStep time_step, EntityInstance* emitter_inst, EntityInstance* initializer_inst, EntityInstance* particle_inst);
+            RandomVelocity();
+            virtual ~RandomVelocity();
 
-    private:
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(RandomVelocity);
-};
+            void Execute(TimeStep time_step, EntityInstance* emitter_inst, EntityInstance* initializer_inst, EntityInstance* particle_inst);
+
+        private:
+
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(RandomVelocity);
+    };
 
 }
 }

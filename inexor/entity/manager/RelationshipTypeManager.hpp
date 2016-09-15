@@ -15,52 +15,53 @@
 namespace inexor {
 namespace entity {
 
-class RelationshipTypeProvider;
-class EntityTypeManager;
+    class RelationshipTypeProvider;
+    class EntityTypeManager;
 
-class RelationshipTypeManager
-{
-    public:
-        RelationshipTypeManager(CefRefPtr<EntityTypeManager> entity_type_manager);
-        virtual ~RelationshipTypeManager();
+    class RelationshipTypeManager
+    {
+        public:
 
-        TypeRefPtr<RelationshipType> Create(std::string name, TypeRefPtr<EntityType> startNodeType, TypeRefPtr<EntityType> endNodeType);
-        TypeRefPtr<RelationshipType> Create(std::string name, std::string startNodeTypeName, std::string endNodeTypeName);
-        TypeRefPtr<RelationshipType> Create(std::string name, bool persist, bool synchronize, TypeRefPtr<EntityType> startNodeType, TypeRefPtr<EntityType> endNodeType);
-        TypeRefPtr<RelationshipType> Create(std::string name, bool persist, bool synchronize, std::string startNodeTypeName, std::string endNodeTypeName);
+            RelationshipTypeManager(CefRefPtr<EntityTypeManager> entity_type_manager);
+            virtual ~RelationshipTypeManager();
 
-        void RegisterType(std::string relationship_type_name, TypeRefPtr<RelationshipType> relationship_type);
-        void RegisterProvider(CefRefPtr<RelationshipTypeProvider> relationship_type_provider);
+            TypeRefPtr<RelationshipType> Create(std::string name, TypeRefPtr<EntityType> startNodeType, TypeRefPtr<EntityType> endNodeType);
+            TypeRefPtr<RelationshipType> Create(std::string name, std::string startNodeTypeName, std::string endNodeTypeName);
+            TypeRefPtr<RelationshipType> Create(std::string name, bool persist, bool synchronize, TypeRefPtr<EntityType> startNodeType, TypeRefPtr<EntityType> endNodeType);
+            TypeRefPtr<RelationshipType> Create(std::string name, bool persist, bool synchronize, std::string startNodeTypeName, std::string endNodeTypeName);
 
-        TypeRefPtr<RelationshipType> Get(std::string relationship_type_name);
-        TypeRefPtr<RelationshipType> GetByUuid(std::string relationship_type_uuid);
-        bool Exists(std::string relationship_type_name);
+            void RegisterType(std::string relationship_type_name, TypeRefPtr<RelationshipType> relationship_type);
+            void RegisterProvider(CefRefPtr<RelationshipTypeProvider> relationship_type_provider);
 
-        void DeleteType(TypeRefPtr<RelationshipType> relationship_type);
-        void DeleteTypeByName(std::string relationship_type_name);
-        void DeleteTypeByUuid(std::string relationship_type_uuid);
-        void DeleteAllTypes();
+            TypeRefPtr<RelationshipType> Get(std::string relationship_type_name);
+            TypeRefPtr<RelationshipType> GetByUuid(std::string relationship_type_uuid);
+            bool Exists(std::string relationship_type_name);
 
-        int Size();
+            void DeleteType(TypeRefPtr<RelationshipType> relationship_type);
+            void DeleteTypeByName(std::string relationship_type_name);
+            void DeleteTypeByUuid(std::string relationship_type_uuid);
+            void DeleteAllTypes();
 
-    private:
+            int Size();
 
-        /**
-         * The key is the NAME of the relationship type.
-         */
-        std::unordered_map<std::string, TypeRefPtr<RelationshipType> > relationship_types;
+        private:
 
-        /**
-         * The key is the UUID, the value is the NAME of the relationship type.
-         */
-        std::unordered_map<std::string, std::string> relationship_type_uuids;
+            /**
+             * The key is the NAME of the relationship type.
+             */
+            std::unordered_map<std::string, TypeRefPtr<RelationshipType> > relationship_types;
 
-        // The entity type manager.
-        CefRefPtr<EntityTypeManager> entity_type_manager;
+            /**
+             * The key is the UUID, the value is the NAME of the relationship type.
+             */
+            std::unordered_map<std::string, std::string> relationship_type_uuids;
 
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(RelationshipTypeManager);
-};
+            // The entity type manager.
+            CefRefPtr<EntityTypeManager> entity_type_manager;
+
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(RelationshipTypeManager);
+    };
 
 }
 }

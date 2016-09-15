@@ -17,49 +17,50 @@
 namespace inexor {
 namespace entity {
 
-class EntityTypeManager
-{
-    public:
-        EntityTypeManager();
-        virtual ~EntityTypeManager();
+    class EntityTypeManager
+    {
+        public:
 
-        TypeRefPtr<EntityType> Create(std::string entity_type_name, bool persist, bool synchronize);
-        TypeRefPtr<EntityType> Create(std::string entity_type_name, bool persist, bool synchronize, TypeRefPtr<EntityType> parent_type);
-        TypeRefPtr<EntityType> Create(std::string factory_name, std::string entity_type_name_suffix);
+            EntityTypeManager();
+            virtual ~EntityTypeManager();
 
-        void RegisterType(std::string entity_type_name, TypeRefPtr<EntityType> entity_type);
-        void RegisterProvider(CefRefPtr<EntityTypeProvider> entity_type_provider);
-        void RegisterFactory(CefRefPtr<EntityTypeFactory> entity_type_factory);
+            TypeRefPtr<EntityType> Create(std::string entity_type_name, bool persist, bool synchronize);
+            TypeRefPtr<EntityType> Create(std::string entity_type_name, bool persist, bool synchronize, TypeRefPtr<EntityType> parent_type);
+            TypeRefPtr<EntityType> Create(std::string factory_name, std::string entity_type_name_suffix);
 
-        TypeRefPtr<EntityType> Get(std::string entity_type_name);
-        TypeRefPtr<EntityType> GetByUuid(std::string entity_type_uuid);
-        bool Exists(std::string entity_type_name);
+            void RegisterType(std::string entity_type_name, TypeRefPtr<EntityType> entity_type);
+            void RegisterProvider(CefRefPtr<EntityTypeProvider> entity_type_provider);
+            void RegisterFactory(CefRefPtr<EntityTypeFactory> entity_type_factory);
 
-        void DeleteType(TypeRefPtr<EntityType> entity_type);
-        void DeleteTypeByName(std::string entity_type_name);
-        void DeleteTypeByUuid(std::string entity_type_uuid);
-        void DeleteAllTypes();
+            TypeRefPtr<EntityType> Get(std::string entity_type_name);
+            TypeRefPtr<EntityType> GetByUuid(std::string entity_type_uuid);
+            bool Exists(std::string entity_type_name);
 
-        int Size();
+            void DeleteType(TypeRefPtr<EntityType> entity_type);
+            void DeleteTypeByName(std::string entity_type_name);
+            void DeleteTypeByUuid(std::string entity_type_uuid);
+            void DeleteAllTypes();
 
-    private:
+            int Size();
 
-        /**
-         * The key is the NAME of the entity type.
-         */
-        std::unordered_map<std::string, TypeRefPtr<EntityType> > entity_types;
+        private:
 
-        /**
-         * The key is the UUID, the value is the NAME of the entity type.
-         */
-        std::unordered_map<std::string, std::string> entity_type_uuids;
+            /**
+             * The key is the NAME of the entity type.
+             */
+            std::unordered_map<std::string, TypeRefPtr<EntityType> > entity_types;
 
-        std::unordered_map<std::string, CefRefPtr<EntityTypeFactory> > entity_type_factories;
+            /**
+             * The key is the UUID, the value is the NAME of the entity type.
+             */
+            std::unordered_map<std::string, std::string> entity_type_uuids;
 
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(EntityTypeManager);
+            std::unordered_map<std::string, CefRefPtr<EntityTypeFactory> > entity_type_factories;
 
-};
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(EntityTypeManager);
+
+    };
 
 }
 }

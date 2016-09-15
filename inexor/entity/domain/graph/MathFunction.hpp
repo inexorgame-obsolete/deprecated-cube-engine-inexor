@@ -14,22 +14,24 @@
 namespace inexor {
 namespace entity {
 
-class MathFunction : public EntityFunction
-{
-    public:
-        MathFunction(std::string name, std::string expression);
-        virtual ~MathFunction();
+    class MathFunction : public EntityFunction
+    {
+        public:
 
-        std::string GetExpression();
-        void SetExpression(std::string expression);
+            MathFunction(std::string name, std::string expression);
+            virtual ~MathFunction();
 
-    private:
-        std::string expression;
+            std::string GetExpression();
+            void SetExpression(std::string expression);
 
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(MathFunction);
+        private:
 
-};
+            std::string expression;
+
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(MathFunction);
+
+    };
 
 }
 }

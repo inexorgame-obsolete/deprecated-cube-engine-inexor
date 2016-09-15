@@ -9,59 +9,60 @@
 #define SRC_ENGINE_ENTITY_DOMAIN_TYPEBASE_H_
 
 #include "inexor/shared/uuid.hpp"
-
 #include "../EntitySystemBase.hpp"
 #include "AttributeBase.hpp"
 
 namespace inexor {
 namespace entity {
 
-class TypeBase : public AttributeBase
-{
-    public:
-        TypeBase(std::string name, bool persist, bool synchronize);
-        TypeBase(std::string name, bool persist, bool synchronize, std::string uuid);
-        virtual ~TypeBase();
+    class TypeBase : public AttributeBase
+    {
+        public:
 
-        std::string GetUuid();
-        void SetUuid(std::string uuid);
+            TypeBase(std::string name, bool persist, bool synchronize);
+            TypeBase(std::string name, bool persist, bool synchronize, std::string uuid);
+            virtual ~TypeBase();
 
-        std::string GetName();
-        std::string GetParentType();
-        bool IsPersisting();
-        bool IsSynchronizing();
+            std::string GetUuid();
+            void SetUuid(std::string uuid);
 
-        /**
-         * The unique identifier of this type.
-         */
-        std::string uuid;
+            std::string GetName();
+            std::string GetParentType();
+            bool IsPersisting();
+            bool IsSynchronizing();
 
-        /**
-         * The name of the type.
-         */
-        std::string name;
+            /**
+             * The unique identifier of this type.
+             */
+            std::string uuid;
 
-    protected:
+            /**
+             * The name of the type.
+             */
+            std::string name;
 
-        /**
-         * The parent type.
-         */
-        std::string parent_type;
+        protected:
 
-        /**
-         * Instances of this type should be persisted.
-         */
-        bool persist;
+            /**
+             * The parent type.
+             */
+            std::string parent_type;
 
-        /**
-         * Instances of this type should be synchronized.
-         */
-        bool synchronize;
+            /**
+             * Instances of this type should be persisted.
+             */
+            bool persist;
 
-    private:
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(TypeBase);
-};
+            /**
+             * Instances of this type should be synchronized.
+             */
+            bool synchronize;
+
+        private:
+
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(TypeBase);
+    };
 
 }
 }

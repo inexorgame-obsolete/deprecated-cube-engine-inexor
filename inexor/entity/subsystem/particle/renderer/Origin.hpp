@@ -20,47 +20,48 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-class Origin : public EntityFunction
-{
-    public:
-        Origin();
-        virtual ~Origin();
+    class Origin : public EntityFunction
+    {
+        public:
 
-        /**
-         * Executed before particles are rendered.
-         * @param time_step The time step.
-         * @param renderer_inst The renderer instance.
-         */
-        void Before(TimeStep time_step, EntityInstance* renderer_inst);
+            Origin();
+            virtual ~Origin();
 
-        /**
-         * Executed for each particle.
-         * @param time_step The time step.
-         * @param renderer_inst The renderer instance.
-         * @param particle_inst The particle instance.
-         */
-        void Execute(TimeStep time_step, EntityInstance* renderer_inst, EntityInstance* particle_inst);
+            /**
+             * Executed before particles are rendered.
+             * @param time_step The time step.
+             * @param renderer_inst The renderer instance.
+             */
+            void Before(TimeStep time_step, EntityInstance* renderer_inst);
 
-        /**
-         * Executed after particles are rendered.
-         * @param time_step The time step.
-         * @param renderer_inst The renderer instance.
-         */
-        void After(TimeStep time_step, EntityInstance* renderer_inst);
+            /**
+             * Executed for each particle.
+             * @param time_step The time step.
+             * @param renderer_inst The renderer instance.
+             * @param particle_inst The particle instance.
+             */
+            void Execute(TimeStep time_step, EntityInstance* renderer_inst, EntityInstance* particle_inst);
 
-    private:
-        /**
-         * The relationship type:
-         *
-         *     particle--[:emitted_by]-->emitter
-         *
-         */
-        TypeRefPtr<RelationshipType> emitted_by;
+            /**
+             * Executed after particles are rendered.
+             * @param time_step The time step.
+             * @param renderer_inst The renderer instance.
+             */
+            void After(TimeStep time_step, EntityInstance* renderer_inst);
 
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(Origin);
+        private:
+            /**
+             * The relationship type:
+             *
+             *     particle--[:emitted_by]-->emitter
+             *
+             */
+            TypeRefPtr<RelationshipType> emitted_by;
 
-};
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(Origin);
+
+    };
 
 }
 }

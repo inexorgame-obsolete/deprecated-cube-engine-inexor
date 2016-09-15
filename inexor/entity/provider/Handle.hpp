@@ -17,61 +17,65 @@
 namespace inexor {
 namespace entity {
 
-class HandleEntityTypeProvider : public EntityTypeProvider
-{
-    public:
-        HandleEntityTypeProvider();
-        virtual ~HandleEntityTypeProvider();
+    class HandleEntityTypeProvider : public EntityTypeProvider
+    {
+        public:
 
-    private:
+            HandleEntityTypeProvider();
+            virtual ~HandleEntityTypeProvider();
 
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(HandleEntityTypeProvider);
+        private:
 
-};
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(HandleEntityTypeProvider);
 
-class HandleRendererEntityTypeProvider : public EntityTypeProvider
-{
-    public:
-        HandleRendererEntityTypeProvider();
-        virtual ~HandleRendererEntityTypeProvider();
+    };
 
-    private:
+    class HandleRendererEntityTypeProvider : public EntityTypeProvider
+    {
+        public:
 
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(HandleRendererEntityTypeProvider);
+            HandleRendererEntityTypeProvider();
+            virtual ~HandleRendererEntityTypeProvider();
 
-};
+        private:
 
-/**
- * Defines a relationship between a handle and any other entity instance with a position.
- */
-class HandlesRelationshipTypeProvider : public RelationshipTypeProvider
-{
-    public:
-        HandlesRelationshipTypeProvider(CefRefPtr<EntityTypeManager> entity_type_manager);
-        virtual ~HandlesRelationshipTypeProvider();
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(HandleRendererEntityTypeProvider);
 
-    private:
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(HandlesRelationshipTypeProvider);
+    };
 
-};
+    /**
+     * Defines a relationship between a handle and any other entity instance with a position.
+     */
+    class HandlesRelationshipTypeProvider : public RelationshipTypeProvider
+    {
+        public:
 
-/**
- * Defines a relationship between a handle renderer and a handle.
- */
-class RendersHandleRelationshipTypeProvider : public RelationshipTypeProvider
-{
-    public:
-        RendersHandleRelationshipTypeProvider(CefRefPtr<EntityTypeManager> entity_type_manager);
-        virtual ~RendersHandleRelationshipTypeProvider();
+            HandlesRelationshipTypeProvider(CefRefPtr<EntityTypeManager> entity_type_manager);
+            virtual ~HandlesRelationshipTypeProvider();
 
-    private:
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(RendersHandleRelationshipTypeProvider);
+        private:
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(HandlesRelationshipTypeProvider);
 
-};
+    };
+
+    /**
+     * Defines a relationship between a handle renderer and a handle.
+     */
+    class RendersHandleRelationshipTypeProvider : public RelationshipTypeProvider
+    {
+        public:
+
+            RendersHandleRelationshipTypeProvider(CefRefPtr<EntityTypeManager> entity_type_manager);
+            virtual ~RendersHandleRelationshipTypeProvider();
+
+        private:
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(RendersHandleRelationshipTypeProvider);
+
+    };
 
 }
 }

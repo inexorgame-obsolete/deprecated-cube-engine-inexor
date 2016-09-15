@@ -17,40 +17,42 @@
 namespace inexor {
 namespace entity {
 
-/**
- * This subsystems manages teleporters.
- */
-class TeleportSubsystem : public SubsystemBase
-{
-    public:
-        TeleportSubsystem();
-        TeleportSubsystem(
-            CefRefPtr<EntityTypeManager> entity_type_manager,
-            CefRefPtr<EntityInstanceManager> entity_instance_manager,
-            CefRefPtr<RelationshipTypeManager> relationship_type_manager,
-            CefRefPtr<RelationshipInstanceManager> relationship_instance_manager
-        );
-        virtual ~TeleportSubsystem();
+    /**
+     * This subsystems manages teleporters.
+     */
+    class TeleportSubsystem : public SubsystemBase
+    {
+        public:
 
-        void Update(TimeStep time_step);
-        void Cleanup();
-        void Reset();
+            TeleportSubsystem();
+            TeleportSubsystem(
+                CefRefPtr<EntityTypeManager> entity_type_manager,
+                CefRefPtr<EntityInstanceManager> entity_instance_manager,
+                CefRefPtr<RelationshipTypeManager> relationship_type_manager,
+                CefRefPtr<RelationshipInstanceManager> relationship_instance_manager
+            );
+            virtual ~TeleportSubsystem();
 
-        InstanceRefPtr<EntityInstance> CreateTeleport(double x, double y, double z);
-        InstanceRefPtr<EntityInstance> CreateTeledest(double x, double y, double z);
+            void Update(TimeStep time_step);
+            void Cleanup();
+            void Reset();
 
-        InstanceRefPtr<RelationshipInstance> Connect(InstanceRefPtr<EntityInstance> teleport, InstanceRefPtr<EntityInstance> teledest);
-        void Disconnect(InstanceRefPtr<RelationshipInstance>);
+            InstanceRefPtr<EntityInstance> CreateTeleport(double x, double y, double z);
+            InstanceRefPtr<EntityInstance> CreateTeledest(double x, double y, double z);
 
-        void DeleteAll();
-        void DeleteAllTeleports();
-        void DeleteAllTeledests();
-        void DeleteAllConnections();
+            InstanceRefPtr<RelationshipInstance> Connect(InstanceRefPtr<EntityInstance> teleport, InstanceRefPtr<EntityInstance> teledest);
+            void Disconnect(InstanceRefPtr<RelationshipInstance>);
 
-    private:
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(TeleportSubsystem);
-};
+            void DeleteAll();
+            void DeleteAllTeleports();
+            void DeleteAllTeledests();
+            void DeleteAllConnections();
+
+        private:
+
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(TeleportSubsystem);
+    };
 
 }
 }

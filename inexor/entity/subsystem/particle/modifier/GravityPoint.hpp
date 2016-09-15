@@ -17,18 +17,20 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-class GravityPoint : public EntityFunction
-{
-    public:
-        GravityPoint();
-        virtual ~GravityPoint();
+    class GravityPoint : public EntityFunction
+    {
+        public:
 
-        void Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle);
+            GravityPoint();
+            virtual ~GravityPoint();
 
-    private:
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(GravityPoint);
-};
+            void Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle);
+
+        private:
+
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(GravityPoint);
+    };
 
 }
 }

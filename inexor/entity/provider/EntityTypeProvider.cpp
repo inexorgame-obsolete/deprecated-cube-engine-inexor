@@ -11,18 +11,18 @@
 namespace inexor {
 namespace entity {
 
-EntityTypeProvider::EntityTypeProvider(std::string entity_name) : entity_name(entity_name) {}
-EntityTypeProvider::~EntityTypeProvider() {}
+    EntityTypeProvider::EntityTypeProvider(std::string entity_name) : entity_name(entity_name) {}
+    EntityTypeProvider::~EntityTypeProvider() {}
 
-std::string EntityTypeProvider::GetEntityName()
-{
-    return entity_name;
-}
+    std::string EntityTypeProvider::GetEntityName()
+    {
+        return entity_name;
+    }
 
-TypeRefPtr<EntityType> EntityTypeProvider::GetEntityType()
-{
-    return entity_type;
-}
+    TypeRefPtr<EntityType> EntityTypeProvider::GetEntityType()
+    {
+        return entity_type;
+    }
 
 }
 }

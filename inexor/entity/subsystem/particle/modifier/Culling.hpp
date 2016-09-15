@@ -17,18 +17,20 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-class Culling : public EntityFunction
-{
-    public:
-        Culling();
-        virtual ~Culling();
+    class Culling : public EntityFunction
+    {
+        public:
 
-        void Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle);
+            Culling();
+            virtual ~Culling();
 
-    private:
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(Culling);
-};
+            void Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle);
+
+        private:
+
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(Culling);
+    };
 
 }
 }

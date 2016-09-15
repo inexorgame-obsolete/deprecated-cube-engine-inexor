@@ -14,22 +14,24 @@
 namespace inexor {
 namespace entity {
 
-class JsFunction : public EntityFunction
-{
-    public:
-        JsFunction(std::string name, std::string callback_name);
-        virtual ~JsFunction();
+    class JsFunction : public EntityFunction
+    {
+        public:
 
-        std::string GetCallbackName();
-        void SetCallbackName(std::string callback_name);
+            JsFunction(std::string name, std::string callback_name);
+            virtual ~JsFunction();
 
-    private:
-        std::string callback_name;
+            std::string GetCallbackName();
+            void SetCallbackName(std::string callback_name);
 
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(JsFunction);
+        private:
 
-};
+            std::string callback_name;
+
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(JsFunction);
+
+    };
 
 }
 }

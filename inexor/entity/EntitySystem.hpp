@@ -29,206 +29,208 @@
 namespace inexor {
 namespace entity {
 
-struct type_info_less
-{
-    bool operator() (const std::type_info* lhs, const std::type_info* rhs) const
+    struct type_info_less
     {
-        return lhs->before(*rhs) != 0;
-    }
-};
-
-class EntitySystem;
-
-typedef std::map<std::type_info const*, void *, type_info_less> TypenameToObject;
-typedef std::map<std::type_info const*, void *, type_info_less>::iterator TypeMapIterator;
-
-class TypeMap
-{
-    friend class EntitySystem;
-
-    TypenameToObject ObjectMap;
-
-    public:
-        template <typename T>
-        T *Get () const
+        bool operator() (const std::type_info* lhs, const std::type_info* rhs) const
         {
-            TypenameToObject::const_iterator iType = ObjectMap.find(&typeid(T));
-            if (iType == ObjectMap.end())
-                return NULL;
-            return reinterpret_cast<T *>(iType->second);
+            return lhs->before(*rhs) != 0;
         }
-        template <typename T>
-        void Set(T *value)
-        {
-            ObjectMap[&typeid(T)] = reinterpret_cast<void *>(value);
-        }
-};
+    };
 
-class EntitySystem
-{
-    public:
-        EntitySystem();
-        virtual ~EntitySystem();
+    class EntitySystem;
 
-        /**
-         * Initializes the providers.
-         */
-        void InitProviders();
+    typedef std::map<std::type_info const*, void *, type_info_less> TypenameToObject;
+    typedef std::map<std::type_info const*, void *, type_info_less>::iterator TypeMapIterator;
 
-        /**
-         * Initializes the subsystems.
-         */
-        void InitSubsystems();
+    class TypeMap
+    {
+        friend class EntitySystem;
 
-        /**
-         * Frame update (main thread).
-         */
-        void Update();
+        TypenameToObject ObjectMap;
 
-        /**
-         * Cleanup at shutdown.
-         */
-        void Cleanup();
+        public:
+            template <typename T>
+            T *Get () const
+            {
+                TypenameToObject::const_iterator iType = ObjectMap.find(&typeid(T));
+                if (iType == ObjectMap.end())
+                    return NULL;
+                return reinterpret_cast<T *>(iType->second);
+            }
+            template <typename T>
+            void Set(T *value)
+            {
+                ObjectMap[&typeid(T)] = reinterpret_cast<void *>(value);
+            }
+    };
 
-        /**
-         * Called on a GFX reset. Each subsystem's Reset() method is called
-         * for cleanup purposes.
-         */
-        void Reset();
+    class EntitySystem
+    {
+        public:
+            EntitySystem();
+            virtual ~EntitySystem();
 
-        /**
-         * Returns a typed reference to the concrete subsystem. You can
-         * retrieve the subsystem with it's original type from everywhere.
-         */
-        template <typename T>
-        T *GetSubsystem () const
-        {
-            return subsystemTypeMap.Get<T>();
-        }
+            /**
+             * Initializes the providers.
+             */
+            void InitProviders();
 
-        /**
-         * Save the current entity system.
-         */
-        void Save(std::string filename);
+            /**
+             * Initializes the subsystems.
+             */
+            void InitSubsystems();
 
-        /**
-         * Loads a entity system from file.
-         */
-        void Load(std::string filename);
+            /**
+             * Frame update (main thread).
+             */
+            void Update();
 
-        /**
-         * Reset timer.
-         */
-        void ResetTimer();
+            /**
+             * Cleanup at shutdown.
+             */
+            void Cleanup();
 
-        /**
-         * Sets the time unit.
-         */
-        void SetTimeUnit(double time_unit);
+            /**
+             * Called on a GFX reset. Each subsystem's Reset() method is called
+             * for cleanup purposes.
+             */
+            void Reset();
 
-        /**
-         * Returns the entity type manager which is responsible for
-         * managing the entity types.
-         */
-        CefRefPtr<EntityTypeManager> GetEntityTypeManager();
+            /**
+             * Returns a typed reference to the concrete subsystem. You can
+             * retrieve the subsystem with it's original type from everywhere.
+             */
+            template <typename T>
+            T *GetSubsystem () const
+            {
+                return subsystemTypeMap.Get<T>();
+            }
 
-        /**
-         * Returns the relationship type manager which is responsible for
-         * managing the relationship types.
-         */
-        CefRefPtr<RelationshipTypeManager> GetRelationshipTypeManager();
+            /**
+             * Save the current entity system.
+             * TODO: export to JSON
+             */
+            void Save(std::string filename);
 
-        /**
-         * Returns the entity instance manager which is responsible for
-         * managing the entity instances.
-         */
-        CefRefPtr<EntityInstanceManager> GetEntityInstanceManager();
+            /**
+             * Loads a entity system from file.
+             // TODO: import from JSON
+             */
+            void Load(std::string filename);
 
-        /**
-         * Returns the relationship instance manager which is responsible for
-         * managing the relationship instances.
-         */
-        CefRefPtr<RelationshipInstanceManager> GetRelationshipInstanceManager();
+            /**
+             * Reset timer.
+             */
+            void ResetTimer();
 
-    private:
+            /**
+             * Sets the time unit.
+             */
+            void SetTimeUnit(double time_unit);
 
-        /**
-         * Frame calculation: The current frame millis.
-         */
-        int frame_millis;
+            /**
+             * Returns the entity type manager which is responsible for
+             * managing the entity types.
+             */
+            CefRefPtr<EntityTypeManager> GetEntityTypeManager();
 
-        /**
-         * Frame calculation: The last frame millis.
-         */
-        int frame_last_millis;
+            /**
+             * Returns the relationship type manager which is responsible for
+             * managing the relationship types.
+             */
+            CefRefPtr<RelationshipTypeManager> GetRelationshipTypeManager();
 
-        /**
-         * Frame calculation: The elapsed millis since the last frame.
-         */
-        int elapsed_millis;
+            /**
+             * Returns the entity instance manager which is responsible for
+             * managing the entity instances.
+             */
+            CefRefPtr<EntityInstanceManager> GetEntityInstanceManager();
 
-        /**
-         * The time unit in milliseconds. Normally set to 1000 for one
-         * second.
-         *
-         * The time unit is used for timing calculations. In the particle
-         * system a rate of 10 would mean to spawn 10 particles per time
-         * unit. If the time unit is 1000 millis, 10 particles would be
-         * spawned within a second. If the gamespeed is lowered the time
-         * unit should be reduced, too.
-         */
-        double time_unit;
+            /**
+             * Returns the relationship instance manager which is responsible for
+             * managing the relationship instances.
+             */
+            CefRefPtr<RelationshipInstanceManager> GetRelationshipInstanceManager();
 
-        /**
-         * The entity type manager.
-         */
-        CefRefPtr<EntityTypeManager> entity_type_manager;
+        private:
 
-        /**
-         * The relationship type manager.
-         */
-        CefRefPtr<RelationshipTypeManager> relationship_type_manager;
+            /**
+             * Frame calculation: The current frame millis.
+             */
+            int frame_millis;
 
-        /**
-         * The entity instance manager.
-         */
-        CefRefPtr<EntityInstanceManager> entity_instance_manager;
+            /**
+             * Frame calculation: The last frame millis.
+             */
+            int frame_last_millis;
 
-        /**
-         * The relationship instance manager.
-         */
-        CefRefPtr<RelationshipInstanceManager> relationship_instance_manager;
+            /**
+             * Frame calculation: The elapsed millis since the last frame.
+             */
+            int elapsed_millis;
 
-        /**
-         * The list of subsystems to iterate over. Only the common API
-         * provided by SubsystemBase is available.
-         */
-        std::vector<SubsystemBase*> subsystems;
+            /**
+             * The time unit in milliseconds. Normally set to 1000 for one
+             * second.
+             *
+             * The time unit is used for timing calculations. In the particle
+             * system a rate of 10 would mean to spawn 10 particles per time
+             * unit. If the time unit is 1000 millis, 10 particles would be
+             * spawned within a second. If the gamespeed is lowered the time
+             * unit should be reduced, too.
+             */
+            double time_unit;
 
-        /**
-         * The subsystem type map grants access to the real type of the
-         * implemented subsystem.
-         */
-        TypeMap subsystemTypeMap;
+            /**
+             * The entity type manager.
+             */
+            CefRefPtr<EntityTypeManager> entity_type_manager;
 
-        /**
-         * The handle subsystem.
-         */
-        CefRefPtr<HandleSubsystem> handle_subsystem;
+            /**
+             * The relationship type manager.
+             */
+            CefRefPtr<RelationshipTypeManager> relationship_type_manager;
 
-        /**
-         * The teleport subsystem.
-         */
-        CefRefPtr<TeleportSubsystem> teleport_subsystem;
+            /**
+             * The entity instance manager.
+             */
+            CefRefPtr<EntityInstanceManager> entity_instance_manager;
 
-        /**
-         * The particle subsystem.
-         */
-        CefRefPtr<particle::ParticleSubsystem> particle_subsystem;
+            /**
+             * The relationship instance manager.
+             */
+            CefRefPtr<RelationshipInstanceManager> relationship_instance_manager;
 
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(EntitySystem);
-};
+            /**
+             * The list of subsystems to iterate over. Only the common API
+             * provided by SubsystemBase is available.
+             */
+            std::vector<SubsystemBase*> subsystems;
+
+            /**
+             * The subsystem type map grants access to the real type of the
+             * implemented subsystem.
+             */
+            TypeMap subsystemTypeMap;
+
+            /**
+             * The handle subsystem.
+             */
+            CefRefPtr<HandleSubsystem> handle_subsystem;
+
+            /**
+             * The teleport subsystem.
+             */
+            CefRefPtr<TeleportSubsystem> teleport_subsystem;
+
+            /**
+             * The particle subsystem.
+             */
+            CefRefPtr<particle::ParticleSubsystem> particle_subsystem;
+
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(EntitySystem);
+    };
 
 }
 }

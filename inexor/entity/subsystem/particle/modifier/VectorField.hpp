@@ -18,30 +18,32 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-class VectorField : public EntityFunction
-{
-    public:
-        VectorField(std::string expression);
-        virtual ~VectorField();
+    class VectorField : public EntityFunction
+    {
+        public:
 
-        void Before(TimeStep time_step, EntityInstance* modifier);
-        void After(TimeStep time_step, EntityInstance* modifier);
+            VectorField(std::string expression);
+            virtual ~VectorField();
 
-        void Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle);
+            void Before(TimeStep time_step, EntityInstance* modifier);
+            void After(TimeStep time_step, EntityInstance* modifier);
 
-    private:
-        mu::Parser parser;
-        int args;
-        std::string expression;
-        mu::value_type ix;
-        mu::value_type iy;
-        mu::value_type iz;
+            void Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle);
 
-        void SetExpression(std::string expression);
+        private:
 
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(VectorField);
-};
+            mu::Parser parser;
+            int args;
+            std::string expression;
+            mu::value_type ix;
+            mu::value_type iy;
+            mu::value_type iz;
+
+            void SetExpression(std::string expression);
+
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(VectorField);
+    };
 
 }
 }

@@ -19,18 +19,20 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-class GeometryCollide : public EntityFunction
-{
-    public:
-        GeometryCollide();
-        virtual ~GeometryCollide();
+    class GeometryCollide : public EntityFunction
+    {
+        public:
 
-        void Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle);
+            GeometryCollide();
+            virtual ~GeometryCollide();
 
-    private:
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(GeometryCollide);
-};
+            void Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle);
+
+        private:
+
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(GeometryCollide);
+    };
 
 }
 }

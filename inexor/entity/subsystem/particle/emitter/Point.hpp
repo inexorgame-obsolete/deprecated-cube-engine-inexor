@@ -17,31 +17,32 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-/**
- * The point emitter emits particle at the position of the emitter. The point
- * emitter is an EntityFunction which accepts the particle type and the emitter
- * instance as parameters.
- */
-class Point : public EntityFunction
-{
-    public:
-        Point();
-        virtual ~Point();
+    /**
+     * The point emitter emits particle at the position of the emitter. The point
+     * emitter is an EntityFunction which accepts the particle type and the emitter
+     * instance as parameters.
+     */
+    class Point : public EntityFunction
+    {
+        public:
 
-        void Execute(TimeStep time_step, EntityInstance* emitter_inst, EntityInstance* particle_inst);
+            Point();
+            virtual ~Point();
 
-    private:
-        /**
-         * The relationship type:
-         *
-         *     particle--[:emitted_by]-->emitter
-         *
-         */
-        TypeRefPtr<RelationshipType> emitted_by;
+            void Execute(TimeStep time_step, EntityInstance* emitter_inst, EntityInstance* particle_inst);
 
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(Point);
-};
+        private:
+            /**
+             * The relationship type:
+             *
+             *     particle--[:emitted_by]-->emitter
+             *
+             */
+            TypeRefPtr<RelationshipType> emitted_by;
+
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(Point);
+    };
 
 }
 }

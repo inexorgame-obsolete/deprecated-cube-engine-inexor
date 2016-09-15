@@ -14,23 +14,25 @@
 namespace inexor {
 namespace entity {
 
-class EntityTypeProvider
-{
-    public:
-        EntityTypeProvider(std::string entity_name);
-        virtual ~EntityTypeProvider();
+    class EntityTypeProvider
+    {
+        public:
 
-        std::string GetEntityName();
-        TypeRefPtr<EntityType> GetEntityType();
+            EntityTypeProvider(std::string entity_name);
+            virtual ~EntityTypeProvider();
 
-    protected:
-        TypeRefPtr<EntityType> entity_type;
-        std::string entity_name;
+            std::string GetEntityName();
+            TypeRefPtr<EntityType> GetEntityType();
 
-    private:
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(EntityTypeProvider);
-};
+        protected:
+
+            TypeRefPtr<EntityType> entity_type;
+            std::string entity_name;
+
+        private:
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(EntityTypeProvider);
+    };
 
 }
 }

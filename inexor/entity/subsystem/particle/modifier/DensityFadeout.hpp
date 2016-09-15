@@ -17,18 +17,20 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-class DensityFadeout : public EntityFunction
-{
-    public:
-        DensityFadeout();
-        virtual ~DensityFadeout();
+    class DensityFadeout : public EntityFunction
+    {
+        public:
 
-        void Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle);
+            DensityFadeout();
+            virtual ~DensityFadeout();
 
-    private:
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(DensityFadeout);
-};
+            void Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle);
+
+        private:
+
+            // Include the default reference counting implementation.
+            IMPLEMENT_REFCOUNTING(DensityFadeout);
+    };
 
 }
 }
