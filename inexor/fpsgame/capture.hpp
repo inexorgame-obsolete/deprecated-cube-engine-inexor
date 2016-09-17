@@ -1,4 +1,3 @@
-// capture.h: client and server state for capture gamemode
 #ifndef PARSEMESSAGES
 
 #ifdef SERVMODE
