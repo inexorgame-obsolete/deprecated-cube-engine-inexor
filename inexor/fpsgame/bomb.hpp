@@ -1,7 +1,4 @@
-// bomb.h: client and server state for bomb gamemode
 #ifndef PARSEMESSAGES
-
-//#include <signal.h>
 
 #ifdef SERVMODE
 
