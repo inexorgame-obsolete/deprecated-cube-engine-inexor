@@ -1,5 +1,3 @@
-/// string operations on filenames (INCOMPLETE! see e.g. stream.cpp).
-
 #ifndef I_FILESYSTEM_H
 #define I_FILESYSTEM_H
 
