@@ -1,8 +1,6 @@
 // bih.h - Bounding interval hierarchy
 // architecture for high performance ray tracing
 // and k-dimensional trees
-//
-// used for octree implementation (?)
 
 struct BIH
 {
