@@ -9,7 +9,6 @@ extern SharedVar<int> outline;
 
 bool boxoutline = false;
 
-/// renders a rectangular box to the target location with faked thick lines
 void boxs(int orient, vec o, const vec &s, float size) 
 {
     int d = dimension(orient), dc = dimcoord(orient);
@@ -40,10 +39,6 @@ void boxs(int orient, vec o, const vec &s, float size)
     xtraverts += gle::end();
 }
 
-/// renders a rectangular box to the target location
-/// @param orient cube face orientation index (3 dimensions x 2 directions = 6 possible orientation indices)
-/// @parm o target rendering position
-/// @param s a constant scalar vector
 void boxs(int orient, vec o, const vec &s)
 {
     int d = dimension(orient), dc = dimcoord(orient);
@@ -62,21 +57,12 @@ void boxs(int orient, vec o, const vec &s)
     xtraverts += gle::end();
 }
 
-/// render cube (6 boxes) to target location
-/// @param o selection start vector
-/// @param s selection end vector
-/// @param g gridsize
 void boxs3D(const vec &o, vec s, int g)
 {
     s.mul(g);
     loopi(6) boxs(i, o, s);
 }
 
-/// renders box grid on the face of the selected volume/area
-/// @param orient orientation
-/// @param o origin vector (start)
-/// @param s end vector
-/// @param g grid size
 void boxsgrid(int orient, vec o, vec s, int g)
 {
     int d = dimension(orient), dc = dimcoord(orient);
@@ -109,9 +95,6 @@ void boxsgrid(int orient, vec o, vec s, int g)
     xtraverts += gle::end();
 }
 
-
-
-/// @see selinfo
 selinfo sel, lastsel, savedsel;
 
 int orient = 0;
@@ -127,9 +110,6 @@ int horient  = 0;
 
 extern int entmoving;
 
-/// dragging is enabled (1) once a grid start cube is selected
-/// once you select a cube the selection box will be drawn a little brighter
-/// @warning this has nothing to do with particles, pickups or entities!
 VARF(dragging, 0, 0, 1,
     if(!dragging || cor[0]<0) return;
     lastcur = cur;
@@ -138,10 +118,6 @@ VARF(dragging, 0, 0, 1,
     sel.orient = orient;
 );
 
-
-/// moving will be set to 1 as soon as you right-click a selected area/volume to move it
-/// once you release the key, moving(0) will be called
-/// @warning this has nothing to do with particles, pickups or entities!
 int moving = 0;
 ICOMMAND(moving, "b", (int *n),
 {
@@ -153,8 +129,6 @@ ICOMMAND(moving, "b", (int *n),
     intret(moving);
 });
 
-
-/// will be called every time the gridpower (gridsize) changes
 VARF(gridpower, 0, 3, 12,
 {
     if(dragging) return;
@@ -175,9 +149,6 @@ VAR(selectcorners, 0, 0, 1);
 /// start/stop heightmap editing
 VARF(hmapedit, 0, 0, 1, horient = sel.orient);
 
-
-/// reset orientation of the last selection
-/// this is called every time the user changes grid size or editing status
 void forcenextundo()
 {
     lastsel.orient = -1;
@@ -185,9 +156,6 @@ void forcenextundo()
 
 extern void hmapcancel();
 
-/// aborts heightsmap editing and resets selection data
-/// @see forcenextundo
-/// @see forcenextundo
 void cubecancel()
 {
     havesel = false;
@@ -196,19 +164,12 @@ void cubecancel()
     hmapcancel();
 }
 
-/// reset the current selection
-/// called every time user changes grid size or editing status
-/// @ee cubecancel
-/// @see entcancel
 void cancelsel()
 {
     cubecancel();
     entcancel();
 }
 
-/// change editing status
-/// also cancel selection, blendmaps and more
-/// @param force represents if the user was forced by administrators
 void toggleedit(bool force)
 {
     if(!force)
@@ -242,8 +203,6 @@ void toggleedit(bool force)
     if(!force) game::edittoggled(editmode);
 }
 
-/// check if user is allowed to edit
-/// concerns may be a scene selection which is not in view or disbaled editing status
 bool noedit(bool view, bool msg)
 {
     if(!editmode) { if(msg) spdlog::get("edit")->error() << "operation only allowed in edit mode"; return true; }
@@ -258,7 +217,6 @@ bool noedit(bool view, bool msg)
     return !viewable;
 }
 
-/// change the selection orientation according to the cursor's position
 void reorient()
 {
     sel.cx = 0;
@@ -268,7 +226,6 @@ void reorient()
     sel.orient = orient;
 }
 
-/// extend the selection according to the cursor's position
 void selextend()
 {
     if(noedit(true)) return;
@@ -286,20 +243,13 @@ void selextend()
     }
 }
 
-
-/// cubescript command hook: toggle editing
 ICOMMAND(edittoggle, "", (), toggleedit(false));
-/// cubescript command hook: remove entity selection
 COMMAND(entcancel, "");
-/// cubescript command hook: remove cube selection
 COMMAND(cubecancel, "");
-/// cubescript command hook: remove both cube and entity selection
 COMMAND(cancelsel, "");
-/// cubescript command hook: change orientation of selected cubes according to the cursor
 COMMAND(reorient, "");
 
 
-/// cubescript command hook: extend selection of cubes according to the cursor
 COMMAND(selextend, "");
 
 ICOMMAND(selmoved,   "", (), { if(noedit(true)) return; intret(sel.o != savedsel.o ? 1 : 0); });
@@ -322,18 +272,11 @@ cube &blockcube(int x, int y, int z, const block3 &b, int rgrid)
 #define loopselxyz(f)    { if(local) makeundo(); loopxyz(sel, sel.grid, f); changed(sel); }
 #define selcube(x, y, z) blockcube(x, y, z, sel, sel.grid)
 
-/// the amount of selected child cubes
-/// they will be displayed in the bottom left of you screen in coopedit mode
 int selchildcount = 0;
 int selchildmat = -1;
 
-/// cubescript: return number of selected cubes
-/// @see selchildcount
 ICOMMAND(havesel, "", (), intret(havesel ? selchildcount : 0));
 
-/// count the number of selected child cubes and materials in your selection
-/// @see gl_drawhud
-/// @see selchildcount
 void countselchild(cube *c, const ivec &cor, int size)
 {
     ivec ss = ivec(sel.s).mul(sel.grid); /// selected volume * grid = list of child cubes
@@ -353,7 +296,6 @@ void countselchild(cube *c, const ivec &cor, int size)
     }
 }
 
-/// get the selected cube's position from the origin vector (0,0,0)
 void normalizelookupcube(const ivec &o)
 {
     if(lusize>gridsize)
@@ -371,9 +313,6 @@ void normalizelookupcube(const ivec &o)
     lusize = gridsize;
 }
 
-/// validate the coordinates of the selected face/volume
-/// make sure the selected grid is not outside of the map
-/// @see sel
 void updateselection()
 {
     sel.o.x = min(lastcur.x, cur.x);
@@ -384,8 +323,6 @@ void updateselection()
     sel.s.z = abs(lastcur.z-cur.z)/sel.grid+1;
 }
 
-/// move the selection grid (the "plane") along
-/// the selection has an origin and can only be moved in 2 dimensions simultaneously
 bool editmoveplane(const vec &o, const vec &ray, int d, float off, vec &handle, vec &dest, bool first)
 {
     plane pl(d, off);
@@ -405,14 +342,9 @@ extern bool hoveringonent(int ent, int orient);
 extern void renderentselection(const vec &o, const vec &ray, bool entmoving);
 extern float rayent(const vec &o, const vec &ray, float radius, int mode, int size, int &orient, int &ent);
 
-/// automaticly select the grid size of the selected face
 VAR(gridlookup, 0, 0, 1);
-
-/// ignore the first cube when view ray intersects it and select the second ("select through cubes")
 VAR(passthroughcube, 0, 1, 1);
 
-/// render selection box to the cursor target
-/// also moves entities!
 void rendereditcursor()
 {
     int d   = dimension(sel.orient),
@@ -607,8 +539,6 @@ void rendereditcursor()
     glDisable(GL_BLEND);
 }
 
-/// check if editing can be done
-/// @warning please note that editing is not allowed when the HUD (head up dispaly) is disabled!
 void tryedit()
 {
     extern SharedVar<int> hidehud;
@@ -616,11 +546,8 @@ void tryedit()
     if(blendpaintmode) trypaintblendmap();
 }
 
-//////////// ready changes to vertex arrays ////////////
-
 static bool haschanged = false;
 
-/// checks and validates changes in the octree system
 void readychanges(const ivec &bbmin, const ivec &bbmax, cube *c, const ivec &cor, int size)
 {
     loopoctabox(cor, size, bbmin, bbmax)
@@ -652,7 +579,6 @@ void readychanges(const ivec &bbmin, const ivec &bbmax, cube *c, const ivec &cor
     }
 }
 
-/// commits changes in geometry
 void commitchanges(bool force)
 {
     if(!force && !haschanged) return;
@@ -670,9 +596,6 @@ void commitchanges(bool force)
     resetblobs();
 }
 
-/// validates editing changes using readychanges() and calls commitchanges()
-/// @see readychanges
-/// @see commitchanges
 void changed(const block3 &sel, bool commit = true)
 {
     if(sel.s.iszero()) return;
@@ -683,7 +606,6 @@ void changed(const block3 &sel, bool commit = true)
 }
 
 
-//////////// copy and undo /////////////
 static inline void copycube(const cube &src, cube &dst)
 {
     dst = src;
@@ -726,7 +648,7 @@ void freeblock(block3 *b, bool alloced = true)
     if(alloced) delete[] b;
 }
 
-void selgridmap(selinfo &sel, uchar *g)                           // generates a map of the cube sizes at each grid point
+void selgridmap(selinfo &sel, uchar *g)                          
 {
     loopxyz(sel, -sel.grid, (*g++ = bitscan(lusize), (void)c));
 }
