@@ -1,18 +1,10 @@
-/// @file game.h
-/// definitions of network protocol, game modes, entities, guns, monsters, mastermode
-/// pickups, triggers, team scores, armour, permission levels, 
-///
-///
-///
 
-/// include guard protectes this file from being included twice
 #ifndef __GAME_H__
 #define __GAME_H__
 
 #include "inexor/shared/cube.hpp"
 #include "inexor/util/Logging.hpp"
 
-/// game console entry types
 enum
 {
     CON_CHAT       = 1<<8,
@@ -24,17 +16,12 @@ enum
 };
 
 
-/// network quantization scale
 #define DMF 16.0f   /// for world locations
 #define DNF 100.0f  /// for normalized vectors
 #define DVELF 1.0f  /// for playerspeed based velocity vectors
 
-/// SVARP radardir defines the directory of radar images (arrows, frame, flags, skulls..)
 extern char *radardir;
 
-
-/// static entity types
-/// @warning this system may becomes deprecated because of the new entity system!
 enum
 {
     NOTUSED = ET_EMPTY,         /// entity slot not in used in maps
@@ -71,9 +58,6 @@ enum
     MAXENTTYPES
 };
 
-
-/// (door) triggers in singleplayer maps (sp and dmsp game modes)
-/// @warning may becomes deprecated if visual scripting will be implemented one day...
 enum
 {
     TRIGGER_RESET = 0,
@@ -84,15 +68,12 @@ enum
 };
 
 
-/// trigger handler
 struct fpsentity : extentity
 {
     int triggerstate, lasttrigger;
     fpsentity() : triggerstate(TRIGGER_RESET), lasttrigger(0) {} 
 };
 
-/// static gun and projectile enumeration
-/// TODO: replace this hardcoded stuff and move on to JSON!
 enum 
 {
 	GUN_FIST = 0,	/// fist
@@ -112,8 +93,6 @@ enum
 	NUMGUNS         /// 
 };
 
-
-/// armour type enumeration... take 20/40/60 % off
 enum 
 {
 	A_BLUE,
@@ -121,8 +100,6 @@ enum
 	A_YELLOW
 };
 
-/// Artificial intelligence: BOT states
-/// "Artificial intelligence is the perpetuum mobile of computer science"
 enum 
 { 
 	M_NONE = 0,
@@ -134,12 +111,6 @@ enum
 	M_AIMING
 };  
 
-
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/// game mode specific code
-
-/// basic game mode bitmask "FLAGS"
-/// (NOT game modes but attributes of game modes!)
 enum
 {
     M_TEAM       = 1<<0,   /// game mode contains teams
@@ -171,8 +142,6 @@ enum
     //M_RACE       = 1<<25,
 };
 
-
-/// structure for game mode description
 static struct gamemodeinfo
 {
     const char *name; /// game mode's name
@@ -210,15 +179,7 @@ static struct gamemodeinfo
     { "hideandseek"},
 };
 
-
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/// game mode validation and attribute handling
-
-/// the first 3 game modes are not used in multiplayer
 #define STARTGAMEMODE (-3)
-
-/// macro to determine the amount of available game modes
-/// division: (size of array) / (size of one gamemodeinfo instance)
 #define NUMGAMEMODES ((int)(sizeof(gamemodes)/sizeof(gamemodes[0])))
 
 /// validate game mode number (array index)
@@ -265,12 +226,6 @@ static struct gamemodeinfo
 #define m_dmsp         (m_check(gamemode, M_DMSP))
 #define m_classicsp    (m_check(gamemode, M_CLASSICSP))
 
-
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/// master server list handling
-
-/// master mode status enumeration
-/// TODO: replace this hardcoded stuff and move on to JSON!
 enum 
 { 
 	MM_AUTH = -1,
@@ -282,18 +237,10 @@ enum
 	MM_START = MM_AUTH
 };
 
-
-/// static strings for server description in master server list
-/// TODO: replace this hardcoded stuff and move on to JSON!
 static const char * const mastermodenames[] =  { "auth",   "open",   "veto",       "locked",     "private",    "password" };
 static const char * const mastermodecolors[] = { "",    COL_GREEN,  COL_YELLOW,   COL_YELLOW,     COL_RED,    COL_RED};
 static const char * const mastermodeicons[] =  { "server", "server", "serverlock", "serverlock", "serverpriv", "serverpriv" };
 
-
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/// sound list and description of administrative levels
-
-/// hardcoded sounds, defined in sounds.cfg
 enum
 {
     S_JUMP = 0, S_LAND, S_RIFLE, S_PUNCH1, S_SG, S_CG,
@@ -331,15 +278,9 @@ enum
     S_FLAGFAIL
 };
 
-/// priviledge levels
 enum {PRIV_NONE = 0, PRIV_MASTER, PRIV_AUTH, PRIV_ADMIN };
 
 
-// network messages codes, c2s, c2c, s2c:
-
-/// server message list
-/// @warning you will need to edit the msgsizes array as well.
-/// @warning you might get kicked from server because you modified the protocol!
 enum
 {
     N_CONNECT = 0,          /// C2S      send connection request to server
@@ -481,7 +422,6 @@ enum
     NUMMSG
 };
 
-/// size incuding message token, 0 for variable or not-checked sizes
 static const int msgsizes[] =               
 {
     N_CONNECT, 0, N_SERVINFO, 0, N_WELCOME, 1, N_INITCLIENT, 0, N_POS, 0, N_TEXT, 0, N_SOUND, 2, N_CDIS, 2,
@@ -524,15 +464,12 @@ static const int msgsizes[] =
 #define DEMO_VERSION 1                  // bump when demo format changes
 #define DEMO_MAGIC "INEXOR_DEMO"
 
-/// demos contain stored network messages of a game
-/// which can be replayed to review games
 struct demoheader
 {
     char magic[16];
     int version, protocol;
 };
 
-/// important teamspecific declarations
 #define MAXTEAMS 128
 #define MAXNAMELEN 15  /// max player name length
 #define MAXTEAMLEN 4   /// max team name length
@@ -547,7 +484,6 @@ enum
     TEAM_NUM
 };
 
-/// const radar blip colors
 static const char * const teamblipcolor[TEAM_NUM] = 
 {
     "_neutral", /// = 'gray'
@@ -556,7 +492,6 @@ static const char * const teamblipcolor[TEAM_NUM] =
 };
 
 
-/// enumeration for icons
 enum
 {
     HICON_BLUE_ARMOUR = 0,
@@ -594,8 +529,6 @@ enum
     HICON_SPACE   = 40
 };
 
-
-/// Bomberman: HUD announce effects
 enum hudannounceeffects 
 {
     E_STATIC_CENTER = 0,
@@ -612,18 +545,12 @@ enum hudannounceeffects
     E_BLINK_CENTER
 };
 
-/// Bomberman constants
 #define MAXRAYS 20
 #define EXP_SELFDAMDIV 2
 #define EXP_SELFPUSH 2.5f
 #define EXP_DISTSCALE 1.5f
 #define BOMB_DAMRAD 20
 
-
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/// hard coded weapons and pickups
-
-/// pickup description structure
 static struct itemstat 
 { 
 	int add, max, sound; 
@@ -631,8 +558,6 @@ static struct itemstat
 	int icon, info;
 }
 
-/// create an array of itemstat instances ('pickups')
-/// TODO: replace this hardcoded stuff and move on to JSON!
 itemstats[] =
 {
     {10,    30,    S_ITEMAMMO,   "SG", HICON_SG,            GUN_SG},
@@ -651,7 +576,6 @@ itemstats[] =
     {20000, 30000, S_ITEMPUP,    "Q",  HICON_QUAD,          -1}
 };
 
-/// weapon description structure
 static const struct guninfo
 { 
 	int sound, attackdelay, damage, spread, projspeed;
@@ -659,8 +583,6 @@ static const struct guninfo
 	const char *name, *file; short part;
 }
 
-/// create an array of guninfo instances ('guns')
-/// TODO: replace this hardcoded stuff and move on to JSON!
 guns[NUMGUNS] =
 {
     { S_PUNCH1,    250,  50,   0,   0,  0,   14,  1,  80,   0,    0, "fist",            "chainsaw",        0 },
@@ -682,11 +604,6 @@ guns[NUMGUNS] =
 
 #include "inexor/fpsgame/ai.hpp"
 
-
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/// fpsstate and fpsent definitions
-
-/// inherited by fpsent and server clients
 struct fpsstate
 {
     int health, maxhealth;
@@ -707,77 +624,72 @@ struct fpsstate
         ammo[gun] = (itemstats[gun-GUN_SG].add*k)/scale;
     }
 
-    /// add ammo
     void addammo(int gun, int k = 1, int scale = 1)
     {
         itemstat &is = itemstats[gun-GUN_SG];
         ammo[gun] = min(ammo[gun] + (is.add*k)/scale, is.max);
     }
 
-    /// ammo limitation reached/exceeded?
     bool hasmaxammo(int type)
     {
        const itemstat &is = itemstats[type-I_SHELLS];
        return ammo[type-I_SHELLS+GUN_SG]>=is.max;
     }
 
-    /// check if I can pick up this item depending on the radius
     bool canpickup(int type)
     {
         if(type<I_SHELLS || type>I_QUAD) return false;
-			itemstat &is = itemstats[type-I_SHELLS];
-	        switch(type)
-	        {
-	            case I_BOOST: return maxhealth<is.max;
-	            case I_HEALTH: return health<maxhealth;
-	                case I_GREENARMOUR:
-	                    // (100h/100g only absorbs 200 damage)
-	                    if(armourtype==A_YELLOW && armour>=100) return false;
-	            case I_YELLOWARMOUR: return !armourtype || armour<is.max;
-	            case I_QUAD: return quadmillis<is.max;
-                case I_BOMBRADIUS:
-                    return bombradius<is.max;
-                    break;
-                case I_BOMBDELAY:
-                    return bombdelay<is.max;
-                    break;
-	            default: return ammo[is.info]<is.max;
-	    	}
-		}
+		itemstat &is = itemstats[type-I_SHELLS];
+	    switch(type)
+	    {
+	        case I_BOOST: return maxhealth<is.max;
+	        case I_HEALTH: return health<maxhealth;
+	            case I_GREENARMOUR:
+	                // (100h/100g only absorbs 200 damage)
+	                if(armourtype==A_YELLOW && armour>=100) return false;
+	        case I_YELLOWARMOUR: return !armourtype || armour<is.max;
+	        case I_QUAD: return quadmillis<is.max;
+            case I_BOMBRADIUS:
+                return bombradius<is.max;
+                break;
+            case I_BOMBDELAY:
+                return bombdelay<is.max;
+                break;
+	        default: return ammo[is.info]<is.max;
+	    }
+	}
 
-    /// pick up this item
     void pickup(int type)
     {
         if(type<I_SHELLS || type>I_QUAD) return;
-            itemstat &is = itemstats[type-I_SHELLS];
-            switch(type)
-            {
-                case I_BOOST:
-                    maxhealth = min(maxhealth+is.add, is.max);
-                case I_HEALTH: // boost also adds to health
-                    health = min(health+is.add, maxhealth);
-                    break;
-                case I_GREENARMOUR:
-                case I_YELLOWARMOUR:
-                    armour = min(armour+is.add, is.max);
-                    armourtype = is.info;
-                    break;
-                case I_QUAD:
-                    quadmillis = min(quadmillis+is.add, is.max);
-                    break;
-                case I_BOMBRADIUS:
-                    bombradius = min(bombradius+is.add, is.max);
-                    break;
-                case I_BOMBDELAY:
-                    bombdelay = min(bombdelay+is.add, is.max);
-                    break;
-                default:
-                    ammo[is.info] = min(ammo[is.info]+is.add, is.max);
-                    break;
-            }
+        itemstat &is = itemstats[type-I_SHELLS];
+        switch(type)
+        {
+            case I_BOOST:
+                maxhealth = min(maxhealth+is.add, is.max);
+            case I_HEALTH: // boost also adds to health
+                health = min(health+is.add, maxhealth);
+                break;
+            case I_GREENARMOUR:
+            case I_YELLOWARMOUR:
+                armour = min(armour+is.add, is.max);
+                armourtype = is.info;
+                break;
+            case I_QUAD:
+                quadmillis = min(quadmillis+is.add, is.max);
+                break;
+            case I_BOMBRADIUS:
+                bombradius = min(bombradius+is.add, is.max);
+                break;
+            case I_BOMBDELAY:
+                bombdelay = min(bombdelay+is.add, is.max);
+                break;
+            default:
+                ammo[is.info] = min(ammo[is.info]+is.add, is.max);
+                break;
         }
+    }
 
-    /// reset all members when spawning
     void respawn()
     {
         health = maxhealth;
@@ -792,7 +704,6 @@ struct fpsstate
         ammo[backupweapon] = 1;
     }
 
-    /// configure spawn settings (weapons, ammo, health...) depending on game mode
     void spawnstate(int gamemode)
     {
         if(m_demo)
@@ -886,7 +797,6 @@ struct fpsstate
         }
     }
 
-    /// just subtract damage here, we can set death, etc. later in code calling this
     int dodamage(int damage)
     {
         int ad = damage*(armourtype+1)*25/100; // let armour absorb when possible
@@ -897,14 +807,12 @@ struct fpsstate
         return damage;
     }
 
-    /// is there ammo left for this gun
     int hasammo(int gun, int exclude = -1)
     {
         return gun >= 0 && gun <= NUMGUNS && gun != exclude && ammo[gun] > 0;
     }
 };
 
-// mostly players can be described with this
 struct fpsent : dynent, fpsstate
 {
     int weight;                         // affects the effectiveness of hitpush
@@ -946,7 +854,6 @@ struct fpsent : dynent, fpsstate
         if(ai) delete ai;
     }
 
-    /// apply push event to object's velocity vector
     void hitpush(int damage, const vec &dir, fpsent *actor, int gun)
     {
         vec push(dir);
@@ -954,21 +861,18 @@ struct fpsent : dynent, fpsstate
         vel.add(push);
     }
 
-    /// @see stopsound
     void stopattacksound()
     {
         if(attackchan >= 0) inexor::sound::stopsound(attacksound, attackchan, 250);
         attacksound = attackchan = -1;
     }
 
-    /// @see stopsound
     void stopidlesound()
     {
         if(idlechan >= 0) inexor::sound::stopsound(idlesound, idlechan, 100);
         idlesound = idlechan = -1;
     }
 
-    /// respawn item
     void respawn()
     {
         dynent::reset();
@@ -989,17 +893,10 @@ struct fpsent : dynent, fpsstate
     }
 };
 
-
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/// team handling
-
-/// @warning those limits should be increased
 #define MAXNAMELEN 15
 #define MAXTEAMLEN 4
 #define MAXTEAMS 128
 
-/// many competetive team modes allow more than 2 teams
-/// allow sorting multiple teams using team scores
 struct teamscore
 {
     const char *team;
@@ -1007,7 +904,6 @@ struct teamscore
     teamscore() {}
     teamscore(const char *s, int n) : team(s), score(n) {}
 
-	/// used for quicksort template to compare teams
     static bool compare(const teamscore &x, const teamscore &y)
     {
         if(x.score > y.score) return true;
@@ -1016,40 +912,31 @@ struct teamscore
     }
 };
 
-/// create hashes to access hashmaps
 static inline uint hthash(const teamscore &t) 
 {
 	return hthash(t.team); 
 }
 
-/// compare two teamnames
 static inline bool htcmp(const char *key, const teamscore &t) 
 {
 	return htcmp(key, t.team);
 }
 
-/// scoreboard team block description
 struct teaminfo
 {
     char team[MAXTEAMLEN+1];
     int frags;
 };
 
-/// create hash for hashsts
 static inline uint hthash(const teaminfo &t) 
 { 
 	return hthash(t.team); 
 }
 
-/// compare two team names
 static inline bool htcmp(const char *team, const teaminfo &t)
 {
 	return !strcmp(team, t.team);
 }
-
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/// entity handling
-/// entity system will be replaced with new entity system later...
 
 namespace entities
 {
@@ -1076,9 +963,6 @@ namespace entities
 
     extern void repammo(fpsent *d, int type, bool local = true);
 }
-
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/// full game handling
 
 namespace game
 {
@@ -1319,9 +1203,6 @@ namespace game
     extern void swayhudgun(int curtime);
     extern vec hudgunorigin(int gun, const vec &from, const vec &to, fpsent *d);
 }
-
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/// (local) dedicated server handling
 
 namespace server
 {
