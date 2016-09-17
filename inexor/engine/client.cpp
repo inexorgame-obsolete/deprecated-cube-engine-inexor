@@ -1,21 +1,12 @@
-// fpsgame/client.cpp 
-// client.cpp, mostly network related client game code
-// implementation of connect and disconnect
-// implementation of enet network parser
-
 #include "inexor/engine/engine.hpp"
 #include "inexor/util/Logging.hpp"
 
 using namespace inexor::util; //needed for quoted()
 
-// (mostly) network related stuff
-
 ENetHost *clienthost = NULL;
 ENetPeer *curpeer = NULL, *connpeer = NULL;
 int connmillis = 0, connattempts = 0, discmillis = 0;
 
-// is player in multiplayer
-// also print multiplayer restricted game function warnings
 bool multiplayer(bool msg)
 {
     bool val = curpeer || hasnonlocalclients(); 
@@ -23,7 +14,6 @@ bool multiplayer(bool msg)
     return val;
 }
 
-// set network bandwidth rate (in kilobytes)
 void setrate(int rate)
 {
    if(!curpeer) return;
@@ -31,13 +21,11 @@ void setrate(int rate)
 }
 VARF(rate, 0, 0, 1024, setrate(rate));
 
-// forward of network throttle
 void throttle();
 VARF(throttle_interval, 0, 5, 30, throttle());
 VARF(throttle_accel,    0, 2, 32, throttle());
 VARF(throttle_decel,    0, 2, 32, throttle());
 
-// implementation fo network throttle
 void throttle()
 {
     if(!curpeer) return;
@@ -45,20 +33,17 @@ void throttle()
     enet_peer_throttle_configure(curpeer, throttle_interval*1000, throttle_accel, throttle_decel);
 }
 
-// is game connected or trying to connect
 bool isconnected(bool attempt, bool local)
 {
     return curpeer || (attempt && connpeer) || (local && haslocalclients());
 }
 ICOMMAND(isconnected, "bb", (int *attempt, int *local), intret(isconnected(*attempt > 0, *local != 0) ? 1 : 0));
 
-// return the current network address
 const ENetAddress *connectedpeer()
 {
     return curpeer ? &curpeer->address : NULL;
 }
 
-// return the ip of the current server
 ICOMMAND(connectedip, "", (),
 {
     const ENetAddress *address = connectedpeer();
@@ -66,18 +51,15 @@ ICOMMAND(connectedip, "", (),
     result(address && enet_address_get_host_ip(address, hostname, sizeof(hostname)) >= 0 ? hostname : "");
 });
 
-// return the port of the current server
 ICOMMAND(connectedport, "", (),
 {
     const ENetAddress *address = connectedpeer();
     intret(address ? address->port : -1);
 });
 
-// servername and connection port (?)
 SVARP(connectname, "");
 VARP(connectport, 0, 0, 0xFFFF);
 
-// abort attempt to connect
 void abortconnect()
 {
     if(!connpeer) return;
@@ -89,7 +71,6 @@ void abortconnect()
     clienthost = NULL;
 }
 
-// connect to a server (serverpassword only for mastermode 3 servers)
 void connectserv(const char *servername, int serverport, const char *serverpassword)
 {   
     if(connpeer)
@@ -142,7 +123,6 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
     game::connectattempt(servername ? servername : "", serverpassword ? serverpassword : "", address);
 }
 
-// use stored data of last connected server to connect again
 void reconnect(const char *serverpassword)
 {
     if(!connectname[0] || connectport <= 0)
@@ -153,7 +133,6 @@ void reconnect(const char *serverpassword)
     connectserv(connectname, connectport, serverpassword);
 }
 
-// disconnect from a server
 void disconnect(bool async, bool cleanup)
 {
     if(curpeer) 
@@ -182,7 +161,6 @@ void disconnect(bool async, bool cleanup)
     }
 }
 
-// try to disconnect (attempting, connected or locally)
 void trydisconnect(bool local)
 {
     if(connpeer)
@@ -200,50 +178,42 @@ void trydisconnect(bool local)
     else spdlog::get("global")->info() << "not connected";
 }
 
-// commands to establish and destroy network connections
 ICOMMAND(connect, "sis", (char *name, int *port, char *pw), connectserv(name, *port, pw));
 COMMAND(reconnect, "s");
 ICOMMAND(disconnect, "b", (int *local), trydisconnect(*local != 0));
 
-// see startlistenserver command to start local servers in game
 ICOMMAND(lanconnect, "is", (int *port, char *pw), connectserv(NULL, *port, pw));
 ICOMMAND(localconnect, "", (), { if(!isconnected()) localconnect(); });
 ICOMMAND(localdisconnect, "", (), { if(haslocalclients()) localdisconnect(); });
 
-// send network packet to server
 void sendclientpacket(ENetPacket *packet, int chan)
 {
     if(curpeer) enet_peer_send(curpeer, chan, packet);
     else localclienttoserver(chan, packet);
 }
 
-// empty network message queue (?)
 void flushclient()
 {
     if(clienthost) enet_host_flush(clienthost);
 }
 
-// print illegal network message to console (wrong protocol?)
 void neterr(const char *s, bool disc)
 {
     spdlog::get("global")->error() << "illegal network message " << quoted(s);
     if(disc) disconnect();
 }
 
-// processes any updates from the server
 void localservertoclient(int chan, ENetPacket *packet)
 {
     packetbuf p(packet);
     game::parsepacketclient(chan, p);
 }
 
-// send ping to server (?)
 void clientkeepalive() 
 { 
 	if(clienthost) enet_host_service(clienthost, NULL, 0); 
 }
 
-// get updates from the server
 void gets2c()           
 {
     ENetEvent event;

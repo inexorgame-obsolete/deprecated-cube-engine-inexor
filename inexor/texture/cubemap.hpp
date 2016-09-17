@@ -26,7 +26,6 @@ extern ushort closestenvmap(int orient, const ivec &co, int size);
 extern GLuint lookupenvmap(ushort emid);
 extern GLuint lookupenvmap(Slot &slot);
 
-// rendergl.cpp:
 extern void drawcubemap(int size, const vec &o, float yaw, float pitch, const cubemapside &side);
 
 #endif // INEXOR_TEX_CUBEMAP_H

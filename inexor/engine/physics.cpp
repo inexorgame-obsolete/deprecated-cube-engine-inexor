@@ -35,8 +35,6 @@ void resetclipplanes()
     }
 }
 
-/////////////////////////  ray - cube collision ///////////////////////////////////////////////
-
 static inline bool pointinbox(const vec &v, const vec &bo, const vec &br)
 {
     return v.x <= bo.x+br.x &&

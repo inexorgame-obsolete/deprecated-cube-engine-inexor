@@ -16,8 +16,6 @@ static inline void drawvatris(vtxarray *va, GLsizei numindices, const GLvoid *in
     drawtris(numindices, indices, va->minvert, va->maxvert);
 }
 
-///////// view frustrum culling ///////////////////////
-
 plane vfcP[5];  // perpindictular vectors to view frustrum bounding planes
 float vfcDfog;  // far plane culling distance (fog limit).
 float vfcDnear[5], vfcDfar[5];

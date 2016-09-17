@@ -1,5 +1,3 @@
-/// game initialisation & main loop
-///
 #include "inexor/engine/engine.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/ui.hpp"
@@ -7,7 +5,6 @@
 #include "inexor/crashreporter/CrashReporter.hpp"
 #include "inexor/util/Logging.hpp"
 
-/// extern functions and data here
 
 namespace inexor {
 namespace rendering {
@@ -15,8 +12,6 @@ namespace screen {
 
     extern SharedVar<int> fullscreen, vsync, vsynctear;
     extern void cleargamma();
-
-    /// screen resolution management
     int screenw = 0, screenh = 0, desktopw = 0, desktoph = 0;
 
 }
@@ -31,20 +26,14 @@ using namespace inexor::sound;
 
 extern void writeinitcfg();
 
-/// local player
 dynent *player = NULL;
-
-/// Simple DirectMedia Window and Layer
 SDL_Window *sdl_window = NULL;
 SDL_GLContext glcontext = NULL;
 
-/// microtiming management integers
 int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1;
 int initing = NOT_INITING;
 
 inexor::util::Metasystem metapp;
-
-/// exiting the game
 
 void cleanupSDL()
 {
@@ -58,7 +47,6 @@ void cleanupSDL()
     }
 }
 
-/// cleans up game memory and SDL at exit
 void cleanup()
 {
     extern void clear_command();
@@ -80,9 +68,6 @@ void cleanup()
     SDL_Quit();
 }
 
-/// normal game quit
-/// @see fatal
-/// @see cleanup
 void quit()
 {
     // CefShutdown();
@@ -98,7 +83,6 @@ void quit()
 }
 COMMAND(quit, "");
 
-/// Fatal crash: log/display crash message and clean up SDL.
 void fatal(const char *s, ...)
 {
     cleanupSDL();
@@ -118,7 +102,6 @@ void fatal(const char *s, ...)
     exit(EXIT_FAILURE);
 }
 
-/// Fatal crash: log/display crash message and clean up SDL.
 void fatal(std::vector<std::string> &output)
 {
     cleanupSDL();
@@ -135,8 +118,6 @@ void fatal(std::vector<std::string> &output)
     exit(EXIT_FAILURE);
 }
 
-/// print initialisation (bug hints) warning in game console
-/// @see addchange
 bool initwarning(const char *desc, int level, int type)
 {
     if(initing < level) 
@@ -147,12 +128,6 @@ bool initwarning(const char *desc, int level, int type)
     return false;
 }
 
-
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/// screen setup and window settings
-
-
-/// hardcoded macros for minimal/maximal screen settings
 #define SCR_MINW 320
 #define SCR_MINH 200
 #define SCR_MAXW 10000
@@ -160,33 +135,26 @@ bool initwarning(const char *desc, int level, int type)
 #define SCR_DEFAULTW 1024
 #define SCR_DEFAULTH 768
 
-/// function forward to change screen resolution
 namespace inexor {
 namespace rendering {
 namespace screen {
 
-void screenres(int w, int h);
+    void screenres(int w, int h);
 
     ICOMMAND(screenres, "ii", (int *w, int *h), screenres(*w, *h));
 
-    /// change screen width and height
     VARF(scr_w, SCR_MINW, -1, SCR_MAXW, screenres(scr_w, -1));
     VARF(scr_h, SCR_MINH, -1, SCR_MAXH, screenres(-1, scr_h));
 
-    /// various buffer precisions and anti aliasing
-    /// @see initwarning
     VAR(colorbits, 0, 0, 32);
     VARF(depthbits, 0, 0, 32, initwarning("depth-buffer precision"));
     VARF(stencilbits, 0, 0, 32, initwarning("stencil-buffer precision"));
 
-    /// "use this function to set the swap interval for the current OpenGL context" (VSYNC)
     void restorevsync()
     {
-        /// https://wiki.libsdl.org/SDL_GL_SetSwapInterval
         if(glcontext) SDL_GL_SetSwapInterval(vsync ? (vsynctear ? -1 : 1) : 0);
     }
 
-    /// VSYNC settings
     VARFP(vsync, 0, 0, 1, restorevsync());
     VARFP(vsynctear, 0, 0, 1, { if(vsync) restorevsync(); });
 
@@ -196,8 +164,6 @@ void screenres(int w, int h);
 
 VARF(fsaa, -1, -1, 16, initwarning("anti-aliasing"));
 
-/// write most important settings to init.cfg using an UTF-8 stream
-/// @see openutf8file
 void writeinitcfg()
 {
     stream *f = openutf8file("init.cfg", "w");
@@ -220,10 +186,6 @@ void writeinitcfg()
     delete f;
 }
 
-
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/// main menu background and loading screen renderer
-
 static Texture *logo_texture = NULL;
 static Texture *background_texture = NULL;
 SVARFP(background, "interface/background.png", background_texture = NULL;);
@@ -239,9 +201,6 @@ string backgroundmapname = "";
 char *backgroundmapinfo = NULL;
 Texture *backgroundmapshot = NULL;
 
-/// create a resolution suggestion by scaling down the larger side of the 2 screen dimensions.
-/// @warning this is a call by reference function!
-/// @warning this function uses old style C-casting
 static void getbackgroundres(int &w, int &h)
 {
     float wk = 1, hk = 1;
@@ -252,19 +211,12 @@ static void getbackgroundres(int &w, int &h)
     h = int(ceil(h*hk));
 }
 
-/// this function is called to render the main menu background once
-/// so the loading progress can be rendered over it continuously
-/// @see renderbackground
 void restorebackground()
 {
     if(renderedframe) return;
     renderbackground(backgroundcaption[0] ? backgroundcaption : NULL, backgroundmapshot, backgroundmapname[0] ? backgroundmapname : NULL, backgroundmapinfo, true);
 }
 
-
-
-/// Render a textured quad of the given dimensions.
-/// Difference to screenquad is the ability to change the start position (with x and y -> lower left corner of the quad)
 void bgquad(float x, float y, float w, float h)
 {
     gle::begin(GL_TRIANGLE_STRIP);
@@ -275,7 +227,6 @@ void bgquad(float x, float y, float w, float h)
     gle::end();
 }
 
-/// render map loading progress screen (and background) including map name and game mode info
 void renderbackground(const char *caption, Texture *mapshot, const char *mapname, const char *mapinfo, bool restore, bool force)
 {
     if(!inbetweenframes && !force) return;
@@ -428,8 +379,6 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
     }
 }
 
-
-/// render progress bar and map screenshot
 void renderprogress(float bar, const char *text, GLuint tex, bool background)
 {
     if(!inbetweenframes || drawtex) return;
@@ -460,7 +409,6 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
           fx = renderedframe ? w - fw - fh/4 : 0.5f*(w - fw), 
           fy = renderedframe ? fh/4 : h - fh*1.5f;
 
-    // Render the loading bar
     if(!loadingframe_texture)
     {
         std::string filename;
@@ -507,9 +455,6 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
         gle::end();
     }
 
-    // render the info stuff
-
-    // map/mode description
     if(text)
     {
         int tw = text_width(text);
@@ -525,7 +470,7 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
 
     glDisable(GL_BLEND);
 
-    if(tex) //render the map shot/lightmap
+    if(tex)
     {
         glBindTexture(GL_TEXTURE_2D, tex);
         float sz = 0.35f*min(w, h), x = 0.5f*(w-sz), y = 0.5f*min(w, h) - sz/15;
@@ -549,31 +494,19 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
     swapbuffers(false);
 }
 
-
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/// mouse and keyboard management (input)
-
-
-/// controlling input devices using Simple DirectMedia Layer
 bool shouldgrab = false, grabinput = false, minimized = false, canrelativemouse = true, relativemouse = false;
 
-/// try to initialise mouse with relative coordinates instead of absolute coordinates
 VARNP(relativemouse, userelativemouse, 0, 1, 1);
 
-/// key repetition is stored in bit masks
 int keyrepeatmask = 0;
-/// check if key was pressed repeatedly using bit masking technique
 void keyrepeat(bool on, int mask)
 {
     if(on) keyrepeatmask |= mask;
     else keyrepeatmask &= ~mask;
 }
 
-/// text input state is also stored in bit masks
 int textinputmask = 0;
-/// start and stop accepting Unicode text input events
-/// @see SDL_StartTextInput
-/// @see SDL_StopTextInput
+
 void textinput(bool on, int mask)
 {
     if(on) 
@@ -588,7 +521,6 @@ void textinput(bool on, int mask)
     }
 }
 
-/// sets input grab mode for mouse and keyboard
 void inputgrab(bool on)
 {
     if(on)
@@ -611,7 +543,7 @@ void inputgrab(bool on)
     }
     else
     {
-        SDL_ShowCursor(SDL_TRUE); // show OS cursor
+        SDL_ShowCursor(SDL_TRUE);
         if(relativemouse)
         {
             SDL_SetWindowGrab(sdl_window, SDL_FALSE);
@@ -628,7 +560,6 @@ namespace inexor {
 namespace rendering {
 namespace screen {
 
-    /// switch fullscreen mode
     void setfullscreen(bool enable)
     {
         if(!sdl_window) return;
@@ -645,15 +576,12 @@ namespace screen {
         }
     }
 
-    /// @warning do not go full screen in debug mode (doesn't work with MSVC)
     #ifdef _DEBUG
        VARF(fullscreen, 0, 0, 1, setfullscreen(fullscreen!=0));
     #else
        VARF(fullscreen, 0, 1, 1, setfullscreen(fullscreen!=0));
     #endif
 
-    /// implementation of screen resolution changer
-    /// @warning forward must be declared above in the code because of the dependencies
     void screenres(int w, int h)
     {
         scr_w = w!=-1 ? clamp(w, SCR_MINW, SCR_MAXW) : scr_w;
@@ -671,7 +599,6 @@ namespace screen {
         }
     }
 
-    /// screen gamma as float value
     static int curgamma = 100;
     VARFP(gamma, 30, 100, 300,
     {
@@ -681,25 +608,19 @@ namespace screen {
             spdlog::get("global")->error() << "Could not set gamma: " << SDL_GetError();
     });
 
-    /// set screen brightness using float value
-    /// @see curgamma
     void restoregamma()
     {
         if(curgamma == 100) return;
         SDL_SetWindowBrightness(sdl_window, curgamma/100.0f);
     }
 
-    /// set screen to normal brightness
     void cleargamma()
     {
         if(curgamma != 100 && sdl_window) {
-            /// "Use this function to set the brightness (gamma multiplier) for the display that owns a given window."
             SDL_SetWindowBrightness(sdl_window, 1.0f);
         }
     }
 
-    /// setting up screen using various attempts with different options
-    /// @see SDL_GL_SetAttribute
     void setupscreen(int &useddepthbits, int &usedfsaa)
     {
         if(glcontext)
@@ -795,8 +716,6 @@ namespace screen {
 }
 }
 
-/// reset OpenGL manually (/resetgl command)
-/// this function is not called in the entire code
 void resetgl()
 {
     clearchanges(CHANGE_GFX);
@@ -864,19 +783,13 @@ void resetgl()
 }
 COMMAND(resetgl, "");
 
-
-/// global vector for input events
-/// please note: this is no a C++ standard library vector
 vector<SDL_Event> events;
 
-/// add a new event to event vector
 void pushevent(const SDL_Event &e)
 {
     events.add(e); 
 }
 
-/// filter mouse motion events depending on operating system
-/// @warning this is very technical OS-depending code
 static bool filterevent(const SDL_Event &event)
 {
     switch(event.type)
@@ -896,9 +809,6 @@ static bool filterevent(const SDL_Event &event)
     return true;
 }
 
-/// poll and filter all events in the SDL (input) event queue
-/// @see SDL_PollEvent
-/// @see filterevent
 static inline bool pollevent(SDL_Event &event)
 {
     while(SDL_PollEvent(&event))
@@ -908,8 +818,6 @@ static inline bool pollevent(SDL_Event &event)
     return false;
 }
 
-/// "abort" key to interrupt updating the masterlist, 
-/// connecting to a server or computing lightmaps
 bool interceptkey(int sym)
 {
     static int lastintercept = SDLK_UNKNOWN;
@@ -935,16 +843,13 @@ bool interceptkey(int sym)
     return false;
 }
 
-/// @see SDL_PeepEvents
 static void ignoremousemotion()
 {
     SDL_Event e;
-    SDL_PumpEvents(); /// pumps the event loop, gathering events from the input devices. 
-    while(SDL_PeepEvents(&e, 1, SDL_GETEVENT, SDL_MOUSEMOTION, SDL_MOUSEMOTION)); /// check the event queue for messages and optionally return them
+    SDL_PumpEvents();
+    while(SDL_PeepEvents(&e, 1, SDL_GETEVENT, SDL_MOUSEMOTION, SDL_MOUSEMOTION));
 }
 
-/// move mouse to screen center
-/// @see SDL_WarpMouseInWindow
 static void resetmousemotion()
 {
     if(grabinput && !relativemouse && !(SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_FULLSCREEN))
@@ -953,8 +858,6 @@ static void resetmousemotion()
     }
 }
 
-/// handle mouse motion coordinates
-/// @warning this is a call by reference function!
 static void checkmousemotion(int &dx, int &dy)
 {
     loopv(events)
@@ -982,7 +885,6 @@ static void checkmousemotion(int &dx, int &dy)
     }
 }
 
-// SDL input process handler also takes care of program exit
 void checkinput()
 {
     SDL_Event event;
@@ -1094,9 +996,6 @@ void checkinput()
     if(mousemoved) resetmousemotion();
 }
 
-/// swapping buffers allows to render to a new buffer
-/// while the other is being presented to the screen
-/// @see SDL_GL_SwapWindow
 void swapbuffers(bool overlay)
 {
     recorder::capture(overlay);
@@ -1104,9 +1003,6 @@ void swapbuffers(bool overlay)
     SDL_GL_SwapWindow(sdl_window);
 }
 
-/// frames per seconds and timing
-
-/// store the last MAXFPSHISTORY fps rates 
 #define MAXFPSHISTORY 60
 int fpspos = 0, fpshistory[MAXFPSHISTORY];
 bool inbetweenframes = false, renderedframe = true;
@@ -1114,7 +1010,6 @@ bool inbetweenframes = false, renderedframe = true;
 VAR(menufps, 0, 60, 1000);
 VARP(maxfps, 0, 200, 1000);
 
-/// limit frames per seconds to use resources intelligently
 void limitfps(int &millis, int curmillis)
 {
     int limit = (mainmenu || minimized) && menufps ? (maxfps ? min(maxfps, menufps) : menufps) : maxfps;
@@ -1138,21 +1033,18 @@ void limitfps(int &millis, int curmillis)
     }
 }
 
-/// clear fps history array
 void resetfpshistory()
 {
     loopi(MAXFPSHISTORY) fpshistory[i] = 1;
     fpspos = 0;
 }
 
-/// add current frames per seconds score to fps history array
 void updatefpshistory(int millis)
 {
     fpshistory[fpspos++] = max(1, min(1000, millis));
     if(fpspos>=MAXFPSHISTORY) fpspos = 0;
 }
 
-/// get average fps, best fps and worst fps (see command fpsrange)
 void getfps(int &fps, int &bestdiff, int &worstdiff)
 {
     int total = fpshistory[MAXFPSHISTORY-1], best = total, worst = total;
@@ -1169,9 +1061,6 @@ void getfps(int &fps, int &bestdiff, int &worstdiff)
     worstdiff = fps-1000/worst;
 }
 
-
-/// cubescript: get fps as float
-/// @see floatret
 void getfps_(int *raw)
 {
     if(*raw) floatret(1000.0f/fpshistory[(fpspos+MAXFPSHISTORY-1)%MAXFPSHISTORY]);
@@ -1184,8 +1073,6 @@ void getfps_(int *raw)
 }
 COMMANDN(getfps, getfps_, "i");
 
-
-/// clock management
 static int clockrealbase = 0, clockvirtbase = 0;
 static void clockreset() 
 { 
@@ -1196,7 +1083,6 @@ static void clockreset()
 VARFP(clockerror, 990000, 1000000, 1010000, clockreset());
 VARFP(clockfix, 0, 0, 1, clockreset());
 
-/// get milliseconds since program start
 int getclockmillis()
 {
     int millis = SDL_GetTicks() - clockrealbase;
@@ -1206,7 +1092,6 @@ int getclockmillis()
 }
 VAR(numcpus, 1, 1, 16);
 
-/// find command line argument
 static bool findarg(int argc, char **argv, const char *str)
 {
     for(int i = 1; i<argc; i++) if(strstr(argv[i], str)==argv[i]) return true;

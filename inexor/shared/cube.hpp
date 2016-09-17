@@ -6,8 +6,6 @@
 #define _FILE_OFFSET_BITS 64
 
 #include <math.h>
-
-// essentiall C standard libraries
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,8 +25,6 @@
 
 #endif
 
-
-/// SDL (Simple DirectMedia Layer) - General Rendering/sound/events/threads
 #ifndef STANDALONE
   #include <SDL.h>
   #include <SDL_opengl.h>
@@ -50,7 +46,6 @@
 #include "inexor/engine/glemu.hpp"
 #endif
 
-/// header files for communication between the game and Cube engine
 #include "inexor/shared/iengine.hpp"
 #include "inexor/shared/igame.hpp"
 
