@@ -30,7 +30,7 @@ before_build:
   - cmd: cd C:\projects\inexor-game
   - cmd: md build
   - cmd: cd build
-  # We generate project files for Visual Studio 13 only atm.
+  # We generate project files for Visual Studio 14 2015 only atm.
   - cmd: if "%platform%"=="Win32" ( set "CMAKE_GENERATOR_NAME=Visual Studio 14 2015" && set "config_cmake_targets=-DBUILD_GLUEGEN=0 -DBUILD_MASTER=1 -DBUILD_SERVER=1 -DBUILD_CLIENT=1" )
   - cmd: if "%platform%"=="x64" ( set "CMAKE_GENERATOR_NAME=Visual Studio 14 2015 Win64" && set "config_cmake_targets=-DBUILD_ALL=1" )
   - cmd: cmake -G "%CMAKE_GENERATOR_NAME%" -DCMAKE_BUILD_TYPE=%configuration% %config_cmake_targets% ..

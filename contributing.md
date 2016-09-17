@@ -4,7 +4,7 @@ Firstly thank you for your interest in contributing to this project.
 Please read the instructions below for informations on how to contribute.
 
 ## General questions
-If you have some general question on the usage or configuration of the game please [contact us](https://github.com/inexor-game/code/wiki/Developing-Communication#contact) or look it up [in the wiki](https://github.com/inexor-game/code/wiki).
+If you have some general question on the usage or configuration of the game please [contact us](https://github.com/inexor-game/code/wiki/Contact) or look it up [in the wiki](https://github.com/inexor-game/code/wiki).
 
 ## Code of Conduct and policies
 With your contribution you agree with our [Code of Conduct](https://github.com/inexor-game/code/wiki/Code-of-Conduct). 
