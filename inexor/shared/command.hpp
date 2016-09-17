@@ -1,13 +1,8 @@
-/// @file Cubescript API
-/// Deprecated.
-
 #ifndef SAUER_COMMAND_H
 #define SAUER_COMMAND_H
 
 #include "inexor/rpc/SharedTree.hpp"
 
-/// contains all kind of different script objects
-/// such as commands, variables, macros or idents
 enum 
 {
 	VAL_NULL = 0,
@@ -54,8 +49,6 @@ enum
     RET_FLOAT  = VAL_FLOAT<<CODE_RET,
 };
 
-/// contains all kind of IDs for command engine
-/// such as variables (float,int,string) or commands
 enum
 { 
 	ID_VAR,
