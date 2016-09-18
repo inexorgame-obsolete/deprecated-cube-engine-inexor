@@ -33,7 +33,8 @@ static uint64_t gettime()
     struct timespec tp;
     uint64_t uuid_time = 0;
 
-    rc = clock_gettime(CLOCK_REALTIME, &tp);
+    //rc = clock_gettime(CLOCK_REALTIME, &tp);
+    rc = timespec_get(&tp, TIME_UTC);
 
     // Convert to 100-nanosecond intervals
     uuid_time = tp.tv_sec * 10000000;
@@ -53,13 +54,6 @@ static uint64_t gettime()
 // Free functions for generating UUIDs.
 //
 
-Uuid uuid1()
-{
-}
-
-Uuid uuid1(uint64_t node)
-{
-}
 
 Uuid uuid1(uint64_t node, uint16_t clock_seq)
 {

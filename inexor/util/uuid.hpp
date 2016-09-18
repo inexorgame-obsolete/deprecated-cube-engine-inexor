@@ -58,8 +58,6 @@ class Uuid
 // clock_seq is given, it is used as the sequence number; otherwise a random
 // 14-bit sequence number is chosen.
 
-Uuid uuid1();
-Uuid uuid1(uint64_t node);
 Uuid uuid1(uint64_t node, uint16_t clock_seq);
 
 } // namespace uuid
