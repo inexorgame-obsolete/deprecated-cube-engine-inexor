@@ -6,10 +6,6 @@
 #include "inexor/ui/context/InexorContextProvider.hpp"
 #include "inexor/ui/layer/InexorLayerProvider.hpp"
 
-extern int uimenuvisible;
-extern char* uimenustate;
-extern char* uimenuparentstate;
-
 namespace inexor {
 namespace ui {
 namespace layer {
@@ -25,11 +21,7 @@ class InexorHudLayer : public inexor::ui::context::InexorContextProvider,
         InexorHudLayer(std::string &name, std::string &url)
             : AbstractInexorLayerProvider(name, url),
 			  _name(name),
-			  _url(url),
-			  is_menu_visible(true),
-			  menu_state("/menu/main"),
-			  menu_parent_state(""),
-			  main_menu(true) {};
+			  _url(url) {};
 
         // InexorCefContextProvider
         void InitializeContext();
@@ -48,35 +40,22 @@ class InexorHudLayer : public inexor::ui::context::InexorContextProvider,
         void SetAcceptingKeyInput(bool _is_accepting_key_input);
         void SetAcceptingMouseInput(bool _is_accepting_mouse_input);
 
-        // User interface state handling
-        bool GetMenuVisibility() { return is_menu_visible; };
-        std::string GetMenuState() { return menu_state; };
-        std::string GetMenuParentState() { return menu_parent_state; };
-        bool GetMainMenu() { return main_menu; };
-        void SetMenuVisibility(bool _is_menu_visible);
-        void SetMenuState(std::string _menu_state);
-        void SetMenuParentState(std::string _menu_parent_state);
-        void SetMainMenu(bool _main_menu);
+        void Show() {
+            SetVisibility(true);
+            // Don't accept input on the HUD layer
+            SetAcceptingKeyInput(false);
+            SetAcceptingMouseInput(false);
+        };
 
-        // Event handling
-        void FireUiEvent(std::string name, bool value);
-        void FireUiEvent(std::string name, std::string value);
-
-        /// Updates the menu states
-        void SetMenuStates(std::string _menu_state, std::string _menu_parent_state, bool _is_menu_visible) {
-            SetMenuState(_menu_state);
-            SetMenuParentState(_menu_parent_state);
-            SetMenuVisibility(_is_menu_visible);
+        void Hide() {
+            SetVisibility(false);
+            SetAcceptingKeyInput(false);
+            SetAcceptingMouseInput(false);
         };
 
     private:
         std::string _name;
         std::string _url;
-
-        bool is_menu_visible;
-        std::string menu_state;
-        std::string menu_parent_state;
-        bool main_menu;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(InexorHudLayer);
