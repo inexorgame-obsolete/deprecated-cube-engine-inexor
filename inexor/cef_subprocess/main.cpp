@@ -7,7 +7,7 @@ int main(int argc, char **argv) {
     setlocale(LC_ALL, "en_US.utf8");
     std::cerr << "init: cef: cef_subprocess\n";
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 
 #ifdef WIN32
     CefMainArgs main_args(GetModuleHandle(NULL));
