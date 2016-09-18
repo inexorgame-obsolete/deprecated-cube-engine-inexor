@@ -1,4 +1,5 @@
 #include "inexor/engine/engine.hpp"
+#include "inexor/entity/subsystem/HandleSubsystem.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/flowgraph/flowgraph.hpp"
 #include "inexor/texture/slot.hpp"
@@ -16,6 +17,8 @@ namespace vscript {
 extern SharedVar<int> outline;
 
 bool boxoutline = false;
+
+extern CefRefPtr<inexor::entity::HandleSubsystem> handle_subsystem;
 
 /// renders a rectangular box to the target location with faked thick lines
 void boxs(int orient, vec o, const vec &s, float size) 

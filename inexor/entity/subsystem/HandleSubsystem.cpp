@@ -99,7 +99,7 @@ namespace entity {
 
     void HandleSubsystem::Drag(vec camdir)
     {
-        logoutf("drag");
+        spdlog::get("global")->debug() << "drag";
     }
 
     void HandleSubsystem::Update(TimeStep time_step)

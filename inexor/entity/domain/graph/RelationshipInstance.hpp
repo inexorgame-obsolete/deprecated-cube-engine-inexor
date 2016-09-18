@@ -13,6 +13,7 @@
 #include "EntityInstance.hpp"
 #include "EntityAttribute.hpp"
 #include "RelationshipType.hpp"
+#include "inexor/util/Logging.hpp"
 
 namespace inexor {
 namespace entity {

@@ -26,6 +26,7 @@
 #include "renderer/Cube.hpp"
 #include "renderer/Model.hpp"
 #include "renderer/Origin.hpp"
+#include "inexor/util/Logging.hpp"
 
 namespace inexor {
 namespace entity {

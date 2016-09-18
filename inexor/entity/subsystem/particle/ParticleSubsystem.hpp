@@ -19,6 +19,7 @@
 #include "../../factory/ParticleInitializerTypeFactory.hpp"
 #include "../../factory/ParticleModifierTypeFactory.hpp"
 #include "../../factory/ParticleRendererTypeFactory.hpp"
+#include "inexor/util/Logging.hpp"
 
 using namespace inexor::entity;
 

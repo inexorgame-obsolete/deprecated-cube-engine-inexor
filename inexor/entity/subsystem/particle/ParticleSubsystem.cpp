@@ -86,7 +86,7 @@ namespace particle {
         apply_modifier = relationship_type_manager->Create(REL_APPLY_MODIFIER, true, true, parent_emitter_type, parent_modifier_type);
         apply_renderer = relationship_type_manager->Create(REL_APPLY_RENDERER, true, true, parent_emitter_type, parent_renderer_type);
 
-        logoutf("Particle subsystem graph model initialized");
+        spdlog::get("global")->debug() << "Particle subsystem graph model initialized";
     }
 
     void ParticleSubsystem::Cleanup()

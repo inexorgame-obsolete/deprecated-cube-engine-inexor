@@ -1,10 +1,11 @@
 // rendergl.cpp: core opengl rendering stuff
 
 #include "inexor/engine/engine.hpp"
+#include "inexor/entity/subsystem/particle/ParticleSubsystem.hpp"
+#include "inexor/entity/subsystem/HandleSubsystem.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/flowgraph/flowgraph.hpp"
 #include "inexor/texture/cubemap.hpp"
-
 #include "inexor/util/Logging.hpp"
 
 using namespace inexor::rendering::screen;
@@ -20,6 +21,10 @@ VARP(vs_debugging, 0, 1, 1);
 
 bool hasVAO = false, hasFBO = false, hasAFBO = false, hasDS = false, hasTF = false, hasTRG = false, hasTSW = false, hasS3TC = false, hasFXT1 = false, hasAF = false, hasFBB = false, hasUBO = false, hasMBR = false;
 int hasstencil = 0;
+
+
+extern CefRefPtr<inexor::entity::particle::ParticleSubsystem> particle_subsystem;
+extern CefRefPtr<inexor::entity::HandleSubsystem> handle_subsystem;
 
 VAR(glversion, 1, 0, 0);
 VAR(glslversion, 1, 0, 0);
@@ -166,6 +171,10 @@ PFNGLGENERATEMIPMAPPROC          glGenerateMipmap_          = NULL;
 
 // GL_EXT_framebuffer_blit
 PFNGLBLITFRAMEBUFFERPROC         glBlitFramebuffer_         = NULL;
+
+// GL_ARB_point_parameters
+PFNGLPOINTPARAMETERFARBPROC      glPointParameterfARB_      = NULL;
+PFNGLPOINTPARAMETERFVARBPROC     glPointParameterfvARB_     = NULL;
 
 // GL_ARB_uniform_buffer_object
 PFNGLGETUNIFORMINDICESPROC       glGetUniformIndices_       = NULL;
@@ -447,6 +456,13 @@ void gl_checkextensions()
         }
     }
     else fatal("Framebuffer object support is required!");
+
+    if(hasext(exts, "GL_ARB_point_parameters"))
+    {
+        glPointParameterfARB_      = (PFNGLPOINTPARAMETERFARBPROC)     getprocaddress("glPointParameterfARB");
+        glPointParameterfvARB_     = (PFNGLPOINTPARAMETERFVARBPROC)    getprocaddress("glPointParameterfvARB");
+    }
+    else fatal("No point sprite support.");
 
     extern SharedVar<int> fpdepthfx;
     if(ati)
@@ -1365,6 +1381,9 @@ void drawglare()
     renderwater();
     rendermaterials();
     renderalphageom();
+    handle_subsystem->RenderHandles();
+    particle_subsystem->RenderFaces();
+    particle_subsystem->RenderParticles();
     renderparticles();
 
     popfogcolor();
@@ -1485,6 +1504,9 @@ void drawreflection(float z, bool refract, int fogdepth, const bvec &col)
     if(refracting) rendergrass();
     rendermaterials();
     renderalphageom(fogging);
+    handle_subsystem->RenderHandles();
+    particle_subsystem->RenderFaces();
+    particle_subsystem->RenderParticles();
     renderparticles();
 
     if(fading) glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
@@ -1950,6 +1972,13 @@ void gl_drawframe()
 
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+    // TODO: render particles either here ...
+    handle_subsystem->RenderHandles();
+    particle_subsystem->RenderFaces();
+    particle_subsystem->RenderParticles();
+
+    if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
     renderwater();
     rendergrass();
 
@@ -1957,6 +1986,10 @@ void gl_drawframe()
     renderalphageom();
 
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    // TODO: ... or here
+    // particle_subsystem->RenderFaces();
+    // particle_subsystem->RenderParticles();
 
     renderparticles(true);
 

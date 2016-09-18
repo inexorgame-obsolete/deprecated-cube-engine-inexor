@@ -154,7 +154,7 @@ namespace entity {
         RelationshipInstanceManager *w = (RelationshipInstanceManager *) data;
         try
         {
-            logoutf("RelationshipInstanceManager::Worker thread started");
+            spdlog::get("global")->debug() << "RelationshipInstanceManager::Worker thread started";
             w->running = true;
             w->stopped = false;
             while (w->running)
@@ -167,9 +167,9 @@ namespace entity {
             }
         } catch (int e)
         {
-            logoutf("RelationshipInstanceManager::Worker died! e: %d", e);
+            spdlog::get("global")->debug() << "RelationshipInstanceManager::Worker died! e: " << e;
         }
-        logoutf("RelationshipInstanceManager::Worker thread stopped");
+        spdlog::get("global")->debug() << "RelationshipInstanceManager::Worker thread stopped";
         return 0;
     }
 
@@ -202,7 +202,7 @@ namespace entity {
     {
         if (stopped)
         {
-            logoutf("Starting default worker thread RelationshipInstanceManager");
+            spdlog::get("global")->debug() << "Starting default worker thread RelationshipInstanceManager";
             thread = SDL_CreateThread(Work, "RelationshipInstanceManager", this);
         }
     }
@@ -213,7 +213,7 @@ namespace entity {
         {
             running = false;
     // SDL_KillThread(thread);
-            logoutf("Stopping worker thread RelationshipInstanceManager");
+            spdlog::get("global")->debug() << "Stopping worker thread RelationshipInstanceManager";
             int retValue;
             SDL_WaitThread(thread, &retValue);
         }

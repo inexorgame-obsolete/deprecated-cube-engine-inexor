@@ -33,7 +33,7 @@ namespace particle {
     {
         if (stopped)
         {
-            logoutf("Starting modifier worker thread %s", name.c_str());
+            spdlog::get("global")->debug() << "Starting modifier worker thread " << name.c_str();
             thread = SDL_CreateThread(Work, name.c_str(), this);
         }
     }
@@ -45,7 +45,7 @@ namespace particle {
         {
             w->running = true;
             w->stopped = false;
-            logoutf("Worker thread started");
+            spdlog::get("global")->debug() << "Worker thread started";
             while (w->running)
             {
                 w->frame_millis = SDL_GetTicks();
@@ -75,7 +75,7 @@ namespace particle {
                         }
                         w->function->After(time_step, w->modifier_instance.get());
                     } catch (int e) {
-                        logoutf("exception modifier worker %d", e);
+                        spdlog::get("global")->debug() << "exception modifier worker " << e;
                     }
                     w->frame_last_millis = w->frame_millis;
                     // w->relationship_instance_manager->relationship_instances_mutex.unlock();
@@ -83,10 +83,10 @@ namespace particle {
             }
         } catch (int e)
         {
-            logoutf("Worker died! e: %d", e);
+            spdlog::get("global")->debug() << "Worker died! e: " << e;
         }
         w->stopped = true;
-        logoutf("Worker thread stopped");
+        spdlog::get("global")->debug() << "Worker thread stopped";
         return 0;
     }
 

@@ -14,6 +14,7 @@
 #include "../manager/EntityInstanceManager.hpp"
 #include "../manager/RelationshipTypeManager.hpp"
 #include "../manager/RelationshipInstanceManager.hpp"
+#include "inexor/util/Logging.hpp"
 
 namespace inexor {
 namespace entity {

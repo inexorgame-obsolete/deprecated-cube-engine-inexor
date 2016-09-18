@@ -1,6 +1,9 @@
 /// game initialisation & main loop
 ///
 #include "inexor/engine/engine.hpp"
+#include "inexor/entity/EntitySystem.hpp"
+#include "inexor/entity/EntityTest.hpp"
+#include "inexor/entity/subsystem/particle/ParticleTest.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/ui.hpp"
 #include "inexor/util/Subsystem.hpp"
@@ -28,6 +31,12 @@ namespace sound {
 
 using namespace inexor::rendering::screen;
 using namespace inexor::sound;
+
+CefRefPtr<inexor::entity::EntitySystem> entity_system;
+CefRefPtr<inexor::entity::EntityTest> entity_test;
+CefRefPtr<inexor::entity::particle::ParticleSubsystem> particle_subsystem;
+CefRefPtr<inexor::entity::particle::ParticleTest> particle_test;
+CefRefPtr<inexor::entity::HandleSubsystem> handle_subsystem;
 
 extern void writeinitcfg();
 
@@ -65,6 +74,7 @@ void cleanup()
     extern void clear_console();
     extern void clear_mdls();
 
+    entity_system->Cleanup();
     recorder::stop();
     cleanupserver();
 
@@ -1387,6 +1397,25 @@ int main(int argc, char **argv)
     inbetweenframes = true;
     renderbackground("initializing...");
 
+    spdlog::get("global")->debug() << "init: entity system";
+    entity_system = new EntitySystem();
+
+    spdlog::get("global")->debug() << "init: particle subsystem";
+    particle_subsystem = entity_system->GetSubsystem<inexor::entity::particle::ParticleSubsystem>();
+
+    spdlog::get("global")->debug() << "init: handle subsystem";
+    handle_subsystem = entity_system->GetSubsystem<inexor::entity::HandleSubsystem>();
+
+    spdlog::get("global")->debug() << "init: entity system tests";
+    entity_test = new inexor::entity::EntityTest();
+    entity_test->PrintStats();
+
+    spdlog::get("global")->info() << "init: particle subsystem tests";
+    particle_test = new inexor::entity::particle::ParticleTest();
+    entity_test->PrintStats();
+    particle_test->RunTests();
+    entity_test->PrintStats();
+
     spdlog::get("global")->debug() << "init: effects";
     loadshaders();
     particleinit();
@@ -1490,6 +1519,7 @@ int main(int argc, char **argv)
         // miscellaneous general game effects
         recomputecamera();
         updateparticles();
+        entity_system->Update();
         updatesounds();
 
         if(minimized) continue;

@@ -14,6 +14,7 @@
 #include "../../../domain/InstanceRefPtr.hpp"
 #include "../../../domain/FunctionRefPtr.hpp"
 #include "../../../domain/graph/EntityInstance.hpp"
+#include "inexor/util/Logging.hpp"
 
 namespace inexor {
 namespace entity {

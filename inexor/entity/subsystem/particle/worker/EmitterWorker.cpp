@@ -37,7 +37,7 @@ namespace particle {
     {
         if (stopped)
         {
-            logoutf("Starting emitter worker thread %s", name.c_str());
+            spdlog::get("global")->debug() << "Starting emitter worker thread " << name.c_str();
             thread = SDL_CreateThread(Work, name.c_str(), this);
         }
     }
@@ -48,7 +48,7 @@ namespace particle {
         {
             running = false;
     // SDL_KillThread(thread);
-            logoutf("Stopping worker thread %s", name.c_str());
+            spdlog::get("global")->debug() << "Stopping worker thread " << name.c_str();
             int retValue;
             SDL_WaitThread(thread, &retValue);
             particle_pool.clear();
@@ -62,7 +62,7 @@ namespace particle {
         {
             w->running = true;
             w->stopped = false;
-            logoutf("Worker thread started");
+            spdlog::get("global")->debug() << "Worker thread started";
             while (w->running)
             {
                 w->frame_millis = SDL_GetTicks();
@@ -182,17 +182,17 @@ namespace particle {
                             ++it;
                         }
                     } catch (int e) {
-                        logoutf("exception emitter worker %d", e);
+                        spdlog::get("global")->debug() << "exception emitter worker " << e;
                     }
                     w->frame_last_millis = w->frame_millis;
                 }
             }
         } catch (int e)
         {
-            logoutf("Worker died! e: %d", e);
+            spdlog::get("global")->debug() << "Worker died! e: " << e;
         }
         w->stopped = true;
-        logoutf("Worker thread stopped");
+        spdlog::get("global")->debug() << "Worker thread stopped";
         return 0;
     }
 

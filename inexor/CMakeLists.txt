@@ -22,6 +22,7 @@ add_subdirectory(ui)
 add_subdirectory(crashreporter)
 add_subdirectory(texture)
 add_subdirectory(math)
+add_subdirectory(muparser)
 add_subdirectory(entity)
 add_subdirectory(flowgraph)
 

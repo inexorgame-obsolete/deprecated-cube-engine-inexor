@@ -15,8 +15,8 @@ namespace entity {
           persist(persist),
           synchronize(synchronize)
     {
-        uuid::Uuid u = uuid::uuid1();
-        uuid = u.hex();
+        random_generator gen;
+        uuid = boost::lexical_cast<std::string>(gen());
     }
 
     TypeBase::TypeBase(std::string name, bool persist, bool synchronize, std::string uuid)

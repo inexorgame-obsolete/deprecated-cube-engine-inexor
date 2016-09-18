@@ -16,6 +16,7 @@
 #include "../EntitySystemBase.hpp"
 #include "../domain/graph/RelationshipInstance.hpp"
 #include "../domain/graph/RelationshipType.hpp"
+#include "inexor/util/Logging.hpp"
 
 namespace inexor {
 namespace entity {

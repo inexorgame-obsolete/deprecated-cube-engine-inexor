@@ -11,6 +11,7 @@
 #include "ParticleWorker.hpp"
 #include "../../../manager/EntityInstanceManager.hpp"
 #include "../../../manager/RelationshipInstanceManager.hpp"
+#include "inexor/util/Logging.hpp"
 
 namespace inexor {
 namespace entity {

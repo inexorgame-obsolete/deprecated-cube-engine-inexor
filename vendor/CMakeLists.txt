@@ -315,15 +315,6 @@ function(require_rapidjson)
   include_directories(${RAPIDJSON_INCLUDE_DIRS})
 endfunction()
 
-#### muparser
-
-find_path(MUPARSER_INCLUDE_DIRS muparser/muParser.h)
-function(require_muparser)
-  message(STATUS "Configuring ${targ} with muparser")
-
-  include_directories(${MUPARSER_INCLUDE_DIRS})
-endfunction()
-
 #### Protobuf
 
 find_libs(PROTOBUF_LIBRARIES protobuf)

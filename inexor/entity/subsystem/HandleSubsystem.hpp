@@ -11,6 +11,7 @@
 #include "../EntitySystemBase.hpp"
 #include "../provider/Handle.hpp"
 #include "SubsystemBase.hpp"
+#include "inexor/util/Logging.hpp"
 
 namespace inexor {
 namespace entity {

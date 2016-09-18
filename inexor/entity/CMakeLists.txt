@@ -13,6 +13,6 @@ function(require_entity targ)
   target_link_libs(${targ} module_entity ${NOLINK})
 
   require_sdl(${targ} ${NOLINK})
-  require_muparser(${targ} ${NOLINK})
+  require_muparser(${CLIENT_BINARY})
 
 endfunction()

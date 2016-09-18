@@ -56,7 +56,7 @@ namespace particle {
             vec vel(v[0] * time_step.time_factor, v[1] * time_step.time_factor, v[2] * time_step.time_factor);
             (*particle)[VELOCITY]->vec3Val.add(vel);
         } catch (mu::Parser::exception_type &e) {
-            logoutf("Error parsing vector field expression %s: %s", e.GetExpr().c_str(), e.GetMsg().c_str());
+            spdlog::get("global")->debug() << "Error parsing vector field expression " << e.GetExpr().c_str() << ": " << e.GetMsg().c_str();
         }
     }
 
