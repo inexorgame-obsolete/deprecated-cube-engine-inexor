@@ -88,7 +88,7 @@ namespace vscript {
         last_time = this_time;
         if(0 == children.size())
         {
-            conoutf(CON_DEBUG, "[3DVS-operator-increment] no child nodes to increment");
+            spdlog::get("global")->debug() << "[3DVS-operator-increment] no child nodes to increment";
         }
 
         // TODO: declare code execution priority strategy!

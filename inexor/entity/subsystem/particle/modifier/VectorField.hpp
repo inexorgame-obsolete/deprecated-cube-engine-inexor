@@ -12,7 +12,7 @@
 #include "../../../domain/graph/EntityFunction.hpp"
 #include "../../../domain/graph/EntityInstance.hpp"
 #include "../ParticleModel.hpp"
-#include "inexor/muparser/include/muParser.h"
+#include "muparser/muParser.h"
 
 namespace inexor {
 namespace entity {

@@ -14,6 +14,7 @@
 #include "inexor/flowgraph/editor/fl_enteditor.hpp"
 #include "inexor/flowgraph/debugger/fl_dbgrays.hpp"
 #include "inexor/flowgraph/events/base/fl_event_base.hpp"
+#include "inexor/util/Logging.hpp"
 
 namespace inexor {
 namespace vscript {
@@ -35,7 +36,7 @@ namespace vscript {
             
             std::vector<CDebugRay> rays;
 
-            geom::CBezierCurve tmp_relation_linker_curve;
+            inexor::math::curves::CBezierCurve tmp_relation_linker_curve;
 
             CScriptNode* add_node(INEXOR_VSCRIPT_NODE_TYPE, int, ...);
             void remove_node(CScriptNode*);
@@ -62,6 +63,8 @@ namespace vscript {
             void sync_all_timers();
             void delete_all_nodes();
     };
+
+    // extern CVisualScriptSystem vScript3D;
 
 };
 };

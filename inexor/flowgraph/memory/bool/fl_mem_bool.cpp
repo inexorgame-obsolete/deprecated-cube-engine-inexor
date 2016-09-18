@@ -6,7 +6,7 @@ namespace vscript {
     CMemBoolNode::CMemBoolNode(const vec position, const bool start_value, const bool constant_memory)
     {
         type = INEXOR_VSCRIPT_NODE_TYPE_MEMORY_BOOL;
-        pos = position;   
+        pos = position;
         block.type = INEXOR_VSCRIPT_DATA_TYPE_BOOLEAN;
         block.data.bool_value = start_value;
         block.constant_value = constant_memory;
@@ -37,7 +37,7 @@ namespace vscript {
         if(block.constant_value)
         {
             triggered_color = INEXOR_VSCRIPT_COLOR_PENDING;
-            conoutf(CON_DEBUG, "[3DVS-bool-setvalue] can't change constant boolean value!");
+            spdlog::get("global")->debug() << "[3DVS-bool-setvalue] can't change constant boolean value!";
         }
         else block.data.bool_value = set_value;
     }

@@ -22,7 +22,7 @@ namespace vscript {
     void CFunctionConoutfNode::in()
     {
         // TODO: format output!
-        conoutf(CON_DEBUG, console_text.c_str());
+        spdlog::get("global")->info() << console_text.c_str();
         last_time = this_time;
     }
 

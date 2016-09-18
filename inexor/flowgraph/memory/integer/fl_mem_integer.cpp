@@ -40,7 +40,7 @@ namespace vscript {
         if(block.constant_value)
         {
             triggered_color = INEXOR_VSCRIPT_COLOR_PENDING;
-            conoutf(CON_DEBUG, "[3DVS-int-increment] can't increment a constant integer value!");
+            spdlog::get("global")->debug() << "[3DVS-int-increment] can't increment a constant integer value!";
         }
         else block.data.int_val ++;
     }
@@ -51,7 +51,7 @@ namespace vscript {
         if(block.constant_value)
         {
             triggered_color = INEXOR_VSCRIPT_COLOR_PENDING;
-            conoutf(CON_DEBUG, "[3DVS-int-decrement] can't decrement a constant integer value!");
+            spdlog::get("global")->debug() << "[3DVS-int-decrement] can't decrement a constant integer value!";
         }
         else block.data.int_val --;
     }
@@ -62,7 +62,7 @@ namespace vscript {
         if(block.constant_value)
         {
             triggered_color = INEXOR_VSCRIPT_COLOR_PENDING;
-            conoutf(CON_DEBUG, "[3DVS-int-setvalue] can't change constant integer value!");
+            spdlog::get("global")->debug() << "[3DVS-int-setvalue] can't change constant integer value!";
         }
         else block.data.int_val = set_value;
     }

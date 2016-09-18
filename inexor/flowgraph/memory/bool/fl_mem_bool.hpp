@@ -6,6 +6,7 @@
 #define INEXOR_VSCRIPT_MEMORY_BOOL_HEADER
 
 #include "inexor/flowgraph/memory/fl_membase.hpp"
+#include "inexor/util/Logging.hpp"
 
 namespace inexor {
 namespace vscript {

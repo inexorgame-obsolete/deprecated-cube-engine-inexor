@@ -1,10 +1,10 @@
 #include <vector>
 
-#include "inexor/engine/engine.hpp"
-#include "inexor/geom/curves/curvebase.hpp"
+#include "inexor/math/curves/curvebase.hpp"
 
 namespace inexor {
-namespace geom {
+namespace math {
+namespace curves {
 
     CCurveBase::CCurveBase()
     {
@@ -97,5 +97,6 @@ namespace geom {
         m_bCacheComputed = false;
     }
 
+};
 };
 };

@@ -8,7 +8,7 @@
 #include "inexor/flowgraph/nodebase/fl_base.hpp"
 #include "inexor/flowgraph/memory/integer/fl_mem_integer.hpp"
 #include "inexor/flowgraph/memory/float/fl_mem_float.hpp"
-
+#include "inexor/util/Logging.hpp"
 
 namespace inexor {
 namespace vscript {

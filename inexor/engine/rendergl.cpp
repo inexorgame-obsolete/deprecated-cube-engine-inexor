@@ -2,11 +2,21 @@
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
+#include "inexor/flowgraph/flowgraph.hpp"
 #include "inexor/texture/cubemap.hpp"
 
 #include "inexor/util/Logging.hpp"
 
 using namespace inexor::rendering::screen;
+using namespace inexor::vscript;
+
+namespace inexor {
+namespace vscript {
+    extern CVisualScriptSystem vScript3D;
+}
+}
+
+VARP(vs_debugging, 0, 1, 1);
 
 bool hasVAO = false, hasFBO = false, hasAFBO = false, hasDS = false, hasTF = false, hasTRG = false, hasTSW = false, hasS3TC = false, hasFXT1 = false, hasAF = false, hasFBB = false, hasUBO = false, hasMBR = false;
 int hasstencil = 0;
@@ -1903,6 +1913,19 @@ void gl_drawframe()
     if(limitsky()) drawskybox(farplane, true);
 
     rendergeom(causticspass);
+
+    inexor::vscript::vScript3D.update_drag_n_drop();
+    inexor::vscript::vScript3D.update_relation_linker();
+    inexor::vscript::vScript3D.run();
+
+    if(editmode || vs_debugging)
+    {
+        inexor::vscript::vScript3D.start_rendering();
+        inexor::vscript::vScript3D.render_nodes();
+        inexor::vscript::vScript3D.render_debug_rays();
+        inexor::vscript::vScript3D.render_node_relations();
+        inexor::vscript::vScript3D.end_rendering();
+    }
 
     extern SharedVar<int> outline;
     if(!wireframe && editmode && outline) renderoutline();

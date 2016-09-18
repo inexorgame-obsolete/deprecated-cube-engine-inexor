@@ -17,7 +17,7 @@ namespace vscript {
 
     void CFunctionPlaysoundNode::in()
     {
-        playsound(sound_id);
+        // inexor::sound::playsound(sound_id);
         last_time = SDL_GetTicks();
         out();
     }

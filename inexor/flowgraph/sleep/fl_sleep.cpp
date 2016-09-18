@@ -12,7 +12,7 @@ namespace vscript {
         default_box_color = INEXOR_VSCRIPT_COLOR_FUNCTION;
         box_color = default_box_color;
         char tmp[64];
-        sprintf_s(tmp, 64, "0/%d ms", sleep_interval);
+        std::snprintf(tmp, 64, "0/%d ms", sleep_interval);
     }
 
     CSleepNode::~CSleepNode()

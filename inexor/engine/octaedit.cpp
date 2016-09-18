@@ -1,9 +1,17 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
+#include "inexor/flowgraph/flowgraph.hpp"
 #include "inexor/texture/slot.hpp"
 #include "inexor/util/Logging.hpp"
 
 using namespace inexor::util;
+using namespace inexor::vscript;
+
+namespace inexor {
+namespace vscript {
+    extern CVisualScriptSystem vScript3D;
+}
+}
 
 extern SharedVar<int> outline;
 
@@ -422,8 +430,10 @@ void rendereditcursor()
     bool hidecursor = g3d_windowhit(true, false) || blendpaintmode, hovering = false;
     hmapsel = false;
 
+    inexor::vscript::vScript3D.selection_blocked_by_geometry = false;
     if(moving)
     {
+        inexor::vscript::vScript3D.selection_blocked_by_geometry = true;
         static vec dest, handle;
         if(editmoveplane(vec(sel.o), camdir, od, sel.o[D[od]]+odc*sel.grid*sel.s[D[od]], handle, dest, moving==1))
         {
@@ -439,9 +449,15 @@ void rendereditcursor()
             sel.o[C[od]] = o[C[od]];
         }
     }
+    else if(nullptr != vScript3D.hovered_node)
+    {
+        entmoving = 2;
+        /// lets not select geometry here
+    }
     else
     if(entmoving)
     {
+        inexor::vscript::vScript3D.selection_blocked_by_geometry = true;
         entdrag(camdir);
     }
     else

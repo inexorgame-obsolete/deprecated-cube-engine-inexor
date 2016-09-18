@@ -1,10 +1,18 @@
 // console.cpp: the console buffer, its display, and command line control
 
-#include "inexor/engine/engine.hpp"
 #include <set>
+
+#include "inexor/engine/engine.hpp"
+#include "inexor/flowgraph/flowgraph.hpp"
 #include "inexor/util/Logging.hpp"
 
 using namespace inexor::util;
+
+namespace inexor {
+namespace vscript {
+    extern CVisualScriptSystem vScript3D;
+}
+}
 
 #define MAXCONLINES 1000
 struct cline { char *line; int type, outtime; };
@@ -584,6 +592,9 @@ void processtextinput(const char *str, int len)
 
 void processkey(int code, bool isdown)
 {
+    /// Notify 3D Visual Scripting System about mouse state changes
+    inexor::vscript::vScript3D.update_mouse(code, isdown);
+
     keym *haskey = keyms.access(code);
     if(haskey && haskey->pressed) execbind(*haskey, isdown); // allow pressed keys to release
     else if(!g3d_key(code, isdown)) // 3D GUI mouse button intercept   

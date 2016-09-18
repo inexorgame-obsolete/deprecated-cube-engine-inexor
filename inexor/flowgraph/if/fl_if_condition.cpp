@@ -39,21 +39,21 @@ namespace vscript {
 
     void CIfNode::condition_true_out()
     {
-        conoutf(CON_DEBUG, "[3DVS-if-condition] boolean statement '%s' turned out to be TRUE.", statement->node_name.c_str());
+        spdlog::get("global")->debug() << "[3DVS-if-condition] boolean statement '%s' turned out to be TRUE.", statement->node_name.c_str();
         if(nullptr != condition_true_node) condition_true_node->in();
         else
         {
-            conoutf(CON_DEBUG, "[3DVS-if-condition] no outgoing node for TRUE conditions found! Script ends.");
+            spdlog::get("global")->debug() << "[3DVS-if-condition] no outgoing node for TRUE conditions found! Script ends.";
         }
     }
 
     void CIfNode::condition_false_out()
     {
-        conoutf(CON_DEBUG, "[3DVS-if-condition] boolean statement '%s' turned out to be FALSE.", statement->node_name.c_str());
+        spdlog::get("global")->debug() << "[3DVS-if-condition] boolean statement '%s' turned out to be FALSE.", statement->node_name.c_str();
         if(nullptr != condition_false_node) condition_false_node->in();
         else
         {
-            conoutf(CON_DEBUG, "[3DVS-if-condition] no outgoing node for FALSE conditions found! Script ends.");
+            spdlog::get("global")->debug() << "[3DVS-if-condition] no outgoing node for FALSE conditions found! Script ends.";
         }
     }
 
@@ -75,11 +75,11 @@ namespace vscript {
                     statement = static_cast<CMemBoolNode*>(parent);
                     // TODO: this requires disconnect_nodes to be implemented!
                     // TODO: remove relation from old node!
-                    conoutf(CON_DEBUG, "[3DVS-if-condition] linked '%s' as boolean statement.", parent->node_name.c_str());
+                    spdlog::get("global")->debug() << "[3DVS-if-condition] linked '%s' as boolean statement.", parent->node_name.c_str();
                     return true;
                 }
                 default_box_color = INEXOR_VSCRIPT_COLOR_PENDING;
-                conoutf(CON_DEBUG, "[3DVS-if-condition] invalid boolean statement node pointer!");
+                spdlog::get("global")->debug() << "[3DVS-if-condition] invalid boolean statement node pointer!";
                 return false;
                 break;
             }

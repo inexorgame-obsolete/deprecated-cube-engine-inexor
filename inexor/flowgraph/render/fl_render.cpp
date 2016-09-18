@@ -16,7 +16,7 @@ namespace vscript {
     void CNodeRenderer::adjust_selection_color(int orient, int index)
     {
         INEXOR_VSCRIPT_NODE_COLORS temp_color = box_color;
-        if(orient == index) 
+        if(orient == index)
         {
             temp_color = INEXOR_VSCRIPT_COLOR_SELECTION;
         }
@@ -105,7 +105,7 @@ namespace vscript {
     void CNodeRenderer::render_box_helplines(vec p)
     {
         glBegin(GL_LINES);
-        
+
         /// we can't render to infinity, so lets just use a very big value
         const float helpline_distance = 1000.0f;
 
@@ -173,7 +173,7 @@ namespace vscript {
         glVertex3f(p.x+boxsize,p.y+boxsize,p.z-helpline_distance);
         glVertex3f(p.x+boxsize,p.y+boxsize,p.z+boxsize);
         glVertex3f(p.x+boxsize,p.y+boxsize,p.z+boxsize+helpline_distance);
-        
+
         glEnd();
     }
 

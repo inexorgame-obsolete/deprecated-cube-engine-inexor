@@ -10,6 +10,7 @@
 #include "inexor/flowgraph/areas/cone/fl_area_cone.hpp"
 #include "inexor/flowgraph/areas/cylinder/fl_area_cylinder.hpp"
 #include "inexor/flowgraph/areas/sphere/fl_area_sphere.hpp"
+#include "inexor/util/Logging.hpp"
 
 namespace inexor {
 namespace vscript {

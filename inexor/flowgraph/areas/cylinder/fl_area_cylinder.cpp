@@ -65,7 +65,7 @@ namespace vscript {
 
     bool CCylinderAreaNode::OnLinkAsChildNodeAttempt(CScriptNode* parent)
     {
-        conoutf(CON_DEBUG, "[3DVS-area-cylinder] a cone area can't run any code so it can't be linked as child node!");
+        spdlog::get("global")->debug() << "[3DVS-area-cylinder] a cone area can't run any code so it can't be linked as child node!";
         return false;
     }
 
@@ -73,7 +73,7 @@ namespace vscript {
     {
         if(INEXOR_VSCRIPT_NODE_TYPE_EVENT != child->type)
         {
-            conoutf(CON_DEBUG, "[3DVS-area-cylinder] a cone can only be linked as parent of an event node!");
+            spdlog::get("global")->debug() << "[3DVS-area-cylinder] a cone can only be linked as parent of an event node!";
         }
         return true;
     }

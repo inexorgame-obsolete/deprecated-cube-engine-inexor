@@ -1,8 +1,9 @@
 #include "bezier.hpp"
 
 namespace inexor {
-namespace geom 
-{
+namespace math {
+namespace curves {
+
     CBezierCurve::CBezierCurve()
     {
         SetAlgorithm(ALGORITHM_BERNSTEIN_POLYNOM);
@@ -164,5 +165,6 @@ namespace geom
         m_bCacheComputed = true;
     }
 
+};
 };
 };

@@ -6,6 +6,7 @@
 #define INEXOR_VSCRIPT_AREA_CYLINDER_HEADER
 
 #include "inexor/flowgraph/nodebase/fl_base.hpp"
+#include "inexor/util/Logging.hpp"
 
 namespace inexor {
 namespace vscript {

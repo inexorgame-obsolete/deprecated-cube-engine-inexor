@@ -21,8 +21,7 @@ add_subdirectory(rpc) # rpc module, protobuf lib
 add_subdirectory(ui)
 add_subdirectory(crashreporter)
 add_subdirectory(texture)
-add_subdirectory(muparser)
-add_subdirectory(geom)
+add_subdirectory(math)
 add_subdirectory(entity)
 add_subdirectory(flowgraph)
 

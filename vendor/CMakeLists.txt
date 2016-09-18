@@ -309,10 +309,19 @@ endfunction()
 
 find_path(RAPIDJSON_INCLUDE_DIRS rapidjson/rapidjson.h)
 function(require_rapidjson)
-  message(STATUS "Configuring ${targ} with protobuf")
+  message(STATUS "Configuring ${targ} with rapidjson")
 
   add_definitions(-DRAPIDJSON_SSE2)
   include_directories(${RAPIDJSON_INCLUDE_DIRS})
+endfunction()
+
+#### muparser
+
+find_path(MUPARSER_INCLUDE_DIRS muparser/muParser.h)
+function(require_muparser)
+  message(STATUS "Configuring ${targ} with muparser")
+
+  include_directories(${MUPARSER_INCLUDE_DIRS})
 endfunction()
 
 #### Protobuf

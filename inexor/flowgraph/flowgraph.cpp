@@ -22,8 +22,8 @@
 #include "inexor/flowgraph/operators/fl_operator.hpp"
 
 // geometry
-#include "inexor/geom/geom.hpp"
-#include "inexor/geom/curves/bezier/bezier.hpp"
+#include "inexor/math/math.hpp"
+#include "inexor/math/curves/bezier/bezier.hpp"
 
 // events
 #include "inexor/flowgraph/events/base/fl_event_base.hpp"
@@ -113,7 +113,7 @@ namespace vscript {
             {
                 if(!strlen(arguments[0].c_str()))
                 {
-                    conoutf(CON_DEBUG, "[3DVS-comments] error: empty string as comment!");
+                    spdlog::get("global")->debug() << "[3DVS-comments] error: empty string as comment!";
                     break;
                 }
                 created_node = new CCommentNode(target);
@@ -125,7 +125,7 @@ namespace vscript {
             {
                 if (!strlen(arguments[0].c_str()))
                 {
-                    conoutf(CON_DEBUG, "[3DVS-functions] error: no function name speficied!");
+                    spdlog::get("global")->debug() << "[3DVS-functions] error: no function name speficied!";
                     break;
                 }
 
@@ -135,7 +135,7 @@ namespace vscript {
                     {
                         if (!strlen(arguments[1].c_str()))
                         {
-                            conoutf(CON_DEBUG, "[3DVS-functions-conoutf] error: no output text specified!");
+                            spdlog::get("global")->debug() << "[3DVS-functions-conoutf] error: no output text specified!";
                             break;
                         }
                         created_node = new CFunctionConoutfNode(target, arguments[1].c_str());
@@ -145,7 +145,7 @@ namespace vscript {
                     {
                         if (!strlen(arguments[1].c_str()))
                         {
-                            conoutf(CON_DEBUG, "[3DVS-functions-playsound] error: sound to play specified!");
+                            spdlog::get("global")->debug() << "[3DVS-functions-playsound] error: sound to play specified!";
                             break;
                         }
                         // add a sound player function
@@ -269,7 +269,7 @@ namespace vscript {
                     }
                     default:
                     {
-                        conoutf(CON_DEBUG, "[3DVS-area-player-interaction-event] unknown event type!");
+                        spdlog::get("global")->debug() << "[3DVS-area-player-interaction-event] unknown event type!";
                         break;
                     }
                 }
@@ -310,7 +310,7 @@ namespace vscript {
                     }
                     default:
                     {
-                        conoutf(CON_DEBUG, "[3DVS-operator] error: unknown operator type!");
+                        spdlog::get("global")->debug() << "[3DVS-operator] error: unknown operator type!";
                         break;
                     }
                 }
@@ -398,7 +398,7 @@ namespace vscript {
         relations.push_back(newcurve);
         from->relations.push_back(newcurve);
         from->pos_changed = true;
-        //conoutf(CON_DEBUG, "[3DVS-node-linker] linked parent %s with child %s.", from->node_name.c_str(), to->node_name.c_str());
+        //spdlog::get("global")->debug() << "[3DVS-node-linker] linked parent %s with child %s.", from->node_name.c_str(), to->node_name.c_str();
     }
 
     // 
@@ -422,12 +422,12 @@ namespace vscript {
                 }
                 else
                 {
-                    conoutf(CON_DEBUG, "[3DVS-node-linker] could not link parent %s with child %s.", from->node_name.c_str(), to->node_name.c_str());
+                    spdlog::get("global")->debug() << "[3DVS-node-linker] could not link parent %s with child %s.", from->node_name.c_str(), to->node_name.c_str();
                 }
             }
             else
             {
-                conoutf(CON_DEBUG,"[3DVS-node-linker] a node can't be linked to itself!");
+                spdlog::get("global")->debug() << "[3DVS-node-linker] a node can't be linked to itself!";
             }
         }
     }
@@ -651,8 +651,8 @@ namespace vscript {
                 {
                     // render node relation curves "dotted"
                     if(h % 2 == 0) continue;
-                    geom::SCustomOutputPoint t = tmp->curve.GetPoint_ByIndex(h);
-                    geom::SCustomOutputPoint n = tmp->curve.GetPoint_ByIndex(h+1);
+                    inexor::math::curves::SCustomOutputPoint t = tmp->curve.GetPoint_ByIndex(h);
+                    inexor::math::curves::SCustomOutputPoint n = tmp->curve.GetPoint_ByIndex(h+1);
                     glVertex3f(t.pos.x, t.pos.y, t.pos.z);
                     glVertex3f(n.pos.x, n.pos.y, n.pos.z);
                 }
@@ -683,7 +683,7 @@ namespace vscript {
     void deleteallnodes()
     {
         vScript3D.delete_all_nodes();
-        conoutf(CON_DEBUG, "[3DVS-nodes] removed all nodes and all node relations.");
+        spdlog::get("global")->debug() << "[3DVS-nodes] removed all nodes and all node relations.";
     }
     COMMAND(deleteallnodes, "");
     

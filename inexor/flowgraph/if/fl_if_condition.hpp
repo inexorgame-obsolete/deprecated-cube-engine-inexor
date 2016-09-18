@@ -7,7 +7,7 @@
 
 #include "inexor/flowgraph/nodebase/fl_base.hpp"
 #include "inexor/flowgraph/memory/bool/fl_mem_bool.hpp"
-
+#include "inexor/util/Logging.hpp"
 
 namespace inexor {
 namespace vscript {

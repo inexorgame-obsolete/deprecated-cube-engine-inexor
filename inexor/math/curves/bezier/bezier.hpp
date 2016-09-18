@@ -20,10 +20,11 @@
 #include <string>
 #include <vector>
 
-#include "inexor/geom/curves/curvebase.hpp"
+#include "inexor/math/curves/curvebase.hpp"
 
 namespace inexor {
-namespace geom {
+namespace math {
+namespace curves {
 
     /// @brief algorithm type enumeration
     enum BEZIER_ALGORITHM
@@ -74,6 +75,7 @@ namespace geom {
 
     };
 
+};
 };
 };
 

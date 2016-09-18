@@ -37,7 +37,7 @@ namespace vscript {
             bool OnLinkAsParentNodeAttempt(CScriptNode*);
     };
 
-};
-};
+}
+}
 
 #endif

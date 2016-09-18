@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "inexor/flowgraph/render/fl_render.hpp"
-#include "inexor/geom/curves/bezier/bezier.hpp"
+#include "inexor/math/curves/bezier/bezier.hpp"
 
 namespace inexor {
 namespace vscript {
@@ -54,7 +54,7 @@ namespace vscript {
         CScriptNode* from;
         CScriptNode* to;
 
-        inexor::geom::CBezierCurve curve;
+        inexor::math::curves::CBezierCurve curve;
     };
 
 

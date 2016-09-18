@@ -37,7 +37,7 @@ namespace vscript {
         if(block.constant_value)
         {
             triggered_color = INEXOR_VSCRIPT_COLOR_PENDING;
-            conoutf(CON_DEBUG, "[3DVS-float-increment] can't increment a constant float value!");
+            spdlog::get("global")->debug() << "[3DVS-float-increment] can't increment a constant float value!";
         }
         else block.data.double_value += 1.0;
     }
@@ -48,7 +48,7 @@ namespace vscript {
         if(block.constant_value)
         {
             triggered_color = INEXOR_VSCRIPT_COLOR_PENDING;
-            conoutf(CON_DEBUG, "[3DVS-float-decrement] can't decrement a constant float value!");
+            spdlog::get("global")->debug() << "[3DVS-float-decrement] can't decrement a constant float value!";
         }
         else block.data.double_value -= 1.0;
     }
@@ -59,7 +59,7 @@ namespace vscript {
         if(block.constant_value)
         {
             triggered_color = INEXOR_VSCRIPT_COLOR_PENDING;
-            conoutf(CON_DEBUG, "[3DVS-float-setvalue] can't change constant float value!");
+            spdlog::get("global")->debug() << "[3DVS-float-setvalue] can't change constant float value!";
         }
         else block.data.double_value = set_value;
     }

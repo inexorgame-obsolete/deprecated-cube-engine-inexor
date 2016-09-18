@@ -13,8 +13,10 @@
 /// typically, if d is not used, then it is implicitly the Z dimension.
 /// ie: d=z => x=x, y=y, z=z
 
-#pragma once
+#ifndef INEXOR_SHARED_GEOM_HEADER
+#define INEXOR_SHARED_GEOM_HEADER
 
+#include <algorithm>
 #include <iostream>
 
 /// declaration of 2- and 4-dimensional vectors
@@ -142,6 +144,18 @@ struct vec
     /// operators for vector comparisn
     bool operator==(const vec &o) const { return x == o.x && y == o.y && z == o.z; }
     bool operator!=(const vec &o) const { return x != o.x || y != o.y || z != o.z; }
+
+
+    /// arithmetic operators for vectors
+    /// please note: you CAN'T just call this->add in these operator methods because this would OVERRIDE its own memory!
+    vec operator+(const vec &o)  { return vec(this->x+o.x, this->y+o.y, this->z+o.z); }
+    vec operator+(const float f) { return vec(this->x+f, this->y+f, this->z+f); }
+    vec operator-(const vec &o)  { return vec(this->x-o.x, this->y-o.y, this->z-o.z); }
+    vec operator-(const float f) { return vec(this->x-f, this->y-f, this->z-f); }
+    vec operator*(const vec &o)  { return vec(this->x*o.x, this->y*o.y, this->z*o.z); }
+    vec operator*(const float f) { return vec(this->x*f, this->y*f, this->z*f); }
+    vec operator/(const vec &o)  { return vec(this->x/o.x, this->y/o.y, this->z/o.z); }
+    vec operator/(const float f) { return vec(this->x/f, this->y/f, this->z/f); }
 
     /// Receive the absolute values of this vec.
     vec &abs() { x = fabs(x); y = fabs(y); z = fabs(z); return *this; }
@@ -421,9 +435,9 @@ struct matrix4x3;
 struct matrix4;
 
 /// quaternions are number systems that extend complex numbers
-/// complex numbers extend the number system of real numbers in a way so x²=-1 can be solved
+/// complex numbers extend the number system of real numbers in a way so xï¿½=-1 can be solved
 /// in this example x = i (imaginary). As you shoud know complex numbers have a real and an imaginary part.
-/// in quarterions, xy is NOT yx:   xy != yx; but i² = k² = j² = ijk = -1
+/// in quarterions, xy is NOT yx:   xy != yx; but iï¿½ = kï¿½ = jï¿½ = ijk = -1
 /// some calculations can be done much easier if you consider this extra condition/dimension
 struct quat : vec4
 {
@@ -1930,3 +1944,4 @@ static inline float sin360(int angle) { return sincos360[angle].y; }
 static inline float tan360(int angle) { const vec2 &sc = sincos360[angle]; return sc.y/sc.x; }
 static inline float cotan360(int angle) { const vec2 &sc = sincos360[angle]; return sc.x/sc.y; }
 
+#endif

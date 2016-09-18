@@ -50,9 +50,9 @@ namespace vscript {
     {
         // TODO: debug this on any operating system!
         CScriptNode* node = static_cast<CScriptNode*>(ptr);
-        conoutf(CON_DEBUG, "[3DVS-threads] thread \f6%s\f7 started!", node->node_name.c_str());
+        spdlog::get("global")->debug() << "[3DVS-threads] thread \f6%s\f7 started!", node->node_name.c_str();
         if(nullptr != node) node->in();
-        conoutf(CON_DEBUG, "[3DVS-threads] thread \f6%s\f7 finished!", node->node_name.c_str());
+        spdlog::get("global")->debug() << "[3DVS-threads] thread \f6%s\f7 finished!", node->node_name.c_str();
         return 0;
     }
 

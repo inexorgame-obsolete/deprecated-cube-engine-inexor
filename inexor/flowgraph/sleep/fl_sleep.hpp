@@ -5,8 +5,9 @@
 #ifndef INEXOR_VSCRIPT_SLEEP_HEADER
 #define INEXOR_VSCRIPT_SLEEP_HEADER
 
+#include <cstdio>
 #include "inexor/flowgraph/nodebase/fl_base.hpp"
-
+#include "inexor/util/Logging.hpp"
 
 namespace inexor {
 namespace vscript {

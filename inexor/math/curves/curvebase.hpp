@@ -8,8 +8,8 @@
 /// TODO: Get point's distance from curve
 
 
-#ifndef INEXOR_GEOM_CURVE_BASE_HEADER
-#define INEXOR_GEOM_CURVE_BASE_HEADER
+#ifndef INEXOR_MATH_CURVE_BASE_HEADER
+#define INEXOR_MATH_CURVE_BASE_HEADER
 
 #include <vector>
 #include "inexor/engine/engine.hpp"
@@ -17,9 +17,9 @@
 #define INEXOR_VSCRIPT_STD_CALC_PRECISION 100
 #define INEXOR_VSCRIPT_STD_MAX_PARAM_POINTS 10
 
-
 namespace inexor {
-namespace geom {
+namespace math {
+namespace curves {
 
     struct SCustomInputPoint 
     {
@@ -53,13 +53,13 @@ namespace geom {
             tangent = vec(0,0,0);
             normal = vec(0,0,0);
         }
-        SCustomOutputPoint(SCustomInputPoint p) 
+        SCustomOutputPoint(SCustomInputPoint p)
         {
             pos = p.pos;
             tangent = vec(0,0,0);
             normal = vec(0,0,0);
         }
-        SCustomOutputPoint(SCustomInputPoint o, vec t, vec n) 
+        SCustomOutputPoint(SCustomInputPoint o, vec t, vec n)
         {
             pos = o.pos;
             tangent = t;
@@ -110,6 +110,7 @@ namespace geom {
             void ClearCachePoints();
     };
 
+};
 };
 };
 

@@ -24,7 +24,7 @@ namespace vscript {
             {
                 area = parent;
                 area_type = parent->type;
-                conoutf(CON_DEBUG, "[3DVS-area-event-node] linked '%s' as event trigger area.", parent->node_name.c_str());
+                spdlog::get("global")->debug() << "[3DVS-area-event-node] linked '%s' as event trigger area.", parent->node_name.c_str();
                 return true;
                 break;
             }
