@@ -1381,8 +1381,8 @@ void drawglare()
     renderwater();
     rendermaterials();
     renderalphageom();
-    handle_subsystem->RenderHandles();
-    particle_subsystem->RenderFaces();
+    // handle_subsystem->RenderHandles();
+    // particle_subsystem->RenderFaces();
     particle_subsystem->RenderParticles();
     renderparticles();
 
@@ -1504,8 +1504,8 @@ void drawreflection(float z, bool refract, int fogdepth, const bvec &col)
     if(refracting) rendergrass();
     rendermaterials();
     renderalphageom(fogging);
-    handle_subsystem->RenderHandles();
-    particle_subsystem->RenderFaces();
+    // handle_subsystem->RenderHandles();
+    // particle_subsystem->RenderFaces();
     particle_subsystem->RenderParticles();
     renderparticles();
 
@@ -1522,7 +1522,7 @@ void drawreflection(float z, bool refract, int fogdepth, const bvec &col)
 
     popfogdist();
     popfogcolor();
-    
+
     reflectz = 1e16f;
     refracting = 0;
     reflecting = fading = fogging = false;
@@ -1988,6 +1988,7 @@ void gl_drawframe()
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     // TODO: ... or here
+    // handle_subsystem->RenderHandles();
     // particle_subsystem->RenderFaces();
     // particle_subsystem->RenderParticles();
 

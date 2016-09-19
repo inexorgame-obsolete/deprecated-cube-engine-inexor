@@ -41,6 +41,7 @@ namespace particle {
 
             void RunTests();
             void ShowCase();
+            void ShowCaseMinimal();
             void PerformanceTest();
 
         private:
