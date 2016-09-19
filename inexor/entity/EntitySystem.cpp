@@ -63,6 +63,7 @@ namespace entity {
         // Create subsystem instances
         handle_subsystem = new HandleSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
         teleport_subsystem = new TeleportSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
+        // vscript_subsystem = new TeleportSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
         particle_subsystem = new ParticleSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
 
         // Store the subsystems and it's type(!) in the subsystem type map, so that
@@ -72,11 +73,13 @@ namespace entity {
         //
         subsystemTypeMap.Set<HandleSubsystem>(handle_subsystem.get());
         subsystemTypeMap.Set<TeleportSubsystem>(teleport_subsystem.get());
+        // subsystemTypeMap.Set<VScriptSubsystem>(vscript_subsystem.get());
         subsystemTypeMap.Set<ParticleSubsystem>(particle_subsystem.get());
 
         // Store all subsystems in a vector:
         subsystems.push_back(handle_subsystem);
         subsystems.push_back(teleport_subsystem);
+        // subsystems.push_back(vscript_subsystem);
         subsystems.push_back(particle_subsystem);
     }
 

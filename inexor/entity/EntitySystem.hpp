@@ -10,21 +10,21 @@
 
 #include <typeinfo>
 
-#include "EntitySystemBase.hpp"
-#include "domain/InstanceBase.hpp"
-#include "domain/TimeStep.hpp"
-#include "domain/TypeBase.hpp"
-#include "domain/graph/EntityInstance.hpp"
-#include "domain/graph/EntityType.hpp"
-#include "domain/graph/RelationshipType.hpp"
-#include "domain/graph/RelationshipInstance.hpp"
-#include "manager/EntityInstanceManager.hpp"
-#include "manager/EntityTypeManager.hpp"
-#include "manager/RelationshipInstanceManager.hpp"
-#include "manager/RelationshipTypeManager.hpp"
-#include "subsystem/HandleSubsystem.hpp"
-#include "subsystem/TeleportSubsystem.hpp"
-#include "subsystem/particle/ParticleSubsystem.hpp"
+#include "inexor/entity/EntitySystemBase.hpp"
+#include "inexor/entity/domain/InstanceBase.hpp"
+#include "inexor/entity/domain/TimeStep.hpp"
+#include "inexor/entity/domain/TypeBase.hpp"
+#include "inexor/entity/domain/graph/EntityInstance.hpp"
+#include "inexor/entity/domain/graph/EntityType.hpp"
+#include "inexor/entity/domain/graph/RelationshipType.hpp"
+#include "inexor/entity/domain/graph/RelationshipInstance.hpp"
+#include "inexor/entity/manager/EntityInstanceManager.hpp"
+#include "inexor/entity/manager/EntityTypeManager.hpp"
+#include "inexor/entity/manager/RelationshipInstanceManager.hpp"
+#include "inexor/entity/manager/RelationshipTypeManager.hpp"
+#include "inexor/entity/subsystem/HandleSubsystem.hpp"
+#include "inexor/entity/subsystem/TeleportSubsystem.hpp"
+#include "inexor/entity/subsystem/particle/ParticleSubsystem.hpp"
 
 namespace inexor {
 namespace entity {
@@ -222,6 +222,11 @@ namespace entity {
              * The teleport subsystem.
              */
             CefRefPtr<TeleportSubsystem> teleport_subsystem;
+
+            /**
+             * The vscript subsystem.
+             */
+            // CefRefPtr<VScriptSubsystem> vscript_subsystem;
 
             /**
              * The particle subsystem.
