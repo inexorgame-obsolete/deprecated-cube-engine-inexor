@@ -26,6 +26,7 @@ add_subdirectory(muparser)
 add_subdirectory(entity)
 add_subdirectory(flowgraph)
 add_subdirectory(vscript)
+add_subdirectory(particle)
 
 # Actual targets
 opt_subdir(client on)

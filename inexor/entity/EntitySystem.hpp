@@ -22,9 +22,10 @@
 #include "inexor/entity/manager/EntityTypeManager.hpp"
 #include "inexor/entity/manager/RelationshipInstanceManager.hpp"
 #include "inexor/entity/manager/RelationshipTypeManager.hpp"
-#include "inexor/entity/subsystem/HandleSubsystem.hpp"
-#include "inexor/entity/subsystem/TeleportSubsystem.hpp"
-#include "inexor/entity/subsystem/particle/ParticleSubsystem.hpp"
+#include "inexor/entity/subsystem/SubsystemBase.hpp"
+// #include "inexor/entity/subsystem/HandleSubsystem.hpp"
+// #include "inexor/entity/subsystem/TeleportSubsystem.hpp"
+// #include "inexor/entity/subsystem/particle/ParticleSubsystem.hpp"
 
 namespace inexor {
 namespace entity {
@@ -152,6 +153,14 @@ namespace entity {
              */
             CefRefPtr<RelationshipInstanceManager> GetRelationshipInstanceManager();
 
+            /**
+             * Adds a subsystem.
+             */
+            template<typename T, typename = std::enable_if<std::is_base_of<SubsystemBase, T>::value>> void AddSubsystem(CefRefPtr<T> subsystem_ref_ptr) {
+                subsystemTypeMap.Set<T>(subsystem_ref_ptr.get());
+                subsystems.push_back(subsystem_ref_ptr);
+            };
+
         private:
 
             /**
@@ -216,12 +225,12 @@ namespace entity {
             /**
              * The handle subsystem.
              */
-            CefRefPtr<HandleSubsystem> handle_subsystem;
+            // CefRefPtr<HandleSubsystem> handle_subsystem;
 
             /**
              * The teleport subsystem.
              */
-            CefRefPtr<TeleportSubsystem> teleport_subsystem;
+            // CefRefPtr<TeleportSubsystem> teleport_subsystem;
 
             /**
              * The vscript subsystem.
@@ -231,7 +240,7 @@ namespace entity {
             /**
              * The particle subsystem.
              */
-            CefRefPtr<particle::ParticleSubsystem> particle_subsystem;
+            // CefRefPtr<particle::ParticleSubsystem> particle_subsystem;
 
             // Include the default reference counting implementation.
             IMPLEMENT_REFCOUNTING(EntitySystem);

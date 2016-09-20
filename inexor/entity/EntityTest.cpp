@@ -35,23 +35,23 @@ namespace entity {
     void EntityTest::SubsystemTest()
     {
         spdlog::get("global")->debug() << "Try to access subsystems by type";
-        CefRefPtr<TeleportSubsystem> teleport_subsystem = entity_system->GetSubsystem<TeleportSubsystem>();
-        CefRefPtr<inexor::entity::particle::ParticleSubsystem> particle_subsystem = entity_system->GetSubsystem<inexor::entity::particle::ParticleSubsystem>();
+        // CefRefPtr<TeleportSubsystem> teleport_subsystem = entity_system->GetSubsystem<TeleportSubsystem>();
+        // CefRefPtr<inexor::entity::particle::ParticleSubsystem> particle_subsystem = entity_system->GetSubsystem<inexor::entity::particle::ParticleSubsystem>();
     }
 
     void EntityTest::InstanceCreationTest()
     {
         spdlog::get("global")->debug() << "Creating 100000 entity and 100000 relationship instances";
-        CefRefPtr<TeleportSubsystem> teleport_subsystem = entity_system->GetSubsystem<TeleportSubsystem>();
-        InstanceRefPtr<EntityInstance> teleport1 = teleport_subsystem->CreateTeleport(0.0, 0.0, 0.0);
-        InstanceRefPtr<EntityInstance> teledest1 = teleport_subsystem->CreateTeledest(0.0, 0.0, 0.0);
-        InstanceRefPtr<RelationshipInstance> teleporting1 = teleport_subsystem->Connect(teleport1, teledest1);
-        for (int i = 0; i < 100000; i++)
-        {
-            InstanceRefPtr<EntityInstance> teledest = teleport_subsystem->CreateTeledest(0.0, 0.0, 0.0);
-            InstanceRefPtr<RelationshipInstance> teleporting = teleport_subsystem->Connect(teleport1, teledest);
-        }
-        PrintStats();
+        // CefRefPtr<TeleportSubsystem> teleport_subsystem = entity_system->GetSubsystem<TeleportSubsystem>();
+        // InstanceRefPtr<EntityInstance> teleport1 = teleport_subsystem->CreateTeleport(0.0, 0.0, 0.0);
+        // InstanceRefPtr<EntityInstance> teledest1 = teleport_subsystem->CreateTeledest(0.0, 0.0, 0.0);
+        // InstanceRefPtr<RelationshipInstance> teleporting1 = teleport_subsystem->Connect(teleport1, teledest1);
+        // for (int i = 0; i < 100000; i++)
+        // {
+        // InstanceRefPtr<EntityInstance> teledest = teleport_subsystem->CreateTeledest(0.0, 0.0, 0.0);
+        // InstanceRefPtr<RelationshipInstance> teleporting = teleport_subsystem->Connect(teleport1, teledest);
+        // }
+        // PrintStats();
     }
 
     void EntityTest::LowLevelTypeCreationTest()
@@ -65,18 +65,18 @@ namespace entity {
 
     void EntityTest::TypeCreationTest()
     {
-        spdlog::get("global")->debug() << "Create a batch of entity types";
-        CefRefPtr<inexor::entity::particle::ParticleSubsystem> particle_subsystem = entity_system->GetSubsystem<inexor::entity::particle::ParticleSubsystem>();
-        for (int i = 0; i < 1000; i++)
-        {
-            std::string particle_type_name = "default_particle_" + i;
-            std::string particle_emitter_type_name = "simple_emitter_" + i;
-            std::string test_function_name = "test_function_" + i;
-            FunctionRefPtr test_function_i = new EntityFunction(test_function_name);
-            TypeRefPtr<EntityType> particle_type_i = particle_subsystem->CreateParticleType(particle_type_name, "default_renderer");
-            TypeRefPtr<EntityType> particle_emitter_type_i = particle_subsystem->CreateEmitterType(particle_emitter_type_name, test_function_i, particle_type_i, 100, 1, 1000, 0.1, 1.0);
-        }
-        PrintStats();
+    	spdlog::get("global")->debug() << "Create a batch of entity types";
+        // CefRefPtr<inexor::entity::particle::ParticleSubsystem> particle_subsystem = entity_system->GetSubsystem<inexor::entity::particle::ParticleSubsystem>();
+        // for (int i = 0; i < 1000; i++)
+        // {
+        // std::string particle_type_name = "default_particle_" + i;
+        // std::string particle_emitter_type_name = "simple_emitter_" + i;
+        // std::string test_function_name = "test_function_" + i;
+        // FunctionRefPtr test_function_i = new EntityFunction(test_function_name);
+        // TypeRefPtr<EntityType> particle_type_i = particle_subsystem->CreateParticleType(particle_type_name, "default_renderer");
+        // TypeRefPtr<EntityType> particle_emitter_type_i = particle_subsystem->CreateEmitterType(particle_emitter_type_name, test_function_i, particle_type_i, 100, 1, 1000, 0.1, 1.0);
+        // }
+        // PrintStats();
     }
 
     void EntityTest::AttributeTest()

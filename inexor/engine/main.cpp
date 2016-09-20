@@ -3,7 +3,7 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/entity/EntitySystem.hpp"
 #include "inexor/entity/EntityTest.hpp"
-#include "inexor/entity/subsystem/particle/ParticleTest.hpp"
+#include "inexor/particle/ParticleTest.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/ui.hpp"
 #include "inexor/util/Subsystem.hpp"
@@ -36,7 +36,7 @@ CefRefPtr<inexor::entity::EntitySystem> entity_system;
 CefRefPtr<inexor::entity::EntityTest> entity_test;
 CefRefPtr<inexor::entity::particle::ParticleSubsystem> particle_subsystem;
 CefRefPtr<inexor::entity::particle::ParticleTest> particle_test;
-CefRefPtr<inexor::entity::HandleSubsystem> handle_subsystem;
+// CefRefPtr<inexor::entity::HandleSubsystem> handle_subsystem;
 
 extern void writeinitcfg();
 
@@ -1401,10 +1401,12 @@ int main(int argc, char **argv)
     entity_system = new EntitySystem();
 
     spdlog::get("global")->debug() << "init: particle subsystem";
-    particle_subsystem = entity_system->GetSubsystem<inexor::entity::particle::ParticleSubsystem>();
+    particle_subsystem = new inexor::entity::particle::ParticleSubsystem(entity_system->GetEntityTypeManager(), entity_system->GetEntityInstanceManager(), entity_system->GetRelationshipTypeManager(), entity_system->GetRelationshipInstanceManager());
+    entity_system->AddSubsystem(particle_subsystem);
+    // particle_subsystem = entity_system->GetSubsystem<inexor::entity::particle::ParticleSubsystem>();
 
-    spdlog::get("global")->debug() << "init: handle subsystem";
-    handle_subsystem = entity_system->GetSubsystem<inexor::entity::HandleSubsystem>();
+    // spdlog::get("global")->debug() << "init: handle subsystem";
+    // handle_subsystem = entity_system->GetSubsystem<inexor::entity::HandleSubsystem>();
 
     spdlog::get("global")->debug() << "init: entity system tests";
     entity_test = new inexor::entity::EntityTest();

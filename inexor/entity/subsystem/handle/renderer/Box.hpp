@@ -8,9 +8,9 @@
 #ifndef ENTITY_SUBSYSTEM_PARTICLE_RENDERER_CUBE_H_
 #define ENTITY_SUBSYSTEM_PARTICLE_RENDERER_CUBE_H_
 
-#include "../../../EntitySystemBase.hpp"
-#include "../../../EntitySystem.hpp"
-#include "../../../domain/graph/EntityFunction.hpp"
+#include "inexor/entity/EntitySystemBase.hpp"
+#include "inexor/entity/EntitySystem.hpp"
+#include "inexor/entity/domain/graph/EntityFunction.hpp"
 
 namespace inexor {
 namespace entity {

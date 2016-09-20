@@ -1,8 +1,8 @@
 // rendergl.cpp: core opengl rendering stuff
 
 #include "inexor/engine/engine.hpp"
-#include "inexor/entity/subsystem/particle/ParticleSubsystem.hpp"
-#include "inexor/entity/subsystem/HandleSubsystem.hpp"
+#include "inexor/particle/subsystem/ParticleSubsystem.hpp"
+// #include "inexor/entity/subsystem/HandleSubsystem.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/flowgraph/flowgraph.hpp"
 #include "inexor/texture/cubemap.hpp"
@@ -24,7 +24,7 @@ int hasstencil = 0;
 
 
 extern CefRefPtr<inexor::entity::particle::ParticleSubsystem> particle_subsystem;
-extern CefRefPtr<inexor::entity::HandleSubsystem> handle_subsystem;
+// extern CefRefPtr<inexor::entity::HandleSubsystem> handle_subsystem;
 
 VAR(glversion, 1, 0, 0);
 VAR(glslversion, 1, 0, 0);
@@ -1973,7 +1973,7 @@ void gl_drawframe()
     if(wireframe && editmode) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     // TODO: render particles either here ...
-    handle_subsystem->RenderHandles();
+    // handle_subsystem->RenderHandles();
     particle_subsystem->RenderFaces();
     particle_subsystem->RenderParticles();
 

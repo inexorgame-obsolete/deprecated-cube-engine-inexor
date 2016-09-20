@@ -8,7 +8,7 @@
 #include "inexor/entity/domain/graph/RelationshipType.hpp"
 #include "inexor/entity/manager/EntityTypeManager.hpp"
 #include "inexor/entity/manager/RelationshipTypeManager.hpp"
-#include "inexor/vscript/VScriptModel.hpp"
+#include "inexor/vscript/model/VScriptModel.hpp"
 
 using namespace inexor::entity;
 

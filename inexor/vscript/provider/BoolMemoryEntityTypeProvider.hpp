@@ -6,7 +6,7 @@
 #include "inexor/entity/domain/graph/EntityFunction.hpp"
 #include "inexor/entity/domain/graph/EntityType.hpp"
 #include "inexor/entity/domain/graph/RelationshipType.hpp"
-#include "inexor/vscript/VScriptModel.hpp"
+#include "inexor/vscript/model/VScriptModel.hpp"
 
 using namespace inexor::entity;
 
