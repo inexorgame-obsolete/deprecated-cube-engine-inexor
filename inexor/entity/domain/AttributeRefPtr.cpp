@@ -255,6 +255,7 @@ namespace entity {
         EntityAttribute* attr = this->get();
         if (attr && attr->type == ENTATTR_INT)
             return attr->intVal + i;
+        return 0;
     }
 
     float AttributeRefPtr::operator+(float f)
@@ -262,6 +263,7 @@ namespace entity {
         EntityAttribute* attr = this->get();
         if (attr && attr->type == ENTATTR_FLOAT)
             return attr->floatVal + f;
+        return 0.0f;
     }
 
     double AttributeRefPtr::operator+(double d)
@@ -269,6 +271,7 @@ namespace entity {
         EntityAttribute* attr = this->get();
         if (attr && attr->type == ENTATTR_FLOAT)
             return attr->doubleVal + d;
+        return 0.0;
     }
 
     std::string AttributeRefPtr::operator+(std::string s)
@@ -276,6 +279,7 @@ namespace entity {
         EntityAttribute* attr = this->get();
         if (attr && attr->type == ENTATTR_STRING)
             return attr->stringVal + s;
+        return std::string("");
     }
 
     AttributeRefPtr& AttributeRefPtr::operator-(const AttributeRefPtr &r)
@@ -348,6 +352,7 @@ namespace entity {
         EntityAttribute* attr = this->get();
         if (attr && attr->type == ENTATTR_INT)
             return attr->intVal - i;
+        return 0;
     }
 
     float AttributeRefPtr::operator-(float f)
@@ -355,6 +360,7 @@ namespace entity {
         EntityAttribute* attr = this->get();
         if (attr && attr->type == ENTATTR_FLOAT)
             return attr->floatVal - f;
+        return 0.0f;
     }
 
     double AttributeRefPtr::operator-(double d)
@@ -362,6 +368,7 @@ namespace entity {
         EntityAttribute* attr = this->get();
         if (attr && attr->type == ENTATTR_FLOAT)
             return attr->doubleVal - d;
+        return 0.0;
     }
 
     AttributeRefPtr& AttributeRefPtr::operator*(const AttributeRefPtr &r)
@@ -434,6 +441,7 @@ namespace entity {
         EntityAttribute* attr = this->get();
         if (attr && attr->type == ENTATTR_INT)
             return attr->intVal * i;
+        return 0;
     }
 
     float AttributeRefPtr::operator*(float f)
@@ -441,6 +449,7 @@ namespace entity {
         EntityAttribute* attr = this->get();
         if (attr && attr->type == ENTATTR_FLOAT)
             return attr->floatVal * f;
+        return 0.0f;
     }
 
     double AttributeRefPtr::operator*(double d)
@@ -448,6 +457,7 @@ namespace entity {
         EntityAttribute* attr = this->get();
         if (attr && attr->type == ENTATTR_FLOAT)
             return attr->doubleVal * d;
+        return 0.0;
     }
 
     AttributeRefPtr& AttributeRefPtr::operator/(const AttributeRefPtr &r)
@@ -529,6 +539,7 @@ namespace entity {
         EntityAttribute* attr = this->get();
         if (attr && attr->type == ENTATTR_INT && i != 0)
             return attr->intVal / i;
+        return 0;
     }
 
     float AttributeRefPtr::operator/(float f)
@@ -536,6 +547,7 @@ namespace entity {
         EntityAttribute* attr = this->get();
         if (attr && attr->type == ENTATTR_FLOAT && f != 0.0f)
             return attr->floatVal / f;
+        return 0.0f;
     }
 
     double AttributeRefPtr::operator/(double d)
@@ -543,6 +555,7 @@ namespace entity {
         EntityAttribute* attr = this->get();
         if (attr && attr->type == ENTATTR_FLOAT && d != 0.0)
             return attr->doubleVal / d;
+        return 0.0;
     }
 
     AttributeRefPtr& AttributeRefPtr::operator+=(int i)
