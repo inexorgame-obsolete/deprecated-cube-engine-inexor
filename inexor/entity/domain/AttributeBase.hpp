@@ -11,8 +11,8 @@
 #include "../EntitySystemBase.hpp"
 #include "AttributeRefPtr.hpp"
 
-class vec;
-class vec4;
+struct vec;
+struct vec4;
 
 namespace inexor {
 namespace entity {
