@@ -330,7 +330,7 @@ namespace entity {
         }
     }
 
-    void EntityAttribute::operator()(TimeStep time_step, EntityType* type)
+    void EntityAttribute::operator()(TimeStep time_step, std::shared_ptr<EntityType> type)
     {
         if (this->type == ENTATTR_FUNCTION)
         {
@@ -338,7 +338,7 @@ namespace entity {
         }
     }
 
-    void EntityAttribute::operator()(TimeStep time_step, EntityType* type, EntityInstance* inst)
+    void EntityAttribute::operator()(TimeStep time_step, std::shared_ptr<EntityType> type, std::shared_ptr<EntityInstance> inst)
     {
         if (this->type == ENTATTR_FUNCTION)
         {
@@ -346,7 +346,7 @@ namespace entity {
         }
     }
 
-    void EntityAttribute::operator()(TimeStep time_step, EntityInstance* inst)
+    void EntityAttribute::operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst)
     {
         if (this->type == ENTATTR_FUNCTION)
         {
@@ -354,7 +354,7 @@ namespace entity {
         }
     }
 
-    void EntityAttribute::operator()(TimeStep time_step, EntityInstance* inst, RelationshipType* rel_type)
+    void EntityAttribute::operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst, std::shared_ptr<RelationshipType> rel_type)
     {
         if (this->type == ENTATTR_FUNCTION)
         {
@@ -362,7 +362,7 @@ namespace entity {
         }
     }
 
-    void EntityAttribute::operator()(TimeStep time_step, EntityInstance* inst, RelationshipInstance* rel_inst)
+    void EntityAttribute::operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst, std::shared_ptr<RelationshipInstance> rel_inst)
     {
         if (this->type == ENTATTR_FUNCTION)
         {
@@ -370,7 +370,7 @@ namespace entity {
         }
     }
 
-    void EntityAttribute::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2)
+    void EntityAttribute::operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2)
     {
         if (this->type == ENTATTR_FUNCTION)
         {
@@ -378,7 +378,7 @@ namespace entity {
         }
     }
 
-    void EntityAttribute::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, EntityInstance* inst_3)
+    void EntityAttribute::operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2, std::shared_ptr<EntityInstance> inst_3)
     {
         if (this->type == ENTATTR_FUNCTION)
         {
@@ -386,7 +386,7 @@ namespace entity {
         }
     }
 
-    void EntityAttribute::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipType* rel_type)
+    void EntityAttribute::operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2, std::shared_ptr<RelationshipType> rel_type)
     {
         if (this->type == ENTATTR_FUNCTION)
         {
@@ -394,7 +394,7 @@ namespace entity {
         }
     }
 
-    void EntityAttribute::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipInstance* rel_inst)
+    void EntityAttribute::operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2, std::shared_ptr<RelationshipInstance> rel_inst)
     {
         if (this->type == ENTATTR_FUNCTION)
         {
@@ -402,7 +402,7 @@ namespace entity {
         }
     }
 
-    void EntityAttribute::operator()(TimeStep time_step, RelationshipType* type)
+    void EntityAttribute::operator()(TimeStep time_step, std::shared_ptr<RelationshipType> type)
     {
         if (this->type == ENTATTR_FUNCTION)
         {
@@ -410,7 +410,7 @@ namespace entity {
         }
     }
 
-    void EntityAttribute::operator()(TimeStep time_step, RelationshipType* type, RelationshipInstance* inst)
+    void EntityAttribute::operator()(TimeStep time_step, std::shared_ptr<RelationshipType> type, std::shared_ptr<RelationshipInstance> inst)
     {
         if (this->type == ENTATTR_FUNCTION)
         {
@@ -418,7 +418,7 @@ namespace entity {
         }
     }
 
-    void EntityAttribute::operator()(TimeStep time_step, RelationshipInstance* inst)
+    void EntityAttribute::operator()(TimeStep time_step, std::shared_ptr<RelationshipInstance> inst)
     {
         if (this->type == ENTATTR_FUNCTION)
         {

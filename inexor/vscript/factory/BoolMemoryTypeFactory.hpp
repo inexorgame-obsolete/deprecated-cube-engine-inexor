@@ -19,7 +19,7 @@ namespace vscript {
     {
         public:
 
-            BoolMemoryTypeFactory(CefRefPtr<EntityTypeManager> entity_type_manager);
+            BoolMemoryTypeFactory(std::shared_ptr<EntityTypeManager> entity_type_manager);
             virtual ~BoolMemoryTypeFactory();
 
             TypeRefPtr<EntityType> Create(std::string name_suffix);

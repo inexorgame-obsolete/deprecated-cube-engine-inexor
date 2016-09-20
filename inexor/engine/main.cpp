@@ -32,11 +32,11 @@ namespace sound {
 using namespace inexor::rendering::screen;
 using namespace inexor::sound;
 
-CefRefPtr<inexor::entity::EntitySystem> entity_system;
-CefRefPtr<inexor::entity::EntityTest> entity_test;
-CefRefPtr<inexor::entity::particle::ParticleSubsystem> particle_subsystem;
-CefRefPtr<inexor::entity::particle::ParticleTest> particle_test;
-// CefRefPtr<inexor::entity::HandleSubsystem> handle_subsystem;
+std::shared_ptr<inexor::entity::EntitySystem> entity_system;
+std::shared_ptr<inexor::entity::EntityTest> entity_test;
+std::shared_ptr<inexor::entity::particle::ParticleSubsystem> particle_subsystem;
+std::shared_ptr<inexor::entity::particle::ParticleTest> particle_test;
+// std::shared_ptr<inexor::entity::HandleSubsystem> handle_subsystem;
 
 extern void writeinitcfg();
 
@@ -1397,23 +1397,23 @@ int main(int argc, char **argv)
     inbetweenframes = true;
     renderbackground("initializing...");
 
-    spdlog::get("global")->debug() << "init: entity system";
-    entity_system = new EntitySystem();
+    spdlog::get("global")->info() << "init: entity system";
+    entity_system = std::make_shared<EntitySystem>();
 
-    spdlog::get("global")->debug() << "init: particle subsystem";
-    particle_subsystem = new inexor::entity::particle::ParticleSubsystem(entity_system->GetEntityTypeManager(), entity_system->GetEntityInstanceManager(), entity_system->GetRelationshipTypeManager(), entity_system->GetRelationshipInstanceManager());
-    entity_system->AddSubsystem(particle_subsystem);
-    // particle_subsystem = entity_system->GetSubsystem<inexor::entity::particle::ParticleSubsystem>();
+    spdlog::get("global")->info() << "init: particle subsystem";
+    particle_subsystem = std::make_shared<inexor::entity::particle::ParticleSubsystem>(entity_system->GetEntityTypeManager(), entity_system->GetEntityInstanceManager(), entity_system->GetRelationshipTypeManager(), entity_system->GetRelationshipInstanceManager());
+    entity_system->RegisterSubsystem(particle_subsystem);
 
     // spdlog::get("global")->debug() << "init: handle subsystem";
     // handle_subsystem = entity_system->GetSubsystem<inexor::entity::HandleSubsystem>();
 
-    spdlog::get("global")->debug() << "init: entity system tests";
-    entity_test = new inexor::entity::EntityTest();
+    spdlog::get("global")->info() << "init: entity system tests";
+    entity_test = std::make_shared<inexor::entity::EntityTest>();
+    entity_test->RunTests();
     entity_test->PrintStats();
 
     spdlog::get("global")->info() << "init: particle subsystem tests";
-    particle_test = new inexor::entity::particle::ParticleTest();
+    particle_test = std::make_shared<inexor::entity::particle::ParticleTest>();
     entity_test->PrintStats();
     particle_test->RunTests();
     entity_test->PrintStats();

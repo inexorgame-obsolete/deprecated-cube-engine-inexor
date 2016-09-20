@@ -52,7 +52,7 @@ namespace entity {
     {
         public:
 
-            HandlesRelationshipTypeProvider(CefRefPtr<EntityTypeManager> entity_type_manager);
+            HandlesRelationshipTypeProvider(std::shared_ptr<EntityTypeManager> entity_type_manager);
             virtual ~HandlesRelationshipTypeProvider();
 
         private:
@@ -68,7 +68,7 @@ namespace entity {
     {
         public:
 
-            RendersHandleRelationshipTypeProvider(CefRefPtr<EntityTypeManager> entity_type_manager);
+            RendersHandleRelationshipTypeProvider(std::shared_ptr<EntityTypeManager> entity_type_manager);
             virtual ~RendersHandleRelationshipTypeProvider();
 
         private:

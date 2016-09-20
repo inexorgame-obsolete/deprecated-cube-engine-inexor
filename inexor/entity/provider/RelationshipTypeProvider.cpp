@@ -13,7 +13,7 @@ namespace entity {
 
     RelationshipTypeProvider::RelationshipTypeProvider(
         std::string relationship_name,
-        CefRefPtr<EntityTypeManager> entity_type_manager
+        std::shared_ptr<EntityTypeManager> entity_type_manager
     ) : relationship_name(relationship_name),
         entity_type_manager(entity_type_manager) {};
 

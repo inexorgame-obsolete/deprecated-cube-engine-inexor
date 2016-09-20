@@ -12,7 +12,7 @@
 namespace inexor {
 namespace entity {
 
-    RelationshipTypeManager::RelationshipTypeManager(CefRefPtr<EntityTypeManager> entity_type_manager) : entity_type_manager(entity_type_manager)
+    RelationshipTypeManager::RelationshipTypeManager(std::shared_ptr<EntityTypeManager> entity_type_manager) : entity_type_manager(entity_type_manager)
     {
     }
 
@@ -34,7 +34,7 @@ namespace entity {
 
     TypeRefPtr<RelationshipType> RelationshipTypeManager::Create(std::string name, bool persist, bool synchronize, TypeRefPtr<EntityType> startNodeType, TypeRefPtr<EntityType> endNodeType)
     {
-        TypeRefPtr<RelationshipType> relationship_type = new RelationshipType(name, persist, synchronize, startNodeType, endNodeType);
+        TypeRefPtr<RelationshipType> relationship_type = std::make_shared<RelationshipType>(name, persist, synchronize, startNodeType, endNodeType);
         relationship_types[name] = relationship_type;
         relationship_type_uuids[relationship_type->uuid] = name;
         return relationship_type;
@@ -44,7 +44,7 @@ namespace entity {
     {
         TypeRefPtr<EntityType> startNodeType = entity_type_manager->Get(startNodeTypeName);
         TypeRefPtr<EntityType> endNodeType = entity_type_manager->Get(endNodeTypeName);
-        TypeRefPtr<RelationshipType> relationship_type = new RelationshipType(name, persist, synchronize, startNodeType, endNodeType);
+        TypeRefPtr<RelationshipType> relationship_type = std::make_shared<RelationshipType>(name, persist, synchronize, startNodeType, endNodeType);
         relationship_types[name] = relationship_type;
         relationship_type_uuids[relationship_type->uuid] = name;
         return relationship_type;
@@ -55,7 +55,7 @@ namespace entity {
         relationship_type_uuids[relationship_type->uuid] = relationship_type_name;
     };
 
-    void RelationshipTypeManager::RegisterProvider(CefRefPtr<RelationshipTypeProvider> relationship_type_provider) {
+    void RelationshipTypeManager::RegisterProvider(std::shared_ptr<RelationshipTypeProvider> relationship_type_provider) {
         RegisterType(relationship_type_provider->GetRelationshipName(), relationship_type_provider->GetRelationshipType());
     };
 

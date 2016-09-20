@@ -30,7 +30,7 @@ namespace entity {
     {
     }
 
-    HandlesRelationshipTypeProvider::HandlesRelationshipTypeProvider(CefRefPtr<EntityTypeManager> entity_type_manager)
+    HandlesRelationshipTypeProvider::HandlesRelationshipTypeProvider(std::shared_ptr<EntityTypeManager> entity_type_manager)
         : RelationshipTypeProvider(REL_HANDLES, entity_type_manager)
     {
         // Define the relationship type
@@ -47,7 +47,7 @@ namespace entity {
     {
     }
 
-    RendersHandleRelationshipTypeProvider::RendersHandleRelationshipTypeProvider(CefRefPtr<EntityTypeManager> entity_type_manager)
+    RendersHandleRelationshipTypeProvider::RendersHandleRelationshipTypeProvider(std::shared_ptr<EntityTypeManager> entity_type_manager)
         : RelationshipTypeProvider(REL_RENDERS_HANDLE, entity_type_manager)
     {
         // Define the relationship type

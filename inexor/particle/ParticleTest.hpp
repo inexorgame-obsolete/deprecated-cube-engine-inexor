@@ -164,9 +164,6 @@ namespace particle {
             InstanceRefPtr<RelationshipInstance> rel_point_emitter_cube_renderer_1;
             InstanceRefPtr<RelationshipInstance> rel_point_emitter_origin_renderer_1;
 
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(ParticleTest);
-
     };
 
 }

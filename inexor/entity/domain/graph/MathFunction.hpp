@@ -28,9 +28,6 @@ namespace entity {
 
             std::string expression;
 
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(MathFunction);
-
     };
 
 }

@@ -96,11 +96,6 @@ namespace entity {
              */
             TypeRefPtr<RelationshipType> type;
 
-        protected:
-
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(RelationshipInstance);
-
     };
 
 }

@@ -76,10 +76,6 @@ namespace entity {
              */
             TypeRefPtr<EntityType> type;
 
-        private:
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(EntityInstance);
-
     };
 
 }

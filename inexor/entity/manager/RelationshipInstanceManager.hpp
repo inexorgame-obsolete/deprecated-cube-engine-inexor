@@ -30,7 +30,7 @@ namespace entity {
     {
         public:
 
-            RelationshipInstanceManager(CefRefPtr<RelationshipTypeManager> relationship_type_manager);
+            RelationshipInstanceManager(std::shared_ptr<RelationshipTypeManager> relationship_type_manager);
             virtual ~RelationshipInstanceManager();
 
             /**
@@ -157,10 +157,7 @@ namespace entity {
             std::mutex instance_creation_queue_mutex;
 
             // The relationship type manager.
-            CefRefPtr<RelationshipTypeManager> relationship_type_manager;
-
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(RelationshipInstanceManager);
+            std::shared_ptr<RelationshipTypeManager> relationship_type_manager;
 
     };
 

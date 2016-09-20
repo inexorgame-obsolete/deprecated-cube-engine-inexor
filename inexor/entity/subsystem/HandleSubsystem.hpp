@@ -24,10 +24,10 @@ class HandleSubsystem : public SubsystemBase
     public:
         HandleSubsystem();
         HandleSubsystem(
-            CefRefPtr<EntityTypeManager> entity_type_manager,
-            CefRefPtr<EntityInstanceManager> entity_instance_manager,
-            CefRefPtr<RelationshipTypeManager> relationship_type_manager,
-            CefRefPtr<RelationshipInstanceManager> relationship_instance_manager
+            std::shared_ptr<EntityTypeManager> entity_type_manager,
+            std::shared_ptr<EntityInstanceManager> entity_instance_manager,
+            std::shared_ptr<RelationshipTypeManager> relationship_type_manager,
+            std::shared_ptr<RelationshipInstanceManager> relationship_instance_manager
         );
         virtual ~HandleSubsystem();
 
@@ -68,9 +68,6 @@ class HandleSubsystem : public SubsystemBase
 
         TypeRefPtr<RelationshipType> handles;
         TypeRefPtr<RelationshipType> renders_handle;
-
-        // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(HandleSubsystem);
 };
 
 }

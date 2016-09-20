@@ -28,9 +28,6 @@ namespace entity {
 
             std::string callback_name;
 
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(JsFunction);
-
     };
 
 }

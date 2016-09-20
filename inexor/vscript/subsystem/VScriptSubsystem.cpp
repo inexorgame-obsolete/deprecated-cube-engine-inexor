@@ -8,19 +8,19 @@ namespace vscript {
     }
 
     VScriptSubsystem::VScriptSubsystem(
-        CefRefPtr<EntityTypeManager> entity_type_manager,
-        CefRefPtr<EntityInstanceManager> entity_instance_manager,
-        CefRefPtr<RelationshipTypeManager> relationship_type_manager,
-        CefRefPtr<RelationshipInstanceManager> relationship_instance_manager
+        std::shared_ptr<EntityTypeManager> entity_type_manager,
+        std::shared_ptr<EntityInstanceManager> entity_instance_manager,
+        std::shared_ptr<RelationshipTypeManager> relationship_type_manager,
+        std::shared_ptr<RelationshipInstanceManager> relationship_instance_manager
     ) : SubsystemBase(VSCRIPT_SUBSYSTEM, entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager)
     {
 
         // Create entity type providers
-        CefRefPtr<EntityTypeProvider> memory_provider = new MemoryEntityTypeProvider();
+        std::shared_ptr<EntityTypeProvider> memory_provider = std::make_shared<MemoryEntityTypeProvider>();
         entity_type_manager->RegisterProvider(memory_provider);
 
         // Create relationship type providers
-        // CefRefPtr<RelationshipTypeProvider> teleporting_provider = new TeleportingRelationshipTypeProvider(entity_type_manager);
+        // std::shared_ptr<RelationshipTypeProvider> teleporting_provider = new TeleportingRelationshipTypeProvider(entity_type_manager);
         // relationship_type_manager->RegisterProvider(teleporting_provider);
 
     }

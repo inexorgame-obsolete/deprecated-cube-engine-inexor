@@ -25,16 +25,12 @@ namespace particle {
     {
         public:
 
-            ParticleInitializerTypeFactory(CefRefPtr<EntityTypeManager> entity_type_manager);
+            ParticleInitializerTypeFactory(std::shared_ptr<EntityTypeManager> entity_type_manager);
             virtual ~ParticleInitializerTypeFactory();
 
             TypeRefPtr<EntityType> Create(std::string name_suffix);
             TypeRefPtr<EntityType> Create(std::string name_suffix, FunctionRefPtr function);
 
-        private:
-
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(ParticleInitializerTypeFactory);
     };
 
 }

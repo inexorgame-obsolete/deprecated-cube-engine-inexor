@@ -15,18 +15,18 @@ namespace inexor {
 namespace entity {
 
     template <class T>
-    class TypeRefPtr : public CefRefPtr<T>
+    class TypeRefPtr : public std::shared_ptr<T>
     {
         public:
 
-            typedef CefRefPtr<T> parent;
+            typedef std::shared_ptr<T> parent;
 
             TypeRefPtr() : parent() {}
             TypeRefPtr(T* p) : parent(p) {}
-            TypeRefPtr(const CefRefPtr<T>& r) : parent(r) {}
+            TypeRefPtr(const std::shared_ptr<T>& r) : parent(r) {}
 
             template <typename U>
-            TypeRefPtr(const CefRefPtr<U>& r) : parent(r) {}
+            TypeRefPtr(const std::shared_ptr<U>& r) : parent(r) {}
 
             AttributeRefPtr operator[](std::string key) const
             {

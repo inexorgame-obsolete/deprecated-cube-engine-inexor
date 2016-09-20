@@ -18,19 +18,19 @@ namespace particle {
     }
 
     ParticleSubsystem::ParticleSubsystem(
-        CefRefPtr<EntityTypeManager> entity_type_manager,
-        CefRefPtr<EntityInstanceManager> entity_instance_manager,
-        CefRefPtr<RelationshipTypeManager> relationship_type_manager,
-        CefRefPtr<RelationshipInstanceManager> relationship_instance_manager
+        std::shared_ptr<EntityTypeManager> entity_type_manager,
+        std::shared_ptr<EntityInstanceManager> entity_instance_manager,
+        std::shared_ptr<RelationshipTypeManager> relationship_type_manager,
+        std::shared_ptr<RelationshipInstanceManager> relationship_instance_manager
     ) : SubsystemBase(PARTICLE_SUBSYSTEM, entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager),
         maxfps(30)
     {
         // Create entity type factories
-        particle_type_factory = new ParticleTypeFactory(entity_type_manager);
-        particle_emitter_type_factory = new ParticleEmitterTypeFactory(entity_type_manager);
-        particle_initializer_type_factory = new ParticleInitializerTypeFactory(entity_type_manager);
-        particle_modifier_type_factory = new ParticleModifierTypeFactory(entity_type_manager);
-        particle_renderer_type_factory = new ParticleRendererTypeFactory(entity_type_manager);
+        particle_type_factory = std::make_shared<ParticleTypeFactory>(entity_type_manager);
+        particle_emitter_type_factory = std::make_shared<ParticleEmitterTypeFactory>(entity_type_manager);
+        particle_initializer_type_factory = std::make_shared<ParticleInitializerTypeFactory>(entity_type_manager);
+        particle_modifier_type_factory = std::make_shared<ParticleModifierTypeFactory>(entity_type_manager);
+        particle_renderer_type_factory = std::make_shared<ParticleRendererTypeFactory>(entity_type_manager);
 
         // Register entity type factories
         entity_type_manager->RegisterFactory(particle_type_factory);
@@ -130,18 +130,18 @@ namespace particle {
             std::list<InstanceRefPtr<RelationshipInstance> >::iterator it2 = (*it)->outgoing[renders->uuid].begin();
             TimeStep time_step(0.0, 1000.0);
             FunctionRefPtr function = (*it)->GetType()[PARTICLE_RENDERER_FUNCTION_ATTRIBUTE_NAME]->functionVal;
-            function->Before(time_step, (*it).get());
+            function->Before(time_step, (*it));
             while (it2 != (*it)->outgoing[renders->uuid].end())
             {
                 if ((*it2)->alive && (*it2)->endNode[REMAINING]->intVal > 0)
                 {
-                    function->Execute(time_step, (*it).get(), (*it2)->endNode.get());
+                    function->Execute(time_step, (*it), (*it2)->endNode);
                 } else {
                     (*it2)->alive = false;
                 }
                 ++it2;
             }
-            function->After(time_step, (*it).get());
+            function->After(time_step, (*it));
             ++it;
         }
     }
@@ -443,44 +443,44 @@ namespace particle {
         }
     }
 
-    CefRefPtr<ParticleWorker> ParticleSubsystem::CreateParticleWorker(std::string name, FunctionRefPtr function)
+    std::shared_ptr<ParticleWorker> ParticleSubsystem::CreateParticleWorker(std::string name, FunctionRefPtr function)
     {
         return CreateParticleWorker(name, function, maxfps);
     }
 
-    CefRefPtr<ParticleWorker> ParticleSubsystem::CreateParticleWorker(std::string name, FunctionRefPtr function, int maxfps)
+    std::shared_ptr<ParticleWorker> ParticleSubsystem::CreateParticleWorker(std::string name, FunctionRefPtr function, int maxfps)
     {
-        CefRefPtr<ParticleWorker> worker = new ParticleWorker(name, maxfps, function);
+        std::shared_ptr<ParticleWorker> worker = std::make_shared<ParticleWorker>(name, maxfps, function);
         particle_workers.push_back(worker);
         worker->Start();
         return worker;
     }
 
-    CefRefPtr<EmitterWorker> ParticleSubsystem::CreateEmitterWorker(TypeRefPtr<EntityType> emitter_type, InstanceRefPtr<EntityInstance> emitter_instance)
+    std::shared_ptr<EmitterWorker> ParticleSubsystem::CreateEmitterWorker(TypeRefPtr<EntityType> emitter_type, InstanceRefPtr<EntityInstance> emitter_instance)
     {
         return CreateEmitterWorker(emitter_type, emitter_instance, maxfps);
     }
 
-    CefRefPtr<EmitterWorker> ParticleSubsystem::CreateEmitterWorker(TypeRefPtr<EntityType> emitter_type, InstanceRefPtr<EntityInstance> emitter_instance, int maxfps)
+    std::shared_ptr<EmitterWorker> ParticleSubsystem::CreateEmitterWorker(TypeRefPtr<EntityType> emitter_type, InstanceRefPtr<EntityInstance> emitter_instance, int maxfps)
     {
         FunctionRefPtr function = emitter_type->GetAttribute(PARTICLE_EMITTER_FUNCTION_ATTRIBUTE_NAME)->GetFunction();
         std::string thread_name = emitter_type->GetName() + "_" + emitter_instance->uuid;
-        CefRefPtr<EmitterWorker> worker = new EmitterWorker(thread_name, maxfps, function, emitter_instance, entity_instance_manager, relationship_instance_manager);
+        std::shared_ptr<EmitterWorker> worker = std::make_shared<EmitterWorker>(thread_name, maxfps, function, emitter_instance, entity_instance_manager, relationship_instance_manager);
         emitter_workers.push_back(worker);
         worker->Start();
         return worker;
     }
 
-    CefRefPtr<ModifierWorker> ParticleSubsystem::CreateModifierWorker(TypeRefPtr<EntityType> modifier_type, InstanceRefPtr<EntityInstance> modifier_instance)
+    std::shared_ptr<ModifierWorker> ParticleSubsystem::CreateModifierWorker(TypeRefPtr<EntityType> modifier_type, InstanceRefPtr<EntityInstance> modifier_instance)
     {
         return CreateModifierWorker(modifier_type, modifier_instance, maxfps);
     }
 
-    CefRefPtr<ModifierWorker> ParticleSubsystem::CreateModifierWorker(TypeRefPtr<EntityType> modifier_type, InstanceRefPtr<EntityInstance> modifier_instance, int maxfps)
+    std::shared_ptr<ModifierWorker> ParticleSubsystem::CreateModifierWorker(TypeRefPtr<EntityType> modifier_type, InstanceRefPtr<EntityInstance> modifier_instance, int maxfps)
     {
         FunctionRefPtr function = modifier_type->GetAttribute(PARTICLE_MODIFIER_FUNCTION_ATTRIBUTE_NAME)->GetFunction();
         std::string thread_name = modifier_type->GetName() + "_" + modifier_instance->uuid;
-        CefRefPtr<ModifierWorker> worker = new ModifierWorker(thread_name, maxfps, function, modifier_instance, entity_instance_manager, relationship_instance_manager);
+        std::shared_ptr<ModifierWorker> worker = std::make_shared<ModifierWorker>(thread_name, maxfps, function, modifier_instance, entity_instance_manager, relationship_instance_manager);
         modifier_workers.push_back(worker);
         worker->Start();
         return worker;

@@ -10,7 +10,7 @@
 namespace inexor {
 namespace vscript {
 
-    BoolMemoryTypeFactory::BoolMemoryTypeFactory(CefRefPtr<EntityTypeManager> entity_type_manager)
+    BoolMemoryTypeFactory::BoolMemoryTypeFactory(std::shared_ptr<EntityTypeManager> entity_type_manager)
         : EntityTypeFactory(BOOL_MEMORY_TYPE_FACTORY, BOOL_MEMORY_FUNCTION_ATTRIBUTE_NAME, ENTTYPE_PREFIX_BOOL_MEMORY_TYPE, entity_type_manager)
     {
     }

@@ -21,7 +21,7 @@ namespace entity {
 
             RelationshipTypeProvider(
                 std::string relationship_name,
-                CefRefPtr<EntityTypeManager> entity_type_manager
+                std::shared_ptr<EntityTypeManager> entity_type_manager
             );
             virtual ~RelationshipTypeProvider() {};
 
@@ -31,7 +31,7 @@ namespace entity {
         protected:
 
             std::string relationship_name;
-            CefRefPtr<EntityTypeManager> entity_type_manager;
+            std::shared_ptr<EntityTypeManager> entity_type_manager;
             TypeRefPtr<RelationshipType> relationship_type;
 
         private:

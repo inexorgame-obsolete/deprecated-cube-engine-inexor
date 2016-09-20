@@ -27,6 +27,7 @@ class EntityTest
         void InstanceCreationTest();
         void TypeCreationTest();
         void LowLevelTypeCreationTest();
+        void LowLevelInstanceCreationTest();
 
     private:
 

@@ -12,7 +12,7 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-    EmitterWorker::EmitterWorker(std::string name, int maxfps, FunctionRefPtr function, InstanceRefPtr<EntityInstance> emitter_instance, CefRefPtr<EntityInstanceManager> entity_instance_manager, CefRefPtr<RelationshipInstanceManager> relationship_instance_manager)
+    EmitterWorker::EmitterWorker(std::string name, int maxfps, FunctionRefPtr function, InstanceRefPtr<EntityInstance> emitter_instance, std::shared_ptr<EntityInstanceManager> entity_instance_manager, std::shared_ptr<RelationshipInstanceManager> relationship_instance_manager)
         : ParticleWorker(name, maxfps, function),
           emitter_instance(emitter_instance),
           entity_instance_manager(entity_instance_manager),
@@ -87,7 +87,7 @@ namespace particle {
                     {
                         for (int part = 0; part < w->emitter_instance[BATCH_SIZE]->intVal; part++)
                         {
-                            // w->function->Execute(time_step, w->particle_type.get(), w->emitter_instance.get());
+                            // w->function->Execute(time_step, w->particle_type, w->emitter_instance);
                             if (w->particle_pool.size() > 0)
                             {
                                 // If a particle is available, we make it reusable again
@@ -100,7 +100,7 @@ namespace particle {
                                 particle_inst[ELAPSED] = 0;
                                 particle_inst[LAST_ELAPSED] = 0;
 
-                                w->function->Execute(time_step, w->emitter_instance.get(), particle_inst.get());
+                                w->function->Execute(time_step, w->emitter_instance, particle_inst);
 
                                 // Reanimate all outgoing relationships
                                 for(std::unordered_map<std::string, std::list<InstanceRefPtr<RelationshipInstance> > >::iterator it = particle_inst->outgoing.begin(); it != particle_inst->outgoing.end(); ++it)
@@ -123,7 +123,7 @@ namespace particle {
                                 // Call all initializers
                                 for(std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = w->emitter_instance->outgoing[w->apply_initializer->uuid].begin(); it != w->emitter_instance->outgoing[w->apply_initializer->uuid].end(); ++it)
                                 {
-                                    (*it)->endNode->GetType()[PARTICLE_INITIALIZER_FUNCTION_ATTRIBUTE_NAME]->functionVal(time_step, w->emitter_instance.get(), (*it)->endNode.get(), particle_inst.get());
+                                    (*it)->endNode->GetType()[PARTICLE_INITIALIZER_FUNCTION_ATTRIBUTE_NAME]->functionVal(time_step, w->emitter_instance, (*it)->endNode, particle_inst);
                                 }
 
                             } else {
@@ -133,7 +133,7 @@ namespace particle {
                                 InstanceRefPtr<EntityInstance> particle_inst = w->entity_instance_manager->Create(w->particle_type);
                                 particle_inst[ELAPSED] = 0;
                                 particle_inst[LAST_ELAPSED] = 0;
-                                w->function->Execute(time_step, w->emitter_instance.get(), particle_inst.get());
+                                w->function->Execute(time_step, w->emitter_instance, particle_inst);
 
                                 // Create a relationship from particle instance to it's origin emitter instance
                                 w->relationship_instance_manager->CreateUnmanagedInstance(w->emitted_by, particle_inst, w->emitter_instance);
@@ -153,7 +153,7 @@ namespace particle {
                                 // Call all initializers
                                 for(std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = w->emitter_instance->outgoing[w->apply_initializer->uuid].begin(); it != w->emitter_instance->outgoing[w->apply_initializer->uuid].end(); ++it)
                                 {
-                                    (*it)->endNode->GetType()[PARTICLE_INITIALIZER_FUNCTION_ATTRIBUTE_NAME]->functionVal(time_step, w->emitter_instance.get(), (*it)->endNode.get(), particle_inst.get());
+                                    (*it)->endNode->GetType()[PARTICLE_INITIALIZER_FUNCTION_ATTRIBUTE_NAME]->functionVal(time_step, w->emitter_instance, (*it)->endNode, particle_inst);
                                 }
 
                             }

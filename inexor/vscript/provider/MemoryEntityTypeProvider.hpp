@@ -24,10 +24,6 @@ namespace vscript {
             MemoryEntityTypeProvider();
             virtual ~MemoryEntityTypeProvider();
 
-        private:
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(MemoryEntityTypeProvider);
-
     };
 
 }

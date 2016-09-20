@@ -67,25 +67,25 @@ namespace entity {
              * Returns the entity type of the start node.
              * @return The entity type of the start node, which may be a parent entity type.
              */
-            CefRefPtr<EntityType> GetStartNodeType() { return this->start_node_type; };
+            std::shared_ptr<EntityType> GetStartNodeType() { return this->start_node_type; };
 
             /**
              * Sets the entity type of the start node.
              * @param startNodeType The entity type of the start node.
              */
-            void SetStartNodeType(CefRefPtr<EntityType> startNodeType) { this->start_node_type = startNodeType; };
+            void SetStartNodeType(std::shared_ptr<EntityType> startNodeType) { this->start_node_type = startNodeType; };
 
             /**
              * Returns the entity type of the end node.
              * @return The entity type of the end node, which may be a parent entity type.
              */
-            CefRefPtr<EntityType> GetEndNodeType() { return this->end_node_type; };
+            std::shared_ptr<EntityType> GetEndNodeType() { return this->end_node_type; };
 
             /**
              * Sets the entity type of the end node.
              * @param startNodeType The entity type of the end node.
              */
-            void SetEndNodeType(CefRefPtr<EntityType> startNodeType) { this->end_node_type = end_node_type; };
+            void SetEndNodeType(std::shared_ptr<EntityType> startNodeType) { this->end_node_type = end_node_type; };
 
             /**
              * The entity type of the start node.
@@ -101,9 +101,6 @@ namespace entity {
 
             // TODO: remove?
             void operator()(EntityInstance* inst);
-
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(RelationshipType);
     };
 
 }

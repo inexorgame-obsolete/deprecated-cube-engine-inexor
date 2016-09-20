@@ -16,23 +16,23 @@ namespace entity {
     }
 
     HandleSubsystem::HandleSubsystem(
-        CefRefPtr<EntityTypeManager> entity_type_manager,
-        CefRefPtr<EntityInstanceManager> entity_instance_manager,
-        CefRefPtr<RelationshipTypeManager> relationship_type_manager,
-        CefRefPtr<RelationshipInstanceManager> relationship_instance_manager
+        std::shared_ptr<EntityTypeManager> entity_type_manager,
+        std::shared_ptr<EntityInstanceManager> entity_instance_manager,
+        std::shared_ptr<RelationshipTypeManager> relationship_type_manager,
+        std::shared_ptr<RelationshipInstanceManager> relationship_instance_manager
     ) : SubsystemBase(SYS_HANDLE, entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager)
     {
 
         // Create entity type providers
-        CefRefPtr<EntityTypeProvider> handle_provider = new HandleEntityTypeProvider();
+        std::shared_ptr<EntityTypeProvider> handle_provider = std::make_shared<HandleEntityTypeProvider>();
         entity_type_manager->RegisterProvider(handle_provider);
-        CefRefPtr<EntityTypeProvider> handle_renderer_provider = new HandleRendererEntityTypeProvider();
+        std::shared_ptr<EntityTypeProvider> handle_renderer_provider = std::make_shared<HandleRendererEntityTypeProvider>();
         entity_type_manager->RegisterProvider(handle_renderer_provider);
 
         // Create relationship type providers
-        CefRefPtr<RelationshipTypeProvider> handles_provider = new HandlesRelationshipTypeProvider(entity_type_manager);
+        std::shared_ptr<RelationshipTypeProvider> handles_provider = std::make_shared<HandlesRelationshipTypeProvider>(entity_type_manager);
         relationship_type_manager->RegisterProvider(handles_provider);
-        CefRefPtr<RelationshipTypeProvider> renders_handle_provider = new RendersHandleRelationshipTypeProvider(entity_type_manager);
+        std::shared_ptr<RelationshipTypeProvider> renders_handle_provider = std::make_shared<RendersHandleRelationshipTypeProvider>(entity_type_manager);
         relationship_type_manager->RegisterProvider(renders_handle_provider);
 
         FunctionRefPtr handle_renderer_box = new Box();
@@ -84,14 +84,14 @@ namespace entity {
         {
             InstanceRefPtr<EntityInstance> handle_renderer = it->second;
             FunctionRefPtr func = handle_renderer[FUNC_RENDERS_HANDLE_ATTRIBUTE_NAME]->functionVal;
-            func->Before(time_step, handle_renderer.get());
+            func->Before(time_step, handle_renderer);
             std::list<InstanceRefPtr<RelationshipInstance> >::iterator it2 = handle_renderer->outgoing[renders_handle->uuid].begin();
             while (it2 != handle_renderer->outgoing[renders_handle->uuid].end())
             {
-                func->Execute(time_step, (*it2).get());
+                func->Execute(time_step, (*it2));
                 ++it2;
             }
-            func->After(time_step, handle_renderer.get());
+            func->After(time_step, handle_renderer);
             ++it;
         }
         // render3dbox((*it).second[POS]->vec3Val, 1.0f, 1.0f, 1.0f, 0);

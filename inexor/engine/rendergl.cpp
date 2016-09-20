@@ -23,8 +23,8 @@ bool hasVAO = false, hasFBO = false, hasAFBO = false, hasDS = false, hasTF = fal
 int hasstencil = 0;
 
 
-extern CefRefPtr<inexor::entity::particle::ParticleSubsystem> particle_subsystem;
-// extern CefRefPtr<inexor::entity::HandleSubsystem> handle_subsystem;
+extern std::shared_ptr<inexor::entity::particle::ParticleSubsystem> particle_subsystem;
+// extern std::shared_ptr<inexor::entity::HandleSubsystem> handle_subsystem;
 
 VAR(glversion, 1, 0, 0);
 VAR(glslversion, 1, 0, 0);

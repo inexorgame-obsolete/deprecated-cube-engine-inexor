@@ -10,7 +10,7 @@
 namespace inexor {
 namespace entity {
 
-    RelationshipInstanceManager::RelationshipInstanceManager(CefRefPtr<RelationshipTypeManager> relationship_type_manager)
+    RelationshipInstanceManager::RelationshipInstanceManager(std::shared_ptr<RelationshipTypeManager> relationship_type_manager)
         : thread(NULL), running(false), stopped(true), maxfps(5), relationship_type_manager(relationship_type_manager)
     {
         frame_millis = frame_last_millis = SDL_GetTicks();
@@ -22,7 +22,7 @@ namespace entity {
 
     InstanceRefPtr<RelationshipInstance> RelationshipInstanceManager::CreateInstance(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<EntityInstance> start_node, InstanceRefPtr<EntityInstance> end_node)
     {
-        InstanceRefPtr<RelationshipInstance> relationship_instance = new RelationshipInstance(relationship_type, start_node, end_node);
+        InstanceRefPtr<RelationshipInstance> relationship_instance = std::make_shared<RelationshipInstance>(relationship_type, start_node, end_node);
         instance_creation_queue_mutex.lock();
         instance_creation_queue.push_back(relationship_instance);
         instance_creation_queue_mutex.unlock();
@@ -39,7 +39,7 @@ namespace entity {
 
     InstanceRefPtr<RelationshipInstance> RelationshipInstanceManager::CreateUnmanagedInstance(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<EntityInstance> start_node, InstanceRefPtr<EntityInstance> end_node)
     {
-        InstanceRefPtr<RelationshipInstance> relationship_instance = new RelationshipInstance(relationship_type, start_node, end_node);
+        InstanceRefPtr<RelationshipInstance> relationship_instance = std::make_shared<RelationshipInstance>(relationship_type, start_node, end_node);
         // Note: no insertion into the instance_creation_queue! -> No lock but no global reference
         start_node->outgoing[relationship_type->uuid].push_back(relationship_instance);
         end_node->incoming[relationship_type->uuid].push_back(relationship_instance);

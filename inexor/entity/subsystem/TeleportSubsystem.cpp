@@ -15,21 +15,21 @@ namespace entity {
     }
 
     TeleportSubsystem::TeleportSubsystem(
-        CefRefPtr<EntityTypeManager> entity_type_manager,
-        CefRefPtr<EntityInstanceManager> entity_instance_manager,
-        CefRefPtr<RelationshipTypeManager> relationship_type_manager,
-        CefRefPtr<RelationshipInstanceManager> relationship_instance_manager
+        std::shared_ptr<EntityTypeManager> entity_type_manager,
+        std::shared_ptr<EntityInstanceManager> entity_instance_manager,
+        std::shared_ptr<RelationshipTypeManager> relationship_type_manager,
+        std::shared_ptr<RelationshipInstanceManager> relationship_instance_manager
     ) : SubsystemBase(TELEPORT_SUBSYSTEM, entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager)
     {
 
         // Create entity type providers
-        CefRefPtr<EntityTypeProvider> teleport_provider = new TeleportEntityTypeProvider();
-        CefRefPtr<EntityTypeProvider> teledest_provider = new TeledestEntityTypeProvider();
+        std::shared_ptr<EntityTypeProvider> teleport_provider = std::make_shared<TeleportEntityTypeProvider>();
+        std::shared_ptr<EntityTypeProvider> teledest_provider = std::make_shared<TeledestEntityTypeProvider>();
         entity_type_manager->RegisterProvider(teleport_provider);
         entity_type_manager->RegisterProvider(teledest_provider);
 
         // Create relationship type providers
-        CefRefPtr<RelationshipTypeProvider> teleporting_provider = new TeleportingRelationshipTypeProvider(entity_type_manager);
+        std::shared_ptr<RelationshipTypeProvider> teleporting_provider = std::make_shared<TeleportingRelationshipTypeProvider>(entity_type_manager);
         relationship_type_manager->RegisterProvider(teleporting_provider);
 
     }

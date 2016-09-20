@@ -18,12 +18,12 @@ namespace entity {
         ResetTimer();
 
         // Create type managers
-        entity_type_manager = new EntityTypeManager();
-        relationship_type_manager = new RelationshipTypeManager(entity_type_manager);
+        entity_type_manager = std::make_shared<EntityTypeManager>();
+        relationship_type_manager = std::make_shared<RelationshipTypeManager>(entity_type_manager);
 
         // Create instance managers
-        entity_instance_manager = new EntityInstanceManager(entity_type_manager);
-        relationship_instance_manager = new RelationshipInstanceManager(relationship_type_manager);
+        entity_instance_manager = std::make_shared<EntityInstanceManager>(entity_type_manager);
+        relationship_instance_manager = std::make_shared<RelationshipInstanceManager>(relationship_type_manager);
 
         InitProviders();
         InitSubsystems();
@@ -47,11 +47,11 @@ namespace entity {
     {
     /*
         // Create entity type providers
-        CefRefPtr<EntityTypeProvider> handle_provider = new HandleEntityTypeProvider();
+        std::shared_ptr<EntityTypeProvider> handle_provider = std::make_shared<HandleEntityTypeProvider>();
         entity_type_manager->RegisterProvider(handle_provider);
 
         // Create relationship type providers
-        CefRefPtr<RelationshipTypeProvider> handles_provider = new HandlesRelationshipTypeProvider(entity_type_manager);
+        std::shared_ptr<RelationshipTypeProvider> handles_provider = std::make_shared<HandlesRelationshipTypeProvider>(entity_type_manager);
         relationship_type_manager->RegisterProvider(handles_provider);
     */
     }
@@ -67,7 +67,7 @@ namespace entity {
         // Store the subsystems and it's type(!) in the subsystem type map, so that
         // the concrete subsystem can be retrieved instead of only as SubsystemBase
         //
-        // ex: CefRefPtr<TeleportSubsystem> teleport_subsystem = entity_system->GetSubsystem<TeleportSubsystem>();
+        // ex: std::shared_ptr<TeleportSubsystem> teleport_subsystem = entity_system->GetSubsystem<TeleportSubsystem>();
         //
     	// subsystemTypeMap.Set<HandleSubsystem>(handle_subsystem.get());
     	// subsystemTypeMap.Set<TeleportSubsystem>(teleport_subsystem.get());
@@ -143,22 +143,22 @@ namespace entity {
         this->time_unit = time_unit;
     }
 
-    CefRefPtr<EntityTypeManager> EntitySystem::GetEntityTypeManager()
+    std::shared_ptr<EntityTypeManager> EntitySystem::GetEntityTypeManager()
     {
         return entity_type_manager;
     }
 
-    CefRefPtr<RelationshipTypeManager> EntitySystem::GetRelationshipTypeManager()
+    std::shared_ptr<RelationshipTypeManager> EntitySystem::GetRelationshipTypeManager()
     {
         return relationship_type_manager;
     }
 
-    CefRefPtr<EntityInstanceManager> EntitySystem::GetEntityInstanceManager()
+    std::shared_ptr<EntityInstanceManager> EntitySystem::GetEntityInstanceManager()
     {
         return entity_instance_manager;
     }
 
-    CefRefPtr<RelationshipInstanceManager> EntitySystem::GetRelationshipInstanceManager()
+    std::shared_ptr<RelationshipInstanceManager> EntitySystem::GetRelationshipInstanceManager()
     {
         return relationship_instance_manager;
     }

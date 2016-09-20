@@ -133,30 +133,30 @@ namespace entity {
              * Returns the entity type manager which is responsible for
              * managing the entity types.
              */
-            CefRefPtr<EntityTypeManager> GetEntityTypeManager();
+            std::shared_ptr<EntityTypeManager> GetEntityTypeManager();
 
             /**
              * Returns the relationship type manager which is responsible for
              * managing the relationship types.
              */
-            CefRefPtr<RelationshipTypeManager> GetRelationshipTypeManager();
+            std::shared_ptr<RelationshipTypeManager> GetRelationshipTypeManager();
 
             /**
              * Returns the entity instance manager which is responsible for
              * managing the entity instances.
              */
-            CefRefPtr<EntityInstanceManager> GetEntityInstanceManager();
+            std::shared_ptr<EntityInstanceManager> GetEntityInstanceManager();
 
             /**
              * Returns the relationship instance manager which is responsible for
              * managing the relationship instances.
              */
-            CefRefPtr<RelationshipInstanceManager> GetRelationshipInstanceManager();
+            std::shared_ptr<RelationshipInstanceManager> GetRelationshipInstanceManager();
 
             /**
              * Adds a subsystem.
              */
-            template<typename T, typename = std::enable_if<std::is_base_of<SubsystemBase, T>::value>> void AddSubsystem(CefRefPtr<T> subsystem_ref_ptr) {
+            template<typename T, typename = std::enable_if<std::is_base_of<SubsystemBase, T>::value>> void RegisterSubsystem(std::shared_ptr<T> subsystem_ref_ptr) {
                 subsystemTypeMap.Set<T>(subsystem_ref_ptr.get());
                 subsystems.push_back(subsystem_ref_ptr);
             };
@@ -193,28 +193,28 @@ namespace entity {
             /**
              * The entity type manager.
              */
-            CefRefPtr<EntityTypeManager> entity_type_manager;
+            std::shared_ptr<EntityTypeManager> entity_type_manager;
 
             /**
              * The relationship type manager.
              */
-            CefRefPtr<RelationshipTypeManager> relationship_type_manager;
+            std::shared_ptr<RelationshipTypeManager> relationship_type_manager;
 
             /**
              * The entity instance manager.
              */
-            CefRefPtr<EntityInstanceManager> entity_instance_manager;
+            std::shared_ptr<EntityInstanceManager> entity_instance_manager;
 
             /**
              * The relationship instance manager.
              */
-            CefRefPtr<RelationshipInstanceManager> relationship_instance_manager;
+            std::shared_ptr<RelationshipInstanceManager> relationship_instance_manager;
 
             /**
              * The list of subsystems to iterate over. Only the common API
              * provided by SubsystemBase is available.
              */
-            std::vector<SubsystemBase*> subsystems;
+            std::vector<std::shared_ptr<SubsystemBase>> subsystems;
 
             /**
              * The subsystem type map grants access to the real type of the
@@ -222,28 +222,6 @@ namespace entity {
              */
             TypeMap subsystemTypeMap;
 
-            /**
-             * The handle subsystem.
-             */
-            // CefRefPtr<HandleSubsystem> handle_subsystem;
-
-            /**
-             * The teleport subsystem.
-             */
-            // CefRefPtr<TeleportSubsystem> teleport_subsystem;
-
-            /**
-             * The vscript subsystem.
-             */
-            // CefRefPtr<VScriptSubsystem> vscript_subsystem;
-
-            /**
-             * The particle subsystem.
-             */
-            // CefRefPtr<particle::ParticleSubsystem> particle_subsystem;
-
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(EntitySystem);
     };
 
 }
@@ -252,6 +230,6 @@ namespace entity {
 /**
  * Provide the entity system as global reference.
  */
-extern CefRefPtr<inexor::entity::EntitySystem> entity_system;
+extern std::shared_ptr<inexor::entity::EntitySystem> entity_system;
 
 #endif /* SRC_ENGINE_ENTITY_ENTITYSYSTEM_H_ */

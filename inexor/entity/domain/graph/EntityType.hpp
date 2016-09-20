@@ -31,9 +31,6 @@ namespace entity {
 
             TypeRefPtr<EntityType> parent;
 
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(EntityType);
-
     };
 
 }

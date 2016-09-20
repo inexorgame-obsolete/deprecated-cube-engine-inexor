@@ -29,8 +29,8 @@ namespace entity {
             TypeRefPtr<EntityType> Create(std::string factory_name, std::string entity_type_name_suffix);
 
             void RegisterType(std::string entity_type_name, TypeRefPtr<EntityType> entity_type);
-            void RegisterProvider(CefRefPtr<EntityTypeProvider> entity_type_provider);
-            void RegisterFactory(CefRefPtr<EntityTypeFactory> entity_type_factory);
+            void RegisterProvider(std::shared_ptr<EntityTypeProvider> entity_type_provider);
+            void RegisterFactory(std::shared_ptr<EntityTypeFactory> entity_type_factory);
 
             TypeRefPtr<EntityType> Get(std::string entity_type_name);
             TypeRefPtr<EntityType> GetByUuid(std::string entity_type_uuid);
@@ -55,10 +55,7 @@ namespace entity {
              */
             std::unordered_map<std::string, std::string> entity_type_uuids;
 
-            std::unordered_map<std::string, CefRefPtr<EntityTypeFactory> > entity_type_factories;
-
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(EntityTypeManager);
+            std::unordered_map<std::string, std::shared_ptr<EntityTypeFactory> > entity_type_factories;
 
     };
 

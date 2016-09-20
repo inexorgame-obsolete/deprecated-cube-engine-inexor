@@ -12,7 +12,7 @@
 namespace inexor {
 namespace entity {
 
-    AttributeRefPtr::AttributeRefPtr() : parent(new EntityAttribute()) {}
+    AttributeRefPtr::AttributeRefPtr() : parent(std::make_shared<EntityAttribute>()) {}
 
     AttributeRefPtr::AttributeRefPtr(EntityAttribute* p) : parent(p)
     {
@@ -29,7 +29,7 @@ namespace entity {
         attr->initialized = true;
     }
 
-    AttributeRefPtr::AttributeRefPtr(const CefRefPtr<EntityAttribute>& r) : parent(r)
+    AttributeRefPtr::AttributeRefPtr(const std::shared_ptr<EntityAttribute>& r) : parent(r)
     {
         EntityAttribute* attr = this->get();
         attr->type = r->type;
@@ -44,27 +44,27 @@ namespace entity {
         attr->initialized = true;
     }
 
-    AttributeRefPtr::AttributeRefPtr(bool value) : parent(new EntityAttribute(value)) {}
+    AttributeRefPtr::AttributeRefPtr(bool value) : parent(std::make_shared<EntityAttribute>(value)) {}
 
-    AttributeRefPtr::AttributeRefPtr(int value) : parent(new EntityAttribute(value)) {}
+    AttributeRefPtr::AttributeRefPtr(int value) : parent(std::make_shared<EntityAttribute>(value)) {}
 
-    AttributeRefPtr::AttributeRefPtr(float value) : parent(new EntityAttribute(value)) {}
+    AttributeRefPtr::AttributeRefPtr(float value) : parent(std::make_shared<EntityAttribute>(value)) {}
 
-    AttributeRefPtr::AttributeRefPtr(double value) : parent(new EntityAttribute(value)) {}
+    AttributeRefPtr::AttributeRefPtr(double value) : parent(std::make_shared<EntityAttribute>(value)) {}
 
-    AttributeRefPtr::AttributeRefPtr(vec value) : parent(new EntityAttribute(value)) {}
+    AttributeRefPtr::AttributeRefPtr(vec value) : parent(std::make_shared<EntityAttribute>(value)) {}
 
-    AttributeRefPtr::AttributeRefPtr(double x, double y, double z) : parent(new EntityAttribute(x, y, z)) {}
+    AttributeRefPtr::AttributeRefPtr(double x, double y, double z) : parent(std::make_shared<EntityAttribute>(x, y, z)) {}
 
-    AttributeRefPtr::AttributeRefPtr(vec4 value) : parent(new EntityAttribute(value)) {}
+    AttributeRefPtr::AttributeRefPtr(vec4 value) : parent(std::make_shared<EntityAttribute>(value)) {}
 
-    AttributeRefPtr::AttributeRefPtr(double x, double y, double z, double w) : parent(new EntityAttribute(x, y, z, w)) {}
+    AttributeRefPtr::AttributeRefPtr(double x, double y, double z, double w) : parent(std::make_shared<EntityAttribute>(x, y, z, w)) {}
 
-    AttributeRefPtr::AttributeRefPtr(std::string value) : parent(new EntityAttribute(value)) {}
+    AttributeRefPtr::AttributeRefPtr(std::string value) : parent(std::make_shared<EntityAttribute>(value)) {}
 
-    AttributeRefPtr::AttributeRefPtr(FunctionRefPtr value) : parent(new EntityAttribute(value)) {}
+    AttributeRefPtr::AttributeRefPtr(FunctionRefPtr value) : parent(std::make_shared<EntityAttribute>(value)) {}
 
-    AttributeRefPtr::AttributeRefPtr(FunctionRefPtr *value) : parent(new EntityAttribute(*value)) {}
+    AttributeRefPtr::AttributeRefPtr(FunctionRefPtr *value) : parent(std::make_shared<EntityAttribute>(*value)) {}
 
     EntityAttribute& AttributeRefPtr::operator=(const EntityAttribute &attribute)
     {
@@ -834,62 +834,62 @@ namespace entity {
         get()->functionVal->Execute(time_step);
     }
 
-    void AttributeRefPtr::operator()(TimeStep time_step, EntityType* type)
+    void AttributeRefPtr::operator()(TimeStep time_step, std::shared_ptr<EntityType> type)
     {
         get()->functionVal->Execute(time_step, type);
     }
 
-    void AttributeRefPtr::operator()(TimeStep time_step, EntityType* type, EntityInstance* inst)
+    void AttributeRefPtr::operator()(TimeStep time_step, std::shared_ptr<EntityType> type, std::shared_ptr<EntityInstance> inst)
     {
         get()->functionVal->Execute(time_step, type, inst);
     }
 
-    void AttributeRefPtr::operator()(TimeStep time_step, EntityInstance* inst)
+    void AttributeRefPtr::operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst)
     {
         get()->functionVal->Execute(time_step, inst);
     }
 
-    void AttributeRefPtr::operator()(TimeStep time_step, EntityInstance* inst, RelationshipType* rel_type)
+    void AttributeRefPtr::operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst, std::shared_ptr<RelationshipType> rel_type)
     {
         get()->functionVal->Execute(time_step, inst, rel_type);
     }
 
-    void AttributeRefPtr::operator()(TimeStep time_step, EntityInstance* inst, RelationshipInstance* rel_inst)
+    void AttributeRefPtr::operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst, std::shared_ptr<RelationshipInstance> rel_inst)
     {
         get()->functionVal->Execute(time_step, inst, rel_inst);
     }
 
-    void AttributeRefPtr::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2)
+    void AttributeRefPtr::operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2)
     {
         get()->functionVal->Execute(time_step, inst_1, inst_2);
     }
 
-    void AttributeRefPtr::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, EntityInstance* inst_3)
+    void AttributeRefPtr::operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2, std::shared_ptr<EntityInstance> inst_3)
     {
         get()->functionVal->Execute(time_step, inst_1, inst_2, inst_3);
     }
 
-    void AttributeRefPtr::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipType* rel_type)
+    void AttributeRefPtr::operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2, std::shared_ptr<RelationshipType> rel_type)
     {
         get()->functionVal->Execute(time_step, inst_1, inst_2, rel_type);
     }
 
-    void AttributeRefPtr::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipInstance* rel_inst)
+    void AttributeRefPtr::operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2, std::shared_ptr<RelationshipInstance> rel_inst)
     {
         get()->functionVal->Execute(time_step, inst_1, inst_2, rel_inst);
     }
 
-    void AttributeRefPtr::operator()(TimeStep time_step, RelationshipType* type)
+    void AttributeRefPtr::operator()(TimeStep time_step, std::shared_ptr<RelationshipType> type)
     {
         get()->functionVal->Execute(time_step, type);
     }
 
-    void AttributeRefPtr::operator()(TimeStep time_step, RelationshipType* type, RelationshipInstance* inst)
+    void AttributeRefPtr::operator()(TimeStep time_step, std::shared_ptr<RelationshipType> type, std::shared_ptr<RelationshipInstance> inst)
     {
         get()->functionVal->Execute(time_step, type, inst);
     }
 
-    void AttributeRefPtr::operator()(TimeStep time_step, RelationshipInstance* inst)
+    void AttributeRefPtr::operator()(TimeStep time_step, std::shared_ptr<RelationshipInstance> inst)
     {
         get()->functionVal->Execute(time_step, inst);
     }

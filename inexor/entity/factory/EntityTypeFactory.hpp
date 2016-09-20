@@ -20,7 +20,7 @@ namespace entity {
     {
         public:
 
-            EntityTypeFactory(std::string factory_name, std::string function_attribute_name, std::string entity_name_prefix, CefRefPtr<EntityTypeManager> entity_type_manager);
+            EntityTypeFactory(std::string factory_name, std::string function_attribute_name, std::string entity_name_prefix, std::shared_ptr<EntityTypeManager> entity_type_manager);
             virtual ~EntityTypeFactory();
 
             /**
@@ -45,12 +45,8 @@ namespace entity {
             std::string factory_name;
             std::string function_attribute_name;
             std::string entity_type_name_prefix;
-            CefRefPtr<EntityTypeManager> entity_type_manager;
+            std::shared_ptr<EntityTypeManager> entity_type_manager;
 
-        private:
-
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(EntityTypeFactory);
     };
 
 }

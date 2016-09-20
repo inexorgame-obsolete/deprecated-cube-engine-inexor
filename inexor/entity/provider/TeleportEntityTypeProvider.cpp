@@ -33,7 +33,7 @@ namespace entity {
     {
     }
 
-    TeleportingRelationshipTypeProvider::TeleportingRelationshipTypeProvider(CefRefPtr<EntityTypeManager> entity_type_manager)
+    TeleportingRelationshipTypeProvider::TeleportingRelationshipTypeProvider(std::shared_ptr<EntityTypeManager> entity_type_manager)
         : RelationshipTypeProvider(REL_TELEPORTING, entity_type_manager)
     {
         // Define the relationship type

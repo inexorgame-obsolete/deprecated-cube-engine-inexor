@@ -29,9 +29,6 @@ namespace entity {
             TypeRefPtr<EntityType> entity_type;
             std::string entity_name;
 
-        private:
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(EntityTypeProvider);
     };
 
 }

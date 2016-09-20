@@ -31,10 +31,10 @@ namespace particle {
 
             ParticleSubsystem();
             ParticleSubsystem(
-                CefRefPtr<EntityTypeManager> entity_type_manager,
-                CefRefPtr<EntityInstanceManager> entity_instance_manager,
-                CefRefPtr<RelationshipTypeManager> relationship_type_manager,
-                CefRefPtr<RelationshipInstanceManager> relationship_instance_manager
+                std::shared_ptr<EntityTypeManager> entity_type_manager,
+                std::shared_ptr<EntityInstanceManager> entity_instance_manager,
+                std::shared_ptr<RelationshipTypeManager> relationship_type_manager,
+                std::shared_ptr<RelationshipInstanceManager> relationship_instance_manager
             );
             virtual ~ParticleSubsystem();
 
@@ -108,12 +108,12 @@ namespace particle {
             InstanceRefPtr<RelationshipInstance> AddInitializerToEmitter(InstanceRefPtr<EntityInstance> emitter_instance, InstanceRefPtr<EntityInstance> initializer_instance);
             InstanceRefPtr<RelationshipInstance> AddRendererToEmitter(InstanceRefPtr<EntityInstance> emitter_instance, InstanceRefPtr<EntityInstance> renderer_instance);
 
-            CefRefPtr<ParticleWorker> CreateParticleWorker(std::string name, FunctionRefPtr function);
-            CefRefPtr<ParticleWorker> CreateParticleWorker(std::string name, FunctionRefPtr function, int maxfps);
-            CefRefPtr<EmitterWorker> CreateEmitterWorker(TypeRefPtr<EntityType> emitter_type, InstanceRefPtr<EntityInstance> emitter_instance);
-            CefRefPtr<EmitterWorker> CreateEmitterWorker(TypeRefPtr<EntityType> emitter_type, InstanceRefPtr<EntityInstance> emitter_instance, int maxfps);
-            CefRefPtr<ModifierWorker> CreateModifierWorker(TypeRefPtr<EntityType> modifier_type, InstanceRefPtr<EntityInstance> modifier_instance);
-            CefRefPtr<ModifierWorker> CreateModifierWorker(TypeRefPtr<EntityType> modifier_type, InstanceRefPtr<EntityInstance> modifier_instance, int maxfps);
+            std::shared_ptr<ParticleWorker> CreateParticleWorker(std::string name, FunctionRefPtr function);
+            std::shared_ptr<ParticleWorker> CreateParticleWorker(std::string name, FunctionRefPtr function, int maxfps);
+            std::shared_ptr<EmitterWorker> CreateEmitterWorker(TypeRefPtr<EntityType> emitter_type, InstanceRefPtr<EntityInstance> emitter_instance);
+            std::shared_ptr<EmitterWorker> CreateEmitterWorker(TypeRefPtr<EntityType> emitter_type, InstanceRefPtr<EntityInstance> emitter_instance, int maxfps);
+            std::shared_ptr<ModifierWorker> CreateModifierWorker(TypeRefPtr<EntityType> modifier_type, InstanceRefPtr<EntityInstance> modifier_instance);
+            std::shared_ptr<ModifierWorker> CreateModifierWorker(TypeRefPtr<EntityType> modifier_type, InstanceRefPtr<EntityInstance> modifier_instance, int maxfps);
 
             void DestroyParticleWorker(std::string name);
             void DestroyParticleWorker(InstanceRefPtr<EntityInstance> entity_instance);
@@ -127,11 +127,11 @@ namespace particle {
              */
             int maxfps;
 
-            CefRefPtr<ParticleTypeFactory> particle_type_factory;
-            CefRefPtr<ParticleEmitterTypeFactory> particle_emitter_type_factory;
-            CefRefPtr<ParticleInitializerTypeFactory> particle_initializer_type_factory;
-            CefRefPtr<ParticleModifierTypeFactory> particle_modifier_type_factory;
-            CefRefPtr<ParticleRendererTypeFactory> particle_renderer_type_factory;
+            std::shared_ptr<ParticleTypeFactory> particle_type_factory;
+            std::shared_ptr<ParticleEmitterTypeFactory> particle_emitter_type_factory;
+            std::shared_ptr<ParticleInitializerTypeFactory> particle_initializer_type_factory;
+            std::shared_ptr<ParticleModifierTypeFactory> particle_modifier_type_factory;
+            std::shared_ptr<ParticleRendererTypeFactory> particle_renderer_type_factory;
 
             std::unordered_map<std::string, TypeRefPtr<EntityType> > particle_types;
             std::unordered_map<std::string, TypeRefPtr<EntityType> > emitter_types;
@@ -142,17 +142,17 @@ namespace particle {
             /**
              * The particle workers.
              */
-            std::vector<CefRefPtr<ParticleWorker> > particle_workers;
+            std::vector<std::shared_ptr<ParticleWorker> > particle_workers;
 
             /**
              * The emitter workers.
              */
-            std::vector<CefRefPtr<EmitterWorker> > emitter_workers;
+            std::vector<std::shared_ptr<EmitterWorker> > emitter_workers;
 
             /**
              * The modifier workers.
              */
-            std::vector<CefRefPtr<ModifierWorker> > modifier_workers;
+            std::vector<std::shared_ptr<ModifierWorker> > modifier_workers;
 
             /**
              * The modifier workers.
@@ -166,9 +166,6 @@ namespace particle {
             TypeRefPtr<RelationshipType> apply_modifier;
             TypeRefPtr<RelationshipType> apply_renderer;
 
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(ParticleSubsystem);
-
     };
 
 }
@@ -178,6 +175,6 @@ namespace particle {
 /**
  * Provide the particle subsystem as global reference.
  */
-extern CefRefPtr<inexor::entity::particle::ParticleSubsystem> particle_subsystem;
+extern std::shared_ptr<inexor::entity::particle::ParticleSubsystem> particle_subsystem;
 
 #endif /* SRC_ENGINE_ENTITY_SUBSYSTEM_PARTICLESUBSYSTEM_H_ */

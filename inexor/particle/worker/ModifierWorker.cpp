@@ -13,7 +13,7 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-    ModifierWorker::ModifierWorker(std::string name, int maxfps, FunctionRefPtr function, InstanceRefPtr<EntityInstance> modifier_instance, CefRefPtr<EntityInstanceManager> entity_instance_manager, CefRefPtr<RelationshipInstanceManager> relationship_instance_manager)
+    ModifierWorker::ModifierWorker(std::string name, int maxfps, FunctionRefPtr function, InstanceRefPtr<EntityInstance> modifier_instance, std::shared_ptr<EntityInstanceManager> entity_instance_manager, std::shared_ptr<RelationshipInstanceManager> relationship_instance_manager)
         : ParticleWorker(name, maxfps, function),
           modifier_instance(modifier_instance),
           entity_instance_manager(entity_instance_manager),
@@ -62,18 +62,18 @@ namespace particle {
                     // the modifier and particle instances as arguments.
                     try {
                         std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = w->modifier_instance->outgoing[w->modifies->uuid].begin();
-                        w->function->Before(time_step, w->modifier_instance.get());
+                        w->function->Before(time_step, w->modifier_instance);
                         while (it != w->modifier_instance->outgoing[w->modifies->uuid].end())
                         {
                             if ((*it)->alive && (*it)->endNode[REMAINING]->intVal > 0)
                             {
-                                w->function->Execute(time_step, w->modifier_instance.get(), (*it)->endNode.get());
+                                w->function->Execute(time_step, w->modifier_instance, (*it)->endNode);
                             } else {
                                 (*it)->alive = false;
                             }
                             ++it;
                         }
-                        w->function->After(time_step, w->modifier_instance.get());
+                        w->function->After(time_step, w->modifier_instance);
                     } catch (int e) {
                         spdlog::get("global")->debug() << "exception modifier worker " << e;
                     }

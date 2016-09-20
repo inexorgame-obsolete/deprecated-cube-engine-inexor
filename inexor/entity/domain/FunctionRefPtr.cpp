@@ -26,7 +26,7 @@ namespace entity {
     {
     }
 
-    FunctionRefPtr::FunctionRefPtr(const CefRefPtr<EntityFunction>& r) : parent(r)
+    FunctionRefPtr::FunctionRefPtr(const std::shared_ptr<EntityFunction>& r) : parent(r)
     {
     }
 
@@ -35,62 +35,62 @@ namespace entity {
         get()->Execute(time_step);
     }
 
-    void FunctionRefPtr::operator()(TimeStep time_step, EntityType* type)
+    void FunctionRefPtr::operator()(TimeStep time_step, std::shared_ptr<EntityType> type)
     {
         get()->Execute(time_step, type);
     }
 
-    void FunctionRefPtr::operator()(TimeStep time_step, EntityType* type, EntityInstance* inst)
+    void FunctionRefPtr::operator()(TimeStep time_step, std::shared_ptr<EntityType> type, std::shared_ptr<EntityInstance> inst)
     {
         get()->Execute(time_step, type, inst);
     }
 
-    void FunctionRefPtr::operator()(TimeStep time_step, EntityInstance* inst)
+    void FunctionRefPtr::operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst)
     {
         get()->Execute(time_step, inst);
     }
 
-    void FunctionRefPtr::operator()(TimeStep time_step, EntityInstance* inst, RelationshipType* rel_type)
+    void FunctionRefPtr::operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst, std::shared_ptr<RelationshipType> rel_type)
     {
         get()->Execute(time_step, inst, rel_type);
     }
 
-    void FunctionRefPtr::operator()(TimeStep time_step, EntityInstance* inst, RelationshipInstance* rel_inst)
+    void FunctionRefPtr::operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst, std::shared_ptr<RelationshipInstance> rel_inst)
     {
         get()->Execute(time_step, inst, rel_inst);
     }
 
-    void FunctionRefPtr::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2)
+    void FunctionRefPtr::operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2)
     {
         get()->Execute(time_step, inst_1, inst_2);
     }
 
-    void FunctionRefPtr::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, EntityInstance* inst_3)
+    void FunctionRefPtr::operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2, std::shared_ptr<EntityInstance> inst_3)
     {
         get()->Execute(time_step, inst_1, inst_2, inst_3);
     }
 
-    void FunctionRefPtr::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipType* rel_type)
+    void FunctionRefPtr::operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2, std::shared_ptr<RelationshipType> rel_type)
     {
         get()->Execute(time_step, inst_1, inst_2, rel_type);
     }
 
-    void FunctionRefPtr::operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipInstance* rel_inst)
+    void FunctionRefPtr::operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2, std::shared_ptr<RelationshipInstance> rel_inst)
     {
         get()->Execute(time_step, inst_1, inst_2, rel_inst);
     }
 
-    void FunctionRefPtr::operator()(TimeStep time_step, RelationshipType* type)
+    void FunctionRefPtr::operator()(TimeStep time_step, std::shared_ptr<RelationshipType> type)
     {
         get()->Execute(time_step, type);
     }
 
-    void FunctionRefPtr::operator()(TimeStep time_step, RelationshipType* type, RelationshipInstance* inst)
+    void FunctionRefPtr::operator()(TimeStep time_step, std::shared_ptr<RelationshipType> type, std::shared_ptr<RelationshipInstance> inst)
     {
         get()->Execute(time_step, type, inst);
     }
 
-    void FunctionRefPtr::operator()(TimeStep time_step, RelationshipInstance* inst)
+    void FunctionRefPtr::operator()(TimeStep time_step, std::shared_ptr<RelationshipInstance> inst)
     {
         get()->Execute(time_step, inst);
     }

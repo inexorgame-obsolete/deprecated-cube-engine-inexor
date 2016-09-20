@@ -22,7 +22,7 @@ namespace entity {
 
     TypeRefPtr<EntityType> EntityTypeManager::Create(std::string entity_type_name, bool persist, bool synchronize)
     {
-        TypeRefPtr<EntityType> entity_type = new EntityType(entity_type_name, persist, synchronize);
+        TypeRefPtr<EntityType> entity_type = std::make_shared<EntityType>(entity_type_name, persist, synchronize);
         entity_types[entity_type_name] = entity_type;
         entity_type_uuids[entity_type->uuid] = entity_type_name;
         return entity_type;
@@ -30,7 +30,7 @@ namespace entity {
 
     TypeRefPtr<EntityType> EntityTypeManager::Create(std::string entity_type_name, bool persist, bool synchronize, TypeRefPtr<EntityType> parent_type)
     {
-        TypeRefPtr<EntityType> entity_type = new EntityType(entity_type_name, persist, synchronize, parent_type);
+        TypeRefPtr<EntityType> entity_type = std::make_shared<EntityType>(entity_type_name, persist, synchronize, parent_type);
         entity_types[entity_type_name] = entity_type;
         entity_type_uuids[entity_type->uuid] = entity_type_name;
         return entity_type;
@@ -47,12 +47,12 @@ namespace entity {
         entity_type_uuids[entity_type->uuid] = entity_type->uuid;
     }
 
-    void EntityTypeManager::RegisterProvider(CefRefPtr<EntityTypeProvider> entity_type_provider)
+    void EntityTypeManager::RegisterProvider(std::shared_ptr<EntityTypeProvider> entity_type_provider)
     {
        RegisterType(entity_type_provider->GetEntityName(), entity_type_provider->GetEntityType());
     }
 
-    void EntityTypeManager::RegisterFactory(CefRefPtr<EntityTypeFactory> entity_type_factory)
+    void EntityTypeManager::RegisterFactory(std::shared_ptr<EntityTypeFactory> entity_type_factory)
     {
         entity_type_factories[entity_type_factory->GetFactoryName()] = entity_type_factory;
     }

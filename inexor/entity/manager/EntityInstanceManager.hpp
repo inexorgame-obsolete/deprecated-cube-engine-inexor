@@ -23,7 +23,7 @@ namespace entity {
     class EntityInstanceManager
     {
         public:
-            EntityInstanceManager(CefRefPtr<EntityTypeManager> entity_type_manager) : entity_type_manager(entity_type_manager) {};
+            EntityInstanceManager(std::shared_ptr<EntityTypeManager> entity_type_manager) : entity_type_manager(entity_type_manager) {};
             virtual ~EntityInstanceManager() {};
 
             InstanceRefPtr<EntityInstance> Create(TypeRefPtr<EntityType> entity_type);
@@ -50,10 +50,7 @@ namespace entity {
             std::unordered_map<std::string, InstanceRefPtr<EntityInstance> > entity_instances;
 
             // the entity type manager.
-            CefRefPtr<EntityTypeManager> entity_type_manager;
-
-            // include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(EntityInstanceManager);
+            std::shared_ptr<EntityTypeManager> entity_type_manager;
 
     };
 

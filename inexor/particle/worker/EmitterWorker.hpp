@@ -23,7 +23,7 @@ namespace particle {
     class EmitterWorker : public ParticleWorker
     {
         public:
-            EmitterWorker(std::string name, int maxfps, FunctionRefPtr function, InstanceRefPtr<EntityInstance> emitter_instance, CefRefPtr<EntityInstanceManager> entity_instance_manager, CefRefPtr<RelationshipInstanceManager> relationship_instance_manager);
+            EmitterWorker(std::string name, int maxfps, FunctionRefPtr function, InstanceRefPtr<EntityInstance> emitter_instance, std::shared_ptr<EntityInstanceManager> entity_instance_manager, std::shared_ptr<RelationshipInstanceManager> relationship_instance_manager);
             virtual ~EmitterWorker();
 
             void Start();
@@ -39,12 +39,12 @@ namespace particle {
             /**
              * The entity instance manager.
              */
-            CefRefPtr<EntityInstanceManager> entity_instance_manager;
+            std::shared_ptr<EntityInstanceManager> entity_instance_manager;
 
             /**
              * The relationship instance manager.
              */
-            CefRefPtr<RelationshipInstanceManager> relationship_instance_manager;
+            std::shared_ptr<RelationshipInstanceManager> relationship_instance_manager;
 
             /**
              * The particle pool.

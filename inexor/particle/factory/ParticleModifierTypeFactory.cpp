@@ -11,7 +11,7 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-    ParticleModifierTypeFactory::ParticleModifierTypeFactory(CefRefPtr<EntityTypeManager> entity_type_manager)
+    ParticleModifierTypeFactory::ParticleModifierTypeFactory(std::shared_ptr<EntityTypeManager> entity_type_manager)
         : EntityTypeFactory(PARTICLE_MODIFIER_TYPE_FACTORY, PARTICLE_MODIFIER_FUNCTION_ATTRIBUTE_NAME, ENTTYPE_PREFIX_PARTICLE_MODIFIER_TYPE, entity_type_manager)
     {
     }

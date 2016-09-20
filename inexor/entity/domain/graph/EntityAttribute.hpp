@@ -88,18 +88,18 @@ namespace entity {
             EntityAttribute& operator=(FunctionRefPtr value);
 
             void operator()(TimeStep time_step);
-            void operator()(TimeStep time_step, EntityType* type);
-            void operator()(TimeStep time_step, EntityType* type, EntityInstance* inst);
-            void operator()(TimeStep time_step, EntityInstance* inst);
-            void operator()(TimeStep time_step, EntityInstance* inst, RelationshipType* rel_type);
-            void operator()(TimeStep time_step, EntityInstance* inst, RelationshipInstance* rel_inst);
-            void operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2);
-            void operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, EntityInstance* inst_3);
-            void operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipType* rel_type);
-            void operator()(TimeStep time_step, EntityInstance* inst_1, EntityInstance* inst_2, RelationshipInstance* rel_inst);
-            void operator()(TimeStep time_step, RelationshipType* type);
-            void operator()(TimeStep time_step, RelationshipType* type, RelationshipInstance* inst);
-            void operator()(TimeStep time_step, RelationshipInstance* inst);
+            void operator()(TimeStep time_step, std::shared_ptr<EntityType> type);
+            void operator()(TimeStep time_step, std::shared_ptr<EntityType> type, std::shared_ptr<EntityInstance> inst);
+            void operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst);
+            void operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst, std::shared_ptr<RelationshipType> rel_type);
+            void operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst, std::shared_ptr<RelationshipInstance> rel_inst);
+            void operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2);
+            void operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2, std::shared_ptr<EntityInstance> inst_3);
+            void operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2, std::shared_ptr<RelationshipType> rel_type);
+            void operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2, std::shared_ptr<RelationshipInstance> rel_inst);
+            void operator()(TimeStep time_step, std::shared_ptr<RelationshipType> type);
+            void operator()(TimeStep time_step, std::shared_ptr<RelationshipType> type, std::shared_ptr<RelationshipInstance> inst);
+            void operator()(TimeStep time_step, std::shared_ptr<RelationshipInstance> inst);
 
         // protected:
 
@@ -114,9 +114,6 @@ namespace entity {
             std::string stringVal;
             FunctionRefPtr functionVal;
 
-        private:
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(EntityAttribute);
     };
 
 }

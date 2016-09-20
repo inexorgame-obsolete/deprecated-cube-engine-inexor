@@ -12,7 +12,7 @@ namespace entity {
 
     InstanceRefPtr<EntityInstance> EntityInstanceManager::Create(TypeRefPtr<EntityType> entity_type)
     {
-        InstanceRefPtr<EntityInstance> entity_instance = new EntityInstance(entity_type);
+        InstanceRefPtr<EntityInstance> entity_instance = std::make_shared<EntityInstance>(entity_type);
         entity_instances[entity_instance->uuid] = entity_instance;
         return entity_instance;
     }
@@ -20,7 +20,7 @@ namespace entity {
     InstanceRefPtr<EntityInstance> EntityInstanceManager::Create(std::string entity_type_name)
     {
         TypeRefPtr<EntityType> entity_type = entity_type_manager->Get(entity_type_name);
-        InstanceRefPtr<EntityInstance> entity_instance = new EntityInstance(entity_type);
+        InstanceRefPtr<EntityInstance> entity_instance = std::make_shared<EntityInstance>(entity_type);
         return entity_instance;
     }
 

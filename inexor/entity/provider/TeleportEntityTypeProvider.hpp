@@ -55,7 +55,7 @@ namespace entity {
     class TeleportingRelationshipTypeProvider : public RelationshipTypeProvider
     {
         public:
-            TeleportingRelationshipTypeProvider(CefRefPtr<EntityTypeManager> entity_type_manager);
+            TeleportingRelationshipTypeProvider(std::shared_ptr<EntityTypeManager> entity_type_manager);
             virtual ~TeleportingRelationshipTypeProvider();
 
         private:

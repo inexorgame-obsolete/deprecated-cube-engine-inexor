@@ -15,7 +15,7 @@ namespace entity {
         std::string factory_name,
         std::string function_attribute_name,
         std::string entity_name_prefix,
-        CefRefPtr<EntityTypeManager> entity_type_manager
+        std::shared_ptr<EntityTypeManager> entity_type_manager
     ) : factory_name(factory_name),
         function_attribute_name(function_attribute_name),
         entity_type_name_prefix(entity_name_prefix),
