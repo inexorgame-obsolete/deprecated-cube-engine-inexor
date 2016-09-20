@@ -19,7 +19,7 @@ namespace vscript {
     {
         public:
 
-            IntegerMemoryTypeFactory(CefRefPtr<EntityTypeManager> entity_type_manager);
+            IntegerMemoryTypeFactory(std::shared_ptr<EntityTypeManager> entity_type_manager);
             virtual ~IntegerMemoryTypeFactory();
 
             TypeRefPtr<EntityType> Create(std::string name_suffix);

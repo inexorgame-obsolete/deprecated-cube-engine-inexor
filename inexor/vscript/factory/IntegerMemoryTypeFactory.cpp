@@ -3,10 +3,10 @@
 namespace inexor {
 namespace vscript {
 
-    IntegerMemoryTypeFactory::IntegerMemoryTypeFactory(CefRefPtr<EntityTypeManager> entity_type_manager)
+    IntegerMemoryTypeFactory::IntegerMemoryTypeFactory(std::shared_ptr<EntityTypeManager> entity_type_manager)
         : EntityTypeFactory(INTEGER_MEMORY_TYPE_FACTORY,
                             INTEGER_MEMORY_FUNCTION_ATTRIBUTE_NAME,
-                            ENTTYPE_PREFIX_ENT_INTEGER_MEMORY_TYPE,
+                            ENTTYPE_PREFIX_INTEGER_MEMORY_TYPE,
                             entity_type_manager)
     {
     }

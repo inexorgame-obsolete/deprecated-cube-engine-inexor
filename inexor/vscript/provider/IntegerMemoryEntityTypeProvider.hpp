@@ -16,7 +16,7 @@ namespace vscript {
     class EntityTypeManager;
 
     /**
-     * Defines the teleport source entity type.
+     * Defines the integer memory entity type.
      */
     class IntegerMemoryEntityTypeProvider : public EntityTypeProvider
     {
