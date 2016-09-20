@@ -24,6 +24,7 @@ namespace vscript {
 
     const std::string ENT_MEMORY("memory");
     const std::string ENT_BOOL_MEMORY("bool_memory");
+    const std::string ENT_INTEGER_MEMORY("integer_memory");
 
     // entity function definitions
 
@@ -37,14 +38,17 @@ namespace vscript {
     // Type factories
 
     const std::string BOOL_MEMORY_TYPE_FACTORY("bool_memory_type_factory");
+    const std::string INTEGER_MEMORY_TYPE_FACTORY("integer_memory_type_factory");
 
     // Type prefixes
 
     const std::string ENTTYPE_PREFIX_BOOL_MEMORY_TYPE("bool_memory_type_");
+    const std::string ENTTYPE_PREFIX_INTEGER_MEMORY_TYPE("integer_memory_type_");
 
     // Function attribute names
 
     const std::string BOOL_MEMORY_FUNCTION_ATTRIBUTE_NAME("todo");
+    const std::string INTEGER_MEMORY_FUNCTION_ATTRIBUTE_NAME("todo2");
 
 }
 }
