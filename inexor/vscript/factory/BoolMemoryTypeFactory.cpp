@@ -1,10 +1,3 @@
-/*
- * ParticleProvider.cpp
- *
- *  Created on: 25.01.2015
- *      Author: aschaeffer
- */
-
 #include "BoolMemoryTypeFactory.hpp"
 
 namespace inexor {
