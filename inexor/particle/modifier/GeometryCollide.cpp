@@ -11,7 +11,7 @@ namespace inexor {
 namespace entity {
 namespace particle {
 
-    GeometryCollide::GeometryCollide() : EntityFunction(MODIFIER_IMMORTAL_FUNCTION)
+    GeometryCollide::GeometryCollide() : EntityFunction(MODIFIER_GEOMETRY_COLLIDE_FUNCTION)
     {
     }
 

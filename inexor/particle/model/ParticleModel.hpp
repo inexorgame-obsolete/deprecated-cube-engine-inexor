@@ -109,6 +109,7 @@ namespace particle {
     const std::string MODIFIER_BROWNIAN_MOTION_FUNCTION("brownian_motion");
     const std::string MODIFIER_CULLING_FUNCTION("culling");
     const std::string MODIFIER_DENSITY_FADEOUT_FUNCTION("density_fadeout");
+    const std::string MODIFIER_GEOMETRY_COLLIDE_FUNCTION("geometry_collide");
     const std::string MODIFIER_GRAVITY_POINT_FUNCTION("gravity_point");
     const std::string MODIFIER_IMMORTAL_FUNCTION("immortal");
     const std::string MODIFIER_SIMPLE_GRAVITY_FUNCTION("simple_gravity");
