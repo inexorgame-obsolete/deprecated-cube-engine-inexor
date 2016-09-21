@@ -31,47 +31,6 @@
 namespace inexor {
 namespace entity {
 
-/*
-
-    struct type_info_less
-    {
-        bool operator() (const std::type_info* lhs, const std::type_info* rhs) const
-        {
-            return lhs->before(*rhs) != 0;
-        }
-    };
-
-    class EntitySystem;
-
-    typedef std::map<std::type_info const*, void *, type_info_less> TypenameToObject;
-    typedef std::map<std::type_info const*, void *, type_info_less>::iterator TypeMapIterator;
-
-    /**
-     * TODO: document this
-     */
-    class TypeMap
-    {
-        friend class EntitySystem;
-
-        TypenameToObject ObjectMap;
-
-        public:
-            template <typename T>
-            T *Get () const
-            {
-                TypenameToObject::const_iterator iType = ObjectMap.find(&typeid(T));
-                if (iType == ObjectMap.end())
-                    return NULL;
-                return reinterpret_cast<T *>(iType->second);
-            }
-            template <typename T>
-            void Set(T *value)
-            {
-                ObjectMap[&typeid(T)] = reinterpret_cast<void *>(value);
-            }
-    };
-*/
-
     /**
      *
      */
