@@ -16,6 +16,7 @@
 #include "inexor/particle/modifier/Culling.hpp"
 #include "inexor/particle/modifier/DensityFadeout.hpp"
 #include "inexor/particle/modifier/GeometryCollide.hpp"
+#include "inexor/particle/modifier/PlayerCollide.hpp"
 #include "inexor/particle/modifier/GravityPoint.hpp"
 #include "inexor/particle/modifier/SimpleGravity.hpp"
 #include "inexor/particle/modifier/Rolling.hpp"
@@ -55,6 +56,7 @@ namespace particle {
             FunctionRefPtr culling_function;
             FunctionRefPtr density_fadeout_function;
             FunctionRefPtr geometry_collide_function;
+            FunctionRefPtr player_collide_function;
             FunctionRefPtr gravity_point_function;
             FunctionRefPtr rolling_function;
             FunctionRefPtr simple_gravity_function;
@@ -74,6 +76,7 @@ namespace particle {
             TypeRefPtr<EntityType> culling_modifier_type;
             TypeRefPtr<EntityType> density_fadeout_modifier_type;
             TypeRefPtr<EntityType> geometry_collide_modifier_type;
+            TypeRefPtr<EntityType> player_collide_modifier_type;
             TypeRefPtr<EntityType> gravity_point_modifier_type;
             TypeRefPtr<EntityType> rolling_modifier_type;
             TypeRefPtr<EntityType> simple_gravity_modifier_type;
@@ -98,6 +101,7 @@ namespace particle {
             InstanceRefPtr<EntityInstance> brownian_motion_modifier_1;
             InstanceRefPtr<EntityInstance> culling_modifier_1;
             InstanceRefPtr<EntityInstance> geometry_collide_modifier_1;
+            InstanceRefPtr<EntityInstance> player_collide_modifier_1;
             InstanceRefPtr<EntityInstance> gravity_point_modifier_1;
             InstanceRefPtr<EntityInstance> gravity_point_modifier_2;
             InstanceRefPtr<EntityInstance> gravity_point_modifier_3;
@@ -133,6 +137,10 @@ namespace particle {
             InstanceRefPtr<RelationshipInstance> rel_point_emitter_geometry_collide_modifier_2;
             InstanceRefPtr<RelationshipInstance> rel_point_emitter_geometry_collide_modifier_3;
             InstanceRefPtr<RelationshipInstance> rel_point_emitter_geometry_collide_modifier_4;
+            InstanceRefPtr<RelationshipInstance> rel_point_emitter_player_collide_modifier_1;
+            InstanceRefPtr<RelationshipInstance> rel_point_emitter_player_collide_modifier_2;
+            InstanceRefPtr<RelationshipInstance> rel_point_emitter_player_collide_modifier_3;
+            InstanceRefPtr<RelationshipInstance> rel_point_emitter_player_collide_modifier_4;
             InstanceRefPtr<RelationshipInstance> rel_point_emitter_gravity_point_modifier_1;
             InstanceRefPtr<RelationshipInstance> rel_point_emitter_gravity_point_modifier_2;
             InstanceRefPtr<RelationshipInstance> rel_point_emitter_gravity_point_modifier_3;

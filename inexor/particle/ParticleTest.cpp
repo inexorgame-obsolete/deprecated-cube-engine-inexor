@@ -14,7 +14,7 @@ namespace particle {
     ParticleTest::ParticleTest()
     {
         spdlog::get("global")->info() << "Create emitter functions";
-        point_emitter_function = new Point();
+        point_emitter_function = std::make_shared<Point>();
 
         spdlog::get("global")->info() << "Create initializer functions";
         random_position_function = new RandomPosition();
@@ -24,6 +24,7 @@ namespace particle {
         brownian_motion_function = new BrownianMotion();
         density_fadeout_function = new DensityFadeout();
         geometry_collide_function = new GeometryCollide();
+        player_collide_function = std::make_shared<PlayerCollide>();
         gravity_point_function = new GravityPoint();
         rolling_function = new Rolling();
         simple_gravity_function = new SimpleGravity();
@@ -51,6 +52,7 @@ namespace particle {
         brownian_motion_modifier_type = particle_subsystem->CreateModifierType("brownian_motion_modifier", brownian_motion_function);
         density_fadeout_modifier_type = particle_subsystem->CreateModifierType("density_fadeout_modifier", density_fadeout_function);
         geometry_collide_modifier_type = particle_subsystem->CreateModifierType("geometry_collide_modifier", geometry_collide_function);
+        player_collide_modifier_type = particle_subsystem->CreateModifierType("player_collide_modifier", player_collide_function);
         gravity_point_modifier_type = particle_subsystem->CreateModifierType("gravity_point_modifier", gravity_point_function);
         rolling_modifier_type = particle_subsystem->CreateModifierType("rolling_modifier", rolling_function);
         simple_gravity_modifier_type = particle_subsystem->CreateModifierType("simple_gravity_modifier", simple_gravity_function);
@@ -77,7 +79,7 @@ namespace particle {
     	SubsystemTest();
     	TypeCreationTest();
     	ShowCase();
-        ShowCaseMinimal();
+        // ShowCaseMinimal();
         // PerformanceTest();
     }
 
@@ -137,8 +139,8 @@ namespace particle {
         point_emitter_2 = particle_subsystem->CreateEmitterInstance(point_emitter, 512.0, 256.0, 512.0, 0.0, 0.0, 0.0);
         point_emitter_2[LIFETIME] = 7500;
         point_emitter_3 = particle_subsystem->CreateEmitterInstance(point_emitter, 768.0, 512.0, 542.0, 0.0, 0.0, 0.0);
-        point_emitter_3[RATE] = 250;
-        point_emitter_3[LIFETIME] = 15000;
+        point_emitter_3[RATE] = 150;
+        point_emitter_3[LIFETIME] = 20000;
         point_emitter_3[BATCH_SIZE] = 1;
         point_emitter_4 = particle_subsystem->CreateEmitterInstance(point_emitter, 256.0, 512.0, 512.0, 0.0, 0.0, 0.0);
 
@@ -146,7 +148,7 @@ namespace particle {
         random_velocity_initializer_1 = particle_subsystem->CreateInitializerInstance(random_velocity_initializer_type);
         random_velocity_initializer_1[DELTA] = vec(15.0f, 15.0f, 10.0f);
         random_velocity_initializer_2 = particle_subsystem->CreateInitializerInstance(random_velocity_initializer_type);
-        random_velocity_initializer_2[DELTA] = vec(15.0f, 15.0f, 40.0f);
+        random_velocity_initializer_2[DELTA] = vec(15.0f, 15.0f, 60.0f);
         random_position_initializer_1 = particle_subsystem->CreateInitializerInstance(random_position_initializer_type);
         random_position_initializer_1[DELTA] = vec(25.0f, 25.0f, 0.0f);
         random_position_initializer_2 = particle_subsystem->CreateInitializerInstance(random_position_initializer_type);
@@ -154,6 +156,7 @@ namespace particle {
 
         spdlog::get("global")->info() << "Create modifier instances";
         geometry_collide_modifier_1 = particle_subsystem->CreateModifierInstance(geometry_collide_modifier_type);
+        player_collide_modifier_1 = particle_subsystem->CreateModifierInstance(player_collide_modifier_type);
         gravity_point_modifier_1 = particle_subsystem->CreateModifierInstance(gravity_point_modifier_type);
         gravity_point_modifier_1[MASS] = 5000.0f;
         gravity_point_modifier_1[GRAVITY] = 15.0f;
@@ -180,9 +183,9 @@ namespace particle {
         velocity_transformation_modifier_1 = particle_subsystem->CreateModifierInstance(velocity_transformation_modifier_type);
 
         spdlog::get("global")->info() << "Create renderer instances";
-        billboard_renderer_1 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "particle/ball1.png", 10.0f);
-        billboard_renderer_2 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "particle/ball2.png", 5.0f);
-        billboard_renderer_3 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "particle/ball3.png", 8.0f);
+        billboard_renderer_1 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "particle/ball1.png", 20.0f);
+        billboard_renderer_2 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "particle/ball2.png", 25.0f);
+        billboard_renderer_3 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "particle/ball3.png", 40.0f);
         billboard_renderer_4 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "particle/base.png", 8.0f);
         billboard_renderer_5 = particle_subsystem->CreateRendererInstance(billboard_renderer_type, "particlepoints", "particle/flash01.png", 8.0f);
         model_renderer_1 = particle_subsystem->CreateRendererInstance(model_renderer_type, "projectile/grenade", vec(0.0f, 0.0f, 2.0f));
@@ -210,6 +213,7 @@ namespace particle {
         rel_point_emitter_velocity_damper_1 = particle_subsystem->AddModifierToEmitter(point_emitter_3, velocity_damper_modifier_1);
         rel_point_emitter_simple_gravity_1 = particle_subsystem->AddModifierToEmitter(point_emitter_3, simple_gravity_modifier_1);
         rel_point_emitter_geometry_collide_modifier_1 = particle_subsystem->AddModifierToEmitter(point_emitter_3, geometry_collide_modifier_1);
+        rel_point_emitter_player_collide_modifier_1 = particle_subsystem->AddModifierToEmitter(point_emitter_3, player_collide_modifier_1);
         rel_point_emitter_velocity_transformation_4 = particle_subsystem->AddModifierToEmitter(point_emitter_4, velocity_transformation_modifier_1);
 
         spdlog::get("global")->info() << "Create relations from emitters to renderers";
