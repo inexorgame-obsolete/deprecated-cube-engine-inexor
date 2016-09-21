@@ -188,7 +188,7 @@ namespace particle {
                         spdlog::get("global")->error() << "Exception in emitter worker thread " << w->GetName() << ": " << e;
                     }
                     w->frame_last_millis = w->frame_millis;
-                    // spdlog::get("global")->debug() << "Particle pool size: " << w->particle_pool.size();
+                    // spdlog::get("global")->info() << "Particle pool size: " << w->particle_pool.size();
                 }
             }
         } catch (int e)
