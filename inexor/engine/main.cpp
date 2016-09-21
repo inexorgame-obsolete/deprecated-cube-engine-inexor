@@ -1259,6 +1259,22 @@ namespace rpc {
 }
 }
 
+ICOMMAND(part_runtests, "b", (bool *b),
+    // particle_subsystem->Cleanup();
+    particle_test->RunTests();
+    entity_test->PrintStats();
+);
+
+ICOMMAND(ent_runtests, "b", (bool *b),
+    entity_test->CleanupTests();
+    entity_test->RunTests();
+    entity_test->PrintStats();
+);
+
+ICOMMAND(ent_stats, "b", (bool *b),
+    entity_test->PrintStats();
+);
+
 int main(int argc, char **argv)
 {
     logging.initDefaultLoggers();
@@ -1409,14 +1425,9 @@ int main(int argc, char **argv)
 
     spdlog::get("global")->info() << "init: entity system tests";
     entity_test = std::make_shared<inexor::entity::EntityTest>();
-    entity_test->RunTests();
-    entity_test->PrintStats();
 
     spdlog::get("global")->info() << "init: particle subsystem tests";
     particle_test = std::make_shared<inexor::entity::particle::ParticleTest>();
-    entity_test->PrintStats();
-    particle_test->RunTests();
-    entity_test->PrintStats();
 
     spdlog::get("global")->debug() << "init: effects";
     loadshaders();
