@@ -1,5 +1,5 @@
 /*
- * Relationship.h
+ * RelationshipInstance.hpp
  *
  *  Created on: 16.01.2015
  *      Author: aschaeffer
@@ -38,7 +38,9 @@ namespace entity {
              * @param startNode The start node entity instance.
              * @param endNode The end node entity instance.
              */
-            RelationshipInstance(TypeRefPtr<RelationshipType> type, InstanceRefPtr<EntityInstance> startNode, InstanceRefPtr<EntityInstance> endNode);
+            RelationshipInstance(TypeRefPtr<RelationshipType> type,
+                                 InstanceRefPtr<EntityInstance> startNode,
+                                 InstanceRefPtr<EntityInstance> endNode);
 
             /**
              * Constructs a new relationship of the given type with the given start
@@ -53,7 +55,10 @@ namespace entity {
              * @param endNode The end node entity instance.
              * @param uuid The uuid of the relationship instance.
              */
-            RelationshipInstance(TypeRefPtr<RelationshipType> type, InstanceRefPtr<EntityInstance> startNode, InstanceRefPtr<EntityInstance> endNode, std::string uuid);
+            RelationshipInstance(TypeRefPtr<RelationshipType> type,
+                                 InstanceRefPtr<EntityInstance> startNode,
+                                 InstanceRefPtr<EntityInstance> endNode,
+                                 std::string uuid);
             virtual ~RelationshipInstance();
 
             /**

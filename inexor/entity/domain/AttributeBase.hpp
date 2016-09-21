@@ -1,5 +1,5 @@
 /*
- * AttributeBase.h
+ * AttributeBase.hpp
  *
  *  Created on: 18.01.2015
  *      Author: aschaeffer
@@ -17,6 +17,9 @@ struct vec4;
 namespace inexor {
 namespace entity {
 
+    /**
+     *
+     */
     class AttributeBase
     {
         public:
@@ -25,10 +28,25 @@ namespace entity {
             virtual ~AttributeBase();
 
             virtual AttributeRefPtr GetAttribute(std::string key);
+
+            /**
+             *
+             */
             void SetAttribute(std::string key, AttributeRefPtr attributeRefPtr);
+            
+            /**
+             *
+             */
             bool HasAttribute(std::string key);
 
+            /**
+            *
+            */
             virtual AttributeRefPtr operator[](std::string key) const;
+
+            /**
+             *
+             */
             virtual AttributeRefPtr & operator[](std::string key);
 
             void AddAttribute(std::string key, AttributeRefPtr attribute);

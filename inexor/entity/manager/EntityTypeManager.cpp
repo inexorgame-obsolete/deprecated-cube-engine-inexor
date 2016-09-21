@@ -94,7 +94,8 @@ namespace entity {
         entity_types.clear();
     }
 
-    int EntityTypeManager::Size() {
+    int EntityTypeManager::Size()
+    {
         return entity_types.size();
     }
 

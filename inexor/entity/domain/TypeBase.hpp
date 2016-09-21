@@ -1,5 +1,5 @@
 /*
- * TypeBase.h
+ * TypeBase.hpp
  *
  *  Created on: 17.01.2015
  *      Author: aschaeffer
@@ -21,6 +21,9 @@ using namespace boost::uuids;
 namespace inexor {
 namespace entity {
 
+    /**
+     *
+     */
     class TypeBase : public AttributeBase
     {
         public:
@@ -29,12 +32,34 @@ namespace entity {
             TypeBase(std::string name, bool persist, bool synchronize, std::string uuid);
             virtual ~TypeBase();
 
+            /**
+            *
+            */
             std::string GetUuid();
+            
+            /**
+             *
+             */
             void SetUuid(std::string uuid);
 
+            /**
+             *
+             */
             std::string GetName();
+
+            /**
+             *
+             */
             std::string GetParentType();
+
+            /**
+             *
+             */
             bool IsPersisting();
+
+            /**
+             *
+             */
             bool IsSynchronizing();
 
             /**

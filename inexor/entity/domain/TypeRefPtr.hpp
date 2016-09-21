@@ -1,5 +1,5 @@
 /*
- * RefPtr.h
+ * TypeRefPtr.hpp
  *
  *  Created on: 29.01.2015
  *      Author: aschaeffer
@@ -14,6 +14,9 @@
 namespace inexor {
 namespace entity {
 
+    /**
+     *
+     */
     template <class T>
     class TypeRefPtr : public std::shared_ptr<T>
     {
@@ -21,13 +24,30 @@ namespace entity {
 
             typedef std::shared_ptr<T> parent;
 
+            /**
+             *
+             */
             TypeRefPtr() : parent() {}
+
+            /**
+             *
+             */
             TypeRefPtr(T* p) : parent(p) {}
+            
+            /**
+             *
+             */
             TypeRefPtr(const std::shared_ptr<T>& r) : parent(r) {}
 
+            /**
+             *
+             */
             template <typename U>
             TypeRefPtr(const std::shared_ptr<U>& r) : parent(r) {}
 
+            /**
+             *
+             */
             AttributeRefPtr operator[](std::string key) const
             {
                 AttributeRefPtr attribute = this->get()->GetAttribute(key);

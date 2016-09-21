@@ -1,5 +1,5 @@
 /*
- * Entity.cpp
+ * EntityInstance.cpp
  *
  *  Created on: 16.01.2015
  *      Author: aschaeffer
@@ -30,13 +30,15 @@ namespace entity {
         return type;
     }
 
-    void EntityInstance::AddOutgoingRelationship(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<RelationshipInstance> relationship_instance)
+    void EntityInstance::AddOutgoingRelationship(TypeRefPtr<RelationshipType> relationship_type,
+                                                 InstanceRefPtr<RelationshipInstance> relationship_instance)
     {
         // TODO: check first for key and create key if not exists!
         this->outgoing[relationship_type->uuid].push_back(relationship_instance);
     }
 
-    void EntityInstance::AddIncomingRelationship(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<RelationshipInstance> relationship_instance)
+    void EntityInstance::AddIncomingRelationship(TypeRefPtr<RelationshipType> relationship_type,
+                                                 InstanceRefPtr<RelationshipInstance> relationship_instance)
     {
         // TODO: check first for key and create key if not exists!
         this->incoming[relationship_type->uuid].push_back(relationship_instance);

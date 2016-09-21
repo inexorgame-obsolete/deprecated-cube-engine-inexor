@@ -10,21 +10,25 @@
 namespace inexor {
 namespace entity {
 
-    EntityType::EntityType(std::string name, bool persist, bool synchronize) : TypeBase(name, persist, synchronize)
+    EntityType::EntityType(std::string name, bool persist, bool synchronize) 
+        : TypeBase(name, persist, synchronize)
     {
     }
 
-    EntityType::EntityType(std::string name, bool persist, bool synchronize, TypeRefPtr<EntityType> parent) : TypeBase(name, persist, synchronize), parent(parent)
+    EntityType::EntityType(std::string name, bool persist, bool synchronize, TypeRefPtr<EntityType> parent) 
+        : TypeBase(name, persist, synchronize), parent(parent)
     {
     }
 
     bool EntityType::IsA(TypeRefPtr<EntityType> type)
     {
+        // TODO: resolve parent of parent recursively!
         return this->uuid == type->uuid || (parent.get() && parent->uuid == type->uuid);
     }
 
     bool EntityType::IsA(std::string uuid)
     {
+        // TODO: resolve parent of parent recursively!
         return this->uuid == uuid || (parent.get() && parent->uuid == uuid);
     }
 

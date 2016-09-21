@@ -1,5 +1,5 @@
 /*
- * EntityTypeProvider.h
+ * EntityTypeFactory.hpp
  *
  *  Created on: 25.01.2015
  *      Author: aschaeffer
@@ -16,11 +16,20 @@ namespace entity {
 
     class EntityTypeManager;
 
+    /**
+     *
+     */
     class EntityTypeFactory
     {
         public:
-
-            EntityTypeFactory(std::string factory_name, std::string function_attribute_name, std::string entity_name_prefix, std::shared_ptr<EntityTypeManager> entity_type_manager);
+            
+            /**
+             *
+             */
+            EntityTypeFactory(std::string factory_name,
+                              std::string function_attribute_name,
+                              std::string entity_name_prefix,
+                              std::shared_ptr<EntityTypeManager> entity_type_manager);
             virtual ~EntityTypeFactory();
 
             /**
@@ -38,6 +47,9 @@ namespace entity {
              */
             std::string GetEntityTypeNamePrefix();
 
+            /**
+             *
+             */
             TypeRefPtr<EntityType> Create(std::string name_suffix);
 
         protected:

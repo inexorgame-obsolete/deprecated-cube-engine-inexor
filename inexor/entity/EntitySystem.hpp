@@ -1,5 +1,5 @@
 /*
- * EntitySystem.h
+ * EntitySystem.hpp
  *
  *  Created on: 17.01.2015
  *      Author: aschaeffer
@@ -46,6 +46,9 @@ namespace entity {
     typedef std::map<std::type_info const*, void *, type_info_less> TypenameToObject;
     typedef std::map<std::type_info const*, void *, type_info_less>::iterator TypeMapIterator;
 
+    /**
+     * TODO: document this
+     */
     class TypeMap
     {
         friend class EntitySystem;
@@ -69,6 +72,9 @@ namespace entity {
     };
 */
 
+    /**
+     *
+     */
     class EntitySystem
     {
         public:

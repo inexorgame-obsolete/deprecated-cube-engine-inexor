@@ -1,5 +1,5 @@
 /*
- * RelationshipType.h
+ * RelationshipType.hpp
  *
  *  Created on: 17.01.2015
  *      Author: aschaeffer
@@ -67,25 +67,25 @@ namespace entity {
              * Returns the entity type of the start node.
              * @return The entity type of the start node, which may be a parent entity type.
              */
-            std::shared_ptr<EntityType> GetStartNodeType() { return this->start_node_type; };
+            std::shared_ptr<EntityType> GetStartNodeType() { return this->start_node_type; }
 
             /**
              * Sets the entity type of the start node.
              * @param startNodeType The entity type of the start node.
              */
-            void SetStartNodeType(std::shared_ptr<EntityType> startNodeType) { this->start_node_type = startNodeType; };
+            void SetStartNodeType(std::shared_ptr<EntityType> startNodeType) { this->start_node_type = startNodeType; }
 
             /**
              * Returns the entity type of the end node.
              * @return The entity type of the end node, which may be a parent entity type.
              */
-            std::shared_ptr<EntityType> GetEndNodeType() { return this->end_node_type; };
+            std::shared_ptr<EntityType> GetEndNodeType() { return this->end_node_type; }
 
             /**
              * Sets the entity type of the end node.
              * @param startNodeType The entity type of the end node.
              */
-            void SetEndNodeType(std::shared_ptr<EntityType> startNodeType) { this->end_node_type = end_node_type; };
+            void SetEndNodeType(std::shared_ptr<EntityType> startNodeType) { this->end_node_type = end_node_type; }
 
             /**
              * The entity type of the start node.

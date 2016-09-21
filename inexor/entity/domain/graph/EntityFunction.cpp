@@ -16,6 +16,7 @@ namespace entity {
 
     EntityFunction::EntityFunction(std::string name) : name(name), signature(-1)
     {
+        // TODO: document this in detail
         // No signature
     }
 

@@ -1,5 +1,5 @@
 /*
- * Handle.h
+ * Handle.hpp
  *
  *  Created on: 18.01.2015
  *      Author: aschaeffer
@@ -17,6 +17,9 @@
 namespace inexor {
 namespace entity {
 
+    /**
+     *
+     */
     class HandleEntityTypeProvider : public EntityTypeProvider
     {
         public:
@@ -31,6 +34,9 @@ namespace entity {
 
     };
 
+    /**
+     *
+     */
     class HandleRendererEntityTypeProvider : public EntityTypeProvider
     {
         public:
@@ -56,6 +62,7 @@ namespace entity {
             virtual ~HandlesRelationshipTypeProvider();
 
         private:
+
             // Include the default reference counting implementation.
             IMPLEMENT_REFCOUNTING(HandlesRelationshipTypeProvider);
 
@@ -72,6 +79,7 @@ namespace entity {
             virtual ~RendersHandleRelationshipTypeProvider();
 
         private:
+
             // Include the default reference counting implementation.
             IMPLEMENT_REFCOUNTING(RendersHandleRelationshipTypeProvider);
 

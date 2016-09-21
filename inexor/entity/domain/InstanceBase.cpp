@@ -25,6 +25,8 @@ namespace entity {
     {
     }
 
+    // TODO: rename these methods to GetUUID and SetUUID (?)
+
     std::string InstanceBase::GetUuid()
     {
         return uuid;

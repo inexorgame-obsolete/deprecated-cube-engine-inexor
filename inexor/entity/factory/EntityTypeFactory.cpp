@@ -1,5 +1,5 @@
 /*
- * EntityTypeProvider.cpp
+ * EntityTypeFactory.cpp
  *
  *  Created on: 25.01.2015
  *      Author: aschaeffer
@@ -11,12 +11,11 @@
 namespace inexor {
 namespace entity {
 
-    EntityTypeFactory::EntityTypeFactory(
-        std::string factory_name,
-        std::string function_attribute_name,
-        std::string entity_name_prefix,
-        std::shared_ptr<EntityTypeManager> entity_type_manager
-    ) : factory_name(factory_name),
+    EntityTypeFactory::EntityTypeFactory(std::string factory_name,
+                                         std::string function_attribute_name,
+                                         std::string entity_name_prefix,
+                                         std::shared_ptr<EntityTypeManager> entity_type_manager)
+      : factory_name(factory_name),
         function_attribute_name(function_attribute_name),
         entity_type_name_prefix(entity_name_prefix),
         entity_type_manager(entity_type_manager)

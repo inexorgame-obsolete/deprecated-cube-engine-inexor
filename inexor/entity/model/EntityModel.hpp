@@ -1,5 +1,5 @@
 /*
- * EntityModel.h
+ * EntityModel.hpp
  *
  *  Created on: 15.02.2015
  *      Author: aschaeffer

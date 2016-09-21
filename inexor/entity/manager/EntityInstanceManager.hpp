@@ -1,5 +1,5 @@
 /*
- * EntityInstanceManager.h
+ * EntityInstanceManager.hpp
  *
  *  Created on: 24.01.2015
  *      Author: aschaeffer
@@ -23,7 +23,10 @@ namespace entity {
     class EntityInstanceManager
     {
         public:
-            EntityInstanceManager(std::shared_ptr<EntityTypeManager> entity_type_manager) : entity_type_manager(entity_type_manager) {};
+            EntityInstanceManager(std::shared_ptr<EntityTypeManager> entity_type_manager) 
+                : entity_type_manager(entity_type_manager) 
+            {
+            }
             virtual ~EntityInstanceManager() {};
 
             InstanceRefPtr<EntityInstance> Create(TypeRefPtr<EntityType> entity_type);

@@ -1,5 +1,5 @@
 /*
- * RelationshipTypeProvider.h
+ * RelationshipTypeProvider.hpp
  *
  *  Created on: 25.01.2015
  *      Author: aschaeffer
@@ -15,18 +15,26 @@
 namespace inexor {
 namespace entity {
 
+    /**
+     *
+     */
     class RelationshipTypeProvider
     {
         public:
 
-            RelationshipTypeProvider(
-                std::string relationship_name,
-                std::shared_ptr<EntityTypeManager> entity_type_manager
-            );
+            RelationshipTypeProvider(std::string relationship_name,
+                                     std::shared_ptr<EntityTypeManager> entity_type_manager);
             virtual ~RelationshipTypeProvider() {};
 
-            std::string GetRelationshipName() { return relationship_name; };
-            TypeRefPtr<RelationshipType> GetRelationshipType() { return relationship_type; };
+            /* 
+             *
+             */
+            std::string GetRelationshipName();
+            
+            /* 
+             *
+             */
+            TypeRefPtr<RelationshipType> GetRelationshipType();
 
         protected:
 

@@ -19,6 +19,9 @@ namespace entity {
     class EntityInstance;
     class RelationshipInstance;
 
+    /**
+     *
+     */
     class EntityFunction
     {
         public:
@@ -50,13 +53,13 @@ namespace entity {
             virtual void Before(TimeStep time_step, std::shared_ptr<EntityInstance> inst);
             virtual void After(TimeStep time_step, std::shared_ptr<EntityInstance> inst);
 
-            /*
+            /**
              * Signature 0: Execute function.
              * @param time_step The timing information.
              */
             virtual void Execute(TimeStep time_step);
 
-            /*
+            /**
              * Signature 1: Execute function.
              * @param time_step The timing information.
              * @param type The entity type.

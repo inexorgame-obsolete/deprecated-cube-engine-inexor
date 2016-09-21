@@ -14,12 +14,16 @@ namespace entity {
     {
     }
 
-    TeleportSubsystem::TeleportSubsystem(
-        std::shared_ptr<EntityTypeManager> entity_type_manager,
-        std::shared_ptr<EntityInstanceManager> entity_instance_manager,
-        std::shared_ptr<RelationshipTypeManager> relationship_type_manager,
-        std::shared_ptr<RelationshipInstanceManager> relationship_instance_manager
-    ) : SubsystemBase(TELEPORT_SUBSYSTEM, entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager)
+
+    TeleportSubsystem::TeleportSubsystem(std::shared_ptr<EntityTypeManager> entity_type_manager,
+                                         std::shared_ptr<EntityInstanceManager> entity_instance_manager,
+                                         std::shared_ptr<RelationshipTypeManager> relationship_type_manager,
+                                         std::shared_ptr<RelationshipInstanceManager> relationship_instance_manager)
+        : SubsystemBase(TELEPORT_SUBSYSTEM,
+                        entity_type_manager,
+                        entity_instance_manager,
+                        relationship_type_manager,
+                        relationship_instance_manager)
     {
 
         // Create entity type providers
@@ -72,7 +76,8 @@ namespace entity {
         return entity_instance;
     }
 
-    InstanceRefPtr<RelationshipInstance> TeleportSubsystem::Connect(InstanceRefPtr<EntityInstance> teleport, InstanceRefPtr<EntityInstance> teledest)
+    InstanceRefPtr<RelationshipInstance> TeleportSubsystem::Connect(InstanceRefPtr<EntityInstance> teleport,
+                                                                    InstanceRefPtr<EntityInstance> teledest)
     {
         TypeRefPtr<RelationshipType> relationship_type = relationship_type_manager->Get(REL_TELEPORTING);
         if (relationship_type.get()) {

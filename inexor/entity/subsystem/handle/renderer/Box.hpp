@@ -1,5 +1,5 @@
 /*
- * Box.h
+ * Box.hpp
  *
  *  Created on: 08.02.2015
  *      Author: aschaeffer

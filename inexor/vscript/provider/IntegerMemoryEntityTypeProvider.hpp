@@ -21,10 +21,12 @@ namespace vscript {
     class IntegerMemoryEntityTypeProvider : public EntityTypeProvider
     {
         public:
+
             IntegerMemoryEntityTypeProvider();
             virtual ~IntegerMemoryEntityTypeProvider();
 
         private:
+
             // Include the default reference counting implementation.
             IMPLEMENT_REFCOUNTING(IntegerMemoryEntityTypeProvider);
 

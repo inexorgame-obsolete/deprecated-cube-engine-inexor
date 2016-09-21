@@ -1,5 +1,5 @@
 /*
- * EntityAttribute.h
+ * EntityAttribute.hpp
  *
  *  Created on: 16.01.2015
  *      Author: aschaeffer
@@ -17,6 +17,10 @@
 namespace inexor {
 namespace entity {
 
+    // TODO: implement a named enumeration
+    /**
+     *
+     */
     enum 
     {
         ENTATTR_FALSE = 0,
@@ -37,6 +41,9 @@ namespace entity {
     class EntityInstance;
     class RelationshipInstance;
 
+    /**
+     *
+     */
     class EntityAttribute
     {
         public:

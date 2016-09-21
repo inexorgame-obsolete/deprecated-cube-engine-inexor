@@ -1,5 +1,5 @@
 /*
- * Entity.h
+ * EntityInstance.hpp
  *
  *  Created on: 16.01.2015
  *      Author: aschaeffer
@@ -19,6 +19,9 @@ namespace entity {
 
     class RelationshipInstance;
 
+    /**
+     *
+     */
     class EntityInstance : public InstanceBase
     {
         public:
@@ -35,13 +38,15 @@ namespace entity {
              * Adds an outgoing relationship. This instance is the start node for
              * the created relation.
              */
-            void AddOutgoingRelationship(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<RelationshipInstance> relationship_instance);
+            void AddOutgoingRelationship(TypeRefPtr<RelationshipType> relationship_type,
+                                         InstanceRefPtr<RelationshipInstance> relationship_instance);
 
             /**
              * Adds an incoming relationship. This instance is the end node for
              * the created relation.
              */
-            void AddIncomingRelationship(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<RelationshipInstance> relationship_instance);
+            void AddIncomingRelationship(TypeRefPtr<RelationshipType> relationship_type,
+                                         InstanceRefPtr<RelationshipInstance> relationship_instance);
 
             /**
              * Returns all relationships of the given relationship type.

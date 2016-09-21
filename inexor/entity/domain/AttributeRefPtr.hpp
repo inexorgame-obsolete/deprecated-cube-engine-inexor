@@ -1,5 +1,5 @@
 /*
- * AttributeRefPtr.h
+ * AttributeRefPtr.hpp
  *
  *  Created on: 29.01.2015
  *      Author: aschaeffer
@@ -24,6 +24,9 @@ namespace entity {
     class EntityInstance;
     class RelationshipInstance;
 
+    /**
+     *
+     */
     class AttributeRefPtr : public std::shared_ptr<EntityAttribute>
     {
         public:

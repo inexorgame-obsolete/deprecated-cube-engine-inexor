@@ -16,15 +16,17 @@ namespace vscript {
     class EntityTypeManager;
 
     /**
-     * Defines the teleport source entity type.
+     * Defines the bool memory entity type.
      */
     class BoolMemoryEntityTypeProvider : public EntityTypeProvider
     {
         public:
+
             BoolMemoryEntityTypeProvider();
             virtual ~BoolMemoryEntityTypeProvider();
 
         private:
+            
             // Include the default reference counting implementation.
             IMPLEMENT_REFCOUNTING(BoolMemoryEntityTypeProvider);
 

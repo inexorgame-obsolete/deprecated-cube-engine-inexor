@@ -1,5 +1,5 @@
 /*
- * MathFunction.h
+ * MathFunction.hpp
  *
  *  Created on: 30.01.2015
  *      Author: aschaeffer
@@ -14,6 +14,9 @@
 namespace inexor {
 namespace entity {
 
+    /**
+     *
+     */
     class MathFunction : public EntityFunction
     {
         public:

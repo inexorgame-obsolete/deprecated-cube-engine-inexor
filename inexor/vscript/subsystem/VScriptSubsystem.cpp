@@ -7,12 +7,15 @@ namespace vscript {
     {
     }
 
-    VScriptSubsystem::VScriptSubsystem(
-        std::shared_ptr<EntityTypeManager> entity_type_manager,
-        std::shared_ptr<EntityInstanceManager> entity_instance_manager,
-        std::shared_ptr<RelationshipTypeManager> relationship_type_manager,
-        std::shared_ptr<RelationshipInstanceManager> relationship_instance_manager
-    ) : SubsystemBase(VSCRIPT_SUBSYSTEM, entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager)
+    VScriptSubsystem::VScriptSubsystem(std::shared_ptr<EntityTypeManager> entity_type_manager,
+                                       std::shared_ptr<EntityInstanceManager> entity_instance_manager,
+                                       std::shared_ptr<RelationshipTypeManager> relationship_type_manager,
+                                       std::shared_ptr<RelationshipInstanceManager> relationship_instance_manager)
+        : SubsystemBase(VSCRIPT_SUBSYSTEM,
+                        entity_type_manager,
+                        entity_instance_manager,
+                        relationship_type_manager,
+                        relationship_instance_manager)
     {
 
         // Create entity type providers

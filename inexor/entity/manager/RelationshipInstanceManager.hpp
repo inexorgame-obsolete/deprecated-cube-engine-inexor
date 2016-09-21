@@ -1,5 +1,5 @@
 /*
- * RelationshipInstanceManager.h
+ * RelationshipInstanceManager.hpp
  *
  *  Created on: 24.01.2015
  *      Author: aschaeffer
@@ -37,27 +37,35 @@ namespace entity {
              * Creates a managed relationship instance of the given type, start
              * node and end node.
              */
-            InstanceRefPtr<RelationshipInstance> CreateInstance(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<EntityInstance> start_node, InstanceRefPtr<EntityInstance> end_node);
+            InstanceRefPtr<RelationshipInstance> CreateInstance(TypeRefPtr<RelationshipType> relationship_type,
+                                                                InstanceRefPtr<EntityInstance> start_node,
+                                                                InstanceRefPtr<EntityInstance> end_node);
 
             /**
              * Creates a managed relationship instance of the given type, start
              * node and end node.
              */
-            InstanceRefPtr<RelationshipInstance> CreateInstance(std::string relationship_type_name, InstanceRefPtr<EntityInstance> start_node, InstanceRefPtr<EntityInstance> end_node);
+            InstanceRefPtr<RelationshipInstance> CreateInstance(std::string relationship_type_name,
+                                                                InstanceRefPtr<EntityInstance> start_node,
+                                                                InstanceRefPtr<EntityInstance> end_node);
 
             /**
              * Creates an un managed relationship instance of the given type, start
              * node and end node. This means the relationship cannot be resolved
              * by it's id.
              */
-            InstanceRefPtr<RelationshipInstance> CreateUnmanagedInstance(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<EntityInstance> start_node, InstanceRefPtr<EntityInstance> end_node);
+            InstanceRefPtr<RelationshipInstance> CreateUnmanagedInstance(TypeRefPtr<RelationshipType> relationship_type,
+                                                                         InstanceRefPtr<EntityInstance> start_node,
+                                                                         InstanceRefPtr<EntityInstance> end_node);
 
             /**
              * Creates an unmanaged relationship instance of the given type, start
              * node and end node. This means the relationship cannot be resolved
              * by it's id.
              */
-            InstanceRefPtr<RelationshipInstance> CreateUnmanagedInstance(std::string relationship_type_name, InstanceRefPtr<EntityInstance> start_node, InstanceRefPtr<EntityInstance> end_node);
+            InstanceRefPtr<RelationshipInstance> CreateUnmanagedInstance(std::string relationship_type_name,
+                                                                         InstanceRefPtr<EntityInstance> start_node,
+                                                                         InstanceRefPtr<EntityInstance> end_node);
 
             bool Exists(std::string uuid);
             InstanceRefPtr<RelationshipInstance> Get(std::string uuid);

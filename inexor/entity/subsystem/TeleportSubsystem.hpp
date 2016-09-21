@@ -1,5 +1,5 @@
 /*
- * TeleportSubsystem.h
+ * TeleportSubsystem.hpp
  *
  *  Created on: 25.01.2015
  *      Author: aschaeffer
@@ -25,12 +25,10 @@ namespace entity {
         public:
 
             TeleportSubsystem();
-            TeleportSubsystem(
-                std::shared_ptr<EntityTypeManager> entity_type_manager,
-                std::shared_ptr<EntityInstanceManager> entity_instance_manager,
-                std::shared_ptr<RelationshipTypeManager> relationship_type_manager,
-                std::shared_ptr<RelationshipInstanceManager> relationship_instance_manager
-            );
+            TeleportSubsystem(std::shared_ptr<EntityTypeManager> entity_type_manager,
+                              std::shared_ptr<EntityInstanceManager> entity_instance_manager,
+                              std::shared_ptr<RelationshipTypeManager> relationship_type_manager,
+                              std::shared_ptr<RelationshipInstanceManager> relationship_instance_manager);
             virtual ~TeleportSubsystem();
 
             void Update(TimeStep time_step);
@@ -40,7 +38,8 @@ namespace entity {
             InstanceRefPtr<EntityInstance> CreateTeleport(double x, double y, double z);
             InstanceRefPtr<EntityInstance> CreateTeledest(double x, double y, double z);
 
-            InstanceRefPtr<RelationshipInstance> Connect(InstanceRefPtr<EntityInstance> teleport, InstanceRefPtr<EntityInstance> teledest);
+            InstanceRefPtr<RelationshipInstance> Connect(InstanceRefPtr<EntityInstance> teleport,
+                                                         InstanceRefPtr<EntityInstance> teledest);
             void Disconnect(InstanceRefPtr<RelationshipInstance>);
 
             void DeleteAll();

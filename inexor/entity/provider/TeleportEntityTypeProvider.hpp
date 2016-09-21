@@ -1,5 +1,5 @@
 /*
- * Teleporter.h
+ * TeleportEntityTypeProvider.hpp
  *
  *  Created on: 18.01.2015
  *      Author: aschaeffer
@@ -25,10 +25,12 @@ namespace entity {
     class TeleportEntityTypeProvider : public EntityTypeProvider
     {
         public:
+
             TeleportEntityTypeProvider();
             virtual ~TeleportEntityTypeProvider();
 
         private:
+
             // Include the default reference counting implementation.
             IMPLEMENT_REFCOUNTING(TeleportEntityTypeProvider);
 
@@ -40,25 +42,29 @@ namespace entity {
     class TeledestEntityTypeProvider : public EntityTypeProvider
     {
         public:
+
             TeledestEntityTypeProvider();
             virtual ~TeledestEntityTypeProvider();
 
         private:
+
             // Include the default reference counting implementation.
             IMPLEMENT_REFCOUNTING(TeledestEntityTypeProvider);
 
     };
 
     /**
-     * Defines the teleporting relationship type.
+     * Defines the teleportation relationship type.
      */
     class TeleportingRelationshipTypeProvider : public RelationshipTypeProvider
     {
         public:
+
             TeleportingRelationshipTypeProvider(std::shared_ptr<EntityTypeManager> entity_type_manager);
             virtual ~TeleportingRelationshipTypeProvider();
 
         private:
+            
             // Include the default reference counting implementation.
             IMPLEMENT_REFCOUNTING(TeleportingRelationshipTypeProvider);
 

@@ -1,5 +1,5 @@
 /*
- * EntitySystemBase.h
+ * EntitySystemBase.hpp
  *
  *  Created on: 17.01.2015
  *      Author: aschaeffer

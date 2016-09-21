@@ -1,5 +1,5 @@
 /*
- * EntityType.h
+ * EntityType.hpp
  *
  *  Created on: 16.01.2015
  *      Author: aschaeffer
@@ -14,6 +14,9 @@
 namespace inexor {
 namespace entity {
 
+    /**
+     *
+     */
     class EntityType : public TypeBase
     {
         public:
@@ -21,10 +24,25 @@ namespace entity {
             EntityType(std::string name, bool persist, bool synchronize);
             EntityType(std::string name, bool persist, bool synchronize, TypeRefPtr<EntityType> parent);
             virtual ~EntityType() {};
-
+            
+            /**
+             *
+             */
             bool IsA(TypeRefPtr<EntityType> type);
+
+            /**
+             *
+             */
             bool IsA(std::string uuid);
+
+            /**
+             *
+             */
             bool IsExactlyA(TypeRefPtr<EntityType> type);
+
+            /**
+             *
+             */
             bool IsExactlyA(std::string uuid);
 
         private:

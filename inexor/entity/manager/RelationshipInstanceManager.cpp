@@ -20,7 +20,9 @@ namespace entity {
     {
     }
 
-    InstanceRefPtr<RelationshipInstance> RelationshipInstanceManager::CreateInstance(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<EntityInstance> start_node, InstanceRefPtr<EntityInstance> end_node)
+    InstanceRefPtr<RelationshipInstance> RelationshipInstanceManager::CreateInstance(TypeRefPtr<RelationshipType> relationship_type,
+                                                                                     InstanceRefPtr<EntityInstance> start_node,
+                                                                                     InstanceRefPtr<EntityInstance> end_node)
     {
         InstanceRefPtr<RelationshipInstance> relationship_instance = std::make_shared<RelationshipInstance>(relationship_type, start_node, end_node);
         instance_creation_queue_mutex.lock();
@@ -31,13 +33,17 @@ namespace entity {
         return relationship_instance;
     }
 
-    InstanceRefPtr<RelationshipInstance> RelationshipInstanceManager::CreateInstance(std::string relationship_type_name, InstanceRefPtr<EntityInstance> start_node, InstanceRefPtr<EntityInstance> end_node)
+    InstanceRefPtr<RelationshipInstance> RelationshipInstanceManager::CreateInstance(std::string relationship_type_name,
+                                                                                     InstanceRefPtr<EntityInstance> start_node,
+                                                                                     InstanceRefPtr<EntityInstance> end_node)
     {
         TypeRefPtr<RelationshipType> relationship_type = relationship_type_manager->Get(relationship_type_name);
         return CreateInstance(relationship_type, start_node, end_node);
     }
 
-    InstanceRefPtr<RelationshipInstance> RelationshipInstanceManager::CreateUnmanagedInstance(TypeRefPtr<RelationshipType> relationship_type, InstanceRefPtr<EntityInstance> start_node, InstanceRefPtr<EntityInstance> end_node)
+    InstanceRefPtr<RelationshipInstance> RelationshipInstanceManager::CreateUnmanagedInstance(TypeRefPtr<RelationshipType> relationship_type,
+                                                                                              InstanceRefPtr<EntityInstance> start_node,
+                                                                                              InstanceRefPtr<EntityInstance> end_node)
     {
         InstanceRefPtr<RelationshipInstance> relationship_instance = std::make_shared<RelationshipInstance>(relationship_type, start_node, end_node);
         // Note: no insertion into the instance_creation_queue! -> No lock but no global reference
@@ -46,7 +52,9 @@ namespace entity {
         return relationship_instance;
     }
 
-    InstanceRefPtr<RelationshipInstance> RelationshipInstanceManager::CreateUnmanagedInstance(std::string relationship_type_name, InstanceRefPtr<EntityInstance> start_node, InstanceRefPtr<EntityInstance> end_node)
+    InstanceRefPtr<RelationshipInstance> RelationshipInstanceManager::CreateUnmanagedInstance(std::string relationship_type_name,
+                                                                                              InstanceRefPtr<EntityInstance> start_node,
+                                                                                              InstanceRefPtr<EntityInstance> end_node)
     {
         TypeRefPtr<RelationshipType> relationship_type = relationship_type_manager->Get(relationship_type_name);
         return CreateUnmanagedInstance(relationship_type, start_node, end_node);

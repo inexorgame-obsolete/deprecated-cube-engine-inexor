@@ -1,5 +1,5 @@
 /*
- * EntityTest.h
+ * EntityTest.hpp
  *
  *  Created on: 14.02.2015
  *      Author: aschaeffer

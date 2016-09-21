@@ -1,5 +1,5 @@
 /*
- * InstanceBase.h
+ * InstanceBase.hpp
  *
  *  Created on: 18.01.2015
  *      Author: aschaeffer
@@ -21,6 +21,9 @@ using namespace boost::uuids;
 namespace inexor {
 namespace entity {
 
+    /**
+     *
+     */
     class InstanceBase : public AttributeBase
     {
         public:
@@ -29,7 +32,14 @@ namespace entity {
             InstanceBase(std::string uuid);
             virtual ~InstanceBase();
 
+            /**
+             *
+             */
             std::string GetUuid();
+
+            /**
+             *
+             */
             void SetUuid(std::string uuid);
 
         // protected:

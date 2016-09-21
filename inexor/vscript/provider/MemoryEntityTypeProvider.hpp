@@ -21,6 +21,7 @@ namespace vscript {
     class MemoryEntityTypeProvider : public EntityTypeProvider
     {
         public:
+
             MemoryEntityTypeProvider();
             virtual ~MemoryEntityTypeProvider();
 

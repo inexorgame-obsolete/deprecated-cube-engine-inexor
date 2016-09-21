@@ -125,6 +125,5 @@ namespace entity {
         return relationship_instance_manager;
     }
 
-
 }
 }

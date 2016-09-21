@@ -1,5 +1,5 @@
 /*
- * Relationship.cpp
+ * RelationshipInstance.cpp
  *
  *  Created on: 16.01.2015
  *      Author: aschaeffer
@@ -11,13 +11,10 @@
 namespace inexor {
 namespace entity {
 
-    RelationshipInstance::RelationshipInstance(
-        TypeRefPtr<RelationshipType> type,
-        InstanceRefPtr<EntityInstance> startNode,
-        InstanceRefPtr<EntityInstance> endNode
-    ) : InstanceBase(),
-        alive(true),
-        type(type)
+    RelationshipInstance::RelationshipInstance(TypeRefPtr<RelationshipType> type,
+                                               InstanceRefPtr<EntityInstance> startNode,
+                                               InstanceRefPtr<EntityInstance> endNode)
+        : InstanceBase(), alive(true), type(type)
     {
         // Type checks
         if (type->start_node_type == NULL || startNode->type->IsA(type->start_node_type)) {
@@ -32,14 +29,11 @@ namespace entity {
         }
     }
 
-    RelationshipInstance::RelationshipInstance(
-        TypeRefPtr<RelationshipType> type,
-        InstanceRefPtr<EntityInstance> startNode,
-        InstanceRefPtr<EntityInstance> endNode,
-        std::string uuid
-    ) : InstanceBase(uuid),
-        alive(true),
-        type(type)
+    RelationshipInstance::RelationshipInstance(TypeRefPtr<RelationshipType> type,
+                                               InstanceRefPtr<EntityInstance> startNode,
+                                               InstanceRefPtr<EntityInstance> endNode,
+                                               std::string uuid)
+        : InstanceBase(uuid), alive(true), type(type)
     {
         // Type checks
         if (type->start_node_type != NULL || startNode->type->IsA(type->start_node_type)) {

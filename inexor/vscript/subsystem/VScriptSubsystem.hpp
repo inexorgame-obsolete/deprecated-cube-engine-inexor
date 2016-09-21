@@ -13,25 +13,41 @@ namespace inexor {
 namespace vscript {
 
     /**
-     * This subsystems manages teleporters.
+     * This subsystems manages 3D visual scripting.
      */
     class VScriptSubsystem : public SubsystemBase
     {
         public:
 
             VScriptSubsystem();
-            VScriptSubsystem(
-                std::shared_ptr<EntityTypeManager> entity_type_manager,
-                std::shared_ptr<EntityInstanceManager> entity_instance_manager,
-                std::shared_ptr<RelationshipTypeManager> relationship_type_manager,
-                std::shared_ptr<RelationshipInstanceManager> relationship_instance_manager
-            );
+            
+            /**
+             *
+             */
+            VScriptSubsystem(std::shared_ptr<EntityTypeManager> entity_type_manager,
+                             std::shared_ptr<EntityInstanceManager> entity_instance_manager,
+                             std::shared_ptr<RelationshipTypeManager> relationship_type_manager,
+                             std::shared_ptr<RelationshipInstanceManager> relationship_instance_manager);
             virtual ~VScriptSubsystem();
 
+            /**
+            *
+            */
             void Update(TimeStep time_step);
+
+            /**
+             *
+             */
             void Cleanup();
+
+            /**
+             *
+             */
             void Reset();
 
+            /**
+             *
+             */
             InstanceRefPtr<EntityInstance> CreateMemory(double x, double y, double z);
 
             // InstanceRefPtr<RelationshipInstance> Connect(InstanceRefPtr<EntityInstance> teleport, InstanceRefPtr<EntityInstance> teledest);

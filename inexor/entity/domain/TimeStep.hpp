@@ -1,5 +1,5 @@
 /*
- * TimeStep.h
+ * TimeStep.hpp
  *
  *  Created on: 30.01.2015
  *      Author: aschaeffer
@@ -11,12 +11,23 @@
 namespace inexor {
 namespace entity {
 
+    /**
+     *
+     */
     class TimeStep
     {
         public:
 
+            /**
+            *
+            */
             TimeStep(int elapsed_millis, double time_factor, double time_unit);
+
+            /**
+             *
+             */
             TimeStep(int elapsed_millis, double time_unit);
+
             virtual ~TimeStep();
 
             int elapsed_millis;

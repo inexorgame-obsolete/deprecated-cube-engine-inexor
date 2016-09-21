@@ -87,7 +87,8 @@ namespace entity {
         }
     }
 
-    int EntityInstanceManager::Size() {
+    int EntityInstanceManager::Size()
+    {
         return entity_instances.size();
     }
 

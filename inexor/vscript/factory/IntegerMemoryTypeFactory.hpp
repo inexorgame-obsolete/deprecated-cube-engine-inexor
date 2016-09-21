@@ -15,14 +15,27 @@ using namespace inexor::entity;
 namespace inexor {
 namespace vscript {
 
+    /**
+     *
+     */
     class IntegerMemoryTypeFactory : public EntityTypeFactory
     {
         public:
 
+            /**
+             *
+             */
             IntegerMemoryTypeFactory(std::shared_ptr<EntityTypeManager> entity_type_manager);
             virtual ~IntegerMemoryTypeFactory();
 
+            /**
+             *
+             */
             TypeRefPtr<EntityType> Create(std::string name_suffix);
+            
+            /**
+             *
+             */
             TypeRefPtr<EntityType> Create(std::string name_suffix, int value);
 
         private:

@@ -1,5 +1,5 @@
 /*
- * EntityTypeProvider.h
+ * EntityTypeProvider.hpp
  *
  *  Created on: 25.01.2015
  *      Author: aschaeffer
@@ -14,6 +14,9 @@
 namespace inexor {
 namespace entity {
 
+    /**
+     *
+     */
     class EntityTypeProvider
     {
         public:
@@ -21,7 +24,14 @@ namespace entity {
             EntityTypeProvider(std::string entity_name);
             virtual ~EntityTypeProvider();
 
+            /**
+             *
+             */
             std::string GetEntityName();
+
+            /**
+             *
+             */
             TypeRefPtr<EntityType> GetEntityType();
 
         protected:

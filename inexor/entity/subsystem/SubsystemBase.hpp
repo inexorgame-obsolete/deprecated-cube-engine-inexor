@@ -1,5 +1,5 @@
 /*
- * Subsystem.h
+ * SubsystemBase.hpp
  *
  *  Created on: 25.01.2015
  *      Author: aschaeffer
@@ -34,19 +34,52 @@ namespace entity {
                 std::shared_ptr<RelationshipTypeManager> relationship_type_manager,
                 std::shared_ptr<RelationshipInstanceManager> relationship_instance_manager
             );
-            virtual ~SubsystemBase() {};
+            virtual ~SubsystemBase() {}
 
+            /**
+             *
+             */
             virtual void Update(TimeStep time_step);
+
+            /**
+             *
+             */
             virtual void Cleanup();
+
+            /**
+             *
+             */
             virtual void Reset();
 
-            std::string GetName() { return name; };
-            void SetName(std::string) { this->name = name; };
+            /**
+             * Get the name of this subsystem
+             */
+            std::string GetName();
 
-            void SetEntityTypeManager(std::shared_ptr<EntityTypeManager> entity_type_manager) { this->entity_type_manager = entity_type_manager; };
-            void SetEntityInstanceManager(std::shared_ptr<EntityInstanceManager> entity_instance_manager) { this->entity_instance_manager = entity_instance_manager; };
-            void SetRelationshipTypeManager(std::shared_ptr<RelationshipTypeManager> relationship_type_manager) { this->relationship_type_manager = relationship_type_manager; };
-            void SetRelationshipInstanceManager(std::shared_ptr<RelationshipInstanceManager> relationship_instance_manager) { this->relationship_instance_manager = relationship_instance_manager; };
+            /**
+             * Set the name of this subsystem
+             */
+            void SetName(std::string);
+
+            /**
+             *
+             */
+            void SetEntityTypeManager(std::shared_ptr<EntityTypeManager> entity_type_manager);
+
+            /**
+             *
+             */
+            void SetEntityInstanceManager(std::shared_ptr<EntityInstanceManager> entity_instance_manager);
+
+            /**
+             *
+             */
+            void SetRelationshipTypeManager(std::shared_ptr<RelationshipTypeManager> relationship_type_manager);
+
+            /**
+             *
+             */
+            void SetRelationshipInstanceManager(std::shared_ptr<RelationshipInstanceManager> relationship_instance_manager);
 
         protected:
 

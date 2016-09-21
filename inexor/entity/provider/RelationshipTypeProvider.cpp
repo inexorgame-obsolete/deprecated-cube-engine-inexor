@@ -11,11 +11,21 @@
 namespace inexor {
 namespace entity {
 
-    RelationshipTypeProvider::RelationshipTypeProvider(
-        std::string relationship_name,
-        std::shared_ptr<EntityTypeManager> entity_type_manager
-    ) : relationship_name(relationship_name),
-        entity_type_manager(entity_type_manager) {};
+    RelationshipTypeProvider::RelationshipTypeProvider(std::string relationship_name,
+                                                       std::shared_ptr<EntityTypeManager> entity_type_manager)
+        : relationship_name(relationship_name), entity_type_manager(entity_type_manager) 
+    {
+    }
 
+    std::string RelationshipTypeProvider::GetRelationshipName()
+    {
+        return relationship_name;
+    }
+    
+    TypeRefPtr<RelationshipType> RelationshipTypeProvider::GetRelationshipType()
+    {
+        return relationship_type;
+    }
+    
 }
 }

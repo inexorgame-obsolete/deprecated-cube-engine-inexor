@@ -11,8 +11,13 @@
 namespace inexor {
 namespace entity {
 
-    EntityTypeProvider::EntityTypeProvider(std::string entity_name) : entity_name(entity_name) {}
-    EntityTypeProvider::~EntityTypeProvider() {}
+    EntityTypeProvider::EntityTypeProvider(std::string entity_name) : entity_name(entity_name)
+    {
+    }
+    
+    EntityTypeProvider::~EntityTypeProvider()
+    {
+    }
 
     std::string EntityTypeProvider::GetEntityName()
     {

@@ -1,5 +1,5 @@
 /*
- * JsFunction.h
+ * JsFunction.hpp
  *
  *  Created on: 30.01.2015
  *      Author: aschaeffer
@@ -14,6 +14,9 @@
 namespace inexor {
 namespace entity {
 
+    /**
+     *
+     */
     class JsFunction : public EntityFunction
     {
         public:
@@ -21,7 +24,14 @@ namespace entity {
             JsFunction(std::string name, std::string callback_name);
             virtual ~JsFunction();
 
+            /**
+             *
+             */
             std::string GetCallbackName();
+            
+            /**
+             *
+             */
             void SetCallbackName(std::string callback_name);
 
         private:

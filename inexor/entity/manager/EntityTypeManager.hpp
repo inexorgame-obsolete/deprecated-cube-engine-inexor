@@ -1,5 +1,5 @@
 /*
- * EntityTypeManager.h
+ * EntityTypeManager.hpp
  *
  *  Created on: 24.01.2015
  *      Author: aschaeffer
@@ -17,6 +17,9 @@
 namespace inexor {
 namespace entity {
 
+    /**
+     *
+     */
     class EntityTypeManager
     {
         public:
@@ -24,23 +27,74 @@ namespace entity {
             EntityTypeManager();
             virtual ~EntityTypeManager();
 
+            /**
+             *
+             */
             TypeRefPtr<EntityType> Create(std::string entity_type_name, bool persist, bool synchronize);
+            
+            /**
+             *
+             */
             TypeRefPtr<EntityType> Create(std::string entity_type_name, bool persist, bool synchronize, TypeRefPtr<EntityType> parent_type);
+            
+            /**
+             *
+             */
             TypeRefPtr<EntityType> Create(std::string factory_name, std::string entity_type_name_suffix);
 
+            /**
+             *
+             */
             void RegisterType(std::string entity_type_name, TypeRefPtr<EntityType> entity_type);
+            
+            /**
+             *
+             */
             void RegisterProvider(std::shared_ptr<EntityTypeProvider> entity_type_provider);
+            
+            /**
+             *
+             */
             void RegisterFactory(std::shared_ptr<EntityTypeFactory> entity_type_factory);
 
+            /**
+             *
+             */
             TypeRefPtr<EntityType> Get(std::string entity_type_name);
+            
+            /**
+             *
+             */
             TypeRefPtr<EntityType> GetByUuid(std::string entity_type_uuid);
+            
+            /**
+             *
+             */
             bool Exists(std::string entity_type_name);
 
+            /**
+             *
+             */
             void DeleteType(TypeRefPtr<EntityType> entity_type);
+            
+            /**
+             *
+             */
             void DeleteTypeByName(std::string entity_type_name);
+            
+            /**
+             *
+             */
             void DeleteTypeByUuid(std::string entity_type_uuid);
+            
+            /**
+             *
+             */
             void DeleteAllTypes();
 
+            /**
+             *
+             */
             int Size();
 
         private:

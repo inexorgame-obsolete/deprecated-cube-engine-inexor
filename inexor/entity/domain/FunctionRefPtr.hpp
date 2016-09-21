@@ -1,5 +1,5 @@
 /*
- * FunctionRefPtr.h
+ * FunctionRefPtr.hpp
  *
  *  Created on: 29.01.2015
  *      Author: aschaeffer
@@ -21,20 +21,33 @@ namespace entity {
     class EntityInstance;
     class RelationshipInstance;
 
+    /**
+     *
+     */
     class FunctionRefPtr : public std::shared_ptr<EntityFunction>
     {
         public:
 
             typedef std::shared_ptr<EntityFunction> parent;
 
+            /**
+             *
+             */
             FunctionRefPtr();
             FunctionRefPtr(EntityFunction* p);
             FunctionRefPtr(const std::shared_ptr<EntityFunction>& r);
 
+            /**
+             *
+             */
             template <typename U>
-            FunctionRefPtr(const std::shared_ptr<U>& r) : parent(r) {
+            FunctionRefPtr(const std::shared_ptr<U>& r) : parent(r)
+            {
             }
 
+            /**
+             *
+             */
             void operator()(TimeStep time_step);
             void operator()(TimeStep time_step, std::shared_ptr<EntityType> type);
             void operator()(TimeStep time_step, std::shared_ptr<EntityType> type, std::shared_ptr<EntityInstance> inst);

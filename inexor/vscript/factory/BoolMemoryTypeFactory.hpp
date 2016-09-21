@@ -15,14 +15,27 @@ using namespace inexor::entity;
 namespace inexor {
 namespace vscript {
 
+    /**
+     *
+     */
     class BoolMemoryTypeFactory : public EntityTypeFactory
     {
         public:
 
+            /**
+             *
+             */
             BoolMemoryTypeFactory(std::shared_ptr<EntityTypeManager> entity_type_manager);
             virtual ~BoolMemoryTypeFactory();
 
+            /**
+             *
+             */
             TypeRefPtr<EntityType> Create(std::string name_suffix);
+
+            /**
+             *
+             */
             TypeRefPtr<EntityType> Create(std::string name_suffix, bool value);
 
         private:
