@@ -30,6 +30,12 @@ namespace entity {
         return entity_instance;
     }
 
+    InstanceRefPtr<EntityInstance> EntityInstanceManager::CreateUnmanagedInstance(TypeRefPtr<EntityType> entity_type)
+    {
+        InstanceRefPtr<EntityInstance> entity_instance = std::make_shared<EntityInstance>(entity_type);
+        return entity_instance;
+    }
+
     bool EntityInstanceManager::Exists(std::string uuid)
     {
         return entity_instances.count(uuid);

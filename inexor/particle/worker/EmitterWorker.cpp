@@ -132,7 +132,7 @@ namespace particle {
                                 // No more particles available in the pool
                                 // Create a new particle instance and wire them together
 
-                                InstanceRefPtr<EntityInstance> particle_inst = w->entity_instance_manager->Create(w->particle_type);
+                                InstanceRefPtr<EntityInstance> particle_inst = w->entity_instance_manager->CreateUnmanagedInstance(w->particle_type);
                                 particle_inst[ELAPSED] = 0;
                                 particle_inst[LAST_ELAPSED] = 0;
                                 w->function->Execute(time_step, w->emitter_instance, particle_inst);
