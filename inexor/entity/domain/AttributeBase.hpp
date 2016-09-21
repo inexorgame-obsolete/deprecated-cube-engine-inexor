@@ -47,14 +47,9 @@ namespace entity {
 
             /**
              * The attributes of this type.
-             * TODO: std::unordered_map (C++11)
              */
             std::unordered_map<std::string, AttributeRefPtr> attributes;
 
-        private:
-
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(AttributeBase);
     };
 
 }

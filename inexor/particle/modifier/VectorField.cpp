@@ -34,7 +34,7 @@ namespace particle {
         }
     }
 
-    void VectorField::Before(TimeStep time_step, EntityInstance* modifier)
+    void VectorField::Before(TimeStep time_step, std::shared_ptr<EntityInstance> modifier)
     {
         // TODO: check performance
         SetExpression(modifier->GetType()[EXPRESSION]->stringVal);
@@ -45,7 +45,7 @@ namespace particle {
     /**
      * The base position is the modifiers position.
      */
-    void VectorField::Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle)
+    void VectorField::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle)
     {
         // TODO: check this -> add modifier position variables: mx, my, mz
         ix = (*particle)[POS]->vec3Val.x - (*modifier)[POS]->vec3Val.x;
@@ -60,7 +60,7 @@ namespace particle {
         }
     }
 
-    void VectorField::After(TimeStep time_step, EntityInstance* modifier)
+    void VectorField::After(TimeStep time_step, std::shared_ptr<EntityInstance> modifier)
     {
     }
 

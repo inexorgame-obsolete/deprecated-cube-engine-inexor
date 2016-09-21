@@ -18,6 +18,7 @@ namespace particle {
           entity_instance_manager(entity_instance_manager),
           relationship_instance_manager(relationship_instance_manager)
     {
+    	// Quicker access by holding references
         std::string particle_type_name = emitter_instance[PARTICLE_TYPE]->stringVal;
         particle_type = particle_subsystem->GetParticleType(particle_type_name);
         emitted_by = particle_subsystem->GetRelationshipType(REL_EMITTED_BY);
@@ -37,7 +38,7 @@ namespace particle {
     {
         if (stopped)
         {
-            spdlog::get("global")->debug() << "Starting emitter worker thread " << name.c_str();
+            spdlog::get("global")->debug() << "Starting emitter worker thread " << name;
             thread = SDL_CreateThread(Work, name.c_str(), this);
         }
     }
@@ -48,7 +49,7 @@ namespace particle {
         {
             running = false;
     // SDL_KillThread(thread);
-            spdlog::get("global")->debug() << "Stopping worker thread " << name.c_str();
+            spdlog::get("global")->debug() << "Stopping emitter worker thread " << name;
             int retValue;
             SDL_WaitThread(thread, &retValue);
             particle_pool.clear();
@@ -62,7 +63,7 @@ namespace particle {
         {
             w->running = true;
             w->stopped = false;
-            spdlog::get("global")->debug() << "Worker thread started";
+            spdlog::get("global")->debug() << "Started emitter worker thread " << w->GetName();
             while (w->running)
             {
                 w->frame_millis = SDL_GetTicks();
@@ -82,6 +83,7 @@ namespace particle {
                     int batches_to_be_emitted = millistoprocess / w->emitter_instance[RATE]->intVal;
                     w->emitter_instance[MILLIS_TO_PROCESS] = millistoprocess % w->emitter_instance[RATE]->intVal;
 
+                    // spdlog::get("global")->debug() << "millistoprocess: " << millistoprocess;
                     // Emit particles
                     for (int batch = 0; batch < batches_to_be_emitted; batch++)
                     {
@@ -163,6 +165,7 @@ namespace particle {
                     // Time step updates for each particle and remove dead particles
                     try {
                         std::list<InstanceRefPtr<RelationshipInstance> >::iterator it = w->emitter_instance->incoming[w->emitted_by->uuid].begin();
+                        // spdlog::get("global")->debug() << "Emitter instance " << w->emitter_instance.get()->uuid << " has " << w->emitter_instance->incoming[w->emitted_by->uuid].size() << " incoming nodes";
                         while (it != w->emitter_instance->incoming[w->emitted_by->uuid].end())
                         {
                             if ((*it)->alive)
@@ -182,17 +185,18 @@ namespace particle {
                             ++it;
                         }
                     } catch (int e) {
-                        spdlog::get("global")->debug() << "exception emitter worker " << e;
+                        spdlog::get("global")->error() << "Exception in emitter worker thread " << w->GetName() << ": " << e;
                     }
                     w->frame_last_millis = w->frame_millis;
+                    // spdlog::get("global")->debug() << "Particle pool size: " << w->particle_pool.size();
                 }
             }
         } catch (int e)
         {
-            spdlog::get("global")->debug() << "Worker died! e: " << e;
+            spdlog::get("global")->error() << "Emitter worker thread died " << w->GetName() << ": " << e;
         }
         w->stopped = true;
-        spdlog::get("global")->debug() << "Worker thread stopped";
+        spdlog::get("global")->info() << "Emitter worker thread stopped " << w->GetName();
         return 0;
     }
 

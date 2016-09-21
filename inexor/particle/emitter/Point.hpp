@@ -12,6 +12,7 @@
 #include "inexor/entity/EntitySystem.hpp"
 #include "inexor/entity/domain/graph/EntityFunction.hpp"
 #include "inexor/particle/subsystem/ParticleSubsystem.hpp"
+#include "inexor/util/Logging.hpp"
 
 namespace inexor {
 namespace entity {
@@ -29,7 +30,7 @@ namespace particle {
             Point();
             virtual ~Point();
 
-            void Execute(TimeStep time_step, EntityInstance* emitter_inst, EntityInstance* particle_inst);
+            void Execute(TimeStep time_step, std::shared_ptr<EntityInstance> emitter_inst, std::shared_ptr<EntityInstance> particle_inst);
 
         private:
             /**

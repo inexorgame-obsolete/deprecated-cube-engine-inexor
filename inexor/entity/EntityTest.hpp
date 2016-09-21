@@ -22,10 +22,8 @@ class EntityTest
         void PrintStats();
         void RunTests();
         void CleanupTests();
-        void SubsystemTest();
         void AttributeTest();
         void InstanceCreationTest();
-        void TypeCreationTest();
         void LowLevelTypeCreationTest();
         void LowLevelInstanceCreationTest();
 

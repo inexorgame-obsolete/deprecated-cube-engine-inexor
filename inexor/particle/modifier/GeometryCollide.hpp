@@ -26,12 +26,8 @@ namespace particle {
             GeometryCollide();
             virtual ~GeometryCollide();
 
-            void Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle);
+            void Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle);
 
-        private:
-
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(GeometryCollide);
     };
 
 }

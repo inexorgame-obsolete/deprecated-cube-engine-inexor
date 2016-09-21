@@ -22,7 +22,7 @@ namespace particle {
     {
     }
 
-    void BrownianMotion::Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle)
+    void BrownianMotion::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle)
     {
         // Add velocity vector
         (*particle)[VELOCITY]->vec3Val.add(vec(

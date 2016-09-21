@@ -25,9 +25,6 @@ namespace entity {
         entity_instance_manager = std::make_shared<EntityInstanceManager>(entity_type_manager);
         relationship_instance_manager = std::make_shared<RelationshipInstanceManager>(relationship_type_manager);
 
-        InitProviders();
-        InitSubsystems();
-
         // Start worker threads
         // Doesn't work in multithreading! Conflicts with renderer!
         // relationship_instance_manager->Start();
@@ -40,45 +37,8 @@ namespace entity {
 
         Cleanup();
         subsystems.clear();
-        subsystemTypeMap.ObjectMap.clear();
-    }
-
-    void EntitySystem::InitProviders()
-    {
-    /*
-        // Create entity type providers
-        std::shared_ptr<EntityTypeProvider> handle_provider = std::make_shared<HandleEntityTypeProvider>();
-        entity_type_manager->RegisterProvider(handle_provider);
-
-        // Create relationship type providers
-        std::shared_ptr<RelationshipTypeProvider> handles_provider = std::make_shared<HandlesRelationshipTypeProvider>(entity_type_manager);
-        relationship_type_manager->RegisterProvider(handles_provider);
-    */
-    }
-
-    void EntitySystem::InitSubsystems()
-    {
-        // Create subsystem instances
-    	// handle_subsystem = new HandleSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
-        // teleport_subsystem = new TeleportSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
-        // vscript_subsystem = new TeleportSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
-    	// particle_subsystem = new ParticleSubsystem(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
-
-        // Store the subsystems and it's type(!) in the subsystem type map, so that
-        // the concrete subsystem can be retrieved instead of only as SubsystemBase
-        //
-        // ex: std::shared_ptr<TeleportSubsystem> teleport_subsystem = entity_system->GetSubsystem<TeleportSubsystem>();
-        //
-    	// subsystemTypeMap.Set<HandleSubsystem>(handle_subsystem.get());
-    	// subsystemTypeMap.Set<TeleportSubsystem>(teleport_subsystem.get());
-        // subsystemTypeMap.Set<VScriptSubsystem>(vscript_subsystem.get());
-    	// subsystemTypeMap.Set<ParticleSubsystem>(particle_subsystem.get());
-
-        // Store all subsystems in a vector:
-    	// subsystems.push_back(handle_subsystem);
-    	// subsystems.push_back(teleport_subsystem);
-        // subsystems.push_back(vscript_subsystem);
-    	// subsystems.push_back(particle_subsystem);
+        subsystem_type_map.clear();
+        // subsystemTypeMap.ObjectMap.clear();
     }
 
     /**
@@ -98,6 +58,7 @@ namespace entity {
         relationship_instance_manager->InvalidateInstances();
         relationship_instance_manager->DequeInstances();
         frame_last_millis = frame_millis;
+        // spdlog::get("global")->info() << "EntitySystem::Update()";
     }
 
     void EntitySystem::Cleanup()
@@ -121,6 +82,7 @@ namespace entity {
         {
             subsystems[i]->Reset();
         }
+        // TODO: activate renderers again
     }
 
     void EntitySystem::Save(std::string filename)

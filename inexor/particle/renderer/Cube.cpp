@@ -21,7 +21,7 @@ namespace particle {
     {
     }
 
-    void Cube::Before(TimeStep time_step, EntityInstance* renderer_inst)
+    void Cube::Before(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst)
     {
         glPushMatrix();
         //rectshader->set();
@@ -35,7 +35,7 @@ namespace particle {
         glBegin(GL_QUADS);
     }
 
-    void Cube::Execute(TimeStep time_step, EntityInstance* renderer_inst, EntityInstance* particle_inst)
+    void Cube::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst, std::shared_ptr<EntityInstance> particle_inst)
     {
         vec pmin((*particle_inst)[POS]->vec3Val);
         vec pmax(pmin);
@@ -74,7 +74,7 @@ namespace particle {
         glVertex3d(pmax.x, pmin.y, pmin.z);
     }
 
-    void Cube::After(TimeStep time_step, EntityInstance* renderer_inst)
+    void Cube::After(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst)
     {
         glEnd();
         glDepthMask(GL_TRUE);

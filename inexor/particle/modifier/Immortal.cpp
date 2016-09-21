@@ -19,7 +19,7 @@ namespace particle {
     {
     }
 
-    void Immortal::Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle)
+    void Immortal::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle)
     {
         (*particle)[REMAINING]->intVal = RAND_MAX;
     }

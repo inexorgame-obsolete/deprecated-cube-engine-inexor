@@ -24,8 +24,8 @@ namespace particle {
             SimpleGravity();
             virtual ~SimpleGravity();
 
-            void Before(TimeStep time_step, EntityInstance* modifier);
-            void Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle);
+            void Before(TimeStep time_step, std::shared_ptr<EntityInstance> modifier);
+            void Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle);
 
         private:
 
@@ -33,8 +33,6 @@ namespace particle {
             float gravity;
             float dz;
 
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(SimpleGravity);
     };
 
 }

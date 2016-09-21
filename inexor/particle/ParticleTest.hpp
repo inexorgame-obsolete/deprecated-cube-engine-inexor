@@ -40,6 +40,8 @@ namespace particle {
             virtual ~ParticleTest();
 
             void RunTests();
+            void SubsystemTest();
+            void TypeCreationTest();
             void ShowCase();
             void ShowCaseMinimal();
             void PerformanceTest();

@@ -22,7 +22,7 @@ namespace particle {
     {
     }
 
-    void Origin::Before(TimeStep time_step, EntityInstance* renderer_inst)
+    void Origin::Before(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst)
     {
         glPushMatrix();
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -37,7 +37,7 @@ namespace particle {
         glBegin(GL_LINES);
     }
 
-    void Origin::Execute(TimeStep time_step, EntityInstance* renderer_inst, EntityInstance* particle_inst)
+    void Origin::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst, std::shared_ptr<EntityInstance> particle_inst)
     {
         vec p_particle((*particle_inst)[POS]->vec3Val);
         vec p_emitter(particle_inst->outgoing[emitted_by->uuid].front()->endNode[POS]->vec3Val);
@@ -45,7 +45,7 @@ namespace particle {
         glVertex3f(p_emitter.x, p_emitter.y, p_emitter.z);
     }
 
-    void Origin::After(TimeStep time_step, EntityInstance* renderer_inst)
+    void Origin::After(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst)
     {
         glEnd();
         glDisable(GL_LINE_STIPPLE);

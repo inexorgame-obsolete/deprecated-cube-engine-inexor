@@ -19,7 +19,7 @@ namespace particle {
     {
     }
 
-    void GeometryCollide::Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle)
+    void GeometryCollide::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle)
     {
         float elasticity = 0.95f;
         physent d;

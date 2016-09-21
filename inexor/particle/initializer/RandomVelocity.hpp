@@ -12,6 +12,7 @@
 #include "inexor/entity/domain/graph/EntityFunction.hpp"
 #include "inexor/entity/domain/graph/EntityInstance.hpp"
 #include "inexor/particle/model/ParticleModel.hpp"
+#include "inexor/util/Logging.hpp"
 
 namespace inexor {
 namespace entity {
@@ -24,12 +25,8 @@ namespace particle {
             RandomVelocity();
             virtual ~RandomVelocity();
 
-            void Execute(TimeStep time_step, EntityInstance* emitter_inst, EntityInstance* initializer_inst, EntityInstance* particle_inst);
+            void Execute(TimeStep time_step, std::shared_ptr<EntityInstance> emitter_inst, std::shared_ptr<EntityInstance> initializer_inst, std::shared_ptr<EntityInstance> particle_inst);
 
-        private:
-
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(RandomVelocity);
     };
 
 }

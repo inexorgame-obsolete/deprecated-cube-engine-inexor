@@ -74,9 +74,35 @@ namespace particle {
 
     void ParticleTest::RunTests()
     {
-        ShowCase();
+    	SubsystemTest();
+    	TypeCreationTest();
+    	ShowCase();
         ShowCaseMinimal();
         // PerformanceTest();
+    }
+
+    void ParticleTest::SubsystemTest()
+    {
+        spdlog::get("global")->info() << "Try to access particle subsystem by type";
+        std::shared_ptr<inexor::entity::particle::ParticleSubsystem> particle_subsystem = entity_system->GetSubsystem<inexor::entity::particle::ParticleSubsystem>();
+        TimeStep time_step(0.0, 1000.0);
+        particle_subsystem->Update(time_step);
+    }
+
+    void ParticleTest::TypeCreationTest()
+    {
+    	spdlog::get("global")->info() << "Create a batch of entity types";
+        // std::shared_ptr<inexor::entity::particle::ParticleSubsystem> particle_subsystem = entity_system->GetSubsystem<inexor::entity::particle::ParticleSubsystem>();
+        // for (int i = 0; i < 1000; i++)
+        // {
+        // std::string particle_type_name = "default_particle_" + i;
+        // std::string particle_emitter_type_name = "simple_emitter_" + i;
+        // std::string test_function_name = "test_function_" + i;
+        // FunctionRefPtr test_function_i = std::make_shared<EntityFunction>(test_function_name);
+        // TypeRefPtr<EntityType> particle_type_i = particle_subsystem->CreateParticleType(particle_type_name, "default_renderer");
+        // TypeRefPtr<EntityType> particle_emitter_type_i = particle_subsystem->CreateEmitterType(particle_emitter_type_name, test_function_i, particle_type_i, 100, 1, 1000, 0.1, 1.0);
+        // }
+        // PrintStats();
     }
 
     void ParticleTest::ShowCaseMinimal()

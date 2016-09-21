@@ -20,7 +20,7 @@ namespace particle {
     {
     }
 
-    void Point::Execute(TimeStep time_step, EntityInstance* emitter_inst, EntityInstance* particle_inst)
+    void Point::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> emitter_inst, std::shared_ptr<EntityInstance> particle_inst)
     {
 
         // InstanceRefPtr<EntityInstance> particle_inst = entity_system->GetEntityInstanceManager()->Create(particle_type);

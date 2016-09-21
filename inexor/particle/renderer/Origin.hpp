@@ -32,7 +32,7 @@ namespace particle {
              * @param time_step The time step.
              * @param renderer_inst The renderer instance.
              */
-            void Before(TimeStep time_step, EntityInstance* renderer_inst);
+            void Before(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst);
 
             /**
              * Executed for each particle.
@@ -40,14 +40,14 @@ namespace particle {
              * @param renderer_inst The renderer instance.
              * @param particle_inst The particle instance.
              */
-            void Execute(TimeStep time_step, EntityInstance* renderer_inst, EntityInstance* particle_inst);
+            void Execute(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst, std::shared_ptr<EntityInstance> particle_inst);
 
             /**
              * Executed after particles are rendered.
              * @param time_step The time step.
              * @param renderer_inst The renderer instance.
              */
-            void After(TimeStep time_step, EntityInstance* renderer_inst);
+            void After(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst);
 
         private:
             /**
@@ -57,9 +57,6 @@ namespace particle {
              *
              */
             TypeRefPtr<RelationshipType> emitted_by;
-
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(Origin);
 
     };
 

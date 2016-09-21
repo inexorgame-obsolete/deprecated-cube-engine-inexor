@@ -103,8 +103,6 @@ namespace particle {
              */
             TypeRefPtr<RelationshipType> renders;
 
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(EmitterWorker);
     };
 
 }

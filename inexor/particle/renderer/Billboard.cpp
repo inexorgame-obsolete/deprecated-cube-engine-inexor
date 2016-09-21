@@ -22,7 +22,7 @@ namespace particle {
     {
     }
 
-    void Billboard::Before(TimeStep time_step, EntityInstance* renderer_inst)
+    void Billboard::Before(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst)
     {
         glPushMatrix();
         glShadeModel(GL_SMOOTH);
@@ -55,12 +55,12 @@ namespace particle {
         glColor4f(1.0f, 0.5f, 0.5f, 0.5f);
     }
 
-    void Billboard::Execute(TimeStep time_step, EntityInstance* renderer_inst, EntityInstance* particle_inst)
+    void Billboard::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst, std::shared_ptr<EntityInstance> particle_inst)
     {
         glVertex3f((*particle_inst)[POS]->vec3Val.x, (*particle_inst)[POS]->vec3Val.y, (*particle_inst)[POS]->vec3Val.z);
     }
 
-    void Billboard::After(TimeStep time_step, EntityInstance* renderer_inst)
+    void Billboard::After(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst)
     {
         glEnd();
         glDisable(GL_BLEND);

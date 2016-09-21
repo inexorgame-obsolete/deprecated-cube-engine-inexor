@@ -19,7 +19,7 @@ namespace particle {
     {
     }
 
-    void DensityFadeout::Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle)
+    void DensityFadeout::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle)
     {
         float percent_done = (*particle)[ELAPSED]->intVal / ((*particle)[REMAINING]->intVal + (*particle)[ELAPSED]->intVal);
         if (percent_done > (*modifier)["density_threshold"]->floatVal)

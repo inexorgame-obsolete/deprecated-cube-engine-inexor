@@ -25,7 +25,7 @@ namespace particle {
     {
     }
 
-    void Model::Before(TimeStep time_step, EntityInstance* renderer_inst)
+    void Model::Before(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst)
     {
         model_name = (*renderer_inst)[MODEL]->stringVal;
         offset = (*renderer_inst)[OFFSET]->vec3Val;
@@ -37,7 +37,7 @@ namespace particle {
         glDepthMask(false);
     }
 
-    void Model::Execute(TimeStep time_step, EntityInstance* renderer_inst, EntityInstance* particle_inst)
+    void Model::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst, std::shared_ptr<EntityInstance> particle_inst)
     {
         //if (m)
         //{
@@ -50,7 +50,7 @@ namespace particle {
             //}
     }
 
-    void Model::After(TimeStep time_step, EntityInstance* renderer_inst)
+    void Model::After(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst)
     {
         glDepthMask(true);
         glPopMatrix();

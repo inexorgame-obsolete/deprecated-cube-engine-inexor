@@ -23,7 +23,7 @@ namespace particle {
     {
     }
 
-    void SimpleGravity::Before(TimeStep time_step, EntityInstance* modifier)
+    void SimpleGravity::Before(TimeStep time_step, std::shared_ptr<EntityInstance> modifier)
     {
         if ((*modifier).HasAttribute(MASS))
         {
@@ -35,7 +35,7 @@ namespace particle {
         }
     }
 
-    void SimpleGravity::Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle)
+    void SimpleGravity::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle)
     {
         float p_mass = (*particle)[MASS]->floatVal;
         (*particle)[VELOCITY]->vec3Val.z += ((-(p_mass) * mass * gravity / (dz * dz)) * dz) / (dz * p_mass);

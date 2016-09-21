@@ -46,6 +46,7 @@ namespace particle {
     {
     }
 
+    /// This method kills all remaining particles available by the renderers during the main menu is open.
     void ParticleSubsystem::Update(TimeStep time_step)
     {
         if (mainmenu)
@@ -64,6 +65,7 @@ namespace particle {
                 }
                 ++it;
             }
+            // spdlog::get("global")->info() << "ParticleSubsystem::Update()";
         }
     }
 
@@ -135,8 +137,11 @@ namespace particle {
             {
                 if ((*it2)->alive && (*it2)->endNode[REMAINING]->intVal > 0)
                 {
-                    function->Execute(time_step, (*it), (*it2)->endNode);
+                	// This calls the actual particle renderer code; which is an
+                	// EntityFunction, for example BillboardRenderer::Execute()
+                	function->Execute(time_step, (*it), (*it2)->endNode);
                 } else {
+                	// Kill the particle instance
                     (*it2)->alive = false;
                 }
                 ++it2;

@@ -19,7 +19,7 @@ namespace particle {
     {
     }
 
-    void VelocityTransformation::Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle)
+    void VelocityTransformation::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle)
     {
         // Store last position
         (*particle)[LAST_POS]->vec3Val = (*particle)[POS]->vec3Val;

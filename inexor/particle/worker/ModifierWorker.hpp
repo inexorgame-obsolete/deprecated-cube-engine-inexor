@@ -52,8 +52,6 @@ namespace particle {
              */
             TypeRefPtr<RelationshipType> modifies;
 
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(ModifierWorker);
     };
 
 }

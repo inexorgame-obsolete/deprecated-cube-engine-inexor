@@ -19,7 +19,7 @@ namespace particle {
     {
     }
 
-    void GravityPoint::Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle)
+    void GravityPoint::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle)
     {
         float m_gravity = (*modifier)[GRAVITY]->floatVal;
         float m_mass = (*modifier)[MASS]->floatVal;

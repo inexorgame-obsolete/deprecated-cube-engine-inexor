@@ -27,7 +27,7 @@ namespace particle {
             BrownianMotion();
             virtual ~BrownianMotion();
 
-            void Execute(TimeStep time_step, EntityInstance* modifier, EntityInstance* particle);
+            void Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle);
 
         private:
 
@@ -35,8 +35,6 @@ namespace particle {
             std::mt19937 gen;
             std::normal_distribution<float> distribution;
 
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(BrownianMotion);
     };
 
 }

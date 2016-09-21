@@ -8,7 +8,11 @@
 #ifndef SRC_ENGINE_ENTITY_ENTITYSYSTEM_H_
 #define SRC_ENGINE_ENTITY_ENTITYSYSTEM_H_
 
+#include <memory>
+// TODO: remove typeinfo
 #include <typeinfo>
+#include <typeindex>
+#include <unordered_map>
 
 #include "inexor/entity/EntitySystemBase.hpp"
 #include "inexor/entity/domain/InstanceBase.hpp"
@@ -23,12 +27,11 @@
 #include "inexor/entity/manager/RelationshipInstanceManager.hpp"
 #include "inexor/entity/manager/RelationshipTypeManager.hpp"
 #include "inexor/entity/subsystem/SubsystemBase.hpp"
-// #include "inexor/entity/subsystem/HandleSubsystem.hpp"
-// #include "inexor/entity/subsystem/TeleportSubsystem.hpp"
-// #include "inexor/entity/subsystem/particle/ParticleSubsystem.hpp"
 
 namespace inexor {
 namespace entity {
+
+/*
 
     struct type_info_less
     {
@@ -64,6 +67,7 @@ namespace entity {
                 ObjectMap[&typeid(T)] = reinterpret_cast<void *>(value);
             }
     };
+*/
 
     class EntitySystem
     {
@@ -98,16 +102,6 @@ namespace entity {
             void Reset();
 
             /**
-             * Returns a typed reference to the concrete subsystem. You can
-             * retrieve the subsystem with it's original type from everywhere.
-             */
-            template <typename T>
-            T *GetSubsystem () const
-            {
-                return subsystemTypeMap.Get<T>();
-            }
-
-            /**
              * Save the current entity system.
              * TODO: export to JSON
              */
@@ -120,12 +114,13 @@ namespace entity {
             void Load(std::string filename);
 
             /**
-             * Reset timer.
+             * Resets the timer and the time unit.
              */
             void ResetTimer();
 
             /**
-             * Sets the time unit.
+             * Sets the time unit. By reducing the time unit, the calculations happens
+             * more often. The default time unit is 1000 ms.
              */
             void SetTimeUnit(double time_unit);
 
@@ -154,11 +149,30 @@ namespace entity {
             std::shared_ptr<RelationshipInstanceManager> GetRelationshipInstanceManager();
 
             /**
+             * Returns a typed reference to the concrete subsystem. You can
+             * retrieve the subsystem with it's original type from everywhere.
+             */
+            template <typename T>
+            std::shared_ptr<T> GetSubsystem()
+            {
+                std::type_index index(typeid(T));
+                if (subsystem_type_map.count(std::type_index(typeid(T))) != 0)
+                {
+                    return std::static_pointer_cast<T>(subsystem_type_map[index]);
+                } else {
+                    return NULL;
+                }
+            };
+
+            /**
              * Adds a subsystem.
              */
-            template<typename T, typename = std::enable_if<std::is_base_of<SubsystemBase, T>::value>> void RegisterSubsystem(std::shared_ptr<T> subsystem_ref_ptr) {
-                subsystemTypeMap.Set<T>(subsystem_ref_ptr.get());
-                subsystems.push_back(subsystem_ref_ptr);
+            template<typename T, typename = std::enable_if<std::is_base_of<SubsystemBase, T>::value>> void RegisterSubsystem(std::shared_ptr<T> subsystem)
+            {
+                subsystem_type_map[std::type_index(typeid(*subsystem))] = subsystem;
+                // subsystem_type_map[&typeid(*subsystem)] = subsystem;
+                // subsystemTypeMap.Set<std::shared_ptr<T>*>(subsystem);
+                subsystems.push_back(subsystem);
             };
 
         private:
@@ -220,7 +234,8 @@ namespace entity {
              * The subsystem type map grants access to the real type of the
              * implemented subsystem.
              */
-            TypeMap subsystemTypeMap;
+            std::map<std::type_index, std::shared_ptr<SubsystemBase> > subsystem_type_map;
+            // TypeMap subsystemTypeMap;
 
     };
 
