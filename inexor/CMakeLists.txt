@@ -27,6 +27,7 @@ add_subdirectory(entity)
 add_subdirectory(flowgraph)
 add_subdirectory(vscript)
 add_subdirectory(particle)
+add_subdirectory(entityrendering)
 
 # Actual targets
 opt_subdir(client on)
