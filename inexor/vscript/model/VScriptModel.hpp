@@ -25,6 +25,7 @@ namespace vscript {
     const std::string ENT_MEMORY("memory");
     const std::string ENT_BOOL_MEMORY("bool_memory");
     const std::string ENT_INTEGER_MEMORY("integer_memory");
+    const std::string ENT_FLOAT_MEMORY("float_memory");
 
     // entity function definitions
 
@@ -44,6 +45,7 @@ namespace vscript {
 
     const std::string ENTTYPE_PREFIX_BOOL_MEMORY_TYPE("bool_memory_type_");
     const std::string ENTTYPE_PREFIX_INTEGER_MEMORY_TYPE("integer_memory_type_");
+    const std::string ENTTYPE_PREFIX_FLOAT_MEMORY_TYPE("integer_memory_type_");
 
     // Function attribute names
 

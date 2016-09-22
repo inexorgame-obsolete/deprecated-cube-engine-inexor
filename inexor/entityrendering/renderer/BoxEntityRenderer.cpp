@@ -8,6 +8,9 @@
 #include "BoxEntityRenderer.hpp"
 #include "inexor/fpsgame/game.hpp"
 #include "inexor/engine/engine.hpp"
+#include "inexor/particle/model/ParticleModel.hpp"
+
+using namespace inexor::entity::particle;
 
 namespace inexor {
 namespace entity {
