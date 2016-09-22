@@ -127,17 +127,58 @@ namespace particle {
              */
             int maxfps;
 
+
+            /**
+             * Factory for creating particle types.
+             */
             std::shared_ptr<ParticleTypeFactory> particle_type_factory;
+
+            /**
+             * Factory for creating particle emitter types.
+             */
             std::shared_ptr<ParticleEmitterTypeFactory> particle_emitter_type_factory;
+
+            /**
+             * Factory for creating particle initializer types.
+             */
             std::shared_ptr<ParticleInitializerTypeFactory> particle_initializer_type_factory;
+
+            /**
+             * Factory for creating particle modifier types.
+             */
             std::shared_ptr<ParticleModifierTypeFactory> particle_modifier_type_factory;
+
+            /**
+             * Factory for creating particle renderer types.
+             */
             std::shared_ptr<ParticleRendererTypeFactory> particle_renderer_type_factory;
 
+
+            /**
+             * This map stores all particles types.
+             */
             std::unordered_map<std::string, TypeRefPtr<EntityType> > particle_types;
+
+            /**
+             * This map stores all particle emitter types.
+             */
             std::unordered_map<std::string, TypeRefPtr<EntityType> > emitter_types;
+
+            /**
+             * This map stores all particles initializer types.
+             */
             std::unordered_map<std::string, TypeRefPtr<EntityType> > initializer_types;
+
+            /**
+             * This map stores all particle modifier types.
+             */
             std::unordered_map<std::string, TypeRefPtr<EntityType> > modifier_types;
+
+            /**
+             * This map stores all particle renderer types.
+             */
             std::unordered_map<std::string, TypeRefPtr<EntityType> > renderer_types;
+
 
             /**
              * The particle workers.
@@ -159,11 +200,54 @@ namespace particle {
              */
             std::vector<InstanceRefPtr<EntityInstance> > renderers;
 
+
+            // The main relationship types of the particle subsystem.
+
+            /**
+             * Relationship type: A particle was emitted by an particle emitter.
+             *
+             * PARTICLE--[was_emitted_by]-->EMITTER
+             *
+             */
             TypeRefPtr<RelationshipType> emitted_by;
+
+            /**
+             * Relationship type: An emitter modifies a particle.
+             *
+             * EMITTER --[modifies]--> PARTICLE
+             *
+             */
             TypeRefPtr<RelationshipType> modifies;
+
+            /**
+             * Relationship type: A renderer renders a particle.
+             *
+             * RENDERER --[renders]--> PARTICLE
+             */
             TypeRefPtr<RelationshipType> renders;
+
+            /**
+             * Relationship type: Particles which where spawned by an emitter
+             * shall be initialized by the linked initializers.
+             *
+             * EMITTER --[apply_initializer]--> INITIALIZER
+             */
             TypeRefPtr<RelationshipType> apply_initializer;
+
+            /**
+             * Relationship type: Particles which where spawned by an emitter
+             * shall be modified by the linked modifiers.
+             *
+             * EMITTER --[apply_initializer]--> INITIALIZER
+             */
             TypeRefPtr<RelationshipType> apply_modifier;
+
+            /**
+             * Relationship type: Particles which where spawned by an emitter
+             * shall be rendered by the linked renderers.
+             *
+             * EMITTER --[apply_initializer]--> RENDERER
+             */
             TypeRefPtr<RelationshipType> apply_renderer;
 
     };
