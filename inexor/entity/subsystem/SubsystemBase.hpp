@@ -62,6 +62,16 @@ namespace entity {
             void SetName(std::string);
 
             /**
+             * Stops triggering activations.
+             */
+            void Pause();
+
+            /**
+             * Resumes triggering activations.
+             */
+            void Resume();
+
+            /**
              *
              */
             void SetEntityTypeManager(std::shared_ptr<EntityTypeManager> entity_type_manager);
@@ -83,12 +93,34 @@ namespace entity {
 
         protected:
 
+            /**
+             * The name of the subsystem.
+             */
             std::string name;
 
+            /**
+             * If paused, no activations are triggered anymore.
+             */
+            bool paused;
+
+            /**
+             * The local reference of the entity type manager.
+             */
             std::shared_ptr<EntityTypeManager> entity_type_manager;
+
+            /**
+             * The local reference of the entity instance manager.
+             */
             std::shared_ptr<EntityInstanceManager> entity_instance_manager;
 
+            /**
+             * The local reference of the relationship type manager.
+             */
             std::shared_ptr<RelationshipTypeManager> relationship_type_manager;
+
+            /**
+             * The local reference of the relationship instance manager.
+             */
             std::shared_ptr<RelationshipInstanceManager> relationship_instance_manager;
 
     };

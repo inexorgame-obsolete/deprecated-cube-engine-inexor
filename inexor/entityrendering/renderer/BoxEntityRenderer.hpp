@@ -9,9 +9,9 @@
 #define INEXOR_ENTITY_RENDERING_BOX_ENTITY_RENDERER_HEADER
 
 #include "inexor/entity/EntitySystemBase.hpp"
-#include "inexor/particle/subsystem/ParticleSubsystem.hpp"
 #include "inexor/entity/EntitySystem.hpp"
 #include "inexor/entity/domain/graph/EntityFunction.hpp"
+#include "inexor/entityrendering/subsystem/EntityRenderingSubsystem.hpp"
 
 namespace inexor {
 namespace entity {

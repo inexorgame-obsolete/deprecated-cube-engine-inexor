@@ -13,8 +13,6 @@ using namespace inexor::entity;
 namespace inexor {
 namespace vscript {
 
-    class EntityTypeManager;
-
     /**
      * Defines the integer memory entity type.
      */
@@ -24,11 +22,6 @@ namespace vscript {
 
             IntegerMemoryEntityTypeProvider();
             virtual ~IntegerMemoryEntityTypeProvider();
-
-        private:
-
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(IntegerMemoryEntityTypeProvider);
 
     };
 

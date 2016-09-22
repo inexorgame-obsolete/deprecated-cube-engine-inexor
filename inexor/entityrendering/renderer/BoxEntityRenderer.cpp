@@ -16,7 +16,7 @@ namespace inexor {
 namespace entity {
 namespace rendering {
 
-    BoxEntityRenderer::BoxEntityRenderer() : EntityFunction(RENDERER_CUBE_FUNCTION)
+    BoxEntityRenderer::BoxEntityRenderer() : EntityFunction(ENT_FUNC_BOX_ENTITY_RENDERER)
     {
     }
 

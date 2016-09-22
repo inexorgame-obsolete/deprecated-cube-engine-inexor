@@ -29,13 +29,13 @@ namespace entity {
 
     const std::string ENT_ENTITY_RENDERER("entity_renderer");
 
-    // entity function definitions
-
-    const std::string FUNC_RENDERS_ENTITY("renders_entity");
-
-    // attribute names
+    // Entity attribute names
 
     const std::string FUNC_RENDERS_ENTITY_ATTRIBUTE_NAME("renders_entity");
+
+    // Entity function names
+
+    const std::string ENT_FUNC_BOX_ENTITY_RENDERER("box_entity_renderer");
 
 }
 }

@@ -10,7 +10,9 @@
 namespace inexor {
 namespace entity {
 
-    SubsystemBase::SubsystemBase(std::string name) : name(name)
+    SubsystemBase::SubsystemBase(std::string name)
+      : name(name),
+        paused(false)
     {
     }
 
@@ -20,6 +22,7 @@ namespace entity {
                                  std::shared_ptr<RelationshipTypeManager> relationship_type_manager,
                                  std::shared_ptr<RelationshipInstanceManager> relationship_instance_manager)
       : name(name),
+        paused(false),
         entity_type_manager(entity_type_manager),
         entity_instance_manager(entity_instance_manager),
         relationship_type_manager(relationship_type_manager),

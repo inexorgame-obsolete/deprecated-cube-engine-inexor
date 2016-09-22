@@ -13,8 +13,6 @@ using namespace inexor::entity;
 namespace inexor {
 namespace vscript {
 
-    class EntityTypeManager;
-
     /**
      * Defines the bool memory entity type.
      */
@@ -24,11 +22,6 @@ namespace vscript {
 
             BoolMemoryEntityTypeProvider();
             virtual ~BoolMemoryEntityTypeProvider();
-
-        private:
-            
-            // Include the default reference counting implementation.
-            IMPLEMENT_REFCOUNTING(BoolMemoryEntityTypeProvider);
 
     };
 

@@ -8,33 +8,36 @@
 namespace inexor {
 namespace vscript {
 
-    // subsystems
+    // Subsystems
 
-    // const std::string SYS_HANDLE("handle_subsystem");
+    // const std::string SUBSYSTEM_VSCRIPTSYS_HANDLE("vscript_subsystem");
 
-    // entity attributes
+    // Entity attributes
 
     // const std::string POS("pos");
 
-    // relationship type definitions
+    // Relationship type definitions
 
-    // const std::string REL_TELEPORTING("teleporting");
+    const std::string REL_ACTIVATES("activates");
 
-    // entity type definitions
+    // Entity type definitions
 
     const std::string ENT_MEMORY("memory");
     const std::string ENT_BOOL_MEMORY("bool_memory");
     const std::string ENT_INTEGER_MEMORY("integer_memory");
     const std::string ENT_FLOAT_MEMORY("float_memory");
 
-    // entity function definitions
+    const std::string ENT_EVENT("event");
+    const std::string ENT_TIMER_EVENT("timer_event");
+    const std::string ENT_PLAYER_COLLIDE_EVENT("player_collide_event");
+
+    // Entity function definitions
 
     // const std::string FUNC_TELEPORTED("teleported");
 
-    // attribute names
+    // Attribute names
 
     // const std::string FUNC_RENDERS_HANDLE_ATTRIBUTE_NAME("renders_handle");
-
 
     // Type factories
 
@@ -51,6 +54,15 @@ namespace vscript {
 
     const std::string BOOL_MEMORY_FUNCTION_ATTRIBUTE_NAME("todo");
     const std::string INTEGER_MEMORY_FUNCTION_ATTRIBUTE_NAME("todo2");
+
+    const std::string ENT_ATTR_ACTIVATION_FUNCTION("activation_function");
+
+    // Function names
+
+    const std::string ENT_FUNC_ACTIVATION("activation");
+    const std::string ENT_FUNC_TIMER_EVENT("timer_event");
+    const std::string ENT_FUNC_INCREASE_INTEGER("increase");
+    const std::string ENT_FUNC_DECREASE_INTEGER("decrease");
 
 }
 }

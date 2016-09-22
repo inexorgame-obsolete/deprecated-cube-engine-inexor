@@ -44,11 +44,6 @@ namespace particle {
             void Update(TimeStep time_step);
 
             /**
-             * Initializes the graph model for the particle system.
-             */
-            void InitializeModel();
-
-            /**
              * Shutdown.
              */
             void Cleanup();
@@ -57,6 +52,12 @@ namespace particle {
              * TODO
              */
             void Reset();
+
+            /**
+             * Initializes the graph model for the particle system.
+             * TODO: Move this to SubsystemBase
+             */
+            void InitializeModel();
 
             /**
              * Renders the faces.

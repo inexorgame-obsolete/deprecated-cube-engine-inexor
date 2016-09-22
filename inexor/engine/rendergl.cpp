@@ -1936,8 +1936,11 @@ void gl_drawframe()
 
     rendergeom(causticspass);
 
+    // TODO: move this to the EntityRenderingSubsystem
     inexor::vscript::vScript3D.update_drag_n_drop();
+    // TODO: move this to the EntityRenderingSubsystem
     inexor::vscript::vScript3D.update_relation_linker();
+    // TODO: move this to the VScriptSubsystem
     inexor::vscript::vScript3D.run();
 
     if(editmode || vs_debugging)

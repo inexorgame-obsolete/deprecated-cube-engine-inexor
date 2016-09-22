@@ -69,26 +69,6 @@ namespace particle {
         }
     }
 
-    void ParticleSubsystem::InitializeModel()
-    {
-        // Create graph model: Node types
-        TypeRefPtr<EntityType> parent_particle_type = entity_type_manager->Create(ENTTYPE_PARENT_PARTICLE_TYPE, true, true);
-        TypeRefPtr<EntityType> parent_emitter_type = entity_type_manager->Create(ENTTYPE_PARENT_EMITTER_TYPE, true, true);
-        TypeRefPtr<EntityType> parent_initializer_type = entity_type_manager->Create(ENTTYPE_PARENT_INITIALIZER_TYPE, true, true);
-        TypeRefPtr<EntityType> parent_modifier_type = entity_type_manager->Create(ENTTYPE_PARENT_MODIFIER_TYPE, true, true);
-        TypeRefPtr<EntityType> parent_renderer_type = entity_type_manager->Create(ENTTYPE_PARENT_RENDERER_TYPE, true, true);
-
-        // Create graph model: Relationship types
-        emitted_by = relationship_type_manager->Create(REL_EMITTED_BY, false, false, parent_particle_type, parent_emitter_type);
-        modifies = relationship_type_manager->Create(REL_MODIFIES, false, false, parent_modifier_type, parent_particle_type);
-        renders = relationship_type_manager->Create(REL_RENDERS, false, false, parent_renderer_type, parent_particle_type);
-        apply_initializer = relationship_type_manager->Create(REL_APPLY_INITIALIZER, true, true, parent_emitter_type, parent_initializer_type);
-        apply_modifier = relationship_type_manager->Create(REL_APPLY_MODIFIER, true, true, parent_emitter_type, parent_modifier_type);
-        apply_renderer = relationship_type_manager->Create(REL_APPLY_RENDERER, true, true, parent_emitter_type, parent_renderer_type);
-
-        spdlog::get("global")->debug() << "Particle subsystem graph model initialized";
-    }
-
     void ParticleSubsystem::Cleanup()
     {
         // Stop default workers
@@ -117,6 +97,26 @@ namespace particle {
 
     void ParticleSubsystem::Reset()
     {
+    }
+
+    void ParticleSubsystem::InitializeModel()
+    {
+        // Create graph model: Node types
+        TypeRefPtr<EntityType> parent_particle_type = entity_type_manager->Create(ENTTYPE_PARENT_PARTICLE_TYPE, true, true);
+        TypeRefPtr<EntityType> parent_emitter_type = entity_type_manager->Create(ENTTYPE_PARENT_EMITTER_TYPE, true, true);
+        TypeRefPtr<EntityType> parent_initializer_type = entity_type_manager->Create(ENTTYPE_PARENT_INITIALIZER_TYPE, true, true);
+        TypeRefPtr<EntityType> parent_modifier_type = entity_type_manager->Create(ENTTYPE_PARENT_MODIFIER_TYPE, true, true);
+        TypeRefPtr<EntityType> parent_renderer_type = entity_type_manager->Create(ENTTYPE_PARENT_RENDERER_TYPE, true, true);
+
+        // Create graph model: Relationship types
+        emitted_by = relationship_type_manager->Create(REL_EMITTED_BY, false, false, parent_particle_type, parent_emitter_type);
+        modifies = relationship_type_manager->Create(REL_MODIFIES, false, false, parent_modifier_type, parent_particle_type);
+        renders = relationship_type_manager->Create(REL_RENDERS, false, false, parent_renderer_type, parent_particle_type);
+        apply_initializer = relationship_type_manager->Create(REL_APPLY_INITIALIZER, true, true, parent_emitter_type, parent_initializer_type);
+        apply_modifier = relationship_type_manager->Create(REL_APPLY_MODIFIER, true, true, parent_emitter_type, parent_modifier_type);
+        apply_renderer = relationship_type_manager->Create(REL_APPLY_RENDERER, true, true, parent_emitter_type, parent_renderer_type);
+
+        spdlog::get("global")->debug() << "Particle subsystem graph model initialized";
     }
 
     void ParticleSubsystem::RenderFaces()

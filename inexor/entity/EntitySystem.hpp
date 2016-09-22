@@ -42,13 +42,15 @@ namespace entity {
 
             /**
              * Initializes the providers.
+             * TODO: remove
              */
-            void InitProviders();
+            // void InitProviders();
 
             /**
              * Initializes the subsystems.
+             * TODO: remove
              */
-            void InitSubsystems();
+            // void InitSubsystems();
 
             /**
              * Frame update (main thread).

@@ -3,7 +3,8 @@
 namespace inexor {
 namespace vscript {
 
-    VScriptSubsystem::VScriptSubsystem() : SubsystemBase(VSCRIPT_SUBSYSTEM)
+    VScriptSubsystem::VScriptSubsystem()
+        : SubsystemBase(VSCRIPT_SUBSYSTEM)
     {
     }
 
@@ -17,7 +18,6 @@ namespace vscript {
                         relationship_type_manager,
                         relationship_instance_manager)
     {
-
         // Create entity type providers
         std::shared_ptr<EntityTypeProvider> memory_provider = std::make_shared<MemoryEntityTypeProvider>();
         entity_type_manager->RegisterProvider(memory_provider);
@@ -26,6 +26,7 @@ namespace vscript {
         // std::shared_ptr<RelationshipTypeProvider> teleporting_provider = new TeleportingRelationshipTypeProvider(entity_type_manager);
         // relationship_type_manager->RegisterProvider(teleporting_provider);
 
+        InitializeModel();
     }
 
     VScriptSubsystem::~VScriptSubsystem()
@@ -34,7 +35,38 @@ namespace vscript {
 
     void VScriptSubsystem::Update(TimeStep time_step)
     {
-        // logoutf("VScriptSubsystem::Update() elapsed_millis: %d time_factor: %2.3f time_unit: %4.1f", time_step.elapsed_millis, time_step.time_factor, time_step.time_unit);
+        // Iterates over all events
+        std::vector<InstanceRefPtr<EntityInstance> >::iterator it = event_instances.begin();
+        while (it != event_instances.end())
+        {
+        	Activate(time_step, (*it));
+            ++it;
+        }
+    }
+
+    void VScriptSubsystem::Activate(TimeStep time_step, InstanceRefPtr<EntityInstance> source)
+    {
+    	// Iterates over all outgoing "activates" relationships for each event
+    	std::list<InstanceRefPtr<RelationshipInstance> >::iterator it2 = source->outgoing[activates->uuid].begin();
+        while (it2 != source->outgoing[activates->uuid].end())
+        {
+        	Activate(time_step, source, (*it2)->endNode, (*it2));
+        	// Continue with the next outgoing relationship
+            ++it2;
+        }
+    }
+
+    void VScriptSubsystem::Activate(TimeStep time_step, InstanceRefPtr<EntityInstance> source, InstanceRefPtr<EntityInstance> target, InstanceRefPtr<RelationshipInstance> activates)
+    {
+    	// First: the relationship provides the name of the function to be called on the target node's type
+        std::string activation_function_name = activates[ENT_ATTR_ACTIVATION_FUNCTION]->stringVal;
+
+        // Second: resolve the target node's type
+        FunctionRefPtr activation_function = target->GetType()[ENT_ATTR_ACTIVATION_FUNCTION]->functionVal;
+
+        // Third: call the activation function and provide the source, the target and the relationship
+        // TODO: we need a boolean result
+    	activation_function->Execute(time_step, source, target, activates);
     }
 
     void VScriptSubsystem::Cleanup()
@@ -45,61 +77,118 @@ namespace vscript {
     {
     }
 
-    InstanceRefPtr<EntityInstance> VScriptSubsystem::CreateMemory(double x, double y, double z)
+    void VScriptSubsystem::InitializeModel()
     {
-        TypeRefPtr<EntityType> entity_type = entity_type_manager->Get(ENT_MEMORY);
-        // Let the entity instance manager create the instance
-        InstanceRefPtr<EntityInstance> entity_instance = entity_instance_manager->Create(entity_type);
-        entity_instance["x"] = x;
-        entity_instance["y"] = y;
-        entity_instance["z"] = z;
-        entity_instance["constant"] = true;
-        return entity_instance;
+        // Create graph model: Node types
+        parent_event_type = entity_type_manager->Create(ENT_EVENT, true, true);
+        parent_memory_type = entity_type_manager->Create(ENT_MEMORY, true, true);
+
+        FunctionRefPtr timer_event_function = std::make_shared<TimerEvent>();
+        CreateEventType(ENT_TIMER_EVENT, timer_event_function);
+
+        CreateMemoryType(ENT_BOOL_MEMORY);
+
+        TypeRefPtr<EntityType> integer_memory_type = CreateMemoryType(ENT_INTEGER_MEMORY);
+        FunctionRefPtr increase_integer_function = std::make_shared<IncreaseInteger>();
+        integer_memory_type[ENT_FUNC_INCREASE_INTEGER] = increase_integer_function;
+        FunctionRefPtr decrease_integer_function = std::make_shared<DecreaseInteger>();
+        integer_memory_type[ENT_FUNC_DECREASE_INTEGER] = decrease_integer_function;
+
+        // Create graph model: Relationship types
+        activates = relationship_type_manager->Create(REL_ACTIVATES, false, false, ENT_ANY, ENT_ANY);
+
+        spdlog::get("global")->debug() << "VScript subsystem graph model initialized";
     }
 
-/*
-    InstanceRefPtr<RelationshipInstance> VScriptSubsystem::Connect(InstanceRefPtr<EntityInstance> teleport, InstanceRefPtr<EntityInstance> teledest)
+    TypeRefPtr<EntityType> VScriptSubsystem::CreateEventType(std::string name, InstanceRefPtr<EntityFunction> function)
     {
-        TypeRefPtr<RelationshipType> relationship_type = relationship_type_manager->Get(REL_TELEPORTING);
-        if (relationship_type.get()) {
-            InstanceRefPtr<RelationshipInstance> relationship_instance = relationship_instance_manager->CreateInstance(relationship_type, teleport, teledest);
-            return relationship_instance;
-        } else {
-            return NULL;
-        }
+        TypeRefPtr<EntityType> event_type = entity_type_manager->Create(name, true, true, parent_event_type);
+        event_type[ENT_ATTR_ACTIVATION_FUNCTION]->functionVal = function;
+        event_types[name] = event_type;
+        return event_type;
     }
 
-    void VScriptSubsystem::Disconnect(InstanceRefPtr<RelationshipInstance> relationship_instance)
+    TypeRefPtr<EntityType> VScriptSubsystem::CreateMemoryType(std::string name)
     {
-        // TODO: check for start and end node for type safety!
-        relationship_instance_manager->DeleteInstance(relationship_instance);
+        TypeRefPtr<EntityType> memory_type = entity_type_manager->Create(name, true, true, parent_memory_type);
+        memory_types[name] = memory_type;
+        return memory_type;
     }
 
-    void VScriptSubsystem::DeleteAll()
+    InstanceRefPtr<EntityInstance> VScriptSubsystem::CreateEvent(TypeRefPtr<EntityType> event_entity_type, double x, double y, double z)
     {
-        DeleteAllTeleports();
-        DeleteAllTeledests();
-        DeleteAllConnections();
+        InstanceRefPtr<EntityInstance> event_entity_instance = entity_instance_manager->Create(event_entity_type);
+        event_entity_instance["x"] = x;
+        event_entity_instance["y"] = y;
+        event_entity_instance["z"] = z;
+        event_instances.push_back(event_entity_instance);
+        return event_entity_instance;
     }
 
-    void VScriptSubsystem::DeleteAllTeleports()
+    InstanceRefPtr<EntityInstance> VScriptSubsystem::CreateMemory(TypeRefPtr<EntityType> memory_entity_type, double x, double y, double z, bool isConstant)
     {
-        TypeRefPtr<EntityType> entity_type = entity_type_manager->Get(ENT_TELEPORT);
-        entity_instance_manager->DeleteAllInstances(entity_type);
+        InstanceRefPtr<EntityInstance> memory_entity_instance = entity_instance_manager->Create(memory_entity_type);
+        memory_entity_instance["x"] = x;
+        memory_entity_instance["y"] = y;
+        memory_entity_instance["z"] = z;
+        memory_entity_instance["constant"] = isConstant;
+        event_instances.push_back(memory_entity_instance);
+        return memory_entity_instance;
     }
 
-    void VScriptSubsystem::DeleteAllTeledests()
+    InstanceRefPtr<RelationshipInstance> VScriptSubsystem::ConnectActivation(InstanceRefPtr<EntityInstance> source, InstanceRefPtr<EntityInstance> target, std::string activation_function_name)
     {
-        TypeRefPtr<EntityType> entity_type = entity_type_manager->Get(ENT_TELEDEST);
-        entity_instance_manager->DeleteAllInstances(entity_type);
+    	// Construct a new relationship instance from source to target of type "activates"
+        InstanceRefPtr<RelationshipInstance> relationship_instance = relationship_instance_manager->CreateInstance(activates, source, target);
+        // Set the activation function which should be called on the target.
+        relationship_instance[ENT_ATTR_ACTIVATION_FUNCTION] = activation_function_name;
+        return relationship_instance;
     }
 
-    void VScriptSubsystem::DeleteAllConnections()
+    /**
+     * Removes the given activation relationship.
+     */
+    void VScriptSubsystem::DisconnectActivation(InstanceRefPtr<RelationshipInstance> activation)
     {
-        TypeRefPtr<RelationshipType> relationship_type = relationship_type_manager->Get(REL_TELEPORTING);
-        relationship_instance_manager->DeleteAllInstances(relationship_type);
+    	// TODO: implement
+    	spdlog::get("global")->error() << "VScriptSubsystem::DisconnectActivation() not implemented";
     }
-*/
+
+    /**
+     * Removes all existing activations between the two given entities.
+     */
+    void VScriptSubsystem::DisconnectAllActivations(InstanceRefPtr<EntityInstance> source, InstanceRefPtr<EntityInstance> target)
+    {
+    	// TODO: implement
+    	spdlog::get("global")->error() << "VScriptSubsystem::DisconnectAllActivations() not implemented";
+    }
+
+    /**
+     * Removes all outgoing activations of the given entity.
+     */
+    void VScriptSubsystem::DisconnectAllOutgoingActivations(InstanceRefPtr<EntityInstance> source)
+    {
+    	// TODO: implement
+    	spdlog::get("global")->error() << "VScriptSubsystem::DisconnectAllOutgoingActivations() not implemented";
+    }
+
+    /**
+     * Removes all incoming activations of the given entity.
+     */
+    void VScriptSubsystem::DisconnectAllIncomingActivations(InstanceRefPtr<EntityInstance> target)
+    {
+    	// TODO: implement
+    	spdlog::get("global")->error() << "VScriptSubsystem::DisconnectAllIncomingActivations() not implemented";
+    }
+
+    /**
+     * Removes all outgoing and incoming activations.
+     */
+    void VScriptSubsystem::DisconnectAllActivations(InstanceRefPtr<EntityInstance> entity)
+    {
+    	// TODO: implement
+    	spdlog::get("global")->error() << "VScriptSubsystem::DisconnectAllActivations() not implemented";
+    }
 
 }
 }

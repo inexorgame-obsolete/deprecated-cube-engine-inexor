@@ -13,7 +13,8 @@ namespace entity {
 namespace rendering {
 
     /**
-     * This subsystems manages the entity rendering.
+     * This subsystems manages the entity rendering and provides functionality
+     * like entity drag and drop and entity instance linking.
      */
     class EntityRenderingSubsystem : public SubsystemBase
     {
@@ -91,5 +92,10 @@ namespace rendering {
 }
 }
 }
+
+/**
+ * Provide the entity rendering subsystem as global reference.
+ */
+extern std::shared_ptr<inexor::entity::rendering::EntityRenderingSubsystem> entity_rendering_subsystem;
 
 #endif /* INEXOR_ENTITY_RENDERING_SUBSYSTEM_HEADER */

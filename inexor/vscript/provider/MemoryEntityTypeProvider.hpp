@@ -13,8 +13,6 @@ using namespace inexor::entity;
 namespace inexor {
 namespace vscript {
 
-    // class EntityTypeManager;
-
     /**
      * Defines the memory entity type.
      */

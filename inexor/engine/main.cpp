@@ -3,10 +3,12 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/entity/EntitySystem.hpp"
 #include "inexor/entity/EntityTest.hpp"
+#include "inexor/entityrendering/subsystem/EntityRenderingSubsystem.hpp"
 #include "inexor/particle/ParticleTest.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/ui.hpp"
 #include "inexor/util/Subsystem.hpp"
+#include "inexor/vscript/VScriptTest.hpp"
 #include "inexor/crashreporter/CrashReporter.hpp"
 #include "inexor/util/Logging.hpp"
 
@@ -34,6 +36,9 @@ using namespace inexor::sound;
 
 std::shared_ptr<inexor::entity::EntitySystem> entity_system;
 std::shared_ptr<inexor::entity::EntityTest> entity_test;
+std::shared_ptr<inexor::entity::rendering::EntityRenderingSubsystem> entity_rendering_subsystem;
+std::shared_ptr<inexor::vscript::VScriptSubsystem> vscript_subsystem;
+std::shared_ptr<inexor::vscript::VScriptTest> vscript_test;
 std::shared_ptr<inexor::entity::particle::ParticleSubsystem> particle_subsystem;
 std::shared_ptr<inexor::entity::particle::ParticleTest> particle_test;
 // std::shared_ptr<inexor::entity::HandleSubsystem> handle_subsystem;
@@ -1275,6 +1280,11 @@ ICOMMAND(ent_stats, "b", (bool *b),
     entity_test->PrintStats();
 );
 
+ICOMMAND(vscript_runtests, "b", (bool *b),
+    vscript_test->RunTests();
+    entity_test->PrintStats();
+);
+
 int main(int argc, char **argv)
 {
     logging.initDefaultLoggers();
@@ -1416,6 +1426,14 @@ int main(int argc, char **argv)
     spdlog::get("global")->info() << "init: entity system";
     entity_system = std::make_shared<EntitySystem>();
 
+    spdlog::get("global")->info() << "init: entity rendering subsystem";
+    entity_rendering_subsystem = std::make_shared<inexor::entity::rendering::EntityRenderingSubsystem>(entity_system->GetEntityTypeManager(), entity_system->GetEntityInstanceManager(), entity_system->GetRelationshipTypeManager(), entity_system->GetRelationshipInstanceManager());
+    entity_system->RegisterSubsystem(entity_rendering_subsystem);
+
+    spdlog::get("global")->info() << "init: vscript subsystem";
+    vscript_subsystem = std::make_shared<inexor::vscript::VScriptSubsystem>(entity_system->GetEntityTypeManager(), entity_system->GetEntityInstanceManager(), entity_system->GetRelationshipTypeManager(), entity_system->GetRelationshipInstanceManager());
+    entity_system->RegisterSubsystem(vscript_subsystem);
+
     spdlog::get("global")->info() << "init: particle subsystem";
     particle_subsystem = std::make_shared<inexor::entity::particle::ParticleSubsystem>(entity_system->GetEntityTypeManager(), entity_system->GetEntityInstanceManager(), entity_system->GetRelationshipTypeManager(), entity_system->GetRelationshipInstanceManager());
     entity_system->RegisterSubsystem(particle_subsystem);
@@ -1425,6 +1443,9 @@ int main(int argc, char **argv)
 
     spdlog::get("global")->info() << "init: entity system tests";
     entity_test = std::make_shared<inexor::entity::EntityTest>();
+
+    spdlog::get("global")->info() << "init: vscript tests";
+    vscript_test = std::make_shared<inexor::vscript::VScriptTest>(entity_system);
 
     spdlog::get("global")->info() << "init: particle subsystem tests";
     particle_test = std::make_shared<inexor::entity::particle::ParticleTest>();
