@@ -2,9 +2,9 @@
 #define INEXOR_ENTITY_RENDERING_SUBSYSTEM_HEADER
 
 #include "inexor/entity/EntitySystemBase.hpp"
+#include "inexor/entity/model/EntityModel.hpp"
 #include "inexor/entity/subsystem/SubsystemBase.hpp"
-
-#define ENTITY_RENDERING_SUBSYSTEM "entity_rendering"
+#include "inexor/entityrendering/model/EntityRenderingModel.hpp"
 
 using namespace inexor::entity;
 
@@ -13,7 +13,7 @@ namespace entity {
 namespace rendering {
 
     /**
-     * This subsystems manages 3D visual scripting.
+     * This subsystems manages the entity rendering.
      */
     class EntityRenderingSubsystem : public SubsystemBase
     {
@@ -36,6 +36,11 @@ namespace rendering {
             void Update(TimeStep time_step);
 
             /**
+             * Initializes the entity rendering graph model.
+             */
+            void InitializeModel();
+
+            /**
              *
              */
             void Cleanup();
@@ -46,6 +51,13 @@ namespace rendering {
             void Reset();
 
             /**
+             * Creates a entity renderer instance of the given renderer type.
+             * For example, create a blue box renderer of type ColouredBoxRenderer.
+             */
+            void CreateEntityRenderer(TypeRefPtr<EntityType> renderer_type);
+            void ConnectEntityRenderer(InstanceRefPtr<EntityInstance> entity_renderer_instance, InstanceRefPtr<EntityInstance> entity_instance);
+
+            /**
              * Renders the entities.
              */
             void RenderEntities();
@@ -54,6 +66,25 @@ namespace rendering {
              * Renders the relationships.
              */
             void RenderRelationships();
+
+        private:
+
+            /**
+             * The entity renderers.
+             */
+            std::vector<InstanceRefPtr<EntityInstance> > entity_renderers;
+
+            /**
+             * The relationship renderers.
+             */
+            std::vector<InstanceRefPtr<EntityInstance> > relationship_renderers;
+
+            /**
+             * The relationship type which connects an entity renderer instance
+             * with another entity instance which shall be rendered by the renderer
+             * instance.
+             */
+            TypeRefPtr<RelationshipType> renders_entity;
 
     };
 
