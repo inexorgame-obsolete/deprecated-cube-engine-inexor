@@ -65,99 +65,54 @@ var log = bunyan.createLogger({
     streams: streams
 });
 
-//Create a server
-var server = restify.createServer({
+// Mother inexor
+inexor = {};
+
+// Create a web server
+inexor.server = restify.createServer({
     name: 'Inexor',
     log: log,
     version: '0.0.9'
 });
 
-//Extend logger using the plugin.
-server.use(restify.requestLogger());
+// Create the tree
+inexor.tree = tree.Root.createTree(inexor.server);
+inexor.tree.grpc.connect();
 
-// Sanitize path
-server.pre(restify.pre.sanitizePath());
-
-// Use nginx-alike logging style: address, method, url, user-agent
-server.use(function(request, response, next) {
+// Extend logger using the plugin.
+inexor.server.pre(restify.pre.sanitizePath());
+inexor.server.use(restify.requestLogger());
+inexor.server.use(function(request, response, next) {
     request.log.info('%s -- %s %s %s', request.connection.remoteAddress, request.method, request.url, request.headers['user-agent']);
     next();
 });
 
 //TODO: This is just a draft, introduce a way to register GET/SETTERS for the REST interface
-server.use(restify.bodyParser()); // for parsing application/json
+inexor.server.use(restify.bodyParser()); // for parsing application/json
 
-//Normally the App/Middleware object of Express/Restify
-//We manually assign the Tree which is ALWAYS needed
-inexor = {};
-inexor.tree = tree.Root.createTree(server);
+// Serve static files from the assets folder
+inexor.server.get(/^\/?.*/, restify.serveStatic({
+    directory: __dirname + './../public',
+    default: 'index.html'
+}));
 
-//Load plugins.json -> require every plugin and assign a namespace
-var plugins = JSON.parse(fs.readFileSync(argv.plugins));
+inexor.tree.on('ready', function() {
+  inexor.server.log.info('Inexor Tree initialized');
 
-const PLUGIN_FOLDER = 'plugins';
-const RESERVED_PLUGINS = ['rest']; // These can only be registered from app/plugins/ folder
-
-//Depending wether plugins-xy or inexor-plugins-xy is used, it is loaded from either app/plugins or NPM
-
-plugins.forEach(function(pluginName) {
-    let names = pluginName.split('-');
-    let name = names[names.length -1]; // The last element
-    let path = '';
-    
-    if (names[0] == 'inexor') {
-        if (RESERVED_PLUGINS.includes(name)) return; // This should jump directly to the next forEach element?
-        path = pluginName;
-    } else {
-        path = './plugins/' + name;
-    }
-    
-    // Read the meta data from package
-    let pluginMeta = require(path + '/package.json');
-    let plugin = require(path)(tree, server);
-    // let sync = (typeof(pluginMeta.plugin.sync) === 'boolean') ? pluginMeta.plugin.sync : false; // Set default to false
-    
-    // inexor.tree.addChild(name, 'node', plugin, sync, false);
-    inexor.tree[name] = plugin;
-        
-    if (pluginMeta.plugin.hasOwnProperty('routes')) {
-        for (routeType in pluginMeta.plugin.routes) {
-            for (route in pluginMeta.plugin.routes[routeType]) {
-                // TODO: This is not generic and needs improvement..
-                
-                let func = pluginMeta.plugin.routes[routeType][route]; // Function name
-                
-                switch (routeType) {
-                case 'get':
-                    server.get(route, inexor.tree[name][func]);
-                    break;
-                case 'set':
-                    server.post(route, inexor.tree[name][func]);
-                    break;
-                }
-            }
-        }
-    }
-});
-
-//REST API for the inexor tree
-server.get('/tree/dump', inexor.tree.rest.dump);
-server.get(/^\/tree\/(.*)/, inexor.tree.rest.get);
-server.post(/^\/tree\/(.*)/, inexor.tree.rest.post);
+  let plugins = JSON.parse(fs.readFileSync(argv.plugins));
+  require('plugins.js')(plugins, inexor).then(function(msg) {
+    inexor.server.log.info(msg);
+    // Finally start the server
+    inexor.server.listen(argv.port, argv.host, function () {
+        // inexor.status = 'ready'; // TODO: THIS IS FOR CEF_INITIALIZATION AND CURRENTLY NOT USED
+        inexor.server.log.info('Inexor-Node-RPC listening on %s:%s', argv.host, argv.port);
+    });
+  }).catch(function(err) {
+    inexor.server.log.err(err);
+  })
+})
 
 // Load controllers
 // TODO: Add a standardized way to load Controllers
 // var EditorSettings = require('./controllers').EditorSettings;
 // inexor.editorSettings = new EditorSettings(inexor.tree, server);
-
-// Serve static files from the assets folder
-server.get(/^\/?.*/, restify.serveStatic({
-    directory: __dirname + './../public',
-    default: 'index.html'
-}));
-
-//Listen on server
-server.listen(argv.port, argv.host, function () {
-    // inexor.status = 'ready'; // TODO: THIS IS FOR CEF_INITIALIZATION AND CURRENTLY NOT USED
-    server.log.info('Inexor-Node-RPC listening on %s:%s', argv.host, argv.port);
-});
