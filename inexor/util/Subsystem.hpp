@@ -1,5 +1,4 @@
-#ifndef INEXOR_UTIL_SERVICE_HEADER
-#define INEXOR_UTIL_SERVICE_HEADER
+#pragma once
 
 #include <string>
 #include <unordered_map>
@@ -229,12 +228,14 @@ public:
 /// TODO: Can we get rid of that restriction?
 ///
 /// @param name The name to register the subsystem as
-/// @param clazz The class of the subsystem
-#define SUBSYSTEM_REGISTER(name, clazz)                \
+/// @param ... The class of the subsystem
+///            (its an argument list because macros are dump and can't 
+///            handle template lists otherwise, since they contain ",").
+#define SUBSYSTEM_REGISTER(name, ...)                \
     int __SUBSYSTEM_DUMMY(name) INEXOR_ATTR_UNUSED = ( \
       ::inexor::util::Subsystem::Register::Set( #name, \
-        [](){ return ::inexor::util::dynamic_pointer_cast<Subsystem>( \
-          ::inexor::compat::make_unique<clazz>()); })  \
+        [](){ return ::inexor::util::dynamic_pointer_cast<::inexor::util::Subsystem>( \
+          ::inexor::compat::make_unique<__VA_ARGS__>()); })  \
       , 0);
 
 /// Make sure that a specific subsystem is included
@@ -251,4 +252,3 @@ public:
 }
 }
 
-#endif
