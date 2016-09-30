@@ -74,6 +74,7 @@ list(APPEND MSVC_COMPILER_FLAGS
   /fp:fast                              # Calculate with less precise floating point values
   /EHsc                                 # assume extern C stuff never throws exceptions
   /W2                                   # Warning level 2
+  /bigobj                               # Disable obj file size limitation to compile big files
   /wd4091                               # Ignore "typedef .. where no variable gets declared ingored" warning
   /wd4244                               # Ignore "conversion from 'int' to 'float', possible loss of data" warning
   /wd4251                               # Ignore "class 'type' needs to have dll-interface .." warning
