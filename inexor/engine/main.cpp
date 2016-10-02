@@ -1242,12 +1242,6 @@ ICOMMANDERR(logformat, "ss", (char *logger_name, char *pattern),
     logging.setLogFormat(logger_name_s, pattern_s)
 );
 
-namespace inexor {
-namespace rpc {
-    extern void clientrpc();
-    COMMAND(clientrpc, "");
-}
-}
 
 int main(int argc, char **argv)
 {

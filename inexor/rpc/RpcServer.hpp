@@ -77,7 +77,7 @@ class RpcServer
         /// Prints out any error info.
         void finished_disconnect();
     };
-    std::vector<clienthandler> clients;
+    static std::vector<clienthandler> clients;
 
     /// Client which isn't connected yet, a buffer caused by the async API.
     std::unique_ptr<stream_type> connect_slot;
@@ -94,7 +94,7 @@ public:
 
     /// Send any variable changes in the core to all clients.
     /// @param excluded_id is given for broadcasting purpose: you don't want to send back a change you just received from a client.
-    void send_msg(MSG_TYPE &&msg, int excluded_id = -1);
+    static void send_msg(MSG_TYPE &&msg, int excluded_id = -1);
 
 private:
 

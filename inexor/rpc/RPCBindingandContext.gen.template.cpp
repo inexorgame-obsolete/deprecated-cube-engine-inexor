@@ -6,12 +6,19 @@
   For more info about how to use this template engine, read the manual of mustache (its easy).
 }}
 #include <unordered_map>
+#include <vector>
 
-#include "treedata.gen.grpc.pb.h" // got generated into the same folder.
+#include "RPCTreeData.gen.grpc.pb.h" // got generated into the same folder.
 
+#include "inexor/util/Subsystem.hpp"
 #include "inexor/rpc/SharedTree.hpp"
 #include "inexor/rpc/RpcSubsystem.hpp"
 
+
+SUBSYSTEM_REGISTER(rpc, inexor::rpc::RpcSubsystem<{{namespace}}::TreeNodeChanged, {{namespace}}::TreeService::AsyncService>); // needs to be in no namespace!
+
+using {{namespace}}::TreeNodeChanged;    // The message type.
+using {{namespace}}::TreeService;        // The RPC service (used only for instancing the RpcServer
 
 // List of extern SharedVar declarations
 {{#shared_vars}}{{namespace_sep_open}}
@@ -21,6 +28,11 @@
 
 namespace inexor { namespace rpc {
 
+// We currently use a static function to signal the subsystem changes (since we cant yet SUBSYSTEM_GET it) .. so this is a temporary workaround.
+template <>
+std::vector<RpcServer<TreeNodeChanged, TreeService::AsyncService>::clienthandler> RpcServer<TreeNodeChanged, TreeService::AsyncService>::clients = {};
+
+
 void set_on_change_functions()
 {
     // TODO: Dont call by type but by reference if not a ptr: *or& -> {cpp_observer_type}
@@ -28,7 +40,7 @@ void set_on_change_functions()
         {
             {{namespace}}::TreeNodeChanged val;
             val.set_{{name_unique}}(newvalue);
-            main2net_interthread_queue.enqueue(std::move(val));
+            inexor::rpc::RpcServer<{{namespace}}::TreeNodeChanged, {{namespace}}::TreeService::AsyncService>::send_msg(std::move(val));
         }
     );
 {{/shared_vars}}
