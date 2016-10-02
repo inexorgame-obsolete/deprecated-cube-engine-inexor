@@ -36,6 +36,28 @@ function(declare_module NAME PATH)
   set(ALL_HEADERS ${ALL_HEADERS} ${headers} CACHE INTERNAL "")
 endfunction()
 
+# USAGE: group_sources(file1 file2 file3)
+#
+# Set up source groups (for better browsing inside IDEs) for the provided list of source files.
+# Filenames can be absolute or relative to SOURCE_DIR.
+# Group names get created based on that path.
+function(group_sources)
+    foreach(FILE ${ARGN})
+      # Get the directory of the source file
+      get_filename_component(PARENT_DIR "${FILE}" DIRECTORY)
+
+      # Remove common directory prefix to make the group
+      string(REPLACE "${SOURCE_DIR}" "" GROUP "${PARENT_DIR}")
+
+      if(OS_WINDOWS)
+        # Make sure we are using windows slashes
+        string(REPLACE "/" "\\" GROUP "${GROUP}")
+      endif()
+
+      source_group("${GROUP}" FILES "${FILE}")
+    endforeach()
+endfunction()
+
 # USAGE: group_modules()
 #
 # Set up Source_groups for VS/XCode.
@@ -54,8 +76,7 @@ function(group_modules)
     endforeach()
 
     if(NOT skip)
-      string(TOLOWER "${mod}" gname)
-      source_group(${gname} FILES ${${mod}_MODULE_HEADERS} ${${mod}_MODULE_SOURCES})
+      group_sources("${${mod}_MODULE_HEADERS} ${${mod}_MODULE_SOURCES}")
     endif()
   endforeach()
 endfunction()
