@@ -8,13 +8,7 @@ foreach(src ${RPC_MODULE_SOURCES})
     list(REMOVE_ITEM RPC_MODULE_SOURCES ${src})
   endif()
 endforeach()
-# create static lib "module_rpc"
-add_lib(rpc)
-
-require_grpc(module_rpc NOLINK)
-require_cxx11_abi(module_rpc NOLINK)
-require_util(module_rpc NOLINK)
-
+group_sources(${RPC_MODULE_HEADERS} ${RPC_MODULE_SOURCES})
 
 include(${SOURCE_DIR}/gluegen/require_run_gluegen.cmake)
 
@@ -37,7 +31,6 @@ function(require_rpc targ BUILD_FLAGS)
   require_run_gluegen(${targ} ${BUILD_FLAGS} ${rpc_dir} ${GLUEGEN_OUT_DIR})
 
   target_include_directories(${targ} PUBLIC ${GLUEGEN_OUT_DIR})
-  target_link_libs(${targ} module_rpc ${NOLINK})
 
   # add_dependencies(${targ} run_doxygen_${targ})
   # add_dependencies(${targ} run_gluegen_${targ})
