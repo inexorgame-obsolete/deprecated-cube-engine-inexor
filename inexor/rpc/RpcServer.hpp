@@ -7,6 +7,7 @@
 #include <string>
 #include <exception>
 #include <queue>
+#include <cstdint>
 
 #include <grpc/grpc.h>
 #include <grpc++/grpc++.h>
@@ -115,7 +116,7 @@ private:
 
     void kickoff_writes();
 
-    void handle_queue_event(int encoded_callback);
+    void handle_queue_event(uintptr_t encoded_callback);
 
     int pick_unused_id();
     bool change_variable(MSG_TYPE &receivedval);
@@ -132,17 +133,17 @@ enum EVENT_TYPE
 
 /// The GRPC queue signals finished events with void* callbacks.
 /// So we compress the needed info (EVENT_TYPE and the clients id) into one integer and cast it to void*.
-const inline int encode_signal(EVENT_TYPE event, int clientid)
+const inline uintptr_t encode_signal(EVENT_TYPE event, int clientid)
 {
     return event << 16 | clientid;
 }
 
-const inline int get_id_from_encoded(int encodedsignal)
+const inline int get_id_from_encoded(uintptr_t encodedsignal)
 {
     return encodedsignal&0xff; // returns just the first 15 bits
 }
 
-const inline int get_event_from_encoded(int encodedsignal)
+const inline int get_event_from_encoded(uintptr_t encodedsignal)
 {
     return encodedsignal>>16; // looses the 15 lowest bits (the clientid).
 }
@@ -151,7 +152,7 @@ const inline int get_event_from_encoded(int encodedsignal)
 template<typename MSG_TYPE, typename U> inline
 void RpcServer<MSG_TYPE, U>::clienthandler::request_read()
 {
-    const int cq_id = encode_signal(E_READ, id);
+    const uintptr_t cq_id = encode_signal(E_READ, id);
     stream->Read(&read_buffer, cq_id);
 }
 
@@ -160,7 +161,7 @@ void RpcServer<MSG_TYPE, U>::clienthandler::request_send_one()
 {
     if(writer_busy || has_writes()) return;
     writer_busy = true;
-    const int cq_id = encode_signal(E_WRITE, id);
+    const uintptr_t cq_id = encode_signal(E_WRITE, id);
     stream->Write(outstanding_writes.front(), (void *)cq_id);
     outstanding_writes.pop();
 }
@@ -175,7 +176,7 @@ void RpcServer<MSG_TYPE, U>::clienthandler::finished_send_one()
 template<typename MSG_TYPE, typename U> inline
 void RpcServer<MSG_TYPE, U>::clienthandler::request_disconnect()
 {
-    const int cq_id = encode_signal(E_DISCONNECT, id);
+    const uintptr_t cq_id = encode_signal(E_DISCONNECT, id);
     stream->Finish(disconnect_status, (void *)cq_id);
 }
 
@@ -221,7 +222,7 @@ template<typename MSG_TYPE, typename U> inline
 void RpcServer<MSG_TYPE, U>::open_connect_slot()
 {
     connect_slot = std::make_unique<stream_type>(&server_context);
-    service.RequestSynchronize(&server_context, connect_slot.get(), cq.get(), cq.get(), (void*)E_CONNECT);
+    service.RequestSynchronize(&server_context, connect_slot.get(), cq.get(), cq.get(), (void *)encode_signal(E_CONNECT, 0));
 }
 
 template<typename MSG_TYPE, typename U> inline
@@ -277,7 +278,7 @@ void RpcServer<MSG_TYPE, U>::process_queue()
 
     for(int i = 0; i < MAX_RPC_EVENT_CHECKS_PER_TICK; i++)
     {
-        int callback_value;
+        uintptr_t callback_value;
         bool no_internal_grpc_error = false;
 
         // read the next event from the completion queue (in nonblocking fashion)
@@ -298,7 +299,7 @@ void RpcServer<MSG_TYPE, U>::process_queue()
 }
 
 template<typename MSG_TYPE, typename U> inline
-void RpcServer<MSG_TYPE, U>::handle_queue_event(int encoded_callback)
+void RpcServer<MSG_TYPE, U>::handle_queue_event(uintptr_t encoded_callback)
 {
 
     int event_type = get_event_from_encoded(encoded_callback);
