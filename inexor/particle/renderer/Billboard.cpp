@@ -24,7 +24,9 @@ namespace particle {
 
     void Billboard::Before(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst)
     {
-        glPushMatrix();
+        //glPushMatrix();
+
+
         glShadeModel(GL_SMOOTH);
         glEnable(GL_POINT_SMOOTH);
         glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
@@ -43,7 +45,7 @@ namespace particle {
 
             glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
             glEnable(GL_TEXTURE_2D);
-            tex = textureload((*renderer_inst)[TEXTURE]->stringVal.c_str(), 0);
+            tex = textureload((*renderer_inst)[TEXTURE]->stringVal.c_str(), 0); // TODO this should be done beforehand
             glBindTexture(GL_TEXTURE_2D, tex->id);
         }
 
@@ -51,21 +53,23 @@ namespace particle {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
         glPointSize((*renderer_inst)[SIZE]->floatVal * 200.0f);
-        glBegin(GL_POINTS);
+
+        gle::defvertex();
+        gle::begin(GL_POINTS);
         // TODO: get particle color
-        glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
+        gle::colorf(1.0f, 1.0f, 1.0f, 0.5f);
     }
 
     AttributeRefPtr Billboard::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst, std::shared_ptr<EntityInstance> particle_inst)
     {
         // spdlog::get("global")->info() << "x: " << (*particle_inst)[POS]->vec3Val.x << " y: " << (*particle_inst)[POS]->vec3Val.y << " z: " << (*particle_inst)[POS]->vec3Val.z;
-        glVertex3f((*particle_inst)[POS]->vec3Val.x, (*particle_inst)[POS]->vec3Val.y, (*particle_inst)[POS]->vec3Val.z);
+        gle::attrib((*particle_inst)[POS]->vec3Val.x, (*particle_inst)[POS]->vec3Val.y, (*particle_inst)[POS]->vec3Val.z);
         return true;
     }
 
     void Billboard::After(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst)
     {
-        glEnd();
+        gle::end();
         glDisable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         if (shader)
@@ -75,7 +79,7 @@ namespace particle {
             glDisable(GL_TEXTURE_2D);
         }
         glDepthMask(GL_TRUE);
-        glPopMatrix();
+        //glPopMatrix();
     }
 
 }
