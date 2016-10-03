@@ -19,10 +19,11 @@ namespace particle {
     {
     }
 
-    void Rolling::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle)
+    AttributeRefPtr Rolling::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle)
     {
         vec l((*particle)[LAST_POS]->vec3Val);
         (*particle)[ROLL]->floatVal += l.sub((*particle)[POS]->vec3Val).magnitude() / (4 * RAD);
+        return true;
     }
 
 }

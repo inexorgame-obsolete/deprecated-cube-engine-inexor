@@ -35,7 +35,7 @@ namespace particle {
         glBegin(GL_QUADS);
     }
 
-    void Cube::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst, std::shared_ptr<EntityInstance> particle_inst)
+    AttributeRefPtr Cube::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst, std::shared_ptr<EntityInstance> particle_inst)
     {
         vec pmin((*particle_inst)[POS]->vec3Val);
         vec pmax(pmin);
@@ -72,6 +72,7 @@ namespace particle {
         glVertex3d(pmin.x, pmin.y, pmax.z);
         glVertex3d(pmax.x, pmin.y, pmax.z);
         glVertex3d(pmax.x, pmin.y, pmin.z);
+        return true;
     }
 
     void Cube::After(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst)

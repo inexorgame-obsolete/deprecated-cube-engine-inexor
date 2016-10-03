@@ -8,36 +8,68 @@
 namespace inexor {
 namespace vscript {
 
-    // Subsystems
+    // Subsystem definitions
 
-    // const std::string SUBSYSTEM_VSCRIPTSYS_HANDLE("vscript_subsystem");
+    const std::string SUBSYSTEM_VSCRIPT("vscript_subsystem");
 
-    // Entity attributes
+    // Entity type definitions
 
-    // const std::string POS("pos");
+    const std::string ENT_TYPE_ACTION("action");
+    const std::string ENT_TYPE_AREA("area");
+    const std::string ENT_TYPE_EVENT("event");
+    const std::string ENT_TYPE_MEMORY("memory");
+    const std::string ENT_TYPE_OPERATOR("operator");
+
+    // Event functions
+
+    const std::string ENT_FUNC_EVENT_CHECK("event_check");
+    // const std::string ENT_FUNC_EVENT_CHECK("event_check");
+
+    // Event entity types
+
+    const std::string ENT_TYPE_EVENT_ON_MEMORY_CHANGED("on_memory_changed");
+    const std::string ENT_TYPE_EVENT_ON_TIMER("on_timer");
+
+    // Relationship type definitions
+
+    const std::string REL_TYPE_EXECUTES("executes");
+
+
+
+
+
+
+
+
+
+
+
+    const std::string ENT_TYPE_EVENT_PLAYER_COLLIDE("player_collide_event");
+
+    const std::string ENT_TYPE_MEMORY_BOOL("bool_memory");
+    const std::string ENT_TYPE_MEMORY_INTEGER("integer_memory");
+    const std::string ENT_TYPE_MEMORY_FLOAT("float_memory");
+    const std::string ENT_TYPE_MEMORY_STRING("string_memory");
+
+    const std::string ENT_TYPE_OPERATOR_ADD("add_operator");
+    const std::string ENT_TYPE_OPERATOR_SUB("sub_operator");
+
+    const std::string ENT_TYPE_ACTION_PRINT("print_action");
+
+    const std::string ENT_TYPE_ATTR_PROPAGATE("propagate");
+    const std::string ENT_TYPE_ATTR_GET("get");
+    const std::string ENT_TYPE_ATTR_SET("set");
+
+
+
+
+
+
+
 
     // Relationship type definitions
 
     const std::string REL_ACTIVATES("activates");
-
-    // Entity type definitions
-
-    const std::string ENT_MEMORY("memory");
-    const std::string ENT_BOOL_MEMORY("bool_memory");
-    const std::string ENT_INTEGER_MEMORY("integer_memory");
-    const std::string ENT_FLOAT_MEMORY("float_memory");
-
-    const std::string ENT_EVENT("event");
-    const std::string ENT_TIMER_EVENT("timer_event");
-    const std::string ENT_PLAYER_COLLIDE_EVENT("player_collide_event");
-
-    // Entity function definitions
-
-    // const std::string FUNC_TELEPORTED("teleported");
-
-    // Attribute names
-
-    // const std::string FUNC_RENDERS_HANDLE_ATTRIBUTE_NAME("renders_handle");
 
     // Type factories
 
@@ -58,6 +90,7 @@ namespace vscript {
     const std::string ENT_ATTR_ACTIVATION_FUNCTION("activation_function");
 
     // Function names
+    const std::string ENT_FUNC_ACTION_PRINT("print");
 
     const std::string ENT_FUNC_ACTIVATION("activation");
     const std::string ENT_FUNC_TIMER_EVENT("timer_event");

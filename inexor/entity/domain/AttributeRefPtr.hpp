@@ -115,19 +115,19 @@ namespace entity {
             AttributeRefPtr& operator/=(float f);
             AttributeRefPtr& operator/=(double d);
 
-            void operator()(TimeStep time_step);
-            void operator()(TimeStep time_step, std::shared_ptr<EntityType> type);
-            void operator()(TimeStep time_step, std::shared_ptr<EntityType> type, std::shared_ptr<EntityInstance> inst);
-            void operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst);
-            void operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst, std::shared_ptr<RelationshipType> rel_type);
-            void operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst, std::shared_ptr<RelationshipInstance> rel_inst);
-            void operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2);
-            void operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2, std::shared_ptr<EntityInstance> inst_3);
-            void operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2, std::shared_ptr<RelationshipType> rel_type);
-            void operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2, std::shared_ptr<RelationshipInstance> rel_inst);
-            void operator()(TimeStep time_step, std::shared_ptr<RelationshipType> type);
-            void operator()(TimeStep time_step, std::shared_ptr<RelationshipType> type, std::shared_ptr<RelationshipInstance> inst);
-            void operator()(TimeStep time_step, std::shared_ptr<RelationshipInstance> inst);
+            AttributeRefPtr operator()(TimeStep time_step);
+            AttributeRefPtr operator()(TimeStep time_step, std::shared_ptr<EntityType> type);
+            AttributeRefPtr operator()(TimeStep time_step, std::shared_ptr<EntityType> type, std::shared_ptr<EntityInstance> inst);
+            AttributeRefPtr operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst);
+            AttributeRefPtr operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst, std::shared_ptr<RelationshipType> rel_type);
+            AttributeRefPtr operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst, std::shared_ptr<RelationshipInstance> rel_inst);
+            AttributeRefPtr operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2);
+            AttributeRefPtr operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2, std::shared_ptr<EntityInstance> inst_3);
+            AttributeRefPtr operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2, std::shared_ptr<RelationshipType> rel_type);
+            AttributeRefPtr operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2, std::shared_ptr<RelationshipInstance> rel_inst);
+            AttributeRefPtr operator()(TimeStep time_step, std::shared_ptr<RelationshipType> type);
+            AttributeRefPtr operator()(TimeStep time_step, std::shared_ptr<RelationshipType> type, std::shared_ptr<RelationshipInstance> inst);
+            AttributeRefPtr operator()(TimeStep time_step, std::shared_ptr<RelationshipInstance> inst);
 
     };
 

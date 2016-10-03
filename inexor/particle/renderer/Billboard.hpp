@@ -12,6 +12,7 @@
 #include "inexor/particle/subsystem/ParticleSubsystem.hpp"
 #include "inexor/entity/EntitySystem.hpp"
 #include "inexor/entity/domain/graph/EntityFunction.hpp"
+#include "inexor/util/Logging.hpp"
 
 namespace inexor {
 namespace entity {
@@ -37,7 +38,7 @@ namespace particle {
              * @param renderer_inst The renderer instance.
              * @param particle_inst The particle instance.
              */
-            void Execute(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst, std::shared_ptr<EntityInstance> particle_inst);
+            AttributeRefPtr Execute(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst, std::shared_ptr<EntityInstance> particle_inst);
 
             /**
              * Executed after particles are rendered.

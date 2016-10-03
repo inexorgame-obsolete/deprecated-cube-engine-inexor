@@ -6,6 +6,7 @@
  */
 
 #include "EntityAttribute.hpp"
+#include "inexor/entity/domain/AttributeRefPtr.hpp"
 
 namespace inexor {
 namespace entity {
@@ -322,131 +323,144 @@ namespace entity {
         return *this;
     }
 
-    void EntityAttribute::operator()(TimeStep time_step)
+    AttributeRefPtr EntityAttribute::operator()(TimeStep time_step)
     {
         if (this->type == ENTATTR_FUNCTION)
         {
-            functionVal(time_step);
+            return functionVal(time_step);
         }
+        return false;
     }
 
-    void EntityAttribute::operator()(TimeStep time_step,
+    AttributeRefPtr EntityAttribute::operator()(TimeStep time_step,
                                      std::shared_ptr<EntityType> type)
     {
         if (this->type == ENTATTR_FUNCTION)
         {
-            functionVal(time_step, type);
+            return functionVal(time_step, type);
         }
+        return false;
     }
 
-    void EntityAttribute::operator()(TimeStep time_step,
+    AttributeRefPtr EntityAttribute::operator()(TimeStep time_step,
                                      std::shared_ptr<EntityType> type,
                                      std::shared_ptr<EntityInstance> inst)
     {
         if (this->type == ENTATTR_FUNCTION)
         {
-            functionVal(time_step, type, inst);
+            return functionVal(time_step, type, inst);
         }
+        return false;
     }
 
-    void EntityAttribute::operator()(TimeStep time_step,
+    AttributeRefPtr EntityAttribute::operator()(TimeStep time_step,
                                      std::shared_ptr<EntityInstance> inst)
     {
         if (this->type == ENTATTR_FUNCTION)
         {
-            functionVal(time_step, inst);
+            return functionVal(time_step, inst);
         }
+        return false;
     }
 
-    void EntityAttribute::operator()(TimeStep time_step,
+    AttributeRefPtr EntityAttribute::operator()(TimeStep time_step,
                                      std::shared_ptr<EntityInstance> inst,
                                      std::shared_ptr<RelationshipType> rel_type)
     {
         if (this->type == ENTATTR_FUNCTION)
         {
-            functionVal(time_step, inst, rel_type);
+            return functionVal(time_step, inst, rel_type);
         }
+        return false;
     }
 
-    void EntityAttribute::operator()(TimeStep time_step,
+    AttributeRefPtr EntityAttribute::operator()(TimeStep time_step,
                                      std::shared_ptr<EntityInstance> inst,
                                      std::shared_ptr<RelationshipInstance> rel_inst)
     {
         if (this->type == ENTATTR_FUNCTION)
         {
-            functionVal(time_step, inst, rel_inst);
+            return functionVal(time_step, inst, rel_inst);
         }
+        return false;
     }
 
-    void EntityAttribute::operator()(TimeStep time_step,
+    AttributeRefPtr EntityAttribute::operator()(TimeStep time_step,
                                      std::shared_ptr<EntityInstance> inst_1,
                                      std::shared_ptr<EntityInstance> inst_2)
     {
         if (this->type == ENTATTR_FUNCTION)
         {
-            functionVal(time_step, inst_1, inst_2);
+            return functionVal(time_step, inst_1, inst_2);
         }
+        return false;
     }
 
-    void EntityAttribute::operator()(TimeStep time_step,
+    AttributeRefPtr EntityAttribute::operator()(TimeStep time_step,
                                      std::shared_ptr<EntityInstance> inst_1,
                                      std::shared_ptr<EntityInstance> inst_2,
                                      std::shared_ptr<EntityInstance> inst_3)
     {
         if (this->type == ENTATTR_FUNCTION)
         {
-            functionVal(time_step, inst_1, inst_2, inst_3);
+            return functionVal(time_step, inst_1, inst_2, inst_3);
         }
+        return false;
     }
 
-    void EntityAttribute::operator()(TimeStep time_step,
+    AttributeRefPtr EntityAttribute::operator()(TimeStep time_step,
                                      std::shared_ptr<EntityInstance> inst_1,
                                      std::shared_ptr<EntityInstance> inst_2,
                                      std::shared_ptr<RelationshipType> rel_type)
     {
         if (this->type == ENTATTR_FUNCTION)
         {
-            functionVal(time_step, inst_1, inst_2, rel_type);
+            return functionVal(time_step, inst_1, inst_2, rel_type);
         }
+        return false;
     }
 
-    void EntityAttribute::operator()(TimeStep time_step,
+    AttributeRefPtr EntityAttribute::operator()(TimeStep time_step,
                                      std::shared_ptr<EntityInstance> inst_1,
                                      std::shared_ptr<EntityInstance> inst_2,
                                      std::shared_ptr<RelationshipInstance> rel_inst)
     {
         if (this->type == ENTATTR_FUNCTION)
         {
-            functionVal(time_step, inst_1, inst_2, rel_inst);
+            return functionVal(time_step, inst_1, inst_2, rel_inst);
         }
+        return false;
     }
 
-    void EntityAttribute::operator()(TimeStep time_step,
+    AttributeRefPtr EntityAttribute::operator()(TimeStep time_step,
                                      std::shared_ptr<RelationshipType> type)
     {
         if (this->type == ENTATTR_FUNCTION)
         {
-            functionVal(time_step, type);
+            return functionVal(time_step, type);
         }
+        return false;
     }
 
-    void EntityAttribute::operator()(TimeStep time_step,
+    AttributeRefPtr EntityAttribute::operator()(TimeStep time_step,
                                      std::shared_ptr<RelationshipType> type,
                                      std::shared_ptr<RelationshipInstance> inst)
     {
         if (this->type == ENTATTR_FUNCTION)
         {
-            functionVal(time_step, type, inst);
+            return functionVal(time_step, type, inst);
         }
+        return false;
     }
 
-    void EntityAttribute::operator()(TimeStep time_step,
+    AttributeRefPtr EntityAttribute::operator()(TimeStep time_step,
                                      std::shared_ptr<RelationshipInstance> inst)
     {
         if (this->type == ENTATTR_FUNCTION)
         {
-            functionVal(time_step, inst);
+            return functionVal(time_step, inst);
         }
+        return false;
     }
 
 }

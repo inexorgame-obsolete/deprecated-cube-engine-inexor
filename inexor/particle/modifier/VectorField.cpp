@@ -45,7 +45,7 @@ namespace particle {
     /**
      * The base position is the modifiers position.
      */
-    void VectorField::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle)
+    AttributeRefPtr VectorField::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle)
     {
         // TODO: check this -> add modifier position variables: mx, my, mz
         ix = (*particle)[POS]->vec3Val.x - (*modifier)[POS]->vec3Val.x;
@@ -57,7 +57,9 @@ namespace particle {
             (*particle)[VELOCITY]->vec3Val.add(vel);
         } catch (mu::Parser::exception_type &e) {
             spdlog::get("global")->debug() << "Error parsing vector field expression " << e.GetExpr().c_str() << ": " << e.GetMsg().c_str();
+            return false;
         }
+        return true;
     }
 
     void VectorField::After(TimeStep time_step, std::shared_ptr<EntityInstance> modifier)

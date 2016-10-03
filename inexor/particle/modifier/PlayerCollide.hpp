@@ -31,7 +31,7 @@ namespace particle {
             PlayerCollide();
             virtual ~PlayerCollide();
 
-            void Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle);
+            AttributeRefPtr Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle);
 
     };
 

@@ -19,7 +19,7 @@ namespace particle {
     {
     }
 
-    void PlayerCollide::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle)
+    AttributeRefPtr PlayerCollide::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle)
     {
         float elasticity = 10.0f;
         physent d;
@@ -37,12 +37,13 @@ namespace particle {
             game::bounced(&d, collidewall);
             float c = collidewall.dot(d.vel);
             float m = d.vel.magnitude();
-            if (m == 0.0f) return;
+            if (m == 0.0f) return false;
             float k = 1.0f + (1.0f - elasticity) * c / m;
             d.vel.mul(k);
             d.vel.sub(vec(collidewall).mul(elasticity * 2.0f * c));
             (*particle)[VELOCITY]->vec3Val = vec(d.vel);
         }
+        return true;
     }
 
 }

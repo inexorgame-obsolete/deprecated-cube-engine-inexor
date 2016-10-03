@@ -22,7 +22,7 @@ namespace particle {
     {
     }
 
-    void BrownianMotion::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle)
+    AttributeRefPtr BrownianMotion::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle)
     {
         // Add velocity vector
         (*particle)[VELOCITY]->vec3Val.add(vec(
@@ -30,6 +30,7 @@ namespace particle {
             distribution(gen) * time_step.time_factor,
             distribution(gen) * time_step.time_factor
         ));
+        return true;
     }
 
 }

@@ -23,8 +23,12 @@ namespace vscript {
         private:
             std::shared_ptr<EntitySystem> entity_system;
 
-            TypeRefPtr<EntityType> timer_event_type;
-            TypeRefPtr<EntityType> integer_memory_type;
+            TypeRefPtr<EntityType> type_event_on_memory_changed;
+            TypeRefPtr<EntityType> type_action_print;
+
+            // TypeRefPtr<EntityType> memory_integer_type;
+            // TypeRefPtr<EntityType> operator_add_type;
+            // TypeRefPtr<EntityType> action_print_type;
 
     };
 

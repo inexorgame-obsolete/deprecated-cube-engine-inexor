@@ -3,12 +3,12 @@
 
 #include "inexor/entity/EntitySystemBase.hpp"
 #include "inexor/entity/subsystem/SubsystemBase.hpp"
-#include "inexor/vscript/provider/MemoryEntityTypeProvider.hpp"
-#include "inexor/vscript/event/TimerEvent.hpp"
-#include "inexor/vscript/operator/IncreaseInteger.hpp"
-#include "inexor/vscript/operator/DecreaseInteger.hpp"
-
-#define VSCRIPT_SUBSYSTEM "vscript"
+#include "inexor/vscript/action/PrintAction.hpp"
+#include "inexor/vscript/manager/ActionManager.hpp"
+#include "inexor/vscript/manager/AreaManager.hpp"
+#include "inexor/vscript/manager/EventManager.hpp"
+#include "inexor/vscript/manager/MemoryManager.hpp"
+#include "inexor/vscript/manager/OperatorManager.hpp"
 
 using namespace inexor::entity;
 
@@ -39,129 +39,71 @@ namespace vscript {
             void Update(TimeStep time_step);
 
             /**
-             * Updates a single activation.
-             */
-            void Activate(TimeStep time_step, InstanceRefPtr<EntityInstance> source);
-
-            /**
-             * Calls the activation.
-             */
-            void Activate(TimeStep time_step, InstanceRefPtr<EntityInstance> source, InstanceRefPtr<EntityInstance> target, InstanceRefPtr<RelationshipInstance> activates);
-
-            /**
-             *
+             * Cleanup the visual scripting subsystem.
              */
             void Cleanup();
 
             /**
-             *
+             * Resets the visual scripting subsystem.
              */
             void Reset();
 
             /**
-             * Initializes the graph model for the particle system.
-             * TODO: Move this to SubsystemBase
+             * Returns the action manager which is responsible for
+             * managing the action nodes.
              */
-            void InitializeModel();
+            std::shared_ptr<ActionManager> GetActionManager();
 
             /**
-             * Creates a event type.
+             * Returns the area manager which is responsible for
+             * managing the area nodes.
              */
-            TypeRefPtr<EntityType> CreateEventType(std::string name, InstanceRefPtr<EntityFunction> function);
+            std::shared_ptr<AreaManager> GetAreaManager();
 
             /**
-             * Creates a memory type.
+             * Returns the event manager which is responsible for
+             * managing the event nodes.
              */
-            TypeRefPtr<EntityType> CreateMemoryType(std::string name);
+            std::shared_ptr<EventManager> GetEventManager();
 
             /**
-             * Creates an event entity.
+             * Returns the memory manager which is responsible for
+             * managing the memory nodes.
              */
-            InstanceRefPtr<EntityInstance> CreateEvent(TypeRefPtr<EntityType> event_type, double x, double y, double z);
+            std::shared_ptr<MemoryManager> GetMemoryManager();
 
             /**
-             * Creates a memory entity.
+             * Returns the operator manager which is responsible for
+             * managing the operator nodes.
              */
-            InstanceRefPtr<EntityInstance> CreateMemory(TypeRefPtr<EntityType> memory_type, double x, double y, double z, bool isConstant);
-
-            /**
-             * Creates an activation relationship between the given source
-             * entity and the given target entity. During activation, the
-             * target's entity function named "activation_function_name" is
-             * called.
-             *
-             * It is possible to create multiple activations between the same
-             * source and target with different activation functions.
-             */
-            InstanceRefPtr<RelationshipInstance> ConnectActivation(InstanceRefPtr<EntityInstance> source, InstanceRefPtr<EntityInstance> target, std::string activation_function_name);
-
-            /**
-             * Removes the given activation relationship.
-             */
-            void DisconnectActivation(InstanceRefPtr<RelationshipInstance> activation);
-
-            /**
-             * Removes all existing activations between the two given entities.
-             */
-            void DisconnectAllActivations(InstanceRefPtr<EntityInstance> source, InstanceRefPtr<EntityInstance> target);
-
-            /**
-             * Removes all outgoing activations of the given entity.
-             */
-            void DisconnectAllOutgoingActivations(InstanceRefPtr<EntityInstance> source);
-
-            /**
-             * Removes all incoming activations of the given entity.
-             */
-            void DisconnectAllIncomingActivations(InstanceRefPtr<EntityInstance> target);
-
-            /**
-             * Removes all outgoing and incoming activations.
-             */
-            void DisconnectAllActivations(InstanceRefPtr<EntityInstance> entity);
+            std::shared_ptr<OperatorManager> GetOperatorManager();
 
         private:
 
             /**
-             * The base type for event types.
+             * The action manager.
              */
-            TypeRefPtr<EntityType> parent_event_type;
+            std::shared_ptr<ActionManager> action_manager;
 
             /**
-             * This map stores all event types.
+             * The area manager.
              */
-            std::unordered_map<std::string, TypeRefPtr<EntityType> > event_types;
+            std::shared_ptr<AreaManager> area_manager;
 
             /**
-             * The base type for memory types.
+             * The event manager.
              */
-            TypeRefPtr<EntityType> parent_memory_type;
+            std::shared_ptr<EventManager> event_manager;
 
             /**
-             * This map stores all memory types.
+             * The memory manager.
              */
-            std::unordered_map<std::string, TypeRefPtr<EntityType> > memory_types;
+            std::shared_ptr<MemoryManager> memory_manager;
 
             /**
-             * The list of event entity instances.
+             * The operator manager.
              */
-            std::vector<InstanceRefPtr<EntityInstance>> event_instances;
-
-            /**
-             * The list of memory entity instances.
-             */
-            std::vector<InstanceRefPtr<EntityInstance>> memory_instances;
-
-
-            // The main relationship types of the VScript subsystem.
-
-            /**
-             * Relationship type: The source entity activates the target entity.
-             *
-             * SOURCE_ENTITY--[activates]-->TARGET_ENTITY
-             *
-             */
-            TypeRefPtr<RelationshipType> activates;
+            std::shared_ptr<OperatorManager> operator_manager;
 
     };
 

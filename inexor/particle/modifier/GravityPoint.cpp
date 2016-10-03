@@ -19,7 +19,7 @@ namespace particle {
     {
     }
 
-    void GravityPoint::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle)
+    AttributeRefPtr GravityPoint::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle)
     {
         float m_gravity = (*modifier)[GRAVITY]->floatVal;
         float m_mass = (*modifier)[MASS]->floatVal;
@@ -33,6 +33,7 @@ namespace particle {
         // logoutf(">>>>>>>>>>>>>>>> force: %2.2f distance: %2.2f p_mass: %2.2f m_mass: %2.2f m_gravity: %2.2f", force, distance, p_mass, m_mass, m_gravity);
         d.mul(force).div(distance * p_mass);
         (*particle)[VELOCITY]->vec3Val.add(d);
+        return true;
     }
 
 }

@@ -37,7 +37,7 @@ namespace particle {
         glDepthMask(false);
     }
 
-    void Model::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst, std::shared_ptr<EntityInstance> particle_inst)
+    AttributeRefPtr Model::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst, std::shared_ptr<EntityInstance> particle_inst)
     {
         //if (m)
         //{
@@ -48,6 +48,7 @@ namespace particle {
             o.add(offset);
             rendermodel(NULL, model_name.c_str(), ANIM_MAPMODEL|ANIM_LOOP, o, yaw, -((*particle_inst)[ROLL]->floatVal), MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_LIGHT_FAST|MDL_DYNSHADOW, NULL, NULL, 0);
             //}
+        return true;
     }
 
     void Model::After(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst)

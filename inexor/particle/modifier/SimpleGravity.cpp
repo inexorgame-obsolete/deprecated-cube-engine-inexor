@@ -35,10 +35,11 @@ namespace particle {
         }
     }
 
-    void SimpleGravity::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle)
+    AttributeRefPtr SimpleGravity::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle)
     {
         float p_mass = (*particle)[MASS]->floatVal;
         (*particle)[VELOCITY]->vec3Val.z += ((-(p_mass) * mass * gravity / (dz * dz)) * dz) / (dz * p_mass);
+        return true;
     }
 
 }

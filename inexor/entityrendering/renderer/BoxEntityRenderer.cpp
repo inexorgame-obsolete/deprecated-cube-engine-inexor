@@ -29,9 +29,10 @@ namespace rendering {
         // Replace with Hannis code
     }
 
-    void BoxEntityRenderer::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst, std::shared_ptr<EntityInstance> particle_inst)
+    AttributeRefPtr BoxEntityRenderer::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst, std::shared_ptr<EntityInstance> particle_inst)
     {
         // Replace with Hannis code
+        return true;
     }
 
     void BoxEntityRenderer::After(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst)

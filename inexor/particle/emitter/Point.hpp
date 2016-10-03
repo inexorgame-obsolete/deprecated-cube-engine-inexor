@@ -30,7 +30,7 @@ namespace particle {
             Point();
             virtual ~Point();
 
-            void Execute(TimeStep time_step, std::shared_ptr<EntityInstance> emitter_inst, std::shared_ptr<EntityInstance> particle_inst);
+            AttributeRefPtr Execute(TimeStep time_step, std::shared_ptr<EntityInstance> emitter_inst, std::shared_ptr<EntityInstance> particle_inst);
 
         private:
             /**

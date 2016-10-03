@@ -9,10 +9,10 @@
 #define SRC_ENGINE_ENTITY_ENTITYATTRIBUTE_H_
 
 #include "inexor/engine/engine.hpp"
-// #include "geom.h"
-#include "../../EntitySystemBase.hpp"
-#include "../TimeStep.hpp"
-#include "../FunctionRefPtr.hpp"
+#include "inexor/entity/EntitySystemBase.hpp"
+#include "inexor/entity/domain/TimeStep.hpp"
+// #include "inexor/entity/domain/AttributeRefPtr.hpp"
+#include "inexor/entity/domain/FunctionRefPtr.hpp"
 
 namespace inexor {
 namespace entity {
@@ -40,6 +40,7 @@ namespace entity {
     class RelationshipType;
     class EntityInstance;
     class RelationshipInstance;
+    class AttributeRefPtr;
 
     /**
      *
@@ -94,19 +95,19 @@ namespace entity {
             EntityAttribute& operator=(FunctionRefPtr* value);
             EntityAttribute& operator=(FunctionRefPtr value);
 
-            void operator()(TimeStep time_step);
-            void operator()(TimeStep time_step, std::shared_ptr<EntityType> type);
-            void operator()(TimeStep time_step, std::shared_ptr<EntityType> type, std::shared_ptr<EntityInstance> inst);
-            void operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst);
-            void operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst, std::shared_ptr<RelationshipType> rel_type);
-            void operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst, std::shared_ptr<RelationshipInstance> rel_inst);
-            void operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2);
-            void operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2, std::shared_ptr<EntityInstance> inst_3);
-            void operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2, std::shared_ptr<RelationshipType> rel_type);
-            void operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2, std::shared_ptr<RelationshipInstance> rel_inst);
-            void operator()(TimeStep time_step, std::shared_ptr<RelationshipType> type);
-            void operator()(TimeStep time_step, std::shared_ptr<RelationshipType> type, std::shared_ptr<RelationshipInstance> inst);
-            void operator()(TimeStep time_step, std::shared_ptr<RelationshipInstance> inst);
+            AttributeRefPtr operator()(TimeStep time_step);
+            AttributeRefPtr operator()(TimeStep time_step, std::shared_ptr<EntityType> type);
+            AttributeRefPtr operator()(TimeStep time_step, std::shared_ptr<EntityType> type, std::shared_ptr<EntityInstance> inst);
+            AttributeRefPtr operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst);
+            AttributeRefPtr operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst, std::shared_ptr<RelationshipType> rel_type);
+            AttributeRefPtr operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst, std::shared_ptr<RelationshipInstance> rel_inst);
+            AttributeRefPtr operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2);
+            AttributeRefPtr operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2, std::shared_ptr<EntityInstance> inst_3);
+            AttributeRefPtr operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2, std::shared_ptr<RelationshipType> rel_type);
+            AttributeRefPtr operator()(TimeStep time_step, std::shared_ptr<EntityInstance> inst_1, std::shared_ptr<EntityInstance> inst_2, std::shared_ptr<RelationshipInstance> rel_inst);
+            AttributeRefPtr operator()(TimeStep time_step, std::shared_ptr<RelationshipType> type);
+            AttributeRefPtr operator()(TimeStep time_step, std::shared_ptr<RelationshipType> type, std::shared_ptr<RelationshipInstance> inst);
+            AttributeRefPtr operator()(TimeStep time_step, std::shared_ptr<RelationshipInstance> inst);
 
         // protected:
 

@@ -24,7 +24,7 @@ namespace particle {
             RandomPosition();
             virtual ~RandomPosition();
 
-            void Execute(TimeStep time_step, std::shared_ptr<EntityInstance> emitter_inst, std::shared_ptr<EntityInstance> initializer_inst, std::shared_ptr<EntityInstance> particle_inst);
+            AttributeRefPtr Execute(TimeStep time_step, std::shared_ptr<EntityInstance> emitter_inst, std::shared_ptr<EntityInstance> initializer_inst, std::shared_ptr<EntityInstance> particle_inst);
 
     };
 

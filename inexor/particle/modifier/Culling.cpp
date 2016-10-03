@@ -19,10 +19,11 @@ namespace particle {
     {
     }
 
-    void Culling::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle)
+    AttributeRefPtr Culling::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> modifier, std::shared_ptr<EntityInstance> particle)
     {
         // Immediately kill the particle
         (*particle)[REMAINING]->intVal = 0;
+        return true;
     }
 
 }

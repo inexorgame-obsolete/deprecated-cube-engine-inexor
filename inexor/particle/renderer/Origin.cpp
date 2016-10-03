@@ -37,12 +37,13 @@ namespace particle {
         glBegin(GL_LINES);
     }
 
-    void Origin::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst, std::shared_ptr<EntityInstance> particle_inst)
+    AttributeRefPtr Origin::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst, std::shared_ptr<EntityInstance> particle_inst)
     {
         vec p_particle((*particle_inst)[POS]->vec3Val);
         vec p_emitter(particle_inst->outgoing[emitted_by->uuid].front()->endNode[POS]->vec3Val);
         glVertex3f(p_particle.x, p_particle.y, p_particle.z);
         glVertex3f(p_emitter.x, p_emitter.y, p_emitter.z);
+        return true;
     }
 
     void Origin::After(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst)

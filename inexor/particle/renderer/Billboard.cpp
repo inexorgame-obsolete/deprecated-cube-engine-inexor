@@ -33,13 +33,13 @@ namespace particle {
         glEnable(GL_POINT_SPRITE);
         glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
-        // logoutf("shader: %s texture: %s size: %2.2f", (*renderer_inst)[SHADER]->stringVal.c_str(), (*renderer_inst)[TEXTURE]->stringVal.c_str(), (*renderer_inst)[SIZE]->floatVal);
+        // spdlog::get("global")->info() << "shader: particlepoints pointSize: " << (*renderer_inst)[SIZE]->floatVal << " texture: " << (*renderer_inst)[TEXTURE]->stringVal;
         if (!shader)
             shader = lookupshaderbyname("particlepoints"); // (*renderer_inst)[SHADER]->stringVal.c_str()
         if(shader)
         {
             shader->set();
-            glUniform1f_(glGetUniformLocation_(shader->program, "pointSize"), (*renderer_inst)[SIZE]->floatVal);
+            glUniform1f(glGetUniformLocation_(shader->program, "pointSize"), (*renderer_inst)[SIZE]->floatVal);
 
             glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
             glEnable(GL_TEXTURE_2D);
@@ -50,14 +50,17 @@ namespace particle {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
+        glPointSize((*renderer_inst)[SIZE]->floatVal * 200.0f);
         glBegin(GL_POINTS);
         // TODO: get particle color
-        glColor4f(1.0f, 0.5f, 0.5f, 0.5f);
+        glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
     }
 
-    void Billboard::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst, std::shared_ptr<EntityInstance> particle_inst)
+    AttributeRefPtr Billboard::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst, std::shared_ptr<EntityInstance> particle_inst)
     {
+        // spdlog::get("global")->info() << "x: " << (*particle_inst)[POS]->vec3Val.x << " y: " << (*particle_inst)[POS]->vec3Val.y << " z: " << (*particle_inst)[POS]->vec3Val.z;
         glVertex3f((*particle_inst)[POS]->vec3Val.x, (*particle_inst)[POS]->vec3Val.y, (*particle_inst)[POS]->vec3Val.z);
+        return true;
     }
 
     void Billboard::After(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst)
