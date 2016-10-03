@@ -73,7 +73,7 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
       COMMENT "Parsing code base for Shared Declarations and generate gluecode doing the networking."
       OUTPUT ${GENERATED_FILES}
       # clear folder containing intermediate files (the AST xml files) before, since we take the complete folder as input to the next stage.
-      COMMAND ${CMAKE_COMMAND} -P ${MAINDIR}/cmake/clean_files_folders.cmake -DPATHS_TO_REMOVE="${DOXYGEN_XML_DIR}" "${doxyfile}" "${GENERATED_FILES}"
+      COMMAND ${CMAKE_COMMAND} -D PATHS_TO_REMOVE="${DOXYGEN_XML_DIR} ${GENERATED_FILES}" -P ${MAINDIR}/cmake/clean_files_folders.cmake
 
       # Parse the codebase using doxygen and output the AST (Abstract syntax tree) to xml files.
       COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
@@ -103,8 +103,8 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
        WORKING_DIRECTORY ${MAINDIR})
 
     add_custom_target(regenerate_gluecode_${TARG}
-      COMMENT "Just removes the generated files to trigger a new generation of these on the next build of ${TARG}"
-      COMMAND ${CMAKE_COMMAND} -P ${MAINDIR}/cmake/clean_files_folders.cmake -DPATHS_TO_REMOVE="${GENERATED_FILES}"
+      COMMENT "Removes the generated gluecode files for target ${TARG} to trigger a new generation of these on the next build of target ${TARG}"
+      COMMAND ${CMAKE_COMMAND} -D PATHS_TO_REMOVE="${GENERATED_FILES}" -P ${MAINDIR}/cmake/clean_files_folders.cmake
     )
     message(STATUS "gluegen will generate the following files: ${GENERATED_FILES}")
 endfunction()
