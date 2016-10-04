@@ -43,6 +43,7 @@ class Root extends Node {
      * @param {string} protoKey
      */
     createRecursive(path, datatype, initialValue = null, sync = false, readOnly = false, protoKey = null) {
+        console.log("path = %s", path);
         let splittedPath = path.split(util.separator);
         var node = this;
         for (let i = 1; i < splittedPath.length - 1; i++) {
@@ -113,7 +114,7 @@ function createTree(server, grpc) {
     root.grpc = {};
     
     // Load the proto definition
-    root.grpc.protoDescriptor = grpc.load(__dirname + "/../../../inexor/rpc/treedata.gen.proto");
+    root.grpc.protoDescriptor = grpc.load(__dirname + "/../../../bin/all/RPCTreeData-inexor.proto");
 
     // Returns the path of the field by proto key.
     root.grpc.getPath = function(protoKey) {
