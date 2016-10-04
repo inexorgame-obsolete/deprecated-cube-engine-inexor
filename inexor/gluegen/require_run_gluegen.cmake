@@ -36,6 +36,7 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
 
     set(gluegen_out_cpp ${OUT_DIR}/RPCBindingandContext.gen.cpp)
     set(gluegen_out_proto ${OUT_DIR}/RPCTreeData.gen.proto)
+    set(proto_general_name RPCTreeData-${TARG}.proto) # The name the proto will be installed (other languages will use this name)
 
     set(gluegen_template_cpp ${TEMPLATES_DIR}/RPCBindingandContext.gen.template.cpp)
     set(gluegen_template_proto ${TEMPLATES_DIR}/RPCTreeData.gen.template.proto)
@@ -107,6 +108,9 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
       COMMAND ${CMAKE_COMMAND} -D PATHS_TO_REMOVE="${GENERATED_FILES}" -P ${MAINDIR}/cmake/clean_files_folders.cmake
     )
     message(STATUS "gluegen will generate the following files: ${GENERATED_FILES}")
+
+    install(FILES ${gluegen_out_proto} DESTINATION ${INSTALL_RESOURCES_DIR} RENAME ${proto_general_name}) # install .proto to bin/all
+    message(STATUS "Proto file install destination: ${INSTALL_RESOURCES_DIR}/${proto_general_name}")
 endfunction()
 
 # Other:
