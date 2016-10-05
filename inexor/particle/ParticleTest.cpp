@@ -135,7 +135,7 @@ namespace particle {
     void ParticleTest::ShowCase()
     {
         spdlog::get("global")->info() << "Create emitter instances";
-        point_emitter_1 = particle_subsystem->CreateEmitterInstance(point_emitter, 512.0, 512.0, 512.0, 0.0, 0.0, 0.0);
+        point_emitter_1 = particle_subsystem->CreateEmitterInstance(point_emitter, 768.0, 512.0, 542.0, 0.0, 0.0, 0.0);
         point_emitter_1[RATE] = 250;
         point_emitter_1[LIFETIME] = 10000;
         // point_emitter_2 = particle_subsystem->CreateEmitterInstance(point_emitter, 512.0, 256.0, 512.0, 0.0, 0.0, 0.0);
