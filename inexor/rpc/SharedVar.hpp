@@ -81,18 +81,18 @@ public:
 
     // Proxies
 
- //   explicit SharedVar() : value() {}
+//   explicit SharedVar() : value() {}
 
-    //template<typename... Args>
-    //explicit SharedVar(Args&&... args)
-    //    : value(std::forward<Args>(args)...) {}
+    template<typename... Args>
+    explicit SharedVar(Args&&... args, SharedOption)
+        : value(std::forward<Args>(args)...) {}
 
-    explicit SharedVar(T otr) : value(otr) {}
+   // explicit SharedVar(T otr) : value(otr) {}
     explicit SharedVar(T &otr) : value(otr) {}
-  //  explicit SharedVar(T &&otr) : value(otr) {} // Shuu TODO we need to reenable this!
-    explicit SharedVar(T otr, SharedOption) : value(otr) {}
+    explicit SharedVar(T &&otr) : value(otr) {} // Shuu TODO we need to reenable this!
+ //   explicit SharedVar(T otr, SharedOption) : value(otr) {}
     explicit SharedVar(T &otr, SharedOption) : value(otr) {}
- //   explicit SharedVar(T &&otr, SharedOption) : value(otr) {}
+    explicit SharedVar(T &&otr, SharedOption) : value(otr) {}
 
     // Avoid ambiguity when observing a string
     T operator= (const char *c) {

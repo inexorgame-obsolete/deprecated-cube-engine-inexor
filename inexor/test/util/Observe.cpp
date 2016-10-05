@@ -16,31 +16,24 @@ namespace {
 
 template<typename T>
 void test_primitive(T seed, T overw) {
-    T m1 = seed, m2 = seed, m3 = seed, m4 = seed;
+    T m1 = seed, m2 = seed;
 
     expectNothrow( SharedVar<T> X(seed); ) << "SharedVar should be initializable via copy constructor";
-    expectNothrow( SharedVar<T> Y; Y =seed; ) << "SharedVar should be initializable via copy assignment";
     expectNothrow( SharedVar<T> Z(std::move(m1)); ) << "SharedVar should be initializable via move constructor";
-    expectNothrow( SharedVar<T> A; A = std::move(m2); ) << "SharedVar should be initializable via move assignment";
 
     // Redo, just so the variables are available
     SharedVar<T> X(seed);
-    SharedVar<T> Y; Y = seed;
-    SharedVar<T> Z(std::move(m3));
-    SharedVar<T> A; A = std::move(m4);
+    SharedVar<T> Z(std::move(m2));
 
     expectEq((T)X, seed) << "Assignment via copy constructor should set the right value";
-    expectEq((T)Y, seed) << "Assignment via copy assignment should set the right value";
     expectEq((T)Z, seed) << "Assignment via move constructor should set the right value";
-    expect(A == seed) << "Assignment via move assignment should set the right value";
 
-    expectEq((T)X, (T)Y);
-    expect(Z == A);
+    expect(Z == X);
 
     expectEq(X + 2, seed + 2);
-    expectEq(Y - 2, seed - 2);
+    expectEq(X - 2, seed - 2);
     expectEq(Z << 2, seed << 2);
-    expectEq(A * 2, seed * 2);
+    expectEq(Z * 2, seed * 2);
 
     T exold, exnew, exret;
     bool called;
@@ -137,7 +130,6 @@ ptest(SizeT, size_t);
 #undef ptest
 
 test(SharedVar, Boolean) {
-    SharedVar<bool> a;
     SharedVar<bool> b(true);
 
     bool called = false;

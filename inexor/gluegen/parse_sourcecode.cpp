@@ -20,9 +20,9 @@ namespace inexor { namespace rpc { namespace gluegen {
 
 // TODO remove duplication
 // Move to utils
-// add fast hash table algorithms to utils
-// add fast std::string replacement to utils
-// add useful string formatter to utils
+// TODO add fast hash table algorithms to utils
+// TODO add fast std::string replacement to utils
+// TODO add useful string formatter to utils
 // merge log stuff into one file in utils
 vector<string> split_by_delimter(string input, string delimiter)
 {
