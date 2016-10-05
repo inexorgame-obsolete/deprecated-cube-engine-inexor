@@ -65,7 +65,7 @@ namespace vscript {
 
     InstanceRefPtr<RelationshipInstance> ActionManager::Connect(InstanceRefPtr<EntityInstance> previous_action, InstanceRefPtr<EntityInstance> next_action)
     {
-        relationship_instance_manager->CreateInstance(rel_executes, previous_action, next_action);
+        return relationship_instance_manager->CreateInstance(rel_executes, previous_action, next_action);
     }
 
     void ActionManager::ExecuteAction(InstanceRefPtr<EntityInstance> action)

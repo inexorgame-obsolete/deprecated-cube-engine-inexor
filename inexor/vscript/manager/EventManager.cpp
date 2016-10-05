@@ -92,7 +92,7 @@ namespace vscript {
 
     InstanceRefPtr<RelationshipInstance> EventManager::Connect(InstanceRefPtr<EntityInstance> event, InstanceRefPtr<EntityInstance> action)
     {
-        relationship_instance_manager->CreateInstance(rel_executes, event, action);
+        return relationship_instance_manager->CreateInstance(rel_executes, event, action);
     }
 
 }
