@@ -1,19 +1,19 @@
-#include "inexor/ui/cefapp.hpp"
+#include "inexor/ui/InexorCefApp.hpp"
 
 InexorCefApp::InexorCefApp(int width, int height)
 {
-    context_manager = new InexorCefContextManager();
+    context_manager = new InexorContextManager();
 
-    layer_manager = new InexorCefLayerManager(width, height);
+    layer_manager = new InexorLayerManager(width, height);
     context_manager->AddSubContext(layer_manager);
 
-    mouse_manager = new InexorCefMouseManager(layer_manager);
+    mouse_manager = new InexorMouseManager(layer_manager);
     context_manager->AddSubContext(mouse_manager);
 
-    keyboard_manager = new InexorCefKeyboardManager(layer_manager);
+    keyboard_manager = new InexorKeyboardManager(layer_manager);
     context_manager->AddSubContext(keyboard_manager);
 
-    frame = new InexorCefFrame();
+    frame = new InexorFrame();
     context_manager->AddSubContext(frame);
     layer_manager->AddLayerProvider(frame);
 

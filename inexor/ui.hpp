@@ -1,8 +1,8 @@
 #ifndef _UI_H
 #define _UI_H
 
-#include "inexor/ui/cefapp.hpp"
+#include "inexor/ui/InexorCefApp.hpp"
 
 extern CefRefPtr<InexorCefApp> cef_app;
 
-#endif  // _UI_H
+#endif

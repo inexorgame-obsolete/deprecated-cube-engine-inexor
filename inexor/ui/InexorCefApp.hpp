@@ -1,5 +1,5 @@
-#ifndef _CEF_APP_H
-#define _CEF_APP_H
+#ifndef INEXOR_UI_INEXOR_CEF_APP_HEADER
+#define INEXOR_UI_INEXOR_CEF_APP_HEADER
 
 #include <string>
 #include <list>
@@ -9,13 +9,13 @@
 #include "include/cef_command_line.h"
 #include "include/cef_render_process_handler.h"
 
-#include "inexor/ui/cefbrowsersettings.hpp"
-#include "inexor/ui/cefframe.hpp"
-#include "inexor/ui/cefcontextmanager.hpp"
-#include "inexor/ui/cefkeyboard.hpp"
-#include "inexor/ui/ceflayermanager.hpp"
-#include "inexor/ui/cefmouse.hpp"
-#include "inexor/ui/cefwindowinfo.hpp"
+#include "inexor/ui/InexorBrowserSettings.hpp"
+#include "inexor/ui/InexorFrame.hpp"
+#include "inexor/ui/InexorContextManager.hpp"
+#include "inexor/ui/InexorKeyboardManager.hpp"
+#include "inexor/ui/InexorLayerManager.hpp"
+#include "inexor/ui/InexorMouseManager.hpp"
+#include "inexor/ui/InexorWindowInfo.hpp"
 
 class InexorCefApp : public CefApp,
                      public CefBrowserProcessHandler,
@@ -30,11 +30,11 @@ class InexorCefApp : public CefApp,
         // Getters for handlers
         CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() { return this; }
         CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() { return this; }
-        CefRefPtr<InexorCefContextManager> GetContextManager() { return context_manager; }
-        CefRefPtr<InexorCefLayerManager> GetLayerManager() { return layer_manager; }
-        CefRefPtr<InexorCefMouseManager> GetMouseManager() { return mouse_manager; }
-        CefRefPtr<InexorCefKeyboardManager> GetKeyboardManager() { return keyboard_manager; }
-        CefRefPtr<InexorCefFrame> GetFrame() { return frame; }
+        CefRefPtr<InexorContextManager> GetContextManager() { return context_manager; }
+        CefRefPtr<InexorLayerManager> GetLayerManager() { return layer_manager; }
+        CefRefPtr<InexorMouseManager> GetMouseManager() { return mouse_manager; }
+        CefRefPtr<InexorKeyboardManager> GetKeyboardManager() { return keyboard_manager; }
+        CefRefPtr<InexorFrame> GetFrame() { return frame; }
 
         // Rendering / Window Management
         void Render();
@@ -51,11 +51,13 @@ class InexorCefApp : public CefApp,
         bool hasFocus() {
             return context_manager->cef_focus;
         }
+
         /// Tell CEF that it should receive input events
         /// rather than inexor
         void setFocus() {
           setFocus(true);
         }
+
         /// Set, whether CEF should receive input events
         /// rather than inexor
         void setFocus(bool b) {
@@ -70,13 +72,13 @@ class InexorCefApp : public CefApp,
         bool handle_sdl_event(SDL_Event ev);
 
 	private:
-        CefRefPtr<InexorCefContextManager> context_manager;
-        CefRefPtr<InexorCefLayerManager> layer_manager;
-        CefRefPtr<InexorCefMouseManager> mouse_manager;
-        CefRefPtr<InexorCefKeyboardManager> keyboard_manager;
-        CefRefPtr<InexorCefFrame> frame;
+        CefRefPtr<InexorContextManager> context_manager;
+        CefRefPtr<InexorLayerManager> layer_manager;
+        CefRefPtr<InexorMouseManager> mouse_manager;
+        CefRefPtr<InexorKeyboardManager> keyboard_manager;
+        CefRefPtr<InexorFrame> frame;
 
         IMPLEMENT_REFCOUNTING(InexorCefApp);
 };
 
-#endif  // _CEF_APP_H
+#endif

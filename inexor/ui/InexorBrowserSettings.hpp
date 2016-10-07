@@ -1,14 +1,14 @@
-#ifndef _CEF_BROWSER_SETTINGS_H
-#define _CEF_BROWSER_SETTINGS_H
+#ifndef INEXOR_UI_INEXOR_BROWSER_SETTINGS_HEADER
+#define INEXOR_UI_INEXOR_BROWSER_SETTINGS_HEADER
 #pragma once
 
 #include "include/cef_app.h"
 
-class InexorCefBrowserSettings : public CefBrowserSettings {
+class InexorBrowserSettings : public CefBrowserSettings {
     public:
-        InexorCefBrowserSettings() {
+        InexorBrowserSettings() {
             windowless_frame_rate = 60;
-            file_access_from_file_urls = STATE_ENABLED;
+            file_access_from_file_urls = STATE_DISABLED;
             plugins = STATE_DISABLED;
             webgl = STATE_DISABLED;
             java = STATE_DISABLED;

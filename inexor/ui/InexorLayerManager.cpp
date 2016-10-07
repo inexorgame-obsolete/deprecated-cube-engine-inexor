@@ -1,18 +1,18 @@
 #include <iostream>
 
-#include "inexor/ui/ceflayermanager.hpp"
+#include "inexor/ui/InexorLayerManager.hpp"
 
-InexorCefLayerManager::InexorCefLayerManager(int width, int height)
+InexorLayerManager::InexorLayerManager(int width, int height)
 {
     SetScreenSize(width, height);
 }
 
-void InexorCefLayerManager::InitializeLayers()
+void InexorLayerManager::InitializeLayers()
 {
-    for(std::list<CefRefPtr<InexorCefLayerProvider> >::iterator it = layer_providers.begin(); it != layer_providers.end(); ++it)
+    for(std::list<CefRefPtr<InexorLayerProvider> >::iterator it = layer_providers.begin(); it != layer_providers.end(); ++it)
     {
-        CefRefPtr<InexorCefLayerProvider> layer_provider = (*it);
-        CefRefPtr<InexorCefLayer> layer = CreateLayer(layer_provider->GetContextName(), layer_provider->GetUrl());
+        CefRefPtr<InexorLayerProvider> layer_provider = (*it);
+        CefRefPtr<InexorLayer> layer = CreateLayer(layer_provider->GetContextName(), layer_provider->GetUrl());
         layer->SetVisibility(layer_provider->GetVisibility());
         layer->SetIsAcceptingInput(layer_provider->GetAcceptingInput());
         layer->SetFocus(layer_provider->GetFocus());
@@ -20,20 +20,20 @@ void InexorCefLayerManager::InitializeLayers()
     }
 }
 
-void InexorCefLayerManager::DestroyLayers()
+void InexorLayerManager::DestroyLayers()
 {
     spdlog::get("global")->debug() << "InexorCefLayerManager::DestroyLayers()";
-    for(std::list<CefRefPtr<InexorCefLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
+    for(std::list<CefRefPtr<InexorLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
     {
         (*it)->Destroy();
     }
 }
 
-void InexorCefLayerManager::AddLayerProvider(CefRefPtr<InexorCefLayerProvider> layer_provider) {
+void InexorLayerManager::AddLayerProvider(CefRefPtr<InexorLayerProvider> layer_provider) {
     layer_providers.push_back(layer_provider);
 }
 
-void InexorCefLayerManager::InitializeContext()
+void InexorLayerManager::InitializeContext()
 {
     CreateFunction("create", this);
     CreateFunction("show", this);
@@ -49,7 +49,7 @@ void InexorCefLayerManager::InitializeContext()
     CreateFunction("showDevTools", this);
 }
 
-bool InexorCefLayerManager::Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception)
+bool InexorLayerManager::Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception)
 {
     CEF_REQUIRE_RENDERER_THREAD();
     if (name == "create") {
@@ -127,54 +127,54 @@ bool InexorCefLayerManager::Execute(const CefString& name, CefRefPtr<CefV8Value>
     return false;
 }
 
-bool InexorCefLayerManager::Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& return_value, CefString& exception)
+bool InexorLayerManager::Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& return_value, CefString& exception)
 {
     CEF_REQUIRE_RENDERER_THREAD();
     return false;
 }
 
-bool InexorCefLayerManager::Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception)
+bool InexorLayerManager::Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception)
 {
     CEF_REQUIRE_RENDERER_THREAD();
     return false;
 }
 
-void InexorCefLayerManager::SetScreenSize(int width, int height)
+void InexorLayerManager::SetScreenSize(int width, int height)
 {
     this->width = width;
     this->height = height;
 }
 
-void InexorCefLayerManager::_CreateLayer(std::string name, std::string url)
+void InexorLayerManager::_CreateLayer(std::string name, std::string url)
 {
     if (!CefCurrentlyOn(TID_UI)) {
-        CefPostTask(TID_UI, NewCefRunnableMethod(this, &InexorCefLayerManager::_CreateLayer, name, url));
+        CefPostTask(TID_UI, NewCefRunnableMethod(this, &InexorLayerManager::_CreateLayer, name, url));
     } else {
         CEF_REQUIRE_UI_THREAD();
-        CefRefPtr<InexorCefLayer> layer = InexorCefLayerManager::CreateLayer(name, 0, 0, width, height, url);
+        CefRefPtr<InexorLayer> layer = InexorLayerManager::CreateLayer(name, 0, 0, width, height, url);
         layer->SetFocus(true);
         layer->SetVisibility(true);
         layer->SetIsAcceptingInput(true);
     }
 }
 
-CefRefPtr<InexorCefLayer> InexorCefLayerManager::CreateLayer(std::string name, std::string url)
+CefRefPtr<InexorLayer> InexorLayerManager::CreateLayer(std::string name, std::string url)
 {
-    return InexorCefLayerManager::CreateLayer(name, 0, 0, width, height, url);
+    return InexorLayerManager::CreateLayer(name, 0, 0, width, height, url);
 }
 
-CefRefPtr<InexorCefLayer> InexorCefLayerManager::CreateLayer(std::string name, int x, int y, int width, int height, std::string url)
+CefRefPtr<InexorLayer> InexorLayerManager::CreateLayer(std::string name, int x, int y, int width, int height, std::string url)
 {
-    CefRefPtr<InexorCefLayer> layer = new InexorCefLayer(name, x, y, width, height, url);
+    CefRefPtr<InexorLayer> layer = new InexorLayer(name, x, y, width, height, url);
     layers.push_back(layer);
     return layer;
 }
 
-CefRefPtr<InexorCefLayer> InexorCefLayerManager::GetLayer(std::string name)
+CefRefPtr<InexorLayer> InexorLayerManager::GetLayer(std::string name)
 {
-    for(std::list<CefRefPtr<InexorCefLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
+    for(std::list<CefRefPtr<InexorLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
     {
-        CefRefPtr<InexorCefLayer> layer = (*it);
+        CefRefPtr<InexorLayer> layer = (*it);
         if (layer->GetName() == name)
             return layer;
     }
@@ -186,145 +186,145 @@ CefRefPtr<InexorCefLayer> InexorCefLayerManager::GetLayer(std::string name)
  * name. If no element was found, the iterator points to end() which means
  * there is no layer with the given name.
  */
-std::list<CefRefPtr<InexorCefLayer> >::iterator InexorCefLayerManager::GetIterator(std::string name)
+std::list<CefRefPtr<InexorLayer> >::iterator InexorLayerManager::GetIterator(std::string name)
 {
-    std::list<CefRefPtr<InexorCefLayer> >::iterator it = layers.begin();
+    std::list<CefRefPtr<InexorLayer> >::iterator it = layers.begin();
     for(it = layers.begin(); it != layers.end(); ++it)
     {
-        CefRefPtr<InexorCefLayer> layer = (*it);
+        CefRefPtr<InexorLayer> layer = (*it);
         if (layer->GetName() == name)
             break;
     }
     return it;
 }
 
-bool InexorCefLayerManager::LayerExists(std::string name)
+bool InexorLayerManager::LayerExists(std::string name)
 {
     return GetIterator(name) != layers.end();
 }
 
-std::list<std::string> InexorCefLayerManager::GetLayers()
+std::list<std::string> InexorLayerManager::GetLayers()
 {
     std::list<std::string> _layers;
-    for(std::list<CefRefPtr<InexorCefLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
+    for(std::list<CefRefPtr<InexorLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
     {
-        CefRefPtr<InexorCefLayer> layer = (*it);
+        CefRefPtr<InexorLayer> layer = (*it);
         _layers.push_back(layer->GetName());
     }
     return _layers;
 }
 
-void InexorCefLayerManager::ShowLayer(std::string name)
+void InexorLayerManager::ShowLayer(std::string name)
 {
-    spdlog::get("global")->debug() << "show layer " << name;
-    CefRefPtr<InexorCefLayer> layer = GetLayer(name);
+    spdlog::get("global")->debug("show layer {}", name);
+    CefRefPtr<InexorLayer> layer = GetLayer(name);
     if (layer.get())
         layer->SetVisibility(true);
 }
 
-void InexorCefLayerManager::HideLayer(std::string name)
+void InexorLayerManager::HideLayer(std::string name)
 {
-    spdlog::get("global")->debug() << "hide layer " << name;
-    CefRefPtr<InexorCefLayer> layer = GetLayer(name);
+    spdlog::get("global")->debug("hide layer {}", name);
+    CefRefPtr<InexorLayer> layer = GetLayer(name);
     if (layer.get())
         layer->SetVisibility(false);
 }
 
-void InexorCefLayerManager::BringToFront(std::string name)
+void InexorLayerManager::BringToFront(std::string name)
 {
-    std::list<CefRefPtr<InexorCefLayer> >::iterator it = GetIterator(name);
+    std::list<CefRefPtr<InexorLayer> >::iterator it = GetIterator(name);
     if (it != layers.end())
         layers.splice(layers.begin(), layers, it);
 }
 
-void InexorCefLayerManager::SendToBack(std::string name)
+void InexorLayerManager::SendToBack(std::string name)
 {
-    std::list<CefRefPtr<InexorCefLayer> >::iterator it = GetIterator(name);
+    std::list<CefRefPtr<InexorLayer> >::iterator it = GetIterator(name);
     if (it != layers.end())
         layers.splice(layers.end(), layers, it);
 }
 
-void InexorCefLayerManager::BringForward(std::string name)
+void InexorLayerManager::BringForward(std::string name)
 {
-    std::list<CefRefPtr<InexorCefLayer> >::iterator it = GetIterator(name);
+    std::list<CefRefPtr<InexorLayer> >::iterator it = GetIterator(name);
     // name exists and not already on front
     if (it != layers.end() && it != layers.begin()) {
-        std::list<CefRefPtr<InexorCefLayer> >::iterator it2 = it;
+        std::list<CefRefPtr<InexorLayer> >::iterator it2 = it;
         --it2;
         layers.splice(it2, layers, it);
     }
 }
 
-void InexorCefLayerManager::SendBackward(std::string name)
+void InexorLayerManager::SendBackward(std::string name)
 {
-    std::list<CefRefPtr<InexorCefLayer> >::iterator it = GetIterator(name);
+    std::list<CefRefPtr<InexorLayer> >::iterator it = GetIterator(name);
     // name exists and not already on back
-    std::list<CefRefPtr<InexorCefLayer> >::iterator it_back = layers.end();
+    std::list<CefRefPtr<InexorLayer> >::iterator it_back = layers.end();
     if (it != layers.end() && it != --it_back) {
-        std::list<CefRefPtr<InexorCefLayer> >::iterator it2 = it;
+        std::list<CefRefPtr<InexorLayer> >::iterator it2 = it;
         ++it2;
         layers.splice(it2, layers, it);
     }
 }
 
-void InexorCefLayerManager::RenderLayer(std::string name)
+void InexorLayerManager::RenderLayer(std::string name)
 {
-    CefRefPtr<InexorCefLayer> layer = GetLayer(name);
+    CefRefPtr<InexorLayer> layer = GetLayer(name);
     if (layer.get())
         layer->Render();
 }
 
-void InexorCefLayerManager::Render()
+void InexorLayerManager::Render()
 {
     CEF_REQUIRE_UI_THREAD();
     // Render from back to front
-    for(std::list<CefRefPtr<InexorCefLayer> >::reverse_iterator it = layers.rbegin(); it != layers.rend(); ++it)
+    for(std::list<CefRefPtr<InexorLayer> >::reverse_iterator it = layers.rbegin(); it != layers.rend(); ++it)
     {
-        CefRefPtr<InexorCefLayer> layer = (*it);
+        CefRefPtr<InexorLayer> layer = (*it);
         if (layer.get() && layer->IsVisible()) {
             layer->Render();
         }
     }
 }
 
-void InexorCefLayerManager::SendKeyEvent(CefKeyEvent event)
+void InexorLayerManager::SendKeyEvent(CefKeyEvent event)
 {
-    for(std::list<CefRefPtr<InexorCefLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
+    for(std::list<CefRefPtr<InexorLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
     {
-        CefRefPtr<InexorCefLayer> layer = (*it);
+        CefRefPtr<InexorLayer> layer = (*it);
         if (layer.get() && layer->IsVisible() && layer->IsAcceptingInput()) {
             layer->GetBrowser()->GetHost()->SendKeyEvent(event);
         }
     }
 }
 
-void InexorCefLayerManager::SendMouseClickEvent(const CefMouseEvent& event, CefBrowserHost::MouseButtonType type, bool mouseUp, int clickCount)
+void InexorLayerManager::SendMouseClickEvent(const CefMouseEvent& event, CefBrowserHost::MouseButtonType type, bool mouseUp, int clickCount)
 {
-    for(std::list<CefRefPtr<InexorCefLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
+    for(std::list<CefRefPtr<InexorLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
     {
-        CefRefPtr<InexorCefLayer> layer = (*it);
+        CefRefPtr<InexorLayer> layer = (*it);
         if (layer.get() && layer->IsVisible() && layer->IsAcceptingInput()) {
             layer->GetBrowser()->GetHost()->SendMouseClickEvent(event, type, mouseUp, clickCount);
         }
     }
 }
 
-void InexorCefLayerManager::SendMouseMoveEvent(const CefMouseEvent& event, bool mouseLeave)
+void InexorLayerManager::SendMouseMoveEvent(const CefMouseEvent& event, bool mouseLeave)
 {
-    for(std::list<CefRefPtr<InexorCefLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
+    for(std::list<CefRefPtr<InexorLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
     {
-        CefRefPtr<InexorCefLayer> layer = (*it);
+        CefRefPtr<InexorLayer> layer = (*it);
         if (layer.get() && layer->IsVisible() && layer->IsAcceptingInput()) {
             layer->GetBrowser()->GetHost()->SendMouseMoveEvent(event, mouseLeave);
         }
     }
 }
 
-void InexorCefLayerManager::SendMouseWheelEvent(const CefMouseEvent& event, int deltaX, int deltaY)
+void InexorLayerManager::SendMouseWheelEvent(const CefMouseEvent& event, int deltaX, int deltaY)
 {
-    for(std::list<CefRefPtr<InexorCefLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
+    for(std::list<CefRefPtr<InexorLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
     {
-        CefRefPtr<InexorCefLayer> layer = (*it);
+        CefRefPtr<InexorLayer> layer = (*it);
         if (layer.get() && layer->IsVisible() && layer->IsAcceptingInput()) {
             layer->GetBrowser()->GetHost()->SendMouseWheelEvent(event, deltaX, deltaY);
         }
