@@ -1,8 +1,8 @@
 #include <iostream>
 
-#include "inexor/ui/ceflayer.hpp"
+#include "inexor/ui/InexorLayer.hpp"
 
-InexorCefLayer::InexorCefLayer(std::string name, int x, int y, int width, int height, std::string url)
+InexorLayer::InexorLayer(std::string name, int x, int y, int width, int height, std::string url)
     : name(name),
       url(url),
       is_visible(false),
@@ -18,7 +18,7 @@ InexorCefLayer::InexorCefLayer(std::string name, int x, int y, int width, int he
     window_info.width = width;
     window_info.height = height;
     cookie_manager = CefCookieManager::CreateManager("/tmp/inexorc", false);
-    render_handler = new InexorCefRenderHandler(true, x, y, width, height);
+    render_handler = new InexorRenderHandler(true, x, y, width, height);
     browser = CefBrowserHost::CreateBrowserSync(window_info, this, url, browser_settings, NULL);
     if (browser.get()) {
         spdlog::get("global")->debug() << "init: cef: created layer \"" << name << "\"";
@@ -26,39 +26,39 @@ InexorCefLayer::InexorCefLayer(std::string name, int x, int y, int width, int he
     }
 }
 
-InexorCefLayer::~InexorCefLayer() { }
+InexorLayer::~InexorLayer() { }
 
-void InexorCefLayer::SetVisibility(bool is_visible)
+void InexorLayer::SetVisibility(bool is_visible)
 {
 	this->is_visible = is_visible;
 	browser->GetHost()->SetWindowVisibility(is_visible);
 	browser->GetHost()->WasHidden(!is_visible);
 }
 
-void InexorCefLayer::SetFocus(bool has_focus)
+void InexorLayer::SetFocus(bool has_focus)
 {
 	this->has_focus = has_focus;
 	browser->GetHost()->SendFocusEvent(has_focus);
 }
 
-void InexorCefLayer::SetIsAcceptingInput(bool is_accepting_input)
+void InexorLayer::SetIsAcceptingInput(bool is_accepting_input)
 {
 	this->is_accepting_input = is_accepting_input;
 }
 
-void InexorCefLayer::Destroy()
+void InexorLayer::Destroy()
 {
     spdlog::get("global")->debug() << "InexorCefLayer::Destroy()";
     browser->GetHost()->CloseBrowser(true);
     // DoClose(browser);
 }
 
-void InexorCefLayer::Copy()
+void InexorLayer::Copy()
 {
     browser->GetFocusedFrame()->Copy();
 }
 
-void InexorCefLayer::Paste()
+void InexorLayer::Paste()
 {
     // SDL_SetClipboardText()
     // SDL_GetClipboardText()
@@ -66,17 +66,17 @@ void InexorCefLayer::Paste()
     browser->GetFocusedFrame()->Paste();
 }
 
-void InexorCefLayer::Cut()
+void InexorLayer::Cut()
 {
     browser->GetFocusedFrame()->Cut();
 }
 
-void InexorCefLayer::ShowDevTools()
+void InexorLayer::ShowDevTools()
 {
     browser->GetHost()->ShowDevTools(window_info, this, browser_settings, CefPoint());
 }
 
-void InexorCefLayer::OnAfterCreated(CefRefPtr<CefBrowser> browser)
+void InexorLayer::OnAfterCreated(CefRefPtr<CefBrowser> browser)
 {
     CEF_REQUIRE_UI_THREAD();
     if (!browser.get())   {
@@ -88,7 +88,7 @@ void InexorCefLayer::OnAfterCreated(CefRefPtr<CefBrowser> browser)
     browser_count++;
 }
 
-bool InexorCefLayer::DoClose(CefRefPtr<CefBrowser> browser)
+bool InexorLayer::DoClose(CefRefPtr<CefBrowser> browser)
 {
     CEF_REQUIRE_UI_THREAD();
     // Closing the main window requires special handling. See the DoClose()
@@ -105,7 +105,7 @@ bool InexorCefLayer::DoClose(CefRefPtr<CefBrowser> browser)
     return false;
 }
 
-void InexorCefLayer::OnBeforeClose(CefRefPtr<CefBrowser> browser)
+void InexorLayer::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 {
     CEF_REQUIRE_UI_THREAD();
     if (browser_id == browser->GetIdentifier()) {
@@ -119,7 +119,7 @@ void InexorCefLayer::OnBeforeClose(CefRefPtr<CefBrowser> browser)
     }
 }
 
-void InexorCefLayer::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, ErrorCode errorCode, const CefString& errorText, const CefString& failedUrl) {
+void InexorLayer::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, ErrorCode errorCode, const CefString& errorText, const CefString& failedUrl) {
     CEF_REQUIRE_UI_THREAD();
     // Don't display an error for downloaded files.
     if (errorCode == ERR_ABORTED)
@@ -133,33 +133,33 @@ void InexorCefLayer::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFra
     frame->LoadString(error_message.str(), failedUrl);
 }
 
-bool InexorCefLayer::OnPreKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event, bool* is_keyboard_shortcut) {
+bool InexorLayer::OnPreKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event, bool* is_keyboard_shortcut) {
     CEF_REQUIRE_UI_THREAD();
     spdlog::get("global")->debug("InexorCefLayer::OnPreKeyEvent: key_event.type: {0} native_key_code: {1} windows_key_code: {2} is_system_key: {3}",
                                  key_event.type, key_event.native_key_code, key_event.windows_key_code, key_event.is_system_key);
     return false;
 }
 
-bool InexorCefLayer::OnKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event) {
+bool InexorLayer::OnKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event) {
     CEF_REQUIRE_UI_THREAD();
     spdlog::get("global")->debug("InexorCefLayer::OnKeyEvent: key_event.type: {0} native_key_code: {1} windows_key_code: {2} is_system_key: {3}",
                                      key_event.type, key_event.native_key_code, key_event.windows_key_code, key_event.is_system_key);
     return false;
 }
 
-void InexorCefLayer::OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& url)
+void InexorLayer::OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& url)
 {
     CEF_REQUIRE_UI_THREAD();
     spdlog::get("global")->debug() << "address change: " << url.ToString();
 }
 
-void InexorCefLayer::OnStatusMessage(CefRefPtr<CefBrowser> browser, const CefString& value)
+void InexorLayer::OnStatusMessage(CefRefPtr<CefBrowser> browser, const CefString& value)
 {
     CEF_REQUIRE_UI_THREAD();
     spdlog::get("global")->debug() << "status: " << value.ToString();
 }
 
-bool InexorCefLayer::OnConsoleMessage(CefRefPtr<CefBrowser> browser, const CefString& message, const CefString& source, int line)
+bool InexorLayer::OnConsoleMessage(CefRefPtr<CefBrowser> browser, const CefString& message, const CefString& source, int line)
 {
     CEF_REQUIRE_UI_THREAD();
     spdlog::get("global")->debug("status: {0} ({1}): {2}", source.ToString(), line, message.ToString());

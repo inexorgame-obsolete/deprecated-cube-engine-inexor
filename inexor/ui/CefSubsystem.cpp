@@ -1,5 +1,5 @@
 #include "inexor/ui/CefSubsystem.hpp"
-#include "inexor/ui/cefsettings.hpp"
+#include "inexor/ui/InexorSettings.hpp"
 
 using namespace inexor::util;
 
@@ -13,19 +13,11 @@ namespace inexor {
 namespace ui {
 
 CefSubsystem::CefSubsystem() {
-    ::cef_app = new InexorCefApp(1024,1024);
+    ::cef_app = new InexorCefApp(1920, 1080);
 
     const CefMainArgs args;
-    int exit_code = CefExecuteProcess(args, cef_app, NULL);
-    if (exit_code >= 0) {
-        /*
-        std::string msg = fmt << "Forking the CEF process "
-            << "yielded a non zero exit code: "
-            << exit_code << ".";
-        */
-        std::string msg = "Forking the CEF process yielded a non zero exit code";
-        throw CefProcessException(msg);
-    }
+    InexorSettings settings;
+    CefInitialize(args, settings, ::cef_app.get(), NULL);
 
     tick();
 }

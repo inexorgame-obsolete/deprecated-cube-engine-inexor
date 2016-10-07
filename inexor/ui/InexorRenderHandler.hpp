@@ -1,5 +1,5 @@
-#ifndef _CEF_RENDER_HANDLER_H
-#define _CEF_RENDER_HANDLER_H
+#ifndef INEXOR_UI_INEXOR_RENDER_HANDLER_HEADER
+#define INEXOR_UI_INEXOR_RENDER_HANDLER_HEADER
 #pragma once
 
 #include "inexor/shared/cube.hpp"
@@ -7,10 +7,10 @@
 #include "include/cef_render_handler.h"
 #include "include/wrapper/cef_helpers.h"
 
-class InexorCefRenderHandler : public CefRenderHandler {
+class InexorRenderHandler : public CefRenderHandler {
     public:
-        InexorCefRenderHandler(bool transparent, int x, int y, int width, int height);
-        virtual ~InexorCefRenderHandler();
+        InexorRenderHandler(bool transparent, int x, int y, int width, int height);
+        virtual ~InexorRenderHandler();
 
         // Initialize the OpenGL environment.
         void Initialize();
@@ -58,7 +58,7 @@ class InexorCefRenderHandler : public CefRenderHandler {
         CefRect original_popup_rect;
 
         // Provides atomic refcounting implementation.
-        IMPLEMENT_REFCOUNTING(InexorCefRenderHandler);
+        IMPLEMENT_REFCOUNTING(InexorRenderHandler);
 
 };
 

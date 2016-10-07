@@ -1,5 +1,5 @@
-#ifndef _CEF_LAYER_H
-#define _CEF_LAYER_H
+#ifndef INEXOR_UI_INEXOR_LAYER_HEADER
+#define INEXOR_UI_INEXOR_LAYER_HEADER
 
 #include <list>
 #include <string>
@@ -10,26 +10,25 @@
 #include "include/cef_load_handler.h"
 #include "include/wrapper/cef_helpers.h"
 
-#include "inexor/ui/cefbrowsersettings.hpp"
-#include "inexor/ui/cefrenderhandler.hpp"
-#include "inexor/ui/cefwindowinfo.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/ui/InexorBrowserSettings.hpp"
+#include "inexor/ui/InexorRenderHandler.hpp"
+#include "inexor/ui/InexorWindowInfo.hpp"
 
-class InexorCefLayer : public CefClient,
-                       public CefLifeSpanHandler,
-                       public CefLoadHandler,
-                       public CefKeyboardHandler,
-                       public CefDisplayHandler,
-                       public CefRequestContextHandler
+class InexorLayer : public CefClient,
+                    public CefLifeSpanHandler,
+                    public CefLoadHandler,
+                    public CefKeyboardHandler,
+                    public CefDisplayHandler,
+                    public CefRequestContextHandler
 {
 
     public:
-        InexorCefLayer(std::string name, int x, int y, int width, int height, std::string url);
-        virtual ~InexorCefLayer();
+        InexorLayer(std::string name, int x, int y, int width, int height, std::string url);
+        virtual ~InexorLayer();
 
         std::string GetName() { return name; }
         std::string GetUrl() { return url; }
-        InexorCefWindowInfo GetWindowInfo() { return window_info; }
+        InexorWindowInfo GetWindowInfo() { return window_info; }
         CefBrowserSettings GetBrowserSettings() { return browser_settings; };
 
         void Render() { render_handler->Render(); };
@@ -53,7 +52,7 @@ class InexorCefLayer : public CefClient,
         bool IsClosing() { return is_closing; }
 
         // Getters for handlers
-        virtual CefRefPtr<InexorCefLayer> GetClientHandler() { return this; };
+        virtual CefRefPtr<InexorLayer> GetClientHandler() { return this; };
         virtual CefRefPtr<CefRenderHandler> GetRenderHandler() { return render_handler; }
         virtual CefRefPtr<CefBrowser> GetBrowser() { return browser; };
         virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() { return this; }
@@ -92,15 +91,15 @@ class InexorCefLayer : public CefClient,
         int browser_count;
         bool is_closing;
 
-        InexorCefWindowInfo window_info;
-        InexorCefBrowserSettings browser_settings;
-        CefRefPtr<InexorCefRenderHandler> render_handler;
+        InexorWindowInfo window_info;
+        InexorBrowserSettings browser_settings;
+        CefRefPtr<InexorRenderHandler> render_handler;
         CefRefPtr<CefBrowser> browser;
         CefRefPtr<CefCookieManager> cookie_manager;
 
         // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(InexorCefLayer);
+        IMPLEMENT_REFCOUNTING(InexorLayer);
 
 };
 
-#endif  // _CEF_LAYER_H
+#endif

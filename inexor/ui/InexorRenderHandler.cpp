@@ -1,4 +1,4 @@
-#include "inexor/ui/cefrenderhandler.hpp"
+#include "inexor/ui/InexorRenderHandler.hpp"
 #include "inexor/engine/engine.hpp"
 
 
@@ -13,7 +13,7 @@
 #define VERIFY_NO_ERROR
 #endif
 
-InexorCefRenderHandler::InexorCefRenderHandler(bool transparent, int x, int y, int width, int height)
+InexorRenderHandler::InexorRenderHandler(bool transparent, int x, int y, int width, int height)
     : transparent(transparent),
       initialized(false),
       texture_id(0),
@@ -23,11 +23,11 @@ InexorCefRenderHandler::InexorCefRenderHandler(bool transparent, int x, int y, i
       view_height(height) {
 }
 
-InexorCefRenderHandler::~InexorCefRenderHandler() {
+InexorRenderHandler::~InexorRenderHandler() {
     Cleanup();
 }
 
-void InexorCefRenderHandler::Initialize() {
+void InexorRenderHandler::Initialize() {
     if (initialized)
         return;
 
@@ -55,12 +55,12 @@ void InexorCefRenderHandler::Initialize() {
     initialized = true;
 }
 
-void InexorCefRenderHandler::Cleanup() {
+void InexorRenderHandler::Cleanup() {
     if (texture_id != 0)
         glDeleteTextures(1, &texture_id);
 }
 
-void InexorCefRenderHandler::Render() {
+void InexorRenderHandler::Render() {
     if (view_width == 0 || view_height == 0 || !initialized)
         return;
 
@@ -93,11 +93,11 @@ void InexorCefRenderHandler::Render() {
     // Draw the facets with the texture.
     if (0u == texture_id)
     {
-      throw GLException("texture id is 0");
+        throw GLException("texture id is 0");
     }
     else
     {
-      glBindTexture(GL_TEXTURE_2D, texture_id); VERIFY_NO_ERROR;
+        glBindTexture(GL_TEXTURE_2D, texture_id); VERIFY_NO_ERROR;
     }
     glInterleavedArrays(GL_T2F_V3F, 0, vertices); VERIFY_NO_ERROR;
     glDrawArrays(GL_QUADS, 0, 4); VERIFY_NO_ERROR;
@@ -109,7 +109,7 @@ void InexorCefRenderHandler::Render() {
     glDisable(GL_BLEND); VERIFY_NO_ERROR;
 }
 
-void InexorCefRenderHandler::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show)
+void InexorRenderHandler::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show)
 {
     if (!show) {
         // Clear the popup rectangle.
@@ -117,7 +117,7 @@ void InexorCefRenderHandler::OnPopupShow(CefRefPtr<CefBrowser> browser, bool sho
     }
 }
 
-void InexorCefRenderHandler::OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect)
+void InexorRenderHandler::OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect)
 {
     if (rect.width <= 0 || rect.height <= 0)
         return;
@@ -125,7 +125,7 @@ void InexorCefRenderHandler::OnPopupSize(CefRefPtr<CefBrowser> browser, const Ce
     popup_rect = GetPopupRectInWebView(original_popup_rect);
 }
 
-CefRect InexorCefRenderHandler::GetPopupRectInWebView(const CefRect& original_rect)
+CefRect InexorRenderHandler::GetPopupRectInWebView(const CefRect& original_rect)
 {
     CefRect rc(original_rect);
     // if x or y are negative, move them to 0.
@@ -146,19 +146,19 @@ CefRect InexorCefRenderHandler::GetPopupRectInWebView(const CefRect& original_re
     return rc;
 }
 
-void InexorCefRenderHandler::ClearPopupRects()
+void InexorRenderHandler::ClearPopupRects()
 {
     popup_rect.Set(0, 0, 0, 0);
     original_popup_rect.Set(0, 0, 0, 0);
 }
 
-bool InexorCefRenderHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect)
+bool InexorRenderHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect)
 {
     rect = CefRect(view_x, view_y, view_width, view_height);
     return true;
 }
 
-void InexorCefRenderHandler::OnPaint(
+void InexorRenderHandler::OnPaint(
     CefRefPtr<CefBrowser> browser,
     CefRenderHandler::PaintElementType type,
     const CefRenderHandler::RectList& dirtyRects,

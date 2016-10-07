@@ -1,23 +1,22 @@
-#ifndef _CEF_CONSOLE_H
-#define _CEF_CONSOLE_H
+#ifndef INEXOR_UI_INEXOR_FRAME_HEADER
+#define INEXOR_UI_INEXOR_FRAME_HEADER
 
 #include "include/cef_app.h"
 
-#include "inexor/ui/cefcontextprovider.hpp"
-#include "inexor/ui/ceflayerprovider.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/ui/InexorContextProvider.hpp"
+#include "inexor/ui/InexorLayerProvider.hpp"
 
-class InexorCefFrame : public InexorCefContextProvider,
-                       public InexorCefLayerProvider
+class InexorFrame : public InexorContextProvider,
+                    public InexorLayerProvider
 {
 
     public:
-        std::string url = "http://localhost:48702/main.html";
+        std::string url = "http://localhost:48702/";
         std::string name = "";
 
-        InexorCefFrame() {};
-        InexorCefFrame(std::string &name) : name(name) {}
-        InexorCefFrame(std::string &name, std::string &url)
+        InexorFrame() {};
+        InexorFrame(std::string &name) : name(name) {}
+        InexorFrame(std::string &name, std::string &url)
           : url(url), name(name) {}
 
         // InexorCefContextProvider
@@ -41,7 +40,7 @@ class InexorCefFrame : public InexorCefContextProvider,
     private:
 
         // Include the default reference counting implementation.
-        IMPLEMENT_REFCOUNTING(InexorCefFrame);
+        IMPLEMENT_REFCOUNTING(InexorFrame);
 };
 
 #endif  // _CEF_FRAME_H
