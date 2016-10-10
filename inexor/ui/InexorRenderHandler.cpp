@@ -51,6 +51,7 @@ void InexorRenderHandler::Initialize() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); VERIFY_NO_ERROR;
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); VERIFY_NO_ERROR;
 
+    setlocale(LC_ALL, "en_US.utf8");
     initialized = true;
 }
 
