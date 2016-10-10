@@ -1,7 +1,6 @@
 #include <iostream>
 
 #include "inexor/ui/InexorRenderHandler.hpp"
-#include "inexor/engine/engine.hpp"
 
 
 // DCHECK on gl errors.
