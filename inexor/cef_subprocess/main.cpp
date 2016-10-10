@@ -5,6 +5,7 @@
 #include "inexor/engine/engine.hpp"
 
 int main(int argc, char **argv) {
+    setlocale(LC_ALL, "en_US.utf8");
 #ifdef WIN32
     CefMainArgs main_args(GetModuleHandle(NULL));
 #else
