@@ -1474,11 +1474,11 @@ int main(int argc, char **argv)
     inputgrab(grabinput = true);
     ignoremousemotion();
 
-    //Initialize the metasystem
-    //SUBSYSTEM_REQUIRE(rpc);
-    //SUBSYSTEM_REQUIRE(cef);
+    // Initialize the subsystems
+    spdlog::get("global")->debug() << "init: subsystems";
     metapp.start("rpc");
     metapp.start("cef");
+    metapp.initialize(argc, argv);
 
 	// main game loop
     for(;;)

@@ -42,13 +42,14 @@ public:
     /// inexor is quit
     virtual ~Subsystem() {};
 
+    /// Called once
+    virtual void initialize(int argc, char **argv) {};
+
     /// Called once per frame, or what ever our event loop
     /// is
     virtual void tick() {};
 
-    /// Called to paint stuff; after everything inexor and
-    /// possibly other modules have been called.
-    virtual void Render() {};
+    bool is_initialized = false;
 
     /// A function that starts a subsystem and returns
     /// a pointer to the instance
@@ -189,8 +190,15 @@ public:
     }
 
     /// Forwarded to all subsystems
-    virtual void Render() {
-        for (auto &e : this->subsystems) e.second->Render();
+    virtual void initialize(int argc, char **argv) {
+        tick();
+        for (auto &e : this->subsystems) {
+            if (!e.second->is_initialized) {
+                e.second->initialize(argc, argv);
+                e.second->is_initialized = true;
+            }
+        }
+        tick();
     }
 
     /// Execute code on the next tick.
@@ -203,7 +211,7 @@ public:
     /// Metasystem is destructed, the functions will be
     /// invoked in the destructor.
     void next_tick(tick_cb f) {
-      next_tick_queue.push(f);
+        next_tick_queue.push(f);
     }
 };
 
