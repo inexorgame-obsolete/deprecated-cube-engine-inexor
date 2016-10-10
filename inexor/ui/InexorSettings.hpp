@@ -30,7 +30,7 @@ class InexorSettings : public CefSettings {
 	        CefString(&locales_dir_path).FromString(std::string(base_path) + "/bin/all/locales");
 	        CefString(&log_file).FromString(std::string(base_path) + "/inexorcef.log");
 	        // TODO: remove hardcoded path!
-	        CefString{&browser_subprocess_path}.FromString(std::string{base_path} + "/bin/linux/x86_64/inexor_cef_subprocess");
+	        CefString{&browser_subprocess_path}.FromString(std::string{base_path} + "/bin/linux/x86_64/cef_subprocess");
         };
 };
 

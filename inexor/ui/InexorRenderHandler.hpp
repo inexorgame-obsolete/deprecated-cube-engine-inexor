@@ -3,6 +3,8 @@
 #pragma once
 
 #include "inexor/shared/cube.hpp"
+#include "inexor/engine/engine.hpp"
+
 #include "include/cef_browser.h"
 #include "include/cef_render_handler.h"
 #include "include/wrapper/cef_helpers.h"
