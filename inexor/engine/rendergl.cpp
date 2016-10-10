@@ -1860,6 +1860,11 @@ int xtraverts, xtravertsva;
 
 void gl_rendercef()
 {
+    if (!cef_app.get()) {
+        spdlog::get("global")->debug("err_cef");
+        return;
+    }
+
     CefRefPtr<InexorLayerManager> layer_manager = cef_app->GetLayerManager();
     std::list<CefRefPtr<InexorLayer> > layers = layer_manager->GetLayerList();
     for(std::list<CefRefPtr<InexorLayer> >::reverse_iterator it = layers.rbegin(); it != layers.rend(); ++it)
