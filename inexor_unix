@@ -12,7 +12,7 @@ exe="${bin}/inexor"
 ln -sf /lib/${arch}-linux-gnu/libudev.so.1 ${bin}/libudev.so.0
 export LD_LIBRARY_PATH="$bin:$LD_LIBRARY_PATH"
 
-# source inexor_node_unix&
+source inexor_node_unix&
 echo >&2 "CALLING: ${exe}"
 find "$dir"/media/ -maxdepth 1 -print0                      \
   | sed 's/^/-k/' -z                                       \
