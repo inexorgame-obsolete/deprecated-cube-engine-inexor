@@ -15,7 +15,7 @@ InexorLayer::InexorLayer(std::string name, int x, int y, int width, int height, 
       browser_count(0),
       is_closing(false)
 {
-    std::cerr << "init: cef: creating layer\n  name: " << name << "\n  url: " << url << "\n  x: " << x << "\n  y " << y << "\n  width: " << width << "\n  height " << height << ")\n";
+    std::cerr << "init: cef: creating layer\n  name: " << name << "\n  url: " << url << "\n  x: " << x << "\n  y: " << y << "\n  width: " << width << "\n  height " << height << ")\n";
     window_info.x = x;
     window_info.y = y;
     window_info.width = width;

@@ -20,7 +20,7 @@ InexorCefApp::InexorCefApp(int width, int height)
     SetScreenSize(width, height);
 
     std::string layer_name("ui");
-    std::string layer_url("http://localhost:48702/");
+    std::string layer_url("http://localhost:48702/treeui/");
     user_interface = new InexorUserInterface(layer_name, layer_url);
     user_interface->Show();
 
