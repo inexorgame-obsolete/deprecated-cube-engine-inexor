@@ -20,7 +20,8 @@ InexorLayer::InexorLayer(std::string name, int x, int y, int width, int height, 
     window_info.y = y;
     window_info.width = width;
     window_info.height = height;
-    cookie_manager = CefCookieManager::CreateManager("/tmp/inexorc", false, NULL);
+    // cookie_manager = CefCookieManager::CreateManager("/tmp/inexorc", false, NULL);
+    cookie_manager = CefCookieManager::CreateManager("/tmp/inexorc", false);
     render_handler = new InexorRenderHandler(true, x, y, width, height);
     browser = CefBrowserHost::CreateBrowserSync(window_info, this, url, browser_settings, NULL);
     if (browser.get()) {

@@ -1242,7 +1242,7 @@ ICOMMAND(uireload, "", (),
         cef_app->GetUserInterface()->Reload();
     }
 );
-ICOMMAND(uistate, "bbb", (bool *_is_visible, bool *_is_accepting_key_input, bool *_is_accepting_mouse_input),
+ICOMMAND(uilayerstate, "bbb", (bool *_is_visible, bool *_is_accepting_key_input, bool *_is_accepting_mouse_input),
     if (cef_app.get()) {
         cef_app->GetUserInterface()->SetVisibility(*_is_visible);
         cef_app->GetUserInterface()->SetAcceptingKeyInput(*_is_accepting_key_input);
@@ -1252,6 +1252,20 @@ ICOMMAND(uistate, "bbb", (bool *_is_visible, bool *_is_accepting_key_input, bool
 ICOMMAND(uiresize, "ii", (int *width, int *height),
     if (cef_app.get()) {
         cef_app->GetUserInterface()->Resize(0, 0, *width, *height);
+    }
+);
+/// Bind to key ESC
+ICOMMAND(uimenu, "", (),
+    if (cef_app.get()) {
+        cef_app->GetUserInterface()->Menu();
+    }
+);
+
+ICOMMAND(uimenustate, "ssb", (char *_menu_state, char *_menu_parent_state, bool *_menu_visible),
+    if (cef_app.get()) {
+        std::string menu_state(_menu_state);
+        std::string menu_parent_state(_menu_parent_state);
+    	cef_app->GetUserInterface()->SetMenuStates(menu_state, menu_parent_state, *_menu_visible);
     }
 );
 
