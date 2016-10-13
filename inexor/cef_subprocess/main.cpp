@@ -3,8 +3,7 @@
 #include <include/cef_base.h>
 
 #include "inexor/ui/InexorCefApp.hpp"
-
-#include "inexor/engine/engine.hpp"
+#include "inexor/ui/InexorCefSubprocessApp.hpp"
 
 int main(int argc, char **argv) {
     setlocale(LC_ALL, "en_US.utf8");
@@ -16,5 +15,7 @@ int main(int argc, char **argv) {
 #endif
     // TODO: do we really need the cef_app initialized again in the subprocess?
     // if not, we are able to decouple the rendering code again!
-    return CefExecuteProcess(main_args, NULL, NULL);
+    // return CefExecuteProcess(main_args, NULL, NULL);
+    CefRefPtr<InexorCefSubprocessApp> cef_app = new InexorCefSubprocessApp();
+    return CefExecuteProcess(main_args, cef_app.get(), NULL);
 }
