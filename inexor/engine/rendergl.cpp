@@ -2051,11 +2051,13 @@ void gl_drawmainmenu()
 {
     xtravertsva = xtraverts = glde = gbatches = 0;
 
+    // TODO: move main menu background to HTML
     renderbackground(NULL, NULL, NULL, NULL, true, true);
     renderpostfx();
 
     gl_rendercef();
     // g3d_render();
+    // TODO: move HUD to HTML
     gl_drawhud();
 }
 

@@ -6,6 +6,10 @@
 #include "inexor/ui/InexorContextProvider.hpp"
 #include "inexor/ui/InexorLayerProvider.hpp"
 
+extern int uimenuvisible;
+extern char* uimenustate;
+extern char* uimenuparentstate;
+
 /**
  * The main user interface of inexor.
  */
@@ -14,7 +18,13 @@ class InexorUserInterface : public InexorContextProvider,
 {
 
     public:
-        InexorUserInterface(std::string &name, std::string &url) : AbstractInexorLayerProvider(name, url), _name(name), _url(url) {};
+        InexorUserInterface(std::string &name, std::string &url)
+            : AbstractInexorLayerProvider(name, url),
+			  _name(name),
+			  _url(url),
+			  menu_visible(true),
+			  menu_state("/menu/main"),
+			  menu_parent_state("") {};
 
         // InexorCefContextProvider
         void InitializeContext();
@@ -41,11 +51,41 @@ class InexorUserInterface : public InexorContextProvider,
                     Resize(0, 0, width, height);
                 }
             }
-        }
+        };
+
+        /// Bind to key ESC
+        void Menu() {
+            if (is_visible) {
+                if (menu_parent_state == "") {
+                    if (!mainmenu) {
+                        menu_visible = false;
+            	    }
+                } else {
+                    this->menu_state = menu_state;
+                }
+            } else {
+                this->menu_state = "/menu/main";
+            }
+        };
+
+        bool IsMenuVisible() { return menu_visible; };
+        std::string GetMenuState() { return menu_state; };
+        std::string GetMenuParentState() { return menu_parent_state; };
+
+        /// Updates the menu states
+        void SetMenuStates(std::string menu_state, std::string menu_parent_state, bool menu_visible) {
+            this->menu_state = menu_state;
+            this->menu_parent_state = menu_parent_state;
+            this->menu_visible = menu_visible;
+        };
 
     private:
         std::string _name;
         std::string _url;
+
+        bool menu_visible;
+        std::string menu_state;
+        std::string menu_parent_state;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(InexorUserInterface);
