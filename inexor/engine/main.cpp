@@ -8,6 +8,12 @@
 #include "inexor/util/Logging.hpp"
 
 /// extern functions and data here
+namespace inexor {
+namespace rpc {
+    extern void testrpcclient();
+    COMMAND(testrpcclient, "");
+}
+}
 
 namespace inexor {
 namespace rendering {

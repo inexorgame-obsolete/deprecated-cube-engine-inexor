@@ -38,6 +38,7 @@ public:
     RpcSubsystem() : serv("0.0.0.0:50051")
     {
         spdlog::get("global")->info() << "RPC server listening on " << serv.server_address;
+        set_on_change_functions();
     }
 
     void tick() override
