@@ -99,7 +99,7 @@ install_linux() {
       zlib1g-dev libsdl2-dev libsdl2-image-dev \
       libsdl2-mixer-dev libenet-dev libprotobuf-dev \
       protobuf-compiler libgconf2-dev libboost-all-dev \
-      libudev-dev
+      libudev-dev doxygen
   apt-get -y -t wily install build-essential binutils
 
   # Manually workaround http://askubuntu.com/questions/288821/how-do-i-resolve-a-cannot-open-shared-object-file-libudev-so-0-error
