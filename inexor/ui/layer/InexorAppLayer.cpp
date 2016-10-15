@@ -1,11 +1,26 @@
 #include <iostream>
 
+#include "inexor/rpc/SharedTree.hpp"
 #include "inexor/ui/layer/InexorAppLayer.hpp"
 #include "inexor/util/Logging.hpp"
+#include "inexor/ui.hpp"
 
 namespace inexor {
 namespace ui {
 namespace layer {
+
+void update_app_layer();
+
+VARFP(showapplayer, 0, 0, 1, update_app_layer());
+
+void update_app_layer()
+{
+    if (showapplayer) {
+        inexor::ui::cef_app->GetAppLayer()->Show();
+    } else {
+        inexor::ui::cef_app->GetAppLayer()->Hide();
+    }
+}
 
 void InexorAppLayer::Reload()
 {
@@ -53,39 +68,6 @@ void InexorAppLayer::SetAcceptingMouseInput(bool _is_accepting_mouse_input)
     if (_is_accepting_mouse_input != GetAcceptingMouseInput()) {
         AbstractInexorLayerProvider::SetAcceptingMouseInput(_is_accepting_mouse_input);
         FireUiEvent("isAcceptingMouseInput", _is_accepting_mouse_input);
-    }
-}
-
-void InexorAppLayer::SetMenuVisibility(bool _is_menu_visible)
-{
-    if (_is_menu_visible != GetMenuVisibility()) {
-        this->is_menu_visible = _is_menu_visible;
-        FireUiEvent("isMenuVisible", _is_menu_visible);
-    }
-}
-
-void InexorAppLayer::SetMenuState(std::string _menu_state)
-{
-    if (_menu_state != GetMenuState()) {
-        this->menu_state = _menu_state;
-        FireUiEvent("menuState", _menu_state);
-    }
-}
-
-void InexorAppLayer::SetMenuParentState(std::string _menu_parent_state)
-{
-    if (_menu_parent_state != GetMenuParentState()) {
-        this->menu_parent_state = _menu_parent_state;
-        FireUiEvent("menuParentState", _menu_parent_state);
-    }
-}
-
-void InexorAppLayer::SetMainMenu(bool _main_menu)
-{
-    if (_main_menu != GetMainMenu()) {
-        this->main_menu = _main_menu;
-        FireUiEvent("mainMenu", _main_menu);
-        SetMenuVisibility(_main_menu);
     }
 }
 

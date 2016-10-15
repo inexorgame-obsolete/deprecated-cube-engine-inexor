@@ -7,7 +7,6 @@
 #include "inexor/util/Logging.hpp"
 #include "inexor/ui/layer/InexorLayerManager.hpp"
 
-
 namespace inexor {
 namespace ui {
 namespace layer {
