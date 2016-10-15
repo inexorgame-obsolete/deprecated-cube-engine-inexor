@@ -15,16 +15,9 @@
 #include <moodycamel/concurrentqueue.h>
 #include <moodycamel/blockingconcurrentqueue.h>
 
-#include "inexor/rpc/RpcSubsystem.hpp"
 #include "inexor/util/Logging.hpp"
 #include "inexor/rpc/SharedTree.hpp"
-#include "inexor/rpc/treedata.gen.hpp"
-
-#include "inexor/rpc/treedata.gen.grpc.pb.h"
-
-
-extern SharedVar<char *> prefabdir; // no leading ::
-
+#include "inexor/rpc/RpcSubsystem.hpp"
 
 using namespace inexor::util;
 
@@ -37,8 +30,6 @@ using grpc::ServerContext;
 using grpc::ServerAsyncReaderWriter;
 using grpc::CompletionQueue;
 using grpc::ServerCompletionQueue;
-using inexor::tree::TreeNodeChanged;
-using inexor::tree::TreeService;
 
 using std::string;
 typedef int64_t int64; // size is important for us, proto explicitly specifies int64
@@ -57,7 +48,7 @@ std::atomic_bool serverstarted(false);
 moodycamel::ConcurrentQueue<TreeNodeChanged>  main2net_interthread_queue; // Something gets pushed on this (lockless threadsafe queue) when we changed values. Gets handled by serverthread.
 moodycamel::ConcurrentQueue<net2maintupel> net2main_interthread_queue; // Something gets pushed on this (lockless threadsafe queue) when a value has arrived. Gets handled by Subsystem::tick();
 
-
+template<typename TreeNodeChanged>
 bool connectnet2main(TreeNodeChanged &receivedval)
 {
 
@@ -68,10 +59,10 @@ bool connectnet2main(TreeNodeChanged &receivedval)
         return false;
     }
 
-    auto ptr2variable_itr = client_treedata.cppvar_pointer_map.find(index);
-    auto expected_type_itr = client_treedata.index_to_type_map.find(index);
+    auto ptr2variable_itr = cppvar_pointer_map.find(index);
+    auto expected_type_itr = index_to_type_map.find(index);
 
-    if(ptr2variable_itr == client_treedata.cppvar_pointer_map.end() || expected_type_itr == client_treedata.index_to_type_map.end())
+    if(ptr2variable_itr == cppvar_pointer_map.end() || expected_type_itr == index_to_type_map.end())
     {
         spdlog::get("global")->info() << "network: received non-supported index: " << index; // -> to debug
         return false;
@@ -124,6 +115,7 @@ bool connectnet2main(TreeNodeChanged &receivedval)
 
 /// Bidirectional Server (able to read and write) which receives changes from our sendchangequeue/the network 
 /// and put it into the network/readchangequeue (respectively)
+template<typename TreeService, TreeNodeChanged>
 class BiDiServer
 {
     std::unique_ptr<Server> grpc_server;       // instanciated only
@@ -284,8 +276,8 @@ RpcSubsystem::RpcSubsystem()
     }
     );
     t.detach();
-    client_treedata.connectall();
-    client_treedata.syncall();
+    set_on_change_functions();
+    send_all_vars();
 }
 
 RpcSubsystem::~RpcSubsystem()

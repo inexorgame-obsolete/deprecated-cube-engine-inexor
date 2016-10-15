@@ -23,7 +23,7 @@ void render_proto_file(const std::string &out_path, const std::string &template_
     });
 }
 
-void render_cpp_tree_header(const std::string &out_path, const std::string &template_path, std::vector<ShTreeNode> &tree, TemplateData &tmpldata)
+void render_cpp_tree_data(const std::string &out_path, const std::string &template_path, std::vector<ShTreeNode> &tree, TemplateData &tmpldata)
 {
     const std::string template_file_contents(filecontents(template_path));
 

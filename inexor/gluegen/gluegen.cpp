@@ -22,7 +22,7 @@ void usage(const std::string &ex, const po::options_description &params) {
         << "Inexor gluegen       Generates the glue code for the tree API."
         << "\n\nEXAMPLES"
         << "\n\n  (1) " << ex << " --help"
-        << "\n\n  (2) " << ex << " --out-proto FILE --out-header FILE --template-proto FILE --template-header FILE --namespace NAMESPACE --XML-AST-folder PATH"
+        << "\n\n  (2) " << ex << " --out-proto FILE --out-cpp FILE --template-proto FILE --template-cpp FILE --namespace NAMESPACE --XML-AST-folder PATH"
         << "\n\n\nDESCRIPTION"
         << "\n  (1) Show this help page"
         << "\n  (2) Generate the glue code."
@@ -45,9 +45,9 @@ int main(int argc, const char **argv)
         ("help", "Print this help message")
         ("namespace", po::value<string>()->required(), "The namespace to use in the generated protocol file and c++ source files. (use C++ :: notation)")
         ("out-proto", po::value<string>()->required(), "The .proto file to write the protocol description to.")
-        ("out-header", po::value<string>()->required(), "The header `.hpp` file the c++ tree adapter code should be generated in")
+        ("out-cpp", po::value<string>()->required(), "The header `.hpp` file the c++ tree adapter code should be generated in")
         ("template-proto", po::value<string>()->required(), "The mustache template which gets used to render(generate) the .proto file")
-        ("template-header", po::value<string>()->required(), "The mustache template which gets used to render(generate) the '.hpp' header file")
+        ("template-cpp", po::value<string>()->required(), "The mustache template which gets used to render(generate) the '.hpp' header file")
         ("XML-AST-folder", po::value<string>()->required(), "The folder containing the doxygen xml (AST) output. We scan those for Shared Declarations");
 
     std::string exec{argv[0]};
@@ -76,8 +76,8 @@ int main(int argc, const char **argv)
 
     const string &ns_str = cli_config["namespace"].as<string>();
     const string &proto_file = cli_config["out-proto"].as<string>();
-    const string &hpp_file = cli_config["out-header"].as<string>();
-    const string &hpp_template = cli_config["template-header"].as<string>();
+    const string &cpp_file = cli_config["out-cpp"].as<string>();
+    const string &cpp_template = cli_config["template-cpp"].as<string>();
     const string &proto_template = cli_config["template-proto"].as<string>();
     const string &xml_AST_file = cli_config["XML-AST-folder"].as<string>();
 
@@ -93,7 +93,7 @@ int main(int argc, const char **argv)
     render_proto_file(proto_file, proto_template, tree, templdata);
 
     // Write cpp files
-    render_cpp_tree_header(hpp_file, hpp_template, tree, templdata);
+    render_cpp_tree_data(cpp_file, cpp_template, tree, templdata);
 
     return 0;
 }
