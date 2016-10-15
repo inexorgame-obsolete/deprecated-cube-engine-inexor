@@ -1,18 +1,22 @@
 #pragma once
 
-
 //namespace inexor { // we need to do it in global scope atm otherwise any cubescript declaration is broken TODO
 //namespace rpc {
 
 class SharedOption
 {
-    const SharedOption *next;
 public:
-    friend SharedOption& operator|(SharedOption& first, const SharedOption& second)
-    {
-        first.next = &second;
-        return first;
-    }
+    friend SharedOption& operator|(SharedOption& first, const SharedOption& second) { return first; }
+};
+
+/// The fuck you cast does nothing expect silencing warnings when doing forbidden casts.
+/// @warning its totally not functional (and even worse it only works for numeric types).
+template<typename S>
+class fu_cast
+{
+public:
+    fu_cast(const char *input) {}
+    operator S() { return 0; }
 };
 
 class Range : public SharedOption
@@ -22,12 +26,12 @@ public:
     // TODO add warning into gluegen
     /// Parse Template Data: Constructor arguments are data names, values get assigned in the place the constructor gets accessed.
     /// we need it for every possible 
-    Range(int min = 0, int max = (int)"{{index}}") {}
-    Range(float min = 0.0f, float max = 1.0f) {}
+    Range(int min = 0, int max = fu_cast<int>("{{index}}")) {}
+    Range(float min = 0.0f, float max = fu_cast<float>("{{index}}")) {}
 
-    const char *proto_template = "min= {{min}} max= {{max}}";
-    const char *cpp_receive_template = "da";
-    const char *cpp_send_template = "da";
+    const char *dummy_key1 = "dummy_value. min = {{min}} max = {{max}}";
+    const char *dummy_key2 = "dummy_value";
+    const char *dummy_key3 = "dummy_value";
 };
 
 // CustomXY are the hardest atm, since we need to override the build-tools behaviour (or we need to set the build tools defaults when customxy is missing)

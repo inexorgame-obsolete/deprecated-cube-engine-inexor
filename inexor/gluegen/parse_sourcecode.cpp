@@ -38,37 +38,16 @@ vector<string> split_by_delimiter(string input, string delimiter)
     return std::move(out);
 }
 
-/// in place removes the leading cast from the argument string.
-/// @warning this does only work currently for (int)4.0f style casts, not for int(4.0f)
-///
-/// (int) "{{shared_value}}"           {{arg}} == {{shared_value}}
-/// (int) 20                           {{arg}} == 20 or (int) 20     // no "
-/// (char*) "\"{{shared_value}}\""     {{arg}} == \"{{shared_value}}\"
-// mache beispiele nur für removecast
-void remove_cast(std::string &def_value)
-{
-   // 2 teile: alles vor dem ersten ')', alles danach
-   // bleibt: "{{xy}}" -> {{xy}}
-   //         "{{shared_value}}" -> "{{shared_value}}" (oder etwa nicht?)
-    for(size_t i = 0; i < (def_value.size()-1); i++)
-    {
-        if(def_value[i] == '"') return; //no ) found before first "
-        else if(def_value[i] == ')')
-        {
-            def_value = def_value.substr(i+1); // only the part after )
-            return;
-        }
-    }
-}
-
 /// This function workarounds doxygens faulty xml which contains '= whateverisbehind' as initializer (totally raw, no c++11 support it seems)
 void remove_leading_assign_sign(string &str)
 {
+    if(str.empty()) return;
     if(str.front() == '=')
         str.erase(0, 1);
 }
 void remove_leading_whitespace(string &input)
 {
+    if(input.empty()) return;
     for(int i = 0; i < input.size(); i++)
         if(input[i] != ' ' && input[i] != '\t')
         {
@@ -81,6 +60,7 @@ void remove_leading_whitespace(string &input)
 /// @warning does not do leading/trailing whitespace skimming.
 void remove_surrounding_char(std::string &str, const char first_cha)
 {
+    if(str.empty()) return;
     if(str.front() == first_cha)
     {
         str.erase(0, 1);
@@ -105,14 +85,20 @@ void remove_surrounding_brackets(std::string &str)
 // Yes we could do this with boost::spirit or with some recursive grammar but oh well we dont need that atm.
 string parse_bracket(string input, string &before_bracket, string &after_bracket)
 {
-    string content(input);
-    int brackets_counter = 0;
-    size_t first_bracket_pos = 0;
-    size_t closing_bracket_pos = (input.size()-1);
+    size_t len = input.size();
 
-    for(size_t i = 0; i < input.size()-1; i++)
+    int brackets_counter = 0;
+    bool found_brackets = false;
+    size_t first_bracket_pos = 0;
+    size_t closing_bracket_pos = len-1;
+
+    for(size_t i = 0; i < len; i++)
     {
-        if(input[i] == '"') while(i < input.size() && input[i] != '"') i++; //skip brackets inside "". TODO handle bad escaping! "\""
+        if(input[i] == '"')
+            do {
+                i++;
+                if(i >= len) break;
+            } while(input[i] != '"'); //skip brackets inside ""
         if(input[i] == '(')
         {
             if(!brackets_counter) first_bracket_pos = i;
@@ -121,15 +107,19 @@ string parse_bracket(string input, string &before_bracket, string &after_bracket
         else if(input[i] == ')')
         {
             brackets_counter--;
-            if(brackets_counter <= 0)
+            if(brackets_counter == 0)
             {
                 closing_bracket_pos = i;
+                found_brackets = true;
                 break;
             }
+            else if(brackets_counter < 0) break;
         }
     }
+    if(!found_brackets) return input;
+
     before_bracket = input.substr(0, first_bracket_pos);
-    content = input.substr(first_bracket_pos+1, closing_bracket_pos-first_bracket_pos-1);
+    string content = input.substr(first_bracket_pos+1, closing_bracket_pos-first_bracket_pos-1);
     after_bracket = input.substr(closing_bracket_pos);
     return content;
 }
@@ -221,7 +211,7 @@ void handle_so_constructors(optionclass &opt, const xml_node &compound_xml)
         std::cout << "arg.name: " << arg.name << std::endl;
         if(opt.hasdefaultvals)
         {
-            remove_cast(arg.default_value);
+            arg.default_value = parse_bracket(arg.default_value, string(), string()); //fu_cast<float>("{{index}}") -> "{{index}}"
             remove_quotes(arg.default_value);
             // TODO need escaping!
         }
