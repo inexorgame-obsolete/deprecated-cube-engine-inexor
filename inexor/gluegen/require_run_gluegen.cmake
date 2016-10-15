@@ -90,15 +90,15 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
 
       # Invoke protoc compiler to generate the .gen.pb.h .gen.pb.cpp files from the .proto definition
       COMMAND ${PROTOC_EXE}
-          --proto_path=${MAINDIR}
-          --cpp_out=${MAINDIR}
+          --proto_path=${OUT_DIR}
+          --cpp_out=${OUT_DIR}
           ${protoc_in}
 
       # same but for the GRPC additions (which does now generate the RPC logic in .gen.grpc.pb.cc)
       COMMAND ${PROTOC_EXE}
           --plugin=protoc-gen-grpc=${GRPC_EXE}
-          --proto_path=${MAINDIR}
-          --grpc_out=${MAINDIR}
+          --proto_path=${OUT_DIR}
+          --grpc_out=${OUT_DIR}
           ${protoc_in}
 
        WORKING_DIRECTORY ${MAINDIR})
