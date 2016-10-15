@@ -1,13 +1,13 @@
 @ECHO OFF
 Setlocal EnableDelayedExpansion
 
-set INEXOR_ARCH=win32
+set INEXOR_ARCH=32
 
 IF /I "%PROCESSOR_ARCHITECTURE%" == "amd64" (
-    set INEXOR_ARCH=win64
+    set INEXOR_ARCH=64
 )
 IF /I "%PROCESSOR_ARCHITEW6432%" == "amd64" (
-    set INEXOR_ARCH=win64
+    set INEXOR_ARCH=64
 )
 
 :: Clear variable

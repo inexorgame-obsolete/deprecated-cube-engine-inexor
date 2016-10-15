@@ -335,7 +335,7 @@ function(require_protobuf targ)
     set(NOLINK "NOLINK")
   endif()
 
-  add_definitions(-DGOOGLE_PROTOBUF_NO_RTTI)
+  add_definitions(-DPROTOBUF_USE_DLLS)
   include_directories(${PROTOBUF_INCLUDE_DIRS})
   target_link_libs(${targ} ${NOLINK} ${PROTOBUF_LIBRARIES})
 endfunction()
