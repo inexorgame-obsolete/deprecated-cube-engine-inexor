@@ -13,6 +13,7 @@
 #include "inexor/util/Subsystem.hpp"
 #include "inexor/rpc/SharedTree.hpp"
 #include "inexor/rpc/RpcSubsystem.hpp"
+#include "inexor/rpc/RpcTestClient.hpp"
 
 
 SUBSYSTEM_REGISTER(rpc, inexor::rpc::RpcSubsystem<{{namespace}}::TreeNodeChanged, {{namespace}}::TreeService::AsyncService>); // needs to be in no namespace!
@@ -27,6 +28,18 @@ using {{namespace}}::TreeService;        // The RPC service (used only for insta
 {{/shared_vars}}
 
 namespace inexor { namespace rpc {
+
+/// Just a pretty basic/stupid test rpc client for debugging purpose.
+void testrpcclient()
+{
+    std::thread t([]
+    {
+        TestRpcClient<TreeNodeChanged, TreeService> *guide = new TestRpcClient<TreeNodeChanged, TreeService>();
+
+        guide->Start();
+    });
+    t.detach();
+}
 
 // We currently use a static function to signal the subsystem changes (since we cant yet SUBSYSTEM_GET it) .. so this is a temporary workaround.
 template <>
