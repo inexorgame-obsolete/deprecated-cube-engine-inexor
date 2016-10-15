@@ -11,7 +11,7 @@ set "MAINDIR=%~dp0.."
 
 :: go for the shipped node+npm which is in the platform submodule since we ship it for developers
 :: + use a really shrinked portable git version
-set "INEXOR_BIN_DIRS=%MAINDIR%\bin\windows\win32;%MAINDIR%\bin\windows\win64"
+set "INEXOR_BIN_DIRS=%MAINDIR%\bin\windows\32;%MAINDIR%\bin\windows\64"
 set "PATH=%INEXOR_BIN_DIRS%;%MAINDIR%\platform\bin\windows\all\npm;%MAINDIR%\platform\bin\windows\all\npm\git\cmd"
 set "NODE_PATH=%MAINDIR%\platform\bin\windows\all\npm;%MAINDIR%\node;%MAINDIR%\node\lib"
 set "NPM_EXECUTEABLE=%MAINDIR%\platform\bin\windows\all\npm\npm.cmd"

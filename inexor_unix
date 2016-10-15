@@ -3,8 +3,16 @@ tolower() {
   tr '[:upper:]' '[:lower:]'
 }
 
-dir="`dirname "$0"`"
 arch="`uname -m | tolower`"
+# Rename the arch to bare style
+if [ "${arch}" = "x86_64" ]
+then
+  arch="64"
+else
+  arch="32"
+fi
+
+dir="`dirname "$0"`"
 os="`uname | tolower`"
 bin="${dir}/bin/${os}/${arch}"
 exe="${bin}/inexor"

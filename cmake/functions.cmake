@@ -102,10 +102,10 @@ function(prepend variable prep)
   set(${variable} ${res} PARENT_SCOPE)
 endfunction()
 
-# Wrapper around find_library to autodetect _debug and
-# _release versions of a library
+# Wrapper around find_library to autodetect debug and
+# release versions of a library.
 #
-# This is necessary when building on Windows.
+# This is necessary when building on Windows in VS (ABI conflicts between MT and MTd).
 #
 # Note: only effects msvc so far
 # Usage: find_cpp_library(<RETURNVAR> <LIBNAME> [NOCACHE])

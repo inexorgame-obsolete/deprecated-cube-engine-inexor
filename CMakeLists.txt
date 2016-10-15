@@ -17,17 +17,6 @@ endif()
 message(STATUS "CMAKE_VERSION = ${CMAKE_VERSION}")
 message(STATUS "CMAKE_GENERATOR = ${CMAKE_GENERATOR}")
 
-# Set a default toolchain file
-string(TOLOWER "${CMAKE_GENERATOR}" GEN)
-if(GEN MATCHES ".*visual studio.*")
-  set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/platform/vs.cmake)
-elseif(GEN MATCHES ".*mingw.*" OR MINGW)
-  set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/platform/mingw.cmake)
-else()
-  set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/platform/linux.cmake)
-endif()
-message(STATUS "Using Toolchain File ${CMAKE_TOOLCHAIN_FILE}")
-
 # Project Name and start working in project scope (some things just work until now, some just work after this command)
 project(Inexor)
 
@@ -39,6 +28,9 @@ include(cmake/platform_detection.cmake)
 
 # Set compile flags and compile specific definitions
 include(cmake/compile_flags_and_defs.cmake)
+
+# We use a lot of thirdparty dependencies which we deliver in prebuilt form to cut down compile time: make cmake find them.
+include(platform/add_platform_files.cmake)
 
 
 #### Install paths ####
@@ -67,7 +59,7 @@ if(OS_LINUX)
 elseif(OS_MACOSX)
   set(EXE_DIR "bin/mac/${PROJECT_ARCH}")
 elseif(OS_WINDOWS)
-  set(EXE_DIR "bin/windows/win${PROJECT_ARCH}")
+  set(EXE_DIR "bin/windows/${PROJECT_ARCH}")
 endif()
 
 set(INSTALL_RESOURCES_DIR "bin/all")
@@ -80,6 +72,8 @@ add_subdirectory(vendor)
 add_subdirectory(inexor)
 
 install(FILES ${INSTALL_SHARED_LIBS} ${INSTALL_EXES} DESTINATION ${EXE_DIR})
+install(FILES ${INSTALL_SHARED_LIBS_DEBUG}   CONFIGURATIONS Debug   DESTINATION ${EXE_DIR})
+install(FILES ${INSTALL_SHARED_LIBS_RELEASE} CONFIGURATIONS Release DESTINATION ${EXE_DIR})
 install(FILES ${INSTALL_RESOURCES} DESTINATION ${INSTALL_RESOURCES_DIR})
 install(DIRECTORY ${INSTALL_RESOURCES_FOLDERS} DESTINATION ${INSTALL_RESOURCES_DIR})
 
