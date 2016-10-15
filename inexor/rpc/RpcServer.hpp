@@ -13,11 +13,25 @@
 
 #include "inexor/util/Logging.hpp"
 
+// size is important for us, proto explicitly specifies int64
+typedef int64_t int64;
 
 namespace inexor {
 namespace rpc {
 
+/// Known C++ SharedVar types
+enum cpp_type_t
+{
+    t_cstring = 0,
+    t_float,
+    t_int
+};
+
+// These functions need to be implemented by the Context Provider (acquiring this submodule):
+extern void set_on_change_functions();
 extern void send_all_vars();
+extern const std::unordered_map<int64, void *> cppvar_pointer_map;
+extern const std::unordered_map<int64, int> index_to_type_map;
 
 #define MAX_RPC_EVENT_CHECKS_PER_TICK 100
 #define MAX_RPC_CLIENTS 128 // possible highest value is 255, see encode_signal()
@@ -54,6 +68,7 @@ class RpcServer
     /// The completion queue (where notifications of the succcess of a network commands get retrieved).
     std::unique_ptr<grpc::ServerCompletionQueue> cq;
 
+public:
     class clienthandler
     {
         /// The stream we write into / receive data from (asynchronously).
@@ -101,6 +116,7 @@ class RpcServer
     };
     static std::vector<clienthandler> clients;
 
+private:
     /// Client which isn't connected yet, a buffer caused by the async API.
     std::unique_ptr<stream_type> connect_slot;
 public:
@@ -115,8 +131,15 @@ public:
     void process_queue();
 
     /// Send any variable changes in the core to all clients.
-    /// @param excluded_id is given for broadcasting purpose: you don't want to send back a change you just received from a client.
-    static void send_msg(MSG_TYPE &&msg, int excluded_id = -1);
+    /// For broadcasting purpose param excluded_id is given: you don't want to send back a change you just received from a client.
+    static void send_msg(MSG_TYPE &&msg, int excluded_id = -1)
+    {
+        for(clienthandler &ci: clients)
+        {
+            if(ci.id != excluded_id) ci.write(msg);
+        }
+    }
+
 
 private:
 
@@ -211,17 +234,6 @@ RpcServer<MSG_TYPE, U>::~RpcServer()
     cq->Shutdown();          // Always shutdown the completion queue after the server.
 }
 
-/// Send any variable changes in the core to all clients.
-/// For broadcasting purpose param excluded_id is given: you don't want to send back a change you just received from a client.
-template<typename MSG_TYPE, typename U> inline
-void RpcServer<MSG_TYPE, U>::send_msg(MSG_TYPE &&msg, int excluded_id = -1)
-{
-    for(clienthandler &ci: clients)
-    {
-        if(ci.id != excluded_id) ci.write(msg);
-    }
-}
-
 template<typename MSG_TYPE, typename U> inline
 void RpcServer<MSG_TYPE, U>::open_connect_slot()
 {
@@ -244,7 +256,7 @@ void RpcServer<MSG_TYPE, U>::handle_new_connection()
 template<typename MSG_TYPE, typename U> inline
 void RpcServer<MSG_TYPE, U>::request_disconnect_client(int id)
 {
-    clienthandler *client = getclient(id)
+    clienthandler *client = get_client(id);
     if(client) client->request_disconnect();
 }
 
@@ -252,7 +264,7 @@ template<typename MSG_TYPE, typename U> inline
 void RpcServer<MSG_TYPE, U>::finish_disconnect_client(int id)
 {
     for(auto ci = clients.begin(); ci != clients.end(); ++ci)
-        if(ci->id == id) 
+        if(ci->id == id)
         {
             ci->finished_disconnect();
             clients.erase(ci);
@@ -301,7 +313,10 @@ void RpcServer<MSG_TYPE, U>::process_queue()
             if(!any_writes_outstanding()) break;
         }
         else if(stat == CompletionQueue::NextStatus::SHUTDOWN)
-            throw std::exception("[GRPC Server] Completion Queue Shutdown status received..");
+        {
+            std::string error_message("[GRPC Server] Completion Queue Shutdown status received..");
+            throw std::runtime_error(error_message);
+        }
     }
 }
 
@@ -350,7 +365,8 @@ int RpcServer<T, U>::pick_unused_id() // TODO get some uuid thing here.
             }
         if(!hasid) return id_try;
     }
-    throw std::exception("grpc system: no client id could be generated.");
+    std::string error_message("grpc system: no client id could be generated.");
+    throw std::runtime_error(error_message);
     return -1;
 }
 

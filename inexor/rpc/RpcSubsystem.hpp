@@ -10,19 +10,8 @@
 #include "inexor/util/Logging.hpp"
 #include "inexor/rpc/RpcServer.hpp"
 
-// size is important for us, proto explicitly specifies int64
-typedef int64_t int64;
-
 namespace inexor {
 namespace rpc {
-
-/// Known C++ SharedVar types
-enum cpp_type_t
-{
-    t_cstring = 0,
-    t_float,
-    t_int
-};
 
 // These functions need to be implemented by the Context Provider (acquiring this submodule):
 extern void set_on_change_functions();
