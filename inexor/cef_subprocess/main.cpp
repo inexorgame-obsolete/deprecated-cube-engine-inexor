@@ -1,15 +1,16 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
-
 #include <include/cef_base.h>
 
 #include "inexor/ui/InexorCefApp.hpp"
 #include "inexor/ui/InexorCefSubprocessApp.hpp"
+#undef main
 
-int main(int argc, char **argv) {
+int main(int argc, char *argv[])
+{
     setlocale(LC_ALL, "en_US.utf8");
-    std::cerr << "init: cef: cef_subprocess\n";
+    std::cout << "init: cef: cef_subprocess\n";
 
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
