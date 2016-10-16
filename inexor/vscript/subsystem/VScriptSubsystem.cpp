@@ -20,13 +20,13 @@ namespace vscript {
                       relationship_type_manager,
                       relationship_instance_manager)
     {
+        relationship_type_manager->Create(REL_TYPE_EXECUTES, ENT_ANY, ENT_TYPE_ACTION);
+
         action_manager = std::make_shared<ActionManager>(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
         area_manager = std::make_shared<AreaManager>(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
         event_manager = std::make_shared<EventManager>(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager, action_manager);
         memory_manager = std::make_shared<MemoryManager>(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
         operator_manager = std::make_shared<OperatorManager>(entity_type_manager, entity_instance_manager, relationship_type_manager, relationship_instance_manager);
-
-        relationship_type_manager->Create(REL_TYPE_EXECUTES, ENT_ANY, ENT_TYPE_ACTION);
     }
 
     VScriptSubsystem::~VScriptSubsystem()
