@@ -41,7 +41,7 @@ namespace particle {
         if(shader)
         {
             shader->set();
-            glUniform1f(glGetUniformLocation_(shader->program, "pointSize"), (*renderer_inst)[SIZE]->floatVal);
+            glUniform1f_(glGetUniformLocation_(shader->program, "pointSize"), (*renderer_inst)[SIZE]->floatVal);
 
             glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
             glEnable(GL_TEXTURE_2D);
@@ -57,7 +57,7 @@ namespace particle {
         gle::defvertex();
         gle::begin(GL_POINTS);
         // TODO: get particle color
-        gle::colorf(1.0f, 1.0f, 1.0f, 0.5f);
+        // gle::colorf(1.0f, 1.0f, 1.0f, 0.5f);
     }
 
     AttributeRefPtr Billboard::Execute(TimeStep time_step, std::shared_ptr<EntityInstance> renderer_inst, std::shared_ptr<EntityInstance> particle_inst)
