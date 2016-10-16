@@ -7,13 +7,13 @@
 #undef LOG_INFO  //conflicting between spdlog and cef
 #undef LOG_WARNING
 
-#include "inexor/util/InexorConsoleSink.hpp"
-#include "inexor/util/InexorCutAnsiCodesSink.hpp"
-
 #include <iomanip>
 #include <map>
 #include <array>
 #include <string>
+
+/// Function which displayes console text ingame.
+extern void conline(int type, const char *sf);
 
 namespace inexor {
 namespace util {
@@ -104,5 +104,46 @@ namespace util {
             void setLogFormat(std::string logger_name, std::string pattern);
     };
 
+    /// Ingame GUI console.
+    class InexorConsoleSink : public spdlog::sinks::sink
+    {
+    public:
+        void log(const spdlog::details::log_msg& msg) override;
+        void flush() override {}
+    };
+
+    /// Sink wrapper for removing any color codes from the log.
+    class InexorCutAnsiCodesSink : public spdlog::sinks::sink
+    {
+      public:
+        InexorCutAnsiCodesSink(spdlog::sink_ptr wrapped_sink) : sink_(wrapped_sink) {}
+        InexorCutAnsiCodesSink(const InexorCutAnsiCodesSink& other) = delete;
+        InexorCutAnsiCodesSink& operator=(const InexorCutAnsiCodesSink& other) = delete;
+
+        ~InexorCutAnsiCodesSink()
+        {
+            flush();
+        }
+
+        /// spdlog hook we override.
+        virtual void log(const spdlog::details::log_msg& msg) override
+        {
+            spdlog::details::log_msg new_msg;
+            new_msg.formatted << cutANSICodes(msg.formatted.str());
+            sink_->log(new_msg);
+        }
+
+        virtual void flush() override
+        {
+            sink_->flush();
+        }
+
+    protected:
+
+        /// @brief cut any valid ANSI Codes (used e.g. for colors in terminals) from a string.
+        std::string cutANSICodes(std::string logline);
+
+        spdlog::sink_ptr sink_;
+    };
 }
 }
