@@ -38,21 +38,25 @@ namespace vscript {
 
             // First check if event fires
             FunctionRefPtr execute_function = (*it)->GetAttribute(ENT_FUNC_EVENT_CHECK)->functionVal;
-            AttributeRefPtr return_value = execute_function->Execute(time_step, (*it));
-            if (return_value->GetBool()) {
+            if(execute_function)
+            {
+                AttributeRefPtr return_value = execute_function->Execute(time_step, (*it));
+                if (return_value->GetBool()) {
 
-                // The event fires, which means we follow all outgoing relationships of type executes.
-                /*
-                std::list<InstanceRefPtr<RelationshipInstance> > outgoing = (*it)->GetAllOutgoingRelationshipsOfType(rel_executes);
-                std::vector<InstanceRefPtr<RelationshipInstance> >::iterator it2 = outgoing.begin();
-                while (it2 != (*it)->outgoing.end())
-                {
-                    action_manager->ExecuteAction(*it);
-                    ++it2;
+                    // The event fires, which means we follow all outgoing relationships of type executes.
+                    /*
+                    std::list<InstanceRefPtr<RelationshipInstance> > outgoing = (*it)->GetAllOutgoingRelationshipsOfType(rel_executes);
+                    std::vector<InstanceRefPtr<RelationshipInstance> >::iterator it2 = outgoing.begin();
+                    while (it2 != (*it)->outgoing.end())
+                    {
+                        action_manager->ExecuteAction(*it);
+                        ++it2;
+                    }
+                    */
                 }
-                */
             }
             ++it;
+
         }
     }
 
