@@ -29,6 +29,8 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
     set(doxyfile ${OUT_DIR}/doxygen-parser.conf)
 
     set(DOXYGEN_XML_DIR ${OUT_DIR}/doxygen_gluegen_output)
+    get_property(SOURCE_FILE_LIST TARGET ${TARG} PROPERTY SOURCES)
+    string (REPLACE ";" " " SOURCE_FILES "${SOURCE_FILE_LIST}")
 
     configure_file(${doxyfile_in} ${doxyfile})
 

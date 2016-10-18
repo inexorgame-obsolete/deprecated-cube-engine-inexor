@@ -143,7 +143,7 @@ INPUT                  = ./inexor/
 # *.md, *.mm, *.dox, *.py, *.f90, *.f, *.for, *.tcl, *.vhd, *.vhdl, *.ucf,
 # *.qsf, *.as and *.js.
 
-FILE_PATTERNS          = *.cpp *.hpp
+FILE_PATTERNS          = *.hpp ${SOURCE_FILES}
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
 # be searched for input files as well.
