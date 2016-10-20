@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.0) 
+cmake_minimum_required(VERSION 3.1) 
 include(cmake/functions.cmake)
 include(cmake/glibc_cxx11_abi_detection.cmake)
 include(cmake/silence_find_pathprogram.cmake)
@@ -31,7 +31,7 @@ message(STATUS "Using Toolchain File ${CMAKE_TOOLCHAIN_FILE}")
 # Project Name and start working in project scope (some things just work until now, some just work after this command)
 project(Inexor)
 
-# Use folders in the resulting project files.
+# Use solution folders.
 set_property(GLOBAL PROPERTY OS_FOLDERS ON)
 
 # Get compiler/os/architecture variables

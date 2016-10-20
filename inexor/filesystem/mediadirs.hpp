@@ -1,11 +1,11 @@
 /// string operations on filenames (INCOMPLETE! see e.g. stream.cpp).
 
-#ifndef I_FILESYSTEM_H
-#define I_FILESYSTEM_H
+#pragma once
 
-#include "inexor/rpc/SharedTree.hpp"
-#include <boost/filesystem.hpp>
 #include <string>
+
+#include "inexor/filesystem/path.hpp"
+#include "inexor/rpc/SharedTree.hpp"
 
 enum {
     DIR_MAP,
@@ -23,10 +23,6 @@ extern SharedVar<char*> mapdir, texturedir, skyboxdir, interfacedir, icondir, so
 namespace inexor {
 namespace filesystem {
 
-/// @see boost::filesystem::path
-/// We need to rename this class bc otherwise we get clashes with legacy code.
-using Path = boost::filesystem::path;
-
 /// Returns the media-dir string of specific type.
 extern const char *getmediadir(int type);
 
@@ -39,4 +35,3 @@ extern std::string &getmediapath(std::string &output, const std::string basename
 
 } // namespace filesystem
 } // namespace inexor
-#endif // I_FILESYSTEM_H

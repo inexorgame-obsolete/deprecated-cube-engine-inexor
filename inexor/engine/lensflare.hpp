@@ -1,3 +1,5 @@
+#pragma once
+
 static struct flaretype
 {
     int type;             /* flaretex index, 0..5, -1 for 6+random shine */
@@ -27,10 +29,6 @@ struct flare
     bvec color;
     bool sparkle;
 };
-
-VAR(flarelights, 0, 0, 1);
-VARP(flarecutoff, 0, 1000, 10000);
-VARP(flaresize, 20, 100, 500);
 
 struct flarerenderer : partrenderer
 {

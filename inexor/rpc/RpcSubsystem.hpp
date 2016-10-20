@@ -1,42 +1,42 @@
 #pragma once
 
 #include <memory>
+#include <queue>
 
-#include <moodycamel/concurrentqueue.h>
-#include <moodycamel/blockingconcurrentqueue.h>
-
-#include <boost/variant.hpp>
-
-#include "inexor/rpc/treedata.gen.grpc.pb.h"
+#include <grpc/grpc.h>
+#include <grpc++/grpc++.h>
 
 #include "inexor/util/Subsystem.hpp"
-#include "inexor/rpc/SharedTree.hpp"
-
-typedef int64_t int64; // size is important for us, proto explicitly specifies int64
+#include "inexor/util/Logging.hpp"
+#include "inexor/rpc/RpcServer.hpp"
 
 namespace inexor {
 namespace rpc {
 
+// These functions need to be implemented by the Context Provider (acquiring this submodule):
+extern void set_on_change_functions();
+extern void send_all_vars();
+extern const std::unordered_map<int64, void *> cppvar_pointer_map;
+extern const std::unordered_map<int64, int> index_to_type_map;
+
+template<typename MSG_TYPE, typename ASYNC_SERVICE_TYPE>
 class RpcSubsystem : public inexor::util::Subsystem
 {
+    RpcServer<MSG_TYPE, ASYNC_SERVICE_TYPE> serv;
 public:
-    RpcSubsystem();
-    virtual ~RpcSubsystem();
-    virtual void tick();
+    RpcSubsystem() : serv("0.0.0.0:50051")
+    {
+        spdlog::get("global")->info() << "RPC server listening on " << serv.server_address;
+        set_on_change_functions();
+    }
+
+    void tick() override
+    {
+        serv.process_queue();
+    }
 };
 
-struct net2maintupel
-{
-    // we pass a pointer to the variable instead of the variablename to the main thread (thats faster, and no mainthread function need to be generated).
-    // Note that the pointer is valid as long as we deal with static data only (sidenote for vectors).
-    boost::variant<SharedVar<char *>*, SharedVar<int>*, SharedVar<float>*> ptr2var;
-    int type;
-
-    boost::variant<std::string, int64, float> value;
-};
-
-extern moodycamel::ConcurrentQueue<inexor::tree::TreeNodeChanged>  main2net_interthread_queue; // Something gets pushed on this (lockless threadsafe queue) when we changed values. Gets handled by serverthread.
-extern moodycamel::ConcurrentQueue<net2maintupel> net2main_interthread_queue; // Something gets pushed on this (lockless threadsafe queue) when a value has arrived. Gets handled by Subsystem::tick();
 
 } // namespace inexor
 } // namespace rpc
+

@@ -1,3 +1,5 @@
+# crash reporter
+
 This module provides a stackwalker on crash.
 
 The stackwalker appears as soon as an signal from the OS arrives to terminate the program (e.g. a segfault, division by zero..).

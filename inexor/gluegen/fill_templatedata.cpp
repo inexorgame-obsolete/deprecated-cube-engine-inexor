@@ -1,46 +1,114 @@
 
 #include <vector>
 #include <string>
-#include <sstream>
+#include <unordered_set>
 
-#include <boost/algorithm/string/regex.hpp>
-
+#include "inexor/gluegen/parse_sourcecode.hpp" // only bc of some string formatting/splitting functions, remove as refractored
 #include "inexor/gluegen/fill_templatedata.hpp"
 #include "inexor/gluegen/tree.hpp"
 
 using namespace inexor::rpc::gluegen;
+using namespace std;
 
-using std::string;
-using std::vector;
 
-/// Join the entrys of a vector|sthelsewithranges into a string, using 'd' as the seperator between the parts.
-template<typename SinglePassRange, typename Delim>
-string join_to_str(SinglePassRange r, Delim d)
+
+// class xy : SharedOption {
+// const char *<name> = <template>;
+// };
+// -> key==<name>, value==<template>
+
+
+void add_rendered_template_hybrids(const optionclass &opt, TemplateData &variable, const TemplateData constructor_args_data)
 {
-    std::stringstream s;
-    bool first = true;
-    for(auto &e : r)
+    for(auto template_hybrid : opt.template_hybrids)
     {
-        if(first)
-            first = false;
-        else
-            s << d;
-        s << e;
+        TemplateData template_hybrid_rendered{TemplateData::Type::Object};
+        MustacheTemplate tmpl{template_hybrid.default_value};
+        template_hybrid_rendered["s"] = tmpl.render(constructor_args_data);
+        variable[template_hybrid.name] << template_hybrid_rendered;
+
+        //std::cout << "rendered " << template_hybrid.name << " : " << template_hybrid_rendered["s"].stringValue() << std::endl;
     }
-    return s.str();
 }
 
-/// C++ equivalent of strtok, tokenizes the input string based on the occurences of delimiter.
-/// @param delimiter is actually a boost::regex, so could be used as such!
-/// Note: make this a template if needed.
-vector<string> split_by_delimter(string input, string delimiter)
+void add_generic_templatedata_default_values(TemplateData &variable, ShTreeNode node)
 {
-    using boost::regex;
-    using boost::split_regex;
+    for(auto reg_option : optionclasses)
+    {
+        optionclass &opt = reg_option.second;
+        if(!opt.hasdefaultvals) continue;
+        for(auto arg : opt.constructor_args)
+        {
+            MustacheTemplate tmpl{arg.default_value};
+            variable[arg.name] = tmpl.render(variable); // add templatedata for this
+        }
+    }
+}
 
-    vector<string> ns;
-    split_regex(ns, input, regex(delimiter));
-    return std::move(ns);
+/// Add templatedata for this shared variable coming from shared options.
+void add_generic_templatedata(TemplateData &variable, ShTreeNode node)
+{
+    // renders: 1. fill data: 
+    //             - take node constructor args, compare it with optionclass names [done]
+    //             - create TemplateData instanz for every constructor param
+    //            1b. default values
+    //              - if optionclass has default values add default value TemplateData
+    //              - 2 cases for default values: values or templates (special: char * get rendered nontheless)
+    //          2. render templates optionclass.templatehybrids().templatestr; templatehybrid { name, templatestr } with passed TemplateData
+    //             add rendered templates to passed TemplateData
+
+    // sharedvar-list
+    //    <template_hybrid_name>-list
+    //       sharedoptioninstance1 // e.g. NoSync()
+    //       sharedoptioninstance2 // e.g. Persistent()
+    //       sharedoptioninstance3 // e.g. Range(0, 3)
+
+
+    // add template data from constructor arguments:
+
+    TemplateData constructor_args_data = variable;
+
+    add_generic_templatedata_default_values(constructor_args_data, node);
+    for(auto node_option : node.shared_options)
+    {
+        auto find_in_definitions = optionclasses.find(node_option.class_name);
+        if(find_in_definitions == optionclasses.end()) continue;
+        std::cout << "node: " << node.get_name_cpp_full() << " option: " << node_option.class_name << std::endl;
+
+        const optionclass &opt = find_in_definitions->second;
+
+        for(size_t i = 0; i < node_option.constructor_args.size(); i++) // loop instance constructor args, take names from defintion of the constructor args.
+        {
+            if(i >= opt.constructor_args.size()) break; // should never happen
+            constructor_args_data[opt.constructor_args[i].name] = node_option.constructor_args[i];
+        }
+    }
+
+    // render template_hybrids and add them to the templatedata of the variable:
+
+    // add empty lists to the variable key=th name
+    for(auto opt : optionclasses)
+        for(auto template_hybrid : opt.second.template_hybrids)
+            variable[template_hybrid.name] = TemplateData(TemplateData::Type::List);
+
+    unordered_set<string> rendered_th_names;
+    // render th's occuring in the constructor
+    for(auto node_option : node.shared_options)
+    {
+        auto find_in_definitions = optionclasses.find(node_option.class_name);
+        if(find_in_definitions == optionclasses.end()) continue;
+        add_rendered_template_hybrids(find_in_definitions->second, variable, constructor_args_data);
+        rendered_th_names.emplace(find_in_definitions->second.name);
+    }
+
+    // render th's which have default values and havent been rendered before.
+    for(auto reg_option : optionclasses)
+    {
+        optionclass &opt = reg_option.second;
+        auto find_in_instances = rendered_th_names.find(opt.name);
+        if(find_in_instances == rendered_th_names.end() && opt.hasdefaultvals)
+            add_rendered_template_hybrids(opt, variable, constructor_args_data);
+    }
 }
 
 TemplateData fill_templatedata(vector<ShTreeNode> &tree, const string &ns)
@@ -51,7 +119,7 @@ TemplateData fill_templatedata(vector<ShTreeNode> &tree, const string &ns)
         "// Do not modify it directly but its corresponding template file instead!";
 
     // namespace string -> protobuf syntax: replace :: with .
-    vector<string> ns_list(split_by_delimter(ns, "::"));
+    vector<string> ns_list(split_by_delimiter(ns, "::"));
     const string &proto_pkg = join_to_str(ns_list, '.');
     tmpldata["package"] = proto_pkg;
     tmpldata["namespace"] = ns;
@@ -61,18 +129,17 @@ TemplateData fill_templatedata(vector<ShTreeNode> &tree, const string &ns)
     for(auto node : tree)
     {
         TemplateData curvariable{TemplateData::Type::Object};
-        curvariable["proto_type"] = node.protoc_lit;
-        curvariable["cpp_type"] = node.type_lit;
-        curvariable["type"] = std::to_string(node.type);
+        curvariable["type_protobuf"] = node.get_type_protobuf();
+        curvariable["type_cpp_primitive"] = node.get_type_cpp_primitive();
+        curvariable["type_numeric"] = std::to_string(node.get_type_numeric());
         curvariable["index"] = std::to_string(index++);
-        curvariable["unique_name"] = node.unique_name;
-        curvariable["path"] = node.path;
-        curvariable["cpp_name"] = node.cpp_var;
+        curvariable["name_unique"] = node.get_name_unique();
+        curvariable["path"] = node.get_path();
+        curvariable["name_cpp_full"] = node.get_name_cpp_full();
+        curvariable["name_cpp_short"] = node.get_name_cpp_short();
 
-        vector<string> ns(split_by_delimter(node.cpp_var, "::"));
-        curvariable["cpp_raw_name"] = ns.back();
+        vector<string> ns(split_by_delimiter(node.get_namespace(), "::"));
 
-        ns.pop_back(); // remove the raw function name
         TemplateData namespace_sep_open{TemplateData::LambdaType{
             [ns](const string&)
         {
@@ -101,6 +168,8 @@ TemplateData fill_templatedata(vector<ShTreeNode> &tree, const string &ns)
 
         curvariable["namespace_sep_open"] = namespace_sep_open;
         curvariable["namespace_sep_close"] = namespace_sep_close;
+
+        add_generic_templatedata(curvariable, node);
 
         sharedvars << curvariable;
     }

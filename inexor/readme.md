@@ -1,4 +1,4 @@
-# Inexor
+# inexor-source-folder
 
 This directory contains the sources – and libraries - for
 the Inexor core application written in C++.

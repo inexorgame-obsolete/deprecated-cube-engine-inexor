@@ -18,7 +18,8 @@ src/lib64
 src/enet
 rpg.bat
 
-doc/
+doc/*
+!doc/mainpage.md
 
 eclipse
 codeblocks
