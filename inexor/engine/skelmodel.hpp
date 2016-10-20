@@ -1,11 +1,6 @@
 #pragma once
 
 #include "inexor/shared/command.hpp"
-VARP(gpuskel, 0, 1, 1);
-
-VAR(maxskelanimdata, 1, 192, 0);
-VAR(testtags, 0, 0, 1);
-
 #define BONEMASK_NOT  0x8000
 #define BONEMASK_END  0xFFFF
 #define BONEMASK_BONE 0x7FFF
