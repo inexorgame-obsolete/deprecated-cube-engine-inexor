@@ -9,6 +9,22 @@ VAR(animationinterpolationtime, 0, 150, 1000);
 
 model *loadingmodel = NULL;
 
+VARFP(envmapmodels, 0, 1, 1, preloadmodelshaders(true));
+VARFP(bumpmodels, 0, 1, 1, preloadmodelshaders(true));
+VARP(fullbrightmodels, 0, 0, 200);
+
+
+VAR(ragdolltimestepmin, 1, 5, 50);
+VAR(ragdolltimestepmax, 1, 10, 50);
+FVAR(ragdollrotfric, 0, 0.85f, 1);
+FVAR(ragdollrotfricstop, 0, 0.1f, 1);
+
+
+VARP(gpuskel, 0, 1, 1);
+
+VAR(maxskelanimdata, 1, 192, 0);
+VAR(testtags, 0, 0, 1);
+
 #include "inexor/engine/ragdoll.hpp"
 #include "inexor/engine/animmodel.hpp"
 #include "inexor/engine/vertmodel.hpp"
