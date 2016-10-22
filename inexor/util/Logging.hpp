@@ -99,7 +99,7 @@ namespace util {
             void initDefaultLoggers();
             void createAndRegisterLogger(std::string logger_name);
             void createSinks();
-            std::vector<spdlog::sink_ptr> getSinksForLogger(std::string logger_name);
+            std::vector<spdlog::sink_ptr> &getSinksForLogger(std::string logger_name);
             void setLogLevel(std::string logger_name, std::string log_level);
             void setLogFormat(std::string logger_name, std::string pattern);
     };
