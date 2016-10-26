@@ -5,6 +5,7 @@
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/util/Subsystem.hpp"
 #include "inexor/ui.hpp"
+#include "inexor/ui/layer/InexorAppLayer.hpp"
 
 #include "inexor/util/Logging.hpp"
 
@@ -2205,7 +2206,7 @@ VAR(hidestats, 0, 0, 1);
 VAR(hidehud, 0, 0, 1);
 
 VARP(crosshairsize, 0, 15, 50);
-// VARP(cursorsize, 0, 30, 50);
+VARP(cursorsize, 0, 30, 50);
 VARP(crosshairfx, 0, 1, 1);
 VARP(crosshaircolors, 0, 1, 1);
 
@@ -2257,49 +2258,70 @@ void writecrosshairs(stream *f)
     f->printf("\n");
 }
 
-// static Texture *cursortex = NULL;
-// SVARFP(cursor, "interface/cursor/default.png", cursortex = NULL);
+static Texture *cursortex = NULL;
+SVARFP(cursor, "interface/cursor/default.png", cursortex = NULL);
 
-void drawcrosshair(int w, int h)
+void draw_g3d_cursor(int w, int h)
 {
-    bool windowhit = g3d_windowhit(true, false);
-    if(!windowhit && (hidehud || mainmenu)) return; //(hidehud || player->state==CS_SPECTATOR || player->state==CS_DEAD)) return;
-
     vec color(1, 1, 1);
     float cx = 0.5f, cy = 0.5f, chsize;
     Texture *crosshair;
-    if(windowhit)
-    {
-		/*
-        if(!cursortex) cursortex = textureload(cursor, 3, true);
-        crosshair = cursortex;
-        chsize = cursorsize*w/900.0f;
-        g3d_cursorpos(cx, cy);
-        */
-    }
-    else
-    { 
-        int index = game::selectcrosshair(color);
-        if(index < 0) return;
-        if(!crosshairfx) index = 0;
-        if(!crosshairfx || !crosshaircolors) color = vec(1, 1, 1);
-        crosshair = crosshairs[index];
-        if(!crosshair) 
-        {
-            loadcrosshair(NULL, index);
-            crosshair = crosshairs[index];
-        }
-        chsize = crosshairsize*w/900.0f;
-    }
-    if(crosshair->type&Texture::ALPHA) glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    if (!cursortex) cursortex = textureload(cursor, 3, true);
+    crosshair = cursortex;
+    chsize = cursorsize * w / 900.0f;
+    g3d_cursorpos(cx, cy);
+    if (crosshair->type & Texture::ALPHA) glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     else glBlendFunc(GL_ONE, GL_ONE);
-    float x = cx*w - (windowhit ? 0 : chsize/2.0f);
-    float y = cy*h - (windowhit ? 0 : chsize/2.0f);
+    float x = cx * w;
+    float y = cy * h;
     glBindTexture(GL_TEXTURE_2D, crosshair->id);
-
     hudshader->set();
     gle::color(color);
     hudquad(x, y, chsize, chsize);
+}
+
+void draw_crosshair(int w, int h)
+{
+    vec color(1, 1, 1);
+    float cx = 0.5f, cy = 0.5f, chsize;
+    Texture *crosshair;
+    int index = game::selectcrosshair(color);
+    if (index < 0) return;
+    if (!crosshairfx) index = 0;
+    if (!crosshairfx || !crosshaircolors) color = vec(1, 1, 1);
+    crosshair = crosshairs[index];
+    if (!crosshair)
+    {
+        loadcrosshair(NULL, index);
+        crosshair = crosshairs[index];
+    }
+    chsize = crosshairsize * w / 900.0f;
+    if (crosshair->type & Texture::ALPHA) glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    else glBlendFunc(GL_ONE, GL_ONE);
+    float x = cx * w - chsize / 2.0f;
+    float y = cy * h - chsize / 2.0f;
+    glBindTexture(GL_TEXTURE_2D, crosshair->id);
+    hudshader->set();
+    gle::color(color);
+    hudquad(x, y, chsize, chsize);
+}
+
+void drawcrosshair(int w, int h)
+{
+    if (new_ui) {
+        if (!showapplayer && !hidehud) {
+            draw_crosshair(w, h);
+        }
+    } else {
+        bool windowhit = g3d_windowhit(true, false);
+        if (!windowhit && (hidehud || mainmenu)) return;
+        if (windowhit) {
+            draw_g3d_cursor(w, h);
+        } else {
+            draw_crosshair(w, h);
+        }
+    }
+
 }
 
 VARP(wallclock, 0, 0, 1);
