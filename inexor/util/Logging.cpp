@@ -60,6 +60,7 @@ void Logging::createSinks()
 void Logging::setLogLevel(std::string logger_name, std::string log_level)
 {
     try {
+        if(log_level.empty() || logger_name.empty()) return;
         auto logger = spdlog::get(logger_name);
         logger->set_level(log_levels.at(log_level));
     } catch (const spdlog::spdlog_ex& ex) {
@@ -70,6 +71,7 @@ void Logging::setLogLevel(std::string logger_name, std::string log_level)
 void Logging::setLogFormat(std::string logger_name, std::string pattern)
 {
     try {
+        if(pattern.empty() || logger_name.empty()) return;
         auto logger = spdlog::get(logger_name);
         logger->set_pattern(pattern);
     } catch (const spdlog::spdlog_ex& ex) {
