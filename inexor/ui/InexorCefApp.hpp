@@ -56,7 +56,7 @@ class InexorCefApp : public CefApp,
         /// @return Whether this event was handled by CEF;
         ///     if false the event should be handled by
         ///     inexor
-        bool HandleSdlEvent(SDL_Event event);
+        bool HandleSdlEvent(SDL_Event &e);
 
 	private:
         CefRefPtr<context::InexorContextManager> context_manager;
