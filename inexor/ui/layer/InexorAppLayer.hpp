@@ -10,6 +10,8 @@ namespace inexor {
 namespace ui {
 namespace layer {
 
+extern SharedVar<int> showapplayer;
+
 /**
  * The application layer of the inexor user interface.
  */
