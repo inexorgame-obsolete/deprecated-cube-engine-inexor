@@ -39,6 +39,7 @@ void InexorLayer::SetVisibility(bool is_visible)
 {
     spdlog::get("global")->info() << "InexorLayer::SetVisibility()\n";
     this->is_visible = is_visible;
+    // browser->Reload();
     browser->GetHost()->WasHidden(!is_visible);
 }
 

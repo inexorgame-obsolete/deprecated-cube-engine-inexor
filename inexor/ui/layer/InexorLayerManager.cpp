@@ -37,7 +37,7 @@ void InexorLayerManager::InitializeLayer(CefRefPtr<InexorLayerProvider> layer_pr
 
 void InexorLayerManager::DestroyLayers()
 {
-    spdlog::get("global")->debug() << "InexorLayerManager::DestroyLayers()";
+//    spdlog::get("global")->debug() << "InexorLayerManager::DestroyLayers()";
     for(std::list<CefRefPtr<InexorLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
     {
         CefRefPtr<InexorLayer> layer = (*it);
