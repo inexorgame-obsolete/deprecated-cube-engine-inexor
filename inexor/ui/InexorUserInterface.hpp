@@ -24,7 +24,8 @@ class InexorUserInterface : public InexorContextProvider,
 			  _url(url),
 			  is_menu_visible(true),
 			  menu_state("/menu/main"),
-			  menu_parent_state("") {};
+			  menu_parent_state(""),
+			  main_menu(true) {};
 
         // InexorCefContextProvider
         void InitializeContext();
@@ -42,7 +43,7 @@ class InexorUserInterface : public InexorContextProvider,
         void Menu() {
             if (is_visible) {
                 if (menu_parent_state == "") {
-                    if (!mainmenu) {
+                    if (!main_menu) {
                         SetMenuVisibility(false);
             	    }
                 } else {
@@ -63,9 +64,11 @@ class InexorUserInterface : public InexorContextProvider,
         bool GetMenuVisibility() { return is_menu_visible; };
         std::string GetMenuState() { return menu_state; };
         std::string GetMenuParentState() { return menu_parent_state; };
+        bool GetMainMenu() { return main_menu; };
         void SetMenuVisibility(bool _is_menu_visible);
         void SetMenuState(std::string _menu_state);
         void SetMenuParentState(std::string _menu_parent_state);
+        void SetMainMenu(bool _main_menu);
 
         // Event handling
         void FireUiEvent(std::string name, bool value);
@@ -85,6 +88,7 @@ class InexorUserInterface : public InexorContextProvider,
         bool is_menu_visible;
         std::string menu_state;
         std::string menu_parent_state;
+        bool main_menu;
 
         // Include the default reference counting implementation.
         IMPLEMENT_REFCOUNTING(InexorUserInterface);

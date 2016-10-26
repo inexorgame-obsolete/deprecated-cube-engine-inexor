@@ -5,6 +5,7 @@
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/util/Logging.hpp"
+#include "inexor/ui.hpp"
 
 using namespace inexor::util; //needed for quoted()
 
@@ -174,6 +175,7 @@ void disconnect(bool async, bool cleanup)
         spdlog::get("global")->info() << "disconnected";
         game::gamedisconnect(cleanup);
         mainmenu = 1;
+        cef_app->GetUserInterface()->SetMainMenu(true);
     }
     if(!connpeer && clienthost)
     {

@@ -4,6 +4,7 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/crashreporter/CrashReporter.hpp"
 #include "inexor/util/Logging.hpp"
+#include "inexor/ui.hpp"
 
 #define LOGSTRLEN 512
 
@@ -667,6 +668,7 @@ void localdisconnect(bool cleanup)
     if(!disconnected) return;
     game::gamedisconnect(cleanup);
     mainmenu = 1;
+    cef_app->GetUserInterface()->SetMainMenu(true);
 }
 
 void localconnect()
