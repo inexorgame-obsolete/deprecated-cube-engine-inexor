@@ -52,9 +52,9 @@ class InexorMouseManager : public inexor::ui::context::InexorContextProvider
         void SetTexture(std::string texture) { this->texture = texture; };
 
         // SDL Events
-        void SendMouseMoveEvent(SDL_Event event);
-        void SendMouseClickEvent(SDL_Event event);
-        void SendMouseWheelEvent(SDL_Event event);
+        void SendMouseMoveEvent(SDL_Event &e);
+        void SendMouseClickEvent(SDL_Event &e);
+        void SendMouseWheelEvent(SDL_Event &e);
 
         // InexorContextProvider
         void InitializeContext();

@@ -26,42 +26,41 @@ bool InexorMouseManager::Set(const CefString& name, const CefRefPtr<CefV8Value> 
     return false;
 }
 
-void InexorMouseManager::SendMouseMoveEvent(SDL_Event event)
+void InexorMouseManager::SendMouseMoveEvent(SDL_Event &e)
 {
-    x = event.motion.x;
-    y = event.motion.y;
+    x = e.motion.x;
+    y = e.motion.y;
     CefMouseEvent mouse_move_event;
-    mouse_move_event.x = event.motion.x;
-    mouse_move_event.y = event.motion.y;
+    mouse_move_event.x = e.motion.x;
+    mouse_move_event.y = e.motion.y;
     layer_manager->SendMouseMoveEvent(mouse_move_event, false);
 }
 
-void InexorMouseManager::SendMouseClickEvent(SDL_Event event)
+void InexorMouseManager::SendMouseClickEvent(SDL_Event &e)
 {
     CefMouseEvent mouse_click_event;
-    mouse_click_event.x = event.motion.x;
-    mouse_click_event.y = event.motion.y;
+    mouse_click_event.x = e.motion.x;
+    mouse_click_event.y = e.motion.y;
     mouse_click_event.modifiers = 0;
-    CefBrowserHost::MouseButtonType mouse_button_type = (event.button.button == 1 ? MBT_LEFT : ( event.button.button == 3 ? MBT_RIGHT : MBT_MIDDLE));
+    CefBrowserHost::MouseButtonType mouse_button_type = (e.button.button == 1 ? MBT_LEFT : ( e.button.button == 3 ? MBT_RIGHT : MBT_MIDDLE));
     layer_manager->SendMouseClickEvent(
         mouse_click_event,
         mouse_button_type,
-        event.button.state != SDL_PRESSED,
+        e.button.state != SDL_PRESSED,
         1
     );
 }
 
-void InexorMouseManager::SendMouseWheelEvent(SDL_Event event)
+void InexorMouseManager::SendMouseWheelEvent(SDL_Event &e)
 {
     CefMouseEvent mouse_wheel_event;
-    mouse_wheel_event.x = event.motion.x;
-    mouse_wheel_event.y = event.motion.y;
-    mouse_wheel_event.modifiers = 1;
-    layer_manager->SendMouseWheelEvent(
-        mouse_wheel_event,
-        event.wheel.x > 0 ? 20 : (event.wheel.x < 0 ? -20 : 0),
-        event.wheel.y > 0 ? 20 : (event.wheel.y < 0 ? -20 : 0)
-    );
+    int delta_x = e.wheel.x;
+    int delta_y = e.wheel.y;
+    if(e.wheel.direction == SDL_MOUSEWHEEL_FLIPPED)
+        delta_y *= -1;
+    else
+        delta_x *= -1;
+    layer_manager->SendMouseWheelEvent(mouse_wheel_event, delta_x * 40, delta_y * 40); // TODO: get rid of *20, but make it resolution relative
 }
 
 }
