@@ -32,7 +32,7 @@ CefSubsystem::~CefSubsystem() {
     CefShutdown();
 
     // Destroy the cef app
-    cef_app = nullptr;
+    cef_app = nullptr; // this crashes bc its refcount isnt zero
 }
 
 void CefSubsystem::tick() {
