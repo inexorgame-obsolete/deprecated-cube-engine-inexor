@@ -75,6 +75,15 @@ void InexorUserInterface::SetMenuParentState(std::string _menu_parent_state)
     }
 }
 
+void InexorUserInterface::SetMainMenu(bool _main_menu)
+{
+    if (_main_menu != GetMainMenu()) {
+        this->main_menu = _main_menu;
+        FireUiEvent("mainMenu", _main_menu);
+        SetMenuVisibility(_main_menu);
+    }
+}
+
 void InexorUserInterface::FireUiEvent(std::string name, bool value)
 {
     CefRefPtr<CefProcessMessage> ui_event = CefProcessMessage::Create("user_interface");
