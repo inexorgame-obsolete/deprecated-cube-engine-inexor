@@ -1,5 +1,7 @@
 #pragma once
 
+#include <SDL.h>
+
 #include "include/cef_app.h"
 
 #include "inexor/ui/context/InexorContextProvider.hpp"

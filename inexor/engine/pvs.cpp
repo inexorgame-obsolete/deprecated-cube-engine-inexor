@@ -1,5 +1,16 @@
 #include "inexor/engine/engine.hpp"
+#include "inexor/ui/input/InputRouter.hpp"
 #include "inexor/util/Logging.hpp"
+
+namespace inexor {
+namespace ui {
+namespace input {
+    extern InputRouter input_router;
+}
+}
+}
+
+using namespace inexor::ui::input;
 
 enum
 {
@@ -851,7 +862,7 @@ static void show_genpvs_progress(int unique = pvs.length(), int processed = numv
 
     renderprogress(bar1, text1);
 
-    if(interceptkey(SDLK_ESCAPE)) genpvs_canceled = true;
+    if(input_router.interceptkey(SDLK_ESCAPE)) genpvs_canceled = true;
     check_genpvs_progress = false;
 }
 

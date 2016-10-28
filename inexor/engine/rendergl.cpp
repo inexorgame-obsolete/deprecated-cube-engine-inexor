@@ -6,12 +6,21 @@
 #include "inexor/util/Subsystem.hpp"
 #include "inexor/ui.hpp"
 #include "inexor/ui/layer/InexorAppLayer.hpp"
-
+#include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/util/Logging.hpp"
+
+namespace inexor {
+namespace ui {
+namespace screen {
+    extern ScreenManager screen_manager;
+}
+}
+}
 
 using namespace inexor::rendering::screen;
 using namespace inexor::ui;
 using namespace inexor::ui::layer;
+using namespace inexor::ui::screen;
 
 bool hasVAO = false, hasFBO = false, hasAFBO = false, hasDS = false, hasTF = false, hasTRG = false, hasTSW = false, hasS3TC = false, hasFXT1 = false, hasAF = false, hasFBB = false, hasUBO = false, hasMBR = false;
 int hasstencil = 0;
@@ -580,16 +589,16 @@ void cef_resize(int width, int height)
     if (cef_app) {
         // TODO: not fully working
         spdlog::get("global")->info("Update Inexor User Interface Screen Size: {0}x{1}", width, height);
-        cef_app->GetHudLayer()->Resize(0, 0, width, screenh);
-        cef_app->GetAppLayer()->Resize(0, 0, width, screenh);
+        cef_app->GetHudLayer()->Resize(0, 0, width, screen_manager.screenh);
+        cef_app->GetAppLayer()->Resize(0, 0, width, screen_manager.screenh);
         cef_app->GetMouseManager()->SetScreenSize(width, height);
     }
 }
 
 void gl_resize()
 {
-    glViewport(0, 0, screenw, screenh);
-    cef_resize(screenw, screenh);
+    glViewport(0, 0, screen_manager.screenw, screen_manager.screenh);
+    cef_resize(screen_manager.screenw, screen_manager.screenh);
 }
  
 void gl_init(int depth, int fsaa)
@@ -1652,7 +1661,7 @@ namespace modelpreview
         drawtex = 0;
 
         glDisable(GL_SCISSOR_TEST);
-        glViewport(0, 0, screenw, screenh);
+        glViewport(0, 0, screen_manager.screenw, screen_manager.screenh);
     }
 }
 
@@ -1705,7 +1714,7 @@ void drawminimap()
 
     renderprogress(0, "generating mini-map...", 0, !renderedframe);
 
-    int size = 1<<minimapsize, sizelimit = min(hwtexsize, min(screenw, screenh));
+    int size = 1<<minimapsize, sizelimit = min(hwtexsize, min(screen_manager.screenw, screen_manager.screenh));
     while(size > sizelimit) size /= 2;
     if(!minimaptex) glGenTextures(1, &minimaptex);
 
@@ -1788,7 +1797,7 @@ void drawminimap()
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
 
-    glViewport(0, 0, screenw, screenh);
+    glViewport(0, 0, screen_manager.screenw, screen_manager.screenh);
 
     camera1 = oldcamera;
     drawtex = 0;
@@ -1807,7 +1816,7 @@ bool deferdrawtextures = false;
 
 void drawtextures()
 {
-    if(minimized) { deferdrawtextures = true; return; }
+    if(screen_manager.minimized) { deferdrawtextures = true; return; }
     deferdrawtextures = false;
     genenvmaps();
     drawminimap();
@@ -1829,15 +1838,15 @@ FVARP(motionblurscale, 0, 0.5f, 1);
 
 void addmotionblur()
 {
-    if(!motionblur || max(screenw, screenh) > hwtexsize) return;
+    if(!motionblur || max(screen_manager.screenw, screen_manager.screenh) > hwtexsize) return;
 
     if(game::ispaused()) { lastmotion = 0; return; }
 
-    if(!motiontex || motionw != screenw || motionh != screenh)
+    if(!motiontex || motionw != screen_manager.screenw || motionh != screen_manager.screenh)
     {
         if(!motiontex) glGenTextures(1, &motiontex);
-        motionw = screenw;
-        motionh = screenh;
+        motionw = screen_manager.screenw;
+        motionh = screen_manager.screenh;
         lastmotion = 0;
         createtexture(motiontex, motionw, motionh, NULL, 3, 0, GL_RGB);
     }
@@ -1858,7 +1867,7 @@ void addmotionblur()
     {
         lastmotion = lastmillis - lastmillis%motionblurmillis;
 
-        glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, screenw, screenh);
+        glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen_manager.screenw, screen_manager.screenh);
     }
 }
 
@@ -1962,7 +1971,7 @@ void gl_drawframe()
 
     updatedynlights();
 
-    aspect = forceaspect ? forceaspect : screenw/float(screenh);
+    aspect = forceaspect ? forceaspect : screen_manager.screenw/float(screen_manager.screenh);
     fovy = 2*atan2(tan(curfov/2*RAD), aspect)/RAD;
     
     int fogmat = lookupmaterial(camera1->o)&(MATF_VOLUME|MATF_INDEX), abovemat = MAT_AIR;
@@ -2083,7 +2092,7 @@ float damagedirs[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
 void damagecompass(int n, const vec &loc)
 {
-    if(!usedamagecompass || minimized) return;
+    if(!usedamagecompass || screen_manager.minimized) return;
     vec delta(loc);
     delta.sub(camera1->o); 
     float yaw = 0, pitch;
@@ -2148,7 +2157,7 @@ VARP(damagescreenmax, 1, 100, 1000);
 
 void damageblend(int n)
 {
-    if(!damagescreen || minimized) return;
+    if(!damagescreen || screen_manager.minimized) return;
     if(lastmillis > damageblendmillis) damageblendmillis = lastmillis;
     damageblendmillis += clamp(n, damagescreenmin, damagescreenmax)*damagescreenfactor;
 }
@@ -2357,7 +2366,7 @@ FVARP(conscale, 1e-3f, 0.33f, 1e3f);
 
 void gl_drawhud()
 {
-    int w = screenw, h = screenh;
+    int w = screen_manager.screenw, h = screen_manager.screenh;
     if(forceaspect) w = int(ceil(h*forceaspect));
 
     if(editmode && !hidehud && !mainmenu)

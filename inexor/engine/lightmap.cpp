@@ -1,9 +1,20 @@
+#include <array>
+
 #include "inexor/engine/engine.hpp"
 #include "inexor/texture/savetexture.hpp"
 #include "inexor/texture/image.hpp"
+#include "inexor/ui/input/InputRouter.hpp"
 #include "inexor/util/Logging.hpp"
 
-#include <array>
+namespace inexor {
+namespace ui {
+namespace input {
+    extern InputRouter input_router;
+}
+}
+}
+
+using namespace inexor::ui::input;
 
 #define MAXLIGHTMAPTASKS 4096
 #define LIGHTMAPBUFSIZE (2*1024*1024)
@@ -245,7 +256,7 @@ volatile bool check_calclight_progress = false;
 
 void check_calclight_canceled()
 {
-    if(interceptkey(SDLK_ESCAPE)) 
+    if(input_router.interceptkey(SDLK_ESCAPE))
     {
         calclight_canceled = true;
         loopv(lightmapworkers) lightmapworkers[i]->doneworking = true;

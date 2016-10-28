@@ -6,9 +6,24 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/engine/textedit.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
+#include "inexor/ui/input/InputRouter.hpp"
+#include "inexor/ui/screen/ScreenManager.hpp"
+
+namespace inexor {
+namespace ui {
+namespace input {
+    extern InputRouter input_router;
+}
+namespace screen {
+    extern ScreenManager screen_manager;
+}
+}
+}
 
 using namespace inexor::filesystem;
 using namespace inexor::rendering::screen;
+using namespace inexor::ui::input;
+using namespace inexor::ui::screen;
 
 static struct gui *windowhit = NULL;
 static bool layoutpass, actionon = false;
@@ -330,8 +345,8 @@ struct gui : g3d_gui
                 rect_(xi+SHADOW, yi+SHADOW, xs, ys);
                 hudshader->set();
             }
-            int x1 = int(floor(screenw*(xi*scale.x+origin.x))), y1 = int(floor(screenh*(1 - ((yi+ys)*scale.y+origin.y)))),
-                x2 = int(ceil(screenw*((xi+xs)*scale.x+origin.x))), y2 = int(ceil(screenh*(1 - (yi*scale.y+origin.y))));
+            int x1 = int(floor(screen_manager.screenw*(xi*scale.x+origin.x))), y1 = int(floor(screen_manager.screenh*(1 - ((yi+ys)*scale.y+origin.y)))),
+                x2 = int(ceil(screen_manager.screenw*((xi+xs)*scale.x+origin.x))), y2 = int(ceil(screen_manager.screenh*(1 - (yi*scale.y+origin.y))));
             glDisable(GL_BLEND);
             modelpreview::start(x1, y1, x2-x1, y2-y1, overlaid);
             game::renderplayerpreview(model, team, weap);
@@ -379,8 +394,8 @@ struct gui : g3d_gui
                 rect_(xi+SHADOW, yi+SHADOW, xs, ys);
                 hudshader->set();
             }
-            int x1 = int(floor(screenw*(xi*scale.x+origin.x))), y1 = int(floor(screenh*(1 - ((yi+ys)*scale.y+origin.y)))),
-                x2 = int(ceil(screenw*((xi+xs)*scale.x+origin.x))), y2 = int(ceil(screenh*(1 - (yi*scale.y+origin.y))));
+            int x1 = int(floor(screen_manager.screenw*(xi*scale.x+origin.x))), y1 = int(floor(screen_manager.screenh*(1 - ((yi+ys)*scale.y+origin.y)))),
+                x2 = int(ceil(screen_manager.screenw*((xi+xs)*scale.x+origin.x))), y2 = int(ceil(screen_manager.screenh*(1 - (yi*scale.y+origin.y))));
             glDisable(GL_BLEND);
             modelpreview::start(x1, y1, x2-x1, y2-y1, overlaid);
             model *m = loadmodel(name);
@@ -439,8 +454,8 @@ struct gui : g3d_gui
                 rect_(xi+SHADOW, yi+SHADOW, xs, ys);
                 hudshader->set();
             }
-            int x1 = int(floor(screenw*(xi*scale.x+origin.x))), y1 = int(floor(screenh*(1 - ((yi+ys)*scale.y+origin.y)))),
-                x2 = int(ceil(screenw*((xi+xs)*scale.x+origin.x))), y2 = int(ceil(screenh*(1 - (yi*scale.y+origin.y))));
+            int x1 = int(floor(screen_manager.screenw*(xi*scale.x+origin.x))), y1 = int(floor(screen_manager.screenh*(1 - ((yi+ys)*scale.y+origin.y)))),
+                x2 = int(ceil(screen_manager.screenw*((xi+xs)*scale.x+origin.x))), y2 = int(ceil(screen_manager.screenh*(1 - (yi*scale.y+origin.y))));
             glDisable(GL_BLEND);
             modelpreview::start(x1, y1, x2-x1, y2-y1, overlaid);
             previewprefab(prefab, color);
@@ -952,7 +967,7 @@ struct gui : g3d_gui
         if(tcurrent) h += ((skiny[5]-skiny[1])-(skiny[3]-skiny[2]))*SKIN_SCALE + FONTH-2*INSERT;
         else h += (skiny[6]-skiny[3])*SKIN_SCALE;
 
-        float aspect = forceaspect ? 1.0f/forceaspect : float(screenh)/float(screenw), fit = 1.0f;
+        float aspect = forceaspect ? 1.0f/forceaspect : float(screen_manager.screenh)/float(screen_manager.screenw), fit = 1.0f;
         if(w*aspect*basescale>1.0f) fit = 1.0f/(w*aspect*basescale);
         if(h*basescale*fit>maxscale) fit *= maxscale/(h*basescale*fit);
         origin = vec(0.5f-((w-xsize)/2 - (skinx[2]-skinx[1])*SKIN_SCALE)*aspect*scale.x*fit, 0.5f + (0.5f*h-(skiny[9]-skiny[7])*SKIN_SCALE)*scale.y*fit, 0);
@@ -1280,7 +1295,7 @@ bool g3d_movecursor(int dx, int dy)
 {
     if(!guis2d.length() || !hascursor) return false;
     const float CURSORSCALE = 500.0f;
-    cursorx = clamp(cursorx+guisens*dx*screenh/(screenw*CURSORSCALE), 0.0, 1.0);
+    cursorx = clamp(cursorx+guisens*dx*screen_manager.screenh/(screen_manager.screenw*CURSORSCALE), 0.0, 1.0);
     cursory = clamp(cursory+guisens*dy/CURSORSCALE, 0.0, 1.0);
     return true;
 }
@@ -1384,8 +1399,8 @@ void g3d_render()
     if(!fieldsactive) fieldmode = FIELDSHOW; //didn't draw any fields, so loose focus - mainly for menu closed
     if((fieldmode!=FIELDSHOW) != wasfocused) 
     {
-        textinput(fieldmode!=FIELDSHOW, TI_GUI);
-        keyrepeat(fieldmode!=FIELDSHOW, KR_GUI);
+        input_router.textinput(fieldmode!=FIELDSHOW, TI_GUI);
+        input_router.keyrepeat(fieldmode!=FIELDSHOW, KR_GUI);
     }
     
     mousebuttons = 0;

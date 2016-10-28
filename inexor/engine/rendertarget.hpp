@@ -1,3 +1,14 @@
+#include "inexor/ui/screen/ScreenManager.hpp"
+
+namespace inexor {
+namespace ui {
+namespace screen {
+    extern ScreenManager screen_manager;
+}
+}
+}
+
+using namespace inexor::ui::screen;
 using namespace inexor::rendering::screen;
 
 extern SharedVar<int> rtsharefb, rtscissor, blurtile;
@@ -315,8 +326,8 @@ struct rendertarget
         h = min(h, hwtexsize);
         if(screenrect())
         {
-            if(w > screenw) w = screenw;
-            if(h > screenh) h = screenh;
+            if(w > screen_manager.screenw) w = screen_manager.screenw;
+            if(h > screen_manager.screenh) h = screen_manager.screenh;
         }
         vieww = w;
         viewh = h;
@@ -383,7 +394,7 @@ struct rendertarget
         }
 
         glBindFramebuffer_(GL_FRAMEBUFFER, 0);
-        glViewport(0, 0, screenw, screenh);
+        glViewport(0, 0, screen_manager.screenw, screen_manager.screenh);
     }
 
     virtual void dodebug(int w, int h) {}
@@ -448,7 +459,7 @@ struct rendertarget
     void debug()
     {
         if(!rendertex) return;
-        int w = min(screenw, screenh)/2, h = (w*screenh)/screenw;
+        int w = min(screen_manager.screenw, screen_manager.screenh)/2, h = (w*screen_manager.screenh)/screen_manager.screenw;
         hudshader->set(); 
         gle::colorf(1, 1, 1);
         glBindTexture(GL_TEXTURE_2D, rendertex);

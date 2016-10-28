@@ -1,10 +1,20 @@
 // console.cpp: the console buffer, its display, and command line control
 
-#include "inexor/engine/engine.hpp"
 #include <set>
+#include "inexor/engine/engine.hpp"
+#include "inexor/ui/input/InputRouter.hpp"
 #include "inexor/util/Logging.hpp"
 
+namespace inexor {
+namespace ui {
+namespace input {
+    extern InputRouter input_router;
+}
+}
+}
+
 using namespace inexor::util;
+using namespace inexor::ui::input;
 
 #define MAXCONLINES 1000
 struct cline { char *line; int type, outtime; };
@@ -254,8 +264,8 @@ ICOMMAND(searcheditbinds, "s", (char *action), searchbinds(action, keym::ACTION_
 void inputcommand(char *init, char *action = NULL, char *prompt = NULL, char *flags = NULL) // turns input to the command line on or off
 {
     commandmillis = init ? totalmillis : -1;
-    textinput(commandmillis >= 0, TI_CONSOLE);
-    keyrepeat(commandmillis >= 0, KR_CONSOLE);
+    input_router.textinput(commandmillis >= 0, TI_CONSOLE);
+    input_router.keyrepeat(commandmillis >= 0, KR_CONSOLE);
     copystring(commandbuf, init ? init : "");
     DELETEA(commandaction);
     DELETEA(commandprompt);
