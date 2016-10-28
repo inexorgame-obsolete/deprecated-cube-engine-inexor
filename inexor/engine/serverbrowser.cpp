@@ -1,5 +1,16 @@
 #include "inexor/engine/engine.hpp"
+#include "inexor/ui/input/InputRouter.hpp"
 #include "inexor/util/Logging.hpp"
+
+namespace inexor {
+namespace ui {
+namespace input {
+    extern InputRouter input_router;
+}
+}
+}
+
+using namespace inexor::ui::input;
 
 struct resolverthread
 {
@@ -162,7 +173,7 @@ bool resolverwait(const char *name, ENetAddress *address)
     
         timeout = SDL_GetTicks() - starttime;
         renderprogress(min(float(timeout)/RESOLVERLIMIT, 1.0f), text);
-        if(interceptkey(SDLK_ESCAPE)) timeout = RESOLVERLIMIT + 1;
+        if(input_router.interceptkey(SDLK_ESCAPE)) timeout = RESOLVERLIMIT + 1;
         if(timeout > RESOLVERLIMIT) break;    
     }
     if(!resolved && timeout > RESOLVERLIMIT)
@@ -204,7 +215,7 @@ int connectwithtimeout(ENetSocket sock, const char *hostname, const ENetAddress 
         }
         timeout = SDL_GetTicks() - starttime;
         renderprogress(min(float(timeout)/CONNLIMIT, 1.0f), text);
-        if(interceptkey(SDLK_ESCAPE)) break;
+        if(input_router.interceptkey(SDLK_ESCAPE)) break;
     }
 
     return -1;
@@ -641,7 +652,7 @@ void retrieveservers(vector<char> &data)
         }
         timeout = SDL_GetTicks() - starttime;
         renderprogress(min(float(timeout)/RETRIEVELIMIT, 1.0f), text);
-        if(interceptkey(SDLK_ESCAPE)) timeout = RETRIEVELIMIT + 1;
+        if(input_router.interceptkey(SDLK_ESCAPE)) timeout = RETRIEVELIMIT + 1;
         if(timeout > RETRIEVELIMIT) break;
     }
 
@@ -659,7 +670,7 @@ void retrieveservers(vector<char> &data)
         }
         timeout = SDL_GetTicks() - starttime;
         renderprogress(min(float(timeout)/RETRIEVELIMIT, 1.0f), text);
-        if(interceptkey(SDLK_ESCAPE)) timeout = RETRIEVELIMIT + 1;
+        if(input_router.interceptkey(SDLK_ESCAPE)) timeout = RETRIEVELIMIT + 1;
         if(timeout > RETRIEVELIMIT) break;
     }
 

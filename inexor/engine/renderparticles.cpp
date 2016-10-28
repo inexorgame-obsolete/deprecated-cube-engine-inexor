@@ -2,7 +2,18 @@
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/engine/rendertarget.hpp"
+#include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/util/Logging.hpp"
+
+namespace inexor {
+namespace ui {
+namespace screen {
+    extern ScreenManager screen_manager;
+}
+}
+}
+
+using namespace inexor::ui::screen;
 
 Shader *particleshader = NULL, *particlenotextureshader = NULL;
 
@@ -979,7 +990,7 @@ void debugparticles()
     if(!dbgparts) return;
     int n = sizeof(parts)/sizeof(parts[0]);
     pushhudmatrix();
-    hudmatrix.ortho(0, FONTH*n*2*inexor::rendering::screen::screenw/float(inexor::rendering::screen::screenh), FONTH*n*2, 0, -1, 1); //squeeze into top-left corner
+    hudmatrix.ortho(0, FONTH*n*2*screen_manager.screenw/float(screen_manager.screenh), FONTH*n*2, 0, -1, 1); //squeeze into top-left corner
     flushhudmatrix();
     hudshader->set();
     loopi(n) draw_text(parts[i]->info, FONTH, (i+n/2)*FONTH);
@@ -1113,7 +1124,7 @@ static void regularsplash(int type, int color, int radius, int num, int fade, co
 
 bool canaddparticles()
 {
-    return !renderedgame && !shadowmapping && !minimized;
+    return !renderedgame && !shadowmapping && !screen_manager.minimized;
 }
 
 void regular_particle_splash(int type, int num, int fade, const vec &p, int color, float size, int radius, int gravity, int delay) 
@@ -1473,7 +1484,7 @@ void updateparticles()
 {
     if(regenemitters) addparticleemitters();
 
-    if(minimized) { canemit = false; return; }
+    if(screen_manager.minimized) { canemit = false; return; }
 
     if(lastmillis - lastemitframe >= emitmillis)
     {

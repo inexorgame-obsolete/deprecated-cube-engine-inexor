@@ -1,8 +1,18 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/texture/slot.hpp"
+#include "inexor/ui/input/InputRouter.hpp"
 #include "inexor/util/Logging.hpp"
 
+namespace inexor {
+namespace ui {
+namespace input {
+    extern InputRouter input_router;
+}
+}
+}
+
+using namespace inexor::ui::input;
 using namespace inexor::util;
 
 extern SharedVar<int> outline;
@@ -231,7 +241,7 @@ void toggleedit(bool force)
     }
     cancelsel();
     stoppaintblendmap();
-    keyrepeat(editmode, KR_EDITMODE);
+    input_router.keyrepeat(editmode, KR_EDITMODE);
     editing = entediting = editmode;
     extern SharedVar<int> fullbright;
     if(fullbright)

@@ -1,5 +1,16 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/texture/cubemap.hpp"
+#include "inexor/ui/screen/ScreenManager.hpp"
+
+namespace inexor {
+namespace ui {
+namespace screen {
+    extern ScreenManager screen_manager;
+}
+}
+}
+
+using namespace inexor::ui::screen;
 
 VARFP(waterreflect, 0, 1, 1, { cleanreflections(); preloadwatershaders(); });
 VARFP(waterrefract, 0, 1, 1, { cleanreflections(); preloadwatershaders(); });
@@ -1017,7 +1028,7 @@ void drawreflections()
 nowaterfall:
 
     if(!refs) return;
-    glViewport(0, 0, inexor::rendering::screen::screenw, inexor::rendering::screen::screenh);
+    glViewport(0, 0, screen_manager.screenw, screen_manager.screenh);
     glBindFramebuffer_(GL_FRAMEBUFFER, 0);
 }
 

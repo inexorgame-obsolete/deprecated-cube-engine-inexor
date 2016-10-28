@@ -6,7 +6,6 @@
 #include "include/cef_render_handler.h"
 #include "include/wrapper/cef_helpers.h"
 
-#include "inexor/shared/cube.hpp"
 #include "inexor/engine/engine.hpp"
 #include "inexor/util/Logging.hpp"
 

@@ -2,12 +2,22 @@
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
+#include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/util/Logging.hpp"
 
 #include "SDL_mixer.h"
 #include <string>
 
+namespace inexor {
+namespace ui {
+namespace screen {
+    extern ScreenManager screen_manager;
+}
+}
+}
+
 using namespace inexor::filesystem;
+using namespace inexor::ui::screen;
 
 #define MAXVOL MIX_MAX_VOLUME
 
@@ -520,7 +530,7 @@ void updatesounds()
 {
     updatemumble();
     if(nosound) return;
-    if(minimized) stopsounds();
+    if(screen_manager.minimized) stopsounds();
     else
     {
         reclaimchannels();
@@ -561,7 +571,7 @@ void preloadmapsounds()
 
 int playsound(int n, const vec *loc, extentity *ent, int flags, int loops, int fade, int chanid, int radius, int expire)
 {
-    if(nosound || !soundvol || minimized) return -1;
+    if(nosound || !soundvol || screen_manager.minimized) return -1;
 
     soundtype &sounds = ent || flags&SND_MAP ? mapsounds : gamesounds;
     if(!sounds.configs.inrange(n)) { spdlog::get("global")->warn() << "unregistered sound: " << n; return -1; } // TODO: LOG_N_TIMES(1)

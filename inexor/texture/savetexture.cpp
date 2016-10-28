@@ -3,7 +3,18 @@
 #include "inexor/texture/savetexture.hpp"
 #include "inexor/texture/SDL_loading.hpp"
 #include "inexor/texture/image.hpp"
+#include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/util/Logging.hpp"
+
+namespace inexor {
+namespace ui {
+namespace screen {
+    extern ScreenManager screen_manager;
+}
+}
+}
+
+using namespace inexor::ui::screen;
 
 void writepngchunk(stream *f, const char *type, uchar *data = NULL, uint len = 0)
 {
@@ -286,9 +297,9 @@ void screenshot(char *filename)
         concatstring(buf, imageexts[format]);
     }
 
-    ImageData image(inexor::rendering::screen::screenw, inexor::rendering::screen::screenh, 3);
-    glPixelStorei(GL_PACK_ALIGNMENT, texalign(image.data, inexor::rendering::screen::screenw, 3));
-    glReadPixels(0, 0, inexor::rendering::screen::screenw, inexor::rendering::screen::screenh, GL_RGB, GL_UNSIGNED_BYTE, image.data);
+    ImageData image(screen_manager.screenw, screen_manager.screenh, 3);
+    glPixelStorei(GL_PACK_ALIGNMENT, texalign(image.data, screen_manager.screenw, 3));
+    glReadPixels(0, 0, screen_manager.screenw, screen_manager.screenh, GL_RGB, GL_UNSIGNED_BYTE, image.data);
     saveimage(path(buf), format, image, true);
 }
 

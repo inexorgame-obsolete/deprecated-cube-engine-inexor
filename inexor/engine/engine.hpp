@@ -430,10 +430,10 @@ enum
 };
 extern bool initwarning(const char *desc, int level = INIT_RESET, int type = CHANGE_GFX);
 
-extern bool grabinput, minimized;
+// extern bool grabinput, minimized;
 
-extern void pushevent(const SDL_Event &e);
-extern bool interceptkey(int sym);
+// extern void pushevent(const SDL_Event &e);
+// extern bool interceptkey(int sym);
 
 extern float loadprogress;
 extern void renderbackground(const char *caption = NULL, Texture *mapshot = NULL, const char *mapname = NULL, const char *mapinfo = NULL, bool restore = false, bool force = false);
@@ -446,11 +446,11 @@ extern const char *gettimestr(const char *format = "%d_%b_%y_%H.%M.%S", bool for
 
 enum { KR_CONSOLE = 1<<0, KR_GUI = 1<<1, KR_EDITMODE = 1<<2 };
 
-extern void keyrepeat(bool on, int mask = ~0);
+// extern void keyrepeat(bool on, int mask = ~0);
 
 enum { TI_CONSOLE = 1<<0, TI_GUI = 1<<1 };
 
-extern void textinput(bool on, int mask = ~0);
+// extern void textinput(bool on, int mask = ~0);
 
 // menu
 extern void menuprocess();

@@ -3,6 +3,8 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/ui.hpp"
+#include "inexor/ui/input/InputRouter.hpp"
+#include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/util/Subsystem.hpp"
 #include "inexor/crashreporter/CrashReporter.hpp"
 #include "inexor/util/Logging.hpp"
@@ -16,15 +18,13 @@ namespace rpc {
 }
 
 namespace inexor {
-namespace rendering {
+namespace ui {
+namespace input {
+    InputRouter input_router;
+}
 namespace screen {
-
     extern SharedVar<int> fullscreen, vsync, vsynctear;
-    extern void cleargamma();
-
-    /// screen resolution management
-    int screenw = 0, screenh = 0, desktopw = 0, desktoph = 0;
-
+    ScreenManager screen_manager;
 }
 }
 namespace sound {
@@ -32,37 +32,20 @@ namespace sound {
 }
 }
 
-using namespace inexor::rendering::screen;
 using namespace inexor::sound;
+using namespace inexor::ui::input;
+using namespace inexor::ui::screen;
 
 extern void writeinitcfg();
 
 /// local player
 dynent *player = NULL;
 
-/// Simple DirectMedia Window and Layer
-SDL_Window *sdl_window = NULL;
-SDL_GLContext glcontext = NULL;
-
 /// microtiming management integers
 int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1;
 int initing = NOT_INITING;
 
 inexor::util::Metasystem metapp;
-
-/// exiting the game
-
-void cleanupSDL()
-{
-    if(SDL_WasInit(SDL_INIT_VIDEO))
-    {
-        // free SDL context
-        if(sdl_window) SDL_SetWindowGrab(sdl_window, SDL_FALSE);
-        SDL_SetRelativeMouseMode(SDL_FALSE);
-        SDL_ShowCursor(SDL_TRUE);
-        cleargamma();
-    }
-}
 
 /// cleans up game memory and SDL at exit
 void cleanup()
@@ -74,7 +57,7 @@ void cleanup()
     recorder::stop();
     cleanupserver();
 
-    cleanupSDL();
+    screen_manager.cleanupSDL();
 
     freeocta(worldroot);
     clear_command();
@@ -108,7 +91,7 @@ COMMAND(quit, "");
 /// Fatal crash: log/display crash message and clean up SDL.
 void fatal(const char *s, ...)
 {
-    cleanupSDL();
+    screen_manager.cleanupSDL();
     static int errors = 0;
     errors++;
     if(errors <= 2) // print up to one extra recursive error
@@ -128,7 +111,7 @@ void fatal(const char *s, ...)
 /// Fatal crash: log/display crash message and clean up SDL.
 void fatal(std::vector<std::string> &output)
 {
-    cleanupSDL();
+    screen_manager.cleanupSDL();
     std::string completeoutput; 
     for(auto message : output) {
         // Temporarly disabled crash handler output (easylogging)
@@ -159,27 +142,17 @@ bool initwarning(const char *desc, int level, int type)
 /// screen setup and window settings
 
 
-/// hardcoded macros for minimal/maximal screen settings
-#define SCR_MINW 320
-#define SCR_MINH 200
-#define SCR_MAXW 10000
-#define SCR_MAXH 10000
-#define SCR_DEFAULTW 1024
-#define SCR_DEFAULTH 768
-
 /// function forward to change screen resolution
 namespace inexor {
-namespace rendering {
+namespace ui {
 namespace screen {
 
-    void screenres(int w, int h);
-
     // TODO: CEF userinterface
-    ICOMMAND(screenres, "ii", (int *w, int *h), screenres(*w, *h));
+    ICOMMAND(screenres, "ii", (int *w, int *h), screen_manager.screenres(*w, *h));
 
     /// change screen width and height
-    VARF(scr_w, SCR_MINW, -1, SCR_MAXW, screenres(scr_w, -1));
-    VARF(scr_h, SCR_MINH, -1, SCR_MAXH, screenres(-1, scr_h));
+    VARF(scr_w, SCR_MINW, -1, SCR_MAXW, screen_manager.screenres(scr_w, -1));
+    VARF(scr_h, SCR_MINH, -1, SCR_MAXH, screen_manager.screenres(-1, scr_h));
 
     /// various buffer precisions and anti aliasing
     /// @see initwarning
@@ -187,22 +160,15 @@ namespace screen {
     VARF(depthbits, 0, 0, 32, initwarning("depth-buffer precision"));
     VARF(stencilbits, 0, 0, 32, initwarning("stencil-buffer precision"));
 
-    /// "use this function to set the swap interval for the current OpenGL context" (VSYNC)
-    void restorevsync()
-    {
-        /// https://wiki.libsdl.org/SDL_GL_SetSwapInterval
-        if(glcontext) SDL_GL_SetSwapInterval(vsync ? (vsynctear ? -1 : 1) : 0);
-    }
-
     /// VSYNC settings
-    VARFP(vsync, 0, 0, 1, restorevsync());
-    VARFP(vsynctear, 0, 0, 1, { if(vsync) restorevsync(); });
+    VARFP(vsync, 0, 0, 1, screen_manager.restorevsync());
+    VARFP(vsynctear, 0, 0, 1, { if(vsync) screen_manager.restorevsync(); });
+
+    VARF(fsaa, -1, -1, 16, initwarning("anti-aliasing"));
 
 }
 }
 }
-
-VARF(fsaa, -1, -1, 16, initwarning("anti-aliasing"));
 
 /// write most important settings to init.cfg using an UTF-8 stream
 /// @see openutf8file
@@ -289,7 +255,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
     if(!inbetweenframes && !force) return;
     stopsounds(); // stop sounds while loading
 
-    int w = screenw, h = screenh;
+    int w = screen_manager.screenw, h = screen_manager.screenh;
     if(forceaspect) w = int(ceil(h*forceaspect));
     getbackgroundres(w, h);
     gettextres(w, h);
@@ -419,7 +385,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
             }
         }
         glDisable(GL_BLEND);
-        if(!restore) swapbuffers(false);
+        if(!restore) screen_manager.swapbuffers(false);
     }
 
     if(!restore)
@@ -450,7 +416,7 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
 
     if(background) restorebackground();
 
-    int w = screenw, h = screenh;
+    int w = screen_manager.screenw, h = screen_manager.screenh;
     if(forceaspect) w = int(ceil(h*forceaspect));
     getbackgroundres(w, h);
     gettextres(w, h);
@@ -554,254 +520,35 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
         glDisable(GL_BLEND);
     }
 
-    swapbuffers(false);
+    screen_manager.swapbuffers(false);
 }
 
 
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/// mouse and keyboard management (input)
-
-
-/// controlling input devices using Simple DirectMedia Layer
-bool shouldgrab = false, grabinput = false, minimized = false, canrelativemouse = true, relativemouse = false;
-
-/// try to initialise mouse with relative coordinates instead of absolute coordinates
-VARNP(relativemouse, userelativemouse, 0, 1, 1);
-
-/// key repetition is stored in bit masks
-int keyrepeatmask = 0;
-/// check if key was pressed repeatedly using bit masking technique
-void keyrepeat(bool on, int mask)
-{
-    if(on) keyrepeatmask |= mask;
-    else keyrepeatmask &= ~mask;
-}
-
-/// text input state is also stored in bit masks
-int textinputmask = 0;
-/// start and stop accepting Unicode text input events
-/// @see SDL_StartTextInput
-/// @see SDL_StopTextInput
-void textinput(bool on, int mask)
-{
-    if(on) 
-    {
-        if(!textinputmask) SDL_StartTextInput();
-        textinputmask |= mask;
-    }
-    else
-    {
-        textinputmask &= ~mask;
-        if(!textinputmask) SDL_StopTextInput();
-    }
-}
-
-/// sets input grab mode for mouse and keyboard
-void inputgrab(bool on)
-{
-    if(on)
-    {
-        SDL_ShowCursor(SDL_FALSE);
-        if(canrelativemouse && userelativemouse)
-        {
-            if(SDL_SetRelativeMouseMode(SDL_TRUE) >= 0) 
-            {
-                SDL_SetWindowGrab(sdl_window, SDL_TRUE);
-                relativemouse = true;
-            }
-            else 
-            {
-                SDL_SetWindowGrab(sdl_window, SDL_FALSE);
-                canrelativemouse = false;
-                relativemouse = false;
-            }
-        }
-    }
-    else
-    {
-        SDL_ShowCursor(SDL_TRUE); // show OS cursor
-        if(relativemouse)
-        {
-            SDL_SetWindowGrab(sdl_window, SDL_FALSE);
-            SDL_SetRelativeMouseMode(SDL_FALSE);
-            relativemouse = false;
-        }
-    }
-    shouldgrab = false;
-}
-
-bool initwindowpos = false;
 
 namespace inexor {
-namespace rendering {
+namespace ui {
+namespace input {
+    /// try to initialise mouse with relative coordinates instead of absolute coordinates
+    VARNP(input_router.relativemouse, userelativemouse, 0, 1, 1);
+}
 namespace screen {
-
-    /// switch fullscreen mode
-    void setfullscreen(bool enable)
-    {
-        if(!sdl_window) return;
-        //initwarning(enable ? "fullscreen" : "windowed");
-        SDL_SetWindowFullscreen(sdl_window, enable ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
-        if(!enable)
-        {
-            SDL_SetWindowSize(sdl_window, scr_w, scr_h);
-            cef_resize(scr_w, scr_h);
-            if(initwindowpos)
-            {
-                SDL_SetWindowPosition(sdl_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-                initwindowpos = false;
-            }
-        }
-    }
 
     /// @warning do not go full screen in debug mode (doesn't work with MSVC)
     #ifdef _DEBUG
-       VARF(fullscreen, 0, 0, 1, setfullscreen(fullscreen!=0));
+       VARF(fullscreen, 0, 0, 1, screen_manager.setfullscreen(fullscreen!=0));
     #else
-       VARF(fullscreen, 0, 1, 1, setfullscreen(fullscreen!=0));
+       VARF(fullscreen, 0, 1, 1, screen_manager.setfullscreen(fullscreen!=0));
     #endif
 
-    /// implementation of screen resolution changer
-    /// @warning forward must be declared above in the code because of the dependencies
-    void screenres(int w, int h)
-    {
-        scr_w = w!=-1 ? clamp(w, SCR_MINW, SCR_MAXW) : scr_w;
-        scr_h = h!=-1 ? clamp(h, SCR_MINH, SCR_MAXH) : scr_h;
-        if(sdl_window)
-        {
-            scr_w = min(scr_w, desktopw);
-            scr_h = min(scr_h, desktoph);
-            if(SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_FULLSCREEN) gl_resize();
-            else {
-                 SDL_SetWindowSize(sdl_window, scr_w, scr_h);
-                 cef_resize(scr_w, scr_h);
-            }
-        }
-        else
-        {
-            initwarning("screen resolution");
-        }
-    }
-
     /// screen gamma as float value
-    static int curgamma = 100;
+    // static int curgamma = 100;
     VARFP(gamma, 30, 100, 300,
     {
-        if(gamma == curgamma) return;
-        curgamma = gamma;
-        if(SDL_SetWindowBrightness(sdl_window, gamma/100.0f)==-1)
+        if(gamma == screen_manager.curgamma) return;
+        screen_manager.curgamma = gamma;
+        if(SDL_SetWindowBrightness(screen_manager.sdl_window, gamma/100.0f)==-1)
             spdlog::get("global")->error() << "Could not set gamma: " << SDL_GetError();
     });
-
-    /// set screen brightness using float value
-    /// @see curgamma
-    void restoregamma()
-    {
-        if(curgamma == 100) return;
-        SDL_SetWindowBrightness(sdl_window, curgamma/100.0f);
-    }
-
-    /// set screen to normal brightness
-    void cleargamma()
-    {
-        if(curgamma != 100 && sdl_window) {
-            /// "Use this function to set the brightness (gamma multiplier) for the display that owns a given window."
-            SDL_SetWindowBrightness(sdl_window, 1.0f);
-        }
-    }
-
-    /// setting up screen using various attempts with different options
-    /// @see SDL_GL_SetAttribute
-    void setupscreen(int &useddepthbits, int &usedfsaa)
-    {
-        if(glcontext)
-        {
-            SDL_GL_DeleteContext(glcontext);
-            glcontext = NULL;
-        }
-        if(sdl_window)
-        {
-            SDL_DestroyWindow(sdl_window);
-            sdl_window = NULL;
-        }
-
-        SDL_DisplayMode desktop;
-        if(SDL_GetDesktopDisplayMode(0, &desktop) < 0) fatal("failed querying desktop display mode: %s", SDL_GetError());
-        desktopw = desktop.w;
-        desktoph = desktop.h;
-
-        if(scr_h < 0) scr_h = SCR_DEFAULTH;
-        if(scr_w < 0) scr_w = (scr_h*desktopw)/desktoph;
-        scr_w = min(scr_w, desktopw);
-        scr_h = min(scr_h, desktoph);
-
-        int winw = scr_w, winh = scr_h, flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
-        if(fullscreen)
-        {
-            winw = desktopw;
-            winh = desktoph;
-            flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-            initwindowpos = true;
-        }
-
-        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-
-        static int configs[] =
-        {
-            0x7, /* try everything */
-            0x6, 0x5, 0x3, /* try disabling one at a time */
-            0x4, 0x2, 0x1, /* try disabling two at a time */
-            0 /* try disabling everything */
-        };
-        int config = 0;
-        SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
-        if(!depthbits) SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-        if(!fsaa)
-        {
-            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
-            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
-        }
-        loopi(sizeof(configs)/sizeof(configs[0]))
-        {
-            config = configs[i];
-            if(!depthbits && config&1) continue;
-            if(!stencilbits && config&2) continue;
-            if(fsaa<=0 && config&4) continue;
-            if(depthbits) SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, config&1 ? depthbits : 16);
-            if(stencilbits)
-            {
-                hasstencil = config&2 ? stencilbits : 0;
-                SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, hasstencil);
-            }
-            else hasstencil = 0;
-            if(fsaa>0)
-            {
-                SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, config&4 ? 1 : 0);
-                SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, config&4 ? fsaa : 0);
-            }
-            sdl_window = SDL_CreateWindow("Inexor", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, winw, winh, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | flags);
-            if(sdl_window) break;
-        }
-        if(!sdl_window) fatal("failed to create OpenGL window: %s", SDL_GetError());
-        else
-        {
-            if(depthbits && (config&1)==0) spdlog::get("global")->warn() << *depthbits << " bit z-buffer not supported - disabling";
-            if(stencilbits && (config&2)==0) spdlog::get("global")->warn() << "Stencil buffer not supported - disabling";
-            if(fsaa>0 && (config&4)==0) spdlog::get("global")->warn() << *fsaa << " anti-aliasing not supported - disabling";
-        }
-
-        SDL_SetWindowMinimumSize(sdl_window, SCR_MINW, SCR_MINH);
-        SDL_SetWindowMaximumSize(sdl_window, SCR_MAXW, SCR_MAXH);
-
-        glcontext = SDL_GL_CreateContext(sdl_window);
-        if(!glcontext) fatal("failed to create OpenGL context: %s", SDL_GetError());
-
-        SDL_GetWindowSize(sdl_window, &screenw, &screenh);
-
-        useddepthbits = config&1 ? depthbits : 0;
-        usedfsaa = config&4 ? fsaa : 0;
-        restorevsync();
-    }
 
 }
 }
@@ -852,9 +599,9 @@ void resetgl()
     cleanupgl();
     
     int useddepthbits = 0, usedfsaa = 0;
-    setupscreen(useddepthbits, usedfsaa);
+    screen_manager.setupscreen(useddepthbits, usedfsaa);
 
-    inputgrab(grabinput);
+    input_router.inputgrab();
 
     gl_init(useddepthbits, usedfsaa);
     inbetweenframes = false;
@@ -868,261 +615,13 @@ void resetgl()
     reloadfonts();
     inbetweenframes = true;
     renderbackground("initializing...");
-    restoregamma();
+    screen_manager.restoregamma();
     reloadshaders();
     reloadtextures();
     initlights();
     allchanged(true);
 }
 COMMAND(resetgl, "");
-
-
-/// global vector for input events
-/// please note: this is no a C++ standard library vector
-vector<SDL_Event> events;
-
-/// add a new event to event vector
-void pushevent(const SDL_Event &e)
-{
-    events.add(e); 
-}
-
-/// filter mouse motion events depending on operating system
-/// @warning this is very technical OS-depending code
-static bool filterevent(const SDL_Event &event)
-{
-    switch(event.type)
-    {
-        case SDL_MOUSEMOTION:
-            if(grabinput && !relativemouse && !(SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_FULLSCREEN))
-            {
-                if(event.motion.x == screenw / 2 && event.motion.y == screenh / 2) 
-                    return false;  // ignore any motion events generated by SDL_WarpMouse
-                #ifdef __APPLE__
-                if(event.motion.y == 0) 
-                    return false;  // let mac users drag windows via the title bar
-                #endif
-            }
-            break;
-    }
-    return true;
-}
-
-/// poll and filter all events in the SDL (input) event queue
-/// @see SDL_PollEvent
-/// @see filterevent
-static inline bool pollevent(SDL_Event &event)
-{
-    while(SDL_PollEvent(&event))
-    {
-        if(filterevent(event)) return true;
-    }
-    return false;
-}
-
-/// "abort" key to interrupt updating the masterlist, 
-/// connecting to a server or computing lightmaps
-bool interceptkey(int sym)
-{
-    static int lastintercept = SDLK_UNKNOWN;
-    int len = lastintercept == sym ? events.length() : 0;
-    SDL_Event event;
-    while(pollevent(event))
-    {
-        switch(event.type)
-        {
-            case SDL_MOUSEMOTION: break; /// ignore mouse motion events during loading processes
-            default: pushevent(event); break;
-        }
-    }
-    lastintercept = sym;
-    if(sym != SDLK_UNKNOWN) for(int i = len; i < events.length(); i++)
-    {
-        if(events[i].type == SDL_KEYDOWN && events[i].key.keysym.sym == sym) 
-        {
-            events.remove(i);
-            return true;
-        }
-    }
-    return false;
-}
-
-/// @see SDL_PeepEvents
-static void ignoremousemotion()
-{
-    SDL_Event e;
-    SDL_PumpEvents(); /// pumps the event loop, gathering events from the input devices. 
-    while(SDL_PeepEvents(&e, 1, SDL_GETEVENT, SDL_MOUSEMOTION, SDL_MOUSEMOTION)); /// check the event queue for messages and optionally return them
-}
-
-/// move mouse to screen center
-/// @see SDL_WarpMouseInWindow
-static void resetmousemotion()
-{
-    if(grabinput && !relativemouse && !(SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_FULLSCREEN))
-    {
-        SDL_WarpMouseInWindow(sdl_window, screenw / 2, screenh / 2);
-    }
-}
-
-/// handle mouse motion coordinates
-/// @warning this is a call by reference function!
-static void checkmousemotion(int &dx, int &dy)
-{
-    loopv(events)
-    {
-        SDL_Event &event = events[i];
-        if(event.type != SDL_MOUSEMOTION)
-        { 
-            if(i > 0) events.remove(0, i); 
-            return; 
-        }
-        dx += event.motion.xrel;
-        dy += event.motion.yrel;
-    }
-    events.setsize(0);
-    SDL_Event event;
-    while(pollevent(event))
-    {
-        if(event.type != SDL_MOUSEMOTION)
-        {
-            events.add(event);
-            return;
-        }
-        dx += event.motion.xrel;
-        dy += event.motion.yrel;
-    }
-}
-
-// SDL input process handler also takes care of program exit
-void checkinput()
-{
-    SDL_Event event;
-    //int lasttype = 0, lastbut = 0;
-    bool mousemoved = false;
-    while(events.length() || pollevent(event))
-    {
-        if(events.length()) event = events.remove(0);
-
-        if (event.type == SDL_QUIT) {
-            quit();
-            return;
-        }
-
-        /*
-        if (cef_app.get() && cef_app->GetAppLayer()->GetAcceptingInput()) {
-            logoutf("checkinput() -> to CEF");
-            bool handled = cef_app->HandleSdlEvent(event);
-            if (handled) continue;
-        }
-        */
-
-        if (inexor::ui::cef_app.get()) {
-            inexor::ui::cef_app->HandleSdlEvent(event);
-        }
-
-        switch(event.type)
-        {
-            case SDL_TEXTINPUT:
-            {
-                static uchar buf[SDL_TEXTINPUTEVENT_TEXT_SIZE+1];
-                int len = decodeutf8(buf, int(sizeof(buf)-1), (const uchar *)event.text.text, strlen(event.text.text));
-                if(len > 0) { buf[len] = '\0'; processtextinput((const char *)buf, len); }
-                break;
-            }
-
-            case SDL_KEYDOWN:
-            case SDL_KEYUP:
-                if(keyrepeatmask || !event.key.repeat)
-                    processkey(event.key.keysym.sym, event.key.state==SDL_PRESSED);
-                break;
-
-            case SDL_WINDOWEVENT:
-                switch(event.window.event)
-                {
-                    case SDL_WINDOWEVENT_CLOSE:
-                        quit();
-                        break;
-
-                    case SDL_WINDOWEVENT_FOCUS_GAINED:
-                        shouldgrab = true;
-                        break;
-                    case SDL_WINDOWEVENT_ENTER:
-                        inputgrab(grabinput = true);
-                break;
-
-                    case SDL_WINDOWEVENT_LEAVE:
-                    case SDL_WINDOWEVENT_FOCUS_LOST:
-                        inputgrab(grabinput = false);
-                        break;
-
-                    case SDL_WINDOWEVENT_MINIMIZED:
-                        minimized = true;
-                        break;
-
-                    case SDL_WINDOWEVENT_MAXIMIZED:
-                    case SDL_WINDOWEVENT_RESTORED:
-                        minimized = false;
-                        break;
-
-                    case SDL_WINDOWEVENT_RESIZED:
-                        break;
-
-                    case SDL_WINDOWEVENT_SIZE_CHANGED:
-                    {
-                        SDL_GetWindowSize(sdl_window, &screenw, &screenh);
-                        if(!(SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_FULLSCREEN))
-                        {
-                            scr_w = clamp(screenw, SCR_MINW, SCR_MAXW);
-                            scr_h = clamp(screenh, SCR_MINH, SCR_MAXH);
-                        }
-                        gl_resize();
-                    }
-                        break;
-                }
-                break;
-
-            case SDL_MOUSEMOTION:
-                if(grabinput)
-                {
-                    int dx = event.motion.xrel, dy = event.motion.yrel;
-                    checkmousemotion(dx, dy);
-                    if(!g3d_movecursor(dx, dy)) mousemove(dx, dy);
-                    mousemoved = true;
-                }
-                else if(shouldgrab) inputgrab(grabinput = true);
-                break;
-
-            case SDL_MOUSEBUTTONDOWN:
-            case SDL_MOUSEBUTTONUP:
-#ifdef __linux__
-   #define keycodeshift 0
-#else
-   #define keycodeshift 2*(event.button.button>=SDL_BUTTON_X1)
-#endif
-                processkey(-event.button.button - keycodeshift, event.button.state==SDL_PRESSED);
-                break;
-
-            case SDL_MOUSEWHEEL:
-                if(event.wheel.y > 0) { processkey(-4, true); processkey(-4, false); }
-                else if(event.wheel.y < 0) { processkey(-5, true); processkey(-5, false); }
-                if(event.wheel.x > 0) { processkey(-35, true); processkey(-35, false); }
-                else if(event.wheel.x < 0) { processkey(-36, true); processkey(-36, false); }
-                break;
-        }
-    }
-    if(mousemoved) resetmousemotion();
-}
-
-/// swapping buffers allows to render to a new buffer
-/// while the other is being presented to the screen
-/// @see SDL_GL_SwapWindow
-void swapbuffers(bool overlay)
-{
-    recorder::capture(overlay);
-    gle::disable();
-    SDL_GL_SwapWindow(sdl_window);
-}
 
 /// frames per seconds and timing
 
@@ -1137,7 +636,7 @@ VARP(maxfps, 0, 200, 1000);
 /// limit frames per seconds to use resources intelligently
 void limitfps(int &millis, int curmillis)
 {
-    int limit = (mainmenu || minimized) && menufps ? (maxfps ? min(maxfps, menufps) : menufps) : maxfps;
+    int limit = (mainmenu || screen_manager.minimized) && menufps ? (maxfps ? min(maxfps, menufps) : menufps) : maxfps;
     if(!limit) return;
     static int fpserror = 0;
     int delay = 1000/limit - (millis-curmillis);
@@ -1309,7 +808,7 @@ int main(int argc, char **argv)
             case 'z': depthbits = atoi(&argv[i][2]); break;
             case 'b': /* compat, ignore */ break;
             case 'a': fsaa = atoi(&argv[i][2]); break;
-            case 'v': vsync = atoi(&argv[i][2]); restorevsync(); break;
+            case 'v': vsync = atoi(&argv[i][2]); screen_manager.restorevsync(); break;
             case 't': fullscreen = atoi(&argv[i][2]); break;
             case 's': stencilbits = atoi(&argv[i][2]); break;
             case 'f': 
@@ -1383,7 +882,7 @@ int main(int argc, char **argv)
     #endif
 
     int useddepthbits = 0, usedfsaa = 0;
-    setupscreen(useddepthbits, usedfsaa);
+    screen_manager.setupscreen(useddepthbits, usedfsaa);
     SDL_ShowCursor(SDL_FALSE);
 
     spdlog::get("global")->debug() << "init: gl";
@@ -1461,8 +960,9 @@ int main(int argc, char **argv)
     initmumble();
     resetfpshistory();
 
-    inputgrab(grabinput = true);
-    ignoremousemotion();
+    input_router.set_grab_input(true);
+    input_router.inputgrab();
+    input_router.ignoremousemotion();
 
 	// main game loop
     for(;;)
@@ -1483,7 +983,7 @@ int main(int argc, char **argv)
 
         metapp.tick();
 
-        checkinput();
+        input_router.checkinput();
         menuprocess();
         tryedit();
 
@@ -1501,14 +1001,14 @@ int main(int argc, char **argv)
         updateparticles();
         updatesounds();
 
-        if(minimized) continue;
+        if(screen_manager.minimized) continue;
 
         inbetweenframes = false;
 
         if(mainmenu) gl_drawmainmenu();
         else gl_drawframe();
 
-        swapbuffers();
+        screen_manager.swapbuffers();
 
         renderedframe = inbetweenframes = true;
     }
