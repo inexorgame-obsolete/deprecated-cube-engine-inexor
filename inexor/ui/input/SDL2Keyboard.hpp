@@ -2,7 +2,11 @@
 #define INEXOR_UI_SDL2_KEYBOARD_HEADER
 
 #include <SDL.h>
+#include <include/cef_base.h>
 
+extern int getKeyboardModifiers(uint16_t const mod);
+
+extern uint16_t convertSDLtoJSKeyCode(SDL_Keycode sdl_keycode, bool shift = false, bool numlock = false);
 #define JSK_BACKSPACE        8
 #define JSK_TAB              9
 #define JSK_NUM5_SECOND     12
@@ -91,8 +95,16 @@
 #define JSK_F10            121
 #define JSK_F11            122
 #define JSK_F12            123
+
+#define JSC_BRACE_LEFT     123
+#define JSC_PIPE           124
+#define JSC_BRACE_RIGHT    125
+#define JSC_TILDE          126
+#define JSC_DELETE         127
+
 #define JSK_NUM_LOCK       144
 #define JSK_SCROLL_LOCK    145
+
 #define JSK_SEMI_COLON     186
 #define JSK_EQUAL_SIGN     187
 #define JSK_COMMA          188
@@ -100,6 +112,7 @@
 #define JSK_PERIOD         190
 #define JSK_FORWARD_SLASH  191
 #define JSK_GRAVE_ACCENT   192
+
 #define JSK_OPEN_BRACKET   219
 #define JSK_BACK_SLASH     220
 #define JSK_CLOSE_BRACKET  221
@@ -129,59 +142,7 @@
 #define JSC_QUESTION        63
 #define JSC_BRACKET_LEFT    91
 #define JSC_BACK_SLASH      92
-#define JSC_UNDERSCORE      95
 #define JSC_BRACKET_RIGHT   93
-#define JSC_BRACE_LEFT     123
-#define JSC_PIPE           124
-#define JSC_BRACE_RIGHT    125
-#define JSC_TILDE          126
-#define JSC_DELETE         127
-
-#define _SDLK_DELETE       127
-#define _SDLK_KP0          1073741912
-#define _SDLK_KP1          1073741913
-#define _SDLK_KP2          1073741914
-#define _SDLK_KP3          1073741915
-#define _SDLK_KP4          1073741916
-#define _SDLK_KP5          1073741917
-#define _SDLK_KP6          1073741918
-#define _SDLK_KP7          1073741919
-#define _SDLK_KP8          1073741920
-#define _SDLK_KP9          1073741921
-#define _SDLK_CAPS_LOCK    1073741881
-#define _SDLK_SCROLL_LOCK  1073741895
-#define _SDLK_INSERT       1073741897
-#define _SDLK_HOME         1073741898
-#define _SDLK_PAGEUP       1073741899
-#define _SDLK_END          1073741901
-#define _SDLK_PAGEDOWN     1073741902
-#define _SDLK_NUM          1073741907
-#define _SDLK_NUM_DIVIDE   1073741908
-#define _SDLK_NUM_MULTIPLY 1073741909
-#define _SDLK_NUM_SUBTRACT 1073741910
-#define _SDLK_NUM_ADD      1073741911
-#define _SDLK_NUM_ENTER    1073741912
-#define _SDLK_NUM_DECIMAL  1073741923
-#define _SDLK_SELECT       1073741925
-#define _SDLK_LCTRL        1073742048
-#define _SDLK_LSHIFT       1073742049
-#define _SDLK_LALT         1073742050
-#define _SDLK_LMETA        1073742051
-#define _SDLK_RCTRL        1073742052
-#define _SDLK_RSHIFT       1073742053
-#define _SDLK_RALT         1073742054
-#define _SDLK_RMETA        1073742055
-#define _SDLK_F1           1073741882
-#define _SDLK_F2           1073741883
-#define _SDLK_F3           1073741884
-#define _SDLK_F4           1073741885
-#define _SDLK_F5           1073741886
-#define _SDLK_F6           1073741887
-#define _SDLK_F7           1073741888
-#define _SDLK_F8           1073741889
-#define _SDLK_F9           1073741890
-#define _SDLK_F10          1073741891
-#define _SDLK_F11          1073741892
-#define _SDLK_F12          1073741893
+#define JSC_UNDERSCORE      95
 
 #endif
