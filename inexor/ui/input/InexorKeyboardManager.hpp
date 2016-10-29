@@ -1,11 +1,8 @@
-#ifndef INEXOR_UI_INEXOR_KEYBOARD_MANAGER_HEADER
-#define INEXOR_UI_INEXOR_KEYBOARD_MANAGER_HEADER
+#pragma once
 
 #include "include/cef_app.h"
-#include "include/cef_client.h"
 
 #include "inexor/ui/context/InexorContextProvider.hpp"
-#include "inexor/ui/input/SDL2Keyboard.hpp"
 #include "inexor/ui/layer/InexorLayerManager.hpp"
 
 namespace inexor {
@@ -17,13 +14,13 @@ class InexorKeyboardManager : public inexor::ui::context::InexorContextProvider,
 {
 
     public:
-        InexorKeyboardManager(CefRefPtr<inexor::ui::layer::InexorLayerManager> layer_manager);
+        InexorKeyboardManager(CefRefPtr<inexor::ui::layer::InexorLayerManager> layer_manager) : layer_manager(layer_manager) {}
 
-        void SendKeyEvent(SDL_Event event);
+        void SendKeyEvent(SDL_Event &e);
 
         // InexorCefContextProvider
-        void InitializeContext();
-        bool Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception);
+        virtual void InitializeContext() override {}
+        virtual bool Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception);
         bool Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& retval, CefString& exception);
         bool Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception);
         std::string GetContextName() { return "keyboard"; };
@@ -42,8 +39,5 @@ class InexorKeyboardManager : public inexor::ui::context::InexorContextProvider,
 
 };
 
-}
-}
-}
+} } } // ns inexor::ui::input
 
-#endif
