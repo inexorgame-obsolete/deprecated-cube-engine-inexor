@@ -85,27 +85,6 @@ function(require_sdl targ)
   require_opengl(${targ} ${NOLINK})
 endfunction()
 
-#### ENET
-
-find_libs(ENET_LIBS enet)
-find_path(ENET_INCLUDE_DIRS enet/enet.h)
-
-register_possible_dependency(${ENET_LIBS})
-
-function(require_enet targ)
-  message(STATUS "Configuring ${targ} with ENet")
-  if (";${ARGN};" MATCHES ";NOLINK;")
-    set(NOLINK "NOLINK")
-  endif()
-
-  include_directories(${ENET_INCLUDE_DIRS})
-  target_link_libs(${targ} ${ENET_LIBS} ${NOLINK})
-  if (OS_WINDOWS)
-    # Why does enet need winmm
-    target_link_libs(${targ} ws2_32 winmm ${NOLINK})
-  endif()
-endfunction()
-
 #### BOOST (System)
 
 find_libs(BOOST_SYSTEM_LIBS boost_system)
@@ -336,3 +315,5 @@ add_require_conan_lib_function(RapidJSON "-DRAPIDJSON_SSE2")
 # ZLIB (fast file compression)
 add_require_conan_lib_function(zlib)
 
+# ENet (reliable UDP networking lib)
+add_require_conan_lib_function(enet)
