@@ -1388,7 +1388,6 @@ void g3d_render()
     if(!fieldsactive) fieldmode = FIELDSHOW; //didn't draw any fields, so loose focus - mainly for menu closed
     if((fieldmode!=FIELDSHOW) != wasfocused) 
     {
-        input_router.textinput(fieldmode!=FIELDSHOW, TI_GUI);
         input_router.keyrepeat(fieldmode!=FIELDSHOW, KR_GUI);
     }
     

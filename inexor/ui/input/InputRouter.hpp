@@ -33,11 +33,6 @@ class InputRouter
         /// Check if key was pressed repeatedly using bit masking technique
         void keyrepeat(bool on, int mask);
 
-        /// Start and stop accepting unicode text input events
-        /// @see SDL_StartTextInput
-        /// @see SDL_StopTextInput
-        void textinput(bool on, int mask);
-
         /// Do grab the input depending on the current grab mode
         void inputgrab();
 

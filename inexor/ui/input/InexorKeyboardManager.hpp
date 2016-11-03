@@ -18,7 +18,9 @@ class InexorKeyboardManager : public inexor::ui::context::InexorContextProvider,
     public:
         InexorKeyboardManager(CefRefPtr<inexor::ui::layer::InexorLayerManager> layer_manager) : layer_manager(layer_manager) {}
 
-        void SendKeyEvent(SDL_Event &e);
+        /// Forward text input and key events to CEF.
+        /// Key events can be seen like Joystick keys, textinput differs from that since it can be composited from multiply keys.
+        void SendKeyEvent(SDL_Event &e) ;
 
         // InexorCefContextProvider
         virtual void InitializeContext() override {}
@@ -28,8 +30,8 @@ class InexorKeyboardManager : public inexor::ui::context::InexorContextProvider,
         std::string GetContextName() { return "keyboard"; };
 
         // CefKeyboardHandler
-        bool OnPreKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event, bool* is_keyboard_shortcut);
-        bool OnKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event);
+        virtual bool OnPreKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event, bool* is_keyboard_shortcut);
+        virtual bool OnKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event);
 
     private:
 
