@@ -842,10 +842,6 @@ int main(int argc, char **argv)
            par = SDL_INIT_NOPARACHUTE;
         #endif
         if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO|par)<0) fatal("Unable to initialize SDL: %s", SDL_GetError());
-
-        // Disable SDL_TEXTINPUT events at startup. They are only
-        // needed if text is about to be entered in chat.
-        SDL_StopTextInput();
     }
 
     spdlog::get("global")->debug() << "init: net";
