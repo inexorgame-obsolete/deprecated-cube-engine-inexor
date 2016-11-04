@@ -723,7 +723,7 @@ namespace ai
         }
 
         delete f;
-        spdlog::get("global")->info() << "loaded " << numwp << " waypoints from " << wptname;
+        spdlog::get("global")->info("loaded {} waypoints from {}", numwp, wptname);
 
         if(!cleanwaypoints()) clearwpcache();
     }
@@ -753,7 +753,7 @@ namespace ai
         }
 
         delete f;
-        spdlog::get("global")->info() << "saved " << (waypoints.length() - 1) << " waypoints to " << wptname;
+        spdlog::get("global")->info("saved {0} waypoints to {1}", (waypoints.length() - 1), wptname);
     }
 
     ICOMMAND(savewaypoints, "s", (char *mname), savewaypoints(true, mname));

@@ -201,7 +201,7 @@ namespace game
 	/// print my own nick name to the game console
     void printname()
     {
-        spdlog::get("global")->info() << "your name is: " << colorname(player1);
+        spdlog::get("global")->info("your name is: {0}", colorname(player1));
     }
     ICOMMAND(name, "sN", (char *s, int *numargs),
     {
@@ -214,7 +214,7 @@ namespace game
     ICOMMAND(tag, "sN", (char *s, int *numargs),
     {
         if(*numargs > 0) switchname("", s);
-        else if(!*numargs) spdlog::get("global")->info() << "your tag is: " << player1->tag;
+        else if(!*numargs) spdlog::get("global")->info("your tag is: {0}", player1->tag);
         else result(player1->tag);
     });
     ICOMMAND(gettag, "", (), result(player1->tag));
@@ -230,7 +230,7 @@ namespace game
     /// print own team name to the game console
     void printteam()
     {
-        spdlog::get("global")->info() << "your team is: " << player1->team;
+        spdlog::get("global")->info("your team is: {0}", player1->team);
     }
 
 	/// switch team or print team name 
@@ -309,11 +309,11 @@ namespace game
 	/// generate new public/private auth key pair using TIGER3 hashing algorithm
     void genauthkey(const char *secret)
     {
-        if(!secret[0]) { spdlog::get("global")->error() << "you must specify a secret password"; return; }
+        if(!secret[0]) { spdlog::get("global")->error("you must specify a secret password"); return; }
         vector<char> privkey, pubkey;
         genprivkey(secret, privkey, pubkey); // generate public and private key
-        spdlog::get("global")->info() << "private key: " << privkey.getbuf();
-        spdlog::get("global")->info() << "public key: " << pubkey.getbuf();
+        spdlog::get("global")->info("private key: {0}", privkey.getbuf());
+        spdlog::get("global")->info("public key: {0}", pubkey.getbuf());
     }
     COMMAND(genauthkey, "s");
 
@@ -322,13 +322,13 @@ namespace game
     void saveauthkeys()
     {
         stream *f = openfile("auth.cfg", "w");
-        if(!f) { spdlog::get("global")->error() << "failed to open auth.cfg for writing"; return; }
+        if(!f) { spdlog::get("global")->error("failed to open auth.cfg for writing"); return; }
         loopv(authkeys)
         {
             authkey *a = authkeys[i];
             f->printf("authkey %s %s %s\n", escapestring(a->name), escapestring(a->key), escapestring(a->desc));
         }
-        spdlog::get("global")->info() << "saved authkeys to auth.cfg";
+        spdlog::get("global")->info("saved authkeys to auth.cfg");
         delete f;
     }
     COMMAND(saveauthkeys, "");
@@ -357,7 +357,7 @@ namespace game
         if(editmode) return true;
         if(isconnected() && multiplayer(false) && !m_edit)
         {
-            spdlog::get("edit")->error() << "editing in multiplayer requires coop edit mode (1)";
+            spdlog::get("edit")->error("editing in multiplayer requires coop edit mode (1)");
             return false;
         }
         if(identexists("allowedittoggle") && !execute("allowedittoggle"))
@@ -574,7 +574,7 @@ namespace game
     {
         fpsent *d = getclient(cn);
         if(!d || d == player1) return;
-        spdlog::get("gameplay")->info() << "ignoring " << d->name;
+        spdlog::get("gameplay")->info("ignoring {0}", d->name);
         if(ignores.find(cn) < 0) ignores.add(cn);
     }
 
@@ -583,7 +583,7 @@ namespace game
     {
         if(ignores.find(cn) < 0) return;
         fpsent *d = getclient(cn);
-        if(d) spdlog::get("gameplay")->info() << "stopped ignoring " << d->name;
+        if(d) spdlog::get("gameplay")->info("stopped ignoring {0}", d->name);
         ignores.removeobj(cn);
     }
 
@@ -1135,17 +1135,17 @@ namespace game
     }
 
     /// send chat messages to server
-    void toserver(char *text) { spdlog::get("chat")->info() << colorname(player1) << ": " << COL_GREEN << text; addmsg(N_TEXT, "rcs", player1, text); }
+    void toserver(char *text) { spdlog::get("chat")->info("{0}: {1}{2}", colorname(player1), COL_GREEN, text); addmsg(N_TEXT, "rcs", player1, text); }
     COMMANDN(say, toserver, "C");
 
     /// send team messages to server
-    void sayteam(char *text) { spdlog::get("chat")->info() << colorname(player1) << ": " << COL_BLUE << text; addmsg(N_SAYTEAM, "rcs", player1, text); }
+    void sayteam(char *text) { spdlog::get("chat")->info("{0}: {1}{2}", colorname(player1), COL_BLUE, text); addmsg(N_SAYTEAM, "rcs", player1, text); }
     COMMAND(sayteam, "C");
 
     void sayprivate(int i, char *text)
     {
-        if(!clients.inrange(i) || !clients[i]) { spdlog::get("gameplay")->warn() << "no such player"; return; }
-        spdlog::get("chat")->info() << COL_GREY << "pm to " << colorname(clients[i]) << COL_GREY << ": " << COL_BLUE << text;
+        if(!clients.inrange(i) || !clients[i]) { spdlog::get("gameplay")->warn("no such player"); return; }
+        spdlog::get("chat")->info("{0}pm to {1}{0}: {2}{3}", COL_GREY, colorname(clients[i]), COL_BLUE, text);
         addmsg(N_PRIVMSG, "rcis", player1, i, text);
     }
     ICOMMAND(pm, "is", (int *i, char *text), sayprivate(*i, text));
@@ -1508,13 +1508,13 @@ namespace game
                 int mycn = getint(p), prot = getint(p);
                 if(prot!=PROTOCOL_VERSION)
                 {
-                    spdlog::get("global")->error() << "you are using a different game protocol (you: " << PROTOCOL_VERSION << ", server: " << prot <<")";
+                    spdlog::get("global")->error("you are using a different game protocol (you: {0}, server: {1})", PROTOCOL_VERSION, prot);
                     disconnect();
                     return;
                 }
                 sessionid = getint(p);
                 player1->clientnum = mycn;      // we are now connected
-                if(getint(p) > 0) spdlog::get("global")->info() << "this server is password protected";
+                if(getint(p) > 0) spdlog::get("global")->info("this server is password protected");
                 getstring(servinfo, p, sizeof(servinfo));
                 getstring(servauth, p, sizeof(servauth));
                 sendintro();
@@ -1538,8 +1538,8 @@ namespace game
                     gamepaused = val;
                     player1->attacking = false;
                 }
-                if(a) spdlog::get("gameplay")->info() << colorname(a) << " " << (val ? "paused" : "resumed") << " the game";
-                else spdlog::get("gameplay")->info() << "game is " << (val ? "paused" : "resumed");
+                if(a) spdlog::get("gameplay")->info("{0} {1} the game", colorname(a), (val ? "paused" : "resumed"));
+                else spdlog::get("gameplay")->info("game is {0}", (val ? "paused" : "resumed"));
                 break;
             }
             case N_GAMESPEED:
@@ -1549,8 +1549,8 @@ namespace game
                 if(!demopacket) gamespeed = val;
                 extern SharedVar<int> slowmosp;
                 if(m_sp && slowmosp) break;
-                if(a) spdlog::get("gameplay")->info() << colorname(a) << " set gamespeed to " << val;
-                else spdlog::get("gameplay")->info() << "gamespeed is " << val;
+                if(a) spdlog::get("gameplay")->info("{0} set gamespeed to {1}", colorname(a), val);
+                else spdlog::get("gameplay")->info("gamespeed is {0}", val);
                 break;
             }
             case N_PERSISTTEAMS:
@@ -1560,7 +1560,7 @@ namespace game
                 {
                     teamspersisted = true;
                 }
-                spdlog::get("gameplay")->info() << "teams will be " << (val ? "persistent" : "reshuffled") << " next game";
+                spdlog::get("gameplay")->info("teams will be {0} next game", (val ? "persistent" : "reshuffled"));
                 break;
             }
 
@@ -1586,7 +1586,7 @@ namespace game
                 if(isignored(d->clientnum)) break;
                 if(d->state!=CS_DEAD && d->state!=CS_SPECTATOR)
                     particle_textcopy(d->abovehead(), text, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
-                spdlog::get("chat")->info() << colorname(d) << ": " << COL_GREEN << text;
+                spdlog::get("chat")->info("{0}: {1}{2}", colorname(d), COL_GREEN, text);
                 break;
             }
 
@@ -1612,7 +1612,7 @@ namespace game
                 if(!t || isignored(t->clientnum)) break;
                 if(t->state!=CS_DEAD && t->state!=CS_SPECTATOR)
                     particle_textcopy(t->abovehead(), text, PART_TEXT, 2000, 0x6496FF, 4.0f, -8);
-                spdlog::get("chat")->info() << colorname(t) << ": " << COL_BLUE << text;
+                spdlog::get("chat")->info("{0}: {1}{2}", colorname(t), COL_BLUE, text);
                 break;
             }
 
@@ -1625,7 +1625,7 @@ namespace game
                 if(!t || isignored(t->clientnum)) break;
                 if(t->state!=CS_DEAD && t->state!=CS_SPECTATOR)
                     particle_textcopy(t->abovehead(), text, PART_TEXT, 2000, 0x6496FF, 4.0f, -8);
-                spdlog::get("chat")->info() << COL_GREY << "PM from " << colorname(t) << COL_GREY << ": " << COL_WHITE << text;
+                spdlog::get("chat")->info("{0}PM from {2}{0}: {1}{3}", COL_GREY, COL_WHITE, colorname(t), text);
                 break;
             }
 
@@ -1683,11 +1683,11 @@ namespace game
                 if(d->name[0])          // already connected
                 {
                     if(strcmp(d->name, text) && !isignored(d->clientnum))
-                        spdlog::get("gameplay")->info() << colorname(d) << " is now known as " << colorname(d, text);
+                        spdlog::get("gameplay")->info("{0} is now known as {1}", colorname(d), colorname(d, text));
                 }
                 else                    // new client
                 {
-                    spdlog::get("gameplay")->info() << COL_GREEN << "join: " << colorname(d, text, COL_WHITE);
+                    spdlog::get("gameplay")->info("{0}join: {1}", COL_GREEN, colorname(d, text, COL_WHITE));
                     if(needclipboard >= 0) needclipboard++;
                 }
                 copystring(d->name, text, MAXNAMELEN+1);
@@ -1713,7 +1713,7 @@ namespace game
                     {
 
                         if(!isignored(d->clientnum))
-                            spdlog::get("gameplay")->info() << colorname(d) << " is now known as " << colorname(d, text);
+                            spdlog::get("gameplay")->info("{0} is now known as {1}", colorname(d), colorname(d, text));
                         copystring(d->name, text, MAXNAMELEN+1);
                     }
                 }
@@ -2027,7 +2027,7 @@ namespace game
             case N_REMIP:
             {
                 if(!d) return;
-                spdlog::get("edit")->info() << colorname(d) << " remipped";
+                spdlog::get("edit")->info("{0} remipped", colorname(d));
                 mpremip(false);
                 break;
             }
@@ -2094,18 +2094,18 @@ namespace game
 
             case N_SERVMSG:
                 getstring(text, p);
-                spdlog::get("gameplay")->info() << text;
+                spdlog::get("gameplay")->info(text);
                 break;
 
             case N_SENDDEMOLIST:
             {
                 int demos = getint(p);
-                if(demos <= 0) spdlog::get("global")->warn() << "no demos available";
+                if(demos <= 0) spdlog::get("global")->warn("no demos available");
                 else loopi(demos)
                 {
                     getstring(text, p);
                     if(p.overread()) break;
-                    spdlog::get("global")->info() << (i + 1) << ". " << text;
+                    spdlog::get("global")->info("{0}. {1}", (i+1), text);
                 }
                 break;
             }
@@ -2203,7 +2203,7 @@ namespace game
                 if(!w) return;
                 filtertext(w->team, text, false, false, MAXTEAMLEN);
                 if(reason == 0 || reason == 1)
-                    spdlog::get("gameplay")->info() << colorname(w) << (reason ? " forced to team " : " switched to team ") << w->team;
+                    spdlog::get("gameplay")->info((reason ? "{0} forced to team {1}" : "{0} switched to team {1}"), colorname(w), w->team);
                 break;
             }
 
@@ -2218,8 +2218,8 @@ namespace game
             case N_ANNOUNCE:
             {
                 int t = getint(p);
-                if     (t==I_QUAD)  { playsound(S_V_QUAD10, NULL, NULL, 0, 0, 0, -1, 0, 3000);  spdlog::get("gameplay")->info() << "quad damage will spawn in 10 seconds!"; }
-                else if(t==I_BOOST) { playsound(S_V_BOOST10, NULL, NULL, 0, 0, 0, -1, 0, 3000); spdlog::get("gameplay")->info() << "+10 health will spawn in 10 seconds!"; }
+                if     (t==I_QUAD)  { playsound(S_V_QUAD10, NULL, NULL, 0, 0, 0, -1, 0, 3000);  spdlog::get("gameplay")->info("quad damage will spawn in 10 seconds!"); }
+                else if(t==I_BOOST) { playsound(S_V_BOOST10, NULL, NULL, 0, 0, 0, -1, 0, 3000); spdlog::get("gameplay")->info("+10 health will spawn in 10 seconds!"); }
                 break;
             }
 
@@ -2232,7 +2232,7 @@ namespace game
                 {
                     int newsize = 0;
                     while(1<<newsize < getworldsize()) newsize++;
-                    spdlog::get("edit")->info() << colorname(d) << (size >= 0 ? " started a new map of size " : " enlarged the map to size ") << newsize;
+                    spdlog::get("edit")->info((size >= 0 ? "{0} started a new map of size {1}" : "{0} enlarged the map to size {1}"), colorname(d), newsize);
                 }
                 break;
             }
@@ -2240,7 +2240,7 @@ namespace game
             case N_REQAUTH:
             {
                 getstring(text, p);
-                if(autoauth && text[0] && tryauth(text)) spdlog::get("global")->info() << "server requested authkey " << quoted(text);
+                if(autoauth && text[0] && tryauth(text)) spdlog::get("global")->info("server requested authkey \"{0}\"", text);
                 break;
             }
 
@@ -2304,7 +2304,7 @@ namespace game
                 defformatstring(fname, "%d.dmo", lastmillis);
                 stream *demo = openrawfile(fname, "wb");
                 if(!demo) return;
-                spdlog::get("global")->info() << "received demo " << quoted(fname);
+                spdlog::get("global")->info("received demo \"{0}\"", fname);
                 ucharbuf b = p.subbuf(p.remaining());
                 demo->write(b.buf, b.maxlen);
                 delete demo;
@@ -2321,7 +2321,7 @@ namespace game
                 fname.replace_extension(".ogz");
                 stream *map = openrawfile(fname.string().c_str(), "wb");
                 if(!map) return;
-                spdlog::get("edit")->info() << "received map";
+                spdlog::get("edit")->info("received map");
                 ucharbuf b = p.subbuf(p.remaining());
                 map->write(b.buf, b.maxlen);
                 delete map;
@@ -2358,8 +2358,8 @@ namespace game
 
     void getmap()
     {
-        if(!m_edit) { spdlog::get("edit")->error() << "\"getmap\" only works in coop edit mode"; return; }
-        spdlog::get("edit")->info() << "getting map...";
+        if(!m_edit) { spdlog::get("edit")->error("\"getmap\" only works in coop edit mode"); return; }
+        spdlog::get("edit")->info("getting map...");
         addmsg(N_GETMAP, "r");
     }
     COMMAND(getmap, "");
@@ -2391,23 +2391,23 @@ namespace game
 
     void getdemo(int i)
     {
-        if(i<=0) spdlog::get("global")->info() << "getting demo...";
-        else spdlog::get("global")->info() << "getting demo " << i << "...";
+        if(i<=0) spdlog::get("global")->info("getting demo...");
+        else spdlog::get("global")->info("getting demo {0}...", i);
         addmsg(N_GETDEMO, "ri", i);
     }
     ICOMMAND(getdemo, "i", (int *val), getdemo(*val));
 
     void listdemos()
     {
-        spdlog::get("global")->info() << "listing demos...";
+        spdlog::get("global")->info("listing demos...");
         addmsg(N_LISTDEMOS, "r");
     }
     COMMAND(listdemos, "");
 
     void sendmap()
     {
-        if(!m_edit || (player1->state==CS_SPECTATOR && remote && !player1->privilege)) { spdlog::get("edit")->error() << "\"sendmap\" only works in coop edit mode"; return; }
-        spdlog::get("edit")->info() << "sending map...";
+        if(!m_edit || (player1->state==CS_SPECTATOR && remote && !player1->privilege)) { spdlog::get("edit")->error("\"sendmap\" only works in coop edit mode"); return; }
+        spdlog::get("edit")->info("sending map...");
         defformatstring(mname, "sendmap_%d", lastmillis);
         save_world(mname, true);
         Path fname = getmediapath(mname, DIR_MAP);
@@ -2416,8 +2416,8 @@ namespace game
         if(map)
         {
             stream::offset len = map->size();
-            if(len > 4*1024*1024) spdlog::get("edit")->error() << "map is too large";
-            else if(len <= 0) spdlog::get("edit")->error() << "could not read map";
+            if(len > 4*1024*1024) spdlog::get("edit")->error("map is too large");
+            else if(len <= 0) spdlog::get("edit")->error("could not read map");
             else
             {
                 sendfile(-1, 2, map);
@@ -2425,7 +2425,7 @@ namespace game
             }
             delete map;
         }
-        else spdlog::get("edit")->error() << "could not read map";
+        else spdlog::get("edit")->error("could not read map");
         remove(findfile(fname.string().c_str(), "rb"));
     }
     COMMAND(sendmap, "");

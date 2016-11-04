@@ -89,7 +89,7 @@ void fatal(const char *s, ...)
     {
         defvformatstring(msg,s,s);
         // Temporarly disabled crash handler output (easylogging)
-        spdlog::get("global")->critical() << msg;
+        spdlog::get("global")->critical(msg);
 
         #ifdef WIN32
             if(errors <= 1) MessageBox(NULL, msg, "Inexor fatal error", MB_OK|MB_SYSTEMMODAL);
@@ -106,7 +106,7 @@ void fatal(std::vector<std::string> &output)
     std::string completeoutput; 
     for(auto message : output) {
         // Temporarly disabled crash handler output (easylogging)
-        spdlog::get("global")->critical() << message;
+        spdlog::get("global")->critical(message);
         completeoutput = inexor::util::fmt << completeoutput << message.c_str();
     }
 #ifdef WIN32
@@ -756,7 +756,7 @@ int main(int argc, char **argv)
             case 'q': 
             {
                 const char *dir = sethomedir(&argv[i][2]);
-                if(dir) spdlog::get("global")->debug() << "Using home directory: " << dir;
+                if(dir) spdlog::get("global")->debug("Using home directory: {}", dir);
                 break;
             }
         }
@@ -783,7 +783,7 @@ int main(int argc, char **argv)
             case 'k':
             {
                 const char *dir = addpackagedir(&argv[i][2]);
-                if(dir) spdlog::get("global")->debug() << "Adding package directory: " << dir;
+                if(dir) spdlog::get("global")->debug("Adding package directory: {}", dir);
                 break;
             }
             // case 'g': spdlog::get("global")->debug() << "Setting log file: " << &argv[i][2]; setlogfile(&argv[i][2]); break;
@@ -835,7 +835,7 @@ int main(int argc, char **argv)
 
     if(dedicated <= 1)
     {
-        spdlog::get("global")->debug() << "init: sdl";
+        spdlog::get("global")->debug("init: SDL");
 
         int par = 0;
         #ifdef _DEBUG
@@ -844,18 +844,18 @@ int main(int argc, char **argv)
         if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO|par)<0) fatal("Unable to initialize SDL: %s", SDL_GetError());
     }
 
-    spdlog::get("global")->debug() << "init: net";
+    spdlog::get("global")->debug("init: ENet");
     if(enet_initialize()<0) fatal("Unable to initialize network module");
     atexit(enet_deinitialize);
     enet_time_set(0);
 
-    spdlog::get("global")->debug() << "init: game";
+    spdlog::get("global")->debug("init: game");
     game::parseoptions(gameargs);
     initserver(dedicated>0, dedicated>1);  /// never returns if dedicated
     ASSERT(dedicated <= 1);
     game::initclient();
 
-    spdlog::get("global")->debug() << "init: video";
+    spdlog::get("global")->debug("init: video");
 
     SDL_SetHint(SDL_HINT_GRAB_KEYBOARD, "0");
     #if !defined(WIN32) && !defined(__APPLE__)
@@ -866,13 +866,13 @@ int main(int argc, char **argv)
     screen_manager.setupscreen(useddepthbits, usedfsaa);
     SDL_ShowCursor(SDL_FALSE);
 
-    spdlog::get("global")->debug() << "init: gl";
+    spdlog::get("global")->debug("init: gl");
     gl_checkextensions();
     gl_init(useddepthbits, usedfsaa);
     notexture = textureload("texture/inexor/notexture.png");
     if(!notexture) fatal("could not find core textures");
 
-    spdlog::get("global")->debug() << "init: console";
+    spdlog::get("global")->debug("init: console");
     if(!execfile("config/stdlib.cfg", false)) fatal("cannot find config files");
     if(!execfile("config/font.cfg", false)) fatal("cannot find font definitions");
     if(!setfont("default")) fatal("no default font specified");
@@ -880,19 +880,19 @@ int main(int argc, char **argv)
     inbetweenframes = true;
     renderbackground("initializing...");
 
-    spdlog::get("global")->debug() << "init: effects";
+    spdlog::get("global")->debug("init: effects");
     loadshaders();
     particleinit();
     initdecals();
 
-    spdlog::get("global")->debug() << "init: world";
+    spdlog::get("global")->debug("init: world");
     camera1 = player = game::iterdynents(0);
     emptymap(0, true, NULL, false);
 
-    spdlog::get("global")->debug() << "init: sound";
+    spdlog::get("global")->debug("init: sound");
     initsound();
 
-    spdlog::get("global")->debug() << "init: cfg";
+    spdlog::get("global")->debug("init: cfg");
     execfile("config/keymap.cfg");
     execfile("config/stdedit.cfg");
     execfile("config/menus.cfg");
@@ -928,7 +928,7 @@ int main(int argc, char **argv)
 
     if(load)
     {
-        spdlog::get("global")->debug() << "init: localconnect";
+        spdlog::get("global")->debug("init: localconnect");
         //localconnect();
         game::changemap(load);
     }
@@ -936,7 +936,7 @@ int main(int argc, char **argv)
 	loadhistory();
     if(initscript) execute(initscript);
 
-    spdlog::get("global")->debug() << "init: mainloop";
+    spdlog::get("global")->debug("init: mainloop");
 
     initmumble();
     resetfpshistory();

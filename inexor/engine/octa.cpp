@@ -162,7 +162,7 @@ void optiface(uchar *p, cube &c)
 void printcube()
 {
     cube &c = lookupcube(lu); // assume this is cube being pointed at
-    spdlog::get("global")->debug() << lu << " @" << lusize;
+    spdlog::get("global")->debug("{} @{}", lu, lusize);
     spdlog::get("global")->debug(" x  {0:8x}", c.faces[0]);
     spdlog::get("global")->debug(" y  {0:8x}", c.faces[1]);
     spdlog::get("global")->debug(" z  {0:8x}", c.faces[2]);

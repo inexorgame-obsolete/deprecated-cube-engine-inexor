@@ -222,7 +222,7 @@ void setupserver(int port, const char *ip = NULL)
     starttime = time(NULL);
     char *ct = ctime(&starttime);
     if(strchr(ct, '\n')) *strchr(ct, '\n') = '\0';
-    spdlog::get("global")->info() << "*** Starting master server on " << (ip ? ip : "localhost") << " " << port << " at " << ct << " ***";
+    spdlog::get("global")->info("*** Starting master server on {0} {1} at {2} ***", (ip ? ip : "localhost"), port, ct);
 }
 
 void genserverlist()
@@ -459,7 +459,7 @@ void reqauth(client &c, uint id, char *name)
     }
     string ip;
     if(enet_address_get_host_ip(&c.address, ip, sizeof(ip)) < 0) copystring(ip, "-");
-    spdlog::get("global")->info() << (ct ? ct : "-") << ": attempting \"" << name << "\" as " << id << " from " << ip;
+    spdlog::get("global")->info("{0}: attempting \"{1}\" as {2} from {3}", (ct ? ct : "-"), name, id, ip);
 
     userinfo *u = users.access(name);
     if(!u)
@@ -497,12 +497,12 @@ void confauth(client &c, uint id, const char *val)
         if(checkchallenge(val, c.authreqs[i].answer))
         {
             outputf(c, "succauth %u\n", id);
-            spdlog::get("global")->info() << "succeeded " << id << " from " << ip;
+            spdlog::get("global")->info("succeeded {} from {}", id, ip);
         }
         else
         {
             outputf(c, "failauth %u\n", id);
-            spdlog::get("global")->info() << "failed " << id << " from " << ip;
+            spdlog::get("global")->info("failed {} from {}", id, ip);
         }
         freechallenge(c.authreqs[i].answer);
         c.authreqs.remove(i--);
@@ -698,7 +698,7 @@ int main(int argc, char **argv)
     {
         if(reloadcfg)
         {
-            spdlog::get("global")->info() << "reloading master.cfg";
+            spdlog::get("global")->info("reloading master.cfg");
             execfile(cfgname);
             bangameservers();
             banclients();

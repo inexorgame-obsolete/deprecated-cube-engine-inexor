@@ -563,17 +563,17 @@ struct captureclientmode : clientmode
         {
             if(strcmp(b.owner, owner))
             {
-                if(!b.name[0]) spdlog::get("gameplay")->info() << teamcolor(owner, owner) << " captured base " << (i+1);
-                else if(basenumbers) spdlog::get("gameplay")->info() << teamcolor(owner, owner) << " captured " << b.name << '(' << (i+1) << ')';
-                else spdlog::get("gameplay")->info() << teamcolor(owner, owner) << " captured " << b.name;
+                if(!b.name[0]) spdlog::get("gameplay")->info("{0} captured base {1}", teamcolor(owner, owner), i+1);
+                else if(basenumbers) spdlog::get("gameplay")->info("{0} captured {1}({2})", teamcolor(owner, owner), b.name , (i+1));
+                else spdlog::get("gameplay")->info("{0} captured {1}", teamcolor(owner, owner), b.name);
                 if(!strcmp(owner, player1->team)) playsound(S_V_BASECAP);
             }
         }
         else if(b.owner[0])
         {
-            if(!b.name[0]) spdlog::get("gameplay")->info() << teamcolor(b.owner, b.owner) << " lost base " << (i+1);
-            else if(basenumbers) spdlog::get("gameplay")->info() << teamcolor(b.owner, b.owner) << " lost " << b.name << '(' << (i+1) << ')';
-            else spdlog::get("gameplay")->info() << teamcolor(b.owner, b.owner) << " lost " << b.name;
+            if(!b.name[0]) spdlog::get("gameplay")->info("{0} lost base {1}", teamcolor(b.owner, b.owner), i+1);
+            else if(basenumbers) spdlog::get("gameplay")->info("{0} lost {1}({2})", teamcolor(b.owner, b.owner), b.name, (i+1));
+            else spdlog::get("gameplay")->info("{0} lost {1}", teamcolor(b.owner, b.owner), b.name);
             if(!strcmp(b.owner, player1->team)) playsound(S_V_BASELOST);
         }
         if(strcmp(b.owner, owner)) particle_splash(PART_SPARK, 200, 250, b.ammopos, owner[0] ? (strcmp(owner, player1->team) ? 0x802020 : 0x2020FF) : 0x208020, 0.24f);
@@ -592,7 +592,7 @@ struct captureclientmode : clientmode
     void setscore(int base, const char *team, int total)
     {
         findscore(team).total = total;
-        if(total>=10000) spdlog::get("gameplay")->info() << teamcolor(team, team) << " captured all bases";
+        if(total>=10000) spdlog::get("gameplay")->info("{0} captured all bases", teamcolor(team, team));
         else if(bases.inrange(base))
         {
             baseinfo &b = bases[base];

@@ -19,7 +19,7 @@ InexorLayer::InexorLayer(std::string name, int x, int y, int width, int height, 
       browser_count(0),
       is_closing(false)
 {
-    spdlog::get("global")->info() << "init: cef: creating layer\n  name: " << name << "\n  url: " << url << "\n  x: " << x << "\n  y: " << y << "\n  width: " << width << "\n  height " << height << ")\n";
+    spdlog::get("global")->info("init: cef: creating layer\n  name: {0}\n url: {1}\n ({2}x{3} at {4}, {5})", name, url, width, height, x, y);
     window_info.x = x;
     window_info.y = y;
     window_info.width = width;
@@ -28,7 +28,7 @@ InexorLayer::InexorLayer(std::string name, int x, int y, int width, int height, 
     render_handler = new InexorRenderHandler(true, x, y, width, height);
     browser = CefBrowserHost::CreateBrowserSync(window_info, this, url, browser_settings, NULL);
     if (browser.get()) {
-        spdlog::get("global")->debug() << "init: cef: created layer " << quoted(name.c_str());
+        spdlog::get("global")->debug("init: cef: created layer \"{0}\"", name);
         UpdateFocus();
     }
 }
@@ -37,7 +37,7 @@ InexorLayer::~InexorLayer() { }
 
 void InexorLayer::SetVisibility(bool is_visible)
 {
-    spdlog::get("global")->info() << "InexorLayer::SetVisibility()\n";
+    spdlog::get("global")->info("InexorLayer::SetVisibility()");
     this->is_visible = is_visible;
     // browser->Reload();
     browser->GetHost()->WasHidden(!is_visible);
@@ -50,14 +50,14 @@ void InexorLayer::UpdateFocus()
 
 void InexorLayer::SetIsAcceptingKeyInput(bool is_accepting_key_input)
 {
-    spdlog::get("global")->info() << "InexorLayer::SetIsAcceptingKeyInput()\n";
+    spdlog::get("global")->info("InexorLayer::SetIsAcceptingKeyInput()");
 	this->is_accepting_key_input = is_accepting_key_input;
 	UpdateFocus();
 }
 
 void InexorLayer::SetIsAcceptingMouseInput(bool is_accepting_mouse_input)
 {
-    spdlog::get("global")->info() << "InexorLayer::SetIsAcceptingMouseInput()\n";
+    spdlog::get("global")->info("InexorLayer::SetIsAcceptingMouseInput()");
     this->is_accepting_mouse_input = is_accepting_mouse_input;
     UpdateFocus();
 }
@@ -144,7 +144,7 @@ void InexorLayer::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame>
     // Don't display an error for downloaded files.
     if (errorCode == ERR_ABORTED)
         return;
-    spdlog::get("global")->error() << "Failed to load URL " << failedUrl.ToString() << ": " << errorText.ToString();
+    spdlog::get("global")->error("Failed to load URL {0}: {1}", failedUrl.ToString(), errorText.ToString());
     // Display a load error message.
     std::stringstream error_message;
     error_message << "<html><body><h2>Failed to load URL " << std::string(failedUrl)
@@ -170,13 +170,13 @@ bool InexorLayer::OnKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& k
 void InexorLayer::OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& url)
 {
     CEF_REQUIRE_UI_THREAD();
-    spdlog::get("global")->debug() << "address change: " << url.ToString();
+    spdlog::get("global")->debug("address change: {0}", url.ToString());
 }
 
 void InexorLayer::OnStatusMessage(CefRefPtr<CefBrowser> browser, const CefString& value)
 {
     CEF_REQUIRE_UI_THREAD();
-    spdlog::get("global")->debug() << "status: " << value.ToString();
+    spdlog::get("global")->debug("status: {0}", value.ToString());
 }
 
 bool InexorLayer::OnConsoleMessage(CefRefPtr<CefBrowser> browser, const CefString& message, const CefString& source, int line)

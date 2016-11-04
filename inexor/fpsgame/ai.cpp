@@ -150,18 +150,18 @@ namespace ai
         bool resetthisguy = false;
         if(!d->name[0])
         {
-            if(aidebug) spdlog::get("gameplay")->debug() << colorname(d, name) << " assigned to " << (o ? colorname(o) : "?") << " at skill " << sk;
-            else spdlog::get("gameplay")->info() << COL_GREEN << "join: " << colorname(d, name, COL_WHITE);
+            if(aidebug) spdlog::get("gameplay")->debug("{} assigned to {} at skill ", colorname(d, name), (o ? colorname(o) : "?"), sk);
+            else spdlog::get("gameplay")->info("{}join: {}", COL_GREEN, colorname(d, name, COL_WHITE));
             resetthisguy = true;
         }
         else
         {
             if(d->ownernum != ocn)
             {
-                if(aidebug) spdlog::get("gameplay")->debug() << colorname(d, name) << " reassigned to " << (o ? colorname(o) : "?");
+                if(aidebug) spdlog::get("gameplay")->debug("{} reassigned to {}", colorname(d, name), (o ? colorname(o) : "?"));
                 resetthisguy = true;
             }
-            if(d->skill != sk && aidebug) spdlog::get("gameplay")->debug() << colorname(d, name) << " changed skill to " << sk;
+            if(d->skill != sk && aidebug) spdlog::get("gameplay")->debug("{} changed skill to {}", colorname(d, name), sk);
         }
 
         copystring(d->name, name, MAXNAMELEN+1);
