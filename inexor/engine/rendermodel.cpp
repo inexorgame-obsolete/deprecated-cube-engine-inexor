@@ -59,7 +59,7 @@ MODELTYPE(MDL_OBJ, obj);
 MODELTYPE(MDL_SMD, smd);
 MODELTYPE(MDL_IQM, iqm);
 
-#define checkmdl if(!loadingmodel) { spdlog::get("global")->error() << "not loading a model"; return; }
+#define checkmdl if(!loadingmodel) { spdlog::get("global")->error("not loading a model"); return; }
 
 void mdlcullface(int *cullface)
 {
@@ -261,7 +261,7 @@ void mdlname()
 COMMAND(mdlname, "");
 
 #define checkragdoll \
-    if(!loadingmodel->skeletal()) { spdlog::get("global")->error() << "not loading a skeletal model"; return; } \
+    if(!loadingmodel->skeletal()) { spdlog::get("global")->error("not loading a skeletal model"); return; } \
     skelmodel *m = (skelmodel *)loadingmodel; \
     if(m->parts.empty()) return; \
     skelmodel::skelmeshgroup *meshes = (skelmodel::skelmeshgroup *)m->parts.last()->meshes; \
@@ -389,7 +389,7 @@ void flushpreloadedmodels(bool msg)
         loadprogress = float(i+1)/preloadmodels.length();
         model *m = loadmodel(preloadmodels[i], -1, msg);
 
-        if(!m) { if(msg) spdlog::get("global")->warn() << "could not load model: " << preloadmodels[i]; } // TODO: LOG_N_TIMES(1)
+        if(!m) { if(msg) spdlog::get("global")->warn("could not load model: {0}", preloadmodels[i]); } // TODO: LOG_N_TIMES(1)
         else
         {
             m->preloadmeshes();
@@ -414,8 +414,8 @@ void preloadusedmapmodels(bool msg, bool bih)
         loadprogress = float(i+1)/mapmodels.length();
         int mmindex = mapmodels[i];
         mapmodelinfo *mmi = getmminfo(mmindex);
-        if(!mmi) { if(msg) spdlog::get("global")->warn() << "could not find map model: " << mmindex; } // TODO: LOG_N_TIMES(1)
-        else if(mmi->name[0] && !loadmodel(NULL, mmindex, msg)) { if(msg) spdlog::get("global")->warn() << "could not load model: " << mmi->name; } // TODO: LOG_N_TIMES(1)
+        if(!mmi) { if(msg) spdlog::get("global")->warn("could not find map model: {0}", mmindex); } // TODO: LOG_N_TIMES(1)
+        else if(mmi->name[0] && !loadmodel(NULL, mmindex, msg)) { if(msg) spdlog::get("global")->warn("could not load model: {0}", mmi->name); } // TODO: LOG_N_TIMES(1)
         else if(mmi->m)
         {
             if(bih) mmi->m->preloadBIH();
@@ -487,12 +487,12 @@ void cleanupmodels()
 void clearmodel(char *name)
 {
     model **m = models.access(name);
-    if(!m) { spdlog::get("global")->error() << "model " << name << " is not loaded"; return; }
+    if(!m) { spdlog::get("global")->error("model {0} is not loaded", name); return; }
     loopv(mapmodels) if(mapmodels[i].m==*m) mapmodels[i].m = NULL;
     models.remove(name);
     (*m)->cleanup();
     delete *m;
-    spdlog::get("global")->info() << "cleared model " << name;
+    spdlog::get("global")->info("cleared model {0}", name);
 }
 
 COMMAND(clearmodel, "s");

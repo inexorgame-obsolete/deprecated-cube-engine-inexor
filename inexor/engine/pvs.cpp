@@ -980,7 +980,7 @@ static void lockpvs_(bool lock)
     lockedwaterpvs = 0;
     loopi(wbytes) lockedwaterpvs |= pvsbuf[d->offset + i] << (i*8);
     loopi(MAXWATERPVS) lockedwaterplanes[i] = waterplanes[i].height;
-    spdlog::get("global")->info() << "locked view cell at " << camera1->o;
+    spdlog::get("global")->info("locked view cell at {}", camera1->o);
 }
 
 VARF(lockpvs, 0, 0, 1, lockpvs_(lockpvs!=0));
@@ -1101,7 +1101,7 @@ void genpvs(int *viewcellsize)
 {
     if(worldsize > 1<<15)
     {
-        spdlog::get("edit")->error() << "map is too large for PVS";
+        spdlog::get("edit")->error( "map is too large for PVS");
         return;
     }
 
@@ -1172,7 +1172,7 @@ void genpvs(int *viewcellsize)
     if(genpvs_canceled) 
     {
         clearpvs();
-        spdlog::get("edit")->info() << "genpvs aborted";
+        spdlog::get("edit")->info("genpvs aborted");
     }
     else spdlog::get("edit")->info("generated {0} unique view cells totaling {1} kB and averaging {2} B ({3} seconds)",
                                    pvs.length(), (pvsbuf.length()/1024.0f), (pvsbuf.length() / max(pvs.length(), 1)), ((end - start) / 1000.0f));

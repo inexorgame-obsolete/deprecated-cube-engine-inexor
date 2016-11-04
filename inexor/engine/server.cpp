@@ -18,7 +18,7 @@ void fatal(const char *fmt, ...)
 {
     cleanupserver(); 
 	defvformatstring(msg,fmt,fmt);
-	spdlog::get("global")->critical() << msg;
+	spdlog::get("global")->critical(msg);
 #ifdef WIN32
 	MessageBox(NULL, msg, "Inexor fatal error", MB_OK|MB_SYSTEMMODAL);
 #else
@@ -33,7 +33,7 @@ void fatal(std::vector<std::string> &output)
     cleanupserver();
     std::string completeoutput;
     for(auto message : output) {
-        spdlog::get("global")->critical() << message;
+        spdlog::get("global")->critical(message);
         completeoutput = inexor::util::fmt << completeoutput << message.c_str();
     }
 #ifdef WIN32
@@ -274,7 +274,7 @@ void disconnect_client(int n, int reason)
     string s;
     if(msg) formatstring(s, "client (%s) disconnected because: %s", clients[n]->hostname, msg);
     else formatstring(s, "client (%s) disconnected", clients[n]->hostname);
-    spdlog::get("global")->info() << s;
+    spdlog::get("global")->info(s);
     server::sendservmsg(s);
 }
 
@@ -343,14 +343,14 @@ ENetSocket connectmaster(bool wait)
     if(!mastername[0]) return ENET_SOCKET_NULL;
     if(masteraddress.host == ENET_HOST_ANY)
     {
-        if(isdedicatedserver()) spdlog::get("global")->info() << "looking up " << *mastername << "...";
+        if(isdedicatedserver()) spdlog::get("global")->info("looking up {0}...", *mastername);
         masteraddress.port = masterport;
         if(!resolverwait(mastername, &masteraddress)) return ENET_SOCKET_NULL;
     }
     ENetSocket sock = enet_socket_create(ENET_SOCKET_TYPE_STREAM);
     if(sock == ENET_SOCKET_NULL)
     {
-        if(isdedicatedserver()) spdlog::get("global")->warn() << "could not open master server socket";
+        if(isdedicatedserver()) spdlog::get("global")->warn("could not open master server socket");
         return ENET_SOCKET_NULL;
     }
     if(wait || serveraddress.host == ENET_HOST_ANY || !enet_socket_bind(sock, &serveraddress))
@@ -363,7 +363,7 @@ ENetSocket connectmaster(bool wait)
         else if(!enet_socket_connect(sock, &masteraddress)) return sock;
     }
     enet_socket_destroy(sock);
-    if(isdedicatedserver()) spdlog::get("global")->warn() << "could not connect to master server";
+    if(isdedicatedserver()) spdlog::get("global")->warn("could not connect to master server");
     return ENET_SOCKET_NULL;
 }
 
@@ -403,9 +403,9 @@ void processmasterinput()
         while(args < end && iscubespace(*args)) args++;
 
         if(matchstring(input, cmdlen, "failreg"))
-            spdlog::get("global")->error() << "master server registration failed: " << args;
+            spdlog::get("global")->error("master server registration failed: {0}", args);
         else if(matchstring(input, cmdlen, "succreg"))
-            spdlog::get("global")->info() << "master server registration succeeded";
+            spdlog::get("global")->info("master server registration succeeded");
         else server::processmasterinput(input, cmdlen, args);
 
         masterinpos = end - masterin.getbuf();
@@ -424,7 +424,7 @@ void flushmasteroutput()
 {
     if(masterconnecting && totalmillis - masterconnecting >= 60000)
     {
-        spdlog::get("global")->warn() << "could not connect to master server";
+        spdlog::get("global")->warn("could not connect to master server");
         disconnectmaster();
     }
     if(masterout.empty() || !masterconnected) return;
@@ -519,7 +519,7 @@ void checkserversockets()        // reply all server info requests
                 int error = 0;
                 if(enet_socket_get_option(mastersock, ENET_SOCKOPT_ERROR, &error) < 0 || error)
                 {
-                    spdlog::get("global")->warn() << "could not connect to master server";
+                    spdlog::get("global")->warn("could not connect to master server");
                     disconnectmaster();
                 }
                 else
@@ -621,7 +621,7 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
                 c.peer->data = &c;
                 string hn;
                 copystring(c.hostname, (enet_address_get_host_ip(&c.peer->address, hn, sizeof(hn))==0) ? hn : "unknown");
-                spdlog::get("global")->info() << "client connected (" << c.hostname << ")";
+                spdlog::get("global")->info("client connected ({0})", c.hostname);
                 int reason = server::clientconnect(c.num, c.peer->address.host);
                 if(reason) disconnect_client(c.num, reason);
                 break;
@@ -637,7 +637,7 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
             {
                 client *c = (client *)event.peer->data;
                 if(!c) break;
-                spdlog::get("global")->info() << "disconnected client (" << c->hostname << ")";
+                spdlog::get("global")->info("disconnected client ({0})", c->hostname);
                 server::clientdisconnect(c->num);
                 delclient(c);
                 break;
@@ -853,37 +853,37 @@ static LRESULT CALLBACK handlemessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 
 static void setupwindow(const char *title)
 {
-	copystring(apptip, title);
-	//appinstance = GetModuleHandle(NULL);
-	if(!appinstance) fatal("failed getting application instance");
-	appicon = LoadIcon(appinstance, MAKEINTRESOURCE(IDI_ICON1));//(HICON)LoadImage(appinstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE);
-	if(!appicon) spdlog::get("global")->error() << "failed loading icon";
+    copystring(apptip, title);
+    //appinstance = GetModuleHandle(NULL);
+    if(!appinstance) fatal("failed getting application instance");
+    appicon = LoadIcon(appinstance, MAKEINTRESOURCE(IDI_ICON1));//(HICON)LoadImage(appinstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE);
+    if(!appicon) spdlog::get("global")->error("failed loading icon");
 
-	appmenu = CreatePopupMenu();
-	if(!appmenu) fatal("failed creating popup menu");
+    appmenu = CreatePopupMenu();
+    if(!appmenu) fatal("failed creating popup menu");
     AppendMenu(appmenu, MF_STRING, MENU_OPENCONSOLE, "Open Console");
     AppendMenu(appmenu, MF_SEPARATOR, 0, NULL);
-	AppendMenu(appmenu, MF_STRING, MENU_EXIT, "Exit");
-	//SetMenuDefaultItem(appmenu, 0, FALSE);
+    AppendMenu(appmenu, MF_STRING, MENU_EXIT, "Exit");
+    //SetMenuDefaultItem(appmenu, 0, FALSE);
 
-	WNDCLASS wc;
-	memset(&wc, 0, sizeof(wc));
-	wc.hCursor = NULL; //LoadCursor(NULL, IDC_ARROW);
-	wc.hIcon = appicon;
-	wc.lpszMenuName = NULL;
-	wc.lpszClassName = title;
-	wc.style = 0;
-	wc.hInstance = appinstance;
-	wc.lpfnWndProc = handlemessages;
-	wc.cbWndExtra = 0;
-	wc.cbClsExtra = 0;
-	wndclass = RegisterClass(&wc);
-	if(!wndclass) fatal("failed registering window class");
+    WNDCLASS wc;
+    memset(&wc, 0, sizeof(wc));
+    wc.hCursor = NULL; //LoadCursor(NULL, IDC_ARROW);
+    wc.hIcon = appicon;
+    wc.lpszMenuName = NULL;
+    wc.lpszClassName = title;
+    wc.style = 0;
+    wc.hInstance = appinstance;
+    wc.lpfnWndProc = handlemessages;
+    wc.cbWndExtra = 0;
+    wc.cbClsExtra = 0;
+    wndclass = RegisterClass(&wc);
+    if(!wndclass) fatal("failed registering window class");
 	
-	appwindow = CreateWindow(MAKEINTATOM(wndclass), title, 0, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, HWND_MESSAGE, NULL, appinstance, NULL);
-	if(!appwindow) fatal("failed creating window");
+    appwindow = CreateWindow(MAKEINTATOM(wndclass), title, 0, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, HWND_MESSAGE, NULL, appinstance, NULL);
+    if(!appwindow) fatal("failed creating window");
 
-	atexit(cleanupwindow);
+    atexit(cleanupwindow);
 
     if(!setupsystemtray(WM_APP)) fatal("failed adding to system tray");
 }
@@ -936,7 +936,7 @@ bool isdedicatedserver() { return dedicatedserver; }
 void rundedicatedserver()
 {
     dedicatedserver = true;
-    spdlog::get("global")->info() << "dedicated server started, waiting for clients...";
+    spdlog::get("global")->info("dedicated server started, waiting for clients...");
 #ifdef WIN32
     SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
 	for(;;)
@@ -961,7 +961,7 @@ bool servererror(bool dedicated, const char *desc)
 #ifndef STANDALONE
     if(!dedicated)
     {
-        spdlog::get("global")->error() << desc;
+        spdlog::get("global")->error(desc);
         cleanupserver();
     }
     else
@@ -975,7 +975,7 @@ bool setuplistenserver(bool dedicated)
     ENetAddress address = { ENET_HOST_ANY, enet_uint16(serverport <= 0 ? server::serverport() : serverport) };
     if(*serverip)
     {
-        if(enet_address_set_host(&address, serverip)<0) spdlog::get("global")->warn() << "WARNING: server ip not resolved";
+        if(enet_address_set_host(&address, serverip)<0) spdlog::get("global")->warn("WARNING: server ip not resolved");
         else serveraddress.host = address.host;
     }
     serverhost = enet_host_create(&address, min(maxclients + server::reserveclients(), MAXCLIENTS), server::numchannels(), 0, serveruprate);
@@ -997,7 +997,7 @@ bool setuplistenserver(bool dedicated)
         enet_socket_destroy(lansock);
         lansock = ENET_SOCKET_NULL;
     }
-    if(lansock == ENET_SOCKET_NULL) spdlog::get("global")->warn() << "WARNING: could not create LAN server info socket";
+    if(lansock == ENET_SOCKET_NULL) spdlog::get("global")->warn("WARNING: could not create LAN server info socket");
     else enet_socket_set_option(lansock, ENET_SOCKOPT_NONBLOCK, 1);
     return true;
 }
@@ -1024,7 +1024,7 @@ void initserver(bool listen, bool dedicated)
         updatemasterserver();
         if(dedicated) rundedicatedserver(); // never returns
 #ifndef STANDALONE
-        else spdlog::get("global")->info() << "listen server started";
+        else spdlog::get("global")->info("listen server started");
 #endif
     }
 }
@@ -1032,7 +1032,7 @@ void initserver(bool listen, bool dedicated)
 #ifndef STANDALONE
 void startlistenserver(int *usemaster)
 {
-    if(serverhost) { spdlog::get("global")->error() << "listen server is already running"; return; }
+    if(serverhost) { spdlog::get("global")->error("listen server is already running"); return; }
 
     allowupdatemaster = *usemaster>0 ? 1 : 0;
 
@@ -1040,19 +1040,19 @@ void startlistenserver(int *usemaster)
     
     updatemasterserver();
 
-    spdlog::get("global")->info() << "listen server started for " << *maxclients << " clients" << (allowupdatemaster ? " and listed with master server" : "");
+    spdlog::get("global")->info("listen server started for {0} clients{1}", *maxclients, (allowupdatemaster ? " and listed with master server" : ""));
 }
 COMMAND(startlistenserver, "i");
 
 void stoplistenserver()
 {
-    if(!serverhost) { spdlog::get("global")->error() << "listen server is not running"; return; }
+    if(!serverhost) { spdlog::get("global")->error("listen server is not running"); return; }
 
     kicknonlocalclients();
     enet_host_flush(serverhost);
     cleanupserver();
 
-    spdlog::get("global")->info() << "listen server stopped";
+    spdlog::get("global")->info("listen server stopped");
 }
 COMMAND(stoplistenserver, "");
 #endif
@@ -1067,9 +1067,9 @@ bool serveroption(char *opt)
         case 'j': setvar("serverport", atoi(opt+2)); return true; 
         case 'm': setsvar("mastername", opt+2); setvar("updatemaster", mastername[0] ? 1 : 0); return true;
 #ifdef STANDALONE
-        case 'q': spdlog::get("global")->debug() << "Using home directory: " << opt; sethomedir(opt+2); return true;
-        case 'k': spdlog::get("global")->debug() << "Adding package directory: " << opt; addpackagedir(opt+2); return true;
-        case 'x': spdlog::get("global")->debug() << "Setting server init script: " << opt; initscript = opt+2; return true;
+        case 'q': spdlog::get("global")->debug("Using home directory: {}", opt); sethomedir(opt+2); return true;
+        case 'k': spdlog::get("global")->debug("Adding package directory: {}", opt); addpackagedir(opt+2); return true;
+        case 'x': spdlog::get("global")->debug("Setting server init script: {}", opt); initscript = opt+2; return true;
 #endif
         default: return false;
     }

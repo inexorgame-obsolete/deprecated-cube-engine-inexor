@@ -20,7 +20,7 @@ int connmillis = 0, connattempts = 0, discmillis = 0;
 bool multiplayer(bool msg)
 {
     bool val = curpeer || hasnonlocalclients(); 
-    if(val && msg) spdlog::get("global")->error() << "operation not available in multiplayer";
+    if(val && msg) spdlog::get("global")->error("operation not available in multiplayer");
     return val;
 }
 
@@ -95,7 +95,7 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
 {   
     if(connpeer)
     {
-        spdlog::get("global")->info() << "aborting connection attempt";
+        spdlog::get("global")->info("aborting connection attempt");
         abortconnect();
     }
 
@@ -112,7 +112,7 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
         spdlog::get("global")->info("attempting to connect to {0}:{1}", servername, serverport);
         if(!resolverwait(servername, &address))
         {
-            spdlog::get("global")->error() << "could not resolve server " << servername;
+            spdlog::get("global")->error("could not resolve server {0}", servername);
             return;
         }
     }
@@ -120,7 +120,7 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
     {
         setsvar("connectname", "");
         setvar("connectport", 0);
-        spdlog::get("global")->info() << "attempting to connect over LAN";
+        spdlog::get("global")->info("attempting to connect over LAN");
         address.host = ENET_HOST_BROADCAST;
     }
 
@@ -129,7 +129,7 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
         clienthost = enet_host_create(NULL, 2, server::numchannels(), rate*1024, rate*1024);
         if(!clienthost)
         {
-            spdlog::get("global")->error() << "could not connect to server";
+            spdlog::get("global")->error("could not connect to server");
             return;
         }
         clienthost->duplicatePeers = 0;
@@ -148,7 +148,7 @@ void reconnect(const char *serverpassword)
 {
     if(!connectname[0] || connectport <= 0)
     {
-        spdlog::get("global")->error() << "no previous connection";
+        spdlog::get("global")->error("no previous connection");
         return;
     }
     connectserv(connectname, connectport, serverpassword);
@@ -172,7 +172,7 @@ void disconnect(bool async, bool cleanup)
         }
         curpeer = NULL;
         discmillis = 0;
-        spdlog::get("global")->info() << "disconnected";
+        spdlog::get("global")->info("disconnected");
         game::gamedisconnect(cleanup);
         mainmenu = 1;
         // inexor::ui::cef_app->GetUserInterface()->SetMainMenu(true);
@@ -189,17 +189,17 @@ void trydisconnect(bool local)
 {
     if(connpeer)
     {
-        spdlog::get("global")->info() << "aborting connection attempt";
+        spdlog::get("global")->info("aborting connection attempt");
         abortconnect();
     }
     else if(curpeer)
     {
-        spdlog::get("global")->info() << "attempting to disconnect...";
+        spdlog::get("global")->info("attempting to disconnect...");
 		// try to disconnect synchronously for a while then disconnect asynchronously
         disconnect(!discmillis);
     }
     else if(local && haslocalclients()) localdisconnect();
-    else spdlog::get("global")->info() << "not connected";
+    else spdlog::get("global")->info("not connected");
 }
 
 // commands to establish and destroy network connections
@@ -228,7 +228,7 @@ void flushclient()
 // print illegal network message to console (wrong protocol?)
 void neterr(const char *s, bool disc)
 {
-    spdlog::get("global")->error() << "illegal network message " << quoted(s);
+    spdlog::get("global")->error("illegal network message \"{0}\"", s);
     if(disc) disconnect();
 }
 
@@ -252,12 +252,12 @@ void gets2c()
     if(!clienthost) return;
     if(connpeer && totalmillis/3000 > connmillis/3000)
     {
-        spdlog::get("global")->info() << "attempting to connect...";
+        spdlog::get("global")->info("attempting to connect...");
         connmillis = totalmillis;
         ++connattempts; 
         if(connattempts > 3)
         {
-            spdlog::get("global")->error() << "could not connect to server";
+            spdlog::get("global")->error("could not connect to server");
             abortconnect();
             return;
         }
@@ -270,14 +270,14 @@ void gets2c()
             localdisconnect(false);
             curpeer = connpeer;
             connpeer = NULL;
-            spdlog::get("global")->info() << "connected to server";
+            spdlog::get("global")->info("connected to server");
             throttle();
             if(rate) setrate(rate);
             game::gameconnect(true);
             break;
          
         case ENET_EVENT_TYPE_RECEIVE:
-            if(discmillis) spdlog::get("global")->info() << "attempting to disconnect...";
+            if(discmillis) spdlog::get("global")->info("attempting to disconnect...");
             else localservertoclient(event.channelID, event.packet);
             enet_packet_destroy(event.packet);
             break;
@@ -286,7 +286,7 @@ void gets2c()
             if(event.data>=DISC_NUM) event.data = DISC_NONE;
             if(event.peer==connpeer)
             {
-                spdlog::get("global")->error() << "could not connect to server";
+                spdlog::get("global")->error("could not connect to server");
                 abortconnect();
             }
             else
@@ -294,8 +294,8 @@ void gets2c()
                 if(!discmillis || event.data)
                 {
                     const char *msg = disconnectreason(event.data);
-                    if(msg) spdlog::get("global")->error() << "server network error, disconnecting (" << msg << ") ...";
-                    else spdlog::get("global")->error() << "server network error, disconnecting...";
+                    if(msg) spdlog::get("global")->error("server network error, disconnecting ({0}) ...", msg);
+                    else spdlog::get("global")->error("server network error, disconnecting...");
                 }
                 disconnect();
             }

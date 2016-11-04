@@ -766,7 +766,7 @@ struct ctfclientmode : clientmode
             f.droploc = vec(-1, -1, -1);
             f.interptime = 0;
         }
-        spdlog::get("gameplay")->info() << teamcolorname(d) << " dropped " << teamcolorflag(f);
+        spdlog::get("gameplay")->info("{0} dropped {1}", teamcolorname(d), teamcolorflag(f));
         playsound(S_FLAGDROP);
     }
 
@@ -809,7 +809,7 @@ struct ctfclientmode : clientmode
         f.interptime = 0;
         returnflag(i);
         if(m_protect && d->feetpos().dist(f.spawnloc) < FLAGRADIUS) d->flagpickup |= 1<<f.id;
-        spdlog::get("gameplay")->info() << teamcolorname(d) << " returned " << teamcolorflag(f);
+        spdlog::get("gameplay")->info("{0} returned {1}", teamcolorname(d), teamcolorflag(f));
         playsound(S_FLAGRETURN);
     }
 
@@ -835,7 +835,7 @@ struct ctfclientmode : clientmode
         returnflag(i, m_protect ? 0 : -1000);
         if(shouldeffect)
         {
-            spdlog::get("gameplay")->info() << teamcolorflag(f) << " reset";
+            spdlog::get("gameplay")->info("{0} reset", teamcolorflag(f));
             playsound(S_FLAGRESET);
         }
     }
@@ -866,11 +866,11 @@ struct ctfclientmode : clientmode
             particle_textcopy(d->abovehead(), ds, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
         }
         d->flags = dflags;
-        if(time) spdlog::get("gameplay")->info() << teamcolorname(d) << " scored for " << teamcolor("your team", ctfflagteam(team), "the enemy team") << std::setprecision(1) << " (in " << (float(time)/10.0f) << "s)";
-        else spdlog::get("gameplay")->info() << teamcolorname(d) << " scored for " << teamcolor("your team", ctfflagteam(team), "the enemy team");
+        if(time) spdlog::get("gameplay")->info("{} scored for {} (in {:.1f} seconds)", teamcolorname(d), teamcolor("your team", ctfflagteam(team), "the enemy team"), (float(time)/10.0f));
+        else spdlog::get("gameplay")->info("{0} scored for {1}", teamcolorname(d), teamcolor("your team", ctfflagteam(team), "the enemy team"));
         playsound(team==ctfteamflag(player1->team) ? S_FLAGSCORE : S_FLAGFAIL);
 
-        if(score >= FLAGLIMIT) spdlog::get("gameplay")->info() << teamcolor("your team", ctfflagteam(team), "the enemy team") << " captured " << score << "flags";
+        if(score >= FLAGLIMIT) spdlog::get("gameplay")->info("{0} captured {1} flags", teamcolor("your team", ctfflagteam(team), "the enemy team"), score);
     }
 
     void takeflag(fpsent *d, int i, int version)
@@ -880,9 +880,9 @@ struct ctfclientmode : clientmode
         f.version = version;
         f.interploc = interpflagpos(f, f.interpangle);
         f.interptime = lastmillis;
-        if(m_hold) spdlog::get("gameplay")->info() << teamcolorname(d) << " picked up the flag for " << teamcolor("your team", d->team, "the enemy team");
-        else if(m_protect || f.droptime) spdlog::get("gameplay")->info() << teamcolorname(d) << " picked up " << teamcolorflag(f);
-        else spdlog::get("gameplay")->info() << teamcolorname(d) << " stole " << teamcolorflag(f);
+        if(m_hold) spdlog::get("gameplay")->info("{0} picked up the flag for {1}", teamcolorname(d), teamcolor("your team", d->team, "the enemy team"));
+        else if(m_protect || f.droptime) spdlog::get("gameplay")->info("{0} picked up {1}", teamcolorname(d), teamcolorflag(f));
+        else spdlog::get("gameplay")->info("{0} stole {1}", teamcolorname(d), teamcolorflag(f));
         ownflag(i, d, lastmillis);
         playsound(S_FLAGPICKUP);
     }

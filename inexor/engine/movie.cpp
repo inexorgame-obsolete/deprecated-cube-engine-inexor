@@ -917,7 +917,7 @@ namespace recorder
  
         int fps, bestdiff, worstdiff;
         getfps(fps, bestdiff, worstdiff);
-        if(videofps > fps) spdlog::get("global")->warn() << "frame rate may be too low to capture at " << videofps << " fps";
+        if(videofps > fps) spdlog::get("global")->warn("frame rate may be too low to capture at {} fps", videofps);
         
         if(videow%2) videow += 1;
         if(videoh%2) videoh += 1;
@@ -925,7 +925,7 @@ namespace recorder
         file = new aviwriter(filename, videow, videoh, videofps, sound);
         if(!file->open()) 
         { 
-            spdlog::get("global")->error() << "unable to create file " << filename;
+            spdlog::get("global")->error("unable to create file {}", filename);
             DELETEP(file);
             return;
         }

@@ -438,18 +438,18 @@ template<class MDL> struct vertcommands : modelcommands<MDL, struct MDL::vertmes
 
     static void loadpart(char *model, float *smooth)
     {
-        if(!MDL::loading) { spdlog::get("global")->error() << "not loading an " << MDL::formatname(); return; }
+        if(!MDL::loading) { spdlog::get("global")->error("not loading an {0}", MDL::formatname()); return; }
         defformatstring(filename, "%s/%s", MDL::dir, model);
         part &mdl = MDL::loading->addpart();
         if(mdl.index) mdl.pitchscale = mdl.pitchoffset = mdl.pitchmin = mdl.pitchmax = 0;
         mdl.meshes = MDL::loading->sharemeshes(path(filename), double(*smooth > 0 ? cos(clamp(*smooth, 0.0f, 180.0f)*RAD) : 2));
-        if(!mdl.meshes) spdlog::get("global")->error() << "could not load " << filename;
+        if(!mdl.meshes) spdlog::get("global")->error("could not load {0}", filename);
         else mdl.initskins();
     }
     
     static void setpitch(float *pitchscale, float *pitchoffset, float *pitchmin, float *pitchmax)
     {
-        if(!MDL::loading || MDL::loading->parts.empty()) { spdlog::get("global")->error() << "not loading an " << MDL::formatname(); return; }
+        if(!MDL::loading || MDL::loading->parts.empty()) { spdlog::get("global")->error("not loading an {0}", MDL::formatname()); return; }
         part &mdl = *MDL::loading->parts.last();
     
         mdl.pitchscale = *pitchscale;
@@ -468,10 +468,10 @@ template<class MDL> struct vertcommands : modelcommands<MDL, struct MDL::vertmes
 
     static void setanim(char *anim, int *frame, int *range, float *speed, int *priority)
     {
-        if(!MDL::loading || MDL::loading->parts.empty()) { spdlog::get("global")->error() << "not loading an " << MDL::formatname(); return; }
+        if(!MDL::loading || MDL::loading->parts.empty()) { spdlog::get("global")->error("not loading an {0}", MDL::formatname()); return; }
         vector<int> anims;
         findanims(anim, anims);
-        if(anims.empty()) spdlog::get("global")->error() << "could not find animation " << anim;
+        if(anims.empty()) spdlog::get("global")->error("could not find animation {0}", anim);
         else loopv(anims)
         {
             MDL::loading->parts.last()->setanim(0, anims[i], *frame, *range, *speed, *priority);

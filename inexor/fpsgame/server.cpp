@@ -11,7 +11,7 @@ namespace game
             if(!game::clientoption(args[i]))
 #endif
             if(!server::serveroption(args[i]))
-                spdlog::get("global")->error() << "unknown command-line option: " << args[i];
+                spdlog::get("global")->error("unknown command-line option: {0}", args[i]);
     }
 
     const char *gameident() { return "fps"; }
@@ -3341,7 +3341,7 @@ namespace server
                 filtertext(text, text, true, true);
                 QUEUE_STR(text);
                 if(isdedicatedserver() && cq)
-                    spdlog::get("global")->info() << colorname(cq) << ": " << text;
+                    spdlog::get("global")->info("{0}: {1}", colorname(cq), text);
                 break;
             }
 
@@ -3357,7 +3357,7 @@ namespace server
                     sendf(t->clientnum, 1, "riis", N_SAYTEAM, cq->clientnum, text);
                 }
                 if(isdedicatedserver() && cq)
-                    spdlog::get("global")->info() << colorname(cq) << " <" << cq->team << ">: " << text;
+                    spdlog::get("global")->info("{0}<{1}>: {2}", colorname(cq), cq->team, text);
                 break;
             }
             case N_PRIVMSG:

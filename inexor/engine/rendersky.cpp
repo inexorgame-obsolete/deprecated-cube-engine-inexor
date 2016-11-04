@@ -56,7 +56,7 @@ Texture *loadskyoverlay(const char *basename)
             t = textureload(name, 0, true, false);
         }
     }
-    if(t==notexture) spdlog::get("global")->error() << "could not load sky overlay texture " << basename;
+    if(t==notexture) spdlog::get("global")->error("could not load sky overlay texture {}", basename);
     return t;
 }
 

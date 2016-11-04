@@ -344,7 +344,7 @@ bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex, bool msg, int 
         {
             cmds = tex->name;
             file = strrchr(tex->name, '>');
-            if(!file) { if(msg) spdlog::get("global")->warn() << "could not load texture " << tex->name; return false; }
+            if(!file) { if(msg) spdlog::get("global")->warn("could not load texture {}", tex->name); return false; }
             file++;
         }
         else file = tex->name;
@@ -357,7 +357,7 @@ bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex, bool msg, int 
     {
         cmds = tname;
         file = strrchr(tname, '>');
-        if(!file) { if(msg) spdlog::get("global")->warn() << "could not load texture " << tname; return false; }
+        if(!file) { if(msg) spdlog::get("global")->warn("could not load texture {}", tname); return false; }
         file++;
     }
 
@@ -393,7 +393,7 @@ bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex, bool msg, int 
         memcpy(dfile + flen - 4, ".dds", 4);
         if(!loaddds(dfile, d, raw ? 1 : (dds ? 0 : -1)) && (!dds || raw))
         {
-            if(msg) spdlog::get("global")->warn() << "could not load texture " << dfile;
+            if(msg) spdlog::get("global")->warn("could not load texture {}", dfile);
             return false;
         }
         if(d.data && !d.compressed && !dds && compress) *compress = scaledds;
@@ -402,9 +402,9 @@ bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex, bool msg, int 
     if(!d.data)
     {
         SDL_Surface *s = loadsurface(file);
-        if(!s) { if(msg) spdlog::get("global")->warn() << "could not load texture " << file; return false; }
+        if(!s) { if(msg) spdlog::get("global")->warn("could not load texture {}", file); return false; }
         int bpp = s->format->BitsPerPixel;
-        if(bpp%8 || !texformat(bpp/8)) { SDL_FreeSurface(s); spdlog::get("global")->warn() << "texture must be 8, 16, 24, or 32 bpp: " << file; return false; }
+        if(bpp%8 || !texformat(bpp/8)) { SDL_FreeSurface(s); spdlog::get("global")->warn("texture must be 8, 16, 24, or 32 bpp: {}", file); return false; }
         if(max(s->w, s->h) > (1<<12)) { SDL_FreeSurface(s); spdlog::get("global")->warn("texture size exceeded {0}x{1} pixels: {2}", (1<<12), (1<<12), file); return false; }
         d.wrap(s);
     }
@@ -564,8 +564,8 @@ bool reloadtexture(Texture &tex)
 void reloadtex(char *name)
 {
     Texture *t = gettexture(name);
-    if(!t) { spdlog::get("global")->error() << "texture " << name << " is not loaded"; return; }
-    if(t->type&Texture::TRANSIENT) { spdlog::get("global")->error() << "can't reload transient texture " << name; return; }
+    if(!t) { spdlog::get("global")->error("texture {} is not loaded", name); return; }
+    if(t->type&Texture::TRANSIENT) { spdlog::get("global")->error("can't reload transient texture {}", name); return; }
     DELETEA(t->alphamask);
     Texture oldtex = *t;
     t->id = 0;
@@ -573,7 +573,7 @@ void reloadtex(char *name)
     {
         if(t->id) glDeleteTextures(1, &t->id);
         *t = oldtex;
-        spdlog::get("global")->error() << "failed to reload texture " << name;
+        spdlog::get("global")->error("failed to reload texture {}", name);
     }
 }
 

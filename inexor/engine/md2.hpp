@@ -271,7 +271,7 @@ struct md2 : vertmodel, vertloader<md2>
         Texture *tex, *masks;
         loadskin(name, pname, tex, masks);
         mdl.initskins(tex, masks);
-        if(tex==notexture) spdlog::get("global")->error() << "could not load model skin for " << name1;
+        if(tex==notexture) spdlog::get("global")->error("could not load model skin for {}", name1);
         loading = this;
         identflags &= ~IDF_PERSIST;
         defformatstring(name3, "%s/%s/md2.cfg", *modeldir, name);

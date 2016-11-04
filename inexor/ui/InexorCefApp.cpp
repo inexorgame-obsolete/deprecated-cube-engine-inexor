@@ -7,7 +7,7 @@ namespace ui {
 
 InexorCefApp::InexorCefApp(int width, int height)
 {
-    spdlog::get("global")->info() << "init: cef: construct InexorCefApp (width: " << width << " height " << height << ")\n";
+    spdlog::get("global")->info("init: cef: construct InexorCefApp (dimensions: {}x{})", width, height);
 
     context_manager = new context::InexorContextManager();
 
@@ -34,7 +34,7 @@ void InexorCefApp::InitHudLayer()
     hud_layer->Show();
     context_manager->AddSubContext(hud_layer);
     layer_manager->AddLayerProvider(hud_layer);
-    spdlog::get("global")->debug() << "init: cef: hud layer\n";
+    spdlog::get("global")->debug("init: cef: hud layer");
 }
 
 void InexorCefApp::InitAppLayer()
@@ -45,7 +45,7 @@ void InexorCefApp::InitAppLayer()
     app_layer->Show();
     context_manager->AddSubContext(app_layer);
     layer_manager->AddLayerProvider(app_layer);
-    spdlog::get("global")->debug() << "init: cef: app layer\n";
+    spdlog::get("global")->debug("init: cef: app layer");
 }
 
 void InexorCefApp::Destroy()
@@ -66,7 +66,7 @@ void InexorCefApp::OnContextInitialized()
 
 void InexorCefApp::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context)
 {
-    spdlog::get("global")->debug() << " ====================== InexorCefApp::OnContextCreated() Injecting inexor object into javascript context\n";
+    spdlog::get("global")->debug(" ====================== InexorCefApp::OnContextCreated() Injecting inexor object into javascript context");
     CefRefPtr<CefV8Value> window_object = context->GetGlobal();
     context->GetGlobal()->SetValue(context_manager->GetContextName(), context_manager->GetContext(), V8_PROPERTY_ATTRIBUTE_NONE);
 }

@@ -62,7 +62,7 @@ class InexorRenderHandler : public CefRenderHandler {
         int view_y;
         int view_width;
         int view_height;
-        bool _view_change_defered;
+        bool _view_change_deferred;
         int _view_x;
         int _view_y;
         int _view_width;

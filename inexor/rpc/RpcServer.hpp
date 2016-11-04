@@ -376,7 +376,7 @@ bool RpcServer<MSG_TYPE, U>::change_variable(MSG_TYPE &receivedval)
     int64 index = receivedval.key_case();
     if(index <= 0)
     {
-        spdlog::get("global")->info() << "[Server] Received illegal message index (none was set)";
+        spdlog::get("global")->info("[Server] Received illegal message index (none was set)");
         return false;
     }
 
@@ -385,7 +385,7 @@ bool RpcServer<MSG_TYPE, U>::change_variable(MSG_TYPE &receivedval)
 
     if(ptr2variable_itr == cppvar_pointer_map.end() || expected_type_itr == index_to_type_map.end())
     {
-        spdlog::get("global")->info() << "network: received non-supported index: " << index; // -> to debug
+        spdlog::get("global")->info("network: received non-supported index: {0}", index); // -> to debug
         return false;
     }
 

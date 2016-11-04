@@ -3,6 +3,7 @@
 #pragma once
 
 #include <spdlog/spdlog.h>
+#include <spdlog/fmt/ostr.h>
 #undef LOG_INFO  //conflicting between spdlog and cef
 #undef LOG_WARNING
 
@@ -82,12 +83,9 @@ namespace util {
         {"trace", spdlog::level::trace},
         {"debug", spdlog::level::debug},
         {"info", spdlog::level::info},
-        {"notice", spdlog::level::notice},
         {"warning", spdlog::level::warn},
         {"error", spdlog::level::err},
         {"critical", spdlog::level::critical},
-        {"alert", spdlog::level::alert},
-        {"emergency", spdlog::level::emerg},
         {"off", spdlog::level::off}
     };
 

@@ -248,7 +248,7 @@ void toggleedit(bool force)
 /// concerns may be a scene selection which is not in view or disbaled editing status
 bool noedit(bool view, bool msg)
 {
-    if(!editmode) { if(msg) spdlog::get("edit")->error() << "operation only allowed in edit mode"; return true; }
+    if(!editmode) { if(msg) spdlog::get("edit")->error("operation only allowed in edit mode"); return true; }
     if(view || haveselent()) return false;
     float r = 1.0f;
     vec o(sel.o), s(sel.s);
@@ -256,7 +256,7 @@ bool noedit(bool view, bool msg)
     o.add(s);
     r = float(max(s.x, max(s.y, s.z)));
     bool viewable = (isvisiblesphere(r, o) != VFC_NOT_VISIBLE);
-    if(!viewable && msg) spdlog::get("edit")->error() << "selection not in view";
+    if(!viewable && msg) spdlog::get("edit")->error("selection not in view");
     return !viewable;
 }
 
@@ -879,7 +879,7 @@ static int countblock(block3 *b) { return countblock(b->c(), b->size()); }
 void swapundo(undolist &a, undolist &b, int op)
 {
     if(noedit()) return;
-    if(a.empty()) { spdlog::get("global")->warn() << "nothing more to " << (op == EDIT_REDO ? "redo" : "undo"); return; }
+    if(a.empty()) { spdlog::get("global")->warn("nothing more to {}", (op == EDIT_REDO ? "redo" : "undo")); return; }
     int ts = a.last->timestamp;
     if(multiplayer(false))
     {
@@ -1281,7 +1281,7 @@ void delprefab(char *name)
     {
         p->cleanup();
         prefabs.remove(name);
-        spdlog::get("edit")->info() << "deleted prefab " << name;
+        spdlog::get("edit")->info("deleted prefab {}", name);
     }
 }
 COMMAND(delprefab, "s");
@@ -1301,16 +1301,16 @@ void saveprefab(char *name)
     defformatstring(filename, "%s/%s.obr", *prefabdir, name);
     path(filename);
     stream *f = opengzfile(filename, "wb");
-    if(!f) { spdlog::get("global")->error() << "could not write prefab to " << filename; return; }
+    if(!f) { spdlog::get("global")->error("could not write prefab to {}", filename); return; }
     prefabheader hdr;
     memcpy(hdr.magic, "OEBR", 4);
     hdr.version = 0;
     lilswap(&hdr.version, 1);
     f->write(&hdr, sizeof(hdr));
     streambuf<uchar> s(f);
-    if(!packblock(*b->copy, s)) { delete f; spdlog::get("global")->error() << "could not pack prefab " << filename; return; }
+    if(!packblock(*b->copy, s)) { delete f; spdlog::get("global")->error("could not pack prefab {}", filename); return; }
     delete f;
-    spdlog::get("edit")->info() << "wrote prefab file " << filename;
+    spdlog::get("edit")->info("wrote prefab file {}", filename);
 }
 COMMAND(saveprefab, "s");
 
@@ -1332,14 +1332,14 @@ prefab *loadprefab(const char *name, bool msg = true)
    defformatstring(filename, strpbrk(name, "/\\") ? "packages/%s.obr" : "packages/prefab/%s.obr", name);
    path(filename);
    stream *f = opengzfile(filename, "rb");
-   if(!f) { if(msg) spdlog::get("global")->error() << "could not read prefab " << filename; return NULL; }
+   if(!f) { if(msg) spdlog::get("global")->error("could not read prefab {}", filename); return NULL; }
    prefabheader hdr;
-   if(f->read(&hdr, sizeof(hdr)) != sizeof(prefabheader) || memcmp(hdr.magic, "OEBR", 4)) { delete f; if(msg) spdlog::get("global")->error() << "prefab " << filename << " has malformatted header"; return NULL; }
+   if(f->read(&hdr, sizeof(hdr)) != sizeof(prefabheader) || memcmp(hdr.magic, "OEBR", 4)) { delete f; if(msg) spdlog::get("global")->error("prefab {} has malformatted header", filename); return NULL; }
    lilswap(&hdr.version, 1);
-   if(hdr.version != 0) { delete f; if(msg) spdlog::get("global")->error() << "prefab " << filename << " uses unsupported version"; return NULL; }
+   if(hdr.version != 0) { delete f; if(msg) spdlog::get("global")->error("prefab {} uses unsupported version", filename); return NULL; }
    streambuf<uchar> s(f);
    block3 *copy = NULL;
-   if(!unpackblock(copy, s)) { delete f; if(msg) spdlog::get("global")->error() << "could not unpack prefab " << filename; return NULL; }
+   if(!unpackblock(copy, s)) { delete f; if(msg) spdlog::get("global")->error("could not unpack prefab {}", filename); return NULL; }
    delete f;
 
    b = &prefabs[name];
@@ -2567,7 +2567,7 @@ bool mpreplacetex(int oldtex, int newtex, bool insel, selinfo &sel, ucharbuf &bu
 void replace(bool insel)
 {
     if(noedit()) return;
-    if(reptex < 0) { spdlog::get("global")->error() << "can only replace after a texture edit"; return; }
+    if(reptex < 0) { spdlog::get("global")->error("can only replace after a texture edit"); return; }
     mpreplacetex(reptex, lasttex, insel, sel, true);
 }
 
@@ -2758,7 +2758,7 @@ void editmat(char *name, char *filtername)
         if(filter < 0) filter = findmaterial(filtername);
         if(filter < 0)
         {
-            spdlog::get("global")->error() << "unknown material "<< quoted(filtername);
+            spdlog::get("global")->error("unknown material \"{}\"", filtername);
             return;
         }
     }
@@ -2766,7 +2766,7 @@ void editmat(char *name, char *filtername)
     if(name[0] || filter < 0)
     {
         id = findmaterial(name);
-        if(id<0) { spdlog::get("global")->error() << "unknown material " << quoted(name); return; }
+        if(id<0) { spdlog::get("global")->error("unknown material \"{}\"", name); return; }
     }
     mpeditmat(id, filter, sel, true);
 }
@@ -2867,7 +2867,7 @@ void g3d_texturemenu()
 /// show texture
 void showtexgui(int *n)
 {
-    if(!editmode) { spdlog::get("edit")->error() << "operation only allowed in edit mode"; return; }
+    if(!editmode) { spdlog::get("edit")->error("operation only allowed in edit mode"); return; }
     gui.showtextures(*n==0 ? !gui.menuon : *n==1);
 }
 

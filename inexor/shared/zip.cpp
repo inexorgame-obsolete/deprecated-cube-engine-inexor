@@ -277,21 +277,21 @@ bool addzip(const char *name, const char *mount = NULL, const char *strip = NULL
     ziparchive *exists = findzip(pname);
     if(exists) 
     {
-        spdlog::get("global")->error() << "already added zip " << pname;
+        spdlog::get("global")->error("already added zip {0}", pname);
         return true;
     }
  
     FILE *f = fopen(findfile(pname, "rb"), "rb");
     if(!f) 
     {
-        spdlog::get("global")->error() << "could not open file " << pname;
+        spdlog::get("global")->error("could not open file {0}", pname);
         return false;
     }
     zipdirectoryheader h;
     vector<zipfile> files;
     if(!findzipdirectory(f, h) || !readzipdirectory(pname, f, h.entries, h.offset, h.size, files))
     {
-        spdlog::get("global")->error() << "could not read directory in zip " << pname;
+        spdlog::get("global")->error("could not read directory in zip {0}", pname);
         fclose(f);
         return false;
     }
@@ -302,7 +302,7 @@ bool addzip(const char *name, const char *mount = NULL, const char *strip = NULL
     mountzip(*arch, files, mount, strip);
     archives.add(arch);
 
-    spdlog::get("global")->info() << "added zip " << pname;
+    spdlog::get("global")->info("added zip {0}", pname);
     return true;
 } 
      
@@ -316,15 +316,15 @@ bool removezip(const char *name)
     ziparchive *exists = findzip(pname);
     if(!exists)
     {
-        spdlog::get("global")->error() << "zip " << pname << " is not loaded";
+        spdlog::get("global")->error("zip {0} is not loaded", pname);
         return false;
     }
     if(exists->openfiles)
     {
-        spdlog::get("global")->error() << "zip " << pname << "has open files";
+        spdlog::get("global")->error("zip {0} has open files", pname);
         return false;
     }
-    spdlog::get("global")->info() << "removed zip " << exists->name;
+    spdlog::get("global")->info("removed zip {0}", exists->name);
     archives.removeobj(exists); 
     delete exists;
     return true;
@@ -523,7 +523,7 @@ struct zipstream : stream
                 else
                 {
 #ifndef STANDALONE
-                    if(dbgzip) spdlog::get("global")->debug() << "inflate error: " << zError(err);
+                    if(dbgzip) spdlog::get("global")->debug("inflate error: {0}", zError(err));
 #endif
                     stopreading(); 
                 }

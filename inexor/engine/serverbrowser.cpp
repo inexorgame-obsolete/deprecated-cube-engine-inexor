@@ -676,7 +676,7 @@ void updatefrommaster()
 {
     vector<char> data;
     retrieveservers(data);
-    if(data.empty()) spdlog::get("global")->error() << "master server not replying";
+    if(data.empty()) spdlog::get("global")->error("master server not replying");
     else
     {
         clearservers();
