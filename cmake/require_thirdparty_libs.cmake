@@ -317,3 +317,6 @@ add_require_conan_lib_function(zlib)
 
 # ENet (reliable UDP networking lib)
 add_require_conan_lib_function(enet)
+
+# spdlog (fast logging library)
+add_require_conan_lib_function(spdlog)
