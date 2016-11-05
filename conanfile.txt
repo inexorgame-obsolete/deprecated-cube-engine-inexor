@@ -1,0 +1,12 @@
+
+[generators]
+  cmake
+
+[requires]
+  RapidJSON/1.0.2@SamuelMarks/stable
+  pugixml/1.7@sl/ci
+  zlib/1.2.8@lasote/stable
+  gtest/1.7.0@lasote/stable
+
+[options]
+  gtest:shared=False
