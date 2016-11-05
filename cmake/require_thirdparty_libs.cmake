@@ -1,4 +1,8 @@
-# TODO: Write a lib detector that does the following: Search for cmake definitions; search for pkg-cfg's; search for libs and headers; everyting may be specified multiple times
+# Adding third-party libs is a three step procedure:
+# 1) Add it to conanfile.txt
+# 2) Add a require_XY() to this file
+# 3) Use the require_XY() in the places you need
+
 
 # NOTE: Locally built dependencies need to go to the bottom
 # so all the others are available and the GLIBC C++11 ABI detection
@@ -11,47 +15,23 @@ set(pwd "${CMAKE_CURRENT_SOURCE_DIR}")
 
 #### Threads
 
-if (NOT THREADAPI)
-  find_package(Threads REQUIRED)
-  
-  if(WIN32 AND CMAKE_USE_WIN32_THREADS_INIT)
-    set(THREADAPI "win32" CACHE INTERNAL "")
-  elseif(CMAKE_USE_PTHREADS_INIT OR CMAKE_HP_PTHREADS_INIT)
-    set(THREADAPI "pthreads" CACHE INTERNAL "")
-  endif()
-endif()
-
-if (THREADAPI STREQUAL "pthreads")
-  set(THREADAPI_PTHREADS 1 CACHE INTERNAL "")
-
-  find_libs(PTHREADS_LIBS pthread pthreadGC2 winpthread)
-  find_path(PTHREADS_INCLUDE_DIRS pthread.h)
-
-elseif(THREADAPI STREQUAL "win32")
-  set(THREADAPI_WIN32 1 CACHE INTERNAL "")
-endif()
-register_possible_dependency(${PTHREADS_LIBS})
-
-message(STATUS "THREADAPI : ${THREADAPI}")
+set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+find_package(Threads REQUIRED)
 
 function(require_threads targ)
-  message(STATUS "Configuring ${targ} with Threads (${THREADAPI})")
+  if(NOT CMAKE_THREAD_LIBS_INIT)
+    return()
+  endif()
+  message(STATUS "Configuring ${targ} with system threads (API: ${CMAKE_THREAD_LIBS_INIT})")
   if (";${ARGN};" MATCHES ";NOLINK;")
     set(NOLINK "NOLINK")
   endif()
 
-  if (THREADAPI_PTHREADS)
-    target_link_libs(${targ} ${PTHREADS_LIBS} ${NOLINK})
-    include_directories(${PTHREADS_INCLUDE_DIRS})
-  elseif(THREADAPI_WIN32)
-    # pass
-  else()
-    message(SEND_ERROR "Unkown thread API: ${THREADAPI}")
-  endif()
-
+  target_link_libraries(${targ} Threads::Threads)
 endfunction()
-#### OpenGL
 
+#### OpenGL
 find_package(OpenGL)
 
 set(OPENGL_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR} CACHE INTERNAL "")
@@ -103,39 +83,6 @@ function(require_sdl targ)
   endif()
 
   require_opengl(${targ} ${NOLINK})
-endfunction()
-
-#### ZLIB
-
-find_package(ZLIB)
-
-if (${ZLIB_FOUND})
-  set(ZLIB_LIBS ${ZLIB_LIBRARY} CACHE INTERNAL "")
-  set(ZLIB_INCLUDE_DIRS ${ZLIB_INCLUDE_DIR} CACHE INTERNAL "")
-else()
-  find_libs(ZLIB_LIBS z zlib1)
-  find_path(ZLIB_INCLUDE_DIRS zlib.h)
-
-  message(STATUS "ZLIB_LIBRARY2 = ${ZLIB_LIBRARY2}")
-  message(STATUS "ZLIB_INCLUDE_DIR2 = ${ZLIB_INCLUDE_DIR2}")
-
-  if (EXISTS ${ZLIB_LIBRARY} AND EXISTS ${ZLIB_INCLUDE_DIR})
-    set(ZLIB_FOUND 1)
-  else()
-    message(ERROR "Could not find zlib")
-  endif()
-endif()
-
-register_possible_dependency(${ZLIB_LIBS})
-
-function(require_zlib targ)
-  message(STATUS "Configuring ${targ} with ZLIB")
-  if (";${ARGN};" MATCHES ";NOLINK;")
-    set(NOLINK "NOLINK")
-  endif()
-
-  target_link_libs(${targ} ${ZLIB_LIBS} ${NOLINK})
-  include_directories(${ZLIB_INCLUDE_DIRS})
 endfunction()
 
 #### ENET
@@ -305,16 +252,6 @@ function(require_boost_program_options targ)
 
 endfunction()
 
-#### Rapidjson
-
-find_path(RAPIDJSON_INCLUDE_DIRS rapidjson/rapidjson.h)
-function(require_rapidjson targ)
-  message(STATUS "Configuring ${targ} with rapidjson")
-
-  add_definitions(-DRAPIDJSON_SSE2)
-  include_directories(${RAPIDJSON_INCLUDE_DIRS})
-endfunction()
-
 #### Protobuf
 
 find_libs(PROTOBUF_LIBRARIES protobuf)
@@ -368,51 +305,34 @@ function(require_grpc targ)
   require_protobuf(${targ} ${NOLINK})
 endfunction()
 
+# This macro lets us create a require_XY (with XY beeing the name of the library) without code dublication
+# but just the name of the library (as it can be found in conan).
+# Additional defines can be put last (e.g. "-DWINDOWS=0 -DDEFINENOSTATICS"), in case conanfile.txt don't provide the necessary arguments for them.
+macro(add_require_conan_lib_function name)
+  string(TOLOWER ${name} name_lower) # Tow different scopes for name_lower and NAME_UPPER: this a macro which does simple text replacement.
+  function(require_${name_lower} targ)
+    message(STATUS "Configuring ${targ} with library ${name}")
+    if (";${ARGN};" MATCHES ";NOLINK;")
+      set(NOLINK "NOLINK")
+    endif()
 
-#### Googletest
+    # This is a macro so the name_lower will have been overridden by other add_require_conan_lib_function invocations in the main time.
+    string(TOUPPER ${name} NAME_UPPER)
+    target_compile_definitions(${targ} PUBLIC ${CONAN_DEFINES_${NAME_UPPER}} ${ARGN})
+    target_include_directories(${targ} PUBLIC ${CONAN_INCLUDE_DIRS_${NAME_UPPER}})
+    target_link_libs(${targ} ${CONAN_LIBS_${NAME_UPPER}} ${NOLINK})
+  endfunction()
+endmacro()
 
-set(GTEST_DIR "${pwd}/googletest" CACHE INTERNAL "")
-set(GTEST_INCLUDE_DIRS "${GTEST_DIR}/include"
-  CACHE INTERNAL "")
+# Google test (unit testing framework)
+add_require_conan_lib_function(gtest)
 
-check_GLIBC_CXX11_AB1()
+# PugiXML (xml parser, used for our gluecode generator)
+add_require_conan_lib_function(pugixml)
 
-set(gtest_cxx_flags "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=${_GLIBCXX_USE_CXX11_ABI}")
+# Rapidjson (JSON parser)
+add_require_conan_lib_function(RapidJSON "-DRAPIDJSON_SSE2")
 
-# NOTE: For some reason compiling with pthreads fails for win32;
-# can we fix this?
-set(gtest_args
-      -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-      -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-      -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
-      -DCMAKE_CXX_FLAGS=${gtest_cxx_flags}
-      -Dgtest_disable_pthreads=true)
+# ZLIB (fast file compression)
+add_require_conan_lib_function(zlib)
 
-if (CMAKE_TOOLCHAIN_FILE)
-  list(APPEND gtest_args
-    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE})
-endif()
-
-ExternalProject_Add( build_gtest
-  SOURCE_DIR "${GTEST_DIR}"
-  INSTALL_COMMAND ""
-  CMAKE_ARGS ${gtest_args})
-
-# This is a bit of a hack to find the actual location of the
-# built library
-ExternalProject_Get_Property(build_gtest BINARY_DIR)
-set(GTEST_LIB_DIR ${BINARY_DIR} CACHE INTERNAL "")
-
-function(require_gtest targ)
-  message(STATUS "Configuring ${targ} with Google Test")
-  if (";${ARGN};" MATCHES ";NOLINK;")
-    set(NOLINK "NOLINK")
-  endif()
-
-  require_cxx11_abi(${targ} ${NOLINK})
-
-  add_dependencies(${targ} build_gtest)
-
-  include_directories(${GTEST_INCLUDE_DIRS})
-  target_link_libs(${targ} gtest ${NOLINK})
-endfunction()
