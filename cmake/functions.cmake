@@ -243,6 +243,7 @@ function(add_app exe)
     install(FILES ${pdbfile} DESTINATION ${EXE_DIR} OPTIONAL)
   endif()
 
+  target_link_libraries(${exe} ${CONAN_LIBS})
   install(TARGETS ${exe} DESTINATION ${EXE_DIR})
 endfunction()
 
