@@ -181,6 +181,9 @@ add_require_conan_lib_function(enet)
 # spdlog (fast logging library)
 add_require_conan_lib_function(spdlog)
 
+# CEF Chromium Embedded Framework (Embedded Browser used for the UI)
+add_require_conan_lib_function(CEF)
+
 # SDL (input output framework)
 add_require_conan_lib_function(SDL2)
 

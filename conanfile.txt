@@ -13,6 +13,7 @@
   SDL2/2.0.5@lasote/stable
   SDL2_mixer/2.0.1@a_teammate/testing
   SDL2_image/2.0.1@lasote/stable
+  CEF/3.2743.1445.gdad7c0a@a_teammate/testing
 
 [options]
   zlib:shared=False
@@ -22,3 +23,4 @@
   SDL2:shared=False
   SDL2_mixer:shared=False
   SDL2_image:shared=False
+  CEF:use_sandbox=False
