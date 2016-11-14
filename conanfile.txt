@@ -9,6 +9,8 @@
   gtest/1.7.0@lasote/stable
   ENet/1.3.13@a_teammate/stable
   spdlog/0.10.0@memsharded/stable
+  Boost/1.60.0@lasote/stable
 
 [options]
-  gtest:shared=False
+gtest:shared=False
+

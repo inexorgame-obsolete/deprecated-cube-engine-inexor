@@ -85,151 +85,60 @@ function(require_sdl targ)
   require_opengl(${targ} ${NOLINK})
 endfunction()
 
-#### BOOST (System)
+set(BOOST_ROOT ${CONAN_BOOST_ROOT})
+set(BOOST_LIBRARYDIR ${CONAN_LIB_DIRS_BOOST})
+set(BOOST_INCLUDEDIR ${CONAN_INCLUDE_DIRS_BOOST})
 
-find_libs(BOOST_SYSTEM_LIBS boost_system)
-find_path(BOOST_SYSTEM_INCLUDE_DIRS boost/system/config.hpp)
+#set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
+#set(Boost_USE_STATIC_RUNTIME ON)
 
-register_possible_dependency(${BOOST_SYSTEM_LIBS})
-
-function(require_boost_system targ)
-  message(STATUS "Configuring ${targ} with Boost System")
-
-  target_link_libs(${targ} ${BOOST_SYSTEM_LIBS})
-  target_include_directories(${targ} PUBLIC ${BOOST_SYSTEM_INCLUDE_DIRS})
-endfunction()
-
-#### BOOST (Thread)
-
-find_path(BOOST_THREAD_INCLUDE_DIRS boost/thread.hpp)
-
-if (THREADAPI_WIN32)
-  find_libs(BOOST_THREAD_LIBS boost_thread_win32 boost_thread)
-else()
-  find_libs(BOOST_THREAD_LIBS boost_thread)
+# Use the same threading as we found out from find_package(Threads)
+add_definitions(-DBOOST_ALL_NO_LIB ${CONAN_DEFINES_BOOST})
+if (CMAKE_USE_PTHREADS_INIT)
+  set(Boost_THREADAPI "pthread")
+  add_definitions(-DBOOST_THREAD_PTHREAD -DBOOST_THREAD_POSIX)
+elseif(CMAKE_USE_WIN32_THREADS_INIT)
+  add_definitions(-DBOOST_THREAD_WIN32)
+  set(Boost_THREADAPI "win32")
 endif()
+# conan: we can override FindBoost
+# include("${CONAN_BOOST_ROOT}/FindBoost.cmake") disable it until we have our runtime chosen.
 
-register_possible_dependency(${BOOST_THREAD_LIBS})
+find_package(Boost REQUIRED
+  COMPONENTS
+  thread
+  random
+  filesystem
+  regex
+  program_options
+)
 
-function(require_boost_thread targ)
-  message(STATUS "Configuring ${targ} with Boost Thread")
-  if (";${ARGN};" MATCHES ";NOLINK;")
-    set(NOLINK "NOLINK")
-  endif()
+# This macro lets us create a require_boost_XY for all other libs. name is the canonical name without spaces, e.g. "program_options"
+# additional defines can be listed, but WITHOUT "-D" and in quotes, followed by additional **boost lib requirements** e.g. "system thread"
+macro(add_require_boost_lib_function name defines requirements)
+  function(require_boost_${name} TARG)
+    message(STATUS "Configuring ${TARG} with library Boost ${name}")
 
-  require_boost_system(${targ} ${NOLINK})
-  require_threads(${targ} ${NOLINK})
+    string(TOUPPER ${name} NAME_UPPER) # we want PROGRAM_OPTIONS as variable
 
-  add_definitions(-DBOOST_THREAD_LIB)
+    string(REPLACE " " ";" DEFINES_LIST "${defines}") # string to list
+    string(REPLACE " " ";" REQUIREMENTS_LIST "${requirements}") # string to list, we just add those libs
+    target_compile_definitions(${TARG} PUBLIC ${CONAN_DEFINES_BOOST} ${defines})
+    target_include_directories(${TARG} PUBLIC ${Boost_INCLUDE_DIRS})
+    target_link_libraries(${TARG} ${Boost_${NAME_UPPER}_LIBRARY})
+    foreach(REQ ${REQUIREMENTS_LIST})
+      string(TOUPPER ${REQ} REQ_UPPER)
+      target_link_libraries(${TARG} ${Boost_${REQ_UPPER}_LIBRARY})
+    endforeach()
+  endfunction()
+endmacro()
 
-  if (THREADAPI_PTHREADS)
-    add_definitions(-DBOOST_THREAD_PTHREAD -DBOOST_THREAD_POSIX)
-  elseif(THREADAPI_WIN32)
-    #add_definitions(-DBOOST_THREAD_WIN32) # redundant
-  endif()
-
-  target_link_libs(${targ} ${BOOST_THREAD_LIBS} ${NOLINK})
-  target_include_directories(${targ} PUBLIC ${BOOST_THREAD_INCLUDE_DIRS})
-endfunction()
-
-#### BOOST (Random)
-
-find_libs(BOOST_RANDOM_LIBS boost_random)
-find_path(BOOST_RANDOM_INCLUDE_DIRS boost/random.hpp)
-
-register_possible_dependency(${BOOST_RANDOM_LIBS})
-
-function(require_boost_random targ)
-  message(STATUS "Configuring ${targ} with Boost Random")
-  if (";${ARGN};" MATCHES ";NOLINK;")
-    set(NOLINK "NOLINK")
-  endif()
-
-  require_boost_system(${targ} ${NOLINK})
-
-  include_directories(${BOOST_RANDOM_INCLUDE_DIRS})
-  target_link_libs(${targ} ${BOOST_RANDOM_LIBS} ${NOLINK})
-endfunction()
-
-#### BOOST (ASIO)
-
-find_path(ASIO_INCLUDE_DIRS boost/asio.hpp)
-
-function(require_asio targ)
-  message(STATUS "Configuring ${targ} with Boost Asio")
-  if (";${ARGN};" MATCHES ";NOLINK;")
-    set(NOLINK "NOLINK")
-  endif()
-  
-  add_definitions(-DBOOST_ASIO_HAS_STD_CHRONO)
-  include_directories(${ASIO_INCLUDE_DIRS})
-
-  if (WIN32)
-    target_link_libs(${targ} ws2_32 ${NOLINK})
-  endif()
-
-  require_boost_system(${targ})
-endfunction()
-
-function(require_boost_asio)
-  require_asio(${ARGN})
-endfunction()
-
-#### BOOST (Filesystem)
-
-find_libs(BOOST_FILESYSTEM_LIBS boost_filesystem)
-find_path(BOOST_FILESYSTEM_INCLUDE_DIRS boost/filesystem.hpp)
-
-register_possible_dependency(${BOOST_FILESYSTEM_LIBS})
-
-function(require_boost_filesystem targ)
-  message(STATUS "Configuring ${targ} with Boost Filesystem")
-  if (";${ARGN};" MATCHES ";NOLINK;")
-    set(NOLINK "NOLINK")
-  endif()
-
-  add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED)
-  target_link_libs(${targ} ${BOOST_FILESYSTEM_LIBS} ${NOLINK})
-  target_include_directories(${targ} PUBLIC ${BOOST_FILESYSTEM_INCLUDE_DIRS})
-
-  require_boost_system(${targ} ${NOLINK})
-endfunction()
-
-#### BOOST (Regex)
-
-find_libs(BOOST_REGEX_LIBS boost_regex)
-find_path(BOOST_REGEX_INCLUDE_DIRS boost/regex.hpp)
-
-register_possible_dependency(${BOOST_REGEX_LIBS})
-
-function(require_boost_regex targ)
-  message(STATUS "Configuring ${targ} with Boost Regex")
-  if (";${ARGN};" MATCHES ";NOLINK;")
-    set(NOLINK "NOLINK")
-  endif()
-
-  target_link_libs(${targ} ${BOOST_REGEX_LIBS} ${NOLINK})
-  target_include_directories(${targ} PUBLIC ${BOOST_REGEX_INCLUDE_DIRS})
-
-endfunction()
-
-#### BOOST (program options)
-
-find_libs(BOOST_PROGRAM_OPTS_LIBS boost_program_options)
-find_path(BOOST_PROGRAM_OPTS_INCLUDE_DIRS boost/program_options.hpp)
-
-register_possible_dependency(${BOOST_PROGRAM_OPTS_LIBS})
-
-function(require_boost_program_options targ)
-  message(STATUS "Configuring ${targ} with Boost program options")
-  if (";${ARGN};" MATCHES ";NOLINK;")
-    set(NOLINK "NOLINK")
-  endif()
-
-  target_link_libs(${targ} ${BOOST_PROGRAM_OPTS_LIBS} ${NOLINK})
-  target_include_directories(${targ} PUBLIC ${BOOST_PROGRAM_OPTS_INCLUDE_DIRS})
-
-endfunction()
+add_require_boost_lib_function(random "" "system")
+add_require_boost_lib_function(filesystem "BOOST_FILESYSTEM_NO_DEPRECATED" "system")
+add_require_boost_lib_function(thread "BOOST_THREAD_LIB" "")
+add_require_boost_lib_function(regex "" "")
+add_require_boost_lib_function(program_options "" "")
 
 #### Protobuf
 
@@ -297,7 +206,13 @@ macro(add_require_conan_lib_function name)
 
     # This is a macro so the name_lower will have been overridden by other add_require_conan_lib_function invocations in the main time.
     string(TOUPPER ${name} NAME_UPPER)
-    target_compile_definitions(${targ} PUBLIC ${CONAN_DEFINES_${NAME_UPPER}} ${ARGN})
+    set(OUR_DEFINITIONS "")
+    foreach(DEF ${CONAN_DEFINES_${NAME_UPPER}} ${ARGN}) # We must remove the -D before each of them..
+      string(REPLACE "-D" "" NEW_DEF ${DEF})
+      list(APPEND OUR_DEFINITIONS ${NEW_DEF})
+    endforeach()
+
+    target_compile_definitions(${targ} PUBLIC ${OUR_DEFINITIONS})
     target_include_directories(${targ} PUBLIC ${CONAN_INCLUDE_DIRS_${NAME_UPPER}})
     target_link_libs(${targ} ${CONAN_LIBS_${NAME_UPPER}} ${NOLINK})
   endfunction()
