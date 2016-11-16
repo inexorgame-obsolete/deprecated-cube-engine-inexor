@@ -99,48 +99,6 @@ add_require_boost_lib_function(thread "BOOST_THREAD_LIB" "")
 add_require_boost_lib_function(regex "" "")
 add_require_boost_lib_function(program_options "" "")
 
-#### Protobuf
-
-find_libs(PROTOBUF_LIBRARIES protobuf)
-find_path(PROTOBUF_INCLUDE_DIRS google/protobuf/service.h)
-
-if (NOT DEFINED PROTOC_EXE)
-  find_program(PROTOC_EXE protoc NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH )
-  # grpc and protoc make problems if versions arent matching.
-  # and since grpc is beta its not shipped for most linux distros
-  # and we pack it prebuilt into the platform repo
-endif()
-
-function(require_protobuf targ)
-  message(STATUS "Configuring ${targ} with protobuf")
-
-  add_definitions(-DPROTOBUF_USE_DLLS)
-  include_directories(${PROTOBUF_INCLUDE_DIRS})
-  target_link_libraries(${targ} ${PROTOBUF_LIBRARIES})
-endfunction()
-
-#### gRPC
-
-find_libs(GRPC_LIBRARIES gpr LIB grpc_unsecure LIB grpc++_unsecure)
-find_path(GRPC_INCLUDE_DIRS grpc/grpc.h)
-find_path(GRPCPP_INCLUDE_DIRS grpc++/grpc++.h)
-
-if (NOT DEFINED GRPC_EXE)
-  find_program(GRPC_EXE grpc_cpp_plugin NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH )
-  # grpc and protoc make problems if versions arent matching.
-  # and since grpc is beta its not shipped for most linux distros
-  # and we pack it prebuilt into the platform repo
-endif()
-
-function(require_grpc targ)
-  message(STATUS "Configuring ${targ} with gRPC")
-
-  include_directories(${GRPC_INCLUDE_DIRS} ${GRPCPP_INCLUDE_DIRS})
-  target_link_libraries(${targ} ${GRPC_LIBRARIES})
-
-  require_protobuf(${targ})
-endfunction()
-
 # This macro lets us create a require_XY (with XY being the name of the library) without code duplication
 # but just the name of the library (as it can be found in conan).
 # Additional defines can be put last (e.g. "-DWINDOWS=0 -DDEFINENOSTATICS"), in case conanfile.txt don't provide the necessary arguments for them.
@@ -177,6 +135,21 @@ add_require_conan_lib_function(zlib)
 
 # ENet (reliable UDP networking lib)
 add_require_conan_lib_function(enet)
+
+# Conan libs which will only work if found through find_package commands:
+
+# Protobuf (XML or JSON like serialization format but in binary, so it needs an compiler)
+add_require_conan_lib_function(Protobuf)
+find_program(Protobuf REQUIRED) 
+if (NOT DEFINED PROTOBUF_PROTOC_EXECUTABLE) # We additionally do this, since we don't have the "PROTOBUF_PROTOC_EXECUTABLE" path anywhere.
+  find_program(PROTOBUF_PROTOC_EXECUTABLE protoc PATHS ${CONAN_BIN_DIRS_PROTOBUF} NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH )
+endif()
+
+# gRPC (googles remote procedure call framework, used for Inexors networking and scripting binding)
+add_require_conan_lib_function(gRPC)
+if (NOT DEFINED GRPC_GRPC_CPP_PLUGIN) # We additionally do this, since we don't have the "PROTOBUF_PROTOC_EXECUTABLE" path anywhere.
+  find_program(GRPC_GRPC_CPP_PLUGIN grpc_cpp_plugin PATHS ${CONAN_BIN_DIRS_GRPC} NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH )
+endif()
 
 # spdlog (fast logging library)
 add_require_conan_lib_function(spdlog)

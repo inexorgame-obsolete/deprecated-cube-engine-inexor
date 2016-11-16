@@ -8,7 +8,7 @@
 find_package(Doxygen)
 
 if(NOT DOXYGEN_FOUND)
-    message(FATAL_ERROR "Doxygen is needed to genarete our glue code.")
+    message(FATAL_ERROR "Doxygen is needed to generate our glue code.")
 endif()
 if (NOT DEFINED GLUEGEN_EXE)
   find_program(GLUEGEN_EXE gluecodegenerator)
@@ -89,14 +89,14 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
       "--XML-AST-folder" "${DOXYGEN_XML_DIR}"
 
       # Invoke protoc compiler to generate the .gen.pb.h .gen.pb.cpp files from the .proto definition
-      COMMAND ${PROTOC_EXE}
+      COMMAND ${PROTOBUF_PROTOC_EXECUTABLE}
           --proto_path=${OUT_DIR}
           --cpp_out=${OUT_DIR}
           ${protoc_in}
 
       # same but for the GRPC additions (which does now generate the RPC logic in .gen.grpc.pb.cc)
-      COMMAND ${PROTOC_EXE}
-          --plugin=protoc-gen-grpc=${GRPC_EXE}
+      COMMAND ${PROTOBUF_PROTOC_EXECUTABLE}
+          --plugin=protoc-gen-grpc=${GRPC_GRPC_CPP_PLUGIN}
           --proto_path=${OUT_DIR}
           --grpc_out=${OUT_DIR}
           ${protoc_in}
