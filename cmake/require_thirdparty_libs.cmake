@@ -99,12 +99,14 @@ add_require_boost_lib_function(thread "BOOST_THREAD_LIB" "")
 add_require_boost_lib_function(regex "" "")
 add_require_boost_lib_function(program_options "" "")
 
-# This macro lets us create a require_XY (with XY being the name of the library) without code duplication
+# This macro lets us create a require_xy (with XY being the name of the library) without code duplication
 # but just the name of the library (as it can be found in conan).
+# require_xy is all lower case. LIMITATION: lib name ("XY") is not allowed to contain "-".
 # Additional defines can be put last (e.g. "-DWINDOWS=0 -DDEFINENOSTATICS"), in case conanfile.txt don't provide the necessary arguments for them.
 macro(add_require_conan_lib_function name)
   string(TOLOWER ${name} name_lower) # Tow different scopes for name_lower and NAME_UPPER: this a macro which does simple text replacement.
-  function(require_${name_lower} targ)
+  string(REPLACE "-" "_" name_lower_alphanumeric ${name_lower})
+  function(require_${name_lower_alphanumeric} targ)
     message(STATUS "Configuring ${targ} with library ${name}")
 
     # This is a macro so the name_lower will have been overridden by other add_require_conan_lib_function invocations in the main time.
@@ -127,6 +129,9 @@ add_require_conan_lib_function(gtest)
 # PugiXML (xml parser, used for our gluecode generator)
 add_require_conan_lib_function(pugixml)
 
+# Kainjow-Mustache (a template engine, used for our gluecode generator)
+add_require_conan_lib_function(Kainjow_Mustache)
+
 # Rapidjson (JSON parser)
 add_require_conan_lib_function(RapidJSON "-DRAPIDJSON_SSE2")
 
@@ -135,8 +140,6 @@ add_require_conan_lib_function(zlib)
 
 # ENet (reliable UDP networking lib)
 add_require_conan_lib_function(enet)
-
-# Conan libs which will only work if found through find_package commands:
 
 # Protobuf (XML or JSON like serialization format but in binary, so it needs an compiler)
 add_require_conan_lib_function(Protobuf)

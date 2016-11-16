@@ -11,7 +11,7 @@ if(NOT DOXYGEN_FOUND)
     message(FATAL_ERROR "Doxygen is needed to generate our glue code.")
 endif()
 if (NOT DEFINED GLUEGEN_EXE)
-  find_program(GLUEGEN_EXE gluecodegenerator)
+  find_program(GLUEGEN_EXE gluecodegenerator PATHS ${CONAN_BIN_DIRS_INEXORGLUEGEN})
 endif()
 
 
