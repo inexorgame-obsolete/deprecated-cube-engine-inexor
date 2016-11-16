@@ -6,8 +6,8 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include <pugixml/pugiconfig.hpp>
-#include <pugixml/pugixml.hpp>
+#include <pugiconfig.hpp>
+#include <pugixml.hpp>
 
 #include "inexor/filesystem/path.hpp"
 #include "inexor/gluegen/parse_sourcecode.hpp"
