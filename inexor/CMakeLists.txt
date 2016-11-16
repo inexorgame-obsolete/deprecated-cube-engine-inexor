@@ -28,4 +28,6 @@ opt_subdir(client on)
 opt_subdir(server off)
 opt_subdir(master off)
 opt_subdir(test   on)
+
+ # This gets used only if invoked from our conan.io package InexorGlueGen. otherwise just used for testing.
 opt_subdir(gluegen off)
