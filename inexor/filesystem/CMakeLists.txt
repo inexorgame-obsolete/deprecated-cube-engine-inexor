@@ -13,6 +13,7 @@ require_sdl(module_filesystem)
 require_boost_filesystem(module_filesystem)
 require_rapidjson(module_filesystem)
 require_util(module_filesystem)
+require_enet(module_filesystem)
 
 # This function is used to bind this module into another module/application
 function(require_filesystem targ)
@@ -24,5 +25,6 @@ function(require_filesystem targ)
   require_boost_filesystem(${targ})
   require_rapidjson(${targ})
   require_util(${targ})
+  require_enet(${targ}) # same cube.hpp shit
 
 endfunction()
