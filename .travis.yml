@@ -14,14 +14,14 @@ matrix:
       dist: trusty
       language: cpp
       compiler: clang
-      env: TARGET=linux_clang CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=clang++-3.7 -DCMAKE_C_COMPILER=clang-3.7 -DBUILD_ALL=1"
+      env: TARGET=linux_clang CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=clang++-3.7 -DCMAKE_C_COMPILER=clang-3.7 -DBUILD_GLUEGEN=0 -DBUILD_MASTER=1 -DBUILD_SERVER=1 -DBUILD_CLIENT=1" CONAN_COMPILER=clang CONAN_COMPILER_VERSION=3.7
 
     - os: linux
       sudo: required
       dist: trusty
       language: cpp
       compiler: gcc
-      env: TARGET=linux_gcc CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=g++-5 -DCMAKE_C_COMPILER=gcc-5 -DBUILD_ALL=1"
+      env: TARGET=linux_gcc CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=g++-5 -DCMAKE_C_COMPILER=gcc-5 -DBUILD_GLUEGEN=0 -DBUILD_MASTER=1 -DBUILD_SERVER=1 -DBUILD_CLIENT=1" CONAN_COMPILER=gcc CONAN_COMPILER_VERSION=5.2
 
     - os: linux
       sudo: required
