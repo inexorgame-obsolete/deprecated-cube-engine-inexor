@@ -101,7 +101,7 @@ install_linux() {
       protobuf-compiler libgconf2-dev libboost-all-dev \
       libudev-dev doxygen
   apt-get -y -t wily install build-essential binutils
-
+  python -m pip install conan
   # Manually workaround http://askubuntu.com/questions/288821/how-do-i-resolve-a-cannot-open-shared-object-file-libudev-so-0-error
   ln -sf /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0
 }
@@ -237,6 +237,8 @@ nigthly_build() {
 build() {
   (
     mkcd "/tmp/inexor-build-${build}"
+    conan
+    conan install "$gitroot" --build=missing -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx="libstdc++11"
     cmake $CMAKE_FLAGS "$gitroot"
     make -kj 5 install
   )
