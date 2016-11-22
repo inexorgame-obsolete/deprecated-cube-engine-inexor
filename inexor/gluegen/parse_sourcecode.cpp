@@ -212,7 +212,8 @@ void handle_so_constructors(optionclass &opt, const xml_node &compound_xml)
         std::cout << "arg.name: " << arg.name << std::endl;
         if(opt.hasdefaultvals)
         {
-            arg.default_value = parse_bracket(arg.default_value, string(), string()); //fu_cast<float>("{{index}}") -> "{{index}}"
+            std::string temp;
+            arg.default_value = parse_bracket(arg.default_value, temp, temp); //fu_cast<float>("{{index}}") -> "{{index}}"
             remove_quotes(arg.default_value);
             // TODO need escaping!
         }
@@ -350,8 +351,9 @@ void handle_shared_var(const xml_node var_xml, std::vector<ShTreeNode> &tree, st
     for(string raw_str : shared_option_strings) // e.g. NoSync() or Range(0, 3) or Persistent(true)
     {
         ShTreeNode::shared_option_arg option;
+        std::string temp;
 
-        string constructor_argsstr = parse_bracket(raw_str, option.class_name, string());
+        string constructor_argsstr = parse_bracket(raw_str, option.class_name, temp);
         option.constructor_args = tokenize_arg_list(constructor_argsstr);
 
 
