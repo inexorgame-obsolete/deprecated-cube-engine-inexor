@@ -1,6 +1,6 @@
 #include <boost/algorithm/clamp.hpp>
 
-#include "InputRouter.hpp"
+#include "inexor/ui/input/InputRouter.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/ui.hpp"
 
@@ -18,8 +18,7 @@ extern void mousemove(int dx, int dy);
 // ENDTODO
 
 namespace inexor {
-namespace ui {
-namespace input {
+namespace io {
 
 InputRouter::InputRouter()
     : shouldgrab(false),
@@ -325,6 +324,6 @@ void InputRouter::checkmousemotion(int &dx, int &dy)
     }
 }
 
-}
-}
-}
+// Instanciate singleton.
+InputRouter input_router;
+} } // ns inexor::io

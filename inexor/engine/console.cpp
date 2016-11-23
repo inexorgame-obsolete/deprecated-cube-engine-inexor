@@ -5,16 +5,9 @@
 #include "inexor/ui/input/InputRouter.hpp"
 #include "inexor/util/Logging.hpp"
 
-namespace inexor {
-namespace ui {
-namespace input {
-    extern InputRouter input_router;
-}
-}
-}
 
 using namespace inexor::util;
-using namespace inexor::ui::input;
+using namespace inexor::io;
 
 #define MAXCONLINES 1000
 struct cline { char *line; int type, outtime; };
