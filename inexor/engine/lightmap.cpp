@@ -6,15 +6,7 @@
 #include "inexor/ui/input/InputRouter.hpp"
 #include "inexor/util/Logging.hpp"
 
-namespace inexor {
-namespace ui {
-namespace input {
-    extern InputRouter input_router;
-}
-}
-}
-
-using namespace inexor::ui::input;
+using namespace inexor::io;
 
 #define MAXLIGHTMAPTASKS 4096
 #define LIGHTMAPBUFSIZE (2*1024*1024)

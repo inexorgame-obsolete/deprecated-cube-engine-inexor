@@ -5,19 +5,25 @@
 
 #include "inexor/rpc/SharedTree.hpp"
 
-#define INPUT_LAYER_GAME 0
-#define INPUT_LAYER_HUD  1
-#define INPUT_LAYER_APP  2
-#define INPUT_LAYER_CHAT 3
-
-#define INPUT_LAYER_GAME_PLAY 0
-#define INPUT_LAYER_GAME_EDIT 1
-#define INPUT_LAYER_GAME_SPEC 2
-
 namespace inexor {
-namespace ui {
-namespace input {
+namespace io {
 
+enum
+{
+    INPUT_LAYER_GAME = 0,
+    INPUT_LAYER_HUD,
+    INPUT_LAYER_APP,
+    INPUT_LAYER_CHAT
+};
+
+enum
+{
+    INPUT_LAYER_GAME_PLAY = 0,
+    INPUT_LAYER_GAME_EDIT,
+    INPUT_LAYER_GAME_SPEC
+};
+
+/// Forwards input events to the subsystem they are needed.
 class InputRouter
 {
     public:
@@ -42,7 +48,6 @@ class InputRouter
         /// connecting to a server or computing lightmaps
         bool interceptkey(int sym);
 
-        /// @see SDL_PeepEvents
         void ignoremousemotion();
 
         /// Periodically checking for new input
@@ -60,7 +65,6 @@ class InputRouter
         void pushevent(const SDL_Event &e);
 
         /// filter mouse motion events depending on operating system
-        /// @warning this is very technical OS-depending code
         bool filterevent(const SDL_Event &event);
 
         /// poll and filter all events in the SDL (input) event queue
@@ -73,7 +77,7 @@ class InputRouter
         void resetmousemotion();
 
         /// handle mouse motion coordinates
-        /// @warning this is a call by reference function!
+        /// @returns deltax and deltay (the difference of the mouse coords)
         void checkmousemotion(int &dx, int &dy);
 
         /// global vector for input events
@@ -92,11 +96,11 @@ class InputRouter
 
 };
 
-// Provide global exports
-
+/// InputRouter singleton
 extern InputRouter input_router;
+
+// Provide global exports
 extern SharedVar<int> userelativemouse;
 
-}
 }
 }

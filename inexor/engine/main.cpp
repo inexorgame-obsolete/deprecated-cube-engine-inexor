@@ -18,17 +18,13 @@ namespace rpc {
 }
 
 namespace inexor {
-namespace ui {
-namespace input {
-    InputRouter input_router;
-}}
 namespace sound {
     extern SharedVar<int> soundchans, soundfreq, soundbufferlen;
 }
 }
 
 using namespace inexor::sound;
-using namespace inexor::ui::input;
+using namespace inexor::io;
 using namespace inexor::rendering::screen;
 
 extern void writeinitcfg();
@@ -537,11 +533,9 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)
 
 
 namespace inexor {
-namespace ui {
-namespace input {
+namespace io {
     /// try to initialise mouse with relative coordinates instead of absolute coordinates
     VARNP(input_router.relativemouse, userelativemouse, 0, 1, 1);
-}
 }
 }
 

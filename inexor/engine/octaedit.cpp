@@ -4,15 +4,7 @@
 #include "inexor/ui/input/InputRouter.hpp"
 #include "inexor/util/Logging.hpp"
 
-namespace inexor {
-namespace ui {
-namespace input {
-    extern InputRouter input_router;
-}
-}
-}
-
-using namespace inexor::ui::input;
+using namespace inexor::io;
 using namespace inexor::util;
 
 extern SharedVar<int> outline;
