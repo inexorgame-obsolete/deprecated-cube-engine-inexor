@@ -8,17 +8,12 @@
 //   kino - ok
 
 #include "inexor/engine/engine.hpp"
+#include "inexor/engine/sound.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/util/Logging.hpp"
 
-#include "SDL_mixer.h"
-
-namespace inexor {
-namespace sound {
-extern bool nosound; // sound.cpp
-}
-}
 using namespace inexor::rendering::screen;
+using namespace inexor::sound;
 
 VAR(dbgmovie, 0, 0, 1);
 
@@ -188,22 +183,22 @@ struct aviwriter
         path(filename);
         if(!strrchr(filename, '.')) concatstring(filename, ".avi");
         
-        if(sound && !inexor::sound::nosound)
-        {
-            Mix_QuerySpec(&soundfrequency, &soundformat, &soundchannels);
-            const char *desc;
-            switch(soundformat)
-            {
-                case AUDIO_U8:     desc = "u8"; break;
-                case AUDIO_S8:     desc = "s8"; break;
-                case AUDIO_U16LSB: desc = "u16l"; break;
-                case AUDIO_U16MSB: desc = "u16b"; break;
-                case AUDIO_S16LSB: desc = "s16l"; break;
-                case AUDIO_S16MSB: desc = "s16b"; break;
-                default:           desc = "unkn";
-            }
-            if(dbgmovie) spdlog::get("global")->debug("soundspec: {0}hz {1} x {2}", soundfrequency, desc, soundchannels);
-        }
+        //if(sound && !inexor::sound::nosound)
+        //{
+        //    Mix_QuerySpec(&soundfrequency, &soundformat, &soundchannels);
+        //    const char *desc;
+        //    switch(soundformat)
+        //    {
+        //        case AUDIO_U8:     desc = "u8"; break;
+        //        case AUDIO_S8:     desc = "s8"; break;
+        //        case AUDIO_U16LSB: desc = "u16l"; break;
+        //        case AUDIO_U16MSB: desc = "u16b"; break;
+        //        case AUDIO_S16LSB: desc = "s16l"; break;
+        //        case AUDIO_S16MSB: desc = "s16b"; break;
+        //        default:           desc = "unkn";
+        //    }
+        //    if(dbgmovie) spdlog::get("global")->debug("soundspec: {0}hz {1} x {2}", soundfrequency, desc, soundchannels);
+        //}  // TODO Sound refractoring
     }
     
     ~aviwriter()
@@ -953,7 +948,7 @@ namespace recorder
         shouldencode = SDL_CreateCond();
         shouldread = SDL_CreateCond();
         thread = SDL_CreateThread(videoencoder, "video encoder", NULL); 
-        if(file->soundfrequency > 0) Mix_SetPostMix(soundencoder, NULL);
+        //if(file->soundfrequency > 0) Mix_SetPostMix(soundencoder, NULL); // TODO Sound refractoring
     }
 
     void cleanup()
@@ -969,7 +964,7 @@ namespace recorder
     {
         if(!file) return;
         if(state == REC_OK) state = REC_USERHALT;
-        if(file->soundfrequency > 0) Mix_SetPostMix(NULL, NULL);
+        //if(file->soundfrequency > 0) Mix_SetPostMix(NULL, NULL); // TODO Sound refractoring
 
         SDL_LockMutex(videolock); // wakeup thread enough to kill it
         SDL_CondSignal(shouldencode);
@@ -1154,7 +1149,8 @@ namespace recorder
 VARP(moview, 0, 320, 10000);
 VARP(movieh, 0, 240, 10000);
 VARP(moviefps, 1, 24, 1000);
-VARP(moviesound, 0, 1, 1);
+//VARP(moviesound, 0, 1, 1); // TODO Sound refractoring
+VARP(moviesound, 0, 0, 0);
 
 void movie(char *name)
 {

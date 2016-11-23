@@ -1,6 +1,7 @@
 /// game initialisation & main loop
 ///
 #include "inexor/engine/engine.hpp"
+#include "inexor/engine/sound.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/ui.hpp"
 #include "inexor/ui/input/InputRouter.hpp"
@@ -14,12 +15,6 @@ namespace inexor {
 namespace rpc {
     extern void testrpcclient();
     COMMAND(testrpcclient, "");
-}
-}
-
-namespace inexor {
-namespace sound {
-    extern SharedVar<int> soundchans, soundfreq, soundbufferlen;
 }
 }
 
