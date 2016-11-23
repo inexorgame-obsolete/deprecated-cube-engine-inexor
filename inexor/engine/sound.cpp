@@ -5,14 +5,14 @@
 #include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/util/Logging.hpp"
 
-#include "SDL_mixer.h"
 #include <string>
 
 
 using namespace inexor::filesystem;
 using namespace inexor::rendering::screen;
 
-#define MAXVOL MIX_MAX_VOLUME
+// #define MAXVOL MIX_MAX_VOLUME  // TODO Sound refractoring
+#define MAXVOL 100
 
 namespace inexor {
 namespace sound {
@@ -22,12 +22,12 @@ bool nosound = true;
 struct soundsample
 {
     char *name;
-    Mix_Chunk *chunk;
+    //Mix_Chunk *chunk;  // TODO Sound refractoring
 
-    soundsample() : name(NULL), chunk(NULL) {}
+    soundsample() : name(NULL)/*, chunk(NULL)*/ {}  // TODO Sound refractoring
     ~soundsample() { DELETEA(name); }
 
-    void cleanup() { if(chunk) { Mix_FreeChunk(chunk); chunk = NULL; } }
+    void cleanup() { /*if(chunk) { Mix_FreeChunk(chunk); chunk = NULL; } */}  // TODO Sound refractoring
     bool load(bool msg = false);
 };
 
@@ -114,8 +114,8 @@ void freechannel(int n)
 void syncchannel(soundchannel &chan)
 {
     if(!chan.dirty) return;
-    if(!Mix_FadingChannel(chan.id)) Mix_Volume(chan.id, chan.volume);
-    Mix_SetPanning(chan.id, 255-chan.pan, chan.pan);
+    //if(!Mix_FadingChannel(chan.id)) Mix_Volume(chan.id, chan.volume);
+    //Mix_SetPanning(chan.id, 255-chan.pan, chan.pan);  // TODO Sound refractoring
     chan.dirty = false;
 }
 
@@ -125,139 +125,52 @@ void stopchannels()
     {
         soundchannel &chan = channels[i];
         if(!chan.inuse) continue;
-        Mix_HaltChannel(i);
+        //Mix_HaltChannel(i);  // TODO Sound refractoring
         freechannel(i);
     }
 }
 
-void setmusicvol(int musicvol);
-VARFP(soundvol, 0, 255, 255, if(!soundvol) { stopchannels(); setmusicvol(0); });
-VARFP(musicvol, 0, 128, 255, setmusicvol(soundvol ? musicvol : 0));
-
-char *musicfile = NULL, *musicdonecmd = NULL;
-
-Mix_Music *music = NULL;
-SDL_RWops *musicrw = NULL;
-stream *musicstream = NULL;
-
-void setmusicvol(int musicvol)
-{
-    if(nosound) return;
-    if(music) Mix_VolumeMusic((musicvol*MAXVOL)/255);
-}
-
-void stopmusic()
-{
-    if(nosound) return;
-    DELETEA(musicfile);
-    DELETEA(musicdonecmd);
-    if(music)
-    {
-        Mix_HaltMusic();
-        Mix_FreeMusic(music);
-        music = NULL;
-    }
-    if(musicrw) { SDL_FreeRW(musicrw); musicrw = NULL; }
-    DELETEP(musicstream);
-}
-
+VARFP(soundvol, 0, 255, 255, if(!soundvol) { stopchannels(); });
 VARF(soundchans, 1, 32, 128, initwarning("sound configuration", INIT_RESET, CHANGE_SOUND));
 VARF(soundfreq, 0, 44100, 44100, initwarning("sound configuration", INIT_RESET, CHANGE_SOUND));
 VARF(soundbufferlen, 128, 1024, 4096, initwarning("sound configuration", INIT_RESET, CHANGE_SOUND));
 
 void initsound()
 {
-    if(Mix_OpenAudio(soundfreq, MIX_DEFAULT_FORMAT, 2, soundbufferlen)<0)
-    {
-        nosound = true;
-        spdlog::get("global")->error("sound init failed (SDL_mixer): {}", Mix_GetError());
-        return;
-    }
-    Mix_AllocateChannels(soundchans);
+    // TODO Sound refractoring
+    //if(Mix_OpenAudio(soundfreq, MIX_DEFAULT_FORMAT, 2, soundbufferlen)<0)
+    //{
+    //    nosound = true;
+    //    spdlog::get("global")->error("sound init failed (SDL_mixer): {}", Mix_GetError());
+    //    return;
+    //}
+    //Mix_AllocateChannels(soundchans);
     maxchannels = soundchans;
     nosound = false;
 }
 
-void musicdone()
-{
-    if(music) { Mix_HaltMusic(); Mix_FreeMusic(music); music = NULL; }
-    if(musicrw) { SDL_FreeRW(musicrw); musicrw = NULL; }
-    DELETEP(musicstream);
-    DELETEA(musicfile);
-    if(!musicdonecmd) return;
-    char *cmd = musicdonecmd;
-    musicdonecmd = NULL;
-    execute(cmd);
-    delete[] cmd;
-}
-
-Mix_Music *loadmusic(const char *name)
-{
-    if(!musicstream) musicstream = openzipfile(name, "rb");
-    if(musicstream)
-    {
-        if(!musicrw) musicrw = musicstream->rwops();
-        if(!musicrw) DELETEP(musicstream);
-    }
-    if(musicrw) music = Mix_LoadMUSType_RW(musicrw, MUS_NONE, 0);
-    else music = Mix_LoadMUS(findfile(name, "rb"));
-    if(!music)
-    {
-        if(musicrw) { SDL_FreeRW(musicrw); musicrw = NULL; }
-        DELETEP(musicstream);
-    }
-    return music;
-}
-
-void startmusic(char *name, char *cmd)
-{
-    if(nosound) return;
-    stopmusic();
-    if(soundvol && musicvol && *name)
-    {
-        std::string file;
-        getmediapath(file, name, DIR_MUSIC);
-        if(loadmusic(file.c_str()))
-        {
-            DELETEA(musicfile);
-            DELETEA(musicdonecmd);
-            musicfile = newstring(file.c_str());
-            if(cmd[0]) musicdonecmd = newstring(cmd);
-            Mix_PlayMusic(music, cmd[0] ? 0 : -1);
-            Mix_VolumeMusic((musicvol*MAXVOL)/255);
-            intret(1);
-        }
-        else
-        {
-            spdlog::get("global")->error("could not play music: {}", file);
-            intret(0);
-        }
-    }
-}
-
-COMMANDN(music, startmusic, "ss");
-
-static Mix_Chunk *loadwav(const char *name)
-{
-    Mix_Chunk *c = NULL;
-    stream *z = openzipfile(name, "rb");
-    if(z)
-    {
-        SDL_RWops *rw = z->rwops();
-        if(rw)
-        {
-            c = Mix_LoadWAV_RW(rw, 0);
-            SDL_FreeRW(rw);
-        }
-        delete z;
-    }
-    if(!c) c = Mix_LoadWAV(findfile(name, "rb"));
-    return c;
-}
+// TODO Sound refractoring
+//static Mix_Chunk *loadwav(const char *name)
+//{
+//    Mix_Chunk *c = NULL;
+//    stream *z = openzipfile(name, "rb");
+//    if(z)
+//    {
+//        SDL_RWops *rw = z->rwops();
+//        if(rw)
+//        {
+//            c = Mix_LoadWAV_RW(rw, 0);
+//            SDL_FreeRW(rw);
+//        }
+//        delete z;
+//    }
+//    if(!c) c = Mix_LoadWAV(findfile(name, "rb"));
+//    return c;
+//}
 
 bool soundsample::load(bool msg)
 {
-    if(chunk) return true;
+    //if(chunk) return true;  // TODO Sound refractoring
     if(!name[0]) return false;
 
     static const char * const exts[] = {"", ".ogg", ".flac", ".wav"};
@@ -267,8 +180,8 @@ bool soundsample::load(bool msg)
         getmediapath(filename, name, DIR_SOUND);
         filename += exts[i]; //append the extension
         if(msg && !i) renderprogress(0, filename.c_str());
-        chunk = loadwav(filename.c_str());
-        if(chunk) return true;
+        //chunk = loadwav(filename.c_str());  // TODO Sound refractoring
+        //if(chunk) return true; // TODO Sound refractoring
     }
 
     spdlog::get("global")->warn("failed to load sound: {}", filename); // TODO: LOG_N_TIMES(1)
@@ -309,7 +222,7 @@ static struct soundtype
             char *n = newstring(name);
             s = &samples[n];
             s->name = n;
-            s->chunk = NULL;
+            //s->chunk = NULL; // TODO Sound refractoring
         }
         soundslot *oldslots = slots.getbuf();
         int oldlen = slots.length();
@@ -355,7 +268,7 @@ static struct soundtype
             soundchannel &chan = channels[i];
             if(chan.inuse && slots.inbuf(chan.slot))
             {
-                Mix_HaltChannel(i);
+                //Mix_HaltChannel(i); // TODO Sound refractoring
                 freechannel(i);
             }
         }
@@ -409,13 +322,13 @@ void clear_sound()
 {
     closemumble();
     if(nosound) return;
-    stopmusic();
+    //stopmusic();  // TODO VARP shouldplaymusic
 
     cleanupsamples();
     gamesounds.clear();
     mapsounds.clear();
     samples.clear();
-    Mix_CloseAudio();
+    //Mix_CloseAudio();  // TODO Sound refractoring
     resetchannels();
 }
 
@@ -423,7 +336,7 @@ void stopmapsounds()
 {
     loopv(channels) if(channels[i].inuse && channels[i].ent)
     {
-        Mix_HaltChannel(i);
+     //   Mix_HaltChannel(i);  // TODO Sound refractoring
         freechannel(i);
     }
 }
@@ -441,7 +354,7 @@ void stopmapsound(extentity *e)
         soundchannel &chan = channels[i];
         if(chan.inuse && chan.ent == e)
         {
-            Mix_HaltChannel(i);
+     //       Mix_HaltChannel(i);  // TODO Sound refractoring
             freechannel(i);
         }
     }
@@ -506,7 +419,7 @@ void reclaimchannels()
     loopv(channels)
     {
         soundchannel &chan = channels[i];
-        if(chan.inuse && !Mix_Playing(i)) freechannel(i);
+        //if(chan.inuse && !Mix_Playing(i)) freechannel(i); // TODO Sound refractoring
     }
 }
 
@@ -531,11 +444,11 @@ void updatesounds()
         else checkmapsounds();
         syncchannels();
     }
-    if(music)
-    {
-        if(!Mix_PlayingMusic()) musicdone();
-        else if(Mix_PausedMusic()) Mix_ResumeMusic();
-    }
+    //if(music)
+    //{
+    //    if(!Mix_PlayingMusic()) musicdone(); // TODO sound VARP isplayingmusic? Or handle it completely on nodejs?
+    //    else if(Mix_PausedMusic()) Mix_ResumeMusic();
+    //}
 }
 
 VARP(maxsoundsatonce, 0, 7, 100);
@@ -578,7 +491,7 @@ int playsound(int n, const vec *loc, extentity *ent, int flags, int loops, int f
         {
             if(channels.inrange(chanid) && sounds.playing(channels[chanid], config))
             {
-                Mix_HaltChannel(chanid);
+                //Mix_HaltChannel(chanid); // TODO Sound refractoring
                 freechannel(chanid);
             }
             return -1;
@@ -613,25 +526,28 @@ int playsound(int n, const vec *loc, extentity *ent, int flags, int loops, int f
     if(fade < 0) return -1;
 
     soundslot &slot = sounds.slots[config.chooseslot()];
-    if(!slot.sample->chunk && !slot.sample->load()) return -1;
+    // if(!slot.sample->chunk && !slot.sample->load())  // TODO Sound refractoring
+    {
+        return -1;
+    }
 
     if(dbgsound) spdlog::get("global")->debug("sound: {}", slot.sample->name);
 
     chanid = -1;
     loopv(channels) if(!channels[i].inuse) { chanid = i; break; }
     if(chanid < 0 && channels.length() < maxchannels) chanid = channels.length();
-    if(chanid < 0) loopv(channels) if(!channels[i].volume) { Mix_HaltChannel(i); freechannel(i); chanid = i; break; }
+    if(chanid < 0) loopv(channels) if(!channels[i].volume) {/* Mix_HaltChannel(i); */freechannel(i); chanid = i; break; } // TODO Sound refractoring
     if(chanid < 0) return -1;
 
     soundchannel &chan = newchannel(chanid, &slot, loc, ent, flags, radius);
     updatechannel(chan);
     int playing = -1;
-    if(fade)
-    {
-        Mix_Volume(chanid, chan.volume);
-        playing = expire >= 0 ? Mix_FadeInChannelTimed(chanid, slot.sample->chunk, loops, fade, expire) : Mix_FadeInChannel(chanid, slot.sample->chunk, loops, fade);
-    }
-    else playing = expire >= 0 ? Mix_PlayChannelTimed(chanid, slot.sample->chunk, loops, expire) : Mix_PlayChannel(chanid, slot.sample->chunk, loops);
+    //if(fade)  // TODO Sound refractoring
+    //{
+    //    Mix_Volume(chanid, chan.volume);
+    //    playing = expire >= 0 ? Mix_FadeInChannelTimed(chanid, slot.sample->chunk, loops, fade, expire) : Mix_FadeInChannel(chanid, slot.sample->chunk, loops, fade);
+    //}
+    //else playing = expire >= 0 ? Mix_PlayChannelTimed(chanid, slot.sample->chunk, loops, expire) : Mix_PlayChannel(chanid, slot.sample->chunk, loops);
     if(playing >= 0) syncchannel(chan);
     else freechannel(chanid);
     return playing;
@@ -641,7 +557,7 @@ void stopsounds()
 {
     loopv(channels) if(channels[i].inuse)
     {
-        Mix_HaltChannel(i);
+        //Mix_HaltChannel(i);
         freechannel(i);
     }
 }
@@ -650,9 +566,9 @@ bool stopsound(int n, int chanid, int fade)
 {
     if(!gamesounds.configs.inrange(n) || !channels.inrange(chanid) || !channels[chanid].inuse || !gamesounds.playing(channels[chanid], gamesounds.configs[n])) return false;
     if(dbgsound) spdlog::get("global")->debug("stopsound: {}", channels[chanid].slot->sample->name);
-    if(!fade || !Mix_FadeOutChannel(chanid, fade))
+    //if(!fade || !Mix_FadeOutChannel(chanid, fade)) // TODO Sound refractoring
     {
-        Mix_HaltChannel(chanid);
+        //Mix_HaltChannel(chanid); // TODO Sound refractoring
         freechannel(chanid);
     }
     return true;
@@ -675,33 +591,13 @@ void resetsound()
     if(!nosound)
     {
         cleanupsamples();
-        if(music)
-        {
-            Mix_HaltMusic();
-            Mix_FreeMusic(music);
-        }
-        if(musicstream) musicstream->seek(0, SEEK_SET);
-        Mix_CloseAudio();
     }
     initsound();
     resetchannels();
     if(nosound)
     {
-        DELETEA(musicfile);
-        DELETEA(musicdonecmd);
-        music = NULL;
         cleanupsamples();
         return;
-    }
-    if(music && loadmusic(musicfile))
-    {
-        Mix_PlayMusic(music, musicdonecmd ? 0 : -1);
-        Mix_VolumeMusic((musicvol*MAXVOL)/255);
-    }
-    else
-    {
-        DELETEA(musicfile);
-        DELETEA(musicdonecmd);
     }
 }
 
