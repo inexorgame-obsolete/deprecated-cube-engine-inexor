@@ -4,9 +4,9 @@
 #pragma once
 
 #include "inexor/rpc/SharedTree.hpp"
+#include "inexor/shared/cube_formatting.hpp"
+#include "inexor/shared/cube_types.hpp"
 
-/// contains all kind of different script objects
-/// such as commands, variables, macros or idents
 enum 
 {
 	VAL_NULL = 0,
@@ -53,8 +53,6 @@ enum
     RET_FLOAT  = VAL_FLOAT<<CODE_RET,
 };
 
-/// contains all kind of IDs for command engine
-/// such as variables (float,int,string) or commands
 enum
 {
     ID_VAR,

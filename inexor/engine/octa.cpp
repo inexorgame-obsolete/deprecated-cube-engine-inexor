@@ -2,6 +2,7 @@
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/util/Logging.hpp"
+#include "inexor/shared/cube_sort.hpp"
 
 cube *worldroot = newcubes(F_SOLID);
 int allocnodes = 0;

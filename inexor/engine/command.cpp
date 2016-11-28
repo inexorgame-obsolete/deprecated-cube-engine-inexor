@@ -4,6 +4,7 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/rpc/SharedTree.hpp"
 #include "inexor/util/Logging.hpp"
+#include <cmath>
 
 using namespace inexor::util;
 
@@ -3052,7 +3053,7 @@ ICOMMAND(atan2, "ff", (float *y, float *x), floatret(atan2(*y, *x)/RAD));
 ICOMMAND(sqrt, "f", (float *a), floatret(sqrt(*a)));
 ICOMMAND(pow, "ff", (float *a, float *b), floatret(pow(*a, *b)));
 ICOMMAND(loge, "f", (float *a), floatret(log(*a)));
-ICOMMAND(log2, "f", (float *a), floatret(log(*a)/M_LN2));
+ICOMMAND(log2, "f", (float *a), floatret(log2f(*a)));
 ICOMMAND(log10, "f", (float *a), floatret(log10(*a)));
 ICOMMAND(exp, "f", (float *a), floatret(exp(*a)));
 ICOMMAND(min, "V", (tagval *args, int numargs),

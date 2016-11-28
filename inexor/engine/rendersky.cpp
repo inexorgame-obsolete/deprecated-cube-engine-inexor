@@ -2,6 +2,7 @@
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/util/Logging.hpp"
+#include "inexor/shared/cube_sort.hpp"
 
 using namespace inexor::filesystem;
 
