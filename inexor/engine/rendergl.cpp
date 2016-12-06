@@ -9,18 +9,9 @@
 #include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/util/Logging.hpp"
 
-namespace inexor {
-namespace ui {
-namespace screen {
-    extern ScreenManager screen_manager;
-}
-}
-}
-
 using namespace inexor::rendering::screen;
 using namespace inexor::ui;
 using namespace inexor::ui::layer;
-using namespace inexor::ui::screen;
 
 bool hasVAO = false, hasFBO = false, hasAFBO = false, hasDS = false, hasTF = false, hasTRG = false, hasTSW = false, hasS3TC = false, hasFXT1 = false, hasAF = false, hasFBB = false, hasUBO = false, hasMBR = false;
 int hasstencil = 0;

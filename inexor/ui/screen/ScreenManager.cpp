@@ -1,6 +1,6 @@
 #include <boost/algorithm/clamp.hpp>
 
-#include "ScreenManager.hpp"
+#include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/util/Logging.hpp"
 
 using boost::algorithm::clamp;
@@ -24,7 +24,7 @@ namespace recorder {
 // ENDTODO
 
 namespace inexor {
-namespace ui {
+namespace rendering {
 namespace screen {
 
 ScreenManager::ScreenManager()
@@ -220,6 +220,9 @@ bool ScreenManager::is_minimized()
 {
     return minimized;
 }
+
+/// Singleton instnace of the screenmanager
+ScreenManager screen_manager;
 
 }
 }

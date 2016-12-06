@@ -2,15 +2,7 @@
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"
 
-namespace inexor {
-namespace ui {
-namespace screen {
-    extern ScreenManager screen_manager;
-}
-}
-}
-
-using namespace inexor::ui::screen;
+using namespace inexor::rendering::screen;
 
 VARFP(waterreflect, 0, 1, 1, { cleanreflections(); preloadwatershaders(); });
 VARFP(waterrefract, 0, 1, 1, { cleanreflections(); preloadwatershaders(); });

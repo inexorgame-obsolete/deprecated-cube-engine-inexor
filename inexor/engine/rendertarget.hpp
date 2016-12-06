@@ -1,14 +1,5 @@
 #include "inexor/ui/screen/ScreenManager.hpp"
 
-namespace inexor {
-namespace ui {
-namespace screen {
-    extern ScreenManager screen_manager;
-}
-}
-}
-
-using namespace inexor::ui::screen;
 using namespace inexor::rendering::screen;
 
 extern SharedVar<int> rtsharefb, rtscissor, blurtile;

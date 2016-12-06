@@ -4,7 +4,7 @@
 #include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/ui.hpp"
 
-using namespace inexor::ui::screen;
+using namespace inexor::rendering::screen;
 using boost::algorithm::clamp;
 
 // TODO: after refactoring there are still dependencies left
