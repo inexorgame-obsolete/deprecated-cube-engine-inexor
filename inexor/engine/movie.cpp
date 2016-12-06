@@ -15,17 +15,10 @@
 
 namespace inexor {
 namespace sound {
-    extern bool nosound; // sound.cpp
-}
-namespace ui {
-namespace screen {
-    extern ScreenManager screen_manager;
+extern bool nosound; // sound.cpp
 }
 }
-}
-
 using namespace inexor::rendering::screen;
-using namespace inexor::ui::screen;
 
 VAR(dbgmovie, 0, 0, 1);
 

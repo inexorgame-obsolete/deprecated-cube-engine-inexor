@@ -13,7 +13,7 @@
 #define SCR_DEFAULTH 768
 
 namespace inexor {
-namespace ui {
+namespace rendering {
 namespace screen {
 
 /// The screen manager manages the SDL window
@@ -84,7 +84,7 @@ extern ScreenManager screen_manager;
 // TODO: for now: not part of the ScreenManager
 extern SharedVar<int> scr_w, scr_h;
 extern SharedVar<int> fullscreen, vsync, vsynctear;
-extern SharedVar<int> depthbits, stencilbits;
+extern SharedVar<int> colorbits, depthbits, stencilbits;
 extern SharedVar<int> fsaa;
 
 }

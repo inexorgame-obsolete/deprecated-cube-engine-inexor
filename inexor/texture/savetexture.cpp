@@ -6,15 +6,7 @@
 #include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/util/Logging.hpp"
 
-namespace inexor {
-namespace ui {
-namespace screen {
-    extern ScreenManager screen_manager;
-}
-}
-}
-
-using namespace inexor::ui::screen;
+using namespace inexor::rendering::screen;
 
 void writepngchunk(stream *f, const char *type, uchar *data = NULL, uint len = 0)
 {

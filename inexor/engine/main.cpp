@@ -21,12 +21,7 @@ namespace inexor {
 namespace ui {
 namespace input {
     InputRouter input_router;
-}
-namespace screen {
-    extern SharedVar<int> fullscreen, vsync, vsynctear;
-    ScreenManager screen_manager;
-}
-}
+}}
 namespace sound {
     extern SharedVar<int> soundchans, soundfreq, soundbufferlen;
 }
@@ -34,7 +29,7 @@ namespace sound {
 
 using namespace inexor::sound;
 using namespace inexor::ui::input;
-using namespace inexor::ui::screen;
+using namespace inexor::rendering::screen;
 
 extern void writeinitcfg();
 
@@ -144,7 +139,7 @@ bool initwarning(const char *desc, int level, int type)
 
 /// function forward to change screen resolution
 namespace inexor {
-namespace ui {
+namespace rendering {
 namespace screen {
 
     // TODO: CEF userinterface
@@ -166,6 +161,22 @@ namespace screen {
 
     VARF(fsaa, -1, -1, 16, initwarning("anti-aliasing"));
 
+    /// @warning do not go full screen in debug mode (doesn't work with MSVC)
+#ifdef _DEBUG
+    VARF(fullscreen, 0, 0, 1, screen_manager.setfullscreen(fullscreen!=0));
+#else
+    VARF(fullscreen, 0, 1, 1, screen_manager.setfullscreen(fullscreen!=0));
+#endif
+
+    /// screen gamma as float value
+    // static int curgamma = 100;
+    VARFP(gamma, 30, 100, 300,
+    {
+        if(gamma == screen_manager.curgamma) return;
+        screen_manager.curgamma = gamma;
+        if(SDL_SetWindowBrightness(screen_manager.sdl_window, gamma/100.0f)==-1)
+            spdlog::get("global")->error("Could not set gamma: {}", SDL_GetError());
+    });
 }
 }
 }
@@ -530,26 +541,6 @@ namespace ui {
 namespace input {
     /// try to initialise mouse with relative coordinates instead of absolute coordinates
     VARNP(input_router.relativemouse, userelativemouse, 0, 1, 1);
-}
-namespace screen {
-
-    /// @warning do not go full screen in debug mode (doesn't work with MSVC)
-    #ifdef _DEBUG
-       VARF(fullscreen, 0, 0, 1, screen_manager.setfullscreen(fullscreen!=0));
-    #else
-       VARF(fullscreen, 0, 1, 1, screen_manager.setfullscreen(fullscreen!=0));
-    #endif
-
-    /// screen gamma as float value
-    // static int curgamma = 100;
-    VARFP(gamma, 30, 100, 300,
-    {
-        if(gamma == screen_manager.curgamma) return;
-        screen_manager.curgamma = gamma;
-        if(SDL_SetWindowBrightness(screen_manager.sdl_window, gamma/100.0f)==-1)
-            spdlog::get("global")->error() << "Could not set gamma: " << SDL_GetError();
-    });
-
 }
 }
 }

@@ -9,21 +9,13 @@
 #include "inexor/ui/input/InputRouter.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"
 
-namespace inexor {
-namespace ui {
-namespace input {
+namespace inexor { namespace ui { namespace input {
     extern InputRouter input_router;
-}
-namespace screen {
-    extern ScreenManager screen_manager;
-}
-}
-}
+}}}
 
 using namespace inexor::filesystem;
 using namespace inexor::rendering::screen;
 using namespace inexor::ui::input;
-using namespace inexor::ui::screen;
 
 static struct gui *windowhit = NULL;
 static bool layoutpass, actionon = false;

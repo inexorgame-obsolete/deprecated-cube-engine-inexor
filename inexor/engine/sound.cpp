@@ -8,16 +8,9 @@
 #include "SDL_mixer.h"
 #include <string>
 
-namespace inexor {
-namespace ui {
-namespace screen {
-    extern ScreenManager screen_manager;
-}
-}
-}
 
 using namespace inexor::filesystem;
-using namespace inexor::ui::screen;
+using namespace inexor::rendering::screen;
 
 #define MAXVOL MIX_MAX_VOLUME
 
