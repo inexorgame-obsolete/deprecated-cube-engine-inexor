@@ -2,16 +2,16 @@ cmake_minimum_required(VERSION 3.1)
 include(cmake/functions.cmake)
 include(cmake/glibc_cxx11_abi_detection.cmake)
 include(cmake/silence_find_pathprogram.cmake)
+include(cmake/get_conan_build_type.cmake)
 
 ### Different Configuration Types (Debug release)
 
-# Only generate Debug and Release configuration types.
-set(CMAKE_CONFIGURATION_TYPES Debug Release)
+get_conan_build_type(BUILD_TYPE)
+message(STATUS "BUILD_TYPE: ${BUILD_TYPE}")
 
-# First choice is Debug
-if(NOT DEFINED CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Debug CACHE INTERN "")
-endif()
+# Only generate the single build type (Debug vs Release) we have our dependencies built for, since our prior step is to run conan.
+set(CMAKE_CONFIGURATION_TYPES ${BUILD_TYPE})
+set(CMAKE_BUILD_TYPE ${BUILD_TYPE} CACHE INTERN "")
 
 
 message(STATUS "CMAKE_VERSION = ${CMAKE_VERSION}")
