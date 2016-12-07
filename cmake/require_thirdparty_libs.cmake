@@ -51,40 +51,6 @@ function(require_opengl targ)
   target_link_libs(${targ} ${OPENGL_LIBS} ${NOLINK})
 endfunction()
 
-#### SDL
-
-find_libs(SDL2_LIBS SDL2 LIB SDL2_image LIB SDL2_mixer)
-register_possible_dependency(${SDL2_LIBS})
-
-find_path(SDL2_BASE_INCLUDE_DIRS  SDL.h       PATH_SUFFIXES SDL2)
-find_path(SDL2_IMAGE_INCLUDE_DIRS SDL_image.h PATH_SUFFIXES SDL2)
-find_path(SDL2_MIXER_INCLUDE_DIRS SDL_mixer.h PATH_SUFFIXES SDL2)
-set(SDL2_INCLUDE_DIRS
-  ${SDL2_BASE_INCLUDE_DIRS}
-  ${SDL2_IMAGE_INCLUDE_DIRS}
-  ${SDL2_MIXER_INCLUDE_DIRS} CACHE INTERNAL "")
-
-function(require_sdl targ)
-  message(STATUS "Configuring ${targ} with SDL")
-  if (";${ARGN};" MATCHES ";NOLINK;")
-    set(NOLINK "NOLINK")
-  endif()
-
-  include_directories(${SDL2_INCLUDE_DIRS})
-  target_link_libs(${targ} ${SDL2_LIBS} ${NOLINK})
-
-  if(OS_WINDOWS)
-    target_link_libs(${targ} winmm ${NOLINK})
-    if(NOT MSVC)
-      add_definitions(-mwindows) # This is GUI!
-    endif()
-  elseif(OS_POSIX)
-    target_link_libs(${targ} dl rt ${NOLINK})
-  endif()
-
-  require_opengl(${targ} ${NOLINK})
-endfunction()
-
 set(BOOST_ROOT ${CONAN_BOOST_ROOT})
 set(BOOST_LIBRARYDIR ${CONAN_LIB_DIRS_BOOST})
 set(BOOST_INCLUDEDIR ${CONAN_INCLUDE_DIRS_BOOST})
@@ -193,7 +159,7 @@ function(require_grpc targ)
   require_protobuf(${targ} ${NOLINK})
 endfunction()
 
-# This macro lets us create a require_XY (with XY beeing the name of the library) without code dublication
+# This macro lets us create a require_XY (with XY being the name of the library) without code duplication
 # but just the name of the library (as it can be found in conan).
 # Additional defines can be put last (e.g. "-DWINDOWS=0 -DDEFINENOSTATICS"), in case conanfile.txt don't provide the necessary arguments for them.
 macro(add_require_conan_lib_function name)
@@ -235,3 +201,33 @@ add_require_conan_lib_function(enet)
 
 # spdlog (fast logging library)
 add_require_conan_lib_function(spdlog)
+
+# SDL (input output framework)
+add_require_conan_lib_function(SDL2)
+
+# SDL_image (image loader library)
+add_require_conan_lib_function(SDL2_image)
+
+# SDL_mixer (sound library)
+add_require_conan_lib_function(SDL2_mixer)
+
+## Wrapper for all SDL libs (you usually want all of them)
+function(require_sdl targ)
+  message(STATUS "Configuring ${targ} with SDL")
+  if (";${ARGN};" MATCHES ";NOLINK;")
+    set(NOLINK "NOLINK")
+  endif()
+  
+#  if(OS_WINDOWS)
+#    target_link_libs(${targ} winmm ${NOLINK})
+#    if(NOT MSVC)
+#      add_definitions(-mwindows) # This is GUI!
+#    endif()
+#  elseif(OS_POSIX)
+#    target_link_libs(${targ} dl rt ${NOLINK})
+#  endif()
+  require_sdl2(${targ} ${NOLINK})
+  require_sdl2_image(${targ} ${NOLINK})
+  require_sdl2_mixer(${targ} ${NOLINK})
+  require_opengl(${targ} ${NOLINK})
+endfunction()

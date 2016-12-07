@@ -10,7 +10,15 @@
   ENet/1.3.13@a_teammate/stable
   spdlog/0.10.0@memsharded/stable
   Boost/1.60.0@lasote/stable
+  SDL2/2.0.5@lasote/stable
+  SDL2_mixer/2.0.1@a_teammate/testing
+  SDL2_image/2.0.1@lasote/stable
 
 [options]
-gtest:shared=False
-
+  zlib:shared=False
+  gtest:shared=False
+  ENet:shared=False
+  Boost:shared=False
+  SDL2:shared=False
+  SDL2_mixer:shared=False
+  SDL2_image:shared=False
