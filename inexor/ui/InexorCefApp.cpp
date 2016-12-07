@@ -29,7 +29,7 @@ InexorCefApp::InexorCefApp(int width, int height)
 void InexorCefApp::InitHudLayer()
 {
     std::string layer_name("hud");
-    std::string layer_url("http://localhost:48702/hud/");
+    std::string layer_url("http://github.com/inexor-game/code");
     hud_layer = new layer::InexorHudLayer(layer_name, layer_url);
     hud_layer->Show();
     context_manager->AddSubContext(hud_layer);
@@ -40,7 +40,7 @@ void InexorCefApp::InitHudLayer()
 void InexorCefApp::InitAppLayer()
 {
     std::string layer_name("app");
-    std::string layer_url("http://localhost:48702/treeui/");
+    std::string layer_url("http://github.com/inexor-game/code");
     app_layer = new layer::InexorAppLayer(layer_name, layer_url);
     app_layer->Show();
     context_manager->AddSubContext(app_layer);
