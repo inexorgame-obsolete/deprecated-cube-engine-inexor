@@ -198,36 +198,6 @@ function(find_libs)
   endif()
 endfunction()
 
-# USAGE: target_link_libs( <BINARYNAME> [ARGS] )
-#
-# Wrapper around target_link libs to be able to set different libs for debug and release
-# (Necessary for MSVC in combination with stdlib-dependend Libs)
-#
-# ARGUMENTS
-#  BINARYNAME - The Name of the target to link the libraries to
-#  ARGS...    - The Libraries
-#
-function(target_link_libs BINARYNAME)
-    if (";${ARGN};" MATCHES ";NOLINK;")
-      return()
-    endif()
-
-    if(DEFINED HAS_FIND_LIBRARY_WRAPPER)
-      foreach(CURLIB ${ARGN})
-        if(${CURLIB} MATCHES "(.*)_release(.*)")
-          target_link_libraries(${BINARYNAME} optimized ${CURLIB})
-        elseif(${CURLIB} MATCHES "(.*)_debug(.*)")
-          target_link_libraries(${BINARYNAME} debug ${CURLIB})
-        else()
-          target_link_libraries(${BINARYNAME} ${CURLIB})
-        endif()
-      endforeach()
-    else()
-      # No need on Unix systems, because of binary compatibility between different configurations
-      target_link_libraries(${BINARYNAME} ${ARGN})
-    endif()
-endfunction()
-
 # USAGE: add_app(executable SOURCE_FILES [CONSOLE_APP])
 #
 # Set up an executable.

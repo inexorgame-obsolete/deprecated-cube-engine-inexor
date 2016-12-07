@@ -12,10 +12,9 @@ declare_module(ui .)
 add_lib(ui)
 
 # Pulled in by including cube.h
-require_enet(module_ui NOLINK)
-require_sdl(module_ui NOLINK)
-require_util(module_ui NOLINK)
-require_cxx11_abi(module_ui NOLINK)
+require_enet(module_ui)
+require_sdl(module_ui)
+require_util(module_ui)
 
 # Configure use of the sandbox.
 option(USE_SANDBOX OFF)
@@ -29,15 +28,11 @@ endif()
 
 function(require_ui targ)
   message(STATUS "Configuring ${targ} with module_ui")
-  if (";${ARGN};" MATCHES ";NOLINK;")
-    set(NOLINK "NOLINK")
-  endif()
 
   include_directories(${CEF_INCLUDE_DIRS})
-  target_link_libs(${targ} module_ui ${CEF_LIBS} ${NOLINK})
+  target_link_libraries(${targ} module_ui ${CEF_LIBS})
 
-  require_util(${targ} ${NOLINK})
-  require_enet(${targ} ${NOLINK})
-  require_sdl(${targ} ${NOLINK})
-  require_cxx11_abi(${targ} ${NOLINK})
+  require_util(${targ})
+  require_enet(${targ})
+  require_sdl(${targ})
 endfunction()

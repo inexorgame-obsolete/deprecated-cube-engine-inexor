@@ -17,7 +17,6 @@ add_definitions(-DSERVER -DSTANDALONE)
 
 add_app(${MASTER_BINARY} ${MASTER_SOURCES} CONSOLE_APP)
 
-require_cxx11_abi(${MASTER_BINARY})
 require_threads(${MASTER_BINARY})
 require_zlib(${MASTER_BINARY})
 require_enet(${MASTER_BINARY})

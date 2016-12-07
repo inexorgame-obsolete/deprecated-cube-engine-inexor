@@ -24,9 +24,6 @@ function(require_threads targ)
     return()
   endif()
   message(STATUS "Configuring ${targ} with system threads (API: ${CMAKE_THREAD_LIBS_INIT})")
-  if (";${ARGN};" MATCHES ";NOLINK;")
-    set(NOLINK "NOLINK")
-  endif()
 
   target_link_libraries(${targ} Threads::Threads)
 endfunction()
@@ -36,19 +33,15 @@ find_package(OpenGL)
 
 set(OPENGL_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR} CACHE INTERNAL "")
 set(OPENGL_LIBS ${OPENGL_gl_LIBRARY} CACHE INTERNAL "")
-register_possible_dependency(${OPENGL_LIBs})
 
 function(require_opengl targ)
   message(STATUS "Configuring ${targ} with OpenGL (${OPENGL_LIBS})")
-  if (";${ARGN};" MATCHES ";NOLINK;")
-    set(NOLINK "NOLINK")
-  endif()
 
   if (OPENGL_INCLUDE_DIRS)
     include_directories("${OPENGL_INCLUDE_DIRS}")
   endif()
 
-  target_link_libs(${targ} ${OPENGL_LIBS} ${NOLINK})
+  target_link_libraries(${targ} ${OPENGL_LIBS})
 endfunction()
 
 set(BOOST_ROOT ${CONAN_BOOST_ROOT})
@@ -111,8 +104,6 @@ add_require_boost_lib_function(program_options "" "")
 find_libs(PROTOBUF_LIBRARIES protobuf)
 find_path(PROTOBUF_INCLUDE_DIRS google/protobuf/service.h)
 
-register_possible_dependency(${PROTOBUF_LIBRARIES})
-
 if (NOT DEFINED PROTOC_EXE)
   find_program(PROTOC_EXE protoc NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH )
   # grpc and protoc make problems if versions arent matching.
@@ -122,13 +113,10 @@ endif()
 
 function(require_protobuf targ)
   message(STATUS "Configuring ${targ} with protobuf")
-  if (";${ARGN};" MATCHES ";NOLINK;")
-    set(NOLINK "NOLINK")
-  endif()
 
   add_definitions(-DPROTOBUF_USE_DLLS)
   include_directories(${PROTOBUF_INCLUDE_DIRS})
-  target_link_libs(${targ} ${NOLINK} ${PROTOBUF_LIBRARIES})
+  target_link_libraries(${targ} ${PROTOBUF_LIBRARIES})
 endfunction()
 
 #### gRPC
@@ -136,9 +124,6 @@ endfunction()
 find_libs(GRPC_LIBRARIES gpr LIB grpc_unsecure LIB grpc++_unsecure)
 find_path(GRPC_INCLUDE_DIRS grpc/grpc.h)
 find_path(GRPCPP_INCLUDE_DIRS grpc++/grpc++.h)
-
-
-register_possible_dependency(${GRPC_LIBRARIES})
 
 if (NOT DEFINED GRPC_EXE)
   find_program(GRPC_EXE grpc_cpp_plugin NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH )
@@ -149,14 +134,11 @@ endif()
 
 function(require_grpc targ)
   message(STATUS "Configuring ${targ} with gRPC")
-  if (";${ARGN};" MATCHES ";NOLINK;")
-    set(NOLINK "NOLINK")
-  endif()
 
   include_directories(${GRPC_INCLUDE_DIRS} ${GRPCPP_INCLUDE_DIRS})
-  target_link_libs(${targ} ${NOLINK} ${GRPC_LIBRARIES})
+  target_link_libraries(${targ} ${GRPC_LIBRARIES})
 
-  require_protobuf(${targ} ${NOLINK})
+  require_protobuf(${targ})
 endfunction()
 
 # This macro lets us create a require_XY (with XY being the name of the library) without code duplication
@@ -166,9 +148,6 @@ macro(add_require_conan_lib_function name)
   string(TOLOWER ${name} name_lower) # Tow different scopes for name_lower and NAME_UPPER: this a macro which does simple text replacement.
   function(require_${name_lower} targ)
     message(STATUS "Configuring ${targ} with library ${name}")
-    if (";${ARGN};" MATCHES ";NOLINK;")
-      set(NOLINK "NOLINK")
-    endif()
 
     # This is a macro so the name_lower will have been overridden by other add_require_conan_lib_function invocations in the main time.
     string(TOUPPER ${name} NAME_UPPER)
@@ -180,7 +159,7 @@ macro(add_require_conan_lib_function name)
 
     target_compile_definitions(${targ} PUBLIC ${OUR_DEFINITIONS})
     target_include_directories(${targ} PUBLIC ${CONAN_INCLUDE_DIRS_${NAME_UPPER}})
-    target_link_libs(${targ} ${CONAN_LIBS_${NAME_UPPER}} ${NOLINK})
+    target_link_libraries(${targ} ${CONAN_LIBS_${NAME_UPPER}})
   endfunction()
 endmacro()
 
@@ -214,20 +193,17 @@ add_require_conan_lib_function(SDL2_mixer)
 ## Wrapper for all SDL libs (you usually want all of them)
 function(require_sdl targ)
   message(STATUS "Configuring ${targ} with SDL")
-  if (";${ARGN};" MATCHES ";NOLINK;")
-    set(NOLINK "NOLINK")
-  endif()
   
 #  if(OS_WINDOWS)
-#    target_link_libs(${targ} winmm ${NOLINK})
+#    target_link_libraries(${targ} winmm)
 #    if(NOT MSVC)
 #      add_definitions(-mwindows) # This is GUI!
 #    endif()
 #  elseif(OS_POSIX)
-#    target_link_libs(${targ} dl rt ${NOLINK})
+#    target_link_libraries(${targ} dl rt)
 #  endif()
-  require_sdl2(${targ} ${NOLINK})
-  require_sdl2_image(${targ} ${NOLINK})
-  require_sdl2_mixer(${targ} ${NOLINK})
-  require_opengl(${targ} ${NOLINK})
+  require_sdl2(${targ})
+  require_sdl2_image(${targ})
+  require_sdl2_mixer(${targ})
+  require_opengl(${targ})
 endfunction()

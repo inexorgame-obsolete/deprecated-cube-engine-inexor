@@ -15,15 +15,8 @@ include(${SOURCE_DIR}/gluegen/require_run_gluegen.cmake)
 
 # @param BUILD_FLAGS see require_run_gluegen
 function(require_rpc targ BUILD_FLAGS)
-  message(STATUS "Configuring ${targ} with module_rpc")
-  if (";${ARGN};" MATCHES ";NOLINK;")
-    set(NOLINK "NOLINK")
-  endif()
-
-
-  require_grpc(${targ} ${NOLINK})
-  require_cxx11_abi(${targ} ${NOLINK})
-  require_util(${targ} ${NOLINK})
+  require_grpc(${targ})
+  require_util(${targ})
 
   # Folder where generated files land: somewhere in the build/ dir.
   set(GLUEGEN_OUT_DIR "${CMAKE_BINARY_DIR}/inexor/rpc/${targ}")
