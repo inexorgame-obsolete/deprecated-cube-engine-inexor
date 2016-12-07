@@ -17,7 +17,6 @@ add_definitions(-DSERVER -DSTANDALONE)
 
 add_app(${SERVER_BINARY} ${SERVER_SOURCES})
 
-require_cxx11_abi(${SERVER_BINARY})
 require_threads(${SERVER_BINARY})
 require_zlib(${SERVER_BINARY})
 require_enet(${SERVER_BINARY})

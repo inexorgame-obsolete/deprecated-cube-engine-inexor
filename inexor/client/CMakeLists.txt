@@ -62,7 +62,6 @@ add_definitions(-DCLIENT)
 
 add_app(${CLIENT_BINARY} ${CLIENT_SOURCES})
 
-require_cxx11_abi(${CLIENT_BINARY})
 require_threads(${CLIENT_BINARY})
 require_crashreporter(${CLIENT_BINARY})
 require_sdl(${CLIENT_BINARY})
