@@ -8,7 +8,7 @@ platform:
 
 # build Configuration, i.e. Debug, Release, etc.
 configuration:
- # - Debug
+  - Debug
   - Release
 
 # scripts that are called at very beginning, before repo cloning
@@ -21,6 +21,7 @@ init:
 
 # scripts that run after cloning repository
 install:
+  - appveyor-retry choco install doxygen.portable
   - cmd: python -m pip install conan
   - cmd: set "MAIN_FOLDER=C:\projects\inexor-game"
   - cmd: cd %MAIN_FOLDER%
@@ -35,9 +36,10 @@ before_build:
   - cmd: set "config_cmake_targets=-DBUILD_GLUEGEN=0 -DBUILD_MASTER=1 -DBUILD_SERVER=1 -DBUILD_CLIENT=1"
   - cmd: if "%platform%"=="Win32" ( set "CMAKE_GENERATOR_NAME=Visual Studio 14 2015" && set "arch_str=x86" )
   - cmd: if "%platform%"=="x64" ( set "CMAKE_GENERATOR_NAME=Visual Studio 14 2015 Win64" && set "arch_str=x86_64")
+  - cmd: if %configuration%=="Debug" (set "runtime_str=MTd")else (set "runtime_str=MT")
   # TODO: debug build with MTd
-  - cmd: conan install .. --build=missing -s compiler="Visual Studio" -s compiler.version=14 -s compiler.runtime=MT -s arch=%arch_str%
-  - cmd: cmake -G "%CMAKE_GENERATOR_NAME%" -DCMAKE_BUILD_TYPE=%configuration% %config_cmake_targets% ..
+  - cmd: conan install .. --build=missing -s compiler="Visual Studio" -s compiler.version=14 -s compiler.runtime=%runtime_str% -s arch=%arch_str% -s build_type=%configuration% 
+  - cmd: cmake -G "%CMAKE_GENERATOR_NAME%" %config_cmake_targets% ..
 
 build:
 # cmakes placeholder project to silence appveyor complaining about us using the cli
