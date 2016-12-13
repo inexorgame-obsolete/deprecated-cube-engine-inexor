@@ -3,7 +3,7 @@
 function(get_conan_build_type BUILD_TYPE)
     MESSAGE(STATUS "Current conanbuildinfo.cmake directory: " ${CMAKE_BINARY_DIR})
     if(NOT EXISTS ${CMAKE_BINARY_DIR}/conaninfo.txt)
-        message(STATUS "WARN: conaninfo.txt not found")
+        message(FATAL_ERROR "conaninfo.txt not found. Run conan prior to cmake!")
         return()
     endif()
 
