@@ -81,6 +81,19 @@ If you keep communicating what you are doing, take into account feedback and tip
 More information about the contributing process can be found [here](https://github.com/inexor-game/code/wiki/How-To-Contribute-Code).
 
 
+## License
+
+The Inexor source code and the Inexor files are provided under the terms of the [ZLIB license](license.md) (very similar to the BSD license).
+Inexor is a fork of Cube 2: Sauerbraten, which is also licensed under the ZLIB license.
+
+The license covers the source code repository on GitHub as well as the "config" directory in the "data" repository on GitHub.  
+Game media included in the game (maps, textures, sounds, models etc.) are NOT covered by this license, and may have individual copyrights and distribution restrictions (see their individual READMEs).  
+
+In contrast to our predecessor Sauerbraten our officially bundled [content needs to be open source](https://github.com/inexor-game/code/wiki/License-Policy), i.e. allowing all kinds of usage required for increasing the ecosystem around the code, including sharing mods or commercial use.
+
+The included third-party libraries also have individual licenses, which you can find in the respective READMEs in platform/legal.
+
+
 ## Resources
 
 * [Website](https://inexor.org)
