@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/sh
 
 mydir="`dirname $0`"
 inexor_dir="`readlink -f "$mydir"`"
