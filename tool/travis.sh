@@ -238,8 +238,8 @@ build() {
   (
     mkcd "/tmp/inexor-build-${build}"
     conan
-    conan install "$gitroot" --build=missing -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx="libstdc++11"
-    cmake $CMAKE_FLAGS "$gitroot"
+    conan install "$gitroot" --scope build_all=1 --build=missing -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx="libstdc++11"
+    conan build "$gitroot"
     make -kj 5 install
   )
 }

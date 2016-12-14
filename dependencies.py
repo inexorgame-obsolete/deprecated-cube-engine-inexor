@@ -11,3 +11,13 @@ requires = (("Kainjow_Mustache/2.0@a_teammate/stable"),
             ("CEF/3.2704.1424.gc3f0a5b@a_teammate/testing"),
             ("Protobuf/3.1.0@a_teammate/stable"),
             ("gRPC/1.1.0-dev@a_teammate/stable"))
+
+options = '''
+  zlib:shared=False
+  gtest:shared=False
+  ENet:shared=False
+  Boost:shared=False
+  SDL2:shared=False
+  SDL2_image:shared=False
+  CEF:use_sandbox=False
+'''
