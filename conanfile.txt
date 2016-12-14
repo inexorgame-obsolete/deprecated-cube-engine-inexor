@@ -14,7 +14,7 @@
   CEF/3.2704.1424.gc3f0a5b@a_teammate/testing
   Protobuf/3.1.0@a_teammate/stable
   gRPC/1.1.0-dev@a_teammate/stable
-  InexorGlueGen/0.2.0alpha@a_teammate/testing
+  InexorGlueGen/0.3.0alpha@a_teammate/testing
 
 [options]
   zlib:shared=False
