@@ -33,13 +33,11 @@ before_build:
   - cmd: md build
   - cmd: cd build
   # We generate project files for Visual Studio 14 2015 only atm.
-  - cmd: set "config_cmake_targets=-DBUILD_GLUEGEN=0 -DBUILD_MASTER=1 -DBUILD_SERVER=1 -DBUILD_CLIENT=1"
   - cmd: if "%platform%"=="Win32" ( set "CMAKE_GENERATOR_NAME=Visual Studio 14 2015" && set "arch_str=x86" )
   - cmd: if "%platform%"=="x64" ( set "CMAKE_GENERATOR_NAME=Visual Studio 14 2015 Win64" && set "arch_str=x86_64")
-  - cmd: if %configuration%=="Debug" (set "runtime_str=MTd")else (set "runtime_str=MT")
-  # TODO: debug build with MTd
-  - cmd: conan install .. --build=missing -s compiler="Visual Studio" -s compiler.version=14 -s compiler.runtime=%runtime_str% -s arch=%arch_str% -s build_type=%configuration% 
-  - cmd: cmake -G "%CMAKE_GENERATOR_NAME%" %config_cmake_targets% ..
+  - cmd: if %configuration%==Debug (set "runtime_str=MTd")else (set "runtime_str=MT")
+  - cmd: conan install .. --scope build_all=1 --build=missing -s compiler="Visual Studio" -s compiler.version=14 -s compiler.runtime=%runtime_str% -s arch=%arch_str% -s build_type=%configuration% 
+  - cmd: conan build ..
 
 build:
 # cmakes placeholder project to silence appveyor complaining about us using the cli
