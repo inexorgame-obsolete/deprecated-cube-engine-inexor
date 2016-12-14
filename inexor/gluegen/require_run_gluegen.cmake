@@ -109,7 +109,7 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
     )
     message(STATUS "gluegen will generate the following files: ${GENERATED_FILES}")
 
-    install(FILES ${gluegen_out_proto} DESTINATION ${INSTALL_RESOURCES_DIR} RENAME ${proto_general_name}) # install .proto to bin/all
+    install(FILES ${gluegen_out_proto} DESTINATION ${EXE_DIR} RENAME ${proto_general_name}) # install .proto to bin/all
     message(STATUS "Proto file install destination: ${INSTALL_RESOURCES_DIR}/${proto_general_name}")
 endfunction()
 

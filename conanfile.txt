@@ -24,3 +24,10 @@
   SDL2:shared=False
   SDL2_image:shared=False
   CEF:use_sandbox=False
+
+[imports]
+  bin, *.dll -> ./bin
+  bin, *.bin -> ./bin
+  bin, *.dat -> ./bin
+  bin, *.pak -> ./bin
+  lib, *.dylib* -> ./bin
