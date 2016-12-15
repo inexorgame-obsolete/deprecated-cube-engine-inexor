@@ -93,7 +93,7 @@ install_linux() {
   install_tool
 
   apt-get -y -t wily install --only-upgrade libfontconfig1
-  apt-get -y -t wily install build-essential binutils doxygen
+  apt-get -y -t wily install build-essential binutils doxygen nasm
   python -m pip install conan
 }
 
@@ -228,9 +228,10 @@ nigthly_build() {
 build() {
   (
     mkcd "/tmp/inexor-build-${build}"
+    conan
     echo "executed conan install "$gitroot" --scope build_all=1 --build=missing -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx=libstdc++11"
-    conan install "$gitroot" --scope build_all=1 --build=missing -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx="libstdc++11"
-    conan build "$gitroot"
+    conan install "$gitroot" --scope build_all=1 --build=missing -s compiler="$CONAN_COMPILER" -s compiler.version="$CONAN_COMPILER_VERSION" -s compiler.libcxx="libstdc++11"
+    conan build "$gitroot" --scope build_all=1 --build=missing -s compiler="$CONAN_COMPILER" -s compiler.version="$CONAN_COMPILER_VERSION" -s compiler.libcxx="libstdc++11"
     make -kj 5 install
   )
 }
