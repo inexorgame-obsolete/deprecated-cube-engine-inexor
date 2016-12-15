@@ -93,17 +93,8 @@ install_linux() {
   install_tool
 
   apt-get -y -t wily install --only-upgrade libfontconfig1
-  # Not using the more recent ones because https://llvm.org/bugs/show_bug.cgi?id=23529
-  # (failure in clang)
-  apt-get -y -t trusty install \
-      zlib1g-dev libsdl2-dev libsdl2-image-dev \
-      libsdl2-mixer-dev libenet-dev libprotobuf-dev \
-      protobuf-compiler libgconf2-dev libboost-all-dev \
-      libudev-dev doxygen
-  apt-get -y -t wily install build-essential binutils
+  apt-get -y -t wily install build-essential binutils doxygen
   python -m pip install conan
-  # Manually workaround http://askubuntu.com/questions/288821/how-do-i-resolve-a-cannot-open-shared-object-file-libudev-so-0-error
-  ln -sf /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0
 }
 
 # Install routines for each target
@@ -237,7 +228,7 @@ nigthly_build() {
 build() {
   (
     mkcd "/tmp/inexor-build-${build}"
-    conan
+    echo "executed conan install "$gitroot" --scope build_all=1 --build=missing -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx=libstdc++11"
     conan install "$gitroot" --scope build_all=1 --build=missing -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx="libstdc++11"
     conan build "$gitroot"
     make -kj 5 install

@@ -40,9 +40,8 @@ class InexorgluegenConan(ConanFile):
 {}'''.format(self.default_options, options)
 
     def source(self):
-        self.run("git clone https://github.com/inexor-game/code/ && cd code && git checkout {}".format(self.options.commit))
-        # This is a very dirty workaround: Although not needed all modules get always built. we'll need a different solution for that.
-        cmake_file = "code/inexor/CMakeLists.txt"
+        # This is just a temporary optimisation to not build all modules for the GlueGen tool, since only the filesystem module is needed.
+        cmake_file = "inexor/CMakeLists.txt"
         tools.replace_in_file(cmake_file, "add_subdirectory(", "#add_subdirectory(")
         tools.replace_in_file(cmake_file, "#add_subdirectory(texture)", '''#add_subdirectory(texture)
 add_subdirectory(util)
@@ -50,13 +49,15 @@ add_subdirectory(filesystem)''') # Just readd module_filesystem and module_util 
 
     def build(self):
         cmake = CMake(self.settings)
+        build_folder = "_build"
+        os.mkdir(build_folder)
         args = ["-DBUILD_CLIENT=OFF", "-DBUILD_MASTER=OFF", "-DBUILD_TEST=OFF", "-DBUILD_SERVER=OFF", "-DBUILD_GLUEGEN=ON"]
         # args += ["-DBUILD_SHARED_LIBS={}".format('ON' if self.options.shared else 'OFF')]
-        self.run('cmake code {} {}'.format(cmake.command_line, " ".join(args)))
-        self.run("cmake --build . {}".format(cmake.build_config))
+        self.run('cd {} && cmake .. {} {}'.format(build_folder, cmake.command_line, " ".join(args)))
+        self.run("cd {} && cmake --build . {}".format(build_folder, cmake.build_config))
 
     def package(self):
         self.copy("*gluecodegenerato*", dst="bin", src="bin", keep_path=False)
-        self.copy("*.dll", dst="bin", keep_path=False)
-        self.copy("*.so", dst="lib", keep_path=False)
+        self.copy("*.dll", dst="bin", src="lib", keep_path=False)
+        self.copy("*.so", dst="lib", src="lib", keep_path=False)
 
