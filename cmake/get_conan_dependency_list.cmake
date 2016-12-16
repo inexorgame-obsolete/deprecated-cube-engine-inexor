@@ -4,6 +4,7 @@
 # if SHOW_LICENSE is true it will also display license info.
 function(get_conan_dependency_list CONANFILE_PY_FOLDER SHOW_LICENSE STRIP_CHANNELS OUTPUT_VAR)
 
+  message(STATUS "executing conan info")
   if(SHOW_LICENSE)
     execute_process(COMMAND conan info --only=license OUTPUT_VARIABLE TEMP_OUTPUT_VAR WORKING_DIRECTORY ${CONANFILE_PY_FOLDER})
   else()

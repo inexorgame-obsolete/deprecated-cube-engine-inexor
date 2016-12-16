@@ -1,0 +1,17 @@
+# Media folder names: core, additional, playground
+
+# get media/core is a submodule: update it
+execute_process(COMMAND git submodule init COMMAND git submodule sync COMMAND git submodule update WORKING_DIRECTORY ${MAINDIR})
+
+# Clone the others:
+if(NOT EXISTS "${MAINDIR}/media/additional")
+  execute_process(COMMAND git clone --depth 1 https://github.com/inexor-game/data-additional.git additional WORKING_DIRECTORY "${MAINDIR}/media")
+else()
+  message(WARNING "Packaging warning: media/additional already exists, update it yourself to a concrete branch.")
+endif()
+
+#if(NOT EXISTS "${MAINDIR}/media/playground")
+#  execute_process(COMMAND git clone --depth 1 https://github.com/inexor-game/data-playground.git playground WORKING_DIRECTORY "${MAINDIR}/media")
+#else()
+#  message(WARNING "Packaging warning: media/playground already exists, update it yourself to a concrete branch.")
+#endif()
