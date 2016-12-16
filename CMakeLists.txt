@@ -65,6 +65,13 @@ install(DIRECTORY "${CMAKE_BINARY_DIR}/bin/" DESTINATION "${EXE_DIR}" USE_SOURCE
 message(STATUS "Generating Project-Files to ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS "Resulting Executable goes to ${EXE_DIR}")
 
+set(DEPENDENCY_LIST_FILE "" CACHE STRING "If DEPENDENCY_LIST_FILE is specified we will save all dependencies including their licenses to this file.")
+if(DEPENDENCY_LIST_FILE)
+  include(cmake/get_conan_dependency_list.cmake)
+  get_conan_dependency_list(${MAINDIR} 1 1 DEPENDENCY_LIST)
+  file(WRITE ${DEPENDENCY_LIST_FILE} "${DEPENDENCY_LIST}")
+  message(STATUS "Created DEPENDENCY_LIST_FILE: ${DEPENDENCY_LIST_FILE}")
+endif()
 
 ## Go for the source subfolder.
 add_subdirectory(inexor)
