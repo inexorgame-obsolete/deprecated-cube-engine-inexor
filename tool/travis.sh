@@ -139,7 +139,6 @@ upload_apidoc() {
     zip -r "${zipp}.zip" "$zipp"
     upload "$zipp.zip"
   )
-  return 0
 }
 
 nigthly_build() {
@@ -252,6 +251,7 @@ run_tests() {
 
 target_before_install() {
   sudo "$script" install_"$TARGET"
+  exit 0
 }
 
 target_script() {
@@ -261,6 +261,7 @@ target_script() {
     build
     run_tests
   fi
+  exit 0
 }
 
 # Upload nightly
@@ -268,6 +269,7 @@ target_after_success() {
   if test "$TARGET" != apidoc; then
     external_pull_request || nigthly_build || true
   fi
+  exit 0
 }
 
 ## MAIN ####################################################
