@@ -139,6 +139,7 @@ upload_apidoc() {
     zip -r "${zipp}.zip" "$zipp"
     upload "$zipp.zip"
   )
+  return 0
 }
 
 nigthly_build() {
@@ -231,8 +232,7 @@ build() {
     conan
     echo "executed conan install "$gitroot" --scope build_all=1 --build=missing -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx=libstdc++11"
     conan install "$gitroot" --scope build_all=1 --build=missing -s compiler="$CONAN_COMPILER" -s compiler.version="$CONAN_COMPILER_VERSION" -s compiler.libcxx="libstdc++11"
-    conan build "$gitroot" --scope build_all=1 --build=missing -s compiler="$CONAN_COMPILER" -s compiler.version="$CONAN_COMPILER_VERSION" -s compiler.libcxx="libstdc++11"
-    make -kj 5 install
+    conan build "$gitroot"
   )
 }
 
