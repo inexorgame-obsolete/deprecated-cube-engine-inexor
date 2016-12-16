@@ -60,7 +60,7 @@ if(INSTALL_LOCALLY)
 endif()
 
 set(EXE_DIR "bin" CACHE STRING "The directory you want to install your executables to. Use target 'install'.")
-install(DIRECTORY "${CMAKE_BINARY_DIR}/bin/" DESTINATION "${EXE_DIR}") # Trailing '/' before the DIRECTORY is significant. Without it bin would be installed to bin/bin.
+install(DIRECTORY "${CMAKE_BINARY_DIR}/bin/" DESTINATION "${EXE_DIR}" USE_SOURCE_PERMISSIONS) # Trailing '/' before the DIRECTORY is significant. Without it bin would be installed to bin/bin.
 
 message(STATUS "Generating Project-Files to ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS "Resulting Executable goes to ${EXE_DIR}")
