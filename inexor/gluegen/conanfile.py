@@ -41,20 +41,27 @@ class InexorgluegenConan(ConanFile):
 
     def source(self):
         # This is just a temporary optimisation to not build all modules for the GlueGen tool, since only the filesystem module is needed.
-        cmake_file = "inexor/CMakeLists.txt"
-        tools.replace_in_file(cmake_file, "add_subdirectory(", "#add_subdirectory(")
-        tools.replace_in_file(cmake_file, "#add_subdirectory(texture)", '''#add_subdirectory(texture)
+        src_cmake_file = "inexor/CMakeLists.txt"
+        tools.replace_in_file(src_cmake_file, "add_subdirectory(", "#add_subdirectory(")
+        tools.replace_in_file(src_cmake_file, "#add_subdirectory(texture)", '''#add_subdirectory(texture)
 add_subdirectory(util)
 add_subdirectory(filesystem)''') # Just readd module_filesystem and module_util again..
 
+        main_cmake_file = "CMakeLists.txt"
+        
+        # enable that you can generate your project files in the main dir. (conan has issues otherwise)
+        tools.replace_in_file(main_cmake_file, 'message(FATAL_ERROR "Keep your director', '#message(FATAL_ERROR "Keep your director')
+        # Disable any conaninfo.txt lookup (conan has NOT generated the conaninfo.txt yet.. wtf?)
+        tools.replace_in_file(main_cmake_file, 'set(CMAKE_CONFIGURATION_TYPES ${BUILD_TYPE})', '#set(CMAKE_CONFIGURATION_TYPES ${BUILD_TYPE})')
+        tools.replace_in_file(main_cmake_file, 'set(CMAKE_BUILD_TYPE ${BUILD_TYPE} CACHE INTERN "")', '#set(CMAKE_BUILD_TYPE ${BUILD_TYPE} CACHE INTERN "")')
+        tools.replace_in_file(main_cmake_file, 'get_conan_build_type(BUILD_TYPE)', '#get_conan_build_type(BUILD_TYPE)')
+        
     def build(self):
         cmake = CMake(self.settings)
-        build_folder = "_build"
-        os.mkdir(build_folder)
         args = ["-DBUILD_CLIENT=OFF", "-DBUILD_MASTER=OFF", "-DBUILD_TEST=OFF", "-DBUILD_SERVER=OFF", "-DBUILD_GLUEGEN=ON"]
         # args += ["-DBUILD_SHARED_LIBS={}".format('ON' if self.options.shared else 'OFF')]
-        self.run('cd {} && cmake .. {} {}'.format(build_folder, cmake.command_line, " ".join(args)))
-        self.run("cd {} && cmake --build . {}".format(build_folder, cmake.build_config))
+        self.run('cmake . {} {}'.format(cmake.command_line, " ".join(args)))
+        self.run("cmake --build . {}".format(cmake.build_config))
 
     def package(self):
         self.copy("*gluecodegenerato*", dst="bin", src="bin", keep_path=False)
