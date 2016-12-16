@@ -1,29 +1,11 @@
-# inexor-source-folder
+# Inexor source folder
 
 This directory contains the sources – and libraries - for
 the Inexor core application written in C++.
 
 
-## Build
-
-Not in this directory.
-
-  ```shell
-  cd ..
-  git submodule init
-  git submodule sync
-  git submodule update
-  mkdir build
-  cd build
-  cmake ..
-  make run_tests
-  make install
-  cd ..
-  ./inexor_unix
-  ```
-
-but see the [wiki](https://github.com/inexor-game/code/wiki/Build) 
-for full instructions.
+See the [wiki](https://github.com/inexor-game/code/wiki/Build) 
+for Build-Instructions.
 
 ## Tree
 
@@ -39,12 +21,6 @@ OpenGL or X11.
 
 **util** – Utilities module: Small functions, little helpers
 that fit nowhere else.
-
-**net** – Network library module and abstraction for message
-based connections. Note that this does NOT contain ENet or
-the actual ingame network stuff, but a generic library that
-is already used by the RPC module. The build config pulls
-asio.
 
 **rpc** – Implementation for the Inexor RPC server and the
 protoc files that describes the RPC protocol. The build
@@ -71,9 +47,3 @@ Note that this is heavily intertwined with the other legacy
 modules shared/ and fpsgame/.  
 **LEGACY CODE: Use the standard library please; Patch, but
 do not add new features here.**
-
-**platform** – Submodule that contains libraries and
-build configs for Windows/Linux/OS X/VS/MinGW.
-
-**vendor** – Build config and submodules for several
-libraries: ENet, Google Test.
