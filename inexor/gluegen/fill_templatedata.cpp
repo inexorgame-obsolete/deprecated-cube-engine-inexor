@@ -115,28 +115,28 @@ TemplateData fill_templatedata(vector<ShTreeNode> &tree, const string &ns)
 {
     TemplateData tmpldata{TemplateData::Type::Object};
 
-    tmpldata["file_comment"] =  "// This file gets generated!\n"
-        "// Do not modify it directly but its corresponding template file instead!";
+    tmpldata.set("file_comment", "// This file gets generated!\n"
+                 "// Do not modify it directly but its corresponding template file instead!");
 
     // namespace string -> protobuf syntax: replace :: with .
     vector<string> ns_list(split_by_delimiter(ns, "::"));
     const string &proto_pkg = join_to_str(ns_list, '.');
-    tmpldata["package"] = proto_pkg;
-    tmpldata["namespace"] = ns;
+    tmpldata.set("package", proto_pkg);
+    tmpldata.set("namespace", ns);
 
     TemplateData sharedvars{TemplateData::Type::List};
     int index = 1;
     for(auto node : tree)
     {
         TemplateData curvariable{TemplateData::Type::Object};
-        curvariable["type_protobuf"] = node.get_type_protobuf();
-        curvariable["type_cpp_primitive"] = node.get_type_cpp_primitive();
-        curvariable["type_numeric"] = std::to_string(node.get_type_numeric());
-        curvariable["index"] = std::to_string(index++);
-        curvariable["name_unique"] = node.get_name_unique();
-        curvariable["path"] = node.get_path();
-        curvariable["name_cpp_full"] = node.get_name_cpp_full();
-        curvariable["name_cpp_short"] = node.get_name_cpp_short();
+        curvariable.set("type_protobuf", node.get_type_protobuf());
+        curvariable.set("type_cpp_primitive", node.get_type_cpp_primitive());
+        curvariable.set("type_numeric", std::to_string(node.get_type_numeric()));
+        curvariable.set("index", std::to_string(index++));
+        curvariable.set("name_unique", node.get_name_unique());
+        curvariable.set("path", node.get_path());
+        curvariable.set("name_cpp_full", node.get_name_cpp_full());
+        curvariable.set("name_cpp_short", node.get_name_cpp_short());
 
         vector<string> ns(split_by_delimiter(node.get_namespace(), "::"));
 
@@ -166,14 +166,14 @@ TemplateData fill_templatedata(vector<ShTreeNode> &tree, const string &ns)
             return ss.str();
         }}};
 
-        curvariable["namespace_sep_open"] = namespace_sep_open;
-        curvariable["namespace_sep_close"] = namespace_sep_close;
+        curvariable.set("namespace_sep_open", namespace_sep_open);
+        curvariable.set("namespace_sep_close", namespace_sep_close);
 
         add_generic_templatedata(curvariable, node);
 
         sharedvars << curvariable;
     }
-    tmpldata["shared_vars"] = sharedvars;
+    tmpldata.set("shared_vars", sharedvars);
 
     return tmpldata;
 }

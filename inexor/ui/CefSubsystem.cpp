@@ -50,10 +50,9 @@ void CefSubsystem::initialize(int argc, char **argv)
     const CefMainArgs args(argc, argv);
 #endif
     std::string executable_path = ExecutablePathWithoutBinary(argv[0]);
-    spdlog::get("global")->info() << "Detected executable path: " << executable_path << "\n";
     InexorSettings settings(executable_path);
     if (!CefInitialize(args, settings, cef_app.get(), NULL)) {
-        spdlog::get("global")->error() << "FATAL: Initialization of CEF subprocess failed!\n";
+        spdlog::get("global")->error("FATAL: Initialization of CEF subprocess failed!");
     }
 }
 

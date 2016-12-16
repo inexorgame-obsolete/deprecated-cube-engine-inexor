@@ -61,7 +61,7 @@ namespace game
             respawn();
             if(_type>=NUMMONSTERTYPES || _type < 0)
             {
-                spdlog::get("global")->warn() << "warning: unknown monster in spawn: " << _type; // TODO: LOG_N_TIMES(1)
+                spdlog::get("global")->warn("warning: unknown monster in spawn: {}", _type); // TODO: LOG_N_TIMES(1)
                 _type = 0;
             }
             mtype = _type;
@@ -344,7 +344,8 @@ namespace game
 
     void endsp(bool allkilled)
     {
-        spdlog::get("gameplay")->info() << (allkilled ? "you have cleared the map!" : "you reached the exit!");
+        if(allkilled) spdlog::get("gameplay")->info("you have cleared the map!");
+        else spdlog::get("gameplay")->info("you reached the exit!");
         monstertotal = 0;
         forceintermission();
     }
@@ -356,14 +357,14 @@ namespace game
         numkilled++;
         player1->frags = numkilled;
         remain = monstertotal-numkilled;
-        if(remain>0 && remain<=5) spdlog::get("gameplay")->info() << "only " << remain << " monster(s) remaining";
+        if(remain>0 && remain<=5) spdlog::get("gameplay")->info("only {} monster(s) remaining", remain);
     }
 
     void updatemonsters(int curtime)
     {
         if(m_dmsp && spawnremain && lastmillis>nextmonster)
         {
-            if(spawnremain--==monstertotal) { spdlog::get("gameplay")->info() << "The invasion has begun!"; playsound(S_V_FIGHT); }
+            if(spawnremain--==monstertotal) { spdlog::get("gameplay")->info("The invasion has begun!"); playsound(S_V_FIGHT); }
             nextmonster = lastmillis+1000;
             spawnmonster();
         }
@@ -417,7 +418,7 @@ namespace game
 
     void spsummary(int accuracy)
     {
-        spdlog::get("gameplay")->info() << "--- single player time score: ---";
+        spdlog::get("gameplay")->info("--- single player time score: ---");
         int pen, score = 0;
 
         pen = ((lastmillis-maptime)*100)/game::scaletime(1000); score += pen;

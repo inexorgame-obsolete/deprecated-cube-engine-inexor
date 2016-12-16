@@ -181,7 +181,7 @@ struct obj : vertmodel, vertloader<obj>
         Texture *tex, *masks;
         loadskin(name, pname, tex, masks);
         mdl.initskins(tex, masks);
-        if(tex==notexture) spdlog::get("global")->warn() << "could not load model skin for " << name1;
+        if(tex==notexture) spdlog::get("global")->warn("could not load model skin for {}", name1);
         return true;
     }
 

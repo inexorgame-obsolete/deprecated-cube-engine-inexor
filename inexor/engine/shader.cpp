@@ -78,17 +78,17 @@ static void showglslinfo(GLenum type, GLuint obj, const char *name, const char *
 
     if(length > 1)
     {
-        spdlog::get("global")->error() << "GLSL ERROR in " << (type == GL_VERTEX_SHADER ? "VS" : (type == GL_FRAGMENT_SHADER ? "FS" : "PROG")) << ": " << name;
+        spdlog::get("global")->error("GLSL ERROR in {0}: {1}", (type == GL_VERTEX_SHADER ? "VS" : (type == GL_FRAGMENT_SHADER ? "FS" : "PROG")), name);
 
         GLchar *log = new GLchar[length];
         if(type) glGetShaderInfoLog_(obj, length, &length, log);
         else glGetProgramInfoLog_(obj, length, &length, log);
 
-        spdlog::get("global")->error() << log;
+        spdlog::get("global")->error(log);
 
         for(int i = 0; i < numparts && parts[i]; i++)
         {
-            spdlog::get("global")->error() << parts[i]; // TODO: insert line numbers at beginning & mark error position. maybe max number of lines.
+            spdlog::get("global")->error(parts[i]); // TODO: insert line numbers at beginning & mark error position. maybe max number of lines.
         }
         delete[] log;
     }
@@ -1096,7 +1096,7 @@ void setshader(char *name)
     Shader *s = shaders.access(name);
     if(!s)
     {
-        spdlog::get("global")->error() << "no such shader: " << name;
+        spdlog::get("global")->error("no such shader: {}", name);
     }
     else slotshader = s;
 }
@@ -1360,7 +1360,7 @@ static bool addpostfx(const char *name, int outputbind, int outputscale, uint in
     Shader *s = useshaderbyname(name);
     if(!s)
     {
-        spdlog::get("global")->error() << "no such postfx shader: " << name;
+        spdlog::get("global")->error("no such postfx shader: {}", name);
         return false;
     }
     postfxpass &p = postfxpasses.add();

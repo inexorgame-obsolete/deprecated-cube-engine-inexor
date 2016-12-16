@@ -976,7 +976,7 @@ void texture(char *type, char *name, int *rot, int *xoffset, int *yoffset, float
     Slot &s = matslot >= 0 ? lookupmaterialslot(matslot, false) : *(tnum != TEX_DIFFUSE ? slots.last() : slots.add(new Slot(slots.length())));
     s.loaded = 0;
     s.texmask |= 1 << tnum;
-    if(s.sts.length() >= 8) spdlog::get("global")->warn() << "warning: too many textures in slot " << (slots.length() - 1);
+    if(s.sts.length() >= 8) spdlog::get("global")->warn("warning: too many textures in slot {}", (slots.length() - 1));
 
     s.addtexture(tnum, name);
 

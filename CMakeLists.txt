@@ -1,17 +1,16 @@
 cmake_minimum_required(VERSION 3.1) 
 include(cmake/functions.cmake)
-include(cmake/glibc_cxx11_abi_detection.cmake)
 include(cmake/silence_find_pathprogram.cmake)
+include(cmake/get_conan_build_type.cmake)
 
 ### Different Configuration Types (Debug release)
 
-# Only generate Debug and Release configuration types.
-set(CMAKE_CONFIGURATION_TYPES Debug Release)
+get_conan_build_type(BUILD_TYPE)
+message(STATUS "BUILD_TYPE: ${BUILD_TYPE}")
 
-# First choice is Debug
-if(NOT DEFINED CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Debug CACHE INTERN "")
-endif()
+# Only generate the single build type (Debug vs Release) we have our dependencies built for, since our prior step is to run conan.
+set(CMAKE_CONFIGURATION_TYPES ${BUILD_TYPE})
+set(CMAKE_BUILD_TYPE ${BUILD_TYPE} CACHE INTERN "")
 
 
 message(STATUS "CMAKE_VERSION = ${CMAKE_VERSION}")
@@ -29,11 +28,15 @@ include(cmake/platform_detection.cmake)
 # Set compile flags and compile specific definitions
 include(cmake/compile_flags_and_defs.cmake)
 
-# We use a lot of thirdparty dependencies which we deliver in prebuilt form to cut down compile time: make cmake find them.
-include(platform/add_platform_files.cmake)
+# Add conan dependencies (our c++ dependency manager)
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
+
+# And we split them accordingly into different require_XY() functions
+include(cmake/require_thirdparty_libs.cmake)
 
 
-#### Install paths ####
+## Path Variables
 
 # Error if paths aren't set well
 get_filename_component(MAINDIR "${CMAKE_SOURCE_DIR}" REALPATH)  # Main inexor folder
@@ -45,6 +48,9 @@ endif()
 # Set the path to inexor/ explicitly to simplify some following definitions
 set(SOURCE_DIR ${MAINDIR}/inexor)
 
+
+## Installation
+
 # INSTALL_LOCALLY will surpress the installation into CMAKE_INSTALL_PREFIX which is by default some global system path.
 option(INSTALL_LOCALLY "Install everything relative to this folder (${MAINDIR}). Not into some global system directories." ON)
 
@@ -53,31 +59,19 @@ if(INSTALL_LOCALLY)
   message(STATUS "Local installation chosen. No files will move outside this folder (${MAINDIR}). .. ${CMAKE_INSTALL_PREFIX}")
 endif()
 
-# Define where to move the binary by target 'install'
-if(OS_LINUX)
-  set(EXE_DIR "bin/linux/${PROJECT_ARCH}")
-elseif(OS_MACOSX)
-  set(EXE_DIR "bin/mac/${PROJECT_ARCH}")
-elseif(OS_WINDOWS)
-  set(EXE_DIR "bin/windows/${PROJECT_ARCH}")
-endif()
-
-set(INSTALL_RESOURCES_DIR "bin/all")
+set(EXE_DIR "bin" CACHE STRING "The directory you want to install your executables to. Use target 'install'.")
+install(DIRECTORY "${CMAKE_BINARY_DIR}/bin/" DESTINATION "${EXE_DIR}" USE_SOURCE_PERMISSIONS) # Trailing '/' before the DIRECTORY is significant. Without it bin would be installed to bin/bin.
 
 message(STATUS "Generating Project-Files to ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS "Resulting Executable goes to ${EXE_DIR}")
 
-### Go for the subfolders.
-add_subdirectory(vendor)
-add_subdirectory(inexor)
-
-install(FILES ${INSTALL_SHARED_LIBS} ${INSTALL_EXES} DESTINATION ${EXE_DIR})
-install(FILES ${INSTALL_SHARED_LIBS_DEBUG}   CONFIGURATIONS Debug   DESTINATION ${EXE_DIR})
-install(FILES ${INSTALL_SHARED_LIBS_RELEASE} CONFIGURATIONS Release DESTINATION ${EXE_DIR})
-install(FILES ${INSTALL_RESOURCES} DESTINATION ${INSTALL_RESOURCES_DIR})
-install(DIRECTORY ${INSTALL_RESOURCES_FOLDERS} DESTINATION ${INSTALL_RESOURCES_DIR})
-
-# shipped portable stuff on win (dirty but temporarily)
-if(OS_WINDOWS)
-  install(DIRECTORY ${INSTALL_PORTABLE_DIR} DESTINATION "bin/windows/all")
+set(DEPENDENCY_LIST_FILE "" CACHE STRING "If DEPENDENCY_LIST_FILE is specified we will save all dependencies including their licenses to this file.")
+if(DEPENDENCY_LIST_FILE)
+  include(cmake/get_conan_dependency_list.cmake)
+  get_conan_dependency_list(${MAINDIR} 1 1 DEPENDENCY_LIST)
+  file(WRITE ${DEPENDENCY_LIST_FILE} "${DEPENDENCY_LIST}")
+  message(STATUS "Created DEPENDENCY_LIST_FILE: ${DEPENDENCY_LIST_FILE}")
 endif()
+
+## Go for the source subfolder.
+add_subdirectory(inexor)

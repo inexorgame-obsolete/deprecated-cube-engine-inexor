@@ -2025,7 +2025,7 @@ bool entinmap(dynent *d, bool avoidplayers)        // brute force but effective 
     // leave ent at original pos, possibly stuck
     d->o = orig;
     d->resetinterp();
-    spdlog::get("global")->warn() << "can't find entity spawn spot! " << std::setprecision(2) << d->o; // TODO: LOG_N_TIMES(1)
+    spdlog::get("global")->warn("can't find entity spawn spot! {:03.2f}", d->o); // TODO: LOG_N_TIMES(1)
     return false;
 }
 

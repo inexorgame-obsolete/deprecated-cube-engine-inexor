@@ -691,7 +691,7 @@ struct collectclientmode : clientmode
             if(!n)
             {
                 b.laststeal = lastmillis;
-                spdlog::get("gameplay")->info() << teamcolorname(d) << " stole a skull from " << teamcolor("your team", collectbaseteam(enemyteam), "the enemy team");
+                spdlog::get("gameplay")->info("{0} stole a skull from {1}", teamcolorname(d), teamcolor("your team", collectbaseteam(enemyteam), "the enemy team"));
                 playsound(S_FLAGDROP, &b.tokenpos);
             }
             if(t) particle_flare(b.tokenpos, vec(t->o.x, t->o.y, t->o.z + 0.5f*(TOKENHEIGHT + 1)), 500, PART_LIGHTNING, team==collectteambase(player1->team) ? 0x2222FF : 0xFF2222, 1.0f);
@@ -716,10 +716,10 @@ struct collectclientmode : clientmode
         d->flags = flags;
         setscore(team, score);
         
-        spdlog::get("gameplay")->info() << teamcolorname(d) << " collected " << deposited << " " << (deposited==1 ? "skull" : "skulls") <<" for " << teamcolor("your team", collectbaseteam(team), "the enemy team");
+        spdlog::get("gameplay")->info("{0} collected {1} {2} for {3}", teamcolorname(d), deposited, (deposited==1 ? "skull" : "skulls"), teamcolor("your team", collectbaseteam(team), "the enemy team"));
         playsound(team==collectteambase(player1->team) ? S_FLAGSCORE : S_FLAGFAIL);
 
-        if(score >= SCORELIMIT) spdlog::get("gameplay")->info() << teamcolor("your team", collectbaseteam(team), "the enemy team") << " collected " << score << " skulls";
+        if(score >= SCORELIMIT) spdlog::get("gameplay")->info("{0} collected {1} skulls",  teamcolor("your team", collectbaseteam(team), "the enemy team"), score);
     }
 
     void checkitems(fpsent *d)

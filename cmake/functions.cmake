@@ -198,36 +198,6 @@ function(find_libs)
   endif()
 endfunction()
 
-# USAGE: target_link_libs( <BINARYNAME> [ARGS] )
-#
-# Wrapper around target_link libs to be able to set different libs for debug and release
-# (Necessary for MSVC in combination with stdlib-dependend Libs)
-#
-# ARGUMENTS
-#  BINARYNAME - The Name of the target to link the libraries to
-#  ARGS...    - The Libraries
-#
-function(target_link_libs BINARYNAME)
-    if (";${ARGN};" MATCHES ";NOLINK;")
-      return()
-    endif()
-
-    if(DEFINED HAS_FIND_LIBRARY_WRAPPER)
-      foreach(CURLIB ${ARGN})
-        if(${CURLIB} MATCHES "(.*)_release(.*)")
-          target_link_libraries(${BINARYNAME} optimized ${CURLIB})
-        elseif(${CURLIB} MATCHES "(.*)_debug(.*)")
-          target_link_libraries(${BINARYNAME} debug ${CURLIB})
-        else()
-          target_link_libraries(${BINARYNAME} ${CURLIB})
-        endif()
-      endforeach()
-    else()
-      # No need on Unix systems, because of binary compatibility between different configurations
-      target_link_libraries(${BINARYNAME} ${ARGN})
-    endif()
-endfunction()
-
 # USAGE: add_app(executable SOURCE_FILES [CONSOLE_APP])
 #
 # Set up an executable.
@@ -267,13 +237,7 @@ function(add_app exe)
     set_property(TARGET ${exe} PROPERTY FOLDER "executables")
   endif()
 
-  # on visual studio we want to copy the seperate debug-info file
-  if(MSVC)
-    set(pdbfile "${CMAKE_CURRENT_BINARY_DIR}/\${CMAKE_INSTALL_CONFIG_NAME}/${exe}.pdb")
-    install(FILES ${pdbfile} DESTINATION ${EXE_DIR} OPTIONAL)
-  endif()
-
-  install(TARGETS ${exe} DESTINATION ${EXE_DIR})
+  target_link_libraries(${exe} ${CONAN_LIBS})
 endfunction()
 
 # USAGE: add_lib(modulename)

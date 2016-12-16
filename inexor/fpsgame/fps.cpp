@@ -60,7 +60,7 @@ namespace game
             following = arg[0] ? parseplayer(arg) : -1;
             if(following==player1->clientnum) following = -1;
             followdir = 0;
-            spdlog::get("global")->info() << "follow " << (following >= 0 ? "on" : "off");
+            spdlog::get("global")->info("follow {}", (following >= 0 ? "on" : "off"));
         }
 	}
     COMMAND(follow, "s");
@@ -81,7 +81,7 @@ namespace game
             cur = (cur + dir + clients.length()) % clients.length();
             if(clients[cur] && clients[cur]->state!=CS_SPECTATOR)
             {
-                if(following<0) spdlog::get("global")->info() << "follow on";
+                if(following<0) spdlog::get("global")->info("follow on");
                 following = cur;
                 followdir = dir;
                 return;
@@ -159,7 +159,7 @@ namespace game
         if(following<0) return;
         following = -1;
         followdir = 0;
-        spdlog::get("global")->info() << "follow off";
+        spdlog::get("global")->info("follow off");
     }
 
     /// Give me the fpsent instance of the player you are currently spectating
@@ -408,7 +408,7 @@ namespace game
             respawnself();
             if(m_classicsp)
             {
-                spdlog::get("gameplay")->info() << "You wasted another life! The monsters stole your armour and some ammo...";
+                spdlog::get("gameplay")->info("You wasted another life! The monsters stole your armour and some ammo...");
                 loopi(NUMGUNS) if(i!=GUN_PISTOL && (player1->ammo[i] = savedammo[i]) > 5) player1->ammo[i] = max(player1->ammo[i]/3, 5);
             }
         }
@@ -540,20 +540,20 @@ namespace game
             aname = colorname(actor, NULL, "", "you");
         }
         if(actor->type==ENT_AI)
-            frag_logger->info() << dname << " got killed by " << aname;
+            frag_logger->info("{0} got killed by {1}", dname, aname);
         else if(d==actor || actor->type==ENT_INANIMATE)
-            frag_logger->info() << dname << " suicided" << (d==player1 ? "!" : "");
+            frag_logger->info("{} suicided{}", dname, (d==player1 ? "!" : ""));
         else if(isteam(d->team, actor->team))
         {
             actor->teamkills++;
-            if(actor==player1) frag_logger->info() << aname << " fragged a teammate (" << dname << ")";
-            else if(d==player1) frag_logger->info() << dname << " got fragged by a teammate (" << aname << ")";
-            else frag_logger->info() << aname << " fragged a teammate (" << dname << ")";
+            if(actor==player1) frag_logger->info("{0} fragged a teammate ({1})", aname, dname);
+            else if(d==player1) frag_logger->info("{0} got fragged by a teammate ({1})", dname, aname);
+            else frag_logger->info("{0} fragged a teammate ({1}", aname, dname);
         }
         else
         {
-            if(d==player1) frag_logger->info() << dname << " got fragged by " << aname;
-            else frag_logger->info() << aname << " fragged " << dname;
+            if(d==player1) frag_logger->info("{0} got fragged by {1}", dname, aname);
+            else frag_logger->info("{0} fragged {1}", aname, dname);
         }
         deathstate(d);
         ai::killed(d, actor);
@@ -573,8 +573,8 @@ namespace game
             intermission = true;
             player1->attacking = false;
             if(cmode) cmode->gameover();
-            spdlog::get("gameplay")->info() << "intermission:";
-            spdlog::get("gameplay")->info() << "game has ended!";
+            spdlog::get("gameplay")->info("intermission:");
+            spdlog::get("gameplay")->info("game has ended!");
             if(m_ctf) spdlog::get("gameplay")->info("player frags: {0}, flags: {1}, deaths: {2}", player1->frags, player1->flags, player1->deaths);
             else if(m_collect) spdlog::get("gameplay")->info("player frags: {0}, skulls: {1}, deaths: {2}", player1->frags, player1->flags, player1->deaths);
             else spdlog::get("gameplay")->info("player frags: {0}, deaths: {1}", player1->frags, player1->deaths);
@@ -647,7 +647,7 @@ namespace game
 
         fpsent *d = clients[cn];
         if(!d) return;
-        if(notify && d->name[0]) spdlog::get("gameplay")->info() << COL_GREY << "leave: " << COL_WHITE << colorname(d);
+        if(notify && d->name[0]) spdlog::get("gameplay")->info("{0}leave:{1} {2}", COL_GREY, COL_WHITE, colorname(d));
         removeweapons(d);
         removetrackedparticles(d);
         removetrackeddynlights(d);
@@ -711,13 +711,13 @@ namespace game
             cmode->setup();
         }
 
-        spdlog::get("gameplay")->info() << "game mode is " << server::modename(gamemode);
+        spdlog::get("gameplay")->info("game mode is {}", server::modename(gamemode));
 
         if(m_sp)
         {
             defformatstring(scorename, "bestscore_%s", getclientmap());
             const char *best = getalias(scorename);
-            if(*best) spdlog::get("gameplay")->info() << "try to beat your best score so far: " << best;
+            if(*best) spdlog::get("gameplay")->info("try to beat your best score so far: {}", best);
         }
 
         if(player1->playermodel != playermodel) switchplayermodel(playermodel);

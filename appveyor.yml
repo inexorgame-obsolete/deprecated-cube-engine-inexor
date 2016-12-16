@@ -2,13 +2,13 @@ version: 0.{build}
 clone_depth: 1
 clone_folder: C:\projects\inexor-game
 
-platform: 
-  - Win32
+platform:
+ # - Win32
   - x64
 
 # build Configuration, i.e. Debug, Release, etc.
 configuration:
- # - Debug
+  - Debug
   - Release
 
 # scripts that are called at very beginning, before repo cloning
@@ -21,6 +21,8 @@ init:
 
 # scripts that run after cloning repository
 install:
+  - appveyor-retry choco install doxygen.portable
+  - cmd: python -m pip install conan
   - cmd: set "MAIN_FOLDER=C:\projects\inexor-game"
   - cmd: cd %MAIN_FOLDER%
   - cmd: git submodule update --init
@@ -31,9 +33,11 @@ before_build:
   - cmd: md build
   - cmd: cd build
   # We generate project files for Visual Studio 14 2015 only atm.
-  - cmd: if "%platform%"=="Win32" ( set "CMAKE_GENERATOR_NAME=Visual Studio 14 2015" && set "config_cmake_targets=-DBUILD_GLUEGEN=0 -DBUILD_MASTER=1 -DBUILD_SERVER=1 -DBUILD_CLIENT=1" )
-  - cmd: if "%platform%"=="x64" ( set "CMAKE_GENERATOR_NAME=Visual Studio 14 2015 Win64" && set "config_cmake_targets=-DBUILD_ALL=1" )
-  - cmd: cmake -G "%CMAKE_GENERATOR_NAME%" -DCMAKE_BUILD_TYPE=%configuration% %config_cmake_targets% ..
+  - cmd: if "%platform%"=="Win32" ( set "CMAKE_GENERATOR_NAME=Visual Studio 14 2015" && set "arch_str=x86" )
+  - cmd: if "%platform%"=="x64" ( set "CMAKE_GENERATOR_NAME=Visual Studio 14 2015 Win64" && set "arch_str=x86_64")
+  - cmd: if %configuration%==Debug (set "runtime_str=MTd")else (set "runtime_str=MT")
+  - cmd: conan install .. --scope build_all=1 --build=missing -s compiler="Visual Studio" -s compiler.version=14 -s compiler.runtime=%runtime_str% -s arch=%arch_str% -s build_type=%configuration% 
+  - cmd: conan build ..
 
 build:
 # cmakes placeholder project to silence appveyor complaining about us using the cli
@@ -50,13 +54,13 @@ after_build: # this is actually partly our before_deploy, but appveyor doesnt li
 
 deploy:
     # push our nightly bundle via ftp
-  - provider: FTP
-    protocol: ftp
-    host: inexor.org
-    username:
-      secure: rpQyxcVaaqNxDvYQlGP/eA==
-    password:
-      secure: aBNw6S6n1MqCfw/0S2vhDA==
+ # - provider: FTP
+ #   protocol: ftp
+ #   host: inexor.org
+ #   username:
+ #     secure: rpQyxcVaaqNxDvYQlGP/eA==
+ #   password:
+ #     secure: aBNw6S6n1MqCfw/0S2vhDA==
     # push release binaries to GitHub if tag gets created (and create a release draft)
   - provider: GitHub
     auth_token:

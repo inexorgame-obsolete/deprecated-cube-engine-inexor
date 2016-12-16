@@ -380,12 +380,12 @@ struct bombclientmode : clientmode
 
     bool canspawn(clientinfo *ci, bool connecting) {
     	if(!m_lms) return true;
-    	if(gamerunning()) { spdlog::get("global")->info() << "game is running"; return false; }
-    	if(notgotspawnlocations) { spdlog::get("global")->info() << "not got spawn locations yet"; return false; }
+    	if(gamerunning()) { spdlog::get("global")->info("game is running"); return false; }
+    	if(notgotspawnlocations) { spdlog::get("global")->info("not got spawn locations yet"); return false; }
     	int i = 0;
     	for(; i < spawnlocs.length(); i++) if(spawnlocs[i]->cn == ci->clientnum) break;
-    	if(i == spawnlocs.length()) { spdlog::get("global")->info() << "player has got no spawn location"; return false; }
-    	if(ci->state.deaths==0) { spdlog::get("global")->info() << "player has no deaths"; return true; } // ci->state.aitype!=AI_NONE &&
+    	if(i == spawnlocs.length()) { spdlog::get("global")->info("player has got no spawn location"); return false; }
+        if(ci->state.deaths==0) { spdlog::get("global")->info("player has no deaths"); return true; } // ci->state.aitype!=AI_NONE &&
     	sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 1250, E_ZOOM_IN, "You cannot respawn this round");
     	return false;
     }

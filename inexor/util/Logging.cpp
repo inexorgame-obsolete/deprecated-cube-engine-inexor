@@ -28,7 +28,7 @@ void Logging::initDefaultLoggers()
     for(const auto& default_logger_name : default_logger_names) {
         createAndRegisterLogger(default_logger_name.c_str());
     }
-    spdlog::get("global")->debug() << "Default loggers initialized";
+    spdlog::get("global")->debug("Default loggers initialized");
 }
 
 void Logging::createAndRegisterLogger(std::string logger_name)

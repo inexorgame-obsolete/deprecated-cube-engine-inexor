@@ -1065,11 +1065,11 @@ static void reportinvalidtextslot(Slot* slot)
 {
     if (reportedinvalidtextsloterrs.find(slot->index) == reportedinvalidtextsloterrs.end())
     {
-        spdlog::get("global")->error() << "Invalid texture definition (Invalid SHADER_NORMALSLMS) on index " << slot->index;
+        spdlog::get("global")->error("Invalid texture definition (Invalid SHADER_NORMALSLMS) on index {}", slot->index);
         loopv(slot->sts)
         {
             Slot::Tex &t = slot->sts[i];
-            if(t.type==TEX_DIFFUSE) spdlog::get("global")->error() << "TEX_DIFFUSE: "<< t.name; break;
+            if(t.type==TEX_DIFFUSE) spdlog::get("global")->error("TEX_DIFFUSE: {}", t.name); break;
         }
         reportedinvalidtextsloterrs.insert(slot->index);
     }

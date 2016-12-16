@@ -27,7 +27,7 @@ void InexorLayerManager::InitializeLayers()
 
 void InexorLayerManager::InitializeLayer(CefRefPtr<InexorLayerProvider> layer_provider)
 {
-    spdlog::get("global")->info() << "InexorLayerManager::InitializeLayer()\n  name: " << layer_provider->GetLayerName() << "\n  url: " << layer_provider->GetUrl() << "\n";
+    spdlog::get("global")->info("InexorLayerManager::InitializeLayer()\n  name: {0}\n url: {1}", layer_provider->GetLayerName(), layer_provider->GetUrl());
     CefRefPtr<InexorLayer> layer = CreateLayer(layer_provider->GetLayerName(), layer_provider->GetUrl());
     layer->SetVisibility(layer_provider->GetVisibility());
     layer->SetIsAcceptingKeyInput(layer_provider->GetAcceptingKeyInput());
