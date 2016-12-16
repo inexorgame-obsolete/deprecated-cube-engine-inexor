@@ -69,7 +69,7 @@ external_pull_request() {
 # Upload one or more files to nightly.inexor.org
 upload() {
   # Fix an issue where upload directory gets specified by subsequent upload() calls
-  ncftpput -R -v -u "$FTP_USER" -p "$FTP_PASSWORD" inexor.org / "$@"
+  ncftpput -R -v -u "$FTP_USER" -p "$FTP_PASSWORD" inexor.org / "$@" || true
 }
 
 ## INSTALLATION ROUTINES ###################################
