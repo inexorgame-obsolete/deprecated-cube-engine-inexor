@@ -69,7 +69,7 @@ external_pull_request() {
 # Upload one or more files to nightly.inexor.org
 upload() {
   # Fix an issue where upload directory gets specified by subsequent upload() calls
-  ncftpput -R -v -u "$FTP_USER" -p "$FTP_PASSWORD" inexor.org / "$@"
+  ncftpput -R -v -u "$FTP_USER" -p "$FTP_PASSWORD" inexor.org / "$@" || true
 }
 
 ## INSTALLATION ROUTINES ###################################
@@ -231,14 +231,13 @@ build() {
     conan
     echo "executed conan install "$gitroot" --scope build_all=1 --build=missing -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx=libstdc++11"
     conan install "$gitroot" --scope build_all=1 --build=missing -s compiler="$CONAN_COMPILER" -s compiler.version="$CONAN_COMPILER_VERSION" -s compiler.libcxx="libstdc++11"
-    conan build "$gitroot" --scope build_all=1 --build=missing -s compiler="$CONAN_COMPILER" -s compiler.version="$CONAN_COMPILER_VERSION" -s compiler.libcxx="libstdc++11"
-    make -kj 5 install
+    conan build "$gitroot"
   )
 }
 
 run_tests() {
   if contains "$TARGET" linux; then
-    "${bin}/linux/`uname -m`/unit_tests"
+    "${bin}/unit_tests"
   elif contains "$TARGET" win; then
     echo >&2 "Sorry, win is not supported for testing yet."
     exit 0
@@ -252,6 +251,7 @@ run_tests() {
 
 target_before_install() {
   sudo "$script" install_"$TARGET"
+  exit 0
 }
 
 target_script() {
@@ -261,6 +261,7 @@ target_script() {
     build
     run_tests
   fi
+  exit 0
 }
 
 # Upload nightly
@@ -268,6 +269,7 @@ target_after_success() {
   if test "$TARGET" != apidoc; then
     external_pull_request || nigthly_build || true
   fi
+  exit 0
 }
 
 ## MAIN ####################################################
