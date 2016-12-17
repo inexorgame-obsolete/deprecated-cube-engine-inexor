@@ -103,6 +103,6 @@ The included third-party libraries also have individual licenses, which you can 
 * [Documentation](https://docs.inexor.org)
 * [Source Repository](https://github.com/inexor-game/code)
 * [Data Repository](https://github.com/inexor-game/data)
-* [IRC Chat (irc.gamesurge.net #inexor)](irc://irc.gamesurge.net/#inexor)
- * [Webchat](https://webchat.gamesurge.net/?channels=inexor)
+* [IRC Chat (#inexor on chat.freenode.net:6697)](irc://chat.freenode.net:6697/#inexor)
+ * [web client](https://webchat.freenode.net/?channels=#inexor)
 
