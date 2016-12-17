@@ -17,7 +17,7 @@ options = '''
   gtest:shared=False
   ENet:shared=False
   Boost:shared=False
-  SDL2:shared=False
-  SDL2_image:shared=False
+  SDL2:shared=True
+  SDL2_image:shared=True
   CEF:use_sandbox=False
 '''

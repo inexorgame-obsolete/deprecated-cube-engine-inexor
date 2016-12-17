@@ -32,6 +32,9 @@ class InexorConan(ConanFile):
         self.run('cd {} && conan export inexor'.format(dir_path))
         os.rename(this_conanfile, gluegen_conanfile)
         os.rename(this_conanfile_backup, this_conanfile)
+        if self.settings.os == "Windows":
+            self.options["SDL2"].shared = False
+            self.options["SDL2_image"].shared = False
 
     def build(self):
         args = []
