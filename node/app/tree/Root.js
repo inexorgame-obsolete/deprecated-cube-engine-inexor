@@ -114,7 +114,7 @@ function createTree(server, grpc) {
     root.grpc = {};
     
     // Load the proto definition
-    root.grpc.protoDescriptor = grpc.load(__dirname + "/../../../bin/all/RPCTreeData-inexor.proto");
+    root.grpc.protoDescriptor = grpc.load(__dirname + "/../../../bin/RPCTreeData-inexor.proto");
 
     // Returns the path of the field by proto key.
     root.grpc.getPath = function(protoKey) {
