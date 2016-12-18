@@ -1,6 +1,5 @@
 from conans import ConanFile, CMake
-import os
-import dependencies
+import os, dependencies, multiprocessing
 
 class InexorConan(ConanFile):
     license = "ZLIB"
@@ -44,9 +43,12 @@ class InexorConan(ConanFile):
             args += ["-DBUILD_SERVER=1"]
         if self.scope.build_master or self.scope.build_all:
             args += ["-DBUILD_MASTER=1"]
+        set_number_cores = ""
+        if self.settings.compiler != "Visual Studio":
+            set_number_cores = 'export MAKEOPTS="-j{}" && '.format(multiprocessing.cpu_count() + 2) # Some padding is ok since i/o is blocking
         cmake = CMake(self.settings)
-        self.run('cmake "{}" {} {}'.format(self.conanfile_directory, cmake.command_line, ' '.join(args)))
-        self.run('cmake --build . --target install {}'.format(cmake.build_config))
+        self.run('{}cmake "{}" {} {}'.format(set_number_cores, self.conanfile_directory, cmake.command_line, ' '.join(args)))
+        self.run('{}cmake --build . --target install {}'.format(set_number_cores, cmake.build_config))
 
     def imports(self):
         self.copy("*.dll", dst="bin", src="bin") # From bin to bin
