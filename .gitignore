@@ -9,6 +9,7 @@ packages
 data
 config
 media/*/*
+!media/core/*
 src/vcpp
 src/xcode
 src/rpggame
