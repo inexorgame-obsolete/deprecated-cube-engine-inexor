@@ -1,11 +1,10 @@
 @echo off
 
 :: Start the nodejs app as the Inexor scripting backend.
-:: We just call our generic node environment setting batch, setting the booleans what it should do beforehand.
-:: The generic handler sets the PATHs for us.
 
-:: we set those to enable those commands in the generic handler
-set "inexor_update_npm=true"
-set "inexor_start_nodeapp=true"
+:: setting the PATHS.
+set "MAINDIR=%~dp0"
+set "NODE_PATH=%MAINDIR%\node;%MAINDIR%\node\lib"
 
-call %~dp0tool\node_windows_generic_handler.bat
+:: Change the dir for one command only
+pushd node && (npm start & popd)
