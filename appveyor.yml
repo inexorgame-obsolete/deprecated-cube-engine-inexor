@@ -74,9 +74,5 @@ deploy:
       appveyor_repo_tag: true
       configuration: release
 
-
-# Note: on_success gets executed last
-on_success: #we atm do not use it as test_script: bc if it fails then it signals a failed build
-  - cmd: cd C:\projects\inexor-game\
-  # run the unit test executable.
-  - cmd: tool\appveyor_test.bat
+test_script:
+  - C:\projects\inexor-game\build\bin\unit_tests.exe
