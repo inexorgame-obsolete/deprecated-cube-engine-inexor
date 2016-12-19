@@ -1,21 +1,21 @@
 version: 0.{build}
 clone_depth: 1
 clone_folder: C:\projects\inexor-game
+# Do not build feature branch with open Pull Requests
+skip_branch_with_pr: true
+# Maximum number of concurrent jobs for the project
+max_jobs: 2
 
 platform:
  # - Win32
   - x64
 
-# build Configuration, i.e. Debug, Release, etc.
 configuration:
   - Debug
   - Release
 
 # scripts that are called at very beginning, before repo cloning
 init:
-  - if defined APPVEYOR_PULL_REQUEST_NUMBER set "IS_PR=True"
-  - if "%APPVEYOR_REPO_NAME%"=="inexor-game/code" set "IS_MAIN_REPO=True"
-  - if "%IS_MAIN_REPO%"=="True" if "%IS_PR%"=="True" set "SKIP_BUILD=1"
   - cmd: cmake --version
   - cmd: msbuild /version
 
@@ -36,21 +36,21 @@ before_build:
   - cmd: if "%platform%"=="Win32" ( set "CMAKE_GENERATOR_NAME=Visual Studio 14 2015" && set "arch_str=x86" )
   - cmd: if "%platform%"=="x64" ( set "CMAKE_GENERATOR_NAME=Visual Studio 14 2015 Win64" && set "arch_str=x86_64")
   - cmd: if %configuration%==Debug (set "runtime_str=MTd")else (set "runtime_str=MT")
+  - cmd: set "args=-DBUILD_GLUEGEN=0 -DBUILD_CLIENT=1 -DBUILD_SERVER=1 -DBUILD_MASTER=1 -DBUILD_TEST=1 -DCREATE_PACKAGE=1"
+  # Only deploy a bundle with the media folder if the branch is master (and its not a pr)(and its a Release build):
+  - cmd: if "%configuration%"=="Release" if "%APPVEYOR_REPO_BRANCH%"=="master" if defined APPVEYOR_PULL_REQUEST_NUMBER set "args=%args% -DPACKAGE_INCLUDE_MEDIA=1"
   - cmd: conan install .. --scope build_all=1 --build=missing -s compiler="Visual Studio" -s compiler.version=14 -s compiler.runtime=%runtime_str% -s arch=%arch_str% -s build_type=%configuration% 
-  - cmd: conan build ..
+  - cmd: cmake .. -G "%CMAKE_GENERATOR_NAME%" %args% -DCPACK_GENERATOR="NSIS;7Z"
 
 build:
-# cmakes placeholder project to silence appveyor complaining about us using the cli
-  project: C:\projects\inexor-game\build\ZERO_CHECK.vcxproj
+  project: C:\projects\inexor-game\build\PACKAGE.vcxproj
   # enable MSBuild parallel builds
-# parallel: true
+  parallel: true
 
-after_build: # this is actually partly our before_deploy, but appveyor doesnt like that with dynamic artifacts
-  - cmd: cd C:\projects\inexor-game\
-  # Start the build here instead of in build to be able to finetune it:
-  - cmd: if not defined SKIP_BUILD  msbuild C:\projects\inexor-game\build\install.vcxproj /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /m
-  # create the nightly bundle .zip
-  - cmd: if not defined SKIP_BUILD if "%configuration%"=="Release" tool\appveyor_create_nightly.bat
+artifacts:
+  # pushing a single file
+  - path: build\Inexor-*.7z
+  - path: build\Inexor-*.exe
 
 deploy:
     # push our nightly bundle via ftp
@@ -68,8 +68,11 @@ deploy:
     draft: true
     prerelease: true
     on:
-      branch: master                 # release from master branch only
-      appveyor_repo_tag: true        # deploy on tag push only
+      # release from master branch only
+      branch: master
+      # deploy on tag push only
+      appveyor_repo_tag: true
+      configuration: release
 
 
 # Note: on_success gets executed last
