@@ -1,10 +1,13 @@
 define(['./module'], function(services) {
-  return services.factory('MenuService', function () {
-    var func = function() {
-      console.log('called "MenuService.func()"');
+  return services.factory('MenuService', [ 'InexorUserInterfaceService', function () {
+
+    var openMenu = function(name) {
+      
     };
+
     return {
-      func: func
+      openMenu: openMenu
     };
-  });
+
+  }]);
 });
