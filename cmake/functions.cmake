@@ -1,3 +1,6 @@
+# Otherwise we can't access the path of this directory anyhow
+set(DIR_OF_FUNCTIONS_CMAKE ${CMAKE_CURRENT_LIST_DIR})
+
 # USAGE: declare_module(<NAME> [PATH])
 #
 # Automatically search for headers and source files inside
@@ -198,6 +201,17 @@ function(find_libs)
   endif()
 endfunction()
 
+function(add_windows_manifest target)
+  add_custom_command(
+    TARGET ${target}
+    POST_BUILD
+    COMMAND "mt.exe" -nologo
+            -manifest \"${DIR_OF_FUNCTIONS_CMAKE}/windows.manifest.xml\"
+            -outputresource:"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${target}.exe"\;\#1
+    COMMENT "Adding manifest..." 
+    )
+endfunction()
+
 # USAGE: add_app(executable SOURCE_FILES [CONSOLE_APP])
 #
 # Set up an executable.
@@ -227,6 +241,7 @@ function(add_app exe)
     else()
       add_executable(${exe} WIN32 ${sources} ${ALL_HEADERS})
     endif()
+    add_windows_manifest(${exe})
   elseif(OS_MACOSX)
     add_executable(${exe} MACOSX_BUNDLE ${sources})
   else()

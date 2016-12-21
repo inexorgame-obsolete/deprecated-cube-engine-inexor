@@ -17,7 +17,7 @@ class InexorgluegenConan(ConanFile):
     generators = "cmake"
     # exporting ../.. is really slow and just works for some stuff..
                       # so as a workaround we (this conanfile.py) get copied in a temporary folder above the Inexor conanfile.py to export the contents..
-    exports = "inexor*", "cmake*.cmake", "CMakeLists.txt", "dependencies.py"
+    exports = "inexor*", "cmake*", "CMakeLists.txt", "dependencies.py"
 
     def config(self):
         if self.options.release_only:
