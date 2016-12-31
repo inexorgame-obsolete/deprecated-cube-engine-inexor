@@ -18,25 +18,4 @@ namespace inexor { namespace rpc { namespace gluegen {
 /// @return true on success.
 extern bool find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tree);
 
-
-/// C++ equivalent of strtok, tokenizes the input string based on the occurences of delimiter.
-extern std::vector<std::string> split_by_delimiter(std::string input, std::string delimiter);
-
-/// Join the entrys of a vector|sthelsewithrange into a string, using 'd' as the seperator between the parts.
-template<typename SinglePassRange, typename Delim>
-inline std::string join_to_str(SinglePassRange r, Delim d)
-{
-    std::stringstream s;
-    bool first = true;
-    for(auto &e : r)
-    {
-        if(first)
-            first = false;
-        else
-            s << d;
-        s << e;
-    }
-    return s.str();
-}
-
 } } } // namespace inexor::rpc::gluegen

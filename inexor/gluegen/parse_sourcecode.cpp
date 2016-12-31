@@ -12,6 +12,7 @@
 #include "inexor/filesystem/path.hpp"
 #include "inexor/gluegen/parse_sourcecode.hpp"
 #include "inexor/gluegen/tree.hpp"
+#include "inexor/gluegen/parse_helpers.hpp"
 
 using namespace pugi;
 using namespace boost;
@@ -20,151 +21,6 @@ using namespace std;
 
 
 namespace inexor { namespace rpc { namespace gluegen {
-
-// Move to utils
-// TODO add fast hash table algorithms to utils
-// TODO add fast std::string replacement to utils
-// TODO add useful string formatter to utils
-// merge log stuff into one file in utils
-vector<string> split_by_delimiter(string input, string delimiter)
-{
-    vector<string> out;
-    size_t last = 0; size_t next = 0;
-    while((next = input.find(delimiter, last)) != string::npos)
-    {
-        out.push_back(input.substr(last, next-last));
-        last = next + delimiter.size();
-    }
-    out.push_back(input.substr(last));
-    return std::move(out);
-}
-
-/// This function workarounds doxygens faulty xml which contains '= whateverisbehind' as initializer (totally raw, no c++11 support it seems)
-void remove_leading_assign_sign(string &str)
-{
-    if(str.empty()) return;
-    if(str.front() == '=')
-        str.erase(0, 1);
-}
-void remove_leading_whitespace(string &input)
-{
-    if(input.empty()) return;
-    for(int i = 0; i < input.size(); i++)
-        if(input[i] != ' ' && input[i] != '\t')
-        {
-            if(i) input = input.substr(i);
-            return;
-        }
-}
-
-/// If first char of string is matching, remove the first and the last one of the string (no matter what the last one is).
-/// @warning does not do leading/trailing whitespace skimming.
-void remove_surrounding_char(std::string &str, const char first_cha)
-{
-    if(str.empty()) return;
-    if(str.front() == first_cha)
-    {
-        str.erase(0, 1);
-        str.erase(str.size() - 1);
-    }
-}
-
-/// @warning requires data has no whitespace before or after the quotes.
-void remove_quotes(std::string &str)
-{
-    remove_surrounding_char(str, '"');
-}
-
-/// @warning requires data has no whitespace before or after the brackets, see remove_surrounding_char.
-void remove_surrounding_brackets(std::string &str)
-{
-    remove_surrounding_char(str, '(');
-}
-
-
-/// Splits a "something(totally(but pretty much ) stupid)great" into "something" "totally(but pretty much ) stupid" and "great".
-// Yes we could do this with boost::spirit or with some recursive grammar but oh well we dont need that atm.
-string parse_bracket(string input, string &before_bracket, string &after_bracket)
-{
-    size_t len = input.size();
-
-    int brackets_counter = 0;
-    bool found_brackets = false;
-    size_t first_bracket_pos = 0;
-    size_t closing_bracket_pos = len-1;
-
-    for(size_t i = 0; i < len; i++)
-    {
-        if(input[i] == '"')
-            do {
-                i++;
-                if(i >= len) break;
-            } while(input[i] != '"'); //skip brackets inside ""
-        if(input[i] == '(')
-        {
-            if(!brackets_counter) first_bracket_pos = i;
-            brackets_counter++;
-        }
-        else if(input[i] == ')')
-        {
-            brackets_counter--;
-            if(brackets_counter == 0)
-            {
-                closing_bracket_pos = i;
-                found_brackets = true;
-                break;
-            }
-            else if(brackets_counter < 0) break;
-        }
-    }
-    if(!found_brackets) return input;
-
-    before_bracket = input.substr(0, first_bracket_pos);
-    string content = input.substr(first_bracket_pos+1, closing_bracket_pos-first_bracket_pos-1);
-    after_bracket = input.substr(closing_bracket_pos);
-    return content;
-}
-
-/// Splits e.g. 'something, some(dadadalu,da), "ich,,,skwo"' into 3 strings "something", "some(dadadalu,da)" and ""ich,,,skwo""
-// Yes we could do this with boost::spirit or with some recursive grammar but oh well we dont need that atm.
-vector<string> tokenize_arg_list(string input)
-{
-    vector<string> tokens;
-
-    int brackets_counter = 0;
-    size_t last_token_end_pos = 0;
-
-    size_t len = input.size();
-
-    for(size_t i = 0; i < len; i++)
-    {
-        if(input[i] == '"') while(i < len && input[i] != '"') i++; //skip stuff inside "".
-        if(!brackets_counter && input[i] == ',')
-        {
-            tokens.push_back(input.substr(last_token_end_pos, i-last_token_end_pos));
-            last_token_end_pos = min(i+1, len); // +1 skipping the char itself
-        }
-        else if(input[i] == '(') brackets_counter++;
-        else if(input[i] == ')') brackets_counter--;
-    }
-    tokens.push_back(input.substr(last_token_end_pos));
-
-    return std::move(tokens);
-}
-
-/// Text can have subfields with more text + siblings text, usually you want all of them concatenated.
-string get_complete_xml_text(const xml_node parent, bool recursive = true)
-{
-    string text;
-    for(pugi::xml_node child : parent.children())
-    {
-        if(child.type() == pugi::node_pcdata)
-            text += child.value();
-        else if(recursive && child.children().begin() != child.children().end()) // our child has children
-            text += get_complete_xml_text(child, true);
-    }
-    return text;
-}
 
 /// Finds in the compound xml node the constructors of this class.xml.
 vector<xml_node> find_class_constructors(const xml_node &class_compound_xml)
@@ -267,9 +123,7 @@ void handle_so_template_hybrids(optionclass &opt, const xml_node &compound_xml)
     optionclasses[opt.name] = opt;
 
     for(auto templ_hy : opt.template_hybrids)
-
         std::cout << "[Template Hybrids inside " << opt.name << "] " << templ_hy.name << " = " << templ_hy.default_value << std::endl;
-
 }
 
 /// This function saves an optionclass instanz to our optionclasses vector.
@@ -287,7 +141,11 @@ void handle_shared_option(const xml_node &compound_xml)
     handle_so_template_hybrids(opt, compound_xml);
 }
 
-void find_options_classes(const std::vector<Path> class_xml_files)
+/// Returns a list of (already parsed) XML files which contain the AST of a class which is the child of a specific class.
+/// Returns not the 'doxygen' parent but directly the specific 'compounddef'
+///
+/// Note: Use the return as a rvalue. e.g. `auto matching_file_trees = find_classes_with_parent(...);`
+vector<xml_node> find_classes_with_parent(string parentname, const vector<Path> class_xml_filenames)
 {
     //the AST looks as follows:
     //- doxygen
@@ -304,7 +162,8 @@ void find_options_classes(const std::vector<Path> class_xml_files)
     //                 type
     //                 declname <-
     //                 defval
-    for(auto file : class_xml_files)
+    vector<xml_node> matching_file_trees;
+    for(auto file : class_xml_filenames)
     {
         xml_document xml;
         if(!xml.load_file(file.make_preferred().c_str(), parse_default|parse_trim_pcdata))
@@ -317,10 +176,14 @@ void find_options_classes(const std::vector<Path> class_xml_files)
 
         for(xml_node base_class : compound_xml.children("basecompoundref"))
         {
-            if(string(base_class.text().as_string()) == "SharedOption")
-                handle_shared_option(compound_xml);
+            if(string(base_class.text().as_string()) == parentname)
+            {
+                matching_file_trees.push_back(std::move(compound_xml));
+                break;
+            }
         }
     }
+    return matching_file_trees;
 }
 
 /// Takes xml variable nodes and outputs ShTreeNode sharedvar declarations.
@@ -382,7 +245,9 @@ bool find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tr
             code_xmls.push_back(file);
         if(contains(file.stem().string(), "class") || contains(file.stem().string(), "struct")) class_xmls.push_back(file);
     }
-    find_options_classes(class_xmls);
+    vector<xml_node> SharedOption_ASTS = find_classes_with_parent("SharedOption", class_xmls);
+    for(auto so_xml_file : SharedOption_ASTS)
+        handle_shared_option(so_xml_file);
 
     // parsing cpp-file xmls for shared declarations.
     //
