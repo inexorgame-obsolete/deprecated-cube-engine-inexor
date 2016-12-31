@@ -14,6 +14,7 @@ if (NOT DEFINED GLUEGEN_EXE)
   find_program(GLUEGEN_EXE gluecodegenerator PATHS ${CONAN_BIN_DIRS_INEXORGLUEGEN})
 endif()
 
+option(DEBUG_GLUEGEN "Whether or not we show additional targets for the intermediate steps of the gluecode generator" OFF)
 
 # Add a gluecode generation run for the specified target.
 # Also adds the gluecode intermediates to the source file list of the target.
@@ -107,10 +108,54 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
       COMMENT "Removes the generated gluecode files for target ${TARG} to trigger a new generation of these on the next build of target ${TARG}"
       COMMAND ${CMAKE_COMMAND} -D PATHS_TO_REMOVE="${GENERATED_FILES}" -P ${MAINDIR}/cmake/clean_files_folders.cmake
     )
+
     message(STATUS "gluegen will generate the following files: ${GENERATED_FILES}")
 
     install(FILES ${gluegen_out_proto} DESTINATION ${EXE_DIR} RENAME ${proto_general_name}) # install .proto to bin/all
     message(STATUS "Proto file install destination: ${INSTALL_RESOURCES_DIR}/${proto_general_name}")
+
+    # Add intermediate targets if desired.
+    if(DEBUG_GLUEGEN)
+      add_custom_target(invoke_parser_${TARG}
+        COMMENT "Parsing code base for Shared Declarations and generate gluecode doing the networking."
+        # clear folder containing intermediate files (the AST xml files) before, since we take the complete folder as input to the next stage.
+        COMMAND ${CMAKE_COMMAND} -D PATHS_TO_REMOVE="${DOXYGEN_XML_DIR} ${GENERATED_FILES}" -P ${MAINDIR}/cmake/clean_files_folders.cmake
+
+        # Parse the codebase using doxygen and output the AST (Abstract syntax tree) to xml files.
+        COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
+        WORKING_DIRECTORY ${MAINDIR}
+      )
+
+      add_custom_target(invoke_GlueGen_${TARG}
+        COMMENT "Parse the AST."
+        # Run our in-house gluecode generator taking doxygens AST as input and generating .gen.proto and .gen.hpp for ${TARG}.
+        COMMAND ${GLUEGEN_EXE}
+        "--template-proto" "${gluegen_template_proto}"
+        "--template-cpp" "${gluegen_template_cpp}"
+        "--out-proto" "${gluegen_out_proto}"
+        "--out-cpp" "${gluegen_out_cpp}"
+        "--namespace" "inexor::tree"
+        "--XML-AST-folder" "${DOXYGEN_XML_DIR}"
+        WORKING_DIRECTORY ${MAINDIR}
+      )
+
+      add_custom_target(invoke_protoc_${TARG}
+        COMMENT "Run protoc"
+        # Invoke protoc compiler to generate the .gen.pb.h .gen.pb.cpp files from the .proto definition
+        COMMAND ${PROTOBUF_PROTOC_EXECUTABLE}
+              --proto_path=${OUT_DIR}
+              --cpp_out=${OUT_DIR}
+              ${protoc_in}
+
+        # same but for the GRPC additions (which does now generate the RPC logic in .gen.grpc.pb.cc)
+        COMMAND ${PROTOBUF_PROTOC_EXECUTABLE}
+              --plugin=protoc-gen-grpc=${GRPC_GRPC_CPP_PLUGIN}
+              --proto_path=${OUT_DIR}
+              --grpc_out=${OUT_DIR}
+              ${protoc_in}
+
+         WORKING_DIRECTORY ${MAINDIR})
+    endif(DEBUG_GLUEGEN)
 endfunction()
 
 # Other:
