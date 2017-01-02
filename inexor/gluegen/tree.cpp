@@ -15,7 +15,7 @@ using boost::algorithm::replace_all_copy;
 using boost::algorithm::replace_all;
 
 
-unordered_map<string, optionclass> optionclasses;
+unordered_map<string, so_class_definition> so_class_definitions;
 
 
 /// Maps C++ string type declarations to the numeric type.
@@ -27,8 +27,8 @@ const std::unordered_map<std::string, ShTreeNode::type_t> ShTreeNode::type_cpp_t
 };
 
 ShTreeNode::ShTreeNode(const std::string &full_cpp_type_dcl, const std::string &cpp_name, const std::string &cpp_namespace, 
-                       const std::vector<shared_option_arg> &so_constructor_arguments)
-                          : name_cpp_short(cpp_name), var_namespace(cpp_namespace), shared_options(so_constructor_arguments)
+                       const std::vector<attached_so> &so_constructor_arguments)
+                          : name_cpp_short(cpp_name), var_namespace(cpp_namespace), attached_options(so_constructor_arguments)
 {
     std::string type_templ_short(full_cpp_type_dcl);
     replace_all(type_templ_short, " ", "");

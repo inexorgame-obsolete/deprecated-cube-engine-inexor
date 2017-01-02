@@ -3,7 +3,7 @@
 #include <string>
 #include <unordered_set>
 
-#include "inexor/gluegen/parse_sourcecode.hpp" // only bc of some string formatting/splitting functions, remove as refractored
+#include "inexor/gluegen/parse_helpers.hpp"
 #include "inexor/gluegen/fill_templatedata.hpp"
 #include "inexor/gluegen/tree.hpp"
 
@@ -11,21 +11,14 @@ using namespace inexor::rpc::gluegen;
 using namespace std;
 
 
-
-// class xy : SharedOption {
-// const char *<name> = <template>;
-// };
-// -> key==<name>, value==<template>
-
-
-void add_rendered_template_hybrids(const optionclass &opt, TemplateData &variable, const TemplateData constructor_args_data)
+void add_rendered_template_hybrids(const so_class_definition &opt, TemplateData &variable, const TemplateData constructor_args_data)
 {
-    for(auto template_hybrid : opt.template_hybrids)
+    for(auto member : opt.const_char_members)
     {
         TemplateData template_hybrid_rendered{TemplateData::Type::Object};
-        MustacheTemplate tmpl{template_hybrid.default_value};
-        template_hybrid_rendered["s"] = tmpl.render(constructor_args_data);
-        variable[template_hybrid.name] << template_hybrid_rendered;
+        MustacheTemplate tmpl{member.default_value};             // the default value of the const char member acts as template.
+        template_hybrid_rendered["s"] = tmpl.render(constructor_args_data); // gets rendered using the data from the constructor args
+        variable[member.name] << template_hybrid_rendered; // and the rendered string is templatedata for the variable (key = <name> from "const char *<name>"
 
         //std::cout << "rendered " << template_hybrid.name << " : " << template_hybrid_rendered["s"].stringValue() << std::endl;
     }
@@ -33,10 +26,10 @@ void add_rendered_template_hybrids(const optionclass &opt, TemplateData &variabl
 
 void add_generic_templatedata_default_values(TemplateData &variable, ShTreeNode node)
 {
-    for(auto reg_option : optionclasses)
+    for(auto reg_option : so_class_definitions)
     {
-        optionclass &opt = reg_option.second;
-        if(!opt.hasdefaultvals) continue;
+        so_class_definition &opt = reg_option.second;
+        if(!opt.constructor_has_default_values) continue;
         for(auto arg : opt.constructor_args)
         {
             MustacheTemplate tmpl{arg.default_value};
@@ -49,10 +42,10 @@ void add_generic_templatedata_default_values(TemplateData &variable, ShTreeNode 
 void add_generic_templatedata(TemplateData &variable, ShTreeNode node)
 {
     // renders: 1. fill data: 
-    //             - take node constructor args, compare it with optionclass names [done]
+    //             - take node constructor args, compare it with so_class_definition names [done]
     //             - create TemplateData instanz for every constructor param
     //            1b. default values
-    //              - if optionclass has default values add default value TemplateData
+    //              - if so_class_definition has default values add default value TemplateData
     //              - 2 cases for default values: values or templates (special: char * get rendered nontheless)
     //          2. render templates optionclass.templatehybrids().templatestr; templatehybrid { name, templatestr } with passed TemplateData
     //             add rendered templates to passed TemplateData
@@ -69,44 +62,45 @@ void add_generic_templatedata(TemplateData &variable, ShTreeNode node)
     TemplateData constructor_args_data = variable;
 
     add_generic_templatedata_default_values(constructor_args_data, node);
-    for(auto node_option : node.shared_options)
+    for(auto node_option : node.attached_options) // a node option is one instance of a sharedoption attached to a node (a SharedVar or SharedClass)
     {
-        auto find_in_definitions = optionclasses.find(node_option.class_name);
-        if(find_in_definitions == optionclasses.end()) continue;
-        std::cout << "node: " << node.get_name_cpp_full() << " option: " << node_option.class_name << std::endl;
+        auto find_in_declarations = so_class_definitions.find(node_option.name);
+        if(find_in_declarations == so_class_definitions.end()) continue; // this argument is not corresponding with the name of a sharedoption.
+        std::cout << "node: " << node.get_name_cpp_full() << " option: " << node_option.name << std::endl;
 
-        const optionclass &opt = find_in_definitions->second;
+        const so_class_definition &opt = find_in_declarations->second;
+        // if(opt.constructor_args.size() >= node_option.constructor_args.size()) throw exception("");
 
         for(size_t i = 0; i < node_option.constructor_args.size(); i++) // loop instance constructor args, take names from defintion of the constructor args.
         {
-            if(i >= opt.constructor_args.size()) break; // should never happen
+            if(i >= opt.constructor_args.size()) break; // more arguments used for the instance than the declaration allows.
             constructor_args_data[opt.constructor_args[i].name] = node_option.constructor_args[i];
         }
     }
 
     // render template_hybrids and add them to the templatedata of the variable:
 
-    // add empty lists to the variable key=th name
-    for(auto opt : optionclasses)
-        for(auto template_hybrid : opt.second.template_hybrids)
-            variable[template_hybrid.name] = TemplateData(TemplateData::Type::List);
+    // add empty lists to the variable key=the name
+    for(auto opt : so_class_definitions)
+        for(auto member : opt.second.const_char_members)
+            variable[member.name] = TemplateData(TemplateData::Type::List);
 
     unordered_set<string> rendered_th_names;
     // render th's occuring in the constructor
-    for(auto node_option : node.shared_options)
+    for(auto node_option : node.attached_options)
     {
-        auto find_in_definitions = optionclasses.find(node_option.class_name);
-        if(find_in_definitions == optionclasses.end()) continue;
+        auto find_in_definitions = so_class_definitions.find(node_option.name);
+        if(find_in_definitions == so_class_definitions.end()) continue;
         add_rendered_template_hybrids(find_in_definitions->second, variable, constructor_args_data);
         rendered_th_names.emplace(find_in_definitions->second.name);
     }
 
     // render th's which have default values and havent been rendered before.
-    for(auto reg_option : optionclasses)
+    for(auto reg_option : so_class_definitions)
     {
-        optionclass &opt = reg_option.second;
+        so_class_definition &opt = reg_option.second;
         auto find_in_instances = rendered_th_names.find(opt.name);
-        if(find_in_instances == rendered_th_names.end() && opt.hasdefaultvals)
+        if(find_in_instances == rendered_th_names.end() && opt.constructor_has_default_values)
             add_rendered_template_hybrids(opt, variable, constructor_args_data);
     }
 }

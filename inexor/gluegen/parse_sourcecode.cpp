@@ -13,6 +13,7 @@
 #include "inexor/gluegen/parse_sourcecode.hpp"
 #include "inexor/gluegen/tree.hpp"
 #include "inexor/gluegen/parse_helpers.hpp"
+#include "inexor/gluegen/parse_sharedoption.hpp"
 
 using namespace pugi;
 using namespace boost;
@@ -22,7 +23,6 @@ using namespace std;
 
 namespace inexor { namespace rpc { namespace gluegen {
 
-/// Finds in the compound xml node the constructors of this class.xml.
 vector<xml_node> find_class_constructors(const xml_node &class_compound_xml)
 {
     vector<xml_node> constructors;
@@ -47,56 +47,6 @@ vector<xml_node> find_class_constructors(const xml_node &class_compound_xml)
     return constructors;
 }
 
-/// This function searches constructors of the found shared_options (derived) class and saves its args to our optionclass instance.
-/// 
-/// We require to have all constructor arguments named the same.
-/// We furthermore require to have default values for either all or no constructor arguments.
-/// + all default_values across all constructors need to be the same.
-/// Error if those requirements aren't met.
-void handle_so_constructors(optionclass &opt, const xml_node &compound_xml)
-{
-    vector<xml_node> constructors = find_class_constructors(compound_xml);
-
-    // The first constructor fills the argument list, the following just control whether their lists are equal.
-    const xml_node first_constructor = constructors.front();
-    for(const xml_node param : first_constructor.children("param"))
-    {
-        optionclass::arg arg;
-        arg.name = param.child("declname").text().as_string();
-        arg.default_value = get_complete_xml_text(param.child("defval"));
-        if(!arg.default_value.empty()) opt.hasdefaultvals = true;
-        std::cout << "arg.name: " << arg.name << std::endl;
-        if(opt.hasdefaultvals)
-        {
-            std::string temp;
-            arg.default_value = parse_bracket(arg.default_value, temp, temp); //fu_cast<float>("{{index}}") -> "{{index}}"
-            remove_quotes(arg.default_value);
-            // TODO need escaping!
-        }
-        opt.constructor_args.push_back(arg);
-    }
-
-
-    // Error checking: TODO Enable
-    //if(opt.hasdefaultvals)
-    //    for(auto arg : opt.constructor_args)
-    //        if(arg.default_value.empty()) throw std::exception("option classes must have default values for either no or all constructor arguments!");
-
-    // control equalness of follow up constructors.
-    //for(const xml_node constru : constructors)
-    //{
-    //    vector<string> arg_names;
-    //    int i = 0;
-    //    for(const xml_node param : first_constructor.children("param")) // compare mit paramname der gleichen nummer
-    //    {
-    //        if(opt.constructor_args[i].name.compare(param.child("declname").text().get()))
-    //            throw std::exception("option class constructor argument names must be equal for different constructor types");
-    //        i++;
-    //    }
-    //}
-}
-
-/// Finds in the compound xml node the constructors of this class.xml.
 vector<xml_node> find_class_member_vars(const xml_node &class_compound_xml)
 {
     vector<xml_node> vars;
@@ -106,39 +56,6 @@ vector<xml_node> find_class_member_vars(const xml_node &class_compound_xml)
                 if(string(member.attribute("kind").value()) == "variable")
                     vars.push_back(member);
     return vars;
-}
-
-void handle_so_template_hybrids(optionclass &opt, const xml_node &compound_xml)
-{
-    for(auto var_xml : find_class_member_vars(compound_xml))
-    {
-        optionclass::arg templ_hy;
-        templ_hy.name = var_xml.child("name").text().as_string();
-        templ_hy.default_value = get_complete_xml_text(var_xml.child("initializer"));
-        remove_leading_assign_sign(templ_hy.default_value);
-        remove_leading_whitespace(templ_hy.default_value);
-        remove_quotes(templ_hy.default_value);
-        opt.template_hybrids.push_back(templ_hy);
-    }
-    optionclasses[opt.name] = opt;
-
-    for(auto templ_hy : opt.template_hybrids)
-        std::cout << "[Template Hybrids inside " << opt.name << "] " << templ_hy.name << " = " << templ_hy.default_value << std::endl;
-}
-
-/// This function saves an optionclass instanz to our optionclasses vector.
-/// 
-/// We require to have all constructor arguments named the same.
-/// We furthermore require to have default values for either all or no constructor arguments.
-/// + all default_values across all constructors need to be the same.
-/// Error if those requirements aren't met.
-void handle_shared_option(const xml_node &compound_xml)
-{
-    optionclass opt(compound_xml.child("compoundname").text().as_string());
-    std::cout << "OptionClass found: " << opt.name << std::endl;
-
-    handle_so_constructors(opt, compound_xml);
-    handle_so_template_hybrids(opt, compound_xml);
 }
 
 /// Returns a list of (already parsed) XML files which contain the AST of a class which is the child of a specific class.
@@ -169,7 +86,7 @@ vector<xml_node> find_classes_with_parent(string parentname, const vector<Path> 
         if(!xml.load_file(file.make_preferred().c_str(), parse_default|parse_trim_pcdata))
         {
             std::cout << "XML file representing the AST couldn't be parsed: " << file << std::endl;
-            return;
+            break;
         }
         xml_node compound_xml = xml.child("doxygen").child("compounddef"); //[@kind='class' and @language='C++']");
 
@@ -202,26 +119,26 @@ void handle_shared_var(const xml_node var_xml, std::vector<ShTreeNode> &tree, st
 
 
     std::cout << "type: " << type << " name: " << name << " argsstring: " << argsstring << " (num: " << args.size() << ")" << std::endl;
-    if(args.size() < 2) // no sharedoptions given (its not allowed to have only shared options as constructor args)
+    if(args.size() <= 1) // no sharedoptions given (its not allowed to have only shared options as constructor args)
     {
-        tree.push_back(ShTreeNode(type, name, var_namespace, vector<ShTreeNode::shared_option_arg>()));
+        tree.push_back(ShTreeNode(type, name, var_namespace, vector<ShTreeNode::attached_so>()));
         return;
     }
 
     const vector<string> shared_option_strings(split_by_delimiter(boost::erase_all_copy(args.back(), " "), "|"));// remove "any" whitespace and tokenize
 
-    vector<ShTreeNode::shared_option_arg> shared_options;
+    vector<ShTreeNode::attached_so> shared_options;
     for(string raw_str : shared_option_strings) // e.g. NoSync() or Range(0, 3) or Persistent(true)
     {
-        ShTreeNode::shared_option_arg option;
+        ShTreeNode::attached_so option;
         std::string temp;
 
-        string constructor_argsstr = parse_bracket(raw_str, option.class_name, temp);
+        string constructor_argsstr = parse_bracket(raw_str, option.name, temp);
         option.constructor_args = tokenize_arg_list(constructor_argsstr);
 
 
         std::cout << "string: " << raw_str << std::endl;
-        std::cout << "opt name: " << option.class_name << std::endl << "args:";
+        std::cout << "opt name: " << option.name << std::endl << "args:";
         for(auto i : option.constructor_args)
             std::cout << " " << i;
         std::cout << std::endl;

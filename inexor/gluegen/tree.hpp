@@ -9,31 +9,46 @@ namespace inexor {
 namespace rpc {
 namespace gluegen {
 
-/// To make our glue generation more flexible we invented Shared Option classes,
-/// which contain info about how to render stuff and which are used in the C++ Tree API.
-struct optionclass
+struct name_defaultvalue_tupel
 {
     std::string name;
-    bool hasdefaultvals = false;
+    std::string default_value;
+};
+typedef std::vector<name_defaultvalue_tupel> name_defaultvalue_vector;
+
+/// A declaration of a class with a "SharedOption" parent class.
+///
+/// To make our glue generation more flexible we invented Shared Option classes,
+/// which contain info about how to render stuff and which are used in the C++ Tree API.
+///
+/// class xy : SharedOption {
+///     xy(T <paramname> = <paramdefvalue>, S <param2name> = <param2defvalue>, ......) {}
+///     const char *<membername> = <membertemplate>;
+/// };
+struct so_class_definition
+{
+    /// The name of the class.
+    std::string name;
+
+    /// Whether or not the constructor has default values is important for subsequent
+    bool constructor_has_default_values = false;
 
     /// All constructor arguments: name first, defaultvalue second.
+    /// since its an ordered map we have the positions of the arguments.
     // we dont have type deduction!
-    struct arg
-    {
-        std::string name;
-        std::string default_value;
-    };
-    std::vector<arg> constructor_args;
+    name_defaultvalue_vector constructor_args;
 
-    /// "const char *" members are template data for our shared declarations,
-    /// but also they get rendered with the previously available info about that shared declaration.
-    std::vector<arg> template_hybrids;
+    /// "const char *" members are template "partials" (see mustache docs) for our shared declarations.
+    /// 
+    /// They may contain template data entries previously available or those named the same as the constructor parameters.
+    name_defaultvalue_vector const_char_members;
 
-    optionclass() {}
-    optionclass(std::string &&class_name) : name(class_name) {}
+    so_class_definition() {}
+    so_class_definition(std::string &&class_name) : name(class_name) {}
 };
-/// name, optionclass instance
-extern std::unordered_map<std::string, optionclass> optionclasses;
+
+/// name, so_class_definition instance
+extern std::unordered_map<std::string, so_class_definition> so_class_definitions;
 
 class ShTreeNode {
 public:
@@ -73,21 +88,23 @@ public:
     /// The protocol buffers variable index; 0 if unset
     uint64_t protoc_idx = 0;
 
-    /// A SharedOption used when declaring this variable inside the constructor.
-    struct shared_option_arg
+    /// A SharedOption instance used when declaring this variable.
+    /// (used inside the constructor: "SharedVar<int> xy(0, NoSync()|Persistent(true))").
+    /// -> option_name = "Persistent" constructor_args.push_back("true").
+    struct attached_so
     {
         /// The sharedoptions name.
-        std::string class_name;
+        std::string name;
         /// The constructor args for the sharedoption instance.
         std::vector<std::string> constructor_args;
     };
 
-    /// We use this list to handle shared options.
-    const std::vector<shared_option_arg> shared_options;
+    /// All options attached when instancing this variable.
+    const std::vector<attached_so> attached_options;
 
     /// @param full_cpp_type_dcl The literal type declaration (e.g. "SharedVar<int>") from which the type_numeric will be deduced.
     ShTreeNode(const std::string &full_cpp_type_dcl, const std::string &full_cpp_name, const std::string &var_namespace_,
-               const std::vector<shared_option_arg> &so_constructor_arguments);
+               const std::vector<attached_so> &so_constructor_arguments);
 
     /// Known SharedVar types
     enum type_t
