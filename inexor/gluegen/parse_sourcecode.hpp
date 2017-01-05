@@ -21,7 +21,7 @@ namespace inexor { namespace rpc { namespace gluegen {
 /// @param xml_folder the index-file of the doxygen output (or any else, but we're tailored for the index one)
 /// @param tree the vector we put our parsed info into.
 /// @return true on success.
-extern bool find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tree);
+extern void find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tree);
 
 
 /// Finds in the compound xml node the constructors of this class.xml.

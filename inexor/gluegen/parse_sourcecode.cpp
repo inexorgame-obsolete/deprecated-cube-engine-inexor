@@ -103,38 +103,24 @@ vector<xml_node> find_classes_with_parent(string parentname, const vector<Path> 
     return matching_file_trees;
 }
 
-/// Takes xml variable nodes and outputs ShTreeNode sharedvar declarations.
-void handle_shared_var(const xml_node var_xml, std::vector<ShTreeNode> &tree, std::string var_namespace)
+
+/// Parse NoSync()|Persistent()|Function([] { echo("hello"); })
+vector<ShTreeNode::attached_so> parse_shared_option_strings(string options_list_str)
 {
-    //was tue ich: "(" << +char_-')' << ',' << char_-'|'oder'('+klammer-')'
-    // return content parse_bracket(string)
-    const string type = get_complete_xml_text(var_xml.child("type"));
-    const string name = get_complete_xml_text(var_xml.child("name"));
-    string argsstring = get_complete_xml_text(var_xml.child("argsstring"));
-    if(argsstring.empty()) return; // it is just an "extern" declaration
+    vector<ShTreeNode::attached_so> options;
 
-    remove_surrounding_brackets(argsstring);
+    const vector<string> option_strings_vec(split_by_delimiter(options_list_str, "|")); // tokenize
 
-    const vector<string> args(tokenize_arg_list(argsstring)); // argsstring = ("map", NoSync()|Persistent())          (defaultval, sharedoption|sharedoption|..)
-
-
-    std::cout << "type: " << type << " name: " << name << " argsstring: " << argsstring << " (num: " << args.size() << ")" << std::endl;
-    if(args.size() <= 1) // no sharedoptions given (its not allowed to have only shared options as constructor args)
+    for(string raw_str : option_strings_vec) // e.g. " NoSync() \n" or Range(0, 3) or Persistent(true)
     {
-        tree.push_back(ShTreeNode(type, name, var_namespace, vector<ShTreeNode::attached_so>()));
-        return;
-    }
-
-    const vector<string> shared_option_strings(split_by_delimiter(boost::erase_all_copy(args.back(), " "), "|"));// remove "any" whitespace and tokenize
-
-    vector<ShTreeNode::attached_so> shared_options;
-    for(string raw_str : shared_option_strings) // e.g. NoSync() or Range(0, 3) or Persistent(true)
-    {
+        trim(raw_str);                       // remove any whitespace around normal chars " NoSync(   ) \n" -> "NoSync(   )"
         ShTreeNode::attached_so option;
-        std::string temp;
 
-        string constructor_argsstr = parse_bracket(raw_str, option.name, temp);
-        option.constructor_args = tokenize_arg_list(constructor_argsstr);
+        string temp;
+        string argsstr = parse_bracket(raw_str, option.name, temp);       // from Range(0, 3) we get "0, 3"
+        option.constructor_args = tokenize_arg_list(argsstr);             // "0", " 3"
+        for(string &arg : option.constructor_args)                        // "0", "3"
+            trim(arg);
 
 
         std::cout << "string: " << raw_str << std::endl;
@@ -142,31 +128,128 @@ void handle_shared_var(const xml_node var_xml, std::vector<ShTreeNode> &tree, st
         for(auto i : option.constructor_args)
             std::cout << " " << i;
         std::cout << std::endl;
-        shared_options.push_back(option);
+
+        options.push_back(option);
     }
-    tree.push_back(ShTreeNode(type, name, var_namespace, shared_options));
+    return options;
 }
 
-bool find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tree)
+/// @param argsstring is of= ("map", NoSync()|Persistent())          (defaultval, sharedoption|sharedoption|..)
+void handle_shared_var(const string type, const string name, string argsstring, std::vector<ShTreeNode> &tree, std::string var_namespace)
 {
-    //sorting input files:
-    std::vector<Path> all_xmls;
-    std::vector<Path> code_xmls;
-    std::vector<Path> class_xmls;
+    remove_surrounding_brackets(argsstring);
 
-    list_files(xml_folder, all_xmls, ".xml");
-    for(auto file : all_xmls)
+    const vector<string> args(tokenize_arg_list(argsstring));
+    std::cout << "type: " << type << " name: " << name << " argsstring: " << argsstring << " (num: " << args.size() << ")" << std::endl;
+
+    if(args.size() < 1)
     {
-        if(contains(file.filename().string(), "_8cpp.xml") || contains(file.filename().string(), "_8hpp.xml") // cpp files for non-namespace declarations
-            || contains(file.filename().string(), "namespace")) //
-            code_xmls.push_back(file);
-        if(contains(file.stem().string(), "class") || contains(file.stem().string(), "struct")) class_xmls.push_back(file);
+        std::cout << "IGNORING SharedVar " << name << ": no defaultvalue given! (This code should not compile)" << std::endl;
+        return; //(the defaultvalue is REQUIRED for SharedVars)
     }
-    vector<xml_node> SharedOption_ASTS = find_classes_with_parent("SharedOption", class_xmls);
-    for(auto so_xml_file : SharedOption_ASTS)
-        handle_shared_option(so_xml_file);
+    if(args.size() == 1) // no options
+    {
+        tree.push_back(ShTreeNode(type, name, var_namespace, args[0], vector<ShTreeNode::attached_so>()));
+        return;
+    }
+    vector<ShTreeNode::attached_so> options = parse_shared_option_strings(args.back());
+    tree.push_back(ShTreeNode(type, name, var_namespace, args[0], options));
+}
 
-    // parsing cpp-file xmls for shared declarations.
+/// Takes xml variable nodes and outputs ShTreeNode sharedvar declarations.
+void handle_global_shared_var(const xml_node var_xml, std::vector<ShTreeNode> &tree, std::string var_namespace)
+{
+    const string type = get_complete_xml_text(var_xml.child("type"));
+    const string name = get_complete_xml_text(var_xml.child("name"));
+    string argsstring = get_complete_xml_text(var_xml.child("argsstring"));
+    if(argsstring.empty()) return; // it is just an "extern" declaration
+
+    handle_shared_var(type, name, argsstring, tree, var_namespace);
+}
+
+/// Get the init list of the constructor of this class.
+///
+/// @warning returns an empty list in case there was no ":" or "{" in the constructor definition. TODO
+string get_class_constructor_init_list(const xml_node &class_compound_xml)
+{
+    xml_node first_constructor = find_class_constructors(class_compound_xml).front(); // we currently ignore the other ones.
+    xml_node loc = first_constructor.child("location");
+    string filename = loc.attribute("bodyfile").value();
+    size_t startline = loc.attribute("bodystart").as_int();
+    size_t endline = loc.attribute("bodyend").as_int();
+    if(endline <= startline) endline = startline; // for one line constructors we sometimes have endline == -1
+
+    string str = filecontents_partly(filename, startline, endline);
+    // player(int kills) : kills(0), deaths(0) { ... }
+
+    // remove anything before and ":"
+    vector<string> split_v = split_by_delimiter(str, ":");
+    if(split_v.size() < 2) return ""; // we **ALWAYS** expect a ":" since the SharedVars need an assignment (TODO: subclasses not!)
+    str = split_v[1];
+
+    // remove anything after and '{' -> " kills(0), deaths(0) "
+    split_v = split_by_delimiter(str, "{");
+    if(split_v.size() < 1) return ""; // we **ALWAYS** expect a body.
+    str = split_v[0];
+
+    trim(str); // remove leading/trailing whitespace  -> "kills(0), deaths(0)"
+
+    // remove any whitespace
+    // tokenize arg list " kills(0)," 
+}
+
+void handle_class_shared_var(const xml_node var_xml, vector<ShTreeNode> &tree, string var_namespace, string initlist)
+{
+    const string type = get_complete_xml_text(var_xml.child("type"));
+    const string name = get_complete_xml_text(var_xml.child("name"));
+    handle_shared_var(type, name, initlist, tree, var_namespace);
+}
+
+
+
+/// Find all classes derived from "SharedClass" and put them in a vector.
+vector<xml_node> find_shared_class_definitions(const vector<Path> &class_xml_filenames)
+{
+    return find_classes_with_parent("SharedClass", class_xml_filenames);
+}
+
+void find_shared_class_trees(const vector<Path> &class_xml_filenames)
+{
+    vector<shared_class_definition> classes;
+
+    vector<xml_node> class_xmls = find_shared_class_definitions(class_xml_filenames);
+    for(xml_node &compound_xml : class_xmls)
+    {
+        shared_class_definition def;
+        string full_name =  get_complete_xml_text(compound_xml.child("compoundname")); // including the namespace e.g. inexor::rendering::screen
+
+        vector<string> ns_and_name(split_by_delimiter(full_name, "::"));
+
+        def.class_name = ns_and_name.back();
+        ns_and_name.pop_back();
+        def.definition_namespace = ns_and_name;
+        def.containing_header = compound_xml.child("location").attribute("file").value();
+
+        const string init_list = get_class_constructor_init_list(compound_xml);
+        if(init_list.empty()) continue;
+        for(auto var_xml : find_class_member_vars(compound_xml))
+        {
+            string type = get_complete_xml_text(var_xml.child("type"));
+            if(!contains(type, "SharedVar")) continue;
+            string name = get_complete_xml_text(var_xml.child("name"));
+            std::cout << "!!!!!!!!!!!!name: " << name << " type: " << type << " class:" << def.class_name << std::endl;
+        }
+    }
+}
+
+/// Finds all shared variable in a (parsed) xml file which contain a specific searchphrase.
+///
+/// @return a list of xml "memberdef" nodes (see comment below) + setting the namespace_of_vars parameter.
+/// @param namespace_of_vars will be set to the namespace of the xml document
+///       (Doxygen splits source files for us, so all variables in one xml file will be in the same ns.)
+vector<xml_node> find_variable_instances(const xml_document &xml, const std::string searchphrase, string &namespace_of_vars)
+{
+    // parsing cpp-file xmls for SharedVars.
     //
     // doxygens AST in cpp files xml is mainly:
     // doxygen
@@ -176,7 +259,52 @@ bool find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tr
     //       member..
     //     section("var")
     //     section("define")..
-    for(auto file : code_xmls)
+    vector<xml_node> variable_nodes;
+    xml_node compound_xml = xml.child("doxygen").child("compounddef"); //[@kind='file' and @language='C++']");
+
+    bool isnamespacefile = string(compound_xml.attribute("kind").value()) == "namespace";
+    namespace_of_vars = isnamespacefile ? get_complete_xml_text(compound_xml.child("compoundname")) : "";
+
+    for(auto section : compound_xml.children("sectiondef"))
+    {
+        if(string(section.attribute("kind").value()) == "var"
+           || string(section.attribute("kind").value()) == "func") // sometimes accessing constructors gets mistakenly recognized as function
+        {
+            for(auto member : section.children("memberdef"))
+            {
+                if(contains(get_complete_xml_text(member.child("definition")), searchphrase))
+                    variable_nodes.push_back(member);
+            }
+        }
+    }
+}
+
+void find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tree)
+{
+    // sorting input files:
+    std::vector<Path> all_xml_files;
+    std::vector<Path> code_xml_files;
+    std::vector<Path> class_xml_files;
+
+    list_files(xml_folder, all_xml_files, ".xml");
+    for(auto file : all_xml_files)
+    {
+        if(contains(file.filename().string(), "_8cpp.xml") || contains(file.filename().string(), "_8hpp.xml") // cpp files for non-namespace declarations
+            || contains(file.filename().string(), "namespace")) //
+            code_xml_files.push_back(file);
+        if(contains(file.stem().string(), "class") || contains(file.stem().string(), "struct")) class_xml_files.push_back(file);
+    }
+
+    // save all option class definitions to its global map.
+    vector<xml_node> SharedOption_ASTS = find_classes_with_parent("SharedOption", class_xml_files);
+    for(auto so_xml_file : SharedOption_ASTS)
+        handle_shared_option(so_xml_file);
+
+    // Search for SharedClass definitions
+    find_shared_class_trees(class_xml_files);
+
+    // search for shared variable instances.
+    for(auto file : class_xml_files)
     {
         //std::cout << "processing file: " << file.make_preferred() << std::endl;
 
@@ -187,24 +315,14 @@ bool find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tr
             continue;
         }
 
-        xml_node compound_xml = xml.child("doxygen").child("compounddef"); //[@kind='file' and @language='C++']");
+        // Search for global SharedVars:
+        string ns_of_vars; // all vars in one xml file are in the same ns, thanks doxygen.
+        vector<xml_node> global_shared_var_xml_parts = find_variable_instances(xml, "SharedVar", ns_of_vars);
+        for(auto xml_part : global_shared_var_xml_parts)
+            handle_global_shared_var(xml_part, tree, ns_of_vars);
 
-        bool isnamespacefile = string(compound_xml.attribute("kind").value()) == "namespace";
-        std::string ns = isnamespacefile ? compound_xml.child("compoundname").text().as_string() : "";
-        for(auto section : compound_xml.children("sectiondef"))
-        {
-            if(string(section.attribute("kind").value()) == "var"
-               || string(section.attribute("kind").value()) == "func") // sometimes accessing constructors gets mistakenly recognized as function
-            {
-                for(auto member : section.children("memberdef"))
-                {
-                    if(contains(get_complete_xml_text(member.child("definition")), "SharedVar"))
-                        handle_shared_var(member, tree, ns);
-                }
-            }
-        }
+        //
     }
-    return true;
 }
 
 } } } // namespace inexor::rpc::gluegen

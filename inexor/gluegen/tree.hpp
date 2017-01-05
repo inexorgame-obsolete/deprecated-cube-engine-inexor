@@ -47,7 +47,6 @@ struct so_class_definition
     so_class_definition(std::string &&class_name) : name(class_name) {}
 };
 
-/// name, so_class_definition instance
 extern std::unordered_map<std::string, so_class_definition> so_class_definitions;
 
 class ShTreeNode {
@@ -73,7 +72,7 @@ public:
     std::string get_path();
 
     /// The full type literal of the c++ type including SharedVar.
-    /// e.g. "SharedVar<char*>"
+    /// e.g. "SharedVar<char*>" or "inexor::tree::MySharedClassName"
     const char *get_type_cpp_full();
 
     /// The c++ type literal of wrapped c++ primitive type ("char*"/"int"/"float").
@@ -102,9 +101,12 @@ public:
     /// All options attached when instancing this variable.
     const std::vector<attached_so> attached_options;
 
+    /// All SharedVars MUST have a default_value (to compile).
+    const std::string default_value;
+
     /// @param full_cpp_type_dcl The literal type declaration (e.g. "SharedVar<int>") from which the type_numeric will be deduced.
     ShTreeNode(const std::string &full_cpp_type_dcl, const std::string &full_cpp_name, const std::string &var_namespace_,
-               const std::vector<attached_so> &so_constructor_arguments);
+               const std::string &default_val, std::vector<attached_so> &so_constructor_arguments);
 
     /// Known SharedVar types
     enum type_t
@@ -136,7 +138,7 @@ private:
         {"SharedVar<char*>", "char*", "string"},
         {"SharedVar<float>", "float", "float"},
         {"SharedVar<int>",   "int",   "int32"},
-    };
+    };// SharedList<ClassName>
 
     /// We use this function in the descriptor since we save type_numeric but the constructor takes the full cpp type.
     static const std::unordered_map<std::string, ShTreeNode::type_t> type_cpp_template_to_numeric;
@@ -147,6 +149,54 @@ private:
     std::string var_namespace;
     std::string path;
 };
+
+struct shared_class_definition
+{
+    std::vector<std::string> definition_namespace;
+    std::string class_name;
+
+    /// We REQUIRE the file to be defined in a cleanly includeable headerfile.
+    /// (There is no chance of using forward declarations of the class for the synchronisation code.)
+    std::string containing_header;
+
+    std::vector<ShTreeNode> nodes;
+};
+
+struct global_var : ShTreeNode
+{
+    // Changes:
+    // extern directly not the containing class-instance
+};
+
+struct class_member_var : ShTreeNode
+{
+    // Changes:
+    // Use class options. Prepend class path to namespace.
+    // Don't iterate var as global var.
+    // index begins for every class from 0
+    // Don't need full c++ name anymore, but class name for extern.
+    // path() is path of class + path of var
+    //        path of class: default = namespace + classname, otherwise CustomPath("...")-attribute
+    //        path of var: default = variablename, otherwise CustomPath("...")
+    //        -> path = namespace + if(isclassmember) classname + (endif) cpp_short_name
+};
+
+/// A Class derived from SharedClass gets reflected automagically. This is the (shrinked) AST representation to enable the magic.
+//struct shared_class : parsed_class_base
+//{
+//    std::string class_name_short;
+//    std::string class_namespace;
+//
+//    /// We use this list to handle shared options applied to all SharedVars we contain.
+//    const std::vector<shared_option_arg> shared_options;
+//
+//    const std::vector<class_member_var> member_vars;
+//
+//    void add_member_var(class_member_var)
+//    {
+//
+//    }
+//};
 
 }
 }
