@@ -5,12 +5,15 @@
 #include <pugiconfig.hpp>
 #include <pugixml.hpp>
 
+#include <boost/algorithm/string.hpp>
+
 #include <vector>
 #include <string>
 #include <iostream>
 
 using namespace std;
 using namespace pugi;
+using namespace boost;
 
 namespace inexor { namespace rpc { namespace gluegen {
 
@@ -39,7 +42,7 @@ name_defaultvalue_vector find_so_constructors_args(so_class_definition &opt, con
             opt.constructor_has_default_values = true;
             std::string temp;
             arg.default_value = parse_bracket(arg.default_value, temp, temp); // fu_cast<float>("{{index}}\n{{name}}") -> "{{index}}\n{{name}}"
-            remove_quotes(arg.default_value);                                 // -> {{index}}'\''n'{{name}}
+            remove_surrounding_quotes(arg.default_value);                                 // -> {{index}}'\''n'{{name}}
             // TODO need escaping!                                            // -> {{index}}<newline_character>{{name}}
         }
         constructor_args.push_back(arg);
@@ -59,12 +62,14 @@ name_defaultvalue_vector find_so_class_const_char_members(so_class_definition &o
 
     for(auto var_xml : find_class_member_vars(compound_xml))
     {
+        if(!contains(get_complete_xml_text(var_xml.child("type")), "SharedVar")) continue;
+
         name_defaultvalue_tupel var;
         var.name = get_complete_xml_text(var_xml.child("name"));
         var.default_value = get_complete_xml_text(var_xml.child("initializer"));
         remove_leading_assign_sign(var.default_value);
-        remove_leading_whitespace(var.default_value);
-        remove_quotes(var.default_value);
+        trim(var.default_value); //remove whitespace
+        remove_surrounding_quotes(var.default_value);
         const_char_members.push_back(var);
     }
 

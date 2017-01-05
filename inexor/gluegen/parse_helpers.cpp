@@ -36,17 +36,6 @@ void remove_leading_assign_sign(string &str)
         str.erase(0, 1);
 }
 
-void remove_leading_whitespace(string &str)
-{
-    if(str.empty()) return;
-    for(int i = 0; i < str.size(); i++)
-        if(str[i] != ' ' && str[i] != '\t')
-        {
-            if(i) str = str.substr(i);
-            return;
-        }
-}
-
 void remove_surrounding_char(string &str, const char first_cha)
 {
     if(str.empty()) return;
@@ -57,7 +46,7 @@ void remove_surrounding_char(string &str, const char first_cha)
     }
 }
 
-void remove_quotes(std::string &str)
+void remove_surrounding_quotes(std::string &str)
 {
     remove_surrounding_char(str, '"');
 }
@@ -147,6 +136,5 @@ string get_complete_xml_text(const xml_node parent, bool recursive)
     }
     return text;
 }
-
 
 } } } // namespace inexor::rpc::gluegen
