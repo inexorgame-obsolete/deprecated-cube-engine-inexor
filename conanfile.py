@@ -51,6 +51,7 @@ class InexorConan(ConanFile):
         self.run('{}cmake --build . --target install {}'.format(set_number_cores, cmake.build_config))
 
     def imports(self):
+        self.copy("gluecodegenerator*", dst="bin", src="bin")
         self.copy("*.dll", dst="bin", src="bin") # From bin to bin
         self.copy("*.bin", dst="bin", src="bin") # From bin to bin
         self.copy("*.dat", dst="bin", src="bin") # From bin to bin

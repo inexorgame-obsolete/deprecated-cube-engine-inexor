@@ -10,9 +10,11 @@ find_package(Doxygen)
 if(NOT DOXYGEN_FOUND)
     message(FATAL_ERROR "Doxygen is needed to generate our glue code.")
 endif()
-if (NOT DEFINED GLUEGEN_EXE)
-  find_program(GLUEGEN_EXE gluecodegenerator PATHS ${CONAN_BIN_DIRS_INEXORGLUEGEN})
-endif()
+
+# We import it there using conan:
+find_program(GLUEGEN_EXE gluecodegenerator PATHS "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" NO_CMAKE_ENVIRONMENT_PATH  NO_CMAKE_PATH NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH )
+
+message("GLUEGEN_EXE ${GLUEGEN_EXE} CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
 option(DEBUG_GLUEGEN "Whether or not we show additional targets for the intermediate steps of the gluecode generator" OFF)
 
