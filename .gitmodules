@@ -1,3 +1,6 @@
 [submodule "media/core"]
 	path = media/core
 	url = https://github.com/inexor-game/data.git
+[submodule "flex"]
+	path = flex
+	url = https://github.com/inexor-game/flex.git
