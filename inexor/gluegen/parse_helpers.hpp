@@ -37,21 +37,4 @@ extern std::string parse_bracket(std::string input, std::string &before_bracket,
 /// Text can have subfields with more text + siblings text, usually you want all of them concatenated.
 std::string get_complete_xml_text(const pugi::xml_node parent, bool recursive = true);
 
-/// Join the entrys of a vector|sthelsewithrange into a string, using 'd' as the seperator between the parts.
-template<typename SinglePassRange, typename Delim>
-inline std::string join_to_str(SinglePassRange r, Delim d)
-{
-    std::stringstream s;
-    bool first = true;
-    for(auto &e : r)
-    {
-        if(first)
-            first = false;
-        else
-            s << d;
-        s << e;
-    }
-    return s.str();
-}
-
 } } } // namespace inexor::rpc::gluegen

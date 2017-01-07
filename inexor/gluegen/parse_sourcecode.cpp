@@ -306,7 +306,7 @@ void find_shared_class_trees()
         def.class_name = ns_and_name.back();
         ns_and_name.pop_back();
         def.definition_namespace = ns_and_name;
-        string ns = join_to_str(def.definition_namespace, "::");
+        string ns = join(def.definition_namespace, "::");
         def.containing_header = compound_xml.child("location").attribute("file").value();
 
         const unordered_map<string, string> init_list_map = get_class_initialized_member_map(compound_xml);
@@ -316,7 +316,7 @@ void find_shared_class_trees()
             string type = get_complete_xml_text(var_xml.child("type"));
             if(!contains(type, "SharedVar")) continue;
             string name = get_complete_xml_text(var_xml.child("name"));
-            std::cout << "!!!!!!!!!!!!name: " << name << " type: " << type << " class:" << def.class_name << std::endl;
+            std::cout << "!!!!!!!!!!!!name: " << name << " type: " << type << " class: " << def.class_name << std::endl;
             parse_class_shared_var(var_xml, ns, init_list_map, def.nodes);
         }
     }

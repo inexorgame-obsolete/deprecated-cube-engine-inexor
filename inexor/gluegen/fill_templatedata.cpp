@@ -1,11 +1,12 @@
+#include "inexor/gluegen/parse_helpers.hpp"
+#include "inexor/gluegen/fill_templatedata.hpp"
+#include "inexor/gluegen/tree.hpp"
+
+#include <boost/algorithm/string.hpp>
 
 #include <vector>
 #include <string>
 #include <unordered_set>
-
-#include "inexor/gluegen/parse_helpers.hpp"
-#include "inexor/gluegen/fill_templatedata.hpp"
-#include "inexor/gluegen/tree.hpp"
 
 using namespace inexor::rpc::gluegen;
 using namespace std;
@@ -114,7 +115,7 @@ TemplateData fill_templatedata(vector<ShTreeNode> &tree, const string &ns)
 
     // namespace string -> protobuf syntax: replace :: with .
     vector<string> ns_list(split_by_delimiter(ns, "::"));
-    const string &proto_pkg = join_to_str(ns_list, '.');
+    const string &proto_pkg = boost::join(ns_list, '.');
     tmpldata.set("package", proto_pkg);
     tmpldata.set("namespace", ns);
 
