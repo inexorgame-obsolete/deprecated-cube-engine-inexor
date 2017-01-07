@@ -7,16 +7,31 @@ namespace bfs = boost::filesystem;
 
 namespace inexor { namespace filesystem {
 
-// TODO: put into filesystem/
-// taken from http://stackoverflow.com/questions/3203452/how-to-read-entire-stream-into-a-stdstring
+
 const std::string filecontents(const std::string &filename)
 {
     std::ifstream file_stream(filename);
+    if(!file_stream.is_open()) return ""; // TODO error log message
     std::string ret;
     char buffer[4096];
     while(file_stream.read(buffer, sizeof(buffer)))
         ret.append(buffer, sizeof(buffer));
     ret.append(buffer, file_stream.gcount());
+    return ret;
+}
+
+const std::string filecontents_partly(const std::string &filename, size_t start_line, size_t end_line)
+{
+    std::ifstream file_stream(filename);
+    if(!file_stream.is_open()) return ""; // TODO error log message
+    std::string ret, line;
+    for(size_t count = 1; count <= end_line; count++)
+    {
+        bool lastline = !std::getline(file_stream, line);
+        if(lastline) break;
+        if(count < start_line) continue;
+        ret.append(line);
+    }
     return ret;
 }
 
