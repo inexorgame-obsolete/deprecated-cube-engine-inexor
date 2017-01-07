@@ -1,8 +1,7 @@
 {
   "name": "Inexor_IPC_Client",
-  "version": "0.8.0",
+  "version": "0.9.1",
   "description": "Scripting in node.js for Inexor",
-  "main": "src/tree/index.js",
   "scripts": {
     "test": "mocha",
     "install": "bower install",
@@ -22,10 +21,8 @@
   "dependencies": {
     "bower": "^1.7.7",
     "bunyan": "^1.7.0",
-    "grpc": "^0.14.1",
-    "protobufjs": "^5.0.1",
+    "inexor-tree": "git+https://github.com/inexor-game/inexor-tree-npm.git",
     "restify": "^4.0.4",
-    "uuid": "^2.0.1",
     "yargs": "^4.1.0"
   },
   "devDependencies": {
@@ -36,5 +33,6 @@
   },
   "engines": {
     "node": ">= 4.4.4"
-  }
+  },
+  "private": true
 }

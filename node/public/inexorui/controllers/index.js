@@ -9,5 +9,5 @@ define([
   './hud/index',
   './menu/index',
   './test/index',
-  './TabbedNavigationController'
+  './RootNavigationController'
 ], function () {});

@@ -3,7 +3,7 @@ define(['./module'], function(controllers) {
   controllers.controller('TestHudController', ['$scope',
     function ($scope) {
 
-	  $scope.registerHud('test', false, '0px', '0px', '100%', '250px', 'F10');
+	  $scope.registerHud('test', false, false, '0px', '0px', '100%', '250px', 'F10');
 
       // Fake value
       $scope.fps = 60;

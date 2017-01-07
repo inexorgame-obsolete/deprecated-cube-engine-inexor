@@ -1,5 +1,135 @@
 body {
-	background-color: transparent;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+#inexorui-logo {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: 50% center;
+  background-attachment: fixed;
+  background-size: 100% 100%;
+}
+
+/* body.mainmenu {
+  background: transparent;
+} */
+
+.inexor-menu-container-centered {
+  margin: auto;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
+  right: 0px;
+  /* height: 60%; */
+  /* height: auto; */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1%;
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 0px;
+}
+
+.inexor-menu-container-centered .page-header {
+  margin: 0px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-bottom: 0px;
+  padding-bottom: 0px;
+}
+
+.inexor-menu-container-centered h1 {
+  margin: auto;
+  color: white;
+  font-size: 5vh;
+  text-align: center;
+}
+
+.inexor-menu-container-centered .well {
+  font-size: 1.5vh;
+}
+
+.inexor-menu-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  /* height: auto; */
+  /* overflow-y: scroll; */
+}
+
+.inexor-serverbrowser-table {
+  background: #fefefe;
+  font-size: 2vh;
+  width: 100%;
+  max-height: 90%;
+  /* height: 90%; */
+  overflow-y: scroll;
+  
+}
+
+.inexor-menu-list.nav-tabs {
+  border-bottom: 0px;
+}
+
+.nav-tabs li.inexor-menu-item {
+  margin-bottom: 0px;
+}
+
+.inexor-menu-item, .inexor-menu-header {
+  width: 100%;
+  height: 100%;
+  margin: auto;
+}
+
+.nav li.inexor-menu-item a,
+.nav li.inexor-menu-header a {
+  display: block;
+  width: 100%;
+  padding: 0px;
+  margin-top: 2.5vh;
+  font-size: 5vh;
+  text-align: center;
+  border: 0px;
+}
+
+.nav li.inexor-menu-header {
+  background-color: rgba(255, 255, 255, 1.0);
+  color: black;
+}
+
+.nav li.inexor-menu-header a {
+  background-color: rgba(255, 255, 255, 1.0);
+  color: black;
+}
+
+.nav li.inexor-menu-item a:hover,
+.nav li.inexor-menu-header a:hover {
+  background-color: transparent;
+  color: #337ab7;
+}
+
+.nav li.inexor-menu-item:hover {
+  background-color: rgba(128, 128, 128, 0.2);
+  color: white;
+  border: 0px;
+}
+
+.nav li.inexor-menu-header a:hover {
+  background-color: rgba(255, 255, 255, 1.0);
+  color: black;
 }
 
 /* The console container element */

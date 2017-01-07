@@ -15,6 +15,31 @@ define(['./inexorui'], function (inexorui) {
         templateUrl: 'inexorui/partials/menu/multiplayer.html',
         controller: 'MultiplayerMenuController'
       })
+      .state('/menu/multiplayer/serverbrowser', {
+        url: '/menu/multiplayer/serverbrowser',
+        templateUrl: 'inexorui/partials/menu/serverbrowser.html',
+        controller: 'ServerBrowserMenuController'
+      })
+      .state('/menu/edit', {
+        url: '/menu/edit',
+        templateUrl: 'inexorui/partials/menu/edit.html',
+        controller: 'EditMenuController'
+      })
+      .state('/menu/botmatch', {
+        url: '/menu/botmatch',
+        templateUrl: 'inexorui/partials/menu/botmatch.html',
+        controller: 'BotMatchMenuController'
+      })
+      .state('/menu/options', {
+        url: '/menu/options',
+        templateUrl: 'inexorui/partials/menu/options.html',
+        controller: 'OptionsMenuController'
+      })
+      .state('/menu/about', {
+        url: '/menu/about',
+        templateUrl: 'inexorui/partials/menu/about.html',
+        controller: 'AboutMenuController'
+      })
       .state('/test/keyboard', {
         url: '/test/keyboard',
         templateUrl: 'inexorui/partials/test/keyboard.html',

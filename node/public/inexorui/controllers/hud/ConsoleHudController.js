@@ -7,7 +7,7 @@ define(['./module'], function(controllers) {
 	  // TODO: F12 quake-like console ()
 	  // TODO: move console to service (component should live even when the controller is not active)
 
-	  $scope.registerHud('console', false, '0px', '0px', '100%', '250px', 'F12');
+	  $scope.registerHud('console', false, false, '0px', '0px', '100%', '250px', 'F12');
 
 	  $scope.jqconsole = angular.element('#hud-console-widget').jqconsole('Inexor CubeScript Console\n', '>>> ');
 

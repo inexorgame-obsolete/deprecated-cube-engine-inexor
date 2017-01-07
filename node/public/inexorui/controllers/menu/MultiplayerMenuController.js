@@ -7,12 +7,19 @@ define(['./module'], function(controllers) {
       $scope.host = "inexor.nooblounge.net";
       $scope.port = "31415";
 
-      $scope.connect = function() {
+      $scope.connect = function(host, port) {
+        if (port == null) {
+          port = $scope.port;
+        }
+        if (host == null) {
+          host = $scope.host;
+        }
         $http.post("/api/execute", {
-          code: "connect " + $scope.host + " " + $scope.port
+          code: "connect " + host + " " + port
         }).then(function(response) {
   	      console.log(response);
           $scope.connected = true;
+          // TODO: hide menu?
         });  
       };
 
