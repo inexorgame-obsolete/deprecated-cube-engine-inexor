@@ -28,8 +28,12 @@ name_defaultvalue_vector find_so_constructors_args(so_class_definition &opt, con
 {
     name_defaultvalue_vector constructor_args;
 
+    auto constructor_vector = find_class_constructors(compound_xml);
+    if(constructor_vector.empty()) return name_defaultvalue_vector();
+
     // The first constructor fills the argument list, the following just control whether their lists are equal.
-    const xml_node first_constructor = find_class_constructors(compound_xml).front();
+    const xml_node first_constructor = constructor_vector.front();
+
     for(const xml_node param : first_constructor.children("param"))
     {
         name_defaultvalue_tupel arg;

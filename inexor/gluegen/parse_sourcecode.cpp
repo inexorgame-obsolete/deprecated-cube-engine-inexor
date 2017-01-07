@@ -161,8 +161,12 @@ vector<xml_node> find_classes_with_parent(string parentname)
 /// @warning returns an empty list in case there was no ":" or "{" in the constructor definition. TODO
 string get_class_constructor_init_list(const xml_node &class_compound_xml)
 {
-    xml_node first_constructor = find_class_constructors(class_compound_xml).front(); // we currently ignore the other ones.
-    xml_node loc = first_constructor.child("location");
+    auto constructor_vector = find_class_constructors(class_compound_xml);
+    if(constructor_vector.empty()) return "";
+
+    const xml_node first_constructor = constructor_vector.front(); // we currently ignore the other ones.
+    const xml_node loc = first_constructor.child("location");
+
     string filename = loc.attribute("bodyfile").value();
     size_t startline = loc.attribute("bodystart").as_int();
     size_t endline = loc.attribute("bodyend").as_int();
