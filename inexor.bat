@@ -1,10 +1,10 @@
-@ECHO OFF
-Setlocal EnableDelayedExpansion
+@echo off
 
-:: Clear variable
-set "DATA_DIRS="
-:: Find all data repos in media
-for /f "delims=" %%a in ('dir "./media" /on /ad /b') do @set "DATA_DIRS=!DATA_DIRS! -kmedia/%%a/"
+:: Start Inexor Flex
 
-start bin\inexor.exe "-q$HOME\My Games\Inexor" %DATA_DIRS% -glog.txt %*
-start /B inexor_node_windows.bat
+:: Setting the PATHS.
+set "MAINDIR=%~dp0"
+set "NODE_PATH=%MAINDIR%\flex"
+
+:: Change the dir for one command only
+pushd flex && (npm start & popd)
