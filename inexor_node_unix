@@ -1,8 +1,0 @@
-#!/bin/sh
-
-link="`readlink -f $0`"
-inexor_dir="`dirname "${link}"`"
-node_dir="${inexor_dir}/node/"
-
-cd "$node_dir"
-npm start
