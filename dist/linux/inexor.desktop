@@ -1,0 +1,30 @@
+[Desktop Entry]
+Version=0.9
+Type=Application
+Name=Inexor
+GenericName=Game
+GenericName[de]=Spiel
+Comment=A fast-paced shooting game featuring an ingame map editor.
+Comment[de]=Ein schneller Shooter mit eingebautem Level-Editor.
+Keywords=Game;First;Person;Shooter;Fast;Paced;Map;Editor;Texture;Model
+Keywords[de]=Spiel;Egoperspektive;Reaktionszeit;Level;Editor;Textur;Model
+Icon=inexor
+Categories=Application;Game;FirstPersonShooter;
+MimeType=x-scheme-handler/inexor
+StartupNotify=true
+Exec=flex client start 31417
+Terminal=false
+
+Actions=StartServer;StopServer
+
+[Desktop Action StartServer]
+Name=Start an Inexor Server
+Name[de]=Starte einen Inexor Server
+Exec=$flex server start 31415
+OnlyShowIn=Unity;
+
+[Desktop Action StopServer]
+Name=Stop Inexor Server
+Name[de]=Stoppe einen Inexor Server
+Exec=$flex server stop 31415
+OnlyShowIn=Unity;
