@@ -1,12 +1,13 @@
 #!/bin/sh
 
-inexor_dir="`dirname "$0"`"
-flex_path="`realpath "${inexor_dir}/../flex/inexor"`"
-echo "${flex_path}"
+tool_dir="`dirname "$0"`"
+inexor_dir="`realpath "${tool_dir}/.."`"
+flex_path="`realpath "${inexor_dir}/flex/inexor"`"
 
-sudo cp dist/linux/inexor.desktop /usr/share/applications
-sudo sed -i -- "s+flex+${flex_path}+g" /usr/share/applications/inexor.desktop
+cp ${inexor_dir}/dist/linux/inexor.desktop /tmp
+sed -i -- "s+\${flex}+${flex_path}+g" /tmp/inexor.desktop
 wget https://raw.githubusercontent.com/inexor-game/artwork/master/logo/logo_thick.svg -O /tmp/inexor.svg
 sudo cp /tmp/inexor.svg /usr/share/pixmaps
 
-sudo update-desktop-database
+sudo xdg-desktop-menu install --novendor /tmp/inexor.desktop
+sudo xdg-desktop-menu forceupdate
