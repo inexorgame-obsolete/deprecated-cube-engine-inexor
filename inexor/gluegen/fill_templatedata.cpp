@@ -44,7 +44,7 @@ void add_generic_templatedata(TemplateData &variable, ShTreeNode node)
 {
     // renders: 1. fill data: 
     //             - take node constructor args, compare it with so_class_definition names [done]
-    //             - create TemplateData instanz for every constructor param
+    //             - create TemplateData instance for every constructor param
     //            1b. default values
     //              - if so_class_definition has default values add default value TemplateData
     //              - 2 cases for default values: values or templates (special: char * get rendered nontheless)
@@ -105,6 +105,99 @@ void add_generic_templatedata(TemplateData &variable, ShTreeNode node)
             add_rendered_template_hybrids(opt, variable, constructor_args_data);
     }
 }
+/// Adds the entries namespace_sep_{open|close} to the templatedata given.
+/// open is e.g. "namespace inexor { namespace rendering {" close is "} }"
+void add_namespace_seps_templatedata(TemplateData &templdata, string ns_str)
+{
+    vector<string> ns(split_by_delimiter(ns_str, "::"));
+
+    TemplateData namespace_sep_open{TemplateData::LambdaType{
+        [ns](const string&)
+    {
+        std::stringstream ss;
+        for(auto &tok : ns)
+        {
+            if(tok.empty())continue;
+            ss << "namespace ";
+            ss << tok;
+            ss << " { ";
+        }
+        return ss.str();
+    }}};
+
+    TemplateData namespace_sep_close{TemplateData::LambdaType{
+        [ns](const std::string&)
+    {
+        std::stringstream ss;
+        for(auto &tok : ns)
+        {
+            if(tok.empty())continue;
+            ss << " }";
+        }
+        return ss.str();
+    }}};
+
+    templdata.set("namespace_sep_open", namespace_sep_open);
+    templdata.set("namespace_sep_close", namespace_sep_close);
+}
+
+TemplateData get_shared_var_templatedata(ShTreeNode &node, int index)
+{
+    TemplateData curvariable{TemplateData::Type::Object};
+    curvariable.set("is_global", node.node_type==ShTreeNode::NODE_CLASS_VAR ? TemplateData::Type::False : TemplateData::Type::True);
+    curvariable.set("type_protobuf", node.get_type_protobuf());
+    curvariable.set("type_cpp_full", node.get_type_cpp_full());
+    curvariable.set("type_cpp_primitive", node.get_type_cpp_primitive());
+    curvariable.set("type_numeric", std::to_string(node.get_type_numeric()));
+    curvariable.set("index", std::to_string(index));
+    curvariable.set("name_unique", node.get_name_unique());
+    curvariable.set("path", node.get_path());
+    curvariable.set("name_cpp_full", node.get_name_cpp_full());
+    curvariable.set("name_cpp_short", node.get_name_cpp_short());
+
+    add_namespace_seps_templatedata(curvariable, node.get_namespace());
+
+    add_generic_templatedata(curvariable, node);
+    return curvariable;
+}
+
+void add_node_templatedata(ShTreeNode &node, int &index, TemplateData &templdata)
+{
+    switch(node.node_type)
+    {
+        case ShTreeNode::NODE_GLOBAL_VAR:
+        case ShTreeNode::NODE_CLASS_VAR:
+        {
+            templdata << get_shared_var_templatedata(node, index);
+            index++;
+            break;
+        }
+        case ShTreeNode::NODE_CLASS_SINGLETON:
+        {
+            for(auto child : node.children)
+            {
+                add_node_templatedata(child, index, templdata);
+                index++;
+            }
+            break;
+        }
+    }
+}
+
+TemplateData get_shared_class_templatedata(ShTreeNode &node)
+{
+    TemplateData curclass{TemplateData::Type::Object};
+
+    shared_class_definition def = node.class_definition;
+    add_namespace_seps_templatedata(curclass, node.get_namespace());
+    curclass.set("definition_header_file", def.containing_header);
+
+    // TODO: recognize the innerclass case!
+    curclass.set("type_parent_cpp_full", def.definition_namespace + "::" + def.class_name);
+    curclass.set("name_parent_cpp_short", node.get_name_cpp_short());
+
+    return curclass;
+}
 
 TemplateData fill_templatedata(vector<ShTreeNode> &tree, const string &ns)
 {
@@ -115,60 +208,28 @@ TemplateData fill_templatedata(vector<ShTreeNode> &tree, const string &ns)
 
     // namespace string -> protobuf syntax: replace :: with .
     vector<string> ns_list(split_by_delimiter(ns, "::"));
-    const string &proto_pkg = boost::join(ns_list, '.');
+    const string &proto_pkg = boost::join(ns_list, ".");
     tmpldata.set("package", proto_pkg);
     tmpldata.set("namespace", ns);
 
     TemplateData sharedvars{TemplateData::Type::List};
+
+    // The protocol buffers variable index
     int index = 1;
-    for(auto node : tree)
+    for(ShTreeNode &node : tree)
     {
-        TemplateData curvariable{TemplateData::Type::Object};
-        curvariable.set("type_protobuf", node.get_type_protobuf());
-        curvariable.set("type_cpp_primitive", node.get_type_cpp_primitive());
-        curvariable.set("type_numeric", std::to_string(node.get_type_numeric()));
-        curvariable.set("index", std::to_string(index++));
-        curvariable.set("name_unique", node.get_name_unique());
-        curvariable.set("path", node.get_path());
-        curvariable.set("name_cpp_full", node.get_name_cpp_full());
-        curvariable.set("name_cpp_short", node.get_name_cpp_short());
-
-        vector<string> ns(split_by_delimiter(node.get_namespace(), "::"));
-
-        TemplateData namespace_sep_open{TemplateData::LambdaType{
-            [ns](const string&)
-        {
-            std::stringstream ss;
-            for(auto &tok : ns)
-            {
-                if(tok.empty())continue;
-                ss << "namespace ";
-                ss << tok;
-                ss << " { ";
-            }
-            return ss.str();
-        }}};
-
-        TemplateData namespace_sep_close{TemplateData::LambdaType{
-            [ns](const std::string&)
-        {
-            std::stringstream ss;
-            for(auto &tok : ns)
-            {
-                if(tok.empty())continue;
-                ss << " }";
-            }
-            return ss.str();
-        }}};
-
-        curvariable.set("namespace_sep_open", namespace_sep_open);
-        curvariable.set("namespace_sep_close", namespace_sep_close);
-
-        add_generic_templatedata(curvariable, node);
-
-        sharedvars << curvariable;
+        add_node_templatedata(node, index, sharedvars);
     }
     tmpldata.set("shared_vars", sharedvars);
+
+    TemplateData sharedclasses{TemplateData::Type::List};
+
+    for(ShTreeNode &node : tree)
+    {
+        if(node.node_type!=ShTreeNode::NODE_CLASS_SINGLETON) continue;
+        sharedclasses << get_shared_class_templatedata(node);
+    }
+    tmpldata.set("shared_classes", sharedclasses);
 
     return tmpldata;
 }

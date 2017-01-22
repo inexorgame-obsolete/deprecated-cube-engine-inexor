@@ -273,7 +273,7 @@ void parse_global_shared_var(const xml_node var_xml, std::string var_namespace, 
     tree.push_back(parse_shared_var(type, name, argsstring, var_namespace));
 }
 
-void parse_class_shared_var(const xml_node var_xml, string var_namespace, const unordered_map<string, string> &class_constructor_init_map,
+void parse_sharedvar_of_class(const xml_node var_xml, string var_namespace, const unordered_map<string, string> &class_constructor_init_map,
                             vector<ShTreeNode> &tree)
 {
     const string type = get_complete_xml_text(var_xml.child("type"));
@@ -281,9 +281,30 @@ void parse_class_shared_var(const xml_node var_xml, string var_namespace, const 
 
     auto argsstring_itr = class_constructor_init_map.find(name);
     if(argsstring_itr == class_constructor_init_map.end())
-        throw(std::exception("Class has Sharedvar member, but it's missing in the constructors initializer list.")); // TODO shall we ignore it? improve output.
+        return;
+    //    throw(std::exception("Class has Sharedvar member, but it's missing in the constructors initializer list.")); // TODO shall we ignore it? it shouldnt compile.
 
     tree.push_back(parse_shared_var(type, name, argsstring_itr->second , var_namespace));
+}
+
+void parse_class_singleton(const xml_node var_xml, std::string var_namespace, shared_class_definition class_definition, vector<ShTreeNode> &tree)
+{
+    const string type = get_complete_xml_text(var_xml.child("type"));
+    const string name = get_complete_xml_text(var_xml.child("name"));
+
+    //if(argsstring.empty()) return; // it is just an "extern" declaration
+    // the constructor of SharedClasses are not containing sharedoptions (or should we?)
+    // TODO: do class instances get here for extern declarations?
+
+    vector<ShTreeNode::attached_so> options; // = parse_shared_option_strings(args.back()); TODO
+    ShTreeNode class_node(type, name, var_namespace, class_definition, options);
+    for(ShTreeNode &child : class_definition.nodes)
+    {
+        child.parent = &class_node;
+        // TODO sollte rekursiv sein wenn type = child
+        class_node.children.push_back(child);
+    }
+    tree.push_back(class_node);
 }
 
 // TODO all nodes are const<-
@@ -295,7 +316,7 @@ vector<xml_node> find_shared_class_definitions()
     return find_classes_with_parent("SharedClass");
 }
 
-void find_shared_class_trees()
+vector<shared_class_definition> find_shared_class_trees()
 {
     vector<shared_class_definition> classes;
 
@@ -309,8 +330,7 @@ void find_shared_class_trees()
 
         def.class_name = ns_and_name.back();
         ns_and_name.pop_back();
-        def.definition_namespace = ns_and_name;
-        string ns = join(def.definition_namespace, "::");
+        def.definition_namespace = join(ns_and_name, "::");
         def.containing_header = compound_xml.child("location").attribute("file").value();
 
         const unordered_map<string, string> init_list_map = get_class_initialized_member_map(compound_xml);
@@ -318,12 +338,14 @@ void find_shared_class_trees()
         for(auto var_xml : find_class_member_vars(compound_xml))
         {
             string type = get_complete_xml_text(var_xml.child("type"));
-            if(!contains(type, "SharedVar")) continue;
+            if(!contains(type, "SharedVar")) continue; // TODO recursive logic
             string name = get_complete_xml_text(var_xml.child("name"));
             std::cout << "!!!!!!!!!!!!name: " << name << " type: " << type << " class: " << def.class_name << std::endl;
-            parse_class_shared_var(var_xml, ns, init_list_map, def.nodes);
+            parse_sharedvar_of_class(var_xml, def.definition_namespace, init_list_map, def.nodes);
         }
+        classes.push_back(def);
     }
+    return classes;
 }
 
 /// Finds all shared variable in a (parsed) xml file which contain a specific searchphrase.
@@ -331,7 +353,7 @@ void find_shared_class_trees()
 /// @return a list of xml "memberdef" nodes (see comment below) + setting the namespace_of_vars parameter.
 /// @param namespace_of_vars will be set to the namespace of the xml document
 ///       (Doxygen splits source files for us, so all variables in one xml file will be in the same ns.)
-vector<xml_node> find_variable_instances(unique_ptr<xml_document> &xml, const std::string searchphrase, string &namespace_of_vars)
+vector<xml_node> find_variable_instances(unique_ptr<xml_document> &xml, const std::string searchphrase, string &namespace_of_vars, bool exact = false)
 {
     // parsing cpp-file xmls for SharedVars.
     //
@@ -356,7 +378,8 @@ vector<xml_node> find_variable_instances(unique_ptr<xml_document> &xml, const st
         {
             for(auto member : section.children("memberdef"))
             {
-                if(contains(get_complete_xml_text(member.child("definition")), searchphrase))
+                if((!exact && contains(get_complete_xml_text(member.child("definition")), searchphrase))
+                   || (exact && get_complete_xml_text(member.child("type")) == searchphrase))
                     variable_nodes.push_back(member);
             }
         }
@@ -377,10 +400,10 @@ void find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tr
         handle_shared_option(compound_xml);
 
     // Search for SharedClass definitions
-    find_shared_class_trees();
+    vector<shared_class_definition> shared_class_defs = find_shared_class_trees();
 
-    // search for shared variable instances.
 
+    // search for the **instances** of the shared vars/classes.
     for(auto &xml : xmls.code_ast_xmls)
     {
         //std::cout << "processing file: " << file.make_preferred() << std::endl;
@@ -389,6 +412,14 @@ void find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tr
         vector<xml_node> global_shared_var_xml_parts = find_variable_instances(xml, "SharedVar", ns_of_vars);
         for(auto xml_part : global_shared_var_xml_parts)
             parse_global_shared_var(xml_part, ns_of_vars, tree);
+
+        // search for class instances
+        for(auto shared_class_def : shared_class_defs)
+        {
+            vector<xml_node> global_shared_var_xml_parts = find_variable_instances(xml, shared_class_def.class_name, ns_of_vars, true);
+            for(auto xml_part : global_shared_var_xml_parts)
+                parse_class_singleton(xml_part, ns_of_vars, shared_class_def, tree);
+        }
     }
   }  catch(std::exception &e)
   {

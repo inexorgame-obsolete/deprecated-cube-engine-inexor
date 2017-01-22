@@ -49,43 +49,88 @@ struct so_class_definition
 
 extern std::unordered_map<std::string, so_class_definition> so_class_definitions;
 
+class ShTreeNode;
+
+struct shared_class_definition
+{
+    /// The name of the SharedClass e.g. "Screen".
+    std::string class_name;
+
+    /// The namespace of the SharedClass definition e.g. "inexor::metainfo"
+    /// @warning this could be some other namespace as the instances one!
+    ///          for example you could have a inexor::metainfo::Screen inexor::rendering::screen1;
+    std::string definition_namespace;
+
+    /// We REQUIRE the file to be defined in a cleanly includeable headerfile.
+    /// (There is no chance of using forward declarations of the class for the synchronisation code.)
+    std::string containing_header;
+
+    std::vector<ShTreeNode> nodes;
+};
+
 class ShTreeNode {
 public:
-    /// The canonical name (including ::) of the c++ variable.
-    /// e.g. "::inexor::rendering::screen::width"
+
+    /// This node could either be a variable (as member of a class or as global one) or a class.
+    /// A class would contain a subtree and passes its options on to it.
+    enum NODE_TYPE
+    {
+        NODE_GLOBAL_VAR,      /// We are a global SharedVar
+        NODE_CLASS_SINGLETON, /// We are a global instance of a SharedClass (no pointer)
+        NODE_CLASS_VAR        /// We are a variable inside an NODE_CLASS_SINGLETON (so this node is a subnode)
+    } node_type;
+
+    /// A pointer to the parent if this node is a NODE_CLASS_VAR.
+    /// Otherwise this is a nullptr.
+    ShTreeNode *parent = nullptr;
+
+    /// If this is a NODE_CLASS_SINGLETON, this is a subtree containing all SharedVars or instanced subclasses.
+    std::vector<ShTreeNode> children;
+
+    /// The canonical name (including ::) of the c++ variable instance.
+    /// If its NODE_GLOBAL_VAR, this is e.g. "::inexor::rendering::num_screens"
+    /// If its NODE_CLASS_SINGLETON, this will return the full name of the class instance (e.g. "::inexor::rendering::Screen")
+    /// If its NODE_CLASS_VAR, this is e.g. "::inexor::rendering::Screen.width"
     std::string get_name_cpp_full();
 
+    /// If this is a NODE_CLASS_VAR this will return the first parents name
+    /// (Needed for e.g. declaring an extern)
+    std::string get_first_parent_name();
+
     /// The c++ variable name excluding any namespaces.
-    /// e.g. "width"
+    /// e.g. "num_screens" or "Screen" or "width"
     std::string get_name_cpp_short();
 
-    /// Name with prepended namespace, connected with underspaces.
-    /// e.g. "_inexor_rendering_screen_width"
+    /// Name with prepended namespace (and classname), connected with underspaces.
+    /// e.g. "_inexor_rendering_num_screens" or "_inexor_rendering_Screen_width"
     std::string get_name_unique();
 
     /// The C++ namespace of the variable.
-    /// e.g. inexor::rendering::screen.
+    /// e.g. inexor::rendering.
     std::string get_namespace();
 
-    /// Path of the variable inside the tree.
-    /// Atm we use only the namespace, e.g. inexor/rendering/screen/.
+    /// Path of the variable inside the tree (including the node name ofc).
+    /// e.g. inexor/rendering/num_screens or inexor/rendering/Screen/ or inexor/rendering/Screen/width.
     std::string get_path();
 
     /// The full type literal of the c++ type including SharedVar.
-    /// e.g. "SharedVar<char*>" or "inexor::tree::MySharedClassName"
+    /// e.g. "SharedVar<char*>" or "inexor::rendering::Screen" or "SharedVar<int>"
     const char *get_type_cpp_full();
 
-    /// The c++ type literal of wrapped c++ primitive type ("char*"/"int"/"float").
+    /// The C++ template type of a SharedVar ("char*"/"int"/"float").
+    /// @note Works only for NODE_GLOBAL_VAR and NODE_CLASS_VAR (otherwise returns nullptr)
     const char *get_type_cpp_primitive();
 
-    /// The protocol buffers type for this node
+    /// The protocol buffers type for this node.
+    /// If its NODE_GLOBAL_VAR or NODE_CLASS_VAR, this is string/float/int32
+    /// If its NODE_CLASS_SINGLETON, this will return get_name_unique (e.g. "_inexor_rendering_Screen")
     const char *get_type_protobuf();
 
-    /// The ambigous(protobuf, c++,fullc++wrapped) numeric type.
+    /// The ambigous(protobuf, c++,fullc++wrapped) numeric type in case this is a NODE_GLOBAL_VAR or NODE_CLASS_VAR.
     int get_type_numeric();
 
-    /// The protocol buffers variable index; 0 if unset
-    uint64_t protoc_idx = 0;
+    /// In case this is a NODE_CLASS_SINGLETON this is a copy of the corresponding class definition.
+    shared_class_definition class_definition;
 
     /// A SharedOption instance used when declaring this variable.
     /// (used inside the constructor: "SharedVar<int> xy(0, NoSync()|Persistent(true))").
@@ -101,17 +146,26 @@ public:
     /// All options attached when instancing this variable.
     const std::vector<attached_so> attached_options;
 
-    /// All SharedVars MUST have a default_value (to compile).
+    /// All SharedVars MUST have a default_value to compile.
+    /// In case of a NODE_CLASS_SINGLETON this is empty.
     const std::string default_value;
 
     /// @param full_cpp_type_dcl The literal type declaration (e.g. "SharedVar<int>") from which the type_numeric will be deduced.
     ShTreeNode(const std::string &full_cpp_type_dcl, const std::string &full_cpp_name, const std::string &var_namespace_,
-               const std::string &default_val, std::vector<attached_so> &so_constructor_arguments);
+               const std::string &default_val, std::vector<attached_so> &so_constructor_arguments, ShTreeNode *parent = nullptr);
+
+    // 2. name of file containing the type declaration shared_class_definition class_instance_type
+    /// @param full_cpp_type_dcl The literal type declaration (e.g. "SharedVar<int>" or "inexor::rendering::Screen").
+    /// @param full_cpp_name The literal variable name (e.g. "mapmodel_amount").
+    /// @param var_namespace_ The namespace of the variable (e.g. "inexor::rendering").
+    ShTreeNode(const std::string &full_cpp_type, const std::string &cpp_name, const std::string &var_namespace_,
+               shared_class_definition class_definition_, std::vector<attached_so> &so_constructor_arguments);
 
     /// Known SharedVar types
     enum type_t
     {
-        t_cstring = 0,
+        t_none = -1, // e.g. a class instance
+        t_cstring,
         t_float,
         t_int
     };
@@ -145,24 +199,18 @@ private:
 
 
     // internal cached of the corresponding retrival function get_xy().
+    std::string full_type;
     std::string name_cpp_short;
     std::string var_namespace;
     std::string path;
 };
 
-struct shared_class_definition
+struct class_node : ShTreeNode
 {
-    std::vector<std::string> definition_namespace;
-    std::string class_name;
-
-    /// We REQUIRE the file to be defined in a cleanly includeable headerfile.
-    /// (There is no chance of using forward declarations of the class for the synchronisation code.)
-    std::string containing_header;
-
-    std::vector<ShTreeNode> nodes;
+  //  shared_class_definition class_definition;
 };
 
-struct global_var : ShTreeNode
+struct variable_node : ShTreeNode
 {
     // Changes:
     // extern directly not the containing class-instance
