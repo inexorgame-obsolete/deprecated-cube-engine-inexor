@@ -5,15 +5,6 @@
 #include <string>
 #include "inexor/util/StringFormatter.hpp"
 
-/// Visual studio does not support noexcept;
-/// INEXOR_NOEXCEPT only enable noexcept on platforms that
-/// support it
-#ifndef _MSC_VER
-    #define INEXOR_NOEXCEPT noexcept
-#else
-    #define INEXOR_NOEXCEPT
-#endif
-
 namespace inexor {
 namespace util {
 
@@ -67,7 +58,7 @@ public:
         return inexor::util::fmt << clazz() << ": " << what_;
     }
 
-    virtual const char* what() const INEXOR_NOEXCEPT {
+    virtual const char* what() const noexcept {
         return what_.c_str();
     }
 };
@@ -92,7 +83,7 @@ public:
         name(const char *s) : base(s) {}                   \
         name(const std::string &s) : base(s) {}            \
         name(const InexorException &e) : base(e) {}        \
-        virtual const char* clazz() INEXOR_NOEXCEPT {      \
+        virtual const char* clazz() noexcept {      \
             return #name ;                                 \
         }                                                  \
     }
