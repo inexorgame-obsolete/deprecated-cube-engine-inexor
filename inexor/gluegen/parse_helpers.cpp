@@ -1,6 +1,8 @@
 #include <pugiconfig.hpp>
 #include <pugixml.hpp>
 
+#include <boost/algorithm/string/replace.hpp>
+
 #include <vector>
 #include <string>
 #include <algorithm>
@@ -10,6 +12,22 @@ using namespace std;
 
 namespace inexor { namespace rpc { namespace gluegen {
 
+string unescape(string &str)
+{
+    using boost::algorithm::replace_all;
+    replace_all(str, "\\'", "\'"); // This is of course non-optimized since we have many roundtrips instead of just one.
+    replace_all(str, "\\\"", "\"");
+    replace_all(str, "\\?", "\?");
+    replace_all(str, "\\\\", "\\");
+    replace_all(str, "\\a", "\a");
+    replace_all(str, "\\b", "\b");
+    replace_all(str, "\\f", "\f");
+    replace_all(str, "\\n", "\n");
+    replace_all(str, "\\r", "\r");
+    replace_all(str, "\\t", "\t");
+    replace_all(str, "\\v", "\v");
+    return str;
+}
 
 // Move to utils
 // TODO add fast hash table algorithms to utils

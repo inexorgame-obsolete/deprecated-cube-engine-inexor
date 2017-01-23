@@ -7,6 +7,11 @@
 
 namespace inexor { namespace rpc { namespace gluegen {
 
+
+/// Replaces input containing escaped chars with their string representation (e.g. "\\n" with the newline character)
+/// Currently it supports: \' \" \? \\ \a \b \f \n \r \t \v . Search for Escape codes c++ to get their specific meaning.
+extern std::string unescape(std::string &str);
+
 /// This function workarounds doxygens faulty xml which contains '= whateverisbehind' as initializer (totally raw, no c++11 support it seems)
 extern void remove_leading_assign_sign(std::string &str);
 

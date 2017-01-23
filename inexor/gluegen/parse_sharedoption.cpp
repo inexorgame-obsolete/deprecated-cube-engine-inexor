@@ -45,9 +45,10 @@ name_defaultvalue_vector find_so_constructors_args(so_class_definition &opt, con
         {
             opt.constructor_has_default_values = true;
             std::string temp;
-            arg.default_value = parse_bracket(arg.default_value, temp, temp); // fu_cast<float>("{{index}}\n{{name}}") -> "{{index}}\n{{name}}"
-            remove_surrounding_quotes(arg.default_value);                                 // -> {{index}}'\''n'{{name}}
-            // TODO need escaping!                                            // -> {{index}}<newline_character>{{name}}
+            arg.default_value = parse_bracket(arg.default_value, temp, temp); // fu_cast<float>( "{{index}}\n{{name}}" ) -> "{{index}}\n{{name}}"
+            trim(arg.default_value);                                          // remove whitespace around "{{index}}\n{{name}}"
+            remove_surrounding_quotes(arg.default_value);                     // -> {{index}}'\''n'{{name}}
+            unescape(arg.default_value);                                      // replace "\\n" with newline char.
         }
         constructor_args.push_back(arg);
     }
