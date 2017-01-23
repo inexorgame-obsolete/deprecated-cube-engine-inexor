@@ -3,6 +3,7 @@
 
 #include <boost/algorithm/string/replace.hpp>
 
+#include <cctype>
 #include <vector>
 #include <string>
 #include <algorithm>
@@ -45,6 +46,12 @@ vector<string> split_by_delimiter(string input, string delimiter)
     }
     out.push_back(input.substr(last));
     return std::move(out);
+}
+
+void trim_floating_point_number_mark(string &str)
+{
+    int strlen = str.length();
+    if(strlen>=2 && str[strlen-1]=='f' && (std::isdigit(str[strlen-2])||str[strlen-2]=='.')) str.pop_back();
 }
 
 void remove_leading_assign_sign(string &str)
@@ -112,7 +119,7 @@ string parse_bracket(string input, string &before_bracket, string &after_bracket
 
     before_bracket = input.substr(0, first_bracket_pos);
     string content = input.substr(first_bracket_pos+1, closing_bracket_pos-first_bracket_pos-1);
-    after_bracket = input.substr(closing_bracket_pos);
+    after_bracket = input.substr(closing_bracket_pos+1);
     return content;
 }
 

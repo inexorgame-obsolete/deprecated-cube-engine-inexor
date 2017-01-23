@@ -71,6 +71,11 @@ int ShTreeNode::get_type_numeric()
     return type_numeric;
 }
 
+const std::string ShTreeNode::get_default_value()
+const {
+    return default_value;
+}
+
 
 std::string ShTreeNode::get_name_cpp_full()
 {

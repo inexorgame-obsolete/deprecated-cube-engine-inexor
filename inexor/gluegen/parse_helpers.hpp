@@ -12,6 +12,12 @@ namespace inexor { namespace rpc { namespace gluegen {
 /// Currently it supports: \' \" \? \\ \a \b \f \n \r \t \v . Search for Escape codes c++ to get their specific meaning.
 extern std::string unescape(std::string &str);
 
+/// Remove the last second last char is a digit (or a dot) and the last one is a 'f'.
+///
+/// This function removes the 'f' from a string like "0.0f", so it works in protobuf where you don't write floats this way.
+/// Only if the first char is a floating point number otherwise the string stays unaltered.
+extern void trim_floating_point_number_mark(std::string &str);
+
 /// This function workarounds doxygens faulty xml which contains '= whateverisbehind' as initializer (totally raw, no c++11 support it seems)
 extern void remove_leading_assign_sign(std::string &str);
 

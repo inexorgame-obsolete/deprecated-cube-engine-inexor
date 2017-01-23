@@ -1,15 +1,15 @@
-{{file_comment}} {{!
+{{{file_comment}}} {{{!
   This is the input mustache-template for our state syncing machines protocol (.proto) file.
   Instead of modifying the generated .proto you should modify this file.
   Generation takes place on each build of Inexor.
   For more info about how to use this template engine, read the manual of mustache (its easy).
-}}
+}}}
 
 syntax = "proto3";
 
 import "google/protobuf/descriptor.proto";
 
-package {{package}};
+package {{{package}}};
 
 service TreeService
 {
@@ -24,7 +24,7 @@ message TreeEvent
 {
   oneof key {
   // All global shared vars, be it in class singletons or global SharedVars
-{{#shared_vars}}    {{type_protobuf}} {{name_unique}} = {{index}}    [(path) = "{{path}}"];
+{{#shared_vars}}    {{{type_protobuf}}} {{{name_unique}}} = {{{index}}}    [(path) = "{{{path}}}", (default_value)="{{{default_value}}}"];
 {{/shared_vars}}
   }
 }
@@ -34,4 +34,7 @@ extend google.protobuf.FieldOptions
 {
   /// The path to the item in the tree.
   string path = 50000;
+  /// Proto3 does not support explicit default values, so we create it as self-defined option.
+  /// It needs to be statically typed, so we require anyone building a tree out of it, to convert it to the appropriate one.
+  string default_value = 50001;
 }

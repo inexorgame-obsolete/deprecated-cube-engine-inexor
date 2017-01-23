@@ -254,11 +254,18 @@ ShTreeNode parse_shared_var(const string type, const string name, string argsstr
         std::cout << "IGNORING SharedVar " << name << ": no defaultvalue given! (This code should not compile)" << std::endl;
         throw(std::exception("SharedVar constructor parameters missing!")); //(the defaultvalue is REQUIRED for SharedVars)
     }
+    string default_value, dummy;
+    string backup = parse_bracket(args[0], dummy, default_value);
+    if(default_value.empty()) default_value = std::move(backup);
+    trim(default_value);
+    trim_floating_point_number_mark(default_value);
+    remove_surrounding_quotes(default_value); // We need to statically type the default value, so there will always be " " around the def_value already in the message.
+
     if(args.size() == 1) // no options
-        return ShTreeNode(type, name, var_namespace, args[0], vector<ShTreeNode::attached_so>());
+        return ShTreeNode(type, name, var_namespace, default_value, vector<ShTreeNode::attached_so>());
 
     vector<ShTreeNode::attached_so> options = parse_shared_option_strings(args.back());
-    return ShTreeNode(type, name, var_namespace, args[0], options);
+    return ShTreeNode(type, name, var_namespace, default_value, options);
 }
 
 /// Takes xml variable nodes and outputs ShTreeNode sharedvar declarations.

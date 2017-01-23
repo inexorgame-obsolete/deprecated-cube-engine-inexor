@@ -133,6 +133,10 @@ public:
     /// The ambigous(protobuf, c++,fullc++wrapped) numeric type in case this is a NODE_GLOBAL_VAR or NODE_CLASS_VAR.
     int get_type_numeric();
 
+    /// All SharedVars MUST have a default_value to compile.
+    /// In case of a NODE_CLASS_SINGLETON this is empty.
+    const std::string get_default_value() const;
+
     /// In case this is a NODE_CLASS_SINGLETON this is a copy of the corresponding class definition.
     shared_class_definition class_definition;
 
@@ -150,9 +154,7 @@ public:
     /// All options attached when instancing this variable.
     const std::vector<attached_so> attached_options;
 
-    /// All SharedVars MUST have a default_value to compile.
-    /// In case of a NODE_CLASS_SINGLETON this is empty.
-    const std::string default_value;
+
 
     /// @param full_cpp_type_dcl The literal type declaration (e.g. "SharedVar<int>") from which the type_numeric will be deduced.
     ShTreeNode(const std::string &full_cpp_type_dcl, const std::string &full_cpp_name, const std::string &var_namespace_,
@@ -203,10 +205,7 @@ private:
 
 
     // internal cached of the corresponding retrival function get_xy().
-    std::string full_type;
-    std::string name_cpp_short;
-    std::string var_namespace;
-    std::string path;
+    std::string full_type, name_cpp_short, var_namespace, path, default_value;
 };
 
 struct class_node : ShTreeNode

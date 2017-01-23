@@ -152,6 +152,7 @@ TemplateData get_shared_var_templatedata(ShTreeNode &node, int index)
     curvariable.set("index", std::to_string(index));
     curvariable.set("name_unique", node.get_name_unique());
     curvariable.set("path", node.get_path());
+    curvariable.set("default_value", node.get_default_value());
     curvariable.set("name_cpp_full", node.get_name_cpp_full());
     curvariable.set("name_cpp_short", node.get_name_cpp_short());
 
