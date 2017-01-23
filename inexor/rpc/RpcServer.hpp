@@ -394,7 +394,7 @@ bool RpcServer<MSG_TYPE, U>::change_variable(MSG_TYPE &receivedval)
     */
 
     auto type = expected_type_itr->second;
-    inexor::tree::TreeNodeChanged msg;
+    inexor::tree::TreeEvent msg;
     msg.GetDescriptor();
     auto field = receivedval.GetDescriptor()->FindFieldByNumber(index);
 

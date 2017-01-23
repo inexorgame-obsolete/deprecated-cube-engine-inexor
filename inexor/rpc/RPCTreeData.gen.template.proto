@@ -17,12 +17,13 @@ service TreeService
   // 
   // Accepts and reads a stream of changed values from clientside, while responding with an (independent) stream of changed value messages itself.
   // The first messages will be the metadata.
-  rpc Synchronize(stream TreeNodeChanged) returns (stream TreeNodeChanged) {}
+  rpc Synchronize(stream TreeEvent) returns (stream TreeEvent) {}
 }
 
-message TreeNodeChanged
+message TreeEvent
 {
   oneof key {
+  // All global shared vars, be it in class singletons or global SharedVars
 {{#shared_vars}}    {{type_protobuf}} {{name_unique}} = {{index}}    [(path) = "{{path}}"];
 {{/shared_vars}}
   }

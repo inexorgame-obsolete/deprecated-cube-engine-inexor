@@ -19,9 +19,9 @@
 #include "{{definition_header_file}}"{{/shared_classes}}
 
 
-SUBSYSTEM_REGISTER(rpc, inexor::rpc::RpcSubsystem<{{namespace}}::TreeNodeChanged, {{namespace}}::TreeService::AsyncService>); // needs to be in no namespace!
+SUBSYSTEM_REGISTER(rpc, inexor::rpc::RpcSubsystem<{{namespace}}::TreeEvent, {{namespace}}::TreeService::AsyncService>); // needs to be in no namespace!
 
-using {{namespace}}::TreeNodeChanged;    // The message type.
+using {{namespace}}::TreeEvent;    // The message type.
 using {{namespace}}::TreeService;        // The RPC service (used only for instancing the RpcServer
 
 // List of extern (global) SharedVar declarations
@@ -43,7 +43,7 @@ void testrpcclient()
 {
     std::thread t([]
     {
-        TestRpcClient<TreeNodeChanged, TreeService> *guide = new TestRpcClient<TreeNodeChanged, TreeService>();
+        TestRpcClient<TreeEvent, TreeService> *guide = new TestRpcClient<TreeEvent, TreeService>();
 
         guide->Start();
     });
@@ -52,7 +52,7 @@ void testrpcclient()
 
 // We currently use a static function to signal the subsystem changes (since we cant yet SUBSYSTEM_GET it) .. so this is a temporary workaround.
 template <>
-std::vector<RpcServer<TreeNodeChanged, TreeService::AsyncService>::clienthandler> RpcServer<TreeNodeChanged, TreeService::AsyncService>::clients = {};
+std::vector<RpcServer<TreeEvent, TreeService::AsyncService>::clienthandler> RpcServer<TreeEvent, TreeService::AsyncService>::clients = {};
 
 
 void set_on_change_functions()
@@ -60,9 +60,9 @@ void set_on_change_functions()
     // TODO: Dont call by type but by reference if not a ptr: *or& -> {cpp_observer_type}
 {{#shared_vars}}        {{name_cpp_full}}.onChange.connect([](const {{type_cpp_primitive}} oldvalue, const {{type_cpp_primitive}} newvalue)
         {
-            {{namespace}}::TreeNodeChanged val;
+            {{namespace}}::TreeEvent val;
             val.set_{{name_unique}}(newvalue);
-            inexor::rpc::RpcServer<{{namespace}}::TreeNodeChanged, {{namespace}}::TreeService::AsyncService>::send_msg(std::move(val));
+            inexor::rpc::RpcServer<{{namespace}}::TreeEvent, {{namespace}}::TreeService::AsyncService>::send_msg(std::move(val));
         }
     );
 {{/shared_vars}}
