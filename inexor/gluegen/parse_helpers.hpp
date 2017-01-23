@@ -35,6 +35,10 @@ extern std::string parse_bracket(std::string input, std::string &before_bracket,
 
 
 /// Text can have subfields with more text + siblings text, usually you want all of them concatenated.
-std::string get_complete_xml_text(const pugi::xml_node parent, bool recursive = true);
+extern std::string get_complete_xml_text(const pugi::xml_node parent, bool recursive = true);
+
+/// Checks whether there is a child with a specific attribute with the same ID as the searchid.
+/// @return true if found.
+extern bool has_child_with_attribute(const pugi::xml_node &parent, std::string attribute_name, std::string attribute_value);
 
 } } } // namespace inexor::rpc::gluegen

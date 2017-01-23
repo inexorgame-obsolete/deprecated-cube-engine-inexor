@@ -137,4 +137,18 @@ string get_complete_xml_text(const xml_node parent, bool recursive)
     return text;
 }
 
+/// Checks recursively whether there is a child with a specific attribute with the same ID as the searchid.
+/// @return true if found.
+bool has_child_with_attribute(const xml_node &parent, string attribute_name, string attribute_value)
+{
+    for(pugi::xml_node child : parent.children())
+    {
+        if(child.attribute(attribute_name.c_str()).value() == attribute_value)
+            return true;
+        if(has_child_with_attribute(child, attribute_name, attribute_value))
+            return true;
+    }
+    return false;
+}
+
 } } } // namespace inexor::rpc::gluegen

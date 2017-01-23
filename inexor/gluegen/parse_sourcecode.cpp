@@ -324,6 +324,7 @@ vector<shared_class_definition> find_shared_class_trees()
     for(xml_node &compound_xml : class_xmls)
     {
         shared_class_definition def;
+        def.refid = compound_xml.attribute("id").value();
         string full_name =  get_complete_xml_text(compound_xml.child("compoundname")); // including the namespace e.g. inexor::rendering::screen
 
         vector<string> ns_and_name(split_by_delimiter(full_name, "::"));
@@ -332,6 +333,12 @@ vector<shared_class_definition> find_shared_class_trees()
         ns_and_name.pop_back();
         def.definition_namespace = join(ns_and_name, "::");
         def.containing_header = compound_xml.child("location").attribute("file").value();
+
+        if(contains(def.containing_header, ".c"))
+        {
+            std::cerr << "ERROR: SharedClasses can only be defined in cleanly include-able **header**-files"
+                << std::endl << "Class in question is " << full_name << std::endl;
+        }
 
         const unordered_map<string, string> init_list_map = get_class_initialized_member_map(compound_xml);
 
@@ -353,7 +360,9 @@ vector<shared_class_definition> find_shared_class_trees()
 /// @return a list of xml "memberdef" nodes (see comment below) + setting the namespace_of_vars parameter.
 /// @param namespace_of_vars will be set to the namespace of the xml document
 ///       (Doxygen splits source files for us, so all variables in one xml file will be in the same ns.)
-vector<xml_node> find_variable_instances(unique_ptr<xml_document> &xml, const std::string searchphrase, string &namespace_of_vars, bool exact = false)
+/// @param checkid if true the "type"-child (and its childs) are searched for an attribute refid matching the searchphrase,
+///        otherwise we check whether the "type"-child contains any text like the searchphrase.
+vector<xml_node> find_variable_instances(unique_ptr<xml_document> &xml, const std::string searchphrase, string &namespace_of_vars, bool checkid = false)
 {
     // parsing cpp-file xmls for SharedVars.
     //
@@ -378,8 +387,8 @@ vector<xml_node> find_variable_instances(unique_ptr<xml_document> &xml, const st
         {
             for(auto member : section.children("memberdef"))
             {
-                if((!exact && contains(get_complete_xml_text(member.child("definition")), searchphrase))
-                   || (exact && get_complete_xml_text(member.child("type")) == searchphrase))
+                if((!checkid && contains(get_complete_xml_text(member.child("definition")), searchphrase))
+                   || has_child_with_attribute(member.child("type"), "refid", searchphrase))
                     variable_nodes.push_back(member);
             }
         }
@@ -416,7 +425,7 @@ void find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tr
         // search for class instances
         for(auto shared_class_def : shared_class_defs)
         {
-            vector<xml_node> global_shared_var_xml_parts = find_variable_instances(xml, shared_class_def.class_name, ns_of_vars, true);
+            vector<xml_node> global_shared_var_xml_parts = find_variable_instances(xml, shared_class_def.refid, ns_of_vars, true);
             for(auto xml_part : global_shared_var_xml_parts)
                 parse_class_singleton(xml_part, ns_of_vars, shared_class_def, tree);
         }

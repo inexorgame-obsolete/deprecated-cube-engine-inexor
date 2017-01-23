@@ -56,6 +56,10 @@ struct shared_class_definition
     /// The name of the SharedClass e.g. "Screen".
     std::string class_name;
 
+    /// The reference identification number used by doxygen.
+    /// We can search for it and every instance contains this refid somewhere.
+    std::string refid;
+
     /// The namespace of the SharedClass definition e.g. "inexor::metainfo"
     /// @warning this could be some other namespace as the instances one!
     ///          for example you could have a inexor::metainfo::Screen inexor::rendering::screen1;
