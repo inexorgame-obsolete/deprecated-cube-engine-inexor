@@ -4,6 +4,7 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/crashreporter/CrashReporter.hpp"
 #include "inexor/util/Logging.hpp"
+#include "inexor/fpsgame/network_types.hpp"
 
 #define LOGSTRLEN 512
 
@@ -335,8 +336,8 @@ void disconnectmaster()
     lastupdatemaster = masterconnecting = masterconnected = 0;
 }
 
-SVARF(mastername, server::defaultmaster(), disconnectmaster());
-VARF(masterport, 1, server::masterport(), 0xFFFF, disconnectmaster());
+SVARF(mastername, INEXOR_DEFAULT_MASTER, disconnectmaster());
+VARF(masterport, 1, INEXOR_MASTER_PORT, MAX_POSSIBLE_PORT, disconnectmaster());
 
 ENetSocket connectmaster(bool wait)
 {
@@ -536,7 +537,7 @@ void checkserversockets()        // reply all server info requests
 
 VAR(serveruprate, 0, 0, INT_MAX);
 SVAR(serverip, "");
-VARF(serverport, 0, server::serverport(), 0xFFFF-1, { if(!serverport) serverport = server::serverport(); });
+VARF(serverport, 0, INEXOR_SERVER_PORT, MAX_POSSIBLE_PORT, { if(!serverport) serverport = server::serverport(); });
 
 #ifdef STANDALONE
 int curtime = 0, lastmillis = 0, elapsedtime = 0, totalmillis = 0;

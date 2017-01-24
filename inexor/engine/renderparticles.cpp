@@ -823,8 +823,8 @@ typedef varenderer<PT_TAPE> taperenderer;
 typedef varenderer<PT_TRAIL> trailrenderer;
 
 // eye space depth texture for soft particles, done at low res then blurred to prevent ugly jaggies
-VARP(depthfxfpscale, 1, 1<<12, 1<<16);
-VARP(depthfxscale, 1, 1<<6, 1<<8);
+VARP(depthfxfpscale, 1, 4096, 65536); //1<<12, 1<<16);
+VARP(depthfxscale, 1, 64, 256);       //1<<6, 1<<8);
 VARP(depthfxblend, 1, 16, 64);
 VARP(depthfxpartblend, 1, 8, 64);
 VAR(depthfxmargin, 0, 16, 64);

@@ -12,7 +12,7 @@ struct vboinfo
 hashtable<GLuint, vboinfo> vbos;
 
 VAR(debugvbo, 0, 0, 1);
-VARFN(vbosize, maxvbosize, 0, 1<<14, 1<<16, allchanged());
+VARFN(vbosize, maxvbosize, 0, 16384, 65536, allchanged()); // 1<<14, 1<<16, allchanged());
 
 enum
 {
