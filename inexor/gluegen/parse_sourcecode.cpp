@@ -241,35 +241,36 @@ vector<ShTreeNode::attached_so> parse_shared_option_strings(string options_list_
     return options;
 }
 
+/// Given the parameter list of a constructor, we set default_value and options plus we return the tokenized arg list.
+///
 /// @param argsstring is of= ("map", NoSync()|Persistent())          (defaultval, sharedoption|sharedoption|..)
-ShTreeNode parse_shared_var(const string type, const string name, string argsstring, std::string var_namespace)
+/// @param default_value will be set to the first param (in this example "map")
+/// @param options the sharedoptions given (the second argument of the constructor-string) will be parsed using parse_shared_option_strings().
+/// @warning throws if no default_value is given!
+const vector<string> parse_shared_var_constructor_argsstring(string name, string argsstring, string &default_value, vector<ShTreeNode::attached_so> &options)
 {
     remove_surrounding_brackets(argsstring);
-
     const vector<string> args(tokenize_arg_list(argsstring));
-    std::cout << "type: " << type << " name: " << name << " argsstring: " << argsstring << " (num: " << args.size() << ")" << std::endl;
 
-    if(args.size() < 1)
+    if(args.empty())
     {
         std::cout << "IGNORING SharedVar " << name << ": no defaultvalue given! (This code should not compile)" << std::endl;
         throw(std::exception("SharedVar constructor parameters missing!")); //(the defaultvalue is REQUIRED for SharedVars)
     }
-    string default_value, dummy;
+
+    string dummy;
     string backup = parse_bracket(args[0], dummy, default_value);
     if(default_value.empty()) default_value = std::move(backup);
     trim(default_value);
     trim_floating_point_number_mark(default_value);
     remove_surrounding_quotes(default_value); // We need to statically type the default value, so there will always be " " around the def_value already in the message.
 
-    if(args.size() == 1) // no options
-        return ShTreeNode(type, name, var_namespace, default_value, vector<ShTreeNode::attached_so>());
-
-    vector<ShTreeNode::attached_so> options = parse_shared_option_strings(args.back());
-    return ShTreeNode(type, name, var_namespace, default_value, options);
+    if(args.size() > 1) options = parse_shared_option_strings(args.back());
+    return args;
 }
 
 /// Takes xml variable nodes and outputs ShTreeNode sharedvar declarations.
-void parse_global_shared_var(const xml_node var_xml, std::string var_namespace, vector<ShTreeNode> &tree)
+void parse_global_shared_var(const xml_node var_xml, std::string var_namespace, vector<ShTreeNode *> &tree)
 {
     const string type = get_complete_xml_text(var_xml.child("type"));
     const string name = get_complete_xml_text(var_xml.child("name"));
@@ -277,11 +278,17 @@ void parse_global_shared_var(const xml_node var_xml, std::string var_namespace, 
 
     if(argsstring.empty()) return; // it is just an "extern" declaration
 
-    tree.push_back(parse_shared_var(type, name, argsstring, var_namespace));
+    vector<ShTreeNode::attached_so> options;
+    string default_value;
+    const vector<string>  args = parse_shared_var_constructor_argsstring(name, argsstring, default_value, options);
+
+    std::cout << "type: " << type << " name: " << name << " argsstring: " << argsstring << " (num: " << args.size() << ")" << std::endl;
+
+    tree.push_back(new ShTreeNode(type, name, var_namespace, default_value, options));
 }
 
 void parse_sharedvar_of_class(const xml_node var_xml, string var_namespace, const unordered_map<string, string> &class_constructor_init_map,
-                            vector<ShTreeNode> &tree)
+                            vector<ShTreeNode *> &tree)
 {
     const string type = get_complete_xml_text(var_xml.child("type"));
     const string name = get_complete_xml_text(var_xml.child("name"));
@@ -291,10 +298,16 @@ void parse_sharedvar_of_class(const xml_node var_xml, string var_namespace, cons
         return;
     //    throw(std::exception("Class has Sharedvar member, but it's missing in the constructors initializer list.")); // TODO shall we ignore it? it shouldnt compile.
 
-    tree.push_back(parse_shared_var(type, name, argsstring_itr->second , var_namespace));
+    vector<ShTreeNode::attached_so> options;
+    string default_value;
+    const vector<string>  args = parse_shared_var_constructor_argsstring(name, argsstring_itr->second, default_value, options);
+
+    std::cout << "Class member: type: " << type << " name: " << name << " argsstring: " << argsstring_itr->second << " (num: " << args.size() << ")" << std::endl;
+
+    tree.push_back(new ShTreeNode(type, name, var_namespace, default_value, options));
 }
 
-void parse_class_singleton(const xml_node var_xml, std::string var_namespace, shared_class_definition class_definition, vector<ShTreeNode> &tree)
+void parse_class_singleton(const xml_node var_xml, std::string var_namespace, shared_class_definition class_definition, vector<ShTreeNode *> &tree)
 {
     const string type = get_complete_xml_text(var_xml.child("type"));
     const string name = get_complete_xml_text(var_xml.child("name"));
@@ -304,13 +317,17 @@ void parse_class_singleton(const xml_node var_xml, std::string var_namespace, sh
     // TODO: do class instances get here for extern declarations?
 
     vector<ShTreeNode::attached_so> options; // = parse_shared_option_strings(args.back()); TODO
-    ShTreeNode class_node(type, name, var_namespace, class_definition, options);
-    for(ShTreeNode &child : class_definition.nodes)
+    ShTreeNode *class_node = new ShTreeNode(type, name, var_namespace, class_definition, options);
+
+    //ShTreeNode &pnode = tree.back(); // We need to work on the same instance, not a copy! of the class_node, otherwise we can't point to its address.
+
+    for(ShTreeNode *child : class_definition.nodes)
     {
-        child.parent = &class_node;
         // TODO sollte rekursiv sein wenn type = child
-        class_node.children.push_back(child);
+        class_node->children.push_back(new ShTreeNode(child));
+        class_node->children.back()->parent = class_node;
     }
+    class_node->set_all_childrens_parent_entry();
     tree.push_back(class_node);
 }
 
@@ -349,7 +366,7 @@ vector<shared_class_definition> find_shared_class_trees()
 
         const unordered_map<string, string> init_list_map = get_class_initialized_member_map(compound_xml);
 
-        for(auto var_xml : find_class_member_vars(compound_xml))
+        for(xml_node &var_xml : find_class_member_vars(compound_xml))
         {
             string type = get_complete_xml_text(var_xml.child("type"));
             if(!contains(type, "SharedVar")) continue; // TODO recursive logic
@@ -403,7 +420,7 @@ vector<xml_node> find_variable_instances(unique_ptr<xml_document> &xml, const st
     return variable_nodes;
 }
 
-void find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode> &tree)
+void find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode *> &tree)
 {
   try {
     // sorting input files:

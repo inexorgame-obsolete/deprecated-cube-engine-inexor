@@ -26,15 +26,16 @@ const std::unordered_map<std::string, ShTreeNode::type_t> ShTreeNode::type_cpp_t
     {"SharedVar<int>", ShTreeNode::t_int}
 };
 
+
 ShTreeNode::ShTreeNode(const std::string &full_cpp_type, const std::string &cpp_name, const std::string &var_namespace_,
-                       const std::string &default_val, std::vector<attached_so> &so_constructor_arguments, ShTreeNode *parent_)
+                       const std::string &default_val, std::vector<attached_so> &so_constructor_arguments)
                           : name_cpp_short(cpp_name), var_namespace(var_namespace_), full_type(full_cpp_type),
-                            default_value(default_val), attached_options(so_constructor_arguments), parent(parent_)
+                            default_value(default_val), attached_options(so_constructor_arguments)
 {
     std::string type_templ_short(full_cpp_type);
     replace_all(type_templ_short, " ", "");
     type_numeric = type_cpp_template_to_numeric.at(type_templ_short);
-    node_type = parent ? NODE_CLASS_VAR : NODE_GLOBAL_VAR;
+    node_type = NODE_GLOBAL_VAR;
 }
 
 ShTreeNode::ShTreeNode(const std::string &full_cpp_type, const std::string &cpp_name, const std::string &var_namespace_,
@@ -46,6 +47,33 @@ ShTreeNode::ShTreeNode(const std::string &full_cpp_type, const std::string &cpp_
     type_numeric = t_none;
 }
 
+ShTreeNode::ShTreeNode(const ShTreeNode *old)
+    : name_cpp_short(old->name_cpp_short), var_namespace(old->var_namespace), full_type(old->full_type),
+    class_definition(old->class_definition), attached_options(old->attached_options), // TODO attached options should differ
+    node_type(old->node_type), type_numeric(old->type_numeric), default_value(old->default_value)
+{
+    // alloc new children
+    for(ShTreeNode *child : old->children)
+    {
+        children.push_back(new ShTreeNode(child));
+        children.back()->parent = this;
+    }
+}
+
+void ShTreeNode::set_node_parent(ShTreeNode *parent)
+{
+    this->parent = parent;
+    node_type = NODE_CLASS_VAR;
+}
+
+void ShTreeNode::set_all_childrens_parent_entry(bool recursively)
+{
+    for(ShTreeNode *child : children)
+    {
+        child->set_node_parent(this);
+        if(recursively) child->set_all_childrens_parent_entry(true);
+    }
+}
 
 const char *ShTreeNode::get_type_cpp_full()
 {
@@ -115,6 +143,7 @@ std::string ShTreeNode::get_path()
     if(path.empty())
     {
         path = "/" + replace_all_copy(get_name_cpp_full(), "::", "/");
+        replace_all(path, ".", "/");
         replace_all(path, "/inexor/", "/");
     }
     return path;

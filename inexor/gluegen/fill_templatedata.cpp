@@ -177,8 +177,7 @@ void add_node_templatedata(ShTreeNode &node, int &index, TemplateData &templdata
         {
             for(auto child : node.children)
             {
-                add_node_templatedata(child, index, templdata);
-                index++;
+                add_node_templatedata(*child, index, templdata);
             }
             break;
         }
@@ -200,7 +199,7 @@ TemplateData get_shared_class_templatedata(ShTreeNode &node)
     return curclass;
 }
 
-TemplateData fill_templatedata(vector<ShTreeNode> &tree, const string &ns)
+TemplateData fill_templatedata(vector<ShTreeNode *> &tree, const string &ns)
 {
     TemplateData tmpldata{TemplateData::Type::Object};
 
@@ -217,18 +216,18 @@ TemplateData fill_templatedata(vector<ShTreeNode> &tree, const string &ns)
 
     // The protocol buffers variable index
     int index = 1;
-    for(ShTreeNode &node : tree)
+    for(ShTreeNode *node : tree)
     {
-        add_node_templatedata(node, index, sharedvars);
+        add_node_templatedata(*node, index, sharedvars);
     }
     tmpldata.set("shared_vars", sharedvars);
 
     TemplateData sharedclasses{TemplateData::Type::List};
 
-    for(ShTreeNode &node : tree)
+    for(ShTreeNode *node : tree)
     {
-        if(node.node_type!=ShTreeNode::NODE_CLASS_SINGLETON) continue;
-        sharedclasses << get_shared_class_templatedata(node);
+        if(node->node_type!=ShTreeNode::NODE_CLASS_SINGLETON) continue;
+        sharedclasses << get_shared_class_templatedata(*node);
     }
     tmpldata.set("shared_classes", sharedclasses);
 

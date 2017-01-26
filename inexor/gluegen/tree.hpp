@@ -69,7 +69,7 @@ struct shared_class_definition
     /// (There is no chance of using forward declarations of the class for the synchronisation code.)
     std::string containing_header;
 
-    std::vector<ShTreeNode> nodes;
+    std::vector<ShTreeNode *> nodes;
 };
 
 class ShTreeNode {
@@ -89,7 +89,7 @@ public:
     ShTreeNode *parent = nullptr;
 
     /// If this is a NODE_CLASS_SINGLETON, this is a subtree containing all SharedVars or instanced subclasses.
-    std::vector<ShTreeNode> children;
+    std::vector<ShTreeNode *> children;
 
     /// The canonical name (including ::) of the c++ variable instance.
     /// If its NODE_GLOBAL_VAR, this is e.g. "::inexor::rendering::num_screens"
@@ -154,11 +154,20 @@ public:
     /// All options attached when instancing this variable.
     const std::vector<attached_so> attached_options;
 
+    /// Tell this NODE_GLOBAL_VAR about its parent, to make it a NODE_CLASS_VAR.
+    /// So basically you do this in a subsequent run for all NODE_CLASS_SINGLETONs children.
+    void set_node_parent(ShTreeNode *parent);
 
+    /// If this is a NODE_CLASS_SINGLETON we do call set_node_parent for any child.
+    /// @warning you need to be sure that this node and all childs are already on the memory place they belong,
+    ///          if you're pushing ShTreeNodes to a vector not operating on the heap, make sure you call this function **afterwards**.
+    void set_all_childrens_parent_entry(bool recursively = true);
 
+    /// Creates a Node of type NODE_GLOBAL_VAR.
+    /// Use set_node_parent to change it to a NODE_CLASS_VAR.
     /// @param full_cpp_type_dcl The literal type declaration (e.g. "SharedVar<int>") from which the type_numeric will be deduced.
     ShTreeNode(const std::string &full_cpp_type_dcl, const std::string &full_cpp_name, const std::string &var_namespace_,
-               const std::string &default_val, std::vector<attached_so> &so_constructor_arguments, ShTreeNode *parent = nullptr);
+               const std::string &default_val, std::vector<attached_so> &so_constructor_arguments);
 
     // 2. name of file containing the type declaration shared_class_definition class_instance_type
     /// @param full_cpp_type_dcl The literal type declaration (e.g. "SharedVar<int>" or "inexor::rendering::Screen").
@@ -166,6 +175,10 @@ public:
     /// @param var_namespace_ The namespace of the variable (e.g. "inexor::rendering").
     ShTreeNode(const std::string &full_cpp_type, const std::string &cpp_name, const std::string &var_namespace_,
                shared_class_definition class_definition_, std::vector<attached_so> &so_constructor_arguments);
+
+    /// Copy constructor, creates a new subtree similar of all childs of the given node.
+    /// So this allocates all children again on the heap.
+    ShTreeNode(const ShTreeNode *old);
 
     /// Known SharedVar types
     enum type_t

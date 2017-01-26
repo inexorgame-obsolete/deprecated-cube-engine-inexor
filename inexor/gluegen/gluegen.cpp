@@ -83,7 +83,7 @@ int main(int argc, const char **argv)
 
     // Read the list of variables
 
-    std::vector<ShTreeNode> tree;
+    std::vector<ShTreeNode *> tree;
 
     find_shared_decls(xml_AST_file, tree); // fill the tree vector
 
@@ -94,6 +94,10 @@ int main(int argc, const char **argv)
 
     // Write cpp files
     render_cpp_tree_data(cpp_file, cpp_template, tree, templdata);
+
+    // Clean up allocated tree nodes.
+    // NOTE: Removed, were being bad guys and do not explicitly delete it but let the OS do it,
+    //                since our destructors are empty. Do not follow this practice in case you dont know why were allowed to be lazy here.
 
     return 0;
 }

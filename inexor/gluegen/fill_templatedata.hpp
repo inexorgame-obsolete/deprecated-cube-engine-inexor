@@ -10,4 +10,5 @@
 using MustacheTemplate = Kainjow::BasicMustache<std::string>;
 using TemplateData = MustacheTemplate::Data;
 
-extern TemplateData fill_templatedata(std::vector<inexor::rpc::gluegen::ShTreeNode> &tree, const std::string &ns);
+extern TemplateData fill_templatedata(std::vector<inexor::rpc::gluegen::ShTreeNode *> &tree, const std::string &ns);
+
