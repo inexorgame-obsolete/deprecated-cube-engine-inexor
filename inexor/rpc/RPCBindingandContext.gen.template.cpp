@@ -15,6 +15,9 @@
 #include "inexor/rpc/RpcSubsystem.hpp"
 #include "inexor/rpc/RpcTestClient.hpp"
 
+{{#shared_classes}}
+#include "{{definition_header_file}}"{{/shared_classes}}
+
 
 SUBSYSTEM_REGISTER(rpc, inexor::rpc::RpcSubsystem<{{namespace}}::TreeNodeChanged, {{namespace}}::TreeService::AsyncService>); // needs to be in no namespace!
 
@@ -23,16 +26,15 @@ using {{namespace}}::TreeService;        // The RPC service (used only for insta
 
 // List of extern (global) SharedVar declarations
 {{#shared_vars}}{{#is_global}}{{namespace_sep_open}}
-    extern {{type_cpp_full}} {{name_cpp_short}};
+    extern {{{type_cpp_full}}} {{name_cpp_short}};
 {{namespace_sep_close}}
 {{/is_global}}{{/shared_vars}}
 
 // List of extern SharedClass declarations
 {{#shared_classes}}{{namespace_sep_open}}
-    extern {{type_parent_cpp_full}} {{name_parent_cpp_short}}; // e.g. extern inexor::rendering::Screen screen2; //TODO
+    extern {{{type_parent_cpp_full}}} {{name_parent_cpp_short}}; // e.g. extern inexor::rendering::Screen screen2; //TODO
 {{namespace_sep_close}}
 {{/shared_classes}}
-
 
 namespace inexor { namespace rpc {
 

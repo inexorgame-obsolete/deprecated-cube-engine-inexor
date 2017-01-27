@@ -9,14 +9,50 @@
 #include "inexor/util/Subsystem.hpp"
 #include "inexor/crashreporter/CrashReporter.hpp"
 #include "inexor/util/Logging.hpp"
+#include "inexor/rpc/SharedClass.hpp"
 
-/// extern functions and data here
 namespace inexor {
 namespace rpc {
     extern void testrpcclient();
     COMMAND(testrpcclient, "");
 }
 }
+
+//template<typename T>
+//class SharedList
+//{
+//    size_t length = 0;
+//  public:
+//    void push_back(SharedVar<T> &x)
+//    {
+//        SharedVar.connect([]{ int id = length;});
+//        length++;
+//    }
+//};
+namespace inexor { namespace rendering {
+
+player player1;
+
+} } // ns inexor::rendering
+
+inexor::rendering::player player2;
+
+using namespace inexor;
+
+rendering::player player3;
+
+//void set_player_weapon1_ammo(int value)
+//{
+//    inexor::rendering::player1.weapons[1].ammo = 0;
+//}
+//
+//void connect_player_weapon_ammo_change(int weaponsid)
+//{
+//    inexor::rendering::player1.weapons[weaponsid].ammo.connect([int oldvalue, int newvalue]
+//    {
+//        
+//    });
+//}
 
 using namespace inexor::sound;
 using namespace inexor::io;
