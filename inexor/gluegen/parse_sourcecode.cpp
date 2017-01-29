@@ -3,6 +3,7 @@
 #include <sstream>
 #include <vector>
 #include <string>
+#include <stdexcept>
 
 #include <boost/algorithm/string.hpp>
 
@@ -255,7 +256,7 @@ const vector<string> parse_shared_var_constructor_argsstring(string name, string
     if(args.empty())
     {
         std::cout << "IGNORING SharedVar " << name << ": no defaultvalue given! (This code should not compile)" << std::endl;
-        throw(std::exception("SharedVar constructor parameters missing!")); //(the defaultvalue is REQUIRED for SharedVars)
+        throw(std::runtime_error("SharedVar constructor parameters missing!")); //(the defaultvalue is REQUIRED for SharedVars)
     }
 
     string dummy;
@@ -296,7 +297,7 @@ void parse_sharedvar_of_class(const xml_node var_xml, string var_namespace, cons
     auto argsstring_itr = class_constructor_init_map.find(name);
     if(argsstring_itr == class_constructor_init_map.end())
         return;
-    //    throw(std::exception("Class has Sharedvar member, but it's missing in the constructors initializer list.")); // TODO shall we ignore it? it shouldnt compile.
+    //    throw(std::runtime_error("Class has Sharedvar member, but it's missing in the constructors initializer list.")); // TODO shall we ignore it? it shouldnt compile.
 
     vector<ShTreeNode::attached_so> options;
     string default_value;

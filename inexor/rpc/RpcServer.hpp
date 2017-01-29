@@ -304,7 +304,7 @@ void RpcServer<MSG_TYPE, U>::process_queue()
         // TODO: adapt blocking time to the time budget and whether or not writes are outstanding
         CompletionQueue::NextStatus stat = cq->AsyncNext((void **)(&callback_value), &no_internal_grpc_error, gpr_inf_past(GPR_CLOCK_REALTIME));
 
-        //if(!) break;// throw std::exception("GRPC had an internal error: Shutting down.");
+        //if(!) break;// throw std::runtime_error("GRPC had an internal error: Shutting down.");
 
         if(no_internal_grpc_error && stat ==  CompletionQueue::NextStatus::GOT_EVENT)
             handle_queue_event(callback_value);
