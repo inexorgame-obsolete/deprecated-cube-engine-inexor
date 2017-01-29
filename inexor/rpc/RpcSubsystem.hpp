@@ -41,11 +41,12 @@ public:
         serv = new RpcServer<MSG_TYPE, ASYNC_SERVICE_TYPE>(full_address.c_str());
         spdlog::get("global")->info("RPC server listening on {0}", serv->server_address);
         set_on_change_functions();
+        serv->block_until_initialized();
     }
 
     virtual void tick() override
     {
-        serv->process_queue();
+        if(serv) serv->process_queue();
     }
 };
 

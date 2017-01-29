@@ -198,7 +198,6 @@ public:
                 e.second->is_initialized = true;
             }
         }
-        tick();
     }
 
     /// Execute code on the next tick.

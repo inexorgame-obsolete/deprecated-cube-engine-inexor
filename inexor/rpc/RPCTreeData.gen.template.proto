@@ -23,7 +23,8 @@ service TreeService
 /// hardcoded events which are not generated but required for the client server to be handled in an uniform way.
 enum GeneralTreeEvents
 {
-  FINISHED_TREE_INTRO_SEND = 0;
+  NO_EVENT = 0;
+  FINISHED_TREE_INTRO_SEND = 1;
 }
 
 message TreeEvent

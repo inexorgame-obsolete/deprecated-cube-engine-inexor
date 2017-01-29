@@ -7,6 +7,8 @@
 #include <string>
 #include <exception>
 #include <queue>
+#include <functional>
+#include <chrono>
 
 #include <grpc/grpc.h>
 #include <grpc++/grpc++.h>
@@ -69,6 +71,10 @@ class RpcServer
     std::unique_ptr<grpc::ServerCompletionQueue> cq;
 
 public:
+
+    /// As soon as the tree arrived from the first client, this will be set to true.
+    bool initialized = false;
+
     class clienthandler
     {
         /// The stream we write into / receive data from (asynchronously).
@@ -130,6 +136,10 @@ public:
     /// In case of errors it throws a std::exception (TODO).
     void process_queue();
 
+    /// This is used during the startup, we process_queue() until we receive a special event.
+    /// After 10 seconds of not receiving this event it throws a runtime error.
+    void block_until_initialized();
+
     /// Send any variable changes in the core to all clients.
     /// For broadcasting purpose param excluded_id is given: you don't want to send back a change you just received from a client.
     static void send_msg(MSG_TYPE &&msg, int excluded_id = -1)
@@ -160,7 +170,7 @@ private:
 
     void kickoff_writes();
 
-    void handle_queue_event(callback_event *encoded_callback);
+    void handle_queue_event(callback_event *encoded_callback, bool broadcast, std::function<void(MSG_TYPE &)> receive_handler);
 
     int pick_unused_id();
     bool change_variable(MSG_TYPE &receivedval);
@@ -250,7 +260,7 @@ void RpcServer<MSG_TYPE, U>::handle_new_connection()
     connect_slot = nullptr;
     if(clients.size() < MAX_RPC_CLIENTS) open_connect_slot();
 
-    send_all_vars(); // TODO: we should send those only to the newly connected client.
+    //send_all_vars(); // TODO: we should send those only to the newly connected client.
 }
 
 template<typename MSG_TYPE, typename U> inline
@@ -307,7 +317,9 @@ void RpcServer<MSG_TYPE, U>::process_queue()
         //if(!) break;// throw std::runtime_error("GRPC had an internal error: Shutting down.");
 
         if(no_internal_grpc_error && stat ==  CompletionQueue::NextStatus::GOT_EVENT)
-            handle_queue_event(callback_value);
+            handle_queue_event(callback_value, true, [=](MSG_TYPE &msg) {
+                    this->change_variable(msg);
+                });
         else if(stat == CompletionQueue::NextStatus::TIMEOUT)
         {
             if(!any_writes_outstanding()) break;
@@ -320,8 +332,49 @@ void RpcServer<MSG_TYPE, U>::process_queue()
     }
 }
 
+template<typename MSG_TYPE, typename ASYNC_SERVICE_TYPE>
+inline void RpcServer<MSG_TYPE, ASYNC_SERVICE_TYPE>::block_until_initialized()
+{
+    if(initialized) return; // We only init from the first client.
+
+    using grpc::CompletionQueue;
+
+    auto time_start = std::chrono::steady_clock::now();
+    while(initialized!=true)
+    {
+        if(std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now()-time_start).count()> 10)
+        {
+            std::string error_message();
+            spdlog::get("global")->error("[GRPC Server] No startup synchronisation finished event received after 10 seconds."); 
+            break;
+        }
+
+        callback_event *callback_value;
+        bool no_internal_grpc_error = false;
+
+        CompletionQueue::NextStatus stat = cq->AsyncNext((void **)(&callback_value), &no_internal_grpc_error, gpr_inf_past(GPR_CLOCK_REALTIME));
+
+        if(no_internal_grpc_error && stat ==  CompletionQueue::NextStatus::GOT_EVENT)
+        {
+            handle_queue_event(callback_value, false, [=](MSG_TYPE &msg) {
+               if(msg.general_event() == 1) // FINISHED_TREE_INTRO_SEND
+               {
+                   initialized = true;
+                   return;
+               }
+                this->change_variable(msg);
+            });
+        }
+        else if(stat == CompletionQueue::NextStatus::SHUTDOWN)
+        {
+            std::string error_message("[GRPC Server] Completion Queue Shutdown status received (in init)..");
+            throw std::runtime_error(error_message);
+        }
+    }
+}
+
 template<typename MSG_TYPE, typename U> inline
-void RpcServer<MSG_TYPE, U>::handle_queue_event(callback_event *encoded_callback)
+void RpcServer<MSG_TYPE, U>::handle_queue_event(callback_event *encoded_callback, bool broadcast, std::function<void(MSG_TYPE &)> receive_handler)
 {
     switch(encoded_callback->type)
     {
@@ -331,8 +384,8 @@ void RpcServer<MSG_TYPE, U>::handle_queue_event(callback_event *encoded_callback
         if(!ci) break; // TODO we should better process its last messages, but we dont have the clients read_buffer anymore.
 
         MSG_TYPE &msg = ci->get_read_result();
-        change_variable(msg);
-        send_msg(std::move(msg), ci->id); //broadcast changes from one client to other clients.
+        receive_handler(msg);
+        if(broadcast) send_msg(std::move(msg), ci->id); //broadcast changes from one client to other clients.
         break;
     }
     case E_WRITE:
@@ -394,8 +447,6 @@ bool RpcServer<MSG_TYPE, U>::change_variable(MSG_TYPE &receivedval)
     */
 
     auto type = expected_type_itr->second;
-    inexor::tree::TreeEvent msg;
-    msg.GetDescriptor();
     auto field = receivedval.GetDescriptor()->FindFieldByNumber(index);
 
     switch(type)
