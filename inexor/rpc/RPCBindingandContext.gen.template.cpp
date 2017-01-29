@@ -32,7 +32,7 @@ using {{namespace}}::TreeService;        // The RPC service (used only for insta
 
 // List of extern SharedClass declarations
 {{#shared_classes}}{{namespace_sep_open}}
-    extern {{{type_parent_cpp_full}}} {{name_parent_cpp_short}}; // e.g. extern inexor::rendering::Screen screen2; //TODO
+    extern {{{type_parent_cpp_full}}} {{name_parent_cpp_short}};
 {{namespace_sep_close}}
 {{/shared_classes}}
 

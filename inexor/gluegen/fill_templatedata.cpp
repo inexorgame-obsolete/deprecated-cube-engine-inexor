@@ -215,7 +215,7 @@ TemplateData fill_templatedata(vector<ShTreeNode *> &tree, const string &ns)
     TemplateData sharedvars{TemplateData::Type::List};
 
     // The protocol buffers variable index
-    int index = 1;
+    int index = 21;
     for(ShTreeNode *node : tree)
     {
         add_node_templatedata(*node, index, sharedvars);

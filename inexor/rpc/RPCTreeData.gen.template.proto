@@ -20,9 +20,18 @@ service TreeService
   rpc Synchronize(stream TreeEvent) returns (stream TreeEvent) {}
 }
 
+/// hardcoded events which are not generated but required for the client server to be handled in an uniform way.
+enum GeneralTreeEvents
+{
+  FINISHED_TREE_INTRO_SEND = 0;
+}
+
 message TreeEvent
 {
   oneof key {
+  // the hardcoded events
+    GeneralTreeEvents general_event = 20;
+
   // All global shared vars, be it in class singletons or global SharedVars
 {{#shared_vars}}    {{{type_protobuf}}} {{{name_unique}}} = {{{index}}}    [(path) = "{{{path}}}", (default_value)="{{{default_value}}}"];
 {{/shared_vars}}
