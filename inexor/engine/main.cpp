@@ -9,7 +9,7 @@
 #include "inexor/util/Subsystem.hpp"
 #include "inexor/crashreporter/CrashReporter.hpp"
 #include "inexor/util/Logging.hpp"
-#include "inexor/rpc/SharedClass.hpp"
+#include "inexor/rpc/SharedTree.hpp"
 
 namespace inexor {
 namespace rpc {
@@ -40,6 +40,23 @@ inexor::rendering::player player2;
 using namespace inexor;
 
 rendering::player player3;
+
+void testfunction(int init)
+{
+
+}
+
+void testfunction(float init)
+{
+
+}
+
+void testfunction(char *init, string num2)
+{
+
+}
+
+SharedFunc(testfunction,)
 
 //void set_player_weapon1_ammo(int value)
 //{
@@ -109,6 +126,8 @@ void quit()
     exit(EXIT_SUCCESS);
 }
 COMMAND(quit, "");
+
+SharedFunc(quit,);
 
 /// Fatal crash: log/display crash message and clean up SDL.
 void fatal(const char *s, ...)

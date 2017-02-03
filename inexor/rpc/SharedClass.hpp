@@ -1,4 +1,5 @@
 #pragma once
+#include "inexor/rpc/SharedVar.hpp"
 
 /// All classes deriving from this class get detected by our reflection system InexorGlueGen.
 class SharedClass

@@ -35,7 +35,7 @@ string unescape(string &str)
 // TODO add fast std::string replacement to utils
 // TODO add useful string formatter to utils
 // merge log stuff into one file in utils
-vector<string> split_by_delimiter(string input, string delimiter)
+vector<string> split_by_delimiter(const string input, const string delimiter)
 {
     vector<string> out;
     size_t last = 0; size_t next = 0;
@@ -45,6 +45,30 @@ vector<string> split_by_delimiter(string input, string delimiter)
         last = next + delimiter.size();
     }
     out.push_back(input.substr(last));
+    return std::move(out);
+}
+
+vector<string> split_in_alphanumeric_parts(const string input)
+{
+    vector<string> out;
+    int last_non_valid = -1;
+    bool last_was_alphanum = false;
+    for(int i = 0; i < input.length(); i++)
+    {
+        const char &curchar = input[i];
+        if(!isalnum(curchar) && curchar != '_')
+        {
+            if(last_was_alphanum)
+            {
+                out.push_back(input.substr(last_non_valid+1, i-last_non_valid-1));
+                last_non_valid = i;
+                last_was_alphanum = false;
+            }
+            else last_non_valid = i;
+        }
+        else last_was_alphanum = true;
+    }
+    if(last_was_alphanum) out.push_back(input.substr(last_non_valid+1));
     return std::move(out);
 }
 
@@ -123,7 +147,7 @@ string parse_bracket(string input, string &before_bracket, string &after_bracket
     return content;
 }
 
-vector<string> tokenize_arg_list(string input)
+vector<string> tokenize_arg_list(const string input)
 {
     vector<string> tokens;
 

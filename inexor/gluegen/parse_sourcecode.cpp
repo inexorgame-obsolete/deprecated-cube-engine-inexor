@@ -244,7 +244,7 @@ vector<ShTreeNode::attached_so> parse_shared_option_strings(string options_list_
 
 /// Given the parameter list of a constructor, we set default_value and options plus we return the tokenized arg list.
 ///
-/// @param argsstring is of= ("map", NoSync()|Persistent())          (defaultval, sharedoption|sharedoption|..)
+/// @param argsstring is formed like ("map", NoSync()|Persistent())       so its (defaultval, sharedoption|sharedoption|..)
 /// @param default_value will be set to the first param (in this example "map")
 /// @param options the sharedoptions given (the second argument of the constructor-string) will be parsed using parse_shared_option_strings().
 /// @warning throws if no default_value is given!
@@ -259,6 +259,7 @@ const vector<string> parse_shared_var_constructor_argsstring(string name, string
         throw(std::runtime_error("SharedVar constructor parameters missing!")); //(the defaultvalue is REQUIRED for SharedVars)
     }
 
+    // use the thing after the first bracket as default_value, if there is nothing
     string dummy;
     string backup = parse_bracket(args[0], dummy, default_value);
     if(default_value.empty()) default_value = std::move(backup);
@@ -294,6 +295,7 @@ void parse_sharedvar_of_class(const xml_node var_xml, string var_namespace, cons
     const string type = get_complete_xml_text(var_xml.child("type"));
     const string name = get_complete_xml_text(var_xml.child("name"));
 
+    // The argsstring (containing the shared options) is in the initilizer list of the constructor of the class, so we look it up.
     auto argsstring_itr = class_constructor_init_map.find(name);
     if(argsstring_itr == class_constructor_init_map.end())
         return;
@@ -330,6 +332,29 @@ void parse_class_singleton(const xml_node var_xml, std::string var_namespace, sh
     }
     class_node->set_all_childrens_parent_entry();
     tree.push_back(class_node);
+}
+
+/// We use the SharedFunc dummy boolean to find out about the name of the function.
+///
+/// The sharedoptions are saved in the initilzers list:
+/// "<initializer>= function_args_dummy(  )...</initializer>"
+/// @return the function name.
+/// @param options in this we return the shared options attached to the variable.
+string get_shared_func_name_from_dummy(const xml_node var_xml, vector<ShTreeNode::attached_so> &options)
+{
+    const string dummy_name = get_complete_xml_text(var_xml.child("name"));
+    string initstring = get_complete_xml_text(var_xml.child("initializer"));
+
+    // we receive sth like static bool __function_dummy_<functionname> = function_args_dummy("<functionname>", options)
+    if(initstring.empty())
+        std::cout << "WARNING: Could not find initializer list of SharedFunc with the dummy " << dummy_name << std::endl;
+    string dummy; // not in used
+    initstring = parse_bracket(initstring, dummy, dummy);    // TODO better api
+
+    string name;
+    parse_shared_var_constructor_argsstring(name, initstring, name, options); // We missuse this function for "<functionname>", options
+    // TODO more generic name.
+    return name;
 }
 
 // TODO all nodes are const<-
@@ -380,7 +405,7 @@ vector<shared_class_definition> find_shared_class_trees()
     return classes;
 }
 
-/// Finds all shared variable in a (parsed) xml file which contain a specific searchphrase.
+/// Finds all shared variables or functions in a (parsed) xml file which contain a specific searchphrase.
 ///
 /// @return a list of xml "memberdef" nodes (see comment below) + setting the namespace_of_vars parameter.
 /// @param namespace_of_vars will be set to the namespace of the xml document
@@ -421,6 +446,80 @@ vector<xml_node> find_variable_instances(unique_ptr<xml_document> &xml, const st
     return variable_nodes;
 }
 
+/// Its a two pass: first we look for the markers signaling we have a shared function,
+/// next we visit any code ASTs again to look up the declarations of these functions.
+/// This struct contains the intermediate result from one to the next step.
+struct shared_function
+{
+    string name;
+    vector<ShTreeNode::attached_so> options;
+
+    /// We can possibly find a lot of function overloads
+    struct function_parameter_list
+    {
+        struct param
+        {
+            /// We only allow primitive types in the parameter lists.
+            /// Any parameter lists containing a parameter which isn't one of these gets discarded.
+            /// If no parameter good enough for us is found, we discard the shared_function and warn.
+            enum PRIMITIVE_TYPES { P_INT, P_FLOAT, P_STR} type;
+            string name;
+
+            /// Parse from string, e.g. "float param1" or "int param2"
+            bool parse_param(string str);
+        };
+        vector<param> params;
+
+        /// Parse params from string e.g. "(float param1, int param2)"
+        bool parse_parameter_list(string str);
+    };
+
+    /// All overloaded parameter lists (any parameter list containing non primitive params get discarded)
+    vector<function_parameter_list> parameter_lists;
+    // TODO namespace
+};
+vector<shared_function> shared_functions;
+
+inline bool shared_function::function_parameter_list::param::parse_param(string str)
+{
+    // input comes e.g. as "const char *name" or "char* name"
+    // We split the input into 2 or 3 parts: delimiter is any non alphanumeric(or '_') char.
+    // The last part is our parameters name, the second last is the type.
+    vector<string> parts1 = split_in_alphanumeric_parts("ich habe *einen ** TEST _geschrieben f.dich..");
+    vector<string> parts2 = split_in_alphanumeric_parts("ich .l");
+    vector<string> parts = split_in_alphanumeric_parts(str);
+    if(parts.size()<2) return false;
+
+    name = parts.back();
+
+    static const unordered_map<string, PRIMITIVE_TYPES> paramtypestr_to_type_mapping = {
+        {"int", PRIMITIVE_TYPES::P_INT},
+        {"float", PRIMITIVE_TYPES::P_FLOAT},
+        {"char", PRIMITIVE_TYPES::P_STR}, // note: the * does not appear in our parts
+        {"string", PRIMITIVE_TYPES::P_STR} // we access it in rpc with a char*, but it got a constructor for it.
+    };
+
+    auto typemap_finder = paramtypestr_to_type_mapping.find(parts[parts.size()-2]);
+    if(typemap_finder == paramtypestr_to_type_mapping.end())
+        return false;
+
+    type = typemap_finder->second;
+}
+
+inline bool shared_function::function_parameter_list::parse_parameter_list(string str)
+{
+    if(str.empty()) return false;
+    remove_surrounding_brackets(str);
+    vector<string> param_strs = tokenize_arg_list(str);
+    for(string &param_str : param_strs)
+    {
+        params.push_back(shared_function::function_parameter_list::param());
+        if(!param_str.empty() // an empty string inside () means we have no params, but that counts as param list.
+           && !params.back().parse_param(param_str)) return false;
+    }
+    return true;
+}
+
 void find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode *> &tree)
 {
   try {
@@ -436,6 +535,37 @@ void find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode *> &
     // Search for SharedClass definitions
     vector<shared_class_definition> shared_class_defs = find_shared_class_trees();
 
+    // For the SharedFunctions: in the GlueGen pass we add dummy booleans named like the functions.
+    for(auto &xml : xmls.code_ast_xmls)
+    {
+        string dummy;
+        vector<xml_node> global_shared_func_xml_parts = find_variable_instances(xml, "__function_dummy_", dummy);
+        for(auto &func_xml : global_shared_func_xml_parts)
+        {
+            shared_functions.push_back(shared_function());
+            shared_function &sf = shared_functions.back();
+            sf.name = get_shared_func_name_from_dummy(func_xml, sf.options);
+        }
+    }
+    // Look for the functions declarations of the functions marked with SharedFunc
+    for(auto &xml : xmls.code_ast_xmls)
+    {
+        for(shared_function &sf : shared_functions)
+        {
+            string declaration_namespace;
+            vector<xml_node> func_xmls = find_variable_instances(xml, sf.name, declaration_namespace);
+            // TODO rename function
+            // TODO: compare declaration namespace with SharedFunc namespace
+            for(xml_node &node : func_xmls)
+            {
+                shared_function::function_parameter_list param_list;
+                if(!param_list.parse_parameter_list(get_complete_xml_text(node.child("argsstring")))) // argsstring wasnt parseable
+                    continue;
+                sf.parameter_lists.push_back(param_list);
+            }
+        }
+        // TODO: warn about empty param list;
+    }
 
     // search for the **instances** of the shared vars/classes.
     for(auto &xml : xmls.code_ast_xmls)
@@ -446,6 +576,7 @@ void find_shared_decls(const std::string xml_folder, std::vector<ShTreeNode *> &
         vector<xml_node> global_shared_var_xml_parts = find_variable_instances(xml, "SharedVar", ns_of_vars);
         for(auto xml_part : global_shared_var_xml_parts)
             parse_global_shared_var(xml_part, ns_of_vars, tree);
+
 
         // search for class instances
         for(auto shared_class_def : shared_class_defs)

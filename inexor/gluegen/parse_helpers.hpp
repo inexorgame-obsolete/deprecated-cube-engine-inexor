@@ -31,14 +31,17 @@ extern void remove_surrounding_quotes(std::string &str);
 /// @warning requires data has no whitespace before or after the brackets, see remove_surrounding_char.
 extern void remove_surrounding_brackets(std::string &str);
 
+/// Splits a string into all parts which are only A-Z, 0-9 or _.
+/// Any other chars in the input wont appear in the output vector.
+extern std::vector<std::string> split_in_alphanumeric_parts(const std::string input);
 
 /// C++ equivalent of strtok, tokenizes the input string based on the occurences of delimiter.
-extern std::vector<std::string> split_by_delimiter(std::string input, std::string delimiter);
+extern std::vector<std::string> split_by_delimiter(const std::string input, const std::string delimiter);
 
 /// Splits e.g. 'something, some(dadadalu,da), "ich,,,skwo"' into 3 strings "something", "some(dadadalu,da)" and ""ich,,,skwo""
 /// split_by_delimiter with ',' as delimiter wouldnt handle (,) correctly.
 ///
-extern std::vector<std::string> tokenize_arg_list(std::string input);
+extern std::vector<std::string> tokenize_arg_list(const std::string input);
 
 /// Splits a "something(totally(but pretty much ) stupid)great" into "something" "totally(but pretty much ) stupid" and "great".
 /// Its greedy meaning that the first full bracket will be matched to the result, everything else goes into after_bracket.
