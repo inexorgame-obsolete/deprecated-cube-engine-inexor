@@ -221,6 +221,33 @@ private:
     std::string full_type, name_cpp_short, var_namespace, path, default_value;
 };
 
+/// This struct contains the intermediate result from one to the next step.
+struct shared_function
+{
+    std::string name;
+    std::vector<ShTreeNode::attached_so> options;
+
+    /// We can possibly find a lot of function overloads
+    struct function_parameter_list
+    {
+        struct param
+        {
+            /// We only allow primitive types in the parameter lists.
+            /// Any parameter lists containing a parameter which isn't one of these gets discarded.
+            /// If no parameter good enough for us is found, we discard the shared_function and warn.
+            enum PRIMITIVE_TYPES { P_INVALID, P_INT, P_FLOAT, P_STR} type;
+            std::string name;
+            std::string default_value;
+        };
+        std::vector<param> params;
+    };
+
+    /// All overloaded parameter lists.
+    std::vector<function_parameter_list> parameter_lists;
+    // TODO namespace
+};
+extern std::vector<shared_function> shared_functions;
+
 struct class_node : ShTreeNode
 {
   //  shared_class_definition class_definition;

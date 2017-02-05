@@ -33,7 +33,7 @@ extern void remove_surrounding_brackets(std::string &str);
 
 /// Splits a string into all parts which are only A-Z, 0-9 or _.
 /// Any other chars in the input wont appear in the output vector.
-extern std::vector<std::string> split_in_alphanumeric_parts(const std::string input);
+extern std::vector<std::string> split_in_alphanumeric_parts(const std::string input, bool respect_quotes);
 
 /// C++ equivalent of strtok, tokenizes the input string based on the occurences of delimiter.
 extern std::vector<std::string> split_by_delimiter(const std::string input, const std::string delimiter);

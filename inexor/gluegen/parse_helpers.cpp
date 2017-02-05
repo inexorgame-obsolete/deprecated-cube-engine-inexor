@@ -48,14 +48,34 @@ vector<string> split_by_delimiter(const string input, const string delimiter)
     return std::move(out);
 }
 
-vector<string> split_in_alphanumeric_parts(const string input)
+vector<string> split_in_alphanumeric_parts(const string input, bool respect_quotes)
 {
     vector<string> out;
     int last_non_valid = -1;
     bool last_was_alphanum = false;
+    bool cur_is_inside_quotes = false;
     for(int i = 0; i < input.length(); i++)
     {
         const char &curchar = input[i];
+        if(respect_quotes && curchar == '"')
+        {
+            if(!cur_is_inside_quotes) // mark the beginning of a quoted string
+            {
+                cur_is_inside_quotes = true;
+                last_non_valid = i;
+                last_was_alphanum = true; // trigger the pushback for the last substring.
+            }
+            else // push back on the closing quote char.
+            {
+                cur_is_inside_quotes = false;
+                out.push_back(input.substr(last_non_valid, i-last_non_valid+1)); // we want to have the " in our output
+                last_non_valid = i;
+                last_was_alphanum = false;
+            }
+            continue;
+        }
+        if(cur_is_inside_quotes) continue; // wait for the next "
+
         if(!isalnum(curchar) && curchar != '_')
         {
             if(last_was_alphanum)

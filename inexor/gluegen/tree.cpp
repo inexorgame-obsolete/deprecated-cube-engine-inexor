@@ -149,6 +149,9 @@ std::string ShTreeNode::get_path()
     return path;
 }
 
+
+std::vector<shared_function> shared_functions;
+
 }
 }
 }
