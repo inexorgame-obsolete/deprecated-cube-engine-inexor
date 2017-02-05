@@ -41,23 +41,28 @@ using namespace inexor;
 
 rendering::player player3;
 
-void testfunction(int init)
-{
-
-}
-
-void testfunction(float init)
-{
-
-}
 
 void testfunction(char *init, string num2)
 {
 
 }
 
-SharedFunc(testfunction,)
+void testfunction(const char *init = "maybe im a string")
+{
 
+}
+
+void testfunction(int init,
+                  int initf);
+
+void testfunction(int init, float initf)
+{
+
+}
+SharedFunc(testfunction)
+
+void testfunction(int init,
+                  int initf) { }
 //void set_player_weapon1_ammo(int value)
 //{
 //    inexor::rendering::player1.weapons[1].ammo = 0;
@@ -127,7 +132,7 @@ void quit()
 }
 COMMAND(quit, "");
 
-SharedFunc(quit,);
+SharedFunc(quit);
 
 /// Fatal crash: log/display crash message and clean up SDL.
 void fatal(const char *s, ...)

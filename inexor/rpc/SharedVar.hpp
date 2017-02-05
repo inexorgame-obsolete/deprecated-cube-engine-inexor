@@ -236,3 +236,6 @@ const T& max(const inexor::rpc::SharedVar<T> &a, const inexor::rpc::SharedVar<T>
 } // ns inexor::rpc
 } // ns inexor
 
+// Import into global namespace.
+using inexor::rpc::SharedVar;
+
