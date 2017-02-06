@@ -199,6 +199,58 @@ TemplateData get_shared_class_templatedata(ShTreeNode &node)
     return curclass;
 }
 
+/// list shared_functions 
+///   list #parameter_lists}}
+///       function_declaration
+///       path ?
+///       list params: local_index type_protobuf param_name, not_last_param
+///   function_name_unique [DONE]
+///   function_name_cpp [DONE]
+///   namespacesep [DONE]
+///        
+typedef shared_function::function_parameter_list::param::PRIMITIVE_TYPES PRIMITIVE_TYPES;
+TemplateData get_shared_function_templatedata(shared_function &sf, int &index)
+{
+    TemplateData curfunction{TemplateData::Type::Object};
+
+    curfunction.set("function_name_cpp_full", sf.get_name_cpp_full());
+    curfunction.set("function_name_unique", sf.get_unique_name());
+    curfunction.set("path", sf.get_path());
+    add_namespace_seps_templatedata(curfunction, sf.ns);
+
+
+    TemplateData overloads{TemplateData::Type::List};
+
+    for(auto &paramlist : sf.parameter_lists)
+    {
+        TemplateData paramlistdata{TemplateData::Type::Object};
+
+        paramlistdata.set("function_declaration", paramlist.declaration);
+        paramlistdata.set("index", std::to_string(index++));
+
+        TemplateData params{TemplateData::Type::List};
+        int local_index = 1;
+        for(int i = 0; i < paramlist.params.size(); i++)
+        {
+            auto &param = paramlist.params[i];
+
+            TemplateData paramdata{TemplateData::Type::Object};
+            paramdata.set("type_protobuf", param.type==PRIMITIVE_TYPES::P_FLOAT ? "float" :
+                         param.type==PRIMITIVE_TYPES::P_INT ? "int32" : "string");
+            paramdata.set("param_name", param.name);
+            paramdata.set("local_index", std::to_string(i+1));
+            paramdata.set("not_last_param", i == paramlist.params.size()-1 ? TemplateData::Type::False : TemplateData::Type::True);
+            params << paramdata;
+        }
+        paramlistdata.set("params", params);
+        overloads << paramlistdata;
+    }
+    curfunction.set("parameter_lists", overloads);
+
+    return curfunction;
+}
+
+
 TemplateData fill_templatedata(vector<ShTreeNode *> &tree, const string &ns)
 {
     TemplateData tmpldata{TemplateData::Type::Object};
@@ -230,6 +282,13 @@ TemplateData fill_templatedata(vector<ShTreeNode *> &tree, const string &ns)
         sharedclasses << get_shared_class_templatedata(*node);
     }
     tmpldata.set("shared_classes", sharedclasses);
+
+
+    TemplateData sharedfunctionsdata{TemplateData::Type::List};
+
+    for(shared_function &sf : shared_functions)
+        sharedfunctionsdata << get_shared_function_templatedata(sf, index);
+    tmpldata.set("shared_functions", sharedfunctionsdata);
 
     return tmpldata;
 }

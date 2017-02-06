@@ -152,6 +152,24 @@ std::string ShTreeNode::get_path()
 
 std::vector<shared_function> shared_functions;
 
+std::string shared_function::get_name_cpp_full()
+{
+    return ns + "::" + name;
+}
+
+std::string shared_function::get_unique_name()
+{
+    return replace_all_copy(get_name_cpp_full(), "::", "_");
+}
+
+std::string shared_function::get_path()
+{
+    string path = replace_all_copy(get_name_cpp_full(), "::", "/");
+
+    replace_all(path, "/inexor/", "/");
+    return path;
+}
+
 }
 }
 }

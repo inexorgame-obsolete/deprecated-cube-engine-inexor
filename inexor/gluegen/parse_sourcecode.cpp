@@ -408,6 +408,7 @@ vector<xml_node> find_variable_instances(unique_ptr<xml_document> &xml, const st
         {
             for(auto member : section.children("memberdef"))
             {
+                if(string(member.attribute("static").value()) == "yes") continue;
                 if((!checkid && contains(get_complete_xml_text(member.child("definition")), searchphrase))
                    || has_child_with_attribute(member.child("type"), "refid", searchphrase))
                     variable_nodes.push_back(member);

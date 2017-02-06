@@ -7,6 +7,7 @@
 }}
 #include <unordered_map>
 #include <vector>
+#include <string>
 
 #include "RPCTreeData.gen.grpc.pb.h" // got generated into the same folder.
 
@@ -24,6 +25,9 @@ SUBSYSTEM_REGISTER(rpc, inexor::rpc::RpcSubsystem<{{namespace}}::TreeEvent, {{na
 using {{namespace}}::TreeEvent;    // The message type.
 using {{namespace}}::TreeService;        // The RPC service (used only for instancing the RpcServer
 
+
+using std::string; // shared functions sometimes have string arguments.
+
 // List of extern (global) SharedVar declarations
 {{#shared_vars}}{{#is_global}}{{namespace_sep_open}}
     extern {{{type_cpp_full}}} {{name_cpp_short}};
@@ -35,6 +39,13 @@ using {{namespace}}::TreeService;        // The RPC service (used only for insta
     extern {{{type_parent_cpp_full}}} {{name_parent_cpp_short}};
 {{namespace_sep_close}}
 {{/shared_classes}}
+
+// List of extern SharedFunc declarations
+{{#shared_functions}}{{#parameter_lists}}{{namespace_sep_open}}
+    extern {{{function_declaration}}};
+{{namespace_sep_close}}
+{{/parameter_lists}}{{/shared_functions}}
+
 
 namespace inexor { namespace rpc {
 
@@ -86,9 +97,24 @@ const std::unordered_map<int64, void *> cppvar_pointer_map
 /// (proto)index -> Data type (cpp_type_t)
 const std::unordered_map<int64, int> index_to_type_map
 {
-    // { index, enum_type(string=0,float=1,int=2) }
+    // { index, enum_type(string=0,float=1,int=2,function=3) }
 {{#shared_vars}}    { {{index}}, {{type_numeric}} },  // {{path}}, {{type_cpp_primitive}}
 {{/shared_vars}}
+// TODO functions
 };
+
+template<typename MSG_TYPE>
+bool execute_function(int index, MSG_TYPE &receivedval)
+{
+    switch(index) {
+{{#shared_functions}}{{#parameter_lists}}    case {{index}}:
+        {{function_name_cpp_full}}({{#params}}SharedFunction_{{function_name_unique}}_params_{{index}}.{{param_name}}() {{#not_last_param}},{{/not_last_param}}
+{{/params}});
+        break;
+{{/parameter_lists}}{{/shared_functions}}
+      default: return false;
+    }
+    return true;
+}
 
 } } // namespace inexor::rpc

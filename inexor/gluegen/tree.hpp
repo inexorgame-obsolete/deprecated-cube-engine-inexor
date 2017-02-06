@@ -225,6 +225,7 @@ private:
 struct shared_function
 {
     std::string name;
+    std::string ns;
     std::vector<ShTreeNode::attached_so> options;
 
     /// We can possibly find a lot of function overloads
@@ -240,11 +241,14 @@ struct shared_function
             std::string default_value;
         };
         std::vector<param> params;
+        std::string declaration;
     };
+    std::string get_name_cpp_full();
+    std::string get_unique_name();
+    std::string get_path();
 
     /// All overloaded parameter lists.
     std::vector<function_parameter_list> parameter_lists;
-    // TODO namespace
 };
 extern std::vector<shared_function> shared_functions;
 

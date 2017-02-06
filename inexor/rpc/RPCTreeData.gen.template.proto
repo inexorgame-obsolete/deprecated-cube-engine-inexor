@@ -27,6 +27,13 @@ enum GeneralTreeEvents
   FINISHED_TREE_INTRO_SEND = 1;
 }
 
+{{#shared_functions}}{{#parameter_lists}}
+message SharedFunction_{{function_name_unique}}_params_{{index}} {
+{{#params}}    {{{type_protobuf}}} {{{param_name}}} = {{local_index}}; // todo     [(path) = "{{{path}}}"]
+{{/params}}
+}
+{{/parameter_lists}}{{/shared_functions}}
+
 message TreeEvent
 {
   oneof key {
@@ -36,6 +43,9 @@ message TreeEvent
   // All global shared vars, be it in class singletons or global SharedVars
 {{#shared_vars}}    {{{type_protobuf}}} {{{name_unique}}} = {{{index}}}    [(path) = "{{{path}}}", (default_value)="{{{default_value}}}"];
 {{/shared_vars}}
+  // All shared function events (function gets executed when event comes in)
+{{#shared_functions}}{{#parameter_lists}}    SharedFunction_{{function_name_unique}}_params_{{index}} = {{index}} [(path) = "{{{path}}}"];
+{{/parameter_lists}}{{/shared_functions}}
   }
 }
 

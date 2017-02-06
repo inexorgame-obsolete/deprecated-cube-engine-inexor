@@ -116,12 +116,14 @@ shared_function::function_parameter_list parse_parameter_list(string str, bool &
 /// Adds none if none primitive types we're used in the parameter list declaration or types
 /// we do not know how to default_construct them. TODO: Add generic runtime mechanism to do expend these!
 /// In case of params with default values we add several parameter lists for each.
-void add_parameter_lists(shared_function &sf, string argsstr)
+void add_parameter_lists(shared_function &sf, string argsstr, string definition_str)
 {
     bool succesfully_parsed = false;
     shared_function::function_parameter_list param_list = parse_parameter_list(argsstr, succesfully_parsed);
     if(!succesfully_parsed) // argsstring wasnt parseable
         return;
+    param_list.declaration = definition_str + " " + argsstr;
+
     sf.parameter_lists.push_back(param_list);
 
     // Add parameter lists if we find params with default values.
@@ -133,6 +135,7 @@ void add_parameter_lists(shared_function &sf, string argsstr)
         shared_function::function_parameter_list param_list_clone;
         for(int k = 0; k < i; k++)
             param_list_clone.params.push_back(param_list.params[k]);
+        param_list_clone.declaration = param_list.declaration;
         sf.parameter_lists.push_back(param_list_clone);
     }
 }
@@ -146,13 +149,14 @@ void look_for_shared_functions(vector<unique_ptr<xml_document>> &code_ast_xmls)
     // in the GlueGen pass we add dummy booleans named like the functions.
     for(auto &xml : code_ast_xmls)
     {
-        string dummy;
-        vector<xml_node> global_shared_func_xml_parts = find_variable_instances(xml, "__function_dummy_", dummy);
+        string marker_namespace;
+        vector<xml_node> global_shared_func_xml_parts = find_variable_instances(xml, "__function_dummy_", marker_namespace);
         for(auto &func_xml : global_shared_func_xml_parts)
         {
             shared_functions.push_back(shared_function());
             shared_function &sf = shared_functions.back();
             sf.name = get_shared_func_name_from_dummy(func_xml, sf.options);
+            sf.ns = marker_namespace;
         }
     }
 
@@ -164,9 +168,10 @@ void look_for_shared_functions(vector<unique_ptr<xml_document>> &code_ast_xmls)
             string declaration_namespace;
             vector<xml_node> func_xmls = find_variable_instances(xml, sf.name, declaration_namespace);
             // TODO rename function
-            // TODO: compare declaration namespace with SharedFunc namespace
+            if(sf.ns != declaration_namespace && !sf.ns.empty()) continue; // the SharedFunc and the declaration need to be in the same ns.
             for(xml_node &node : func_xmls)
-                add_parameter_lists(sf, get_complete_xml_text(node.child("argsstring")));
+                add_parameter_lists(sf, get_complete_xml_text(node.child("argsstring")),
+                                    get_complete_xml_text(node.child("definition")));
         }
         // TODO: warn about empty param list;
     }
