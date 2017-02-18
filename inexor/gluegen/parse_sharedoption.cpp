@@ -1,6 +1,7 @@
 #include "inexor/gluegen/tree.hpp"
 #include "inexor/gluegen/parse_helpers.hpp"
 #include "inexor/gluegen/parse_sourcecode.hpp"
+#include "inexor/gluegen/parse_sharedoption.hpp"
 
 #include <pugiconfig.hpp>
 #include <pugixml.hpp>
@@ -17,6 +18,8 @@ using namespace boost;
 
 namespace inexor { namespace rpc { namespace gluegen {
 
+unordered_map<string, option_definition> option_definitions;
+
 /// This function searches constructors of the sharedoptions class in the AST, looks up the args of the constructor and saves those in opt.
 ///
 /// @param opt the class (derived from a common base class called SharedOption) in parsed form.
@@ -24,7 +27,7 @@ namespace inexor { namespace rpc { namespace gluegen {
 /// We furthermore require to have default values for either all or no constructor arguments.
 /// + all default_values across all constructors need to be the same.
 /// Error if those requirements aren't met.
-name_defaultvalue_vector find_so_constructors_args(so_class_definition &opt, const xml_node &compound_xml)
+name_defaultvalue_vector find_so_constructors_args(option_definition &opt, const xml_node &compound_xml)
 {
     name_defaultvalue_vector constructor_args;
 
@@ -61,13 +64,13 @@ name_defaultvalue_vector find_so_constructors_args(so_class_definition &opt, con
     //       that may require us to match different constructors when parsing the instances. that would be too complex)
 }
 
-name_defaultvalue_vector find_so_class_const_char_members(so_class_definition &opt, const xml_node &compound_xml)
+name_defaultvalue_vector find_options_class_const_char_members(option_definition &opt, const xml_node &compound_xml)
 {
     name_defaultvalue_vector const_char_members;
 
     for(auto var_xml : find_class_member_vars(compound_xml))
     {
-        if(!contains(get_complete_xml_text(var_xml.child("type")), "SharedVar")) continue;
+        if(!contains(get_complete_xml_text(var_xml.child("type")), "char")) continue;
 
         name_defaultvalue_tupel var;
         var.name = get_complete_xml_text(var_xml.child("name"));
@@ -81,7 +84,7 @@ name_defaultvalue_vector find_so_class_const_char_members(so_class_definition &o
     return const_char_members;
 }
 
-/// This function saves a so_class_definition (a class declaration which is derived from SharedOption) to our so_class_definitions vector.
+/// This function saves a option_definition (a class declaration which is derived from SharedOption) to our option_definitions vector.
 /// 
 /// We require to have all constructor arguments named the same.
 /// We furthermore require to have default values for either all or no constructor arguments.
@@ -89,13 +92,13 @@ name_defaultvalue_vector find_so_class_const_char_members(so_class_definition &o
 /// Error if those requirements aren't met.
 void handle_shared_option(const xml_node &compound_xml)
 {
-    so_class_definition opt(get_complete_xml_text(compound_xml.child("compoundname")));
+    option_definition opt(get_complete_xml_text(compound_xml.child("compoundname")));
     std::cout << "SharedOption-derived class definition found: " << opt.name << std::endl;
 
     opt.constructor_args = find_so_constructors_args(opt, compound_xml);
-    opt.const_char_members = find_so_class_const_char_members(opt, compound_xml);
+    opt.const_char_members = find_options_class_const_char_members(opt, compound_xml);
 
-    so_class_definitions[opt.name] = opt;
+    option_definitions[opt.name] = opt;
 
     for(auto member : opt.const_char_members)
         std::cout << "['const char *'-members of " << opt.name << "] " << member.name << " = " << member.default_value << std::endl;

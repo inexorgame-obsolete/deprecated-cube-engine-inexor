@@ -12,7 +12,7 @@ using namespace inexor::rpc::gluegen;
 using namespace std;
 
 
-void add_rendered_template_hybrids(const so_class_definition &opt, TemplateData &variable, const TemplateData constructor_args_data)
+void add_rendered_template_hybrids(const option_definition &opt, TemplateData &variable, const TemplateData constructor_args_data)
 {
     for(auto member : opt.const_char_members)
     {
@@ -25,11 +25,12 @@ void add_rendered_template_hybrids(const so_class_definition &opt, TemplateData 
     }
 }
 
-void add_generic_templatedata_default_values(TemplateData &variable, ShTreeNode node)
+/// A shared option can have default values. All Classes WITHOUT having this option attached will use the options default values then!
+void add_options_with_default_values_templatedata(TemplateData &variable)
 {
-    for(auto reg_option : so_class_definitions)
+    for(auto reg_option : option_definitions)
     {
-        so_class_definition &opt = reg_option.second;
+        option_definition &opt = reg_option.second;
         if(!opt.constructor_has_default_values) continue;
         for(auto arg : opt.constructor_args)
         {
@@ -40,13 +41,13 @@ void add_generic_templatedata_default_values(TemplateData &variable, ShTreeNode 
 }
 
 /// Add templatedata for this shared variable coming from shared options.
-void add_generic_templatedata(TemplateData &variable, ShTreeNode node)
+void add_options_templatedata(TemplateData &variable, ShTreeNode node)
 {
     // renders: 1. fill data: 
-    //             - take node constructor args, compare it with so_class_definition names [done]
+    //             - take node constructor args, compare it with option_definition names [done]
     //             - create TemplateData instance for every constructor param
     //            1b. default values
-    //              - if so_class_definition has default values add default value TemplateData
+    //              - if option_definition has default values add default value TemplateData
     //              - 2 cases for default values: values or templates (special: char * get rendered nontheless)
     //          2. render templates optionclass.templatehybrids().templatestr; templatehybrid { name, templatestr } with passed TemplateData
     //             add rendered templates to passed TemplateData
@@ -62,14 +63,14 @@ void add_generic_templatedata(TemplateData &variable, ShTreeNode node)
 
     TemplateData constructor_args_data = variable;
 
-    add_generic_templatedata_default_values(constructor_args_data, node);
+    add_options_with_default_values_templatedata(constructor_args_data);
     for(auto node_option : node.attached_options) // a node option is one instance of a sharedoption attached to a node (a SharedVar or SharedClass)
     {
-        auto find_in_declarations = so_class_definitions.find(node_option.name);
-        if(find_in_declarations == so_class_definitions.end()) continue; // this argument is not corresponding with the name of a sharedoption.
+        auto find_in_declarations = option_definitions.find(node_option.name);
+        if(find_in_declarations == option_definitions.end()) continue; // this argument is not corresponding with the name of a sharedoption.
         std::cout << "node: " << node.get_name_cpp_full() << " option: " << node_option.name << std::endl;
 
-        const so_class_definition &opt = find_in_declarations->second;
+        const option_definition &opt = find_in_declarations->second;
         // if(opt.constructor_args.size() >= node_option.constructor_args.size()) throw exception("");
 
         for(size_t i = 0; i < node_option.constructor_args.size(); i++) // loop instance constructor args, take names from defintion of the constructor args.
@@ -82,7 +83,7 @@ void add_generic_templatedata(TemplateData &variable, ShTreeNode node)
     // render template_hybrids and add them to the templatedata of the variable:
 
     // add empty lists to the variable key=the name
-    for(auto opt : so_class_definitions)
+    for(auto opt : option_definitions)
         for(auto member : opt.second.const_char_members)
             variable[member.name] = TemplateData(TemplateData::Type::List);
 
@@ -90,16 +91,16 @@ void add_generic_templatedata(TemplateData &variable, ShTreeNode node)
     // render th's occuring in the constructor
     for(auto node_option : node.attached_options)
     {
-        auto find_in_definitions = so_class_definitions.find(node_option.name);
-        if(find_in_definitions == so_class_definitions.end()) continue;
+        auto find_in_definitions = option_definitions.find(node_option.name);
+        if(find_in_definitions == option_definitions.end()) continue;
         add_rendered_template_hybrids(find_in_definitions->second, variable, constructor_args_data);
         rendered_th_names.emplace(find_in_definitions->second.name);
     }
 
     // render th's which have default values and havent been rendered before.
-    for(auto reg_option : so_class_definitions)
+    for(auto reg_option : option_definitions)
     {
-        so_class_definition &opt = reg_option.second;
+        option_definition &opt = reg_option.second;
         auto find_in_instances = rendered_th_names.find(opt.name);
         if(find_in_instances == rendered_th_names.end() && opt.constructor_has_default_values)
             add_rendered_template_hybrids(opt, variable, constructor_args_data);
@@ -158,7 +159,7 @@ TemplateData get_shared_var_templatedata(ShTreeNode &node, int index)
 
     add_namespace_seps_templatedata(curvariable, node.get_namespace());
 
-    add_generic_templatedata(curvariable, node);
+    add_options_templatedata(curvariable, node);
     return curvariable;
 }
 
@@ -184,19 +185,47 @@ void add_node_templatedata(ShTreeNode &node, int &index, TemplateData &templdata
     }
 }
 
-TemplateData get_shared_class_templatedata(ShTreeNode &node)
+TemplateData get_shared_class_templatedata(shared_class_definition &def, int &treevent_index)
 {
-    TemplateData curclass{TemplateData::Type::Object};
-
-    shared_class_definition def = node.class_definition;
-    add_namespace_seps_templatedata(curclass, node.get_namespace());
-    curclass.set("definition_header_file", def.containing_header);
+    TemplateData cur_definition{TemplateData::Type::Object};
+    // The class needs to be defined in a cleanly includeable header file.
+    cur_definition.set("definition_header_file", def.containing_header);
 
     // TODO: recognize the innerclass case!
-    curclass.set("type_parent_cpp_full", def.definition_namespace + "::" + def.class_name);
-    curclass.set("name_parent_cpp_short", node.get_name_cpp_short());
+    // The name of the class with leading namespace.
+    cur_definition.set("definition_name_cpp", def.get_name_cpp_full());
+    cur_definition.set("definition_name_unique", def.get_name_unique());
 
-    return curclass;
+    TemplateData all_instances{TemplateData::Type::List};
+
+    for(ShTreeNode *inst_node : def.instances)
+    {
+        TemplateData cur_instance{TemplateData::Type::Object};
+        add_namespace_seps_templatedata(cur_instance, inst_node->get_namespace());
+
+        // The first parents name, e.g. of inexor::game::player1.weapons.ammo its player1.
+        cur_instance.set("name_parent_cpp_short", inst_node->get_name_cpp_short());
+
+        //
+        cur_instance.set("instance_name_unique", inst_node->get_name_unique());
+        cur_instance.set("path", inst_node->get_path());
+        cur_instance.set("index", std::to_string(treevent_index++));
+
+        add_options_templatedata(cur_instance, inst_node);
+
+        all_instances << cur_instance;
+    }
+    cur_definition.set("instances", all_instances);
+
+    TemplateData members{TemplateData::Type::List};
+
+    int index = 1;
+    for(ShTreeNode *child : def.nodes)
+    {
+        members << get_shared_var_templatedata(*child, index++);
+    }
+    cur_definition.set("members", members);
+    return cur_definition;
 }
 
 /// list shared_functions 
@@ -250,7 +279,6 @@ TemplateData get_shared_function_templatedata(shared_function &sf, int &index)
     return curfunction;
 }
 
-
 TemplateData fill_templatedata(vector<ShTreeNode *> &tree, const string &ns)
 {
     TemplateData tmpldata{TemplateData::Type::Object};
@@ -276,12 +304,11 @@ TemplateData fill_templatedata(vector<ShTreeNode *> &tree, const string &ns)
 
     TemplateData sharedclasses{TemplateData::Type::List};
 
-    for(ShTreeNode *node : tree)
+    for(auto &class_def : shared_class_definitions)
     {
-        if(node->node_type!=ShTreeNode::NODE_CLASS_SINGLETON) continue;
-        sharedclasses << get_shared_class_templatedata(*node);
+        sharedclasses << get_shared_class_templatedata(class_def, index);
     }
-    tmpldata.set("shared_classes", sharedclasses);
+    tmpldata.set("shared_class_definitions", sharedclasses);
 
 
     TemplateData sharedfunctionsdata{TemplateData::Type::List};

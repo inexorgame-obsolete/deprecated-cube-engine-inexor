@@ -15,8 +15,7 @@ using boost::algorithm::replace_all_copy;
 using boost::algorithm::replace_all;
 
 
-unordered_map<string, so_class_definition> so_class_definitions;
-
+std::vector<shared_class_definition> shared_class_definitions;
 
 /// Maps C++ string type declarations to the numeric type.
 /// SharedVar<float> -> float
@@ -28,7 +27,7 @@ const std::unordered_map<std::string, ShTreeNode::type_t> ShTreeNode::type_cpp_t
 
 
 ShTreeNode::ShTreeNode(const std::string &full_cpp_type, const std::string &cpp_name, const std::string &var_namespace_,
-                       const std::string &default_val, std::vector<attached_so> &so_constructor_arguments)
+                       const std::string &default_val, std::vector<attached_option> &so_constructor_arguments)
                           : name_cpp_short(cpp_name), var_namespace(var_namespace_), full_type(full_cpp_type),
                             default_value(default_val), attached_options(so_constructor_arguments)
 {
@@ -39,7 +38,7 @@ ShTreeNode::ShTreeNode(const std::string &full_cpp_type, const std::string &cpp_
 }
 
 ShTreeNode::ShTreeNode(const std::string &full_cpp_type, const std::string &cpp_name, const std::string &var_namespace_,
-                       shared_class_definition class_definition_, std::vector<attached_so>& so_constructor_arguments)
+                       shared_class_definition class_definition_, std::vector<attached_option>& so_constructor_arguments)
                             : name_cpp_short(cpp_name), var_namespace(var_namespace_), full_type(full_cpp_type),
                               class_definition(class_definition_), attached_options(so_constructor_arguments)
 {
@@ -149,6 +148,15 @@ std::string ShTreeNode::get_path()
     return path;
 }
 
+std::string shared_class_definition::get_name_cpp_full()
+{
+    return definition_namespace + "::" + class_name;
+}
+
+std::string shared_class_definition::get_name_unique()
+{
+    return replace_all_copy(get_name_cpp_full(), "::", "_");
+}
 
 std::vector<shared_function> shared_functions;
 

@@ -30,17 +30,22 @@ namespace inexor { namespace rpc { namespace gluegen {
 /// The .xml files contain doxygen generated ASTs (Abstract Syntax Trees)
 struct AST_xmls_context
 {
-    vector<Path> all_xml_file_names;
-    vector<Path> code_xml_file_names;
-    vector<Path> class_xml_file_names;
+    typedef inexor::filesystem::Path Path;
+    typedef pugi::xml_document xml_document;
+
+    std::vector<Path> all_xml_file_names;
+    std::vector<Path> code_xml_file_names;
+    std::vector<Path> class_xml_file_names;
 
     // We want to parse the files only once:
 
     //vector<xml_document> all_ast_xmls; // we dont need all parsed
-    vector<unique_ptr<xml_document>> code_ast_xmls;
-    vector<unique_ptr<xml_document>> class_ast_xmls;
+    std::vector<std::unique_ptr<xml_document>> code_ast_xmls;
+    std::vector<std::unique_ptr<xml_document>> class_ast_xmls;
 
-    void find_xmls(Path directory)
+    /// Find all xml files (with a name we're interested in) in a given directory.
+    /// all_xml_file_names, code_xml_file_names and class_xml_file_names will contain the entries afterwards.
+    void find_xml_files(Path directory)
     {
         // sorting input files:
 
@@ -57,7 +62,9 @@ struct AST_xmls_context
         }
     }
 
-    void load_xmls()
+    /// Parse all xml files of all_xml_file_names and load the parsed ASTs into code_ast_xmls and class_ast_xmls.
+    /// @note find_xml_files needs to be executed beforehand.
+    void parse_all_xmls()
     {
         for(auto &file : class_xml_file_names)
         {
@@ -81,6 +88,7 @@ struct AST_xmls_context
         return true;
     }
 } xmls;
+bool verbose = false;
 
 
 vector<xml_node> find_class_constructors(const xml_node &class_compound_xml)
@@ -214,16 +222,16 @@ unordered_map<string, string> get_class_initialized_member_map(const xml_node &c
 }
 
 /// Parse NoSync()|Persistent()|Function([] { echo("hello"); })
-vector<ShTreeNode::attached_so> parse_shared_option_strings(string options_list_str)
+vector<attached_option> parse_shared_option_strings(string options_list_str)
 {
-    vector<ShTreeNode::attached_so> options;
+    vector<attached_option> options;
 
     const vector<string> option_strings_vec(split_by_delimiter(options_list_str, "|")); // tokenize
 
     for(string raw_str : option_strings_vec) // e.g. " NoSync() \n" or Range(0, 3) or Persistent(true)
     {
         trim(raw_str);                       // remove any whitespace around normal chars " NoSync(   ) \n" -> "NoSync(   )"
-        ShTreeNode::attached_so option;
+        attached_option option;
 
         string temp;
         string argsstr = parse_bracket(raw_str, option.name, temp);       // from Range(0, 3) we get "0, 3"
@@ -232,11 +240,14 @@ vector<ShTreeNode::attached_so> parse_shared_option_strings(string options_list_
             trim(arg);
 
 
-        std::cout << "string: " << raw_str << std::endl;
-        std::cout << "opt name: " << option.name << std::endl << "args:";
-        for(auto &i : option.constructor_args)
-            std::cout << " " << i;
-        std::cout << std::endl;
+        if(verbose)
+        {
+            std::cout << "string: " << raw_str << std::endl;
+            std::cout << "opt name: " << option.name << std::endl << "args:";
+            for(auto &i : option.constructor_args)
+                std::cout << " " << i;
+            std::cout << std::endl;
+        }
 
         options.push_back(option);
     }
@@ -249,7 +260,7 @@ vector<ShTreeNode::attached_so> parse_shared_option_strings(string options_list_
 /// @param default_value will be set to the first param (in this example "map")
 /// @param options the sharedoptions given (the second argument of the constructor-string) will be parsed using parse_shared_option_strings().
 /// @warning throws if no default_value is given!
-const vector<string> parse_shared_var_constructor_argsstring(string name, string argsstring, string &default_value, vector<ShTreeNode::attached_so> &options)
+const vector<string> parse_shared_var_constructor_argsstring(string name, string argsstring, string &default_value, vector<attached_option> &options)
 {
     remove_surrounding_brackets(argsstring);
     const vector<string> args(tokenize_arg_list(argsstring));
@@ -281,11 +292,11 @@ void parse_global_shared_var(const xml_node var_xml, string var_namespace, vecto
 
     if(argsstring.empty()) return; // it is just an "extern" declaration
 
-    vector<ShTreeNode::attached_so> options;
+    vector<attached_option> options;
     string default_value;
     const vector<string>  args = parse_shared_var_constructor_argsstring(name, argsstring, default_value, options);
 
-    std::cout << "type: " << type << " name: " << name << " argsstring: " << argsstring << " (num: " << args.size() << ")" << std::endl;
+    if(verbose) std::cout << "type: " << type << " name: " << name << " argsstring: " << argsstring << " (num: " << args.size() << ")" << std::endl;
 
     tree.push_back(new ShTreeNode(type, name, var_namespace, default_value, options));
 }
@@ -302,16 +313,16 @@ void parse_sharedvar_of_class(const xml_node var_xml, string var_namespace, cons
         return;
     //    throw(std::runtime_error("Class has Sharedvar member, but it's missing in the constructors initializer list.")); // TODO shall we ignore it? it shouldnt compile.
 
-    vector<ShTreeNode::attached_so> options;
+    vector<attached_option> options;
     string default_value;
     const vector<string>  args = parse_shared_var_constructor_argsstring(name, argsstring_itr->second, default_value, options);
 
-    std::cout << "Class member: type: " << type << " name: " << name << " argsstring: " << argsstring_itr->second << " (num: " << args.size() << ")" << std::endl;
+    if(verbose) std::cout << "Class member: type: " << type << " name: " << name << " argsstring: " << argsstring_itr->second << " (num: " << args.size() << ")" << std::endl;
 
     tree.push_back(new ShTreeNode(type, name, var_namespace, default_value, options));
 }
 
-void parse_class_singleton(const xml_node var_xml, string var_namespace, shared_class_definition class_definition, vector<ShTreeNode *> &tree)
+void parse_single_class_instance(const xml_node var_xml, std::string var_namespace, shared_class_definition &class_definition, vector<ShTreeNode *> &tree)
 {
     const string type = get_complete_xml_text(var_xml.child("type"));
     const string name = get_complete_xml_text(var_xml.child("name"));
@@ -320,9 +331,9 @@ void parse_class_singleton(const xml_node var_xml, string var_namespace, shared_
     // the constructor of SharedClasses are not containing sharedoptions (or should we?)
     // TODO: do class instances get here for extern declarations?
 
-    vector<ShTreeNode::attached_so> options; // = parse_shared_option_strings(args.back()); TODO
+    vector<attached_option> options = class_definition.attached_options; // = parse_shared_option_strings(args.back()); TODO
     ShTreeNode *class_node = new ShTreeNode(type, name, var_namespace, class_definition, options);
-
+    class_definition.instances.push_back(class_node);
     //ShTreeNode &pnode = tree.back(); // We need to work on the same instance, not a copy! of the class_node, otherwise we can't point to its address.
 
     for(ShTreeNode *child : class_definition.nodes)
@@ -370,12 +381,17 @@ vector<shared_class_definition> find_shared_class_trees()
 
         const unordered_map<string, string> init_list_map = get_class_initialized_member_map(compound_xml);
 
+        // If there is an entry SharedClass(...) in the constructor initializer list, then we treat ... as SharedOptions
+        auto class_options_itr = init_list_map.find("SharedClass");
+        if(class_options_itr != init_list_map.end())
+            def.attached_options = parse_shared_option_strings(class_options_itr->second);
+
         for(xml_node &var_xml : find_class_member_vars(compound_xml))
         {
             string type = get_complete_xml_text(var_xml.child("type"));
             if(!contains(type, "SharedVar")) continue; // TODO recursive logic
             string name = get_complete_xml_text(var_xml.child("name"));
-            std::cout << "!!!!!!!!!!!!name: " << name << " type: " << type << " class: " << def.class_name << std::endl;
+            if(verbose) std::cout << "sharedvar in class definition: name: " << name << " type: " << type << " class: " << def.class_name << std::endl;
             parse_sharedvar_of_class(var_xml, def.definition_namespace, init_list_map, def.nodes);
         }
         classes.push_back(def);
@@ -422,8 +438,8 @@ void find_shared_decls(const string xml_folder, std::vector<ShTreeNode *> &tree)
 {
   try {
     // sorting input files:
-    xmls.find_xmls(xml_folder);
-    xmls.load_xmls();
+    xmls.find_xml_files(xml_folder);
+    xmls.parse_all_xmls();
 
     // save all option class definitions to its global map.
     vector<xml_node> so_compound_xmls = find_classes_with_parent("SharedOption");
@@ -434,11 +450,12 @@ void find_shared_decls(const string xml_folder, std::vector<ShTreeNode *> &tree)
     look_for_shared_functions(xmls.code_ast_xmls);
 
     // Search for SharedClass definitions
-    vector<shared_class_definition> shared_class_defs = find_shared_class_trees();
+    shared_class_definitions = find_shared_class_trees();
+
+
     // search for the **instances** of the shared vars/classes.
     for(auto &xml : xmls.code_ast_xmls)
     {
-        //std::cout << "processing file: " << file.make_preferred() << std::endl;
         // Search for global SharedVars:
         string ns_of_vars; // all vars in one xml file are in the same ns, thanks doxygen.
         vector<xml_node> global_shared_var_xml_parts = find_variable_instances(xml, "SharedVar", ns_of_vars);
@@ -447,11 +464,12 @@ void find_shared_decls(const string xml_folder, std::vector<ShTreeNode *> &tree)
 
 
         // search for class instances
-        for(auto shared_class_def : shared_class_defs)
+        for(auto &shared_class_def : shared_class_definitions)
         {
             vector<xml_node> global_shared_var_xml_parts = find_variable_instances(xml, shared_class_def.refid, ns_of_vars, true);
             for(auto xml_part : global_shared_var_xml_parts)
-                parse_class_singleton(xml_part, ns_of_vars, shared_class_def, tree);
+                // if(has_child_with_attribute(xml_part.child("type"), "refid", searchphrase))) we should better check for the SharedList id
+                    parse_single_class_instance(xml_part, ns_of_vars, shared_class_def, tree);
         }
     }
   }  catch(std::exception &e)

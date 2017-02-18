@@ -5,49 +5,11 @@
 #include <list>
 #include <unordered_map>
 
+#include "inexor/gluegen/parse_sharedoption.hpp"
+
 namespace inexor {
 namespace rpc {
 namespace gluegen {
-
-struct name_defaultvalue_tupel
-{
-    std::string name;
-    std::string default_value;
-};
-typedef std::vector<name_defaultvalue_tupel> name_defaultvalue_vector;
-
-/// A declaration of a class with a "SharedOption" parent class.
-///
-/// To make our glue generation more flexible we invented Shared Option classes,
-/// which contain info about how to render stuff and which are used in the C++ Tree API.
-///
-/// class xy : SharedOption {
-///     xy(T <paramname> = <paramdefvalue>, S <param2name> = <param2defvalue>, ......) {}
-///     const char *<membername> = <membertemplate>;
-/// };
-struct so_class_definition
-{
-    /// The name of the class.
-    std::string name;
-
-    /// Whether or not the constructor has default values is important for subsequent
-    bool constructor_has_default_values = false;
-
-    /// All constructor arguments: name first, defaultvalue second.
-    /// since its an ordered map we have the positions of the arguments.
-    // we dont have type deduction!
-    name_defaultvalue_vector constructor_args;
-
-    /// "const char *" members are template "partials" (see mustache docs) for our shared declarations.
-    /// 
-    /// They may contain template data entries previously available or those named the same as the constructor parameters.
-    name_defaultvalue_vector const_char_members;
-
-    so_class_definition() {}
-    so_class_definition(std::string &&class_name) : name(class_name) {}
-};
-
-extern std::unordered_map<std::string, so_class_definition> so_class_definitions;
 
 class ShTreeNode;
 
@@ -69,8 +31,22 @@ struct shared_class_definition
     /// (There is no chance of using forward declarations of the class for the synchronisation code.)
     std::string containing_header;
 
+    /// The definition of a class instance can already contain shared options, which will get attached to all instances.
+    std::vector<attached_option> attached_options;
+
+    /// All children nodes will get copied here. TODO: this should be a clear structure containing sharedvars and subclasses.
     std::vector<ShTreeNode *> nodes;
+
+    /// All ShTreeNodes instances of this type.
+    std::vector<ShTreeNode *> instances;
+
+    /// The namespace + the classes name.
+    std::string get_name_cpp_full();
+
+    /// The namespace + the classes name but with _ instead of ::.
+    std::string get_name_unique();
 };
+extern std::vector<shared_class_definition> shared_class_definitions;
 
 class ShTreeNode {
 public:
@@ -140,19 +116,8 @@ public:
     /// In case this is a NODE_CLASS_SINGLETON this is a copy of the corresponding class definition.
     shared_class_definition class_definition;
 
-    /// A SharedOption instance used when declaring this variable.
-    /// (used inside the constructor: "SharedVar<int> xy(0, NoSync()|Persistent(true))").
-    /// -> option_name = "Persistent" constructor_args.push_back("true").
-    struct attached_so
-    {
-        /// The sharedoptions name.
-        std::string name;
-        /// The constructor args for the sharedoption instance.
-        std::vector<std::string> constructor_args;
-    };
-
     /// All options attached when instancing this variable.
-    const std::vector<attached_so> attached_options;
+    const std::vector<attached_option> attached_options;
 
     /// Tell this NODE_GLOBAL_VAR about its parent, to make it a NODE_CLASS_VAR.
     /// So basically you do this in a subsequent run for all NODE_CLASS_SINGLETONs children.
@@ -167,14 +132,14 @@ public:
     /// Use set_node_parent to change it to a NODE_CLASS_VAR.
     /// @param full_cpp_type_dcl The literal type declaration (e.g. "SharedVar<int>") from which the type_numeric will be deduced.
     ShTreeNode(const std::string &full_cpp_type_dcl, const std::string &full_cpp_name, const std::string &var_namespace_,
-               const std::string &default_val, std::vector<attached_so> &so_constructor_arguments);
+               const std::string &default_val, std::vector<attached_option> &so_constructor_arguments);
 
     // 2. name of file containing the type declaration shared_class_definition class_instance_type
     /// @param full_cpp_type_dcl The literal type declaration (e.g. "SharedVar<int>" or "inexor::rendering::Screen").
     /// @param full_cpp_name The literal variable name (e.g. "mapmodel_amount").
     /// @param var_namespace_ The namespace of the variable (e.g. "inexor::rendering").
     ShTreeNode(const std::string &full_cpp_type, const std::string &cpp_name, const std::string &var_namespace_,
-               shared_class_definition class_definition_, std::vector<attached_so> &so_constructor_arguments);
+               shared_class_definition class_definition_, std::vector<attached_option> &so_constructor_arguments);
 
     /// Copy constructor, creates a new subtree similar of all childs of the given node.
     /// So this allocates all children again on the heap.
