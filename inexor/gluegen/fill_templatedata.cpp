@@ -148,7 +148,7 @@ TemplateData get_shared_var_templatedata(ShTreeNode &node, int index)
     curvariable.set("is_global", node.node_type==ShTreeNode::NODE_CLASS_VAR ? TemplateData::Type::False : TemplateData::Type::True);
     curvariable.set("type_protobuf", node.get_type_protobuf());
     curvariable.set("type_cpp_full", node.get_type_cpp_full());
-    curvariable.set("type_cpp_primitive", node.get_type_cpp_primitive());
+    curvariable.set("type_cpp_primitive", node.get_template_type());
     curvariable.set("type_numeric", std::to_string(node.get_type_numeric()));
     curvariable.set("index", std::to_string(index));
     curvariable.set("name_unique", node.get_name_unique());
@@ -185,31 +185,37 @@ void add_node_templatedata(ShTreeNode &node, int &index, TemplateData &templdata
     }
 }
 
-TemplateData get_shared_class_templatedata(shared_class_definition &def, int &treevent_index)
+TemplateData get_shared_class_templatedata(shared_class_definition *def, int &treevent_index, bool add_instances = true)
 {
     TemplateData cur_definition{TemplateData::Type::Object};
     // The class needs to be defined in a cleanly includeable header file.
-    cur_definition.set("definition_header_file", def.containing_header);
+    cur_definition.set("definition_header_file", def->containing_header);
 
     // TODO: recognize the innerclass case!
     // The name of the class with leading namespace.
-    cur_definition.set("definition_name_cpp", def.get_name_cpp_full());
-    cur_definition.set("definition_name_unique", def.get_name_unique());
+    cur_definition.set("definition_name_cpp", def->get_name_cpp_full());
+    cur_definition.set("definition_name_unique", def->get_name_unique());
 
     TemplateData all_instances{TemplateData::Type::List};
 
-    for(ShTreeNode *inst_node : def.instances)
+    if(add_instances) for(ShTreeNode *inst_node : def->instances)
     {
         TemplateData cur_instance{TemplateData::Type::Object};
         add_namespace_seps_templatedata(cur_instance, inst_node->get_namespace());
 
         // The first parents name, e.g. of inexor::game::player1.weapons.ammo its player1.
         cur_instance.set("name_parent_cpp_short", inst_node->get_name_cpp_short());
-
-        //
         cur_instance.set("instance_name_unique", inst_node->get_name_unique());
         cur_instance.set("path", inst_node->get_path());
-        cur_instance.set("index", std::to_string(treevent_index++));
+        cur_instance.set("index", std::to_string(treevent_index++)); // TODO double iteration?
+
+        // were doing this for sharedlists, where the first template is relevant.
+        if(inst_node->template_type_definition)
+        {
+            TemplateData dummy_list(TemplateData::Type::List);
+            dummy_list << get_shared_class_templatedata(inst_node->template_type_definition, treevent_index, false);
+            cur_instance.set("first_template_type", std::move(dummy_list));
+        }
 
         add_options_templatedata(cur_instance, inst_node);
 
@@ -219,10 +225,10 @@ TemplateData get_shared_class_templatedata(shared_class_definition &def, int &tr
 
     TemplateData members{TemplateData::Type::List};
 
-    int index = 1;
-    for(ShTreeNode *child : def.nodes)
+    int local_index = 2;
+    for(ShTreeNode *child : def->nodes)
     {
-        members << get_shared_var_templatedata(*child, index++);
+        members << get_shared_var_templatedata(*child, local_index++);
     }
     cur_definition.set("members", members);
     return cur_definition;
@@ -304,7 +310,7 @@ TemplateData fill_templatedata(vector<ShTreeNode *> &tree, const string &ns)
 
     TemplateData sharedclasses{TemplateData::Type::List};
 
-    for(auto &class_def : shared_class_definitions)
+    for(shared_class_definition *class_def : shared_class_definitions)
     {
         sharedclasses << get_shared_class_templatedata(class_def, index);
     }

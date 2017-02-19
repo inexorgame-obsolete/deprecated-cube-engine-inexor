@@ -15,7 +15,7 @@ using boost::algorithm::replace_all_copy;
 using boost::algorithm::replace_all;
 
 
-std::vector<shared_class_definition> shared_class_definitions;
+std::vector<shared_class_definition *> shared_class_definitions;
 
 /// Maps C++ string type declarations to the numeric type.
 /// SharedVar<float> -> float
@@ -38,7 +38,7 @@ ShTreeNode::ShTreeNode(const std::string &full_cpp_type, const std::string &cpp_
 }
 
 ShTreeNode::ShTreeNode(const std::string &full_cpp_type, const std::string &cpp_name, const std::string &var_namespace_,
-                       shared_class_definition class_definition_, std::vector<attached_option>& so_constructor_arguments)
+                       shared_class_definition *class_definition_, std::vector<attached_option>& so_constructor_arguments)
                             : name_cpp_short(cpp_name), var_namespace(var_namespace_), full_type(full_cpp_type),
                               class_definition(class_definition_), attached_options(so_constructor_arguments)
 {
@@ -80,10 +80,12 @@ const char *ShTreeNode::get_type_cpp_full()
     return full_type.c_str();
 }
 
-const char *ShTreeNode::get_type_cpp_primitive()
+std::string ShTreeNode::get_template_type()
 {
-    if(node_type==NODE_CLASS_SINGLETON) return nullptr;
-    return type_lookup[type_numeric].type_cpp_primitive;
+    size_t open_pos = full_type.find("<") + 1;
+    size_t closing_pos = full_type.find_last_of(">", open_pos);
+    if(closing_pos == string::npos || open_pos == string::npos) return "";
+    return full_type.substr(open_pos, closing_pos-open_pos);
 }
 
 const char * ShTreeNode::get_type_protobuf()

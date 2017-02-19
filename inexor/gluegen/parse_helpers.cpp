@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include "parse_helpers.hpp"
 
 using namespace pugi;
 using namespace std;
@@ -218,6 +219,20 @@ bool has_child_with_attribute(const xml_node &parent, string attribute_name, str
             return true;
     }
     return false;
+}
+
+std::vector<std::string> get_values_of_childs_attribute(const pugi::xml_node & parent, std::string attribute_name)
+{
+    std::vector<std::string> found_attribute_values;
+    static const std::string empty;
+    std::string cur_attribute_value;
+    for(pugi::xml_node child : parent.children())
+    {
+        cur_attribute_value = child.attribute(attribute_name.c_str()).value();
+        if(cur_attribute_value != empty)
+            found_attribute_values.push_back(cur_attribute_value);
+    }
+    return found_attribute_values;
 }
 
 } } } // namespace inexor::rpc::gluegen

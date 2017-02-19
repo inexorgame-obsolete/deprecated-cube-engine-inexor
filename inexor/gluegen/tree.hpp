@@ -46,7 +46,8 @@ struct shared_class_definition
     /// The namespace + the classes name but with _ instead of ::.
     std::string get_name_unique();
 };
-extern std::vector<shared_class_definition> shared_class_definitions;
+// TODO: we never free, but let the program handle it. smart pointers?
+extern std::vector<shared_class_definition *> shared_class_definitions;
 
 class ShTreeNode {
 public:
@@ -97,9 +98,11 @@ public:
     /// e.g. "SharedVar<char*>" or "inexor::rendering::Screen" or "SharedVar<int>"
     const char *get_type_cpp_full();
 
-    /// The C++ template type of a SharedVar ("char*"/"int"/"float").
-    /// @note Works only for NODE_GLOBAL_VAR and NODE_CLASS_VAR (otherwise returns nullptr)
-    const char *get_type_cpp_primitive();
+    /// The C++ template type of a SharedVar ("char*"/"int"/"float")
+    /// or a SharedClass("Classname<SharedVar<int>>" or "ClassName1<ClassName2>").
+    /// @return the string of the typename of the template, otherwise an empty string if no "<..>" is found.
+    /// @note For NODE_CLASS_SINGLETON its an edge case to handle sharedlists (SharedList<player> players).
+    std::string get_template_type();
 
     /// The protocol buffers type for this node.
     /// If its NODE_GLOBAL_VAR or NODE_CLASS_VAR, this is string/float/int32
@@ -114,7 +117,12 @@ public:
     const std::string get_default_value() const;
 
     /// In case this is a NODE_CLASS_SINGLETON this is a copy of the corresponding class definition.
-    shared_class_definition class_definition;
+    shared_class_definition *class_definition = nullptr;
+
+    /// In case this is a NODE_CLASS_SINGLETON and its a template, we link to the shared classes definition of the template arg.
+    /// @note This is for handling the edge case of a SharedLists, since there we're interested in the templated arg 
+    //        (SharedList<player> players).
+    shared_class_definition *template_type_definition = nullptr;
 
     /// All options attached when instancing this variable.
     const std::vector<attached_option> attached_options;
@@ -139,7 +147,7 @@ public:
     /// @param full_cpp_name The literal variable name (e.g. "mapmodel_amount").
     /// @param var_namespace_ The namespace of the variable (e.g. "inexor::rendering").
     ShTreeNode(const std::string &full_cpp_type, const std::string &cpp_name, const std::string &var_namespace_,
-               shared_class_definition class_definition_, std::vector<attached_option> &so_constructor_arguments);
+               shared_class_definition *class_definition_, std::vector<attached_option> &so_constructor_arguments);
 
     /// Copy constructor, creates a new subtree similar of all childs of the given node.
     /// So this allocates all children again on the heap.
@@ -176,7 +184,7 @@ private:
         {"SharedVar<char*>", "char*", "string"},
         {"SharedVar<float>", "float", "float"},
         {"SharedVar<int>",   "int",   "int32"},
-    };// SharedList<ClassName>
+    };
 
     /// We use this function in the descriptor since we save type_numeric but the constructor takes the full cpp type.
     static const std::unordered_map<std::string, ShTreeNode::type_t> type_cpp_template_to_numeric;
@@ -191,7 +199,7 @@ struct shared_function
 {
     std::string name;
     std::string ns;
-    std::vector<ShTreeNode::attached_so> options;
+    std::vector<attached_option> options;
 
     /// We can possibly find a lot of function overloads
     struct function_parameter_list
@@ -216,47 +224,6 @@ struct shared_function
     std::vector<function_parameter_list> parameter_lists;
 };
 extern std::vector<shared_function> shared_functions;
-
-struct class_node : ShTreeNode
-{
-  //  shared_class_definition class_definition;
-};
-
-struct variable_node : ShTreeNode
-{
-    // Changes:
-    // extern directly not the containing class-instance
-};
-
-struct class_member_var : ShTreeNode
-{
-    // Changes:
-    // Use class options. Prepend class path to namespace.
-    // Don't iterate var as global var.
-    // index begins for every class from 0
-    // Don't need full c++ name anymore, but class name for extern.
-    // path() is path of class + path of var
-    //        path of class: default = namespace + classname, otherwise CustomPath("...")-attribute
-    //        path of var: default = variablename, otherwise CustomPath("...")
-    //        -> path = namespace + if(isclassmember) classname + (endif) cpp_short_name
-};
-
-/// A Class derived from SharedClass gets reflected automagically. This is the (shrinked) AST representation to enable the magic.
-//struct shared_class : parsed_class_base
-//{
-//    std::string class_name_short;
-//    std::string class_namespace;
-//
-//    /// We use this list to handle shared options applied to all SharedVars we contain.
-//    const std::vector<shared_option_arg> shared_options;
-//
-//    const std::vector<class_member_var> member_vars;
-//
-//    void add_member_var(class_member_var)
-//    {
-//
-//    }
-//};
 
 }
 }

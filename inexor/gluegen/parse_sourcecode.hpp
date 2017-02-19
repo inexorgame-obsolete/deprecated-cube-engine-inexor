@@ -49,6 +49,6 @@ extern std::vector<pugi::xml_node> find_variable_instances(std::unique_ptr<pugi:
 /// @param default_value will be set to the first param (in this example "map")
 /// @param options the sharedoptions given (the second argument of the constructor-string) will be parsed using parse_shared_option_strings().
 /// @warning throws if no default_value is given!
-extern const std::vector<std::string> parse_shared_var_constructor_argsstring(std::string name, std::string argsstring, std::string &default_value, std::vector<ShTreeNode::attached_so> &options);
+extern const std::vector<std::string> parse_shared_var_constructor_argsstring(std::string name, std::string argsstring, std::string &default_value, std::vector<attached_option> &options);
 
 } } } // namespace inexor::rpc::gluegen

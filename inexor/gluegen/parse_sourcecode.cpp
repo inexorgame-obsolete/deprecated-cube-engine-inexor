@@ -322,7 +322,7 @@ void parse_sharedvar_of_class(const xml_node var_xml, string var_namespace, cons
     tree.push_back(new ShTreeNode(type, name, var_namespace, default_value, options));
 }
 
-void parse_single_class_instance(const xml_node var_xml, std::string var_namespace, shared_class_definition &class_definition, vector<ShTreeNode *> &tree)
+void parse_single_class_instance(const xml_node var_xml, std::string var_namespace, shared_class_definition *class_definition, vector<ShTreeNode *> &tree)
 {
     const string type = get_complete_xml_text(var_xml.child("type"));
     const string name = get_complete_xml_text(var_xml.child("name"));
@@ -331,18 +331,27 @@ void parse_single_class_instance(const xml_node var_xml, std::string var_namespa
     // the constructor of SharedClasses are not containing sharedoptions (or should we?)
     // TODO: do class instances get here for extern declarations?
 
-    vector<attached_option> options = class_definition.attached_options; // = parse_shared_option_strings(args.back()); TODO
+    vector<attached_option> options = class_definition->attached_options; // = parse_shared_option_strings(args.back()); TODO
     ShTreeNode *class_node = new ShTreeNode(type, name, var_namespace, class_definition, options);
-    class_definition.instances.push_back(class_node);
-    //ShTreeNode &pnode = tree.back(); // We need to work on the same instance, not a copy! of the class_node, otherwise we can't point to its address.
+    class_definition->instances.push_back(class_node);
 
-    for(ShTreeNode *child : class_definition.nodes)
+    for(ShTreeNode *child : class_definition->nodes)
     {
         // TODO sollte rekursiv sein wenn type = child
         class_node->children.push_back(new ShTreeNode(child));
         class_node->children.back()->parent = class_node;
     }
     class_node->set_all_childrens_parent_entry();
+
+    // In case we have a template child, we link the definition of it into the class.
+    vector<string> &all_childs_refids = get_values_of_childs_attribute(var_xml.child("type"), "refid");
+    if(all_childs_refids.size() >= 2)
+    {
+        for(shared_class_definition *d : shared_class_definitions)
+            if(all_childs_refids[1] == d->refid) // a template can have many refids, the first is the outer case.
+                class_node->template_type_definition = d;
+    }
+
     tree.push_back(class_node);
 }
 
@@ -355,25 +364,25 @@ vector<xml_node> find_shared_class_definitions()
     return find_classes_with_parent("SharedClass");
 }
 
-vector<shared_class_definition> find_shared_class_trees()
+vector<shared_class_definition *> find_shared_class_trees()
 {
-    vector<shared_class_definition> classes;
+    vector<shared_class_definition *> classes;
 
     vector<xml_node> class_xmls = find_shared_class_definitions();
     for(xml_node &compound_xml : class_xmls)
     {
-        shared_class_definition def;
-        def.refid = compound_xml.attribute("id").value();
+        shared_class_definition *def = new shared_class_definition();
+        def->refid = compound_xml.attribute("id").value();
         string full_name =  get_complete_xml_text(compound_xml.child("compoundname")); // including the namespace e.g. inexor::rendering::screen
 
         vector<string> ns_and_name(split_by_delimiter(full_name, "::"));
 
-        def.class_name = ns_and_name.back();
+        def->class_name = ns_and_name.back();
         ns_and_name.pop_back();
-        def.definition_namespace = join(ns_and_name, "::");
-        def.containing_header = compound_xml.child("location").attribute("file").value();
+        def->definition_namespace = join(ns_and_name, "::");
+        def->containing_header = compound_xml.child("location").attribute("file").value();
 
-        if(contains(def.containing_header, ".c"))
+        if(contains(def->containing_header, ".c"))
         {
             std::cerr << "ERROR: SharedClasses can only be defined in cleanly include-able **header**-files"
                 << std::endl << "Class in question is " << full_name << std::endl;
@@ -384,15 +393,15 @@ vector<shared_class_definition> find_shared_class_trees()
         // If there is an entry SharedClass(...) in the constructor initializer list, then we treat ... as SharedOptions
         auto class_options_itr = init_list_map.find("SharedClass");
         if(class_options_itr != init_list_map.end())
-            def.attached_options = parse_shared_option_strings(class_options_itr->second);
+            def->attached_options = parse_shared_option_strings(class_options_itr->second);
 
         for(xml_node &var_xml : find_class_member_vars(compound_xml))
         {
             string type = get_complete_xml_text(var_xml.child("type"));
             if(!contains(type, "SharedVar")) continue; // TODO recursive logic
             string name = get_complete_xml_text(var_xml.child("name"));
-            if(verbose) std::cout << "sharedvar in class definition: name: " << name << " type: " << type << " class: " << def.class_name << std::endl;
-            parse_sharedvar_of_class(var_xml, def.definition_namespace, init_list_map, def.nodes);
+            if(verbose) std::cout << "sharedvar in class definition: name: " << name << " type: " << type << " class: " << def->class_name << std::endl;
+            parse_sharedvar_of_class(var_xml, def->definition_namespace, init_list_map, def->nodes);
         }
         classes.push_back(def);
     }
@@ -424,10 +433,15 @@ vector<xml_node> find_variable_instances(unique_ptr<xml_document> &xml, const st
         {
             for(auto member : section.children("memberdef"))
             {
-                if(string(member.attribute("static").value()) == "yes") continue;
-                if((!checkid && contains(get_complete_xml_text(member.child("definition")), searchphrase))
-                   || has_child_with_attribute(member.child("type"), "refid", searchphrase))
+                if(string(member.attribute("static").value()) == "yes") continue; // This is a global variable, we need to access from another file.
+                if((!checkid && contains(get_complete_xml_text(member.child("definition")), searchphrase)))
                     variable_nodes.push_back(member);
+                else
+                {
+                    vector<string> all_childs_refids = get_values_of_childs_attribute(member.child("type"), "refid");
+                    if(!all_childs_refids.empty() && all_childs_refids.front() == searchphrase) // a template can have many refids, the first is the outer case.
+                        variable_nodes.push_back(member);
+                }
             }
         }
     }
@@ -464,9 +478,9 @@ void find_shared_decls(const string xml_folder, std::vector<ShTreeNode *> &tree)
 
 
         // search for class instances
-        for(auto &shared_class_def : shared_class_definitions)
+        for(auto shared_class_def : shared_class_definitions)
         {
-            vector<xml_node> global_shared_var_xml_parts = find_variable_instances(xml, shared_class_def.refid, ns_of_vars, true);
+            vector<xml_node> global_shared_var_xml_parts = find_variable_instances(xml, shared_class_def->refid, ns_of_vars, true);
             for(auto xml_part : global_shared_var_xml_parts)
                 // if(has_child_with_attribute(xml_part.child("type"), "refid", searchphrase))) we should better check for the SharedList id
                     parse_single_class_instance(xml_part, ns_of_vars, shared_class_def, tree);

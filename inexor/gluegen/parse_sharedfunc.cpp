@@ -24,7 +24,7 @@ namespace inexor { namespace rpc { namespace gluegen {
 /// "<initializer>= function_args_dummy(  )...</initializer>"
 /// @return the function name.
 /// @param options in this we return the shared options attached to the variable.
-string get_shared_func_name_from_dummy(const xml_node var_xml, vector<ShTreeNode::attached_so> &options)
+string get_shared_func_name_from_dummy(const xml_node var_xml, vector<attached_option> &options)
 {
     const string dummy_name = get_complete_xml_text(var_xml.child("name"));
     string initstring = get_complete_xml_text(var_xml.child("initializer"));

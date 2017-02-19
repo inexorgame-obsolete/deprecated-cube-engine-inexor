@@ -55,4 +55,8 @@ extern std::string get_complete_xml_text(const pugi::xml_node parent, bool recur
 /// @return true if found.
 extern bool has_child_with_attribute(const pugi::xml_node &parent, std::string attribute_name, std::string attribute_value);
 
+/// Returns the values of all first class childrens attribute given by name.
+/// You check for "refid" and get all first level childs refid.
+extern std::vector<std::string> get_values_of_childs_attribute(const pugi::xml_node &parent, std::string attribute_name);
+
 } } } // namespace inexor::rpc::gluegen
