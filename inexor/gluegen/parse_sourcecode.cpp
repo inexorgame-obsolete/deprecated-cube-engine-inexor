@@ -435,7 +435,7 @@ vector<xml_node> find_variable_instances(unique_ptr<xml_document> &xml, const st
         {
             for(auto member : section.children("memberdef"))
             {
-             //   if(string(member.attribute("static").value()) == "yes") continue; // This is a global variable, we need to access from another file.
+             //   if(string(member.attribute("static").value()) == "yes") continue; // This is a global variable, we need to access from another file. (COMMENTED bc sharedfunctions get marked with static bools)
                 if((!checkid && contains(get_complete_xml_text(member.child("definition")), searchphrase)))
                     variable_nodes.push_back(member);
                 else

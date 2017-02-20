@@ -96,16 +96,21 @@ shared_function::function_parameter_list parse_parameter_list(string str, bool &
     shared_function::function_parameter_list param_list;
     if(str.empty()) { is_valid_param_list = false; return param_list; }
     remove_surrounding_brackets(str);
+    if(str.empty()) // we had () before, now we have nothing -> no parameters
+    {
+        is_valid_param_list = true;
+        return param_list;
+    }
     vector<string> param_strs = tokenize_arg_list(str);
     for(string &param_str : param_strs)
     {
-        param_list.params.push_back(parse_param(param_str));
-        if(!param_str.empty() // an empty string inside () means we have no params, but that counts as param list.
-           && !param_list.params.back().type != PRIMITIVE_TYPES::P_INVALID)
+        auto param = parse_param(param_str);
+        if(param.type == PRIMITIVE_TYPES::P_INVALID)
         {
             is_valid_param_list = false;
             return param_list;
         }
+        else param_list.params.push_back(std::move(param));
     }
     is_valid_param_list = true;
     return param_list;
@@ -171,13 +176,15 @@ void look_for_shared_functions(vector<unique_ptr<xml_document>> &code_ast_xmls)
             // TODO rename function
             if(sf.ns != declaration_namespace && !sf.ns.empty()) continue; // the SharedFunc and the declaration need to be in the same ns.
             for(xml_node &node : func_xmls)
+            {
+                if(get_complete_xml_text(node.child("name")) != sf.name) continue; // We find_variables with contain() not exact matches.
                 add_parameter_lists(sf, get_complete_xml_text(node.child("argsstring")),
                                     get_complete_xml_text(node.child("definition")));
+            }
         }
-        // TODO: warn about empty param list;
     }
     for(shared_function &sf : shared_functions)
-        if(sf.parameter_lists.empty())
+        if(sf.parameter_lists.empty()) // TODO: remove shared function!!
             std::cout << "WARN: Ignored shared function " << sf.name << " (no valid parameter list found)" << std::endl;
 }
 
