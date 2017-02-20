@@ -25,6 +25,8 @@ using namespace std;
 
 namespace inexor { namespace rpc { namespace gluegen {
 
+bool verbose = true;
+
 /// Global Singleton class containing all xml files (and filenames)
 ///
 /// The .xml files contain doxygen generated ASTs (Abstract Syntax Trees)
@@ -88,8 +90,6 @@ struct AST_xmls_context
         return true;
     }
 } xmls;
-bool verbose = false;
-
 
 vector<xml_node> find_class_constructors(const xml_node &class_compound_xml)
 {
@@ -301,8 +301,8 @@ void parse_global_shared_var(const xml_node var_xml, string var_namespace, vecto
     tree.push_back(new ShTreeNode(type, name, var_namespace, default_value, options));
 }
 
-void parse_sharedvar_of_class(const xml_node var_xml, string var_namespace, const unordered_map<string, string> &class_constructor_init_map,
-                            vector<ShTreeNode *> &tree)
+void parse_sharedvar_of_class(const xml_node var_xml, string var_namespace, string class_name,
+                              const unordered_map<string, string> &class_constructor_init_map, vector<ShTreeNode *> &tree)
 {
     const string type = get_complete_xml_text(var_xml.child("type"));
     const string name = get_complete_xml_text(var_xml.child("name"));
@@ -310,14 +310,17 @@ void parse_sharedvar_of_class(const xml_node var_xml, string var_namespace, cons
     // The argsstring (containing the shared options) is in the initilizer list of the constructor of the class, so we look it up.
     auto argsstring_itr = class_constructor_init_map.find(name);
     if(argsstring_itr == class_constructor_init_map.end())
+    {
+        std::cout << "SharedClass has Sharedvar member, which is missing in the constructors initializer list. (Class: "
+            << class_name << ", Variable: " << name << ")" << std::endl;
         return;
-    //    throw(std::runtime_error("Class has Sharedvar member, but it's missing in the constructors initializer list.")); // TODO shall we ignore it? it shouldnt compile.
+    }
 
     vector<attached_option> options;
     string default_value;
     const vector<string>  args = parse_shared_var_constructor_argsstring(name, argsstring_itr->second, default_value, options);
 
-    if(verbose) std::cout << "Class member: type: " << type << " name: " << name << " argsstring: " << argsstring_itr->second << " (num: " << args.size() << ")" << std::endl;
+    if(verbose) std::cout << "Class member -- class: " << class_name << " type: "<< type << " name: " << name << " argsstring: " << argsstring_itr->second << " (num: " << args.size() << ")" << std::endl;
 
     tree.push_back(new ShTreeNode(type, name, var_namespace, default_value, options));
 }
@@ -399,9 +402,8 @@ vector<shared_class_definition *> find_shared_class_trees()
         {
             string type = get_complete_xml_text(var_xml.child("type"));
             if(!contains(type, "SharedVar")) continue; // TODO recursive logic
-            string name = get_complete_xml_text(var_xml.child("name"));
-            if(verbose) std::cout << "sharedvar in class definition: name: " << name << " type: " << type << " class: " << def->class_name << std::endl;
-            parse_sharedvar_of_class(var_xml, def->definition_namespace, init_list_map, def->nodes);
+
+            parse_sharedvar_of_class(var_xml, def->definition_namespace, def->class_name, init_list_map, def->nodes);
         }
         classes.push_back(def);
     }
@@ -433,7 +435,7 @@ vector<xml_node> find_variable_instances(unique_ptr<xml_document> &xml, const st
         {
             for(auto member : section.children("memberdef"))
             {
-                if(string(member.attribute("static").value()) == "yes") continue; // This is a global variable, we need to access from another file.
+             //   if(string(member.attribute("static").value()) == "yes") continue; // This is a global variable, we need to access from another file.
                 if((!checkid && contains(get_complete_xml_text(member.child("definition")), searchphrase)))
                     variable_nodes.push_back(member);
                 else

@@ -156,6 +156,7 @@ void look_for_shared_functions(vector<unique_ptr<xml_document>> &code_ast_xmls)
             shared_functions.push_back(shared_function());
             shared_function &sf = shared_functions.back();
             sf.name = get_shared_func_name_from_dummy(func_xml, sf.options);
+            if(verbose) std::cout << "shared function: " << sf.name << std::endl;
             sf.ns = marker_namespace;
         }
     }

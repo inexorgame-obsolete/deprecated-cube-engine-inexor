@@ -14,6 +14,8 @@
 
 namespace inexor { namespace rpc { namespace gluegen {
 
+/// Global singleton switching between verbose or non-verbose output to the console.
+extern bool verbose;
 
 /// Find all the Shared Declarations in a (doxygen provided) xml AST representation of the sources.
 ///
