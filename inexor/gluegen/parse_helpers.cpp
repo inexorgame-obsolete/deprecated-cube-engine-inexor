@@ -201,7 +201,7 @@ string get_complete_xml_text(const xml_node parent, bool recursive)
     {
         if(child.type() == pugi::node_pcdata)
             text += child.value();
-        else if(recursive && child.children().begin() != child.children().end()) // our child has children
+        else if(recursive && !child.first_child().empty()) // our child has children
             text += get_complete_xml_text(child, true);
     }
     return text;
