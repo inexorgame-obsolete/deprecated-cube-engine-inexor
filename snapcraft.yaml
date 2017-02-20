@@ -28,9 +28,14 @@ parts:
         - libcairo2
         - libpango-1.0-0
         - libpangocairo-1.0-0 
-    plugin: conan
-    missing: true
+    plugin: python
+    python-version: python2
     source: "https://github.com/inexor-game/code.git"
-    install: |
+    python-packages:
+      - conan
+    build:  |
       mkdir -p $SNAPCRAFT_PART_INSTALL/usr/local/games/inexor
+      CONAN_USER_HOME=$SNAPCRAFT_PART_INSTALL/usr/local/games/inexor conan install build=missing
+      CONAN_USER_HOME=$SNAPCRAFT_PART_INSTALL/usr/local/games/inexor conan build
+    install: |
       cp -r bin/ $SNAPCRAFT_PART_INSTALL/usr/local/games/inexor/
