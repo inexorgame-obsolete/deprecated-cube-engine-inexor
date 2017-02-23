@@ -1,12 +1,26 @@
 node { 
-    stage "Checkout project"
-    checkout scm
+    stage('Checkout project') {
+        checkout scm
+    }
 
-    stage 'Build'
-    sh '[ -d build ] || mkdir build'
-    sh 'cd build && conan install .. --build=missing && conan build ..'
+    stage('Install and build dependencies') {
+        steps {
+            dir('build') {
+                sh 'conan install .. --build=missing'
+            }
+        }
+    }
 
-    stage 'Doxygen'
-    tool name: 'doxygen', type: 'hudson.plugins.doxygen.DoxygenInstallation'
+    stage('Build with conan') {
+        steps {
+            dir('build') {
+                sh 'conan build ..'
+            }
+        }
+    }
+
+    stage('Doxygen') {
+        tool name: 'doxygen', type: 'hudson.plugins.doxygen.DoxygenInstallation'
+    }
 
 }
