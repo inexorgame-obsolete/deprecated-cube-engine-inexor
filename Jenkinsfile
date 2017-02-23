@@ -4,18 +4,14 @@ node {
     }
 
     stage('Install and build dependencies') {
-        steps {
-            dir('build') {
-                sh 'conan install .. --build=missing'
-            }
+        dir('build') {
+            sh 'conan install .. --build=missing'
         }
     }
 
     stage('Build with conan') {
-        steps {
-            dir('build') {
-                sh 'conan build ..'
-            }
+        dir('build') {
+            sh 'conan build ..'
         }
     }
 
