@@ -15,8 +15,9 @@ node {
         }
     }
 
-    stage('Doxygen') {
+    stage('Generating API documentation') {
         tool name: 'doxygen', type: 'hudson.plugins.doxygen.DoxygenInstallation'
+        sh 'doxygen doxygen.conf'
         publishHTML(target: [
             allowMissing: false,
             alwaysLinkToLastBuild: false,
