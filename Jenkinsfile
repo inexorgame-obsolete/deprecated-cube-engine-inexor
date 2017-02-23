@@ -11,7 +11,9 @@ node {
 
     stage('Build with conan') {
         dir('build') {
-            sh 'conan build ..'
+            withEnv(['MAKEFLAGS="-j 2"']) {
+                sh 'conan build ..'
+            }
         }
     }
 
