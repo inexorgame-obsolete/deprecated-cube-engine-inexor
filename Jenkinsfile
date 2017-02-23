@@ -17,9 +17,18 @@ node {
 
     stage('Doxygen') {
         tool name: 'doxygen', type: 'hudson.plugins.doxygen.DoxygenInstallation'
+        publishHTML(target: [
+            allowMissing: false,
+            alwaysLinkToLastBuild: false,
+            keepAll: true,
+            reportDir: 'doc/',
+            reportFiles: 'index.html',
+            reportName: 'Inexor Core API Documentation'
+        ])
     }
 
     stage('Archive artifacts') {
+        fingerprint 'bin/inexor,bin/inexor.exe,bin/RPCTreeData-inexor.proto'
         archiveArtifacts artifacts: 'bin/inexor,bin/inexor.exe,bin/RPCTreeData-inexor.proto', fingerprint: true, onlyIfSuccessful: true
     }
 
