@@ -19,4 +19,8 @@ node {
         tool name: 'doxygen', type: 'hudson.plugins.doxygen.DoxygenInstallation'
     }
 
+    stage('Archive artifacts') {
+        archiveArtifacts artifacts: 'bin/inexor,bin/inexor.exe,bin/RPCTreeData-inexor.proto', fingerprint: true, onlyIfSuccessful: true
+    }
+
 }
