@@ -3,7 +3,6 @@
 #include <boost/algorithm/string/replace.hpp>
 
 #include "inexor/gluegen/tree.hpp"
-#include "tree.hpp"
 
 namespace inexor {
 namespace rpc {
@@ -159,8 +158,6 @@ std::string shared_class_definition::get_name_unique()
 {
     return replace_all_copy(get_name_cpp_full(), "::", "_");
 }
-
-std::vector<shared_function> shared_functions;
 
 std::string shared_function::get_name_cpp_full()
 {

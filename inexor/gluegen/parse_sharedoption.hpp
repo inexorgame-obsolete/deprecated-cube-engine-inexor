@@ -46,8 +46,6 @@ struct option_definition
     option_definition(std::string &&class_name) : name(class_name) {}
 };
 
-extern std::unordered_map<std::string, option_definition> option_definitions;
-
 
 /// A SharedOption instance **used** when instancing a variable or class.
 /// (used inside the constructor: "SharedVar<int> xy(0, NoSync()|Persistent(true))").
@@ -64,6 +62,17 @@ struct attached_option
     std::vector<std::string> constructor_args;
 };
 
-extern void handle_shared_option(const pugi::xml_node &compound_xml);
+/// Parses " NoSync()|Persistent()|Function([] { echo("hello"); })   "
+extern std::vector<attached_option> parse_attached_options_string(std::string options_list_str, bool verbose = false);
+
+struct ParserContext;
+
+/// Parse all option_definition xml nodes and save it to our option_definitions map.
+extern void analyze_shared_options(ParserContext &data);
+
+/// Returns true if this compound xml node has as parent the SharedOption base class.
+extern bool is_option_class_node(const pugi::xml_node class_xml_compound_node);
+
+
 
 } } } // namespace inexor::rpc::gluegen

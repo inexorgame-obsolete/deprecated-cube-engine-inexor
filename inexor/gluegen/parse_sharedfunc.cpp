@@ -3,9 +3,12 @@
 #include "inexor/gluegen/parse_sourcecode.hpp"
 #include "inexor/gluegen/parse_sharedfunc.hpp"
 #include "inexor/gluegen/tree.hpp"
+#include "inexor/gluegen/ParserContext.hpp"
 
 #include <pugiconfig.hpp>
 #include <pugixml.hpp>
+
+#include <boost/algorithm/string.hpp>
 
 #include <vector>
 #include <string>
@@ -14,6 +17,7 @@
 
 using namespace pugi;
 using namespace std;
+using namespace boost::algorithm;
 
 namespace inexor { namespace rpc { namespace gluegen {
 
@@ -145,47 +149,59 @@ void add_parameter_lists(shared_function &sf, string argsstr, string definition_
     }
 }
 
-/// Its a two pass: first we look for the markers signaling we have a shared function,
-/// next we visit any code ASTs again to look up the declarations of these functions.
-/// This struct contains the intermediate result from one to the next step.
-void look_for_shared_functions(vector<unique_ptr<xml_document>> &code_ast_xmls)
+bool is_function_marker_node(const xml_node var_node)
 {
-    // For the SharedFunctions markers:
-    // in the GlueGen pass we add dummy booleans named like the functions.
-    for(auto &xml : code_ast_xmls)
-    {
-        string marker_namespace;
-        vector<xml_node> global_shared_func_xml_parts = find_variable_instances(xml, "__function_dummy_", marker_namespace);
-        for(auto &func_xml : global_shared_func_xml_parts)
-        {
-            shared_functions.push_back(shared_function());
-            shared_function &sf = shared_functions.back();
-            sf.name = get_shared_func_name_from_dummy(func_xml, sf.options);
-            if(verbose) std::cout << "shared function: " << sf.name << std::endl;
-            sf.ns = marker_namespace;
-        }
-    }
+    if(contains(get_complete_xml_text(var_node.child("name")), "__function_dummy_"))
+        return true;
+    return false;
+}
 
-    // Look for the functions declarations of the functions marked with SharedFunc
-    for(auto &xml : code_ast_xmls)
+extern void analyze_shared_function_markers(ParserContext &data)
+{
+    for(auto &member_xml : data.def_nodes.shared_function_markers)
     {
-        for(shared_function &sf : shared_functions)
-        {
-            string declaration_namespace;
-            vector<xml_node> func_xmls = find_variable_instances(xml, sf.name, declaration_namespace);
-            // TODO rename function
-            if(sf.ns != declaration_namespace && !sf.ns.empty()) continue; // the SharedFunc and the declaration need to be in the same ns.
-            for(xml_node &node : func_xmls)
-            {
-                if(get_complete_xml_text(node.child("name")) != sf.name) continue; // We find_variables with contain() not exact matches.
-                add_parameter_lists(sf, get_complete_xml_text(node.child("argsstring")),
-                                    get_complete_xml_text(node.child("definition")));
-            }
-        }
+        shared_function sf;
+        sf.name = get_shared_func_name_from_dummy(member_xml, sf.options);
+
+        xml_node compound_def = member_xml.parent().parent(); // first up: sectiondef 2nd: compounddef
+        sf.ns = get_namespace_of_namespace_file(compound_def);
+
+        data.shared_functions[sf.ns + "::" + sf.name] = sf;
+
+        if(data.verbose) std::cout << "shared function: " << sf.name << std::endl;
     }
-    for(shared_function &sf : shared_functions)
-        if(sf.parameter_lists.empty()) // TODO: remove shared function!!
+}
+
+// Finds all functions(and variables: TODO) instances with a "definition" entry in the AST containing a known variable marker.
+shared_function *is_shared_function_declaration_node(const pugi::xml_node xml_member_node, ParserContext &data)
+{
+    if(string(xml_member_node.attribute("kind").value()) != "function") return nullptr;
+
+    xml_node compound_def = xml_member_node.parent().parent(); // first up: sectiondef 2nd: compounddef
+    string full_name = get_namespace_of_namespace_file(compound_def) + "::" + get_complete_xml_text(xml_member_node.child("name"));
+
+    auto finditr = data.shared_functions.find(full_name);
+    return finditr == data.shared_functions.end() ? nullptr : &finditr->second;
+}
+
+void parse_function_declaration(const pugi::xml_node var_xml, shared_function *sf)
+{
+    add_parameter_lists(*sf, get_complete_xml_text(var_xml.child("argsstring")),
+                        get_complete_xml_text(var_xml.child("definition")));
+}
+
+void control_shared_functions(ParserContext &data)
+{
+    for(auto it = data.shared_functions.begin(); it != data.shared_functions.end();)
+    {
+        shared_function &sf = it->second;
+        if(sf.parameter_lists.empty())
+        {
             std::cout << "WARN: Ignored shared function " << sf.name << " (no valid parameter list found)" << std::endl;
+            it = data.shared_functions.erase(it);
+        }
+        else it++;
+    }
 }
 
 } } } // namespace inexor::rpc::gluegen

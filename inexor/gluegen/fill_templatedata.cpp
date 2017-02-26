@@ -1,6 +1,7 @@
 #include "inexor/gluegen/parse_helpers.hpp"
 #include "inexor/gluegen/fill_templatedata.hpp"
 #include "inexor/gluegen/tree.hpp"
+#include "inexor/gluegen/ParserContext.hpp"
 
 #include <boost/algorithm/string.hpp>
 
@@ -8,8 +9,9 @@
 #include <string>
 #include <unordered_set>
 
-using namespace inexor::rpc::gluegen;
 using namespace std;
+
+namespace inexor { namespace rpc { namespace gluegen {
 
 
 void add_rendered_template_hybrids(const option_definition &opt, TemplateData &variable, const TemplateData constructor_args_data)
@@ -26,9 +28,9 @@ void add_rendered_template_hybrids(const option_definition &opt, TemplateData &v
 }
 
 /// A shared option can have default values. All Classes WITHOUT having this option attached will use the options default values then!
-void add_options_with_default_values_templatedata(TemplateData &variable)
+void add_options_with_default_values_templatedata(TemplateData &variable, ParserContext &data)
 {
-    for(auto reg_option : option_definitions)
+    for(auto reg_option : data.option_definitions)
     {
         option_definition &opt = reg_option.second;
         if(!opt.constructor_has_default_values) continue;
@@ -41,7 +43,7 @@ void add_options_with_default_values_templatedata(TemplateData &variable)
 }
 
 /// Add templatedata for this shared variable coming from shared options.
-void add_options_templatedata(TemplateData &variable, ShTreeNode node)
+void add_options_templatedata(TemplateData &variable, vector<attached_option> attached_options, ParserContext &data)
 {
     // renders: 1. fill data: 
     //             - take node constructor args, compare it with option_definition names [done]
@@ -63,12 +65,12 @@ void add_options_templatedata(TemplateData &variable, ShTreeNode node)
 
     TemplateData constructor_args_data = variable;
 
-    add_options_with_default_values_templatedata(constructor_args_data);
-    for(auto node_option : node.attached_options) // a node option is one instance of a sharedoption attached to a node (a SharedVar or SharedClass)
+    add_options_with_default_values_templatedata(constructor_args_data, data);
+    for(auto node_option : attached_options) // a node option is one instance of a sharedoption attached to a node (a SharedVar or SharedClass)
     {
-        auto find_in_declarations = option_definitions.find(node_option.name);
-        if(find_in_declarations == option_definitions.end()) continue; // this argument is not corresponding with the name of a sharedoption.
-        std::cout << "node: " << node.get_name_cpp_full() << " option: " << node_option.name << std::endl;
+        auto find_in_declarations = data.option_definitions.find(node_option.name);
+        if(find_in_declarations == data.option_definitions.end()) continue; // this argument is not corresponding with the name of a sharedoption.
+       // std::cout << "node: " << node.get_name_cpp_full() << " option: " << node_option.name << std::endl;
 
         const option_definition &opt = find_in_declarations->second;
         // if(opt.constructor_args.size() >= node_option.constructor_args.size()) throw exception("");
@@ -83,22 +85,22 @@ void add_options_templatedata(TemplateData &variable, ShTreeNode node)
     // render template_hybrids and add them to the templatedata of the variable:
 
     // add empty lists to the variable key=the name
-    for(auto opt : option_definitions)
+    for(auto opt : data.option_definitions)
         for(auto member : opt.second.const_char_members)
             variable[member.name] = TemplateData(TemplateData::Type::List);
 
     unordered_set<string> rendered_th_names;
     // render th's occuring in the constructor
-    for(auto node_option : node.attached_options)
+    for(auto node_option : attached_options)
     {
-        auto find_in_definitions = option_definitions.find(node_option.name);
-        if(find_in_definitions == option_definitions.end()) continue;
+        auto find_in_definitions = data.option_definitions.find(node_option.name);
+        if(find_in_definitions == data.option_definitions.end()) continue;
         add_rendered_template_hybrids(find_in_definitions->second, variable, constructor_args_data);
         rendered_th_names.emplace(find_in_definitions->second.name);
     }
 
     // render th's which have default values and havent been rendered before.
-    for(auto reg_option : option_definitions)
+    for(auto reg_option : data.option_definitions)
     {
         option_definition &opt = reg_option.second;
         auto find_in_instances = rendered_th_names.find(opt.name);
@@ -142,7 +144,7 @@ void add_namespace_seps_templatedata(TemplateData &templdata, string ns_str)
     templdata.set("namespace_sep_close", namespace_sep_close);
 }
 
-TemplateData get_shared_var_templatedata(ShTreeNode &node, int index)
+TemplateData get_shared_var_templatedata(ShTreeNode &node, int index, ParserContext &data)
 {
     TemplateData curvariable{TemplateData::Type::Object};
     curvariable.set("is_global", node.node_type==ShTreeNode::NODE_CLASS_VAR ? TemplateData::Type::False : TemplateData::Type::True);
@@ -159,33 +161,11 @@ TemplateData get_shared_var_templatedata(ShTreeNode &node, int index)
 
     add_namespace_seps_templatedata(curvariable, node.get_namespace());
 
-    add_options_templatedata(curvariable, node);
+    add_options_templatedata(curvariable, node.attached_options, data);
     return curvariable;
 }
 
-void add_node_templatedata(ShTreeNode &node, int &index, TemplateData &templdata)
-{
-    switch(node.node_type)
-    {
-        case ShTreeNode::NODE_GLOBAL_VAR:
-        case ShTreeNode::NODE_CLASS_VAR:
-        {
-            templdata << get_shared_var_templatedata(node, index);
-            index++;
-            break;
-        }
-        case ShTreeNode::NODE_CLASS_SINGLETON:
-        {
-            for(auto child : node.children)
-            {
-                add_node_templatedata(*child, index, templdata);
-            }
-            break;
-        }
-    }
-}
-
-TemplateData get_shared_class_templatedata(shared_class_definition *def, int &treevent_index, bool add_instances = true)
+TemplateData get_shared_class_templatedata(shared_class_definition *def, int &treevent_index, ParserContext &ctx, bool add_instances = true)
 {
     TemplateData cur_definition{TemplateData::Type::Object};
     // The class needs to be defined in a cleanly includeable header file.
@@ -195,6 +175,8 @@ TemplateData get_shared_class_templatedata(shared_class_definition *def, int &tr
     // The name of the class with leading namespace.
     cur_definition.set("definition_name_cpp", def->get_name_cpp_full());
     cur_definition.set("definition_name_unique", def->get_name_unique());
+
+    add_options_templatedata(cur_definition, def->attached_options, ctx);
 
     TemplateData all_instances{TemplateData::Type::List};
 
@@ -213,11 +195,11 @@ TemplateData get_shared_class_templatedata(shared_class_definition *def, int &tr
         if(inst_node->template_type_definition)
         {
             TemplateData dummy_list(TemplateData::Type::List);
-            dummy_list << get_shared_class_templatedata(inst_node->template_type_definition, treevent_index, false);
+            dummy_list << get_shared_class_templatedata(inst_node->template_type_definition, treevent_index, ctx, false);
             cur_instance.set("first_template_type", std::move(dummy_list));
         }
 
-        add_options_templatedata(cur_instance, inst_node);
+        add_options_templatedata(cur_instance, inst_node->attached_options, ctx);
 
         all_instances << cur_instance;
     }
@@ -228,7 +210,7 @@ TemplateData get_shared_class_templatedata(shared_class_definition *def, int &tr
     int local_index = 2;
     for(ShTreeNode *child : def->nodes)
     {
-        members << get_shared_var_templatedata(*child, local_index++);
+        members << get_shared_var_templatedata(*child, local_index++, ctx);
     }
     cur_definition.set("members", members);
     return cur_definition;
@@ -285,7 +267,7 @@ TemplateData get_shared_function_templatedata(shared_function &sf, int &index)
     return curfunction;
 }
 
-TemplateData fill_templatedata(vector<ShTreeNode *> &tree, const string &ns)
+TemplateData fill_templatedata(ParserContext &data, const string &ns)
 {
     TemplateData tmpldata{TemplateData::Type::Object};
 
@@ -302,27 +284,29 @@ TemplateData fill_templatedata(vector<ShTreeNode *> &tree, const string &ns)
 
     // The protocol buffers variable index
     int index = 21;
-    for(ShTreeNode *node : tree)
+    for(ShTreeNode *node : data.instances)
     {
-        add_node_templatedata(*node, index, sharedvars);
+        sharedvars << get_shared_var_templatedata(*node, index, data);
+        index++;
     }
     tmpldata.set("shared_vars", sharedvars);
 
     TemplateData sharedclasses{TemplateData::Type::List};
 
-    for(shared_class_definition *class_def : shared_class_definitions)
+    for(auto class_def_it : data.shared_class_definitions)
     {
-        sharedclasses << get_shared_class_templatedata(class_def, index);
+        sharedclasses << get_shared_class_templatedata(class_def_it.second, index, data);
     }
     tmpldata.set("shared_class_definitions", sharedclasses);
 
 
     TemplateData sharedfunctionsdata{TemplateData::Type::List};
 
-    for(shared_function &sf : shared_functions)
-        sharedfunctionsdata << get_shared_function_templatedata(sf, index);
+    for(auto sf_it : data.shared_functions)
+        sharedfunctionsdata << get_shared_function_templatedata(sf_it.second, index);
     tmpldata.set("shared_functions", sharedfunctionsdata);
 
     return tmpldata;
 }
 
+} } } // namespace inexor::rpc::gluegen

@@ -10,6 +10,7 @@
 #include "inexor/gluegen/parse_sourcecode.hpp"
 #include "inexor/gluegen/generate_files.hpp"
 #include "inexor/gluegen/fill_templatedata.hpp"
+#include "inexor/gluegen/ParserContext.hpp"
 
 
 using namespace inexor::rpc::gluegen;
@@ -83,21 +84,17 @@ int main(int argc, const char **argv)
 
     // Read the list of variables
 
-    std::vector<ShTreeNode *> tree;
+    ParserContext parserctx;
 
-    find_shared_decls(xml_AST_file, tree); // fill the tree vector
+    find_shared_decls(xml_AST_file, parserctx); // fill the tree vector
 
-    TemplateData templdata = fill_templatedata(tree, ns_str);
+    TemplateData templdata = fill_templatedata(parserctx, ns_str);
 
     // Write the protoc file
-    render_proto_file(proto_file, proto_template, tree, templdata);
+    render_proto_file(proto_file, proto_template, templdata);
 
     // Write cpp files
-    render_cpp_tree_data(cpp_file, cpp_template, tree, templdata);
-
-    // Clean up allocated tree nodes.
-    // NOTE: Removed, were being bad guys and do not explicitly delete it but let the OS do it,
-    //                since our destructors are empty. Do not follow this practice in case you dont know why were allowed to be lazy here.
+    render_cpp_tree_data(cpp_file, cpp_template, templdata);
 
     return 0;
 }

@@ -18,8 +18,6 @@ using namespace boost;
 
 namespace inexor { namespace rpc { namespace gluegen {
 
-unordered_map<string, option_definition> option_definitions;
-
 /// This function searches constructors of the sharedoptions class in the AST, looks up the args of the constructor and saves those in opt.
 ///
 /// @param opt the class (derived from a common base class called SharedOption) in parsed form.
@@ -84,13 +82,14 @@ name_defaultvalue_vector find_options_class_const_char_members(option_definition
     return const_char_members;
 }
 
-/// This function saves a option_definition (a class declaration which is derived from SharedOption) to our option_definitions vector.
+/// This function parses an option_definition xml node and save it to our option_definitions map.
 /// 
 /// We require to have all constructor arguments named the same.
 /// We furthermore require to have default values for either all or no constructor arguments.
 /// + all default_values across all constructors need to be the same.
-/// Error if those requirements aren't met.
-void handle_shared_option(const xml_node &compound_xml)
+/// TODO we do not handle namespaces for this correctly atm.
+/// TODO: Error if those requirements aren't met.
+void parse_shared_option_definition(const xml_node &compound_xml, unordered_map<string, option_definition> &option_definitions)
 {
     option_definition opt(get_complete_xml_text(compound_xml.child("compoundname")));
     std::cout << "SharedOption-derived class definition found: " << opt.name << std::endl;
@@ -102,6 +101,57 @@ void handle_shared_option(const xml_node &compound_xml)
 
     for(auto member : opt.const_char_members)
         std::cout << "['const char *'-members of " << opt.name << "] " << member.name << " = " << member.default_value << std::endl;
+}
+
+
+void analyze_shared_options(ParserContext &data)
+{
+    for(auto &compound_node : data.def_nodes.options)
+        parse_shared_option_definition(compound_node, data.option_definitions);
+}
+
+bool is_option_class_node(const xml_node class_xml_compound_node)
+{
+    for(xml_node &base_class : class_xml_compound_node.children("basecompoundref"))
+    {
+        string baseclassname = base_class.text().as_string();
+        if(baseclassname == "SharedOption")
+            return true;
+    }
+    return false;
+}
+
+
+vector<attached_option> parse_attached_options_string(string options_list_str, bool verbose)
+{
+    vector<attached_option> options;
+
+    const vector<string> option_strings_vec(split_by_delimiter(options_list_str, "|")); // tokenize
+
+    for(string raw_str : option_strings_vec) // e.g. " NoSync() \n" or Range(0, 3) or Persistent(true)
+    {
+        trim(raw_str);                       // remove any whitespace around normal chars " NoSync(   ) \n" -> "NoSync(   )"
+        attached_option option;
+
+        string temp;
+        string argsstr = parse_bracket(raw_str, option.name, temp);       // from Range(0, 3) we get "0, 3"
+        option.constructor_args = tokenize_arg_list(argsstr);             // "0", " 3"
+        for(string &arg : option.constructor_args)                        // "0", "3"
+            trim(arg);
+
+
+        if(verbose)
+        {
+            std::cout << "string: " << raw_str << std::endl;
+            std::cout << "opt name: " << option.name << std::endl << "args:";
+            for(auto &i : option.constructor_args)
+                std::cout << " " << i;
+            std::cout << std::endl;
+        }
+
+        options.push_back(option);
+    }
+    return options;
 }
 
 } } } // namespace inexor::rpc::gluegen
