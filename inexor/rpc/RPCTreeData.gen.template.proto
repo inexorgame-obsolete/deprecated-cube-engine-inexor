@@ -88,7 +88,7 @@ message TreeEvent
 {{/shared_vars}}
 
   // All event message for the SharedLists
-{{#shared_class_definitions}}def-noch {{definition_name_unique}}{{#is_shared_list}} is shared-list{{#instances}} instance {{instance_name_unique}}{{#first_template_type}}
+{{#shared_class_definitions}}{{#is_shared_list}}{{#instances}}{{#first_template_type}}
     list_{{definition_name_unique}}_added list_{{instance_name_unique}}_added = {{index}} [(path) = "{{{path}}}", (event_type)=TYPE_LIST_EVENT_ADDED];
     list_{{definition_name_unique}}_modified list_{{instance_name_unique}}_modified = {{index}} [(path) = "{{{path}}}", (event_type)=TYPE_LIST_EVENT_MODIFIED];
     list_{{definition_name_unique}}_removed list_{{instance_name_unique}}_removed = {{index}} [(path) = "{{{path}}}", (event_type)=TYPE_LIST_EVENT_REMOVED];
@@ -100,7 +100,7 @@ message TreeEvent
 {{/members}}{{/instances}}{{/is_shared_list}}{{/shared_class_definitions}}
 
   // All shared function events (function gets executed when event comes in)
-{{#shared_functions}}{{#parameter_lists}}    SharedFunction_{{function_name_unique}}_params_{{index}} = {{index}} [(path) = "{{{path}}}", (event_type)=TYPE_FUNCTION_EVENT];
+{{#shared_functions}}{{#parameter_lists}}    SharedFunction_{{function_name_unique}}_params_{{index}} SharedFunction_{{function_name_unique}}_params_{{index}} = {{index}} [(path) = "{{{path}}}", (event_type)=TYPE_FUNCTION_EVENT];
 {{/parameter_lists}}{{/shared_functions}}
   }
 }

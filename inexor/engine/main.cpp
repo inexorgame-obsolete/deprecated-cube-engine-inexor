@@ -10,6 +10,7 @@
 #include "inexor/crashreporter/CrashReporter.hpp"
 #include "inexor/util/Logging.hpp"
 #include "inexor/rpc/SharedTree.hpp"
+#include "inexor/rpc/SharedList.hpp"
 
 namespace inexor {
 namespace rpc {
@@ -40,7 +41,7 @@ inexor::rendering::player player2;
 using namespace inexor;
 
 rendering::player player3;
-
+SharedList<rendering::player> testbliat;
 
 void testfunction(char *init, string num2)
 {
