@@ -45,7 +45,7 @@ enum TreeEventTypes
 /// So one for each SharedClass, whether they get used in a SharedList somewhere or not.
 /// There are 3 things which can happen to a SharedLists entry: it can be removed, modified or a new one can be added.
 {{#shared_class_definitions}}{{^is_shared_list}}message list_{{definition_name_unique}}_added {
-  option (event_type) = TYPE_LIST_EVENT_ADDED;
+  option (message_type) = TYPE_LIST_EVENT_ADDED;
   int64 intern_shared_list_id_number = 1;
 
 {{#members}}  {{{type_protobuf}}} {{{name_unique}}} = {{local_index}}    [(path) = "{{{path}}}", (default_value)="{{{default_value}}}", (event_type)=TYPE_LIST_CLASS_VAR_DUMMY];
@@ -53,7 +53,7 @@ enum TreeEventTypes
 }
 
 message list_{{definition_name_unique}}_modified {
-  option (event_type) = TYPE_LIST_EVENT_MODIFIED;
+  option (message_type) = TYPE_LIST_EVENT_MODIFIED;
   int64 intern_shared_list_id_number = 1;
   oneof key {
 {{#members}}    {{{type_protobuf}}} {{{name_unique}}} = {{local_index}}    [(path) = "{{{path}}}", (default_value)="{{{default_value}}}", (event_type)=TYPE_LIST_CLASS_VAR_DUMMY];
@@ -62,7 +62,7 @@ message list_{{definition_name_unique}}_modified {
 }
 
 message list_{{{definition_name_unique}}}_removed {
-  option (event_type) = TYPE_LIST_EVENT_REMOVED;
+  option (message_type) = TYPE_LIST_EVENT_REMOVED;
   int64 intern_shared_list_id_number = 1;
 }
 {{/is_shared_list}}{{/shared_class_definitions}}
@@ -70,9 +70,9 @@ message list_{{{definition_name_unique}}}_removed {
 /// Shared Functions can be executed through the InexorTree on flex side and get executed on Core side.
 /// For each overload found in the sourcecode one message type gets generated.
 {{#shared_functions}}{{#parameter_lists}}
-message SharedFunction_{{function_name_unique}}_params_event{{overload_counter}} {
-  option (event_type) = TYPE_FUNCTION_EVENT;
-{{#params}}  {{{type_protobuf}}} {{{param_name}}} = {{local_index}} [(path) = "{{{path}}}", (event_type)=TYPE_FUNCTION_PARAM];
+message SharedFunction_{{function_name_unique}}_params_event_{{overload_counter}} {
+  option (message_type) = TYPE_FUNCTION_EVENT;
+{{#params}}  {{{type_protobuf}}} function_param_{{param_name}} = {{local_index}} [(path) = "{{{path}}}", (event_type)=TYPE_FUNCTION_PARAM];
 {{/params}}
 }
 {{/parameter_lists}}{{/shared_functions}}
@@ -121,5 +121,6 @@ extend google.protobuf.FieldOptions
 
 extend google.protobuf.MessageOptions {
   // @see TreeEventTypes
-  TreeEventTypes event_type = 50002;
+  // TreeEventTypes event_type = 50002; WE CAN'T DO THIS CURRENTLY SINCE THAT CAUSES MULTIPLY DEFINITIONS ERRORS WITH THE FieldOptions.event_type .. protobuf-bug?
+  TreeEventTypes message_type = 50002;
 }
