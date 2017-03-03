@@ -144,7 +144,18 @@ void add_namespace_seps_templatedata(TemplateData &templdata, string ns_str)
     templdata.set("namespace_sep_close", namespace_sep_close);
 }
 
-TemplateData get_shared_var_templatedata(ShTreeNode &node, int index, ParserContext &data)
+/// Index is a very special data entry: every time it gets referenced it gets iterated!
+TemplateData::PartialType get_index_incrementer()
+{
+    return TemplateData::PartialType([]() {
+        static int count = 21;
+        return to_string(count++);
+    });
+}
+
+/// @param local_index if this is different from -1 we set "local_index" with it.
+///        otherwise we use the tree_event index counter.. @see add_event_index_templatedata
+TemplateData get_shared_var_templatedata(ShTreeNode &node, int local_index, ParserContext &data)
 {
     TemplateData curvariable{TemplateData::Type::Object};
     curvariable.set("is_global", node.node_type==ShTreeNode::NODE_CLASS_VAR ? TemplateData::Type::False : TemplateData::Type::True);
@@ -152,7 +163,8 @@ TemplateData get_shared_var_templatedata(ShTreeNode &node, int index, ParserCont
     curvariable.set("type_cpp_full", node.get_type_cpp_full());
     curvariable.set("type_cpp_primitive", node.get_template_type());
     curvariable.set("type_numeric", std::to_string(node.get_type_numeric()));
-    curvariable.set("index", std::to_string(index));
+    if(local_index>0) curvariable.set("local_index", std::to_string(local_index));
+    curvariable.set("index", get_index_incrementer());
     curvariable.set("name_unique", node.get_name_unique());
     curvariable.set("path", node.get_path());
     curvariable.set("default_value", node.get_default_value());
@@ -165,7 +177,7 @@ TemplateData get_shared_var_templatedata(ShTreeNode &node, int index, ParserCont
     return curvariable;
 }
 
-TemplateData get_shared_class_templatedata(shared_class_definition *def, int &treevent_index, ParserContext &ctx, bool add_instances = true)
+TemplateData get_shared_class_templatedata(shared_class_definition *def, ParserContext &ctx, bool add_instances = true)
 {
     TemplateData cur_definition{TemplateData::Type::Object};
     // The class needs to be defined in a cleanly includeable header file.
@@ -189,13 +201,13 @@ TemplateData get_shared_class_templatedata(shared_class_definition *def, int &tr
         cur_instance.set("name_parent_cpp_short", inst_node->get_name_cpp_short());
         cur_instance.set("instance_name_unique", inst_node->get_name_unique());
         cur_instance.set("path", inst_node->get_path());
-        cur_instance.set("index", std::to_string(treevent_index++)); // TODO double iteration?
+        cur_instance.set("index", get_index_incrementer());
 
         // were doing this for sharedlists, where the first template is relevant.
         if(inst_node->template_type_definition)
         {
             TemplateData dummy_list(TemplateData::Type::List);
-            dummy_list << get_shared_class_templatedata(inst_node->template_type_definition, treevent_index, ctx, false);
+            dummy_list << get_shared_class_templatedata(inst_node->template_type_definition, ctx, false);
             cur_instance.set("first_template_type", std::move(dummy_list));
         }
 
@@ -226,7 +238,7 @@ TemplateData get_shared_class_templatedata(shared_class_definition *def, int &tr
 ///   namespacesep [DONE]
 ///        
 typedef shared_function::function_parameter_list::param::PRIMITIVE_TYPES PRIMITIVE_TYPES;
-TemplateData get_shared_function_templatedata(shared_function &sf, int &index)
+TemplateData get_shared_function_templatedata(shared_function &sf)
 {
     TemplateData curfunction{TemplateData::Type::Object};
 
@@ -238,12 +250,15 @@ TemplateData get_shared_function_templatedata(shared_function &sf, int &index)
 
     TemplateData overloads{TemplateData::Type::List};
 
+    int overload_counter = 0;
     for(auto &paramlist : sf.parameter_lists)
     {
         TemplateData paramlistdata{TemplateData::Type::Object};
 
         paramlistdata.set("function_declaration", paramlist.declaration);
-        paramlistdata.set("index", std::to_string(index++));
+        paramlistdata.set("index", get_index_incrementer());
+
+        paramlistdata.set("overload_counter", std::to_string(overload_counter++));
 
         TemplateData params{TemplateData::Type::List};
         int local_index = 1;
@@ -282,12 +297,9 @@ TemplateData fill_templatedata(ParserContext &data, const string &ns)
 
     TemplateData sharedvars{TemplateData::Type::List};
 
-    // The protocol buffers variable index
-    int index = 21;
     for(ShTreeNode *node : data.instances)
     {
-        sharedvars << get_shared_var_templatedata(*node, index, data);
-        index++;
+        sharedvars << get_shared_var_templatedata(*node, -1, data);
     }
     tmpldata.set("shared_vars", sharedvars);
 
@@ -295,7 +307,7 @@ TemplateData fill_templatedata(ParserContext &data, const string &ns)
 
     for(auto class_def_it : data.shared_class_definitions)
     {
-        sharedclasses << get_shared_class_templatedata(class_def_it.second, index, data);
+        sharedclasses << get_shared_class_templatedata(class_def_it.second, data);
     }
     tmpldata.set("shared_class_definitions", sharedclasses);
 
@@ -303,7 +315,7 @@ TemplateData fill_templatedata(ParserContext &data, const string &ns)
     TemplateData sharedfunctionsdata{TemplateData::Type::List};
 
     for(auto sf_it : data.shared_functions)
-        sharedfunctionsdata << get_shared_function_templatedata(sf_it.second, index);
+        sharedfunctionsdata << get_shared_function_templatedata(sf_it.second);
     tmpldata.set("shared_functions", sharedfunctionsdata);
 
     return tmpldata;

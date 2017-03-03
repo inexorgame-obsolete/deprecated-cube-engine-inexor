@@ -44,11 +44,11 @@ enum TreeEventTypes
 /// This is a list of all possible SharedList template arguments (SharedList<SharedClassName> xy).
 /// So one for each SharedClass, whether they get used in a SharedList somewhere or not.
 /// There are 3 things which can happen to a SharedLists entry: it can be removed, modified or a new one can be added.
-{{#shared_class_definitions}}message list_{{definition_name_unique}}_added {
+{{#shared_class_definitions}}{{^is_shared_list}}message list_{{definition_name_unique}}_added {
   option (event_type) = TYPE_LIST_EVENT_ADDED;
   int64 intern_shared_list_id_number = 1;
-  
-{{#members}}  {{{type_protobuf}}} {{{name_unique}}} = {{index}}    [(path) = "{{{path}}}", (default_value)="{{{default_value}}}", (event_type)=TYPE_LIST_CLASS_VAR_DUMMY];
+
+{{#members}}  {{{type_protobuf}}} {{{name_unique}}} = {{local_index}}    [(path) = "{{{path}}}", (default_value)="{{{default_value}}}", (event_type)=TYPE_LIST_CLASS_VAR_DUMMY];
 {{/members}}
 }
 
@@ -56,7 +56,7 @@ message list_{{definition_name_unique}}_modified {
   option (event_type) = TYPE_LIST_EVENT_MODIFIED;
   int64 intern_shared_list_id_number = 1;
   oneof key {
-{{#members}}    {{{type_protobuf}}} {{{name_unique}}} = {{index}}    [(path) = "{{{path}}}", (default_value)="{{{default_value}}}", (event_type)=TYPE_LIST_CLASS_VAR_DUMMY];
+{{#members}}    {{{type_protobuf}}} {{{name_unique}}} = {{local_index}}    [(path) = "{{{path}}}", (default_value)="{{{default_value}}}", (event_type)=TYPE_LIST_CLASS_VAR_DUMMY];
 {{/members}}
   }
 }
@@ -65,12 +65,12 @@ message list_{{{definition_name_unique}}}_removed {
   option (event_type) = TYPE_LIST_EVENT_REMOVED;
   int64 intern_shared_list_id_number = 1;
 }
-{{/shared_class_definitions}}
+{{/is_shared_list}}{{/shared_class_definitions}}
 
 /// Shared Functions can be executed through the InexorTree on flex side and get executed on Core side.
 /// For each overload found in the sourcecode one message type gets generated.
 {{#shared_functions}}{{#parameter_lists}}
-message SharedFunction_{{function_name_unique}}_params_{{index}} {
+message SharedFunction_{{function_name_unique}}_params_event{{overload_counter}} {
   option (event_type) = TYPE_FUNCTION_EVENT;
 {{#params}}  {{{type_protobuf}}} {{{param_name}}} = {{local_index}} [(path) = "{{{path}}}", (event_type)=TYPE_FUNCTION_PARAM];
 {{/params}}
@@ -84,23 +84,23 @@ message TreeEvent
     GeneralTreeEvents general_event = 20;
 
   // All basic global shared vars singeltons.
-{{#shared_vars}}    {{{type_protobuf}}} {{{name_unique}}} = {{{index}}}    [(path) = "{{{path}}}", (default_value)="{{{default_value}}}", (event_type)=TYPE_GLOBAL_VAR_MODIFIED];
+{{#shared_vars}}    {{{type_protobuf}}} {{{name_unique}}} = {{>index}}    [(path) = "{{{path}}}", (default_value)="{{{default_value}}}", (event_type)=TYPE_GLOBAL_VAR_MODIFIED];
 {{/shared_vars}}
 
   // All event message for the SharedLists
 {{#shared_class_definitions}}{{#is_shared_list}}{{#instances}}{{#first_template_type}}
-    list_{{definition_name_unique}}_added list_{{instance_name_unique}}_added = {{index}} [(path) = "{{{path}}}", (event_type)=TYPE_LIST_EVENT_ADDED];
-    list_{{definition_name_unique}}_modified list_{{instance_name_unique}}_modified = {{index}} [(path) = "{{{path}}}", (event_type)=TYPE_LIST_EVENT_MODIFIED];
-    list_{{definition_name_unique}}_removed list_{{instance_name_unique}}_removed = {{index}} [(path) = "{{{path}}}", (event_type)=TYPE_LIST_EVENT_REMOVED];
+    list_{{definition_name_unique}}_added list_{{instance_name_unique}}_added = {{>index}} [(path) = "{{{path}}}", (event_type)=TYPE_LIST_EVENT_ADDED];
+    list_{{definition_name_unique}}_modified list_{{instance_name_unique}}_modified = {{>index}} [(path) = "{{{path}}}", (event_type)=TYPE_LIST_EVENT_MODIFIED];
+    list_{{definition_name_unique}}_removed list_{{instance_name_unique}}_removed = {{>index}} [(path) = "{{{path}}}", (event_type)=TYPE_LIST_EVENT_REMOVED];
 {{/first_template_type}}{{/instances}}{{/is_shared_list}}{{/shared_class_definitions}}
 
   // All event message for global SharedClasses
 {{#shared_class_definitions}}{{^is_shared_list}}{{#instances}}
-{{#members}}    {{{type_protobuf}}} class_{{instance_name_unique}}_var_{{{name_unique}}} = {{index}}    [(path) = "{{{path}}}", (default_value)="{{{default_value}}}", (event_type)=TYPE_GLOBAL_VAR_MODIFIED];
+{{#members}}    {{{type_protobuf}}} class_{{instance_name_unique}}_var_{{{name_unique}}} = {{>index}}    [(path) = "{{{path}}}", (default_value)="{{{default_value}}}", (event_type)=TYPE_GLOBAL_VAR_MODIFIED];
 {{/members}}{{/instances}}{{/is_shared_list}}{{/shared_class_definitions}}
 
   // All shared function events (function gets executed when event comes in)
-{{#shared_functions}}{{#parameter_lists}}    SharedFunction_{{function_name_unique}}_params_{{index}} SharedFunction_{{function_name_unique}}_params_{{index}} = {{index}} [(path) = "{{{path}}}", (event_type)=TYPE_FUNCTION_EVENT];
+{{#shared_functions}}{{#parameter_lists}}    SharedFunction_{{function_name_unique}}_params_event_{{overload_counter}} SharedFunction_{{function_name_unique}}_params_{{overload_counter}} = {{>index}} [(path) = "{{{path}}}", (event_type)=TYPE_FUNCTION_EVENT];
 {{/parameter_lists}}{{/shared_functions}}
   }
 }
