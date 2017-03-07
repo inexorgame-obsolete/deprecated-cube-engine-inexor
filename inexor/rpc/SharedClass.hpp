@@ -1,11 +1,13 @@
 #pragma once
 #include "inexor/rpc/SharedVar.hpp"
+#include "inexor/rpc/SharedOptions.hpp"
 
 /// All classes deriving from this class get detected by our reflection system InexorGlueGen.
 class SharedClass
 {
 public:
-    int id; // optional id in a SharedList
+    SharedClass() {}
+    SharedClass(SharedOption p) {}
 };
 
 namespace inexor { namespace rendering {
@@ -25,6 +27,9 @@ public:
     }
 
     player(const char *alpha);
+    player(const player &old) : kills(old.kills), deaths(old.deaths) // TODO: TELL PEOPLE THIS IS REQUIRED
+    { }
+
     SharedVar<int> kills;
     SharedVar<int> deaths;
     class weapon : public SharedClass

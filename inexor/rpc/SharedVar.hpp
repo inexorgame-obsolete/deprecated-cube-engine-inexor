@@ -87,7 +87,7 @@ public:
     explicit SharedVar(Args&&... args, SharedOption)
         : value(std::forward<Args>(args)...) {}
 
-   // explicit SharedVar(T otr) : value(otr) {}
+    explicit SharedVar(const SharedVar<T> &otr) : value(otr.value) {}
     explicit SharedVar(T &otr) : value(otr) {}
     explicit SharedVar(T &&otr) : value(otr) {} // Shuu TODO we need to reenable this!
  //   explicit SharedVar(T otr, SharedOption) : value(otr) {}

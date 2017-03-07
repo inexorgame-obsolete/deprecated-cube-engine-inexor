@@ -33,13 +33,13 @@ template<typename T>
 struct SharedList : SharedClass
 {
     int len = 0;
-    std::function<void(int, sharedclasstest &)> element_pushed_back_func;
+    std::function<void(int, T &)> element_pushed_back_func;
     std::function<void(int)> element_removed_func;
     std::vector<T> container;
 
     SharedList() : SharedClass(InternalSharedListMarker()) {}
 
-    void push_back(T s) // + &s + &&s hat beides
+    void push_back(const T &&s) // TODO &&
     {
         int id = ++len;
         container.push_back(std::move(s));
@@ -56,7 +56,12 @@ struct SharedList : SharedClass
 
     T& operator[](size_t n)
     {
+        return container[n];
+    }
 
+    size_t size()
+    {
+        return container.size();
     }
 };
 
