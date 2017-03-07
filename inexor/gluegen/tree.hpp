@@ -64,7 +64,7 @@ public:
 
     /// The C++ template type of a SharedVar ("char*"/"int"/"float")
     /// or a SharedClass("Classname<SharedVar<int>>" or "ClassName1<ClassName2>").
-    /// @return the string of the typename of the template, otherwise an empty string if no "<..>" is found.
+    /// @return Gives back anything between '<' and the first ',' of the full_type string
     /// @note For NODE_CLASS_SINGLETON its an edge case to handle sharedlists (SharedList<player> players).
     std::string get_template_type();
 

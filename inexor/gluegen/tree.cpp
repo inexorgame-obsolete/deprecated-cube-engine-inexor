@@ -82,9 +82,10 @@ const char *ShTreeNode::get_type_cpp_full()
 std::string ShTreeNode::get_template_type()
 {
     size_t open_pos = full_type.find("<") + 1;
-    size_t closing_pos = full_type.find_last_of(">", open_pos);
-    if(closing_pos == string::npos || open_pos == string::npos) return "";
-    return full_type.substr(open_pos, closing_pos-open_pos);
+    size_t end_first_param_pos = full_type.find(",", open_pos);
+    if(open_pos == string::npos) return "";
+    if(end_first_param_pos != string::npos) return full_type.substr(open_pos, end_first_param_pos-open_pos);
+    return full_type.substr(open_pos, full_type.size()-open_pos-1); // we do -1, since the last letter ">" should be skipped
 }
 
 const char * ShTreeNode::get_type_protobuf()
