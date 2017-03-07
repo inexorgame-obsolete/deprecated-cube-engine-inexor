@@ -89,6 +89,13 @@ shared_function::function_parameter_list::param parse_param(string str)
     }
 
     return_param.type = typemap_finder->second;
+    if(return_param.type == PRIMITIVE_TYPES::P_INT || return_param.type == PRIMITIVE_TYPES::P_FLOAT)
+        if(str.find("*") != string::npos || str.find("&") != string::npos) // we do not allow pointers or references on numeric types.
+            return_param.type = PRIMITIVE_TYPES::P_INVALID; // TODO: we should switch to whitelisting instead of blacklisting here..
+
+    if(return_param.type == PRIMITIVE_TYPES::P_STR)
+        if(type_str == "char" && str.find("const") == string::npos) // we only allow const char, no mutable char arguments
+            return_param.type = PRIMITIVE_TYPES::P_INVALID;
     return return_param;
 }
 
