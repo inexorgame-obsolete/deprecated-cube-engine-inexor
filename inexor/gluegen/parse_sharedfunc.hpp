@@ -32,6 +32,8 @@ struct shared_function
         };
         std::vector<param> params;
         std::string declaration;
+        /// If this is a clone, this is a copy of a parameter list which had default values.
+        bool clone = false;
     };
     std::string get_name_cpp_full();
     std::string get_unique_name();

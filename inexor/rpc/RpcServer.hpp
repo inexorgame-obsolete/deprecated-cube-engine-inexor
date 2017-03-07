@@ -32,8 +32,9 @@ enum cpp_type_t
 // These functions need to be implemented by the Context Provider (acquiring this submodule):
 extern void set_on_change_functions();
 extern void send_all_vars();
-extern const std::unordered_map<int64, void *> cppvar_pointer_map;
-extern const std::unordered_map<int64, int> index_to_type_map;
+
+template<typename MSG_TYPE>
+bool handle_index(int index, const MSG_TYPE &tree_event);
 
 #define MAX_RPC_EVENT_CHECKS_PER_TICK 100
 #define MAX_RPC_CLIENTS 128 // possible highest value is 255, see encode_signal()
@@ -433,46 +434,10 @@ bool RpcServer<MSG_TYPE, U>::change_variable(MSG_TYPE &receivedval)
         return false;
     }
 
-    auto ptr2variable_itr = cppvar_pointer_map.find(index);
-    auto expected_type_itr = index_to_type_map.find(index);
-
-    if(ptr2variable_itr == cppvar_pointer_map.end() || expected_type_itr == index_to_type_map.end())
+    if(!handle_index<MSG_TYPE>(index, receivedval))
     {
         spdlog::get("global")->info("network: received non-supported index: {0}", index); // -> to debug
         return false;
-    }
-
-    /*
-    generated security layer network here
-    */
-
-    auto type = expected_type_itr->second;
-    auto field = receivedval.GetDescriptor()->FindFieldByNumber(index);
-
-    switch(type)
-    { // TODO: renew this passage to generated shit for every variable to get rid of (runtime?) reflection (only in case its runtime reflection ofc)
-        case cpp_type_t::t_cstring:
-        {
-            SharedVar<char *> *changed = static_cast<SharedVar<char *>*>(ptr2variable_itr->second);
-            std::string newvalue(receivedval.GetReflection()->GetString(receivedval, field)); //TODO remove double type conversation..
-            changed->setnosync(strdup(newvalue.c_str()));
-            break;
-        }
-        case cpp_type_t::t_int:
-        {
-            SharedVar<int> *changed = static_cast<SharedVar<int>*>(ptr2variable_itr->second);
-            int newvalue = (int64)receivedval.GetReflection()->GetInt64(receivedval, field);
-            // TODO actually type is int32!
-            changed->setnosync(newvalue);
-            break;
-        }
-        case cpp_type_t::t_float:
-        {
-            SharedVar<float> *changed = static_cast<SharedVar<float>*>(ptr2variable_itr->second);
-            float newvalue = receivedval.GetReflection()->GetFloat(receivedval, field);
-            changed->setnosync(newvalue);
-            break;
-        }
     }
     return true;
 }

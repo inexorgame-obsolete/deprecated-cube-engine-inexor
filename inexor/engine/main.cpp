@@ -64,18 +64,6 @@ SharedFunc(testfunction)
 
 void testfunction(int init,
                   int initf) { }
-//void set_player_weapon1_ammo(int value)
-//{
-//    inexor::rendering::player1.weapons[1].ammo = 0;
-//}
-//
-//void connect_player_weapon_ammo_change(int weaponsid)
-//{
-//    inexor::rendering::player1.weapons[weaponsid].ammo.connect([int oldvalue, int newvalue]
-//    {
-//        
-//    });
-//}
 
 using namespace inexor::sound;
 using namespace inexor::io;

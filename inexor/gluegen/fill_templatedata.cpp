@@ -145,10 +145,11 @@ void add_namespace_seps_templatedata(TemplateData &templdata, string ns_str)
 }
 
 /// Index is a very special data entry: every time it gets referenced it gets iterated!
-TemplateData::PartialType get_index_incrementer()
+TemplateData::PartialType get_index_incrementer(bool reset = false)
 {
-    return TemplateData::PartialType([]() {
+    return TemplateData::PartialType([reset]() {
         static int count = 21;
+        if(reset) count = 20;
         return to_string(count++);
     });
 }
@@ -158,7 +159,12 @@ TemplateData::PartialType get_index_incrementer()
 TemplateData get_shared_var_templatedata(ShTreeNode &node, int local_index, ParserContext &data)
 {
     TemplateData curvariable{TemplateData::Type::Object};
+    // These is a hacky way to distinct between these in pure-data form.. TODO embedd logic in template?
     curvariable.set("is_global", node.node_type==ShTreeNode::NODE_CLASS_VAR ? TemplateData::Type::False : TemplateData::Type::True);
+    curvariable.set("is_int", node.get_type_numeric()== node.t_int ? TemplateData::Type::True : TemplateData::Type::False);
+    curvariable.set("is_float", node.get_type_numeric()== node.t_float ? TemplateData::Type::True : TemplateData::Type::False);
+    curvariable.set("is_string", node.get_type_numeric()== node.t_cstring ? TemplateData::Type::True : TemplateData::Type::False);
+
     curvariable.set("type_protobuf", node.get_type_protobuf());
     curvariable.set("type_cpp_full", node.get_type_cpp_full());
     curvariable.set("type_cpp_primitive", node.get_template_type());
@@ -199,6 +205,7 @@ TemplateData get_shared_class_templatedata(shared_class_definition *def, ParserC
 
         // The first parents name, e.g. of inexor::game::player1.weapons.ammo its player1.
         cur_instance.set("name_parent_cpp_short", inst_node->get_name_cpp_short());
+        cur_instance.set("name_parent_cpp_full", inst_node->get_name_cpp_full());
         cur_instance.set("instance_name_unique", inst_node->get_name_unique());
         cur_instance.set("path", inst_node->get_path());
         cur_instance.set("index", get_index_incrementer());
@@ -260,6 +267,8 @@ TemplateData get_shared_function_templatedata(shared_function &sf)
 
         paramlistdata.set("overload_counter", std::to_string(overload_counter++));
 
+        paramlistdata.set("overload_is_expanded", paramlist.clone ? TemplateData::Type::True : TemplateData::Type::False);
+
         TemplateData params{TemplateData::Type::List};
         int local_index = 1;
         for(int i = 0; i < paramlist.params.size(); i++)
@@ -269,6 +278,10 @@ TemplateData get_shared_function_templatedata(shared_function &sf)
             TemplateData paramdata{TemplateData::Type::Object};
             paramdata.set("type_protobuf", param.type==PRIMITIVE_TYPES::P_FLOAT ? "float" :
                          param.type==PRIMITIVE_TYPES::P_INT ? "int32" : "string");
+            paramdata.set("is_int", param.type==PRIMITIVE_TYPES::P_INT ? TemplateData::Type::True : TemplateData::Type::False);
+            paramdata.set("is_float", param.type==PRIMITIVE_TYPES::P_FLOAT ? TemplateData::Type::True : TemplateData::Type::False);
+            paramdata.set("is_string", param.type==PRIMITIVE_TYPES::P_STR ? TemplateData::Type::True : TemplateData::Type::False);
+
             paramdata.set("param_name", param.name);
             paramdata.set("local_index", std::to_string(i+1));
             paramdata.set("not_last_param", i == paramlist.params.size()-1 ? TemplateData::Type::False : TemplateData::Type::True);
@@ -294,6 +307,8 @@ TemplateData fill_templatedata(ParserContext &data, const string &ns)
     const string &proto_pkg = boost::join(ns_list, ".");
     tmpldata.set("package", proto_pkg);
     tmpldata.set("namespace", ns);
+
+    tmpldata.set("index_reset", get_index_incrementer(true)); // This design is so fucked up.. mustache forces us too though.
 
     TemplateData sharedvars{TemplateData::Type::List};
 

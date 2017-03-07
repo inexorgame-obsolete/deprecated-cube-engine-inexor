@@ -127,7 +127,6 @@ shared_function::function_parameter_list parse_parameter_list(string str, bool &
     return param_list;
 }
 
-
 /// Adds a (+or several) parameter list(s).
 /// Adds none if none primitive types we're used in the parameter list declaration or types
 /// we do not know how to default_construct them. TODO: Add generic runtime mechanism to do expend these!
@@ -138,7 +137,7 @@ void add_parameter_lists(shared_function &sf, string argsstr, string definition_
     shared_function::function_parameter_list param_list = parse_parameter_list(argsstr, succesfully_parsed);
     if(!succesfully_parsed) // argsstring wasnt parseable
         return;
-    param_list.declaration = definition_str + " " + argsstr;
+    param_list.declaration = definition_str + argsstr;
 
     sf.parameter_lists.push_back(param_list);
 
@@ -152,6 +151,7 @@ void add_parameter_lists(shared_function &sf, string argsstr, string definition_
         for(int k = 0; k < i; k++)
             param_list_clone.params.push_back(param_list.params[k]);
         param_list_clone.declaration = param_list.declaration;
+        param_list_clone.clone = true;
         sf.parameter_lists.push_back(param_list_clone);
     }
 }
@@ -194,7 +194,7 @@ shared_function *is_shared_function_declaration_node(const pugi::xml_node xml_me
 void parse_function_declaration(const pugi::xml_node var_xml, shared_function *sf)
 {
     add_parameter_lists(*sf, get_complete_xml_text(var_xml.child("argsstring")),
-                        get_complete_xml_text(var_xml.child("definition")));
+                        get_complete_xml_text(var_xml.child("type"))+ " " + get_complete_xml_text(var_xml.child("name")));
 }
 
 void control_shared_functions(ParserContext &data)
