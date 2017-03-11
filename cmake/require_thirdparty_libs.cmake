@@ -34,6 +34,10 @@ find_package(OpenGL)
 set(OPENGL_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR} CACHE INTERNAL "")
 set(OPENGL_LIBS ${OPENGL_gl_LIBRARY} CACHE INTERNAL "")
 
+if (OS_MACOSX)
+  find_package(GLUT)
+endif()
+
 function(require_opengl targ)
   message(STATUS "Configuring ${targ} with OpenGL (${OPENGL_LIBS})")
 
@@ -42,6 +46,15 @@ function(require_opengl targ)
   endif()
 
   target_link_libraries(${targ} ${OPENGL_LIBS})
+  if (OS_MACOSX)
+    message(STATUS "Configuring ${targ} with GLUT (${GLUT_LIBRARY})")
+
+    if (GLUT_INCLUDE_DIR)
+      include_directories("${GLUT_INCLUDE_DIR}")
+    endif()
+
+    target_link_libraries(${targ} ${GLUT_LIBRARIES})
+  endif()
 endfunction()
 
 set(BOOST_ROOT ${CONAN_BOOST_ROOT})
@@ -143,7 +156,7 @@ add_require_conan_lib_function(enet)
 
 # Protobuf (XML or JSON like serialization format but in binary, so it needs an compiler)
 add_require_conan_lib_function(Protobuf)
-find_program(Protobuf REQUIRED) 
+find_program(Protobuf REQUIRED)
 if (NOT DEFINED PROTOBUF_PROTOC_EXECUTABLE) # We additionally do this, since we don't have the "PROTOBUF_PROTOC_EXECUTABLE" path anywhere.
   find_program(PROTOBUF_PROTOC_EXECUTABLE protoc PATHS ${CONAN_BIN_DIRS_PROTOBUF} NO_CMAKE_ENVIRONMENT_PATH  NO_CMAKE_PATH NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH )
 endif()
@@ -172,7 +185,7 @@ add_require_conan_lib_function(SDL2_mixer)
 ## Wrapper for all SDL libs (you usually want all of them)
 function(require_sdl targ)
   message(STATUS "Configuring ${targ} with SDL")
-  
+
 #  if(OS_WINDOWS)
 #    target_link_libraries(${targ} winmm)
 #    if(NOT MSVC)

@@ -19,7 +19,7 @@
 
 #ifdef WIN32
   #ifndef WIN32_LEAN_AND_MEAN // only include very important win API core, not inflicting other libs.
-	#define WIN32_LEAN_AND_MEAN
+  #define WIN32_LEAN_AND_MEAN
   #endif
 
   #include "windows.h"
@@ -30,7 +30,13 @@
 /// SDL (Simple DirectMedia Layer) - General Rendering/sound/events/threads
 #ifndef STANDALONE
   #include <SDL.h>
-  #include <SDL_opengl.h>
+  #ifdef __APPLE__
+    #include <OpenGL/gl.h>
+    #include <GLUT/glut.h>
+    #include <OpenGL/glext.h>
+  #else
+    #include <SDL_opengl.h>
+  #endif
 #endif
 
 /// ENET: reliable UDP networking library
@@ -52,4 +58,3 @@
 /// header files for communication between the game and Cube engine
 #include "inexor/shared/iengine.hpp"
 #include "inexor/shared/igame.hpp"
-
