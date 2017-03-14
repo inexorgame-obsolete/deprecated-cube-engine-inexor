@@ -44,6 +44,9 @@ struct shared_class_definition
 
     /// The namespace + the classes name but with _ instead of ::.
     std::string get_name_unique();
+
+    /// Sets the node_type of each children to NODE_CLASS_VAR.
+    void make_all_children_node_class_var();
 };
 
 struct ParserContext;

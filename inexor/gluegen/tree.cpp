@@ -73,6 +73,15 @@ void ShTreeNode::set_all_childrens_parent_entry(bool recursively)
     }
 }
 
+void ShTreeNode::set_all_childrens_type(NODE_TYPE ntype)
+{
+    for(ShTreeNode *child : children)
+    {
+        child->node_type = ntype;
+        child->set_all_childrens_type(ntype);
+    }
+}
+
 const char *ShTreeNode::get_type_cpp_full()
 {
     if(node_type==NODE_CLASS_SINGLETON) return nullptr;
@@ -110,13 +119,22 @@ std::string ShTreeNode::get_name_cpp_full()
 {
     if(node_type==NODE_CLASS_VAR)
     {
-        assert(parent != nullptr);
+        if(!parent) // this is a child node of a definition
+            return name_cpp_short;
         return parent->get_name_cpp_full() + "." + name_cpp_short;
     }
     return var_namespace + (var_namespace.empty() ? "" : "::") + name_cpp_short;
 }
 
-std::string ShTreeNode::get_first_parent_name()
+std::string ShTreeNode::get_first_parent_name_full()
+{
+    if(!parent) return "";
+    ShTreeNode *cur_par;
+    for(cur_par = parent; cur_par!=nullptr; cur_par = cur_par->parent); // go to the uppermost
+    return cur_par->get_name_cpp_full();
+}
+
+std::string ShTreeNode::get_first_parent_name_short()
 {
     if(!parent) return "";
     ShTreeNode *cur_par;
@@ -143,7 +161,8 @@ std::string ShTreeNode::get_path()
 {
     if(path.empty())
     {
-        path = "/" + replace_all_copy(get_name_cpp_full(), "::", "/");
+        path = node_type==NODE_CLASS_VAR ? "" : "/";
+        path += replace_all_copy(get_name_cpp_full(), "::", "/");
         replace_all(path, ".", "/");
         replace_all(path, "/inexor/", "/");
     }

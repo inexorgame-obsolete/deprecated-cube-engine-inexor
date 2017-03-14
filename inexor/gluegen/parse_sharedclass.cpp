@@ -58,15 +58,25 @@ shared_class_definition *new_shared_class_definition(xml_node &compound_xml)
     return def;
 }
 
+void shared_class_definition::make_all_children_node_class_var()
+{
+    for(ShTreeNode *child : nodes)
+    {
+        child->node_type = ShTreeNode::NODE_CLASS_VAR;
+        child->set_all_childrens_type(ShTreeNode::NODE_CLASS_VAR);
+    }
+}
+
 void parse_shared_class_definitions(ParserContext &data)
 {
-    vector<shared_class_definition *> classes;
-
     for(xml_node &compound_xml : data.def_nodes.shared_classes)
     {
         shared_class_definition *s = new_shared_class_definition(compound_xml);
         data.shared_class_definitions[s->refid] = s;
     }
+
+    for(auto it : data.shared_class_definitions)
+        it.second->make_all_children_node_class_var();
 }
 
 bool is_shared_class_definition_node(const pugi::xml_node class_xml_compound_node)
@@ -107,10 +117,11 @@ void parse_class_instance(const xml_node var_xml, std::string var_namespace, sha
     for(ShTreeNode *child : class_definition->nodes)
     {
         // TODO sollte rekursiv sein wenn type = child
-        class_node->children.push_back(new ShTreeNode(child));
-        class_node->children.back()->parent = class_node;
+        ShTreeNode *childclone = new ShTreeNode(child);
+        childclone->parent = class_node;
+        class_node->children.push_back(childclone);
     }
-    class_node->set_all_childrens_parent_entry();
+    class_node->set_all_childrens_parent_entry(); // DOPPELT GEMOPPELT?
 
     // In case we have a template child, we link the definition of it into the class.
     vector<string> &all_childs_refids = get_values_of_childs_attribute(var_xml.child("type"), "refid");

@@ -32,13 +32,13 @@ public:
 
     SharedVar<int> kills;
     SharedVar<int> deaths;
-    class weapon : public SharedClass
-    {
-    public:
-        weapon() : ammo(0) {}
-        SharedVar<int> ammo;
-    };
-    //SharedList<weapon> weapons;
-    weapon mainweapon;
+    //class weapon : public SharedClass
+    //{
+    //public:
+    //    weapon() : ammo(0) {}
+    //    SharedVar<int> ammo;
+    //};
+    ////SharedList<weapon> weapons;
+    //weapon mainweapon;
 };
 } } // ns inexor::rendering

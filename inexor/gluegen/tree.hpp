@@ -39,8 +39,12 @@ public:
     std::string get_name_cpp_full();
 
     /// If this is a NODE_CLASS_VAR this will return the first parents name
-    /// (Needed for e.g. declaring an extern)
-    std::string get_first_parent_name();
+    /// (e.g. Screen)
+    std::string get_first_parent_name_short();
+
+    /// If this is a NODE_CLASS_VAR this will return the first parents name + prepended namespace
+    /// (e.g. inexor::rendering::Screen)
+    std::string get_first_parent_name_full();
 
     /// The c++ variable name excluding any namespaces.
     /// e.g. "num_screens" or "Screen" or "width"
@@ -98,7 +102,10 @@ public:
     /// If this is a NODE_CLASS_SINGLETON we do call set_node_parent for any child.
     /// @warning you need to be sure that this node and all childs are already on the memory place they belong,
     ///          if you're pushing ShTreeNodes to a vector not operating on the heap, make sure you call this function **afterwards**.
-    void set_all_childrens_parent_entry(bool recursively = true);
+    void set_all_childrens_parent_entry(bool recursively = true);   /// If this is a NODE_CLASS_SINGLETON we do call set_node_parent for any child.
+
+    /// Sets the node_type of each children (e.g. to NODE_CLASS_VAR).
+    void set_all_childrens_type(NODE_TYPE ntype);
 
     /// Creates a Node of type NODE_GLOBAL_VAR.
     /// Use set_node_parent to change it to a NODE_CLASS_VAR.

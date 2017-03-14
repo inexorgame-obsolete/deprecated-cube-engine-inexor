@@ -72,7 +72,7 @@ message list_{{{definition_name_unique}}}_removed {
 {{#shared_functions}}{{#parameter_lists}}
 message SharedFunction_{{function_name_unique}}_params_event_{{overload_counter}} {
   option (message_type) = TYPE_FUNCTION_EVENT;
-{{#params}}  {{{type_protobuf}}} function_param_{{param_name}} = {{local_index}} [(path) = "{{{path}}}", (event_type)=TYPE_FUNCTION_PARAM];
+{{#params}}  {{{type_protobuf}}} function_param_{{param_name}} = {{local_index}} [(path) = "{{param_name}}", (event_type)=TYPE_FUNCTION_PARAM];
 {{/params}}
 }
 {{/parameter_lists}}{{/shared_functions}}
