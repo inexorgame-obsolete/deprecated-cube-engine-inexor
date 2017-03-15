@@ -29,11 +29,21 @@ struct shared_function
             enum PRIMITIVE_TYPES { P_INVALID, P_INT, P_FLOAT, P_STR } type;
             std::string name;
             std::string default_value;
+            inline bool operator!=(const param &b) { return b.name != name || b.type != type;}
         };
         std::vector<param> params;
         std::string declaration;
         /// If this is a clone, this is a copy of a parameter list which had default values.
         bool clone = false;
+
+        inline bool operator==(const function_parameter_list &p_list)
+        {
+            if(p_list.params.size() != params.size()) return false;
+            for(int i = 0; i < params.size(); i++)
+                if(params[i] != p_list.params[i]) return false;
+            return true;
+        }
+        bool has_default_params() const;
     };
     std::string get_name_cpp_full();
     std::string get_unique_name();
@@ -41,6 +51,10 @@ struct shared_function
 
     /// All overloaded parameter lists.
     std::vector<function_parameter_list> parameter_lists;
+
+    /// Checks whether this parameter_list is already saved in parameter_lists and pushes back if not.
+    /// Special case: A has no default params but B has. A and B share the same parameters though -> drop A for B.
+    void add_parameter_list(const function_parameter_list &p_list);
 };
 
 /// Returns true if this member var is a function marker.

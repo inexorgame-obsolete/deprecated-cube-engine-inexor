@@ -127,9 +127,56 @@ shared_function::function_parameter_list parse_parameter_list(string str, bool &
     return param_list;
 }
 
+bool shared_function::function_parameter_list::has_default_params() const
+{
+    for(auto &param : params)
+        if(!param.default_value.empty()) return true;
+    return false;
+}
+
+/// If we input a p(const char *a, const char *b = hello, const char *c = "world"); this will give us the function param list for p(const char *a);
+/// @note check before using this function whether the parameter list has params with default values (otherwise you'll add a total copy of the input).
+shared_function::function_parameter_list default_value_shrinked_clone(const shared_function::function_parameter_list &p_list)
+{
+    for(int i = 0; i < p_list.params.size(); i++)
+    {
+        auto &param = p_list.params[i];
+        if(param.default_value.empty()) continue;
+        /// add the new param list with params up until this one.
+        shared_function::function_parameter_list param_list_clone;
+        for(int k = 0; k < i; k++)
+            param_list_clone.params.push_back(p_list.params[k]);
+        //param_list_clone.declaration = p_list.declaration;
+        param_list_clone.clone = true;
+        return param_list_clone;
+    }
+    return shared_function::function_parameter_list(p_list);
+}
+
+void shared_function::add_parameter_list(const function_parameter_list &p_list)
+{
+    bool haslist = false;
+    for(int i = 0; i < parameter_lists.size(); i++)
+        if(parameter_lists[i] == p_list)
+        {
+            if(!parameter_lists[i].has_default_params() && p_list.has_default_params())
+            { // Special case: A has no default params but B has
+                parameter_lists[i] = p_list;
+                parameter_lists.push_back(default_value_shrinked_clone(p_list));
+            }
+            haslist = true; // in any case: we already got this one, no need to append a new one.
+        }
+    if(!haslist)
+    {
+        parameter_lists.push_back(p_list);
+        if(p_list.has_default_params()) // Add another parameter lists if we find params with default values.
+            parameter_lists.push_back(default_value_shrinked_clone(p_list));
+    }
+}
+
 /// Adds a (+or several) parameter list(s).
 /// Adds none if none primitive types we're used in the parameter list declaration or types
-/// we do not know how to default_construct them. TODO: Add generic runtime mechanism to do expend these!
+/// we do not know how to default_construct them.
 /// In case of params with default values we add several parameter lists for each.
 void add_parameter_lists(shared_function &sf, string argsstr, string definition_str)
 {
@@ -139,21 +186,7 @@ void add_parameter_lists(shared_function &sf, string argsstr, string definition_
         return;
     param_list.declaration = definition_str + argsstr;
 
-    sf.parameter_lists.push_back(param_list);
-
-    // Add parameter lists if we find params with default values.
-    for(int i = param_list.params.size()-1; i >= 0; i--)
-    {
-        auto &param = param_list.params[i];
-        if(param.default_value.empty()) break;
-        /// add the new param list with params up until this one.
-        shared_function::function_parameter_list param_list_clone;
-        for(int k = 0; k < i; k++)
-            param_list_clone.params.push_back(param_list.params[k]);
-        param_list_clone.declaration = param_list.declaration;
-        param_list_clone.clone = true;
-        sf.parameter_lists.push_back(param_list_clone);
-    }
+    sf.add_parameter_list(param_list);
 }
 
 bool is_function_marker_node(const xml_node var_node)
