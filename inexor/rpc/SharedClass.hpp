@@ -17,7 +17,6 @@ class player : public SharedClass
 public:
     player() : kills(0), deaths(0)
     {
-        deaths = 0;
     }
     player(int kills)
         :
@@ -29,6 +28,10 @@ public:
     player(const char *alpha);
     player(const player &old) : kills(old.kills), deaths(old.deaths) // TODO: TELL PEOPLE THIS IS REQUIRED
     { }
+    player operator=(const player &a)
+    {
+        return player(a);
+    }
 
     SharedVar<int> kills;
     SharedVar<int> deaths;
