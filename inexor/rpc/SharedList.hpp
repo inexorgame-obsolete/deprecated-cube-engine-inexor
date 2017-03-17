@@ -39,13 +39,20 @@ struct SharedList : SharedClass
 
     SharedList() : SharedClass(InternalSharedListMarker()) {}
 
-    void push_back(const T &&s) // TODO &&
+    void push_back(T &&s)
     {
         int id = ++len;
         container.push_back(std::move(s));
         element_pushed_back_func(id, container.back());
     }
-    // fehlt: emplace emplace back assign, insert, swap, erase
+
+    void push_back(const T &s)
+    {
+        int id = ++len;
+        container.push_back(s);
+        element_pushed_back_func(id, container.back());
+    }
+    // fehlt: emplace emplace back assign, insert, swap
 
     void erase(int i)
     {

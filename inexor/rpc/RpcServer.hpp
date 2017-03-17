@@ -345,7 +345,6 @@ inline void RpcServer<MSG_TYPE, ASYNC_SERVICE_TYPE>::block_until_initialized()
     {
         if(std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now()-time_start).count()> 10)
         {
-            std::string error_message();
             spdlog::get("global")->error("[GRPC Server] No startup synchronisation finished event received after 10 seconds."); 
             break;
         }
