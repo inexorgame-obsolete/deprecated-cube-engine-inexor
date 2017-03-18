@@ -3,7 +3,7 @@ import os, sys
 
 class InexorgluegenConan(ConanFile):
     name = "InexorGlueGen"
-    version = "0.3.0alpha"
+    version = "0.5.0alpha"
     description = """This is the conan.io package for the Inexor game gluecode generator, which generates our network code (which is also our scripting binding)
                      to sync variables/classes/lists without writing extra code.
                      Since its a requirement for Inexors build, but we do not want to split it from our source repo (since it depends on some modules there),

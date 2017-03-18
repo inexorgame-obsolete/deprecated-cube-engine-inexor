@@ -10,7 +10,7 @@ class InexorConan(ConanFile):
     default_options = dependencies.options
 
     def configure(self):
-        self.requires.add("InexorGlueGen/0.3.0alpha@inexor/testing")
+        self.requires.add("InexorGlueGen/0.5.0alpha@inexor/testing")
 
         # THIS IS A VERY DIRTY HACK
         # following is given:
