@@ -124,7 +124,7 @@ void parse_class_instance(const xml_node var_xml, std::string var_namespace, sha
     class_node->set_all_childrens_parent_entry(); // DOPPELT GEMOPPELT?
 
     // In case we have a template child, we link the definition of it into the class.
-    vector<string> &all_childs_refids = get_values_of_childs_attribute(var_xml.child("type"), "refid");
+    vector<string> all_childs_refids = get_values_of_childs_attribute(var_xml.child("type"), "refid");
     if(all_childs_refids.size() >= 2)
     {
         // a template can have many refids, TODO: we only recognize the first one atm, not all template args.

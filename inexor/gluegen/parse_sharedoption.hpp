@@ -5,6 +5,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace inexor { namespace rpc { namespace gluegen {
 
