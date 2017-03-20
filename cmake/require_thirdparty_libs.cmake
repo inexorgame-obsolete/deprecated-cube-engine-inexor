@@ -34,10 +34,6 @@ find_package(OpenGL)
 set(OPENGL_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR} CACHE INTERNAL "")
 set(OPENGL_LIBS ${OPENGL_gl_LIBRARY} CACHE INTERNAL "")
 
-if (OS_MACOSX)
-  find_package(GLUT)
-endif()
-
 function(require_opengl targ)
   message(STATUS "Configuring ${targ} with OpenGL (${OPENGL_LIBS})")
 
@@ -46,15 +42,6 @@ function(require_opengl targ)
   endif()
 
   target_link_libraries(${targ} ${OPENGL_LIBS})
-  if (OS_MACOSX)
-    message(STATUS "Configuring ${targ} with GLUT (${GLUT_LIBRARY})")
-
-    if (GLUT_INCLUDE_DIR)
-      include_directories("${GLUT_INCLUDE_DIR}")
-    endif()
-
-    target_link_libraries(${targ} ${GLUT_LIBRARIES})
-  endif()
 endfunction()
 
 set(BOOST_ROOT ${CONAN_BOOST_ROOT})

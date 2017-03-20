@@ -31,8 +31,7 @@
 #ifndef STANDALONE
   #include <SDL.h>
   #ifdef __APPLE__
-    #include <OpenGL/gl.h>
-    #include <GLUT/glut.h>
+    #include <OpenGL/gl3.h>
     #include <OpenGL/glext.h>
   #else
     #include <SDL_opengl.h>
