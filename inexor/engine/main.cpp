@@ -771,6 +771,7 @@ ICOMMANDERR(logformat, "ss", (char *logger_name, char *pattern),
     logging.setLogFormat(logger_name_s, pattern_s)
 );
 
+SharedVar<char *> package_dir((char*)"media/core");
 
 int main(int argc, char **argv)
 {
@@ -874,6 +875,9 @@ int main(int argc, char **argv)
         #endif
         if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO|par)<0) fatal("Unable to initialize SDL: %s", SDL_GetError());
     }
+
+    const char *dir = addpackagedir(package_dir);
+    if(dir) spdlog::get("global")->debug("Adding package directory: {}", dir);
 
     spdlog::get("global")->debug("init: ENet");
     if(enet_initialize()<0) fatal("Unable to initialize network module");
