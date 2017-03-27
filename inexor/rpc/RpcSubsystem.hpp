@@ -32,7 +32,6 @@ public:
         delete serv;
     }
 
-   // RpcSubsystem() : serv("0.0.0.0:50051")
     virtual void initialize(int argc, char **argv) override
     {
         if(argc < 2) return;

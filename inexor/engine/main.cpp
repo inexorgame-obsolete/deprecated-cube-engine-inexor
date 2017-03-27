@@ -12,13 +12,6 @@
 #include "inexor/rpc/SharedTree.hpp"
 #include "inexor/rpc/SharedList.hpp"
 
-namespace inexor {
-namespace rpc {
-    extern void testrpcclient();
-    COMMAND(testrpcclient, "");
-}
-}
-
 //template<typename T>
 //class SharedList
 //{
@@ -788,10 +781,8 @@ int main(int argc, char **argv)
 
     // Ensure the correct locale
     setlocale(LC_ALL, "en_US.utf8");
-
     int dedicated = 0;
     char *load = NULL, *initscript = NULL;
-
     // Initialize the metasystem
     SUBSYSTEM_REQUIRE(rpc); // remote process control: communication with the scripting engine
     // Initialize the submodules

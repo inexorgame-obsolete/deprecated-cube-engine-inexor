@@ -56,13 +56,13 @@ using std::string; // shared functions sometimes have string arguments.
 namespace inexor { namespace rpc {
 
 /// Just a pretty basic/stupid test rpc client for debugging purpose.
-void testrpcclient()
+void testrpcclient(std::string port)
 {
-    std::thread t([]
+    std::thread t([port]
     {
         TestRpcClient<TreeEvent, TreeService> *guide = new TestRpcClient<TreeEvent, TreeService>();
 
-        guide->Start();
+        guide->Start(port);
     });
     t.detach();
 }

@@ -27,9 +27,9 @@ private:
 
 public:
 
-    void Start()
+    void Start(std::string port)
     {
-        std::shared_ptr<grpc::Channel> channel(grpc::CreateChannel("localhost:50051", grpc::InsecureChannelCredentials()));
+        std::shared_ptr<grpc::Channel> channel(grpc::CreateChannel("localhost:"+port, grpc::InsecureChannelCredentials()));
         std::unique_ptr<typename SERVICE_TYPE::Stub> stub_(SERVICE_TYPE::NewStub(channel));
         grpc::ClientContext context;
         grpc::CompletionQueue cq;
