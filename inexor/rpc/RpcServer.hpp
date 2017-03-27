@@ -102,10 +102,10 @@ public:
         /// Start an asynchronous read.
         void request_read();
         /// Get the message the last read spit out.
-        MSG_TYPE &get_read_result()      { return read_buffer; }
+        const MSG_TYPE &get_read_result()      { return read_buffer; }
 
         /// Add message to the queue of to-be-sent messages.
-        void write(MSG_TYPE &msg)        { outstanding_writes.push(msg); }
+        void write(const MSG_TYPE &msg)        { outstanding_writes.push(msg); }
 
         /// Whether or not writes are outstanding.
         bool has_writes()                { return !outstanding_writes.size(); }
@@ -143,7 +143,7 @@ public:
 
     /// Send any variable changes in the core to all clients.
     /// For broadcasting purpose param excluded_id is given: you don't want to send back a change you just received from a client.
-    static void send_msg(MSG_TYPE &&msg, int excluded_id = -1)
+    static void send_msg(const MSG_TYPE &msg, int excluded_id = -1)
     {
         for(clienthandler &ci: clients)
         {
@@ -171,10 +171,10 @@ private:
 
     void kickoff_writes();
 
-    void handle_queue_event(callback_event *encoded_callback, bool broadcast, std::function<void(MSG_TYPE &)> receive_handler);
+    void handle_queue_event(callback_event *encoded_callback, bool broadcast, std::function<void(const MSG_TYPE &)> receive_handler);
 
     int pick_unused_id();
-    bool change_variable(MSG_TYPE &receivedval);
+    bool change_variable(const MSG_TYPE &receivedval);
 
 
 };
@@ -190,7 +190,7 @@ template<typename MSG_TYPE, typename U> inline
 void RpcServer<MSG_TYPE, U>::clienthandler::request_read()
 {
     const void *cq_id = encode_signal(EVENT_TYPE::E_READ, id);
-    stream->Read(&read_buffer, cq_id);
+    stream->Read(&read_buffer, (void *)cq_id);
 }
 
 template<typename MSG_TYPE, typename U> inline
@@ -257,7 +257,10 @@ void RpcServer<MSG_TYPE, U>::handle_new_connection()
 {
     int n_id = pick_unused_id();
     spdlog::get("global")->info("RPC Server: New client connected id {}", n_id);
+
     clients.push_back(clienthandler(n_id, std::move(connect_slot)));
+    clients.back().request_read();
+
     connect_slot = nullptr;
     if(clients.size() < MAX_RPC_CLIENTS) open_connect_slot();
 
@@ -318,7 +321,7 @@ void RpcServer<MSG_TYPE, U>::process_queue()
         //if(!) break;// throw std::runtime_error("GRPC had an internal error: Shutting down.");
 
         if(no_internal_grpc_error && stat ==  CompletionQueue::NextStatus::GOT_EVENT)
-            handle_queue_event(callback_value, true, [=](MSG_TYPE &msg) {
+            handle_queue_event(callback_value, true, [=](const MSG_TYPE &msg) {
                     this->change_variable(msg);
                 });
         else if(stat == CompletionQueue::NextStatus::TIMEOUT)
@@ -339,15 +342,18 @@ inline void RpcServer<MSG_TYPE, ASYNC_SERVICE_TYPE>::block_until_initialized()
     if(initialized) return; // We only init from the first client.
 
     using grpc::CompletionQueue;
+    using std::chrono::steady_clock;
+    using std::chrono::seconds;
+    using std::chrono::duration_cast;
 
-    auto time_start = std::chrono::steady_clock::now();
+    auto time_start = steady_clock::now();
     while(initialized!=true)
     {
-        if(std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now()-time_start).count()> 10)
-        {
-            spdlog::get("global")->error("[GRPC Server] No startup synchronisation finished event received after 10 seconds."); 
-            break;
-        }
+        //if(duration_cast<seconds>(steady_clock::now()-time_start).count()> 10)
+        //{
+        //    spdlog::get("global")->error("[GRPC Server] No startup synchronisation finished event received after 10 seconds."); 
+        //    break;
+        //}
 
         callback_event *callback_value;
         bool no_internal_grpc_error = false;
@@ -356,7 +362,9 @@ inline void RpcServer<MSG_TYPE, ASYNC_SERVICE_TYPE>::block_until_initialized()
 
         if(no_internal_grpc_error && stat ==  CompletionQueue::NextStatus::GOT_EVENT)
         {
-            handle_queue_event(callback_value, false, [=](MSG_TYPE &msg) {
+            handle_queue_event(callback_value, false, [&](const MSG_TYPE &msg) {
+                int64 index = msg.key_case();
+                spdlog::get("global")->info("here we are!!!: {}", index);
                if(msg.general_event() == 1) // FINISHED_TREE_INTRO_SEND
                {
                    initialized = true;
@@ -374,7 +382,7 @@ inline void RpcServer<MSG_TYPE, ASYNC_SERVICE_TYPE>::block_until_initialized()
 }
 
 template<typename MSG_TYPE, typename U> inline
-void RpcServer<MSG_TYPE, U>::handle_queue_event(callback_event *encoded_callback, bool broadcast, std::function<void(MSG_TYPE &)> receive_handler)
+void RpcServer<MSG_TYPE, U>::handle_queue_event(callback_event *encoded_callback, bool broadcast, std::function<void(const MSG_TYPE &)> receive_handler)
 {
     switch(encoded_callback->type)
     {
@@ -383,9 +391,10 @@ void RpcServer<MSG_TYPE, U>::handle_queue_event(callback_event *encoded_callback
         clienthandler *ci = get_client(encoded_callback->client_id);
         if(!ci) break; // TODO we should better process its last messages, but we dont have the clients read_buffer anymore.
 
-        MSG_TYPE &msg = ci->get_read_result();
+        const MSG_TYPE msg = ci->get_read_result();
+        ci->request_read();
         receive_handler(msg);
-        if(broadcast) send_msg(std::move(msg), ci->id); //broadcast changes from one client to other clients.
+        if(broadcast) send_msg(msg, ci->id); //broadcast changes from one client to other clients.
         break;
     }
     case E_WRITE:
@@ -424,9 +433,11 @@ int RpcServer<T, U>::pick_unused_id() // TODO get some uuid thing here.
 }
 
 template<typename MSG_TYPE, typename U> inline
-bool RpcServer<MSG_TYPE, U>::change_variable(MSG_TYPE &receivedval)
+bool RpcServer<MSG_TYPE, U>::change_variable(const MSG_TYPE &receivedval)
 {
     int64 index = receivedval.key_case();
+    spdlog::get("global")->info("GOT!!!: {}", index);
+
     if(index <= 0)
     {
         spdlog::get("global")->info("[Server] Received illegal message index (none was set)");
