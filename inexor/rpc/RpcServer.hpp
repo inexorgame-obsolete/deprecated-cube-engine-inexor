@@ -64,8 +64,12 @@ class RpcServer
 {
     typedef grpc::ServerAsyncReaderWriter<MSG_TYPE, MSG_TYPE> stream_type;
 
-    std::unique_ptr<grpc::Server> grpc_server; // GRPC server instance, running while this class is alive.
-    grpc::ServerContext server_context;        // settings like the ip/port of the server are saved in here.
+    /// GRPC server instance, running while this class is alive.
+    std::unique_ptr<grpc::Server> grpc_server;
+
+    /// settings like the ip/port of the server are saved in here.
+    grpc::ServerContext server_context;
+
     ASYNC_SERVICE_TYPE service;
 
     /// The completion queue (where notifications of the succcess of a network commands get retrieved).
@@ -240,9 +244,11 @@ RpcServer<MSG_TYPE, U>::RpcServer(const char *address) : server_address(address)
 template<typename MSG_TYPE, typename U> inline
 RpcServer<MSG_TYPE, U>::~RpcServer()
 {
-    for(auto &client : clients) client.request_disconnect(); //TODO we should also receive whether disconnect was successfully
+	// TODO we should also receive whether disconnect was successfully
+    for(auto &client : clients) client.request_disconnect();
     grpc_server->Shutdown();
-    cq->Shutdown();          // Always shutdown the completion queue after the server.
+    // Always shutdown the completion queue after the server.
+    cq->Shutdown();
 }
 
 template<typename MSG_TYPE, typename U> inline
@@ -264,7 +270,8 @@ void RpcServer<MSG_TYPE, U>::handle_new_connection()
     connect_slot = nullptr;
     if(clients.size() < MAX_RPC_CLIENTS) open_connect_slot();
 
-    //send_all_vars(); // TODO: we should send those only to the newly connected client.
+    // TODO: we should send those only to the newly connected client.
+    //send_all_vars();
 }
 
 template<typename MSG_TYPE, typename U> inline
@@ -320,7 +327,7 @@ void RpcServer<MSG_TYPE, U>::process_queue()
 
         //if(!) break;// throw std::runtime_error("GRPC had an internal error: Shutting down.");
 
-        if(no_internal_grpc_error && stat ==  CompletionQueue::NextStatus::GOT_EVENT)
+        if(no_internal_grpc_error && stat == CompletionQueue::NextStatus::GOT_EVENT)
             handle_queue_event(callback_value, true, [=](const MSG_TYPE &msg) {
                     this->change_variable(msg);
                 });
@@ -347,7 +354,7 @@ inline void RpcServer<MSG_TYPE, ASYNC_SERVICE_TYPE>::block_until_initialized()
     using std::chrono::duration_cast;
 
     auto time_start = steady_clock::now();
-    while(initialized!=true)
+    while(initialized != true)
     {
         //if(duration_cast<seconds>(steady_clock::now()-time_start).count()> 10)
         //{
@@ -360,7 +367,7 @@ inline void RpcServer<MSG_TYPE, ASYNC_SERVICE_TYPE>::block_until_initialized()
 
         CompletionQueue::NextStatus stat = cq->AsyncNext((void **)(&callback_value), &no_internal_grpc_error, gpr_inf_past(GPR_CLOCK_REALTIME));
 
-        if(no_internal_grpc_error && stat ==  CompletionQueue::NextStatus::GOT_EVENT)
+        if(no_internal_grpc_error && stat == CompletionQueue::NextStatus::GOT_EVENT)
         {
             handle_queue_event(callback_value, false, [&](const MSG_TYPE &msg) {
                 int64 index = msg.key_case();
