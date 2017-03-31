@@ -364,12 +364,12 @@ inline void RpcServer<MSG_TYPE, ASYNC_SERVICE_TYPE>::block_until_initialized()
         {
             handle_queue_event(callback_value, false, [&](const MSG_TYPE &msg) {
                 int64 index = msg.key_case();
-                spdlog::get("global")->info("here we are!!!: {}", index);
-               if(msg.general_event() == 1) // FINISHED_TREE_INTRO_SEND
-               {
-                   initialized = true;
-                   return;
-               }
+                // FINISHED_TREE_INTRO_SEND
+                if(msg.general_event() == 1)
+                {
+                    initialized = true;
+                    return;
+                }
                 this->change_variable(msg);
             });
         }
@@ -436,7 +436,6 @@ template<typename MSG_TYPE, typename U> inline
 bool RpcServer<MSG_TYPE, U>::change_variable(const MSG_TYPE &receivedval)
 {
     int64 index = receivedval.key_case();
-    spdlog::get("global")->info("GOT!!!: {}", index);
 
     if(index <= 0)
     {
