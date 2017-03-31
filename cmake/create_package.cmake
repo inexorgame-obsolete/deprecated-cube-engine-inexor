@@ -17,9 +17,9 @@ install(CODE "execute_process(COMMAND doxygen doxygen.conf WORKING_DIRECTORY ${M
 install(DIRECTORY "${MAINDIR}/doc/" DESTINATION "doc")
 
 # Update the node.js package.
-set(NODE_DIR "${MAINDIR}/node/")
-install(CODE "execute_process(COMMAND npm install COMMAND npm update WORKING_DIRECTORY ${NODE_DIR})") # always npm update on installation time
-install(DIRECTORY ${NODE_DIR} DESTINATION "node")
+set(NODE_DIR "${MAINDIR}/flex/")
+install(CODE "execute_process(COMMAND npm install WORKING_DIRECTORY ${NODE_DIR})")
+install(DIRECTORY ${NODE_DIR} DESTINATION "flex")
 
 # Install the media folders only if specified.
 option(PACKAGE_INCLUDE_MEDIA "If enabled we include the media folders in the package created." OFF)
@@ -32,7 +32,6 @@ endif()
 set(INSTALL_FILES changelog.md contributing.md readme.md credits.md license.md master.cfg server-init.cfg media/readme.md)
 if(OS_WINDOWS)
   set(INSTALL_FILES_STARTUP inexor.bat server.bat) # used as links in the startmenu
-  list(APPEND INSTALL_FILES inexor_node_windows.bat ${INSTALL_FILES_STARTUP})
 elseif(OS_LINUX)
   set(INSTALL_FILES_STARTUP inexor_unix) # used as links in the startmenu
   list(APPEND INSTALL_FILES ${INSTALL_FILES_STARTUP})
