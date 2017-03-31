@@ -158,11 +158,8 @@ public:
     /// @throws NoSuchSubsystem
     void start(const std::string &sub) {
         Subsystem::Register::EnsureExist(sub);
-
-        next_tick([&, sub]() {
-            if (!is_running(sub))
-                subsystems[sub] = Subsystem::Register::Get(sub)();
-        });
+        if (!is_running(sub))
+            subsystems[sub] = Subsystem::Register::Get(sub)();
     }
 
     /// Stop a subsystem by name
@@ -177,10 +174,8 @@ public:
     void stop(const std::string &sub) {
         Subsystem::Register::EnsureExist(sub);
 
-        next_tick([&, sub]() {
-            if (is_running(sub))
-                subsystems.erase(sub);
-        });
+        if (is_running(sub))
+            subsystems.erase(sub);
     }
 
     /// Forwarded to all subsystems
@@ -190,10 +185,21 @@ public:
     }
 
     /// Forwarded to all subsystems
-    virtual void initialize(int argc, char **argv) {
-        tick();
+    virtual void initialize(int argc, char **argv)
+    {
         for (auto &e : this->subsystems) {
             if (!e.second->is_initialized) {
+                e.second->initialize(argc, argv);
+                e.second->is_initialized = true;
+            }
+        }
+    }
+
+    /// Initialize a specific subsystem
+    void initialize(const std::string &sub, int argc, char **argv)
+    {
+        for (auto &e : this->subsystems) {
+            if (e.first == sub && !e.second->is_initialized) {
                 e.second->initialize(argc, argv);
                 e.second->is_initialized = true;
             }

@@ -784,14 +784,18 @@ int main(int argc, char **argv)
     setlocale(LC_ALL, "en_US.utf8");
     int dedicated = 0;
     char *load = NULL, *initscript = NULL;
+
     // Initialize the metasystem
-    SUBSYSTEM_REQUIRE(rpc); // remote process control: communication with the scripting engine
-    SUBSYSTEM_REQUIRE(cef); // (embedded chromium): ingame html5+js browser for the ui. must come after rpc.. todo new system.
+    // remote process control: communication with the scripting engine
+    SUBSYSTEM_REQUIRE(rpc);
+    // (embedded chromium): ingame html5+js browser for the ui. must come after rpc.. todo new system.
+    SUBSYSTEM_REQUIRE(cef);
+
     // Initialize the submodules
     metapp.start("rpc");
+    metapp.initialize("rpc", argc, argv);
     metapp.start("cef");
-    metapp.initialize(argc, argv);
-
+    metapp.initialize("cef", argc, argv);
 
     //initing = INIT_RESET;
     //for(int i = 1; i<argc; i++)
