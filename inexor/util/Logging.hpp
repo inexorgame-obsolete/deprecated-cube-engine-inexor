@@ -68,7 +68,8 @@ namespace util {
     };
 
     /// The default logger names which are used in inexor
-    static const std::array<std::string, 7> default_logger_names = {
+    static const std::array<std::string, 8> default_logger_names = {
+        "ui",
         "global",
         "chat",
         "gameplay",
