@@ -57,13 +57,14 @@ enum
 /// contains all kind of IDs for command engine
 /// such as variables (float,int,string) or commands
 enum
-{ 
-	ID_VAR,
-	ID_FVAR,
-	ID_SVAR,
-	ID_COMMAND,
-	ID_ALIAS,
-	ID_LOCAL
+{
+    ID_VAR,
+    ID_FVAR,
+    ID_SVAR,
+    ID_NOSYNC_VAR, // only cubescript var, but no flex binding (InexorTreeAPI)
+    ID_COMMAND,
+    ID_ALIAS,
+    ID_LOCAL
 };
 
 enum 
@@ -123,6 +124,8 @@ union identvalptr
     SharedVar<int>   *i;   // ID_VAR
     SharedVar<float> *f;   // ID_FVAR
     SharedVar<char*> *s;   // ID_SVAR
+    // Non-Tree-API synced vars (only cubescript, no Tree syncing):
+    int *iold; // ID_NOSYNC_VAR
 };
 
 typedef void (__cdecl *identfun)();
@@ -169,6 +172,10 @@ struct ident
     ident(int t, const char *n, int m, int x, SharedVar<int> *s, void *f = NULL, int flags = 0)
         : type(t), flags(flags | (m > x ? IDF_READONLY : 0)), name(n), minval(m), maxval(x), fun((identfun)f)
     { storage.i = s; }
+    // ID_VAR oldschool (without InexorTree binding)
+    ident(int t, const char *n, int m, int x, int *s, void *f = NULL, int flags = 0)
+        : type(t), flags(flags | (m > x ? IDF_READONLY : 0)), name(n), minval(m), maxval(x), fun((identfun)f)
+    { storage.iold = s; }
     // ID_FVAR
     ident(int t, const char *n, float m, float x, SharedVar<float> *s, void *f = NULL, int flags = 0)
         : type(t), flags(flags | (m > x ? IDF_READONLY : 0)), name(n), minvalf(m), maxvalf(x), fun((identfun)f)
@@ -308,7 +315,7 @@ inline void ident::getval(tagval &v) const
 
 #define _VAR(name, global, min, cur, max, persist) SharedVar<int> global((int)cur); UNUSED int dummy_register_##global = variable(#name, min, cur, max, &global, NULL, persist)
 /// Version of VAR which doesnt sync with the tree api.
-#define _VAR_NOSYNC(name, global, min, cur, max, persist) SharedVar<int> global((int)cur); UNUSED int dummy_register_##global = variable(#name, min, cur, max, &global, NULL, persist)
+#define _VAR_NOSYNC(name, global, min, cur, max, persist) int global((int)cur); UNUSED int dummy_register_##global = variable(#name, min, cur, max, &global, NULL, persist)
 
 #define VARN(name, global, min, cur, max) _VAR(name, global, min, cur, max, 0)
 #define VARN_NOSYNC(name, global, min, cur, max) _VAR_NOSYNC(name, global, min, cur, max, 0)

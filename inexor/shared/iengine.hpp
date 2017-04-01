@@ -124,6 +124,7 @@ extern void packvslot(vector<uchar> &buf, const VSlot *vs);
 
 // command
 extern int variable(const char *name, int min, int cur, int max, SharedVar<int> *storage, identfun fun, int flags);
+extern int variable(const char *name, int min, int cur, int max, int *storage, identfun fun, int flags);
 extern float fvariable(const char *name, float min, float cur, float max, SharedVar<float> *storage, identfun fun, int flags);
 extern char *svariable(const char *name, const char *cur, SharedVar<char*> *storage, identfun fun, int flags);
 extern void setvar(const char *name, int i, bool dofunc = true, bool doclamp = true);

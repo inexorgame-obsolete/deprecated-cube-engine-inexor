@@ -177,6 +177,10 @@ void clearoverride(ident &i)
             *i.storage.i = i.overrideval.i;
             i.changed();
             break;
+        case ID_NOSYNC_VAR:
+            *i.storage.iold = i.overrideval.i;
+            i.changed();
+            break;
         case ID_FVAR:
             *i.storage.f = i.overrideval.f;
             i.changed();
@@ -496,6 +500,12 @@ int variable(const char *name, int min, int cur, int max, SharedVar<int> *storag
     return cur;
 }
 
+int variable(const char *name, int min, int cur, int max, int *storage, identfun fun, int flags)
+{
+    addident(ident(ID_NOSYNC_VAR, name, min, max, storage, (void *)fun, flags));
+    return cur;
+}
+
 float fvariable(const char *name, float min, float cur, float max, SharedVar<float> *storage, identfun fun, int flags)
 {
     addident(ident(ID_FVAR, name, min, max, storage, (void *)fun, flags));
@@ -531,10 +541,21 @@ char *svariable(const char *name, const char *cur, SharedVar<char*> *storage, id
 
 void setvar(const char *name, int i, bool dofunc, bool doclamp)
 {
-    GETVAR(id, name, );
-    OVERRIDEVAR(return, id->overrideval.i = *id->storage.i, , )
-    if(doclamp) *id->storage.i = clamp(i, id->minval, id->maxval);
-    else *id->storage.i = i;
+    ident *id = idents.access(name);
+    if(!id) return;
+    if(id->type == ID_VAR)
+    {
+        OVERRIDEVAR(return, id->overrideval.i = *id->storage.i, , )
+        if(doclamp) *id->storage.i = clamp(i, id->minval, id->maxval);
+        else *id->storage.i = i;
+    }
+    else if(id->type == ID_NOSYNC_VAR)
+    {
+        OVERRIDEVAR(return, id->overrideval.i = *id->storage.iold, , )
+        if(doclamp) *id->storage.iold = clamp(i, id->minval, id->maxval);
+        else *id->storage.iold = i;
+    }
+    else return;
     if(dofunc) id->changed();
 }
 void setfvar(const char *name, float f, bool dofunc, bool doclamp)
@@ -554,17 +575,20 @@ void setsvar(const char *name, const char *str, bool dofunc)
 }
 int getvar(const char *name)
 {
-    GETVAR(id, name, 0);
-    return *id->storage.i;
+    ident *id = idents.access(name);
+    if(!id || (id->type != ID_VAR && id->type != ID_NOSYNC_VAR)) return 0;
+    return id->type == ID_VAR ? *id->storage.iold : *id->storage.i;
 }
 int getvarmin(const char *name)
 {
-    GETVAR(id, name, 0);
+    ident *id = idents.access(name);
+    if(!id || (id->type != ID_VAR && id->type != ID_NOSYNC_VAR)) return 0;
     return id->minval;
 }
 int getvarmax(const char *name)
 {
-    GETVAR(id, name, 0);
+    ident *id = idents.access(name);
+    if(!id || (id->type != ID_VAR && id->type != ID_NOSYNC_VAR)) return 0;
     return id->maxval;
 }
 float getfvarmin(const char *name)
@@ -592,6 +616,7 @@ void touchvar(const char *name)
     if(id) switch(id->type)
     {
         case ID_VAR:
+        case ID_NOSYNC_VAR:
         case ID_FVAR:
         case ID_SVAR:
             id->changed();
@@ -628,9 +653,10 @@ void setvarchecked(ident *id, int val)
     else
 #endif
     {
-        OVERRIDEVAR(return, id->overrideval.i = *id->storage.i, , )
+        OVERRIDEVAR(return, id->overrideval.i = id->type==ID_NOSYNC_VAR ? *id->storage.iold : *id->storage.i, , )
         if(val < id->minval || val > id->maxval) val = clampvar(id, val, id->minval, id->maxval);
-        *id->storage.i = val;
+        if(id->type==ID_NOSYNC_VAR) *id->storage.iold = val;
+        else *id->storage.i = val;
         id->changed();                                             // call trigger function if available
 #ifndef STANDALONE
         if(id->flags&IDF_OVERRIDE && !(identflags&IDF_OVERRIDDEN)) game::vartrigger(id);
@@ -1028,6 +1054,7 @@ static void compilelookup(vector<uint> &code, const char *&p, int ltype)
             ident *id = newident(lookup, IDF_UNKNOWN);
             if(id) switch(id->type)
             {
+                case ID_NOSYNC_VAR:
                 case ID_VAR: code.add(CODE_IVAR|((ltype >= VAL_ANY ? VAL_INT : ltype)<<CODE_RET)|(id->index<<8)); goto done;
                 case ID_FVAR: code.add(CODE_FVAR|((ltype >= VAL_ANY ? VAL_FLOAT : ltype)<<CODE_RET)|(id->index<<8)); goto done;
                 case ID_SVAR: code.add(CODE_SVAR|((ltype >= VAL_ANY ? VAL_STR : ltype)<<CODE_RET)|(id->index<<8)); goto done;
@@ -1152,7 +1179,7 @@ static bool compileblocksub(vector<uint> &code, const char *&p)
             ident *id = newident(lookup, IDF_UNKNOWN);
             if(id) switch(id->type)
             {
-            case ID_VAR: code.add(CODE_IVAR|RET_STR|(id->index<<8)); goto done;
+            case ID_VAR: case ID_NOSYNC_VAR: code.add(CODE_IVAR|RET_STR|(id->index<<8)); goto done;
             case ID_FVAR: code.add(CODE_FVAR|RET_STR|(id->index<<8)); goto done;
             case ID_SVAR: code.add(CODE_SVAR|RET_STR|(id->index<<8)); goto done;
             case ID_ALIAS: code.add((id->index < MAXARGS ? CODE_LOOKUPARG : CODE_LOOKUP)|RET_STR|(id->index<<8)); goto done;
@@ -1411,6 +1438,7 @@ static void compilestatements(vector<uint> &code, const char *&p, int rettype, i
                     code.add(CODE_LOCAL);
                     break;
                 case ID_VAR:
+                case ID_NOSYNC_VAR:
                     if(!(more = compilearg(code, p, VAL_INT))) code.add(CODE_PRINT|(id->index<<8));
                     else if(!(id->flags&IDF_HEX) || !(more = compilearg(code, p, VAL_INT))) code.add(CODE_IVAR1|(id->index<<8));
                     else if(!(more = compilearg(code, p, VAL_INT))) code.add(CODE_IVAR2|(id->index<<8));
@@ -1548,6 +1576,7 @@ void printvar(ident *id)
         case ID_VAR: printvar(id, *id->storage.i); break;
         case ID_FVAR: printfvar(id, *id->storage.f); break;
         case ID_SVAR: printsvar(id, *id->storage.s); break;
+        case ID_NOSYNC_VAR: printvar(id, *id->storage.iold); break;
     }
 }
 
@@ -1804,7 +1833,7 @@ static const uint *runcode(const uint *code, tagval &result)
             }
 
             case CODE_LOOKUPU|RET_STR:
-                #define LOOKUPU(aval, sval, ival, fval, nval) { \
+                #define LOOKUPU(aval, sval, ival, ioldval, fval, nval) { \
                     tagval &arg = args[numargs-1]; \
                     if(arg.type != VAL_STR && arg.type != VAL_MACRO) continue; \
                     id = idents.access(arg.s); \
@@ -1817,6 +1846,7 @@ static const uint *runcode(const uint *code, tagval &result)
                             aval; \
                             continue; \
                         case ID_SVAR: freearg(arg); sval; continue; \
+                        case ID_NOSYNC_VAR: freearg(arg); ioldval; continue; \
                         case ID_VAR: freearg(arg); ival; continue; \
                         case ID_FVAR: freearg(arg); fval; continue; \
                         case ID_COMMAND: \
@@ -1840,6 +1870,7 @@ static const uint *runcode(const uint *code, tagval &result)
                 LOOKUPU(arg.setstr(newstring(id->getstr())), 
                         arg.setstr(newstring(*id->storage.s)),
                         arg.setstr(newstring(intstr(*id->storage.i))),
+                        arg.setstr(newstring(intstr(*id->storage.iold))),
                         arg.setstr(newstring(floatstr(*id->storage.f))),
                         arg.setstr(newstring("")));
             case CODE_LOOKUP|RET_STR:
@@ -1862,6 +1893,7 @@ static const uint *runcode(const uint *code, tagval &result)
                 LOOKUPU(arg.setint(id->getint()),
                         arg.setint(parseint(*id->storage.s)),
                         arg.setint(*id->storage.i),
+                        arg.setint(*id->storage.iold),
                         arg.setint(int(*id->storage.f)),
                         arg.setint(0));
             case CODE_LOOKUP|RET_INT:
@@ -1872,6 +1904,7 @@ static const uint *runcode(const uint *code, tagval &result)
                 LOOKUPU(arg.setfloat(id->getfloat()),
                         arg.setfloat(parsefloat(*id->storage.s)),
                         arg.setfloat(float(*id->storage.i)),
+                        arg.setfloat(float(*id->storage.iold)),
                         arg.setfloat(*id->storage.f),
                         arg.setfloat(0.0f));
             case CODE_LOOKUP|RET_FLOAT:
@@ -1882,6 +1915,7 @@ static const uint *runcode(const uint *code, tagval &result)
                 LOOKUPU(id->getval(arg),
                         arg.setstr(newstring(*id->storage.s)),
                         arg.setint(*id->storage.i),
+                        arg.setint(*id->storage.iold),
                         arg.setfloat(*id->storage.f),
                         arg.setnull());
             case CODE_LOOKUP|RET_NULL:
@@ -1894,9 +1928,9 @@ static const uint *runcode(const uint *code, tagval &result)
             case CODE_SVAR|RET_FLOAT: args[numargs++].setfloat(parsefloat(*identmap[op>>8]->storage.s)); continue;
             case CODE_SVAR1: setsvarchecked(identmap[op>>8], args[0].s); freeargs(args, numargs, 0); continue;
 
-            case CODE_IVAR|RET_INT: case CODE_IVAR|RET_NULL: args[numargs++].setint(*identmap[op>>8]->storage.i); continue;
-            case CODE_IVAR|RET_STR: args[numargs++].setstr(newstring(intstr(*identmap[op>>8]->storage.i))); continue;
-            case CODE_IVAR|RET_FLOAT: args[numargs++].setfloat(float(*identmap[op>>8]->storage.i)); continue;
+            case CODE_IVAR|RET_INT: case CODE_IVAR|RET_NULL: args[numargs++].setint(identmap[op>>8]->type==ID_NOSYNC_VAR ? *identmap[op>>8]->storage.iold : *identmap[op>>8]->storage.i); continue;
+            case CODE_IVAR|RET_STR: args[numargs++].setstr(newstring(intstr(identmap[op>>8]->type==ID_NOSYNC_VAR ? *identmap[op>>8]->storage.iold : *identmap[op>>8]->storage.i))); continue;
+            case CODE_IVAR|RET_FLOAT: args[numargs++].setfloat(float(identmap[op>>8]->type==ID_NOSYNC_VAR ? *identmap[op>>8]->storage.iold : *identmap[op>>8]->storage.i)); continue;
             case CODE_IVAR1: setvarchecked(identmap[op>>8], args[0].i); numargs = 0; continue;
             case CODE_IVAR2: setvarchecked(identmap[op>>8], (args[0].i<<16)|(args[1].i<<8)); numargs = 0; continue;
             case CODE_IVAR3: setvarchecked(identmap[op>>8], (args[0].i<<16)|(args[1].i<<8)|args[2].i); numargs = 0; continue;
@@ -2047,6 +2081,7 @@ static const uint *runcode(const uint *code, tagval &result)
                         goto exit;  
                     }
                     case ID_VAR:
+                    case ID_NOSYNC_VAR:
                         if(numargs <= 1) printvar(id); 
                         else
                         {
@@ -2302,6 +2337,7 @@ void writecfg(const char *name)
         if(id.flags&IDF_PERSIST) switch(id.type)
         {
             case ID_VAR: f->printf("%s %d\n", escapeid(id), **id.storage.i); break;
+            case ID_NOSYNC_VAR: f->printf("%s %d\n", escapeid(id), *id.storage.iold); break;
             case ID_FVAR: f->printf("%s %s\n", escapeid(id), floatstr(*id.storage.f)); break;
             case ID_SVAR: f->printf("%s %s\n", escapeid(id), escapestring(*id.storage.s)); break;
         }

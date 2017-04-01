@@ -85,7 +85,8 @@ extern void compactmruvslots();
 
 // shadowmap
 
-extern SharedVar<int> shadowmap, shadowmapcasters;
+extern SharedVar<int> shadowmap;
+extern int shadowmapcasters;
 extern bool shadowmapping;
 extern matrix4 shadowmatrix;
 
