@@ -16,6 +16,7 @@
 #include "inexor/ui/input/InexorMouseManager.hpp"
 #include "inexor/ui/layer/InexorLayerManager.hpp"
 #include "inexor/ui/layer/InexorAppLayer.hpp"
+#include "inexor/ui/layer/InexorConsoleLayer.hpp"
 #include "inexor/ui/layer/InexorHudLayer.hpp"
 #include "inexor/util/Logging.hpp"
 
@@ -38,6 +39,7 @@ class InexorCefApp : public CefApp,
         CefRefPtr<input::InexorKeyboardManager> GetKeyboardManager() { return keyboard_manager; }
         CefRefPtr<layer::InexorLayerManager> GetLayerManager() { return layer_manager; }
         CefRefPtr<layer::InexorHudLayer> GetHudLayer() { return hud_layer; }
+        CefRefPtr<layer::InexorConsoleLayer> GetConsoleLayer() { return console_layer; }
         CefRefPtr<layer::InexorAppLayer> GetAppLayer() { return app_layer; }
 
         // Rendering / Window Management
@@ -64,9 +66,11 @@ class InexorCefApp : public CefApp,
         CefRefPtr<input::InexorKeyboardManager> keyboard_manager;
         CefRefPtr<layer::InexorLayerManager> layer_manager;
         CefRefPtr<layer::InexorHudLayer> hud_layer;
+        CefRefPtr<layer::InexorConsoleLayer> console_layer;
         CefRefPtr<layer::InexorAppLayer> app_layer;
 
         void InitHudLayer();
+        void InitConsoleLayer();
         void InitAppLayer();
 
         IMPLEMENT_REFCOUNTING(InexorCefApp);
