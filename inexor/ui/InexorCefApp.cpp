@@ -30,7 +30,7 @@ InexorCefApp::InexorCefApp(int width, int height)
 void InexorCefApp::InitHudLayer()
 {
     std::string layer_name("hud");
-    std::string layer_url("http://localhost:31416/api/v1/interfaces/ui-client-hud");
+    std::string layer_url("http://localhost:31416/api/v1/interfaces/ui-client-hud/public/index.html");
     hud_layer = new layer::InexorHudLayer(layer_name, layer_url);
     hud_layer->Show();
     context_manager->AddSubContext(hud_layer);
@@ -41,9 +41,9 @@ void InexorCefApp::InitHudLayer()
 void InexorCefApp::InitConsoleLayer()
 {
     std::string layer_name("console");
-    std::string layer_url("http://localhost:31416/api/v1/interfaces/ui-console");
+    std::string layer_url("http://localhost:31416/api/v1/interfaces/ui-console/public/index.html");
     console_layer = new layer::InexorConsoleLayer(layer_name, layer_url);
-    console_layer->Show();
+    console_layer->Hide();
     context_manager->AddSubContext(console_layer);
     layer_manager->AddLayerProvider(console_layer);
     spdlog::get("ui")->debug("init: cef: console layer");
@@ -52,9 +52,9 @@ void InexorCefApp::InitConsoleLayer()
 void InexorCefApp::InitAppLayer()
 {
     std::string layer_name("app");
-    std::string layer_url("http://localhost:31416/api/v1/interfaces/ui-client-interface");
+    std::string layer_url("http://localhost:31416/api/v1/interfaces/ui-client-interface/index.html");
     app_layer = new layer::InexorAppLayer(layer_name, layer_url);
-    app_layer->Show();
+    app_layer->Hide();
     context_manager->AddSubContext(app_layer);
     layer_manager->AddLayerProvider(app_layer);
     spdlog::get("ui")->debug("init: cef: app layer");
