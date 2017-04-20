@@ -3,7 +3,7 @@
 // and k-dimensional trees
 //
 // used for octree implementation (?)
-
+// NO INCLUDE GUARD
 struct BIH
 {
     struct node

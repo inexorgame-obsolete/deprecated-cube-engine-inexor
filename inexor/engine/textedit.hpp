@@ -1,4 +1,4 @@
-
+//NO INCLUDE GUARD
 struct editline
 {
     enum { CHUNKSIZE = 256 };

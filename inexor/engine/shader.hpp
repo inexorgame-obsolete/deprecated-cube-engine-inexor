@@ -1,7 +1,6 @@
 /// @file Header for the internal GLSL shader organisation
 
-#ifndef INEXOR_SHADER_H
-#define INEXOR_SHADER_H
+#pragma once
 
 struct GlobalShaderParamState
 {
@@ -473,6 +472,3 @@ extern void setblurshader(int pass, int size, int radius, float *weights, float 
 // TODO
 extern Slot dummyslot;
 extern VSlot dummyvslot;
-
-
-#endif // INEXOR_SHADER_H

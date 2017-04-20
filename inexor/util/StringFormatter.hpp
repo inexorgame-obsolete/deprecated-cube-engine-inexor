@@ -1,5 +1,4 @@
-#ifndef INEXOR_UTIL_STRING_FORMATTER_HEADER
-#define INEXOR_UTIL_STRING_FORMATTER_HEADER
+#pragma once
 
 #include <sstream>
 #include <string>
@@ -56,5 +55,3 @@ namespace util {
   extern StringFormatter::FmtMark fmt;
 }
 }
-
-#endif

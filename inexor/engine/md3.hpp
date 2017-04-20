@@ -1,3 +1,4 @@
+//NO INCLUDE GUARD
 struct md3;
 
 struct md3frame

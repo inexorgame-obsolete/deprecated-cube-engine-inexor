@@ -3,8 +3,7 @@
 // Will be standard in C++14; supported by boost but only
 // from 1.56 (ubuntu provides 1.55)
 
-#ifndef INEXOR_COMPAT_MAKE_UNIQUE_HEADER
-#define INEXOR_COMPAT_MAKE_UNIQUE_HEADER
+#pragma once
 
 // TODO: Use Boost implementation
 
@@ -22,6 +21,3 @@ std::unique_ptr<T> make_unique(Args&&... args) {
 
 }
 }
-
-
-#endif

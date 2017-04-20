@@ -1,5 +1,5 @@
 // 6-directional octree heightfield map format
-
+//NO INCLUDE GUARD
 struct elementset
 {
     ushort texture, lmid, envmap;
