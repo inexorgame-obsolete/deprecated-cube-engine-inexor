@@ -1,8 +1,6 @@
 /// Show stacktrace on unix, do not include directly.
 /// Code mainly written by Rafael Baptista.
-
-#ifndef INEXOR_CRASHREPORTER_STACKWALKER_POSIX_H
-#define INEXOR_CRASHREPORTER_STACKWALKER_POSIX_H
+#pragma once
 
 #include <execinfo.h>
 #include <stdlib.h>
@@ -145,4 +143,3 @@ static inline void printStackTrace(std::vector<std::string> &output)
 } // namespace crashreporter
 } // namespace inexor
 
-#endif // INEXOR_CRASHREPORTER_STACKWALKER_POSIX_H

@@ -1,5 +1,4 @@
-#ifndef INEXOR_UI_INEXOR_CONTEXT_PROVIDER_HEADER
-#define INEXOR_UI_INEXOR_CONTEXT_PROVIDER_HEADER
+#pragma once
 
 #include <list>
 
@@ -45,5 +44,3 @@ class InexorContextProvider : public CefV8Handler,
 }
 }
 }
-
-#endif

@@ -1,8 +1,5 @@
 /// OpenGL extension checks: check whether certain features are available for your graphics-hardware/platform(driver)
-
-#ifndef INEXOR_ENGINE_GLEXTS_HEADER
-#define INEXOR_ENGINE_GLEXTS_HEADER
-
+#pragma once
 // OpenGL 1.3
 #ifndef WIN32
 #define glActiveTexture_ glActiveTexture
@@ -441,5 +438,3 @@ extern PFNGLBINDVERTEXARRAYPROC    glBindVertexArray_;
 extern PFNGLDELETEVERTEXARRAYSPROC glDeleteVertexArrays_;
 extern PFNGLGENVERTEXARRAYSPROC    glGenVertexArrays_;
 extern PFNGLISVERTEXARRAYPROC      glIsVertexArray_;
-
-#endif // INEXOR_ENGINE_GLEXTS_HEADER

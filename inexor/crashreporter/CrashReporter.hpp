@@ -3,8 +3,7 @@
 /// (Just make sure you got debuginfo on windows and initiate this class somewhere in your code,
 /// as singleton or as instance in your main functin, either works)
 
-#ifndef INEXOR_UTIL_CRASH_REPORTER_H
-#define INEXOR_UTIL_CRASH_REPORTER_H
+#pragma once
 
 #include <signal.h>
 
@@ -30,5 +29,3 @@ namespace crashreporter {
 
 } // namespace crashreporter
 } // namespace inexor
-
-#endif // INEXOR_UTIL_CRASH_REPORTER_H

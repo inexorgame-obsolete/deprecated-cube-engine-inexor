@@ -1,5 +1,4 @@
-#ifndef INEXOR_UI_LAYER_CONSOLE_HEADER
-#define INEXOR_UI_LAYER_CONSOLE_HEADER
+#pragma once
 
 #include "include/cef_app.h"
 
@@ -65,4 +64,4 @@ class InexorConsoleLayer : public inexor::ui::context::InexorContextProvider,
 }
 }
 
-#endif
+

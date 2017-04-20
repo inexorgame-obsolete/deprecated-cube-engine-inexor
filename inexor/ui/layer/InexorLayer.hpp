@@ -1,6 +1,4 @@
-#ifndef INEXOR_UI_LAYER_LAYER_HEADER
-#define INEXOR_UI_LAYER_LAYER_HEADER
-
+#pragma once
 #include <list>
 #include <string>
 #include <sstream>
@@ -116,4 +114,3 @@ class InexorLayer : public CefClient,
 }
 }
 
-#endif

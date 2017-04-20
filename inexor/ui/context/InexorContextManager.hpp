@@ -1,5 +1,4 @@
-#ifndef INEXOR_UI_INEXOR_CONTEXT_MANAGER_HEADER
-#define INEXOR_UI_INEXOR_CONTEXT_MANAGER_HEADER
+#pragma once
 
 #include <list>
 
@@ -46,4 +45,3 @@ class InexorContextManager : public InexorContextProvider
 }
 }
 
-#endif

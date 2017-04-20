@@ -1,3 +1,4 @@
+//NO INCLUDE GUARD
 struct iqm;
 
 struct iqmheader

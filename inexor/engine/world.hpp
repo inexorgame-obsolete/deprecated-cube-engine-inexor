@@ -1,3 +1,4 @@
+//NO INCLUDE GUARD
 // world.h
 // contains general enumerations and structure 
 // to describe world, map format and enviroment

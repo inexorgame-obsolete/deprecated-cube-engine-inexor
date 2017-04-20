@@ -1,6 +1,4 @@
-#ifndef INEXOR_UI_LAYER_HUD_HEADER
-#define INEXOR_UI_LAYER_HUD_HEADER
-
+#pragma once
 #include "include/cef_app.h"
 
 #include "inexor/ui/context/InexorContextProvider.hpp"
@@ -65,4 +63,3 @@ class InexorHudLayer : public inexor::ui::context::InexorContextProvider,
 }
 }
 
-#endif

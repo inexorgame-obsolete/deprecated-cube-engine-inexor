@@ -1,5 +1,4 @@
-#ifndef INEXOR_TEST_HELPERS_HEADER
-#define INEXOR_TEST_HELPERS_HEADER
+#pragma once
 
 #include "gtest/gtest.h"
 
@@ -46,4 +45,4 @@ R rand(R a=std::numeric_limits<R>::min(),
   return d(trand);
 }
 
-#endif
+

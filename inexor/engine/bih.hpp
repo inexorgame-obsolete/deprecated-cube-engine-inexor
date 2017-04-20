@@ -3,7 +3,7 @@
 // and k-dimensional trees
 //
 // used for octree implementation (?)
-
+#pragma once
 struct BIH
 {
     struct node

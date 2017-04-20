@@ -1,5 +1,4 @@
-#ifndef INEXOR_UI_INEXOR_CEF_SUB_APP_HEADER
-#define INEXOR_UI_INEXOR_CEF_SUB_APP_HEADER
+#pragma once
 
 #include <string>
 #include <list>
@@ -68,4 +67,3 @@ class InexorCefSubprocessApp : public CefApp,
 }
 }
 
-#endif

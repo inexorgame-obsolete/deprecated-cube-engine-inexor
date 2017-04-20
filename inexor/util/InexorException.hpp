@@ -1,5 +1,4 @@
-#ifndef INEXOR_UTIL_INEXOR_EXCEPTION_HEADER
-#define INEXOR_UTIL_INEXOR_EXCEPTION_HEADER
+#pragma once
 
 #include <exception>
 #include <string>
@@ -95,5 +94,3 @@ public:
 
 }
 }
-
-#endif

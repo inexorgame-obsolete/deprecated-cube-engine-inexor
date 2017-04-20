@@ -1,8 +1,7 @@
 /// @file Set of containers (vector,hashset,buffer,stream) and tools for developing
 /// @warning Try to avoid using these containers for new code.
 
-#ifndef _TOOLS_H
-#define _TOOLS_H
+#pragma once
 
 #include <new>
 #include <cstddef>
@@ -1525,4 +1524,3 @@ struct ipmask
     bool check(enet_uint32 host) const { return (host & mask) == ip; }
 };
 
-#endif

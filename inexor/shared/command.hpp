@@ -1,8 +1,7 @@
 /// @file Cubescript API
 /// Deprecated.
 
-#ifndef SAUER_COMMAND_H
-#define SAUER_COMMAND_H
+#pragma once
 
 #include "inexor/rpc/SharedTree.hpp"
 
@@ -393,4 +392,4 @@ inline void ident::getval(tagval &v) const
       }                                                                                      \
   )
 
-#endif // SAUER_COMMAND_H
+

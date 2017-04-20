@@ -1,3 +1,4 @@
+//NO INCLUDE GUARD
 #include "inexor/ui/screen/ScreenManager.hpp"
 
 using namespace inexor::rendering::screen;

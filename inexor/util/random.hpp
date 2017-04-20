@@ -1,5 +1,4 @@
-#ifndef INEXOR_UTIL_RANDOM_HEADER
-#define INEXOR_UTIL_RANDOM_HEADER
+#pragma once
 
 #include <type_traits>
 #include <limits>
@@ -150,4 +149,4 @@ using random::deterministic_rnd;
 }
 }
 
-#endif
+
