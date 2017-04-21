@@ -5,9 +5,8 @@
 ///
 ///
 
-/// include guard protectes this file from being included twice
-#ifndef __GAME_H__
-#define __GAME_H__
+/// pragmaonce protectes this file from being included twice
+#pragma once
 
 #include "inexor/shared/cube.hpp"
 #include "inexor/util/Logging.hpp"
@@ -1139,6 +1138,4 @@ namespace server
     extern bool serveroption(const char *arg);
     extern bool delayspawn(int type);
 }
-
-#endif /// __GAME_H__
 

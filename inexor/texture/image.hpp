@@ -1,7 +1,6 @@
 /// @file Texture modifiers mainly applied on load.
 
-#ifndef INEXOR_TEX_MODIFIERS_H
-#define INEXOR_TEX_MODIFIERS_H
+#pragma once
 
 #include <SDL.h>
 #include <SDL_opengl.h>
@@ -126,4 +125,4 @@ extern void forcergbimage(ImageData &s);
 extern void blurtexture(int n, int bpp, int w, int h, uchar *dst, const uchar *src, int margin = 0);
 extern void blurnormals(int n, int w, int h, bvec *dst, const bvec *src, int margin = 0);
 
-#endif //INEXOR_TEX_MODIFIERS_H
+

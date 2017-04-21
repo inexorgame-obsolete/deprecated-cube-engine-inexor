@@ -1,5 +1,4 @@
-#ifndef INEXOR_UI_CEF_SUBSYSTEM_HEADER
-#define INEXOR_UI_CEF_SUBSYSTEM_HEADER
+#pragma once
 
 #include "inexor/ui.hpp"
 
@@ -23,4 +22,4 @@ public:
 }
 }
 
-#endif
+

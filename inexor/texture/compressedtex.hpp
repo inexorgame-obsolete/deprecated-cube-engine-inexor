@@ -1,7 +1,6 @@
 /// @file compressed texture (mostly dds) loading.
 
-#ifndef INEXOR_TEX_COMPRESSED_H
-#define INEXOR_TEX_COMPRESSED_H
+#pragma once
 
 #include "inexor/engine/engine.hpp"
 
@@ -68,4 +67,3 @@ struct DDSURFACEDESC2
     uint dwTextureStage;
 };
 
-#endif //INEXOR_TEX_COMPRESSED_H

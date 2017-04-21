@@ -5,8 +5,7 @@
 /// Each Slot can have a node-chain of numerous virtual Slots which contain differing shader stuff,
 /// or scaling, color, rotation.. So a bunch of textures (a Slot) can easily be varying ingame.
 
-#ifndef INEXOR_TEX_SLOT_H
-#define INEXOR_TEX_SLOT_H
+#pragma once
 
 #include "inexor/texture/image.hpp"
 
@@ -201,7 +200,7 @@ extern bool unpackvslot(ucharbuf &buf, VSlot &dst, bool delta);
 extern vector<Slot *> slots;
 extern vector<VSlot *> vslots;
 
-#endif //INEXOR_TEX_SLOT_H
+
 
 /// TODO
 // make emptyvslot obsolete by providing a better cleaning algorithm

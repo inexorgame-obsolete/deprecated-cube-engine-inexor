@@ -1,7 +1,6 @@
 /// @file environment map loading routine.
 
-#ifndef INEXOR_TEX_CUBEMAP_H
-#define INEXOR_TEX_CUBEMAP_H
+#pragma once
 
 #include "inexor/engine/engine.hpp"
 
@@ -29,4 +28,4 @@ extern GLuint lookupenvmap(Slot &slot);
 // rendergl.cpp:
 extern void drawcubemap(int size, const vec &o, float yaw, float pitch, const cubemapside &side);
 
-#endif // INEXOR_TEX_CUBEMAP_H
+

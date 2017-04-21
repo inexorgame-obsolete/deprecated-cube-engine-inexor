@@ -1,5 +1,3 @@
-#ifndef INEXOR_UI_INEXOR_RENDER_HANDLER_HEADER
-#define INEXOR_UI_INEXOR_RENDER_HANDLER_HEADER
 #pragma once
 
 #include "include/cef_browser.h"
@@ -77,5 +75,3 @@ class InexorRenderHandler : public CefRenderHandler {
 
 }
 }
-
-#endif

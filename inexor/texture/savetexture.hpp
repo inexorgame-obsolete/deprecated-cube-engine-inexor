@@ -1,7 +1,6 @@
 /// @file everything to save images of various formats.
 
-#ifndef INEXOR_TEX_SAVETEXTURE_H
-#define INEXOR_TEX_SAVETEXTURE_H
+#pragma once
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/texture/texture.hpp"
@@ -20,4 +19,4 @@ extern int guessimageformat(const char *filename, int format = IMG_PNG);
 extern void savepng(const char *filename, ImageData &image, bool flip = false);
 extern void savetga(const char *filename, ImageData &image, bool flip = false);
 
-#endif // INEXOR_TEX_SAVETEXTURE_H
+

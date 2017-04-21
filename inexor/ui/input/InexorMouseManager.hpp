@@ -1,5 +1,4 @@
-#ifndef INEXOR_UI_INEXOR_MOUSE_MANAGER_HEADER
-#define INEXOR_UI_INEXOR_MOUSE_MANAGER_HEADER
+#pragma once
 
 #include <iostream>
 
@@ -95,4 +94,3 @@ class InexorMouseManager : public inexor::ui::context::InexorContextProvider
 }
 }
 
-#endif
