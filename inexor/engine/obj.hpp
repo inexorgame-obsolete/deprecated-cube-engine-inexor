@@ -1,3 +1,4 @@
+// NO INCLUDE GUARD
 struct obj;
 
 struct obj : vertmodel, vertloader<obj>

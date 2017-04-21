@@ -1,3 +1,4 @@
+//NO INCLUDE GUARD
 struct vertmodel : animmodel
 {
     struct vert { vec pos, norm; };

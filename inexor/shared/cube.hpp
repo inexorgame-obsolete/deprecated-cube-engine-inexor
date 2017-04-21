@@ -1,7 +1,6 @@
 /// @file main header file for legacy code.
 
-#ifndef __CUBE_H__
-#define __CUBE_H__
+#pragma once
 
 #define _FILE_OFFSET_BITS 64
 
@@ -53,7 +52,4 @@
 /// header files for communication between the game and Cube engine
 #include "inexor/shared/iengine.hpp"
 #include "inexor/shared/igame.hpp"
-
-
-#endif // __CUBE_H__
 

@@ -1,3 +1,4 @@
+//NO INCLUDE GUARD
 struct md5;
 
 struct md5joint

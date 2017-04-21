@@ -1,5 +1,3 @@
-#ifndef INEXOR_UI_INEXOR_WINDOW_INFO_HEADER
-#define INEXOR_UI_INEXOR_WINDOW_INFO_HEADER
 #pragma once
 
 #include "include/cef_app.h"
@@ -33,4 +31,3 @@ class InexorWindowInfo : public CefWindowInfo {
 }
 }
 
-#endif

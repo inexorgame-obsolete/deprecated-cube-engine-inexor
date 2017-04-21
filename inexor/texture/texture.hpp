@@ -1,7 +1,6 @@
 /// @file Main texture loading and organizing routines + main texture structures.
 
-#ifndef INEXOR_TEX_TEXTURE_H
-#define INEXOR_TEX_TEXTURE_H
+#pragma once
 
 #include "inexor/texture/texsettings.hpp"
 #include "inexor/texture/image.hpp"
@@ -71,4 +70,4 @@ extern bool loadimage(const char *filename, ImageData &image);
 extern Texture *registertexture(const char *name);
 extern Texture *gettexture(const char *name);
 
-#endif // INEXOR_TEX_TEXTURE_H
+

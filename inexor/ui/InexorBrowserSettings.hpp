@@ -1,5 +1,4 @@
-#ifndef INEXOR_UI_INEXOR_BROWSER_SETTINGS_HEADER
-#define INEXOR_UI_INEXOR_BROWSER_SETTINGS_HEADER
+
 #pragma once
 
 #include "include/cef_app.h"
@@ -23,5 +22,3 @@ class InexorBrowserSettings : public CefBrowserSettings {
 
 }
 }
-
-#endif

@@ -1,7 +1,6 @@
 /// @file Settings for texture loading and handling.
 
-#ifndef INEXOR_TEX_SETTINGS_H
-#define INEXOR_TEX_SETTINGS_H
+#pragma once
 
 #include "inexor/rpc/SharedTree.hpp"
 
@@ -25,4 +24,4 @@ extern SharedVar<int> texcompressquality;
 extern SharedVar<int> usenp2;
 
 
-#endif // INEXOR_TEX_SETTINGS_H
+

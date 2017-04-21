@@ -1,7 +1,6 @@
 /// @file Small helper functions to organize which OpenGL formats to use.
 
-#ifndef INEXOR_TEX_FORMAT_H
-#define INEXOR_TEX_FORMAT_H
+#pragma once
 
 #include "inexor/engine/engine.hpp" //bc hasTC
 
@@ -12,4 +11,4 @@ extern GLenum compressedformat(GLenum format, int w, int h, int force = 0);
 extern GLenum textarget(GLenum subtarget);
 extern int formatsize(GLenum format);
 
-#endif //INEXOR_TEX_FORMAT_H
+

@@ -1,5 +1,4 @@
-#ifndef INEXOR_UTIL_UTIL_HEADER
-#define INEXOR_UTIL_UTIL_HEADER
+#pragma once
 
 #include <string>
 #include <memory>
@@ -90,5 +89,3 @@ namespace util {
 
 }
 }
-
-#endif

@@ -1,3 +1,4 @@
+//NO INCLUDE GUARD
 struct fpsent;
 
 #define MAXBOTS 32

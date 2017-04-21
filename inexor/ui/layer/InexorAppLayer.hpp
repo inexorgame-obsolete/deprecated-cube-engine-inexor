@@ -1,6 +1,4 @@
-#ifndef INEXOR_UI_LAYER_APP_HEADER
-#define INEXOR_UI_LAYER_APP_HEADER
-
+#pragma once
 #include "include/cef_app.h"
 
 #include "inexor/ui/context/InexorContextProvider.hpp"
@@ -58,4 +56,4 @@ class InexorAppLayer : public inexor::ui::context::InexorContextProvider,
 }
 }
 
-#endif
+

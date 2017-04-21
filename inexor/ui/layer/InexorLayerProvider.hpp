@@ -1,5 +1,4 @@
-#ifndef INEXOR_UI_LAYER_PROVIDER_HEADER
-#define INEXOR_UI_LAYER_PROVIDER_HEADER
+#pragma once
 
 #include "include/cef_app.h"
 #include "include/wrapper/cef_helpers.h"
@@ -120,5 +119,3 @@ class AbstractInexorLayerProvider : public InexorLayerProvider
 }
 }
 }
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef _UI_H
-#define _UI_H
+#pragma once
 
 #include "inexor/ui/InexorCefApp.hpp"
 
@@ -9,4 +8,3 @@ namespace ui {
 }
 }
 
-#endif

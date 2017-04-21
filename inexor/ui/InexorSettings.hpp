@@ -1,5 +1,4 @@
-#ifndef INEXOR_UI_INEXOR_SETTINGS_HEADER
-#define INEXOR_UI_INEXOR_SETTINGS_HEADER
+
 #pragma once
 
 #include <string>
@@ -51,4 +50,4 @@ class InexorSettings : public CefSettings
 }
 }
 
-#endif
+

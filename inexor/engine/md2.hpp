@@ -1,3 +1,4 @@
+//NO INCLUDE GUARD
 struct md2;
 
 static const float md2normaltable[256][3] =

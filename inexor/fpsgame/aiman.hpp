@@ -1,3 +1,4 @@
+//NO INCLUDE GUARD
 // aiman.h (A.I. manager)
 // server-side ai manager
 

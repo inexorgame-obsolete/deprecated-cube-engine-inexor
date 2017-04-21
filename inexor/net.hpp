@@ -1,5 +1,4 @@
-#ifndef INEXOR_NET_NET_HEADER
-#define INEXOR_NET_NET_HEADER
+#pragma once
 
 #include "inexor/net/MessageConnect.hpp"
 #include "inexor/net/MCHub.hpp"
@@ -9,4 +8,4 @@
 #include "inexor/net/MCSocketServer.hpp"
 #include "inexor/net/MCSocket.hpp"
 
-#endif
+

@@ -1,5 +1,4 @@
-#ifndef __ENGINE_H__
-#define __ENGINE_H__
+#pragma once
 
 #include "inexor/shared/cube.hpp"
 #include "inexor/engine/world.hpp"
@@ -607,8 +606,6 @@ namespace recorder
 
 /// Exception that should be thrown if GL related functionality failed.
 IEXCEPTION(GLException, "OpenGL related functionality failed");
-
-#endif
 
 #endif
 
