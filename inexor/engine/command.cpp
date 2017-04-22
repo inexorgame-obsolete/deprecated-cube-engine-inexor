@@ -2910,12 +2910,7 @@ void findfile_(char *name)
     string fname;
     copystring(fname, name);
     path(fname);
-    intret(
-#ifndef STANDALONE
-        findzipfile(fname) ||
-#endif
-        fileexists(fname, "e") || findfile(fname, "e") ? 1 : 0
-    );
+    intret(fileexists(fname, "e") || findfile(fname, "e") ? 1 : 0);
 }
 COMMANDN(findfile, findfile_, "s");
 
