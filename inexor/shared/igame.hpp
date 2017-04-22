@@ -45,7 +45,6 @@ namespace game
     extern void broadcastfov(int fov);
     extern int getfollowingfov();
 
-    extern const char *gameident();
     extern const char *savedconfig();
     extern const char *restoreconfig();
     extern const char *defaultconfig();

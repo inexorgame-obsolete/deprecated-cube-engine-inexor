@@ -13,8 +13,6 @@ namespace game
             if(!server::serveroption(args[i]))
                 spdlog::get("global")->error("unknown command-line option: {0}", args[i]);
     }
-
-    const char *gameident() { return "fps"; }
 }
 
 extern ENetAddress masteraddress;
