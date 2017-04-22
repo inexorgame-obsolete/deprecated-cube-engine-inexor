@@ -1293,25 +1293,15 @@ namespace game
     }
 
     // any data written into this vector will get saved with the map data.
-	// must take care to do own versioning, and endianess if applicable. 
-	// will not get called when loading maps from other games, so provide defaults.
+    // must take care to do own versioning, and endianess if applicable.
+    // will not get called when loading maps from other games, so provide defaults.
     void writegamedata(vector<char> &extras) {}
     void readgamedata(vector<char> &extras) {}
 
-	// file name of important configuration files
-	// are stored in constant functions that return strings...
-    /// TODO: remove this hardcoded passage and move on to JSON!
     const char *savedconfig() { return "config/saved.cfg"; }
     const char *restoreconfig() { return "config/restore.cfg"; }
     const char *defaultconfig() { return "config/defaults.cfg"; }
     const char *autoexec() { return "config/autoexec.cfg"; }
     const char *savedservers() { return "config/servers.cfg"; }
-
-	// load "auth.cfg" configuration file with disabled log messages (?)
-    /// TODO: remove this hardcoded passage and move on to JSON!
-    void loadconfigs()
-    {
-        execfile("config/auth.cfg", false);
-    }
 }
 

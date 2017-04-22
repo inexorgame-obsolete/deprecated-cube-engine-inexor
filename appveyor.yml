@@ -38,7 +38,7 @@ before_build:
   - cmd: if "%platform%"=="Win32" ( set "CMAKE_GENERATOR_NAME=Visual Studio 14 2015" && set "arch_str=x86" )
   - cmd: if "%platform%"=="x64" ( set "CMAKE_GENERATOR_NAME=Visual Studio 14 2015 Win64" && set "arch_str=x86_64")
   - cmd: if %configuration%==Debug (set "runtime_str=MTd")else (set "runtime_str=MT")
-  - cmd: set "args=-DBUILD_CLIENT=1 -DBUILD_SERVER=1 -DBUILD_MASTER=1 -DBUILD_TEST=1 -DCREATE_PACKAGE=1"
+  - cmd: set "args=-DBUILD_CLIENT=1 -DBUILD_SERVER=1 -DBUILD_TEST=1 -DCREATE_PACKAGE=1"
   # Only deploy a bundle with the media folder if the branch is master (and its not a pr)(and its a Release build):
 #  - cmd: if "%configuration%"=="Release" if "%APPVEYOR_REPO_BRANCH%"=="master" if defined APPVEYOR_PULL_REQUEST_NUMBER set "args=%args% -DPACKAGE_INCLUDE_MEDIA=1"
   - cmd: conan remote add inexor https://api.bintray.com/conan/inexorgame/inexor-conan --insert

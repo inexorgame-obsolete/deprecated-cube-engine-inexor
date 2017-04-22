@@ -369,7 +369,6 @@ extern void cleanupserver();
 extern void serverslice(bool dedicated, uint timeout);
 extern void updatetime();
 
-extern ENetSocket connectmaster(bool wait);
 extern void localclienttoserver(int chan, ENetPacket *);
 extern void localconnect();
 extern bool serveroption(char *opt);
