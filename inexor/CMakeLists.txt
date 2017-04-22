@@ -17,7 +17,7 @@ declare_module(fpsgame ./fpsgame)
 
 add_subdirectory(util)
 add_subdirectory(filesystem)
-add_subdirectory(rpc) # rpc module, protobuf lib
+add_subdirectory(network) # syncronisation module + legacy network
 add_subdirectory(ui)
 add_subdirectory(crashreporter)
 add_subdirectory(texture)

@@ -1,6 +1,6 @@
 #pragma once
-#include "inexor/rpc/SharedVar.hpp"
-#include "inexor/rpc/SharedOptions.hpp"
+#include "inexor/network/SharedVar.hpp"
+#include "inexor/network/SharedOptions.hpp"
 
 /// All classes deriving from this class get detected by our reflection system InexorGlueGen.
 class SharedClass

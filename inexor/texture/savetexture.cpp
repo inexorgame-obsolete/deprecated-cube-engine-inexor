@@ -1,5 +1,5 @@
 /// @file everything to save images of various formats.
-#include "inexor/rpc/SharedTree.hpp"
+#include "inexor/network/SharedTree.hpp"
 #include "inexor/texture/savetexture.hpp"
 #include "inexor/texture/SDL_loading.hpp"
 #include "inexor/texture/image.hpp"

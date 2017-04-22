@@ -5,7 +5,7 @@
 #include <string>
 
 #include "inexor/filesystem/path.hpp"
-#include "inexor/rpc/SharedTree.hpp"
+#include "inexor/network/SharedTree.hpp"
 
 enum {
     DIR_MAP,

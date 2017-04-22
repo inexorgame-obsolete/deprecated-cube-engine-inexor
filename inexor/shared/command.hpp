@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "inexor/rpc/SharedTree.hpp"
+#include "inexor/network/SharedTree.hpp"
 
 /// contains all kind of different script objects
 /// such as commands, variables, macros or idents

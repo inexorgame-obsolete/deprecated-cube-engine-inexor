@@ -8,7 +8,7 @@
 
 #include "inexor/util/Subsystem.hpp"
 #include "inexor/util/Logging.hpp"
-#include "inexor/rpc/RpcServer.hpp"
+#include "inexor/network/RpcServer.hpp"
 
 namespace inexor {
 namespace rpc {

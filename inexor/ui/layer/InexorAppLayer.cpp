@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "inexor/rpc/SharedTree.hpp"
+#include "inexor/network/SharedTree.hpp"
 #include "inexor/ui/layer/InexorAppLayer.hpp"
 #include "inexor/util/Logging.hpp"
 #include "inexor/ui.hpp"
