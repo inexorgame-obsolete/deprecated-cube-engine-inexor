@@ -25,8 +25,6 @@ namespace entities
 
 namespace game
 {
-    extern void parseoptions(vector<const char *> &args);
-
     extern void gamedisconnect(bool cleanup);
     extern void parsepacketclient(int chan, packetbuf &p);
     extern void connectattempt(const char *name, const char *password, const ENetAddress &address);

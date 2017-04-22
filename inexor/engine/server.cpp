@@ -9,7 +9,7 @@
 
 #define LOGSTRLEN 512
 
-char *initscript = NULL;
+const char *initscript = NULL;
 
 #ifdef STANDALONE
 
@@ -919,6 +919,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw)
 #ifdef STANDALONE
     int standalonemain(int argc, char **argv);
     int status = standalonemain(args.length()-1, args.getbuf());
+    #undef main
     #define main standalonemain
 #else
     SDL_SetMainReady();
@@ -1059,7 +1060,7 @@ void stoplistenserver()
 COMMAND(stoplistenserver, "");
 #endif
 
-bool serveroption(char *opt)
+bool serveroption(const char *opt)
 {
     switch(opt[1])
     {
@@ -1080,6 +1081,13 @@ vector<const char *> gameargs;
 
 #ifdef STANDALONE
 
+void parseoptions(vector<const char *> &args)
+{
+    loopv(args)
+        if(!serveroption(args[i]))
+            spdlog::get("global")->error("unknown command-line option: {0}", args[i]);
+}
+
 inexor::util::Logging logging;
 
 int main(int argc, char **argv)
@@ -1090,7 +1098,7 @@ int main(int argc, char **argv)
     atexit(enet_deinitialize);
     enet_time_set(0);
     for(int i = 1; i<argc; i++) if(argv[i][0]!='-' || !serveroption(argv[i])) gameargs.add(argv[i]);
-    game::parseoptions(gameargs);
+    parseoptions(gameargs);
     initserver(true, true);
     return EXIT_SUCCESS;
 }

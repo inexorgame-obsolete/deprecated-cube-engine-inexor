@@ -364,8 +364,6 @@ extern bool depthfxing;
 extern void drawdepthfxtex();
 
 // server
-extern vector<const char *> gameargs;
-
 extern void initserver(bool listen, bool dedicated);
 extern void cleanupserver();
 extern void serverslice(bool dedicated, uint timeout);
