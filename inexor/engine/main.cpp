@@ -953,12 +953,8 @@ int main(int argc, char **argv)
 
     identflags &= ~IDF_PERSIST;
 
-    string gamecfgname;
-    copystring(gamecfgname, "config/game_");
-    concatstring(gamecfgname, game::gameident());
-    concatstring(gamecfgname, ".cfg");
-    execfile(gamecfgname);
-    
+    execfile("config/game_fps.cfg");
+
     game::loadconfigs();
 
     identflags |= IDF_PERSIST;

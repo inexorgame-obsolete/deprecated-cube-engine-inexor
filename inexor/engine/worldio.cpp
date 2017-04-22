@@ -7,6 +7,8 @@
 using namespace inexor::sound;
 using namespace inexor::util;
 
+#define GAME_IDENTITY "fps"
+
 /// remove map postfix (.ogz) from file path/name to get map name
 void cutogz(char *s) 
 {   
@@ -113,7 +115,7 @@ bool loadents(const char *fname, vector<entity> &ents, uint *crc)
     }
 
     string gametype;
-    copystring(gametype, "fps");
+    copystring(gametype, GAME_IDENTITY);
     bool samegame = true;
     int eif = 0;
     if(hdr.version>=16)
@@ -121,7 +123,7 @@ bool loadents(const char *fname, vector<entity> &ents, uint *crc)
         int len = f->getchar();
         f->read(gametype, len+1);
     }
-    if(strcmp(gametype, game::gameident()))
+    if(strcmp(gametype, GAME_IDENTITY))
     {
         samegame = false;
         spdlog::get("global")->warn("WARNING: loading map from {} game, ignoring entities except for lights/mapmodels", gametype);
@@ -1071,8 +1073,8 @@ bool save_world(const char *mname, bool nolms)
 
     if(dbgvars) spdlog::get("global")->debug("wrote {0} vars", hdr.numvars);
 
-    f->putchar((int)strlen(game::gameident()));
-    f->write(game::gameident(), (int)strlen(game::gameident())+1);
+    f->putchar((int)strlen(GAME_IDENTITY));
+    f->write(GAME_IDENTITY, (int)strlen(GAME_IDENTITY)+1);
     f->putlil<ushort>(entities::extraentinfosize());
 
     /// TODO: extend map format here...(?)
@@ -1284,7 +1286,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
     if(dbgvars) spdlog::get("global")->debug("read {} vars", hdr.numvars);
 
     string gametype;
-    copystring(gametype, "fps");
+    copystring(gametype, GAME_IDENTITY);
     bool samegame = true;
     int eif = 0;
     if(hdr.version>=16)
@@ -1292,7 +1294,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
         int len = f->getchar();
         f->read(gametype, len+1);
     }
-    if(strcmp(gametype, game::gameident())!=0)
+    if(strcmp(gametype, GAME_IDENTITY)!=0)
     {
         samegame = false;
         spdlog::get("global")->warn("WARNING: loading map from {} game, ignoring entities except for lights/mapmodels", gametype);
