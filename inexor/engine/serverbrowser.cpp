@@ -618,84 +618,16 @@ void clearservers(bool full = false)
 
 void retrieveservers(vector<char> &data)
 {
-    ENetSocket sock = connectmaster(true);
-    if(sock == ENET_SOCKET_NULL) return;
-
-    extern SharedVar<char*> mastername;
-    defformatstring(text, "retrieving servers from %s... (esc to abort)", *mastername);
-    renderprogress(0, text);
-
-    int starttime = SDL_GetTicks(), timeout = 0;
-    const char *req = "list\n";
-    int reqlen = strlen(req);
-    ENetBuffer buf;
-    while(reqlen > 0)
-    {
-        enet_uint32 events = ENET_SOCKET_WAIT_SEND;
-        if(enet_socket_wait(sock, &events, 250) >= 0 && events) 
-        {
-            buf.data = (void *)req;
-            buf.dataLength = reqlen;
-            int sent = enet_socket_send(sock, NULL, &buf, 1);
-            if(sent < 0) break;
-            req += sent;
-            reqlen -= sent;
-            if(reqlen <= 0) break;
-        }
-        timeout = SDL_GetTicks() - starttime;
-        renderprogress(min(float(timeout)/RETRIEVELIMIT, 1.0f), text);
-        if(input_router.interceptkey(SDLK_ESCAPE)) timeout = RETRIEVELIMIT + 1;
-        if(timeout > RETRIEVELIMIT) break;
-    }
-
-    if(reqlen <= 0) for(;;)
-    {
-        enet_uint32 events = ENET_SOCKET_WAIT_RECEIVE;
-        if(enet_socket_wait(sock, &events, 250) >= 0 && events)
-        {
-            if(data.length() >= data.capacity()) data.reserve(4096);
-            buf.data = data.getbuf() + data.length();
-            buf.dataLength = data.capacity() - data.length();
-            int recv = enet_socket_receive(sock, NULL, &buf, 1);
-            if(recv <= 0) break;
-            data.advance(recv);
-        }
-        timeout = SDL_GetTicks() - starttime;
-        renderprogress(min(float(timeout)/RETRIEVELIMIT, 1.0f), text);
-        if(input_router.interceptkey(SDLK_ESCAPE)) timeout = RETRIEVELIMIT + 1;
-        if(timeout > RETRIEVELIMIT) break;
-    }
-
-    if(data.length()) data.add('\0');
-    enet_socket_destroy(sock);
-}
-
-bool updatedservers = false;
-
-void updatefrommaster()
-{
-    vector<char> data;
-    retrieveservers(data);
-    if(data.empty()) spdlog::get("global")->error("master server not replying");
-    else
-    {
-        clearservers();
-        execute(data.getbuf());
-    }
-    refreshservers();
-    updatedservers = true;
 }
 
 void initservers()
 {
     selectedserver = NULL;
-    if(autoupdateservers && !updatedservers) updatefrommaster();
 }
 
 ICOMMAND(addserver, "sis", (const char *name, int *port, const char *password), addserver(name, *port, password[0] ? password : NULL));
 ICOMMAND(keepserver, "sis", (const char *name, int *port, const char *password), addserver(name, *port, password[0] ? password : NULL, true));
 ICOMMAND(clearservers, "i", (int *full), clearservers(*full!=0));
-COMMAND(updatefrommaster, "");
 COMMAND(initservers, "");
 
 void writeservercfg()

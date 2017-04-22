@@ -265,27 +265,19 @@ static struct gamemodeinfo
 #define m_dmsp         (m_check(gamemode, M_DMSP))
 #define m_classicsp    (m_check(gamemode, M_CLASSICSP))
 
-
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/// master server list handling
-
-/// master mode status enumeration
-/// TODO: replace this hardcoded stuff and move on to JSON!
-enum 
-{ 
-	MM_AUTH = -1,
-	MM_OPEN = 0,
-	MM_VETO,
-	MM_LOCKED, 
-	MM_PRIVATE, 
-	MM_PASSWORD, 
-	MM_START = MM_AUTH
+/// master mode states: server rights managment
+enum
+{
+    MM_START = -1,
+    MM_OPEN = 0,   // anyone can claim master
+    MM_VETO,       // anyone can vote for maps and join
+    MM_LOCKED,     // newly joined players start in spectator mode
+    MM_PRIVATE,
+    MM_PASSWORD,
 };
 
-
 /// static strings for server description in master server list
-/// TODO: replace this hardcoded stuff and move on to JSON!
-static const char * const mastermodenames[] =  { "auth",   "open",   "veto",       "locked",     "private",    "password" };
+static const char * const mastermodenames[] =  { "default",   "open",   "veto",   "locked",     "private",    "password" };
 static const char * const mastermodecolors[] = { "",    COL_GREEN,  COL_YELLOW,   COL_YELLOW,     COL_RED,    COL_RED};
 static const char * const mastermodeicons[] =  { "server", "server", "serverlock", "serverlock", "serverpriv", "serverpriv" };
 

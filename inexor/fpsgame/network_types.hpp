@@ -117,16 +117,11 @@ enum
     N_SCOREFLAG,            /// S2C      a client has scored the flag
     N_INITFLAGS,            /// S2C      send a list of flags available in game
 
-                            // text, auth, bots, options, gamespeed
+                            // text, bots, options, gamespeed
     N_SAYTEAM,              /// C2S|S2C  team chat
     N_PRIVMSG,              /// C2S|S2C  private/personal message
     N_HUDANNOUNCE,          /// S2C      BOMBERMAN Announcement
     N_CLIENT,               /// S2C      client synchronisation
-    N_AUTHTRY,              /// C2S      try to authentificate using auth key(s)
-    N_AUTHKICK,             /// C2S      try to authentificate using my auth key(s), kick a specific person [hacker] and then relinquish master again
-    N_AUTHCHAL,             /// C2S      authentification challenge
-    N_AUTHANS,              /// S2C      authentification response
-    N_REQAUTH,              /// S2C      this nick name requires authentification
 
     N_PAUSEGAME,            /// C2S|S2C  server paused game. stop player movement and actions.
     N_GAMESPEED,            /// C2S|S2C  change game speed (and broadcast that change)
@@ -179,7 +174,6 @@ static const int msgsizes[] =
     N_TAKEFLAG, 3, N_RETURNFLAG, 4, N_RESETFLAG, 6, N_INVISFLAG, 3, N_TRYDROPFLAG, 1, N_DROPFLAG, 7, N_SCOREFLAG, 11, N_INITFLAGS, 0,
     N_SAYTEAM, 0, N_PRIVMSG, 0, N_HUDANNOUNCE, 0,
     N_CLIENT, 0,
-    N_AUTHTRY, 0, N_AUTHKICK, 0, N_AUTHCHAL, 0, N_AUTHANS, 0, N_REQAUTH, 0,
     N_PAUSEGAME, 0, N_GAMESPEED, 0, N_PERSISTTEAMS, 0,
     N_ADDBOT, 2, N_DELBOT, 1, N_INITAI, 0, N_FROMAI, 2, N_BOTLIMIT, 2, N_BOTBALANCE, 2,
     N_MAPCRC, 0, N_CHECKMAPS, 1,
@@ -192,7 +186,7 @@ static const int msgsizes[] =
 };
 
 /// priviledge levels
-enum { PRIV_NONE = 0, PRIV_MASTER, PRIV_AUTH, PRIV_ADMIN };
+enum { PRIV_NONE = 0, PRIV_MASTER, PRIV_ADMIN };
 
 /// demos contain stored network messages of a game
 /// which can be replayed to review games

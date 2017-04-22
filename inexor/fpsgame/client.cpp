@@ -1,6 +1,6 @@
 /// fpsgame/client.cpp
 /// implementation of various game core functions such as
-/// minimap, hud, administration, auth, connect, network message parser and more
+/// minimap, hud, administration, connect, network message parser and more
 /// implementation of many cube script get functions
 
 #include "inexor/fpsgame/game.hpp"
@@ -176,7 +176,7 @@ namespace game
 
     bool connected = false, remote = false, demoplayback = false, gamepaused = false, teamspersisted = false;
     int sessionid = 0, mastermode = MM_OPEN, gamespeed = 100;
-    string servinfo = "", servauth = "", connectpass = "";
+    string servinfo = "", connectpass = "";
 
     /// push dead bodies (?)
     VARP(deadpush, 1, 2, 20);
@@ -252,91 +252,7 @@ namespace game
         addmsg(N_SWITCHMODEL, "ri", player1->playermodel);
     }
 
-	/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    /// authkeys (asymmetrical encryption using TIGER3 hashes)
-
-	/// structure for authentification keys
-    struct authkey
-    {
-        char *name, *key, *desc;
-        int lastauth;
-
-        authkey(const char *name, const char *key, const char *desc)
-            : name(newstring(name)), key(newstring(key)), desc(newstring(desc)),
-              lastauth(0)
-        {
-        }
-
-        ~authkey() // delete heap memory for members in destructur
-        {
-            DELETEA(name);
-            DELETEA(key);
-            DELETEA(desc);
-        }
-    };
-
-    /// a vector fo authkeys for authentification on servers
-    vector<authkey *> authkeys;
-
-	/// find auth key by description
-    authkey *findauthkey(const char *desc = "")
-    {
-        loopv(authkeys) if(!strcmp(authkeys[i]->desc, desc) && !strcasecmp(authkeys[i]->name, player1->name)) return authkeys[i];
-        loopv(authkeys) if(!strcmp(authkeys[i]->desc, desc)) return authkeys[i];
-        return NULL;
-    }
-
-    /// do authentification automaticly
-    VARP(autoauth, 0, 1, 1);
-
-    /// add a new authkey to authkey library
-    void addauthkey(const char *name, const char *key, const char *desc)
-    {
-        loopvrev(authkeys) if(!strcmp(authkeys[i]->desc, desc) && !strcmp(authkeys[i]->name, name)) delete authkeys.remove(i);
-        if(name[0] && key[0]) authkeys.add(new authkey(name, key, desc));
-    }
-    ICOMMAND(authkey, "sss", (char *name, char *key, char *desc), addauthkey(name, key, desc));
-
-	/// check if both description and name for this authkey are available
-    bool hasauthkey(const char *name, const char *desc)
-    {
-        if(!name[0] && !desc[0]) return authkeys.length() > 0;
-        loopvrev(authkeys) if(!strcmp(authkeys[i]->desc, desc) && !strcmp(authkeys[i]->name, name)) return true; // if both name and desc are available, return true
-        return false;
-    }
-    ICOMMAND(hasauthkey, "ss", (char *name, char *desc), intret(hasauthkey(name, desc) ? 1 : 0));
-
-	/// generate new public/private auth key pair using TIGER3 hashing algorithm
-    void genauthkey(const char *secret)
-    {
-        if(!secret[0]) { spdlog::get("global")->error("you must specify a secret password"); return; }
-        vector<char> privkey, pubkey;
-        genprivkey(secret, privkey, pubkey); // generate public and private key
-        spdlog::get("global")->info("private key: {0}", privkey.getbuf());
-        spdlog::get("global")->info("public key: {0}", pubkey.getbuf());
-    }
-    COMMAND(genauthkey, "s");
-
-    /// save all authkeys to "auth.cfg"
-    /// TODO: remove this hardcoded passage and move on to JSON!
-    void saveauthkeys()
-    {
-        stream *f = openfile("auth.cfg", "w");
-        if(!f) { spdlog::get("global")->error("failed to open auth.cfg for writing"); return; }
-        loopv(authkeys)
-        {
-            authkey *a = authkeys[i];
-            f->printf("authkey %s %s %s\n", escapestring(a->name), escapestring(a->key), escapestring(a->desc));
-        }
-        spdlog::get("global")->info("saved authkeys to auth.cfg");
-        delete f;
-    }
-    COMMAND(saveauthkeys, "");
-
-	/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-	/// enable crc and senditemstoserver
-	/// called just after map load by startmap
+    /// set booleans sendcrc and senditemstoserver if connected.
     void sendmapinfo()
     {
         if(!connected) return;
@@ -416,7 +332,7 @@ namespace game
     }
     ICOMMAND(getclienticon, "i", (int *cn), result(getclienticon(*cn)));
 
-    /// check if this cn is game master, auth master or administrator
+    /// check if this client is a game master or administrator
     bool ismaster(int cn)
     {
         fpsent *d = getclient(cn);
@@ -424,30 +340,17 @@ namespace game
     }
     ICOMMAND(ismaster, "i", (int *cn), intret(ismaster(*cn) ? 1 : 0));
 
-    /// check if this cn is auth master or administrator
-    /// TODO: change the color of auth masters to purple!
-    bool isauth(int cn)
-    {
-        fpsent *d = getclient(cn);
-        return d && d->privilege >= PRIV_AUTH;
-    }
-    ICOMMAND(isauth, "i", (int *cn), intret(isauth(*cn) ? 1 : 0));
-
-    /// check if this cn is administrator (orange)
+    /// check if this client is an administrator
     bool isadmin(int cn)
     {
         fpsent *d = getclient(cn);
-        /// there is no higher permission level than administrator at the moment
         return d && d->privilege >= PRIV_ADMIN;
     }
     ICOMMAND(isadmin, "i", (int *cn), intret(isadmin(*cn) ? 1 : 0));
 
-	/// return master mode 
     ICOMMAND(getmastermode, "", (), intret(mastermode));
-	/// return master mode name
     ICOMMAND(mastermodename, "i", (int *mm), result(server::mastermodename(*mm, "")));
 
-	/// check if this cn is spectator
     bool isspectator(int cn)
     {
         fpsent *d = getclient(cn);
@@ -537,34 +440,13 @@ namespace game
     }
     COMMAND(setteam, "ss");
 
-    /// please note: there is no difference between kick and ban
-
-	/// kickban a player
-    /// @see addmsg
+    /// request to kickban a player
     void kick(const char *victim, const char *reason)
     {
         int vn = parseplayer(victim);
         if(vn>=0 && vn!=player1->clientnum) addmsg(N_KICK, "ris", vn, reason);
     }
     COMMAND(kick, "ss");
-
-    /// kick a player using authentification key
-    void authkick(const char *desc, const char *victim, const char *reason)
-    {
-        authkey *a = findauthkey(desc);
-        int vn = parseplayer(victim);
-        if(a && vn>=0 && vn!=player1->clientnum) 
-        {
-            a->lastauth = lastmillis;
-            addmsg(N_AUTHKICK, "rssis", a->desc, a->name, vn, reason);
-        }
-    }
-    ICOMMAND(authkick, "ss", (const char *victim, const char *reason), authkick("", victim, reason));
-    ICOMMAND(sauthkick, "ss", (const char *victim, const char *reason), if(servauth[0]) authkick(servauth, victim, reason));
-    ICOMMAND(dauthkick, "sss", (const char *desc, const char *victim, const char *reason), if(desc[0]) authkick(desc, victim, reason));
-	
-    /// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    /// ignoring players
 
     /// a vector of ignored client numbers (cns)
     vector<int> ignores;
@@ -596,8 +478,6 @@ namespace game
 
     /// hash setmaster password
     /// cn and sessionid are used to hash: servers do to store the hash value.
-    /// therefore, we have an authentification system
-    /// @see hashpassword
     void hashpwd(const char *pwd)
     {
         if(player1->clientnum<0) return;
@@ -630,19 +510,6 @@ namespace game
 
     /// request to change server master mode (permissions requires)
     ICOMMAND(mastermode, "i", (int *val), addmsg(N_MASTERMODE, "ri", *val));
-
-	/// try to authentificate using specified auth key
-    bool tryauth(const char *desc)
-    {
-        authkey *a = findauthkey(desc);
-        if(!a) return false;
-        a->lastauth = lastmillis;
-        addmsg(N_AUTHTRY, "rss", a->desc, a->name);
-        return true;
-    }
-    ICOMMAND(auth, "s", (char *desc), tryauth(desc));
-    ICOMMAND(sauth, "", (), if(servauth[0]) tryauth(servauth));
-    ICOMMAND(dauth, "s", (char *desc), if(desc[0]) tryauth(desc));
 
     /// toggle own spectator or put player into spectator (permissions requred)
     void togglespectator(int val, const char *who)
@@ -1291,7 +1158,7 @@ namespace game
         flushclient();
     }
 
-	/// send authkey and hashed password during connection progress
+    /// send N_CONNECT (with own name, serverpassword, playermodel and fov)
     void sendintro()
     {
         packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
@@ -1306,18 +1173,6 @@ namespace game
             memset(connectpass, 0, sizeof(connectpass));
         }
         sendstring(hash, p);
-        authkey *a = servauth[0] && autoauth ? findauthkey(servauth) : NULL;
-        if(a)
-        {
-            a->lastauth = lastmillis;
-            sendstring(a->desc, p);
-            sendstring(a->name, p);
-        }
-        else
-        {
-            sendstring("", p);
-            sendstring("", p);
-        }
         sendclientpacket(p.finalize(), 1);
     }
 
@@ -1516,7 +1371,6 @@ namespace game
                 player1->clientnum = mycn;      // we are now connected
                 if(getint(p) > 0) spdlog::get("global")->info("this server is password protected");
                 getstring(servinfo, p, sizeof(servinfo));
-                getstring(servauth, p, sizeof(servauth));
                 sendintro();
                 break;
             }
@@ -2233,34 +2087,6 @@ namespace game
                     int newsize = 0;
                     while(1<<newsize < getworldsize()) newsize++;
                     spdlog::get("edit")->info((size >= 0 ? "{0} started a new map of size {1}" : "{0} enlarged the map to size {1}"), colorname(d), newsize);
-                }
-                break;
-            }
-
-            case N_REQAUTH:
-            {
-                getstring(text, p);
-                if(autoauth && text[0] && tryauth(text)) spdlog::get("global")->info("server requested authkey \"{0}\"", text);
-                break;
-            }
-
-            case N_AUTHCHAL:
-            {
-                getstring(text, p);
-                authkey *a = findauthkey(text);
-                uint id = (uint)getint(p);
-                getstring(text, p);
-                if(a && a->lastauth && lastmillis - a->lastauth < 60*1000)
-                {
-                    vector<char> buf;
-                    answerchallenge(a->key, text, buf);
-                    //spdlog::get("global")->debug() << "answering %u, challenge %s with %s", id, text, buf.getbuf());
-                    packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
-                    putint(p, N_AUTHANS);
-                    sendstring(a->desc, p);
-                    putint(p, id);
-                    sendstring(buf.getbuf(), p);
-                    sendclientpacket(p.finalize(), 1);
                 }
                 break;
             }

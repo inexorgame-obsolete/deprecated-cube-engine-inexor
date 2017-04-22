@@ -913,8 +913,6 @@ int main(int argc, char **argv)
 
     execfile("config/game_fps.cfg");
 
-    game::loadconfigs();
-
     identflags |= IDF_PERSIST;
 
     if(execfile("once.cfg", false)) remove(findfile("once.cfg", "rb"));

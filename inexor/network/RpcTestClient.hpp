@@ -20,7 +20,7 @@ private:
     DATA_TYPE make_test_msg()
     {
         DATA_TYPE t;
-        t.set__masterport(25);
+        //t.set__masterport(25);
         return t;
     }
 
