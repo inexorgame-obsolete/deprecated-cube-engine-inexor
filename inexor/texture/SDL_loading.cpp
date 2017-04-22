@@ -89,20 +89,6 @@ bool canloadsurface(const char *name)
 
 SDL_Surface *loadsurface(const char *name)
 {
-    SDL_Surface *s = NULL;
-    stream *z = openzipfile(name, "rb");
-    if(z)
-    {
-        SDL_RWops *rw = z->rwops();
-        if(rw)
-        {
-            char *ext = (char *)strrchr(name, '.');
-            if(ext) ++ext;
-            s = IMG_LoadTyped_RW(rw, 0, ext);
-            SDL_FreeRW(rw);
-        }
-        delete z;
-    }
-    if(!s) s = IMG_Load(findfile(name, "rb"));
+    SDL_Surface *s = IMG_Load(findfile(name, "rb"));
     return fixsurfaceformat(s);
 }

@@ -152,19 +152,7 @@ void initsound()
 // TODO Sound refractoring
 //static Mix_Chunk *loadwav(const char *name)
 //{
-//    Mix_Chunk *c = NULL;
-//    stream *z = openzipfile(name, "rb");
-//    if(z)
-//    {
-//        SDL_RWops *rw = z->rwops();
-//        if(rw)
-//        {
-//            c = Mix_LoadWAV_RW(rw, 0);
-//            SDL_FreeRW(rw);
-//        }
-//        delete z;
-//    }
-//    if(!c) c = Mix_LoadWAV(findfile(name, "rb"));
+//    Mix_Chunk *c = Mix_LoadWAV(findfile(name, "rb"));
 //    return c;
 //}
 
