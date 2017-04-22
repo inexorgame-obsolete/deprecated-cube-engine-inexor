@@ -3,7 +3,7 @@
 #include "inexor/ui/CefSubsystem.hpp"
 #include "inexor/ui/InexorSettings.hpp"
 #include "inexor/filesystem/ExecutablePath.hpp"
-#include "inexor/rpc/SharedTree.hpp"
+#include "inexor/network/SharedTree.hpp"
 
 using namespace inexor::filesystem;
 using namespace inexor::util;

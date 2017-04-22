@@ -12,9 +12,9 @@
 #include "RPCTreeData.gen.grpc.pb.h" // got generated into the same folder.
 
 #include "inexor/util/Subsystem.hpp"
-#include "inexor/rpc/SharedTree.hpp"
-#include "inexor/rpc/RpcSubsystem.hpp"
-#include "inexor/rpc/RpcTestClient.hpp"
+#include "inexor/network/SharedTree.hpp"
+#include "inexor/network/RpcSubsystem.hpp"
+#include "inexor/network/RpcTestClient.hpp"
 
 {{#shared_class_definitions}}{{^is_shared_list}}#include "{{definition_header_file}}"
 {{/is_shared_list}}{{/shared_class_definitions}}

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "inexor/rpc/SharedOptions.hpp"
+#include "inexor/network/SharedOptions.hpp"
 
 // SKIP_FUNCTION_MACROS identifies all uppercase, single line macros without semicolon behind it.
 #ifdef  GLUEGEN_PASS

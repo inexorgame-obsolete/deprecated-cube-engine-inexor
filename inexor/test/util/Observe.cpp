@@ -6,7 +6,7 @@
 
 #include "gtest/gtest.h"
 
-#include "inexor/rpc/SharedVar.hpp"
+#include "inexor/network/SharedVar.hpp"
 #include "inexor/test/helpers.hpp"
 
 using namespace std;

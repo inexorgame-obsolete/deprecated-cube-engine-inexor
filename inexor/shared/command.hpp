@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "inexor/rpc/SharedTree.hpp"
+#include "inexor/network/SharedTree.hpp"
 #include "inexor/shared/cube_formatting.hpp"
 #include "inexor/shared/cube_types.hpp"
 

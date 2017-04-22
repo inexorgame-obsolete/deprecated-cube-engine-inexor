@@ -4,7 +4,7 @@
 
 #include <boost/signals2.hpp>
 
-#include "inexor/rpc/SharedOptions.hpp"
+#include "inexor/network/SharedOptions.hpp"
 namespace inexor {
 namespace rpc {
 

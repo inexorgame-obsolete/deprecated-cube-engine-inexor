@@ -9,8 +9,8 @@
 #include "inexor/util/Subsystem.hpp"
 #include "inexor/crashreporter/CrashReporter.hpp"
 #include "inexor/util/Logging.hpp"
-#include "inexor/rpc/SharedTree.hpp"
-#include "inexor/rpc/SharedList.hpp"
+#include "inexor/network/SharedTree.hpp"
+#include "inexor/network/SharedList.hpp"
 
 //template<typename T>
 //class SharedList

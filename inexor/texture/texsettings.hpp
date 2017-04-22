@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "inexor/rpc/SharedTree.hpp"
+#include "inexor/network/SharedTree.hpp"
 
 extern SharedVar<int> usetexcompress; // from rendergl
 

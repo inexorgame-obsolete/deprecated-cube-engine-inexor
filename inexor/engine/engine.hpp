@@ -3,7 +3,7 @@
 #include "inexor/shared/cube.hpp"
 #include "inexor/engine/world.hpp"
 
-#include "inexor/rpc/SharedTree.hpp"
+#include "inexor/network/SharedTree.hpp"
 
 #ifndef STANDALONE
 

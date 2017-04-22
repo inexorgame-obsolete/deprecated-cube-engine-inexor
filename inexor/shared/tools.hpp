@@ -22,7 +22,7 @@
 #include <boost/algorithm/clamp.hpp>
 
 #include "inexor/util/random.hpp"
-#include "inexor/rpc/SharedTree.hpp"
+#include "inexor/network/SharedTree.hpp"
 #include "inexor/util.hpp"
 // TODO:
 // Replace swap in sources

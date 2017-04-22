@@ -3,7 +3,7 @@
 #include "inexor/ui/layer/InexorConsoleLayer.hpp"
 #include "inexor/util/Logging.hpp"
 #include "inexor/ui.hpp"
-#include "inexor/rpc/SharedTree.hpp"
+#include "inexor/network/SharedTree.hpp"
 
 namespace inexor {
 namespace ui {

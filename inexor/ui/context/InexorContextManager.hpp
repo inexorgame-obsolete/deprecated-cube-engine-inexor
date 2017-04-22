@@ -6,7 +6,7 @@
 #include "include/cef_render_process_handler.h"
 #include "include/wrapper/cef_helpers.h"
 
-#include "inexor/rpc/SharedTree.hpp"
+#include "inexor/network/SharedTree.hpp"
 #include "inexor/ui/context/InexorContextProvider.hpp"
 
 namespace inexor {

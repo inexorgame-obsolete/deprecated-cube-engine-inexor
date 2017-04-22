@@ -1,6 +1,6 @@
 // the interface the game uses to access the engine
 
-#include "inexor/rpc/SharedTree.hpp"
+#include "inexor/network/SharedTree.hpp"
 
 extern int curtime;                     // current frame time
 extern int lastmillis;                  // last time

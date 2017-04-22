@@ -3,7 +3,7 @@
 #include <vector>
 #include <SDL.h>
 
-#include "inexor/rpc/SharedTree.hpp"
+#include "inexor/network/SharedTree.hpp"
 
 namespace inexor {
 namespace io {

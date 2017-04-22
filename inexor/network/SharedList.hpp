@@ -1,9 +1,9 @@
 
 #pragma once
 
-#include "inexor/rpc/SharedOptions.hpp"
-#include "inexor/rpc/SharedVar.hpp"
-#include "inexor/rpc/SharedClass.hpp"
+#include "inexor/network/SharedOptions.hpp"
+#include "inexor/network/SharedVar.hpp"
+#include "inexor/network/SharedClass.hpp"
 
 
 struct sharedclasstest : SharedClass
