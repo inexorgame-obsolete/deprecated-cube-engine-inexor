@@ -889,7 +889,7 @@ int main(int argc, char **argv)
     enet_time_set(0);
 
     spdlog::get("global")->debug("init: game");
-    game::parseoptions(gameargs);
+
     initserver(dedicated>0, dedicated>1);  /// never returns if dedicated
     ASSERT(dedicated <= 1);
     game::initclient();

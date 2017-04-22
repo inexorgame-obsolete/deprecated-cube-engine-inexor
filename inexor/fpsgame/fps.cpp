@@ -8,9 +8,8 @@ using namespace inexor::sound;
 
 namespace game
 {
-    /// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    /// general game functionality (spawn, attack, spectate...)
-	
+    // general game functionality (spawn, attack, spectate...)
+
     fpsent *player1 = NULL; /// our client
     vector<fpsent *> players; /// other clients
 
@@ -21,16 +20,8 @@ namespace game
     int following = -1, followdir = 0;
     int savedammo[NUMGUNS];
 
-	/// this does not make sense at all
-    /// in case this is not a standalone, eihrul wanted the programmers
-    /// to implement their client option condition here... somehow
-    bool clientoption(const char *arg) 
-	{ 
-		return false;
-	}
-
-	/// send taunt network animation message to server
-	/// taunt animation is this "im gonna kill you" gesture 
+    /// send taunt network animation message to server
+    /// taunt animation is this "im gonna kill you" gesture 
     /// that can be seen by other players
     void taunt()
     {

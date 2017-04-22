@@ -2,19 +2,6 @@
 #include "inexor/util/random.hpp"
 #include "inexor/util/Logging.hpp"
 
-namespace game
-{
-    void parseoptions(vector<const char *> &args)
-    {
-        loopv(args)
-#ifndef STANDALONE
-            if(!game::clientoption(args[i]))
-#endif
-            if(!server::serveroption(args[i]))
-                spdlog::get("global")->error("unknown command-line option: {0}", args[i]);
-    }
-}
-
 extern ENetAddress masteraddress;
 
 namespace server
