@@ -1,3 +1,4 @@
+#pragma once
 static void FUNCNAME(halvetexture)(uchar *src, uint sw, uint sh, uint stride, uchar *dst)
 {
     for(uchar *yend = &src[sh*stride]; src < yend;)

@@ -1,4 +1,4 @@
-
+#pragma once
 #define writetex(t, body) \
         { \
         uchar *dstrow = t.data; \

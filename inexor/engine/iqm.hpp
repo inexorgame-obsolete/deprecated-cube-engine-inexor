@@ -1,4 +1,4 @@
-//NO INCLUDE GUARD
+#pragma once
 struct iqm;
 
 struct iqmheader

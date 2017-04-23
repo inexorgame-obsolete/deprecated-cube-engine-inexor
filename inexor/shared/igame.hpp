@@ -1,5 +1,5 @@
 // the interface the engine uses to run the gameplay module
-
+#pragma once
 namespace entities
 {
     extern void editent(int i, bool local);

@@ -1,5 +1,5 @@
-//NO INCLUDE GUARD
 // capture.h: client and server state for capture gamemode
+#pragma once
 #ifndef PARSEMESSAGES
 
 #ifdef SERVMODE

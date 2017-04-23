@@ -1,4 +1,4 @@
-//NO INCLUDE GUARD
+#pragma once
 namespace gle
 {
     enum

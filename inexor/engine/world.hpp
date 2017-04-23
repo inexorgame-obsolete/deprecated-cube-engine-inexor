@@ -1,11 +1,10 @@
-//NO INCLUDE GUARD
 // world.h
 // contains general enumerations and structure 
 // to describe world, map format and enviroment
 // 
 // 
 // 
-
+#pragma once
 // bump if map format changes, see worldio.cpp last sauerbraten-one was 33
 #define MAPVERSION 40
 

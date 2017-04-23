@@ -1,4 +1,4 @@
-//NO INCLUDE GUARD
+#pragma once
 struct vertmodel : animmodel
 {
     struct vert { vec pos, norm; };

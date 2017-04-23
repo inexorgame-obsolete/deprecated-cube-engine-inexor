@@ -1,4 +1,4 @@
-//NO INCLUDE GUARD
+#pragma once
 #define LM_MINW 2
 #define LM_MINH 2
 #define LM_MAXW 128

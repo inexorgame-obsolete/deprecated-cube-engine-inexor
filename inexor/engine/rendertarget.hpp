@@ -1,4 +1,4 @@
-//NO INCLUDE GUARD
+#pragma once
 #include "inexor/ui/screen/ScreenManager.hpp"
 
 using namespace inexor::rendering::screen;

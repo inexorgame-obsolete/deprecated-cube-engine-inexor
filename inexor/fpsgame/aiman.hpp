@@ -1,7 +1,6 @@
-//NO INCLUDE GUARD
 // aiman.h (A.I. manager)
 // server-side ai manager
-
+#pragma once
 namespace aiman
 {
     bool dorefresh = false, botbalance = true;

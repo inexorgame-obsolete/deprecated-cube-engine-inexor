@@ -1,3 +1,4 @@
+#pragma once
 #ifndef PARSEMESSAGES
 
 #define collectteambase(s) (!strcmp(s, "good") ? 1 : (!strcmp(s, "evil") ? 2 : 0))

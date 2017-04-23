@@ -1,5 +1,5 @@
 // the interface the game uses to access the engine
-
+#pragma once
 #include "inexor/rpc/SharedTree.hpp"
 
 extern int curtime;                     // current frame time

@@ -1,4 +1,5 @@
 // bomb.h: client and server state for bomb gamemode
+#pragma once
 #ifndef PARSEMESSAGES
 
 #define TEAM_HIDE "hide"
