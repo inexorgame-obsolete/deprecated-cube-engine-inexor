@@ -656,17 +656,6 @@ struct fpsstate
             ammo[GUN_GL] = 0;
             backupweapon = GUN_FIST;
         }
-        else if(m_sp)
-        {
-            if(m_dmsp) 
-            {
-                armourtype = A_BLUE;
-                armour = 25;
-            }
-            ammo[GUN_PISTOL] = 80;
-            ammo[GUN_GL] = 1;
-            backupweapon = GUN_FIST;
-        }
         else
         {
             armourtype = A_BLUE;
