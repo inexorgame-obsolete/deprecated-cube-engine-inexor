@@ -1,6 +1,7 @@
 #include "inexor/fpsgame/game.hpp"
 #include "inexor/util/random.hpp"
 #include "inexor/util/Logging.hpp"
+#include "inexor/fpsgame/entities.hpp"
 
 namespace server
 {
@@ -871,21 +872,6 @@ namespace server
             case I_QUAD: sec = 70; break;
         }
         return sec*1000;
-    }
-
-    bool delayspawn(int type)
-    {
-        switch(type)
-        {
-            case I_GREENARMOUR:
-            case I_YELLOWARMOUR:
-                return !m_classicsp;
-            case I_BOOST:
-            case I_QUAD:
-                return true;
-            default:
-                return false;
-        }
     }
  
     bool pickup(int i, int sender)         // server side item pickup, acknowledge first client that gets it
@@ -1901,7 +1887,7 @@ namespace server
             server_entity se = { NOTUSED, 0, false };
             while(sents.length()<=i) sents.add(se);
             sents[i].type = ments[i].type;
-            if(m_mp(gamemode) && delayspawn(sents[i].type)) sents[i].spawntime = spawntime(sents[i].type);
+            if(m_mp(gamemode) && entities::delayspawn(sents[i].type)) sents[i].spawntime = spawntime(sents[i].type);
             else sents[i].spawned = true;
         }
         notgotitems = false;
@@ -3155,7 +3141,7 @@ namespace server
                     sents[n].type = getint(p);
                     if(canspawnitem(sents[n].type))
                     {
-                        if(m_mp(gamemode) && delayspawn(sents[n].type)) sents[n].spawntime = spawntime(sents[n].type);
+                        if(m_mp(gamemode) && entities::delayspawn(sents[n].type)) sents[n].spawntime = spawntime(sents[n].type);
                         else sents[n].spawned = true;
                     }
                 }

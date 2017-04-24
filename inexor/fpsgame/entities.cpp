@@ -1,5 +1,6 @@
 #include "inexor/fpsgame/game.hpp"
 #include "inexor/util/Logging.hpp"
+#include "inexor/fpsgame/entities.hpp"
 
 using namespace inexor::sound;
 
@@ -402,10 +403,10 @@ namespace entities
         if(m_noitems) return;
         loopv(ents) {
             if((m_bomb  && ents[i]->type>=I_BOMBS && ents[i]->type<=I_BOMBDELAY) || (!m_bomb && ents[i]->type>=I_SHELLS && ents[i]->type<=I_QUAD)) {
-                ents[i]->setspawned(force || m_sp || !server::delayspawn(ents[i]->type));
+                ents[i]->setspawned(force || m_sp || !delayspawn(ents[i]->type));
             }
             if(!m_noammo && ents[i]->type>=I_HEALTH && ents[i]->type<=I_QUAD) {
-                ents[i]->setspawned(force || m_sp || !server::delayspawn(ents[i]->type));
+                ents[i]->setspawned(force || m_sp || !delayspawn(ents[i]->type));
             }
         }
     }
