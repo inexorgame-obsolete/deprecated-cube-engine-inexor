@@ -1111,9 +1111,6 @@ namespace game
     extern vec hudgunorigin(int gun, const vec &from, const vec &to, fpsent *d);
 }
 
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/// (local) dedicated server handling
-
 namespace server
 {
     extern const char *modename(int n, const char *unknown = "unknown");
@@ -1127,6 +1124,5 @@ namespace server
     extern void forcepersist(bool persist);
     extern void hashpassword(int cn, int sessionid, const char *pwd, char *result, int maxlen = MAXSTRLEN);
     extern int msgsizelookup(int msg);
-    extern bool delayspawn(int type);
 }
 
