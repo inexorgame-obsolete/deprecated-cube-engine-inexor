@@ -1401,8 +1401,6 @@ namespace game
                 int val = clamp(getint(p), 10, 1000), cn = getint(p);
                 fpsent *a = cn >= 0 ? getclient(cn) : NULL;
                 if(!demopacket) gamespeed = val;
-                extern SharedVar<int> slowmosp;
-                if(m_sp && slowmosp) break;
                 if(a) spdlog::get("gameplay")->info("{0} set gamespeed to {1}", colorname(a), val);
                 else spdlog::get("gameplay")->info("gamespeed is {0}", val);
                 break;

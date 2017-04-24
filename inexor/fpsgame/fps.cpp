@@ -284,28 +284,6 @@ namespace game
         }
     }
 
-	/// if slow motion SP game mode is disabled, set
-    /// local game speed ("server") to 100 (normal speed)
-    /// @see forcegamespeed
-    VARFP(slowmosp, 0, 0, 1, 
-	{ 
-		if(m_sp && !slowmosp) server::forcegamespeed(100); 
-	}); 
-
-	/// refill health slowly in slowmotion sp game mode
-	/// (singleplayer only, check game mode slowmosp)
-	/// @see updateworld 
-    void checkslowmo()
-    {
-        static int lastslowmohealth = 0;
-        server::forcegamespeed(intermission ? 100 : clamp(player1->health, 25, 200));
-        if(player1->health<player1->maxhealth && lastmillis-max(maptime, lastslowmohealth)>player1->health*player1->health/2)
-        {
-            lastslowmohealth = lastmillis;
-            player1->health++;
-        }
-    }
-
     /// called in game loop to the update game world
     void updateworld()        
     {
@@ -343,12 +321,7 @@ namespace game
                 moveplayer(player1, 10, true);
                 swayhudgun(curtime);
                 entities::checkitems(player1);
-                if(m_sp)
-                {
-                    if(slowmosp) checkslowmo();
-                    if(m_classicsp) entities::checktriggers();
-                }
-                else if(cmode) cmode->checkitems(player1);
+                if(cmode) cmode->checkitems(player1);
             }
         }
 
@@ -460,16 +433,14 @@ namespace game
         }
         damageeffect(damage, d, d!=h);
 
-		ai::damaged(d, actor);
-
-        if(m_sp && slowmosp && d==player1 && d->health < 1) d->health = 1;
+        ai::damaged(d, actor);
 
         if(d->health<=0) { if(local) killed(d, actor); }
         else if(d==h) playsound(S_PAIN6);
         else playsound(S_PAIN1+rnd(5), &d->o);
     }
 
-	// show score at death
+    // show score at death
     VARP(deathscore, 0, 1, 1);
 
     /// mark players as dead and update their state data
@@ -573,7 +544,6 @@ namespace game
             int accuracy = (player1->totaldamage*100)/max(player1->totalshots, 1);
             spdlog::get("gameplay")->info("player total damage dealt: {0}, damage wasted: {1}, accuracy: {2}%",
                                           player1->totaldamage, (player1->totalshots-player1->totaldamage), accuracy);
-            if(m_sp) spsummary(accuracy);
 
             showscores(true);
             disablezoom();
@@ -703,13 +673,6 @@ namespace game
         }
 
         spdlog::get("gameplay")->info("game mode is {}", server::modename(gamemode));
-
-        if(m_sp)
-        {
-            defformatstring(scorename, "bestscore_%s", getclientmap());
-            const char *best = getalias(scorename);
-            if(*best) spdlog::get("gameplay")->info("try to beat your best score so far: {}", best);
-        }
 
         if(player1->playermodel != playermodel) switchplayermodel(playermodel);
 
