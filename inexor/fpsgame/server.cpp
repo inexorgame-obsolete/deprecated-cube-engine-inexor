@@ -3519,13 +3519,6 @@ namespace server
         }
     }
 
-    int laninfoport() { return INEXOR_LANINFO_PORT; }
-    int serverinfoport(int servport) { return servport < 0 ? INEXOR_SERVINFO_PORT : servport+1; }
-    int serverport(int infoport) { return infoport < 0 ? INEXOR_SERVER_PORT : infoport-1; }
-    const char *defaultmaster() { return INEXOR_DEFAULT_MASTER; }
-    int masterport() { return INEXOR_MASTER_PORT; }
-    int numchannels() { return 3; }
-
     #include "inexor/fpsgame/extinfo.hpp"
 
     void serverinforeply(ucharbuf &req, ucharbuf &p)

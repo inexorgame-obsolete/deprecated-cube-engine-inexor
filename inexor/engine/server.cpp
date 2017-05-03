@@ -358,7 +358,7 @@ void checkserversockets()        // reply all server info requests
 
 VAR(serveruprate, 0, 0, INT_MAX);
 SVAR(serverip, "");
-VARF(serverport, 0, INEXOR_SERVER_PORT, MAX_POSSIBLE_PORT, { if(!serverport) serverport = server::serverport(); });
+VARF(serverport, 0, INEXOR_SERVER_PORT, MAX_POSSIBLE_PORT, { if(!serverport) serverport = server_port(); });
 
 #ifdef STANDALONE
 int curtime = 0, lastmillis = 0, elapsedtime = 0, totalmillis = 0;
@@ -784,16 +784,16 @@ bool servererror(bool dedicated, const char *desc)
   
 bool setuplistenserver(bool dedicated)
 {
-    ENetAddress address = { ENET_HOST_ANY, enet_uint16(serverport <= 0 ? server::serverport() : serverport) };
+    ENetAddress address = { ENET_HOST_ANY, enet_uint16(serverport <= 0 ? server_port() : serverport) };
     if(*serverip)
     {
         if(enet_address_set_host(&address, serverip)<0) spdlog::get("global")->warn("WARNING: server ip not resolved");
         else serveraddress.host = address.host;
     }
-    serverhost = enet_host_create(&address, min(maxclients + server::reserveclients(), MAXCLIENTS), server::numchannels(), 0, serveruprate);
+    serverhost = enet_host_create(&address, min(maxclients + server::reserveclients(), MAXCLIENTS), NUM_ENET_CHANNELS, 0, serveruprate);
     if(!serverhost) return servererror(dedicated, "could not create server host");
     serverhost->duplicatePeers = maxdupclients ? maxdupclients : MAXCLIENTS;
-    address.port = server::serverinfoport(serverport > 0 ? serverport : -1);
+    address.port = server_info_port(serverport > 0 ? serverport : -1);
     pongsock = enet_socket_create(ENET_SOCKET_TYPE_DATAGRAM);
     if(pongsock != ENET_SOCKET_NULL && enet_socket_bind(pongsock, &address) < 0)
     {
@@ -802,7 +802,7 @@ bool setuplistenserver(bool dedicated)
     }
     if(pongsock == ENET_SOCKET_NULL) return servererror(dedicated, "could not create server info socket");
     else enet_socket_set_option(pongsock, ENET_SOCKOPT_NONBLOCK, 1);
-    address.port = server::laninfoport();
+    address.port = lan_info_port();
     lansock = enet_socket_create(ENET_SOCKET_TYPE_DATAGRAM);
     if(lansock != ENET_SOCKET_NULL && (enet_socket_set_option(lansock, ENET_SOCKOPT_REUSEADDR, 1) < 0 || enet_socket_bind(lansock, &address) < 0))
     {

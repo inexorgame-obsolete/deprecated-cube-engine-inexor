@@ -4,6 +4,7 @@
 // implementation of enet network parser
 
 #include "inexor/engine/engine.hpp"
+#include "inexor/network/legacy/game_types.hpp"
 #include "inexor/util/Logging.hpp"
 #include "inexor/ui.hpp"
 
@@ -99,7 +100,7 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
         abortconnect();
     }
 
-    if(serverport <= 0) serverport = server::serverport();
+    if(serverport <= 0) serverport = server_port();
 
     ENetAddress address;
     address.port = serverport;
@@ -126,7 +127,7 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
 
     if(!clienthost) 
     {
-        clienthost = enet_host_create(NULL, 2, server::numchannels(), rate*1024, rate*1024);
+        clienthost = enet_host_create(NULL, 2, NUM_ENET_CHANNELS, rate*1024, rate*1024);
         if(!clienthost)
         {
             spdlog::get("global")->error("could not connect to server");
@@ -135,7 +136,7 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
         clienthost->duplicatePeers = 0;
     }
 
-    connpeer = enet_host_connect(clienthost, &address, server::numchannels(), 0); 
+    connpeer = enet_host_connect(clienthost, &address, NUM_ENET_CHANNELS, 0);
     enet_host_flush(clienthost);
     connmillis = totalmillis;
     connattempts = 0;

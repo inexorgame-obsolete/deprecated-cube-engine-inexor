@@ -18,8 +18,15 @@
 inline int lan_info_port() { return INEXOR_LANINFO_PORT; }
 inline int server_info_port(int servport) { return servport < 0 ? INEXOR_SERVINFO_PORT : servport+1; }
 inline int server_port(int infoport = -1) { return infoport < 0 ? INEXOR_SERVER_PORT : infoport-1; }
-/// One channel is for file download/upload, one for priority messages
-#define ENET_CHANNEL_AMOUNT 3
+
+// sendf/sendfile channels
+enum
+{
+    CHAN_POS = 0, // Priority messages (position updates ..)
+    CHAN_MSG,     // Low prio updates (text messages ..)
+    CHAN_FILE,    // File upload/download
+    NUM_ENET_CHANNELS
+};
 
 /// server message list
 /// @warning you will need to edit the msgsizes array as well.
