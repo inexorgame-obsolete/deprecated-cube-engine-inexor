@@ -14,6 +14,13 @@
 #define DEMO_VERSION 1                  // bump when demo format changes
 #define DEMO_MAGIC "INEXOR_DEMO"
 
+
+inline int lan_info_port() { return INEXOR_LANINFO_PORT; }
+inline int server_info_port(int servport) { return servport < 0 ? INEXOR_SERVINFO_PORT : servport+1; }
+inline int server_port(int infoport = -1) { return infoport < 0 ? INEXOR_SERVER_PORT : infoport-1; }
+/// One channel is for file download/upload, one for priority messages
+#define ENET_CHANNEL_AMOUNT 3
+
 /// server message list
 /// @warning you will need to edit the msgsizes array as well.
 /// @warning you might get kicked from server because you modified the protocol!

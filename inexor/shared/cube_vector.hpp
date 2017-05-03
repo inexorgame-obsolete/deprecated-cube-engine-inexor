@@ -5,9 +5,11 @@
 #pragma once
 
 #include "inexor/shared/cube_sort.hpp"
+#include "inexor/shared/cube_tools.hpp" // for is_class, NULL
+#include "inexor/shared/cube_loops.hpp"
+#include "inexor/shared/cube_types.hpp" //uchar
+#include "inexor/network/legacy/buffer_types.hpp" // databuf
 
-/// convert to float (?)
-/// clever way to avoid static_casts (?)
 template<class T>
 static inline float heapscore(const T &n) { return n; }
 
