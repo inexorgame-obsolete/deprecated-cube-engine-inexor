@@ -10,7 +10,7 @@
 #include "inexor/shared/cube_endian.hpp"
 #include "inexor/shared/cube_formatting.hpp"
 #include "inexor/shared/cube_hash.hpp"
-#include "inexor/shared/cube_network.hpp"
+#include "inexor/network/legacy/cube_network.hpp"
 #include "inexor/shared/cube_vector.hpp"
 #include "inexor/shared/stream.hpp"
 #include "inexor/shared/cube_unicode.hpp"

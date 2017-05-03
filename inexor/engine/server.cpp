@@ -4,7 +4,7 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/crashreporter/CrashReporter.hpp"
 #include "inexor/util/Logging.hpp"
-#include "inexor/fpsgame/network_types.hpp"
+#include "inexor/network/legacy/game_types.hpp"
 #include "inexor/shared/cube_queue.hpp"
 
 #define LOGSTRLEN 512

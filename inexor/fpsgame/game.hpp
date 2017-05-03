@@ -10,7 +10,7 @@
 
 #include "inexor/shared/cube.hpp"
 #include "inexor/util/Logging.hpp"
-#include "inexor/fpsgame/network_types.hpp"
+#include "inexor/network/legacy/game_types.hpp"
 
 /// game console entry types
 enum
