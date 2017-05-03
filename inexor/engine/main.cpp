@@ -797,75 +797,13 @@ int main(int argc, char **argv)
     metapp.start("cef");
     metapp.initialize("cef", argc, argv);
 
-    //initing = INIT_RESET;
-    //for(int i = 1; i<argc; i++)
-    //{
-    //    if(argv[i][0]=='-') switch(argv[i][1])
-    //    {
-    //        case 'q': 
-    //        {
-    //            const char *dir = sethomedir(&argv[i][2]);
-    //            if(dir) spdlog::get("global")->debug("Using home directory: {}", dir);
-    //            break;
-    //        }
-    //    }
-    //}
-    //execfile("init.cfg", false);
-
-    //// parse command line arguments
-    //for(int i = 1; i<argc; i++)
-    //{
-    //    if(argv[i][0]=='-') switch(argv[i][1])
-    //    {
-    //        case 'q': /* parsed first */ break;
-    //        case 'r': /* compat, ignore */ break;
-    //        case 'k':
-    //        {
-    //            const char *dir = addpackagedir(&argv[i][2]);
-    //            if(dir) spdlog::get("global")->debug("Adding package directory: {}", dir);
-    //            break;
-    //        }
-    //        // case 'g': spdlog::get("global")->debug() << "Setting log file: " << &argv[i][2]; setlogfile(&argv[i][2]); break;
-    //        case 'd': dedicated = atoi(&argv[i][2]); if(dedicated<=0) dedicated = 2; break;
-    //        case 'w': scr_w = clamp(atoi(&argv[i][2]), SCR_MINW, SCR_MAXW); if(!findarg(argc, argv, "-h")) scr_h = -1; break;
-    //        case 'h': scr_h = clamp(atoi(&argv[i][2]), SCR_MINH, SCR_MAXH); if(!findarg(argc, argv, "-w")) scr_w = -1; break;
-    //        case 'z': depthbits = atoi(&argv[i][2]); break;
-    //        case 'b': /* compat, ignore */ break;
-    //        case 'a': fsaa = atoi(&argv[i][2]); break;
-    //        case 'v': vsync = atoi(&argv[i][2]); screen_manager.restorevsync(); break;
-    //        case 't': fullscreen = atoi(&argv[i][2]); break;
-    //        case 's': stencilbits = atoi(&argv[i][2]); break;
-    //        case 'f':
-    //        {
-    //            extern SharedVar<int>shaderprecision;
-    //            int prec = shaderprecision;
-    //            for(int j = 2; argv[i][j]; j++) switch(argv[i][j])
-    //            {
-    //                case '0': prec = 0; break;
-    //                case '1': case '2': case '3': prec = argv[i][j] - '1'; break;
-    //                default: break;
-    //            }
-    //            shaderprecision = prec;
-    //            break;
-    //        }
-    //        case 'l':
-    //        {
-    //            /// TODO: ?
-    //            char pkgdir[] = "";
-    //            load = strstr(path(&argv[i][2]), path(pkgdir));
-    //            if(load) load += sizeof(pkgdir)-1;
-    //            else load = &argv[i][2];
-    //            break;
-    //        }
-    //        case 'x': initscript = &argv[i][2]; break;
-    //        default: if(!serveroption(argv[i])) gameargs.add(argv[i]); break;
-    //    } else gameargs.add(argv[i]);
-    //}
-
-    initing = NOT_INITING;
-
     // After submodule initialization force the correct locale
     setlocale(LC_ALL, "en_US.utf8");
+
+    initing = INIT_RESET;
+    execfile("init.cfg", false);
+
+    initing = NOT_INITING;
 
     numcpus = clamp(SDL_GetCPUCount(), 1, 16);
 
