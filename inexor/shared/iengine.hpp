@@ -1,6 +1,7 @@
 // the interface the game uses to access the engine
 
 #include "inexor/network/SharedTree.hpp"
+#include "inexor/network/legacy/game_types.hpp"
 
 extern int curtime;                     // current frame time
 extern int lastmillis;                  // last time
@@ -432,8 +433,6 @@ extern void cleanragdoll(dynent *d);
 #define MAXTRANS 5000                  // max amount of data to swallow in 1 go
 
 extern SharedVar<int> maxclients;
-
-enum { DISC_NONE = 0, DISC_EOP, DISC_LOCAL, DISC_KICK, DISC_MSGERR, DISC_IPBAN, DISC_PRIVATE, DISC_MAXCLIENTS, DISC_TIMEOUT, DISC_OVERFLOW, DISC_PASSWORD, DISC_NUM };
 
 extern void *getclientinfo(int i);
 extern ENetPeer *getclientpeer(int i);
