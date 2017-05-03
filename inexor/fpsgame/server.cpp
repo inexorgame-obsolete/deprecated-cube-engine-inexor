@@ -701,17 +701,6 @@ namespace server
     vector<server_entity> sents;
     vector<savedscore> scores;
 
-    int msgsizelookup(int msg)
-    {
-        static int sizetable[NUMMSG] = { -1 };
-        if(sizetable[0] < 0)
-        {
-            memset(sizetable, -1, sizeof(sizetable));
-            for(const int *p = msgsizes; *p >= 0; p += 2) sizetable[p[0]] = p[1];
-        }
-        return msg >= 0 && msg < NUMMSG ? sizetable[msg] : -1;
-    }
-
     const char *modename(int n, const char *unknown)
     {
         if(m_valid(n)) return gamemodes[n - STARTGAMEMODE].name;
@@ -3453,7 +3442,7 @@ namespace server
             case N_REPLACE:
             case N_EDITVSLOT:
             {
-                int size = server::msgsizelookup(type);
+                int size = msgsizelookup(type);
                 if(size<=0) { disconnect_client(sender, DISC_MSGERR); return; }
                 loopi(size-1) getint(p);
                 if(p.remaining() < 2) { disconnect_client(sender, DISC_MSGERR); return; }
@@ -3506,7 +3495,7 @@ namespace server
 
             default: genericmsg:
             {
-                int size = server::msgsizelookup(type);
+                int size = msgsizelookup(type);
                 if(size<=0) { disconnect_client(sender, DISC_MSGERR); return; }
                 loopi(size-1) getint(p);
                 if(ci) switch(msgfilter[type])

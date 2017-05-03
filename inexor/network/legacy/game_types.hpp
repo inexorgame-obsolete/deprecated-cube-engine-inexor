@@ -199,6 +199,17 @@ static const int msgsizes[] =
     -1
 };
 
+inline int msgsizelookup(int msg)
+{
+    static int sizetable[NUMMSG] ={-1};
+    if(sizetable[0] < 0)
+    {
+        memset(sizetable, -1, sizeof(sizetable));
+        for(const int *p = msgsizes; *p >= 0; p += 2) sizetable[p[0]] = p[1];
+    }
+    return msg >= 0 && msg < NUMMSG ? sizetable[msg] : -1;
+}
+
 /// priviledge levels
 enum { PRIV_NONE = 0, PRIV_MASTER, PRIV_ADMIN };
 
