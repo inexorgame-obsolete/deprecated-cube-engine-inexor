@@ -1,4 +1,15 @@
-#include "inexor/shared/cube.hpp"
+#include "inexor/shared/cube_types.hpp"
+#include "inexor/shared/cube_loops.hpp"
+#include "inexor/shared/cube_endian.hpp"
+#include "inexor/shared/cube_tools.hpp"
+#include "inexor/shared/cube_formatting.hpp"
+
+#include <ctype.h>
+#include <algorithm>
+
+using std::swap;
+using std::min;
+using std::max;
 
 ///////////////////////// cryptography /////////////////////////////////
 
@@ -200,28 +211,6 @@ template<int BI_DIGITS> struct bigint
     }
 
     void zero() { len = 0; }
-
-    void print(stream *out) const
-    {
-        vector<char> buf;
-        printdigits(buf);
-        out->write(buf.getbuf(), buf.length());
-    }
-
-    void printdigits(vector<char> &buf) const
-    {
-        loopi(len)
-        {
-            digit d = digits[len-i-1];
-            loopj(BI_DIGIT_BITS/4)
-            {
-                uint shift = BI_DIGIT_BITS - (j+1)*4;
-                int val = (d >> shift) & 0xF;
-                if(val < 10) buf.add('0' + val);
-                else buf.add('a' + val - 10);
-            }
-        }
-    }
 
     template<int Y_DIGITS> bigint &operator=(const bigint<Y_DIGITS> &y)
     {
@@ -779,13 +768,6 @@ struct ecjacobian
         return true;
     }
 
-    void print(vector<char> &buf)
-    {
-        normalize();
-        buf.add(y.hasbit(0) ? '-' : '+');
-        x.printdigits(buf);
-    }
-
     void parse(const char *s)
     {
         bool ybit = *s++ == '-';
@@ -836,24 +818,6 @@ const ecjacobian ecjacobian::base(
 #error Unsupported GF
 #endif
 
-void genprivkey(const char *seed, vector<char> &privstr, vector<char> &pubstr)
-{
-    tiger::hashval hash;
-    tiger::hash((const uchar *)seed, (int)strlen(seed), hash);
-    bigint<8*sizeof(hash.bytes)/BI_DIGIT_BITS> privkey;
-    memcpy(privkey.digits, hash.bytes, sizeof(hash.bytes));
-    privkey.len = 8*sizeof(hash.bytes)/BI_DIGIT_BITS;
-    privkey.shrink();
-    privkey.printdigits(privstr);
-    privstr.add('\0');
-
-    ecjacobian c(ecjacobian::base);
-    c.mul(privkey);
-    c.normalize();
-    c.print(pubstr);
-    pubstr.add('\0');
-}
-
 bool hashstring(const char *str, char *result, int maxlen)
 {
     tiger::hashval hv;
@@ -869,61 +833,18 @@ bool hashstring(const char *str, char *result, int maxlen)
     return true;
 }
 
-void answerchallenge(const char *privstr, const char *challenge, vector<char> &answerstr)
+void hashpassword(int cn, int sessionid, const char *pwd, char *result, int maxlen)
 {
-    gfint privkey;
-    privkey.parse(privstr);
-    ecjacobian answer;
-    answer.parse(challenge);
-    answer.mul(privkey);
-    answer.normalize();
-    answer.x.printdigits(answerstr);
-    answerstr.add('\0');
+    char buf[2*sizeof(string)];
+    formatstring(buf, "%d %d ", cn, sessionid);
+    concatstring(buf, pwd, sizeof(buf));
+    if(!hashstring(buf, result, maxlen)) *result = '\0';
 }
 
-void *parsepubkey(const char *pubstr)
+bool checkpassword(int cn, int sessionid, const char *wanted, const char *given)
 {
-    ecjacobian *pubkey = new ecjacobian;
-    pubkey->parse(pubstr);
-    return pubkey;
-}
-
-void freepubkey(void *pubkey)
-{
-    delete (ecjacobian *)pubkey;
-}
-
-void *genchallenge(void *pubkey, const void *seed, int seedlen, vector<char> &challengestr)
-{
-    tiger::hashval hash;
-    tiger::hash((const uchar *)seed, seedlen, hash);
-    gfint challenge;
-    memcpy(challenge.digits, hash.bytes, sizeof(hash.bytes));
-    challenge.len = 8*sizeof(hash.bytes)/BI_DIGIT_BITS;
-    challenge.shrink();
-
-    ecjacobian answer(*(ecjacobian *)pubkey);
-    answer.mul(challenge);
-    answer.normalize();
-
-    ecjacobian secret(ecjacobian::base);
-    secret.mul(challenge);
-    secret.normalize();
-
-    secret.print(challengestr);
-    challengestr.add('\0');
-   
-    return new gfield(answer.x);
-}
-
-void freechallenge(void *answer)
-{
-    delete (gfint *)answer;
-}
-
-bool checkchallenge(const char *answerstr, void *correct)
-{
-    gfint answer(answerstr);
-    return answer == *(gfint *)correct;
+    string hash;
+    hashpassword(cn, sessionid, wanted, hash, sizeof(hash));
+    return !strcmp(hash, given);
 }
 

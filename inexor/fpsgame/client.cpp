@@ -6,6 +6,7 @@
 #include "inexor/fpsgame/game.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/util/Logging.hpp"
+#include "inexor/network/legacy/crypto.hpp"
 
 using namespace inexor::filesystem;
 using namespace inexor::sound;
@@ -482,7 +483,7 @@ namespace game
     {
         if(player1->clientnum<0) return;
         string hash;
-        server::hashpassword(player1->clientnum, sessionid, pwd, hash);
+        hashpassword(player1->clientnum, sessionid, pwd, hash);
         result(hash);
     }
     COMMAND(hashpwd, "s");
@@ -502,7 +503,7 @@ namespace game
         else 
         {
             if(cn != player1->clientnum) return;
-            server::hashpassword(player1->clientnum, sessionid, arg, hash);
+            hashpassword(player1->clientnum, sessionid, arg, hash);
         }
         addmsg(N_SETMASTER, "riis", cn, val, hash);
     }
@@ -1169,7 +1170,7 @@ namespace game
         string hash = "";
         if(connectpass[0])
         {
-            server::hashpassword(player1->clientnum, sessionid, connectpass, hash);
+            hashpassword(player1->clientnum, sessionid, connectpass, hash);
             memset(connectpass, 0, sizeof(connectpass));
         }
         sendstring(hash, p);

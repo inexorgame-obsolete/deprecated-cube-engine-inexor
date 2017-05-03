@@ -2,6 +2,7 @@
 #include "inexor/util/random.hpp"
 #include "inexor/util/Logging.hpp"
 #include "inexor/fpsgame/entities.hpp"
+#include "inexor/network/legacy/crypto.hpp"
 
 namespace server
 {
@@ -1280,21 +1281,6 @@ namespace server
         persistteams(persist);
     }
 
-    void hashpassword(int cn, int sessionid, const char *pwd, char *result, int maxlen)
-    {
-        char buf[2*sizeof(string)];
-        formatstring(buf, "%d %d ", cn, sessionid);
-        concatstring(buf, pwd, sizeof(buf));
-        if(!hashstring(buf, result, maxlen)) *result = '\0';
-    }
-
-    bool checkpassword(clientinfo *ci, const char *wanted, const char *given)
-    {
-        string hash;
-        hashpassword(ci->clientnum, ci->sessionid, wanted, hash, sizeof(hash));
-        return !strcmp(hash, given);
-    }
-
     void revokemaster(clientinfo *ci)
     {
         ci->privilege = PRIV_NONE;
@@ -1308,7 +1294,7 @@ namespace server
         if(!val) return false;
         const char *name = "";
 
-        bool haspass = adminpass[0] && checkpassword(ci, adminpass, pass);
+        bool haspass = adminpass[0] && checkpassword(ci->clientnum, ci->sessionid, adminpass, pass);
         int wantpriv = ci->local || haspass ? PRIV_ADMIN : PRIV_MASTER;
         if(wantpriv <= ci->privilege) return true;
         else if(wantpriv <= PRIV_MASTER && !force)
@@ -2642,10 +2628,10 @@ namespace server
         if(!m_mp(gamemode)) return DISC_LOCAL;
         if(serverpass[0])
         {
-            if(!checkpassword(ci, serverpass, pwd)) return DISC_PASSWORD;
+            if(!checkpassword(ci->clientnum, ci->sessionid, serverpass, pwd)) return DISC_PASSWORD;
             return DISC_NONE;
         }
-        if(adminpass[0] && checkpassword(ci, adminpass, pwd)) return DISC_NONE;
+        if(adminpass[0] && checkpassword(ci->clientnum, ci->sessionid, adminpass, pwd)) return DISC_NONE;
         if(numclients(-1, false, true)>=maxclients) return DISC_MAXCLIENTS;
         uint ip = getclientip(ci->clientnum);
         loopv(bannedips) if(bannedips[i].ip==ip) return DISC_IPBAN;

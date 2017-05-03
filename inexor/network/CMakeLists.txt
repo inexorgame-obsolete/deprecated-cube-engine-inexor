@@ -8,7 +8,7 @@ foreach(src ${NETWORK_MODULE_SOURCES})
     list(REMOVE_ITEM NETWORK_MODULE_SOURCES ${src})
   endif()
 endforeach()
-group_sources(${NETWORK_MODULE_HEADERS} ${NETWORK_MODULE_SOURCES})
+add_lib(network)
 
 include(require_run_gluegen.cmake)
 
@@ -25,5 +25,6 @@ function(require_network targ BUILD_FLAGS)
   require_run_gluegen(${targ} ${BUILD_FLAGS} ${network_dir} ${GLUEGEN_OUT_DIR})
 
   target_include_directories(${targ} PUBLIC ${GLUEGEN_OUT_DIR})
+  target_link_libraries(${targ} module_network)
 endfunction()
 
