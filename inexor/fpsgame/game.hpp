@@ -1111,6 +1111,5 @@ namespace server
     extern void forcepaused(bool paused);
     extern void forcegamespeed(int speed);
     extern void forcepersist(bool persist);
-    extern void hashpassword(int cn, int sessionid, const char *pwd, char *result, int maxlen = MAXSTRLEN);
 }
 

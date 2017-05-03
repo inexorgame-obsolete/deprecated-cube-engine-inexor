@@ -3,6 +3,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cassert>
 
 #ifdef _DEBUG
 #define ASSERT(c) assert(c)
