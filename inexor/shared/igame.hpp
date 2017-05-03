@@ -100,7 +100,6 @@ namespace server
     extern void deleteclientinfo(void *ci);
     extern void serverinit();
     extern int reserveclients();
-    extern int numchannels();
     extern void clientdisconnect(int n);
     extern int clientconnect(int n, uint ip);
     extern void localdisconnect(int n);
@@ -113,9 +112,6 @@ namespace server
     extern void serverinforeply(ucharbuf &req, ucharbuf &p);
     extern void serverupdate();
     extern bool servercompatible(char *name, char *sdec, char *map, int ping, const vector<int> &attr, int np);
-    extern int laninfoport();
-    extern int serverinfoport(int servport = -1);
-    extern int serverport(int infoport = -1);
     extern bool ispaused();
     extern int scaletime(int t);
 }

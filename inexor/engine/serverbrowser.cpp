@@ -1,6 +1,7 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/ui/input/InputRouter.hpp"
 #include "inexor/util/Logging.hpp"
+#include "inexor/network/legacy/game_types.hpp"
 
 using namespace inexor::io;
 
@@ -359,7 +360,7 @@ static serverinfo *newserver(const char *name, int port, uint ip = ENET_HOST_ANY
 {
     serverinfo *si = new serverinfo;
     si->address.host = ip;
-    si->address.port = server::serverinfoport(port);
+    si->address.port = server_info_port(port);
     if(ip!=ENET_HOST_ANY) si->resolved = RESOLVED;
 
     si->port = port;
@@ -378,7 +379,7 @@ static serverinfo *newserver(const char *name, int port, uint ip = ENET_HOST_ANY
 
 void addserver(const char *name, int port, const char *password, bool keep)
 {
-    if(port <= 0) port = server::serverport();
+    if(port <= 0) port = server_port();
     loopv(servers)
     {
         serverinfo *s = servers[i];
@@ -447,7 +448,7 @@ void pingservers()
     {
         ENetAddress address;
         address.host = ENET_HOST_BROADCAST;
-        address.port = server::laninfoport();
+        address.port = lan_info_port();
         buildping(buf, ping, lanpings);
         enet_socket_send(pingsock, &address, &buf, 1);
     }
@@ -515,7 +516,7 @@ void checkpings()
         else if(!searchlan || !lanpings.checkattempt(millis, false)) continue;
         else
         {
-            si = newserver(NULL, server::serverport(addr.port), addr.host); 
+            si = newserver(NULL, server_port(addr.port), addr.host); 
             millis = lanpings.decodeping(millis);
         }
         int rtt = clamp(totalmillis - millis, 0, min(servpingdecay, totalmillis));
