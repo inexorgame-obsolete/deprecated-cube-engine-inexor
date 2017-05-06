@@ -101,8 +101,7 @@ void cleanup()
 void quit()
 {
     writeinitcfg();
-    writeservercfg();
-	writehistory();
+    writehistory();
     abortconnect();
     disconnect();
     localdisconnect();

@@ -547,36 +547,14 @@ void newgui(char *name, char *contents, char *header, char *init)
     m->init = init && init[0] ? compilecode(init) : NULL;
 }
 
-menu *guiserversmenu = NULL;
-
-void guiservers(uint *header, int *pagemin, int *pagemax)
-{
-    extern const char *showservers(g3d_gui *cgui, uint *header, int pagemin, int pagemax);
-    if(cgui) 
-    {
-        const char *command = showservers(cgui, header, *pagemin, *pagemax > 0 ? *pagemax : INT_MAX);
-        if(command)
-        {
-            updatelater.add().schedule(command);
-            if(shouldclearmenu) clearlater = true;
-            guiserversmenu = clearlater || guistack.empty() ? NULL : guistack.last();
-        }
-    }
-}
-
+/// This function gets executed as we get connected.
 void notifywelcome()
 {
-    if(guiserversmenu)
-    {
-        if(guistack.length() && guistack.last() == guiserversmenu) clearguis();
-        guiserversmenu = NULL;
-    }
 }
 
 COMMAND(newgui, "ssss");
 COMMAND(guibutton, "sss");
 COMMAND(guitext, "ss");
-COMMAND(guiservers, "eii");
 ICOMMAND(cleargui, "i", (int *n), intret(cleargui(*n)));
 COMMAND(showgui, "s");
 COMMAND(hidegui, "s");
