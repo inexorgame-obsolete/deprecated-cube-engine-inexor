@@ -6,15 +6,14 @@
 #include "inexor/network/legacy/crypto.hpp"
 #include "inexor/server/client_management.hpp"
 
+#include "inexor/gamemode/capture_server.hpp"
+#include "inexor/gamemode/ctf_server.hpp"
+#include "inexor/gamemode/collect_server.hpp"
+#include "inexor/gamemode/bomb_server.hpp"
+#include "inexor/gamemode/hideandseek_server.hpp"
+
 namespace server
 {
-    struct server_entity            // server side version of "entity" type
-    {
-        int type;
-        int spawntime;
-        bool spawned;
-    };
-
 
     int gamemode = 0;
 
@@ -97,7 +96,8 @@ namespace server
             if(getclientip(c.clientnum) == ip) disconnect_client(c.clientnum, DISC_KICK);
         }
     }
- 
+
+// maprotation
     struct maprotation
     {
         static int exclude;
@@ -267,6 +267,7 @@ namespace server
     COMMAND(maprotationreset, "");
     COMMANDN(maprotation, addmaprotations, "ss2V");
 
+// demos
     struct demofile
     {
         string info;
@@ -282,8 +283,9 @@ namespace server
 
     VAR(maxdemos, 0, 5, 25);
     VAR(maxdemosize, 0, 16, 31);
-    VAR(restrictdemos, 0, 1, 1);
 
+// rights managment (again) and config
+    VAR(restrictdemos, 0, 1, 1);
     VAR(restrictpausegame, 0, 0, 1);
     VAR(restrictgamespeed, 0, 1, 1);
     VAR(restrictpersistteams, 0, 0, 1);
@@ -302,6 +304,7 @@ namespace server
     SVAR(servermotd, "");
     VAR(spectatemodifiedmap, 0, 1, 1);
 
+// clients: teamkillkick
     struct teamkillkick
     {
         int modes, limit, ban;
@@ -378,32 +381,26 @@ namespace server
         shouldcheckteamkills = false;
     }
 
-    void *newclientinfo() { return new clientinfo; }
-    void deleteclientinfo(void *ci) { delete (clientinfo *)ci; }
-
-    clientinfo *getinfo(int n)
-    {
-        if(n < MAXCLIENTS) return (clientinfo *)getclientinfo(n);
-        n -= MAXCLIENTS;
-        return bots.inrange(n) ? bots[n] : NULL;
-    }
 
     uint mcrc = 0;
     vector<entity> ments;
     vector<server_entity> sents;
     vector<savedscore> scores;
 
+    // gamemode
     const char *modename(int n, const char *unknown)
     {
         if(m_valid(n)) return gamemodes[n - STARTGAMEMODE].name;
         return unknown;
     }
 
+    // client managment
     const char *mastermodename(int n, const char *unknown)
     {
         return (n>=MM_START && size_t(n-MM_START)<sizeof(mastermodenames)/sizeof(mastermodenames[0])) ? mastermodenames[n-MM_START] : unknown;
     }
 
+    // server only network
     void sendservmsg(const char *s) { sendf(-1, 1, "ris", N_SERVMSG, s); }
     void sendservmsgf(const char *fmt, ...)
     {
@@ -411,6 +408,7 @@ namespace server
          sendf(-1, 1, "ris", N_SERVMSG, s);
     }
 
+    // entity & map
     void resetitems()
     {
         mcrc = 0;
@@ -419,6 +417,7 @@ namespace server
         //cps.reset();
     }
 
+    // config
     bool serveroption(const char *arg)
     {
         if(arg[0]=='-') switch(arg[1])
@@ -437,6 +436,7 @@ namespace server
         resetitems();
     }
 
+    //client managment
     int numclients(int exclude = -1, bool nospec = true, bool noai = true, bool priv = false)
     {
         int n = 0;
@@ -466,57 +466,20 @@ namespace server
         return cname[cidx];
     }
 
-    struct servmode
-    {
-        virtual ~servmode() {}
+    // gamemode
 
-        virtual void entergame(clientinfo *ci) {}
-        virtual void leavegame(clientinfo *ci, bool disconnecting = false) {}
-        virtual void connected(clientinfo *ci) {}
-
-        virtual void moved(clientinfo *ci, const vec &oldpos, bool oldclip, const vec &newpos, bool newclip) {}
-        virtual bool canspawn(clientinfo *ci, bool connecting = false) { return true; }
-        virtual void spawned(clientinfo *ci) {}
-        virtual int fragvalue(clientinfo *victim, clientinfo *actor)
-        {
-            if(victim==actor || isteam(victim->team, actor->team)) return -1;
-            return 1;
-        }
-        virtual bool canhit(clientinfo *victim, clientinfo *actor) { return true; }
-        virtual void died(clientinfo *victim, clientinfo *actor) {}
-        virtual bool canchangeteam(clientinfo *ci, const char *oldteam, const char *newteam) { return true; }
-        virtual void changeteam(clientinfo *ci, const char *oldteam, const char *newteam) {}
-        virtual void initclient(clientinfo *ci, packetbuf &p, bool connecting) {}
-        virtual void update() {}
-        virtual void updatelimbo() {}
-        virtual void cleanup() {}
-        virtual void setup() {}
-        virtual void newmap() {}
-        virtual void intermission() {}
-        virtual bool hidefrags() { return false; }
-        virtual int getteamscore(const char *team) { return 0; }
-        virtual void getteamscores(vector<teamscore> &scores) {}
-        virtual bool extinfoteam(const char *team, ucharbuf &p) { return false; }
-    };
-
-    #define SERVMODE 1
-    #include "inexor/fpsgame/capture.hpp"
-    #include "inexor/fpsgame/ctf.hpp"
-    #include "inexor/fpsgame/collect.hpp"
-    #include "inexor/fpsgame/bomb.hpp"
-    #include "inexor/fpsgame/hideandseek.hpp"
-
-    captureservmode capturemode;
-    ctfservmode ctfmode;
-    collectservmode collectmode;
-    bombservmode bombmode;
-    hideandseekservmode hideandseekmode;
+    captureservermode capturemode;
+    ctfservermode ctfmode;
+    collectservermode collectmode;
+    bombservermode bombmode;
+    hideandseekservermode hideandseekmode;
 
     servmode *smode = NULL;
 
+    // entities
     bool canspawnitem(int type) {
-    	if(m_bomb) return (type>=I_BOMBS && type<=I_BOMBDELAY);
-    	else return !m_noitems && (type>=I_SHELLS && type<=I_QUAD && (!m_noammo || type<I_SHELLS || type>I_CARTRIDGES));
+        if(m_bomb) return (type>=I_BOMBS && type<=I_BOMBDELAY);
+        else return !m_noitems && (type>=I_SHELLS && type<=I_QUAD && (!m_noammo || type<I_SHELLS || type>I_CARTRIDGES));
     }
 
     int spawntime(int type)
@@ -556,6 +519,7 @@ namespace server
         return true;
     }
 
+    // team managment
     static hashset<teaminfo> teaminfos;
 
     void clearteaminfo()
@@ -679,6 +643,7 @@ namespace server
         return worst->name;
     }
 
+    // demo again
     void prunedemos(int extra = 0)
     {
         int n = clamp(demos.length() + extra - maxdemos, 0, demos.length());
@@ -904,6 +869,7 @@ namespace server
         else enddemorecord();
     }
 
+    // game managment?
     void pausegame(bool val, clientinfo *ci = NULL)
     {
         if(gamepaused==val) return;
@@ -939,6 +905,7 @@ namespace server
         changegamespeed(speed);
     }
 
+    // team managment
     void persistteams(bool val)
     {
         if(teamspersisted==val) return;
@@ -1079,6 +1046,8 @@ namespace server
         if(sc) sc->save(ci->state);
     }
 
+    // network
+
     /// MSG filter works as a firewall
     /// it allowes only certain messages for certain things, see checktype
     /// -1 will become 1 in the switchcase below, its a hack to not misinterpretate the different cases as messages 
@@ -1133,7 +1102,7 @@ namespace server
         if(ci && ++ci->overflow >= 200) return -2;
         return type;
     }
-
+    // worldstate
     struct worldstate
     {
         int uses, len;
@@ -1298,6 +1267,7 @@ namespace server
         return flush;
     }
 
+    // gamemode
     template<class T>
     void sendstate(gamestate &gs, T &p)
     {
@@ -1329,6 +1299,7 @@ namespace server
         gs.lastspawn = gamemillis;
     }
 
+    // client managment
     void sendwelcome(clientinfo *ci)
     {
         packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
@@ -1373,12 +1344,14 @@ namespace server
         }
     }
 
+    // map managment
     bool hasmap(clientinfo *ci)
     {
         return (m_edit && (clients.length() > 0 || ci->local)) ||
                (smapname[0] && (!m_timed || gamemillis < gamelimit || (ci->state.state==CS_SPECTATOR && !ci->privilege && !ci->local) || numclients(ci->clientnum, true, true, true)));
     }
 
+    // client managment | gamemode | network
     int welcomepacket(packetbuf &p, clientinfo *ci)
     {
         putint(p, N_WELCOME);
@@ -1510,6 +1483,7 @@ namespace server
         return false;
     }
 
+    // gamestate
     void sendresume(clientinfo *ci)
     {
         gamestate &gs = ci->state;
@@ -1545,7 +1519,7 @@ namespace server
         }
         notgotitems = false;
     }
-        
+    // map managment
     void changemap(const char *s, int mode)
     {
         stopdemo();
@@ -1735,6 +1709,7 @@ namespace server
         }
     }
 
+    // gamemode
     void checkintermission()
     {
         if(gamemillis >= gamelimit && !interm && !m_timeforward)
@@ -1811,7 +1786,8 @@ namespace server
             if (plalive < 2) startintermission();
         }
     }
-	
+
+    // worldstate? physics?
     void dodamage(clientinfo *target, clientinfo *actor, int damage, int gun, const vec &hitpush = vec(0, 0, 0))
     {
         if (smode && !smode->canhit(target, actor)) return;
@@ -2106,6 +2082,7 @@ namespace server
         shouldstep = clients.length() > 0;
     }
 
+    // clientmanagment
     void forcespectator(clientinfo *ci)
     {
         if(ci->state.state==CS_ALIVE) suicide(ci);
@@ -2116,6 +2093,7 @@ namespace server
         sendf(-1, 1, "ri3", N_SPECTATOR, ci->clientnum, 1);
     }
 
+    // map managment
     struct crcinfo
     {
         int crc, matches;
@@ -2193,6 +2171,7 @@ namespace server
         }
     }
 
+    // client managment
     bool shouldspectate(clientinfo *ci)
     {
         return !ci->local && ci->warned && modifiedmapspectator && (mcrc || modifiedmapspectator > 1);
@@ -2210,11 +2189,13 @@ namespace server
         if(!hasmap(ci)) rotatemap(true);
     }
 
+    // server network
     void sendservinfo(clientinfo *ci)
     {
         sendf(ci->clientnum, 1, "ri5s", N_SERVINFO, ci->clientnum, PROTOCOL_VERSION, ci->sessionid, serverpass[0] ? 1 : 0, *serverdesc);
     }
 
+    // client managment
     void noclients()
     {
         bannedips.shrink(0);
@@ -2299,7 +2280,8 @@ namespace server
             if(checkgban(getclientip(ci->clientnum))) disconnect_client(ci->clientnum, DISC_IPBAN);
         }
     }
-       
+
+    // network
     int allowconnect(clientinfo *ci, const char *pwd = "")
     {
         if(ci->local) return DISC_NONE;
@@ -2386,7 +2368,12 @@ namespace server
         if(sender<0 || p.packet->flags&ENET_PACKET_FLAG_UNSEQUENCED || chan > 2) return;
         char text[MAXTRANS];
         int type;
-        clientinfo *ci = sender>=0 ? getinfo(sender) : NULL, *cq = ci, *cm = ci;
+        // the sender
+        clientinfo *ci = sender>=0 ? getinfo(sender) : NULL;
+        // (probably) the sender OR the bot sending from the same sender
+        clientinfo *cq = ci;
+        // the receiver?
+        clientinfo *cm = ci;
         if(ci && !ci->connected)
         {
             if(chan==0) return;
@@ -3140,14 +3127,6 @@ namespace server
             case N_SERVCMD:
                 getstring(text, p);
                 break;
-                     
-            #define PARSEMESSAGES 1
-            #include "inexor/fpsgame/capture.hpp"
-            #include "inexor/fpsgame/ctf.hpp"
-            #include "inexor/fpsgame/collect.hpp"
-            #include "inexor/fpsgame/bomb.hpp"
-            #include "inexor/fpsgame/hideandseek.hpp"
-            #undef PARSEMESSAGES
 
             case -1:
                 disconnect_client(sender, DISC_MSGERR);
@@ -3157,17 +3136,21 @@ namespace server
                 disconnect_client(sender, DISC_OVERFLOW);
                 return;
 
-            default: genericmsg:
+            default:
             {
-                int size = msgsizelookup(type);
-                if(size<=0) { disconnect_client(sender, DISC_MSGERR); return; }
-                loopi(size-1) getint(p);
-                if(ci) switch(msgfilter[type])
+                if(smode && smode->parse_network_message(type, ci, cq, p)) return;
+                genericmsg:
                 {
-                    case 2: case 3: if(ci->state.state != CS_SPECTATOR) QUEUE_MSG; break;
-                    default: if(cq && (ci != cq || ci->state.state!=CS_SPECTATOR)) { QUEUE_AI; QUEUE_MSG; } break;
+                    int size = msgsizelookup(type);
+                    if(size<=0) { disconnect_client(sender, DISC_MSGERR); return; }
+                    loopi(size-1) getint(p);
+                    if(ci) switch(msgfilter[type])
+                    {
+                        case 2: case 3: if(ci->state.state != CS_SPECTATOR) QUEUE_MSG; break;
+                        default: if(cq && (ci != cq || ci->state.state!=CS_SPECTATOR)) { QUEUE_AI; QUEUE_MSG; } break;
+                    }
+                    break;
                 }
-                break;
             }
         }
     }

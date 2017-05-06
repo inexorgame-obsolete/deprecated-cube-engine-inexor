@@ -15,7 +15,9 @@ extern ENetPeer *getclientpeer(int i);
 
 extern SharedVar<int> maxclients;
 
+
 namespace server {
+
 
 static constexpr int DEATHMILLIS = 300;
 
@@ -306,6 +308,12 @@ struct clientinfo
         } else return gameoffset + clientmillis;
     }
 };
+
+extern vector<clientinfo *> connects, clients, bots;
+
+/// Also recognizes bots.
+/// ToDo: Merge both functions (getclientinfo and clientinfo) or better both structures client and clientinfo.
+extern clientinfo *getinfo(int n);
 
 struct ban
 {

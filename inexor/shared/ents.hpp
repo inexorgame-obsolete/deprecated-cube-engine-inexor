@@ -70,6 +70,14 @@ struct entity
     uchar reserved;
 };
 
+/// server side version of "entity" type
+struct server_entity
+{
+    int type;
+    int spawntime;
+    bool spawned;
+};
+
 struct entitylight
 {
     vec color, dir;
