@@ -261,10 +261,6 @@ static struct gamemodeinfo
 #define m_botmode      (m_checknot(gamemode, M_DEMO|M_LOCAL))
 #define m_mp(mode)     (m_checknot(mode, M_LOCAL))
 
-#define m_sp           (m_check(gamemode, M_DMSP | M_CLASSICSP))
-#define m_dmsp         (m_check(gamemode, M_DMSP))
-#define m_classicsp    (m_check(gamemode, M_CLASSICSP))
-
 /// master mode states: server rights managment
 enum
 {
@@ -975,21 +971,6 @@ namespace game
     extern void forceintermission();
     extern void c2sinfo(bool force = false);
     extern void sendposition(fpsent *d, bool reliable = false);
-
-    // monster
-    struct monster;
-    extern vector<monster *> monsters;
-
-    extern void clearmonsters();
-    extern void preloadmonsters();
-    extern void stackmonster(monster *d, physent *o);
-    extern void updatemonsters(int curtime);
-    extern void rendermonsters();
-    extern void suicidemonster(monster *m);
-    extern void hitmonster(int damage, monster *m, fpsent *at, const vec &vel, int gun);
-    extern void monsterkilled();
-    extern void endsp(bool allkilled);
-    extern void spsummary(int accuracy);
 
     // movable
     struct movable;

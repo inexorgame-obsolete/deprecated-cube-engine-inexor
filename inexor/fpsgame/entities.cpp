@@ -107,9 +107,6 @@ namespace entities
                 case I_HEALTH: case I_BOOST: case I_GREENARMOUR: case I_YELLOWARMOUR: case I_QUAD:
                     if(m_noitems) continue;
                     break;
-                case CARROT: case RESPAWNPOINT:
-                    if(!m_classicsp) continue;
-                    break;
                 case I_BOMBS: case I_BOMBRADIUS: case I_BOMBDELAY:
                     if(!m_bomb) continue;
                     break;
@@ -590,7 +587,7 @@ namespace entities
                     e.lasttrigger = lastmillis;
                     setuptriggerflags(e);
                     if(checktriggertype(e.attr3, TRIG_RUMBLE)) playsound(S_RUMBLE, &e.o);
-                    if(checktriggertype(e.attr3, TRIG_ENDSP)) endsp(false);
+                    if(checktriggertype(e.attr3, TRIG_ENDSP)); //endsp(false);
                     if(e.attr4) doleveltrigger(e.attr4, 1);
                     break;
                 case TRIGGERED:
@@ -613,7 +610,7 @@ namespace entities
                     e.lasttrigger = lastmillis;
                     setuptriggerflags(e);
                     if(checktriggertype(e.attr3, TRIG_RUMBLE)) playsound(S_RUMBLE, &e.o);
-                    if(checktriggertype(e.attr3, TRIG_ENDSP)) endsp(false);
+                    if(checktriggertype(e.attr3, TRIG_ENDSP)); // endsp(false);
                     if(e.attr4) doleveltrigger(e.attr4, 0);
                     break;
             }

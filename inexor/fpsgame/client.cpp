@@ -598,15 +598,12 @@ namespace game
     ICOMMANDS("m_demo", "i", (int *mode), { int gamemode = *mode; intret(m_demo); });
     ICOMMANDS("m_edit", "i", (int *mode), { int gamemode = *mode; intret(m_edit); });
     ICOMMANDS("m_lobby", "i", (int *mode), { int gamemode = *mode; intret(m_lobby); });
-    ICOMMANDS("m_sp", "i", (int *mode), { int gamemode = *mode; intret(m_sp); });
-    ICOMMANDS("m_dmsp", "i", (int *mode), { int gamemode = *mode; intret(m_dmsp); });
-    ICOMMANDS("m_classicsp", "i", (int *mode), { int gamemode = *mode; intret(m_classicsp); });
     ICOMMANDS("m_lms", "i", (int *mode), { int gamemode = *mode; intret(m_lms); });
     ICOMMANDS("m_bomb", "i", (int *mode), { int gamemode = *mode; intret(m_bomb); });
     ICOMMANDS("m_timeforward", "i", (int *mode), { int gamemode = *mode; intret(m_timeforward); });
     ICOMMANDS("m_obstacles", "i", (int *mode), { int gamemode = *mode; intret(m_obstacles); });
-	
-	/// request map change, server may ignore
+
+    /// request map change, server may ignore
     void changemap(const char *name, int mode)
     {
         if(!remote)
