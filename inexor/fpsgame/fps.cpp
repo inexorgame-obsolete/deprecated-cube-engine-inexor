@@ -605,11 +605,9 @@ namespace game
         loopv(clients) if(clients[i]) clientdisconnected(i, notify);
     }
 
-    /// initialize new client
     void initclient()
     {
         player1 = spawnstate(new fpsent);
-        /// also filter player's name locally
         filtertext(player1->name, "unnamed", false, false, MAXNAMELEN);
         players.add(player1);
     }

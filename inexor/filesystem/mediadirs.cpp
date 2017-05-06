@@ -9,6 +9,7 @@ SVARP(texturedir, "texture");
 SVARP(skyboxdir, "skybox");
 SVARP(interfacedir, "interface");
 SVARP(icondir, "interface/icon");
+SVARP(radardir, "interface/radar");
 SVARP(sounddir, "sound");
 SVARP(musicdir, "music");
 
@@ -28,6 +29,7 @@ const char *getmediadir(int type)
     case DIR_SKYBOX:    return *skyboxdir;
     case DIR_UI:        return *interfacedir;
     case DIR_ICON:      return *icondir;
+    case DIR_RADAR:      return *radardir;
     case DIR_SOUND:     return *sounddir;
     case DIR_MUSIC:     return *musicdir;
     }
