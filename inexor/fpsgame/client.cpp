@@ -11,6 +11,12 @@
 #include "inexor/network/legacy/crypto.hpp"
 #include "inexor/engine/worldio.hpp"
 
+#include "inexor/gamemode/capture_client.hpp"
+#include "inexor/gamemode/ctf_client.hpp"
+#include "inexor/gamemode/collect_client.hpp"
+#include "inexor/gamemode/bomb_client.hpp"
+#include "inexor/gamemode/hideandseek_client.hpp"
+
 using namespace inexor::filesystem;
 using namespace inexor::sound;
 using namespace inexor::util;
@@ -25,13 +31,13 @@ namespace game
     VARP(radarteammates, 0, 1, 1);
     FVARP(minimapalpha, 0, 1, 1);
 
-	/// calculate required radar scale
+    /// calculate required radar scale
     float calcradarscale()
     {
         return clamp(max(minimapradius.x, minimapradius.y)/3, float(minradarscale), float(maxradarscale));
     }
 
-	/// draw rotated minimap
+    /// draw rotated minimap
     /// @see calcradarscale
     void drawminimap(fpsent *d, float x, float y, float s)
     {
@@ -72,7 +78,7 @@ namespace game
         gle::end();
     }
 
-	/// draw a specific teamate's icon arrow in minimap
+    /// draw a specific teamate's icon arrow in minimap
     void drawteammate(fpsent *d, float x, float y, float s, fpsent *o, float scale)
     {
         vec dir = d->o;
@@ -92,7 +98,7 @@ namespace game
     }
 
     /// set specific textures for teammates, skulls... on the minimap
-    void setbliptex(int team, const char *type = "")
+    void setbliptex(int team, const char *type)
     {
         settexture(tempformatstring("%s/blip%s%s.png", *radardir, teamblipcolor[team], type), 3);
     }
@@ -137,17 +143,7 @@ namespace game
         if(dead) gle::end();
     }
 
-    /// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	/// game modes
-
-	/// game mode header files
-    #include "inexor/fpsgame/capture.hpp"
-    #include "inexor/fpsgame/ctf.hpp"
-    #include "inexor/fpsgame/collect.hpp"
-    #include "inexor/fpsgame/bomb.hpp"
-    #include "inexor/fpsgame/hideandseek.hpp"
-
-	/// gamemodes
+    /// gamemodes
     clientmode *cmode = NULL;
     captureclientmode capturemode;
     ctfclientmode ctfmode;
@@ -155,7 +151,7 @@ namespace game
     bombclientmode bombmode;
     hideandseekclientmode hideandseekmode;
 
-	/// set game mode pointer
+    /// set game mode pointer
     void setclientmode()
     {
         if(m_capture) cmode = &capturemode;
@@ -2047,14 +2043,6 @@ namespace game
                 break;
             }
 
-            #define PARSEMESSAGES 1
-            #include "inexor/fpsgame/capture.hpp"
-            #include "inexor/fpsgame/ctf.hpp"
-            #include "inexor/fpsgame/collect.hpp"
-            #include "inexor/fpsgame/bomb.hpp"
-            #include "inexor/fpsgame/hideandseek.hpp"
-            #undef PARSEMESSAGES
-
             case N_ANNOUNCE:
             {
                 int t = getint(p);
@@ -2099,6 +2087,7 @@ namespace game
                 break;
 
             default:
+                if(cmode && cmode->parse_network_message(type, p)) return;
                 neterr("type", cn < 0);
                 return;
         }
