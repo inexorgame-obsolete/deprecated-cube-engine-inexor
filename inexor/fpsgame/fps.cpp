@@ -83,22 +83,17 @@ namespace game
     ICOMMAND(nextfollow, "i", (int *dir), nextfollow(*dir < 0 ? -1 : 1));
 
 
-	/// get client map name
+    /// get client map name
     const char *getclientmap() 
-	{ 
-		return clientmap;
-	}
+    {
+        return clientmap;
+    }
 
-	/// reset game state in singleplayer
+    /// reset game state in singleplayer
     /// reset all monsters, triggers, bouncers, movables, and projectiles
     void resetgamestate()
     {
-        if(m_obstacles || m_classicsp) clearmovables();
-        if(m_classicsp)
-        {
-            clearmonsters();                 
-            entities::resettriggers();
-        }
+        if(m_obstacles) clearmovables();
         clearprojectiles();
         clearbouncers();
     }
@@ -302,7 +297,6 @@ namespace game
         moveragdolls();
         gets2c();
         updatemovables(curtime);
-        updatemonsters(curtime);
         if(connected)
         {
             if(player1->state == CS_DEAD)
@@ -314,7 +308,6 @@ namespace game
                     moveplayer(player1, 10, true);
                 }
             }
-            // TODO: Spectate everyone during intermission
             else if (!intermission || player1->state == CS_SPECTATOR)
             {
                 if(player1->ragdoll) cleanragdoll(player1);
@@ -363,28 +356,15 @@ namespace game
                 return;
             }
             if(lastmillis < player1->lastpain + spawnwait) return;
-            if(m_dmsp) 
-			{
-				// if we die in SP we try the same map again
-				changemap(clientmap, gamemode); 
-				return; 
-			}
             respawnself();
-            if(m_classicsp)
-            {
-                spdlog::get("gameplay")->info("You wasted another life! The monsters stole your armour and some ammo...");
-                loopi(NUMGUNS) if(i!=GUN_PISTOL && (player1->ammo[i] = savedammo[i]) > 5) player1->ammo[i] = max(player1->ammo[i]/3, 5);
-            }
         }
     }
 
-
-	/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    /// mutiplayer game functionality
+    // mutiplayer game functionality
 
 
-	/// filter attack attempts
-	/// not possible in intermission or if player's state is CS_DEAD
+    /// filter attack attempts
+    /// not possible in intermission or if player's state is CS_DEAD
     void doattack(bool on)
     {
         if(!connected || intermission) return;
@@ -637,11 +617,10 @@ namespace game
     /// show game mode description text during map load
     VARP(showmodeinfo, 0, 1, 1);
 
-	/// clear all game data to start a new game
+    /// clear all game data to start a new game
     void startgame()
     {
         clearmovables();
-        clearmonsters();
         clearprojectiles();
         clearbouncers();
         clearragdolls();
@@ -727,7 +706,6 @@ namespace game
     {
         switch(d->type)
         {
-            case ENT_AI: if(dir.z > 0) stackmonster((monster *)d, o); break;
             case ENT_INANIMATE: if(dir.z > 0) stackmovable((movable *)d, o); break;
         }
     }
@@ -750,7 +728,7 @@ namespace game
     }
 
     /// return the sum of dynamic entities currently in scene
-    int numdynents() { return players.length() + monsters.length() + movables.length(); }
+    int numdynents() { return players.length() + movables.length(); }
 
     /// iterate through all dynamic entities and return entity with index [i]
     /// @returned a player, monster or movable (all dynamic entities)
@@ -758,8 +736,6 @@ namespace game
     {
         if(i<players.length()) return players[i];
         i -= players.length();
-        if(i<monsters.length()) return (dynent *)monsters[i];
-        i -= monsters.length();
         if(i<movables.length()) return (dynent *)movables[i];
         return NULL;
     }
@@ -837,14 +813,12 @@ namespace game
                 if(pl->suicided!=seq) { addmsg(N_SUICIDE, "rc", pl); pl->suicided = seq; }
             }
         }
-        else if(d->type==ENT_AI) suicidemonster((monster *)d);
         else if(d->type==ENT_INANIMATE) suicidemovable((movable *)d);
     }
     ICOMMAND(suicide, "", (), suicide(player1));
 
-    /// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	/// hud rendering
-	
+    // hud rendering
+
     /// checks if minimap is required for this game mode
     bool needminimap()
 	{ 

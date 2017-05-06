@@ -42,7 +42,6 @@ prepend(CLIENT_SOURCES_FPSGAME ${SOURCE_DIR}/fpsgame
     client.cpp
     entities.cpp
     fps.cpp
-    monster.cpp
     movable.cpp
     render.cpp
     scoreboard.cpp
