@@ -876,7 +876,7 @@ int main(int argc, char **argv)
         static int frames = 0;
 
         int fps_limit = (mainmenu || screen_manager.minimized) && menufps ? (maxfps ? min(maxfps, menufps) : menufps) : maxfps;
-        updatetime(game::ispaused(), gamespeed, fps_limit);
+        updatetime(game::ispaused(), game::gamespeed, fps_limit);
 
         metapp.tick();
 
