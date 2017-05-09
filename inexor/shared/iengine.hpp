@@ -2,12 +2,8 @@
 
 #include "inexor/network/SharedTree.hpp"
 #include "inexor/network/legacy/game_types.hpp"
+#include "inexor/util/legacy_time.hpp"
 
-extern int curtime;                     // current frame time
-extern int lastmillis;                  // last time
-extern int elapsedtime;                 // elapsed frame time
-extern int totalmillis;                 // total elapsed time
-extern uint totalsecs;
 extern int gamespeed, paused;
 
 enum

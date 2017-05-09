@@ -367,7 +367,6 @@ extern void drawdepthfxtex();
 extern void initserver(bool listen, bool dedicated);
 extern void cleanupserver();
 extern void serverslice(bool dedicated, uint timeout);
-extern void updatetime();
 
 extern void localclienttoserver(int chan, ENetPacket *);
 extern void localconnect();

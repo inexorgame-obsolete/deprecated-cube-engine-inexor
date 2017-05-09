@@ -875,17 +875,11 @@ namespace game
         else printvar(id, gamespeed);
     });
 
-	/// scale time with gametime
-    int scaletime(int t) 
-	{
-		return t*gamespeed;
-	}
-
     /// collect client to server messages conveniently
     vector<uchar> messages;
     int messagecn = -1, messagereliable = false;
 
-	/// add network message
+    /// add network message
     bool addmsg(int type, const char *fmt, ...)
     {
         if(!connected) return false;

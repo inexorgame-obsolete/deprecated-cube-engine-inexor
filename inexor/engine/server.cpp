@@ -6,6 +6,7 @@
 #include "inexor/util/Logging.hpp"
 #include "inexor/network/legacy/game_types.hpp"
 #include "inexor/shared/cube_queue.hpp"
+#include "inexor/util/legacy_time.hpp"
 
 #define LOGSTRLEN 512
 
@@ -360,23 +361,6 @@ VAR(serveruprate, 0, 0, INT_MAX);
 SVAR(serverip, "");
 VARF(serverport, 0, INEXOR_SERVER_PORT, MAX_POSSIBLE_PORT, { if(!serverport) serverport = server_port(); });
 
-#ifdef STANDALONE
-int curtime = 0, lastmillis = 0, elapsedtime = 0, totalmillis = 0;
-#endif
-
-uint totalsecs = 0;
-
-void updatetime()
-{
-    static int lastsec = 0;
-    if(totalmillis - lastsec >= 1000) 
-    {
-        int cursecs = (totalmillis - lastsec) / 1000;
-        totalsecs += cursecs;
-        lastsec += cursecs * 1000;
-    }
-}
-
 void serverslice(bool dedicated, uint timeout)   // main server update, called from main loop in sp, or from below in dedicated server
 {
     if(!serverhost) 
@@ -388,19 +372,8 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
        
     // below is network only
 
-    if(dedicated) 
-    {
-        int millis = (int)enet_time_get();
-        elapsedtime = millis - totalmillis;
-        static int timeerr = 0;
-        int scaledtime = server::scaletime(elapsedtime) + timeerr;
-        curtime = scaledtime/100;
-        timeerr = scaledtime%100;
-        if(server::ispaused()) curtime = 0;
-        lastmillis += curtime;
-        totalmillis = millis;
-        updatetime();
-    }
+    if(dedicated) updatetime(server::ispaused(), gamespeed);
+
     server::serverupdate();
 
     checkserversockets();

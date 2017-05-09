@@ -11,6 +11,7 @@
 #include "inexor/engine/sound.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/util/Logging.hpp"
+#include "inexor/util/legacy_time.hpp"
 #include "inexor/shared/cube_queue.hpp"
 struct unionfind
 {
@@ -872,7 +873,7 @@ namespace recorder
 
     int gettime()
     {
-        return inbetweenframes ? getclockmillis() : totalmillis;
+        return inbetweenframes ? time_since_program_start() : totalmillis;
     }
 
     int videoencoder(void *data) // runs on a separate thread
