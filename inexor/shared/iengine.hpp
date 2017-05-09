@@ -4,8 +4,6 @@
 #include "inexor/network/legacy/game_types.hpp"
 #include "inexor/util/legacy_time.hpp"
 
-extern int gamespeed, paused;
-
 enum
 {
     MATF_INDEX_SHIFT  = 0,

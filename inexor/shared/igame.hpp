@@ -25,6 +25,8 @@ namespace entities
 
 namespace game
 {
+    extern int gamespeed, paused;
+
     extern void gamedisconnect(bool cleanup);
     extern void parsepacketclient(int chan, packetbuf &p);
     extern void connectattempt(const char *name, const char *password, const ENetAddress &address);
@@ -95,6 +97,8 @@ namespace game
  
 namespace server
 {
+    extern int gamespeed;
+
     extern void *newclientinfo();
     extern void deleteclientinfo(void *ci);
     extern void serverinit();

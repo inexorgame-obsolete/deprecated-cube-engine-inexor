@@ -372,7 +372,12 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
        
     // below is network only
 
-    if(dedicated) updatetime(server::ispaused(), gamespeed);
+    if(dedicated)
+#ifdef STANDALONE
+        updatetime(server::ispaused(), server::gamespeed);
+#else
+        updatetime(server::ispaused(), game::gamespeed);
+#endif
 
     server::serverupdate();
 
