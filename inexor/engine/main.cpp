@@ -11,6 +11,7 @@
 #include "inexor/util/Logging.hpp"
 #include "inexor/network/SharedTree.hpp"
 #include "inexor/network/SharedList.hpp"
+#include "inexor/util/legacy_time.hpp"
 
 //template<typename T>
 //class SharedList
@@ -67,8 +68,6 @@ extern void writeinitcfg();
 /// local player
 dynent *player = NULL;
 
-/// microtiming management integers
-int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1;
 int initing = NOT_INITING;
 
 inexor::util::Metasystem metapp;
@@ -654,30 +653,6 @@ bool inbetweenframes = false, renderedframe = true;
 VAR(menufps, 0, 60, 1000);
 VARP(maxfps, 0, 200, 1000);
 
-/// limit frames per seconds to use resources intelligently
-void limitfps(int &millis, int curmillis)
-{
-    int limit = (mainmenu || screen_manager.minimized) && menufps ? (maxfps ? min(maxfps, menufps) : menufps) : maxfps;
-    if(!limit) return;
-    static int fpserror = 0;
-    int delay = 1000/limit - (millis-curmillis);
-    if(delay < 0) fpserror = 0;
-    else
-    {
-        fpserror += 1000%limit;
-        if(fpserror >= limit)
-        {
-            ++delay;
-            fpserror -= limit;
-        }
-        if(delay > 0)
-        {
-            SDL_Delay(delay);
-            millis += delay;
-        }
-    }
-}
-
 /// clear fps history array
 void resetfpshistory()
 {
@@ -724,26 +699,6 @@ void getfps_(int *raw)
 }
 COMMANDN(getfps, getfps_, "i");
 
-
-/// clock management
-static int clockrealbase = 0, clockvirtbase = 0;
-static void clockreset() 
-{ 
-	clockrealbase = SDL_GetTicks(); 
-	clockvirtbase = totalmillis;
-}
-
-VARFP(clockerror, 990000, 1000000, 1010000, clockreset());
-VARFP(clockfix, 0, 0, 1, clockreset());
-
-/// get milliseconds since program start
-int getclockmillis()
-{
-    int millis = SDL_GetTicks() - clockrealbase;
-    if(clockfix) millis = int(millis*(double(clockerror)/1000000));
-    millis += clockvirtbase;
-    return max(millis, totalmillis);
-}
 VAR(numcpus, 1, 1, 16);
 
 /// find command line argument
@@ -915,22 +870,13 @@ int main(int argc, char **argv)
     input_router.inputgrab();
     input_router.ignoremousemotion();
 
-	// main game loop
+    // main game loop
     for(;;)
     {
         static int frames = 0;
-        int millis = getclockmillis();
-        limitfps(millis, totalmillis);
-        elapsedtime = millis - totalmillis;
-        static int timeerr = 0;
-        int scaledtime = game::scaletime(elapsedtime) + timeerr;
-        curtime = scaledtime/100;
-        timeerr = scaledtime%100;
-        if(!multiplayer(false) && curtime>200) curtime = 200;
-        if(game::ispaused()) curtime = 0;
-		lastmillis += curtime;
-        totalmillis = millis;
-        updatetime();
+
+        int fps_limit = (mainmenu || screen_manager.minimized) && menufps ? (maxfps ? min(maxfps, menufps) : menufps) : maxfps;
+        updatetime(game::ispaused(), gamespeed, fps_limit);
 
         metapp.tick();
 

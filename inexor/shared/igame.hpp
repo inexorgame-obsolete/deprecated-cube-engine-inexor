@@ -37,7 +37,6 @@ namespace game
     extern void changemap(const char *name);
     extern void forceedit(const char *name);
     extern bool ispaused();
-    extern int scaletime(int t);
     extern bool allowmouselook();
     // view
     extern void broadcastfov(int fov);
@@ -113,6 +112,5 @@ namespace server
     extern void serverupdate();
     extern bool servercompatible(char *name, char *sdec, char *map, int ping, const vector<int> &attr, int np);
     extern bool ispaused();
-    extern int scaletime(int t);
 }
 

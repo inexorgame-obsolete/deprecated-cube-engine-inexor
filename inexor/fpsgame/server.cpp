@@ -1258,8 +1258,6 @@ namespace server
         changegamespeed(speed);
     }
 
-    int scaletime(int t) { return t*gamespeed; }
-
     void persistteams(bool val)
     {
         if(teamspersisted==val) return;
