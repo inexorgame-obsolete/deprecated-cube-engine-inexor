@@ -1,10 +1,12 @@
 #pragma once
 
+#include "inexor/shared/cube_types.hpp"
+#include "inexor/shared/cube_tools.hpp"
+
 #include <algorithm>
 #include <enet/enet.h>
 
-#include "inexor/shared/cube_types.hpp"
-#include "inexor/shared/cube_tools.hpp"
+#include <boost/algorithm/clamp.hpp> // TODO replace with std::clamp as C++17 is our target.
 
 /// template implementation of buffers (networking e.g.).
 /// work like streams: you put stuff at the end, you get stuff from the end
@@ -55,7 +57,7 @@ struct databuf
     /// create a sub buffer copy from this buffer (from the current position)
     databuf subbuf(int sz)
     {
-        sz = clamp(sz, 0, maxlen-len);
+        sz = boost::algorithm::clamp(sz, 0, maxlen-len);
         len += sz;
         return databuf(&buf[len-sz], sz);
     }

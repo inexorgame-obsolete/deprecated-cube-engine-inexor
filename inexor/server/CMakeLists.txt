@@ -4,8 +4,12 @@ prepend(SERVER_SOURCES_ENGINE ${SOURCE_DIR}/engine
 prepend(SERVER_SOURCES_FPSGAME ${SOURCE_DIR}/fpsgame
     server.cpp entities.cpp)
 
+# generate source file list from files in this folder
+declare_module(server .)
+
 set(SERVER_SOURCES
   ${SHARED_MODULE_SOURCES}
+  ${SERVER_MODULE_SOURCES} # files from this folder
   ${SERVER_SOURCES_FPSGAME}
   ${SERVER_SOURCES_ENGINE}
   CACHE INTERNAL "")
