@@ -10,6 +10,8 @@
 #include "inexor/shared/cube_types.hpp" //uchar
 #include "inexor/network/legacy/buffer_types.hpp" // databuf
 
+#include <algorithm>
+
 template<class T>
 static inline float heapscore(const T &n) { return n; }
 
@@ -195,7 +197,7 @@ template <class T, int MINSIZE = 8> struct vector
     void growbuf(int sz)
     {
         int olen = alen;
-        if(!alen) alen = max(MINSIZE, sz);
+        if(!alen) alen = std::max(MINSIZE, sz);
         else while(alen < sz) alen += alen/2;
         if(alen <= olen) return;
         buf = (T *)realloc(buf, alen*sizeof(T));

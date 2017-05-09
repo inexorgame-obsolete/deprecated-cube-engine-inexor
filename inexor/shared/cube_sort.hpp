@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <string.h>
+
 struct sortless
 {
     template<class T> bool operator()(const T &x, const T &y) const { return x < y; }
