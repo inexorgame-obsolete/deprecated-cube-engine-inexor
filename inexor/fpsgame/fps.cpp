@@ -1,6 +1,7 @@
 /// implementation of basic game functionsand cubescript bindings
 
 #include "inexor/fpsgame/game.hpp"
+#include "inexor/fpsgame/entities.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/util/Logging.hpp"
 

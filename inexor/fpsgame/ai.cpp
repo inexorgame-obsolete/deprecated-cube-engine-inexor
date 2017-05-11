@@ -611,7 +611,7 @@ namespace ai
                     case I_GREENARMOUR: case I_YELLOWARMOUR: case I_QUAD: break;
                     default:
                     {
-                        itemstat &is = itemstats[entities::ents[ent]->type-I_SHELLS];
+                        const itemstat &is = itemstats[entities::ents[ent]->type-I_SHELLS];
                         wantsitem = isgoodammo(is.info) && d->ammo[is.info] <= (d->ai->weappref == is.info ? is.add : is.add/2);
                         break;
                     }

@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "inexor/shared/cube_types.hpp"
+
 #include <iostream>
 
 /// declaration of 2- and 4-dimensional vectors

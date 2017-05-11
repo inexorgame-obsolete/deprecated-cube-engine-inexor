@@ -1,4 +1,5 @@
 #include "inexor/fpsgame/game.hpp"
+#include "inexor/fpsgame/entities.hpp"
 
 using namespace inexor::sound;
 
