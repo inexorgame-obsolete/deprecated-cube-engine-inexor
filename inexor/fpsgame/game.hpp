@@ -18,44 +18,6 @@
 #define DNF 100.0f  /// for normalized vectors
 #define DVELF 1.0f  /// for playerspeed based velocity vectors
 
-/// static entity types
-/// @warning this system may becomes deprecated because of the new entity system!
-enum
-{
-    NOTUSED = ET_EMPTY,         /// entity slot not in used in maps
-    LIGHT = ET_LIGHT,           /// lightsource, attr1 = radius, attr2 = intensity
-    MAPMODEL = ET_MAPMODEL,     /// attr1 = z-angle, attr2 = idx
-    PLAYERSTART,                /// attr1 = z-angle, attr2 = team
-    ENVMAP = ET_ENVMAP,         /// attr1 = radius
-    PARTICLES = ET_PARTICLES,   /// particles (may becomes deprecated because of the new particle system)
-    MAPSOUND = ET_SOUND,        /// sounds
-    SPOTLIGHT = ET_SPOTLIGHT,   /// cone-shaped spotlights
-
-    /// prefix I_ stands for "Inexor"...
-    I_SHELLS, I_BULLETS, I_ROCKETS, I_ROUNDS, I_GRENADES, I_CARTRIDGES, /// ammo pickups
-    I_BOMBS = ET_BOMBS,         /// bomberman game mode
-    I_BOMBRADIUS,               /// bomb radius (see bomberman game mode)
-    I_BOMBDELAY,                /// bomberman game mode
-	I_HEALTH, I_BOOST,          /// bomberman game mode
-    I_GREENARMOUR, I_YELLOWARMOUR, /// bomberman game mode
-    I_QUAD,                     /// bomberman game mode
-
-    TELEPORT,                   /// attr1 = idx, attr2 = model, attr3 = tag
-    TELEDEST,                   /// attr1 = z-angle, attr2 = idx
-    MONSTER,                    /// attr1 = z-angle, attr2 = monstertype
-    CARROT,                     /// attr1 = tag, attr2 = type
-    JUMPPAD,                    /// attr1 = z-push, attr2 = y-push, attr3 = x-push
-    BASE,                       /// base (regencapture and capture game modes)
-    RESPAWNPOINT,               /// singleplayer: respawn points ('respawnpoint set' :))
-    BOX,                        /// attr1 = z-angle, attr2 = idx, attr3 = weight
-    BARREL,                     /// attr1 = z-angle, attr2 = idx, attr3 = weight, attr4 = health
-    PLATFORM,                   /// attr1 = z-angle, attr2 = idx, attr3 = tag, attr4 = speed
-    ELEVATOR,                   /// attr1 = z-angle, attr2 = idx, attr3 = tag, attr4 = speed
-    FLAG,                       /// attr1 = z-angle, attr2 = team
-    OBSTACLE = ET_OBSTACLE,     /// attr1 = z-angle, attr2 = idx (mapmodel index), attr3 = health, attr4 = weight, attr5 = respawnmillis
-    MAXENTTYPES
-};
-
 
 /// (door) triggers in singleplayer maps (sp and dmsp game modes)
 /// @warning may becomes deprecated if visual scripting will be implemented one day...
@@ -119,12 +81,10 @@ enum
 	M_AIMING
 };  
 
-
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/// game mode specific code
+// game mode specific code
 
 /// basic game mode bitmask "FLAGS"
-/// (NOT game modes but attributes of game modes!)
+/// (NOT game modes but attributes of game modes)
 enum
 {
     M_TEAM       = 1<<0,   /// game mode contains teams
@@ -138,22 +98,21 @@ enum
     M_CTF        = 1<<8,   /// game mode is about capturing a flag
     M_PROTECT    = 1<<9,   /// game mode is about protecting a flag
     M_HOLD       = 1<<10,  /// game mode is about holding a flag (for 20 seconds)
-    M_OVERTIME   = 1<<11,  /// game mode allows overtime (?)
+    M_OVERTIME   = 1<<11,  /// game mode has longer matches
     M_EDIT       = 1<<12,  /// game mode allows cooperative editing (coopedit)
     M_DEMO       = 1<<13,  /// game mode is a demo playback
     M_LOCAL      = 1<<14,  /// game mode is played in singleplayer only (locally)
-    M_LOBBY      = 1<<15,  /// game mode does not imply certain grouped gameplay but also allows to built lobbys (pseudoteams working against each other)
+    M_LOBBY      = 1<<15,  /// game mode does not imply certain (good vs evil) grouped gameplay but also allows to built lobbys (pseudoteams working against each other)
     M_DMSP       = 1<<16,  /// death match single player
     M_CLASSICSP  = 1<<17,  /// classic singleplayer
     M_SLOWMO     = 1<<18,  /// game mode is played in slow motion
     M_COLLECT    = 1<<19,  /// game mode is about collecting skulls
 
-    M_LMS        = 1<<20,  /// 
-    M_BOMB       = 1<<21,  /// 
-    M_TIMEFORWARD= 1<<22,  ///
-    M_OBSTACLES  = 1<<23,  ///
-    M_HIDEANDSEEK= 1<<24,  /// 
-    //M_RACE       = 1<<25,
+    M_LMS        = 1<<20,  /// last man standing
+    M_BOMB       = 1<<21,  /// bomberman
+    M_TIMEFORWARD= 1<<22,  /// time counts onward (instead of from full time to zero)
+    M_OBSTACLES  = 1<<23,  /// game mode has obstacles which can be destroyed dynamically
+    M_HIDEANDSEEK= 1<<24
 };
 
 
@@ -192,12 +151,10 @@ static struct gamemodeinfo
     { "effic collect", M_NOITEMS | M_EFFICIENCY | M_COLLECT | M_TEAM},
     { "bomberman", M_LMS | M_BOMB | M_OBSTACLES},
     { "bomberman team", M_LMS | M_BOMB | M_TEAM | M_OBSTACLES},
-    { "hideandseek"},
+    { "hideandseek"}
 };
 
-
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/// game mode validation and attribute handling
+// game mode validation and attribute handling
 
 /// the first 3 game modes are not used in multiplayer
 #define STARTGAMEMODE (-3)
@@ -838,8 +795,7 @@ namespace entities
     extern void repammo(fpsent *d, int type, bool local = true);
 }
 
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/// full game handling
+// full game handling
 
 namespace game
 {
@@ -847,7 +803,9 @@ namespace game
     {
         vector<fpsent *> players;
 
-        char *sametag() //returns whether this scoregroup is a clan/playing-group, whatever. it returns null if players in this group have different tags and the tag if they all share the same one
+        /// Returns whether this scoregroup is a clan/playing-group, whatever.
+        /// @return the shared tag if all tags are the same, otherwise null.
+        char *sametag()
         {
             fpsent *prev = NULL;
             loopv(players)
