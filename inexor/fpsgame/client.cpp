@@ -4,6 +4,7 @@
 /// implementation of many cube script get functions
 
 #include "inexor/fpsgame/game.hpp"
+#include "inexor/fpsgame/entities.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/util/Logging.hpp"
 #include "inexor/network/legacy/crypto.hpp"

@@ -11,7 +11,13 @@
 #include "inexor/shared/cube.hpp"
 #include "inexor/util/Logging.hpp"
 #include "inexor/network/legacy/game_types.hpp"
+#include "inexor/network/legacy/administration.hpp"
 
+#include "inexor/fpsgame/gamemode.hpp"
+#include "inexor/engine/particles.hpp"
+#include "inexor/fpsgame/fpsstate.hpp"
+
+#include "inexor/fpsgame/ai.hpp"
 
 /// network quantization scale
 #define DMF 16.0f   /// for world locations
@@ -37,171 +43,6 @@ struct fpsentity : extentity
     int triggerstate, lasttrigger;
     fpsentity() : triggerstate(TRIGGER_RESET), lasttrigger(0) {} 
 };
-
-/// static gun and projectile enumeration
-/// TODO: replace this hardcoded stuff and move on to JSON!
-enum 
-{
-	GUN_FIST = 0,	/// fist
-	GUN_SG,			/// shotgun
-	GUN_CG,			/// 
-	GUN_RL,			/// rocket launcher
-	GUN_RIFLE,		/// rifle
-	GUN_GL,			/// grenade launcher
-	GUN_PISTOL,		/// pistol
-	GUN_BOMB,		/// BOMBERMAN gamemode: bomb
-	GUN_FIREBALL,	/// monster/bot: fireball
-	GUN_ICEBALL,	/// monster/bot: iceball
-	GUN_SLIMEBALL,	/// monster/bot: slimeball
-	GUN_BITE,		/// bite
-	GUN_BARREL,		/// barrel damage
-	GUN_SPLINTER,	/// splinter
-	NUMGUNS         /// 
-};
-
-
-/// armour type enumeration... take 20/40/60 % off
-enum 
-{
-	A_BLUE,
-	A_GREEN,
-	A_YELLOW
-};
-
-/// Artificial intelligence: BOT states
-/// "Artificial intelligence is the perpetuum mobile of computer science"
-enum 
-{ 
-	M_NONE = 0,
-	M_SEARCH,
-	M_HOME,
-	M_ATTACKING,
-	M_PAIN,
-	M_SLEEP,
-	M_AIMING
-};  
-
-// game mode specific code
-
-/// basic game mode bitmask "FLAGS"
-/// (NOT game modes but attributes of game modes)
-enum
-{
-    M_TEAM       = 1<<0,   /// game mode contains teams
-    M_NOITEMS    = 1<<1,   /// game mode has no items
-    M_NOAMMO     = 1<<2,   /// game mode has no ammo?
-    M_INSTA      = 1<<3,   /// game mode has an instagib modifier
-    M_EFFICIENCY = 1<<4,   /// game mode has an efficiency modifier
-    M_TACTICS    = 1<<5,   /// game mode offers random spawn weapons (see tactics mode)
-    M_CAPTURE    = 1<<6,   /// game mode is about capturing bases
-    M_REGEN      = 1<<7,   /// game mode is about capturing supply bases (see regencapture mode)
-    M_CTF        = 1<<8,   /// game mode is about capturing a flag
-    M_PROTECT    = 1<<9,   /// game mode is about protecting a flag
-    M_HOLD       = 1<<10,  /// game mode is about holding a flag (for 20 seconds)
-    M_OVERTIME   = 1<<11,  /// game mode has longer matches
-    M_EDIT       = 1<<12,  /// game mode allows cooperative editing (coopedit)
-    M_DEMO       = 1<<13,  /// game mode is a demo playback
-    M_LOCAL      = 1<<14,  /// game mode is played in singleplayer only (locally)
-    M_LOBBY      = 1<<15,  /// game mode does not imply certain (good vs evil) grouped gameplay but also allows to built lobbys (pseudoteams working against each other)
-    M_DMSP       = 1<<16,  /// death match single player
-    M_CLASSICSP  = 1<<17,  /// classic singleplayer
-    M_SLOWMO     = 1<<18,  /// game mode is played in slow motion
-    M_COLLECT    = 1<<19,  /// game mode is about collecting skulls
-
-    M_LMS        = 1<<20,  /// last man standing
-    M_BOMB       = 1<<21,  /// bomberman
-    M_TIMEFORWARD= 1<<22,  /// time counts onward (instead of from full time to zero)
-    M_OBSTACLES  = 1<<23,  /// game mode has obstacles which can be destroyed dynamically
-    M_HIDEANDSEEK= 1<<24
-};
-
-
-/// structure for game mode description
-static struct gamemodeinfo
-{
-    const char *name; /// game mode's name
-    int flags;        /// a bitmask container (see flags above)
-} gamemodes[] =
-{
-    { "SP", M_LOCAL | M_CLASSICSP},
-    { "DMSP", M_LOCAL | M_DMSP},
-    { "demo", M_DEMO | M_LOCAL},
-    { "ffa", M_LOBBY},
-    { "coop edit", M_EDIT},
-    { "teamplay", M_TEAM},
-    { "instagib", M_NOITEMS | M_INSTA},
-    { "insta team", M_NOITEMS | M_INSTA | M_TEAM},
-    { "efficiency", M_NOITEMS | M_EFFICIENCY},
-    { "effic team", M_NOITEMS | M_EFFICIENCY | M_TEAM},
-    { "tactics", M_NOITEMS | M_TACTICS},
-    { "tac team", M_NOITEMS | M_TACTICS | M_TEAM},
-    { "capture", M_NOAMMO | M_TACTICS | M_CAPTURE | M_TEAM},
-    { "regen capture", M_NOITEMS | M_CAPTURE | M_REGEN | M_TEAM},
-    { "ctf", M_CTF | M_TEAM},
-    { "insta ctf", M_NOITEMS | M_INSTA | M_CTF | M_TEAM},
-    { "protect", M_CTF | M_PROTECT | M_TEAM},
-    { "insta protect", M_NOITEMS | M_INSTA | M_CTF | M_PROTECT | M_TEAM},
-    { "hold", M_CTF | M_HOLD | M_TEAM},
-    { "insta hold", M_NOITEMS | M_INSTA | M_CTF | M_HOLD | M_TEAM},
-    { "effic ctf", M_NOITEMS | M_EFFICIENCY | M_CTF | M_TEAM},
-    { "effic protect", M_NOITEMS | M_EFFICIENCY | M_CTF | M_PROTECT | M_TEAM},
-    { "effic hold", M_NOITEMS | M_EFFICIENCY | M_CTF | M_HOLD | M_TEAM},
-    { "collect", M_COLLECT | M_TEAM},
-    { "insta collect", M_NOITEMS | M_INSTA | M_COLLECT | M_TEAM},
-    { "effic collect", M_NOITEMS | M_EFFICIENCY | M_COLLECT | M_TEAM},
-    { "bomberman", M_LMS | M_BOMB | M_OBSTACLES},
-    { "bomberman team", M_LMS | M_BOMB | M_TEAM | M_OBSTACLES},
-    { "hideandseek"}
-};
-
-// game mode validation and attribute handling
-
-/// the first 3 game modes are not used in multiplayer
-#define STARTGAMEMODE (-3)
-
-/// macro to determine the amount of available game modes
-/// division: (size of array) / (size of one gamemodeinfo instance)
-#define NUMGAMEMODES ((int)(sizeof(gamemodes)/sizeof(gamemodes[0])))
-
-/// validate game mode number (array index)
-#define m_valid(mode)          ((mode) >= STARTGAMEMODE && (mode) < STARTGAMEMODE + NUMGAMEMODES)
-/// validate game mode number and attribute (to check if this gamemode has items or bases e.g.)
-#define m_check(mode, flag)    (m_valid(mode) && gamemodes[(mode) - STARTGAMEMODE].flags&(flag))
-/// validate game mode number and check if game mode does NOT have these attribuges
-#define m_checknot(mode, flag) (m_valid(mode) && !(gamemodes[(mode) - STARTGAMEMODE].flags&(flag)))
-/// validate game mode number and check if game mode supports parameter flag bit masks
-/// to check if this game mode supports multiple attributes (EFFICIENCY | CTF  e.g.)
-#define m_checkall(mode, flag) (m_valid(mode) && (gamemodes[(mode) - STARTGAMEMODE].flags&(flag)) == (flag))
-
-/// those game mode check macros are built on top of the layer above
-#define m_noitems      (m_check(gamemode, M_NOITEMS))
-#define m_noammo       (m_check(gamemode, M_NOAMMO|M_NOITEMS))
-#define m_insta        (m_check(gamemode, M_INSTA))
-#define m_tactics      (m_check(gamemode, M_TACTICS))
-#define m_efficiency   (m_check(gamemode, M_EFFICIENCY))
-#define m_capture      (m_check(gamemode, M_CAPTURE))
-#define m_regencapture (m_checkall(gamemode, M_CAPTURE | M_REGEN))
-#define m_ctf          (m_check(gamemode, M_CTF))
-#define m_protect      (m_checkall(gamemode, M_CTF | M_PROTECT))
-#define m_hold         (m_checkall(gamemode, M_CTF | M_HOLD))
-#define m_collect      (m_check(gamemode, M_COLLECT))
-#define m_teammode     (m_check(gamemode, M_TEAM))
-#define m_overtime     (m_check(gamemode, M_OVERTIME))
-#define isteam(a,b)    (m_teammode && strcmp(a, b)==0)
-
-#define m_lms          (m_check(gamemode, M_LMS))
-#define m_bomb         (m_check(gamemode, M_BOMB))
-#define m_hideandseek  (m_check(gamemode, M_HIDEANDSEEK))
-
-#define m_obstacles    (m_check(gamemode, M_OBSTACLES))
-#define m_timeforward  (m_check(gamemode, M_TIMEFORWARD))
-
-#define m_demo         (m_check(gamemode, M_DEMO))
-#define m_edit         (m_check(gamemode, M_EDIT))
-#define m_lobby        (m_check(gamemode, M_LOBBY))
-#define m_timed        (m_checknot(gamemode, M_DEMO|M_EDIT|M_LOCAL))
-#define m_botmode      (m_checknot(gamemode, M_DEMO|M_LOCAL))
-#define m_mp(mode)     (m_checknot(mode, M_LOCAL))
 
 /// master mode states: server rights managment
 enum
@@ -243,343 +84,12 @@ static const char * const teamblipcolor[TEAM_NUM] =
     "_red"
 };
 
-
-/// enumeration for icons
-enum
-{
-    HICON_BLUE_ARMOUR = 0,
-    HICON_GREEN_ARMOUR,
-    HICON_YELLOW_ARMOUR,
-
-    HICON_HEALTH,
-
-    HICON_FIST,
-    HICON_SG,
-    HICON_CG,
-    HICON_RL,
-    HICON_RIFLE,
-    HICON_GL,
-    HICON_PISTOL,
-    HICON_BOMB,
-
-    HICON_QUAD,
-
-    HICON_RED_FLAG,
-    HICON_BLUE_FLAG,
-    HICON_NEUTRAL_FLAG,
-
-    HICON_TOKEN,
-	
-	// bomberman
-    HICON_BOMBRADIUS,
-    HICON_BOMBDELAY,
-
-    HICON_X       = 20,
-    HICON_Y       = 1650,
-    HICON_TEXTY   = 1644,
-    HICON_STEP    = 490,
-    HICON_SIZE    = 120,
-    HICON_SPACE   = 40
-};
-
-
-/// Bomberman: HUD announce effects
-enum hudannounceeffects 
-{
-    E_STATIC_CENTER = 0,
-    E_STATIC_LEFT,
-    E_STATIC_RIGHT,
-    E_STATIC_TOP,
-    E_STATIC_BOTTOM,
-    E_FADE_LEFT_RIGHT,
-    E_FADE_RIGHT_LEFT,
-    E_FADE_TOP_BOTTOM,
-    E_FADE_BOTTOM_TOP,
-    E_ZOOM_IN,
-    E_ZOOM_OUT,
-    E_BLINK_CENTER
-};
-
 /// Bomberman constants
 #define MAXRAYS 20
 #define EXP_SELFDAMDIV 2
 #define EXP_SELFPUSH 2.5f
 #define EXP_DISTSCALE 1.5f
 #define BOMB_DAMRAD 20
-
-
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/// hard coded weapons and pickups
-
-/// pickup description structure
-static struct itemstat 
-{ 
-	int add, max, sound; 
-	const char *name; 
-	int icon, info;
-}
-
-/// create an array of itemstat instances ('pickups')
-/// TODO: replace this hardcoded stuff and move on to JSON!
-itemstats[] =
-{
-    {10,    30,    S_ITEMAMMO,   "SG", HICON_SG,            GUN_SG},
-    {20,    60,    S_ITEMAMMO,   "CG", HICON_CG,            GUN_CG},
-    {5,     15,    S_ITEMAMMO,   "RL", HICON_RL,            GUN_RL},
-    {5,     15,    S_ITEMAMMO,   "RI", HICON_RIFLE,         GUN_RIFLE},
-    {10,    30,    S_ITEMAMMO,   "GL", HICON_GL,            GUN_GL},
-    {30,    120,   S_ITEMAMMO,   "PI", HICON_PISTOL,        GUN_PISTOL},
-	{1,     12,    S_ITEMAMMO,   "BO", HICON_BOMB,          GUN_BOMB},
-    {1,     10,    S_ITEMPUP,    "BR", HICON_BOMBRADIUS,    -1},
-    {1,     7,     S_ITEMPUP,    "BD", HICON_BOMBDELAY,     -1},
-    {25,    100,   S_ITEMHEALTH, "H",  HICON_HEALTH,        -1},
-    {10,    1000,  S_ITEMHEALTH, "MH", HICON_HEALTH,        -1},
-    {100,   100,   S_ITEMARMOUR, "GA", HICON_GREEN_ARMOUR,  A_GREEN},
-    {200,   200,   S_ITEMARMOUR, "YA", HICON_YELLOW_ARMOUR, A_YELLOW},
-    {20000, 30000, S_ITEMPUP,    "Q",  HICON_QUAD,          -1}
-};
-
-/// weapon description structure
-static const struct guninfo
-{ 
-	int sound, attackdelay, damage, spread, projspeed;
-	int kickamount, range, rays, hitpush, exprad, ttl; 
-	const char *name, *file; short part;
-}
-
-/// create an array of guninfo instances ('guns')
-/// TODO: replace this hardcoded stuff and move on to JSON!
-guns[NUMGUNS] =
-{
-    { S_PUNCH1,    250,  50,   0,   0,  0,   14,  1,  80,   0,    0, "fist",            "chainsaw",        0 },
-    { S_SG,       1400,  10, 400,   0, 20, 1024, 20,  80,   0,    0, "shotgun",         "shotgun",         0 },
-    { S_CG,        100,  30, 100,   0,  7, 1024,  1,  80,   0,    0, "chaingun",        "chaingun",        0 },
-    { S_RLFIRE,    800, 120,   0, 320, 10, 1024,  1, 160,  40,    0, "rocketlauncher",  "rocket",          0 },
-    { S_RIFLE,    1500, 100,   0,   0, 30, 2048,  1,  80,   0,    0, "rifle",           "rifle",           0 },
-    { S_FLAUNCH,   600,  90,   0, 200, 10, 1024,  1, 250,  45, 1500, "grenadelauncher", "grenadelauncher", 0 },
-    { S_PISTOL,    500,  35,  50,   0,  7, 1024,  1,  80,   0,    0, "pistol",          "pistol",          0 },
-    { S_FEXPLODE,  375, 200,   8,  20,  0, 1024,  1, 150,  40, 1500, "bomb",            "cannon",          0 },
-    { S_FLAUNCH,   200,  20,   0, 200,  1, 1024,  1,  80,  40,    0, "fireball",        NULL,              PART_FIREBALL1 },
-    { S_ICEBALL,   200,  40,   0, 120,  1, 1024,  1,  80,  40,    0, "iceball",         NULL,              PART_FIREBALL2 },
-    { S_SLIMEBALL, 200,  30,   0, 640,  1, 1024,  1,  80,  40,    0, "slimeball",       NULL,              PART_FIREBALL3 },
-    { S_PIGR1,     250,  50,   0,   0,  1,   12,  1,  80,   0,    0, "bite",            NULL,              0 },
-    { -1,            0, 120,   0,   0,  0,    0,  1,  80,  40,    0, "barrel",          NULL,              0 },
-    { S_FEXPLODE,  375, 200,   8,  20,  0, 1024,  1, 150,  40, 1500, "bomb_splinter",   NULL,              0 },
-
-};
-
-#include "inexor/fpsgame/ai.hpp"
-
-
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/// fpsstate and fpsent definitions
-
-/// inherited by fpsent and server clients
-struct fpsstate
-{
-    int health, maxhealth;
-    int armour, armourtype;
-    int quadmillis;
-    int gunselect, gunwait;
-    int ammo[NUMGUNS];
-    int aitype, skill;
-    int backupweapon; //no ammo - weapon
-    int bombradius;
-    int bombdelay;
-
-    fpsstate() : maxhealth(100), aitype(AI_NONE), skill(0), backupweapon(GUN_FIST) {}
-
-    /// set initial ammo
-    void baseammo(int gun, int k = 2, int scale = 1)
-    {
-        ammo[gun] = (itemstats[gun-GUN_SG].add*k)/scale;
-    }
-
-    /// add ammo
-    void addammo(int gun, int k = 1, int scale = 1)
-    {
-        itemstat &is = itemstats[gun-GUN_SG];
-        ammo[gun] = min(ammo[gun] + (is.add*k)/scale, is.max);
-    }
-
-    /// ammo limitation reached/exceeded?
-    bool hasmaxammo(int type)
-    {
-       const itemstat &is = itemstats[type-I_SHELLS];
-       return ammo[type-I_SHELLS+GUN_SG]>=is.max;
-    }
-
-    /// check if I can pick up this item depending on the radius
-    bool canpickup(int type)
-    {
-        if(type<I_SHELLS || type>I_QUAD) return false;
-			itemstat &is = itemstats[type-I_SHELLS];
-	        switch(type)
-	        {
-	            case I_BOOST: return maxhealth<is.max;
-	            case I_HEALTH: return health<maxhealth;
-	                case I_GREENARMOUR:
-	                    // (100h/100g only absorbs 200 damage)
-	                    if(armourtype==A_YELLOW && armour>=100) return false;
-	            case I_YELLOWARMOUR: return !armourtype || armour<is.max;
-	            case I_QUAD: return quadmillis<is.max;
-                case I_BOMBRADIUS:
-                    return bombradius<is.max;
-                    break;
-                case I_BOMBDELAY:
-                    return bombdelay<is.max;
-                    break;
-	            default: return ammo[is.info]<is.max;
-	    	}
-		}
-
-    /// pick up this item
-    void pickup(int type)
-    {
-        if(type<I_SHELLS || type>I_QUAD) return;
-            itemstat &is = itemstats[type-I_SHELLS];
-            switch(type)
-            {
-                case I_BOOST:
-                    maxhealth = min(maxhealth+is.add, is.max);
-                case I_HEALTH: // boost also adds to health
-                    health = min(health+is.add, maxhealth);
-                    break;
-                case I_GREENARMOUR:
-                case I_YELLOWARMOUR:
-                    armour = min(armour+is.add, is.max);
-                    armourtype = is.info;
-                    break;
-                case I_QUAD:
-                    quadmillis = min(quadmillis+is.add, is.max);
-                    break;
-                case I_BOMBRADIUS:
-                    bombradius = min(bombradius+is.add, is.max);
-                    break;
-                case I_BOMBDELAY:
-                    bombdelay = min(bombdelay+is.add, is.max);
-                    break;
-                default:
-                    ammo[is.info] = min(ammo[is.info]+is.add, is.max);
-                    break;
-            }
-        }
-
-    /// reset all members when spawning
-    void respawn()
-    {
-        health = maxhealth;
-        armour = 0;
-        armourtype = A_BLUE;
-        quadmillis = 0;
-        gunselect = GUN_PISTOL;
-        gunwait = 0;
-        bombradius = 1;
-        bombdelay = 1;
-        loopi(NUMGUNS) ammo[i] = 0;
-        ammo[backupweapon] = 1;
-    }
-
-    /// configure spawn settings (weapons, ammo, health...) depending on game mode
-    void spawnstate(int gamemode)
-    {
-        if(m_demo)
-        {
-            gunselect = GUN_FIST;
-            backupweapon = GUN_FIST;
-        }
-        else if(m_insta)
-        {
-            armour = 0;
-            health = 1;
-            gunselect = GUN_RIFLE;
-            ammo[GUN_RIFLE] = 100;
-            backupweapon = GUN_FIST;
-        }
-        else if(m_regencapture)
-        {
-            armourtype = A_BLUE;
-            armour = 25;
-            gunselect = GUN_PISTOL;
-            ammo[GUN_PISTOL] = 40;
-            ammo[GUN_GL] = 1;
-            backupweapon = GUN_FIST;
-        }
-        else if(m_tactics)
-        {
-            armourtype = A_GREEN;
-            armour = 100;
-            ammo[GUN_PISTOL] = 40;
-            backupweapon = GUN_FIST;
-            int spawngun1 = rnd(5)+1, spawngun2;
-            gunselect = spawngun1;
-            baseammo(spawngun1, m_noitems ? 2 : 1);
-            do spawngun2 = rnd(5)+1; while(spawngun1==spawngun2);
-            baseammo(spawngun2, m_noitems ? 2 : 1);
-            if(m_noitems) ammo[GUN_GL] += 1;
-        }
-        else if(m_efficiency)
-        {
-            armourtype = A_GREEN;
-            armour = 100;
-            loopi(5) baseammo(i+1);
-            gunselect = GUN_CG;
-            ammo[GUN_CG] /= 2;
-            backupweapon = GUN_FIST;
-        }
-        else if(m_ctf || m_collect)
-        {
-            armourtype = A_BLUE;
-            armour = 50;
-            ammo[GUN_PISTOL] = 40;
-            ammo[GUN_GL] = 1;
-            backupweapon = GUN_FIST;
-        }
-        else if(m_bomb)
-        {
-            health = 1;
-            armourtype = A_GREEN;
-            armour = 0;
-            gunselect = GUN_BOMB;
-            backupweapon = GUN_BOMB;
-        }
-        else if(m_hideandseek)
-        {
-            health = 100;
-            armour = 0;
-            gunselect = GUN_RL;
-            ammo[GUN_RL] = 10;
-            ammo[GUN_PISTOL] = 0;
-            ammo[GUN_GL] = 0;
-            backupweapon = GUN_FIST;
-        }
-        else
-        {
-            armourtype = A_BLUE;
-            armour = 25;
-            ammo[GUN_PISTOL] = 40;
-            ammo[GUN_GL] = 1;
-            backupweapon = GUN_FIST;
-        }
-    }
-
-    /// just subtract damage here, we can set death, etc. later in code calling this
-    int dodamage(int damage)
-    {
-        int ad = damage*(armourtype+1)*25/100; // let armour absorb when possible
-        if(ad>armour) ad = armour;
-        armour -= ad;
-        damage -= ad;
-        health -= damage;
-        return damage;
-    }
-
-    /// is there ammo left for this gun
-    int hasammo(int gun, int exclude = -1)
-    {
-        return gun >= 0 && gun <= NUMGUNS && gun != exclude && ammo[gun] > 0;
-    }
-};
 
 // mostly players can be described with this
 struct fpsent : dynent, fpsstate
@@ -684,7 +194,7 @@ struct teamscore
     teamscore() {}
     teamscore(const char *s, int n) : team(s), score(n) {}
 
-	/// used for quicksort template to compare teams
+    // used for quicksort template to compare teams
     static bool compare(const teamscore &x, const teamscore &y)
     {
         if(x.score > y.score) return true;
@@ -694,16 +204,10 @@ struct teamscore
 };
 
 /// create hashes to access hashmaps
-static inline uint hthash(const teamscore &t) 
-{
-	return hthash(t.team); 
-}
+static inline uint hthash(const teamscore &t) { return hthash(t.team); }
 
 /// compare two teamnames
-static inline bool htcmp(const char *key, const teamscore &t) 
-{
-	return htcmp(key, t.team);
-}
+static inline bool htcmp(const char *key, const teamscore &t) { return htcmp(key, t.team); }
 
 /// scoreboard team block description
 struct teaminfo
@@ -713,18 +217,11 @@ struct teaminfo
 };
 
 /// create hash for hashsts
-static inline uint hthash(const teaminfo &t) 
-{ 
-	return hthash(t.team); 
-}
+static inline uint hthash(const teaminfo &t) { return hthash(t.team); }
 
 /// compare two team names
-static inline bool htcmp(const char *team, const teaminfo &t)
-{
-	return !strcmp(team, t.team);
-}
+static inline bool htcmp(const char *team, const teaminfo &t) { return !strcmp(team, t.team); }
 
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 /// entity handling
 /// entity system will be replaced with new entity system later...
 

@@ -159,7 +159,7 @@ namespace entities
 
     void addammo(int type, int &v, bool local)
     {
-        itemstat &is = itemstats[type-I_SHELLS];
+        const itemstat &is = itemstats[type-I_SHELLS];
         v += is.add;
         if(v>is.max) v = is.max;
         if(local) msgsound(is.sound);
@@ -182,7 +182,7 @@ namespace entities
         if(type<I_SHELLS || type>I_QUAD) return;
         ents[n]->clearspawned();
         if(!d) return;
-        itemstat &is = itemstats[type-I_SHELLS];
+        const itemstat &is = itemstats[type-I_SHELLS];
         if(d!=player1 || isthirdperson())
         {
             //particle_text(d->abovehead(), is.name, PART_TEXT, 2000, 0xFFC864, 4.0f, -8);

@@ -1,6 +1,7 @@
 /// Bot Movement, according to waypoints (saved within the map in an excluded file).
 
 #include "inexor/fpsgame/game.hpp"
+#include "inexor/fpsgame/entities.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 
 extern selinfo sel;

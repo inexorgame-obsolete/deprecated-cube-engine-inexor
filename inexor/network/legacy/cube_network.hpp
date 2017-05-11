@@ -7,6 +7,9 @@
 #include "inexor/shared/cube_tools.hpp"
 #include "inexor/shared/cube_vector.hpp"
 
+#define MAXCLIENTS 128                 // DO NOT set this any higher
+#define MAXTRANS 5000                  // max amount of data to swallow in 1 go
+
 extern void putint(ucharbuf &p, int n);
 extern void putint(packetbuf &p, int n);
 extern void putint(vector<uchar> &p, int n);
