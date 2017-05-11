@@ -210,9 +210,6 @@ inline int msgsizelookup(int msg)
     return msg >= 0 && msg < NUMMSG ? sizetable[msg] : -1;
 }
 
-/// priviledge levels
-enum { PRIV_NONE = 0, PRIV_MASTER, PRIV_ADMIN };
-
 /// demos contain stored network messages of a game
 /// which can be replayed to review games
 struct demoheader

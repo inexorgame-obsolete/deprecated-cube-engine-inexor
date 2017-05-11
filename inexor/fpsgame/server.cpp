@@ -713,16 +713,6 @@ namespace server
         return (n>=MM_START && size_t(n-MM_START)<sizeof(mastermodenames)/sizeof(mastermodenames[0])) ? mastermodenames[n-MM_START] : unknown;
     }
 
-    const char *privname(int type)
-    {
-        switch(type)
-        {
-            case PRIV_ADMIN: return "admin";
-            case PRIV_MASTER: return "master";
-            default: return "unknown";
-        }
-    }
-
     void sendservmsg(const char *s) { sendf(-1, 1, "ris", N_SERVMSG, s); }
     void sendservmsgf(const char *fmt, ...)
     {
