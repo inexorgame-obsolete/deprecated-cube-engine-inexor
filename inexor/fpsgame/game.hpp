@@ -44,7 +44,7 @@ struct fpsentity : extentity
     fpsentity() : triggerstate(TRIGGER_RESET), lasttrigger(0) {} 
 };
 
-/// master mode states: server rights managment
+/// master mode states: server rights management
 enum
 {
     MM_START = -1,
