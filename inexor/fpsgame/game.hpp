@@ -19,47 +19,6 @@
 
 #include "inexor/fpsgame/ai.hpp"
 
-/// network quantization scale
-#define DMF 16.0f   /// for world locations
-#define DNF 100.0f  /// for normalized vectors
-#define DVELF 1.0f  /// for playerspeed based velocity vectors
-
-
-/// (door) triggers in singleplayer maps (sp and dmsp game modes)
-/// @warning may becomes deprecated if visual scripting will be implemented one day...
-enum
-{
-    TRIGGER_RESET = 0,
-    TRIGGERING,
-    TRIGGERED,
-    TRIGGER_RESETTING,
-    TRIGGER_DISAPPEARED
-};
-
-
-/// trigger handler
-struct fpsentity : extentity
-{
-    int triggerstate, lasttrigger;
-    fpsentity() : triggerstate(TRIGGER_RESET), lasttrigger(0) {} 
-};
-
-/// master mode states: server rights management
-enum
-{
-    MM_START = -1,
-    MM_OPEN = 0,   // anyone can claim master
-    MM_VETO,       // anyone can vote for maps and join
-    MM_LOCKED,     // newly joined players start in spectator mode
-    MM_PRIVATE,
-    MM_PASSWORD,
-};
-
-/// static strings for server description in master server list
-static const char * const mastermodenames[] =  { "default",   "open",   "veto",   "locked",     "private",    "password" };
-static const char * const mastermodecolors[] = { "",    COL_GREEN,  COL_YELLOW,   COL_YELLOW,     COL_RED,    COL_RED};
-static const char * const mastermodeicons[] =  { "server", "server", "serverlock", "serverlock", "serverpriv", "serverpriv" };
-
 
 /// important teamspecific declarations
 #define MAXTEAMS 128
@@ -84,7 +43,6 @@ static const char * const teamblipcolor[TEAM_NUM] =
     "_red"
 };
 
-/// Bomberman constants
 #define MAXRAYS 20
 #define EXP_SELFDAMDIV 2
 #define EXP_SELFPUSH 2.5f
@@ -177,15 +135,13 @@ struct fpsent : dynent, fpsstate
 };
 
 
-/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/// team handling
+// team handling
 
-/// @warning those limits should be increased
 #define MAXNAMELEN 15
 #define MAXTEAMLEN 4
 #define MAXTEAMS 128
 
-/// many competetive team modes allow more than 2 teams
+/// some team modes allow more than 2 teams
 /// allow sorting multiple teams using team scores
 struct teamscore
 {
@@ -222,36 +178,6 @@ static inline uint hthash(const teaminfo &t) { return hthash(t.team); }
 /// compare two team names
 static inline bool htcmp(const char *team, const teaminfo &t) { return !strcmp(team, t.team); }
 
-/// entity handling
-/// entity system will be replaced with new entity system later...
-
-namespace entities
-{
-    extern vector<extentity *> ents;
-
-    extern const char *entmdlname(int type);
-    extern const char *itemname(int i);
-    extern int itemicon(int i);
-
-    extern void preloadentities();
-    extern void renderentities();
-    extern void resettriggers();
-    extern void checktriggers();
-    extern void checkitems(fpsent *d);
-    extern void checkquad(int time, fpsent *d);
-    extern void resetspawns();
-    extern void spawnitems(bool force = false);
-    extern void putitems(packetbuf &p);
-    extern void setspawn(int i, bool on);
-    extern void teleport(int n, fpsent *d);
-    extern void pickupeffects(int n, fpsent *d);
-    extern void teleporteffects(fpsent *d, int tp, int td, bool local = true);
-    extern void jumppadeffects(fpsent *d, int jp, bool local = true);
-
-    extern void repammo(fpsent *d, int type, bool local = true);
-}
-
-// full game handling
 
 namespace game
 {

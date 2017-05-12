@@ -6,9 +6,17 @@
 #include "inexor/shared/cube_types.hpp"
 #include "inexor/shared/cube_tools.hpp"
 #include "inexor/shared/cube_vector.hpp"
+#include "inexor/network/legacy/buffer_types.hpp"
 
 #define MAXCLIENTS 128                 // DO NOT set this any higher
 #define MAXTRANS 5000                  // max amount of data to swallow in 1 go
+
+
+
+/// network quantization scale
+#define DMF 16.0f   /// for world locations
+#define DNF 100.0f  /// for normalized vectors
+#define DVELF 1.0f  /// for playerspeed based velocity vectors
 
 extern void putint(ucharbuf &p, int n);
 extern void putint(packetbuf &p, int n);
