@@ -276,14 +276,6 @@ enum
 
 extern void adddecal(int type, const vec &center, const vec &surface, float radius, const bvec &color = bvec(0xFF, 0xFF, 0xFF), int info = 0);
 
-// worldio
-extern bool load_world(const char *mname, const char *cname = NULL);
-extern bool save_world(const char *mname, bool nolms = false);
-extern void getmapfilename(const char *fname, const char *cname, char *mapname);
-extern uint getmapcrc();
-extern void clearmapcrc();
-extern bool loadents(const char *fname, vector<entity> &ents, uint *crc = NULL);
-
 // physics
 extern vec collidewall;
 extern bool collideinside;
