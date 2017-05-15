@@ -1,6 +1,7 @@
 // worldio.cpp: loading & saving of maps and savegames
 
 #include "inexor/engine/engine.hpp"
+#include "inexor/engine/worldio.hpp"
 #include "inexor/texture/slot.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/util/Logging.hpp"

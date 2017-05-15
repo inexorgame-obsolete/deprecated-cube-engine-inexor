@@ -2,6 +2,7 @@
 #include "inexor/util/random.hpp"
 #include "inexor/util/Logging.hpp"
 #include "inexor/fpsgame/entities.hpp"
+#include "inexor/engine/worldio.hpp"
 #include "inexor/network/legacy/crypto.hpp"
 #include "inexor/server/client_management.hpp"
 

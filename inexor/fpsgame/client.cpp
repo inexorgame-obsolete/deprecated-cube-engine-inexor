@@ -8,6 +8,7 @@
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/util/Logging.hpp"
 #include "inexor/network/legacy/crypto.hpp"
+#include "inexor/engine/worldio.hpp"
 
 using namespace inexor::filesystem;
 using namespace inexor::sound;
