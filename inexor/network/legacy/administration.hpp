@@ -28,6 +28,4 @@ enum
 
 /// static strings for server description in master server list
 static const char * const mastermodenames[] ={"default",   "open",   "veto",   "locked",     "private",    "password"};
-static const char * const mastermodecolors[] ={"",    COL_GREEN,  COL_YELLOW,   COL_YELLOW,     COL_RED,    COL_RED};
-static const char * const mastermodeicons[] ={"server", "server", "serverlock", "serverlock", "serverpriv", "serverpriv"};
 
