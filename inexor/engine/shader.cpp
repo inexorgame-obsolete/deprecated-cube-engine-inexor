@@ -1,6 +1,7 @@
 // shader.cpp: OpenGL GLSL shader management
 
 #include "inexor/engine/engine.hpp"
+#include "inexor/texture/slot.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/util/Logging.hpp"
 

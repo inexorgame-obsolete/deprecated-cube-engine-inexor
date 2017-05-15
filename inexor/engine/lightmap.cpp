@@ -1,6 +1,7 @@
 #include <array>
 
 #include "inexor/engine/engine.hpp"
+#include "inexor/texture/slot.hpp"
 #include "inexor/texture/savetexture.hpp"
 #include "inexor/texture/image.hpp"
 #include "inexor/ui/input/InputRouter.hpp"
