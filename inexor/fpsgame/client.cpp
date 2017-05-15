@@ -5,6 +5,7 @@
 
 #include "inexor/fpsgame/game.hpp"
 #include "inexor/fpsgame/entities.hpp"
+#include "inexor/engine/3dgui.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/util/Logging.hpp"
 #include "inexor/network/legacy/crypto.hpp"
@@ -23,12 +24,6 @@ namespace game
     VARP(maxradarscale, 1, 1024, 10000);
     VARP(radarteammates, 0, 1, 1);
     FVARP(minimapalpha, 0, 1, 1);
-
-    /// Bomberman HUD
-    int hudannounce_begin = 0;
-    int hudannounce_timeout = 0;
-    int hudannounce_effect = 0;
-    char* hudannounce_text;
 
 	/// calculate required radar scale
     float calcradarscale()

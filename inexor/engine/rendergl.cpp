@@ -1,6 +1,7 @@
 // rendergl.cpp: core opengl rendering stuff
 
 #include "inexor/engine/engine.hpp"
+#include "inexor/engine/3dgui.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/util/Subsystem.hpp"

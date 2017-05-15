@@ -246,13 +246,6 @@ namespace game
     extern int following;
     extern SharedVar<int> smoothmove, smoothdist;
 
-    // osd
-    extern int hudannounce_begin;
-    extern int hudannounce_timeout;
-    extern int hudannounce_effect;
-    extern char* hudannounce_text;
-
-
     extern bool clientoption(const char *arg);
     extern fpsent *getclient(int cn);
     extern fpsent *newclient(int cn);

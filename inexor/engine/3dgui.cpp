@@ -6,6 +6,7 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/engine/textedit.hpp"
 #include "inexor/texture/slot.hpp"
+#include "inexor/engine/3dgui.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/ui/input/InputRouter.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"
@@ -19,6 +20,12 @@ static struct gui *windowhit = NULL;
 static bool layoutpass, actionon = false;
 static float firstx, firsty;
 static int mousebuttons = 0;
+
+/// Bomberman HUD
+int hudannounce_begin = 0;
+int hudannounce_timeout = 0;
+int hudannounce_effect = 0;
+char* hudannounce_text;
 
 enum
 {
@@ -1412,3 +1419,7 @@ void consolebox(int x1, int y1, int x2, int y2)
     pophudmatrix();
 }
 
+int g3d_callback::starttime()
+{
+    return totalmillis;
+}

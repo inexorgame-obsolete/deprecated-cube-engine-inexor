@@ -1,4 +1,7 @@
-//NO INCLUDE GUARD
+#pragma once
+
+#include "inexor/engine/3dgui.hpp"
+
 struct editline
 {
     enum { CHUNKSIZE = 256 };
