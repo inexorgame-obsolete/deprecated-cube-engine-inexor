@@ -1,4 +1,5 @@
 #include "inexor/engine/engine.hpp"
+#include "inexor/texture/slot.hpp"
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/shared/cube_sort.hpp"
 

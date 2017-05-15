@@ -1,9 +1,11 @@
 // renderva.cpp: handles the occlusion and rendering of vertex arrays
 
-#include <unordered_set>
 #include "inexor/engine/engine.hpp"
+#include "inexor/texture/slot.hpp"
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/util/Logging.hpp"
+
+#include <unordered_set>
 
 static inline void drawtris(GLsizei numindices, const GLvoid *indices, ushort minvert, ushort maxvert)
 {

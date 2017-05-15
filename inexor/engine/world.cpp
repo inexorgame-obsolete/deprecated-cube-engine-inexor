@@ -1,6 +1,7 @@
 // world.cpp: core map management stuff
 
 #include "inexor/engine/engine.hpp"
+#include "inexor/texture/slot.hpp"
 #include "inexor/util/Logging.hpp"
 
 using namespace inexor::sound;

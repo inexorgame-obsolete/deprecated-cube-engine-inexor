@@ -1,10 +1,8 @@
-//NO INCLUDE GUARD
+#pragma once
+
 // world.h
-// contains general enumerations and structure 
-// to describe world, map format and enviroment
-// 
-// 
-// 
+// contains general enumerations and structures to describe world, map format and environment
+
 
 // bump if map format changes, see worldio.cpp last sauerbraten-one was 33
 #define MAPVERSION 40
@@ -61,19 +59,18 @@ struct compatheader
 };
 
 // enumeration for material visibility
-enum 
-{ 
+enum
+{
     MATSURF_NOT_VISIBLE = 0,
     MATSURF_VISIBLE,
     MATSURF_EDIT_ONLY
 };
 
-// Inexor's vertex structure
-struct vertex 
+struct vertex
 {
-	vec pos;        // vertex position
-	bvec4 norm;     // normal vector
-	vec2 tc;        // Texture UV coordinates
-	svec2 lm;       // light map UV coordinates
-	bvec4 tangent;	// tangents (for skinning/animation ?)
+    vec pos;        // vertex position
+    bvec4 norm;     // normal vector
+    vec2 tc;        // Texture UV coordinates
+    svec2 lm;       // light map UV coordinates
+    bvec4 tangent;	// tangents (for skinning/animation ?)
 };

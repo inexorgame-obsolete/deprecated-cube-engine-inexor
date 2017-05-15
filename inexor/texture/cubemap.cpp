@@ -1,5 +1,6 @@
 /// @file environment map loading routine.
 
+#include "inexor/texture/slot.hpp"
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/texture/image.hpp"
 #include "inexor/texture/format.hpp"
