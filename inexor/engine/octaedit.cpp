@@ -1,4 +1,5 @@
 #include "inexor/engine/engine.hpp"
+#include "inexor/engine/3dgui.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/texture/slot.hpp"
 #include "inexor/ui/input/InputRouter.hpp"
