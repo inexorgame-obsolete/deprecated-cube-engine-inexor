@@ -5,6 +5,7 @@
 #include "inexor/shared/ents.hpp"
 #include "inexor/fpsgame/fpsstate.hpp"
 #include "inexor/network/SharedTree.hpp"
+#include "inexor/network/legacy/administration.hpp"
 
 #include <enet/enet.h>
 
@@ -14,6 +15,26 @@ extern void *getclientinfo(int i);
 extern ENetPeer *getclientpeer(int i);
 
 extern SharedVar<int> maxclients;
+extern SharedVar<int> maxdupclients;
+
+#define DEFAULTCLIENTS 16
+
+/// server side version of "dynent" type
+struct client
+{
+    bool connected;
+    int num;
+    ENetPeer *peer;
+    string hostname;
+    void *info;
+};
+extern vector<client *> clients;
+
+extern client &addclient();
+extern void delclient(client *c);
+extern void disconnect_client(int n, int reason);
+extern bool has_clients();
+extern int get_num_clients();
 
 
 namespace server {

@@ -7,6 +7,7 @@
 #include "inexor/network/legacy/game_types.hpp"
 #include "inexor/util/Logging.hpp"
 #include "inexor/ui.hpp"
+#include "inexor/server/client_management.hpp"
 
 using namespace inexor::util; //needed for quoted()
 
@@ -20,7 +21,7 @@ int connmillis = 0, connattempts = 0, discmillis = 0;
 // also print multiplayer restricted game function warnings
 bool multiplayer(bool msg)
 {
-    bool val = curpeer || hasnonlocalclients(); 
+    bool val = curpeer; 
     if(val && msg) spdlog::get("global")->error("operation not available in multiplayer");
     return val;
 }
@@ -50,9 +51,9 @@ void throttle()
 // is game connected or trying to connect
 bool isconnected(bool attempt, bool local)
 {
-    return curpeer || (attempt && connpeer) || (local && haslocalclients());
+    return curpeer || (attempt && connpeer);
 }
-ICOMMAND(isconnected, "bb", (int *attempt, int *local), intret(isconnected(*attempt > 0, *local != 0) ? 1 : 0));
+ICOMMAND(isconnected, "b", (int *attempt), intret(isconnected(*attempt > 0) ? 1 : 0));
 
 // return the current network address
 const ENetAddress *connectedpeer()
@@ -184,39 +185,29 @@ void disconnect(bool async, bool cleanup)
     }
 }
 
-// try to disconnect (attempting, connected or locally)
-void trydisconnect(bool local)
+// try to disconnect (abort connect try or disconnect)
+void trydisconnect()
 {
     if(connpeer)
     {
         spdlog::get("global")->info("aborting connection attempt");
         abortconnect();
-    }
-    else if(curpeer)
+    } else if(curpeer)
     {
         spdlog::get("global")->info("attempting to disconnect...");
-		// try to disconnect synchronously for a while then disconnect asynchronously
-        disconnect(!discmillis);
-    }
-    else if(local && haslocalclients()) localdisconnect();
-    else spdlog::get("global")->info("not connected");
+        disconnect(!discmillis);// try to disconnect synchronously for a while then disconnect asynchronously
+    } else spdlog::get("global")->info("not connected");
 }
 
 // commands to establish and destroy network connections
 ICOMMAND(connect, "sis", (char *name, int *port, char *pw), connectserv(name, *port, pw));
 COMMAND(reconnect, "s");
-ICOMMAND(disconnect, "b", (int *local), trydisconnect(*local != 0));
-
-// see startlistenserver command to start local servers in game
-ICOMMAND(lanconnect, "is", (int *port, char *pw), connectserv(NULL, *port, pw));
-ICOMMAND(localconnect, "", (), { if(!isconnected()) localconnect(); });
-ICOMMAND(localdisconnect, "", (), { if(haslocalclients()) localdisconnect(); });
+ICOMMAND(disconnect, "", (), trydisconnect());
 
 // send network packet to server
 void sendclientpacket(ENetPacket *packet, int chan)
 {
     if(curpeer) enet_peer_send(curpeer, chan, packet);
-    else localclienttoserver(chan, packet);
 }
 
 // empty network message queue (?)
@@ -267,7 +258,6 @@ void gets2c()
     {
         case ENET_EVENT_TYPE_CONNECT:
             disconnect(false, false); 
-            localdisconnect(false);
             curpeer = connpeer;
             connpeer = NULL;
             spdlog::get("global")->info("connected to server");

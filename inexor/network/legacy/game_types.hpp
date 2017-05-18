@@ -219,17 +219,15 @@ struct demoheader
 };
 
 
-enum { DISC_NONE = 0, DISC_EOP, DISC_LOCAL, DISC_KICK, DISC_MSGERR, DISC_IPBAN, DISC_PRIVATE, DISC_MAXCLIENTS, DISC_TIMEOUT, DISC_OVERFLOW, DISC_PASSWORD, DISC_NUM };
+enum { DISC_NONE = 0, DISC_EOP, DISC_KICK, DISC_MSGERR, DISC_IPBAN, DISC_PRIVATE, DISC_MAXCLIENTS, DISC_TIMEOUT, DISC_OVERFLOW, DISC_PASSWORD, DISC_NUM };
 
-namespace network
-{
+
 // TODO: Can we make this server only?
 inline const char *disconnectreason(int reason)
 {
     switch(reason)
     {
         case DISC_EOP: return "end of packet";
-        case DISC_LOCAL: return "server is in local mode";
         case DISC_KICK: return "kicked/banned";
         case DISC_MSGERR: return "message error";
         case DISC_IPBAN: return "ip is banned";
@@ -241,4 +239,3 @@ inline const char *disconnectreason(int reason)
         default: return NULL;
     }
 }
-} // ns network

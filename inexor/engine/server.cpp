@@ -8,6 +8,7 @@
 #include "inexor/shared/cube_queue.hpp"
 #include "inexor/util/legacy_time.hpp"
 #include "inexor/server/windows_integration.hpp"
+#include "inexor/server/client_management.hpp"
 
 const char *initscript = NULL;
 
@@ -48,71 +49,11 @@ void fatal(std::vector<std::string> &output)
 
 #endif
 
-#define DEFAULTCLIENTS 8
-
-enum { ST_EMPTY, ST_LOCAL, ST_TCPIP };
-
-struct client                   // server side version of "dynent" type
-{
-    int type;
-    int num;
-    ENetPeer *peer;
-    string hostname;
-    void *info;
-};
-
-vector<client *> clients;
 
 ENetHost *serverhost = NULL;
 int laststatus = 0; 
 ENetSocket pongsock = ENET_SOCKET_NULL, lansock = ENET_SOCKET_NULL;
 
-int localclients = 0, nonlocalclients = 0;
-
-bool hasnonlocalclients() { return nonlocalclients!=0; }
-bool haslocalclients() { return localclients!=0; }
-
-client &addclient(int type)
-{
-    client *c = NULL;
-    loopv(clients) if(clients[i]->type==ST_EMPTY)
-    {
-        c = clients[i];
-        break;
-    }
-    if(!c)
-    {
-        c = new client;
-        c->num = clients.length();
-        clients.add(c);
-    }
-    c->info = server::newclientinfo();
-    c->type = type;
-    switch(type)
-    {
-        case ST_TCPIP: nonlocalclients++; break;
-        case ST_LOCAL: localclients++; break;
-    }
-    return *c;
-}
-
-void delclient(client *c)
-{
-    if(!c) return;
-    switch(c->type)
-    {
-        case ST_TCPIP: nonlocalclients--; if(c->peer) c->peer->data = NULL; break;
-        case ST_LOCAL: localclients--; break;
-        case ST_EMPTY: return;
-    }
-    c->type = ST_EMPTY;
-    c->peer = NULL;
-    if(c->info)
-    {
-        server::deleteclientinfo(c->info);
-        c->info = NULL;
-    }
-}
 
 void cleanupserver()
 {
@@ -124,17 +65,9 @@ void cleanupserver()
     pongsock = lansock = ENET_SOCKET_NULL;
 }
 
-VARF(maxclients, 0, DEFAULTCLIENTS, MAXCLIENTS, { if(!maxclients) maxclients = DEFAULTCLIENTS; });
-VARF(maxdupclients, 0, 0, MAXCLIENTS, { if(serverhost) serverhost->duplicatePeers = maxdupclients ? maxdupclients : MAXCLIENTS; });
-
 void process(ENetPacket *packet, int sender, int chan);
-//void disconnect_client(int n, int reason);
 
 int getservermtu() { return serverhost ? serverhost->mtu : -1; }
-void *getclientinfo(int i) { return !clients.inrange(i) || clients[i]->type==ST_EMPTY ? NULL : clients[i]->info; }
-ENetPeer *getclientpeer(int i) { return clients.inrange(i) && clients[i]->type==ST_TCPIP ? clients[i]->peer : NULL; }
-int getnumclients()        { return clients.length(); }
-uint getclientip(int n)    { return clients.inrange(n) && clients[n]->type==ST_TCPIP ? clients[n]->peer->address.host : 0; }
 
 void sendpacket(int n, int chan, ENetPacket *packet, int exclude)
 {
@@ -144,20 +77,7 @@ void sendpacket(int n, int chan, ENetPacket *packet, int exclude)
         loopv(clients) if(i!=exclude && server::allowbroadcast(i)) sendpacket(i, chan, packet);
         return;
     }
-    switch(clients[n]->type)
-    {
-        case ST_TCPIP:
-        {
-            enet_peer_send(clients[n]->peer, chan, packet);
-            break;
-        }
-
-#ifndef STANDALONE
-        case ST_LOCAL:
-            localservertoclient(chan, packet);
-            break;
-#endif
-    }
+    if(clients[n]->connected) enet_peer_send(clients[n]->peer, chan, packet);
 }
 
 ENetPacket *sendf(int cn, int chan, const char *format, ...)
@@ -248,55 +168,11 @@ ENetPacket *sendfile(int cn, int chan, stream *file, const char *format, ...)
     return packet->referenceCount > 0 ? packet : NULL;
 }
 
-const char *disconnectreason(int reason)
-{
-    switch(reason)
-    {
-        case DISC_EOP: return "end of packet";
-        case DISC_LOCAL: return "server is in local mode";
-        case DISC_KICK: return "kicked/banned";
-        case DISC_MSGERR: return "message error";
-        case DISC_IPBAN: return "ip is banned";
-        case DISC_PRIVATE: return "server is in private mode";
-        case DISC_MAXCLIENTS: return "server FULL";
-        case DISC_TIMEOUT: return "connection timed out";
-        case DISC_OVERFLOW: return "overflow";
-        case DISC_PASSWORD: return "invalid password";
-        default: return NULL;
-    }
-}
-
-void disconnect_client(int n, int reason)
-{
-    if(!clients.inrange(n) || clients[n]->type!=ST_TCPIP) return;
-    enet_peer_disconnect(clients[n]->peer, reason);
-    server::clientdisconnect(n);
-    delclient(clients[n]);
-    const char *msg = disconnectreason(reason);
-    string s;
-    if(msg) formatstring(s, "client (%s) disconnected because: %s", clients[n]->hostname, msg);
-    else formatstring(s, "client (%s) disconnected", clients[n]->hostname);
-    spdlog::get("global")->info(s);
-    server::sendservmsg(s);
-}
-
-void kicknonlocalclients(int reason)
-{
-    loopv(clients) if(clients[i]->type==ST_TCPIP) disconnect_client(i, reason);
-}
-
 void process(ENetPacket *packet, int sender, int chan)   // sender may be -1
 {
     packetbuf p(packet);
     server::parsepacket(sender, chan, p);
     if(p.overread()) { disconnect_client(sender, DISC_EOP); return; }
-}
-
-void localclienttoserver(int chan, ENetPacket *packet)
-{
-    client *c = NULL;
-    loopv(clients) if(clients[i]->type==ST_LOCAL) { c = clients[i]; break; }
-    if(c) process(packet, c->num, chan);
 }
 
 #ifdef STANDALONE
@@ -385,9 +261,9 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
     if(totalmillis-laststatus>60*1000)   // display bandwidth stats, useful for server ops
     {
         laststatus = totalmillis;     
-        if(nonlocalclients || serverhost->totalSentData || serverhost->totalReceivedData)
+        if(has_clients() || serverhost->totalSentData || serverhost->totalReceivedData)
             spdlog::get("global")->debug("status: {0} remote clients, {1} send, {2} rec (K/sec)",
-                                         nonlocalclients, (serverhost->totalSentData/60.0f/1024), (serverhost->totalReceivedData/60.0f/1024));
+                                         get_num_clients(), (serverhost->totalSentData/60.0f/1024), (serverhost->totalReceivedData/60.0f/1024));
         serverhost->totalSentData = serverhost->totalReceivedData = 0;
     }
 
@@ -404,7 +280,7 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
         {
             case ENET_EVENT_TYPE_CONNECT:
             {
-                client &c = addclient(ST_TCPIP);
+                client &c = addclient();
                 c.peer = event.peer;
                 c.peer->data = &c;
                 string hn;
@@ -445,25 +321,12 @@ void flushserver(bool force)
 #ifndef STANDALONE
 void localdisconnect(bool cleanup)
 {
-    bool disconnected = false;
-    loopv(clients) if(clients[i]->type==ST_LOCAL) 
-    {
-        server::localdisconnect(i);
-        delclient(clients[i]);
-        disconnected = true;
-    }
-    if(!disconnected) return;
-    game::gamedisconnect(cleanup);
-    mainmenu = 1;
-    // inexor::ui::cef_app->GetUserInterface()->SetMainMenu(true);
+
 }
 
 void localconnect()
 {
-    client &c = addclient(ST_LOCAL);
-    copystring(c.hostname, "local");
-    game::gameconnect(false);
-    server::localconnect(c.num);
+
 }
 #endif
 
@@ -558,28 +421,6 @@ void initserver(bool listen, bool dedicated)
     }
 }
 
-#ifndef STANDALONE
-void startlistenserver(int *usemaster)
-{
-    if(serverhost) { spdlog::get("global")->error("listen server is already running"); return; }
-
-    if(!setuplistenserver(false)) return;
-    spdlog::get("global")->info("listen server started for {0} clients", *maxclients);
-}
-COMMAND(startlistenserver, "i");
-
-void stoplistenserver()
-{
-    if(!serverhost) { spdlog::get("global")->error("listen server is not running"); return; }
-
-    kicknonlocalclients();
-    enet_host_flush(serverhost);
-    cleanupserver();
-
-    spdlog::get("global")->info("listen server stopped");
-}
-COMMAND(stoplistenserver, "");
-#endif
 
 bool serveroption(const char *opt)
 {

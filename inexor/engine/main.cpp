@@ -57,7 +57,6 @@ void quit()
     writehistory();
     abortconnect();
     disconnect();
-    localdisconnect();
     writecfg();
     cleanup();
     metapp.stop("cef");
@@ -812,11 +811,10 @@ int main(int argc, char **argv)
     if(load)
     {
         spdlog::get("global")->debug("init: localconnect");
-        //localconnect();
         game::changemap(load);
     }
 
-	loadhistory();
+    loadhistory();
     if(initscript) execute(initscript);
 
     spdlog::get("global")->debug("init: mainloop");
