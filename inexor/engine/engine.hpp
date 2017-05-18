@@ -368,16 +368,12 @@ extern void initserver(bool listen, bool dedicated);
 extern void cleanupserver();
 extern void serverslice(bool dedicated, uint timeout);
 
-extern void localclienttoserver(int chan, ENetPacket *);
-extern void localconnect();
 extern bool serveroption(char *opt);
 
 // serverbrowser
 extern bool resolverwait(const char *name, ENetAddress *address);
 
 // client
-extern void localdisconnect(bool cleanup = true);
-extern void localservertoclient(int chan, ENetPacket *packet);
 extern void connectserv(const char *servername, int port, const char *serverpassword);
 extern void abortconnect();
 extern void clientkeepalive();

@@ -1135,7 +1135,7 @@ namespace server
 
     void flushclientposition(clientinfo &ci)
     {
-        if(ci.position.empty() || (!hasnonlocalclients() && !demorecord)) return;
+        if(ci.position.empty() || (!has_clients() && !demorecord)) return;
         packetbuf p(ci.position.length(), 0);
         p.put(ci.position.getbuf(), ci.position.length());
         ci.position.setsize(0);
@@ -1259,7 +1259,7 @@ namespace server
 
     bool sendpackets(bool force)
     {
-        if(clients.empty() || (!hasnonlocalclients() && !demorecord)) return false;
+        if(clients.empty() || (!has_clients() && !demorecord)) return false;
         enet_uint32 curtime = enet_time_get()-lastsend;
         if(curtime<33 && !force) return false;
         bool flush = buildworldstate();
@@ -1544,8 +1544,6 @@ namespace server
             ci->state.timeplayed += lastmillis - ci->state.lasttimeplayed;
         }
 
-        if(!m_mp(gamemode)) kicknonlocalclients(DISC_LOCAL);
-
         sendf(-1, 1, "risii", N_MAPCHANGE, smapname, gamemode, 1);
 
         clearteaminfo();
@@ -1672,7 +1670,7 @@ namespace server
             if(idx < 0) return;
             map = maprotations[idx].map;
         }
-        if(hasnonlocalclients()) sendservmsgf("local player forced %s on map %s", modename(mode), map[0] ? map : "[new map]");
+        if(has_clients()) sendservmsgf("local player forced %s on map %s", modename(mode), map[0] ? map : "[new map]");
         changemap(map, mode);
     }
 
@@ -1698,7 +1696,7 @@ namespace server
         if(ci->local || (ci->privilege && mastermode>=MM_VETO))
         {
             if(demorecord) enddemorecord();
-            if(!ci->local || hasnonlocalclients())
+            if(!ci->local || has_clients())
                 sendservmsgf("%s forced %s on map %s", colorname(ci), modename(ci->modevote), ci->mapvote[0] ? ci->mapvote : "[new map]");
             changemap(ci->mapvote, ci->modevote);
         }
@@ -2202,25 +2200,6 @@ namespace server
         aiman::clearai();
     }
 
-    void localconnect(int n)
-    {
-        clientinfo *ci = getinfo(n);
-        ci->clientnum = ci->ownernum = n;
-        ci->connectmillis = totalmillis;
-        ci->sessionid = (rnd(0x1000000)*((totalmillis%10000)+1))&0xFFFFFF;
-        ci->local = true;
-
-        connects.add(ci);
-        sendservinfo(ci);
-        if(smode == &bombmode && !notgotitems) bombmode.sendspawnlocs(true);		//awful workaround to what seems to be a bug in the codebase.
-    }
-
-    void localdisconnect(int n)
-    {
-        if(m_demo) enddemoplayback();
-        clientdisconnect(n);
-    }
-
     int clientconnect(int n, uint ip)
     {
         clientinfo *ci = getinfo(n);
@@ -2229,7 +2208,6 @@ namespace server
         ci->sessionid = (rnd(0x1000000)*((totalmillis%10000)+1))&0xFFFFFF;
 
         connects.add(ci);
-        if(!m_mp(gamemode)) return DISC_LOCAL;
         sendservinfo(ci);
         return DISC_NONE;
     }
@@ -2285,7 +2263,6 @@ namespace server
     int allowconnect(clientinfo *ci, const char *pwd = "")
     {
         if(ci->local) return DISC_NONE;
-        if(!m_mp(gamemode)) return DISC_LOCAL;
         if(serverpass[0])
         {
             if(!checkpassword(ci->clientnum, ci->sessionid, serverpass, pwd)) return DISC_PASSWORD;
@@ -2392,15 +2369,7 @@ namespace server
                     string password;
                     getstring(password, p, sizeof(password));
                     int disc = allowconnect(ci, password);
-                    if(disc)
-                    {
-                        if(disc == DISC_LOCAL)
-                        {
-                            disconnect_client(sender, disc);
-                            return;
-                        }
-                    }
-                    else connected(ci);
+                    if(disc == DISC_NONE) connected(ci);
                     break;
                 }
 
@@ -2422,9 +2391,9 @@ namespace server
 
         if(p.packet->flags&ENET_PACKET_FLAG_RELIABLE) reliablemessages = true;
         #define QUEUE_AI clientinfo *cm = cq;
-        #define QUEUE_MSG { if(cm && (!cm->local || demorecord || hasnonlocalclients())) while(curmsg<p.length()) cm->messages.add(p.buf[curmsg++]); }
+        #define QUEUE_MSG { if(cm && (!cm->local || demorecord || has_clients())) while(curmsg<p.length()) cm->messages.add(p.buf[curmsg++]); }
         #define QUEUE_BUF(body) { \
-            if(cm && (!cm->local || demorecord || hasnonlocalclients())) \
+            if(cm && (!cm->local || demorecord || has_clients())) \
             { \
                 curmsg = p.length(); \
                 { body; } \
@@ -2460,7 +2429,7 @@ namespace server
                 }
                 if(cp)
                 {
-                    if((!ci->local || demorecord || hasnonlocalclients()) && (cp->state.state==CS_ALIVE || cp->state.state==CS_EDITING))
+                    if((!ci->local || demorecord || has_clients()) && (cp->state.state==CS_ALIVE || cp->state.state==CS_EDITING))
                     {
                         if(!ci->local && !m_edit && max(vel.magnitude2(), (float)fabs(vel.z)) >= 180)
                             cp->setexceeded();
@@ -2479,7 +2448,7 @@ namespace server
                 int pcn = getint(p), teleport = getint(p), teledest = getint(p);
                 clientinfo *cp = getinfo(pcn);
                 if(cp && pcn != sender && cp->ownernum != sender) cp = NULL;
-                if(cp && (!ci->local || demorecord || hasnonlocalclients()) && (cp->state.state==CS_ALIVE || cp->state.state==CS_EDITING))
+                if(cp && (!ci->local || demorecord || has_clients()) && (cp->state.state==CS_ALIVE || cp->state.state==CS_EDITING))
                 {
                     flushclientposition(*cp);
                     sendf(-1, 0, "ri4x", N_TELEPORT, pcn, teleport, teledest, cp->ownernum); 
@@ -2492,7 +2461,7 @@ namespace server
                 int pcn = getint(p), jumppad = getint(p);
                 clientinfo *cp = getinfo(pcn);
                 if(cp && pcn != sender && cp->ownernum != sender) cp = NULL;
-                if(cp && (!ci->local || demorecord || hasnonlocalclients()) && (cp->state.state==CS_ALIVE || cp->state.state==CS_EDITING))
+                if(cp && (!ci->local || demorecord || has_clients()) && (cp->state.state==CS_ALIVE || cp->state.state==CS_EDITING))
                 {
                     cp->setpushed();
                     flushclientposition(*cp);
@@ -2919,7 +2888,7 @@ namespace server
             }
 
             case N_FORCEINTERMISSION:
-                if(ci->local && !hasnonlocalclients()) startintermission();
+                if(ci->local && !has_clients()) startintermission();
                 break;
 
             case N_RECORDDEMO:

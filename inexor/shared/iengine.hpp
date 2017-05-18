@@ -319,11 +319,6 @@ extern int getservermtu();
 extern int getnumclients();
 extern uint getclientip(int n);
 extern void localconnect();
-extern const char *disconnectreason(int reason);
-extern void disconnect_client(int n, int reason);
-extern void kicknonlocalclients(int reason = DISC_NONE);
-extern bool hasnonlocalclients();
-extern bool haslocalclients();
 extern void sendserverinforeply(ucharbuf &p);
 extern bool isdedicatedserver();
 

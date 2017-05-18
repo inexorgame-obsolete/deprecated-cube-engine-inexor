@@ -601,7 +601,7 @@ namespace game
         if(!remote)
         {
             server::forcemap(name, mode);
-            if(!isconnected()) localconnect();
+            //if(!isconnected()) localconnect(); TODO!
         }
         else if(player1->state!=CS_SPECTATOR || player1->privilege) addmsg(N_MAPVOTE, "rsi", name, mode);
     }
@@ -615,8 +615,7 @@ namespace game
 
     void forceintermission()
     {
-        if(!remote && !hasnonlocalclients()) server::startintermission();
-        else addmsg(N_FORCEINTERMISSION, "r");
+        addmsg(N_FORCEINTERMISSION, "r");
     }
 
     /// force edit mode
