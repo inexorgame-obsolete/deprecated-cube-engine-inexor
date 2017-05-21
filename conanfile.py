@@ -8,6 +8,7 @@ class InexorConan(ConanFile):
     requires = (("InexorGlueGen/0.6.0alpha@inexorgame/testing"),
                 ("Protobuf/3.1.0@inexorgame/stable"),
                 ("gRPC/1.1.0-dev@inexorgame/stable"),
+                ("doxygen/1.8.13@inexorgame/testing"),
                 ("Boost/1.60.0@lasote/stable"),
                 ("RapidJSON/1.0.2@inexorgame/stable"),
                 ("zlib/1.2.8@lasote/stable"),
