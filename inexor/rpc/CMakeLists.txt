@@ -10,7 +10,7 @@ foreach(src ${RPC_MODULE_SOURCES})
 endforeach()
 group_sources(${RPC_MODULE_HEADERS} ${RPC_MODULE_SOURCES})
 
-include(${SOURCE_DIR}/gluegen/require_run_gluegen.cmake)
+include(require_run_gluegen.cmake)
 
 
 # @param BUILD_FLAGS see require_run_gluegen
@@ -24,9 +24,5 @@ function(require_rpc targ BUILD_FLAGS)
   require_run_gluegen(${targ} ${BUILD_FLAGS} ${rpc_dir} ${GLUEGEN_OUT_DIR})
 
   target_include_directories(${targ} PUBLIC ${GLUEGEN_OUT_DIR})
-
-  # add_dependencies(${targ} run_doxygen_${targ})
-  # add_dependencies(${targ} run_gluegen_${targ})
-  # add_dependencies(${targ} run_protoc_${targ})
 endfunction()
 
