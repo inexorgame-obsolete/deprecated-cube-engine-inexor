@@ -8,15 +8,6 @@
 # * Targets as called by .travis.yml
 # * Main routine
 
-# ATTENTION:
-# Please USE the following naming format for any files uploaded to our distribution server (nightly.inexor.org):
-# ...-BUILDNUMBER-<PACKAGENAME>.EXTENSION
-# where <PACKAGENAME> is NOT CONTAINING any -
-# correct: master-oldbranch-olddirty-1043.2-linux_gcc.txt
-# correct: ...-992.2-apidoc.hip
-# wrong: ...-1043.2-linux-gcc.zip
-# wrong: ...-linux_gcc-1043.2.zip
-
 ## UTILITY FUNCTIONS #######################################
 
 # Check if a string contains something
@@ -219,7 +210,7 @@ nigthly_build() {
     ln -s "$descf" "master-latest-$TARGET.txt"
     upload "master-latest-$TARGET.zip" "master-latest-$TARGET.txt"
   ) fi
-  
+
   return 0
 }
 
@@ -229,8 +220,8 @@ build() {
   (
     mkcd "/tmp/inexor-build-${build}"
     conan
-    echo "executed conan install "$gitroot" --scope build_all=1 --build=missing -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx=libstdc++11"
-    conan install "$gitroot" --scope build_all=1 --build=missing -s compiler="$CONAN_COMPILER" -s compiler.version="$CONAN_COMPILER_VERSION" -s compiler.libcxx="libstdc++11"
+    echo "executed conan install "$gitroot" --scope build_all=1 --scope create_package=1 --build=missing -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx=libstdc++11"
+    conan install "$gitroot" --scope build_all=1 --scope create_package=1  --build=missing -s compiler="$CONAN_COMPILER" -s compiler.version="$CONAN_COMPILER_VERSION" -s compiler.libcxx="libstdc++11"
     conan build "$gitroot"
   )
 }
