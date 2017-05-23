@@ -3,6 +3,13 @@
 #include "inexor/engine/3dgui.hpp" // dependency should be inverted: 3dgui should include weapon.hpp
 #include "inexor/engine/particles.hpp" // dependency should be inverted: particles should include weapon.hpp
 
+#define MAXRAYS 20
+#define EXP_SELFDAMDIV 2
+#define EXP_SELFPUSH 2.5f
+#define EXP_DISTSCALE 1.5f
+#define BOMB_DAMRAD 20
+
+
 /// gun and projectile enumeration
 enum
 {
