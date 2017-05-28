@@ -236,8 +236,8 @@ done:
 string homedir = "";
 struct packagedir
 {
-    char *dir, *filter;
-    size_t dirlen, filterlen;
+    const char *dir;
+    size_t dirlen;
 };
 vector<packagedir> packagedirs;
 
@@ -384,60 +384,17 @@ size_t fixpackagedir(char *dir)
     return len;
 }
 
-/// Replaces "$HOME" in string src with the user platforms home-directory
-bool subhomedir(char *dst, int len, const char *src)
-{
-    const char *sub = strstr(src, "$HOME");
-    if(!sub) sub = strchr(src, '~');
-    if(sub && sub-src < len)
-    {
-#ifdef WIN32
-        char home[MAX_PATH+1];
-        home[0] = '\0';
-        if(SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, 0, home) != S_OK || !home[0]) return false;
-#else
-        const char *home = getenv("HOME");
-        if(!home || !home[0]) return false;
-#endif
-        dst[sub-src] = '\0';
-        concatstring(dst, home, len);
-        concatstring(dst, sub+(*sub == '~' ? 1 : strlen("$HOME")), len);
-    }
-    return true;
-}
-
-/// sets home directory
-const char *sethomedir(const char *dir)
-{
-    string pdir;
-    copystring(pdir, dir);
-    if(!subhomedir(pdir, sizeof(pdir), dir) || !fixpackagedir(pdir)) return NULL;
-    copystring(homedir, pdir);
-    return homedir;
-}
-
 /// Add an optional media directory.
 /// Inexor can have multiple directories for its content it will treat like the games root-folder.
 const char *addpackagedir(const char *dir)
 {
     string pdir;
     copystring(pdir, dir);
-    if(!subhomedir(pdir, sizeof(pdir), dir) || !fixpackagedir(pdir)) return NULL;
-    char *filter = pdir;
-    for(;;)
-    {
-        const char *meddir = "media"; //wont find any dynamic package dir here anyways (before loading the configs).
-        static int len = strlen(meddir);
-        filter = strstr(filter, meddir);
-        if(!filter) break;
-        if(filter > pdir && filter[-1] == PATHDIV && filter[len] == PATHDIV) break;
-        filter += len;
-    }    
+    if(!fixpackagedir(pdir)) return NULL;
+
     packagedir &pf = packagedirs.add();
-    pf.dir = filter ? newstring(pdir, filter-pdir) : newstring(pdir);
-    pf.dirlen = filter ? filter-pdir : strlen(pdir);
-    pf.filter = filter ? newstring(filter) : NULL;
-    pf.filterlen = filter ? strlen(filter) : 0;
+    pf.dir = newstring(pdir);
+    pf.dirlen = strlen(pdir);
     return pf.dir;
 }
 
@@ -472,7 +429,6 @@ const char *findfile(const char *filename, const char *mode)
     loopv(packagedirs)
     {
         packagedir &pf = packagedirs[i];
-        if(pf.filter && strncmp(filename, pf.filter, pf.filterlen)) continue;
         formatstring(s, "%s%s", pf.dir, filename);
         if(fileexists(s, mode)) return s;
     }
@@ -554,8 +510,6 @@ int listfiles(const char *dir, const char *ext, vector<char *> &files)
     loopv(packagedirs)
     {
         packagedir &pf = packagedirs[i];
-        if(pf.filter && strncmp(dirname, pf.filter, dirlen == pf.filterlen-1 ? dirlen : pf.filterlen))
-            continue;
         formatstring(s, "%s%s", pf.dir, dirname);
         if(listdir(s, false, ext, files)) dirs++;
     }
