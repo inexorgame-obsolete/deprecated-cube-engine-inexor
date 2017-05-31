@@ -26,6 +26,7 @@ install:
   - cmd: set "MAIN_FOLDER=C:\projects\inexor-game"
   - cmd: cd %MAIN_FOLDER%
   - cmd: git submodule update --init
+  - cmd: for /F "tokens=* USEBACKQ" %F in (`git rev-list --all --count`) do (set INEXOR_MINOR_VERSION=%F)
 
 # scripts to run before build
 before_build:
@@ -40,7 +41,7 @@ before_build:
   # Only deploy a bundle with the media folder if the branch is master (and its not a pr)(and its a Release build):
 #  - cmd: if "%configuration%"=="Release" if "%APPVEYOR_REPO_BRANCH%"=="master" if defined APPVEYOR_PULL_REQUEST_NUMBER set "args=%args% -DPACKAGE_INCLUDE_MEDIA=1"
   - cmd: conan install .. --scope build_all=1 --scope create_package=1 --build=missing -s compiler="Visual Studio" -s compiler.version=14 -s compiler.runtime=%runtime_str% -s arch=%arch_str% -s build_type=%configuration% 
-  - cmd: cmake .. -G "%CMAKE_GENERATOR_NAME%" %args% -DCPACK_GENERATOR="7Z"
+  - cmd: cmake .. -G "%CMAKE_GENERATOR_NAME%" %args% -DCPACK_GENERATOR="ZIP"
   #"NSIS;7Z"
 
 build:
@@ -50,7 +51,7 @@ build:
 
 artifacts:
   # pushing a single file
-  - path: build\Inexor-*.7z
+  - path: build\Inexor-*.zip
 #  - path: build\Inexor-*.exe
 
 deploy:
@@ -71,8 +72,8 @@ deploy:
     on:
       # release from master branch only
       branch: master
-      # deploy on tag push only
-      appveyor_repo_tag: true
+      # do not only deploy on tag push
+      appveyor_repo_tag: false
       configuration: release
 
 test_script:

@@ -149,6 +149,7 @@ nigthly_build() {
     branch: ${branch}
     job:    ${jobno}
     build:  ${build}
+    commit amount: ${GIT_REV_COUNT}
 
     gitroot: ${gitroot}
     zip: ${zipf}
@@ -276,6 +277,9 @@ export main_repo="inexor-game/code"
 export branch="$TRAVIS_BRANCH" # The branch we're on
 export jobno="$TRAVIS_JOB_NUMBER" # The job number
 export commit="${TRAVIS_COMMIT}"
+export GIT_REV_COUNT=`git rev-list --all --count` # We use the commit amount of the branch as version number.
+export INEXOR_MINOR_VERSION="${GIT_REV_COUNT}"
+
 # Name of this build
 export build="$(echo "${branch}-${jobno}" | sed 's#/#-#g')-${TARGET}"
 export gitroot="$TRAVIS_BUILD_DIR"
