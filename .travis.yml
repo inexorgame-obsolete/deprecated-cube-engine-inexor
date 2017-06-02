@@ -2,6 +2,11 @@ language: c++
 sudo: required
 dist: trusty
 
+notifications:
+  email:
+    on_success: never
+    on_failure: change
+
 env:
   global:
     - secure: UUtdYLhd9+cY+bMrcRvvtjmsQBqM5L9zgzyLeQZLMmmWbHwLsfpQask9A8eD1oc1K1o0tYmK+Qk1flxNTbnUtlryPNgJxJ95a/TwLl1P9yN6plMleNbuwMs5dyS9VnmcK3LzDFuoje/9rtX2seNR2PW2EJSvPz20ENaT693Kfa8=
