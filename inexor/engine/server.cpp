@@ -1068,7 +1068,6 @@ bool serveroption(char *opt)
         case 'j': setvar("serverport", atoi(opt+2)); return true; 
         case 'm': setsvar("mastername", opt+2); setvar("updatemaster", mastername[0] ? 1 : 0); return true;
 #ifdef STANDALONE
-        case 'q': spdlog::get("global")->debug("Using home directory: {}", opt); sethomedir(opt+2); return true;
         case 'k': spdlog::get("global")->debug("Adding package directory: {}", opt); addpackagedir(opt+2); return true;
         case 'x': spdlog::get("global")->debug("Setting server init script: {}", opt); initscript = opt+2; return true;
 #endif
