@@ -26,7 +26,10 @@ install:
   - cmd: set "MAIN_FOLDER=C:\projects\inexor-game"
   - cmd: cd %MAIN_FOLDER%
   - cmd: git submodule update --init
-  - cmd: for /F "tokens=* USEBACKQ" %F in (`git rev-list --all --count`) do (set INEXOR_MINOR_VERSION=%F)
+  # set INEXOR_VERSION (used in cmakes package creation process) based on the last tag found.
+  - cmd: git fetch origin 'refs/tags/*:refs/tags/*'
+  - cmd: for /F "tokens=* USEBACKQ" %%F in (`git rev-list --tags "--max-count=1"`) do (set HELPER_TAGLIST=%%F)
+  - cmd: for /F "tokens=* USEBACKQ" %%F in (`git describe --tags %HELPER_TAGLIST%`) do (set INEXOR_VERSION=%%F)
 
 # scripts to run before build
 before_build:
@@ -67,14 +70,16 @@ deploy:
   - provider: GitHub
     auth_token:
       secure: vIfb9LX3nWCSRefUqY4JJL3hSosnPgKAbmGejFBL+C9GtHJKSuPLU6aMCrR79hPM
-    draft: true
+    draft: false
     prerelease: true
+    # Override files if there are any already.
+    force_update: true
     on:
       # release from master branch only
       branch: master
-      # do not only deploy on tag push
-      appveyor_repo_tag: false
-      configuration: release
+      # do only deploy on tag push
+      appveyor_repo_tag: true
+      configuration: Release
 
 test_script:
   - C:\projects\inexor-game\build\bin\unit_tests.exe
