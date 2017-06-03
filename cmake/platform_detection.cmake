@@ -48,7 +48,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   set(COMPILER_MSVC 1)
   # Currently we only support VS 2015 natively
   if(NOT MSVC_VERSION EQUAL 1900)
-      message(WARNING "Use Visual Studio 2015 in order to compile Inexor. (Otherwise you would need to recompile the dependencies yourself)")
+  #    message(WARNING "Use Visual Studio 2015 in order to compile Inexor. (Otherwise you would need to recompile the dependencies yourself)")
   endif()
 else()
   message(FATAL_ERROR "Could not detect compiler, please get in contact with the devs.")

@@ -24,7 +24,7 @@ elseif(OS_LINUX)
   list(APPEND INSTALL_FILES ${INSTALL_FILES_STARTUP})
 endif()
 
-set(INSTALL_FILES_DEV CMakeLists.txt conanfile.py doxygen.conf tool/create_visual_studio_project.bat)
+set(INSTALL_FILES_DEV CMakeLists.txt conanfile.py doxygen.conf tool/create_visual_studio2015_project.bat tool/create_visual_studio2017_project.bat)
 set(INSTALL_FOLDERS_DEV cmake inexor)
 
 install_file_hierarchy("./" ${INSTALL_FILES})
