@@ -112,6 +112,11 @@ install_apidoc() {
   install_tool
   apt-get install -y -t trusty doxygen
 }
+
+install_new_version_tagger() {
+  return 0
+}
+
 install_osx() {
   # if you need sudo for some stuff here, you need to adjust travis.yml and target_before_install()
   #brew install sdl2
@@ -137,82 +142,48 @@ nigthly_build() {
   local zipf="/tmp/${build}.zip"
   local descf="/tmp/${build}.txt"
 
-  # Include the media files
-  local media="${media}"
-  test -n "${media}" || test "$branch" = master && media=true
-
-  echo "
-  ---------------------------------------
-    Exporting Nightly build
-
-    commit: ${commit}
-    branch: ${branch}
-    job:    ${jobno}
-    build:  ${build}
-    commit amount: ${GIT_REV_COUNT}
-
-    gitroot: ${gitroot}
-    zip: ${zipf}
-    dir: ${outd}
-
-    data export: $media
-  "
-
-  mkdir "$outd"
-
-  if test "$media" = true; then (
-    cd "$gitroot"
-    curl -LOk https://github.com/inexor-game/data/archive/master.zip
-    unzip "master.zip" -d "$outd"
-    rm "master.zip"
-    cd "$outd"
-    mv "data-master" "media/data"
-  ) fi
-
-  local ignore="$(<<< '
-    .
-    ..
-    .gitignore
-    build
-    cmake
-    CMakeLists.txt
-    appveyor.yml
-    doxygen.conf
-    .git
-    .gitignore
-    .gitmodules
-    inexor
-    platform
-    tool
-    vendor
-    .travis.yml
-  ' tr -d " " | grep -v '^\s*$')"
-
-  (
-    cd "$gitroot"
-    ls -a | grep -Fivx "$ignore" | xargs -t cp -rvt "$outd"
-  )
-
-  (
-    cd "`dirname "$outd"`"
-    zip -r "$zipf" "`basename $outd`"
-  )
-
-  (
-    echo "Commit: ${commit}"
-    echo -n "SHA 512: "
-    sha512sum "$zipf"
-  ) > "$descf"
-
-  upload "$zipf" "$descf"
-
-  if test "$branch" = master; then (
-    ln -s "$zipf" "master-latest-$TARGET.zip"
-    ln -s "$descf" "master-latest-$TARGET.txt"
-    upload "master-latest-$TARGET.zip" "master-latest-$TARGET.txt"
-  ) fi
-
   return 0
+}
+
+## increment the version number based on the last tag.
+incremented_version()
+{
+  local major_version=`echo -e "${last_tag}" | sed "s/^\(.*\)\\.[0-9]\+\.[0-9]\+-alpha$/\1/"`
+  local minor_version=`echo -e "${last_tag}" | sed "s/^[0-9]\+\.\(.*\)\.[0-9]\+-alpha$/\1/"`
+  local patch_version=`echo -e "${last_tag}" | sed "s/^[0-9]\+\.[0-9]\+\.\(.*\)-alpha$/\1/"`
+
+  local new_patch_version=$((patch_version+1))
+  local new_version="$major_version.$minor_version.$new_patch_version-alpha"
+  echo $new_version
+}
+
+# increment version and create a tag on github.
+# (each time we push to master)
+create_tag() {
+  if [ -n "TRAVIS_TAG" ]; then
+    echo >&2 -e "===============\n" \
+      "Skipping tag creation, because this build\n" \
+      "got triggered by a tag.\n" \
+      "===============\n"
+  elif [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then 
+    # direct push to master
+
+    export new_version=$(incremented_version)
+    
+    git config --global user.email "travis@travis-ci.org"
+    git config --global user.name "Travis"
+
+    git tag -a -m "automatic tag creation on push to master branch" "${new_version}"
+    git push -q https://$GITHUB_TOKEN@github.com/inexor-game/code --tags
+
+  else
+    echo >&2 -e "===============\n" \
+      "Skipping tag creation, because this is \n" \
+      "not a direct commit to master.\n" \
+      "===============\n"
+      export new_version=$(incremented_version)
+      echo >&2 -e $new_version
+  fi
 }
 
 # ACTUALLY COMPILING AND TESTING INEXOR ####################
@@ -249,6 +220,8 @@ target_before_install() {
 target_script() {
   if test "$TARGET" = apidoc; then
     upload_apidoc
+  elif test "$TARGET" = new_version_tagger; then
+    create_tag
   else
     build
     run_tests
@@ -277,8 +250,20 @@ export main_repo="inexor-game/code"
 export branch="$TRAVIS_BRANCH" # The branch we're on
 export jobno="$TRAVIS_JOB_NUMBER" # The job number
 export commit="${TRAVIS_COMMIT}"
-export GIT_REV_COUNT=`git rev-list --all --count` # We use the commit amount of the branch as version number.
-export INEXOR_MINOR_VERSION="${GIT_REV_COUNT}"
+
+# Tags do not get fetched from travis usually.
+git fetch origin 'refs/tags/*:refs/tags/*'
+export last_tag=`git describe --tags $(git rev-list --tags --max-count=1)`
+
+
+# The tag gets created on push to the master branch, then we push the tag to github and that push triggers travis.
+if [ -n "TRAVIS_TAG" ]; then
+  # We use the last tag as version for the package creation if this job got triggered by a tag-push.
+  export INEXOR_VERSION=${last_tag}
+else
+  # Otherwise we want a new version, not the last tag of the master branch, but the last one + 1.
+  export INEXOR_VERSION=$(incremented_version)
+fi
 
 # Name of this build
 export build="$(echo "${branch}-${jobno}" | sed 's#/#-#g')-${TARGET}"

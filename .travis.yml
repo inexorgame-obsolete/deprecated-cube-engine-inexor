@@ -34,6 +34,16 @@ matrix:
       env: TARGET=apidoc
       git:
         submodules: false
+ 
+    - os: linux
+      sudo: required
+      dist: trusty
+      env: TARGET=new_version_tagger
+      git:
+        submodules: false
+      branches:
+        only:
+          - master
 
 before_install:
   - bash tool/travis.sh target_before_install
@@ -43,3 +53,18 @@ script:
 
 after_success:
   - bash tool/travis.sh target_after_success
+
+deploy:
+  skip_cleanup: true
+  provider: releases
+  api_key:
+    secure: GkIbJs8haX3uJ2CNcqmc2F+k+cZrt4SyrAIuYHshZqwXhMjACltO1Fh17MtGTWuRduLJ4iATcm+En4Y/cDYojwUjnFVGWbFE6iEi5tQrQYR4paC42VArYodCFe0mYMC2D05IUZxaVDELDo25Lit8FeLIy4pPpLWEh2mGIT+/8S4=
+  file_glob: true
+  file: Inexor-*.zip
+  overwrite: true
+  on:
+    # Deploy only if build was caused by a tag push.
+    tags: true
+    all_branches: true
+    condition: "$CC = gcc"
+    repo: inexor-game/code
