@@ -30,7 +30,7 @@ bool InexorKeyboardManager::Set(const CefString& name, const CefRefPtr<CefV8Valu
     return false;
 }
 
-#if _MSC_VER == 1900 // visual studio 2015 bug see https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error?forum=vcgeneral
+#if _MSC_VER // visual studio 2015/17 bug see https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error?forum=vcgeneral
 std::u16string utf8_to_utf16(std::string utf8_string)
 {
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> convert;
