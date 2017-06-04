@@ -1,0 +1,29 @@
+{
+  "name": "@inexor-game/core-windows64",
+  "version": "0.5.0",
+  "description": "The Inexor Core client",
+  "author": "The Inexor Team",
+  "license": "Zlib",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/inexor-game/code.git"
+  },
+  "bugs": {
+    "url": "https://github.com/inexor-game/code/issues"
+  },
+  "homepage": "https://github.com/inexor-game/code/wiki",
+  "keywords": [
+    "FPS",
+    "game",
+    "open source",
+    "free",
+    "multiplayer",
+    "c++",
+    "fast",
+    "community",
+    "map making"
+  ],
+  "engines": {
+    "node": ">=4.0.0"
+  }
+}
