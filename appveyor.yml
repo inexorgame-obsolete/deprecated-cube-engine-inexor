@@ -27,9 +27,8 @@ install:
   - cmd: cd %MAIN_FOLDER%
   - cmd: git submodule update --init
   # set INEXOR_VERSION (used in cmakes package creation process) based on the last tag found.
-  - cmd: git fetch origin 'refs/tags/*:refs/tags/*'
-  - cmd: for /F "tokens=* USEBACKQ" %%F in (`git rev-list --tags "--max-count=1"`) do (set HELPER_TAGLIST=%%F)
-  - cmd: for /F "tokens=* USEBACKQ" %%F in (`git describe --tags %HELPER_TAGLIST%`) do (set INEXOR_VERSION=%%F)
+  - cmd: if "%APPVEYOR_REPO_TAG%"=="true" ( set "INEXOR_VERSION=%APPVEYOR_REPO_TAG_NAME%" )
+  - cmd: if "%APPVEYOR_REPO_TAG%"=="false" ( set "INEXOR_VERSION=development" )
 
 # scripts to run before build
 before_build:
