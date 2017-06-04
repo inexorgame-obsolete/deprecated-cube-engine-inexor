@@ -75,11 +75,33 @@ deploy:
     # Override files if there are any already.
     force_update: true
     on:
-      # release from master branch only
-      branch: master
       # do only deploy on tag push
       appveyor_repo_tag: true
       configuration: Release
+
+# Notify npm about the new release
+after_deploy:
+  - ps:|
+            if ($ENV:APPVEYOR_REPO_TAG  -eq "true" -and $ENV:CONFIGURATION  -eq "Release" )
+            {
+                $package_json = "C:\projects\inexor-game\package.json"
+                
+                
+                $package_version = $ENV:APPVEYOR_REPO_TAG_NAME -replace "-alpha"
+                
+                (Get-Content $package_json) | ForEach-Object { $_ -replace "VERSION_PLACEHOLDER", $package_version } | Set-Content $package_json
+                
+                $package_name_extension = "windows64"
+                
+                (Get-Content $package_json) | ForEach-Object { $_ -replace "PLATFORM_PLACEHOLDER", $package_name_extension } | Set-Content $package_json
+                
+                "//registry.npmjs.org/:_authToken=`$`{NPM_TOKEN`}" | Out-File (Join-Path $ENV:APPVEYOR_BUILD_FOLDER ".npmrc") -Encoding UTF8
+                iex "npm pack"
+                iex "npm publish --access public"
+            }
+            
+            
+  
 
 test_script:
   - C:\projects\inexor-game\build\bin\unit_tests.exe
