@@ -56,3 +56,9 @@ node/.npm
 
 # Python compiled
 *.pyc
+
+# Launchpad stuff
+parts
+prime
+stage
+*.snap

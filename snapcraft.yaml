@@ -1,0 +1,38 @@
+name: inexor
+summary: "Community fork of the Cube 2 Sauerbraten game."
+description: "Inexor is a fork of the open-source First-Person-Shooter Cube 2 Sauerbraten, a fast-paced shooting game featuring an ingame map editor. In contrast to Sauerbraten, Inexor adds a lot of functionality and strives to stay open to improvements and suggestions. The goal of this project is to be more flexible and create an environment where development is easy, fast and where creativity can prosper."
+version: "0.9.0"
+confinement: "devmode"
+grade: "devel"
+
+apps: 
+  core: 
+    command: usr/local/games/inexor/bin/inexor
+
+parts:
+  core:
+    build-packages: 
+        - git
+        - cmake
+        - build-essential
+        - libgl1-mesa-dev
+        - doxygen
+    stage-packages:
+        - libfontconfig1
+        - libfreetype6
+        - libnss3
+        - libxcomposite1
+        - libxtst6
+        - libgconf-2-4
+        - libcups2
+        - libcairo2
+        - libpango-1.0-0
+        - libpangocairo-1.0-0 
+    plugin: conan
+    missing: true
+    source: "https://github.com/inexor-game/code.git"
+    source-depth: 1
+    prepare: |
+      mkdir -p $SNAPCRAFT_PART_INSTALL/usr/local/games/inexor
+    install: |
+      cp -r bin/ $SNAPCRAFT_PART_INSTALL/usr/local/games/inexor/
