@@ -1,0 +1,33 @@
+{
+  "name": "@inexor-game/core",
+  "version": "0.9.0",
+  "description": "The Inexor Core client",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "postinstall": "node tool/release.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/inexor-game/code.git"
+  },
+  "keywords": [
+    "inexor",
+    "core",
+    "fps"
+  ],
+  "author": "The Inexor Team",
+  "license": "Zlib",
+  "bugs": {
+    "url": "https://github.com/inexor-game/code/issues"
+  },
+  "homepage": "https://github.com/inexor-game/code#readme",
+  "engines": {
+    "node": ">=6.10.3"
+  },
+  "dependencies": {
+    "follow-redirects": "^1.2.3",
+    "unzip": "^0.1.11"
+  }
+}

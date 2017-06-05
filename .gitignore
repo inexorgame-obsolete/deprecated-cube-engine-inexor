@@ -56,3 +56,6 @@ node/.npm
 
 # Python compiled
 *.pyc
+
+# Node.js
+node_modules/
