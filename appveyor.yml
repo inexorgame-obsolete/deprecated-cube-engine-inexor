@@ -94,7 +94,7 @@ after_deploy:
                 
                 (Get-Content $package_json) | ForEach-Object { $_ -replace "PLATFORM_PLACEHOLDER", $package_name_extension } | Set-Content $package_json
                 
-                "//registry.npmjs.org/:_authToken=`$`{NPM_TOKEN`}" | Out-File (Join-Path $ENV:APPVEYOR_BUILD_FOLDER ".npmrc") -Encoding UTF8
+                "@inexorgame:registry=https://registry.npmjs.org/`n//registry.npmjs.org/:_authToken=${NPM_TOKEN}" | Out-File (Join-Path $ENV:APPVEYOR_BUILD_FOLDER ".npmrc") -Encoding UTF8
                 iex "npm pack"
                 iex "npm publish --access public"
             }

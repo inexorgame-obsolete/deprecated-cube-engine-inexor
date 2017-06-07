@@ -179,7 +179,8 @@ update_package_json()
 publish_to_npm()
 {
   # Create a npmrc file containing our npm token
-  echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+  echo "@inexorgame:registry=https://registry.npmjs.org/
+//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
 
   update_package_json
   npm pack
