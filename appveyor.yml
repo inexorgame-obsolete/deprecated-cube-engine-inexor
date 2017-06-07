@@ -1,5 +1,6 @@
 version: 0.{build}
 clone_depth: 1
+shallow_clone: true
 clone_folder: C:\projects\inexor-game
 # Do not build feature branch with open Pull Requests
 skip_branch_with_pr: true
