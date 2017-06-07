@@ -189,7 +189,7 @@ publish_to_npm()
 # increment version and create a tag on github.
 # (each time we push to master)
 create_tag() {
-  if [ -n "TRAVIS_TAG" ]; then
+  if test -n "$TRAVIS_TAG"; then
     echo >&2 -e "===============\n" \
       "Skipping tag creation, because this build\n" \
       "got triggered by a tag.\n" \
@@ -269,7 +269,7 @@ target_after_success() {
 # Upload nightly
 target_after_deploy() {
   if test "$TARGET" != apidoc; then
-    if test -n "TRAVIS_TAG"; then
+    if test -n "$TRAVIS_TAG"; then
       if test "$CC" == "gcc"; then
         publish_to_npm
       fi
@@ -298,7 +298,7 @@ export last_tag=`git describe --tags $(git rev-list --tags --max-count=1)`
 
 
 # The tag gets created on push to the master branch, then we push the tag to github and that push triggers travis.
-if [ -n "TRAVIS_TAG" ]; then
+if test -n "$TRAVIS_TAG"; then
   # We use the last tag as version for the package creation if this job got triggered by a tag-push.
   export INEXOR_VERSION=${last_tag}
 else
