@@ -10,7 +10,7 @@ The goal of this project is to be more flexible and create an environment where 
 ## How is Inexor organized?
 
 We are a non-hierarchical organisation. This means we are simply a group of people with different ideas working together without a leader making all the decisions. Anyone of us is free to work on the particular things they want to.
-For this organisation to work properly we rely on good communication. We are on IRC and Mumble pretty much everyday. Every so often we organise official Mumble meetings to discuss our roadmap and strategies.
+For this organisation to work properly we rely on good communication. We are on Riot and Mumble pretty much everyday. Every so often we organise official Mumble meetings to discuss our roadmap and strategies.
 
 We are open for new people!
 
@@ -23,11 +23,11 @@ Even though we might have refactored most of the code at some point, Inexor shou
 A popular stance among the Sauerbraten community is "that's impossible", and this is what we want to prove wrong. Our answer to remarks like "things are best like they are" is: standing still means falling behind.
 
 
-##### Different features are afoot 
+##### Different features are afoot
 giving a general but no inevitably defined idea of where we're going next
 
 * node.js scripting
- * (JavaScript + asynchronous + package manager) 
+ * (JavaScript + asynchronous + package manager)
 * new user interface using HTML5 + CSS3
 * functionality to facilitate content-creating:
   * better editing features (e.g. a version control system for maps)
@@ -44,14 +44,14 @@ giving a general but no inevitably defined idea of where we're going next
 We believe that basing our project on these few points will work out for the best.  
 They have already required a lot of thought and discussion, so chances are high that -in case you're not fully convinced by them yet- you will get convinced by working with it.
 
-However, if you want to influence our development you should join our IRC-channel #inexor on gamesurge.net (see [Contact](https://github.com/inexor-game/code/wiki/Contact)) and talk with us.  
+However, if you want to influence our development you should join us on [Riot.im#inexor](https://riot.im/app/#/room/#inexor:matrix.org). For more ways to to talk with us check the [Contact](https://github.com/inexor-game/code/wiki/Contact)) page on the wiki.  
 
 And of course we won't be too proud to rethink this list if you face us with a more thought-through and better developed alternative.
 
 
 ## What have we changed already?
 
-Have a look in our [features section](https://github.com/inexor-game/code/wiki#features) and our 
+Have a look in our [features section](https://github.com/inexor-game/code/wiki#features) and our
 [changelog](https://github.com/inexor-game/code/blob/master/changelog.md).
 
 
@@ -73,7 +73,7 @@ Good tutorials on the whole process needed to build Inexor can be found in its [
 
 You have already accomplished the first step by reading this readme. Congratz!
 
-The second one is only slightly harder by joining us in IRC (again see the wiki site for that: [Contact](https://github.com/inexor-game/code/wiki/Contact)) and idling/participating in our chat.
+The second one is only slightly harder by joining us in [Riot.im#inexor](https://riot.im/app/#/room/#inexor:matrix.org), consider the [contact](https://github.com/inexor-game/code/wiki/Contact) page in our wiki for more ways to chat.
 
 To contribute to the project and merge your changes into the master branch you need to convince enough members that the changes are an improvement.
 If you keep communicating what you are doing, take into account feedback and tips from others as well as giving insights into your decision making process, it won't be an issue.
@@ -103,6 +103,4 @@ The included third-party libraries also have individual licenses, which you can 
 * [Documentation](https://docs.inexor.org)
 * [Source Repository](https://github.com/inexor-game/code)
 * [Data Repository](https://github.com/inexor-game/data)
-* [IRC Chat (#inexor on chat.freenode.net:6697)](irc://chat.freenode.net:6697/#inexor)
- * [web client](https://webchat.freenode.net/?channels=#inexor)
-
+* [Riot.im#inexor](https://riot.im/app/#/room/#inexor:matrix.org)
