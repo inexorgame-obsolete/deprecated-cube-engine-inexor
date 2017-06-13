@@ -168,12 +168,12 @@ update_package_json()
   local package_version=`echo -e "${INEXOR_VERSION}" | sed "s/^\(.*\)-alpha$/\1/"`
 
   # Replace the version in the file.
-  sed -i -e 's/VERSION_PLACEHOLDER/${package_version}/g' "${package_json_path}"
+  sed -i -e "s/VERSION_PLACEHOLDER/${package_version}/g" "${package_json_path}"
 
   local package_name_extension="linux64"
 
   # Make the package name platform specific
-  sed -i -e 's/PLATFORM_PLACEHOLDER/${package_name_extension}/g' "${package_json_path}"
+  sed -i -e "s/PLATFORM_PLACEHOLDER/${package_name_extension}/g" "${package_json_path}"
 }
 
 publish_to_npm()
