@@ -58,14 +58,13 @@ deploy:
   skip_cleanup: true
   provider: releases
   api_key:
-    secure: GkIbJs8haX3uJ2CNcqmc2F+k+cZrt4SyrAIuYHshZqwXhMjACltO1Fh17MtGTWuRduLJ4iATcm+En4Y/cDYojwUjnFVGWbFE6iEi5tQrQYR4paC42VArYodCFe0mYMC2D05IUZxaVDELDo25Lit8FeLIy4pPpLWEh2mGIT+/8S4=
+    - secure: GkIbJs8haX3uJ2CNcqmc2F+k+cZrt4SyrAIuYHshZqwXhMjACltO1Fh17MtGTWuRduLJ4iATcm+En4Y/cDYojwUjnFVGWbFE6iEi5tQrQYR4paC42VArYodCFe0mYMC2D05IUZxaVDELDo25Lit8FeLIy4pPpLWEh2mGIT+/8S4=
   file_glob: true
-  file: Inexor-*.zip
+  file: /tmp/inexor-build/*nexor-*.zip
   overwrite: true
   on:
     # Deploy only if build was caused by a tag push.
     tags: true
-    all_branches: true
     condition: "$CC = gcc"
     repo: inexor-game/code
 
