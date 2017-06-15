@@ -2653,7 +2653,7 @@ namespace server
                 getstring(text, p);
                 filtertext(text, text, true, true);
                 QUEUE_STR(text);
-                if(isdedicatedserver() && cq)
+                if(cq)
                     spdlog::get("global")->info("{0}: {1}", colorname(cq), text);
                 break;
             }
@@ -2669,7 +2669,7 @@ namespace server
                     if(t==cq || t->state.state==CS_SPECTATOR || t->state.aitype != AI_NONE || strcmp(cq->team, t->team)) continue;
                     sendf(t->clientnum, 1, "riis", N_SAYTEAM, cq->clientnum, text);
                 }
-                if(isdedicatedserver() && cq)
+                if(cq)
                     spdlog::get("global")->info("{0}<{1}>: {2}", colorname(cq), cq->team, text);
                 break;
             }

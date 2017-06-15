@@ -1,5 +1,4 @@
 // server.cpp: little more than enhanced multicaster
-// runs dedicated or as client coroutine
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/crashreporter/CrashReporter.hpp"
@@ -69,105 +68,6 @@ void process(ENetPacket *packet, int sender, int chan);
 
 int getservermtu() { return serverhost ? serverhost->mtu : -1; }
 
-void sendpacket(int n, int chan, ENetPacket *packet, int exclude)
-{
-    if(n<0)
-    {
-        server::recordpacket(chan, packet->data, packet->dataLength);
-        loopv(clients) if(i!=exclude && server::allowbroadcast(i)) sendpacket(i, chan, packet);
-        return;
-    }
-    if(clients[n]->connected) enet_peer_send(clients[n]->peer, chan, packet);
-}
-
-ENetPacket *sendf(int cn, int chan, const char *format, ...)
-{
-    int exclude = -1;
-    bool reliable = false;
-    if(*format=='r') { reliable = true; ++format; }
-    packetbuf p(MAXTRANS, reliable ? ENET_PACKET_FLAG_RELIABLE : 0);
-    va_list args;
-    va_start(args, format);
-    while(*format) switch(*format++)
-    {
-        case 'x':
-            exclude = va_arg(args, int);
-            break;
-
-        case 'v':
-        {
-            int n = va_arg(args, int);
-            int *v = va_arg(args, int *);
-            loopi(n) putint(p, v[i]);
-            break;
-        }
-
-        case 'i': 
-        {
-            int n = isdigit(*format) ? *format++-'0' : 1;
-            loopi(n) putint(p, va_arg(args, int));
-            break;
-        }
-        case 'f':
-        {
-            int n = isdigit(*format) ? *format++-'0' : 1;
-            loopi(n) putfloat(p, (float)va_arg(args, double));
-            break;
-        }
-        case 's': sendstring(va_arg(args, const char *), p); break;
-        case 'm':
-        {
-            int n = va_arg(args, int);
-            p.put(va_arg(args, uchar *), n);
-            break;
-        }
-    }
-    va_end(args);
-    ENetPacket *packet = p.finalize();
-    sendpacket(cn, chan, packet, exclude);
-    return packet->referenceCount > 0 ? packet : NULL;
-}
-
-ENetPacket *sendfile(int cn, int chan, stream *file, const char *format, ...)
-{
-    if(cn < 0)
-    {
-#ifdef STANDALONE
-        return NULL;
-#endif
-    }
-    else if(!clients.inrange(cn)) return NULL;
-
-    int len = (int)min(file->size(), stream::offset(INT_MAX));
-    if(len <= 0 || len > 16<<20) return NULL;
-
-    packetbuf p(MAXTRANS+len, ENET_PACKET_FLAG_RELIABLE);
-    va_list args;
-    va_start(args, format);
-    while(*format) switch(*format++)
-    {
-        case 'i':
-        {
-            int n = isdigit(*format) ? *format++-'0' : 1;
-            loopi(n) putint(p, va_arg(args, int));
-            break;
-        }
-        case 's': sendstring(va_arg(args, const char *), p); break;
-        case 'l': putint(p, len); break;
-    }
-    va_end(args);
-
-    file->seek(0, SEEK_SET);
-    file->read(p.subbuf(len).buf, len);
-
-    ENetPacket *packet = p.finalize();
-    if(cn >= 0) sendpacket(cn, chan, packet, -1);
-#ifndef STANDALONE
-    else sendclientpacket(packet, chan);
-#endif
-    return packet->referenceCount > 0 ? packet : NULL;
-}
-
 void process(ENetPacket *packet, int sender, int chan)   // sender may be -1
 {
     packetbuf p(packet);
@@ -201,13 +101,15 @@ void sendserverinforeply(ucharbuf &p)
 
 #define MAXPINGDATA 32
 
-void checkserversockets()        // reply all server info requests
+/// Reply all server info requests
+void checkserversockets()
 {
     static ENetSocketSet readset, writeset;
     ENET_SOCKETSET_EMPTY(readset);
     ENET_SOCKETSET_EMPTY(writeset);
     ENetSocket maxsock = pongsock;
     ENET_SOCKETSET_ADD(readset, pongsock);
+
     if(lansock != ENET_SOCKET_NULL)
     {
         maxsock = max(maxsock, lansock);
@@ -236,31 +138,27 @@ VAR(serveruprate, 0, 0, INT_MAX);
 SVAR(serverip, "");
 VARF(serverport, 0, INEXOR_SERVER_PORT, MAX_POSSIBLE_PORT, { if(!serverport) serverport = server_port(); });
 
-void serverslice(bool dedicated, uint timeout)   // main server update, called from main loop in sp, or from below in dedicated server
+
+/// main server update
+void serverslice(uint timeout)
 {
-    if(!serverhost) 
+    if(!serverhost)
     {
         server::serverupdate();
         server::sendpackets();
         return;
     }
-       
+
     // below is network only
 
-    if(dedicated)
-#ifdef STANDALONE
-        updatetime(server::ispaused(), server::gamespeed);
-#else
-        updatetime(server::ispaused(), game::gamespeed);
-#endif
-
+    updatetime(server::ispaused(), server::gamespeed);
     server::serverupdate();
 
     checkserversockets();
 
     if(totalmillis-laststatus>60*1000)   // display bandwidth stats, useful for server ops
     {
-        laststatus = totalmillis;     
+        laststatus = totalmillis;
         if(has_clients() || serverhost->totalSentData || serverhost->totalReceivedData)
             spdlog::get("global")->debug("status: {0} remote clients, {1} send, {2} rec (K/sec)",
                                          get_num_clients(), (serverhost->totalSentData/60.0f/1024), (serverhost->totalReceivedData/60.0f/1024));
@@ -297,7 +195,7 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
                 if(event.packet->referenceCount==0) enet_packet_destroy(event.packet);
                 break;
             }
-            case ENET_EVENT_TYPE_DISCONNECT: 
+            case ENET_EVENT_TYPE_DISCONNECT:
             {
                 client *c = (client *)event.peer->data;
                 if(!c) break;
@@ -330,56 +228,44 @@ void localconnect()
 }
 #endif
 
-static bool dedicatedserver = false;
-
-bool isdedicatedserver() { return dedicatedserver; }
-
-void rundedicatedserver()
+void run_server()
 {
-    dedicatedserver = true;
     spdlog::get("global")->info("dedicated server started, waiting for clients...");
 #ifdef WIN32
-	for(;;)
-	{
-		MSG msg;
-		while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-		{
-			if(msg.message == WM_QUIT) exit(EXIT_SUCCESS);
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-		serverslice(true, 5);
-	}
-#else
-    for(;;) serverslice(true, 5);
-#endif
-    dedicatedserver = false;
-}
-
-bool servererror(bool dedicated, const char *desc)
-{
-#ifndef STANDALONE
-    if(!dedicated)
+    SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
+    for(;;)
     {
-        spdlog::get("global")->error(desc);
-        cleanupserver();
+        MSG msg;
+        while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+        {
+            if(msg.message == WM_QUIT) exit(EXIT_SUCCESS);
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+        serverslice(5);
     }
-    else
+#else
+    for(;;) serverslice(5);
 #endif
-        fatal("%s", desc);
+    }
+
+
+bool servererror(const char *desc)
+{
+    fatal("%s", desc);
     return false;
 }
-  
-bool setuplistenserver(bool dedicated)
+
+bool setup_network_sockets()
 {
-    ENetAddress address = { ENET_HOST_ANY, enet_uint16(serverport <= 0 ? server_port() : serverport) };
+    ENetAddress address ={ENET_HOST_ANY, enet_uint16(serverport <= 0 ? server_port() : serverport)};
     if(*serverip)
     {
         if(enet_address_set_host(&address, serverip)<0) spdlog::get("global")->warn("WARNING: server ip not resolved");
         else serveraddress.host = address.host;
     }
     serverhost = enet_host_create(&address, min(maxclients + server::reserveclients(), MAXCLIENTS), NUM_ENET_CHANNELS, 0, serveruprate);
-    if(!serverhost) return servererror(dedicated, "could not create server host");
+    if(!serverhost) return servererror("could not create server host");
     serverhost->duplicatePeers = maxdupclients ? maxdupclients : MAXCLIENTS;
     address.port = server_info_port(serverport > 0 ? serverport : -1);
     pongsock = enet_socket_create(ENET_SOCKET_TYPE_DATAGRAM);
@@ -388,7 +274,7 @@ bool setuplistenserver(bool dedicated)
         enet_socket_destroy(pongsock);
         pongsock = ENET_SOCKET_NULL;
     }
-    if(pongsock == ENET_SOCKET_NULL) return servererror(dedicated, "could not create server info socket");
+    if(pongsock == ENET_SOCKET_NULL) return servererror("could not create server info socket");
     else enet_socket_set_option(pongsock, ENET_SOCKOPT_NONBLOCK, 1);
     address.port = lan_info_port();
     lansock = enet_socket_create(ENET_SOCKET_TYPE_DATAGRAM);
@@ -400,25 +286,6 @@ bool setuplistenserver(bool dedicated)
     if(lansock == ENET_SOCKET_NULL) spdlog::get("global")->warn("WARNING: could not create LAN server info socket");
     else enet_socket_set_option(lansock, ENET_SOCKOPT_NONBLOCK, 1);
     return true;
-}
-
-void initserver(bool listen, bool dedicated)
-{
-    server::serverinit();
-
-    if(initscript) execfile(initscript);
-    else execfile("server-init.cfg", false);
-
-    if(listen) setuplistenserver(dedicated);
-
-    if(listen)
-    {
-        dedicatedserver = dedicated;
-        if(dedicated) rundedicatedserver(); // never returns
-#ifndef STANDALONE
-        else spdlog::get("global")->info("listen server started");
-#endif
-    }
 }
 
 bool serveroption(const char *opt)
@@ -440,7 +307,7 @@ bool serveroption(const char *opt)
     }
 }
 
-void parseoptions(int argc, const char **argv)
+void parseoptions(int argc, char **argv)
 {
     for(int i = 1; i<argc; i++) if(argv[i][0]!='-' || !serveroption(argv[i]))
         spdlog::get("global")->error("unknown command-line option: {0}", argv[i]);
@@ -448,7 +315,7 @@ void parseoptions(int argc, const char **argv)
 
 inexor::util::Logging logging;
 
-int main(int argc, const char **argv)
+int main(int argc, char **argv)
 {
     logging.initDefaultLoggers();
     UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // We only need to initialse it, not use it.
@@ -458,6 +325,13 @@ int main(int argc, const char **argv)
 
     parseoptions(argc, argv);
 
-    initserver(true, true);
+    server::serverinit();
+
+    if(initscript) execfile(initscript);
+    else execfile("server-init.cfg", false);
+
+    setup_network_sockets();
+
+    run_server(); // never returns
     return EXIT_SUCCESS;
 }

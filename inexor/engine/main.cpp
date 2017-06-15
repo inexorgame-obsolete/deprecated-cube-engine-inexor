@@ -80,7 +80,6 @@ void cleanup()
     extern void clear_mdls();
 
     recorder::stop();
-    cleanupserver();
 
     screen_manager.cleanupSDL();
 
@@ -735,7 +734,7 @@ int main(int argc, char **argv)
 
     // Ensure the correct locale
     setlocale(LC_ALL, "en_US.utf8");
-    int dedicated = 0;
+
     char *load = NULL, *initscript = NULL;
 
     // Initialize the metasystem
@@ -760,16 +759,13 @@ int main(int argc, char **argv)
 
     numcpus = clamp(SDL_GetCPUCount(), 1, 16);
 
-    if(dedicated <= 1)
-    {
-        spdlog::get("global")->debug("init: SDL");
+    spdlog::get("global")->debug("init: SDL");
 
-        int par = 0;
-        #ifdef _DEBUG
-           par = SDL_INIT_NOPARACHUTE;
-        #endif
-        if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO|par)<0) fatal("Unable to initialize SDL: %s", SDL_GetError());
-    }
+    int par = 0;
+    #ifdef _DEBUG
+        par = SDL_INIT_NOPARACHUTE;
+    #endif
+    if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO|par)<0) fatal("Unable to initialize SDL: %s", SDL_GetError());
 
     const char *dir = addpackagedir(package_dir);
     if(dir) spdlog::get("global")->debug("Adding package directory: {}", dir);
@@ -781,8 +777,6 @@ int main(int argc, char **argv)
 
     spdlog::get("global")->debug("init: game");
 
-    initserver(dedicated>0, dedicated>1);  /// never returns if dedicated
-    ASSERT(dedicated <= 1);
     game::initclient();
 
     spdlog::get("global")->debug("init: video");
@@ -885,8 +879,6 @@ int main(int argc, char **argv)
         if(lastmillis) game::updateworld();
 
         checksleep(lastmillis);
-
-        serverslice(false, 0);
 
         if(frames) updatefpshistory(elapsedtime);
         frames++;
