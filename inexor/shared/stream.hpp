@@ -2,6 +2,14 @@
 /// Use the filesystem module for new code.
 #pragma once
 
+#include "inexor/shared/cube_vector.hpp"
+#include "inexor/shared/cube_formatting.hpp"
+#include "inexor/shared/cube_types.hpp"
+#include "inexor/shared/cube_tools.hpp"
+
+#include <zlib.h>
+#include <stdio.h>
+
 // workaround for some C platforms that have these two functions as macros - not used anywhere
 #ifdef getchar
 #undef getchar
@@ -51,9 +59,6 @@ struct stream
     template<class T> T getlil() { return lilswap(get<T>()); }
     template<class T> T getbig() { return bigswap(get<T>()); }
 
-#ifndef STANDALONE
-    SDL_RWops *rwops();
-#endif
 };
 
 template<class T>

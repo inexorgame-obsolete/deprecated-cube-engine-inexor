@@ -232,12 +232,8 @@ void saveimage(const char *filename, int format, ImageData &image, bool flip)
         if(flip) texflip(flipped);
         SDL_Surface *s = wrapsurface(flipped.data, flipped.w, flipped.h, flipped.bpp);
         if(!s) break;
-        stream *f = openfile(filename, "wb");
-        if(f)
-        {
-            SDL_SaveBMP_RW(s, f->rwops(), 1);
-            delete f;
-        }
+        const char *found = findfile(filename, "wb");
+        if(found) SDL_SaveBMP(s, found);
         SDL_FreeSurface(s);
         break;
     }
