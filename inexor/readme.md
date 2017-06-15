@@ -4,7 +4,7 @@ This directory contains the sources – and libraries - for
 the Inexor core application written in C++.
 
 
-See the [wiki](https://github.com/inexor-game/code/wiki/Build) 
+See the [wiki](https://github.com/inexorgame/inexor-core/wiki/Build) 
 for Build-Instructions.
 
 ## Tree

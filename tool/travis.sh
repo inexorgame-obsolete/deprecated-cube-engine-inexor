@@ -204,7 +204,7 @@ create_tag() {
     git config --global user.name "Travis"
 
     git tag -a -m "automatic tag creation on push to master branch" "${new_version}"
-    git push -q https://$GITHUB_TOKEN@github.com/inexor-game/code --tags
+    git push -q https://$GITHUB_TOKEN@github.com/inexorgame/inexor-core --tags
 
   else
     echo >&2 -e "===============\n" \

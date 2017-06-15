@@ -4,18 +4,18 @@ Firstly thank you for your interest in contributing to this project.
 Please read the instructions below for informations on how to contribute.
 
 ## General questions
-If you have some general question on the usage or configuration of the game please [contact us](https://github.com/inexor-game/code/wiki/Contact) or look it up [in the wiki](https://github.com/inexor-game/code/wiki).
+If you have some general question on the usage or configuration of the game please [contact us](https://github.com/inexorgame/inexor-core/wiki/Contact) or look it up [in the wiki](https://github.com/inexorgame/inexor-core/wiki).
 
 ## Code of Conduct and policies
-With your contribution you agree with our [Code of Conduct](https://github.com/inexor-game/code/wiki/Code-of-Conduct). 
+With your contribution you agree with our [Code of Conduct](https://github.com/inexorgame/inexor-core/wiki/Code-of-Conduct). 
 
 If you consider contributing
- * **code:** you have to agree to license it under the terms of the [ZLIB license](https://github.com/inexor-game/code/blob/master/license.md).
- * **content:** your contribution has to match the [License Policy](https://github.com/inexor-game/code/wiki/License-Policy).  
+ * **code:** you have to agree to license it under the terms of the [ZLIB license](https://github.com/inexorgame/inexor-core/blob/master/license.md).
+ * **content:** your contribution has to match the [License Policy](https://github.com/inexorgame/inexor-core/wiki/License-Policy).  
 
 ## Merging your feature
 
-If you want to merge a new feature into the master branch, you first need to create a [pull request](https://github.com/inexor-game/code/pulls) to get your contributions reviewed.
+If you want to merge a new feature into the master branch, you first need to create a [pull request](https://github.com/inexorgame/inexor-core/pulls) to get your contributions reviewed.
 We want to keep our history clean from merge-commits, so after getting green light for merging, you need to **rebase** your branch onto master.
  
 ## Submitting issues

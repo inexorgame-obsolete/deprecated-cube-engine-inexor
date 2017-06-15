@@ -3,7 +3,7 @@ import os, dependencies, multiprocessing
 
 class InexorConan(ConanFile):
     license = "ZLIB"
-    url = "https://github.com/inexor-game/code.git"
+    url = "https://github.com/inexorgame/inexor-core.git"
     settings = "os", "compiler", "build_type", "arch"
 
     requires = dependencies.requires
