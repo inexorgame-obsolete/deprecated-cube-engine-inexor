@@ -2220,7 +2220,7 @@ namespace game
             else if(len <= 0) spdlog::get("edit")->error("could not read map");
             else
             {
-                sendfile(-1, 2, map);
+                send_file(map);
                 if(needclipboard >= 0) needclipboard++;
             }
             delete map;

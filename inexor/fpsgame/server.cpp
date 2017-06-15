@@ -5,6 +5,7 @@
 #include "inexor/engine/worldio.hpp"
 #include "inexor/network/legacy/crypto.hpp"
 #include "inexor/server/client_management.hpp"
+#include "inexor/server/network_send.hpp"
 
 #include "inexor/gamemode/capture_server.hpp"
 #include "inexor/gamemode/ctf_server.hpp"
@@ -2939,7 +2940,7 @@ namespace server
                 else
                 {
                     sendservmsgf("[%s is getting the map]", colorname(ci));
-                    if((ci->getmap = sendfile(sender, 2, mapdata, "ri", N_SENDMAP)))
+                    if((ci->getmap = sendfile(sender, CHAN_FILE, mapdata, "ri", N_SENDMAP)))
                         ci->getmap->freeCallback = freegetmap;
                     ci->needclipboard = totalmillis ? totalmillis : 1;
                 }

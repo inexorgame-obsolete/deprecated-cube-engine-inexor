@@ -7,7 +7,7 @@
 #include "inexor/shared/cube_vector.hpp"
 
 #include <boost/algorithm/clamp.hpp> // TODO replace with std::clamp as soon as C++17 is our target.
-
+#include <algorithm>
 
 // all network traffic is in 32bit ints, which are then compressed using the following simple scheme (assumes that most values are small).
 
@@ -127,6 +127,34 @@ void filtertext(char *dst, const char *src, bool whitespace, bool forcespace, si
         if(!--len) break;
     }
     *dst = '\0';
+}
+
+/// Puts a file into a ENet packet.
+/// args is just a forward of "...", meaning this function should be used like
+ENetPacket *make_file_packet(stream *file, const char *format, va_list args)
+{
+    int len = (int)std::min(file->size(), stream::offset(INT_MAX));
+    if(len <= 0 || len > 16<<20) return NULL;
+
+    packetbuf p(MAXTRANS+len, ENET_PACKET_FLAG_RELIABLE);
+
+    while(*format) switch(*format++)
+    {
+        case 'i':
+        {
+            int n = isdigit(*format) ? *format++-'0' : 1;
+            loopi(n) putint(p, va_arg(args, int));
+            break;
+        }
+        case 's': sendstring(va_arg(args, const char *), p); break;
+        case 'l': putint(p, len); break;
+    }
+
+    file->seek(0, SEEK_SET);
+    file->read(p.subbuf(len).buf, len);
+
+    ENetPacket *packet = p.finalize();
+    return packet;
 }
 
 void ipmask::parse(const char *name)
