@@ -6,6 +6,7 @@
 #include "inexor/shared/cube_types.hpp"
 #include "inexor/shared/cube_tools.hpp"
 #include "inexor/shared/cube_vector.hpp"
+#include "inexor/shared/stream.hpp"
 #include "inexor/network/legacy/buffer_types.hpp"
 
 #define MAXCLIENTS 128                 // DO NOT set this any higher
@@ -47,3 +48,8 @@ struct ipmask
     int print(char *buf) const;
     bool check(enet_uint32 host) const { return (host & mask) == ip; }
 };
+
+/// Puts a file into a ENet packet.
+/// args is just a forward of "...", see C argument forwarding.
+extern ENetPacket *make_file_packet(stream *file, const char *format, va_list args);
+

@@ -7,7 +7,6 @@
 #include "inexor/network/legacy/game_types.hpp"
 #include "inexor/util/Logging.hpp"
 #include "inexor/ui.hpp"
-#include "inexor/server/client_management.hpp"
 
 using namespace inexor::util; //needed for quoted()
 
@@ -231,13 +230,25 @@ void localservertoclient(int chan, ENetPacket *packet)
 }
 
 // send ping to server (?)
-void clientkeepalive() 
-{ 
-	if(clienthost) enet_host_service(clienthost, NULL, 0); 
+void clientkeepalive()
+{
+    if(clienthost) enet_host_service(clienthost, NULL, 0);
+}
+
+/// Send a file to all other clients.
+ENetPacket *send_file(stream *file, const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    ENetPacket *packet = make_file_packet(file, format, args);
+    va_end(args);
+
+    sendclientpacket(packet, CHAN_FILE);
+    return packet->referenceCount > 0 ? packet : NULL;
 }
 
 // get updates from the server
-void gets2c()           
+void gets2c()
 {
     ENetEvent event;
     if(!clienthost) return;
@@ -245,7 +256,7 @@ void gets2c()
     {
         spdlog::get("global")->info("attempting to connect...");
         connmillis = totalmillis;
-        ++connattempts; 
+        ++connattempts;
         if(connattempts > 3)
         {
             spdlog::get("global")->error("could not connect to server");
@@ -257,7 +268,7 @@ void gets2c()
     switch(event.type)
     {
         case ENET_EVENT_TYPE_CONNECT:
-            disconnect(false, false); 
+            disconnect(false, false);
             curpeer = connpeer;
             connpeer = NULL;
             spdlog::get("global")->info("connected to server");
@@ -265,7 +276,7 @@ void gets2c()
             if(rate) setrate(rate);
             game::gameconnect(true);
             break;
-         
+
         case ENET_EVENT_TYPE_RECEIVE:
             if(discmillis) spdlog::get("global")->info("attempting to disconnect...");
             else localservertoclient(event.channelID, event.packet);
