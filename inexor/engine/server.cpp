@@ -421,7 +421,6 @@ void initserver(bool listen, bool dedicated)
     }
 }
 
-
 bool serveroption(const char *opt)
 {
     switch(opt[1])
@@ -430,37 +429,35 @@ bool serveroption(const char *opt)
         case 'c': setvar("maxclients", atoi(opt+2)); return true;
         case 'i': setsvar("serverip", opt+2); return true;
         case 'j': setvar("serverport", atoi(opt+2)); return true;
-#ifdef STANDALONE
         case 'k': spdlog::get("global")->debug("Adding package directory: {}", opt); addpackagedir(opt+2); return true;
         case 'x': spdlog::get("global")->debug("Setting server init script: {}", opt); initscript = opt+2; return true;
-#endif
+        case 'n': setsvar("serverdesc", &opt[2]); return true;
+        case 'y': setsvar("serverpass", &opt[2]); return true;
+        case 'p': setsvar("adminpass", &opt[2]); return true;
+        case 'o': setvar("publicserver", atoi(&opt[2])); return true;
+
         default: return false;
     }
 }
 
-vector<const char *> gameargs;
-
-#ifdef STANDALONE
-
-void parseoptions(vector<const char *> &args)
+void parseoptions(int argc, const char **argv)
 {
-    loopv(args)
-        if(!serveroption(args[i]))
-            spdlog::get("global")->error("unknown command-line option: {0}", args[i]);
+    for(int i = 1; i<argc; i++) if(argv[i][0]!='-' || !serveroption(argv[i]))
+        spdlog::get("global")->error("unknown command-line option: {0}", argv[i]);
 }
 
 inexor::util::Logging logging;
 
-int main(int argc, char **argv)
+int main(int argc, const char **argv)
 {
     logging.initDefaultLoggers();
     UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // We only need to initialse it, not use it.
     if(enet_initialize()<0) fatal("Unable to initialise network module");
     atexit(enet_deinitialize);
     enet_time_set(0);
-    for(int i = 1; i<argc; i++) if(argv[i][0]!='-' || !serveroption(argv[i])) gameargs.add(argv[i]);
-    parseoptions(gameargs);
+
+    parseoptions(argc, argv);
+
     initserver(true, true);
     return EXIT_SUCCESS;
 }
-#endif

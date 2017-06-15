@@ -419,18 +419,6 @@ namespace server
     }
 
     // config
-    bool serveroption(const char *arg)
-    {
-        if(arg[0]=='-') switch(arg[1])
-        {
-            case 'n': setsvar("serverdesc", &arg[2]); return true;
-            case 'y': setsvar("serverpass", &arg[2]); return true;
-            case 'p': setsvar("adminpass", &arg[2]); return true;
-            case 'o': setvar("publicserver", atoi(&arg[2])); return true;
-        }
-        return false;
-    }
-
     void serverinit()
     {
         smapname[0] = '\0';
