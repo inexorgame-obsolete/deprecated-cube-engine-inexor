@@ -317,7 +317,6 @@ extern int getnumclients();
 extern uint getclientip(int n);
 extern void localconnect();
 extern void sendserverinforeply(ucharbuf &p);
-extern bool isdedicatedserver();
 
 // client
 extern void sendclientpacket(ENetPacket *packet, int chan);

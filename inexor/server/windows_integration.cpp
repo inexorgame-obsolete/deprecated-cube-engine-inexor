@@ -254,7 +254,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw)
     setupwindow("Inexor server");
     SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
 
-    int standalonemain(int argc, char **argv);
+    extern int standalonemain(int argc, char **argv);
     int status = standalonemain(args.length()-1, args.getbuf());
 
     delete[] buf;

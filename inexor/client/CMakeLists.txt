@@ -25,7 +25,6 @@ prepend(CLIENT_SOURCES_ENGINE ${SOURCE_DIR}/engine
     rendersky.cpp
     rendertext.cpp
     renderva.cpp
-    server.cpp
     shader.cpp
     sound.cpp
     water.cpp
@@ -45,12 +44,15 @@ prepend(CLIENT_SOURCES_FPSGAME ${SOURCE_DIR}/fpsgame
     movable.cpp
     render.cpp
     scoreboard.cpp
-    server.cpp
     waypoint.cpp
     weapon.cpp)
 
+# generate source file list of this folder
+declare_module(client .)
+
 set(CLIENT_SOURCES
   ${SHARED_MODULE_SOURCES}
+  ${CLIENT_MODULE_SOURCES}
   ${CLIENT_SOURCES_ENGINE}
   ${CLIENT_SOURCES_FPSGAME} CACHE INTERNAL "")
 
