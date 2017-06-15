@@ -6,12 +6,12 @@
   "license": "Zlib",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/inexor-game/code.git"
+    "url": "git+https://github.com/inexorgame/inexor-core.git"
   },
   "bugs": {
-    "url": "https://github.com/inexor-game/code/issues"
+    "url": "https://github.com/inexorgame/inexor-core/issues"
   },
-  "homepage": "https://github.com/inexor-game/code/wiki",
+  "homepage": "https://github.com/inexorgame/inexor-core/wiki",
   "keywords": [
     "FPS",
     "game",

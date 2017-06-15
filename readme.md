@@ -1,6 +1,6 @@
 # Inexor
 
-[![Build Status](https://ci.inexor.org/job/inexor/job/code/job/master/badge/icon)](https://ci.inexor.org/job/inexor/job/code/job/master/) [![Build Status](https://travis-ci.org/inexor-game/code.svg?branch=master)](https://travis-ci.org/inexor-game/code) [![Build status](https://ci.appveyor.com/api/projects/status/h9kwt5lk54epjv8t/branch/master?svg=true)](https://ci.appveyor.com/project/inexor-game/code)
+[![Build Status](https://ci.inexor.org/job/inexor/job/code/job/master/badge/icon)](https://ci.inexor.org/job/inexor/job/code/job/master/) [![Build Status](https://travis-ci.org/inexorgame/inexor-core.svg?branch=master)](https://travis-ci.org/inexorgame/inexor-core) [![Build status](https://ci.appveyor.com/api/projects/status/h9kwt5lk54epjv8t/branch/master?svg=true)](https://ci.appveyor.com/project/inexor-game/code)
 
 Inexor is a fork of the open-source First-Person-Shooter Cube 2: Sauerbraten, a fast-paced shooting game featuring an ingame map editor.  
 In contrast to Sauerbraten, Inexor adds a lot of functionality and strives to stay open to improvements and suggestions.  
@@ -44,15 +44,15 @@ giving a general but no inevitably defined idea of where we're going next
 We believe that basing our project on these few points will work out for the best.  
 They have already required a lot of thought and discussion, so chances are high that -in case you're not fully convinced by them yet- you will get convinced by working with it.
 
-However, if you want to influence our development you should join us on [Riot.im#inexor](https://riot.im/app/#/room/#inexor:matrix.org). For more ways to to talk with us check the [Contact](https://github.com/inexor-game/code/wiki/Contact)) page on the wiki.  
+However, if you want to influence our development you should join us on [Riot.im#inexor](https://riot.im/app/#/room/#inexor:matrix.org). For more ways to to talk with us check the [Contact](https://github.com/inexorgame/inexor-core/wiki/Contact)) page on the wiki.  
 
 And of course we won't be too proud to rethink this list if you face us with a more thought-through and better developed alternative.
 
 
 ## What have we changed already?
 
-Have a look in our [features section](https://github.com/inexor-game/code/wiki#features) and our
-[changelog](https://github.com/inexor-game/code/blob/master/changelog.md).
+Have a look in our [features section](https://github.com/inexorgame/inexor-core/wiki#features) and our
+[changelog](https://github.com/inexorgame/inexor-core/blob/master/changelog.md).
 
 
 If you are a developer familiar with Sauerbraten worrying about the direction we are going check out the posts in our blog called
@@ -66,19 +66,19 @@ Consequently, our approach in developing Inexor is probably the most profound on
 
 ## Build
 
-Good tutorials on the whole process needed to build Inexor can be found in its [wiki page](https://github.com/inexor-game/code/wiki/Build), which you should read beforehand for saving you some nerves.
+Good tutorials on the whole process needed to build Inexor can be found in its [wiki page](https://github.com/inexorgame/inexor-core/wiki/Build), which you should read beforehand for saving you some nerves.
 
 
 ## Join us
 
 You have already accomplished the first step by reading this readme. Congratz!
 
-The second one is only slightly harder by joining us in [Riot.im#inexor](https://riot.im/app/#/room/#inexor:matrix.org), consider the [contact](https://github.com/inexor-game/code/wiki/Contact) page in our wiki for more ways to chat.
+The second one is only slightly harder by joining us in [Riot.im#inexor](https://riot.im/app/#/room/#inexor:matrix.org), consider the [contact](https://github.com/inexorgame/inexor-core/wiki/Contact) page in our wiki for more ways to chat.
 
 To contribute to the project and merge your changes into the master branch you need to convince enough members that the changes are an improvement.
 If you keep communicating what you are doing, take into account feedback and tips from others as well as giving insights into your decision making process, it won't be an issue.
 
-More information about the contributing process can be found [here](https://github.com/inexor-game/code/wiki/How-To-Contribute-Code).
+More information about the contributing process can be found [here](https://github.com/inexorgame/inexor-core/wiki/How-To-Contribute-Code).
 
 
 ## License
@@ -89,7 +89,7 @@ Inexor is a fork of Cube 2: Sauerbraten, which is also licensed under the ZLIB l
 The license covers the source code repository on GitHub as well as the "config" directory in the "data" repository on GitHub.  
 Game media included in the game (maps, textures, sounds, models etc.) are NOT covered by this license, and may have individual copyrights and distribution restrictions (see their individual READMEs).  
 
-In contrast to our predecessor Sauerbraten our officially bundled [content needs to be open source](https://github.com/inexor-game/code/wiki/License-Policy), i.e. allowing all kinds of usage required for increasing the ecosystem around the code, including sharing mods or commercial use.
+In contrast to our predecessor Sauerbraten our officially bundled [content needs to be open source](https://github.com/inexorgame/inexor-core/wiki/License-Policy), i.e. allowing all kinds of usage required for increasing the ecosystem around the code, including sharing mods or commercial use.
 
 The included third-party libraries also have individual licenses, which you can find in the respective READMEs in platform/legal.
 
@@ -97,10 +97,11 @@ The included third-party libraries also have individual licenses, which you can 
 ## Resources
 
 * [Website](https://inexor.org)
-* [Wiki](https://github.com/inexor-game/code/wiki)
-* [Issue Tracker](https://github.com/inexor-game/code/issues)
+* [Wiki](https://github.com/inexorgame/inexor-core/wiki)
+* [Issue Tracker](https://github.com/inexorgame/inexor-core/issues)
 * [Kanboard](https://waffle.io/inexor-game/code)
 * [Documentation](https://docs.inexor.org)
-* [Source Repository](https://github.com/inexor-game/code)
-* [Data Repository](https://github.com/inexor-game/data)
-* [Riot.im#inexor](https://riot.im/app/#/room/#inexor:matrix.org)
+* [Source Repository](https://github.com/inexorgame/inexor-core)
+* [Data Repository](https://github.com/inexorgame/data)
+* **Recommended**: [Riot.im#inexor](https://riot.im/app/#/room/#inexor:matrix.org)
+* Alternative: [IRC Chat (#inexor on chat.freenode.net:6697)](irc://chat.freenode.net:6697/#inexor)
