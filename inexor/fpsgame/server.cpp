@@ -869,12 +869,7 @@ namespace server
         if(!gamepaused) return;
         int admins = 0;
         loopv(clients) if(clients[i]->privilege >= (restrictpausegame ? PRIV_ADMIN : PRIV_MASTER) || clients[i]->local) admins++;
-        if(!admins) pausegame(false); //if no admins on the server, resume game
-    }
-
-    void forcepaused(bool paused)
-    {
-        pausegame(paused);
+        if(!admins) pausegame(false);
     }
 
     bool ispaused() { return gamepaused; }
@@ -887,10 +882,6 @@ namespace server
         sendf(-1, 1, "riii", N_GAMESPEED, gamespeed, ci ? ci->clientnum : -1);
     }
 
-    void forcegamespeed(int speed)
-    {
-        changegamespeed(speed);
-    }
 
     // team managment
     void persistteams(bool val)
@@ -906,11 +897,6 @@ namespace server
         int admins = 0;
         loopv(clients) if(clients[i]->privilege >= (restrictpersistteams ? PRIV_ADMIN : PRIV_MASTER) || clients[i]->local) admins++;
         if(!admins) persistteams(false); //if no admins or (or masters) around, reshuffle teams again
-    }
-
-    void forcepersist(bool persist)
-    {
-        persistteams(persist);
     }
 
     void revokemaster(clientinfo *ci)
@@ -1647,20 +1633,6 @@ namespace server
         }
     }
 
-    void forcemap(const char *map, int mode)
-    {
-        stopdemo();
-        if(!map[0] && !m_check(mode, M_EDIT)) 
-        {
-            int idx = findmaprotation(mode, smapname);
-            if(idx < 0 && smapname[0]) idx = findmaprotation(mode, "");
-            if(idx < 0) return;
-            map = maprotations[idx].map;
-        }
-        if(has_clients()) sendservmsgf("local player forced %s on map %s", modename(mode), map[0] ? map : "[new map]");
-        changemap(map, mode);
-    }
-
     void vote(const char *map, int reqmode, int sender)
     {
         clientinfo *ci = getinfo(sender);
@@ -1712,20 +1684,11 @@ namespace server
         checkintermission();
     }
 
-    void forceintermission()
-    {
-        if(interm) return;
-        interm = gamemillis + 10000;
-        sendf(-1, 1, "ri2", N_TIMEUP, 0);
-        if(smode) smode->intermission();
-    }
 
-    ///
-    // Checks if the game has ended because only one player is still alive.
-    // It does this by checking if less than 2 players have their state set to alive.
-    // This means, the game will also end if someone is gagging
-    // If only one is still alive this method forces intermission.
-    ///
+    /// Checks if the game has ended because only one player is still alive.
+    /// If yes it forces intermission.
+    /// @note It does this by checking if less than 2 players have their state set to alive.
+    ///       This means, the game will also end if someone is Lagging.
     void checklms()
     {
         if(m_teammode)
@@ -2875,7 +2838,7 @@ namespace server
             }
 
             case N_FORCEINTERMISSION:
-                if(ci->local && !has_clients()) startintermission();
+                if(ci->privilege >= PRIV_ADMIN) startintermission();
                 break;
 
             case N_RECORDDEMO:

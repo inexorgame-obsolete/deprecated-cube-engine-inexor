@@ -735,7 +735,7 @@ int main(int argc, char **argv)
     // Ensure the correct locale
     setlocale(LC_ALL, "en_US.utf8");
 
-    char *load = NULL, *initscript = NULL;
+    char *initscript = NULL;
 
     // Initialize the metasystem
     // remote process control: communication with the scripting engine
@@ -843,12 +843,6 @@ int main(int argc, char **argv)
     identflags |= IDF_PERSIST;
 
     if(execfile("once.cfg", false)) remove(findfile("once.cfg", "rb"));
-
-    if(load)
-    {
-        spdlog::get("global")->debug("init: localconnect");
-        game::changemap(load);
-    }
 
     loadhistory();
     if(initscript) execute(initscript);

@@ -79,7 +79,7 @@ struct hideandseekservermode : servmode, hideandseekmode
         if(totalmillis > lastupdatecheck + 1000)
         {
             lastupdatecheck = totalmillis;
-            if(checkfinished()) forceintermission();
+            if(checkfinished()) startintermission();
         }
     }
 
