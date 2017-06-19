@@ -19,7 +19,7 @@ struct bombservermode : servmode, bombmode
         sequence = 0;
         countdown = COUNTDOWNSECONDS;
         timecounter = totalmillis;
-        forcepaused(true);
+        pausegame(true);
         notgotspawnlocations = true;
         spawnlocs.deletecontents();
         if(!notgotitems)
@@ -86,7 +86,7 @@ struct bombservermode : servmode, bombmode
                 {
                     sequence = 2;
                     sendf(-1, 1, "ri3s ", N_HUDANNOUNCE, 2000, E_ZOOM_IN, "F I G H T");
-                    forcepaused(false);
+                    pausegame(false);
                 } else if(remaining/1000 != countdown)
                 {
                     defformatstring(msg, "- %d -", countdown--);

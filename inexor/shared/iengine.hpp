@@ -315,7 +315,6 @@ extern void flushserver(bool force);
 extern int getservermtu();
 extern int getnumclients();
 extern uint getclientip(int n);
-extern void localconnect();
 extern void sendserverinforeply(ucharbuf &p);
 
 // client

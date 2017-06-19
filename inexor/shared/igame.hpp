@@ -102,8 +102,6 @@ namespace server
     extern int reserveclients();
     extern void clientdisconnect(int n);
     extern int clientconnect(int n, uint ip);
-    extern void localdisconnect(int n);
-    extern void localconnect(int n);
     extern bool allowbroadcast(int n);
     extern void recordpacket(int chan, void *data, int len);
     extern void parsepacket(int sender, int chan, packetbuf &p);

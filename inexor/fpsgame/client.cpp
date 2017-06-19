@@ -598,12 +598,8 @@ namespace game
     /// request map change, server may ignore
     void changemap(const char *name, int mode)
     {
-        if(!remote)
-        {
-            server::forcemap(name, mode);
-            //if(!isconnected()) localconnect(); TODO!
-        }
-        else if(player1->state!=CS_SPECTATOR || player1->privilege) addmsg(N_MAPVOTE, "rsi", name, mode);
+        if(!isconnected()) spdlog::get("global")->error("Could not change map, not connected!");
+        addmsg(N_MAPVOTE, "rsi", name, mode);
     }
 
     /// validates game mode name and calls changemap above
@@ -819,9 +815,8 @@ namespace game
 	/// pause game 
     void pausegame(bool val)
     {
-        if(!connected) return;
-        if(!remote) server::forcepaused(val);
-        else addmsg(N_PAUSEGAME, "ri", val ? 1 : 0);
+        if(!isconnected()) spdlog::get("gameplay")->error("Could not pause game, not connected!");
+        addmsg(N_PAUSEGAME, "ri", val ? 1 : 0);
     }
     ICOMMAND(pausegame, "i", (int *val), pausegame(*val > 0));
 
@@ -839,9 +834,8 @@ namespace game
     /// Set reshuffeling behaviour on mapchange according to bool val (true activates persistent teams) 
     void persistteams(bool val)
     {
-        if(!connected) return;
-        if(!remote) server::forcepersist(val); //do it on direct way, when playing locally
-        else addmsg(N_PERSISTTEAMS, "ri", val ? 1 : 0);
+        if(!isconnected()) spdlog::get("gameplay")->error("Could not set teams to be persistent. We're not connected!");
+        addmsg(N_PERSISTTEAMS, "ri", val ? 1 : 0);
     }
     ICOMMAND(persistteams, "i", (int *val), persistteams(*val > 0));
 
@@ -857,8 +851,7 @@ namespace game
     void changegamespeed(int val)
     {
         if(!connected) return;
-        if(!remote) server::forcegamespeed(val);
-        else addmsg(N_GAMESPEED, "ri", val);
+        addmsg(N_GAMESPEED, "ri", val);
     }
     ICOMMAND(gamespeed, "iN$", (int *val, int *numargs, ident *id),
     {
