@@ -1,6 +1,7 @@
 #pragma once
-#include "inexor/fpsgame/game.hpp"
+#include "inexor/server/game_management.hpp"
 #include "inexor/server/client_management.hpp"
+#include "inexor/fpsgame/game.hpp"
 
 // TODO: make vector<players> extendable by mode
 

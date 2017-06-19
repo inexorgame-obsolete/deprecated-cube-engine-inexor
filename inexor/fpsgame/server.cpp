@@ -63,7 +63,11 @@ namespace server
 
     bool notgotitems = true;        // true when map has changed and waiting for clients to send item
     int gamemillis = 0, gamelimit = 0, nextexceeded = 0, gamespeed = 100;
-    bool gamepaused = false, teamspersisted = false, shouldstep = true;
+    bool shouldstep = true;
+
+    /// Whether team reshuffeling after map change is disabled.
+    /// TODO move this to a better sourcefile.
+    bool teamspersisted;
 
     string smapname = "";
     int interm = 0;
@@ -858,14 +862,8 @@ namespace server
         else enddemorecord();
     }
 
-    // game managment?
-    void pausegame(bool val, clientinfo *ci = NULL)
-    {
-        if(gamepaused==val) return;
-        gamepaused = val;
-        sendf(-1, 1, "riii", N_PAUSEGAME, gamepaused ? 1 : 0, ci ? ci->clientnum : -1);
-    }
-
+    /// If no player with a high enough privilege level is on the server, resume the game.
+    /// (Otherwise servers could get locked after an admin disconnected).
     void checkpausegame()
     {
         if(!gamepaused) return;
