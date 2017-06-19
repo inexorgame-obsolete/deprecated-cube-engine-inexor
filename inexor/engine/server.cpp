@@ -216,18 +216,6 @@ void flushserver(bool force)
     if(server::sendpackets(force) && serverhost) enet_host_flush(serverhost);
 }
 
-#ifndef STANDALONE
-void localdisconnect(bool cleanup)
-{
-
-}
-
-void localconnect()
-{
-
-}
-#endif
-
 void run_server()
 {
     spdlog::get("global")->info("dedicated server started, waiting for clients...");

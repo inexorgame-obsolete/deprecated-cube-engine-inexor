@@ -1,6 +1,7 @@
 #pragma once
 
 #include "inexor/network/legacy/cube_network.hpp"
+#include "inexor/network/legacy/game_types.hpp"
 
 
 extern ENetPacket *sendf(int cn, int chan, const char *format, ...);
