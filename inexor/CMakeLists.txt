@@ -21,6 +21,7 @@ add_subdirectory(network) # syncronisation module + legacy network
 add_subdirectory(ui)
 add_subdirectory(crashreporter)
 add_subdirectory(texture)
+add_subdirectory(gamemode)
 
 # Actual targets
 opt_subdir(client on)
