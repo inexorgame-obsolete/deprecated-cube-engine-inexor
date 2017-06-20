@@ -4,7 +4,7 @@
 #include "inexor/shared/cube_loops.hpp"
 #include "inexor/shared/ents.hpp"
 #include "inexor/fpsgame/weapon.hpp"
-#include "inexor/fpsgame/gamemode.hpp"
+#include "inexor/gamemode/gamemode.hpp"
 #include "inexor/util/random.hpp"
 
 #include <algorithm>
