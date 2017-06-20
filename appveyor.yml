@@ -79,10 +79,14 @@ deploy:
       configuration: Release
 
 # Notify npm about the new release
+# Note: the "        " lines which look like indentation errors are there for a reason (yaml)!
 after_deploy:
   - ps:|
-            if ($ENV:APPVEYOR_REPO_TAG  -eq "true" -and $ENV:CONFIGURATION  -eq "Release" )
+            echo "starting NPM deployment"
+            if ($ENV:APPVEYOR_REPO_TAG -eq "true")
             {
+              if ($ENV:CONFIGURATION -eq "Release" )
+              {
                 $package_json = "C:\projects\inexor-game\package.json"
                 
                 
@@ -97,6 +101,9 @@ after_deploy:
                 "@inexorgame:registry=https://registry.npmjs.org/`n//registry.npmjs.org/:_authToken=${NPM_TOKEN}" | Out-File (Join-Path $ENV:APPVEYOR_BUILD_FOLDER ".npmrc") -Encoding UTF8
                 iex "npm pack"
                 iex "npm publish --access public"
+                
+                echo "published to NPM"
+              }
             }
             
             
