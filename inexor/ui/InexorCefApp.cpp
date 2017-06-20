@@ -30,7 +30,7 @@ InexorCefApp::InexorCefApp(int width, int height)
 void InexorCefApp::InitHudLayer()
 {
     std::string layer_name("hud");
-    std::string layer_url("http://localhost:31416/api/v1/interfaces/ui-client-hud/public/index.html");
+    std::string layer_url("http://localhost:31416/api/v1/interfaces/ui-client-hud/index.html");
     hud_layer = new layer::InexorHudLayer(layer_name, layer_url);
     hud_layer->Show();
     context_manager->AddSubContext(hud_layer);
@@ -41,7 +41,7 @@ void InexorCefApp::InitHudLayer()
 void InexorCefApp::InitConsoleLayer()
 {
     std::string layer_name("console");
-    std::string layer_url("http://localhost:31416/api/v1/interfaces/ui-console/public/index.html");
+    std::string layer_url("http://localhost:31416/api/v1/interfaces/ui-console/index.html");
     console_layer = new layer::InexorConsoleLayer(layer_name, layer_url);
     console_layer->Hide();
     context_manager->AddSubContext(console_layer);
