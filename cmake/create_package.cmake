@@ -75,3 +75,7 @@ set(CPACK_PACKAGE_INSTALL_DIRECTORY "Inexor")
 set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
 
 include(CPack)
+
+add_custom_target(package_debug
+              COMMAND ${CMAKE_CPACK_COMMAND} --debug --verbose --config CPackConfig.cmake
+              COMMENTS "Build package with debug and verbose output")
