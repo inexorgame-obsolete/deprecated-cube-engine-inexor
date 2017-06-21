@@ -29,7 +29,7 @@ class InexorConan(ConanFile):
         self.run('cmake "{}" {} {}'.format(self.conanfile_directory, cmake.command_line, ' '.join(args)))
         self.run('cmake --build . --target install {}'.format(cmake.build_config))
         if self.scope.create_package:
-            self.run('cmake --build . --target package {}'.format(cmake.build_config))
+            self.run('cmake --build . --target package_debug {}'.format(cmake.build_config))
 
     def imports(self):
         self.copy("*.dll", dst="bin", src="bin") # From bin to bin
