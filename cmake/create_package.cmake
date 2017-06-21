@@ -24,6 +24,9 @@ list(APPEND INSTALL_FILES ${INSTALL_FILES_STARTUP})
 
 install_file_hierarchy("./" ${INSTALL_FILES})
 
+set(INSTALL_FOLDERS dist)
+install(DIRECTORY ${INSTALL_FOLDERS} DESTINATION "./")
+
 set(DEPENDENCY_LIST_FILE "dependencies.md" CACHE STRING "If DEPENDENCY_LIST_FILE is specified we will save all dependencies including their licenses to this file.")
 if(DEPENDENCY_LIST_FILE)
   include(cmake/get_conan_dependency_list.cmake)
