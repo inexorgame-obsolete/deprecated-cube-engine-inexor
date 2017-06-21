@@ -12,24 +12,17 @@ function(install_file_hierarchy DESTINATION_FOLDER)
   endforeach()
 endfunction()
 
-# Generate the documentation using doxygen.
-install(CODE "execute_process(COMMAND doxygen doxygen.conf WORKING_DIRECTORY ${MAINDIR})")
-install(DIRECTORY "${MAINDIR}/doc/" DESTINATION "doc")
+# Normal game bundle
 
 set(INSTALL_FILES changelog.md contributing.md readme.md credits.md license.md master.cfg server-init.cfg)
 if(OS_WINDOWS)
   set(INSTALL_FILES_STARTUP inexor.bat server.bat) # used as links in the startmenu
 elseif(OS_LINUX)
   set(INSTALL_FILES_STARTUP inexor_unix) # used as links in the startmenu
-  list(APPEND INSTALL_FILES ${INSTALL_FILES_STARTUP})
 endif()
-
-set(INSTALL_FILES_DEV CMakeLists.txt conanfile.py doxygen.conf tool/create_visual_studio2015_project.bat tool/create_visual_studio2017_project.bat)
-set(INSTALL_FOLDERS_DEV cmake inexor)
+list(APPEND INSTALL_FILES ${INSTALL_FILES_STARTUP})
 
 install_file_hierarchy("./" ${INSTALL_FILES})
-install_file_hierarchy("./" ${INSTALL_FILES_DEV})
-install(DIRECTORY ${INSTALL_FOLDERS_DEV} DESTINATION "./")
 
 set(DEPENDENCY_LIST_FILE "dependencies.md" CACHE STRING "If DEPENDENCY_LIST_FILE is specified we will save all dependencies including their licenses to this file.")
 if(DEPENDENCY_LIST_FILE)
@@ -39,6 +32,22 @@ if(DEPENDENCY_LIST_FILE)
   message(STATUS "Created DEPENDENCY_LIST_FILE: ${DEPENDENCY_LIST_FILE}")
   install_file_hierarchy("./" ${DEPENDENCY_LIST_FILE})
 endif()
+
+# Developer files bundle
+
+option(PACK_DEV_FILES "Bundle development files with the package" OFF)
+
+if(PACK_DEV_FILES)
+  set(INSTALL_FILES_DEV CMakeLists.txt conanfile.py doxygen.conf tool/create_visual_studio2015_project.bat tool/create_visual_studio2017_project.bat)
+  set(INSTALL_FOLDERS_DEV cmake inexor)
+  install_file_hierarchy("./" ${INSTALL_FILES_DEV})
+  install(DIRECTORY ${INSTALL_FOLDERS_DEV} DESTINATION "./")
+
+  # Generate the documentation using doxygen.
+  install(CODE "execute_process(COMMAND doxygen doxygen.conf WORKING_DIRECTORY ${MAINDIR})")
+  install(DIRECTORY "${MAINDIR}/doc/" DESTINATION "doc")
+endif()
+
 
 set(PACKAGE_GENERATORS_DEFAULT ZIP)
 
@@ -57,7 +66,6 @@ if(NOT ENV_VERSION)
 else()
   set(CPACK_PACKAGE_VERSION "${ENV_VERSION}" CACHE STRING "Complete version of the created package.")
 endif()
-
 
 
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "Inexor")
