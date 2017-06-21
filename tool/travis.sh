@@ -75,11 +75,11 @@ install_tool() {
 
 install_linux() {
   apt-key adv --keyserver keyserver.ubuntu.com --recv-keys FB1BF5BF09FA0AB7
-  
+
   add-apt-repository -y "deb http://ppa.launchpad.net/zoogie/sdl2-snapshots/ubuntu trusty main"
   install_wily_repo
   apt-get update
-  
+
 
   install_tool
 
@@ -195,11 +195,11 @@ create_tag() {
       "Skipping tag creation, because this build\n" \
       "got triggered by a tag.\n" \
       "===============\n"
-  elif [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then 
+  elif [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
     # direct push to master
 
     export new_version=$(incremented_version)
-    
+
     git config --global user.email "travis@travis-ci.org"
     git config --global user.name "Travis"
 
@@ -288,7 +288,7 @@ tool="`dirname "$0"`"
 code="${tool}/.."
 bin="${code}/bin"
 
-export main_repo="inexor-game/code"
+export main_repo="inexorgame/inexor-core"
 export branch="$TRAVIS_BRANCH" # The branch we're on
 export jobno="$TRAVIS_JOB_NUMBER" # The job number
 export commit="${TRAVIS_COMMIT}"

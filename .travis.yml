@@ -34,7 +34,7 @@ matrix:
       env: TARGET=apidoc
       git:
         submodules: false
- 
+
     - os: linux
       sudo: required
       dist: trusty
@@ -66,8 +66,7 @@ deploy:
     # Deploy only if build was caused by a tag push.
     tags: true
     condition: "$CC = gcc"
-    repo: inexor-game/code
+    repo: inexorgame/inexor-core
 
 after_deploy:
-  - bash tool/travis.sh target_after_deploy 
-
+  - bash tool/travis.sh target_after_deploy
