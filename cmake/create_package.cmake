@@ -16,7 +16,7 @@ endfunction()
 install(CODE "execute_process(COMMAND doxygen doxygen.conf WORKING_DIRECTORY ${MAINDIR})")
 install(DIRECTORY "${MAINDIR}/doc/" DESTINATION "doc")
 
-set(INSTALL_FILES changelog.md contributing.md readme.md credits.md license.md master.cfg server-init.cfg media/readme.md)
+set(INSTALL_FILES changelog.md contributing.md readme.md credits.md license.md master.cfg server-init.cfg)
 if(OS_WINDOWS)
   set(INSTALL_FILES_STARTUP inexor.bat server.bat) # used as links in the startmenu
 elseif(OS_LINUX)
