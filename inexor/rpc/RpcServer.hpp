@@ -9,6 +9,7 @@
 #include <queue>
 #include <functional>
 #include <chrono>
+#include <thread>
 
 #include <grpc/grpc.h>
 #include <grpc++/grpc++.h>
@@ -356,18 +357,10 @@ inline void RpcServer<MSG_TYPE, ASYNC_SERVICE_TYPE>::block_until_initialized()
     auto time_start = steady_clock::now();
     while(initialized != true)
     {
-        //if(duration_cast<seconds>(steady_clock::now()-time_start).count()> 10)
-        //{
-        //    spdlog::get("global")->error("[GRPC Server] No startup synchronisation finished event received after 10 seconds."); 
-        //    break;
-        //}
-
         callback_event *callback_value;
         bool no_internal_grpc_error = false;
-
-        CompletionQueue::NextStatus stat = cq->AsyncNext((void **)(&callback_value), &no_internal_grpc_error, gpr_inf_past(GPR_CLOCK_REALTIME));
-
-        if(no_internal_grpc_error && stat == CompletionQueue::NextStatus::GOT_EVENT)
+        bool regularEvent = cq->Next((void **)(&callback_value), &no_internal_grpc_error);
+        if(no_internal_grpc_error && regularEvent)
         {
             handle_queue_event(callback_value, false, [&](const MSG_TYPE &msg) {
                 int64 index = msg.key_case();
@@ -380,7 +373,7 @@ inline void RpcServer<MSG_TYPE, ASYNC_SERVICE_TYPE>::block_until_initialized()
                 this->change_variable(msg);
             });
         }
-        else if(stat == CompletionQueue::NextStatus::SHUTDOWN)
+        else if(!regularEvent)
         {
             std::string error_message("[GRPC Server] Completion Queue Shutdown status received (in init)..");
             throw std::runtime_error(error_message);
