@@ -1,4 +1,5 @@
 #pragma once
+#include "inexor/shared/cube_vector.hpp"
 
 
 // game mode specific code
@@ -122,4 +123,13 @@ static struct gamemodeinfo
 #define m_timed        (m_checknot(gamemode, M_DEMO|M_EDIT|M_LOCAL))
 #define m_botmode      (m_checknot(gamemode, M_DEMO|M_LOCAL))
 #define m_mp(mode)     (m_checknot(mode, M_LOCAL))
+
+/// shortens a list of mode groups ("[<operator>]<modetype>") into a bitmask.
+/// Input may be "?ctf" "!?collect" "*capture" which would do:
+///  operator ? adds this to the bitmask (so ctf modes are added)
+///  operator !? means AND (so after the second entry got evaluated only modes which are ctf AND collect modes are left)
+///  operator * is equivalent to add this if its not edit mode or anything local.
+///  operator ! means REVERT (so "?ctf", "!instactf" means all ctf-gamemodes but instactf)
+/// Input could also be the gamemode number (e.g. "21", "3") or the gamemode name ("ctf", "collect")
+extern int genmodemask(vector<char *> &modes);
 
