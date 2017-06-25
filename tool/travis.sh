@@ -67,6 +67,7 @@ upload() {
 
 install_wily_repo() {
   echo -e "\ndeb http://archive.ubuntu.com/ubuntu wily "{main,multiverse,universe,restricted} >> /etc/apt/sources.list
+  echo -e "\ndeb http://archive.ubuntu.com/ubuntu zesty "{main,multiverse,universe,restricted} >> /etc/apt/sources.list
 }
 
 install_tool() {
@@ -111,7 +112,7 @@ install_linux_clang() {
 }
 install_linux_gcc() {
   install_linux
-  apt-get -y -t wily install gcc-5 g++-5
+  apt-get -y -t zesty install gcc-5 g++-5
 }
 install_apidoc() {
   apt-get update
@@ -201,11 +202,11 @@ create_tag() {
       "Skipping tag creation, because this build\n" \
       "got triggered by a tag.\n" \
       "===============\n"
-  elif [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then 
+  elif [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
     # direct push to master
 
     export new_version=$(incremented_version)
-    
+
     git config --global user.email "travis@travis-ci.org"
     git config --global user.name "Travis"
 
