@@ -64,3 +64,9 @@ int genmodemask(vector<char *> &modes)
     }
     return modemask;
 }
+
+const char *modename(int n, const char *unknown)
+{
+    if(m_valid(n)) return gamemodes[n - STARTGAMEMODE].name;
+    return unknown;
+}

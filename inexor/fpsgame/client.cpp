@@ -342,7 +342,7 @@ namespace game
     ICOMMAND(isadmin, "i", (int *cn), intret(isadmin(*cn) ? 1 : 0));
 
     ICOMMAND(getmastermode, "", (), intret(mastermode));
-    ICOMMAND(mastermodename, "i", (int *mm), result(server::mastermodename(*mm, "")));
+    ICOMMAND(mastermodename, "i", (int *mm), result(mastermodename(*mm, "")));
 
     bool isspectator(int cn)
     {
@@ -524,7 +524,7 @@ namespace game
     {
         if(multiplayer(false) && !m_mp(mode))
         {
-            spdlog::get("gameplay")->error("mode {0} ({1}) not supported in multiplayer", server::modename(mode), mode);
+            spdlog::get("gameplay")->error("mode {0} ({1}) not supported in multiplayer", modename(mode), mode);
             loopi(NUMGAMEMODES) if(m_mp(STARTGAMEMODE + i)) { mode = STARTGAMEMODE + i; break; }
         }
 
@@ -545,7 +545,7 @@ namespace game
     {
         if(multiplayer(false) && !m_mp(mode))
         {
-            spdlog::get("gameplay")->error("mode {0} ({1}) not supported in multiplayer", server::modename(mode), mode);
+            spdlog::get("gameplay")->error("mode {0} ({1}) not supported in multiplayer", modename(mode), mode);
             intret(0);
             return;
         }
@@ -1964,7 +1964,7 @@ namespace game
                 if(mm != mastermode)
                 {
                     mastermode = mm;
-                    spdlog::get("gameplay")->info("mastermode is {0} ({1})", server::mastermodename(mastermode), mastermode);
+                    spdlog::get("gameplay")->info("mastermode is {0} ({1})", mastermodename(mastermode), mastermode);
                 }
                 break;
             }
@@ -1972,7 +1972,7 @@ namespace game
             case N_MASTERMODE:
             {
                 mastermode = getint(p);
-                spdlog::get("gameplay")->info("mastermode is {0} ({1})", server::mastermodename(mastermode), mastermode);
+                spdlog::get("gameplay")->info("mastermode is {0} ({1})", mastermodename(mastermode), mastermode);
                 break;
             }
 

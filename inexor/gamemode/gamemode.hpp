@@ -133,3 +133,6 @@ static struct gamemodeinfo
 /// Input could also be the gamemode number (e.g. "21", "3") or the gamemode name ("ctf", "collect")
 extern int genmodemask(vector<char *> &modes);
 
+/// Returns the name of the gamemode number n.
+/// If n does not specify a correct gamemode, it returns the "unknown" string.
+extern const char *modename(int n, const char *unknown = "unknown");

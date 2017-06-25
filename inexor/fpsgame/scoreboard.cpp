@@ -147,7 +147,7 @@ namespace game
      
         g.pushlist();
         g.spring();
-        g.text(server::modename(gamemode), 0xFFFF80);
+        g.text(modename(gamemode), 0xFFFF80);
         g.separator();
         const char *mname = getclientmap();
         g.text(mname[0] ? mname : "[new map]", 0xFFFF80);
