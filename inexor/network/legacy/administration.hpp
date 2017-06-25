@@ -29,3 +29,8 @@ enum
 /// static strings for server description in master server list
 static const char * const mastermodenames[] ={"default",   "open",   "veto",   "locked",     "private",    "password"};
 
+/// Gives back the mastermode name based on the index. If index is out of range, gives back the given unknown-string.
+inline const char *mastermodename(int n, const char *unknown = "unknown")
+{
+    return (n>=MM_START && size_t(n-MM_START)<sizeof(mastermodenames)/sizeof(mastermodenames[0])) ? mastermodenames[n-MM_START] : unknown;
+}

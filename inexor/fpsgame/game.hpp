@@ -193,8 +193,6 @@ namespace game
 
 namespace server
 {
-    extern const char *modename(int n, const char *unknown = "unknown");
-    extern const char *mastermodename(int n, const char *unknown = "unknown");
     extern void startintermission();
     extern void stopdemo();
 }

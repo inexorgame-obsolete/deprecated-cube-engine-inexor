@@ -330,19 +330,6 @@ namespace server
     vector<server_entity> sents;
     vector<savedscore> scores;
 
-    // gamemode
-    const char *modename(int n, const char *unknown)
-    {
-        if(m_valid(n)) return gamemodes[n - STARTGAMEMODE].name;
-        return unknown;
-    }
-
-    // client managment
-    const char *mastermodename(int n, const char *unknown)
-    {
-        return (n>=MM_START && size_t(n-MM_START)<sizeof(mastermodenames)/sizeof(mastermodenames[0])) ? mastermodenames[n-MM_START] : unknown;
-    }
-
     // server only network
     void sendservmsg(const char *s) { sendf(-1, 1, "ris", N_SERVMSG, s); }
     void sendservmsgf(const char *fmt, ...)

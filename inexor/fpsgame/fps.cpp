@@ -650,7 +650,7 @@ namespace game
             cmode->setup();
         }
 
-        spdlog::get("gameplay")->info("game mode is {}", server::modename(gamemode));
+        spdlog::get("gameplay")->info("game mode is {}", modename(gamemode));
 
         if(player1->playermodel != playermodel) switchplayermodel(playermodel);
 
@@ -682,7 +682,7 @@ namespace game
 
     const char *getclientmode()
     {
-        return server::modename(gamemode, NULL);
+        return modename(gamemode, NULL);
     }
 
     /// trigger sound effects depending on the material you enter
