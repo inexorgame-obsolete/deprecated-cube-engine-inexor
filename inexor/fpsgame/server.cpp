@@ -109,11 +109,11 @@ namespace server
         string map;
 
         long calcmodemask() const { return modes&((long)1<<NUMGAMEMODES) ? modes & ~exclude : modes; }
-        bool hasmode(int mode, int offset = STARTGAMEMODE) const { return (calcmodemask() & (1 << (mode-offset))) != 0; }
+        bool hasmode(int mode, int offset = 0) const { return (calcmodemask() & (1 << (mode-offset))) != 0; }
 
         int findmode(int mode) const
         {
-            if(!hasmode(mode)) loopi(NUMGAMEMODES) if(hasmode(i, 0)) return i+STARTGAMEMODE;
+            if(!hasmode(mode)) loopi(NUMGAMEMODES) if(hasmode(i, 0)) return i;
             return mode;
         }
 
@@ -177,7 +177,7 @@ namespace server
 
     bool addmaprotation(int modemask, const char *map)
     {
-        if(!map[0]) loopk(NUMGAMEMODES) if(modemask&(1<<k) && !m_check(k+STARTGAMEMODE, M_EDIT)) modemask &= ~(1<<k);
+        if(!map[0]) loopk(NUMGAMEMODES) if(modemask&(1<<k) && !m_check(k, M_EDIT)) modemask &= ~(1<<k);
         if(!modemask) return false;
         if(!(modemask&((long)1<<NUMGAMEMODES))) maprotation::exclude |= modemask;
         maprotation &rot = maprotations.add();
@@ -254,7 +254,7 @@ namespace server
 
         bool match(int mode) const
         {
-            return (modes&(1<<(mode-STARTGAMEMODE)))!=0;
+            return (modes&(1<<(mode)))!=0;
         }
 
         bool includes(const teamkillkick &tk) const
@@ -620,7 +620,7 @@ namespace server
 
     void setupdemorecord()
     {
-        if(!m_mp(gamemode) || m_edit) return;
+        if(m_edit) return;
 
         demotmp = opentempfile("demorecord", "w+b");
         if(!demotmp) return;
@@ -781,7 +781,7 @@ namespace server
         }
     }
 
-    void stopdemo()
+    void stopdemo() 
     {
         if(m_demo) enddemoplayback();
         else enddemorecord();
@@ -1318,7 +1318,7 @@ namespace server
             sendstring(ci->team, p);
             putint(p, -1);
         }
-        if(ci && (m_demo || m_mp(gamemode)) && ci->state.state!=CS_SPECTATOR)
+        if(ci && ci->state.state!=CS_SPECTATOR)
         {
             if(smode && !smode->canspawn(ci, true))
             {
@@ -1412,7 +1412,7 @@ namespace server
             server_entity se = { NOTUSED, 0, false };
             while(sents.length()<=i) sents.add(se);
             sents[i].type = ments[i].type;
-            if(m_mp(gamemode) && entities::delayspawn(sents[i].type)) sents[i].spawntime = spawntime(sents[i].type);
+            if(entities::delayspawn(sents[i].type)) sents[i].spawntime = spawntime(sents[i].type);
             else sents[i].spawned = true;
         }
         notgotitems = false;
@@ -1478,8 +1478,7 @@ namespace server
         if(smode)
         {
             smode->setup();
-            if(m_mp(gamemode))
-                loopv(clients)
+            loopv(clients)
             {
                 clientinfo* ci = clients[i];
                 if(ci->state.state == CS_SPECTATOR) continue;
@@ -1495,7 +1494,7 @@ namespace server
             loopv(clients)
             {
                 clientinfo *ci = clients[i];
-                if(m_mp(gamemode) && ci->state.state!=CS_SPECTATOR) sendspawn(ci);
+                if(ci->state.state!=CS_SPECTATOR) sendspawn(ci);
             }
         }
     }
@@ -1564,7 +1563,7 @@ namespace server
     void vote(const char *map, int reqmode, int sender)
     {
         clientinfo *ci = getinfo(sender);
-        if(!ci || (ci->state.state==CS_SPECTATOR && !ci->privilege && !ci->local) || (!ci->local && !m_mp(reqmode))) return;
+        if(!ci || (ci->state.state==CS_SPECTATOR && !ci->privilege)) return;
         if(!m_valid(reqmode)) return;
         if(!map[0] && !m_check(reqmode, M_EDIT))
         {
@@ -1826,7 +1825,7 @@ namespace server
     void pickupevent::process(clientinfo *ci)
     {
         gamestate &gs = ci->state;
-        if(m_mp(gamemode) && !gs.isalive(gamemillis)) return;
+        if(!gs.isalive(gamemillis)) return;
         pickup(ent, ci->clientnum);
     }
 
@@ -2628,7 +2627,7 @@ namespace server
                     sents[n].type = getint(p);
                     if(canspawnitem(sents[n].type))
                     {
-                        if(m_mp(gamemode) && entities::delayspawn(sents[n].type)) sents[n].spawntime = spawntime(sents[n].type);
+                        if(entities::delayspawn(sents[n].type)) sents[n].spawntime = spawntime(sents[n].type);
                         else sents[n].spawned = true;
                     }
                 }
@@ -3018,7 +3017,7 @@ namespace server
         putint(p, gamemode);
         putint(p, m_timed ? max((gamelimit - gamemillis)/1000, 0) : 0);
         putint(p, maxclients);
-        putint(p, serverpass[0] ? MM_PASSWORD : (!m_mp(gamemode) ? MM_PRIVATE : (mastermode || mastermask&MM_AUTOAPPROVE ? mastermode : MM_START)));
+        putint(p, serverpass[0] ? MM_PASSWORD : (mastermode || mastermask&MM_AUTOAPPROVE ? mastermode : MM_START));
         if(gamepaused || gamespeed != 100)
         {
             putint(p, gamepaused ? 1 : 0);

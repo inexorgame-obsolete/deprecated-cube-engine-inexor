@@ -522,12 +522,6 @@ namespace game
     /// @see startgame
     void changemapserv(const char *name, int mode)
     {
-        if(multiplayer(false) && !m_mp(mode))
-        {
-            spdlog::get("gameplay")->error("mode {0} ({1}) not supported in multiplayer", modename(mode), mode);
-            loopi(NUMGAMEMODES) if(m_mp(STARTGAMEMODE + i)) { mode = STARTGAMEMODE + i; break; }
-        }
-
         gamemode = mode;
         nextmode = mode;
         if(editmode) toggleedit();
@@ -543,26 +537,19 @@ namespace game
 	/// force server to change game mode (permissions required)
     void setmode(int mode)
     {
-        if(multiplayer(false) && !m_mp(mode))
-        {
-            spdlog::get("gameplay")->error("mode {0} ({1}) not supported in multiplayer", modename(mode), mode);
-            intret(0);
-            return;
-        }
         nextmode = mode;
         intret(1);
     }
 
-	/// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	/// cubescript interface
+// cubescript interface
 
-	/// set game mode
+    /// set game mode
     ICOMMAND(mode, "i", (int *val), setmode(*val));
 
-	/// get game mode in cubescript
+    /// get game mode in cubescript
     ICOMMAND(getmode, "", (), intret(gamemode));
 
-	/// return remaining time
+    /// return remaining time
     ICOMMAND(timeremaining, "i", (int *formatted), 
     {
         int val = max(maplimit - lastmillis, 0)/1000;
@@ -2146,8 +2133,8 @@ namespace game
         }
     }
 
-	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	// server communication about demos and maps
+
+  // server communication about demos and maps
 
     void getmap()
     {
@@ -2159,12 +2146,8 @@ namespace game
 
     void stopdemo()
     {
-        if(remote)
-        {
-            if(player1->privilege<PRIV_MASTER) return;
-            addmsg(N_STOPDEMO, "r");
-        }
-        else server::stopdemo();
+        if(player1->privilege<PRIV_MASTER) return;
+        addmsg(N_STOPDEMO, "r");
     }
     COMMAND(stopdemo, ""); 
 
