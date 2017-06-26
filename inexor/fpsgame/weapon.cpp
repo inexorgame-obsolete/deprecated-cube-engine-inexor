@@ -399,30 +399,26 @@ namespace game
         f->lastpain = lastmillis;
         if(at->type==ENT_PLAYER && !isteam(at->team, f->team)) at->totaldamage += damage;
 
-        if(f->type==ENT_AI || !m_mp(gamemode) || f==at) f->hitpush(damage, vel, at, gun);
+        if(f->type==ENT_AI || f==at) f->hitpush(damage, vel, at, gun);
 
         if(f->type==ENT_AI) return;
 
-        if(!m_mp(gamemode)) damaged(damage, f, at);
-        else
+        hitmsg &h = hits.add();
+        h.target = f->clientnum;
+        h.lifesequence = f->lifesequence;
+        h.info1 = int(info1*DMF);
+        h.info2 = info2;
+        h.dir = f==at ? ivec(0, 0, 0) : ivec(vec(vel).mul(DNF));
+        if(at==player1)
         {
-            hitmsg &h = hits.add();
-            h.target = f->clientnum;
-            h.lifesequence = f->lifesequence;
-            h.info1 = int(info1*DMF);
-            h.info2 = info2;
-            h.dir = f==at ? ivec(0, 0, 0) : ivec(vec(vel).mul(DNF));
-            if(at==player1)
+            damageeffect(damage, f);
+            if(f==player1)
             {
-                damageeffect(damage, f);
-                if(f==player1)
-                {
-                    damageblend(damage);
-                    damagecompass(damage, at ? at->o : f->o);
-                    playsound(S_PAIN6);
-                }
-                else playsound(S_PAIN1+rnd(5), &f->o);
+                damageblend(damage);
+                damagecompass(damage, at ? at->o : f->o);
+                playsound(S_PAIN6);
             }
+            else playsound(S_PAIN1+rnd(5), &f->o);
         }
     }
 

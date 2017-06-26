@@ -194,6 +194,5 @@ namespace game
 namespace server
 {
     extern void startintermission();
-    extern void stopdemo();
 }
 

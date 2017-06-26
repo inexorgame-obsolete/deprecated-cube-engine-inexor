@@ -108,28 +108,15 @@ namespace game
         return d;
     }
 
-    /// Send "I would like to spawn" to server in multiplayer
-    /// try to spawn yourself in singleplayer
-    /// @see addmsg
-    /// @see spawnplayer
+    /// Send "I would like to spawn" to server
     void respawnself()
     {
         if(ispaused()) return;
-        if(m_mp(gamemode))
+        int seq = (player1->lifesequence<<16)|((lastmillis/1000)&0xFFFF);
+        if(player1->respawned!=seq) 
         {
-            int seq = (player1->lifesequence<<16)|((lastmillis/1000)&0xFFFF);
-            if(player1->respawned!=seq) 
-			{
-				addmsg(N_TRYSPAWN, "rc", player1);
-				player1->respawned = seq;
-			}
-        }
-        else
-        {
-            spawnplayer(player1);
-            showscores(false);
-            lasthit = 0;
-            if(cmode) cmode->respawned(player1);
+            addmsg(N_TRYSPAWN, "rc", player1);
+            player1->respawned = seq;
         }
     }
 
@@ -670,8 +657,7 @@ namespace game
         ai::clearwaypoints(true);
 
         respawnent = -1; // so we don't respawn at an old spot
-        if(!m_mp(gamemode)) spawnplayer(player1);
-        else findplayerspawn(player1, -1);
+        findplayerspawn(player1, -1);
         entities::resetspawns();
         copystring(clientmap, name ? name : "");
         
@@ -803,12 +789,8 @@ namespace game
         {
             if(d->state!=CS_ALIVE) return;
             fpsent *pl = (fpsent *)d;
-            if(!m_mp(gamemode)) killed(pl, pl);
-            else 
-            {
-                int seq = (pl->lifesequence<<16)|((lastmillis/1000)&0xFFFF);
-                if(pl->suicided!=seq) { addmsg(N_SUICIDE, "rc", pl); pl->suicided = seq; }
-            }
+            int seq = (pl->lifesequence<<16)|((lastmillis/1000)&0xFFFF);
+            if(pl->suicided!=seq) { addmsg(N_SUICIDE, "rc", pl); pl->suicided = seq; }
         }
         else if(d->type==ENT_INANIMATE) suicidemovable((movable *)d);
     }

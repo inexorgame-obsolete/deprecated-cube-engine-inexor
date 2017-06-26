@@ -22,7 +22,7 @@ enum
     M_OVERTIME   = 1<<11,  /// game mode has longer matches
     M_EDIT       = 1<<12,  /// game mode allows cooperative editing (coopedit)
     M_DEMO       = 1<<13,  /// game mode is a demo playback
-    M_LOCAL      = 1<<14,  /// game mode is played in singleplayer only (locally)
+    // old: M_LOCAL      = 1<<14,  /// game mode is played in singleplayer only (locally)
     M_LOBBY      = 1<<15,  /// game mode does not imply certain (good vs evil) grouped gameplay but also allows to built lobbys (pseudoteams working against each other)
     M_DMSP       = 1<<16,  /// death match single player
     M_CLASSICSP  = 1<<17,  /// classic singleplayer
@@ -44,9 +44,7 @@ static struct gamemodeinfo
     int flags;        /// a bitmask container (see flags above)
 } gamemodes[] =
 {
-    {"SP", M_LOCAL | M_CLASSICSP},
-    {"DMSP", M_LOCAL | M_DMSP},
-    {"demo", M_DEMO | M_LOCAL},
+    {"demo", M_DEMO},
     {"ffa", M_LOBBY},
     {"coop edit", M_EDIT},
     {"teamplay", M_TEAM},
@@ -77,22 +75,18 @@ static struct gamemodeinfo
 
 // game mode validation and attribute handling
 
-/// the first 3 game modes are not used in multiplayer
-#define STARTGAMEMODE (-3)
-
 /// macro to determine the amount of available game modes
-/// division: (size of array) / (size of one gamemodeinfo instance)
 #define NUMGAMEMODES ((int)(sizeof(gamemodes)/sizeof(gamemodes[0])))
 
 /// validate game mode number (array index)
-#define m_valid(mode)          ((mode) >= STARTGAMEMODE && (mode) < STARTGAMEMODE + NUMGAMEMODES)
+#define m_valid(mode)          ((mode) >= 0 && (mode) < NUMGAMEMODES)
 /// validate game mode number and attribute (to check if this gamemode has items or bases e.g.)
-#define m_check(mode, flag)    (m_valid(mode) && gamemodes[(mode) - STARTGAMEMODE].flags&(flag))
+#define m_check(mode, flag)    (m_valid(mode) && gamemodes[(mode)].flags&(flag))
 /// validate game mode number and check if game mode does NOT have these attribuges
-#define m_checknot(mode, flag) (m_valid(mode) && !(gamemodes[(mode) - STARTGAMEMODE].flags&(flag)))
+#define m_checknot(mode, flag) (m_valid(mode) && !(gamemodes[(mode)].flags&(flag)))
 /// validate game mode number and check if game mode supports parameter flag bit masks
 /// to check if this game mode supports multiple attributes (EFFICIENCY | CTF  e.g.)
-#define m_checkall(mode, flag) (m_valid(mode) && (gamemodes[(mode) - STARTGAMEMODE].flags&(flag)) == (flag))
+#define m_checkall(mode, flag) (m_valid(mode) && (gamemodes[(mode)].flags&(flag)) == (flag))
 
 /// those game mode check macros are built on top of the layer above
 #define m_noitems      (m_check(gamemode, M_NOITEMS))
@@ -120,9 +114,8 @@ static struct gamemodeinfo
 #define m_demo         (m_check(gamemode, M_DEMO))
 #define m_edit         (m_check(gamemode, M_EDIT))
 #define m_lobby        (m_check(gamemode, M_LOBBY))
-#define m_timed        (m_checknot(gamemode, M_DEMO|M_EDIT|M_LOCAL))
-#define m_botmode      (m_checknot(gamemode, M_DEMO|M_LOCAL))
-#define m_mp(mode)     (m_checknot(mode, M_LOCAL))
+#define m_timed        (m_checknot(gamemode, M_DEMO|M_EDIT))
+#define m_botmode      (m_checknot(gamemode, M_DEMO))
 
 /// shortens a list of mode groups ("[<operator>]<modetype>") into a bitmask.
 /// Input may be "?ctf" "!?collect" "*capture" which would do:

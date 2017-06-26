@@ -38,7 +38,7 @@ int genmodemask(vector<char *> &modes)
         {
             case '*':
                 modemask |= (long)1<<NUMGAMEMODES;
-                loopk(NUMGAMEMODES) if(m_checknot(k+STARTGAMEMODE, M_DEMO|M_EDIT|M_LOCAL)) modemask |= 1<<k;
+                loopk(NUMGAMEMODES) if(m_checknot(k, M_DEMO|M_EDIT)) modemask |= 1<<k;
                 continue;
             case '!':
                 mode++;
@@ -54,12 +54,12 @@ int genmodemask(vector<char *> &modes)
         }
         int modenum = INT_MAX;
         if(isdigit(mode[0])) modenum = atoi(mode);
-        else loopk(NUMGAMEMODES) if(searchmodename(gamemodes[k].name, mode)) { modenum = k+STARTGAMEMODE; break; }
+        else loopk(NUMGAMEMODES) if(searchmodename(gamemodes[k].name, mode)) { modenum = k; break; }
         if(!m_valid(modenum)) continue;
         switch(op)
         {
-            case '!': modemask &= ~(1 << (modenum - STARTGAMEMODE)); break;
-            default: modemask |= 1 << (modenum - STARTGAMEMODE); break;
+            case '!': modemask &= ~(1 << (modenum)); break;
+            default: modemask |= 1 << (modenum); break;
         }
     }
     return modemask;
@@ -67,6 +67,6 @@ int genmodemask(vector<char *> &modes)
 
 const char *modename(int n, const char *unknown)
 {
-    if(m_valid(n)) return gamemodes[n - STARTGAMEMODE].name;
+    if(m_valid(n)) return gamemodes[n].name;
     return unknown;
 }
