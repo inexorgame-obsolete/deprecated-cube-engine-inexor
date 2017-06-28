@@ -17,6 +17,9 @@ namespace server
 {
 
     int gamemode = 0;
+    // TODO move:
+extern void flushserver(bool force);
+extern int getservermtu();
 
     struct savedscore
     {
@@ -420,7 +423,7 @@ namespace server
     bool pickup(int i, int sender)         // server side item pickup, acknowledge first client that gets it
     {
         if((m_timed && gamemillis>=gamelimit) || !sents.inrange(i) || !sents[i].spawned) return false;
-        clientinfo *ci = getinfo(sender);
+        clientinfo *ci = get_client_info(sender);
         if(!ci || (!ci->local && !ci->state.canpickup(sents[i].type))) return false;
         sents[i].spawned = false;
         sents[i].spawntime = spawntime(sents[i].type);
@@ -883,7 +886,7 @@ namespace server
         int priv = ci->privilege;
         if((priv || ci->local) && ci->clientnum!=victim)
         {
-            clientinfo *vinfo = (clientinfo *)getclientinfo(victim);
+            clientinfo *vinfo = get_client_info(victim, false);
             if(vinfo && vinfo->connected && (priv >= vinfo->privilege || ci->local) && vinfo->privilege < PRIV_ADMIN && !vinfo->local)
             {
                 if(trial) return true;
@@ -1554,7 +1557,7 @@ namespace server
 
     void vote(const char *map, int reqmode, int sender)
     {
-        clientinfo *ci = getinfo(sender);
+        clientinfo *ci = get_client_info(sender);
         if(!ci || (ci->state.state==CS_SPECTATOR && !ci->privilege)) return;
         if(!m_valid(reqmode)) return;
         if(!map[0] && !m_check(reqmode, M_EDIT))
@@ -1756,7 +1759,7 @@ namespace server
         loopv(hits)
         {
             hitinfo &h = hits[i];
-            clientinfo *target = getinfo(h.target);
+            clientinfo *target = get_client_info(h.target);
             if(!target || target->state.state!=CS_ALIVE || h.lifesequence!=target->state.lifesequence || h.dist<0 || h.dist>guns[gun].exprad) continue;
 
             bool dup = false;
@@ -1800,7 +1803,7 @@ namespace server
                 loopv(hits)
                 {
                     hitinfo &h = hits[i];
-                    clientinfo *target = getinfo(h.target);
+                    clientinfo *target = get_client_info(h.target);
                     if(!target || target->state.state!=CS_ALIVE || h.lifesequence!=target->state.lifesequence || h.rays<1 || h.dist > guns[gun].range + 1) continue;
 
                     totalrays += h.rays;
@@ -2071,7 +2074,7 @@ namespace server
 
     int clientconnect(int n, uint ip)
     {
-        clientinfo *ci = getinfo(n);
+        clientinfo *ci = get_client_info(n);
         ci->clientnum = ci->ownernum = n;
         ci->connectmillis = totalmillis;
         ci->sessionid = (rnd(0x1000000)*((totalmillis%10000)+1))&0xFFFFFF;
@@ -2081,9 +2084,10 @@ namespace server
         return DISC_NONE;
     }
 
+    // TODO Merge with disconnect_client or rename this function
     void clientdisconnect(int n)
     {
-        clientinfo *ci = getinfo(n);
+        clientinfo *ci = get_client_info(n);
         if(ci->connected)
         {
             if(ci->privilege) setmaster(ci, false);
@@ -2094,7 +2098,7 @@ namespace server
             clients.removeobj(ci);
             aiman::removeai(ci);
             if(!numclients(-1, false, true)) noclients(); // bans clear when server empties
-            if(ci->local) checkpausegame();
+            checkpausegame();
         }
         else connects.removeobj(ci);
     }
@@ -2148,14 +2152,14 @@ namespace server
 
     bool allowbroadcast(int n)
     {
-        clientinfo *ci = getinfo(n);
+        clientinfo *ci = get_client_info(n);
         return ci && ci->connected;
     }
 
     void receivefile(int sender, uchar *data, int len)
     {
         if(!m_edit || len <= 0 || len > 4*1024*1024) return;
-        clientinfo *ci = getinfo(sender);
+        clientinfo *ci = get_client_info(sender);
         if(ci->state.state==CS_SPECTATOR && !ci->privilege && !ci->local) return;
         if(mapdata) DELETEP(mapdata);
         mapdata = opentempfile("mapdata", "w+b");
@@ -2215,7 +2219,7 @@ namespace server
         char text[MAXTRANS];
         int type;
         // the sender
-        clientinfo *ci = sender>=0 ? getinfo(sender) : NULL;
+        clientinfo *ci = sender>=0 ? get_client_info(sender) : NULL;
         // (probably) the sender OR the bot sending from the same sender
         clientinfo *cq = ci;
         // the receiver?
@@ -2279,7 +2283,7 @@ namespace server
                 int pcn = getuint(p); 
                 p.get(); 
                 uint flags = getuint(p);
-                clientinfo *cp = getinfo(pcn);
+                clientinfo *cp = get_client_info(pcn);
                 if(cp && pcn != sender && cp->ownernum != sender) cp = NULL;
                 vec pos;
                 loopk(3)
@@ -2315,7 +2319,7 @@ namespace server
             case N_TELEPORT:
             {
                 int pcn = getint(p), teleport = getint(p), teledest = getint(p);
-                clientinfo *cp = getinfo(pcn);
+                clientinfo *cp = get_client_info(pcn);
                 if(cp && pcn != sender && cp->ownernum != sender) cp = NULL;
                 if(cp && (!ci->local || demorecord || has_clients()) && (cp->state.state==CS_ALIVE || cp->state.state==CS_EDITING))
                 {
@@ -2328,7 +2332,7 @@ namespace server
             case N_JUMPPAD:
             {
                 int pcn = getint(p), jumppad = getint(p);
-                clientinfo *cp = getinfo(pcn);
+                clientinfo *cp = get_client_info(pcn);
                 if(cp && pcn != sender && cp->ownernum != sender) cp = NULL;
                 if(cp && (!ci->local || demorecord || has_clients()) && (cp->state.state==CS_ALIVE || cp->state.state==CS_EDITING))
                 {
@@ -2345,7 +2349,7 @@ namespace server
                 if(qcn < 0) cq = ci;
                 else
                 {
-                    cq = getinfo(qcn);
+                    cq = get_client_info(qcn);
                     if(cq && qcn != sender && cq->ownernum != sender) cq = NULL;
                 }
                 break;
@@ -2558,7 +2562,7 @@ namespace server
             //server receives private messages in the format "receivercn, text" and forwards it to the receiver with "sendercn, text"
                 int tcn = getint(p);
                 getstring(text, p);
-                clientinfo *rec = getinfo(tcn); //private message receiver
+                clientinfo *rec = get_client_info(tcn); //private message receiver
                 if(!ci || !cq || !rec || rec == cq || rec->state.aitype != AI_NONE) break;
 
                 sendf(rec->clientnum, 1, "riis", N_PRIVMSG, cq->clientnum, text);
@@ -2728,7 +2732,7 @@ namespace server
             {
                 int spectator = getint(p), val = getint(p);
                 if(!ci->privilege && !ci->local && (spectator!=sender || (ci->state.state==CS_SPECTATOR && mastermode>=MM_LOCKED))) break;
-                clientinfo *spinfo = (clientinfo *)getclientinfo(spectator); // no bots
+                clientinfo *spinfo = get_client_info(spectator, false);
                 if(!spinfo || !spinfo->connected || (spinfo->state.state==CS_SPECTATOR ? val : !val)) break;
 
                 if(spinfo->state.state!=CS_SPECTATOR && val) forcespectator(spinfo);
@@ -2744,7 +2748,7 @@ namespace server
                 getstring(text, p);
                 filtertext(text, text, false, false, MAXTEAMLEN);
                 if(!ci->privilege && !ci->local) break;
-                clientinfo *wi = getinfo(who);
+                clientinfo *wi = get_client_info(who);
                 if(!m_teammode || !text[0] || !wi || !wi->connected || !strcmp(wi->team, text)) break;
                 if((!smode || smode->canchangeteam(wi, wi->team, text)) && addteaminfo(text))
                 {
@@ -2836,7 +2840,7 @@ namespace server
                 if(mn != ci->clientnum)
                 {
                     if(!ci->privilege && !ci->local) break;
-                    clientinfo *minfo = (clientinfo *)getclientinfo(mn);
+                    clientinfo *minfo = get_client_info(mn, false);
                     if(!minfo || !minfo->connected || (!ci->local && minfo->privilege >= ci->privilege) || (val && minfo->privilege)) break;
                     setmaster(minfo, val!=0, "", true);
                 }

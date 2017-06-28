@@ -69,7 +69,7 @@ struct bombservermode : servmode, bombmode
                     loopv(spawnlocs)
                     {
                         if(spawnlocs[i]->cn == -1) continue;
-                        clientinfo* ci = getinfo(spawnlocs[i]->cn);
+                        clientinfo* ci = get_client_info(spawnlocs[i]->cn);
                         if(!ci || ci->state.state==CS_SPECTATOR || ci->state.aitype != AI_NONE || ci->clientmap[0] || ci->mapcrc) continue;
                         return;
                     }

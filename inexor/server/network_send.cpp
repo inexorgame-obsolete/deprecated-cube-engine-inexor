@@ -4,15 +4,17 @@
 #include "inexor/engine/engine.hpp" // TODO remove when allowbroadcast and recordpacket are moved.
 #include "inexor/network/legacy/cube_network.hpp"
 
+using namespace server; // TODO move this in there
+
 void sendpacket(int n, int chan, ENetPacket *packet, int exclude)
 {
     if(n<0)
     {
-        server::recordpacket(chan, packet->data, packet->dataLength);
-        loopv(clients) if(i!=exclude && server::allowbroadcast(i)) sendpacket(i, chan, packet);
+        recordpacket(chan, packet->data, packet->dataLength);
+        loopv(client_connections) if(i!=exclude && allowbroadcast(i)) sendpacket(i, chan, packet);
         return;
     }
-    if(clients[n]->connected) enet_peer_send(clients[n]->peer, chan, packet);
+    if(client_connections[n]->connected) enet_peer_send(client_connections[n]->peer, chan, packet);
 }
 
 // broadcast if cn = -1
@@ -77,7 +79,7 @@ void sendservmsgf(const char *fmt, ...)
 
 ENetPacket *sendfile(int cn, int chan, stream *file, const char *format, ...)
 {
-    if(!clients.inrange(cn)) return NULL;
+    if(!client_connections.inrange(cn)) return NULL;
 
     va_list args;
     va_start(args, format);
