@@ -62,7 +62,7 @@ namespace server
 
 
     bool notgotitems = true;        // true when map has changed and waiting for clients to send item
-    int gamemillis = 0, gamelimit = 0, nextexceeded = 0, gamespeed = 100;
+    int gamelimit = 0, nextexceeded = 0, gamespeed = 100;
     bool shouldstep = true;
 
     /// Whether team reshuffeling after map change is disabled.

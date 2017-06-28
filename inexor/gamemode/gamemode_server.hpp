@@ -16,8 +16,7 @@ extern string smapname;
 
 extern int interm;
 
-// TODO move to legacy_time.hpp
-extern int gamemillis, gamelimit;
+extern int gamelimit;
 
 extern vector<entity> ments;
 extern vector<server_entity> sents;

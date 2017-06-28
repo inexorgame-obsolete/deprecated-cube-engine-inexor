@@ -9,6 +9,7 @@ using std::chrono::milliseconds;
 
 
 int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1;
+int gamemillis = 0;
 uint totalsecs = 0;
 
 int scaletime(int time, int gamespeed)
