@@ -10,6 +10,7 @@ extern uint totalsecs;  // probably bc the server is longer running there was a 
 // note: virtual game milliseconds is scaled with the gamespeed and effected by a paused game.
 extern int curtime;                     // elapsed frame time since last updatetime() (in virtual game milliseconds)
 extern int lastmillis;                  // elapsed frame time since program start (in virtual game milliseconds)
+extern int gamemillis;                  // elapsed frame time since game start (in virtual game milliseconds)
 
 /// Updates the above global timing variables.
 /// @param is_paused if true we won't update any frame times.

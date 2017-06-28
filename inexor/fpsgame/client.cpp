@@ -515,7 +515,7 @@ namespace game
     /// ask the server to acquire CRC32 checksum of all player's maps (permissions requred)
     ICOMMAND(checkmaps, "", (), addmsg(N_CHECKMAPS, "r"));
 
-    int gamemode = INT_MAX, nextmode = INT_MAX;
+    int nextmode = INT_MAX;
     string clientmap = "";
 
     /// force server to change map (permissions required)

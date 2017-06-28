@@ -42,7 +42,7 @@ namespace server {
 
 static constexpr int DEATHMILLIS = 300;
 
-extern int gamemillis, nextexceeded;
+extern int nextexceeded;
 
 template <int N>
 struct projectilestate
