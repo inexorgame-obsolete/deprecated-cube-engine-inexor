@@ -1,6 +1,7 @@
 #pragma once
 #include "inexor/fpsgame/teaminfo.hpp"
 #include "inexor/fpsgame/fpsent.hpp"
+#include "inexor/fpsgame/entities.hpp"
 
 namespace game {
 
@@ -44,5 +45,8 @@ struct clientmode
     /// @return true if message got handled.
     virtual bool parse_network_message(int type, ucharbuf &p) = 0;
 };
+
+extern clientmode *cmode;
+extern void setclientmode();
 
 } // ns game

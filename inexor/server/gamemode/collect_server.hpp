@@ -1,7 +1,7 @@
 #pragma once
 #include "inexor/fpsgame/game.hpp"
 #include "inexor/gamemode/collect_common.hpp"
-#include "inexor/gamemode/gamemode_server.hpp"
+#include "inexor/server/gamemode/gamemode_server.hpp"
 
 namespace server {
 

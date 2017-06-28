@@ -3,10 +3,13 @@
 #include "inexor/server/client_management.hpp"
 #include "inexor/server/map_management.hpp"
 #include "inexor/fpsgame/game.hpp"
+#include "inexor/server/network_send.hpp"
 
 // TODO: make vector<players> extendable by mode
 
 namespace server {
+
+extern void startintermission();
 
 // true when map has changed and waiting for clients to send item
 extern bool notgotitems;

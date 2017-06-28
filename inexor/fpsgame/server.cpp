@@ -8,11 +8,11 @@
 #include "inexor/server/network_send.hpp"
 #include "inexor/server/demos.hpp"
 
-#include "inexor/gamemode/capture_server.hpp"
-#include "inexor/gamemode/ctf_server.hpp"
-#include "inexor/gamemode/collect_server.hpp"
-#include "inexor/gamemode/bomb_server.hpp"
-#include "inexor/gamemode/hideandseek_server.hpp"
+#include "inexor/server/gamemode/capture_server.hpp"
+#include "inexor/server/gamemode/ctf_server.hpp"
+#include "inexor/server/gamemode/collect_server.hpp"
+#include "inexor/server/gamemode/bomb_server.hpp"
+#include "inexor/server/gamemode/hideandseek_server.hpp"
 
 namespace server
 {

@@ -2,7 +2,7 @@
 #include "inexor/fpsgame/game.hpp"
 #include "inexor/engine/sound.hpp"
 #include "inexor/gamemode/collect_common.hpp"
-#include "inexor/gamemode/gamemode_client.hpp"
+#include "inexor/client/gamemode/gamemode_client.hpp"
 
 namespace game {
 

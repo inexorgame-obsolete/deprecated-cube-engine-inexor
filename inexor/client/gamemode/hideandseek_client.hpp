@@ -1,13 +1,15 @@
 #pragma once
 #include "inexor/fpsgame/game.hpp"
 #include "inexor/gamemode/hideandseek_common.hpp"
-#include "inexor/gamemode/gamemode_client.hpp"
+#include "inexor/client/gamemode/gamemode_client.hpp"
 
 
 #define ishider(ci) (strcmp(ci->team, TEAM_HIDE) == 0 && ci->state != CS_SPECTATOR ? true : false)
 #define isseeker(ci) (strcmp(ci->team, TEAM_SEEK) == 0 && ci->state != CS_SPECTATOR ? true : false)
 
 namespace game {
+
+extern SharedVar<int> showminimapobstacles;
 
 struct hideandseekclientmode : clientmode, hideandseekmode
 {

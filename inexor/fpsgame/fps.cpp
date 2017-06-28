@@ -4,6 +4,7 @@
 #include "inexor/fpsgame/entities.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/util/Logging.hpp"
+#include "inexor/client/gamemode/gamemode_client.hpp"
 
 using namespace inexor::sound;
 
