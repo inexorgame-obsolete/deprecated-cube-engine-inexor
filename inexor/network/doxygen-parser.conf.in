@@ -62,7 +62,7 @@ EXTRACT_STATIC         = YES
 # for Java sources.
 # The default value is: YES.
 
-EXTRACT_LOCAL_CLASSES  = YES
+EXTRACT_LOCAL_CLASSES  = NO
 
 # If this flag is set to YES, the members of anonymous namespaces will be
 # extracted and appear in the documentation as a namespace called
@@ -71,7 +71,7 @@ EXTRACT_LOCAL_CLASSES  = YES
 # are hidden.
 # The default value is: NO.
 
-EXTRACT_ANON_NSPACES   = YES
+EXTRACT_ANON_NSPACES   = NO
 
 # If the CASE_SENSE_NAMES tag is set to NO then doxygen will only generate file
 # names in lower-case letters. If set to YES, upper-case letters are also
@@ -155,7 +155,7 @@ WARN_NO_PARAMDOC       = NO
 # spaces.
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = ./inexor/
+INPUT                  = ${SOURCE_DIR}
 
 # If the value of the INPUT tag contains directories, you can use the
 # FILE_PATTERNS tag to specify one or more wildcard patterns (like *.cpp and
@@ -181,7 +181,7 @@ RECURSIVE              = YES
 # Note that the wildcards are matched against the file with absolute path, so to
 # exclude all test directories for example use the pattern */test/*
 
-EXCLUDE_PATTERNS       = */vendor/* */platform/*
+EXCLUDE_PATTERNS       = */vendor/* */platform/* */flex/* */node/*
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) path
 # into which the generated documentation will be written. If a relative path is
