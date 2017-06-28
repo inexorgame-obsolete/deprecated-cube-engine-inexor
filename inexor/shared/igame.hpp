@@ -101,7 +101,6 @@ namespace server
     extern void clientdisconnect(int n);
     extern int clientconnect(int n, uint ip);
     extern bool allowbroadcast(int n);
-    extern void recordpacket(int chan, void *data, int len);
     extern void parsepacket(int sender, int chan, packetbuf &p);
     extern bool sendpackets(bool force = false);
     extern void serverinforeply(ucharbuf &req, ucharbuf &p);

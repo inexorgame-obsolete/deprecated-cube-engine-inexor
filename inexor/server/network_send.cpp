@@ -1,6 +1,7 @@
 
 #include "inexor/server/network_send.hpp"
 #include "inexor/server/client_management.hpp"
+#include "inexor/server/demos.hpp"
 #include "inexor/engine/engine.hpp" // TODO remove when allowbroadcast and recordpacket are moved.
 #include "inexor/network/legacy/cube_network.hpp"
 
