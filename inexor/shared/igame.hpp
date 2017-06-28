@@ -96,8 +96,6 @@ namespace server
 {
     extern int gamespeed;
 
-    extern void *newclientinfo();
-    extern void deleteclientinfo(void *ci);
     extern void serverinit();
     extern int reserveclients();
     extern void clientdisconnect(int n);

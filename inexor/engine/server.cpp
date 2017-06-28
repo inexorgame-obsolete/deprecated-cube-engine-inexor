@@ -11,14 +11,14 @@
 
 const char *initscript = NULL;
 
-#ifdef STANDALONE
-
 void conline(int type, const char *sf) {};
 
+namespace server {
 void cleanupserver();
+}
 void fatal(const char *fmt, ...)
 {
-    cleanupserver(); 
+    server::cleanupserver(); 
 	defvformatstring(msg,fmt,fmt);
 	spdlog::get("global")->critical(msg);
 #ifdef WIN32
@@ -32,7 +32,7 @@ void fatal(const char *fmt, ...)
 /// Fatal crash: log/display crash message and clean up server.
 void fatal(std::vector<std::string> &output)
 {
-    cleanupserver();
+    server::cleanupserver();
     std::string completeoutput;
     for(auto message : output) {
         spdlog::get("global")->critical(message);
@@ -46,8 +46,7 @@ void fatal(std::vector<std::string> &output)
     exit(EXIT_FAILURE);
 }
 
-#endif
-
+namespace server {
 
 ENetHost *serverhost = NULL;
 int laststatus = 0; 
@@ -75,7 +74,6 @@ void process(ENetPacket *packet, int sender, int chan)   // sender may be -1
     if(p.overread()) { disconnect_client(sender, DISC_EOP); return; }
 }
 
-#ifdef STANDALONE
 bool resolverwait(const char *name, ENetAddress *address)
 {
     return enet_address_set_host(address, name) >= 0;
@@ -85,7 +83,6 @@ int connectwithtimeout(ENetSocket sock, const char *hostname, const ENetAddress 
 {
     return enet_socket_connect(sock, &remoteaddress);
 }
-#endif
 
 ENetAddress serveraddress = { ENET_HOST_ANY, ENET_PORT_ANY };
 
@@ -178,7 +175,7 @@ void serverslice(uint timeout)
         {
             case ENET_EVENT_TYPE_CONNECT:
             {
-                client &c = addclient();
+                client &c = add_client_connection();
                 c.peer = event.peer;
                 c.peer->data = &c;
                 string hn;
@@ -200,8 +197,7 @@ void serverslice(uint timeout)
                 client *c = (client *)event.peer->data;
                 if(!c) break;
                 spdlog::get("global")->info("disconnected client ({0})", c->hostname);
-                server::clientdisconnect(c->num);
-                delclient(c);
+                clientdisconnect(c->num);
                 break;
             }
             default:
@@ -300,6 +296,9 @@ void parseoptions(int argc, char **argv)
     for(int i = 1; i<argc; i++) if(argv[i][0]!='-' || !serveroption(argv[i]))
         spdlog::get("global")->error("unknown command-line option: {0}", argv[i]);
 }
+} // ns server
+
+using namespace server;
 
 inexor::util::Logging logging;
 
@@ -313,7 +312,7 @@ int main(int argc, char **argv)
 
     parseoptions(argc, argv);
 
-    server::serverinit();
+    serverinit();
 
     if(initscript) execfile(initscript);
     else execfile("server-init.cfg", false);

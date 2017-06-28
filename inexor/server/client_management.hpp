@@ -6,18 +6,23 @@
 #include "inexor/fpsgame/fpsstate.hpp"
 #include "inexor/network/SharedTree.hpp"
 #include "inexor/network/legacy/administration.hpp"
+#include "inexor/util/legacy_time.hpp"
 
 #include <enet/enet.h>
 
 #include <algorithm>
 
-extern void *getclientinfo(int i);
+
+#define DEFAULTCLIENTS 16
+
+
+namespace server {
+
 extern ENetPeer *getclientpeer(int i);
+extern uint getclientip(int n);
 
 extern SharedVar<int> maxclients;
 extern SharedVar<int> maxdupclients;
-
-#define DEFAULTCLIENTS 16
 
 /// server side version of "dynent" type
 struct client
@@ -28,17 +33,13 @@ struct client
     string hostname;
     void *info;
 };
-extern vector<client *> clients;
+extern vector<client *> client_connections;
 
-extern client &addclient();
-extern void delclient(client *c);
+extern client &add_client_connection();
+
 extern void disconnect_client(int n, int reason);
 extern bool has_clients();
 extern int get_num_clients();
-
-
-namespace server {
-
 
 static constexpr int DEATHMILLIS = 300;
 
@@ -330,11 +331,10 @@ struct clientinfo
     }
 };
 
+// TODO remove connects array and merge with client_connections
 extern vector<clientinfo *> connects, clients, bots;
 
-/// Also recognizes bots.
-/// ToDo: Merge both functions (getclientinfo and clientinfo) or better both structures client and clientinfo.
-extern clientinfo *getinfo(int n);
+extern clientinfo *get_client_info(int n, bool findbots = true);
 
 struct ban
 {

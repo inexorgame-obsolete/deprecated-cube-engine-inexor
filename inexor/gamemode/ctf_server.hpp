@@ -223,7 +223,7 @@ struct ctfservermode : servmode, ctfmode
             }
             if(m_hold && f.owner_id>=0 && lastmillis - f.owntime >= HOLDSECS*1000)
             {
-                clientinfo *ci = getinfo(f.owner_id);
+                clientinfo *ci = get_client_info(f.owner_id);
                 if(ci) scoreflag(ci, i);
                 else
                 {
