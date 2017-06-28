@@ -1,7 +1,7 @@
 #pragma once
 #include "inexor/fpsgame/game.hpp"
 #include "inexor/gamemode/bomb_common.hpp"
-#include "inexor/gamemode/gamemode_server.hpp"
+#include "inexor/server/gamemode/gamemode_server.hpp"
 
 namespace server {
 extern void sendspawn(clientinfo *ci);

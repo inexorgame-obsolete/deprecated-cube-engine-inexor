@@ -1,22 +1,14 @@
 #pragma once
 #include "inexor/fpsgame/game.hpp"
 #include "inexor/gamemode/ctf_common.hpp"
-#include "inexor/gamemode/gamemode_server.hpp"
+#include "inexor/server/gamemode/gamemode_server.hpp"
 #include "inexor/util/legacy_time.hpp"
 
 namespace server {
 
-VAR(ctftkpenalty, 0, 1, 1); // TODO remove
-
 struct ctfservermode : servmode, ctfmode
 {
-    bool addflag(int i, const vec &o, int team, int invistime = 0)
-    {
-        if(!ctfmode::addflag(i, o, team)) return false;
-        flag &f = flags[i];
-        f.invistime = invistime;
-        return true;
-    }
+    bool addflag(int i, const vec &o, int team, int invistime = 0);
 
     void ownflag(int i, int owner, int owntime)
     {
@@ -135,11 +127,7 @@ struct ctfservermode : servmode, ctfmode
         loopv(flags) if(flags[i].dropper == ci->clientnum) { flags[i].dropper = -1; flags[i].dropcount = 0; }
     }
 
-    void died(clientinfo *ci, clientinfo *actor)
-    {
-        dropflag(ci, ctftkpenalty && actor && actor != ci && isteam(actor->team, ci->team) ? actor : NULL);
-        loopv(flags) if(flags[i].dropper == ci->clientnum) { flags[i].dropper = -1; flags[i].dropcount = 0; }
-    }
+    void died(clientinfo *ci, clientinfo *actor);
 
     bool canspawn(clientinfo *ci, bool connecting)
     {

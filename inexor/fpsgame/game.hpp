@@ -12,7 +12,6 @@
 #include "inexor/util/Logging.hpp"
 #include "inexor/network/legacy/game_types.hpp"
 #include "inexor/network/legacy/administration.hpp"
-#include "inexor/gamemode/gamemode_client.hpp"
 
 #include "inexor/engine/particles.hpp"
 #include "inexor/fpsgame/fpsent.hpp"
@@ -23,10 +22,6 @@
 
 namespace game
 {
-
-    extern clientmode *cmode;
-    extern void setclientmode();
-
     // fps
     extern int nextmode;
     extern string clientmap;
@@ -190,9 +185,3 @@ namespace game
     extern void swayhudgun(int curtime);
     extern vec hudgunorigin(int gun, const vec &from, const vec &to, fpsent *d);
 }
-
-namespace server
-{
-    extern void startintermission();
-}
-

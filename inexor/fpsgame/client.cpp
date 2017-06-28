@@ -11,11 +11,11 @@
 #include "inexor/network/legacy/crypto.hpp"
 #include "inexor/engine/worldio.hpp"
 
-#include "inexor/gamemode/capture_client.hpp"
-#include "inexor/gamemode/ctf_client.hpp"
-#include "inexor/gamemode/collect_client.hpp"
-#include "inexor/gamemode/bomb_client.hpp"
-#include "inexor/gamemode/hideandseek_client.hpp"
+#include "inexor/client/gamemode/capture_client.hpp"
+#include "inexor/client/gamemode/ctf_client.hpp"
+#include "inexor/client/gamemode/collect_client.hpp"
+#include "inexor/client/gamemode/bomb_client.hpp"
+#include "inexor/client/gamemode/hideandseek_client.hpp"
 
 using namespace inexor::filesystem;
 using namespace inexor::sound;

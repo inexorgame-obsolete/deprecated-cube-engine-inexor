@@ -1,7 +1,7 @@
 #pragma once
 #include "inexor/fpsgame/game.hpp"
 #include "inexor/gamemode/hideandseek_common.hpp"
-#include "inexor/gamemode/gamemode_server.hpp"
+#include "inexor/server/gamemode/gamemode_server.hpp"
 
 #define ishider(ci) (strcmp(ci->team, TEAM_HIDE) == 0 && ci->state.state != CS_SPECTATOR ? true : false)
 #define isseeker(ci) (strcmp(ci->team, TEAM_SEEK) == 0 && ci->state.state != CS_SPECTATOR ? true : false)

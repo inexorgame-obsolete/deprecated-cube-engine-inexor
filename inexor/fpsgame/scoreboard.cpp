@@ -1,5 +1,6 @@
 // creation of scoreboard
 #include "inexor/fpsgame/game.hpp"
+#include "inexor/client/gamemode/gamemode_client.hpp"
 
 namespace game
 {
