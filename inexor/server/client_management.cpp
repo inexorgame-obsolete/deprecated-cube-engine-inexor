@@ -1,4 +1,5 @@
 #include "inexor/server/client_management.hpp"
+#include "inexor/server/network_send.hpp"
 #include "inexor/network/legacy/cube_network.hpp"
 #include "inexor/shared/cube.hpp"
 
@@ -65,7 +66,7 @@ void disconnect_client(int n, int reason)
     if(msg) formatstring(s, "client (%s) disconnected because: %s", clients[n]->hostname, msg);
     else formatstring(s, "client (%s) disconnected", clients[n]->hostname);
     spdlog::get("global")->info(s);
-    server::sendservmsg(s);
+    sendservmsg(s);
 }
 
 namespace server {

@@ -330,14 +330,6 @@ namespace server
     vector<server_entity> sents;
     vector<savedscore> scores;
 
-    // server only network
-    void sendservmsg(const char *s) { sendf(-1, 1, "ris", N_SERVMSG, s); }
-    void sendservmsgf(const char *fmt, ...)
-    {
-         defvformatstring(s, fmt, fmt);
-         sendf(-1, 1, "ris", N_SERVMSG, s);
-    }
-
     // entity & map
     void resetitems()
     {

@@ -105,7 +105,6 @@ namespace server
     extern bool allowbroadcast(int n);
     extern void recordpacket(int chan, void *data, int len);
     extern void parsepacket(int sender, int chan, packetbuf &p);
-    extern void sendservmsg(const char *s);
     extern bool sendpackets(bool force = false);
     extern void serverinforeply(ucharbuf &req, ucharbuf &p);
     extern void serverupdate();
