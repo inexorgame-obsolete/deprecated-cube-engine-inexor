@@ -3,6 +3,7 @@
 #include "inexor/shared/cube_vector.hpp"
 #include "inexor/shared/cube_loops.hpp"
 
+int gamemode = 0;
 
 bool searchmodename(const char *haystack, const char *needle)
 {
