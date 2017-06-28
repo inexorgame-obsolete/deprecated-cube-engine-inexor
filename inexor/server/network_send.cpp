@@ -64,7 +64,16 @@ ENetPacket *sendf(int cn, int chan, const char *format, ...)
     return packet->referenceCount > 0 ? packet : NULL;
 }
 
+void sendservmsg(const char *s)
+{
+    sendf(-1, 1, "ris", N_SERVMSG, s);
+}
 
+void sendservmsgf(const char *fmt, ...)
+{
+    defvformatstring(s, fmt, fmt);
+    sendf(-1, 1, "ris", N_SERVMSG, s);
+}
 
 ENetPacket *sendfile(int cn, int chan, stream *file, const char *format, ...)
 {
