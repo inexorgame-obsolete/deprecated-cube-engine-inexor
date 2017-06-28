@@ -1,6 +1,7 @@
 #pragma once
 #include "inexor/server/game_management.hpp"
 #include "inexor/server/client_management.hpp"
+#include "inexor/server/map_management.hpp"
 #include "inexor/fpsgame/game.hpp"
 
 // TODO: make vector<players> extendable by mode
@@ -9,10 +10,6 @@ namespace server {
 
 // true when map has changed and waiting for clients to send item
 extern bool notgotitems;
-
-extern int gamemode;
-
-extern string smapname;
 
 extern int interm;
 

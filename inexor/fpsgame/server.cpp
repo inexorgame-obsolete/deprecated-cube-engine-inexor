@@ -15,8 +15,6 @@
 
 namespace server
 {
-
-    int gamemode = 0;
     // TODO move:
 extern void flushserver(bool force);
 extern int getservermtu();

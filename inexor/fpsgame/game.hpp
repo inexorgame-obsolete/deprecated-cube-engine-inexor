@@ -28,7 +28,7 @@ namespace game
     extern void setclientmode();
 
     // fps
-    extern int gamemode, nextmode;
+    extern int nextmode;
     extern string clientmap;
     extern bool intermission;
     extern int maptime, maprealtime, maplimit;

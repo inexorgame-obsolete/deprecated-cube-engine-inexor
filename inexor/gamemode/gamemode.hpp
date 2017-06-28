@@ -117,6 +117,9 @@ static struct gamemodeinfo
 #define m_timed        (m_checknot(gamemode, M_DEMO|M_EDIT))
 #define m_botmode      (m_checknot(gamemode, M_DEMO))
 
+/// The currently set gamemode.
+extern int gamemode;
+
 /// shortens a list of mode groups ("[<operator>]<modetype>") into a bitmask.
 /// Input may be "?ctf" "!?collect" "*capture" which would do:
 ///  operator ? adds this to the bitmask (so ctf modes are added)
