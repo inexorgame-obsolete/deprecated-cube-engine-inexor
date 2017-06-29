@@ -1,9 +1,15 @@
 // bih.h - Bounding interval hierarchy
 // architecture for high performance ray tracing
 // and k-dimensional trees
-//
-// used for octree implementation (?)
+
 #pragma once
+
+#include "inexor/shared/geom.hpp"
+#include "inexor/shared/ents.hpp"
+#include "inexor/texture/texture.hpp"
+#include "inexor/shared/cube_vector.hpp"
+#include "inexor/shared/cube_types.hpp"
+
 struct BIH
 {
     struct node

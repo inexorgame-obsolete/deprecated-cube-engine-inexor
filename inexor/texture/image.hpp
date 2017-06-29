@@ -2,10 +2,14 @@
 
 #pragma once
 
+#include "inexor/shared/geom.hpp"
+#include "inexor/shared/cube_loops.hpp"
+#include "inexor/shared/cube_types.hpp"
+
 #include <SDL.h>
 #include <SDL_opengl.h>
 
-#include "inexor/shared/cube.hpp"
+#include <algorithm>
 
 /// Structure holding the Raw Pixel Data and minimum image info.
 /// Used when loading/modifying a texture.
@@ -50,7 +54,10 @@ struct ImageData
         if (!ndata) { owner = this; freefunc = NULL; }
     }
 
-    int calclevelsize(int level) const { return ((max(w >> level, 1) + align - 1) / align)*((max(h >> level, 1) + align - 1) / align)*bpp; }
+    int calclevelsize(int level) const
+    {
+        return ((std::max(w >> level, 1) + align - 1) / align)*((std::max(h >> level, 1) + align - 1) / align)*bpp;
+    }
 
     int calcsize() const
     {

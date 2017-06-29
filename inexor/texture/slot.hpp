@@ -7,7 +7,10 @@
 
 #pragma once
 
+#include "inexor/texture/texture.hpp"
 #include "inexor/texture/image.hpp"
+#include "inexor/engine/shader.hpp"
+#include "inexor/engine/octa.hpp"
 
 #include <rapidjson/document.h>
 
@@ -188,6 +191,8 @@ extern VSlot *emptyvslot(Slot &owner);
 
 extern VSlot *editvslot(const VSlot &src, const VSlot &delta);
 extern void mergevslot(VSlot &dst, const VSlot &src, const VSlot &delta);
+
+extern bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex = NULL, bool msg = true, int *compress = NULL); // TODO move to texture.hpp
 
 extern void compactvslots(cube *c, int n = 8);
 extern void compactvslot(int &index);

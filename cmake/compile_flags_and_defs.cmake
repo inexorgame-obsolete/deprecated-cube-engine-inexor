@@ -155,6 +155,10 @@ message(STATUS "EXE_LINKER_FLAGS_RELEASE:       ${CMAKE_EXE_LINKER_FLAGS_RELEASE
 # aren't in the C++ standard (e.g. UINT8_MAX, INT64_MIN, etc).
 add_definitions(-D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS)
 
+# -D_USE_MATH_DEFINES                   = By defining this prior to math.h we get M_PI defined
+# -DHAVE_M_PI                           = This is for SDL to not try to define M_PI
+add_definitions(-D_USE_MATH_DEFINES -DHAVE_M_PI)
+  
 if(OS_POSIX)
   # Allow the Large File Support (LFS) interface to replace the old interface.
   add_definitions(-D_FILE_OFFSET_BITS=64)
@@ -164,9 +168,8 @@ if(OS_WINDOWS)
   # -DWIN32 -D_WIN32 -D_WINDOWS           = Windows platform
   # -DNOMINMAX                            = Use the standard's templated min/max
   # -D_WIN32_WINNT=0x0600                 = Target is Windows Vista
-  # -D_MATH_DEFINES_DEFINED               = We define our own math constants (PI, ln(2)...) this fixes warnings when including math.h
-  # -DWIN32_LEAN_AND_MEAN               = Skip deprecated windows.h parts (which will for sure cause troubles)
-  add_definitions(-DWIN32 -D_WIN32 -D_WINDOWS -DWINDOWS -DNOMINMAX -D_WIN32_WINNT=0x0600 -D_MATH_DEFINES_DEFINED -DWIN32_LEAN_AND_MEAN )
+  # -DWIN32_LEAN_AND_MEAN                 = Skip deprecated windows.h parts (which will for sure cause troubles)
+  add_definitions(-DWIN32 -D_WIN32 -D_WINDOWS -DWINDOWS -DNOMINMAX -D_WIN32_WINNT=0x0600 -DWIN32_LEAN_AND_MEAN )
   if(X64)
     add_definitions(-DWIN64)
   endif()	

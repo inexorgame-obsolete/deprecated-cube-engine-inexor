@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstring>
 
 #ifdef _DEBUG
 #define ASSERT(c) assert(c)
