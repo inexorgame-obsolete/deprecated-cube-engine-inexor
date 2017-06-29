@@ -1,5 +1,12 @@
 
+#include "inexor/network/legacy/cube_network.hpp"
 #include "inexor/network/legacy/buffer_types.hpp"
+
+#include "inexor/shared/cube_unicode.hpp"
+#include "inexor/shared/cube_endian.hpp"
+#include "inexor/shared/cube_vector.hpp"
+
+#include <boost/algorithm/clamp.hpp> // TODO replace with std::clamp as soon as C++17 is our target.
 
 
 // all network traffic is in 32bit ints, which are then compressed using the following simple scheme (assumes that most values are small).
@@ -140,7 +147,7 @@ void ipmask::parse(const char *name)
             if(c == '.') break;
             if(c == '/')
             {
-                int range = clamp(int(strtol(name, NULL, 10)), 0, 32);
+                int range = boost::algorithm::clamp(int(strtol(name, NULL, 10)), 0, 32);
                 mask = range ? ENET_HOST_TO_NET_32(0xFFffFFff << (32 - range)) : maskconv.i;
                 ip = ipconv.i & mask;
                 return;

@@ -2,6 +2,18 @@
 
 #pragma once
 
+#include "inexor/shared/cube_vector.hpp"
+#include "inexor/shared/cube_loops.hpp"
+#include "inexor/shared/cube_types.hpp"
+#include "inexor/shared/geom.hpp"
+#include "inexor/network/SharedTree.hpp"
+#include "inexor/engine/glexts.hpp"
+
+#include <SDL.h>
+#include <SDL_opengl.h>
+
+#include <algorithm>
+
 struct GlobalShaderParamState
 {
     const char *name;
@@ -216,7 +228,7 @@ struct Shader
         if(detailshader->variantrows)
         {
             int start = detailshader->variantrows[row], end = detailshader->variantrows[row+1];
-            for(col = min(start + col, end-1); col >= start; --col)
+            for(col = std::min(start + col, end-1); col >= start; --col)
             {
                 if(!detailshader->variants[col]->invalid()) { s = detailshader->variants[col]; break; }
             }

@@ -6,6 +6,7 @@
 #pragma once
 
 #include <string.h>
+#include <algorithm>
 
 struct sortless
 {
@@ -63,13 +64,13 @@ static inline void quicksort(T *start, T *end, F fun)
         }
         else if(fun(*start, end[-1])) { pivot = *start; *start = *mid; } /*mid <= start < end */
         else if(fun(*mid, end[-1])) { pivot = end[-1]; end[-1] = *start; *start = *mid; } /* mid < end <= start */
-        else { pivot = *mid; swap(*start, end[-1]); }  /* end <= mid <= start */
+        else { pivot = *mid; std::swap(*start, end[-1]); }  /* end <= mid <= start */
         *mid = end[-2];
         do
         {
             while(fun(*i, pivot)) if(++i >= j) goto partitioned;
             while(fun(pivot, *--j)) if(i >= j) goto partitioned;
-            swap(*i, *j);
+            std::swap(*i, *j);
         } while(++i < j);
     partitioned:
         end[-2] = *i;

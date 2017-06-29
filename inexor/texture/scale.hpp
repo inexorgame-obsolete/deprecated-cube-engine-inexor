@@ -1,3 +1,7 @@
+/// This is a very ugly header as its changes based on the defines FUNCNAME, PIXELOP, DEFPIXEL and BPP
+/// Plus clamp has to be in global scope prior to including this
+
+
 static void FUNCNAME(halvetexture)(uchar *src, uint sw, uint sh, uint stride, uchar *dst)
 {
     for(uchar *yend = &src[sh*stride]; src < yend;)

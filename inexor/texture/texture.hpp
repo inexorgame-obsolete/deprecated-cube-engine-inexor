@@ -4,8 +4,7 @@
 
 #include "inexor/texture/texsettings.hpp"
 #include "inexor/texture/image.hpp"
-#include "inexor/engine/engine.hpp"
-#include "inexor/texture/slot.hpp"
+#include "inexor/shared/cube_types.hpp"
 #include "inexor/texture/additionaltools.hpp" //this one is only to avoid the compiler behaviour that it doesnt build cubescript only files, so we keep a dummy "extern" to it.
 
 /// Different Texture Types.
@@ -61,7 +60,6 @@ extern bool reloadtexture(const char *name);
 extern void setuptexcompress();
 
 extern Texture *textureload(const char *name, int clamp = 0, bool mipit = true, bool msg = true, bool threadsafe = false);
-extern bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex = NULL, bool msg = true, int *compress = NULL);
 extern Texture *newtexture(Texture *t, const char *rname, ImageData &s, int clamp = 0, bool mipit = true, bool canreduce = false, bool transient = false, int compress = 0);
 
 extern bool loadimage(const char *filename, ImageData &image);
@@ -69,5 +67,4 @@ extern bool loadimage(const char *filename, ImageData &image);
 // Texture Registry:
 extern Texture *registertexture(const char *name);
 extern Texture *gettexture(const char *name);
-
 

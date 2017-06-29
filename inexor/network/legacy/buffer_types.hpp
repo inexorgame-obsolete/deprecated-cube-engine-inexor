@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <enet/enet.h>
 
-#include <boost/algorithm/clamp.hpp> // TODO replace with std::clamp as C++17 is our target.
+#include <boost/algorithm/clamp.hpp> // TODO replace with std::clamp as soon as C++17 is our target.
 
 /// template implementation of buffers (networking e.g.).
 /// work like streams: you put stuff at the end, you get stuff from the end
@@ -25,7 +25,7 @@ struct databuf
     int len, maxlen;
     uchar flags;
 
-    databuf() : buf(NULL), len(0), maxlen(0), flags(0)
+    databuf() : buf(nullptr), len(0), maxlen(0), flags(0)
     {
     }
 
@@ -65,7 +65,7 @@ struct databuf
     T *pad(int numvals)
     {
         T *vals = &buf[len];
-        len += min(numvals, maxlen-len);
+        len += std::min(numvals, maxlen-len);
         return vals;
     }
 
@@ -97,10 +97,10 @@ struct databuf
     /// skip the first n elemnts of the buffer.
     void offset(int n)
     {
-        n = min(n, maxlen);
+        n = std::min(n, maxlen);
         buf += n;
         maxlen -= n;
-        len = max(len-n, 0);
+        len = std::max(len-n, 0);
     }
 
     T *getbuf() const { return buf; }
@@ -142,7 +142,7 @@ struct packetbuf : ucharbuf
     /// reserve memory in this constructor
     packetbuf(int growth, int pflags = 0) : growth(growth)
     {
-        packet = enet_packet_create(NULL, growth, pflags);
+        packet = enet_packet_create(nullptr, growth, pflags);
         buf = (uchar *)packet->data;
         maxlen = packet->dataLength;
     }
@@ -193,7 +193,8 @@ struct packetbuf : ucharbuf
         ucharbuf::put(vals, numvals);
     }
 
-    /// ?
+    /// remove any allocated space which is not used yet
+    /// background: allocations are expensive, so we pr
     ENetPacket *finalize()
     {
         resize(len);
@@ -206,8 +207,8 @@ struct packetbuf : ucharbuf
         if(growth > 0 && packet && !packet->referenceCount)
         {
             enet_packet_destroy(packet);
-            packet = NULL;
-            buf = NULL;
+            packet = nullptr;
+            buf = nullptr;
             len = maxlen = 0;
         }
     }

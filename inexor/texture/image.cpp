@@ -4,7 +4,17 @@
 #include "inexor/texture/image.hpp"
 #include "inexor/texture/texsettings.hpp"
 #include "inexor/texture/macros.hpp"
+#include "inexor/shared/cube_endian.hpp"
+#include "inexor/shared/geom.hpp"
 
+#include <boost/algorithm/clamp.hpp> // TODO replace with std::clamp as soon as C++17 is our target.
+
+#include <algorithm>
+
+using boost::algorithm::clamp;
+using std::min;
+using std::max;
+using std::swap;
 
 
 #define FUNCNAME(name) name##1
