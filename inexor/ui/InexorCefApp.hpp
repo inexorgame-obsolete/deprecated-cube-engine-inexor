@@ -27,7 +27,7 @@ class InexorCefApp : public CefApp,
 {
 
     public:
-        InexorCefApp(int width, int height);
+        InexorCefApp(std::string port, int width, int height);
 
         void Destroy();
 
@@ -69,7 +69,7 @@ class InexorCefApp : public CefApp,
         CefRefPtr<layer::InexorAppLayer> app_layer;
 
         void InitHudLayer();
-        void InitConsoleLayer();
+        void InitConsoleLayer(std::string port);
         void InitAppLayer();
 
         IMPLEMENT_REFCOUNTING(InexorCefApp);

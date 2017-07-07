@@ -18,7 +18,6 @@ namespace ui {
 CefRefPtr<InexorCefApp> cef_app;
 
 CefSubsystem::CefSubsystem() {
-    cef_app = new InexorCefApp(1920, 1080);
 }
 
 CefSubsystem::~CefSubsystem() {
@@ -42,7 +41,13 @@ void CefSubsystem::tick() {
 
 void CefSubsystem::initialize(int argc, char **argv)
 {
-    spdlog::get("global")->info("CefSubsystem::initialize() --> CefInitialize()");
+	spdlog::get("global")->info("CefSubsystem::initialize() --> CefInitialize()");
+
+    if(argc < 2) return;
+    std::string port = argv[1];
+
+    cef_app = new InexorCefApp(port, 1920, 1080);
+
 
 #ifdef WIN32
     const CefMainArgs args(GetModuleHandle(NULL));

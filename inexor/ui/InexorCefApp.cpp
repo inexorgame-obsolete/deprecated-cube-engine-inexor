@@ -5,7 +5,7 @@
 namespace inexor {
 namespace ui {
 
-InexorCefApp::InexorCefApp(int width, int height)
+InexorCefApp::InexorCefApp(std::string port, int width, int height)
 {
     spdlog::get("ui")->info("init: cef: construct InexorCefApp (dimensions: {}x{})", width, height);
 
@@ -23,7 +23,7 @@ InexorCefApp::InexorCefApp(int width, int height)
     SetScreenSize(width, height);
 
     InitHudLayer();
-    InitConsoleLayer();
+    InitConsoleLayer(port);
     InitAppLayer();
 }
 
@@ -38,10 +38,10 @@ void InexorCefApp::InitHudLayer()
     spdlog::get("ui")->debug("init: cef: hud layer");
 }
 
-void InexorCefApp::InitConsoleLayer()
+void InexorCefApp::InitConsoleLayer(std::string port)
 {
     std::string layer_name("console");
-    std::string layer_url("http://localhost:31416/api/v1/interfaces/ui-console/index.html");
+    std::string layer_url("http://localhost:31416/api/v1/interfaces/ui-console/index.html?instanceId=" + port);
     console_layer = new layer::InexorConsoleLayer(layer_name, layer_url);
     console_layer->Hide();
     context_manager->AddSubContext(console_layer);
