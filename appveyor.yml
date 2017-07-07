@@ -21,7 +21,6 @@ init:
 
 # scripts that run after cloning repository
 install:
-  - appveyor-retry choco install doxygen.portable
   - cmd: python -m pip install conan
   - cmd: set "MAIN_FOLDER=C:\projects\inexor-game"
   - cmd: cd %MAIN_FOLDER%

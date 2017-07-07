@@ -84,7 +84,7 @@ install_linux() {
   install_tool
 
   apt-get -y -t wily install --only-upgrade libfontconfig1
-  apt-get -y -t wily install build-essential binutils doxygen nasm
+  apt-get -y -t wily install build-essential binutils nasm
   python -m pip install conan
 
   # upgrade cmake
