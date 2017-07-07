@@ -43,7 +43,7 @@ void InexorCefApp::InitConsoleLayer(std::string port)
     std::string layer_name("console");
     std::string layer_url("http://localhost:31416/api/v1/interfaces/ui-console/index.html?instanceId=" + port);
     console_layer = new layer::InexorConsoleLayer(layer_name, layer_url);
-    console_layer->Hide();
+    console_layer->Show();
     context_manager->AddSubContext(console_layer);
     layer_manager->AddLayerProvider(console_layer);
     spdlog::get("ui")->debug("init: cef: console layer");
