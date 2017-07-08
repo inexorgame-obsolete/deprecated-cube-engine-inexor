@@ -2,11 +2,13 @@
 
 #include "inexor/ui/CefSubsystem.hpp"
 #include "inexor/ui/InexorSettings.hpp"
+#include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/filesystem/ExecutablePath.hpp"
 #include "inexor/network/SharedTree.hpp"
 
 using namespace inexor::filesystem;
 using namespace inexor::util;
+using namespace inexor::rendering::screen;
 
 // TODO: Namespace; encapsulate in the class; damint
 
@@ -41,12 +43,11 @@ void CefSubsystem::tick() {
 
 void CefSubsystem::initialize(int argc, char **argv)
 {
-	spdlog::get("global")->info("CefSubsystem::initialize() --> CefInitialize()");
-
     if(argc < 2) return;
     std::string port = argv[1];
 
-    cef_app = new InexorCefApp(port, 1920, 1080);
+    spdlog::get("global")->info("CefSubsystem::initialize() --> CefInitialize({0}, {1}, {2})", port, scr_w, scr_h);
+    cef_app = new InexorCefApp(port, scr_w, scr_h);
 
 
 #ifdef WIN32
