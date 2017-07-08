@@ -5,7 +5,7 @@
 namespace inexor {
 namespace ui {
 
-InexorCefApp::InexorCefApp(std::string port, int width, int height)
+InexorCefApp::InexorCefApp(std::string instance_id, std::string host, std::string port, int width, int height)
 {
     spdlog::get("ui")->info("init: cef: construct InexorCefApp (dimensions: {}x{})", width, height);
 
@@ -22,15 +22,15 @@ InexorCefApp::InexorCefApp(std::string port, int width, int height)
 
     SetScreenSize(width, height);
 
-    InitHudLayer();
-    InitConsoleLayer(port);
-    InitAppLayer();
+    InitHudLayer(instance_id, host, port);
+    InitConsoleLayer(instance_id, host, port);
+    InitAppLayer(instance_id, host, port);
 }
 
-void InexorCefApp::InitHudLayer()
+void InexorCefApp::InitHudLayer(std::string instance_id, std::string host, std::string port)
 {
     std::string layer_name("hud");
-    std::string layer_url("http://localhost:31416/api/v1/interfaces/ui-client-hud/index.html");
+    std::string layer_url("http://" + host + ":" + port + "/api/v1/interfaces/ui-client-hud/index.html?instanceId=" + instance_id + "&host=" + host + "&port=" + port);
     hud_layer = new layer::InexorHudLayer(layer_name, layer_url);
     hud_layer->Show();
     context_manager->AddSubContext(hud_layer);
@@ -38,10 +38,10 @@ void InexorCefApp::InitHudLayer()
     spdlog::get("ui")->debug("init: cef: hud layer");
 }
 
-void InexorCefApp::InitConsoleLayer(std::string port)
+void InexorCefApp::InitConsoleLayer(std::string instance_id, std::string host, std::string port)
 {
     std::string layer_name("console");
-    std::string layer_url("http://localhost:31416/api/v1/interfaces/ui-console/index.html?instanceId=" + port);
+    std::string layer_url("http://" + host + ":" + port + "/api/v1/interfaces/ui-console/index.html?instanceId=" + instance_id + "&host=" + host + "&port=" + port);
     console_layer = new layer::InexorConsoleLayer(layer_name, layer_url);
     console_layer->Show();
     context_manager->AddSubContext(console_layer);
@@ -49,10 +49,10 @@ void InexorCefApp::InitConsoleLayer(std::string port)
     spdlog::get("ui")->debug("init: cef: console layer");
 }
 
-void InexorCefApp::InitAppLayer()
+void InexorCefApp::InitAppLayer(std::string instance_id, std::string host, std::string port)
 {
     std::string layer_name("app");
-    std::string layer_url("http://localhost:31416/api/v1/interfaces/ui-client-interface/index.html");
+    std::string layer_url("http://" + host + ":" + port + "/api/v1/interfaces/ui-client-interface/index.html?instanceId=" + instance_id + "&host=" + host + "&port=" + port);
     app_layer = new layer::InexorAppLayer(layer_name, layer_url);
     app_layer->Hide();
     context_manager->AddSubContext(app_layer);
