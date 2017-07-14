@@ -130,7 +130,7 @@ install_osx() {
   exit 0
 }
 
-## UPLOADING NIGHTLY BUILDS AND THE APIDOC #################
+## Automatic Creation of tags and generation of the doxygen documentation #################
 
 create_apidoc() {
   (
@@ -157,35 +157,6 @@ incremented_version()
   local new_patch_version=$((patch_version+1))
   local new_version="$major_version.$minor_version.$new_patch_version-alpha"
   echo $new_version
-}
-
-# The package.json contains PLACEHOLDERs we need to replace.
-# On deploy (so if this is a tagged build), we want to publish to npm as well.
-update_package_json()
-{
-  local package_json_path="${code}/package.json"
-
-  # Cut the "-alpha" from the version
-  local package_version=`echo -e "${INEXOR_VERSION}" | sed "s/^\(.*\)-alpha$/\1/"`
-
-  # Replace the version in the file.
-  sed -i -e "s/VERSION_PLACEHOLDER/${package_version}/g" "${package_json_path}"
-
-  local package_name_extension="linux64"
-
-  # Make the package name platform specific
-  sed -i -e "s/PLATFORM_PLACEHOLDER/${package_name_extension}/g" "${package_json_path}"
-}
-
-publish_to_npm()
-{
-  # Create a npmrc file containing our npm token
-  echo "@inexorgame:registry=https://registry.npmjs.org/
-//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
-
-  update_package_json
-  npm pack
-  npm publish --access public
 }
 
 # increment version and create a tag on github.
@@ -266,17 +237,6 @@ target_after_success() {
  # if test "$TARGET" != apidoc; then
  #   external_pull_request || true
  # fi
-  exit 0
-}
-
-target_after_deploy() {
-  if test "$TARGET" != apidoc; then
-    if test -n "$TRAVIS_TAG"; then
-      if test "$CC" == "gcc"; then
-        publish_to_npm
-      fi
-    fi
-  fi
   exit 0
 }
 

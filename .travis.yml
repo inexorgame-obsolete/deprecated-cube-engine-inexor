@@ -70,6 +70,3 @@ deploy:
     tags: true
     condition: "$CC = gcc"
     repo: inexorgame/inexor-core
-
-after_deploy:
-  - bash tool/travis.sh target_after_deploy
