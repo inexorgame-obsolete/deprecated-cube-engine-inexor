@@ -58,9 +58,9 @@ deploy:
   skip_cleanup: true
   provider: releases
   api_key:
-    - secure: GkIbJs8haX3uJ2CNcqmc2F+k+cZrt4SyrAIuYHshZqwXhMjACltO1Fh17MtGTWuRduLJ4iATcm+En4Y/cDYojwUjnFVGWbFE6iEi5tQrQYR4paC42VArYodCFe0mYMC2D05IUZxaVDELDo25Lit8FeLIy4pPpLWEh2mGIT+/8S4=
+    - secure: DgFzibKfjjD4v6zP51sjyP+chyBNKA6D3LHz4+pKN2mSBLSFeqK29z+38TlIOJHSpq6pWdvxqHjn+vQuYV1v/oqri0AVpo0kxFojtNaIFo1Dc/Sfv76V7X6p9+JaSRtKtqCjOV7QP9fftyUgSu1Bq67fwuv6QvDgOzdQIcV87bA=
   file_glob: true
-  file: /tmp/inexor-build/*nexor-*.zip
+  file: /tmp/inexor-build/Inexor-*.zip
   overwrite: true
   on:
     # Deploy only if build was caused by a tag push.
