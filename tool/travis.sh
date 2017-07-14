@@ -132,24 +132,18 @@ install_osx() {
 
 ## UPLOADING NIGHTLY BUILDS AND THE APIDOC #################
 
-upload_apidoc() {
+create_apidoc() {
   (
-    local zipp="/tmp/$build"
+    local zipname="Inexor-${last_tag}-doc.zip"
+    local zipfolder="/tmp/inexor-build"
     cd "$gitroot" -v
     doxygen doxygen.conf 2>&1 | grep -vF 'sqlite3_step " \
       "failed: memberdef.id_file may not be NULL'
-    mv doc "$zipp"
-    zip -r "${zipp}.zip" "$zipp"
-    upload "$zipp.zip"
+    mkdir -pv "${zipfolder}"
+    zip -r "${zipfolder}/${zipname}" "doc"
+    echo >&2 "Succesfully created ${zipfolder}/${zipname}"
+    # upload "${zipfolder}/${zipname}"
   )
-}
-
-nigthly_build() {
-  local outd="/tmp/${build}.d/"
-  local zipf="/tmp/${build}.zip"
-  local descf="/tmp/${build}.txt"
-
-  return 0
 }
 
 ## increment the version number based on the last tag.
@@ -257,7 +251,7 @@ target_before_install() {
 
 target_script() {
   if test "$TARGET" = apidoc; then
-    upload_apidoc
+    create_apidoc
   elif test "$TARGET" = new_version_tagger; then
     create_tag
   else
@@ -269,13 +263,12 @@ target_script() {
 
 # Upload nightly
 target_after_success() {
-  if test "$TARGET" != apidoc; then
-    external_pull_request || nigthly_build || true
-  fi
+ # if test "$TARGET" != apidoc; then
+ #   external_pull_request || true
+ # fi
   exit 0
 }
 
-# Upload nightly
 target_after_deploy() {
   if test "$TARGET" != apidoc; then
     if test -n "$TRAVIS_TAG"; then

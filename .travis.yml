@@ -32,6 +32,9 @@ matrix:
       sudo: required
       dist: trusty
       env: TARGET=apidoc
+      # We check for gcc when deciding to deploy: so this is only an indicator that we want to deploy this branch.
+      language: cpp
+      compiler: gcc
       git:
         submodules: false
 
