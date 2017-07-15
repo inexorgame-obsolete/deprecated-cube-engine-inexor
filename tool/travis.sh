@@ -198,6 +198,12 @@ build() {
     echo "executed conan install "$gitroot" --scope build_all=1 --scope create_package=1 --build=missing -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx=libstdc++11"
     conan install "$gitroot" --scope build_all=1 --scope create_package=1  --build=missing -s compiler="$CONAN_COMPILER" -s compiler.version="$CONAN_COMPILER_VERSION" -s compiler.libcxx="libstdc++11"
     conan build "$gitroot"
+
+    # workaround that CPack sometimes fails on linux to copy the file to the final directory from the intermediate dir..
+    local tempdir="/tmp/inexor-build/_CPack_Packages/Linux/ZIP/"
+    local zipname="Inexor-${last_tag}-Linux.zip"
+    local outputdir="/tmp/inexor-build/"
+    mv -f -v -u "${tempdir}${zipname}" "${outputdir}" || true
   )
 }
 
