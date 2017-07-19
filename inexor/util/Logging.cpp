@@ -5,6 +5,8 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <fstream>
+#include <exception>
 
 using std::make_shared;
 
@@ -35,10 +37,18 @@ void Logging::initDefaultLoggers()
 
 void Logging::createAndRegisterLogger(std::string logger_name)
 {
-    std::vector<spdlog::sink_ptr> sinks = getSinksForLogger(logger_name);
-    auto logger = std::make_shared<spdlog::logger>(logger_name, begin(sinks), end(sinks));
-    logger->set_pattern("%H:%M:%S [%n] [%l] %v");
-    spdlog::register_logger(logger);
+
+    try
+    {
+        std::vector<spdlog::sink_ptr> sinks = getSinksForLogger(logger_name);
+        auto logger = std::make_shared<spdlog::logger>(logger_name, begin(sinks), end(sinks));
+        logger->set_pattern("%H:%M:%S [%n] [%l] %v");
+        spdlog::register_logger(logger);
+    }
+    catch(...)
+    {
+
+    }
 }
 
 // TODO: Here we should configure which sinks are used in which logger using a configuration file
@@ -47,14 +57,41 @@ std::vector<spdlog::sink_ptr> &Logging::getSinksForLogger(std::string logger_nam
     return allsinks;
 }
 
+bool is_file_writeable(const std::string &filename)
+{
+    std::ofstream outfile(filename.c_str());
+    return outfile.good();
+}
+
+/// Modifies the given logname until its a writeable file.
+/// Does so by simply appending a number to it.
+/// @return false if it exceeded 100 rename tries and none worked.
+bool find_logger_name(std::string &logname_without_extension)
+{
+    constexpr int max_log_renamed_versions = 100;
+    for(int i = 0; i < max_log_renamed_versions; i++)
+    {
+        if(is_file_writeable(logname_without_extension + std::to_string(i) + ".log"))
+        {
+            logname_without_extension = logname_without_extension + std::to_string(i);
+            return true;
+        }
+    }
+    return false;
+}
+
 // TODO: Here we should configure which sinks are used in which logger using a configuration file
 void Logging::createSinks()
 {
-    allsinks.push_back(make_shared<spdlog::sinks::stdout_sink_st>());
+    allsinks.push_back(make_shared<spdlog::sinks::stdout_sink_mt>());
     allsinks.push_back(make_shared<InexorConsoleSink>());
-    allsinks.push_back(make_shared<InexorCutAnsiCodesSink>(make_shared<spdlog::sinks::rotating_file_sink_st>("inexor", "log", 5242880, 3)));
+
+    std::string logger_name = "inexor";
+    if(!find_logger_name(logger_name)) throw std::runtime_error("There was no way to create a logfile.");
+
+    allsinks.push_back(make_shared<InexorCutAnsiCodesSink>(make_shared<spdlog::sinks::rotating_file_sink_mt>(logger_name, "log", 5242880, 3)));
 #if defined(_MSC_VER) && !defined(NDEBUG)
-    allsinks.push_back(make_shared<spdlog::sinks::msvc_sink_st>());
+    allsinks.push_back(make_shared<spdlog::sinks::msvc_sink_mt>());
 #endif
 }
 
