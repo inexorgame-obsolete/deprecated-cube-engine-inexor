@@ -47,20 +47,6 @@ static inline bool htcmp(const char *x, const char *y)
     return !strcmp(x, y);
 }
 
-/// ?
-#ifndef STANDALONE
-static inline uint hthash(GLuint key)
-{
-    return key;
-}
-
-static inline bool htcmp(GLuint x, GLuint y)
-{
-    return x==y;
-}
-#endif
-
-
 template<class H, class E, class K, class T> struct hashbase
 {
     typedef E elemtype;

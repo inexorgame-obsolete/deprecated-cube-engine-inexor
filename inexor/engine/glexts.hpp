@@ -1,5 +1,10 @@
 /// OpenGL extension checks: check whether certain features are available for your graphics-hardware/platform(driver)
 #pragma once
+
+#include <SDL.h>
+#include <SDL_opengl.h>
+
+
 // OpenGL 1.3
 #ifndef WIN32
 #define glActiveTexture_ glActiveTexture
