@@ -1,4 +1,9 @@
-//NO INCLUDE GUARD
+#pragma once
+
+
+#include <SDL.h>
+#include <SDL_opengl.h>
+
 namespace gle
 {
     enum
