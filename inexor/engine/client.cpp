@@ -222,13 +222,6 @@ void neterr(const char *s, bool disc)
     if(disc) disconnect();
 }
 
-// processes any updates from the server
-void localservertoclient(int chan, ENetPacket *packet)
-{
-    packetbuf p(packet);
-    game::parsepacketclient(chan, p);
-}
-
 // send ping to server (?)
 void clientkeepalive()
 {
@@ -279,7 +272,11 @@ void gets2c()
 
         case ENET_EVENT_TYPE_RECEIVE:
             if(discmillis) spdlog::get("global")->info("attempting to disconnect...");
-            else localservertoclient(event.channelID, event.packet);
+            else {
+                // processes any updates from the server
+                packetbuf p(event.packet);
+                game::parsepacketclient(event.channelID, p);
+            }
             enet_packet_destroy(event.packet);
             break;
 
