@@ -13,6 +13,9 @@
 #include "inexor/network/SharedList.hpp"
 #include "inexor/util/legacy_time.hpp"
 
+#include "inexor/engine/glexts.hpp"
+#include "inexor/engine/glemu.hpp"
+
 using namespace inexor::sound;
 using namespace inexor::io;
 using namespace inexor::rendering::screen;

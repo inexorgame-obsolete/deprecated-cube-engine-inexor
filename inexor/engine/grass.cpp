@@ -1,6 +1,9 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/texture/slot.hpp"
 
+#include "inexor/engine/glexts.hpp"
+#include "inexor/engine/glemu.hpp"
+
 VARP(grass, 0, 0, 1);
 VAR(dbggrass, 0, 0, 1);
 VARP(grassdist, 0, 256, 10000);

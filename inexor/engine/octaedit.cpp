@@ -5,6 +5,9 @@
 #include "inexor/ui/input/InputRouter.hpp"
 #include "inexor/util/Logging.hpp"
 
+#include "inexor/engine/glexts.hpp"
+#include "inexor/engine/glemu.hpp"
+
 using namespace inexor::io;
 using namespace inexor::util;
 

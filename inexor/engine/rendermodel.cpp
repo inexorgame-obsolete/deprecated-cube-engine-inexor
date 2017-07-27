@@ -2,6 +2,9 @@
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/util/Logging.hpp"
 
+#include "inexor/engine/glexts.hpp"
+#include "inexor/engine/glemu.hpp"
+
 SVARP(modeldir, "model");
 
 VAR(oqdynent, 0, 1, 1);

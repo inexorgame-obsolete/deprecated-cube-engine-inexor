@@ -6,6 +6,9 @@
 #include "inexor/util/Logging.hpp"
 #include "inexor/client/gamemode/gamemode_client.hpp"
 
+#include "inexor/engine/glexts.hpp"
+#include "inexor/engine/glemu.hpp"
+
 using namespace inexor::sound;
 
 namespace game

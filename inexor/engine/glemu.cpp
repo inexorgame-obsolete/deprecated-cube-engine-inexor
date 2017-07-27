@@ -1,5 +1,8 @@
 #include "inexor/shared/cube.hpp"
 
+#include "inexor/engine/glexts.hpp"
+#include "inexor/engine/glemu.hpp"
+
 extern SharedVar<int> glversion;
 extern SharedVar<int> intel_mapbufferrange_bug;
 

@@ -4,6 +4,9 @@
 #include "inexor/util/Logging.hpp"
 #include "inexor/shared/cube_sort.hpp"
 
+#include "inexor/engine/glexts.hpp"
+#include "inexor/engine/glemu.hpp"
+
 using namespace inexor::filesystem;
 
 Texture *sky[6] = { 0, 0, 0, 0, 0, 0 }, *clouds[6] = { 0, 0, 0, 0, 0, 0 };

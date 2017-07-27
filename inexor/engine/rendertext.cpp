@@ -1,5 +1,9 @@
 #include "inexor/engine/engine.hpp"
 
+#include "inexor/engine/glexts.hpp"
+#include "inexor/engine/glemu.hpp"
+
+
 static hashnameset<font> fonts;
 static font *fontdef = NULL;
 static int fontdeftex = 0;

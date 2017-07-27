@@ -2,6 +2,11 @@
 
 #include "inexor/engine/3dgui.hpp"
 
+
+#include "inexor/engine/glexts.hpp"
+#include "inexor/engine/glemu.hpp"
+
+
 struct editline
 {
     enum { CHUNKSIZE = 256 };

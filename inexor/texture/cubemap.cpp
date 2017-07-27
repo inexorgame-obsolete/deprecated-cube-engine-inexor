@@ -8,6 +8,9 @@
 #include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/util/Logging.hpp"
 
+#include "inexor/engine/glexts.hpp"
+#include "inexor/engine/glemu.hpp"
+
 using namespace inexor::rendering::screen;
 
 void forcecubemapload(GLuint tex)

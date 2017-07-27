@@ -3,6 +3,9 @@
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/shared/cube_sort.hpp"
 
+#include "inexor/engine/glexts.hpp"
+#include "inexor/engine/glemu.hpp"
+
 struct QuadNode
 {
     int x, y, size;
