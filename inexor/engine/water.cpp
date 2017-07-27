@@ -3,6 +3,9 @@
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"
 
+#include "inexor/engine/glexts.hpp"
+#include "inexor/engine/glemu.hpp"
+
 using namespace inexor::rendering::screen;
 
 VARFP(waterreflect, 0, 1, 1, { cleanreflections(); preloadwatershaders(); });

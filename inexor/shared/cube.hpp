@@ -23,11 +23,6 @@
 #include "inexor/shared/ents.hpp"
 #include "inexor/shared/command.hpp"
 
-#ifndef STANDALONE
-#include "inexor/engine/glexts.hpp"
-#include "inexor/engine/glemu.hpp"
-#endif
-
 // header files for communication between the game and Cube engine
 #include "inexor/shared/iengine.hpp"
 #include "inexor/shared/igame.hpp"

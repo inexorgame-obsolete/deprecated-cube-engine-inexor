@@ -5,6 +5,9 @@
 #include "inexor/util/Logging.hpp"
 #include "inexor/engine/worldio.hpp"
 
+#include "inexor/engine/glexts.hpp"
+#include "inexor/engine/glemu.hpp"
+
 using namespace inexor::sound;
 using namespace inexor::util;
 

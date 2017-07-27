@@ -1,6 +1,9 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/engine/rendertarget.hpp"
 
+#include "inexor/engine/glexts.hpp"
+#include "inexor/engine/glemu.hpp"
+
 static struct glaretexture : rendertarget
 {
     bool dorender()

@@ -1,6 +1,9 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/engine/rendertarget.hpp"
 
+#include "inexor/engine/glexts.hpp"
+#include "inexor/engine/glemu.hpp"
+
 VARP(shadowmap, 0, 0, 1);
 
 extern void cleanshadowmap();

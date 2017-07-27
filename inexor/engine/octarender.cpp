@@ -5,6 +5,9 @@
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/util/Logging.hpp"
 
+#include "inexor/engine/glexts.hpp"
+#include "inexor/engine/glemu.hpp"
+
 struct vboinfo
 {
     int uses;

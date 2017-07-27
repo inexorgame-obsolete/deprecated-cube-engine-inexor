@@ -3,6 +3,9 @@
 #include "inexor/fpsgame/fpsent.hpp"
 #include "inexor/fpsgame/entities.hpp"
 
+#include "inexor/engine/glexts.hpp"
+#include "inexor/engine/glemu.hpp"
+
 namespace game {
 
 extern SharedVar<float> minimapalpha;

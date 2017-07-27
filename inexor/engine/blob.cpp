@@ -1,5 +1,8 @@
 #include "inexor/engine/engine.hpp"
 
+#include "inexor/engine/glexts.hpp"
+#include "inexor/engine/glemu.hpp"
+
 extern SharedVar<int> intel_mapbufferrange_bug;
 
 VARNP(blobs, showblobs, 0, 1, 1);

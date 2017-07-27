@@ -13,6 +13,9 @@
 #include "inexor/network/SharedList.hpp"
 #include "inexor/util/legacy_time.hpp"
 
+#include "inexor/engine/glexts.hpp"
+#include "inexor/engine/glemu.hpp"
+
 //template<typename T>
 //class SharedList
 //{

@@ -1,6 +1,9 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/util/Logging.hpp"
 
+#include "inexor/engine/glexts.hpp"
+#include "inexor/engine/glemu.hpp"
+
 struct decalvert
 {
     vec pos;
