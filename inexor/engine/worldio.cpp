@@ -461,6 +461,7 @@ cube *loadchildren(stream *f, const ivec &co, int size, bool &failed);
 /// @param srcsurfs
 /// @param hassurfs
 /// @param normals
+/// @param hasnorms
 /// @param merges
 /// @param hasmerges
 /// @see loadc
@@ -919,8 +920,7 @@ void savevslots(stream *f, int numvslots)
 
 /// load one vertex slot from a (file) stream
 /// @param f (file) stream)
-/// @param v a reference to a vslot to which data will be written
-/// @param changed ?
+/// @param vs a reference to a vslot to which data will be written
 void loadvslot(stream *f, VSlot &vs, int changed)
 {
     vs.changed = changed;

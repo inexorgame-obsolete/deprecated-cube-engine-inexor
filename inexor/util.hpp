@@ -44,7 +44,7 @@ namespace util {
   ///           std::string::find_last_of would take (at
   ///           least char and string)
   /// @param s The String to split
-  /// @param sep The char/string/... to separate s by
+  /// @param sep__ The char/string/... to separate s by
   /// @return The last element of s separated by sep
   ///
   template<typename T>

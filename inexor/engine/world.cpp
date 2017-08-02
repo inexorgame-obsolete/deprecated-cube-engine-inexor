@@ -548,6 +548,7 @@ void entselectionbox(const entity &e, vec &eo, vec &es)
 VAR(entselsnap, 0, 0, 1);
 VAR(entmovingshadow, 0, 1, 1);
 
+
 extern void boxs(int orient, vec o, const vec &s, float size);
 extern void boxs(int orient, vec o, const vec &s);
 extern void boxs3D(const vec &o, vec s, int g);

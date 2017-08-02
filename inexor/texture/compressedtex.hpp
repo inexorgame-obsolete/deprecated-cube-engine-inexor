@@ -1,4 +1,6 @@
-/// @file compressed texture (mostly dds) loading.
+/** @file compressedtex.hpp
+  * compressed texture (mostly dds) loading.
+  */
 
 #pragma once
 

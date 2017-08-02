@@ -1,4 +1,6 @@
-/// @file compressed texture (mostly dds) loading.
+/** @file compressedtex.cpp
+  * compressed texture (mostly dds) loading.
+  */
 
 #include "inexor/texture/compressedtex.hpp"
 #include "inexor/util/Logging.hpp"

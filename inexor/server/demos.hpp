@@ -47,6 +47,7 @@ extern void listdemos(int cn);
 
 /// Send a specific demo to the client.
 /// If client ci is not receiving one yet and num is valid.
+/// @param ci info of connected clients on server side
 /// @param num if 0 send the latest demo.
 extern void senddemo(clientinfo *ci, int num);
 

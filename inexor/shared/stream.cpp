@@ -136,7 +136,7 @@ bool fileexists(const char *path, const char *mode)
 }
 
 /// Creates a directory of given name
-/// @Return Returns true on success
+/// @return Returns true on success
 bool createdir(const char *path)
 {
     size_t len = strlen(path);
@@ -180,8 +180,8 @@ const char *addpackagedir(const char *dir)
 
 /// Checks whether given file exists (and is available in the specific mode)
 /// Where Path is the filename and mode can optionally be set
-/// Available Modes are "e" (see @Return) "w"/"a" for writeable files only and "d" for executeable files only
-/// @Return Returns the filename of the found file (or the, if "e" is specified it returns NULL if nothing was found.
+/// Available Modes are "e" (see @return) "w"/"a" for writeable files only and "d" for executeable files only
+/// @return Returns the filename of the found file (or the, if "e" is specified it returns NULL if nothing was found.
 ///         Otherwise it returns the inital filename.
 const char *findfile(const char *filename, const char *mode)
 {
@@ -217,7 +217,7 @@ const char *findfile(const char *filename, const char *mode)
 }
 
 /// Internal use only Use listfiles instead.
-/// @Returns false if dirname does not exists
+/// @return false if dirname does not exists
 bool listdir(const char *dirname, bool rel, const char *ext, vector<char *> &files)
 {
     size_t extsize = ext ? strlen(ext)+1 : 0;
@@ -271,7 +271,7 @@ bool listdir(const char *dirname, bool rel, const char *ext, vector<char *> &fil
 }
 
 /// Lists all files in given directory and put it into vector files
-/// @Argument ext optionally filters for occurences with such extension only 
+/// ext optionally filters for occurences with such extension only 
 int listfiles(const char *dir, const char *ext, vector<char *> &files)
 {
     string dirname;

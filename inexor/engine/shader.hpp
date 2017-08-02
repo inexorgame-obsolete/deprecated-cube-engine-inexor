@@ -1,4 +1,6 @@
-/// @file Header for the internal GLSL shader organisation
+/** @file shader.hpp
+  * Header for the internal GLSL shader organisation.
+  */
 
 #pragma once
 

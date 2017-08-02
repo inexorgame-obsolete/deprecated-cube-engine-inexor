@@ -1,4 +1,6 @@
-/// @file Wrapper for the SDL API calls used to load textures.
+/** @file SDL_loading.hpp
+  * Wrapper for the SDL API calls used to load textures.
+  */
 
 #pragma once
 
