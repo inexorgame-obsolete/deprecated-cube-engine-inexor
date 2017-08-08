@@ -42,7 +42,7 @@ namespace rpc {
 ///
 /// oi.onChange.connect([] (const int &a, const int &b)
 ///     {
-///         spdlog::get("global")->info("hey we changed! (old: {} new: {}", a, b);
+///         Log.default->info("hey we changed! (old: {} new: {}", a, b);
 ///     }
 /// );
 ///
@@ -87,10 +87,11 @@ public:
     explicit SharedVar(Args&&... args, SharedOption)
         : value(std::forward<Args>(args)...) {}
 
-    explicit SharedVar(const SharedVar<T> &otr) : value(otr.value) {}
+    explicit SharedVar(const SharedVar<T> &otr) : value(otr.value) { onChange.connect(otr.onChange); }
+    //explicit SharedVar(T otr) : value(otr) {}
     explicit SharedVar(T &otr) : value(otr) {}
-    explicit SharedVar(T &&otr) : value(otr) {} // Shuu TODO we need to reenable this!
- //   explicit SharedVar(T otr, SharedOption) : value(otr) {}
+    explicit SharedVar(T &&otr) : value(otr) {}
+    //explicit SharedVar(T otr, SharedOption) : value(otr) {}
     explicit SharedVar(T &otr, SharedOption) : value(otr) {}
     explicit SharedVar(T &&otr, SharedOption) : value(otr) {}
 
