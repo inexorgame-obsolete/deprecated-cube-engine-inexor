@@ -193,7 +193,7 @@ static void setupwindow(const char *title)
     //appinstance = GetModuleHandle(NULL);
     if(!appinstance) fatal("failed getting application instance");
     appicon = LoadIcon(appinstance, MAKEINTRESOURCE(IDI_ICON1));//(HICON)LoadImage(appinstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE);
-    if(!appicon) spdlog::get("global")->error("failed loading icon");
+    if(!appicon) Log.start_stop->error("failed loading icon");
 
     appmenu = CreatePopupMenu();
     if(!appmenu) fatal("failed creating popup menu");

@@ -227,7 +227,7 @@ template<typename MSG_TYPE, typename U> inline
 void RpcServer<MSG_TYPE, U>::clienthandler::finished_disconnect()
 {
     if(!disconnect_status.ok())
-        spdlog::get("global")->error("Disconnecting client errored (msg: {})", disconnect_status.error_message());
+        Log.sync->error("Disconnecting client errored (msg: {})", disconnect_status.error_message());
 }
 
 template<typename MSG_TYPE, typename U> inline
@@ -263,7 +263,7 @@ template<typename MSG_TYPE, typename U> inline
 void RpcServer<MSG_TYPE, U>::handle_new_connection()
 {
     int n_id = pick_unused_id();
-    spdlog::get("global")->info("RPC Server: New client connected id {}", n_id);
+    Log.sync->info("RPC Server: New client connected id {}", n_id);
 
     clients.push_back(clienthandler(n_id, std::move(connect_slot)));
     clients.back().request_read();
@@ -439,13 +439,13 @@ bool RpcServer<MSG_TYPE, U>::change_variable(const MSG_TYPE &receivedval)
 
     if(index <= 0)
     {
-        spdlog::get("global")->info("[Server] Received illegal message index (none was set)");
+        Log.sync->error("[Server] Received illegal message index (none was set)");
         return false;
     }
 
     if(!handle_index<MSG_TYPE>(index, receivedval))
     {
-        spdlog::get("global")->info("network: received non-supported index: {0}", index); // -> to debug
+        Log.sync->error("network: received non-supported index: {0}", index); // -> to debug
         return false;
     }
     return true;

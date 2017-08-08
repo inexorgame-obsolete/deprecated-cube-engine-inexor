@@ -41,7 +41,7 @@ class InexorSettings : public CefSettings
         CefString(&resources_dir_path).FromString(executable_path);
         CefString(&locales_dir_path).FromString(executable_path + "/locales");
         CefString(&log_file).FromString(std::string(base_path) + "inexorcef.log"); // TODO: make adaptable.
-        spdlog::get("global")->info("init: cef: setting subprocess executable_path: {}", executable_path);
+        Log.default->info("init: cef: setting subprocess executable_path: {}", executable_path);
         CefString(&browser_subprocess_path).FromString(executable_path + "/cef_subprocess");
     }
 

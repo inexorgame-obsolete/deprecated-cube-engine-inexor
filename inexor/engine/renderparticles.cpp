@@ -53,7 +53,7 @@ struct particleemitter
         radius = bbmin.dist(bbmax)/2;
         cullmin = ivec(int(floor(bbmin.x)), int(floor(bbmin.y)), int(floor(bbmin.z)));
         cullmax = ivec(int(ceil(bbmax.x)), int(ceil(bbmax.y)), int(ceil(bbmax.z)));
-        if(dbgpseed) spdlog::get("global")->debug("radius: {0}, maxfade: {1}", radius, maxfade);
+        if(dbgpseed) Log.default->debug("radius: {0}, maxfade: {1}", radius, maxfade);
     }
     
     void extendbb(const vec &o, float size = 0)
@@ -1519,7 +1519,7 @@ void updateparticles()
             pe.lastemit = lastmillis;
         }
         if(dbgpcull && (canemit || replayed) && addedparticles)
-            spdlog::get("global")->debug("{0} emitters, {1} particles", emitted, addedparticles);
+            Log.default->debug("{0} emitters, {1} particles", emitted, addedparticles);
     }
     if(editmode) // show sparkly thingies for map entities in edit mode
     {

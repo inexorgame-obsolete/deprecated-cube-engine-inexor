@@ -65,7 +65,7 @@ struct md3 : vertmodel, vertloader<md3>
             if(strncmp(header.id, "IDP3", 4) != 0 || header.version != 15) // header check
             { 
                 delete f;
-                spdlog::get("global")->error("md3: corrupted header");
+                Log.default->error("md3: corrupted header");
                 return false; 
             }
 
@@ -179,7 +179,7 @@ struct md3 : vertmodel, vertloader<md3>
         Texture *tex, *masks;
         loadskin(name, pname, tex, masks);
         mdl.initskins(tex, masks);
-        if(tex==notexture) spdlog::get("global")->error("could not load model skin for {}", name1);
+        if(tex==notexture) Log.default->error("could not load model skin for {}", name1);
         return true;
     }
 

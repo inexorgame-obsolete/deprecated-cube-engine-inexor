@@ -31,7 +31,7 @@ void InexorConsoleLayer::Reload()
 void InexorConsoleLayer::Resize(int x, int y, int width, int height)
 {
     if (is_visible && layer.get()) {
-        spdlog::get("global")->info("Resize CONSOLE layer: ({0}x{1} at {2}, {3})", width, height, x, y);
+        Log.default->info("Resize CONSOLE layer: ({0}x{1} at {2}, {3})", width, height, x, y);
         if (layer->GetInexorRenderHandler()->SetViewRect(x, y, width, height)) {
             layer->GetBrowser()->GetHost()->WasResized();
         }

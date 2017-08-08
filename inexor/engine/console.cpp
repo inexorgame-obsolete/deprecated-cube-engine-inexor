@@ -183,7 +183,7 @@ hashtable<int, keym> keyms(128);
 
 void keymap(int *code, char *key)
 {
-    if(identflags&IDF_OVERRIDDEN) { spdlog::get("global")->error("cannot override keymap {}", *code); return; }
+    if(identflags&IDF_OVERRIDDEN) { Log.default->error("cannot override keymap {}", *code); return; }
     keym &km = keyms[*code];
     km.code = *code;
     DELETEA(km.name);
@@ -233,9 +233,9 @@ void getbind(char *key, int type)
 
 void bindkey(char *key, char *action, int state, const char *cmd)
 {
-    if(identflags&IDF_OVERRIDDEN) { spdlog::get("global")->error("cannot override {0} {1}", cmd, quoted(key)); return; }
+    if(identflags&IDF_OVERRIDDEN) { Log.default->error("cannot override {0} {1}", cmd, quoted(key)); return; }
     keym *km = findbind(key);
-    if(!km) { spdlog::get("global")->error("unknown key {}", quoted(key)); return; }
+    if(!km) { Log.default->error("unknown key {}", quoted(key)); return; }
     char *&binding = km->actions[state];
     if(!keypressed || keyaction!=binding) delete[] binding;
     // trim white-space to make searchbinds more reliable
@@ -679,7 +679,7 @@ void addcomplete(char *command, int type, char *dir, char *ext)
 {
     if(identflags&IDF_OVERRIDDEN)
     {
-        spdlog::get("global")->error("cannot override complete {}", command);
+        Log.default->error("cannot override complete {}", command);
         return;
     }
     if(!dir[0])

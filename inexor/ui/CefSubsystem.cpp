@@ -42,7 +42,7 @@ void CefSubsystem::tick() {
 
 void CefSubsystem::initialize(int argc, char **argv)
 {
-    spdlog::get("global")->info("CefSubsystem::initialize() --> CefInitialize()");
+    Log.default->info("CefSubsystem::initialize() --> CefInitialize()");
 
 #ifdef WIN32
     const CefMainArgs args(GetModuleHandle(NULL));
@@ -52,7 +52,7 @@ void CefSubsystem::initialize(int argc, char **argv)
     std::string executable_path = ExecutablePathWithoutBinary(argv[0]);
     InexorSettings settings(executable_path);
     if (!CefInitialize(args, settings, cef_app.get(), NULL)) {
-        spdlog::get("global")->error("FATAL: Initialization of CEF subprocess failed!");
+        Log.default->error("FATAL: Initialization of CEF subprocess failed!");
     }
 }
 

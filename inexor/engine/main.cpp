@@ -125,7 +125,7 @@ void fatal(const char *s, ...)
     {
         defvformatstring(msg,s,s);
         // Temporarly disabled crash handler output (easylogging)
-        spdlog::get("global")->critical(msg);
+        Log.default->critical(msg);
 
         #ifdef WIN32
             if(errors <= 1) MessageBox(NULL, msg, "Inexor fatal error", MB_OK|MB_SYSTEMMODAL);
@@ -142,7 +142,7 @@ void fatal(std::vector<std::string> &output)
     std::string completeoutput; 
     for(auto message : output) {
         // Temporarly disabled crash handler output (easylogging)
-        spdlog::get("global")->critical(message);
+        Log.default->critical(message);
         completeoutput = inexor::util::fmt << completeoutput << message.c_str();
     }
 #ifdef WIN32
@@ -207,7 +207,7 @@ namespace screen {
         if(gamma == screen_manager.curgamma) return;
         screen_manager.curgamma = gamma;
         if(SDL_SetWindowBrightness(screen_manager.sdl_window, gamma/100.0f)==-1)
-            spdlog::get("global")->error("Could not set gamma: {}", SDL_GetError());
+            Log.default->error("Could not set gamma: {}", SDL_GetError());
     });
 }
 }
@@ -712,25 +712,26 @@ static bool findarg(int argc, char **argv, const char *str)
 ICOMMANDERR(subsystem_start, "s", (char *s), std::string ccs{s}; metapp.start(ccs));
 ICOMMANDERR(subsystem_stop, "s", (char *s), std::string ccs{s}; metapp.stop(ccs));
 
-inexor::util::Logging logging;
-
-ICOMMANDERR(loglevel, "ss", (char *logger_name, char *log_level),
-    std::string logger_name_s{logger_name};
-    std::string log_level_s{log_level};
-    logging.setLogLevel(logger_name_s, log_level_s)
-);
-
-ICOMMANDERR(logformat, "ss", (char *logger_name, char *pattern),
-    std::string logger_name_s{logger_name};
-    std::string pattern_s{pattern};
-    logging.setLogFormat(logger_name_s, pattern_s)
-);
+//inexor::util::Logging logging;
+//
+//ICOMMANDERR(loglevel, "ss", (char *logger_name, char *log_level),
+//    std::string logger_name_s{logger_name};
+//    std::string log_level_s{log_level};
+//    logging.setLogLevel(logger_name_s, log_level_s)
+//);
+//
+//ICOMMANDERR(logformat, "ss", (char *logger_name, char *pattern),
+//    std::string logger_name_s{logger_name};
+//    std::string pattern_s{pattern};
+//    logging.setLogFormat(logger_name_s, pattern_s)
+//);
 
 SharedVar<char *> package_dir((char*)"media/core");
 
 int main(int argc, char **argv)
 {
-    logging.initDefaultLoggers();
+    char *exe_name = argv[0];
+    Log.logfile = exe_name;
 
     // We only need to initialize it, not use it.
     UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // catches all msgs from the OS, that it wants to terminate us. 
@@ -762,7 +763,7 @@ int main(int argc, char **argv)
 
     numcpus = clamp(SDL_GetCPUCount(), 1, 16);
 
-    spdlog::get("global")->debug("init: SDL");
+    Log.default->debug("init: SDL");
 
     int par = 0;
     #ifdef _DEBUG
@@ -771,18 +772,18 @@ int main(int argc, char **argv)
     if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO|par)<0) fatal("Unable to initialize SDL: %s", SDL_GetError());
 
     const char *dir = addpackagedir(package_dir);
-    if(dir) spdlog::get("global")->debug("Adding package directory: {}", dir);
+    if(dir) Log.default->debug("Adding package directory: {}", dir);
 
-    spdlog::get("global")->debug("init: ENet");
+    Log.default->debug("init: ENet");
     if(enet_initialize()<0) fatal("Unable to initialize network module");
     atexit(enet_deinitialize);
     enet_time_set(0);
 
-    spdlog::get("global")->debug("init: game");
+    Log.default->debug("init: game");
 
     game::initclient();
 
-    spdlog::get("global")->debug("init: video");
+    Log.default->debug("init: video");
 
     SDL_SetHint(SDL_HINT_GRAB_KEYBOARD, "0");
     #if !defined(WIN32) && !defined(__APPLE__)
@@ -793,13 +794,13 @@ int main(int argc, char **argv)
     screen_manager.setupscreen(useddepthbits, usedfsaa);
     SDL_ShowCursor(SDL_FALSE);
 
-    spdlog::get("global")->debug("init: gl");
+    Log.default->debug("init: gl");
     gl_checkextensions();
     gl_init(useddepthbits, usedfsaa);
     notexture = textureload("texture/inexor/notexture.png");
     if(!notexture) fatal("could not find core textures");
 
-    spdlog::get("global")->debug("init: console");
+    Log.default->debug("init: console");
     if(!execfile("config/stdlib.cfg", false)) fatal("cannot find config files");
     if(!execfile("config/font.cfg", false)) fatal("cannot find font definitions");
     if(!setfont("default")) fatal("no default font specified");
@@ -807,19 +808,19 @@ int main(int argc, char **argv)
     inbetweenframes = true;
     renderbackground("initializing...");
 
-    spdlog::get("global")->debug("init: effects");
+    Log.default->debug("init: effects");
     loadshaders();
     particleinit();
     initdecals();
 
-    spdlog::get("global")->debug("init: world");
+    Log.default->debug("init: world");
     camera1 = player = game::iterdynents(0);
     emptymap(0, true, NULL, false);
 
-    spdlog::get("global")->debug("init: sound");
+    Log.default->debug("init: sound");
     initsound();
 
-    spdlog::get("global")->debug("init: cfg");
+    Log.default->debug("init: cfg");
     execfile("config/keymap.cfg");
     execfile("config/stdedit.cfg");
     execfile("config/menus.cfg");
@@ -850,7 +851,7 @@ int main(int argc, char **argv)
     loadhistory();
     if(initscript) execute(initscript);
 
-    spdlog::get("global")->debug("init: mainloop");
+    Log.default->debug("init: mainloop");
 
     initmumble();
     resetfpshistory();

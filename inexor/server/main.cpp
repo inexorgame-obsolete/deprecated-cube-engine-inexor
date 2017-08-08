@@ -20,7 +20,7 @@ void fatal(const char *fmt, ...)
 {
     server::cleanupserver(); 
 	defvformatstring(msg,fmt,fmt);
-	spdlog::get("global")->critical(msg);
+	Log.default->critical(msg);
 #ifdef WIN32
 	MessageBox(NULL, msg, "Inexor fatal error", MB_OK|MB_SYSTEMMODAL);
 #else
@@ -35,7 +35,7 @@ void fatal(std::vector<std::string> &output)
     server::cleanupserver();
     std::string completeoutput;
     for(auto message : output) {
-        spdlog::get("global")->critical(message);
+        Log.default->critical(message);
         completeoutput = inexor::util::fmt << completeoutput << message.c_str();
     }
 #ifdef WIN32
@@ -157,7 +157,7 @@ void serverslice(uint timeout)
     {
         laststatus = totalmillis;
         if(has_clients() || serverhost->totalSentData || serverhost->totalReceivedData)
-            spdlog::get("global")->info("status: {0} remote clients, {1} send, {2} rec (K/sec)",
+            Log.default->info("status: {0} remote clients, {1} send, {2} rec (K/sec)",
                                          get_num_clients(), (serverhost->totalSentData/60.0f/1024), (serverhost->totalReceivedData/60.0f/1024));
         serverhost->totalSentData = serverhost->totalReceivedData = 0;
     }
@@ -180,7 +180,7 @@ void serverslice(uint timeout)
                 c.peer->data = &c;
                 string hn;
                 copystring(c.hostname, (enet_address_get_host_ip(&c.peer->address, hn, sizeof(hn))==0) ? hn : "unknown");
-                spdlog::get("global")->info("client connected ({0})", c.hostname);
+                Log.default->info("client connected ({0})", c.hostname);
                 int reason = server::clientconnect(c.num, c.peer->address.host);
                 if(reason) disconnect_client(c.num, reason);
                 break;
@@ -196,7 +196,7 @@ void serverslice(uint timeout)
             {
                 client *c = (client *)event.peer->data;
                 if(!c) break;
-                spdlog::get("global")->info("disconnected client ({0})", c->hostname);
+                Log.default->info("disconnected client ({0})", c->hostname);
                 clientdisconnect(c->num);
                 break;
             }
@@ -214,7 +214,7 @@ void flushserver(bool force)
 
 void run_server()
 {
-    spdlog::get("global")->info("dedicated server started, waiting for clients...");
+    Log.default->info("dedicated server started, waiting for clients...");
 #ifdef WIN32
     SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
     for(;;)
@@ -245,7 +245,7 @@ bool setup_network_sockets()
     ENetAddress address ={ENET_HOST_ANY, enet_uint16(serverport <= 0 ? server_port() : serverport)};
     if(*serverip)
     {
-        if(enet_address_set_host(&address, serverip)<0) spdlog::get("global")->warn("WARNING: server ip not resolved");
+        if(enet_address_set_host(&address, serverip)<0) Log.default->warn("WARNING: server ip not resolved");
         else serveraddress.host = address.host;
     }
     serverhost = enet_host_create(&address, min(maxclients + server::reserveclients(), MAXCLIENTS), NUM_ENET_CHANNELS, 0, serveruprate);
@@ -267,7 +267,7 @@ bool setup_network_sockets()
         enet_socket_destroy(lansock);
         lansock = ENET_SOCKET_NULL;
     }
-    if(lansock == ENET_SOCKET_NULL) spdlog::get("global")->warn("WARNING: could not create LAN server info socket");
+    if(lansock == ENET_SOCKET_NULL) Log.default->warn("WARNING: could not create LAN server info socket");
     else enet_socket_set_option(lansock, ENET_SOCKOPT_NONBLOCK, 1);
     return true;
 }
@@ -280,8 +280,8 @@ bool serveroption(const char *opt)
         case 'c': setvar("maxclients", atoi(opt+2)); return true;
         case 'i': setsvar("serverip", opt+2); return true;
         case 'j': setvar("serverport", atoi(opt+2)); return true;
-        case 'k': spdlog::get("global")->debug("Adding package directory: {}", opt); addpackagedir(opt+2); return true;
-        case 'x': spdlog::get("global")->debug("Setting server init script: {}", opt); initscript = opt+2; return true;
+        case 'k': Log.default->debug("Adding package directory: {}", opt); addpackagedir(opt+2); return true;
+        case 'x': Log.default->debug("Setting server init script: {}", opt); initscript = opt+2; return true;
         case 'n': setsvar("serverdesc", &opt[2]); return true;
         case 'y': setsvar("serverpass", &opt[2]); return true;
         case 'p': setsvar("adminpass", &opt[2]); return true;
@@ -294,18 +294,18 @@ bool serveroption(const char *opt)
 void parseoptions(int argc, char **argv)
 {
     for(int i = 1; i<argc; i++) if(argv[i][0]!='-' || !serveroption(argv[i]))
-        spdlog::get("global")->error("unknown command-line option: {0}", argv[i]);
+        Log.default->error("unknown command-line option: {0}", argv[i]);
 }
 } // ns server
 
 using namespace server;
 
-inexor::util::Logging logging;
-
 int main(int argc, char **argv)
 {
-    logging.initDefaultLoggers();
     UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // We only need to initialse it, not use it.
+    char *exe_name = argv[0];
+    Log.logfile = exe_name;
+
     if(enet_initialize()<0) fatal("Unable to initialise network module");
     atexit(enet_deinitialize);
     enet_time_set(0);

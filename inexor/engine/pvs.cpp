@@ -981,7 +981,7 @@ static void lockpvs_(bool lock)
     lockedwaterpvs = 0;
     loopi(wbytes) lockedwaterpvs |= pvsbuf[d->offset + i] << (i*8);
     loopi(MAXWATERPVS) lockedwaterplanes[i] = waterplanes[i].height;
-    spdlog::get("global")->info("locked view cell at {}", camera1->o);
+    Log.default->info("locked view cell at {}", camera1->o);
 }
 
 VARF(lockpvs, 0, 0, 1, lockpvs_(lockpvs!=0));
@@ -1089,7 +1089,7 @@ void testpvs(int *vcsize)
     lockedpvs = w.testviewcell(o, size, &lockedwaterpvs, &len);
     loopi(MAXWATERPVS) lockedwaterplanes[i] = waterplanes[i].height;
     lockpvs = 1;
-    spdlog::get("edit")->debug("generated test view cell of size {0} at {1} ({2} B)", size, camera1->o, len);
+    Log.edit->debug("generated test view cell of size {0} at {1} ({2} B)", size, camera1->o, len);
 
     origpvsnodes.setsize(0);
     numwaterplanes = oldnumwaterplanes;
@@ -1102,7 +1102,7 @@ void genpvs(int *viewcellsize)
 {
     if(worldsize > 1<<15)
     {
-        spdlog::get("edit")->error( "map is too large for PVS");
+        Log.edit->error( "map is too large for PVS");
         return;
     }
 
@@ -1173,9 +1173,9 @@ void genpvs(int *viewcellsize)
     if(genpvs_canceled) 
     {
         clearpvs();
-        spdlog::get("edit")->info("genpvs aborted");
+        Log.edit->info("genpvs aborted");
     }
-    else spdlog::get("edit")->info("generated {0} unique view cells totaling {1} kB and averaging {2} B ({3} seconds)",
+    else Log.edit->info("generated {0} unique view cells totaling {1} kB and averaging {2} B ({3} seconds)",
                                    pvs.length(), (pvsbuf.length()/1024.0f), (pvsbuf.length() / max(pvs.length(), 1)), ((end - start) / 1000.0f));
 }
 
@@ -1183,7 +1183,7 @@ COMMAND(genpvs, "i");
 
 void pvsstats()
 {
-    spdlog::get("edit")->debug("{0} unique view cells totaling {1} kB and averaging {2} B",
+    Log.edit->debug("{0} unique view cells totaling {1} kB and averaging {2} B",
                                pvs.length(), (pvsbuf.length() / 1024.0f), (pvsbuf.length()/max(pvs.length(), 1)));
 }
 

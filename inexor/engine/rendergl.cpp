@@ -220,8 +220,8 @@ void gl_checkextensions()
     const char *exts = (const char *)glGetString(GL_EXTENSIONS);
     const char *renderer = (const char *)glGetString(GL_RENDERER);
     const char *version = (const char *)glGetString(GL_VERSION);
-    spdlog::get("global")->info("Renderer: {0} ({1})", renderer, vendor);
-    spdlog::get("global")->info("Driver: {0}", version);
+    Log.default->info("Renderer: {0} ({1})", renderer, vendor);
+    Log.default->info("Driver: {0}", version);
 
 #ifdef __APPLE__
     extern int mac_osversion();
@@ -387,7 +387,7 @@ void gl_checkextensions()
     if(glversion >= 300 || hasext(exts, "GL_ARB_texture_float") || hasext(exts, "GL_ATI_texture_float"))
     {
         hasTF = true;
-        if(glversion < 300 && dbgexts) spdlog::get("global")->debug("Using GL_ARB_texture_float extension.");
+        if(glversion < 300 && dbgexts) Log.default->debug("Using GL_ARB_texture_float extension.");
         shadowmap = 1;
         extern SharedVar<int> smoothshadowmappeel;
         smoothshadowmappeel = 1;
@@ -396,7 +396,7 @@ void gl_checkextensions()
     if(glversion >= 300 || hasext(exts, "GL_ARB_texture_rg"))
     {
         hasTRG = true;
-        if(glversion < 300 && dbgexts) spdlog::get("global")->debug("Using GL_ARB_texture_rg extension.");
+        if(glversion < 300 && dbgexts) Log.default->debug("Using GL_ARB_texture_rg extension.");
     }
 
     if(glversion >= 300 || hasext(exts, "GL_ARB_framebuffer_object"))
@@ -414,7 +414,7 @@ void gl_checkextensions()
         glGenerateMipmap_          = (PFNGLGENERATEMIPMAPPROC)         getprocaddress("glGenerateMipmapEXT");
         glBlitFramebuffer_         = (PFNGLBLITFRAMEBUFFERPROC)        getprocaddress("glBlitFramebufferEXT");
         hasAFBO = hasFBO = hasFBB = hasDS = true;
-        if(glversion < 300 && dbgexts) spdlog::get("global")->debug("Using GL_ARB_framebuffer_object extension.");
+        if(glversion < 300 && dbgexts) Log.default->debug("Using GL_ARB_framebuffer_object extension.");
     }
     else if(hasext(exts, "GL_EXT_framebuffer_object"))
     {
@@ -430,19 +430,19 @@ void gl_checkextensions()
         glFramebufferRenderbuffer_ = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)getprocaddress("glFramebufferRenderbufferEXT");
         glGenerateMipmap_          = (PFNGLGENERATEMIPMAPPROC)         getprocaddress("glGenerateMipmapEXT");
         hasFBO = true;
-        if(dbgexts) spdlog::get("global")->debug("Using GL_EXT_framebuffer_object extension.");
+        if(dbgexts) Log.default->debug("Using GL_EXT_framebuffer_object extension.");
 
         if(hasext(exts, "GL_EXT_framebuffer_blit"))
         {
             glBlitFramebuffer_     = (PFNGLBLITFRAMEBUFFERPROC)        getprocaddress("glBlitFramebufferEXT");
             hasFBB = true;
-            if(dbgexts) spdlog::get("global")->debug("Using GL_EXT_framebuffer_blit extension.");
+            if(dbgexts) Log.default->debug("Using GL_EXT_framebuffer_blit extension.");
         }
 
         if(hasext(exts, "GL_EXT_packed_depth_stencil") || hasext(exts, "GL_NV_packed_depth_stencil"))
         {
             hasDS = true;
-            if(dbgexts) spdlog::get("global")->debug("Using GL_EXT_packed_depth_stencil extension.");
+            if(dbgexts) Log.default->debug("Using GL_EXT_packed_depth_stencil extension.");
         }
     }
     else fatal("Framebuffer object support is required!");
@@ -450,7 +450,7 @@ void gl_checkextensions()
     extern SharedVar<int> fpdepthfx;
     if(ati)
     {
-        //spdlog::get("global")->warn() << "WARNING: ATI cards may show garbage in skybox. (use \"/ati_skybox_bug 1\" to fix)";
+        //Log.default->warn() << "WARNING: ATI cards may show garbage in skybox. (use \"/ati_skybox_bug 1\" to fix)";
 
         minimizetcusage = 1;
         if(hasTF && hasTRG) fpdepthfx = 1;
@@ -485,7 +485,7 @@ void gl_checkextensions()
         glMapBufferRange_         = (PFNGLMAPBUFFERRANGEPROC)        getprocaddress("glMapBufferRange");
         glFlushMappedBufferRange_ = (PFNGLFLUSHMAPPEDBUFFERRANGEPROC)getprocaddress("glFlushMappedBufferRange");
         hasMBR = true;
-        if(glversion < 300 && dbgexts) spdlog::get("global")->debug("Using GL_ARB_map_buffer_range.");
+        if(glversion < 300 && dbgexts) Log.default->debug("Using GL_ARB_map_buffer_range.");
     }
 
     if(glversion >= 310 || hasext(exts, "GL_ARB_uniform_buffer_object"))
@@ -500,7 +500,7 @@ void gl_checkextensions()
 
         useubo = 1;
         hasUBO = true;
-        if(glversion < 310 && dbgexts) spdlog::get("global")->debug("Using GL_ARB_uniform_buffer_object extension.");
+        if(glversion < 310 && dbgexts) Log.default->debug("Using GL_ARB_uniform_buffer_object extension.");
     }
 
     if(glversion >= 300 || hasext(exts, "GL_ARB_vertex_array_object"))
@@ -510,7 +510,7 @@ void gl_checkextensions()
         glGenVertexArrays_ =    (PFNGLGENVERTEXARRAYSPROC)   getprocaddress("glGenVertexArrays");
         glIsVertexArray_ =      (PFNGLISVERTEXARRAYPROC)     getprocaddress("glIsVertexArray");
         hasVAO = true;
-        if(glversion < 300 && dbgexts) spdlog::get("global")->debug("Using GL_ARB_vertex_array_object extension.");
+        if(glversion < 300 && dbgexts) Log.default->debug("Using GL_ARB_vertex_array_object extension.");
     }
     else if(hasext(exts, "GL_APPLE_vertex_array_object"))
     {
@@ -519,13 +519,13 @@ void gl_checkextensions()
         glGenVertexArrays_ =    (PFNGLGENVERTEXARRAYSPROC)   getprocaddress("glGenVertexArraysAPPLE");
         glIsVertexArray_ =      (PFNGLISVERTEXARRAYPROC)     getprocaddress("glIsVertexArrayAPPLE");
         hasVAO = true;
-        if(dbgexts) spdlog::get("global")->debug("Using GL_APPLE_vertex_array_object extension.");
+        if(dbgexts) Log.default->debug("Using GL_APPLE_vertex_array_object extension.");
     }
 
     if(glversion >= 330 || hasext(exts, "GL_ARB_texture_swizzle") || hasext(exts, "GL_EXT_texture_swizzle"))
     {
         hasTSW = true;
-        if(glversion < 330 && dbgexts) spdlog::get("global")->debug("Using GL_ARB_texture_swizzle extension.");
+        if(glversion < 330 && dbgexts) Log.default->debug("Using GL_ARB_texture_swizzle extension.");
     }
 
     if(hasext(exts, "GL_EXT_texture_compression_s3tc"))
@@ -536,18 +536,18 @@ void gl_checkextensions()
 #else
         if(!mesa) usetexcompress = 2;
 #endif
-        if(dbgexts) spdlog::get("global")->debug("Using GL_EXT_texture_compression_s3tc extension.");
+        if(dbgexts) Log.default->debug("Using GL_EXT_texture_compression_s3tc extension.");
     }
     else if(hasext(exts, "GL_EXT_texture_compression_dxt1") && hasext(exts, "GL_ANGLE_texture_compression_dxt3") && hasext(exts, "GL_ANGLE_texture_compression_dxt5"))
     {
         hasS3TC = true;
-        if(dbgexts) spdlog::get("global")->debug("Using GL_EXT_texture_compression_dxt1 extension.");
+        if(dbgexts) Log.default->debug("Using GL_EXT_texture_compression_dxt1 extension.");
     }
     if(hasext(exts, "GL_3DFX_texture_compression_FXT1"))
     {
         hasFXT1 = true;
         if(mesa) usetexcompress = max(usetexcompress, 1);
-        if(dbgexts) spdlog::get("global")->debug("Using GL_3DFX_texture_compression_FXT1.");
+        if(dbgexts) Log.default->debug("Using GL_3DFX_texture_compression_FXT1.");
     }
 
     if(hasext(exts, "GL_EXT_texture_filter_anisotropic"))
@@ -556,7 +556,7 @@ void gl_checkextensions()
         glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &val);
         hwmaxaniso = val;
         hasAF = true;
-        if(dbgexts) spdlog::get("global")->debug("Using GL_EXT_texture_filter_anisotropic extension.");
+        if(dbgexts) Log.default->debug("Using GL_EXT_texture_filter_anisotropic extension.");
     }
 
     if(glversion >= 300 || hasext(exts, "GL_EXT_gpu_shader4"))
@@ -583,7 +583,7 @@ void cef_resize(int width, int height)
 {
     if (cef_app) {
         // TODO: not fully working
-        spdlog::get("global")->info("Update Inexor User Interface Screen Size: {0}x{1}", width, height);
+        Log.default->info("Update Inexor User Interface Screen Size: {0}x{1}", width, height);
         cef_app->GetHudLayer()->Resize(0, 0, width, screen_manager.screenh);
         cef_app->GetAppLayer()->Resize(0, 0, width, screen_manager.screenh);
         cef_app->GetMouseManager()->SetScreenSize(width, height);
@@ -1897,7 +1897,7 @@ void gl_rendercefmouse(int view_x, int view_y, int view_width, int view_height)
 void gl_rendercef()
 {
     if (!cef_app.get()) {
-        spdlog::get("global")->debug("err_cef");
+        Log.default->debug("err_cef");
         return;
     }
 
@@ -1916,15 +1916,15 @@ void gl_rendercef()
             unsigned int texture_id = render_handler->GetTextureId();
 
             if (!initialized) {
-                spdlog::get("global")->debug("err_initialized");
+                Log.default->debug("err_initialized");
                 continue;
             }
             if (view_width == 0 || view_height == 0) {
-                spdlog::get("global")->debug("err_view");
+                Log.default->debug("err_view");
                 continue;
             }
             if (texture_id == 0u) {
-                spdlog::get("global")->debug("err_tex");
+                Log.default->debug("err_tex");
                 continue;
             }
 
