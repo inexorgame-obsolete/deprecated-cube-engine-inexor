@@ -1,8 +1,6 @@
-prepend(SERVER_SOURCES_ENGINE ${SOURCE_DIR}/engine
-    server.cpp command.cpp worldio.cpp)
+prepend(SERVER_SOURCES_ENGINE ${SOURCE_DIR}/engine command.cpp worldio.cpp)
 
-prepend(SERVER_SOURCES_FPSGAME ${SOURCE_DIR}/fpsgame
-    server.cpp entities.cpp)
+prepend(SERVER_SOURCES_FPSGAME ${SOURCE_DIR}/fpsgame server.cpp entities.cpp)
 
 # generate source file list from files in this folder
 declare_module(server .)
