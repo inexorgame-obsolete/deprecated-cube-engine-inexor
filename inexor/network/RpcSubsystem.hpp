@@ -28,7 +28,7 @@ public:
 
     ~RpcSubsystem()
     {
-        spdlog::get("global")->info("RPC server stopped ({0})", serv->server_address);
+        Log.sync->info("RPC server stopped ({0})", serv->server_address);
         delete serv;
     }
 
@@ -38,7 +38,7 @@ public:
         std::string port = argv[1];
         std::string full_address = "0.0.0.0:"+ port;
         serv = new RpcServer<MSG_TYPE, ASYNC_SERVICE_TYPE>(full_address.c_str());
-        spdlog::get("global")->info("RPC server listening on {0}", serv->server_address);
+        Log.sync->info("RPC server listening on {0}", serv->server_address);
         set_on_change_functions();
         serv->block_until_initialized();
     }

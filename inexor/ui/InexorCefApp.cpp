@@ -7,7 +7,7 @@ namespace ui {
 
 InexorCefApp::InexorCefApp(std::string instance_id, std::string host, std::string port, int width, int height)
 {
-    spdlog::get("ui")->info("init: cef: construct InexorCefApp (dimensions: {}x{})", width, height);
+    Log.ui->info("init: cef: construct InexorCefApp (dimensions: {}x{})", width, height);
 
     context_manager = new context::InexorContextManager();
 
@@ -35,7 +35,7 @@ void InexorCefApp::InitHudLayer(std::string instance_id, std::string host, std::
     hud_layer->Show();
     context_manager->AddSubContext(hud_layer);
     layer_manager->AddLayerProvider(hud_layer);
-    spdlog::get("ui")->debug("init: cef: hud layer");
+    Log.ui->debug("init: cef: hud layer");
 }
 
 void InexorCefApp::InitConsoleLayer(std::string instance_id, std::string host, std::string port)
@@ -46,7 +46,7 @@ void InexorCefApp::InitConsoleLayer(std::string instance_id, std::string host, s
     console_layer->Show();
     context_manager->AddSubContext(console_layer);
     layer_manager->AddLayerProvider(console_layer);
-    spdlog::get("ui")->debug("init: cef: console layer");
+    Log.ui->debug("init: cef: console layer");
 }
 
 void InexorCefApp::InitAppLayer(std::string instance_id, std::string host, std::string port)
@@ -57,7 +57,7 @@ void InexorCefApp::InitAppLayer(std::string instance_id, std::string host, std::
     app_layer->Hide();
     context_manager->AddSubContext(app_layer);
     layer_manager->AddLayerProvider(app_layer);
-    spdlog::get("ui")->debug("init: cef: app layer");
+    Log.ui->debug("init: cef: app layer");
 }
 
 void InexorCefApp::Destroy()
@@ -78,7 +78,7 @@ void InexorCefApp::OnContextInitialized()
 
 void InexorCefApp::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context)
 {
-    spdlog::get("ui")->debug(" ====================== InexorCefApp::OnContextCreated() Injecting inexor object into javascript context");
+    Log.ui->debug(" ====================== InexorCefApp::OnContextCreated() Injecting inexor object into javascript context");
     CefRefPtr<CefV8Value> window_object = context->GetGlobal();
     context->GetGlobal()->SetValue(context_manager->GetContextName(), context_manager->GetContext(), V8_PROPERTY_ATTRIBUTE_NONE);
 }

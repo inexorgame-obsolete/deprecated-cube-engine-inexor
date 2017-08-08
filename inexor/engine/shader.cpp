@@ -82,17 +82,17 @@ static void showglslinfo(GLenum type, GLuint obj, const char *name, const char *
 
     if(length > 1)
     {
-        spdlog::get("global")->error("GLSL ERROR in {0}: {1}", (type == GL_VERTEX_SHADER ? "VS" : (type == GL_FRAGMENT_SHADER ? "FS" : "PROG")), name);
+        Log.default->error("GLSL ERROR in {0}: {1}", (type == GL_VERTEX_SHADER ? "VS" : (type == GL_FRAGMENT_SHADER ? "FS" : "PROG")), name);
 
         GLchar *log = new GLchar[length];
         if(type) glGetShaderInfoLog_(obj, length, &length, log);
         else glGetProgramInfoLog_(obj, length, &length, log);
 
-        spdlog::get("global")->error(log);
+        Log.default->error(log);
 
         for(int i = 0; i < numparts && parts[i]; i++)
         {
-            spdlog::get("global")->error(parts[i]); // TODO: insert line numbers at beginning & mark error position. maybe max number of lines.
+            Log.default->error(parts[i]); // TODO: insert line numbers at beginning & mark error position. maybe max number of lines.
         }
         delete[] log;
     }
@@ -152,7 +152,7 @@ static void bindglsluniform(Shader &s, UniformLoc &u)
         u.offset = offsetval;
         u.size = sizeval;
         glUniformBlockBinding_(s.program, bidx, u.binding);
-    //    if(dbgubo) spdlog::get("global")->debug() << "UBO: %s:%s:%d, offset: %d, size: %d, stride: %d", u.name, u.blockname, u.binding, offsetval, sizeval, strideval);
+    //    if(dbgubo) Log.default->debug() << "UBO: %s:%s:%d, offset: %d, size: %d, stride: %d", u.name, u.blockname, u.binding, offsetval, sizeval, strideval);
     }
 }
 
@@ -1100,7 +1100,7 @@ void setshader(char *name)
     Shader *s = shaders.access(name);
     if(!s)
     {
-        spdlog::get("global")->error("no such shader: {}", name);
+        Log.default->error("no such shader: {}", name);
     }
     else slotshader = s;
 }
@@ -1364,7 +1364,7 @@ static bool addpostfx(const char *name, int outputbind, int outputscale, uint in
     Shader *s = useshaderbyname(name);
     if(!s)
     {
-        spdlog::get("global")->error("no such postfx shader: {}", name);
+        Log.default->error("no such postfx shader: {}", name);
         return false;
     }
     postfxpass &p = postfxpasses.add();

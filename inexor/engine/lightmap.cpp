@@ -2278,7 +2278,7 @@ void calclight(int *quality)
 {
     if(!setlightmapquality(*quality))
     {
-        spdlog::get("global")->error("valid range for calclight quality is -1..1");
+        Log.default->error("valid range for calclight quality is -1..1");
         return;
     }
     renderbackground("computing lightmaps... (esc to abort)");
@@ -2317,9 +2317,9 @@ void calclight(int *quality)
     renderbackground("lighting done...");
     allchanged();
     if(calclight_canceled)
-        spdlog::get("edit")->info("calclight aborted");
+        Log.edit->info("calclight aborted");
     else
-        spdlog::get("edit")->info("generated {0} lightmaps using {1}% of {2} textures ({3} seconds)",
+        Log.edit->info("generated {0} lightmaps using {1}% of {2} textures ({3} seconds)",
                                   total,
                                   (lightmaps.length() ? lumels * 100 / (lightmaps.length() * LM_PACKW * LM_PACKH) : 0),
                                   lightmaps.length(),
@@ -2337,7 +2337,7 @@ void patchlight(int *quality)
     if(noedit(true)) return;
     if(!setlightmapquality(*quality))
     {
-        spdlog::get("global")->error("valid range for patchlight quality is -1..1");
+        Log.default->error("valid range for patchlight quality is -1..1");
         return;
     }
     renderbackground("patching lightmaps... (esc to abort)");
@@ -2377,9 +2377,9 @@ void patchlight(int *quality)
     renderbackground("lighting done...");
     allchanged();
     if(calclight_canceled)
-        spdlog::get("edit")->info("patchlight aborted");
+        Log.edit->info("patchlight aborted");
     else
-        spdlog::get("edit")->info("patched {0} lightmaps using {1}% of {2} textures ({3} seconds)",
+        Log.edit->info("patched {0} lightmaps using {1}% of {2} textures ({3} seconds)",
                                   total,
                                   (lightmaps.length() ? lumels * 100 / (lightmaps.length() * LM_PACKW * LM_PACKH) : 0),
                                   lightmaps.length(),
@@ -2804,7 +2804,7 @@ void lightreaching(const vec &target, vec &color, vec &dir, bool fast, extentity
 
         //if(target==player->o)
         //{
-        //    spdlog::get("global")->debug() << i << " - " << intensity << " " << mag;
+        //    Log.default->debug() << i << " - " << intensity << " " << mag;
         //}
 
         vec lightcol = vec(e.attr2, e.attr3, e.attr4).mul(1.0f/255);

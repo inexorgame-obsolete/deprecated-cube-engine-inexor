@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "inexor/network/SharedClass.hpp"
+
 #include <spdlog/spdlog.h>
 #include <spdlog/fmt/ostr.h>
 #undef LOG_INFO  //conflicting between spdlog and cef
@@ -11,12 +13,135 @@
 #include <map>
 #include <array>
 #include <string>
+#include <vector>
 
-/// Function which displayes console text ingame.
-extern void conline(int type, const char *sf);
+
 
 namespace inexor {
 namespace util {
+
+#define DEFAULT_LOG_PATTERN "%H:%M:%S [%n] [%l] %v"
+
+    /// Wrapper around spdlog::logger to put it into the InexorTree
+    /// We want to set the pattern and the level on a per-logger-base and expose it.
+    class Logger
+    {
+    public:
+        std::shared_ptr<spdlog::logger> spdlog_logger;
+        SharedVar<char *> pattern;
+        SharedVar<int> level; // TODO: ranges min max value
+
+        Logger() : pattern((char*)DEFAULT_LOG_PATTERN), level(2) // spdlog::level::info
+        {
+            /// Add the listeners for the pattern and the level variables.
+            pattern.onChange.connect([this](char *const &old_pattern, char *const &new_pattern)
+            {
+                try
+                {
+                    spdlog_logger->set_pattern(new_pattern);
+                }
+                catch(const spdlog::spdlog_ex& ex) {}
+            });
+            level.onChange.connect([this](const int &old_level, const int &new_level)
+            {
+                try
+                {
+                    spdlog_logger->set_level(static_cast<spdlog::level::level_enum>(new_level));
+                }
+                catch(const spdlog::spdlog_ex& ex) {}
+            });
+        }
+        Logger(const Logger &old) : spdlog_logger(old.spdlog_logger), pattern(old.pattern), level(old.level) {}
+
+        const std::shared_ptr<spdlog::logger> &operator->() const
+        {
+            return spdlog_logger;
+        };
+
+        void create_spdlog_logger(const std::string logger_name);
+
+        /// Wrapper for create_spdlog_logger, taking the current logger_name as argument.
+        void recreate_spdlog_logger();
+    };
+
+    /// The global inexor logging API
+    /// TODO: enable sharing.
+    class log_manager
+    {
+    private:
+        /// After adding a sink we need to recreate all loggers to make them use them.
+        /// Since we can't modify the sinks of existing loggers.
+        void all_loggers_apply_sinks_change();
+
+    public:
+        log_manager();
+
+        /// The absolute path of the logfile which gets created as sink.
+        SharedVar<char *> logfile;
+
+        /// Logger for everything not fitting elsewhere.
+        static Logger default;
+
+        /// Logger for the startup and the shut down of the game.
+        static Logger start_stop;
+
+        /// Logger for synchronization messages.
+        /// e.g. between the gameclient and its gameserver or between inexor-flex and inexor-core.
+        static Logger sync;
+
+        /// Logger for the filesystem messages and other input/output.
+        /// E.g. "file not available" or "no keyboard available" or "model xy has a malformatted header".
+        static Logger io;
+
+        /// Logger for utility functions.
+        /// e.g. you may want all string_copy-warnings to be on "error"-level in production.
+        static Logger util;
+
+        /// Logger for rendering messages.
+        static Logger render;
+
+        /// Logger for the user interface rendering (CEF bindings).
+        static Logger ui;
+
+        /// Logger for all general game messages.
+        /// e.g. "evil captured base 2".
+        static Logger game;
+
+        /// Logger for "you got killed" or "you killed xy"
+        static Logger frag_involved;
+
+        /// Logger for "player1 killed playerC"
+        static Logger frag_not_involved;
+
+        /// Logger for chat messages.
+        static Logger chat;
+
+        /// Logger for team chat messages.
+        static Logger team_chat;
+
+        /// Logger for world related functions.
+        /// e.g. verbose("octree-extension has been loaded to (0, 1024, 1024).");
+        static Logger world;
+
+        /// Logger for messages of the editing mode.
+        /// e.g. "player1 has recalculated his lightmaps."
+        /// may be conflicting with the "world"-logger sometimes: in that case prefer edit.
+        static Logger edit;
+
+        /// We allow the syntax Log.info("hallo") and forward it to the logger log_manager::default
+        Logger &operator->() const
+        {
+            return default;
+        };
+
+        static Logger create_and_register_logger(std::string logger_name,
+                                                 const std::string pattern = DEFAULT_LOG_PATTERN,
+                                                 int level = spdlog::level::info);
+    };
+
+
+////// Logging helper utilities:
+
 
     // ANSI Console colors: everything behind it will be in that particular color.
     // \x1b[38;2; is the ANSI escape sequence for 24bit foreground color, then the RGB values follow (+ closing 'm').
@@ -35,7 +160,7 @@ namespace util {
     {
         const std::string _text;
         const char *_leading,  // e.g. "{"
-                   *_trailing; // e.g. "}"
+            *_trailing; // e.g. "}"
 
         embraced(const char *text, const char *leading, const char *trailing) : _text(text), _leading(leading), _trailing(trailing) {}
 
@@ -66,85 +191,7 @@ namespace util {
     {
         quoted(const char *text) : embraced(text, "\"", "\"") {}
     };
+} } // ns inexor::util
 
-    /// The default logger names which are used in inexor
-    static const std::array<std::string, 8> default_logger_names = {
-        "ui",
-        "global",
-        "chat",
-        "gameplay",
-        "edit",
-        "server",
-        "frag_involved",
-        "frag_not_involved"
-    };
+extern inexor::util::log_manager Log;
 
-    /// Map to lookup for log level names
-    static const std::map<std::string, spdlog::level::level_enum> log_levels = {
-        {"trace", spdlog::level::trace},
-        {"debug", spdlog::level::debug},
-        {"info", spdlog::level::info},
-        {"warning", spdlog::level::warn},
-        {"error", spdlog::level::err},
-        {"critical", spdlog::level::critical},
-        {"off", spdlog::level::off}
-    };
-
-    /// The global inexor logging API
-    class Logging
-    {
-        std::vector<spdlog::sink_ptr> allsinks;
-        public:
-            Logging();
-            ~Logging();
-            void initDefaultLoggers();
-            void createAndRegisterLogger(std::string logger_name);
-            void createSinks();
-            std::vector<spdlog::sink_ptr> &getSinksForLogger(std::string logger_name);
-            void setLogLevel(std::string logger_name, std::string log_level);
-            void setLogFormat(std::string logger_name, std::string pattern);
-    };
-
-    /// Ingame GUI console.
-    class InexorConsoleSink : public spdlog::sinks::sink
-    {
-    public:
-        void log(const spdlog::details::log_msg& msg) override;
-        void flush() override {}
-    };
-
-    /// Sink wrapper for removing any color codes from the log.
-    class InexorCutAnsiCodesSink : public spdlog::sinks::sink
-    {
-      public:
-        InexorCutAnsiCodesSink(spdlog::sink_ptr wrapped_sink) : sink_(wrapped_sink) {}
-        InexorCutAnsiCodesSink(const InexorCutAnsiCodesSink& other) = delete;
-        InexorCutAnsiCodesSink& operator=(const InexorCutAnsiCodesSink& other) = delete;
-
-        ~InexorCutAnsiCodesSink()
-        {
-            flush();
-        }
-
-        /// spdlog hook we override.
-        virtual void log(const spdlog::details::log_msg& msg) override
-        {
-            spdlog::details::log_msg new_msg;
-            new_msg.formatted << cutANSICodes(msg.formatted.str());
-            sink_->log(new_msg);
-        }
-
-        virtual void flush() override
-        {
-            sink_->flush();
-        }
-
-    protected:
-
-        /// @brief cut any valid ANSI Codes (used e.g. for colors in terminals) from a string.
-        std::string cutANSICodes(std::string logline);
-
-        spdlog::sink_ptr sink_;
-    };
-}
-}

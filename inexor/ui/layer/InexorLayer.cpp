@@ -19,7 +19,7 @@ InexorLayer::InexorLayer(std::string name, int x, int y, int width, int height, 
       browser_count(0),
       is_closing(false)
 {
-    spdlog::get("global")->info("init: cef: creating layer\n  name: {0}\n url: {1}\n ({2}x{3} at {4}, {5})", name, url, width, height, x, y);
+    Log.default->info("init: cef: creating layer\n  name: {0}\n url: {1}\n ({2}x{3} at {4}, {5})", name, url, width, height, x, y);
     window_info.x = x;
     window_info.y = y;
     window_info.width = width;
@@ -28,7 +28,7 @@ InexorLayer::InexorLayer(std::string name, int x, int y, int width, int height, 
     render_handler = new InexorRenderHandler(true, x, y, width, height);
     browser = CefBrowserHost::CreateBrowserSync(window_info, this, url, browser_settings, NULL);
     if (browser.get()) {
-        spdlog::get("global")->debug("init: cef: created layer \"{0}\"", name);
+        Log.default->debug("init: cef: created layer \"{0}\"", name);
         UpdateFocus();
     }
 }
@@ -37,7 +37,7 @@ InexorLayer::~InexorLayer() { }
 
 void InexorLayer::SetVisibility(bool is_visible)
 {
-    spdlog::get("global")->info("InexorLayer::SetVisibility()");
+    Log.default->info("InexorLayer::SetVisibility()");
     this->is_visible = is_visible;
     // browser->Reload();
     browser->GetHost()->WasHidden(!is_visible);
@@ -50,14 +50,14 @@ void InexorLayer::UpdateFocus()
 
 void InexorLayer::SetIsAcceptingKeyInput(bool is_accepting_key_input)
 {
-    spdlog::get("global")->info("InexorLayer::SetIsAcceptingKeyInput()");
+    Log.default->info("InexorLayer::SetIsAcceptingKeyInput()");
 	this->is_accepting_key_input = is_accepting_key_input;
 	UpdateFocus();
 }
 
 void InexorLayer::SetIsAcceptingMouseInput(bool is_accepting_mouse_input)
 {
-    spdlog::get("global")->info("InexorLayer::SetIsAcceptingMouseInput()");
+    Log.default->info("InexorLayer::SetIsAcceptingMouseInput()");
     this->is_accepting_mouse_input = is_accepting_mouse_input;
     UpdateFocus();
 }
@@ -135,7 +135,7 @@ void InexorLayer::OnBeforeClose(CefRefPtr<CefBrowser> browser)
     if (--browser_count == 0) {
         // All browser windows have closed. Quit the application message loop.
         //CefQuitMessageLoop();
-        //spdlog::get("global")->debug() << "InexorCefLayer::OnBeforeClose()";
+        //Log.default->debug() << "InexorCefLayer::OnBeforeClose()";
     }
 }
 
@@ -144,7 +144,7 @@ void InexorLayer::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame>
     // Don't display an error for downloaded files.
     if (errorCode == ERR_ABORTED)
         return;
-    spdlog::get("global")->error("Failed to load URL {0}: {1}", failedUrl.ToString(), errorText.ToString());
+    Log.default->error("Failed to load URL {0}: {1}", failedUrl.ToString(), errorText.ToString());
     // Display a load error message.
     std::stringstream error_message;
     error_message << "<html><body><h2>Failed to load URL " << std::string(failedUrl)
@@ -155,14 +155,14 @@ void InexorLayer::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame>
 
 bool InexorLayer::OnPreKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event, bool* is_keyboard_shortcut) {
     CEF_REQUIRE_UI_THREAD();
-    spdlog::get("global")->debug("InexorCefLayer::OnPreKeyEvent: key_event.type: {0} native_key_code: {1} windows_key_code: {2} is_system_key: {3}",
+    Log.default->debug("InexorCefLayer::OnPreKeyEvent: key_event.type: {0} native_key_code: {1} windows_key_code: {2} is_system_key: {3}",
                                  key_event.type, key_event.native_key_code, key_event.windows_key_code, key_event.is_system_key);
     return false;
 }
 
 bool InexorLayer::OnKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event) {
     CEF_REQUIRE_UI_THREAD();
-    spdlog::get("global")->debug("InexorCefLayer::OnKeyEvent: key_event.type: {0} native_key_code: {1} windows_key_code: {2} is_system_key: {3}",
+    Log.default->debug("InexorCefLayer::OnKeyEvent: key_event.type: {0} native_key_code: {1} windows_key_code: {2} is_system_key: {3}",
                                      key_event.type, key_event.native_key_code, key_event.windows_key_code, key_event.is_system_key);
     return false;
 }
@@ -170,19 +170,19 @@ bool InexorLayer::OnKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& k
 void InexorLayer::OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& url)
 {
     CEF_REQUIRE_UI_THREAD();
-    spdlog::get("global")->debug("address change: {0}", url.ToString());
+    Log.default->debug("address change: {0}", url.ToString());
 }
 
 void InexorLayer::OnStatusMessage(CefRefPtr<CefBrowser> browser, const CefString& value)
 {
     CEF_REQUIRE_UI_THREAD();
-    spdlog::get("global")->debug("status: {0}", value.ToString());
+    Log.default->debug("status: {0}", value.ToString());
 }
 
 bool InexorLayer::OnConsoleMessage(CefRefPtr<CefBrowser> browser, const CefString& message, const CefString& source, int line)
 {
     CEF_REQUIRE_UI_THREAD();
-    spdlog::get("global")->debug("status: {0} ({1}): {2}", source.ToString(), line, message.ToString());
+    Log.default->debug("status: {0} ({1}): {2}", source.ToString(), line, message.ToString());
     return true;
 }
 

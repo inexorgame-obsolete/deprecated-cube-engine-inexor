@@ -44,7 +44,7 @@ void InexorRenderHandler::Initialize()
     if (initialized)
         return;
 
-    spdlog::get("global")->debug("InexorRenderHandler initializing...");
+    Log.default->debug("InexorRenderHandler initializing...");
 
     // glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST); VERIFY_NO_ERROR;
 
@@ -67,7 +67,7 @@ void InexorRenderHandler::Initialize()
 
     setlocale(LC_ALL, "en_US.utf8");
 
-    spdlog::get("global")->debug("InexorRenderHandler initialized!");
+    Log.default->debug("InexorRenderHandler initialized!");
 
     initialized = true;
 }
@@ -125,17 +125,17 @@ void InexorRenderHandler::ClearPopupRects()
 bool InexorRenderHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect)
 {
     rect = CefRect(view_x, view_y, view_width, view_height);
-    spdlog::get("global")->debug("GetViewRect: ({0}x{1} at {2}, {3})", view_width, view_height, view_x, view_y);
+    Log.default->debug("GetViewRect: ({0}x{1} at {2}, {3})", view_width, view_height, view_x, view_y);
     return true;
 }
 
 bool InexorRenderHandler::SetViewRect(int view_x, int view_y, int view_width, int view_height)
 {
     if (initialized) {
-        // spdlog::get("global")->info() << "SetViewRect: (" << view_x << ", " << view_y << ", " << view_width << ", " << view_height << ")\n";
+        // Log.default->info() << "SetViewRect: (" << view_x << ", " << view_y << ", " << view_width << ", " << view_height << ")\n";
         int view_width2 = (view_width / 32) * 32;
         int view_height2 = (view_height / 32) * 32;
-        spdlog::get("global")->debug("SetViewRect: ({0}x{1} at {2}, {3})", view_width2, view_height2, view_x, view_y);
+        Log.default->debug("SetViewRect: ({0}x{1} at {2}, {3})", view_width2, view_height2, view_x, view_y);
 
         bool success = this->view_x != view_x || this->view_y != view_y || this->view_width != view_width2 || this->view_height != view_height2;
         this->view_x = view_x;
@@ -145,7 +145,7 @@ bool InexorRenderHandler::SetViewRect(int view_x, int view_y, int view_width, in
         this->texture_initialized = false;
         return success;
     } else {
-        spdlog::get("global")->debug("SetViewRect DEFERRED: ({0}x{1} at {2}, {3})", view_width, view_height, view_x, view_y);
+        Log.default->debug("SetViewRect DEFERRED: ({0}x{1} at {2}, {3})", view_width, view_height, view_x, view_y);
 
         this->_view_x = view_x;
         this->_view_y = view_y;
@@ -164,14 +164,14 @@ void InexorRenderHandler::OnPaint(
 ) {
     if (!initialized) {
         if (CefCurrentlyOn(TID_UI)) {
-            spdlog::get("global")->debug("OnPaint:Initialize ({}x{})", width, height);
-            spdlog::get("global")->debug("OnPaint:BeforeInitialization ({0}x{1} at {2}, {3})", view_width, view_height, view_x, view_y);
+            Log.default->debug("OnPaint:Initialize ({}x{})", width, height);
+            Log.default->debug("OnPaint:BeforeInitialization ({0}x{1} at {2}, {3})", view_width, view_height, view_x, view_y);
             Initialize();
             browser->GetHost()->WasResized();
-            spdlog::get("global")->debug("OnPaint:AfterInitialization ({0}x{1} at {2}, {3})", view_width, view_height, view_x, view_y);
+            Log.default->debug("OnPaint:AfterInitialization ({0}x{1} at {2}, {3})", view_width, view_height, view_x, view_y);
             return;
         } else {
-            spdlog::get("global")->debug("InexorRenderHandler::OnPaint() Wrong thread!");
+            Log.default->debug("InexorRenderHandler::OnPaint() Wrong thread!");
             return;
         }
     }
@@ -200,12 +200,12 @@ void InexorRenderHandler::OnPaint(
         int old_height = view_height;
         // view_width = width;
         // view_height = height;
-        spdlog::get("global")->debug("OnPaint:X ({}x{})", width, height);
+        Log.default->debug("OnPaint:X ({}x{})", width, height);
         glPixelStorei(GL_UNPACK_ROW_LENGTH, view_width); VERIFY_NO_ERROR;
         // if (!texture_initialized || old_width != view_width || old_height != view_height || (dirtyRects.size() == 1 && dirtyRects[0] == CefRect(0, 0, view_width, view_height))) {
         if (!texture_initialized || old_width != view_width || old_height != view_height) {
             // Update/resize the whole texture.
-            spdlog::get("global")->debug("OnPaint: Full Resize ({}x{})", width, height);
+            Log.default->debug("OnPaint: Full Resize ({}x{})", width, height);
         	glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0); VERIFY_NO_ERROR;
         	glPixelStorei(GL_UNPACK_SKIP_ROWS, 0); VERIFY_NO_ERROR;
         	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, view_width, view_height, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, buffer); VERIFY_NO_ERROR;
@@ -228,7 +228,7 @@ void InexorRenderHandler::OnPaint(
         int skip_rows = 0, y = popup_rect.y;
         int w = width;
         int h = height;
-        spdlog::get("global")->debug("OnPaint:Y ({}x{})", width, height);
+        Log.default->debug("OnPaint:Y ({}x{})", width, height);
 
         // Adjust the popup to fit inside the view.
         if (x < 0) {

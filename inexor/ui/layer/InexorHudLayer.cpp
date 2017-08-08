@@ -31,7 +31,7 @@ void InexorHudLayer::Reload()
 void InexorHudLayer::Resize(int x, int y, int width, int height)
 {
     if (is_visible && layer.get()) {
-        spdlog::get("global")->debug("Resize HUD layer: ({0}x{1} at {2}, {3})", width, height, x, y);
+        Log.ui->debug("Resize HUD layer: ({0}x{1} at {2}, {3})", width, height, x, y);
         if (layer->GetInexorRenderHandler()->SetViewRect(x, y, width, height)) {
             layer->GetBrowser()->GetHost()->WasResized();
         }

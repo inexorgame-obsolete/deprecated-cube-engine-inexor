@@ -386,7 +386,7 @@ inline void ident::getval(tagval &v) const
       try {                                                                                  \
           b;                                                                                 \
       } catch (inexor::util::InexorException &e) {                                           \
-          spdlog::get("global")->error("EXCEPTION in {0}: {1}", #name, e.message());         \
+          Log.default->error("EXCEPTION in {0}: {1}", #name, e.message());         \
       }                                                                                      \
   )
 

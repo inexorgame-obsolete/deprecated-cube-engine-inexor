@@ -56,7 +56,7 @@ namespace game
             following = arg[0] ? parseplayer(arg) : -1;
             if(following==player1->clientnum) following = -1;
             followdir = 0;
-            spdlog::get("global")->info("follow {}", (following >= 0 ? "on" : "off"));
+            Log.default->info("follow {}", (following >= 0 ? "on" : "off"));
         }
 	}
     COMMAND(follow, "s");
@@ -77,7 +77,7 @@ namespace game
             cur = (cur + dir + clients.length()) % clients.length();
             if(clients[cur] && clients[cur]->state!=CS_SPECTATOR)
             {
-                if(following<0) spdlog::get("global")->info("follow on");
+                if(following<0) Log.default->info("follow on");
                 following = cur;
                 followdir = dir;
                 return;
@@ -137,7 +137,7 @@ namespace game
         if(following<0) return;
         following = -1;
         followdir = 0;
-        spdlog::get("global")->info("follow off");
+        Log.default->info("follow off");
     }
 
     /// Give me the fpsent instance of the player you are currently spectating
@@ -344,7 +344,7 @@ namespace game
             if(wait>0)
             {
                 lastspawnattempt = lastmillis;
-                //spdlog::get("gameplay")->info() << "you must wait %d second%s before respawn!", wait, wait!=1 ? "s" : "");
+                //Log.game->info() << "you must wait %d second%s before respawn!", wait, wait!=1 ? "s" : "");
                 return;
             }
             if(lastmillis < player1->lastpain + spawnwait) return;
@@ -461,7 +461,7 @@ namespace game
 
         fpsent *h = followingplayer();
         if(!h) h = player1;
-        auto frag_logger = d==h || actor==h ? spdlog::get("frag_involved") : spdlog::get("frag_not_involved");
+        auto &frag_logger = d==h || actor==h ? Log.frag_involved : Log.frag_not_involved;
         const char *dname = "", *aname = "";
         if(m_teammode && teamcolorfrags)
         {
@@ -507,14 +507,14 @@ namespace game
             intermission = true;
             player1->attacking = false;
             if(cmode) cmode->gameover();
-            spdlog::get("gameplay")->info("intermission:");
-            spdlog::get("gameplay")->info("game has ended!");
-            if(m_ctf) spdlog::get("gameplay")->info("player frags: {0}, flags: {1}, deaths: {2}", player1->frags, player1->flags, player1->deaths);
-            else if(m_collect) spdlog::get("gameplay")->info("player frags: {0}, skulls: {1}, deaths: {2}", player1->frags, player1->flags, player1->deaths);
-            else spdlog::get("gameplay")->info("player frags: {0}, deaths: {1}", player1->frags, player1->deaths);
+            Log.game->info("intermission:");
+            Log.game->info("game has ended!");
+            if(m_ctf) Log.game->info("player frags: {0}, flags: {1}, deaths: {2}", player1->frags, player1->flags, player1->deaths);
+            else if(m_collect) Log.game->info("player frags: {0}, skulls: {1}, deaths: {2}", player1->frags, player1->flags, player1->deaths);
+            else Log.game->info("player frags: {0}, deaths: {1}", player1->frags, player1->deaths);
 
             int accuracy = (player1->totaldamage*100)/max(player1->totalshots, 1);
-            spdlog::get("gameplay")->info("player total damage dealt: {0}, damage wasted: {1}, accuracy: {2}%",
+            Log.game->info("player total damage dealt: {0}, damage wasted: {1}, accuracy: {2}%",
                                           player1->totaldamage, (player1->totalshots-player1->totaldamage), accuracy);
 
             showscores(true);
@@ -580,7 +580,7 @@ namespace game
 
         fpsent *d = clients[cn];
         if(!d) return;
-        if(notify && d->name[0]) spdlog::get("gameplay")->info("{0}leave:{1} {2}", COL_GREY, COL_WHITE, colorname(d));
+        if(notify && d->name[0]) Log.game->info("{0}leave:{1} {2}", COL_GREY, COL_WHITE, colorname(d));
         removeweapons(d);
         removetrackedparticles(d);
         removetrackeddynlights(d);
@@ -641,7 +641,7 @@ namespace game
             cmode->setup();
         }
 
-        spdlog::get("gameplay")->info("game mode is {}", modename(gamemode));
+        Log.game->info("game mode is {}", modename(gamemode));
 
         if(player1->playermodel != playermodel) switchplayermodel(playermodel);
 

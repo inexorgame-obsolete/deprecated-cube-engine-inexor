@@ -56,16 +56,16 @@ public:
             cq.Next(&tag, &ok);
             if(!ok)
             {
-                spdlog::get("global")->info("[Client] Not okay: for = {}", ((tag == (void *)writetag) ? "writer" : "reader"));
+                Log.sync->info("[Client] Not okay: for = {}", ((tag == (void *)writetag) ? "writer" : "reader"));
                 return;
             }
             if(tag == (void *)writetag)
             {
-                spdlog::get("global")->info("[Client] Sent testmessage");
+                Log.sync->info("[Client] Sent testmessage");
             }
             else if(tag == (void *)readtag)
             {
-                spdlog::get("global")->info("[Client] Received. Index: {}", receivedvalue.key_case());
+                Log.sync->info("[Client] Received. Index: {}", receivedvalue.key_case());
                 stream->Read(&receivedvalue, (void *)readtag);
             }
             //  stream->WritesDone();

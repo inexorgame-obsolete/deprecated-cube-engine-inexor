@@ -127,7 +127,7 @@ struct captureclientmode : clientmode, capturemode_common
     void setscore(int base, const char *team, int total)
     {
         findscore(team).total = total;
-        if(total>=10000) spdlog::get("gameplay")->info("{0} captured all bases", teamcolor(team, team));
+        if(total>=10000) Log.game->info("{0} captured all bases", teamcolor(team, team));
         else if(bases.inrange(base))
         {
             baseinfo &b = bases[base];

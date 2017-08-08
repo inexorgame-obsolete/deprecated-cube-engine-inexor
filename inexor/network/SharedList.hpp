@@ -14,7 +14,7 @@ struct sharedclasstest : SharedClass
     {
         //test.connect([id](int oldvalue, int newvalue)
         //{
-        //    spdlog::get("global")->debug("init: ENet {}", id, value);
+        //    Log.default->debug("init: ENet {}", id, value);
         //});
     }
     sharedclasstest() : test(15) {}

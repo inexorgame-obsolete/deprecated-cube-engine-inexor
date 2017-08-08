@@ -319,7 +319,7 @@ bool undonext = true;
 
 bool noentedit()
 {
-    if(!editmode) { spdlog::get("edit")->error("operation only allowed in edit mode"); return true; }
+    if(!editmode) { Log.edit->error("operation only allowed in edit mode"); return true; }
     return !entediting;
 }
 
@@ -898,7 +898,7 @@ void delent()
 int findtype(char *what)
 {
     for(int i = 0; *entities::entname(i); i++) if(strcmp(what, entities::entname(i))==0) return i;
-    spdlog::get("edit")->error("unknown entity type \"{}\"", what);
+    Log.edit->error("unknown entity type \"{}\"", what);
     return ET_EMPTY;
 }
 
@@ -973,7 +973,7 @@ extentity *newentity(bool local, const vec &o, int type, int v1, int v2, int v3,
     {
         idx = -1;
         for(int i = keepents; i < ents.length(); i++) if(ents[i]->type == ET_EMPTY) { idx = i; break; }
-        if(idx < 0 && ents.length() >= MAXENTS) { spdlog::get("edit")->info("too many entities"); return NULL; }
+        if(idx < 0 && ents.length() >= MAXENTS) { Log.edit->info("too many entities"); return NULL; }
     }
     else while(ents.length() < idx) ents.add(entities::newentity())->type = ET_EMPTY;
     extentity &e = *entities::newentity();
@@ -1266,7 +1266,7 @@ bool emptymap(int scale, bool force, const char *mname, bool usecfg)    // main 
 {
     if(!force && !editmode) 
     {
-        spdlog::get("edit")->error("newmap only allowed in edit mode");
+        Log.edit->error("newmap only allowed in edit mode");
         return false;
     }
 
@@ -1303,7 +1303,7 @@ bool enlargemap(bool force)
 {
     if(!force && !editmode)
     {
-        spdlog::get("edit")->error("mapenlarge only allowed in edit mode");
+        Log.edit->error("mapenlarge only allowed in edit mode");
         return false;
     }
     if(worldsize >= 1<<16) return false;
@@ -1365,7 +1365,7 @@ void shrinkmap()
  
     allchanged();
 
-    spdlog::get("global")->info("shrunk map to size {}", *worldscale);
+    Log.default->info("shrunk map to size {}", *worldscale);
 }
 
 void newmap(int *i) { bool force = !isconnected(); if(force) game::forceedit(""); if(emptymap(*i, force, NULL)) game::newmap(max(*i, 0)); }
