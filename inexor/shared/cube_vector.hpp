@@ -67,7 +67,7 @@ template <class T, int MINSIZE = 8> struct vector
     /// Add new index to vector
     /// @brief Pushs a new element at the end of the vector. Allocates memory automaticly if neccesary.
     /// @param x Element which will be added at the end
-    /// @note May allocates a lot of memory without your notice
+    /// @sideeffect May allocates a lot of memory without your notice
     /// @see growbuf
     /// @return The last element of the vector (which is parameter x)
     T &add(const T &x)
@@ -80,7 +80,7 @@ template <class T, int MINSIZE = 8> struct vector
     /// Add new EMPTY index to vector.
     /// @brief Pushs a new EMPTY element at the end of the vector. Allocates memory automaticly if neccesary.
     /// @see growbuf
-    /// @note May allocates a lot of memory without your notice.
+    /// @sideeffect May allocates a lot of memory without your notice.
     /// @return The last element of the vector (which is parameter x).
     T &add()
     {

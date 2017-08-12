@@ -718,9 +718,9 @@ namespace game
 
     /// iterate through all dynamic entities and return entity with index [i]
     /// You put the list in and get it through to return back
-	/// The caller has to hand in a list which will get filled
-	/// @return a player, monster or movable (all dynamic entities)
-	dynent *iterdynents(int i)
+    /// The caller has to hand in a list which will get filled
+    /// @return a player, monster or movable (all dynamic entities)
+    dynent *iterdynents(int i)
     {
         if(i<players.length()) return players[i];
         i -= players.length();

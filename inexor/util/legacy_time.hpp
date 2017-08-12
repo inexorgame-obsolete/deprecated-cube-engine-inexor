@@ -15,7 +15,7 @@ extern int gamemillis;                  // elapsed frame time since game start (
 /// Updates the above global timing variables.
 /// @param is_paused if true we won't update any frame times.
 /// @param gamespeed there exist wall time and frame time:
-///        one is the virtual 'clock' for the game, the other one is scaled (and does not update when paused).
+/// one is the virtual 'clock' for the game, the other one is scaled (and does not update when paused).
 /// @param max_fps in case of limited fps we let this thread sleep for some milliseconds, if 0 everythings unlimited.
 /// TODO: encapsulate this into a class to make concurrency easier.
 extern void updatetime(bool is_paused, int gamespeed, int max_fps = 0);
