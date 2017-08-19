@@ -451,13 +451,23 @@ struct mergecompat
 };
 
 /// forward function "loadchildren"
+/// @param f
+/// @param co
+/// @param size
+/// @param failed
 cube *loadchildren(stream *f, const ivec &co, int size, bool &failed);
 
 
 /// convert a surface from a newer map version to a surface of older version (?)
 /// @param c a reference to a cube whose surfaces will be converted
 /// @param co a reference to an output integer vector [mathematical vector] 
-
+/// @param size
+/// @param srcsurfs
+/// @param hassurfs
+/// @param normals
+/// @param hasnorms
+/// @param merges
+/// @param hasmerges
 void convertoldsurfaces(cube &c, const ivec &co, int size, surfacecompat *srcsurfs, int hassurfs, normalscompat *normals, int hasnorms, mergecompat *merges, int hasmerges)
 {
     /// each cube consists of 6 faces
@@ -914,6 +924,7 @@ void savevslots(stream *f, int numvslots)
 /// load one vertex slot from a (file) stream
 /// @param f (file) stream)
 /// @param vs a reference to a vslot to which data will be written
+/// @param changed
 void loadvslot(stream *f, VSlot &vs, int changed)
 {
     vs.changed = changed;

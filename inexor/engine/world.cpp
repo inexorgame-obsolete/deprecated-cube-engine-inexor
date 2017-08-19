@@ -548,10 +548,29 @@ void entselectionbox(const entity &e, vec &eo, vec &es)
 VAR(entselsnap, 0, 0, 1);
 VAR(entmovingshadow, 0, 1, 1);
 
-
+/// @param orient
+/// @param o
+/// @param s
+/// @param size
 extern void boxs(int orient, vec o, const vec &s, float size);
+
+/// @param orient
+/// @param o
+/// @param s
 extern void boxs(int orient, vec o, const vec &s);
+
+/// @param o
+/// @param s
+/// @param g
 extern void boxs3D(const vec &o, vec s, int g);
+
+/// @param o
+/// @param ray
+/// @param d
+/// @param off
+/// @param handle
+/// @param dest
+/// @param first
 extern bool editmoveplane(const vec &o, const vec &ray, int d, float off, vec &handle, vec &dest, bool first);
 
 int entmoving = 0;

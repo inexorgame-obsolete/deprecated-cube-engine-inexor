@@ -149,12 +149,13 @@ class Slot
 
     VSlot *findvariant(const VSlot &src, const VSlot &delta);
 
-	/// Combine and load texture data to be ready for sending it to the gpu.
-	/// Combination is used to merge the diffuse and the specularity map into one texture (spec as alpha)
-	/// and to merge the normal info and the depth info into another (depth as alpha)
-	/// @param index xy
-	/// @param t Output texture made from seperate textures being combined
-	/// @param msg show progress bar.
+    /// Combine and load texture data to be ready for sending it to the gpu.
+    /// Combination is used to merge the diffuse and the specularity map into one texture (spec as alpha)
+    /// and to merge the normal info and the depth info into another (depth as alpha)
+    /// @param index xy
+    /// @param t Output texture made from seperate textures being combined
+    /// @param msg show progress bar
+    /// @param forceload 
     void combinetextures(int index, Slot::Tex &t, bool msg = true, bool forceload = false);
 
     Slot &load(bool msg, bool forceload);
@@ -191,7 +192,7 @@ extern void cleanupmaterialslots();
 
 /// Apply changes to all following neighbors of root.
 /// Making it accordingly to roots vslot
-/// @param root of neighbours
+/// @param root Root of neighbours
 /// @param changed includes info about what changed
 extern void propagatevslot(VSlot *root, int changed);
 extern void texturereset(int first, int num = 0);

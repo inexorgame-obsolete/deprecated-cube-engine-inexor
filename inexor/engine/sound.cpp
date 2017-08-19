@@ -593,11 +593,10 @@ void resetsound()
 COMMAND(resetsound, "");
 
 #ifdef WIN32
-
+#include<io.h>
 #include <wchar.h>
 
 #else
-
 #include <unistd.h>
 
 #ifdef _POSIX_SHARED_MEMORY_OBJECTS
