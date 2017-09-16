@@ -98,8 +98,8 @@ extern int getservermtu();
         loopvrev(clients)
         {
             clientinfo &c = *clients[i];
-            if(c.state.aitype != AI_NONE || c.privilege >= PRIV_ADMIN || c.local) continue;
-            if(actor && ((c.privilege > priv && !actor->local) || c.clientnum == actor->clientnum)) continue;
+            if(c.state.aitype != AI_NONE || c.privilege >= PRIV_ADMIN) continue;
+            if(actor && (c.privilege > priv || c.clientnum == actor->clientnum)) continue;
             if(getclientip(c.clientnum) == ip) disconnect_client(c.clientnum, DISC_KICK);
         }
     }
@@ -278,7 +278,7 @@ extern int getservermtu();
 
     void addteamkill(clientinfo *actor, clientinfo *victim, int n)
     {
-        if(!m_timed || actor->state.aitype != AI_NONE || actor->local || actor->privilege || (victim && victim->state.aitype != AI_NONE)) return;
+        if(!m_timed || actor->state.aitype != AI_NONE || actor->privilege || (victim && victim->state.aitype != AI_NONE)) return;
         shouldcheckteamkills = true;
         uint ip = getclientip(actor->clientnum);
         loopv(teamkills) if(teamkills[i].ip == ip) 
@@ -338,7 +338,7 @@ extern int getservermtu();
         loopv(clients) 
         {
             clientinfo *ci = clients[i];
-            if(ci->clientnum!=exclude && (!nospec || ci->state.state!=CS_SPECTATOR || (priv && (ci->privilege || ci->local))) && (!noai || ci->state.aitype == AI_NONE)) n++;
+            if(ci->clientnum!=exclude && (!nospec || ci->state.state!=CS_SPECTATOR || (priv && ci->privilege)) && (!noai || ci->state.aitype == AI_NONE)) n++;
         }
         return n;
     }
@@ -406,7 +406,7 @@ extern int getservermtu();
     {
         if((m_timed && gamemillis>=gamelimit) || !sents.inrange(i) || !sents[i].spawned) return false;
         clientinfo *ci = get_client_info(sender);
-        if(!ci || (!ci->local && !ci->state.canpickup(sents[i].type))) return false;
+        if(!ci || !ci->state.canpickup(sents[i].type)) return false;
         sents[i].spawned = false;
         sents[i].spawntime = spawntime(sents[i].type);
         sendf(-1, 1, "ri3", N_ITEMACC, i, sender);
@@ -553,7 +553,7 @@ extern int getservermtu();
     {
         if(!gamepaused) return;
         int admins = 0;
-        loopv(clients) if(clients[i]->privilege >= (restrictpausegame ? PRIV_ADMIN : PRIV_MASTER) || clients[i]->local) admins++;
+        loopv(clients) if(clients[i]->privilege >= (restrictpausegame ? PRIV_ADMIN : PRIV_MASTER)) admins++;
         if(!admins) pausegame(false);
     }
 
@@ -580,14 +580,14 @@ extern int getservermtu();
     {
         if(!teamspersisted) return;
         int admins = 0;
-        loopv(clients) if(clients[i]->privilege >= (restrictpersistteams ? PRIV_ADMIN : PRIV_MASTER) || clients[i]->local) admins++;
+        loopv(clients) if(clients[i]->privilege >= (restrictpersistteams ? PRIV_ADMIN : PRIV_MASTER)) admins++;
         if(!admins) persistteams(false); //if no admins or (or masters) around, reshuffle teams again
     }
 
     void revokemaster(clientinfo *ci)
     {
         ci->privilege = PRIV_NONE;
-        if(ci->state.state==CS_SPECTATOR && !ci->local) aiman::removeai(ci);
+        if(ci->state.state==CS_SPECTATOR) aiman::removeai(ci);
     }
 
     extern void connected(clientinfo *ci);
@@ -598,7 +598,7 @@ extern int getservermtu();
         const char *name = "";
 
         bool haspass = adminpass[0] && checkpassword(ci->clientnum, ci->sessionid, adminpass, pass);
-        int wantpriv = ci->local || haspass ? PRIV_ADMIN : PRIV_MASTER;
+        int wantpriv = haspass ? PRIV_ADMIN : PRIV_MASTER;
         if(wantpriv <= ci->privilege) return true;
         else if(wantpriv <= PRIV_MASTER && !force)
         {
@@ -612,7 +612,7 @@ extern int getservermtu();
                 sendf(ci->clientnum, 1, "ris", N_SERVMSG, "Master is already claimed.");
                 return false;
             }
-            if(!(mastermask&MM_AUTOAPPROVE) && !ci->privilege && !ci->local)
+            if(!(mastermask&MM_AUTOAPPROVE) && !ci->privilege)
             {
                 sendf(ci->clientnum, 1, "ris", N_SERVMSG, "This server requires special permission to claim master.");
                 return false;
@@ -623,7 +623,7 @@ extern int getservermtu();
         name = privname(ci->privilege);
 
         bool hasmaster = false;
-        loopv(clients) if(clients[i]->local || clients[i]->privilege >= PRIV_MASTER) hasmaster = true;
+        loopv(clients) if(clients[i]->privilege >= PRIV_MASTER) hasmaster = true;
         if(!hasmaster)
         {
             mastermode = MM_OPEN;
@@ -649,10 +649,10 @@ extern int getservermtu();
     bool trykick(clientinfo *ci, int victim, const char *reason = NULL, bool trial = false)
     {
         int priv = ci->privilege;
-        if((priv || ci->local) && ci->clientnum!=victim)
+        if((priv) && ci->clientnum!=victim)
         {
             clientinfo *vinfo = get_client_info(victim, false);
-            if(vinfo && vinfo->connected && (priv >= vinfo->privilege || ci->local) && vinfo->privilege < PRIV_ADMIN && !vinfo->local)
+            if(vinfo && vinfo->connected && priv >= vinfo->privilege && vinfo->privilege < PRIV_ADMIN)
             {
                 if(trial) return true;
                 string kicker;
@@ -670,7 +670,7 @@ extern int getservermtu();
     savedscore *findscore(clientinfo *ci, bool insert)
     {
         uint ip = getclientip(ci->clientnum);
-        if(!ip && !ci->local) return 0;
+        if(!ip) return 0;
         if(!insert)
         {
             loopv(clients)
@@ -744,7 +744,6 @@ extern int getservermtu();
                     // never allow
                 default: return -1;
             }
-            if(ci->local) return type;
         }
         switch(msgfilter[type])
         {
@@ -1007,8 +1006,8 @@ extern int getservermtu();
     // map managment
     bool hasmap(clientinfo *ci)
     {
-        return (m_edit && (clients.length() > 0 || ci->local)) ||
-               (smapname[0] && (!m_timed || gamemillis < gamelimit || (ci->state.state==CS_SPECTATOR && !ci->privilege && !ci->local) || numclients(ci->clientnum, true, true, true)));
+        return (m_edit && clients.length() > 0) ||
+               (smapname[0] && (!m_timed || gamemillis < gamelimit || (ci->state.state==CS_SPECTATOR && !ci->privilege) || numclients(ci->clientnum, true, true, true)));
     }
 
     // client managment | gamemode | network
@@ -1133,7 +1132,6 @@ extern int getservermtu();
 
     bool restorescore(clientinfo *ci)
     {
-        //if(ci->local) return false;
         savedscore *sc = findscore(ci, false);
         if(sc)
         {
@@ -1295,7 +1293,7 @@ extern int getservermtu();
         loopv(clients)
         {
             clientinfo *oi = clients[i];
-            if(oi->state.state==CS_SPECTATOR && !oi->privilege && !oi->local) continue;
+            if(oi->state.state==CS_SPECTATOR && !oi->privilege) continue;
             if(oi->state.aitype!=AI_NONE) continue;
             maxvotes++;
             if(!m_valid(oi->modevote)) continue;
@@ -1334,17 +1332,17 @@ extern int getservermtu();
             if(idx < 0) return;
             map = maprotations[idx].map;
         }
-        if(lockmaprotation && !ci->local && ci->privilege < (lockmaprotation > 1 ? PRIV_ADMIN : PRIV_MASTER) && findmaprotation(reqmode, map) < 0)
+        if(lockmaprotation && ci->privilege < (lockmaprotation > 1 ? PRIV_ADMIN : PRIV_MASTER) && findmaprotation(reqmode, map) < 0)
         {
             sendf(sender, 1, "ris", N_SERVMSG, "This server has locked the map rotation.");
             return;
         }
         copystring(ci->mapvote, map);
         ci->modevote = reqmode;
-        if(ci->local || (ci->privilege && mastermode>=MM_VETO))
+        if(ci->privilege && mastermode>=MM_VETO)
         {
             if(demorecord) enddemorecord();
-            if(!ci->local || has_clients())
+            if(has_clients()>1)
                 sendservmsgf("%s forced %s on map %s", colorname(ci), modename(ci->modevote), ci->mapvote[0] ? ci->mapvote : "[new map]");
             changemap(ci->mapvote, ci->modevote);
         }
@@ -1477,7 +1475,7 @@ extern int getservermtu();
     void suicide(clientinfo *ci)
     {
         gamestate &gs = ci->state;
-        if(gs.state!=CS_ALIVE) return;
+        if(gs.state!=CS_ALIVE && (gs.state==CS_SPECTATOR || gs.state==CS_EDITING)) return;
         int fragvalue = smode ? smode->fragvalue(ci, ci) : -1;
         ci->state.frags += fragvalue;
         ci->state.deaths++;
@@ -1726,7 +1724,7 @@ extern int getservermtu();
         if(smode) smode->leavegame(ci);
         ci->state.state = CS_SPECTATOR;
         ci->state.timeplayed += lastmillis - ci->state.lasttimeplayed;
-        if(!ci->local && (!ci->privilege || ci->warned)) aiman::removeai(ci);
+        if(!ci->privilege || ci->warned) aiman::removeai(ci);
         sendf(-1, 1, "ri3", N_SPECTATOR, ci->clientnum, 1);
     }
 
@@ -1785,7 +1783,7 @@ extern int getservermtu();
                 if(smode) smode->leavegame(ci);
                 ci->state.state = CS_SPECTATOR;
                 ci->state.timeplayed += lastmillis - ci->state.lasttimeplayed;
-                if(!ci->local && !ci->privilege) aiman::removeai(ci);
+                if(!ci->privilege) aiman::removeai(ci);
                 sendf(-1, 1, "ri3", N_SPECTATOR, ci->clientnum, 1);
             }
         }
@@ -1804,14 +1802,14 @@ extern int getservermtu();
         if(req < 0 && modifiedmapspectator && (mcrc || modifiedmapspectator > 1)) loopv(clients)
         {
             clientinfo *ci = clients[i];
-            if(!ci->local && ci->warned && ci->state.state != CS_SPECTATOR) forcespectator(ci);
+            if(ci->warned && ci->state.state != CS_SPECTATOR) forcespectator(ci);
         }
     }
 
     // client managment
     bool shouldspectate(clientinfo *ci)
     {
-        return !ci->local && ci->warned && modifiedmapspectator && (mcrc || modifiedmapspectator > 1);
+        return ci->warned && modifiedmapspectator && (mcrc || modifiedmapspectator > 1);
     }
 
     void unspectate(clientinfo *ci)
@@ -1894,7 +1892,7 @@ extern int getservermtu();
         loopvrev(clients)
         {
             clientinfo *ci = clients[i];
-            if(ci->state.aitype != AI_NONE || ci->local || ci->privilege >= PRIV_ADMIN) continue;
+            if(ci->state.aitype != AI_NONE || ci->privilege >= PRIV_ADMIN) continue;
             if(checkgban(getclientip(ci->clientnum))) disconnect_client(ci->clientnum, DISC_IPBAN);
         }
     }
@@ -1902,7 +1900,6 @@ extern int getservermtu();
     // network
     int allowconnect(clientinfo *ci, const char *pwd = "")
     {
-        if(ci->local) return DISC_NONE;
         if(serverpass[0])
         {
             if(!checkpassword(ci->clientnum, ci->sessionid, serverpass, pwd)) return DISC_PASSWORD;
@@ -1927,7 +1924,7 @@ extern int getservermtu();
     {
         if(!m_edit || len <= 0 || len > 4*1024*1024) return;
         clientinfo *ci = get_client_info(sender);
-        if(ci->state.state==CS_SPECTATOR && !ci->privilege && !ci->local) return;
+        if(ci->state.state==CS_SPECTATOR && !ci->privilege) return;
         if(mapdata) DELETEP(mapdata);
         mapdata = opentempfile("mapdata", "w+b");
         if(!mapdata) { sendf(sender, 1, "ris", N_SERVMSG, "failed to open temporary file for map"); return; }
@@ -2031,9 +2028,9 @@ extern int getservermtu();
 
         if(p.packet->flags&ENET_PACKET_FLAG_RELIABLE) reliablemessages = true;
         #define QUEUE_AI clientinfo *cm = cq;
-        #define QUEUE_MSG { if(cm && (!cm->local || demorecord || has_clients())) while(curmsg<p.length()) cm->messages.add(p.buf[curmsg++]); }
+        #define QUEUE_MSG { if(cm) while(curmsg<p.length()) cm->messages.add(p.buf[curmsg++]); }
         #define QUEUE_BUF(body) { \
-            if(cm && (!cm->local || demorecord || has_clients())) \
+            if(cm) \
             { \
                 curmsg = p.length(); \
                 { body; } \
@@ -2069,9 +2066,9 @@ extern int getservermtu();
                 }
                 if(cp)
                 {
-                    if((!ci->local || demorecord || has_clients()) && (cp->state.state==CS_ALIVE || cp->state.state==CS_EDITING))
+                    if(cp->state.state==CS_ALIVE || cp->state.state==CS_EDITING)
                     {
-                        if(!ci->local && !m_edit && max(vel.magnitude2(), (float)fabs(vel.z)) >= 180)
+                        if(!m_edit && max(vel.magnitude2(), (float)fabs(vel.z)) >= 180)
                             cp->setexceeded();
                         cp->position.setsize(0);
                         while(curmsg<p.length()) cp->position.add(p.buf[curmsg++]);
@@ -2088,7 +2085,7 @@ extern int getservermtu();
                 int pcn = getint(p), teleport = getint(p), teledest = getint(p);
                 clientinfo *cp = get_client_info(pcn);
                 if(cp && pcn != sender && cp->ownernum != sender) cp = NULL;
-                if(cp && (!ci->local || demorecord || has_clients()) && (cp->state.state==CS_ALIVE || cp->state.state==CS_EDITING))
+                if(cp && (cp->state.state==CS_ALIVE || cp->state.state==CS_EDITING))
                 {
                     flushclientposition(*cp);
                     sendf(-1, 0, "ri4x", N_TELEPORT, pcn, teleport, teledest, cp->ownernum); 
@@ -2101,7 +2098,7 @@ extern int getservermtu();
                 int pcn = getint(p), jumppad = getint(p);
                 clientinfo *cp = get_client_info(pcn);
                 if(cp && pcn != sender && cp->ownernum != sender) cp = NULL;
-                if(cp && (!ci->local || demorecord || has_clients()) && (cp->state.state==CS_ALIVE || cp->state.state==CS_EDITING))
+                if(cp && (cp->state.state==CS_ALIVE || cp->state.state==CS_EDITING))
                 {
                     cp->setpushed();
                     flushclientposition(*cp);
@@ -2125,7 +2122,7 @@ extern int getservermtu();
             case N_EDITMODE:
             {
                 int val = getint(p);
-                if(!ci->local && !m_edit) break;
+                if(!m_edit) break;
                 if(val ? ci->state.state!=CS_ALIVE && ci->state.state!=CS_DEAD : ci->state.state!=CS_EDITING) break;
                 if(smode)
                 {
@@ -2232,7 +2229,7 @@ extern int getservermtu();
 
             case N_SUICIDE:
             {
-                if(cq) cq->addevent(new suicideevent);
+                ci->addevent(new suicideevent);
                 break;
             }
 
@@ -2312,7 +2309,7 @@ extern int getservermtu();
             case N_SAYTEAM:
             {
                 getstring(text, p);
-                if(!ci || !cq || (ci->state.state==CS_SPECTATOR && !ci->local && !ci->privilege) || !m_teammode || !cq->team[0]) break;
+                if(!ci || !cq || (ci->state.state==CS_SPECTATOR && !ci->privilege) || !m_teammode || !cq->team[0]) break;
                 filtertext(text, text, true, true);
                 loopv(clients)
                 {
@@ -2381,7 +2378,7 @@ extern int getservermtu();
 
             case N_ITEMLIST:
             {
-                if((ci->state.state==CS_SPECTATOR && !ci->privilege && !ci->local) || !notgotitems || strcmp(ci->clientmap, smapname)) { while(getint(p)>=0 && !p.overread()) getint(p); break; }
+                if((ci->state.state==CS_SPECTATOR && !ci->privilege) || !notgotitems || strcmp(ci->clientmap, smapname)) { while(getint(p)>=0 && !p.overread()) getint(p); break; }
                 int n;
                 while((n = getint(p))>=0 && n<MAXENTS && !p.overread())
                 {
@@ -2454,9 +2451,9 @@ extern int getservermtu();
             case N_MASTERMODE:
             {
                 int mm = getint(p);
-                if((ci->privilege || ci->local) && mm>=MM_OPEN && mm<=MM_PRIVATE)
+                if(ci->privilege && mm>=MM_OPEN && mm<=MM_PRIVATE)
                 {
-                    if((ci->privilege>=PRIV_ADMIN || ci->local) || (mastermask&(1<<mm)))
+                    if((ci->privilege>=PRIV_ADMIN) || (mastermask&(1<<mm)))
                     {
                         mastermode = mm;
                         allowedips.shrink(0);
@@ -2478,7 +2475,7 @@ extern int getservermtu();
 
             case N_CLEARBANS:
             {
-                if(ci->privilege || ci->local)
+                if(ci->privilege)
                 {
                     bannedips.shrink(0);
                     sendservmsg("cleared all bans");
@@ -2498,7 +2495,7 @@ extern int getservermtu();
             case N_SPECTATOR:
             {
                 int spectator = getint(p), val = getint(p);
-                if(!ci->privilege && !ci->local && (spectator!=sender || (ci->state.state==CS_SPECTATOR && mastermode>=MM_LOCKED))) break;
+                if(!ci->privilege && (spectator!=sender || (ci->state.state==CS_SPECTATOR && mastermode>=MM_LOCKED))) break;
                 clientinfo *spinfo = get_client_info(spectator, false);
                 if(!spinfo || !spinfo->connected || (spinfo->state.state==CS_SPECTATOR ? val : !val)) break;
 
@@ -2514,7 +2511,7 @@ extern int getservermtu();
                 int who = getint(p);
                 getstring(text, p);
                 filtertext(text, text, false, false, MAXTEAMLEN);
-                if(!ci->privilege && !ci->local) break;
+                if(!ci->privilege) break;
                 clientinfo *wi = get_client_info(who);
                 if(!m_teammode || !text[0] || !wi || !wi->connected || !strcmp(wi->team, text)) break;
                 if((!smode || smode->canchangeteam(wi, wi->team, text)) && addteaminfo(text))
@@ -2547,7 +2544,7 @@ extern int getservermtu();
 
             case N_STOPDEMO:
             {
-                if(ci->privilege < (restrictdemos ? PRIV_ADMIN : PRIV_MASTER) && !ci->local) break;
+                if(ci->privilege < (restrictdemos ? PRIV_ADMIN : PRIV_MASTER)) break;
                 stopdemo();
                 break;
             }
@@ -2555,20 +2552,20 @@ extern int getservermtu();
             case N_CLEARDEMOS:
             {
                 int demo = getint(p);
-                if(ci->privilege < (restrictdemos ? PRIV_ADMIN : PRIV_MASTER) && !ci->local) break;
+                if(ci->privilege < (restrictdemos ? PRIV_ADMIN : PRIV_MASTER)) break;
                 cleardemos(demo);
                 break;
             }
 
             case N_LISTDEMOS:
-                if(!ci->privilege && !ci->local && ci->state.state==CS_SPECTATOR) break;
+                if(!ci->privilege && ci->state.state==CS_SPECTATOR) break;
                 listdemos(sender);
                 break;
 
             case N_GETDEMO:
             {
                 int n = getint(p);
-                if(!ci->privilege && !ci->local && ci->state.state==CS_SPECTATOR) break;
+                if(!ci->privilege && ci->state.state==CS_SPECTATOR) break;
                 senddemo(ci, n);
                 break;
             }
@@ -2588,7 +2585,7 @@ extern int getservermtu();
             case N_NEWMAP:
             {
                 int size = getint(p);
-                if(!ci->privilege && !ci->local && ci->state.state==CS_SPECTATOR) break;
+                if(!ci->privilege && ci->state.state==CS_SPECTATOR) break;
                 if(size>=0)
                 {
                     smapname[0] = '\0';
@@ -2606,9 +2603,9 @@ extern int getservermtu();
                 getstring(text, p);
                 if(mn != ci->clientnum)
                 {
-                    if(!ci->privilege && !ci->local) break;
+                    if(!ci->privilege) break;
                     clientinfo *minfo = get_client_info(mn, false);
-                    if(!minfo || !minfo->connected || (!ci->local && minfo->privilege >= ci->privilege) || (val && minfo->privilege)) break;
+                    if(!minfo || !minfo->connected || minfo->privilege >= ci->privilege || (val && minfo->privilege)) break;
                     setmaster(minfo, val!=0, "", true);
                 }
                 else setmaster(ci, val!=0, text);
@@ -2645,21 +2642,21 @@ extern int getservermtu();
             case N_PAUSEGAME:
             {
                 int val = getint(p);
-                if(ci->privilege < (restrictpausegame ? PRIV_ADMIN : PRIV_MASTER) && !ci->local) break;
+                if(ci->privilege < (restrictpausegame ? PRIV_ADMIN : PRIV_MASTER)) break;
                 pausegame(val > 0, ci);
                 break;
             }
             case N_GAMESPEED:
             {
                 int val = getint(p);
-                if(ci->privilege < (restrictgamespeed ? PRIV_ADMIN : PRIV_MASTER) && !ci->local) break;
+                if(ci->privilege < (restrictgamespeed ? PRIV_ADMIN : PRIV_MASTER)) break;
                 changegamespeed(val, ci);
                 break;
             }
             case N_PERSISTTEAMS:
             {
                 int val = getint(p);
-                if(ci->privilege < (restrictpersistteams ? PRIV_ADMIN : PRIV_MASTER) && !ci->local) break;
+                if(ci->privilege < (restrictpersistteams ? PRIV_ADMIN : PRIV_MASTER)) break;
                 persistteams(val > 0);
                 break;
             }

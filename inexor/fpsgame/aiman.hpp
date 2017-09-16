@@ -86,7 +86,7 @@ namespace aiman
 	/// 
     static inline bool validaiclient(clientinfo *ci)
     {
-        return ci->clientnum >= 0 && ci->state.aitype == AI_NONE && (ci->state.state!=CS_SPECTATOR || ci->local || (ci->privilege && !ci->warned));
+        return ci->clientnum >= 0 && ci->state.aitype == AI_NONE && (ci->state.state!=CS_SPECTATOR || (ci->privilege && !ci->warned));
     }
 
 	// 
@@ -263,21 +263,21 @@ namespace aiman
 	// master requires to add a bot
 	void reqadd(clientinfo *ci, int skill)
 	{
-        if(!ci->local && !ci->privilege) return;
-        if(!addai(skill, !ci->local && ci->privilege < PRIV_ADMIN ? botlimit : -1)) sendf(ci->clientnum, 1, "ris", N_SERVMSG, "failed to create or assign bot");
+        if(!ci->privilege) return;
+        if(!addai(skill, ci->privilege < PRIV_ADMIN ? botlimit : -1)) sendf(ci->clientnum, 1, "ris", N_SERVMSG, "failed to create or assign bot");
 	}
 
 	// master requires to delete a bot
 	void reqdel(clientinfo *ci)
 	{
-        if(!ci->local && !ci->privilege) return;
+        if(!ci->privilege) return;
         if(!deleteai()) sendf(ci->clientnum, 1, "ris", N_SERVMSG, "failed to remove any bots");
 	}
 
 	// set the bot limit and send a message to all clients
     void setbotlimit(clientinfo *ci, int limit)
     {
-        if(ci && !ci->local && ci->privilege < PRIV_ADMIN) return;
+        if(ci && ci->privilege < PRIV_ADMIN) return;
         botlimit = clamp(limit, 0, MAXBOTS);
         dorefresh = true;
         defformatstring(msg, "bot limit is now %d", *botlimit);
@@ -287,7 +287,7 @@ namespace aiman
 	// enable or disable bot balancing and send a message to all clients
     void setbotbalance(clientinfo *ci, bool balance)
     {
-        if(ci && !ci->local && !ci->privilege) return;
+        if(ci && !ci->privilege) return;
         botbalance = balance ? 1 : 0;
         dorefresh = true;
         defformatstring(msg, "bot team balancing is now %s", botbalance ? "enabled" : "disabled");
@@ -299,7 +299,7 @@ namespace aiman
     void changemap()
     {
         dorefresh = true;
-        loopv(clients) if(clients[i]->local || clients[i]->privilege) return;
+        loopv(clients) if(clients[i]->privilege) return;
         if(botbalance != (serverbotbalance != 0)) setbotbalance(NULL, serverbotbalance != 0);
     }
 

@@ -212,7 +212,7 @@ struct bombservermode : servmode, bombmode
 
             case N_SPAWNLOC:
             {
-                if(!parsespawnloc(p, (ci->state.state!=CS_SPECTATOR || ci->privilege || ci->local) && !strcmp(ci->clientmap, smapname)))
+                if(!parsespawnloc(p, (ci->state.state!=CS_SPECTATOR || ci->privilege) && !strcmp(ci->clientmap, smapname)))
                     disconnect_client(ci->clientnum, DISC_MSGERR);
                 return true;
             }

@@ -318,11 +318,11 @@ struct captureservermode : servmode, capturemode_common
         switch(type)
         {
             case N_BASES:
-                parsebases(p, (ci->state.state!=CS_SPECTATOR || ci->privilege || ci->local) && !strcmp(ci->clientmap, smapname));
+                parsebases(p, (ci->state.state!=CS_SPECTATOR || ci->privilege) && !strcmp(ci->clientmap, smapname));
                 return true;
 
             case N_REPAMMO:
-                if((ci->state.state!=CS_SPECTATOR || ci->local || ci->privilege) && cq) replenishammo(cq);
+                if((ci->state.state!=CS_SPECTATOR || ci->privilege) && cq) replenishammo(cq);
                 return true;
         }
         return false;
