@@ -1,4 +1,5 @@
-/// @file Internal(!!) Header for the windows stackwalker.
+/// @file StackWalker_windows.hpp
+/// Internal(!!) Header for the windows stackwalker.
 /// @warning Don't include this file directly but CrashReporter.h instead.
 
 #pragma once

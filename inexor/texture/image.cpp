@@ -1,4 +1,5 @@
-/// @file Texture modifiers mainly applied on load.
+/// @file image.cpp
+/// Texture modifiers mainly applied on load.
 
 
 #include "inexor/texture/image.hpp"
@@ -215,7 +216,6 @@ static void reorients3tc(GLenum format, int blocksize, int w, int h, uchar *src,
     }
 }
 
-/// @param isnormalmap specifies whether you pass in a normal map and hence need to shift the blue/red channels accordingly.
 void texreorient(ImageData &s, bool flipx, bool flipy, bool swapxy, bool isnormalmap)
 {
     ImageData d(swapxy ? s.h : s.w, swapxy ? s.w : s.h, s.bpp, s.levels, s.align, s.compressed);
@@ -246,7 +246,6 @@ void texreorient(ImageData &s, bool flipx, bool flipy, bool swapxy, bool isnorma
 /// @param isnormalmap specifies whether you pass in a normal map and hence need to shift the blue/red channels accordingly.
 void texrotate(ImageData &s, int numrots, bool isnormalmap)
 {
-    // 1..3 rotate through 90..270 degrees, 4 flips X, 5 flips Y
     if(numrots >= 1 && numrots <= 5)
         texreorient(s,
         numrots >= 2 && numrots <= 4, // flip X on 180/270 degrees

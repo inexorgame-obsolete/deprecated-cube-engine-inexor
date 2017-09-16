@@ -1,3 +1,4 @@
+/// @file slot.cpp 
 /// @file management of texture slots as visible ingame.
 /// each texture slot can have multiple textures.
 /// additional textures can be used for various shaders.
@@ -23,7 +24,7 @@ VSlot dummyvslot(&dummyslot);
 /// Resets all textures from the slots-stack.
 /// @param first: the texturepos from whereon you want to reset
 /// @param num: the number of slots you want to reset from thereon. All if 0
-/// @example texturereset(0, 40); resets the first 40 textures
+/// for example texturereset(0, 40); resets the first 40 textures
 void texturereset(int first, int num)
 {
     if(!(identflags&IDF_OVERRIDDEN) && !game::allowedittoggle()) return;
@@ -236,9 +237,6 @@ static void propagatevslot(VSlot &dst, const VSlot &src, int diff, bool edit = f
     if(diff & (1 << VSLOT_COLOR)) dst.colorscale = src.colorscale;
 }
 
-/// Apply changes to all following neighbors of root.
-/// Making it accordingly to roots vslot
-/// @param changed includes info about what changed
 void propagatevslot(VSlot *root, int changed)
 {
     for(VSlot *vs = root->next; vs; vs = vs->next)
@@ -682,10 +680,7 @@ Slot::Tex *Slot::findtexture(int type)
     return NULL;
 }
 
-/// Combine and load texture data to be ready for sending it to the gpu.
-/// Combination is used to merge the diffuse and the specularity map into one texture (spec as alpha)
-/// and to merge the normal info and the depth info into another (depth as alpha)
-/// @param msg show progress bar.
+
 void Slot::combinetextures(int index, Slot::Tex &t, bool msg, bool forceload)
 {
     vector<char> key;

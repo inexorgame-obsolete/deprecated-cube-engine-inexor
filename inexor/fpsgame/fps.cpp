@@ -48,7 +48,7 @@ namespace game
 
 	/// follow a specific player if you are in spectator mode
     /// @param arg either the player's name or his client number
-    /// @seee parseplayer
+    /// @see parseplayer
     void follow(char *arg)
     {
         if(arg[0] ? player1->state==CS_SPECTATOR : following>=0)
@@ -720,7 +720,9 @@ namespace game
     int numdynents() { return players.length() + movables.length(); }
 
     /// iterate through all dynamic entities and return entity with index [i]
-    /// @returned a player, monster or movable (all dynamic entities)
+    /// You put the list in and get it through to return back
+    /// The caller has to hand in a list which will get filled
+    /// @return a player, monster or movable (all dynamic entities)
     dynent *iterdynents(int i)
     {
         if(i<players.length()) return players[i];
@@ -770,7 +772,7 @@ namespace game
         return colorname(d, NULL, isteam(d->team, player1->team) ? COL_BLUE : COL_RED, alt);
     }
 
-	/// color player name blue if you have the same team (\f1) otherwise red (\f3)
+	/// color player name blue if you have the same team f1 otherwise red f3
     /// @warning not safe.
     const char *teamcolor(const char *name, bool sameteam, const char *alt)
     {

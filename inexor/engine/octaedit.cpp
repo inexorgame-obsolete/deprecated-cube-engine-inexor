@@ -48,7 +48,7 @@ void boxs(int orient, vec o, const vec &s, float size)
 
 /// renders a rectangular box to the target location
 /// @param orient cube face orientation index (3 dimensions x 2 directions = 6 possible orientation indices)
-/// @parm o target rendering position
+/// @param o target rendering position
 /// @param s a constant scalar vector
 void boxs(int orient, vec o, const vec &s)
 {
@@ -204,7 +204,7 @@ void cubecancel()
 
 /// reset the current selection
 /// called every time user changes grid size or editing status
-/// @ee cubecancel
+/// @see cubecancel
 /// @see entcancel
 void cancelsel()
 {

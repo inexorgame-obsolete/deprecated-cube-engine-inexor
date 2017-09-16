@@ -1,9 +1,7 @@
-/// @file game.h
+/// @file game.hpp
 /// definitions of network protocol, game modes, entities, guns, monsters, mastermode
 /// pickups, triggers, team scores, armour, permission levels, 
-///
-///
-///
+
 
 /// pragmaonce protectes this file from being included twice
 #pragma once

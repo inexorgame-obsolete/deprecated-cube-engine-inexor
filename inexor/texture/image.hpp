@@ -1,4 +1,5 @@
-/// @file Texture modifiers mainly applied on load.
+/// @file image.hpp
+/// Texture modifiers mainly applied on load.
 
 #pragma once
 
@@ -112,8 +113,20 @@ extern void resizetexture(int w, int h, bool mipmap, bool canreduce, GLenum targ
 extern void scaleimage(ImageData &s, int w, int h);
 
 extern void texoffset(ImageData &s, int xoffset, int yoffset);
+
+/// @param s The texture/image which you want to apply rotation operations to
+/// @param numrots Specifies what type of rotation on what axis to implement
+///		   1..3 rotate through 90..270 degrees, 4 flips X, 5 flips Y
+/// @param isnormalmap specifies whether you pass in a normal map and hence need to shift the blue/red channels accordingly.
 extern void texrotate(ImageData &s, int numrots, bool isnormalmap = false);
+
+/// @param s The texture/image which you want to orientate
+/// @param flipx Flip from x axis
+/// @param flipy Flip from y axis
+/// @param swapxy Swap on both x and y 
+/// @param isnormalmap specifies whether you pass in a normal map and hence need to shift the blue/red channels accordingly.
 extern void texreorient(ImageData &s, bool flipx, bool flipy, bool swapxy, bool isnormalmap = false);
+
 extern void texflip(ImageData &s);
 
 extern void texmad(ImageData &s, const vec &mul, const vec &add);

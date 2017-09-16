@@ -1,4 +1,5 @@
-/// @file environment map loading routine.
+/// @file cubemap.cpp
+/// environment map loading routine.
 
 #include "inexor/texture/slot.hpp"
 #include "inexor/texture/cubemap.hpp"

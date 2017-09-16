@@ -1,4 +1,5 @@
-/// @file Logging stuff including the ingame console logging functionality.
+/// @file Logging.hpp
+/// Logging stuff including the ingame console logging functionality.
 
 #pragma once
 

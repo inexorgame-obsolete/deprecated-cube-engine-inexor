@@ -54,8 +54,10 @@ struct servmode
     virtual bool extinfoteam(const char *team, ucharbuf &p) { return false; }
 
     /// process gamemode specific network messages.
+    /// @param type the N_ network message type
     /// @param ci the sender.
     /// @param cq the currently focused player (sender or bot from senders pc)
+    /// @param p the network packet containing the data
     /// @return whether this messages got processed.
     virtual bool parse_network_message(int type, clientinfo *ci, clientinfo *cq, packetbuf &p) = 0;
 };

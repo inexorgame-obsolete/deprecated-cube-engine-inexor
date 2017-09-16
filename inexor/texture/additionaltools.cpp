@@ -1,4 +1,5 @@
-/// @file additional texture generation tools provided by the engine.
+/// @file additionaltools.cpp
+/// additional texture generation tools provided by the engine.
 
 //#include "inexor/texture/additionaltools.hpp"
 #include "inexor/texture/texsettings.hpp"

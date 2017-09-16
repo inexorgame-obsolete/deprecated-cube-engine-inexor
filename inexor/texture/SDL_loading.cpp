@@ -1,4 +1,5 @@
-/// @file Wrapper for the SDL API calls used to load textures.
+/// @file SDL_loading.cpp
+/// Wrapper for the SDL API calls used to load textures.
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/texture/SDL_loading.hpp"

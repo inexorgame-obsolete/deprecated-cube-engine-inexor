@@ -1,4 +1,5 @@
-/// @file mathmatics for vectors, matrices, quaterions and more
+/// @file geom.hpp
+/// mathmatics for vectors, matrices, quaterions and more
 
 /// The cube engine uses 3 different linear coordinate systems
 /// which are oriented around each of the axis dimensions.

@@ -1,4 +1,5 @@
-/// @file Main texture loading and organizing routines.
+/// @file texture.cpp
+/// Main texture loading and organizing routines.
 
 #include "inexor/engine/engine.hpp"
 //#include "SDL_image.hpp"
@@ -478,12 +479,7 @@ uchar *loadalphamask(Texture *t)
     return t->alphamask;
 }
 
-/// @param clamp
-/// @param mipit specifies whether mipmap (lower quality versions; usually used when far away or small) textures should be created.
-/// @param msg specifies whether a renderprogress bar should be displayed while loading. Always off if threadsafe = true.
-/// @param threadsafe if true, the texture wont be automatically registerd to the global texture registry,
-///        you need to check whether it is loaded via gettexture beforehand in a nonthreaded environment and register it afterwards
-///        with registertexture.
+
 Texture *textureload(const char *name, int clamp, bool mipit, bool msg, bool threadsafe)
 {
     Texture *t;

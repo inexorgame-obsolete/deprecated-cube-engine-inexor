@@ -1,4 +1,6 @@
-/// @file everything to save images of various formats.
+/// @file savetexture.cpp
+/// everything to save images of various formats.
+
 #include "inexor/network/SharedTree.hpp"
 #include "inexor/texture/savetexture.hpp"
 #include "inexor/texture/SDL_loading.hpp"

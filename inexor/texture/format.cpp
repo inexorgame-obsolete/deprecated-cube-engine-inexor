@@ -1,4 +1,5 @@
-/// @file Small helper functions to organize which OpenGL formats to use.
+/// @file format.cpp
+/// Small helper functions to organize which OpenGL formats to use.
 
 #include "inexor/texture/format.hpp"
 #include "inexor/texture/texsettings.hpp"

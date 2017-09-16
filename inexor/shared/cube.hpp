@@ -1,4 +1,5 @@
-/// @file main header file for legacy code.
+/// @file cube.hpp
+/// main header file for legacy code.
 
 #pragma once
 

@@ -1,4 +1,5 @@
-/// @file Main texture loading and organizing routines + main texture structures.
+/// @file texture.hpp 
+/// texture loading and organizing routines + main texture structures.
 
 #pragma once
 
@@ -59,7 +60,15 @@ extern bool reloadtexture(Texture &tex);
 extern bool reloadtexture(const char *name);
 extern void setuptexcompress();
 
+/// @param name Name of texture
+/// @param clamp the last pixel of texture image will be stretched to infinity
+/// @param mipit specifies whether mipmap (lower quality versions; usually used when far away or small) textures should be created.
+/// @param msg specifies whether a renderprogress bar should be displayed while loading. Always off if threadsafe = true.
+/// @param threadsafe if true, the texture wont be automatically registerd to the global texture registry,
+///        you need to check whether it is loaded via gettexture beforehand in a nonthreaded environment and register it afterwards
+///        with registertexture.
 extern Texture *textureload(const char *name, int clamp = 0, bool mipit = true, bool msg = true, bool threadsafe = false);
+
 extern Texture *newtexture(Texture *t, const char *rname, ImageData &s, int clamp = 0, bool mipit = true, bool canreduce = false, bool transient = false, int compress = 0);
 
 extern bool loadimage(const char *filename, ImageData &image);

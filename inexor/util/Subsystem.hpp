@@ -122,6 +122,7 @@ public:
 private:
     /// The list of functions to be called on the next tick
     struct : std::queue<tick_cb> {
+        /// Tick is executed with every frame
         void tick() {
             while (!empty()) {
                 front()();

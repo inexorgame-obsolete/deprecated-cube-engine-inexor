@@ -45,7 +45,6 @@ template <class T, int MINSIZE = 8> struct vector
 
     /// Destructor
     /// @brief Deletes all allocated memory and sets vector size to 0.
-    /// @sideeffects Calling this method manually means that all data contained in this vector will be lost.
     ~vector()
     {
         shrink(0);
@@ -67,7 +66,7 @@ template <class T, int MINSIZE = 8> struct vector
     /// Add new index to vector
     /// @brief Pushs a new element at the end of the vector. Allocates memory automaticly if neccesary.
     /// @param x Element which will be added at the end
-    /// @sideeffects May allocates a lot of memory without your notice
+    /// @sideeffect May allocates a lot of memory without your notice
     /// @see growbuf
     /// @return The last element of the vector (which is parameter x)
     T &add(const T &x)
@@ -79,9 +78,8 @@ template <class T, int MINSIZE = 8> struct vector
 
     /// Add new EMPTY index to vector.
     /// @brief Pushs a new EMPTY element at the end of the vector. Allocates memory automaticly if neccesary.
-    /// @param x Element which will be added at the end.
     /// @see growbuf
-    /// @sideeffects May allocates a lot of memory without your notice.
+    /// @sideeffect May allocates a lot of memory without your notice.
     /// @return The last element of the vector (which is parameter x).
     T &add()
     {
@@ -93,7 +91,7 @@ template <class T, int MINSIZE = 8> struct vector
     /// Duplicate vector's last index.
     /// @brief Duplicates last index of the vector and appends it to the end. Allocates memory automaticly if neccesary.
     /// @see growbuf
-    /// @sideeffects May allocates a lot of memory without your notice.
+    /// @note May allocates a lot of memory without your notice.
     /// @return The last element of the vector.
     T &dup()
     {
@@ -253,7 +251,6 @@ template <class T, int MINSIZE = 8> struct vector
     }
 
     /// remove element from given position.
-    /// @sideeffect 
     /// @return the removed element.
     T remove(int i)
     {

@@ -43,7 +43,7 @@ public:
 
     /// Initialize this exception with a custom error
     /// message in a string
-    /// @param s The error message
+    /// @param e The error message
     InexorException(const InexorException &e)
         : std::exception(e), what_(e.what_){}
 

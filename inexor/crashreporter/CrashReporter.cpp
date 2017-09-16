@@ -1,4 +1,5 @@
-/// @file the CrashReporter instance you want to have somewhere in your code.
+/// @file CrashReporter.cpp
+/// the CrashReporter instance you want to have somewhere in your code.
 
 
 #ifndef __MINGW32__ // we do not allow MinGW stackwalking atm.
