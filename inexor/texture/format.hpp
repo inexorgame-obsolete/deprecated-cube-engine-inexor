@@ -1,4 +1,7 @@
-/// @file Small helper functions to organize which OpenGL formats to use.
+/** @file format.hpp 
+  * Small helper functions to organize which OpenGL formats to use.
+  */
+
 
 #pragma once
 

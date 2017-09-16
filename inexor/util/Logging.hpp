@@ -1,5 +1,6 @@
-/// @file Logging stuff including the ingame console logging functionality.
-
+/** @file Logging.hpp
+  * stuff including the ingame console logging functionality.
+  */
 #pragma once
 
 #include "inexor/network/SharedClass.hpp"

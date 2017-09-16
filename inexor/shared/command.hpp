@@ -1,5 +1,7 @@
-/// @file Cubescript API
-/// Deprecated.
+/** @file command.hpp
+  * Cubescript API
+  * Deprecated.
+  */
 
 #pragma once
 

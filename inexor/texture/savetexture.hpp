@@ -1,4 +1,6 @@
-/// @file everything to save images of various formats.
+/** @file savetexture.hpp
+  * everything to save images of various formats.
+  */
 
 #pragma once
 

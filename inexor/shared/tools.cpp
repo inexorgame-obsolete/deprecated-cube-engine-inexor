@@ -1,4 +1,6 @@
-/// @file General tools, typedefines and generic definitions.
+/** @file tools.cpp
+  * General tools, typedefines and generic definitions.
+  */
 
 #include "inexor/shared/cube.hpp"
 #ifndef WIN32

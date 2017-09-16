@@ -179,6 +179,7 @@ namespace game
 
     /// change own nick name
     /// @param name my new nickname
+    /// @param tag is clantag of the player
     /// @see filtertext
     void switchname(const char *name, const char *tag)
     {

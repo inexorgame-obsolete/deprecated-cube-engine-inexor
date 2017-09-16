@@ -1,5 +1,6 @@
-/// @file Settings for texture loading and handling.
-
+/** @file texsettings.cpp
+  * Settings for texture loading and handling.
+  */
 #include "inexor/engine/engine.hpp"
 #include "inexor/texture/texsettings.hpp"
 

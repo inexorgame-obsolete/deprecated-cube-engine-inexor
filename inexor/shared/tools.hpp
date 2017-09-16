@@ -1,4 +1,7 @@
-/// @file Set of containers (vector,hashset,buffer,stream) and tools for developing
+/** @file tools.hpp
+  * Set of containers (vector,hashset,buffer,stream) and tools for developing
+  */
+
 /// @warning Try to avoid using these containers for new code.
 
 #pragma once

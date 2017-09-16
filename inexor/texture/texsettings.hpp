@@ -1,5 +1,6 @@
-/// @file Settings for texture loading and handling.
-
+/** @file texsettings.hpp
+  *Settings for texture loading and handling.
+  */
 #pragma once
 
 #include "inexor/network/SharedTree.hpp"

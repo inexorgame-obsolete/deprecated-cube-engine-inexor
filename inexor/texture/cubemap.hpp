@@ -1,4 +1,6 @@
-/// @file environment map loading routine.
+/** @file cubemap.hpp
+  * environment map loading routine.
+  */
 
 #pragma once
 

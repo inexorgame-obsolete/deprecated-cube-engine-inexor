@@ -23,9 +23,7 @@ int time_since_program_start()
     return duration_cast<milliseconds>(Clock::now() - startup_timestamp).count();
 }
 
-/// Block for a specific time to limit frames per seconds to use resources intelligently.
-/// @param elapsed_time time in real milliseconds since last updatetime();
-/// @warning We block inaccurately sometimes! You need to check the time again afterwards.
+
 void limitfps(int max_fps, int elapsed_time)
 {
     static int fpserror = 0; // rounding errors correction: todo this is still insufficient for small rounding errors.
