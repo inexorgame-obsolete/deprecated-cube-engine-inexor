@@ -275,19 +275,19 @@ struct ctfservermode : servmode, ctfmode
         {
             case N_TRYDROPFLAG:
             {
-                if((ci->state.state!=CS_SPECTATOR || ci->local || ci->privilege) && cq) dropflag(cq);
+                if((ci->state.state!=CS_SPECTATOR || ci->privilege) && cq) dropflag(cq);
                 return true;
             }
 
             case N_TAKEFLAG:
             {
                 int flag = getint(p), version = getint(p);
-                if((ci->state.state!=CS_SPECTATOR || ci->local || ci->privilege) && cq) takeflag(cq, flag, version);
+                if((ci->state.state!=CS_SPECTATOR || ci->privilege) && cq) takeflag(cq, flag, version);
                 return true;
             }
 
             case N_INITFLAGS:
-                parseflags(p, (ci->state.state!=CS_SPECTATOR || ci->privilege || ci->local) && !strcmp(ci->clientmap, smapname));
+                parseflags(p, (ci->state.state!=CS_SPECTATOR || ci->privilege) && !strcmp(ci->clientmap, smapname));
                 return true;
         }
         return false;

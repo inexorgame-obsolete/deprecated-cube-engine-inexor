@@ -209,7 +209,7 @@ struct clientinfo
     int fov;
     int modevote;
     int privilege;
-    bool connected, local, timesync;
+    bool connected, timesync;
     int gameoffset, lastevent, pushed, exceeded;
     gamestate state;
     vector<gameevent *> events;
@@ -310,7 +310,7 @@ struct clientinfo
         playermodel = -1;
         fov = 100;
         privilege = PRIV_NONE;
-        connected = local = false;
+        connected = false;
         position.setsize(0);
         messages.setsize(0);
         ping = 0;

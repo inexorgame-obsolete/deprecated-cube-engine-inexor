@@ -249,20 +249,20 @@ struct collectservermode : servmode, collectmode_common
         switch(type)
         {
             case N_INITTOKENS:
-                parsebases(p, (ci->state.state!=CS_SPECTATOR || ci->privilege || ci->local) && !strcmp(ci->clientmap, smapname));
+                parsebases(p, (ci->state.state!=CS_SPECTATOR || ci->privilege) && !strcmp(ci->clientmap, smapname));
                 return true;
 
             case N_TAKETOKEN:
             {
                 int id = getint(p);
-                if((ci->state.state!=CS_SPECTATOR || ci->local || ci->privilege) && cq) taketoken(cq, id);
+                if((ci->state.state!=CS_SPECTATOR || ci->privilege) && cq) taketoken(cq, id);
                 return true;
             }
 
             case N_DEPOSITTOKENS:
             {
                 int id = getint(p);
-                if((ci->state.state!=CS_SPECTATOR || ci->local || ci->privilege) && cq) deposittokens(cq, id);
+                if((ci->state.state!=CS_SPECTATOR || ci->privilege) && cq) deposittokens(cq, id);
                 return true;
             }
         }
