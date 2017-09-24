@@ -561,9 +561,9 @@ struct gzstream : stream
             loopi(4) checkcrc |= uint(readbyte()) << (i*8);
             loopi(4) checksize |= uint(readbyte()) << (i*8);
             if(checkcrc != crc)
-                Log.default->debug("gzip crc check failed: read {0}, calculated {1}", checkcrc, crc);
+                Log.std->debug("gzip crc check failed: read {0}, calculated {1}", checkcrc, crc);
             if(checksize != zfile.total_out)
-                Log.default->debug("gzip size check failed: read {0}, calculated {1}", checksize, uint(zfile.total_out));
+                Log.std->debug("gzip size check failed: read {0}, calculated {1}", checksize, uint(zfile.total_out));
         }
 #endif
     }

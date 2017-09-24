@@ -37,7 +37,7 @@ void loadsky(const char *basename, Texture *texs[6])
             }
         }
         if(texs[i]==notexture)
-            Log.default->error("could not load side {0} of sky texture {1}", side, basename);
+            Log.std->error("could not load side {0} of sky texture {1}", side, basename);
     }
 }
 
@@ -60,7 +60,7 @@ Texture *loadskyoverlay(const char *basename)
             t = textureload(name, 0, true, false);
         }
     }
-    if(t==notexture) Log.default->error("could not load sky overlay texture {}", basename);
+    if(t==notexture) Log.std->error("could not load sky overlay texture {}", basename);
     return t;
 }
 

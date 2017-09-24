@@ -81,7 +81,7 @@ namespace util {
         SharedVar<char *> logfile;
 
         /// Logger for everything not fitting elsewhere.
-        static Logger default;
+        static Logger std;
 
         /// Logger for the startup and the shut down of the game.
         static Logger start_stop;
@@ -132,7 +132,7 @@ namespace util {
         /// We allow the syntax Log.info("hallo") and forward it to the logger log_manager::default
         Logger &operator->() const
         {
-            return default;
+            return std;
         };
 
         static Logger create_and_register_logger(std::string logger_name,

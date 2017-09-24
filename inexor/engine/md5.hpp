@@ -228,7 +228,7 @@ struct md5 : skelmodel, skelloader<md5>
                     m->load(f, buf, sizeof(buf));
                     if(!m->numtris || !m->numverts)
                     {
-                        Log.default->info("empty mesh in {}", filename);
+                        Log.std->info("empty mesh in {}", filename);
                         meshes.removeobj(m);
                         delete m;
                     }

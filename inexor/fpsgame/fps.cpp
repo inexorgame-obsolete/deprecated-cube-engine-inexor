@@ -56,7 +56,7 @@ namespace game
             following = arg[0] ? parseplayer(arg) : -1;
             if(following==player1->clientnum) following = -1;
             followdir = 0;
-            Log.default->info("follow {}", (following >= 0 ? "on" : "off"));
+            Log.std->info("follow {}", (following >= 0 ? "on" : "off"));
         }
 	}
     COMMAND(follow, "s");
@@ -77,7 +77,7 @@ namespace game
             cur = (cur + dir + clients.length()) % clients.length();
             if(clients[cur] && clients[cur]->state!=CS_SPECTATOR)
             {
-                if(following<0) Log.default->info("follow on");
+                if(following<0) Log.std->info("follow on");
                 following = cur;
                 followdir = dir;
                 return;
@@ -137,7 +137,7 @@ namespace game
         if(following<0) return;
         following = -1;
         followdir = 0;
-        Log.default->info("follow off");
+        Log.std->info("follow off");
     }
 
     /// Give me the fpsent instance of the player you are currently spectating

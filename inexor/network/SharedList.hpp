@@ -14,12 +14,12 @@ struct sharedclasstest : SharedClass
     {
         //test.connect([id](int oldvalue, int newvalue)
         //{
-        //    Log.default->debug("init: ENet {}", id, value);
+        //    Log.std->debug("init: ENet {}", id, value);
         //});
     }
     sharedclasstest() : test(15) {}
 
-    // TODO we should fire on = operator ein: adde + remove event fürs parent oder onchange für jeden member! (Achtung overhead)
+    // TODO we should fire on = operator ein: adde + remove event fï¿½rs parent oder onchange fï¿½r jeden member! (Achtung overhead)
     // vllt gibts schon iwie ne anleitung standardlisten zu modifizieren?
 };
 

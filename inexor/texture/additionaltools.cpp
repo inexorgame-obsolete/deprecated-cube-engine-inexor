@@ -34,7 +34,7 @@ void mergenormalmaps(char *heightfile, char *normalfile) // jpg/png/tga + tga ->
 
 void gendds(char *infile, char *outfile)
 {
-    if(!hasS3TC || usetexcompress <= 1) { Log.default->error("OpenGL driver does not support S3TC texture compression"); return; }
+    if(!hasS3TC || usetexcompress <= 1) { Log.std->error("OpenGL driver does not support S3TC texture compression"); return; }
 
     glHint(GL_TEXTURE_COMPRESSION_HINT, GL_NICEST);
 
@@ -43,7 +43,7 @@ void gendds(char *infile, char *outfile)
     Texture *t = gettexture(cfile);
     if(t) reloadtex(cfile);
     t = textureload(cfile);
-    if(t == notexture) { Log.default->error("failed loading {}", infile); return; }
+    if(t == notexture) { Log.std->error("failed loading {}", infile); return; }
 
     glBindTexture(GL_TEXTURE_2D, t->id);
     GLint compressed = 0, format = 0, width = 0, height = 0;
@@ -52,16 +52,16 @@ void gendds(char *infile, char *outfile)
     glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
     glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
 
-    if(!compressed) { Log.default->error("failed compressing {}", infile); return; }
+    if(!compressed) { Log.std->error("failed compressing {}", infile); return; }
     int fourcc = 0;
     switch(format)
     {
-    case GL_COMPRESSED_RGB_S3TC_DXT1_EXT: fourcc = FOURCC_DXT1; Log.default->info("compressed as DXT1"); break;
-    case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT: fourcc = FOURCC_DXT1; Log.default->info("compressed as DXT1a"); break;
-    case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT: fourcc = FOURCC_DXT3; Log.default->info("compressed as DXT3"); break;
-    case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT: fourcc = FOURCC_DXT5; Log.default->info("compressed as DXT5"); break;
+    case GL_COMPRESSED_RGB_S3TC_DXT1_EXT: fourcc = FOURCC_DXT1; Log.std->info("compressed as DXT1"); break;
+    case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT: fourcc = FOURCC_DXT1; Log.std->info("compressed as DXT1a"); break;
+    case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT: fourcc = FOURCC_DXT3; Log.std->info("compressed as DXT3"); break;
+    case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT: fourcc = FOURCC_DXT5; Log.std->info("compressed as DXT5"); break;
     default:
-        Log.default->error("failed compressing {0}: unknown format: {1:#x}", infile, format); break;
+        Log.std->error("failed compressing {0}: unknown format: {1:#x}", infile, format); break;
         return;
     }
 
@@ -76,7 +76,7 @@ void gendds(char *infile, char *outfile)
     }
 
     stream *f = openfile(path(outfile, true), "wb");
-    if(!f) { Log.default->error("failed writing to {}", outfile); return; }
+    if(!f) { Log.std->error("failed writing to {}", outfile); return; }
 
     int csize = 0;
     for(int lw = width, lh = height, level = 0;;)
@@ -122,7 +122,7 @@ void gendds(char *infile, char *outfile)
 
     delete[] data;
 
-    Log.default->info("wrote DDS file {}", outfile);
+    Log.std->info("wrote DDS file {}", outfile);
 
     setuptexcompress();
 }

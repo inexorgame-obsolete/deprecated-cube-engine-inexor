@@ -343,7 +343,7 @@ struct decalrenderer
         if(dbgdec)
         {
             int nverts = endvert < lastvert ? endvert + maxverts - lastvert : endvert - lastvert;
-            Log.default->debug("tris = {0}, verts = {1}, total tris = {2}",
+            Log.std->debug("tris = {0}, verts = {1}, total tris = {2}",
                                          nverts/3, nverts, ((maxverts - 3 - availverts)/3));
         }
         if(endvert==lastvert) return;

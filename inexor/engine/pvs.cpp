@@ -981,7 +981,7 @@ static void lockpvs_(bool lock)
     lockedwaterpvs = 0;
     loopi(wbytes) lockedwaterpvs |= pvsbuf[d->offset + i] << (i*8);
     loopi(MAXWATERPVS) lockedwaterplanes[i] = waterplanes[i].height;
-    Log.default->info("locked view cell at {}", camera1->o);
+    Log.std->info("locked view cell at {}", camera1->o);
 }
 
 VARF(lockpvs, 0, 0, 1, lockpvs_(lockpvs!=0));

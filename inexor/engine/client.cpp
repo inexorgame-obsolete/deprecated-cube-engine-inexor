@@ -21,7 +21,7 @@ int connmillis = 0, connattempts = 0, discmillis = 0;
 bool multiplayer(bool msg)
 {
     bool val = curpeer; 
-    if(val && msg) Log.default->error("operation not available in multiplayer");
+    if(val && msg) Log.std->error("operation not available in multiplayer");
     return val;
 }
 
@@ -96,7 +96,7 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
 {   
     if(connpeer)
     {
-        Log.default->info("aborting connection attempt");
+        Log.std->info("aborting connection attempt");
         abortconnect();
     }
 
@@ -109,10 +109,10 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
     {
         if(strcmp(servername, connectname)) setsvar("connectname", servername);
         if(serverport != connectport) setvar("connectport", serverport);
-        Log.default->info("attempting to connect to {0}:{1}", servername, serverport);
+        Log.std->info("attempting to connect to {0}:{1}", servername, serverport);
         if(!resolverwait(servername, &address))
         {
-            Log.default->error("could not resolve server {0}", servername);
+            Log.std->error("could not resolve server {0}", servername);
             return;
         }
     }
@@ -120,7 +120,7 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
     {
         setsvar("connectname", "");
         setvar("connectport", 0);
-        Log.default->info("attempting to connect over LAN");
+        Log.std->info("attempting to connect over LAN");
         address.host = ENET_HOST_BROADCAST;
     }
 
@@ -129,7 +129,7 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
         clienthost = enet_host_create(NULL, 2, NUM_ENET_CHANNELS, rate*1024, rate*1024);
         if(!clienthost)
         {
-            Log.default->error("could not connect to server");
+            Log.std->error("could not connect to server");
             return;
         }
         clienthost->duplicatePeers = 0;
@@ -148,7 +148,7 @@ void reconnect(const char *serverpassword)
 {
     if(!connectname[0] || connectport <= 0)
     {
-        Log.default->error("no previous connection");
+        Log.std->error("no previous connection");
         return;
     }
     connectserv(connectname, connectport, serverpassword);
@@ -172,7 +172,7 @@ void disconnect(bool async, bool cleanup)
         }
         curpeer = NULL;
         discmillis = 0;
-        Log.default->info("disconnected");
+        Log.std->info("disconnected");
         game::gamedisconnect(cleanup);
         mainmenu = 1;
         // inexor::ui::cef_app->GetUserInterface()->SetMainMenu(true);
@@ -189,13 +189,13 @@ void trydisconnect()
 {
     if(connpeer)
     {
-        Log.default->info("aborting connection attempt");
+        Log.std->info("aborting connection attempt");
         abortconnect();
     } else if(curpeer)
     {
-        Log.default->info("attempting to disconnect...");
+        Log.std->info("attempting to disconnect...");
         disconnect(!discmillis);// try to disconnect synchronously for a while then disconnect asynchronously
-    } else Log.default->info("not connected");
+    } else Log.std->info("not connected");
 }
 
 // commands to establish and destroy network connections
@@ -218,7 +218,7 @@ void flushclient()
 // print illegal network message to console (wrong protocol?)
 void neterr(const char *s, bool disc)
 {
-    Log.default->error("illegal network message \"{0}\"", s);
+    Log.std->error("illegal network message \"{0}\"", s);
     if(disc) disconnect();
 }
 
@@ -247,12 +247,12 @@ void gets2c()
     if(!clienthost) return;
     if(connpeer && totalmillis/3000 > connmillis/3000)
     {
-        Log.default->info("attempting to connect...");
+        Log.std->info("attempting to connect...");
         connmillis = totalmillis;
         ++connattempts;
         if(connattempts > 3)
         {
-            Log.default->error("could not connect to server");
+            Log.std->error("could not connect to server");
             abortconnect();
             return;
         }
@@ -264,14 +264,14 @@ void gets2c()
             disconnect(false, false);
             curpeer = connpeer;
             connpeer = NULL;
-            Log.default->info("connected to server");
+            Log.std->info("connected to server");
             throttle();
             if(rate) setrate(rate);
             game::gameconnect(true);
             break;
 
         case ENET_EVENT_TYPE_RECEIVE:
-            if(discmillis) Log.default->info("attempting to disconnect...");
+            if(discmillis) Log.std->info("attempting to disconnect...");
             else {
                 // processes any updates from the server
                 packetbuf p(event.packet);
@@ -284,7 +284,7 @@ void gets2c()
             if(event.data>=DISC_NUM) event.data = DISC_NONE;
             if(event.peer==connpeer)
             {
-                Log.default->error("could not connect to server");
+                Log.std->error("could not connect to server");
                 abortconnect();
             }
             else
@@ -292,8 +292,8 @@ void gets2c()
                 if(!discmillis || event.data)
                 {
                     const char *msg = disconnectreason(event.data);
-                    if(msg) Log.default->error("server network error, disconnecting ({0}) ...", msg);
-                    else Log.default->error("server network error, disconnecting...");
+                    if(msg) Log.std->error("server network error, disconnecting ({0}) ...", msg);
+                    else Log.std->error("server network error, disconnecting...");
                 }
                 disconnect();
             }

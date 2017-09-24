@@ -583,10 +583,10 @@ void addblendbrush(const char *name, const char *imgname)
     delblendbrush(name);
 
     ImageData s;
-    if(!loadimage(imgname, s)) { Log.default->error("could not load blend brush image {}", imgname); return; }
+    if(!loadimage(imgname, s)) { Log.std->error("could not load blend brush image {}", imgname); return; }
     if(max(s.w, s.h) > (1<<12))
     {
-        Log.default->error("blend brush image size exceeded {0}x{1} pixels: {2}", (1<<12), (1<<12), imgname);
+        Log.std->error("blend brush image size exceeded {0}x{1} pixels: {2}", (1<<12), (1<<12), imgname);
         return;
     }
     
@@ -767,7 +767,7 @@ ICOMMAND(moveblendmap, "ii", (int *dx, int *dy),
     if(noedit(true) || (nompedit && multiplayer())) return;
     if(*dx%(BM_IMAGE_SIZE<<BM_SCALE) || *dy%(BM_IMAGE_SIZE<<BM_SCALE)) 
     {
-        Log.default->error("blendmap movement must be in multiples of {}", (BM_IMAGE_SIZE<<BM_SCALE));
+        Log.std->error("blendmap movement must be in multiples of {}", (BM_IMAGE_SIZE<<BM_SCALE));
         return;
     }
     if(*dx <= -worldsize || *dx >= worldsize || *dy <= -worldsize || *dy >= worldsize)

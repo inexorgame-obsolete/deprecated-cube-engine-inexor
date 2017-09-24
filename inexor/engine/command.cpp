@@ -278,8 +278,8 @@ static void debugalias()
     {
         ident *id = l->id;
         ++depth;
-        if(depth < dbgalias) Log.default->error("  {}) {}", (total-depth+1), id->name);
-        else if(l->next == &noalias) Log.default->error("  {}{}) {}", (depth == dbgalias ? "" : ".."), (total - depth + 1), id->name);
+        if(depth < dbgalias) Log.std->error("  {}) {}", (total-depth+1), id->name);
+        else if(l->next == &noalias) Log.std->error("  {}{}) {}", (depth == dbgalias ? "" : ".."), (total - depth + 1), id->name);
     }
 }
 
@@ -296,7 +296,7 @@ static void debugcode(const char *fmt, ...)
     // conoutfv(CON_ERROR, fmt, args);
     // va_end(args);
     defvformatstring(msg, fmt, fmt);
-    Log.default->error(msg);
+    Log.std->error(msg);
 
     debugalias();
 }
@@ -312,7 +312,7 @@ static void debugcodeline(const char *p, const char *fmt, ...)
     // conoutfv(CON_ERROR, debugline(p, fmt), args);
     // va_end(args);
     defvformatstring(msg, fmt, fmt);
-    Log.default->error(msg);
+    Log.std->error(msg);
 
     debugalias();
 }
@@ -1551,23 +1551,23 @@ void freecode(uint *code)
 
 void printvar(ident *id, int i)
 {
-    if (i < 0) Log.default->info("{} = {}", id->name, i);
+    if (i < 0) Log.std->info("{} = {}", id->name, i);
     else if (id->flags&IDF_HEX && id->maxval == 0xFFFFFF)
-        Log.default->info("{0} = 0x{1:.6X} {2}", id->name, i, ivec((i >> 16) & 0xFF, (i >> 8) & 0xFF, i & 0xFF));
+        Log.std->info("{0} = 0x{1:.6X} {2}", id->name, i, ivec((i >> 16) & 0xFF, (i >> 8) & 0xFF, i & 0xFF));
     else if (id->flags&IDF_HEX)
-        Log.default->info("{0} = 0x{1:X}", id->name, i);
+        Log.std->info("{0} = 0x{1:X}", id->name, i);
     else
-        Log.default->info("{0} = {1:d}", id->name, i);
+        Log.std->info("{0} = {1:d}", id->name, i);
 }
 
 void printfvar(ident *id, float f)
 {
-    Log.default->info("{} = {}", id->name, floatstr(f));
+    Log.std->info("{} = {}", id->name, floatstr(f));
 }
 
 void printsvar(ident *id, const char *s)
 {
-    Log.default->info("{} = {}{}{}", id->name, (strchr(s, '"') ? "[" : "\""), s, (strchr(s, '"') ? "]" : "\"") ) ;
+    Log.std->info("{} = {}{}{}", id->name, (strchr(s, '"') ? "[" : "\""), s, (strchr(s, '"') ? "]" : "\"") ) ;
 }
 
 void printvar(ident *id)
@@ -2243,7 +2243,7 @@ bool execfile(const char *cfgfile, bool msg)
         buf = loadfile(makerelpath(getcurexecdir(), path(s)), NULL);
         if(!buf) 
         {
-            if(msg) Log.default->error("could not read {}", quoted(cfgfile));
+            if(msg) Log.std->error("could not read {}", quoted(cfgfile));
             return false;
         }
     }
@@ -3123,8 +3123,8 @@ ICOMMAND(<s, "ss", (char *a, char *b), intret(strcmp(a,b)<0));
 ICOMMAND(>s, "ss", (char *a, char *b), intret(strcmp(a,b)>0));
 ICOMMAND(<=s, "ss", (char *a, char *b), intret(strcmp(a,b)<=0));
 ICOMMAND(>=s, "ss", (char *a, char *b), intret(strcmp(a,b)>=0));
-ICOMMAND(echo, "C", (char *s), Log.default->info("{}{}", COL_GREEN, s););
-ICOMMAND(error, "C", (char *s), Log.default->error(s););
+ICOMMAND(echo, "C", (char *s), Log.std->info("{}{}", COL_GREEN, s););
+ICOMMAND(error, "C", (char *s), Log.std->error(s););
 ICOMMAND(strstr, "ss", (char *a, char *b), { char *s = strstr(a, b); intret(s ? s-a : -1); });
 ICOMMAND(strlen, "s", (char *s), intret(strlen(s)));
 ICOMMAND(strcode, "si", (char *s, int *i), intret(*i > 0 ? (memchr(s, 0, *i) ? 0 : uchar(s[*i])) : uchar(s[0])));

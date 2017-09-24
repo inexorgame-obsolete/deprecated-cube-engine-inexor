@@ -195,7 +195,7 @@ log_manager::log_manager() : logfile((char*)"default_inexor_log.log")
 
 void log_manager::all_loggers_apply_sinks_change()
 {
-    default.recreate_spdlog_logger();
+    std.recreate_spdlog_logger();
     start_stop.recreate_spdlog_logger();
     sync.recreate_spdlog_logger();
     io.recreate_spdlog_logger();
@@ -223,7 +223,7 @@ Logger log_manager::create_and_register_logger(std::string logger_name, const st
 
 /// Initialize the static members of the log_manager class.
 /// static members have no explicit parent, meaning first usage initializes these members.
-Logger log_manager::default      = log_manager::create_and_register_logger("default");
+Logger log_manager::std      = log_manager::create_and_register_logger("std");
 Logger log_manager::start_stop   = log_manager::create_and_register_logger("start_stop");
 Logger log_manager::sync         = log_manager::create_and_register_logger("sync");
 Logger log_manager::io           = log_manager::create_and_register_logger("io");

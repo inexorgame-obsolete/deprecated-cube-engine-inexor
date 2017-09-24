@@ -2278,7 +2278,7 @@ void calclight(int *quality)
 {
     if(!setlightmapquality(*quality))
     {
-        Log.default->error("valid range for calclight quality is -1..1");
+        Log.std->error("valid range for calclight quality is -1..1");
         return;
     }
     renderbackground("computing lightmaps... (esc to abort)");
@@ -2337,7 +2337,7 @@ void patchlight(int *quality)
     if(noedit(true)) return;
     if(!setlightmapquality(*quality))
     {
-        Log.default->error("valid range for patchlight quality is -1..1");
+        Log.std->error("valid range for patchlight quality is -1..1");
         return;
     }
     renderbackground("patching lightmaps... (esc to abort)");
@@ -2804,7 +2804,7 @@ void lightreaching(const vec &target, vec &color, vec &dir, bool fast, extentity
 
         //if(target==player->o)
         //{
-        //    Log.default->debug() << i << " - " << intensity << " " << mag;
+        //    Log.std->debug() << i << " - " << intensity << " " << mag;
         //}
 
         vec lightcol = vec(e.attr2, e.attr3, e.attr4).mul(1.0f/255);

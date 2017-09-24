@@ -195,7 +195,7 @@ namespace game
 	/// print my own nick name to the game console
     void printname()
     {
-        Log.default->info("your name is: {0}", colorname(player1));
+        Log.std->info("your name is: {0}", colorname(player1));
     }
     ICOMMAND(name, "sN", (char *s, int *numargs),
     {
@@ -208,7 +208,7 @@ namespace game
     ICOMMAND(tag, "sN", (char *s, int *numargs),
     {
         if(*numargs > 0) switchname("", s);
-        else if(!*numargs) Log.default->info("your tag is: {0}", player1->tag);
+        else if(!*numargs) Log.std->info("your tag is: {0}", player1->tag);
         else result(player1->tag);
     });
     ICOMMAND(gettag, "", (), result(player1->tag));
@@ -224,7 +224,7 @@ namespace game
     /// print own team name to the game console
     void printteam()
     {
-        Log.default->info("your team is: {0}", player1->team);
+        Log.std->info("your team is: {0}", player1->team);
     }
 
 	/// switch team or print team name 
@@ -586,7 +586,7 @@ namespace game
     /// request map change, server may ignore
     void changemap(const char *name, int mode)
     {
-        if(!isconnected()) Log.default->error("Could not change map, not connected!");
+        if(!isconnected()) Log.std->error("Could not change map, not connected!");
         addmsg(N_MAPVOTE, "rsi", name, mode);
     }
 
@@ -1327,13 +1327,13 @@ namespace game
                 int mycn = getint(p), prot = getint(p);
                 if(prot!=PROTOCOL_VERSION)
                 {
-                    Log.default->error("you are using a different game protocol (you: {0}, server: {1})", PROTOCOL_VERSION, prot);
+                    Log.std->error("you are using a different game protocol (you: {0}, server: {1})", PROTOCOL_VERSION, prot);
                     disconnect();
                     return;
                 }
                 sessionid = getint(p);
                 player1->clientnum = mycn;      // we are now connected
-                if(getint(p) > 0) Log.default->info("this server is password protected");
+                if(getint(p) > 0) Log.std->info("this server is password protected");
                 getstring(servinfo, p, sizeof(servinfo));
                 sendintro();
                 break;
@@ -1916,12 +1916,12 @@ namespace game
             case N_SENDDEMOLIST:
             {
                 int demos = getint(p);
-                if(demos <= 0) Log.default->warn("no demos available");
+                if(demos <= 0) Log.std->warn("no demos available");
                 else loopi(demos)
                 {
                     getstring(text, p);
                     if(p.overread()) break;
-                    Log.default->info("{0}. {1}", (i+1), text);
+                    Log.std->info("{0}. {1}", (i+1), text);
                 }
                 break;
             }
@@ -2085,7 +2085,7 @@ namespace game
                 defformatstring(fname, "%d.dmo", lastmillis);
                 stream *demo = openrawfile(fname, "wb");
                 if(!demo) return;
-                Log.default->info("received demo \"{0}\"", fname);
+                Log.std->info("received demo \"{0}\"", fname);
                 ucharbuf b = p.subbuf(p.remaining());
                 demo->write(b.buf, b.maxlen);
                 delete demo;
@@ -2168,15 +2168,15 @@ namespace game
 
     void getdemo(int i)
     {
-        if(i<=0) Log.default->info("getting demo...");
-        else Log.default->info("getting demo {0}...", i);
+        if(i<=0) Log.std->info("getting demo...");
+        else Log.std->info("getting demo {0}...", i);
         addmsg(N_GETDEMO, "ri", i);
     }
     ICOMMAND(getdemo, "i", (int *val), getdemo(*val));
 
     void listdemos()
     {
-        Log.default->info("listing demos...");
+        Log.std->info("listing demos...");
         addmsg(N_LISTDEMOS, "r");
     }
     COMMAND(listdemos, "");

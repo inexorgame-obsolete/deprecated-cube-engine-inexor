@@ -79,7 +79,7 @@ void fatal(const char *s, ...)
     {
         defvformatstring(msg,s,s);
         // Temporarly disabled crash handler output (easylogging)
-        Log.default->critical(msg);
+        Log.std->critical(msg);
 
         #ifdef WIN32
             if(errors <= 1) MessageBox(NULL, msg, "Inexor fatal error", MB_OK|MB_SYSTEMMODAL);
@@ -96,7 +96,7 @@ void fatal(std::vector<std::string> &output)
     std::string completeoutput; 
     for(auto message : output) {
         // Temporarly disabled crash handler output (easylogging)
-        Log.default->critical(message);
+        Log.std->critical(message);
         completeoutput = inexor::util::fmt << completeoutput << message.c_str();
     }
 #ifdef WIN32
@@ -161,7 +161,7 @@ namespace screen {
         if(gamma == screen_manager.curgamma) return;
         screen_manager.curgamma = gamma;
         if(SDL_SetWindowBrightness(screen_manager.sdl_window, gamma/100.0f)==-1)
-            Log.default->error("Could not set gamma: {}", SDL_GetError());
+            Log.std->error("Could not set gamma: {}", SDL_GetError());
     });
 }
 }
@@ -786,9 +786,9 @@ int main(int argc, char **argv)
     execfile("config/heightmap.cfg");
     execfile("config/blendbrush.cfg");
     if(game::savedservers()) execfile(game::savedservers(), false);
-    
+
     identflags |= IDF_PERSIST;
-    
+
     initing = INIT_LOAD;
     if(!execfile(game::savedconfig(), false))
     {

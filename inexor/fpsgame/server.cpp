@@ -2302,7 +2302,7 @@ extern int getservermtu();
                 filtertext(text, text, true, true);
                 QUEUE_STR(text);
                 if(cq)
-                    Log.default->info("{0}: {1}", colorname(cq), text);
+                    Log.std->info("{0}: {1}", colorname(cq), text);
                 break;
             }
 
@@ -2318,7 +2318,7 @@ extern int getservermtu();
                     sendf(t->clientnum, 1, "riis", N_SAYTEAM, cq->clientnum, text);
                 }
                 if(cq)
-                    Log.default->info("{0}<{1}>: {2}", colorname(cq), cq->team, text);
+                    Log.std->info("{0}<{1}>: {2}", colorname(cq), cq->team, text);
                 break;
             }
             case N_PRIVMSG:

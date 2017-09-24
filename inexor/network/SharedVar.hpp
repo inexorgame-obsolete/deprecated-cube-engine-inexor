@@ -42,7 +42,7 @@ namespace rpc {
 ///
 /// oi.onChange.connect([] (const int &a, const int &b)
 ///     {
-///         Log.default->info("hey we changed! (old: {} new: {}", a, b);
+///         Log.std->info("hey we changed! (old: {} new: {}", a, b);
 ///     }
 /// );
 ///

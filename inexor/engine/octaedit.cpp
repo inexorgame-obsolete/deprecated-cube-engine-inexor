@@ -819,7 +819,7 @@ void pruneundos(int maxremain)                          // bound memory
         totalundos -= u->size;
         freeundo(u);
     }
-    //Log.default->debug() << "undo: " << totalundos << " of " << (undomegs<<20) << "(%%" << (totalundos*100 / (undomegs<<20)) << ")";
+    //Log.std->debug() << "undo: " << totalundos << " of " << (undomegs<<20) << "(%%" << (totalundos*100 / (undomegs<<20)) << ")";
     while(!redos.empty())
     {
         undoblock *u = redos.popfirst();
@@ -883,7 +883,7 @@ static int countblock(block3 *b) { return countblock(b->c(), b->size()); }
 void swapundo(undolist &a, undolist &b, int op)
 {
     if(noedit()) return;
-    if(a.empty()) { Log.default->warn("nothing more to {}", (op == EDIT_REDO ? "redo" : "undo")); return; }
+    if(a.empty()) { Log.std->warn("nothing more to {}", (op == EDIT_REDO ? "redo" : "undo")); return; }
     int ts = a.last->timestamp;
     if(multiplayer(false))
     {
@@ -1305,14 +1305,14 @@ void saveprefab(char *name)
     defformatstring(filename, "%s/%s.obr", *prefabdir, name);
     path(filename);
     stream *f = opengzfile(filename, "wb");
-    if(!f) { Log.default->error("could not write prefab to {}", filename); return; }
+    if(!f) { Log.std->error("could not write prefab to {}", filename); return; }
     prefabheader hdr;
     memcpy(hdr.magic, "OEBR", 4);
     hdr.version = 0;
     lilswap(&hdr.version, 1);
     f->write(&hdr, sizeof(hdr));
     streambuf<uchar> s(f);
-    if(!packblock(*b->copy, s)) { delete f; Log.default->error("could not pack prefab {}", filename); return; }
+    if(!packblock(*b->copy, s)) { delete f; Log.std->error("could not pack prefab {}", filename); return; }
     delete f;
     Log.edit->info("wrote prefab file {}", filename);
 }
@@ -1336,14 +1336,14 @@ prefab *loadprefab(const char *name, bool msg = true)
    defformatstring(filename, strpbrk(name, "/\\") ? "packages/%s.obr" : "packages/prefab/%s.obr", name);
    path(filename);
    stream *f = opengzfile(filename, "rb");
-   if(!f) { if(msg) Log.default->error("could not read prefab {}", filename); return NULL; }
+   if(!f) { if(msg) Log.std->error("could not read prefab {}", filename); return NULL; }
    prefabheader hdr;
-   if(f->read(&hdr, sizeof(hdr)) != sizeof(prefabheader) || memcmp(hdr.magic, "OEBR", 4)) { delete f; if(msg) Log.default->error("prefab {} has malformatted header", filename); return NULL; }
+   if(f->read(&hdr, sizeof(hdr)) != sizeof(prefabheader) || memcmp(hdr.magic, "OEBR", 4)) { delete f; if(msg) Log.std->error("prefab {} has malformatted header", filename); return NULL; }
    lilswap(&hdr.version, 1);
-   if(hdr.version != 0) { delete f; if(msg) Log.default->error("prefab {} uses unsupported version", filename); return NULL; }
+   if(hdr.version != 0) { delete f; if(msg) Log.std->error("prefab {} uses unsupported version", filename); return NULL; }
    streambuf<uchar> s(f);
    block3 *copy = NULL;
-   if(!unpackblock(copy, s)) { delete f; if(msg) Log.default->error("could not unpack prefab {}", filename); return NULL; }
+   if(!unpackblock(copy, s)) { delete f; if(msg) Log.std->error("could not unpack prefab {}", filename); return NULL; }
    delete f;
 
    b = &prefabs[name];
@@ -2571,7 +2571,7 @@ bool mpreplacetex(int oldtex, int newtex, bool insel, selinfo &sel, ucharbuf &bu
 void replace(bool insel)
 {
     if(noedit()) return;
-    if(reptex < 0) { Log.default->error("can only replace after a texture edit"); return; }
+    if(reptex < 0) { Log.std->error("can only replace after a texture edit"); return; }
     mpreplacetex(reptex, lasttex, insel, sel, true);
 }
 
@@ -2762,7 +2762,7 @@ void editmat(char *name, char *filtername)
         if(filter < 0) filter = findmaterial(filtername);
         if(filter < 0)
         {
-            Log.default->error("unknown material \"{}\"", filtername);
+            Log.std->error("unknown material \"{}\"", filtername);
             return;
         }
     }
@@ -2770,7 +2770,7 @@ void editmat(char *name, char *filtername)
     if(name[0] || filter < 0)
     {
         id = findmaterial(name);
-        if(id<0) { Log.default->error("unknown material \"{}\"", name); return; }
+        if(id<0) { Log.std->error("unknown material \"{}\"", name); return; }
     }
     mpeditmat(id, filter, sel, true);
 }

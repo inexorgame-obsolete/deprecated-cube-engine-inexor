@@ -27,7 +27,7 @@ void InexorLayerManager::InitializeLayers()
 
 void InexorLayerManager::InitializeLayer(CefRefPtr<InexorLayerProvider> layer_provider)
 {
-    Log.default->info("InexorLayerManager::InitializeLayer()\n  name: {0}\n url: {1}", layer_provider->GetLayerName(), layer_provider->GetUrl());
+    Log.std->info("InexorLayerManager::InitializeLayer()\n  name: {0}\n url: {1}", layer_provider->GetLayerName(), layer_provider->GetUrl());
     CefRefPtr<InexorLayer> layer = CreateLayer(layer_provider->GetLayerName(), layer_provider->GetUrl());
     layer->SetVisibility(layer_provider->GetVisibility());
     layer->SetIsAcceptingKeyInput(layer_provider->GetAcceptingKeyInput());
@@ -37,7 +37,7 @@ void InexorLayerManager::InitializeLayer(CefRefPtr<InexorLayerProvider> layer_pr
 
 void InexorLayerManager::DestroyLayers()
 {
-//    Log.default->debug() << "InexorLayerManager::DestroyLayers()";
+//    Log.std->debug() << "InexorLayerManager::DestroyLayers()";
     for(std::list<CefRefPtr<InexorLayer> >::iterator it = layers.begin(); it != layers.end(); ++it)
     {
         CefRefPtr<InexorLayer> layer = (*it);
@@ -150,7 +150,7 @@ std::list<std::string> InexorLayerManager::GetLayers()
 
 void InexorLayerManager::ShowLayer(std::string name)
 {
-    Log.default->debug("show layer {}", name);
+    Log.std->debug("show layer {}", name);
     CefRefPtr<InexorLayer> layer = GetLayer(name);
     if (layer.get())
         layer->SetVisibility(true);
@@ -158,7 +158,7 @@ void InexorLayerManager::ShowLayer(std::string name)
 
 void InexorLayerManager::HideLayer(std::string name)
 {
-    Log.default->debug("hide layer {}", name);
+    Log.std->debug("hide layer {}", name);
     CefRefPtr<InexorLayer> layer = GetLayer(name);
     if (layer.get())
         layer->SetVisibility(false);

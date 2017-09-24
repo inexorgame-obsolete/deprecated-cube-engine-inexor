@@ -1365,7 +1365,7 @@ void shrinkmap()
  
     allchanged();
 
-    Log.default->info("shrunk map to size {}", *worldscale);
+    Log.std->info("shrunk map to size {}", *worldscale);
 }
 
 void newmap(int *i) { bool force = !isconnected(); if(force) game::forceedit(""); if(emptymap(*i, force, NULL)) game::newmap(max(*i, 0)); }

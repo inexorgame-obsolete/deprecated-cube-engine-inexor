@@ -172,7 +172,7 @@ struct aviwriter
             videoframes += seg.videoframes;
             indexframes += seg.indexframes;
         }
-        if(dbgmovie) Log.default->debug("fileframes: sound={0}, video={1}+{2}(dups)", soundframes, videoframes, (indexframes-videoframes));
+        if(dbgmovie) Log.std->debug("fileframes: sound={0}, video={1}+{2}(dups)", soundframes, videoframes, (indexframes-videoframes));
         f->seek(fileframesoffset, SEEK_SET);
         f->putlil<uint>(segments[0].indexframes);
         f->seek(filevideooffset, SEEK_SET);
@@ -238,7 +238,7 @@ struct aviwriter
         //        case AUDIO_S16MSB: desc = "s16b"; break;
         //        default:           desc = "unkn";
         //    }
-        //    if(dbgmovie) Log.default->debug("soundspec: {0}hz {1} x {2}", soundfrequency, desc, soundchannels);
+        //    if(dbgmovie) Log.std->debug("soundspec: {0}hz {1} x {2}", soundfrequency, desc, soundchannels);
         //}  // TODO Sound refractoring
     }
     
@@ -953,7 +953,7 @@ namespace recorder
  
         int fps, bestdiff, worstdiff;
         getfps(fps, bestdiff, worstdiff);
-        if(videofps > fps) Log.default->warn("frame rate may be too low to capture at {} fps", videofps);
+        if(videofps > fps) Log.std->warn("frame rate may be too low to capture at {} fps", videofps);
         
         if(videow%2) videow += 1;
         if(videoh%2) videoh += 1;
@@ -961,11 +961,11 @@ namespace recorder
         file = new aviwriter(filename, videow, videoh, videofps, sound);
         if(!file->open()) 
         { 
-            Log.default->error("unable to create file {}", filename);
+            Log.std->error("unable to create file {}", filename);
             DELETEP(file);
             return;
         }
-        Log.default->info("movie recording to: {0} {1}x{2} @{3}fps{4}", file->filename, file->videow, file->videoh, file->videofps,
+        Log.std->info("movie recording to: {0} {1}x{2} @{3}fps{4}", file->filename, file->videow, file->videoh, file->videofps,
                                     ((file->soundfrequency>0)?" + sound":""));
 
         starttime = gettime();
@@ -1028,7 +1028,7 @@ namespace recorder
         thread = NULL;
 
         static const char * const mesgs[] = { "ok", "stopped", "computer too slow", "file error"};
-        Log.default->info("movie recording halted: {0} ({1} frames)", mesgs[state], file->videoframes);
+        Log.std->info("movie recording halted: {0} ({1} frames)", mesgs[state], file->videoframes);
 
         DELETEP(file);
         state = REC_OK;

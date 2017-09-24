@@ -72,7 +72,7 @@ void disconnect_client(int n, int reason)
     string s;
     if(msg) formatstring(s, "client (%s) disconnected because: %s", client_connections[n]->hostname, msg);
     else formatstring(s, "client (%s) disconnected", client_connections[n]->hostname);
-    Log.default->info(s);
+    Log.std->info(s);
     sendservmsg(s);
 }
 

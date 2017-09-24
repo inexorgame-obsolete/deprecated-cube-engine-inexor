@@ -278,7 +278,7 @@ namespace entities
         for(;;)
         {
             e = findentity(TELEDEST, e+1);
-            if(e==beenhere || e<0) { Log.default->warn("no teleport destination for tag {}", tag); return; } // TODO: LOG_N_TIMES(1)
+            if(e==beenhere || e<0) { Log.std->warn("no teleport destination for tag {}", tag); return; } // TODO: LOG_N_TIMES(1)
             if(beenhere<0) beenhere = e;
             if(ents[e]->attr2==tag)
             {

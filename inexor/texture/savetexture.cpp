@@ -33,10 +33,10 @@ void savepng(const char *filename, ImageData &image, bool flip)
     case 2: ctype = 4; break;
     case 3: ctype = 2; break;
     case 4: ctype = 6; break;
-    default: Log.default->error("failed saving png to {}", filename); return;
+    default: Log.std->error("failed saving png to {}", filename); return;
     }
     stream *f = openfile(filename, "wb");
-    if(!f) { Log.default->error("could not write to {}", filename); return; }
+    if(!f) { Log.std->error("could not write to {}", filename); return; }
 
     uchar signature[] = { 137, 80, 78, 71, 13, 10, 26, 10 };
     f->write(signature, sizeof(signature));
@@ -115,7 +115,7 @@ cleanuperror:
 error:
     delete f;
 
-    Log.default->error("failed saving png to {}", filename);
+    Log.std->error("failed saving png to {}", filename);
 }
 
 struct tgaheader
@@ -141,11 +141,11 @@ void savetga(const char *filename, ImageData &image, bool flip)
     switch(image.bpp)
     {
     case 3: case 4: break;
-    default: Log.default->error("failed saving tga to {}", filename); return;
+    default: Log.std->error("failed saving tga to {}", filename); return;
     }
 
     stream *f = openfile(filename, "wb");
-    if(!f) { Log.default->error("could not write to {}", filename); return; }
+    if(!f) { Log.std->error("could not write to {}", filename); return; }
 
     tgaheader hdr;
     memset(&hdr, 0, sizeof(hdr));

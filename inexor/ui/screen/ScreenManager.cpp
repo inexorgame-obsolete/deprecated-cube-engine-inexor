@@ -154,9 +154,9 @@ void ScreenManager::setupscreen(int &useddepthbits, int &usedfsaa)
     if (!sdl_window) fatal("failed to create OpenGL window: %s", SDL_GetError());
     else
     {
-        if (depthbits && (config&1)==0) Log.default->warn("{} bit z-buffer not supported - disabling", *depthbits);
-        if (stencilbits && (config&2)==0) Log.default->warn("Stencil buffer not supported - disabling");
-        if (fsaa>0 && (config&4)==0) Log.default->warn("{} anti-aliasing not supported - disabling", *fsaa);
+        if (depthbits && (config&1)==0) Log.std->warn("{} bit z-buffer not supported - disabling", *depthbits);
+        if (stencilbits && (config&2)==0) Log.std->warn("Stencil buffer not supported - disabling");
+        if (fsaa>0 && (config&4)==0) Log.std->warn("{} anti-aliasing not supported - disabling", *fsaa);
     }
 
     SDL_SetWindowMinimumSize(sdl_window, SCR_MINW, SCR_MINH);

@@ -11,7 +11,7 @@ CefRefPtr<CefV8Value> InexorContextProvider::GetContext()
     if (!context.get())
     {
         // This has to be happen when the context is initialized
-        Log.default->debug("init: cef: context \"{}\"", GetContextName());
+        Log.ui->debug("init: cef: context \"{}\"", GetContextName());
         InitializeSubContexts();
         InitializeContext();
     }

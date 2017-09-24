@@ -53,7 +53,7 @@ void CefSubsystem::initialize(int argc, char **argv)
 
     std::string host = *interface_hostname;
     std::string port = std::to_string(interface_port);
-    Log.default->info("CefSubsystem::initialize() --> CefInitialize({0}, {1}, {2}, {3}, {4})", instance_id, host, port, scr_w, scr_h);
+    Log.ui->info("CefSubsystem::initialize() --> CefInitialize({0}, {1}, {2}, {3}, {4})", instance_id, host, port, scr_w, scr_h);
     cef_app = new InexorCefApp(instance_id, host, port, scr_w, scr_h);
 
 
@@ -65,7 +65,7 @@ void CefSubsystem::initialize(int argc, char **argv)
     std::string executable_path = ExecutablePathWithoutBinary(argv[0]);
     InexorSettings settings(executable_path);
     if (!CefInitialize(args, settings, cef_app.get(), NULL)) {
-        Log.default->error("FATAL: Initialization of CEF subprocess failed!");
+        Log.ui->error("FATAL: Initialization of CEF subprocess failed!");
     }
 }
 

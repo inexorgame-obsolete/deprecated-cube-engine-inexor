@@ -387,7 +387,7 @@ inline void ident::getval(tagval &v) const
       try {                                                                                  \
           b;                                                                                 \
       } catch (inexor::util::InexorException &e) {                                           \
-          Log.default->error("EXCEPTION in {0}: {1}", #name, e.message());         \
+          Log.std->error("EXCEPTION in {0}: {1}", #name, e.message());         \
       }                                                                                      \
   )
 

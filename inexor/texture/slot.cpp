@@ -195,7 +195,7 @@ ICOMMAND(compactvslots, "", (),
     if(nompedit && multiplayer()) return;
     int oldamount = vslots.length();
     compactvslots();
-    Log.default->info("compacted virtual Slots (before: {0}, now: {1})", oldamount, vslots.length());
+    Log.std->info("compacted virtual Slots (before: {0}, now: {1})", oldamount, vslots.length());
     allchanged();
 });
 
@@ -971,7 +971,7 @@ void texture(char *type, char *name, int *rot, int *xoffset, int *yoffset, float
     Slot &s = matslot >= 0 ? lookupmaterialslot(matslot, false) : *(tnum != TEX_DIFFUSE ? slots.last() : slots.add(new Slot(slots.length())));
     s.loaded = 0;
     s.texmask |= 1 << tnum;
-    if(s.sts.length() >= 8) Log.default->warn("warning: too many textures in slot {}", (slots.length() - 1));
+    if(s.sts.length() >= 8) Log.std->warn("warning: too many textures in slot {}", (slots.length() - 1));
 
     s.addtexture(tnum, name);
 
@@ -985,7 +985,7 @@ void texture(char *type, char *name, int *rot, int *xoffset, int *yoffset, float
         vs.scale = *scale <= 0 ? 1 : *scale;
         propagatevslot(&vs, (1 << VSLOT_NUM) - 1);
     }
-    //Log.default->warn() << "old texture loaded, should it be converted?";
+    //Log.std->warn() << "old texture loaded, should it be converted?";
 }
 COMMAND(texture, "ssiiif");
 

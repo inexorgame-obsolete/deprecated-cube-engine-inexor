@@ -58,7 +58,7 @@ void genvbo(int type, void *buf, int len, vtxarray **vas, int numva)
     vboinfo &vbi = vbos[vbo]; 
     vbi.uses = numva;
  
-    if(debugvbo) Log.default->debug("vbo {0}: type {1} size {2}, {3} uses", vbo, type, len, numva);
+    if(debugvbo) Log.std->debug("vbo {0}: type {1} size {2}, {3} uses", vbo, type, len, numva);
 
     loopi(numva)
     {
