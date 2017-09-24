@@ -27,6 +27,7 @@ codeblocks
 xcode
 
 build*
+cmake-build-*
 bin*
 
 Debug
