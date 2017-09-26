@@ -55,7 +55,7 @@ int client_count = 0;
 bool has_clients() { return client_count != 0; }
 // TODO: merge get_num_clients and numclients.. (maybe difference: connected vs not yet connected)?
 // same as merging clientinfo with client_connection..
-int get_num_clients() { return client_connections.length(); }
+int get_num_clients() { return client_count; }
 
 int numclients(int exclude, bool nospec, bool noai, bool priv)
 {
@@ -127,30 +127,6 @@ void clearbans(clientinfo *actor)
     {
         bannedips.shrink(0);
         sendservmsg("cleared all bans");
-    }
-}
-
-// TODO: merge clientinfo and sendernum as soon as client_connections are gone
-void change_mastermode(int mm, int sendernum, clientinfo *actor)
-{
-    if(actor->privilege && mm>=MM_OPEN && mm<=MM_PRIVATE)
-    {
-        if((actor->privilege>=PRIV_ADMIN) || (mastermask&(1<<mm)))
-        {
-            mastermode = mm;
-            allowedips.shrink(0);
-            if(mm>=MM_PRIVATE)
-            {
-                loopv(clients) allowedips.add(getclientip(clients[i]->clientnum));
-            }
-            sendf(-1, 1, "rii", N_MASTERMODE, mastermode);
-            //sendservmsgf("mastermode is now %s (%d)", mastermodename(mastermode), mastermode);
-        }
-        else
-        {
-            defformatstring(s, "mastermode %d is disabled on this server", mm);
-            sendf(sendernum, 1, "ris", N_SERVMSG, s);
-        }
     }
 }
 
@@ -238,6 +214,31 @@ int allowconnect(clientinfo *ci, const char *pwd = "")
 
 int mastermode = MM_OPEN, mastermask = MM_PRIVSERV;
 
+
+// TODO: merge clientinfo and sendernum as soon as client_connections are gone
+void change_mastermode(int mm, int sendernum, clientinfo *actor)
+{
+    if(actor->privilege && mm>=MM_OPEN && mm<=MM_PRIVATE)
+    {
+        if((actor->privilege>=PRIV_ADMIN) || (mastermask&(1<<mm)))
+        {
+            mastermode = mm;
+            allowedips.shrink(0);
+            if(mm>=MM_PRIVATE)
+            {
+                loopv(clients) allowedips.add(getclientip(clients[i]->clientnum));
+            }
+            sendf(-1, 1, "rii", N_MASTERMODE, mastermode);
+            //sendservmsgf("mastermode is now %s (%d)", mastermodename(mastermode), mastermode);
+        }
+        else
+        {
+            defformatstring(s, "mastermode %d is disabled on this server", mm);
+            sendf(sendernum, 1, "ris", N_SERVMSG, s);
+        }
+    }
+}
+
 int get_mastermode_int()
 {
     return serverpass[0] ? MM_PASSWORD : (mastermode || mastermask&MM_AUTOAPPROVE ? mastermode : MM_START);
@@ -254,24 +255,28 @@ bool setmaster(clientinfo *ci, bool val, const char *pass, bool force, bool tria
     if(!val) return false;
     const char *name = "";
 
+    // is there already a player with priv >= master on this server?
+    bool hasmaster = false;
+    loopv(clients) if(ci!=clients[i] && clients[i]->privilege >= PRIV_MASTER) hasmaster = true;
+
     bool haspass = adminpass[0] && checkpassword(ci->clientnum, ci->sessionid, adminpass, pass);
     int wantpriv = haspass ? PRIV_ADMIN : PRIV_MASTER;
     if(wantpriv <= ci->privilege) return true;
     else if(wantpriv <= PRIV_MASTER && !force)
     {
-        if(ci->state.state==CS_SPECTATOR)
+        if(hasmaster)
         {
-            sendf(ci->clientnum, 1, "ris", N_SERVMSG, "Spectators may not claim master.");
+            sendf(ci->clientnum, 1, "ris", N_SERVMSG, "Master is already claimed.");
             return false;
         }
-        loopv(clients) if(ci!=clients[i] && clients[i]->privilege)
-            {
-                sendf(ci->clientnum, 1, "ris", N_SERVMSG, "Master is already claimed.");
-                return false;
-            }
         if(!(mastermask&MM_AUTOAPPROVE) && !ci->privilege)
         {
             sendf(ci->clientnum, 1, "ris", N_SERVMSG, "This server requires special permission to claim master.");
+            return false;
+        }
+        if(ci->state.state==CS_SPECTATOR && numclients(ci->clientnum, true, true, true))
+        {
+            sendf(ci->clientnum, 1, "ris", N_SERVMSG, "Spectators may not claim master.");
             return false;
         }
     }
@@ -279,8 +284,6 @@ bool setmaster(clientinfo *ci, bool val, const char *pass, bool force, bool tria
     ci->privilege = wantpriv;
     name = privname(ci->privilege);
 
-    bool hasmaster = false;
-    loopv(clients) if(clients[i]->privilege >= PRIV_MASTER) hasmaster = true;
     if(!hasmaster)
     {
         mastermode = MM_OPEN;
