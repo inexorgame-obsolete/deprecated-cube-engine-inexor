@@ -2258,21 +2258,36 @@ extern int getservermtu();
             case N_PAUSEGAME:
             {
                 int val = getint(p);
-                if(ci->privilege < (restrictpausegame ? PRIV_ADMIN : PRIV_MASTER)) break;
+                if(ci->privilege < (restrictpausegame ? PRIV_ADMIN : PRIV_MASTER))
+                {
+                    defformatstring(s, "You need to be %s to pause the game", restrictpausegame ? "admin" : "master");
+                    sendf(ci->clientnum, 1, "ris", N_SERVMSG, s);
+                    break;
+                }
                 pausegame(val > 0, ci);
                 break;
             }
             case N_GAMESPEED:
             {
                 int val = getint(p);
-                if(ci->privilege < (restrictgamespeed ? PRIV_ADMIN : PRIV_MASTER)) break;
+                if(ci->privilege < (restrictgamespeed ? PRIV_ADMIN : PRIV_MASTER))
+                {
+                    defformatstring(s, "You need to be %s to change the gamespeed", restrictgamespeed ? "admin" : "master");
+                    sendf(ci->clientnum, 1, "ris", N_SERVMSG, s);
+                    break;
+                }
                 changegamespeed(val, ci);
                 break;
             }
             case N_PERSISTTEAMS:
             {
                 int val = getint(p);
-                if(ci->privilege < (restrictpersistteams ? PRIV_ADMIN : PRIV_MASTER)) break;
+                if(ci->privilege < (restrictpersistteams ? PRIV_ADMIN : PRIV_MASTER))
+                {
+                    defformatstring(s, "You need to be %s to enable/disable persistent teams", restrictpersistteams ? "admin" : "master");
+                    sendf(ci->clientnum, 1, "ris", N_SERVMSG, s);
+                    break;
+                }
                 persistteams(val > 0);
                 break;
             }
