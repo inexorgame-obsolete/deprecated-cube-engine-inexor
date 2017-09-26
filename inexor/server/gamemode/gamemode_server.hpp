@@ -61,4 +61,5 @@ struct servmode
     /// @return whether this messages got processed.
     virtual bool parse_network_message(int type, clientinfo *ci, clientinfo *cq, packetbuf &p) = 0;
 };
+extern servmode *smode;
 } // ns server

@@ -197,7 +197,7 @@ void serverslice(uint timeout)
                 client *c = (client *)event.peer->data;
                 if(!c) break;
                 Log.std->info("disconnected client ({0})", c->hostname);
-                clientdisconnect(c->num);
+                disconnect_client(c->num, DISC_NONE);
                 break;
             }
             default:
@@ -248,7 +248,7 @@ bool setup_network_sockets()
         if(enet_address_set_host(&address, serverip)<0) Log.std->warn("WARNING: server ip not resolved");
         else serveraddress.host = address.host;
     }
-    serverhost = enet_host_create(&address, min(maxclients + server::reserveclients(), MAXCLIENTS), NUM_ENET_CHANNELS, 0, serveruprate);
+    serverhost = enet_host_create(&address, min(maxclients + reserveclients(), MAXCLIENTS), NUM_ENET_CHANNELS, 0, serveruprate);
     if(!serverhost) return servererror("could not create server host");
     serverhost->duplicatePeers = maxdupclients ? maxdupclients : MAXCLIENTS;
     address.port = server_info_port(serverport > 0 ? serverport : -1);

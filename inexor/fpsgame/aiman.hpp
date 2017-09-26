@@ -2,6 +2,8 @@
 // aiman.h (A.I. manager)
 // server-side ai manager
 
+extern void sendresume(clientinfo *ci);
+
 namespace aiman
 {
     bool dorefresh = false, botbalance = true;

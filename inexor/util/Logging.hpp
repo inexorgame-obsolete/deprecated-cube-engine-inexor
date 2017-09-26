@@ -54,7 +54,7 @@ namespace util {
         }
         Logger(const Logger &old) : spdlog_logger(old.spdlog_logger), pattern(old.pattern), level(old.level) {}
 
-        const std::shared_ptr<spdlog::logger> &operator->() const
+        const std::shared_ptr<spdlog::logger> operator->() const
         {
             return spdlog_logger;
         };

@@ -97,7 +97,6 @@ namespace server
     extern int gamespeed;
 
     extern void serverinit();
-    extern int reserveclients();
     extern void clientdisconnect(int n);
     extern int clientconnect(int n, uint ip);
     extern bool allowbroadcast(int n);

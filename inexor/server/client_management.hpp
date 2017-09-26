@@ -23,6 +23,7 @@ extern uint getclientip(int n);
 
 extern SharedVar<int> maxclients;
 extern SharedVar<int> maxdupclients;
+extern int reserveclients();
 
 /// server side version of "dynent" type
 struct client
@@ -37,9 +38,19 @@ extern vector<client *> client_connections;
 
 extern client &add_client_connection();
 
+/// After some period of time without response we disconnect a client.
+extern void check_clients_timed_out();
+
 extern void disconnect_client(int n, int reason);
 extern bool has_clients();
 extern int get_num_clients();
+
+/// List all connected clients (game players)
+/// @param exclude exclude the player with this client number from the counter.
+/// @param nospec exclude spectators (expect they have priviledge leveles and parameter priv is true)
+/// @param priv see nospec: count priviledges users (master, admin, local) even when they are in spectator mode.
+/// @param noai exclude bots from the counter.
+extern int numclients(int exclude = -1, bool nospec = true, bool noai = true, bool priv = false);
 
 static constexpr int DEATHMILLIS = 300;
 
@@ -331,16 +342,19 @@ struct clientinfo
     }
 };
 
+/// colorful version of the clients name
+/// (if two people share the same name or ci is a bot)
+extern const char *colorname(clientinfo *ci, const char *name = nullptr);
+
+extern bool player_connected(clientinfo *ci, const char *password);
+
 // TODO remove connects array and merge with client_connections
 extern vector<clientinfo *> connects, clients, bots;
 
 extern clientinfo *get_client_info(int n, bool findbots = true);
 
-struct ban
-{
-    int time, expire;
-    uint ip;
-};
+/// New map: we throw away the scores of disconnected players.
+extern void resetdisconnectedplayerscores();
 
 namespace aiman
 {
@@ -356,6 +370,22 @@ extern void addclient(clientinfo *ci);
 extern void changeteam(clientinfo *ci);
 }
 
+extern int mastermode, mastermask;
+extern int get_mastermode_int();
+extern bool setmaster(clientinfo *ci, bool val, const char *pass = "", bool force = false, bool trial = false);
+extern void change_mastermode(int mm, int sendernum, clientinfo *actor);
+
+////// Bans
+
+extern void addban(uint ip, int expire);
+
+extern void clearbans(clientinfo *actor);
+extern void check_bans_expired();
+extern bool trykick(clientinfo *ci, int victim, const char *reason = NULL, bool trial = false);
+/// Kick all clients with this IP
+/// (including bots and people in the same LAN)
+extern void kickclients(uint ip, clientinfo *actor = NULL, int priv = PRIV_NONE);
+
 } // ns server
 
 #define MM_MODE 0xF
@@ -363,3 +393,4 @@ extern void changeteam(clientinfo *ci);
 #define MM_PRIVSERV (MM_MODE | MM_AUTOAPPROVE)
 #define MM_PUBSERV ((1<<MM_OPEN) | (1<<MM_VETO))
 #define MM_COOPSERV (MM_AUTOAPPROVE | MM_PUBSERV | (1<<MM_LOCKED))
+
