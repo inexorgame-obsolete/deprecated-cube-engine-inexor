@@ -26,42 +26,45 @@ struct hideandseekclientmode : clientmode, hideandseekmode
             xoffset = -size,
             yoffset = -size,
             dist = dir.magnitude2(), maxdist = 1 - 0.05f - 0.05f;
-        if(dist >= maxdist) dir.mul(maxdist/dist);
-        dir.rotate_around_z(-camera1->yaw*RAD);
-        drawradar(x + s*0.5f*(1.0f + dir.x + xoffset), y + s*0.5f*(1.0f + dir.y + yoffset), size*s);
+        if (dist >= maxdist) 
+            dir.mul(maxdist / dist);
+        dir.rotate_around_z(-camera1->yaw * RAD);
+        drawradar(x + s * 0.5f * (1.0f + dir.x + xoffset), y + s * 0.5f *(1.0f + dir.y + yoffset), size * s);
     }
 
     void drawhud(fpsent *d, int w, int h)
     {
-        if(!ishider(d)) return;
+        if (!ishider(d)) return;
 
         // minimap
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         int s = 1800/4, x = 1800*w/h - s - s/10, y = s/10;
         glColor4f(1, 1, 1, minimapalpha);
-        if(minimapalpha >= 1) glDisable(GL_BLEND);
+        if (minimapalpha >= 1) glDisable(GL_BLEND);
         bindminimap();
         drawminimap(d, x, y, s);
-        if(minimapalpha >= 1) glEnable(GL_BLEND);
+        if (minimapalpha >= 1) glEnable(GL_BLEND);
         glColor3f(1, 1, 1);
-        float margin = 0.04f, roffset = s*margin, rsize = s + 2*roffset;
+        float margin = 0.04f, roffset = s * margin, rsize = s + 2 * roffset;
         setradartex();
         drawradar(x - roffset, y - roffset, rsize);
         // show obstacles on minimap
         defformatstring(blip, "%s/blip_block.png", *radardir);
-        if(showminimapobstacles) loopv(movables)
+        if (showminimapobstacles)
+            loopv(movables);
+        else
         {
-            dynent *m = (dynent *)movables[i];
-            if(!isobstaclealive((movable *)m)) continue;
-
+            dynent * m = (dynent *)movables[i];
+            if (!isobstaclealive((movable *)m)) 
+                continue;
             settexture(blip, 3);
-            drawblip(d, x, y, s, m->o, 1.0f);
+            drawblip(d, x, y, s, m -> o, 1.0f);
         }
         // show other players on minimap
         loopv(players)
         {
-            fpsent *o = players[i];
-            if(o != d && o->state == CS_ALIVE && !ishider(o))
+            fpsent * o = players[i];
+            if (o != d && o->state == CS_ALIVE && !ishider(o))
             {
                 setbliptex(TEAM_OPPONENT);
                 drawblip(d, x, y, s, o->o, 2.0f);
@@ -71,7 +74,7 @@ struct hideandseekclientmode : clientmode, hideandseekmode
 
     bool isinvisible(fpsent *d)
     {
-        if(ishider(d) && (totalmillis-maptime < STARTINVISIBLESECS*1000 || ishider(player1))) return true;
+        if (ishider(d) && (totalmillis-maptime < STARTINVISIBLESECS*1000 || ishider(player1))) return true;
         return false;
     }
 
@@ -83,12 +86,12 @@ struct hideandseekclientmode : clientmode, hideandseekmode
     {
         /*
         if (showhideandseekrole) {
-        g.pushlist();
-        g.strut(4);
-        g.text("rank", fgcolor);
-        loopv(sg.players) {
-        fpsent *d = sg.players[i];
-        g.textf("%s", 0xFFFFDD, NULL, "");
+            g.pushlist();
+            g.strut(4);
+            g.text("rank", fgcolor);
+            loopv(sg.players) {
+            fpsent *d = sg.players[i];
+            g.textf("%s", 0xFFFFDD, NULL, "");
         }
         g.poplist();
         }

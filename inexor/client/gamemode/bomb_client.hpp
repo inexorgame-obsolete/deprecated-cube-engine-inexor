@@ -21,11 +21,15 @@ struct bombclientmode : clientmode, bombmode
         int bicon = icon - HICON_BOMBRADIUS;
         bind_bomb_items_texture();
         glBegin(GL_TRIANGLE_STRIP);
-        float tsz = 0.25f, tx = tsz*(bicon%4), ty = tsz*(bicon/4);
-        glTexCoord2f(tx, ty);     glVertex2f(x, y);
-        glTexCoord2f(tx+tsz, ty);     glVertex2f(x+sz, y);
-        glTexCoord2f(tx, ty+tsz); glVertex2f(x, y+sz);
-        glTexCoord2f(tx+tsz, ty+tsz); glVertex2f(x+sz, y+sz);
+        float tsz = 0.25f, tx = tsz * (bicon % 4), ty = tsz *(bicon / 4);
+        glTexCoord2f(tx, ty);     
+        glVertex2f(x, y);
+        glTexCoord2f(tx + tsz, ty);     
+        glVertex2f(x + sz, y);
+        glTexCoord2f(tx, ty + tsz); 
+        glVertex2f(x, y + sz);
+        glTexCoord2f(tx + tsz, ty + tsz); 
+        glVertex2f(x + sz, y + sz);
         glEnd();
     }
 
@@ -38,9 +42,10 @@ struct bombclientmode : clientmode, bombmode
             xoffset = -size,
             yoffset = -size,
             dist = dir.magnitude2(), maxdist = 1 - 0.05f - 0.05f;
-        if(dist >= maxdist) dir.mul(maxdist/dist);
-        dir.rotate_around_z(-camera1->yaw*RAD);
-        drawradar(x + s*0.5f*(1.0f + dir.x + xoffset), y + s*0.5f*(1.0f + dir.y + yoffset), size*s);
+        if(dist >= maxdist) 
+            dir.mul(maxdist / dist);
+        dir.rotate_around_z(-camera1->yaw * RAD);
+        drawradar(x + s * 0.5f * (1.0f + dir.x + xoffset), y + s * 0.5f * (1.0f + dir.y + yoffset), size * s);
     }
 
     void drawhud(fpsent *d, int w, int h);
@@ -50,12 +55,13 @@ struct bombclientmode : clientmode, bombmode
         loopv(players)
         {
             fpsent *p = players[i];
-            if(p == player1 || p->state!=CS_ALIVE) continue;
+            if(p == player1 || p->state != CS_ALIVE) 
+                continue;
             float yaw, pitch;
             vectoyawpitch(vec(p->o).sub(camera1->o), yaw, pitch);
             const char *modelname = m_teammode ? (strcmp(p->team, player1->team) == 0 ? "bomb/posindicator/blue" : "bomb/posindicator/red") : "bomb/posindicator/green";
-            float angle = 360*lastmillis/1000.0f;
-            float alpha = 0.3f + 0.5f*(2*fabs(fmod(lastmillis/1000.0f, 1.0f) - 0.5f));
+            float angle = 360 * lastmillis / 1000.0f;
+            float alpha = 0.3f + 0.5f * (2 * fabs(fmod(lastmillis / 1000.0f, 1.0f) - 0.5f));
             entitylight light;
             rendermodel(&light, modelname, ANIM_MAPMODEL|ANIM_LOOP,
                         p->feetpos(), angle, pitch,
@@ -74,7 +80,8 @@ struct bombclientmode : clientmode, bombmode
     void killed(fpsent *d, fpsent *actor)
     {
         d->state = CS_SPECTATOR;
-        if(d!=player1) return;
+        if(d!=player1) 
+            return;
         following = actor->clientnum;
         player1->yaw = actor->yaw;
         player1->pitch = actor->pitch;
@@ -90,7 +97,8 @@ struct bombclientmode : clientmode, bombmode
 
     void pickspawn(fpsent *d)
     {
-        if(!entities::ents.inrange(myspawnloc)) return;
+        if(!entities::ents.inrange(myspawnloc)) 
+            return;
         extentity& e = *entities::ents[myspawnloc];
         d->o = e.o;
         d->yaw = e.attr1;
