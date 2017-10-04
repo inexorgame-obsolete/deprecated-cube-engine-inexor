@@ -368,7 +368,7 @@ extern bool resolverwait(const char *name, ENetAddress *address);
 
 // client
 // TODO: own file client/network.hpp
-extern void connectserv(const char *servername, int port, const char *serverpassword);
+extern void connectserv(const char *servername, int port, const char *serverpassword, const char *mapwish = nullptr, int modewish = -1);
 extern void abortconnect();
 extern void clientkeepalive();
 

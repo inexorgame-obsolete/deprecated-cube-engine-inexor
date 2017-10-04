@@ -1642,9 +1642,11 @@ extern int getservermtu();
                     ci->playermodel = getint(p);
                     ci->fov = getint(p); //TODO mix this in other msg..
 
-                    string password;
+                    string password, mapwish;
                     getstring(password, p, sizeof(password));
-                    if(player_connected(ci, password)) shouldstep = true;
+                    getstring(mapwish, p, sizeof(mapwish));
+                    int modewish = getint(p);
+                    if(player_connected(ci, password, mapwish, modewish)) shouldstep = true;
                     break;
                 }
 

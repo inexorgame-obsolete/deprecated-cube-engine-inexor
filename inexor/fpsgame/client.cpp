@@ -3,6 +3,7 @@
 /// minimap, hud, administration, connect, network message parser and more
 /// implementation of many cube script get functions
 
+#include <inexor/engine/engine.hpp>
 #include "inexor/fpsgame/game.hpp"
 #include "inexor/fpsgame/entities.hpp"
 #include "inexor/engine/3dgui.hpp"
@@ -170,6 +171,8 @@ namespace game
     bool connected = false, remote = false, demoplayback = false, gamepaused = false, teamspersisted = false;
     int sessionid = 0, mastermode = MM_OPEN, gamespeed = 100;
     string servinfo = "", connectpass = "";
+    string connectmapwish = "";
+    int connectmodewish = -1;
 
     /// push dead bodies (?)
     VARP(deadpush, 1, 2, 20);
@@ -586,8 +589,8 @@ namespace game
     /// request map change, server may ignore
     void changemap(const char *name, int mode)
     {
-        if(!isconnected()) Log.std->error("Could not change map, not connected!");
-        addmsg(N_MAPVOTE, "rsi", name, mode);
+        if(!isconnected()) connectserv(nullptr, 0, nullptr, name, mode); // connect the server with default port at localhost.
+        else addmsg(N_MAPVOTE, "rsi", name, mode);
     }
 
     /// validates game mode name and calls changemap above
@@ -918,9 +921,11 @@ namespace game
     }
 
 	/// copy connection password (?)
-    void connectattempt(const char *name, const char *password, const ENetAddress &address)
+    void connectattempt(const char *mapwish, int modewish, const char *password)
     {
         copystring(connectpass, password);
+        copystring(connectmapwish, mapwish);
+        connectmodewish = modewish;
     }
 
     /// reset connection password after connection failed
@@ -928,6 +933,8 @@ namespace game
     {
 		// WARNING: Shouldn't we clear the history as well?
         memset(connectpass, 0, sizeof(connectpass));
+        memset(connectmapwish, 0, sizeof(connectmapwish));
+        connectmodewish = m_valid(nextmode) ? nextmode : 0;
     }
 
 	/// ? 
@@ -1137,6 +1144,12 @@ namespace game
             memset(connectpass, 0, sizeof(connectpass));
         }
         sendstring(hash, p);
+        sendstring(connectmapwish, p);
+        putint(p, connectmodewish);
+
+        memset(connectmapwish, 0, sizeof(connectmapwish));
+        connectmodewish = m_valid(nextmode) ? nextmode : 0;
+
         sendclientpacket(p.finalize(), 1);
     }
 

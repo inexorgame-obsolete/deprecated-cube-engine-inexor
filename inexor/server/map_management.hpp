@@ -4,5 +4,6 @@
 
 namespace server {
     extern string smapname;
+    extern void changemap(const char *s, int mode);
 }
 

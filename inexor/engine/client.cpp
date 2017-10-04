@@ -92,7 +92,7 @@ void abortconnect()
 }
 
 // connect to a server (serverpassword only for mastermode 3 servers)
-void connectserv(const char *servername, int serverport, const char *serverpassword)
+void connectserv(const char *servername, int serverport, const char *serverpassword, const char *mapwish, int modewish)
 {   
     if(connpeer)
     {
@@ -140,7 +140,7 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
     connmillis = totalmillis;
     connattempts = 0;
 
-    game::connectattempt(servername ? servername : "", serverpassword ? serverpassword : "", address);
+    game::connectattempt(mapwish ? mapwish : "", modewish, serverpassword ? serverpassword : "");
 }
 
 // use stored data of last connected server to connect again

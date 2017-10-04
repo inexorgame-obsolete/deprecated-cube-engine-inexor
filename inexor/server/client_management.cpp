@@ -434,14 +434,16 @@ extern void assign_team(clientinfo *ci);
 extern void sendwelcome(clientinfo *ci);
 extern void sendinitclient(clientinfo *ci);
 
-bool player_connected(clientinfo *ci, const char *password)
+bool player_connected(clientinfo *ci, const char *password, const char *mapwish, int modewish)
 {
     int disc = allowconnect(ci, password);
     if(disc != DISC_NONE) return false;
 
     if(m_demo) enddemoplayback();
 
-    choosemap(ci);
+    // if player is local and has a mapwish: fulfill it on connect.
+    if(mapwish[0] && ci->privilege == PRIV_LOCAL && get_num_clients() <= 1) changemap(mapwish, modewish);
+    else choosemap(ci);
 
     connects.removeobj(ci);
     clients.add(ci);

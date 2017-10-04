@@ -346,7 +346,7 @@ struct clientinfo
 /// (if two people share the same name or ci is a bot)
 extern const char *colorname(clientinfo *ci, const char *name = nullptr);
 
-extern bool player_connected(clientinfo *ci, const char *password);
+extern bool player_connected(clientinfo *ci, const char *password, const char *mapwish, int modewish);
 
 // TODO remove connects array and merge with client_connections
 extern vector<clientinfo *> connects, clients, bots;
