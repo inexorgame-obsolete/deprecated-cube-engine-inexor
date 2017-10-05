@@ -1,5 +1,13 @@
 # UI MODULE
 declare_module(ui .)
+
+# exclude the subfolder cef_subprocess from the source file list, as these files are in a different binary.
+foreach(src ${UI_MODULE_SOURCES})
+  if(src MATCHES ".*cef_subprocess.*")
+    list(REMOVE_ITEM UI_MODULE_SOURCES ${src})
+  endif()
+endforeach()
+
 add_lib(ui)
 
 # Pulled in by including cube.h
@@ -19,3 +27,5 @@ function(require_ui targ)
   require_sdl(${targ})
   require_cef(${targ})
 endfunction()
+
+add_subdirectory(cef_subprocess)

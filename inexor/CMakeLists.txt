@@ -25,8 +25,5 @@ add_subdirectory(gamemode)
 
 # Actual targets
 opt_subdir(client on)
-if(BUILD_CLIENT)
-add_subdirectory(cef_subprocess)
-endif()
 opt_subdir(server off)
 opt_subdir(test   on)
