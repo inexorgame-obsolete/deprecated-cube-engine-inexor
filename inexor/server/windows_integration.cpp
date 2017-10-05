@@ -1,6 +1,5 @@
 
 #ifdef WIN32
-#ifdef STANDALONE
 
 #include "inexor/shared/cube_types.hpp"
 #include "inexor/shared/cube_unicode.hpp"
@@ -262,5 +261,4 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw)
     return 0;
 }
 
-#endif
 #endif

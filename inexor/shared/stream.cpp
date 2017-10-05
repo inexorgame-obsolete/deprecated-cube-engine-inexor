@@ -420,9 +420,7 @@ struct filestream : stream
     }
 };
 
-#ifndef STANDALONE
 VAR(dbggz, 0, 0, 1);
-#endif
 
 struct gzstream : stream
 {
@@ -554,18 +552,16 @@ struct gzstream : stream
     void finishreading()
     {
         if(!reading) return;
-#ifndef STANDALONE
         if(dbggz)
         {
             uint checkcrc = 0, checksize = 0;
             loopi(4) checkcrc |= uint(readbyte()) << (i*8);
             loopi(4) checksize |= uint(readbyte()) << (i*8);
             if(checkcrc != crc)
-                Log.std->debug("gzip crc check failed: read {0}, calculated {1}", checkcrc, crc);
+                Log.io->debug("gzip crc check failed: read {0}, calculated {1}", checkcrc, crc);
             if(checksize != zfile.total_out)
-                Log.std->debug("gzip size check failed: read {0}, calculated {1}", checksize, uint(zfile.total_out));
+                Log.io->debug("gzip size check failed: read {0}, calculated {1}", checksize, uint(zfile.total_out));
         }
-#endif
     }
 
     void stopreading()
