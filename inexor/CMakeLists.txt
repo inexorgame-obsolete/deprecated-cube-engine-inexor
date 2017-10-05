@@ -25,5 +25,5 @@ add_subdirectory(gamemode)
 
 # Actual targets
 opt_subdir(client on)
-opt_subdir(server off)
+opt_subdir(server on)
 opt_subdir(test   on)
