@@ -3,6 +3,7 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/crashreporter/CrashReporter.hpp"
 #include "inexor/util/Logging.hpp"
+#include "inexor/util/Subsystem.hpp"
 #include "inexor/network/legacy/game_types.hpp"
 #include "inexor/shared/cube_queue.hpp"
 #include "inexor/util/legacy_time.hpp"
@@ -12,6 +13,8 @@
 const char *initscript = NULL;
 
 void conline(int type, const char *sf) {};
+
+inexor::util::Metasystem metapp;
 
 namespace server {
 void cleanupserver();
@@ -148,6 +151,7 @@ void serverslice(uint timeout)
 
     // below is network only
 
+    metapp.tick();
     updatetime(server::ispaused(), server::gamespeed);
     server::serverupdate();
 
@@ -303,6 +307,12 @@ int main(int argc, char **argv)
     UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // We only need to initialse it, not use it.
     char *exe_name = argv[0];
     Log.logfile = exe_name;
+    // Initialize the metasystem
+    // remote process control: communication with the scripting engine
+    SUBSYSTEM_REQUIRE(rpc);
+
+    metapp.start("rpc");
+    metapp.initialize("rpc", argc, argv);
 
     if(enet_initialize()<0) fatal("Unable to initialise network module");
     atexit(enet_deinitialize);
