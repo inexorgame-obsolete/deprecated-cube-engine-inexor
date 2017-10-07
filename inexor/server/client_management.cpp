@@ -3,6 +3,7 @@
 #include "inexor/server/gamemode/gamemode_server.hpp"
 #include "inexor/server/demos.hpp"
 #include "inexor/network/legacy/crypto.hpp"
+#include "inexor/network/IsLocalConnection.hpp"
 #include "inexor/network/legacy/cube_network.hpp"
 #include "inexor/util/Logging.hpp"
 #include "inexor/shared/cube.hpp"
@@ -464,7 +465,25 @@ bool player_connected(clientinfo *ci, const char *password)
     return true;
 }
 
-client &add_client_connection()
+/// If client ci is from the same ip as this server -> make him priv_local.
+void promote_if_local_client(client *c)
+{
+    clientinfo *ci = static_cast<clientinfo *>(c->info);
+
+    if(!c->peer)
+    {
+        Log->info("Client had no peer! (cn: {})", ci->clientnum);
+        return;
+    }
+
+    if(IsLocalConnection(c->peer->host->socket))
+    {
+        ci->privilege = PRIV_LOCAL;
+        Log->info("promoted local client (cn: {})", ci->clientnum);
+    }
+}
+
+client &add_client_connection(ENetPeer *peer)
 {
     client *c = NULL;
     loopv(client_connections) if(!client_connections[i]->connected) // fill spaces
@@ -478,9 +497,12 @@ client &add_client_connection()
         c->num = client_connections.length();
         client_connections.add(c);
     }
+    c->peer = peer;
+    c->peer->data = c;
     c->info = new clientinfo;
     c->connected = true;
     client_count++;
+    promote_if_local_client(c);
     return *c;
 }
 

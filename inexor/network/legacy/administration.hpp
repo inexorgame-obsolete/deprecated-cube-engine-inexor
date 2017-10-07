@@ -2,12 +2,18 @@
 #include "inexor/util/Logging.hpp"
 
 /// priviledge levels
-enum { PRIV_NONE = 0, PRIV_MASTER, PRIV_ADMIN };
+enum {
+    PRIV_NONE = 0,
+    PRIV_MASTER,
+    PRIV_ADMIN,
+    PRIV_LOCAL
+};
 
 inline const char *privname(int type)
 {
     switch(type)
     {
+        case PRIV_LOCAL: return "local";
         case PRIV_ADMIN: return "admin";
         case PRIV_MASTER: return "master";
         default: return "unknown";

@@ -175,9 +175,7 @@ void serverslice(uint timeout)
         {
             case ENET_EVENT_TYPE_CONNECT:
             {
-                client &c = add_client_connection();
-                c.peer = event.peer;
-                c.peer->data = &c;
+                client &c = add_client_connection(event.peer);
                 string hn;
                 copystring(c.hostname, (enet_address_get_host_ip(&c.peer->address, hn, sizeof(hn))==0) ? hn : "unknown");
                 Log.std->info("client connected ({0})", c.hostname);
@@ -243,13 +241,13 @@ bool servererror(const char *desc)
 bool setup_network_sockets()
 {
     ENetAddress address ={ENET_HOST_ANY, enet_uint16(serverport <= 0 ? server_port() : serverport)};
-    if(*serverip)
+    if(serverip[0])
     {
-        if(enet_address_set_host(&address, serverip)<0) Log.std->warn("WARNING: server ip not resolved");
+        if(enet_address_set_host(&address, serverip)<0) Log.std->warn("WARNING: server ip not resolved ({})", serverip);
         else serveraddress.host = address.host;
     }
     serverhost = enet_host_create(&address, min(maxclients + reserveclients(), MAXCLIENTS), NUM_ENET_CHANNELS, 0, serveruprate);
-    if(!serverhost) return servererror("could not create server host");
+    if(!serverhost) return servererror("could not create servenet_address_set_hoster host");
     serverhost->duplicatePeers = maxdupclients ? maxdupclients : MAXCLIENTS;
     address.port = server_info_port(serverport > 0 ? serverport : -1);
     pongsock = enet_socket_create(ENET_SOCKET_TYPE_DATAGRAM);

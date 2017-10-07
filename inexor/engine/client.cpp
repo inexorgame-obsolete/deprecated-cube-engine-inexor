@@ -200,6 +200,7 @@ void trydisconnect()
 
 // commands to establish and destroy network connections
 ICOMMAND(connect, "sis", (char *name, int *port, char *pw), connectserv(name, *port, pw));
+ICOMMAND(lanconnect, "is", (int *port, char *pw), connectserv(nullptr, *port, pw));
 COMMAND(reconnect, "s");
 ICOMMAND(disconnect, "", (), trydisconnect());
 

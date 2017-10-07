@@ -36,7 +36,7 @@ struct client
 };
 extern vector<client *> client_connections;
 
-extern client &add_client_connection();
+extern client &add_client_connection(ENetPeer *peer);
 
 /// After some period of time without response we disconnect a client.
 extern void check_clients_timed_out();
