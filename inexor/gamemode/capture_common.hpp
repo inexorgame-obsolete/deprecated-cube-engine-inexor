@@ -26,6 +26,7 @@ struct capturemode_common
     static const int MAXAMMO = 5;
     static const int REPAMMODIST = 32;
     static const int RESPAWNSECS = 10;
+    static const int REGENRESPAWNSECS = 0;
     static const int MAXBASES = 100;
 
     struct baseinfo
