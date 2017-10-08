@@ -38,8 +38,8 @@ struct captureclientmode : clientmode, capturemode_common
 
     int respawnwait(fpsent *d) override
     {
-        if(m_regencapture) return -1;
-        return max(0, RESPAWNSECS-(lastmillis-d->lastpain)/1000);
+        // if(m_regencapture) return -1;
+        return max(0, (m_regencapture ? REGENRESPAWNSECS : RESPAWNSECS)-(lastmillis-d->lastpain)/1000);
     }
 
     int clipconsole(int w, int h) override
