@@ -65,8 +65,7 @@ upload() {
 
 ## INSTALLATION ROUTINES ###################################
 
-install_wily_repo() {
-  echo -e "\ndeb http://archive.ubuntu.com/ubuntu wily "{main,multiverse,universe,restricted} >> /etc/apt/sources.list
+install_additional_repos() {
   echo -e "\ndeb http://archive.ubuntu.com/ubuntu zesty "{main,multiverse,universe,restricted} >> /etc/apt/sources.list
 }
 
@@ -77,14 +76,14 @@ install_tool() {
 install_linux() {
   apt-key adv --keyserver keyserver.ubuntu.com --recv-keys FB1BF5BF09FA0AB7
 
-  install_wily_repo
+  install_additional_repos
   apt-get update
 
 
   install_tool
 
-  apt-get -y -t wily install --only-upgrade libfontconfig1
-  apt-get -y -t wily install build-essential binutils nasm
+  apt-get -y -t zesty install --only-upgrade libfontconfig1
+  apt-get -y -t zesty install build-essential binutils nasm
   python -m pip install conan
 
   # upgrade cmake
@@ -98,17 +97,17 @@ install_linux() {
 # Install routines for each target
 
 install_win64() {
-  install_wily_repo
+  install_additional_repos
   apt-get update
   install_tool
-  apt-get -y -t wily install mingw-w64
+  apt-get -y -t zesty install mingw-w64
 }
 install_win32() {
   install_win64
 }
 install_linux_clang() {
   install_linux
-  apt-get -y -t wily install clang-3.7 binutils
+  apt-get -y -t zesty install clang-3.7 binutils
 }
 install_linux_gcc() {
   install_linux
