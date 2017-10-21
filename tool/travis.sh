@@ -107,11 +107,11 @@ install_win32() {
 }
 install_linux_clang() {
   install_linux
-  apt-get -y -t zesty install clang-3.7 binutils
+  apt-get -y -t zesty install clang-3.9 binutils
 }
 install_linux_gcc() {
   install_linux
-  apt-get -y -t zesty install gcc-5 g++-5
+  apt-get -y -t zesty install gcc-6 g++-6
 }
 install_apidoc() {
   apt-get update

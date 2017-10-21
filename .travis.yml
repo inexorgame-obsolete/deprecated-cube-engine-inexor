@@ -19,14 +19,14 @@ matrix:
       dist: trusty
       language: cpp
       compiler: clang
-      env: TARGET=linux_clang CONAN_COMPILER='clang' CONAN_COMPILER_VERSION='3.5'
+      env: TARGET=linux_clang CONAN_COMPILER='clang' CONAN_COMPILER_VERSION='3.9'
 
     - os: linux
       sudo: required
       dist: trusty
       language: cpp
       compiler: gcc
-      env: TARGET=linux_gcc CONAN_COMPILER='gcc' CONAN_COMPILER_VERSION='5.4'
+      env: TARGET=linux_gcc CONAN_COMPILER='gcc' CONAN_COMPILER_VERSION='6.3'
 
     - os: linux
       sudo: required
