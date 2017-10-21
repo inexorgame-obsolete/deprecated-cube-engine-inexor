@@ -186,7 +186,7 @@ log_manager::log_manager() : logfile((char*)"default_inexor_log.log")
 
         if(!find_logfile_name(logfile_name_without_ext)) throw std::runtime_error("There was no way to create a logfile.");
         logfile_name = logfile_name_without_ext + ".log";
-        logfile_sink = std::make_shared<InexorCutAnsiCodesSink>(std::make_shared<spdlog::sinks::simple_file_sink_mt>(logfile_name, true, true));
+        logfile_sink = std::make_shared<InexorCutAnsiCodesSink>(std::make_shared<spdlog::sinks::simple_file_sink_mt>(logfile_name, true));
 
         io->debug("changed the logfile to {}", logfile_name, old_logfile);
         all_loggers_apply_sinks_change();
