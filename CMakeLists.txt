@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.4)
 include(cmake/functions.cmake)
 include(cmake/silence_find_pathprogram.cmake)
 include(cmake/get_conan_build_type.cmake)
