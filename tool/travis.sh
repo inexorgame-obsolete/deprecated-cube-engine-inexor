@@ -148,13 +148,13 @@ create_apidoc() {
 ## increment the version number based on the last tag.
 incremented_version()
 {
-  local major_version=`echo -e "${last_tag}" | sed "s/^\(.*\)\\.[0-9]\+\.[0-9]\+-alpha$/\1/"`
-  local minor_version=`echo -e "${last_tag}" | sed "s/^[0-9]\+\.\(.*\)\.[0-9]\+-alpha$/\1/"`
-  local patch_version=`echo -e "${last_tag}" | sed "s/^[0-9]\+\.[0-9]\+\.\(.*\)-alpha$/\1/"`
+  local major_version=`echo -e "${last_tag}" | sed "s/^\(.*\)\\.[0-9]\+\.[0-9]\+-alpha.*$/\1/"`
+  local minor_version=`echo -e "${last_tag}" | sed "s/^[0-9]\+\.\(.*\)\.[0-9]\+-alpha.*$/\1/"`
+  local patch_version=`echo -e "${last_tag}" | sed "s/^[0-9]\+\.[0-9]\+\.\(.*\)-alpha.*$/\1/"`
 
 
   local new_patch_version=$((patch_version+1))
-  local new_version="$major_version.$minor_version.$new_patch_version-alpha"
+  local new_version="$major_version.$minor_version.$new_patch_version-alpha@latest"
   echo $new_version
 }
 
