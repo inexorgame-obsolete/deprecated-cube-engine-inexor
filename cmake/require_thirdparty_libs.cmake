@@ -71,33 +71,27 @@ find_package(Boost REQUIRED
   filesystem
   regex
   program_options
+  system
 )
 
 # This macro lets us create a require_boost_XY for all other libs. name is the canonical name without spaces, e.g. "program_options"
-# additional defines can be listed, but WITHOUT "-D" and in quotes, followed by additional **boost lib requirements** e.g. "system thread"
-macro(add_require_boost_lib_function name defines requirements)
+# additional defines can be listed, but WITHOUT "-D" and in quotes.
+macro(add_require_boost_lib_function name defines)
   function(require_boost_${name} TARG)
     message(STATUS "Configuring ${TARG} with library Boost ${name}")
 
-    string(TOUPPER ${name} NAME_UPPER) # we want PROGRAM_OPTIONS as variable
-
     string(REPLACE " " ";" DEFINES_LIST "${defines}") # string to list
-    string(REPLACE " " ";" REQUIREMENTS_LIST "${requirements}") # string to list, we just add those libs
     target_compile_definitions(${TARG} PUBLIC ${CONAN_DEFINES_BOOST} ${defines})
     target_include_directories(${TARG} PUBLIC ${Boost_INCLUDE_DIRS})
-    target_link_libraries(${TARG} ${Boost_${NAME_UPPER}_LIBRARY})
-    foreach(REQ ${REQUIREMENTS_LIST})
-      string(TOUPPER ${REQ} REQ_UPPER)
-      target_link_libraries(${TARG} ${Boost_${REQ_UPPER}_LIBRARY})
-    endforeach()
+    target_link_libraries(${TARG} Boost::${name})
   endfunction()
 endmacro()
 
-add_require_boost_lib_function(random "" "system")
-add_require_boost_lib_function(filesystem "BOOST_FILESYSTEM_NO_DEPRECATED" "system")
-add_require_boost_lib_function(thread "BOOST_THREAD_LIB" "")
-add_require_boost_lib_function(regex "" "")
-add_require_boost_lib_function(program_options "" "")
+add_require_boost_lib_function(random "")
+add_require_boost_lib_function(filesystem "BOOST_FILESYSTEM_NO_DEPRECATED")
+add_require_boost_lib_function(thread "BOOST_THREAD_LIB")
+add_require_boost_lib_function(regex "")
+add_require_boost_lib_function(program_options "")
 
 # This macro lets us create a require_xy (with XY being the name of the library) without code duplication
 # but just the name of the library (as it can be found in conan).
