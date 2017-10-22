@@ -53,8 +53,7 @@ build:
 
 artifacts:
   # pushing a single file
-  - path: build\Inexor-*.zip
-#  - path: build\Inexor-*.exe
+  - path: build\inexor-core-*.zip
 
 deploy:
     # push our nightly bundle via ftp
