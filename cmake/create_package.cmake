@@ -14,14 +14,7 @@ endfunction()
 
 # Normal game bundle
 
-set(INSTALL_FILES changelog.md contributing.md readme.md credits.md license.md master.cfg server-init.cfg)
-if(OS_WINDOWS)
-  set(INSTALL_FILES_STARTUP inexor.bat server.bat) # used as links in the startmenu
-elseif(OS_LINUX)
-  set(INSTALL_FILES_STARTUP inexor_unix) # used as links in the startmenu
-endif()
-list(APPEND INSTALL_FILES ${INSTALL_FILES_STARTUP})
-
+set(INSTALL_FILES changelog.md contributing.md readme.md credits.md license.md)
 install_file_hierarchy("./" ${INSTALL_FILES})
 
 set(INSTALL_FOLDERS dist)
@@ -58,7 +51,6 @@ set(CPACK_GENERATOR ${PACKAGE_GENERATORS_DEFAULT} CACHE STRING "List of CPack Ge
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${MAINDIR}/readme.md")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Inexor nightly package")
 set(CPACK_RESOURCE_FILE_LICENSE "${MAINDIR}/license.md")
-set(CPACK_PACKAGE_EXECUTABLES ${INSTALL_FILES_STARTUP})
 
 ## versioning and name of the file
 

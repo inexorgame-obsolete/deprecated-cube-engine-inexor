@@ -1,8 +1,0 @@
-#!/bin/sh
-
-inexor_dir="`dirname "$0"`"
-flex_dir="${inexor_dir}/flex/"
-
-cd "$flex_dir"
-pwd
-npm start
