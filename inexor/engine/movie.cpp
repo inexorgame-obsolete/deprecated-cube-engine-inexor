@@ -11,6 +11,46 @@
 #include "inexor/engine/sound.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/util/Logging.hpp"
+#include "inexor/shared/cube_queue.hpp"
+struct unionfind
+{
+    struct ufval
+    {
+        int rank, next;
+
+        ufval() : rank(0), next(-1) {}
+    };
+
+    vector<ufval> ufvals;
+
+    int find(int k)
+    {
+        if(k>=ufvals.length()) return k;
+        while(ufvals[k].next>=0) k = ufvals[k].next;
+        return k;
+    }
+
+    int compressfind(int k)
+    {
+        if(ufvals[k].next<0) return k;
+        return ufvals[k].next = compressfind(ufvals[k].next);
+    }
+
+    void unite (int x, int y)
+    {
+        while(ufvals.length() <= max(x, y)) ufvals.add();
+        x = compressfind(x);
+        y = compressfind(y);
+        if(x==y) return;
+        ufval &xval = ufvals[x], &yval = ufvals[y];
+        if(xval.rank < yval.rank) xval.next = y;
+        else
+        {
+            yval.next = x;
+            if(xval.rank==yval.rank) yval.rank++;
+        }
+    }
+};
 
 using namespace inexor::rendering::screen;
 using namespace inexor::sound;
