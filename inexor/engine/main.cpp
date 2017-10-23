@@ -12,52 +12,6 @@
 #include "inexor/network/SharedTree.hpp"
 #include "inexor/network/SharedList.hpp"
 
-//template<typename T>
-//class SharedList
-//{
-//    size_t length = 0;
-//  public:
-//    void push_back(SharedVar<T> &x)
-//    {
-//        SharedVar.connect([]{ int id = length;});
-//        length++;
-//    }
-//};
-namespace inexor { namespace rendering {
-
-player player1;
-
-} } // ns inexor::rendering
-
-inexor::rendering::player player2;
-
-using namespace inexor;
-
-rendering::player player3;
-SharedList<rendering::player> testbliat;
-
-void testfunction(char *init, string num2)
-{
-
-}
-
-void testfunction(const char *init = "maybe im a string")
-{
-
-}
-
-void testfunction(int init,
-                  int initf);
-
-void testfunction(int init, float initf)
-{
-
-}
-SharedFunc(testfunction)
-
-void testfunction(int init,
-                  int initf) { }
-
 using namespace inexor::sound;
 using namespace inexor::io;
 using namespace inexor::rendering::screen;
@@ -771,7 +725,9 @@ ICOMMANDERR(logformat, "ss", (char *logger_name, char *pattern),
     logging.setLogFormat(logger_name_s, pattern_s)
 );
 
-SharedVar<char *> package_dir((char*)"media/core");
+// temporal workaround for Sharedlists
+SharedVar<char *> package_dir((char*)"media/essential");
+SharedVar<char *> package_dir2((char*)"media/additional");
 
 int main(int argc, char **argv)
 {
@@ -881,6 +837,8 @@ int main(int argc, char **argv)
     }
 
     const char *dir = addpackagedir(package_dir);
+    if(dir) spdlog::get("global")->debug("Adding package directory: {}", dir);
+    dir = addpackagedir(package_dir2);
     if(dir) spdlog::get("global")->debug("Adding package directory: {}", dir);
 
     spdlog::get("global")->debug("init: ENet");
