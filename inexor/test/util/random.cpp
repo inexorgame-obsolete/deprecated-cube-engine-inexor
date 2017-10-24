@@ -79,14 +79,14 @@ TEST(PseudoRandom, XToYRange) {
     for (range &r : ranges) {
         int r0 = rnd(r.a, r.z);
         bool diff = false;
-        for (int i=0; i<10; i++) {
+        for (int i=0; i<15; i++) {
             if (rnd(r.a, r.z) != r0) {
                 diff = true;
                 break;
             }
         }
 
-        EXPECT_TRUE(diff) << "Expected at least one of ten random"
+        EXPECT_TRUE(diff) << "Expected at least one of ten random "
             "numbers to be different when calling rnd("
             << r.a << ", " << r.z << ") = " << r0;
 
