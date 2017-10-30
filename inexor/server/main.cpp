@@ -274,31 +274,6 @@ bool setup_network_sockets()
     else enet_socket_set_option(lansock, ENET_SOCKOPT_NONBLOCK, 1);
     return true;
 }
-
-bool serveroption(const char *opt)
-{
-    switch(opt[1])
-    {
-        case 'u': setvar("serveruprate", atoi(opt+2)); return true;
-        case 'c': setvar("maxclients", atoi(opt+2)); return true;
-        case 'i': setsvar("serverip", opt+2); return true;
-        case 'j': setvar("serverport", atoi(opt+2)); return true;
-        case 'k': Log.std->debug("Adding package directory: {}", opt); addpackagedir(opt+2); return true;
-        case 'x': Log.std->debug("Setting server init script: {}", opt); initscript = opt+2; return true;
-        case 'n': setsvar("serverdesc", &opt[2]); return true;
-        case 'y': setsvar("serverpass", &opt[2]); return true;
-        case 'p': setsvar("adminpass", &opt[2]); return true;
-        case 'o': setvar("publicserver", atoi(&opt[2])); return true;
-
-        default: return false;
-    }
-}
-
-void parseoptions(int argc, char **argv)
-{
-    for(int i = 1; i<argc; i++) if(argv[i][0]!='-' || !serveroption(argv[i]))
-        Log.std->error("unknown command-line option: {0}", argv[i]);
-}
 } // ns server
 
 using namespace server;
@@ -318,8 +293,6 @@ int main(int argc, char **argv)
     if(enet_initialize()<0) fatal("Unable to initialise network module");
     atexit(enet_deinitialize);
     enet_time_set(0);
-
-    parseoptions(argc, argv);
 
     serverinit();
 
