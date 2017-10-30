@@ -21,7 +21,7 @@ void cleanupserver();
 }
 void fatal(const char *fmt, ...)
 {
-    server::cleanupserver(); 
+    server::cleanupserver();
 	defvformatstring(msg,fmt,fmt);
 	Log.std->critical(msg);
 #ifdef WIN32
@@ -29,7 +29,7 @@ void fatal(const char *fmt, ...)
 #else
     fprintf(stderr, "server error: %s\n", msg);
 #endif
-    exit(EXIT_FAILURE); 
+    exit(EXIT_FAILURE);
 }
 
 /// Fatal crash: log/display crash message and clean up server.
@@ -52,7 +52,7 @@ void fatal(std::vector<std::string> &output)
 namespace server {
 
 ENetHost *serverhost = NULL;
-int laststatus = 0; 
+int laststatus = 0;
 ENetSocket pongsock = ENET_SOCKET_NULL, lansock = ENET_SOCKET_NULL;
 
 
@@ -64,6 +64,7 @@ void cleanupserver()
     if(pongsock != ENET_SOCKET_NULL) enet_socket_destroy(pongsock);
     if(lansock != ENET_SOCKET_NULL) enet_socket_destroy(lansock);
     pongsock = lansock = ENET_SOCKET_NULL;
+    metapp.stop("rpc");
 }
 
 void process(ENetPacket *packet, int sender, int chan);
