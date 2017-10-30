@@ -23,11 +23,17 @@ int time_since_program_start()
     return duration_cast<milliseconds>(Clock::now() - startup_timestamp).count();
 }
 
-
-void limitfps(int max_fps, int elapsed_time)
+/// Block for a specific time to limit frames per seconds to use resources intelligently.
+/// @param max_fps in case of limited fps we let this thread sleep for some milliseconds, if 0 everythings unlimited.
+/// @param elapsed_time time in real milliseconds since last updatetime();
+/// @return We block inaccurately sometimes! So we give back the delay in milliseconds.
+int limitfps(int max_fps, int elapsed_time)
 {
     static int fpserror = 0; // rounding errors correction: todo this is still insufficient for small rounding errors.
     int delay = 1000/max_fps - elapsed_time;
+    // we return the real delay: we ask the process to go to sleep for xy milliseconds,
+    // but its not guaranteed it really only takes xy milliseconds.
+    int real_delay = 0;
     if(delay < 0) fpserror = 0;
     else
     {
@@ -39,9 +45,13 @@ void limitfps(int max_fps, int elapsed_time)
         }
         if(delay > 0)
         {
+            int wall_millis_before_sleep = time_since_program_start();
             std::this_thread::sleep_for(milliseconds(delay));
+            // the sleep may be of inaccurate duration:
+            real_delay = time_since_program_start() - wall_millis_before_sleep;
         }
     }
+    return real_delay;
 }
 
 void updatetime(bool is_paused, int gamespeed, int max_fps)
@@ -51,15 +61,16 @@ void updatetime(bool is_paused, int gamespeed, int max_fps)
     elapsedtime = current_wall_millis - totalmillis; // time between last update and current time
     if(max_fps)
     {
-        limitfps(max_fps, elapsedtime);
-        elapsedtime = time_since_program_start() - totalmillis; // see limitfps warning
+        int delay = limitfps(max_fps, elapsedtime);
+        current_wall_millis += delay;
+        elapsedtime += delay;
     }
 
     static int timeerr = 0; // the rounding error introduced by the gamespeed multiplication: e.g. gamespeed 125: (t*125)/100) ?= t.
     int scaledtime = scaletime(elapsedtime, gamespeed) + timeerr;
     curtime = scaledtime/100;
     timeerr = scaledtime%100;
-  //  if(!multiplayer(false) && curtime>200) curtime = 200;
+
     if(is_paused) curtime = 0;
     lastmillis += curtime;
 
