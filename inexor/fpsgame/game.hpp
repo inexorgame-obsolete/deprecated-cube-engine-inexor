@@ -56,7 +56,7 @@ namespace game
     extern void drawicon(int icon, float x, float y, float sz = 120);
 
     // client
-    extern bool connected, remote, demoplayback;
+    extern bool connected, demoplayback;
     extern string servinfo;
     extern vector<uchar> messages;
 

@@ -31,7 +31,7 @@ namespace game
     extern void parsepacketclient(int chan, packetbuf &p);
     extern void connectattempt(const char *mapwish, int modewish, const char *password);
     extern void connectfail();
-    extern void gameconnect(bool _remote);
+    extern void gameconnect();
     extern bool allowedittoggle();
     extern void edittoggled(bool on);
     extern void writeclientinfo(stream *f);

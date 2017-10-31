@@ -280,11 +280,11 @@ using namespace server;
 
 int main(int argc, char **argv)
 {
-    UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // We only need to initialse it, not use it.
+    UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // We only need to initialize it, not use it.
     char *exe_name = argv[0];
     Log.logfile = exe_name;
     // Initialize the metasystem
-    // remote process control: communication with the scripting engine
+    // Remote Procedure Call: communication with the scripting engine
     SUBSYSTEM_REQUIRE(rpc);
 
     metapp.start("rpc");

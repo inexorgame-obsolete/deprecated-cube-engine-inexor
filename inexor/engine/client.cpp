@@ -268,7 +268,7 @@ void gets2c()
             Log.std->info("connected to server");
             throttle();
             if(rate) setrate(rate);
-            game::gameconnect(true);
+            game::gameconnect();
             break;
 
         case ENET_EVENT_TYPE_RECEIVE:

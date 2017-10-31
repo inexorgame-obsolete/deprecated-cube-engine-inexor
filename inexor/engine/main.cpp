@@ -698,7 +698,7 @@ int main(int argc, char **argv)
     char *initscript = NULL;
 
     // Initialize the metasystem
-    // remote process control: communication with the scripting engine
+    // Remote Procedure Call: communication with the scripting engine
     SUBSYSTEM_REQUIRE(rpc);
     // (embedded chromium): ingame html5+js browser for the ui. must come after rpc.. todo new system.
     SUBSYSTEM_REQUIRE(cef);

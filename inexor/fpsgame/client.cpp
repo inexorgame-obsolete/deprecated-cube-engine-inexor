@@ -168,7 +168,7 @@ namespace game
     bool senditemstoserver = false, sendcrc = false; 
     int lastping = 0;
 
-    bool connected = false, remote = false, demoplayback = false, gamepaused = false, teamspersisted = false;
+    bool connected = false, demoplayback = false, gamepaused = false, teamspersisted = false;
     int sessionid = 0, mastermode = MM_OPEN, gamespeed = 100;
     string servinfo = "", connectpass = "";
     string connectmapwish = "";
@@ -254,7 +254,7 @@ namespace game
     {
         if(!connected) return;
         sendcrc = true;
-        if(player1->state!=CS_SPECTATOR || player1->privilege || !remote) senditemstoserver = true;
+        if(player1->state!=CS_SPECTATOR || player1->privilege) senditemstoserver = true;
     }
 
 	/// write my player name to a stream
@@ -596,7 +596,7 @@ namespace game
     /// validates game mode name and calls changemap above
     void changemap(const char *name)
     {
-        changemap(name, m_valid(nextmode) ? nextmode : (remote ? 0 : 1));
+        changemap(name, m_valid(nextmode) ? nextmode : 1);
     }
     ICOMMAND(map, "s", (char *name), changemap(name));
 
@@ -832,10 +832,10 @@ namespace game
 
     bool ispersisted() { return teamspersisted; }
 
-	/// check if mouse looking is allowed
+	/// check if looking around with the mouse is allowed.
     bool allowmouselook() 
 	{ 
-		return !gamepaused || !remote || m_edit;
+		return !gamepaused || m_edit;
 	}
 
     /// change game speed (requires permissions)
@@ -938,18 +938,17 @@ namespace game
     }
 
 	/// ? 
-    void gameconnect(bool _remote)
+    void gameconnect()
     {
-        remote = _remote;
         if(editmode) toggleedit();
     }
 
 	/// clean up local storage/vars after disconnect from server
     void gamedisconnect(bool cleanup)
     {
-        if(remote) stopfollowing();
+        stopfollowing();
         ignores.setsize(0);
-        connected = remote = false;
+        connected = false;
         player1->clientnum = -1;
         sessionid = 0;
         mastermode = MM_OPEN;
@@ -2001,7 +2000,7 @@ namespace game
                 if(sn==player1->clientnum)
                 {
                     s = player1;
-                    if(val && remote && !player1->privilege) senditemstoserver = false;
+                    if(val && !player1->privilege) senditemstoserver = false;
                 }
                 else s = newclient(sn);
                 if(!s) return;
@@ -2167,14 +2166,14 @@ namespace game
 
     void recorddemo(int val)
     {
-        if(remote && player1->privilege<PRIV_MASTER) return;
+        if(player1->privilege<PRIV_MASTER) return;
         addmsg(N_RECORDDEMO, "ri", val);
     }
     ICOMMAND(recorddemo, "i", (int *val), recorddemo(*val));
 
     void cleardemos(int val)
     {
-        if(remote && player1->privilege<PRIV_MASTER) return;
+        if(player1->privilege<PRIV_MASTER) return;
         addmsg(N_CLEARDEMOS, "ri", val);
     }
     ICOMMAND(cleardemos, "i", (int *val), cleardemos(*val));
@@ -2196,7 +2195,7 @@ namespace game
 
     void sendmap()
     {
-        if(!m_edit || (player1->state==CS_SPECTATOR && remote && !player1->privilege)) { Log.edit->error("\"sendmap\" only works in coop edit mode"); return; }
+        if(!m_edit || (player1->state==CS_SPECTATOR && !player1->privilege)) { Log.edit->error("\"sendmap\" only works in coop edit mode"); return; }
         Log.edit->info("sending map...");
         defformatstring(mname, "sendmap_%d", lastmillis);
         save_world(mname, true);
