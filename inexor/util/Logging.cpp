@@ -89,7 +89,7 @@ void Logging::createSinks()
     std::string logger_name = "inexor";
     if(!find_logger_name(logger_name)) throw std::runtime_error("There was no way to create a logfile.");
 
-    allsinks.push_back(make_shared<InexorCutAnsiCodesSink>(make_shared<spdlog::sinks::rotating_file_sink_mt>(logger_name, "log", 5242880, 3)));
+    allsinks.push_back(make_shared<InexorCutAnsiCodesSink>(make_shared<spdlog::sinks::rotating_file_sink_mt>(logger_name + "log", 5242880, 3)));
 #if defined(_MSC_VER) && !defined(NDEBUG)
     allsinks.push_back(make_shared<spdlog::sinks::msvc_sink_mt>());
 #endif
