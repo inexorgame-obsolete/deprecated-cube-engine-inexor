@@ -9,7 +9,7 @@
 #include <vector>
 #include <string>
 
-#include "RPCTreeData.gen.grpc.pb.h" // got generated into the same folder.
+#include "inexor-tree.gen.grpc.pb.h" // got generated into the same folder.
 
 #include "inexor/util/Subsystem.hpp"
 #include "inexor/network/SharedTree.hpp"
@@ -83,7 +83,7 @@ void set_on_change_functions()
         }
     );
 {{/shared_vars}}
-      
+
     // Set all onchange functions for remove/push_back/member_modifed for sharedlists
 {{#shared_class_definitions}}{{#is_shared_list}}{{#instances}}{{#first_template_type}}
 

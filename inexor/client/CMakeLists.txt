@@ -56,7 +56,7 @@ set(CLIENT_SOURCES
   ${CLIENT_SOURCES_FPSGAME} CACHE INTERNAL "")
 
 # Set Binary name
-set(CLIENT_BINARY inexor CACHE INTERNAL "Client binary name.")
+set(CLIENT_BINARY inexor-core-client CACHE INTERNAL "Client binary name.")
 
 add_definitions(-DCLIENT)
 

@@ -166,6 +166,12 @@ add_require_conan_lib_function(SDL2)
 # SDL_image (image loader library)
 add_require_conan_lib_function(SDL2_image)
 
+# libjpeg turbo a dependency of SDL2_image
+add_require_conan_lib_function(libjpeg-turbo)
+
+# libpng a dependency of SDL2_image
+add_require_conan_lib_function(libpng)
+
 # SDL_mixer (sound library)
 add_require_conan_lib_function(SDL2_mixer)
 
@@ -182,6 +188,8 @@ function(require_sdl targ)
 #    target_link_libraries(${targ} dl rt)
 #  endif()
   require_sdl2(${targ})
+  require_libjpeg_turbo(${targ})
+  require_libpng(${targ})
   require_sdl2_image(${targ})
   require_sdl2_mixer(${targ})
   require_opengl(${targ})

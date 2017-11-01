@@ -61,12 +61,11 @@ endif()
 
 set(EXE_DIR "bin" CACHE STRING "The directory you want to install your executables to. Use target 'install'.")
 install(DIRECTORY "${CMAKE_BINARY_DIR}/bin/" DESTINATION "${EXE_DIR}" USE_SOURCE_PERMISSIONS) # Trailing '/' before the DIRECTORY is significant. Without it bin would be installed to bin/bin.
-
 message(STATUS "Generating Project-Files to ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS "Resulting Executable goes to ${EXE_DIR}")
 
-
-message(WARNING "Requirements: Git, Python, CMake, Doxygen, a Compiler and node.js")
+# We have the .exe suffix on all platforms, to ease our startup manager and possible future uses.
+set(CMAKE_EXECUTABLE_SUFFIX ".exe")
 
 option(CREATE_PACKAGE "If enabled we can create a distributable package by building the target \"PACKAGE\"" OFF)
 if(CREATE_PACKAGE)

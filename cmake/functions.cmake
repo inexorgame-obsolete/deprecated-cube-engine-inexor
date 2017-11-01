@@ -251,8 +251,6 @@ function(add_app exe)
   if(MSVC)
     set_property(TARGET ${exe} PROPERTY FOLDER "executables")
   endif()
-
-  target_link_libraries(${exe} ${CONAN_LIBS})
 endfunction()
 
 # USAGE: add_lib(modulename)

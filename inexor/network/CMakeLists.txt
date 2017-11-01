@@ -15,6 +15,7 @@ include(require_run_gluegen.cmake)
 
 # @param BUILD_FLAGS see require_run_gluegen
 function(require_network targ BUILD_FLAGS)
+  require_protobuf(${targ})
   require_grpc(${targ})
   require_util(${targ})
   require_enet(${targ})

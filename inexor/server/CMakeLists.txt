@@ -11,15 +11,15 @@ set(SERVER_SOURCES
   CACHE INTERNAL "")
 
 # Set Binary name
-set(SERVER_BINARY server CACHE INTERNAL "Server binary name.")
+set(SERVER_BINARY_NAME inexor-core-server CACHE INTERNAL "Server binary name.")
 
 add_definitions(-DSERVER -DSTANDALONE)
 
-add_app(${SERVER_BINARY} ${SERVER_SOURCES})
+add_app(${SERVER_BINARY_NAME} ${SERVER_SOURCES})
 
-require_threads(${SERVER_BINARY})
-require_zlib(${SERVER_BINARY})
-require_network(${SERVER_BINARY} "SERVER STANDALONE SERVMODE")
-require_util(${SERVER_BINARY})
-require_crashreporter(${SERVER_BINARY})
-require_filesystem(${SERVER_BINARY})
+require_threads(${SERVER_BINARY_NAME})
+require_zlib(${SERVER_BINARY_NAME})
+require_network(${SERVER_BINARY_NAME} "SERVER STANDALONE SERVMODE")
+require_util(${SERVER_BINARY_NAME})
+require_crashreporter(${SERVER_BINARY_NAME})
+require_filesystem(${SERVER_BINARY_NAME})

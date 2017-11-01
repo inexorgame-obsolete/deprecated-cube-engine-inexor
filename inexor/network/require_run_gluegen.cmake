@@ -23,7 +23,7 @@ option(DEBUG_GLUEGEN "Whether or not we show additional targets for the intermed
 # Add a gluecode generation run for the specified target.
 # Also adds the gluecode intermediates to the source file list of the target.
 #
-# @param TARG specifies the postfix for the ...-{target}.gen.proto and ...-{target}.gen.hpp output.
+# @param TARG specifies the target name in the format inexor-core-{client|server}
 # @param BUILDFLAGS specifies any additional build flags we want to specify for that target:
 #        The argument of the tag is a list of macros of the form: name or name=definition (no spaces).
 #        If the definition and the "=" are omitted, "=1" is assumed.
@@ -36,15 +36,17 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
     set(DOXYGEN_XML_DIR ${OUT_DIR}/doxygen_gluegen_output)
     get_property(SOURCE_FILE_LIST TARGET ${TARG} PROPERTY SOURCES)
     string (REPLACE ";" " " SOURCE_FILES "${SOURCE_FILE_LIST}")
+    string (REPLACE "inexor-core-" "" target_short "${TARG}")
 
     configure_file(${doxyfile_in} ${doxyfile}) # Generate doxygen config
 
+    set(proto_filename_wo_ext inexor-tree)
+    set(proto_general_name ${proto_filename_wo_ext}-${target_short}.proto) # The name the proto will be installed (other languages will use this name)
     set(gluegen_out_cpp ${OUT_DIR}/RPCBindingandContext.gen.cpp)
-    set(gluegen_out_proto ${OUT_DIR}/RPCTreeData.gen.proto)
-    set(proto_general_name RPCTreeData-${TARG}.proto) # The name the proto will be installed (other languages will use this name)
+    set(gluegen_out_proto ${OUT_DIR}/${proto_filename_wo_ext}.gen.proto)
 
     set(gluegen_template_cpp ${TEMPLATES_DIR}/RPCBindingandContext.gen.template.cpp)
-    set(gluegen_template_proto ${TEMPLATES_DIR}/RPCTreeData.gen.template.proto)
+    set(gluegen_template_proto ${TEMPLATES_DIR}/inexor-tree.gen.template.proto)
 
     message(STATUS "Gluegen (for target ${TARG}) runs with command: "
                   " --template-proto " "${gluegen_template_proto}"
@@ -65,8 +67,8 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
 
     set(protoc_in ${gluegen_out_proto})
 
-    set(protoc_out_cc ${OUT_DIR}/RPCTreeData.gen.pb.cc ${OUT_DIR}/RPCTreeData.gen.grpc.pb.cc)
-    set(protoc_out_h ${OUT_DIR}/RPCTreeData.gen.pb.h ${OUT_DIR}/RPCTreeData.gen.grpc.pb.h)
+    set(protoc_out_cc ${OUT_DIR}/${proto_filename_wo_ext}.gen.pb.cc ${OUT_DIR}/${proto_filename_wo_ext}.gen.grpc.pb.cc)
+    set(protoc_out_h ${OUT_DIR}/${proto_filename_wo_ext}.gen.pb.h ${OUT_DIR}/${proto_filename_wo_ext}.gen.grpc.pb.h)
 
 
     set(GENERATED_FILES ${GENERATED_FILES} ${protoc_out_cc} ${protoc_out_h})
@@ -108,7 +110,7 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
 
        WORKING_DIRECTORY ${MAINDIR})
 
-    add_custom_target(regenerate_gluecode_${TARG}
+    add_custom_target(gen_bindings_${target_short}
       COMMENT "Removes the generated gluecode files for target ${TARG} to trigger a new generation of these on the next build of target ${TARG}"
       COMMAND ${CMAKE_COMMAND} -D PATHS_TO_REMOVE="${GENERATED_FILES}" -P ${MAINDIR}/cmake/clean_files_folders.cmake
     )
@@ -120,7 +122,7 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
 
     # Add intermediate targets if desired.
     if(DEBUG_GLUEGEN)
-      add_custom_target(invoke_parser_${TARG}
+      add_custom_target(invoke_parser_${target_short}
         COMMENT "Parsing code base for Shared Declarations and generate gluecode doing the networking."
         # clear folder containing intermediate files (the AST xml files) before, since we take the complete folder as input to the next stage.
         COMMAND ${CMAKE_COMMAND} -D PATHS_TO_REMOVE="${DOXYGEN_XML_DIR} ${GENERATED_FILES}" -P ${MAINDIR}/cmake/clean_files_folders.cmake
@@ -130,7 +132,7 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
         WORKING_DIRECTORY ${MAINDIR}
       )
 
-      add_custom_target(invoke_GlueGen_${TARG}
+      add_custom_target(invoke_GlueGen_${target_short}
         COMMENT "Parse the AST."
         # Run our in-house gluecode generator taking doxygens AST as input and generating .gen.proto and .gen.hpp for ${TARG}.
         COMMAND ${GLUEGEN_EXE}
@@ -143,7 +145,7 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
         WORKING_DIRECTORY ${MAINDIR}
       )
 
-      add_custom_target(invoke_protoc_${TARG}
+      add_custom_target(invoke_protoc_${target_short}
         COMMENT "Run protoc"
         # Invoke protoc compiler to generate the .gen.pb.h .gen.pb.cpp files from the .proto definition
         COMMAND ${PROTOBUF_PROTOC_EXECUTABLE}

@@ -208,7 +208,7 @@ build() {
 
 run_tests() {
   if contains "$TARGET" linux; then
-    "${bin}/unit_tests"
+    "${bin}/unit_tests.exe"
   elif contains "$TARGET" win; then
     echo >&2 "Sorry, win is not supported for testing yet."
     exit 0
