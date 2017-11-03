@@ -39,6 +39,7 @@ list(APPEND GCC_OR_CLANG_COMPILER_FLAGS_RELEASE
 list(APPEND GCC_OR_CLANG_LINKER_FLAGS
   -Wl,-rpath,.                    # Set rpath so that libraries can be placed next to the executable
   -Wl,--as-needed                 # Only link libraries that export symbols used by the binary
+  -static-libstdc++               # Link statically
 )
 list(APPEND GCC_OR_CLANG_LINKER_FLAGS_RELEASE
   -Wl,-O1                         # Enable linker optimizations
