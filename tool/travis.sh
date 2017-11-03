@@ -147,7 +147,7 @@ incremented_version()
 
 
   local new_patch_version=$((patch_version+1))
-  local new_version="$major_version.$minor_version.$new_patch_version@latest"
+  local new_version="$major_version.$minor_version.$new_patch_version@alpha"
   echo $new_version
 }
 
