@@ -55,6 +55,21 @@ external_pull_request() {
   fi
 }
 
+# Check whether this build is either triggered by a tag or whether
+# there already is a tag on the specified commit.
+need_new_tag() {
+  if test -n "$TRAVIS_TAG"; then
+    true
+  else
+    export current_tag=`git tag --contains`
+    if test -n "$current_tag"; then
+        true
+      else
+        false
+      fi
+  fi
+}
+
 # upload remote_path local_path [local_paths]...
 #
 # Upload one or more files to nightly.inexor.org
@@ -154,12 +169,15 @@ incremented_version()
 # increment version and create a tag on github.
 # (each time we push to master)
 create_tag() {
-  if test -n "$TRAVIS_TAG"; then
+  need_new_tag || {
     echo >&2 -e "===============\n" \
       "Skipping tag creation, because this build\n" \
-      "got triggered by a tag.\n" \
+      "got triggered by a tag\n" \
+      "or because there is already a tag.\n" \
       "===============\n"
-  elif [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
+    exit 0
+  }
+  if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
     # direct push to master
 
     export new_version=$(incremented_version)
@@ -256,15 +274,17 @@ export commit="${TRAVIS_COMMIT}"
 git fetch origin 'refs/tags/*:refs/tags/*'
 export last_tag=`git describe --tags $(git rev-list --tags --max-count=1)`
 
+# The queue is:
+# a tag gets created on push to the master branch (using travis), then we push the
+# tag to github and that push triggers travis again (which uploads the release packages)
 
-# The tag gets created on push to the master branch, then we push the tag to github and that push triggers travis.
-if test -n "$TRAVIS_TAG"; then
-  # We use the last tag as version for the package creation if this job got triggered by a tag-push.
-  export INEXOR_VERSION=${last_tag}
-else
-  # Otherwise we want a new version, not the last tag of the master branch, but the last one + 1.
+# We use the last tag as version for the package creation
+export INEXOR_VERSION=${last_tag}
+need_new_tag && {
+  # If we want a new tag
+  # We use the last tag of the master branch + 1.
   export INEXOR_VERSION=$(incremented_version)
-fi
+}
 
 # Name of this build
 export build="$(echo "${branch}-${jobno}" | sed 's#/#-#g')-${TARGET}"
