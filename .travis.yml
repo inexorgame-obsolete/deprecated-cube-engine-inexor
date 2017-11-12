@@ -68,5 +68,5 @@ deploy:
   on:
     # Deploy only if build was caused by a tag push.
     tags: true
-    condition: "$CC = gcc"
+    condition: "$CC = clang"
     repo: inexorgame/inexor-core
