@@ -59,13 +59,13 @@ external_pull_request() {
 # there already is a tag on the specified commit.
 need_new_tag() {
   if test -n "$TRAVIS_TAG"; then
-    true
+    false
   else
     export current_tag=`git tag --contains`
     if test -n "$current_tag"; then
-        true
-      else
         false
+      else
+        true
       fi
   fi
 }
