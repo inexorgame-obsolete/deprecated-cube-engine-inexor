@@ -1,6 +1,6 @@
 ## Changelog
 
-### Speed Release (0.9.0@beta, 2017-11-12)
+### Speed Release (0.9.0@alpha, 2017-11-12)
 
 #### Social
 
@@ -112,8 +112,7 @@ InexorCore is what one would have called Inexor/Sauerbraten before (the C++ part
       * or build locally
   * Changed Versioning to add a channel
       * version@channel
-      * channel *alpha* gets published on each push to master
-      * channel *beta* gets published manually by the dev team
+      * i.e. channel *alpha* or channel *latestcef*
   * Unified names of the executables of Inexor Core #430
 
 #### C++ Refactoring
