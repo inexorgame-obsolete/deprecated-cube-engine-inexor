@@ -641,7 +641,7 @@ namespace game
             int qdam = guns[p.gun].damage*(p.owner->quadmillis ? 4 : 1);
             if(p.owner->type==ENT_AI) qdam /= MONSTERDAMAGEFACTOR;
             vec dv;
-            float dist = p.to.dist(p.o, dv); 
+            float dist = p.to.dist(p.o, dv);
             dv.mul(time/max(dist*1000/p.speed, float(time)));
             vec v = vec(p.o).add(dv);
             bool exploded = false;
@@ -872,7 +872,7 @@ namespace game
         {
             dynent *hits[MAXRAYS];
             int maxrays = guns[d->gunselect].rays;
-            loopi(maxrays) 
+            loopi(maxrays)
             {
                 if((hits[i] = intersectclosest(from, rays[i], d, dist))) shorten(from, rays[i], dist);
                 else adddecal(DECAL_BULLET, rays[i], vec(from).sub(rays[i]).normalize(), 2.0f);
@@ -929,10 +929,14 @@ namespace game
         d->vel.add(kickback);
         float shorten = 0;
         if(guns[d->gunselect].range && dist > guns[d->gunselect].range)
+        {
             shorten = guns[d->gunselect].range;
+        }
         float barrier = raycube(d->o, unitv, dist, RAY_CLIPMAT|RAY_ALPHAPOLY);
         if(barrier > 0 && barrier < dist && (!shorten || barrier < shorten))
+        {
             shorten = barrier;
+        }
         if(shorten) to = vec(unitv).mul(shorten).add(from);
 
         if(guns[d->gunselect].rays > 1) createrays(d->gunselect, from, to);
@@ -1006,7 +1010,7 @@ namespace game
 
     VARP(bombcolliderad, 0, 16, 1000);
     VARP(bombbarrier, 0, 1, 1);
-	
+
     void renderbouncers()
     {
         float yaw, pitch;
@@ -1034,7 +1038,9 @@ namespace game
                 int tremble = (rnd(bbarr_tremblepeak*2)) - bbarr_tremblepeak;                                    // Compute random tremble
 
                 if(bombbarrier)
+                {
                     regularshape(bbarr_type, bombcolliderad + tremble, bbarr_color, bbarr_dir, bbarr_num, bbarr_fade, floor, bbarr_size, bbarr_gravity, 200, &mov_from, &mov_to);
+                }
                 rendermodel(&bnc.light, "projectile/bomb", ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_DYNSHADOW);
             }
             // DEBUG: vvv REMOVE RENDERMODEL FOR SPLINTERS vvv
@@ -1171,8 +1177,8 @@ namespace game
         }
         return false;
     }
-	
-	
+
+
     void avoidweapons(ai::avoidset &obstacles, float radius)
     {
         loopv(projs)
@@ -1188,4 +1194,3 @@ namespace game
         }
     }
 };
-

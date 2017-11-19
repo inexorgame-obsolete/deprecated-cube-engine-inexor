@@ -1,3 +1,6 @@
+/// Skeletal Models Header:
+/// Header for model file formats with embedded skeletons
+
 #pragma once
 
 #include "inexor/shared/command.hpp"
