@@ -63,3 +63,5 @@ node_modules/
 
 # This file gets generated.
 dependencies.md
+
+.ropeproject
