@@ -1,18 +1,46 @@
+###########################
+####### README FIRST! #####
+###########################
+# This file should only be edited in our main repository (code)
+# You are doing something wrong
+# if you are trying to edit this file in ci-prebuilds.
+#
+# Our automation is grabbing the version of this file from our main repository
+# and commit it with automatic changes to ci-prebuilds
+# and only when Conan dependencies are actually changed
+# in order to not cause unnecessary rebuilds.
+#
+# The ci-prebuilds version will have un-comment every line starting with #CI(followed by an empty space)
+# e.g. #CI echo this only gets executed in ci-prebuilds
+#
+# The ci-prebuilds version will have every line removed containing #CEDELETE
+# e.g. #CIDELETE this line is not visible in ci-prebuilds aka. won't get executed
+#
+
 version: 0.{build}
 clone_depth: 1
-clone_folder: C:\projects\inexor-game
+clone_folder: C:\projects\inexorgame
 # Do not build feature branch with open Pull Requests
 skip_branch_with_pr: true
 # Maximum number of concurrent jobs for the project
-max_jobs: 2
+max_jobs: 4
+
+# https://www.appveyor.com/docs/build-environment/#build-worker-images
+image: Visual Studio 2017
+
+environment:
+    # VS VERSION IN CMAKE STYLE
+    matrix:
+      - VSVERSION: "15 2017"
+      - VSVERSION: "14 2015"
 
 platform:
- # - Win32
   - x64
+  #CI - Win32
 
 configuration:
+  #CI - Release
   - Debug
-  - Release
 
 # scripts that are called at very beginning, before repo cloning
 init:
@@ -22,32 +50,44 @@ init:
 # scripts that run after cloning repository
 install:
   - cmd: python -m pip install conan
-  - cmd: set "MAIN_FOLDER=C:\projects\inexor-game"
+  - cmd: set "MAIN_FOLDER=C:\projects\inexorgame\%RELATIVE_PATH%"
   - cmd: cd %MAIN_FOLDER%
-  - cmd: git submodule update --init
-  # set INEXOR_VERSION (used in cmakes package creation process) based on the last tag found.
+  - cmd: git submodule update --init --recursive
+  - cmd: set VSVERSIONSHORT=%VSVERSION:~0,2%
+   # set INEXOR_VERSION (used in cmakes package creation process) based on the last tag found.
   - cmd: if "%APPVEYOR_REPO_TAG%"=="true" ( set "INEXOR_VERSION=%APPVEYOR_REPO_TAG_NAME%" )
   - cmd: if "%APPVEYOR_REPO_TAG%"=="false" ( set "INEXOR_VERSION=development" )
 
 # scripts to run before build
 before_build:
-  - cmd: cd C:\projects\inexor-game
+  # Fix detection of VS 2017 by e.g. OpenSSL
+  - cmd: set "VS150COMNTOOLS=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\"
+  - cmd: if "%VSVERSION%"=="15 2017" if "%platform%"=="x64" ( "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat" )
+  - cmd: if "%VSVERSION%"=="15 2017" if "%platform%"=="Win32" ( "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsamd64_x86.bat" )
+
+  - cmd: cd %MAIN_FOLDER%
   - cmd: md build
   - cmd: cd build
+
   # We generate project files for Visual Studio 14 2015 only atm.
-  - cmd: if "%platform%"=="Win32" ( set "CMAKE_GENERATOR_NAME=Visual Studio 14 2015" && set "arch_str=x86" )
-  - cmd: if "%platform%"=="x64" ( set "CMAKE_GENERATOR_NAME=Visual Studio 14 2015 Win64" && set "arch_str=x86_64")
+  - cmd: if "%platform%"=="Win32" ( set "CMAKE_GENERATOR_NAME=Visual Studio %VSVERSION%" && set "arch_str=x86" )
+  - cmd: if "%platform%"=="x64" ( set "CMAKE_GENERATOR_NAME=Visual Studio %VSVERSION% Win64" && set "arch_str=x86_64")
   - cmd: if %configuration%==Debug (set "runtime_str=MTd")else (set "runtime_str=MT")
-  - cmd: set "args=-DBUILD_CLIENT=1 -DBUILD_SERVER=1 -DBUILD_MASTER=1 -DBUILD_TEST=1 -DCREATE_PACKAGE=1"
-  # Only deploy a bundle with the media folder if the branch is master (and its not a pr)(and its a Release build):
-#  - cmd: if "%configuration%"=="Release" if "%APPVEYOR_REPO_BRANCH%"=="master" if defined APPVEYOR_PULL_REQUEST_NUMBER set "args=%args% -DPACKAGE_INCLUDE_MEDIA=1"
+
+  - cmd: set "args=-DBUILD_CLIENT=1 -DBUILD_SERVER=1 -DBUILD_TEST=1 -DCREATE_PACKAGE=1"
+
   - cmd: conan remote add inexor https://api.bintray.com/conan/inexorgame/inexor-conan --insert
-  - cmd: conan install .. --scope build_all=1 --scope create_package=1 --build=missing -s compiler="Visual Studio" -s compiler.version=14 -s compiler.runtime=%runtime_str% -s arch=%arch_str% -s build_type=%configuration%
-  - cmd: cmake .. -G "%CMAKE_GENERATOR_NAME%" %args% -DCPACK_GENERATOR="ZIP"
-  #"NSIS;7Z"
+  - cmd: conan remote add community https://api.bintray.com/conan/conan-community/conan --insert 3
+
+  - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan install .. --scope build_all=1 --build -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s arch=%arch_str% -s build_type=%configuration% ) else ( conan install .. --scope build_all=1 --scope create_package=1 --build=missing -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s arch=%arch_str% -s build_type=%configuration% )
+  - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan user --password "%CONAN_PASSWORD%" -r inexor "%CONAN_USER%" )
+  - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan upload --all -r inexor --retry 3 --retry_wait 10 --confirm "*stable*" )
+  - cmd: if "%GLOBAL_NIGHTLY%"=="true" ( cmake .. -G "%CMAKE_GENERATOR_NAME%" %args% -DCPACK_GENERATOR="ZIP" ) else ( cmake .. -G "%CMAKE_GENERATOR_NAME%" %args% )
+#"NSIS;7Z"
+
 
 build:
-  project: C:\projects\inexor-game\build\PACKAGE.vcxproj
+  project: "%MAIN_FOLDER%build\\PACKAGE.vcxproj"
   # enable MSBuild parallel builds
   parallel: true
 
@@ -78,4 +118,4 @@ deploy:
       configuration: Release
 
 test_script:
-  - C:\projects\inexor-game\build\bin\unit_tests.exe
+  - C:\projects\inexorgame\%RELATIVE_PATH%build\bin\unit_tests.exe

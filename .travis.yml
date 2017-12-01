@@ -1,61 +1,179 @@
-language: c++
-sudo: required
-dist: trusty
+###########################
+####### README FIRST! #####
+###########################
+# This file should only be edited in our main repository (inexor-core)
+# You are doing something wrong
+# if you are trying to edit this file in the master branch of ci-prebuilds.
+#
+# Our automation is grabbing the version of this file from our main repository
+# and commit it with automatic changes to ci-prebuilds
+# and only when Conan dependencies are actually changed
+# in order to not cause unnecessary rebuilds.
+#
+# The ci-prebuilds version will have un-comment every line starting with #CI(followed by an empty space)
+# e.g. #CI echo this only gets executed in ci-prebuilds
+#
+# The ci-prebuilds version will have every line removed containing #CIDELETE
+# e.g. #CIDELETE this line is not visible in ci-prebuilds aka. won't get executed
+#
 
 notifications:
   email:
     on_success: never
     on_failure: change
 
-env:
-  global:
-    - secure: UUtdYLhd9+cY+bMrcRvvtjmsQBqM5L9zgzyLeQZLMmmWbHwLsfpQask9A8eD1oc1K1o0tYmK+Qk1flxNTbnUtlryPNgJxJ95a/TwLl1P9yN6plMleNbuwMs5dyS9VnmcK3LzDFuoje/9rtX2seNR2PW2EJSvPz20ENaT693Kfa8=
-    - secure: G8rRE17KDx83crRLQSEkIyvMbXlbpKDvIYoKE+y9Bg3qu79tsB/RrNdo6OGHx4x3KhBGpuo4NdN/4FAGS599P4W+KN3kNr9VFSCMJhJK59+KkYfGq2rX1oGDhB4B1xjVk0tj6bFIJ333hVLEYFviIKYxRSZfnKa0RmgBJZbvMfs=
+git:
+  depth: 15
 
-matrix:
+jobs:
   include:
-    - os: linux
-      sudo: required
-      dist: trusty
-      language: cpp
-      compiler: clang
-      env: TARGET=linux_clang CONAN_COMPILER='clang' CONAN_COMPILER_VERSION='3.9'
+  # We run the following jobs in our main repository:    #CIDELETE
+    - stage: Conan                                       #CIDELETE
+      os: linux                                          #CIDELETE
+      dist: trusty                                       #CIDELETE
+      sudo: false                                        #CIDELETE
+      language: cpp                                      #CIDELETE
+      env: docker_tag="NODOCKER" conan_prebuilds="true"  #CIDELETE
+    - stage: Testing                                     #CIDELETE
+      os: linux                                          #CIDELETE
+      dist: trusty                                       #CIDELETE
+      sudo: required                                     #CIDELETE
+      language: cpp                                      #CIDELETE
+      compiler: clang                                    #CIDELETE
+      services:                                          #CIDELETE
+        - docker                                         #CIDELETE
+      env: CMAKE_CC="clang-4.0" CMAKE_CXX="clang++-4.0" CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="4.0" TARGET=linux_clang docker_tag="optimization" NIGHTLY="true" #CIDELETE
+    - os: linux                                          #CIDELETE
+      dist: trusty                                       #CIDELETE
+      sudo: required                                     #CIDELETE
+      language: cpp                                      #CIDELETE
+      compiler: gcc                                      #CIDELETE
+      services:                                          #CIDELETE
+        - docker                                         #CIDELETE
+      env: CMAKE_CC="gcc-7" CMAKE_CXX="g++-7" CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="7.2" TARGET=linux_gcc docker_tag="gcc070clang040" NIGHTLY="true" #CIDELETE
+    - stage: "Create GitHub Tag"                         #CIDELETE
+      if: branch = master AND tag is blank AND fork is false AND type != pull_request #CIDELETE
+      os: linux                                          #CIDELETE
+      sudo: false                                        #CIDELETE
+      dist: trusty                                       #CIDELETE
+      language: cpp                                      #CIDELETE
+      env: docker_tag="NODOCKER" TARGET=new_version_tagger #CIDELETE
+      git:                                               #CIDELETE
+        submodules: false                                #CIDELETE
+      branches:                                          #CIDELETE
+        only:                                            #CIDELETE
+          - master                                       #CIDELETE
+    #- os: linux                                         #CIDELETE
+      #sudo: false                                       #CIDELETE
+      #dist: trusty                                      #CIDELETE
+      #language: cpp                                     #CIDELETE
+      #env: docker_tag="NODOCKER" TARGET=apidoc          #CIDELETE
+      #git:                                              #CIDELETE
+        #submodules: false                               #CIDELETE
 
-    - os: linux
-      sudo: required
-      dist: trusty
-      language: cpp
-      compiler: gcc
-      env: TARGET=linux_gcc CONAN_COMPILER='gcc' CONAN_COMPILER_VERSION='6.3'
 
-    - os: linux
-      sudo: required
-      dist: trusty
-      env: TARGET=apidoc
-      # We check for gcc when deciding to deploy: so this is only an indicator that we want to deploy this branch.
-      language: cpp
-      compiler: gcc
-      git:
-        submodules: false
+    # We run the following jobs in ci-prebuilds:
+    # Our main compilers we run tests for
+    #CI - os: linux
+      #CI dist: trusty
+      #CI sudo: required
+      #CI language: cpp
+      #CI compiler: gcc
+      #CI services:
+        #CI - docker
+      #CI env: CMAKE_CC="gcc-7" CMAKE_CXX="g++-7" CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="7.2" TARGET=linux_gcc docker_tag="gcc070clang040" NIGHTLY="conan"
 
-    - os: linux
-      sudo: required
-      dist: trusty
-      env: TARGET=new_version_tagger
-      git:
-        submodules: false
-      branches:
-        only:
-          - master
+    #CI - os: linux
+      #CI dist: trusty
+      #CI sudo: required
+      #CI language: cpp
+      #CI compiler: clang
+      #CI services:
+        #CI - docker
+      #CI env: CMAKE_CC="clang-4.0" CMAKE_CXX="clang++-4.0" CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="4.0" TARGET=linux_clang docker_tag="optimization" NIGHTLY="conan"
+
+    # Older compilers we compile Conan packages for, to speed things up for other people
+    #CI - os: linux
+      #CI dist: trusty
+      #CI sudo: required
+      #CI language: cpp
+      #CI compiler: gcc
+      #CI services:
+        #CI - docker
+      #CI env: CMAKE_CC="gcc-6" CMAKE_CXX="g++-6" CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="6.3" TARGET=linux_gcc docker_tag="optimization" NIGHTLY="conan"
+
+    #CI - os: linux
+      #CI dist: trusty
+      #CI sudo: required
+      #CI language: cpp
+      #CI compiler: gcc
+      #CI services:
+        #CI - docker
+      #CI env: CMAKE_CC="gcc-5" CMAKE_CXX="g++-5" CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="5.4" TARGET=linux_gcc docker_tag="legacy" NIGHTLY="conan"
+
+    #CI - os: linux
+      #CI dist: trusty
+      #CI sudo: required
+      #CI language: cpp
+      #CI compiler: clang
+      #CI services:
+        #CI - docker
+      #CI env: CMAKE_CC="clang-3.9" CMAKE_CXX="clang++-3.9" CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="3.9" TARGET=linux_clang docker_tag="legacy"  NIGHTLY="conan"
+
+    #CI - os: linux
+      #CI dist: trusty
+      #CI sudo: required
+      #CI language: cpp
+      #CI compiler: clang
+      #CI services:
+        #CI - docker
+      #CI env: CMAKE_CC="clang-3.8" CMAKE_CXX="clang++-3.8" CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="3.8" TARGET=linux_clang docker_tag="legacy" NIGHTLY="conan"
+
+    #- os: osx
+      #sudo: false
+      #osx_image: xcode8
+      #language: cpp
+      #compiler: clang
+      #env: docker_tag="NODOCKER" compiler=clang TARGET="osx" CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=clang++-3.9 -DCMAKE_C_COMPILER=clang-3.9 -DBUILD_ALL=1"
+
+  #CI fast_finish: true # don't wait for allow_failures to fail, gives faster response
+  #allow_failures:
+    #- os: osx
+
 
 before_install:
-  - bash tool/travis.sh target_before_install
+  # Get our CI Docker image
+  - if ! [[ "${docker_tag}" == 'NODOCKER' ]]; then
+        sudo docker pull inexorgame/ci-docker':'${docker_tag} ;
+    fi
 
 script:
-  - bash tool/travis.sh target_script
+  - if [ "${conan_prebuilds}" == "true" ]; then
+      set -e ;
+      bash ./tool/travis_conditional_conan_package_generating.sh ;
+    else
+      echo "${conan_prebuilds}" ;
+    fi
+  - if [ "${GLOBAL_NIGHTLY}" == "false" ]; then
+      NIGHTLY="false";
+    fi
+  - if [ "${GLOBAL_NIGHTLY}" == "conan" ]; then
+      NIGHTLY_USER="${CONAN_USER}";
+      NIGHTLY_PASSWORD="${CONAN_PASSWORD}";
+    else
+      NIGHTLY_USER="${FTP_USER}";
+      NIGHTLY_PASSWORD="${FTP_PASSWORD}";
+    fi
+  - if ! [[ "${docker_tag}" == "NODOCKER" ]]; then
+    sudo docker run -v $(pwd)':'/inexor --net=host -it inexorgame/ci-docker':'${docker_tag} /inexor/${RELATIVE_PATH}tool/travis.sh target_script /${RELATIVE_PATH} ${TARGET} ${CONAN_COMPILER} ${CONAN_COMPILER_VERSION} ${CMAKE_CC} ${CMAKE_CXX} ${TRAVIS_COMMIT} ${TRAVIS_BRANCH} ${TRAVIS_JOB_NUMBER} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN} ${TRAVIS_TAG} ${TRAVIS_PULL_REQUEST} ${TRAVIS_REPO_SLUG};
+    fi
+  - if [ "${TARGET}" == "new_version_tagger" ]; then
+        bash ./tool/travis.sh target_script /${RELATIVE_PATH} ${TARGET} ${CONAN_COMPILER} ${CONAN_COMPILER_VERSION} ${CMAKE_CC} ${CMAKE_CXX} ${TRAVIS_COMMIT} ${TRAVIS_BRANCH} ${TRAVIS_JOB_NUMBER} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN} ${TRAVIS_TAG} ${TRAVIS_PULL_REQUEST} ${TRAVIS_REPO_SLUG};
+    fi
+  - if [ "${TRAVIS_OS_NAME}" == "osx" ]; then
+      bash tool/travis.sh target_before_install;
+    fi
 
-after_success:
-  - bash tool/travis.sh target_after_success
 
 deploy:
   skip_cleanup: true
