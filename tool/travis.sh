@@ -264,14 +264,21 @@ if [[ $CC == gcc* ]]; then
 fi
 
 
-if [ -z "$2" ]; then
-  export gitroot="/inexor"
+if [[ $TARGET == new_version_tagger ]]; then
+  # we don't run this target within a docker container
+  # i.e. we don't need to switch the directory
+  # to be within our git repository clone
+  export gitroot="."
 else
-  # this makes it possible to run this script successfull
-  # even if doesn't get called from the root directory
-  # of THIS repository
-  # required to make inexor-game/ci-prebuilds working
-  export gitroot="/inexor/$2"
+  if [ -z "$2" ]; then
+    export gitroot="/inexor"
+  else
+    # this makes it possible to run this script successfull
+    # even if doesn't get called from the root directory
+    # of THIS repository
+    # required to make inexor-game/ci-prebuilds working
+    export gitroot="/inexor/$2"
+  fi
 fi
 
 self_pull_request && {
