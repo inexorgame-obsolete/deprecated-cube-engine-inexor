@@ -15,11 +15,11 @@ set -e
 # Making sure we NEVER execute anything of this for pull requests as this could be a huge security risk
 if [[ "${TRAVIS_PULL_REQUEST}" != false ]]; then
     echo "We don't build Conan packages for pull requests for security reasons."
-    # exit 0
+    exit 0
 fi
 
 
-if ! [[ "${TRAVIS_BRANCH}" == "croydon/dockerization+conan-packages" ]]; then
+if ! [[ "${TRAVIS_BRANCH}" == "master" ]]; then
     echo "This isn't the master branch"
     exit 0
 fi
@@ -50,8 +50,8 @@ echo "Update submodule in ci-prebuilds"
 cd inexor
 
 git fetch --all
-git checkout croydon/dockerization+conan-packages
-git reset --hard origin/croydon/dockerization+conan-packages
+git checkout master
+git reset --hard origin/master
 cd ../
 
 
