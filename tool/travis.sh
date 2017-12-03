@@ -77,6 +77,8 @@ build() {
     conan remote add inexor https://api.bintray.com/conan/inexorgame/inexor-conan --insert
     conan remote add community https://api.bintray.com/conan/conan-community/conan --insert 3
 
+    conan info "$gitroot"
+
     if test "$NIGHTLY" = conan; then
       echo "executed conan install "$gitroot" --scope build_all=1 --build -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx=libstdc++11 -e CC=$CC -e CXX=$CXX"
       conan install "$gitroot" --scope build_all=1 --build -s compiler="$CONAN_COMPILER" -s compiler.version="$CONAN_COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -e CC="$CC" -e CXX="$CXX"
@@ -169,24 +171,25 @@ create_tag() {
       "===============\n"
     exit 0
   }
-  if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
+
+  if [ "$TRAVIS_BRANCH" = "master" -a is_main_repo ]; then
     # direct push to master
 
     export new_version=$(incremented_version)
+    echo >&2 -e $new_version
 
-    git config --global user.email "travis@travis-ci.org"
+    git config --global user.email "ci@inexor.org"
     git config --global user.name "InexorBot"
 
     git tag -a -m "Rolling release: automatic tag creation on push to master branch" "${new_version}"
     git push -q https://$GITHUB_TOKEN@github.com/inexorgame/inexor-core --tags
 
   else
-    echo >&2 -e "===============\n" \
+    echo >&2 -e "\n===============\n" \
     "Skipping tag creation, because this is \n" \
     "not a direct commit to master.\n" \
     "===============\n"
     export new_version=$(incremented_version)
-    echo >&2 -e $new_version
   fi
 }
 
