@@ -101,7 +101,7 @@ jobs:
       #CI services:
         #CI - docker
       #CI env: CMAKE_CC="clang-4.0" CMAKE_CXX="clang++-4.0" CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="4.0" TARGET=linux_clang docker_tag="ubuntu-artful-clang040" NIGHTLY="conan"
-      
+
     #CI - os: linux
       #CI dist: trusty
       #CI sudo: required
@@ -190,7 +190,7 @@ deploy:
   api_key:
     - secure: DgFzibKfjjD4v6zP51sjyP+chyBNKA6D3LHz4+pKN2mSBLSFeqK29z+38TlIOJHSpq6pWdvxqHjn+vQuYV1v/oqri0AVpo0kxFojtNaIFo1Dc/Sfv76V7X6p9+JaSRtKtqCjOV7QP9fftyUgSu1Bq67fwuv6QvDgOzdQIcV87bA=
   file_glob: true
-  file: /tmp/inexor-build/inexor-core-*.zip
+  file: build/cpack/inexor-core-*.zip
   overwrite: true
   on:
     # Deploy only if build was caused by a tag push.
