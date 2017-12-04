@@ -92,7 +92,8 @@ build() {
     # workaround that CPack sometimes fails on linux to copy the file to the final directory from the intermediate dir..
     local tempdir="/tmp/inexor-build/_CPack_Packages/Linux/ZIP/"
     local zipname="Inexor-${last_tag}-Linux.zip"
-    local outputdir="/tmp/inexor-build/"
+    local outputdir="/inexor/build/cpack/"
+    mkdir -pv ${outputdir}
     mv -f -v -u "${tempdir}${zipname}" "${outputdir}" || true
   )
 }
