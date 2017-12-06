@@ -89,12 +89,12 @@ build() {
 
     conan build "$gitroot"
 
-    # workaround that CPack sometimes fails on linux to copy the file to the final directory from the intermediate dir..
-    local tempdir="/tmp/inexor-build/_CPack_Packages/Linux/ZIP/"
-    local zipname="Inexor-${last_tag}-Linux.zip"
+    # Moving the CPack package to the /inexor directory, so we are able to access it from outside of Docker
+    local tempdir="/tmp/inexor-build/"
+    local zipname="inexor-core-${last_tag}-Linux64.zip"
     local outputdir="/inexor/build/cpack/"
     mkdir -pv ${outputdir}
-    mv -f -v -u "${tempdir}${zipname}" "${outputdir}" || true
+    mv -f -v -u "${tempdir}${zipname}" "${outputdir}"
   )
 }
 
