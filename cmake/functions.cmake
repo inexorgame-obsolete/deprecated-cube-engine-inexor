@@ -208,7 +208,7 @@ function(add_windows_manifest target)
     COMMAND "mt.exe" -nologo
             -manifest \"${DIR_OF_FUNCTIONS_CMAKE}/windows.manifest.xml\"
             -outputresource:"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${target}.exe"\;\#1
-    COMMENT "Adding manifest..." 
+    COMMENT "Adding manifest..."
     )
 endfunction()
 
@@ -217,7 +217,7 @@ endfunction()
 # Set up an executable.
 # First this function creates a platform specific
 # executable. On windows it creates a WIN32 executable, on
-# OSX it creates a bundle.
+# macOS it creates a bundle.
 # If "CONSOLE_APP" is given within the arguments,
 # it wont create a WIN32 but a console app on windows.
 #
@@ -242,8 +242,8 @@ function(add_app exe)
       add_executable(${exe} WIN32 ${sources} ${ALL_HEADERS})
     endif()
     add_windows_manifest(${exe})
-  elseif(OS_MACOSX)
-    add_executable(${exe} MACOSX_BUNDLE ${sources})
+  elseif(OS_MACOS)
+    add_executable(${exe} MACOS_BUNDLE ${sources})
   else()
     add_executable(${exe} ${sources})
   endif()
@@ -280,7 +280,7 @@ endfunction()
 # includes the named subdir if that option is ON.
 function(opt_subdir subdir initial)
   string(TOUPPER "BUILD_${subdir}" option_name)
-  
+
   if(NOT DEFINED BUILD_ALL)
     option(${option_name} "Build ${subdir}" ${initial})
   endif()
@@ -295,7 +295,7 @@ function(opt_subdir subdir initial)
 endfunction()
 
 # USAGE: pragma_once(net_module server_target)
-# Servers as include guard alternative, since its sets the variable ALREADY_INCLUDED 
+# Servers as include guard alternative, since its sets the variable ALREADY_INCLUDED
 # in its parents scope.
 function(pragma_once VAR1 VAR2)
 
@@ -312,4 +312,3 @@ function(pragma_once VAR1 VAR2)
 
   set(ALREADY_INCLUDED 0 PARENT_SCOPE)
 endfunction()
-
