@@ -1,7 +1,7 @@
 ### @File:
 # NOTE:  **This file needs to be included AFTER project()**
 
-# * Set platform boolean OS_* (WINDOWS/LINUX/MACOSX)
+# * Set platform boolean OS_* (WINDOWS/LINUX/MACOS)
 # * Set architecture booleans X32 and X64
 # * Set architecture string PROJECT_ARCH ("64"/"32" or "x86"/"x86_64")
 # * Set compiler booleans COMPILER_* (GNU/CLANG/MSVC)
@@ -9,9 +9,9 @@
 
 # Determine the platform.
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
-  set(OS_MACOSX 1)
+  set(OS_MACOS 1)
   set(OS_POSIX 1)
-  message(STATUS "Platform: OSX")
+  message(STATUS "Platform: macOS")
 elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
   set(OS_LINUX 1)
   set(OS_POSIX 1)

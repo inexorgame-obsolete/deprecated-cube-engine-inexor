@@ -3,7 +3,7 @@
 ## Inexor
 
 For a full list of all contributors please have a look at the git history of the respective repository.
-Our ingame content has individual readme files, where you can find license and copyright information. 
+Our ingame content has individual readme files, where you can find license and copyright information.
 
 ## Cube 2: Sauerbraten
 
@@ -33,11 +33,11 @@ freely, subject to the following restrictions:
 
 ### Cube2/Sauerbraten Credits
 
-* Wouter "[Aardappel](http://strlen.com/)" van Oortmerssen: A lot of the general code, and the original concept and design. 
-* Lee "[eihrul](http://sauerbraten.org/lee/)" Salzman: ENet networking library, nix ports, and a lot of the general code, especially rendering/lightmaps/physics related. 
+* Wouter "[Aardappel](http://strlen.com/)" van Oortmerssen: A lot of the general code, and the original concept and design.
+* Lee "[eihrul](http://sauerbraten.org/lee/)" Salzman: ENet networking library, nix ports, and a lot of the general code, especially rendering/lightmaps/physics related.
 * Mike "Gilt" Dysart: General programming, especially editing/physics related.
-* Robert "[baby-rabbit](http://www.fernlightning.com/)" Pointon: GUI, particle rendering, and movie recording code, MacOSX porting. 
-* Quinton "[quin](http://www.redeclipse.net/)" Reeves: Bots/AI code. Assists with community management, documentation/wiki, and development. 
+* Robert "[baby-rabbit](http://www.fernlightning.com/)" Pointon: GUI, particle rendering, and movie recording code, macOS porting.
+* Quinton "[quin](http://www.redeclipse.net/)" Reeves: Bots/AI code. Assists with community management, documentation/wiki, and development.
 
 with contributions from:
 
@@ -46,4 +46,4 @@ with contributions from:
 
 other stuff:
 
-* The [SDL team](http://www.libsdl.org/): For their libraries.
+* The [SDL team](https://www.libsdl.org): For their libraries.

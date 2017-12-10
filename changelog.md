@@ -49,7 +49,7 @@
       * Made the **Inexor Tree** available via websockets as well
   * Using standard paths for better cross platform compatibility
       * defines storage location of configurations and data
-      * also first preparation for MacOSX support
+      * also first preparation for macOS support
   * Using TOML as general configuaration file format
       * human readable
       * machine processable
@@ -203,7 +203,7 @@ InexorCore is what one would have called Inexor/Sauerbraten before (the C++ part
   * added support for GCC 5.3
   * changed the source code directory structure
   * added contributing.md guidelines
-  * the subsystem implementation is now memory safe 
+  * the subsystem implementation is now memory safe
   * reintroduced a stackwalker for release binaries
   * merged all Sauerbraten improvements till SVN r5238
   * fixed: pressing the button to open the chat console also prints the key in the chat console
@@ -236,7 +236,7 @@ InexorCore is what one would have called Inexor/Sauerbraten before (the C++ part
 #### Updates
 ##### 0.4.1 - 2015-11-19
   * improved: don't try to load missing map models on each frame
-  * fixed: crash on explosions 
+  * fixed: crash on explosions
   * fixed: crash when starting subsystems in startup scripts
   * fixed: /getmap tries to load non-existing local map
   * fixed: /resetgl tries to load non-existing files
@@ -269,12 +269,12 @@ InexorCore is what one would have called Inexor/Sauerbraten before (the C++ part
  * fixed waypoint loading
  * new default screenshot filename, including the full date
  * display which music is getting played
- 
+
 #### Node.js / CEF
 
  * added (temporary) startscript for Windows
  * provide an own window manager
- * restructuring of large portions of the node code 
+ * restructuring of large portions of the node code
 
 #### Code internals & refactoring
  * minor improvements in the loading of sounds and textures
