@@ -138,16 +138,16 @@ jobs:
         #CI - docker
       #CI env: CMAKE_CC="clang-3.8" CMAKE_CXX="clang++-3.8" CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="3.8" TARGET=linux_clang docker_tag="ubuntu-zesty-clang038" NIGHTLY="conan"
 
-    #- os: osx
-      #sudo: false
-      #osx_image: xcode8
-      #language: cpp
-      #compiler: clang
-      #env: docker_tag="NODOCKER" compiler=clang TARGET="osx" CMAKE_FLAGS="-DCMAKE_CXX_COMPILER=clang++-3.9 -DCMAKE_C_COMPILER=clang-3.9 -DBUILD_ALL=1"
+    #CI - os: osx
+      #CI sudo: false
+      #CI osx_image: xcode9.2
+      #CI language: cpp
+      #CI compiler: clang
+      #CI env: docker_tag="NODOCKER" compiler=clang TARGET="macos" NIGHTLY="conan"
 
   #CI fast_finish: true # don't wait for allow_failures to fail, gives faster response
-  #allow_failures:
-    #- os: osx
+  #CI allow_failures:
+    #CI - os: osx
 
 
 before_install:
@@ -180,7 +180,7 @@ script:
         bash ./tool/travis.sh target_script /${RELATIVE_PATH} ${TARGET} ${CONAN_COMPILER} ${CONAN_COMPILER_VERSION} ${CMAKE_CC} ${CMAKE_CXX} ${TRAVIS_COMMIT} ${TRAVIS_BRANCH} ${TRAVIS_JOB_NUMBER} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN} ${TRAVIS_TAG} ${TRAVIS_PULL_REQUEST} ${TRAVIS_REPO_SLUG};
     fi
   - if [ "${TRAVIS_OS_NAME}" == "osx" ]; then
-      bash tool/travis.sh target_before_install;
+      bash ${RELATIVE_PATH}tool/travis_macos.sh;
     fi
 
 
