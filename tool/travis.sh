@@ -75,7 +75,11 @@ build() {
     conan --version
 
     conan remote add inexor https://api.bintray.com/conan/inexorgame/inexor-conan --insert
-    conan remote add community https://api.bintray.com/conan/conan-community/conan --insert 3
+    ## https://bintray.com/conan/conan-center is second
+    conan remote add bincrafers https://api.bintray.com/conan/bincrafters/public-conan --insert 3
+    conan remote add community https://api.bintray.com/conan/conan-community/conan --insert 4
+
+    conan remote list
 
     conan info "$gitroot"
 

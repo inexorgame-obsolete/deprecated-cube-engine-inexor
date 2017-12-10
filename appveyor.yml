@@ -1,7 +1,7 @@
 ###########################
 ####### README FIRST! #####
 ###########################
-# This file should only be edited in our main repository (code)
+# This file should only be edited in our main repository (inexor-core)
 # You are doing something wrong
 # if you are trying to edit this file in ci-prebuilds.
 #
@@ -69,7 +69,6 @@ before_build:
   - cmd: md build
   - cmd: cd build
 
-  # We generate project files for Visual Studio 14 2015 only atm.
   - cmd: if "%platform%"=="Win32" ( set "CMAKE_GENERATOR_NAME=Visual Studio %VSVERSION%" && set "arch_str=x86" )
   - cmd: if "%platform%"=="x64" ( set "CMAKE_GENERATOR_NAME=Visual Studio %VSVERSION% Win64" && set "arch_str=x86_64")
   - cmd: if %configuration%==Debug (set "runtime_str=MTd")else (set "runtime_str=MT")
@@ -77,7 +76,11 @@ before_build:
   - cmd: set "args=-DBUILD_CLIENT=1 -DBUILD_SERVER=1 -DBUILD_TEST=1 -DCREATE_PACKAGE=1"
 
   - cmd: conan remote add inexor https://api.bintray.com/conan/inexorgame/inexor-conan --insert
-  - cmd: conan remote add community https://api.bintray.com/conan/conan-community/conan --insert 3
+  ## https://bintray.com/conan/conan-center is second
+  - cmd: conan remote add bincrafers https://api.bintray.com/conan/bincrafters/public-conan --insert 3
+  - cmd: conan remote add community https://api.bintray.com/conan/conan-community/conan --insert 4
+
+  - cmd: conan remote list
 
   - cmd: conan info ..
   - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan install .. --scope build_all=1 --build -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s arch=%arch_str% -s build_type=%configuration% ) else ( conan install .. --scope build_all=1 --scope create_package=1 --build=missing -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s arch=%arch_str% -s build_type=%configuration% )
