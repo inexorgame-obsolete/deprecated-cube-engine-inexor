@@ -1,5 +1,5 @@
 requires = (
-    ("InexorGlueGen/0.6.0alpha@inexorgame/stable"),
+    ("InexorGlueGen/0.6.1@inexorgame/stable"),
     ("Protobuf/3.1.0@inexorgame/stable"),
     ("gRPC/1.1.0@inexorgame/stable"),
     ("doxygen/1.8.13@inexorgame/stable"),
