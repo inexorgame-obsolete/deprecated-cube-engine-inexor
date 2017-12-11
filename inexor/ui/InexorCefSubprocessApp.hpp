@@ -25,20 +25,20 @@ class InexorCefSubprocessApp : public CefApp,
         InexorCefSubprocessApp();
 
         // Getters for handlers
-        CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() { return this; }
+        CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() override { return this; }
 
         // CefV8Handler
-        bool Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception);
+        bool Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception) override;
 
         // CefV8Accessor
-        bool Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& retval, CefString& exception);
-        bool Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception);
+        bool Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& retval, CefString& exception) override;
+        bool Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception) override;
 
         // CefRenderProcessHandler
-        void OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context);
+        void OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) override;
 
         // Event Handling
-        bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefProcessId source_process, CefRefPtr<CefProcessMessage> message);
+        bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefProcessId source_process, CefRefPtr<CefProcessMessage> message) override;
         void FireUiEvent(std::string name, const CefV8ValueList& arguments);
 
 
@@ -66,4 +66,3 @@ class InexorCefSubprocessApp : public CefApp,
 
 }
 }
-

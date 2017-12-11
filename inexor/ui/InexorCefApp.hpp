@@ -32,7 +32,7 @@ class InexorCefApp : public CefApp,
         void Destroy();
 
         // Getters for handlers
-        CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() { return this; }
+        CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() override { return this; }
         CefRefPtr<context::InexorContextManager> GetContextManager() { return context_manager; }
         CefRefPtr<input::InexorMouseManager> GetMouseManager() { return mouse_manager; }
         CefRefPtr<input::InexorKeyboardManager> GetKeyboardManager() { return keyboard_manager; }
@@ -45,7 +45,7 @@ class InexorCefApp : public CefApp,
         void SetScreenSize(int width, int height);
 
         // CefBrowserProcessHandler
-        void OnContextInitialized();
+        void OnContextInitialized() override;
         // void OnBeforeChildProcessLaunch(CefRefPtr app, CefRefPtr command_line) {}
         // void OnRenderProcessThreadCreated(CefRefPtr app, CefRefPtr extra_info) {}
 
@@ -77,4 +77,3 @@ class InexorCefApp : public CefApp,
 
 }
 }
-

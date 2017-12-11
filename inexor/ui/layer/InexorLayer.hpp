@@ -56,33 +56,33 @@ class InexorLayer : public CefClient,
 
         // Getters for handlers
         virtual CefRefPtr<InexorLayer> GetClientHandler() { return this; };
-        virtual CefRefPtr<CefRenderHandler> GetRenderHandler() { return render_handler; }
+        virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override { return render_handler; }
         virtual CefRefPtr<InexorRenderHandler> GetInexorRenderHandler() { return render_handler; }
         virtual CefRefPtr<CefBrowser> GetBrowser() { return browser; };
-        virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() { return this; }
-        virtual CefRefPtr<CefLoadHandler> GetLoadHandler() { return this; }
-        virtual CefRefPtr<CefKeyboardHandler> GetKeyboardHandler() { return this; }
-        virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() { return this; }
+        virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }
+        virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override { return this; }
+        virtual CefRefPtr<CefKeyboardHandler> GetKeyboardHandler() override { return this; }
+        virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() override { return this; }
         virtual CefRefPtr<CefRequestContextHandler> GetRequestContextHandler() { return this; }
-        virtual CefRefPtr<CefCookieManager> GetCookieManager() { return cookie_manager; }
+        virtual CefRefPtr<CefCookieManager> GetCookieManager() override { return cookie_manager; }
 
         // CefLifeSpanHandler
-        void OnAfterCreated(CefRefPtr<CefBrowser> browser);
-        bool DoClose(CefRefPtr<CefBrowser> browser);
-        void OnBeforeClose(CefRefPtr<CefBrowser> browser);
+        void OnAfterCreated(CefRefPtr<CefBrowser> browser) override;
+        bool DoClose(CefRefPtr<CefBrowser> browser) override;
+        void OnBeforeClose(CefRefPtr<CefBrowser> browser) override;
 
         // CefLoadHandler
-        virtual void OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, ErrorCode errorCode, const CefString& errorText, const CefString& failedUrl);
+        virtual void OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, ErrorCode errorCode, const CefString& errorText, const CefString& failedUrl) override;
 
         // CefKeyboardHandler
-        bool OnPreKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event, bool* is_keyboard_shortcut);
-        bool OnKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event);
+        bool OnPreKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event, bool* is_keyboard_shortcut) override;
+        bool OnKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent& key_event, CefEventHandle os_event) override;
         void SendKeyEvent(const CefKeyEvent& event) { browser->GetHost()->SendKeyEvent(event); }
 
         // CefDisplayHandler
-        void OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& url);
-        void OnStatusMessage(CefRefPtr<CefBrowser> browser, const CefString& value);
-        bool OnConsoleMessage(CefRefPtr<CefBrowser> browser, const CefString& message, const CefString& source, int line);
+        void OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& url) override;
+        void OnStatusMessage(CefRefPtr<CefBrowser> browser, const CefString& value) override;
+        bool OnConsoleMessage(CefRefPtr<CefBrowser> browser, const CefString& message, const CefString& source, int line) override;
 
 	private:
 
@@ -113,4 +113,3 @@ class InexorLayer : public CefClient,
 }
 }
 }
-

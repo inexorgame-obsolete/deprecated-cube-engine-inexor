@@ -22,18 +22,18 @@ class InexorRenderHandler : public CefRenderHandler {
         void Cleanup();
 
         // Forwarded from CefRenderHandler callbacks.
-        void OnPopupShow(CefRefPtr<CefBrowser> browser, bool show);
+        void OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) override;
 
-        void OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect);
+        void OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect) override;
 
-        bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect);
+        bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect) override;
 
         bool SetViewRect(int view_x, int view_y, int view_width, int view_height);
 
         void OnPaint(CefRefPtr<CefBrowser> browser,
             CefRenderHandler::PaintElementType type,
             const CefRenderHandler::RectList& dirtyRects,
-            const void* buffer, int width, int height);
+            const void* buffer, int width, int height) override;
 
         bool IsTransparent() { return transparent; }
 
