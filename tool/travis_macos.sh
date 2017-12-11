@@ -47,32 +47,116 @@ external_pull_request() {
 }
 
 install_dependencies() {
-  pip install conan
+  brew install conan
 }
 
 ## INSTALLATION ROUTINES ###################################
 
 build() {
   (
-    mkcd "/tmp/inexor-build"
+    ## mkcd "/tmp/inexor-build"
 
     conan --version
 
     conan remote add inexor https://api.bintray.com/conan/inexorgame/inexor-conan --insert
-    ## https://bintray.com/conan/conan-center is second
+    ## https://bintray.com/conan/conan-center is second, https://bintray.com/conan/conan-transit/ third
     conan remote add bincrafers https://api.bintray.com/conan/bincrafters/public-conan --insert 3
     conan remote add community https://api.bintray.com/conan/conan-community/conan --insert 4
 
     conan remote list
 
-    conan info "$gitroot"
+
+    echo "$pwd"
+    ls
+
+    conan user -p "${CONAN_PASSWORD}" -r inexor "${CONAN_USER}"
+
+    conan install Kainjow_Mustache/2.0@inexorgame/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
+    set -f
+    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "Kainjow_Mustache/2.0@inexorgame/stable"
+    set +f
+
+    conan install bzip2/1.0.6@lasote/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
+    set -f
+    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "bzip2/1.0.6@lasote/stable"
+    set +f
+
+    conan install pugixml/1.7@inexorgame/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
+    set -f
+    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "pugixml/1.7@inexorgame/stable"
+    set +f
+
+    conan install RapidJSON/1.1.0@inexorgame/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
+    set -f
+    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "RapidJSON/1.1.0@inexorgame/stable"
+    set +f
+
+    conan install gtest/1.8.0@lasote/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
+    set -f
+    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "gtest/1.8.0@lasote/stable"
+    set +f
+
+    conan install spdlog/0.14.0@bincrafters/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
+    set -f
+    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "spdlog/0.14.0@bincrafters/stable"
+    set +f
+
+    conan install fmt/4.0.0@bincrafters/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
+    set -f
+    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "fmt/4.0.0@bincrafters/stable"
+    set +f
+
+    conan install zlib/1.2.11@conan/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
+    set -f
+    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "zlib/1.2.11@conan/stable"
+    set +f
+
+    conan install ENet/1.3.13@inexorgame/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
+    set -f
+    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "ENet/1.3.13@inexorgame/stable"
+    set +f
+
+    conan install Protobuf/3.1.0@inexorgame/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
+    set -f
+    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "Protobuf/3.1.0@inexorgame/stable"
+    set +f
+
+    conan install gRPC/1.1.0@inexorgame/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
+    set -f
+    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "gRPC/1.1.0@inexorgame/stable"
+    set +f
+
+    conan install libpng/1.6.21@lasote/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
+    set -f
+    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "libpng/1.6.21@lasote/stable"
+    set +f
+
+    conan install SDL2_image/2.0.1@lasote/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
+    set -f
+    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "SDL2_image/2.0.1@lasote/stable"
+    set +f
+
+    conan install SDL2/2.0.5@lasote/testing --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
+    conan install CEF/3.2704.1424.gc3f0a5b@inexorgame/testing --scope build_all=1 --build -s compiler.libcxx="libc++"
+
+    conan install InexorGlueGen/0.6.0alpha@inexorgame/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
+    set -f
+    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "InexorGlueGen/0.6.0alpha@inexorgame/stable"
+    set +f
+
+    conan install Boost/1.64.0@inexorgame/stable --scope build_all=1 --build -s compiler.libcxx="libc++"
+    set -f
+    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "Boost/1.64.0@inexorgame/stable"
+    set +f
+
+    conan info .
 
     if test "$NIGHTLY" = conan; then
-      echo "execut conan install "$gitroot" --scope build_all=1 --build -s compiler.libcxx=libstdc++11"
-      conan install "$gitroot" --scope build_all=1 --build -s compiler.libcxx="libstdc++11"
+      echo "execut conan install . --scope build_all=1 --build -s compiler.libcxx=libc++"
+      conan install . --scope build_all=1 --build -s compiler.libcxx="libc++"
     else
-      echo "execut conan install "$gitroot" --scope build_all=1 --scope create_package=1 --build=missing -s compiler.libcxx=libstdc++11"
-      conan install "$gitroot" --scope build_all=1 --scope create_package=1 --build=missing -s compiler.libcxx="libstdc++11"
+      echo "execut conan install . --scope build_all=1 --scope create_package=1 --build=missing -s compiler.libcxx=libc++"
+      conan install . --scope build_all=1 --scope create_package=1 --build=missing -s compiler.libcxx="libc++"
     fi
 
     conan build "$gitroot"
@@ -159,15 +243,11 @@ export build="$(echo "${branch}-${jobno}" | sed 's#/#-#g')-${TARGET}"
 export main_repo="inexorgame/inexor-core"
 
 
-if [ -z "$2" ]; then
-  export gitroot="."
-else
-  # this makes it possible to run this script successfull
-  # even if doesn't get called from the root directory
-  # of THIS repository
-  # required to make inexor-game/ci-prebuilds working
-  export gitroot="./$2"
-fi
+# this makes it possible to run this script successfull
+# even if doesn't get called from the root directory
+# of THIS repository
+# required to make inexor-game/ci-prebuilds working
+export gitroot="./${RELATIVE_PATH}"
 
 self_pull_request && {
   echo >&2 -e "Skipping build, because this is a pull " \
@@ -177,6 +257,8 @@ self_pull_request && {
   exit 0
 }
 
+echo "$pwd"
+echo "$gitroot"
 cd "$gitroot"
 
 # Tags do not get fetched from travis usually.
