@@ -23,11 +23,11 @@ class InexorConsoleLayer : public inexor::ui::context::InexorContextProvider,
 			  _url(url) {};
 
         // InexorCefContextProvider
-        void InitializeContext();
-        bool Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception);
-        bool Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& retval, CefString& exception);
-        bool Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception);
-        std::string GetContextName() { return _name; };
+        void InitializeContext() override;
+        bool Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception) override;
+        bool Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& retval, CefString& exception) override;
+        bool Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception) override;
+        std::string GetContextName() override { return _name; };
 
         // User interface resize handling
         void Reload();
@@ -35,9 +35,9 @@ class InexorConsoleLayer : public inexor::ui::context::InexorContextProvider,
         void AutoResize(int width, int height);
 
         // Intercept setters for event handling
-        void SetVisibility(bool _is_visible);
-        void SetAcceptingKeyInput(bool _is_accepting_key_input);
-        void SetAcceptingMouseInput(bool _is_accepting_mouse_input);
+        void SetVisibility(bool _is_visible) override;
+        void SetAcceptingKeyInput(bool _is_accepting_key_input) override;
+        void SetAcceptingMouseInput(bool _is_accepting_mouse_input) override;
 
         void Show() {
             SetVisibility(true);
@@ -63,5 +63,3 @@ class InexorConsoleLayer : public inexor::ui::context::InexorContextProvider,
 }
 }
 }
-
-

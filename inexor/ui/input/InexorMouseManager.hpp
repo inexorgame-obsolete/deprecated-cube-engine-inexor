@@ -56,11 +56,11 @@ class InexorMouseManager : public inexor::ui::context::InexorContextProvider
         void SendMouseWheelEvent(SDL_Event &e);
 
         // InexorContextProvider
-        void InitializeContext();
-        bool Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception);
-        bool Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& retval, CefString& exception);
-        bool Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception);
-        std::string GetContextName() { return "mouse"; };
+        void InitializeContext() override;
+        bool Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception) override;
+        bool Get(const CefString& name, const CefRefPtr<CefV8Value> object, CefRefPtr<CefV8Value>& retval, CefString& exception) override;
+        bool Set(const CefString& name, const CefRefPtr<CefV8Value> object, const CefRefPtr<CefV8Value> value, CefString& exception) override;
+        std::string GetContextName() override { return "mouse"; };
 
 	private:
         // Layer Manager
@@ -93,4 +93,3 @@ class InexorMouseManager : public inexor::ui::context::InexorContextProvider
 }
 }
 }
-
