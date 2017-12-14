@@ -1,9 +1,15 @@
 requires = (
-    ("InexorGlueGen/0.6.1@inexorgame/stable"),
+    ("InexorGlueGen/0.6.2@inexorgame/stable"),
     ("Protobuf/3.1.0@inexorgame/stable"),
     ("gRPC/1.1.0@inexorgame/stable"),
     ("doxygen/1.8.13@inexorgame/stable"),
-    ("Boost/1.64.0@lasote/stable"),
+    ("cmake-findboost/0.2.0@bincrafters/stable"),
+    ("Boost.Filesystem/1.65.1@bincrafters/stable"),
+    ("Boost.Program_Options/1.65.1@bincrafters/stable"),
+    ("Boost.Random/1.65.1@bincrafters/stable"),
+    ("Boost.Regex/1.65.1@bincrafters/stable"),
+    ("Boost.System/1.65.1@bincrafters/stable"),
+    ("Boost.Thread/1.65.1@bincrafters/stable"),
     ("RapidJSON/1.1.0@inexorgame/stable"),
     ("zlib/1.2.11@conan/stable"),
     ("gtest/1.8.0@lasote/stable"),
@@ -20,7 +26,6 @@ options = '''
   gtest:shared=False
   gtest:no_gmock=True
   ENet:shared=False
-  Boost:shared=False
   SDL2:shared=False
   SDL2_image:shared=False
   spdlog:fmt_external=True
