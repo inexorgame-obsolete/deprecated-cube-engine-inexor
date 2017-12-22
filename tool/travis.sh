@@ -72,23 +72,27 @@ build() {
   (
     mkcd "/tmp/inexor-build"
 
+    ## FIXME: SDL2/SDL2_image (and potential other packages are broken for Conan >= 0.30.0)
+    pip uninstall -y conan
+    pip install conan==0.29.2
+
     conan --version
 
     conan remote add inexor https://api.bintray.com/conan/inexorgame/inexor-conan --insert
-    ## https://bintray.com/conan/conan-center is second
+    ## https://bintray.com/conan/conan-center is second, https://bintray.com/conan/conan-transit/ third
     conan remote add bincrafers https://api.bintray.com/conan/bincrafters/public-conan --insert 3
     conan remote add community https://api.bintray.com/conan/conan-community/conan --insert 4
 
     conan remote list
 
-    conan info "$gitroot"
+    ## conan info "$gitroot"
 
     if test "$NIGHTLY" = conan; then
-      echo "executed conan install "$gitroot" --scope build_all=1 --build -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx=libstdc++11 -e CC=$CC -e CXX=$CXX"
-      conan install "$gitroot" --scope build_all=1 --build -s compiler="$CONAN_COMPILER" -s compiler.version="$CONAN_COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -e CC="$CC" -e CXX="$CXX"
+      echo "executed conan install "$gitroot" --env build_all=1 --build -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx=libstdc++11 -e CC=$CC -e CXX=$CXX"
+      conan install "$gitroot" --env build_all=1 --build -s compiler="$CONAN_COMPILER" -s compiler.version="$CONAN_COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -e CC="$CC" -e CXX="$CXX"
     else
-      echo "executed conan install "$gitroot" --scope build_all=1 --scope create_package=1 --build=missing -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx=libstdc++11 -e CC=$CC -e CXX=$CXX"
-      conan install "$gitroot" --scope build_all=1 --scope create_package=1 --build=missing -s compiler="$CONAN_COMPILER" -s compiler.version="$CONAN_COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -e CC="$CC" -e CXX="$CXX"
+      echo "executed conan install "$gitroot" --env build_all=1 --env create_package=1 --build=missing -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx=libstdc++11 -e CC=$CC -e CXX=$CXX"
+      conan install "$gitroot" --env build_all=1 --env create_package=1 --build=missing -s compiler="$CONAN_COMPILER" -s compiler.version="$CONAN_COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -e CC="$CC" -e CXX="$CXX"
     fi
 
     conan build "$gitroot"

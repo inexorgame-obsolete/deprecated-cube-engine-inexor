@@ -15,10 +15,12 @@ requires = (
     ("gtest/1.8.0@lasote/stable"),
     ("ENet/1.3.13@inexorgame/stable"),
     ("spdlog/0.14.0@bincrafters/stable"),
-    ("fmt/4.0.0@bincrafters/stable"),
+    ("fmt/4.1.0@bincrafters/stable"),  # spdlog dependency (fix version to make it re-producable)
     ("SDL2/2.0.5@lasote/testing"),  # not self-contained
     ("SDL2_image/2.0.1@lasote/stable"),
-    ("CEF/3.2704.1424.gc3f0a5b@inexorgame/testing")  # not self-contained
+    ("libpng/1.6.34@bincrafters/stable"),  # override SDl2_image dep for Conan >= 0.30.0 compatibility
+    ("libjpeg-turbo/1.5.2@bincrafters/stable"),  # override SDl2_image dep for Conan >= 0.30.0 compatibility
+    ("CEF/3.3239.1709.g093cae4@inexorgame/testing")  # not self-contained
 )
 
 options = '''
@@ -26,6 +28,7 @@ options = '''
   gtest:shared=False
   gtest:no_gmock=True
   ENet:shared=False
+  Boost:shared=False
   SDL2:shared=False
   SDL2_image:shared=False
   spdlog:fmt_external=True
