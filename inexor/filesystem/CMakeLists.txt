@@ -11,7 +11,6 @@ add_lib(filesystem)          # Our module is **a static lib** which gets linked 
 # ("module_filesystem" is used and not just "filesystem", since we require it for this subproject)
 require_sdl(module_filesystem)
 require_boost_filesystem(module_filesystem)
-require_rapidjson(module_filesystem)
 require_util(module_filesystem)
 require_enet(module_filesystem)
 
@@ -23,7 +22,6 @@ function(require_filesystem targ)
   # Also tell the other module that it needs our dependencies:
   require_sdl(${targ}) # we need sdl since we havent refractored cube.hpp good enough yet
   require_boost_filesystem(${targ})
-  require_rapidjson(${targ})
   require_util(${targ})
   require_enet(${targ}) # same cube.hpp shit
 

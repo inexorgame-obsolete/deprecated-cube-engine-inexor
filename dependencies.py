@@ -4,7 +4,6 @@ requires = (
     ("gRPC/1.1.0@inexorgame/stable"),
     ("doxygen/1.8.13@inexorgame/stable"),
     ("Boost/1.66.0@conan/stable"),
-    ("RapidJSON/1.1.0@inexorgame/stable"),
     ("zlib/1.2.11@conan/stable"),
     ("gtest/1.8.0@lasote/stable"),
     ("ENet/1.3.13@inexorgame/stable"),

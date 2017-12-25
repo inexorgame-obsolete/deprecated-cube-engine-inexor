@@ -12,7 +12,6 @@
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/util/Logging.hpp"
 
-using namespace rapidjson;
 using namespace inexor::filesystem;
 
 vector<VSlot *> vslots;
@@ -486,44 +485,6 @@ VSlot::VSlot(Slot *slot, int index) : slot(slot), next(NULL), index(index), chan
     if(slot) slot->addvariant(this);
 }
 
-void VSlot::parsejson(const Document &j)
-{
-    if(j.HasMember("rotation") && j["rotation"].IsNumber()) rotation = clamp(j["rotation"].GetInt(), 0, 5);
-    // TODO: seperate flipping and rotation
-
-    if(j.HasMember("scale") && j["scale"].IsNumber()) scale = j["scale"].GetDouble();
-
-    if(j.HasMember("offset") && j["offset"].IsObject())
-    {
-        const Value &offs = j["offset"];
-        if(offs.HasMember("x") && offs["x"].IsNumber()) offset.x = offs["x"].GetInt();
-        if(offs.HasMember("y") && offs["y"].IsNumber()) offset.y = offs["y"].GetInt();
-        offset.max(0); // TODO: isnt this behaviour a bit unintuative?
-    }
-
-    if(j.HasMember("scroll") && j["scroll"].IsObject())
-    {
-        const Value &scrl = j["scroll"];
-        if(scrl.HasMember("x") && scrl["x"].IsNumber()) scroll.x = scrl["x"].GetDouble() / 1000.0f;
-        if(scrl.HasMember("y") && scrl["y"].IsNumber()) scroll.y = scrl["y"].GetDouble() / 1000.0f;
-    }
-
-    if(j.HasMember("alpha") && j["alpha"].IsObject())
-    {
-        const Value &alp = j["alpha"];
-        if(alp.HasMember("front") && alp["front"].IsNumber()) alphafront = clamp(alp["front"].GetDouble(), 0.0f, 1.0f);
-        if(alp.HasMember("back") && alp["back"].IsNumber())   alphaback = clamp(alp["back"].GetDouble(), 0.0f, 1.0f);
-    }
-
-    if(j.HasMember("color") && j["color"].IsObject())
-    {
-        const Value &col = j["color"];
-        if(col.HasMember("red") && col["red"].IsNumber())     colorscale.r = clamp(col["red"].GetDouble(), 0.0f, 1.0f);
-        if(col.HasMember("green") && col["green"].IsNumber()) colorscale.g = clamp(col["green"].GetDouble(), 0.0f, 1.0f);
-        if(col.HasMember("blue") && col["blue"].IsNumber())   colorscale.b = clamp(col["blue"].GetDouble(), 0.0f, 1.0f);
-    }
-}
-
 /// Wrapper around new VSlot to reuse unused dead vslots.
 /// @warning not threadsafe since it accesses slots and vslots globals.
 VSlot *emptyvslot(Slot &owner)
@@ -715,43 +676,6 @@ void Slot::combinetextures(int index, Slot::Tex &t, bool msg, bool forceload)
     }
     t.t = newtexture( t.t, key.getbuf(), ts, 0, true, true, true, compress);
 }
-
-struct jsontextype
-{
-    const char *name;
-    int type;
-} jsontextypes[TEX_NUM] = {
-    {"diffuse", TEX_DIFFUSE},
-    {"other", TEX_UNKNOWN},
-    {"decal", TEX_DECAL},
-    {"normal", TEX_NORMAL},
-    {"glow", TEX_GLOW},
-    {"spec", TEX_SPEC},
-    {"depth", TEX_DEPTH},
-    {"envmap", TEX_ENVMAP}
-};
-
-void Slot::parsejson(const Document &j)
-{
-    ASSERT(j.IsObject());
-    loopi(TEX_NUM) //check for all 8 kind of textures
-    {
-        if(!j.HasMember(jsontextypes[i].name) || !j[jsontextypes[i].name].IsString()) continue;
-
-        const Value &name = j[jsontextypes[i].name];
-        if(!name.IsString()) continue;
-        texmask |= 1 << i;
-        addtexture(i, name.GetString());
-    }
-
-    if(j.HasMember("grass") && j["grass"].IsString())    // seperate entry, not in sts, TODO
-    {
-        autograss = new string;
-        getmediapath(autograss, MAXSTRLEN, j["grass"].GetString(), DIR_TEXTURE);
-        nformatstring(autograss, MAXSTRLEN, "<premul>%s", autograss); // prefix
-    }
-}
-
 
 MSlot &lookupmaterialslot(int index, bool load)
 {

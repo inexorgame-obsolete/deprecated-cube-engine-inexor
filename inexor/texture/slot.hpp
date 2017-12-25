@@ -13,8 +13,6 @@
 #include "inexor/engine/shader.hpp"
 #include "inexor/engine/octa.hpp"
 
-#include <rapidjson/document.h>
-
 class Slot;
 
 enum
@@ -74,10 +72,6 @@ class VSlot
     {
         linked = false;
     }
-
-    /// Add all size/rotation/offset/scroll modifiers from a JSON file.
-    /// Note: we dont parse shaderparams atm.
-    void parsejson(const rapidjson::Document &j);
 };
 
 class Slot
@@ -160,9 +154,6 @@ class Slot
     Slot &load(bool msg, bool forceload);
     Texture *loadthumbnail();
     void loadlayermask();
-
-    /// Parse all textures from given json document.
-    void parsejson(const rapidjson::Document &j);
 };
 
 struct MSlot : Slot, VSlot

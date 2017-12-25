@@ -133,9 +133,6 @@ add_require_conan_lib_function(pugixml)
 # Kainjow-Mustache (a template engine, used for our gluecode generator)
 add_require_conan_lib_function(Kainjow_Mustache)
 
-# Rapidjson (JSON parser)
-add_require_conan_lib_function(RapidJSON "-DRAPIDJSON_SSE2")
-
 # ZLIB (fast file compression)
 add_require_conan_lib_function(zlib)
 
