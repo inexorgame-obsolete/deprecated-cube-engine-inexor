@@ -28,7 +28,8 @@ option(DEBUG_GLUEGEN "Whether or not we show additional targets for the intermed
 #        The argument of the tag is a list of macros of the form: name or name=definition (no spaces).
 #        If the definition and the "=" are omitted, "=1" is assumed.
 # @param TEMPLATES_DIR specifies the directory where the template files are which get used to generate the target specific gluecode.
-# @param OUT_DIR specifies the dir where the .gen.proto and .gen.hpp files get spit out.
+# @param OUT_DIR specifies the dir where the .gen.hpp files get spit out.
+# @note The .proto file gets additionally copied to CMAKE_RUNTIME_OUTPUT_DIRECTORY.
 function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
     set(doxyfile_in ${TEMPLATES_DIR}/doxygen-parser.conf.in) # TODO move this
     set(doxyfile ${OUT_DIR}/doxygen-parser.conf)
@@ -108,17 +109,22 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
           --grpc_out=${OUT_DIR}
           ${protoc_in}
 
-       WORKING_DIRECTORY ${MAINDIR})
+      # Copy the proto file to the CMAKE_CURRENT_BINARY_DIR
+      COMMAND ${CMAKE_COMMAND} -E copy "${gluegen_out_proto}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${proto_general_name}"
+
+      WORKING_DIRECTORY ${MAINDIR})
 
     add_custom_target(gen_bindings_${target_short}
       COMMENT "Removes the generated gluecode files for target ${TARG} to trigger a new generation of these on the next build of target ${TARG}"
-      COMMAND ${CMAKE_COMMAND} -D PATHS_TO_REMOVE="${GENERATED_FILES}" -P ${MAINDIR}/cmake/clean_files_folders.cmake
+      COMMAND ${CMAKE_COMMAND} -D PATHS_TO_REMOVE="${GENERATED_FILES}" -P "${MAINDIR}/cmake/clean_files_folders.cmake"
     )
 
     message(STATUS "gluegen will generate the following files: ${GENERATED_FILES}")
 
     install(FILES ${gluegen_out_proto} DESTINATION ${EXE_DIR} RENAME ${proto_general_name}) # install .proto to bin/all
-    message(STATUS "Proto file install destination: ${INSTALL_RESOURCES_DIR}/${proto_general_name}")
+
+    message(STATUS "Proto file install destination: ${EXE_DIR}/${proto_general_name}")
+    message(STATUS "Proto file intermediate destination: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
     # Add intermediate targets if desired.
     if(DEBUG_GLUEGEN)
