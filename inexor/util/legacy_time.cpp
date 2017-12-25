@@ -16,55 +16,63 @@ int scaletime(int time, int gamespeed)
 {
     return time * gamespeed;
 }
+/*
+static int clockrealbase = 0, clockvirtbase = 0;
+static void clockreset() 
+{ 
+	clockrealbase = SDL_GetTicks(); 
+	clockvirtbase = totalmillis;
+}
+
+int clockerror = 1000000;
+int clockfix = 0;
+
+int getclockmillis()
+{
+    int millis = SDL_GetTicks() - clockrealbase;
+    if(clockfix) millis = int(millis*(double(clockerror)/1000000));
+    millis += clockvirtbase;
+    return std::max(millis, totalmillis);
+} */
 
 int time_since_program_start()
 {
     static auto const startup_timestamp = Clock::now(); // initialized on first time_since_program_start() only and never touched again.
     return duration_cast<milliseconds>(Clock::now() - startup_timestamp).count();
+    //return getclockmillis();
 }
 
 /// Block for a specific time to limit frames per seconds to use resources intelligently.
 /// @param max_fps in case of limited fps we let this thread sleep for some milliseconds, if 0 everythings unlimited.
 /// @param elapsed_time time in real milliseconds since last updatetime();
 /// @return We block inaccurately sometimes! So we give back the delay in milliseconds.
-int limitfps(int max_fps, int elapsed_time)
+void limitfps(int &millis, int curmillis, int fps_limit)
 {
-    static int fpserror = 0; // rounding errors correction: todo this is still insufficient for small rounding errors.
-    int delay = 1000/max_fps - elapsed_time;
-    // we return the real delay: we ask the process to go to sleep for xy milliseconds,
-    // but its not guaranteed it really only takes xy milliseconds.
-    int real_delay = 0;
+    if(!fps_limit) return;
+    static int fpserror = 0;
+    int delay = 1000/fps_limit - (millis-curmillis);
     if(delay < 0) fpserror = 0;
     else
     {
-        fpserror += 1000%max_fps;
-        if(fpserror >= max_fps)
+        fpserror += 1000%fps_limit;
+        if(fpserror >= fps_limit)
         {
             ++delay;
-            fpserror -= max_fps;
+            fpserror -= fps_limit;
         }
         if(delay > 0)
         {
-            int wall_millis_before_sleep = time_since_program_start();
             std::this_thread::sleep_for(milliseconds(delay));
-            // the sleep may be of inaccurate duration:
-            real_delay = time_since_program_start() - wall_millis_before_sleep;
+            millis += delay;
         }
     }
-    return real_delay;
 }
 
-void updatetime(bool is_paused, int gamespeed, int max_fps)
+void updatetime(bool is_paused, int gamespeed, int fps_limit)
 {
     int current_wall_millis = time_since_program_start();
-
-    elapsedtime = current_wall_millis - totalmillis; // time between last update and current time
-    if(max_fps)
-    {
-        int delay = limitfps(max_fps, elapsedtime);
-        current_wall_millis += delay;
-        elapsedtime += delay;
-    }
+    limitfps(current_wall_millis, totalmillis, fps_limit);
+    elapsedtime = current_wall_millis - totalmillis;
 
     static int timeerr = 0; // the rounding error introduced by the gamespeed multiplication: e.g. gamespeed 125: (t*125)/100) ?= t.
     int scaledtime = scaletime(elapsedtime, gamespeed) + timeerr;
