@@ -2377,7 +2377,7 @@ extern int getservermtu();
 
             default:
             {
-                if(smode && smode->parse_network_message(type, ci, cq, p)) return;
+                if(smode && smode->parse_network_message(type, ci, cq, p)) break;
                 genericmsg:
                 {
                     int size = msgsizelookup(type);
