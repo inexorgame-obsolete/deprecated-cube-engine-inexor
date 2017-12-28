@@ -12,7 +12,7 @@
 #include "inexor/engine/bih.hpp"
 #include "inexor/engine/shader.hpp"
 #include "inexor/texture/texture.hpp"
-#include "inexor/engine/model.hpp"
+#include "inexor/model/model.hpp"
 
 #include "inexor/util/InexorException.hpp"
 

@@ -28,10 +28,10 @@ VARP(gpuskel, 0, 1, 1);
 VAR(maxskelanimdata, 1, 192, 0);
 VAR(testtags, 0, 0, 1);
 
-#include "inexor/engine/ragdoll.hpp"
-#include "inexor/engine/animmodel.hpp"
-#include "inexor/engine/vertmodel.hpp"
-#include "inexor/engine/skelmodel.hpp"
+#include "inexor/model/ragdoll.hpp"
+#include "inexor/model/animmodel.hpp"
+#include "inexor/model/vertmodel.hpp"
+#include "inexor/model/skelmodel.hpp"
 
 static model *(__cdecl *modeltypes[NUMMODELTYPES])(const char *);
 
@@ -48,12 +48,12 @@ static model *__loadmodel__##modelclass(const char *filename) \
 } \
 UNUSED static int __dummy__##modelclass = addmodeltype((modeltype), __loadmodel__##modelclass);
  
-#include "inexor/engine/md2.hpp"
-#include "inexor/engine/md3.hpp"
-#include "inexor/engine/md5.hpp"
-#include "inexor/engine/obj.hpp"
-#include "inexor/engine/smd.hpp"
-#include "inexor/engine/iqm.hpp"
+#include "inexor/model/md2.hpp"
+#include "inexor/model/md3.hpp"
+#include "inexor/model/md5.hpp"
+#include "inexor/model/obj.hpp"
+#include "inexor/model/smd.hpp"
+#include "inexor/model/iqm.hpp"
 
 MODELTYPE(MDL_MD2, md2);
 MODELTYPE(MDL_MD3, md3);

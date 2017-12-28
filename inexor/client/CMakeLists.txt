@@ -19,7 +19,6 @@ prepend(CLIENT_SOURCES_ENGINE ${SOURCE_DIR}/engine
     physics.cpp
     pvs.cpp
     rendergl.cpp
-    rendermodel.cpp
     renderparticles.cpp
     rendersky.cpp
     rendertext.cpp
@@ -72,3 +71,4 @@ require_ui(${CLIENT_BINARY})
 require_texture(${CLIENT_BINARY})
 require_io(${CLIENT_BINARY})
 require_gamemode(${CLIENT_BINARY})
+require_model(${CLIENT_BINARY})

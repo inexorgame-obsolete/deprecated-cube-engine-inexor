@@ -22,6 +22,7 @@ add_subdirectory(ui)
 add_subdirectory(crashreporter)
 add_subdirectory(texture)
 add_subdirectory(gamemode)
+add_subdirectory(model)
 
 # Actual targets
 opt_subdir(client on)
