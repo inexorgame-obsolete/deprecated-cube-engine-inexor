@@ -2,7 +2,7 @@
 
 #include "inexor/fpsgame/game.hpp"
 #include "inexor/fpsgame/entities.hpp"
-#include "inexor/filesystem/mediadirs.hpp"
+#include "inexor/io/filesystem/mediadirs.hpp"
 #include "inexor/engine/worldio.hpp"
 
 extern selinfo sel;

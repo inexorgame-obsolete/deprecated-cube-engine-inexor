@@ -1,4 +1,5 @@
 #include "inexor/client/gamemode/hideandseek_client.hpp"
+#include "inexor/io/filesystem/mediadirs.hpp"
 
 #define ishider(ci) (strcmp(ci->team, TEAM_HIDE) == 0 && ci->state != CS_SPECTATOR ? true : false)
 #define isseeker(ci) (strcmp(ci->team, TEAM_SEEK) == 0 && ci->state != CS_SPECTATOR ? true : false)

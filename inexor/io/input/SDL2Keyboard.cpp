@@ -1,6 +1,6 @@
 #include <SDL.h>
 #include <include/cef_base.h>
-#include "inexor/ui/input/SDL2Keyboard.hpp"
+#include "inexor/io/input/SDL2Keyboard.hpp"
 
 int getKeyboardModifiers(uint16_t const mod)
 {
@@ -418,7 +418,7 @@ int getWindowsKeyCode(SDL_Keysym const &key)
         result = 32;
         break;
     case SDLK_EXCLAIM:
-        result = uppercase ? 167 : 33; // § : !
+        result = uppercase ? 167 : 33; // ï¿½ : !
         break;
 
     case SDLK_QUOTEDBL:
@@ -443,10 +443,10 @@ int getWindowsKeyCode(SDL_Keysym const &key)
         result = 40;
         break;
     case SDLK_RIGHTPAREN:
-        result = alt_gr ? 93 : uppercase ? 176 : 41; // ] ? ° : )
+        result = alt_gr ? 93 : uppercase ? 176 : 41; // ] ? ï¿½ : )
         break;
     case SDLK_ASTERISK:
-        result = uppercase ? 181 : 42; // µ : *
+        result = uppercase ? 181 : 42; // ï¿½ : *
         break;
     case SDLK_PLUS:
         result = 43;
@@ -465,13 +465,13 @@ int getWindowsKeyCode(SDL_Keysym const &key)
         break;
 
     case SDLK_0:
-        result = alt_gr ? 64 : uppercase ? 48 : 224; // @ ? 0 : à
+        result = alt_gr ? 64 : uppercase ? 48 : 224; // @ ? 0 : ï¿½
         break;
     case SDLK_1:
         result = uppercase ? 49 : 38; // 1 : & (KO)
         break;
     case SDLK_2:
-        result = alt_gr ? 126 : uppercase ? 50 : 233; // ~ ? 2 : é
+        result = alt_gr ? 126 : uppercase ? 50 : 233; // ~ ? 2 : ï¿½
         break;
     case SDLK_3:
         result = alt_gr ? 35 : uppercase ? 51 : 34; // # ? 3 : "
@@ -486,13 +486,13 @@ int getWindowsKeyCode(SDL_Keysym const &key)
         result = alt_gr ? 124 : uppercase ? 54 : 45; // | ? 6 : -
         break;
     case SDLK_7:
-        result = alt_gr ? 96 : uppercase ? 55 : 232; // ` ? 7 : è
+        result = alt_gr ? 96 : uppercase ? 55 : 232; // ` ? 7 : ï¿½
         break;
     case SDLK_8:
         result = alt_gr ? 92 : uppercase ? 56 : 95; // \ ? 8 : _
         break;
     case SDLK_9:
-        result = alt_gr ? 94 : uppercase ? 57 : 231; // ^ ? 9 : ç
+        result = alt_gr ? 94 : uppercase ? 57 : 231; // ^ ? 9 : ï¿½
         break;
 
     case SDLK_COLON:
@@ -526,7 +526,7 @@ int getWindowsKeyCode(SDL_Keysym const &key)
         result = 93;
         break;
     case SDLK_CARET:
-        result = uppercase ? 168 : 94; // ^ : ¨
+        result = uppercase ? 168 : 94; // ^ : ï¿½
         break;
     case SDLK_UNDERSCORE:
         result = 95;
@@ -616,4 +616,4 @@ int getWindowsKeyCode(SDL_Keysym const &key)
     }
     return result;
 }
- // fehlt noch: großbuchstaben
+ // fehlt noch: groï¿½buchstaben

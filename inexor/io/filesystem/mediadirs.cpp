@@ -1,7 +1,7 @@
 /// string operations on filenames (INCOMPLETE! see e.g. stream.cpp).
 
 #include "inexor/shared/cube.hpp"
-#include "inexor/filesystem/mediadirs.hpp"
+#include "inexor/io/filesystem/mediadirs.hpp"
 #include "inexor/util/StringFormatter.hpp"
 
 SVARP(mapdir, "map");

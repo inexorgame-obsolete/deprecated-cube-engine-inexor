@@ -1,5 +1,5 @@
 #include "inexor/engine/engine.hpp"
-#include "inexor/ui/input/InputRouter.hpp"
+#include "inexor/io/input/InputRouter.hpp"
 #include "inexor/util/Logging.hpp"
 #include "inexor/network/legacy/game_types.hpp"
 

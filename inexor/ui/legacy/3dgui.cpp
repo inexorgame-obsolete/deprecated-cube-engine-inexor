@@ -7,8 +7,8 @@
 #include "inexor/ui/legacy/textedit.hpp"
 #include "inexor/texture/slot.hpp"
 #include "inexor/ui/legacy/3dgui.hpp"
-#include "inexor/filesystem/mediadirs.hpp"
-#include "inexor/ui/input/InputRouter.hpp"
+#include "inexor/io/filesystem/mediadirs.hpp"
+#include "inexor/io/input/InputRouter.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"
 
 

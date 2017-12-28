@@ -4,7 +4,7 @@
 #include "inexor/engine/worldio.hpp"
 #include "inexor/engine/sound.hpp"
 #include "inexor/texture/slot.hpp"
-#include "inexor/filesystem/mediadirs.hpp"
+#include "inexor/io/filesystem/mediadirs.hpp"
 #include "inexor/util/Logging.hpp"
 
 using namespace inexor::sound;

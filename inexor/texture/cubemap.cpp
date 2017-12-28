@@ -5,7 +5,7 @@
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/texture/image.hpp"
 #include "inexor/texture/format.hpp"
-#include "inexor/filesystem/mediadirs.hpp"
+#include "inexor/io/filesystem/mediadirs.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/util/Logging.hpp"
 

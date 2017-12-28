@@ -2,7 +2,7 @@
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/ui/legacy/3dgui.hpp"
-#include "inexor/filesystem/mediadirs.hpp"
+#include "inexor/io/filesystem/mediadirs.hpp"
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/util/Subsystem.hpp"
 

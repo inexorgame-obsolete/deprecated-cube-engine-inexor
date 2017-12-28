@@ -1,5 +1,5 @@
 ﻿#include "inexor/ui/input/InexorKeyboardManager.hpp"
-#include "inexor/ui/input/SDL2Keyboard.hpp"
+#include "inexor/io/input/SDL2Keyboard.hpp"
 
 #include <SDL.h>
 #include <include/cef_base.h>

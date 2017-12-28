@@ -1,7 +1,7 @@
 
 #include <fstream>
 #include <vector>
-#include "inexor/filesystem/path.hpp"
+#include "inexor/io/filesystem/path.hpp"
 
 namespace bfs = boost::filesystem;
 

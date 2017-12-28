@@ -3,7 +3,7 @@
 
 #include "inexor/engine/engine.hpp"
 //#include "SDL_image.hpp"
-#include "inexor/filesystem/mediadirs.hpp"
+#include "inexor/io/filesystem/mediadirs.hpp"
 #include "inexor/texture/texture.hpp"
 #include "inexor/texture/image.hpp"
 #include "inexor/texture/SDL_loading.hpp"

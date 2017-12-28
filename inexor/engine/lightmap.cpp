@@ -4,7 +4,7 @@
 #include "inexor/texture/slot.hpp"
 #include "inexor/texture/savetexture.hpp"
 #include "inexor/texture/image.hpp"
-#include "inexor/ui/input/InputRouter.hpp"
+#include "inexor/io/input/InputRouter.hpp"
 #include "inexor/util/Logging.hpp"
 
 using namespace inexor::io;

@@ -4,7 +4,7 @@
 #include "inexor/ui/InexorCefApp.hpp"
 #include "inexor/ui/InexorSettings.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"
-#include "inexor/filesystem/ExecutablePath.hpp"
+#include "inexor/io/filesystem/ExecutablePath.hpp"
 #include "inexor/network/SharedTree.hpp"
 
 #include <string>

@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include "inexor/filesystem/path.hpp"
+#include "inexor/io/filesystem/path.hpp"
 #include "inexor/network/SharedTree.hpp"
 
 enum {

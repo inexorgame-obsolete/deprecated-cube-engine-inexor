@@ -1,5 +1,5 @@
 #include "inexor/client/gamemode/bomb_client.hpp"
-#include "inexor/filesystem/mediadirs.hpp"
+#include "inexor/io/filesystem/mediadirs.hpp"
 
 namespace game {
 

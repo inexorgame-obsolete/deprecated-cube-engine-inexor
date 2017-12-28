@@ -1,5 +1,5 @@
 #include "inexor/engine/engine.hpp"
-#include "inexor/filesystem/mediadirs.hpp"
+#include "inexor/io/filesystem/mediadirs.hpp"
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/util/Logging.hpp"
 #include "inexor/shared/cube_sort.hpp"

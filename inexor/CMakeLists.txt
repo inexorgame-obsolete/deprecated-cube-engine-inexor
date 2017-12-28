@@ -16,7 +16,7 @@ declare_module(engine ./engine)
 declare_module(fpsgame ./fpsgame)
 
 add_subdirectory(util)
-add_subdirectory(filesystem)
+add_subdirectory(io)
 add_subdirectory(network) # syncronisation module + legacy network
 add_subdirectory(ui)
 add_subdirectory(crashreporter)

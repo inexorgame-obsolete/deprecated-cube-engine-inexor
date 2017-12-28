@@ -1,7 +1,7 @@
 #include <boost/algorithm/clamp.hpp>
 
 #include "inexor/ui/InexorCefApp.hpp"
-#include "inexor/ui/input/InputRouter.hpp"
+#include "inexor/io/input/InputRouter.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"
 
 using namespace inexor::rendering::screen;
