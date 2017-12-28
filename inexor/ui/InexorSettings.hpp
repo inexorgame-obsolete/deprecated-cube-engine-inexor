@@ -14,6 +14,8 @@
 
 #include "inexor/util/Logging.hpp"
 
+#include "include/cef_app.h"
+
 namespace inexor {
 namespace ui {
 

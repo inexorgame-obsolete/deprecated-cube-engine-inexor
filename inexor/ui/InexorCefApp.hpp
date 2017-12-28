@@ -74,6 +74,7 @@ class InexorCefApp : public CefApp,
 
         IMPLEMENT_REFCOUNTING(InexorCefApp);
 };
+extern CefRefPtr<InexorCefApp> cef_app;
 
 }
 }

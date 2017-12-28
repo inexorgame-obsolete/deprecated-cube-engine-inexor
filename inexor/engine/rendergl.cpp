@@ -5,7 +5,8 @@
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/util/Subsystem.hpp"
-#include "inexor/ui.hpp"
+
+#include "inexor/ui/InexorCefApp.hpp"
 #include "inexor/ui/layer/InexorAppLayer.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/util/Logging.hpp"

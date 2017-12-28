@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "inexor/ui/CefSubsystem.hpp"
+#include "inexor/ui/InexorCefApp.hpp"
 #include "inexor/ui/InexorSettings.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/filesystem/ExecutablePath.hpp"
@@ -20,9 +21,6 @@ namespace inexor {
 namespace ui {
 
 CefRefPtr<InexorCefApp> cef_app;
-
-CefSubsystem::CefSubsystem() {
-}
 
 CefSubsystem::~CefSubsystem() {
     cef_app->Destroy();
@@ -64,6 +62,11 @@ void CefSubsystem::initialize(int argc, char **argv)
 #endif
     std::string executable_path = ExecutablePathWithoutBinary(argv[0]);
     InexorSettings settings(executable_path);
+    Log.ui->error("FATAL: Initialization of CEF subprocess failed!  {}", executable_path);
+    for (int i = 0; i < argc; i++) {
+        char *arg = argv[i];
+        Log.ui->error("FATAL: {}!", arg);
+    }
     if (!CefInitialize(args, settings, cef_app.get(), NULL)) {
         Log.ui->error("FATAL: Initialization of CEF subprocess failed!");
     }

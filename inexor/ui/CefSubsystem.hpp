@@ -1,7 +1,5 @@
 #pragma once
 
-#include "inexor/ui.hpp"
-
 #include "inexor/util/InexorException.hpp"
 #include "inexor/util/Subsystem.hpp"
 
@@ -12,10 +10,9 @@ IEXCEPTION(CefProcessException, "The CEF process was started with a non-zero exi
 
 class CefSubsystem : public inexor::util::Subsystem {
 public:
-    CefSubsystem();
-    virtual ~CefSubsystem();
-    virtual void tick();
-    virtual void initialize(int argc, char **argv);
+    ~CefSubsystem();
+    virtual void tick() override;
+    virtual void initialize(int argc, char **argv) override;
 };
 
 }

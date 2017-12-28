@@ -3,7 +3,6 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/engine/sound.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
-#include "inexor/ui.hpp"
 #include "inexor/ui/input/InputRouter.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/util/Subsystem.hpp"

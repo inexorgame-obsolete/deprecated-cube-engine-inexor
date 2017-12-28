@@ -2,7 +2,8 @@
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/engine/3dgui.hpp"
-#include "inexor/ui.hpp"
+
+#include <limits>
 
 #define GUI_TITLE_COLOR  0xFFDD88
 #define GUI_BUTTON_COLOR 0xFFFFFF

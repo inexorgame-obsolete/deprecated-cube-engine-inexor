@@ -6,7 +6,7 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/network/legacy/game_types.hpp"
 #include "inexor/util/Logging.hpp"
-#include "inexor/ui.hpp"
+#include "inexor/ui/InexorCefApp.hpp"
 
 using namespace inexor::util; //needed for quoted()
 
