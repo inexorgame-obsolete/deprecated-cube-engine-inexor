@@ -2,7 +2,7 @@
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/engine/worldio.hpp"
-#include "inexor/engine/sound.hpp"
+#include "inexor/sound/sound.hpp"
 #include "inexor/texture/slot.hpp"
 #include "inexor/io/filesystem/mediadirs.hpp"
 #include "inexor/io/Logging.hpp"

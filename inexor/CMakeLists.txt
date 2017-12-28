@@ -24,6 +24,7 @@ add_subdirectory(texture)
 add_subdirectory(gamemode)
 add_subdirectory(model)
 add_subdirectory(physics)
+add_subdirectory(sound)
 
 # Actual targets
 opt_subdir(client on)

@@ -8,7 +8,7 @@
 //   kino - ok
 
 #include "inexor/engine/engine.hpp"
-#include "inexor/engine/sound.hpp"
+#include "inexor/sound/sound.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/io/Logging.hpp"
 #include "inexor/util/legacy_time.hpp"

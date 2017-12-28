@@ -22,7 +22,6 @@ prepend(CLIENT_SOURCES_ENGINE ${SOURCE_DIR}/engine
     rendertext.cpp
     renderva.cpp
     shader.cpp
-    sound.cpp
     water.cpp
     world.cpp
     worldio.cpp
@@ -71,3 +70,4 @@ require_io(${CLIENT_BINARY})
 require_gamemode(${CLIENT_BINARY})
 require_model(${CLIENT_BINARY})
 require_physics(${CLIENT_BINARY})
+require_sound(${CLIENT_BINARY})

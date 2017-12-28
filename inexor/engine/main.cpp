@@ -1,7 +1,7 @@
 /// game initialisation & main loop
 ///
 #include "inexor/engine/engine.hpp"
-#include "inexor/engine/sound.hpp"
+#include "inexor/sound/sound.hpp"
 #include "inexor/io/filesystem/mediadirs.hpp"
 #include "inexor/io/input/InputRouter.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"

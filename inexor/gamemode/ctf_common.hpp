@@ -1,6 +1,6 @@
 #pragma once
 #include "inexor/fpsgame/game.hpp"
-#include "inexor/engine/sound.hpp"
+#include "inexor/sound/sound.hpp"
 #include "inexor/network/legacy/buffer_types.hpp"
 
 #define ctfteamflag(s) (!strcmp(s, "good") ? 1 : (!strcmp(s, "evil") ? 2 : 0))

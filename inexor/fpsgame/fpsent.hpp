@@ -3,7 +3,7 @@
 #include "inexor/fpsgame/fpsstate.hpp"
 #include "inexor/shared/geom.hpp"
 #include "inexor/network/legacy/administration.hpp"
-#include "inexor/engine/sound.hpp"
+#include "inexor/sound/sound.hpp"
 #include "inexor/fpsgame/weapon.hpp"
 #include "inexor/fpsgame/ai.hpp"
 

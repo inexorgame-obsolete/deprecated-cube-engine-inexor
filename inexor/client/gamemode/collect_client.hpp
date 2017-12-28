@@ -1,6 +1,6 @@
 #pragma once
 #include "inexor/fpsgame/game.hpp"
-#include "inexor/engine/sound.hpp"
+#include "inexor/sound/sound.hpp"
 #include "inexor/gamemode/collect_common.hpp"
 #include "inexor/client/gamemode/gamemode_client.hpp"
 
