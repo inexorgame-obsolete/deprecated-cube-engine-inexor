@@ -9,7 +9,6 @@
 
 #include "inexor/engine/octa.hpp"
 #include "inexor/engine/lightmap.hpp"
-#include "inexor/engine/bih.hpp"
 #include "inexor/engine/shader.hpp"
 #include "inexor/texture/texture.hpp"
 #include "inexor/model/model.hpp"

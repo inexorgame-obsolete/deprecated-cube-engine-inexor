@@ -1,5 +1,4 @@
 prepend(CLIENT_SOURCES_ENGINE ${SOURCE_DIR}/engine
-    bih.cpp
     blend.cpp
     client.cpp
     command.cpp
@@ -16,7 +15,6 @@ prepend(CLIENT_SOURCES_ENGINE ${SOURCE_DIR}/engine
     octa.cpp
     octaedit.cpp
     octarender.cpp
-    physics.cpp
     pvs.cpp
     rendergl.cpp
     renderparticles.cpp
@@ -72,3 +70,4 @@ require_texture(${CLIENT_BINARY})
 require_io(${CLIENT_BINARY})
 require_gamemode(${CLIENT_BINARY})
 require_model(${CLIENT_BINARY})
+require_physics(${CLIENT_BINARY})

@@ -4,7 +4,7 @@
 // very robust (uses discrete steps at fixed fps).
 
 #include "inexor/engine/engine.hpp"
-#include "inexor/engine/mpr.hpp"
+#include "inexor/physics/mpr.hpp"
 #include "inexor/io/Logging.hpp"
 
 #include <iomanip> // std::setprecision
