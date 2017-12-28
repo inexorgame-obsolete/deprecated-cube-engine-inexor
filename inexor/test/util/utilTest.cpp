@@ -2,7 +2,7 @@
 
 #include "inexor/test/helpers.hpp"
 
-#include "inexor/util.hpp"
+#include "inexor/util/util.hpp"
 
 using namespace std;
 using namespace inexor::util;

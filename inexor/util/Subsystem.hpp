@@ -5,9 +5,9 @@
 #include <functional>
 #include <queue>
 
-#include "inexor/util.hpp"
 #include "inexor/util/InexorException.hpp"
 #include "inexor/compat/make_unique.hpp"
+#include "inexor/util/util.hpp"
 
 namespace inexor {
 namespace util {

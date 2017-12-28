@@ -2,7 +2,7 @@
 
 #include "inexor/shared/cube.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
-#include "inexor/util.hpp"
+#include "inexor/util/StringFormatter.hpp"
 
 SVARP(mapdir, "map");
 SVARP(texturedir, "texture");

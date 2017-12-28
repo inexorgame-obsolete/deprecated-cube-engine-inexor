@@ -3,7 +3,6 @@
 #include "inexor/ui.hpp"
 
 #include "inexor/util/InexorException.hpp"
-#include "inexor/util/Logging.hpp"
 #include "inexor/util/Subsystem.hpp"
 
 namespace inexor {

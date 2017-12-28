@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "inexor/util.hpp"
+#include "inexor/util/util.hpp"
 #include "inexor/util/random.hpp"
 
 #include "gtest/gtest.h"
