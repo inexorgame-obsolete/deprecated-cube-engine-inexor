@@ -48,9 +48,10 @@ external_pull_request() {
 
 install_dependencies() {
   ## install Conan 0.29.2 as we are not yet compatible with Conan >= 0.30.0
-  cd "$(brew --repo homebrew/core)"
-  cd "$(brew --repo homebrew/core)" && git checkout 971a4ec25f6835874379a2850d8c5fedc4690746
-  HOMEBREW_NO_AUTO_UPDATE=1 brew install conan
+  # cd "$(brew --repo homebrew/core)"
+  # cd "$(brew --repo homebrew/core)" && git checkout 971a4ec25f6835874379a2850d8c5fedc4690746
+  # HOMEBREW_NO_AUTO_UPDATE=1 brew install conan
+  brew install conan
 }
 
 ## INSTALLATION ROUTINES ###################################
