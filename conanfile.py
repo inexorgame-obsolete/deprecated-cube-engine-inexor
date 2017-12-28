@@ -27,7 +27,7 @@ class InexorConan(ConanFile):
         if self.scope.create_package:
             args += ["-DCREATE_PACKAGE=1"]
         cmake = CMake(self)
-        self.run('cmake "{}" {} {}'.format(self.conanfile_directory, cmake.command_line, ' '.join(args)))
+        self.run('cmake "{}" {} {}'.format(self.source_folder, cmake.command_line, ' '.join(args)))
         self.run('cmake --build . --target install {}'.format(cmake.build_config))
         if self.scope.create_package:
             self.run('cmake --build . --target package_debug {}'.format(cmake.build_config))
