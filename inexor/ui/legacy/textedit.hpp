@@ -1,6 +1,6 @@
 #pragma once
 
-#include "inexor/engine/3dgui.hpp"
+#include "inexor/ui/legacy/3dgui.hpp"
 
 
 #include "inexor/engine/glexts.hpp"

@@ -6,7 +6,7 @@
 #include <inexor/engine/engine.hpp>
 #include "inexor/fpsgame/game.hpp"
 #include "inexor/fpsgame/entities.hpp"
-#include "inexor/engine/3dgui.hpp"
+#include "inexor/ui/legacy/3dgui.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/util/Logging.hpp"
 #include "inexor/network/legacy/crypto.hpp"

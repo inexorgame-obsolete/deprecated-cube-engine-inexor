@@ -1,7 +1,7 @@
 // menus.cpp: ingame menu system (also used for scores and serverlist)
 
 #include "inexor/engine/engine.hpp"
-#include "inexor/engine/3dgui.hpp"
+#include "inexor/ui/legacy/3dgui.hpp"
 
 #include <limits>
 

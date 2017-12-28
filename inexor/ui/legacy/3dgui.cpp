@@ -4,9 +4,9 @@
 // implementationwise, it is *stateless*: it keeps no internal gui structure, hit tests are instant, usage & implementation is greatly simplified
 
 #include "inexor/engine/engine.hpp"
-#include "inexor/engine/textedit.hpp"
+#include "inexor/ui/legacy/textedit.hpp"
 #include "inexor/texture/slot.hpp"
-#include "inexor/engine/3dgui.hpp"
+#include "inexor/ui/legacy/3dgui.hpp"
 #include "inexor/filesystem/mediadirs.hpp"
 #include "inexor/ui/input/InputRouter.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"

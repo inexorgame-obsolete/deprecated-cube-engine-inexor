@@ -1,6 +1,6 @@
 #pragma once
 #include "inexor/engine/sound.hpp" // dependency should be inverted: sound should include weapon.hpp
-#include "inexor/engine/3dgui.hpp" // dependency should be inverted: 3dgui should include weapon.hpp
+#include "inexor/ui/legacy/3dgui.hpp" // dependency should be inverted: 3dgui should include weapon.hpp
 #include "inexor/engine/particles.hpp" // dependency should be inverted: particles should include weapon.hpp
 
 #define MAXRAYS 20
