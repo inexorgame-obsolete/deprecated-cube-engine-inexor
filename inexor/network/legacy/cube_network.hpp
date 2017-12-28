@@ -6,7 +6,7 @@
 #include "inexor/shared/cube_types.hpp"
 #include "inexor/shared/cube_tools.hpp"
 #include "inexor/shared/cube_vector.hpp"
-#include "inexor/shared/stream.hpp"
+#include "inexor/io/legacy/stream.hpp"
 #include "inexor/network/legacy/buffer_types.hpp"
 
 #define MAXCLIENTS 128                 // DO NOT set this any higher

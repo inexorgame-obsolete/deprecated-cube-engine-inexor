@@ -1,6 +1,6 @@
 #include "inexor/shared/cube.hpp"
 #include "inexor/io/Logging.hpp"
-#include "inexor/shared/stream.hpp"
+#include "inexor/io/legacy/stream.hpp"
 
 ///////////////////////// file system ///////////////////////
 

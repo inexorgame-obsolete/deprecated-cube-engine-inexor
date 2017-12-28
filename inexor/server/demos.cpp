@@ -1,5 +1,5 @@
 #include "inexor/shared/cube.hpp"
-#include "inexor/shared/stream.hpp"
+#include "inexor/io/legacy/stream.hpp"
 #include "inexor/gamemode/gamemode.hpp"
 #include "inexor/server/demos.hpp"
 #include "inexor/server/client_management.hpp"

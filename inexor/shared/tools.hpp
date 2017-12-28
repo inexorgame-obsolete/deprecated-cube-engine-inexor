@@ -12,7 +12,7 @@
 #include "inexor/shared/cube_hash.hpp"
 #include "inexor/network/legacy/cube_network.hpp"
 #include "inexor/shared/cube_vector.hpp"
-#include "inexor/shared/stream.hpp"
+#include "inexor/io/legacy/stream.hpp"
 #include "inexor/shared/cube_unicode.hpp"
 
 #include <new>
