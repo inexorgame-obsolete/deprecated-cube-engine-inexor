@@ -1,6 +1,6 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/io/input/InputRouter.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 #include "inexor/network/legacy/game_types.hpp"
 
 using namespace inexor::io;

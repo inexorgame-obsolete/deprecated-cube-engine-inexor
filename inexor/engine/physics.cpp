@@ -5,7 +5,7 @@
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/engine/mpr.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 
 #include <iomanip> // std::setprecision
 

@@ -5,7 +5,7 @@
 #include "inexor/network/legacy/crypto.hpp"
 #include "inexor/network/IsLocalConnection.hpp"
 #include "inexor/network/legacy/cube_network.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 #include "inexor/shared/cube.hpp"
 
 namespace server {

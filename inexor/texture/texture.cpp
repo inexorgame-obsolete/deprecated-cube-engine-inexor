@@ -13,7 +13,7 @@
 #include "inexor/texture/texsettings.hpp"
 #include "inexor/texture/compressedtex.hpp"
 #include "inexor/texture/additionaltools.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 
 #include <unordered_map>
 #include <map>

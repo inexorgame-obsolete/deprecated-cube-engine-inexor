@@ -2,7 +2,7 @@
 /// compressed texture (mostly dds) loading.
 
 #include "inexor/texture/compressedtex.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 
 VAR(dbgdds, 0, 0, 1);
 

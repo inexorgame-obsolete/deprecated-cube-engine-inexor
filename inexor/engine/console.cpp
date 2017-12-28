@@ -3,7 +3,7 @@
 #include <set>
 #include "inexor/engine/engine.hpp"
 #include "inexor/io/input/InputRouter.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 #include "inexor/shared/cube_queue.hpp"
 
 

@@ -12,7 +12,7 @@
 #define GetCurrentDir getcwd
 #endif
 
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 
 #include "include/cef_app.h"
 

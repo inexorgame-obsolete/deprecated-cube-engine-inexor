@@ -7,7 +7,7 @@
 #include "inexor/texture/format.hpp"
 #include "inexor/io/filesystem/mediadirs.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"

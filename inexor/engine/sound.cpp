@@ -4,7 +4,7 @@
 #include "inexor/engine/sound.hpp"
 #include "inexor/io/filesystem/mediadirs.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 
 #include <string>
 

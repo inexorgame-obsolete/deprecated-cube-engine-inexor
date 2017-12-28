@@ -1,5 +1,5 @@
 #include "inexor/fpsgame/game.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 #include "inexor/fpsgame/entities.hpp"
 
 using namespace inexor::sound;

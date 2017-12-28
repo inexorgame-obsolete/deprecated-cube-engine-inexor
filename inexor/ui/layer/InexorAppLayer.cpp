@@ -2,7 +2,7 @@
 
 #include "inexor/network/SharedTree.hpp"
 #include "inexor/ui/layer/InexorAppLayer.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 #include "inexor/ui/InexorCefApp.hpp"
 
 namespace inexor {

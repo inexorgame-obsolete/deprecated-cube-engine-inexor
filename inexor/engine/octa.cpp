@@ -1,7 +1,7 @@
 // core world management routines
 
 #include "inexor/engine/engine.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 #include "inexor/shared/cube_sort.hpp"
 
 cube *worldroot = newcubes(F_SOLID);

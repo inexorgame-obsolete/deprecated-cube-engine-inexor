@@ -8,7 +8,7 @@
 #include <grpc/grpc.h>
 #include <grpc++/grpc++.h>
 
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 
 namespace inexor { namespace rpc {
 

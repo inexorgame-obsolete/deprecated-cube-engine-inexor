@@ -8,7 +8,7 @@
 #include "inexor/fpsgame/entities.hpp"
 #include "inexor/ui/legacy/3dgui.hpp"
 #include "inexor/io/filesystem/mediadirs.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 #include "inexor/network/legacy/crypto.hpp"
 #include "inexor/engine/worldio.hpp"
 

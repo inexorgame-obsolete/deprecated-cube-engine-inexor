@@ -1,7 +1,7 @@
 #include <boost/algorithm/clamp.hpp>
 
 #include "inexor/ui/screen/ScreenManager.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 
 using boost::algorithm::clamp;
 

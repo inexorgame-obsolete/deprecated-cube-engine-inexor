@@ -3,7 +3,7 @@
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/network/SharedTree.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 #include <cmath>
 
 using namespace inexor::util;

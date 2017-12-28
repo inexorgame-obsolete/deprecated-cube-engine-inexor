@@ -6,7 +6,7 @@
 #include "inexor/texture/macros.hpp"
 #include "inexor/texture/savetexture.hpp"
 #include "inexor/texture/compressedtex.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 
 void flipnormalmapy(char *destfile, char *normalfile) // jpg/png /tga-> tga
 {

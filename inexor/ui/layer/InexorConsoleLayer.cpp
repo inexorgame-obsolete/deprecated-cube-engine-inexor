@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "inexor/ui/layer/InexorConsoleLayer.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 #include "inexor/ui/InexorCefApp.hpp"
 #include "inexor/network/SharedTree.hpp"
 

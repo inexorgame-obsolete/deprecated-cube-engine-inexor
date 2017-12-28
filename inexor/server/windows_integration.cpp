@@ -7,7 +7,7 @@
 #include "inexor/shared/cube_vector.hpp"
 #include "inexor/shared/cube_queue.hpp"
 
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 
 #include <windows.h>
 #include <shellapi.h>

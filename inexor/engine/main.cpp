@@ -7,7 +7,7 @@
 #include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/util/Subsystem.hpp"
 #include "inexor/crashreporter/CrashReporter.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 #include "inexor/network/SharedTree.hpp"
 #include "inexor/network/SharedList.hpp"
 #include "inexor/util/legacy_time.hpp"

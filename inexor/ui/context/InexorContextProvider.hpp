@@ -5,7 +5,7 @@
 #include "include/cef_app.h"
 #include "include/wrapper/cef_helpers.h"
 
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 
 namespace inexor {
 namespace ui {

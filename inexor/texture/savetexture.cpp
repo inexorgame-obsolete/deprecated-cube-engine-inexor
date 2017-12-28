@@ -6,7 +6,7 @@
 #include "inexor/texture/SDL_loading.hpp"
 #include "inexor/texture/image.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 
 using namespace inexor::rendering::screen;
 

@@ -2,7 +2,7 @@
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/texture/slot.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 #include "inexor/engine/worldio.hpp"
 
 #include "inexor/engine/glexts.hpp"

@@ -14,7 +14,7 @@
 #include <grpc/grpc.h>
 #include <grpc++/grpc++.h>
 
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 
 // size is important for us, proto explicitly specifies int64
 typedef int64_t int64;

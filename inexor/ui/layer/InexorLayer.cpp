@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 #include "inexor/ui/layer/InexorLayer.hpp"
 
 using namespace inexor::util;

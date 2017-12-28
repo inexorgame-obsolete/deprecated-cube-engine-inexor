@@ -5,7 +5,7 @@
 #include "inexor/engine/sound.hpp"
 #include "inexor/texture/slot.hpp"
 #include "inexor/io/filesystem/mediadirs.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 
 using namespace inexor::sound;
 using namespace inexor::util;

@@ -1,5 +1,5 @@
 #pragma once
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 
 /// priviledge levels
 enum {

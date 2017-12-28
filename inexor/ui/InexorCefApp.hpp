@@ -17,7 +17,7 @@
 #include "inexor/ui/layer/InexorAppLayer.hpp"
 #include "inexor/ui/layer/InexorConsoleLayer.hpp"
 #include "inexor/ui/layer/InexorHudLayer.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 
 namespace inexor {
 namespace ui {

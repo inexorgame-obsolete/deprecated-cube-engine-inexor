@@ -1,5 +1,5 @@
 #include "inexor/shared/cube.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 #include "inexor/shared/stream.hpp"
 
 ///////////////////////// file system ///////////////////////

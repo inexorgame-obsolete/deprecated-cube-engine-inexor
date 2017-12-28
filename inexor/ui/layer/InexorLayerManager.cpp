@@ -4,7 +4,7 @@
 //#include "include/cef_task.h"
 #include "include/wrapper/cef_closure_task.h"
 
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 #include "inexor/ui/layer/InexorLayerManager.hpp"
 
 namespace inexor {

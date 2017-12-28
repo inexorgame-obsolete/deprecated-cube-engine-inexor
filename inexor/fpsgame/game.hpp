@@ -7,7 +7,7 @@
 #pragma once
 
 #include "inexor/shared/cube.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 #include "inexor/network/legacy/game_types.hpp"
 #include "inexor/network/legacy/administration.hpp"
 

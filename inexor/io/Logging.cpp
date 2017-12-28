@@ -1,4 +1,4 @@
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 #include "inexor/network/SharedTree.hpp"
 #include "inexor/network/SharedList.hpp"
 
@@ -176,7 +176,7 @@ log_manager::log_manager() : logfile((char*)"default_inexor_log.log")
     // Queue size for async mode must be power of 2
     size_t q_size = 4096;
     // Set async mode
-    spdlog::set_async_mode(q_size);
+//   spdlog::set_async_mode(q_size);
 
     logfile.onChange.connect([&, this](char * const &old_logfile, char * const &new_logfile)
     {

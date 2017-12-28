@@ -3,7 +3,7 @@
 #include "inexor/io/filesystem/mediadirs.hpp"
 #include "inexor/texture/slot.hpp"
 #include "inexor/io/input/InputRouter.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"

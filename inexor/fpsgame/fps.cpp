@@ -3,7 +3,7 @@
 #include "inexor/fpsgame/game.hpp"
 #include "inexor/fpsgame/entities.hpp"
 #include "inexor/io/filesystem/mediadirs.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 #include "inexor/client/gamemode/gamemode_client.hpp"
 
 #include "inexor/engine/glexts.hpp"

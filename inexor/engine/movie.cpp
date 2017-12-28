@@ -10,7 +10,7 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/engine/sound.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 #include "inexor/util/legacy_time.hpp"
 #include "inexor/shared/cube_queue.hpp"
 struct unionfind

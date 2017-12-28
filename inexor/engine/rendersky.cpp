@@ -1,7 +1,7 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/io/filesystem/mediadirs.hpp"
 #include "inexor/texture/cubemap.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 #include "inexor/shared/cube_sort.hpp"
 
 #include "inexor/engine/glexts.hpp"

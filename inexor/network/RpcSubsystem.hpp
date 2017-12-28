@@ -7,7 +7,7 @@
 #include <grpc++/grpc++.h>
 
 #include "inexor/util/Subsystem.hpp"
-#include "inexor/util/Logging.hpp"
+#include "inexor/io/Logging.hpp"
 #include "inexor/network/RpcServer.hpp"
 
 namespace inexor {
