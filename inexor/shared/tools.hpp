@@ -23,12 +23,11 @@
 
 #include "inexor/util/random.hpp"
 #include "inexor/network/SharedTree.hpp"
-#include "inexor/util.hpp"
+
 // TODO:
 // Replace swap in sources
 // Replace rnd in sources (+ friends)
 // Remove stringslice (replace with std::string methods)
-// Move top level headers (inexor/util.hpp) to their moduls again.
 
 using std::swap;
 using std::min;
@@ -62,8 +61,15 @@ static inline int bitscan(uint mask)
 #endif
 #endif
 
-INEXOR_FUNCTION_ALIAS(rnd, inexor::util::rnd<int>);
-INEXOR_FUNCTION_ALIAS(rndscale, inexor::util::rnd<float>);
-INEXOR_FUNCTION_ALIAS(detrnd, inexor::util::deterministic_rnd<int>);
+/// Function alias. Should be replaced inline actually!
+inline int rnd(int Rmax) {
+    return inexor::util::rnd<int>(Rmax);
+}
+inline float rndscale(float Rmax) {
+    return inexor::util::rnd<float>(Rmax);
+}
+inline float detrnd(int seed, int Rmax) {
+    return inexor::util::deterministic_rnd<int>(seed, Rmax);
+}
 
 
