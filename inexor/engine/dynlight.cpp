@@ -1,5 +1,6 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/engine/pvs.hpp"
+#include "inexor/engine/dynlight.hpp"
 
 VARP(maxdynlights, 0, 3, MAXDYNLIGHTS);
 VARP(dynlightdist, 0, 1024, 10000);
@@ -129,16 +130,6 @@ int finddynlights()
         if(closedynlights.length() >= DYNLIGHTMASK) break;
     }
     return closedynlights.length();
-}
-
-bool getdynlight(int n, vec &o, float &radius, vec &color)
-{
-    if(!closedynlights.inrange(n)) return false;
-    dynlight &d = *closedynlights[n];
-    o = d.o;
-    radius = d.curradius;
-    color = d.curcolor;
-    return true;
 }
 
 void dynlightreaching(const vec &target, vec &color, vec &dir, bool hud)

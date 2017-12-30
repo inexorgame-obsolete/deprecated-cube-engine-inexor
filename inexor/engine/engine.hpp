@@ -238,14 +238,6 @@ extern SharedVar<int> oqfrags;
 #define startquery(query) do { glBeginQuery_(GL_SAMPLES_PASSED, ((occludequery *)(query))->id); } while(0)
 #define endquery(query) do { glEndQuery_(GL_SAMPLES_PASSED); } while(0)
 
-// dynlight
-
-extern void updatedynlights();
-extern int finddynlights();
-extern void calcdynlightmask(vtxarray *va);
-extern int setdynlights(vtxarray *va);
-extern bool getdynlight(int n, vec &o, float &radius, vec &color);
-
 // material
 
 extern SharedVar<int> showmat;
