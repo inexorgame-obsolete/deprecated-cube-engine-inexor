@@ -5,6 +5,7 @@
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/io/Logging.hpp"
 #include "inexor/engine/shadowmap.hpp"
+#include "inexor/engine/material.hpp"
 
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"

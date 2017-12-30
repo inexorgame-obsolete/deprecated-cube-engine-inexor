@@ -13,6 +13,7 @@
 #include "inexor/engine/blend.hpp"
 #include "inexor/engine/pvs.hpp"
 #include "inexor/engine/dynlight.hpp"
+#include "inexor/engine/material.hpp"
 
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"

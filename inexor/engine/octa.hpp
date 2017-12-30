@@ -9,9 +9,6 @@
 #include "inexor/shared/ents.hpp"
 #include "inexor/network/SharedTree.hpp"
 
-#include <SDL.h>
-#include <SDL_opengl.h>
-
 #include <boost/algorithm/clamp.hpp> // TODO replace with std::clamp as soon as C++17 is our target.
 
 struct elementset
@@ -102,7 +99,7 @@ struct grasstri
 struct occludequery
 {
     void *owner;
-    GLuint id;
+    uint id;
     int fragments;
 };
 
@@ -148,7 +145,7 @@ struct vtxarray
     vertex *vdata;           // vertex data
     ushort voffset;          // offset into vertex data
     ushort *edata, *skydata; // vertex indices
-    GLuint vbuf, ebuf, skybuf; // VBOs
+    uint vbuf, ebuf, skybuf; // VBOs
     ushort minvert, maxvert; // DRE info
     elementset *eslist;      // List of element indices sets (range) per texture
     materialsurface *matbuf; // buffer of material surfaces
