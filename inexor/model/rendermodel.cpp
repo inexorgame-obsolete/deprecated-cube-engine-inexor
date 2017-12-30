@@ -1,6 +1,7 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/io/Logging.hpp"
+#include "inexor/engine/pvs.hpp"
 
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"

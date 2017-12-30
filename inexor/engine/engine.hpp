@@ -71,21 +71,6 @@ extern void popshadowmap();
 extern void rendershadowmapreceivers();
 extern void guessshadowdir();
 
-// pvs
-extern void clearpvs();
-extern bool pvsoccluded(const ivec &bbmin, const ivec &bbmax);
-extern bool pvsoccludedsphere(const vec &center, float radius);
-extern bool waterpvsoccluded(int height);
-extern void setviewcell(const vec &p);
-extern void savepvs(stream *f);
-extern void loadpvs(stream *f, int numpvs);
-extern int getnumviewcells();
-
-static inline bool pvsoccluded(const ivec &bborigin, int size)
-{
-    return pvsoccluded(bborigin, ivec(bborigin).add(size));
-}
-
 // rendergl
 extern bool hasVAO, hasFBO, hasAFBO, hasDS, hasTF, hasTRG, hasTSW, hasS3TC, hasFXT1, hasAF, hasFBB, hasUBO, hasMBR;
 extern int hasstencil;

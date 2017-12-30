@@ -2,6 +2,7 @@
 #include "inexor/io/input/InputRouter.hpp"
 #include "inexor/io/Logging.hpp"
 #include "inexor/shared/cube_queue.hpp"
+#include "inexor/engine/pvs.hpp"
 
 using namespace inexor::io;
 

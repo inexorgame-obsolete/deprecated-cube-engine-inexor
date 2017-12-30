@@ -1,4 +1,5 @@
 #include "inexor/engine/engine.hpp"
+#include "inexor/engine/pvs.hpp"
 
 VARP(maxdynlights, 0, 3, MAXDYNLIGHTS);
 VARP(dynlightdist, 0, 1024, 10000);
