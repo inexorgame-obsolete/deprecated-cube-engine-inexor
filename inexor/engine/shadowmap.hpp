@@ -1,0 +1,21 @@
+#pragma once
+
+// Shadowmaps are used to add a shadow to dynamically moving entities.
+// They are basically low resultion renderings from the perspective of the light.
+
+#include "inexor/network/SharedVar.hpp"
+#include "inexor/shared/geom.hpp"
+
+extern SharedVar<int> shadowmap;
+extern int shadowmapcasters;
+extern bool shadowmapping;
+extern matrix4 shadowmatrix;
+
+extern bool isshadowmapcaster(const vec &o, float rad);
+extern bool addshadowmapcaster(const vec &o, float xyrad, float zrad);
+extern bool isshadowmapreceiver(vtxarray *va);
+extern void rendershadowmap();
+extern void pushshadowmap();
+extern void popshadowmap();
+extern void rendershadowmapreceivers();
+extern void guessshadowdir();

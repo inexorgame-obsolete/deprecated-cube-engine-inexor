@@ -55,22 +55,6 @@ extern void renderpostfx();
 extern void compacteditvslots();
 extern void compactmruvslots();
 
-// shadowmap
-
-extern SharedVar<int> shadowmap;
-extern int shadowmapcasters;
-extern bool shadowmapping;
-extern matrix4 shadowmatrix;
-
-extern bool isshadowmapcaster(const vec &o, float rad);
-extern bool addshadowmapcaster(const vec &o, float xyrad, float zrad);
-extern bool isshadowmapreceiver(vtxarray *va);
-extern void rendershadowmap();
-extern void pushshadowmap();
-extern void popshadowmap();
-extern void rendershadowmapreceivers();
-extern void guessshadowdir();
-
 // rendergl
 extern bool hasVAO, hasFBO, hasAFBO, hasDS, hasTF, hasTRG, hasTSW, hasS3TC, hasFXT1, hasAF, hasFBB, hasUBO, hasMBR;
 extern int hasstencil;

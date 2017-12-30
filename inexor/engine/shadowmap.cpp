@@ -1,5 +1,6 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/engine/rendertarget.hpp"
+#include "inexor/engine/shadowmap.hpp"
 
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"
