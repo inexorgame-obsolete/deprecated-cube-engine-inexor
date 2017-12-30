@@ -5,6 +5,7 @@
 #include "inexor/engine/particles.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/io/Logging.hpp"
+#include "inexor/engine/rendertext.hpp"
 
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"

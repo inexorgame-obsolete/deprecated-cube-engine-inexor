@@ -10,6 +10,7 @@
 #include "inexor/io/filesystem/mediadirs.hpp"
 #include "inexor/io/input/InputRouter.hpp"
 #include "inexor/ui/screen/ScreenManager.hpp"
+#include "inexor/engine/rendertext.hpp"
 
 
 using namespace inexor::filesystem;

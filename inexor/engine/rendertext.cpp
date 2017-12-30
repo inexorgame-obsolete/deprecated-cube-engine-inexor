@@ -1,4 +1,5 @@
 #include "inexor/engine/engine.hpp"
+#include "inexor/engine/rendertext.hpp"
 
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"

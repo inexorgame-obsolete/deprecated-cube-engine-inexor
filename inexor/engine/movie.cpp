@@ -13,6 +13,8 @@
 #include "inexor/io/Logging.hpp"
 #include "inexor/util/legacy_time.hpp"
 #include "inexor/shared/cube_queue.hpp"
+#include "inexor/engine/rendertext.hpp"
+
 struct unionfind
 {
     struct ufval

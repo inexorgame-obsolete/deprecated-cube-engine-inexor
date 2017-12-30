@@ -5,6 +5,7 @@
 #include "inexor/io/input/InputRouter.hpp"
 #include "inexor/io/Logging.hpp"
 #include "inexor/shared/cube_queue.hpp"
+#include "inexor/engine/rendertext.hpp"
 
 
 using namespace inexor::util;
