@@ -6,6 +6,7 @@
 #include "inexor/engine/worldio.hpp"
 #include "inexor/engine/blend.hpp"
 #include "inexor/engine/pvs.hpp"
+#include "inexor/physics/physics.hpp"
 
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"

@@ -7,6 +7,7 @@
 #include "inexor/io/input/InputRouter.hpp"
 #include "inexor/io/Logging.hpp"
 #include "inexor/engine/blend.hpp"
+#include "inexor/physics/physics.hpp"
 
 using namespace inexor::io;
 

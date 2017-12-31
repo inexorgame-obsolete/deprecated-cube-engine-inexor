@@ -360,16 +360,6 @@ extern void addchange(const char *desc, int type);
 extern void clearchanges(int type);
 
 // physics
-extern void mousemove(int dx, int dy);
-extern bool pointincube(const clipplanes &p, const vec &v);
-extern bool overlapsdynent(const vec &o, float radius);
-extern void rotatebb(vec &center, vec &radius, int yaw);
-extern float shadowray(const vec &o, const vec &ray, float radius, int mode, extentity *t = NULL);
-struct ShadowRayCache;
-extern ShadowRayCache *newshadowraycache();
-extern void freeshadowraycache(ShadowRayCache *&cache);
-extern void resetshadowraycache(ShadowRayCache *cache);
-extern float shadowray(ShadowRayCache *cache, const vec &o, const vec &ray, float radius, int mode, extentity *t = NULL);
 
 // world
 
