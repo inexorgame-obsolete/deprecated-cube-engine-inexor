@@ -30,7 +30,7 @@ InexorCefApp::InexorCefApp(std::string instance_id, std::string host, std::strin
 void InexorCefApp::InitHudLayer(std::string instance_id, std::string host, std::string port)
 {
     std::string layer_name("hud");
-    std::string layer_url("http://" + host + ":" + port + "/api/v1/interfaces/ui-client-hud/index.html?instanceId=" + instance_id + "&host=" + host + "&port=" + port);
+    std::string layer_url("http://" + host + ":" + port + "/api/v1/interfaces/hud/index.html?instanceId=" + instance_id + "&host=" + host + "&port=" + port);
     hud_layer = new layer::InexorHudLayer(layer_name, layer_url);
     hud_layer->Show();
     context_manager->AddSubContext(hud_layer);
@@ -41,7 +41,7 @@ void InexorCefApp::InitHudLayer(std::string instance_id, std::string host, std::
 void InexorCefApp::InitConsoleLayer(std::string instance_id, std::string host, std::string port)
 {
     std::string layer_name("console");
-    std::string layer_url("http://" + host + ":" + port + "/api/v1/interfaces/ui-console/index.html?instanceId=" + instance_id + "&host=" + host + "&port=" + port);
+    std::string layer_url("http://" + host + ":" + port + "/api/v1/interfaces/console/index.html?instanceId=" + instance_id + "&host=" + host + "&port=" + port);
     console_layer = new layer::InexorConsoleLayer(layer_name, layer_url);
     console_layer->Show();
     context_manager->AddSubContext(console_layer);
@@ -52,7 +52,7 @@ void InexorCefApp::InitConsoleLayer(std::string instance_id, std::string host, s
 void InexorCefApp::InitAppLayer(std::string instance_id, std::string host, std::string port)
 {
     std::string layer_name("app");
-    std::string layer_url("http://" + host + ":" + port + "/api/v1/interfaces/ui-client-interface/index.html?instanceId=" + instance_id + "&host=" + host + "&port=" + port);
+    std::string layer_url("http://" + host + ":" + port + "/api/v1/interfaces/client-interface/index.html?instanceId=" + instance_id + "&host=" + host + "&port=" + port);
     app_layer = new layer::InexorAppLayer(layer_name, layer_url);
     app_layer->Hide();
     context_manager->AddSubContext(app_layer);
