@@ -1,7 +1,7 @@
 requires = (
     ("InexorGlueGen/0.6.2@inexorgame/stable"),
-    ("Protobuf/3.1.0@inexorgame/stable"),
-    ("gRPC/1.1.0@inexorgame/stable"),
+    ("Protobuf/3.5.1@inexorgame/stable"),
+    ("gRPC/1.8.3@inexorgame/stable"),
     ("doxygen/1.8.13@inexorgame/stable"),
     ("cmake-findboost/0.2.0@bincrafters/stable"),
     ("Boost.Filesystem/1.65.1@bincrafters/stable"),
