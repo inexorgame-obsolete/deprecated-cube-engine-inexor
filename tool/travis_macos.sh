@@ -56,8 +56,12 @@ install_dependencies() {
 
 ## INSTALLATION ROUTINES ###################################
 
-build_conan_and_upload() {
+build_conan() {
   conan install "$1" --build=missing -s compiler.libcxx="libc++"
+}
+
+build_conan_and_upload() {
+  build_conan "$1"
   set -f
   if contains "$1" stable; then
     conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "$1"
@@ -92,8 +96,8 @@ build() {
     build_conan_and_upload "fmt/4.1.0@bincrafters/stable"
     build_conan_and_upload "zlib/1.2.11@conan/stable"
     build_conan_and_upload "ENet/1.3.13@inexorgame/stable"
-    build_conan_and_upload "Protobuf/3.1.0@inexorgame/stable"
-    build_conan_and_upload "gRPC/1.1.0@inexorgame/stable"
+    build_conan_and_upload "Protobuf/3.5.1@inexorgame/stable"
+    build_conan_and_upload "gRPC/1.8.3@inexorgame/stable"
     build_conan_and_upload "libpng/1.6.34@bincrafters/stable"
 
     build_conan_and_upload "cmake-findboost/0.2.0@bincrafters/stable"
@@ -104,13 +108,13 @@ build() {
     build_conan_and_upload "Boost.Thread/1.65.1@bincrafters/stable"
     build_conan_and_upload "InexorGlueGen/0.6.2@inexorgame/stable"
 
-    build_conan_and_upload "SDL2/2.0.5@lasote/testing"
+    build_conan "SDL2/2.0.5@lasote/testing"
 
     build_conan_and_upload "libjpeg-turbo/1.5.2@bincrafters/stable"
-    build_conan_and_upload "SDL2_image/2.0.1@lasote/stable"
+    build_conan "SDL2_image/2.0.1@lasote/stable"
 
-    build_conan_and_upload "CEF/3.3239.1709.g093cae4@inexorgame/testing"
-    build_conan_and_upload "Boost/1.64.0@inexorgame/stable"
+    build_conan "CEF/3.3239.1709.g093cae4@inexorgame/testing"
+    build_conan "Boost/1.64.0@inexorgame/stable"
 
     conan info .
 
