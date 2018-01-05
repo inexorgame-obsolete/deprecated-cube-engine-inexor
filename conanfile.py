@@ -1,9 +1,11 @@
 from conans import ConanFile, CMake
 import dependencies
+import os
 
 
 class InexorConan(ConanFile):
     license = "ZLIB"
+    description = "Inexor's private root Conan recipe"
     url = "https://github.com/inexorgame/inexor-core.git"
     settings = "os", "compiler", "build_type", "arch"
 
@@ -18,13 +20,13 @@ class InexorConan(ConanFile):
 
     def build(self):
         args = []
-        if self.scope.build_test or self.scope.build_all:
+        if os.environ['build_test'] or os.environ['build_all']:
             args += ["-DBUILD_TEST=1"]
-        if self.scope.build_server or self.scope.build_all:
+        if os.environ['build_server'] or os.environ['build_all']:
             args += ["-DBUILD_SERVER=1"]
-        if self.scope.build_master or self.scope.build_all:
+        if os.environ['build_master'] or os.environ['build_all']:
             args += ["-DBUILD_MASTER=1"]
-        if self.scope.create_package:
+        if os.environ['create_package']:
             args += ["-DCREATE_PACKAGE=1"]
         cmake = CMake(self)
         self.run('cmake "{}" {} {}'.format(self.source_folder, cmake.command_line, ' '.join(args)))
