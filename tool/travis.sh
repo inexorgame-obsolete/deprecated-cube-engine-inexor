@@ -87,6 +87,8 @@ build() {
 
     ## conan info "$gitroot"
 
+    conan install gRPC/1.8.3@inexorgame/stable --env build_all=1 --build -s compiler="$CONAN_COMPILER" -s compiler.version="$CONAN_COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -e CC="$CC" -e CXX="$CXX"
+
     if test "$NIGHTLY" = conan; then
       echo "executed conan install "$gitroot" --env build_all=1 --build -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx=libstdc++11 -e CC=$CC -e CXX=$CXX"
       conan install "$gitroot" --env build_all=1 --build -s compiler="$CONAN_COMPILER" -s compiler.version="$CONAN_COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -e CC="$CC" -e CXX="$CXX"
