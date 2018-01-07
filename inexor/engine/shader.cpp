@@ -2,7 +2,10 @@
 
 #include "inexor/engine/engine.hpp"
 #include "inexor/texture/slot.hpp"
+
 #include "inexor/ui/screen/ScreenManager.hpp"
+#include "inexor/ui/legacy/menus.hpp"
+
 #include "inexor/io/Logging.hpp"
 
 #include "inexor/engine/shader.hpp"

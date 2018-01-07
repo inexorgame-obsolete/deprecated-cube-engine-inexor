@@ -5,6 +5,7 @@
 #include "inexor/engine/shadowmap.hpp"
 #include "inexor/engine/blob.hpp"
 #include "inexor/physics/physics.hpp"
+#include "inexor/ui/legacy/menus.hpp"
 
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"

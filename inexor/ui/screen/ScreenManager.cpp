@@ -1,6 +1,8 @@
 #include <boost/algorithm/clamp.hpp>
 
 #include "inexor/ui/screen/ScreenManager.hpp"
+#include "inexor/ui/legacy/menus.hpp"
+
 #include "inexor/io/Logging.hpp"
 
 using boost::algorithm::clamp;
@@ -9,9 +11,6 @@ using boost::algorithm::clamp;
 extern void cef_resize(int width, int height);
 extern void gl_resize();
 extern void fatal(const char *s, ...);
-enum { NOT_INITING = 0, INIT_LOAD, INIT_RESET };
-enum { CHANGE_GFX = 1<<0, CHANGE_SOUND = 1<<1 };
-extern bool initwarning(const char *desc, int level = INIT_RESET, int type = CHANGE_GFX);
 extern int hasstencil;
 namespace gle {
     extern int enabled;

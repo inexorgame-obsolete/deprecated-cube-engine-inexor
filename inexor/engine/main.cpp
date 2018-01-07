@@ -111,19 +111,6 @@ void fatal(std::vector<std::string> &output)
     exit(EXIT_FAILURE);
 }
 
-/// print initialisation (bug hints) warning in game console
-/// @see addchange
-bool initwarning(const char *desc, int level, int type)
-{
-    if(initing < level) 
-    {
-        addchange(desc, type);
-        return true;
-    }
-    return false;
-}
-
-
 /// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 /// screen setup and window settings
 

@@ -1,8 +1,10 @@
 /// @file texsettings.cpp
 /// Settings for texture loading and handling.
 
-#include "inexor/engine/engine.hpp"
-#include "inexor/texture/texsettings.hpp"
+#include "inexor/texture/texture.hpp"
+
+#include "inexor/shared/command.hpp"
+#include "inexor/ui/legacy/menus.hpp"
 
 VAR(hwtexsize, 1, 0, 0);
 VAR(hwcubetexsize, 1, 0, 0);

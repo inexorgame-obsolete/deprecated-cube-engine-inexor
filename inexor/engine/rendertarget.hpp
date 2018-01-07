@@ -9,7 +9,7 @@
 #include "inexor/engine/glemu.hpp"
 
 extern void screenquad(float sw, float sh); // todo remove
-extern void hudquad(float x, float y, float w, float h, float tx = 0, float ty = 0, float tw = 1, float th = 1);
+extern void hudquad(float x, float y, float w, float h, float tx, float ty, float tw, float th);
 
 #include "inexor/network/SharedVar.hpp"
 

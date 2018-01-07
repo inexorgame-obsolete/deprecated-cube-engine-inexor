@@ -315,21 +315,7 @@ extern void writebinds(stream *f);
 extern void writecompletions(stream *f);
 
 // main
-enum
-{
-    NOT_INITING = 0,
-    INIT_LOAD,
-    INIT_RESET
-};
-extern int initing;
 extern SharedVar<int> numcpus;
-
-enum
-{
-    CHANGE_GFX   = 1<<0,
-    CHANGE_SOUND = 1<<1
-};
-extern bool initwarning(const char *desc, int level = INIT_RESET, int type = CHANGE_GFX);
 
 // extern bool grabinput, minimized;
 
@@ -352,13 +338,6 @@ enum { KR_CONSOLE = 1<<0, KR_GUI = 1<<1, KR_EDITMODE = 1<<2 };
 enum { TI_CONSOLE = 1<<0, TI_GUI = 1<<1 };
 
 // extern void textinput(bool on, int mask = ~0);
-
-// menu
-extern void menuprocess();
-extern void addchange(const char *desc, int type);
-extern void clearchanges(int type);
-
-// physics
 
 // world
 
