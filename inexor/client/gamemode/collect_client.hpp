@@ -12,24 +12,24 @@ struct collectclientmode : clientmode, collectmode_common
 
     token &droptoken(int id, const vec &o, int team, int droptime);
 
-    void preload();
+    void preload() override;
 
     void drawblip(fpsent *d, float x, float y, float s, const vec &pos, float size = 0.05f);
 
     void drawbaseblip(fpsent *d, float x, float y, float s, int i);
 
-    int clipconsole(int w, int h)
+    int clipconsole(int w, int h) override
     {
         return (h*(1 + 1 + 10))/(4*10);
     }
 
-    void drawhud(fpsent *d, int w, int h);
+    void drawhud(fpsent *d, int w, int h) override;
 
-    void rendergame();
+    void rendergame() override;
 
-    void setup();
+    void setup() override;
 
-    void senditems(packetbuf &p);
+    void senditems(packetbuf &p) override;
 
     vec movetoken(const vec &o, int yaw);
 
@@ -49,14 +49,14 @@ struct collectclientmode : clientmode, collectmode_common
 
     void deposittokens(fpsent *d, int basenum, int deposited, int team, int score, int flags);
 
-    void checkitems(fpsent *d);
+    void checkitems(fpsent *d) override;
 
-    int respawnwait(fpsent *d)
+    int respawnwait(fpsent *d) override
     {
         return max(0, RESPAWNSECS-(lastmillis-d->lastpain)/1000);
     }
 
-    void pickspawn(fpsent *d)
+    void pickspawn(fpsent *d) override
     {
         findplayerspawn(d, -1, collectteambase(d->team));
     }

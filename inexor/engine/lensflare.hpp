@@ -41,12 +41,12 @@ struct flarerenderer : partrenderer
     {
         flares = new flare[maxflares];
     }
-    ~flarerenderer()
+    ~flarerenderer() override
     {
         delete[] flares;
     }
 
-    void reset()
+    void reset() override
     {
         numflares = 0;
     }
@@ -122,17 +122,17 @@ struct flarerenderer : partrenderer
         }
     }
 
-    int count()
+    int count() override
     {
         return numflares;
     }
 
-    bool haswork()
+    bool haswork() override
     {
         return (numflares != 0) && !glaring && !reflecting  && !refracting;
     }
 
-    void render()
+    void render() override
     {
         textureshader->set();
         glDisable(GL_DEPTH_TEST);
@@ -185,7 +185,7 @@ struct flarerenderer : partrenderer
     }
 
     //square per round hole - use addflare(..) instead
-    particle *addpart(const vec &o, const vec &d, int fade, int color, float size, int gravity = 0) { return NULL; }
+    particle *addpart(const vec &o, const vec &d, int fade, int color, float size, int gravity = 0) override { return NULL; }
 };
 static flarerenderer flares("<grey>particle/lensflares.png", 64);
 

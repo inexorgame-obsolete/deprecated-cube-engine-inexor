@@ -9,37 +9,37 @@ struct bombclientmode : clientmode, bombmode
 {
     int myspawnloc;
 
-    void setup()
+    void setup() override
     {
         myspawnloc = -1;
     }
 
-    void senditems(packetbuf &p);
+    void senditems(packetbuf &p) override;
 
     void drawicon(int icon, float x, float y, float sz);
 
     void drawblip(fpsent *d, float x, float y, float s, const vec &pos, float size_factor);
 
-    void drawhud(fpsent *d, int w, int h);
+    void drawhud(fpsent *d, int w, int h) override;
 
     void renderplayersposindicator();
 
-    void rendergame()
+    void rendergame() override
     {
         renderplayersposindicator();
     }
 
-    void renderscoreboard(g3d_gui &g, scoregroup &sg, int fgcolor, int bgcolor);
+    void renderscoreboard(g3d_gui &g, scoregroup &sg, int fgcolor, int bgcolor) override;
 
-    void killed(fpsent *d, fpsent *actor);
+    void killed(fpsent *d, fpsent *actor) override;
 
-    void gameconnect(fpsent *d)
+    void gameconnect(fpsent *d) override
     {
         d->deaths++;
         d->state = CS_SPECTATOR;
     }
 
-    void pickspawn(fpsent *d);
+    void pickspawn(fpsent *d) override;
 
     bool parse_network_message(int type, ucharbuf &p) override;
 };

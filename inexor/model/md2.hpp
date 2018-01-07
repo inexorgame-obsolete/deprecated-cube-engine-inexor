@@ -77,9 +77,9 @@ struct md2 : vertmodel, vertloader<md2>
     static const char *formatname() { return "md2"; }
     static bool multiparted() { return false; }
     static bool multimeshed() { return false; }
-    int type() const { return MDL_MD2; }
+    int type() const override { return MDL_MD2; }
 
-    int linktype(animmodel *m) const { return LINK_COOP; }
+    int linktype(animmodel *m) const override { return LINK_COOP; }
 
     struct md2meshgroup : vertmeshgroup
     {
@@ -207,7 +207,7 @@ struct md2 : vertmodel, vertloader<md2>
         {
         }
 
-        void getdefaultanim(animinfo &info, int anim, uint varseed, dynent *d)
+        void getdefaultanim(animinfo &info, int anim, uint varseed, dynent *d) override
         {
             //                      0              3              6   7   8   9   10   11  12  13   14  15  16  17
             //                      D    D    D    D    D    D    A   P   I   R,  E    J   T   W    FO  SA  GS  GI
@@ -243,7 +243,7 @@ struct md2 : vertmodel, vertloader<md2>
         }
     };
 
-    meshgroup *loadmeshes(const char *name, va_list args)
+    meshgroup *loadmeshes(const char *name, va_list args) override
     {
         md2meshgroup *group = new md2meshgroup;
         if(!group->load(name)) { delete group; return NULL; }
@@ -257,7 +257,7 @@ struct md2 : vertmodel, vertloader<md2>
         return *p;
     }
 
-    bool load()
+    bool load() override
     { 
         part &mdl = addpart();
         const char *pname = parentdir(name);

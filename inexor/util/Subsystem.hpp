@@ -139,7 +139,7 @@ public:
     /// Start this Metasystem with no subsystems
     Metasystem() {}
 
-    ~Metasystem() {
+    ~Metasystem() override {
         next_tick_queue.tick();
     }
 
@@ -180,13 +180,13 @@ public:
     }
 
     /// Forwarded to all subsystems
-    virtual void tick() {
+    void tick() override {
         next_tick_queue.tick();
         for (auto &e : this->subsystems) e.second->tick();
     }
 
     /// Forwarded to all subsystems
-    virtual void initialize(int argc, char **argv)
+    void initialize(int argc, char **argv) override
     {
         for (auto &e : this->subsystems) {
             if (!e.second->is_initialized) {

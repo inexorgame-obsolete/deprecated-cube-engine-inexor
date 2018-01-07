@@ -50,7 +50,7 @@ struct md3 : vertmodel, vertloader<md3>
     md3(const char *name) : vertmodel(name) {}
 
     static const char *formatname() { return "md3"; }
-    int type() const { return MDL_MD3; }
+    int type() const override { return MDL_MD3; }
 
     struct md3meshgroup : vertmeshgroup
     {
@@ -156,14 +156,14 @@ struct md3 : vertmodel, vertloader<md3>
         }
     };
     
-    meshgroup *loadmeshes(const char *name, va_list args)
+    meshgroup *loadmeshes(const char *name, va_list args) override
     {
         md3meshgroup *group = new md3meshgroup;
         if(!group->load(name)) { delete group; return NULL; }
         return group;
     }
 
-    bool loaddefaultparts()
+    bool loaddefaultparts() override
     {
         const char *pname = parentdir(name);
         part &mdl = addpart();
@@ -183,7 +183,7 @@ struct md3 : vertmodel, vertloader<md3>
         return true;
     }
 
-    bool load()
+    bool load() override
     {
         formatstring(dir, "%s/%s", *modeldir, name);
         defformatstring(cfgname, "%s/%s/md3.cfg", *modeldir, name);

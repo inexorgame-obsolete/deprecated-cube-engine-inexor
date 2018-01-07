@@ -280,7 +280,7 @@ struct listrenderer : partrenderer
     {
     }
 
-    virtual ~listrenderer()
+    ~listrenderer() override
     {
     }
 
@@ -288,7 +288,7 @@ struct listrenderer : partrenderer
     {
     }
 
-    void reset()  
+    void reset() override  
     {
         if(!list) return;
         listparticle *p = list;
@@ -303,7 +303,7 @@ struct listrenderer : partrenderer
         list = NULL;
     }
     
-    void resettracked(physent *owner) 
+    void resettracked(physent *owner) override 
     {
         if(!(type&PT_TRACK)) return;
         for(listparticle **prev = &list, *cur = list; cur; cur = *prev)
@@ -318,7 +318,7 @@ struct listrenderer : partrenderer
         }
     }
     
-    particle *addpart(const vec &o, const vec &d, int fade, int color, float size, int gravity) 
+    particle *addpart(const vec &o, const vec &d, int fade, int color, float size, int gravity) override 
     {
         if(!parempty)
         {
@@ -343,7 +343,7 @@ struct listrenderer : partrenderer
         return p;
     }
     
-    int count() 
+    int count() override 
     {
         int num = 0;
         listparticle *lp;
@@ -351,7 +351,7 @@ struct listrenderer : partrenderer
         return num;
     }
     
-    bool haswork() 
+    bool haswork() override 
     {
         return (list != NULL);
     }
@@ -360,7 +360,7 @@ struct listrenderer : partrenderer
     virtual void endrender() = 0;
     virtual void renderpart(listparticle *p, const vec &o, const vec &d, int blend, int ts) = 0;
 
-    void render() 
+    void render() override 
     {
         startrender();
         if(texname)
@@ -403,18 +403,18 @@ struct meterrenderer : listrenderer
         : listrenderer(type|PT_NOTEX|PT_LERP)
     {}
 
-    void startrender()
+    void startrender() override
     {
         glDisable(GL_BLEND);
         gle::defvertex();
     }
 
-    void endrender()
+    void endrender() override
     {
         glEnable(GL_BLEND);
     }
 
-    void renderpart(listparticle *p, const vec &o, const vec &d, int blend, int ts)
+    void renderpart(listparticle *p, const vec &o, const vec &d, int blend, int ts) override
     {
         int basetype = type&0xFF;
         float scale = FONTH*p->size/80.0f, right = 8, left = p->progress/100.0f*right;
@@ -481,20 +481,20 @@ struct textrenderer : listrenderer
         : listrenderer(type)
     {}
 
-    void startrender()
+    void startrender() override
     {
     }
 
-    void endrender()
+    void endrender() override
     {
     }
 
-    void killpart(listparticle *p)
+    void killpart(listparticle *p) override
     {
         if(p->text && p->flags&1) delete[] p->text;
     }
 
-    void renderpart(listparticle *p, const vec &o, const vec &d, int blend, int ts)
+    void renderpart(listparticle *p, const vec &o, const vec &d, int blend, int ts) override
     {
         float scale = p->size/80.0f, xoff = -text_width(p->text)/2, yoff = 0;
         if((type&0xFF)==PT_TEXTUP) { xoff += detrnd((size_t)p, 100)-50; yoff -= detrnd((size_t)p, 101); }
@@ -633,12 +633,12 @@ struct varenderer : partrenderer
         if(type & PT_RND4) rndmask |= 0x03<<5;
     }
 
-    void cleanup()
+    void cleanup() override
     {
         if(vbo) { glDeleteBuffers_(1, &vbo); vbo = 0; }
     }
     
-    void init(int n)
+    void init(int n) override
     {
         DELETEA(parts);
         DELETEA(verts);
@@ -649,13 +649,13 @@ struct varenderer : partrenderer
         lastupdate = -1;
     }
         
-    void reset() 
+    void reset() override 
     {
         numparts = 0;
         lastupdate = -1;
     }
     
-    void resettracked(physent *owner) 
+    void resettracked(physent *owner) override 
     {
         if(!(type&PT_TRACK)) return;
         loopi(numparts)
@@ -666,17 +666,17 @@ struct varenderer : partrenderer
         lastupdate = -1;
     }
     
-    int count() 
+    int count() override 
     {
         return numparts;
     }
     
-    bool haswork() 
+    bool haswork() override 
     {
         return (numparts > 0);
     }
 
-    particle *addpart(const vec &o, const vec &d, int fade, int color, float size, int gravity) 
+    particle *addpart(const vec &o, const vec &d, int fade, int color, float size, int gravity) override 
     {
         particle *p = parts + (numparts < maxparts ? numparts++ : rnd(maxparts)); //next free slot, or kill a random kitten
         p->o = o;
@@ -692,7 +692,7 @@ struct varenderer : partrenderer
         return p;
     }
  
-    void seedemitter(particleemitter &pe, const vec &o, const vec &d, int fade, float size, int gravity)
+    void seedemitter(particleemitter &pe, const vec &o, const vec &d, int fade, float size, int gravity) override
     {
         pe.maxfade = max(pe.maxfade, fade);
         size *= SQRT2;
@@ -787,7 +787,7 @@ struct varenderer : partrenderer
         }
     }
    
-    void update()
+    void update() override
     {
         if(lastmillis == lastupdate && vbo) return;
         lastupdate = lastmillis;
@@ -801,7 +801,7 @@ struct varenderer : partrenderer
         gle::clearvbo();
     }
  
-    void render()
+    void render() override
     {   
         if(!tex) tex = textureload(texname, texclamp);
         glBindTexture(GL_TEXTURE_2D, tex->id);
@@ -871,7 +871,7 @@ struct softquadrenderer : quadrenderer
     {
     }
 
-    int adddepthfx(vec &bbmin, vec &bbmax)
+    int adddepthfx(vec &bbmin, vec &bbmax) override
     {
         if(!depthfxtex.highprecision() && !depthfxtex.emulatehighprecision()) return 0;
         int numsoft = 0;

@@ -2800,7 +2800,7 @@ struct texturegui : g3d_callback
 
     texturegui() : menustart(-1) {}
 
-    void gui(g3d_gui &g, bool firstpass)
+    void gui(g3d_gui &g, bool firstpass) override
     {
         int origtab = menutab, numtabs = max((slots.length() + texguiwidth*texguiheight - 1)/(texguiwidth*texguiheight), 1);
         g.start(menustart, 0.04f, &menutab);

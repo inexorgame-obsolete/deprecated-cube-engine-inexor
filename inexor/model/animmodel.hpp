@@ -1033,7 +1033,7 @@ struct animmodel : model
         }
     }
 
-    void render(int anim, int basetime, int basetime2, const vec &o, float yaw, float pitch, dynent *d, modelattach *a, const vec &color, const vec &dir, float trans)
+    void render(int anim, int basetime, int basetime2, const vec &o, float yaw, float pitch, dynent *d, modelattach *a, const vec &color, const vec &dir, float trans) override
     {
         yaw += spinyaw*lastmillis/1000.0f;
         pitch += offsetpitch + spinpitch*lastmillis/1000.0f;
@@ -1121,12 +1121,12 @@ struct animmodel : model
     {
     }
 
-    ~animmodel()
+    ~animmodel() override
     {
         parts.deletecontents();
     }
 
-    void cleanup()
+    void cleanup() override
     {
         loopv(parts) parts[i]->cleanup();
     }
@@ -1153,13 +1153,13 @@ struct animmodel : model
         parts[0]->genBIH(bih, m);
     }
 
-    void preloadBIH()
+    void preloadBIH() override
     {
         model::preloadBIH();
         if(bih) loopv(parts) parts[i]->preloadBIH();
     }
 
-    BIH *setBIH()
+    BIH *setBIH() override
     {
         if(bih) return bih;
         vector<BIH::mesh> meshes;
@@ -1180,7 +1180,7 @@ struct animmodel : model
         return parts[0]->unlink(p);
     }
 
-    bool envmapped()
+    bool envmapped() override
     {
         loopv(parts) if(parts[i]->envmapped()) return true;
         return false;
@@ -1191,23 +1191,23 @@ struct animmodel : model
         return true;
     }
 
-    void preloadshaders(bool force)
+    void preloadshaders(bool force) override
     {
         loopv(parts) parts[i]->preloadshaders(force);
     }
 
-    void preloadmeshes()
+    void preloadmeshes() override
     {
         loopv(parts) parts[i]->preloadmeshes();
     }
 
-    void setshader(Shader *shader)
+    void setshader(Shader *shader) override
     {
         if(parts.empty()) loaddefaultparts();
         loopv(parts) loopvj(parts[i]->skins) parts[i]->skins[j].shader = shader;
     }
 
-    void setenvmap(float envmapmin, float envmapmax, Texture *envmap)
+    void setenvmap(float envmapmin, float envmapmax, Texture *envmap) override
     {
         if(parts.empty()) loaddefaultparts();
         loopv(parts) loopvj(parts[i]->skins)
@@ -1222,19 +1222,19 @@ struct animmodel : model
         }
     }
 
-    void setspec(float spec)
+    void setspec(float spec) override
     {
         if(parts.empty()) loaddefaultparts();
         loopv(parts) loopvj(parts[i]->skins) parts[i]->skins[j].spec = spec;
     }
 
-    void setambient(float ambient)
+    void setambient(float ambient) override
     {
         if(parts.empty()) loaddefaultparts();
         loopv(parts) loopvj(parts[i]->skins) parts[i]->skins[j].ambient = ambient;
     }
 
-    void setglow(float glow, float delta, float pulse)
+    void setglow(float glow, float delta, float pulse) override
     {
         if(parts.empty()) loaddefaultparts();
         loopv(parts) loopvj(parts[i]->skins) 
@@ -1246,7 +1246,7 @@ struct animmodel : model
         }
     }
 
-    void setglare(float specglare, float glowglare)
+    void setglare(float specglare, float glowglare) override
     {
         if(parts.empty()) loaddefaultparts();
         loopv(parts) loopvj(parts[i]->skins)
@@ -1257,31 +1257,31 @@ struct animmodel : model
         }
     }
 
-    void setalphatest(float alphatest)
+    void setalphatest(float alphatest) override
     {
         if(parts.empty()) loaddefaultparts();
         loopv(parts) loopvj(parts[i]->skins) parts[i]->skins[j].alphatest = alphatest;
     }
 
-    void setalphablend(bool alphablend)
+    void setalphablend(bool alphablend) override
     {
         if(parts.empty()) loaddefaultparts();
         loopv(parts) loopvj(parts[i]->skins) parts[i]->skins[j].alphablend = alphablend;
     }
 
-    void setfullbright(float fullbright)
+    void setfullbright(float fullbright) override
     {
         if(parts.empty()) loaddefaultparts();
         loopv(parts) loopvj(parts[i]->skins) parts[i]->skins[j].fullbright = fullbright;
     }
 
-    void setcullface(bool cullface)
+    void setcullface(bool cullface) override
     {
         if(parts.empty()) loaddefaultparts();
         loopv(parts) loopvj(parts[i]->skins) parts[i]->skins[j].cullface = cullface;
     }
 
-    void calcbb(vec &center, vec &radius)
+    void calcbb(vec &center, vec &radius) override
     {
         if(parts.empty()) return;
         vec bbmin(1e16f, 1e16f, 1e16f), bbmax(-1e16f, -1e16f, -1e16f);
@@ -1310,7 +1310,7 @@ struct animmodel : model
     static int matrixpos;
     static matrix4 matrixstack[64];
 
-    void startrender()
+    void startrender() override
     {
         enabletc = enablealphablend = enablenormals = enabletangents = enablebones = enabledepthoffset = false;
         enablecullface = true;
@@ -1358,7 +1358,7 @@ struct animmodel : model
         lastvbuf = lasttcbuf = lastxbuf = lastnbuf = lastbbuf = lastebuf = 0;
     }
 
-    void endrender()
+    void endrender() override
     {
         if(lastvbuf || lastebuf) disablevbo();
         if(enablealphablend) glDisable(GL_BLEND);

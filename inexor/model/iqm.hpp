@@ -100,7 +100,7 @@ struct iqm : skelmodel, skelloader<iqm>
     iqm(const char *name) : skelmodel(name) {}
 
     static const char *formatname() { return "iqm"; }
-    int type() const { return MDL_IQM; }
+    int type() const override { return MDL_IQM; }
 
     struct iqmmeshgroup : skelmeshgroup
     {
@@ -352,7 +352,7 @@ struct iqm : skelmodel, skelloader<iqm>
             return loadiqm(filename, true, false);
         }
 
-        skelanimspec *loadanim(const char *animname)
+        skelanimspec *loadanim(const char *animname) override
         {
             const char *sep = strchr(animname, ':');
             skelanimspec *sa = skel->findskelanim(animname, sep ? '\0' : ':');
@@ -368,7 +368,7 @@ struct iqm : skelmodel, skelloader<iqm>
         }
     };            
 
-    meshgroup *loadmeshes(const char *name, va_list args)
+    meshgroup *loadmeshes(const char *name, va_list args) override
     {
         iqmmeshgroup *group = new iqmmeshgroup;
         group->shareskeleton(va_arg(args, char *));
@@ -376,7 +376,7 @@ struct iqm : skelmodel, skelloader<iqm>
         return group;
     }
 
-    bool loaddefaultparts()
+    bool loaddefaultparts() override
     {
         skelpart &mdl = addpart();
         mdl.pitchscale = mdl.pitchoffset = mdl.pitchmin = mdl.pitchmax = 0;
@@ -392,7 +392,7 @@ struct iqm : skelmodel, skelloader<iqm>
         return true;
     }
 
-    bool load()
+    bool load() override
     {
         formatstring(dir, "%s/%s", *modeldir, name);
         defformatstring(cfgname, "%s/%s/iqm.cfg", *modeldir, name);

@@ -25,7 +25,7 @@ class InexorLayerProvider : public CefBase
 
     public:
         InexorLayerProvider() {};
-        virtual ~InexorLayerProvider() {};
+        ~InexorLayerProvider() override {};
 
         void SetLayer(CefRefPtr<InexorLayer> layer) { this->layer = layer; }
 
@@ -63,32 +63,32 @@ class AbstractInexorLayerProvider : public InexorLayerProvider
         AbstractInexorLayerProvider() : is_visible(false) {};
         AbstractInexorLayerProvider(std::string &name) : is_visible(false), name(name) {}
         AbstractInexorLayerProvider(std::string &name, std::string &url) : is_visible(false), name(name), url(url) {};
-        virtual ~AbstractInexorLayerProvider() {};
+        ~AbstractInexorLayerProvider() override {};
 
-        std::string GetLayerName() { return name; };
-        void SetLayerName(std::string &_name) {
+        std::string GetLayerName() override { return name; };
+        void SetLayerName(std::string &_name) override {
             name = _name;
         };
 
-        std::string GetUrl() { return url; };
-        void SetUrl(std::string &_url) {
+        std::string GetUrl() override { return url; };
+        void SetUrl(std::string &_url) override {
             url = _url;
         };
 
-        bool GetVisibility() { return is_visible; };
-        void SetVisibility(bool _is_visible) {
+        bool GetVisibility() override { return is_visible; };
+        void SetVisibility(bool _is_visible) override {
             this->is_visible = _is_visible;
             if (layer.get()) layer->SetVisibility(_is_visible);
         };
 
-        bool GetAcceptingKeyInput() { return is_accepting_key_input; };
-        void SetAcceptingKeyInput(bool _is_accepting_key_input) {
+        bool GetAcceptingKeyInput() override { return is_accepting_key_input; };
+        void SetAcceptingKeyInput(bool _is_accepting_key_input) override {
             this->is_accepting_key_input = _is_accepting_key_input;
             if (layer.get()) layer->SetIsAcceptingKeyInput(_is_accepting_key_input);
         };
 
-        bool GetAcceptingMouseInput() { return is_accepting_mouse_input; };
-        void SetAcceptingMouseInput(bool _is_accepting_mouse_input) {
+        bool GetAcceptingMouseInput() override { return is_accepting_mouse_input; };
+        void SetAcceptingMouseInput(bool _is_accepting_mouse_input) override {
             this->is_accepting_mouse_input = _is_accepting_mouse_input;
             if (layer.get()) layer->SetIsAcceptingMouseInput(_is_accepting_mouse_input);
         };

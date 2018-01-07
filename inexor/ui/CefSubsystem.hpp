@@ -10,9 +10,9 @@ IEXCEPTION(CefProcessException, "The CEF process was started with a non-zero exi
 
 class CefSubsystem : public inexor::util::Subsystem {
 public:
-    ~CefSubsystem();
-    virtual void tick() override;
-    virtual void initialize(int argc, char **argv) override;
+    ~CefSubsystem() override;
+    void tick() override;
+    void initialize(int argc, char **argv) override;
 };
 
 }

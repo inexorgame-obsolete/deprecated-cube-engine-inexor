@@ -351,7 +351,7 @@ struct filestream : stream
     FILE *file;
 
     filestream() : file(NULL) {}
-    ~filestream() { close(); }
+    ~filestream() override { close(); }
 
     bool open(const char *name, const char *mode)
     {
@@ -371,13 +371,13 @@ struct filestream : stream
         return file!=NULL;
     }
 
-    void close()
+    void close() override
     {
         if(file) { fclose(file); file = NULL; }
     }
 
-    bool end() { return feof(file)!=0; }
-    offset tell() 
+    bool end() override { return feof(file)!=0; }
+    offset tell() override 
     { 
 #ifdef WIN32
 #ifdef __GNUC__
@@ -389,7 +389,7 @@ struct filestream : stream
         return ftello(file); 
 #endif
     }
-    bool seek(offset pos, int whence) 
+    bool seek(offset pos, int whence) override 
     { 
 #ifdef WIN32
 #ifdef __GNUC__
@@ -402,15 +402,15 @@ struct filestream : stream
 #endif
     }
 
-    size_t read(void *buf, size_t len) { return fread(buf, 1, len, file); }
-    size_t write(const void *buf, size_t len) { return fwrite(buf, 1, len, file); }
-    bool flush() { return !fflush(file); }
-    int getchar() { return fgetc(file); }
-    bool putchar(int c) { return fputc(c, file)!=EOF; }
-    bool getline(char *str, size_t len) { return fgets(str, len, file)!=NULL; }
-    bool putstring(const char *str) { return fputs(str, file)!=EOF; }
+    size_t read(void *buf, size_t len) override { return fread(buf, 1, len, file); }
+    size_t write(const void *buf, size_t len) override { return fwrite(buf, 1, len, file); }
+    bool flush() override { return !fflush(file); }
+    int getchar() override { return fgetc(file); }
+    bool putchar(int c) override { return fputc(c, file)!=EOF; }
+    bool getline(char *str, size_t len) override { return fgets(str, len, file)!=NULL; }
+    bool putstring(const char *str) override { return fputs(str, file)!=EOF; }
 
-    size_t printf(const char *fmt, ...)
+    size_t printf(const char *fmt, ...) override
     {
         va_list v;
         va_start(v, fmt);
@@ -458,7 +458,7 @@ struct gzstream : stream
         zfile.avail_in = zfile.avail_out = 0;
     }
 
-    ~gzstream()
+    ~gzstream() override
     {
         close();
     }
@@ -547,7 +547,7 @@ struct gzstream : stream
         return true;
     }
 
-    uint getcrc() { return crc; }
+    uint getcrc() override { return crc; }
 
     void finishreading()
     {
@@ -596,7 +596,7 @@ struct gzstream : stream
         writing = false;
     }
 
-    void close()
+    void close() override
     {
         if(reading) finishreading();
         stopreading();
@@ -606,11 +606,11 @@ struct gzstream : stream
         if(autoclose) DELETEP(file);
     }
 
-    bool end() { return !reading && !writing; }
-    offset tell() { return reading ? zfile.total_out : (writing ? zfile.total_in : offset(-1)); }
-    offset rawtell() { return file ? file->tell() : offset(-1); }
+    bool end() override { return !reading && !writing; }
+    offset tell() override { return reading ? zfile.total_out : (writing ? zfile.total_in : offset(-1)); }
+    offset rawtell() override { return file ? file->tell() : offset(-1); }
 
-    offset size()
+    offset size() override
     {
         if(!file) return -1;
         offset pos = tell();
@@ -619,9 +619,9 @@ struct gzstream : stream
         return file->seek(pos, SEEK_SET) ? isize : offset(-1);
     }
 
-    offset rawsize() { return file ? file->size() : offset(-1); }
+    offset rawsize() override { return file ? file->size() : offset(-1); }
 
-    bool seek(offset pos, int whence)
+    bool seek(offset pos, int whence) override
     {
         if(writing || !reading) return false;
 
@@ -662,7 +662,7 @@ struct gzstream : stream
         return true;
     }
 
-    size_t read(void *buf, size_t len)
+    size_t read(void *buf, size_t len) override
     {
         if(!reading || !buf || !len) return 0;
         zfile.next_out = (Bytef *)buf;
@@ -695,9 +695,9 @@ struct gzstream : stream
         return true;
     }
 
-    bool flush() { return flushbuf(true); }
+    bool flush() override { return flushbuf(true); }
 
-    size_t write(const void *buf, size_t len)
+    size_t write(const void *buf, size_t len) override
     {
         if(!writing || !buf || !len) return 0;
         zfile.next_in = (Bytef *)buf;
@@ -729,7 +729,7 @@ struct utf8stream : stream
     {
     }
 
-    ~utf8stream()
+    ~utf8stream() override
     {
         close();
     }
@@ -789,17 +789,17 @@ struct utf8stream : stream
         writing = false;
     }
 
-    void close()
+    void close() override
     {
         stopreading();
         stopwriting();
         if(autoclose) DELETEP(file);
     }
 
-    bool end() { return !reading && !writing; }
-    offset tell() { return reading || writing ? pos : offset(-1); }
+    bool end() override { return !reading && !writing; }
+    offset tell() override { return reading || writing ? pos : offset(-1); }
 
-    bool seek(offset off, int whence)
+    bool seek(offset off, int whence) override
     {
         if(writing || !reading) return false;
 
@@ -831,7 +831,7 @@ struct utf8stream : stream
         return true;
     }
 
-    size_t read(void *dst, size_t len)
+    size_t read(void *dst, size_t len) override
     {
         if(!reading || !dst || !len) return 0;
         size_t next = 0;
@@ -847,7 +847,7 @@ struct utf8stream : stream
         return next;
     }
 
-    bool getline(char *dst, size_t len)
+    bool getline(char *dst, size_t len) override
     {
         if(!reading || !dst || !len) return false;
         --len;
@@ -867,7 +867,7 @@ struct utf8stream : stream
         return true;
     }
 
-    size_t write(const void *src, size_t len)
+    size_t write(const void *src, size_t len) override
     {
         if(!writing || !src || !len) return 0;
         uchar dst[512];
@@ -882,7 +882,7 @@ struct utf8stream : stream
         return next;
     }
 
-    bool flush() { return file->flush(); }
+    bool flush() override { return file->flush(); }
 };
 
 stream *openrawfile(const char *filename, const char *mode)

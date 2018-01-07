@@ -78,7 +78,7 @@ struct gui : g3d_gui
 
     static int ty, tx, tpos, *tcurrent, tcolor; //tracking tab size and position since uses different layout method...
 
-    bool allowautotab(bool on)
+    bool allowautotab(bool on) override
     {
         bool oldval = shouldautotab;
         shouldautotab = on;
@@ -94,7 +94,7 @@ struct gui : g3d_gui
         }
     }
 
-    bool shouldtab()
+    bool shouldtab() override
     {
         if(tcurrent && shouldautotab)
         {
@@ -128,7 +128,7 @@ struct gui : g3d_gui
     bool visible() { return (!tcurrent || tpos==*tcurrent) && !layoutpass; }
 
     //tab is always at top of page
-    void tab(const char *name, int color) 
+    void tab(const char *name, int color) override 
     {
         if(curdepth != 0) return;
         if(color) tcolor = color;
@@ -161,7 +161,7 @@ struct gui : g3d_gui
     bool ishorizontal() const { return curdepth&1; }
     bool isvertical() const { return !ishorizontal(); }
 
-    void pushlist()
+    void pushlist() override
     {	
         if(layoutpass)
         {
@@ -203,7 +203,7 @@ struct gui : g3d_gui
         curdepth++;	
     }
 
-    void poplist()
+    void poplist() override
     {
         if(!lists.inrange(curlist)) return;
         list &l = lists[curlist];
@@ -231,19 +231,19 @@ struct gui : g3d_gui
         }
     }
 
-    int text  (const char *text, int color, const char *icon) { autotab(); return button_(text, color, icon, false, false); }
-    int button(const char *text, int color, const char *icon) { autotab(); return button_(text, color, icon, true, false); }
-    int title (const char *text, int color, const char *icon) { autotab(); return button_(text, color, icon, false, true); }
+    int text  (const char *text, int color, const char *icon) override { autotab(); return button_(text, color, icon, false, false); }
+    int button(const char *text, int color, const char *icon) override { autotab(); return button_(text, color, icon, true, false); }
+    int title (const char *text, int color, const char *icon) override { autotab(); return button_(text, color, icon, false, true); }
 
-    void separator() { autotab(); line_(FONTH/3); }
-    void progress(float percent) { autotab(); line_((FONTH*4)/5, percent); }
+    void separator() override { autotab(); line_(FONTH/3); }
+    void progress(float percent) override { autotab(); line_((FONTH*4)/5, percent); }
 
     //use to set min size (useful when you have progress bars)
-    void strut(float size) { layout(isvertical() ? int(size*FONTW) : 0, isvertical() ? 0 : int(size*FONTH)); }
+    void strut(float size) override { layout(isvertical() ? int(size*FONTW) : 0, isvertical() ? 0 : int(size*FONTH)); }
     //add space between list items
-    void space(float size) { layout(isvertical() ? 0 : int(size*FONTW), isvertical() ? int(size*FONTH) : 0); }
+    void space(float size) override { layout(isvertical() ? 0 : int(size*FONTW), isvertical() ? int(size*FONTH) : 0); }
 
-    void spring(int weight) 
+    void spring(int weight) override 
     { 
         if(curlist < 0) return;
         list &l = lists[curlist];
@@ -263,7 +263,7 @@ struct gui : g3d_gui
         l.curspring = nextspring;
     }
 
-    void column(int col)
+    void column(int col) override
     {
         if(curlist < 0 || !layoutpass || col < 0 || col >= MAXCOLUMNS) return;
         list &l = lists[curlist];
@@ -295,7 +295,7 @@ struct gui : g3d_gui
         }
     }
 
-    bool mergehits(bool on) 
+    bool mergehits(bool on) override 
     { 
         bool oldval = shouldmergehits;
         shouldmergehits = on; 
@@ -310,7 +310,7 @@ struct gui : g3d_gui
         return windowhit==this && hitx>=x && hity>=y && hitx<x+w && hity<y+h;
     }
 
-    int image(Texture *t, float scale, bool overlaid)
+    int image(Texture *t, float scale, bool overlaid) override
     {
         autotab();
         if(scale==0) scale = 1;
@@ -319,7 +319,7 @@ struct gui : g3d_gui
         return layout(size+SHADOW, size+SHADOW);
     }
     
-    int texture(VSlot &vslot, float scale, bool overlaid)
+    int texture(VSlot &vslot, float scale, bool overlaid) override
     {
         autotab();
         if(scale==0) scale = 1;
@@ -328,7 +328,7 @@ struct gui : g3d_gui
         return layout(size+SHADOW, size+SHADOW);
     }
 
-    int playerpreview(int model, int team, int weap, float sizescale, bool overlaid)
+    int playerpreview(int model, int team, int weap, float sizescale, bool overlaid) override
     {
         autotab();
         if(sizescale==0) sizescale = 1;
@@ -377,7 +377,7 @@ struct gui : g3d_gui
         return layout(size+SHADOW, size+SHADOW);
     }
 
-    int modelpreview(const char *name, int anim, float sizescale, bool overlaid)
+    int modelpreview(const char *name, int anim, float sizescale, bool overlaid) override
     {
         autotab();
         if(sizescale==0) sizescale = 1;
@@ -437,7 +437,7 @@ struct gui : g3d_gui
         return layout(size+SHADOW, size+SHADOW);
     }
 
-    int prefabpreview(const char *prefab, const vec &color, float sizescale, bool overlaid)
+    int prefabpreview(const char *prefab, const vec &color, float sizescale, bool overlaid) override
     {
         autotab();
         if(sizescale==0) sizescale = 1;
@@ -482,7 +482,7 @@ struct gui : g3d_gui
         return layout(size+SHADOW, size+SHADOW);
     }
  
-    void slider(int &val, int vmin, int vmax, int color, const char *label)
+    void slider(int &val, int vmin, int vmax, int color, const char *label) override
     {
         autotab();
         int x = curx;
@@ -522,12 +522,12 @@ struct gui : g3d_gui
         }
     }
 
-    char *field(const char *name, int color, int length, int height, const char *initval, int initmode)
+    char *field(const char *name, int color, int length, int height, const char *initval, int initmode) override
     {
         return field_(name, color, length, height, initval, initmode, FIELDEDIT);
     }
 
-    char *keyfield(const char *name, int color, int length, int height, const char *initval, int initmode)
+    char *keyfield(const char *name, int color, int length, int height, const char *initval, int initmode) override
     {
         return field_(name, color, length, height, initval, initmode, FIELDKEY);
     }
@@ -643,7 +643,7 @@ struct gui : g3d_gui
         draw_text(text, x, y, color>>16, (color>>8)&0xFF, color&0xFF, force ? -0xFF : 0xFF);
     }
 
-    void background(int color, int inheritw, int inherith)
+    void background(int color, int inheritw, int inherith) override
     {
         if(layoutpass) return;
         hudnotextureshader->set();
@@ -815,7 +815,7 @@ struct gui : g3d_gui
         layout(ishorizontal() ? FONTH : 0, ishorizontal() ? 0 : FONTH);
     }
 
-    void textbox(const char *text, int width, int height, int color) 
+    void textbox(const char *text, int width, int height, int color) override 
     {
         width *= FONTW;
         height *= FONTH;
@@ -973,7 +973,7 @@ struct gui : g3d_gui
         scale = vec(aspect*scale.x*fit, scale.y*fit, 1);
     }
 
-    void start(int starttime, float initscale, int *tab, bool allowinput)
+    void start(int starttime, float initscale, int *tab, bool allowinput) override
     {
         if(gui2d) 
         {
@@ -1081,7 +1081,7 @@ struct gui : g3d_gui
         }
     }
 
-    void end()
+    void end() override
     {
         if(layoutpass)
         {	

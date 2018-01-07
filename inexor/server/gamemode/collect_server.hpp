@@ -16,14 +16,14 @@ struct collectservermode : servmode, collectmode_common
         notgotbases = !empty;
     }
 
-    void cleanup()
+    void cleanup() override
     {
         reset(false);
     }
 
-    void setup();
+    void setup() override;
 
-    void newmap()
+    void newmap() override
     {
         reset(true);
     }
@@ -39,24 +39,24 @@ struct collectservermode : servmode, collectmode_common
 
     void droptokens(clientinfo *ci, bool penalty = false);
 
-    void leavegame(clientinfo *ci, bool disconnecting = false);
+    void leavegame(clientinfo *ci, bool disconnecting = false) override;
 
-    void died(clientinfo *ci, clientinfo *actor)
+    void died(clientinfo *ci, clientinfo *actor) override
     {
         droptokens(ci, !actor || isteam(actor->team, ci->team));
     }
 
-    bool canspawn(clientinfo *ci, bool connecting)
+    bool canspawn(clientinfo *ci, bool connecting) override
     {
         return connecting || !ci->state.lastdeath || gamemillis+curtime-ci->state.lastdeath >= RESPAWNSECS*1000;
     }
 
-    bool canchangeteam(clientinfo *ci, const char *oldteam, const char *newteam)
+    bool canchangeteam(clientinfo *ci, const char *oldteam, const char *newteam) override
     {
         return collectteambase(newteam) > 0;
     }
 
-    void changeteam(clientinfo *ci, const char *oldteam, const char *newteam)
+    void changeteam(clientinfo *ci, const char *oldteam, const char *newteam) override
     {
     }
 
@@ -64,9 +64,9 @@ struct collectservermode : servmode, collectmode_common
 
     void taketoken(clientinfo *ci, int id);
 
-    void update();
+    void update() override;
 
-    void initclient(clientinfo *ci, packetbuf &p, bool connecting);
+    void initclient(clientinfo *ci, packetbuf &p, bool connecting) override;
 
     void parsebases(ucharbuf &p, bool commit);
 

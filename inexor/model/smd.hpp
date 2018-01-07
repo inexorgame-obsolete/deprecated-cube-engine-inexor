@@ -13,7 +13,7 @@ struct smd : skelmodel, skelloader<smd>
     smd(const char *name) : skelmodel(name) {}
 
     static const char *formatname() { return "smd"; }
-    int type() const { return MDL_SMD; }
+    int type() const override { return MDL_SMD; }
 
     struct smdmesh : skelmesh
     {
@@ -346,7 +346,7 @@ struct smd : skelmodel, skelloader<smd>
             return numframes;
         }
 
-        skelanimspec *loadanim(const char *filename)
+        skelanimspec *loadanim(const char *filename) override
         {
             skelanimspec *sa = skel->findskelanim(filename);
             if(sa || skel->numbones <= 0) return sa;
@@ -407,7 +407,7 @@ struct smd : skelmodel, skelloader<smd>
         }
     };            
 
-    meshgroup *loadmeshes(const char *name, va_list args)
+    meshgroup *loadmeshes(const char *name, va_list args) override
     {
         smdmeshgroup *group = new smdmeshgroup;
         group->shareskeleton(va_arg(args, char *));
@@ -415,7 +415,7 @@ struct smd : skelmodel, skelloader<smd>
         return group;
     }
 
-    bool loaddefaultparts()
+    bool loaddefaultparts() override
     {
         skelpart &mdl = addpart();
         mdl.pitchscale = mdl.pitchoffset = mdl.pitchmin = mdl.pitchmax = 0;
@@ -431,7 +431,7 @@ struct smd : skelmodel, skelloader<smd>
         return true;
     }
 
-    bool load()
+    bool load() override
     {
         formatstring(dir, "%s/%s", *modeldir, name);
         defformatstring(cfgname, "%s/%s/smd.cfg", *modeldir, name);

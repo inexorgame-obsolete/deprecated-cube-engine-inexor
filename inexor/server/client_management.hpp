@@ -168,7 +168,7 @@ struct timedevent : gameevent
 {
     int millis;
 
-    bool flush(clientinfo *ci, int fmillis);
+    bool flush(clientinfo *ci, int fmillis) override;
 };
 
 struct hitinfo
@@ -186,7 +186,7 @@ struct shotevent : timedevent
     vec from, to;
     vector<hitinfo> hits;
 
-    void process(clientinfo *ci);
+    void process(clientinfo *ci) override;
 };
 
 struct explodeevent : timedevent
@@ -194,21 +194,21 @@ struct explodeevent : timedevent
     int id, gun;
     vector<hitinfo> hits;
 
-    bool keepable() const { return true; }
+    bool keepable() const override { return true; }
 
-    void process(clientinfo *ci);
+    void process(clientinfo *ci) override;
 };
 
 struct suicideevent : gameevent
 {
-    void process(clientinfo *ci);
+    void process(clientinfo *ci) override;
 };
 
 struct pickupevent : gameevent
 {
     int ent;
 
-    void process(clientinfo *ci);
+    void process(clientinfo *ci) override;
 };
 
 

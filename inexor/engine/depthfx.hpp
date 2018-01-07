@@ -11,7 +11,7 @@ vec depthfxmin(1e16f, 1e16f, 1e16f), depthfxmax(1e16f, 1e16f, 1e16f);
 
 static struct depthfxtexture : rendertarget
 {
-    const GLenum *colorformats() const
+    const GLenum *colorformats() const override
     {
         static const GLenum colorfmts[] = { GL_RG16F, GL_RGB16F, GL_RGBA, GL_RGBA8, GL_RGB, GL_RGB8, GL_FALSE };
         return &colorfmts[fpdepthfx && hasTF ? (hasTRG ? 0 : 1) : 2];
@@ -49,19 +49,19 @@ static struct depthfxtexture : rendertarget
         return addblurtiles(sx1, sy1, sx2, sy2);
     }
 
-    bool screenrect() const { return true; }
-    bool filter() const { return blurdepthfx!=0; }
+    bool screenrect() const override { return true; }
+    bool filter() const override { return blurdepthfx!=0; }
     bool highprecision() const { return colorfmt==GL_RG16F || colorfmt==GL_RGB16F; }
     bool emulatehighprecision() const { return depthfxemuprecision && !blurdepthfx; }
 
-    bool shouldrender()
+    bool shouldrender() override
     {
         extern void finddepthfxranges();
         finddepthfxranges();
         return (numdepthfxranges && scissorx1 < scissorx2 && scissory1 < scissory2) || debugdepthfx;
     }
 
-    bool dorender()
+    bool dorender() override
     {
         glClearColor(1, 1, 1, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -93,7 +93,7 @@ static struct depthfxtexture : rendertarget
         return numdepthfxranges > 0;
     }
 
-    void dodebug(int w, int h)
+    void dodebug(int w, int h) override
     {
         if(numdepthfxranges > 0)
         {

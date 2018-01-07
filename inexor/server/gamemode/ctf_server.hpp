@@ -27,16 +27,16 @@ struct ctfservermode : servmode, ctfmode
         notgotflags = !empty;
     }
 
-    void cleanup()
+    void cleanup() override
     {
         reset(false);
     }
 
     void setupholdspawns();
 
-    void setup();
+    void setup() override;
 
-    void newmap()
+    void newmap() override
     {
         reset(true);
     }
@@ -45,21 +45,21 @@ struct ctfservermode : servmode, ctfmode
 
     void dropflag(clientinfo *ci, clientinfo *dropper = NULL);
 
-    void leavegame(clientinfo *ci, bool disconnecting = false);
+    void leavegame(clientinfo *ci, bool disconnecting = false) override;
 
-    void died(clientinfo *ci, clientinfo *actor);
+    void died(clientinfo *ci, clientinfo *actor) override;
 
-    bool canspawn(clientinfo *ci, bool connecting)
+    bool canspawn(clientinfo *ci, bool connecting) override
     {
         return m_efficiency || !m_protect ? connecting || !ci->state.lastdeath || gamemillis+curtime-ci->state.lastdeath >= RESPAWNSECS*1000 : true;
     }
 
-    bool canchangeteam(clientinfo *ci, const char *oldteam, const char *newteam)
+    bool canchangeteam(clientinfo *ci, const char *oldteam, const char *newteam) override
     {
         return ctfteamflag(newteam) > 0;
     }
 
-    void changeteam(clientinfo *ci, const char *oldteam, const char *newteam)
+    void changeteam(clientinfo *ci, const char *oldteam, const char *newteam) override
     {
         dropflag(ci);
     }
@@ -70,9 +70,9 @@ struct ctfservermode : servmode, ctfmode
 
     void takeflag(clientinfo *ci, int i, int version);
 
-    void update();
+    void update() override;
 
-    void initclient(clientinfo *ci, packetbuf &p, bool connecting);
+    void initclient(clientinfo *ci, packetbuf &p, bool connecting) override;
 
     void parseflags(ucharbuf &p, bool commit);
 

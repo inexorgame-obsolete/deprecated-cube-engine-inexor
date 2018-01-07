@@ -13,7 +13,7 @@ namespace ui {
 class InexorRenderHandler : public CefRenderHandler {
     public:
         InexorRenderHandler(bool transparent, int x, int y, int width, int height);
-        virtual ~InexorRenderHandler();
+        ~InexorRenderHandler() override;
 
         // Initialize the OpenGL environment.
         void Initialize();

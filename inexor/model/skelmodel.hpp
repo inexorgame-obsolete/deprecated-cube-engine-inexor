@@ -181,7 +181,7 @@ struct skelmodel : animmodel
         {
         }
 
-        virtual ~skelmesh()
+        ~skelmesh() override
         {
             DELETEA(verts);
             DELETEA(bumpverts);
@@ -211,7 +211,7 @@ struct skelmodel : animmodel
             mesh::calctangents(bumpverts, verts, verts, numverts, tris, numtris, areaweight);
         }
 
-        void calcbb(vec &bbmin, vec &bbmax, const matrix4x3 &m)
+        void calcbb(vec &bbmin, vec &bbmax, const matrix4x3 &m) override
         {
             loopj(numverts)
             {
@@ -224,7 +224,7 @@ struct skelmodel : animmodel
             }
         }
 
-        void genBIH(BIH::mesh &m)
+        void genBIH(BIH::mesh &m) override
         {
             m.tris = (const BIH::tri *)tris;
             m.numtris = numtris;
@@ -377,7 +377,7 @@ struct skelmodel : animmodel
             #undef IPLOOP
         }
 
-        void setshader(Shader *s)
+        void setshader(Shader *s) override
         {
             skelmeshgroup *g = (skelmeshgroup *)group;
             if(glaring)
@@ -1120,7 +1120,7 @@ struct skelmodel : animmodel
             memset(numblends, 0, sizeof(numblends));
         }
 
-        virtual ~skelmeshgroup()
+        ~skelmeshgroup() override
         {
             if(skel)
             {
@@ -1160,13 +1160,13 @@ struct skelmodel : animmodel
             skel->shared++;
         }
 
-        int findtag(const char *name)
+        int findtag(const char *name) override
         {
             return skel->findtag(name);
         }
 
-        void *animkey() { return skel; }
-        int totalframes() const { return max(skel->numframes, 1); }
+        void *animkey() override { return skel; }
+        int totalframes() const override { return max(skel->numframes, 1); }
 
         virtual skelanimspec *loadanim(const char *filename) { return NULL; }
 
@@ -1305,7 +1305,7 @@ struct skelmodel : animmodel
             }
         }
 
-        void concattagtransform(part *p, int i, const matrix4x3 &m, matrix4x3 &n)
+        void concattagtransform(part *p, int i, const matrix4x3 &m, matrix4x3 &n) override
         {
             skel->concattagtransform(p, i, m, n);
         }
@@ -1373,7 +1373,7 @@ struct skelmodel : animmodel
             }
         }
 
-        void cleanup()
+        void cleanup() override
         {
             loopi(MAXBLENDCACHE)
             {
@@ -1420,7 +1420,7 @@ struct skelmodel : animmodel
             SEARCHCACHE(MAXBLENDCACHE, blendcacheentry, blendcache, )
         }
 
-        void preload(part *p)
+        void preload(part *p) override
         {
             if(!skel->canpreload()) return;
             bool tangents = false;
@@ -1431,7 +1431,7 @@ struct skelmodel : animmodel
             if(!vbocache->vbuf) genvbo(tangents, *vbocache);
         }
 
-        void render(const animstate *as, float pitch, const vec &axis, const vec &forward, dynent *d, part *p)
+        void render(const animstate *as, float pitch, const vec &axis, const vec &forward, dynent *d, part *p) override
         {
             bool tangents = false;
             loopv(p->skins) if(p->skins[i].tangents()) tangents = true;
@@ -1525,7 +1525,7 @@ struct skelmodel : animmodel
         {
         }
 
-        virtual ~skelpart()
+        ~skelpart() override
         {
             DELETEA(buildingpartmask);
         }
@@ -1578,7 +1578,7 @@ struct skelmodel : animmodel
             ((skelmeshgroup *)meshes)->skel->optimize();
         }
 
-        void loaded()
+        void loaded() override
         {
             endanimparts();
             part::loaded();
@@ -1589,7 +1589,7 @@ struct skelmodel : animmodel
     {
     }
 
-    int linktype(animmodel *m) const
+    int linktype(animmodel *m) const override
     {
         return type()==m->type() &&
             ((skelmeshgroup *)parts[0]->meshes)->skel == ((skelmeshgroup *)m->parts[0]->meshes)->skel ? 
@@ -1597,7 +1597,7 @@ struct skelmodel : animmodel
                 LINK_TAG;
     }
     
-    bool skeletal() const { return true; }
+    bool skeletal() const override { return true; }
 
     skelpart &addpart()
     {

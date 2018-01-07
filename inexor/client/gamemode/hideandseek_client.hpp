@@ -11,19 +11,19 @@ struct hideandseekclientmode : clientmode, hideandseekmode
 {
     static constexpr int STARTINVISIBLESECS = 30;
 
-    void setup() {}
+    void setup() override {}
 
     void drawblip(fpsent *d, float x, float y, float s, const vec &pos, float size_factor);
 
-    void drawhud(fpsent *d, int w, int h);
+    void drawhud(fpsent *d, int w, int h) override;
 
-    bool isinvisible(fpsent *d);
+    bool isinvisible(fpsent *d) override;
 
-    void rendergame()
+    void rendergame() override
     {
     }
 
-    void renderscoreboard(g3d_gui &g, scoregroup &sg, int fgcolor, int bgcolor)
+    void renderscoreboard(g3d_gui &g, scoregroup &sg, int fgcolor, int bgcolor) override
     {
         /*
         if (showhideandseekrole) {
@@ -39,20 +39,20 @@ struct hideandseekclientmode : clientmode, hideandseekmode
         */
     }
 
-    void killed(fpsent *d, fpsent *actor)
+    void killed(fpsent *d, fpsent *actor) override
     {
     }
 
-    void respawned(fpsent *d)
+    void respawned(fpsent *d) override
     {
     }
 
-    void pickspawn(fpsent *d)
+    void pickspawn(fpsent *d) override
     {
         findplayerspawn(player1); // TODO: Is this correct??
     }
 
-    bool hidefrags()
+    bool hidefrags() override
     {
         return true;
     }

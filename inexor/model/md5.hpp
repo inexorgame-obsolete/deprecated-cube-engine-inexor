@@ -31,7 +31,7 @@ struct md5 : skelmodel, skelloader<md5>
     md5(const char *name) : skelmodel(name) {}
 
     static const char *formatname() { return "md5"; }
-    int type() const { return MDL_MD5; }
+    int type() const override { return MDL_MD5; }
 
     struct md5mesh : skelmesh
     {
@@ -43,7 +43,7 @@ struct md5 : skelmodel, skelloader<md5>
         {
         }
 
-        ~md5mesh()
+        ~md5mesh() override
         {
             cleanup();
         }
@@ -261,7 +261,7 @@ struct md5 : skelmodel, skelloader<md5>
             return true;
         }
 
-        skelanimspec *loadanim(const char *filename)
+        skelanimspec *loadanim(const char *filename) override
         {
             skelanimspec *sa = skel->findskelanim(filename);
             if(sa) return sa;
@@ -389,7 +389,7 @@ struct md5 : skelmodel, skelloader<md5>
         }
     };            
 
-    meshgroup *loadmeshes(const char *name, va_list args)
+    meshgroup *loadmeshes(const char *name, va_list args) override
     {
         md5meshgroup *group = new md5meshgroup;
         group->shareskeleton(va_arg(args, char *));
@@ -397,7 +397,7 @@ struct md5 : skelmodel, skelloader<md5>
         return group;
     }
 
-    bool loaddefaultparts()
+    bool loaddefaultparts() override
     {
         skelpart &mdl = addpart();
         mdl.pitchscale = mdl.pitchoffset = mdl.pitchmin = mdl.pitchmax = 0;
@@ -415,7 +415,7 @@ struct md5 : skelmodel, skelloader<md5>
         return true;
     }
 
-    bool load()
+    bool load() override
     {
         formatstring(dir, "%s/%s", *modeldir, name);
         defformatstring(cfgname, "%s/%s/md5.cfg", *modeldir, name);

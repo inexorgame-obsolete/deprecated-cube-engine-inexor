@@ -20,7 +20,7 @@ struct hideandseekservermode : servmode, hideandseekmode
     vector<seekersinfo*> seekersinfos;
     int lastupdatecheck;
 
-    void setup();
+    void setup() override;
 
     void initplayers();
 
@@ -29,28 +29,28 @@ struct hideandseekservermode : servmode, hideandseekmode
         sethider(ci);
     }
 
-    void initclient(clientinfo *ci, packetbuf &p, bool connecting)
+    void initclient(clientinfo *ci, packetbuf &p, bool connecting) override
     {
         setseeker(ci);
     }
 
-    void connected(clientinfo *ci)
+    void connected(clientinfo *ci) override
     {
         setseeker(ci);
     }
 
-    void leavegame(clientinfo *ci, bool disconnecting);
+    void leavegame(clientinfo *ci, bool disconnecting) override;
 
-    void cleanup()
+    void cleanup() override
     {
         seekersinfos.deletecontents();
     }
 
     bool checkfinished();
 
-    void update();
+    void update() override;
 
-    void intermission()
+    void intermission() override
     {
     }
 
@@ -58,16 +58,16 @@ struct hideandseekservermode : servmode, hideandseekmode
     {
     }
 
-    bool canspawn(clientinfo *ci, bool connecting)
+    bool canspawn(clientinfo *ci, bool connecting) override
     {
         return true;
     }
 
-    bool canhit(clientinfo *target, clientinfo *actor);
+    bool canhit(clientinfo *target, clientinfo *actor) override;
 
-    void died(clientinfo *target, clientinfo *actor);
+    void died(clientinfo *target, clientinfo *actor) override;
 
-    bool canchangeteam(clientinfo *ci, const char *oldteam, const char *newteam)
+    bool canchangeteam(clientinfo *ci, const char *oldteam, const char *newteam) override
     {
         return false;
     }

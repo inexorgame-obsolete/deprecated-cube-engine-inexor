@@ -7,7 +7,7 @@ struct obj : vertmodel, vertloader<obj>
 
     static const char *formatname() { return "obj"; }
     static bool animated() { return false; }
-    int type() const { return MDL_OBJ; }
+    int type() const override { return MDL_OBJ; }
 
     struct objmeshgroup : vertmeshgroup
     {
@@ -160,14 +160,14 @@ struct obj : vertmodel, vertloader<obj>
         }
     };
 
-    meshgroup *loadmeshes(const char *name, va_list args)
+    meshgroup *loadmeshes(const char *name, va_list args) override
     {
         objmeshgroup *group = new objmeshgroup;
         if(!group->load(name, va_arg(args, double))) { delete group; return NULL; }
         return group;
     }
 
-    bool loaddefaultparts()
+    bool loaddefaultparts() override
     {
         part &mdl = addpart();
         const char *pname = parentdir(name);
@@ -186,7 +186,7 @@ struct obj : vertmodel, vertloader<obj>
         return true;
     }
 
-    bool load()
+    bool load() override
     {
         formatstring(dir, "%s/%s", *modeldir, name);
         defformatstring(cfgname, "%s/%s/obj.cfg", *modeldir, name);

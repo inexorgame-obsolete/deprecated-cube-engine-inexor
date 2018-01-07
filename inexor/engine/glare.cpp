@@ -6,7 +6,7 @@
 
 static struct glaretexture : rendertarget
 {
-    bool dorender()
+    bool dorender() override
     {
         extern void drawglare();
         drawglare();

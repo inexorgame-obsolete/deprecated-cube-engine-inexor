@@ -33,7 +33,7 @@ struct vertmodel : animmodel
         {
         }
 
-        virtual ~vertmesh()
+        ~vertmesh() override
         {
             DELETEA(verts);
             DELETEA(tcverts);
@@ -59,7 +59,7 @@ struct vertmodel : animmodel
             mesh::calctangents(bumpverts, verts, tcverts, numverts, tris, numtris, areaweight, ((vertmeshgroup *)group)->numframes);
         }
 
-        void calcbb(vec &bbmin, vec &bbmax, const matrix4x3 &m)
+        void calcbb(vec &bbmin, vec &bbmax, const matrix4x3 &m) override
         {
             loopj(numverts)
             {
@@ -72,7 +72,7 @@ struct vertmodel : animmodel
             }
         }
 
-        void genBIH(BIH::mesh &m)
+        void genBIH(BIH::mesh &m) override
         {
             m.tris = (const BIH::tri *)tris;
             m.numtris = numtris;
@@ -228,7 +228,7 @@ struct vertmodel : animmodel
         {
         }
 
-        virtual ~vertmeshgroup()
+        ~vertmeshgroup() override
         {
             DELETEA(tags);
             if(ebuf) glDeleteBuffers_(1, &ebuf);
@@ -239,15 +239,15 @@ struct vertmodel : animmodel
             DELETEA(vdata);
         }
 
-        int findtag(const char *name)
+        int findtag(const char *name) override
         {
             loopi(numtags) if(!strcmp(tags[i].name, name)) return i;
             return -1;
         }
 
-        int totalframes() const { return numframes; }
+        int totalframes() const override { return numframes; }
 
-        void concattagtransform(part *p, int i, const matrix4x3 &m, matrix4x3 &n)
+        void concattagtransform(part *p, int i, const matrix4x3 &m, matrix4x3 &n) override
         {
             n.mul(m, tags[numtags + i].transform);
             n.translate(m.transformnormal(p->translate).mul(p->model->scale));
@@ -352,7 +352,7 @@ struct vertmodel : animmodel
             if(enablebones) disablebones();
         }
 
-        void cleanup()
+        void cleanup() override
         {
             loopi(MAXVBOCACHE)
             {
@@ -363,7 +363,7 @@ struct vertmodel : animmodel
             if(ebuf) { glDeleteBuffers_(1, &ebuf); ebuf = 0; }
         }
 
-        void preload(part *p)
+        void preload(part *p) override
         {
             if(numframes > 1) return;
             bool tangents = p->tangents();
@@ -371,7 +371,7 @@ struct vertmodel : animmodel
             if(!vbocache->vbuf) genvbo(tangents, *vbocache);
         }
 
-        void render(const animstate *as, float pitch, const vec &axis, const vec &forward, dynent *d, part *p)
+        void render(const animstate *as, float pitch, const vec &axis, const vec &forward, dynent *d, part *p) override
         {
             if(as->cur.anim&ANIM_NORENDER)
             {

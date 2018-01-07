@@ -23,7 +23,7 @@ struct menu : g3d_callback
 
     menu() : name(NULL), header(NULL), contents(NULL), init(NULL), onclear(NULL), showtab(true) {}
 
-    void gui(g3d_gui &g, bool firstpass)
+    void gui(g3d_gui &g, bool firstpass) override
     {
         cgui = &g;
         cgui->start(menustart, 0.03f, showtab ? &menutab : NULL);
@@ -660,7 +660,7 @@ static vector<change> needsapply;
 
 static struct applymenu : menu
 {
-    void gui(g3d_gui &g, bool firstpass)
+    void gui(g3d_gui &g, bool firstpass) override
     {
         if(guistack.empty()) return;
         g.start(menustart, 0.03f);
@@ -681,7 +681,7 @@ static struct applymenu : menu
         g.end();
     }
 
-    void clear()
+    void clear() override
     {
         menu::clear();
         needsapply.shrink(0);

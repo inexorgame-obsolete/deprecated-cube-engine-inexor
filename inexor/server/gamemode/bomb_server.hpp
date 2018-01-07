@@ -14,27 +14,27 @@ struct bombservermode : servmode, bombmode
 
     static constexpr int COUNTDOWNSECONDS = 3;
 
-    void setup();
+    void setup() override;
 
     bool parsespawnloc(ucharbuf &p, bool commit);
 
-    void updatelimbo();
+    void updatelimbo() override;
 
-    void leavegame(clientinfo *ci, bool disconnecting);
+    void leavegame(clientinfo *ci, bool disconnecting) override;
 
     void sendspawnlocs(bool resuscitate = false);
 
     bool gamerunning();
 
-    bool canspawn(clientinfo *ci, bool connecting);
+    bool canspawn(clientinfo *ci, bool connecting) override;
 
     void pushentity(int type, vec o);
 
-    void died(clientinfo *target, clientinfo *actor);
+    void died(clientinfo *target, clientinfo *actor) override;
 
-    bool canchangeteam(clientinfo *ci, const char *oldteam, const char *newteam);
+    bool canchangeteam(clientinfo *ci, const char *oldteam, const char *newteam) override;
 
-    void cleanup()
+    void cleanup() override
     {
         spawnlocs.deletecontents();
     }

@@ -13,30 +13,30 @@ struct ctfclientmode : clientmode, ctfmode
 
     void returnflag(int i, int vistime = -1000);
 
-    void preload();
+    void preload() override;
 
     void drawblip(fpsent *d, float x, float y, float s, const vec &pos, bool flagblip);
 
     void drawblip(fpsent *d, float x, float y, float s, int i, bool flagblip);
 
-    int clipconsole(int w, int h)
+    int clipconsole(int w, int h) override
     {
         return (h*(1 + 1 + 10))/(4*10);
     }
 
-    void drawhud(fpsent *d, int w, int h);
+    void drawhud(fpsent *d, int w, int h) override;
 
-    void removeplayer(fpsent *d);
+    void removeplayer(fpsent *d) override;
 
     vec interpflagpos(flag &f, float &angle);
 
     vec interpflagpos(flag &f) { float angle; return interpflagpos(f, angle); }
 
-    void rendergame();
+    void rendergame() override;
 
-    void setup();
+    void setup() override;
 
-    void senditems(packetbuf &p);
+    void senditems(packetbuf &p) override;
 
     void parseflags(ucharbuf &p, bool commit);
 
@@ -64,25 +64,25 @@ struct ctfclientmode : clientmode, ctfmode
 
     void invisflag(int i, int invis);
 
-    void checkitems(fpsent *d);
+    void checkitems(fpsent *d) override;
 
-    void respawned(fpsent *d);
+    void respawned(fpsent *d) override;
 
-    int respawnwait(fpsent *d);
+    int respawnwait(fpsent *d) override;
 
     bool pickholdspawn(fpsent *d);
 
-    void pickspawn(fpsent *d);
+    void pickspawn(fpsent *d) override;
 
     bool aihomerun(fpsent *d, ai::aistate &b);
 
-    bool aicheck(fpsent *d, ai::aistate &b);
+    bool aicheck(fpsent *d, ai::aistate &b) override;
 
-    void aifind(fpsent *d, ai::aistate &b, vector<ai::interest> &interests);
+    void aifind(fpsent *d, ai::aistate &b, vector<ai::interest> &interests) override;
 
-    bool aidefend(fpsent *d, ai::aistate &b);
+    bool aidefend(fpsent *d, ai::aistate &b) override;
 
-    bool aipursue(fpsent *d, ai::aistate &b);
+    bool aipursue(fpsent *d, ai::aistate &b) override;
 
     bool parse_network_message(int type, ucharbuf &p) override;
 };

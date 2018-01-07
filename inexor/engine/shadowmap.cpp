@@ -102,15 +102,15 @@ VAR(smoothshadowmappeel, 1, 0, 0);
 
 static struct shadowmaptexture : rendertarget
 {
-    const GLenum *colorformats() const
+    const GLenum *colorformats() const override
     {
         static const GLenum rgbafmts[] = { GL_RGBA16F, GL_RGBA16, GL_RGBA, GL_RGBA8, GL_FALSE };
         return &rgbafmts[fpshadowmap && hasTF ? 0 : (shadowmapprecision ? 1 : 2)];
     }
 
-    bool swaptexs() const { return true; }
+    bool swaptexs() const override { return true; }
 
-    bool scissorblur(int &x, int &y, int &w, int &h)
+    bool scissorblur(int &x, int &y, int &w, int &h) override
     {
         x = max(int(floor((scissorx1+1)/2*vieww)) - 2*blursize, 2);
         y = max(int(floor((scissory1+1)/2*viewh)) - 2*blursize, 2);
@@ -119,7 +119,7 @@ static struct shadowmaptexture : rendertarget
         return true;
     }
 
-    bool scissorrender(int &x, int &y, int &w, int &h)
+    bool scissorrender(int &x, int &y, int &w, int &h) override
     {
         x = y = 2;
         w = vieww - 2*2;
@@ -127,13 +127,13 @@ static struct shadowmaptexture : rendertarget
         return true;
     }
 
-    void doclear()
+    void doclear() override
     {
         glClearColor(0, 0, 0, 0);
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     }
 
-    bool dorender()
+    bool dorender() override
     {
         vec skewdir(shadowdir);
         skewdir.rotate_around_z(-camera1->yaw*RAD);
@@ -184,9 +184,9 @@ static struct shadowmaptexture : rendertarget
         return shadowmapcasters>0;
     }
 
-    bool flipdebug() const { return false; }
+    bool flipdebug() const override { return false; }
 
-    void dodebug(int w, int h)
+    void dodebug(int w, int h) override
     {
         if(shadowmapcasters)
         {

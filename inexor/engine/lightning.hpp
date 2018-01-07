@@ -80,31 +80,31 @@ struct lightningrenderer : listrenderer
         : listrenderer("particle/lightning.jpg", 2, PT_LIGHTNING|PT_TRACK|PT_GLARE)
     {}
 
-    void startrender()
+    void startrender() override
     {
         glDisable(GL_CULL_FACE);
         gle::defattrib(gle::ATTRIB_VERTEX, 3, GL_FLOAT);
         gle::defattrib(gle::ATTRIB_TEXCOORD0, 2, GL_FLOAT);
     }
 
-    void endrender()
+    void endrender() override
     {
         glEnable(GL_CULL_FACE);
     }
 
-    void update()
+    void update() override
     {
         setuplightning();
     }
 
-    void seedemitter(particleemitter &pe, const vec &o, const vec &d, int fade, float size, int gravity)
+    void seedemitter(particleemitter &pe, const vec &o, const vec &d, int fade, float size, int gravity) override
     {
         pe.maxfade = max(pe.maxfade, fade);
         pe.extendbb(o, size);
         pe.extendbb(d, size);
     }
 
-    void renderpart(listparticle *p, const vec &o, const vec &d, int blend, int ts)
+    void renderpart(listparticle *p, const vec &o, const vec &d, int blend, int ts) override
     {
         blend = min(blend<<2, 255);
         if(type&PT_MOD) //multiply alpha into color

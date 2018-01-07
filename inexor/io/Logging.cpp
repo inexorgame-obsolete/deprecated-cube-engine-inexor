@@ -59,20 +59,20 @@ public:
     InexorCutAnsiCodesSink(const InexorCutAnsiCodesSink& other) = delete;
     InexorCutAnsiCodesSink& operator=(const InexorCutAnsiCodesSink& other) = delete;
 
-    ~InexorCutAnsiCodesSink()
+    ~InexorCutAnsiCodesSink() override
     {
         flush();
     }
 
     /// spdlog hook we override.
-    virtual void log(const spdlog::details::log_msg& msg) override
+    void log(const spdlog::details::log_msg& msg) override
     {
         spdlog::details::log_msg new_msg;
         new_msg.formatted << cutANSICodes(msg.formatted.str());
         sink_->log(new_msg);
     }
 
-    virtual void flush() override
+    void flush() override
     {
         sink_->flush();
     }

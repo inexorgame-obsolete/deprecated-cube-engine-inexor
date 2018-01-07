@@ -109,7 +109,7 @@ struct fireballrenderer : listrenderer
         : listrenderer(texname, 0, PT_FIREBALL|PT_GLARE|PT_SHADER)
     {}
 
-    void startrender()
+    void startrender() override
     {
         if(glaring) SETSHADER(explosionglare);
         else if(!reflecting && !refracting && depthfx && depthfxtex.rendertex && numdepthfxranges>0)
@@ -122,12 +122,12 @@ struct fireballrenderer : listrenderer
         sphere::enable();
     }
 
-    void endrender()
+    void endrender() override
     {
         sphere::disable();
     }
 
-    void cleanup()
+    void cleanup() override
     {
         sphere::cleanup();
     }
@@ -189,13 +189,13 @@ struct fireballrenderer : listrenderer
         return numranges;
     }
 
-    void seedemitter(particleemitter &pe, const vec &o, const vec &d, int fade, float size, int gravity)
+    void seedemitter(particleemitter &pe, const vec &o, const vec &d, int fade, float size, int gravity) override
     {
         pe.maxfade = max(pe.maxfade, fade);
         pe.extendbb(o, (size+1+pe.ent->attr2)*WOBBLE); 
     }
 
-    void renderpart(listparticle *p, const vec &o, const vec &d, int blend, int ts)
+    void renderpart(listparticle *p, const vec &o, const vec &d, int blend, int ts) override
     {
         float pmax = p->val,
               size = p->fade ? float(ts)/p->fade : 1,

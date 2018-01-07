@@ -399,7 +399,7 @@ namespace game
             showing = on;
         }
 
-        void gui(g3d_gui &g, bool firstpass)
+        void gui(g3d_gui &g, bool firstpass) override
         {
             g.start(menustart, 0.03f, NULL, false);
             renderscoreboard(g, firstpass);
