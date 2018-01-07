@@ -4,6 +4,7 @@
 /// additional textures can be used for various shaders.
 
 #include "inexor/engine/engine.hpp"
+#include "inexor/engine/material.hpp"
 #include "inexor/texture/texture.hpp"
 #include "inexor/texture/macros.hpp"
 #include "inexor/texture/image.hpp"
