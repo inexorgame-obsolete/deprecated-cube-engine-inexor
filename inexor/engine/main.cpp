@@ -11,6 +11,7 @@
 #include "inexor/network/SharedTree.hpp"
 #include "inexor/network/SharedList.hpp"
 #include "inexor/util/legacy_time.hpp"
+#include "inexor/engine/decal.hpp"
 
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"

@@ -408,11 +408,6 @@ extern void renderparticles(bool mainpass = false);
 extern bool printparticles(extentity &e, char *buf, int len);
 extern void regularshape(int type, int radius, int color, int dir, int num, int fade, const vec &p, float size, int gravity, int vel = 200, const vec* modfrom=NULL, const vec* modto=NULL); // bomberman
 
-// decal
-extern void initdecals();
-extern void cleardecals();
-extern void renderdecals(bool mainpass = false);
-
 // blob
 
 enum
