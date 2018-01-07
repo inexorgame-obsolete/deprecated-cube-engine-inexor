@@ -408,21 +408,6 @@ extern void renderparticles(bool mainpass = false);
 extern bool printparticles(extentity &e, char *buf, int len);
 extern void regularshape(int type, int radius, int color, int dir, int num, int fade, const vec &p, float size, int gravity, int vel = 200, const vec* modfrom=NULL, const vec* modto=NULL); // bomberman
 
-// blob
-
-enum
-{
-    BLOB_STATIC = 0,
-    BLOB_DYNAMIC
-};
-
-extern SharedVar<int> showblobs;
-
-extern void initblobs(int type = -1);
-extern void resetblobs();
-extern void renderblob(int type, const vec &o, float radius, float fade = 1);
-extern void flushblobs();
-
 // rendersky
 extern int explicitsky;
 extern double skyarea;

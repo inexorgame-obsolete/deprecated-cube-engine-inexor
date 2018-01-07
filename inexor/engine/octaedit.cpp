@@ -5,6 +5,7 @@
 #include "inexor/io/input/InputRouter.hpp"
 #include "inexor/io/Logging.hpp"
 #include "inexor/engine/blend.hpp"
+#include "inexor/engine/blob.hpp"
 #include "inexor/engine/material.hpp"
 
 #include "inexor/engine/glexts.hpp"
