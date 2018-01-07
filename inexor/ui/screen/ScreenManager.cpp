@@ -19,9 +19,7 @@ namespace gle {
     extern void forcedisable();
     static inline void disable() { if (enabled) forcedisable(); }
 }
-namespace recorder {
-    extern void capture(bool overlay = true);
-}
+
 // ENDTODO
 
 namespace inexor {
