@@ -14,6 +14,7 @@
 #include "inexor/engine/dynlight.hpp"
 #include "inexor/engine/material.hpp"
 #include "inexor/engine/decal.hpp"
+#include "inexor/engine/shadowmap.hpp"
 
 #include "inexor/ui/legacy/3dgui.hpp"
 #include "inexor/ui/legacy/menus.hpp"

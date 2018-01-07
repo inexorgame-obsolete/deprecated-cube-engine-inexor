@@ -1,9 +1,15 @@
+#include "inexor/shared/command.hpp"
+#include "inexor/shared/geom.hpp"
 #include "inexor/engine/engine.hpp"
 #include "inexor/engine/rendertarget.hpp"
 #include "inexor/engine/shadowmap.hpp"
 
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"
+
+#include <algorithm>
+
+extern bool hasVAO, hasFBO, hasAFBO, hasDS, hasTF, hasTRG, hasTSW, hasS3TC, hasFXT1, hasAF, hasFBB, hasUBO, hasMBR; //todo remove
 
 VARP(shadowmap, 0, 0, 1);
 

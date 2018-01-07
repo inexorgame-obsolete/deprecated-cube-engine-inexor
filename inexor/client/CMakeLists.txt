@@ -19,6 +19,7 @@ prepend(CLIENT_SOURCES_ENGINE ${SOURCE_DIR}/engine
     renderparticles.cpp
     rendersky.cpp
     rendertext.cpp
+    rendertarget.cpp
     renderva.cpp
     shader.cpp
     water.cpp

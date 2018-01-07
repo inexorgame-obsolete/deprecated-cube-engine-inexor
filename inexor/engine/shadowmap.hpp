@@ -5,6 +5,7 @@
 
 #include "inexor/network/SharedVar.hpp"
 #include "inexor/shared/geom.hpp"
+#include "inexor/engine/octa.hpp"
 
 extern SharedVar<int> shadowmap;
 extern int shadowmapcasters;

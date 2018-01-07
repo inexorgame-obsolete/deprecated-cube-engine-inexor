@@ -1,8 +1,17 @@
 #pragma once
 #include "inexor/ui/screen/ScreenManager.hpp"
 
+#include "inexor/texture/texture.hpp"
+#include "inexor/texture/texsettings.hpp"
+
+#include "inexor/engine/shader.hpp"
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"
+
+extern void screenquad(float sw, float sh); // todo remove
+extern void hudquad(float x, float y, float w, float h, float tx = 0, float ty = 0, float tw = 1, float th = 1);
+
+#include "inexor/network/SharedVar.hpp"
 
 extern SharedVar<int> rtsharefb, rtscissor, blurtile;
 
@@ -47,16 +56,7 @@ struct rendertarget
 
     virtual bool depthtest() const { return true; }
 
-    void cleanup(bool fullclean = false)
-    {
-        if(renderfb) { glDeleteFramebuffers_(1, &renderfb); renderfb = 0; }
-        if(renderdb) { glDeleteRenderbuffers_(1, &renderdb); renderdb = 0; }
-        if(rendertex) { glDeleteTextures(1, &rendertex); rendertex = 0; }
-        texw = texh = 0;
-        cleanupblur();
-
-        if(fullclean) colorfmt = depthfmt = GL_FALSE;
-    }
+    void cleanup(bool fullclean = false);
 
     void cleanupblur()
     {
@@ -138,16 +138,16 @@ struct rendertarget
     {
         if(x1 >= 1 || y1 >= 1 || x2 <= -1 || y2 <= -1) return false;
 
-        scissorx1 = min(scissorx1, max(x1, -1.0f));
-        scissory1 = min(scissory1, max(y1, -1.0f));
-        scissorx2 = max(scissorx2, min(x2, 1.0f));
-        scissory2 = max(scissory2, min(y2, 1.0f));
+        scissorx1 = std::min(scissorx1, std::max(x1, -1.0f));
+        scissory1 = std::min(scissory1, std::max(y1, -1.0f));
+        scissorx2 = std::max(scissorx2, std::min(x2, 1.0f));
+        scissory2 = std::max(scissory2, std::min(y2, 1.0f));
 
         float blurerror = 2.0f*float(2*blursize + blurmargin);
-        int tx1 = max(0, min(BLURTILES - 1, int((x1-blurerror/vieww + 1)/2 * BLURTILES))),
-            ty1 = max(0, min(BLURTILES - 1, int((y1-blurerror/viewh + 1)/2 * BLURTILES))),
-            tx2 = max(0, min(BLURTILES - 1, int((x2+blurerror/vieww + 1)/2 * BLURTILES))),
-            ty2 = max(0, min(BLURTILES - 1, int((y2+blurerror/viewh + 1)/2 * BLURTILES)));
+        int tx1 = std::max(0, std::min(BLURTILES - 1, int((x1-blurerror/vieww + 1)/2 * BLURTILES))),
+            ty1 = std::max(0, std::min(BLURTILES - 1, int((y1-blurerror/viewh + 1)/2 * BLURTILES))),
+            tx2 = std::max(0, std::min(BLURTILES - 1, int((x2+blurerror/vieww + 1)/2 * BLURTILES))),
+            ty2 = std::max(0, std::min(BLURTILES - 1, int((y2+blurerror/viewh + 1)/2 * BLURTILES)));
 
         uint mask = (BLURTILEMASK>>(BLURTILES - (tx2+1))) & (BLURTILEMASK<<tx1);
         for(int y = ty1; y <= ty2; y++) blurtiles[y] |= mask;
@@ -163,10 +163,10 @@ struct rendertarget
 
         if(!blurtile) return true;
 
-        int tx1 = max(0, min(BLURTILES - 1, int((x1 + 1)/2 * BLURTILES))),
-            ty1 = max(0, min(BLURTILES - 1, int((y1 + 1)/2 * BLURTILES))),
-            tx2 = max(0, min(BLURTILES - 1, int((x2 + 1)/2 * BLURTILES))),
-            ty2 = max(0, min(BLURTILES - 1, int((y2 + 1)/2 * BLURTILES)));
+        int tx1 = std::max(0, std::min(BLURTILES - 1, int((x1 + 1)/2 * BLURTILES))),
+            ty1 = std::max(0, std::min(BLURTILES - 1, int((y1 + 1)/2 * BLURTILES))),
+            tx2 = std::max(0, std::min(BLURTILES - 1, int((x2 + 1)/2 * BLURTILES))),
+            ty2 = std::max(0, std::min(BLURTILES - 1, int((y2 + 1)/2 * BLURTILES)));
 
         uint mask = (BLURTILEMASK>>(BLURTILES - (tx2+1))) & (BLURTILEMASK<<tx1);
         for(int y = ty1; y <= ty2; y++) if(blurtiles[y] & mask) return true;
@@ -281,10 +281,10 @@ struct rendertarget
             }
             return false;
         }
-        x = max(int(floor((scissorx1+1)/2*vieww)) - 2*blursize, 0);
-        y = max(int(floor((scissory1+1)/2*viewh)) - 2*blursize, 0);
-        w = min(int(ceil((scissorx2+1)/2*vieww)) + 2*blursize, vieww) - x;
-        h = min(int(ceil((scissory2+1)/2*viewh)) + 2*blursize, viewh) - y;
+        x = std::max(int(floor((scissorx1+1)/2*vieww)) - 2*blursize, 0);
+        y = std::max(int(floor((scissory1+1)/2*viewh)) - 2*blursize, 0);
+        w = std::min(int(ceil((scissorx2+1)/2*vieww)) + 2*blursize, vieww) - x;
+        h = std::min(int(ceil((scissory2+1)/2*viewh)) + 2*blursize, viewh) - y;
         return true;
     }
 
@@ -301,10 +301,10 @@ struct rendertarget
             }
             return false;
         }
-        x = max(int(floor((scissorx1+1)/2*vieww)), 0);
-        y = max(int(floor((scissory1+1)/2*viewh)), 0);
-        w = min(int(ceil((scissorx2+1)/2*vieww)), vieww) - x;
-        h = min(int(ceil((scissory2+1)/2*viewh)), viewh) - y;
+        x = std::max(int(floor((scissorx1+1)/2*vieww)), 0);
+        y = std::max(int(floor((scissory1+1)/2*viewh)), 0);
+        w = std::min(int(ceil((scissorx2+1)/2*vieww)), vieww) - x;
+        h = std::min(int(ceil((scissory2+1)/2*viewh)), viewh) - y;
         return true;
     }
 
@@ -315,8 +315,8 @@ struct rendertarget
 
     void render(int w, int h, int blursize = 0, float blursigma = 0)
     {
-        w = min(w, hwtexsize);
-        h = min(h, hwtexsize);
+        w = std::min(w, *hwtexsize);
+        h = std::min(h, *hwtexsize);
         if(screenrect())
         {
             // TODO: this name is so ugly it cries for replacement.
@@ -344,11 +344,11 @@ struct rendertarget
         if(blursize && !blurtex) setupblur();
         if(swaptexs() && blursize)
         {
-            swap(rendertex, blurtex);
+            std::swap(rendertex, blurtex);
             if(!rtsharefb)
             {
-                swap(renderfb, blurfb);
-                swap(renderdb, blurdb);
+                std::swap(renderfb, blurfb);
+                std::swap(renderdb, blurdb);
             }
         }
         glBindFramebuffer_(GL_FRAMEBUFFER, renderfb);
@@ -453,12 +453,12 @@ struct rendertarget
     void debug()
     {
         if(!rendertex) return;
-        int w = min(inexor::rendering::screen::screen_manager.screenw, inexor::rendering::screen::screen_manager.screenh)/2, h = (w*inexor::rendering::screen::screen_manager.screenh)/inexor::rendering::screen::screen_manager.screenw;
+        int w = std::min(inexor::rendering::screen::screen_manager.screenw, inexor::rendering::screen::screen_manager.screenh)/2, h = (w*inexor::rendering::screen::screen_manager.screenh)/inexor::rendering::screen::screen_manager.screenw;
         hudshader->set(); 
         gle::colorf(1, 1, 1);
         glBindTexture(GL_TEXTURE_2D, rendertex);
         float tx1 = 0, tx2 = 1, ty1 = 0, ty2 = 1;
-        if(flipdebug()) swap(ty1, ty2);
+        if(flipdebug()) std::swap(ty1, ty2);
         hudquad(0, 0, w, h, tx1, ty1, tx2-tx1, ty2-ty1);
         hudnotextureshader->set();
         dodebug(w, h);

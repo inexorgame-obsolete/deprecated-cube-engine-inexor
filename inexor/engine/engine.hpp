@@ -21,7 +21,6 @@ extern physent *camera1;                // special ent that acts as camera, same
 
 extern SharedVar<int> worldscale, worldsize;
 extern SharedVar<int> mapversion;
-extern SharedVar<char*> maptitle;
 extern vector<ushort> texmru;
 extern int xtraverts, xtravertsva;
 extern const ivec cubecoords[8];
@@ -414,20 +413,6 @@ extern double skyarea;
 
 extern void drawskybox(int farplane, bool limited);
 extern bool limitsky();
-
-// sound
-namespace inexor {
-namespace sound {
-    extern void clear_sound();
-    extern void clearmapsounds();
-    extern void checkmapsounds();
-    extern void updatesounds();
-    extern void preloadmapsounds();
-    extern void initmumble();
-    extern void closemumble();
-    extern void updatemumble();
-}
-}
 
 // grass
 extern void generategrass();

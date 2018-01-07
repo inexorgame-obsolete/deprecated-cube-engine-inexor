@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include <SDL_opengl.h>
+#include "inexor/network/legacy/buffer_types.hpp"
 
 namespace gle
 {

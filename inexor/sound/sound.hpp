@@ -57,4 +57,9 @@ extern bool stopsound(int n, int chanid, int fade = 0);
 extern void stopsounds();
 extern void initsound();
 
+extern void clear_sound();
+extern void clearmapsounds();
+extern void updatesounds();
+extern void preloadmapsounds();
+
 } } // ns inexor::sound

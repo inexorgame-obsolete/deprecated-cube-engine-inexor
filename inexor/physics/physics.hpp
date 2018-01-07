@@ -1,7 +1,7 @@
 #pragma once
 
 #include "inexor/shared/geom.hpp"
-#include "inexor/shared/octa.hpp"
+#include "inexor/engine/octa.hpp"
 #include "inexor/shared/ents.hpp"
 
 extern bool pointincube(const clipplanes &p, const vec &v);

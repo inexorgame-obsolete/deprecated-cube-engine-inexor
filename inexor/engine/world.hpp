@@ -1,5 +1,9 @@
 #pragma once
 
+#include "inexor/network/SharedVar.hpp"
+#include "inexor/shared/cube_types.hpp"
+#include "inexor/shared/geom.hpp"
+
 // world.h
 // contains general enumerations and structures to describe world, map format and environment
 
@@ -11,6 +15,8 @@
 #define WATER_AMPLITUDE 0.4f
 #define WATER_OFFSET 1.1f
 #define TEX_SCALE 8.0f
+
+extern SharedVar<char*> maptitle;
 
 // hardcoded texture numbers
 enum

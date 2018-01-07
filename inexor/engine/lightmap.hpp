@@ -1,4 +1,11 @@
-//NO INCLUDE GUARD
+
+#pragma once
+// lightmaps are textures covering all static planes to add lighting.
+#include "inexor/shared/cube_types.hpp"
+#include "inexor/shared/cube_tools.hpp"
+#include "inexor/shared/cube_vector.hpp"
+#include "inexor/engine/octa.hpp"
+
 #define LM_MINW 2
 #define LM_MINH 2
 #define LM_MAXW 128
@@ -83,7 +90,7 @@ extern vector<LightMap> lightmaps;
 struct LightMapTexture
 {
     int w, h, type;
-    GLuint id;
+    uint id;
     int unlitx, unlity;
 
     LightMapTexture()

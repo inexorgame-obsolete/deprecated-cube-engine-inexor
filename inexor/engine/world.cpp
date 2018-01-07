@@ -11,6 +11,8 @@
 
 #include "inexor/ui/legacy/menus.hpp"
 
+#include "inexor/sound/sound.hpp"
+
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"
 

@@ -7,6 +7,7 @@
 #include "inexor/io/Logging.hpp"
 #include "inexor/engine/rendertext.hpp"
 #include "inexor/engine/pvs.hpp"
+#include "inexor/engine/shadowmap.hpp"
 
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"

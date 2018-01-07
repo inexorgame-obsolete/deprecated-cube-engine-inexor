@@ -1,10 +1,8 @@
 /// game initialisation & main loop
 ///
 #include "inexor/engine/engine.hpp"
-#include "inexor/sound/sound.hpp"
 #include "inexor/io/filesystem/mediadirs.hpp"
 #include "inexor/io/input/InputRouter.hpp"
-#include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/util/Subsystem.hpp"
 #include "inexor/crashreporter/CrashReporter.hpp"
 #include "inexor/io/Logging.hpp"
@@ -13,6 +11,10 @@
 #include "inexor/util/legacy_time.hpp"
 #include "inexor/engine/decal.hpp"
 
+#include "inexor/sound/sound.hpp"
+#include "inexor/sound/mumble.hpp"
+
+#include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/ui/legacy/menus.hpp"
 #include "inexor/engine/rendertext.hpp"
 

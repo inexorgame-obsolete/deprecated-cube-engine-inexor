@@ -1,6 +1,8 @@
 #pragma once
+#include "inexor/shared/cube_tools.hpp"
 
 #include <cstdarg>
+#include <cstdio>
 #include <stdarg.h>
 
 #ifdef __GNUC__

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "inexor/shared/octa.hpp"
+#include "inexor/engine/octa.hpp"
 #include "inexor/network/SharedVar.hpp"
 #include "inexor/shared/cube_vector.hpp"
 #include "inexor/shared/geom.hpp"
