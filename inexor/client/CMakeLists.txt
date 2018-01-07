@@ -9,7 +9,6 @@ prepend(CLIENT_SOURCES_ENGINE ${SOURCE_DIR}/engine
     grass.cpp
     main.cpp
     material.cpp
-    menus.cpp
     movie.cpp
     normal.cpp
     octa.cpp

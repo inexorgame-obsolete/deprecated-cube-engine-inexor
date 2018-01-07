@@ -13,6 +13,9 @@
 #include "inexor/util/legacy_time.hpp"
 #include "inexor/engine/decal.hpp"
 
+#include "inexor/ui/legacy/menus.hpp"
+#include "inexor/engine/rendertext.hpp"
+
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"
 

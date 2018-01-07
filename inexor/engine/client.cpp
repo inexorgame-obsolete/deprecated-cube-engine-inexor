@@ -7,6 +7,7 @@
 #include "inexor/network/legacy/game_types.hpp"
 #include "inexor/io/Logging.hpp"
 #include "inexor/ui/InexorCefApp.hpp"
+#include "inexor/ui/legacy/menus.hpp"
 
 using namespace inexor::util; //needed for quoted()
 

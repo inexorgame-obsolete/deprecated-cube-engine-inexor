@@ -119,6 +119,11 @@ extern void g3d_cursorpos(float &x, float &y);
 extern void g3d_resetcursor();
 extern void g3d_limitscale(float scale);
 
+extern void g3d_render();
+extern bool g3d_windowhit(bool on, bool act);
+extern bool g3d_key(int code, bool isdown);
+extern bool g3d_input(const char *str, int len);
+
 
 /// Bomberman: HUD announce effects
 enum hudannounceeffects
@@ -142,3 +147,4 @@ extern int hudannounce_begin;
 extern int hudannounce_timeout;
 extern int hudannounce_effect;
 extern char* hudannounce_text;
+

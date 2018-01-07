@@ -9,6 +9,7 @@
 #include "inexor/engine/blend.hpp"
 #include "inexor/engine/pvs.hpp"
 #include "inexor/engine/material.hpp"
+#include "inexor/ui/legacy/menus.hpp"
 
 using namespace inexor::sound;
 using namespace inexor::util;

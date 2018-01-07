@@ -1,5 +1,4 @@
 #include "inexor/engine/engine.hpp"
-#include "inexor/ui/legacy/3dgui.hpp"
 #include "inexor/io/filesystem/mediadirs.hpp"
 #include "inexor/texture/slot.hpp"
 #include "inexor/io/input/InputRouter.hpp"
@@ -7,6 +6,9 @@
 #include "inexor/engine/blend.hpp"
 #include "inexor/engine/blob.hpp"
 #include "inexor/engine/material.hpp"
+
+#include "inexor/ui/legacy/3dgui.hpp"
+#include "inexor/ui/legacy/menus.hpp"
 
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"

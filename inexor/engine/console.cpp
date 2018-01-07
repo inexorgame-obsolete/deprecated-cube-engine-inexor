@@ -5,7 +5,10 @@
 #include "inexor/io/input/InputRouter.hpp"
 #include "inexor/io/Logging.hpp"
 #include "inexor/shared/cube_queue.hpp"
+
 #include "inexor/engine/rendertext.hpp"
+#include "inexor/ui/legacy/3dgui.hpp"
+#include "inexor/ui/legacy/menus.hpp"
 
 
 using namespace inexor::util;
