@@ -42,7 +42,7 @@ void uploadtexture(GLenum target, GLenum internal, int tw, int th, GLenum format
 {
     int bpp = formatsize(format), row = 0, rowalign = 0;
     if(!pitch) pitch = pw*bpp;
-    uchar *buf = NULL;
+    uchar *buf = nullptr;
     if(pw!=tw || ph!=th)
     {
         buf = new uchar[tw*th*bpp];
@@ -242,10 +242,10 @@ Texture *gettexture(const char *name)
     string tname;
     copystring(tname, name);
     auto it = textures.find(path(tname));
-    return it != textures.end() ? &it->second : NULL;
+    return it != textures.end() ? &it->second : nullptr;
 }
 
-Texture *notexture = NULL; // used as default, ensured to be loaded
+Texture *notexture = nullptr; // used as default, ensured to be loaded
 
 int texalign(void *data, int w, int bpp)
 {
@@ -336,7 +336,7 @@ VAR(scaledds, 0, 2, 4);
 
 bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex, bool msg, int *compress)
 {
-    const char *cmds = NULL, *file = tname;
+    const char *cmds = nullptr, *file = tname;
 
     if(!tname)
     {
@@ -459,9 +459,9 @@ bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex, bool msg, int 
 uchar *loadalphamask(Texture *t)
 {
     if(t->alphamask) return t->alphamask;
-    if(!(t->type&Texture::ALPHA)) return NULL;
+    if(!(t->type&Texture::ALPHA)) return nullptr;
     ImageData s;
-    if(!texturedata(s, t->name, NULL, false) || !s.data || s.compressed) return NULL;
+    if(!texturedata(s, t->name, nullptr, false) || !s.data || s.compressed) return nullptr;
     t->alphamask = new uchar[s.h * ((s.w + 7) / 8)];
     uchar *srcrow = s.data, *dst = t->alphamask - 1;
     loop(y, s.h)
@@ -495,7 +495,7 @@ Texture *textureload(const char *name, int clamp, bool mipit, bool msg, bool thr
     copystring(tname, name);
     int compress = 0;
     ImageData s;
-    if(texturedata(s, tname, NULL, msg && !threadsafe, &compress)) return newtexture(threadsafe ? t : NULL, tname, s, clamp, mipit, false, false, compress);
+    if(texturedata(s, tname, nullptr, msg && !threadsafe, &compress)) return newtexture(threadsafe ? t : nullptr, tname, s, clamp, mipit, false, false, compress);
     return notexture;
 }
 
@@ -546,12 +546,12 @@ bool reloadtexture(Texture &tex)
         {
             int compress = 0;
             ImageData s;
-            if(!texturedata(s, tex.name, NULL, true, &compress) || !newtexture(&tex, NULL, s, tex.clamp, tex.mipmap, false, false, compress)) return false;
+            if(!texturedata(s, tex.name, nullptr, true, &compress) || !newtexture(&tex, nullptr, s, tex.clamp, tex.mipmap, false, false, compress)) return false;
             break;
         }
 
         case Texture::CUBEMAP:
-            if(!cubemaploadwildcard(&tex, NULL, tex.mipmap, true)) return false;
+            if(!cubemaploadwildcard(&tex, nullptr, tex.mipmap, true)) return false;
             break;
     }
     return true;

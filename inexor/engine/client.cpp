@@ -13,8 +13,8 @@ using namespace inexor::util; //needed for quoted()
 
 // (mostly) network related stuff
 
-ENetHost *clienthost = NULL;
-ENetPeer *curpeer = NULL, *connpeer = NULL;
+ENetHost *clienthost = nullptr;
+ENetPeer *curpeer = nullptr, *connpeer = nullptr;
 int connmillis = 0, connattempts = 0, discmillis = 0;
 
 // is player in multiplayer
@@ -58,7 +58,7 @@ ICOMMAND(isconnected, "b", (int *attempt), intret(isconnected(*attempt > 0) ? 1 
 // return the current network address
 const ENetAddress *connectedpeer()
 {
-    return curpeer ? &curpeer->address : NULL;
+    return curpeer ? &curpeer->address : nullptr;
 }
 
 // return the ip of the current server
@@ -86,10 +86,10 @@ void abortconnect()
     if(!connpeer) return;
     game::connectfail();
     if(connpeer->state!=ENET_PEER_STATE_DISCONNECTED) enet_peer_reset(connpeer);
-    connpeer = NULL;
+    connpeer = nullptr;
     if(curpeer) return;
     enet_host_destroy(clienthost);
-    clienthost = NULL;
+    clienthost = nullptr;
 }
 
 // connect to a server (serverpassword only for mastermode 3 servers)
@@ -127,7 +127,7 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
 
     if(!clienthost) 
     {
-        clienthost = enet_host_create(NULL, 2, NUM_ENET_CHANNELS, rate*1024, rate*1024);
+        clienthost = enet_host_create(nullptr, 2, NUM_ENET_CHANNELS, rate*1024, rate*1024);
         if(!clienthost)
         {
             Log.std->error("could not connect to server");
@@ -171,7 +171,7 @@ void disconnect(bool async, bool cleanup)
             if(async) return;
             enet_peer_reset(curpeer);
         }
-        curpeer = NULL;
+        curpeer = nullptr;
         discmillis = 0;
         Log.std->info("disconnected");
         game::gamedisconnect(cleanup);
@@ -181,7 +181,7 @@ void disconnect(bool async, bool cleanup)
     if(!connpeer && clienthost)
     {
         enet_host_destroy(clienthost);
-        clienthost = NULL;
+        clienthost = nullptr;
     }
 }
 
@@ -227,7 +227,7 @@ void neterr(const char *s, bool disc)
 // send ping to server (?)
 void clientkeepalive()
 {
-    if(clienthost) enet_host_service(clienthost, NULL, 0);
+    if(clienthost) enet_host_service(clienthost, nullptr, 0);
 }
 
 /// Send a file to all other clients.
@@ -239,7 +239,7 @@ ENetPacket *send_file(stream *file, const char *format, ...)
     va_end(args);
 
     sendclientpacket(packet, CHAN_FILE);
-    return packet->referenceCount > 0 ? packet : NULL;
+    return packet->referenceCount > 0 ? packet : nullptr;
 }
 
 // get updates from the server
@@ -265,7 +265,7 @@ void gets2c()
         case ENET_EVENT_TYPE_CONNECT:
             disconnect(false, false);
             curpeer = connpeer;
-            connpeer = NULL;
+            connpeer = nullptr;
             Log.std->info("connected to server");
             throttle();
             if(rate) setrate(rate);

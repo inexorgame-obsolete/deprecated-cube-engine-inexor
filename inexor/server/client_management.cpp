@@ -78,7 +78,7 @@ clientinfo *get_client_info(int n, bool findbots) {
                ? (clientinfo *) client_connections[n]->info : nullptr;
     if (!findbots) return nullptr;
     n -= MAXCLIENTS;
-    return bots.inrange(n) ? bots[n] : NULL;
+    return bots.inrange(n) ? bots[n] : nullptr;
 }
 
 //// Name helpers
@@ -355,7 +355,7 @@ vector<savedscore> scores;
 savedscore *findscore(clientinfo *ci, bool insert)
 {
     uint ip = getclientip(ci->clientnum);
-    if(!ip) return 0;
+    if(!ip) return nullptr;
     if(!insert)
     {
         loopv(clients)
@@ -376,7 +376,7 @@ savedscore *findscore(clientinfo *ci, bool insert)
         savedscore &sc = scores[i];
         if(sc.ip == ip && !strcmp(sc.name, ci->name)) return &sc;
     }
-    if(!insert) return 0;
+    if(!insert) return nullptr;
     savedscore &sc = scores.add();
     sc.ip = ip;
     copystring(sc.name, ci->name);
@@ -487,7 +487,7 @@ void promote_if_local_client(client *c)
 
 client &add_client_connection(ENetPeer *peer)
 {
-    client *c = NULL;
+    client *c = nullptr;
     loopv(client_connections) if(!client_connections[i]->connected) // fill spaces
         {
             c = client_connections[i];
@@ -514,12 +514,12 @@ void delete_client_connection(client *c)
     if(!c->connected) return;
     c->connected = false;
     client_count--;
-    if(c->peer) c->peer->data = NULL;
-    c->peer = NULL;
+    if(c->peer) c->peer->data = nullptr;
+    c->peer = nullptr;
     if(c->info)
     {
         delete (clientinfo *)c->info;
-        c->info = NULL;
+        c->info = nullptr;
     }
 }
 

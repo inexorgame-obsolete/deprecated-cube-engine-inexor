@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <utility>
 
 #include "inexor/engine/engine.hpp"
 
@@ -24,7 +25,7 @@ class InexorMouseManager : public inexor::ui::context::InexorContextProvider
 
     public:
         InexorMouseManager(CefRefPtr<inexor::ui::layer::InexorLayerManager> layer_manager, int screen_width, int screen_height)
-            : layer_manager(layer_manager),
+            : layer_manager(std::move(layer_manager)),
               screen_width(screen_width),
               screen_height(screen_height),
               x(screen_width / 2),

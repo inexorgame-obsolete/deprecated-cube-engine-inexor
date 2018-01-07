@@ -64,7 +64,7 @@ ENetPacket *sendf(int cn, int chan, const char *format, ...)
     va_end(args);
     ENetPacket *packet = p.finalize();
     sendpacket(cn, chan, packet, exclude);
-    return packet->referenceCount > 0 ? packet : NULL;
+    return packet->referenceCount > 0 ? packet : nullptr;
 }
 
 void sendservmsg(const char *s)
@@ -80,7 +80,7 @@ void sendservmsgf(const char *fmt, ...)
 
 ENetPacket *sendfile(int cn, int chan, stream *file, const char *format, ...)
 {
-    if(!client_connections.inrange(cn)) return NULL;
+    if(!client_connections.inrange(cn)) return nullptr;
 
     va_list args;
     va_start(args, format);
@@ -89,5 +89,5 @@ ENetPacket *sendfile(int cn, int chan, stream *file, const char *format, ...)
 
     sendpacket(cn, chan, packet, -1);
 
-    return packet->referenceCount > 0 ? packet : NULL;
+    return packet->referenceCount > 0 ? packet : nullptr;
 }

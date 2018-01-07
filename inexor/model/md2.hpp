@@ -246,7 +246,7 @@ struct md2 : vertmodel, vertloader<md2>
     meshgroup *loadmeshes(const char *name, va_list args) override
     {
         md2meshgroup *group = new md2meshgroup;
-        if(!group->load(name)) { delete group; return NULL; }
+        if(!group->load(name)) { delete group; return nullptr; }
         return group;
     }
 
@@ -282,7 +282,7 @@ struct md2 : vertmodel, vertloader<md2>
             execfile(name3, false);
         }
         identflags |= IDF_PERSIST;
-        loading = 0;
+        loading = nullptr;
         translate.y = -translate.y;
         loaded();
         return true;

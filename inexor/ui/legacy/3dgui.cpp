@@ -18,7 +18,7 @@ using namespace inexor::filesystem;
 using namespace inexor::rendering::screen;
 using namespace inexor::io;
 
-static struct gui *windowhit = NULL;
+static struct gui *windowhit = nullptr;
 static bool layoutpass, actionon = false;
 static float firstx, firsty;
 static int mousebuttons = 0;
@@ -89,8 +89,8 @@ struct gui : g3d_gui
     { 
         if(tcurrent)
         {
-            if(layoutpass && !tpos) tcurrent = NULL; //disable tabs because you didn't start with one
-            if(shouldautotab && !curdepth && (layoutpass ? 0 : cury) + ysize > guiautotab*FONTH) tab(NULL, tcolor); 
+            if(layoutpass && !tpos) tcurrent = nullptr; //disable tabs because you didn't start with one
+            if(shouldautotab && !curdepth && (layoutpass ? 0 : cury) + ysize > guiautotab*FONTH) tab(nullptr, tcolor); 
         }
     }
 
@@ -407,7 +407,7 @@ struct gui : g3d_gui
                 m->boundbox(center, radius);
                 float yaw;
                 vec o = calcmodelpreviewpos(radius, yaw).sub(center);
-                rendermodel(&light, name, anim, o, yaw, 0, 0, NULL, NULL, 0);
+                rendermodel(&light, name, anim, o, yaw, 0, 0, nullptr, nullptr, 0);
             }
             modelpreview::end();
             hudshader->set();
@@ -559,7 +559,7 @@ struct gui : g3d_gui
         bool wasvertical = isvertical();
         if(wasvertical && e->maxy != 1) pushlist();
         
-        char *result = NULL;
+        char *result = nullptr;
         if(visible() && !layoutpass)
         {
             e->rendered = true;
@@ -603,7 +603,7 @@ struct gui : g3d_gui
             if(slines > 0) 
             {
                 int pos = e->scrolly;
-                slider(e->scrolly, slines, 0, color, NULL);
+                slider(e->scrolly, slines, 0, color, nullptr);
                 if(pos != e->scrolly) e->cy = e->scrolly; 
             }
             if(wasvertical) poplist();
@@ -702,8 +702,8 @@ struct gui : g3d_gui
     {
         Slot &slot = *vslot.slot;
         if(slot.sts.empty()) return;
-        VSlot *layer = NULL;
-        Texture *t = NULL, *glowtex = NULL, *layertex = NULL;
+        VSlot *layer = nullptr;
+        Texture *t = nullptr, *glowtex = nullptr, *layertex = nullptr;
         if(slot.loaded)
         {
             t = slot.sts[0].t;
@@ -999,7 +999,7 @@ struct gui : g3d_gui
         }
         else
         {
-            if(tcurrent && !*tcurrent) tcurrent = NULL;
+            if(tcurrent && !*tcurrent) tcurrent = nullptr;
             cury = -ysize; 
             curx = -xsize/2;
             
@@ -1021,7 +1021,7 @@ struct gui : g3d_gui
                 hudmatrix.scale(-scale.x, scale.y, scale.z);
             
                 vec dir;
-                lightreaching(origin, light, dir, false, 0, 0.5f); 
+                lightreaching(origin, light, dir, false, nullptr, 0.5f); 
                 float intensity = vec(yaw, 0.0f).dot(dir);
                 light.mul(1.0f + max(intensity, 0.0f));
             }
@@ -1132,7 +1132,7 @@ struct gui : g3d_gui
     }
 };
 
-Texture *gui::skintex = NULL, *gui::overlaytex = NULL, *gui::slidertex = NULL;
+Texture *gui::skintex = nullptr, *gui::overlaytex = nullptr, *gui::slidertex = nullptr;
 
 //chop skin into a grid
 const int gui::skiny[] = {0, 7, 21, 34, 43, 48, 56, 104, 111, 117, 128},
@@ -1337,7 +1337,7 @@ bool g3d_windowhit(bool on, bool act)
 
 void g3d_render()   
 {
-    windowhit = NULL;    
+    windowhit = nullptr;    
     if(actionon) mousebuttons |= G3D_PRESSED;
    
     gui::reset(); 

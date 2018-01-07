@@ -2,6 +2,8 @@
 
 #include <SDL.h>
 
+#include <utility>
+
 #include "include/cef_app.h"
 
 #include "inexor/ui/context/InexorContextProvider.hpp"
@@ -16,7 +18,7 @@ class InexorKeyboardManager : public inexor::ui::context::InexorContextProvider,
 {
 
     public:
-        InexorKeyboardManager(CefRefPtr<inexor::ui::layer::InexorLayerManager> layer_manager) : layer_manager(layer_manager) {}
+        InexorKeyboardManager(CefRefPtr<inexor::ui::layer::InexorLayerManager> layer_manager) : layer_manager(std::move(layer_manager)) {}
 
         /// Forward text input and key events to CEF.
         /// Key events can be seen like Joystick keys, textinput differs from that since it can be composited from multiply keys.

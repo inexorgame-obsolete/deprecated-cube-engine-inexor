@@ -31,14 +31,14 @@ template <class T, int MINSIZE = 8> struct vector
 
     /// Default constructor
     /// @brief sets all members to 0
-    vector() : buf(NULL), alen(0), ulen(0)
+    vector() : buf(nullptr), alen(0), ulen(0)
     {
     }
 
     /// Copy constructor
     /// @brief this constructor initialises the vector by copying another vector.
     /// @param v the vector from which data will be copied (call by reference).
-    vector(const vector &v) : buf(NULL), alen(0), ulen(0)
+    vector(const vector &v) : buf(nullptr), alen(0), ulen(0)
     {
         *this = v;
     }
@@ -152,7 +152,7 @@ template <class T, int MINSIZE = 8> struct vector
     /// @warning This member does NOT clean up its memory!
     void disown()
     {
-        buf = NULL;
+        buf = nullptr;
         alen = ulen = 0;
     }
 

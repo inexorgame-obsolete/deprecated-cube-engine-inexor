@@ -23,18 +23,18 @@ struct ImageData
     void(*freefunc)(void *);
 
     ImageData()
-        : data(NULL), owner(NULL), freefunc(NULL)
+        : data(nullptr), owner(nullptr), freefunc(nullptr)
     {
     }
 
 
     ImageData(int nw, int nh, int nbpp, int nlevels = 1, int nalign = 0, GLenum ncompressed = GL_FALSE)
     {
-        setdata(NULL, nw, nh, nbpp, nlevels, nalign, ncompressed);
+        setdata(nullptr, nw, nh, nbpp, nlevels, nalign, ncompressed);
     }
 
     ImageData(int nw, int nh, int nbpp, uchar *data)
-        : owner(NULL), freefunc(NULL)
+        : owner(nullptr), freefunc(nullptr)
     {
         setdata(data, nw, nh, nbpp);
     }
@@ -52,7 +52,7 @@ struct ImageData
         pitch = align ? 0 : w*bpp;
         compressed = ncompressed;
         data = ndata ? ndata : new uchar[calcsize()];
-        if (!ndata) { owner = this; freefunc = NULL; }
+        if (!ndata) { owner = this; freefunc = nullptr; }
     }
 
     int calclevelsize(int level) const
@@ -79,9 +79,9 @@ struct ImageData
 
     void disown()
     {
-        data = NULL;
-        owner = NULL;
-        freefunc = NULL;
+        data = nullptr;
+        owner = nullptr;
+        freefunc = nullptr;
     }
 
     void cleanup()

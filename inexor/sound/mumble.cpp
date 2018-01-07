@@ -70,7 +70,7 @@ void initmumble()
         mumblelink = shm_open(shmname, O_RDWR, 0);
         if(mumblelink >= 0)
         {
-            mumbleinfo = (MumbleInfo *)mmap(NULL, sizeof(MumbleInfo), PROT_READ|PROT_WRITE, MAP_SHARED, mumblelink, 0);
+            mumbleinfo = (MumbleInfo *)mmap(nullptr, sizeof(MumbleInfo), PROT_READ|PROT_WRITE, MAP_SHARED, mumblelink, 0);
             if(mumbleinfo != (MumbleInfo *)-1) wcsncpy(mumbleinfo->name, L"Inexor", 256);
         }
     #endif

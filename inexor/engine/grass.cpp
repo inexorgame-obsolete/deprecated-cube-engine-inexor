@@ -217,7 +217,7 @@ static void gengrassquads(vtxarray *va)
             s.grasstex = textureload(s.autograss, 2);
         }
 
-        grassgroup *group = NULL;
+        grassgroup *group = nullptr;
         loopi(NUMGRASSWEDGES)
         {
             grasswedge &w = grasswedges[i];    
@@ -265,7 +265,7 @@ void generategrass()
     gle::bindvbo(grassvbo);
     int size = grassverts.length()*sizeof(grassvert);
     grassvbosize = max(grassvbosize, size);
-    glBufferData_(GL_ARRAY_BUFFER, grassvbosize, size == grassvbosize ? grassverts.getbuf() : NULL, GL_STREAM_DRAW);
+    glBufferData_(GL_ARRAY_BUFFER, grassvbosize, size == grassvbosize ? grassverts.getbuf() : nullptr, GL_STREAM_DRAW);
     if(size != grassvbosize) glBufferSubData_(GL_ARRAY_BUFFER, 0, size, grassverts.getbuf());
     gle::clearvbo();
 }
@@ -283,7 +283,7 @@ void rendergrass()
 
     gle::bindvbo(grassvbo);
 
-    const grassvert *ptr = 0;
+    const grassvert *ptr = nullptr;
     gle::vertexpointer(sizeof(grassvert), ptr->pos.v);
     gle::colorpointer(sizeof(grassvert), ptr->color.v);
     gle::texcoord0pointer(sizeof(grassvert), ptr->tc.v);

@@ -126,7 +126,7 @@ void bombclientmode::renderscoreboard(g3d_gui &g, scoregroup &sg, int fgcolor, i
         loopv(sg.players)
         {
             fpsent *d = sg.players[i];
-            g.textf("%d", 0xFFFFDD, NULL, d->ammo[GUN_BOMB]);
+            g.textf("%d", 0xFFFFDD, nullptr, d->ammo[GUN_BOMB]);
         }
         g.poplist();
     }
@@ -138,7 +138,7 @@ void bombclientmode::renderscoreboard(g3d_gui &g, scoregroup &sg, int fgcolor, i
         loopv(sg.players)
         {
             fpsent *d = sg.players[i];
-            g.textf("%1.1fs", 0xFFFFDD, NULL, 5.5f-(d->bombdelay*0.5f));
+            g.textf("%1.1fs", 0xFFFFDD, nullptr, 5.5f-(d->bombdelay*0.5f));
         }
         g.poplist();
     }
@@ -150,7 +150,7 @@ void bombclientmode::renderscoreboard(g3d_gui &g, scoregroup &sg, int fgcolor, i
         loopv(sg.players)
         {
             fpsent *d = sg.players[i];
-            g.textf("%d", 0xFFFFDD, NULL, d->bombradius);
+            g.textf("%d", 0xFFFFDD, nullptr, d->bombradius);
         }
         g.poplist();
     }
@@ -196,7 +196,7 @@ void bombclientmode::renderscoreboard(g3d_gui &g, scoregroup &sg, int fgcolor, i
             rendermodel(&light, modelname, ANIM_MAPMODEL|ANIM_LOOP,
                         p->feetpos(), angle, pitch,
                         MDL_GHOST | MDL_CULL_VFC | MDL_LIGHT | MDL_CULL_OCCLUDED,
-                        NULL, NULL, 0, 0, alpha);
+                        nullptr, nullptr, 0, 0, alpha);
         }
     }
 

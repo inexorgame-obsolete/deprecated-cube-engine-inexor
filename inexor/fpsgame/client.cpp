@@ -145,7 +145,7 @@ namespace game
     }
 
     /// gamemodes
-    clientmode *cmode = NULL;
+    clientmode *cmode = nullptr;
     captureclientmode capturemode;
     ctfclientmode ctfmode;
     collectclientmode collectmode;
@@ -160,7 +160,7 @@ namespace game
         else if(m_collect) cmode = &collectmode;
         else if(m_bomb) cmode = &bombmode;
         else if(m_hideandseek) cmode = &hideandseekmode;
-        else cmode = NULL;
+        else cmode = nullptr;
 
     }
 
@@ -202,7 +202,7 @@ namespace game
     }
     ICOMMAND(name, "sN", (char *s, int *numargs),
     {
-        if(*numargs > 0) switchname(s, NULL);
+        if(*numargs > 0) switchname(s, nullptr);
         else if(!*numargs) printname();
         else result(colorname(player1));
     });
@@ -623,11 +623,11 @@ namespace game
 	/// send copied data from your clipboard to server
     void sendclipboard()
     {
-        uchar *outbuf = NULL;
+        uchar *outbuf = nullptr;
         int inlen = 0, outlen = 0;
         if(!packeditinfo(localedit, inlen, outbuf, outlen))
         {
-            outbuf = NULL;
+            outbuf = nullptr;
             inlen = outlen = 0;
         }
         packetbuf p(16 + outlen, ENET_PACKET_FLAG_RELIABLE);
@@ -735,7 +735,7 @@ namespace game
             case EDIT_UNDO:
             case EDIT_REDO:
             {
-                uchar *outbuf = NULL;
+                uchar *outbuf = nullptr;
                 int inlen = 0, outlen = 0;
                 if(packundo(op, inlen, outbuf, outlen))
                 {
@@ -1095,7 +1095,7 @@ namespace game
         }
         if(senditemstoserver)
         {
-            if(!m_noitems || cmode!=NULL) p.reliable();
+            if(!m_noitems || cmode!=nullptr) p.reliable();
             if(!m_noitems) entities::putitems(p);
             if(cmode) cmode->senditems(p);
             senditemstoserver = false;
@@ -1362,7 +1362,7 @@ namespace game
             {
                 bool val = getint(p) > 0;
                 int cn = getint(p);
-                fpsent *a = cn >= 0 ? getclient(cn) : NULL;
+                fpsent *a = cn >= 0 ? getclient(cn) : nullptr;
                 if(!demopacket)
                 {
                     gamepaused = val;
@@ -1375,7 +1375,7 @@ namespace game
             case N_GAMESPEED:
             {
                 int val = clamp(getint(p), 10, 1000), cn = getint(p);
-                fpsent *a = cn >= 0 ? getclient(cn) : NULL;
+                fpsent *a = cn >= 0 ? getclient(cn) : nullptr;
                 if(!demopacket) gamespeed = val;
                 if(a) Log.game->info("{0} set gamespeed to {1}", colorname(a), val);
                 else Log.game->info("gamespeed is {0}", val);
@@ -1583,7 +1583,7 @@ namespace game
             {
                 int scn = getint(p);
                 fpsent *s = getclient(scn);
-                if(!s) { parsestate(NULL, p); break; }
+                if(!s) { parsestate(nullptr, p); break; }
                 if(s->state==CS_DEAD && s->lastpain) saveragdoll(s);
                 if(s==player1)
                 {
@@ -1657,7 +1657,7 @@ namespace game
                 fpsent *target = getclient(tcn);
                 vec dir;
                 loopk(3) dir[k] = getint(p)/DNF;
-                if(target) target->hitpush(damage * (target->health<=0 ? deadpush : 1), dir, NULL, gun);
+                if(target) target->hitpush(damage * (target->health<=0 ? deadpush : 1), dir, nullptr, gun);
                 break;
             }
 
@@ -1731,7 +1731,7 @@ namespace game
                 if(!entities::ents.inrange(i)) break;
                 entities::setspawn(i, true);
                 ai::itemspawned(i);
-                playsound(S_ITEMSPAWN, &entities::ents[i]->o, NULL, 0, 0, 0, -1, 0, 1500);
+                playsound(S_ITEMSPAWN, &entities::ents[i]->o, nullptr, 0, 0, 0, -1, 0, 1500);
                 #if 0
                 const char *name = entities::itemname(i);
                 if(name) particle_text(entities::ents[i]->o, name, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
@@ -1755,7 +1755,7 @@ namespace game
                     attachentity(*e);
                     entities::setspawn(id, true);
                     ai::itemspawned(id);
-                    playsound(S_ITEMSPAWN, &entities::ents[id]->o, NULL, 0, 0, -1, 0, 1500);
+                    playsound(S_ITEMSPAWN, &entities::ents[id]->o, nullptr, 0, 0, -1, 0, 1500);
                     int icon = entities::itemicon(id);
                     if(icon >= 0) particle_icon(vec(0.0f, 0.0f, 4.0f).add(entities::ents[id]->o), icon%4, icon/4, PART_HUD_ICON, 2000, 0xFFFFFF, 2.0f, -8);
                 }
@@ -2038,15 +2038,15 @@ namespace game
             case N_ANNOUNCE:
             {
                 int t = getint(p);
-                if     (t==I_QUAD)  { playsound(S_V_QUAD10, NULL, NULL, 0, 0, 0, -1, 0, 3000);  Log.game->info("quad damage will spawn in 10 seconds!"); }
-                else if(t==I_BOOST) { playsound(S_V_BOOST10, NULL, NULL, 0, 0, 0, -1, 0, 3000); Log.game->info("+10 health will spawn in 10 seconds!"); }
+                if     (t==I_QUAD)  { playsound(S_V_QUAD10, nullptr, nullptr, 0, 0, 0, -1, 0, 3000);  Log.game->info("quad damage will spawn in 10 seconds!"); }
+                else if(t==I_BOOST) { playsound(S_V_BOOST10, nullptr, nullptr, 0, 0, 0, -1, 0, 3000); Log.game->info("+10 health will spawn in 10 seconds!"); }
                 break;
             }
 
             case N_NEWMAP:
             {
                 int size = getint(p);
-                if(size>=0) emptymap(size, true, NULL);
+                if(size>=0) emptymap(size, true, nullptr);
                 else enlargemap(true);
                 if(d && d!=player1)
                 {
@@ -2118,7 +2118,7 @@ namespace game
                 ucharbuf b = p.subbuf(p.remaining());
                 map->write(b.buf, b.maxlen);
                 delete map;
-                if(load_world(mname, oldname[0] ? oldname : NULL))
+                if(load_world(mname, oldname[0] ? oldname : nullptr))
                     entities::spawnitems(true);
                 remove(findfile(fname.string().c_str(), "rb"));
                 break;
@@ -2137,7 +2137,7 @@ namespace game
                 break;
 
             case 1:
-                parsemessages(-1, NULL, p);
+                parsemessages(-1, nullptr, p);
                 break;
 
             case 2:

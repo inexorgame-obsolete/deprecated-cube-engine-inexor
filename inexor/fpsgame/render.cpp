@@ -23,12 +23,12 @@ namespace game
         if(!d->ragdoll || !ragdollmillis || (!ragdollfade && lastmillis > d->lastpain + ragdollmillis)) return;
         fpsent *r = new fpsent(*d);
         r->lastupdate = ragdollfade && lastmillis > d->lastpain + max(ragdollmillis - ragdollfade, 0) ? lastmillis - max(ragdollmillis - ragdollfade, 0) : d->lastpain;
-        r->edit = NULL;
-        r->ai = NULL;
+        r->edit = nullptr;
+        r->ai = nullptr;
         r->attackchan = r->idlechan = -1;
         if(d==player1) r->playermodel = playermodel;
         ragdolls.add(r);
-        d->ragdoll = NULL;   
+        d->ragdoll = nullptr;   
     }
 
     void clearragdolls()
@@ -53,8 +53,8 @@ namespace game
     // Todo: Don't hardcode them here, build playermodel packages which can be added by simple add the files!
     static const playermodelinfo playermodels[2] =
     {
-        { "player/mrfixit2", "player/mrfixit2/blue", "player/mrfixit2/red", "player/mrfixit2/hudgun", NULL, "player/mrfixit2/horns", { "player/mrfixit2/armor/blue", "player/mrfixit2/armor/green", "player/mrfixit2/armor/yellow" }, "mrfixit2", "mrfixit2_blue", "mrfixit2_red", true },
-        { "player/ironsnoutx10k", "player/ironsnoutx10k/blue", "player/ironsnoutx10k/red", "player/ironsnoutx10k/hudgun", NULL, "player/ironsnoutx10k/wings", { "player/ironsnoutx10k/armor/blue", "player/ironsnoutx10k/armor/green", "player/ironsnoutx10k/armor/yellow" }, "ironsnoutx10k", "ironsnoutx10k_blue", "ironsnoutx10k_red", true },
+        { "player/mrfixit2", "player/mrfixit2/blue", "player/mrfixit2/red", "player/mrfixit2/hudgun", nullptr, "player/mrfixit2/horns", { "player/mrfixit2/armor/blue", "player/mrfixit2/armor/green", "player/mrfixit2/armor/yellow" }, "mrfixit2", "mrfixit2_blue", "mrfixit2_red", true },
+        { "player/ironsnoutx10k", "player/ironsnoutx10k/blue", "player/ironsnoutx10k/red", "player/ironsnoutx10k/hudgun", nullptr, "player/ironsnoutx10k/wings", { "player/ironsnoutx10k/armor/blue", "player/ironsnoutx10k/armor/green", "player/ironsnoutx10k/armor/yellow" }, "ironsnoutx10k", "ironsnoutx10k_blue", "ironsnoutx10k_red", true },
         //{ "captaincannon", "captaincannon/blue", "captaincannon/red", "captaincannon/hudgun", NULL, "captaincannon/quad", { "captaincannon/armor/blue", "captaincannon/armor/green", "captaincannon/armor/yellow" }, "captaincannon", "captaincannon_blue", "captaincannon_red", true }
     };
 
@@ -65,7 +65,7 @@ namespace game
 
     const playermodelinfo *getplayermodelinfo(int n)
     {
-        if(size_t(n) >= sizeof(playermodels)/sizeof(playermodels[0])) return NULL;
+        if(size_t(n) >= sizeof(playermodels)/sizeof(playermodels[0])) return nullptr;
         return &playermodels[n];
     }
 
@@ -178,7 +178,7 @@ namespace game
             case 1: mdlname = mdl.blueteam; break;
             case 2: mdlname = mdl.redteam; break;
         }
-        renderclient(d, mdlname, a[0].tag ? a : NULL, hold, attack, delay, lastaction, intermission && d->state!=CS_DEAD ? 0 : d->lastpain, fade, ragdoll && mdl.ragdoll);
+        renderclient(d, mdlname, a[0].tag ? a : nullptr, hold, attack, delay, lastaction, intermission && d->state!=CS_DEAD ? 0 : d->lastpain, fade, ragdoll && mdl.ragdoll);
 #if 0
         if(d->state!=CS_DEAD && d->quadmillis) 
         {
@@ -204,7 +204,7 @@ namespace game
 
         startmodelbatches();
 
-        fpsent *exclude = isthirdperson() ? NULL : followingplayer();
+        fpsent *exclude = isthirdperson() ? nullptr : followingplayer();
         loopv(players)
         {
             fpsent *d = players[i];
@@ -313,14 +313,14 @@ namespace game
         modelattach a[2];
         d->muzzle = vec(-1, -1, -1);
         a[0] = modelattach("tag_muzzle", &d->muzzle);
-        dynent *interp = NULL;
+        dynent *interp = nullptr;
         if(d->gunselect==GUN_FIST && chainsawhudgun)
         {
             anim |= ANIM_LOOP;
             base = 0;
             interp = &guninterp;
         }
-        rendermodel(NULL, gunname, anim, sway, testhudgun ? 0 : d->yaw+90, testhudgun ? 0 : d->pitch, MDL_LIGHT|MDL_HUD, interp, a, base, (int)ceil(speed));
+        rendermodel(nullptr, gunname, anim, sway, testhudgun ? 0 : d->yaw+90, testhudgun ? 0 : d->pitch, MDL_LIGHT|MDL_HUD, interp, a, base, (int)ceil(speed));
         if(d->muzzle.x >= 0) d->muzzle = calcavatarpos(d->muzzle, 12);
     }
 
@@ -351,7 +351,7 @@ namespace game
 
     void renderplayerpreview(int model, int team, int weap)
     {
-        static fpsent *previewent = NULL;
+        static fpsent *previewent = nullptr;
         if(!previewent)
         {
             previewent = new fpsent;

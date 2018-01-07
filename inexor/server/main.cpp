@@ -10,7 +10,7 @@
 #include "inexor/server/windows_integration.hpp"
 #include "inexor/server/client_management.hpp"
 
-const char *initscript = NULL;
+const char *initscript = nullptr;
 
 void conline(int type, const char *sf) {};
 
@@ -51,7 +51,7 @@ void fatal(std::vector<std::string> &output)
 
 namespace server {
 
-ENetHost *serverhost = NULL;
+ENetHost *serverhost = nullptr;
 int laststatus = 0;
 ENetSocket pongsock = ENET_SOCKET_NULL, lansock = ENET_SOCKET_NULL;
 
@@ -59,7 +59,7 @@ ENetSocket pongsock = ENET_SOCKET_NULL, lansock = ENET_SOCKET_NULL;
 void cleanupserver()
 {
     if(serverhost) enet_host_destroy(serverhost);
-    serverhost = NULL;
+    serverhost = nullptr;
 
     if(pongsock != ENET_SOCKET_NULL) enet_socket_destroy(pongsock);
     if(lansock != ENET_SOCKET_NULL) enet_socket_destroy(lansock);

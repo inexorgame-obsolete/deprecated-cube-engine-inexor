@@ -51,7 +51,7 @@ class VSlot
     vec colorscale;
     vec glowcolor;
 
-    VSlot(Slot *slot = NULL, int index = -1);
+    VSlot(Slot *slot = nullptr, int index = -1);
 
     void reset()
     {
@@ -80,7 +80,7 @@ class Slot
     struct Tex
     {
         int type;
-        Texture *t = NULL;
+        Texture *t = nullptr;
         string name;
         int combined = -1;
     };
@@ -101,18 +101,18 @@ class Slot
     float layermaskscale;
     ImageData *layermask;
 
-    Slot(int index = -1) : index(index), variants(NULL), autograss(NULL), layermaskname(NULL), layermask(NULL) { reset(); }
+    Slot(int index = -1) : index(index), variants(nullptr), autograss(nullptr), layermaskname(nullptr), layermask(nullptr) { reset(); }
 
     void reset()
     {
         sts.shrink(0);
-        shader = NULL;
+        shader = nullptr;
         params.shrink(0);
         loaded = false;
         texmask = 0;
         DELETEA(autograss);
-        grasstex = NULL;
-        thumbnail = NULL;
+        grasstex = nullptr;
+        thumbnail = nullptr;
         DELETEA(layermaskname);
         layermaskmode = 0;
         layermaskscale = 1;
@@ -122,12 +122,12 @@ class Slot
     void cleanup()
     {
         loaded = false;
-        grasstex = NULL;
-        thumbnail = NULL;
+        grasstex = nullptr;
+        thumbnail = nullptr;
         loopv(sts)
         {
             Tex &t = sts[i];
-            t.t = NULL;
+            t.t = nullptr;
             t.combined = -1;
         }
     }
@@ -195,7 +195,7 @@ extern VSlot *emptyvslot(Slot &owner);
 extern VSlot *editvslot(const VSlot &src, const VSlot &delta);
 extern void mergevslot(VSlot &dst, const VSlot &src, const VSlot &delta);
 
-extern bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex = NULL, bool msg = true, int *compress = NULL); // TODO move to texture.hpp
+extern bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex = nullptr, bool msg = true, int *compress = nullptr); // TODO move to texture.hpp
 
 extern void compactvslots(cube *c, int n = 8);
 extern void compactvslot(int &index);

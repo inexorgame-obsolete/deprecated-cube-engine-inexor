@@ -112,7 +112,7 @@ CefRefPtr<InexorLayer> InexorLayerManager::GetLayer(std::string name)
         if (layer->GetName() == name)
             return layer;
     }
-    return NULL;
+    return nullptr;
 }
 
 /**

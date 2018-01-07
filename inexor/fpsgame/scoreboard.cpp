@@ -108,7 +108,7 @@ namespace game
             fpsent *o = players[i];
             if(!showconnecting && !o->name[0]) continue;
             if(o->state==CS_SPECTATOR) { spectators.add(o); continue; }
-            const char *team = m_teammode && o->team[0] ? o->team : NULL;
+            const char *team = m_teammode && o->team[0] ? o->team : nullptr;
             bool found = false;
             loopj(numgroups)
             {
@@ -141,8 +141,8 @@ namespace game
             string hostname;
             if(enet_address_get_host_ip(address, hostname, sizeof(hostname)) >= 0)
             {
-                if(servinfo[0]) g.titlef("%.25s", 0xFFFF80, NULL, servinfo);
-                else g.titlef("%s:%d", 0xFFFF80, NULL, hostname, address->port);
+                if(servinfo[0]) g.titlef("%.25s", 0xFFFF80, nullptr, servinfo);
+                else g.titlef("%s:%d", 0xFFFF80, nullptr, hostname, address->port);
             }
         }
      
@@ -153,7 +153,7 @@ namespace game
         const char *mname = getclientmap();
         g.text(mname[0] ? mname : "[new map]", 0xFFFF80);
 
-        if(gamespeed != 100) { g.separator(); g.textf("%d.%02dx", 0xFFFF80, NULL, gamespeed/100, gamespeed%100); }
+        if(gamespeed != 100) { g.separator(); g.textf("%d.%02dx", 0xFFFF80, nullptr, gamespeed/100, gamespeed%100); }
         if(m_timed && mname[0] && (maplimit >= 0 || intermission))
         {
             g.separator();
@@ -164,7 +164,7 @@ namespace game
                 secs %= 60;
                 g.pushlist();
                 g.strut(mins >= 10 ? 4.5f : 3.5f);
-                g.textf("%d:%02d", 0xFFFF80, NULL, mins, secs);
+                g.textf("%d:%02d", 0xFFFF80, nullptr, mins, secs);
                 g.poplist();
             }
         }
@@ -220,8 +220,8 @@ namespace game
             {
                 g.pushlist(); // vertical
                 char *teamname = sg.sametag();
-                if(sg.score>=10000) g.textf("%s: WIN", fgcolor, NULL, teamname && teamname[0] ? teamname : sg.team);
-                else g.textf("%s: %d", fgcolor, NULL, teamname && teamname[0] ? teamname : sg.team, sg.score);
+                if(sg.score>=10000) g.textf("%s: WIN", fgcolor, nullptr, teamname && teamname[0] ? teamname : sg.team);
+                else g.textf("%s: %d", fgcolor, nullptr, teamname && teamname[0] ? teamname : sg.team, sg.score);
 
                 g.pushlist(); // horizontal
             }
@@ -231,7 +231,7 @@ namespace game
                 g.pushlist();
                 g.strut(5);
                 g.text("flags",fgcolor);
-                loopscoregroup(o, g.textf("%d", 0xFFFFDD, NULL, o->flags));
+                loopscoregroup(o, g.textf("%d", 0xFFFFDD, nullptr, o->flags));
                 g.poplist();
             }
 
@@ -240,7 +240,7 @@ namespace game
                 g.pushlist();
                 g.strut(6);
                 g.text("frags", fgcolor);
-                loopscoregroup(o, g.textf("%d", 0xFFFFDD, NULL, o->frags));
+                loopscoregroup(o, g.textf("%d", 0xFFFFDD, nullptr, o->frags));
                 g.poplist();
             }
 
@@ -249,7 +249,7 @@ namespace game
                 g.pushlist();
                 g.strut(6);
                 g.text("acc", fgcolor);
-                loopscoregroup(o, g.textf("%d%%", 0xFFFFDD, NULL, (o->totaldamage*100)/max(o->totalshots, 1)));
+                loopscoregroup(o, g.textf("%d%%", 0xFFFFDD, nullptr, (o->totaldamage*100)/max(o->totalshots, 1)));
                 g.poplist();
             }
 
@@ -266,7 +266,7 @@ namespace game
                     status = o->privilege>=PRIV_ADMIN ? 0xFF8000 : 0x40FF80;
                     if(o->state==CS_DEAD) status = (status>>1)&0x7F7F7F;
                 }
-                g.textf("%s ", status, NULL, colorname(o));
+                g.textf("%s ", status, nullptr, colorname(o));
             });
             g.poplist();
 
@@ -280,7 +280,7 @@ namespace game
                     loopscoregroup(o,
                     {
                         if(o->state==CS_LAGGED) g.text("LAG", 0xFFFFDD);
-                        else g.textf("%d", 0xFFFFDD, NULL, o->plag);
+                        else g.textf("%d", 0xFFFFDD, nullptr, o->plag);
                     });
                     g.poplist();
                 }
@@ -295,7 +295,7 @@ namespace game
                         fpsent *p = o->ownernum >= 0 ? getclient(o->ownernum) : o;
                         if(!p) p = o;
                         if(!showpj && p->state==CS_LAGGED) g.text("LAG", 0xFFFFDD);
-                        else g.textf("%d", 0xFFFFDD, NULL, p->ping);
+                        else g.textf("%d", 0xFFFFDD, nullptr, p->ping);
                     });
                     g.poplist();
                 }
@@ -306,7 +306,7 @@ namespace game
                 g.space(1);
                 g.pushlist();
                 g.text("cn", fgcolor);
-                loopscoregroup(o, g.textf("%d", 0xFFFFDD, NULL, o->clientnum));
+                loopscoregroup(o, g.textf("%d", 0xFFFFDD, nullptr, o->clientnum));
                 g.poplist();
             }
             
@@ -349,7 +349,7 @@ namespace game
                 g.space(1);
                 g.pushlist();
                 g.text("cn", 0xFFFF80);
-                loopv(spectators) g.textf("%d", 0xFFFFDD, NULL, spectators[i]->clientnum);
+                loopv(spectators) g.textf("%d", 0xFFFFDD, nullptr, spectators[i]->clientnum);
                 g.poplist();
 
                 g.poplist();
@@ -401,7 +401,7 @@ namespace game
 
         void gui(g3d_gui &g, bool firstpass) override
         {
-            g.start(menustart, 0.03f, NULL, false);
+            g.start(menustart, 0.03f, nullptr, false);
             renderscoreboard(g, firstpass);
             g.end();
         }

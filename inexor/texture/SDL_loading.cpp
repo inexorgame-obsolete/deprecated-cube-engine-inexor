@@ -19,13 +19,13 @@ SDL_Surface *wrapsurface(void *data, int width, int height, int bpp)
     case 3: return SDL_CreateRGBSurfaceFrom(data, width, height, 8 * bpp, bpp*width, RGBMASKS);
     case 4: return SDL_CreateRGBSurfaceFrom(data, width, height, 8 * bpp, bpp*width, RGBAMASKS);
     }
-    return NULL;
+    return nullptr;
 }
 
 SDL_Surface *creatergbsurface(SDL_Surface *os)
 {
     SDL_Surface *ns = SDL_CreateRGBSurface(SDL_SWSURFACE, os->w, os->h, 24, RGBMASKS);
-    if(ns) SDL_BlitSurface(os, NULL, ns, NULL);
+    if(ns) SDL_BlitSurface(os, nullptr, ns, nullptr);
     SDL_FreeSurface(os);
     return ns;
 }
@@ -36,7 +36,7 @@ SDL_Surface *creatergbasurface(SDL_Surface *os)
     if(ns)
     {
         SDL_SetSurfaceBlendMode(os, SDL_BLENDMODE_NONE);
-        SDL_BlitSurface(os, NULL, ns, NULL);
+        SDL_BlitSurface(os, nullptr, ns, nullptr);
     }
     SDL_FreeSurface(os);
     return ns;
@@ -47,7 +47,7 @@ bool checkgrayscale(SDL_Surface *s)
     // gray scale images have 256 levels, no colorkey, and the palette is a ramp
     if(s->format->palette)
     {
-        if(s->format->palette->ncolors != 256 || SDL_GetColorKey(s, NULL) >= 0) return false;
+        if(s->format->palette->ncolors != 256 || SDL_GetColorKey(s, nullptr) >= 0) return false;
         const SDL_Color *colors = s->format->palette->colors;
         loopi(256) if(colors[i].r != i || colors[i].g != i || colors[i].b != i) return false;
     }
@@ -56,17 +56,17 @@ bool checkgrayscale(SDL_Surface *s)
 
 SDL_Surface *fixsurfaceformat(SDL_Surface *s)
 {
-    if(!s) return NULL;
+    if(!s) return nullptr;
     if(!s->pixels || min(s->w, s->h) <= 0 || s->format->BytesPerPixel <= 0)
     {
         SDL_FreeSurface(s);
-        return NULL;
+        return nullptr;
     }
     static const uint rgbmasks[] = { RGBMASKS }, rgbamasks[] = { RGBAMASKS };
     switch(s->format->BytesPerPixel)
     {
     case 1:
-        if(!checkgrayscale(s)) return SDL_GetColorKey(s, NULL) >= 0 ? creatergbasurface(s) : creatergbsurface(s);
+        if(!checkgrayscale(s)) return SDL_GetColorKey(s, nullptr) >= 0 ? creatergbasurface(s) : creatergbsurface(s);
         break;
     case 3:
         if(s->format->Rmask != rgbmasks[0] || s->format->Gmask != rgbmasks[1] || s->format->Bmask != rgbmasks[2])

@@ -15,14 +15,14 @@
 
 using namespace inexor::rendering::screen;
 
-Shader *Shader::lastshader = NULL;
+Shader *Shader::lastshader = nullptr;
 
-Shader *nullshader = NULL, *hudshader = NULL, *hudnotextureshader = NULL, *textureshader = NULL, *notextureshader = NULL, *nocolorshader = NULL, *foggedshader = NULL, *foggednotextureshader = NULL, *stdworldshader = NULL;
+Shader *nullshader = nullptr, *hudshader = nullptr, *hudnotextureshader = nullptr, *textureshader = nullptr, *notextureshader = nullptr, *nocolorshader = nullptr, *foggedshader = nullptr, *foggednotextureshader = nullptr, *stdworldshader = nullptr;
 
 static hashnameset<GlobalShaderParamState> globalparams(256);
 static hashtable<const char *, int> localparams(256);
 static hashnameset<Shader> shaders(256);
-static Shader *slotshader = NULL;
+static Shader *slotshader = nullptr;
 static vector<SlotShaderParam> slotparams;
 static bool standardshaders = false, forceshaders = true, loadedshaders = false;
 
@@ -60,26 +60,26 @@ void loadshaders()
 Shader *lookupshaderbyname(const char *name) 
 { 
     Shader *s = shaders.access(name);
-    return s && s->loaded() ? s : NULL;
+    return s && s->loaded() ? s : nullptr;
 }
 
 Shader *generateshader(const char *name, const char *fmt, ...)
 {
-    if(!loadedshaders) return NULL; 
-    Shader *s = name ? lookupshaderbyname(name) : NULL;
+    if(!loadedshaders) return nullptr; 
+    Shader *s = name ? lookupshaderbyname(name) : nullptr;
     if(!s)
     {
         defvformatstring(cmd, fmt, fmt);
         standardshaders = true;
         execute(cmd); 
         standardshaders = false;
-        s = name ? lookupshaderbyname(name) : NULL;
+        s = name ? lookupshaderbyname(name) : nullptr;
         if(!s) s = nullshader;
     }
     return s;
 }
 
-static void showglslinfo(GLenum type, GLuint obj, const char *name, const char **parts = NULL, int numparts = 0)
+static void showglslinfo(GLenum type, GLuint obj, const char *name, const char **parts = nullptr, int numparts = 0)
 {
     GLint length = 0;
     if(type) glGetShaderiv_(obj, GL_INFO_LOG_LENGTH, &length);
@@ -121,7 +121,7 @@ static void compileglslshader(GLenum type, GLuint &obj, const char *def, const c
     parts[numparts++] = source;
 
     obj = glCreateShader_(type);
-    glShaderSource_(obj, numparts, (const GLchar **)parts, NULL);
+    glShaderSource_(obj, numparts, (const GLchar **)parts, nullptr);
     glCompileShader_(obj);
     GLint success;
     glGetShaderiv_(obj, GL_COMPILE_STATUS, &success);
@@ -382,7 +382,7 @@ void GlobalShaderParamState::resetversions()
     });
 }
 
-static float *findslotparam(Slot &s, const char *name, float *noval = NULL)
+static float *findslotparam(Slot &s, const char *name, float *noval = nullptr)
 {
     loopv(s.params)
     {
@@ -397,7 +397,7 @@ static float *findslotparam(Slot &s, const char *name, float *noval = NULL)
     return noval;
 }
 
-static float *findslotparam(VSlot &s, const char *name, float *noval = NULL)
+static float *findslotparam(VSlot &s, const char *name, float *noval = nullptr)
 {
     loopv(s.params)
     {
@@ -492,7 +492,7 @@ bool Shader::compile()
 
 void Shader::cleanup(bool invalid)
 {
-    detailshader = NULL;
+    detailshader = nullptr;
     used = false;
     if(vsobj) { if(!reusevs) glDeleteShader_(vsobj); vsobj = 0; }
     if(psobj) { if(!reuseps) glDeleteShader_(psobj); psobj = 0; }
@@ -511,9 +511,9 @@ void Shader::cleanup(bool invalid)
         defaultparams.setsize(0);
         attriblocs.setsize(0);
         uniformlocs.setsize(0);
-        altshader = NULL;
+        altshader = nullptr;
         loopi(MAXSHADERDETAIL) fastshader[i] = this;
-        reusevs = reuseps = NULL;
+        reusevs = reuseps = nullptr;
     }
     else loopv(defaultparams) defaultparams[i].loc = -1;
 }
@@ -547,12 +547,12 @@ static void genuniformlocs(Shader &s, const char *vs, const char *ps, Shader *re
     }
 }
 
-Shader *newshader(int type, const char *name, const char *vs, const char *ps, Shader *variant = NULL, int row = 0)
+Shader *newshader(int type, const char *name, const char *vs, const char *ps, Shader *variant = nullptr, int row = 0)
 {
     if(Shader::lastshader)
     {
         glUseProgram_(0);
-        Shader::lastshader = NULL;
+        Shader::lastshader = nullptr;
     }
 
     Shader *exists = shaders.access(name); 
@@ -566,7 +566,7 @@ Shader *newshader(int type, const char *name, const char *vs, const char *ps, Sh
     s.variantshader = variant;
     s.standard = standardshaders;
     if(forceshaders) s.forced = true;
-    s.reusevs = s.reuseps = NULL;
+    s.reusevs = s.reuseps = nullptr;
     if(variant)
     {
         int row = 0, col = 0;
@@ -592,7 +592,7 @@ Shader *newshader(int type, const char *name, const char *vs, const char *ps, Sh
     {
         s.cleanup(true);
         if(variant) shaders.remove(rname);
-        return NULL;
+        return nullptr;
     }
     if(variant) variant->addvariant(row, &s);
     s.fixdetailshader();
@@ -657,7 +657,7 @@ void setupshaders()
 static const char *findglslmain(const char *s)
 {
     const char *main = strstr(s, "main");
-    if(!main) return NULL;
+    if(!main) return nullptr;
     for(; main >= s; main--) switch(*main) { case '\r': case '\n': case ';': return main + 1; }
     return s;
 }
@@ -743,7 +743,7 @@ static bool genwatervariant(Shader &s, const char *sname, const char *vs, const 
 
     defformatstring(name, "<water>%s", sname);
     Shader *variant = newshader(s.type, name, vsw.getbuf(), psw.getbuf(), &s, row);
-    return variant!=NULL;
+    return variant!=nullptr;
 }
 
 bool minimizedynlighttcusage() { return maxvaryings < 48; }
@@ -932,7 +932,7 @@ static void genfogshader(vector<char> &vsbuf, vector<char> &psbuf, const char *v
     }
 }
 
-static void genuniformdefs(vector<char> &vsbuf, vector<char> &psbuf, const char *vs, const char *ps, Shader *variant = NULL)
+static void genuniformdefs(vector<char> &vsbuf, vector<char> &psbuf, const char *vs, const char *ps, Shader *variant = nullptr)
 {
     if(variant ? variant->defaultparams.empty() : slotparams.empty()) return;
     const char *vsmain = findglslmain(vs), *psmain = findglslmain(ps);
@@ -976,7 +976,7 @@ void Shader::force()
     if(!deferred()) return;
         
     char *cmd = defer;
-    defer = NULL;
+    defer = nullptr;
     bool wasstandard = standardshaders, wasforcing = forceshaders;
     int oldflags = identflags;
     standardshaders = standard;
@@ -999,7 +999,7 @@ void Shader::force()
 void fixshaderdetail()
 {
     // must null out separately because fixdetailshader can recursively set it
-    enumerate(shaders, Shader, s, { if(!s.forced) s.detailshader = NULL; });
+    enumerate(shaders, Shader, s, { if(!s.forced) s.detailshader = nullptr; });
     enumerate(shaders, Shader, s, { if(s.forced) s.fixdetailshader(); }); 
     linkslotshaders();
 }
@@ -1018,7 +1018,7 @@ VARFP(shaderdetail, 0, MAXSHADERDETAIL, MAXSHADERDETAIL, fixshaderdetail());
 void Shader::fixdetailshader(bool shouldforce, bool recurse)
 {
     Shader *alt = this;
-    detailshader = NULL;
+    detailshader = nullptr;
     do
     {
         Shader *cur = shaderdetail < MAXSHADERDETAIL ? alt->fastshader[shaderdetail] : alt;
@@ -1038,7 +1038,7 @@ void Shader::fixdetailshader(bool shouldforce, bool recurse)
 Shader *useshaderbyname(const char *name)
 {
     Shader *s = shaders.access(name);
-    if(!s) return NULL;
+    if(!s) return nullptr;
     if(!s->detailshader) s->fixdetailshader(); 
     s->forced = true;
     return s;
@@ -1112,7 +1112,7 @@ void setshader(char *name)
 
 void resetslotshader()
 {
-    slotshader = NULL;
+    slotshader = nullptr;
     slotparams.shrink(0);
 }
 
@@ -1203,7 +1203,7 @@ static hashset<const char *> shaderparamnames(256);
 
 const char *getshaderparamname(const char *name, bool insert)
 {
-    const char *exists = shaderparamnames.find(name, NULL);
+    const char *exists = shaderparamnames.find(name, nullptr);
     if(exists || !insert) return exists;
     return shaderparamnames.add(newstring(name));
 }
@@ -1252,7 +1252,7 @@ struct postfxpass
     uint inputs, freeinputs;
     int outputbind, outputscale;
 
-    postfxpass() : shader(NULL), inputs(1), freeinputs(1), outputbind(0), outputscale(0) {}
+    postfxpass() : shader(nullptr), inputs(1), freeinputs(1), outputbind(0), outputscale(0) {}
 };
 vector<postfxpass> postfxpasses;
 
@@ -1266,7 +1266,7 @@ static int allocatepostfxtex(int scale)
     postfxtex &t = postfxtexs.add();
     t.scale = scale;
     glGenTextures(1, &t.id);
-    createtexture(t.id, max(screen_manager.screenw>>scale, 1), max(screen_manager.screenh>>scale, 1), NULL, 3, 1, GL_RGB);
+    createtexture(t.id, max(screen_manager.screenw>>scale, 1), max(screen_manager.screenh>>scale, 1), nullptr, 3, 1, GL_RGB);
     return postfxtexs.length()-1;
 }
 
@@ -1417,9 +1417,9 @@ void cleanupshaders()
 {
     cleanuppostfx(true);
 
-    nullshader = hudshader = hudnotextureshader = textureshader = notextureshader = nocolorshader = foggedshader = foggednotextureshader = stdworldshader = NULL;
+    nullshader = hudshader = hudnotextureshader = textureshader = notextureshader = nocolorshader = foggedshader = foggednotextureshader = stdworldshader = nullptr;
     enumerate(shaders, Shader, s, s.cleanup());
-    Shader::lastshader = NULL;
+    Shader::lastshader = nullptr;
     glUseProgram_(0);
 }
 
@@ -1475,7 +1475,7 @@ void setupblurkernel(int radius, float sigma, float *weights, float *offsets)
 void setblurshader(int pass, int size, int radius, float *weights, float *offsets)
 {
     if(radius<1 || radius>MAXBLURRADIUS) return; 
-    static Shader *blurshader[7][2] = { { NULL, NULL }, { NULL, NULL }, { NULL, NULL }, { NULL, NULL }, { NULL, NULL }, { NULL, NULL }, { NULL, NULL } };
+    static Shader *blurshader[7][2] = { { nullptr, nullptr }, { nullptr, nullptr }, { nullptr, nullptr }, { nullptr, nullptr }, { nullptr, nullptr }, { nullptr, nullptr }, { nullptr, nullptr } };
     Shader *&s = blurshader[radius-1][pass];
     if(!s)
     {

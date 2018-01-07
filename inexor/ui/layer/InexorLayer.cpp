@@ -24,9 +24,9 @@ InexorLayer::InexorLayer(std::string name, int x, int y, int width, int height, 
     window_info.y = y;
     window_info.width = width;
     window_info.height = height;
-    cookie_manager = CefCookieManager::CreateManager("/tmp/inexorc", false, NULL);
+    cookie_manager = CefCookieManager::CreateManager("/tmp/inexorc", false, nullptr);
     render_handler = new InexorRenderHandler(true, x, y, width, height);
-    browser = CefBrowserHost::CreateBrowserSync(window_info, this, url, browser_settings, NULL);
+    browser = CefBrowserHost::CreateBrowserSync(window_info, this, url, browser_settings, nullptr);
     if (browser.get()) {
         Log.ui->debug("init: cef: created layer \"{0}\"", name);
         UpdateFocus();
@@ -130,7 +130,7 @@ void InexorLayer::OnBeforeClose(CefRefPtr<CefBrowser> browser)
     CEF_REQUIRE_UI_THREAD();
     if (browser_id == browser->GetIdentifier()) {
         // Free the browser pointer so that the browser can be destroyed.
-        browser = NULL;
+        browser = nullptr;
     }
     if (--browser_count == 0) {
         // All browser windows have closed. Quit the application message loop.

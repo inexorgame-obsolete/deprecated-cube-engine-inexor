@@ -17,7 +17,7 @@ struct font
     vector<charinfo> chars;
     int charoffset, defaultw, defaulth, scale;
 
-    font() : name(NULL) {}
+    font() : name(nullptr) {}
     ~font() { DELETEA(name); }
 };
 

@@ -35,10 +35,10 @@ namespace game
     extern bool clientoption(const char *arg);
     extern fpsent *getclient(int cn);
     extern fpsent *newclient(int cn);
-    extern const char *colorname(fpsent *d, const char *name = NULL, const char *prefix = "", const char *alt = NULL);
+    extern const char *colorname(fpsent *d, const char *name = nullptr, const char *prefix = "", const char *alt = nullptr);
     extern const char *teamcolorname(fpsent *d, const char *alt = "you");
-    extern const char *teamcolor(const char *name, bool sameteam, const char *alt = NULL);
-    extern const char *teamcolor(const char *name, const char *team, const char *alt = NULL);
+    extern const char *teamcolor(const char *name, bool sameteam, const char *alt = nullptr);
+    extern const char *teamcolor(const char *name, const char *team, const char *alt = nullptr);
     extern fpsent *pointatplayer();
     extern fpsent *hudplayer();
     extern fpsent *followingplayer();
@@ -51,7 +51,7 @@ namespace game
     extern void damaged(int damage, fpsent *d, fpsent *actor, bool local = true);
     extern void killed(fpsent *d, fpsent *actor);
     extern void timeupdate(int timeremain);
-    extern void msgsound(int n, physent *d = NULL);
+    extern void msgsound(int n, physent *d = nullptr);
     extern void drawicon(int icon, float x, float y, float sz = 120);
 
     // client
@@ -63,7 +63,7 @@ namespace game
     extern void ignore(int cn);
     extern void unignore(int cn);
     extern bool isignored(int cn);
-    extern bool addmsg(int type, const char *fmt = NULL, ...);
+    extern bool addmsg(int type, const char *fmt = nullptr, ...);
     extern void switchname(const char *name, const char *tag);
     extern void switchteam(const char *name);
     extern void switchplayermodel(int playermodel);

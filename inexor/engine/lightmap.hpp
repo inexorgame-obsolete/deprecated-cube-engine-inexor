@@ -27,8 +27,8 @@ struct PackNode
     ushort x, y, w, h;
     int available; //amount of pixels without lightmap-information
 
-    PackNode() : child1(0), child2(0), x(0), y(0), w(LM_PACKW), h(LM_PACKH), available(min(LM_PACKW, LM_PACKH)) {}
-    PackNode(ushort x, ushort y, ushort w, ushort h) : child1(0), child2(0), x(x), y(y), w(w), h(h), available(min(w, h)) {}
+    PackNode() : child1(nullptr), child2(nullptr), x(0), y(0), w(LM_PACKW), h(LM_PACKH), available(min(LM_PACKW, LM_PACKH)) {}
+    PackNode(ushort x, ushort y, ushort w, ushort h) : child1(nullptr), child2(nullptr), x(x), y(y), w(w), h(h), available(min(w, h)) {}
 
     void clear()
     {
@@ -66,7 +66,7 @@ struct LightMap
     LightMap()
      : type(LM_DIFFUSE), bpp(3), tex(-1), offsetx(-1), offsety(-1),
        lightmaps(0), lumels(0), unlitx(-1), unlity(-1),
-       data(NULL)
+       data(nullptr)
     {
     }
 

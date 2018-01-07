@@ -76,7 +76,7 @@ struct streambuf
 };
 
 
-extern char *makerelpath(const char *dir, const char *file, const char *prefix = NULL, const char *cmd = NULL);
+extern char *makerelpath(const char *dir, const char *file, const char *prefix = nullptr, const char *cmd = nullptr);
 extern char *path(char *s);
 extern char *path(const char *s, bool copy);
 extern const char *parentdir(const char *directory);
@@ -88,8 +88,8 @@ extern const char *findfile(const char *filename, const char *mode);
 extern stream *openrawfile(const char *filename, const char *mode);
 extern stream *openfile(const char *filename, const char *mode);
 extern stream *opentempfile(const char *filename, const char *mode);
-extern stream *opengzfile(const char *filename, const char *mode, stream *file = NULL, int level = Z_BEST_COMPRESSION);
-extern stream *openutf8file(const char *filename, const char *mode, stream *file = NULL);
+extern stream *opengzfile(const char *filename, const char *mode, stream *file = nullptr, int level = Z_BEST_COMPRESSION);
+extern stream *openutf8file(const char *filename, const char *mode, stream *file = nullptr);
 extern char *loadfile(const char *fn, size_t *size, bool utf8 = true);
 extern bool listdir(const char *dir, bool rel, const char *ext, vector<char *> &files);
 extern int listfiles(const char *dir, const char *ext, vector<char *> &files);

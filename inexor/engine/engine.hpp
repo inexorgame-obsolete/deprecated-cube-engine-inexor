@@ -295,7 +295,7 @@ extern hashnameset<ident> idents;
 extern int identflags;
 
 extern void clearoverrides();
-extern void writecfg(const char *name = NULL);
+extern void writecfg(const char *name = nullptr);
 extern void loadhistory();
 extern void writehistory();
 
@@ -323,7 +323,7 @@ extern SharedVar<int> numcpus;
 // extern bool interceptkey(int sym);
 
 extern float loadprogress;
-extern void renderbackground(const char *caption = NULL, Texture *mapshot = NULL, const char *mapname = NULL, const char *mapinfo = NULL, bool restore = false, bool force = false);
+extern void renderbackground(const char *caption = nullptr, Texture *mapshot = nullptr, const char *mapname = nullptr, const char *mapinfo = nullptr, bool restore = false, bool force = false);
 extern void renderprogress(float bar, const char *text, GLuint tex = 0, bool background = false);
 
 extern void getfps(int &fps, int &bestdiff, int &worstdiff);
@@ -371,9 +371,9 @@ static inline model *loadmapmodel(int n)
     if(mapmodels.inrange(n))
     {
         model *m = mapmodels[n].m;
-        return m ? m : loadmodel(NULL, n);
+        return m ? m : loadmodel(nullptr, n);
     }
-    return NULL;
+    return nullptr;
 }
 
 // renderparticles
@@ -384,7 +384,7 @@ extern void seedparticles();
 extern void updateparticles();
 extern void renderparticles(bool mainpass = false);
 extern bool printparticles(extentity &e, char *buf, int len);
-extern void regularshape(int type, int radius, int color, int dir, int num, int fade, const vec &p, float size, int gravity, int vel = 200, const vec* modfrom=NULL, const vec* modto=NULL); // bomberman
+extern void regularshape(int type, int radius, int color, int dir, int num, int fade, const vec &p, float size, int gravity, int vel = 200, const vec* modfrom=nullptr, const vec* modto=nullptr); // bomberman
 
 // rendersky
 extern int explicitsky;

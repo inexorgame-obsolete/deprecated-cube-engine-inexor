@@ -43,7 +43,7 @@ struct ctfservermode : servmode, ctfmode
 
     void dropflag(int i, const vec &o, int droptime, int dropper = -1, bool penalty = false);
 
-    void dropflag(clientinfo *ci, clientinfo *dropper = NULL);
+    void dropflag(clientinfo *ci, clientinfo *dropper = nullptr);
 
     void leavegame(clientinfo *ci, bool disconnecting = false) override;
 

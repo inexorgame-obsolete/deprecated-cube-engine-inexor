@@ -49,7 +49,7 @@ namespace ai
     }
 
     extern SharedVar<int> showwaypoints, dropwaypoints;
-    extern int closestwaypoint(const vec &pos, float mindist, bool links, fpsent *d = NULL);
+    extern int closestwaypoint(const vec &pos, float mindist, bool links, fpsent *d = nullptr);
     extern void findwaypointswithin(const vec &pos, float mindist, float maxdist, vector<int> &results);
 	extern void inferwaypoints(fpsent *d, const vec &o, const vec &v, float mindist = ai::CLOSEDIST);
 
@@ -131,8 +131,8 @@ namespace ai
     extern void navigate();
     extern void clearwaypoints(bool full = false);
     extern void seedwaypoints();
-    extern void loadwaypoints(bool force = false, const char *mname = NULL);
-    extern void savewaypoints(bool force = false, const char *mname = NULL);
+    extern void loadwaypoints(bool force = false, const char *mname = nullptr);
+    extern void savewaypoints(bool force = false, const char *mname = nullptr);
 
     // ai state information for the owner client
     enum
@@ -294,7 +294,7 @@ namespace ai
     extern void think(fpsent *d, bool run);
 
     extern bool badhealth(fpsent *d);
-    extern bool checkothers(vector<int> &targets, fpsent *d = NULL, int state = -1, int targtype = -1, int target = -1, bool teams = false, int *members = NULL);
+    extern bool checkothers(vector<int> &targets, fpsent *d = nullptr, int state = -1, int targtype = -1, int target = -1, bool teams = false, int *members = nullptr);
     extern bool makeroute(fpsent *d, aistate &b, int node, bool changed = true, int retries = 0);
     extern bool makeroute(fpsent *d, aistate &b, const vec &pos, bool changed = true, int retries = 0);
     extern bool randomnode(fpsent *d, aistate &b, const vec &pos, float guard = SIGHTMIN, float wander = SIGHTMAX);

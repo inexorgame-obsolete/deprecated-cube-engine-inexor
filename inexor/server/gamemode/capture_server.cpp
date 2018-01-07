@@ -142,7 +142,7 @@ void captureservermode::setup() {
 
     void captureservermode::sendbases() {
         packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
-        initclient(NULL, p, false);
+        initclient(nullptr, p, false);
         sendpacket(-1, 1, p.finalize());
     }
 
@@ -172,7 +172,7 @@ void captureservermode::setup() {
     }
 
     void captureservermode::endcheck() {
-        const char *lastteam = NULL;
+        const char *lastteam = nullptr;
 
         loopv(bases)
         {
@@ -183,12 +183,12 @@ void captureservermode::setup() {
                 if(!lastteam) lastteam = b.owner;
                 else if(strcmp(lastteam, b.owner))
                 {
-                    lastteam = NULL;
+                    lastteam = nullptr;
                     break;
                 }
             } else
             {
-                lastteam = NULL;
+                lastteam = nullptr;
                 break;
             }
         }

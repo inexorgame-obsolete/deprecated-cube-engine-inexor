@@ -139,7 +139,7 @@ namespace game
 
     vec hudgunorigin(int gun, const vec &from, const vec &to, fpsent *d);
 
-    void newbouncer(const vec &from, const vec &to, bool local, int id, fpsent *owner, int type, int lifetime, int speed, entitylight *light = NULL, int generation = 0)
+    void newbouncer(const vec &from, const vec &to, bool local, int id, fpsent *owner, int type, int lifetime, int speed, entitylight *light = nullptr, int generation = 0)
     {
         bouncer &bnc = *bouncers.add(new bouncer);
         bnc.o = from;
@@ -222,7 +222,7 @@ namespace game
         to.y = (to.y * fac) + (((float)rnd(120))-60.0f);
         to.z+=5.0f;
         to.add(p);
-        newbouncer(p, to, true, 0, d, BNC_SPLINTER, 210, 140, NULL, generation); // lifetime, speed
+        newbouncer(p, to, true, 0, d, BNC_SPLINTER, 210, 140, nullptr, generation); // lifetime, speed
     }
 
     void spawnsplinters(const vec &p, fpsent *d)
@@ -234,7 +234,7 @@ namespace game
             to.x*=fac;
             to.y*=fac;
             to.add(p);
-            newbouncer(p, to, true, 0, d, BNC_SPLINTER, 210, 140, NULL, d->bombradius); // 1+((d->bombradius-1)*2)); // 1, 3, 5, 7, ... generations
+            newbouncer(p, to, true, 0, d, BNC_SPLINTER, 210, 140, nullptr, d->bombradius); // 1+((d->bombradius-1)*2)); // 1, 3, 5, 7, ... generations
         }
     }
 
@@ -280,7 +280,7 @@ namespace game
                 {
                     int qdam = guns[GUN_GL].damage*(bnc.owner->quadmillis ? 4 : 1);
                     hits.setsize(0);
-                    explode(bnc.local, bnc.owner, bnc.o, NULL, qdam, GUN_GL);
+                    explode(bnc.local, bnc.owner, bnc.o, nullptr, qdam, GUN_GL);
                     adddecal(DECAL_SCORCH, bnc.o, vec(0, 0, 1), guns[GUN_GL].exprad/2);
                     if(bnc.local)
                         addmsg(N_EXPLODE, "rci3iv", bnc.owner, lastmillis-maptime, GUN_GL, bnc.id-maptime,
@@ -289,7 +289,7 @@ namespace game
                 else if(bnc.bouncetype==BNC_BOMB)
                 {
                     hits.setsize(0);
-                    explode(bnc.local, bnc.owner, bnc.o, NULL, guns[GUN_BOMB].damage, GUN_BOMB);
+                    explode(bnc.local, bnc.owner, bnc.o, nullptr, guns[GUN_BOMB].damage, GUN_BOMB);
                     adddecal(DECAL_SCORCH, bnc.o, vec(0, 0, 1), bnc.owner->bombradius*guns[GUN_BOMB].exprad);
                     spawnsplinters(bnc.o, bnc.owner); // starts with 3+x generations
                     if(bnc.local)
@@ -299,7 +299,7 @@ namespace game
                 else if(bnc.bouncetype==BNC_SPLINTER)
                 {
                     hits.setsize(0);
-                    explode(bnc.local, bnc.owner, bnc.o, NULL, guns[GUN_SPLINTER].damage, GUN_SPLINTER);
+                    explode(bnc.local, bnc.owner, bnc.o, nullptr, guns[GUN_SPLINTER].damage, GUN_SPLINTER);
                     spawnnextsplinter(bnc.o, bnc.vel, bnc.owner, bnc.generation);
                     if(bnc.local)
                         addmsg(N_EXPLODE, "rci3iv", bnc.owner, lastmillis-maptime, GUN_SPLINTER, bnc.id-maptime,
@@ -363,7 +363,7 @@ namespace game
         }
     }
 
-    void spawnbouncer(const vec &p, const vec &vel, fpsent *d, int type, entitylight *light = NULL)
+    void spawnbouncer(const vec &p, const vec &vel, fpsent *d, int type, entitylight *light = nullptr)
     {
         vec to(rnd(100)-50, rnd(100)-50, rnd(100)-50);
         if(to.iszero()) to.z += 1;
@@ -560,7 +560,7 @@ namespace game
                     {
                         vec pos(p.o);
                         pos.add(vec(p.offset).mul(p.offsetmillis/float(OFFSETMILLIS)));
-                        explode(p.local, p.owner, pos, NULL, 0, GUN_RL);
+                        explode(p.local, p.owner, pos, nullptr, 0, GUN_RL);
                         adddecal(DECAL_SCORCH, pos, vec(p.dir).neg(), guns[gun].exprad/2);
                         projs.remove(i);
                         break;
@@ -575,7 +575,7 @@ namespace game
                     {
                         vec pos(b.o);
                         pos.add(vec(b.offset).mul(b.offsetmillis/float(OFFSETMILLIS)));
-                        explode(b.local, b.owner, pos, NULL, 0, GUN_GL);
+                        explode(b.local, b.owner, pos, nullptr, 0, GUN_GL);
                         adddecal(DECAL_SCORCH, pos, vec(0, 0, 1), guns[gun].exprad/2);
                         delete bouncers.remove(i);
                         break;
@@ -590,7 +590,7 @@ namespace game
                     {
                         vec pos(b.o);
                         pos.add(vec(b.offset).mul(b.offsetmillis/float(OFFSETMILLIS)));
-                        explode(b.local, b.owner, pos, NULL, 0, GUN_BOMB);
+                        explode(b.local, b.owner, pos, nullptr, 0, GUN_BOMB);
                         // adddecal(DECAL_SCORCH, pos, vec(0, 0, 1), b.owner->bombradius*guns[GUN_BOMB].exprad/2);
                         spawnsplinters(b.o, b.owner);
                         delete bouncers.remove(i);
@@ -606,7 +606,7 @@ namespace game
                     {
                         vec pos(b.o);
                         pos.add(vec(b.offset).mul(b.offsetmillis/float(OFFSETMILLIS)));
-                        explode(b.local, b.owner, pos, NULL, 0, GUN_SPLINTER);
+                        explode(b.local, b.owner, pos, nullptr, 0, GUN_SPLINTER);
                         spawnnextsplinter(b.o, b.vel, b.owner, b.generation);
                         delete bouncers.remove(i);
                         break;
@@ -662,7 +662,7 @@ namespace game
                     {
                         if(raycubepos(p.o, p.dir, p.to, 0, RAY_CLIPMAT|RAY_ALPHAPOLY)>=4) continue;
                     }
-                    projsplash(p, v, NULL, qdam);
+                    projsplash(p, v, nullptr, qdam);
                     exploded = true;
                 }
                 else
@@ -790,13 +790,13 @@ namespace game
             case S_CHAINSAW_ATTACK:
                 if(d->attacksound >= 0) looped = true;
                 d->attacksound = sound;
-                d->attackchan = playsound(sound, d==hudplayer() ? NULL : &d->o, NULL, 0, -1, 100, d->attackchan);
+                d->attackchan = playsound(sound, d==hudplayer() ? nullptr : &d->o, nullptr, 0, -1, 100, d->attackchan);
                 break;
             default:
-                playsound(sound, d==hudplayer() ? NULL : &d->o);
+                playsound(sound, d==hudplayer() ? nullptr : &d->o);
                 break;
         }
-        if(d->quadmillis && lastmillis-prevaction>200 && !looped) playsound(S_ITEMPUP, d==hudplayer() ? NULL : &d->o);
+        if(d->quadmillis && lastmillis-prevaction>200 && !looped) playsound(S_ITEMPUP, d==hudplayer() ? nullptr : &d->o);
     }
 
     void particletrack(physent *owner, vec &o, vec &d)
@@ -836,7 +836,7 @@ namespace game
 
     dynent *intersectclosest(const vec &from, const vec &to, fpsent *at, float &bestdist)
     {
-        dynent *best = NULL;
+        dynent *best = nullptr;
         bestdist = 1e16f;
         loopi(numdynents())
         {
@@ -877,11 +877,11 @@ namespace game
             loopi(maxrays) if(hits[i])
             {
                 o = hits[i];
-                hits[i] = NULL;
+                hits[i] = nullptr;
                 int numhits = 1;
                 for(int j = i+1; j < maxrays; j++) if(hits[j] == o)
                 {
-                    hits[j] = NULL;
+                    hits[j] = nullptr;
                     numhits++;
                 }
                 hitpush(numhits*qdam, o, d, from, to, d->gunselect, numhits);
@@ -1050,7 +1050,7 @@ namespace game
             // TODO: ^^^ REMOVE RENDERMODEL FOR SPLINTERS ^^^
             else
             {
-                const char *mdl = NULL;
+                const char *mdl = nullptr;
                 int cull = MDL_CULL_VFC|MDL_CULL_DIST|MDL_CULL_OCCLUDED;
                 float fade = 1;
                 if(bnc.lifetime < 250) fade = bnc.lifetime/250.0f;
@@ -1061,7 +1061,7 @@ namespace game
                     case BNC_DEBRIS: mdl = debrisnames[bnc.variant]; break;
                     default: continue;
                 }
-                rendermodel(&bnc.light, mdl, ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, cull, NULL, NULL, 0, 0, fade);
+                rendermodel(&bnc.light, mdl, ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, cull, nullptr, nullptr, 0, 0, fade);
             }
         }
     }
@@ -1103,7 +1103,7 @@ namespace game
            d->clientnum >= 0 && d->state == CS_ALIVE &&
            d->lastattackgun == gun && lastmillis - d->lastaction < guns[gun].attackdelay + 50)
         {
-            d->attackchan = playsound(d->attacksound, local ? NULL : &d->o, NULL, 0, -1, -1, d->attackchan);
+            d->attackchan = playsound(d->attacksound, local ? nullptr : &d->o, nullptr, 0, -1, -1, d->attackchan);
             if(d->attackchan < 0) d->attacksound = -1;
         }
         else d->stopattacksound();
@@ -1127,13 +1127,13 @@ namespace game
             if(d->idlesound >= 0) d->stopidlesound();
             if(sound >= 0)
             {
-                d->idlechan = playsound(sound, local ? NULL : &d->o, NULL, 0, -1, 100, d->idlechan, radius);
+                d->idlechan = playsound(sound, local ? nullptr : &d->o, nullptr, 0, -1, 100, d->idlechan, radius);
                 if(d->idlechan >= 0) d->idlesound = sound;
             }
         }
         else if(sound >= 0)
         {
-            d->idlechan = playsound(sound, local ? NULL : &d->o, NULL, 0, -1, -1, d->idlechan, radius);
+            d->idlechan = playsound(sound, local ? nullptr : &d->o, nullptr, 0, -1, -1, d->idlechan, radius);
             if(d->idlechan < 0) d->idlesound = -1;
         }
     }
@@ -1181,13 +1181,13 @@ namespace game
         loopv(projs)
         {
             projectile &p = projs[i];
-            obstacles.avoidnear(NULL, p.o.z + guns[p.gun].exprad + 1, p.o, radius + guns[p.gun].exprad);
+            obstacles.avoidnear(nullptr, p.o.z + guns[p.gun].exprad + 1, p.o, radius + guns[p.gun].exprad);
         }
         loopv(bouncers)
         {
             bouncer &bnc = *bouncers[i];
             if(bnc.bouncetype != BNC_GRENADE) continue;
-            obstacles.avoidnear(NULL, bnc.o.z + guns[GUN_GL].exprad + 1, bnc.o, radius + guns[GUN_GL].exprad);
+            obstacles.avoidnear(nullptr, bnc.o.z + guns[GUN_GL].exprad + 1, bnc.o, radius + guns[GUN_GL].exprad);
         }
     }
 };

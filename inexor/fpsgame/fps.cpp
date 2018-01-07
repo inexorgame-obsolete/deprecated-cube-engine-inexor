@@ -15,7 +15,7 @@ namespace game
 {
     // general game functionality (spawn, attack, spectate...)
 
-    fpsent *player1 = NULL; /// our client
+    fpsent *player1 = nullptr; /// our client
     vector<fpsent *> players; /// other clients
 
     bool intermission = false;
@@ -128,7 +128,7 @@ namespace game
     fpsent *pointatplayer()
     {
         loopv(players) if(players[i] != player1 && intersect(players[i], player1->o, worldpos)) return players[i];
-        return NULL;
+        return nullptr;
     }
 
     /// stop spectating a specific player and start free camery fly
@@ -143,10 +143,10 @@ namespace game
     /// Give me the fpsent instance of the player you are currently spectating
     fpsent *followingplayer()
     {
-        if(player1->state!=CS_SPECTATOR || following<0) return NULL;
+        if(player1->state!=CS_SPECTATOR || following<0) return nullptr;
         fpsent *target = getclient(following);
         if(target && target->state!=CS_SPECTATOR) return target;
-        return NULL;
+        return nullptr;
     }
 
     /// Receive the fov the currently followed player got or -1 on failure.
@@ -196,7 +196,7 @@ namespace game
         switch(player1->state)
         {
             case CS_EDITING: return false;
-            case CS_SPECTATOR: return followingplayer()!=NULL;
+            case CS_SPECTATOR: return followingplayer()!=nullptr;
         }
         return true;
     }
@@ -470,8 +470,8 @@ namespace game
         }
         else
         {
-            dname = colorname(d, NULL, "", "you");
-            aname = colorname(actor, NULL, "", "you");
+            dname = colorname(d, nullptr, "", "you");
+            aname = colorname(actor, nullptr, "", "you");
         }
         if(actor->type==ENT_AI)
             frag_logger->info("{0} got killed by {1}", dname, aname);
@@ -542,12 +542,12 @@ namespace game
         if(cn < 0 || cn > max(0xFF, MAXCLIENTS + MAXBOTS))
         {
             neterr("clientnum", false);
-            return NULL;
+            return nullptr;
         }
 
         if(cn == player1->clientnum) return player1;
 
-        while(cn >= clients.length()) clients.add(NULL);
+        while(cn >= clients.length()) clients.add(nullptr);
         if(!clients[cn])
         {
             fpsent *d = new fpsent;
@@ -563,7 +563,7 @@ namespace game
     fpsent *getclient(int cn)   
     {
         if(cn == player1->clientnum) return player1;
-        return clients.inrange(cn) ? clients[cn] : NULL;
+        return clients.inrange(cn) ? clients[cn] : nullptr;
     }
 
     /// notify my client to change data when another clients disconnect
@@ -672,7 +672,7 @@ namespace game
 
     const char *getclientmode()
     {
-        return modename(gamemode, NULL);
+        return modename(gamemode, nullptr);
     }
 
     /// trigger sound effects depending on the material you enter
@@ -682,9 +682,9 @@ namespace game
         if(waterlevel>0) 
         {
             /// as long as you do not enter lava play a splash sound
-            if(material!=MAT_LAVA) playsound(S_SPLASH1, d==player1 ? NULL : &d->o); 
+            if(material!=MAT_LAVA) playsound(S_SPLASH1, d==player1 ? nullptr : &d->o); 
         }
-        else if(waterlevel<0) playsound(material==MAT_LAVA ? S_BURN : S_SPLASH2, d==player1 ? NULL : &d->o);
+        else if(waterlevel<0) playsound(material==MAT_LAVA ? S_BURN : S_SPLASH2, d==player1 ? nullptr : &d->o);
         /// only send server message if I entered the water and fpsent d is not a bot
         if(floorlevel>0) { if(d==player1 || d->type!=ENT_PLAYER || ((fpsent *)d)->ai) msgsound(S_JUMP, d); }
         else if(floorlevel<0) { if(d==player1 || d->type!=ENT_PLAYER || ((fpsent *)d)->ai) msgsound(S_LAND, d); }
@@ -728,7 +728,7 @@ namespace game
         if(i<players.length()) return players[i];
         i -= players.length();
         if(i<movables.length()) return (dynent *)movables[i];
-        return NULL;
+        return nullptr;
     }
 
     // player name coloring
@@ -739,7 +739,7 @@ namespace game
 
     /// are there any duplicate names in our client list?
     /// in case this is true, their client numbers will be displayed behind both nicknames
-    bool duplicatename(fpsent *d, const char *name = NULL, const char *alt = NULL)
+    bool duplicatename(fpsent *d, const char *name = nullptr, const char *alt = nullptr)
     {
         if(!name) name = d->name;
         if(alt && d != player1 && !strcmp(name, alt)) return true;
@@ -768,8 +768,8 @@ namespace game
     /// color name depending on my team in red or blue
     const char *teamcolorname(fpsent *d, const char *alt)
     {
-        if(!teamcolortext || !m_teammode) return colorname(d, NULL, "", alt);
-        return colorname(d, NULL, isteam(d->team, player1->team) ? COL_BLUE : COL_RED, alt);
+        if(!teamcolortext || !m_teammode) return colorname(d, nullptr, "", alt);
+        return colorname(d, nullptr, isteam(d->team, player1->team) ? COL_BLUE : COL_RED, alt);
     }
 
 	/// color player name blue if you have the same team f1 otherwise red f3

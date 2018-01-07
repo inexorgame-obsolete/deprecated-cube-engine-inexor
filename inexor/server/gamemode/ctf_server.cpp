@@ -14,7 +14,7 @@ bool ctfservermode::addflag(int i, const vec &o, int team, int invistime)
 
 void ctfservermode::died(clientinfo *ci, clientinfo *actor)
 {
-    dropflag(ci, ctftkpenalty && actor && actor != ci && isteam(actor->team, ci->team) ? actor : NULL);
+    dropflag(ci, ctftkpenalty && actor && actor != ci && isteam(actor->team, ci->team) ? actor : nullptr);
     loopv(flags) if(flags[i].dropper == ci->clientnum) { flags[i].dropper = -1; flags[i].dropcount = 0; }
 }
 
@@ -78,7 +78,7 @@ void ctfservermode::died(clientinfo *ci, clientinfo *actor)
         f.dropper = dropper;
         f.owner_id = -1;
         f.invistime = 0;
-        f.owner = NULL;
+        f.owner = nullptr;
         if(!f.vistime) f.vistime = droptime;
     }
 

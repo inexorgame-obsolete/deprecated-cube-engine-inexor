@@ -31,7 +31,7 @@ namespace game
             exploding(0),
             tag(e.type==PLATFORM || e.type==ELEVATOR ? e.attr3 : 0),
             dir(e.type==PLATFORM || e.type==ELEVATOR ? (e.attr4 < 0 ? -1 : 1) : 0),
-            stacked(NULL),
+            stacked(nullptr),
             stackpos(0, 0, 0)
         {
             state = CS_ALIVE;
@@ -165,7 +165,7 @@ namespace game
             }
             else if(m->maymove() || (m->stacked && (m->stacked->state!=CS_ALIVE || m->stackpos != m->stacked->o)))
             {
-                if(physsteps > 0) m->stacked = NULL;
+                if(physsteps > 0) m->stacked = nullptr;
                 moveplayer(m, 1, true);
             }
         }
@@ -180,7 +180,7 @@ namespace game
             vec o = m.feetpos();
             const char *mdlname = mapmodelname(m.mapmodel);
             if(!mdlname) continue;
-            rendermodel(NULL, mdlname, ANIM_MAPMODEL|ANIM_LOOP, o, m.yaw, 0, MDL_LIGHT | MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_DIST | MDL_CULL_OCCLUDED, &m);
+            rendermodel(nullptr, mdlname, ANIM_MAPMODEL|ANIM_LOOP, o, m.yaw, 0, MDL_LIGHT | MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_DIST | MDL_CULL_OCCLUDED, &m);
         }
     }
     

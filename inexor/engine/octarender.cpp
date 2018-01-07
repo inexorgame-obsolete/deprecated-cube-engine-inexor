@@ -408,7 +408,7 @@ struct vacollect : verthash
         va->verts = verts.length();
         va->tris = worldtris/3;
         va->vbuf = 0;
-        va->vdata = 0;
+        va->vdata = nullptr;
         va->minvert = 0;
         va->maxvert = va->verts-1;
         va->voffset = 0;
@@ -426,7 +426,7 @@ struct vacollect : verthash
             va->maxvert += va->voffset;
         }
 
-        va->matbuf = NULL;
+        va->matbuf = nullptr;
         va->matsurfs = matsurfs.length();
         if(va->matsurfs) 
         {
@@ -435,7 +435,7 @@ struct vacollect : verthash
         }
 
         va->skybuf = 0;
-        va->skydata = 0;
+        va->skydata = nullptr;
         va->sky = skyindices.length();
         va->explicitsky = explicitskyindices.length();
         if(va->sky + va->explicitsky)
@@ -447,7 +447,7 @@ struct vacollect : verthash
             if(va->voffset) loopi(va->sky+va->explicitsky) skydata[i] += va->voffset; 
         }
 
-        va->eslist = NULL;
+        va->eslist = nullptr;
         va->texs = texs.length();
         va->blendtris = 0;
         va->blends = 0;
@@ -456,7 +456,7 @@ struct vacollect : verthash
         va->alphafronttris = 0;
         va->alphafront = 0;
         va->ebuf = 0;
-        va->edata = 0;
+        va->edata = nullptr;
         if(va->texs)
         {
             va->eslist = new elementset[va->texs];
@@ -820,8 +820,8 @@ void addcubeverts(VSlot &vslot, int orient, int size, vec *pos, int convex, usho
     int dim = dimension(orient);
     int shadowmask = texture==DEFAULT_SKY || alpha ? 0 : calcshadowmask(pos, numverts);
 
-    LightMap *lm = NULL;
-    LightMapTexture *lmtex = NULL;
+    LightMap *lm = nullptr;
+    LightMapTexture *lmtex = nullptr;
     if(lightmaps.inrange(lmid-LMID_RESERVED))
     {
         lm = &lightmaps[lmid-LMID_RESERVED];
@@ -830,7 +830,7 @@ void addcubeverts(VSlot &vslot, int orient, int size, vec *pos, int convex, usho
                 lightmaps.inrange(lmid+1-LMID_RESERVED) &&
                 (lightmaps[lmid+1-LMID_RESERVED].type&LM_TYPE)==LM_BUMPMAP1))
             lmtex = &lightmaptexs[lm->tex];
-        else lm = NULL;
+        else lm = nullptr;
     }
 
     vec4 sgen, tgen;
@@ -1054,7 +1054,7 @@ void gencubeverts(cube &c, const ivec &co, int size, int csi)
     loopi(6) if(vismask&(1<<i) && (vis = visibletris(c, i, co, size)))
     {
         vec pos[MAXFACEVERTS];
-        vertinfo *verts = NULL;
+        vertinfo *verts = nullptr;
         int numverts = c.ext ? c.ext->surfaces[i].numverts&MAXFACEVERTS : 0, convex = 0;
         if(numverts)
         {
@@ -1077,14 +1077,14 @@ void gencubeverts(cube &c, const ivec &co, int size, int csi)
         }
 
         VSlot &vslot = lookupvslot(c.texture[i], true),
-              *layer = vslot.layer && !(c.material&MAT_ALPHA) ? &lookupvslot(vslot.layer, true) : NULL;
+              *layer = vslot.layer && !(c.material&MAT_ALPHA) ? &lookupvslot(vslot.layer, true) : nullptr;
         ushort envmap = vslot.slot->shader->type&SHADER_ENVMAP ? (vslot.slot->texmask&(1<<TEX_ENVMAP) ? EMID_CUSTOM : closestenvmap(i, co, size)) : EMID_NONE,
                envmap2 = layer && layer->slot->shader->type&SHADER_ENVMAP ? (layer->slot->texmask&(1<<TEX_ENVMAP) ? EMID_CUSTOM : closestenvmap(i, co, size)) : EMID_NONE;
         while(tj >= 0 && tjoints[tj].edge < i*(MAXFACEVERTS+1)) tj = tjoints[tj].next;
         int hastj = tj >= 0 && tjoints[tj].edge < (i+1)*(MAXFACEVERTS+1) ? tj : -1;
         int grassy = vslot.slot->autograss && i!=O_BOTTOM ? (vis!=3 || convex ? 1 : 2) : 0;
         if(!c.ext)
-            addcubeverts(vslot, i, size, pos, convex, c.texture[i], LMID_AMBIENT, NULL, numverts, hastj, envmap, grassy, (c.material&MAT_ALPHA)!=0);
+            addcubeverts(vslot, i, size, pos, convex, c.texture[i], LMID_AMBIENT, nullptr, numverts, hastj, envmap, grassy, (c.material&MAT_ALPHA)!=0);
         else
         { 
             const surfaceinfo &surf = c.ext->surfaces[i];
@@ -1210,7 +1210,7 @@ vtxarray *newva(const ivec &co, int size)
     vc.optimize();
 
     vtxarray *va = new vtxarray;
-    va->parent = NULL;
+    va->parent = nullptr;
     va->o = co;
     va->size = size;
     va->skyarea = vc.skyarea;
@@ -1218,7 +1218,7 @@ vtxarray *newva(const ivec &co, int size)
     va->skyclip = vc.skyclip < INT_MAX ? vc.skyclip : INT_MAX;
     va->curvfc = VFC_NOT_VISIBLE;
     va->occluded = OCCLUDE_NOTHING;
-    va->query = NULL;
+    va->query = nullptr;
     va->bbmin = ivec(-1, -1, -1);
     va->bbmax = ivec(-1, -1, -1);
     va->hasmerges = 0;
@@ -1266,7 +1266,7 @@ void clearvas(cube *c)
         if(c[i].ext)
         {
             if(c[i].ext->va) destroyva(c[i].ext->va, false);
-            c[i].ext->va = NULL;
+            c[i].ext->va = nullptr;
             c[i].ext->tjoints = -1;
         }
         if(c[i].children) clearvas(c[i].children);
@@ -1363,7 +1363,7 @@ int genmergedfaces(cube &c, const ivec &co, int size, int minlevel = -1)
             if(tj >= 0 && tjoints[tj].edge < (i+1)*(MAXFACEVERTS+1)) mf.tjoints = tj;
 
             VSlot &vslot = lookupvslot(mf.tex, true),
-                  *layer = vslot.layer && !(c.material&MAT_ALPHA) ? &lookupvslot(vslot.layer, true) : NULL;
+                  *layer = vslot.layer && !(c.material&MAT_ALPHA) ? &lookupvslot(vslot.layer, true) : nullptr;
             if(vslot.slot->shader->type&SHADER_ENVMAP)
                 mf.envmap = vslot.slot->texmask&(1<<TEX_ENVMAP) ? EMID_CUSTOM : closestenvmap(i, co, size);
             ushort envmap2 = layer && layer->slot->shader->type&SHADER_ENVMAP ? (layer->slot->texmask&(1<<TEX_ENVMAP) ? EMID_CUSTOM : closestenvmap(i, co, size)) : EMID_NONE;
@@ -1751,7 +1751,7 @@ void octarender()                               // creates va s for all leaf cub
         skyarea += va->skyarea;
     }
 
-    visibleva = NULL;
+    visibleva = nullptr;
 }
 
 void precachetextures()

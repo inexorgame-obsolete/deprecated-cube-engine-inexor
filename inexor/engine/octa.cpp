@@ -19,8 +19,8 @@ cubeext *growcubeext(cubeext *old, int maxverts)
     }
     else
     {
-        ext->va = NULL;
-        ext->ents = NULL;
+        ext->va = nullptr;
+        ext->ents = nullptr;
         ext->tjoints = -1;
     }
     ext->maxverts = maxverts;
@@ -57,8 +57,8 @@ cube *newcubes(uint face, int mat)
     cube *c = new cube[8];
     loopi(8)
     {
-        c->children = NULL;
-        c->ext = NULL;
+        c->children = nullptr;
+        c->ext = nullptr;
         c->visible = 0;
         c->merged = 0;
         setfaces(*c, face);
@@ -90,7 +90,7 @@ void freecubeext(cube &c)
     if(c.ext)
     {
         delete[] (uchar *)c.ext;
-        c.ext = NULL;
+        c.ext = nullptr;
     }
 }
 
@@ -102,7 +102,7 @@ void discardchildren(cube &c, bool fixtex, int depth)
     if(c.ext)
     {
         if(c.ext->va) destroyva(c.ext->va);
-        c.ext->va = NULL;
+        c.ext->va = nullptr;
         c.ext->tjoints = -1;
         freeoctaentities(c);
         freecubeext(c);
@@ -518,9 +518,9 @@ bool remip(cube &c, const ivec &co, int size)
     }
 
     cube n = c;
-    n.ext = NULL;
+    n.ext = nullptr;
     forcemip(n);
-    n.children = NULL;
+    n.children = nullptr;
     if(!subdividecube(n, false, false))
         { freeocta(n.children); return false; }
 
@@ -836,7 +836,7 @@ uint faceedges(const cube &c, int orient)
     return u.face;
 }
 
-static inline int genfacevecs(const cube &cu, int orient, const ivec &pos, int size, bool solid, ivec2 *fvecs, const ivec *v = NULL)
+static inline int genfacevecs(const cube &cu, int orient, const ivec &pos, int size, bool solid, ivec2 *fvecs, const ivec *v = nullptr)
 {
     int i = 0;
         if(solid)
@@ -1865,7 +1865,7 @@ static void invalidatemerges(cube &c)
         {
             if(!(c.ext->va->hasmerges&(MERGE_PART | MERGE_ORIGIN))) return;
             destroyva(c.ext->va);
-            c.ext->va = NULL;
+            c.ext->va = nullptr;
         }
         if(c.ext->tjoints >= 0) c.ext->tjoints = -1;
     }

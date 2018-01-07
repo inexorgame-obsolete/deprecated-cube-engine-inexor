@@ -29,7 +29,7 @@ extern int getservermtu();
     /// TODO move this to a better sourcefile.
     bool teamspersisted;
     enet_uint32 lastsend = 0;
-    stream *mapdata = NULL;
+    stream *mapdata = nullptr;
 
     string smapname = "";
 
@@ -213,7 +213,7 @@ extern int getservermtu();
 
     void checkteamkills()
     {
-        teamkillkick *kick = NULL;
+        teamkillkick *kick = nullptr;
         if(m_timed) loopv(teamkillkicks) if(teamkillkicks[i].match(gamemode) && (!kick || kick->includes(teamkillkicks[i])))
             kick = &teamkillkicks[i];
         if(kick) loopvrev(teamkills)
@@ -258,7 +258,7 @@ extern int getservermtu();
     bombservermode bombmode;
     hideandseekservermode hideandseekmode;
 
-    servmode *smode = NULL;
+    servmode *smode = nullptr;
 
     // entities
     bool canspawnitem(int type) {
@@ -327,7 +327,7 @@ extern int getservermtu();
         teaminfo *t = teaminfos.access(team);
         if(!t)
         {
-            if(teaminfos.numelems >= MAXTEAMS && !pruneteaminfo()) return NULL;
+            if(teaminfos.numelems >= MAXTEAMS && !pruneteaminfo()) return nullptr;
             t = &teaminfos[team];
             copystring(t->team, team, sizeof(t->team));
             t->frags = 0;
@@ -337,7 +337,7 @@ extern int getservermtu();
 
     clientinfo *choosebestclient(float &bestrank)
     {
-        clientinfo *best = NULL;
+        clientinfo *best = nullptr;
         bestrank = -1;
         loopv(clients)
         {
@@ -395,7 +395,7 @@ extern int getservermtu();
         teamrank(const char *name) : name(name), rank(0), clients(0) {}
     };
 
-    const char *chooseworstteam(const char *suggest = NULL, clientinfo *exclude = NULL)
+    const char *chooseworstteam(const char *suggest = nullptr, clientinfo *exclude = nullptr)
     {
         teamrank teamranks[2] = { teamrank("good"), teamrank("evil") };
         const int numteams = sizeof(teamranks)/sizeof(teamranks[0]);
@@ -429,7 +429,7 @@ extern int getservermtu();
 
     void assign_team(clientinfo *ci)
     {
-        const char *worst = m_teammode ? chooseworstteam(NULL, ci) : NULL;
+        const char *worst = m_teammode ? chooseworstteam(nullptr, ci) : nullptr;
         copystring(ci->team, worst ? worst : "good", MAXTEAMLEN+1);
     }
 
@@ -438,7 +438,7 @@ extern int getservermtu();
         loopv(clients)
         {
             clientinfo *ci = clients[i];
-            if(ci->getmap == packet) ci->getmap = NULL;
+            if(ci->getmap == packet) ci->getmap = nullptr;
         }
     }
 
@@ -454,7 +454,7 @@ extern int getservermtu();
 
     bool ispaused() { return gamepaused; }
 
-    void changegamespeed(int val, clientinfo *ci = NULL)
+    void changegamespeed(int val, clientinfo *ci = nullptr)
     {
         val = clamp(val, 10, 1000);
         if(gamespeed==val) return;
@@ -540,7 +540,7 @@ extern int getservermtu();
         int uses, len;
         uchar *data;
 
-        worldstate() : uses(0), len(0), data(NULL) {}
+        worldstate() : uses(0), len(0), data(nullptr) {}
 
         void setup(int n) { len = n; data = new uchar[n]; }
         void cleanup() { DELETEA(data); len = 0; }
@@ -652,7 +652,7 @@ extern int getservermtu();
         {
             clientinfo &ci = *clients[i];
             ci.overflow = 0;
-            ci.wsdata = NULL;
+            ci.wsdata = nullptr;
             wsmax += ci.position.length();
             if(ci.messages.length()) wsmax += 10 + ci.messages.length();
         }
@@ -958,7 +958,7 @@ extern int getservermtu();
         else if(m_collect) smode = &collectmode;
         else if(m_bomb) smode = &bombmode;
         else if(m_hideandseek) smode = &hideandseekmode;
-        else smode = NULL;
+        else smode = nullptr;
 
         if(m_timed && smapname[0]) sendf(-1, 1, "ri2", N_TIMEUP, gamemillis < gamelimit && !interm ? max((gamelimit - gamemillis)/1000, 1) : 0);
         loopv(clients)
@@ -1054,7 +1054,7 @@ extern int getservermtu();
             if(oi->state.aitype!=AI_NONE) continue;
             maxvotes++;
             if(!m_valid(oi->modevote)) continue;
-            votecount *vc = NULL;
+            votecount *vc = nullptr;
             loopvj(votes) if(!strcmp(oi->mapvote, votes[j].map) && oi->modevote==votes[j].mode)
             {
                 vc = &votes[j];
@@ -1063,7 +1063,7 @@ extern int getservermtu();
             if(!vc) vc = &votes.add(votecount(oi->mapvote, oi->modevote));
             vc->count++;
         }
-        votecount *best = NULL;
+        votecount *best = nullptr;
         loopv(votes) if(!best || votes[i].count > best->count || (votes[i].count == best->count && rnd(2))) best = &votes[i];
         if(force || (best && best->count > maxvotes/2))
         {
@@ -1206,7 +1206,7 @@ extern int getservermtu();
                 else { friends = 1; enemies = clients.length()-1; }
                 actor->state.effectiveness += fragvalue*friends/float(max(enemies, 1));
             }
-            teaminfo *t = m_teammode ? teaminfos.access(actor->team) : NULL;
+            teaminfo *t = m_teammode ? teaminfos.access(actor->team) : nullptr;
             if(t) t->frags += fragvalue; 
             sendf(-1, 1, "ri5", N_DIED, target->clientnum, actor->clientnum, actor->state.frags, t ? t->frags : 0);
             target->position.setsize(0);
@@ -1236,11 +1236,11 @@ extern int getservermtu();
         int fragvalue = smode ? smode->fragvalue(ci, ci) : -1;
         ci->state.frags += fragvalue;
         ci->state.deaths++;
-        teaminfo *t = m_teammode ? teaminfos.access(ci->team) : NULL;
+        teaminfo *t = m_teammode ? teaminfos.access(ci->team) : nullptr;
         if(t) t->frags += fragvalue;
         sendf(-1, 1, "ri5", N_DIED, ci->clientnum, ci->clientnum, gs.frags, t ? t->frags : 0);
         ci->position.setsize(0);
-        if(smode) smode->died(ci, NULL);
+        if(smode) smode->died(ci, nullptr);
         gs.state = CS_DEAD;
         gs.lastdeath = gamemillis;
         gs.respawn();
@@ -1516,7 +1516,7 @@ extern int getservermtu();
             }
             else
             {
-                crcinfo *match = NULL;
+                crcinfo *match = nullptr;
                 loopvj(crcs) if(crcs[j].crc == ci->mapcrc) { match = &crcs[j]; break; }
                 if(!match) crcs.add(crcinfo(ci->mapcrc, 1));
                 else match->matches++;
@@ -1622,7 +1622,7 @@ extern int getservermtu();
         char text[MAXTRANS];
         int type;
         // the sender
-        clientinfo *ci = sender>=0 ? get_client_info(sender) : NULL;
+        clientinfo *ci = sender>=0 ? get_client_info(sender) : nullptr;
         // (probably) the sender OR the bot sending from the same sender
         clientinfo *cq = ci;
         // the receiver?
@@ -1688,7 +1688,7 @@ extern int getservermtu();
                 p.get(); 
                 uint flags = getuint(p);
                 clientinfo *cp = get_client_info(pcn);
-                if(cp && pcn != sender && cp->ownernum != sender) cp = NULL;
+                if(cp && pcn != sender && cp->ownernum != sender) cp = nullptr;
                 vec pos;
                 loopk(3)
                 {
@@ -1724,7 +1724,7 @@ extern int getservermtu();
             {
                 int pcn = getint(p), teleport = getint(p), teledest = getint(p);
                 clientinfo *cp = get_client_info(pcn);
-                if(cp && pcn != sender && cp->ownernum != sender) cp = NULL;
+                if(cp && pcn != sender && cp->ownernum != sender) cp = nullptr;
                 if(cp && (cp->state.state==CS_ALIVE || cp->state.state==CS_EDITING))
                 {
                     flushclientposition(*cp);
@@ -1737,7 +1737,7 @@ extern int getservermtu();
             {
                 int pcn = getint(p), jumppad = getint(p);
                 clientinfo *cp = get_client_info(pcn);
-                if(cp && pcn != sender && cp->ownernum != sender) cp = NULL;
+                if(cp && pcn != sender && cp->ownernum != sender) cp = nullptr;
                 if(cp && (cp->state.state==CS_ALIVE || cp->state.state==CS_EDITING))
                 {
                     cp->setpushed();
@@ -1754,7 +1754,7 @@ extern int getservermtu();
                 else
                 {
                     cq = get_client_info(qcn);
-                    if(cq && qcn != sender && cq->ownernum != sender) cq = NULL;
+                    if(cq && qcn != sender && cq->ownernum != sender) cq = nullptr;
                 }
                 break;
             }
@@ -1801,7 +1801,7 @@ extern int getservermtu();
                 copystring(ci->clientmap, text);
                 ci->mapcrc = text[0] ? crc : 1;
                 checkmaps();
-                if(cq && cq != ci && cq->ownernum != ci->clientnum) cq = NULL;
+                if(cq && cq != ci && cq->ownernum != ci->clientnum) cq = nullptr;
                 break;
             }
 
@@ -1822,7 +1822,7 @@ extern int getservermtu();
                     ci->mapcrc = -1;
                     checkmaps();
                     if(ci == cq) { if(ci->state.state != CS_DEAD) break; }
-                    else if(cq->ownernum != ci->clientnum) { cq = NULL; break; }
+                    else if(cq->ownernum != ci->clientnum) { cq = nullptr; break; }
                 }
                 if(cq->state.deadflush)
                 {
@@ -2120,7 +2120,7 @@ extern int getservermtu();
                 if(spinfo->state.state!=CS_SPECTATOR && val) forcespectator(spinfo);
                 else if(spinfo->state.state==CS_SPECTATOR && !val) unspectate(spinfo);
 
-                if(cq && cq != ci && cq->ownernum != ci->clientnum) cq = NULL;
+                if(cq && cq != ci && cq->ownernum != ci->clientnum) cq = nullptr;
                 break;
             }
 

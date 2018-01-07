@@ -27,7 +27,7 @@ struct soundsample
     char *name;
     //Mix_Chunk *chunk;  // TODO Sound refractoring
 
-    soundsample() : name(NULL)/*, chunk(NULL)*/ {}  // TODO Sound refractoring
+    soundsample() : name(nullptr)/*, chunk(NULL)*/ {}  // TODO Sound refractoring
     ~soundsample() { DELETEA(name); }
 
     void cleanup() { /*if(chunk) { Mix_FreeChunk(chunk); chunk = NULL; } */}  // TODO Sound refractoring
@@ -75,8 +75,8 @@ struct soundchannel
     {
         inuse = false;
         clearloc();
-        slot = NULL;
-        ent = NULL;
+        slot = nullptr;
+        ent = nullptr;
         radius = 0;
         volume = -1;
         pan = -1;
@@ -87,7 +87,7 @@ struct soundchannel
 vector<soundchannel> channels;
 int maxchannels = 0;
 
-soundchannel &newchannel(int n, soundslot *slot, const vec *loc = NULL, extentity *ent = NULL, int flags = 0, int radius = 0)
+soundchannel &newchannel(int n, soundslot *slot, const vec *loc = nullptr, extentity *ent = nullptr, int flags = 0, int radius = 0)
 {
     if(ent)
     {
@@ -360,7 +360,7 @@ void checkmapsounds()
         if(e.type!=ET_SOUND) continue;
         if(camera1->o.dist(e.o) < e.attr2)
         {
-            if(!(e.flags&EF_SOUND)) playsound(e.attr1, NULL, &e, SND_MAP, -1);
+            if(!(e.flags&EF_SOUND)) playsound(e.attr1, nullptr, &e, SND_MAP, -1);
         }
         else if(e.flags&EF_SOUND) stopmapsound(&e);
     }
@@ -570,7 +570,7 @@ int playsoundname(const char *s, const vec *loc, int vol, int flags, int loops, 
     if(!vol) vol = 100;
     int id = gamesounds.findsound(s, vol);
     if(id < 0) id = gamesounds.addsound(s, vol);
-    return playsound(id, loc, NULL, flags, loops, fade, chanid, radius, expire);
+    return playsound(id, loc, nullptr, flags, loops, fade, chanid, radius, expire);
 }
 
 void sound(int *n) { playsound(*n); }

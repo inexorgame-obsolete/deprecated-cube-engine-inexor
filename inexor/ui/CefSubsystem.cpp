@@ -67,7 +67,7 @@ void CefSubsystem::initialize(int argc, char **argv)
         char *arg = argv[i];
         Log.ui->error("FATAL: {}!", arg);
     }
-    if (!CefInitialize(args, settings, cef_app.get(), NULL)) {
+    if (!CefInitialize(args, settings, cef_app.get(), nullptr)) {
         Log.ui->error("FATAL: Initialization of CEF subprocess failed!");
     }
 }

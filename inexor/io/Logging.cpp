@@ -4,6 +4,7 @@
 
 #include <spdlog/sinks/msvc_sink.h>
 
+#include <utility>
 #include <vector>
 #include <string>
 #include <memory>
@@ -55,7 +56,7 @@ public:
 class InexorCutAnsiCodesSink : public spdlog::sinks::sink
 {
 public:
-    InexorCutAnsiCodesSink(spdlog::sink_ptr wrapped_sink) : sink_(wrapped_sink) {}
+    InexorCutAnsiCodesSink(spdlog::sink_ptr wrapped_sink) : sink_(std::move(wrapped_sink)) {}
     InexorCutAnsiCodesSink(const InexorCutAnsiCodesSink& other) = delete;
     InexorCutAnsiCodesSink& operator=(const InexorCutAnsiCodesSink& other) = delete;
 

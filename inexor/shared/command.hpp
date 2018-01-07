@@ -169,39 +169,39 @@ struct ident
     
     ident() {}
     // ID_VAR
-    ident(int t, const char *n, int m, int x, SharedVar<int> *s, void *f = NULL, int flags = 0)
+    ident(int t, const char *n, int m, int x, SharedVar<int> *s, void *f = nullptr, int flags = 0)
         : type(t), flags(flags | (m > x ? IDF_READONLY : 0)), name(n), minval(m), maxval(x), fun((identfun)f)
     { storage.i = s; }
     // ID_VAR oldschool (without InexorTree binding)
-    ident(int t, const char *n, int m, int x, int *s, void *f = NULL, int flags = 0)
+    ident(int t, const char *n, int m, int x, int *s, void *f = nullptr, int flags = 0)
         : type(t), flags(flags | (m > x ? IDF_READONLY : 0)), name(n), minval(m), maxval(x), fun((identfun)f)
     { storage.iold = s; }
     // ID_FVAR
-    ident(int t, const char *n, float m, float x, SharedVar<float> *s, void *f = NULL, int flags = 0)
+    ident(int t, const char *n, float m, float x, SharedVar<float> *s, void *f = nullptr, int flags = 0)
         : type(t), flags(flags | (m > x ? IDF_READONLY : 0)), name(n), minvalf(m), maxvalf(x), fun((identfun)f)
     { storage.f = s; }
     // ID_SVAR
-    ident(int t, const char *n, SharedVar<char*> *s, void *f = NULL, int flags = 0)
+    ident(int t, const char *n, SharedVar<char*> *s, void *f = nullptr, int flags = 0)
         : type(t), flags(flags), name(n), fun((identfun)f)
     { storage.s = s; }
     // ID_ALIAS
     ident(int t, const char *n, char *a, int flags)
-        : type(t), valtype(VAL_STR), flags(flags), name(n), code(NULL), stack(NULL)
+        : type(t), valtype(VAL_STR), flags(flags), name(n), code(nullptr), stack(nullptr)
     { val.s = a; }
     ident(int t, const char *n, int a, int flags)
-        : type(t), valtype(VAL_INT), flags(flags), name(n), code(NULL), stack(NULL)
+        : type(t), valtype(VAL_INT), flags(flags), name(n), code(nullptr), stack(nullptr)
     { val.i = a; }
     ident(int t, const char *n, float a, int flags)
-        : type(t), valtype(VAL_FLOAT), flags(flags), name(n), code(NULL), stack(NULL)
+        : type(t), valtype(VAL_FLOAT), flags(flags), name(n), code(nullptr), stack(nullptr)
     { val.f = a; }
     ident(int t, const char *n, int flags)
-        : type(t), valtype(VAL_NULL), flags(flags), name(n), code(NULL), stack(NULL)
+        : type(t), valtype(VAL_NULL), flags(flags), name(n), code(nullptr), stack(nullptr)
     {}
     ident(int t, const char *n, const tagval &v, int flags)
-        : type(t), valtype(v.type), flags(flags), name(n), code(NULL), stack(NULL)
+        : type(t), valtype(v.type), flags(flags), name(n), code(nullptr), stack(nullptr)
     { val = v; }
     // ID_COMMAND
-    ident(int t, const char *n, const char *args, uint argmask, int numargs, void *f = NULL, int flags = 0)
+    ident(int t, const char *n, const char *args, uint argmask, int numargs, void *f = nullptr, int flags = 0)
         : type(t), numargs(numargs), flags(flags), name(n), args(args), argmask(argmask), fun((identfun)f)
     {}
 
@@ -244,7 +244,7 @@ extern void result(const char *s);
 
 static inline int parseint(const char *s)
 {
-    return int(strtoul(s, NULL, 0));
+    return int(strtoul(s, nullptr, 0));
 }
 
 static inline float parsefloat(const char *s)

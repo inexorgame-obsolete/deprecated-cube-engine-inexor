@@ -56,7 +56,7 @@ namespace entities
     const char *itemname(int i)
     {
         int t = ents[i]->type;
-        if(t<I_SHELLS || t>I_QUAD) return NULL;
+        if(t<I_SHELLS || t>I_QUAD) return nullptr;
             return itemstats[t-I_SHELLS].name;
     }
 
@@ -71,18 +71,18 @@ namespace entities
     {
         static const char * const entmdlnames[] =
         {
-            NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+            nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
             "item/ammo/shell", "item/ammo/bullet", "item/ammo/rocket", "item/ammo/rifleround", "item/ammo/grenade", "item/ammo/cartridge",
             "item/ammo/bomb", "item/ammo/bombradius", "item/ammo/bombdelay",
             "item/health", "item/boost", "item/armor/green", "item/armor/yellow", "item/quad", "game/teleporter",
-            NULL, NULL,
+            nullptr, nullptr,
             "carrot",
-            NULL, NULL,
+            nullptr, nullptr,
             "checkpoint",
-            NULL, NULL,
-            NULL, NULL,
-            NULL,
-            NULL, //obstacle
+            nullptr, nullptr,
+            nullptr, nullptr,
+            nullptr,
+            nullptr, //obstacle
         };
         return entmdlnames[type];
     }
@@ -92,9 +92,9 @@ namespace entities
         if(e.type == TELEPORT)
         {
             if(e.attr2 > 0) return mapmodelname(e.attr2);
-            if(e.attr2 < 0) return NULL;
+            if(e.attr2 < 0) return nullptr;
         }
-        return e.type < MAXENTTYPES ? entmdlname(e.type) : NULL;
+        return e.type < MAXENTTYPES ? entmdlname(e.type) : nullptr;
     }
 
     void preloadentities()
@@ -191,28 +191,28 @@ namespace entities
             // TODO: bomb items switch
             particle_icon(d->abovehead(), is.icon%4, is.icon/4, PART_HUD_ICON_GREY, 2000, 0xFFFFFF, 2.0f, -8);
         }
-        playsound(itemstats[type-I_SHELLS].sound, d!=player1 ? &d->o : NULL, NULL, 0, 0, 0, -1, 0, 1500);
+        playsound(itemstats[type-I_SHELLS].sound, d!=player1 ? &d->o : nullptr, nullptr, 0, 0, 0, -1, 0, 1500);
         d->pickup(type);
         if(d==player1) switch(type)
         {
             case I_BOOST:
                 Log.game->info("you have a permanent +10 health bonus! ({})", d->maxhealth);
-                playsound(S_V_BOOST, NULL, NULL, 0, 0, 0, -1, 0, 3000);
+                playsound(S_V_BOOST, nullptr, nullptr, 0, 0, 0, -1, 0, 3000);
                 break;
 
             case I_QUAD:
                 Log.game->info("you got the quad!");
-                playsound(S_V_QUAD, NULL, NULL, 0, 0, 0, -1, 0, 3000);
+                playsound(S_V_QUAD, nullptr, nullptr, 0, 0, 0, -1, 0, 3000);
                 break;
 
             case I_BOMBRADIUS:
                 Log.game->info("you have a permanent +1 damage radius bonus!");
-                playsound(S_V_QUAD, NULL, NULL, 0, 0, -1, 0, 3000); // TODO: other sound
+                playsound(S_V_QUAD, nullptr, nullptr, 0, 0, -1, 0, 3000); // TODO: other sound
                 break;
 
             case I_BOMBDELAY:
                 Log.game->info("your bombs explode faster!");
-                playsound(S_ITEMHEALTH, NULL, NULL, 0, 0, -1, 0, 3000);
+                playsound(S_ITEMHEALTH, nullptr, nullptr, 0, 0, -1, 0, 3000);
                 break;
         }
     }
@@ -228,11 +228,11 @@ namespace entities
             {
                 int snd = S_TELEPORT, flags = 0;
                 if(e.attr4 > 0) { snd = e.attr4; flags = SND_MAP; }
-                if(d == player1) playsound(snd, NULL, NULL, flags);
+                if(d == player1) playsound(snd, nullptr, nullptr, flags);
                 else
                 {
-                    playsound(snd, &e.o, NULL, flags);
-                    if(ents.inrange(td) && ents[td]->type == TELEDEST) playsound(snd, &ents[td]->o, NULL, flags);
+                    playsound(snd, &e.o, nullptr, flags);
+                    if(ents.inrange(td) && ents[td]->type == TELEDEST) playsound(snd, &ents[td]->o, nullptr, flags);
                 }
             }
         }
@@ -258,8 +258,8 @@ namespace entities
             {
                 int snd = S_JUMPPAD, flags = 0;
                 if(e.attr4 > 0) { snd = e.attr4; flags = SND_MAP; }
-                if(d == player1) playsound(snd, NULL, NULL, flags);
-                else playsound(snd, &e.o, NULL, flags);
+                if(d == player1) playsound(snd, nullptr, nullptr, flags);
+                else playsound(snd, &e.o, nullptr, flags);
             }
         }
         if(local && d->clientnum >= 0)
@@ -374,7 +374,7 @@ namespace entities
         if(d->quadmillis && (d->quadmillis -= time)<=0)
         {
             d->quadmillis = 0;
-            playsound(S_PUPOUT, d==player1 ? NULL : &d->o);
+            playsound(S_PUPOUT, d==player1 ? nullptr : &d->o);
             if(d==player1) Log.game->info("quad damage is over");
         }
     }

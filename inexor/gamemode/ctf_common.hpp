@@ -41,7 +41,7 @@ struct flag
         owner_id = dropper = -1;
         invistime = owntime = runstart = 0;
         //if(id >= 0) loopv(players) players[i]->flagpickup &= ~(1<<id);
-        owner = NULL;
+        owner = nullptr;
         dropangle = spawnangle = 0;
         interploc = vec(0, 0, 0);
         interpangle = 0;

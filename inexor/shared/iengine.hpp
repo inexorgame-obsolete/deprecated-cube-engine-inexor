@@ -40,12 +40,12 @@ enum // cube empty-space materials
 #define isdeadly(mat) ((mat)==MAT_LAVA)
 
 extern void lightent(extentity &e, float height = 8.0f);
-extern void lightreaching(const vec &target, vec &color, vec &dir, bool fast = false, extentity *e = 0, float ambient = 0.4f);
+extern void lightreaching(const vec &target, vec &color, vec &dir, bool fast = false, extentity *e = nullptr, float ambient = 0.4f);
 extern entity *brightestlight(const vec &target, const vec &dir);
 
 enum { RAY_BB = 1, RAY_POLY = 3, RAY_ALPHAPOLY = 7, RAY_ENTS = 9, RAY_CLIPMAT = 16, RAY_SKIPFIRST = 32, RAY_EDITMAT = 64, RAY_SHADOW = 128, RAY_PASS = 256, RAY_SKIPSKY = 512 };
 
-extern float raycube   (const vec &o, const vec &ray,     float radius = 0, int mode = RAY_CLIPMAT, int size = 0, extentity *t = 0);
+extern float raycube   (const vec &o, const vec &ray,     float radius = 0, int mode = RAY_CLIPMAT, int size = 0, extentity *t = nullptr);
 extern float raycubepos(const vec &o, const vec &ray, vec &hit, float radius = 0, int mode = RAY_CLIPMAT, int size = 0);
 extern float rayfloor  (const vec &o, vec &floor, int mode = 0, float radius = 0);
 extern bool  raycubelos(const vec &o, const vec &dest, vec &hitpos);
@@ -64,7 +64,7 @@ extern void packvslot(vector<uchar> &buf, const VSlot *vs);
 
 // menus
 extern vec menuinfrontofplayer();
-extern void newgui(char *name, char *contents, char *header = NULL, char *init = NULL);
+extern void newgui(char *name, char *contents, char *header = nullptr, char *init = nullptr);
 extern void showgui(const char *name);
 extern int cleargui(int n = 0);
 
@@ -144,9 +144,9 @@ enum
     DL_FLASH  = 1<<2
 };
 
-extern void adddynlight(const vec &o, float radius, const vec &color, int fade = 0, int peak = 0, int flags = 0, float initradius = 0, const vec &initcolor = vec(0, 0, 0), physent *owner = NULL);
+extern void adddynlight(const vec &o, float radius, const vec &color, int fade = 0, int peak = 0, int flags = 0, float initradius = 0, const vec &initcolor = vec(0, 0, 0), physent *owner = nullptr);
 extern void dynlightreaching(const vec &target, vec &color, vec &dir, bool hud = false);
-extern void removetrackeddynlights(physent *owner = NULL);
+extern void removetrackeddynlights(physent *owner = nullptr);
 
 // rendergl
 extern physent *camera1;
@@ -222,14 +222,14 @@ struct modelattach
     vec *pos;
     model *m;
 
-    modelattach() : tag(NULL), name(NULL), anim(-1), basetime(0), pos(NULL), m(NULL) {}
-    modelattach(const char *tag, const char *name, int anim = -1, int basetime = 0) : tag(tag), name(name), anim(anim), basetime(basetime), pos(NULL), m(NULL) {}
-    modelattach(const char *tag, vec *pos) : tag(tag), name(NULL), anim(-1), basetime(0), pos(pos), m(NULL) {}
+    modelattach() : tag(nullptr), name(nullptr), anim(-1), basetime(0), pos(nullptr), m(nullptr) {}
+    modelattach(const char *tag, const char *name, int anim = -1, int basetime = 0) : tag(tag), name(name), anim(anim), basetime(basetime), pos(nullptr), m(nullptr) {}
+    modelattach(const char *tag, vec *pos) : tag(tag), name(nullptr), anim(-1), basetime(0), pos(pos), m(nullptr) {}
 };
 
 extern void startmodelbatches();
 extern void endmodelbatches();
-extern void rendermodel(entitylight *light, const char *mdl, int anim, const vec &o, float yaw = 0, float pitch = 0, int cull = MDL_CULL_VFC | MDL_CULL_DIST | MDL_CULL_OCCLUDED | MDL_LIGHT, dynent *d = NULL, modelattach *a = NULL, int basetime = 0, int basetime2 = 0, float trans = 1);
+extern void rendermodel(entitylight *light, const char *mdl, int anim, const vec &o, float yaw = 0, float pitch = 0, int cull = MDL_CULL_VFC | MDL_CULL_DIST | MDL_CULL_OCCLUDED | MDL_LIGHT, dynent *d = nullptr, modelattach *a = nullptr, int basetime = 0, int basetime2 = 0, float trans = 1);
 extern void abovemodel(vec &o, const char *mdl);
 extern void rendershadow(dynent *d);
 extern void renderclient(dynent *d, const char *mdlname, modelattach *attachments, int hold, int attack, int attackdelay, int lastaction, int lastpain, float fade = 1, bool ragdoll = false);

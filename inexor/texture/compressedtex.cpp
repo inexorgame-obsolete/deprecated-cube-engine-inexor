@@ -161,7 +161,7 @@ bool loaddds(const char *filename, ImageData &image, int force)
     case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
     case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT: bpp = 16; break;
     }
-    image.setdata(NULL, d.dwWidth, d.dwHeight, bpp, !supported || force > 0 ? 1 : d.dwMipMapCount, 4, format);
+    image.setdata(nullptr, d.dwWidth, d.dwHeight, bpp, !supported || force > 0 ? 1 : d.dwMipMapCount, 4, format);
     size_t size = image.calcsize();
     if(f->read(image.data, size) != size) { delete f; image.cleanup(); return false; }
     delete f;

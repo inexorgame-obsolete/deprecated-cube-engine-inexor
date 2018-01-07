@@ -13,7 +13,7 @@
 static vec menupos;
 static int menustart = 0;
 static int menutab = 1;
-static g3d_gui *cgui = NULL;
+static g3d_gui *cgui = nullptr;
 
 struct menu : g3d_callback
 {
@@ -21,21 +21,21 @@ struct menu : g3d_callback
     uint *contents, *init, *onclear;
     bool showtab;
 
-    menu() : name(NULL), header(NULL), contents(NULL), init(NULL), onclear(NULL), showtab(true) {}
+    menu() : name(nullptr), header(nullptr), contents(nullptr), init(nullptr), onclear(nullptr), showtab(true) {}
 
     void gui(g3d_gui &g, bool firstpass) override
     {
         cgui = &g;
-        cgui->start(menustart, 0.03f, showtab ? &menutab : NULL);
+        cgui->start(menustart, 0.03f, showtab ? &menutab : nullptr);
         if(showtab) cgui->tab(header ? header : name, GUI_TITLE_COLOR);
         execute(contents);
         cgui->end();
-        cgui = NULL;
+        cgui = nullptr;
     }
 
     virtual void clear() 
     {
-        if(onclear) { freecode(onclear); onclear = NULL; }
+        if(onclear) { freecode(onclear); onclear = nullptr; }
     }
 };
 
@@ -55,7 +55,7 @@ struct delayedupdate
         float f;
         char *s;
     } val;
-    delayedupdate() : type(ACTION), id(NULL) { val.s = NULL; }
+    delayedupdate() : type(ACTION), id(nullptr) { val.s = nullptr; }
     ~delayedupdate() { if(type == STRING || type == ACTION) DELETEA(val.s); }
 
     void schedule(const char *s) { type = ACTION; val.s = newstring(s); }
@@ -69,7 +69,7 @@ struct delayedupdate
         {
             case INT: return val.i;
             case FLOAT: return int(val.f);
-            case STRING: return int(strtol(val.s, NULL, 0));
+            case STRING: return int(strtol(val.s, nullptr, 0));
             default: return 0;
         }
     }
@@ -205,7 +205,7 @@ void clearguis(int level = -1)
        if(m->onclear)
        {
            uint *action = m->onclear;
-           m->onclear = NULL;
+           m->onclear = nullptr;
            execute(action);
            freecode(action);
        }
@@ -217,7 +217,7 @@ void guionclear(char *action)
 {
     if(guistack.empty()) return;
     menu *m = guistack.last();
-    if(m->onclear) { freecode(m->onclear); m->onclear = NULL; } 
+    if(m->onclear) { freecode(m->onclear); m->onclear = nullptr; } 
     if(action[0]) m->onclear = compilecode(action);
 }
 
@@ -250,7 +250,7 @@ void guibutton(char *name, char *action, char *icon)
 {
     if(!cgui) return;
     bool hideicon = !strcmp(icon, "0");
-    int ret = cgui->button(name, GUI_BUTTON_COLOR, hideicon ? NULL : (icon[0] ? icon : (strstr(action, "showgui") ? "menu" : "action")));
+    int ret = cgui->button(name, GUI_BUTTON_COLOR, hideicon ? nullptr : (icon[0] ? icon : (strstr(action, "showgui") ? "menu" : "action")));
     if(ret&G3D_UP) 
     {
         updatelater.add().schedule(action[0] ? action : name);
@@ -293,7 +293,7 @@ void guicolor(int *color)
     if(cgui) 
     {   
         defformatstring(desc, "0x%06X", *color);
-        cgui->text(desc, *color, NULL);
+        cgui->text(desc, *color, nullptr);
     }
 }
 
@@ -305,7 +305,7 @@ void guitextbox(char *text, int *width, int *height, int *color)
 void guitext(char *name, char *icon)
 {
     bool hideicon = !strcmp(icon, "0");
-    if(cgui) cgui->text(name, !hideicon && icon[0] ? GUI_BUTTON_COLOR : GUI_TEXT_COLOR, hideicon ? NULL : (icon[0] ? icon : "info"));
+    if(cgui) cgui->text(name, !hideicon && icon[0] ? GUI_BUTTON_COLOR : GUI_TEXT_COLOR, hideicon ? nullptr : (icon[0] ? icon : "info"));
 }
 
 void guititle(char *name)
@@ -477,7 +477,7 @@ void guifield(char *var, int *maxlength, char *onchange)
 void guieditor(char *name, int *maxlength, int *height, int *mode)
 {
     if(!cgui) return;
-    cgui->field(name, GUI_BUTTON_COLOR, *maxlength ? *maxlength : 12, *height, NULL, *mode<=0 ? EDITORFOREVER : *mode);
+    cgui->field(name, GUI_BUTTON_COLOR, *maxlength ? *maxlength : 12, *height, nullptr, *mode<=0 ? EDITORFOREVER : *mode);
     //returns a non-NULL pointer (the currentline) when the user commits, could then manipulate via text* commands
 }
 
@@ -528,11 +528,11 @@ void newgui(char *name, char *contents, char *header, char *init)
     }
     if(header && header[0])
     {
-        char *end = NULL;
+        char *end = nullptr;
         int val = strtol(header, &end, 0);
         if(end && !*end)
         {
-            m->header = NULL;
+            m->header = nullptr;
             m->showtab = val != 0;
         }
         else
@@ -543,11 +543,11 @@ void newgui(char *name, char *contents, char *header, char *init)
     }
     else
     {
-        m->header = NULL;
+        m->header = nullptr;
         m->showtab = true;
     }
     m->contents = compilecode(contents);
-    m->init = init && init[0] ? compilecode(init) : NULL;
+    m->init = init && init[0] ? compilecode(init) : nullptr;
 }
 
 /// This function gets executed as we get connected.

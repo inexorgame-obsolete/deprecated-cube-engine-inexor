@@ -13,7 +13,7 @@ struct QuadNode
     uint filled;
     QuadNode *child[4];
 
-    QuadNode(int x, int y, int size) : x(x), y(y), size(size), filled(0) { loopi(4) child[i] = 0; }
+    QuadNode(int x, int y, int size) : x(x), y(y), size(size), filled(0) { loopi(4) child[i] = nullptr; }
 
     void clear()
     {
@@ -81,7 +81,7 @@ struct QuadNode
 
 static float wfwave, wfscroll, wfxscale, wfyscale;
 
-static void renderwaterfall(const materialsurface &m, float offset, const vec *normal = NULL)
+static void renderwaterfall(const materialsurface &m, float offset, const vec *normal = nullptr)
 {
     if(gle::attribbuf.empty())
     {
@@ -178,7 +178,7 @@ int findmaterial(const char *name)
 const char *findmaterialname(int mat)
 {
     loopi(sizeof(materials)/sizeof(materials[0])) if(materials[i].id == mat) return materials[i].name;
-    return NULL;
+    return nullptr;
 }
 
 const char *getmaterialdesc(int mat, const char *prefix)
@@ -414,7 +414,7 @@ void setupmaterials(int start, int len)
     for(int i = start; i < len; i++)
     {
         vtxarray *va = valist[i];
-        materialsurface *skip = NULL;
+        materialsurface *skip = nullptr;
         loopj(va->matsurfs)
         {
             materialsurface &m = va->matbuf[j];
@@ -640,7 +640,7 @@ GETMATIDXVAR(glass, color, const bvec &)
 
 VARP(glassenv, 0, 1, 1);
 
-static void drawglass(const materialsurface &m, float offset, const vec *normal = NULL)
+static void drawglass(const materialsurface &m, float offset, const vec *normal = nullptr)
 {
     if(gle::attribbuf.empty())
     {
@@ -685,7 +685,7 @@ void rendermaterials()
 
     glDisable(GL_CULL_FACE);
 
-    MSlot *mslot = NULL;
+    MSlot *mslot = nullptr;
     int lastorient = -1, lastmat = -1, usedwaterfall = -1;
     bool depth = true, blended = false;
     ushort envmapped = EMID_NONE;
@@ -916,7 +916,7 @@ void rendermaterials()
         switch(matvol)
         {
             case MAT_WATER:
-                renderwaterfall(m, 0.1f, waterfallenv ? &normals[m.orient] : NULL);
+                renderwaterfall(m, 0.1f, waterfallenv ? &normals[m.orient] : nullptr);
                 break;
 
             case MAT_LAVA:

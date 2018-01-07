@@ -416,7 +416,7 @@ void captureclientmode::rendergame()
             static vector<int> targets; // build a list of others who are interested in this
             targets.setsize(0);
             ai::checkothers(targets, d, ai::AI_S_DEFEND, ai::AI_T_AFFINITY, j, true);
-            fpsent *e = NULL;
+            fpsent *e = nullptr;
             int regen = !m_regencapture || d->health >= 100 ? 0 : 1;
             if(m_regencapture)
             {
@@ -459,7 +459,7 @@ void captureclientmode::rendergame()
             static vector<int> targets; // build a list of others who are interested in this
             targets.setsize(0);
             ai::checkothers(targets, d, ai::AI_S_DEFEND, ai::AI_T_AFFINITY, b.target, true);
-            fpsent *e = NULL;
+            fpsent *e = nullptr;
             loopi(numdynents()) if((e = (fpsent *)iterdynents(i)) && !e->ai && e->state == CS_ALIVE && isteam(d->team, e->team))
                 { // try to guess what non ai are doing
                     vec ep = e->feetpos();

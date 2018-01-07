@@ -14,7 +14,7 @@
 
 using namespace inexor::rendering::screen;
 
-Shader *particleshader = NULL, *particlenotextureshader = NULL;
+Shader *particleshader = nullptr, *particlenotextureshader = nullptr;
 
 VARP(particlesize, 20, 100, 500);
     
@@ -77,7 +77,7 @@ struct particleemitter
 };
 
 static vector<particleemitter> emitters;
-static particleemitter *seedemitter = NULL;
+static particleemitter *seedemitter = nullptr;
 
 void clearparticleemitters()
 {
@@ -170,11 +170,11 @@ struct partrenderer
     string info;
    
     partrenderer(const char *texname, int texclamp, int type, int collide = 0)
-        : tex(NULL), texname(texname), texclamp(texclamp), type(type), collide(collide)
+        : tex(nullptr), texname(texname), texclamp(texclamp), type(type), collide(collide)
     {
     }
     partrenderer(int type, int collide = 0)
-        : tex(NULL), texname(NULL), texclamp(0), type(type), collide(collide)
+        : tex(nullptr), texname(nullptr), texclamp(0), type(type), collide(collide)
     {
     }
     virtual ~partrenderer()
@@ -272,11 +272,11 @@ struct listrenderer : partrenderer
     listparticle *list;
 
     listrenderer(const char *texname, int texclamp, int type, int collide = 0) 
-        : partrenderer(texname, texclamp, type, collide), list(NULL)
+        : partrenderer(texname, texclamp, type, collide), list(nullptr)
     {
     }
     listrenderer(int type, int collide = 0)
-        : partrenderer(type, collide), list(NULL)
+        : partrenderer(type, collide), list(nullptr)
     {
     }
 
@@ -300,7 +300,7 @@ struct listrenderer : partrenderer
         }
         p->next = parempty;
         parempty = list;
-        list = NULL;
+        list = nullptr;
     }
     
     void resettracked(physent *owner) override 
@@ -338,7 +338,7 @@ struct listrenderer : partrenderer
         p->millis = lastmillis + emitoffset;
         p->color = bvec(color>>16, (color>>8)&0xFF, color&0xFF);
         p->size = size;
-        p->owner = NULL;
+        p->owner = nullptr;
         p->flags = 0;
         return p;
     }
@@ -353,7 +353,7 @@ struct listrenderer : partrenderer
     
     bool haswork() override 
     {
-        return (list != NULL);
+        return (list != nullptr);
     }
     
     virtual void startrender() = 0;
@@ -395,7 +395,7 @@ struct listrenderer : partrenderer
     }
 };
 
-listparticle *listrenderer::parempty = NULL;
+listparticle *listrenderer::parempty = nullptr;
 
 struct meterrenderer : listrenderer
 {
@@ -505,7 +505,7 @@ struct textrenderer : listrenderer
 
         textmatrix = &m;
         draw_text(p->text, 0, 0, p->color.r, p->color.g, p->color.b, blend);
-        textmatrix = NULL;
+        textmatrix = nullptr;
     } 
 };
 static textrenderer texts(PT_TEXT|PT_LERP);
@@ -625,7 +625,7 @@ struct varenderer : partrenderer
 
     varenderer(const char *texname, int type, int collide = 0) 
         : partrenderer(texname, 3, type, collide),
-          verts(NULL), parts(NULL), maxparts(0), numparts(0), lastupdate(-1), rndmask(0), vbo(0)
+          verts(nullptr), parts(nullptr), maxparts(0), numparts(0), lastupdate(-1), rndmask(0), vbo(0)
     {
         if(type & PT_HFLIP) rndmask |= 0x01;
         if(type & PT_VFLIP) rndmask |= 0x02;
@@ -686,7 +686,7 @@ struct varenderer : partrenderer
         p->millis = lastmillis + emitoffset;
         p->color = bvec(color>>16, (color>>8)&0xFF, color&0xFF);
         p->size = size;
-        p->owner = NULL;
+        p->owner = nullptr;
         p->flags = 0x80 | (rndmask ? rnd(0x80) & rndmask : 0);
         lastupdate = -1;
         return p;
@@ -796,7 +796,7 @@ struct varenderer : partrenderer
 
         if(!vbo) glGenBuffers_(1, &vbo);
         gle::bindvbo(vbo);
-        glBufferData_(GL_ARRAY_BUFFER, maxparts*4*sizeof(partvert), NULL, GL_STREAM_DRAW);
+        glBufferData_(GL_ARRAY_BUFFER, maxparts*4*sizeof(partvert), nullptr, GL_STREAM_DRAW);
         glBufferSubData_(GL_ARRAY_BUFFER, 0, numparts*4*sizeof(partvert), verts);
         gle::clearvbo();
     }
@@ -807,7 +807,7 @@ struct varenderer : partrenderer
         glBindTexture(GL_TEXTURE_2D, tex->id);
 
         gle::bindvbo(vbo);
-        const partvert *ptr = 0;
+        const partvert *ptr = nullptr;
         gle::vertexpointer(sizeof(partvert), ptr->pos.v);
         gle::texcoord0pointer(sizeof(partvert), ptr->tc.v);
         gle::colorpointer(sizeof(partvert), ptr->color.v);
@@ -945,7 +945,7 @@ void finddepthfxranges()
                 if(!numdepthfxranges)
                 {
                     numdepthfxranges = 1;
-                    depthfxowners[0] = NULL;
+                    depthfxowners[0] = nullptr;
                     depthfxranges[0] = 0;
                 }
             }
@@ -1473,7 +1473,7 @@ void seedparticles()
         seedemitter = &pe;
         for(int millis = 0; millis < seedmillis; millis += min(emitmillis, seedmillis/10))
             makeparticles(e);    
-        seedemitter = NULL;
+        seedemitter = nullptr;
         pe.lastemit = -seedmillis;
         pe.finalize();
     }

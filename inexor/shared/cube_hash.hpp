@@ -79,8 +79,8 @@ template<class H, class E, class K, class T> struct hashbase
         : size(size)
     {
         numelems = 0;
-        chunks = NULL;
-        unused = NULL;
+        chunks = nullptr;
+        unused = nullptr;
         chains = new chain *[size];
         memset(chains, 0, size*sizeof(chain *));
     }
@@ -190,7 +190,7 @@ template<class H, class E, class K, class T> struct hashbase
         if(!numelems) return;
         memset(chains, 0, size*sizeof(chain *));
         numelems = 0;
-        unused = NULL;
+        unused = nullptr;
         deletechunks();
     }
 

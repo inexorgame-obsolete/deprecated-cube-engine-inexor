@@ -44,7 +44,7 @@ struct Texture
     GLuint id;
     uchar *alphamask;
 
-    Texture() : alphamask(NULL) {}
+    Texture() : alphamask(nullptr) {}
 };
 
 /// Global used to specify this texture has not be found.

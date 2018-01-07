@@ -199,7 +199,7 @@ ICOMMAND(compactvslots, "", (),
     allchanged();
 });
 
-static void clampvslotoffset(VSlot &dst, Slot *slot = NULL)
+static void clampvslotoffset(VSlot &dst, Slot *slot = nullptr)
 {
     if(!slot) slot = dst.slot;
     if(slot && slot->sts.inrange(0))
@@ -246,7 +246,7 @@ void propagatevslot(VSlot *root, int changed)
     }
 }
 
-static void mergevslot(VSlot &dst, const VSlot &src, int diff, Slot *slot = NULL)
+static void mergevslot(VSlot &dst, const VSlot &src, int diff, Slot *slot = nullptr)
 {
     if(diff & (1 << VSLOT_SHPARAM)) loopv(src.params)
     {
@@ -396,7 +396,7 @@ bool unpackvslot(ucharbuf &buf, VSlot &dst, bool delta)
         {
             string name;
             getstring(name, buf);
-            SlotShaderParam p = { name[0] ? getshaderparamname(name) : NULL, -1,{ 0, 0, 0, 0 } };
+            SlotShaderParam p = { name[0] ? getshaderparamname(name) : nullptr, -1,{ 0, 0, 0, 0 } };
             loopi(4) p.val[i] = getfloat(buf);
             if(p.name) dst.params.add(p);
             break;
@@ -463,7 +463,7 @@ VSlot *Slot::findvariant(const VSlot &src, const VSlot &delta)
             comparevslot(*dst, delta, delta.changed))
             return dst;
     }
-    return NULL;
+    return nullptr;
 }
 
 
@@ -480,7 +480,7 @@ VSlot *Slot::setvariantchain(VSlot *vs)
     return variants;
 }
 
-VSlot::VSlot(Slot *slot, int index) : slot(slot), next(NULL), index(index), changed(0)
+VSlot::VSlot(Slot *slot, int index) : slot(slot), next(nullptr), index(index), changed(0)
 {
     reset();
     if(slot) slot->addvariant(this);
@@ -516,7 +516,7 @@ VSlot *editvslot(const VSlot &src, const VSlot &delta)
     {
         compactvslots();
         allchanged();
-        if(vslots.length() >= 0x10000) return NULL;
+        if(vslots.length() >= 0x10000) return nullptr;
     }
     if(autocompactvslots && ++clonedvslots >= autocompactvslots)
     {
@@ -599,7 +599,7 @@ static void mergedepth(ImageData &c, ImageData &z)
     );
 }
 
-static void addname(vector<char> &key, Slot::Tex &t, bool combined = false, const char *prefix = NULL)
+static void addname(vector<char> &key, Slot::Tex &t, bool combined = false, const char *prefix = nullptr)
 {
     if(combined) key.add('&');
     if(prefix) { while(*prefix) key.add(*prefix++); }
@@ -639,7 +639,7 @@ void Slot::addtexture(int type, const char *filename)
 Slot::Tex *Slot::findtexture(int type)
 {
     loopv(sts) if((1 << sts[i].type)&(1 << type)) return &sts[i];
-    return NULL;
+    return nullptr;
 }
 
 
@@ -654,7 +654,7 @@ void Slot::combinetextures(int index, Slot::Tex &t, bool msg, bool forceload)
     if(t.t) return;
     int compress = 0;
     ImageData ts;
-    if(!texturedata(ts, NULL, &t, msg, &compress)) { t.t = notexture; return; }
+    if(!texturedata(ts, nullptr, &t, msg, &compress)) { t.t = notexture; return; }
     switch(t.type)
     {
         case TEX_DIFFUSE:
@@ -664,7 +664,7 @@ void Slot::combinetextures(int index, Slot::Tex &t, bool msg, bool forceload)
                 Slot::Tex &a = sts[i];
                 if(a.combined != index) continue;
                 ImageData as;
-                if(!texturedata(as, NULL, &a, msg)) continue;
+                if(!texturedata(as, nullptr, &a, msg)) continue;
                 if(as.w != ts.w || as.h != ts.h) scaleimage(as, ts.w, ts.h);
                 switch(a.type)
                 {
@@ -770,7 +770,7 @@ Texture *Slot::loadthumbnail()
             addname(name, sts[glow], true, prefix);
         }
     }
-    VSlot *layer = vslot.layer ? &lookupvslot(vslot.layer, false) : NULL;
+    VSlot *layer = vslot.layer ? &lookupvslot(vslot.layer, false) : nullptr;
     if(layer)
     {
         if(layer->colorscale == vec(1, 1, 1)) addname(name, layer->slot->sts[0], true, "<layer>");
@@ -786,9 +786,9 @@ Texture *Slot::loadthumbnail()
     else
     {
         ImageData s, g, l;
-        texturedata(s, NULL, &sts[0], false);
-        if(glow >= 0) texturedata(g, NULL, &sts[glow], false);
-        if(layer) texturedata(l, NULL, &layer->slot->sts[0], false);
+        texturedata(s, nullptr, &sts[0], false);
+        if(glow >= 0) texturedata(g, nullptr, &sts[glow], false);
+        if(layer) texturedata(l, nullptr, &layer->slot->sts[0], false);
         if(!s.data) t = thumbnail = notexture;
         else
         {
@@ -815,7 +815,7 @@ Texture *Slot::loadthumbnail()
                     srcrow += l.pitch;
                 }
             }
-            t = newtexture(NULL, name.getbuf(), s, 0, false, false, true);
+            t = newtexture(nullptr, name.getbuf(), s, 0, false, false, true);
             t->xs = xs;
             t->ys = ys;
             thumbnail = t;
@@ -921,7 +921,7 @@ void autograss(char *name)
     if(slots.empty()) return;
     Slot &s = *slots.last();
     DELETEA(s.autograss);
-    s.autograss = name[0] ? newstring(makerelpath(getcurexecdir(), name, NULL, "<premul>")) : NULL;
+    s.autograss = name[0] ? newstring(makerelpath(getcurexecdir(), name, nullptr, "<premul>")) : nullptr;
 }
 COMMAND(autograss, "s");
 
@@ -966,7 +966,7 @@ void texlayer(int *layer, char *name, int *mode, float *scale)
     if(slots.empty()) return;
     Slot &s = *slots.last();
     s.variants->layer = *layer < 0 ? max(slots.length() - 1 + *layer, 0) : *layer;
-    s.layermaskname = name[0] ? newstring(path(makerelpath(getcurexecdir(), name))) : NULL;
+    s.layermaskname = name[0] ? newstring(path(makerelpath(getcurexecdir(), name))) : nullptr;
     s.layermaskmode = *mode;
     s.layermaskscale = *scale <= 0 ? 1 : *scale;
     propagatevslot(s.variants, 1 << VSLOT_LAYER);

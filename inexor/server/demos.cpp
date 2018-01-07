@@ -30,7 +30,7 @@ void adddemo()
     if(!demotmp) return;
     int len = (int)min(demotmp->size(), stream::offset((maxdemosize<<20) + 0x10000));
     demofile &d = demos.add();
-    time_t t = time(NULL);
+    time_t t = time(nullptr);
     char *timestr = ctime(&t), *trim = timestr + strlen(timestr);
     while(trim>timestr && iscubespace(*--trim)) *trim = '\0';
     formatstring(d.info, "%s: %s, %s, %.2f%s", timestr, modename(gamemode), smapname, len > 1024*1024 ? len/(1024*1024.f) : len/1024.0f, len > 1024*1024 ? "MB" : "kB");
@@ -80,7 +80,7 @@ void setupdemorecord()
     demotmp = opentempfile("demorecord", "w+b");
     if(!demotmp) return;
 
-    stream *f = opengzfile(NULL, "wb", demotmp);
+    stream *f = opengzfile(nullptr, "wb", demotmp);
     if(!f) { DELETEP(demotmp); return; }
 
     sendservmsg("recording demo");
@@ -95,7 +95,7 @@ void setupdemorecord()
     demorecord->write(&hdr, sizeof(demoheader));
 
     packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
-    welcomepacket(p, NULL);
+    welcomepacket(p, nullptr);
     writedemo(1, p.buf, p.len);
 }
 
@@ -130,7 +130,7 @@ static void freegetdemo(ENetPacket *packet)
     loopv(clients)
     {
         clientinfo *ci = clients[i];
-        if(ci->getdemo == packet) ci->getdemo = NULL;
+        if(ci->getdemo == packet) ci->getdemo = nullptr;
     }
 }
 
@@ -209,7 +209,7 @@ void readdemo()
         }
         lilswap(&chan, 1);
         lilswap(&len, 1);
-        ENetPacket *packet = enet_packet_create(NULL, len+1, 0);
+        ENetPacket *packet = enet_packet_create(nullptr, len+1, 0);
         if(!packet || demoplayback->read(packet->data+1, len)!=size_t(len))
         {
             if(packet) enet_packet_destroy(packet);

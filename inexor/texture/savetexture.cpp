@@ -10,7 +10,7 @@
 
 using namespace inexor::rendering::screen;
 
-void writepngchunk(stream *f, const char *type, uchar *data = NULL, uint len = 0)
+void writepngchunk(stream *f, const char *type, uchar *data = nullptr, uint len = 0)
 {
     f->putbig<uint>(len);
     f->write(type, 4);
@@ -55,9 +55,9 @@ void savepng(const char *filename, ImageData &image, bool flip)
     crc = crc32(crc, (const Bytef *)"IDAT", 4);
 
     z_stream z;
-    z.zalloc = NULL;
-    z.zfree = NULL;
-    z.opaque = NULL;
+    z.zalloc = nullptr;
+    z.zfree = nullptr;
+    z.opaque = nullptr;
 
     if(deflateInit(&z, compresspng) != Z_OK)
         goto error;

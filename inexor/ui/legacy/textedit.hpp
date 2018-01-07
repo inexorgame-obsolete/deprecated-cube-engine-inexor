@@ -15,8 +15,8 @@ struct editline
     char *text;
     int len, maxlen;
 
-    editline() : text(NULL), len(0), maxlen(0) {}
-    editline(const char *init) : text(NULL), len(0), maxlen(0)
+    editline() : text(nullptr), len(0), maxlen(0) {}
+    editline(const char *init) : text(nullptr), len(0), maxlen(0)
     {
         set(init);
     }
@@ -29,7 +29,7 @@ struct editline
         len = maxlen = 0;
     }
 
-    bool grow(int total, const char *fmt = NULL, ...) PRINTFARGS(3, 4)
+    bool grow(int total, const char *fmt = nullptr, ...) PRINTFARGS(3, 4)
     {
         if(total + 1 <= maxlen) return false;
         maxlen = (total + CHUNKSIZE) - total%CHUNKSIZE;
@@ -165,7 +165,7 @@ struct editor
     vector<editline> lines; // MUST always contain at least one line!
         
     editor(const char *name, int mode, const char *initval) : 
-        mode(mode), active(true), rendered(false), name(newstring(name)), filename(NULL),
+        mode(mode), active(true), rendered(false), name(newstring(name)), filename(nullptr),
         cx(0), cy(0), mx(-1), maxx(-1), maxy(-1), scrolly(0), linewrap(false), pixelwidth(-1), pixelheight(-1)
     {
         //printf("editor %08x '%s'\n", this, name);
@@ -177,7 +177,7 @@ struct editor
         //printf("~editor %08x '%s'\n", this, name);
         DELETEA(name);
         DELETEA(filename);
-        clear(NULL);
+        clear(nullptr);
     }
         
     void clear(const char *init = "")
@@ -198,7 +198,7 @@ struct editor
     void load()
     {
         if(!filename) return;
-        clear(NULL);
+        clear(nullptr);
         stream *file = openutf8file(filename, "r");
         if(file) 
         {
@@ -270,7 +270,7 @@ struct editor
     {
         if(b==this) return;
 
-        b->clear(NULL);
+        b->clear(nullptr);
         int sx, sy, ex, ey;
         region(sx, sy, ex, ey);
         loopi(1+ey-sy)
@@ -670,7 +670,7 @@ struct editor
 // a 'stack' where the last is the current focused editor
 static vector <editor*> editors;
 
-static editor *currentfocus() { return editors.length() ? editors.last() : NULL; }
+static editor *currentfocus() { return editors.length() ? editors.last() : nullptr; }
 
 static void readyeditors() 
 {
@@ -686,7 +686,7 @@ static void flusheditors()
     }
 }
 
-static editor *useeditor(const char *name, int mode, bool focus, const char *initval = NULL) 
+static editor *useeditor(const char *name, int mode, bool focus, const char *initval = nullptr) 
 {
     loopv(editors) if(strcmp(editors[i]->name, name) == 0) 
     {

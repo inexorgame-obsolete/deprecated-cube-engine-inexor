@@ -65,9 +65,9 @@ static inline void demanglesymbol(std::vector<std::string> &output, char *symbol
 static inline void demanglesymbol(std::vector<std::string> &output, char *symbol)
 {
     //before: ./module(function+0x15c) [0x8048a6d]
-    char* begin_name = NULL;
-    char* begin_offset = NULL;
-    char* end_offset = NULL;
+    char* begin_name = nullptr;
+    char* begin_offset = nullptr;
+    char* end_offset = nullptr;
 
     // find parentheses and +address offset surrounding the mangled name
     for(char *p = symbol; *p; ++p)

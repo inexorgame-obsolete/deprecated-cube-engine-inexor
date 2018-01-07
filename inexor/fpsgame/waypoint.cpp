@@ -201,7 +201,7 @@ namespace ai
         lastwpcache = waypoints.length();
 
 		    wpavoid.clear();
-		    loopv(waypoints) if(waypoints[i].weight < 0) wpavoid.avoidnear(NULL, waypoints[i].o.z + WAYPOINTRADIUS, waypoints[i].o, WAYPOINTRADIUS);
+		    loopv(waypoints) if(waypoints[i].weight < 0) wpavoid.avoidnear(nullptr, waypoints[i].o.z + WAYPOINTRADIUS, waypoints[i].o, WAYPOINTRADIUS);
     }
 
     struct wpcachestack
@@ -685,7 +685,7 @@ namespace ai
         if(!*mname) return false;
 
         string mapname;
-        getmapfilename(mname, NULL, mapname);
+        getmapfilename(mname, nullptr, mapname);
         nformatstring(wptname, MAXSTRLEN, "%s%s", mapname, ".wpt");
         return true;
     }

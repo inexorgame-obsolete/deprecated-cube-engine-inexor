@@ -126,14 +126,14 @@ struct UniformLoc
     const char *name, *blockname;
     int loc, version, binding, stride, offset, size;
     void *data;
-    UniformLoc(const char *name = NULL, const char *blockname = NULL, int binding = -1, int stride = -1) : name(name), blockname(blockname), loc(-1), version(-1), binding(binding), stride(stride), offset(-1), size(-1), data(NULL) {}
+    UniformLoc(const char *name = nullptr, const char *blockname = nullptr, int binding = -1, int stride = -1) : name(name), blockname(blockname), loc(-1), version(-1), binding(binding), stride(stride), offset(-1), size(-1), data(nullptr) {}
 };
 
 struct AttribLoc
 {
     const char *name;
     int loc;
-    AttribLoc(const char *name = NULL, int loc = -1) : name(name), loc(loc) {}
+    AttribLoc(const char *name = nullptr, int loc = -1) : name(name), loc(loc) {}
 };
 
 struct Shader
@@ -156,7 +156,7 @@ struct Shader
     vector<AttribLoc> attriblocs;
     const void *owner;
 
-    Shader() : name(NULL), vsstr(NULL), psstr(NULL), defer(NULL), type(SHADER_DEFAULT), program(0), vsobj(0), psobj(0), detailshader(NULL), variantshader(NULL), altshader(NULL), variantrows(NULL), standard(false), forced(false), used(false), reusevs(NULL), reuseps(NULL), owner(NULL)
+    Shader() : name(nullptr), vsstr(nullptr), psstr(nullptr), defer(nullptr), type(SHADER_DEFAULT), program(0), vsobj(0), psobj(0), detailshader(nullptr), variantshader(nullptr), altshader(nullptr), variantrows(nullptr), standard(false), forced(false), used(false), reusevs(nullptr), reuseps(nullptr), owner(nullptr)
     {
         loopi(MAXSHADERDETAIL) fastshader[i] = this;
     }
@@ -171,12 +171,12 @@ struct Shader
     }
 
     void fixdetailshader(bool force = true, bool recurse = true);
-    void allocparams(Slot *slot = NULL);
+    void allocparams(Slot *slot = nullptr);
     void setslotparams(Slot &slot);
     void setslotparams(Slot &slot, VSlot &vslot);
     void bindprograms();
 
-    void flushparams(Slot *slot = NULL)
+    void flushparams(Slot *slot = nullptr)
     {
         if(!used) { allocparams(slot); used = true; }
         loopv(globalparams) globalparams[i].flush();
@@ -186,7 +186,7 @@ struct Shader
 
     bool invalid() const { return (type&SHADER_INVALID)!=0; }
     bool deferred() const { return (type&SHADER_DEFERRED)!=0; }
-    bool loaded() const { return detailshader!=NULL; }
+    bool loaded() const { return detailshader!=nullptr; }
 
     static inline bool isnull(const Shader *s) { return !s; }
 
@@ -200,9 +200,9 @@ struct Shader
 
     Shader *getvariant(int col, int row) const
     {
-        if(row < 0 || row >= MAXVARIANTROWS || col < 0 || !variantrows) return NULL;
+        if(row < 0 || row >= MAXVARIANTROWS || col < 0 || !variantrows) return nullptr;
         int start = variantrows[row], end = variantrows[row+1];
-        return col < end - start ? variants[start + col] : NULL;
+        return col < end - start ? variants[start + col] : nullptr;
     }
 
     bool hasoption(int row)
@@ -298,7 +298,7 @@ struct GlobalShaderParam
     const char *name;
     GlobalShaderParamState *param;
 
-    GlobalShaderParam(const char *name) : name(name), param(NULL) {}
+    GlobalShaderParam(const char *name) : name(name), param(nullptr) {}
 
     GlobalShaderParamState *resolve()
     {
@@ -362,15 +362,15 @@ struct LocalShaderParam
     LocalShaderParamState *resolve()
     {
         Shader *s = Shader::lastshader;
-        if(!s) return NULL;
+        if(!s) return nullptr;
         if(!s->localparamremap.inrange(loc))
         {
             extern int getlocalparam(const char *name);
             if(loc == -1) loc = getlocalparam(name);
-            if(!s->localparamremap.inrange(loc)) return NULL;
+            if(!s->localparamremap.inrange(loc)) return nullptr;
         }
         uchar remap = s->localparamremap[loc];
-        return s->localparams.inrange(remap) ? &s->localparams[remap] : NULL;
+        return s->localparams.inrange(remap) ? &s->localparams[remap] : nullptr;
     }
 
     void setf(float x = 0, float y = 0, float z = 0, float w = 0)

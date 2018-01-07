@@ -29,7 +29,7 @@ using namespace inexor::rendering::screen;
 extern void writeinitcfg();
 
 /// local player
-dynent *player = NULL;
+dynent *player = nullptr;
 
 int initing = NOT_INITING;
 
@@ -188,20 +188,20 @@ void writeinitcfg()
 /// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 /// main menu background and loading screen renderer
 
-static Texture *logo_texture = NULL;
-static Texture *background_texture = NULL;
+static Texture *logo_texture = nullptr;
+static Texture *background_texture = nullptr;
 SVARFP(background, "interface/background.png", background_texture = NULL;);
 SVARFP(logo, "interface/logo.png", logo_texture = NULL;);
 
-static Texture *mapshotframe_texture = NULL;
-static Texture *loadingbar_texture = NULL;
-static Texture *loadingframe_texture = NULL;
+static Texture *mapshotframe_texture = nullptr;
+static Texture *loadingbar_texture = nullptr;
+static Texture *loadingframe_texture = nullptr;
 
 float loadprogress = 0;
 string backgroundcaption = "";
 string backgroundmapname = "";
-char *backgroundmapinfo = NULL;
-Texture *backgroundmapshot = NULL;
+char *backgroundmapinfo = nullptr;
+Texture *backgroundmapshot = nullptr;
 
 /// create a resolution suggestion by scaling down the larger side of the 2 screen dimensions.
 /// @warning this is a call by reference function!
@@ -222,7 +222,7 @@ static void getbackgroundres(int &w, int &h)
 void restorebackground()
 {
     if(renderedframe) return;
-    renderbackground(backgroundcaption[0] ? backgroundcaption : NULL, backgroundmapshot, backgroundmapname[0] ? backgroundmapname : NULL, backgroundmapinfo, true);
+    renderbackground(backgroundcaption[0] ? backgroundcaption : nullptr, backgroundmapshot, backgroundmapname[0] ? backgroundmapname : nullptr, backgroundmapinfo, true);
 }
 
 
@@ -688,7 +688,7 @@ int main(int argc, char **argv)
     // Ensure the correct locale
     setlocale(LC_ALL, "en_US.utf8");
 
-    char *initscript = NULL;
+    char *initscript = nullptr;
 
     // Initialize the metasystem
     // Remote Procedure Call: communication with the scripting engine
@@ -766,7 +766,7 @@ int main(int argc, char **argv)
 
     Log.start_stop->info("init: world");
     camera1 = player = game::iterdynents(0);
-    emptymap(0, true, NULL, false);
+    emptymap(0, true, nullptr, false);
 
     Log.start_stop->info("init: sound");
     initsound();

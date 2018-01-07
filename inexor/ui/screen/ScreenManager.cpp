@@ -34,7 +34,7 @@ ScreenManager::ScreenManager()
       screenh(0),
       desktopw(0),
       desktoph(0),
-      sdl_window(0),
+      sdl_window(nullptr),
       initwindowpos(false),
       curgamma(100)
 {
@@ -87,12 +87,12 @@ void ScreenManager::setupscreen(int &useddepthbits, int &usedfsaa)
     if (glcontext)
     {
         SDL_GL_DeleteContext(glcontext);
-        glcontext = NULL;
+        glcontext = nullptr;
     }
     if (sdl_window)
     {
         SDL_DestroyWindow(sdl_window);
-        sdl_window = NULL;
+        sdl_window = nullptr;
     }
 
     SDL_DisplayMode desktop;

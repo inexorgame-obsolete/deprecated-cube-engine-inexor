@@ -235,7 +235,7 @@ struct clientinfo
     ENetPacket *getdemo, *getmap, *clipboard;
     int lastclipboard, needclipboard;
 
-    clientinfo() : getdemo(NULL), getmap(NULL), clipboard(NULL) { reset(); }
+    clientinfo() : getdemo(nullptr), getmap(nullptr), clipboard(nullptr) { reset(); }
     ~clientinfo() { events.deletecontents(); cleanclipboard(); }
 
     void addevent(gameevent *e)
@@ -311,7 +311,7 @@ struct clientinfo
 
     void cleanclipboard(bool fullclean = true)
     {
-        if(clipboard) { if(--clipboard->referenceCount <= 0) enet_packet_destroy(clipboard); clipboard = NULL; }
+        if(clipboard) { if(--clipboard->referenceCount <= 0) enet_packet_destroy(clipboard); clipboard = nullptr; }
         if(fullclean) lastclipboard = 0;
     }
 
@@ -381,10 +381,10 @@ extern void addban(uint ip, int expire);
 
 extern void clearbans(clientinfo *actor);
 extern void check_bans_expired();
-extern bool trykick(clientinfo *ci, int victim, const char *reason = NULL, bool trial = false);
+extern bool trykick(clientinfo *ci, int victim, const char *reason = nullptr, bool trial = false);
 /// Kick all clients with this IP
 /// (including bots and people in the same LAN)
-extern void kickclients(uint ip, clientinfo *actor = NULL, int priv = PRIV_NONE);
+extern void kickclients(uint ip, clientinfo *actor = nullptr, int priv = PRIV_NONE);
 
 } // ns server
 

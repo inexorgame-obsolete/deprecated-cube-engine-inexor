@@ -52,7 +52,7 @@ int resolverloop(void * data)
             resolverresult &rr = resolverresults.add();
             rr.query = rt->query;
             rr.address = address;
-            rt->query = NULL;
+            rt->query = nullptr;
             rt->starttime = 0;
             SDL_CondSignal(resultcond);
         }
@@ -71,7 +71,7 @@ void resolverinit()
     loopi(RESOLVERTHREADS)
     {
         resolverthread &rt = resolverthreads.add();
-        rt.query = NULL;
+        rt.query = nullptr;
         rt.starttime = 0;
         rt.thread = SDL_CreateThread(resolverloop, "resolver", &rt);
     }
@@ -85,7 +85,7 @@ void resolverstop(resolverthread &rt)
     {
         rt.thread = SDL_CreateThread(resolverloop, "resolver", &rt);
     }
-    rt.query = NULL;
+    rt.query = nullptr;
     rt.starttime = 0;
     SDL_UnlockMutex(resolvermutex);
 } 

@@ -23,7 +23,7 @@ namespace aiman
         {
             clientinfo *ci = clients[i];
             if(ci->state.state==CS_SPECTATOR || !ci->team[0]) continue; // skip spectators
-            teamscore *t = NULL;
+            teamscore *t = nullptr;
             loopvj(teams) 
 			{
 				if(!strcmp(teams[j].team, ci->team))
@@ -53,7 +53,7 @@ namespace aiman
         while(reassign.length() && teams.length() && teams[0].score > teams.last().score + 1)
         {
             teamscore &t = teams.last();
-            clientinfo *bot = NULL;
+            clientinfo *bot = nullptr;
             loopv(reassign) if(reassign[i] && !strcmp(reassign[i]->team, teams[0].team))
             {
                 bot = reassign.removeunordered(i);
@@ -92,9 +92,9 @@ namespace aiman
     }
 
 	// 
-	clientinfo *findaiclient(clientinfo *exclude = NULL)
+	clientinfo *findaiclient(clientinfo *exclude = nullptr)
 	{
-        clientinfo *least = NULL;
+        clientinfo *least = nullptr;
 		loopv(clients)
 		{
 			clientinfo *ci = clients[i];
@@ -132,7 +132,7 @@ namespace aiman
         else
 		{
 			cn = bots.length();
-			bots.add(NULL);
+			bots.add(nullptr);
 		}
     	const char *team = m_teammode ? chooseteam() : "";
         if(!bots[cn]) bots[cn] = new clientinfo;
@@ -199,7 +199,7 @@ namespace aiman
 		}
 	}
 
-	void shiftai(clientinfo *ci, clientinfo *owner = NULL)
+	void shiftai(clientinfo *ci, clientinfo *owner = nullptr)
 	{
         if(ci->ownernum >= 0 && !ci->aireinit && smode) smode->leavegame(ci, true);
         clientinfo *prevowner = get_client_info(ci->ownernum, false);
@@ -217,7 +217,7 @@ namespace aiman
 
 	bool reassignai()
 	{
-        clientinfo *hi = NULL, *lo = NULL;
+        clientinfo *hi = nullptr, *lo = nullptr;
 		loopv(clients)
 		{
 			clientinfo *ci = clients[i];
@@ -302,7 +302,7 @@ namespace aiman
     {
         dorefresh = true;
         loopv(clients) if(clients[i]->privilege) return;
-        if(botbalance != (serverbotbalance != 0)) setbotbalance(NULL, serverbotbalance != 0);
+        if(botbalance != (serverbotbalance != 0)) setbotbalance(nullptr, serverbotbalance != 0);
     }
 
 	// a new human player connected

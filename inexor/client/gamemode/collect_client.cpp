@@ -105,7 +105,7 @@ namespace game {
             vec tokenpos(b.tokenpos);
             tokenpos.z -= theight.z/2 + sinf(lastmillis/100.0f)/20;
             float alpha = player1->state == CS_ALIVE && player1->tokens <= 0 && lastmillis < b.laststeal + STEALTOKENTIME ? 0.5f : 1.0f;
-            rendermodel(&b.light, b.team==team ? "game/skull/blue" : "game/skull/red", ANIM_MAPMODEL|ANIM_LOOP, tokenpos, lastmillis/10.0f, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_OCCLUDED, NULL, NULL, 0, 0, alpha);
+            rendermodel(&b.light, b.team==team ? "game/skull/blue" : "game/skull/red", ANIM_MAPMODEL|ANIM_LOOP, tokenpos, lastmillis/10.0f, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_OCCLUDED, nullptr, nullptr, 0, 0, alpha);
             formatstring(b.info, "%d", totalscore(b.team));
             vec above(b.tokenpos);
             above.z += TOKENHEIGHT;
@@ -118,7 +118,7 @@ namespace game {
             p.z += 1+sinf(lastmillis/100.0+t.o.x+t.o.y)/20;
             rendermodel(&t.light, t.team == team || (t.team < 0 && -t.team != team) ? "game/skull/blue" : "game/skull/red", ANIM_MAPMODEL|ANIM_LOOP, p, lastmillis/10.0f, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_DIST | MDL_CULL_OCCLUDED);
         }
-        fpsent *exclude = isthirdperson() ? NULL : hudplayer();
+        fpsent *exclude = isthirdperson() ? nullptr : hudplayer();
         loopv(players)
         {
             fpsent *d = players[i];
@@ -238,7 +238,7 @@ namespace game {
         token *t = findtoken(id);
         if(t)
         {
-            inexor::sound::playsound(t->team == team || (t->team < 0 && -t->team != team) ? S_ITEMAMMO : S_ITEMHEALTH, d!=player1 ? &d->o : NULL);
+            inexor::sound::playsound(t->team == team || (t->team < 0 && -t->team != team) ? S_ITEMAMMO : S_ITEMHEALTH, d!=player1 ? &d->o : nullptr);
             removetoken(id);
         }
         d->tokens = total;
@@ -246,7 +246,7 @@ namespace game {
 
     collectmode_common::token *collectclientmode::droptoken(fpsent *d, int id, const vec &o, int team, int yaw, int n) {
         vec pos = movetoken(o, yaw);
-        if(pos.z < 0) return NULL;
+        if(pos.z < 0) return nullptr;
         token &t = droptoken(id, pos, team, lastmillis);
         lightreaching(vec(t.o).add(vec(0, 0, TOKENHEIGHT)), t.light.color, t.light.dir, true);
         if(!n) inexor::sound::playsound(S_ITEMSPAWN, d ? &d->o : &pos);
@@ -266,7 +266,7 @@ namespace game {
     collectclientmode::stealtoken(fpsent *d, int id, const vec &o, int team, int yaw, int n, int basenum, int enemyteam,
                                   int score) {
         if(!n) setscore(enemyteam, score);
-        token *t = droptoken(NULL, id, o, team, yaw, n);
+        token *t = droptoken(nullptr, id, o, team, yaw, n);
         if(bases.inrange(basenum))
         {
             base &b = bases[basenum];

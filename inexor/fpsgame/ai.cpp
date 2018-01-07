@@ -277,7 +277,7 @@ namespace ai
 
     bool enemy(fpsent *d, aistate &b, const vec &pos, float guard = SIGHTMIN, int pursue = 0)
     {
-        fpsent *t = NULL;
+        fpsent *t = nullptr;
         vec dp = d->headpos();
         float mindist = guard*guard, bestdist = 1e16f;
         loopv(players)
@@ -363,7 +363,7 @@ namespace ai
         while(true)
     {
             float dist = 1e16f;
-        fpsent *t = NULL;
+        fpsent *t = nullptr;
         loopv(players)
         {
             fpsent *e = players[i];
@@ -1040,7 +1040,7 @@ namespace ai
                 else enemyok = false;
             }
             else if(!enemyok && target(d, b, d->gunselect == GUN_FIST ? 1 : 0, false, SIGHTMIN))
-                enemyok = (e = getclient(d->ai->enemy)) != NULL;
+                enemyok = (e = getclient(d->ai->enemy)) != nullptr;
         }
         if(enemyok)
         {

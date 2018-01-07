@@ -6,10 +6,10 @@
 
 
 static hashnameset<font> fonts;
-static font *fontdef = NULL;
+static font *fontdef = nullptr;
 static int fontdeftex = 0;
 
-font *curfont = NULL;
+font *curfont = nullptr;
 int curfonttex = 0;
 
 void newfont(char *name, char *tex, int *defaultw, int *defaulth)
@@ -181,7 +181,7 @@ void draw_textf(const char *fstr, int left, int top, ...)
     draw_text(str, left, top);
 }
 
-const matrix4x3 *textmatrix = NULL;
+const matrix4x3 *textmatrix = nullptr;
 
 static float draw_char(Texture *&tex, int c, float x, float y, float scale)
 {

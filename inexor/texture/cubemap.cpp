@@ -80,17 +80,17 @@ Texture *cubemaploadwildcard(Texture *t, const char *name, bool mipit, bool msg,
             concatstring(sname, wildcard + 1);
         }
         ImageData &s = surface[i];
-        texturedata(s, sname, NULL, msg, &compress);
-        if(!s.data) return NULL;
+        texturedata(s, sname, nullptr, msg, &compress);
+        if(!s.data) return nullptr;
         if(s.w != s.h)
         {
             if(msg) Log.std->error("cubemap texture {} does not have square size", sname);
-            return NULL;
+            return nullptr;
         }
         if(s.compressed ? s.compressed != surface[0].compressed || s.w != surface[0].w || s.h != surface[0].h || s.levels != surface[0].levels : surface[0].compressed || s.bpp != surface[0].bpp)
         {
             if(msg) Log.std->error("cubemap texture {} doesn't match other sides' format", sname);
-            return NULL;
+            return nullptr;
         }
         tsize = max(tsize, max(s.w, s.h));
     }
@@ -160,19 +160,19 @@ Texture *cubemapload(const char *name, bool mipit, bool msg, bool transient)
     string pname;
     inexor::filesystem::getmediapath(pname, MAXSTRLEN, name, DIR_SKYBOX);
 
-    Texture *t = NULL;
+    Texture *t = nullptr;
     if(!strchr(pname, '*'))
     {
         defformatstring(jpgname, "%s_*.jpg", pname);
-        t = cubemaploadwildcard(NULL, jpgname, mipit, false, transient);
+        t = cubemaploadwildcard(nullptr, jpgname, mipit, false, transient);
         if(!t)
         {
             defformatstring(pngname, "%s_*.png", pname);
-            t = cubemaploadwildcard(NULL, pngname, mipit, false, transient);
+            t = cubemaploadwildcard(nullptr, pngname, mipit, false, transient);
             if(!t && msg) Log.std->error("could not load envmap {}", name);
         }
     }
-    else t = cubemaploadwildcard(NULL, pname, mipit, msg, transient);
+    else t = cubemaploadwildcard(nullptr, pname, mipit, msg, transient);
     return t;
 }
 
@@ -186,14 +186,14 @@ struct envmap
 };
 
 static vector<envmap> envmaps;
-static Texture *skyenvmap = NULL;
+static Texture *skyenvmap = nullptr;
 
 void clearenvmaps()
 {
     if(skyenvmap)
     {
         if(skyenvmap->type&Texture::TRANSIENT) cleanuptexture(skyenvmap);
-        skyenvmap = NULL;
+        skyenvmap = nullptr;
     }
     loopv(envmaps) glDeleteTextures(1, &envmaps[i].tex);
     envmaps.shrink(0);
@@ -261,7 +261,7 @@ void initenvmaps()
     clearenvmaps();
     extern SharedVar<char *> skybox;
     char *da = *skybox; //TODO fix
-    skyenvmap = da[0] ? cubemapload(da, true, false, true) : NULL;
+    skyenvmap = da[0] ? cubemapload(da, true, false, true) : nullptr;
     const vector<extentity *> &ents = entities::getents();
     loopv(ents)
     {

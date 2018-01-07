@@ -33,7 +33,7 @@ const char *getmediadir(int type)
     case DIR_SOUND:     return *sounddir;
     case DIR_MUSIC:     return *musicdir;
     }
-    return NULL;
+    return nullptr;
 }
 
 Path getmediapath(const std::string &basename, int type)

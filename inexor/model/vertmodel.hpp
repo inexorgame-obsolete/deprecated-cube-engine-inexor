@@ -29,7 +29,7 @@ struct vertmodel : animmodel
         int voffset, eoffset, elen;
         ushort minvert, maxvert;
 
-        vertmesh() : verts(0), tcverts(0), bumpverts(0), tris(0)
+        vertmesh() : verts(nullptr), tcverts(nullptr), bumpverts(nullptr), tris(nullptr)
         {
         }
 
@@ -159,8 +159,8 @@ struct vertmodel : animmodel
         {
             const vert * RESTRICT vert1 = &verts[as.cur.fr1 * numverts],
                        * RESTRICT vert2 = &verts[as.cur.fr2 * numverts],
-                       * RESTRICT pvert1 = as.interp<1 ? &verts[as.prev.fr1 * numverts] : NULL, 
-                       * RESTRICT pvert2 = as.interp<1 ? &verts[as.prev.fr2 * numverts] : NULL;
+                       * RESTRICT pvert1 = as.interp<1 ? &verts[as.prev.fr1 * numverts] : nullptr, 
+                       * RESTRICT pvert2 = as.interp<1 ? &verts[as.prev.fr2 * numverts] : nullptr;
             #define ipvert(attrib)   v.attrib.lerp(vert1[i].attrib, vert2[i].attrib, as.cur.t)
             #define ipbvert(attrib, type)  v.attrib.lerp(bvert1[i].attrib, bvert2[i].attrib, as.cur.t)
             #define ipvertp(attrib)  v.attrib.lerp(pvert1[i].attrib, pvert2[i].attrib, as.prev.t).lerp(vec().lerp(vert1[i].attrib, vert2[i].attrib, as.cur.t), as.interp)
@@ -175,8 +175,8 @@ struct vertmodel : animmodel
             {
                 const bumpvert * RESTRICT bvert1 = &bumpverts[as.cur.fr1 * numverts],
                                * RESTRICT bvert2 = &bumpverts[as.cur.fr2 * numverts],
-                               * RESTRICT bpvert1 = as.interp<1 ? &bumpverts[as.prev.fr1 * numverts] : NULL, 
-                               * RESTRICT bpvert2 = as.interp<1 ? &bumpverts[as.prev.fr2 * numverts] : NULL;
+                               * RESTRICT bpvert1 = as.interp<1 ? &bumpverts[as.prev.fr1 * numverts] : nullptr, 
+                               * RESTRICT bpvert2 = as.interp<1 ? &bumpverts[as.prev.fr2 * numverts] : nullptr;
                 if(as.interp<1) iploop(vvertbump, { ipvertp(pos); ipbvertp(tangent, vec4); })
                 else iploop(vvertbump, { ipvert(pos); ipbvert(tangent, vec4); })
             }
@@ -205,7 +205,7 @@ struct vertmodel : animmodel
         char *name;
         matrix4x3 transform;
 
-        tag() : name(NULL) {}
+        tag() : name(nullptr) {}
         ~tag() { DELETEA(name); }
     };
 
@@ -224,7 +224,7 @@ struct vertmodel : animmodel
         int vlen, vertsize;
         uchar *vdata;
 
-        vertmeshgroup() : numframes(0), tags(NULL), numtags(0), edata(NULL), ebuf(0), vtangents(false), vlen(0), vertsize(0), vdata(NULL) 
+        vertmeshgroup() : numframes(0), tags(nullptr), numtags(0), edata(nullptr), ebuf(0), vtangents(false), vlen(0), vertsize(0), vdata(nullptr) 
         {
         }
 
@@ -324,7 +324,7 @@ struct vertmodel : animmodel
 
         void bindvbo(const animstate *as, vbocacheentry &vc)
         {
-            vvert *vverts = 0;
+            vvert *vverts = nullptr;
             bindpos(ebuf, vc.vbuf, &vverts->pos, vertsize);
             if(as->cur.anim&ANIM_NOSKIN)
             {
@@ -337,13 +337,13 @@ struct vertmodel : animmodel
                 if(vtangents)
                 {
                     if(enablenormals) disablenormals();
-                    vvertbump *vvertbumps = 0;
+                    vvertbump *vvertbumps = nullptr;
                     bindtangents(&vvertbumps->tangent, vertsize);
                 }
                 else
                 {
                     if(enabletangents) disabletangents();
-                    vvertn *vvertns = 0;
+                    vvertn *vvertns = nullptr;
                     bindnormals(&vvertns->norm, vertsize);
                 }
 
@@ -381,7 +381,7 @@ struct vertmodel : animmodel
 
             bool tangents = p->tangents();
             if(tangents!=vtangents) { cleanup(); disablevbo(); }
-            vbocacheentry *vc = NULL;
+            vbocacheentry *vc = nullptr;
             if(numframes<=1) vc = vbocache;
             else
             {

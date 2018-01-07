@@ -2,6 +2,7 @@
 
 #include <exception>
 #include <string>
+#include <utility>
 #include "inexor/util/StringFormatter.hpp"
 
 namespace inexor {
@@ -39,7 +40,7 @@ public:
     /// message
     ///
     /// @param s The error message
-    InexorException(const std::string &s) : what_(s) {}
+    InexorException(std::string s) : what_(std::move(s)) {}
 
     /// Initialize this exception with a custom error
     /// message in a string

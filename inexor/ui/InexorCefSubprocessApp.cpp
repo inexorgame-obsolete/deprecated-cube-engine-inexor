@@ -58,7 +58,7 @@ void InexorCefSubprocessApp::FireUiEvent(std::string name, const CefV8ValueList&
 {
     for (auto const &event_handler : event_handlers) {
         // Don't handle exceptions of the event handlers
-        CefRefPtr<CefV8Value> retval = event_handler.first->ExecuteFunctionWithContext(event_handler.second, NULL, arguments_list);
+        CefRefPtr<CefV8Value> retval = event_handler.first->ExecuteFunctionWithContext(event_handler.second, nullptr, arguments_list);
     }
 }
 

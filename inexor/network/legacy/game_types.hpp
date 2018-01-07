@@ -236,6 +236,6 @@ inline const char *disconnectreason(int reason)
         case DISC_TIMEOUT: return "connection timed out";
         case DISC_OVERFLOW: return "overflow";
         case DISC_PASSWORD: return "invalid password";
-        default: return NULL;
+        default: return nullptr;
     }
 }

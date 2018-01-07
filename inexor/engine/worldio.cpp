@@ -73,7 +73,7 @@ static void fixent(entity &e, int version)
 bool loadents(const char *fname, vector<entity> &ents, uint *crc)
 {
     string mapname, ogzname;
-    getmapfilename(fname, NULL, mapname);
+    getmapfilename(fname, nullptr, mapname);
     formatstring(ogzname, "%s/%s.ogz", *mapdir, mapname);
     path(ogzname);
     stream *f = opengzfile(ogzname, "rb");
@@ -162,7 +162,7 @@ bool loadents(const char *fname, vector<entity> &ents, uint *crc)
         if(eif > 0) f->seek(eif, SEEK_CUR);
         if(samegame)
         {
-            entities::readent(e, NULL, hdr.version);
+            entities::readent(e, nullptr, hdr.version);
         }
         else if(e.type>=ET_GAMESPECIFIC || hdr.version<=14)
         {
@@ -199,7 +199,7 @@ VARP(savebak, 0, 2, 2);
 /// @param fname file name (if not specified: "untitled")
 /// @see load_world
 /// @see save_world
-void setmapfilenames(const char *fname, const char *cname = 0)
+void setmapfilenames(const char *fname, const char *cname = nullptr)
 {
     string mapname;
     getmapfilename(fname, cname, mapname);
@@ -225,7 +225,7 @@ void mapcfgname()
     if(!*mname) mname = "untitled";
 
     string mapname;
-    getmapfilename(mname, NULL, mapname);
+    getmapfilename(mname, nullptr, mapname);
 	defformatstring(cfgname, "%s.cfg", mapname);
     path(cfgname);
     result(cfgname);
@@ -483,9 +483,9 @@ void convertoldsurfaces(cube &c, const ivec &co, int size, surfacecompat *srcsur
     loopi(6) if((hassurfs|hasnorms|hasmerges)&(1<<i))
     {
         surfaceinfo &dst = dstsurfs[i];
-        vertinfo *curverts = NULL;
+        vertinfo *curverts = nullptr;
         int numverts = 0;
-        surfacecompat *src = NULL, *blend = NULL;
+        surfacecompat *src = nullptr, *blend = nullptr;
         if(hassurfs&(1<<i))
         {
             src = &srcsurfs[i];
@@ -825,7 +825,7 @@ void loadc(stream *f, cube &c, const ivec &co, int size, bool &failed)
         }    
     }
 
-    c.children = (haschildren ? loadchildren(f, co, size>>1, failed) : NULL);
+    c.children = (haschildren ? loadchildren(f, co, size>>1, failed) : nullptr);
 }
 
 /// load all 8 children from a octree cube (from a file stream)
@@ -984,13 +984,13 @@ void loadvslots(stream *f, int numvslots)
         int changed = f->getlil<int>();
         if(changed < 0)
         {
-            loopi(-changed) vslots.add(new VSlot(NULL, vslots.length()));
+            loopi(-changed) vslots.add(new VSlot(nullptr, vslots.length()));
             numvslots += changed;
         }
         else
         {
             prev[vslots.length()] = f->getlil<int>();
-            loadvslot(f, *vslots.add(new VSlot(NULL, vslots.length())), changed);    
+            loadvslot(f, *vslots.add(new VSlot(nullptr, vslots.length())), changed);    
             numvslots--;
         }
     }
@@ -1245,7 +1245,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
     renderprogress(0, "clearing world...");
 
     freeocta(worldroot);
-    worldroot = NULL;
+    worldroot = nullptr;
 
     int worldscale = 0;
     while(1<<worldscale < hdr.worldsize) worldscale++;
@@ -1336,7 +1336,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
 
     vector<extentity *> &ents = entities::getents();
     int einfosize = entities::extraentinfosize();
-    char *ebuf = einfosize > 0 ? new char[einfosize] : NULL;
+    char *ebuf = einfosize > 0 ? new char[einfosize] : nullptr;
     loopi(min(hdr.numents, MAXENTS))
     {
         extentity &e = *entities::newentity();
@@ -1483,8 +1483,8 @@ void writeobj(char *name)
     loopv(valist)
     {
         vtxarray &va = *valist[i];
-        ushort *edata = NULL;
-        vertex *vdata = NULL;
+        ushort *edata = nullptr;
+        vertex *vdata = nullptr;
         if(!readva(&va, edata, vdata)) continue;
         ushort *idx = edata;
         loopj(va.texs)

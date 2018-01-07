@@ -72,7 +72,7 @@ class ScreenManager
 
         /// Simple DirectMedia Window and Layer
         SDL_Window *sdl_window;
-        SDL_GLContext glcontext = NULL;
+        SDL_GLContext glcontext = nullptr;
 
     private:
 

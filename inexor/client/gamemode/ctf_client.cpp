@@ -35,7 +35,7 @@ namespace game {
         f.droptime = 0;
         loopv(players) players[i]->flagpickup &= ~(1<<f.id);
         f.vistime = vistime;
-        f.owner = NULL;
+        f.owner = nullptr;
         f.owner_id = -1;
     }
 
@@ -191,14 +191,14 @@ namespace game {
             float angle;
             vec pos = interpflagpos(f, angle);
             if(m_hold)
-                rendermodel(!f.droptime && !f.owner ? &f.light : NULL, flagname, ANIM_MAPMODEL|ANIM_LOOP,
+                rendermodel(!f.droptime && !f.owner ? &f.light : nullptr, flagname, ANIM_MAPMODEL|ANIM_LOOP,
                             pos, angle, 0,
                             MDL_GHOST | MDL_CULL_VFC | (f.droptime || f.owner ? MDL_LIGHT : 0),
-                            NULL, NULL, 0, 0, 0.5f + 0.5f*(2*fabs(fmod(lastmillis/1000.0f, 1.0f) - 0.5f)));
-            rendermodel(!f.droptime && !f.owner ? &f.light : NULL, flagname, ANIM_MAPMODEL|ANIM_LOOP,
+                            nullptr, nullptr, 0, 0, 0.5f + 0.5f*(2*fabs(fmod(lastmillis/1000.0f, 1.0f) - 0.5f)));
+            rendermodel(!f.droptime && !f.owner ? &f.light : nullptr, flagname, ANIM_MAPMODEL|ANIM_LOOP,
                         pos, angle, 0,
                         MDL_DYNSHADOW | MDL_CULL_VFC | MDL_CULL_OCCLUDED | (f.droptime || f.owner ? MDL_LIGHT : 0),
-                        NULL, NULL, 0, 0, 0.3f + (f.vistime ? 0.7f*min((lastmillis - f.vistime)/1000.0f, 1.0f) : 0.0f));
+                        nullptr, nullptr, 0, 0, 0.3f + (f.vistime ? 0.7f*min((lastmillis - f.vistime)/1000.0f, 1.0f) : 0.0f));
 
             if(m_protect && canaddparticles() && f.owner && insidebase(f, f.owner->feetpos()))
             {
@@ -319,7 +319,7 @@ namespace game {
         f.droploc = o;
         f.droptime = droptime;
         loopv(players) players[i]->flagpickup &= ~(1<<f.id);
-        f.owner = NULL;
+        f.owner = nullptr;
         f.dropangle = yaw;
         if(!f.vistime) f.vistime = droptime;
     }
@@ -607,7 +607,7 @@ namespace game {
                 targets.setsize(0);
                 bool home = !m_hold && f.team == ctfteamflag(d->team);
                 ai::checkothers(targets, d, home ? ai::AI_S_DEFEND : ai::AI_S_PURSUE, ai::AI_T_AFFINITY, j, true);
-                fpsent *e = NULL;
+                fpsent *e = nullptr;
                 loopi(numdynents()) if((e = (fpsent *)iterdynents(i)) && !e->ai && e->state == CS_ALIVE && isteam(d->team, e->team))
                     { // try to guess what non ai are doing
                         vec ep = e->feetpos();
@@ -684,7 +684,7 @@ namespace game {
                 static vector<int> targets; // build a list of others who are interested in this
                 targets.setsize(0);
                 ai::checkothers(targets, d, ai::AI_S_DEFEND, ai::AI_T_AFFINITY, b.target, true);
-                fpsent *e = NULL;
+                fpsent *e = nullptr;
                 loopi(numdynents()) if((e = (fpsent *)iterdynents(i)) && !e->ai && e->state == CS_ALIVE && isteam(d->team, e->team))
                     { // try to guess what non ai are doing
                         vec ep = e->feetpos();

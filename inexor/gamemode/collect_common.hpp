@@ -89,7 +89,7 @@ struct collectmode_common
     token *findtoken(int id)
     {
         loopv(tokens) if(tokens[i].id == id) return &tokens[i];
-        return NULL;
+        return nullptr;
     }
 
     token &droptoken(const vec &o, int team, int droptime)
