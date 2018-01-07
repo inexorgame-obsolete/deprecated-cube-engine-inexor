@@ -3,6 +3,11 @@
 #include "inexor/shared/geom.hpp"
 #include "inexor/shared/ents.hpp"
 
+enum
+{
+    SND_MAP = 1<<0
+};
+
 /// hardcoded sound slots (to reference them in code)
 /// sound files get assigned to these slots in sounds.cfg
 enum

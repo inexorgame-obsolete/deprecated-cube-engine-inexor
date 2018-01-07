@@ -13,6 +13,7 @@
 
 #include "inexor/sound/sound.hpp"
 #include "inexor/sound/mumble.hpp"
+#include "inexor/engine/movie.hpp"
 
 #include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/ui/legacy/menus.hpp"

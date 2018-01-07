@@ -2,6 +2,7 @@
 #include "inexor/io/Logging.hpp"
 #include "inexor/fpsgame/entities.hpp"
 #include "inexor/physics/physics.hpp"
+#include "inexor/sound/sound.hpp"
 
 using namespace inexor::sound;
 

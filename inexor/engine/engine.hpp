@@ -398,15 +398,6 @@ extern void generategrass();
 extern void rendergrass();
 extern void cleanupgrass();
 
-// recorder
-
-namespace recorder
-{
-    extern void stop();
-    extern void capture(bool overlay = true);
-    extern void cleanup();
-}
-
 /// Exception that should be thrown if GL related functionality failed.
 IEXCEPTION(GLException, "OpenGL related functionality failed");
 

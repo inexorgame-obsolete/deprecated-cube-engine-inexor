@@ -3,6 +3,8 @@
 #include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/ui/legacy/menus.hpp"
 
+#include "inexor/engine/movie.hpp"
+
 #include "inexor/io/Logging.hpp"
 
 using boost::algorithm::clamp;
