@@ -556,27 +556,6 @@ extern void generategrass();
 extern void rendergrass();
 extern void cleanupgrass();
 
-// blendmap
-extern SharedVar<int> blendpaintmode;
-
-struct BlendMapCache;
-extern BlendMapCache *newblendmapcache();
-extern void freeblendmapcache(BlendMapCache *&cache);
-extern bool setblendmaporigin(BlendMapCache *cache, const ivec &o, int size);
-extern bool hasblendmap(BlendMapCache *cache);
-extern uchar lookupblendmap(BlendMapCache *cache, const vec &pos);
-extern void resetblendmap();
-extern void enlargeblendmap();
-extern void shrinkblendmap(int octant);
-extern void optimizeblendmap();
-extern void stoppaintblendmap();
-extern void trypaintblendmap();
-extern void renderblendbrush(GLuint tex, float x, float y, float w, float h);
-extern void renderblendbrush();
-extern bool loadblendmap(stream *f, int info);
-extern void saveblendmap(stream *f);
-extern uchar shouldsaveblendmap();
-
 // recorder
 
 namespace recorder

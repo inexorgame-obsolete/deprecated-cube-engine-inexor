@@ -6,6 +6,7 @@
 #include "inexor/texture/image.hpp"
 #include "inexor/io/input/InputRouter.hpp"
 #include "inexor/io/Logging.hpp"
+#include "inexor/engine/blend.hpp"
 
 using namespace inexor::io;
 

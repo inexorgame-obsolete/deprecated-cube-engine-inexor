@@ -3,7 +3,6 @@
 /// pickups, triggers, team scores, armour, permission levels, 
 
 
-/// pragmaonce protectes this file from being included twice
 #pragma once
 
 #include "inexor/shared/cube.hpp"

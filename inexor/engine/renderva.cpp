@@ -4,6 +4,7 @@
 #include "inexor/texture/slot.hpp"
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/io/Logging.hpp"
+#include "inexor/engine/blend.hpp"
 
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"
@@ -671,7 +672,7 @@ void renderoutline()
 
 HVAR(blendbrushcolor, 0, 0x0000C0, 0xFFFFFF);
 
-void renderblendbrush(GLuint tex, float x, float y, float w, float h)
+void renderblendbrush(uint tex, float x, float y, float w, float h)
 {
     SETSHADER(blendbrush);
 

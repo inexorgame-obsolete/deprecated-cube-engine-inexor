@@ -1,4 +1,5 @@
 #include "inexor/engine/engine.hpp"
+#include "inexor/engine/blend.hpp"
 #include "inexor/io/Logging.hpp"
 
 enum

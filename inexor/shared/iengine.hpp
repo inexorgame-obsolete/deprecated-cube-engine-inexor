@@ -1,4 +1,5 @@
 // the interface the game uses to access the engine
+#pragma once
 
 #include "inexor/network/SharedTree.hpp"
 #include "inexor/network/legacy/game_types.hpp"

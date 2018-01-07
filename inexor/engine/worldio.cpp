@@ -6,6 +6,7 @@
 #include "inexor/texture/slot.hpp"
 #include "inexor/io/filesystem/mediadirs.hpp"
 #include "inexor/io/Logging.hpp"
+#include "inexor/engine/blend.hpp"
 
 using namespace inexor::sound;
 using namespace inexor::util;
