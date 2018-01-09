@@ -74,7 +74,7 @@ build() {
 
     ## FIXME: SDL2/SDL2_image (and potential other packages are broken for Conan >= 0.30.0)
     pip uninstall -y conan
-    pip install conan==1.0.0b4
+    pip install conan==1.0.0b5
 
     conan --version
 

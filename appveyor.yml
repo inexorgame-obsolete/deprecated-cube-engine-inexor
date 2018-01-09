@@ -49,7 +49,7 @@ init:
 
 # scripts that run after cloning repository
 install:
-  - cmd: python -m pip install conan==1.0.0b4
+  - cmd: python -m pip install conan==1.0.0b5
   - cmd: set "MAIN_FOLDER=C:\projects\inexorgame\%RELATIVE_PATH%"
   - cmd: cd %MAIN_FOLDER%
   - cmd: git submodule update --init --recursive
