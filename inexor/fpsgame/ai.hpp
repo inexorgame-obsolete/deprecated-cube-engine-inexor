@@ -1,5 +1,9 @@
 #pragma once
 
+#include "inexor/shared/geom.hpp"
+#include "inexor/shared/cube_vector.hpp"
+#include "inexor/network/SharedVar.hpp"
+
 struct fpsent;
 
 #define MAXBOTS 32
@@ -199,15 +203,7 @@ namespace ai
         }
         ~aiinfo() {}
 
-		void clearsetup()
-		{
-         	weappref = GUN_PISTOL;
-            spot = target = vec(0, 0, 0);
-            lastaction = lasthunt = lastcheck = enemyseen = enemymillis = blocktime = huntseq = blockseq = targtime = targseq = lastaimrnd = 0;
-            lastrun = jumpseed = lastmillis;
-            jumprand = lastmillis+5000;
-            targnode = targlast = enemy = -1;
-		}
+		void clearsetup();
 
 		void clear(bool prev = false)
 		{
@@ -223,13 +219,7 @@ namespace ai
             trywipe = false;
         }
 
-        void clean(bool tryit = false)
-        {
-            if(!tryit) becareful = dontmove = false;
-            targyaw = rnd(360);
-            targpitch = 0.f;
-            tryreset = tryit;
-        }
+        void clean(bool tryit = false);
 
         void reset(bool tryit = false) { wipe(); clean(tryit); }
 

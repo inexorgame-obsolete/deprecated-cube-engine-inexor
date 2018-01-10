@@ -13,7 +13,6 @@
 #include "inexor/engine/particles.hpp"
 #include "inexor/fpsgame/fpsent.hpp"
 #include "inexor/fpsgame/fpsstate.hpp"
-#include "inexor/fpsgame/teaminfo.hpp"
 #include "inexor/fpsgame/ai.hpp"
 
 
@@ -105,13 +104,6 @@ namespace game
     extern void gunselect(int gun, fpsent *d);
     extern void weaponswitch(fpsent *d);
     extern void avoidweapons(ai::avoidset &obstacles, float radius);
-
-    // scoreboard
-    extern void showscores(bool on);
-    extern void getbestplayers(vector<fpsent *> &best);
-    extern void getbestteams(vector<const char *> &best);
-    extern void clearteaminfo();
-    extern void setteaminfo(const char *team, int frags);
 
     // render
     struct playermodelinfo

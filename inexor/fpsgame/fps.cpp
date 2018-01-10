@@ -6,6 +6,8 @@
 #include "inexor/io/Logging.hpp"
 #include "inexor/client/gamemode/gamemode_client.hpp"
 #include "inexor/fpsgame/projectile.hpp"
+#include "inexor/fpsgame/teaminfo.hpp"
+#include "inexor/fpsgame/scoreboard.hpp"
 
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"

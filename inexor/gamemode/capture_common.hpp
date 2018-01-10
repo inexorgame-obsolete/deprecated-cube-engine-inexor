@@ -1,5 +1,6 @@
 #pragma once
 #include "inexor/fpsgame/game.hpp"
+#include "inexor/fpsgame/teaminfo.hpp"
 
 #include <algorithm>
 

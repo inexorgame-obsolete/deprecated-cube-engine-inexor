@@ -6,7 +6,7 @@
 #include "inexor/sound/sound.hpp"
 #include "inexor/fpsgame/guns.hpp"
 #include "inexor/fpsgame/ai.hpp"
-
+#include "inexor/engine/octaedit.hpp" // for freeeditinfo
 
 // mostly players can be described with this
 struct fpsent : dynent, fpsstate

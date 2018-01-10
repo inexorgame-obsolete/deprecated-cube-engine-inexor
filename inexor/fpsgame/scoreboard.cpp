@@ -1,6 +1,14 @@
 // creation of scoreboard
 #include "inexor/fpsgame/game.hpp"
 #include "inexor/client/gamemode/gamemode_client.hpp"
+#include "inexor/ui/legacy/3dgui.hpp"
+#include "inexor/shared/command.hpp"
+#include "inexor/fpsgame/fpsent.hpp"
+#include "inexor/fpsgame/teaminfo.hpp"
+#include "inexor/fpsgame/scoreboard.hpp"
+#include "inexor/shared/ents.hpp"
+#include "inexor/shared/cube_hash.hpp"
+#include "inexor/shared/cube_vector.hpp"
 
 namespace game
 {

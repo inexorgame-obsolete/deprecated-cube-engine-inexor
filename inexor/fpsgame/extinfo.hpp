@@ -1,8 +1,6 @@
-/// Warning
-/// Do not comment or use the following code in new work!
-/// Extinfo is deprecated and will probably be removed in further versions...
-/// -Hanni
+#pragma once
 
+#include "inexor/fpsgame/teaminfo.hpp"
 
 #define EXT_ACK                         -1
 #define EXT_VERSION                     105

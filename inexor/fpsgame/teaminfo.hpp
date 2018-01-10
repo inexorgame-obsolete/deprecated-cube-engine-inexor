@@ -4,6 +4,7 @@
 #include "inexor/shared/cube_vector.hpp"
 #include "inexor/shared/cube_tools.hpp"
 #include "inexor/shared/cube_loops.hpp"
+#include "inexor/shared/cube_hash.hpp"
 
 #include <string.h>
 
@@ -95,3 +96,7 @@ struct scoregroup : teamscore
         return prev ? prev->tag : nullptr;
     }
 };
+namespace game {
+extern void clearteaminfo();
+extern void setteaminfo(const char *team, int frags);
+}

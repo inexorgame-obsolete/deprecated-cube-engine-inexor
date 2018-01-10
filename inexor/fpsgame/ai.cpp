@@ -1,5 +1,6 @@
 #include "inexor/fpsgame/game.hpp"
 #include "inexor/fpsgame/entities.hpp"
+#include "inexor/fpsgame/guns.hpp"
 #include "inexor/client/gamemode/gamemode_client.hpp"
 
 
@@ -1469,6 +1470,22 @@ namespace ai
             }
 
         }
+    }
+
+    void aiinfo::clean(bool tryit) {
+        if(!tryit) becareful = dontmove = false;
+        targyaw = rnd(360);
+        targpitch = 0.f;
+        tryreset = tryit;
+    }
+
+    void aiinfo::clearsetup() {
+        weappref = GUN_PISTOL;
+        spot = target = vec(0, 0, 0);
+        lastaction = lasthunt = lastcheck = enemyseen = enemymillis = blocktime = huntseq = blockseq = targtime = targseq = lastaimrnd = 0;
+        lastrun = jumpseed = lastmillis;
+        jumprand = lastmillis+5000;
+        targnode = targlast = enemy = -1;
     }
 }
 

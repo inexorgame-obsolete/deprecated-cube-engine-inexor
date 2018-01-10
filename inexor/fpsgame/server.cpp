@@ -7,6 +7,7 @@
 #include "inexor/server/client_management.hpp"
 #include "inexor/server/network_send.hpp"
 #include "inexor/server/demos.hpp"
+#include "inexor/fpsgame/teaminfo.hpp"
 
 #include "inexor/server/gamemode/capture_server.hpp"
 #include "inexor/server/gamemode/ctf_server.hpp"

@@ -1,5 +1,6 @@
 #pragma once
 #include "inexor/fpsgame/game.hpp"
+#include "inexor/fpsgame/teaminfo.hpp"
 #include "inexor/sound/sound.hpp"
 #include "inexor/network/legacy/buffer_types.hpp"
 

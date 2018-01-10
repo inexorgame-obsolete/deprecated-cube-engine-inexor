@@ -4,9 +4,10 @@
 #include "inexor/server/demos.hpp"
 #include "inexor/network/legacy/crypto.hpp"
 #include "inexor/network/IsLocalConnection.hpp"
-#include "inexor/network/legacy/cube_network.hpp"
-#include "inexor/io/Logging.hpp"
-#include "inexor/shared/cube.hpp"
+
+#include "inexor/shared/cube_vector.hpp"
+#include "inexor/shared/command.hpp"
+
 
 namespace server {
 
