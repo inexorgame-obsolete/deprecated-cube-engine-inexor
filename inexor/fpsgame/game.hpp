@@ -87,50 +87,8 @@ namespace game
     extern bool isobstaclealive(movable *m);
 
     // weapon
-    enum 
-	{ 
-		BNC_GRENADE, 
-		BNC_BOMB, 
-		BNC_SPLINTER, 
-		BNC_GIBS, 
-		BNC_DEBRIS, 
-		BNC_BARRELDEBRIS
-	};
 
-    struct projectile
-    {
-        vec dir, o, to, offset;
-        float speed;
-        fpsent *owner;
-        int gun;
-        bool local;
-        int offsetmillis;
-        int id;
-        entitylight light;
-    };
-    extern vector<projectile> projs;
 
-    struct bouncer : physent
-    {
-        int lifetime, bounces;
-        float lastyaw, roll;
-        bool local;
-        fpsent *owner;
-        int bouncetype, variant;
-        vec offset;
-        int offsetmillis;
-        int id;
-        entitylight light;
-        int generation;
-
-        bouncer() : bounces(0), roll(0), variant(0)
-        {
-            type = ENT_BOUNCE;
-        }
-    };
-    extern vector<bouncer *> bouncers;
-
-    extern int getweapon(const char *name);
     extern void shoot(fpsent *d, const vec &targ);
     extern void shoteffects(int gun, const vec &from, const vec &to, fpsent *d, bool local, int id, int prevaction);
     extern void explode(bool local, fpsent *owner, const vec &v, dynent *safe, int dam, int gun);
@@ -140,15 +98,8 @@ namespace game
     extern float intersectdist;
     extern bool intersect(dynent *d, const vec &from, const vec &to, float &dist = intersectdist);
     extern dynent *intersectclosest(const vec &from, const vec &to, fpsent *at, float &dist = intersectdist);
-    extern void clearbouncers();
-    extern void updatebouncers(int curtime);
-    extern void removebouncers(fpsent *owner);
-    extern void renderbouncers();
-    extern void clearprojectiles();
-    extern void updateprojectiles(int curtime);
-    extern void removeprojectiles(fpsent *owner);
-    extern void renderprojectiles();
-    extern void preloadbouncers();
+
+    extern int getweapon(const char *name);
     extern void removeweapons(fpsent *owner);
     extern void updateweapons(int curtime);
     extern void gunselect(int gun, fpsent *d);

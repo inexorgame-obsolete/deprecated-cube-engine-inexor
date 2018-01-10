@@ -1,5 +1,6 @@
 #include "inexor/client/gamemode/bomb_client.hpp"
 #include "inexor/io/filesystem/mediadirs.hpp"
+#include "inexor/fpsgame/projectile.hpp"
 
 namespace game {
 

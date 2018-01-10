@@ -1,6 +1,8 @@
 // weapon.cpp: all shooting and effects code, projectile management
 #include "inexor/fpsgame/game.hpp"
 #include "inexor/engine/engine.hpp"
+#include "inexor/fpsgame/guns.hpp"
+#include "inexor/fpsgame/projectile.hpp"
 
 using namespace inexor::sound;
 
