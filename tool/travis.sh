@@ -72,10 +72,6 @@ build() {
   (
     mkcd "/tmp/inexor-build"
 
-    ## FIXME: SDL2/SDL2_image (and potential other packages are broken for Conan >= 0.30.0)
-    pip uninstall -y conan
-    pip install conan
-
     conan --version
 
     conan remote add inexor https://api.bintray.com/conan/inexorgame/inexor-conan --insert
