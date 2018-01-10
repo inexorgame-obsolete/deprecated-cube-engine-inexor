@@ -4,7 +4,7 @@
 #include "inexor/shared/geom.hpp"
 #include "inexor/network/legacy/administration.hpp"
 #include "inexor/sound/sound.hpp"
-#include "inexor/fpsgame/weapon.hpp"
+#include "inexor/fpsgame/guns.hpp"
 #include "inexor/fpsgame/ai.hpp"
 
 
