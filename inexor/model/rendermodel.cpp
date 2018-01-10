@@ -1,3 +1,5 @@
+
+#include "inexor/model/rendermodel.hpp"
 #include "inexor/engine/engine.hpp"
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/io/Logging.hpp"
@@ -6,11 +8,14 @@
 #include "inexor/engine/blob.hpp"
 #include "inexor/physics/physics.hpp"
 #include "inexor/ui/legacy/menus.hpp"
+#include "inexor/io/filesystem/mediadirs.hpp"
 
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"
 
-SVARP(modeldir, "model");
+
+void loadskin(const char *dir, const char *altdir, Texture *&skin, Texture *&masks);
+void preloadmodelshaders(bool force);
 
 VAR(oqdynent, 0, 1, 1);
 VAR(animationinterpolationtime, 0, 150, 1000);

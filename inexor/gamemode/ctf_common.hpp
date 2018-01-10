@@ -145,4 +145,3 @@ struct ctfmode
         return dx*dx + dy*dy <= BASERADIUS*BASERADIUS && fabs(dz) <= BASEHEIGHT;
     }
 };
-

@@ -8,6 +8,7 @@
 #include "inexor/io/Logging.hpp"
 #include "inexor/engine/blend.hpp"
 #include "inexor/physics/physics.hpp"
+#include "inexor/model/rendermodel.hpp"
 
 using namespace inexor::io;
 

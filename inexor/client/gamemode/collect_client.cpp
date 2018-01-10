@@ -1,4 +1,5 @@
 #include "inexor/client/gamemode/collect_client.hpp"
+#include "inexor/model/rendermodel.hpp"
 
 namespace game {
 

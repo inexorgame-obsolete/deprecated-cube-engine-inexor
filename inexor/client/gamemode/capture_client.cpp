@@ -1,5 +1,6 @@
 #include "inexor/client/gamemode/capture_client.hpp"
 #include "inexor/engine/rendertext.hpp"
+#include "inexor/model/rendermodel.hpp"
 
 namespace game {
 

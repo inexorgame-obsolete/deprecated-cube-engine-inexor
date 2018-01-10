@@ -3,6 +3,8 @@
 #include "inexor/fpsgame/entities.hpp"
 #include "inexor/physics/physics.hpp"
 #include "inexor/sound/sound.hpp"
+#include "inexor/model/rendermodel.hpp"
+
 
 using namespace inexor::sound;
 

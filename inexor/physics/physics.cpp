@@ -8,6 +8,7 @@
 #include "inexor/physics/physics.hpp"
 #include "inexor/engine/material.hpp"
 #include "inexor/io/Logging.hpp"
+#include "inexor/model/rendermodel.hpp"
 
 #include <iomanip> // std::setprecision
 

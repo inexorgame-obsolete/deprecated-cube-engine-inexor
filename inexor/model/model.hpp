@@ -2,8 +2,40 @@
 #pragma once
 
 #include "inexor/physics/bih.hpp"
+#include "inexor/shared/ents.hpp"
+#include "inexor/shared/geom.hpp"
+#include "inexor/texture/texture.hpp"
+#include "inexor/engine/shader.hpp"
+
 
 enum { MDL_MD2 = 0, MDL_MD3, MDL_MD5, MDL_OBJ, MDL_SMD, MDL_IQM, NUMMODELTYPES };
+enum { MDL_CULL_VFC = 1<<0, MDL_CULL_DIST = 1<<1, MDL_CULL_OCCLUDED = 1<<2, MDL_CULL_QUERY = 1<<3, MDL_SHADOW = 1<<4, MDL_DYNSHADOW = 1<<5, MDL_LIGHT = 1<<6, MDL_DYNLIGHT = 1<<7, MDL_FULLBRIGHT = 1<<8, MDL_NORENDER = 1<<9, MDL_LIGHT_FAST = 1<<10, MDL_HUD = 1<<11, MDL_GHOST = 1<<12 };
+
+struct model;
+struct modelattach
+{
+    const char *tag, *name;
+    int anim, basetime;
+    vec *pos;
+    model *m;
+
+    modelattach() : tag(nullptr), name(nullptr), anim(-1), basetime(0), pos(nullptr), m(nullptr) {}
+    modelattach(const char *tag, const char *name, int anim = -1, int basetime = 0) : tag(tag), name(name), anim(anim), basetime(basetime), pos(nullptr), m(nullptr) {}
+    modelattach(const char *tag, vec *pos) : tag(tag), name(nullptr), anim(-1), basetime(0), pos(pos), m(nullptr) {}
+};
+
+extern void startmodelbatches();
+extern void endmodelbatches();
+extern void rendermodel(entitylight *light, const char *mdl, int anim, const vec &o, float yaw = 0, float pitch = 0, int cull = MDL_CULL_VFC | MDL_CULL_DIST | MDL_CULL_OCCLUDED | MDL_LIGHT, dynent *d = nullptr, modelattach *a = nullptr, int basetime = 0, int basetime2 = 0, float trans = 1);
+extern void abovemodel(vec &o, const char *mdl);
+extern void rendershadow(dynent *d);
+extern void renderclient(dynent *d, const char *mdlname, modelattach *attachments, int hold, int attack, int attackdelay, int lastaction, int lastpain, float fade = 1, bool ragdoll = false);
+extern void interpolateorientation(dynent *d, float &interpyaw, float &interppitch);
+extern void setbbfrommodel(dynent *d, const char *mdl);
+extern const char *mapmodelname(int i);
+extern model *loadmodel(const char *name, int i = -1, bool msg = false);
+extern void preloadmodel(const char *name);
+extern void flushpreloadedmodels(bool msg = true);
 
 struct model
 {
@@ -18,7 +50,13 @@ struct model
     int batch;
 
     model(const char *name) : name(name ? newstring(name) : nullptr), spinyaw(0), spinpitch(0), offsetyaw(0), offsetpitch(0), collide(true), ellipsecollide(false), shadow(true), alphadepth(true), depthoffset(false), scale(1.0f), translate(0, 0, 0), bih(nullptr), bbcenter(0, 0, 0), bbradius(-1, -1, -1), bbextend(0, 0, 0), collidecenter(0, 0, 0), collideradius(-1, -1, -1), rejectradius(-1), eyeheight(0.9f), collidexyradius(0), collideheight(0), batch(-1) {}
-    virtual ~model() { DELETEA(name); DELETEP(bih); }
+    virtual ~model()
+    {
+        delete[] name;
+        name = nullptr;
+        delete bih;
+        bih = nullptr;
+    }
     virtual void calcbb(vec &center, vec &radius) = 0;
     virtual void render(int anim, int basetime, int basetime2, const vec &o, float yaw, float pitch, dynent *d, modelattach *a = nullptr, const vec &color = vec(0, 0, 0), const vec &dir = vec(0, 0, 0), float transparent = 1) = 0;
     virtual bool load() = 0;

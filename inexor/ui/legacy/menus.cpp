@@ -3,6 +3,7 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/ui/legacy/3dgui.hpp"
 #include "inexor/ui/legacy/menus.hpp"
+#include "inexor/model/rendermodel.hpp"
 
 #include <limits>
 

@@ -1,4 +1,5 @@
 #include "inexor/engine/engine.hpp"
+#include "inexor/model/rendermodel.hpp"
 
 bool BIH::triintersect(const mesh &m, int tidx, const vec &mo, const vec &mray, float maxdist, float &dist, int mode)
 {

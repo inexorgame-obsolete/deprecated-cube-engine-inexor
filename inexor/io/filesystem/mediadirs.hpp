@@ -16,10 +16,11 @@ enum {
     DIR_RADAR,
     DIR_SOUND,
     DIR_MUSIC,
+    DIR_MODEL,
     DIR_NUM
 }; /// media path types.
 
-extern SharedVar<char*> mapdir, texturedir, skyboxdir, interfacedir, radardir, icondir, sounddir, musicdir;
+extern SharedVar<char*> mapdir, texturedir, skyboxdir, interfacedir, radardir, icondir, sounddir, musicdir, modeldir;
 
 namespace inexor {
 namespace filesystem {

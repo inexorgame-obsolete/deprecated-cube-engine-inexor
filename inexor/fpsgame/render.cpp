@@ -3,6 +3,8 @@
 #include "inexor/client/gamemode/gamemode_client.hpp"
 #include "inexor/fpsgame/projectile.hpp"
 #include "inexor/fpsgame/scoreboard.hpp"
+#include "inexor/model/rendermodel.hpp"
+
 
 using namespace inexor::sound;
 

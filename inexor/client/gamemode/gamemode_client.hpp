@@ -2,9 +2,13 @@
 #include "inexor/fpsgame/teaminfo.hpp"
 #include "inexor/fpsgame/fpsent.hpp"
 #include "inexor/fpsgame/entities.hpp"
+#include "inexor/ui/legacy/3dgui.hpp"
+#include "inexor/fpsgame/ai.hpp"
 
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"
+
+#include "inexor/network/SharedVar.hpp"
 
 namespace game {
 

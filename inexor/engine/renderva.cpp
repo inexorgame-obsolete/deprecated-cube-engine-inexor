@@ -8,6 +8,7 @@
 #include "inexor/engine/pvs.hpp"
 #include "inexor/engine/shadowmap.hpp"
 #include "inexor/engine/dynlight.hpp"
+#include "inexor/model/rendermodel.hpp"
 
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"

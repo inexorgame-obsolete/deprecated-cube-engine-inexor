@@ -352,30 +352,6 @@ extern bool pointinsel(const selinfo &sel, const vec &o);
 extern void resetmap();
 extern void startmap(const char *name);
 
-// rendermodel
-extern SharedVar<char*> modeldir;
-
-struct mapmodelinfo { string name; model *m; };
-
-extern void findanims(const char *pattern, vector<int> &anims);
-extern void loadskin(const char *dir, const char *altdir, Texture *&skin, Texture *&masks);
-extern mapmodelinfo *getmminfo(int i);
-extern void startmodelquery(occludequery *query);
-extern void endmodelquery();
-extern void preloadmodelshaders(bool force = false);
-extern void preloadusedmapmodels(bool msg = false, bool bih = false);
-
-static inline model *loadmapmodel(int n)
-{
-    extern vector<mapmodelinfo> mapmodels;
-    if(mapmodels.inrange(n))
-    {
-        model *m = mapmodels[n].m;
-        return m ? m : loadmodel(nullptr, n);
-    }
-    return nullptr;
-}
-
 // renderparticles
 extern void particleinit();
 extern void clearparticles();

@@ -12,6 +12,7 @@ SVARP(icondir, "interface/icon");
 SVARP(radardir, "interface/radar");
 SVARP(sounddir, "sound");
 SVARP(musicdir, "music");
+SVARP(modeldir, "model");
 
 using namespace inexor::util;
 using namespace boost::filesystem;
