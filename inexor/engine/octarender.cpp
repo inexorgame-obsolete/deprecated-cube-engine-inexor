@@ -8,6 +8,8 @@
 #include "inexor/engine/material.hpp"
 #include "inexor/engine/blob.hpp"
 
+#include "inexor/engine/rendersky.hpp"
+
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"
 

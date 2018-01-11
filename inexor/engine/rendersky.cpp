@@ -2,10 +2,13 @@
 #include "inexor/io/filesystem/mediadirs.hpp"
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/io/Logging.hpp"
-#include "inexor/shared/cube_sort.hpp"
+
+#include "inexor/engine/rendersky.hpp"
 
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"
+
+#include "inexor/shared/cube_sort.hpp"
 
 using namespace inexor::filesystem;
 

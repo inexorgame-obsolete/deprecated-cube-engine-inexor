@@ -351,13 +351,6 @@ extern void renderparticles(bool mainpass = false);
 extern bool printparticles(extentity &e, char *buf, int len);
 extern void regularshape(int type, int radius, int color, int dir, int num, int fade, const vec &p, float size, int gravity, int vel = 200, const vec* modfrom=nullptr, const vec* modto=nullptr); // bomberman
 
-// rendersky
-extern int explicitsky;
-extern double skyarea;
-
-extern void drawskybox(int farplane, bool limited);
-extern bool limitsky();
-
 // grass
 extern void generategrass();
 extern void rendergrass();

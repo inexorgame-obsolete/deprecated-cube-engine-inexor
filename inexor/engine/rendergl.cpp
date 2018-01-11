@@ -17,6 +17,7 @@
 #include "inexor/engine/shadowmap.hpp"
 
 #include "inexor/engine/octaedit.hpp"
+#include "inexor/engine/rendersky.hpp"
 
 #include "inexor/ui/legacy/3dgui.hpp"
 #include "inexor/ui/legacy/menus.hpp"
