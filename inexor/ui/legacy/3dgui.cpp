@@ -13,6 +13,7 @@
 #include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/engine/rendertext.hpp"
 
+#include "inexor/engine/octaedit.hpp"
 
 using namespace inexor::filesystem;
 using namespace inexor::rendering::screen;

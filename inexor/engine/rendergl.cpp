@@ -16,6 +16,8 @@
 #include "inexor/engine/decal.hpp"
 #include "inexor/engine/shadowmap.hpp"
 
+#include "inexor/engine/octaedit.hpp"
+
 #include "inexor/ui/legacy/3dgui.hpp"
 #include "inexor/ui/legacy/menus.hpp"
 #include "inexor/engine/rendertext.hpp"

@@ -10,6 +10,8 @@
 #include "inexor/physics/physics.hpp"
 #include "inexor/model/rendermodel.hpp"
 
+#include "inexor/engine/octaedit.hpp"
+
 using namespace inexor::io;
 
 #define MAXLIGHTMAPTASKS 4096

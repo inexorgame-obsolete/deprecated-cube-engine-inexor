@@ -1,4 +1,5 @@
 #include "inexor/engine/engine.hpp"
+#include "inexor/engine/octaedit.hpp"
 #include "inexor/io/filesystem/mediadirs.hpp"
 #include "inexor/texture/slot.hpp"
 #include "inexor/io/input/InputRouter.hpp"

@@ -1,6 +1,7 @@
 // world.cpp: core map management stuff
 
 #include "inexor/engine/engine.hpp"
+#include "inexor/engine/octaedit.hpp"
 #include "inexor/texture/slot.hpp"
 #include "inexor/io/Logging.hpp"
 #include "inexor/engine/worldio.hpp"

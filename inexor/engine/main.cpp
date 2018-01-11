@@ -15,6 +15,8 @@
 #include "inexor/sound/mumble.hpp"
 #include "inexor/engine/movie.hpp"
 
+#include "inexor/engine/octaedit.hpp"
+
 #include "inexor/ui/screen/ScreenManager.hpp"
 #include "inexor/ui/legacy/menus.hpp"
 #include "inexor/engine/rendertext.hpp"

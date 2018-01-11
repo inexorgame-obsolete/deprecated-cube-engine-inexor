@@ -31,3 +31,11 @@ extern bool mpreplacetex(int oldtex, int newtex, bool insel, selinfo &sel, uchar
 extern void mpdelcube(selinfo &sel, bool local);
 extern bool mpeditvslot(int delta, int allfaces, selinfo &sel, ucharbuf &buf);
 extern void mpremip(bool local);
+
+extern void cancelsel();
+extern void rendertexturepanel(int w, int h);
+extern void addundo(undoblock *u);
+extern void commitchanges(bool force = false);
+extern void rendereditcursor();
+extern void tryedit();
+extern void previewprefab(const char *name, const vec &color);
