@@ -1,14 +1,41 @@
 // console.cpp: the console buffer, its display, and command line control
 
-#include <set>
-#include "inexor/engine/engine.hpp"
-#include "inexor/io/input/InputRouter.hpp"
-#include "inexor/io/Logging.hpp"
-#include "inexor/shared/cube_queue.hpp"
+#include <boost/algorithm/clamp.hpp>                  // for clamp
+#include <stdlib.h>                                   // for abs
+#include <string.h>                                   // for strlen, strcmp
+#include <algorithm>                                  // for min
+#include <memory>                                     // for __shared_ptr
+#include <set>                                        // for set
+#include <string>                                     // for string
 
-#include "inexor/engine/rendertext.hpp"
-#include "inexor/ui/legacy/3dgui.hpp"
-#include "inexor/ui/legacy/menus.hpp"
+#include "SDL_clipboard.h"                            // for SDL_GetClipboar...
+#include "SDL_keyboard.h"                             // for SDL_GetModState
+#include "SDL_keycode.h"                              // for ::SDLK_KP_ENTER
+#include "SDL_stdinc.h"                               // for SDL_free
+#include "inexor/engine/engine.hpp"                   // for idents, identflags
+#include "inexor/engine/octaedit.hpp"                 // for editmode
+#include "inexor/engine/rendertext.hpp"               // for FONTH
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/io/input/InputRouter.hpp"            // for InputRouter
+#include "inexor/io/legacy/stream.hpp"                // for stream, openutf...
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/network/legacy/cube_network.hpp"     // for filtertext
+#include "inexor/shared/command.hpp"                  // for escapestring
+#include "inexor/shared/cube_formatting.hpp"          // for formatstring
+#include "inexor/shared/cube_hash.hpp"                // for hashtable, enum...
+#include "inexor/shared/cube_loops.hpp"               // for i, j, loopv, loopi
+#include "inexor/shared/cube_queue.hpp"               // for reversequeue
+#include "inexor/shared/cube_tools.hpp"               // for newstring, DELETEA
+#include "inexor/shared/cube_types.hpp"               // for string, uchar
+#include "inexor/shared/cube_unicode.hpp"             // for iscubespace
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/ents.hpp"                     // for dynent, ::CS_SP...
+#include "inexor/shared/iengine.hpp"                  // for draw_text, text...
+#include "inexor/shared/igame.hpp"                    // for clipconsole
+#include "inexor/shared/tools.hpp"                    // for min, clamp
+#include "inexor/ui/legacy/3dgui.hpp"                 // for g3d_input, g3d_key
+#include "inexor/ui/legacy/menus.hpp"                 // for mainmenu
+#include "inexor/util/legacy_time.hpp"                // for totalmillis
 
 
 using namespace inexor::util;
@@ -86,10 +113,9 @@ void setconskip(int &skip, int filter, int n)
     }
 }
 
+ICOMMAND(clearconsole, "", (), { while(conlines.length()) delete[] conlines.pop().line; });
 ICOMMAND(conskip, "i", (int *n), setconskip(conskip, fullconsole ? fullconfilter : confilter, *n));
 ICOMMAND(miniconskip, "i", (int *n), setconskip(miniconskip, miniconfilter, *n));
-
-ICOMMAND(clearconsole, "", (), { while(conlines.length()) delete[] conlines.pop().line; });
 
 int drawconlines(int conskip, int confade, int conwidth, int conheight, int conoff, int filter, int y = 0, int dir = 1)
 {
@@ -250,14 +276,14 @@ void bindkey(char *key, char *action, int state, const char *cmd)
 }
 
 ICOMMAND(bind,     "ss", (char *key, char *action), bindkey(key, action, keym::ACTION_DEFAULT, "bind"));
-ICOMMAND(specbind, "ss", (char *key, char *action), bindkey(key, action, keym::ACTION_SPECTATOR, "specbind"));
 ICOMMAND(editbind, "ss", (char *key, char *action), bindkey(key, action, keym::ACTION_EDITING, "editbind"));
 ICOMMAND(getbind,     "s", (char *key), getbind(key, keym::ACTION_DEFAULT));
-ICOMMAND(getspecbind, "s", (char *key), getbind(key, keym::ACTION_SPECTATOR));
 ICOMMAND(geteditbind, "s", (char *key), getbind(key, keym::ACTION_EDITING));
+ICOMMAND(getspecbind, "s", (char *key), getbind(key, keym::ACTION_SPECTATOR));
 ICOMMAND(searchbinds,     "s", (char *action), searchbinds(action, keym::ACTION_DEFAULT));
-ICOMMAND(searchspecbinds, "s", (char *action), searchbinds(action, keym::ACTION_SPECTATOR));
 ICOMMAND(searcheditbinds, "s", (char *action), searchbinds(action, keym::ACTION_EDITING));
+ICOMMAND(searchspecbinds, "s", (char *action), searchbinds(action, keym::ACTION_SPECTATOR));
+ICOMMAND(specbind, "ss", (char *key, char *action), bindkey(key, action, keym::ACTION_SPECTATOR, "specbind"));
 
 void inputcommand(char *init, char *action = nullptr, char *prompt = nullptr, char *flags = nullptr) // turns input to the command line on or off
 {
@@ -280,6 +306,7 @@ void inputcommand(char *init, char *action = nullptr, char *prompt = nullptr, ch
 }
 
 ICOMMAND(saycommand, "C", (char *init), inputcommand(init));
+
 COMMAND(inputcommand, "ssss");
 
 void pasteconsole()

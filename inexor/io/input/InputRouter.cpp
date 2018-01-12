@@ -1,8 +1,17 @@
-#include <boost/algorithm/clamp.hpp>
+#include <boost/algorithm/clamp.hpp>                  // for clamp
+#include <string.h>                                   // for size_t, strlen
+#include <memory>                                     // for allocator_trait...
 
-#include "inexor/ui/InexorCefApp.hpp"
+#include "SDL_keyboard.h"                             // for SDL_StartTextInput
+#include "SDL_keycode.h"                              // for ::SDLK_UNKNOWN
+#include "SDL_mouse.h"                                // for SDL_SetRelative...
+#include "SDL_stdinc.h"                               // for ::SDL_FALSE
+#include "SDL_video.h"                                // for SDL_GetWindowFlags
+#include "include/base/cef_ref_counted.h"             // for scoped_refptr
+#include "include/cef_base.h"                         // for CefRefPtr
 #include "inexor/io/input/InputRouter.hpp"
-#include "inexor/ui/screen/ScreenManager.hpp"
+#include "inexor/ui/InexorCefApp.hpp"                 // for cef_app, Inexor...
+#include "inexor/ui/screen/ScreenManager.hpp"         // for ScreenManager
 
 using namespace inexor::rendering::screen;
 using boost::algorithm::clamp;

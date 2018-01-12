@@ -3,15 +3,32 @@
 /// each texture slot can have multiple textures.
 /// additional textures can be used for various shaders.
 
-#include "inexor/engine/engine.hpp"
-#include "inexor/engine/material.hpp"
-#include "inexor/texture/texture.hpp"
-#include "inexor/texture/macros.hpp"
-#include "inexor/texture/image.hpp"
-#include "inexor/texture/cubemap.hpp"
+#include <boost/algorithm/clamp.hpp>                  // for clamp
+#include <stdlib.h>                                   // for atoi
+#include <string.h>                                   // for memcmp, memcpy
+#include <algorithm>                                  // for min, swap, max
+#include <memory>                                     // for __shared_ptr
+
+#include "inexor/engine/engine.hpp"                   // for allchanged, com...
+#include "inexor/engine/material.hpp"                 // for findmaterial
+#include "inexor/engine/octa.hpp"                     // for cube, worldroot
+#include "inexor/engine/octaedit.hpp"                 // for noedit
+#include "inexor/engine/world.hpp"                    // for ::DEFAULT_GEOM
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/io/filesystem/mediadirs.hpp"         // for getmediapath
+#include "inexor/io/legacy/stream.hpp"                // for makerelpath, path
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/network/legacy/cube_network.hpp"     // for putfloat, getfloat
+#include "inexor/shared/command.hpp"                  // for COMMAND, getcur...
+#include "inexor/shared/cube_formatting.hpp"          // for defformatstring
+#include "inexor/shared/iengine.hpp"                  // for multiplayer
+#include "inexor/shared/igame.hpp"                    // for allowedittoggle
+#include "inexor/shared/tools.hpp"                    // for clamp, min, swap
+#include "inexor/texture/cubemap.hpp"                 // for cubemapload
+#include "inexor/texture/image.hpp"                   // for ImageData, scal...
+#include "inexor/texture/macros.hpp"                  // for dst, src, readw...
 #include "inexor/texture/slot.hpp"
-#include "inexor/io/filesystem/mediadirs.hpp"
-#include "inexor/io/Logging.hpp"
+#include "inexor/texture/texture.hpp"                 // for ::TEX_DIFFUSE
 
 using namespace inexor::filesystem;
 
@@ -190,6 +207,7 @@ int compactvslots()
 }
 
 ICOMMAND(compactvslots, "", (),
+
 {
     extern SharedVar<int> nompedit;
     if(nompedit && multiplayer()) return;
@@ -538,6 +556,7 @@ static void fixinsidefaces(cube *c, const ivec &o, int size, int tex)
 }
 
 ICOMMAND(fixinsidefaces, "i", (int *tex),
+
 {
     extern SharedVar<int> nompedit;
     if(noedit(true) || (nompedit && multiplayer())) return;

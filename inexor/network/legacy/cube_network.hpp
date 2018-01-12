@@ -1,13 +1,18 @@
 #pragma once
 
+#include <enet/enet.h>                             // for ENetPacket
+#include <stdarg.h>                                // for va_list
+#include <stddef.h>                                // for size_t
 #include <algorithm>
-#include <enet/enet.h>
 
-#include "inexor/shared/cube_types.hpp"
-#include "inexor/shared/cube_tools.hpp"
-#include "inexor/shared/cube_vector.hpp"
+#include "enet/types.h"                            // for enet_uint32
 #include "inexor/io/legacy/stream.hpp"
-#include "inexor/network/legacy/buffer_types.hpp"
+#include "inexor/network/legacy/buffer_types.hpp"  // for ucharbuf, packetbu...
+#include "inexor/shared/cube_tools.hpp"
+#include "inexor/shared/cube_types.hpp"            // for uchar
+#include "inexor/shared/cube_vector.hpp"           // for vector
+
+struct stream;
 
 #define MAXCLIENTS 128                 // DO NOT set this any higher
 #define MAXTRANS 5000                  // max amount of data to swallow in 1 go

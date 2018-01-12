@@ -1,9 +1,29 @@
-#include "inexor/fpsgame/game.hpp"
-#include "inexor/io/Logging.hpp"
+#include <math.h>                                     // for sinf
+#include <stddef.h>                                   // for size_t
+#include <memory>                                     // for __shared_ptr
+
+#include "enet/enet.h"                                // for _ENetPacketFlag...
+#include "inexor/engine/particles.hpp"                // for particle_icon
+#include "inexor/fpsgame/ai.hpp"                      // for inferwaypoints
 #include "inexor/fpsgame/entities.hpp"
-#include "inexor/physics/physics.hpp"
-#include "inexor/sound/sound.hpp"
-#include "inexor/model/rendermodel.hpp"
+#include "inexor/fpsgame/fpsent.hpp"                  // for fpsent
+#include "inexor/fpsgame/game.hpp"                    // for player1, addmsg
+#include "inexor/fpsgame/guns.hpp"                    // for itemstat, items...
+#include "inexor/gamemode/gamemode.hpp"               // for m_bomb, m_noammo
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/model/model.hpp"                     // for mapmodelname
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/network/legacy/buffer_types.hpp"     // for packetbuf
+#include "inexor/network/legacy/cube_network.hpp"     // for putint, DMF
+#include "inexor/network/legacy/game_types.hpp"       // for ::N_EDITENT
+#include "inexor/physics/physics.hpp"                 // for overlapsdynent
+#include "inexor/shared/command.hpp"                  // for execute, idente...
+#include "inexor/shared/cube_formatting.hpp"          // for defformatstring
+#include "inexor/shared/cube_loops.hpp"               // for i, loopv, loopi
+#include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
+#include "inexor/shared/iengine.hpp"                  // for renderentarrow
+#include "inexor/sound/sound.hpp"                     // for playsound, ::S_...
+#include "inexor/util/legacy_time.hpp"                // for lastmillis
 
 
 using namespace inexor::sound;
@@ -530,6 +550,7 @@ namespace entities
     }
 
     ICOMMAND(trigger, "ii", (int *tag, int *state),
+
     {
         if(*state) unlocktriggers(*tag);
         else unlocktriggers(*tag, TRIGGERED, TRIGGER_RESETTING);

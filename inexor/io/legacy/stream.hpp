@@ -2,13 +2,16 @@
 /// Use the filesystem module for new code.
 #pragma once
 
-#include "inexor/shared/cube_vector.hpp"
-#include "inexor/shared/cube_formatting.hpp"
-#include "inexor/shared/cube_types.hpp"
-#include "inexor/shared/cube_tools.hpp"
+#include <stdio.h>                            // for size_t, SEEK_SET
+#include <string.h>                           // for strlen
+#include <sys/types.h>                        // for off_t
+#include <zlib.h>                             // for Z_BEST_COMPRESSION
 
-#include <zlib.h>
-#include <stdio.h>
+#include "inexor/shared/cube_endian.hpp"      // for bigswap, lilswap
+#include "inexor/shared/cube_formatting.hpp"  // for PRINTFARGS
+#include "inexor/shared/cube_tools.hpp"
+#include "inexor/shared/cube_types.hpp"       // for uchar, uint
+#include "inexor/shared/cube_vector.hpp"      // for vector
 
 // workaround for some C platforms that have these two functions as macros - not used anywhere
 #ifdef getchar

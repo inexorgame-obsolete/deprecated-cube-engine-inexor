@@ -1,9 +1,33 @@
-#include "inexor/fpsgame/game.hpp"
-#include "inexor/fpsgame/entities.hpp"
-#include "inexor/client/gamemode/gamemode_client.hpp"
-#include "inexor/fpsgame/projectile.hpp"
-#include "inexor/fpsgame/scoreboard.hpp"
-#include "inexor/model/rendermodel.hpp"
+#include <boost/algorithm/clamp.hpp>                   // for clamp
+#include <math.h>                                      // for fmod, ceil, cosf
+#include <stddef.h>                                    // for size_t
+#include <algorithm>                                   // for max, min
+
+#include "inexor/client/gamemode/gamemode_client.hpp"  // for cmode, clientmode
+#include "inexor/engine/octaedit.hpp"                  // for editmode
+#include "inexor/engine/particles.hpp"                 // for particle_text
+#include "inexor/fpsgame/ai.hpp"                       // for render
+#include "inexor/fpsgame/entities.hpp"                 // for preloadentities
+#include "inexor/fpsgame/fpsent.hpp"                   // for fpsent
+#include "inexor/fpsgame/game.hpp"                     // for playermodelinfo
+#include "inexor/fpsgame/guns.hpp"                     // for guninfo, ::GUN...
+#include "inexor/fpsgame/projectile.hpp"               // for preloadbouncers
+#include "inexor/fpsgame/scoreboard.hpp"               // for getbestplayers
+#include "inexor/gamemode/gamemode.hpp"                // for m_teammode
+#include "inexor/model/model.hpp"                      // for preloadmodel
+#include "inexor/network/SharedVar.hpp"                // for SharedVar, min
+#include "inexor/shared/command.hpp"                   // for VARP, VAR, FVAR
+#include "inexor/shared/cube_formatting.hpp"           // for concatstring
+#include "inexor/shared/cube_loops.hpp"                // for i, loopv, loopi
+#include "inexor/shared/cube_tools.hpp"                // for copystring
+#include "inexor/shared/cube_types.hpp"                // for string
+#include "inexor/shared/cube_vector.hpp"               // for vector
+#include "inexor/shared/ents.hpp"                      // for ANIM_LOOP, ::C...
+#include "inexor/shared/geom.hpp"                      // for vec, vec::(ano...
+#include "inexor/shared/iengine.hpp"                   // for cleanragdoll
+#include "inexor/shared/tools.hpp"                     // for max, clamp, min
+#include "inexor/sound/sound.hpp"                      // for preloadsound
+#include "inexor/util/legacy_time.hpp"                 // for lastmillis
 
 
 using namespace inexor::sound;

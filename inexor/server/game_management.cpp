@@ -1,5 +1,7 @@
+#include "inexor/network/legacy/game_types.hpp"  // for ::N_PAUSEGAME
+#include "inexor/server/client_management.hpp"   // for clientinfo
 #include "inexor/server/game_management.hpp"
-#include "inexor/server/network_send.hpp"
+#include "inexor/server/network_send.hpp"        // for sendf
 
 namespace server {
 

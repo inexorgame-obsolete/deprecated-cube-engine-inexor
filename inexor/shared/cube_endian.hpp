@@ -5,6 +5,7 @@
 #pragma once
 
 #include <SDL2/SDL.h>
+#include "inexor/shared/cube_types.hpp"
 
 const int islittleendian = 1;
 

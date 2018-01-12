@@ -1,12 +1,25 @@
-#include "inexor/server/client_management.hpp"
-#include "inexor/server/network_send.hpp"
-#include "inexor/server/gamemode/gamemode_server.hpp"
-#include "inexor/server/demos.hpp"
-#include "inexor/network/legacy/crypto.hpp"
-#include "inexor/network/IsLocalConnection.hpp"
+#include <string.h>                                    // for strcmp
+#include <memory>                                      // for __shared_ptr
 
-#include "inexor/shared/cube_vector.hpp"
-#include "inexor/shared/command.hpp"
+#include "enet/enet.h"                                 // for ENetPeer, enet...
+#include "inexor/fpsgame/guns.hpp"                     // for ::GUN_SG, ::GU...
+#include "inexor/gamemode/gamemode.hpp"                // for m_demo
+#include "inexor/io/Logging.hpp"                       // for Log, Logger
+#include "inexor/network/IsLocalConnection.hpp"        // for IsLocalConnection
+#include "inexor/network/legacy/buffer_types.hpp"      // for packetbuf
+#include "inexor/network/legacy/crypto.hpp"            // for checkpassword
+#include "inexor/network/legacy/cube_network.hpp"      // for putint, ipmask
+#include "inexor/network/legacy/game_types.hpp"        // for ::N_SERVMSG
+#include "inexor/server/client_management.hpp"
+#include "inexor/server/demos.hpp"                     // for enddemoplayback
+#include "inexor/server/gamemode/gamemode_server.hpp"  // for smode, servmode
+#include "inexor/server/map_management.hpp"            // for changemap
+#include "inexor/server/network_send.hpp"              // for sendf, sendser...
+#include "inexor/shared/command.hpp"                   // for VARF, SVAR
+#include "inexor/shared/cube_formatting.hpp"           // for formatstring
+#include "inexor/shared/cube_tools.hpp"                // for copystring
+#include "inexor/shared/cube_vector.hpp"               // for vector
+#include "inexor/shared/tools.hpp"                     // for rnd
 
 
 namespace server {

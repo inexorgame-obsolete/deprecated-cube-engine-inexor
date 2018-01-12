@@ -1,7 +1,9 @@
-#include "inexor/util/legacy_time.hpp"
+#include <sys/types.h>  // for uint
+#include <chrono>       // for milliseconds, duration_cast, operator-, stead...
+#include <thread>       // for sleep_for
+#include <type_traits>  // for enable_if<>::type
 
-#include <chrono>
-#include <thread>
+#include "inexor/util/legacy_time.hpp"
 
 typedef std::chrono::steady_clock Clock;
 using std::chrono::duration_cast;

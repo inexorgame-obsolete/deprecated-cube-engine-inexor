@@ -1,16 +1,21 @@
 #pragma once
 
-#include <string>
 #include <list>
-#include <map>
+#include <map>                                   // for map
+#include <string>                                // for string
 
-#include "include/cef_app.h"
+#include "include/cef_app.h"                     // for CefApp
+#include "include/cef_base.h"                    // for CefRefPtr, CefString
 #include "include/cef_browser.h"
 #include "include/cef_command_line.h"
-#include "include/cef_render_process_handler.h"
+#include "include/cef_process_message.h"         // for CefProcessId, CefPro...
+#include "include/cef_render_process_handler.h"  // for CefRenderProcessHandler
+#include "include/cef_v8.h"                      // for CefV8Value (ptr only)
 #include "include/wrapper/cef_helpers.h"
-
 #include "inexor/io/Logging.hpp"
+
+class CefBrowser;
+class CefFrame;
 
 namespace inexor {
 namespace ui {

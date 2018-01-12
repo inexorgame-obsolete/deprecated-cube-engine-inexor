@@ -1,4 +1,18 @@
+#include <limits.h>                                // for INT_MIN
+#include <string.h>                                // for strcmp
+#include <algorithm>                               // for max
+
+#include "enet/enet.h"                             // for _ENetPacketFlag::E...
+#include "inexor/network/legacy/cube_network.hpp"  // for putint, getint, DMF
+#include "inexor/network/legacy/game_types.hpp"    // for ::N_EXPIRETOKENS
 #include "inexor/server/gamemode/collect_server.hpp"
+#include "inexor/server/map_management.hpp"        // for smapname
+#include "inexor/server/network_send.hpp"          // for sendf, sendpacket
+#include "inexor/shared/cube_loops.hpp"            // for i, loopv, loopvrev, k
+#include "inexor/shared/cube_vector.hpp"           // for vector
+#include "inexor/shared/ents.hpp"                  // for entity, ::CS_ALIVE
+#include "inexor/shared/geom.hpp"                  // for vec, vec::(anonymo...
+#include "inexor/shared/tools.hpp"                 // for rnd, max
 
 namespace server {
 

@@ -1,4 +1,19 @@
-#include "inexor/engine/engine.hpp"
+#include <math.h>                                     // for cos
+#include <stdlib.h>                                   // for abs
+#include <algorithm>                                  // for min
+
+#include "inexor/engine/engine.hpp"                   // for flataxisface
+#include "inexor/engine/lightmap.hpp"                 // for lerpbounds, ler...
+#include "inexor/engine/octa.hpp"                     // for cube, tjoint
+#include "inexor/engine/world.hpp"                    // for ::DEFAULT_SKY
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/shared/command.hpp"                  // for VARR
+#include "inexor/shared/cube_hash.hpp"                // for hashset
+#include "inexor/shared/cube_loops.hpp"               // for i, j, k, loopi
+#include "inexor/shared/cube_types.hpp"               // for RAD, uint, ushort
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/geom.hpp"                     // for vec, vec2, vec2...
+#include "inexor/shared/tools.hpp"                    // for min
 
 struct normalgroup
 {

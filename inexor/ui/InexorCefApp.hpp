@@ -1,23 +1,29 @@
 #pragma once
 
-#include <string>
 #include <list>
+#include <string>                                      // for string
 
-#include "include/cef_app.h"
+#include "SDL_events.h"                                // for SDL_Event
+#include "include/cef_app.h"                           // for CefApp
+#include "include/cef_base.h"                          // for CefRefPtr, IMP...
 #include "include/cef_browser.h"
+#include "include/cef_browser_process_handler.h"       // for CefBrowserProc...
 #include "include/cef_command_line.h"
 #include "include/cef_render_process_handler.h"
-
+#include "inexor/io/Logging.hpp"
 #include "inexor/ui/InexorBrowserSettings.hpp"
 #include "inexor/ui/InexorWindowInfo.hpp"
-#include "inexor/ui/context/InexorContextManager.hpp"
-#include "inexor/ui/input/InexorKeyboardManager.hpp"
-#include "inexor/ui/input/InexorMouseManager.hpp"
-#include "inexor/ui/layer/InexorLayerManager.hpp"
-#include "inexor/ui/layer/InexorAppLayer.hpp"
-#include "inexor/ui/layer/InexorConsoleLayer.hpp"
-#include "inexor/ui/layer/InexorHudLayer.hpp"
-#include "inexor/io/Logging.hpp"
+#include "inexor/ui/context/InexorContextManager.hpp"  // for InexorContextM...
+#include "inexor/ui/input/InexorKeyboardManager.hpp"   // for InexorKeyboard...
+#include "inexor/ui/input/InexorMouseManager.hpp"      // for InexorMouseMan...
+#include "inexor/ui/layer/InexorAppLayer.hpp"          // for InexorAppLayer
+#include "inexor/ui/layer/InexorConsoleLayer.hpp"      // for InexorConsoleL...
+#include "inexor/ui/layer/InexorHudLayer.hpp"          // for InexorHudLayer
+#include "inexor/ui/layer/InexorLayerManager.hpp"      // for InexorLayerMan...
+
+class CefBrowser;
+class CefFrame;
+class CefV8Context;
 
 namespace inexor {
 namespace ui {

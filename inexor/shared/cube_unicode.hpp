@@ -3,7 +3,9 @@
 /// Use codecvt_utf8 for a std way (maybe provide a wrapper).
 #pragma once
 
-#include "inexor/shared/cube_types.hpp"
+#include <stddef.h>                      // for size_t
+
+#include "inexor/shared/cube_types.hpp"  // for uchar, uint
 
 /// UTF-8 encoder/decoder function prototypes
 extern size_t decodeutf8(uchar *dst, size_t dstlen, const uchar *src, size_t srclen, size_t *carry = nullptr);

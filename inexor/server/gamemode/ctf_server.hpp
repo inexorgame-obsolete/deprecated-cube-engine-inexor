@@ -1,8 +1,13 @@
 #pragma once
 #include "inexor/fpsgame/game.hpp"
-#include "inexor/gamemode/ctf_common.hpp"
-#include "inexor/server/gamemode/gamemode_server.hpp"
-#include "inexor/util/legacy_time.hpp"
+#include "inexor/gamemode/ctf_common.hpp"              // for ctfmode, ctfmo...
+#include "inexor/gamemode/gamemode.hpp"                // for m_efficiency
+#include "inexor/network/legacy/buffer_types.hpp"      // for packetbuf (ptr...
+#include "inexor/server/client_management.hpp"         // for clientinfo
+#include "inexor/server/gamemode/gamemode_server.hpp"  // for servmode
+#include "inexor/util/legacy_time.hpp"                 // for curtime, gamem...
+
+struct vec;
 
 namespace server {
 

@@ -1,9 +1,15 @@
 #pragma once
 
 #include "inexor/engine/octa.hpp"
-#include "inexor/network/SharedVar.hpp"
-#include "inexor/shared/cube_vector.hpp"
+#include "inexor/network/SharedVar.hpp"   // for SharedVar
+#include "inexor/shared/cube_types.hpp"   // for ushort
+#include "inexor/shared/cube_vector.hpp"  // for vector
 #include "inexor/shared/geom.hpp"
+#include "inexor/shared/iengine.hpp"      // for ::MATF_VOLUME
+
+struct cube;
+struct ivec;
+struct materialsurface;
 
 extern SharedVar<int> showmat;
 

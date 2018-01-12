@@ -1,6 +1,30 @@
+#include <limits.h>                                   // for INT_MAX
+#include <math.h>                                     // for sinf, cosf, M_PI
+#include <string.h>                                   // for strcmp, strlen
+#include <memory>                                     // for __shared_ptr
+
+#include "SDL_opengl.h"                               // for glBlendFunc
 #include "inexor/client/gamemode/capture_client.hpp"
-#include "inexor/engine/rendertext.hpp"
-#include "inexor/model/rendermodel.hpp"
+#include "inexor/engine/glemu.hpp"                    // for attribf, colorf
+#include "inexor/engine/particles.hpp"                // for particle_splash
+#include "inexor/fpsgame/entities.hpp"                // for entmdlname, ents
+#include "inexor/fpsgame/game.hpp"                    // for player1, teamcolor
+#include "inexor/fpsgame/guns.hpp"                    // for itemstat, items...
+#include "inexor/fpsgame/teaminfo.hpp"                // for ::TEAM_NONE
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/model/model.hpp"                     // for rendermodel
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/network/legacy/cube_network.hpp"     // for getint, putint
+#include "inexor/network/legacy/game_types.hpp"       // for ::N_REPAMMO
+#include "inexor/shared/command.hpp"                  // for VARP, getalias
+#include "inexor/shared/cube_formatting.hpp"          // for formatstring
+#include "inexor/shared/cube_loops.hpp"               // for i, loopv, j, loopi
+#include "inexor/shared/cube_tools.hpp"               // for copystring
+#include "inexor/shared/cube_types.hpp"               // for string, RAD
+#include "inexor/shared/ents.hpp"                     // for extentity, ::I_...
+#include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
+#include "inexor/shared/igame.hpp"                    // for iterdynents
+#include "inexor/sound/sound.hpp"                     // for playsound, prel...
 
 namespace game {
 
@@ -8,7 +32,6 @@ VARP(capturetether, 0, 1, 1);
 VARP(autorepammo, 0, 1, 1);
 VARP(basenumbers, 0, 0, 1);
 
-ICOMMAND(repammo, "", (), capturemode.replenishammo());
 ICOMMAND(insidebases, "", (),
 {
     vector<char> buf;
@@ -25,6 +48,8 @@ ICOMMAND(insidebases, "", (),
     buf.add('\0');
     result(buf.getbuf());
 });
+ICOMMAND(repammo, "", (), capturemode.replenishammo());
+
 
 void captureclientmode::drawblips(fpsent *d, float blipsize, int fw, int fh, int type, bool skipenemy)
 {

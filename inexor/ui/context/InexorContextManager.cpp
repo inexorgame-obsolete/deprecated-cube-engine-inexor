@@ -1,3 +1,5 @@
+#include "include/base/cef_logging.h"     // for COMPACT_GOOGLE_LOG_DCHECK
+#include "include/wrapper/cef_helpers.h"  // for CEF_REQUIRE_RENDERER_THREAD
 #include "inexor/ui/context/InexorContextManager.hpp"
 
 namespace inexor {

@@ -1,5 +1,15 @@
 
+#include "inexor/fpsgame/teaminfo.hpp"           // for MAXTEAMLEN
+#include "inexor/gamemode/gamemode.hpp"          // for isteam
+#include "inexor/network/legacy/game_types.hpp"  // for ::N_HUDANNOUNCE, ::N...
 #include "inexor/server/gamemode/hideandseek_server.hpp"
+#include "inexor/server/network_send.hpp"        // for sendf
+#include "inexor/shared/cube_formatting.hpp"     // for defformatstring
+#include "inexor/shared/cube_loops.hpp"          // for i, loopv
+#include "inexor/shared/cube_tools.hpp"          // for copystring
+#include "inexor/shared/tools.hpp"               // for rnd
+#include "inexor/ui/legacy/3dgui.hpp"            // for hudannounceeffects::...
+#include "inexor/util/legacy_time.hpp"           // for totalmillis
 
 namespace server {
 

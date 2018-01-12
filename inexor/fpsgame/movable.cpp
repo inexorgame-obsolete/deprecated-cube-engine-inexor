@@ -1,7 +1,21 @@
 // movable.cpp: implements physics for inanimate models
-#include "inexor/fpsgame/game.hpp"
-#include "inexor/fpsgame/entities.hpp"
-#include "inexor/model/rendermodel.hpp"
+#include <math.h>                         // for fabs
+#include <algorithm>                      // for min, max
+
+#include "inexor/fpsgame/entities.hpp"    // for ents
+#include "inexor/fpsgame/fpsent.hpp"      // for fpsent
+#include "inexor/fpsgame/game.hpp"        // for explode, player1
+#include "inexor/fpsgame/guns.hpp"        // for ::GUN_BARREL, guninfo, guns
+#include "inexor/gamemode/gamemode.hpp"   // for m_obstacles
+#include "inexor/model/model.hpp"         // for mapmodelname, rendermodel
+#include "inexor/shared/command.hpp"      // for _icmd_platform<>::run, ICOM...
+#include "inexor/shared/cube_loops.hpp"   // for i, loopv
+#include "inexor/shared/cube_vector.hpp"  // for vector
+#include "inexor/shared/ents.hpp"         // for entity, ::PLATFORM, ::OBSTACLE
+#include "inexor/shared/geom.hpp"         // for vec, vec::(anonymous union)...
+#include "inexor/shared/iengine.hpp"      // for vecfromyawpitch, adddecal
+#include "inexor/shared/tools.hpp"        // for min, max
+#include "inexor/util/legacy_time.hpp"    // for lastmillis
 
 
 extern int physsteps;

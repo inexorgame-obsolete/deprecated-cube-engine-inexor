@@ -1,4 +1,20 @@
+#include <boost/algorithm/clamp.hpp>                  // for clamp
+#include <limits.h>                                   // for INT_MAX
+#include <string.h>                                   // for strcmp
+#include <algorithm>                                  // for max
+
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/network/legacy/cube_network.hpp"     // for putint, getint
+#include "inexor/network/legacy/game_types.hpp"       // for ::N_RESETFLAG
 #include "inexor/server/gamemode/ctf_server.hpp"
+#include "inexor/server/map_management.hpp"           // for smapname
+#include "inexor/server/network_send.hpp"             // for sendf
+#include "inexor/shared/command.hpp"                  // for VAR
+#include "inexor/shared/cube_loops.hpp"               // for i, loopv, j, k
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/ents.hpp"                     // for entity, ::CS_SP...
+#include "inexor/shared/geom.hpp"                     // for vec, ivec, ivec...
+#include "inexor/shared/tools.hpp"                    // for rnd, clamp, max
 
 namespace server {
 

@@ -1,7 +1,33 @@
-#include "inexor/fpsgame/game.hpp"
-#include "inexor/fpsgame/entities.hpp"
-#include "inexor/fpsgame/guns.hpp"
-#include "inexor/client/gamemode/gamemode_client.hpp"
+#include <boost/algorithm/clamp.hpp>                   // for clamp
+#include <math.h>                                      // for fabs, asin, atan2
+#include <algorithm>                                   // for min, max
+#include <memory>                                      // for __shared_ptr
+
+#include "inexor/client/gamemode/gamemode_client.hpp"  // for cmode, clientmode
+#include "inexor/engine/particles.hpp"                 // for particle_flare
+#include "inexor/fpsgame/ai.hpp"                       // for aiinfo, interest
+#include "inexor/fpsgame/entities.hpp"                 // for ents, checkitems
+#include "inexor/fpsgame/fpsent.hpp"                   // for fpsent
+#include "inexor/fpsgame/fpsstate.hpp"                 // for ::AI_BOT, ::AI...
+#include "inexor/fpsgame/game.hpp"                     // for players, color...
+#include "inexor/fpsgame/guns.hpp"                     // for guninfo, ::GUN...
+#include "inexor/fpsgame/teaminfo.hpp"                 // for MAXNAMELEN
+#include "inexor/gamemode/gamemode.hpp"                // for m_bomb, isteam
+#include "inexor/io/Logging.hpp"                       // for Log, Logger
+#include "inexor/network/SharedVar.hpp"                // for SharedVar
+#include "inexor/network/legacy/game_types.hpp"        // for ::N_ADDBOT
+#include "inexor/shared/command.hpp"                   // for ICOMMAND, VAR
+#include "inexor/shared/cube_formatting.hpp"           // for defformatstring
+#include "inexor/shared/cube_loops.hpp"                // for i, loopv, loopi
+#include "inexor/shared/cube_tools.hpp"                // for copystring
+#include "inexor/shared/cube_types.hpp"                // for ushort, RAD
+#include "inexor/shared/cube_vector.hpp"               // for vector
+#include "inexor/shared/ents.hpp"                      // for extentity, ::C...
+#include "inexor/shared/geom.hpp"                      // for vec, vec::(ano...
+#include "inexor/shared/iengine.hpp"                   // for moveplayer
+#include "inexor/shared/igame.hpp"                     // for suicide
+#include "inexor/shared/tools.hpp"                     // for rnd, clamp, min
+#include "inexor/util/legacy_time.hpp"                 // for lastmillis
 
 
 extern SharedVar<int> fog;
@@ -20,9 +46,9 @@ namespace ai
 	// options for local dedicated server
 	// those messages are not actually handled in any client code
     ICOMMAND(addbot, "s", (char *s), addmsg(N_ADDBOT, "ri", *s ? clamp(parseint(s), 1, 101) : -1));
-    ICOMMAND(delbot, "", (), addmsg(N_DELBOT, "r"));
-    ICOMMAND(botlimit, "i", (int *n), addmsg(N_BOTLIMIT, "ri", *n));
     ICOMMAND(botbalance, "i", (int *n), addmsg(N_BOTBALANCE, "ri", *n));
+    ICOMMAND(botlimit, "i", (int *n), addmsg(N_BOTLIMIT, "ri", *n));
+    ICOMMAND(delbot, "", (), addmsg(N_DELBOT, "r"));
 
     float viewdist(int x)
     {

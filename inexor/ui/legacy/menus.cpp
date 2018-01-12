@@ -1,11 +1,29 @@
 // menus.cpp: ingame menu system (also used for scores and serverlist)
 
-#include "inexor/engine/engine.hpp"
-#include "inexor/ui/legacy/3dgui.hpp"
-#include "inexor/ui/legacy/menus.hpp"
-#include "inexor/model/rendermodel.hpp"
+#include <ctype.h>                                    // for isdigit
+#include <limits.h>                                   // for INT_MIN
+#include <math.h>                                     // for floor
+#include <stdlib.h>                                   // for strtol
+#include <string.h>                                   // for strcmp, strspn
+#include <algorithm>                                  // for max, min
 
-#include <limits>
+#include "inexor/engine/engine.hpp"                   // for camera1, player
+#include "inexor/model/rendermodel.hpp"               // for findanims
+#include "inexor/shared/command.hpp"                  // for COMMAND, execute
+#include "inexor/shared/cube_formatting.hpp"          // for defformatstring
+#include "inexor/shared/cube_hash.hpp"                // for hashnameset
+#include "inexor/shared/cube_loops.hpp"               // for i, loopv, loopi
+#include "inexor/shared/cube_tools.hpp"               // for newstring, DELETEA
+#include "inexor/shared/cube_types.hpp"               // for uint
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/ents.hpp"                     // for physent, ANIM_ALL
+#include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
+#include "inexor/shared/iengine.hpp"                  // for isconnected
+#include "inexor/shared/tools.hpp"                    // for max, min
+#include "inexor/texture/texture.hpp"                 // for textureload
+#include "inexor/ui/legacy/3dgui.hpp"                 // for g3d_gui, ::G3D_UP
+#include "inexor/ui/legacy/menus.hpp"
+#include "inexor/util/legacy_time.hpp"                // for totalmillis
 
 #define GUI_TITLE_COLOR  0xFFDD88
 #define GUI_BUTTON_COLOR 0xFFFFFF
@@ -560,6 +578,7 @@ COMMAND(newgui, "ssss");
 COMMAND(guibutton, "sss");
 COMMAND(guitext, "ss");
 ICOMMAND(cleargui, "i", (int *n), intret(cleargui(*n)));
+
 COMMAND(showgui, "s");
 COMMAND(hidegui, "s");
 COMMAND(guionclear, "s");

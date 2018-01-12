@@ -1,18 +1,46 @@
-#include "inexor/engine/engine.hpp"
+#include <SDL_opengl.h>                               // for GL_STATIC_DRAW
+#include <boost/algorithm/clamp.hpp>                  // for clamp
+#include <limits.h>                                   // for USHRT_MAX
+#include <stdlib.h>                                   // for abs
+#include <string.h>                                   // for memset, memcmp
+#include <algorithm>                                  // for min, max, swap
+#include <memory>                                     // for __shared_ptr
+
+#include "SDL_opengl.h"                               // for glBlendFunc
+#include "inexor/engine/blend.hpp"                    // for stoppaintblendmap
+#include "inexor/engine/blob.hpp"                     // for resetblobs
+#include "inexor/engine/engine.hpp"                   // for player, discard...
+#include "inexor/engine/glemu.hpp"                    // for attrib, attribf
+#include "inexor/engine/glexts.hpp"                   // for glBufferData_
+#include "inexor/engine/lightmap.hpp"                 // for brightencube
+#include "inexor/engine/material.hpp"                 // for findmaterial
+#include "inexor/engine/octa.hpp"                     // for selinfo, cube
 #include "inexor/engine/octaedit.hpp"
-#include "inexor/io/filesystem/mediadirs.hpp"
-#include "inexor/texture/slot.hpp"
-#include "inexor/io/input/InputRouter.hpp"
-#include "inexor/io/Logging.hpp"
-#include "inexor/engine/blend.hpp"
-#include "inexor/engine/blob.hpp"
-#include "inexor/engine/material.hpp"
-
-#include "inexor/ui/legacy/3dgui.hpp"
-#include "inexor/ui/legacy/menus.hpp"
-
-#include "inexor/engine/glexts.hpp"
-#include "inexor/engine/glemu.hpp"
+#include "inexor/engine/shader.hpp"                   // for SlotShaderParam
+#include "inexor/engine/world.hpp"                    // for ::DEFAULT_SKY
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/io/input/InputRouter.hpp"            // for InputRouter
+#include "inexor/io/legacy/stream.hpp"                // for streambuf, stream
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/shared/command.hpp"                  // for COMMAND, intret
+#include "inexor/shared/cube_endian.hpp"              // for lilswap
+#include "inexor/shared/cube_formatting.hpp"          // for defformatstring
+#include "inexor/shared/cube_hash.hpp"                // for hashnameset
+#include "inexor/shared/cube_loops.hpp"               // for i, loop, loopi, j
+#include "inexor/shared/cube_tools.hpp"               // for newstring, DELETEA
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/ents.hpp"                     // for dynent, entity
+#include "inexor/shared/geom.hpp"                     // for ivec, vec, ivec...
+#include "inexor/shared/iengine.hpp"                  // for multiplayer
+#include "inexor/shared/igame.hpp"                    // for edittrigger
+#include "inexor/shared/tools.hpp"                    // for min, max, clamp
+#include "inexor/texture/slot.hpp"                    // for VSlot, Slot
+#include "inexor/texture/texture.hpp"                 // for Texture, notexture
+#include "inexor/ui/legacy/3dgui.hpp"                 // for g3d_gui, g3d_ad...
+#include "inexor/ui/legacy/menus.hpp"                 // for mainmenu
+#include "inexor/util/legacy_time.hpp"                // for totalmillis
+#include "zconf.h"                                    // for Bytef, uLongf
+#include "zlib.h"                                     // for compressBound
 
 using namespace inexor::io;
 using namespace inexor::util;
@@ -156,6 +184,7 @@ VARF(dragging, 0, 0, 1,
 /// @warning this has nothing to do with particles, pickups or entities!
 int moving = 0;
 ICOMMAND(moving, "b", (int *n),
+
 {
     if(*n >= 0)
     {
@@ -301,6 +330,7 @@ void selextend()
 
 /// cubescript command hook: toggle editing
 ICOMMAND(edittoggle, "", (), toggleedit(false));
+
 /// cubescript command hook: remove entity selection
 COMMAND(entcancel, "");
 /// cubescript command hook: remove cube selection
@@ -315,8 +345,8 @@ COMMAND(reorient, "");
 COMMAND(selextend, "");
 
 ICOMMAND(selmoved,   "", (), { if(noedit(true)) return; intret(sel.o != savedsel.o ? 1 : 0); });
-ICOMMAND(selsave,    "", (), { if(noedit(true)) return; savedsel = sel; });
 ICOMMAND(selrestore, "", (), { if(noedit(true)) return; sel = savedsel; });
+ICOMMAND(selsave,    "", (), { if(noedit(true)) return; savedsel = sel; });
 ICOMMAND(selswap,    "", (), { if(noedit(true)) return; swap(sel, savedsel); });
 
 /// looks up a world cube, based on coordinates mapped by the block
@@ -1680,6 +1710,7 @@ COMMAND(brushvert, "iii");
 void hmapcancel() { htextures.setsize(0); }
 COMMAND(hmapcancel, "");
 ICOMMAND(hmapselect, "", (),
+
     int t = lookupcube(cur).texture[orient];
     int i = htextures.find(t);
     if(i<0)
@@ -2536,6 +2567,7 @@ COMMAND(gettex, "");
 COMMAND(getcurtex, "");
 COMMAND(getseltex, "");
 ICOMMAND(getreptex, "", (), { if(!noedit()) intret(vslots.inrange(reptex) ? reptex : -1); });
+
 COMMAND(gettexname, "ii");
 
 void replacetexcube(cube &c, int oldtex, int newtex)

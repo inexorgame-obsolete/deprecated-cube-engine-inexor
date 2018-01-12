@@ -6,6 +6,10 @@
 
 #pragma once
 
+#include "inexor/shared/cube_types.hpp"
+#include "inexor/shared/cube_loops.hpp"
+#include "inexor/shared/cube_tools.hpp"
+#include <string.h>
 
 static inline uint memhash(const void *ptr, int len)
 {
@@ -87,7 +91,8 @@ template<class H, class E, class K, class T> struct hashbase
 
     ~hashbase()
     {
-        DELETEA(chains);
+        delete[] chains;
+        chains = nullptr;
         deletechunks();
     }
 

@@ -1,13 +1,13 @@
-#include <array>
-#include <limits>
+#include <stddef.h>                                   // for size_t
+#include <limits>                                     // for numeric_limits
+#include <ostream>                                    // for operator<<
+#include <string>                                     // for string, operator<<
 
-#include <cstdint>
-#include <cstdbool>
-
-#include "gtest/gtest.h"
-
-#include "inexor/network/SharedVar.hpp"
-#include "inexor/test/helpers.hpp"
+#include "gtest/gtest-message.h"                      // for Message
+#include "gtest/gtest-test-part.h"                    // for TestPartResult
+#include "gtest/gtest.h"                              // for AssertionResult
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/test/helpers.hpp"                    // for expectEq, expect
 
 using namespace std;
 using namespace inexor::rpc;

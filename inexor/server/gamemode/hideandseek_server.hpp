@@ -1,7 +1,15 @@
 #pragma once
+#include <string.h>                                    // for strcmp
+
 #include "inexor/fpsgame/game.hpp"
-#include "inexor/gamemode/hideandseek_common.hpp"
-#include "inexor/server/gamemode/gamemode_server.hpp"
+#include "inexor/gamemode/hideandseek_common.hpp"      // for TEAM_HIDE, TEA...
+#include "inexor/server/client_management.hpp"         // for clientinfo (pt...
+#include "inexor/server/gamemode/gamemode_server.hpp"  // for servmode
+#include "inexor/shared/cube_vector.hpp"               // for vector
+#include "inexor/shared/ents.hpp"                      // for ::CS_SPECTATOR
+
+struct fpsent;
+struct packetbuf;
 
 #define ishider(ci) (strcmp(ci->team, TEAM_HIDE) == 0 && ci->state.state != CS_SPECTATOR ? true : false)
 #define isseeker(ci) (strcmp(ci->team, TEAM_SEEK) == 0 && ci->state.state != CS_SPECTATOR ? true : false)

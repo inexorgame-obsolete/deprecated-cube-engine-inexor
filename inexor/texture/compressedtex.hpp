@@ -4,6 +4,9 @@
 #pragma once
 
 #include "inexor/engine/engine.hpp"
+#include "inexor/shared/cube_types.hpp"  // for uint, ushort
+
+struct ImageData;
 
 extern bool loaddds(const char *filename, ImageData &image, int force = 0);
 

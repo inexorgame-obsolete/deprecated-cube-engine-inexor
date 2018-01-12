@@ -1,7 +1,5 @@
 #include "inexor/util/random.hpp"
 
-#include <chrono>
-
 namespace inexor {
 namespace util {
 

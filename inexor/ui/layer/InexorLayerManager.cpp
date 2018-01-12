@@ -1,11 +1,15 @@
-#include <iostream>
+#include <memory>                                   // for __shared_ptr
 
-#include "include/base/cef_bind.h"
+#include "include/base/cef_bind.h"                  // for Bind
+#include "include/base/cef_logging.h"               // for COMPACT_GOOGLE_LO...
+#include "include/base/cef_ref_counted.h"           // for scoped_refptr
+#include "include/cef_task.h"                       // for CefTask, CefCurre...
 //#include "include/cef_task.h"
-#include "include/wrapper/cef_closure_task.h"
-
-#include "inexor/io/Logging.hpp"
+#include "include/wrapper/cef_closure_task.h"       // for CefCreateClosureTask
+#include "include/wrapper/cef_helpers.h"            // for CEF_REQUIRE_RENDE...
+#include "inexor/io/Logging.hpp"                    // for Log, Logger, log_...
 #include "inexor/ui/layer/InexorLayerManager.hpp"
+#include "inexor/ui/layer/InexorLayerProvider.hpp"  // for InexorLayerProvider
 
 namespace inexor {
 namespace ui {

@@ -1,16 +1,38 @@
 // renderparticles.cpp
 
-#include "inexor/engine/engine.hpp"
-#include "inexor/engine/rendertarget.hpp"
-#include "inexor/engine/particles.hpp"
-#include "inexor/ui/screen/ScreenManager.hpp"
-#include "inexor/io/Logging.hpp"
-#include "inexor/engine/rendertext.hpp"
-#include "inexor/engine/pvs.hpp"
-#include "inexor/engine/shadowmap.hpp"
+#include <SDL_opengl.h>                               // for GL_ARRAY_BUFFER
+#include <boost/algorithm/clamp.hpp>                  // for clamp
+#include <math.h>                                     // for M_PI, ceil, floor
+#include <string.h>                                   // for strlen, strrchr
+#include <algorithm>                                  // for max, min, swap
+#include <memory>                                     // for __shared_ptr
 
-#include "inexor/engine/glexts.hpp"
-#include "inexor/engine/glemu.hpp"
+#include "SDL_opengl.h"                               // for glBlendFunc
+#include "inexor/engine/engine.hpp"                   // for camera1, entname
+#include "inexor/engine/glemu.hpp"                    // for attrib, begin, end
+#include "inexor/engine/glexts.hpp"                   // for glBufferData_
+#include "inexor/engine/octaedit.hpp"                 // for editmode
+#include "inexor/engine/particles.hpp"                // for ::PART_STEAM
+#include "inexor/engine/pvs.hpp"                      // for pvsoccluded
+#include "inexor/engine/rendertext.hpp"               // for FONTH, textmatrix
+#include "inexor/engine/shader.hpp"                   // for lookupshaderbyname
+#include "inexor/engine/shadowmap.hpp"                // for shadowmapping
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/network/SharedVar.hpp"               // for SharedVar, min
+#include "inexor/shared/command.hpp"                  // for VARP, VAR, VARFP
+#include "inexor/shared/cube_formatting.hpp"          // for concatstring
+#include "inexor/shared/cube_loops.hpp"               // for i, loopi, k, loopk
+#include "inexor/shared/cube_tools.hpp"               // for newstring, DELETEA
+#include "inexor/shared/cube_types.hpp"               // for uchar, uint, SQRT2
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/ents.hpp"                     // for entity, extentity
+#include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
+#include "inexor/shared/iengine.hpp"                  // for camright, camup
+#include "inexor/shared/igame.hpp"                    // for entname, getents
+#include "inexor/shared/tools.hpp"                    // for rnd, max, rndscale
+#include "inexor/texture/texture.hpp"                 // for textureload
+#include "inexor/ui/screen/ScreenManager.hpp"         // for ScreenManager
+#include "inexor/util/legacy_time.hpp"                // for lastmillis
 
 using namespace inexor::rendering::screen;
 
@@ -859,10 +881,10 @@ VAR(lnscrollmillis, 1, 300, 5000);
 FVAR(lnscrollscale, 0, 0.125f, 10);
 FVAR(lnblendpower, 0, 0.25f, 1000);
 
-#include "inexor/engine/depthfx.hpp"
-#include "inexor/engine/explosion.hpp"
-#include "inexor/engine/lensflare.hpp"
-#include "inexor/engine/lightning.hpp"
+#include "inexor/engine/depthfx.hpp"                  // for depthfxmax, dep...
+#include "inexor/engine/explosion.hpp"                // for fireballrenderer
+#include "inexor/engine/lensflare.hpp"                // for flares, flarere...
+#include "inexor/engine/lightning.hpp"                // for lightnings, lig...
 
 struct softquadrenderer : quadrenderer
 {

@@ -1,9 +1,20 @@
 
+#include <ctype.h>                                 // for isdigit
+#include <stdarg.h>                                // for va_arg, va_end
+
+#include "inexor/network/legacy/buffer_types.hpp"  // for packetbuf
+#include "inexor/network/legacy/cube_network.hpp"  // for putint, make_file_...
+#include "inexor/network/legacy/game_types.hpp"    // for ::N_SERVMSG
+#include "inexor/server/client_management.hpp"     // for client_connections
+#include "inexor/server/demos.hpp"                 // for recordpacket
 #include "inexor/server/network_send.hpp"
-#include "inexor/server/client_management.hpp"
-#include "inexor/server/demos.hpp"
-#include "inexor/engine/engine.hpp" // TODO remove when allowbroadcast and recordpacket are moved.
-#include "inexor/network/legacy/cube_network.hpp"
+#include "inexor/shared/cube_formatting.hpp"       // for defvformatstring
+#include "inexor/shared/cube_loops.hpp"            // for i, loopi, loopv
+#include "inexor/shared/cube_types.hpp"            // for uchar
+#include "inexor/shared/cube_vector.hpp"           // for vector
+#include "inexor/shared/igame.hpp"                 // for allowbroadcast
+
+struct stream;
 
 using namespace server; // TODO move this in there
 

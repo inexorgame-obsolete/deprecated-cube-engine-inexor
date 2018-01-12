@@ -1,30 +1,67 @@
 // rendergl.cpp: core opengl rendering stuff
 
-#include "inexor/engine/engine.hpp"
-#include "inexor/io/filesystem/mediadirs.hpp"
-#include "inexor/texture/cubemap.hpp"
-#include "inexor/util/Subsystem.hpp"
-#include "inexor/ui/InexorCefApp.hpp"
-#include "inexor/ui/layer/InexorAppLayer.hpp"
-#include "inexor/ui/screen/ScreenManager.hpp"
-#include "inexor/io/Logging.hpp"
+#include <SDL_opengl.h>                               // for PFNGLGENFRAMEBU...
+#include <boost/algorithm/clamp.hpp>                  // for clamp
+#include <ctype.h>                                    // for tolower
+#include <math.h>                                     // for fabs, log, tan
+#include <stdio.h>                                    // for sscanf
+#include <stdlib.h>                                   // for abs
+#include <string.h>                                   // for strstr, memcpy
+#include <time.h>                                     // for localtime, strf...
+#include <algorithm>                                  // for max, min, swap
+#include <list>                                       // for _List_iterator
+#include <memory>                                     // for __shared_ptr
+#include <string>                                     // for string
 
-#include "inexor/engine/blend.hpp"
-#include "inexor/engine/pvs.hpp"
-#include "inexor/engine/dynlight.hpp"
-#include "inexor/engine/material.hpp"
-#include "inexor/engine/decal.hpp"
-#include "inexor/engine/shadowmap.hpp"
-
-#include "inexor/engine/octaedit.hpp"
-#include "inexor/engine/rendersky.hpp"
-
-#include "inexor/ui/legacy/3dgui.hpp"
-#include "inexor/ui/legacy/menus.hpp"
-#include "inexor/engine/rendertext.hpp"
-
-#include "inexor/engine/glexts.hpp"
-#include "inexor/engine/glemu.hpp"
+#include "SDL_opengl.h"                               // for glDisable, glEn...
+#include "SDL_video.h"                                // for SDL_GL_GetProcA...
+#include "include/base/cef_ref_counted.h"             // for scoped_refptr
+#include "include/cef_base.h"                         // for CefRefPtr
+#include "inexor/engine/blend.hpp"                    // for renderblendbrush
+#include "inexor/engine/decal.hpp"                    // for renderdecals
+#include "inexor/engine/dynlight.hpp"                 // for updatedynlights
+#include "inexor/engine/engine.hpp"                   // for refracting, ren...
+#include "inexor/engine/glemu.hpp"                    // for attribf, colorf
+#include "inexor/engine/lightmap.hpp"                 // for lightmaps
+#include "inexor/engine/material.hpp"                 // for rendermaterials
+#include "inexor/engine/octa.hpp"                     // for cube, gbatches
+#include "inexor/engine/octaedit.hpp"                 // for editmode, rende...
+#include "inexor/engine/pvs.hpp"                      // for setviewcell
+#include "inexor/engine/rendersky.hpp"                // for drawskybox, lim...
+#include "inexor/engine/rendertext.hpp"               // for FONTH
+#include "inexor/engine/shader.hpp"                   // for Shader, LocalSh...
+#include "inexor/engine/shadowmap.hpp"                // for shadowmap, shad...
+#include "inexor/engine/world.hpp"                    // for WATER_OFFSET
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/io/filesystem/mediadirs.hpp"         // for getmediapath
+#include "inexor/io/legacy/stream.hpp"                // for path, stream
+#include "inexor/network/SharedVar.hpp"               // for SharedVar, min
+#include "inexor/shared/command.hpp"                  // for VARP, VAR, floa...
+#include "inexor/shared/cube_formatting.hpp"          // for tempformatstring
+#include "inexor/shared/cube_loops.hpp"               // for i, k, loopi, loopk
+#include "inexor/shared/cube_tools.hpp"               // for DELETEA
+#include "inexor/shared/cube_types.hpp"               // for RAD, uint, string
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/ents.hpp"                     // for physent, dynent
+#include "inexor/shared/geom.hpp"                     // for vec, matrix4
+#include "inexor/shared/iengine.hpp"                  // for movecamera, dra...
+#include "inexor/shared/igame.hpp"                    // for defaultcrosshair
+#include "inexor/shared/tools.hpp"                    // for max, min, clamp
+#include "inexor/texture/cubemap.hpp"                 // for cubemapside
+#include "inexor/texture/texsettings.hpp"             // for hwtexsize, hwcu...
+#include "inexor/texture/texture.hpp"                 // for textureload
+#include "inexor/ui/InexorCefApp.hpp"                 // for cef_app, Inexor...
+#include "inexor/ui/InexorRenderHandler.hpp"          // for InexorRenderHan...
+#include "inexor/ui/input/InexorMouseManager.hpp"     // for InexorMouseManager
+#include "inexor/ui/layer/InexorAppLayer.hpp"         // for InexorAppLayer
+#include "inexor/ui/layer/InexorConsoleLayer.hpp"     // for InexorConsoleLayer
+#include "inexor/ui/layer/InexorHudLayer.hpp"         // for InexorHudLayer
+#include "inexor/ui/layer/InexorLayer.hpp"            // for InexorLayer
+#include "inexor/ui/layer/InexorLayerManager.hpp"     // for InexorLayerManager
+#include "inexor/ui/legacy/3dgui.hpp"                 // for g3d_render, g3d...
+#include "inexor/ui/legacy/menus.hpp"                 // for mainmenu
+#include "inexor/ui/screen/ScreenManager.hpp"         // for ScreenManager
+#include "inexor/util/legacy_time.hpp"                // for lastmillis, tot...
 
 using namespace inexor::rendering::screen;
 using namespace inexor::ui;
@@ -635,14 +672,14 @@ void gl_init(int depth, int fsaa)
 
 VAR(wireframe, 0, 0, 1);
 
-ICOMMAND(getcamyaw, "", (), floatret(camera1->yaw));
 ICOMMAND(getcampitch, "", (), floatret(camera1->pitch));
-ICOMMAND(getcamroll, "", (), floatret(camera1->roll));
-ICOMMAND(getcampos, "", (), 
+ICOMMAND(getcampos, "", (),
 {
     defformatstring(pos, "%s %s %s", floatstr(camera1->o.x), floatstr(camera1->o.y), floatstr(camera1->o.z));
     result(pos);
 });
+ICOMMAND(getcamroll, "", (), floatret(camera1->roll));
+ICOMMAND(getcamyaw, "", (), floatret(camera1->yaw));
 
 vec worldpos, camdir, camright, camup;
 
@@ -2253,6 +2290,7 @@ void loadcrosshair_(const char *name, int *i)
 COMMANDN(loadcrosshair, loadcrosshair_, "si");
 
 ICOMMAND(getcrosshair, "i", (int *i), 
+
 {
     const char *name = "";
     if(*i >= 0 && *i < MAXCROSSHAIRS)

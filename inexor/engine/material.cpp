@@ -1,11 +1,30 @@
-#include "inexor/engine/engine.hpp"
-#include "inexor/texture/slot.hpp"
-#include "inexor/texture/cubemap.hpp"
-#include "inexor/shared/cube_sort.hpp"
-#include "inexor/engine/material.hpp"
+#include <math.h>                                     // for fabs, fmod, floor
+#include <stdlib.h>                                   // for abs
+#include <string.h>                                   // for memmove, strcmp
+#include <algorithm>                                  // for max, swap, min
 
-#include "inexor/engine/glexts.hpp"
-#include "inexor/engine/glemu.hpp"
+#include "SDL_opengl.h"                               // for glDepthMask
+#include "inexor/engine/engine.hpp"                   // for camera1, visibl...
+#include "inexor/engine/glemu.hpp"                    // for attrib, attribf
+#include "inexor/engine/glexts.hpp"                   // for glActiveTexture_
+#include "inexor/engine/material.hpp"
+#include "inexor/engine/octa.hpp"                     // for materialsurface
+#include "inexor/engine/octaedit.hpp"                 // for editmode
+#include "inexor/engine/shader.hpp"                   // for Shader, useshad...
+#include "inexor/engine/world.hpp"                    // for WATER_OFFSET
+#include "inexor/network/legacy/buffer_types.hpp"     // for ucharbuf
+#include "inexor/shared/command.hpp"                  // for HVARFR, VARP, VARF
+#include "inexor/shared/cube_formatting.hpp"          // for concatstring
+#include "inexor/shared/cube_loops.hpp"               // for i, loopi, j, loopv
+#include "inexor/shared/cube_sort.hpp"                // for quicksort
+#include "inexor/shared/cube_tools.hpp"               // for DELETEP
+#include "inexor/shared/ents.hpp"                     // for physent, entity
+#include "inexor/shared/geom.hpp"                     // for vec, ivec, vec:...
+#include "inexor/shared/tools.hpp"                    // for max, swap, min
+#include "inexor/texture/cubemap.hpp"                 // for lookupenvmap
+#include "inexor/texture/slot.hpp"                    // for MSlot, Slot::Tex
+#include "inexor/texture/texture.hpp"                 // for Texture, notexture
+#include "inexor/util/legacy_time.hpp"                // for lastmillis
 
 struct QuadNode
 {

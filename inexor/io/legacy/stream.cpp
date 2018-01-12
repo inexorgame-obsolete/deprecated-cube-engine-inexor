@@ -1,16 +1,27 @@
-#include "inexor/shared/cube.hpp"
-#include "inexor/io/Logging.hpp"
+#include <fcntl.h>                                    // for SEEK_END, SEEK_SET
+#include <stdarg.h>                                   // for va_end, va_start
+#include <algorithm>                                  // for min, max
+#include <memory>                                     // for __shared_ptr
+
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/io/legacy/stream.hpp"
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/shared/command.hpp"                  // for VAR
+#include "inexor/shared/cube_loops.hpp"               // for i, loopi, loopv
+#include "inexor/shared/cube_tools.hpp"               // for copystring, new...
+#include "inexor/shared/cube_unicode.hpp"             // for decodeutf8, enc...
+#include "inexor/shared/tools.hpp"                    // for min, max
+#include "zconf.h"                                    // for Bytef, MAX_WBITS
+#include "zlib.h"                                     // for z_stream, crc32
 
 ///////////////////////// file system ///////////////////////
 
 #ifdef WIN32
 #include <shlobj.h>
 #else
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <dirent.h>
+#include <dirent.h>                                   // for dirent, closedir
+#include <sys/stat.h>                                 // for mkdir
+#include <unistd.h>                                   // for access, R_OK, W_OK
 #endif
 
 string homedir = "";

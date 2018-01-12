@@ -1,13 +1,16 @@
-#include <iostream>
+#include <memory>                                     // for __shared_ptr
+#include <string>                                     // for string, to_string
 
+#include "include/base/cef_ref_counted.h"             // for scoped_refptr
+#include "include/cef_app.h"                          // for CefApp, CefDoMe...
+#include "include/cef_base.h"                         // for CefRefPtr, CefM...
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/io/filesystem/ExecutablePath.hpp"    // for ExecutablePathW...
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
 #include "inexor/ui/CefSubsystem.hpp"
-#include "inexor/ui/InexorCefApp.hpp"
-#include "inexor/ui/InexorSettings.hpp"
-#include "inexor/ui/screen/ScreenManager.hpp"
-#include "inexor/io/filesystem/ExecutablePath.hpp"
-#include "inexor/network/SharedTree.hpp"
-
-#include <string>
+#include "inexor/ui/InexorCefApp.hpp"                 // for InexorCefApp
+#include "inexor/ui/InexorSettings.hpp"               // for InexorSettings
+#include "inexor/ui/screen/ScreenManager.hpp"         // for scr_h, scr_w
 
 using namespace inexor::filesystem;
 using namespace inexor::util;

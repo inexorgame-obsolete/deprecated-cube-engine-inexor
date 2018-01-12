@@ -1,5 +1,20 @@
+#include <string.h>                            // for strcmp
+
+#include "SDL_opengl.h"                        // for glBlendFunc, glColor3f
 #include "inexor/client/gamemode/hideandseek_client.hpp"
-#include "inexor/io/filesystem/mediadirs.hpp"
+#include "inexor/fpsgame/teaminfo.hpp"         // for ::TEAM_OPPONENT
+#include "inexor/io/filesystem/mediadirs.hpp"  // for radardir
+#include "inexor/shared/cube_formatting.hpp"   // for defformatstring
+#include "inexor/shared/cube_loops.hpp"        // for i, loopv
+#include "inexor/shared/cube_types.hpp"        // for RAD
+#include "inexor/shared/cube_vector.hpp"       // for vector
+#include "inexor/shared/ents.hpp"              // for ::CS_SPECTATOR, dynent
+#include "inexor/shared/geom.hpp"              // for vec, vec::(anonymous u...
+#include "inexor/util/legacy_time.hpp"         // for totalmillis
+
+namespace game {
+struct movable;
+}  // namespace game
 
 #define ishider(ci) (strcmp(ci->team, TEAM_HIDE) == 0 && ci->state != CS_SPECTATOR ? true : false)
 #define isseeker(ci) (strcmp(ci->team, TEAM_SEEK) == 0 && ci->state != CS_SPECTATOR ? true : false)

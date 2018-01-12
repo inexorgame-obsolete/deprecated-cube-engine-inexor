@@ -1,5 +1,20 @@
-#include "inexor/engine/engine.hpp"
-#include "inexor/model/rendermodel.hpp"
+#include <boost/algorithm/clamp.hpp>      // for clamp
+#include <limits.h>                       // for INT_MAX, INT_MIN, SHRT_MAX
+#include <string.h>                       // for memcpy
+#include <algorithm>                      // for max, min, swap
+
+#include "inexor/engine/lightmap.hpp"     // for lightmapping
+#include "inexor/model/model.hpp"         // for model
+#include "inexor/model/rendermodel.hpp"   // for loadmapmodel
+#include "inexor/physics/bih.hpp"         // for BIH::mesh, BIH, BIH::node
+#include "inexor/shared/cube_loops.hpp"   // for i, loopi, k, j, loopj, loopk
+#include "inexor/shared/cube_types.hpp"   // for ushort, uchar
+#include "inexor/shared/cube_vector.hpp"  // for vector
+#include "inexor/shared/ents.hpp"         // for extentity, ::EF_NOCOLLIDE
+#include "inexor/shared/geom.hpp"         // for vec, ivec, vec::(anonymous ...
+#include "inexor/shared/iengine.hpp"      // for ::RAY_SHADOW, ::RAY_ALPHAPOLY
+#include "inexor/shared/tools.hpp"        // for max, min, clamp, swap
+#include "inexor/texture/texture.hpp"     // for Texture, loadalphamask
 
 bool BIH::triintersect(const mesh &m, int tidx, const vec &mo, const vec &mray, float maxdist, float &dist, int mode)
 {

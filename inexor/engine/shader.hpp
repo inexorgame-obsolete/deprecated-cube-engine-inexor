@@ -3,17 +3,20 @@
 
 #pragma once
 
-#include "inexor/shared/cube_vector.hpp"
-#include "inexor/shared/cube_loops.hpp"
-#include "inexor/shared/cube_types.hpp"
-#include "inexor/shared/geom.hpp"
-#include "inexor/network/SharedTree.hpp"
-#include "inexor/engine/glexts.hpp"
-
 #include <SDL.h>
-#include <SDL_opengl.h>
+#include <SDL_opengl.h>                   // for GL_FALSE, GL_FLOAT_VEC4
+#include <limits.h>                       // for USHRT_MAX
+#include <string.h>                       // for memcpy, memset, NULL
+#include <algorithm>                      // for min
 
-#include <algorithm>
+#include "inexor/engine/glexts.hpp"       // for glUniform4fv_, glUniform1f_
+#include "inexor/network/SharedTree.hpp"
+#include "inexor/network/SharedVar.hpp"   // for SharedVar
+#include "inexor/shared/cube_loops.hpp"   // for i, loopi, loopv
+#include "inexor/shared/cube_tools.hpp"   // for DELETEA
+#include "inexor/shared/cube_types.hpp"   // for ushort, uint, uchar
+#include "inexor/shared/cube_vector.hpp"  // for vector
+#include "inexor/shared/geom.hpp"         // for plane, vec::(anonymous)
 
 struct GlobalShaderParamState
 {

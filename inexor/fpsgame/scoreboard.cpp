@@ -1,14 +1,30 @@
 // creation of scoreboard
-#include "inexor/fpsgame/game.hpp"
-#include "inexor/client/gamemode/gamemode_client.hpp"
-#include "inexor/ui/legacy/3dgui.hpp"
-#include "inexor/shared/command.hpp"
-#include "inexor/fpsgame/fpsent.hpp"
-#include "inexor/fpsgame/teaminfo.hpp"
+#include <limits.h>                                    // for INT_MIN
+#include <string.h>                                    // for strcmp
+#include <algorithm>                                   // for max
+
+#include "enet/enet.h"                                 // for enet_address_g...
+#include "inexor/client/gamemode/gamemode_client.hpp"  // for cmode, clientmode
+#include "inexor/fpsgame/fpsent.hpp"                   // for fpsent
+#include "inexor/fpsgame/game.hpp"                     // for player1, color...
 #include "inexor/fpsgame/scoreboard.hpp"
-#include "inexor/shared/ents.hpp"
-#include "inexor/shared/cube_hash.hpp"
-#include "inexor/shared/cube_vector.hpp"
+#include "inexor/fpsgame/teaminfo.hpp"                 // for scoregroup
+#include "inexor/gamemode/gamemode.hpp"                // for m_teammode
+#include "inexor/network/SharedVar.hpp"                // for SharedVar
+#include "inexor/network/legacy/administration.hpp"    // for ::PRIV_ADMIN
+#include "inexor/shared/command.hpp"                   // for VARP, _icmd_sh...
+#include "inexor/shared/cube_hash.hpp"                 // for hashset, enume...
+#include "inexor/shared/cube_loops.hpp"                // for i, loopv, k, j
+#include "inexor/shared/cube_tools.hpp"                // for copystring
+#include "inexor/shared/cube_types.hpp"                // for string
+#include "inexor/shared/cube_vector.hpp"               // for vector
+#include "inexor/shared/ents.hpp"                      // for ::CS_SPECTATOR
+#include "inexor/shared/geom.hpp"                      // for vec
+#include "inexor/shared/iengine.hpp"                   // for multiplayer
+#include "inexor/shared/igame.hpp"                     // for gamespeed, get...
+#include "inexor/shared/tools.hpp"                     // for max
+#include "inexor/ui/legacy/3dgui.hpp"                  // for g3d_gui, g3d_a...
+#include "inexor/util/legacy_time.hpp"                 // for lastmillis
 
 namespace game
 {

@@ -1,12 +1,18 @@
 ﻿#include "inexor/ui/input/InexorKeyboardManager.hpp"
-#include "inexor/io/input/SDL2Keyboard.hpp"
+#include <stdint.h>                          // for uint32_t
+#include <codecvt>                           // for codecvt_utf8_utf16
+#include <locale>                            // for wstring_convert
+#include <memory>                            // for __shared_ptr
+#include <string>                            // for u16string, string
 
-#include <SDL.h>
-#include <include/cef_base.h>
+#include "SDL_keyboard.h"                    // for SDL_Keysym
+#include "include/base/cef_logging.h"        // for COMPACT_GOOGLE_LOG_DCHECK
+#include "include/base/cef_ref_counted.h"    // for scoped_refptr
+#include "include/wrapper/cef_helpers.h"     // for CEF_REQUIRE_RENDERER_THREAD
+#include "inexor/io/Logging.hpp"             // for Log, Logger, log_manager
+#include "inexor/io/input/SDL2Keyboard.hpp"  // for convertSDLtoJSKeyCode
 
-#include <string>
-#include <locale>
-#include <codecvt>
+class CefBrowser;
 
 namespace inexor {
 namespace ui {

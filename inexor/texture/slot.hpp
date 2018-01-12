@@ -8,12 +8,21 @@
 
 #pragma once
 
-#include "inexor/texture/texture.hpp"
-#include "inexor/texture/image.hpp"
-#include "inexor/engine/shader.hpp"
 #include "inexor/engine/octa.hpp"
+#include "inexor/engine/shader.hpp"                // for SlotShaderParam
+#include "inexor/network/legacy/buffer_types.hpp"  // for ucharbuf
+#include "inexor/shared/cube_loops.hpp"            // for i, loopv
+#include "inexor/shared/cube_tools.hpp"            // for DELETEA, DELETEP
+#include "inexor/shared/cube_types.hpp"            // for string, uchar, uint
+#include "inexor/shared/cube_vector.hpp"           // for vector
+#include "inexor/shared/geom.hpp"                  // for vec, ivec2, vec2
+#include "inexor/texture/image.hpp"
+#include "inexor/texture/texture.hpp"
 
 class Slot;
+struct ImageData;
+struct Texture;
+struct cube;
 
 enum
 {

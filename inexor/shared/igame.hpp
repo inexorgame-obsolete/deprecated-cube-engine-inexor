@@ -1,5 +1,6 @@
 // the interface the engine uses to run the gameplay module
 #pragma once
+#include "inexor/shared/command.hpp"
 
 namespace entities
 {

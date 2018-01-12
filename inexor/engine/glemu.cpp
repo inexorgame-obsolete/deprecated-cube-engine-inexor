@@ -1,7 +1,13 @@
-#include "inexor/shared/cube.hpp"
+#include <string.h>                       // for memcpy
+#include <algorithm>                      // for min
 
-#include "inexor/engine/glexts.hpp"
+#include "SDL_opengl.h"                   // for GLint, GLsizei, glDrawArrays
 #include "inexor/engine/glemu.hpp"
+#include "inexor/engine/glexts.hpp"       // for glBindBuffer_, glBufferData_
+#include "inexor/network/SharedVar.hpp"   // for SharedVar
+#include "inexor/shared/cube_loops.hpp"   // for i, loopi, loopv
+#include "inexor/shared/cube_vector.hpp"  // for vector
+#include "inexor/shared/tools.hpp"        // for min
 
 extern SharedVar<int> glversion;
 extern SharedVar<int> intel_mapbufferrange_bug;

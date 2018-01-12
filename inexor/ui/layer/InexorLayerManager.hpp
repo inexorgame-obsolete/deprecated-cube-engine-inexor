@@ -1,15 +1,21 @@
 #pragma once
 
-#include <list>
+#include <list>                                         // for list, list<>:...
+#include <string>                                       // for string
 
 #include "include/cef_app.h"
-#include "inexor/ui/context/InexorContextProvider.hpp"
-#include "inexor/ui/layer/InexorLayer.hpp"
+#include "include/cef_base.h"                           // for CefRefPtr
+#include "include/cef_browser.h"                        // for CefBrowserHost
+#include "include/cef_v8.h"                             // for CefV8Value (p...
+#include "inexor/ui/context/InexorContextProvider.hpp"  // for InexorContext...
+#include "inexor/ui/layer/InexorLayer.hpp"              // for InexorLayer
 #include "inexor/ui/layer/InexorLayerProvider.hpp"
 
 namespace inexor {
 namespace ui {
 namespace layer {
+
+class InexorLayerProvider;
 
 class InexorLayerManager : public inexor::ui::context::InexorContextProvider
 {

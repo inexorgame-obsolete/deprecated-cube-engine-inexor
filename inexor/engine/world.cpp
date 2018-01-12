@@ -1,22 +1,42 @@
 // world.cpp: core map management stuff
 
-#include "inexor/engine/engine.hpp"
-#include "inexor/engine/octaedit.hpp"
-#include "inexor/texture/slot.hpp"
-#include "inexor/io/Logging.hpp"
-#include "inexor/engine/worldio.hpp"
-#include "inexor/engine/blend.hpp"
-#include "inexor/engine/pvs.hpp"
-#include "inexor/physics/physics.hpp"
-#include "inexor/engine/decal.hpp"
+#include <boost/algorithm/clamp.hpp>                  // for clamp
+#include <math.h>                                     // for fmod, fabs, M_PI
+#include <stdlib.h>                                   // for abs
+#include <string.h>                                   // for strcmp
+#include <algorithm>                                  // for max, min, swap
+#include <memory>                                     // for __shared_ptr
 
-#include "inexor/ui/legacy/menus.hpp"
-
-#include "inexor/sound/sound.hpp"
-#include "inexor/model/rendermodel.hpp"
-
-#include "inexor/engine/glexts.hpp"
-#include "inexor/engine/glemu.hpp"
+#include "SDL_opengl.h"                               // for glDepthFunc
+#include "inexor/engine/blend.hpp"                    // for enlargeblendmap
+#include "inexor/engine/decal.hpp"                    // for cleardecals
+#include "inexor/engine/engine.hpp"                   // for allchanged, new...
+#include "inexor/engine/glemu.hpp"                    // for attrib, begin
+#include "inexor/engine/lightmap.hpp"                 // for clearlightcache
+#include "inexor/engine/octa.hpp"                     // for cube, selinfo
+#include "inexor/engine/octaedit.hpp"                 // for addundo, cancelsel
+#include "inexor/engine/pvs.hpp"                      // for clearpvs
+#include "inexor/engine/world.hpp"                    // for MAPVERSION
+#include "inexor/engine/worldio.hpp"                  // for clearmapcrc
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/model/model.hpp"                     // for loadmodel, model
+#include "inexor/model/rendermodel.hpp"               // for loadmapmodel
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/physics/physics.hpp"                 // for rotatebb
+#include "inexor/shared/command.hpp"                  // for intret, COMMAND
+#include "inexor/shared/cube_formatting.hpp"          // for concatstring
+#include "inexor/shared/cube_loops.hpp"               // for i, loopv, loopi, j
+#include "inexor/shared/cube_tools.hpp"               // for copystring
+#include "inexor/shared/cube_types.hpp"               // for uint, RAD, string
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/ents.hpp"                     // for extentity, ::ET...
+#include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
+#include "inexor/shared/iengine.hpp"                  // for entinmap, drope...
+#include "inexor/shared/igame.hpp"                    // for getents, editent
+#include "inexor/shared/tools.hpp"                    // for max, rnd, clamp
+#include "inexor/sound/sound.hpp"                     // for clearmapsounds
+#include "inexor/texture/slot.hpp"                    // for clearslots
+#include "inexor/ui/legacy/menus.hpp"                 // for clearmainmenu
 
 using namespace inexor::sound;
 using namespace inexor::util;
@@ -828,6 +848,7 @@ bool hoveringonent(int ent, int orient)
 VAR(entitysurf, 0, 0, 1);
 
 ICOMMAND(entadd, "", (),
+
 {
     if(enthover >= 0 && !noentedit())
     {
@@ -837,12 +858,14 @@ ICOMMAND(entadd, "", (),
 });
 
 ICOMMAND(enttoggle, "", (),
+
 {
     if(enthover < 0 || noentedit() || !enttoggle(enthover)) { entmoving = 0; intret(0); }
     else { if(entmoving > 1) entmoving = 1; intret(1); }
 });
 
 ICOMMAND(entmoving, "b", (int *n),
+
 {
     if(*n >= 0)
     {
@@ -1125,12 +1148,13 @@ void nearestent()
     if(closest >= 0) entadd(closest);
 }    
             
-ICOMMAND(enthavesel,"",  (), addimplicit(intret(entgroup.length())));
-ICOMMAND(entselect, "e", (uint *body), if(!noentedit()) addgroup(e.type != ET_EMPTY && entgroup.find(n)<0 && executebool(body)));
-ICOMMAND(entloop,   "e", (uint *body), if(!noentedit()) addimplicit(groupeditloop(((void)e, execute(body)))));
-ICOMMAND(insel,     "",  (), entfocus(efocus, intret(pointinsel(sel, e.o))));
 ICOMMAND(entget,    "",  (), entfocus(efocus, string s; printent(e, s, sizeof(s)); result(s)));
+ICOMMAND(enthavesel,"",  (), addimplicit(intret(entgroup.length())));
 ICOMMAND(entindex,  "",  (), intret(efocus));
+ICOMMAND(entloop,   "e", (uint *body), if(!noentedit()) addimplicit(groupeditloop(((void)e, execute(body)))));
+ICOMMAND(entselect, "e", (uint *body), if(!noentedit()) addgroup(e.type != ET_EMPTY && entgroup.find(n)<0 && executebool(body)));
+ICOMMAND(insel,     "",  (), entfocus(efocus, intret(pointinsel(sel, e.o))));
+
 COMMAND(entset, "siiiii");
 COMMAND(nearestent, "");
 

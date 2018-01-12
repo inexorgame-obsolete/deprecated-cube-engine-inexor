@@ -1,8 +1,13 @@
 /// @file format.cpp
 /// Small helper functions to organize which OpenGL formats to use.
 
+#include <SDL_opengl.h>                    // for GL_COMPRESSED_RGBA_S3TC_DX...
+#include <algorithm>                       // for max
+
+#include "inexor/network/SharedVar.hpp"    // for SharedVar
+#include "inexor/shared/tools.hpp"         // for max
 #include "inexor/texture/format.hpp"
-#include "inexor/texture/texsettings.hpp"
+#include "inexor/texture/texsettings.hpp"  // for usetexcompress, texcompress
 
 GLenum texformat(int bpp)
 {

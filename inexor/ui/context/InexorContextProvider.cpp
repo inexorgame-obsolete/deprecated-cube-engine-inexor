@@ -1,5 +1,7 @@
-#include <iostream>
+#include <memory>                          // for __shared_ptr
 
+#include "include/base/cef_ref_counted.h"  // for scoped_refptr
+#include "inexor/io/Logging.hpp"           // for Log, Logger, log_manager
 #include "inexor/ui/context/InexorContextProvider.hpp"
 
 namespace inexor {

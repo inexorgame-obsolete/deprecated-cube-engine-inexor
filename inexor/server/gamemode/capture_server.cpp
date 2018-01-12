@@ -1,4 +1,16 @@
+#include <string.h>                                // for strcmp
+#include <algorithm>                               // for min, max
+
+#include "enet/enet.h"                             // for _ENetPacketFlag::E...
+#include "inexor/fpsgame/guns.hpp"                 // for itemstat, ::A_GREEN
+#include "inexor/network/legacy/cube_network.hpp"  // for putint, getint
+#include "inexor/network/legacy/game_types.hpp"    // for ::N_BASESCORE, ::N...
 #include "inexor/server/gamemode/capture_server.hpp"
+#include "inexor/server/map_management.hpp"        // for smapname
+#include "inexor/server/network_send.hpp"          // for sendf, sendpacket
+#include "inexor/shared/cube_loops.hpp"            // for i, loopv, j, loopvj
+#include "inexor/shared/cube_vector.hpp"           // for vector
+#include "inexor/shared/tools.hpp"                 // for min, max
 
 namespace server {
 

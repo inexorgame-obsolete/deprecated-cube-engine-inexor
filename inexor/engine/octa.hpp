@@ -2,14 +2,18 @@
 
 #pragma once
 
-#include "inexor/engine/world.hpp"
-#include "inexor/shared/geom.hpp"
-#include "inexor/shared/cube_vector.hpp"
-#include "inexor/shared/cube_types.hpp"
-#include "inexor/shared/ents.hpp"
-#include "inexor/network/SharedTree.hpp"
+#include <boost/algorithm/clamp.hpp>      // for clamp
 
-#include <boost/algorithm/clamp.hpp> // TODO replace with std::clamp as soon as C++17 is our target.
+#include "inexor/engine/world.hpp"
+#include "inexor/network/SharedTree.hpp"
+#include "inexor/network/SharedVar.hpp"   // for SharedVar
+#include "inexor/shared/cube_loops.hpp"   // for loopi
+#include "inexor/shared/cube_types.hpp"   // for uchar, uint, ushort
+#include "inexor/shared/cube_vector.hpp"  // for vector
+#include "inexor/shared/ents.hpp"         // for entity
+#include "inexor/shared/geom.hpp"         // for ivec, ivec::(anonymous unio...
+
+struct vertex;
 
 struct elementset
 {

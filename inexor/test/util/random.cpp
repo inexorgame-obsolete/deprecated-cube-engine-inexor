@@ -1,17 +1,17 @@
+#include <array>                              // for array, array<>::value_type
+#include <ostream>                            // for operator<<, basic_ostre...
+#include <random>                             // for default_random_engine
+#include <unordered_map>                      // for unordered_map, operator==
+#include <unordered_set>                      // for unordered_set
+#include <utility>                            // for pair
+
+#include "gtest/gtest.h"
+
 #include <boost/thread/thread.hpp>
 #include <boost/thread/lock_guard.hpp>
 #include <boost/thread/mutex.hpp>
 
-#include <array>
-#include <unordered_map>
-#include <unordered_set>
-
-#include "inexor/util/util.hpp"
-#include "inexor/util/random.hpp"
-
-#include "gtest/gtest.h"
-
-#include "inexor/test/helpers.hpp"
+#include "inexor/util/random.hpp"             // for rnd, deterministic_rnd
 
 using namespace std;
 using namespace boost;

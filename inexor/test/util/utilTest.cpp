@@ -1,8 +1,12 @@
-#include "gtest/gtest.h"
+#include <ostream>                          // for operator<<
+#include <string>                           // for string, basic_string, to_...
 
-#include "inexor/test/helpers.hpp"
-
-#include "inexor/util/util.hpp"
+#include "gtest/gtest-message.h"            // for Message
+#include "gtest/gtest-test-part.h"          // for TestPartResult
+#include "gtest/gtest.h"                    // for Test, TestInfo (ptr only)
+#include "inexor/test/helpers.hpp"          // for expectEq, test
+#include "inexor/util/StringFormatter.hpp"  // for StringFormatter, StringFo...
+#include "inexor/util/util.hpp"             // for to_string, split_find_last
 
 using namespace std;
 using namespace inexor::util;

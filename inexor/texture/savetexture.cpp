@@ -1,12 +1,33 @@
 /// @file savetexture.cpp
 /// everything to save images of various formats.
 
-#include "inexor/network/SharedTree.hpp"
+#include <fcntl.h>                                    // for SEEK_END, SEEK_SET
+#include <string.h>                                   // for strlen, memset
+#include <algorithm>                                  // for min
+#include <memory>                                     // for __shared_ptr
+
+#include "SDL_opengl.h"                               // for glPixelStorei
+#include "SDL_surface.h"                              // for SDL_FreeSurface
+#include "inexor/engine/engine.hpp"                   // for gettimestr
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/io/legacy/stream.hpp"                // for stream, findfile
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/shared/command.hpp"                  // for VARP, COMMAND
+#include "inexor/shared/cube_endian.hpp"              // for bigswap
+#include "inexor/shared/cube_formatting.hpp"          // for concatstring
+#include "inexor/shared/cube_loops.hpp"               // for i, loopi, j, loopj
+#include "inexor/shared/cube_tools.hpp"               // for copystring
+#include "inexor/shared/cube_types.hpp"               // for uchar, uint
+#include "inexor/shared/cube_unicode.hpp"             // for iscubespace
+#include "inexor/shared/igame.hpp"                    // for getclientmap
+#include "inexor/shared/tools.hpp"                    // for min
+#include "inexor/texture/SDL_loading.hpp"             // for wrapsurface
+#include "inexor/texture/image.hpp"                   // for ImageData, texflip
 #include "inexor/texture/savetexture.hpp"
-#include "inexor/texture/SDL_loading.hpp"
-#include "inexor/texture/image.hpp"
-#include "inexor/ui/screen/ScreenManager.hpp"
-#include "inexor/io/Logging.hpp"
+#include "inexor/texture/texture.hpp"                 // for texalign
+#include "inexor/ui/screen/ScreenManager.hpp"         // for ScreenManager
+#include "zconf.h"                                    // for Bytef
+#include "zlib.h"                                     // for crc32, z_stream
 
 using namespace inexor::rendering::screen;
 

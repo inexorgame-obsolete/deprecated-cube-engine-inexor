@@ -1,8 +1,22 @@
-#include "inexor/engine/engine.hpp"
-#include "inexor/engine/rendertext.hpp"
+#include <stdio.h>                            // for sscanf
+#include <string.h>                           // for memcpy, memset, strlen
+#include <algorithm>                          // for max
 
-#include "inexor/engine/glexts.hpp"
-#include "inexor/engine/glemu.hpp"
+#include "SDL_opengl.h"                       // for glBindTexture, glBlendFunc
+#include "inexor/engine/engine.hpp"           // for xtraverts
+#include "inexor/engine/glemu.hpp"            // for attribf, attrib, end
+#include "inexor/engine/rendertext.hpp"
+#include "inexor/io/legacy/stream.hpp"        // for makerelpath
+#include "inexor/shared/command.hpp"          // for COMMAND, getcurexecdir
+#include "inexor/shared/cube_formatting.hpp"  // for defvformatstring
+#include "inexor/shared/cube_hash.hpp"        // for hashnameset, hashbase
+#include "inexor/shared/cube_loops.hpp"       // for i, loopv, loopi
+#include "inexor/shared/cube_types.hpp"       // for uchar
+#include "inexor/shared/geom.hpp"             // for bvec, matrix4x3, vec2
+#include "inexor/shared/iengine.hpp"          // for fatal
+#include "inexor/shared/tools.hpp"            // for max
+#include "inexor/texture/texture.hpp"         // for textureload, Texture
+#include "inexor/util/legacy_time.hpp"        // for totalmillis
 
 
 static hashnameset<font> fonts;

@@ -16,25 +16,23 @@
 
 #pragma once
 
-#include "inexor/shared/cube_loops.hpp"
-#include "inexor/shared/cube_types.hpp"
+#include <boost/algorithm/clamp.hpp>     // for clamp
+#include <stdlib.h>                      // for abs
+#include <algorithm>                     // for max, min, swap
+#include <cmath>                         // for cosf, sinf, sqrtf, fabs, ceil
+#include <iostream>                      // for operator<<, basic_ostream::o...
 
-#include <boost/algorithm/clamp.hpp> // TODO replace with std::clamp as soon as C++17 is our target.
+#include "inexor/shared/cube_loops.hpp"  // for i, loopi
+#include "inexor/shared/cube_types.hpp"  // for uchar, uint, ushort, RAD
 
-#include <iostream>
-#include <algorithm>
-
-#include <cmath> // for std::abs and M_PI
-
+struct ivec2;
+struct ivec4;
+struct ivec;
+struct svec;
+struct usvec;
+struct vec4;
 /// declaration of 2- and 4-dimensional vectors
 struct vec;
-struct vec4;
-struct ivec;
-
-struct ivec4;
-struct ivec2;
-struct usvec;
-struct svec;
 
 /// 2-dimensional float vectors
 struct vec2
@@ -426,8 +424,8 @@ struct vec4
 inline vec::vec(const vec4 &v) : x(v.x), y(v.y), z(v.z) {}
 
 struct matrix3;
-struct matrix4x3;
 struct matrix4;
+struct matrix4x3;
 
 /// quaternions are number systems that extend complex numbers
 /// complex numbers extend the number system of real numbers in a way so x²=-1 can be solved

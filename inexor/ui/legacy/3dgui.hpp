@@ -1,7 +1,11 @@
 #pragma once
 
+#include "inexor/shared/cube_formatting.hpp"  // for PRINTFARGS, defvformats...
 #include "inexor/texture/slot.hpp" // for Texture and Image and Slot
-#include "inexor/shared/cube_formatting.hpp"
+
+class VSlot;
+struct Texture;
+struct vec;
 
 /// enumeration for icons
 enum

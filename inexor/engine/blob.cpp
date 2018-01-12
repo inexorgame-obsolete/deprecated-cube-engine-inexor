@@ -1,8 +1,25 @@
-#include "inexor/engine/engine.hpp"
+#include <SDL_opengl.h>                               // for GL_ARRAY_BUFFER
+#include <limits.h>                                   // for INT_MAX
+#include <string.h>                                   // for memset, memcpy
+#include <algorithm>                                  // for min, max
 
+#include "SDL_opengl.h"                               // for glBindTexture
 #include "inexor/engine/blob.hpp"
-#include "inexor/engine/glexts.hpp"
-#include "inexor/engine/glemu.hpp"
+#include "inexor/engine/engine.hpp"                   // for faceconvexity
+#include "inexor/engine/glemu.hpp"                    // for colorpointer
+#include "inexor/engine/glexts.hpp"                   // for glUnmapBuffer_
+#include "inexor/engine/octa.hpp"                     // for materialsurface
+#include "inexor/engine/shader.hpp"                   // for Shader, foggeds...
+#include "inexor/engine/world.hpp"                    // for ::DEFAULT_SKY
+#include "inexor/shared/command.hpp"                  // for VARFP, VAR, VARNP
+#include "inexor/shared/cube_loops.hpp"               // for i, j, loopi, loopj
+#include "inexor/shared/cube_tools.hpp"               // for DELETEA
+#include "inexor/shared/cube_types.hpp"               // for ushort, uchar
+#include "inexor/shared/geom.hpp"                     // for vec, ivec, ivec...
+#include "inexor/shared/iengine.hpp"                  // for ::MAT_ALPHA
+#include "inexor/shared/tools.hpp"                    // for min, max
+#include "inexor/texture/texture.hpp"                 // for textureload
+#include "inexor/util/legacy_time.hpp"                // for totalmillis
 
 extern SharedVar<int> intel_mapbufferrange_bug;
 

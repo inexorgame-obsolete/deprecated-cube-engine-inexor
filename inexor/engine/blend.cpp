@@ -1,7 +1,28 @@
-#include "inexor/engine/engine.hpp"
+#include <SDL_opengl.h>                               // for GL_R8
+#include <boost/algorithm/clamp.hpp>                  // for clamp
+#include <math.h>                                     // for floor
+#include <string.h>                                   // for memset, strcmp
+#include <algorithm>                                  // for max, min, swap
+#include <memory>                                     // for __shared_ptr
+
+#include "SDL_opengl.h"                               // for glTexParameteri
 #include "inexor/engine/blend.hpp"
-#include "inexor/io/Logging.hpp"
-#include "inexor/texture/texture.hpp"
+#include "inexor/engine/engine.hpp"                   // for worldsize, worl...
+#include "inexor/engine/lightmap.hpp"                 // for previewblends
+#include "inexor/engine/octa.hpp"                     // for selinfo
+#include "inexor/engine/octaedit.hpp"                 // for noedit
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/io/legacy/stream.hpp"                // for stream
+#include "inexor/shared/command.hpp"                  // for COMMAND, ICOMMAND
+#include "inexor/shared/cube_loops.hpp"               // for i, loopi, loopj
+#include "inexor/shared/cube_tools.hpp"               // for newstring
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/geom.hpp"                     // for ivec, ivec::(an...
+#include "inexor/shared/iengine.hpp"                  // for multiplayer
+#include "inexor/shared/tools.hpp"                    // for clamp, max, min
+#include "inexor/texture/image.hpp"                   // for ImageData
+#include "inexor/texture/texture.hpp"                 // for createtexture
+#include "inexor/util/legacy_time.hpp"                // for totalmillis
 
 enum
 {
@@ -11,8 +32,8 @@ enum
 };
 
 struct BlendMapBranch;
-struct BlendMapSolid;
 struct BlendMapImage;
+struct BlendMapSolid;
 
 struct BlendMapNode
 {
@@ -704,6 +725,7 @@ void trypaintblendmap()
 }
 
 ICOMMAND(paintblendmap, "D", (int *isdown),
+
 {
     if(*isdown)
     {
@@ -758,6 +780,7 @@ void showblendmap()
 COMMAND(showblendmap, "");
 COMMAND(optimizeblendmap, "");
 ICOMMAND(clearblendmap, "", (),
+
 {
     if(noedit(true) || (nompedit && multiplayer())) return;
     resetblendmap();
@@ -765,6 +788,7 @@ ICOMMAND(clearblendmap, "", (),
 });
 
 ICOMMAND(moveblendmap, "ii", (int *dx, int *dy),
+
 {
     if(noedit(true) || (nompedit && multiplayer())) return;
     if(*dx%(BM_IMAGE_SIZE<<BM_SCALE) || *dy%(BM_IMAGE_SIZE<<BM_SCALE)) 

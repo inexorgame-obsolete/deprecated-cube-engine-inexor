@@ -2,8 +2,13 @@
 
 
 #include <SDL.h>
-#include <SDL_opengl.h>
-#include "inexor/network/legacy/buffer_types.hpp"
+#include <SDL_opengl.h>                            // for GLenum, GL_FLOAT
+#include <stddef.h>                                // for size_t
+
+#include "inexor/engine/glexts.hpp"                // for glVertexAttrib4f_
+#include "inexor/network/legacy/buffer_types.hpp"  // for ucharbuf
+#include "inexor/shared/cube_types.hpp"            // for uchar, uint, ushort
+#include "inexor/shared/geom.hpp"                  // for vec, vec::(anonymous)
 
 namespace gle
 {

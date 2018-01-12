@@ -1,11 +1,14 @@
-#include <boost/algorithm/clamp.hpp>
+#include <boost/algorithm/clamp.hpp>                  // for clamp
+#include <memory>                                     // for __shared_ptr
 
+#include "SDL.h"                                      // for SDL_WasInit
+#include "SDL_error.h"                                // for SDL_GetError
+#include "SDL_mouse.h"                                // for SDL_SetRelative...
+#include "SDL_stdinc.h"                               // for ::SDL_FALSE
+#include "inexor/engine/movie.hpp"                    // for capture
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/ui/legacy/menus.hpp"                 // for initwarning
 #include "inexor/ui/screen/ScreenManager.hpp"
-#include "inexor/ui/legacy/menus.hpp"
-
-#include "inexor/engine/movie.hpp"
-
-#include "inexor/io/Logging.hpp"
 
 using boost::algorithm::clamp;
 

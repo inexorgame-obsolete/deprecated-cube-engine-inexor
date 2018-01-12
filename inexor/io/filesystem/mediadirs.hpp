@@ -2,10 +2,11 @@
 
 #pragma once
 
-#include <string>
+#include <string>                         // for string
 
-#include "inexor/io/filesystem/path.hpp"
+#include "inexor/io/filesystem/path.hpp"  // for Path
 #include "inexor/network/SharedTree.hpp"
+#include "inexor/network/SharedVar.hpp"   // for SharedVar
 
 enum {
     DIR_MAP,

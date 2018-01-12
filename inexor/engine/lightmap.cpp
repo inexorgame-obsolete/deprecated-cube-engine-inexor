@@ -1,16 +1,50 @@
-#include <array>
+#include <boost/algorithm/clamp.hpp>                  // for clamp
+#include <limits.h>                                   // for USHRT_MAX
+#include <math.h>                                     // for cosf, sinf, fabs
+#include <string.h>                                   // for memcpy, memset
+#include <algorithm>                                  // for max, min, swap
+#include <array>                                      // for array
+#include <memory>                                     // for __shared_ptr
 
-#include "inexor/engine/engine.hpp"
-#include "inexor/texture/slot.hpp"
-#include "inexor/texture/savetexture.hpp"
-#include "inexor/texture/image.hpp"
-#include "inexor/io/input/InputRouter.hpp"
-#include "inexor/io/Logging.hpp"
-#include "inexor/engine/blend.hpp"
-#include "inexor/physics/physics.hpp"
-#include "inexor/model/rendermodel.hpp"
+#include "SDL_keycode.h"                              // for ::SDLK_ESCAPE
+#include "SDL_mutex.h"                                // for SDL_UnlockMutex
+#include "SDL_opengl.h"                               // for glGenTextures
+#include "SDL_stdinc.h"                               // for Uint32
+#include "SDL_thread.h"                               // for SDL_CreateThread
+#include "SDL_timer.h"                                // for SDL_GetTicks
+#include "inexor/engine/blend.hpp"                    // for setblendmaporigin
+#include "inexor/engine/engine.hpp"                   // for allchanged, ren...
+#include "inexor/engine/lightmap.hpp"                 // for LightMap, Light...
+#include "inexor/engine/octa.hpp"                     // for vertinfo, surfa...
+#include "inexor/engine/octaedit.hpp"                 // for noedit, editmode
+#include "inexor/engine/shader.hpp"                   // for Shader, ::SHADE...
+#include "inexor/engine/world.hpp"                    // for ::DEFAULT_SKY
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/io/input/InputRouter.hpp"            // for InputRouter
+#include "inexor/model/model.hpp"                     // for loadmodel, model
+#include "inexor/model/rendermodel.hpp"               // for preloadusedmapm...
+#include "inexor/network/SharedVar.hpp"               // for SharedVar, min
+#include "inexor/physics/physics.hpp"                 // for shadowray, free...
+#include "inexor/shared/command.hpp"                  // for VARR, VAR, VARF
+#include "inexor/shared/cube_formatting.hpp"          // for defformatstring
+#include "inexor/shared/cube_hash.hpp"                // for hashset, hashbase
+#include "inexor/shared/cube_loops.hpp"               // for i, k, loopi, loopv
+#include "inexor/shared/cube_tools.hpp"               // for ASSERT
+#include "inexor/shared/cube_types.hpp"               // for uchar, RAD, ushort
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/ents.hpp"                     // for extentity, entity
+#include "inexor/shared/geom.hpp"                     // for vec, vec2, bvec
+#include "inexor/shared/iengine.hpp"                  // for ::RAY_SHADOW
+#include "inexor/shared/igame.hpp"                    // for getents, getcli...
+#include "inexor/shared/tools.hpp"                    // for max, min, clamp
+#include "inexor/texture/image.hpp"                   // for ImageData, blur...
+#include "inexor/texture/savetexture.hpp"             // for savepng
+#include "inexor/texture/slot.hpp"                    // for VSlot, lookupvslot
+#include "inexor/texture/texsettings.hpp"             // for hwtexsize, maxt...
+#include "inexor/texture/texture.hpp"                 // for createtexture
 
-#include "inexor/engine/octaedit.hpp"
+struct BlendMapCache;
+struct ShadowRayCache;
 
 using namespace inexor::io;
 
@@ -18,7 +52,6 @@ using namespace inexor::io;
 #define LIGHTMAPBUFSIZE (2*1024*1024)
 
 struct lightmapinfo;
-struct lightmaptask;
 
 /// Structure containing anything to calculate while calclighting, which gets passed to the lightmap threads.
 struct lightmapworker

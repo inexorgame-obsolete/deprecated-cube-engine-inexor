@@ -1,7 +1,16 @@
 #pragma once
+#include "inexor/client/gamemode/gamemode_client.hpp"  // for clientmode
 #include "inexor/fpsgame/game.hpp"
-#include "inexor/gamemode/ctf_common.hpp"
-#include "inexor/client/gamemode/gamemode_client.hpp"
+#include "inexor/gamemode/ctf_common.hpp"              // for flag (ptr only)
+#include "inexor/network/legacy/buffer_types.hpp"      // for ucharbuf, pack...
+#include "inexor/shared/cube_vector.hpp"               // for vector
+#include "inexor/shared/geom.hpp"                      // for vec
+
+namespace ai {
+struct aistate;
+struct interest;
+}  // namespace ai
+struct fpsent;
 
 namespace game {
 

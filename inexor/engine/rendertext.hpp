@@ -1,9 +1,13 @@
 #pragma once
 
+#include "inexor/shared/cube_tools.hpp"   // for DELETEA
 // Simplistic bitmap text rendering
-#include "inexor/shared/cube_vector.hpp"
+#include "inexor/shared/cube_vector.hpp"  // for vector
 #include "inexor/shared/geom.hpp"
 #include "inexor/texture/texture.hpp"
+
+struct Texture;
+struct matrix4x3;
 
 struct font
 {

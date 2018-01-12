@@ -1,10 +1,34 @@
 // command.cpp: implements the parsing and execution of a tiny script language which
 // is largely backwards compatible with the quake console language.
 
-#include "inexor/engine/engine.hpp"
-#include "inexor/network/SharedTree.hpp"
-#include "inexor/io/Logging.hpp"
-#include <cmath>
+#include <boost/algorithm/clamp.hpp>                  // for clamp
+#include <ctype.h>                                    // for isdigit
+#include <limits.h>                                   // for INT_MIN
+#include <stdlib.h>                                   // for strtoul, abs
+#include <string.h>                                   // for strlen, strcspn
+#include <algorithm>                                  // for max, min
+#include <cmath>                                      // for acos, asin, atan
+#include <memory>                                     // for __shared_ptr
+
+#include "inexor/engine/engine.hpp"                   // for addreleaseaction
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/io/legacy/stream.hpp"                // for path, loadfile
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/network/legacy/buffer_types.hpp"     // for databuf
+#include "inexor/network/legacy/cube_network.hpp"     // for filtertext
+#include "inexor/shared/command.hpp"                  // for tagval, ident
+#include "inexor/shared/cube_formatting.hpp"          // for formatstring
+#include "inexor/shared/cube_hash.hpp"                // for hashnameset
+#include "inexor/shared/cube_loops.hpp"               // for i, loopi, j, loopj
+#include "inexor/shared/cube_tools.hpp"               // for newstring, copy...
+#include "inexor/shared/cube_types.hpp"               // for uint, string, RAD
+#include "inexor/shared/cube_unicode.hpp"             // for cube2uni, cubel...
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/geom.hpp"                     // for ivec
+#include "inexor/shared/iengine.hpp"                  // for fatal
+#include "inexor/shared/igame.hpp"                    // for allowedittoggle
+#include "inexor/shared/tools.hpp"                    // for max, clamp, rnd
+#include "inexor/util/legacy_time.hpp"                // for lastmillis, tot...
 
 using namespace inexor::util;
 
@@ -603,10 +627,10 @@ float getfvarmax(const char *name)
     return id->maxvalf;
 }
 
-ICOMMAND(getvarmin, "s", (char *s), intret(getvarmin(s)));
-ICOMMAND(getvarmax, "s", (char *s), intret(getvarmax(s)));
-ICOMMAND(getfvarmin, "s", (char *s), floatret(getfvarmin(s)));
 ICOMMAND(getfvarmax, "s", (char *s), floatret(getfvarmax(s)));
+ICOMMAND(getfvarmin, "s", (char *s), floatret(getfvarmin(s)));
+ICOMMAND(getvarmax, "s", (char *s), intret(getvarmax(s)));
+ICOMMAND(getvarmin, "s", (char *s), intret(getvarmin(s)));
 
 bool identexists(const char *name) { return idents.access(name)!=nullptr; }
 ident *getident(const char *name) { return idents.access(name); }
@@ -2409,10 +2433,9 @@ void floatret(float v)
 #undef ICOMMANDNAME
 #define ICOMMANDNAME(name) _stdcmd
 
+ICOMMAND(?, "ttt", (tagval *cond, tagval *t, tagval *f), result(*(getbool(*cond) ? t : f)));
 ICOMMAND(do, "e", (uint *body), executeret(body, *commandret));
 ICOMMAND(if, "tee", (tagval *cond, uint *t, uint *f), executeret(getbool(*cond) ? t : f, *commandret));
-ICOMMAND(?, "ttt", (tagval *cond, tagval *t, tagval *f), result(*(getbool(*cond) ? t : f)));
-
 ICOMMAND(pushif, "rte", (ident *id, tagval *v, uint *code),
 {
     if(id->type != ID_ALIAS || id->index < MAXARGS) return;
@@ -2985,45 +3008,46 @@ void sortlist(char *list, ident *x, ident *y, uint *body)
 }
 COMMAND(sortlist, "srre");
 
-ICOMMAND(+, "ii", (int *a, int *b), intret(*a + *b));
-ICOMMAND(*, "ii", (int *a, int *b), intret(*a * *b));
-ICOMMAND(-, "ii", (int *a, int *b), intret(*a - *b));
-ICOMMAND(+f, "ff", (float *a, float *b), floatret(*a + *b));
-ICOMMAND(*f, "ff", (float *a, float *b), floatret(*a * *b));
-ICOMMAND(-f, "ff", (float *a, float *b), floatret(*a - *b));
-ICOMMAND(=, "ii", (int *a, int *b), intret((int)(*a == *b)));
-ICOMMAND(!=, "ii", (int *a, int *b), intret((int)(*a != *b)));
-ICOMMAND(<, "ii", (int *a, int *b), intret((int)(*a < *b)));
-ICOMMAND(>, "ii", (int *a, int *b), intret((int)(*a > *b)));
-ICOMMAND(<=, "ii", (int *a, int *b), intret((int)(*a <= *b)));
-ICOMMAND(>=, "ii", (int *a, int *b), intret((int)(*a >= *b)));
-ICOMMAND(=f, "ff", (float *a, float *b), intret((int)(*a == *b)));
-ICOMMAND(!=f, "ff", (float *a, float *b), intret((int)(*a != *b)));
-ICOMMAND(<f, "ff", (float *a, float *b), intret((int)(*a < *b)));
-ICOMMAND(>f, "ff", (float *a, float *b), intret((int)(*a > *b)));
-ICOMMAND(<=f, "ff", (float *a, float *b), intret((int)(*a <= *b)));
-ICOMMAND(>=f, "ff", (float *a, float *b), intret((int)(*a >= *b)));
-ICOMMAND(^, "ii", (int *a, int *b), intret(*a ^ *b));
 ICOMMAND(!, "t", (tagval *a), intret(!getbool(*a)));
-ICOMMAND(&, "ii", (int *a, int *b), intret(*a & *b));
-ICOMMAND(|, "ii", (int *a, int *b), intret(*a | *b));
-ICOMMAND(~, "i", (int *a), intret(~*a));
-ICOMMAND(^~, "ii", (int *a, int *b), intret(*a ^ ~*b));
-ICOMMAND(&~, "ii", (int *a, int *b), intret(*a & ~*b));
-ICOMMAND(|~, "ii", (int *a, int *b), intret(*a | ~*b));
-ICOMMAND(<<, "ii", (int *a, int *b), intret(*b < 32 ? *a << max(*b, 0) : 0));
-ICOMMAND(>>, "ii", (int *a, int *b), intret(*a >> clamp(*b, 0, 31)));
+ICOMMAND(!=, "ii", (int *a, int *b), intret((int)(*a != *b)));
+ICOMMAND(!=f, "ff", (float *a, float *b), intret((int)(*a != *b)));
 ICOMMAND(&&, "e1V", (tagval *args, int numargs),
-{
-    if(!numargs) intret(1);
-    else loopi(numargs) 
-    {   
-        if(i) freearg(*commandret);
-        executeret(args[i].code, *commandret);
-        if(!getbool(*commandret)) break;
-    }
-});
+ {
+     if(!numargs) intret(1);
+     else loopi(numargs)
+     {
+         if(i) freearg(*commandret);
+         executeret(args[i].code, *commandret);
+         if(!getbool(*commandret)) break;
+     }
+ });
+ICOMMAND(&, "ii", (int *a, int *b), intret(*a & *b));
+ICOMMAND(&~, "ii", (int *a, int *b), intret(*a & ~*b));
+ICOMMAND(*, "ii", (int *a, int *b), intret(*a * *b));
+ICOMMAND(*f, "ff", (float *a, float *b), floatret(*a * *b));
+ICOMMAND(+, "ii", (int *a, int *b), intret(*a + *b));
+ICOMMAND(+f, "ff", (float *a, float *b), floatret(*a + *b));
+ICOMMAND(-, "ii", (int *a, int *b), intret(*a - *b));
+ICOMMAND(-f, "ff", (float *a, float *b), floatret(*a - *b));
+ICOMMAND(<, "ii", (int *a, int *b), intret((int)(*a < *b)));
+ICOMMAND(<<, "ii", (int *a, int *b), intret(*b < 32 ? *a << max(*b, 0) : 0));
+ICOMMAND(<=, "ii", (int *a, int *b), intret((int)(*a <= *b)));
+ICOMMAND(<=f, "ff", (float *a, float *b), intret((int)(*a <= *b)));
+ICOMMAND(<f, "ff", (float *a, float *b), intret((int)(*a < *b)));
+ICOMMAND(=, "ii", (int *a, int *b), intret((int)(*a == *b)));
+ICOMMAND(=f, "ff", (float *a, float *b), intret((int)(*a == *b)));
+ICOMMAND(>, "ii", (int *a, int *b), intret((int)(*a > *b)));
+ICOMMAND(>=, "ii", (int *a, int *b), intret((int)(*a >= *b)));
+ICOMMAND(>=f, "ff", (float *a, float *b), intret((int)(*a >= *b)));
+ICOMMAND(>>, "ii", (int *a, int *b), intret(*a >> clamp(*b, 0, 31)));
+ICOMMAND(>f, "ff", (float *a, float *b), intret((int)(*a > *b)));
+ICOMMAND(^, "ii", (int *a, int *b), intret(*a ^ *b));
+ICOMMAND(^~, "ii", (int *a, int *b), intret(*a ^ ~*b));
+ICOMMAND(|, "ii", (int *a, int *b), intret(*a | *b));
+ICOMMAND(|~, "ii", (int *a, int *b), intret(*a | ~*b));
+ICOMMAND(~, "i", (int *a), intret(~*a));
 ICOMMAND(||, "e1V", (tagval *args, int numargs),
+
 {
     if(!numargs) intret(0);
     else loopi(numargs)
@@ -3034,23 +3058,24 @@ ICOMMAND(||, "e1V", (tagval *args, int numargs),
     }
 });
 
-ICOMMAND(div, "ii", (int *a, int *b), intret(*b ? *a / *b : 0));
-ICOMMAND(mod, "ii", (int *a, int *b), intret(*b ? *a % *b : 0));
-ICOMMAND(divf, "ff", (float *a, float *b), floatret(*b ? *a / *b : 0));
-ICOMMAND(modf, "ff", (float *a, float *b), floatret(*b ? fmod(*a, *b) : 0));
-ICOMMAND(sin, "f", (float *a), floatret(sin(*a*RAD)));
-ICOMMAND(cos, "f", (float *a), floatret(cos(*a*RAD)));
-ICOMMAND(tan, "f", (float *a), floatret(tan(*a*RAD)));
-ICOMMAND(asin, "f", (float *a), floatret(asin(*a)/RAD));
 ICOMMAND(acos, "f", (float *a), floatret(acos(*a)/RAD));
+ICOMMAND(asin, "f", (float *a), floatret(asin(*a)/RAD));
 ICOMMAND(atan, "f", (float *a), floatret(atan(*a)/RAD));
 ICOMMAND(atan2, "ff", (float *y, float *x), floatret(atan2(*y, *x)/RAD));
-ICOMMAND(sqrt, "f", (float *a), floatret(sqrt(*a)));
-ICOMMAND(pow, "ff", (float *a, float *b), floatret(pow(*a, *b)));
-ICOMMAND(loge, "f", (float *a), floatret(log(*a)));
-ICOMMAND(log2, "f", (float *a), floatret(log2f(*a)));
-ICOMMAND(log10, "f", (float *a), floatret(log10(*a)));
+ICOMMAND(cos, "f", (float *a), floatret(cos(*a*RAD)));
+ICOMMAND(div, "ii", (int *a, int *b), intret(*b ? *a / *b : 0));
+ICOMMAND(divf, "ff", (float *a, float *b), floatret(*b ? *a / *b : 0));
 ICOMMAND(exp, "f", (float *a), floatret(exp(*a)));
+ICOMMAND(log10, "f", (float *a), floatret(log10(*a)));
+ICOMMAND(log2, "f", (float *a), floatret(log2f(*a)));
+ICOMMAND(loge, "f", (float *a), floatret(log(*a)));
+ICOMMAND(mod, "ii", (int *a, int *b), intret(*b ? *a % *b : 0));
+ICOMMAND(modf, "ff", (float *a, float *b), floatret(*b ? fmod(*a, *b) : 0));
+ICOMMAND(pow, "ff", (float *a, float *b), floatret(pow(*a, *b)));
+ICOMMAND(sin, "f", (float *a), floatret(sin(*a*RAD)));
+ICOMMAND(sqrt, "f", (float *a), floatret(sqrt(*a)));
+ICOMMAND(tan, "f", (float *a), floatret(tan(*a*RAD)));
+
 ICOMMAND(min, "V", (tagval *args, int numargs),
 {
     int val = numargs > 0 ? args[numargs - 1].getint() : 0;
@@ -3114,21 +3139,20 @@ ICOMMAND(cond, "ee2V", (tagval *args, int numargs),
 CASECOMMAND(case, "i", int, args[0].getint(), args[i].type == VAL_NULL || args[i].getint() == val);
 CASECOMMAND(casef, "f", float, args[0].getfloat(), args[i].type == VAL_NULL || args[i].getfloat() == val);
 CASECOMMAND(cases, "s", const char *, args[0].getstr(), args[i].type == VAL_NULL || !strcmp(args[i].getstr(), val));
-
-ICOMMAND(rnd, "ii", (int *a, int *b), intret(*a - *b > 0 ? rnd(*a - *b) + *b : *b));
-ICOMMAND(strcmp, "ss", (char *a, char *b), intret(strcmp(a,b)==0));
-ICOMMAND(=s, "ss", (char *a, char *b), intret(strcmp(a,b)==0));
 ICOMMAND(!=s, "ss", (char *a, char *b), intret(strcmp(a,b)!=0));
-ICOMMAND(<s, "ss", (char *a, char *b), intret(strcmp(a,b)<0));
-ICOMMAND(>s, "ss", (char *a, char *b), intret(strcmp(a,b)>0));
 ICOMMAND(<=s, "ss", (char *a, char *b), intret(strcmp(a,b)<=0));
+ICOMMAND(<s, "ss", (char *a, char *b), intret(strcmp(a,b)<0));
+ICOMMAND(=s, "ss", (char *a, char *b), intret(strcmp(a,b)==0));
 ICOMMAND(>=s, "ss", (char *a, char *b), intret(strcmp(a,b)>=0));
+ICOMMAND(>s, "ss", (char *a, char *b), intret(strcmp(a,b)>0));
+ICOMMAND(codestr, "i", (int *i), { char *s = newstring(1); s[0] = char(*i); s[1] = '\0'; stringret(s); });
 ICOMMAND(echo, "C", (char *s), Log.std->info("{}{}", COL_GREEN, s););
 ICOMMAND(error, "C", (char *s), Log.std->error(s););
-ICOMMAND(strstr, "ss", (char *a, char *b), { char *s = strstr(a, b); intret(s ? s-a : -1); });
-ICOMMAND(strlen, "s", (char *s), intret(strlen(s)));
+ICOMMAND(rnd, "ii", (int *a, int *b), intret(*a - *b > 0 ? rnd(*a - *b) + *b : *b));
+ICOMMAND(strcmp, "ss", (char *a, char *b), intret(strcmp(a,b)==0));
 ICOMMAND(strcode, "si", (char *s, int *i), intret(*i > 0 ? (memchr(s, 0, *i) ? 0 : uchar(s[*i])) : uchar(s[0])));
-ICOMMAND(codestr, "i", (int *i), { char *s = newstring(1); s[0] = char(*i); s[1] = '\0'; stringret(s); });
+ICOMMAND(strlen, "s", (char *s), intret(strlen(s)));
+ICOMMAND(strstr, "ss", (char *a, char *b), { char *s = strstr(a, b); intret(s ? s-a : -1); });
 ICOMMAND(struni, "si", (char *s, int *i), intret(*i > 0 ? (memchr(s, 0, *i) ? 0 : cube2uni(s[*i])) : cube2uni(s[0])));
 ICOMMAND(unistr, "i", (int *i), { char *s = newstring(1); s[0] = uni2cube(*i); s[1] = '\0'; stringret(s); }); 
 

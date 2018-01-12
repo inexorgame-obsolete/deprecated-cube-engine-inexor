@@ -1,9 +1,15 @@
 #pragma once
 #include "inexor/fpsgame/game.hpp"
-#include "inexor/gamemode/bomb_common.hpp"
-#include "inexor/server/gamemode/gamemode_server.hpp"
+#include "inexor/gamemode/bomb_common.hpp"             // for bombmode, spaw...
+#include "inexor/network/legacy/buffer_types.hpp"      // for packetbuf (ptr...
+#include "inexor/server/gamemode/gamemode_server.hpp"  // for servmode
+#include "inexor/shared/cube_vector.hpp"               // for vector
+
+struct vec;
 
 namespace server {
+struct clientinfo;
+
 extern void sendspawn(clientinfo *ci);
 
 struct bombservermode : servmode, bombmode

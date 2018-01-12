@@ -1,4 +1,8 @@
-#include "inexor/shared/cube.hpp"
+
+#include <math.h>                        // for fabs, sqrt, sqrtf
+
+#include "inexor/shared/cube_loops.hpp"  // for loop
+#include "inexor/shared/geom.hpp"        // for vec2, vec, matrix4, vec4
 
 static inline double det2x2(double a, double b, double c, double d) { return a*d - b*c; }
 static inline double det3x3(double a1, double a2, double a3,

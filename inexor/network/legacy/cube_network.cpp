@@ -1,13 +1,20 @@
 
+#include <boost/algorithm/clamp.hpp>               // for clamp
+#include <ctype.h>                                 // for isdigit
+#include <limits.h>                                // for INT_MAX
+#include <stdio.h>                                 // for sprintf, size_t
+#include <stdlib.h>                                // for strtol
+#include <algorithm>                               // for min
+
+#include "enet/enet.h"                             // for ENetPacket, _ENetP...
+#include "enet/unix.h"                             // for ENET_HOST_TO_NET_32
+#include "inexor/io/legacy/stream.hpp"             // for stream, stream::of...
+#include "inexor/network/legacy/buffer_types.hpp"  // for ucharbuf, packetbuf
 #include "inexor/network/legacy/cube_network.hpp"
-#include "inexor/network/legacy/buffer_types.hpp"
-
-#include "inexor/shared/cube_unicode.hpp"
-#include "inexor/shared/cube_endian.hpp"
-#include "inexor/shared/cube_vector.hpp"
-
-#include <boost/algorithm/clamp.hpp> // TODO replace with std::clamp as soon as C++17 is our target.
-#include <algorithm>
+#include "inexor/shared/cube_endian.hpp"           // for lilswap
+#include "inexor/shared/cube_loops.hpp"            // for i, loopi, loopj
+#include "inexor/shared/cube_unicode.hpp"          // for iscubeprint, iscub...
+#include "inexor/shared/cube_vector.hpp"           // for vector
 
 // all network traffic is in 32bit ints, which are then compressed using the following simple scheme (assumes that most values are small).
 

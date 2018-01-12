@@ -1,6 +1,10 @@
 #pragma once
 #include "inexor/fpsgame/game.hpp"
-#include "inexor/shared/ents.hpp"
+#include "inexor/shared/cube_vector.hpp"  // for vector
+#include "inexor/shared/ents.hpp"         // for ::I_BOOST, ::I_GREENARMOUR
+
+struct fpsent;
+struct packetbuf;
 
 
 /// (door) triggers in singleplayer maps (sp and dmsp game modes)

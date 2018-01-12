@@ -1,5 +1,12 @@
 #pragma once
 #include "inexor/engine/octa.hpp"
+#include "inexor/network/legacy/buffer_types.hpp"  // for ucharbuf
+#include "inexor/shared/cube_types.hpp"            // for uchar
+
+struct editinfo;
+struct selinfo;
+struct undoblock;
+struct vec;
 
 /// This file contains editing stuff.
 

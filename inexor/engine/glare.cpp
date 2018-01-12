@@ -1,8 +1,10 @@
-#include "inexor/engine/engine.hpp"
-#include "inexor/engine/rendertarget.hpp"
 
-#include "inexor/engine/glexts.hpp"
-#include "inexor/engine/glemu.hpp"
+#include "SDL_opengl.h"                               // for glBindTexture
+#include "inexor/engine/glemu.hpp"                    // for colorf
+#include "inexor/engine/rendertarget.hpp"             // for screenquad, ren...
+#include "inexor/engine/shader.hpp"                   // for SETSHADER, Shader
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/shared/command.hpp"                  // for VARP, FVARP, VAR
 
 static struct glaretexture : rendertarget
 {

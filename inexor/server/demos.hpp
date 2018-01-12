@@ -1,9 +1,15 @@
 #pragma once
 
-#include "inexor/server/client_management.hpp"
-#include "inexor/shared/cube_vector.hpp"
-#include "inexor/shared/cube_types.hpp"
 #include "inexor/network/SharedTree.hpp"
+#include "inexor/network/SharedVar.hpp"   // for SharedVar
+#include "inexor/server/client_management.hpp"
+#include "inexor/shared/cube_types.hpp"   // for string, uchar
+#include "inexor/shared/cube_vector.hpp"  // for vector
+
+namespace server {
+struct clientinfo;
+}  // namespace server
+struct stream;
 
 namespace server
 {

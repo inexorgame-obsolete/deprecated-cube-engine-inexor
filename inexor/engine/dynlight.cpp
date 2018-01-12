@@ -1,6 +1,20 @@
-#include "inexor/engine/engine.hpp"
-#include "inexor/engine/pvs.hpp"
+#include <math.h>                                     // for fmod, sqrtf
+
 #include "inexor/engine/dynlight.hpp"
+#include "inexor/engine/engine.hpp"                   // for isfoggedsphere
+#include "inexor/engine/octa.hpp"                     // for vtxarray
+#include "inexor/engine/pvs.hpp"                      // for pvsoccludedsphere
+#include "inexor/engine/shader.hpp"                   // for DYNLIGHTBITS
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/shared/command.hpp"                  // for VARP
+#include "inexor/shared/cube_loops.hpp"               // for i, loopv, loopvrev
+#include "inexor/shared/cube_types.hpp"               // for uint
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/ents.hpp"                     // for physent, ::ENT_...
+#include "inexor/shared/geom.hpp"                     // for vec, vec4, ivec
+#include "inexor/shared/iengine.hpp"                  // for collide, ::DL_F...
+#include "inexor/shared/igame.hpp"                    // for adddynlights
+#include "inexor/util/legacy_time.hpp"                // for lastmillis
 
 VARP(maxdynlights, 0, 3, MAXDYNLIGHTS);
 VARP(dynlightdist, 0, 1024, 10000);

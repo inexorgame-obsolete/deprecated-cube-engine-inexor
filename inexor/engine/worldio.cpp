@@ -1,16 +1,45 @@
 // worldio.cpp: loading & saving of maps and savegames
 
-#include "inexor/engine/engine.hpp"
+#include <boost/algorithm/clamp.hpp>                  // for clamp
+#include <fcntl.h>                             // for SEEK_CUR, SEEK_END
+#include <limits.h>                                   // for USHRT_MAX
+#include <math.h>                                     // for floor
+#include <stdio.h>                                    // for remove, rename
+#include <string.h>                            // for memcmp, strcmp, strstr
+#include <algorithm>                           // for min
+#include <memory>                              // for __shared_ptr
+
+#include "SDL_timer.h"                                // for SDL_GetTicks
+#include "inexor/engine/blend.hpp"                    // for shouldsaveblendmap
+#include "inexor/engine/engine.hpp"                   // for renderprogress
+#include "inexor/engine/lightmap.hpp"                 // for LightMap, light...
+#include "inexor/engine/octa.hpp"                     // for vertinfo, cube
+#include "inexor/engine/pvs.hpp"                      // for getnumviewcells
+#include "inexor/engine/shader.hpp"                   // for SlotShaderParam
+#include "inexor/engine/world.hpp"             // for octaheader, compatheader
 #include "inexor/engine/worldio.hpp"
-#include "inexor/sound/sound.hpp"
-#include "inexor/texture/slot.hpp"
-#include "inexor/io/filesystem/mediadirs.hpp"
-#include "inexor/io/Logging.hpp"
-#include "inexor/engine/blend.hpp"
-#include "inexor/engine/pvs.hpp"
-#include "inexor/engine/material.hpp"
-#include "inexor/ui/legacy/menus.hpp"
-#include "inexor/model/rendermodel.hpp"
+#include "inexor/io/Logging.hpp"               // for Log, Logger, log_manager
+#include "inexor/io/filesystem/mediadirs.hpp"  // for getmediapath, ::DIR_MAP
+#include "inexor/io/legacy/stream.hpp"         // for stream, opengzfile, path
+#include "inexor/model/model.hpp"                     // for flushpreloadedm...
+#include "inexor/model/rendermodel.hpp"               // for preloadusedmapm...
+#include "inexor/network/SharedVar.hpp"        // for SharedVar
+#include "inexor/shared/command.hpp"           // for ::ID_FVAR, ::ID_SVAR
+#include "inexor/shared/cube_endian.hpp"       // for lilswap
+#include "inexor/shared/cube_formatting.hpp"   // for formatstring
+#include "inexor/shared/cube_hash.hpp"                // for hashtable, enum...
+#include "inexor/shared/cube_loops.hpp"        // for loopi
+#include "inexor/shared/cube_tools.hpp"        // for copystring
+#include "inexor/shared/ents.hpp"              // for entity, ::ET_MAPMODEL
+#include "inexor/shared/geom.hpp"              // for vec, vec::(anonymous u...
+#include "inexor/shared/iengine.hpp"                  // for ::MAT_AIR, ::MA...
+#include "inexor/shared/igame.hpp"             // for readent
+#include "inexor/shared/tools.hpp"             // for min
+#include "inexor/sound/sound.hpp"                     // for preloadmapsounds
+#include "inexor/texture/slot.hpp"                    // for VSlot, vslots
+#include "inexor/texture/texture.hpp"                 // for textureload
+#include "inexor/ui/legacy/menus.hpp"                 // for clearmainmenu
+#include "inexor/util/legacy_time.hpp"                // for totalmillis
 
 using namespace inexor::sound;
 using namespace inexor::util;

@@ -1,8 +1,11 @@
 /// string operations on filenames (INCOMPLETE! see e.g. stream.cpp).
 
-#include "inexor/shared/cube.hpp"
+#include <algorithm>                                  // for move
+#include <cstddef>                                    // for size_t
+
 #include "inexor/io/filesystem/mediadirs.hpp"
-#include "inexor/util/StringFormatter.hpp"
+#include "inexor/shared/command.hpp"                  // for SVARP
+#include "inexor/util/StringFormatter.hpp"            // for StringFormatter
 
 SVARP(mapdir, "map");
 SVARP(texturedir, "texture");

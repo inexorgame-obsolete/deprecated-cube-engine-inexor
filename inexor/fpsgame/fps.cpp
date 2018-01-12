@@ -1,16 +1,46 @@
 /// implementation of basic game functionsand cubescript bindings
 
-#include "inexor/fpsgame/game.hpp"
-#include "inexor/fpsgame/entities.hpp"
-#include "inexor/io/filesystem/mediadirs.hpp"
-#include "inexor/io/Logging.hpp"
-#include "inexor/client/gamemode/gamemode_client.hpp"
-#include "inexor/fpsgame/projectile.hpp"
-#include "inexor/fpsgame/teaminfo.hpp"
-#include "inexor/fpsgame/scoreboard.hpp"
+#include <string.h>                                    // for strcmp
+#include <algorithm>                                   // for max
+#include <memory>                                      // for __shared_ptr
 
-#include "inexor/engine/glexts.hpp"
-#include "inexor/engine/glemu.hpp"
+#include "SDL_opengl.h"                                // for glPopMatrix
+#include "inexor/client/gamemode/gamemode_client.hpp"  // for cmode, clientmode
+#include "inexor/engine/glemu.hpp"                     // for attribf, begin
+#include "inexor/engine/octaedit.hpp"                  // for editmode
+#include "inexor/engine/particles.hpp"                 // for removetrackedp...
+#include "inexor/fpsgame/ai.hpp"                       // for clearwaypoints
+#include "inexor/fpsgame/entities.hpp"                 // for checkquad, che...
+#include "inexor/fpsgame/fpsent.hpp"                   // for fpsent
+#include "inexor/fpsgame/fpsstate.hpp"                 // for ::AI_NONE
+#include "inexor/fpsgame/game.hpp"                     // for addmsg, getweapon
+#include "inexor/fpsgame/guns.hpp"                     // for ::GUN_BOMB
+#include "inexor/fpsgame/projectile.hpp"               // for clearbouncers
+#include "inexor/fpsgame/scoreboard.hpp"               // for showscores
+#include "inexor/fpsgame/teaminfo.hpp"                 // for clearteaminfo
+#include "inexor/gamemode/gamemode.hpp"                // for modename, game...
+#include "inexor/io/Logging.hpp"                       // for Logger, Log
+#include "inexor/network/SharedVar.hpp"                // for SharedVar
+#include "inexor/network/legacy/administration.hpp"    // for ::PRIV_ADMIN
+#include "inexor/network/legacy/cube_network.hpp"      // for filtertext
+#include "inexor/network/legacy/game_types.hpp"        // for ::N_SOUND, ::N...
+#include "inexor/shared/command.hpp"                   // for intret, ICOMMAND
+#include "inexor/shared/cube_formatting.hpp"           // for tempformatstring
+#include "inexor/shared/cube_loops.hpp"                // for i, loopi, loopv
+#include "inexor/shared/cube_tools.hpp"                // for copystring
+#include "inexor/shared/cube_vector.hpp"               // for vector
+#include "inexor/shared/ents.hpp"                      // for ::CS_DEAD, ::C...
+#include "inexor/shared/geom.hpp"                      // for vec, matrix4
+#include "inexor/shared/iengine.hpp"                   // for moveplayer
+#include "inexor/shared/igame.hpp"                     // for ispaused
+#include "inexor/shared/tools.hpp"                     // for rnd, max
+#include "inexor/sound/sound.hpp"                      // for playsound, ::S...
+#include "inexor/ui/legacy/3dgui.hpp"                  // for ::HICON_X, ::H...
+#include "inexor/util/legacy_time.hpp"                 // for lastmillis
+
+namespace game {
+struct movable;
+}  // namespace game
 
 using namespace inexor::sound;
 
@@ -43,6 +73,7 @@ namespace game
 
     /// cubescript: get the player I am following
     ICOMMAND(getfollow, "", (),
+
     {
         fpsent *f = followingplayer();
         intret(f ? f->clientnum : -1);
@@ -527,12 +558,12 @@ namespace game
         }
     }
 
+    ICOMMAND(getaccuracy, "", (), intret((player1->totaldamage*100)/max(player1->totalshots, 1)));
+    ICOMMAND(getdeaths, "", (), intret(player1->deaths));
+    ICOMMAND(getflags, "", (), intret(player1->flags));
     /// return a player's statistics to cubescript
     ICOMMAND(getfrags, "", (), intret(player1->frags));
-    ICOMMAND(getflags, "", (), intret(player1->flags));
-    ICOMMAND(getdeaths, "", (), intret(player1->deaths));
     ICOMMAND(getteamkills, "", (), intret(player1->teamkills));
-    ICOMMAND(getaccuracy, "", (), intret((player1->totaldamage*100)/max(player1->totalshots, 1)));
     ICOMMAND(gettotaldamage, "", (), intret(player1->totaldamage));
     ICOMMAND(gettotalshots, "", (), intret(player1->totalshots));
 
@@ -850,14 +881,17 @@ namespace game
     /// those 3 functions are used to rotate in circles through your weapons
 	/// so you see different preview images of the other weapons in your holsters
     ICOMMAND(ammohudup, "V", (tagval *args, int numargs), // 1 up
+
     {
         loopi(3) ammohudup[i] = i < numargs ? getweapon(args[i].getstr()) : -1;
     });
     ICOMMAND(ammohuddown, "V", (tagval *args, int numargs), // 1 down
+
     {
         loopi(3) ammohuddown[i] = i < numargs ? getweapon(args[i].getstr()) : -1;
     });
     ICOMMAND(ammohudcycle, "V", (tagval *args, int numargs), // begin again
+
     {
         loopi(8) ammohudcycle[i] = i < numargs ? getweapon(args[i].getstr()) : -1;
     });

@@ -3,7 +3,14 @@
 
 #pragma once
 
+#include "SDL_opengl.h"                  // for GLuint, GLenum
 #include "inexor/engine/engine.hpp"
+#include "inexor/shared/cube_types.hpp"  // for ushort
+
+class Slot;
+struct Texture;
+struct ivec;
+struct vec;
 
 struct cubemapside
 {

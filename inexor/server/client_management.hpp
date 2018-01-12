@@ -1,16 +1,20 @@
 #pragma once
 
-#include "inexor/shared/cube_types.hpp"
-#include "inexor/shared/cube_vector.hpp"
-#include "inexor/shared/ents.hpp"
-#include "inexor/fpsgame/fpsstate.hpp"
+#include <enet/enet.h>                               // for ENetPeer, ENetPa...
+#include <limits.h>                                  // for INT_MAX
+#include <sys/types.h>                               // for uint
+#include <algorithm>                                 // for max
+
+#include "inexor/fpsgame/fpsstate.hpp"               // for fpsstate
 #include "inexor/network/SharedTree.hpp"
-#include "inexor/network/legacy/administration.hpp"
-#include "inexor/util/legacy_time.hpp"
-
-#include <enet/enet.h>
-
-#include <algorithm>
+#include "inexor/network/SharedVar.hpp"              // for SharedVar
+#include "inexor/network/legacy/administration.hpp"  // for ::PRIV_NONE, ::M...
+#include "inexor/shared/cube_loops.hpp"              // for i, loopi
+#include "inexor/shared/cube_types.hpp"              // for string, uchar
+#include "inexor/shared/cube_vector.hpp"             // for vector
+#include "inexor/shared/ents.hpp"                    // for ::CS_ALIVE, ::CS...
+#include "inexor/shared/geom.hpp"                    // for vec
+#include "inexor/util/legacy_time.hpp"               // for gamemillis
 
 
 #define DEFAULTCLIENTS 16

@@ -1,16 +1,13 @@
-#include "inexor/io/Logging.hpp"
-#include "inexor/network/SharedTree.hpp"
-#include "inexor/network/SharedList.hpp"
+#include <stddef.h>                                  // for size_t
+#include <algorithm>                                 // for move, remove
+#include <fstream>                                   // for ofstream
+#include <memory>                                    // for make_shared, __s...
+#include <stdexcept>                                 // for runtime_error
+#include <string>                                    // for basic_string
+#include <vector>                                    // for vector
 
 #include <spdlog/sinks/msvc_sink.h>
-
-#include <utility>
-#include <vector>
-#include <string>
-#include <memory>
-#include <fstream>
-#include <exception>
-#include <iostream>
+#include "inexor/io/Logging.hpp"
 
 /// Function which displayes console text ingame. (legacy UI)
 extern void conline(int type, const char *sf);

@@ -1,10 +1,10 @@
 /// @file texsettings.cpp
 /// Settings for texture loading and handling.
 
-#include "inexor/texture/texture.hpp"
 
-#include "inexor/shared/command.hpp"
-#include "inexor/ui/legacy/menus.hpp"
+#include "inexor/shared/command.hpp"                  // for VARFP, VAR
+#include "inexor/texture/texture.hpp"                 // for setuptexcompress
+#include "inexor/ui/legacy/menus.hpp"                 // for initwarning
 
 VAR(hwtexsize, 1, 0, 0);
 VAR(hwcubetexsize, 1, 0, 0);

@@ -1,10 +1,12 @@
-#include <iostream>
-#include <chrono>
-#include <thread>
-#include <include/cef_base.h>
+#include <locale.h>                              // for setlocale, LC_ALL
+#include <chrono>                                // for milliseconds
+#include <iostream>                              // for operator<<, cout
+#include <thread>                                // for sleep_for
 
-#include "inexor/ui/InexorCefApp.hpp"
-#include "inexor/ui/InexorCefSubprocessApp.hpp"
+#include "include/cef_app.h"                     // for CefApp, CefExecutePr...
+#include "include/cef_base.h"                    // for CefRefPtr, CefMainArgs
+#include "inexor/ui/InexorCefSubprocessApp.hpp"  // for InexorCefSubprocessApp
+
 #undef main
 
 int main(int argc, char *argv[])

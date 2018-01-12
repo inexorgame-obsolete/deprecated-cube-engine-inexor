@@ -6,6 +6,8 @@
 #include "inexor/engine/engine.hpp"
 #include "inexor/texture/texture.hpp"
 
+struct ImageData;
+
 enum
 {
     IMG_BMP = 0,

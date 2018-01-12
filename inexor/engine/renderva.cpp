@@ -1,19 +1,41 @@
 // renderva.cpp: handles the occlusion and rendering of vertex arrays
 
-#include "inexor/engine/engine.hpp"
-#include "inexor/texture/slot.hpp"
-#include "inexor/texture/cubemap.hpp"
-#include "inexor/io/Logging.hpp"
-#include "inexor/engine/blend.hpp"
-#include "inexor/engine/pvs.hpp"
-#include "inexor/engine/shadowmap.hpp"
-#include "inexor/engine/dynlight.hpp"
-#include "inexor/model/rendermodel.hpp"
+#include <SDL_opengl.h>                               // for GL_STATIC_DRAW
+#include <limits.h>                                   // for INT_MAX
+#include <string.h>                                   // for memset, memcpy
+#include <algorithm>                                  // for min, max, swap
+#include <memory>                                     // for __shared_ptr
+#include <unordered_set>                              // for unordered_set
 
-#include "inexor/engine/glexts.hpp"
-#include "inexor/engine/glemu.hpp"
-
-#include <unordered_set>
+#include "SDL_opengl.h"                               // for GL_TRUE, glDept...
+#include "inexor/engine/dynlight.hpp"                 // for calcdynlightmask
+#include "inexor/engine/engine.hpp"                   // for reflecting, ref...
+#include "inexor/engine/glemu.hpp"                    // for bindebo, bindvbo
+#include "inexor/engine/glexts.hpp"                   // for glActiveTexture_
+#include "inexor/engine/lightmap.hpp"                 // for LightMapTexture
+#include "inexor/engine/octa.hpp"                     // for vtxarray, octae...
+#include "inexor/engine/octaedit.hpp"                 // for editmode
+#include "inexor/engine/pvs.hpp"                      // for pvsoccluded
+#include "inexor/engine/shader.hpp"                   // for Shader, lookups...
+#include "inexor/engine/shadowmap.hpp"                // for isshadowmaprece...
+#include "inexor/engine/world.hpp"                    // for vertex
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/model/model.hpp"                     // for endmodelbatches
+#include "inexor/model/rendermodel.hpp"               // for endmodelquery
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/shared/command.hpp"                  // for VAR, VARR, HVAR
+#include "inexor/shared/cube_formatting.hpp"          // for defformatstring
+#include "inexor/shared/cube_loops.hpp"               // for i, loopi, loopv, k
+#include "inexor/shared/cube_types.hpp"               // for ushort, uint
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/ents.hpp"                     // for extentity, ::EF...
+#include "inexor/shared/geom.hpp"                     // for ivec, ivec::(an...
+#include "inexor/shared/igame.hpp"                    // for getents, animat...
+#include "inexor/shared/tools.hpp"                    // for min, max, swap
+#include "inexor/texture/cubemap.hpp"                 // for lookupenvmap
+#include "inexor/texture/slot.hpp"                    // for VSlot, Slot
+#include "inexor/texture/texture.hpp"                 // for Texture, notexture
+#include "inexor/util/legacy_time.hpp"                // for lastmillis
 
 static inline void drawtris(GLsizei numindices, const GLvoid *indices, ushort minvert, ushort maxvert)
 {

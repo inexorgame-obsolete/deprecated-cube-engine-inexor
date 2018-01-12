@@ -3,14 +3,33 @@
 // they "felt right", and have no basis in reality. Collision detection is simplistic but
 // very robust (uses discrete steps at fixed fps).
 
-#include "inexor/engine/engine.hpp"
-#include "inexor/physics/mpr.hpp"
-#include "inexor/physics/physics.hpp"
-#include "inexor/engine/material.hpp"
-#include "inexor/io/Logging.hpp"
-#include "inexor/model/rendermodel.hpp"
+#include <boost/algorithm/clamp.hpp>                  // for clamp
+#include <math.h>                                     // for fabs, cosf, sinf
+#include <stdio.h>                                    // for printf, NULL
+#include <string.h>                                   // for memset
+#include <algorithm>                                  // for min, max
+#include <memory>                                     // for __shared_ptr
 
-#include <iomanip> // std::setprecision
+#include "inexor/engine/engine.hpp"                   // for player, worldsize
+#include "inexor/engine/octa.hpp"                     // for clipplanes, cube
+#include "inexor/engine/world.hpp"                    // for ::DEFAULT_SKY
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/model/model.hpp"                     // for model
+#include "inexor/model/rendermodel.hpp"               // for loadmapmodel
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/physics/bih.hpp"                     // for mmintersect
+#include "inexor/physics/mpr.hpp"                     // for EntOBB, EntCapsule
+#include "inexor/physics/physics.hpp"
+#include "inexor/shared/command.hpp"                  // for ICOMMAND, FVAR
+#include "inexor/shared/cube_loops.hpp"               // for i, loopi, loopv
+#include "inexor/shared/cube_types.hpp"               // for uint, RAD, ushort
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/ents.hpp"                     // for physent, dynent
+#include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
+#include "inexor/shared/iengine.hpp"                  // for insideworld
+#include "inexor/shared/igame.hpp"                    // for getents, physic...
+#include "inexor/shared/tools.hpp"                    // for min, max, rnd
+#include "inexor/util/legacy_time.hpp"                // for scaletime, last...
 
 const int MAXCLIPPLANES = 1024;
 static clipplanes clipcache[MAXCLIPPLANES];
@@ -1989,13 +2008,12 @@ bool moveplatform(physent *p, const vec &dir)
 
 #define dir(name,v,d,s,os) ICOMMAND(name, "D", (int *down), { player->s = *down!=0; player->v = player->s ? d : (player->os ? -(d) : 0); });
 
+ICOMMAND(attack, "D", (int *down), { game::doattack(*down!=0); });
+ICOMMAND(jump,   "D", (int *down), { if(!*down || game::canjump()) player->jumping = *down!=0; });
 dir(backward, move,   -1, k_down,  k_up);
 dir(forward,  move,    1, k_up,    k_down);
 dir(left,     strafe,  1, k_left,  k_right);
 dir(right,    strafe, -1, k_right, k_left);
-
-ICOMMAND(jump,   "D", (int *down), { if(!*down || game::canjump()) player->jumping = *down!=0; });
-ICOMMAND(attack, "D", (int *down), { game::doattack(*down!=0); });
 
 bool entinmap(dynent *d, bool avoidplayers)        // brute force but effective way to find a free spawn spot in the map
 {

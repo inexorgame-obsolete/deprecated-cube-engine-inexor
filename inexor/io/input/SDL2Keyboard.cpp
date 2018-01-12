@@ -1,5 +1,5 @@
-#include <SDL.h>
-#include <include/cef_base.h>
+#include "SDL_keyboard.h"      // for SDL_Keysym
+#include "include/cef_base.h"  // for ::EVENTFLAG_ALT_DOWN, ::EVENTFLAG_CAPS...
 #include "inexor/io/input/SDL2Keyboard.hpp"
 
 int getKeyboardModifiers(uint16_t const mod)

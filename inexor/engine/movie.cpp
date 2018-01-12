@@ -7,15 +7,41 @@
 //   avidemux - ok - 3Apr09-RockKeyman:had to swap UV channels as it showed up blue
 //   kino - ok
 
-#include "inexor/engine/engine.hpp"
-#include "inexor/sound/sound.hpp"
-#include "inexor/engine/movie.hpp"
+#include <SDL_opengl.h>                               // for GL_FRAMEBUFFER
+#include <fcntl.h>                                    // for SEEK_SET, SEEK_END
+#include <math.h>                                     // for ceil
+#include <string.h>                                   // for memcpy, memset
+#include <algorithm>                                  // for max, swap
+#include <memory>                                     // for __shared_ptr
 
-#include "inexor/ui/screen/ScreenManager.hpp"
-#include "inexor/io/Logging.hpp"
-#include "inexor/util/legacy_time.hpp"
-#include "inexor/shared/cube_queue.hpp"
-#include "inexor/engine/rendertext.hpp"
+#include "SDL_audio.h"                                // for AUDIO_S8, AUDIO_U8
+#include "SDL_endian.h"                               // for SDL_BIG_ENDIAN
+#include "SDL_mutex.h"                                // for SDL_UnlockMutex
+#include "SDL_opengl.h"                               // for GLuint, glReadP...
+#include "SDL_stdinc.h"                               // for Uint16, Uint8
+#include "SDL_thread.h"                               // for SDL_CreateThread
+#include "inexor/engine/engine.hpp"                   // for screenquadflipped
+#include "inexor/engine/glexts.hpp"                   // for glBindFramebuffer_
+#include "inexor/engine/movie.hpp"
+#include "inexor/engine/rendertext.hpp"               // for FONTH
+#include "inexor/engine/shader.hpp"                   // for useshaderbyname
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/io/legacy/stream.hpp"                // for stream, stream:...
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/shared/command.hpp"                  // for VARP, VAR, intret
+#include "inexor/shared/cube_endian.hpp"              // for endianswap
+#include "inexor/shared/cube_formatting.hpp"          // for concatstring
+#include "inexor/shared/cube_loops.hpp"               // for i, loopi, loopv
+#include "inexor/shared/cube_queue.hpp"               // for queue
+#include "inexor/shared/cube_tools.hpp"               // for DELETEA, DELETEP
+#include "inexor/shared/cube_types.hpp"               // for uint, uchar
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/geom.hpp"                     // for matrix4
+#include "inexor/shared/iengine.hpp"                  // for draw_textf, get...
+#include "inexor/shared/tools.hpp"                    // for max, swap
+#include "inexor/texture/texture.hpp"                 // for texalign, creat...
+#include "inexor/ui/screen/ScreenManager.hpp"         // for ScreenManager
+#include "inexor/util/legacy_time.hpp"                // for time_since_prog...
 
 struct unionfind
 {
@@ -58,7 +84,7 @@ struct unionfind
 };
 
 using namespace inexor::rendering::screen;
-using namespace inexor::sound;
+//using namespace inexor::sound;
 
 VAR(dbgmovie, 0, 0, 1);
 

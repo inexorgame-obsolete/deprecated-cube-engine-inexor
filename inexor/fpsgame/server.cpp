@@ -1,19 +1,48 @@
-#include "inexor/fpsgame/game.hpp"
-#include "inexor/util/random.hpp"
-#include "inexor/io/Logging.hpp"
-#include "inexor/fpsgame/entities.hpp"
-#include "inexor/engine/worldio.hpp"
-#include "inexor/network/legacy/crypto.hpp"
-#include "inexor/server/client_management.hpp"
-#include "inexor/server/network_send.hpp"
-#include "inexor/server/demos.hpp"
-#include "inexor/fpsgame/teaminfo.hpp"
+#include <boost/algorithm/clamp.hpp>                      // for clamp
+#include <math.h>                                         // for fabs
+#include <stdarg.h>                                       // for va_arg, va_end
+#include <string.h>                                       // for strcmp, memset
+#include <algorithm>                                      // for max, min
+#include <memory>                                         // for __shared_ptr
 
-#include "inexor/server/gamemode/capture_server.hpp"
-#include "inexor/server/gamemode/ctf_server.hpp"
-#include "inexor/server/gamemode/collect_server.hpp"
-#include "inexor/server/gamemode/bomb_server.hpp"
-#include "inexor/server/gamemode/hideandseek_server.hpp"
+#include "enet/enet.h"                                    // for ENetPacket
+#include "enet/types.h"                                   // for enet_uint32
+#include "inexor/engine/worldio.hpp"                      // for loadents
+#include "inexor/fpsgame/entities.hpp"                    // for delayspawn
+#include "inexor/fpsgame/fpsstate.hpp"                    // for ::AI_NONE
+#include "inexor/fpsgame/guns.hpp"                        // for guninfo, guns
+#include "inexor/fpsgame/teaminfo.hpp"                    // for teaminfo
+#include "inexor/gamemode/gamemode.hpp"                   // for m_teammode
+#include "inexor/io/Logging.hpp"                          // for Log, Logger
+#include "inexor/io/legacy/stream.hpp"                    // for opentempfile
+#include "inexor/network/SharedVar.hpp"                   // for SharedVar
+#include "inexor/network/legacy/administration.hpp"       // for ::PRIV_ADMIN
+#include "inexor/network/legacy/buffer_types.hpp"         // for packetbuf
+#include "inexor/network/legacy/cube_network.hpp"         // for putint, getint
+#include "inexor/network/legacy/game_types.hpp"           // for ::N_SERVMSG
+#include "inexor/server/client_management.hpp"            // for clientinfo
+#include "inexor/server/demos.hpp"                        // for enddemorecord
+#include "inexor/server/game_management.hpp"              // for pausegame
+#include "inexor/server/gamemode/bomb_server.hpp"         // for bombservermode
+#include "inexor/server/gamemode/capture_server.hpp"      // for captureserv...
+#include "inexor/server/gamemode/collect_server.hpp"      // for collectserv...
+#include "inexor/server/gamemode/ctf_server.hpp"          // for ctfservermode
+#include "inexor/server/gamemode/gamemode_server.hpp"     // for servmode
+#include "inexor/server/gamemode/hideandseek_server.hpp"  // for hideandseek...
+#include "inexor/server/network_send.hpp"                 // for sendf, send...
+#include "inexor/shared/command.hpp"                      // for explodelist
+#include "inexor/shared/cube_endian.hpp"                  // for lilswap
+#include "inexor/shared/cube_formatting.hpp"              // for formatstring
+#include "inexor/shared/cube_hash.hpp"                    // for hashset
+#include "inexor/shared/cube_loops.hpp"                   // for i, loopv, j
+#include "inexor/shared/cube_tools.hpp"                   // for copystring
+#include "inexor/shared/cube_types.hpp"                   // for uchar, string
+#include "inexor/shared/cube_vector.hpp"                  // for vector
+#include "inexor/shared/ents.hpp"                         // for server_entity
+#include "inexor/shared/geom.hpp"                         // for vec, vec::(...
+#include "inexor/shared/iengine.hpp"                      // for sendserveri...
+#include "inexor/shared/tools.hpp"                        // for max, rnd
+#include "inexor/util/legacy_time.hpp"                    // for gamemillis
 
 namespace server
 {
@@ -2395,7 +2424,7 @@ extern int getservermtu();
         }
     }
 
-    #include "inexor/fpsgame/extinfo.hpp"
+#include "inexor/fpsgame/extinfo.hpp"                     // for extserverin...
 
     void serverinforeply(ucharbuf &req, ucharbuf &p)
     {
@@ -2427,6 +2456,6 @@ extern int getservermtu();
         return attr.length() && attr[0]==PROTOCOL_VERSION;
     }
 
-    #include "inexor/fpsgame/aiman.hpp"
+#include "inexor/fpsgame/aiman.hpp"                       // for changeteam
 }
 

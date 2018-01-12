@@ -1,5 +1,26 @@
 
+#include <string.h>                                // for strcmp
+#include <algorithm>                               // for max
+#include <memory>                                  // for __shared_ptr
+
+#include "inexor/fpsgame/fpsstate.hpp"             // for ::AI_NONE
+#include "inexor/fpsgame/guns.hpp"                 // for ::GUN_BOMB
+#include "inexor/gamemode/gamemode.hpp"            // for m_teammode, m_lms
+#include "inexor/io/Logging.hpp"                   // for Log, Logger, log_m...
+#include "inexor/network/legacy/cube_network.hpp"  // for getint, DMF
+#include "inexor/network/legacy/game_types.hpp"    // for ::N_HUDANNOUNCE
+#include "inexor/server/client_management.hpp"     // for clientinfo, gamestate
+#include "inexor/server/game_management.hpp"       // for pausegame
 #include "inexor/server/gamemode/bomb_server.hpp"
+#include "inexor/server/map_management.hpp"        // for smapname
+#include "inexor/server/network_send.hpp"          // for sendf
+#include "inexor/shared/cube_formatting.hpp"       // for defformatstring
+#include "inexor/shared/cube_loops.hpp"            // for i, loopv, loopi, k
+#include "inexor/shared/ents.hpp"                  // for entity, server_entity
+#include "inexor/shared/geom.hpp"                  // for vec, ivec, ivec::(...
+#include "inexor/shared/tools.hpp"                 // for rnd, max
+#include "inexor/ui/legacy/3dgui.hpp"              // for hudannounceeffects...
+#include "inexor/util/legacy_time.hpp"             // for totalmillis
 
 #define bombteamname(s) (!strcmp(s, "good") ? 1 : (!strcmp(s, "evil") ? 2 : 0))
 

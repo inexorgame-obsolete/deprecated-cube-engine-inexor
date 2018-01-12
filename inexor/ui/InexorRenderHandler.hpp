@@ -1,11 +1,13 @@
 #pragma once
 
+#include "include/cef_base.h"            // for CefRect, CefRefPtr, IMPLEMEN...
 #include "include/cef_browser.h"
-#include "include/cef_render_handler.h"
+#include "include/cef_render_handler.h"  // for CefRenderHandler, CefRenderH...
 #include "include/wrapper/cef_helpers.h"
-
 #include "inexor/engine/engine.hpp"
 #include "inexor/io/Logging.hpp"
+
+class CefBrowser;
 
 namespace inexor {
 namespace ui {

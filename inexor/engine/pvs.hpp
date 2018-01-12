@@ -4,8 +4,10 @@
 // They get precomputed using static geometry.
 // So for really dynamic worlds one would probably need a different solution.
 
-#include "inexor/shared/geom.hpp"
 #include "inexor/io/legacy/stream.hpp"
+#include "inexor/shared/geom.hpp"  // for ivec, vec (ptr only)
+
+struct stream;
 
 extern void clearpvs();
 extern bool pvsoccluded(const ivec &bbmin, const ivec &bbmax);

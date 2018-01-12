@@ -1,17 +1,36 @@
 /// @file cubemap.cpp
 /// environment map loading routine.
 
-#include "inexor/texture/slot.hpp"
-#include "inexor/texture/cubemap.hpp"
-#include "inexor/texture/image.hpp"
-#include "inexor/texture/format.hpp"
-#include "inexor/io/filesystem/mediadirs.hpp"
-#include "inexor/ui/screen/ScreenManager.hpp"
-#include "inexor/io/Logging.hpp"
-#include "inexor/engine/material.hpp"
+#include <boost/algorithm/clamp.hpp>                  // for clamp
+#include <string.h>                                   // for strchr
+#include <algorithm>                                  // for min, max, swap
+#include <memory>                                     // for __shared_ptr
 
-#include "inexor/engine/glexts.hpp"
-#include "inexor/engine/glemu.hpp"
+#include "SDL_timer.h"                                // for SDL_GetTicks
+#include "inexor/engine/engine.hpp"                   // for renderprogress
+#include "inexor/engine/glemu.hpp"                    // for attribf, begin
+#include "inexor/engine/material.hpp"                 // for setupmaterials
+#include "inexor/engine/octa.hpp"                     // for ::EMID_RESERVED
+#include "inexor/engine/shader.hpp"                   // for SETSHADER, Shader
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/io/filesystem/mediadirs.hpp"         // for getmediapath
+#include "inexor/network/SharedVar.hpp"               // for SharedVar, min
+#include "inexor/shared/command.hpp"                  // for VAR, VARFP
+#include "inexor/shared/cube_formatting.hpp"          // for concatstring
+#include "inexor/shared/cube_loops.hpp"               // for i, loopv, loopi
+#include "inexor/shared/cube_tools.hpp"               // for copystring, str...
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/ents.hpp"                     // for extentity, ::ET...
+#include "inexor/shared/geom.hpp"                     // for vec, C, R, ivec...
+#include "inexor/shared/igame.hpp"                    // for getents
+#include "inexor/shared/tools.hpp"                    // for clamp, min, max
+#include "inexor/texture/cubemap.hpp"
+#include "inexor/texture/format.hpp"                  // for alphaformat
+#include "inexor/texture/image.hpp"                   // for ImageData, blur...
+#include "inexor/texture/slot.hpp"                    // for Slot::Tex, Slot
+#include "inexor/texture/texsettings.hpp"             // for maxtexsize, hwc...
+#include "inexor/texture/texture.hpp"                 // for Texture, create...
+#include "inexor/ui/screen/ScreenManager.hpp"         // for ScreenManager
 
 using namespace inexor::rendering::screen;
 

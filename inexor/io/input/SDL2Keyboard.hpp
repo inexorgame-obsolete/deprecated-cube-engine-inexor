@@ -2,6 +2,9 @@
 
 #include <SDL.h>
 #include <include/cef_base.h>
+#include <stdint.h>       // for uint16_t
+
+#include "SDL_keycode.h"  // for SDL_Keycode
 
 extern int getKeyboardModifiers(uint16_t const mod);
 

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "SDL_opengl.h"  // for GLenum
 #include "inexor/engine/engine.hpp" //bc hasTC
 
 extern GLenum texformat(int bpp);

@@ -1,13 +1,18 @@
 #pragma once
 
 #include <SDL.h>
+#include <string>                                       // for string
+#include <utility>                                      // for move
 
-#include <utility>
-
+#include "SDL_events.h"                                 // for SDL_Event
 #include "include/cef_app.h"
+#include "include/cef_base.h"                           // for CefRefPtr
+#include "include/cef_keyboard_handler.h"               // for CefKeyboardHa...
+#include "include/cef_v8.h"                             // for CefV8Value (p...
+#include "inexor/ui/context/InexorContextProvider.hpp"  // for InexorContext...
+#include "inexor/ui/layer/InexorLayerManager.hpp"       // for InexorLayerMa...
 
-#include "inexor/ui/context/InexorContextProvider.hpp"
-#include "inexor/ui/layer/InexorLayerManager.hpp"
+class CefBrowser;
 
 namespace inexor {
 namespace ui {

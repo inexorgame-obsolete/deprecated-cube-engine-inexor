@@ -1,8 +1,37 @@
 // weapon.cpp: all shooting and effects code, projectile management
-#include "inexor/fpsgame/game.hpp"
-#include "inexor/engine/engine.hpp"
-#include "inexor/fpsgame/guns.hpp"
-#include "inexor/fpsgame/projectile.hpp"
+#include <ctype.h>                                    // for isdigit
+#include <math.h>                                     // for fabs, cos, sin
+#include <string.h>                                   // for strcasecmp
+#include <algorithm>                                  // for max, min
+
+#include "inexor/engine/engine.hpp"                   // for regularshape
+#include "inexor/engine/particles.hpp"                // for particle_splash
+#include "inexor/fpsgame/ai.hpp"                      // for avoidset
+#include "inexor/fpsgame/fpsent.hpp"                  // for fpsent
+#include "inexor/fpsgame/game.hpp"                    // for player1, addmsg
+#include "inexor/fpsgame/guns.hpp"                    // for guninfo, guns
+#include "inexor/fpsgame/projectile.hpp"              // for bouncer, projec...
+#include "inexor/gamemode/gamemode.hpp"               // for isteam, m_bomb
+#include "inexor/model/model.hpp"                     // for rendermodel
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/network/legacy/cube_network.hpp"     // for DMF, DNF
+#include "inexor/network/legacy/game_types.hpp"       // for ::N_EXPLODE
+#include "inexor/shared/command.hpp"                  // for VARP, ICOMMAND
+#include "inexor/shared/cube_formatting.hpp"          // for defformatstring
+#include "inexor/shared/cube_loops.hpp"               // for i, loopi, loopv, j
+#include "inexor/shared/cube_types.hpp"               // for RAD
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/ents.hpp"                     // for dynent, ::CS_ALIVE
+#include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
+#include "inexor/shared/iengine.hpp"                  // for adddynlight
+#include "inexor/shared/igame.hpp"                    // for iterdynents
+#include "inexor/shared/tools.hpp"                    // for rnd, rndscale, max
+#include "inexor/sound/sound.hpp"                     // for playsound, ::S_...
+#include "inexor/util/legacy_time.hpp"                // for lastmillis
+
+namespace game {
+struct movable;
+}  // namespace game
 
 using namespace inexor::sound;
 
@@ -85,6 +114,7 @@ namespace game
         playsound(S_NOAMMO);
     }
     ICOMMAND(cycleweapon, "V", (tagval *args, int numargs),
+
     {
          int numguns = min(numargs, 8);
          int guns[8];
@@ -108,6 +138,7 @@ namespace game
     }
 
     ICOMMAND(weapon, "V", (tagval *args, int numargs),
+
     {
         if(player1->state!=CS_ALIVE) return;
         loopi(8)

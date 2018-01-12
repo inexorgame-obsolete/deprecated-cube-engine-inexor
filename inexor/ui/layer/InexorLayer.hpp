@@ -1,17 +1,27 @@
 #pragma once
 #include <list>
-#include <string>
 #include <sstream>
+#include <string>                                 // for string
 
+#include "include/base/cef_ref_counted.h"         // for scoped_refptr
 #include "include/cef_app.h"
-#include "include/cef_client.h"
-#include "include/cef_load_handler.h"
+#include "include/cef_base.h"                     // for CefRefPtr, CefString
+#include "include/cef_browser.h"                  // for CefBrowser, CefBrow...
+#include "include/cef_client.h"                   // for CefClient
+#include "include/cef_cookie.h"                   // for CefCookieManager
+#include "include/cef_display_handler.h"          // for CefDisplayHandler
+#include "include/cef_keyboard_handler.h"         // for CefKeyboardHandler
+#include "include/cef_life_span_handler.h"        // for CefLifeSpanHandler
+#include "include/cef_load_handler.h"             // for CefLoadHandler, Cef...
+#include "include/cef_render_handler.h"           // for CefRenderHandler
+#include "include/cef_request_context_handler.h"  // for CefRequestContextHa...
 #include "include/wrapper/cef_helpers.h"
-
 #include "inexor/io/Logging.hpp"
-#include "inexor/ui/InexorBrowserSettings.hpp"
-#include "inexor/ui/InexorRenderHandler.hpp"
-#include "inexor/ui/InexorWindowInfo.hpp"
+#include "inexor/ui/InexorBrowserSettings.hpp"    // for InexorBrowserSettings
+#include "inexor/ui/InexorRenderHandler.hpp"      // for InexorRenderHandler
+#include "inexor/ui/InexorWindowInfo.hpp"         // for InexorWindowInfo
+
+class CefFrame;
 
 namespace inexor {
 namespace ui {

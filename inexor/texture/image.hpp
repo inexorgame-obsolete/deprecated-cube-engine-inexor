@@ -3,14 +3,19 @@
 
 #pragma once
 
-#include "inexor/shared/geom.hpp"
-#include "inexor/shared/cube_loops.hpp"
-#include "inexor/shared/cube_types.hpp"
-
 #include <SDL.h>
-#include <SDL_opengl.h>
+#include <SDL_opengl.h>                  // for GLenum, GL_FALSE
+#include <sys/types.h>                   // for uint
+#include <algorithm>                     // for max
 
-#include <algorithm>
+#include "SDL_pixels.h"                  // for SDL_PixelFormat
+#include "SDL_surface.h"                 // for SDL_Surface, SDL_FreeSurface
+#include "inexor/shared/cube_loops.hpp"  // for loopi
+#include "inexor/shared/cube_types.hpp"  // for uchar
+#include "inexor/shared/geom.hpp"
+
+struct bvec;
+struct vec;
 
 /// Structure holding the Raw Pixel Data and minimum image info.
 /// Used when loading/modifying a texture.

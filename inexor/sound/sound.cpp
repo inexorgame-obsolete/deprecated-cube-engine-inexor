@@ -1,14 +1,29 @@
 // sound.cpp: basic positional sound using sdl_mixer
 
-#include "inexor/engine/engine.hpp"
-#include "inexor/io/filesystem/mediadirs.hpp"
-#include "inexor/ui/screen/ScreenManager.hpp"
-#include "inexor/ui/legacy/menus.hpp"
-#include "inexor/io/Logging.hpp"
-#include "inexor/sound/sound.hpp"
-#include "inexor/sound/mumble.hpp"
+#include <boost/algorithm/clamp.hpp>                  // for clamp
+#include <string.h>                                   // for strcmp
+#include <algorithm>                                  // for max, min
+#include <memory>                                     // for __shared_ptr
+#include <string>                                     // for string
 
-#include <string>
+#include "inexor/engine/engine.hpp"                   // for camera1, render...
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/io/filesystem/mediadirs.hpp"         // for getmediapath
+#include "inexor/shared/command.hpp"                  // for COMMAND, intret
+#include "inexor/shared/cube_hash.hpp"                // for hashnameset
+#include "inexor/shared/cube_loops.hpp"               // for i, loopv, j, k
+#include "inexor/shared/cube_tools.hpp"               // for newstring, DELETEA
+#include "inexor/shared/cube_types.hpp"               // for RAD
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/ents.hpp"                     // for extentity, ::EF...
+#include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
+#include "inexor/shared/igame.hpp"                    // for getents
+#include "inexor/shared/tools.hpp"                    // for rnd, clamp, max
+#include "inexor/sound/mumble.hpp"                    // for closemumble
+#include "inexor/sound/sound.hpp"
+#include "inexor/ui/legacy/menus.hpp"                 // for initwarning
+#include "inexor/ui/screen/ScreenManager.hpp"         // for ScreenManager
+#include "inexor/util/legacy_time.hpp"                // for totalmillis
 
 
 using namespace inexor::filesystem;

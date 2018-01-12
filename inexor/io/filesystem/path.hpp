@@ -1,9 +1,10 @@
 #pragma once
 
-#include <vector>
-#include <string>
-
 #include <boost/filesystem.hpp>
+#include <boost/filesystem/path.hpp>  // for path
+#include <stddef.h>                   // for size_t
+#include <string>                     // for string
+#include <vector>                     // for vector
 
 namespace inexor { namespace filesystem {
 

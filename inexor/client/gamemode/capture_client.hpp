@@ -1,7 +1,17 @@
 #pragma once
+#include <algorithm>                                   // for max
+
+#include "inexor/client/gamemode/gamemode_client.hpp"  // for clientmode
+#include "inexor/fpsgame/ai.hpp"                       // for ::AI_S_DEFEND
+#include "inexor/fpsgame/fpsent.hpp"                   // for fpsent
 #include "inexor/fpsgame/game.hpp"
-#include "inexor/gamemode/capture_common.hpp"
-#include "inexor/client/gamemode/gamemode_client.hpp"
+#include "inexor/gamemode/capture_common.hpp"          // for capturemode_co...
+#include "inexor/gamemode/gamemode.hpp"                // for m_regencapture
+#include "inexor/network/legacy/buffer_types.hpp"      // for packetbuf (ptr...
+#include "inexor/shared/cube_vector.hpp"               // for vector
+#include "inexor/shared/iengine.hpp"                   // for findplayerspawn
+#include "inexor/shared/tools.hpp"                     // for max
+#include "inexor/util/legacy_time.hpp"                 // for lastmillis
 
 namespace game {
 

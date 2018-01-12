@@ -1,8 +1,14 @@
 #pragma once
 
-#include "inexor/shared/geom.hpp"
-#include "inexor/shared/cube_vector.hpp"
-#include "inexor/network/SharedVar.hpp"
+#include <limits.h>                       // for USHRT_MAX
+#include <string.h>                       // for memset, memmove
+
+#include "inexor/network/SharedVar.hpp"   // for SharedVar
+#include "inexor/shared/cube_loops.hpp"   // for i, loopv, loopi, k, loopk
+#include "inexor/shared/cube_types.hpp"   // for ushort
+#include "inexor/shared/cube_vector.hpp"  // for vector
+#include "inexor/shared/geom.hpp"         // for vec
+#include "inexor/util/legacy_time.hpp"    // for lastmillis
 
 struct fpsent;
 

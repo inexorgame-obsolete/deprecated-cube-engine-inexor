@@ -1,9 +1,32 @@
 // core world management routines
 
-#include "inexor/engine/engine.hpp"
-#include "inexor/io/Logging.hpp"
-#include "inexor/shared/cube_sort.hpp"
-#include "inexor/physics/physics.hpp"
+#include <boost/algorithm/clamp.hpp>                  // for clamp
+#include <limits.h>                                   // for INT_MAX
+#include <stdlib.h>                                   // for abs
+#include <string.h>                                   // for memcpy, memset
+#include <algorithm>                                  // for max, min, swap
+#include <memory>                                     // for __shared_ptr
+
+#include "inexor/engine/engine.hpp"                   // for renderprogress
+#include "inexor/engine/lightmap.hpp"                 // for brightencube
+#include "inexor/engine/octa.hpp"                     // for cube, facebounds
+#include "inexor/engine/octaedit.hpp"                 // for ::EDIT_REMIP
+#include "inexor/engine/world.hpp"                    // for ::DEFAULT_GEOM
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/physics/physics.hpp"                 // for pointincube
+#include "inexor/shared/command.hpp"                  // for VAR, COMMAND
+#include "inexor/shared/cube_hash.hpp"                // for hashtable, hashset
+#include "inexor/shared/cube_loops.hpp"               // for i, loopi, j, loopj
+#include "inexor/shared/cube_sort.hpp"                // for quicksort
+#include "inexor/shared/cube_tools.hpp"               // for ASSERT, DELETEA
+#include "inexor/shared/cube_types.hpp"               // for uchar, ushort
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/geom.hpp"                     // for ivec, ivec::(an...
+#include "inexor/shared/iengine.hpp"                  // for ::MAT_AIR, ::MA...
+#include "inexor/shared/igame.hpp"                    // for edittrigger
+#include "inexor/shared/tools.hpp"                    // for max, min, clamp
+#include "inexor/util/legacy_time.hpp"                // for totalmillis
 
 cube *worldroot = newcubes(F_SOLID);
 int allocnodes = 0;

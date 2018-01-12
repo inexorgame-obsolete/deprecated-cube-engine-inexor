@@ -1,7 +1,12 @@
 
+#include <ctype.h>                        // for isdigit
+#include <limits.h>                       // for INT_MAX
+#include <stdlib.h>                       // for atoi
+#include <string.h>                       // for strchr
+
 #include "inexor/gamemode/gamemode.hpp"
-#include "inexor/shared/cube_vector.hpp"
-#include "inexor/shared/cube_loops.hpp"
+#include "inexor/shared/cube_loops.hpp"   // for k, loopk, i, loopv
+#include "inexor/shared/cube_vector.hpp"  // for vector
 
 int gamemode = 0;
 

@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "inexor/shared/cube_hash.hpp" // for htcmp
 #include "inexor/shared/cube_sort.hpp"
 #include "inexor/shared/cube_tools.hpp" // for is_class, NULL
 #include "inexor/shared/cube_loops.hpp"

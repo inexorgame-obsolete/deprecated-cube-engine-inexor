@@ -1,5 +1,35 @@
+#include <math.h>                                  // for fabs, fmod
+#include <string.h>                                // for strcmp, memset
+#include <algorithm>                               // for max, min, swap
+#include <memory>                                  // for __shared_ptr
+
+#include "SDL_opengl.h"                            // for glBlendFunc, glDis...
 #include "inexor/client/gamemode/ctf_client.hpp"
-#include "inexor/model/rendermodel.hpp"
+#include "inexor/engine/glemu.hpp"                 // for colorf
+#include "inexor/engine/particles.hpp"             // for particle_fireball
+#include "inexor/fpsgame/ai.hpp"                   // for interest, makeroute
+#include "inexor/fpsgame/entities.hpp"             // for ents
+#include "inexor/fpsgame/fpsent.hpp"               // for fpsent
+#include "inexor/fpsgame/game.hpp"                 // for player1, teamcolor...
+#include "inexor/fpsgame/guns.hpp"                 // for ::GUN_FIST, ::GUN_...
+#include "inexor/fpsgame/teaminfo.hpp"             // for ::TEAM_NONE, ::TEA...
+#include "inexor/gamemode/gamemode.hpp"            // for m_hold, m_protect
+#include "inexor/io/Logging.hpp"                   // for Log, Logger, log_m...
+#include "inexor/model/model.hpp"                  // for preloadmodel, rend...
+#include "inexor/network/SharedVar.hpp"            // for SharedVar
+#include "inexor/network/legacy/cube_network.hpp"  // for getint, putint, DMF
+#include "inexor/network/legacy/game_types.hpp"    // for ::N_INITFLAGS, ::N...
+#include "inexor/shared/command.hpp"               // for _icmd_dropflag<>::run
+#include "inexor/shared/cube_formatting.hpp"       // for defformatstring
+#include "inexor/shared/cube_loops.hpp"            // for i, loopv, k, loopk, j
+#include "inexor/shared/cube_types.hpp"            // for RAD
+#include "inexor/shared/ents.hpp"                  // for extentity, ::CS_ALIVE
+#include "inexor/shared/iengine.hpp"               // for draw_textf, dropto...
+#include "inexor/shared/igame.hpp"                 // for iterdynents, numdy...
+#include "inexor/shared/tools.hpp"                 // for rnd, max, min, swap
+#include "inexor/sound/sound.hpp"                  // for playsound, ::S_FLA...
+#include "inexor/ui/legacy/3dgui.hpp"              // for ::HICON_SIZE, ::HI...
+#include "inexor/util/legacy_time.hpp"             // for lastmillis
 
 namespace game {
 

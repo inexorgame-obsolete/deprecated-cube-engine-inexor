@@ -4,25 +4,24 @@
 #pragma once
 
 
-#include "inexor/shared/cube_types.hpp"
-#include "inexor/shared/cube_loops.hpp"
-#include "inexor/shared/cube_tools.hpp"
+#include <boost/algorithm/clamp.hpp>  // for clamp
+#include <algorithm>                  // for max, min
+#include <cstddef>
+#include <map>                        // for swap
+#include <new>
+
+#include "inexor/io/legacy/stream.hpp"
+#include "inexor/network/SharedTree.hpp"
+#include "inexor/network/legacy/cube_network.hpp"
 #include "inexor/shared/cube_endian.hpp"
 #include "inexor/shared/cube_formatting.hpp"
 #include "inexor/shared/cube_hash.hpp"
-#include "inexor/network/legacy/cube_network.hpp"
-#include "inexor/shared/cube_vector.hpp"
-#include "inexor/io/legacy/stream.hpp"
+#include "inexor/shared/cube_loops.hpp"
+#include "inexor/shared/cube_tools.hpp"
+#include "inexor/shared/cube_types.hpp"
 #include "inexor/shared/cube_unicode.hpp"
-
-#include <new>
-#include <cstddef>
-#include <algorithm>
-
-#include <boost/algorithm/clamp.hpp>
-
-#include "inexor/util/random.hpp"
-#include "inexor/network/SharedTree.hpp"
+#include "inexor/shared/cube_vector.hpp"
+#include "inexor/util/random.hpp"     // for rnd, deterministic_rnd
 
 // TODO:
 // Replace swap in sources

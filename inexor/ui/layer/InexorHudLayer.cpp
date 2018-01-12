@@ -1,9 +1,16 @@
-#include <iostream>
+#include <memory>                                     // for __shared_ptr
 
+#include "include/base/cef_logging.h"                 // for COMPACT_GOOGLE_...
+#include "include/base/cef_ref_counted.h"             // for scoped_refptr
+#include "include/cef_browser.h"                      // for CefBrowser, Cef...
+#include "include/wrapper/cef_helpers.h"              // for CEF_REQUIRE_REN...
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/shared/command.hpp"                  // for VARFP
+#include "inexor/ui/InexorCefApp.hpp"                 // for InexorCefApp
+#include "inexor/ui/InexorRenderHandler.hpp"          // for InexorRenderHan...
 #include "inexor/ui/layer/InexorHudLayer.hpp"
-#include "inexor/io/Logging.hpp"
-#include "inexor/ui/InexorCefApp.hpp"
-#include "inexor/network/SharedTree.hpp"
+#include "inexor/ui/layer/InexorLayer.hpp"            // for InexorLayer
 
 namespace inexor {
 namespace ui {

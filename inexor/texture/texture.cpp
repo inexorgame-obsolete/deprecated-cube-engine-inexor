@@ -1,23 +1,40 @@
 /// @file texture.cpp
 /// Main texture loading and organizing routines.
 
-#include "inexor/engine/engine.hpp"
-//#include "SDL_image.hpp"
-#include "inexor/io/filesystem/mediadirs.hpp"
-#include "inexor/texture/texture.hpp"
-#include "inexor/texture/image.hpp"
-#include "inexor/texture/SDL_loading.hpp"
-#include "inexor/texture/format.hpp"
-#include "inexor/texture/cubemap.hpp"
-#include "inexor/texture/slot.hpp"
-#include "inexor/texture/texsettings.hpp"
-#include "inexor/texture/compressedtex.hpp"
-#include "inexor/texture/additionaltools.hpp"
-#include "inexor/io/Logging.hpp"
+#include <SDL_opengl.h>                               // for GL_DEPTH_STENCIL
+#include <boost/algorithm/clamp.hpp>                  // for clamp
+#include <stdlib.h>                                   // for atoi, NULL, atof
+#include <string.h>                                   // for strchr, strcspn
+#include <algorithm>                                  // for max
+#include <map>                                        // for map, _Rb_tree_i...
+#include <memory>                                     // for __shared_ptr
+#include <string>                                     // for string
+#include <type_traits>                                // for __decay_and_str...
+#include <unordered_map>                              // for _Node_iterator
+#include <utility>                                    // for pair, make_pair
 
-#include <unordered_map>
-#include <map>
-#include <iterator>
+#include "SDL_pixels.h"                               // for SDL_PixelFormat
+#include "SDL_surface.h"                              // for SDL_FreeSurface
+#include "inexor/engine/engine.hpp"                   // for loadprogress
+#include "inexor/engine/glexts.hpp"                   // for glCompressedTex...
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/io/legacy/stream.hpp"                // for path
+#include "inexor/network/SharedVar.hpp"               // for SharedVar, min
+#include "inexor/shared/command.hpp"                  // for COMMAND, VAR
+#include "inexor/shared/cube_formatting.hpp"          // for formatstring
+#include "inexor/shared/cube_loops.hpp"               // for i, loopi, loop
+#include "inexor/shared/cube_tools.hpp"               // for matchstring
+#include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
+#include "inexor/shared/tools.hpp"                    // for max, clamp
+#include "inexor/texture/SDL_loading.hpp"             // for loadsurface
+#include "inexor/texture/additionaltools.hpp"         // for flipnormalmapy
+#include "inexor/texture/compressedtex.hpp"           // for loaddds
+#include "inexor/texture/cubemap.hpp"                 // for clearenvmaps
+#include "inexor/texture/format.hpp"                  // for compressedformat
+#include "inexor/texture/image.hpp"                   // for ImageData, resi...
+#include "inexor/texture/slot.hpp"                    // for Slot::Tex, clea...
+#include "inexor/texture/texsettings.hpp"             // for bilinear, maxte...
+#include "inexor/texture/texture.hpp"
 
 // We need to specify the commands here, bc. completely "unused" (and cubescript only functions are) source files get ignored in modules.. (BUG)
 

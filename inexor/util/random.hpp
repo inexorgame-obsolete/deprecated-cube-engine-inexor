@@ -1,12 +1,11 @@
 #pragma once
 
-#include <type_traits>
-#include <limits>
-
-#include <boost/uuid/seed_rng.hpp>
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_int_distribution.hpp>
-#include <boost/random/uniform_real_distribution.hpp>
+#include <boost/random/mersenne_twister.hpp>           // for mt19937
+#include <boost/random/uniform_int_distribution.hpp>   // for uniform_int_di...
+#include <boost/random/uniform_real_distribution.hpp>  // for uniform_real_d...
+#include <boost/uuid/seed_rng.hpp>                     // for seed
+#include <limits>                                      // for numeric_limits
+#include <type_traits>                                 // for conditional
 
 namespace inexor {
 namespace util {

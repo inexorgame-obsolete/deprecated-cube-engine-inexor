@@ -1,28 +1,59 @@
 /// game initialisation & main loop
 ///
-#include "inexor/engine/engine.hpp"
-#include "inexor/io/filesystem/mediadirs.hpp"
-#include "inexor/io/input/InputRouter.hpp"
-#include "inexor/util/Subsystem.hpp"
-#include "inexor/crashreporter/CrashReporter.hpp"
-#include "inexor/io/Logging.hpp"
-#include "inexor/network/SharedTree.hpp"
-#include "inexor/network/SharedList.hpp"
-#include "inexor/util/legacy_time.hpp"
-#include "inexor/engine/decal.hpp"
+#include <boost/algorithm/clamp.hpp>                  // for clamp
+#include <locale.h>                                   // for setlocale, LC_ALL
+#include <math.h>                                     // for ceil
+#include <stdio.h>                                    // for remove
+#include <stdlib.h>                                   // for exit, EXIT_FAILURE
+#include <string.h>                                   // for strstr
+#include <algorithm>                                  // for min, max
+#include <memory>                                     // for __shared_ptr
+#include <string>                                     // for string, basic_s...
+#include <vector>                                     // for vector
 
-#include "inexor/sound/sound.hpp"
-#include "inexor/sound/mumble.hpp"
-#include "inexor/engine/movie.hpp"
-
-#include "inexor/engine/octaedit.hpp"
-
-#include "inexor/ui/screen/ScreenManager.hpp"
-#include "inexor/ui/legacy/menus.hpp"
-#include "inexor/engine/rendertext.hpp"
-
-#include "inexor/engine/glexts.hpp"
-#include "inexor/engine/glemu.hpp"
+#include "SDL.h"                                      // for SDL_Quit, SDL_Init
+#include "SDL_cpuinfo.h"                              // for SDL_GetCPUCount
+#include "SDL_error.h"                                // for SDL_GetError
+#include "SDL_hints.h"                                // for SDL_SetHint
+#include "SDL_mouse.h"                                // for SDL_ShowCursor
+#include "SDL_opengl.h"                               // for glBindTexture
+#include "SDL_stdinc.h"                               // for ::SDL_FALSE
+#include "SDL_video.h"                                // for SDL_SetWindowBr...
+#include "enet/enet.h"                                // for enet_initialize
+#include "inexor/crashreporter/CrashReporter.hpp"     // for CrashReporter
+#include "inexor/engine/decal.hpp"                    // for initdecals
+#include "inexor/engine/engine.hpp"                   // for gl_init, writecfg
+#include "inexor/engine/glemu.hpp"                    // for attribf, begin
+#include "inexor/engine/lightmap.hpp"                 // for initlights
+#include "inexor/engine/movie.hpp"                    // for cleanup, stop
+#include "inexor/engine/octa.hpp"                     // for worldroot
+#include "inexor/engine/octaedit.hpp"                 // for tryedit
+#include "inexor/engine/rendertext.hpp"               // for FONTH
+#include "inexor/engine/shader.hpp"                   // for Shader, hudshader
+#include "inexor/io/Logging.hpp"                      // for Log, log_manager
+#include "inexor/io/filesystem/mediadirs.hpp"         // for getmediapath
+#include "inexor/io/input/InputRouter.hpp"            // for InputRouter
+#include "inexor/io/legacy/stream.hpp"                // for stream, addpack...
+#include "inexor/network/SharedFunc.hpp"              // for SharedFunc
+#include "inexor/network/SharedVar.hpp"               // for SharedVar, min
+#include "inexor/shared/command.hpp"                  // for execfile, VARF
+#include "inexor/shared/cube_formatting.hpp"          // for defvformatstring
+#include "inexor/shared/cube_loops.hpp"               // for loopi, i
+#include "inexor/shared/cube_tools.hpp"               // for copystring, new...
+#include "inexor/shared/cube_types.hpp"               // for string
+#include "inexor/shared/ents.hpp"                     // for dynent
+#include "inexor/shared/geom.hpp"                     // for matrix4
+#include "inexor/shared/iengine.hpp"                  // for draw_text, flus...
+#include "inexor/shared/igame.hpp"                    // for savedservers
+#include "inexor/shared/tools.hpp"                    // for rndscale, min, rnd
+#include "inexor/sound/mumble.hpp"                    // for initmumble
+#include "inexor/sound/sound.hpp"                     // for clear_sound
+#include "inexor/texture/texture.hpp"                 // for textureload
+#include "inexor/ui/legacy/menus.hpp"                 // for initwarning
+#include "inexor/ui/screen/ScreenManager.hpp"         // for ScreenManager
+#include "inexor/util/StringFormatter.hpp"            // for StringFormatter
+#include "inexor/util/Subsystem.hpp"                  // for Metasystem, SUB...
+#include "inexor/util/legacy_time.hpp"                // for lastmillis, upd...
 
 using namespace inexor::sound;
 using namespace inexor::io;

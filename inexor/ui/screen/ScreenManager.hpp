@@ -2,7 +2,9 @@
 
 #include <SDL.h>
 
+#include "SDL_video.h"                   // for SDL_GLContext, SDL_Window
 #include "inexor/network/SharedTree.hpp"
+#include "inexor/network/SharedVar.hpp"  // for SharedVar
 
 /// Hard coded defaults for the SDL window
 #define SCR_MINW 320

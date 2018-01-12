@@ -1,22 +1,25 @@
 
-#include "inexor/shared/command.hpp"
-#include "inexor/shared/ents.hpp"
+
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/shared/command.hpp"                  // for VARFP
+#include "inexor/shared/cube_formatting.hpp"          // for defformatstring
+#include "inexor/shared/cube_types.hpp"               // for RAD
+#include "inexor/shared/ents.hpp"                     // for dynent
+#include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
 #include "inexor/sound/mumble.hpp"
 
 #ifdef WIN32
 
-#include <wchar.h>
+#include <wchar.h>                                    // for wcsncpy
 
 #else
 
-#include <unistd.h>
+#include <unistd.h>                                   // for _POSIX_SHARED_M...
 
 #ifdef _POSIX_SHARED_MEMORY_OBJECTS
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/mman.h>
-#include <fcntl.h>
-#include <wchar.h>
+#include <fcntl.h>                                    // for O_RDWR
+#include <sys/mman.h>                                 // for mmap, munmap
+#include <wchar.h>                                    // for wcsncpy
 #endif
 
 #endif

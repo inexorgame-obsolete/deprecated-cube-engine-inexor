@@ -1,8 +1,26 @@
-#include "inexor/engine/engine.hpp"
-#include "inexor/texture/slot.hpp"
+#include <SDL_opengl.h>                               // for GL_ARRAY_BUFFER
+#include <math.h>                                     // for M_PI, ceil, cos
+#include <algorithm>                                  // for max, min
 
-#include "inexor/engine/glexts.hpp"
-#include "inexor/engine/glemu.hpp"
+#include "SDL_opengl.h"                               // for glBindTexture
+#include "inexor/engine/engine.hpp"                   // for isfoggedsphere
+#include "inexor/engine/glemu.hpp"                    // for bindvbo, clearvbo
+#include "inexor/engine/glexts.hpp"                   // for glActiveTexture_
+#include "inexor/engine/lightmap.hpp"                 // for LightMapTexture
+#include "inexor/engine/octa.hpp"                     // for grasstri, vtxarray
+#include "inexor/engine/octaedit.hpp"                 // for editmode
+#include "inexor/engine/shader.hpp"                   // for SETSHADER, Shader
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/shared/command.hpp"                  // for VARP, FVARP, FVARR
+#include "inexor/shared/cube_loops.hpp"               // for i, loopi, loopv
+#include "inexor/shared/cube_types.hpp"               // for uchar
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/ents.hpp"                     // for physent
+#include "inexor/shared/geom.hpp"                     // for vec, plane, vec2
+#include "inexor/shared/tools.hpp"                    // for max, min, rnd
+#include "inexor/texture/slot.hpp"                    // for Slot, lookupvslot
+#include "inexor/texture/texture.hpp"                 // for Texture, textur...
+#include "inexor/util/legacy_time.hpp"                // for lastmillis
 
 VARP(grass, 0, 0, 1);
 VAR(dbggrass, 0, 0, 1);

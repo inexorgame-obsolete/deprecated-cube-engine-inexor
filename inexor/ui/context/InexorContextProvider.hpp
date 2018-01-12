@@ -1,10 +1,12 @@
 #pragma once
 
-#include <list>
+#include <list>                // for list
+#include <string>              // for string
 
 #include "include/cef_app.h"
+#include "include/cef_base.h"  // for CefRefPtr, CefString
+#include "include/cef_v8.h"    // for CefV8Value, CefV8Accessor, CefV8Handler
 #include "include/wrapper/cef_helpers.h"
-
 #include "inexor/io/Logging.hpp"
 
 namespace inexor {

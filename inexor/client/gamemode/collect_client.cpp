@@ -1,5 +1,26 @@
+#include <math.h>                                  // for sinf
+#include <memory>                                  // for __shared_ptr
+
+#include "SDL_opengl.h"                            // for glBlendFunc, glDis...
 #include "inexor/client/gamemode/collect_client.hpp"
-#include "inexor/model/rendermodel.hpp"
+#include "inexor/engine/glemu.hpp"                 // for colorf
+#include "inexor/engine/particles.hpp"             // for particle_flare
+#include "inexor/fpsgame/ai.hpp"                   // for interest, makeroute
+#include "inexor/fpsgame/entities.hpp"             // for ents
+#include "inexor/fpsgame/game.hpp"                 // for player1, newclient
+#include "inexor/fpsgame/teaminfo.hpp"             // for ::TEAM_OPPONENT
+#include "inexor/gamemode/gamemode.hpp"            // for m_collect, isteam
+#include "inexor/io/Logging.hpp"                   // for Log, Logger, log_m...
+#include "inexor/model/model.hpp"                  // for preloadmodel, rend...
+#include "inexor/network/SharedVar.hpp"            // for SharedVar
+#include "inexor/network/legacy/cube_network.hpp"  // for getint, putint, DMF
+#include "inexor/network/legacy/game_types.hpp"    // for ::N_DEPOSITTOKENS
+#include "inexor/shared/cube_formatting.hpp"       // for formatstring
+#include "inexor/shared/cube_loops.hpp"            // for i, loopv, k, loopk
+#include "inexor/shared/cube_types.hpp"            // for RAD
+#include "inexor/shared/ents.hpp"                  // for extentity, entityl...
+#include "inexor/sound/sound.hpp"                  // for playsound, ::S_FLA...
+#include "inexor/ui/legacy/3dgui.hpp"              // for ::HICON_SIZE, ::HI...
 
 namespace game {
 

@@ -1,10 +1,29 @@
-#include "inexor/engine/engine.hpp"
-#include "inexor/io/Logging.hpp"
-#include "inexor/engine/material.hpp"
-#include "inexor/engine/decal.hpp"
+#include <SDL_opengl.h>                               // for GL_ARRAY_BUFFER
+#include <math.h>                                     // for ceil, fabs
+#include <stddef.h>                                   // for size_t
+#include <algorithm>                                  // for max
+#include <memory>                                     // for __shared_ptr
 
-#include "inexor/engine/glexts.hpp"
-#include "inexor/engine/glemu.hpp"
+#include "SDL_opengl.h"                               // for glBlendFunc
+#include "inexor/engine/decal.hpp"
+#include "inexor/engine/engine.hpp"                   // for faceconvexity
+#include "inexor/engine/glemu.hpp"                    // for bindvbo, clearvbo
+#include "inexor/engine/glexts.hpp"                   // for glBufferSubData_
+#include "inexor/engine/octa.hpp"                     // for materialsurface
+#include "inexor/engine/shader.hpp"                   // for Shader, SETSHADER
+#include "inexor/engine/world.hpp"                    // for ::DEFAULT_SKY
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/shared/command.hpp"                  // for VARP, VAR, VARFP
+#include "inexor/shared/cube_loops.hpp"               // for i, j, loopi, loopj
+#include "inexor/shared/cube_tools.hpp"               // for DELETEA
+#include "inexor/shared/cube_types.hpp"               // for ushort, RAD, uchar
+#include "inexor/shared/ents.hpp"                     // for physent
+#include "inexor/shared/geom.hpp"                     // for vec, ivec, ivec...
+#include "inexor/shared/iengine.hpp"                  // for ::MAT_ALPHA
+#include "inexor/shared/tools.hpp"                    // for rnd, max
+#include "inexor/texture/texture.hpp"                 // for textureload
+#include "inexor/util/legacy_time.hpp"                // for lastmillis
 
 struct decalvert
 {

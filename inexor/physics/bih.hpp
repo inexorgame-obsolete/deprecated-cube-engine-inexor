@@ -4,11 +4,16 @@
 
 #pragma once
 
-#include "inexor/shared/geom.hpp"
+#include <stdlib.h>                       // for abs
+
+#include "inexor/shared/cube_types.hpp"   // for ushort, uchar
+#include "inexor/shared/cube_vector.hpp"  // for vector
 #include "inexor/shared/ents.hpp"
+#include "inexor/shared/geom.hpp"         // for svec, ivec, ivec::(anonymou...
 #include "inexor/texture/texture.hpp"
-#include "inexor/shared/cube_vector.hpp"
-#include "inexor/shared/cube_types.hpp"
+
+struct Texture;
+struct extentity;
 
 struct BIH
 {

@@ -2,15 +2,17 @@
 /// Texture modifiers mainly applied on load.
 
 
+#include <boost/algorithm/clamp.hpp>       // for clamp
+#include <string.h>                        // for memcpy
+#include <algorithm>                       // for max, min, swap
+
+#include "SDL_opengl.h"                    // for GLenum, GL_TEXTURE_CUBE_MAP
+#include "inexor/network/SharedVar.hpp"    // for SharedVar, min
+#include "inexor/shared/cube_endian.hpp"   // for lilswap
+#include "inexor/shared/geom.hpp"          // for vec, vec::(anonymous union...
 #include "inexor/texture/image.hpp"
-#include "inexor/texture/texsettings.hpp"
-#include "inexor/texture/macros.hpp"
-#include "inexor/shared/cube_endian.hpp"
-#include "inexor/shared/geom.hpp"
-
-#include <boost/algorithm/clamp.hpp> // TODO replace with std::clamp as soon as C++17 is our target.
-
-#include <algorithm>
+#include "inexor/texture/macros.hpp"       // for dst, src, readwritetex
+#include "inexor/texture/texsettings.hpp"  // for texreduce, maxtexsize, hwc...
 
 using boost::algorithm::clamp;
 using std::min;

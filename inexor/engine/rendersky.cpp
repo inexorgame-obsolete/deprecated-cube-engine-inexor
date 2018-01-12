@@ -1,14 +1,34 @@
-#include "inexor/engine/engine.hpp"
-#include "inexor/io/filesystem/mediadirs.hpp"
-#include "inexor/texture/cubemap.hpp"
-#include "inexor/io/Logging.hpp"
+#include <SDL_opengl.h>                               // for GL_STATIC_DRAW
+#include <limits.h>                                   // for INT_MAX
+#include <math.h>                                     // for ceil, sqrtf, M_PI
+#include <string.h>                                   // for strchr, strcpy
+#include <algorithm>                                  // for max, min
+#include <memory>                                     // for __shared_ptr
 
+#include "SDL_opengl.h"                               // for GLushort, GL_TRUE
+#include "inexor/engine/engine.hpp"                   // for rendersky, camm...
+#include "inexor/engine/glemu.hpp"                    // for attribf, begin
+#include "inexor/engine/glexts.hpp"                   // for glBufferData_
+#include "inexor/engine/octa.hpp"                     // for vtxarray, ::OCC...
+#include "inexor/engine/octaedit.hpp"                 // for editmode
 #include "inexor/engine/rendersky.hpp"
-
-#include "inexor/engine/glexts.hpp"
-#include "inexor/engine/glemu.hpp"
-
-#include "inexor/shared/cube_sort.hpp"
+#include "inexor/engine/shader.hpp"                   // for Shader, LOCALPARAM
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/io/filesystem/mediadirs.hpp"         // for getmediapath
+#include "inexor/network/SharedVar.hpp"               // for SharedVar, min
+#include "inexor/shared/command.hpp"                  // for FVARR, VARR, HVARR
+#include "inexor/shared/cube_formatting.hpp"          // for concatstring
+#include "inexor/shared/cube_loops.hpp"               // for i, loopi
+#include "inexor/shared/cube_sort.hpp"                // for quicksort
+#include "inexor/shared/cube_tools.hpp"               // for DELETEA
+#include "inexor/shared/cube_types.hpp"               // for RAD, MAXSTRLEN
+#include "inexor/shared/ents.hpp"                     // for physent
+#include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
+#include "inexor/shared/iengine.hpp"                  // for insideworld
+#include "inexor/shared/tools.hpp"                    // for max, min
+#include "inexor/texture/cubemap.hpp"                 // for cubemapside
+#include "inexor/texture/texture.hpp"                 // for textureload
+#include "inexor/util/legacy_time.hpp"                // for lastmillis
 
 using namespace inexor::filesystem;
 

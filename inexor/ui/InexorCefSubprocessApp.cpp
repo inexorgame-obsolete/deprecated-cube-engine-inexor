@@ -1,6 +1,13 @@
-#include <iostream>
+#include <ext/alloc_traits.h>              // for __alloc_traits<>::value_type
+#include <iostream>                        // for operator<<, cerr, ostream
+#include <utility>                         // for pair
 
+#include "include/base/cef_ref_counted.h"  // for scoped_refptr
+#include "include/cef_values.h"            // for CefListValue, CefValueType
 #include "inexor/ui/InexorCefSubprocessApp.hpp"
+
+class CefBrowser;
+class CefFrame;
 
 namespace inexor {
 namespace ui {

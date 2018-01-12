@@ -1,12 +1,30 @@
 /// @file additionaltools.cpp
 /// additional texture generation tools provided by the engine.
 
+#include <SDL_opengl.h>                       // for GL_COMPRESSED_RGB_S3TC_...
+#include <string.h>                           // for memcpy, memset, strlen
+#include <algorithm>                          // for max
+#include <memory>                             // for __shared_ptr
+
+#include "SDL_opengl.h"                       // for glGetTexLevelParameteriv
+#include "inexor/engine/engine.hpp"           // for hasS3TC
+#include "inexor/engine/glexts.hpp"           // for glGetCompressedTexImage_
+#include "inexor/io/Logging.hpp"              // for Log, Logger, log_manager
+#include "inexor/io/legacy/stream.hpp"        // for stream, openfile, path
+#include "inexor/network/SharedVar.hpp"       // for SharedVar
+#include "inexor/shared/cube_endian.hpp"      // for lilswap
+#include "inexor/shared/cube_formatting.hpp"  // for concatstring, defformat...
+#include "inexor/shared/cube_tools.hpp"       // for copystring
+#include "inexor/shared/cube_types.hpp"       // for uchar, uint, string
+#include "inexor/shared/geom.hpp"             // for bvec, vec
+#include "inexor/shared/tools.hpp"            // for max
+#include "inexor/texture/compressedtex.hpp"   // for DDSURFACEDESC2, DDSURFA...
+#include "inexor/texture/image.hpp"           // for ImageData
+#include "inexor/texture/macros.hpp"          // for dst, src, read2writetex
+#include "inexor/texture/savetexture.hpp"     // for guessimageformat, savei...
 //#include "inexor/texture/additionaltools.hpp"
-#include "inexor/texture/texsettings.hpp"
-#include "inexor/texture/macros.hpp"
-#include "inexor/texture/savetexture.hpp"
-#include "inexor/texture/compressedtex.hpp"
-#include "inexor/io/Logging.hpp"
+#include "inexor/texture/texsettings.hpp"     // for usetexcompress
+#include "inexor/texture/texture.hpp"         // for loadimage, gettexture
 
 void flipnormalmapy(char *destfile, char *normalfile) // jpg/png /tga-> tga
 {

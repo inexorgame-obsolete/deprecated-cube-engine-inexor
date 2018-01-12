@@ -1,17 +1,43 @@
 
-#include "inexor/model/rendermodel.hpp"
-#include "inexor/engine/engine.hpp"
-#include "inexor/texture/cubemap.hpp"
-#include "inexor/io/Logging.hpp"
-#include "inexor/engine/pvs.hpp"
-#include "inexor/engine/shadowmap.hpp"
-#include "inexor/engine/blob.hpp"
-#include "inexor/physics/physics.hpp"
-#include "inexor/ui/legacy/menus.hpp"
-#include "inexor/io/filesystem/mediadirs.hpp"
+#include <boost/algorithm/clamp.hpp>                  // for clamp
+#include <math.h>                                     // for fabs, sqrtf
+#include <string.h>                                   // for strchr, strlen
+#include <algorithm>                                  // for max, min
+#include <memory>                                     // for __shared_ptr
+#include <string>                                     // for string
 
-#include "inexor/engine/glexts.hpp"
-#include "inexor/engine/glemu.hpp"
+#include "SDL_opengl.h"                               // for GL_LINE_LOOP
+#include "inexor/engine/blob.hpp"                     // for flushblobs, ren...
+#include "inexor/engine/engine.hpp"                   // for refracting, ref...
+#include "inexor/engine/glemu.hpp"                    // for attribf, begin
+#include "inexor/engine/lightmap.hpp"                 // for lightmapping
+#include "inexor/engine/octa.hpp"                     // for occludequery
+#include "inexor/engine/octaedit.hpp"                 // for editmode
+#include "inexor/engine/pvs.hpp"                      // for pvsoccluded
+#include "inexor/engine/shader.hpp"                   // for lookupshaderbyname
+#include "inexor/engine/shadowmap.hpp"                // for shadowmapping
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/io/filesystem/mediadirs.hpp"         // for modeldir
+#include "inexor/io/legacy/stream.hpp"                // for makerelpath
+#include "inexor/model/model.hpp"                     // for model, modelattach
+#include "inexor/model/rendermodel.hpp"
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/physics/physics.hpp"                 // for rotatebb
+#include "inexor/shared/command.hpp"                  // for COMMAND, VAR
+#include "inexor/shared/cube_formatting.hpp"          // for defformatstring
+#include "inexor/shared/cube_hash.hpp"                // for hashnameset
+#include "inexor/shared/cube_loops.hpp"               // for i, loopi, loopv, j
+#include "inexor/shared/cube_tools.hpp"               // for UNUSED, DELETEP
+#include "inexor/shared/cube_unicode.hpp"             // for iscubespace
+#include "inexor/shared/ents.hpp"                     // for dynent, entityl...
+#include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
+#include "inexor/shared/iengine.hpp"                  // for dynlightreaching
+#include "inexor/shared/igame.hpp"                    // for allowmove, allo...
+#include "inexor/shared/tools.hpp"                    // for max, min, clamp
+#include "inexor/texture/cubemap.hpp"                 // for cubemapload
+#include "inexor/texture/texture.hpp"                 // for textureload
+#include "inexor/ui/legacy/menus.hpp"                 // for initing
+#include "inexor/util/legacy_time.hpp"                // for lastmillis
 
 
 void loadskin(const char *dir, const char *altdir, Texture *&skin, Texture *&masks);
@@ -38,10 +64,10 @@ VARP(gpuskel, 0, 1, 1);
 VAR(maxskelanimdata, 1, 192, 0);
 VAR(testtags, 0, 0, 1);
 
-#include "inexor/model/ragdoll.hpp"
-#include "inexor/model/animmodel.hpp"
-#include "inexor/model/vertmodel.hpp"
-#include "inexor/model/skelmodel.hpp"
+#include "inexor/model/animmodel.hpp"                 // for animmodel::part
+#include "inexor/model/ragdoll.hpp"                   // for ragdollskel
+#include "inexor/model/skelmodel.hpp"                 // for skelmodel, skel...
+#include "inexor/model/vertmodel.hpp"                 // for vertmodel
 
 static model *(__cdecl *modeltypes[NUMMODELTYPES])(const char *);
 
@@ -58,12 +84,12 @@ static model *__loadmodel__##modelclass(const char *filename) \
 } \
 UNUSED static int __dummy__##modelclass = addmodeltype((modeltype), __loadmodel__##modelclass);
  
-#include "inexor/model/md2.hpp"
-#include "inexor/model/md3.hpp"
-#include "inexor/model/md5.hpp"
-#include "inexor/model/obj.hpp"
-#include "inexor/model/smd.hpp"
-#include "inexor/model/iqm.hpp"
+#include "inexor/model/iqm.hpp"                       // for iqm
+#include "inexor/model/md2.hpp"                       // for md2
+#include "inexor/model/md3.hpp"                       // for md3
+#include "inexor/model/md5.hpp"                       // for md5
+#include "inexor/model/obj.hpp"                       // for obj
+#include "inexor/model/smd.hpp"                       // for smd
 
 MODELTYPE(MDL_MD2, md2);
 MODELTYPE(MDL_MD3, md3);
@@ -1044,6 +1070,7 @@ void findanims(const char *pattern, vector<int> &anims)
 }
 
 ICOMMAND(findanims, "s", (char *name),
+
 {
     vector<int> anims;
     findanims(name, anims);

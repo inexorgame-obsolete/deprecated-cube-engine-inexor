@@ -1,10 +1,28 @@
-#include "inexor/shared/cube.hpp"
-#include "inexor/io/legacy/stream.hpp"
-#include "inexor/gamemode/gamemode.hpp"
+#include <boost/algorithm/clamp.hpp>                  // for clamp
+#include <fcntl.h>                                    // for SEEK_SET
+#include <string.h>                                   // for memcmp, memcpy
+#include <time.h>                                     // for ctime, time
+#include <algorithm>                                  // for min
+
+#include "enet/enet.h"                                // for ENetPacket, ene...
+#include "enet/types.h"                               // for enet_uint8
+#include "inexor/gamemode/gamemode.hpp"               // for modename, gamemode
+#include "inexor/io/legacy/stream.hpp"                // for stream, opengzfile
+#include "inexor/network/legacy/buffer_types.hpp"     // for packetbuf
+#include "inexor/network/legacy/cube_network.hpp"     // for putint, sendstring
+#include "inexor/network/legacy/game_types.hpp"       // for demoheader, DEM...
+#include "inexor/server/client_management.hpp"        // for clientinfo, cli...
 #include "inexor/server/demos.hpp"
-#include "inexor/server/client_management.hpp"
-#include "inexor/server/map_management.hpp"
-#include "inexor/server/network_send.hpp"
+#include "inexor/server/map_management.hpp"           // for smapname
+#include "inexor/server/network_send.hpp"             // for sendservmsg, sendf
+#include "inexor/shared/command.hpp"                  // for VAR
+#include "inexor/shared/cube_endian.hpp"              // for lilswap
+#include "inexor/shared/cube_formatting.hpp"          // for formatstring
+#include "inexor/shared/cube_loops.hpp"               // for i, loopv, loopi
+#include "inexor/shared/cube_tools.hpp"               // for DELETEP
+#include "inexor/shared/cube_unicode.hpp"             // for iscubespace
+#include "inexor/shared/tools.hpp"                    // for clamp, min
+#include "inexor/util/legacy_time.hpp"                // for gamemillis, cur...
 
 namespace server {
 

@@ -1,6 +1,15 @@
-#include <iostream>
+#include <memory>                                   // for __shared_ptr
 
+#include "include/base/cef_logging.h"               // for COMPACT_GOOGLE_LO...
+#include "include/base/cef_ref_counted.h"           // for scoped_refptr
+#include "include/cef_v8.h"                         // for CefV8Value, CefV8...
+#include "include/wrapper/cef_helpers.h"            // for CEF_REQUIRE_UI_TH...
+#include "inexor/io/Logging.hpp"                    // for Log, Logger, log_...
 #include "inexor/ui/InexorCefApp.hpp"
+#include "inexor/ui/layer/InexorLayerProvider.hpp"  // for InexorLayerProvider
+
+class CefBrowser;
+class CefFrame;
 
 namespace inexor {
 namespace ui {

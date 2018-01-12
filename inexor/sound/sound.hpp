@@ -1,7 +1,11 @@
 #pragma once
 #include "inexor/network/SharedTree.hpp"
-#include "inexor/shared/geom.hpp"
+#include "inexor/network/SharedVar.hpp"  // for SharedVar
 #include "inexor/shared/ents.hpp"
+#include "inexor/shared/geom.hpp"
+
+struct extentity;
+struct vec;
 
 enum
 {

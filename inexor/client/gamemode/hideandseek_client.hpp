@@ -1,7 +1,15 @@
 #pragma once
-#include "inexor/fpsgame/game.hpp"
-#include "inexor/gamemode/hideandseek_common.hpp"
-#include "inexor/client/gamemode/gamemode_client.hpp"
+#include "inexor/client/gamemode/gamemode_client.hpp"  // for clientmode
+#include "inexor/fpsgame/fpsent.hpp"                   // for fpsent
+#include "inexor/fpsgame/game.hpp"                     // for player1
+#include "inexor/gamemode/hideandseek_common.hpp"      // for hideandseekmode
+#include "inexor/network/SharedVar.hpp"                // for SharedVar
+#include "inexor/network/legacy/buffer_types.hpp"      // for ucharbuf
+#include "inexor/shared/iengine.hpp"                   // for findplayerspawn
+
+struct g3d_gui;
+struct scoregroup;
+struct vec;
 
 namespace game {
 

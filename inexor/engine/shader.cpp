@@ -1,17 +1,28 @@
 // shader.cpp: OpenGL GLSL shader management
 
-#include "inexor/engine/engine.hpp"
-#include "inexor/texture/slot.hpp"
+#include <boost/algorithm/clamp.hpp>                  // for clamp
+#include <ctype.h>                                    // for isdigit
+#include <math.h>                                     // for exp
+#include <stdio.h>                                    // for sscanf
+#include <memory>                                     // for __shared_ptr
 
-#include "inexor/ui/screen/ScreenManager.hpp"
-#include "inexor/ui/legacy/menus.hpp"
-
-#include "inexor/io/Logging.hpp"
-
+#include "SDL_opengl.h"                               // for GLint, glGetInt...
+#include "inexor/engine/engine.hpp"                   // for renderprogress
+#include "inexor/engine/glemu.hpp"                    // for ::MAXATTRIBS
+#include "inexor/engine/glexts.hpp"                   // for glGetUniformLoc...
 #include "inexor/engine/shader.hpp"
-
-#include "inexor/engine/glexts.hpp"
-#include "inexor/engine/glemu.hpp"
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/shared/command.hpp"                  // for execute, COMMAND
+#include "inexor/shared/cube_formatting.hpp"          // for defformatstring
+#include "inexor/shared/cube_hash.hpp"                // for hashnameset
+#include "inexor/shared/cube_unicode.hpp"             // for iscubealpha
+#include "inexor/shared/iengine.hpp"                  // for fatal
+#include "inexor/shared/tools.hpp"                    // for max, clamp, min
+#include "inexor/texture/slot.hpp"                    // for Slot, VSlot
+#include "inexor/texture/texture.hpp"                 // for createtexture
+#include "inexor/ui/legacy/menus.hpp"                 // for initwarning
+#include "inexor/ui/screen/ScreenManager.hpp"         // for ScreenManager
+#include "inexor/util/legacy_time.hpp"                // for lastmillis
 
 using namespace inexor::rendering::screen;
 
@@ -1196,7 +1207,6 @@ COMMAND(altshader, "ss");
 COMMAND(fastshader, "ssi");
 COMMAND(defershader, "iss");
 ICOMMAND(forceshader, "s", (const char *name), useshaderbyname(name));
-
 ICOMMAND(isshaderdefined, "s", (char *name), intret(lookupshaderbyname(name) ? 1 : 0));
 
 static hashset<const char *> shaderparamnames(256);
@@ -1227,9 +1237,9 @@ void addslotparam(const char *name, float x, float y, float z, float w)
     slotparams.add(param);
 }
 
-ICOMMAND(setuniformparam, "sffff", (char *name, float *x, float *y, float *z, float *w), addslotparam(name, *x, *y, *z, *w));
-ICOMMAND(setshaderparam, "sffff", (char *name, float *x, float *y, float *z, float *w), addslotparam(name, *x, *y, *z, *w));
 ICOMMAND(defuniformparam, "sffff", (char *name, float *x, float *y, float *z, float *w), addslotparam(name, *x, *y, *z, *w));
+ICOMMAND(setshaderparam, "sffff", (char *name, float *x, float *y, float *z, float *w), addslotparam(name, *x, *y, *z, *w));
+ICOMMAND(setuniformparam, "sffff", (char *name, float *x, float *y, float *z, float *w), addslotparam(name, *x, *y, *z, *w));
 
 #define NUMPOSTFXBINDS 10
 
@@ -1391,6 +1401,7 @@ void clearpostfx()
 COMMAND(clearpostfx, "");
 
 ICOMMAND(addpostfx, "siisffff", (char *name, int *bind, int *scale, char *inputs, float *x, float *y, float *z, float *w),
+
 {
     int inputmask = inputs[0] ? 0 : 1;
     int freemask = inputs[0] ? 0 : 1;
@@ -1408,6 +1419,7 @@ ICOMMAND(addpostfx, "siisffff", (char *name, int *bind, int *scale, char *inputs
 });
 
 ICOMMAND(setpostfx, "sffff", (char *name, float *x, float *y, float *z, float *w),
+
 {
     clearpostfx();
     if(name[0]) addpostfx(name, 0, 0, 1, 1, vec4(*x, *y, *z, *w));

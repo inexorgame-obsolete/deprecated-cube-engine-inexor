@@ -1,17 +1,23 @@
 #pragma once
-#include "inexor/ui/screen/ScreenManager.hpp"
+#include <SDL_opengl.h>                        // for GL_FRAMEBUFFER, GL_REN...
+#include <math.h>                              // for ceil, floor
+#include <string.h>                            // for memcpy, memset
+#include <algorithm>                           // for min, max, swap
 
-#include "inexor/texture/texture.hpp"
-#include "inexor/texture/texsettings.hpp"
-
-#include "inexor/engine/shader.hpp"
-#include "inexor/engine/glexts.hpp"
-#include "inexor/engine/glemu.hpp"
+#include "SDL_opengl.h"                        // for GLenum, glDisable, glE...
+#include "inexor/engine/glemu.hpp"             // for attribf, begin, defvertex
+#include "inexor/engine/glexts.hpp"            // for glBindFramebuffer_
+#include "inexor/engine/shader.hpp"            // for setblurshader, setupbl...
+#include "inexor/shared/cube_loops.hpp"        // for i, loop, loopi
+#include "inexor/shared/cube_types.hpp"        // for uint
+#include "inexor/texture/texsettings.hpp"      // for hwtexsize
+#include "inexor/texture/texture.hpp"          // for createtexture
+#include "inexor/ui/screen/ScreenManager.hpp"  // for ScreenManager, screen_...
 
 extern void screenquad(float sw, float sh); // todo remove
 extern void hudquad(float x, float y, float w, float h, float tx, float ty, float tw, float th);
 
-#include "inexor/network/SharedVar.hpp"
+#include "inexor/network/SharedVar.hpp"        // for SharedVar
 
 extern SharedVar<int> rtsharefb, rtscissor, blurtile;
 

@@ -1,6 +1,10 @@
 #pragma once
 
 #include "inexor/shared/command.hpp"
+#include "inexor/shared/geom.hpp"
+#include <SDL_opengl.h>
+#include "inexor/engine/engine.hpp"
+#include "inexor/engine/rendertarget.hpp"             // for rendertarget
 
 #define MAXDFXRANGES 4
 

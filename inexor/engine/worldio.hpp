@@ -1,9 +1,11 @@
 #pragma once
 /// World input output: legacy serialisation of map files.
 
+#include "inexor/shared/cube_types.hpp"   // for uint
+#include "inexor/shared/cube_vector.hpp"  // for vector
 #include "inexor/shared/ents.hpp"
-#include "inexor/shared/cube_vector.hpp"
-#include "inexor/shared/cube_types.hpp"
+
+struct entity;
 
 extern bool load_world(const char *mname, const char *cname = nullptr);
 extern bool save_world(const char *mname, bool nolms = false);

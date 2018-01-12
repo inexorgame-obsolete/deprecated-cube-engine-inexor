@@ -3,17 +3,42 @@
 // special feature is that its mostly *modeless*: you can use this menu while playing, without turning menus on or off
 // implementationwise, it is *stateless*: it keeps no internal gui structure, hit tests are instant, usage & implementation is greatly simplified
 
-#include "inexor/engine/engine.hpp"
-#include "inexor/ui/legacy/textedit.hpp"
-#include "inexor/texture/slot.hpp"
-#include "inexor/ui/legacy/3dgui.hpp"
-#include "inexor/ui/legacy/menus.hpp"
-#include "inexor/io/filesystem/mediadirs.hpp"
-#include "inexor/io/input/InputRouter.hpp"
-#include "inexor/ui/screen/ScreenManager.hpp"
-#include "inexor/engine/rendertext.hpp"
+#include <boost/algorithm/clamp.hpp>                  // for clamp
+#include <limits.h>                                   // for INT_MAX
+#include <math.h>                                     // for floor, ceil, fabs
+#include <stdlib.h>                                   // for abs
+#include <string.h>                                   // for memset, strcmp
+#include <algorithm>                                  // for max, min, swap
+#include <string>                                     // for string
 
-#include "inexor/engine/octaedit.hpp"
+#include "SDL_keycode.h"                              // for ::SDLK_ESCAPE
+#include "SDL_opengl.h"                               // for glBlendFunc
+#include "inexor/engine/engine.hpp"                   // for camera1, end
+#include "inexor/engine/glemu.hpp"                    // for attribf, attrib
+#include "inexor/engine/octaedit.hpp"                 // for previewprefab
+#include "inexor/engine/rendertext.hpp"               // for FONTH, FONTW
+#include "inexor/engine/shader.hpp"                   // for Shader, hudshader
+#include "inexor/io/filesystem/mediadirs.hpp"         // for getmediapath
+#include "inexor/io/filesystem/path.hpp"              // for Path
+#include "inexor/io/input/InputRouter.hpp"            // for InputRouter
+#include "inexor/model/model.hpp"                     // for loadmodel, rend...
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/shared/command.hpp"                  // for intstr, VARP
+#include "inexor/shared/cube_loops.hpp"               // for k, j, i, loopk
+#include "inexor/shared/cube_types.hpp"               // for ushort, RAD, uchar
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/ents.hpp"                     // for physent, dynent
+#include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
+#include "inexor/shared/iengine.hpp"                  // for hudmatrix, draw...
+#include "inexor/shared/igame.hpp"                    // for g3d_gamemenus
+#include "inexor/shared/tools.hpp"                    // for max, min, clamp
+#include "inexor/texture/slot.hpp"                    // for VSlot, Slot
+#include "inexor/texture/texture.hpp"                 // for textureload
+#include "inexor/ui/legacy/3dgui.hpp"
+#include "inexor/ui/legacy/menus.hpp"                 // for g3d_mainmenu
+#include "inexor/ui/legacy/textedit.hpp"              // for editor, current...
+#include "inexor/ui/screen/ScreenManager.hpp"         // for ScreenManager
+#include "inexor/util/legacy_time.hpp"                // for totalmillis
 
 using namespace inexor::filesystem;
 using namespace inexor::rendering::screen;

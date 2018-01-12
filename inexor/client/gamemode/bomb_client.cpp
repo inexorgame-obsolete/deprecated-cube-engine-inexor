@@ -1,9 +1,35 @@
+#include <math.h>                                     // for fabs, fmod, sin
+#include <string.h>                                   // for strcmp
+#include <algorithm>                                  // for max
+
+#include "SDL_opengl.h"                               // for glTexCoord2f
+#include "SDL_timer.h"                                // for SDL_GetTicks
 #include "inexor/client/gamemode/bomb_client.hpp"
-#include "inexor/io/filesystem/mediadirs.hpp"
-#include "inexor/fpsgame/projectile.hpp"
-#include "inexor/model/rendermodel.hpp"
+#include "inexor/fpsgame/entities.hpp"                // for ents
+#include "inexor/fpsgame/game.hpp"                    // for player1, players
+#include "inexor/fpsgame/guns.hpp"                    // for ::GUN_BOMB
+#include "inexor/fpsgame/projectile.hpp"              // for bouncer, bouncers
+#include "inexor/fpsgame/teaminfo.hpp"                // for scoregroup, ::T...
+#include "inexor/gamemode/gamemode.hpp"               // for m_teammode, isteam
+#include "inexor/io/filesystem/mediadirs.hpp"         // for radardir
+#include "inexor/model/model.hpp"                     // for rendermodel
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/network/legacy/cube_network.hpp"     // for putint, getint
+#include "inexor/network/legacy/game_types.hpp"       // for ::N_SPAWNLOC
+#include "inexor/shared/command.hpp"                  // for VARP
+#include "inexor/shared/cube_formatting.hpp"          // for formatstring
+#include "inexor/shared/cube_loops.hpp"               // for i, loopv, k, loopk
+#include "inexor/shared/cube_types.hpp"               // for RAD
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
+#include "inexor/shared/iengine.hpp"                  // for text_bounds
+#include "inexor/shared/tools.hpp"                    // for max
+#include "inexor/ui/legacy/3dgui.hpp"                 // for g3d_gui, ::HICO...
+#include "inexor/util/legacy_time.hpp"                // for lastmillis
 
 namespace game {
+
+struct movable;
 
 VARP(showbombs, 0, 1, 1);
 VARP(showbombradius, 0, 1, 1);

@@ -1,8 +1,23 @@
 /// @file compressedtex.cpp
 /// compressed texture (mostly dds) loading.
 
+#include <SDL_opengl.h>                               // for GL_COMPRESSED_R...
+#include <string.h>                                   // for memcpy, memcmp
+#include <algorithm>                                  // for min
+#include <memory>                                     // for __shared_ptr
+
+#include "SDL_opengl.h"                               // for GL_FALSE, GLenum
+#include "inexor/engine/engine.hpp"                   // for hasS3TC
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/io/legacy/stream.hpp"                // for stream, openfile
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/shared/command.hpp"                  // for VAR
+#include "inexor/shared/cube_endian.hpp"              // for lilswap
+#include "inexor/shared/cube_loops.hpp"               // for loop
+#include "inexor/shared/geom.hpp"                     // for bvec, bvec4
+#include "inexor/shared/tools.hpp"                    // for min
 #include "inexor/texture/compressedtex.hpp"
-#include "inexor/io/Logging.hpp"
+#include "inexor/texture/image.hpp"                   // for ImageData
 
 VAR(dbgdds, 0, 0, 1);
 

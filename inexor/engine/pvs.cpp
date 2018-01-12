@@ -1,8 +1,33 @@
-#include "inexor/engine/engine.hpp"
-#include "inexor/io/input/InputRouter.hpp"
-#include "inexor/io/Logging.hpp"
-#include "inexor/shared/cube_queue.hpp"
+#include <limits.h>                                   // for INT_MAX, INT_MIN
+#include <math.h>                                     // for floor
+#include <string.h>                                   // for memset, memcpy
+#include <algorithm>                                  // for max, min, swap
+#include <memory>                                     // for __shared_ptr
+
+#include "SDL_keycode.h"                              // for ::SDLK_ESCAPE
+#include "SDL_mutex.h"                                // for SDL_LockMutex
+#include "SDL_stdinc.h"                               // for Uint32
+#include "SDL_thread.h"                               // for SDL_CreateThread
+#include "SDL_timer.h"                                // for SDL_GetTicks
+#include "inexor/engine/engine.hpp"                   // for worldsize, rend...
+#include "inexor/engine/octa.hpp"                     // for cube, materials...
 #include "inexor/engine/pvs.hpp"
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/io/input/InputRouter.hpp"            // for InputRouter
+#include "inexor/io/legacy/stream.hpp"                // for stream
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/network/legacy/buffer_types.hpp"     // for databuf
+#include "inexor/shared/command.hpp"                  // for COMMAND, VAR, VARN
+#include "inexor/shared/cube_formatting.hpp"          // for defformatstring
+#include "inexor/shared/cube_hash.hpp"                // for hashtable, hash...
+#include "inexor/shared/cube_loops.hpp"               // for i, loopi, k, j
+#include "inexor/shared/cube_queue.hpp"               // for queue
+#include "inexor/shared/cube_tools.hpp"               // for DELETEA, DELETEP
+#include "inexor/shared/cube_types.hpp"               // for uchar, uint
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/ents.hpp"                     // for physent
+#include "inexor/shared/iengine.hpp"                  // for ::MATF_CLIP
+#include "inexor/shared/tools.hpp"                    // for max, min, swap
 
 using namespace inexor::io;
 

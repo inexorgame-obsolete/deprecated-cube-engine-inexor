@@ -1,6 +1,12 @@
-#include <iostream>
+#include <memory>                         // for __shared_ptr
+#include <sstream>                        // for operator<<, basic_ostream
 
-#include "inexor/io/Logging.hpp"
+#include "include/base/cef_logging.h"     // for COMPACT_GOOGLE_LOG_DCHECK
+#include "include/cef_callback.h"         // for CefCompletionCallback
+#include "include/cef_frame.h"            // for CefFrame
+#include "include/cef_request_context.h"  // for CefRequestContext
+#include "include/wrapper/cef_helpers.h"  // for CEF_REQUIRE_UI_THREAD
+#include "inexor/io/Logging.hpp"          // for Log, Logger, log_manager
 #include "inexor/ui/layer/InexorLayer.hpp"
 
 using namespace inexor::util;

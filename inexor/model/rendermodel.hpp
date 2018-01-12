@@ -1,5 +1,10 @@
 #pragma once
 #include "inexor/model/model.hpp"
+#include "inexor/shared/cube_types.hpp"   // for string
+#include "inexor/shared/cube_vector.hpp"  // for vector
+
+struct model;
+struct occludequery;
 
 struct mapmodelinfo { string name; model *m; };
 

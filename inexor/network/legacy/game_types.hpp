@@ -1,4 +1,5 @@
 #pragma once
+#include <string.h> // for memset
 /// This file contains static protocol information for the (soon to be legacy) network code.
 
 /// constant protocol and version definitions

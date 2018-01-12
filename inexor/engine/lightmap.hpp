@@ -1,10 +1,18 @@
 
 #pragma once
-// lightmaps are textures covering all static planes to add lighting.
-#include "inexor/shared/cube_types.hpp"
-#include "inexor/shared/cube_tools.hpp"
-#include "inexor/shared/cube_vector.hpp"
+#include <algorithm>                      // for min
+
 #include "inexor/engine/octa.hpp"
+#include "inexor/shared/cube_tools.hpp"   // for DELETEP
+// lightmaps are textures covering all static planes to add lighting.
+#include "inexor/shared/cube_types.hpp"   // for ushort, uchar, uint
+#include "inexor/shared/cube_vector.hpp"  // for vector
+#include "inexor/shared/geom.hpp"         // for vec, vec2, bvec, ivec (ptr ...
+#include "inexor/shared/tools.hpp"        // for min
+
+struct cube;
+struct surfaceinfo;
+struct vertinfo;
 
 #define LM_MINW 2
 #define LM_MINH 2

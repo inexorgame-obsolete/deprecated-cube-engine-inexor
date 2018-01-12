@@ -1,8 +1,11 @@
 #pragma once
-#include "include/cef_app.h"
+#include <string>                                       // for string
 
-#include "inexor/ui/context/InexorContextProvider.hpp"
-#include "inexor/ui/layer/InexorLayerProvider.hpp"
+#include "include/cef_app.h"
+#include "include/cef_base.h"                           // for CefString
+#include "include/cef_v8.h"                             // for CefV8Value (p...
+#include "inexor/ui/context/InexorContextProvider.hpp"  // for InexorContext...
+#include "inexor/ui/layer/InexorLayerProvider.hpp"      // for AbstractInexo...
 
 namespace inexor {
 namespace ui {

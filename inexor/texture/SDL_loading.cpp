@@ -1,7 +1,16 @@
 /// @file SDL_loading.cpp
 /// Wrapper for the SDL API calls used to load textures.
 
-#include "inexor/engine/engine.hpp"
+#include <algorithm>                     // for min
+
+#include "SDL_blendmode.h"               // for ::SDL_BLENDMODE_NONE
+#include "SDL_endian.h"                  // for SDL_BIG_ENDIAN, SDL_BYTEORDER
+#include "SDL_image.h"                   // for IMG_Load
+#include "SDL_pixels.h"                  // for SDL_PixelFormat, SDL_Color
+#include "inexor/io/legacy/stream.hpp"   // for findfile, openfile, stream
+#include "inexor/shared/cube_loops.hpp"  // for i, loopi
+#include "inexor/shared/cube_types.hpp"  // for uint
+#include "inexor/shared/tools.hpp"       // for min
 #include "inexor/texture/SDL_loading.hpp"
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN

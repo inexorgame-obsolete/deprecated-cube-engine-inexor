@@ -1,6 +1,11 @@
 
-#include <fstream>
-#include <vector>
+#include <boost/filesystem/operations.hpp>     // for exists, is_directory
+#include <boost/filesystem/path_traits.hpp>    // for filesystem
+#include <boost/iterator/iterator_facade.hpp>  // for operator!=, iterator_f...
+#include <boost/system/error_code.hpp>         // for error_code
+#include <fstream>                             // for ifstream, basic_istream
+#include <vector>                              // for vector
+
 #include "inexor/io/filesystem/path.hpp"
 
 namespace bfs = boost::filesystem;

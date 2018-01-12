@@ -2,6 +2,10 @@
 
 #include "inexor/server/client_management.hpp"
 
+namespace server {
+struct clientinfo;
+}  // namespace server
+
 namespace server
 {
 /// Whether this game is currently paused.

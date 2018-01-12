@@ -1,15 +1,21 @@
 #pragma once
 
+#include "inexor/io/legacy/stream.hpp"
 // Blendmaps, used to blend two different images together.
 #include "inexor/network/SharedTree.hpp"
-#include "inexor/shared/cube_types.hpp"
+#include "inexor/network/SharedVar.hpp"  // for SharedVar
+#include "inexor/shared/cube_types.hpp"  // for uchar, uint
 #include "inexor/shared/cube_vector.hpp"
-#include "inexor/io/legacy/stream.hpp"
+
+struct ivec;
+struct stream;
+struct vec;
 
 
 extern SharedVar<int> blendpaintmode;
 
 struct BlendMapCache;
+
 extern BlendMapCache *newblendmapcache();
 extern void freeblendmapcache(BlendMapCache *&cache);
 extern bool setblendmaporigin(BlendMapCache *cache, const ivec &o, int size);

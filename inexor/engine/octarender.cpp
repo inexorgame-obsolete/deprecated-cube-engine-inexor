@@ -1,17 +1,41 @@
 // octarender.cpp: fill vertex arrays with different cube surfaces.
 
-#include "inexor/engine/engine.hpp"
-#include "inexor/texture/slot.hpp"
-#include "inexor/texture/cubemap.hpp"
-#include "inexor/io/Logging.hpp"
-#include "inexor/engine/shadowmap.hpp"
-#include "inexor/engine/material.hpp"
-#include "inexor/engine/blob.hpp"
+#include <SDL_opengl.h>                               // for GL_ARRAY_BUFFER
+#include <boost/algorithm/clamp.hpp>                  // for clamp
+#include <limits.h>                                   // for SHRT_MAX, USHRT...
+#include <math.h>                                     // for fabs, ceil, asin
+#include <stdlib.h>                                   // for abs, size_t
+#include <string.h>                                   // for memcpy, memset
+#include <algorithm>                                  // for max, min, swap
+#include <memory>                                     // for __shared_ptr
 
-#include "inexor/engine/rendersky.hpp"
-
-#include "inexor/engine/glexts.hpp"
-#include "inexor/engine/glemu.hpp"
+#include "SDL_opengl.h"                               // for GLuint, GLenum
+#include "inexor/engine/blob.hpp"                     // for resetblobs
+#include "inexor/engine/engine.hpp"                   // for worldsize, face...
+#include "inexor/engine/glemu.hpp"                    // for bindebo, bindvbo
+#include "inexor/engine/glexts.hpp"                   // for glBindBuffer_
+#include "inexor/engine/lightmap.hpp"                 // for LightMapTexture
+#include "inexor/engine/material.hpp"                 // for genmatsurfs
+#include "inexor/engine/octa.hpp"                     // for vtxarray, cube
+#include "inexor/engine/rendersky.hpp"                // for explicitsky
+#include "inexor/engine/shader.hpp"                   // for Shader, ::SHADE...
+#include "inexor/engine/shadowmap.hpp"                // for guessshadowdir
+#include "inexor/engine/world.hpp"                    // for vertex, ::DEFAU...
+#include "inexor/io/Logging.hpp"                      // for Log, Logger
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/network/legacy/buffer_types.hpp"     // for databuf
+#include "inexor/shared/command.hpp"                  // for VARF, COMMAND, VAR
+#include "inexor/shared/cube_hash.hpp"                // for hashtable, hash...
+#include "inexor/shared/cube_loops.hpp"               // for i, k, j, loopi, l
+#include "inexor/shared/cube_tools.hpp"               // for ASSERT
+#include "inexor/shared/cube_types.hpp"               // for ushort, uchar
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/geom.hpp"                     // for vec, ivec, vec:...
+#include "inexor/shared/iengine.hpp"                  // for ::MAT_ALPHA
+#include "inexor/shared/tools.hpp"                    // for max, min, clamp
+#include "inexor/texture/cubemap.hpp"                 // for closestenvmap
+#include "inexor/texture/slot.hpp"                    // for VSlot, lookupvslot
+#include "inexor/texture/texture.hpp"                 // for ::TEX_ENVMAP
 
 struct vboinfo
 {

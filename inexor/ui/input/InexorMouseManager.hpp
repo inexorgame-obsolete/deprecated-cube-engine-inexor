@@ -1,14 +1,17 @@
 #pragma once
 
 #include <iostream>
-#include <utility>
+#include <string>                                       // for string
+#include <utility>                                      // for move
 
-#include "inexor/engine/engine.hpp"
-
+#include "SDL_events.h"                                 // for SDL_Event
+#include "SDL_opengl.h"                                 // for GL_ONE
 #include "include/cef_app.h"
-
-#include "inexor/ui/context/InexorContextProvider.hpp"
-#include "inexor/ui/layer/InexorLayerManager.hpp"
+#include "include/cef_base.h"                           // for CefRefPtr
+#include "include/cef_v8.h"                             // for CefV8Value (p...
+#include "inexor/engine/engine.hpp"
+#include "inexor/ui/context/InexorContextProvider.hpp"  // for InexorContext...
+#include "inexor/ui/layer/InexorLayerManager.hpp"       // for InexorLayerMa...
 
 #ifndef GL_ONE
 #define GL_ONE 0x1
