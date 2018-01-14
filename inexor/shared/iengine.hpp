@@ -7,79 +7,8 @@
 
 #include "inexor/engine/octaedit.hpp"
 
-enum
-{
-    MATF_INDEX_SHIFT  = 0,
-    MATF_VOLUME_SHIFT = 2,
-    MATF_CLIP_SHIFT   = 5,
-    MATF_FLAG_SHIFT   = 8,
 
-    MATF_INDEX  = 3 << MATF_INDEX_SHIFT,
-    MATF_VOLUME = 7 << MATF_VOLUME_SHIFT,
-    MATF_CLIP   = 7 << MATF_CLIP_SHIFT,
-    MATF_FLAGS  = 0xFF << MATF_FLAG_SHIFT
-};
-
-enum // cube empty-space materials
-{
-    MAT_AIR      = 0,                      // the default, fill the empty space with air
-    MAT_WATER    = 1 << MATF_VOLUME_SHIFT, // fill with water, showing waves at the surface
-    MAT_LAVA     = 2 << MATF_VOLUME_SHIFT, // fill with lava
-    MAT_GLASS    = 3 << MATF_VOLUME_SHIFT, // behaves like clip but is blended blueish
-
-    MAT_NOCLIP   = 1 << MATF_CLIP_SHIFT,  // collisions always treat cube as empty
-    MAT_CLIP     = 2 << MATF_CLIP_SHIFT,  // collisions always treat cube as solid
-    MAT_GAMECLIP = 3 << MATF_CLIP_SHIFT,  // game specific clip material
-
-    MAT_DEATH    = 1 << MATF_FLAG_SHIFT,  // force player suicide
-    MAT_ALPHA    = 4 << MATF_FLAG_SHIFT   // alpha blended
-};
-
-#define isliquid(mat) ((mat)==MAT_WATER || (mat)==MAT_LAVA)
-#define isclipped(mat) ((mat)==MAT_GLASS)
-#define isdeadly(mat) ((mat)==MAT_LAVA)
-
-extern void lightent(extentity &e, float height = 8.0f);
-extern void lightreaching(const vec &target, vec &color, vec &dir, bool fast = false, extentity *e = nullptr, float ambient = 0.4f);
-extern entity *brightestlight(const vec &target, const vec &dir);
-
-enum { RAY_BB = 1, RAY_POLY = 3, RAY_ALPHAPOLY = 7, RAY_ENTS = 9, RAY_CLIPMAT = 16, RAY_SKIPFIRST = 32, RAY_EDITMAT = 64, RAY_SHADOW = 128, RAY_PASS = 256, RAY_SKIPSKY = 512 };
-
-extern float raycube   (const vec &o, const vec &ray,     float radius = 0, int mode = RAY_CLIPMAT, int size = 0, extentity *t = nullptr);
-extern float raycubepos(const vec &o, const vec &ray, vec &hit, float radius = 0, int mode = RAY_CLIPMAT, int size = 0);
-extern float rayfloor  (const vec &o, vec &floor, int mode = 0, float radius = 0);
-extern bool  raycubelos(const vec &o, const vec &dest, vec &hitpos);
-
-extern SharedVar<int> thirdperson;
-extern bool isthirdperson();
-
-extern bool settexture(const char *name, int clamp = 0);
-
-// texture
-
-class VSlot;
-
-extern void packvslot(vector<uchar> &buf, int index);
-extern void packvslot(vector<uchar> &buf, const VSlot *vs);
-
-// menus
-extern vec menuinfrontofplayer();
-extern void newgui(char *name, char *contents, char *header = nullptr, char *init = nullptr);
-extern void showgui(const char *name);
-extern int cleargui(int n = 0);
-
-// octa
-extern int lookupmaterial(const vec &o);
-
-static inline bool insideworld(const vec &o)
-{
-    return o.x>=0 && o.x<worldsize && o.y>=0 && o.y<worldsize && o.z>=0 && o.z<worldsize;
-}
-
-static inline bool insideworld(const ivec &o)
-{
-    return uint(o.x)<uint(worldsize) && uint(o.y)<uint(worldsize) && uint(o.z)<uint(worldsize);
-}
+#include "inexor/texture/settexture.hpp"
 
 // world
 extern bool emptymap(int factor, bool force, const char *mname = "", bool usecfg = true);

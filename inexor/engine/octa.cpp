@@ -9,7 +9,7 @@
 
 #include "inexor/engine/engine.hpp"                   // for renderprogress
 #include "inexor/engine/lightmap.hpp"                 // for brightencube
-#include "inexor/engine/octa.hpp"                     // for cube, facebounds
+#include "inexor/engine/octree.hpp"                     // for cube, facebounds
 #include "inexor/engine/octaedit.hpp"                 // for ::EDIT_REMIP
 #include "inexor/engine/world.hpp"                    // for ::DEFAULT_GEOM
 #include "inexor/io/Logging.hpp"                      // for Log, Logger

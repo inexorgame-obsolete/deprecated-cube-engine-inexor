@@ -11,7 +11,7 @@
 #include "inexor/engine/engine.hpp"                   // for refracting, ref...
 #include "inexor/engine/glemu.hpp"                    // for attribf, begin
 #include "inexor/engine/lightmap.hpp"                 // for lightmapping
-#include "inexor/engine/octa.hpp"                     // for occludequery
+#include "inexor/engine/octree.hpp"                     // for occludequery
 #include "inexor/engine/octaedit.hpp"                 // for editmode
 #include "inexor/engine/pvs.hpp"                      // for pvsoccluded
 #include "inexor/engine/shader.hpp"                   // for lookupshaderbyname

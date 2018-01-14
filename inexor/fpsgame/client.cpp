@@ -25,7 +25,7 @@
 #include "inexor/client/gamemode/gamemode_client.hpp"     // for clientmode
 #include "inexor/client/gamemode/hideandseek_client.hpp"  // for hideandseek...
 #include "inexor/engine/glemu.hpp"                        // for attribf, begin
-#include "inexor/engine/octa.hpp"                         // for selinfo
+#include "inexor/engine/octree.hpp"                         // for selinfo
 #include "inexor/engine/octaedit.hpp"                     // for toggleedit
 #include "inexor/engine/particles.hpp"                    // for particle_te...
 #include "inexor/engine/worldio.hpp"                      // for load_world

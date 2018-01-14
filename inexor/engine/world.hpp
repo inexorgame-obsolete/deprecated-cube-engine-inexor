@@ -3,6 +3,8 @@
 #include "inexor/network/SharedVar.hpp"
 #include "inexor/shared/cube_types.hpp"
 #include "inexor/shared/geom.hpp"
+#include "inexor/shared/cube_vector.hpp"
+#include "inexor/engine/octree.hpp"
 
 // world.h
 // contains general enumerations and structures to describe world, map format and environment

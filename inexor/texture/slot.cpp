@@ -11,7 +11,7 @@
 
 #include "inexor/engine/engine.hpp"                   // for allchanged, com...
 #include "inexor/engine/material.hpp"                 // for findmaterial
-#include "inexor/engine/octa.hpp"                     // for cube, worldroot
+#include "inexor/engine/octree.hpp"                     // for cube, worldroot
 #include "inexor/engine/octaedit.hpp"                 // for noedit
 #include "inexor/engine/world.hpp"                    // for ::DEFAULT_GEOM
 #include "inexor/io/Logging.hpp"                      // for Log, Logger

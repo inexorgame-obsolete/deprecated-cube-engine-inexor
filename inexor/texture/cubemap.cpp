@@ -10,7 +10,7 @@
 #include "inexor/engine/engine.hpp"                   // for renderprogress
 #include "inexor/engine/glemu.hpp"                    // for attribf, begin
 #include "inexor/engine/material.hpp"                 // for setupmaterials
-#include "inexor/engine/octa.hpp"                     // for ::EMID_RESERVED
+#include "inexor/engine/octree.hpp"                     // for ::EMID_RESERVED
 #include "inexor/engine/shader.hpp"                   // for SETSHADER, Shader
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/io/filesystem/mediadirs.hpp"         // for getmediapath

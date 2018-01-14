@@ -24,7 +24,7 @@
 #include "inexor/engine/glemu.hpp"                    // for attribf, colorf
 #include "inexor/engine/lightmap.hpp"                 // for lightmaps
 #include "inexor/engine/material.hpp"                 // for rendermaterials
-#include "inexor/engine/octa.hpp"                     // for cube, gbatches
+#include "inexor/engine/octree.hpp"                     // for cube, gbatches
 #include "inexor/engine/octaedit.hpp"                 // for editmode, rende...
 #include "inexor/engine/pvs.hpp"                      // for setviewcell
 #include "inexor/engine/rendersky.hpp"                // for drawskybox, lim...

@@ -16,7 +16,7 @@
 #include "inexor/engine/glexts.hpp"                   // for glBindBuffer_
 #include "inexor/engine/lightmap.hpp"                 // for LightMapTexture
 #include "inexor/engine/material.hpp"                 // for genmatsurfs
-#include "inexor/engine/octa.hpp"                     // for vtxarray, cube
+#include "inexor/engine/octree.hpp"                     // for vtxarray, cube
 #include "inexor/engine/rendersky.hpp"                // for explicitsky
 #include "inexor/engine/shader.hpp"                   // for Shader, ::SHADE...
 #include "inexor/engine/shadowmap.hpp"                // for guessshadowdir

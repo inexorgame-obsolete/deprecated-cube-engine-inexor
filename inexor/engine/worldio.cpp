@@ -13,7 +13,7 @@
 #include "inexor/engine/blend.hpp"                    // for shouldsaveblendmap
 #include "inexor/engine/engine.hpp"                   // for renderprogress
 #include "inexor/engine/lightmap.hpp"                 // for LightMap, light...
-#include "inexor/engine/octa.hpp"                     // for vertinfo, cube
+#include "inexor/engine/octree.hpp"                     // for vertinfo, cube
 #include "inexor/engine/pvs.hpp"                      // for getnumviewcells
 #include "inexor/engine/shader.hpp"                   // for SlotShaderParam
 #include "inexor/engine/world.hpp"             // for octaheader, compatheader

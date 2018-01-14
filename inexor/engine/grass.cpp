@@ -7,7 +7,7 @@
 #include "inexor/engine/glemu.hpp"                    // for bindvbo, clearvbo
 #include "inexor/engine/glexts.hpp"                   // for glActiveTexture_
 #include "inexor/engine/lightmap.hpp"                 // for LightMapTexture
-#include "inexor/engine/octa.hpp"                     // for grasstri, vtxarray
+#include "inexor/engine/octree.hpp"                     // for grasstri, vtxarray
 #include "inexor/engine/octaedit.hpp"                 // for editmode
 #include "inexor/engine/shader.hpp"                   // for SETSHADER, Shader
 #include "inexor/network/SharedVar.hpp"               // for SharedVar

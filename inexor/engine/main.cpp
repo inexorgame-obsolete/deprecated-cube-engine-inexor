@@ -26,7 +26,7 @@
 #include "inexor/engine/glemu.hpp"                    // for attribf, begin
 #include "inexor/engine/lightmap.hpp"                 // for initlights
 #include "inexor/engine/movie.hpp"                    // for cleanup, stop
-#include "inexor/engine/octa.hpp"                     // for worldroot
+#include "inexor/engine/octree.hpp"                     // for worldroot
 #include "inexor/engine/octaedit.hpp"                 // for tryedit
 #include "inexor/engine/rendertext.hpp"               // for FONTH
 #include "inexor/engine/shader.hpp"                   // for Shader, hudshader

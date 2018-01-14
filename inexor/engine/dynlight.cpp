@@ -2,7 +2,7 @@
 
 #include "inexor/engine/dynlight.hpp"
 #include "inexor/engine/engine.hpp"                   // for isfoggedsphere
-#include "inexor/engine/octa.hpp"                     // for vtxarray
+#include "inexor/engine/octree.hpp"                     // for vtxarray
 #include "inexor/engine/pvs.hpp"                      // for pvsoccludedsphere
 #include "inexor/engine/shader.hpp"                   // for DYNLIGHTBITS
 #include "inexor/network/SharedVar.hpp"               // for SharedVar

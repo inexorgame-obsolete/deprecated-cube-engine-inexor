@@ -11,7 +11,7 @@
 #include <memory>                                     // for __shared_ptr
 
 #include "inexor/engine/engine.hpp"                   // for player, worldsize
-#include "inexor/engine/octa.hpp"                     // for clipplanes, cube
+#include "inexor/engine/octree.hpp"                     // for clipplanes, cube
 #include "inexor/engine/world.hpp"                    // for ::DEFAULT_SKY
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/model/model.hpp"                     // for model

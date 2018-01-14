@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "inexor/engine/octa.hpp"
+#include "inexor/engine/octree.hpp"
 #include "inexor/engine/shader.hpp"                // for SlotShaderParam
 #include "inexor/network/legacy/buffer_types.hpp"  // for ucharbuf
 #include "inexor/shared/cube_loops.hpp"            // for i, loopv
@@ -212,6 +212,7 @@ extern void compactvslot(VSlot &vs);
 extern int compactvslots();
 
 extern void packvslot(vector<uchar> &buf, const VSlot &src);
+extern void packvslot(vector<uchar> &buf, int index);
 extern bool unpackvslot(ucharbuf &buf, VSlot &dst, bool delta);
 
 extern vector<Slot *> slots;

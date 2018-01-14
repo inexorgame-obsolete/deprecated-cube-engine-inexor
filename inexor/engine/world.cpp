@@ -13,7 +13,7 @@
 #include "inexor/engine/engine.hpp"                   // for allchanged, new...
 #include "inexor/engine/glemu.hpp"                    // for attrib, begin
 #include "inexor/engine/lightmap.hpp"                 // for clearlightcache
-#include "inexor/engine/octa.hpp"                     // for cube, selinfo
+#include "inexor/engine/octree.hpp"                     // for cube, selinfo
 #include "inexor/engine/octaedit.hpp"                 // for addundo, cancelsel
 #include "inexor/engine/pvs.hpp"                      // for clearpvs
 #include "inexor/engine/world.hpp"                    // for MAPVERSION

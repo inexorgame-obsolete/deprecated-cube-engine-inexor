@@ -8,7 +8,7 @@
 #include "inexor/engine/engine.hpp"                   // for faceconvexity
 #include "inexor/engine/glemu.hpp"                    // for colorpointer
 #include "inexor/engine/glexts.hpp"                   // for glUnmapBuffer_
-#include "inexor/engine/octa.hpp"                     // for materialsurface
+#include "inexor/engine/octree.hpp"                     // for materialsurface
 #include "inexor/engine/shader.hpp"                   // for Shader, foggeds...
 #include "inexor/engine/world.hpp"                    // for ::DEFAULT_SKY
 #include "inexor/shared/command.hpp"                  // for VARFP, VAR, VARNP

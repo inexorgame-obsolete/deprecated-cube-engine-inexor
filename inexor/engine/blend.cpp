@@ -9,7 +9,7 @@
 #include "inexor/engine/blend.hpp"
 #include "inexor/engine/engine.hpp"                   // for worldsize, worl...
 #include "inexor/engine/lightmap.hpp"                 // for previewblends
-#include "inexor/engine/octa.hpp"                     // for selinfo
+#include "inexor/engine/octree.hpp"                     // for selinfo
 #include "inexor/engine/octaedit.hpp"                 // for noedit
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/io/legacy/stream.hpp"                // for stream

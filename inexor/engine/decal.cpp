@@ -9,7 +9,7 @@
 #include "inexor/engine/engine.hpp"                   // for faceconvexity
 #include "inexor/engine/glemu.hpp"                    // for bindvbo, clearvbo
 #include "inexor/engine/glexts.hpp"                   // for glBufferSubData_
-#include "inexor/engine/octa.hpp"                     // for materialsurface
+#include "inexor/engine/octree.hpp"                     // for materialsurface
 #include "inexor/engine/shader.hpp"                   // for Shader, SETSHADER
 #include "inexor/engine/world.hpp"                    // for ::DEFAULT_SKY
 #include "inexor/io/Logging.hpp"                      // for Log, Logger

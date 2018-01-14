@@ -3,7 +3,7 @@
 // Shadowmaps are used to add a shadow to dynamically moving entities.
 // They are basically low resultion renderings from the perspective of the light.
 
-#include "inexor/engine/octa.hpp"
+#include "inexor/engine/octree.hpp"
 #include "inexor/network/SharedVar.hpp"  // for SharedVar
 #include "inexor/shared/geom.hpp"        // for vec (ptr only), matrix4
 

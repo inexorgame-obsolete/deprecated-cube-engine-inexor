@@ -11,7 +11,7 @@
 #include "inexor/engine/glexts.hpp"                   // for glBindFramebuffer_
 #include "inexor/engine/lightmap.hpp"                 // for ambientcolor
 #include "inexor/engine/material.hpp"                 // for showmat
-#include "inexor/engine/octa.hpp"                     // for materialsurface
+#include "inexor/engine/octree.hpp"                     // for materialsurface
 #include "inexor/engine/octaedit.hpp"                 // for editmode
 #include "inexor/engine/pvs.hpp"                      // for waterpvsoccluded
 #include "inexor/engine/shader.hpp"                   // for lookupshaderbyname

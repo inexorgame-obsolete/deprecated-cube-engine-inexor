@@ -2,7 +2,7 @@
 #pragma once
 #include <algorithm>                      // for min
 
-#include "inexor/engine/octa.hpp"
+#include "inexor/engine/octree.hpp"
 #include "inexor/shared/cube_tools.hpp"   // for DELETEP
 // lightmaps are textures covering all static planes to add lighting.
 #include "inexor/shared/cube_types.hpp"   // for ushort, uchar, uint
@@ -166,3 +166,7 @@ extern void check_calclight_canceled();
 
 extern int lightmapping;
 
+
+extern void lightent(extentity &e, float height = 8.0f);
+extern void lightreaching(const vec &target, vec &color, vec &dir, bool fast = false, extentity *e = nullptr, float ambient = 0.4f);
+extern entity *brightestlight(const vec &target, const vec &dir);

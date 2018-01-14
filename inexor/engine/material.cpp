@@ -8,7 +8,7 @@
 #include "inexor/engine/glemu.hpp"                    // for attrib, attribf
 #include "inexor/engine/glexts.hpp"                   // for glActiveTexture_
 #include "inexor/engine/material.hpp"
-#include "inexor/engine/octa.hpp"                     // for materialsurface
+#include "inexor/engine/octree.hpp"                     // for materialsurface
 #include "inexor/engine/octaedit.hpp"                 // for editmode
 #include "inexor/engine/shader.hpp"                   // for Shader, useshad...
 #include "inexor/engine/world.hpp"                    // for WATER_OFFSET

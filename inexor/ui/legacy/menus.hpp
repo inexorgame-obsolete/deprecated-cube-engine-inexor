@@ -1,6 +1,8 @@
 #pragma once
 
 #include "inexor/network/SharedVar.hpp"
+#include "inexor/shared/geom.hpp"
+
 // Main menu controlling.
 
 extern SharedVar<int> mainmenu;
@@ -12,6 +14,9 @@ extern void menuprocess();
 extern void addchange(const char *desc, int type);
 extern void clearchanges(int type);
 
+
+extern vec menuinfrontofplayer();
+extern int cleargui(int n = 0);
 
 enum
 {

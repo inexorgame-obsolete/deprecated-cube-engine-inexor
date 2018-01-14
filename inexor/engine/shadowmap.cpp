@@ -7,7 +7,7 @@
 #include "inexor/engine/glemu.hpp"                    // for colorf
 #include "inexor/engine/glexts.hpp"                   // for glActiveTexture_
 #include "inexor/engine/lightmap.hpp"                 // for ambientcolor
-#include "inexor/engine/octa.hpp"                     // for vtxarray
+#include "inexor/engine/octree.hpp"                     // for vtxarray
 #include "inexor/engine/rendertarget.hpp"             // for rtscissor, rend...
 #include "inexor/engine/shader.hpp"                   // for GLOBALPARAM
 #include "inexor/engine/shadowmap.hpp"

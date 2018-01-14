@@ -4,7 +4,7 @@
 
 #include "inexor/engine/engine.hpp"                   // for flataxisface
 #include "inexor/engine/lightmap.hpp"                 // for lerpbounds, ler...
-#include "inexor/engine/octa.hpp"                     // for cube, tjoint
+#include "inexor/engine/octree.hpp"                     // for cube, tjoint
 #include "inexor/engine/world.hpp"                    // for ::DEFAULT_SKY
 #include "inexor/network/SharedVar.hpp"               // for SharedVar
 #include "inexor/shared/command.hpp"                  // for VARR
