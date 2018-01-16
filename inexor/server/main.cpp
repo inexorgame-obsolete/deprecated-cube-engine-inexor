@@ -13,6 +13,7 @@
 #include "enet/unix.h"                                // for ENET_SOCKET_NULL
 #include "inexor/crashreporter/CrashReporter.hpp"     // for CrashReporter
 #include "inexor/io/Logging.hpp"                      // for Log, log_manager
+#include "inexor/io/Error.hpp"                      // for fatal
 #include "inexor/network/SharedVar.hpp"               // for SharedVar
 #include "inexor/network/legacy/buffer_types.hpp"     // for ucharbuf, packe...
 #include "inexor/network/legacy/cube_network.hpp"     // for MAXCLIENTS, MAX...
@@ -38,34 +39,10 @@ inexor::util::Metasystem metapp;
 namespace server {
 void cleanupserver();
 }
-void fatal(const char *fmt, ...)
+// Called from fatal()
+void cleanup_application()
 {
     server::cleanupserver();
-	defvformatstring(msg,fmt,fmt);
-	Log.std->critical(msg);
-#ifdef WIN32
-	MessageBox(NULL, msg, "Inexor fatal error", MB_OK|MB_SYSTEMMODAL);
-#else
-    fprintf(stderr, "server error: %s\n", msg);
-#endif
-    exit(EXIT_FAILURE);
-}
-
-/// Fatal crash: log/display crash message and clean up server.
-void fatal(std::vector<std::string> &output)
-{
-    server::cleanupserver();
-    std::string completeoutput;
-    for(auto message : output) {
-        Log.std->critical(message);
-        completeoutput = inexor::util::fmt << completeoutput << message.c_str();
-    }
-#ifdef WIN32
-    MessageBox(NULL, completeoutput.c_str(), "Inexor fatal error", MB_OK | MB_SYSTEMMODAL);
-#else
-    fprintf(stderr, "server error: %s\n", completeoutput.c_str());
-#endif
-    exit(EXIT_FAILURE);
 }
 
 namespace server {

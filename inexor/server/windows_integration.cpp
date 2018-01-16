@@ -8,13 +8,11 @@
 #include "inexor/shared/cube_queue.hpp"
 
 #include "inexor/io/Logging.hpp"
+#include "inexor/io/Error.hpp"
+
 
 #include <windows.h>
 #include <shellapi.h>
-
-
-extern void fatal(const char *s, ...);
-
 
 #define LOGSTRLEN 512
 #define IDI_ICON1 1

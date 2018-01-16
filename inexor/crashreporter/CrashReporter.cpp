@@ -14,8 +14,7 @@
 #else
 #include "inexor/crashreporter/StackWalker_posix.hpp"  // for printStackTrace
 #endif
-
-extern void fatal(std::vector<std::string> &output);
+#include "inexor/io/Error.hpp"
 
 namespace inexor {
 namespace crashreporter {

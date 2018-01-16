@@ -4,7 +4,7 @@
 #include <locale.h>                                   // for setlocale, LC_ALL
 #include <math.h>                                     // for ceil
 #include <stdio.h>                                    // for remove
-#include <stdlib.h>                                   // for exit, EXIT_FAILURE
+#include <stdlib.h>                                   // for exit, EXIT_FAILURE, atexit
 #include <string.h>                                   // for strstr
 #include <algorithm>                                  // for min, max
 #include <memory>                                     // for __shared_ptr
@@ -108,41 +108,9 @@ COMMAND(quit, "");
 
 SharedFunc(quit);
 
-/// Fatal crash: log/display crash message and clean up SDL.
-void fatal(const char *s, ...)
+void cleanup_application()
 {
     screen_manager.cleanupSDL();
-    static int errors = 0;
-    errors++;
-    if(errors <= 2) // print up to one extra recursive error
-    {
-        defvformatstring(msg,s,s);
-        // Temporarly disabled crash handler output (easylogging)
-        Log.std->critical(msg);
-
-        #ifdef WIN32
-            if(errors <= 1) MessageBox(NULL, msg, "Inexor fatal error", MB_OK|MB_SYSTEMMODAL);
-        #endif
-    }
-    SDL_Quit();
-    exit(EXIT_FAILURE);
-}
-
-/// Fatal crash: log/display crash message and clean up SDL.
-void fatal(std::vector<std::string> &output)
-{
-    screen_manager.cleanupSDL();
-    std::string completeoutput; 
-    for(auto message : output) {
-        // Temporarly disabled crash handler output (easylogging)
-        Log.std->critical(message);
-        completeoutput = inexor::util::fmt << completeoutput << message.c_str();
-    }
-#ifdef WIN32
-    MessageBox(NULL, completeoutput.c_str(), "Inexor fatal error", MB_OK | MB_SYSTEMMODAL);
-#endif
-    SDL_Quit();
-    exit(EXIT_FAILURE);
 }
 
 /// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -716,7 +684,7 @@ int main(int argc, char **argv)
     Log.logfile = exe_name;
 
     // We only need to initialize it, not use it.
-    UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // catches all msgs from the OS, that it wants to terminate us. 
+    UNUSED inexor::crashreporter::CrashReporter SingletonStackwalker; // catches all msgs from the OS, that it wants to terminate us.
 
     // Ensure the correct locale
     setlocale(LC_ALL, "en_US.utf8");
@@ -751,7 +719,11 @@ int main(int argc, char **argv)
     #ifdef _DEBUG
         par = SDL_INIT_NOPARACHUTE;
     #endif
-    if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO|par)<0) fatal("Unable to initialize SDL: %s", SDL_GetError());
+    if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO|par)<0)
+        fatal("Unable to initialize SDL: %s", SDL_GetError());
+
+    // Ensure we run SDL_QUIT at exit
+    atexit(SDL_Quit);
 
     const char *dir = addpackagedir(package_dir);
     if(dir) Log.start_stop->info("Adding package directory: {}", dir);
