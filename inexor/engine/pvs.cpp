@@ -1153,6 +1153,7 @@ void genpvs(int *viewcellsize)
     genpvs_canceled = false;
     check_genpvs_progress = false;
     SDL_TimerID timer = 0;
+    extern SharedVar<int> numcpus;
     int numthreads = pvsthreads > 0 ? pvsthreads : numcpus;
     if(numthreads<=1) 
     {

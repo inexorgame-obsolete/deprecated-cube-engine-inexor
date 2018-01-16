@@ -94,3 +94,15 @@ extern bool pointinsel(const selinfo &sel, const vec &o);
 
 extern void resetmap();
 extern void startmap(const char *name);
+
+extern char *entname(entity &e);
+extern bool haveselent();
+extern undoblock *copyundoents(undoblock *u);
+extern void pasteundoent(int idx, const entity &ue);
+extern void pasteundoents(undoblock *u);
+
+extern vector<int> entgroup;
+
+extern SharedVar<int> worldscale, worldsize;
+extern SharedVar<int> mapversion;
+

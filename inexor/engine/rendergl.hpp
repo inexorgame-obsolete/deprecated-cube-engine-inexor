@@ -4,8 +4,11 @@
 #include "inexor/shared/geom.hpp"
 #include "inexor/io/legacy/stream.hpp"
 
+/// special ent that acts as camera, same object as player1 in FPS mode
 extern physent *camera1;
 extern vec worldpos, camdir, camright, camup;
+
+extern int xtraverts, xtravertsva;
 
 extern void disablezoom();
 

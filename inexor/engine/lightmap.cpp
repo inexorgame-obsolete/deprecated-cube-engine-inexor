@@ -2324,6 +2324,7 @@ void calclight(int *quality)
     mpremip(true);                                                        //merge faces and consequently reduce vertex data
     optimizeblendmap();
     loadlayermasks();
+    extern SharedVar<int> numcpus;
     int numthreads = lightthreads > 0 ? lightthreads : numcpus;
     if(numthreads > 1) preloadusedmapmodels(false, true);
     resetlightmaps(false);
@@ -2381,6 +2382,7 @@ void patchlight(int *quality)
     }
     renderbackground("patching lightmaps... (esc to abort)");
     loadlayermasks();
+    extern SharedVar<int> numcpus;
     int numthreads = lightthreads > 0 ? lightthreads : numcpus;
     if(numthreads > 1) preloadusedmapmodels(false, true);
     cleanuplightmaps();

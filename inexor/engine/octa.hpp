@@ -69,3 +69,8 @@ static inline bool insideworld(const ivec &o)
 {
     return uint(o.x)<uint(worldsize) && uint(o.y)<uint(worldsize) && uint(o.z)<uint(worldsize);
 }
+extern const ivec cubecoords[8];
+extern const ivec facecoords[6][4];
+extern const uchar fv[6][4];
+extern const uchar fvmasks[64];
+extern const uchar faceedgesidx[6][4];

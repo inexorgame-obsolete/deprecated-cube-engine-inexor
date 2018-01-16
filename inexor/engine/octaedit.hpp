@@ -46,3 +46,5 @@ extern void commitchanges(bool force = false);
 extern void rendereditcursor();
 extern void tryedit();
 extern void previewprefab(const char *name, const vec &color);
+
+extern vector<ushort> texmru;

@@ -211,6 +211,9 @@ extern void compactvslot(int &index);
 extern void compactvslot(VSlot &vs);
 extern int compactvslots();
 
+extern void compacteditvslots();
+extern void compactmruvslots();
+
 extern void packvslot(vector<uchar> &buf, const VSlot &src);
 extern void packvslot(vector<uchar> &buf, int index);
 extern void packvslot(vector<uchar> &buf, const VSlot *src);
