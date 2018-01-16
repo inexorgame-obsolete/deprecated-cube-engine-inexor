@@ -150,23 +150,7 @@ struct ragdolldata
     matrix4x3 *animjoints;
     dualquat *reljoints;
 
-    ragdolldata(ragdollskel *skel, float scale = 1)
-            : skel(skel),
-              millis(lastmillis),
-              collidemillis(0),
-              collisions(0),
-              floating(0),
-              lastmove(lastmillis),
-              unsticks(INT_MAX),
-              radius(0),
-              timestep(0),
-              scale(scale),
-              verts(new vert[skel->verts.length()]),
-              tris(new matrix3[skel->tris.length()]),
-              animjoints(!skel->animjoints || skel->joints.empty() ? nullptr : new matrix4x3[skel->joints.length()]),
-              reljoints(skel->reljoints.empty() ? nullptr : new dualquat[skel->reljoints.length()])
-    {
-    }
+    ragdolldata(ragdollskel *skel, float scale = 1);
 
     ~ragdolldata()
     {
@@ -217,7 +201,7 @@ struct ragdolldata
         loopv(skel->verts) center.add(verts[i].pos);
         center.div(skel->verts.length());
         radius = 0;
-        loopv(skel->verts) radius = max(radius, verts[i].pos.dist(center));
+        loopv(skel->verts) radius = std::max(radius, verts[i].pos.dist(center));
     }
 
     void init(dynent *d)
