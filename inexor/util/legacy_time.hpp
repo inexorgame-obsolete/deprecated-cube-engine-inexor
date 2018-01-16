@@ -29,3 +29,6 @@ extern int time_since_program_start();
 /// @param gamespeed there exist wall time and frame time:
 ///        one is the virtual 'clock' for the game, the other one is scaled (and does not update when paused).
 extern int scaletime(int time, int gamespeed);
+
+/// Returns a string of the current time in the specified format.
+extern const char *gettimestr(const char *format = "%d_%b_%y_%H.%M.%S", bool forcelowercase = false);

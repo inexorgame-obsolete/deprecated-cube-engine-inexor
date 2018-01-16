@@ -44,6 +44,25 @@ int time_since_program_start()
     //return getclockmillis();
 }
 
+static time_t systime = 0;
+static char timebuf[260];
+
+const char *gettimestr(const char *format, bool forcelowercase)
+{
+	if(!systime) { systime = time(nullptr); systime -= totalmillis/1000; if(!systime) systime++; }
+    time_t timeoffset = systime + totalmillis/1000;
+    strftime(timebuf, sizeof(timebuf), format, localtime(&timeoffset));
+
+    if(forcelowercase)// hack because not all platforms (windows) support %P lowercase option // also strip leading 0 from 12 hour time
+    {
+        char *dst = timebuf;
+        const char *src = &timebuf[timebuf[0]=='0' ? 1 : 0];
+        while(*src) *dst++ = tolower(*src++);
+        *dst++ = '\0';
+    }
+	return timebuf;
+}
+
 /// Block for a specific time to limit frames per seconds to use resources intelligently.
 /// @param max_fps in case of limited fps we let this thread sleep for some milliseconds, if 0 everythings unlimited.
 /// @param elapsed_time time in real milliseconds since last updatetime();

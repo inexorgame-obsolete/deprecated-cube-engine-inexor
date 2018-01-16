@@ -8,7 +8,6 @@
 
 #include "SDL_opengl.h"                               // for glPixelStorei
 #include "SDL_surface.h"                              // for SDL_FreeSurface
-#include "inexor/engine/engine.hpp"                   // for gettimestr
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/io/legacy/stream.hpp"                // for stream, findfile
 #include "inexor/network/SharedVar.hpp"               // for SharedVar
@@ -26,6 +25,7 @@
 #include "inexor/texture/savetexture.hpp"
 #include "inexor/texture/texture.hpp"                 // for texalign
 #include "inexor/ui/screen/ScreenManager.hpp"         // for ScreenManager
+#include "inexor/util/legacy_time.hpp"                // for gettimestr
 #include "zconf.h"                                    // for Bytef
 #include "zlib.h"                                     // for crc32, z_stream
 
