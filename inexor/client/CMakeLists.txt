@@ -4,7 +4,9 @@ prepend(CLIENT_SOURCES_ENGINE ${SOURCE_DIR}/engine
     command.cpp
     console.cpp
     decal.cpp
+    depthfx.cpp
     dynlight.cpp
+    explosion.cpp
     glemu.cpp
     grass.cpp
     main.cpp

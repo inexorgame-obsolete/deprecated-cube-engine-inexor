@@ -6,9 +6,11 @@
 
 #include "inexor/engine/engine.hpp"                   // for regularshape
 #include "inexor/engine/particles.hpp"                // for particle_splash
+#include "inexor/engine/renderparticles.hpp"
 #include "inexor/fpsgame/ai.hpp"                      // for avoidset
 #include "inexor/fpsgame/fpsent.hpp"                  // for fpsent
 #include "inexor/fpsgame/game.hpp"                    // for player1, addmsg
+#include "inexor/fpsgame/weapon.hpp"
 #include "inexor/fpsgame/guns.hpp"                    // for guninfo, guns
 #include "inexor/fpsgame/projectile.hpp"              // for bouncer, projec...
 #include "inexor/gamemode/gamemode.hpp"               // for isteam, m_bomb

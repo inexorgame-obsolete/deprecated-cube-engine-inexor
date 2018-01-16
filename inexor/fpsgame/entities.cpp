@@ -4,6 +4,7 @@
 
 #include "enet/enet.h"                                // for _ENetPacketFlag...
 #include "inexor/engine/particles.hpp"                // for particle_icon
+#include "inexor/engine/renderparticles.hpp"
 #include "inexor/fpsgame/ai.hpp"                      // for inferwaypoints
 #include "inexor/fpsgame/entities.hpp"
 #include "inexor/fpsgame/fpsent.hpp"                  // for fpsent

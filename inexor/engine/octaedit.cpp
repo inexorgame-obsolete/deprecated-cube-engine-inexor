@@ -15,9 +15,11 @@
 #include "inexor/engine/lightmap.hpp"                 // for brightencube
 #include "inexor/engine/material.hpp"                 // for findmaterial
 #include "inexor/engine/octree.hpp"                     // for selinfo, cube
+#include "inexor/engine/octa.hpp"                     // for selinfo, cube
 #include "inexor/engine/octaedit.hpp"
 #include "inexor/engine/shader.hpp"                   // for SlotShaderParam
 #include "inexor/engine/world.hpp"                    // for ::DEFAULT_SKY
+#include "inexor/engine/frame.hpp"
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/io/input/InputRouter.hpp"            // for InputRouter
 #include "inexor/io/legacy/stream.hpp"                // for streambuf, stream

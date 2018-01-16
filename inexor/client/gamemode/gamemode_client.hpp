@@ -8,6 +8,8 @@
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"
 
+#include "inexor/physics/physics.hpp"
+
 #include "inexor/network/SharedVar.hpp"
 
 namespace game {

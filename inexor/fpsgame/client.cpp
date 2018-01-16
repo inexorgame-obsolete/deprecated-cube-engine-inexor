@@ -28,6 +28,7 @@
 #include "inexor/engine/octree.hpp"                         // for selinfo
 #include "inexor/engine/octaedit.hpp"                     // for toggleedit
 #include "inexor/engine/particles.hpp"                    // for particle_te...
+#include "inexor/engine/renderparticles.hpp"
 #include "inexor/engine/worldio.hpp"                      // for load_world
 #include "inexor/fpsgame/ai.hpp"                          // for itemspawned
 #include "inexor/fpsgame/entities.hpp"                    // for setspawn
@@ -35,6 +36,7 @@
 #include "inexor/fpsgame/fpsstate.hpp"                    // for ::AI_BOT
 #include "inexor/fpsgame/game.hpp"                        // for player1
 #include "inexor/fpsgame/guns.hpp"                        // for guninfo
+#include "inexor/fpsgame/weapon.hpp"
 #include "inexor/fpsgame/scoreboard.hpp"                  // for showscores
 #include "inexor/fpsgame/teaminfo.hpp"                    // for MAXNAMELEN
 #include "inexor/gamemode/gamemode.hpp"                   // for m_edit, isteam

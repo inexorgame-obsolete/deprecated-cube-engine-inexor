@@ -5,12 +5,14 @@
 
 #include "inexor/client/gamemode/gamemode_client.hpp"  // for cmode, clientmode
 #include "inexor/engine/particles.hpp"                 // for particle_flare
+#include "inexor/engine/renderparticles.hpp"
 #include "inexor/fpsgame/ai.hpp"                       // for aiinfo, interest
 #include "inexor/fpsgame/entities.hpp"                 // for ents, checkitems
 #include "inexor/fpsgame/fpsent.hpp"                   // for fpsent
 #include "inexor/fpsgame/fpsstate.hpp"                 // for ::AI_BOT, ::AI...
 #include "inexor/fpsgame/game.hpp"                     // for players, color...
 #include "inexor/fpsgame/guns.hpp"                     // for guninfo, ::GUN...
+#include "inexor/fpsgame/weapon.hpp"                     // for guninfo, ::GUN...
 #include "inexor/fpsgame/teaminfo.hpp"                 // for MAXNAMELEN
 #include "inexor/gamemode/gamemode.hpp"                // for m_bomb, isteam
 #include "inexor/io/Logging.hpp"                       // for Log, Logger

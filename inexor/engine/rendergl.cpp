@@ -19,6 +19,7 @@
 #include "include/cef_base.h"                         // for CefRefPtr
 #include "inexor/engine/blend.hpp"                    // for renderblendbrush
 #include "inexor/engine/decal.hpp"                    // for renderdecals
+#include "inexor/engine/depthfx.hpp"
 #include "inexor/engine/dynlight.hpp"                 // for updatedynlights
 #include "inexor/engine/engine.hpp"                   // for refracting, ren...
 #include "inexor/engine/glemu.hpp"                    // for attribf, colorf
@@ -612,7 +613,7 @@ void gl_checkextensions()
     if(glversion >= 300 || hasext(exts, "GL_EXT_gpu_shader4"))
     {
         // on DX10 or above class cards (i.e. GF8 or RadeonHD) enable expensive features
-        extern SharedVar<int> grass, glare, maxdynlights, depthfxsize, blurdepthfx;
+        extern SharedVar<int> grass, glare, maxdynlights;
         grass = 1;
         waterfallrefract = 1;
         glare = 1;

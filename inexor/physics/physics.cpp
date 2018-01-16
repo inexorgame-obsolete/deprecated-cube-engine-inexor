@@ -20,6 +20,7 @@
 #include "inexor/physics/bih.hpp"                     // for mmintersect
 #include "inexor/physics/mpr.hpp"                     // for EntOBB, EntCapsule
 #include "inexor/physics/physics.hpp"
+#include "inexor/engine/octa.hpp"
 #include "inexor/shared/command.hpp"                  // for ICOMMAND, FVAR
 #include "inexor/shared/cube_loops.hpp"               // for i, loopi, loopv
 #include "inexor/shared/cube_types.hpp"               // for uint, RAD, ushort

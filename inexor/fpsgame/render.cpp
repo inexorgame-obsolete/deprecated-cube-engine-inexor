@@ -6,6 +6,7 @@
 #include "inexor/client/gamemode/gamemode_client.hpp"  // for cmode, clientmode
 #include "inexor/engine/octaedit.hpp"                  // for editmode
 #include "inexor/engine/particles.hpp"                 // for particle_text
+#include "inexor/engine/renderparticles.hpp"
 #include "inexor/fpsgame/ai.hpp"                       // for render
 #include "inexor/fpsgame/entities.hpp"                 // for preloadentities
 #include "inexor/fpsgame/fpsent.hpp"                   // for fpsent

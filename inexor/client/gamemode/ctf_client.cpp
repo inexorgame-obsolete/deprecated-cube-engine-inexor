@@ -7,6 +7,7 @@
 #include "inexor/client/gamemode/ctf_client.hpp"
 #include "inexor/engine/glemu.hpp"                 // for colorf
 #include "inexor/engine/particles.hpp"             // for particle_fireball
+#include "inexor/engine/renderparticles.hpp"
 #include "inexor/fpsgame/ai.hpp"                   // for interest, makeroute
 #include "inexor/fpsgame/entities.hpp"             // for ents
 #include "inexor/fpsgame/fpsent.hpp"               // for fpsent
@@ -30,6 +31,7 @@
 #include "inexor/sound/sound.hpp"                  // for playsound, ::S_FLA...
 #include "inexor/ui/legacy/3dgui.hpp"              // for ::HICON_SIZE, ::HI...
 #include "inexor/util/legacy_time.hpp"             // for lastmillis
+#include "inexor/engine/octa.hpp"
 
 namespace game {
 

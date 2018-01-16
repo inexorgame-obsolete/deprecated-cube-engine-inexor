@@ -9,12 +9,15 @@
 #include "inexor/engine/glemu.hpp"                     // for attribf, begin
 #include "inexor/engine/octaedit.hpp"                  // for editmode
 #include "inexor/engine/particles.hpp"                 // for removetrackedp...
+#include "inexor/engine/renderparticles.hpp"
 #include "inexor/fpsgame/ai.hpp"                       // for clearwaypoints
 #include "inexor/fpsgame/entities.hpp"                 // for checkquad, che...
 #include "inexor/fpsgame/fpsent.hpp"                   // for fpsent
 #include "inexor/fpsgame/fpsstate.hpp"                 // for ::AI_NONE
 #include "inexor/fpsgame/game.hpp"                     // for addmsg, getweapon
 #include "inexor/fpsgame/guns.hpp"                     // for ::GUN_BOMB
+#include "inexor/fpsgame/weapon.hpp"
+#include "inexor/engine/material.hpp"
 #include "inexor/fpsgame/projectile.hpp"               // for clearbouncers
 #include "inexor/fpsgame/scoreboard.hpp"               // for showscores
 #include "inexor/fpsgame/teaminfo.hpp"                 // for clearteaminfo
@@ -1128,10 +1131,6 @@ namespace game
     void writegamedata(vector<char> &extras) {}
     void readgamedata(vector<char> &extras) {}
 
-    const char *savedconfig() { return "config/saved.cfg"; }
-    const char *restoreconfig() { return "config/restore.cfg"; }
-    const char *defaultconfig() { return "config/defaults.cfg"; }
-    const char *autoexec() { return "config/autoexec.cfg"; }
-    const char *savedservers() { return "config/servers.cfg"; }
+
 }
 

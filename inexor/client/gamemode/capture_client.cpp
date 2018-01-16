@@ -7,6 +7,9 @@
 #include "inexor/client/gamemode/capture_client.hpp"
 #include "inexor/engine/glemu.hpp"                    // for attribf, colorf
 #include "inexor/engine/particles.hpp"                // for particle_splash
+#include "inexor/engine/octa.hpp"
+#include "inexor/engine/renderparticles.hpp"
+#include "inexor/engine/material.hpp"
 #include "inexor/fpsgame/entities.hpp"                // for entmdlname, ents
 #include "inexor/fpsgame/game.hpp"                    // for player1, teamcolor
 #include "inexor/fpsgame/guns.hpp"                    // for itemstat, items...
