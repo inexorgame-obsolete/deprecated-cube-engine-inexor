@@ -19,6 +19,7 @@
 #include "inexor/network/legacy/cube_network.hpp"     // for MAXCLIENTS, MAX...
 #include "inexor/network/legacy/game_types.hpp"       // for server_port
 #include "inexor/server/client_management.hpp"        // for client, disconn...
+#include "inexor/fpsgame/server.hpp"
 #include "inexor/shared/command.hpp"                  // for execfile, SVAR
 #include "inexor/shared/cube_formatting.hpp"          // for defvformatstring
 #include "inexor/shared/cube_loops.hpp"               // for i, loopi

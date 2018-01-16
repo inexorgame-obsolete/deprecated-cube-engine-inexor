@@ -30,6 +30,8 @@
 #include "inexor/server/gamemode/gamemode_server.hpp"     // for servmode
 #include "inexor/server/gamemode/hideandseek_server.hpp"  // for hideandseek...
 #include "inexor/server/network_send.hpp"                 // for sendf, send...
+#include "inexor/server/network.hpp"
+#include "inexor/server/extinfo.hpp"
 #include "inexor/shared/command.hpp"                      // for explodelist
 #include "inexor/shared/cube_endian.hpp"                  // for lilswap
 #include "inexor/shared/cube_formatting.hpp"              // for formatstring
@@ -334,7 +336,7 @@ extern int getservermtu();
     }
 
     // team managment
-    static hashset<teaminfo> teaminfos;
+    hashset<teaminfo> teaminfos;
 
     void clearteaminfo()
     {
@@ -2423,8 +2425,6 @@ extern int getservermtu();
             }
         }
     }
-
-#include "inexor/fpsgame/extinfo.hpp"                     // for extserverin...
 
     void serverinforeply(ucharbuf &req, ucharbuf &p)
     {

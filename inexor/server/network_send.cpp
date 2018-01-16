@@ -12,7 +12,7 @@
 #include "inexor/shared/cube_loops.hpp"            // for i, loopi, loopv
 #include "inexor/shared/cube_types.hpp"            // for uchar
 #include "inexor/shared/cube_vector.hpp"           // for vector
-#include "inexor/shared/igame.hpp"                 // for allowbroadcast
+#include "inexor/fpsgame/server.hpp"
 
 struct stream;
 
