@@ -25,4 +25,11 @@ extern void gunselect(int gun, fpsent *d);
 extern void weaponswitch(fpsent *d);
 extern void avoidweapons(ai::avoidset &obstacles, float radius);
 
+
+extern void bounced(physent *d, const vec &surface);
+extern bool weaponcollide(physent *d, const vec &dir);
+extern void adddynlights();
+extern void particletrack(physent *owner, vec &o, vec &d);
+extern void dynlighttrack(physent *owner, vec &o, vec &hud);
+
 }

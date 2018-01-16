@@ -26,4 +26,7 @@ extern vec hudgunorigin(int gun, const vec &from, const vec &to, fpsent *d);
 extern void rendergame(bool mainpass);
 extern void renderavatar();
 extern void renderplayerpreview(int model, int team, int weap);
+
+
+extern void preload();
 }

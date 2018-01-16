@@ -42,4 +42,31 @@ namespace game
     extern void msgsound(int n, physent *d = nullptr);
     extern void drawicon(int icon, float x, float y, float sz = 120);
 
+    extern int getfollowingfov();
+    extern void updateworld();
+    extern void initclient();
+    extern void physicstrigger(physent *d, bool local, int floorlevel, int waterlevel, int material = 0);
+    extern void dynentcollide(physent *d, physent *o, const vec &dir);
+    extern const char *getclientmap();
+    extern const char *getclientmode();
+    extern void resetgamestate();
+    extern void suicide(physent *d);
+    extern void startmap(const char *name);
+    extern float abovegameplayhud(int w, int h);
+    extern void gameplayhud(int w, int h);
+    extern bool canjump();
+    extern bool allowmove(physent *d);
+    extern void doattack(bool on);
+    extern dynent *iterdynents(int i);
+    extern int numdynents();
+    extern void writegamedata(vector<char> &extras);
+    extern void readgamedata(vector<char> &extras);
+    extern int clipconsole(int w, int h);
+    extern const char *defaultcrosshair(int index);
+    extern int selectcrosshair(vec &color);
+    extern void lighteffects(dynent *d, vec &color, vec &dir);
+    extern void setupcamera();
+    extern bool detachcamera();
+    extern bool collidecamera();
+    extern bool needminimap();
 }
