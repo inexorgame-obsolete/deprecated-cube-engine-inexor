@@ -7,6 +7,7 @@ prepend(CLIENT_SOURCES_ENGINE ${SOURCE_DIR}/engine
     depthfx.cpp
     dynlight.cpp
     explosion.cpp
+    frame.cpp
     glemu.cpp
     grass.cpp
     main.cpp
@@ -17,6 +18,7 @@ prepend(CLIENT_SOURCES_ENGINE ${SOURCE_DIR}/engine
     octaedit.cpp
     octarender.cpp
     pvs.cpp
+    renderbackground.cpp
     rendergl.cpp
     renderparticles.cpp
     rendersky.cpp

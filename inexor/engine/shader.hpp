@@ -488,3 +488,6 @@ extern void setblurshader(int pass, int size, int radius, float *weights, float 
 // TODO
 extern Slot dummyslot;
 extern VSlot dummyvslot;
+
+extern void loadshaders();
+extern void renderpostfx();

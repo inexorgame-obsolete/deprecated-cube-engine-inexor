@@ -463,4 +463,18 @@ void cmdname<__LINE__>::run proto \
       }                                                                                      \
   )
 
+enum { KR_CONSOLE = 1<<0, KR_GUI = 1<<1, KR_EDITMODE = 1<<2 };
+
+
+extern hashnameset<ident> idents;
+extern int identflags;
+
+extern void clearoverrides();
+extern void writecfg(const char *name = nullptr);
+extern void loadhistory();
+extern void writehistory();
+
+extern void checksleep(int millis);
+extern void clearsleep(bool clearoverrides = true);
+
 

@@ -6,6 +6,7 @@
 #include "inexor/fpsgame/fpsent.hpp"      // for fpsent
 #include "inexor/fpsgame/game.hpp"        // for explode, player1
 #include "inexor/fpsgame/guns.hpp"        // for ::GUN_BARREL, guninfo, guns
+#include "inexor/fpsgame/weapon.hpp"             
 #include "inexor/gamemode/gamemode.hpp"   // for m_obstacles
 #include "inexor/model/model.hpp"         // for mapmodelname, rendermodel
 #include "inexor/shared/command.hpp"      // for _icmd_platform<>::run, ICOM...

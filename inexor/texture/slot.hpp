@@ -213,6 +213,7 @@ extern int compactvslots();
 
 extern void packvslot(vector<uchar> &buf, const VSlot &src);
 extern void packvslot(vector<uchar> &buf, int index);
+extern void packvslot(vector<uchar> &buf, const VSlot *src);
 extern bool unpackvslot(ucharbuf &buf, VSlot &dst, bool delta);
 
 extern vector<Slot *> slots;

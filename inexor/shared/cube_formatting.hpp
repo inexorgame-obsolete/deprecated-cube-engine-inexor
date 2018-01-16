@@ -59,8 +59,8 @@ template<size_t N> inline void concformatstring(char(&d)[N], const char *fmt, ..
     va_end(v);
 }
 
-#define defformatstring(d,...) string d; formatstring(d, __VA_ARGS__)
-#define defvformatstring(d,last,fmt) string d; { va_list ap; va_start(ap, last); vformatstring(d, fmt, ap); va_end(ap); }
+#define defformatstring(d,...) char d[260]; formatstring(d, __VA_ARGS__)
+#define defvformatstring(d,last,fmt) char d[260]; { va_list ap; va_start(ap, last); vformatstring(d, fmt, ap); va_end(ap); }
 
 /// formatstring using some static globals, faster but less safe.
 extern char *tempformatstring(const char *fmt, ...) PRINTFARGS(1, 2);

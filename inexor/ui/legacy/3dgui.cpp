@@ -30,7 +30,8 @@
 #include "inexor/shared/ents.hpp"                     // for physent, dynent
 #include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
 #include "inexor/shared/iengine.hpp"                  // for hudmatrix, draw...
-#include "inexor/shared/igame.hpp"                    // for g3d_gamemenus
+#include "inexor/fpsgame/scoreboard.hpp"              // for g3d_gamemenus
+#include "inexor/fpsgame/render.hpp"
 #include "inexor/shared/tools.hpp"                    // for max, min, clamp
 #include "inexor/texture/slot.hpp"                    // for VSlot, Slot
 #include "inexor/texture/texture.hpp"                 // for textureload

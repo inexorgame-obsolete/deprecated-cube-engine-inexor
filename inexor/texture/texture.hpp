@@ -1,5 +1,5 @@
 /// @file texture.hpp 
-/// texture loading and organizing routines + main texture structures.
+/// internal texture loading and organizing routines + main texture structures.
 
 #pragma once
 

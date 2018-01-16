@@ -89,6 +89,8 @@ extern SharedVar<int> fullscreen, vsync, vsynctear;
 extern SharedVar<int> colorbits, depthbits, stencilbits;
 extern SharedVar<int> fsaa;
 
+extern int screenw, screenh;
+
 }
 }
 }

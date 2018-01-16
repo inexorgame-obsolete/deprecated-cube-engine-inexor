@@ -3,11 +3,34 @@
 #include "inexor/shared/cube_vector.hpp"
 #include "inexor/shared/geom.hpp"
 #include "inexor/shared/command.hpp"
+#include "inexor/engine/material.hpp"
+#include "inexor/engine/octa.hpp"
+#include "inexor/util/legacy_time.hpp"
+#include "inexor/util/random.hpp"
+#include "inexor/shared/igame.hpp"
 /*
     seed particle position = avg(modelview * base2anim * spherepos)  
     mapped transform = invert(curtri) * origtrig 
     parented transform = parent{invert(curtri) * origtrig} * (invert(parent{base2anim}) * base2anim)
 */
+
+
+VAR(ragdollconstrain, 1, 5, 100);
+
+FVAR(ragdollbodyfric, 0, 0.95f, 1);
+FVAR(ragdollbodyfricscale, 0, 2, 10);
+FVAR(ragdollwaterfric, 0, 0.85f, 1);
+FVAR(ragdollgroundfric, 0, 0.8f, 1);
+FVAR(ragdollairfric, 0, 0.996f, 1);
+FVAR(ragdollunstick, 0, 10, 1e3f);
+VAR(ragdollexpireoffset, 0, 1500, 30000);
+VAR(ragdollwaterexpireoffset, 0, 3000, 30000);
+
+VAR(ragdolltimestepmin, 1, 5, 50);
+VAR(ragdolltimestepmax, 1, 10, 50);
+FVAR(ragdollrotfric, 0, 0.85f, 1);
+FVAR(ragdollrotfricstop, 0, 0.1f, 1);
+
 
 void ragdolldata::constraindist()
 {
@@ -168,8 +191,6 @@ void ragdolldata::updatepos()
     }
 }
 
-VAR(ragdollconstrain, 1, 5, 100);
-
 void ragdolldata::constrain()
 {
     loopi(ragdollconstrain)
@@ -182,15 +203,6 @@ void ragdolldata::constrain()
         updatepos();
     }
 }
-
-FVAR(ragdollbodyfric, 0, 0.95f, 1);
-FVAR(ragdollbodyfricscale, 0, 2, 10);
-FVAR(ragdollwaterfric, 0, 0.85f, 1);
-FVAR(ragdollgroundfric, 0, 0.8f, 1);
-FVAR(ragdollairfric, 0, 0.996f, 1);
-FVAR(ragdollunstick, 0, 10, 1e3f);
-VAR(ragdollexpireoffset, 0, 1500, 30000);
-VAR(ragdollwaterexpireoffset, 0, 3000, 30000);
 
 void ragdolldata::move(dynent *pl, float ts)
 {
@@ -210,14 +222,14 @@ void ragdolldata::move(dynent *pl, float ts)
    
     calcrotfriction(); 
 	float tsfric = timestep ? ts/timestep : 1,
-		  airfric = ragdollairfric + min((ragdollbodyfricscale*collisions)/skel->verts.length(), 1.0f)*(ragdollbodyfric - ragdollairfric);
+		  airfric = ragdollairfric + std::min((ragdollbodyfricscale*collisions)/skel->verts.length(), 1.0f)*(ragdollbodyfric - ragdollairfric);
     collisions = 0;
     loopv(skel->verts)
     {
         vert &v = verts[i];
         vec dpos = vec(v.pos).sub(v.oldpos);
         dpos.z -= GRAVITY*ts*ts;
-        if(water) dpos.z += 0.25f*sinf(detrnd(size_t(this)+i, 360)*RAD + lastmillis/10000.0f*M_PI)*ts;
+        if(water) dpos.z += 0.25f*sinf(inexor::util::deterministic_rnd<int>(size_t(this)+i, 360)*RAD + lastmillis/10000.0f*M_PI)*ts;
         dpos.mul(pow((water ? ragdollwaterfric : 1.0f) * (v.collided ? ragdollgroundfric : airfric), ts*1000.0f/ragdolltimestepmin)*tsfric);
         v.oldpos = v.pos;
         v.pos.add(dpos);
@@ -250,7 +262,25 @@ void ragdolldata::move(dynent *pl, float ts)
     constrain();
     calctris();
     calcboundsphere();
-}    
+}
+
+ragdolldata::ragdolldata(ragdollskel *skel, float scale)
+        : skel(skel),
+          millis(lastmillis),
+          collidemillis(0),
+          collisions(0),
+          floating(0),
+          lastmove(lastmillis),
+          unsticks(INT_MAX),
+          radius(0),
+          timestep(0),
+          scale(scale),
+          verts(new vert[skel->verts.length()]),
+          tris(new matrix3[skel->tris.length()]),
+          animjoints(!skel->animjoints || skel->joints.empty() ? nullptr : new matrix4x3[skel->joints.length()]),
+          reljoints(skel->reljoints.empty() ? nullptr : new dualquat[skel->reljoints.length()])
+{
+}
 
 FVAR(ragdolleyesmooth, 0, 0.5f, 1);
 VAR(ragdolleyesmoothmillis, 1, 250, 10000);
@@ -264,7 +294,7 @@ void moveragdoll(dynent *d)
         int lastmove = d->ragdoll->lastmove;
         while(d->ragdoll->lastmove + (lastmove == d->ragdoll->lastmove ? ragdolltimestepmin : ragdolltimestepmax) <= lastmillis)
         {
-            int timestep = min(ragdolltimestepmax, lastmillis - d->ragdoll->lastmove);
+            int timestep = std::min(*ragdolltimestepmax, lastmillis - d->ragdoll->lastmove);
             d->ragdoll->move(d, timestep/1000.0f);
             d->ragdoll->lastmove += timestep;
         }

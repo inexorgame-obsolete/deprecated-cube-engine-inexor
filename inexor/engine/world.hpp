@@ -82,3 +82,15 @@ struct vertex
     svec2 lm;       // light map UV coordinates
     bvec4 tangent;	// tangents (for skinning/animation ?)
 };
+
+
+extern vector<int> outsideents;
+
+extern void entcancel();
+extern void entitiesinoctanodes();
+extern void attachentities();
+extern void freeoctaentities(cube &c);
+extern bool pointinsel(const selinfo &sel, const vec &o);
+
+extern void resetmap();
+extern void startmap(const char *name);

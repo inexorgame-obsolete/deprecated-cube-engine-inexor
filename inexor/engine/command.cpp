@@ -28,6 +28,7 @@
 #include "inexor/shared/iengine.hpp"                  // for fatal
 #include "inexor/shared/igame.hpp"                    // for allowedittoggle
 #include "inexor/shared/tools.hpp"                    // for max, clamp, rnd
+#include "inexor/fpsgame/config.hpp"
 #include "inexor/util/legacy_time.hpp"                // for lastmillis, tot...
 
 using namespace inexor::util;

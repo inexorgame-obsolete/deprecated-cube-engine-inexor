@@ -25,6 +25,7 @@
 #include "inexor/engine/movie.hpp"
 #include "inexor/engine/rendertext.hpp"               // for FONTH
 #include "inexor/engine/shader.hpp"                   // for useshaderbyname
+#include "inexor/engine/frame.hpp"
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/io/legacy/stream.hpp"                // for stream, stream:...
 #include "inexor/network/SharedVar.hpp"               // for SharedVar

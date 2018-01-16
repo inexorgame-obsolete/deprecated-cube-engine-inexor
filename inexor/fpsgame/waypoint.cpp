@@ -7,6 +7,8 @@
 #include <memory>                                     // for __shared_ptr
 
 #include "inexor/engine/octree.hpp"                     // for selinfo
+#include "inexor/engine/octa.hpp"                     // for selinfo
+#include "inexor/engine/material.hpp"                     // for selinfo
 #include "inexor/engine/octaedit.hpp"                 // for noedit
 #include "inexor/engine/worldio.hpp"                  // for getmapfilename
 #include "inexor/fpsgame/ai.hpp"                      // for waypoint, isway...

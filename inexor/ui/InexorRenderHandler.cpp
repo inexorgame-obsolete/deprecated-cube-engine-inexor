@@ -6,7 +6,10 @@
 #include "include/base/cef_ref_counted.h"  // for scoped_refptr
 #include "include/cef_browser.h"           // for CefBrowser, CefBrowserHost
 #include "include/cef_task.h"              // for CefCurrentlyOn
-#include "inexor/engine/engine.hpp"        // for GLException
+#include "inexor/util/InexorException.hpp"
+/// Exception that should be thrown if GL related functionality failed.
+IEXCEPTION(GLException, "OpenGL related functionality failed");
+
 #include "inexor/io/Logging.hpp"           // for Log, Logger, log_manager
 #include "inexor/ui/InexorRenderHandler.hpp"
 
