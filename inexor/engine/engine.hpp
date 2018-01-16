@@ -34,9 +34,6 @@ extern const uchar fv[6][4];
 extern const uchar fvmasks[64];
 extern const uchar faceedgesidx[6][4];
 
-extern SDL_Window *sdl_window;
-
-
 extern SharedVar<int> zpass, glowpass;
 
 extern vector<int> entgroup;
@@ -87,18 +84,7 @@ extern SharedVar<int> oqfrags;
 #define startquery(query) do { glBeginQuery_(GL_SAMPLES_PASSED, ((occludequery *)(query))->id); } while(0)
 #define endquery(query) do { glEndQuery_(GL_SAMPLES_PASSED); } while(0)
 
-// console
-extern void processkey(int code, bool isdown);
-extern void processtextinput(const char *str, int len);
-extern int rendercommand(int x, int y, int w);
-extern int renderconsole(int w, int h, int abovehud);
-extern void resetcomplete();
-extern void complete(char *s, int maxlen, const char *cmdprefix, bool backwards);
-const char *getkeyname(int code);
-extern const char *addreleaseaction(char *s);
-extern void writebinds(stream *f);
-extern void writecompletions(stream *f);
-
+#include "inexor/engine/console.hpp"
 // main
 extern SharedVar<int> numcpus;
 
@@ -107,9 +93,6 @@ extern SharedVar<int> numcpus;
 // extern void pushevent(const SDL_Event &e);
 // extern bool interceptkey(int sym);
 #include "inexor/engine/renderbackground.hpp"
-
-extern void getfps(int &fps, int &bestdiff, int &worstdiff);
-extern void swapbuffers(bool overlay = true);
 
 #include "inexor/engine/glare.hpp"
 #include "inexor/engine/octarender.hpp"

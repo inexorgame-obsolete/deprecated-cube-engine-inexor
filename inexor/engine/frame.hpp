@@ -10,3 +10,5 @@ extern void resetfpshistory();
 extern int get_current_max_fps();
 
 extern void updatefpshistory(int millis);
+
+extern void getfps(int &fps, int &bestdiff, int &worstdiff);
