@@ -1,4 +1,3 @@
-#include <boost/random/mersenne_twister.hpp>  // for mersenne_twister_engine
 #include <array>                              // for array, array<>::value_type
 #include <ostream>                            // for operator<<, basic_ostre...
 #include <random>                             // for default_random_engine
@@ -10,6 +9,10 @@
 #include "gtest/gtest-test-part.h"            // for TestPartResult
 #include "gtest/gtest.h"                      // for Test, TestInfo (ptr only)
 #include "inexor/util/random.hpp"             // for rnd, deterministic_rnd
+
+#include <boost/thread/thread.hpp>            // IWYU pragma: keep
+#include <boost/thread/lock_guard.hpp>        // IWYU pragma: keep
+#include <boost/thread/mutex.hpp>             // IWYU pragma: keep
 
 using namespace std;
 using namespace boost;

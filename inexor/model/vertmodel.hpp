@@ -1,4 +1,8 @@
-//NO INCLUDE GUARD
+
+#pragma once
+#include "inexor/model/animmodel.hpp"
+#include "inexor/shared/geom.hpp"
+
 struct vertmodel : animmodel
 {
     struct vert { vec pos, norm; };

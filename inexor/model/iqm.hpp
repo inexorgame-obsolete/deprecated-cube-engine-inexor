@@ -1,5 +1,5 @@
-//NO INCLUDE GUARD
-struct iqm;
+#pragma once
+#include "inexor/model/skelmodel.hpp"
 
 struct iqmheader
 {

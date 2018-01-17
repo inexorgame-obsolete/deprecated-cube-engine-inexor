@@ -1,5 +1,5 @@
-//NO INCLUDE GUARD
-struct md5;
+#pragma once
+#include "inexor/model/skelmodel.hpp"
 
 struct md5joint
 {

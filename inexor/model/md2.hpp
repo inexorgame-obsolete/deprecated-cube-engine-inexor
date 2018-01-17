@@ -1,5 +1,5 @@
-//NO INCLUDE GUARD
-struct md2;
+#pragma once
+#include "inexor/model/vertmodel.hpp"
 
 static const float md2normaltable[256][3] =
 {

@@ -1,5 +1,7 @@
 // renderparticles.cpp
 
+#include "inexor/engine/renderparticles.hpp"          // IWYU pragma: keep
+
 #include <SDL_opengl.h>                               // for GL_ARRAY_BUFFER
 #include <boost/algorithm/clamp.hpp>                  // for clamp
 #include <math.h>                                     // for M_PI, ceil, floor

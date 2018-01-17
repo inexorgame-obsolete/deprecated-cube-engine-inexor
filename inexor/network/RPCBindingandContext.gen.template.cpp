@@ -13,7 +13,7 @@
 
 #include "inexor/util/Subsystem.hpp"
 #include "inexor/network/SharedTree.hpp"
-#include "inexor/network/RpcSubsystem.hpp"
+#include "inexor/network/RpcSubsystem.hpp" // IWYU pragma: keep
 #include "inexor/network/RpcTestClient.hpp"
 
 {{#shared_class_definitions}}{{^is_shared_list}}#include "{{definition_header_file}}"

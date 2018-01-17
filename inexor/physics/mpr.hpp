@@ -1,5 +1,12 @@
 // This code is based off the Minkowski Portal Refinement algorithm by Gary Snethen in XenoCollide & Game Programming Gems 7.
 #pragma once
+
+#include "inexor/shared/geom.hpp"
+#include "inexor/engine/octree.hpp"
+#include "inexor/shared/cube_loops.hpp"
+#include "inexor/shared/tools.hpp"
+#include "inexor/shared/ents.hpp"
+
 namespace mpr
 {
     struct CubePlanes

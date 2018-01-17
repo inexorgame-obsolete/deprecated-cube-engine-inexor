@@ -1,5 +1,5 @@
-//NO INCLUDE GUARD
-struct smd;
+#pragma once
+#include "inexor/model/skelmodel.hpp"
 
 struct smdbone
 {

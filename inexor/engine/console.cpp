@@ -1,5 +1,7 @@
 // console.cpp: the console buffer, its display, and command line control
 
+#include "inexor/engine/console.hpp"                  // IWYU pragma: keep
+
 #include <boost/algorithm/clamp.hpp>                  // for clamp
 #include <stdlib.h>                                   // for abs, size_t
 #include <string.h>                                   // for strlen, strcmp

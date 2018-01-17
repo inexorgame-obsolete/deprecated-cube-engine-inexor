@@ -1,5 +1,5 @@
 #pragma once
-struct obj;
+#include "inexor/model/vertmodel.hpp"
 
 struct obj : vertmodel, vertloader<obj>
 {

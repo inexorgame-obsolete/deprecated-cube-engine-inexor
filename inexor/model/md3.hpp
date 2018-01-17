@@ -1,5 +1,5 @@
-//NO INCLUDE GUARD
-struct md3;
+#pragma once
+#include "inexor/model/vertmodel.hpp"
 
 struct md3frame
 {
