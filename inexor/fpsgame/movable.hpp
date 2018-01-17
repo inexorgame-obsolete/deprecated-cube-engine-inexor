@@ -1,12 +1,17 @@
 #pragma once
 
-// Moving platforms, obstacles (bomberman mode) and barels
-#include "inexor/shared/cube_vector.hpp"
 #include "inexor/fpsgame/fpsent.hpp"
+// Moving platforms, obstacles (bomberman mode) and barels
+#include "inexor/shared/cube_vector.hpp"  // for vector
+
+struct fpsent;
+struct physent;
+struct vec;
 
 namespace game {
 
 struct movable;
+
 extern vector<movable *> movables;
 
 extern void clearmovables();

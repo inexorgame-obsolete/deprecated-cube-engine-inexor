@@ -5,6 +5,7 @@
 #include <SDL_opengl.h>                            // for GLenum, GL_FLOAT
 #include <stddef.h>                                // for size_t
 
+#include "SDL_opengl.h"                            // for GL_ARRAY_BUFFER
 #include "inexor/engine/glexts.hpp"                // for glVertexAttrib4f_
 #include "inexor/network/legacy/buffer_types.hpp"  // for ucharbuf
 #include "inexor/shared/cube_types.hpp"            // for uchar, uint, ushort

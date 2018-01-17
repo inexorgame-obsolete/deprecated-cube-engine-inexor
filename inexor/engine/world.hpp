@@ -1,10 +1,16 @@
 #pragma once
 
-#include "inexor/network/SharedVar.hpp"
-#include "inexor/shared/cube_types.hpp"
-#include "inexor/shared/geom.hpp"
-#include "inexor/shared/cube_vector.hpp"
 #include "inexor/engine/octree.hpp"
+#include "inexor/network/SharedVar.hpp"   // for SharedVar
+#include "inexor/shared/cube_types.hpp"   // for uchar
+#include "inexor/shared/cube_vector.hpp"  // for vector
+#include "inexor/shared/geom.hpp"         // for bvec4, vec, svec2, vec2
+
+struct cube;
+struct entity;
+struct extentity;
+struct selinfo;
+struct undoblock;
 
 // world.h
 // contains general enumerations and structures to describe world, map format and environment

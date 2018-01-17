@@ -6,7 +6,9 @@
 #include <memory>                                     // for __shared_ptr
 #include <string>                                     // for string
 
-#include "inexor/engine/engine.hpp"                   // for camera1, render...
+#include "inexor/engine/renderbackground.hpp"         // for renderprogress
+#include "inexor/engine/rendergl.hpp"                 // for camera1
+#include "inexor/fpsgame/entities.hpp"                // for getents
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/io/filesystem/mediadirs.hpp"         // for getmediapath
 #include "inexor/shared/command.hpp"                  // for COMMAND, intret
@@ -17,7 +19,6 @@
 #include "inexor/shared/cube_vector.hpp"              // for vector
 #include "inexor/shared/ents.hpp"                     // for extentity, ::EF...
 #include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
-#include "inexor/shared/igame.hpp"                    // for getents
 #include "inexor/shared/tools.hpp"                    // for rnd, clamp, max
 #include "inexor/sound/mumble.hpp"                    // for closemumble
 #include "inexor/sound/sound.hpp"

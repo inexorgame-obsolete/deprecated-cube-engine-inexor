@@ -6,15 +6,19 @@
 #include <algorithm>                                  // for max, min
 
 #include "SDL_opengl.h"                               // for glDisable, glEn...
-#include "inexor/engine/engine.hpp"                   // for checkquery, cam...
+#include "inexor/engine/glare.hpp"                    // for glaring
 #include "inexor/engine/glemu.hpp"                    // for attribf, end
 #include "inexor/engine/glexts.hpp"                   // for glBindFramebuffer_
 #include "inexor/engine/lightmap.hpp"                 // for ambientcolor
-#include "inexor/engine/material.hpp"                 // for showmat
-#include "inexor/engine/octree.hpp"                     // for materialsurface
+#include "inexor/engine/material.hpp"                 // for ::MAT_WATER
 #include "inexor/engine/octaedit.hpp"                 // for editmode
+#include "inexor/engine/octarender.hpp"               // for allchanged
+#include "inexor/engine/octree.hpp"                   // for materialsurface
 #include "inexor/engine/pvs.hpp"                      // for waterpvsoccluded
+#include "inexor/engine/rendergl.hpp"                 // for camera1, drawtex
+#include "inexor/engine/renderva.hpp"                 // for checkquery, res...
 #include "inexor/engine/shader.hpp"                   // for lookupshaderbyname
+#include "inexor/engine/water.hpp"                    // for GETMATIDXVAR
 #include "inexor/engine/world.hpp"                    // for WATER_OFFSET
 #include "inexor/network/SharedVar.hpp"               // for SharedVar
 #include "inexor/network/legacy/buffer_types.hpp"     // for ucharbuf
@@ -24,7 +28,6 @@
 #include "inexor/shared/cube_vector.hpp"              // for vector
 #include "inexor/shared/ents.hpp"                     // for physent, entity
 #include "inexor/shared/geom.hpp"                     // for bvec, ivec, vec
-#include "inexor/shared/iengine.hpp"                  // for ::MAT_WATER
 #include "inexor/shared/tools.hpp"                    // for max, min, clamp
 #include "inexor/texture/cubemap.hpp"                 // for lookupenvmap
 #include "inexor/texture/slot.hpp"                    // for MSlot, Slot::Tex

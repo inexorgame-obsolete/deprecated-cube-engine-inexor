@@ -1,8 +1,9 @@
 #pragma once
 
 #include "inexor/shared/ents.hpp"
-#include "inexor/shared/geom.hpp"
+#include "inexor/shared/geom.hpp"  // for vec
 
+struct physent;
 struct vtxarray;
 // Dynlights (dynamic lights) are really primitive shaders which light up the near field
 // area of the light source. It does not take into account occlusion.

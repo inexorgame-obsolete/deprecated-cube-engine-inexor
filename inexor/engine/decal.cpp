@@ -6,10 +6,12 @@
 
 #include "SDL_opengl.h"                               // for glBlendFunc
 #include "inexor/engine/decal.hpp"
-#include "inexor/engine/engine.hpp"                   // for faceconvexity
 #include "inexor/engine/glemu.hpp"                    // for bindvbo, clearvbo
 #include "inexor/engine/glexts.hpp"                   // for glBufferSubData_
-#include "inexor/engine/octree.hpp"                     // for materialsurface
+#include "inexor/engine/material.hpp"                 // for ::MAT_ALPHA
+#include "inexor/engine/octa.hpp"                     // for faceconvexity
+#include "inexor/engine/octree.hpp"                   // for materialsurface
+#include "inexor/engine/rendergl.hpp"                 // for zerofogcolor
 #include "inexor/engine/shader.hpp"                   // for Shader, SETSHADER
 #include "inexor/engine/world.hpp"                    // for ::DEFAULT_SKY
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
@@ -20,7 +22,6 @@
 #include "inexor/shared/cube_types.hpp"               // for ushort, RAD, uchar
 #include "inexor/shared/ents.hpp"                     // for physent
 #include "inexor/shared/geom.hpp"                     // for vec, ivec, ivec...
-#include "inexor/shared/iengine.hpp"                  // for ::MAT_ALPHA
 #include "inexor/shared/tools.hpp"                    // for rnd, max
 #include "inexor/texture/texture.hpp"                 // for textureload
 #include "inexor/util/legacy_time.hpp"                // for lastmillis

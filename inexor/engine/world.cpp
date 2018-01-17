@@ -8,21 +8,30 @@
 #include <memory>                                     // for __shared_ptr
 
 #include "SDL_opengl.h"                               // for glDepthFunc
+#include "inexor/client/network.hpp"                  // for isconnected
 #include "inexor/engine/blend.hpp"                    // for enlargeblendmap
 #include "inexor/engine/decal.hpp"                    // for cleardecals
-#include "inexor/engine/engine.hpp"                   // for allchanged, new...
 #include "inexor/engine/glemu.hpp"                    // for attrib, begin
 #include "inexor/engine/lightmap.hpp"                 // for clearlightcache
-#include "inexor/engine/octree.hpp"                     // for cube, selinfo
+#include "inexor/engine/octa.hpp"                     // for newcubes, freeocta
 #include "inexor/engine/octaedit.hpp"                 // for addundo, cancelsel
+#include "inexor/engine/octarender.hpp"               // for allchanged, upd...
+#include "inexor/engine/octree.hpp"                   // for cube, selinfo
 #include "inexor/engine/pvs.hpp"                      // for clearpvs
+#include "inexor/engine/rendergl.hpp"                 // for xtraverts, camera1
+#include "inexor/engine/renderparticles.hpp"          // for clearparticleem...
+#include "inexor/engine/water.hpp"                    // for cleanreflections
 #include "inexor/engine/world.hpp"                    // for MAPVERSION
 #include "inexor/engine/worldio.hpp"                  // for clearmapcrc
+#include "inexor/fpsgame/client.hpp"                  // for newmap, forceedit
+#include "inexor/fpsgame/entities.hpp"                // for getents, editent
+#include "inexor/fpsgame/fps.hpp"                     // for getclientmap
+#include "inexor/fpsgame/player.hpp"                  // for player
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/model/model.hpp"                     // for loadmodel, model
 #include "inexor/model/rendermodel.hpp"               // for loadmapmodel
 #include "inexor/network/SharedVar.hpp"               // for SharedVar
-#include "inexor/physics/physics.hpp"                 // for rotatebb
+#include "inexor/physics/physics.hpp"                 // for entinmap, rotatebb
 #include "inexor/shared/command.hpp"                  // for intret, COMMAND
 #include "inexor/shared/cube_formatting.hpp"          // for concatstring
 #include "inexor/shared/cube_loops.hpp"               // for i, loopv, loopi, j
@@ -31,8 +40,6 @@
 #include "inexor/shared/cube_vector.hpp"              // for vector
 #include "inexor/shared/ents.hpp"                     // for extentity, ::ET...
 #include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
-#include "inexor/shared/iengine.hpp"                  // for entinmap, drope...
-#include "inexor/shared/igame.hpp"                    // for getents, editent
 #include "inexor/shared/tools.hpp"                    // for max, rnd, clamp
 #include "inexor/sound/sound.hpp"                     // for clearmapsounds
 #include "inexor/texture/slot.hpp"                    // for clearslots

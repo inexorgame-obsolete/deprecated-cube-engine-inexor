@@ -1,14 +1,27 @@
-#include "inexor/shared/geom.hpp"
-#include "inexor/engine/explosion.hpp"
-#include "inexor/engine/engine.hpp"
-#include "inexor/engine/depthfx.hpp"
-#include "inexor/engine/glare.hpp"
-#include "inexor/engine/water.hpp"
-#include "inexor/engine/engine.hpp"
-#include "inexor/util/legacy_time.hpp"
-#include "inexor/engine/glemu.hpp"
+#include <SDL_opengl.h>                  // for glDepthFunc, GLushort, GL_UN...
+#include <math.h>                        // for cos, sin, M_PI
+#include <string.h>                      // for memmove
+#include <algorithm>                     // for max, min
 
-#include <SDL_opengl.h>
+#include "SDL_opengl.h"                  // for GL_STATIC_DRAW, GL_ARRAY_BUFFER
+#include "inexor/engine/depthfx.hpp"     // for depthfxtexture, depthfxtex
+#include "inexor/engine/explosion.hpp"
+#include "inexor/engine/glare.hpp"       // for glaring
+#include "inexor/engine/glemu.hpp"       // for bindebo, bindvbo, clearebo
+#include "inexor/engine/glexts.hpp"      // for glBufferData_, glDeleteBuffers_
+#include "inexor/engine/octree.hpp"      // for glde
+#include "inexor/engine/rendergl.hpp"    // for camera1, camprojmatrix, camr...
+#include "inexor/engine/renderva.hpp"    // for isfoggedsphere
+#include "inexor/engine/shader.hpp"      // for LOCALPARAM, SETSHADER, Shader
+#include "inexor/engine/water.hpp"       // for reflecting, refracting, refl...
+#include "inexor/network/SharedVar.hpp"  // for SharedVar
+#include "inexor/physics/physics.hpp"    // for collide
+#include "inexor/shared/cube_loops.hpp"  // for i, k, loopi, j, loopk, loopj
+#include "inexor/shared/cube_tools.hpp"  // for DELETEA
+#include "inexor/shared/cube_types.hpp"  // for ushort, SQRT3, RAD
+#include "inexor/shared/ents.hpp"        // for physent, extentity, ::ENT_CA...
+#include "inexor/shared/geom.hpp"        // for vec, vec::(anonymous union):...
+#include "inexor/util/legacy_time.hpp"   // for lastmillis
 
 namespace sphere
 {

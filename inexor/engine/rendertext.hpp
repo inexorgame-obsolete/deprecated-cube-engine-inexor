@@ -1,9 +1,11 @@
 #pragma once
 
-#include "inexor/shared/cube_tools.hpp"   // for DELETEA
+#include <math.h>                             // for ceil
+
+#include "inexor/shared/cube_formatting.hpp"  // for PRINTFARGS
+#include "inexor/shared/cube_tools.hpp"       // for DELETEA
 // Simplistic bitmap text rendering
-#include "inexor/shared/cube_vector.hpp"  // for vector
-#include "inexor/shared/cube_formatting.hpp"  // for vector
+#include "inexor/shared/cube_vector.hpp"      // for vector
 #include "inexor/shared/geom.hpp"
 #include "inexor/texture/texture.hpp"
 

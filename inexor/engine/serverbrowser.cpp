@@ -1,17 +1,17 @@
-#include <algorithm>                          // for min
+#include <algorithm>                           // for min
 
-#include "SDL_keycode.h"                      // for ::SDLK_ESCAPE
-#include "SDL_mutex.h"                        // for SDL_LockMutex, SDL_Unlo...
-#include "SDL_thread.h"                       // for SDL_CreateThread, SDL_G...
-#include "SDL_timer.h"                        // for SDL_GetTicks
-#include "enet/enet.h"                        // for ENetAddress, enet_addre...
-#include "inexor/engine/engine.hpp"           // for renderprogress
-#include "inexor/io/input/InputRouter.hpp"    // for InputRouter, input_router
-#include "inexor/shared/cube_formatting.hpp"  // for defformatstring
-#include "inexor/shared/cube_loops.hpp"       // for i, loopv, loopi
-#include "inexor/shared/cube_vector.hpp"      // for vector
-#include "inexor/shared/tools.hpp"            // for min
-#include "inexor/util/legacy_time.hpp"        // for totalmillis
+#include "SDL_keycode.h"                       // for ::SDLK_ESCAPE
+#include "SDL_mutex.h"                         // for SDL_LockMutex, SDL_Unl...
+#include "SDL_thread.h"                        // for SDL_CreateThread, SDL_...
+#include "SDL_timer.h"                         // for SDL_GetTicks
+#include "enet/enet.h"                         // for ENetAddress, enet_addr...
+#include "inexor/engine/renderbackground.hpp"  // for renderprogress
+#include "inexor/io/input/InputRouter.hpp"     // for InputRouter, input_router
+#include "inexor/shared/cube_formatting.hpp"   // for defformatstring
+#include "inexor/shared/cube_loops.hpp"        // for i, loopv, loopi
+#include "inexor/shared/cube_vector.hpp"       // for vector
+#include "inexor/shared/tools.hpp"             // for min
+#include "inexor/util/legacy_time.hpp"         // for totalmillis
 
 using namespace inexor::io;
 

@@ -5,7 +5,6 @@
 
 #include <boost/algorithm/clamp.hpp>                      // for clamp
 #include <ctype.h>                                        // for isdigit
-#include <inexor/engine/engine.hpp>                       // for camera1
 #include <limits.h>                                       // for INT_MAX
 #include <math.h>                                         // for fabs, M_PI
 #include <stdarg.h>                                       // for va_arg, va_end
@@ -24,32 +23,42 @@
 #include "inexor/client/gamemode/ctf_client.hpp"          // for ctfclientmode
 #include "inexor/client/gamemode/gamemode_client.hpp"     // for clientmode
 #include "inexor/client/gamemode/hideandseek_client.hpp"  // for hideandseek...
+#include "inexor/client/network.hpp"                      // for sendclientp...
 #include "inexor/engine/glemu.hpp"                        // for attribf, begin
-#include "inexor/engine/octree.hpp"                         // for selinfo
+#include "inexor/engine/material.hpp"                     // for ::MATF_CLIP
+#include "inexor/engine/octa.hpp"                         // for lookupmaterial
 #include "inexor/engine/octaedit.hpp"                     // for toggleedit
-#include "inexor/engine/particles.hpp"                    // for particle_te...
-#include "inexor/engine/renderparticles.hpp"
+#include "inexor/engine/octree.hpp"                       // for selinfo
+#include "inexor/engine/particles.hpp"                    // for ::PART_TEXT
+#include "inexor/engine/rendergl.hpp"                     // for disablezoom
+#include "inexor/engine/renderparticles.hpp"              // for particle_te...
+#include "inexor/engine/world.hpp"                        // for emptymap
 #include "inexor/engine/worldio.hpp"                      // for load_world
 #include "inexor/fpsgame/ai.hpp"                          // for itemspawned
-#include "inexor/fpsgame/entities.hpp"                    // for setspawn
+#include "inexor/fpsgame/client.hpp"                      // for messages
+#include "inexor/fpsgame/entities.hpp"                    // for getents
+#include "inexor/fpsgame/fps.hpp"                         // for player1
 #include "inexor/fpsgame/fpsent.hpp"                      // for fpsent
 #include "inexor/fpsgame/fpsstate.hpp"                    // for ::AI_BOT
-#include "inexor/fpsgame/game.hpp"                        // for player1
 #include "inexor/fpsgame/guns.hpp"                        // for guninfo
-#include "inexor/fpsgame/weapon.hpp"
+#include "inexor/fpsgame/render.hpp"                      // for saveragdoll
 #include "inexor/fpsgame/scoreboard.hpp"                  // for showscores
 #include "inexor/fpsgame/teaminfo.hpp"                    // for MAXNAMELEN
+#include "inexor/fpsgame/weapon.hpp"                      // for explodeeffects
 #include "inexor/gamemode/gamemode.hpp"                   // for m_edit, isteam
+#include "inexor/io/Error.hpp"                            // for fatal
 #include "inexor/io/Logging.hpp"                          // for Log, Logger
 #include "inexor/io/filesystem/mediadirs.hpp"             // for getmediapath
 #include "inexor/io/filesystem/path.hpp"                  // for Path
 #include "inexor/io/legacy/stream.hpp"                    // for openrawfile
+#include "inexor/model/ragdoll.hpp"                       // for cleanragdoll
 #include "inexor/network/SharedVar.hpp"                   // for SharedVar
 #include "inexor/network/legacy/administration.hpp"       // for mastermodename
 #include "inexor/network/legacy/buffer_types.hpp"         // for ucharbuf
 #include "inexor/network/legacy/crypto.hpp"               // for hashpassword
 #include "inexor/network/legacy/cube_network.hpp"         // for getint, get...
 #include "inexor/network/legacy/game_types.hpp"           // for ::N_EDITF
+#include "inexor/physics/physics.hpp"                     // for vecfromyawp...
 #include "inexor/shared/command.hpp"                      // for intret, result
 #include "inexor/shared/cube_endian.hpp"                  // for lilswap
 #include "inexor/shared/cube_formatting.hpp"              // for formatstring
@@ -59,14 +68,12 @@
 #include "inexor/shared/cube_vector.hpp"                  // for vector
 #include "inexor/shared/ents.hpp"                         // for ::CS_DEAD
 #include "inexor/shared/geom.hpp"                         // for vec, ivec
-#include "inexor/shared/iengine.hpp"                      // for sendclientp...
-#include "inexor/shared/igame.hpp"                        // for getents
 #include "inexor/shared/tools.hpp"                        // for clamp, max
 #include "inexor/sound/sound.hpp"                         // for playsound
+#include "inexor/texture/settexture.hpp"                  // for settexture
+#include "inexor/texture/slot.hpp"                        // for packvslot
 #include "inexor/ui/legacy/3dgui.hpp"                     // for hudannounce...
 #include "inexor/util/legacy_time.hpp"                    // for totalmillis
-
-class VSlot;
 
 using namespace inexor::filesystem;
 using namespace inexor::sound;

@@ -1,10 +1,14 @@
 #pragma once
 
-#include "inexor/shared/cube_vector.hpp"
 #include "inexor/engine/octree.hpp"
+#include "inexor/shared/cube_types.hpp"   // for ushort
+#include "inexor/shared/cube_vector.hpp"  // for vector
+#include "inexor/shared/geom.hpp"         // for ivec (ptr only), vec
 
-struct vtxarray;
+struct cube;
+struct tjoint;
 struct vertex;
+struct vtxarray;
 
 extern vector<tjoint> tjoints;
 extern vector<vtxarray *> varoot, valist;

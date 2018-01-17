@@ -2,6 +2,7 @@
 /// Settings for texture loading and handling.
 
 
+
 #include "inexor/shared/command.hpp"                  // for VARFP, VAR
 #include "inexor/texture/texture.hpp"                 // for setuptexcompress
 #include "inexor/ui/legacy/menus.hpp"                 // for initwarning

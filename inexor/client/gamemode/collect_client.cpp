@@ -3,14 +3,20 @@
 
 #include "SDL_opengl.h"                            // for glBlendFunc, glDis...
 #include "inexor/client/gamemode/collect_client.hpp"
+#include "inexor/engine/dynlight.hpp"              // for adddynlight
 #include "inexor/engine/glemu.hpp"                 // for colorf
-#include "inexor/engine/particles.hpp"             // for particle_flare
-#include "inexor/engine/material.hpp"
-#include "inexor/engine/octa.hpp"
-#include "inexor/engine/renderparticles.hpp"
+#include "inexor/engine/lightmap.hpp"              // for lightreaching
+#include "inexor/engine/material.hpp"              // for ::MATF_CLIP, ::MAT...
+#include "inexor/engine/octa.hpp"                  // for lookupmaterial
+#include "inexor/engine/particles.hpp"             // for ::PART_LIGHTNING
+#include "inexor/engine/rendergl.hpp"              // for flushhudmatrix
+#include "inexor/engine/renderparticles.hpp"       // for particle_flare
+#include "inexor/engine/rendertext.hpp"            // for draw_textf
 #include "inexor/fpsgame/ai.hpp"                   // for interest, makeroute
+#include "inexor/fpsgame/client.hpp"               // for addmsg
 #include "inexor/fpsgame/entities.hpp"             // for ents
-#include "inexor/fpsgame/game.hpp"                 // for player1, newclient
+#include "inexor/fpsgame/fps.hpp"                  // for player1, newclient
+#include "inexor/fpsgame/player.hpp"               // for isthirdperson
 #include "inexor/fpsgame/teaminfo.hpp"             // for ::TEAM_OPPONENT
 #include "inexor/gamemode/gamemode.hpp"            // for m_collect, isteam
 #include "inexor/io/Logging.hpp"                   // for Log, Logger, log_m...
@@ -24,7 +30,6 @@
 #include "inexor/shared/ents.hpp"                  // for extentity, entityl...
 #include "inexor/sound/sound.hpp"                  // for playsound, ::S_FLA...
 #include "inexor/ui/legacy/3dgui.hpp"              // for ::HICON_SIZE, ::HI...
-#include "inexor/engine/lightmap.hpp"
 
 namespace game {
 

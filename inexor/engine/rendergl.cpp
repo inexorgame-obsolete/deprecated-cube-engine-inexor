@@ -2,12 +2,10 @@
 
 #include <SDL_opengl.h>                               // for PFNGLGENFRAMEBU...
 #include <boost/algorithm/clamp.hpp>                  // for clamp
-#include <ctype.h>                                    // for tolower
 #include <math.h>                                     // for fabs, log, tan
-#include <stdio.h>                                    // for sscanf
+#include <stdio.h>                                    // for sscanf, NULL
 #include <stdlib.h>                                   // for abs
 #include <string.h>                                   // for strstr, memcpy
-#include <time.h>                                     // for localtime, strf...
 #include <algorithm>                                  // for max, min, swap
 #include <list>                                       // for _List_iterator
 #include <memory>                                     // for __shared_ptr
@@ -18,35 +16,49 @@
 #include "include/base/cef_ref_counted.h"             // for scoped_refptr
 #include "include/cef_base.h"                         // for CefRefPtr
 #include "inexor/engine/blend.hpp"                    // for renderblendbrush
+#include "inexor/engine/console.hpp"                  // for rendercommand
 #include "inexor/engine/decal.hpp"                    // for renderdecals
-#include "inexor/engine/depthfx.hpp"
+#include "inexor/engine/depthfx.hpp"                  // for drawdepthfxtex
 #include "inexor/engine/dynlight.hpp"                 // for updatedynlights
-#include "inexor/engine/engine.hpp"                   // for refracting, ren...
+#include "inexor/engine/frame.hpp"                    // for getfps, rendere...
+#include "inexor/engine/glare.hpp"                    // for addglare, drawg...
 #include "inexor/engine/glemu.hpp"                    // for attribf, colorf
+#include "inexor/engine/grass.hpp"                    // for rendergrass
 #include "inexor/engine/lightmap.hpp"                 // for lightmaps
 #include "inexor/engine/material.hpp"                 // for rendermaterials
-#include "inexor/engine/octree.hpp"                     // for cube, gbatches
+#include "inexor/engine/octa.hpp"                     // for lookupmaterial
 #include "inexor/engine/octaedit.hpp"                 // for editmode, rende...
+#include "inexor/engine/octarender.hpp"               // for valist
+#include "inexor/engine/octree.hpp"                   // for cube, gbatches
 #include "inexor/engine/pvs.hpp"                      // for setviewcell
+#include "inexor/engine/renderbackground.hpp"         // for renderbackground
+#include "inexor/engine/rendergl.hpp"                 // for camera1, cammatrix
+#include "inexor/engine/renderparticles.hpp"          // for renderparticles
 #include "inexor/engine/rendersky.hpp"                // for drawskybox, lim...
-#include "inexor/engine/rendertext.hpp"               // for FONTH
+#include "inexor/engine/rendertext.hpp"               // for FONTH, draw_textf
+#include "inexor/engine/renderva.hpp"                 // for renderalphageom
 #include "inexor/engine/shader.hpp"                   // for Shader, LocalSh...
 #include "inexor/engine/shadowmap.hpp"                // for shadowmap, shad...
-#include "inexor/engine/world.hpp"                    // for WATER_OFFSET
+#include "inexor/engine/water.hpp"                    // for refracting, ren...
+#include "inexor/engine/world.hpp"                    // for worldsize, WATE...
+#include "inexor/fpsgame/client.hpp"                  // for allowmouselook
+#include "inexor/fpsgame/fps.hpp"                     // for defaultcrosshair
+#include "inexor/fpsgame/player.hpp"                  // for player
+#include "inexor/fpsgame/render.hpp"                  // for renderavatar
+#include "inexor/io/Error.hpp"                        // for fatal
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/io/filesystem/mediadirs.hpp"         // for getmediapath
 #include "inexor/io/legacy/stream.hpp"                // for path, stream
 #include "inexor/network/SharedVar.hpp"               // for SharedVar, min
+#include "inexor/physics/physics.hpp"                 // for movecamera, ray...
 #include "inexor/shared/command.hpp"                  // for VARP, VAR, floa...
 #include "inexor/shared/cube_formatting.hpp"          // for tempformatstring
 #include "inexor/shared/cube_loops.hpp"               // for i, k, loopi, loopk
 #include "inexor/shared/cube_tools.hpp"               // for DELETEA
-#include "inexor/shared/cube_types.hpp"               // for RAD, uint, string
+#include "inexor/shared/cube_types.hpp"               // for RAD, uint, PI
 #include "inexor/shared/cube_vector.hpp"              // for vector
 #include "inexor/shared/ents.hpp"                     // for physent, dynent
 #include "inexor/shared/geom.hpp"                     // for vec, matrix4
-#include "inexor/shared/iengine.hpp"                  // for movecamera, dra...
-#include "inexor/shared/igame.hpp"                    // for defaultcrosshair
 #include "inexor/shared/tools.hpp"                    // for max, min, clamp
 #include "inexor/texture/cubemap.hpp"                 // for cubemapside
 #include "inexor/texture/texsettings.hpp"             // for hwtexsize, hwcu...
@@ -675,6 +687,7 @@ VAR(wireframe, 0, 0, 1);
 
 ICOMMAND(getcampitch, "", (), floatret(camera1->pitch));
 ICOMMAND(getcampos, "", (),
+
 {
     defformatstring(pos, "%s %s %s", floatstr(camera1->o.x), floatstr(camera1->o.y), floatstr(camera1->o.z));
     result(pos);

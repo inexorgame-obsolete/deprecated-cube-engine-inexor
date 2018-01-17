@@ -1,10 +1,13 @@
 #pragma once
 
-#include "inexor/physics/physics.hpp"
+#include <algorithm>                      // for max
 
-#include "inexor/shared/cube_loops.hpp"
-#include "inexor/shared/cube_vector.hpp"
-#include "inexor/shared/geom.hpp"
+#include "inexor/network/SharedVar.hpp"   // for SharedVar
+#include "inexor/physics/physics.hpp"     // for collide
+#include "inexor/shared/cube_loops.hpp"   // for i, loopv, k, loopk, j, loopi
+#include "inexor/shared/cube_vector.hpp"  // for vector
+#include "inexor/shared/ents.hpp"         // for dynent, ::ENT_BOUNCE, physent
+#include "inexor/shared/geom.hpp"         // for vec, matrix4x3, matrix3
 
 extern void moveragdoll(dynent *d);
 extern void cleanragdoll(dynent *d);

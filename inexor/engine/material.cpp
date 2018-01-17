@@ -4,15 +4,22 @@
 #include <algorithm>                                  // for max, swap, min
 
 #include "SDL_opengl.h"                               // for glDepthMask
-#include "inexor/engine/engine.hpp"                   // for camera1, visibl...
+#include "inexor/engine/glare.hpp"                    // for glaring
 #include "inexor/engine/glemu.hpp"                    // for attrib, attribf
 #include "inexor/engine/glexts.hpp"                   // for glActiveTexture_
+#include "inexor/engine/lightmap.hpp"                 // for brightestlight
 #include "inexor/engine/material.hpp"
-#include "inexor/engine/octree.hpp"                     // for materialsurface
+#include "inexor/engine/octa.hpp"                     // for visibleface
 #include "inexor/engine/octaedit.hpp"                 // for editmode
+#include "inexor/engine/octarender.hpp"               // for allchanged, valist
+#include "inexor/engine/octree.hpp"                   // for materialsurface
+#include "inexor/engine/rendergl.hpp"                 // for camera1, xtraverts
+#include "inexor/engine/renderva.hpp"                 // for reflectedva
 #include "inexor/engine/shader.hpp"                   // for Shader, useshad...
+#include "inexor/engine/water.hpp"                    // for reflecting, pre...
 #include "inexor/engine/world.hpp"                    // for WATER_OFFSET
 #include "inexor/network/legacy/buffer_types.hpp"     // for ucharbuf
+#include "inexor/physics/physics.hpp"                 // for raycube, vecfro...
 #include "inexor/shared/command.hpp"                  // for HVARFR, VARP, VARF
 #include "inexor/shared/cube_formatting.hpp"          // for concatstring
 #include "inexor/shared/cube_loops.hpp"               // for i, loopi, j, loopv

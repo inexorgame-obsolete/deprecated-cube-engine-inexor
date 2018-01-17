@@ -1,22 +1,29 @@
 
+#include <math.h>                                     // for ceil
+#include <stddef.h>                                   // for NULL
+#include <algorithm>                                  // for min, max
+#include <string>                                     // for string
+
+#include "inexor/client/network.hpp"                  // for clientkeepalive
+#include "inexor/engine/frame.hpp"                    // for renderedframe
+#include "inexor/engine/glemu.hpp"                    // for attribf, begin
 #include "inexor/engine/renderbackground.hpp"
-#include "inexor/shared/geom.hpp"
-#include "inexor/engine/rendertext.hpp"
-#include "inexor/engine/rendergl.hpp"
-#include "inexor/engine/shader.hpp"
-#include "inexor/engine/frame.hpp"
-#include "inexor/client/network.hpp"
-
-#include "inexor/ui/screen/ScreenManager.hpp"
-#include "inexor/ui/legacy/menus.hpp"
-
-#include "inexor/io/filesystem/mediadirs.hpp"
-#include "inexor/sound/sound.hpp"
-#include "inexor/util/legacy_time.hpp"
-#include "inexor/util/random.hpp"
-
-#include "inexor/engine/glemu.hpp"
-#include "inexor/shared/command.hpp"
+#include "inexor/engine/rendergl.hpp"                 // for flushhudmatrix
+#include "inexor/engine/rendertext.hpp"               // for draw_text, FONTH
+#include "inexor/engine/shader.hpp"                   // for Shader, hudshader
+#include "inexor/io/filesystem/mediadirs.hpp"         // for getmediapath
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/shared/command.hpp"                  // for SVARFP
+#include "inexor/shared/cube_loops.hpp"               // for loopi, i
+#include "inexor/shared/cube_tools.hpp"               // for copystring, new...
+#include "inexor/shared/cube_types.hpp"               // for string
+#include "inexor/shared/geom.hpp"                     // for matrix4
+#include "inexor/sound/sound.hpp"                     // for stopsounds
+#include "inexor/texture/texture.hpp"                 // for textureload
+#include "inexor/ui/legacy/menus.hpp"                 // for mainmenu
+#include "inexor/ui/screen/ScreenManager.hpp"         // for ScreenManager
+#include "inexor/util/legacy_time.hpp"                // for lastmillis
+#include "inexor/util/random.hpp"                     // for rnd
 
 using inexor::rendering::screen::screen_manager;
 using inexor::sound::stopsounds;

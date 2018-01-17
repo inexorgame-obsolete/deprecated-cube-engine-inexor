@@ -3,13 +3,17 @@
 #include <memory>                                     // for __shared_ptr
 
 #include "enet/enet.h"                                // for _ENetPacketFlag...
-#include "inexor/engine/particles.hpp"                // for particle_icon
-#include "inexor/engine/renderparticles.hpp"
+#include "inexor/client/network.hpp"                  // for flushclient
+#include "inexor/engine/particles.hpp"                // for ::PART_HUD_ICON...
+#include "inexor/engine/renderparticles.hpp"          // for particle_icon
+#include "inexor/engine/world.hpp"                    // for renderentarrow
 #include "inexor/fpsgame/ai.hpp"                      // for inferwaypoints
+#include "inexor/fpsgame/client.hpp"                  // for addmsg, sendpos...
 #include "inexor/fpsgame/entities.hpp"
+#include "inexor/fpsgame/fps.hpp"                     // for player1, msgsound
 #include "inexor/fpsgame/fpsent.hpp"                  // for fpsent
-#include "inexor/fpsgame/game.hpp"                    // for player1, addmsg
 #include "inexor/fpsgame/guns.hpp"                    // for itemstat, items...
+#include "inexor/fpsgame/player.hpp"                  // for isthirdperson
 #include "inexor/gamemode/gamemode.hpp"               // for m_bomb, m_noammo
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/model/model.hpp"                     // for mapmodelname
@@ -22,7 +26,6 @@
 #include "inexor/shared/cube_formatting.hpp"          // for defformatstring
 #include "inexor/shared/cube_loops.hpp"               // for i, loopv, loopi
 #include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
-#include "inexor/shared/iengine.hpp"                  // for renderentarrow
 #include "inexor/sound/sound.hpp"                     // for playsound, ::S_...
 #include "inexor/util/legacy_time.hpp"                // for lastmillis
 

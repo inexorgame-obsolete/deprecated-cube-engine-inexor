@@ -1,7 +1,8 @@
 #pragma once
 #include "inexor/engine/octree.hpp"
 #include "inexor/network/legacy/buffer_types.hpp"  // for ucharbuf
-#include "inexor/shared/cube_types.hpp"            // for uchar
+#include "inexor/shared/cube_types.hpp"            // for uchar, ushort
+#include "inexor/shared/cube_vector.hpp"           // for vector
 
 struct editinfo;
 struct selinfo;

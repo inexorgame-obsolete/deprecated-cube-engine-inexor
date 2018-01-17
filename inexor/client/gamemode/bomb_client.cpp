@@ -5,9 +5,12 @@
 #include "SDL_opengl.h"                               // for glTexCoord2f
 #include "SDL_timer.h"                                // for SDL_GetTicks
 #include "inexor/client/gamemode/bomb_client.hpp"
+#include "inexor/engine/rendergl.hpp"                 // for bind_bomb_items...
+#include "inexor/engine/rendertext.hpp"               // for text_bounds
 #include "inexor/fpsgame/entities.hpp"                // for ents
-#include "inexor/fpsgame/game.hpp"                    // for player1, players
+#include "inexor/fpsgame/fps.hpp"                     // for player1, players
 #include "inexor/fpsgame/guns.hpp"                    // for ::GUN_BOMB
+#include "inexor/fpsgame/movable.hpp"                 // for isobstaclealive
 #include "inexor/fpsgame/projectile.hpp"              // for bouncer, bouncers
 #include "inexor/fpsgame/teaminfo.hpp"                // for scoregroup, ::T...
 #include "inexor/gamemode/gamemode.hpp"               // for m_teammode, isteam
@@ -16,14 +19,15 @@
 #include "inexor/network/SharedVar.hpp"               // for SharedVar
 #include "inexor/network/legacy/cube_network.hpp"     // for putint, getint
 #include "inexor/network/legacy/game_types.hpp"       // for ::N_SPAWNLOC
+#include "inexor/physics/physics.hpp"                 // for entinmap, vecto...
 #include "inexor/shared/command.hpp"                  // for VARP
 #include "inexor/shared/cube_formatting.hpp"          // for formatstring
 #include "inexor/shared/cube_loops.hpp"               // for i, loopv, k, loopk
 #include "inexor/shared/cube_types.hpp"               // for RAD
 #include "inexor/shared/cube_vector.hpp"              // for vector
 #include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
-#include "inexor/shared/iengine.hpp"                  // for text_bounds
 #include "inexor/shared/tools.hpp"                    // for max
+#include "inexor/texture/settexture.hpp"              // for settexture
 #include "inexor/ui/legacy/3dgui.hpp"                 // for g3d_gui, ::HICO...
 #include "inexor/util/legacy_time.hpp"                // for lastmillis
 

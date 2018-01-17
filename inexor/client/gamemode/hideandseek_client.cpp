@@ -2,6 +2,8 @@
 
 #include "SDL_opengl.h"                        // for glBlendFunc, glColor3f
 #include "inexor/client/gamemode/hideandseek_client.hpp"
+#include "inexor/engine/rendergl.hpp"          // for bindminimap, camera1
+#include "inexor/fpsgame/movable.hpp"          // for isobstaclealive, movables
 #include "inexor/fpsgame/teaminfo.hpp"         // for ::TEAM_OPPONENT
 #include "inexor/io/filesystem/mediadirs.hpp"  // for radardir
 #include "inexor/shared/cube_formatting.hpp"   // for defformatstring
@@ -10,6 +12,7 @@
 #include "inexor/shared/cube_vector.hpp"       // for vector
 #include "inexor/shared/ents.hpp"              // for ::CS_SPECTATOR, dynent
 #include "inexor/shared/geom.hpp"              // for vec, vec::(anonymous u...
+#include "inexor/texture/settexture.hpp"       // for settexture
 #include "inexor/util/legacy_time.hpp"         // for totalmillis
 
 namespace game {

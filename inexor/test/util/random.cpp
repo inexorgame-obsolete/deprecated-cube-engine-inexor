@@ -1,3 +1,4 @@
+#include <boost/random/mersenne_twister.hpp>  // for mersenne_twister_engine
 #include <array>                              // for array, array<>::value_type
 #include <ostream>                            // for operator<<, basic_ostre...
 #include <random>                             // for default_random_engine
@@ -5,12 +6,9 @@
 #include <unordered_set>                      // for unordered_set
 #include <utility>                            // for pair
 
-#include "gtest/gtest.h"
-
-#include <boost/thread/thread.hpp>
-#include <boost/thread/lock_guard.hpp>
-#include <boost/thread/mutex.hpp>
-
+#include "gtest/gtest-message.h"              // for Message
+#include "gtest/gtest-test-part.h"            // for TestPartResult
+#include "gtest/gtest.h"                      // for Test, TestInfo (ptr only)
 #include "inexor/util/random.hpp"             // for rnd, deterministic_rnd
 
 using namespace std;

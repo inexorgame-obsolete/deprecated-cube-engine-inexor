@@ -7,8 +7,8 @@
 #include <memory>                             // for __shared_ptr
 
 #include "SDL_opengl.h"                       // for glGetTexLevelParameteriv
-#include "inexor/engine/engine.hpp"           // for hasS3TC
 #include "inexor/engine/glexts.hpp"           // for glGetCompressedTexImage_
+#include "inexor/engine/rendergl.hpp"         // for hasS3TC
 #include "inexor/io/Logging.hpp"              // for Log, Logger, log_manager
 #include "inexor/io/legacy/stream.hpp"        // for stream, openfile, path
 #include "inexor/network/SharedVar.hpp"       // for SharedVar

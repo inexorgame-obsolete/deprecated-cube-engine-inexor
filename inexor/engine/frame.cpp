@@ -1,7 +1,11 @@
+#include <algorithm>                                  // for max, min
+
 #include "inexor/engine/frame.hpp"
-#include "inexor/shared/command.hpp"
-#include "inexor/ui/legacy/menus.hpp"
-#include "inexor/ui/screen/ScreenManager.hpp"
+#include "inexor/network/SharedVar.hpp"               // for SharedVar, min
+#include "inexor/shared/command.hpp"                  // for floatret, intret
+#include "inexor/shared/cube_loops.hpp"               // for i, loopi
+#include "inexor/ui/legacy/menus.hpp"                 // for mainmenu
+#include "inexor/ui/screen/ScreenManager.hpp"         // for ScreenManager
 
 using inexor::rendering::screen::screen_manager;
 

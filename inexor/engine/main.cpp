@@ -2,59 +2,56 @@
 ///
 #include <boost/algorithm/clamp.hpp>                  // for clamp
 #include <locale.h>                                   // for setlocale, LC_ALL
-#include <math.h>                                     // for ceil
 #include <stdio.h>                                    // for remove
-#include <stdlib.h>                                   // for exit, EXIT_FAILURE, atexit
+#include <stdlib.h>                                   // for atexit, exit
 #include <string.h>                                   // for strstr
-#include <algorithm>                                  // for min, max
 #include <memory>                                     // for __shared_ptr
-#include <string>                                     // for string, basic_s...
-#include <vector>                                     // for vector
+#include <string>                                     // for string
 
 #include "SDL.h"                                      // for SDL_Quit, SDL_Init
 #include "SDL_cpuinfo.h"                              // for SDL_GetCPUCount
 #include "SDL_error.h"                                // for SDL_GetError
 #include "SDL_hints.h"                                // for SDL_SetHint
 #include "SDL_mouse.h"                                // for SDL_ShowCursor
-#include "SDL_opengl.h"                               // for glBindTexture
 #include "SDL_stdinc.h"                               // for ::SDL_FALSE
 #include "SDL_video.h"                                // for SDL_SetWindowBr...
 #include "enet/enet.h"                                // for enet_initialize
+#include "inexor/client/network.hpp"                  // for abortconnect
 #include "inexor/crashreporter/CrashReporter.hpp"     // for CrashReporter
 #include "inexor/engine/decal.hpp"                    // for initdecals
-#include "inexor/engine/engine.hpp"                   // for gl_init, writecfg
-#include "inexor/engine/glemu.hpp"                    // for attribf, begin
+#include "inexor/engine/frame.hpp"                    // for inbetweenframes
 #include "inexor/engine/lightmap.hpp"                 // for initlights
 #include "inexor/engine/movie.hpp"                    // for cleanup, stop
-#include "inexor/engine/octree.hpp"                     // for worldroot
+#include "inexor/engine/octa.hpp"                     // for freeocta
 #include "inexor/engine/octaedit.hpp"                 // for tryedit
-#include "inexor/engine/rendertext.hpp"               // for FONTH
-#include "inexor/engine/shader.hpp"                   // for Shader, hudshader
-#include "inexor/engine/frame.hpp"
+#include "inexor/engine/octarender.hpp"               // for allchanged
+#include "inexor/engine/octree.hpp"                   // for worldroot
+#include "inexor/engine/renderbackground.hpp"         // for renderbackground
+#include "inexor/engine/rendergl.hpp"                 // for gl_init, gl_che...
+#include "inexor/engine/renderparticles.hpp"          // for particleinit
+#include "inexor/engine/rendertext.hpp"               // for setfont
+#include "inexor/engine/shader.hpp"                   // for loadshaders
+#include "inexor/engine/world.hpp"                    // for emptymap
+#include "inexor/fpsgame/client.hpp"                  // for ispaused, games...
+#include "inexor/fpsgame/config.hpp"                  // for savedservers
+#include "inexor/fpsgame/fps.hpp"                     // for initclient, ite...
+#include "inexor/io/Error.hpp"                        // for fatal
 #include "inexor/io/Logging.hpp"                      // for Log, log_manager
-#include "inexor/io/filesystem/mediadirs.hpp"         // for getmediapath
 #include "inexor/io/input/InputRouter.hpp"            // for InputRouter
 #include "inexor/io/legacy/stream.hpp"                // for stream, addpack...
 #include "inexor/network/SharedFunc.hpp"              // for SharedFunc
-#include "inexor/network/SharedVar.hpp"               // for SharedVar, min
+#include "inexor/network/SharedVar.hpp"               // for SharedVar
 #include "inexor/shared/command.hpp"                  // for execfile, VARF
-#include "inexor/shared/cube_formatting.hpp"          // for defvformatstring
-#include "inexor/shared/cube_loops.hpp"               // for loopi, i
-#include "inexor/shared/cube_tools.hpp"               // for copystring, new...
-#include "inexor/shared/cube_types.hpp"               // for string
+#include "inexor/shared/cube_tools.hpp"               // for ASSERT, UNUSED
 #include "inexor/shared/ents.hpp"                     // for dynent
-#include "inexor/shared/geom.hpp"                     // for matrix4
-#include "inexor/shared/iengine.hpp"                  // for draw_text, flus...
-#include "inexor/shared/igame.hpp"                    // for savedservers
-#include "inexor/shared/tools.hpp"                    // for rndscale, min, rnd
+#include "inexor/shared/tools.hpp"                    // for clamp
 #include "inexor/sound/mumble.hpp"                    // for initmumble
 #include "inexor/sound/sound.hpp"                     // for clear_sound
-#include "inexor/texture/texture.hpp"                 // for textureload
+#include "inexor/texture/texture.hpp"                 // for reloadtexture
 #include "inexor/ui/legacy/menus.hpp"                 // for initwarning
 #include "inexor/ui/screen/ScreenManager.hpp"         // for ScreenManager
-#include "inexor/util/StringFormatter.hpp"            // for StringFormatter
 #include "inexor/util/Subsystem.hpp"                  // for Metasystem, SUB...
-#include "inexor/util/legacy_time.hpp"                // for lastmillis, upd...
+#include "inexor/util/legacy_time.hpp"                // for updatetime, las...
 
 using namespace inexor::sound;
 using namespace inexor::io;

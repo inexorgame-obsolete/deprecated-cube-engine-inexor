@@ -1,7 +1,7 @@
 // console.cpp: the console buffer, its display, and command line control
 
 #include <boost/algorithm/clamp.hpp>                  // for clamp
-#include <stdlib.h>                                   // for abs
+#include <stdlib.h>                                   // for abs, size_t
 #include <string.h>                                   // for strlen, strcmp
 #include <algorithm>                                  // for min
 #include <memory>                                     // for __shared_ptr
@@ -12,9 +12,11 @@
 #include "SDL_keyboard.h"                             // for SDL_GetModState
 #include "SDL_keycode.h"                              // for ::SDLK_KP_ENTER
 #include "SDL_stdinc.h"                               // for SDL_free
-#include "inexor/engine/engine.hpp"                   // for idents, identflags
 #include "inexor/engine/octaedit.hpp"                 // for editmode
-#include "inexor/engine/rendertext.hpp"               // for FONTH
+#include "inexor/engine/rendertext.hpp"               // for draw_text, text...
+#include "inexor/fpsgame/client.hpp"                  // for toserver
+#include "inexor/fpsgame/fps.hpp"                     // for clipconsole
+#include "inexor/fpsgame/player.hpp"                  // for player
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/io/input/InputRouter.hpp"            // for InputRouter
 #include "inexor/io/legacy/stream.hpp"                // for stream, openutf...
@@ -30,8 +32,6 @@
 #include "inexor/shared/cube_unicode.hpp"             // for iscubespace
 #include "inexor/shared/cube_vector.hpp"              // for vector
 #include "inexor/shared/ents.hpp"                     // for dynent, ::CS_SP...
-#include "inexor/shared/iengine.hpp"                  // for draw_text, text...
-#include "inexor/shared/igame.hpp"                    // for clipconsole
 #include "inexor/shared/tools.hpp"                    // for min, clamp
 #include "inexor/ui/legacy/3dgui.hpp"                 // for g3d_input, g3d_key
 #include "inexor/ui/legacy/menus.hpp"                 // for mainmenu

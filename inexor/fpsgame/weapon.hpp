@@ -2,9 +2,17 @@
 
 
 
-#include "inexor/fpsgame/fpsent.hpp"
 #include "inexor/fpsgame/ai.hpp"
+#include "inexor/fpsgame/fpsent.hpp"
 #include "inexor/shared/geom.hpp"
+
+namespace ai {
+struct avoidset;
+}  // namespace ai
+struct dynent;
+struct fpsent;
+struct physent;
+struct vec;
 
 namespace game {
 

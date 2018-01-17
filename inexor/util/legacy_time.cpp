@@ -1,4 +1,5 @@
-#include <sys/types.h>  // for uint
+#include <ctype.h>      // for tolower
+#include <time.h>       // for localtime, strftime, time, time_t
 #include <chrono>       // for milliseconds, duration_cast, operator-, stead...
 #include <thread>       // for sleep_for
 #include <type_traits>  // for enable_if<>::type

@@ -1,13 +1,19 @@
+#include <limits.h>                                   // for INT_MAX
+#include <math.h>                                     // for pow, sinf, cosf
+#include <stddef.h>                                   // for size_t
+
+#include "inexor/engine/material.hpp"                 // for ::MATF_VOLUME
+#include "inexor/engine/octa.hpp"                     // for lookupmaterial
+#include "inexor/fpsgame/fps.hpp"                     // for physicstrigger
 #include "inexor/model/ragdoll.hpp"
-#include "inexor/shared/cube_loops.hpp"
-#include "inexor/shared/cube_vector.hpp"
-#include "inexor/shared/geom.hpp"
-#include "inexor/shared/command.hpp"
-#include "inexor/engine/material.hpp"
-#include "inexor/engine/octa.hpp"
-#include "inexor/util/legacy_time.hpp"
-#include "inexor/util/random.hpp"
-#include "inexor/shared/igame.hpp"
+#include "inexor/shared/command.hpp"                  // for FVAR, VAR
+#include "inexor/shared/cube_loops.hpp"               // for i, loopv, loopi
+#include "inexor/shared/cube_tools.hpp"               // for DELETEP
+#include "inexor/shared/cube_types.hpp"               // for RAD
+#include "inexor/shared/cube_vector.hpp"              // for vector
+#include "inexor/shared/geom.hpp"                     // for vec, matrix3
+#include "inexor/util/legacy_time.hpp"                // for lastmillis, cur...
+#include "inexor/util/random.hpp"                     // for deterministic_rnd
 /*
     seed particle position = avg(modelview * base2anim * spherepos)  
     mapped transform = invert(curtri) * origtrig 

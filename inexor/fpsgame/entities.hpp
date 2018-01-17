@@ -1,7 +1,7 @@
 #pragma once
 #include "inexor/fpsgame/game.hpp"
 #include "inexor/shared/cube_vector.hpp"  // for vector
-#include "inexor/shared/ents.hpp"         // for ::I_BOOST, ::I_GREENARMOUR
+#include "inexor/shared/ents.hpp"         // for entity (ptr only), ::I_BOOST
 
 struct fpsent;
 struct packetbuf;

@@ -11,16 +11,20 @@
 
 #include "SDL_opengl.h"                               // for GLuint, GLenum
 #include "inexor/engine/blob.hpp"                     // for resetblobs
-#include "inexor/engine/engine.hpp"                   // for worldsize, face...
 #include "inexor/engine/glemu.hpp"                    // for bindebo, bindvbo
 #include "inexor/engine/glexts.hpp"                   // for glBindBuffer_
 #include "inexor/engine/lightmap.hpp"                 // for LightMapTexture
-#include "inexor/engine/material.hpp"                 // for genmatsurfs
-#include "inexor/engine/octree.hpp"                     // for vtxarray, cube
+#include "inexor/engine/material.hpp"                 // for ::MAT_ALPHA
+#include "inexor/engine/octa.hpp"                     // for faceconvexity
+#include "inexor/engine/octree.hpp"                   // for vtxarray, cube
+#include "inexor/engine/renderbackground.hpp"         // for renderprogress
+#include "inexor/engine/rendergl.hpp"                 // for drawtextures
+#include "inexor/engine/renderparticles.hpp"          // for seedparticles
 #include "inexor/engine/rendersky.hpp"                // for explicitsky
+#include "inexor/engine/renderva.hpp"                 // for resetqueries
 #include "inexor/engine/shader.hpp"                   // for Shader, ::SHADE...
 #include "inexor/engine/shadowmap.hpp"                // for guessshadowdir
-#include "inexor/engine/world.hpp"                    // for vertex, ::DEFAU...
+#include "inexor/engine/world.hpp"                    // for vertex, worldsize
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/network/SharedVar.hpp"               // for SharedVar
 #include "inexor/network/legacy/buffer_types.hpp"     // for databuf
@@ -31,7 +35,6 @@
 #include "inexor/shared/cube_types.hpp"               // for ushort, uchar
 #include "inexor/shared/cube_vector.hpp"              // for vector
 #include "inexor/shared/geom.hpp"                     // for vec, ivec, vec:...
-#include "inexor/shared/iengine.hpp"                  // for ::MAT_ALPHA
 #include "inexor/shared/tools.hpp"                    // for max, min, clamp
 #include "inexor/texture/cubemap.hpp"                 // for closestenvmap
 #include "inexor/texture/slot.hpp"                    // for VSlot, lookupvslot

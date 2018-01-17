@@ -1,10 +1,21 @@
-#include "inexor/fpsgame/teaminfo.hpp"
-#include "inexor/fpsgame/server.hpp"
-#include "inexor/server/network.hpp"
-#include "inexor/server/network_send.hpp"
-#include "inexor/server/client_management.hpp"
-#include "inexor/server/gamemode/gamemode_server.hpp"
-#include "inexor/shared/command.hpp"
+#include <algorithm>                                   // for max
+
+#include "inexor/fpsgame/server.hpp"                   // for teaminfos
+#include "inexor/fpsgame/teaminfo.hpp"                 // for teamscore, htcmp
+#include "inexor/gamemode/gamemode.hpp"                // for m_teammode
+#include "inexor/network/SharedVar.hpp"                // for SharedVar
+#include "inexor/network/legacy/buffer_types.hpp"      // for ucharbuf
+#include "inexor/network/legacy/cube_network.hpp"      // for putint, sendst...
+#include "inexor/server/client_management.hpp"         // for clientinfo
+#include "inexor/server/gamemode/gamemode_server.hpp"  // for smode, servmode
+#include "inexor/server/network.hpp"                   // for sendserverinfo...
+#include "inexor/shared/command.hpp"                   // for VAR
+#include "inexor/shared/cube_hash.hpp"                 // for hashset
+#include "inexor/shared/cube_loops.hpp"                // for i, loopv
+#include "inexor/shared/cube_types.hpp"                // for uchar, uint
+#include "inexor/shared/cube_vector.hpp"               // for vector
+#include "inexor/shared/ents.hpp"                      // for ::CS_SPECTATOR
+#include "inexor/util/legacy_time.hpp"                 // for gamemillis
 
 #define EXT_ACK                         -1
 #define EXT_VERSION                     105

@@ -6,12 +6,15 @@
 #include "SDL_opengl.h"                               // for glBlendFunc
 #include "inexor/client/gamemode/capture_client.hpp"
 #include "inexor/engine/glemu.hpp"                    // for attribf, colorf
-#include "inexor/engine/particles.hpp"                // for particle_splash
-#include "inexor/engine/octa.hpp"
-#include "inexor/engine/renderparticles.hpp"
-#include "inexor/engine/material.hpp"
+#include "inexor/engine/material.hpp"                 // for ::MATF_CLIP
+#include "inexor/engine/octa.hpp"                     // for lookupmaterial
+#include "inexor/engine/particles.hpp"                // for ::PART_SPARK
+#include "inexor/engine/rendergl.hpp"                 // for flushhudmatrix
+#include "inexor/engine/renderparticles.hpp"          // for particle_splash
+#include "inexor/engine/rendertext.hpp"               // for setfont, text_b...
+#include "inexor/fpsgame/client.hpp"                  // for addmsg
 #include "inexor/fpsgame/entities.hpp"                // for entmdlname, ents
-#include "inexor/fpsgame/game.hpp"                    // for player1, teamcolor
+#include "inexor/fpsgame/fps.hpp"                     // for player1, teamcolor
 #include "inexor/fpsgame/guns.hpp"                    // for itemstat, items...
 #include "inexor/fpsgame/teaminfo.hpp"                // for ::TEAM_NONE
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
@@ -26,7 +29,6 @@
 #include "inexor/shared/cube_types.hpp"               // for string, RAD
 #include "inexor/shared/ents.hpp"                     // for extentity, ::I_...
 #include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
-#include "inexor/shared/igame.hpp"                    // for iterdynents
 #include "inexor/sound/sound.hpp"                     // for playsound, prel...
 
 namespace game {
@@ -36,6 +38,7 @@ VARP(autorepammo, 0, 1, 1);
 VARP(basenumbers, 0, 0, 1);
 
 ICOMMAND(insidebases, "", (),
+
 {
     vector<char> buf;
     if(m_capture && player1->state == CS_ALIVE) loopv(capturemode.bases)

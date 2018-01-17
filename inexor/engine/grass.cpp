@@ -3,13 +3,15 @@
 #include <algorithm>                                  // for max, min
 
 #include "SDL_opengl.h"                               // for glBindTexture
-#include "inexor/engine/engine.hpp"                   // for isfoggedsphere
 #include "inexor/engine/glemu.hpp"                    // for bindvbo, clearvbo
 #include "inexor/engine/glexts.hpp"                   // for glActiveTexture_
 #include "inexor/engine/lightmap.hpp"                 // for LightMapTexture
-#include "inexor/engine/octree.hpp"                     // for grasstri, vtxarray
 #include "inexor/engine/octaedit.hpp"                 // for editmode
+#include "inexor/engine/octree.hpp"                   // for grasstri, vtxarray
+#include "inexor/engine/rendergl.hpp"                 // for camera1, xtrave...
+#include "inexor/engine/renderva.hpp"                 // for isfoggedsphere
 #include "inexor/engine/shader.hpp"                   // for SETSHADER, Shader
+#include "inexor/engine/water.hpp"                    // for reflectz, refra...
 #include "inexor/network/SharedVar.hpp"               // for SharedVar
 #include "inexor/shared/command.hpp"                  // for VARP, FVARP, FVARR
 #include "inexor/shared/cube_loops.hpp"               // for i, loopi, loopv

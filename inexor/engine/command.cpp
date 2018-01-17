@@ -4,13 +4,17 @@
 #include <boost/algorithm/clamp.hpp>                  // for clamp
 #include <ctype.h>                                    // for isdigit
 #include <limits.h>                                   // for INT_MIN
-#include <stdlib.h>                                   // for strtoul, abs
+#include <stdlib.h>                                   // for strtoul, abs, NULL
 #include <string.h>                                   // for strlen, strcspn
 #include <algorithm>                                  // for max, min
 #include <cmath>                                      // for acos, asin, atan
 #include <memory>                                     // for __shared_ptr
 
-#include "inexor/engine/engine.hpp"                   // for addreleaseaction
+#include "inexor/engine/console.hpp"                  // for addreleaseaction
+#include "inexor/engine/rendergl.hpp"                 // for writecrosshairs
+#include "inexor/fpsgame/client.hpp"                  // for allowedittoggle
+#include "inexor/fpsgame/config.hpp"                  // for autoexec, defau...
+#include "inexor/io/Error.hpp"                        // for fatal
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/io/legacy/stream.hpp"                // for path, loadfile
 #include "inexor/network/SharedVar.hpp"               // for SharedVar
@@ -25,10 +29,7 @@
 #include "inexor/shared/cube_unicode.hpp"             // for cube2uni, cubel...
 #include "inexor/shared/cube_vector.hpp"              // for vector
 #include "inexor/shared/geom.hpp"                     // for ivec
-#include "inexor/shared/iengine.hpp"                  // for fatal
-#include "inexor/shared/igame.hpp"                    // for allowedittoggle
 #include "inexor/shared/tools.hpp"                    // for max, clamp, rnd
-#include "inexor/fpsgame/config.hpp"
 #include "inexor/util/legacy_time.hpp"                // for lastmillis, tot...
 
 using namespace inexor::util;

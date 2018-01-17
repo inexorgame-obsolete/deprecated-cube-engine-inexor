@@ -7,16 +7,18 @@
 #include <memory>                                     // for __shared_ptr
 
 #include "SDL_opengl.h"                               // for GLint, glGetInt...
-#include "inexor/engine/engine.hpp"                   // for renderprogress
 #include "inexor/engine/glemu.hpp"                    // for ::MAXATTRIBS
 #include "inexor/engine/glexts.hpp"                   // for glGetUniformLoc...
+#include "inexor/engine/renderbackground.hpp"         // for renderprogress
+#include "inexor/engine/rendergl.hpp"                 // for glslversion
+#include "inexor/engine/rendertarget.hpp"             // for screenquad
 #include "inexor/engine/shader.hpp"
+#include "inexor/io/Error.hpp"                        // for fatal
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/shared/command.hpp"                  // for execute, COMMAND
 #include "inexor/shared/cube_formatting.hpp"          // for defformatstring
 #include "inexor/shared/cube_hash.hpp"                // for hashnameset
 #include "inexor/shared/cube_unicode.hpp"             // for iscubealpha
-#include "inexor/shared/iengine.hpp"                  // for fatal
 #include "inexor/shared/tools.hpp"                    // for max, clamp, min
 #include "inexor/texture/slot.hpp"                    // for Slot, VSlot
 #include "inexor/texture/texture.hpp"                 // for createtexture

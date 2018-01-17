@@ -1,13 +1,14 @@
 /// @file savetexture.cpp
 /// everything to save images of various formats.
 
-#include <fcntl.h>                                    // for SEEK_END, SEEK_SET
+#include <stdio.h>                                    // for SEEK_END, SEEK_SET
 #include <string.h>                                   // for strlen, memset
 #include <algorithm>                                  // for min
 #include <memory>                                     // for __shared_ptr
 
 #include "SDL_opengl.h"                               // for glPixelStorei
 #include "SDL_surface.h"                              // for SDL_FreeSurface
+#include "inexor/fpsgame/fps.hpp"                     // for getclientmap
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/io/legacy/stream.hpp"                // for stream, findfile
 #include "inexor/network/SharedVar.hpp"               // for SharedVar
@@ -18,7 +19,6 @@
 #include "inexor/shared/cube_tools.hpp"               // for copystring
 #include "inexor/shared/cube_types.hpp"               // for uchar, uint
 #include "inexor/shared/cube_unicode.hpp"             // for iscubespace
-#include "inexor/shared/igame.hpp"                    // for getclientmap
 #include "inexor/shared/tools.hpp"                    // for min
 #include "inexor/texture/SDL_loading.hpp"             // for wrapsurface
 #include "inexor/texture/image.hpp"                   // for ImageData, texflip

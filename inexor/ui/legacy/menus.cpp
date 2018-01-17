@@ -7,8 +7,11 @@
 #include <string.h>                                   // for strcmp, strspn
 #include <algorithm>                                  // for max, min
 
-#include "inexor/engine/engine.hpp"                   // for camera1, player
+#include "inexor/client/network.hpp"                  // for isconnected
+#include "inexor/engine/rendergl.hpp"                 // for camera1
+#include "inexor/fpsgame/player.hpp"                  // for player
 #include "inexor/model/rendermodel.hpp"               // for findanims
+#include "inexor/physics/physics.hpp"                 // for vecfromyawpitch
 #include "inexor/shared/command.hpp"                  // for COMMAND, execute
 #include "inexor/shared/cube_formatting.hpp"          // for defformatstring
 #include "inexor/shared/cube_hash.hpp"                // for hashnameset
@@ -18,7 +21,6 @@
 #include "inexor/shared/cube_vector.hpp"              // for vector
 #include "inexor/shared/ents.hpp"                     // for physent, ANIM_ALL
 #include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
-#include "inexor/shared/iengine.hpp"                  // for isconnected
 #include "inexor/shared/tools.hpp"                    // for max, min
 #include "inexor/texture/texture.hpp"                 // for textureload
 #include "inexor/ui/legacy/3dgui.hpp"                 // for g3d_gui, ::G3D_UP

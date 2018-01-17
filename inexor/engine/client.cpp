@@ -8,7 +8,8 @@
 #include <memory>                                     // for __shared_ptr
 
 #include "enet/enet.h"                                // for ENetEvent, enet...
-#include "inexor/engine/engine.hpp"                   // for resolverwait
+#include "inexor/client/network.hpp"                  // for resolverwait
+#include "inexor/fpsgame/client.hpp"                  // for connectattempt
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/network/SharedVar.hpp"               // for SharedVar
 #include "inexor/network/legacy/buffer_types.hpp"     // for packetbuf
@@ -17,7 +18,6 @@
 #include "inexor/shared/command.hpp"                  // for ICOMMAND, intret
 #include "inexor/shared/cube_tools.hpp"               // for ASSERT
 #include "inexor/shared/cube_types.hpp"               // for string
-#include "inexor/shared/igame.hpp"                    // for connectattempt
 #include "inexor/ui/legacy/menus.hpp"                 // for mainmenu
 #include "inexor/util/legacy_time.hpp"                // for totalmillis
 

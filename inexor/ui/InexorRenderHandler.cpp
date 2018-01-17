@@ -1,16 +1,17 @@
-#include <locale.h>                        // for setlocale, LC_ALL
-#include <memory>                          // for __shared_ptr
-#include <vector>                          // for vector, vector<>::const_it...
+#include <locale.h>                         // for setlocale, LC_ALL
+#include <memory>                           // for __shared_ptr
+#include <vector>                           // for vector, vector<>::const_i...
 
-#include "SDL_opengl.h"                    // for glPixelStorei, GL_TEXTURE_2D
-#include "include/base/cef_ref_counted.h"  // for scoped_refptr
-#include "include/cef_browser.h"           // for CefBrowser, CefBrowserHost
-#include "include/cef_task.h"              // for CefCurrentlyOn
-#include "inexor/util/InexorException.hpp"
+#include "SDL_opengl.h"                     // for glPixelStorei, GL_TEXTURE_2D
+#include "include/base/cef_ref_counted.h"   // for scoped_refptr
+#include "include/cef_browser.h"            // for CefBrowser, CefBrowserHost
+#include "include/cef_task.h"               // for CefCurrentlyOn
+#include "inexor/util/InexorException.hpp"  // for IEXCEPTION
+
 /// Exception that should be thrown if GL related functionality failed.
 IEXCEPTION(GLException, "OpenGL related functionality failed");
 
-#include "inexor/io/Logging.hpp"           // for Log, Logger, log_manager
+#include "inexor/io/Logging.hpp"            // for Log, Logger, log_manager
 #include "inexor/ui/InexorRenderHandler.hpp"
 
 

@@ -4,20 +4,27 @@
 #include <memory>                                      // for __shared_ptr
 
 #include "inexor/client/gamemode/gamemode_client.hpp"  // for cmode, clientmode
-#include "inexor/engine/particles.hpp"                 // for particle_flare
-#include "inexor/engine/renderparticles.hpp"
+#include "inexor/client/network.hpp"                   // for multiplayer
+#include "inexor/engine/particles.hpp"                 // for ::PART_LIGHTNING
+#include "inexor/engine/rendergl.hpp"                  // for camera1
+#include "inexor/engine/renderparticles.hpp"           // for particle_flare
+#include "inexor/engine/world.hpp"                     // for findents, getw...
 #include "inexor/fpsgame/ai.hpp"                       // for aiinfo, interest
+#include "inexor/fpsgame/client.hpp"                   // for addmsg
 #include "inexor/fpsgame/entities.hpp"                 // for ents, checkitems
+#include "inexor/fpsgame/fps.hpp"                      // for players, color...
 #include "inexor/fpsgame/fpsent.hpp"                   // for fpsent
 #include "inexor/fpsgame/fpsstate.hpp"                 // for ::AI_BOT, ::AI...
-#include "inexor/fpsgame/game.hpp"                     // for players, color...
 #include "inexor/fpsgame/guns.hpp"                     // for guninfo, ::GUN...
-#include "inexor/fpsgame/weapon.hpp"                     // for guninfo, ::GUN...
+#include "inexor/fpsgame/render.hpp"                   // for chooserandompl...
 #include "inexor/fpsgame/teaminfo.hpp"                 // for MAXNAMELEN
+#include "inexor/fpsgame/weapon.hpp"                   // for avoidweapons
 #include "inexor/gamemode/gamemode.hpp"                // for m_bomb, isteam
 #include "inexor/io/Logging.hpp"                       // for Log, Logger
+#include "inexor/model/ragdoll.hpp"                    // for cleanragdoll
 #include "inexor/network/SharedVar.hpp"                // for SharedVar
 #include "inexor/network/legacy/game_types.hpp"        // for ::N_ADDBOT
+#include "inexor/physics/physics.hpp"                  // for moveplayer
 #include "inexor/shared/command.hpp"                   // for ICOMMAND, VAR
 #include "inexor/shared/cube_formatting.hpp"           // for defformatstring
 #include "inexor/shared/cube_loops.hpp"                // for i, loopv, loopi
@@ -26,8 +33,6 @@
 #include "inexor/shared/cube_vector.hpp"               // for vector
 #include "inexor/shared/ents.hpp"                      // for extentity, ::C...
 #include "inexor/shared/geom.hpp"                      // for vec, vec::(ano...
-#include "inexor/shared/iengine.hpp"                   // for moveplayer
-#include "inexor/shared/igame.hpp"                     // for suicide
 #include "inexor/shared/tools.hpp"                     // for rnd, clamp, min
 #include "inexor/util/legacy_time.hpp"                 // for lastmillis
 

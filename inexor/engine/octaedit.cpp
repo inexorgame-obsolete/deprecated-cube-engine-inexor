@@ -7,23 +7,30 @@
 #include <memory>                                     // for __shared_ptr
 
 #include "SDL_opengl.h"                               // for glBlendFunc
+#include "inexor/client/network.hpp"                  // for multiplayer
 #include "inexor/engine/blend.hpp"                    // for stoppaintblendmap
 #include "inexor/engine/blob.hpp"                     // for resetblobs
-#include "inexor/engine/engine.hpp"                   // for player, discard...
+#include "inexor/engine/frame.hpp"                    // for inbetweenframes
 #include "inexor/engine/glemu.hpp"                    // for attrib, attribf
 #include "inexor/engine/glexts.hpp"                   // for glBufferData_
 #include "inexor/engine/lightmap.hpp"                 // for brightencube
-#include "inexor/engine/material.hpp"                 // for findmaterial
-#include "inexor/engine/octree.hpp"                     // for selinfo, cube
-#include "inexor/engine/octa.hpp"                     // for selinfo, cube
+#include "inexor/engine/material.hpp"                 // for ::MATF_VOLUME
+#include "inexor/engine/octa.hpp"                     // for discardchildren
 #include "inexor/engine/octaedit.hpp"
+#include "inexor/engine/octarender.hpp"               // for allchanged, des...
+#include "inexor/engine/octree.hpp"                   // for selinfo, cube
+#include "inexor/engine/rendergl.hpp"                 // for camdir, disable...
+#include "inexor/engine/renderva.hpp"                 // for isvisiblesphere
 #include "inexor/engine/shader.hpp"                   // for SlotShaderParam
-#include "inexor/engine/world.hpp"                    // for ::DEFAULT_SKY
-#include "inexor/engine/frame.hpp"
+#include "inexor/engine/world.hpp"                    // for worldsize, entc...
+#include "inexor/fpsgame/client.hpp"                  // for edittrigger
+#include "inexor/fpsgame/fps.hpp"                     // for resetgamestate
+#include "inexor/fpsgame/player.hpp"                  // for player
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/io/input/InputRouter.hpp"            // for InputRouter
 #include "inexor/io/legacy/stream.hpp"                // for streambuf, stream
 #include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/physics/physics.hpp"                 // for entinmap, ::RAY...
 #include "inexor/shared/command.hpp"                  // for COMMAND, intret
 #include "inexor/shared/cube_endian.hpp"              // for lilswap
 #include "inexor/shared/cube_formatting.hpp"          // for defformatstring
@@ -33,13 +40,11 @@
 #include "inexor/shared/cube_vector.hpp"              // for vector
 #include "inexor/shared/ents.hpp"                     // for dynent, entity
 #include "inexor/shared/geom.hpp"                     // for ivec, vec, ivec...
-#include "inexor/shared/iengine.hpp"                  // for multiplayer
-#include "inexor/shared/igame.hpp"                    // for edittrigger
 #include "inexor/shared/tools.hpp"                    // for min, max, clamp
 #include "inexor/texture/slot.hpp"                    // for VSlot, Slot
 #include "inexor/texture/texture.hpp"                 // for Texture, notexture
 #include "inexor/ui/legacy/3dgui.hpp"                 // for g3d_gui, g3d_ad...
-#include "inexor/ui/legacy/menus.hpp"                 // for mainmenu
+#include "inexor/ui/legacy/menus.hpp"                 // for menuinfrontofpl...
 #include "inexor/util/legacy_time.hpp"                // for totalmillis
 #include "zconf.h"                                    // for Bytef, uLongf
 #include "zlib.h"                                     // for compressBound

@@ -10,9 +10,16 @@
 #include <algorithm>                                  // for min, max
 #include <memory>                                     // for __shared_ptr
 
-#include "inexor/engine/engine.hpp"                   // for player, worldsize
-#include "inexor/engine/octree.hpp"                     // for clipplanes, cube
-#include "inexor/engine/world.hpp"                    // for ::DEFAULT_SKY
+#include "inexor/engine/material.hpp"                 // for ::MATF_VOLUME
+#include "inexor/engine/octa.hpp"                     // for insideworld
+#include "inexor/engine/octree.hpp"                   // for clipplanes, cube
+#include "inexor/engine/rendergl.hpp"                 // for camera1
+#include "inexor/engine/world.hpp"                    // for worldsize, worl...
+#include "inexor/fpsgame/client.hpp"                  // for gamespeed
+#include "inexor/fpsgame/entities.hpp"                // for getents, drophe...
+#include "inexor/fpsgame/fps.hpp"                     // for physicstrigger
+#include "inexor/fpsgame/player.hpp"                  // for player
+#include "inexor/fpsgame/weapon.hpp"                  // for bounced, weapon...
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/model/model.hpp"                     // for model
 #include "inexor/model/rendermodel.hpp"               // for loadmapmodel
@@ -20,15 +27,12 @@
 #include "inexor/physics/bih.hpp"                     // for mmintersect
 #include "inexor/physics/mpr.hpp"                     // for EntOBB, EntCapsule
 #include "inexor/physics/physics.hpp"
-#include "inexor/engine/octa.hpp"
 #include "inexor/shared/command.hpp"                  // for ICOMMAND, FVAR
 #include "inexor/shared/cube_loops.hpp"               // for i, loopi, loopv
 #include "inexor/shared/cube_types.hpp"               // for uint, RAD, ushort
 #include "inexor/shared/cube_vector.hpp"              // for vector
 #include "inexor/shared/ents.hpp"                     // for physent, dynent
 #include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
-#include "inexor/shared/iengine.hpp"                  // for insideworld
-#include "inexor/shared/igame.hpp"                    // for getents, physic...
 #include "inexor/shared/tools.hpp"                    // for min, max, rnd
 #include "inexor/util/legacy_time.hpp"                // for scaletime, last...
 

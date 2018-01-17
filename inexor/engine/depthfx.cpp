@@ -1,10 +1,18 @@
+#include <SDL_opengl.h>                               // for GLenum, glBindT...
+#include <algorithm>                                  // for max, min
+
 #include "inexor/engine/depthfx.hpp"
-#include "inexor/engine/explosion.hpp"
-#include "inexor/shared/command.hpp"
-#include "inexor/shared/geom.hpp"
-#include <SDL_opengl.h>
-#include "inexor/engine/engine.hpp"
-#include "inexor/engine/rendertarget.hpp"             // for rendertarget
+#include "inexor/engine/explosion.hpp"                // for fireballrenderer
+#include "inexor/engine/glemu.hpp"                    // for colorf
+#include "inexor/engine/glexts.hpp"                   // for glActiveTexture_
+#include "inexor/engine/particles.hpp"                // for parts, partrend...
+#include "inexor/engine/rendergl.hpp"                 // for calcspherescissor
+#include "inexor/engine/shader.hpp"                   // for LOCALPARAMF
+#include "inexor/engine/water.hpp"                    // for refracting, ref...
+#include "inexor/shared/command.hpp"                  // for VARP, VAR, VARFP
+#include "inexor/shared/cube_loops.hpp"               // for i, loopi, k, loopk
+#include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
+#include "inexor/shared/tools.hpp"                    // for max, min
 
 #define MAXDFXRANGES 4
 

@@ -22,6 +22,7 @@
 #include "inexor/network/legacy/game_types.hpp"           // for ::N_SERVMSG
 #include "inexor/server/client_management.hpp"            // for clientinfo
 #include "inexor/server/demos.hpp"                        // for enddemorecord
+#include "inexor/server/extinfo.hpp"                      // for extserverin...
 #include "inexor/server/game_management.hpp"              // for pausegame
 #include "inexor/server/gamemode/bomb_server.hpp"         // for bombservermode
 #include "inexor/server/gamemode/capture_server.hpp"      // for captureserv...
@@ -29,9 +30,8 @@
 #include "inexor/server/gamemode/ctf_server.hpp"          // for ctfservermode
 #include "inexor/server/gamemode/gamemode_server.hpp"     // for servmode
 #include "inexor/server/gamemode/hideandseek_server.hpp"  // for hideandseek...
+#include "inexor/server/network.hpp"                      // for sendserveri...
 #include "inexor/server/network_send.hpp"                 // for sendf, send...
-#include "inexor/server/network.hpp"
-#include "inexor/server/extinfo.hpp"
 #include "inexor/shared/command.hpp"                      // for explodelist
 #include "inexor/shared/cube_endian.hpp"                  // for lilswap
 #include "inexor/shared/cube_formatting.hpp"              // for formatstring
@@ -42,7 +42,6 @@
 #include "inexor/shared/cube_vector.hpp"                  // for vector
 #include "inexor/shared/ents.hpp"                         // for server_entity
 #include "inexor/shared/geom.hpp"                         // for vec, vec::(...
-#include "inexor/shared/iengine.hpp"                      // for sendserveri...
 #include "inexor/shared/tools.hpp"                        // for max, rnd
 #include "inexor/util/legacy_time.hpp"                    // for gamemillis
 

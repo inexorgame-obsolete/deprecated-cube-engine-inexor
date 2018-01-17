@@ -8,14 +8,23 @@
 
 #include "SDL_opengl.h"                               // for GL_LINE_LOOP
 #include "inexor/engine/blob.hpp"                     // for flushblobs, ren...
-#include "inexor/engine/engine.hpp"                   // for refracting, ref...
+#include "inexor/engine/dynlight.hpp"                 // for dynlightreaching
+#include "inexor/engine/glare.hpp"                    // for glaring
 #include "inexor/engine/glemu.hpp"                    // for attribf, begin
-#include "inexor/engine/lightmap.hpp"                 // for lightmapping
-#include "inexor/engine/octree.hpp"                     // for occludequery
+#include "inexor/engine/lightmap.hpp"                 // for lightreaching
 #include "inexor/engine/octaedit.hpp"                 // for editmode
+#include "inexor/engine/octree.hpp"                   // for occludequery
 #include "inexor/engine/pvs.hpp"                      // for pvsoccluded
+#include "inexor/engine/renderbackground.hpp"         // for loadprogress
+#include "inexor/engine/rendergl.hpp"                 // for camera1, xtraverts
+#include "inexor/engine/renderva.hpp"                 // for newquery, endquery
 #include "inexor/engine/shader.hpp"                   // for lookupshaderbyname
 #include "inexor/engine/shadowmap.hpp"                // for shadowmapping
+#include "inexor/engine/water.hpp"                    // for refracting, ref...
+#include "inexor/fpsgame/client.hpp"                  // for allowedittoggle
+#include "inexor/fpsgame/entities.hpp"                // for getents
+#include "inexor/fpsgame/fps.hpp"                     // for allowmove, ligh...
+#include "inexor/fpsgame/player.hpp"                  // for player
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/io/filesystem/mediadirs.hpp"         // for modeldir
 #include "inexor/io/legacy/stream.hpp"                // for makerelpath
@@ -31,8 +40,6 @@
 #include "inexor/shared/cube_unicode.hpp"             // for iscubespace
 #include "inexor/shared/ents.hpp"                     // for dynent, entityl...
 #include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
-#include "inexor/shared/iengine.hpp"                  // for dynlightreaching
-#include "inexor/shared/igame.hpp"                    // for allowmove, allo...
 #include "inexor/shared/tools.hpp"                    // for max, min, clamp
 #include "inexor/texture/cubemap.hpp"                 // for cubemapload
 #include "inexor/texture/texture.hpp"                 // for textureload
@@ -60,7 +67,6 @@ VAR(testtags, 0, 0, 1);
 #include "inexor/model/animmodel.hpp"                 // for animmodel::part
 #include "inexor/model/ragdoll.hpp"                   // for ragdollskel
 #include "inexor/model/skelmodel.hpp"                 // for skelmodel, skel...
-#include "inexor/model/vertmodel.hpp"                 // for vertmodel
 
 static model *(__cdecl *modeltypes[NUMMODELTYPES])(const char *);
 

@@ -7,7 +7,7 @@
 #include <memory>                                     // for __shared_ptr
 
 #include "SDL_opengl.h"                               // for GL_FALSE, GLenum
-#include "inexor/engine/engine.hpp"                   // for hasS3TC
+#include "inexor/engine/rendergl.hpp"                 // for hasS3TC
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/io/legacy/stream.hpp"                // for stream, openfile
 #include "inexor/network/SharedVar.hpp"               // for SharedVar

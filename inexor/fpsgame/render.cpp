@@ -4,19 +4,26 @@
 #include <algorithm>                                   // for max, min
 
 #include "inexor/client/gamemode/gamemode_client.hpp"  // for cmode, clientmode
+#include "inexor/client/network.hpp"                   // for multiplayer
 #include "inexor/engine/octaedit.hpp"                  // for editmode
-#include "inexor/engine/particles.hpp"                 // for particle_text
-#include "inexor/engine/renderparticles.hpp"
+#include "inexor/engine/particles.hpp"                 // for ::PART_TEXT
+#include "inexor/engine/rendergl.hpp"                  // for calcavatarpos
+#include "inexor/engine/renderparticles.hpp"           // for particle_text
 #include "inexor/fpsgame/ai.hpp"                       // for render
 #include "inexor/fpsgame/entities.hpp"                 // for preloadentities
+#include "inexor/fpsgame/fps.hpp"                      // for player1, hudpl...
 #include "inexor/fpsgame/fpsent.hpp"                   // for fpsent
-#include "inexor/fpsgame/game.hpp"                     // for playermodelinfo
 #include "inexor/fpsgame/guns.hpp"                     // for guninfo, ::GUN...
+#include "inexor/fpsgame/movable.hpp"                  // for rendermovables
+#include "inexor/fpsgame/player.hpp"                   // for isthirdperson
 #include "inexor/fpsgame/projectile.hpp"               // for preloadbouncers
+#include "inexor/fpsgame/render.hpp"                   // for playermodelinfo
 #include "inexor/fpsgame/scoreboard.hpp"               // for getbestplayers
 #include "inexor/gamemode/gamemode.hpp"                // for m_teammode
 #include "inexor/model/model.hpp"                      // for preloadmodel
+#include "inexor/model/ragdoll.hpp"                    // for cleanragdoll
 #include "inexor/network/SharedVar.hpp"                // for SharedVar, min
+#include "inexor/physics/physics.hpp"                  // for vecfromyawpitch
 #include "inexor/shared/command.hpp"                   // for VARP, VAR, FVAR
 #include "inexor/shared/cube_formatting.hpp"           // for concatstring
 #include "inexor/shared/cube_loops.hpp"                // for i, loopv, loopi
@@ -25,7 +32,6 @@
 #include "inexor/shared/cube_vector.hpp"               // for vector
 #include "inexor/shared/ents.hpp"                      // for ANIM_LOOP, ::C...
 #include "inexor/shared/geom.hpp"                      // for vec, vec::(ano...
-#include "inexor/shared/iengine.hpp"                   // for cleanragdoll
 #include "inexor/shared/tools.hpp"                     // for max, clamp, min
 #include "inexor/sound/sound.hpp"                      // for preloadsound
 #include "inexor/util/legacy_time.hpp"                 // for lastmillis

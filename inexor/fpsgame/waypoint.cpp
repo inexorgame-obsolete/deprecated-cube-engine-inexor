@@ -6,19 +6,21 @@
 #include <algorithm>                                  // for max, min, swap
 #include <memory>                                     // for __shared_ptr
 
-#include "inexor/engine/octree.hpp"                     // for selinfo
-#include "inexor/engine/octa.hpp"                     // for selinfo
-#include "inexor/engine/material.hpp"                     // for selinfo
+#include "inexor/engine/material.hpp"                 // for ::MATF_VOLUME
+#include "inexor/engine/octa.hpp"                     // for lookupmaterial
 #include "inexor/engine/octaedit.hpp"                 // for noedit
+#include "inexor/engine/octree.hpp"                   // for selinfo
+#include "inexor/engine/world.hpp"                    // for getworldsize
 #include "inexor/engine/worldio.hpp"                  // for getmapfilename
 #include "inexor/fpsgame/ai.hpp"                      // for waypoint, isway...
 #include "inexor/fpsgame/entities.hpp"                // for ents
+#include "inexor/fpsgame/fps.hpp"                     // for players, player1
 #include "inexor/fpsgame/fpsent.hpp"                  // for fpsent
 #include "inexor/fpsgame/fpsstate.hpp"                // for ::AI_NONE
-#include "inexor/fpsgame/game.hpp"                    // for players, player1
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/io/legacy/stream.hpp"                // for stream, opengzfile
 #include "inexor/network/SharedVar.hpp"               // for SharedVar
+#include "inexor/physics/physics.hpp"                 // for collide, raycube
 #include "inexor/shared/command.hpp"                  // for ICOMMAND, _icmd...
 #include "inexor/shared/cube_formatting.hpp"          // for nformatstring
 #include "inexor/shared/cube_loops.hpp"               // for i, loopi, j, loopv
@@ -27,8 +29,6 @@
 #include "inexor/shared/cube_vector.hpp"              // for vector
 #include "inexor/shared/ents.hpp"                     // for extentity, ::BASE
 #include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
-#include "inexor/shared/iengine.hpp"                  // for lookupmaterial
-#include "inexor/shared/igame.hpp"                    // for getclientmap
 #include "inexor/shared/tools.hpp"                    // for max, min, rnd
 
 extern selinfo sel;

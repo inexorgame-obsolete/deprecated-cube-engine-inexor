@@ -2,8 +2,12 @@
 
 #pragma once
 
-#include "inexor/engine/octree.hpp"
-#include "inexor/engine/material.hpp"
+#include "inexor/engine/material.hpp"    // for ::MAT_AIR, ::MATF_VOLUME
+#include "inexor/engine/octree.hpp"      // for cubeext (ptr only), faceboun...
+#include "inexor/engine/world.hpp"       // for worldsize
+#include "inexor/network/SharedVar.hpp"  // for SharedVar
+#include "inexor/shared/cube_types.hpp"  // for uint, ushort, uchar
+#include "inexor/shared/geom.hpp"        // for ivec, vec, vec::(anonymous u...
 
 extern cube *newcubes(uint face = F_EMPTY, int mat = MAT_AIR);
 extern cubeext *growcubeext(cubeext *ext, int maxverts);

@@ -11,6 +11,8 @@
 #include "inexor/shared/tools.hpp"        // for min
 
 struct cube;
+struct entity;
+struct extentity;
 struct surfaceinfo;
 struct vertinfo;
 

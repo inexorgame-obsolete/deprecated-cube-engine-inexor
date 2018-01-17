@@ -1,12 +1,20 @@
 #pragma once
 
-#include "inexor/fpsgame/fpsent.hpp"
-#include "inexor/shared/cube_vector.hpp"
-#include "inexor/shared/command.hpp"
-#include "inexor/network/legacy/buffer_types.hpp"
-#include "inexor/io/legacy/stream.hpp"
-#include "inexor/texture/slot.hpp"
 #include "inexor/engine/octree.hpp"
+#include "inexor/fpsgame/fpsent.hpp"
+#include "inexor/io/legacy/stream.hpp"
+#include "inexor/network/legacy/buffer_types.hpp"
+#include "inexor/shared/command.hpp"
+#include "inexor/shared/cube_types.hpp"   // for string, uchar
+#include "inexor/shared/cube_vector.hpp"  // for vector
+#include "inexor/texture/slot.hpp"
+
+class VSlot;
+struct fpsent;
+struct ident;
+struct packetbuf;
+struct selinfo;
+struct stream;
 
 namespace game {
 

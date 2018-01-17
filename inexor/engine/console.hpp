@@ -1,6 +1,8 @@
 #pragma once
 #include "inexor/io/legacy/stream.hpp"
 
+struct stream;
+
 extern void processkey(int code, bool isdown);
 extern void processtextinput(const char *str, int len);
 extern int rendercommand(int x, int y, int w);

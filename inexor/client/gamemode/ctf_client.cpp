@@ -5,13 +5,19 @@
 
 #include "SDL_opengl.h"                            // for glBlendFunc, glDis...
 #include "inexor/client/gamemode/ctf_client.hpp"
+#include "inexor/engine/dynlight.hpp"              // for adddynlight
 #include "inexor/engine/glemu.hpp"                 // for colorf
-#include "inexor/engine/particles.hpp"             // for particle_fireball
-#include "inexor/engine/renderparticles.hpp"
+#include "inexor/engine/material.hpp"              // for ::MATF_CLIP, ::MAT...
+#include "inexor/engine/octa.hpp"                  // for lookupmaterial
+#include "inexor/engine/particles.hpp"             // for ::PART_EXPLOSION
+#include "inexor/engine/rendergl.hpp"              // for flushhudmatrix
+#include "inexor/engine/renderparticles.hpp"       // for particle_fireball
+#include "inexor/engine/rendertext.hpp"            // for draw_textf
 #include "inexor/fpsgame/ai.hpp"                   // for interest, makeroute
+#include "inexor/fpsgame/client.hpp"               // for addmsg
 #include "inexor/fpsgame/entities.hpp"             // for ents
+#include "inexor/fpsgame/fps.hpp"                  // for player1, teamcolor...
 #include "inexor/fpsgame/fpsent.hpp"               // for fpsent
-#include "inexor/fpsgame/game.hpp"                 // for player1, teamcolor...
 #include "inexor/fpsgame/guns.hpp"                 // for ::GUN_FIST, ::GUN_...
 #include "inexor/fpsgame/teaminfo.hpp"             // for ::TEAM_NONE, ::TEA...
 #include "inexor/gamemode/gamemode.hpp"            // for m_hold, m_protect
@@ -20,18 +26,16 @@
 #include "inexor/network/SharedVar.hpp"            // for SharedVar
 #include "inexor/network/legacy/cube_network.hpp"  // for getint, putint, DMF
 #include "inexor/network/legacy/game_types.hpp"    // for ::N_INITFLAGS, ::N...
+#include "inexor/physics/physics.hpp"              // for droptofloor, entinmap
 #include "inexor/shared/command.hpp"               // for _icmd_dropflag<>::run
 #include "inexor/shared/cube_formatting.hpp"       // for defformatstring
 #include "inexor/shared/cube_loops.hpp"            // for i, loopv, k, loopk, j
 #include "inexor/shared/cube_types.hpp"            // for RAD
 #include "inexor/shared/ents.hpp"                  // for extentity, ::CS_ALIVE
-#include "inexor/shared/iengine.hpp"               // for draw_textf, dropto...
-#include "inexor/shared/igame.hpp"                 // for iterdynents, numdy...
 #include "inexor/shared/tools.hpp"                 // for rnd, max, min, swap
 #include "inexor/sound/sound.hpp"                  // for playsound, ::S_FLA...
 #include "inexor/ui/legacy/3dgui.hpp"              // for ::HICON_SIZE, ::HI...
 #include "inexor/util/legacy_time.hpp"             // for lastmillis
-#include "inexor/engine/octa.hpp"
 
 namespace game {
 

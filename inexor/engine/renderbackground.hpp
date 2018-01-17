@@ -1,6 +1,9 @@
 #pragma once
 
+#include "SDL_opengl.h"  // for GLuint
 #include "inexor/texture/texture.hpp"
+
+struct Texture;
 
 extern float loadprogress;
 

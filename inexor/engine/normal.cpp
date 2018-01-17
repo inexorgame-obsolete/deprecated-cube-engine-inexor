@@ -2,10 +2,12 @@
 #include <stdlib.h>                                   // for abs
 #include <algorithm>                                  // for min
 
-#include "inexor/engine/engine.hpp"                   // for flataxisface
 #include "inexor/engine/lightmap.hpp"                 // for lerpbounds, ler...
-#include "inexor/engine/octree.hpp"                     // for cube, tjoint
-#include "inexor/engine/world.hpp"                    // for ::DEFAULT_SKY
+#include "inexor/engine/octa.hpp"                     // for flataxisface
+#include "inexor/engine/octarender.hpp"               // for tjoints, findtj...
+#include "inexor/engine/octree.hpp"                   // for cube, tjoint
+#include "inexor/engine/renderbackground.hpp"         // for renderprogress
+#include "inexor/engine/world.hpp"                    // for worldsize, ::DE...
 #include "inexor/network/SharedVar.hpp"               // for SharedVar
 #include "inexor/shared/command.hpp"                  // for VARR
 #include "inexor/shared/cube_hash.hpp"                // for hashset

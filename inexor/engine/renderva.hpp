@@ -1,7 +1,10 @@
 #pragma once
-#include "inexor/engine/octree.hpp"
-#include "inexor/shared/geom.hpp"
-#include "inexor/network/SharedVar.hpp"
+#include <SDL_opengl.h>                  // for GL_SAMPLES_PASSED
+
+#include "inexor/engine/glexts.hpp"      // for glBeginQuery_, glEndQuery_
+#include "inexor/engine/octree.hpp"      // for occludequery, vtxarray (ptr ...
+#include "inexor/network/SharedVar.hpp"  // for SharedVar
+#include "inexor/shared/geom.hpp"        // for ivec (ptr only), vec
 
 extern vtxarray *visibleva, *reflectedva;
 

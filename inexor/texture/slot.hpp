@@ -13,7 +13,7 @@
 #include "inexor/network/legacy/buffer_types.hpp"  // for ucharbuf
 #include "inexor/shared/cube_loops.hpp"            // for i, loopv
 #include "inexor/shared/cube_tools.hpp"            // for DELETEA, DELETEP
-#include "inexor/shared/cube_types.hpp"            // for string, uchar, uint
+#include "inexor/shared/cube_types.hpp"            // for uchar, string, uint
 #include "inexor/shared/cube_vector.hpp"           // for vector
 #include "inexor/shared/geom.hpp"                  // for vec, ivec2, vec2
 #include "inexor/texture/image.hpp"

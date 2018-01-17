@@ -1,5 +1,8 @@
+#include <stdlib.h>                      // for exit, EXIT_FAILURE
+#include <memory>                        // for __shared_ptr
+
 #include "inexor/io/Error.hpp"
-#include "inexor/io/Logging.hpp"
+#include "inexor/io/Logging.hpp"         // for Log, Logger, log_manager
 
 /// Fatal crash: log/display crash message and clean up SDL.
 void fatal(const char *s, ...)

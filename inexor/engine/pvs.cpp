@@ -9,9 +9,13 @@
 #include "SDL_stdinc.h"                               // for Uint32
 #include "SDL_thread.h"                               // for SDL_CreateThread
 #include "SDL_timer.h"                                // for SDL_GetTicks
-#include "inexor/engine/engine.hpp"                   // for worldsize, rend...
-#include "inexor/engine/octree.hpp"                     // for cube, materials...
+#include "inexor/engine/material.hpp"                 // for ::MATF_CLIP
+#include "inexor/engine/octarender.hpp"               // for valist
+#include "inexor/engine/octree.hpp"                   // for cube, materials...
 #include "inexor/engine/pvs.hpp"
+#include "inexor/engine/renderbackground.hpp"         // for renderprogress
+#include "inexor/engine/rendergl.hpp"                 // for camera1
+#include "inexor/engine/world.hpp"                    // for worldsize, worl...
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/io/input/InputRouter.hpp"            // for InputRouter
 #include "inexor/io/legacy/stream.hpp"                // for stream
@@ -26,7 +30,6 @@
 #include "inexor/shared/cube_types.hpp"               // for uchar, uint
 #include "inexor/shared/cube_vector.hpp"              // for vector
 #include "inexor/shared/ents.hpp"                     // for physent
-#include "inexor/shared/iengine.hpp"                  // for ::MATF_CLIP
 #include "inexor/shared/tools.hpp"                    // for max, min, swap
 
 using namespace inexor::io;

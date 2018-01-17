@@ -1,8 +1,13 @@
 #pragma once
 
-#include "inexor/shared/ents.hpp"
-#include "inexor/shared/geom.hpp"
+#include "SDL_opengl.h"                  // for GLenum
 #include "inexor/io/legacy/stream.hpp"
+#include "inexor/network/SharedVar.hpp"  // for SharedVar
+#include "inexor/shared/ents.hpp"
+#include "inexor/shared/geom.hpp"        // for vec, matrix4, bvec
+
+struct physent;
+struct stream;
 
 /// special ent that acts as camera, same object as player1 in FPS mode
 extern physent *camera1;

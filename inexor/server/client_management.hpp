@@ -10,7 +10,7 @@
 #include "inexor/network/SharedVar.hpp"              // for SharedVar
 #include "inexor/network/legacy/administration.hpp"  // for ::PRIV_NONE, ::M...
 #include "inexor/shared/cube_loops.hpp"              // for i, loopi
-#include "inexor/shared/cube_types.hpp"              // for string, uchar
+#include "inexor/shared/cube_types.hpp"              // for string, uchar, uint
 #include "inexor/shared/cube_vector.hpp"             // for vector
 #include "inexor/shared/ents.hpp"                    // for ::CS_ALIVE, ::CS...
 #include "inexor/shared/geom.hpp"                    // for vec

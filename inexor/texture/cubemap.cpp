@@ -7,11 +7,14 @@
 #include <memory>                                     // for __shared_ptr
 
 #include "SDL_timer.h"                                // for SDL_GetTicks
-#include "inexor/engine/engine.hpp"                   // for renderprogress
+#include "inexor/client/network.hpp"                  // for clientkeepalive
+#include "inexor/engine/frame.hpp"                    // for renderedframe
 #include "inexor/engine/glemu.hpp"                    // for attribf, begin
 #include "inexor/engine/material.hpp"                 // for setupmaterials
-#include "inexor/engine/octree.hpp"                     // for ::EMID_RESERVED
+#include "inexor/engine/octree.hpp"                   // for ::EMID_RESERVED
+#include "inexor/engine/renderbackground.hpp"         // for renderprogress
 #include "inexor/engine/shader.hpp"                   // for SETSHADER, Shader
+#include "inexor/fpsgame/entities.hpp"                // for getents
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/io/filesystem/mediadirs.hpp"         // for getmediapath
 #include "inexor/network/SharedVar.hpp"               // for SharedVar, min
@@ -22,7 +25,6 @@
 #include "inexor/shared/cube_vector.hpp"              // for vector
 #include "inexor/shared/ents.hpp"                     // for extentity, ::ET...
 #include "inexor/shared/geom.hpp"                     // for vec, C, R, ivec...
-#include "inexor/shared/igame.hpp"                    // for getents
 #include "inexor/shared/tools.hpp"                    // for clamp, min, max
 #include "inexor/texture/cubemap.hpp"
 #include "inexor/texture/format.hpp"                  // for alphaformat

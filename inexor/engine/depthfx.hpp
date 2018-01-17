@@ -1,10 +1,13 @@
 #pragma once
 
+#include <SDL_opengl.h>                    // for GLenum
+
+#include "inexor/engine/rendertarget.hpp"  // for rendertarget
+#include "inexor/network/SharedVar.hpp"    // for SharedVar
 #include "inexor/shared/command.hpp"
 #include "inexor/shared/geom.hpp"
-#include "inexor/engine/rendertarget.hpp"             // for rendertarget
-#include "inexor/network/SharedVar.hpp"
-#include <SDL_opengl.h>
+
+struct vec;
 
 extern SharedVar<int> depthfx, depthfxsize, blurdepthfx, depthfxpartblend, depthfxblend, depthfxscale, depthfxbias, depthfxscissor;
 extern int numdepthfxranges;

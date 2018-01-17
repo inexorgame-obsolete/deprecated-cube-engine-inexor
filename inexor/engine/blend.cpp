@@ -6,11 +6,13 @@
 #include <memory>                                     // for __shared_ptr
 
 #include "SDL_opengl.h"                               // for glTexParameteri
+#include "inexor/client/network.hpp"                  // for multiplayer
 #include "inexor/engine/blend.hpp"
-#include "inexor/engine/engine.hpp"                   // for worldsize, worl...
 #include "inexor/engine/lightmap.hpp"                 // for previewblends
-#include "inexor/engine/octree.hpp"                     // for selinfo
 #include "inexor/engine/octaedit.hpp"                 // for noedit
+#include "inexor/engine/octree.hpp"                   // for selinfo
+#include "inexor/engine/rendergl.hpp"                 // for worldpos, hasTRG
+#include "inexor/engine/world.hpp"                    // for worldsize, worl...
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/io/legacy/stream.hpp"                // for stream
 #include "inexor/shared/command.hpp"                  // for COMMAND, ICOMMAND
@@ -18,7 +20,6 @@
 #include "inexor/shared/cube_tools.hpp"               // for newstring
 #include "inexor/shared/cube_vector.hpp"              // for vector
 #include "inexor/shared/geom.hpp"                     // for ivec, ivec::(an...
-#include "inexor/shared/iengine.hpp"                  // for multiplayer
 #include "inexor/shared/tools.hpp"                    // for clamp, max, min
 #include "inexor/texture/image.hpp"                   // for ImageData
 #include "inexor/texture/texture.hpp"                 // for createtexture

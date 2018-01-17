@@ -9,11 +9,16 @@
 #include <algorithm>                                  // for min, swap, max
 #include <memory>                                     // for __shared_ptr
 
-#include "inexor/engine/engine.hpp"                   // for allchanged, com...
-#include "inexor/engine/material.hpp"                 // for findmaterial
-#include "inexor/engine/octree.hpp"                     // for cube, worldroot
+#include "inexor/client/network.hpp"                  // for multiplayer
+#include "inexor/engine/material.hpp"                 // for ::MATF_INDEX
+#include "inexor/engine/octa.hpp"                     // for visibletris
 #include "inexor/engine/octaedit.hpp"                 // for noedit
+#include "inexor/engine/octarender.hpp"               // for allchanged
+#include "inexor/engine/octree.hpp"                   // for cube, worldroot
+#include "inexor/engine/renderbackground.hpp"         // for renderprogress
+#include "inexor/engine/renderva.hpp"                 // for resetinvalidtex...
 #include "inexor/engine/world.hpp"                    // for ::DEFAULT_GEOM
+#include "inexor/fpsgame/client.hpp"                  // for allowedittoggle
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/io/filesystem/mediadirs.hpp"         // for getmediapath
 #include "inexor/io/legacy/stream.hpp"                // for makerelpath, path
@@ -21,8 +26,6 @@
 #include "inexor/network/legacy/cube_network.hpp"     // for putfloat, getfloat
 #include "inexor/shared/command.hpp"                  // for COMMAND, getcur...
 #include "inexor/shared/cube_formatting.hpp"          // for defformatstring
-#include "inexor/shared/iengine.hpp"                  // for multiplayer
-#include "inexor/shared/igame.hpp"                    // for allowedittoggle
 #include "inexor/shared/tools.hpp"                    // for clamp, min, swap
 #include "inexor/texture/cubemap.hpp"                 // for cubemapload
 #include "inexor/texture/image.hpp"                   // for ImageData, scal...

@@ -1,6 +1,4 @@
 
-#include <math.h>                        // for fabs, sqrt, sqrtf
-
 #include "inexor/shared/cube_loops.hpp"  // for loop
 #include "inexor/shared/geom.hpp"        // for vec2, vec, matrix4, vec4
 

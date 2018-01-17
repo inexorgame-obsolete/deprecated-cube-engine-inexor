@@ -7,12 +7,12 @@
 #include "inexor/model/model.hpp"         // for model
 #include "inexor/model/rendermodel.hpp"   // for loadmapmodel
 #include "inexor/physics/bih.hpp"         // for BIH::mesh, BIH, BIH::node
+#include "inexor/physics/physics.hpp"     // for ::RAY_SHADOW, ::RAY_ALPHAPOLY
 #include "inexor/shared/cube_loops.hpp"   // for i, loopi, k, j, loopj, loopk
 #include "inexor/shared/cube_types.hpp"   // for ushort, uchar
 #include "inexor/shared/cube_vector.hpp"  // for vector
 #include "inexor/shared/ents.hpp"         // for extentity, ::EF_NOCOLLIDE
 #include "inexor/shared/geom.hpp"         // for vec, ivec, vec::(anonymous ...
-#include "inexor/shared/iengine.hpp"      // for ::RAY_SHADOW, ::RAY_ALPHAPOLY
 #include "inexor/shared/tools.hpp"        // for max, min, clamp, swap
 #include "inexor/texture/texture.hpp"     // for Texture, loadalphamask
 

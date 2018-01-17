@@ -6,27 +6,36 @@
 
 #include "SDL_opengl.h"                                // for glPopMatrix
 #include "inexor/client/gamemode/gamemode_client.hpp"  // for cmode, clientmode
+#include "inexor/client/network.hpp"                   // for gets2c, neterr
+#include "inexor/engine/dynlight.hpp"                  // for removetrackedd...
 #include "inexor/engine/glemu.hpp"                     // for attribf, begin
+#include "inexor/engine/material.hpp"                  // for ::MAT_LAVA
 #include "inexor/engine/octaedit.hpp"                  // for editmode
-#include "inexor/engine/particles.hpp"                 // for removetrackedp...
-#include "inexor/engine/renderparticles.hpp"
+#include "inexor/engine/rendergl.hpp"                  // for disablezoom
+#include "inexor/engine/renderparticles.hpp"           // for removetrackedp...
+#include "inexor/engine/rendertext.hpp"                // for text_bounds
 #include "inexor/fpsgame/ai.hpp"                       // for clearwaypoints
+#include "inexor/fpsgame/client.hpp"                   // for addmsg, c2sinfo
 #include "inexor/fpsgame/entities.hpp"                 // for checkquad, che...
+#include "inexor/fpsgame/fps.hpp"                      // for clients, clien...
 #include "inexor/fpsgame/fpsent.hpp"                   // for fpsent
 #include "inexor/fpsgame/fpsstate.hpp"                 // for ::AI_NONE
-#include "inexor/fpsgame/game.hpp"                     // for addmsg, getweapon
 #include "inexor/fpsgame/guns.hpp"                     // for ::GUN_BOMB
-#include "inexor/fpsgame/weapon.hpp"
-#include "inexor/engine/material.hpp"
+#include "inexor/fpsgame/movable.hpp"                  // for clearmovables
+#include "inexor/fpsgame/player.hpp"                   // for thirdperson
 #include "inexor/fpsgame/projectile.hpp"               // for clearbouncers
+#include "inexor/fpsgame/render.hpp"                   // for clearragdolls
 #include "inexor/fpsgame/scoreboard.hpp"               // for showscores
 #include "inexor/fpsgame/teaminfo.hpp"                 // for clearteaminfo
+#include "inexor/fpsgame/weapon.hpp"                   // for getweapon, dam...
 #include "inexor/gamemode/gamemode.hpp"                // for modename, game...
 #include "inexor/io/Logging.hpp"                       // for Logger, Log
+#include "inexor/model/ragdoll.hpp"                    // for moveragdoll
 #include "inexor/network/SharedVar.hpp"                // for SharedVar
 #include "inexor/network/legacy/administration.hpp"    // for ::PRIV_ADMIN
 #include "inexor/network/legacy/cube_network.hpp"      // for filtertext
 #include "inexor/network/legacy/game_types.hpp"        // for ::N_SOUND, ::N...
+#include "inexor/physics/physics.hpp"                  // for moveplayer
 #include "inexor/shared/command.hpp"                   // for intret, ICOMMAND
 #include "inexor/shared/cube_formatting.hpp"           // for tempformatstring
 #include "inexor/shared/cube_loops.hpp"                // for i, loopi, loopv
@@ -34,8 +43,6 @@
 #include "inexor/shared/cube_vector.hpp"               // for vector
 #include "inexor/shared/ents.hpp"                      // for ::CS_DEAD, ::C...
 #include "inexor/shared/geom.hpp"                      // for vec, matrix4
-#include "inexor/shared/iengine.hpp"                   // for moveplayer
-#include "inexor/shared/igame.hpp"                     // for ispaused
 #include "inexor/shared/tools.hpp"                     // for rnd, max
 #include "inexor/sound/sound.hpp"                      // for playsound, ::S...
 #include "inexor/ui/legacy/3dgui.hpp"                  // for ::HICON_X, ::H...

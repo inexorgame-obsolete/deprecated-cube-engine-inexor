@@ -3,22 +3,22 @@
 #include <algorithm>                                  // for max, min
 
 #include "SDL_opengl.h"                               // for glColorMask
-#include "inexor/engine/engine.hpp"                   // for camera1, render...
 #include "inexor/engine/glemu.hpp"                    // for colorf
 #include "inexor/engine/glexts.hpp"                   // for glActiveTexture_
 #include "inexor/engine/lightmap.hpp"                 // for ambientcolor
-#include "inexor/engine/octree.hpp"                     // for vtxarray
+#include "inexor/engine/octree.hpp"                   // for vtxarray
+#include "inexor/engine/rendergl.hpp"                 // for camera1, render...
 #include "inexor/engine/rendertarget.hpp"             // for rtscissor, rend...
 #include "inexor/engine/shader.hpp"                   // for GLOBALPARAM
 #include "inexor/engine/shadowmap.hpp"
+#include "inexor/fpsgame/entities.hpp"                // for getents
+#include "inexor/physics/physics.hpp"                 // for vecfromyawpitch
 #include "inexor/shared/command.hpp"                  // for VARP, VAR, VARFP
 #include "inexor/shared/cube_loops.hpp"               // for i, loopv
 #include "inexor/shared/cube_types.hpp"               // for RAD, SQRT2
 #include "inexor/shared/cube_vector.hpp"              // for vector
 #include "inexor/shared/ents.hpp"                     // for physent, extentity
 #include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
-#include "inexor/shared/iengine.hpp"                  // for vecfromyawpitch
-#include "inexor/shared/igame.hpp"                    // for getents
 #include "inexor/shared/tools.hpp"                    // for max, min
 
 extern bool hasVAO, hasFBO, hasAFBO, hasDS, hasTF, hasTRG, hasTSW, hasS3TC, hasFXT1, hasAF, hasFBB, hasUBO, hasMBR; //todo remove

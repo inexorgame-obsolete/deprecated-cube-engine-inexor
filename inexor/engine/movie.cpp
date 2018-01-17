@@ -8,8 +8,8 @@
 //   kino - ok
 
 #include <SDL_opengl.h>                               // for GL_FRAMEBUFFER
-#include <fcntl.h>                                    // for SEEK_SET, SEEK_END
 #include <math.h>                                     // for ceil
+#include <stdio.h>                                    // for SEEK_SET, SEEK_END
 #include <string.h>                                   // for memcpy, memset
 #include <algorithm>                                  // for max, swap
 #include <memory>                                     // for __shared_ptr
@@ -20,12 +20,13 @@
 #include "SDL_opengl.h"                               // for GLuint, glReadP...
 #include "SDL_stdinc.h"                               // for Uint16, Uint8
 #include "SDL_thread.h"                               // for SDL_CreateThread
-#include "inexor/engine/engine.hpp"                   // for screenquadflipped
+#include "inexor/engine/frame.hpp"                    // for getfps, inbetwe...
 #include "inexor/engine/glexts.hpp"                   // for glBindFramebuffer_
 #include "inexor/engine/movie.hpp"
-#include "inexor/engine/rendertext.hpp"               // for FONTH
+#include "inexor/engine/rendergl.hpp"                 // for screenquadflipped
+#include "inexor/engine/rendertarget.hpp"             // for screenquad
+#include "inexor/engine/rendertext.hpp"               // for FONTH, draw_textf
 #include "inexor/engine/shader.hpp"                   // for useshaderbyname
-#include "inexor/engine/frame.hpp"
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/io/legacy/stream.hpp"                // for stream, stream:...
 #include "inexor/network/SharedVar.hpp"               // for SharedVar
@@ -38,7 +39,6 @@
 #include "inexor/shared/cube_types.hpp"               // for uint, uchar
 #include "inexor/shared/cube_vector.hpp"              // for vector
 #include "inexor/shared/geom.hpp"                     // for matrix4
-#include "inexor/shared/iengine.hpp"                  // for draw_textf, get...
 #include "inexor/shared/tools.hpp"                    // for max, swap
 #include "inexor/texture/texture.hpp"                 // for texalign, creat...
 #include "inexor/ui/screen/ScreenManager.hpp"         // for ScreenManager

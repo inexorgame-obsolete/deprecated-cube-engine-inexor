@@ -1,6 +1,10 @@
 #pragma once
-#include "inexor/shared/geom.hpp"
 #include "inexor/shared/ents.hpp"
+#include "inexor/shared/geom.hpp"
+
+struct extentity;
+struct physent;
+struct vec;
 
 extern void particleinit();
 extern void clearparticles();

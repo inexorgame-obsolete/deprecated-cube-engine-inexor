@@ -1,7 +1,7 @@
 /// @file texture.cpp
 /// Main texture loading and organizing routines.
 
-#include <SDL_opengl.h>                               // for GL_DEPTH_STENCIL
+#include <SDL_opengl.h>                               // for GLenum, glTexPa...
 #include <boost/algorithm/clamp.hpp>                  // for clamp
 #include <stdlib.h>                                   // for atoi, NULL, atof
 #include <string.h>                                   // for strchr, strcspn
@@ -15,8 +15,9 @@
 
 #include "SDL_pixels.h"                               // for SDL_PixelFormat
 #include "SDL_surface.h"                              // for SDL_FreeSurface
-#include "inexor/engine/engine.hpp"                   // for loadprogress
 #include "inexor/engine/glexts.hpp"                   // for glCompressedTex...
+#include "inexor/engine/renderbackground.hpp"         // for loadprogress
+#include "inexor/engine/rendergl.hpp"                 // for hasAF
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/io/legacy/stream.hpp"                // for path
 #include "inexor/network/SharedVar.hpp"               // for SharedVar, min

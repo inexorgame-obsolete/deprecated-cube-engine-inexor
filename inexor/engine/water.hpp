@@ -2,10 +2,15 @@
 
 // Water and lava rendering including reflections
 
-#include "inexor/shared/geom.hpp"
+#include "inexor/engine/material.hpp"    // for ::MATF_INDEX
 #include "inexor/engine/octree.hpp"
-#include "inexor/network/SharedVar.hpp"
+#include "inexor/network/SharedVar.hpp"  // for SharedVar
+#include "inexor/shared/geom.hpp"
 #include "inexor/texture/texture.hpp"
+
+struct Texture;
+struct bvec;
+struct materialsurface;
 
 extern int refracting, refractfog;
 extern bool reflecting, fading, fogging;

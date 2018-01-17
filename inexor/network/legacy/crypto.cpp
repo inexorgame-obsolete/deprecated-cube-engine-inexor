@@ -1,13 +1,12 @@
 #include <ctype.h>                            // for isalpha, isdigit, isxdigit
 #include <string.h>                           // for memcpy, memset, strcmp
-#include <sys/types.h>                        // for ushort, uint
 #include <algorithm>                          // for max, min, swap
 
 #include "inexor/shared/cube_endian.hpp"      // for islittleendian
 #include "inexor/shared/cube_formatting.hpp"  // for concatstring, formatstring
 #include "inexor/shared/cube_loops.hpp"       // for i, j, loopi, loop, loop...
 #include "inexor/shared/cube_tools.hpp"       // for ASSERT
-#include "inexor/shared/cube_types.hpp"       // for uchar, string
+#include "inexor/shared/cube_types.hpp"       // for uchar, ushort, string
 
 using std::swap;
 using std::min;

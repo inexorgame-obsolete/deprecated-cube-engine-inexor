@@ -1,4 +1,3 @@
-#include <fcntl.h>                                    // for SEEK_END, SEEK_SET
 #include <stdarg.h>                                   // for va_end, va_start
 #include <algorithm>                                  // for min, max
 #include <memory>                                     // for __shared_ptr

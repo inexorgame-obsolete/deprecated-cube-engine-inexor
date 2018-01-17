@@ -1,33 +1,27 @@
 // server.cpp: little more than enhanced multicaster
 
 #include <limits.h>                                   // for INT_MAX
-#include <stdio.h>                                    // for fprintf, stderr
-#include <stdlib.h>                                   // for exit, atexit
+#include <stdlib.h>                                   // for atexit, EXIT_SU...
 #include <algorithm>                                  // for max, min
 #include <memory>                                     // for __shared_ptr
-#include <string>                                     // for basic_string
-#include <vector>                                     // for vector
 
 #include "enet/enet.h"                                // for enet_socket_des...
 #include "enet/types.h"                               // for enet_uint16
 #include "enet/unix.h"                                // for ENET_SOCKET_NULL
 #include "inexor/crashreporter/CrashReporter.hpp"     // for CrashReporter
+#include "inexor/fpsgame/server.hpp"                  // for sendpackets
+#include "inexor/io/Error.hpp"                        // for fatal
 #include "inexor/io/Logging.hpp"                      // for Log, log_manager
-#include "inexor/io/Error.hpp"                      // for fatal
 #include "inexor/network/SharedVar.hpp"               // for SharedVar
 #include "inexor/network/legacy/buffer_types.hpp"     // for ucharbuf, packe...
 #include "inexor/network/legacy/cube_network.hpp"     // for MAXCLIENTS, MAX...
 #include "inexor/network/legacy/game_types.hpp"       // for server_port
 #include "inexor/server/client_management.hpp"        // for client, disconn...
-#include "inexor/fpsgame/server.hpp"
 #include "inexor/shared/command.hpp"                  // for execfile, SVAR
-#include "inexor/shared/cube_formatting.hpp"          // for defvformatstring
 #include "inexor/shared/cube_loops.hpp"               // for i, loopi
 #include "inexor/shared/cube_tools.hpp"               // for copystring, UNUSED
 #include "inexor/shared/cube_types.hpp"               // for string, uchar
-#include "inexor/shared/igame.hpp"                    // for sendpackets
 #include "inexor/shared/tools.hpp"                    // for max, min
-#include "inexor/util/StringFormatter.hpp"            // for StringFormatter
 #include "inexor/util/Subsystem.hpp"                  // for Metasystem, SUB...
 #include "inexor/util/legacy_time.hpp"                // for updatetime, tot...
 

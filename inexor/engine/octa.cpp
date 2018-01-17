@@ -7,11 +7,15 @@
 #include <algorithm>                                  // for max, min, swap
 #include <memory>                                     // for __shared_ptr
 
-#include "inexor/engine/engine.hpp"                   // for renderprogress
 #include "inexor/engine/lightmap.hpp"                 // for brightencube
-#include "inexor/engine/octree.hpp"                     // for cube, facebounds
+#include "inexor/engine/material.hpp"                 // for ::MAT_AIR, ::MA...
+#include "inexor/engine/octa.hpp"                     // for insideworld
 #include "inexor/engine/octaedit.hpp"                 // for ::EDIT_REMIP
-#include "inexor/engine/world.hpp"                    // for ::DEFAULT_GEOM
+#include "inexor/engine/octarender.hpp"               // for allchanged, des...
+#include "inexor/engine/octree.hpp"                   // for cube, facebounds
+#include "inexor/engine/renderbackground.hpp"         // for renderprogress
+#include "inexor/engine/world.hpp"                    // for worldsize, worl...
+#include "inexor/fpsgame/client.hpp"                  // for edittrigger
 #include "inexor/io/Logging.hpp"                      // for Log, Logger
 #include "inexor/network/SharedVar.hpp"               // for SharedVar
 #include "inexor/physics/physics.hpp"                 // for pointincube
@@ -23,8 +27,6 @@
 #include "inexor/shared/cube_types.hpp"               // for uchar, ushort
 #include "inexor/shared/cube_vector.hpp"              // for vector
 #include "inexor/shared/geom.hpp"                     // for ivec, ivec::(an...
-#include "inexor/shared/iengine.hpp"                  // for ::MAT_AIR, ::MA...
-#include "inexor/shared/igame.hpp"                    // for edittrigger
 #include "inexor/shared/tools.hpp"                    // for max, min, clamp
 #include "inexor/util/legacy_time.hpp"                // for totalmillis
 

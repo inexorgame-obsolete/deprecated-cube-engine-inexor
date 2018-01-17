@@ -4,11 +4,12 @@
 #pragma once
 
 #include <SDL.h>
-#include <SDL_opengl.h>                   // for GL_FALSE, GL_FLOAT_VEC4
+#include <SDL_opengl.h>                   // for GL_FALSE, GL_FLOAT, GL_INT
 #include <limits.h>                       // for USHRT_MAX
 #include <string.h>                       // for memcpy, memset, NULL
 #include <algorithm>                      // for min
 
+#include "SDL_opengl.h"                   // for GL_FLOAT_VEC4, GL_BOOL, GL_...
 #include "inexor/engine/glexts.hpp"       // for glUniform4fv_, glUniform1f_
 #include "inexor/network/SharedTree.hpp"
 #include "inexor/network/SharedVar.hpp"   // for SharedVar

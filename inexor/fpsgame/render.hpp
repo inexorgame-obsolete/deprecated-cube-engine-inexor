@@ -1,7 +1,9 @@
 #pragma once
 #include "inexor/fpsgame/fpsent.hpp"
-#include "inexor/shared/geom.hpp"
-#include "inexor/network/SharedVar.hpp"
+#include "inexor/network/SharedVar.hpp"  // for SharedVar
+#include "inexor/shared/geom.hpp"        // for vec
+
+struct fpsent;
 
 namespace game {
 struct playermodelinfo

@@ -2,10 +2,13 @@
 
 #include "inexor/engine/octree.hpp"
 #include "inexor/shared/ents.hpp"
-#include "inexor/shared/geom.hpp"
+#include "inexor/shared/geom.hpp"  // for vec
 
 struct clipplanes;
+struct dynent;
+struct entity;
 struct extentity;
+struct physent;
 struct vec;
 
 extern bool pointincube(const clipplanes &p, const vec &v);

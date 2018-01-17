@@ -13,11 +13,16 @@
 
 #include "SDL_keycode.h"                              // for ::SDLK_ESCAPE
 #include "SDL_opengl.h"                               // for glBlendFunc
-#include "inexor/engine/engine.hpp"                   // for camera1, end
+#include "inexor/engine/console.hpp"                  // for getkeyname
 #include "inexor/engine/glemu.hpp"                    // for attribf, attrib
+#include "inexor/engine/lightmap.hpp"                 // for lightreaching
 #include "inexor/engine/octaedit.hpp"                 // for previewprefab
-#include "inexor/engine/rendertext.hpp"               // for FONTH, FONTW
+#include "inexor/engine/rendergl.hpp"                 // for camera1, hudmatrix
+#include "inexor/engine/rendertext.hpp"               // for FONTH, draw_text
 #include "inexor/engine/shader.hpp"                   // for Shader, hudshader
+#include "inexor/fpsgame/player.hpp"                  // for player
+#include "inexor/fpsgame/render.hpp"                  // for renderplayerpre...
+#include "inexor/fpsgame/scoreboard.hpp"              // for g3d_gamemenus
 #include "inexor/io/filesystem/mediadirs.hpp"         // for getmediapath
 #include "inexor/io/filesystem/path.hpp"              // for Path
 #include "inexor/io/input/InputRouter.hpp"            // for InputRouter
@@ -29,9 +34,6 @@
 #include "inexor/shared/cube_vector.hpp"              // for vector
 #include "inexor/shared/ents.hpp"                     // for physent, dynent
 #include "inexor/shared/geom.hpp"                     // for vec, vec::(anon...
-#include "inexor/shared/iengine.hpp"                  // for hudmatrix, draw...
-#include "inexor/fpsgame/scoreboard.hpp"              // for g3d_gamemenus
-#include "inexor/fpsgame/render.hpp"
 #include "inexor/shared/tools.hpp"                    // for max, min, clamp
 #include "inexor/texture/slot.hpp"                    // for VSlot, Slot
 #include "inexor/texture/texture.hpp"                 // for textureload

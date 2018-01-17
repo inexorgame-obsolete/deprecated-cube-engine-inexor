@@ -1,6 +1,8 @@
 #pragma once
 
-#include "inexor/engine/particles.hpp"
+#include "inexor/engine/particles.hpp"  // for listrenderer, ::PT_FIREBALL
+
+struct vec;
 
 struct fireballrenderer : listrenderer
 {
