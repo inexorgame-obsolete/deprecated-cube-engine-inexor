@@ -365,6 +365,15 @@ bool PackNode::insert(ushort &tx, ushort &ty, ushort tw, ushort th)
     available = max(child1->available, child2->available);
     return inserted;
 }
+
+void PackNode::clear() {
+    DELETEP(child1);
+    DELETEP(child2);
+}
+
+PackNode::PackNode(ushort x, ushort y, ushort w, ushort h) : child1(nullptr), child2(nullptr), x(x), y(y), w(w), h(h), available(min(w, h)) {}
+PackNode::PackNode() : child1(nullptr), child2(nullptr), x(0), y(0), w(LM_PACKW), h(LM_PACKH), available(min(LM_PACKW, LM_PACKH)) {}
+
 //copys pixels of the dimensions tw and th from src into this lightmap
 //it returns in tx and ty, where it copied the pixels to (the position on the lightmaptex) 
 bool LightMap::insert(ushort &tx, ushort &ty, uchar *src, ushort tw, ushort th)

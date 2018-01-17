@@ -856,6 +856,33 @@ void Slot::loadlayermask()
     }
 }
 
+void Slot::reset() {
+    sts.shrink(0);
+    shader = nullptr;
+    params.shrink(0);
+    loaded = false;
+    texmask = 0;
+    DELETEA(autograss);
+    grasstex = nullptr;
+    thumbnail = nullptr;
+    DELETEA(layermaskname);
+    layermaskmode = 0;
+    layermaskscale = 1;
+    if(layermask) DELETEP(layermask);
+}
+
+void Slot::cleanup() {
+    loaded = false;
+    grasstex = nullptr;
+    thumbnail = nullptr;
+    loopv(sts)
+    {
+        Tex &t = sts[i];
+        t.t = nullptr;
+        t.combined = -1;
+    }
+}
+
 void loadlayermasks()
 {
     loopv(slots) slots[i]->loadlayermask();

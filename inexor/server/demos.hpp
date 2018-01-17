@@ -1,8 +1,6 @@
 #pragma once
 
-#include "inexor/network/SharedTree.hpp"
 #include "inexor/network/SharedVar.hpp"   // for SharedVar
-#include "inexor/server/client_management.hpp"
 #include "inexor/shared/cube_types.hpp"   // for string, uchar
 #include "inexor/shared/cube_vector.hpp"  // for vector
 

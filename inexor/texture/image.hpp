@@ -12,7 +12,6 @@
 #include "SDL_surface.h"                 // for SDL_Surface, SDL_FreeSurface
 #include "inexor/shared/cube_loops.hpp"  // for loopi
 #include "inexor/shared/cube_types.hpp"  // for uchar, uint
-#include "inexor/shared/geom.hpp"
 
 struct bvec;
 struct vec;

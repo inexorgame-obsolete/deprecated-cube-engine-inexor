@@ -4,7 +4,6 @@
 
 #include <boost/algorithm/clamp.hpp>      // for clamp
 
-#include "inexor/network/SharedTree.hpp"
 #include "inexor/network/SharedVar.hpp"   // for SharedVar
 #include "inexor/shared/cube_loops.hpp"   // for loopi
 #include "inexor/shared/cube_types.hpp"   // for uchar, uint, ushort

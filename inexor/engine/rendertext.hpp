@@ -6,8 +6,6 @@
 #include "inexor/shared/cube_tools.hpp"       // for DELETEA
 // Simplistic bitmap text rendering
 #include "inexor/shared/cube_vector.hpp"      // for vector
-#include "inexor/shared/geom.hpp"
-#include "inexor/texture/texture.hpp"
 
 struct Texture;
 struct matrix4x3;
@@ -25,7 +23,7 @@ struct font
     int charoffset, defaultw, defaulth, scale;
 
     font() : name(nullptr) {}
-    ~font() { DELETEA(name); }
+    ~font() { delete name; name = nullptr; }
 };
 
 #define FONTH (curfont->scale)

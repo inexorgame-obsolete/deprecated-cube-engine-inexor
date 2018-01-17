@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "inexor/network/SharedTree.hpp"
 #include "inexor/network/SharedVar.hpp"  // for SharedVar
 
 extern SharedVar<int> usetexcompress; // from rendergl

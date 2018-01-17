@@ -1,6 +1,5 @@
 #pragma once
 
-#include "inexor/shared/ents.hpp"
 #include "inexor/shared/geom.hpp"  // for vec
 
 struct physent;

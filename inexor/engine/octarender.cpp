@@ -1,4 +1,5 @@
 // octarender.cpp: fill vertex arrays with different cube surfaces.
+#include "inexor/engine/octarender.hpp"
 
 #include <SDL_opengl.h>                               // for GL_ARRAY_BUFFER
 #include <boost/algorithm/clamp.hpp>                  // for clamp

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "inexor/engine/octree.hpp"
 #include "inexor/network/SharedVar.hpp"   // for SharedVar
 #include "inexor/shared/cube_types.hpp"   // for uchar
 #include "inexor/shared/cube_vector.hpp"  // for vector

@@ -8,16 +8,11 @@
 
 #pragma once
 
-#include "inexor/engine/octree.hpp"
 #include "inexor/engine/shader.hpp"                // for SlotShaderParam
 #include "inexor/network/legacy/buffer_types.hpp"  // for ucharbuf
-#include "inexor/shared/cube_loops.hpp"            // for i, loopv
-#include "inexor/shared/cube_tools.hpp"            // for DELETEA, DELETEP
 #include "inexor/shared/cube_types.hpp"            // for uchar, string, uint
 #include "inexor/shared/cube_vector.hpp"           // for vector
 #include "inexor/shared/geom.hpp"                  // for vec, ivec2, vec2
-#include "inexor/texture/image.hpp"
-#include "inexor/texture/texture.hpp"
 
 class Slot;
 struct ImageData;
@@ -112,34 +107,9 @@ class Slot
 
     Slot(int index = -1) : index(index), variants(nullptr), autograss(nullptr), layermaskname(nullptr), layermask(nullptr) { reset(); }
 
-    void reset()
-    {
-        sts.shrink(0);
-        shader = nullptr;
-        params.shrink(0);
-        loaded = false;
-        texmask = 0;
-        DELETEA(autograss);
-        grasstex = nullptr;
-        thumbnail = nullptr;
-        DELETEA(layermaskname);
-        layermaskmode = 0;
-        layermaskscale = 1;
-        if(layermask) DELETEP(layermask);
-    }
+    void reset();
 
-    void cleanup()
-    {
-        loaded = false;
-        grasstex = nullptr;
-        thumbnail = nullptr;
-        loopv(sts)
-        {
-            Tex &t = sts[i];
-            t.t = nullptr;
-            t.combined = -1;
-        }
-    }
+    void cleanup();
 
     void addtexture(int type, const char *filename);
 

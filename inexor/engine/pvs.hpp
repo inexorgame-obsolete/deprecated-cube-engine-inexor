@@ -4,7 +4,6 @@
 // They get precomputed using static geometry.
 // So for really dynamic worlds one would probably need a different solution.
 
-#include "inexor/io/legacy/stream.hpp"
 #include "inexor/shared/geom.hpp"  // for ivec, vec (ptr only)
 
 struct stream;

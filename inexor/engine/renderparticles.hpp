@@ -1,6 +1,4 @@
 #pragma once
-#include "inexor/shared/ents.hpp"
-#include "inexor/shared/geom.hpp"
 
 struct extentity;
 struct physent;

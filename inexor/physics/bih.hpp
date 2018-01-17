@@ -8,9 +8,7 @@
 
 #include "inexor/shared/cube_types.hpp"   // for ushort, uchar
 #include "inexor/shared/cube_vector.hpp"  // for vector
-#include "inexor/shared/ents.hpp"
 #include "inexor/shared/geom.hpp"         // for svec, ivec, ivec::(anonymou...
-#include "inexor/texture/texture.hpp"
 
 struct Texture;
 struct extentity;

@@ -1,7 +1,8 @@
 #pragma once
 
 #include <enet/enet.h>
-#include "inexor/io/legacy/stream.hpp"
+
+struct stream;
 
 extern void sendclientpacket(ENetPacket *packet, int chan);
 extern void flushclient();

@@ -1,14 +1,10 @@
 
 #pragma once
-#include <algorithm>                      // for min
 
-#include "inexor/engine/octree.hpp"
-#include "inexor/shared/cube_tools.hpp"   // for DELETEP
 // lightmaps are textures covering all static planes to add lighting.
 #include "inexor/shared/cube_types.hpp"   // for ushort, uchar, uint
 #include "inexor/shared/cube_vector.hpp"  // for vector
 #include "inexor/shared/geom.hpp"         // for vec, vec2, bvec, ivec (ptr ...
-#include "inexor/shared/tools.hpp"        // for min
 
 struct cube;
 struct entity;
@@ -37,14 +33,10 @@ struct PackNode
     ushort x, y, w, h;
     int available; //amount of pixels without lightmap-information
 
-    PackNode() : child1(nullptr), child2(nullptr), x(0), y(0), w(LM_PACKW), h(LM_PACKH), available(min(LM_PACKW, LM_PACKH)) {}
-    PackNode(ushort x, ushort y, ushort w, ushort h) : child1(nullptr), child2(nullptr), x(x), y(y), w(w), h(h), available(min(w, h)) {}
+    PackNode();
+    PackNode(ushort x, ushort y, ushort w, ushort h);
 
-    void clear()
-    {
-        DELETEP(child1);
-        DELETEP(child2);
-    }
+    void clear();
 
     ~PackNode()
     {

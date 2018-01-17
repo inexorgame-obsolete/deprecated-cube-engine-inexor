@@ -9,7 +9,6 @@
 
 #include "inexor/shared/cube_endian.hpp"      // for bigswap, lilswap
 #include "inexor/shared/cube_formatting.hpp"  // for PRINTFARGS
-#include "inexor/shared/cube_tools.hpp"
 #include "inexor/shared/cube_types.hpp"       // for uchar, uint
 #include "inexor/shared/cube_vector.hpp"      // for vector
 

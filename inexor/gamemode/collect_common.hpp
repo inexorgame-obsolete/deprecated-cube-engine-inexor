@@ -1,11 +1,16 @@
 #pragma once
-#include "inexor/fpsgame/game.hpp"
+
+#include "inexor/shared/tools.hpp"
+#include "inexor/shared/geom.hpp"
+#include "inexor/shared/cube_types.hpp"
+#include "inexor/shared/cube_vector.hpp"
+#include "inexor/shared/cube_loops.hpp"
 #include "inexor/fpsgame/teaminfo.hpp"
 
 #define collectteambase(s) (!strcmp(s, "good") ? 1 : (!strcmp(s, "evil") ? 2 : 0))
 #define collectbaseteam(i) (i==1 ? "good" : (i==2 ? "evil" : NULL))
 
-
+// TODO: Split into .cpp and .hpp
 struct collectmode_common
 {
     static const int BASERADIUS = 16;

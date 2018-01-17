@@ -1,6 +1,4 @@
 #pragma once
-#include "inexor/io/legacy/stream.hpp"
-
 struct stream;
 
 extern void processkey(int code, bool isdown);

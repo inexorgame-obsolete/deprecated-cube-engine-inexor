@@ -6,8 +6,6 @@
 #include "SDL_opengl.h"                  // for GLenum, GL_RGB, GL_TEXTURE_2D
 #include "inexor/shared/cube_types.hpp"  // for uchar
 #include "inexor/texture/additionaltools.hpp" //this one is only to avoid the compiler behaviour that it doesnt build cubescript only files, so we keep a dummy "extern" to it.
-#include "inexor/texture/image.hpp"
-#include "inexor/texture/texsettings.hpp"
 
 struct ImageData;
 

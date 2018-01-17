@@ -1,7 +1,5 @@
 #pragma once
 
-#include "inexor/server/client_management.hpp"
-
 namespace server {
 struct clientinfo;
 }  // namespace server

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "inexor/fpsgame/fpsent.hpp"
 // Moving platforms, obstacles (bomberman mode) and barels
+
 #include "inexor/shared/cube_vector.hpp"  // for vector
 
 struct fpsent;

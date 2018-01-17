@@ -3,7 +3,6 @@
 
 #include "inexor/shared/cube_types.hpp"   // for uint
 #include "inexor/shared/cube_vector.hpp"  // for vector
-#include "inexor/shared/ents.hpp"
 
 struct entity;
 

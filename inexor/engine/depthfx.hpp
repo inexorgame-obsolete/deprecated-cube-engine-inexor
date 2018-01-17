@@ -4,10 +4,7 @@
 
 #include "inexor/engine/rendertarget.hpp"  // for rendertarget
 #include "inexor/network/SharedVar.hpp"    // for SharedVar
-#include "inexor/shared/command.hpp"
 #include "inexor/shared/geom.hpp"
-
-struct vec;
 
 extern SharedVar<int> depthfx, depthfxsize, blurdepthfx, depthfxpartblend, depthfxblend, depthfxscale, depthfxbias, depthfxscissor;
 extern int numdepthfxranges;

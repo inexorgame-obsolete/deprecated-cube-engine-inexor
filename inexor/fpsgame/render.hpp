@@ -1,5 +1,4 @@
 #pragma once
-#include "inexor/fpsgame/fpsent.hpp"
 #include "inexor/network/SharedVar.hpp"  // for SharedVar
 #include "inexor/shared/geom.hpp"        // for vec
 

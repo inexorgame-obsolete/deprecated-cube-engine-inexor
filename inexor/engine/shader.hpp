@@ -11,7 +11,6 @@
 
 #include "SDL_opengl.h"                   // for GL_FLOAT_VEC4, GL_BOOL, GL_...
 #include "inexor/engine/glexts.hpp"       // for glUniform4fv_, glUniform1f_
-#include "inexor/network/SharedTree.hpp"
 #include "inexor/network/SharedVar.hpp"   // for SharedVar
 #include "inexor/shared/cube_loops.hpp"   // for i, loopi, loopv
 #include "inexor/shared/cube_tools.hpp"   // for DELETEA

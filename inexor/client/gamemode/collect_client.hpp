@@ -9,7 +9,6 @@
 #include "inexor/shared/cube_vector.hpp"               // for vector
 #include "inexor/shared/geom.hpp"                      // for vec
 #include "inexor/shared/tools.hpp"                     // for max
-#include "inexor/sound/sound.hpp"
 #include "inexor/util/legacy_time.hpp"                 // for lastmillis
 
 namespace ai {

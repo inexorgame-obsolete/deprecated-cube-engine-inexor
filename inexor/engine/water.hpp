@@ -3,10 +3,8 @@
 // Water and lava rendering including reflections
 
 #include "inexor/engine/material.hpp"    // for ::MATF_INDEX
-#include "inexor/engine/octree.hpp"
 #include "inexor/network/SharedVar.hpp"  // for SharedVar
 #include "inexor/shared/geom.hpp"
-#include "inexor/texture/texture.hpp"
 
 struct Texture;
 struct bvec;

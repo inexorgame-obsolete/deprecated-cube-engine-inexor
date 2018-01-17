@@ -1,8 +1,6 @@
 #pragma once
 
 #include "enet/enet.h"  // for ENetPacket
-#include "inexor/network/legacy/cube_network.hpp"
-#include "inexor/network/legacy/game_types.hpp"
 
 struct stream;
 

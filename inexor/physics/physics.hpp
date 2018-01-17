@@ -1,7 +1,5 @@
 #pragma once
 
-#include "inexor/engine/octree.hpp"
-#include "inexor/shared/ents.hpp"
 #include "inexor/shared/geom.hpp"  // for vec
 
 struct clipplanes;

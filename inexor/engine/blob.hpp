@@ -3,8 +3,6 @@
 #include "inexor/network/SharedVar.hpp"  // for SharedVar
 #include "inexor/shared/geom.hpp"
 
-struct vec;
-
 // Blob shadows. legacy dynamic shadows which occasionally shine through walls.
 
 enum

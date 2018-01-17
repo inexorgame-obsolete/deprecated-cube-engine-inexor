@@ -1,11 +1,5 @@
 #pragma once
 
-
-
-#include "inexor/fpsgame/ai.hpp"
-#include "inexor/fpsgame/fpsent.hpp"
-#include "inexor/shared/geom.hpp"
-
 namespace ai {
 struct avoidset;
 }  // namespace ai

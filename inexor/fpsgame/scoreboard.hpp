@@ -1,6 +1,5 @@
 #pragma once
 
-#include "inexor/fpsgame/fpsent.hpp"
 #include "inexor/shared/cube_vector.hpp"  // for vector
 
 struct fpsent;

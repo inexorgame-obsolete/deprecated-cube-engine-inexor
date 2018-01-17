@@ -2,7 +2,8 @@
 
 #include "inexor/shared/ents.hpp"
 #include "inexor/shared/geom.hpp"
-#include "inexor/texture/texture.hpp"
+
+struct Texture;
 
 enum
 {

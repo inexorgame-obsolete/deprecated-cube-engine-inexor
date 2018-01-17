@@ -6,7 +6,6 @@
 #include <algorithm>                                 // for max
 
 #include "inexor/fpsgame/fpsstate.hpp"               // for fpsstate
-#include "inexor/network/SharedTree.hpp"
 #include "inexor/network/SharedVar.hpp"              // for SharedVar
 #include "inexor/network/legacy/administration.hpp"  // for ::PRIV_NONE, ::M...
 #include "inexor/shared/cube_loops.hpp"              // for i, loopi

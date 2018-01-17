@@ -4,7 +4,6 @@
 #include <vector>                        // for vector
 
 #include "SDL_events.h"                  // for SDL_Event
-#include "inexor/network/SharedTree.hpp"
 #include "inexor/network/SharedVar.hpp"  // for SharedVar
 
 namespace inexor {

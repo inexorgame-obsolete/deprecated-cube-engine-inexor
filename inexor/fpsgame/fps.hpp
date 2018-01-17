@@ -1,10 +1,8 @@
 #pragma once
 
-#include "inexor/fpsgame/fpsent.hpp"
 #include "inexor/network/SharedVar.hpp"   // for SharedVar
 #include "inexor/shared/cube_types.hpp"   // for string
 #include "inexor/shared/cube_vector.hpp"  // for vector
-#include "inexor/shared/geom.hpp"
 
 struct dynent;
 struct fpsent;
