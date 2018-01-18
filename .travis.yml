@@ -28,7 +28,7 @@ git:
 jobs:
   include:
   # We run the following jobs in our main repository:    #CIDELETE
-    - stage: Conan                                       #CIDELETE
+    - stage: "Conan prebuilds triggering"                #CIDELETE
       os: linux                                          #CIDELETE
       dist: trusty                                       #CIDELETE
       sudo: false                                        #CIDELETE
