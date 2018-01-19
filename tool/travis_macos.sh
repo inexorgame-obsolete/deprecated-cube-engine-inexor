@@ -101,11 +101,11 @@ build() {
     build_conan_and_upload "libpng/1.6.34@bincrafters/stable"
 
     build_conan_and_upload "cmake-findboost/0.2.0@bincrafters/stable"
-    build_conan_and_upload "Boost.Filesystem/1.65.1@bincrafters/stable"
-    build_conan_and_upload "Boost.Program_Options/1.65.1@bincrafters/stable"
-    build_conan_and_upload "Boost.Random/1.65.1@bincrafters/stable"
-    build_conan_and_upload "Boost.Regex/1.65.1@bincrafters/stable"
-    build_conan_and_upload "Boost.Thread/1.65.1@bincrafters/stable"
+    build_conan_and_upload "boost_filesystem/1.66.0@bincrafters/testing"
+    build_conan_and_upload "boost_program_options/1.66.0@bincrafters/testing"
+    build_conan_and_upload "boost_random/1.66.0@bincrafters/testing"
+    build_conan_and_upload "boost_regex/1.66.0@bincrafters/testing"
+    build_conan_and_upload "boost_thread/1.66.0@bincrafters/testing"
     build_conan_and_upload "InexorGlueGen/0.6.2@inexorgame/stable"
 
     build_conan "SDL2/2.0.5@lasote/testing"
