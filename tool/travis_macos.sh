@@ -106,7 +106,7 @@ build() {
     build_conan_and_upload "boost_random/1.66.0@bincrafters/testing"
     build_conan_and_upload "boost_regex/1.66.0@bincrafters/testing"
     build_conan_and_upload "boost_thread/1.66.0@bincrafters/testing"
-    build_conan_and_upload "InexorGlueGen/0.6.2@inexorgame/stable"
+    build_conan_and_upload "InexorGlueGen/0.6.3@inexorgame/stable"
 
     build_conan "SDL2/2.0.5@lasote/testing"
 

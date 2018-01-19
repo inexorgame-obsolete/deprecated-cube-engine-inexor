@@ -12,7 +12,7 @@ requires = (
     ("boost_thread/1.66.0@bincrafters/testing"),
     ("RapidJSON/1.1.0@inexorgame/stable"),
     ("zlib/1.2.11@conan/stable"),
-    ("gtest/1.8.0@lasote/stable"),
+    ("gtest/1.8.0@bincrafters/stable"),
     ("ENet/1.3.13@inexorgame/stable"),
     ("spdlog/0.14.0@bincrafters/stable"),
     ("fmt/4.1.0@bincrafters/stable"),  # spdlog dependency (fix version to make it re-producable)
