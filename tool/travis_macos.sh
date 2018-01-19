@@ -64,7 +64,7 @@ build_conan_and_upload() {
   build_conan "$1"
   set -f
   if contains "$1" stable; then
-    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "$1"
+    conan upload --all --force -r inexor --retry 3 --retry-wait 10 --confirm "$1"
   fi
   set +f
 }
@@ -186,7 +186,7 @@ target_after_success() {
     # Upload all conan packages to our Bintray repository
     conan user -p "${NIGHTLY_PASSWORD}" -r inexor "${NIGHTLY_USER}"
     set -f
-    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "*stable*"
+    conan upload --all --force -r inexor --retry 3 --retry-wait 10 --confirm "*stable*"
     set +f
   fi
 }

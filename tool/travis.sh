@@ -207,9 +207,9 @@ target_after_success() {
         # Upload all conan packages to our Bintray repository
         conan user -p "${NIGHTLY_PASSWORD}" -r inexor "${NIGHTLY_USER}"
         set -f
-        conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "*stable*"
+        conan upload --all --force -r inexor --retry 3 --retry-wait 10 --confirm "*stable*"
         # FIXME: Remove this when Boost 1.66.0 is going to stable channel
-        conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "*boost*"
+        conan upload --all --force -r inexor --retry 3 --retry-wait 10 --confirm "*boost*"
         set +f
     fi
   fi
