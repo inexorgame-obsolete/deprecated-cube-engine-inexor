@@ -90,7 +90,6 @@ build() {
     build_conan_and_upload "Kainjow_Mustache/2.0@inexorgame/stable"
     build_conan_and_upload "bzip2/1.0.6@lasote/stable"
     build_conan_and_upload "pugixml/1.7@inexorgame/stable"
-    build_conan_and_upload "RapidJSON/1.1.0@inexorgame/stable"
     build_conan_and_upload "gtest/1.8.0@lasote/stable"
     build_conan_and_upload "spdlog/0.14.0@bincrafters/stable"
     build_conan_and_upload "fmt/4.1.0@bincrafters/stable"
