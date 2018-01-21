@@ -1,7 +1,6 @@
 #pragma once
 #include <string.h>                                    // for strcmp
 
-#include "inexor/fpsgame/game.hpp"
 #include "inexor/gamemode/hideandseek_common.hpp"      // for TEAM_HIDE, TEA...
 #include "inexor/server/client_management.hpp"         // for clientinfo (pt...
 #include "inexor/server/gamemode/gamemode_server.hpp"  // for servmode

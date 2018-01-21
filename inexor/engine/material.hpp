@@ -1,11 +1,8 @@
 #pragma once
 
-#include "inexor/engine/octree.hpp"
 #include "inexor/network/SharedVar.hpp"   // for SharedVar
 #include "inexor/shared/cube_types.hpp"   // for ushort
 #include "inexor/shared/cube_vector.hpp"  // for vector
-#include "inexor/shared/geom.hpp"
-#include "inexor/shared/iengine.hpp"      // for ::MATF_VOLUME
 
 struct cube;
 struct ivec;

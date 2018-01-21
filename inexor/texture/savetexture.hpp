@@ -3,9 +3,6 @@
 
 #pragma once
 
-#include "inexor/engine/engine.hpp"
-#include "inexor/texture/texture.hpp"
-
 struct ImageData;
 
 enum

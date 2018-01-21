@@ -12,6 +12,7 @@
 #include "inexor/io/input/InputRouter.hpp"
 #include "inexor/ui/InexorCefApp.hpp"                 // for cef_app, Inexor...
 #include "inexor/ui/screen/ScreenManager.hpp"         // for ScreenManager
+#include "inexor/shared/cube_unicode.hpp"
 
 using namespace inexor::rendering::screen;
 using boost::algorithm::clamp;

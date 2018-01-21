@@ -4,7 +4,6 @@
 #include "include/cef_browser.h"
 #include "include/cef_render_handler.h"  // for CefRenderHandler, CefRenderH...
 #include "include/wrapper/cef_helpers.h"
-#include "inexor/engine/engine.hpp"
 #include "inexor/io/Logging.hpp"
 
 class CefBrowser;

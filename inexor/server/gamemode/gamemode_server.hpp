@@ -3,7 +3,6 @@
 #include "inexor/server/client_management.hpp"
 #include "inexor/server/map_management.hpp"
 #include "inexor/fpsgame/teaminfo.hpp"
-#include "inexor/fpsgame/game.hpp"
 #include "inexor/server/network_send.hpp"
 
 // TODO: make vector<players> extendable by mode

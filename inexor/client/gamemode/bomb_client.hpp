@@ -1,7 +1,6 @@
 #pragma once
 #include "inexor/client/gamemode/gamemode_client.hpp"  // for clientmode
 #include "inexor/fpsgame/fpsent.hpp"                   // for fpsent
-#include "inexor/fpsgame/game.hpp"
 #include "inexor/gamemode/bomb_common.hpp"             // for bombmode
 #include "inexor/network/legacy/buffer_types.hpp"      // for packetbuf (ptr...
 #include "inexor/shared/ents.hpp"                      // for ::CS_SPECTATOR

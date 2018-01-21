@@ -1,11 +1,18 @@
 #pragma once
-#include "inexor/fpsgame/game.hpp"
+#include "inexor/shared/tools.hpp"
+#include "inexor/shared/geom.hpp"
+#include "inexor/shared/cube_types.hpp"
+#include "inexor/shared/cube_vector.hpp"
+#include "inexor/shared/cube_loops.hpp"
+
 #include "inexor/fpsgame/teaminfo.hpp"
 #include "inexor/sound/sound.hpp"
 #include "inexor/network/legacy/buffer_types.hpp"
 
 #define ctfteamflag(s) (!strcmp(s, "good") ? 1 : (!strcmp(s, "evil") ? 2 : 0))
 #define ctfflagteam(i) (i==1 ? "good" : (i==2 ? "evil" : NULL))
+
+struct fpsent;
 
 struct flag
 {

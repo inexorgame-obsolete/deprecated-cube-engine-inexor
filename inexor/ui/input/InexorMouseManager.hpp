@@ -9,15 +9,13 @@
 #include "include/cef_app.h"
 #include "include/cef_base.h"                           // for CefRefPtr
 #include "include/cef_v8.h"                             // for CefV8Value (p...
-#include "inexor/engine/engine.hpp"
 #include "inexor/ui/context/InexorContextProvider.hpp"  // for InexorContext...
 #include "inexor/ui/layer/InexorLayerManager.hpp"       // for InexorLayerMa...
+#include "inexor/texture/settexture.hpp"
 
 #ifndef GL_ONE
 #define GL_ONE 0x1
 #endif
-
-extern bool settexture(const char *name, int clamp);
 
 namespace inexor {
 namespace ui {

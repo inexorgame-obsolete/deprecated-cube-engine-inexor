@@ -3,13 +3,11 @@
 
 #include "inexor/client/gamemode/gamemode_client.hpp"  // for clientmode
 #include "inexor/fpsgame/fpsent.hpp"                   // for fpsent
-#include "inexor/fpsgame/game.hpp"
 #include "inexor/gamemode/collect_common.hpp"          // for collectmode_co...
 #include "inexor/network/legacy/buffer_types.hpp"      // for ucharbuf, pack...
 #include "inexor/physics/physics.hpp"                  // for findplayerspawn
 #include "inexor/shared/cube_vector.hpp"               // for vector
 #include "inexor/shared/geom.hpp"                      // for vec
-#include "inexor/shared/iengine.hpp"                   // for findplayerspawn
 #include "inexor/shared/tools.hpp"                     // for max
 #include "inexor/sound/sound.hpp"
 #include "inexor/util/legacy_time.hpp"                 // for lastmillis
