@@ -3,7 +3,7 @@ requires = (
     ("Protobuf/3.5.1@inexorgame/stable"),
     ("gRPC/1.8.3@inexorgame/stable"),
     ("doxygen/1.8.13@inexorgame/stable"),
-    ("cmake-findboost/0.2.0@bincrafters/stable"),
+    ("cmake-findboost/0.2.1@bincrafters/stable"),
     ("boost_filesystem/1.66.0@bincrafters/testing"),
     ("boost_program_options/1.66.0@bincrafters/testing"),
     ("boost_random/1.66.0@bincrafters/testing"),
