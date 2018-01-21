@@ -99,22 +99,25 @@ build() {
     build_conan_and_upload "Protobuf/3.5.1@inexorgame/stable"
     build_conan_and_upload "gRPC/1.8.3@inexorgame/stable"
     build_conan_and_upload "libpng/1.6.34@bincrafters/stable"
+    build_conan_and_upload "Boost/1.66.0@conan/stable"
+    build_conan_and_upload "fmt/4.1.0@bincrafters/stable"
+    build_conan_and_upload "spdlog/0.14.0@bincrafters/stable"
 
-    build_conan_and_upload "cmake-findboost/0.2.0@bincrafters/stable"
-    build_conan_and_upload "boost_filesystem/1.66.0@bincrafters/testing"
-    build_conan_and_upload "boost_program_options/1.66.0@bincrafters/testing"
-    build_conan_and_upload "boost_random/1.66.0@bincrafters/testing"
-    build_conan_and_upload "boost_regex/1.66.0@bincrafters/testing"
-    build_conan_and_upload "boost_thread/1.66.0@bincrafters/testing"
+    # build_conan_and_upload "cmake-findboost/0.2.0@bincrafters/stable"
+    # build_conan_and_upload "boost_filesystem/1.66.0@bincrafters/testing"
+    # build_conan_and_upload "boost_program_options/1.66.0@bincrafters/testing"
+    # build_conan_and_upload "boost_random/1.66.0@bincrafters/testing"
+    # build_conan_and_upload "boost_regex/1.66.0@bincrafters/testing"
+    # build_conan_and_upload "boost_thread/1.66.0@bincrafters/testing"
+
     build_conan_and_upload "InexorGlueGen/0.6.3@inexorgame/stable"
 
-    build_conan "SDL2/2.0.5@lasote/testing"
-
     build_conan_and_upload "libjpeg-turbo/1.5.2@bincrafters/stable"
+    build_conan "SDL2/2.0.5@lasote/testing"
     build_conan "SDL2_image/2.0.1@lasote/stable"
 
+    build_conan "doxygen/1.8.13@inexorgame/stable"
     build_conan "CEF/3.3239.1709.g093cae4@inexorgame/testing"
-    build_conan "Boost/1.64.0@inexorgame/stable"
 
     conan info .
 
