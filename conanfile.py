@@ -32,7 +32,7 @@ class InexorConan(ConanFile):
         cmake = CMake(self)
         self.run('cmake "{}" {} {}'.format(self.source_folder, cmake.command_line, ' '.join(args)))
         self.run('cmake --build . --target install {}'.format(cmake.build_config))
-        if self.scope.create_package:
+        if 'create_package' in os.environ:
             self.run('cmake --build . --target package_debug {}'.format(cmake.build_config))
 
     def imports(self):
