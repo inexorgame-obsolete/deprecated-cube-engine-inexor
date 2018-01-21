@@ -6,9 +6,9 @@ function(get_conan_dependency_list CONANFILE_PY_FOLDER SHOW_LICENSE STRIP_CHANNE
 
   message(STATUS "executing conan info")
   if(SHOW_LICENSE)
-    execute_process(COMMAND conan info --only=license OUTPUT_VARIABLE TEMP_OUTPUT_VAR WORKING_DIRECTORY ${CONANFILE_PY_FOLDER})
+    execute_process(COMMAND conan info . --only=license OUTPUT_VARIABLE TEMP_OUTPUT_VAR WORKING_DIRECTORY ${CONANFILE_PY_FOLDER})
   else()
-    execute_process(COMMAND conan info --only=stringwhichclearlywillnevermatch OUTPUT_VARIABLE TEMP_OUTPUT_VAR WORKING_DIRECTORY ${CONANFILE_PY_FOLDER})
+    execute_process(COMMAND conan info . --only=stringwhichclearlywillnevermatch OUTPUT_VARIABLE TEMP_OUTPUT_VAR WORKING_DIRECTORY ${CONANFILE_PY_FOLDER})
   endif()
 
   # Strip any log appearing before the actual list (probably coming form the configure() commands):

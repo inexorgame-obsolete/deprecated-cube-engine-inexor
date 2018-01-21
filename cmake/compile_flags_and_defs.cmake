@@ -109,7 +109,11 @@ list(APPEND MSVC_LINKER_FLAGS_RELEASE
   /LTCG                                 # Link-time Code Generation: further optimisations in the linker stage.
   )
 
-
+if(OS_MACOS)
+  list(APPEND GCC_OR_CLANG_LINKER_FLAGS_RELEASE
+    -flto                             # Enable link time optimizations (otherwhise -O doesn't work)
+  )
+endif()
 
 # Just merge compiler/linker flags (specific to the used compiler)
 # We do save separate compiler specific flags, since we need them in our reflection pass which builds upon clang
