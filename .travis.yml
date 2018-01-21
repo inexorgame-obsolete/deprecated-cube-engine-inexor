@@ -28,7 +28,7 @@ git:
 jobs:
   include:
   # We run the following jobs in our main repository:    #CIDELETE
-    - stage: Conan                                       #CIDELETE
+    - stage: "Conan prebuilds triggering"                #CIDELETE
       os: linux                                          #CIDELETE
       dist: trusty                                       #CIDELETE
       sudo: false                                        #CIDELETE
@@ -50,7 +50,7 @@ jobs:
       compiler: gcc                                      #CIDELETE
       services:                                          #CIDELETE
         - docker                                         #CIDELETE
-      env: CMAKE_CC="gcc-7" CMAKE_CXX="g++-7" CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="7" TARGET=linux_gcc docker_tag="ubuntu-artful-gcc07" NIGHTLY="true" #CIDELETE
+      env: CMAKE_CC="gcc-7" CMAKE_CXX="g++-7" CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="7" TARGET=linux_gcc docker_tag="ubuntu-bionic-gcc07" NIGHTLY="true" #CIDELETE
     - stage: "Create GitHub Tag"                         #CIDELETE
       if: branch = master AND tag is blank AND fork is false AND type != pull_request #CIDELETE
       os: linux                                          #CIDELETE
@@ -90,7 +90,7 @@ jobs:
       #CI compiler: gcc
       #CI services:
         #CI - docker
-      #CI env: CMAKE_CC="gcc-7" CMAKE_CXX="g++-7" CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="7" TARGET=linux_gcc docker_tag="ubuntu-artful-gcc07" NIGHTLY="conan"
+      #CI env: CMAKE_CC="gcc-7" CMAKE_CXX="g++-7" CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="7" TARGET=linux_gcc docker_tag="ubuntu-bionic-gcc07" NIGHTLY="conan"
 
     # Older compilers we compile Conan packages for, to speed things up for other people
     #CI - os: linux
@@ -127,7 +127,7 @@ jobs:
       #CI compiler: clang
       #CI services:
         #CI - docker
-      #CI env: CMAKE_CC="clang-3.9" CMAKE_CXX="clang++-3.9" CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="3.9" TARGET=linux_clang docker_tag="ubuntu-zesty-clang039"  NIGHTLY="conan"
+      #CI env: CMAKE_CC="clang-3.9" CMAKE_CXX="clang++-3.9" CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="3.9" TARGET=linux_clang docker_tag="ubuntu-zesty-clang039" NIGHTLY="conan"
 
     #CI - os: linux
       #CI dist: trusty

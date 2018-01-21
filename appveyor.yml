@@ -83,9 +83,9 @@ before_build:
   - cmd: conan remote list
 
   - cmd: conan info ..
-  - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan install .. --scope build_all=1 --build -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s arch=%arch_str% -s build_type=%configuration% ) else ( conan install .. --scope build_all=1 --scope create_package=1 --build=missing -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s arch=%arch_str% -s build_type=%configuration% )
+  - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan install .. --env build_all=1 --build -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s arch=%arch_str% -s build_type=%configuration% ) else ( conan install .. --env build_all=1 --env create_package=1 --build=missing -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s arch=%arch_str% -s build_type=%configuration% )
   - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan user --password "%CONAN_PASSWORD%" -r inexor "%CONAN_USER%" )
-  - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan upload --all -r inexor --retry 3 --retry_wait 10 --confirm "*stable*" )
+  - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan upload --all -r inexor --retry 3 --retry-wait 10 --confirm "*stable*" )
   - cmd: if "%GLOBAL_NIGHTLY%"=="true" ( cmake .. -G "%CMAKE_GENERATOR_NAME%" %args% -DCPACK_GENERATOR="ZIP" ) else ( cmake .. -G "%CMAKE_GENERATOR_NAME%" %args% )
 #"NSIS;7Z"
 

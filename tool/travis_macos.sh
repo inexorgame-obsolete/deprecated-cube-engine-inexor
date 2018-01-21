@@ -47,10 +47,27 @@ external_pull_request() {
 }
 
 install_dependencies() {
+  ## install Conan 0.29.2 as we are not yet compatible with Conan >= 0.30.0
+  # cd "$(brew --repo homebrew/core)"
+  # cd "$(brew --repo homebrew/core)" && git checkout 971a4ec25f6835874379a2850d8c5fedc4690746
+  # HOMEBREW_NO_AUTO_UPDATE=1 brew install conan
   brew install conan
 }
 
 ## INSTALLATION ROUTINES ###################################
+
+build_conan() {
+  conan install "$1" --build=missing -s compiler.libcxx="libc++"
+}
+
+build_conan_and_upload() {
+  build_conan "$1"
+  set -f
+  if contains "$1" stable; then
+    conan upload --all --force -r inexor --retry 3 --retry-wait 10 --confirm "$1"
+  fi
+  set +f
+}
 
 build() {
   (
@@ -65,98 +82,50 @@ build() {
 
     conan remote list
 
-
     echo "$pwd"
     ls
 
     conan user -p "${CONAN_PASSWORD}" -r inexor "${CONAN_USER}"
 
-    conan install Kainjow_Mustache/2.0@inexorgame/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
-    set -f
-    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "Kainjow_Mustache/2.0@inexorgame/stable"
-    set +f
+    build_conan_and_upload "Kainjow_Mustache/2.0@inexorgame/stable"
+    build_conan_and_upload "bzip2/1.0.6@lasote/stable"
+    build_conan_and_upload "pugixml/1.7@inexorgame/stable"
+    build_conan_and_upload "gtest/1.8.0@lasote/stable"
+    build_conan_and_upload "spdlog/0.14.0@bincrafters/stable"
+    build_conan_and_upload "fmt/4.1.0@bincrafters/stable"
+    build_conan_and_upload "zlib/1.2.11@conan/stable"
+    build_conan_and_upload "ENet/1.3.13@inexorgame/stable"
+    build_conan_and_upload "Protobuf/3.5.1@inexorgame/stable"
+    build_conan_and_upload "gRPC/1.8.3@inexorgame/stable"
+    build_conan_and_upload "libpng/1.6.34@bincrafters/stable"
+    build_conan_and_upload "Boost/1.66.0@conan/stable"
+    build_conan_and_upload "fmt/4.1.0@bincrafters/stable"
+    build_conan_and_upload "spdlog/0.14.0@bincrafters/stable"
 
-    conan install bzip2/1.0.6@lasote/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
-    set -f
-    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "bzip2/1.0.6@lasote/stable"
-    set +f
+    # build_conan_and_upload "cmake-findboost/0.2.0@bincrafters/stable"
+    # build_conan_and_upload "boost_filesystem/1.66.0@bincrafters/testing"
+    # build_conan_and_upload "boost_program_options/1.66.0@bincrafters/testing"
+    # build_conan_and_upload "boost_random/1.66.0@bincrafters/testing"
+    # build_conan_and_upload "boost_regex/1.66.0@bincrafters/testing"
+    # build_conan_and_upload "boost_thread/1.66.0@bincrafters/testing"
 
-    conan install pugixml/1.7@inexorgame/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
-    set -f
-    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "pugixml/1.7@inexorgame/stable"
-    set +f
+    build_conan_and_upload "InexorGlueGen/0.6.3@inexorgame/stable"
 
-    conan install RapidJSON/1.1.0@inexorgame/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
-    set -f
-    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "RapidJSON/1.1.0@inexorgame/stable"
-    set +f
+    build_conan_and_upload "libjpeg-turbo/1.5.2@bincrafters/stable"
+    build_conan "SDL2/2.0.5@lasote/testing"
+    build_conan "SDL2_image/2.0.1@lasote/stable"
 
-    conan install gtest/1.8.0@lasote/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
-    set -f
-    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "gtest/1.8.0@lasote/stable"
-    set +f
-
-    conan install spdlog/0.14.0@bincrafters/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
-    set -f
-    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "spdlog/0.14.0@bincrafters/stable"
-    set +f
-
-    conan install fmt/4.0.0@bincrafters/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
-    set -f
-    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "fmt/4.0.0@bincrafters/stable"
-    set +f
-
-    conan install zlib/1.2.11@conan/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
-    set -f
-    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "zlib/1.2.11@conan/stable"
-    set +f
-
-    conan install ENet/1.3.13@inexorgame/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
-    set -f
-    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "ENet/1.3.13@inexorgame/stable"
-    set +f
-
-    conan install Protobuf/3.1.0@inexorgame/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
-    set -f
-    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "Protobuf/3.1.0@inexorgame/stable"
-    set +f
-
-    conan install gRPC/1.1.0@inexorgame/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
-    set -f
-    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "gRPC/1.1.0@inexorgame/stable"
-    set +f
-
-    conan install libpng/1.6.21@lasote/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
-    set -f
-    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "libpng/1.6.21@lasote/stable"
-    set +f
-
-    conan install SDL2_image/2.0.1@lasote/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
-    set -f
-    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "SDL2_image/2.0.1@lasote/stable"
-    set +f
-
-    conan install SDL2/2.0.5@lasote/testing --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
-    conan install CEF/3.2704.1424.gc3f0a5b@inexorgame/testing --scope build_all=1 --build -s compiler.libcxx="libc++"
-
-    conan install InexorGlueGen/0.6.0alpha@inexorgame/stable --scope build_all=1 --build=missing -s compiler.libcxx="libc++"
-    set -f
-    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "InexorGlueGen/0.6.0alpha@inexorgame/stable"
-    set +f
-
-    conan install Boost/1.64.0@inexorgame/stable --scope build_all=1 --build -s compiler.libcxx="libc++"
-    set -f
-    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "Boost/1.64.0@inexorgame/stable"
-    set +f
+    build_conan "doxygen/1.8.13@inexorgame/stable"
+    build_conan "CEF/3.3239.1709.g093cae4@inexorgame/testing"
 
     conan info .
 
     if test "$NIGHTLY" = conan; then
-      echo "execut conan install . --scope build_all=1 --build -s compiler.libcxx=libc++"
-      conan install . --scope build_all=1 --build -s compiler.libcxx="libc++"
+      echo "execut conan install . --env build_all=1 --build -s compiler.libcxx=libc++"
+      conan install . --env build_all=1 --build -s compiler.libcxx="libc++"
     else
-      echo "execut conan install . --scope build_all=1 --scope create_package=1 --build=missing -s compiler.libcxx=libc++"
-      conan install . --scope build_all=1 --scope create_package=1 --build=missing -s compiler.libcxx="libc++"
+      echo "execut conan install . --env build_all=1 --env create_package=1 --build=missing -s compiler.libcxx=libc++"
+      conan install . --env build_all=1 --env create_package=1 --build=missing -s compiler.libcxx="libc++"
     fi
 
     conan build "$gitroot"
@@ -219,7 +188,7 @@ target_after_success() {
     # Upload all conan packages to our Bintray repository
     conan user -p "${NIGHTLY_PASSWORD}" -r inexor "${NIGHTLY_USER}"
     set -f
-    conan upload --all --force -r inexor --retry 3 --retry_wait 10 --confirm "*stable*"
+    conan upload --all --force -r inexor --retry 3 --retry-wait 10 --confirm "*stable*"
     set +f
   fi
 }
