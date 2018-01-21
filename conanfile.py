@@ -20,14 +20,15 @@ class InexorConan(ConanFile):
 
     def build(self):
         args = []
-        if os.environ['build_test'] or os.environ['build_all']:
+        if 'build_test' in os.environ or 'build_all' in os.environ:
             args += ["-DBUILD_TEST=1"]
-        if os.environ['build_server'] or os.environ['build_all']:
+        if 'build_server' in os.environ or 'build_all' in os.environ:
             args += ["-DBUILD_SERVER=1"]
-        if os.environ['build_master'] or os.environ['build_all']:
+        if 'build_master' in os.environ or 'build_all' in os.environ:
             args += ["-DBUILD_MASTER=1"]
-        if os.environ['create_package']:
+        if 'create_package' in os.environ:
             args += ["-DCREATE_PACKAGE=1"]
+
         cmake = CMake(self)
         self.run('cmake "{}" {} {}'.format(self.source_folder, cmake.command_line, ' '.join(args)))
         self.run('cmake --build . --target install {}'.format(cmake.build_config))
