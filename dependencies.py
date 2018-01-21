@@ -14,7 +14,7 @@ requires = (
     ("SDL2_image/2.0.1@lasote/stable"),
     ("libpng/1.6.34@bincrafters/stable"),  # override SDl2_image dep for Conan >= 0.30.0 compatibility
     ("libjpeg-turbo/1.5.2@bincrafters/stable"),  # override SDl2_image dep for Conan >= 0.30.0 compatibility
-    ("CEF/3.3239.1709.g093cae4@inexorgame/testing")  # not self-contained
+    ("CEF/3.2704.1424.gc3f0a5b@inexorgame/testing")  # not self-contained
 )
 
 options = '''
