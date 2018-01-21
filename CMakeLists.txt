@@ -30,7 +30,7 @@ include(cmake/compile_flags_and_defs.cmake)
 
 # Add conan dependencies (our c++ dependency manager)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup(TARGETS)
+conan_basic_setup()
 
 # And we split them accordingly into different require_XY() functions
 include(cmake/require_thirdparty_libs.cmake)
