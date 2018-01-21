@@ -1,7 +1,7 @@
 requires = (
     ("InexorGlueGen/0.6.3@inexorgame/stable"),
     ("Protobuf/3.5.1@inexorgame/stable"),
-    ("gRPC/1.8.3@inexorgame/stable"),
+    ("gRPC/1.1.0@inexorgame/stable"),
     ("doxygen/1.8.13@inexorgame/stable"),
     ("Boost/1.66.0@conan/stable"),
     ("RapidJSON/1.1.0@inexorgame/stable"),
