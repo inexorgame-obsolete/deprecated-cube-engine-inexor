@@ -5,9 +5,7 @@
 #include <algorithm>                                  // for max, min
 #include <memory>                                     // for __shared_ptr
 
-#include "enet/enet.h"                                // for enet_socket_des...
-#include "enet/types.h"                               // for enet_uint16
-#include "enet/unix.h"                                // for ENET_SOCKET_NULL
+#include <enet/enet.h>                                // for enet_socket_des...
 #include "inexor/crashreporter/CrashReporter.hpp"     // for CrashReporter
 #include "inexor/fpsgame/server.hpp"                  // for sendpackets
 #include "inexor/io/Error.hpp"                        // for fatal
@@ -17,6 +15,7 @@
 #include "inexor/network/legacy/cube_network.hpp"     // for MAXCLIENTS, MAX...
 #include "inexor/network/legacy/game_types.hpp"       // for server_port
 #include "inexor/server/client_management.hpp"        // for client, disconn...
+#include "inexor/server/windows_integration.hpp"      // IWYU pragma: keep
 #include "inexor/shared/command.hpp"                  // for execfile, SVAR
 #include "inexor/shared/cube_loops.hpp"               // for i, loopi
 #include "inexor/shared/cube_tools.hpp"               // for copystring, UNUSED

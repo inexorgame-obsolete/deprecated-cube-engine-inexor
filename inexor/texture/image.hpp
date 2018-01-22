@@ -5,7 +5,6 @@
 
 #include <SDL.h>
 #include <SDL_opengl.h>                  // for GLenum, GL_FALSE
-#include <sys/types.h>                   // for uint
 #include <algorithm>                     // for max
 
 #include "SDL_pixels.h"                  // for SDL_PixelFormat

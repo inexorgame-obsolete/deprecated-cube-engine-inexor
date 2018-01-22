@@ -4,8 +4,8 @@
 #include <time.h>                                     // for ctime, time
 #include <algorithm>                                  // for min
 
-#include "enet/enet.h"                                // for ENetPacket, ene...
-#include "enet/types.h"                               // for enet_uint8
+#include <enet/enet.h>                                // for ENetPacket, ene...
+
 #include "inexor/gamemode/gamemode.hpp"               // for modename, gamemode
 #include "inexor/io/legacy/stream.hpp"                // for stream, opengzfile
 #include "inexor/network/legacy/buffer_types.hpp"     // for packetbuf

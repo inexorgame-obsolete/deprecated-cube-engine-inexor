@@ -3,7 +3,7 @@
 #include <string.h>                                    // for strcmp
 #include <algorithm>                                   // for max
 
-#include "enet/enet.h"                                 // for enet_address_g...
+#include <enet/enet.h>                                 // for enet_address_g...
 #include "inexor/client/gamemode/gamemode_client.hpp"  // for cmode, clientmode
 #include "inexor/client/network.hpp"                   // for multiplayer
 #include "inexor/fpsgame/client.hpp"                   // for demoplayback

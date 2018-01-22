@@ -6,8 +6,7 @@
 #include <stdlib.h>                                // for strtol
 #include <algorithm>                               // for min
 
-#include "enet/enet.h"                             // for ENetPacket, _ENetP...
-#include "enet/unix.h"                             // for ENET_HOST_TO_NET_32
+#include <enet/enet.h>                             // for ENetPacket, _ENetP...
 #include "inexor/io/legacy/stream.hpp"             // for stream, stream::of...
 #include "inexor/network/legacy/buffer_types.hpp"  // for ucharbuf, packetbuf
 #include "inexor/network/legacy/cube_network.hpp"

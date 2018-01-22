@@ -15,7 +15,7 @@
 #include "SDL_mouse.h"                                // for SDL_ShowCursor
 #include "SDL_stdinc.h"                               // for ::SDL_FALSE
 #include "SDL_video.h"                                // for SDL_SetWindowBr...
-#include "enet/enet.h"                                // for enet_initialize
+#include <enet/enet.h>                                // for enet_initialize
 #include "inexor/client/network.hpp"                  // for abortconnect
 #include "inexor/crashreporter/CrashReporter.hpp"     // for CrashReporter
 #include "inexor/engine/decal.hpp"                    // for initdecals

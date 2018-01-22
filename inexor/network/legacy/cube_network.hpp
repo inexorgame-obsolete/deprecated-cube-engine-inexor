@@ -5,7 +5,6 @@
 #include <stddef.h>                                // for size_t
 #include <algorithm>
 
-#include "enet/types.h"                            // for enet_uint32
 #include "inexor/network/legacy/buffer_types.hpp"  // for ucharbuf, packetbu...
 #include "inexor/shared/cube_types.hpp"            // for uchar
 #include "inexor/shared/cube_vector.hpp"           // for vector

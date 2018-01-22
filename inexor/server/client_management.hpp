@@ -2,7 +2,6 @@
 
 #include <enet/enet.h>                               // for ENetPeer, ENetPa...
 #include <limits.h>                                  // for INT_MAX
-#include <sys/types.h>                               // for uint
 #include <algorithm>                                 // for max
 
 #include "inexor/fpsgame/fpsstate.hpp"               // for fpsstate

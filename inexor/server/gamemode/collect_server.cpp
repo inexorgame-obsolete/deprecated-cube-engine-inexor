@@ -2,7 +2,7 @@
 #include <string.h>                                // for strcmp
 #include <algorithm>                               // for max
 
-#include "enet/enet.h"                             // for _ENetPacketFlag::E...
+#include <enet/enet.h>                             // for _ENetPacketFlag::E...
 #include "inexor/network/legacy/cube_network.hpp"  // for putint, getint, DMF
 #include "inexor/network/legacy/game_types.hpp"    // for ::N_EXPIRETOKENS
 #include "inexor/server/gamemode/collect_server.hpp"

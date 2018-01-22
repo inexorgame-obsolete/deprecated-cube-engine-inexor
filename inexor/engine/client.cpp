@@ -7,7 +7,8 @@
 #include <string.h>                                   // for strcmp
 #include <memory>                                     // for __shared_ptr
 
-#include "enet/enet.h"                                // for ENetEvent, enet...
+#include <enet/enet.h>                                // for ENetEvent, enet...
+
 #include "inexor/client/network.hpp"                  // for resolverwait
 #include "inexor/fpsgame/client.hpp"                  // for connectattempt
 #include "inexor/io/Logging.hpp"                      // for Log, Logger

@@ -4,7 +4,6 @@
 
 #include <stdio.h>                            // for size_t, SEEK_SET
 #include <string.h>                           // for strlen
-#include <sys/types.h>                        // for off_t
 #include <zlib.h>                             // for Z_BEST_COMPRESSION
 
 #include "inexor/shared/cube_endian.hpp"      // for bigswap, lilswap

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "enet/enet.h"  // for ENetPacket
+#include <enet/enet.h>  // for ENetPacket
 
 struct stream;
 

@@ -5,8 +5,8 @@
 #include <algorithm>                                      // for max, min
 #include <memory>                                         // for __shared_ptr
 
-#include "enet/enet.h"                                    // for ENetPacket
-#include "enet/types.h"                                   // for enet_uint32
+#include <enet/enet.h>                                    // for ENetPacket
+
 #include "inexor/engine/worldio.hpp"                      // for loadents
 #include "inexor/fpsgame/entities.hpp"                    // for delayspawn
 #include "inexor/fpsgame/fpsstate.hpp"                    // for ::AI_NONE

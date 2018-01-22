@@ -1,4 +1,3 @@
-#include <ext/alloc_traits.h>              // for __alloc_traits<>::value_type
 #include <iostream>                        // for operator<<, cerr, ostream
 #include <utility>                         // for pair
 
