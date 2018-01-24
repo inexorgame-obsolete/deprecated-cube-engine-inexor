@@ -44,25 +44,23 @@ self_pull_request() {
 # Check whether this is a pull request, that pulls a branch
 # from a different repo.
 external_pull_request() {
-  if is_main_repo; then
-    false
-  else
-    is_pull_request
+  if test ! self_pull_request; then
+    if is_pull_request; then
+      true
+    fi
   fi
+
+  false
 }
 
 # Check whether this build is either triggered by a tag or whether
 # there already is a tag on the specified commit.
 need_new_tag() {
-  if test -n "$TRAVIS_TAG"; then
+  export current_tag=`git tag --contains`
+  if test -n "$current_tag"; then
     false
   else
-    export current_tag=`git tag --contains`
-    if test -n "$current_tag"; then
-        false
-      else
-        true
-      fi
+    true
   fi
 }
 
@@ -84,37 +82,34 @@ build() {
     ## conan info "$gitroot"
 
     if test "$NIGHTLY" = conan; then
-      echo "executed conan install "$gitroot" --env build_all=1 --build -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx=libstdc++11 -e CC=$CC -e CXX=$CXX"
+      echo "execute conan install "$gitroot" --env build_all=1 --build -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx=libstdc++11 -e CC=$CC -e CXX=$CXX"
       conan install "$gitroot" --env build_all=1 --build -s compiler="$CONAN_COMPILER" -s compiler.version="$CONAN_COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -e CC="$CC" -e CXX="$CXX"
     else
-      echo "executed conan install "$gitroot" --env build_all=1 --env create_package=1 --build=missing -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx=libstdc++11 -e CC=$CC -e CXX=$CXX"
-      conan install "$gitroot" --env build_all=1 --env create_package=1 --build=missing -s compiler="$CONAN_COMPILER" -s compiler.version="$CONAN_COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -e CC="$CC" -e CXX="$CXX"
+      if test "$NIGHTLY" = true; then
+        echo "execute conan install "$gitroot" --env build_all=1 --env create_package=1 --build=missing -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx=libstdc++11 -e CC=$CC -e CXX=$CXX"
+        conan install "$gitroot" --env build_all=1 --env create_package=1 --build=missing -s compiler="$CONAN_COMPILER" -s compiler.version="$CONAN_COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -e CC="$CC" -e CXX="$CXX"
+      else
+        echo "execute conan install "$gitroot" --env build_test=1 --env build_server=1 --build=missing -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx=libstdc++11 -e CC=$CC -e CXX=$CXX"
+        conan install "$gitroot" --env build_test=1 --env build_server=1 --build=missing -s compiler="$CONAN_COMPILER" -s compiler.version="$CONAN_COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -e CC="$CC" -e CXX="$CXX"
+      fi
     fi
 
     conan build "$gitroot"
 
-    # Moving the CPack package to the /inexor directory, so we are able to access it from outside of Docker
-    local tempdir="/tmp/inexor-build/"
-    local zipname="inexor-core-${last_tag}-Linux64.zip"
-    local outputdir="/inexor/build/cpack/"
-    mkdir -pv ${outputdir}
-    mv -f -v -u "${tempdir}${zipname}" "${outputdir}"
+    if test "$NIGHTLY" = true; then
+      # Moving the CPack package to the /inexor directory, so we are able to access it from outside of Docker
+      local tempdir="/tmp/inexor-build/"
+      local zipname="inexor-core-${INEXOR_VERSION}-Linux64.zip"
+      local outputdir="/inexor/build/cpack/"
+      mkdir -pv ${outputdir}
+      mv -f -v -u "${tempdir}${zipname}" "${outputdir}"
+    fi
   )
 }
 
 
-install_new_version_tagger() {
-  return 0
-}
-
-
 run_tests() {
-  if contains "$TARGET" linux; then
     "${bin}/unit_tests.exe"
-  else
-    echo >&2 "ERROR: UNKNOWN TRAVIS TARGET: ${TARGET}"
-    exit 23
-  fi
 }
 
 
@@ -141,7 +136,7 @@ upload() {
 ## Automatic Creation of tags and generation of the doxygen documentation #################
 create_apidoc() {
   (
-    local zipname="Inexor-${last_tag}-doc.zip"
+    local zipname="Inexor-${INEXOR_VERSION}-doc.zip"
     local zipfolder="/tmp/inexor-build"
     cd "$gitroot" -v
     doxygen doxygen.conf 2>&1 | grep -vF 'sqlite3_step " \
@@ -177,7 +172,7 @@ create_tag() {
     exit 0
   }
 
-  if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
+  if [ "$branch" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
     # direct push to master
 
     export new_version=$(incremented_version)
@@ -199,7 +194,7 @@ create_tag() {
 }
 
 # Upload nightly
-target_after_success() {
+upload_nightlies() {
   if test "$TARGET" != apidoc; then
     if test "$NIGHTLY" = conan; then
         # Upload all conan packages to our Bintray repository
@@ -211,18 +206,6 @@ target_after_success() {
   fi
 }
 
-target_script() {
-  if test "$TARGET" = apidoc; then
-    create_apidoc
-  elif test "$TARGET" = new_version_tagger; then
-    create_tag
-  else
-    build
-    run_tests
-    target_after_success
-  fi
-  exit 0
-}
 
 ## MAIN ####################################################
 
@@ -233,44 +216,43 @@ script="$0"
 tool="`dirname "$0"`"
 code="${tool}/.."
 bin="${code}/bin"
-TARGET="$3"
-#CMAKE_FLAGS="$4"
-CONAN_COMPILER="$4"
-CONAN_COMPILER_VERSION="$5"
-export CC="$6"
-export CXX="$7"
+TARGET="$1"
+#CMAKE_FLAGS="$2"
+CONAN_COMPILER="$2"
+CONAN_COMPILER_VERSION="$3"
 
-export commit="$8"
-export branch="$9" # The branch we're on
-export jobno="${10}" # The job number
+export branch=`git rev-parse --abbrev-ref HEAD` # The branch we're on
+export commit_date=`git show -s --format=%cd --date=format:%Y-%m-%d-%H-%m-%S`
 # Nightly is either true, false or conan
-NIGHTLY="${11}"
-NIGHTLY_USER="${12}"
-NIGHTLY_PASSWORD="${13}"
-FTP_DOMAIN="${14}"
-if test "${15}" != NO_TAG; then
-  TRAVIS_TAG=${15}
-fi
+NIGHTLY="${4}"
+NIGHTLY_USER="${5}"
+NIGHTLY_PASSWORD="${6}"
+FTP_DOMAIN="${7}"
+
 if [[ -z ${TRAVIS_PULL_REQUEST} ]]; then
-  TRAVIS_PULL_REQUEST="${16}"
+  TRAVIS_PULL_REQUEST="${8}"
 fi
 if [[ -z ${TRAVIS_REPO_SLUG} ]]; then
-  TRAVIS_REPO_SLUG="${17}"
+  TRAVIS_REPO_SLUG="${9}"
 fi
 
 
 # Name of this build
-export build="$(echo "${branch}-${jobno}" | sed 's#/#-#g')-${TARGET}"
+export build="$(echo "${branch}-${commit_date}" | sed 's#/#-#g')-${TARGET}"
 export main_repo="inexorgame/inexor-core"
 
 # Workaround Boost.Build problem to not be able to found Clang
-if [[ $CC == clang* ]]; then
+if [[ $CONAN_COMPILER == clang ]]; then
+  export CC="clang-$CONAN_COMPILER_VERSION"
+  export CXX="clang++-$CONAN_COMPILER_VERSION"
   sudo ln -sf /usr/bin/${CC} /usr/bin/clang
   sudo ln -sf /usr/bin/${CXX} /usr/bin/clang++
 fi
 
 # Just to make sure that no package uses the wrong GCC version...
-if [[ $CC == gcc* ]]; then
+if [[ $CONAN_COMPILER == gcc ]]; then
+  export CC="gcc-$CONAN_COMPILER_VERSION"
+  export CXX="g++-$CONAN_COMPILER_VERSION"
   sudo ln -sf /usr/bin/${CC} /usr/bin/gcc
   sudo ln -sf /usr/bin/${CXX} /usr/bin/gcc++
 fi
@@ -282,15 +264,15 @@ if [[ $TARGET == new_version_tagger ]]; then
   # to be within our git repository clone
   export gitroot="."
 else
-  if [ -z "$2" ]; then
+  # if [ -z "$1" ]; then
     export gitroot="/inexor"
-  else
+  # else
     # this makes it possible to run this script successfull
     # even if doesn't get called from the root directory
     # of THIS repository
     # required to make inexor-game/ci-prebuilds working
-    export gitroot="/inexor/$2"
-  fi
+    # export gitroot="/inexor/$1"
+  # fi
 fi
 
 self_pull_request && {
@@ -319,4 +301,16 @@ need_new_tag && {
   export INEXOR_VERSION=$(incremented_version)
 }
 
-"$@"  # Call the desired function
+
+# main entry point
+if test "$TARGET" = apidoc; then
+  create_apidoc
+elif test "$TARGET" = new_version_tagger; then
+  create_tag
+else
+  build
+  run_tests
+  upload_nightlies
+fi
+
+exit 0

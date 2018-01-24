@@ -42,7 +42,7 @@ jobs:
       compiler: clang                                    #CIDELETE
       services:                                          #CIDELETE
         - docker                                         #CIDELETE
-      env: CMAKE_CC="clang-5.0" CMAKE_CXX="clang++-5.0" CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="5.0" TARGET=linux_clang docker_tag="ubuntu-bionic-clang050" NIGHTLY="true" #CIDELETE
+      env: CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="5.0" TARGET=linux_clang docker_tag="ubuntu-bionic-clang050" NIGHTLY="true" #CIDELETE
     - os: linux                                          #CIDELETE
       dist: trusty                                       #CIDELETE
       sudo: required                                     #CIDELETE
@@ -50,9 +50,9 @@ jobs:
       compiler: gcc                                      #CIDELETE
       services:                                          #CIDELETE
         - docker                                         #CIDELETE
-      env: CMAKE_CC="gcc-7" CMAKE_CXX="g++-7" CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="7" TARGET=linux_gcc docker_tag="ubuntu-bionic-gcc07" NIGHTLY="true" #CIDELETE
+      env: CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="7" TARGET=linux_gcc docker_tag="ubuntu-bionic-gcc07" NIGHTLY="true" #CIDELETE
     - stage: "Create GitHub Tag"                         #CIDELETE
-      if: branch = master AND tag is blank AND fork is false AND type != pull_request #CIDELETE
+      if: branch = master AND tag is blank AND fork is false AND type != pull_request AND repo = head_repo #CIDELETE
       os: linux                                          #CIDELETE
       sudo: false                                        #CIDELETE
       dist: trusty                                       #CIDELETE
@@ -81,7 +81,7 @@ jobs:
       #CI compiler: clang
       #CI services:
         #CI - docker
-      #CI env: CMAKE_CC="clang-5.0" CMAKE_CXX="clang++-5.0" CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="5.0" TARGET=linux_clang docker_tag="ubuntu-bionic-clang050" NIGHTLY="conan"
+      #CI env: CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="5.0" TARGET=linux_clang docker_tag="ubuntu-bionic-clang050" NIGHTLY="conan"
 
     #CI - os: linux
       #CI dist: trusty
@@ -90,7 +90,7 @@ jobs:
       #CI compiler: gcc
       #CI services:
         #CI - docker
-      #CI env: CMAKE_CC="gcc-7" CMAKE_CXX="g++-7" CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="7" TARGET=linux_gcc docker_tag="ubuntu-bionic-gcc07" NIGHTLY="conan"
+      #CI env: CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="7" TARGET=linux_gcc docker_tag="ubuntu-bionic-gcc07" NIGHTLY="conan"
 
     # Older compilers we compile Conan packages for, to speed things up for other people
     #CI - os: linux
@@ -100,7 +100,7 @@ jobs:
       #CI compiler: clang
       #CI services:
         #CI - docker
-      #CI env: CMAKE_CC="clang-4.0" CMAKE_CXX="clang++-4.0" CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="4.0" TARGET=linux_clang docker_tag="ubuntu-artful-clang040" NIGHTLY="conan"
+      #CI env: CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="4.0" TARGET=linux_clang docker_tag="ubuntu-artful-clang040" NIGHTLY="conan"
 
     #CI - os: linux
       #CI dist: trusty
@@ -109,7 +109,7 @@ jobs:
       #CI compiler: gcc
       #CI services:
         #CI - docker
-      #CI env: CMAKE_CC="gcc-6" CMAKE_CXX="g++-6" CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="6" TARGET=linux_gcc docker_tag="ubuntu-artful-gcc06" NIGHTLY="conan"
+      #CI env: CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="6" TARGET=linux_gcc docker_tag="ubuntu-artful-gcc06" NIGHTLY="conan"
 
     #CI - os: linux
       #CI dist: trusty
@@ -118,7 +118,7 @@ jobs:
       #CI compiler: gcc
       #CI services:
         #CI - docker
-      #CI env: CMAKE_CC="gcc-5" CMAKE_CXX="g++-5" CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="5" TARGET=linux_gcc docker_tag="ubuntu-zesty-gcc054" NIGHTLY="conan"
+      #CI env: CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="5" TARGET=linux_gcc docker_tag="ubuntu-bionic-gcc054" NIGHTLY="conan"
 
     #CI - os: linux
       #CI dist: trusty
@@ -127,7 +127,7 @@ jobs:
       #CI compiler: clang
       #CI services:
         #CI - docker
-      #CI env: CMAKE_CC="clang-3.9" CMAKE_CXX="clang++-3.9" CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="3.9" TARGET=linux_clang docker_tag="ubuntu-zesty-clang039" NIGHTLY="conan"
+      #CI env: CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="3.9" TARGET=linux_clang docker_tag="ubuntu-bionic-clang039" NIGHTLY="conan"
 
     #CI - os: linux
       #CI dist: trusty
@@ -136,7 +136,7 @@ jobs:
       #CI compiler: clang
       #CI services:
         #CI - docker
-      #CI env: CMAKE_CC="clang-3.8" CMAKE_CXX="clang++-3.8" CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="3.8" TARGET=linux_clang docker_tag="ubuntu-zesty-clang038" NIGHTLY="conan"
+      #CI env: CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="3.8" TARGET=linux_clang docker_tag="ubuntu-bionic-clang038" NIGHTLY="conan"
 
     #CI - os: osx
       #CI sudo: false
@@ -174,10 +174,11 @@ script:
       NIGHTLY_PASSWORD="${FTP_PASSWORD}";
     fi
   - if ! [[ "${docker_tag}" == "NODOCKER" ]]; then
-    sudo docker run -v $(pwd)':'/inexor --net=host -it inexorgame/ci-docker':'${docker_tag} /inexor/${RELATIVE_PATH}tool/travis.sh target_script /${RELATIVE_PATH} ${TARGET} ${CONAN_COMPILER} ${CONAN_COMPILER_VERSION} ${CMAKE_CC} ${CMAKE_CXX} ${TRAVIS_COMMIT} ${TRAVIS_BRANCH} ${TRAVIS_JOB_NUMBER} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN} ${TRAVIS_TAG} ${TRAVIS_PULL_REQUEST} ${TRAVIS_REPO_SLUG};
+    SOURCE_DIRECTORY="$(pwd)/${RELATIVE_PATH}";
+    sudo docker run -v ${SOURCE_DIRECTORY}':'/inexor --net=host -it inexorgame/ci-docker':'${docker_tag} /inexor/tool/travis.sh ${TARGET} ${CONAN_COMPILER} ${CONAN_COMPILER_VERSION} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN} ${TRAVIS_PULL_REQUEST} ${TRAVIS_REPO_SLUG};
     fi
   - if [ "${TARGET}" == "new_version_tagger" ]; then
-        bash ./tool/travis.sh target_script /${RELATIVE_PATH} ${TARGET} ${CONAN_COMPILER} ${CONAN_COMPILER_VERSION} ${CMAKE_CC} ${CMAKE_CXX} ${TRAVIS_COMMIT} ${TRAVIS_BRANCH} ${TRAVIS_JOB_NUMBER} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN} ${TRAVIS_TAG} ${TRAVIS_PULL_REQUEST} ${TRAVIS_REPO_SLUG};
+        bash ./tool/travis.sh ${TARGET} ${CONAN_COMPILER} ${CONAN_COMPILER_VERSION} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN} ${TRAVIS_PULL_REQUEST} ${TRAVIS_REPO_SLUG};
     fi
   - if [ "${TRAVIS_OS_NAME}" == "osx" ]; then
       bash ${RELATIVE_PATH}tool/travis_macos.sh;

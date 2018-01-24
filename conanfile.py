@@ -24,8 +24,6 @@ class InexorConan(ConanFile):
             args += ["-DBUILD_TEST=1"]
         if 'build_server' in os.environ or 'build_all' in os.environ:
             args += ["-DBUILD_SERVER=1"]
-        if 'build_master' in os.environ or 'build_all' in os.environ:
-            args += ["-DBUILD_MASTER=1"]
         if 'create_package' in os.environ:
             args += ["-DCREATE_PACKAGE=1"]
 
