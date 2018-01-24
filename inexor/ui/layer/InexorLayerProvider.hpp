@@ -20,7 +20,7 @@ namespace inexor {
 namespace ui {
 namespace layer {
 
-class InexorLayerProvider : public CefBase
+class InexorLayerProvider : public CefBaseRefCounted
 {
 
     public:
