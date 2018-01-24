@@ -39,18 +39,16 @@ self_pull_request() {
 # Check whether this is a pull request, that pulls a branch
 # from a different repo.
 external_pull_request() {
-  if is_main_repo; then
-    false
-  else
-    is_pull_request
+  if test ! self_pull_request; then
+    if is_pull_request; then
+      true
+    fi
   fi
+
+  false
 }
 
 install_dependencies() {
-  ## install Conan 0.29.2 as we are not yet compatible with Conan >= 0.30.0
-  # cd "$(brew --repo homebrew/core)"
-  # cd "$(brew --repo homebrew/core)" && git checkout 971a4ec25f6835874379a2850d8c5fedc4690746
-  # HOMEBREW_NO_AUTO_UPDATE=1 brew install conan
   brew install conan
 }
 
@@ -99,15 +97,6 @@ build() {
     build_conan_and_upload "gRPC/1.8.3@inexorgame/stable"
     build_conan_and_upload "libpng/1.6.34@bincrafters/stable"
     build_conan_and_upload "Boost/1.66.0@conan/stable"
-    build_conan_and_upload "fmt/4.1.0@bincrafters/stable"
-    build_conan_and_upload "spdlog/0.14.0@bincrafters/stable"
-
-    # build_conan_and_upload "cmake-findboost/0.2.0@bincrafters/stable"
-    # build_conan_and_upload "boost_filesystem/1.66.0@bincrafters/testing"
-    # build_conan_and_upload "boost_program_options/1.66.0@bincrafters/testing"
-    # build_conan_and_upload "boost_random/1.66.0@bincrafters/testing"
-    # build_conan_and_upload "boost_regex/1.66.0@bincrafters/testing"
-    # build_conan_and_upload "boost_thread/1.66.0@bincrafters/testing"
 
     build_conan_and_upload "InexorGlueGen/0.6.3@inexorgame/stable"
 
@@ -115,7 +104,14 @@ build() {
     build_conan "SDL2/2.0.5@lasote/testing"
     build_conan "SDL2_image/2.0.1@lasote/stable"
 
-    build_conan "doxygen/1.8.13@inexorgame/stable"
+    build_conan_and_upload "cmake-findboost/0.2.0@bincrafters/stable"
+    build_conan_and_upload "boost_filesystem/1.66.0@bincrafters/testing"
+    build_conan_and_upload "boost_program_options/1.66.0@bincrafters/testing"
+    build_conan_and_upload "boost_random/1.66.0@bincrafters/testing"
+    build_conan_and_upload "boost_regex/1.66.0@bincrafters/testing"
+    build_conan_and_upload "boost_thread/1.66.0@bincrafters/testing"
+
+    build_conan "doxygen/1.8.14@inexorgame/stable"
     build_conan "CEF/3.3239.1709.g093cae4@inexorgame/testing"
 
     conan info .
@@ -130,33 +126,22 @@ build() {
 
     conan build "$gitroot"
 
-    # Moving the CPack package to the /inexor directory, so we are able to access it from outside of Docker
-    local tempdir="/tmp/inexor-build/"
-    local zipname="inexor-core-${last_tag}-Linux64.zip"
-    local outputdir="/inexor/build/cpack/"
-    mkdir -pv ${outputdir}
-    mv -f -v -u "${tempdir}${zipname}" "${outputdir}"
+    if test "$NIGHTLY" != conan; then
+      # Moving the CPack package to the /inexor directory, so we are able to access it from outside of Docker
+      local tempdir="/tmp/inexor-build/"
+      local zipname="inexor-core-${INEXOR_VERSION}-Linux64.zip"
+      local outputdir="/inexor/build/cpack/"
+      mkdir -pv ${outputdir}
+      mv -f -v -u "${tempdir}${zipname}" "${outputdir}"
+    fi
   )
 }
 
 run_tests() {
-  if contains "$TARGET" macos; then
     "${bin}/unit_tests.exe"
-  else
-    echo >&2 "ERROR: UNKNOWN TRAVIS TARGET: ${TARGET}"
-    exit 23
-  fi
 }
 
 
-# ATTENTION:
-# Please USE the following naming format for any files uploaded to our distribution server
-# <BRANCHNAME>-<BUILDNUMBER>-<TARGET_NAME>.EXTENSION
-# where <PACKAGENAME> is NOT CONTAINING any -
-# correct: master-1043.2-linux_gcc.txt
-# correct: refactor-992.2-apidoc.hip
-# exception: master-latest-<TARGET_NAME>.zip
-# wrong: ...-linux_gcc-1043.2.zip
 
 ## UPLOADING BUILDS AND THE APIDOC #################
 
@@ -183,7 +168,7 @@ incremented_version()
 }
 
 # Upload nightly
-target_after_success() {
+upload_nightlies() {
   if test "$NIGHTLY" = conan; then
     # Upload all conan packages to our Bintray repository
     conan user -p "${NIGHTLY_PASSWORD}" -r inexor "${NIGHTLY_USER}"
@@ -203,12 +188,13 @@ tool="`dirname "$0"`"
 code="${tool}/.."
 bin="${code}/bin"
 
-export commit=TRAVIS_COMMIT
+# export commit=TRAVIS_COMMIT # we don't use that right now
 export branch=TRAVIS_BRANCH # The branch we're on
 export jobno=TRAVIS_JOB_NUMBER # The job number
+export commit_date=`git show -s --format=%cd --date=format:%Y-%m-%d-%H-%m-%S`
 
 # Name of this build
-export build="$(echo "${branch}-${jobno}" | sed 's#/#-#g')-${TARGET}"
+export build="$(echo "${branch}-${commit_date}" | sed 's#/#-#g')-${TARGET}"
 export main_repo="inexorgame/inexor-core"
 
 
@@ -250,4 +236,4 @@ export INEXOR_VERSION=${last_tag}
 install_dependencies
 build
 run_tests
-target_after_success
+upload_nightlies
