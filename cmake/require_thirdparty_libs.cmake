@@ -141,16 +141,13 @@ add_require_conan_lib_function(enet)
 
 # Protobuf (XML or JSON like serialization format but in binary, so it needs an compiler)
 add_require_conan_lib_function(Protobuf)
-find_program(Protobuf REQUIRED) 
-if (NOT DEFINED PROTOBUF_PROTOC_EXECUTABLE) # We additionally do this, since we don't have the "PROTOBUF_PROTOC_EXECUTABLE" path anywhere.
-  find_program(PROTOBUF_PROTOC_EXECUTABLE protoc PATHS ${CONAN_BIN_DIRS_PROTOBUF} NO_CMAKE_ENVIRONMENT_PATH  NO_CMAKE_PATH NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH )
-endif()
+
+find_program(PROTOBUF_PROTOC_EXECUTABLE protoc PATHS ${CONAN_BIN_DIRS_PROTOBUF} NO_CMAKE_ENVIRONMENT_PATH  NO_CMAKE_PATH NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH )
+
 
 # gRPC (googles remote procedure call framework, used for Inexors networking and scripting binding)
 add_require_conan_lib_function(gRPC)
-if (NOT DEFINED GRPC_GRPC_CPP_PLUGIN) # We additionally do this, since we don't have the "PROTOBUF_PROTOC_EXECUTABLE" path anywhere.
-  find_program(GRPC_GRPC_CPP_PLUGIN grpc_cpp_plugin PATHS ${CONAN_BIN_DIRS_GRPC} NO_CMAKE_ENVIRONMENT_PATH  NO_CMAKE_PATH NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH )
-endif()
+find_program(GRPC_GRPC_CPP_PLUGIN grpc_cpp_plugin PATHS ${CONAN_BIN_DIRS_GRPC} NO_CMAKE_ENVIRONMENT_PATH  NO_CMAKE_PATH NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH )
 
 # spdlog (fast logging library)
 add_require_conan_lib_function(spdlog)
