@@ -38,11 +38,21 @@ list(APPEND GCC_OR_CLANG_COMPILER_FLAGS_RELEASE
 )
 list(APPEND GCC_OR_CLANG_LINKER_FLAGS
   -Wl,-rpath,.                    # Set rpath so that libraries can be placed next to the executable
-  -Wl,--as-needed                 # Only link libraries that export symbols used by the binary
   -static-libstdc++               # Link statically
 )
+
+## --as-needed is not known to Apple's Clang linker
+if(NOT OS_MACOS)
+  list(APPEND GCC_OR_CLANG_LINKER_FLAGS
+    -Wl,--as-needed                 # Only link libraries that export symbols used by the binary
+  )
+
+  list(APPEND GCC_OR_CLANG_LINKER_FLAGS_RELEASE
+    -Wl,-O1                         # Enable linker optimizations
+  )
+endif()
+
 list(APPEND GCC_OR_CLANG_LINKER_FLAGS_RELEASE
-  -Wl,-O1                         # Enable linker optimizations
   -Wl,--gc-sections               # Remove unused code resulting from -fdata-sections and -function-sections
 )
 
@@ -111,7 +121,7 @@ list(APPEND MSVC_LINKER_FLAGS_RELEASE
 
 if(OS_MACOS)
   list(APPEND GCC_OR_CLANG_LINKER_FLAGS_RELEASE
-    -flto                             # Enable link time optimizations (otherwhise -O doesn't work)
+    -flto                             # Enable link time optimizations
   )
 endif()
 
@@ -163,7 +173,7 @@ add_definitions(-D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS)
 # -D_USE_MATH_DEFINES                   = By defining this prior to math.h we get M_PI defined
 # -DHAVE_M_PI                           = This is for SDL to not try to define M_PI
 add_definitions(-D_USE_MATH_DEFINES -DHAVE_M_PI)
-  
+
 if(OS_POSIX)
   # Allow the Large File Support (LFS) interface to replace the old interface.
   add_definitions(-D_FILE_OFFSET_BITS=64)

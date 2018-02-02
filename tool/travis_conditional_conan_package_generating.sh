@@ -7,10 +7,13 @@
 # In both, appveyor.yml and .travis.yml, lines with #CIDELETE are getting completely removed
 
 
-# TODO: support for branches with conan- instead of only master to test mass building of packages easily (maybe)
-
 # this makes the entire script fail if one commands fail
 set -e
+
+# Check if a string contains something
+contains() {
+  test "`subrm "$1" "$2"`" != "$1"
+}
 
 # Making sure we NEVER execute anything of this for pull requests as this could be a huge security risk
 if [[ "${TRAVIS_PULL_REQUEST}" != false ]]; then
@@ -18,17 +21,25 @@ if [[ "${TRAVIS_PULL_REQUEST}" != false ]]; then
     exit 0
 fi
 
+force="false";
+build_branch="master";
 
-if ! [[ "${TRAVIS_BRANCH}" == "master" ]]; then
+if [[ "`git log -1 --pretty=%B`" == *"[build prebuilds]"* ]]; then
+  echo "Building prebuilds because of the commit message keyword [build prebuilds]"
+  force="true";
+  build_branch="${TRAVIS_BRANCH}";
+else
+  if ! [[ "${TRAVIS_BRANCH}" == "master" ]]; then
     echo "This isn't the master branch"
     exit 0
+  fi
 fi
 
 # Check if important files did change in the last commit (the commit we are checking out)
 echo "Filtered git diff output:"
 echo "$(git diff --name-only ${TRAVIS_COMMIT}^ -- dependencies.py)"
 
-if [[ "$(git diff --name-only ${TRAVIS_COMMIT}^ -- dependencies.py)" == "" ]]; then
+if [[ "${force}" == "false" ]] && [[ "$(git diff --name-only ${TRAVIS_COMMIT}^ -- dependencies.py)" == "" ]]; then
     echo "No changes found in Conan dependencies!"
     exit 0
 fi
@@ -51,7 +62,7 @@ cd inexor
 
 git fetch --all
 git checkout master
-git reset --hard origin/master
+git reset --hard origin/${TRAVIS_BRANCH}
 cd ../
 
 

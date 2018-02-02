@@ -2,50 +2,9 @@
 #
 ## UTILITY FUNCTIONS #######################################
 
-# Check if a string contains something
-contains() {
-  test "`subrm "$1" "$2"`" != "$1"
-}
-
-# Remove a substring by name
-subrm() {
-  echo "${1#*$2}"
-}
-
 mkcd() {
   mkdir -pv "$1"
   cd "$1"
-}
-
-# Check whether this travis job runs for the main repository (inexorgame/inexor-core)
-is_main_repo() {
-  test "${TRAVIS_REPO_SLUG}" = "${main_repo}"
-}
-
-# Check whether this build is for a pull request
-is_pull_request() {
-  test "${TRAVIS_PULL_REQUEST}" != false
-}
-
-# Check whether this is a pull request, wants to merge a
-# branch within the main repo into the main repo.
-#
-# E.g. Merge inexor-game/code: karo/unittesting
-#      into  inexor-game/code: master
-self_pull_request() {
-  is_pull_request && is_main_repo
-}
-
-# Check whether this is a pull request, that pulls a branch
-# from a different repo.
-external_pull_request() {
-  if test ! self_pull_request; then
-    if is_pull_request; then
-      true
-    fi
-  fi
-
-  false
 }
 
 install_dependencies() {
@@ -61,7 +20,7 @@ build_conan() {
 build_conan_and_upload() {
   build_conan "$1"
   set -f
-  if contains "$1" stable; then
+  if [[ "$1" == *"stable"* ]]; then
     conan upload --all --force -r inexor --retry 3 --retry-wait 10 --confirm "$1"
   fi
   set +f
@@ -94,11 +53,11 @@ build() {
     build_conan_and_upload "zlib/1.2.11@conan/stable"
     build_conan_and_upload "ENet/1.3.13@inexorgame/stable"
     build_conan_and_upload "Protobuf/3.5.1@inexorgame/stable"
-    build_conan_and_upload "gRPC/1.8.3@inexorgame/stable"
+    build_conan_and_upload "gRPC/1.1.0@inexorgame/stable"
     build_conan_and_upload "libpng/1.6.34@bincrafters/stable"
     build_conan_and_upload "Boost/1.66.0@conan/stable"
 
-    build_conan_and_upload "InexorGlueGen/0.6.3@inexorgame/stable"
+    build_conan_and_upload "InexorGlueGen/0.6.5@inexorgame/stable"
 
     build_conan_and_upload "libjpeg-turbo/1.5.2@bincrafters/stable"
     build_conan "SDL2/2.0.5@lasote/testing"
@@ -129,7 +88,7 @@ build() {
     if test "$NIGHTLY" != conan; then
       # Moving the CPack package to the /inexor directory, so we are able to access it from outside of Docker
       local tempdir="/tmp/inexor-build/"
-      local zipname="inexor-core-${INEXOR_VERSION}-Linux64.zip"
+      local zipname="inexor-core-${INEXOR_VERSION}-macOS64.zip"
       local outputdir="/inexor/build/cpack/"
       mkdir -pv ${outputdir}
       mv -f -v -u "${tempdir}${zipname}" "${outputdir}"
@@ -204,13 +163,6 @@ export main_repo="inexorgame/inexor-core"
 # required to make inexor-game/ci-prebuilds working
 export gitroot="./${RELATIVE_PATH}"
 
-self_pull_request && {
-  echo >&2 -e "Skipping build, because this is a pull " \
-    "request with a branch in the main repo.\n"         \
-    "This means, there should already be a CI job for " \
-    "this branch. No need to do things twice."
-  exit 0
-}
 
 echo "$pwd"
 echo "$gitroot"
