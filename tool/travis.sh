@@ -7,50 +7,9 @@
 
 ## UTILITY FUNCTIONS #######################################
 
-# Check if a string contains something
-contains() {
-  test "`subrm "$1" "$2"`" != "$1"
-}
-
-# Remove a substring by name
-subrm() {
-  echo "${1#*$2}"
-}
-
 mkcd() {
   mkdir -pv "$1"
   cd "$1"
-}
-
-# Check whether this travis job runs for the main repository (inexorgame/inexor-core)
-is_main_repo() {
-  test "${TRAVIS_REPO_SLUG}" = "${main_repo}"
-}
-
-# Check whether this build is for a pull request
-is_pull_request() {
-  test "${TRAVIS_PULL_REQUEST}" != false
-}
-
-# Check whether this is a pull request, wants to merge a
-# branch within the main repo into the main repo.
-#
-# E.g. Merge inexor-game/code: karo/unittesting
-#      into  inexor-game/code: master
-self_pull_request() {
-  is_pull_request && is_main_repo
-}
-
-# Check whether this is a pull request, that pulls a branch
-# from a different repo.
-external_pull_request() {
-  if test ! self_pull_request; then
-    if is_pull_request; then
-      true
-    fi
-  fi
-
-  false
 }
 
 # Check whether this build is either triggered by a tag or whether
@@ -216,26 +175,16 @@ script="$0"
 tool="`dirname "$0"`"
 code="${tool}/.."
 bin="${code}/bin"
-TARGET="$1"
-#CMAKE_FLAGS="$2"
-CONAN_COMPILER="$2"
-CONAN_COMPILER_VERSION="$3"
-
-export branch=`git rev-parse --abbrev-ref HEAD` # The branch we're on
-export commit_date=`git show -s --format=%cd --date=format:%Y-%m-%d-%H-%m-%S`
-# Nightly is either true, false or conan
-NIGHTLY="${4}"
+TARGET="${1}"
+CONAN_COMPILER="${2}"
+CONAN_COMPILER_VERSION="${3}"
+NIGHTLY="${4}" # Nightly is either true, false or conan
 NIGHTLY_USER="${5}"
 NIGHTLY_PASSWORD="${6}"
 FTP_DOMAIN="${7}"
 
-if [[ -z ${TRAVIS_PULL_REQUEST} ]]; then
-  TRAVIS_PULL_REQUEST="${8}"
-fi
-if [[ -z ${TRAVIS_REPO_SLUG} ]]; then
-  TRAVIS_REPO_SLUG="${9}"
-fi
-
+export branch=`git rev-parse --abbrev-ref HEAD` # The branch we're on
+export commit_date=`git show -s --format=%cd --date=format:%Y-%m-%d-%H-%m-%S`
 
 # Name of this build
 export build="$(echo "${branch}-${commit_date}" | sed 's#/#-#g')-${TARGET}"
@@ -264,24 +213,9 @@ if [[ $TARGET == new_version_tagger ]]; then
   # to be within our git repository clone
   export gitroot="."
 else
-  # if [ -z "$1" ]; then
-    export gitroot="/inexor"
-  # else
-    # this makes it possible to run this script successfull
-    # even if doesn't get called from the root directory
-    # of THIS repository
-    # required to make inexor-game/ci-prebuilds working
-    # export gitroot="/inexor/$1"
-  # fi
+  export gitroot=${code}
 fi
 
-self_pull_request && {
-  echo >&2 -e "Skipping build, because this is a pull " \
-    "request with a branch in the main repo.\n"         \
-    "This means, there should already be a CI job for " \
-    "this branch. No need to do things twice."
-  exit 0
-}
 
 cd "$gitroot"
 
