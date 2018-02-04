@@ -101,10 +101,6 @@ jobs:
       #CI env: COMPILER="clang" COMPILER_VERSION="3.9" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-clang039" NIGHTLY="conan"
     #CI - <<: *linux
       #CI env: COMPILER="clang" COMPILER_VERSION="3.9" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-clang039" NIGHTLY="conan"
-    #CI - <<: *linux
-      #CI env: COMPILER="clang" COMPILER_VERSION="3.8" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-clang038" NIGHTLY="conan"
-    #CI - <<: *linux
-      #CI env: COMPILER="clang" COMPILER_VERSION="3.8" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-clang038" NIGHTLY="conan"
 
   #CI fast_finish: true # don't wait for allow_failures to fail, gives faster response
   #CI allow_failures:
