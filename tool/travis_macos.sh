@@ -8,17 +8,28 @@ mkcd() {
 }
 
 install_dependencies() {
+  brew update &> /dev/null
   brew install conan
+  brew install nasm
 }
 
 ## INSTALLATION ROUTINES ###################################
 
 build_conan() {
-  conan install "$1" --build=missing -s compiler.libcxx="libc++"
+  conan install "$1" --build=missing -s compiler.libcxx="libc++" -s build_type=${COMPILER_CONFIGURATION}
 }
 
 build_conan_and_upload() {
   build_conan "$1"
+  set -f
+  if [[ "$1" == *"stable"* ]]; then
+    conan upload --all --force -r inexor --retry 3 --retry-wait 10 --confirm "$1"
+  fi
+  set +f
+}
+
+rebuild_conan_and_upload() {
+  conan install "$1" --build -s compiler.libcxx="libc++" -s build_type=${COMPILER_CONFIGURATION}
   set -f
   if [[ "$1" == *"stable"* ]]; then
     conan upload --all --force -r inexor --retry 3 --retry-wait 10 --confirm "$1"
@@ -39,7 +50,7 @@ build() {
 
     conan remote list
 
-    echo "$pwd"
+    pwd
     ls
 
     conan user -p "${CONAN_PASSWORD}" -r inexor "${CONAN_USER}"
@@ -48,8 +59,8 @@ build() {
     build_conan_and_upload "bzip2/1.0.6@lasote/stable"
     build_conan_and_upload "pugixml/1.7@inexorgame/stable"
     build_conan_and_upload "gtest/1.8.0@lasote/stable"
-    build_conan_and_upload "spdlog/0.14.0@bincrafters/stable"
-    build_conan_and_upload "fmt/4.1.0@bincrafters/stable"
+    rebuild_conan_and_upload "spdlog/0.14.0@bincrafters/stable"
+    rebuild_conan_and_upload "fmt/4.1.0@bincrafters/stable"
     build_conan_and_upload "zlib/1.2.11@conan/stable"
     build_conan_and_upload "ENet/1.3.13@inexorgame/stable"
     build_conan_and_upload "Protobuf/3.5.1@inexorgame/stable"
@@ -57,18 +68,19 @@ build() {
     build_conan_and_upload "libpng/1.6.34@bincrafters/stable"
     build_conan_and_upload "Boost/1.66.0@conan/stable"
 
-    build_conan_and_upload "InexorGlueGen/0.6.5@inexorgame/stable"
+    build_conan_and_upload "InexorGlueGen/0.6.6@inexorgame/stable"
 
     build_conan_and_upload "libjpeg-turbo/1.5.2@bincrafters/stable"
-    build_conan "SDL2/2.0.5@lasote/testing"
-    build_conan "SDL2_image/2.0.1@lasote/stable"
+    rebuild_conan_and_upload "OpenSSL/1.1.0g@conan/stable"
+    rebuild_conan "SDL2/2.0.5@lasote/testing"
+    rebuild_conan "SDL2_image/2.0.1@lasote/stable"
 
-    build_conan_and_upload "cmake-findboost/0.2.0@bincrafters/stable"
-    build_conan_and_upload "boost_filesystem/1.66.0@bincrafters/testing"
-    build_conan_and_upload "boost_program_options/1.66.0@bincrafters/testing"
-    build_conan_and_upload "boost_random/1.66.0@bincrafters/testing"
-    build_conan_and_upload "boost_regex/1.66.0@bincrafters/testing"
-    build_conan_and_upload "boost_thread/1.66.0@bincrafters/testing"
+    build_conan "cmake-findboost/0.2.0@bincrafters/stable"
+    build_conan "boost_filesystem/1.66.0@bincrafters/stable"
+    build_conan "boost_program_options/1.66.0@bincrafters/stable"
+    build_conan "boost_random/1.66.0@bincrafters/stable"
+    build_conan "boost_regex/1.66.0@bincrafters/stable"
+    build_conan "boost_thread/1.66.0@bincrafters/stable"
 
     build_conan "doxygen/1.8.14@inexorgame/stable"
     build_conan "CEF/3.3239.1709.g093cae4@inexorgame/testing"
@@ -76,12 +88,19 @@ build() {
     conan info .
 
     if test "$NIGHTLY" = conan; then
-      echo "execut conan install . --env build_all=1 --build -s compiler.libcxx=libc++"
-      conan install . --env build_all=1 --build -s compiler.libcxx="libc++"
+      if test "$TARGET" = "conanforcerebuild"; then
+        buildstrategy=""
+      else
+        buildstrategy="=missing"
+      fi
+
+      execute="conan install . --env build_all=1 --build${buildstrategy} -s compiler="${COMPILER}" -s compiler.libcxx="libc++" -s build_type=${COMPILER_CONFIGURATION}"
     else
-      echo "execut conan install . --env build_all=1 --env create_package=1 --build=missing -s compiler.libcxx=libc++"
-      conan install . --env build_all=1 --env create_package=1 --build=missing -s compiler.libcxx="libc++"
+      execute="conan install . --env build_all=1 --env create_package=1 --build=missing -s compiler="${COMPILER}" -s compiler.libcxx="libc++" -s build_type=${COMPILER_CONFIGURATION}"
     fi
+
+    echo "execute ${execute}";
+    eval ${execute}
 
     conan build "$gitroot"
 

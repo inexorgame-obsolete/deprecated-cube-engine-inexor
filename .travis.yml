@@ -27,6 +27,18 @@ git:
 
 language: cpp
 
+linux: &linux
+  os: linux
+  sudo: required
+  dist: trusty
+  services:
+    - docker
+
+osx: &osx
+  os: osx
+  sudo: false
+  language: generic
+
 jobs:
   include:
   # We run the following jobs in our main repository:    #CIDELETE
@@ -34,113 +46,76 @@ jobs:
       os: linux                                          #CIDELETE
       dist: trusty                                       #CIDELETE
       sudo: false                                        #CIDELETE
-      env: docker_tag="NODOCKER" conan_prebuilds="true"  #CIDELETE
+      env: DOCKER="NODOCKER" conan_prebuilds="true"      #CIDELETE
     - stage: "Building & Testing"                        #CIDELETE
-      os: linux                                          #CIDELETE
-      dist: trusty                                       #CIDELETE
-      sudo: required                                     #CIDELETE
-      compiler: clang                                    #CIDELETE
-      services:                                          #CIDELETE
-        - docker                                         #CIDELETE
-      env: CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="5.0" TARGET="compile" docker_tag="ubuntu-bionic-clang050" NIGHTLY="true" #CIDELETE
-    - os: linux                                          #CIDELETE
-      dist: trusty                                       #CIDELETE
-      sudo: required                                     #CIDELETE
-      compiler: gcc                                      #CIDELETE
-      services:                                          #CIDELETE
-        - docker                                         #CIDELETE
-      env: CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="7" TARGET="compile" docker_tag="ubuntu-bionic-gcc07" NIGHTLY="true" #CIDELETE
+      <<: *linux                                         #CIDELETE
+      env: COMPILER="clang" COMPILER_VERSION="5.0" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-clang050" NIGHTLY="true" #CIDELETE
+    - <<: *linux                                         #CIDELETE
+      env: COMPILER="gcc" COMPILER_VERSION="7" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-gcc07" NIGHTLY="true" #CIDELETE
     - stage: "Create GitHub Tag"                         #CIDELETE
       if: branch = master AND tag is blank AND fork is false AND type != pull_request AND repo = head_repo #CIDELETE
       os: linux                                          #CIDELETE
       sudo: false                                        #CIDELETE
       dist: trusty                                       #CIDELETE
-      env: docker_tag="NODOCKER" TARGET=new_version_tagger #CIDELETE
-      git:                                               #CIDELETE
-        submodules: false                                #CIDELETE
+      env: DOCKER="NODOCKER" TARGET=new_version_tagger   #CIDELETE
       branches:                                          #CIDELETE
         only:                                            #CIDELETE
           - master                                       #CIDELETE
     #- os: linux                                         #CIDELETE
       #sudo: false                                       #CIDELETE
       #dist: trusty                                      #CIDELETE
-      #env: docker_tag="NODOCKER" TARGET=apidoc          #CIDELETE
+      #env: DOCKER="NODOCKER" TARGET=apidoc              #CIDELETE
 
 
     # We run the following jobs in ci-prebuilds:
     # Our main compilers we run tests for
-    #CI - os: linux
-      #CI dist: trusty
-      #CI sudo: required
-      #CI compiler: clang
-      #CI services:
-        #CI - docker
-      #CI env: CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="5.0" TARGET="compile" docker_tag="ubuntu-bionic-clang050" NIGHTLY="conan"
-
-    #CI - os: linux
-      #CI dist: trusty
-      #CI sudo: required
-      #CI compiler: gcc
-      #CI services:
-        #CI - docker
-      #CI env: CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="7" TARGET="compile" docker_tag="ubuntu-bionic-gcc07" NIGHTLY="conan"
+    #CI - <<: *osx
+      #CI osx_image: xcode9.2
+      #CI env: COMPILER="clang" COMPILER_CONFIGURATION="Release" TARGET="macos" DOCKER="NODOCKER" NIGHTLY="conan"
+    #CI - <<: *osx
+      #CI osx_image: xcode9.2
+      #CI env: COMPILER="clang" COMPILER_CONFIGURATION="Debug" TARGET="macos" DOCKER="NODOCKER" NIGHTLY="conan"
+    #CI - <<: *linux
+      #CI env: COMPILER="clang" COMPILER_VERSION="5.0" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-clang050" NIGHTLY="conan"
+    #CI - <<: *linux
+      #CI env: COMPILER="clang" COMPILER_VERSION="5.0" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-clang050" NIGHTLY="conan"
+    #CI - <<: *linux
+      #CI env: COMPILER="gcc" COMPILER_VERSION="7" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-gcc07" NIGHTLY="conan"
+    #CI - <<: *linux
+      #CI env: COMPILER="gcc" COMPILER_VERSION="7" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-gcc07" NIGHTLY="conan"
 
     # Older compilers we compile Conan packages for, to speed things up for other people
-    #CI - os: linux
-      #CI dist: trusty
-      #CI sudo: required
-      #CI compiler: clang
-      #CI services:
-        #CI - docker
-      #CI env: CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="4.0" TARGET="compile" docker_tag="ubuntu-bionic-clang040" NIGHTLY="conan"
-
-    #CI - os: linux
-      #CI dist: trusty
-      #CI sudo: required
-      #CI compiler: gcc
-      #CI services:
-        #CI - docker
-      #CI env: CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="6" TARGET="compile" docker_tag="ubuntu-bionic-gcc06" NIGHTLY="conan"
-
-    #CI - os: linux
-      #CI dist: trusty
-      #CI sudo: required
-      #CI compiler: gcc
-      #CI services:
-        #CI - docker
-      #CI env: CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="5" TARGET="compile" docker_tag="ubuntu-bionic-gcc05" NIGHTLY="conan"
-
-    #CI - os: linux
-      #CI dist: trusty
-      #CI sudo: required
-      #CI compiler: clang
-      #CI services:
-        #CI - docker
-      #CI env: CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="3.9" TARGET="compile" docker_tag="ubuntu-bionic-clang039" NIGHTLY="conan"
-
-    #CI - os: linux
-      #CI dist: trusty
-      #CI sudo: required
-      #CI compiler: clang
-      #CI services:
-        #CI - docker
-      #CI env: CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="3.8" TARGET="compile" docker_tag="ubuntu-bionic-clang038" NIGHTLY="conan"
-
-    #CI - os: osx
-      #CI sudo: false
-      #CI osx_image: xcode9.2
-      #CI compiler: clang
-      #CI env: docker_tag="NODOCKER" compiler=clang TARGET="macos" NIGHTLY="conan"
+    #CI - <<: *linux
+      #CI env: COMPILER="clang" COMPILER_VERSION="4.0" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-clang040" NIGHTLY="conan"
+    #CI - <<: *linux
+      #CI env: COMPILER="clang" COMPILER_VERSION="4.0" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-clang040" NIGHTLY="conan"
+    #CI - <<: *linux
+      #CI env: COMPILER="gcc" COMPILER_VERSION="6" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-gcc06" NIGHTLY="conan"
+    #CI - <<: *linux
+      #CI env: COMPILER="gcc" COMPILER_VERSION="6" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-gcc06" NIGHTLY="conan"
+    #CI - <<: *linux
+      #CI env: COMPILER="gcc" COMPILER_VERSION="5" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-gcc05" NIGHTLY="conan"
+    #CI - <<: *linux
+      #CI env: COMPILER="gcc" COMPILER_VERSION="5" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-gcc05" NIGHTLY="conan"
+    #CI - <<: *linux
+      #CI env: COMPILER="clang" COMPILER_VERSION="3.9" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-clang039" NIGHTLY="conan"
+    #CI - <<: *linux
+      #CI env: COMPILER="clang" COMPILER_VERSION="3.9" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-clang039" NIGHTLY="conan"
+    #CI - <<: *linux
+      #CI env: COMPILER="clang" COMPILER_VERSION="3.8" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-clang038" NIGHTLY="conan"
+    #CI - <<: *linux
+      #CI env: COMPILER="clang" COMPILER_VERSION="3.8" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-clang038" NIGHTLY="conan"
 
   #CI fast_finish: true # don't wait for allow_failures to fail, gives faster response
   #CI allow_failures:
     #CI - os: osx
+    #CI - os: linux
 
 
 before_install:
   # Get our CI Docker image
-  - if ! [[ "${docker_tag}" == 'NODOCKER' ]]; then
-        sudo docker pull inexorgame/ci-docker':'${docker_tag} ;
+  - if ! [[ "${DOCKER}" == 'NODOCKER' ]]; then
+        sudo docker pull inexorgame/ci-docker':'${DOCKER} ;
     fi
 
 script:
@@ -152,6 +127,9 @@ script:
   - if [ "${GLOBAL_NIGHTLY}" == "false" ]; then
       NIGHTLY="false";
     fi
+  - if [ "${GLOBAL_NIGHTLY}" == "conanforcerebuild" ]; then
+      TARGET="conanforcerebuild";
+    fi
   - if [ "${GLOBAL_NIGHTLY}" == "conan" ]; then
       NIGHTLY_USER="${CONAN_USER}";
       NIGHTLY_PASSWORD="${CONAN_PASSWORD}";
@@ -159,34 +137,24 @@ script:
       NIGHTLY_USER="${FTP_USER}";
       NIGHTLY_PASSWORD="${FTP_PASSWORD}";
     fi
-  - if ! [[ "${docker_tag}" == "NODOCKER" ]]; then
-      if [[ "${TRAVIS_REPO_SLUG}" == "inexorgame/inexor-core" ]]; then
-        if [[ ! "${TRAVIS_PULL_REQUEST}" == false ]]; then
-          echo >&2 -e "Skipping build, because this is a pull " \
-            "request with a branch in the main repo.\n"         \
-            "This means, there should already be a CI job for " \
-            "this branch. No need to do things twice.";
-         exit 0;
-        fi;
+  - if [[ "${TRAVIS_REPO_SLUG}" == "inexorgame/inexor-core" ]]; then
+      if [[ ! "${TRAVIS_PULL_REQUEST}" == false ]]; then
+        echo >&2 -e "Skipping build, because this is a pull " \
+          "request with a branch in the main repo.\n"         \
+          "This means, there should already be a CI job for " \
+          "this branch. No need to do things twice.";
+        exit 0;
       fi;
-      sudo docker run -v $(pwd)':'/inexor --net=host -it inexorgame/ci-docker':'${docker_tag} /inexor/${RELATIVE_PATH}tool/travis.sh ${TARGET} ${CONAN_COMPILER} ${CONAN_COMPILER_VERSION} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN};
-    fi
-  - if [ "${TARGET}" == "new_version_tagger" ]; then
-        bash ./tool/travis.sh ${TARGET} ${CONAN_COMPILER} ${CONAN_COMPILER_VERSION} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN};
-    fi
-  - if [ "${TRAVIS_OS_NAME}" == "osx" ]; then
-      if [[ "${TRAVIS_REPO_SLUG}" == "inexorgame/inexor-core" ]]; then
-        if [[ ! "${TRAVIS_PULL_REQUEST}" == false ]]; then
-          echo >&2 -e "Skipping build, because this is a pull " \
-            "request with a branch in the main repo.\n"         \
-            "This means, there should already be a CI job for " \
-            "this branch. No need to do things twice.";
-         exit 0;
-        fi;
-      fi;
+    fi;
+    if ! [[ "${DOCKER}" == "NODOCKER" ]]; then
+      sudo docker run -v $(pwd)':'/inexor --net=host -it inexorgame/ci-docker':'${DOCKER} /inexor/${RELATIVE_PATH}tool/travis.sh ${TARGET} ${COMPILER} ${COMPILER_VERSION} ${COMPILER_CONFIGURATION} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN};
+    fi;
+    if [ "${TRAVIS_OS_NAME}" == "osx" ]; then
       bash ${RELATIVE_PATH}tool/travis_macos.sh;
+    fi;
+  - if [ "${TARGET}" == "new_version_tagger" ]; then
+        bash ./tool/travis.sh ${TARGET} ${COMPILER} ${COMPILER_VERSION} ${COMPILER_CONFIGURATION} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN};
     fi
-
 
 deploy:
   skip_cleanup: true

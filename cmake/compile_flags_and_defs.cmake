@@ -50,11 +50,11 @@ if(NOT OS_MACOS)
   list(APPEND GCC_OR_CLANG_LINKER_FLAGS_RELEASE
     -Wl,-O1                         # Enable linker optimizations
   )
-endif()
 
-list(APPEND GCC_OR_CLANG_LINKER_FLAGS_RELEASE
-  -Wl,--gc-sections               # Remove unused code resulting from -fdata-sections and -function-sections
-)
+  list(APPEND GCC_OR_CLANG_LINKER_FLAGS_RELEASE
+    -Wl,--gc-sections               # Remove unused code resulting from -fdata-sections and -function-sections
+  )
+endif()
 
 if(X64)
     # 64-bit architecture.
