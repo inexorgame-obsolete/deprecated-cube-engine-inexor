@@ -10,7 +10,7 @@ requires = (
     ("spdlog/0.14.0@bincrafters/stable"),
     ("fmt/4.1.0@bincrafters/stable"),
     ("SDL2/2.0.5@lasote/testing"),  # not self-contained
-    ("SDL2_image/2.0.1@lasote/stable"),
+    ("SDL2_image/2.0.1@inexorgame/stable"),  # todo: unfork
     ("libpng/1.6.34@bincrafters/stable"),  # override SDl2_image dep for Conan >= 0.30.0 compatibility
     ("libjpeg-turbo/1.5.2@bincrafters/stable"),  # override SDl2_image dep for Conan >= 0.30.0 compatibility
     ("CEF/3.3239.1709.g093cae4@inexorgame/testing")  # not self-contained
