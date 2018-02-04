@@ -1,10 +1,5 @@
 #! /bin/bash
 #
-# Structure
-# * Utility functions
-# * Compiling and testing
-# * Main routine
-
 ## UTILITY FUNCTIONS #######################################
 
 mkcd() {
@@ -41,17 +36,23 @@ build() {
     ## conan info "$gitroot"
 
     if test "$NIGHTLY" = conan; then
-      echo "execute conan install "$gitroot" --env build_all=1 --build -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx=libstdc++11 -e CC=$CC -e CXX=$CXX"
-      conan install "$gitroot" --env build_all=1 --build -s compiler="$CONAN_COMPILER" -s compiler.version="$CONAN_COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -e CC="$CC" -e CXX="$CXX"
+      if test "$TARGET" = "conanforcerebuild"; then
+        buildstrategy=""
+      else
+        buildstrategy="=missing"
+      fi
+
+      execute="conan install "$gitroot" --env build_all=1 --build${buildstrategy} -s compiler="$COMPILER" -s compiler.version="$COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -s build_type=${COMPILER_CONFIGURATION} -e CC="$CC" -e CXX="$CXX""
     else
       if test "$NIGHTLY" = true; then
-        echo "execute conan install "$gitroot" --env build_all=1 --env create_package=1 --build=missing -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx=libstdc++11 -e CC=$CC -e CXX=$CXX"
-        conan install "$gitroot" --env build_all=1 --env create_package=1 --build=missing -s compiler="$CONAN_COMPILER" -s compiler.version="$CONAN_COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -e CC="$CC" -e CXX="$CXX"
+        execute="conan install "$gitroot" --env build_all=1 --env create_package=1 --build=missing -s compiler="$COMPILER" -s compiler.version="$COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -s build_type=${COMPILER_CONFIGURATION} -e CC="$CC" -e CXX="$CXX""
       else
-        echo "execute conan install "$gitroot" --env build_test=1 --env build_server=1 --build=missing -s compiler=$CONAN_COMPILER -s compiler.version=$CONAN_COMPILER_VERSION -s compiler.libcxx=libstdc++11 -e CC=$CC -e CXX=$CXX"
-        conan install "$gitroot" --env build_test=1 --env build_server=1 --build=missing -s compiler="$CONAN_COMPILER" -s compiler.version="$CONAN_COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -e CC="$CC" -e CXX="$CXX"
+        execute="conan install "$gitroot" --env build_test=1 --env build_server=1 --build=missing -s compiler="$COMPILER" -s compiler.version="$COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -s build_type=${COMPILER_CONFIGURATION} -e CC="$CC" -e CXX="$CXX""
       fi
     fi
+
+    echo "execute ${execute}";
+    eval ${execute}
 
     conan build "$gitroot"
 
@@ -176,12 +177,13 @@ tool="`dirname "$0"`"
 code="${tool}/.."
 bin="${code}/bin"
 TARGET="${1}"
-CONAN_COMPILER="${2}"
-CONAN_COMPILER_VERSION="${3}"
-NIGHTLY="${4}" # Nightly is either true, false or conan
-NIGHTLY_USER="${5}"
-NIGHTLY_PASSWORD="${6}"
-FTP_DOMAIN="${7}"
+COMPILER="${2}"
+COMPILER_VERSION="${3}"
+COMPILER_CONFIGURATION="${4}" # Debug or Release
+NIGHTLY="${5}" # Nightly is either true, false or conan
+NIGHTLY_USER="${6}"
+NIGHTLY_PASSWORD="${7}"
+FTP_DOMAIN="${8}"
 
 export branch=`git rev-parse --abbrev-ref HEAD` # The branch we're on
 export commit_date=`git show -s --format=%cd --date=format:%Y-%m-%d-%H-%m-%S`
@@ -191,17 +193,17 @@ export build="$(echo "${branch}-${commit_date}" | sed 's#/#-#g')-${TARGET}"
 export main_repo="inexorgame/inexor-core"
 
 # Workaround Boost.Build problem to not be able to found Clang
-if [[ $CONAN_COMPILER == clang ]]; then
-  export CC="clang-$CONAN_COMPILER_VERSION"
-  export CXX="clang++-$CONAN_COMPILER_VERSION"
+if [[ $COMPILER == clang ]]; then
+  export CC="clang-$COMPILER_VERSION"
+  export CXX="clang++-$COMPILER_VERSION"
   sudo ln -sf /usr/bin/${CC} /usr/bin/clang
   sudo ln -sf /usr/bin/${CXX} /usr/bin/clang++
 fi
 
 # Just to make sure that no package uses the wrong GCC version...
-if [[ $CONAN_COMPILER == gcc ]]; then
-  export CC="gcc-$CONAN_COMPILER_VERSION"
-  export CXX="g++-$CONAN_COMPILER_VERSION"
+if [[ $COMPILER == gcc ]]; then
+  export CC="gcc-$COMPILER_VERSION"
+  export CXX="g++-$COMPILER_VERSION"
   sudo ln -sf /usr/bin/${CC} /usr/bin/gcc
   sudo ln -sf /usr/bin/${CXX} /usr/bin/gcc++
 fi
