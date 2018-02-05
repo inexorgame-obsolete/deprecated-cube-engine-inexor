@@ -16,7 +16,11 @@ install_dependencies() {
 ## INSTALLATION ROUTINES ###################################
 
 build_conan() {
-  conan install "$1" --build=missing -s compiler.libcxx="libc++" -s build_type=${COMPILER_CONFIGURATION}
+  conan install "$1" --build=missing -s compiler="${COMPILER}" -s compiler.version="${COMPILER_VERSION}" -s compiler.libcxx="libc++" -s build_type=${COMPILER_CONFIGURATION}
+}
+
+rebuild_conan() {
+  conan install "$1" --build -s compiler="${COMPILER}" -s compiler.version="${COMPILER_VERSION}" -s compiler.libcxx="libc++" -s build_type=${COMPILER_CONFIGURATION}
 }
 
 build_conan_and_upload() {
@@ -29,7 +33,7 @@ build_conan_and_upload() {
 }
 
 rebuild_conan_and_upload() {
-  conan install "$1" --build -s compiler.libcxx="libc++" -s build_type=${COMPILER_CONFIGURATION}
+  conan install "$1" --build -s compiler="${COMPILER}" -s compiler.version="${COMPILER_VERSION}" -s compiler.libcxx="libc++" -s build_type=${COMPILER_CONFIGURATION}
   set -f
   if [[ "$1" == *"stable"* ]]; then
     conan upload --all --force -r inexor --retry 3 --retry-wait 10 --confirm "$1"

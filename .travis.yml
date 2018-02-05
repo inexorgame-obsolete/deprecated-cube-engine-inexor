@@ -71,10 +71,10 @@ jobs:
     # Our main compilers we run tests for
     #CI - <<: *osx
       #CI osx_image: xcode9.2
-      #CI env: COMPILER="clang" COMPILER_CONFIGURATION="Release" TARGET="macos" DOCKER="NODOCKER" NIGHTLY="conan"
+      #CI env: COMPILER="apple-clang" COMPILER_VERSION="9.0" COMPILER_CONFIGURATION="Release" TARGET="macos" DOCKER="NODOCKER" NIGHTLY="conan"
     #CI - <<: *osx
       #CI osx_image: xcode9.2
-      #CI env: COMPILER="clang" COMPILER_CONFIGURATION="Debug" TARGET="macos" DOCKER="NODOCKER" NIGHTLY="conan"
+      #CI env: COMPILER="apple-clang" COMPILER_VERSION="9.0" COMPILER_CONFIGURATION="Debug" TARGET="macos" DOCKER="NODOCKER" NIGHTLY="conan"
     #CI - <<: *linux
       #CI env: COMPILER="clang" COMPILER_VERSION="5.0" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-clang050" NIGHTLY="conan"
     #CI - <<: *linux
