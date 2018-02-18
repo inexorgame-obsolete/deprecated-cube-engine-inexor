@@ -119,7 +119,8 @@ before_install:
     fi
 
 script:
-  - if [ "${conan_prebuilds}" == "true" ]; then
+  - set -e;
+    if [ "${conan_prebuilds}" == "true" ]; then
       bash ./tool/travis_conditional_conan_package_generating.sh ;
     else
       echo "${conan_prebuilds}" ;
