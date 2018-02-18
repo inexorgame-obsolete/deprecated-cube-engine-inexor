@@ -2,12 +2,6 @@
 
 ### Speed Release (0.9.0@alpha, 2017-11-12)
 
-#### Social
-
-  * Organized a hackathon in Tübingen (Germany)
-  * Using riot as main developer and support channel (https://riot.im/app/#/room/#inexor:matrix.org)
-  * Added a public telegram group at https://t.me/inexor
-
 #### User Interface / Web Technologies
 
   * Migrating from Cubescript UI to HTML5/CSS/JS
@@ -57,7 +51,7 @@
 
 #### InexorFlex manages InexorCore
 
-InexorFlex is the node.js part.
+InexorFlex is the Node.js part.
 InexorCore is what one would have called Inexor/Sauerbraten before (the C++ part).
 
   * Instances Framework
@@ -122,14 +116,6 @@ InexorCore is what one would have called Inexor/Sauerbraten before (the C++ part
   * Logging Framework for Inexor Flex
       * Integration of Inexor Core logging
   * Pragma once instead of include guards #489
-
-#### Website
-
-  * New design
-  * Show blog posts
-  * Better navigation
-  * Download Page
-  * Improved code structure
 
 
 ***
