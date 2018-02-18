@@ -59,11 +59,11 @@ build() {
 
     conan user -p "${CONAN_PASSWORD}" -r inexor "${CONAN_USER}"
 
-    build_conan_and_upload "Kainjow_Mustache/2.0@inexorgame/stable"
+    build_conan_and_upload "kainjow-mustache/3.1@inexorgame/stable"
     build_conan_and_upload "bzip2/1.0.6@lasote/stable"
     build_conan_and_upload "pugixml/1.7@inexorgame/stable"
     build_conan_and_upload "gtest/1.8.0@lasote/stable"
-    rebuild_conan_and_upload "spdlog/0.14.0@bincrafters/stable"
+    rebuild_conan_and_upload "spdlog/0.16.3@bincrafters/stable"
     rebuild_conan_and_upload "fmt/4.1.0@bincrafters/stable"
     build_conan_and_upload "zlib/1.2.11@conan/stable"
     build_conan_and_upload "ENet/1.3.13@inexorgame/stable"
@@ -72,12 +72,13 @@ build() {
     build_conan_and_upload "libpng/1.6.34@bincrafters/stable"
     build_conan_and_upload "Boost/1.66.0@conan/stable"
 
-    build_conan_and_upload "InexorGlueGen/0.6.6@inexorgame/stable"
+    build_conan_and_upload "InexorGlueGen/0.6.7@inexorgame/stable"
 
     build_conan_and_upload "libjpeg-turbo/1.5.2@bincrafters/stable"
     rebuild_conan_and_upload "OpenSSL/1.1.0g@conan/stable"
     rebuild_conan "SDL2/2.0.5@lasote/testing"
     rebuild_conan "SDL2_image/2.0.1@lasote/stable"
+    rebuild_conan "SDL2_image/2.0.1@inexorgame/stable"
 
     build_conan "cmake-findboost/0.2.0@bincrafters/stable"
     build_conan "boost_filesystem/1.66.0@bincrafters/stable"

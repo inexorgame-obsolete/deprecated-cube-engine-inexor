@@ -3,6 +3,7 @@ requires = (
     ("Protobuf/3.5.1@inexorgame/stable"),
     ("gRPC/1.1.0@inexorgame/stable"),
         ("OpenSSL/1.1.0g@conan/stable"),  # remove at next gRPC update
+    ("doxygen/1.8.13@inexorgame/stable"),
     ("Boost/1.66.0@conan/stable"),
     ("zlib/1.2.11@conan/stable"),
     ("gtest/1.8.0@lasote/stable"),
