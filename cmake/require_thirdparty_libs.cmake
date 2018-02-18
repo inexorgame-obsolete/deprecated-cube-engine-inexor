@@ -129,7 +129,7 @@ add_require_conan_lib_function(ENet)
 
 # Protobuf (XML or JSON like serialization format but in binary, so it needs an compiler)
 set(protobuf_MODULE_COMPATIBLE ON)
-add_require_conan_lib_function(Protobuf)
+add_require_conan_lib_function(protobuf)
 find_program(PROTOBUF_PROTOC_EXECUTABLE protoc PATHS ${CONAN_BIN_DIRS_PROTOBUF} NO_CMAKE_ENVIRONMENT_PATH  NO_CMAKE_PATH NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH )
 
 # gRPC (googles remote procedure call framework, used for Inexors networking and scripting binding)
