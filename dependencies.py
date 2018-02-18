@@ -9,7 +9,7 @@ requires = (
     ("gtest/1.8.0@lasote/stable"),
     ("ENet/1.3.13@inexorgame/stable"),
     ("spdlog/0.16.3@bincrafters/stable"),
-        ("fmt/4.1.0@bincrafters/stable"),  # fix version to make it re-producable
+        ("fmt/4.1.0@bincrafters/stable"),  # fix version to make it re-producable, remove at next spdlog update
     ("SDL2/2.0.5@lasote/testing"),  # not self-contained
     ("SDL2_image/2.0.1@inexorgame/stable"),  # todo: unfork
         ("libpng/1.6.34@bincrafters/stable"),  # override for Conan >= 0.30.0 compatibility
