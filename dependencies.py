@@ -1,6 +1,6 @@
 requires = (
     ("InexorGlueGen/0.6.7@inexorgame/stable"),
-    ("Protobuf/3.5.1@inexorgame/stable"),
+    ("protobuf/3.5.1@bincrafters/stable"),
     ("gRPC/1.1.0@inexorgame/stable"),
         ("OpenSSL/1.1.0g@conan/stable"),  # remove at next gRPC update
     ("doxygen/1.8.13@inexorgame/stable"),
