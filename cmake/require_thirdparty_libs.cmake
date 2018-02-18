@@ -118,8 +118,8 @@ add_require_conan_lib_function(gtest)
 # PugiXML (xml parser, used for our gluecode generator)
 add_require_conan_lib_function(pugixml)
 
-# Kainjow-Mustache (a template engine, used for our gluecode generator)
-add_require_conan_lib_function(Kainjow_Mustache)
+# kainjow-mustache (a template engine, used for our gluecode generator)
+add_require_conan_lib_function(kainjow-mustache)
 
 # ZLIB (fast file compression)
 add_require_conan_lib_function(zlib)
