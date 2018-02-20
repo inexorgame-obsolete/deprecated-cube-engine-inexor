@@ -9,7 +9,11 @@
 
 #undef main
 
+#ifdef WIN32
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
+#else
 int main(int argc, char *argv[])
+#endif
 {
     setlocale(LC_ALL, "en_US.utf8");
     std::cout << "init: cef: cef_subprocess\n";
