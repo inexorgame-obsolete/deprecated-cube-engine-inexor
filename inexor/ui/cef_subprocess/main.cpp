@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
 #ifdef WIN32
-    CefMainArgs main_args(GetModuleHandle(NULL));
+    CefMainArgs main_args(hInstance);
 #else
     const CefMainArgs main_args(argc, argv);
 #endif
