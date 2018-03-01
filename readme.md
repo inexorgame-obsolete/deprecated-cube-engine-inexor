@@ -1,6 +1,6 @@
 # Inexor
 
-[![Build Status](https://travis-ci.org/inexorgame/inexor-core.svg?branch=master)](https://travis-ci.org/inexorgame/inexor-core) [![Build status](https://ci.appveyor.com/api/projects/status/h9kwt5lk54epjv8t/branch/master?svg=true)](https://ci.appveyor.com/project/inexorgame/inexor-core)
+ [![Build Status](https://travis-ci.org/inexorgame/inexor-core.svg?branch=master)](https://travis-ci.org/inexorgame/inexor-core) [![Build status](https://ci.appveyor.com/api/projects/status/h9kwt5lk54epjv8t/branch/master?svg=true)](https://ci.appveyor.com/project/inexorgame/inexor-core) [![Backers on Open Collective](https://opencollective.com/inexorgame/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/inexorgame/sponsors/badge.svg)](#sponsors)
 
 Inexor is a fork of the open-source First-Person-Shooter Cube 2: Sauerbraten, a fast-paced shooting game featuring an in-game map editor.  
 In contrast to Sauerbraten, Inexor adds a lot of functionality and strives to stay open to improvements and suggestions.  
@@ -77,6 +77,36 @@ To contribute to the project and merge your changes into the master branch you n
 It probably won't be an issue. However you should still communicate what you're doing and why you are doing it and of course take feedback and tips from others into account.
 
 More information about the contributing process can be found [here](https://github.com/inexorgame/inexor-core/wiki/How-To-Contribute-Code).
+
+
+## Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+<a href="graphs/contributors"><img src="https://opencollective.com/inexorgame/contributors.svg?width=890&button=false" /></a>
+
+
+## Backers
+
+Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/inexorgame#backer)]
+
+<a href="https://opencollective.com/inexorgame#backers" target="_blank"><img src="https://opencollective.com/inexorgame/backers.svg?width=890"></a>
+
+
+## Sponsors
+
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/inexorgame#sponsor)]
+
+<a href="https://opencollective.com/inexorgame/sponsor/0/website" target="_blank"><img src="https://opencollective.com/inexorgame/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/inexorgame/sponsor/1/website" target="_blank"><img src="https://opencollective.com/inexorgame/sponsor/1/avatar.svg"></a>
+<a href="https://opencollective.com/inexorgame/sponsor/2/website" target="_blank"><img src="https://opencollective.com/inexorgame/sponsor/2/avatar.svg"></a>
+<a href="https://opencollective.com/inexorgame/sponsor/3/website" target="_blank"><img src="https://opencollective.com/inexorgame/sponsor/3/avatar.svg"></a>
+<a href="https://opencollective.com/inexorgame/sponsor/4/website" target="_blank"><img src="https://opencollective.com/inexorgame/sponsor/4/avatar.svg"></a>
+<a href="https://opencollective.com/inexorgame/sponsor/5/website" target="_blank"><img src="https://opencollective.com/inexorgame/sponsor/5/avatar.svg"></a>
+<a href="https://opencollective.com/inexorgame/sponsor/6/website" target="_blank"><img src="https://opencollective.com/inexorgame/sponsor/6/avatar.svg"></a>
+<a href="https://opencollective.com/inexorgame/sponsor/7/website" target="_blank"><img src="https://opencollective.com/inexorgame/sponsor/7/avatar.svg"></a>
+<a href="https://opencollective.com/inexorgame/sponsor/8/website" target="_blank"><img src="https://opencollective.com/inexorgame/sponsor/8/avatar.svg"></a>
+<a href="https://opencollective.com/inexorgame/sponsor/9/website" target="_blank"><img src="https://opencollective.com/inexorgame/sponsor/9/avatar.svg"></a>
+
 
 
 ## License
