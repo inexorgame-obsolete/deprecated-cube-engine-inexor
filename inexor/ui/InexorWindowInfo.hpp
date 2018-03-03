@@ -14,7 +14,6 @@ class InexorWindowInfo : public CefWindowInfo {
 	        width = 1920;
 	        height = 1080;
 	        windowless_rendering_enabled = true;
-	        // transparent_painting_enabled = true; // not availaible in newer CEF anymore
         };
 
         InexorWindowInfo(int x, int y, int width, int height) {
@@ -23,7 +22,6 @@ class InexorWindowInfo : public CefWindowInfo {
         	this->width = width;
         	this->height = height;
 	        windowless_rendering_enabled = true;
-	        // transparent_painting_enabled = true; // not availaible in newer CEF anymore
         };
 
 };
