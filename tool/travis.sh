@@ -39,7 +39,7 @@ build() {
       if test "$TARGET" = "conanforcerebuild"; then
         buildstrategy=""
       else
-        buildstrategy="=missing"
+        buildstrategy="=outdated"
       fi
 
       execute="conan install "$gitroot" --env build_all=1 --build${buildstrategy} -s compiler="$COMPILER" -s compiler.version="$COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -s build_type=${COMPILER_CONFIGURATION} -e CC="$CC" -e CXX="$CXX""
