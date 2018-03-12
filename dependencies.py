@@ -6,7 +6,7 @@ requires = (
     ("doxygen/1.8.13@inexorgame/stable"),
     ("Boost/1.66.0@conan/stable"),
     ("zlib/1.2.11@conan/stable"),
-    ("gtest/1.8.0@lasote/stable"),
+    ("gtest/1.8.0@bincrafters/stable"),
     ("ENet/1.3.13@inexorgame/stable"),
     ("spdlog/0.16.3@bincrafters/stable"),
         ("fmt/4.1.0@bincrafters/stable"),  # fix version to make it re-producable, remove at next spdlog update
