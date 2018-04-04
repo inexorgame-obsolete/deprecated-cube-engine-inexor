@@ -36,9 +36,7 @@ enum TreeEventTypes
   TYPE_LIST_EVENT_ADDED = 2;    // The message for a newly created element in a SharedList.
   TYPE_LIST_EVENT_MODIFIED = 3; // The message for a modified event of a sharedlist (containing the id + the updated value).
   TYPE_LIST_EVENT_REMOVED = 4;  // The message that an element in a SharedList has been removed.
-  TYPE_LIST_CLASS_VAR_DUMMY = 5;// List events each have a message, some containe a lot of sharedvars. Those get marked with this.
-  TYPE_FUNCTION_EVENT = 6;      // A signal that a function should be executed on Core side.
-  TYPE_FUNCTION_PARAM = 7;      // The above is a message, these are the members of that message.
+  TYPE_LIST_CLASS_VAR_DUMMY = 5;// Each of the List events above result in a message. Each of the SharedVar inside gets marked as dummy.
 };
 
 /// This is a list of all possible SharedList template arguments (SharedList<SharedClassName> xy).
@@ -67,15 +65,6 @@ message list_{{{definition_name_unique}}}_removed {
 }
 {{/is_shared_list}}{{/shared_class_definitions}}
 
-/// Shared Functions can be executed through the InexorTree on flex side and get executed on Core side.
-/// For each overload found in the sourcecode one message type gets generated.
-{{#shared_functions}}{{#parameter_lists}}
-message SharedFunction_{{function_name_unique}}_params_event_{{overload_counter}} {
-  option (message_type) = TYPE_FUNCTION_EVENT;
-{{#params}}  {{{type_protobuf}}} function_param_{{param_name}} = {{local_index}} [(path) = "{{param_name}}", (event_type)=TYPE_FUNCTION_PARAM];
-{{/params}}
-}
-{{/parameter_lists}}{{/shared_functions}}
 
 message TreeEvent
 {
@@ -98,11 +87,6 @@ message TreeEvent
 {{#shared_class_definitions}}{{^is_shared_list}}{{#instances}}
 {{#members}}    {{{type_protobuf}}} class_{{instance_name_unique}}_var_{{{name_unique}}} = {{>index}}    [(path) = "{{{path}}}", (default_value)="{{{default_value}}}", (event_type)=TYPE_GLOBAL_VAR_MODIFIED];
 {{/members}}{{/instances}}{{/is_shared_list}}{{/shared_class_definitions}}
-
-  // All shared function events
-  // TODO:!!!! WTF message names get converted to lower space!!!
-{{#shared_functions}}{{#parameter_lists}}    SharedFunction_{{function_name_unique}}_params_event_{{overload_counter}} SharedFunction_{{function_name_unique}}_params_{{overload_counter}} = {{>index}} [(path) = "{{{path}}}", (event_type)=TYPE_FUNCTION_EVENT];
-{{/parameter_lists}}{{/shared_functions}}
   }
 }
 

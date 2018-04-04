@@ -5,24 +5,6 @@
 #include "inexor/network/SharedVar.hpp"
 #include "inexor/network/SharedClass.hpp"
 
-
-struct sharedclasstest : SharedClass
-{
-    SharedVar<int> test;
-
-    void setonchangefunctions(int id)
-    {
-        //test.connect([id](int oldvalue, int newvalue)
-        //{
-        //    Log.std->debug("init: ENet {}", id, value);
-        //});
-    }
-    sharedclasstest() : test(15) {}
-
-    // TODO we should fire on = operator ein: adde + remove event f�rs parent oder onchange f�r jeden member! (Achtung overhead)
-    // vllt gibts schon iwie ne anleitung standardlisten zu modifizieren?
-};
-
 struct InternalSharedListMarker : SharedOption
 {
     InternalSharedListMarker() {}
