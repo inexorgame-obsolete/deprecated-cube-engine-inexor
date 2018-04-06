@@ -4,9 +4,9 @@
 
 namespace inexor { namespace ui {
 
-class TreeNodes : public SharedClass {
+class TreeNode : public SharedClass {
 public:
-    TreeNodes() : url(""), name(""), visible(0), x(0), y(0), width(0), height(0), mouse_accept_input(0), keyboard_accept_input(0)
+    TreeNode() : url(""), name(""), visible(0), x(0), y(0), width(0), height(0), mouse_accept_input(0), keyboard_accept_input(0)
     {
     }
 
@@ -21,5 +21,5 @@ public:
     SharedVar<int> keyboard_accept_input;
 };
 
-extern SharedList<TreeNodes> layers;
+extern SharedList<TreeNode> layers;
 } } // ns inexor::ui

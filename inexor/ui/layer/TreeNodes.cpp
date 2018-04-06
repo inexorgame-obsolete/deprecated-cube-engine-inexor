@@ -3,6 +3,6 @@
 
 namespace inexor { namespace ui {
 
-SharedList<TreeNodes> layers;
+SharedList<TreeNode> layers;
 
 } } // ns inexor::ui
