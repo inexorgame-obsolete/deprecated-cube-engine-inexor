@@ -46,12 +46,6 @@ using std::string; // shared functions sometimes have string arguments.
 {{namespace_sep_close}}
 {{/first_template_type}}{{/instances}}{{/is_shared_list}}{{/shared_class_definitions}}
 
-// List of extern SharedFunc declarations
-{{#shared_functions}}{{#parameter_lists}}{{^overload_is_expanded}}{{namespace_sep_open}}
-    extern {{{function_declaration}}};
-{{namespace_sep_close}}
-{{/overload_is_expanded}}{{/parameter_lists}}{{/shared_functions}}
-
 
 namespace inexor { namespace rpc {
 
@@ -173,12 +167,6 @@ bool handle_index(int index, const MSG_TYPE &tree_event)
         break;
 {{/members}}{{/instances}}{{/is_shared_list}}{{/shared_class_definitions}}
 
-  // All shared function events (function gets executed when event comes in)
-{{#shared_functions}}{{#parameter_lists}}    case {{>index}}:
-        {{function_name_cpp_full}}({{#params}}{{#is_string}}strdup({{/is_string}}tree_event.sharedfunction_{{function_name_unique}}_params_{{overload_counter}}().function_param_{{param_name}}(){{#is_string}}.c_str()){{/is_string}} {{#not_last_param}},{{/not_last_param}}
-{{/params}});
-        break;
-{{/parameter_lists}}{{/shared_functions}}
       default: return false;
     }
     return true;

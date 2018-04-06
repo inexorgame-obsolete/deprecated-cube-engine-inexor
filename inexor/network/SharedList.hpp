@@ -38,9 +38,9 @@ struct SharedList : SharedClass
 
     void erase(int i)
     {
-        if(i >= container.size() || i < 0) return;
-        container.erase(container.begin() + i);
-        element_removed_func(i);
+      //  if(i >= container.size() || i < 0) return;
+      //  container.erase(container.begin() + i);
+      //  element_removed_func(i);
     }
 
     T& operator[](size_t n)
