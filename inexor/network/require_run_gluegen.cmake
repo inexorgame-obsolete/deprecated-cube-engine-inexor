@@ -78,11 +78,12 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
     target_sources(${targ} PUBLIC ${GENERATED_FILES}) # Add to targets source list.
 
 
+    set(PATHS_TO_REMOVE_BEFORE_GEN ${DOXYGEN_XML_DIR} ${GENERATED_FILES})
     add_custom_command(
       COMMENT "Parsing code base for Shared Declarations and generate gluecode doing the networking."
       OUTPUT ${GENERATED_FILES}
       # clear folder containing intermediate files (the AST xml files) before, since we take the complete folder as input to the next stage.
-      COMMAND ${CMAKE_COMMAND} -D PATHS_TO_REMOVE="${DOXYGEN_XML_DIR} ${GENERATED_FILES}" -P ${MAINDIR}/cmake/clean_files_folders.cmake
+      COMMAND ${CMAKE_COMMAND} -D PATHS_TO_REMOVE="${PATHS_TO_REMOVE_BEFORE_GEN}" -P ${MAINDIR}/cmake/clean_files_folders.cmake
 
       # Parse the codebase using doxygen and output the AST (Abstract syntax tree) to xml files.
       COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
@@ -116,7 +117,7 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
 
     add_custom_target(gen_bindings_${target_short}
       COMMENT "Removes the generated gluecode files for target ${TARG} to trigger a new generation of these on the next build of target ${TARG}"
-      COMMAND ${CMAKE_COMMAND} -D PATHS_TO_REMOVE="${GENERATED_FILES}" -P "${MAINDIR}/cmake/clean_files_folders.cmake"
+      COMMAND ${CMAKE_COMMAND} -D PATHS_TO_REMOVE="${PATHS_TO_REMOVE_BEFORE_GEN}" -P "${MAINDIR}/cmake/clean_files_folders.cmake"
     )
 
     message(STATUS "gluegen will generate the following files: ${GENERATED_FILES}")
@@ -131,7 +132,7 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
       add_custom_target(invoke_parser_${target_short}
         COMMENT "Parsing code base for Shared Declarations and generate gluecode doing the networking."
         # clear folder containing intermediate files (the AST xml files) before, since we take the complete folder as input to the next stage.
-        COMMAND ${CMAKE_COMMAND} -D PATHS_TO_REMOVE="${DOXYGEN_XML_DIR} ${GENERATED_FILES}" -P ${MAINDIR}/cmake/clean_files_folders.cmake
+        COMMAND ${CMAKE_COMMAND} -D PATHS_TO_REMOVE="${PATHS_TO_REMOVE_BEFORE_GEN}" -P ${MAINDIR}/cmake/clean_files_folders.cmake
 
         # Parse the codebase using doxygen and output the AST (Abstract syntax tree) to xml files.
         COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
