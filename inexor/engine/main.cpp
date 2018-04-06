@@ -52,6 +52,7 @@
 #include "inexor/ui/screen/ScreenManager.hpp"         // for ScreenManager
 #include "inexor/util/Subsystem.hpp"                  // for Metasystem, SUB...
 #include "inexor/util/legacy_time.hpp"                // for updatetime, las...
+#include "inexor/ui/layer/TreeNodes.hpp"
 
 using namespace inexor::sound;
 using namespace inexor::io;
@@ -314,13 +315,18 @@ int main(int argc, char **argv)
     // Remote Procedure Call: communication with the scripting engine
     SUBSYSTEM_REQUIRE(rpc);
     // (embedded chromium): ingame html5+js browser for the ui. must come after rpc.. todo new system.
-    SUBSYSTEM_REQUIRE(cef);
+  //  SUBSYSTEM_REQUIRE(cef);
 
     // Initialize the submodules
     metapp.start("rpc");
     metapp.initialize("rpc", argc, argv);
-    metapp.start("cef");
-    metapp.initialize("cef", argc, argv);
+// metapp.start("cef");
+//    metapp.initialize("cef", argc, argv);
+
+
+    inexor::ui::TreeNode t;
+    inexor::ui::layers.push_back(t);
+    t.height = 2;
 
     // After submodule initialization force the correct locale
     setlocale(LC_ALL, "en_US.utf8");
