@@ -134,8 +134,8 @@ bool handle_index(int index, const MSG_TYPE &tree_event)
     {
         {{definition_name_cpp}} new_entry;
         auto &add_sub_msg = tree_event.list_{{instance_name_unique}}_added();
-{{#members}}{{#is_string}}        new_entry.{{name_cpp_short}}.setnosync(add_sub_msg.sharedclass_member_{{name_unique}}());{{/is_string}}{{^is_string}}
-        new_entry.{{name_cpp_short}}.setnosync(strdup(add_sub_msg.sharedclass_member_{{name_unique}}().c_str()));{{/is_string}}
+{{#members}}{{#is_string}}        new_entry.{{name_cpp_short}}.setnosync(strdup(add_sub_msg.sharedclass_member_{{name_unique}}().c_str()));{{/is_string}}{{^is_string}}
+        new_entry.{{name_cpp_short}}.setnosync(add_sub_msg.sharedclass_member_{{name_unique}}());{{/is_string}}
         {{name_parent_cpp_full}}.push_back(std::move(new_entry));
 {{/members}}
         break;
