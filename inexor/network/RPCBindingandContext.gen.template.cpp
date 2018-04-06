@@ -134,7 +134,8 @@ bool handle_index(int index, const MSG_TYPE &tree_event)
     {
         {{definition_name_cpp}} new_entry;
         auto &add_sub_msg = tree_event.list_{{instance_name_unique}}_added();
-{{#members}}        new_entry.{{name_cpp_short}}.setnosync(add_sub_msg.sharedclass_member_{{name_unique}}());
+{{#members}}{{#is_string}}        new_entry.{{name_cpp_short}}.setnosync(add_sub_msg.sharedclass_member_{{name_unique}}());{{/is_string}}{{^is_string}}
+        new_entry.{{name_cpp_short}}.setnosync(strdup(add_sub_msg.sharedclass_member_{{name_unique}}().c_str()));{{/is_string}}
         {{name_parent_cpp_full}}.push_back(std::move(new_entry));
 {{/members}}
         break;
@@ -146,8 +147,9 @@ bool handle_index(int index, const MSG_TYPE &tree_event)
         if(id < 0 || id >= {{name_parent_cpp_full}}.size()) break;
         {{definition_name_cpp}} &ref = {{name_parent_cpp_full}}[id];
         switch(modify_sub_msg.key_case()) {
-{{#members}}        case {{local_index}}:
-            ref.{{name_cpp_short}}.setnosync(modify_sub_msg.sharedclass_member_{{name_unique}}()); break;
+{{#members}}        case {{local_index}}:{{#is_string}}
+            ref.{{name_cpp_short}}.setnosync(strdup(modify_sub_msg.sharedclass_member_{{name_unique}}().c_str())); break;{{/is_string}}{{^is_string}}
+            ref.{{name_cpp_short}}.setnosync(modify_sub_msg.sharedclass_member_{{name_unique}}()); break;{{/is_string}}
 {{/members}}
         }
         break;
