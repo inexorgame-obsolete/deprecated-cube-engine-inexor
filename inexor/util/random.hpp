@@ -3,7 +3,7 @@
 #include <boost/random/mersenne_twister.hpp>           // for mt19937
 #include <boost/random/uniform_int_distribution.hpp>   // for uniform_int_di...
 #include <boost/random/uniform_real_distribution.hpp>  // for uniform_real_d...
-#include <boost/uuid/seed_rng.hpp>                     // for seed
+#include <boost/uuid/detail/seed_rng.hpp>              // for seed
 #include <limits>                                      // for numeric_limits
 #include <type_traits>                                 // for conditional
 
@@ -147,5 +147,3 @@ using random::deterministic_rnd;
 
 }
 }
-
-
