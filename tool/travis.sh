@@ -45,9 +45,9 @@ build() {
       execute="conan install "$gitroot" --env build_all=1 --build${buildstrategy} -s compiler="$COMPILER" -s compiler.version="$COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -s build_type=${COMPILER_CONFIGURATION} -e CC="$CC" -e CXX="$CXX""
     else
       if test "$NIGHTLY" = true; then
-        execute="conan install "$gitroot" --env build_all=1 --env create_package=1 --build=missing -s compiler="$COMPILER" -s compiler.version="$COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -s build_type=${COMPILER_CONFIGURATION} -e CC="$CC" -e CXX="$CXX""
+        execute="conan install "$gitroot" --env build_all=1 --env create_package=1 --build=outdated -s compiler="$COMPILER" -s compiler.version="$COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -s build_type=${COMPILER_CONFIGURATION} -e CC="$CC" -e CXX="$CXX""
       else
-        execute="conan install "$gitroot" --env build_test=1 --env build_server=1 --build=missing -s compiler="$COMPILER" -s compiler.version="$COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -s build_type=${COMPILER_CONFIGURATION} -e CC="$CC" -e CXX="$CXX""
+        execute="conan install "$gitroot" --env build_test=1 --env build_server=1 --build=outdated -s compiler="$COMPILER" -s compiler.version="$COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -s build_type=${COMPILER_CONFIGURATION} -e CC="$CC" -e CXX="$CXX""
       fi
     fi
 
