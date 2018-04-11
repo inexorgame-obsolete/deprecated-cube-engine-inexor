@@ -16,7 +16,7 @@ install_dependencies() {
 ## INSTALLATION ROUTINES ###################################
 
 build_conan() {
-  conan install "$1" --build=missing -s compiler="${COMPILER}" -s compiler.version="${COMPILER_VERSION}" -s compiler.libcxx="libc++" -s build_type=${COMPILER_CONFIGURATION}
+  conan install "$1" --build=outdated -s compiler="${COMPILER}" -s compiler.version="${COMPILER_VERSION}" -s compiler.libcxx="libc++" -s build_type=${COMPILER_CONFIGURATION}
 }
 
 rebuild_conan() {
