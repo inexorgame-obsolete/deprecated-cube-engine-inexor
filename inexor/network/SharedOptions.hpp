@@ -2,7 +2,6 @@
 
 //namespace inexor { // we need to do it in global scope atm otherwise any cubescript declaration is broken TODO
 //namespace rpc {
-#include <type_traits>
 
 class SharedOption
 {
@@ -14,7 +13,7 @@ public:
     /// The Operator | lets us chain more than one SharedOption together.
     /// Since SharedOptions are used for constructing the SharedVars, the default value will be passed on to the
     /// resulting SharedOption.
-    friend SharedOption& operator|(SharedOption &&first, const SharedOption &&second)
+    friend SharedOption& operator|(SharedOption& first, const SharedOption& second)
     {
         if(second.defval_int != 0) first.defval_int = second.defval_int;
         if(second.defval_float != 0.0f) first.defval_float = second.defval_float;
@@ -57,6 +56,9 @@ public:
     CustomPath(const char *path = "{{path}}") {}
 
     const char *proto_template = "(path)=\"{{path}}\"";
+    const char *cpp_init_check_template = "send(path";
+    const char *cpp_receive_template = "da";
+    const char *cpp_send_template = "da";
 };
 
 class NoSync : public SharedOption
@@ -77,16 +79,6 @@ public:
     const char *proto_template = "da";
     const char *cpp_receive_template = "da";
     const char *cpp_send_template = "da";
-};
-
-class Default : public  SharedOption
-{
-public:
-    Default(const int val = 0) {defval_int = val;}
-    Default(const float val = 0.0f) { defval_float = val; }
-    Default(const char *val = "") { defval_cstring = val; }
-
-    const char *default_value = "{{val}}";
 };
 
 //class Function : public SharedOption
