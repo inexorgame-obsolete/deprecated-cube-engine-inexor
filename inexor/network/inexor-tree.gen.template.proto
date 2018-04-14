@@ -46,7 +46,7 @@ enum TreeEventTypes
   option (message_type) = TYPE_LIST_EVENT_ADDED;
   int64 intern_shared_list_id_number = 1; // TODO we use this (and switch to a map hence), as soon as we want to work safer
 
-{{#members}}  {{{type_protobuf}}} sharedclass_member_{{name_unique}} = {{local_index}}    [(path) = "{{{path}}}", (default_value)="{{{default_value}}}", (event_type)=TYPE_LIST_CLASS_VAR_DUMMY];
+{{#members}}  {{{type_protobuf}}} sharedclass_member_{{name_unique}} = {{local_index}}    [(path) = "{{{path}}}", (default_value)="{{{default_value}}}", (event_type)=TYPE_LIST_CLASS_VAR_DUMMY, (message_type)="{{{type_protobuf}}}"];
 {{/members}}
 }
 
@@ -54,7 +54,7 @@ message list_{{definition_name_unique}}_modified {
   option (message_type) = TYPE_LIST_EVENT_MODIFIED;
   int64 intern_shared_list_id_number = 1;
   oneof key {
-{{#members}}    {{{type_protobuf}}} sharedclass_member_{{name_unique}} = {{local_index}}    [(path) = "{{{path}}}", (default_value)="{{{default_value}}}", (event_type)=TYPE_LIST_CLASS_VAR_DUMMY];
+{{#members}}    {{{type_protobuf}}} sharedclass_member_{{name_unique}} = {{local_index}}    [(path) = "{{{path}}}", (default_value)="{{{default_value}}}", (event_type)=TYPE_LIST_CLASS_VAR_DUMMY, (message_type)="{{{type_protobuf}}}"];
 {{/members}}
   }
 }
@@ -73,14 +73,14 @@ message TreeEvent
     GeneralTreeEvents general_event = 20;
 
   // All basic global shared vars singeltons.
-{{#shared_vars}}    {{{type_protobuf}}} {{{name_unique}}} = {{>index}}    [(path) = "{{{path}}}", (default_value)="{{{default_value}}}", (event_type)=TYPE_GLOBAL_VAR_MODIFIED];
+{{#shared_vars}}    {{{type_protobuf}}} {{{name_unique}}} = {{>index}}    [(path) = "{{{path}}}", (default_value)="{{{default_value}}}", (event_type)=TYPE_GLOBAL_VAR_MODIFIED, (message_type)="{{{type_protobuf}}}"];
 {{/shared_vars}}
 
   // All event message for the SharedLists
 {{#shared_class_definitions}}{{#is_shared_list}}{{#instances}}{{#first_template_type}}
-    list_{{definition_name_unique}}_added list_{{instance_name_unique}}_added = {{>index}} [(path) = "{{{path}}}", (event_type)=TYPE_LIST_EVENT_ADDED];
-    list_{{definition_name_unique}}_modified list_{{instance_name_unique}}_modified = {{>index}} [(path) = "{{{path}}}", (event_type)=TYPE_LIST_EVENT_MODIFIED];
-    list_{{definition_name_unique}}_removed list_{{instance_name_unique}}_removed = {{>index}} [(path) = "{{{path}}}", (event_type)=TYPE_LIST_EVENT_REMOVED];
+    list_{{definition_name_unique}}_added list_{{instance_name_unique}}_added = {{>index}} [(path) = "{{{path}}}", (event_type)=TYPE_LIST_EVENT_ADDED, (message_type)="list_{{definition_name_unique}}_added"];
+    list_{{definition_name_unique}}_modified list_{{instance_name_unique}}_modified = {{>index}} [(path) = "{{{path}}}", (event_type)=TYPE_LIST_EVENT_MODIFIED, (message_type)="list_{{definition_name_unique}}_modified"];
+    list_{{definition_name_unique}}_removed list_{{instance_name_unique}}_removed = {{>index}} [(path) = "{{{path}}}", (event_type)=TYPE_LIST_EVENT_REMOVED, (message_type)="list_{{definition_name_unique}}_removed"];
 {{/first_template_type}}{{/instances}}{{/is_shared_list}}{{/shared_class_definitions}}
 
   // All event message for global SharedClasses
