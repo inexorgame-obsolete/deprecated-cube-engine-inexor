@@ -77,7 +77,7 @@ build() {
     build_conan_and_upload "libjpeg-turbo/1.5.2@bincrafters/stable"
     rebuild_conan_and_upload "OpenSSL/1.1.0g@conan/stable"
     rebuild_conan "sdl2/2.0.8@bincrafters/testing"
-    rebuild_conan "SDL2_image/2.0.1@inexorgame/stable"
+    rebuild_conan "sdl2_image_lowercase/2.0.1@inexorgame/stable"
 
     build_conan "doxygen/1.8.14@inexorgame/stable"
     build_conan "CEF/3.3239.1709.g093cae4@inexorgame/testing"

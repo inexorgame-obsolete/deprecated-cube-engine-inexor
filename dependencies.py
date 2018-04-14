@@ -22,8 +22,8 @@ options = '''
   gtest:build_gmock=False
   ENet:shared=False
   Boost:shared=False
-  SDL2:shared=False
-  SDL2_image:shared=False
+  sdl2:shared=False
+  sdl2_image_lowercase:shared=False
   spdlog:fmt_external=True
   protobuf:with_zlib=True
 '''

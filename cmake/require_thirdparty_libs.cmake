@@ -145,29 +145,29 @@ add_require_conan_lib_function(fmt)
 # CEF Chromium Embedded Framework (Embedded Browser used for the UI)
 add_require_conan_lib_function(CEF)
 
-# SDL (input output framework)
-add_require_conan_lib_function(SDL2)
+# sdl2 (input output framework)
+add_require_conan_lib_function(sdl2)
 
-# SDL_image (image loader library)
-add_require_conan_lib_function(SDL2_image)
+# sdl2_image (image loader library)
+add_require_conan_lib_function(sdl2_image_lowercase)
 
-# libjpeg turbo a dependency of SDL2_image
+# libjpeg turbo a dependency of sdl2_image
 add_require_conan_lib_function(libjpeg-turbo)
 
-# libpng a dependency of SDL2_image
+# libpng a dependency of sdl2_image
 add_require_conan_lib_function(libpng)
 
-# SDL_mixer (sound library)
-# add_require_conan_lib_function(SDL2_mixer)
+# sdl2_mixer (sound library)
+# add_require_conan_lib_function(sdl2_mixer)
 
 ## Wrapper for all SDL libs (you usually want all of them)
 function(require_sdl targ)
-  message(STATUS "Configuring ${targ} with SDL")
+  message(STATUS "Configuring ${targ} with SDL2")
 
   require_sdl2(${targ})
   require_libjpeg_turbo(${targ})
   require_libpng(${targ})
-  require_sdl2_image(${targ})
- # require_sdl2_mixer(${targ})
+  require_sdl2_image_lowercase(${targ})
+  # require_sdl2_mixer(${targ})
   require_opengl(${targ})
 endfunction()
