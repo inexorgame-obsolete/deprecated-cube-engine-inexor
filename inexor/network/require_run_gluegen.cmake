@@ -35,9 +35,10 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
     set(doxyfile ${OUT_DIR}/doxygen-parser.conf)
 
     set(DOXYGEN_XML_DIR ${OUT_DIR}/doxygen_gluegen_output)
-    get_property(SOURCE_FILE_LIST TARGET ${TARG} PROPERTY SOURCES)
-    string (REPLACE ";" " " SOURCE_FILES "${SOURCE_FILE_LIST}")
+
     string (REPLACE "inexor-core-" "" target_short "${TARG}")
+
+    get_all_source_files(${TARG} "SOURCE_FILES")
 
     configure_file(${doxyfile_in} ${doxyfile}) # Generate doxygen config
 
@@ -78,12 +79,14 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
     target_sources(${targ} PUBLIC ${GENERATED_FILES}) # Add to targets source list.
 
 
-    set(PATHS_TO_REMOVE_BEFORE_GEN ${DOXYGEN_XML_DIR} ${GENERATED_FILES})
+    set(PATHS_TO_REMOVE_BEFORE_GEN ${DOXYGEN_XML_DIR} ${GENERATED_FILES} ${doxyfile})
     add_custom_command(
       COMMENT "Parsing code base for Shared Declarations and generate gluecode doing the networking."
       OUTPUT ${GENERATED_FILES}
       # clear folder containing intermediate files (the AST xml files) before, since we take the complete folder as input to the next stage.
       COMMAND ${CMAKE_COMMAND} -D PATHS_TO_REMOVE="${PATHS_TO_REMOVE_BEFORE_GEN}" -P ${MAINDIR}/cmake/clean_files_folders.cmake
+
+      COMMAND ${CMAKE_COMMAND} -D DOXYFILE_TEMPLATE_IN="${doxyfile_in}" -D DOXYFILE_OUT="${doxyfile}" -D DOXYGEN_XML_DIR="${DOXYGEN_XML_DIR}" -D SOURCE_FILES="${SOURCE_FILES}" -P ${SOURCE_DIR}/network/generate_doxygen_conf.cmake
 
       # Parse the codebase using doxygen and output the AST (Abstract syntax tree) to xml files.
       COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}

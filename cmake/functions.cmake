@@ -116,6 +116,32 @@ function(add_windows_manifest target)
     )
 endfunction()
 
+
+# Receive all source files, including those from modules linked from the specified target.
+#
+# Firstly get all direct source files of the target.
+# Afterwards require all dependencies of the target and (in case it is one of ALL_MODULES)
+# append all source files of that module as well.
+function(get_all_source_files TARG RESULT_LIST_NAME)
+  get_property(SOURCE_FILE_LIST TARGET ${TARG} PROPERTY SOURCES)
+
+  get_property(LINKLIBS TARGET ${TARG} PROPERTY LINK_LIBRARIES)
+
+  foreach(dep ${LINKLIBS})
+    if (${dep} MATCHES "module_")
+      string (REPLACE "module_" "" mod_only "${dep}")
+      string (TOUPPER "${mod_only}" mod_upper)
+      if ("${mod_upper}" IN_LIST ALL_MODULES)
+        set(SOURCE_FILE_LIST ${SOURCE_FILE_LIST} ${${mod_upper}_MODULE_SOURCES})
+      endif()
+    endif()
+  endforeach()
+  message(STATUS "YEEE FOR ${TARG}: ${SOURCE_FILES}")
+
+  string (REPLACE ";" " " SOURCE_FILES "${SOURCE_FILE_LIST}")
+  set (${RESULT_LIST_NAME} ${SOURCE_FILES} PARENT_SCOPE)
+endfunction()
+
 # USAGE: add_app(executable SOURCE_FILES [CONSOLE_APP])
 #
 # Set up an executable.

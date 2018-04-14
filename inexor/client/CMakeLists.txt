@@ -66,7 +66,6 @@ require_threads(${CLIENT_BINARY})
 require_crashreporter(${CLIENT_BINARY})
 require_sdl(${CLIENT_BINARY})
 require_zlib(${CLIENT_BINARY})
-require_network(${CLIENT_BINARY} "CLIENT NOT_STANDALONE")
 require_util(${CLIENT_BINARY})
 require_ui(${CLIENT_BINARY})
 require_texture(${CLIENT_BINARY})
@@ -75,3 +74,5 @@ require_gamemode(${CLIENT_BINARY})
 require_model(${CLIENT_BINARY})
 require_physics(${CLIENT_BINARY})
 require_sound(${CLIENT_BINARY})
+require_network(${CLIENT_BINARY} "CLIENT NOT_STANDALONE") # This should come last
+
