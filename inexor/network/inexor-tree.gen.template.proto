@@ -43,7 +43,7 @@ enum TreeEventTypes
 /// So one for each SharedClass, whether they get used in a SharedList somewhere or not.
 /// There are 3 things which can happen to a SharedLists entry: it can be removed, modified or a new one can be added.
 {{#shared_class_definitions}}{{^is_shared_list}}message list_{{definition_name_unique}}_added {
-  option (message_type) = TYPE_LIST_EVENT_ADDED;
+ // option (message_type) = TYPE_LIST_EVENT_ADDED;
   int64 intern_shared_list_id_number = 1; // TODO we use this (and switch to a map hence), as soon as we want to work safer
 
 {{#members}}  {{{type_protobuf}}} sharedclass_member_{{name_unique}} = {{local_index}}    [(path) = "{{{path}}}", (default_value)="{{{default_value}}}", (event_type)=TYPE_LIST_CLASS_VAR_DUMMY, (message_type)="{{{type_protobuf}}}"];
@@ -51,7 +51,7 @@ enum TreeEventTypes
 }
 
 message list_{{definition_name_unique}}_modified {
-  option (message_type) = TYPE_LIST_EVENT_MODIFIED;
+ // option (message_type) = TYPE_LIST_EVENT_MODIFIED;
   int64 intern_shared_list_id_number = 1;
   oneof key {
 {{#members}}    {{{type_protobuf}}} sharedclass_member_{{name_unique}} = {{local_index}}    [(path) = "{{{path}}}", (default_value)="{{{default_value}}}", (event_type)=TYPE_LIST_CLASS_VAR_DUMMY, (message_type)="{{{type_protobuf}}}"];
@@ -60,7 +60,7 @@ message list_{{definition_name_unique}}_modified {
 }
 
 message list_{{{definition_name_unique}}}_removed {
-  option (message_type) = TYPE_LIST_EVENT_REMOVED;
+ // option (message_type) = TYPE_LIST_EVENT_REMOVED;
   int64 intern_shared_list_id_number = 1;
 }
 {{/is_shared_list}}{{/shared_class_definitions}}
@@ -103,13 +103,12 @@ extend google.protobuf.FieldOptions
   // @see TreeEventTypes
   TreeEventTypes event_type = 50002;
 
-  /// The same as the type of the element.
+  /// The same as the type of the element. i.e. `int32 i = 0 [(message_type)="int32"];`
   /// This is a workaround for the nodejs side, whose API is not allowing to get the type of a message field.
-  string message_type = 50002;
+  string message_type = 50003;
 }
 
-extend google.protobuf.MessageOptions {
+//extend google.protobuf.MessageOptions {
   // @see TreeEventTypes
   // TreeEventTypes event_type = 50002; WE CAN'T DO THIS CURRENTLY SINCE THAT CAUSES MULTIPLY DEFINITIONS ERRORS WITH THE FieldOptions.event_type .. protobuf-bug?
-  TreeEventTypes message_type = 50002;
-}
+//}
