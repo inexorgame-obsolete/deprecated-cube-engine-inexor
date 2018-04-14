@@ -1,7 +1,7 @@
 requires = (
     ("InexorGlueGen/0.6.8@inexorgame/stable"),
     ("protobuf/3.5.1@bincrafters/stable"),
-    ("gRPC/1.8.3@inexorgame/stable"),
+    ("gRPC/1.9.1@inexorgame/stable"),
     ("doxygen/1.8.13@inexorgame/stable"),
     ("Boost/1.66.0@conan/stable"),
     ("zlib/1.2.11@conan/stable"),
