@@ -85,7 +85,7 @@ message TreeEvent
 
   // All event message for global SharedClasses
 {{#shared_class_definitions}}{{^is_shared_list}}{{#instances}}
-{{#members}}    {{{type_protobuf}}} class_{{instance_name_unique}}_var_{{{name_unique}}} = {{>index}}    [(path) = "{{{path}}}", (default_value)="{{{default_value}}}", (event_type)=TYPE_GLOBAL_VAR_MODIFIED];
+{{#members}}    {{{type_protobuf}}} class_{{instance_name_unique}}_var_{{{name_unique}}} = {{>index}}    [(path) = "{{{path}}}", (default_value)="{{{default_value}}}", (event_type)=TYPE_GLOBAL_VAR_MODIFIED, (message_type)="{{{type_protobuf}}}"];
 {{/members}}{{/instances}}{{/is_shared_list}}{{/shared_class_definitions}}
   }
 }
@@ -102,6 +102,10 @@ extend google.protobuf.FieldOptions
 
   // @see TreeEventTypes
   TreeEventTypes event_type = 50002;
+
+  /// The same as the type of the element.
+  /// This is a workaround for the nodejs side, whose API is not allowing to get the type of a message field.
+  string message_type = 50002;
 }
 
 extend google.protobuf.MessageOptions {
