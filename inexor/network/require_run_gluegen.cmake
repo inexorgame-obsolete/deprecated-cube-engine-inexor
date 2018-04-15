@@ -55,7 +55,6 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
                   " --template-cpp " "${gluegen_template_cpp}"
                   " --out-proto " "${gluegen_out_proto}"
                   " --out-cpp " "${gluegen_out_cpp}"
-                  " --namespace " "inexor::tree"
                   " --XML-AST-folder " "${DOXYGEN_XML_DIR}")
 
     set(GENERATED_FILES ${gluegen_out_cpp} ${gluegen_out_proto})
@@ -97,7 +96,6 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
       "--template-cpp" "${gluegen_template_cpp}"
       "--out-proto" "${gluegen_out_proto}"
       "--out-cpp" "${gluegen_out_cpp}"
-      "--namespace" "inexor::tree"
       "--XML-AST-folder" "${DOXYGEN_XML_DIR}"
 
       # Invoke protoc compiler to generate the .gen.pb.h .gen.pb.cpp files from the .proto definition
@@ -150,7 +148,6 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
         "--template-cpp" "${gluegen_template_cpp}"
         "--out-proto" "${gluegen_out_proto}"
         "--out-cpp" "${gluegen_out_cpp}"
-        "--namespace" "inexor::tree"
         "--XML-AST-folder" "${DOXYGEN_XML_DIR}"
         WORKING_DIRECTORY ${MAINDIR}
       )

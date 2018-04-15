@@ -18,12 +18,12 @@
 
 {{#shared_class_definitions}}{{^is_shared_list}}#include "{{definition_header_file}}"
 {{/is_shared_list}}{{/shared_class_definitions}}
+using namespace inexor;
 
+SUBSYSTEM_REGISTER(rpc, rpc::RpcSubsystem<tree::TreeEvent, tree::TreeService::AsyncService>); // needs to be in no namespace!
 
-SUBSYSTEM_REGISTER(rpc, inexor::rpc::RpcSubsystem<{{namespace}}::TreeEvent, {{namespace}}::TreeService::AsyncService>); // needs to be in no namespace!
-
-using {{namespace}}::TreeEvent;    // The message type.
-using {{namespace}}::TreeService;        // The RPC service (used only for instancing the RpcServer
+using tree::TreeEvent;    // The message type.
+using tree::TreeService;        // The RPC service (used only for instancing the RpcServer
 
 
 using std::string; // shared functions sometimes have string arguments.
@@ -71,9 +71,9 @@ void set_on_change_functions()
     // Set all Global sharedvars onchange functions
 {{#shared_vars}}        {{name_cpp_full}}.onChange.connect([](const {{type_cpp_primitive}} oldvalue, const {{type_cpp_primitive}} newvalue)
         {
-            {{namespace}}::TreeEvent val;
+            tree::TreeEvent val;
             val.set_{{name_unique}}(newvalue);
-            inexor::rpc::RpcServer<{{namespace}}::TreeEvent, {{namespace}}::TreeService::AsyncService>::send_msg(std::move(val));
+            rpc::RpcServer<tree::TreeEvent, tree::TreeService::AsyncService>::send_msg(std::move(val));
         }
     );
 {{/shared_vars}}
@@ -82,30 +82,30 @@ void set_on_change_functions()
 {{#shared_class_definitions}}{{#is_shared_list}}{{#instances}}{{#first_template_type}}
 
     {{name_parent_cpp_full}}.element_removed_func = [](int id) {
-        {{namespace}}::TreeEvent tevent;
-        {{namespace}}::list_{{definition_name_unique}}_removed *rem_msg(tevent.mutable_list_{{instance_name_unique}}_removed());
+        tree::TreeEvent tevent;
+        tree::list_{{definition_name_unique}}_removed *rem_msg(tevent.mutable_list_{{instance_name_unique}}_removed());
         rem_msg->set_intern_shared_list_id_number(id);
 
-        inexor::rpc::RpcServer<{{namespace}}::TreeEvent, {{namespace}}::TreeService::AsyncService>::send_msg(std::move(tevent));
+        rpc::RpcServer<tree::TreeEvent, tree::TreeService::AsyncService>::send_msg(std::move(tevent));
     };
 
     {{name_parent_cpp_full}}.element_pushed_back_func = [](int id, {{definition_name_cpp}} &element) {
-        {{namespace}}::TreeEvent tevent;
-        {{namespace}}::list_{{definition_name_unique}}_added *added_msg(tevent.mutable_list_{{instance_name_unique}}_added());
+        tree::TreeEvent tevent;
+        tree::list_{{definition_name_unique}}_added *added_msg(tevent.mutable_list_{{instance_name_unique}}_added());
         added_msg->set_intern_shared_list_id_number(id);
 {{#members}}        added_msg->set_sharedclass_member_{{name_unique}}(element.{{name_cpp_short}});
 {{/members}}
 
 
-        inexor::rpc::RpcServer<{{namespace}}::TreeEvent, {{namespace}}::TreeService::AsyncService>::send_msg(std::move(tevent));
+        rpc::RpcServer<tree::TreeEvent, tree::TreeService::AsyncService>::send_msg(std::move(tevent));
 {{#members}}        element.{{name_cpp_short}}.onChange.connect([id](const {{type_cpp_primitive}} oldvalue, const {{type_cpp_primitive}} newvalue)
         {
-            {{namespace}}::TreeEvent tevent;
-            {{namespace}}::list_{{definition_name_unique}}_modified *modified_msg(tevent.mutable_list_{{instance_name_unique}}_modified());
+            tree::TreeEvent tevent;
+            tree::list_{{definition_name_unique}}_modified *modified_msg(tevent.mutable_list_{{instance_name_unique}}_modified());
             modified_msg->set_intern_shared_list_id_number(id);
             modified_msg->set_sharedclass_member_{{name_unique}}(newvalue);
 
-            inexor::rpc::RpcServer<{{namespace}}::TreeEvent, {{namespace}}::TreeService::AsyncService>::send_msg(std::move(tevent));
+            rpc::RpcServer<tree::TreeEvent, tree::TreeService::AsyncService>::send_msg(std::move(tevent));
         });
 {{/members}}
     };
