@@ -40,8 +40,6 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
 
     get_all_source_files(${TARG} "SOURCE_FILES")
 
-    configure_file(${doxyfile_in} ${doxyfile}) # Generate doxygen config
-
     set(proto_filename_wo_ext inexor-tree)
     set(proto_general_name ${proto_filename_wo_ext}-${target_short}.proto) # The name the proto will be installed (other languages will use this name)
     set(gluegen_out_cpp ${OUT_DIR}/RPCBindingandContext.gen.cpp)
@@ -85,6 +83,7 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
       # clear folder containing intermediate files (the AST xml files) before, since we take the complete folder as input to the next stage.
       COMMAND ${CMAKE_COMMAND} -D PATHS_TO_REMOVE="${PATHS_TO_REMOVE_BEFORE_GEN}" -P ${MAINDIR}/cmake/clean_files_folders.cmake
 
+      # Create the doxygen config
       COMMAND ${CMAKE_COMMAND} -D DOXYFILE_TEMPLATE_IN="${doxyfile_in}" -D DOXYFILE_OUT="${doxyfile}" -D DOXYGEN_XML_DIR="${DOXYGEN_XML_DIR}" -D SOURCE_FILES="${SOURCE_FILES}" -P ${SOURCE_DIR}/network/generate_doxygen_conf.cmake
 
       # Parse the codebase using doxygen and output the AST (Abstract syntax tree) to xml files.
@@ -131,9 +130,12 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
     # Add intermediate targets if desired.
     if(DEBUG_GLUEGEN)
       add_custom_target(invoke_parser_${target_short}
-        COMMENT "Parsing code base for Shared Declarations and generate gluecode doing the networking."
+        COMMENT "Parsing code base using doxygen and save AST in folder (in xml format)"
         # clear folder containing intermediate files (the AST xml files) before, since we take the complete folder as input to the next stage.
         COMMAND ${CMAKE_COMMAND} -D PATHS_TO_REMOVE="${PATHS_TO_REMOVE_BEFORE_GEN}" -P ${MAINDIR}/cmake/clean_files_folders.cmake
+
+        # Create the doxygen config
+        COMMAND ${CMAKE_COMMAND} -D DOXYFILE_TEMPLATE_IN="${doxyfile_in}" -D DOXYFILE_OUT="${doxyfile}" -D DOXYGEN_XML_DIR="${DOXYGEN_XML_DIR}" -D SOURCE_FILES="${SOURCE_FILES}" -P ${SOURCE_DIR}/network/generate_doxygen_conf.cmake
 
         # Parse the codebase using doxygen and output the AST (Abstract syntax tree) to xml files.
         COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
@@ -141,7 +143,7 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
       )
 
       add_custom_target(invoke_GlueGen_${target_short}
-        COMMENT "Parse the AST."
+        COMMENT "Run InexorGlueGen taking the AST generated with invoke_parser_xy"
         # Run our in-house gluecode generator taking doxygens AST as input and generating .gen.proto and .gen.hpp for ${TARG}.
         COMMAND ${GLUEGEN_EXE}
         "--template-proto" "${gluegen_template_proto}"
@@ -166,8 +168,10 @@ function(require_run_gluegen TARG BUILDFLAGS TEMPLATES_DIR OUT_DIR)
               --proto_path=${OUT_DIR}
               --grpc_out=${OUT_DIR}
               ${protoc_in}
+        # Copy the proto file to the CMAKE_CURRENT_BINARY_DIR
+        COMMAND ${CMAKE_COMMAND} -E copy "${gluegen_out_proto}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${proto_general_name}"
 
-         WORKING_DIRECTORY ${MAINDIR})
+        WORKING_DIRECTORY ${MAINDIR})
     endif(DEBUG_GLUEGEN)
 endfunction()
 
