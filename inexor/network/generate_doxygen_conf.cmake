@@ -6,7 +6,7 @@
 #Data must be defined
 #  DOXYGEN_XML_DIR
 #  SOURCE_FILES
-string(REPLACE ".cpp\" ".cpp" SOURCE_FILES ${SOURCE_FILES})
+string(REPLACE ".cpp\\" ".cpp" SOURCE_FILES ${SOURCE_FILES})
 
 message(STATUS "this is the SOURCE_FILES list: ${SOURCE_FILES}")
 configure_file(${DOXYFILE_TEMPLATE_IN} ${DOXYFILE_OUT})
