@@ -39,81 +39,90 @@ osx: &osx
   sudo: false
   language: generic
 
-jobs:
-  include:
-  # We run the following jobs in our main repository:    #CIDELETE
-    - stage: "Conan prebuilds triggering"                #CIDELETE
-      os: linux                                          #CIDELETE
-      dist: trusty                                       #CIDELETE
-      sudo: false                                        #CIDELETE
-      env: DOCKER="NODOCKER" conan_prebuilds="true"      #CIDELETE
-    - stage: "Building & Testing"                        #CIDELETE
-      <<: *linux                                         #CIDELETE
-      env: COMPILER="clang" COMPILER_VERSION="5.0" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-clang050" NIGHTLY="true" #CIDELETE
-    - <<: *linux                                         #CIDELETE
-      env: COMPILER="gcc" COMPILER_VERSION="7" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-gcc07" NIGHTLY="true" #CIDELETE
-    - stage: "Create GitHub Tag"                         #CIDELETE
-      if: branch = master AND tag is blank AND fork is false AND repo = head_repo AND type != pull_request  #CIDELETE
-      os: linux                                          #CIDELETE
-      sudo: false                                        #CIDELETE
-      dist: trusty                                       #CIDELETE
-      env: DOCKER="NODOCKER" TARGET=new_version_tagger   #CIDELETE
-      branches:                                          #CIDELETE
-        only:                                            #CIDELETE
-          - master                                       #CIDELETE
-    #- os: linux                                         #CIDELETE
-      #sudo: false                                       #CIDELETE
-      #dist: trusty                                      #CIDELETE
-      #env: DOCKER="NODOCKER" TARGET=apidoc              #CIDELETE
+core: &core
+  jobs:
+    include:
+    # We run the following jobs in our main repository:
+      - stage: "Conan prebuilds triggering"
+        os: linux
+        dist: trusty
+        sudo: false
+        env: DOCKER="NODOCKER" conan_prebuilds="true"
+      - stage: "Building & Testing"
+        <<: *linux
+        env: COMPILER="clang" COMPILER_VERSION="5.0" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-clang050" NIGHTLY="true"
+      - <<: *linux
+        env: COMPILER="gcc" COMPILER_VERSION="7" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-gcc07" NIGHTLY="true"
+      - stage: "Create GitHub Tag"
+        if: branch = master AND tag is blank AND fork is false AND repo = head_repo AND type != pull_request
+        os: linux
+        sudo: false
+        dist: trusty
+        env: DOCKER="NODOCKER" TARGET=new_version_tagger
+        branches:
+          only:
+            - master
+      #- os: linux
+       #vsudo: false
+       #vdist: trusty
+       #venv: DOCKER="NODOCKER" TARGET=apidoc
 
-
-    # We run the following jobs in ci-prebuilds:
+ciprebuilds: &ciprebuilds
+  jobs:
+    include:
     # Our main compilers we run tests for
-    #CI - <<: *osx
-      #CI osx_image: xcode9.2
-      #CI env: COMPILER="apple-clang" COMPILER_VERSION="9.0" COMPILER_CONFIGURATION="Release" TARGET="macos" DOCKER="NODOCKER" NIGHTLY="conan"
-    #CI - <<: *osx
-      #CI osx_image: xcode9.2
-      #CI env: COMPILER="apple-clang" COMPILER_VERSION="9.0" COMPILER_CONFIGURATION="Debug" TARGET="macos" DOCKER="NODOCKER" NIGHTLY="conan"
-    #CI - <<: *linux
-      #CI env: COMPILER="gcc" COMPILER_VERSION="8" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-gcc08" NIGHTLY="conan"
-    #CI - <<: *linux
-      #CI env: COMPILER="gcc" COMPILER_VERSION="8" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-gcc08" NIGHTLY="conan"
-    #CI - <<: *linux
-      #CI env: COMPILER="clang" COMPILER_VERSION="6.0" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-clang060" NIGHTLY="conan"
-    #CI - <<: *linux
-      #CI env: COMPILER="clang" COMPILER_VERSION="6.0" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-clang060" NIGHTLY="conan"
+      - <<: *osx
+        osx_image: xcode9.2
+        env: COMPILER="apple-clang" COMPILER_VERSION="9.0" COMPILER_CONFIGURATION="Release" TARGET="macos" DOCKER="NODOCKER" NIGHTLY="conan"
+      - <<: *osx
+        osx_image: xcode9.2
+        env: COMPILER="apple-clang" COMPILER_VERSION="9.0" COMPILER_CONFIGURATION="Debug" TARGET="macos" DOCKER="NODOCKER" NIGHTLY="conan"
+      - <<: *linux
+        env: COMPILER="gcc" COMPILER_VERSION="8" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-gcc08" NIGHTLY="conan"
+      - <<: *linux
+        env: COMPILER="gcc" COMPILER_VERSION="8" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-gcc08" NIGHTLY="conan"
+      - <<: *linux
+        env: COMPILER="clang" COMPILER_VERSION="6.0" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-clang060" NIGHTLY="conan"
+      - <<: *linux
+        env: COMPILER="clang" COMPILER_VERSION="6.0" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-clang060" NIGHTLY="conan"
 
     # Older compilers we compile Conan packages for, to speed things up for other people
-    #CI - <<: *linux
-      #CI env: COMPILER="clang" COMPILER_VERSION="5.0" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-clang050" NIGHTLY="conan"
-    #CI - <<: *linux
-      #CI env: COMPILER="clang" COMPILER_VERSION="5.0" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-clang050" NIGHTLY="conan"
-    #CI - <<: *linux
-      #CI env: COMPILER="gcc" COMPILER_VERSION="7" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-gcc07" NIGHTLY="conan"
-    #CI - <<: *linux
-      #CI env: COMPILER="gcc" COMPILER_VERSION="7" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-gcc07" NIGHTLY="conan"
-    #CI - <<: *linux
-      #CI env: COMPILER="clang" COMPILER_VERSION="4.0" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-clang040" NIGHTLY="conan"
-    #CI - <<: *linux
-      #CI env: COMPILER="clang" COMPILER_VERSION="4.0" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-clang040" NIGHTLY="conan"
-    #CI - <<: *linux
-      #CI env: COMPILER="gcc" COMPILER_VERSION="6" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-gcc06" NIGHTLY="conan"
-    #CI - <<: *linux
-      #CI env: COMPILER="gcc" COMPILER_VERSION="6" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-gcc06" NIGHTLY="conan"
-    #CI - <<: *linux
-      #CI env: COMPILER="gcc" COMPILER_VERSION="5" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-gcc05" NIGHTLY="conan"
-    #CI - <<: *linux
-      #CI env: COMPILER="gcc" COMPILER_VERSION="5" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-gcc05" NIGHTLY="conan"
-    #CI - <<: *linux
-      #CI env: COMPILER="clang" COMPILER_VERSION="3.9" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-clang039" NIGHTLY="conan"
-    #CI - <<: *linux
-      #CI env: COMPILER="clang" COMPILER_VERSION="3.9" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-clang039" NIGHTLY="conan"
+      - <<: *linux
+        env: COMPILER="clang" COMPILER_VERSION="5.0" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-clang050" NIGHTLY="conan"
+      - <<: *linux
+        env: COMPILER="clang" COMPILER_VERSION="5.0" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-clang050" NIGHTLY="conan"
+      - <<: *linux
+        env: COMPILER="gcc" COMPILER_VERSION="7" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-gcc07" NIGHTLY="conan"
+      - <<: *linux
+        env: COMPILER="gcc" COMPILER_VERSION="7" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-gcc07" NIGHTLY="conan"
+      - <<: *linux
+        env: COMPILER="clang" COMPILER_VERSION="4.0" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-clang040" NIGHTLY="conan"
+      - <<: *linux
+        env: COMPILER="clang" COMPILER_VERSION="4.0" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-clang040" NIGHTLY="conan"
+      - <<: *linux
+        env: COMPILER="gcc" COMPILER_VERSION="6" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-gcc06" NIGHTLY="conan"
+      - <<: *linux
+        env: COMPILER="gcc" COMPILER_VERSION="6" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-gcc06" NIGHTLY="conan"
+      - <<: *linux
+        env: COMPILER="gcc" COMPILER_VERSION="5" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-gcc05" NIGHTLY="conan"
+      - <<: *linux
+        env: COMPILER="gcc" COMPILER_VERSION="5" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-gcc05" NIGHTLY="conan"
+      - <<: *linux
+        env: COMPILER="clang" COMPILER_VERSION="3.9" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-clang039" NIGHTLY="conan"
+      - <<: *linux
+        env: COMPILER="clang" COMPILER_VERSION="3.9" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-clang039" NIGHTLY="conan"
+    fast_finish: true # don't wait for allow_failures to fail, gives faster response
+    allow_failures:
+      - os: osx
+      #CI - os: linux
 
-  #CI fast_finish: true # don't wait for allow_failures to fail, gives faster response
-  #CI allow_failures:
-    #CI - os: osx
-    #CI - os: linux
+
+
+# We run the following jobs in our main repository:    #CIDELETE
+<<: *core  #CIDELETE
+
+# We run the following jobs in ci-prebuilds:
+#CI <<: *ciprebuilds
 
 
 before_install:
