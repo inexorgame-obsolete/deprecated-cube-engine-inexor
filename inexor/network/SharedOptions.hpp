@@ -46,7 +46,6 @@ public:
     Range(int min = 0, int max = fu_cast<int>("{{index}}")) {}
     Range(float min = 0.0f, float max = fu_cast<float>("{{index}}")) {}
 
-    const char *proto_template = "(min)={{min}}, (max)={{max}}";
 };
 
 // CustomXY are the hardest atm, since we need to override the build-tools behaviour (or we need to set the build tools defaults when customxy is missing)
@@ -54,39 +53,22 @@ public:
 class CustomPath : public SharedOption
 {
 public:
-    CustomPath(const char *path = "{{path}}") {}
-
-    const char *proto_template = "(path)=\"{{path}}\"";
-};
-
-class NoSync : public SharedOption
-{
-public:
-    NoSync() {}
-
-    const char *cpp_receive_template = "return;";
-    const char *cpp_send_template = "return;";
+    CustomPath(const char *path = "{{&path}}") {}
 };
 
 // TODO respect default initializer ispersistent = false
 class Persistent : public SharedOption
 {
 public:
-    Persistent(bool ispersistent) {}
-
-    const char *proto_template = "da";
-    const char *cpp_receive_template = "da";
-    const char *cpp_send_template = "da";
+    Persistent(bool persistent) {}
 };
 
 class Default : public  SharedOption
 {
 public:
-    Default(const int val = 0) {defval_int = val;}
-    Default(const float val = 0.0f) { defval_float = val; }
-    Default(const char *val = "") { defval_cstring = val; }
-
-    const char *default_value = "{{val}}";
+    Default(const int default_value = 0) {defval_int = default_value;}
+    Default(const float default_value = 0.0f) { defval_float = default_value; }
+    Default(const char *default_value = "") { defval_cstring = default_value; }
 };
 
 //class Function : public SharedOption
