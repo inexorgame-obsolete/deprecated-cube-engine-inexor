@@ -373,7 +373,7 @@ static inline void loopiter(ident *id, identstack &stack, const char *s) { tagva
 #define COMMANDN(name, fun, nargs) UNUSED static bool __dummy_##fun = addcommand(#name, (identfun)fun, nargs); SharedFunc(name)
 #define COMMAND(name, nargs) COMMANDN(name, name, nargs)
 
-#define _VAR(name, global, min, cur, max, persist) SharedVar<int> global((int)cur); UNUSED int dummy_register_##global = variable(#name, min, cur, max, &global, NULL, persist)
+#define _VAR(name, global, min, cur, max, persist) SharedVar<int> global = reflection_marker((int)cur); UNUSED int dummy_register_##global = variable(#name, min, cur, max, &global, NULL, persist)
 /// Version of VAR which doesnt sync with the tree api.
 #define _VAR_NOSYNC(name, global, min, cur, max, persist) int global((int)cur); UNUSED int dummy_register_##global = variable(#name, min, cur, max, &global, NULL, persist)
 
@@ -385,47 +385,47 @@ static inline void loopiter(ident *id, identstack &stack, const char *s) { tagva
 #define VAR_NOSYNC(name, min, cur, max) _VAR_NOSYNC(name, name, min, cur, max, 0)
 #define VARP(name, min, cur, max) _VAR(name, name, min, cur, max, IDF_PERSIST)
 #define VARR(name, min, cur, max) _VAR(name, name, min, cur, max, IDF_OVERRIDE)
-#define _VARF(name, global, min, cur, max, body, persist)  void var_##name(); SharedVar<int> global((int)cur); UNUSED int dummy_register_##global = variable(#name, min, cur, max, &global, var_##name, persist); void var_##name() { body; }
+#define _VARF(name, global, min, cur, max, body, persist)  void var_##name(); SharedVar<int> global = reflection_marker((int)cur); UNUSED int dummy_register_##global = variable(#name, min, cur, max, &global, var_##name, persist); void var_##name() { body; }
 #define VARFN(name, global, min, cur, max, body) _VARF(name, global, min, cur, max, body, 0)
 #define VARF(name, min, cur, max, body) _VARF(name, name, min, cur, max, body, 0)
 #define VARFP(name, min, cur, max, body) _VARF(name, name, min, cur, max, body, IDF_PERSIST)
 #define VARFR(name, min, cur, max, body) _VARF(name, name, min, cur, max, body, IDF_OVERRIDE)
 
-#define _HVAR(name, global, min, cur, max, persist) SharedVar<int> global(cur); UNUSED int dummy_register_##global = variable(#name, min, cur, max, &global, NULL, persist | IDF_HEX)
+#define _HVAR(name, global, min, cur, max, persist) SharedVar<int> global = reflection_marker(cur); UNUSED int dummy_register_##global = variable(#name, min, cur, max, &global, NULL, persist | IDF_HEX)
 #define HVARN(name, global, min, cur, max) _HVAR(name, global, min, cur, max, 0)
 #define HVARNP(name, global, min, cur, max) _HVAR(name, global, min, cur, max, IDF_PERSIST)
 #define HVARNR(name, global, min, cur, max) _HVAR(name, global, min, cur, max, IDF_OVERRIDE)
 #define HVAR(name, min, cur, max) _HVAR(name, name, min, cur, max, 0)
 #define HVARP(name, min, cur, max) _HVAR(name, name, min, cur, max, IDF_PERSIST)
 #define HVARR(name, min, cur, max) _HVAR(name, name, min, cur, max, IDF_OVERRIDE)
-#define _HVARF(name, global, min, cur, max, body, persist)  void var_##name(); SharedVar<int> global((int)cur); UNUSED int dummy_register_##global = variable(#name, min, cur, max, &global, var_##name, persist | IDF_HEX); void var_##name() { body; }
+#define _HVARF(name, global, min, cur, max, body, persist)  void var_##name(); SharedVar<int> global = reflection_marker((int)cur); UNUSED int dummy_register_##global = variable(#name, min, cur, max, &global, var_##name, persist | IDF_HEX); void var_##name() { body; }
 #define HVARFN(name, global, min, cur, max, body) _HVARF(name, global, min, cur, max, body, 0)
 #define HVARF(name, min, cur, max, body) _HVARF(name, name, min, cur, max, body, 0)
 #define HVARFP(name, min, cur, max, body) _HVARF(name, name, min, cur, max, body, IDF_PERSIST)
 #define HVARFR(name, min, cur, max, body) _HVARF(name, name, min, cur, max, body, IDF_OVERRIDE)
 
-#define _FVAR(name, global, min, cur, max, persist) SharedVar<float> global((float)cur); UNUSED float dummy_register_##global = fvariable(#name, min, cur, max, &global, NULL, persist)
+#define _FVAR(name, global, min, cur, max, persist) SharedVar<float> global = reflection_marker((float)cur); UNUSED float dummy_register_##global = fvariable(#name, min, cur, max, &global, NULL, persist)
 #define FVARN(name, global, min, cur, max) _FVAR(name, global, min, cur, max, 0)
 #define FVARNP(name, global, min, cur, max) _FVAR(name, global, min, cur, max, IDF_PERSIST)
 #define FVARNR(name, global, min, cur, max) _FVAR(name, global, min, cur, max, IDF_OVERRIDE)
 #define FVAR(name, min, cur, max) _FVAR(name, name, min, cur, max, 0)
 #define FVARP(name, min, cur, max) _FVAR(name, name, min, cur, max, IDF_PERSIST)
 #define FVARR(name, min, cur, max) _FVAR(name, name, min, cur, max, IDF_OVERRIDE)
-#define _FVARF(name, global, min, cur, max, body, persist) void var_##name(); SharedVar<float> global((float)cur); UNUSED float dummy_register_##global = fvariable(#name, min, cur, max, &global, var_##name, persist); void var_##name() { body; }
+#define _FVARF(name, global, min, cur, max, body, persist) void var_##name(); SharedVar<float> global = reflection_marker((float)cur); UNUSED float dummy_register_##global = fvariable(#name, min, cur, max, &global, var_##name, persist); void var_##name() { body; }
 #define FVARFN(name, global, min, cur, max, body) _FVARF(name, global, min, cur, max, body, 0)
 #define FVARF(name, min, cur, max, body) _FVARF(name, name, min, cur, max, body, 0)
 #define FVARFP(name, min, cur, max, body) _FVARF(name, name, min, cur, max, body, IDF_PERSIST)
 #define FVARFR(name, min, cur, max, body) _FVARF(name, name, min, cur, max, body, IDF_OVERRIDE)
 
 
-#define _SVAR(name, global, cur, persist) SharedVar<char*> global((char *)cur); UNUSED char* dummy_register_##global = *global = (char*)svariable(#name, cur, &global, NULL, persist)
+#define _SVAR(name, global, cur, persist) SharedVar<char*> global = reflection_marker((char *)cur); UNUSED char* dummy_register_##global = *global = (char*)svariable(#name, cur, &global, NULL, persist)
 #define SVARN(name, global, cur) _SVAR(name, global, cur, 0)
 #define SVARNP(name, global, cur) _SVAR(name, global, cur, IDF_PERSIST)
 #define SVARNR(name, global, cur) _SVAR(name, global, cur, IDF_OVERRIDE)
 #define SVAR(name, cur) _SVAR(name, name, cur, 0)
 #define SVARP(name, cur) _SVAR(name, name, cur, IDF_PERSIST)
 #define SVARR(name, cur) _SVAR(name, name, cur, IDF_OVERRIDE)
-#define _SVARF(name, global, cur, body, persist) void var_##name(); SharedVar<char*> global((char*)cur); UNUSED char* dummy_register_##global = *global = (char*)svariable(#name, cur, &global, var_##name, persist); void var_##name() { body; }
+#define _SVARF(name, global, cur, body, persist) void var_##name(); SharedVar<char*> global = reflection_marker((char*)cur); UNUSED char* dummy_register_##global = *global = (char*)svariable(#name, cur, &global, var_##name, persist); void var_##name() { body; }
 #define SVARFN(name, global, cur, body) _SVARF(name, global, cur, body, 0)
 #define SVARF(name, cur, body) _SVARF(name, name, cur, body, 0)
 #define SVARFP(name, cur, body) _SVARF(name, name, cur, body, IDF_PERSIST)
