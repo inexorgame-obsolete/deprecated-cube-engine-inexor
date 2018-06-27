@@ -59,12 +59,13 @@ build() {
 
     conan user -p "${CONAN_PASSWORD}" -r inexor "${CONAN_USER}"
 
+    rebuild_conan_and_upload "spdlog/0.17.0@bincrafters/stable"
+    rebuild_conan_and_upload "fmt/4.1.0@bincrafters/stable"
+    build_conan_and_upload "doxygen/1.8.13@inexorgame/stable"
     build_conan_and_upload "kainjow-mustache/3.1@inexorgame/stable"
     build_conan_and_upload "bzip2/1.0.6@conan/stable"
     build_conan_and_upload "pugixml/1.7@inexorgame/stable"
     build_conan_and_upload "gtest/1.8.0@bincrafters/stable"
-    rebuild_conan_and_upload "spdlog/0.16.3@bincrafters/stable"
-    rebuild_conan_and_upload "fmt/4.1.0@bincrafters/stable"
     build_conan_and_upload "zlib/1.2.11@conan/stable"
     build_conan_and_upload "ENet/1.3.13@inexorgame/stable"
     build_conan_and_upload "protobuf/3.5.1@bincrafters/stable"

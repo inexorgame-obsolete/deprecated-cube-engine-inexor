@@ -7,8 +7,7 @@ requires = (
     ("zlib/1.2.11@conan/stable"),
     ("gtest/1.8.0@bincrafters/stable"),
     ("ENet/1.3.13@inexorgame/stable"),
-    ("spdlog/0.16.3@bincrafters/stable"),
-        ("fmt/4.1.0@bincrafters/stable"),  # fix version to make it re-producable, remove at next spdlog update
+    ("spdlog/0.17.0@bincrafters/stable"),
     ("sdl2/2.0.8@bincrafters/testing"),  # not self-contained
     ("sdl2_image_lowercase/2.0.1@inexorgame/stable"),  # todo: unfork
         ("libpng/1.6.34@bincrafters/stable"),  # override for Conan >= 0.30.0 compatibility
