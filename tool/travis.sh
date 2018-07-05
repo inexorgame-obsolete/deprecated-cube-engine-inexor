@@ -132,25 +132,15 @@ create_tag() {
     exit 0
   }
 
-  if [ "$branch" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
-    # direct push to master
+  # direct push to master
+  export new_version=$(incremented_version)
+  echo >&2 -e $new_version
 
-    export new_version=$(incremented_version)
-    echo >&2 -e $new_version
+  git config --global user.email "ci@inexor.org"
+  git config --global user.name "InexorBot"
 
-    git config --global user.email "ci@inexor.org"
-    git config --global user.name "InexorBot"
-
-    git tag -a -m "Rolling release: automatic tag creation on push to master branch" "${new_version}"
-    git push -q https://$GITHUB_TOKEN@github.com/inexorgame/inexor-core --tags
-
-  else
-    echo >&2 -e "\n===============\n" \
-    "Skipping tag creation, because this is \n" \
-    "not a direct commit to master.\n" \
-    "===============\n"
-    export new_version=$(incremented_version)
-  fi
+  git tag -a -m "Rolling release: automatic tag creation on push to master branch" "${new_version}"
+  git push -q https://$GITHUB_TOKEN@github.com/inexorgame/inexor-core --tags
 }
 
 # Upload nightly

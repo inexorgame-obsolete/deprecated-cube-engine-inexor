@@ -167,7 +167,15 @@ script:
       bash ${RELATIVE_PATH}tool/travis_macos.sh;
     fi;
   - if [ "${TARGET}" == "new_version_tagger" ]; then
+      if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
         bash ./tool/travis.sh ${TARGET} ${COMPILER} ${COMPILER_VERSION} ${COMPILER_CONFIGURATION} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN};
+      else
+        echo >&2 -e "\n===============\n" \
+        "Skipping tag creation, because this is \n" \
+        "not a direct commit to master.\n" \
+        "===============\n";
+        exit 0;
+      fi
     fi
 
 deploy:
