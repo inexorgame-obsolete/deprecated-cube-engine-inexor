@@ -59,8 +59,12 @@ build() {
 
     conan user -p "${CONAN_PASSWORD}" -r inexor "${CONAN_USER}"
 
-    rebuild_conan_and_upload "spdlog/0.17.0@bincrafters/stable"
-    rebuild_conan_and_upload "fmt/4.1.0@bincrafters/stable"
+    rebuild_conan_and_upload "sdl2/2.0.8@bincrafters/testing"
+    build_conan_and_upload "libpng/1.6.34@bincrafters/stable"
+    build_conan_and_upload "libjpeg-turbo/1.5.2@bincrafters/stable"
+    rebuild_conan_and_upload "sdl2_image/2.0.3@bincrafters/stable"
+    build_conan_and_upload "spdlog/0.17.0@bincrafters/stable"
+    build_conan_and_upload "fmt/4.1.0@bincrafters/stable"
     build_conan_and_upload "doxygen/1.8.13@inexorgame/stable"
     build_conan_and_upload "kainjow-mustache/3.1@inexorgame/stable"
     build_conan_and_upload "bzip2/1.0.6@conan/stable"
@@ -70,15 +74,13 @@ build() {
     build_conan_and_upload "ENet/1.3.13@inexorgame/stable"
     build_conan_and_upload "protobuf/3.5.1@bincrafters/stable"
     build_conan_and_upload "gRPC/1.8.3@inexorgame/stable"
-    build_conan_and_upload "libpng/1.6.34@bincrafters/stable"
+
     build_conan_and_upload "Boost/1.66.0@conan/stable"
 
     build_conan_and_upload "InexorGlueGen/0.6.8@inexorgame/stable"
 
-    build_conan_and_upload "libjpeg-turbo/1.5.2@bincrafters/stable"
     rebuild_conan_and_upload "OpenSSL/1.1.0g@conan/stable"
-    rebuild_conan "sdl2/2.0.8@bincrafters/testing"
-    rebuild_conan "sdl2_image_lowercase/2.0.1@inexorgame/stable"
+
 
     build_conan "doxygen/1.8.14@inexorgame/stable"
     build_conan "CEF/3.3239.1709.g093cae4@inexorgame/testing"
