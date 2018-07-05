@@ -9,9 +9,7 @@ requires = (
     ("ENet/1.3.13@inexorgame/stable"),
     ("spdlog/0.17.0@bincrafters/stable"),
     ("sdl2/2.0.8@bincrafters/testing"),  # not self-contained
-    ("sdl2_image_lowercase/2.0.1@inexorgame/stable"),  # todo: unfork
-        ("libpng/1.6.34@bincrafters/stable"),  # override for Conan >= 0.30.0 compatibility
-        ("libjpeg-turbo/1.5.2@bincrafters/stable"),  # override for Conan >= 0.30.0 compatibility
+    ("sdl2_image/2.0.3@bincrafters/stable"),
     ("CEF/3.3239.1709.g093cae4@inexorgame/testing")  # not self-contained
 )
 
@@ -22,7 +20,7 @@ options = '''
   ENet:shared=False
   Boost:shared=False
   sdl2:shared=False
-  sdl2_image_lowercase:shared=False
+  sdl2_image:shared=False
   spdlog:fmt_external=True
   protobuf:with_zlib=True
 '''

@@ -16,7 +16,7 @@ class InexorConan(ConanFile):
     def configure(self):
         if self.settings.compiler == "gcc":
             self.options["sdl2"].shared = True
-            self.options["sdl2_image_lowercase"].shared = True
+            self.options["sdl2_image"].shared = True
 
     def build(self):
         args = []

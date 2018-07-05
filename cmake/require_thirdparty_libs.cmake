@@ -149,7 +149,7 @@ add_require_conan_lib_function(CEF)
 add_require_conan_lib_function(sdl2)
 
 # sdl2_image (image loader library)
-add_require_conan_lib_function(sdl2_image_lowercase)
+add_require_conan_lib_function(sdl2_image)
 
 # libjpeg turbo a dependency of sdl2_image
 add_require_conan_lib_function(libjpeg-turbo)
@@ -167,7 +167,7 @@ function(require_sdl targ)
   require_sdl2(${targ})
   require_libjpeg_turbo(${targ})
   require_libpng(${targ})
-  require_sdl2_image_lowercase(${targ})
+  require_sdl2_image(${targ})
   # require_sdl2_mixer(${targ})
   require_opengl(${targ})
 endfunction()
