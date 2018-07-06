@@ -6,7 +6,7 @@ requires = (
     ("Boost/1.66.0@conan/stable"),
     ("zlib/1.2.11@conan/stable"),
     ("gtest/1.8.0@bincrafters/stable"),
-    ("ENet/1.3.13@inexorgame/stable"),
+    ("enet/1.3.13@bincrafters/stable"),
     ("spdlog/0.17.0@bincrafters/stable"),
     ("sdl2/2.0.8@bincrafters/testing"),  # not self-contained
     ("sdl2_image/2.0.3@bincrafters/stable"),
