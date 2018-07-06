@@ -125,7 +125,7 @@ add_require_conan_lib_function(kainjow-mustache)
 add_require_conan_lib_function(zlib)
 
 # ENet (reliable UDP networking lib)
-add_require_conan_lib_function(ENet)
+add_require_conan_lib_function(enet)
 
 # Protobuf (XML or JSON like serialization format but in binary, so it needs an compiler)
 set(protobuf_MODULE_COMPATIBLE ON)
