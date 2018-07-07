@@ -73,41 +73,6 @@ run_tests() {
 }
 
 
-# ATTENTION:
-# Please USE the following naming format for any files uploaded to our distribution server
-# <BRANCHNAME>-<BUILDNUMBER>-<TARGET_NAME>.EXTENSION
-# where <PACKAGENAME> is NOT CONTAINING any -
-# correct: master-1043.2-linux_gcc.txt
-# correct: refactor-992.2-apidoc.hip
-# exception: master-latest-<TARGET_NAME>.zip
-# wrong: ...-linux_gcc-1043.2.zip
-
-## UPLOADING BUILDS AND THE APIDOC #################
-
-# upload remote_path local_path [local_paths]...
-#
-# Upload one or more files to our nightly or dependencies server
-# Variables are defined on the Travis website
-upload() {
-  # Fix an issue where upload directory gets specified by subsequent upload() calls
-  ncftpput -R -v -u "$FTP_USER" -p "$FTP_PASSWORD" "$FTP_DOMAIN" /linux/ "$@" || true
-}
-
-## Automatic Creation of tags and generation of the doxygen documentation #################
-create_apidoc() {
-  (
-    local zipname="Inexor-${INEXOR_VERSION}-doc.zip"
-    local zipfolder="/tmp/inexor-build"
-    cd "$gitroot" -v
-    doxygen doxygen.conf 2>&1 | grep -vF 'sqlite3_step " \
-      "failed: memberdef.id_file may not be NULL'
-    mkdir -pv "${zipfolder}"
-    zip -r "${zipfolder}/${zipname}" "doc"
-    echo >&2 "Succesfully created ${zipfolder}/${zipname}"
-    # upload "${zipfolder}/${zipname}"
-  )
-}
-
 ## increment the version number based on the last tag.
 incremented_version()
 {
@@ -145,14 +110,12 @@ create_tag() {
 
 # Upload nightly
 upload_nightlies() {
-  if test "$TARGET" != apidoc; then
-    if test "$NIGHTLY" = conan; then
-        # Upload all conan packages to our Bintray repository
-        conan user -p "${NIGHTLY_PASSWORD}" -r inexor "${NIGHTLY_USER}"
-        set -f
-        conan upload --all --force -r inexor --retry 3 --retry-wait 10 --confirm "*stable*"
-        set +f
-    fi
+  if test "$NIGHTLY" = conan; then
+    # Upload all conan packages to our Bintray repository
+    conan user -p "${NIGHTLY_PASSWORD}" -r inexor "${NIGHTLY_USER}"
+    set -f
+    conan upload --all --force -r inexor --retry 3 --retry-wait 10 --confirm "*stable*"
+    set +f
   fi
 }
 
@@ -173,7 +136,6 @@ COMPILER_CONFIGURATION="${4}" # Debug or Release
 NIGHTLY="${5}" # Nightly is either true, false or conan
 NIGHTLY_USER="${6}"
 NIGHTLY_PASSWORD="${7}"
-FTP_DOMAIN="${8}"
 
 export branch=`git rev-parse --abbrev-ref HEAD` # The branch we're on
 export commit_date=`git show -s --format=%cd --date=format:%Y-%m-%d-%H-%m-%S`
@@ -229,9 +191,7 @@ need_new_tag && {
 
 
 # main entry point
-if test "$TARGET" = apidoc; then
-  create_apidoc
-elif test "$TARGET" = new_version_tagger; then
+if test "$TARGET" = new_version_tagger; then
   create_tag
 else
   build

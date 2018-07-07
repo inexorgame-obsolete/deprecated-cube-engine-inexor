@@ -53,19 +53,24 @@ core: &core
         env: COMPILER="clang" COMPILER_VERSION="5.0" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-clang050" NIGHTLY="true"
       - <<: *linux
         env: COMPILER="gcc" COMPILER_VERSION="7" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-gcc07" NIGHTLY="true"
+      - stage: "Docs"
+        os: linux
+        sudo: false
+        dist: trusty
+        addons:
+          apt:
+            packages:
+              - doxygen
+        env: DOCKER="NODOCKER" TARGET="apidoc"
       - stage: "Create GitHub Tag"
         if: branch = master AND tag is blank AND fork is false AND repo = head_repo AND type != pull_request
         os: linux
         sudo: false
         dist: trusty
-        env: DOCKER="NODOCKER" TARGET=new_version_tagger
+        env: DOCKER="NODOCKER" TARGET="new_version_tagger"
         branches:
           only:
             - master
-      #- os: linux
-       #vsudo: false
-       #vdist: trusty
-       #venv: DOCKER="NODOCKER" TARGET=apidoc
 
 ciprebuilds: &ciprebuilds
   jobs:
@@ -144,13 +149,6 @@ script:
   - if [ "${GLOBAL_NIGHTLY}" == "conanforcerebuild" ]; then
       TARGET="conanforcerebuild";
     fi
-  - if [ "${GLOBAL_NIGHTLY}" == "conan" ]; then
-      NIGHTLY_USER="${CONAN_USER}";
-      NIGHTLY_PASSWORD="${CONAN_PASSWORD}";
-    else
-      NIGHTLY_USER="${FTP_USER}";
-      NIGHTLY_PASSWORD="${FTP_PASSWORD}";
-    fi
   - if [[ "${TRAVIS_REPO_SLUG}" == "inexorgame/inexor-core" ]]; then
       if [[ ! "${TRAVIS_PULL_REQUEST}" == false ]]; then
         echo >&2 -e "Skipping build, because this is a pull " \
@@ -161,14 +159,14 @@ script:
       fi;
     fi;
     if ! [[ "${DOCKER}" == "NODOCKER" ]]; then
-      sudo docker run -v $(pwd)':'/inexor --net=host -it inexorgame/ci-docker':'${DOCKER} /inexor/${RELATIVE_PATH}tool/travis.sh ${TARGET} ${COMPILER} ${COMPILER_VERSION} ${COMPILER_CONFIGURATION} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN};
+      sudo docker run -v $(pwd)':'/inexor --net=host -it inexorgame/ci-docker':'${DOCKER} /inexor/${RELATIVE_PATH}tool/travis.sh ${TARGET} ${COMPILER} ${COMPILER_VERSION} ${COMPILER_CONFIGURATION} ${NIGHTLY} ${CONAN_USER} ${CONAN_PASSWORD};
     fi;
     if [ "${TRAVIS_OS_NAME}" == "osx" ]; then
       bash ${RELATIVE_PATH}tool/travis_macos.sh;
     fi;
   - if [ "${TARGET}" == "new_version_tagger" ]; then
       if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
-        bash ./tool/travis.sh ${TARGET} ${COMPILER} ${COMPILER_VERSION} ${COMPILER_CONFIGURATION} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN};
+        bash ./tool/travis.sh ${TARGET} ${COMPILER} ${COMPILER_VERSION} ${COMPILER_CONFIGURATION} ${NIGHTLY} ${CONAN_USER} ${CONAN_PASSWORD};
       else
         echo >&2 -e "\n===============\n" \
         "Skipping tag creation, because this is \n" \
@@ -176,6 +174,9 @@ script:
         "===============\n";
         exit 0;
       fi
+    fi
+  - if [ "${TARGET}" == "apidoc" ]; then
+      chmod +x ./tool/documentation_create.sh && chmod +x ./tool/documentation_deploy.sh && source ./tool/documentation_deploy.sh;
     fi
 
 deploy:
