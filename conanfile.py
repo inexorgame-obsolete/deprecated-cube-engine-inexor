@@ -19,19 +19,19 @@ class InexorConan(ConanFile):
             self.options["sdl2_image"].shared = True
 
     def build(self):
-        args = []
-        if 'build_test' in os.environ or 'build_all' in os.environ:
-            args += ["-DBUILD_TEST=1"]
-        if 'build_server' in os.environ or 'build_all' in os.environ:
-            args += ["-DBUILD_SERVER=1"]
-        if 'create_package' in os.environ:
-            args += ["-DCREATE_PACKAGE=1"]
-
         cmake = CMake(self)
-        self.run('cmake "{}" {} {}'.format(self.source_folder, cmake.command_line, ' '.join(args)))
-        self.run('cmake --build . --target install {}'.format(cmake.build_config))
+        if 'build_test' in os.environ or 'build_all' in os.environ:
+            cmake.definitions['BUILD_TEST'] = "1"
+        if 'build_server' in os.environ or 'build_all' in os.environ:
+            cmake.definitions['BUILD_SERVER'] = "1"
         if 'create_package' in os.environ:
-            self.run('cmake --build . --target package_debug {}'.format(cmake.build_config))
+            cmake.definitions['CREATE_PACKAGE'] = "1"
+
+        cmake.configure(source_folder='{}'.format(self.source_folder))
+        cmake.build()
+        cmake.install()
+        if 'create_package' in os.environ:
+            cmake.build(target="package_debug")
 
     def imports(self):
         self.copy("*.dll", dst="bin", src="bin")  # From bin to bin
