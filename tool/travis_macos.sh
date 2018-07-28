@@ -48,7 +48,7 @@ build() {
     conan --version
 
     conan remote add inexor https://api.bintray.com/conan/inexorgame/inexor-conan --insert
-    ## https://bintray.com/conan/conan-center is second, https://bintray.com/conan/conan-transit/ third
+    ## https://bintray.com/conan/conan-center is second
     conan remote add bincrafers https://api.bintray.com/conan/bincrafters/public-conan --insert 3
     conan remote add community https://api.bintray.com/conan/conan-community/conan --insert 4
 
@@ -73,12 +73,12 @@ build() {
     build_conan_and_upload "gtest/1.8.0@bincrafters/stable"
     build_conan_and_upload "zlib/1.2.11@conan/stable"
 
-    build_conan_and_upload "protobuf/3.5.1@bincrafters/stable"
+    build_conan_and_upload "protobuf/3.5.2@bincrafters/stable"
     build_conan_and_upload "gRPC/1.8.3@inexorgame/stable"
 
     build_conan_and_upload "Boost/1.66.0@conan/stable"
 
-    build_conan_and_upload "InexorGlueGen/0.6.8@inexorgame/stable"
+    build_conan_and_upload "InexorGlueGen/0.6.9@inexorgame/stable"
 
     rebuild_conan_and_upload "OpenSSL/1.1.0g@conan/stable"
 
@@ -92,12 +92,12 @@ build() {
       if test "$TARGET" = "conanforcerebuild"; then
         buildstrategy=""
       else
-        buildstrategy="=missing"
+        buildstrategy="=outdated"
       fi
 
       execute="conan install . --env build_all=1 --build${buildstrategy} -s compiler="${COMPILER}" -s compiler.libcxx="libc++" -s build_type=${COMPILER_CONFIGURATION}"
     else
-      execute="conan install . --env build_all=1 --env create_package=1 --build=missing -s compiler="${COMPILER}" -s compiler.libcxx="libc++" -s build_type=${COMPILER_CONFIGURATION}"
+      execute="conan install . --env build_all=1 --env create_package=1 --build=outdated -s compiler="${COMPILER}" -s compiler.libcxx="libc++" -s build_type=${COMPILER_CONFIGURATION}"
     fi
 
     echo "execute ${execute}";
@@ -118,19 +118,6 @@ build() {
 
 run_tests() {
     "${bin}/unit_tests.exe"
-}
-
-
-
-## UPLOADING BUILDS AND THE APIDOC #################
-
-# upload remote_path local_path [local_paths]...
-#
-# Upload one or more files to our nightly or dependencies server
-# Variables are defined on the Travis website
-upload() {
-  # Fix an issue where upload directory gets specified by subsequent upload() calls
-  ncftpput -R -v -u "$FTP_USER" -p "$FTP_PASSWORD" "$FTP_DOMAIN" /macos/ "$@" || true
 }
 
 
