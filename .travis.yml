@@ -119,8 +119,6 @@ ciprebuilds: &ciprebuilds
     fast_finish: true # don't wait for allow_failures to fail, gives faster response
     allow_failures:
       - os: osx
-      #CI - os: linux
-
 
 
 # We run the following jobs in our main repository:    #CIDELETE
