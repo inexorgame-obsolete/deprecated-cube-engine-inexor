@@ -1,0 +1,9 @@
+
+set "originalPath=%cd%"
+cd %~dp0..
+mkdir build
+cd build
+conan remote add inexor https://api.bintray.com/conan/inexorgame/inexor-conan --insert
+conan install .. --build=outdated -s compiler="Visual Studio" -s compiler.version=15 -s compiler.runtime=MTd -s compiler.toolset=v141_clang_c2 -s build_type=Debug
+conan build ..
+cd %originalPath%
