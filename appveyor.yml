@@ -32,7 +32,11 @@ environment:
     # VS VERSION IN CMAKE STYLE
     matrix:
       - VSVERSION: "15 2017"
+        TOOLSET: "None"
+      #CI - VSVERSION: "15 2017"
+        #CI TOOLSET: "v141_clang_c2"
       - VSVERSION: "14 2015"
+        TOOLSET: "None"
 
 platform:
   - x64
@@ -44,6 +48,7 @@ configuration:
 
 # scripts that are called at very beginning, before repo cloning
 init:
+  - cmd: python --version
   - cmd: cmake --version
   - cmd: msbuild /version
 
@@ -52,7 +57,6 @@ install:
   - cmd: python -m pip install conan
   - cmd: set "MAIN_FOLDER=C:\projects\inexorgame\%RELATIVE_PATH%"
   - cmd: cd %MAIN_FOLDER%
-  - cmd: git submodule update --init --recursive
   - cmd: set VSVERSIONSHORT=%VSVERSION:~0,2%
    # set INEXOR_VERSION (used in cmakes package creation process) based on the last tag found.
   - cmd: if "%APPVEYOR_REPO_TAG%"=="true" ( set "INEXOR_VERSION=%APPVEYOR_REPO_TAG_NAME%" )
@@ -85,7 +89,7 @@ before_build:
   - cmd: conan remote list
 
   - cmd: if "%GLOBAL_NIGHTLY%"=="conanforcerebuild" ( set "buildstrategy=" && set "GLOBAL_NIGHTLY=conan") else ( set "buildstrategy==outdated" )
-  - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan install .. --env build_all=1 --build%buildstrategy% -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s arch=%arch_str% -s build_type=%configuration% ) else ( conan install .. --env build_all=1 --env create_package=1 --build=outdated -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s arch=%arch_str% -s build_type=%configuration% )
+  - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan install .. --env build_all=1 --build%buildstrategy% -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s compiler.toolset=%TOOLSET% -s arch=%arch_str% -s build_type=%configuration% ) else ( conan install .. --env build_all=1 --env create_package=1 --build=outdated -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s compiler.toolset=%TOOLSET% -s arch=%arch_str% -s build_type=%configuration% )
   - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan user --password "%CONAN_PASSWORD%" -r inexor "%CONAN_USER%" )
   - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan upload --all -r inexor --retry 3 --retry-wait 10 --confirm "*stable*" )
   - cmd: if "%GLOBAL_NIGHTLY%"=="true" ( cmake .. -G "%CMAKE_GENERATOR_NAME%" %args% -DCPACK_GENERATOR="ZIP" ) else ( cmake .. -G "%CMAKE_GENERATOR_NAME%" %args% )
@@ -102,14 +106,6 @@ artifacts:
   - path: build\inexor-core-*.zip
 
 deploy:
-    # push our nightly bundle via ftp
- # - provider: FTP
- #   protocol: ftp
- #   host: inexor.org
- #   username:
- #     secure: rpQyxcVaaqNxDvYQlGP/eA==
- #   password:
- #     secure: aBNw6S6n1MqCfw/0S2vhDA==
     # push release binaries to GitHub if tag gets created (and create a release draft)
   - provider: GitHub
     auth_token:
