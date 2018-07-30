@@ -4,7 +4,7 @@ struct extentity;
 struct physent;
 struct vec;
 
-extern void particleinit();
+extern void initparticles();
 extern void clearparticles();
 extern void clearparticleemitters();
 extern void seedparticles();

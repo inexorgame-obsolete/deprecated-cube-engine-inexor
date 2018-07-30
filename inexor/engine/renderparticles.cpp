@@ -761,10 +761,10 @@ partrenderer *parts[] =
 };
 
  
-VARFP(maxparticles, 10, 4000, 40000, particleinit());
-VARFP(fewparticles, 10, 100, 40000, particleinit());
+VARFP(maxparticles, 10, 4000, 40000, initparticles());
+VARFP(fewparticles, 10, 100, 40000, initparticles());
 
-void particleinit() 
+void initparticles() 
 {
     if(!particleshader) particleshader = lookupshaderbyname("particle");
     if(!particlenotextureshader) particlenotextureshader = lookupshaderbyname("particlenotexture");

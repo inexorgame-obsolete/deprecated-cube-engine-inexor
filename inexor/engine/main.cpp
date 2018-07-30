@@ -28,7 +28,7 @@
 #include "inexor/engine/octree.hpp"                   // for worldroot
 #include "inexor/engine/renderbackground.hpp"         // for renderbackground
 #include "inexor/engine/rendergl.hpp"                 // for gl_init, gl_che...
-#include "inexor/engine/renderparticles.hpp"          // for particleinit
+#include "inexor/engine/renderparticles.hpp"          // for initparticles
 #include "inexor/engine/rendertext.hpp"               // for setfont
 #include "inexor/engine/shader.hpp"                   // for loadshaders
 #include "inexor/engine/world.hpp"                    // for emptymap
@@ -239,7 +239,7 @@ void resetgl()
     cleanupdepthfx();
     cleanupshaders();
     cleanupgl();
-    
+
     int useddepthbits = 0, usedfsaa = 0;
     screen_manager.setupscreen(useddepthbits, usedfsaa);
 
@@ -385,7 +385,7 @@ int main(int argc, char **argv)
 
     Log.start_stop->info("init: effects");
     loadshaders();
-    particleinit();
+    initparticles();
     initdecals();
 
     Log.start_stop->info("init: world");
