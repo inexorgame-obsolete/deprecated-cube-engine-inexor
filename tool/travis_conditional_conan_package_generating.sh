@@ -10,11 +10,6 @@
 # this makes the entire script fail if one commands fail
 set -e
 
-# Check if a string contains something
-contains() {
-  test "`subrm "$1" "$2"`" != "$1"
-}
-
 # Making sure we NEVER execute anything of this for pull requests as this could be a huge security risk
 if [[ "${TRAVIS_PULL_REQUEST}" != false ]]; then
     echo "We don't build Conan packages for pull requests for security reasons."
