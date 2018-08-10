@@ -133,7 +133,7 @@ add_require_conan_lib_function(protobuf)
 find_program(PROTOBUF_PROTOC_EXECUTABLE protoc PATHS ${CONAN_BIN_DIRS_PROTOBUF} NO_CMAKE_ENVIRONMENT_PATH  NO_CMAKE_PATH NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH )
 
 # gRPC (googles remote procedure call framework, used for Inexors networking and scripting binding)
-add_require_conan_lib_function(gRPC)
+add_require_conan_lib_function(grpc)
 find_program(GRPC_GRPC_CPP_PLUGIN grpc_cpp_plugin PATHS ${CONAN_BIN_DIRS_GRPC} NO_CMAKE_ENVIRONMENT_PATH  NO_CMAKE_PATH NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH )
 
 # spdlog (fast logging library)

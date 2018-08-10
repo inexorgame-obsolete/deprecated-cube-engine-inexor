@@ -1,6 +1,6 @@
 # This function executes conan to get a list of all dependencies ("conan info" but stripped).
 # conanfile_py_folder is the path to the folder the conanfile.py lies in.
-# if STRIP_CHANNELS is true the output in the form of Boost/1.60.0@lasote/stable becomes Boost/1.60.0
+# if STRIP_CHANNELS is true the output in the form of boost/1.66.0@conan/stable becomes boost/1.66.0
 # if SHOW_LICENSE is true it will also display license info.
 function(get_conan_dependency_list CONANFILE_PY_FOLDER SHOW_LICENSE STRIP_CHANNELS OUTPUT_VAR)
 
