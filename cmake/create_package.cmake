@@ -72,5 +72,5 @@ set(CPACK_PACKAGE_FILE_NAME "inexor-core-${CPACK_PACKAGE_VERSION}-${CMAKE_SYSTEM
 include(CPack)
 
 add_custom_target(package_debug
-              COMMAND ${CMAKE_CPACK_COMMAND} --debug --verbose --config CPackConfig.cmake
+              COMMAND ${CMAKE_CPACK_COMMAND} --debug --config CPackConfig.cmake
               COMMENTS "Build package with debug and verbose output")
