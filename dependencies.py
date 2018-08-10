@@ -1,9 +1,9 @@
 requires = (
-    ("InexorGlueGen/0.6.9@inexorgame/stable"),
+    ("InexorGlueGen/0.6.10@inexorgame/stable"),
     ("protobuf/3.5.2@bincrafters/stable"),
     ("gRPC/1.9.1@inexorgame/stable"),
     ("doxygen/1.8.13@inexorgame/stable"),
-    ("Boost/1.66.0@conan/stable"),
+    ("boost/1.66.0@conan/stable"),
     ("zlib/1.2.11@conan/stable"),
     ("gtest/1.8.0@bincrafters/stable"),
     ("enet/1.3.13@bincrafters/stable"),
@@ -18,7 +18,7 @@ options = '''
   gtest:shared=False
   gtest:build_gmock=False
   enet:shared=False
-  Boost:shared=False
+  boost:shared=False
   sdl2:shared=False
   sdl2_image:shared=False
   spdlog:fmt_external=True
