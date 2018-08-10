@@ -67,21 +67,13 @@ build() {
     build_conan_and_upload "spdlog/0.17.0@bincrafters/stable"
     build_conan_and_upload "fmt/4.1.0@bincrafters/stable"
     build_conan_and_upload "doxygen/1.8.13@inexorgame/stable"
-    build_conan_and_upload "kainjow-mustache/3.1@inexorgame/stable"
-    build_conan_and_upload "bzip2/1.0.6@conan/stable"
-    build_conan_and_upload "pugixml/1.7@inexorgame/stable"
     build_conan_and_upload "gtest/1.8.0@bincrafters/stable"
-    build_conan_and_upload "zlib/1.2.11@conan/stable"
 
-    build_conan_and_upload "protobuf/3.5.2@bincrafters/stable"
     build_conan_and_upload "gRPC/1.8.3@inexorgame/stable"
 
     build_conan_and_upload "Boost/1.66.0@conan/stable"
 
     build_conan_and_upload "InexorGlueGen/0.6.9@inexorgame/stable"
-
-    rebuild_conan_and_upload "OpenSSL/1.1.0g@conan/stable"
-
 
     build_conan "doxygen/1.8.14@inexorgame/stable"
     build_conan "CEF/3.3239.1709.g093cae4@inexorgame/testing"

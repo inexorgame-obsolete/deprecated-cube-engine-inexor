@@ -131,7 +131,7 @@ EOF
 # Upload nightly
 upload_nightlies() {
   if test "$NIGHTLY" = conan; then
-    source ./travis_conan_upload.sh
+    source ./tool/travis_conan_upload.sh
   fi
 }
 
