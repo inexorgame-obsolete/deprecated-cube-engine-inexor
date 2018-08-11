@@ -13,11 +13,6 @@ class InexorConan(ConanFile):
     generators = "cmake"
     default_options = dependencies.options
 
-    def configure(self):
-        if self.settings.compiler == "gcc":
-            self.options["sdl2"].shared = True
-            self.options["sdl2_image"].shared = True
-
     def build(self):
         cmake = CMake(self)
         if 'build_test' in os.environ or 'build_all' in os.environ:
