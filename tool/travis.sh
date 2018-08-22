@@ -86,9 +86,9 @@ incremented_version()
 # increment version and create a tag on GitHub
 # each time we push to master, check are in travis.yml
 create_tag() {
-  version_flex=$(git ls-remote https://github.com/inexorgame/inexor-flex refs/heads/master | cut -d ' ' -f1)
-  version_media_essential=$(git ls-remote https://github.com/inexorgame/media-essential refs/heads/master | cut -d ' ' -f1)
-  version_media_additional=$(git ls-remote https://github.com/inexorgame/media-additional refs/heads/master | cut -d ' ' -f1)
+  version_flex=$(echo $(git ls-remote https://github.com/inexorgame/inexor-flex refs/heads/master) | cut -d ' ' -f1)
+  version_media_essential=$(echo $(git ls-remote https://github.com/inexorgame/media-essential refs/heads/master) | cut -d ' ' -f1)
+  version_media_additional=$(echo $(git ls-remote https://github.com/inexorgame/media-additional refs/heads/master) | cut -d ' ' -f1)
 
   echo "Versions:"
   echo "inexor-flex:" ${version_flex}
@@ -116,7 +116,7 @@ create_tag() {
   Rolling release: automatic tag creation on push to master branch
 
   Version information:
-  inexor-flex $version_flex
+  inexor-flex: $version_flex
   media-essential: $version_media_essential
   media-additional: $version_media_additional
 EOF
