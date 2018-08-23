@@ -26,6 +26,8 @@ class InexorConan(ConanFile):
         cmake.build()
         cmake.install()
         if 'create_package' in os.environ:
+            cmake.build(target="package")
+        if 'create_package_debug' in os.environ:
             cmake.build(target="package_debug")
 
     def imports(self):
