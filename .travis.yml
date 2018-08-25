@@ -63,7 +63,6 @@ core: &core
               - doxygen
         env: DOCKER="NODOCKER" TARGET="apidoc"
       - stage: "Create GitHub Tag"
-        if: branch = master AND tag is blank AND fork is false AND repo = head_repo AND type != pull_request
         os: linux
         sudo: false
         dist: trusty
