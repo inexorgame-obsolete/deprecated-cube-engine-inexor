@@ -108,7 +108,7 @@ deploy:
     # push release binaries to GitHub if tag gets created (and create a release draft)
   - provider: GitHub
     auth_token:
-      secure: mILffF4R/yXcj1hSZzZq1HoLe2aScWVuUpCYvkDqLKStI7JHiLt5yb7w2DPo+HF0
+      secure: M/qXIxI0UwsfWg1JBnQf987R+dE0vdo/peOH03Z3E3aD4MM6jWlBIlL5VP5RMzbE
     draft: false
     prerelease: true
     # Override files if there are any already.
