@@ -48,50 +48,50 @@ configuration:
 
 # scripts that are called at very beginning, before repo cloning
 init:
-  - cmd: python --version
-  - cmd: cmake --version
-  - cmd: msbuild /version
+  - python --version
+  - cmake --version
+  - msbuild /version
 
 # scripts that run after cloning repository
 install:
-  - cmd: python -m pip install conan
-  - cmd: set "MAIN_FOLDER=C:\projects\inexorgame\%RELATIVE_PATH%"
-  - cmd: cd %MAIN_FOLDER%
-  - cmd: set VSVERSIONSHORT=%VSVERSION:~0,2%
+  - python -m pip install conan
+  - set "MAIN_FOLDER=C:\projects\inexorgame\%RELATIVE_PATH%"
+  - cd %MAIN_FOLDER%
+  - set VSVERSIONSHORT=%VSVERSION:~0,2%
    # set INEXOR_VERSION (used in cmakes package creation process) based on the last tag found.
-  - cmd: if "%APPVEYOR_REPO_TAG%"=="true" ( set "INEXOR_VERSION=%APPVEYOR_REPO_TAG_NAME%" )
-  - cmd: if "%APPVEYOR_REPO_TAG%"=="false" ( set "INEXOR_VERSION=development" )
+  - if "%APPVEYOR_REPO_TAG%"=="true" ( set "INEXOR_VERSION=%APPVEYOR_REPO_TAG_NAME%" )
+  - if "%APPVEYOR_REPO_TAG%"=="false" ( set "INEXOR_VERSION=development" )
 
 # scripts to run before build
 before_build:
   # Fix detection of VS 2017 by e.g. OpenSSL
-  - cmd: set "VS150COMNTOOLS=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\"
-  - cmd: if "%VSVERSION%"=="15 2017" if "%platform%"=="x64" ( "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat" )
-  - cmd: if "%VSVERSION%"=="15 2017" if "%platform%"=="Win32" ( "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsamd64_x86.bat" )
+  - set "VS150COMNTOOLS=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\"
+  - if "%VSVERSION%"=="15 2017" if "%platform%"=="x64" ( "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat" )
+  - if "%VSVERSION%"=="15 2017" if "%platform%"=="Win32" ( "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsamd64_x86.bat" )
 
-  - cmd: cd %MAIN_FOLDER%
-  - cmd: md build
-  - cmd: cd build
+  - cd %MAIN_FOLDER%
+  - md build
+  - cd build
 
-  - cmd: if "%platform%"=="Win32" ( set "CMAKE_GENERATOR_NAME=Visual Studio %VSVERSION%" && set "arch_str=x86" )
-  - cmd: if "%platform%"=="x64" ( set "CMAKE_GENERATOR_NAME=Visual Studio %VSVERSION% Win64" && set "arch_str=x86_64")
-  - cmd: if %configuration%==Debug (set "runtime_str=MTd")else (set "runtime_str=MT")
+  - if "%platform%"=="Win32" ( set "CMAKE_GENERATOR_NAME=Visual Studio %VSVERSION%" && set "arch_str=x86" )
+  - if "%platform%"=="x64" ( set "CMAKE_GENERATOR_NAME=Visual Studio %VSVERSION% Win64" && set "arch_str=x86_64")
+  - if %configuration%==Debug (set "runtime_str=MTd")else (set "runtime_str=MT")
 
-  - cmd: set "args=-DBUILD_CLIENT=1 -DBUILD_SERVER=1 -DBUILD_TEST=1 -DCREATE_PACKAGE=1"
+  - set "args=-DBUILD_CLIENT=1 -DBUILD_SERVER=1 -DBUILD_TEST=1 -DCREATE_PACKAGE=1"
 
-  - cmd: conan --version
+  - conan --version
 
-  - cmd: conan remote add inexor https://api.bintray.com/conan/inexorgame/inexor-conan --insert
+  - conan remote add inexor https://api.bintray.com/conan/inexorgame/inexor-conan --insert
   ## https://bintray.com/conan/conan-center is second
 
-  - cmd: conan remote list
+  - conan remote list
 
-  - cmd: if "%GLOBAL_NIGHTLY%"=="conanforcerebuild" ( set "buildstrategy=" && set "GLOBAL_NIGHTLY=conan") else ( set "buildstrategy==outdated" )
-  - cmd: if "%GLOBAL_NIGHTLY%"=="conan" (  set "createpackage=" ) else ( set "createpackage=--env create_package=1" && set "buildstrategy==outdated")
-  - cmd: conan install .. --env build_all=1 %createpackage% --build%buildstrategy% -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s compiler.toolset=%TOOLSET% -s arch=%arch_str% -s build_type=%configuration%
-  - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan user --password "%CONAN_PASSWORD%" -r inexor "%CONAN_USER%" )
-  - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan upload --all -r inexor --retry 3 --retry-wait 10 --confirm "*inexorgame/stable*")
-  - cmd: if "%GLOBAL_NIGHTLY%"=="true" ( cmake .. -G "%CMAKE_GENERATOR_NAME%" %args% -DCPACK_GENERATOR="ZIP" ) else ( cmake .. -G "%CMAKE_GENERATOR_NAME%" %args% )
+  - if "%GLOBAL_NIGHTLY%"=="conanforcerebuild" ( set "buildstrategy=" && set "GLOBAL_NIGHTLY=conan") else ( set "buildstrategy==outdated" )
+  - if "%GLOBAL_NIGHTLY%"=="conan" (  set "createpackage=" ) else ( set "createpackage=--env create_package=1" && set "buildstrategy==outdated")
+  - conan install .. --env build_all=1 %createpackage% --build%buildstrategy% -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s compiler.toolset=%TOOLSET% -s arch=%arch_str% -s build_type=%configuration%
+  - if "%GLOBAL_NIGHTLY%"=="conan" ( conan user --password "%CONAN_PASSWORD%" -r inexor "%CONAN_USER%" )
+  - if "%GLOBAL_NIGHTLY%"=="conan" ( conan upload --all -r inexor --retry 3 --retry-wait 10 --confirm "*inexorgame/stable*")
+  - if "%GLOBAL_NIGHTLY%"=="true" ( cmake .. -G "%CMAKE_GENERATOR_NAME%" %args% -DCPACK_GENERATOR="ZIP" ) else ( cmake .. -G "%CMAKE_GENERATOR_NAME%" %args% )
 #"NSIS;7Z"
 
 
