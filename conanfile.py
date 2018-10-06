@@ -31,9 +31,9 @@ class InexorConan(ConanFile):
             cmake.build(target="package_debug")
 
     def imports(self):
-        self.copy("*.dll", dst="bin", src="bin")  # From bin to bin
-        self.copy("*.so*", dst="bin", src="lib")  # From lib to bin
-        self.copy("*.dylib*", dst="bin", src="lib")  # From lib to bin
-        self.copy("*.bin", dst="bin", src="bin")  # From bin to bin
-        self.copy("*.dat", dst="bin", src="bin")  # From bin to bin
-        self.copy("*.pak", dst="bin", src="bin")  # From bin to bin
+        self.copy("*.dll", dst="bin", src="bin")
+        self.copy("*.so*", dst="bin", src="lib")
+        self.copy("*.dylib*", dst="bin", src="lib")
+        self.copy("*.bin", dst="bin", src="bin")
+        self.copy("*.dat", dst="bin", src="bin")
+        self.copy("*.pak", dst="bin", src="bin")
