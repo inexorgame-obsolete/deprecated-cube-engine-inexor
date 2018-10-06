@@ -5,7 +5,7 @@ requires = (
     ("doxygen/1.8.13@inexorgame/stable"),
     ("boost/1.66.0@conan/stable"),
     ("zlib/1.2.11@conan/stable"),
-    ("gtest/1.8.0@bincrafters/stable"),
+    ("gtest/1.8.1@bincrafters/stable"),
     ("enet/1.3.13@bincrafters/stable"),
     ("spdlog/0.17.0@bincrafters/stable"),
     ("sdl2/2.0.8@bincrafters/stable"),  # not self-contained
