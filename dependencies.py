@@ -10,7 +10,7 @@ requires = (
     ("spdlog/0.17.0@bincrafters/stable"),
     ("sdl2/2.0.8@bincrafters/stable"),  # not self-contained
     ("sdl2_image/2.0.3@bincrafters/stable"),
-    ("CEF/3.3239.1709.g093cae4@inexorgame/testing")  # not self-contained
+    ("cef/3.3239.1709.g093cae4@bincrafters/testing")  # not self-contained
 )
 
 options = '''
