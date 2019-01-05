@@ -143,7 +143,7 @@ add_require_conan_lib_function(spdlog)
 add_require_conan_lib_function(fmt)
 
 # CEF Chromium Embedded Framework (Embedded Browser used for the UI)
-add_require_conan_lib_function(CEF)
+add_require_conan_lib_function(cef)
 
 # sdl2 (input output framework)
 add_require_conan_lib_function(sdl2)
