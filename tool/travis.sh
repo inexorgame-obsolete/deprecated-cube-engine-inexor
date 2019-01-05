@@ -40,9 +40,9 @@ build() {
     fi
 
     if test "$NIGHTLY" = true; then
-      execute="conan install "$gitroot" --env build_all=1 --env create_package=1 --build${buildstrategy} -s compiler="$COMPILER" -s compiler.version="$COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -s build_type=${COMPILER_CONFIGURATION} -e CC="$CC" -e CXX="$CXX""
+      execute="conan install "$gitroot" --env build_all=1 --env create_package=1 --build${buildstrategy} -s compiler="$COMPILER" -s compiler.version="$COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -s build_type=${BUILD_TYPE} -e CC="$CC" -e CXX="$CXX""
     else
-      execute="conan install "$gitroot" --env build_test=1 --env build_server=1 --build${buildstrategy} -s compiler="$COMPILER" -s compiler.version="$COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -s build_type=${COMPILER_CONFIGURATION} -e CC="$CC" -e CXX="$CXX""
+      execute="conan install "$gitroot" --env build_test=1 --env build_server=1 --build${buildstrategy} -s compiler="$COMPILER" -s compiler.version="$COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -s build_type=${BUILD_TYPE} -e CC="$CC" -e CXX="$CXX""
     fi
 
     echo "execute ${execute}";
@@ -125,6 +125,7 @@ EOF
 
 upload_nightlies() {
   # Upload nightly - dummy placeholder
+  echo ""
 }
 
 
@@ -140,7 +141,7 @@ bin="${code}/bin"
 TARGET="${1}"
 COMPILER="${2}"
 COMPILER_VERSION="${3}"
-COMPILER_CONFIGURATION="${4}" # Debug or Release
+BUILD_TYPE="${4}" # Debug or Release
 NIGHTLY="${5}" # Nightly is either true or false
 NIGHTLY_USER="${6}"
 NIGHTLY_PASSWORD="${7}"

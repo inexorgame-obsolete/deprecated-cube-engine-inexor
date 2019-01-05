@@ -40,9 +40,9 @@ build() {
         buildstrategy="=outdated"
       fi
 
-      execute="conan install . --env build_all=1 --build${buildstrategy} -s compiler="${COMPILER}" -s compiler.libcxx="libc++" -s build_type=${COMPILER_CONFIGURATION}"
+      execute="conan install . --env build_all=1 --build${buildstrategy} -s compiler="${COMPILER}" -s compiler.libcxx="libc++" -s build_type=${BUILD_TYPE}"
     else
-      execute="conan install . --env build_all=1 --env create_package=1 --build=outdated -s compiler="${COMPILER}" -s compiler.libcxx="libc++" -s build_type=${COMPILER_CONFIGURATION}"
+      execute="conan install . --env build_all=1 --env create_package=1 --build=outdated -s compiler="${COMPILER}" -s compiler.libcxx="libc++" -s build_type=${BUILD_TYPE}"
     fi
 
     echo "execute ${execute}";
