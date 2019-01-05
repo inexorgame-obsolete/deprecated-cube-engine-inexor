@@ -1,22 +1,3 @@
-###########################
-####### README FIRST! #####
-###########################
-# This file should only be edited in our main repository (inexor-core)
-# You are doing something wrong
-# if you are trying to edit this file in ci-prebuilds.
-#
-# Our automation is grabbing the version of this file from our main repository
-# and commit it with automatic changes to ci-prebuilds
-# and only when Conan dependencies are actually changed
-# in order to not cause unnecessary rebuilds.
-#
-# The ci-prebuilds version will have un-comment every line starting with #CI(followed by an empty space)
-# e.g. #CI echo this only gets executed in ci-prebuilds
-#
-# The ci-prebuilds version will have every line removed containing #CEDELETE
-# e.g. #CIDELETE this line is not visible in ci-prebuilds aka. won't get executed
-#
-
 version: 0.{build}
 clone_depth: 1
 clone_folder: C:\projects\inexorgame
@@ -89,8 +70,6 @@ before_build:
   - if "%GLOBAL_NIGHTLY%"=="conanforcerebuild" ( set "buildstrategy=" && set "GLOBAL_NIGHTLY=conan") else ( set "buildstrategy==outdated" )
   - if "%GLOBAL_NIGHTLY%"=="conan" (  set "createpackage=" ) else ( set "createpackage=--env create_package=1" && set "buildstrategy==outdated")
   - conan install .. --env build_all=1 %createpackage% --build%buildstrategy% -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s compiler.toolset=%TOOLSET% -s arch=%arch_str% -s build_type=%configuration%
-  - if "%GLOBAL_NIGHTLY%"=="conan" ( conan user --password "%CONAN_PASSWORD%" -r inexor "%CONAN_USER%" )
-  - if "%GLOBAL_NIGHTLY%"=="conan" ( conan upload --all -r inexor --retry 3 --retry-wait 10 --confirm "*inexorgame/stable*")
   - if "%GLOBAL_NIGHTLY%"=="true" ( cmake .. -G "%CMAKE_GENERATOR_NAME%" %args% -DCPACK_GENERATOR="ZIP" ) else ( cmake .. -G "%CMAKE_GENERATOR_NAME%" %args% )
 #"NSIS;7Z"
 

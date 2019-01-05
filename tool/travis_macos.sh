@@ -15,32 +15,6 @@ install_dependencies() {
 
 ## INSTALLATION ROUTINES ###################################
 
-build_conan() {
-  conan install "$1" --build=outdated -s compiler="${COMPILER}" -s compiler.version="${COMPILER_VERSION}" -s compiler.libcxx="libc++" -s build_type=${COMPILER_CONFIGURATION}
-}
-
-rebuild_conan() {
-  conan install "$1" --build -s compiler="${COMPILER}" -s compiler.version="${COMPILER_VERSION}" -s compiler.libcxx="libc++" -s build_type=${COMPILER_CONFIGURATION}
-}
-
-build_conan_and_upload() {
-  build_conan "$1"
-  set -f
-  if [[ "$1" == *"stable"* ]]; then
-    conan upload --all --force -r inexor --retry 3 --retry-wait 10 --confirm "$1"
-  fi
-  set +f
-}
-
-rebuild_conan_and_upload() {
-  conan install "$1" --build -s compiler="${COMPILER}" -s compiler.version="${COMPILER_VERSION}" -s compiler.libcxx="libc++" -s build_type=${COMPILER_CONFIGURATION}
-  set -f
-  if [[ "$1" == *"stable"* ]]; then
-    conan upload --all --force -r inexor --retry 3 --retry-wait 10 --confirm "$1"
-  fi
-  set +f
-}
-
 build() {
   (
     ## mkcd "/tmp/inexor-build"
@@ -56,25 +30,6 @@ build() {
     ls
 
     conan user -p "${CONAN_PASSWORD}" -r inexor "${CONAN_USER}"
-
-    rebuild_conan_and_upload "enet/1.3.13@bincrafters/stable"
-    build_conan_and_upload "sdl2/2.0.8@bincrafters/testing"
-    build_conan_and_upload "libpng/1.6.34@bincrafters/stable"
-    build_conan_and_upload "libjpeg-turbo/1.5.2@bincrafters/stable"
-    rebuild_conan_and_upload "sdl2_image/2.0.3@bincrafters/stable"
-    build_conan_and_upload "spdlog/0.17.0@bincrafters/stable"
-    build_conan_and_upload "fmt/4.1.0@bincrafters/stable"
-    build_conan_and_upload "doxygen/1.8.13@inexorgame/stable"
-    build_conan_and_upload "gtest/1.8.0@bincrafters/stable"
-
-    build_conan_and_upload "gRPC/1.8.3@inexorgame/stable"
-
-    build_conan_and_upload "Boost/1.66.0@conan/stable"
-
-    build_conan_and_upload "InexorGlueGen/0.6.9@inexorgame/stable"
-
-    build_conan "doxygen/1.8.14@inexorgame/stable"
-    build_conan "CEF/3.3239.1709.g093cae4@inexorgame/testing"
 
     conan info .
 
@@ -149,12 +104,7 @@ export commit_date=`git show -s --format=%cd --date=format:%Y-%m-%d-%H-%m-%S`
 export build="$(echo "${branch}-${commit_date}" | sed 's#/#-#g')-${TARGET}"
 export main_repo="inexorgame/inexor-core"
 
-
-# this makes it possible to run this script successfull
-# even if doesn't get called from the root directory
-# of THIS repository
-# required to make inexor-game/ci-prebuilds working
-export gitroot="./${RELATIVE_PATH}"
+export gitroot="./"
 
 
 echo "$pwd"
