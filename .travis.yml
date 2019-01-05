@@ -6,12 +6,11 @@ notifications:
 git:
   depth: 15
 
-language: cpp
-
 linux: &linux
   os: linux
-  sudo: required
-  dist: trusty
+  dist: xenial
+  language: python
+  python: "3.7"
   services:
     - docker
 
@@ -28,9 +27,9 @@ jobs:
   include:
   - stage: "Building & Testing"
     <<: *linux
-    env: COMPILER="clang" COMPILER_VERSION="5.0" COMPILER_CONFIGURATION="Release" TARGET="compile" NIGHTLY="true"
+    env: COMPILER="clang" COMPILER_VERSION="5.0" BUILD_TYPE="Release" TARGET="compile" NIGHTLY="true"
   - <<: *linux
-    env: COMPILER="gcc" COMPILER_VERSION="7" COMPILER_CONFIGURATION="Release" TARGET="compile" NIGHTLY="true"
+    env: COMPILER="gcc" COMPILER_VERSION="7" BUILD_TYPE="Release" TARGET="compile" NIGHTLY="true"
   - stage: "Docs"
     os: linux
     sudo: false
@@ -53,7 +52,7 @@ before_install:
   # Get our CI Docker image
   - if [ -z "${DOCKER}" ]; then
         docker_version=$(echo ${COMPILER_VERSION} | sed -e 's/\.//g');
-        DOCKER="lasote/conan"${COMPILER}${docker_version};
+        DOCKER="conanio/"${COMPILER}${docker_version};
         echo ${DOCKER};
     fi;
     if ! [[ "${DOCKER}" == 'NODOCKER' ]]; then
@@ -78,14 +77,14 @@ script:
       fi;
     fi;
     if ! [[ "${DOCKER}" == "NODOCKER" ]]; then
-      sudo docker run -v $(pwd)':'/inexor --net=host -it ${DOCKER} /inexor/tool/travis.sh ${TARGET} ${COMPILER} ${COMPILER_VERSION} ${COMPILER_CONFIGURATION} ${NIGHTLY} ${CONAN_USER} ${CONAN_PASSWORD};
+      sudo docker run -v $(pwd)':'/inexor --net=host -it ${DOCKER} /inexor/tool/travis.sh ${TARGET} ${COMPILER} ${COMPILER_VERSION} ${BUILD_TYPE} ${NIGHTLY} ${CONAN_USER} ${CONAN_PASSWORD};
     fi;
     if [ "${TRAVIS_OS_NAME}" == "osx" ]; then
       bash tool/travis_macos.sh;
     fi;
   - if [ "${TARGET}" == "new_version_tagger" ]; then
       if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
-        bash ./tool/travis.sh ${TARGET} ${COMPILER} ${COMPILER_VERSION} ${COMPILER_CONFIGURATION} ${NIGHTLY} ${CONAN_USER} ${CONAN_PASSWORD};
+        bash ./tool/travis.sh ${TARGET} ${COMPILER} ${COMPILER_VERSION} ${BUILD_TYPE} ${NIGHTLY} ${CONAN_USER} ${CONAN_PASSWORD};
       else
         echo >&2 -e "\n===============\n" \
         "Skipping tag creation, because this is \n" \
