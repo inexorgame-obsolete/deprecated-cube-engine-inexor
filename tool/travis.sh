@@ -33,20 +33,16 @@ build() {
 
     ## conan info "$gitroot"
 
-    if test "$NIGHTLY" = conan; then
-      if test "$TARGET" = "conanforcerebuild"; then
-        buildstrategy=""
-      else
-        buildstrategy="=outdated"
-      fi
-
-      execute="conan install "$gitroot" --env build_all=1 --build${buildstrategy} -s compiler="$COMPILER" -s compiler.version="$COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -s build_type=${COMPILER_CONFIGURATION} -e CC="$CC" -e CXX="$CXX""
+    if test "$TARGET" = "conanforcerebuild"; then
+      buildstrategy=""
     else
-      if test "$NIGHTLY" = true; then
-        execute="conan install "$gitroot" --env build_all=1 --env create_package=1 --build=outdated -s compiler="$COMPILER" -s compiler.version="$COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -s build_type=${COMPILER_CONFIGURATION} -e CC="$CC" -e CXX="$CXX""
-      else
-        execute="conan install "$gitroot" --env build_test=1 --env build_server=1 --build=outdated -s compiler="$COMPILER" -s compiler.version="$COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -s build_type=${COMPILER_CONFIGURATION} -e CC="$CC" -e CXX="$CXX""
-      fi
+      buildstrategy="=outdated"
+    fi
+
+    if test "$NIGHTLY" = true; then
+      execute="conan install "$gitroot" --env build_all=1 --env create_package=1 --build${buildstrategy} -s compiler="$COMPILER" -s compiler.version="$COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -s build_type=${COMPILER_CONFIGURATION} -e CC="$CC" -e CXX="$CXX""
+    else
+      execute="conan install "$gitroot" --env build_test=1 --env build_server=1 --build${buildstrategy} -s compiler="$COMPILER" -s compiler.version="$COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -s build_type=${COMPILER_CONFIGURATION} -e CC="$CC" -e CXX="$CXX""
     fi
 
     echo "execute ${execute}";
@@ -126,11 +122,9 @@ EOF
   git push -q https://$GITHUB_TOKEN@github.com/inexorgame/inexor-core --tags
 }
 
-# Upload nightly
+
 upload_nightlies() {
-  if test "$NIGHTLY" = conan; then
-    source ./tool/travis_conan_upload.sh
-  fi
+  # Upload nightly - dummy placeholder
 }
 
 
@@ -147,7 +141,7 @@ TARGET="${1}"
 COMPILER="${2}"
 COMPILER_VERSION="${3}"
 COMPILER_CONFIGURATION="${4}" # Debug or Release
-NIGHTLY="${5}" # Nightly is either true, false or conan
+NIGHTLY="${5}" # Nightly is either true or false
 NIGHTLY_USER="${6}"
 NIGHTLY_PASSWORD="${7}"
 
