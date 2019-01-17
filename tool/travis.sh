@@ -39,7 +39,7 @@ build() {
       buildstrategy="=outdated"
     fi
 
-    if test "$NIGHTLY" = true; then
+    if test "$IS_NIGHTLY" = true; then
       execute="conan install "$gitroot" --env build_all=1 --env create_package=1 --build${buildstrategy} -s compiler="$COMPILER" -s compiler.version="$COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -s build_type=${BUILD_TYPE} -e CC="$CC" -e CXX="$CXX""
     else
       execute="conan install "$gitroot" --env build_test=1 --env build_server=1 --build${buildstrategy} -s compiler="$COMPILER" -s compiler.version="$COMPILER_VERSION" -s compiler.libcxx="libstdc++11" -s build_type=${BUILD_TYPE} -e CC="$CC" -e CXX="$CXX""
@@ -50,7 +50,7 @@ build() {
 
     conan build "$gitroot"
 
-    if test "$NIGHTLY" = true; then
+    if test "$IS_NIGHTLY" = true; then
       # Moving the CPack package to the /inexor directory, so we are able to access it from outside of Docker
       local tempdir="/tmp/inexor-build/"
       local zipname="inexor-core-${INEXOR_VERSION}-Linux64.zip"
@@ -142,7 +142,7 @@ TARGET="${1}"
 COMPILER="${2}"
 COMPILER_VERSION="${3}"
 BUILD_TYPE="${4}" # Debug or Release
-NIGHTLY="${5}" # Nightly is either true or false
+IS_NIGHTLY="${5}" # Either true or false - Set to true if you want to generate packages with cpack
 NIGHTLY_USER="${6}"
 NIGHTLY_PASSWORD="${7}"
 
