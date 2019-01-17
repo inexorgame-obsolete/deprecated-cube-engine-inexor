@@ -143,8 +143,6 @@ COMPILER="${2}"
 COMPILER_VERSION="${3}"
 BUILD_TYPE="${4}" # Debug or Release
 IS_NIGHTLY="${5}" # Either true or false - Set to true if you want to generate packages with cpack
-NIGHTLY_USER="${6}"
-NIGHTLY_PASSWORD="${7}"
 
 export branch=`git rev-parse --abbrev-ref HEAD` # The branch we're on
 export commit_date=`git show -s --format=%cd --date=format:%Y-%m-%d-%H-%m-%S`
